@@ -1,0 +1,64 @@
+# OPT-07 — CSV Import & Export
+
+**PLANNING ONLY. Şu an çalıştırılamaz.**
+
+**Amaç**: Menü/ürün verisinin toplu CSV import/export'unu sağlamak.
+**Bounded context**: Menu Catalog verisinin toplu giriş/çıkış katmanı.
+**Owner**: Engineering. **Sınıf**: Optional (M1).
+**Bağımlılıklar**: Menu Catalog, CORE-13 (görsel referansları için).
+**Public contracts/events**: `ImportCompleted`, `ImportFailed`.
+**Tenant isolation**: Aynı.
+**Permissions**: `menu.import`, `menu.export`.
+**Entitlement**: Plan'a bağlı.
+**ECA hooks**: Yok.
+**AI-off/on**: AI import edilen veriyi temizleyebilir/eşleştirebilir (ileri
+özellik); temel import AI'dan bağımsız çalışır.
+**UX**: Şablon indirme → doldurma → yükleme → hata satırı gösterimi → düzeltme
+→ tekrar deneme.
+**States**: Import job: `queued → validating → importing → completed/failed`.
+**Retention**: Import geçmişi saklanır (hata ayıklama için).
+**Observability**: Import başarı/hata oranı.
+**Security**: CSV injection (formula injection) koruması zorunlu.
+**A11y/i18n**: Hata mesajları çok dilli.
+**Phase delivery**: Stage 2 Post-MVP.
+**Acceptance**: Formula-injection payload'ının temizlendiğinin testi; kısmi
+başarısız import'un hangi satırların başarısız olduğunu doğru raporladığının
+testi.
+**Rollback**: Başarısız import hiçbir kısmi veri bırakmadan geri alınabilir
+olmalı (transactional import).
+**Open questions**: Yok.
+
+
+## AI Capability Manifest
+
+Bkz. `docs/32-AI-CAPABILITY-MANIFEST-MATRIX.md` ve
+`templates/AI-CAPABILITY-MANIFEST.md`.
+
+- **deterministic_baseline**: required — AI kapalıyken/sıfır krediyle bu
+  modülün ana işlevi eksiksiz çalışır, veri kaybı olmaz.
+- **ai_posture**: assistive
+- **Optional AI use case(ler)**: CSV sütun→şema eşleme önerisi (import öncesi)
+- **AI-off / no-credit deterministic path**: AI kill switch aktifken, sıfır
+  iç kredi/provider kredisi yokken, quota/429/outage/residency-denial/
+  safety-block/invalid-schema durumlarında bu modülün AI-destekli önerisi
+  görünmez/pasif olur; kullanıcı girdisi/taslağı korunur, modülün temel işlevi
+  manuel/deterministik olarak tam çalışmaya devam eder.
+- **Data classification**: Dosya meta verisi (satır içeriği — işletme verisi)
+- **Allowed tools/side effects**: Yalnız yukarıdaki opsiyonel kullanım
+  örneğiyle sınırlı öneri/taslak/açıklama üretimi; `docs/14` §3 tool-allowlist
+  dışına çıkmaz.
+- **Forbidden authority (final-authority)**: Gerçek import yazma işlemi insan onay adımından sonra deterministik çalışır
+- **Human approval**: Üretilen her AI çıktısı (taslak/öneri/açıklama) kalıcı
+  veri veya eylem haline gelmeden önce ayrı, açık bir insan eylemi gerektirir
+  (`docs/01` §3, `docs/06` §7).
+- **Feature policy**: feature × provider/model × account × policy ×
+  tenant/residency `modules/ai-provider-account-vault.md` üzerinden çözülür.
+- **Budget/credit behavior**: reserve→invoke→debit/reconcile/release/refund
+  (`modules/ai-provider-account-vault.md` §credit ledger); kullanılmayan/
+  reddedilen öneri release/refund edilir.
+- **Eval/audit**: Kullanım/kabul oranı ve çağrı audit'i CORE-07'ye yazılır;
+  modüle özgü eval seti implementasyon başladığında tanımlanır (henüz yok —
+  `docs/16`'ya genel AI eval açık maddesi, `docs/16` AI-02 ile ilişkili).
+- **Phase**: Mimari olarak Stage 0'dan itibaren pre-wired (port/event/izin
+  tanımlı); etkinleştirme fazı için bkz. `docs/32` ilgili tablo satırı ve
+  `docs/26`.

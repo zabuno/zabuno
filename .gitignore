@@ -1,0 +1,38 @@
+# PLANNING ONLY — bu dosya laravelv01'in gelecekteki standalone zabuno/zabuno
+# public deposu kökü olarak kullanılacağı varsayımıyla yazılmıştır
+# (docs/31-PUBLIC-REPOSITORY-GOVERNANCE.md §5). Ham kanıt/snapshot dosyaları
+# burada silinmez, yalnız public depodan dışlanır.
+
+# Ham kanıt — yalnız public archive attestation istisna
+/evidence/*
+!/evidence/PUBLIC-ARCHIVE-ATTESTATION.md
+
+# Standalone root'taki arşivlenmiş eski proje kökü ve bağlı çalışma alanları —
+# public depoya hiçbir koşulda dahil edilmez (docs/31 §2)
+/old/
+/worktrees/
+
+# Lisanssız upstream snapshot byte'ları (docs/16 LIC-01, docs/28 §1)
+/research/upstream/imageoptimization/snapshot/
+
+# Secret / env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Bağımlılıklar / derlenmiş çıktı
+/vendor/
+/node_modules/
+/public/build/
+/storage/*.key
+
+# Cache / log
+*.log
+.phpunit.cache/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store

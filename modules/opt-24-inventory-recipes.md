@@ -1,0 +1,64 @@
+# OPT-24 — Inventory / Recipes
+
+**PLANNING ONLY. Şu an çalıştırılamaz.**
+
+**Amaç**: Stok takibi ve reçete (ürün-malzeme ilişkisi) yönetimi sağlamak.
+**Bounded context**: Menu Catalog'un `out_of_stock` state'ini otomatik
+tetikleyebilecek bir kaynak veri sağlar; kendi malzeme/stok veri modeli var.
+**Owner**: Product + Engineering. **Sınıf**: Optional (M2).
+**Bağımlılıklar**: Menu Catalog, CORE-11 (stok bitince otomatik gizleme
+kuralı).
+**Public contracts/events**: `StockLevelChanged`, `StockDepleted`.
+**Tenant isolation**: Aynı.
+**Permissions**: `inventory.manage`.
+**Entitlement**: M2 edition.
+**ECA hooks**: `StockDepleted` → ürünü `out_of_stock` yapan kural (Menu Catalog
+ile entegre).
+**AI-off/on**: AI talep tahmini önerebilir (ileri özellik); temel stok takibi
+AI'dan bağımsız.
+**UX**: Stok seviyesi girişi, düşük stok uyarısı.
+**States**: Stok kaydı: `in_stock → low_stock → out_of_stock`.
+**Retention**: Stok hareketleri loglanır.
+**Observability**: Stok tükenme sıklığı, en çok tükenen ürünler.
+**Security**: Yok.
+**A11y/i18n**: Standart.
+**Phase delivery**: Growth Stage.
+**Acceptance**: Stok sıfırlanınca ürünün otomatik `out_of_stock` (hidden değil)
+olduğunun testi (`docs/05` §5 ayrımı korunur).
+**Rollback**: Disable edilirse ürünler manuel görünürlük yönetimine döner.
+**Open questions**: Yok.
+
+
+## AI Capability Manifest
+
+Bkz. `docs/32-AI-CAPABILITY-MANIFEST-MATRIX.md` ve
+`templates/AI-CAPABILITY-MANIFEST.md`.
+
+- **deterministic_baseline**: required — AI kapalıyken/sıfır krediyle bu
+  modülün ana işlevi eksiksiz çalışır, veri kaybı olmaz.
+- **ai_posture**: advisory
+- **Optional AI use case(ler)**: Stok tükenme tahmini ve reçete maliyet içgörüsü
+- **AI-off / no-credit deterministic path**: AI kill switch aktifken, sıfır
+  iç kredi/provider kredisi yokken, quota/429/outage/residency-denial/
+  safety-block/invalid-schema durumlarında bu modülün AI-destekli önerisi
+  görünmez/pasif olur; kullanıcı girdisi/taslağı korunur, modülün temel işlevi
+  manuel/deterministik olarak tam çalışmaya devam eder.
+- **Data classification**: Stok/reçete meta verisi
+- **Allowed tools/side effects**: Yalnız yukarıdaki opsiyonel kullanım
+  örneğiyle sınırlı öneri/taslak/açıklama üretimi; `docs/14` §3 tool-allowlist
+  dışına çıkmaz.
+- **Forbidden authority (final-authority)**: Stok düşme/sipariş verme kararı deterministik iş kuralındadır
+- **Human approval**: Üretilen her AI çıktısı (taslak/öneri/açıklama) kalıcı
+  veri veya eylem haline gelmeden önce ayrı, açık bir insan eylemi gerektirir
+  (`docs/01` §3, `docs/06` §7).
+- **Feature policy**: feature × provider/model × account × policy ×
+  tenant/residency `modules/ai-provider-account-vault.md` üzerinden çözülür.
+- **Budget/credit behavior**: reserve→invoke→debit/reconcile/release/refund
+  (`modules/ai-provider-account-vault.md` §credit ledger); kullanılmayan/
+  reddedilen öneri release/refund edilir.
+- **Eval/audit**: Kullanım/kabul oranı ve çağrı audit'i CORE-07'ye yazılır;
+  modüle özgü eval seti implementasyon başladığında tanımlanır (henüz yok —
+  `docs/16`'ya genel AI eval açık maddesi, `docs/16` AI-02 ile ilişkili).
+- **Phase**: Mimari olarak Stage 0'dan itibaren pre-wired (port/event/izin
+  tanımlı); etkinleştirme fazı için bkz. `docs/32` ilgili tablo satırı ve
+  `docs/26`.

@@ -1,0 +1,36 @@
+# CLAUDE.md — laravelv01 içinde Claude'a özel kurallar
+
+`AGENTS.md` bu dizindeki tüm ajanlar için geçerlidir; bu dosya yalnız Claude
+oturumları için ek netleştirme taşır.
+
+## Kapsam sınırı
+
+- Bu paketteki Claude oturumu **tek writer**'dır (bkz. görev talimatındaki ROL VE
+  YETKİ bölümü). Aynı pakette başka bir writer'ın (Codex dahil) production/runtime
+  kodu, Kernel testi veya Actionplan kanonik içeriği üretmesi kabul edilmez; bu
+  paket zaten yalnız Claude tarafından yazılmıştır.
+- Bu dizin ürün/runtime kodu içermez; dolayısıyla "tek writer" kısıtı burada asıl
+  olarak *belge tutarlılığı* anlamına gelir — aynı kavramın iki farklı dosyada
+  çelişen şekilde tanımlanmaması.
+
+## Yazım sırası önerisi (bağlayıcı değil, rehber)
+
+1. Provenance ve şart (00, 01)
+2. Journey/roller, mimari kararlar (02, 03)
+3. Modül kataloğu ve alt sistemler (04–15)
+4. Gap/unknown-unknowns (16)
+5. Waterfall master + 8 stage (17–25)
+6. Matris, QA, kaynak kaydı, izlenebilirlik (26–29)
+7. `modules/`, `skills/`, `templates/`, `research/`
+
+Bu sıra modülü/dokümanı birbirine referans verirken ileri-referansların (henüz
+yazılmamış dosyaya link) geçici olarak var olmasına izin verir; her yeni dosya
+tamamlandığında geriye dönük linkler doğrulanır (bkz. self-check madde 5, broken
+link hedefi sıfır).
+
+## Ton
+
+- Owner teknik değildir; teknik kararlar somut restoran/SaaS kullanıcı yolculuğu
+  örnekleriyle açıklanır (bkz. kök yönetişim talimatındaki "Owner persona" maddesi).
+  Bu, `docs/` içindeki her stage dokümanının `kullaniciYolculugu` alanında yapılır.
+- Metafor karar/kontrat/test kanıtının yerine geçmez; yalnız anlaşılırlığı artırır.
