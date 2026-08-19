@@ -1,7 +1,10 @@
-# CLAUDE.md — laravelv01 içinde Claude'a özel kurallar
+# CLAUDE.md — bu repo (zabuno/zabuno) içinde Claude'a özel kurallar
 
 `AGENTS.md` bu dizindeki tüm ajanlar için geçerlidir; bu dosya yalnız Claude
-oturumları için ek netleştirme taşır.
+oturumları için ek netleştirme taşır. Workspace/Git sınırı (aktif repo, dış
+arşiv, workspace-parent, fail-closed preflight) `AGENTS.md` §6a'da
+kategorik olarak, yerel `.local/WORKSPACE-BOUNDARY.md`'de ise mutlak-yol
+düzeyinde tanımlıdır; bu dosya o sınırı **tekrar tanımlamaz**, ona uyar.
 
 ## Kapsam sınırı
 

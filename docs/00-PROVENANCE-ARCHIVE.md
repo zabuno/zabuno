@@ -8,8 +8,8 @@ kökünün nereye taşındığını kayıt altına alır.
 | Kaynak | Konum | Rol |
 |---|---|---|
 | Codex ana kapsam metni | Orkestratör oturum eki (attachment) — dosya adı/UUID public dokümanda taşınmaz (`docs/31` §7) | Kullanıcının orijinal QR Menü SaaS kapsam/gereksinim dokümanı — bu külliyatın birincil girdisi |
-| Kök `AGENTS.md` (eski) | `old/AGENTS.md` | Aynı kapsam metninin proje köküne önceden yerleştirilmiş kopyası |
-| Kök `CLAUDE.md` (eski) | `old/CLAUDE.md` | **[legacy]** Django tabanlı, önceki legacy QR-menü projesinin/denemesinin referans dokümanı (eski ürün adı owner talimatı gereği bu külliyatta hiçbir bağlamda yazılmaz) — yeni ürün adı **Zabuno**'dur (`docs/31` §7); teknoloji seçimleri taşınmaz, yalnız modül/rol/domain dersleri süzülür (`docs/30` postmortem ile ilişkili) |
+| Kök `AGENTS.md` (eski) | `old/AGENTS.md` (tarihsel arşivleme konumu — bkz. §6, bu depoda karşılığı yoktur) | Aynı kapsam metninin proje köküne önceden yerleştirilmiş kopyası |
+| Kök `CLAUDE.md` (eski) | `old/CLAUDE.md` (tarihsel arşivleme konumu — bkz. §6, bu depoda karşılığı yoktur) | **[legacy]** Django tabanlı, önceki legacy QR-menü projesinin/denemesinin referans dokümanı (eski ürün adı owner talimatı gereği bu külliyatta hiçbir bağlamda yazılmaz) — yeni ürün adı **Zabuno**'dur (`docs/31` §7); teknoloji seçimleri taşınmaz, yalnız modül/rol/domain dersleri süzülür (`docs/30` postmortem ile ilişkili) |
 | Görev talimatı (bu paketi tetikleyen) | Konuşma geçmişi | Sekiz aşamalı waterfall sırası, dosya listesi, mimari kararlar, donmuş kapsam kanıtları buradan alınmıştır |
 
 ## 2. Donmuş kapsam kanıtları (görev talimatından, doğrudan aktarım)
@@ -79,3 +79,21 @@ olarak Laravel + React + MVC kararı gerekçelendirilmiştir.
 Bu dosya, provenance ve arşivleme konusunda **tek kanonik sahiptir**. Başka hiçbir
 doküman arşivleme kanıtlarını veya donmuş hash değerlerini tekrar basmaz; yalnız
 buraya link verir.
+
+## 6. Güncel topoloji notu — tarihsel kayıt ile bugünü karıştırmayın
+
+§1–§4'teki `old/`, `laravelv01` ve arşivleme-anı kök yapısı referansları
+**tarihsel bir kayıttır**: Part A arşivleme işlemi yapıldığı andaki (bu
+külliyatın henüz public bir depo olmadığı, pre-publication) kök düzenini
+anlatır ve bu kayıt **değiştirilmez/silinmez** (`AGENTS.md` §4 kanıt disiplini
+ile tutarlı).
+
+Bu, **bugünün** topolojisi değildir. Bu külliyat artık public
+[`zabuno/zabuno`](https://github.com/zabuno/zabuno) deposunun **kökünün
+kendisidir**; güncel kökte `old/` veya `laravelv01` adlı bir dizin **yoktur**.
+Tarihsel arşivin kendisi bu depodan tamamen ayrı, dış bir konumda tutulur ve
+bu depoyla hiçbir Git ilişkisi yoktur (mutlak konum yalnız yerel
+`.local/WORKSPACE-BOUNDARY.md`'de kayıtlıdır — bkz. `AGENTS.md` §6a; bu genel
+kural `docs/31` §1a/§2'de de uygulanır). Yeni okuyucu §1–§4'ü **o anki**
+düzenin kanıtı olarak okumalı, güncel dizin yapısı için `README.md` §Dizin
+yapısı'na bakmalıdır.

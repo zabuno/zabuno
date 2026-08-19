@@ -1,40 +1,50 @@
 # 31 — Public Repository Governance
 
-**PLANNING ONLY.** Bu doküman, bu külliyatın (`laravelv01`) tek bir public
-GitHub deposu — **`zabuno/zabuno`** — olarak yayınlanma kuralının **tek
-kanonik kaynağıdır**. Yeni ürün adı **Zabuno**'dur. Legacy QR-menü projesinin/
-denemesinin eski adı, owner'ın kesin talimatı gereği ("bu adı kullanma") bu
-külliyatın **hiçbir yerinde — tarihsel bağlamda bile — yazılmaz**; yalnız
-"legacy QR-menü projesi/denemesi" ifadesiyle anılır (bkz. §7, §9).
+**PLANNING ONLY (doküman içeriği için) — ama depo hedefi artık current-state.**
+Bu doküman, bu külliyatın tek bir public GitHub deposu — **`zabuno/zabuno`**
+— olarak yayınlanma kuralının **tek kanonik kaynağıdır**. Yeni ürün adı
+**Zabuno**'dur. Legacy QR-menü projesinin/denemesinin eski adı, owner'ın
+kesin talimatı gereği ("bu adı kullanma") bu külliyatın **hiçbir yerinde —
+tarihsel bağlamda bile — yazılmaz**; yalnız "legacy QR-menü projesi/denemesi"
+ifadesiyle anılır (bkz. §7, §9).
 
 ## 1. Hedef depo
 
-- Tek monorepo: **`zabuno/zabuno`**, **PUBLIC**, standalone Git root
-  `laravelv01` (bu dizin ileride bu deponun kökü olacaktır — bkz. `AGENTS.md`
-  §6, bu paket içinde `git init`/`git remote` çalıştırılmaz, yalnız hedef
-  burada kayıt altına alınır).
+- Tek monorepo: **`zabuno/zabuno`**, **PUBLIC**. Bu külliyatın bulunduğu depo
+  **zaten bu deponun kendisidir** — güncel kökte artık ayrı, gelecekte
+  taşınacak bir "standalone root" beklentisi yoktur; bu dosyanın kendisi bu
+  deponun içindedir (bkz. `README.md` §Dizin yapısı, `docs/00` §6 güncel
+  topoloji notu).
 - Önceki çalışma turlarında kullanılan, legacy ürün adını taşıyan eski depo
-  adı **terk edilmiştir** — her yeni public-plan referansı `zabuno/zabuno`'yu
+  adı **terk edilmiştir** — her public-plan referansı `zabuno/zabuno`'yu
   kullanır.
 
 ### 1a. Git yetkisi ve yayın sırası
 
-Claude yazarı ve ondan bağımsız reviewer bu paket kapsamında **sıfır** Git
-mutasyonu yapar (`AGENTS.md` §6). Fiili `git init` / stage / commit /
-public `zabuno/zabuno` oluşturma / push işlemi, yalnız aşağıdaki iki koşul
+Bu paket kapsamında (ve genel olarak bu külliyatın doküman-yazım paketlerinde)
+Claude yazarı ve ondan bağımsız reviewer **sıfır** Git mutasyonu yapar
+(`AGENTS.md` §6). Bu deponun ilk oluşturulması/ilk push'u önceden,
+owner-yetkili bir MASTER adımıyla tamamlanmıştır — bu artık bir "gelecek
+eylem" değil, gerçekleşmiş bir olgudur. Bundan **sonraki** her ek public
+Git eylemi (yeni commit, branch, merge, ek push) için aynı disiplin
+**geçerliliğini sürdürür**: fiili Git eylemi yalnız aşağıdaki iki koşul
 **birlikte** sağlandığında Codex Desktop MASTER tarafından yapılır:
 
 1. Nihai bağımsız review **GREEN** sonucu, ve
 2. Owner'ın açık public yayın talebi.
 
-Bu düzeltme paketini başlatan görev talimatı, (2) koşulunu **karşılar** —
-owner'ın açık public yayın onayı bu talimatla verilmiştir; bu onay yalnız
-(1) sağlandıktan **sonra** fiili Git eylemine dönüşür. Worker'lar Git
-eylemini asla kendi başlarına öne çekmez veya üstlenmez.
+Bu, her yeni doküman paketi için tekrar sıfırdan başlayan bir kural
+**değildir** — depo bir kere kurulmuş olsa bile, ondan sonraki her yeni
+değişiklik seti için worker'lar Git eylemini asla kendi başlarına öne çekmez
+veya üstlenmez; fail-closed workspace/repo preflight (`AGENTS.md` §6a,
+`.local/WORKSPACE-BOUNDARY.md`) her Git işleminden önce ayrıca uygulanır.
 
 ## 2. Yayınlanmayacaklar (kesin liste)
 
-- `old/` — arşivlenmiş eski proje kökü (Django/FastAPI legacy denemeleri).
+- Arşivlenmiş eski proje kökü (Django/FastAPI legacy denemeleri) — bu depoda
+  güncel kökte böyle bir dizin (`old/`) zaten yoktur (`docs/00` §6); bu madde,
+  gelecekte herhangi bir arşiv içeriğinin yanlışlıkla bu depoya staged
+  edilmesine karşı **standing** bir yasaktır.
 - Root Git history, raw local evidence, mutlak dosya yolları, attachment ID'leri.
 - İç geliştirme-orkestrasyon aracının (hangi araç kullanılırsa kullanılsın)
   worktree/session/capability/panel iç detayları.
@@ -60,10 +70,11 @@ license" satırları).
 
 ## 5. `.gitignore` sözleşmesi
 
-Depo kökünde (`laravelv01/.gitignore`, bu külliyatın kendisi) şu kurallar
-uygulanır:
+Bu deponun kök `.gitignore`'ında şu kurallar uygulanır:
 
 ```
+/.local/                                  # ignore — yerel workspace/Git sınır sözleşmesi
+                                           # (mutlak yol taşır, bkz. AGENTS.md §6a)
 /evidence/*                              # ignore
 !/evidence/PUBLIC-ARCHIVE-ATTESTATION.md # allow — tek istisna
 /research/upstream/imageoptimization/snapshot/   # ignore (lisanssız)
@@ -72,8 +83,8 @@ uygulanır:
 
 `evidence/` altındaki ham kanıt dosyaları (archive-before.tsv, git-before.txt
 vb.) **silinmez veya düzenlenmez** — yalnız `.gitignore` ile public depodan
-**dışlanır**. Yerelde aynen kalırlar (`AGENTS.md` §1 "old/ bir arşivdir"
-ilkesiyle aynı disiplin).
+**dışlanır**. Yerelde aynen kalırlar (`AGENTS.md` §1'deki dış arşive
+dokunmama ilkesiyle aynı disiplin).
 
 ## 6. Upstream provenance — imageoptimization
 

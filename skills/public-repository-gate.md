@@ -42,8 +42,10 @@ kasıtlıdır (bkz. §Zorunlu marka kontrolü).
 
 ## Authority
 Salt-okunur kapı — bir dosyayı **yayınlamaz**, yalnız "geçti/geçmedi"
-sonucu üretir. Fiili `git init`/`git add`/`git commit`/push eylemi Claude
-yazarına veya reviewer'a **asla** ait değildir (`AGENTS.md` §6); yalnız
+sonucu üretir. Fiili `git add`/`git commit`/push eylemi Claude yazarına veya
+reviewer'a **asla** ait değildir (`AGENTS.md` §6); bu deponun ilk `git init`/
+ilk push'u önceden owner-yetkili MASTER tarafından tamamlanmıştır — bundan
+sonraki her ek public commit/push için de aynı disiplin geçerlidir: yalnız
 nihai bağımsız review GREEN olduktan **ve** owner'ın açık public yayın
 talebi geldikten **sonra**, Codex Desktop MASTER bu iki koşulu birlikte
 sağlayarak fiili Git eylemini gerçekleştirir (`docs/31` §1a). Bu skill

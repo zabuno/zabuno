@@ -5,6 +5,14 @@ verdiği paket talimatı) her maddesinin bu külliyatta nerede karşılandığı
 **çift yönlü** kanıtıdır: talimat maddesi → kanonik dosya/bölüm, ve kanonik
 dosya → hangi talimat maddesini karşıladığı.
 
+> **Tarihsel kayıt notu**: §A ve §M'deki `.git`/`old`/`laravelv01`/
+> `worktrees` referansları, Part A arşivleme paketinin **o anki (pre-
+> publication)** görev talimatını ve kanıtını birebir yansıtır — bu satırlar
+> tarihsel kayıt olarak **değiştirilmez/silinmez** (`docs/00` §6 aynı
+> disiplini uygular). Bu, **güncel** topoloji değildir: bu depo artık public
+> `zabuno/zabuno`'nun kökü olarak yayındadır, güncel kökte `old/`/`laravelv01`
+> yoktur (bkz. `README.md` §Dizin yapısı, `docs/00` §6).
+
 ## A — Arşivleme, ön kanıt ve rollback
 
 | Talimat maddesi | Karşılandığı yer |
@@ -22,8 +30,8 @@ dosya → hangi talimat maddesini karşıladığı.
 | Talimat maddesi | Karşılandığı yer |
 |---|---|
 | Türkçe yazım, İngilizce ürün UI dili | Tüm `docs/*` dosyaları + `README.md` |
-| laravelv01/README.md (0/8, plan-onayı) | `README.md` |
-| laravelv01/AGENTS.md, CLAUDE.md | `AGENTS.md`, `CLAUDE.md` |
+| Kök `README.md` (0/8, plan-onayı) | `README.md` |
+| Kök `AGENTS.md`, `CLAUDE.md` | `AGENTS.md`, `CLAUDE.md` |
 | docs/00–32 (33 dosya) | `docs/00-PROVENANCE-ARCHIVE.md` … `docs/32-AI-CAPABILITY-MANIFEST-MATRIX.md` |
 | templates/MODULE-SPEC.md, ADR.md, MILESTONE-GATE.md, SKILL-SPEC.md, AI-CAPABILITY-MANIFEST.md | `templates/` |
 

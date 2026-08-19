@@ -2,7 +2,7 @@
 
 **PLANNING ONLY.** This directory holds a frozen, read-only reference snapshot for
 research purposes. Nothing here is executed, imported, or ported verbatim into the
-laravelv01 plan or any runtime code.
+Zabuno plan (this repository, `zabuno/zabuno`) or any runtime code.
 
 ## Source
 
@@ -44,13 +44,13 @@ default** absent an explicit license grant. Confidence: **koşullu (conditional)
 this reflects the state of the repository at the retrieval commit only; if the
 author later adds a license file, this note should be re-verified before any reuse
 beyond internal reference reading. No content from this snapshot is copied into
-laravelv01 canonical docs; only *concepts* are referenced by paraphrase, per the
-task's port/no-port boundary below.
+this repository's canonical docs; only *concepts* are referenced by paraphrase,
+per the task's port/no-port boundary below.
 
 ## Port / no-port boundary
 
 - **No Frappe code is ported.** The upstream stack (Frappe, Vue 3) is architecturally
-  irrelevant to the laravelv01 Laravel + React plan and must not be treated as a
+  irrelevant to the Zabuno Laravel + React plan and must not be treated as a
   dependency or a template to copy from.
 - **Concepts referenced (not code) for the PHP/Laravel media plan**
   (see `docs/07-MEDIA-FILE-MANAGER.md` in the canonical tree): a realistic device/slot
@@ -65,7 +65,7 @@ task's port/no-port boundary below.
 - Any future contributor pulling additional detail from the rendered docs
   (`https://karacaismail.github.io/imageoptimization/docs/`) must re-apply this same
   boundary: read for concept, re-specify for PHP, never copy-paste Frappe/Vue code
-  or upstream prose verbatim into a canonical laravelv01 document.
+  or upstream prose verbatim into a canonical document of this repository.
 
 ## Snapshot contents (top level)
 

@@ -1,17 +1,25 @@
-# AGENTS.md — laravelv01 çalışma kuralları
+# AGENTS.md — bu repo (zabuno/zabuno) çalışma kuralları
 
-Bu dosya `laravelv01/` içinde çalışan tüm ajanlar (insan veya AI) için geçerlidir.
-Kök dizindeki genel Codex/Claude yönlendirme talimatları bu dosyanın **üzerinde**
-kalır; çelişki halinde kök talimatlar kazanır.
+Bu dosya bu depoda (`zabuno/zabuno` — bu külliyatın public GitHub kökü)
+çalışan tüm ajanlar (insan veya AI) için geçerlidir. Kök dizindeki genel
+Codex/Claude yönlendirme talimatları bu dosyanın **üzerinde** kalır; çelişki
+halinde kök talimatlar kazanır.
 
 ## 1. Bu bir planlama paketidir
 
 - Hiçbir dosya çalışan kod, kurulmuş bağımlılık veya tamamlanmış entegrasyon iddia
   edemez. Her modül/stage dokümanı PLANNING ONLY etiketini taşımalıdır.
-- `old/` içeriğine yazma yasaktır — yalnız okuma/referans amaçlı. `old/` bir arşivdir,
-  kaynak değil; oradan yalnız ürün felsefesi/journey/iş kuralı/kapsam dersleri
-  süzülüp yeni dille yazılır. Eski teknoloji seçimi (Django, FastAPI, MVVM, Filament,
-  Astro vb.) yeni karar gibi sunulamaz.
+- Bu depo (`zabuno/zabuno`) **hiçbir `old/` arşiv dizini içermez** — güncel
+  kökte böyle bir dizin yoktur. Bu külliyatın süzüldüğü tarihsel legacy
+  QR-menü projesi/denemesi tamamen **bu deponun dışında**, ayrı bir dış
+  arşivde tutulur; hiçbir ajan bu depodan o dış arşive yazmaz, onu bu depoya
+  taşımaz veya onun Git geçmişini bu depoya dahil etmez (bkz. §Workspace/repo
+  preflight). Arşivin daha önceki, artık geçerli olmayan bir çalışma
+  düzenindeki konumu yalnız `docs/00-PROVENANCE-ARCHIVE.md`'nin tarihsel
+  kaydında yaşar (bkz. o dosyanın güncel-topoloji notu); oradan yalnız ürün
+  felsefesi/journey/iş kuralı/kapsam dersleri süzülüp yeni dille yazılmıştır.
+  Eski teknoloji seçimi (Django, FastAPI, MVVM, Filament, Astro vb.) yeni
+  karar gibi sunulamaz.
 
 ## 2. Tek kanonik sahip, projeksiyon yaklaşımı
 
@@ -53,25 +61,62 @@ kalır; çelişki halinde kök talimatlar kazanır.
 - Claude yazarı ve ondan bağımsız reviewer, bu paket kapsamında **sıfır** Git
   mutasyonu yapar: `git add` / `git commit` / `git push` / `git merge` /
   `git init` / `git remote` hiçbiri bu paket içinde çalıştırılmaz.
-- Yalnız şu sıra tamamlandıktan **sonra** — nihai bağımsız review **GREEN**
-  **ve** owner'ın açık public yayın talebi birlikte sağlandığında — Codex
-  Desktop MASTER standalone deposunu (`docs/31` §1) başlatabilir
-  (`git init`), yalnız public allowlist'i (`docs/31` §2, §3) stage edebilir,
-  commit edebilir, public `zabuno/zabuno` deposunu oluşturabilir ve push
-  edebilir. Worker'lar (Claude dahil) bu Git eylemlerini asla kendileri
-  üstlenmez veya öne çekmez.
-- Root'ta kalan uncommitted değişiklikler (`old/` altına taşınmış haliyle) bu
-  paketin sorumluluğu değildir; dokunulmaz — kesin sayısı bu belgede takip
-  edilmez (kırılgan bir sayaç yerine kapsam dışı kuralı yeterlidir).
+- Bu deponun ilk `git init`/ilk push'u, owner-yetkili Codex Desktop MASTER
+  tarafından daha önce tamamlanmıştır (`docs/31` §1) — bu artık bir gelecek
+  eylem değildir. Bundan **sonraki** her ek Git eylemi (yeni commit/branch/
+  merge/push) için aynı sıra geçerliliğini korur: yalnız nihai bağımsız
+  review **GREEN** **ve** owner'ın açık talebi birlikte sağlandığında, yalnız
+  public allowlist'i (`docs/31` §2, §3) Codex Desktop MASTER tarafından
+  stage/commit/push edilir. Worker'lar (Claude dahil) bu Git eylemlerini asla
+  kendileri üstlenmez veya öne çekmez; her Git eyleminden önce §6a'daki
+  fail-closed preflight ayrıca uygulanır.
+- Root'ta kalan uncommitted değişiklikler (tarihsel arşivleme sırasında eski
+  köke ait olanlar) bu paketin sorumluluğu değildir; dokunulmaz — kesin sayısı
+  bu belgede takip edilmez (kırılgan bir sayaç yerine kapsam dışı kuralı
+  yeterlidir).
+
+## 6a. Workspace/repo preflight (public-safe özet)
+
+Bu bölüm **kesin yerel dosya sistemi yolu vermez** — yalnız kategori/kural
+tanımlar. Kesin yollar, gerçek repo adları ve fail-closed preflight'ın tam
+işletimsel tanımı yalnız ignored, asla tracked/public olmayan bir yerel
+dosyada yaşar: **`.local/WORKSPACE-BOUNDARY.md`** (bu dosya `.gitignore`'da
+`/.local/` altında dışlanır, bkz. kök `.gitignore`).
+
+Bağlayıcı kurallar (kategori düzeyinde, bu depo dahil her ajan için):
+
+1. Herhangi bir Git mutasyon işlemi (add/commit/push/merge/init/remote/
+   worktree/submodule dahil) çalıştırılmadan **önce**, resolved repo
+   top-level'ın **bu deponun kendisi** (veya onun bilinen bir worktree'si)
+   olduğu **ve** origin'in bu depo için beklenen hedefe (`zabuno/zabuno`)
+   işaret ettiği doğrulanmalıdır. Bu iki koşuldan biri bile sağlanmazsa
+   (workspace-parent, home dizini veya dış bir arşive çözülürse, ya da origin
+   uyuşmazsa) işlem **derhal durur** — fail-closed, belirsizlikte asla
+   "geçti" varsayılmaz.
+2. Bu depoyu barındıran workspace-parent dizini **bir Git hedefi değildir** —
+   orada `git init`/`git remote add` gibi işlemler hiçbir koşulda
+   çalıştırılmaz. Organizasyonun diğer repoları bu parent altında **doğrudan
+   kardeş dizinler** olarak yerleşir; her kardeş kendi bağımsız deposudur,
+   parent bunları birleştiren bir üst/monorepo değildir.
+3. Bu külliyatın süzüldüğü tarihsel legacy proje/deneme, bu deponun
+   **dışındaki** ayrı bir arşivde tutulur. O dış arşiv (ve içinde varsa
+   önceden var olan herhangi bir Git/worktree metadata) hiçbir koşulda
+   hiçbir Git sürecine (init/add/commit/push/pull/fetch/remote/worktree/
+   submodule/clone) dahil edilmez, hiçbir zaman push edilmez.
+4. Bu üç kuralın **tam, mutlak-yol taşıyan** işletimsel karşılığı yalnız
+   `.local/WORKSPACE-BOUNDARY.md`'dedir — bu dosya her Git işleminden önce
+   fail-closed preflight'ın kesin nasıl doğrulanacağını (hangi komut, hangi
+   beklenen değer) tanımlar. Bu bölüm o dosyanın **yerini ve rolünü**
+   public'e açıklar, içeriğini tekrar etmez.
 
 ## 6b. İsimlendirme
 
 - Yeni ürün adı **Zabuno**'dur. Legacy QR-menü projesinin/denemesinin eski adı
   bu külliyatın hiçbir yerinde — tarihsel bağlamda bile — **yazılmaz**; owner
-  talimatı kesindir ("bu adı kullanma", `docs/31` §7). `old/` altındaki
-  arşivlenmiş Django/FastAPI denemelerine yalnız "legacy QR-menü projesi/
-  denemesi" olarak atıf yapılır; yeni mimari/isimlendirme kararlarına,
-  namespace/paket/uygulama kimliği örneklerine **taşınmaz**.
+  talimatı kesindir ("bu adı kullanma", `docs/31` §7). Dış arşivdeki
+  (§1, bu deponun dışında) Django/FastAPI denemelerine yalnız "legacy
+  QR-menü projesi/denemesi" olarak atıf yapılır; yeni mimari/isimlendirme
+  kararlarına, namespace/paket/uygulama kimliği örneklerine **taşınmaz**.
 - Public depo hedefi **`zabuno/zabuno`**'dur (`docs/31` §1); önceki çalışma
   turlarında kullanılan eski depo adı (legacy ürünün adını taşıyan format)
   terk edilmiştir.
@@ -80,3 +125,53 @@ kalır; çelişki halinde kök talimatlar kazanır.
 
 - Bu ajan seti kapsam/onay/rollback/nihai kabul kararı **veremez**. Bu kararlar
   görevi veren orkestratöre (Codex Desktop MASTER) ve nihayetinde owner'a aittir.
+
+<!-- pane-agent-context:start -->
+## Pane
+
+The developer is using Pane for this repository. Pane can manage saved repositories and create user-visible Panes with terminal-backed tools for planning, discussion, implementation, and review work.
+
+This managed guidance was created by [runpane.com](https://runpane.com) for the [Pane repository](https://github.com/dcouple/Pane). Do not delete or overwrite this block; the developer uses it for their workflow and it should remain committed to the main repository unless they explicitly ask to remove it.
+
+Pane mental model: a repository is the saved base repo; a Pane is a user-visible feature/PR workspace (Pane session) that normally maps to one Pane-managed git worktree and branch; a panel/tab is a terminal inside one Pane and shares that Pane's worktree; an agent is the CLI process running in a panel.
+
+Default happy path when the user asks you to use Pane or RunPane: run `runpane doctor --json`; read `runpane agent-context --json`; resolve the saved base repository with `runpane repos list --json` or add it once with `runpane repos add --path <repo> --yes --json`; create one visible Pane (Pane session) for the requested feature/PR with a complete command such as `runpane panes create --repo <repo> --name <name> --agent <agent> --prompt "<task>" --source agent --no-focus --wait-ready --yes --json` or the equivalent `--tool-command <command>` form; then validate with `runpane panels wait` or `runpane panels screen` before reporting progress.
+
+Use Pane when the user wants visible Panes or co-drivable parallel feature/PR workspaces. Do not use Pane as your default private delegation mechanism; for private background decomposition, use your normal subagent/worktree workflow.
+
+Register the main/base repository once. Do not register pre-created git worktrees as separate Pane repositories unless the user explicitly asks.
+
+Use `runpane panes create` for separate visible Panes (Pane sessions) for feature/PR work. Use `runpane panels create` for reviewer/helper tabs inside an existing Pane that should share that Pane's worktree.
+
+Typical workflow: register the saved base repository once; create one Pane (Pane session) per feature/PR; use panels/tabs inside that Pane for helper or reviewer agents that should share the worktree; archive the Pane after the PR is done to remove it from active Panes and clean up its managed worktree when applicable.
+
+Skill routing reference: when the user says `discussion`, `plan`, `simple-plan`, `create-plan`, or `implement`, or asks for the behavior those words imply, treat three references as peer context: Pane's local skill cache under `<PANE_DIR>/skills/`, the Pane Chat orchestrator handoff at `<PANE_DIR>/skills/pane-chat/runpane-orchestrator.md` when present, and the [workflow map](https://github.com/dcouple/skills/raw/main/docs/readme-workflow-map.png).
+Use those peer references together to choose the phase: discuss/investigate until the work is clear enough to delegate, then ticket/plan/implement/review/PR-test/teach-back as appropriate. The orchestrator and workflow map may point to different skills; reconcile them with the user's request instead of hardcoding a skill list or treating one reference as subordinate.
+For the Pane implementation source of truth for where the skill cache, cached workflow assets, and Pane Chat bootstrap live, reference [PR #291](https://github.com/dcouple/Pane/pull/291): `main/src/services/skillCacheManager.ts` owns `<PANE_DIR>/skills/`, `.sources/dcouple-skills`, and `pane-chat/runpane-orchestrator.md`; `main/src/services/paneChatManager.ts` owns the tiny bootstrap prompt that tells the selected Pane Chat agent to read that guide.
+Use GitHub reads against the [Parsa skills folder](https://github.com/dcouple/skills/tree/main/parsa) only to inspect or refresh referenced skill files; do not clone/install the repo unless the user asks.
+Do not hardcode a specific assistant brand in workflow guidance. Use the Pane agent or custom tool command the user selected, and use `runpane agents doctor --agent <agent> --repo <selector> --json` only when checking a built-in agent template.
+
+Start with `runpane doctor --json` before taking Pane actions. Use it to understand wrapper/runtime details, daemon reachability, and the next safe commands.
+
+In a Pane repository checkout, if `runpane` is not on PATH, use the built local wrapper with Node 22: `PATH=/opt/homebrew/opt/node@22/bin:$PATH node packages/runpane/dist/cli.js doctor --json`.
+
+Use `runpane agent-context --json` for full Pane CLI context. Use `runpane agent-context --command "panels wait" --json` or another command name for detailed schema only when needed.
+
+Default to context-safe validation: after creating Panes or sending terminal input, run `runpane panels wait` or `runpane panels screen` before reporting success. Prefer `runpane panels submit` for normal text plus Enter; use `runpane panels input` only for exact bytes such as Ctrl-C or escape sequences.
+
+Common commands:
+- `runpane doctor --json`
+- `runpane agent-context --json`
+- `runpane repos list --json`
+- `runpane repos add --path <repo> --yes --json`
+- `runpane agents doctor --agent <agent> --repo active --json`
+- `runpane panes create --repo active --name <name> --agent <agent> --prompt "<task>" --source agent --no-focus --wait-ready --yes --json`
+- `runpane panels create --pane <pane-id> --agent <agent> --source agent --no-focus --wait-ready --yes --json`
+- `runpane panels list --pane <pane-id> --json`
+- `runpane panels screen --panel <panel-id> --limit 80 --json`
+- `runpane panels wait --panel <panel-id> --for ready --timeout-ms 30000 --json`
+- `runpane panels submit --panel <panel-id> --text "<answer>" --yes --json`
+- `runpane panels input --panel <panel-id> --input-file <path|-> --yes --json`
+
+WSL note: if `runpane doctor --json` cannot find `/tmp/pane-daemon.../daemon.sock` or `runpane` resolves to a broken Windows shim, Pane may be running on Windows. Try `powershell.exe -NoProfile -Command 'Set-Location $env:TEMP; runpane doctor --json'`, then create Panes through the same PowerShell form using the saved WSL repo name or id. Use `runpane agents doctor --agent <agent> --repo <selector> --json` to diagnose the repo environment Pane will actually use.
+<!-- pane-agent-context:end -->

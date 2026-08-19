@@ -46,8 +46,8 @@ requirement'tan ileriye doğru hangi test'in onu doğrulayacağı izlenebilir
 
 Bir worker'ın "tamamladım" beyanı **kanıt değildir**. Kanıt: çalışan test
 çıktısı, ölçülmüş metrik, bağımsız review sonucu. Bu külliyatın kendisi de bu
-kurala tabidir — `laravelv01/README.md`'nin "0/8" sayacı bu yüzden plan
-üretiminden etkilenmez.
+kurala tabidir — `README.md`'nin "0/8" sayacı bu yüzden plan üretiminden
+etkilenmez.
 
 ## 5. Zorunlu test kategorileri (implementasyon başladığında)
 
@@ -62,8 +62,8 @@ replay/idempotency testi (`docs/09` §5), i18n pseudolocale/RTL testi
 
 ## 6. Bu paketin kendi durumu
 
-Bu paket (laravelv01 dokümantasyon külliyatı) **yalnız docs-only yapısal
-kabul**e tabidir: dosyaların var olup olmadığı, thin/placeholder olup olmadığı,
+Bu paket (bu depodaki, `zabuno/zabuno`, dokümantasyon külliyatı) **yalnız
+docs-only yapısal kabul**e tabidir: dosyaların var olup olmadığı, thin/placeholder olup olmadığı,
 link'lerin çalışıp çalışmadığı, sekiz aşamalı sıranın doğru olup olmadığı
 (bkz. `README.md` self-check, madde M). Runtime test **N/A**'dır çünkü runtime
 kod yoktur — bu bir eksiklik değil, paketin doğası gereği beklenen durumdur.

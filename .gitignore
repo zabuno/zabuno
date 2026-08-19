@@ -1,14 +1,19 @@
-# PLANNING ONLY — bu dosya laravelv01'in gelecekteki standalone zabuno/zabuno
-# public deposu kökü olarak kullanılacağı varsayımıyla yazılmıştır
-# (docs/31-PUBLIC-REPOSITORY-GOVERNANCE.md §5). Ham kanıt/snapshot dosyaları
-# burada silinmez, yalnız public depodan dışlanır.
+# Bu dosya, bu deponun kendisinin — public `zabuno/zabuno` kökünün —
+# `.gitignore`'ıdır (docs/31-PUBLIC-REPOSITORY-GOVERNANCE.md §5). Ham kanıt/
+# snapshot dosyaları burada silinmez, yalnız public depodan dışlanır.
+
+# Yalnız yerel workspace/Git sınır sözleşmesi (mutlak yol taşır) — asla
+# tracked/public olmaz; bkz. AGENTS.md §Workspace/repo preflight
+/.local/
 
 # Ham kanıt — yalnız public archive attestation istisna
 /evidence/*
 !/evidence/PUBLIC-ARCHIVE-ATTESTATION.md
 
-# Standalone root'taki arşivlenmiş eski proje kökü ve bağlı çalışma alanları —
-# public depoya hiçbir koşulda dahil edilmez (docs/31 §2)
+# Arşivlenmiş eski proje kökü (varsa) ve Git worktree çalışma kopyaları —
+# public depoya hiçbir koşulda dahil edilmez (docs/31 §2); `worktrees/`
+# burada standart `git worktree` mekanizmasının çalışma dizinlerini ifade
+# eder, ayrı bir arşiv değildir.
 /old/
 /worktrees/
 
