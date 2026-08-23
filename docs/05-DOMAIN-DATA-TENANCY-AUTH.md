@@ -100,6 +100,39 @@ tenant-scope ile sağlanır (global scope / query builder macro seviyesinde,
 uygulama detayı `modules/core-tenancy.md`). IDOR (Insecure Direct Object
 Reference) testleri her modülün acceptance kriterine dahildir (`docs/27`).
 
+## 6a. Client-heavy frontend / server-authoritative iş bölümü
+
+Genel yön: Restaurant Admin ve Superadmin client-rendered SPA/PWA'dır;
+Public Menu/Marketing static/cacheable shell + versioned publication
+snapshot'tır; per-request SSR mümkün olduğunca azaltılır (`docs/03` ADR-L07
+ile tutarlı). Bu, §2'deki tek-PDP/deny-by-default kararını **gevşetmez** —
+yalnız hangi işin nerede çalıştığını ayırır:
+
+**Client'a taşınabilir** (yetki/veri kararı taşımaz): UI rendering, local
+view state, bounded data filtering/sorting, safe preview, local form
+validation, reversible optimistic UI (yalnız idempotent işlemlerde, `docs/10`
+§5 optimistic-update disipliniyle tutarlı), draft state, client cache,
+command palette search, layout adaptation, public menu presentation, image
+preview/güvenli pre-processing, offline-safe draft (`docs/10` §5 offline
+state ayrımıyla tutarlı).
+
+**Server'da kalması zorunlu** (authoritative, bypass edilemez): authentication,
+authorization/PDP kararı (§2), tenant isolation (§1, §6), authoritative
+validation, permission mutation, publication, payment, audit, ECA execution,
+AI secrets/tool execution (`docs/14` §3), signed media access, immutable
+snapshots, QR destination authority, rate limiting, idempotency, final
+business rules.
+
+Client'ın gönderdiği `role`/`workspace_id`/`permission`/`price`/
+`publication state`/AI sonucu **tek başına güvenilmez** — server her
+istekte kimlik, tenant, resource relationship, attribute ve permission'ı
+yeniden doğrular (§2, §6 ile aynı ilke). Server yükünü azaltmak için
+coarse-grained typed API, pagination, server-driven filter, ETag/
+Cache-Control, versioned publication snapshot, CDN, queue/background job,
+gerektiğinde SSE/WebSocket, incremental sync, request dedup, client query
+cache, pre-signed bounded upload kullanılabilir — bunların hiçbiri güvenlik
+kuralını client'a taşımaz.
+
 ## 7. Kanonik sahiplik
 
 Tenant modeli, authorization mekaniği ve auth akışlarının tek kanonik sahibi bu

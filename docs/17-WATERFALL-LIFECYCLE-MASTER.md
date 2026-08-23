@@ -224,10 +224,13 @@ korunur.
 
 Bu plan korpusunun üretilmiş olması (bu §3a stage panoları dahil) **hiçbir
 stage'i tamamlamaz** — bu, PLANNING ONLY bir doküman genişletmesidir, ürün
-ilerlemesi değildir. Şu an:
+ilerlemesi değildir. S1-WP01A foundation iskeletinin implementation-in-
+progress durumu da (`docs/26` S1-WP01, `README.md` §İlerleme) bu sayacı
+değiştirmez — Exit Gate kanıtla GO almadan sayaç artmaz. Şu an:
 
 ```
-0/8 tamamlandı, aktif aşama: plan-onayı (Stage 1 MVP henüz başlamadı)
+0/8 tamamlandı, 1/8 aktif: Stage 1 — MVP (S1-WP01 Foundation & preflight,
+alt paket S1-WP01A implementation-in-progress; S1-WP02..07 not-started)
 ```
 
 ## 6. Kanonik sahiplik

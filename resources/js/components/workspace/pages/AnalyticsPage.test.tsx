@@ -1,0 +1,215 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, waitFor, within } from '@testing-library/react';
+
+import { AnalyticsPage } from './AnalyticsPage';
+
+/**
+ * ANALYTICS_FRONTEND_RED
+ *
+ * S1-WP05b1 RED — AnalyticsPage is frozen to the real
+ * GET /api/workspaces/{workspaceId}/brand/locations/{locationId}/analytics/summary?range=...
+ * contract instead of the honest-unavailable stub it renders today: it
+ * must accept real workspaceId/locationId props, never fetch before both
+ * are defined, offer Today/Last 7 days/Last 30 days, show real loading
+ * and API-failure states without fabricating a zero, render a real zero
+ * only when the API actually returns one, render real nonzero counts in
+ * accessible metric cards, refetch on range change and drop a stale
+ * in-flight response, and stay 320 CSS px fluid with no breakpoint
+ * classes or "responsive" wording. None of this exists yet, so every
+ * assertion below fails RED against current production. No production,
+ * i18n, Storybook, backend or Git edits are made from this file.
+ */
+
+const WORKSPACE_ID = 41;
+const LOCATION_ID = 907;
+const SUMMARY_ENDPOINT = `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/analytics/summary`;
+
+const BREAKPOINT_CLASS_PATTERN = /(^|[\s"'`])(sm|md|lg|xl|2xl):/;
+const RESPONSIVE_WORDING = /\bresponsive\b/i;
+
+function jsonResponse(status: number, body: unknown): Response {
+    return {
+        ok: status >= 200 && status < 300,
+        status,
+        json: async () => body,
+    } as Response;
+}
+
+function summaryBody(range: string, qrResolveCount: number, menuOpenCount: number) {
+    return { range, qrResolveCount, menuOpenCount, generatedAt: '2026-08-22T09:00:00.000Z' };
+}
+
+function setViewport(width: number, height: number) {
+    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
+    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    window.dispatchEvent(new Event('resize'));
+}
+
+function collectClassLists(root: HTMLElement): string[] {
+    const classLists: string[] = [];
+    if (root.className) classLists.push(root.className);
+    root.querySelectorAll<HTMLElement>('*').forEach((el) => {
+        if (el.className && typeof el.className === 'string') classLists.push(el.className);
+    });
+    return classLists;
+}
+
+describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRONTEND_RED)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        setViewport(320, 480);
+        fetchSpy = vi.fn(async (url: string) => {
+            if (String(url) === `${SUMMARY_ENDPOINT}?range=today`) {
+                return jsonResponse(200, summaryBody('today', 3, 2));
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('never fetches the summary endpoint before both workspaceId and locationId are provided', async () => {
+        render(<AnalyticsPage />);
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(fetchSpy).not.toHaveBeenCalled();
+    });
+
+    it('fetches the exact location-scoped summary endpoint for the default Today range once real IDs are provided', async () => {
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const [url] = fetchSpy.mock.calls[0];
+        expect(String(url)).toBe(`${SUMMARY_ENDPOINT}?range=today`);
+    });
+
+    it('offers Today, Last 7 days, and Last 30 days range options', () => {
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        const rangeControl = screen.getByRole('combobox', { name: /range/i });
+        const optionLabels = within(rangeControl)
+            .getAllByRole('option')
+            .map((option) => option.textContent);
+
+        expect(optionLabels).toEqual(
+            expect.arrayContaining([
+                expect.stringMatching(/today/i),
+                expect.stringMatching(/last 7 days/i),
+                expect.stringMatching(/last 30 days/i),
+            ]),
+        );
+    });
+
+    it('shows a real loading state before the fetch resolves, never a fabricated zero', async () => {
+        let resolveFetch: ((value: Response) => void) | undefined;
+        fetchSpy.mockImplementation(
+            () =>
+                new Promise<Response>((resolve) => {
+                    resolveFetch = resolve;
+                }),
+        );
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const region = screen.getByRole('region', { name: /metric|report/i });
+        expect(within(region).getByText(/loading/i)).toBeInTheDocument();
+        expect(within(region).queryByText(/^0$/)).not.toBeInTheDocument();
+
+        resolveFetch?.(jsonResponse(200, summaryBody('today', 3, 2)));
+        await waitFor(() => expect(within(region).getByText('3')).toBeInTheDocument());
+    });
+
+    it('shows an explicit API-failure state and never fabricates a zero when the request fails', async () => {
+        fetchSpy.mockImplementation(async () => jsonResponse(500, { message: 'Server Error' }));
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+        await waitFor(() =>
+            expect(within(region).getByText(/fail|error|unavailable/i)).toBeInTheDocument(),
+        );
+        expect(within(region).queryByText(/^0$/)).not.toBeInTheDocument();
+    });
+
+    it('renders a real zero count when the API genuinely returns zero', async () => {
+        fetchSpy.mockImplementation(async () => jsonResponse(200, summaryBody('today', 0, 0)));
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+        await waitFor(() => expect(within(region).getAllByText('0').length).toBeGreaterThan(0));
+    });
+
+    it('renders real nonzero QR Resolve and Confirmed Menu Open counts in accessible metric cards', async () => {
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+
+        await waitFor(() => expect(within(region).getByText('3')).toBeInTheDocument());
+        expect(within(region).getByText('2')).toBeInTheDocument();
+        expect(within(region).getByText(/qr resolve/i)).toBeInTheDocument();
+        expect(within(region).getByText(/menu open/i)).toBeInTheDocument();
+    });
+
+    it('refetches on range change and, when the superseded initial request resolves late, keeps the newer range result instead of being overwritten by it', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        let resolveToday: ((value: Response) => void) | undefined;
+        fetchSpy.mockImplementation(async (url: string) => {
+            if (String(url) === `${SUMMARY_ENDPOINT}?range=today`) {
+                return new Promise<Response>((resolve) => {
+                    resolveToday = resolve;
+                });
+            }
+            if (String(url) === `${SUMMARY_ENDPOINT}?range=7d`) {
+                return jsonResponse(200, summaryBody('7d', 19, 12));
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        // The initial Today request is still in flight (deferred) when the
+        // user switches to 7d before it ever resolves.
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith(`${SUMMARY_ENDPOINT}?range=today`));
+
+        await user.selectOptions(screen.getByRole('combobox', { name: /range/i }), '7d');
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+        await waitFor(() => expect(within(region).getByText('19')).toBeInTheDocument());
+        expect(within(region).getByText('12')).toBeInTheDocument();
+
+        // The superseded Today request now resolves late; its stale result
+        // must not clobber the already-displayed 7d result.
+        resolveToday?.(jsonResponse(200, summaryBody('today', 3, 2)));
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(within(region).getByText('19')).toBeInTheDocument();
+        expect(within(region).getByText('12')).toBeInTheDocument();
+        expect(within(region).queryByText('3')).not.toBeInTheDocument();
+    });
+
+    it('stays 320 CSS px fluid with no breakpoint-prefixed classes or "responsive" wording', async () => {
+        const { container } = render(
+            <AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />,
+        );
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        for (const classList of collectClassLists(container)) {
+            expect(classList).not.toMatch(BREAKPOINT_CLASS_PATTERN);
+        }
+        expect(container.textContent ?? '').not.toMatch(RESPONSIVE_WORDING);
+    });
+});

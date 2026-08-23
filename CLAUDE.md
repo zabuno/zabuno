@@ -12,9 +12,13 @@ düzeyinde tanımlıdır; bu dosya o sınırı **tekrar tanımlamaz**, ona uyar.
   YETKİ bölümü). Aynı pakette başka bir writer'ın (Codex dahil) production/runtime
   kodu, Kernel testi veya Actionplan kanonik içeriği üretmesi kabul edilmez; bu
   paket zaten yalnız Claude tarafından yazılmıştır.
-- Bu dizin ürün/runtime kodu içermez; dolayısıyla "tek writer" kısıtı burada asıl
-  olarak *belge tutarlılığı* anlamına gelir — aynı kavramın iki farklı dosyada
-  çelişen şekilde tanımlanmaması.
+- Bu dizin artık S1-WP01A foundation kapsamında gerçek ürün/runtime kodu da
+  içerir (`app/`, `config/`, `routes/`, `resources/`, `composer.json`/
+  `package.json` ve kilit dosyaları — bkz. `AGENTS.md` §1); dolayısıyla "tek
+  writer" kısıtı hem *belge tutarlılığı* (aynı kavramın iki farklı dosyada
+  çelişen şekilde tanımlanmaması) hem de bu runtime kodun kendisi için
+  geçerlidir — aynı değişiklik paketinde başka bir writer'ın (Codex dahil)
+  bu production kodunu değiştirmesi kabul edilmez.
 
 ## Yazım sırası önerisi (bağlayıcı değil, rehber)
 

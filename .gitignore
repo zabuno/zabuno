@@ -20,22 +20,37 @@
 # Lisanssız upstream snapshot byte'ları (docs/16 LIC-01, docs/28 §1)
 /research/upstream/imageoptimization/snapshot/
 
-# Secret / env
+# Secret / env — yalnız dev/staging/prod katmanlama örnek dosyaları allowlist'te
+# (docs/26 S1-WP01 "env/config katmanlama"), gerçek .env asla tracked olmaz.
 .env
 .env.*
 !.env.example
+!.env.staging.example
+!.env.production.example
+.env.backup
 *.pem
 *.key
+auth.json
+Homestead.json
+Homestead.yaml
 
 # Bağımlılıklar / derlenmiş çıktı
 /vendor/
 /node_modules/
 /public/build/
+/public/hot/
+/public/storage
 /storage/*.key
+/.flowbite-react/
+/storybook-static/
+
+# Yerel runtime veritabanı — public depoya asla dahil edilmez
+/database/database.sqlite
 
 # Cache / log
 *.log
 .phpunit.cache/
+.phpunit.result.cache
 
 # IDE / OS
 .idea/

@@ -190,6 +190,28 @@ dosya → hangi talimat maddesini karşıladığı.
 | Zabuno ürün adı; legacy ürün adı owner talimatı gereği hiçbir bağlamda (tarihsel dahil) yazılmaz — yalnız "legacy QR-menü projesi/denemesi" ifadesi kullanılır | `README.md`, `docs/00`, `docs/31` §7, `modules/opt-08-custom-branding.md` |
 | Marka/legacy-token doğrulama kapısı | `docs/31` §9, `skills/public-repository-gate.md` §Zorunlu marka kontrolü |
 
+## P — S1-WP02A Identity & Sessions delivery contract (local-candidate-targeted-green, public-promotion RED)
+
+| Talimat maddesi | Karşılandığı yer |
+|---|---|
+| WP02A kapsam sözleşmesi (once/simdi/fark/kullaniciYolculugu/kalanEngel/capability_delta + çalıştırılabilirlik iddiası — artık yerel implementation candidate) | `docs/33` §1 |
+| Yerel hedefli evidence (Vitest 23/23, odaklı PHP closure review 5 test/6 assertion, lint/build/Pint/`git diff --check` GREEN, bağımsız closure review FINAL_INDEPENDENT_REVIEW_GREEN) + local URL'ler | `docs/33` §Final durum, `docs/27` §6 |
+| predecessor kapısı (S1-WP01 promotion RED — composer license + AGENTS.md/docs/31 çelişkisi), sayaç 0/8 değişmez, public-promotion ayrı RED kalır | `docs/33` §2, §Final durum, `docs/26` S1-WP02 satırı, `docs/17` §4 |
+| Scope (CORE-01 only) ve non-goals (tenant/RBAC/settings/admin/invitation/password-reset/social/passkey/SMS/billing/menu/QR/AI-call/Docker/Next.js/Filament hariç) | `docs/33` §3 |
+| Architecture boundary (Domain←Application←Infra/Adapters←MVC, React view-only, Flowbite/shadcn/Radix) | `docs/33` §4, `docs/03` ADR-L02/L03/L06 |
+| Server-owned auth threat model (rate limit, CSRF, session rotation/fixation, enumeration-safe, hash, duplicate normalized email, signed expiry reuse, logout invalidation, mail fake/local, WCAG, i18n) | `docs/33` §6 |
+| Fortify/Sanctum kararı + kaynak sınıflandırması (Laravel 13 uyumu) | `docs/33` §7, `docs/28` "S1-WP02A Identity & Sessions delivery contract" bölümü |
+| Shared-host kısıtları | `docs/33` §8 |
+| No-credit AI invariant | `docs/33` §9, `modules/core-identity-sessions.md` §AI Capability Manifest |
+| Acceptance-before-implementation (exact) | `docs/33` §10, `docs/27` §1/§3 |
+| Blind RED test aday matrisi (requirement ID → test tipi → RED → GREEN) — S1WP02A-REG-01/02/03, S1WP02A-VERIFY-01/02/03, S1WP02A-SESSION-01/02, S1WP02A-CSRF-01, S1WP02A-RATE-01, S1WP02A-LOGOUT-01, S1WP02A-MAIL-01, S1WP02A-A11Y-01, S1WP02A-I18N-01, S1WP02A-AI-01, S1WP02A-HOST-01 | `docs/33` §11 |
+| Entry/exit gate (S1-WP02A kendi kapanışı, Stage 1 Exit Gate ile karıştırılmaz) | `docs/33` §12, `docs/17` §2 |
+| Rollback (bounded evidence-sync docs değişiklikleri + implementasyon/yerel ignore edilen runtime-state rollback planı, revert edilecek bir commit yok, sıfır Git mutasyonu) | `docs/33` §13, `AGENTS.md` §6 |
+| docs/26 S1-WP02 satırına split linki, WP02 in-progress (alt paket WP02A local-candidate-targeted-green, geri kalanı not-started) | `docs/26` §3 Stage 1 tablosu, S1-WP02 satırı, §6 status sözleşmesi |
+| docs/27 korpus sayısı (34 dosya) ve acceptance/QA-bütçe metni docs/33 ile tutarlı | `docs/27` §6 |
+| docs/28 resmi kaynaklar (Fortify/Sanctum docs, iki composer.json, email verification docs) | `docs/28` "S1-WP02A Identity & Sessions delivery contract — bu oturumda canlı doğrulanan kaynaklar" |
+| README docs ağacı linki + ilerleme anlatımına WP02A notu (0/8 ve iki P1 blocker değişmedi) | `README.md` §Nasıl gezinilir, §İlerleme |
+
 ## M — Self-check ve teslim
 
 | Talimat maddesi | Karşılandığı yer |

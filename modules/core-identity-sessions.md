@@ -1,6 +1,13 @@
 # CORE-01 — Identity & Sessions
 
-**PLANNING ONLY. Şu an çalıştırılamaz.**
+**Bounded runtime durumu: S1-WP02A'nın dar dikey dilimi (register→
+verification-pending→signed/expiring email verification→authenticated
+cookie session→logout) yerel çalıştırılabilir bir implementation
+candidate'tır — hedefli kanıtla desteklenir, public-promotion RED
+(`docs/33` §Final durum). Bu modülün geri kalanı — şifre sıfırlama, geniş
+oturum yönetimi (çoklu cihaz/liste/revoke), brute-force tam koruma matrisi,
+`locked`/`deactivated` hesap durumları vb. — hâlâ **PLANNING ONLY, şu an
+çalıştırılamaz**.**
 
 ## Amaç
 Kullanıcının var oluşunu ve oturumunu yönetmek: kayıt, doğrulama, giriş/çıkış,

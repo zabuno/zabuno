@@ -1,6 +1,16 @@
 # CORE-02 — Tenancy / Organization / Venue
 
-**PLANNING ONLY. Şu an çalıştırılamaz.**
+**Bounded runtime durumu: S1-WP02B'nin bounded baseline'ı — workspace
+create+owner-membership (tek transaction), üyelik-scope'lu liste,
+current/switch context, enumeration-safe tenant escape reddi —
+code/test-local-candidate-targeted-green'dir: hedefli kanıt (23/23 test/72
+assertion) ve bağımsız kapanış review'ı GREEN, ama yalnız API kodu + izole
+test koşusu seviyesindedir — persistent DB migrate edilmedi, workspace
+UI/tarayıcı journey'si yoktur, public-promotion RED (`docs/34` §13a). Bu
+modülün geri kalanı — Brand/Location/işletme profili alanları, workspace
+state geçiş uç noktaları (suspend/archive/delete), davet akışı, multi-branch
+genişlemesi, external/social/delivery provider registry UI'ı vb. — hâlâ
+**PLANNING ONLY, şu an çalıştırılamaz**.**
 
 ## Amaç
 Workspace/Brand/Location hiyerarşisini çözmek ve her isteğin doğru tenant

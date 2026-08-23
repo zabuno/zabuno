@@ -106,6 +106,31 @@ print — beş ayrı tema domeni. Ortak design token seti paylaşılır; her dom
 kendi layout kısıtları vardır; draft/preview/publish/rollback döngüsü her tema
 domeni için ayrı ayrı geçerlidir (`docs/06`).
 
+## ADR-L10: Dual-renderer hazırlığı, Stage 1'de tek canonical renderer
+
+**Karar**: Zabuno dual-renderer-**ready** mimariyle kurulur — aynı semantic
+domain/view-model contract'ı (`docs/35` §5 UI state union'ları, §6 port/
+use-case sözleşmesi) birden fazla renderer tarafından tüketilebilecek
+şekilde tasarlanır (örn. `renderer-zabuno` ana özel tasarım sistemi,
+ileride `renderer-enterprise-adapter` gibi Flowbite/AntD tabanlı bir
+adapter). Renderer'lar birbirini import etmez, business logic taşımaz,
+aynı semantic token'ları (`docs/06` §11) ve aynı accessibility/interaction
+sözleşmesini (`docs/35` §8) tüketir; aynı ekranın iki bağımsız business
+implementasyonu oluşturulmaz.
+**Stage 1 sınırı**: yalnız **tek** canonical production renderer kullanılır
+(`docs/06` ADR-L06'daki Flowbite-first/shadcn-source-owned bileşen kararı).
+İkinci renderer'ın **implementasyonu** yalnız gerçek enterprise CRUD,
+migration veya white-label ihtiyacı ölçülüp kanıtlandığında (veya bir
+feature flag/theme profile kararıyla) aktive edilir — Stage 1'de ikinci bir
+renderer paketi **açılmaz**.
+**Gerekçe**: Hazırlık (contract ayrımı, port/adapter disiplini) mimari
+borcu önler; ikinci renderer'ın erken inşası ise kanıtsız kapasite israfı
+sayılır (`docs/16` gap disipliniyle tutarlı — "ne zaman ikinci renderer?"
+sorusu kanıt gerektirir).
+**Durum**: deneysel/koşullu — henüz hiçbir ikinci renderer paketi
+başlamamıştır; bu karar yalnız **hazırlık** ilkesidir, bir implementasyon
+taahhüdü değildir.
+
 ## Kanıt/sınıf notu
 
 Her karar `docs/28-SOURCE-REGISTER.md`'de birincil kaynağına bağlanır ve
