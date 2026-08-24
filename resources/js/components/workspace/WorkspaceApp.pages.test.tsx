@@ -502,7 +502,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
         await user.click(scope.getByRole('button', { name: 'Create' }));
 
-        await screen.findByText('Şişli');
+        await scope.findByText('Şişli');
 
         const postCalls = fetchMock.mock.calls.filter(
             ([calledUrl, init]) =>

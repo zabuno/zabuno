@@ -1,6 +1,6 @@
 import type React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, fireEvent, within } from '@testing-library/react';
+import { cleanup, render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 
 /**
  * Freezes the exclusive Brand (#brand) and Locations (#locations) page
@@ -201,10 +201,13 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const locationA = makeLocationA();
         const locationB = makeLocationB();
 
-        await screen.findByText(locationA.display_name);
+        await waitFor(() => {
+            expect(document.querySelector('#locations')).not.toBeNull();
+        });
         const destination = document.querySelector('#locations');
         expect(destination).not.toBeNull();
         const scope = within(destination as HTMLElement);
+        await scope.findByText(locationA.display_name);
 
         for (const location of [locationA, locationB]) {
             expect(scope.getByText(location.display_name)).toBeInTheDocument();
