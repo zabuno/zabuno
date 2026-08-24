@@ -98,8 +98,14 @@ export function CurrentSubscriptionStatus({ workspaceId }: CurrentSubscriptionSt
     }, [fetchSubscription]);
 
     return (
-        <div role="region" aria-label={t('workspace.billing.currentPlan.region')} className="flex flex-col gap-3">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('workspace.billing.currentPlan.region')}</p>
+        <div
+            role="region"
+            aria-label={t('workspace.billing.currentPlan.region')}
+            className="flex flex-col gap-3"
+        >
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t('workspace.billing.currentPlan.region')}
+            </p>
 
             {status === 'loading' && (
                 <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
@@ -130,9 +136,15 @@ export function CurrentSubscriptionStatus({ workspaceId }: CurrentSubscriptionSt
 
             {status === 'success' && subscription?.state === 'active' && (
                 <div className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
-                    <span className="font-medium text-gray-900 dark:text-white">{subscription.plan_name}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                        {subscription.plan_name}
+                    </span>
                     <span>{subscription.plan_code}</span>
-                    <span>{t('workspace.billing.currentPlan.version', { version: String(subscription.plan_version) })}</span>
+                    <span>
+                        {t('workspace.billing.currentPlan.version', {
+                            version: String(subscription.plan_version),
+                        })}
+                    </span>
                     <span>{subscription.ends_at}</span>
                 </div>
             )}

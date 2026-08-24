@@ -82,7 +82,9 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
     }
 
     const badges: WorkspacePageStatusBadge[] =
-        assets.length > 0 ? [{ key: 'media-count', status: 'success', label: `#${assets.length}` }] : [];
+        assets.length > 0
+            ? [{ key: 'media-count', status: 'success', label: `#${assets.length}` }]
+            : [];
 
     return (
         <div id="media">

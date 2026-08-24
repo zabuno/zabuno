@@ -24,9 +24,17 @@ type CurrentSubscriptionCardProps = {
  * currently selected workspace — honest loading/error/none/active, never a
  * fabricated plan or end date.
  */
-export function CurrentSubscriptionCard({ status, subscription, onRetry }: CurrentSubscriptionCardProps) {
+export function CurrentSubscriptionCard({
+    status,
+    subscription,
+    onRetry,
+}: CurrentSubscriptionCardProps) {
     return (
-        <div role="region" aria-label={t('platform.subscriptions.subscription.region.label')} className="flex flex-col gap-3">
+        <div
+            role="region"
+            aria-label={t('platform.subscriptions.subscription.region.label')}
+            className="flex flex-col gap-3"
+        >
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
                 {t('platform.subscriptions.subscription.region.label')}
             </p>
@@ -60,7 +68,9 @@ export function CurrentSubscriptionCard({ status, subscription, onRetry }: Curre
 
             {status === 'success' && subscription?.state === 'active' && (
                 <div className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
-                    <span className="font-medium text-gray-900 dark:text-white">{subscription.plan_name}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                        {subscription.plan_name}
+                    </span>
                     <span>{subscription.plan_code}</span>
                     <span>{t('platform.subscriptions.subscription.active.label')}</span>
                     <span>{subscription.ends_at}</span>

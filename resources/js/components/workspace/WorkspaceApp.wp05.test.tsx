@@ -32,7 +32,9 @@ function makePlans() {
     ];
 }
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -49,7 +51,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeLocation() {
@@ -113,8 +120,16 @@ function buildFetchMock() {
 }
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        configurable: true,
+        writable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        configurable: true,
+        writable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -141,7 +156,12 @@ async function renderCurrentWorkspace() {
 
     await screen.findByRole('navigation', { name: 'Restaurant admin' });
 
-    return { ...rendered, restoreFetch: () => { window.fetch = originalFetch; } };
+    return {
+        ...rendered,
+        restoreFetch: () => {
+            window.fetch = originalFetch;
+        },
+    };
 }
 
 describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP05a, RED)', () => {
@@ -189,7 +209,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
                 within(analyticsRegion).getByRole('group', { name: /range/i }),
         ).toBeTruthy();
 
-        const metricRegion = within(analyticsRegion).getByRole('region', { name: /metric|report/i });
+        const metricRegion = within(analyticsRegion).getByRole('region', {
+            name: /metric|report/i,
+        });
         expect(metricRegion).toBeInTheDocument();
 
         expect(await within(metricRegion).findAllByText('0')).toHaveLength(2);
@@ -212,17 +234,13 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
 
         const teamRegion = main.querySelector('#team') as HTMLElement;
 
-        expect(
-            within(teamRegion).getByRole('heading', { name: /Team/i }),
-        ).toBeInTheDocument();
+        expect(within(teamRegion).getByRole('heading', { name: /Team/i })).toBeInTheDocument();
 
         expect(within(teamRegion).getByLabelText(/invite.*email/i)).toBeInTheDocument();
 
         expect(within(teamRegion).queryByRole('radio', { name: /Owner/i })).not.toBeInTheDocument();
 
-        expect(
-            within(teamRegion).getByRole('region', { name: /member/i }),
-        ).toBeInTheDocument();
+        expect(within(teamRegion).getByRole('region', { name: /member/i })).toBeInTheDocument();
 
         const inviteButton = within(teamRegion).getByRole('button', { name: /invite/i });
         expect(inviteButton).toBeDisabled();
@@ -251,8 +269,12 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         ).toBeInTheDocument();
 
         const planRegion = within(billingRegion).getByRole('region', { name: /^plan$/i });
-        const currentPlanRegion = within(billingRegion).getByRole('region', { name: /current.plan/i });
-        const manualPaymentRegion = within(billingRegion).getByRole('region', { name: /manual.payment/i });
+        const currentPlanRegion = within(billingRegion).getByRole('region', {
+            name: /current.plan/i,
+        });
+        const manualPaymentRegion = within(billingRegion).getByRole('region', {
+            name: /manual.payment/i,
+        });
         expect(currentPlanRegion).toBeInTheDocument();
         expect(manualPaymentRegion).toBeInTheDocument();
 
@@ -345,17 +367,22 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
             name: /manual.payment/i,
         });
 
-        for (const fieldName of [/plan assignment/i, /end date/i, /payment note/i, /document reference/i]) {
+        for (const fieldName of [
+            /plan assignment/i,
+            /end date/i,
+            /payment note/i,
+            /document reference/i,
+        ]) {
             const field = within(manualPaymentRegion).getByLabelText(fieldName);
             expect(field).toBeDisabled();
             expect(field).toHaveValue('');
         }
 
         const iyzicoRegion = within(billingRegion).getByRole('region', { name: /iyzico sandbox/i });
+        expect(within(iyzicoRegion).getByRole('button', { name: /sandbox/i })).toBeDisabled();
         expect(
-            within(iyzicoRegion).getByRole('button', { name: /sandbox/i }),
-        ).toBeDisabled();
-        expect(within(iyzicoRegion).getByText(/not available|unavailable|not connected/i)).toBeInTheDocument();
+            within(iyzicoRegion).getByText(/not available|unavailable|not connected/i),
+        ).toBeInTheDocument();
 
         restoreFetch();
     });

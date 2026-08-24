@@ -37,8 +37,16 @@ function jsonResponse(status: number, body: unknown): Response {
 }
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -73,7 +81,10 @@ describe('BrandEditForm — visible Slug field (FrontendBlitz RED)', () => {
             if (url === '/sanctum/csrf-cookie') {
                 return jsonResponse(204, {});
             }
-            if (url === `/api/workspaces/${WORKSPACE_ID}/brand` && (init?.method ?? 'GET').toUpperCase() === 'PUT') {
+            if (
+                url === `/api/workspaces/${WORKSPACE_ID}/brand` &&
+                (init?.method ?? 'GET').toUpperCase() === 'PUT'
+            ) {
                 return jsonResponse(200, { ...brand, name: 'Zeytin Renamed' });
             }
             throw new Error(`unexpected fetch: ${url}`);
@@ -103,7 +114,10 @@ describe('BrandEditForm — visible Slug field (FrontendBlitz RED)', () => {
                 ((reqInit as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'PUT',
         );
         expect(putCall).toBeDefined();
-        const sentBody = JSON.parse(String((putCall?.[1] as RequestInit).body)) as Record<string, unknown>;
+        const sentBody = JSON.parse(String((putCall?.[1] as RequestInit).body)) as Record<
+            string,
+            unknown
+        >;
         expect(sentBody).not.toHaveProperty('slug');
     });
 });

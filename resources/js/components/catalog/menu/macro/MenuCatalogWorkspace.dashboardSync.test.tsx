@@ -31,7 +31,9 @@ function visibilityUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/visibility`;
 }
 
-function importMenuCatalogModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importMenuCatalogModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import(/* @vite-ignore */ './MenuCatalogWorkspace') as unknown as Promise<T>;
 }
 
@@ -106,7 +108,9 @@ function buildFetchMock() {
             return jsonResponse(200, { id: MENU_ITEM_ID, isVisible: false });
         }
 
-        throw new Error(`Unhandled fetch in MenuCatalogWorkspace dashboardSync test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in MenuCatalogWorkspace dashboardSync test: ${method} ${String(url)}`,
+        );
     });
 }
 

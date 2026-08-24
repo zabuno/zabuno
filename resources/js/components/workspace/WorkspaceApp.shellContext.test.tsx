@@ -32,7 +32,9 @@ const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 const WORKSPACE_ID = 71;
 const SEARCH_OR_NOTIFICATIONS_FETCH_PATTERN = /search|notification/i;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -49,7 +51,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeLocation(overrides: Partial<Record<string, unknown>> = {}) {
@@ -98,14 +105,20 @@ function buildFetchMock(locations: Array<Record<string, unknown>>) {
         }
 
         if (SEARCH_OR_NOTIFICATIONS_FETCH_PATTERN.test(String(url))) {
-            throw new Error(`Unexpected search/notifications fetch in shell context RED test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unexpected search/notifications fetch in shell context RED test: ${method} ${String(url)}`,
+            );
         }
 
-        throw new Error(`Unhandled fetch in WorkspaceApp shell context test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in WorkspaceApp shell context test: ${method} ${String(url)}`,
+        );
     });
 }
 
-async function renderCurrentWorkspace(locations: Array<Record<string, unknown>> = [makeLocation()]) {
+async function renderCurrentWorkspace(
+    locations: Array<Record<string, unknown>> = [makeLocation()],
+) {
     const fetchMock = buildFetchMock(locations);
     vi.stubGlobal('fetch', fetchMock);
 
@@ -127,7 +140,9 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
         await renderCurrentWorkspace();
 
         const banner = screen.getByRole('banner');
-        const workspaceControl = within(banner).getByRole('button', { name: 'Zeytin Restoranları' });
+        const workspaceControl = within(banner).getByRole('button', {
+            name: 'Zeytin Restoranları',
+        });
 
         await user.click(workspaceControl);
 
@@ -191,8 +206,12 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
 
         const banner = screen.getByRole('banner');
 
-        const searchControl = within(banner).getByRole('button', { name: 'Global search unavailable' });
-        const notificationsControl = within(banner).getByRole('button', { name: 'Notifications unavailable' });
+        const searchControl = within(banner).getByRole('button', {
+            name: 'Global search unavailable',
+        });
+        const notificationsControl = within(banner).getByRole('button', {
+            name: 'Notifications unavailable',
+        });
 
         expect(searchControl).toBeDisabled();
         expect(notificationsControl).toBeDisabled();
@@ -207,9 +226,7 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
     it('keeps exactly one "Open AI command center" launcher alongside the new banner controls', async () => {
         await renderCurrentWorkspace();
 
-        expect(
-            screen.getAllByRole('button', { name: 'Open AI command center' }),
-        ).toHaveLength(1);
+        expect(screen.getAllByRole('button', { name: 'Open AI command center' })).toHaveLength(1);
     });
 
     it('renders the real workspace control but no Current location combobox when the server returns zero locations', async () => {
@@ -217,7 +234,9 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
 
         const banner = screen.getByRole('banner');
 
-        expect(within(banner).getByRole('button', { name: 'Zeytin Restoranları' })).toBeInTheDocument();
+        expect(
+            within(banner).getByRole('button', { name: 'Zeytin Restoranları' }),
+        ).toBeInTheDocument();
         expect(within(banner).queryByRole('combobox', { name: 'Current location' })).toBeNull();
 
         vi.unstubAllGlobals();

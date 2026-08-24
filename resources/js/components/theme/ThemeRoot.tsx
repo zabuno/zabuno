@@ -119,13 +119,20 @@ export function ThemeRoot({ children }: ThemeRootProps) {
                                     const currentIndex = THEME_OPTIONS.indexOf(option);
                                     if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
                                         event.preventDefault();
-                                        const next = THEME_OPTIONS[(currentIndex + 1) % THEME_OPTIONS.length];
+                                        const next =
+                                            THEME_OPTIONS[
+                                                (currentIndex + 1) % THEME_OPTIONS.length
+                                            ];
                                         choose(next, true);
-                                    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                                    } else if (
+                                        event.key === 'ArrowLeft' ||
+                                        event.key === 'ArrowUp'
+                                    ) {
                                         event.preventDefault();
                                         const prev =
                                             THEME_OPTIONS[
-                                                (currentIndex - 1 + THEME_OPTIONS.length) % THEME_OPTIONS.length
+                                                (currentIndex - 1 + THEME_OPTIONS.length) %
+                                                    THEME_OPTIONS.length
                                             ];
                                         choose(prev, true);
                                     } else if (event.key === 'Home') {

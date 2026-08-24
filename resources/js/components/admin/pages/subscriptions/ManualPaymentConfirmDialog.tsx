@@ -19,7 +19,13 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
  * never issues a request on its own — only this dialog's Confirm button
  * triggers the CSRF bootstrap and POST.
  */
-export function ManualPaymentConfirmDialog({ planLabel, endsAt, confirming, onCancel, onConfirm }: ManualPaymentConfirmDialogProps) {
+export function ManualPaymentConfirmDialog({
+    planLabel,
+    endsAt,
+    confirming,
+    onCancel,
+    onConfirm,
+}: ManualPaymentConfirmDialogProps) {
     const dialogRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<Element | null>(null);
 
@@ -85,7 +91,9 @@ export function ManualPaymentConfirmDialog({ planLabel, endsAt, confirming, onCa
             className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             onKeyDown={handleKeyDown}
         >
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{t('platform.subscriptions.confirm.heading')}</h2>
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t('platform.subscriptions.confirm.heading')}
+            </h2>
             <span className="text-gray-700 dark:text-gray-300">{planLabel}</span>
             <span className="text-gray-700 dark:text-gray-300">{endsAt}</span>
 

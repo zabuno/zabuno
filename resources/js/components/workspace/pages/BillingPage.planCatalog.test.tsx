@@ -92,11 +92,15 @@ describe('BillingPage — S1-WP05 Plan catalog (BILLING_PLAN_CATALOG_FRONTEND_RE
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT);
+            const call = fetchSpy.mock.calls.find(
+                ([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT,
+            );
             expect(call).toBeDefined();
         });
 
-        const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT);
+        const call = fetchSpy.mock.calls.find(
+            ([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT,
+        );
         const init = call?.[1] as RequestInit | undefined;
         expect(init?.credentials).toBe('same-origin');
         const headers = new Headers(init?.headers);
@@ -142,7 +146,9 @@ describe('BillingPage — S1-WP05 Plan catalog (BILLING_PLAN_CATALOG_FRONTEND_RE
         });
 
         const customCard = within(planRegion()).getByText('Custom').closest('li') as HTMLElement;
-        expect(within(customCard).getByText(/price unavailable|not available|unavailable/i)).toBeInTheDocument();
+        expect(
+            within(customCard).getByText(/price unavailable|not available|unavailable/i),
+        ).toBeInTheDocument();
         expect(within(customCard).queryByText(/^\d/)).not.toBeInTheDocument();
     });
 
@@ -187,7 +193,9 @@ describe('BillingPage — S1-WP05 Plan catalog (BILLING_PLAN_CATALOG_FRONTEND_RE
             expect(within(planRegion()).getByText('Growth')).toBeInTheDocument();
         });
 
-        const plansCalls = fetchSpy.mock.calls.filter(([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT);
+        const plansCalls = fetchSpy.mock.calls.filter(
+            ([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT,
+        );
         expect(plansCalls.length).toBe(2);
         for (const [, init] of plansCalls) {
             const requestInit = init as RequestInit | undefined;
@@ -226,9 +234,13 @@ describe('BillingPage — S1-WP05 Plan catalog (BILLING_PLAN_CATALOG_FRONTEND_RE
         expect(screen.getByRole('region', { name: 'Current plan' })).toBeInTheDocument();
 
         const manualPaymentRegion = screen.getByRole('region', { name: 'Manual payment' });
-        expect(within(manualPaymentRegion).getByRole('button', { name: /record payment/i })).toBeDisabled();
+        expect(
+            within(manualPaymentRegion).getByRole('button', { name: /record payment/i }),
+        ).toBeDisabled();
 
         const iyzicoRegion = screen.getByRole('region', { name: 'Iyzico sandbox' });
-        expect(within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i })).toBeDisabled();
+        expect(
+            within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i }),
+        ).toBeDisabled();
     });
 });

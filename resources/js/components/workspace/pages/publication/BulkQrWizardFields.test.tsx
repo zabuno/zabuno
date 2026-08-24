@@ -28,8 +28,16 @@ const FIXED_PIXEL_CLASS_PATTERN =
 const BREAKPOINT_CLASS_PATTERN = /(^|[\s"'`])(sm|md|lg|xl|2xl):/;
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -59,9 +67,13 @@ function getFields(wizard: HTMLElement) {
         areaSectionCount: within(wizard).getByLabelText(/area\/section count/i) as HTMLInputElement,
         tableCount: within(wizard).getByLabelText(/table count/i) as HTMLInputElement,
         namingPrefix: within(wizard).getByLabelText(/naming prefix/i) as HTMLInputElement,
-        namingSequenceStart: within(wizard).getByLabelText(/naming sequence start/i) as HTMLInputElement,
+        namingSequenceStart: within(wizard).getByLabelText(
+            /naming sequence start/i,
+        ) as HTMLInputElement,
         namingRange: within(wizard).getByLabelText(/naming range/i) as HTMLInputElement,
-        seatCountPerTable: within(wizard).getByLabelText(/seat count per table/i) as HTMLInputElement,
+        seatCountPerTable: within(wizard).getByLabelText(
+            /seat count per table/i,
+        ) as HTMLInputElement,
     };
 }
 
@@ -115,7 +127,9 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
         expect(submit).toBeEnabled();
 
         rerender(<BulkQrWizardFields {...DEFAULT_PROPS} hasCurrentPublication={false} />);
-        expect(within(getWizard()).getByRole('button', { name: /create table qr codes/i })).toBeDisabled();
+        expect(
+            within(getWizard()).getByRole('button', { name: /create table qr codes/i }),
+        ).toBeDisabled();
     });
 
     it('performs zero fetch when the create action is clicked while the plan is invalid', async () => {
@@ -206,14 +220,18 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
         await user.click(submit);
 
         await waitFor(() => {
-            expect(fetchSpy.mock.calls.some(([url]) => /sanctum\/csrf-cookie/.test(String(url)))).toBe(true);
+            expect(
+                fetchSpy.mock.calls.some(([url]) => /sanctum\/csrf-cookie/.test(String(url))),
+            ).toBe(true);
         });
 
         await waitFor(() => {
             expect(fetchSpy.mock.calls.some(([url]) => BULK_URL.test(String(url)))).toBe(true);
         });
 
-        const csrfCallIndex = fetchSpy.mock.calls.findIndex(([url]) => /sanctum\/csrf-cookie/.test(String(url)));
+        const csrfCallIndex = fetchSpy.mock.calls.findIndex(([url]) =>
+            /sanctum\/csrf-cookie/.test(String(url)),
+        );
         const postCallIndex = fetchSpy.mock.calls.findIndex(([url]) => BULK_URL.test(String(url)));
         expect(csrfCallIndex).toBeGreaterThanOrEqual(0);
         expect(postCallIndex).toBeGreaterThan(csrfCallIndex);
@@ -229,7 +247,12 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
         expect(headers.get('X-XSRF-TOKEN')).toBe('wp04b10-test-token');
 
         const payload = JSON.parse(String(postInit.body));
-        expect(payload).toMatchObject({ menuId: 42, areaSectionCount: 3, tableCount: 12, seatCountPerTable: 2 });
+        expect(payload).toMatchObject({
+            menuId: 42,
+            areaSectionCount: 3,
+            tableCount: 12,
+            seatCountPerTable: 2,
+        });
         expect(payload).not.toHaveProperty('namingPrefix');
         expect(payload).not.toHaveProperty('namingRange');
         expect(payload).not.toHaveProperty('namingSequenceStart');
@@ -239,7 +262,8 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
         fetchSpy.mockImplementation(async (url: string) => {
             const href = String(url);
             if (/sanctum\/csrf-cookie/.test(href)) return jsonResponse(204, null);
-            if (BULK_URL.test(href)) return jsonResponse(201, { areas: [], tables: [], qrCodes: [] });
+            if (BULK_URL.test(href))
+                return jsonResponse(201, { areas: [], tables: [], qrCodes: [] });
             return jsonResponse(404, { message: 'Not found' });
         });
         const user = userEvent.setup();
@@ -328,7 +352,9 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
         });
 
         expect(within(wizard).getByText(/12 tables across 3 areas/i)).toBeInTheDocument();
-        expect(within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/)).not.toBeInTheDocument();
+        expect(
+            within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/),
+        ).not.toBeInTheDocument();
         expect(within(wizard).queryByRole('list')).not.toBeInTheDocument();
         expect(onCreated).not.toHaveBeenCalled();
 
@@ -359,7 +385,9 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
                 expect(within(wizard).getByRole('alert')).toBeInTheDocument();
             });
 
-            expect(within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/)).not.toBeInTheDocument();
+            expect(
+                within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/),
+            ).not.toBeInTheDocument();
             expect(onCreated).not.toHaveBeenCalled();
 
             const postCalls = fetchSpy.mock.calls.filter(([url]) => BULK_URL.test(String(url)));
@@ -386,7 +414,9 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
             });
             const user = userEvent.setup();
 
-            const { unmount } = render(<BulkQrWizardFields {...DEFAULT_PROPS} onCreated={onCreated} />);
+            const { unmount } = render(
+                <BulkQrWizardFields {...DEFAULT_PROPS} onCreated={onCreated} />,
+            );
             const wizard = getWizard();
             await fillValidPlan(user, wizard);
 
@@ -397,7 +427,9 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
                 expect(within(wizard).getByRole('alert')).toBeInTheDocument();
             });
 
-            expect(within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/)).not.toBeInTheDocument();
+            expect(
+                within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/),
+            ).not.toBeInTheDocument();
             expect(onCreated).not.toHaveBeenCalled();
 
             unmount();
@@ -478,7 +510,9 @@ describe('BulkQrWizardFields real submit wiring (BULK_QR_WIZARD_WIRING_RED)', ()
         await user.click(submit);
 
         await waitFor(() => {
-            expect(within(wizard).getByText('Created 3 areas, 2 tables, 2 QR codes.')).toBeInTheDocument();
+            expect(
+                within(wizard).getByText('Created 3 areas, 2 tables, 2 QR codes.'),
+            ).toBeInTheDocument();
         });
 
         const t1Link = within(wizard).getByRole('link', { name: /T1/ });
@@ -596,7 +630,9 @@ describe('BulkQrWizardFields honest-state gaps (BULK_QR_WIZARD_HONEST_STATE_RED)
         const submit = within(wizard).getByRole('button', { name: /create table qr codes/i });
         await user.click(submit);
 
-        const createdMessage = await within(wizard).findByText('Created 3 areas, 2 tables, 2 QR codes.');
+        const createdMessage = await within(wizard).findByText(
+            'Created 3 areas, 2 tables, 2 QR codes.',
+        );
         expect(createdMessage).toHaveAttribute('role', 'status');
 
         expect(within(wizard).queryByText(/has not been submitted/i)).not.toBeInTheDocument();
@@ -701,7 +737,9 @@ describe('BulkQrWizardFields honest-state gaps (BULK_QR_WIZARD_HONEST_STATE_RED)
             expect(within(wizard).getByRole('alert')).toBeInTheDocument();
         });
 
-        expect(within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/)).not.toBeInTheDocument();
+        expect(
+            within(wizard).queryByText(/^Created \d+ areas, \d+ tables, \d+ QR codes\.$/),
+        ).not.toBeInTheDocument();
         expect(onCreated).not.toHaveBeenCalled();
 
         const postCalls = fetchSpy.mock.calls.filter(([url]) => BULK_URL.test(String(url)));

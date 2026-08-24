@@ -54,7 +54,9 @@ function visibilityUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/visibility`;
 }
 
-function importMenuCatalogModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importMenuCatalogModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import(/* @vite-ignore */ './MenuCatalogWorkspace') as unknown as Promise<T>;
 }
 
@@ -119,7 +121,13 @@ function buildFetchMock(handlers: FetchHandlers) {
         if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'POST') {
             return handlers.createMenu
                 ? handlers.createMenu(body)
-                : jsonResponse(201, { id: 42, workspaceId: WORKSPACE_ID, locationId: LOCATION_ID, name: body.name, state: 'draft' });
+                : jsonResponse(201, {
+                      id: 42,
+                      workspaceId: WORKSPACE_ID,
+                      locationId: LOCATION_ID,
+                      name: body.name,
+                      state: 'draft',
+                  });
         }
         if (String(url) === categoriesUrl(WORKSPACE_ID, 42) && method === 'POST') {
             return handlers.createCategory
@@ -197,15 +205,30 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
             createMenu: (body) => {
                 expect((body as { name: string }).name).toBe('Ana Menü');
                 currentMenuId = 42;
-                return jsonResponse(201, { id: 42, workspaceId: WORKSPACE_ID, locationId: LOCATION_ID, name: (body as { name: string }).name, state: 'draft' });
+                return jsonResponse(201, {
+                    id: 42,
+                    workspaceId: WORKSPACE_ID,
+                    locationId: LOCATION_ID,
+                    name: (body as { name: string }).name,
+                    state: 'draft',
+                });
             },
             createCategory: (body) => {
                 expect((body as { name: string }).name).toBe('Başlangıçlar');
-                return jsonResponse(201, { id: 5, menuId: 42, name: (body as { name: string }).name, position: 0 });
+                return jsonResponse(201, {
+                    id: 5,
+                    menuId: 42,
+                    name: (body as { name: string }).name,
+                    position: 0,
+                });
             },
             createProduct: (body) => {
                 expect((body as { name: string }).name).toBe('Mercimek Çorbası');
-                return jsonResponse(201, { id: 9, workspaceId: WORKSPACE_ID, name: (body as { name: string }).name });
+                return jsonResponse(201, {
+                    id: 9,
+                    workspaceId: WORKSPACE_ID,
+                    name: (body as { name: string }).name,
+                });
             },
             createMenuItem: (body) => {
                 const typed = body as { productId: number; price: string; currency: string };
@@ -245,11 +268,16 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
             const csrfIndex = calledUrls.lastIndexOf(CSRF_COOKIE_URL);
             const writeIndex = fetchMock.mock.calls.findIndex(
-                (call) => String(call[0]) === writeUrl && ((call[1] as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === method,
+                (call) =>
+                    String(call[0]) === writeUrl &&
+                    ((call[1] as RequestInit | undefined)?.method ?? 'GET').toUpperCase() ===
+                        method,
             );
             expect(csrfIndex).toBeGreaterThanOrEqual(0);
             expect(writeIndex).toBeGreaterThan(csrfIndex);
-            assertMutationRequestInit(fetchMock.mock.calls[writeIndex][1] as RequestInit | undefined);
+            assertMutationRequestInit(
+                fetchMock.mock.calls[writeIndex][1] as RequestInit | undefined,
+            );
         }
 
         const menuNameInput = await screen.findByLabelText(/menu name/i);
@@ -356,7 +384,9 @@ describe('MenuCatalogWorkspace — required validation (RED, module-not-found)',
         expect(alert).toBeInTheDocument();
 
         const postCalls = fetchMock.mock.calls.filter(
-            (call) => String(call[0]) === menuUrl(WORKSPACE_ID, LOCATION_ID) && ((call[1] as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'POST',
+            (call) =>
+                String(call[0]) === menuUrl(WORKSPACE_ID, LOCATION_ID) &&
+                ((call[1] as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'POST',
         );
         expect(postCalls).toHaveLength(0);
 
@@ -390,7 +420,10 @@ describe('MenuCatalogWorkspace — backend error surfacing (RED, module-not-foun
     it('renders an accessible alert on a 422 create-menu response and does not advance to the created state', async () => {
         const fetchMock = buildFetchMock({
             createMenu: () =>
-                jsonResponse(422, { message: 'The name field is required.', errors: { name: ['The name field is required.'] } }),
+                jsonResponse(422, {
+                    message: 'The name field is required.',
+                    errors: { name: ['The name field is required.'] },
+                }),
         });
         vi.stubGlobal('fetch', fetchMock);
 
@@ -421,7 +454,8 @@ describe('MenuCatalogWorkspace — loading and busy state (RED, module-not-found
             const method = (init?.method ?? 'GET').toUpperCase();
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             if (String(url) === brandUrl(WORKSPACE_ID)) return pendingBrand;
-            if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID)) return jsonResponse(404, { message: 'Not Found.' });
+            if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID))
+                return jsonResponse(404, { message: 'Not Found.' });
             throw new Error(`Unhandled fetch: ${method} ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchMock);
@@ -450,8 +484,10 @@ describe('MenuCatalogWorkspace — loading and busy state (RED, module-not-found
             const method = (init?.method ?? 'GET').toUpperCase();
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             if (String(url) === brandUrl(WORKSPACE_ID)) return jsonResponse(200, makeBrand());
-            if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(404, { message: 'Not Found.' });
-            if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'POST') return pendingCreate;
+            if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(404, { message: 'Not Found.' });
+            if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'POST')
+                return pendingCreate;
             throw new Error(`Unhandled fetch: ${method} ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchMock);
@@ -472,7 +508,13 @@ describe('MenuCatalogWorkspace — loading and busy state (RED, module-not-found
         expect(screen.getByRole('status')).toBeInTheDocument();
 
         resolveCreate(
-            jsonResponse(201, { id: 42, workspaceId: WORKSPACE_ID, locationId: LOCATION_ID, name: 'Ana Menü', state: 'draft' }),
+            jsonResponse(201, {
+                id: 42,
+                workspaceId: WORKSPACE_ID,
+                locationId: LOCATION_ID,
+                name: 'Ana Menü',
+                state: 'draft',
+            }),
         );
         vi.unstubAllGlobals();
     });
@@ -482,42 +524,45 @@ describe('MenuCatalogWorkspace — initial load error and retry (RED, module-not
     it.each([
         { label: 'brand GET fails', brandStatus: 500, menuStatus: 404 },
         { label: 'menu GET fails', brandStatus: 200, menuStatus: 500 },
-    ])('renders an accessible alert with a Retry button instead of the create-menu form when the initial $label, and recovers on Retry', async ({ brandStatus, menuStatus }) => {
-        let attempt = 0;
-        const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
-            const method = (init?.method ?? 'GET').toUpperCase();
-            if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (String(url) === brandUrl(WORKSPACE_ID)) {
-                return attempt === 0 && brandStatus !== 200
-                    ? jsonResponse(brandStatus, { message: 'Server Error.' })
-                    : jsonResponse(200, makeBrand());
-            }
-            if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') {
-                return attempt === 0 && menuStatus !== 404
-                    ? jsonResponse(menuStatus, { message: 'Server Error.' })
-                    : jsonResponse(404, { message: 'Not Found.' });
-            }
-            throw new Error(`Unhandled fetch: ${method} ${String(url)}`);
-        });
-        vi.stubGlobal('fetch', fetchMock);
+    ])(
+        'renders an accessible alert with a Retry button instead of the create-menu form when the initial $label, and recovers on Retry',
+        async ({ brandStatus, menuStatus }) => {
+            let attempt = 0;
+            const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+                const method = (init?.method ?? 'GET').toUpperCase();
+                if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
+                if (String(url) === brandUrl(WORKSPACE_ID)) {
+                    return attempt === 0 && brandStatus !== 200
+                        ? jsonResponse(brandStatus, { message: 'Server Error.' })
+                        : jsonResponse(200, makeBrand());
+                }
+                if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') {
+                    return attempt === 0 && menuStatus !== 404
+                        ? jsonResponse(menuStatus, { message: 'Server Error.' })
+                        : jsonResponse(404, { message: 'Not Found.' });
+                }
+                throw new Error(`Unhandled fetch: ${method} ${String(url)}`);
+            });
+            vi.stubGlobal('fetch', fetchMock);
 
-        const { MenuCatalogWorkspace } = await importMenuCatalogModule<{
-            MenuCatalogWorkspace: React.ComponentType<MenuCatalogWorkspaceProps>;
-        }>();
-        render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+            const { MenuCatalogWorkspace } = await importMenuCatalogModule<{
+                MenuCatalogWorkspace: React.ComponentType<MenuCatalogWorkspaceProps>;
+            }>();
+            render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
-        const alert = await screen.findByRole('alert');
-        expect(alert).toBeInTheDocument();
-        expect(screen.queryByLabelText(/menu name/i)).not.toBeInTheDocument();
+            const alert = await screen.findByRole('alert');
+            expect(alert).toBeInTheDocument();
+            expect(screen.queryByLabelText(/menu name/i)).not.toBeInTheDocument();
 
-        attempt = 1;
-        fireEvent.click(screen.getByRole('button', { name: /retry/i }));
+            attempt = 1;
+            fireEvent.click(screen.getByRole('button', { name: /retry/i }));
 
-        await screen.findByLabelText(/menu name/i);
-        expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+            await screen.findByLabelText(/menu name/i);
+            expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
-        vi.unstubAllGlobals();
-    });
+            vi.unstubAllGlobals();
+        },
+    );
 });
 
 describe('MenuCatalogWorkspace — location switch resets stale state (RED)', () => {
@@ -539,13 +584,19 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
 
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_A) && method === 'GET') return jsonResponse(200, treeAEmptyCategory);
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_A) && method === 'GET')
+                return jsonResponse(200, treeAEmptyCategory);
 
             if (calledUrl === productsUrl(WORKSPACE_ID, 5) && method === 'POST') {
                 expect((body as { name: string }).name).toBe('Mercimek Çorbası');
-                return jsonResponse(201, { id: 9, workspaceId: WORKSPACE_ID, name: (body as { name: string }).name });
+                return jsonResponse(201, {
+                    id: 9,
+                    workspaceId: WORKSPACE_ID,
+                    name: (body as { name: string }).name,
+                });
             }
             if (calledUrl === menuItemsUrl(WORKSPACE_ID, 5) && method === 'POST') {
                 expect((body as { productId: number }).productId).toBe(9);
@@ -576,18 +627,33 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
             if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_B) && method === 'POST') {
                 expect((body as { name: string }).name).toBe('Yeni Menü');
                 bMenuCreated = true;
-                return jsonResponse(201, { id: 99, workspaceId: WORKSPACE_ID, locationId: LOCATION_B, name: (body as { name: string }).name, state: 'draft' });
+                return jsonResponse(201, {
+                    id: 99,
+                    workspaceId: WORKSPACE_ID,
+                    locationId: LOCATION_B,
+                    name: (body as { name: string }).name,
+                    state: 'draft',
+                });
             }
 
             if (calledUrl === categoriesUrl(WORKSPACE_ID, 99) && method === 'POST') {
                 expect((body as { name: string }).name).toBe('Tatlılar');
                 bCategoryCreated = true;
-                return jsonResponse(201, { id: 77, menuId: 99, name: (body as { name: string }).name, position: 0 });
+                return jsonResponse(201, {
+                    id: 77,
+                    menuId: 99,
+                    name: (body as { name: string }).name,
+                    position: 0,
+                });
             }
 
             if (calledUrl === productsUrl(WORKSPACE_ID, 77) && method === 'POST') {
                 bProductCreated = true;
-                return jsonResponse(201, { id: 88, workspaceId: WORKSPACE_ID, name: (body as { name: string }).name });
+                return jsonResponse(201, {
+                    id: 88,
+                    workspaceId: WORKSPACE_ID,
+                    name: (body as { name: string }).name,
+                });
             }
 
             throw new Error(`Unhandled fetch in location-switch test: ${method} ${calledUrl}`);
@@ -598,7 +664,9 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
             MenuCatalogWorkspace: React.ComponentType<MenuCatalogWorkspaceProps>;
         }>();
 
-        const { rerender } = render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_A} />);
+        const { rerender } = render(
+            <MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_A} />,
+        );
 
         const aProductNameInput = await screen.findByLabelText(/product name/i);
         fireEvent.change(aProductNameInput, { target: { value: 'Mercimek Çorbası' } });
@@ -664,7 +732,7 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
 });
 
 describe('MenuCatalogWorkspace — edit allergens of an existing server-returned menu item (RED)', () => {
-    it('lets a returning owner open the existing allergen form for a server-loaded item, prefilled from its own allergens, and PUTs to that item\'s real id', async () => {
+    it("lets a returning owner open the existing allergen form for a server-loaded item, prefilled from its own allergens, and PUTs to that item's real id", async () => {
         const FIRST_ITEM_ID = 101;
         const SECOND_ITEM_ID = 202;
         const tree = makeMenuTree({
@@ -706,15 +774,19 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(200, tree);
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(200, tree);
             if (calledUrl === allergensUrl(WORKSPACE_ID, FIRST_ITEM_ID) && method === 'PUT') {
                 const typed = body as { allergens: string[] };
                 expect(typed.allergens).toEqual(['gluten', 'süt']);
                 return jsonResponse(200, { id: FIRST_ITEM_ID, allergens: typed.allergens });
             }
 
-            throw new Error(`Unhandled fetch in existing-item allergen test: ${method} ${calledUrl}`);
+            throw new Error(
+                `Unhandled fetch in existing-item allergen test: ${method} ${calledUrl}`,
+            );
         });
         vi.stubGlobal('fetch', fetchMock);
 
@@ -732,7 +804,9 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
         });
         expect(writeCallsBeforeInteraction).toHaveLength(0);
 
-        fireEvent.click(screen.getByRole('button', { name: 'Edit allergens for Mercimek Çorbası' }));
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Edit allergens for Mercimek Çorbası' }),
+        );
 
         const allergensInput = (await screen.findByRole('textbox', {
             name: 'Allergens (comma-separated)',
@@ -790,11 +864,17 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(200, tree);
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(200, tree);
             if (calledUrl === productsUrl(WORKSPACE_ID, CATEGORY_B_ID) && method === 'POST') {
                 expect((body as { name: string }).name).toBe('Baklava');
-                return jsonResponse(201, { id: 21, workspaceId: WORKSPACE_ID, name: (body as { name: string }).name });
+                return jsonResponse(201, {
+                    id: 21,
+                    workspaceId: WORKSPACE_ID,
+                    name: (body as { name: string }).name,
+                });
             }
             if (calledUrl === menuItemsUrl(WORKSPACE_ID, CATEGORY_B_ID) && method === 'POST') {
                 expect((body as { productId: number }).productId).toBe(21);
@@ -807,8 +887,13 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
                     position: 0,
                 });
             }
-            if (calledUrl === productsUrl(WORKSPACE_ID, CATEGORY_A_ID) || calledUrl === menuItemsUrl(WORKSPACE_ID, CATEGORY_A_ID)) {
-                throw new Error(`Write incorrectly routed to first category: ${method} ${calledUrl}`);
+            if (
+                calledUrl === productsUrl(WORKSPACE_ID, CATEGORY_A_ID) ||
+                calledUrl === menuItemsUrl(WORKSPACE_ID, CATEGORY_A_ID)
+            ) {
+                throw new Error(
+                    `Write incorrectly routed to first category: ${method} ${calledUrl}`,
+                );
             }
 
             throw new Error(`Unhandled fetch in category-selection test: ${method} ${calledUrl}`);
@@ -829,7 +914,10 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
 
         const options = within(categorySelect).getAllByRole('option') as HTMLOptionElement[];
         expect(options.map((option) => option.textContent)).toEqual(['Başlangıçlar', 'Tatlılar']);
-        expect(options.map((option) => option.value)).toEqual([String(CATEGORY_A_ID), String(CATEGORY_B_ID)]);
+        expect(options.map((option) => option.value)).toEqual([
+            String(CATEGORY_A_ID),
+            String(CATEGORY_B_ID),
+        ]);
         expect(categorySelect.value).toBe(String(CATEGORY_A_ID));
 
         const aProductNameInput = await screen.findByLabelText(/product name/i);
@@ -838,7 +926,9 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
         fireEvent.change(categorySelect, { target: { value: String(CATEGORY_B_ID) } });
         expect(categorySelect.value).toBe(String(CATEGORY_B_ID));
 
-        const clearedProductInput = (await screen.findByLabelText(/product name/i)) as HTMLInputElement;
+        const clearedProductInput = (await screen.findByLabelText(
+            /product name/i,
+        )) as HTMLInputElement;
         expect(clearedProductInput.value).toBe('');
         expect(screen.queryByLabelText(/price/i)).not.toBeInTheDocument();
         expect(screen.queryByLabelText(/allergens/i)).not.toBeInTheDocument();
@@ -893,17 +983,27 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(200, tree);
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(200, tree);
             if (calledUrl === productsUrl(WORKSPACE_ID, 5) && method === 'POST') {
                 expect((body as { name: string }).name).toBe('Baklava');
-                return jsonResponse(201, { id: NEW_PRODUCT_ID, workspaceId: WORKSPACE_ID, name: (body as { name: string }).name });
+                return jsonResponse(201, {
+                    id: NEW_PRODUCT_ID,
+                    workspaceId: WORKSPACE_ID,
+                    name: (body as { name: string }).name,
+                });
             }
             if (calledUrl === allergensUrl(WORKSPACE_ID, EXISTING_ITEM_ID) && method === 'PUT') {
-                throw new Error('Must not PUT allergens for the stale existing item during new-product creation');
+                throw new Error(
+                    'Must not PUT allergens for the stale existing item during new-product creation',
+                );
             }
 
-            throw new Error(`Unhandled fetch in new-product-resets-stale-item test: ${method} ${calledUrl}`);
+            throw new Error(
+                `Unhandled fetch in new-product-resets-stale-item test: ${method} ${calledUrl}`,
+            );
         });
         vi.stubGlobal('fetch', fetchMock);
 
@@ -914,7 +1014,9 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
 
         await screen.findByText('Mercimek Çorbası');
 
-        fireEvent.click(screen.getByRole('button', { name: 'Edit allergens for Mercimek Çorbası' }));
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Edit allergens for Mercimek Çorbası' }),
+        );
 
         const staleAllergensInput = (await screen.findByRole('textbox', {
             name: 'Allergens (comma-separated)',
@@ -932,9 +1034,14 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
         });
 
         expect(
-            screen.queryByRole('button', { name: 'Edit allergens for Mercimek Çorbası', pressed: true }),
+            screen.queryByRole('button', {
+                name: 'Edit allergens for Mercimek Çorbası',
+                pressed: true,
+            }),
         ).not.toBeInTheDocument();
-        expect(screen.queryByRole('textbox', { name: 'Allergens (comma-separated)' })).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole('textbox', { name: 'Allergens (comma-separated)' }),
+        ).not.toBeInTheDocument();
 
         await screen.findByLabelText(/price/i);
 
@@ -981,13 +1088,19 @@ describe('MenuCatalogWorkspace — edit price of an existing server-returned men
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(200, tree);
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(200, tree);
             if (calledUrl === priceUrl(WORKSPACE_ID, REAL_ITEM_ID) && method === 'PUT') {
                 const typed = body as { price: string; currency: string };
                 expect(typed.price).toBe('50.00');
                 expect(typed.currency).toBe('TRY');
-                return jsonResponse(200, { id: REAL_ITEM_ID, priceMinorAmount: 5000, currencyCode: 'TRY' });
+                return jsonResponse(200, {
+                    id: REAL_ITEM_ID,
+                    priceMinorAmount: 5000,
+                    currencyCode: 'TRY',
+                });
             }
 
             throw new Error(`Unhandled fetch in existing-item price test: ${method} ${calledUrl}`);
@@ -1070,8 +1183,10 @@ describe('MenuCatalogWorkspace — edit price of an existing server-returned men
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(200, tree);
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(200, tree);
             if (calledUrl === priceUrl(WORKSPACE_ID, REAL_ITEM_ID) && method === 'PUT') {
                 return jsonResponse(422, { message: 'The price field is invalid.' });
             }
@@ -1104,7 +1219,7 @@ describe('MenuCatalogWorkspace — edit price of an existing server-returned men
     });
 });
 
-describe('MenuCatalogWorkspace — visible price uses each currency\'s ISO fraction digits, consistent with edit-prefill (RED)', () => {
+describe("MenuCatalogWorkspace — visible price uses each currency's ISO fraction digits, consistent with edit-prefill (RED)", () => {
     it('renders JPY (0 fraction digits) and KWD (3 fraction digits) minor amounts using the correct decimal places, matching the Edit price prefill', async () => {
         const JPY_ITEM_ID = 501;
         const KWD_ITEM_ID = 502;
@@ -1160,11 +1275,15 @@ describe('MenuCatalogWorkspace — visible price uses each currency\'s ISO fract
         expect(screen.queryByText('123.45 KWD')).not.toBeInTheDocument();
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit price for Sushi Seti' }));
-        const jpyPriceInput = (await screen.findByRole('textbox', { name: /price/i })) as HTMLInputElement;
+        const jpyPriceInput = (await screen.findByRole('textbox', {
+            name: /price/i,
+        })) as HTMLInputElement;
         expect(jpyPriceInput.value).toBe('125');
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit price for Makbous' }));
-        const kwdPriceInput = (await screen.findByRole('textbox', { name: /price/i })) as HTMLInputElement;
+        const kwdPriceInput = (await screen.findByRole('textbox', {
+            name: /price/i,
+        })) as HTMLInputElement;
         expect(kwdPriceInput.value).toBe('12.345');
 
         vi.unstubAllGlobals();
@@ -1182,13 +1301,26 @@ describe('MenuCatalogWorkspace — product name field clears only on a successfu
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(404, { message: 'Not Found.' });
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(404, { message: 'Not Found.' });
             if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'POST') {
-                return jsonResponse(201, { id: 42, workspaceId: WORKSPACE_ID, locationId: LOCATION_ID, name: (body as { name: string }).name, state: 'draft' });
+                return jsonResponse(201, {
+                    id: 42,
+                    workspaceId: WORKSPACE_ID,
+                    locationId: LOCATION_ID,
+                    name: (body as { name: string }).name,
+                    state: 'draft',
+                });
             }
             if (calledUrl === categoriesUrl(WORKSPACE_ID, 42) && method === 'POST') {
-                return jsonResponse(201, { id: 5, menuId: 42, name: (body as { name: string }).name, position: 0 });
+                return jsonResponse(201, {
+                    id: 5,
+                    menuId: 42,
+                    name: (body as { name: string }).name,
+                    position: 0,
+                });
             }
             if (calledUrl === productsUrl(WORKSPACE_ID, 5) && method === 'POST') {
                 createProductCallCount += 1;
@@ -1196,7 +1328,11 @@ describe('MenuCatalogWorkspace — product name field clears only on a successfu
                     return jsonResponse(500, { message: 'Server Error.' });
                 }
                 expect((body as { name: string }).name).toBe('Kahve');
-                return jsonResponse(201, { id: RETURNED_PRODUCT_ID, workspaceId: WORKSPACE_ID, name: (body as { name: string }).name });
+                return jsonResponse(201, {
+                    id: RETURNED_PRODUCT_ID,
+                    workspaceId: WORKSPACE_ID,
+                    name: (body as { name: string }).name,
+                });
             }
 
             throw new Error(`Unhandled fetch in product-name-clear test: ${method} ${calledUrl}`);
@@ -1216,7 +1352,9 @@ describe('MenuCatalogWorkspace — product name field clears only on a successfu
         fireEvent.change(categoryNameInput, { target: { value: 'Başlangıçlar' } });
         fireEvent.click(screen.getByRole('button', { name: /create category|add category/i }));
 
-        const productNameInput = (await screen.findByLabelText(/product name/i)) as HTMLInputElement;
+        const productNameInput = (await screen.findByLabelText(
+            /product name/i,
+        )) as HTMLInputElement;
         fireEvent.change(productNameInput, { target: { value: 'Kahve' } });
         fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
 
@@ -1232,7 +1370,10 @@ describe('MenuCatalogWorkspace — product name field clears only on a successfu
 
         await waitFor(() => {
             const productPostCalls = fetchMock.mock.calls.filter(
-                (call) => String(call[0]) === productsUrl(WORKSPACE_ID, 5) && ((call[1] as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'POST',
+                (call) =>
+                    String(call[0]) === productsUrl(WORKSPACE_ID, 5) &&
+                    ((call[1] as RequestInit | undefined)?.method ?? 'GET').toUpperCase() ===
+                        'POST',
             );
             expect(productPostCalls).toHaveLength(2);
         });
@@ -1292,8 +1433,10 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(200, tree);
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(200, tree);
             if (calledUrl === visibilityUrl(WORKSPACE_ID, HIDDEN_ITEM_ID) && method === 'PUT') {
                 const body = init?.body ? JSON.parse(String(init.body)) : {};
                 expect(body).toEqual({ isVisible: true });
@@ -1340,12 +1483,17 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
         expect(csrfIndex).toBeGreaterThanOrEqual(0);
         expect(putIndex).toBeGreaterThan(csrfIndex);
 
-        expect((screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement).checked).toBe(false);
+        expect(
+            (screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement).checked,
+        ).toBe(false);
 
         resolvePut(jsonResponse(200, { id: HIDDEN_ITEM_ID, isVisible: true }));
 
         await waitFor(() => {
-            expect((screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement).checked).toBe(true);
+            expect(
+                (screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement)
+                    .checked,
+            ).toBe(true);
         });
 
         vi.unstubAllGlobals();
@@ -1382,8 +1530,10 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
             const calledUrl = String(url);
 
             if (calledUrl === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET') return jsonResponse(200, makeBrand());
-            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') return jsonResponse(200, tree);
+            if (calledUrl === brandUrl(WORKSPACE_ID) && method === 'GET')
+                return jsonResponse(200, makeBrand());
+            if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
+                return jsonResponse(200, tree);
             if (calledUrl === visibilityUrl(WORKSPACE_ID, HIDDEN_ITEM_ID) && method === 'PUT') {
                 return jsonResponse(422, { message: 'The isVisible field is invalid.' });
             }
@@ -1397,14 +1547,18 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
         }>();
         render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
-        const toggle = (await screen.findByRole('checkbox', { name: 'Show Baklava' })) as HTMLInputElement;
+        const toggle = (await screen.findByRole('checkbox', {
+            name: 'Show Baklava',
+        })) as HTMLInputElement;
         expect(toggle.checked).toBe(false);
 
         fireEvent.click(toggle);
 
         const alert = await screen.findByRole('alert');
         expect(alert).toBeInTheDocument();
-        expect((screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement).checked).toBe(false);
+        expect(
+            (screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement).checked,
+        ).toBe(false);
 
         vi.unstubAllGlobals();
     });

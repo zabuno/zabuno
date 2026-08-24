@@ -106,11 +106,15 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
         render(<PlanManagementPage />);
 
         await waitFor(() => {
-            const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT);
+            const call = fetchSpy.mock.calls.find(
+                ([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT,
+            );
             expect(call).toBeDefined();
         });
 
-        const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT);
+        const call = fetchSpy.mock.calls.find(
+            ([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT,
+        );
         const init = call?.[1] as RequestInit | undefined;
         expect(init?.credentials).toBe('same-origin');
         expect(new Headers(init?.headers).get('Accept')).toBe('application/json');
@@ -154,8 +158,12 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
         expect(within(listRegion()).getByText('starter')).toBeInTheDocument();
         expect(within(listRegion()).getByText('3 locations')).toBeInTheDocument();
 
-        const enterpriseRow = within(listRegion()).getByText('Enterprise').closest('li') as HTMLElement;
-        expect(within(enterpriseRow).getByText(/price unavailable|unavailable|not available/i)).toBeInTheDocument();
+        const enterpriseRow = within(listRegion())
+            .getByText('Enterprise')
+            .closest('li') as HTMLElement;
+        expect(
+            within(enterpriseRow).getByText(/price unavailable|unavailable|not available/i),
+        ).toBeInTheDocument();
         expect(within(enterpriseRow).getByText(/inactive/i)).toBeInTheDocument();
     });
 
@@ -184,7 +192,9 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
             expect(within(listRegion()).getByText('Starter')).toBeInTheDocument();
         });
 
-        const plansCalls = fetchSpy.mock.calls.filter(([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT);
+        const plansCalls = fetchSpy.mock.calls.filter(
+            ([calledUrl]) => String(calledUrl) === PLANS_ENDPOINT,
+        );
         expect(plansCalls.length).toBe(2);
     });
 
@@ -251,13 +261,17 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
         await user.click(screen.getByRole('button', { name: /create plan/i }));
 
         await waitFor(() => {
-            const csrfCall = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT);
+            const csrfCall = fetchSpy.mock.calls.find(
+                ([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT,
+            );
             expect(csrfCall).toBeDefined();
         });
 
         const postCall = await waitFor(() => {
             const call = fetchSpy.mock.calls.find(
-                ([calledUrl, callInit]) => String(calledUrl) === PLANS_ENDPOINT && (callInit as RequestInit | undefined)?.method === 'POST',
+                ([calledUrl, callInit]) =>
+                    String(calledUrl) === PLANS_ENDPOINT &&
+                    (callInit as RequestInit | undefined)?.method === 'POST',
             );
             expect(call).toBeDefined();
             return call as [string, RequestInit];
@@ -301,18 +315,26 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
             expect(within(listRegion()).getByText('Enterprise')).toBeInTheDocument();
         });
 
-        const enterpriseRow = within(listRegion()).getByText('Enterprise').closest('li') as HTMLElement;
-        expect(within(enterpriseRow).queryByRole('button', { name: /activate/i })).toBeInTheDocument();
+        const enterpriseRow = within(listRegion())
+            .getByText('Enterprise')
+            .closest('li') as HTMLElement;
+        expect(
+            within(enterpriseRow).queryByRole('button', { name: /activate/i }),
+        ).toBeInTheDocument();
 
         const starterRow = within(listRegion()).getByText('Starter').closest('li') as HTMLElement;
-        expect(within(starterRow).queryByRole('button', { name: /activate/i })).not.toBeInTheDocument();
+        expect(
+            within(starterRow).queryByRole('button', { name: /activate/i }),
+        ).not.toBeInTheDocument();
 
         await user.click(within(enterpriseRow).getByRole('button', { name: /activate/i }));
 
         const dialog = screen.getByRole('dialog', { name: /activate/i });
         expect(within(dialog).getByText('Enterprise')).toBeInTheDocument();
         expect(within(dialog).getByText('enterprise')).toBeInTheDocument();
-        expect(within(dialog).getByText(/price unavailable|unavailable|not available/i)).toBeInTheDocument();
+        expect(
+            within(dialog).getByText(/price unavailable|unavailable|not available/i),
+        ).toBeInTheDocument();
 
         const callsBeforeCancel = fetchSpy.mock.calls.length;
         await user.click(within(dialog).getByRole('button', { name: /cancel/i }));
@@ -324,10 +346,7 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
     it('confirms Activate via csrf-cookie then POST /api/admin/plans/{id}/activate, refetches authoritatively, and announces success', async () => {
         const user = userEvent.setup();
         let getCount = 0;
-        const activatedPlans = [
-            { ...makePlans()[0] },
-            { ...makePlans()[1], is_active: true },
-        ];
+        const activatedPlans = [{ ...makePlans()[0] }, { ...makePlans()[1], is_active: true }];
 
         fetchSpy.mockImplementation(async (url: string, init?: RequestInit) => {
             const u = String(url);
@@ -347,14 +366,18 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
             expect(within(listRegion()).getByText('Enterprise')).toBeInTheDocument();
         });
 
-        const enterpriseRow = within(listRegion()).getByText('Enterprise').closest('li') as HTMLElement;
+        const enterpriseRow = within(listRegion())
+            .getByText('Enterprise')
+            .closest('li') as HTMLElement;
         await user.click(within(enterpriseRow).getByRole('button', { name: /activate/i }));
 
         const dialog = screen.getByRole('dialog', { name: /activate/i });
         await user.click(within(dialog).getByRole('button', { name: /confirm|activate/i }));
 
         await waitFor(() => {
-            const activateCall = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === '/api/admin/plans/22/activate');
+            const activateCall = fetchSpy.mock.calls.find(
+                ([calledUrl]) => String(calledUrl) === '/api/admin/plans/22/activate',
+            );
             expect(activateCall).toBeDefined();
         });
 
@@ -366,11 +389,15 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
 
         await waitFor(() => {
             const row = within(listRegion()).getByText('Enterprise').closest('li') as HTMLElement;
-            expect(within(row).queryByRole('button', { name: /activate/i })).not.toBeInTheDocument();
+            expect(
+                within(row).queryByRole('button', { name: /activate/i }),
+            ).not.toBeInTheDocument();
         });
 
         expect(getCount).toBe(2);
-        expect(screen.getByRole('status', { name: /activate|success/i })).toHaveTextContent(/activat/i);
+        expect(screen.getByRole('status', { name: /activate|success/i })).toHaveTextContent(
+            /activat/i,
+        );
     });
 
     /**
@@ -391,7 +418,9 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
             if (u === PLANS_ENDPOINT && init?.method === undefined) return jsonResponse(200, []);
             if (u === CSRF_ENDPOINT) return jsonResponse(500, { message: 'csrf unavailable' });
             if (u === PLANS_ENDPOINT && init?.method === 'POST') {
-                throw new Error('POST /api/admin/plans must not be issued when CSRF bootstrap is non-OK');
+                throw new Error(
+                    'POST /api/admin/plans must not be issued when CSRF bootstrap is non-OK',
+                );
             }
             throw new Error(`Unhandled fetch: ${u} ${init?.method ?? 'GET'}`);
         });
@@ -412,7 +441,9 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
         expect(errorNode.closest('[role="alert"], [role="status"]')).not.toBeNull();
 
         const postCalls = fetchSpy.mock.calls.filter(
-            ([calledUrl, callInit]) => String(calledUrl) === PLANS_ENDPOINT && (callInit as RequestInit | undefined)?.method === 'POST',
+            ([calledUrl, callInit]) =>
+                String(calledUrl) === PLANS_ENDPOINT &&
+                (callInit as RequestInit | undefined)?.method === 'POST',
         );
         expect(postCalls.length).toBe(0);
     });
@@ -430,7 +461,8 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
             const u = String(url);
             if (u === PLANS_ENDPOINT && init?.method === undefined) return jsonResponse(200, []);
             if (u === CSRF_ENDPOINT) return jsonResponse(204, null);
-            if (u === PLANS_ENDPOINT && init?.method === 'POST') return jsonResponse(422, { message: 'invalid' });
+            if (u === PLANS_ENDPOINT && init?.method === 'POST')
+                return jsonResponse(422, { message: 'invalid' });
             throw new Error(`Unhandled fetch: ${u} ${init?.method ?? 'GET'}`);
         });
 
@@ -472,7 +504,9 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
             expect(within(listRegion()).getByText('Enterprise')).toBeInTheDocument();
         });
 
-        const enterpriseRow = within(listRegion()).getByText('Enterprise').closest('li') as HTMLElement;
+        const enterpriseRow = within(listRegion())
+            .getByText('Enterprise')
+            .closest('li') as HTMLElement;
         const activateTrigger = within(enterpriseRow).getByRole('button', { name: /activate/i });
         activateTrigger.focus();
         expect(document.activeElement).toBe(activateTrigger);

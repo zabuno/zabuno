@@ -11,7 +11,11 @@ function formatPrice(priceMinorAmount: number, currencyCode: string): string {
 
 export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRegionProps) {
     return (
-        <div role="region" aria-label={t('workspace.publication.draftPreview.region')} className="flex flex-col gap-3">
+        <div
+            role="region"
+            aria-label={t('workspace.publication.draftPreview.region')}
+            className="flex flex-col gap-3"
+        >
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                 {t('workspace.publication.draftPreview.region')}
             </h3>
@@ -47,18 +51,32 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
                                                 key={item.id}
                                                 className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
                                             >
-                                                <span>{item.productName ?? `#${item.productId}`}</span>
                                                 <span>
-                                                    {formatPrice(item.priceMinorAmount, item.currencyCode)}
+                                                    {item.productName ?? `#${item.productId}`}
+                                                </span>
+                                                <span>
+                                                    {formatPrice(
+                                                        item.priceMinorAmount,
+                                                        item.currencyCode,
+                                                    )}
                                                 </span>
                                                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                    {t('workspace.publication.draftPreview.allergens')}:{' '}
-                                                    {item.allergens.length > 0 ? item.allergens.join(', ') : '—'}
+                                                    {t(
+                                                        'workspace.publication.draftPreview.allergens',
+                                                    )}
+                                                    :{' '}
+                                                    {item.allergens.length > 0
+                                                        ? item.allergens.join(', ')
+                                                        : '—'}
                                                 </span>
                                                 <span className="text-xs text-gray-500 dark:text-gray-400">
                                                     {item.isVisible
-                                                        ? t('workspace.publication.draftPreview.visible')
-                                                        : t('workspace.publication.draftPreview.hidden')}
+                                                        ? t(
+                                                              'workspace.publication.draftPreview.visible',
+                                                          )
+                                                        : t(
+                                                              'workspace.publication.draftPreview.hidden',
+                                                          )}
                                                 </span>
                                             </li>
                                         ))}

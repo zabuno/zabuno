@@ -15,7 +15,15 @@ type SessionData = {
     redirect_url?: string;
 };
 
-type SessionPhase = 'idle' | 'loading' | 'error' | 'ready' | 'transaction' | 'failed' | 'invalidRedirect' | 'checkoutError';
+type SessionPhase =
+    | 'idle'
+    | 'loading'
+    | 'error'
+    | 'ready'
+    | 'transaction'
+    | 'failed'
+    | 'invalidRedirect'
+    | 'checkoutError';
 
 type IyzicoSandboxCheckoutProps = {
     workspaceId: number;
@@ -36,7 +44,13 @@ function isValidSubscriptionData(value: unknown): value is { state: Subscription
 }
 
 function isSessionState(value: unknown): value is SessionState {
-    return value === 'none' || value === 'initiated' || value === 'processing' || value === 'succeeded' || value === 'failed';
+    return (
+        value === 'none' ||
+        value === 'initiated' ||
+        value === 'processing' ||
+        value === 'succeeded' ||
+        value === 'failed'
+    );
 }
 
 function isValidSessionData(value: unknown): value is SessionData {
@@ -55,7 +69,11 @@ function isValidSessionData(value: unknown): value is SessionData {
     }
 
     if (candidate.amount_minor !== undefined) {
-        if (typeof candidate.amount_minor !== 'number' || !Number.isSafeInteger(candidate.amount_minor) || candidate.amount_minor < 0) {
+        if (
+            typeof candidate.amount_minor !== 'number' ||
+            !Number.isSafeInteger(candidate.amount_minor) ||
+            candidate.amount_minor < 0
+        ) {
             return false;
         }
     }
@@ -232,13 +250,26 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
     }, [posting, sessionUrl]);
 
     const startDisabled = subscriptionPhase !== 'active' || sessionPhase !== 'ready' || posting;
-    const showStartButton = sessionPhase === 'ready' || sessionPhase === 'idle' || sessionPhase === 'loading' || sessionPhase === 'error' || posting;
+    const showStartButton =
+        sessionPhase === 'ready' ||
+        sessionPhase === 'idle' ||
+        sessionPhase === 'loading' ||
+        sessionPhase === 'error' ||
+        posting;
 
     return (
-        <div role="region" aria-label={t('workspace.billing.iyzicoSandbox.heading')} className="flex flex-col w-full gap-3">
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{t('workspace.billing.iyzicoSandbox.heading')}</h2>
+        <div
+            role="region"
+            aria-label={t('workspace.billing.iyzicoSandbox.heading')}
+            className="flex flex-col w-full gap-3"
+        >
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t('workspace.billing.iyzicoSandbox.heading')}
+            </h2>
 
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('workspace.billing.iyzicoSandbox.disclaimer')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+                {t('workspace.billing.iyzicoSandbox.disclaimer')}
+            </p>
 
             {subscriptionPhase === 'loading' && (
                 <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
@@ -328,7 +359,9 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
                     </p>
                     {session?.conversation_id && (
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {t('workspace.billing.iyzicoSandbox.conversation', { id: session.conversation_id })}
+                            {t('workspace.billing.iyzicoSandbox.conversation', {
+                                id: session.conversation_id,
+                            })}
                         </p>
                     )}
                     <button
@@ -341,20 +374,41 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
                 </div>
             )}
 
-            {subscriptionPhase === 'active' && sessionPhase === 'transaction' && session && !posting && (
-                <div className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
-                    <span>{t(`workspace.billing.iyzicoSandbox.state.${session.state as 'initiated' | 'processing' | 'succeeded'}`)}</span>
-                    {session.conversation_id && <span>{t('workspace.billing.iyzicoSandbox.conversation', { id: session.conversation_id })}</span>}
-                    {session.amount_minor !== undefined && session.currency && (
-                        <span>{t('workspace.billing.iyzicoSandbox.amount', { amount: String(session.amount_minor), currency: session.currency })}</span>
-                    )}
-                    {isHttpsUrl(session.redirect_url) && (
-                        <a href={session.redirect_url} className="font-medium text-blue-600 dark:text-blue-400">
-                            {t('workspace.billing.iyzicoSandbox.continueLink')}
-                        </a>
-                    )}
-                </div>
-            )}
+            {subscriptionPhase === 'active' &&
+                sessionPhase === 'transaction' &&
+                session &&
+                !posting && (
+                    <div className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+                        <span>
+                            {t(
+                                `workspace.billing.iyzicoSandbox.state.${session.state as 'initiated' | 'processing' | 'succeeded'}`,
+                            )}
+                        </span>
+                        {session.conversation_id && (
+                            <span>
+                                {t('workspace.billing.iyzicoSandbox.conversation', {
+                                    id: session.conversation_id,
+                                })}
+                            </span>
+                        )}
+                        {session.amount_minor !== undefined && session.currency && (
+                            <span>
+                                {t('workspace.billing.iyzicoSandbox.amount', {
+                                    amount: String(session.amount_minor),
+                                    currency: session.currency,
+                                })}
+                            </span>
+                        )}
+                        {isHttpsUrl(session.redirect_url) && (
+                            <a
+                                href={session.redirect_url}
+                                className="font-medium text-blue-600 dark:text-blue-400"
+                            >
+                                {t('workspace.billing.iyzicoSandbox.continueLink')}
+                            </a>
+                        )}
+                    </div>
+                )}
 
             {showStartButton && (
                 <button

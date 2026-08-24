@@ -64,7 +64,10 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
             if (href === INVITATIONS_ENDPOINT && method === 'GET') {
                 return jsonResponse(200, []);
             }
-            if (href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` && method === 'POST') {
+            if (
+                href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` &&
+                method === 'POST'
+            ) {
                 currentMembers = currentMembers.map((member) => {
                     if (member.id === EDITOR_ID) {
                         return { ...member, role: 'owner' };
@@ -109,13 +112,19 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
         });
 
         const editorRow = rowFor('Mehmet Demir');
-        expect(within(editorRow).getByRole('button', { name: /transfer ownership/i })).toBeInTheDocument();
+        expect(
+            within(editorRow).getByRole('button', { name: /transfer ownership/i }),
+        ).toBeInTheDocument();
 
         const ownerRow = rowFor('Ayşe Yılmaz');
-        expect(within(ownerRow).queryByRole('button', { name: /transfer ownership/i })).not.toBeInTheDocument();
+        expect(
+            within(ownerRow).queryByRole('button', { name: /transfer ownership/i }),
+        ).not.toBeInTheDocument();
 
         const memberRow = rowFor('Elif Kaya');
-        expect(within(memberRow).queryByRole('button', { name: /transfer ownership/i })).not.toBeInTheDocument();
+        expect(
+            within(memberRow).queryByRole('button', { name: /transfer ownership/i }),
+        ).not.toBeInTheDocument();
     });
 
     it('clicking Transfer ownership opens the accessible ConfirmDialog with explicit cancel/confirm, and issues no POST before confirm', async () => {
@@ -134,7 +143,9 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
         expect(within(dialog).getByRole('button', { name: /^cancel/i })).toBeInTheDocument();
 
         expect(
-            fetchSpy.mock.calls.find(([, init]) => (init as RequestInit | undefined)?.method === 'POST'),
+            fetchSpy.mock.calls.find(
+                ([, init]) => (init as RequestInit | undefined)?.method === 'POST',
+            ),
         ).toBeUndefined();
     });
 
@@ -157,7 +168,9 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
         });
 
         expect(
-            fetchSpy.mock.calls.find(([, init]) => (init as RequestInit | undefined)?.method === 'POST'),
+            fetchSpy.mock.calls.find(
+                ([, init]) => (init as RequestInit | undefined)?.method === 'POST',
+            ),
         ).toBeUndefined();
     });
 
@@ -172,9 +185,13 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
             const href = String(url);
             const method = (init?.method ?? 'GET').toUpperCase();
             if (href === '/sanctum/csrf-cookie') return jsonResponse(204, null);
-            if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, currentMembers);
+            if (href === MEMBERS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, currentMembers);
             if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
-            if (href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` && method === 'POST') {
+            if (
+                href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` &&
+                method === 'POST'
+            ) {
                 return deferredPost;
             }
             throw new Error(`Unhandled fetch: ${method} ${href}`);
@@ -222,7 +239,9 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
         expect(postHeaders.get('Accept')).toBe('application/json');
         expect(postHeaders.get('X-XSRF-TOKEN')).toBe(readCookie('XSRF-TOKEN'));
 
-        const csrfCall = fetchSpy.mock.calls.find(([url]) => String(url) === '/sanctum/csrf-cookie');
+        const csrfCall = fetchSpy.mock.calls.find(
+            ([url]) => String(url) === '/sanctum/csrf-cookie',
+        );
         expect(csrfCall).toBeDefined();
 
         releasePost?.(jsonResponse(204, null));
@@ -244,7 +263,8 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
 
         const getCallsBefore = fetchSpy.mock.calls.filter(
             ([url, init]) =>
-                String(url) === MEMBERS_ENDPOINT && ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
+                String(url) === MEMBERS_ENDPOINT &&
+                ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
         ).length;
 
         const editorRow = rowFor('Mehmet Demir');
@@ -267,7 +287,8 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
 
         const getCallsAfter = fetchSpy.mock.calls.filter(
             ([url, init]) =>
-                String(url) === MEMBERS_ENDPOINT && ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
+                String(url) === MEMBERS_ENDPOINT &&
+                ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
         ).length;
         expect(getCallsAfter).toBeGreaterThan(getCallsBefore);
     });
@@ -280,9 +301,13 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
             const href = String(url);
             const method = (init?.method ?? 'GET').toUpperCase();
             if (href === '/sanctum/csrf-cookie') return jsonResponse(204, null);
-            if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, currentMembers);
+            if (href === MEMBERS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, currentMembers);
             if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
-            if (href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` && method === 'POST') {
+            if (
+                href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` &&
+                method === 'POST'
+            ) {
                 postCalls += 1;
 
                 return jsonResponse(500, { message: 'Failed' });
@@ -343,7 +368,10 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
             const method = (init?.method ?? 'GET').toUpperCase();
             if (href === '/sanctum/csrf-cookie') return jsonResponse(204, null);
             if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
-            if (href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` && method === 'POST') {
+            if (
+                href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}/transfer-ownership` &&
+                method === 'POST'
+            ) {
                 postCalls += 1;
                 nextGetOutcome = 'fail';
 
@@ -434,7 +462,9 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
         });
 
         const editorRow = rowFor('Mehmet Demir');
-        const transferButton = within(editorRow).getByRole('button', { name: /transfer ownership/i });
+        const transferButton = within(editorRow).getByRole('button', {
+            name: /transfer ownership/i,
+        });
         transferButton.focus();
         expect(transferButton).toHaveFocus();
 

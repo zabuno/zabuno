@@ -1,172 +1,230 @@
 {
-  "$schemaNote": "Single canonical numeric speed-policy source for SP-01 (fast-delivery genome). Consumed by scripts/speed-gate. AGENTS.md, .claude/rules/fast-development.md, .claude/skills/zabuno-speeder/SKILL.md, .claude/agents/zabuno-speeder.md, docs/26, docs/27 and both speeder reports must reference this file by path and must not restate its numbers.",
-  "checkpointCadenceMinutesMax": 20,
-  "checkpointCadenceAppliesTo": ["prototype", "microHotfix", "normal", "highRisk"],
-  "lanes": {
-    "prototype": {
-      "targetedTestMax": 0,
-      "testFilesMax": 0,
-      "browserRunsMax": 0,
-      "fullLocalQaMax": 0,
-      "ciFullQaMax": 0,
-      "reviewerFullSuiteRunsMax": 0
+    "$schemaNote": "Single canonical numeric speed-policy source for SP-01 (fast-delivery genome). Consumed by scripts/speed-gate. AGENTS.md, .claude/rules/fast-development.md, .claude/skills/zabuno-speeder/SKILL.md, .claude/agents/zabuno-speeder.md, docs/26, docs/27 and both speeder reports must reference this file by path and must not restate its numbers.",
+    "checkpointCadenceMinutesMax": 20,
+    "checkpointCadenceAppliesTo": ["prototype", "microHotfix", "normal", "highRisk"],
+    "lanes": {
+        "prototype": {
+            "targetedTestMax": 0,
+            "testFilesMax": 0,
+            "browserRunsMax": 0,
+            "fullLocalQaMax": 0,
+            "ciFullQaMax": 0,
+            "reviewerFullSuiteRunsMax": 0
+        },
+        "microHotfix": {
+            "targetedTestMin": 1,
+            "targetedTestMax": 3,
+            "testFilesMax": 1,
+            "browserRunsMax": 0,
+            "fullLocalQaMax": 1,
+            "ciFullQaMax": 1,
+            "productDiffLinesMax": 30,
+            "adjacentMicroFixesMax": 3,
+            "reviewerFullSuiteRunsMax": 0
+        },
+        "normal": {
+            "targetedTestMin": 3,
+            "targetedTestMax": 8,
+            "testFilesMax": 2,
+            "browserRunsMax": 1,
+            "fullLocalQaMax": 1,
+            "ciFullQaMax": 1,
+            "reviewerFullSuiteRunsMax": 0,
+            "reviewerCanAuthorTests": false,
+            "reviewerAdversarialCheckSuggestionsMax": 2
+        },
+        "highRisk": {
+            "targetedTestMax": null,
+            "testFilesMax": null,
+            "browserRunsMax": 1,
+            "fullLocalQaMax": 1,
+            "ciFullQaMax": 1,
+            "requiresJustificationAboveNormal": true,
+            "requiresExplicitApprovedTargetedTestMax": true,
+            "reviewerFullSuiteRunsMax": 0,
+            "reviewerCanAuthorTests": false
+        }
     },
-    "microHotfix": {
-      "targetedTestMin": 1,
-      "targetedTestMax": 3,
-      "testFilesMax": 1,
-      "browserRunsMax": 0,
-      "fullLocalQaMax": 1,
-      "ciFullQaMax": 1,
-      "productDiffLinesMax": 30,
-      "adjacentMicroFixesMax": 3,
-      "reviewerFullSuiteRunsMax": 0
+    "programThroughputObjective": {
+        "note": "Replaces any single-package duration SLA. The objective is risk-adjusted PROGRAM throughput, not a promised duration for one package. speed-gate and operational docs must never restate these numbers or imply a per-package time commitment.",
+        "singlePackageDurationSlaClaimAllowed": false,
+        "targetThroughputMultiplier": {
+            "min": 10,
+            "stretch": 50,
+            "claimStatus": "target-not-yet-achieved",
+            "basis": "accepted vertical slices per unit program time, vs. pre-genome baseline; owner-set target, pending A/B evidence, see claude_speeder_report.md §14"
+        },
+        "numerator": "acceptedVerticalSlices",
+        "guardrails": {
+            "escapedDefectRateMustNotIncrease": true,
+            "reworkRateMustNotIncrease": true,
+            "ciStabilityMustNotRegress": true,
+            "evidenceRequiredBeforeMultiplierClaim": true
+        }
     },
-    "normal": {
-      "targetedTestMin": 3,
-      "targetedTestMax": 8,
-      "testFilesMax": 2,
-      "browserRunsMax": 1,
-      "fullLocalQaMax": 1,
-      "ciFullQaMax": 1,
-      "reviewerFullSuiteRunsMax": 0,
-      "reviewerCanAuthorTests": false,
-      "reviewerAdversarialCheckSuggestionsMax": 2
+    "highRiskPathPatterns": [
+        "app/**/Auth/**",
+        "app/**/Billing/**",
+        "app/**/Tenancy/**",
+        "app/**/Authorization/**",
+        "**/Webhook*",
+        "database/migrations/**",
+        "app/**/Security/**",
+        "resources/js/**/auth/**",
+        "resources/js/**/billing/**",
+        "resources/js/**/workspace/pages/team/**",
+        "resources/js/**/checkout/**",
+        "resources/js/**/payment/**"
+    ],
+    "highRiskSemanticClasses": [
+        "auth-flow",
+        "tenancy-isolation",
+        "billing-or-payment-calculation",
+        "webhook-signature-or-verification",
+        "migration-or-irreversible-data-change",
+        "authorization-decision",
+        "secrets-or-credential-handling"
+    ],
+    "highRiskPathPatternsAreConservativeTriggerOnly": true,
+    "microBatch": {
+        "adjacentMicroFixesMax": 3,
+        "sameComponentOrJourneyRequired": true
     },
-    "highRisk": {
-      "targetedTestMax": null,
-      "testFilesMax": null,
-      "browserRunsMax": 1,
-      "fullLocalQaMax": 1,
-      "ciFullQaMax": 1,
-      "requiresJustificationAboveNormal": true,
-      "requiresExplicitApprovedTargetedTestMax": true,
-      "reviewerFullSuiteRunsMax": 0,
-      "reviewerCanAuthorTests": false
+    "snapshotEvidenceReuse": {
+        "keyedBy": "contentHashOfChangedFiles",
+        "reuseWindowMinutes": null
+    },
+    "fullQaExecutionsPerChangePackageMax": 2,
+    "flakyQuarantine": {
+        "reproducibilityEvidenceRequired": true,
+        "minReproRuns": 3,
+        "ownerOrMasterVisibleRecordRequired": true,
+        "expiryDays": 14,
+        "linkedRepairTaskRequired": true,
+        "neverQuarantineIfHighRiskClassAffected": true,
+        "unknownFailureDefaultsToBlocking": true
+    },
+    "moduleFramework": {
+        "note": "Program-scale overlay, see claude_speeder_report.md §16. Serialization unit is a conflict component, not a module.",
+        "packageManifestSchema": {
+            "packageId": "string, required",
+            "module": "string, required",
+            "writeSet": "string[], required — same set as allowedFiles",
+            "readSet": "string[], required",
+            "contractsConsumed": "string[] (portName@contractManifestHash)",
+            "contractsChanged": "string[] (portName@contractManifestHash)",
+            "tablesOrMigrationsTouched": "string[]",
+            "sharedSurfacesTouched": "string[] — steward lane names (routes|frontendShell|i18n|dependencyLockfiles|migrationsSchema|testConfig|ci)",
+            "dependsOnPackages": "string[] (packageId) — DAG edges"
+        },
+        "conflictGraphScheduler": {
+            "concurrencyConditions": [
+                "writeSet(P1) ∩ writeSet(P2) = ∅",
+                "writeSet(P1) ∩ readSet(P2) = ∅ AND writeSet(P2) ∩ readSet(P1) = ∅",
+                "contractsChanged(P1) ∩ contractsConsumed(P2) = ∅ AND contractsChanged(P2) ∩ contractsConsumed(P1) = ∅",
+                "tablesOrMigrationsTouched(P1) ∩ tablesOrMigrationsTouched(P2) = ∅",
+                "sharedSurfacesTouched(P1) ∩ sharedSurfacesTouched(P2) = ∅",
+                "dependsOnPackages(P1) and dependsOnPackages(P2) members already merged"
+            ],
+            "onViolation": "serialize only the conflicting conflictComponent, never the whole module",
+            "moduleBoundaryAloneNeverSerializes": true,
+            "highRiskAloneNeverSerializesWholeModule": true,
+            "onlyExactConflictEdgeOrHighRiskContractRequiresSerialization": true
+        },
+        "stewardLanes": {
+            "note": "per-surface lane, not one global steward queue; different lanes never block each other",
+            "lanes": {
+                "routes": {
+                    "concurrentActivePackages": 1,
+                    "queueDiscipline": "FIFO",
+                    "coversFiles": ["routes/api.php"]
+                },
+                "frontendShell": {
+                    "concurrentActivePackages": 1,
+                    "queueDiscipline": "FIFO",
+                    "coversFiles": ["resources/js/components/workspace/WorkspaceApp.tsx"]
+                },
+                "i18n": {
+                    "concurrentActivePackages": 1,
+                    "queueDiscipline": "FIFO",
+                    "coversFiles": ["resources/js/i18n/workspace.ts"]
+                },
+                "dependencyLockfiles": {
+                    "concurrentActivePackages": 1,
+                    "queueDiscipline": "FIFO",
+                    "coversFiles": ["composer.lock", "package-lock.json"]
+                },
+                "migrationsSchema": {
+                    "concurrentActivePackages": 1,
+                    "queueDiscipline": "FIFO",
+                    "coversFiles": ["database/migrations/**"]
+                },
+                "testConfig": {
+                    "concurrentActivePackages": 1,
+                    "queueDiscipline": "FIFO",
+                    "coversFiles": ["phpunit.xml"]
+                },
+                "ci": {
+                    "concurrentActivePackages": 1,
+                    "queueDiscipline": "FIFO",
+                    "coversFiles": [".github/workflows/ci.yml"]
+                }
+            },
+            "crossLaneConcurrency": "unrestricted"
+        },
+        "moduleConcurrentActivePackagesMax": null,
+        "moduleSerializationBasis": "conflictComponent, NOT module",
+        "withinModuleShardingRequiresNonOverlappingFileSet": true,
+        "contractFreezeRecording": {
+            "mechanism": "immutableCommitSha+contractManifestHash",
+            "notATag": true,
+            "registryContentAuthoredBy": "separate authorized Claude config/governance writer, in its own package — never MASTER (MASTER is repo-read-only)",
+            "gitInclusionExecutedBy": "MASTER-only, after gate approval"
+        },
+        "gitMutationsByPackageWorkers": "forbidden",
+        "rampStage": "0",
+        "rampStages": ["4", "12", "25", "50", "100"],
+        "rampStageMeaning": "max concurrently admitted workers across all roles; gated by admission evidence (docs/26, docs/27), not implemented by this JSON"
+    },
+    "fastDeliveryGenomeOverlay": {
+        "note": "Fixed separate 8-item denominator, independent of the product roadmap docs/17 §4 counter. See AGENTS.md and both speeder reports for rationale.",
+        "totalItems": 8,
+        "completedItems": 0,
+        "activeItem": 1,
+        "items": [
+            { "n": 1, "title": "speed genome + gate", "status": "active", "dependsOn": [] },
+            { "n": 2, "title": "CI structural-RED repair", "status": "pending", "dependsOn": [1] },
+            {
+                "n": 3,
+                "title": "clean worktree / snapshot isolation automation",
+                "status": "pending",
+                "dependsOn": [1]
+            },
+            {
+                "n": 4,
+                "title": "module dependency DAG + write-set manifest",
+                "status": "pending",
+                "dependsOn": [1, 3]
+            },
+            {
+                "n": 5,
+                "title": "affected-test / module-CI selection",
+                "status": "pending",
+                "dependsOn": [2, 4]
+            },
+            { "n": 6, "title": "conflict-graph scheduler", "status": "pending", "dependsOn": [4] },
+            {
+                "n": 7,
+                "title": "steward lanes + merge queue",
+                "status": "pending",
+                "dependsOn": [6]
+            },
+            {
+                "n": 8,
+                "title": "admission-gated 4-to-12-to-25-to-50-to-100 ramp with 30-day throughput/escaped-defect evidence",
+                "status": "pending",
+                "dependsOn": [2, 5, 6, 7]
+            }
+        ]
     }
-  },
-  "programThroughputObjective": {
-    "note": "Replaces any single-package duration SLA. The objective is risk-adjusted PROGRAM throughput, not a promised duration for one package. speed-gate and operational docs must never restate these numbers or imply a per-package time commitment.",
-    "singlePackageDurationSlaClaimAllowed": false,
-    "targetThroughputMultiplier": { "min": 10, "stretch": 50, "claimStatus": "target-not-yet-achieved", "basis": "accepted vertical slices per unit program time, vs. pre-genome baseline; owner-set target, pending A/B evidence, see claude_speeder_report.md §14" },
-    "numerator": "acceptedVerticalSlices",
-    "guardrails": {
-      "escapedDefectRateMustNotIncrease": true,
-      "reworkRateMustNotIncrease": true,
-      "ciStabilityMustNotRegress": true,
-      "evidenceRequiredBeforeMultiplierClaim": true
-    }
-  },
-  "highRiskPathPatterns": [
-    "app/**/Auth/**",
-    "app/**/Billing/**",
-    "app/**/Tenancy/**",
-    "app/**/Authorization/**",
-    "**/Webhook*",
-    "database/migrations/**",
-    "app/**/Security/**",
-    "resources/js/**/auth/**",
-    "resources/js/**/billing/**",
-    "resources/js/**/workspace/pages/team/**",
-    "resources/js/**/checkout/**",
-    "resources/js/**/payment/**"
-  ],
-  "highRiskSemanticClasses": [
-    "auth-flow",
-    "tenancy-isolation",
-    "billing-or-payment-calculation",
-    "webhook-signature-or-verification",
-    "migration-or-irreversible-data-change",
-    "authorization-decision",
-    "secrets-or-credential-handling"
-  ],
-  "highRiskPathPatternsAreConservativeTriggerOnly": true,
-  "microBatch": {
-    "adjacentMicroFixesMax": 3,
-    "sameComponentOrJourneyRequired": true
-  },
-  "snapshotEvidenceReuse": {
-    "keyedBy": "contentHashOfChangedFiles",
-    "reuseWindowMinutes": null
-  },
-  "fullQaExecutionsPerChangePackageMax": 2,
-  "flakyQuarantine": {
-    "reproducibilityEvidenceRequired": true,
-    "minReproRuns": 3,
-    "ownerOrMasterVisibleRecordRequired": true,
-    "expiryDays": 14,
-    "linkedRepairTaskRequired": true,
-    "neverQuarantineIfHighRiskClassAffected": true,
-    "unknownFailureDefaultsToBlocking": true
-  },
-  "moduleFramework": {
-    "note": "Program-scale overlay, see claude_speeder_report.md §16. Serialization unit is a conflict component, not a module.",
-    "packageManifestSchema": {
-      "packageId": "string, required",
-      "module": "string, required",
-      "writeSet": "string[], required — same set as allowedFiles",
-      "readSet": "string[], required",
-      "contractsConsumed": "string[] (portName@contractManifestHash)",
-      "contractsChanged": "string[] (portName@contractManifestHash)",
-      "tablesOrMigrationsTouched": "string[]",
-      "sharedSurfacesTouched": "string[] — steward lane names (routes|frontendShell|i18n|dependencyLockfiles|migrationsSchema|testConfig|ci)",
-      "dependsOnPackages": "string[] (packageId) — DAG edges"
-    },
-    "conflictGraphScheduler": {
-      "concurrencyConditions": [
-        "writeSet(P1) ∩ writeSet(P2) = ∅",
-        "writeSet(P1) ∩ readSet(P2) = ∅ AND writeSet(P2) ∩ readSet(P1) = ∅",
-        "contractsChanged(P1) ∩ contractsConsumed(P2) = ∅ AND contractsChanged(P2) ∩ contractsConsumed(P1) = ∅",
-        "tablesOrMigrationsTouched(P1) ∩ tablesOrMigrationsTouched(P2) = ∅",
-        "sharedSurfacesTouched(P1) ∩ sharedSurfacesTouched(P2) = ∅",
-        "dependsOnPackages(P1) and dependsOnPackages(P2) members already merged"
-      ],
-      "onViolation": "serialize only the conflicting conflictComponent, never the whole module",
-      "moduleBoundaryAloneNeverSerializes": true,
-      "highRiskAloneNeverSerializesWholeModule": true,
-      "onlyExactConflictEdgeOrHighRiskContractRequiresSerialization": true
-    },
-    "stewardLanes": {
-      "note": "per-surface lane, not one global steward queue; different lanes never block each other",
-      "lanes": {
-        "routes": { "concurrentActivePackages": 1, "queueDiscipline": "FIFO", "coversFiles": ["routes/api.php"] },
-        "frontendShell": { "concurrentActivePackages": 1, "queueDiscipline": "FIFO", "coversFiles": ["resources/js/components/workspace/WorkspaceApp.tsx"] },
-        "i18n": { "concurrentActivePackages": 1, "queueDiscipline": "FIFO", "coversFiles": ["resources/js/i18n/workspace.ts"] },
-        "dependencyLockfiles": { "concurrentActivePackages": 1, "queueDiscipline": "FIFO", "coversFiles": ["composer.lock", "package-lock.json"] },
-        "migrationsSchema": { "concurrentActivePackages": 1, "queueDiscipline": "FIFO", "coversFiles": ["database/migrations/**"] },
-        "testConfig": { "concurrentActivePackages": 1, "queueDiscipline": "FIFO", "coversFiles": ["phpunit.xml"] },
-        "ci": { "concurrentActivePackages": 1, "queueDiscipline": "FIFO", "coversFiles": [".github/workflows/ci.yml"] }
-      },
-      "crossLaneConcurrency": "unrestricted"
-    },
-    "moduleConcurrentActivePackagesMax": null,
-    "moduleSerializationBasis": "conflictComponent, NOT module",
-    "withinModuleShardingRequiresNonOverlappingFileSet": true,
-    "contractFreezeRecording": {
-      "mechanism": "immutableCommitSha+contractManifestHash",
-      "notATag": true,
-      "registryContentAuthoredBy": "separate authorized Claude config/governance writer, in its own package — never MASTER (MASTER is repo-read-only)",
-      "gitInclusionExecutedBy": "MASTER-only, after gate approval"
-    },
-    "gitMutationsByPackageWorkers": "forbidden",
-    "rampStage": "0",
-    "rampStages": ["4", "12", "25", "50", "100"],
-    "rampStageMeaning": "max concurrently admitted workers across all roles; gated by admission evidence (docs/26, docs/27), not implemented by this JSON"
-  },
-  "fastDeliveryGenomeOverlay": {
-    "note": "Fixed separate 8-item denominator, independent of the product roadmap docs/17 §4 counter. See AGENTS.md and both speeder reports for rationale.",
-    "totalItems": 8,
-    "completedItems": 0,
-    "activeItem": 1,
-    "items": [
-      { "n": 1, "title": "speed genome + gate", "status": "active", "dependsOn": [] },
-      { "n": 2, "title": "CI structural-RED repair", "status": "pending", "dependsOn": [1] },
-      { "n": 3, "title": "clean worktree / snapshot isolation automation", "status": "pending", "dependsOn": [1] },
-      { "n": 4, "title": "module dependency DAG + write-set manifest", "status": "pending", "dependsOn": [1, 3] },
-      { "n": 5, "title": "affected-test / module-CI selection", "status": "pending", "dependsOn": [2, 4] },
-      { "n": 6, "title": "conflict-graph scheduler", "status": "pending", "dependsOn": [4] },
-      { "n": 7, "title": "steward lanes + merge queue", "status": "pending", "dependsOn": [6] },
-      { "n": 8, "title": "admission-gated 4-to-12-to-25-to-50-to-100 ramp with 30-day throughput/escaped-defect evidence", "status": "pending", "dependsOn": [2, 5, 6, 7] }
-    ]
-  }
 }

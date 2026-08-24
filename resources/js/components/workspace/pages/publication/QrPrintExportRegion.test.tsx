@@ -68,7 +68,9 @@ describe('QrPrintExportRegion bulk QR wizard (BULK_QR_WIZARD_RED)', () => {
         render(<QrPrintExportRegion />);
 
         const wizard = screen.getByRole('group', { name: /bulk qr wizard/i });
-        const fields = WIZARD_FIELD_LABELS.map((labelPattern) => within(wizard).getByLabelText(labelPattern));
+        const fields = WIZARD_FIELD_LABELS.map((labelPattern) =>
+            within(wizard).getByLabelText(labelPattern),
+        );
 
         const allInputs = Array.from(wizard.querySelectorAll('input'));
         fields.forEach((field, index) => {
@@ -643,7 +645,9 @@ describe('QrPrintExportRegion theme selection (QR_THEME_SELECTION_RED)', () => {
         render(<QrPrintExportRegion items={[item]} />);
 
         const region = screen.getByRole('region', { name: /qr print export/i });
-        const highContrastButton = within(region).getByRole('button', { name: /^high contrast theme$/i });
+        const highContrastButton = within(region).getByRole('button', {
+            name: /^high contrast theme$/i,
+        });
         await user.click(highContrastButton);
 
         const classicButton = within(region).getByRole('button', { name: /^classic theme$/i });

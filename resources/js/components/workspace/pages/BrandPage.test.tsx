@@ -11,12 +11,21 @@ import type { BrandProfile } from '../BrandEditForm';
  * fluid-first (no fixed-pixel / breakpoint) markup at a 320px viewport.
  */
 
-const FIXED_PIXEL_CLASS_PATTERN = /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
+const FIXED_PIXEL_CLASS_PATTERN =
+    /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
 const BREAKPOINT_CLASS_PATTERN = /(^|[\s"'`])(sm|md|lg|xl|2xl):/;
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -72,7 +81,9 @@ describe('BrandPage — honest loading state before the brand has arrived', () =
     it('delegates to the real BrandEditForm once a brand is loaded, replacing the loading status', () => {
         render(<BrandPage workspaceId={61} brand={makeBrand()} onSaved={vi.fn()} />);
 
-        expect(screen.queryByRole('status', { name: '' })).not.toHaveTextContent('Loading your brand…');
+        expect(screen.queryByRole('status', { name: '' })).not.toHaveTextContent(
+            'Loading your brand…',
+        );
         expect(screen.getByText('Menekşe')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
     });
@@ -87,14 +98,18 @@ describe('BrandPage — fluid-first markup', () => {
     it('carries no fixed-pixel or breakpoint class at a 320x480 viewport', () => {
         setViewport(320, 480);
 
-        const { container } = render(<BrandPage workspaceId={61} brand={makeBrand()} onSaved={vi.fn()} />);
+        const { container } = render(
+            <BrandPage workspaceId={61} brand={makeBrand()} onSaved={vi.fn()} />,
+        );
 
         const root = container.querySelector('#brand') as HTMLElement;
         expect(root).not.toBeNull();
 
         const classLists = collectClassLists(root);
         const offenders = classLists.filter(
-            (classList) => FIXED_PIXEL_CLASS_PATTERN.test(classList) || BREAKPOINT_CLASS_PATTERN.test(classList),
+            (classList) =>
+                FIXED_PIXEL_CLASS_PATTERN.test(classList) ||
+                BREAKPOINT_CLASS_PATTERN.test(classList),
         );
 
         expect(offenders).toEqual([]);

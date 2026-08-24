@@ -26,12 +26,19 @@ const REQUIRED_STATES = [
     'Dark',
 ] as const;
 
-function importStoriesModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importStoriesModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import(/* @vite-ignore */ './BrandOnboardingForm.stories') as unknown as Promise<T>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyStory = { args?: Record<string, unknown>; parameters?: Record<string, any>; globals?: Record<string, any> };
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type AnyStory = {
+    args?: Record<string, unknown>;
+    parameters?: Record<string, any>;
+    globals?: Record<string, any>;
+};
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 describe('BrandOnboardingForm.stories — Storybook contract matrix', () => {
     it('exports a meta pointing at BrandOnboardingForm with a Macro/Workspace title', async () => {
@@ -44,7 +51,9 @@ describe('BrandOnboardingForm.stories — Storybook contract matrix', () => {
     it.each(REQUIRED_STATES)(
         'exports a %s story, or declares an explicit *NotApplicable metadata export',
         async (state) => {
-            const mod = await importStoriesModule<Record<string, AnyStory | undefined> & Record<string, unknown>>();
+            const mod = await importStoriesModule<
+                Record<string, AnyStory | undefined> & Record<string, unknown>
+            >();
 
             if (mod[state] === undefined) {
                 expect(mod[`${state}NotApplicable`]).toBeDefined();
@@ -57,17 +66,26 @@ describe('BrandOnboardingForm.stories — Storybook contract matrix', () => {
 
     it('renders the Default story with real-shaped local fixture args', async () => {
         const mod = await importStoriesModule<{ Default: AnyStory }>();
-        const args = mod.Default.args as { workspaceId: number; onCreated: (brand: unknown) => void };
+        const args = mod.Default.args as {
+            workspaceId: number;
+            onCreated: (brand: unknown) => void;
+        };
 
         expect(args.workspaceId).toEqual(expect.any(Number));
         expect(args.onCreated).toEqual(expect.any(Function));
 
-        render(<BrandOnboardingForm {...(args as React.ComponentProps<typeof BrandOnboardingForm>)} />);
+        render(
+            <BrandOnboardingForm {...(args as React.ComponentProps<typeof BrandOnboardingForm>)} />,
+        );
     });
 
     it('.storybook/preview.tsx declares the xs320 viewport option at 320x640 (Storybook 10 viewport.options, not the removed viewport.viewports key)', () => {
         const xs320 = (
-            previewConfig as { parameters?: { viewport?: { options?: Record<string, { styles?: Record<string, unknown> }> } } }
+            previewConfig as {
+                parameters?: {
+                    viewport?: { options?: Record<string, { styles?: Record<string, unknown> }> };
+                };
+            }
         ).parameters?.viewport?.options?.xs320;
         expect(xs320).toBeDefined();
         expect(xs320?.styles).toMatchObject({ width: '320px', height: '640px' });
@@ -78,7 +96,8 @@ describe('BrandOnboardingForm.stories — Storybook contract matrix', () => {
         expect(mod.Mobile320.parameters?.viewport?.defaultViewport).toBeUndefined();
 
         const viewportGlobal = mod.Mobile320.globals?.viewport;
-        const viewportValue = typeof viewportGlobal === 'string' ? viewportGlobal : viewportGlobal?.value;
+        const viewportValue =
+            typeof viewportGlobal === 'string' ? viewportGlobal : viewportGlobal?.value;
         expect(viewportValue).toBe('xs320');
         if (typeof viewportGlobal === 'object' && viewportGlobal !== null) {
             expect(viewportGlobal.isRotated).toBe(false);

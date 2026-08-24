@@ -96,7 +96,9 @@ function createDeferred<T>() {
 const BACKUP_RESTORE_EVIDENCE_ITEM_MODULE_SPECIFIER = ['.', 'BackupRestoreEvidenceItem'].join('/');
 
 async function importBackupRestoreEvidenceItemModule() {
-    return import(/* @vite-ignore */ BACKUP_RESTORE_EVIDENCE_ITEM_MODULE_SPECIFIER) as unknown as Promise<{
+    return import(
+        /* @vite-ignore */ BACKUP_RESTORE_EVIDENCE_ITEM_MODULE_SPECIFIER
+    ) as unknown as Promise<{
         BackupRestoreEvidenceItem: React.ComponentType<{ workspaceId: number }>;
     }>;
 }
@@ -195,39 +197,56 @@ describe('BackupRestoreEvidenceItem — real backup/restore evidence contract (S
         ['a malformed 200 payload (invalid JSON)', () => Promise.resolve(malformedResponse(200))],
         [
             'a parsed 200 payload with data.status outside passed/failed',
-            () => Promise.resolve(jsonResponse(200, evidenceEnvelope('passed', { status: 'unknown' }))),
+            () =>
+                Promise.resolve(
+                    jsonResponse(200, evidenceEnvelope('passed', { status: 'unknown' })),
+                ),
         ],
         [
             'a parsed 200 payload with a negative duration_ms',
-            () => Promise.resolve(jsonResponse(200, evidenceEnvelope('passed', { duration_ms: -1 }))),
+            () =>
+                Promise.resolve(jsonResponse(200, evidenceEnvelope('passed', { duration_ms: -1 }))),
         ],
         [
             'a parsed 200 payload with a non-finite restored_row_count',
             () =>
                 Promise.resolve(
-                    jsonResponse(200, evidenceEnvelope('passed', { restored_row_count: Number.POSITIVE_INFINITY })),
+                    jsonResponse(
+                        200,
+                        evidenceEnvelope('passed', {
+                            restored_row_count: Number.POSITIVE_INFINITY,
+                        }),
+                    ),
                 ),
         ],
         [
             'a parsed 200 payload with a negative restored_row_count',
-            () => Promise.resolve(jsonResponse(200, evidenceEnvelope('passed', { restored_row_count: -5 }))),
+            () =>
+                Promise.resolve(
+                    jsonResponse(200, evidenceEnvelope('passed', { restored_row_count: -5 })),
+                ),
         ],
         [
             'a parsed 200 payload missing claim',
             () => Promise.resolve(jsonResponse(200, evidenceEnvelope('passed', { claim: '' }))),
         ],
-    ])('renders a distinct error state for %s, never passed/failed metadata', async (_label, makeResult) => {
-        const fetchSpy = vi.fn(makeResult);
-        vi.stubGlobal('fetch', fetchSpy);
+    ])(
+        'renders a distinct error state for %s, never passed/failed metadata',
+        async (_label, makeResult) => {
+            const fetchSpy = vi.fn(makeResult);
+            vi.stubGlobal('fetch', fetchSpy);
 
-        const { BackupRestoreEvidenceItem } = await importBackupRestoreEvidenceItemModule();
-        render(<BackupRestoreEvidenceItem workspaceId={WORKSPACE_ID} />);
+            const { BackupRestoreEvidenceItem } = await importBackupRestoreEvidenceItemModule();
+            render(<BackupRestoreEvidenceItem workspaceId={WORKSPACE_ID} />);
 
-        await waitFor(() => expect(screen.getByText(/error|failed to load|couldn.t load/i)).toBeInTheDocument());
-        expect(screen.queryByText(/\bpassed\b/i)).not.toBeInTheDocument();
-        expect(screen.queryByText(/\bfailed\b/i)).not.toBeInTheDocument();
-        expect(screen.queryByText(/unavailable/i)).not.toBeInTheDocument();
-    });
+            await waitFor(() =>
+                expect(screen.getByText(/error|failed to load|couldn.t load/i)).toBeInTheDocument(),
+            );
+            expect(screen.queryByText(/\bpassed\b/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/\bfailed\b/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/unavailable/i)).not.toBeInTheDocument();
+        },
+    );
 
     it('issues at most one request per mount', async () => {
         const fetchSpy = vi.fn(async () => jsonResponse(200, evidenceEnvelope('passed')));
@@ -243,7 +262,9 @@ describe('BackupRestoreEvidenceItem — real backup/restore evidence contract (S
     });
 
     it('issues exactly one plain fetch call with no init/options/headers/credentials/CSRF', async () => {
-        const fetchSpy = vi.fn<(url: string) => Promise<Response>>(async () => jsonResponse(200, evidenceEnvelope('passed')));
+        const fetchSpy = vi.fn<(url: string) => Promise<Response>>(async () =>
+            jsonResponse(200, evidenceEnvelope('passed')),
+        );
         vi.stubGlobal('fetch', fetchSpy);
 
         const { BackupRestoreEvidenceItem } = await importBackupRestoreEvidenceItemModule();
@@ -262,8 +283,10 @@ describe('BackupRestoreEvidenceItem — real backup/restore evidence contract (S
             [OTHER_WORKSPACE_ID]: createDeferred<Response>(),
         };
         const fetchSpy = vi.fn(async (url: string) => {
-            if (String(url) === endpointFor(WORKSPACE_ID)) return deferredByWorkspace[WORKSPACE_ID].promise;
-            if (String(url) === endpointFor(OTHER_WORKSPACE_ID)) return deferredByWorkspace[OTHER_WORKSPACE_ID].promise;
+            if (String(url) === endpointFor(WORKSPACE_ID))
+                return deferredByWorkspace[WORKSPACE_ID].promise;
+            if (String(url) === endpointFor(OTHER_WORKSPACE_ID))
+                return deferredByWorkspace[OTHER_WORKSPACE_ID].promise;
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchSpy);
@@ -277,7 +300,9 @@ describe('BackupRestoreEvidenceItem — real backup/restore evidence contract (S
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith(endpointFor(OTHER_WORKSPACE_ID)));
 
-        deferredByWorkspace[OTHER_WORKSPACE_ID].resolve(jsonResponse(200, evidenceEnvelope('failed')));
+        deferredByWorkspace[OTHER_WORKSPACE_ID].resolve(
+            jsonResponse(200, evidenceEnvelope('failed')),
+        );
         await waitFor(() => expect(screen.getByText(/\bfailed\b/i)).toBeInTheDocument());
 
         deferredByWorkspace[WORKSPACE_ID].resolve(jsonResponse(200, evidenceEnvelope('passed')));

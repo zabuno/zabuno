@@ -215,7 +215,9 @@ export function QrPrintExportRegion({
                         type="button"
                         aria-pressed={theme === key}
                         onClick={() => setTheme(key)}
-                        className={theme === key ? THEME_BUTTON_SELECTED_CLASSES : THEME_BUTTON_CLASSES}
+                        className={
+                            theme === key ? THEME_BUTTON_SELECTED_CLASSES : THEME_BUTTON_CLASSES
+                        }
                     >
                         {t(THEME_LABEL_KEYS[key])}
                     </button>

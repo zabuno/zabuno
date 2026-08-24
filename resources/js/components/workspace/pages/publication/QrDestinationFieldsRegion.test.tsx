@@ -646,11 +646,18 @@ describe('QrDestinationRegion bulk wizard merge (QR_BULK_WIZARD_MERGE_RED)', () 
         fetchSpy.mockImplementation(async (url: string, init?: RequestInit) => {
             const href = String(url);
             if (/sanctum\/csrf-cookie/.test(href)) return jsonResponse(204, null);
-            if (QR_LIST_PATH.test(href) && (!init || init.method === undefined || init.method === 'GET')) {
+            if (
+                QR_LIST_PATH.test(href) &&
+                (!init || init.method === undefined || init.method === 'GET')
+            ) {
                 return jsonResponse(200, []);
             }
             if (/brand\/locations\/923\/tables\/bulk$/.test(href)) {
-                return jsonResponse(201, { areas: [{ id: 1 }], tables: [{ id: 601, name: 'T1' }], qrCodes: [bulkQrItem] });
+                return jsonResponse(201, {
+                    areas: [{ id: 1 }],
+                    tables: [{ id: 601, name: 'T1' }],
+                    qrCodes: [bulkQrItem],
+                });
             }
             return jsonResponse(404, { message: 'Not found' });
         });
@@ -729,7 +736,10 @@ describe('QrDestinationRegion bulk wizard merge (QR_BULK_WIZARD_MERGE_RED)', () 
         fetchSpy.mockImplementation(async (url: string, init?: RequestInit) => {
             const href = String(url);
             if (/sanctum\/csrf-cookie/.test(href)) return jsonResponse(204, null);
-            if (QR_LIST_PATH.test(href) && (!init || init.method === undefined || init.method === 'GET')) {
+            if (
+                QR_LIST_PATH.test(href) &&
+                (!init || init.method === undefined || init.method === 'GET')
+            ) {
                 return jsonResponse(200, []);
             }
             if (/brand\/locations\/923\/tables\/bulk$/.test(href)) {

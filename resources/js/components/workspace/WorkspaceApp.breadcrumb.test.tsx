@@ -31,7 +31,9 @@ const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 const WORKSPACE_ID = 71;
 const SEARCH_OR_NOTIFICATIONS_FETCH_PATTERN = /search|notification/i;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -48,7 +50,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeLocation(overrides: Partial<Record<string, unknown>> = {}) {
@@ -97,14 +104,20 @@ function buildFetchMock(locations: Array<Record<string, unknown>>) {
         }
 
         if (SEARCH_OR_NOTIFICATIONS_FETCH_PATTERN.test(String(url))) {
-            throw new Error(`Unexpected search/notifications fetch in breadcrumb RED test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unexpected search/notifications fetch in breadcrumb RED test: ${method} ${String(url)}`,
+            );
         }
 
-        throw new Error(`Unhandled fetch in WorkspaceApp breadcrumb test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in WorkspaceApp breadcrumb test: ${method} ${String(url)}`,
+        );
     });
 }
 
-async function renderCurrentWorkspace(locations: Array<Record<string, unknown>> = [makeLocation()]) {
+async function renderCurrentWorkspace(
+    locations: Array<Record<string, unknown>> = [makeLocation()],
+) {
     const fetchMock = buildFetchMock(locations);
     vi.stubGlobal('fetch', fetchMock);
 
@@ -223,7 +236,9 @@ describe('WorkspaceApp — main breadcrumb (S1-WP01A, RED)', () => {
             }),
         );
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).toBeNull();

@@ -25,7 +25,8 @@ function tokenFromPath(pathname, prefix) {
 }
 
 function isHtmlResponse(response) {
-    var contentType = response.headers && response.headers.get ? response.headers.get('content-type') : null;
+    var contentType =
+        response.headers && response.headers.get ? response.headers.get('content-type') : null;
 
     return typeof contentType === 'string' && contentType.indexOf('html') !== -1;
 }
@@ -35,7 +36,7 @@ function offlineResponse() {
         '<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>Çevrimdışı</title></head>' +
             '<body><p>Bu menü şu anda çevrimdışı ve daha önce hiç görüntülenmemiş. ' +
             'Lütfen bağlantınızı kontrol edip tekrar deneyin.</p></body></html>',
-        { status: 503, headers: { 'content-type': 'text/html' } }
+        { status: 503, headers: { 'content-type': 'text/html' } },
     );
 }
 

@@ -100,7 +100,13 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
     }
 
     return (
-        <div style={{ maxWidth: 'clamp(20rem, 60vw, 40rem)', margin: '0 auto', padding: 'clamp(1rem, 4vw, 2.5rem) 1rem' }}>
+        <div
+            style={{
+                maxWidth: 'clamp(20rem, 60vw, 40rem)',
+                margin: '0 auto',
+                padding: 'clamp(1rem, 4vw, 2.5rem) 1rem',
+            }}
+        >
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
                     {t('workspace.location.heading')}

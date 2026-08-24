@@ -9,7 +9,10 @@ type BrandOnboardingSuccessHarnessProps = {
     onCreated: (brand: BrandProfile) => void;
 };
 
-function BrandOnboardingSuccessHarness({ workspaceId, onCreated }: BrandOnboardingSuccessHarnessProps) {
+function BrandOnboardingSuccessHarness({
+    workspaceId,
+    onCreated,
+}: BrandOnboardingSuccessHarnessProps) {
     const [created, setCreated] = useState<BrandProfile | null>(null);
 
     return (
@@ -133,13 +136,18 @@ export const Success: Story = {
         },
     ],
     args: { workspaceId: WORKSPACE_ID, onCreated: () => {} },
-    render: (args) => <BrandOnboardingSuccessHarness {...(args as BrandOnboardingSuccessHarnessProps)} />,
+    render: (args) => (
+        <BrandOnboardingSuccessHarness {...(args as BrandOnboardingSuccessHarnessProps)} />
+    ),
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 
         respondWith(jsonResponse(201, CREATED_BRAND));
 
-        await userEvent.type(canvasElement.querySelector<HTMLInputElement>('#brand-name')!, CREATED_BRAND.name);
+        await userEvent.type(
+            canvasElement.querySelector<HTMLInputElement>('#brand-name')!,
+            CREATED_BRAND.name,
+        );
         await userEvent.type(
             canvasElement.querySelector<HTMLInputElement>('#brand-timezone')!,
             CREATED_BRAND.timezone,

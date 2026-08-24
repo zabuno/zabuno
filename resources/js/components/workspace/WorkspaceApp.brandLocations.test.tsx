@@ -17,7 +17,9 @@ const WORKSPACE_ID = 61;
 const LOCATION_ID_A = 811;
 const LOCATION_ID_B = 812;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -103,19 +105,23 @@ function buildFetchMock() {
             return jsonResponse(200, [makeLocationA(), makeLocationB()]);
         }
         if (
-            String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}/menu` &&
+            String(url) ===
+                `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}/menu` &&
             method === 'GET'
         ) {
             return jsonResponse(404, {});
         }
         if (
-            String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_B}/menu` &&
+            String(url) ===
+                `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_B}/menu` &&
             method === 'GET'
         ) {
             return jsonResponse(404, {});
         }
 
-        throw new Error(`Unhandled fetch in WorkspaceApp brandLocations test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in WorkspaceApp brandLocations test: ${method} ${String(url)}`,
+        );
     });
 }
 
@@ -133,7 +139,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const fetchMock = buildFetchMock();
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
@@ -149,10 +157,14 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const fetchMock = buildFetchMock();
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
-        const destination = await screen.findByText('Menekşe').then(() => document.querySelector('#brand'));
+        const destination = await screen
+            .findByText('Menekşe')
+            .then(() => document.querySelector('#brand'));
         expect(destination).not.toBeNull();
         const scope = within(destination as HTMLElement);
 
@@ -181,7 +193,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const fetchMock = buildFetchMock();
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         const locationA = makeLocationA();
@@ -211,7 +225,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
     });
 
     async function renderOnBrandPage() {
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
@@ -300,23 +316,30 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
                     contact_phone: '+90 212 555 02 02',
                 });
             }
-            if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` && method === 'GET') {
+            if (
+                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` &&
+                method === 'GET'
+            ) {
                 return jsonResponse(200, [makeLocationA(), makeLocationB()]);
             }
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}/menu` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}/menu` &&
                 method === 'GET'
             ) {
                 return jsonResponse(404, {});
             }
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_B}/menu` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_B}/menu` &&
                 method === 'GET'
             ) {
                 return jsonResponse(404, {});
             }
 
-            throw new Error(`Unhandled fetch in WorkspaceApp brandLocations save test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unhandled fetch in WorkspaceApp brandLocations save test: ${method} ${String(url)}`,
+            );
         });
         vi.stubGlobal('fetch', fetchMock);
         document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
@@ -348,7 +371,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
                 const calls = fetchMock.mock.calls.filter(
                     ([url, requestInit]) =>
                         String(url) === `/api/workspaces/${WORKSPACE_ID}/brand` &&
-                        ((requestInit as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'PUT',
+                        (
+                            (requestInit as RequestInit | undefined)?.method ?? 'GET'
+                        ).toUpperCase() === 'PUT',
                 );
                 if (calls.length > 0) {
                     return calls;
@@ -375,7 +400,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
             contact_phone: '+90 212 555 02 02',
         });
 
-        const csrfCallIndex = fetchMock.mock.calls.findIndex(([url]) => String(url) === CSRF_COOKIE_URL);
+        const csrfCallIndex = fetchMock.mock.calls.findIndex(
+            ([url]) => String(url) === CSRF_COOKIE_URL,
+        );
         const putCallIndex = fetchMock.mock.calls.findIndex(
             ([url, requestInit]) =>
                 String(url) === `/api/workspaces/${WORKSPACE_ID}/brand` &&

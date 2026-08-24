@@ -78,7 +78,10 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             </h3>
 
             <div className="flex flex-col gap-3">
-                <label htmlFor={fileId} className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                    htmlFor={fileId}
+                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                >
                     {t('workspace.media.upload.field.file')}
                     <input
                         id={fileId}
@@ -88,7 +91,10 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     />
                 </label>
 
-                <label htmlFor={altId} className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                    htmlFor={altId}
+                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                >
                     {t('workspace.media.upload.field.altText')}
                     <input
                         id={altId}
@@ -100,7 +106,10 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     />
                 </label>
 
-                <label htmlFor={slotId} className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                    htmlFor={slotId}
+                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                >
                     {t('workspace.media.upload.field.assetSlot')}
                     <select
                         id={slotId}
@@ -108,7 +117,9 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                         onChange={(event) => setSlot(event.target.value)}
                         className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:text-white"
                     >
-                        <option value="">{t('workspace.media.upload.field.assetSlot.placeholder')}</option>
+                        <option value="">
+                            {t('workspace.media.upload.field.assetSlot.placeholder')}
+                        </option>
                         {SLOT_OPTIONS.map(([value, labelKey]) => (
                             <option key={value} value={value}>
                                 {t(labelKey)}
@@ -117,7 +128,10 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     </select>
                 </label>
 
-                <label htmlFor={rightsId} className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                    htmlFor={rightsId}
+                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                >
                     {t('workspace.media.upload.field.rights')}
                     <input
                         id={rightsId}
@@ -127,7 +141,10 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     />
                 </label>
 
-                <label htmlFor={expiryId} className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                    htmlFor={expiryId}
+                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                >
                     {t('workspace.media.upload.field.expiry')}
                     <input
                         id={expiryId}

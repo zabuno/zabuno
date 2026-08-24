@@ -115,19 +115,25 @@ export function TenantIsolationEvidenceItem({ workspaceId }: TenantIsolationEvid
     if (state.phase === 'loading') {
         status = (
             <span role="status">
-                <Badge status="info">{t('workspace.launchReadiness.tenantIsolation.status.loading')}</Badge>
+                <Badge status="info">
+                    {t('workspace.launchReadiness.tenantIsolation.status.loading')}
+                </Badge>
             </span>
         );
     } else if (state.phase === 'unavailable') {
         status = (
             <span role="status">
-                <Badge status="warning">{t('workspace.launchReadiness.item.status.unavailable')}</Badge>
+                <Badge status="warning">
+                    {t('workspace.launchReadiness.item.status.unavailable')}
+                </Badge>
             </span>
         );
     } else if (state.phase === 'error') {
         status = (
             <span role="alert">
-                <Badge status="error">{t('workspace.launchReadiness.tenantIsolation.status.error')}</Badge>
+                <Badge status="error">
+                    {t('workspace.launchReadiness.tenantIsolation.status.error')}
+                </Badge>
             </span>
         );
     } else {

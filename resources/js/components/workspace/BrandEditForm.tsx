@@ -101,9 +101,21 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
     if (!editing) {
         const summaryItems: ReadOnlySummaryItem[] = [
             { key: 'slug', label: t('workspace.brandLocations.brand.slug'), value: brand.slug },
-            { key: 'locale', label: t('workspace.brandLocations.brand.locale'), value: brand.locale },
-            { key: 'timezone', label: t('workspace.brandLocations.brand.timezone'), value: brand.timezone },
-            { key: 'currency', label: t('workspace.brandLocations.brand.currency'), value: brand.currency },
+            {
+                key: 'locale',
+                label: t('workspace.brandLocations.brand.locale'),
+                value: brand.locale,
+            },
+            {
+                key: 'timezone',
+                label: t('workspace.brandLocations.brand.timezone'),
+                value: brand.timezone,
+            },
+            {
+                key: 'currency',
+                label: t('workspace.brandLocations.brand.currency'),
+                value: brand.currency,
+            },
         ];
 
         if (brand.description) {

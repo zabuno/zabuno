@@ -12,12 +12,21 @@ import type { LocationProfile } from '../LocationEditForm';
  * breakpoint) markup at a 320px viewport.
  */
 
-const FIXED_PIXEL_CLASS_PATTERN = /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
+const FIXED_PIXEL_CLASS_PATTERN =
+    /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
 const BREAKPOINT_CLASS_PATTERN = /(^|[\s"'`])(sm|md|lg|xl|2xl):/;
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -137,7 +146,9 @@ describe('LocationsPage — current-location select', () => {
             />,
         );
 
-        fireEvent.change(screen.getByLabelText('Location'), { target: { value: String(locationB.id) } });
+        fireEvent.change(screen.getByLabelText('Location'), {
+            target: { value: String(locationB.id) },
+        });
 
         expect(onSelectLocation).toHaveBeenCalledWith(locationB.id);
     });
@@ -168,7 +179,9 @@ describe('LocationsPage — fluid-first markup', () => {
 
         const classLists = collectClassLists(root);
         const offenders = classLists.filter(
-            (classList) => FIXED_PIXEL_CLASS_PATTERN.test(classList) || BREAKPOINT_CLASS_PATTERN.test(classList),
+            (classList) =>
+                FIXED_PIXEL_CLASS_PATTERN.test(classList) ||
+                BREAKPOINT_CLASS_PATTERN.test(classList),
         );
 
         expect(offenders).toEqual([]);

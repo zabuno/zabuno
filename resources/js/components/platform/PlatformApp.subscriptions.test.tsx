@@ -67,7 +67,9 @@ function buildFetchMock() {
             return jsonResponse(200, makeWorkspaces());
         }
 
-        throw new Error(`Unhandled fetch in PlatformApp subscriptions test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in PlatformApp subscriptions test: ${method} ${String(url)}`,
+        );
     });
 }
 
@@ -104,9 +106,16 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
 
         const fetchMock = vi.mocked(fetch);
         await waitFor(() => {
-            expect(fetchMock).toHaveBeenCalledWith(PLANS_ENDPOINT, expect.objectContaining({ credentials: 'same-origin' }));
+            expect(fetchMock).toHaveBeenCalledWith(
+                PLANS_ENDPOINT,
+                expect.objectContaining({ credentials: 'same-origin' }),
+            );
         });
-        expect(fetchMock.mock.calls.some(([calledUrl]) => String(calledUrl).startsWith(WORKSPACES_ENDPOINT))).toBe(false);
+        expect(
+            fetchMock.mock.calls.some(([calledUrl]) =>
+                String(calledUrl).startsWith(WORKSPACES_ENDPOINT),
+            ),
+        ).toBe(false);
     });
 
     it('keeps Plans selected and rendered for an unknown hash', async () => {
@@ -131,7 +140,9 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         const fetchMock = vi.mocked(fetch);
         await waitFor(() => {
             expect(
-                fetchMock.mock.calls.some(([calledUrl]) => String(calledUrl).startsWith(WORKSPACES_ENDPOINT)),
+                fetchMock.mock.calls.some(([calledUrl]) =>
+                    String(calledUrl).startsWith(WORKSPACES_ENDPOINT),
+                ),
             ).toBe(true);
         });
 
@@ -142,13 +153,19 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         const { PlatformApp } = await importPlatformAppModule();
         render(<PlatformApp />);
 
-        expect(await screen.findByRole('link', { name: /^plans$/i })).toHaveAttribute('aria-current', 'page');
+        expect(await screen.findByRole('link', { name: /^plans$/i })).toHaveAttribute(
+            'aria-current',
+            'page',
+        );
 
         history.replaceState(null, '', `${window.location.pathname}#subscriptions`);
         window.dispatchEvent(new HashChangeEvent('hashchange'));
 
         await waitFor(() => {
-            expect(screen.getByRole('link', { name: /subscriptions/i })).toHaveAttribute('aria-current', 'page');
+            expect(screen.getByRole('link', { name: /subscriptions/i })).toHaveAttribute(
+                'aria-current',
+                'page',
+            );
         });
         expect(await screen.findByText('Acme Corp')).toBeInTheDocument();
 
@@ -156,7 +173,10 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         window.dispatchEvent(new HashChangeEvent('hashchange'));
 
         await waitFor(() => {
-            expect(screen.getByRole('link', { name: /^plans$/i })).toHaveAttribute('aria-current', 'page');
+            expect(screen.getByRole('link', { name: /^plans$/i })).toHaveAttribute(
+                'aria-current',
+                'page',
+            );
         });
     });
 
@@ -168,7 +188,9 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
 
         await screen.findByText('Acme Corp');
 
-        expect(screen.queryByText(/invented|placeholder|sample workspace/i)).not.toBeInTheDocument();
+        expect(
+            screen.queryByText(/invented|placeholder|sample workspace/i),
+        ).not.toBeInTheDocument();
         expect(screen.queryByText('Enterprise')).not.toBeInTheDocument();
     });
 });

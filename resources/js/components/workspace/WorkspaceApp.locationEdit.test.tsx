@@ -16,7 +16,9 @@ const WORKSPACE_ID = 61;
 const LOCATION_ID_A = 811;
 const LOCATION_ID_B = 812;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -120,7 +122,9 @@ function buildFetchMock() {
         if (handled) {
             return handled;
         }
-        throw new Error(`Unhandled fetch in WorkspaceApp locationEdit test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in WorkspaceApp locationEdit test: ${method} ${String(url)}`,
+        );
     });
 }
 
@@ -178,9 +182,9 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const firstRowScope = within(rows[0]);
         fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(locationA) }));
 
-        expect((await firstRowScope.findByLabelText('Display name')) as HTMLInputElement).toHaveValue(
-            locationA.display_name,
-        );
+        expect(
+            (await firstRowScope.findByLabelText('Display name')) as HTMLInputElement,
+        ).toHaveValue(locationA.display_name);
         expect(firstRowScope.getByLabelText('Country code')).toHaveValue(locationA.country_code);
         expect(firstRowScope.getByLabelText('City')).toHaveValue(locationA.city);
         expect(firstRowScope.getByLabelText('Address line 1')).toHaveValue(locationA.address_line1);
@@ -202,7 +206,9 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
-        fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }));
+        fireEvent.click(
+            firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
+        );
         await firstRowScope.findByLabelText('Display name');
 
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Cancel' }));
@@ -227,7 +233,8 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
             const method = (init?.method ?? 'GET').toUpperCase();
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
                 method === 'PUT'
             ) {
                 return new Promise<Response>((resolve) => {
@@ -238,13 +245,17 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
             if (handled) {
                 return handled;
             }
-            throw new Error(`Unhandled fetch in WorkspaceApp locationEdit pending test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unhandled fetch in WorkspaceApp locationEdit pending test: ${method} ${String(url)}`,
+            );
         });
 
         const scope = await renderOnLocationsPage(fetchMock);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
-        fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }));
+        fireEvent.click(
+            firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
+        );
         await firstRowScope.findByLabelText('Display name');
 
         const saveButton = firstRowScope.getByRole('button', { name: 'Save' });
@@ -271,7 +282,8 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
                 return jsonResponse(204, {});
             }
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
                 method === 'PUT'
             ) {
                 return jsonResponse(200, {
@@ -286,12 +298,16 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
             if (handled) {
                 return handled;
             }
-            throw new Error(`Unhandled fetch in WorkspaceApp locationEdit save test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unhandled fetch in WorkspaceApp locationEdit save test: ${method} ${String(url)}`,
+            );
         });
         vi.stubGlobal('fetch', fetchMock);
         document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
         const navLink = await screen.findByRole('link', { name: 'Locations' });
         fireEvent.click(navLink);
@@ -300,7 +316,9 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
-        fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }));
+        fireEvent.click(
+            firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
+        );
         const displayNameInput = await firstRowScope.findByLabelText('Display name');
 
         fireEvent.change(displayNameInput, { target: { value: 'Kadıköy Şube Güncel' } });
@@ -322,8 +340,11 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
             while (Date.now() < deadline) {
                 const calls = fetchMock.mock.calls.filter(
                     ([url, requestInit]) =>
-                        String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
-                        ((requestInit as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'PUT',
+                        String(url) ===
+                            `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
+                        (
+                            (requestInit as RequestInit | undefined)?.method ?? 'GET'
+                        ).toUpperCase() === 'PUT',
                 );
                 if (calls.length > 0) {
                     return calls;
@@ -349,10 +370,13 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
             postal_code: '34710',
         });
 
-        const csrfCallIndex = fetchMock.mock.calls.findIndex(([url]) => String(url) === CSRF_COOKIE_URL);
+        const csrfCallIndex = fetchMock.mock.calls.findIndex(
+            ([url]) => String(url) === CSRF_COOKIE_URL,
+        );
         const putCallIndex = fetchMock.mock.calls.findIndex(
             ([url, requestInit]) =>
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
                 ((requestInit as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'PUT',
         );
         expect(csrfCallIndex).toBeGreaterThanOrEqual(0);
@@ -383,7 +407,8 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const withPut = vi.fn(async (url: string, init?: RequestInit) => {
             const method = (init?.method ?? 'GET').toUpperCase();
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
                 method === 'PUT'
             ) {
                 return jsonResponse(422, {
@@ -397,7 +422,9 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const scope = await renderOnLocationsPage(withPut);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
-        fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }));
+        fireEvent.click(
+            firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
+        );
         await firstRowScope.findByLabelText('Display name');
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Save' }));
 
@@ -423,7 +450,8 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const withPut = vi.fn(async (url: string, init?: RequestInit) => {
             const method = (init?.method ?? 'GET').toUpperCase();
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
                 method === 'PUT'
             ) {
                 return jsonResponse(403, { message: 'Forbidden.' });
@@ -434,7 +462,9 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const scope = await renderOnLocationsPage(withPut);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
-        fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }));
+        fireEvent.click(
+            firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
+        );
         await firstRowScope.findByLabelText('Display name');
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Save' }));
 
@@ -453,7 +483,8 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const withPut = vi.fn(async (url: string, init?: RequestInit) => {
             const method = (init?.method ?? 'GET').toUpperCase();
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID_A}` &&
                 method === 'PUT'
             ) {
                 return jsonResponse(404, { message: 'Not found.' });
@@ -464,7 +495,9 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const scope = await renderOnLocationsPage(withPut);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
-        fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }));
+        fireEvent.click(
+            firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
+        );
         await firstRowScope.findByLabelText('Display name');
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Save' }));
 

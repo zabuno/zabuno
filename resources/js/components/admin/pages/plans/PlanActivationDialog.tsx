@@ -14,7 +14,12 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
     return Array.from(container.querySelectorAll<HTMLElement>('button:not([disabled])'));
 }
 
-export function PlanActivationDialog({ plan, onCancel, onConfirm, confirming }: PlanActivationDialogProps) {
+export function PlanActivationDialog({
+    plan,
+    onCancel,
+    onConfirm,
+    confirming,
+}: PlanActivationDialogProps) {
     const dialogRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<Element | null>(null);
 
@@ -80,7 +85,9 @@ export function PlanActivationDialog({ plan, onCancel, onConfirm, confirming }: 
             className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             onKeyDown={handleKeyDown}
         >
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{t('platform.plans.activate.dialog.heading')}</h2>
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t('platform.plans.activate.dialog.heading')}
+            </h2>
             <span className="font-medium text-gray-900 dark:text-white">{plan.name}</span>
             <span className="text-gray-500 dark:text-gray-400">{plan.code}</span>
             <span className="text-gray-700 dark:text-gray-300">{formatPlanPrice(plan)}</span>

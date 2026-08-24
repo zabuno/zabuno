@@ -2,7 +2,10 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 import { BrandEditForm, type BrandProfile } from './BrandEditForm';
-import { stubFetch as stubFetchLifecycle, withFetchLifecycle } from '../../storybook/fetchLifecycle';
+import {
+    stubFetch as stubFetchLifecycle,
+    withFetchLifecycle,
+} from '../../storybook/fetchLifecycle';
 
 type BrandEditFormHarnessProps = {
     workspaceId: number;

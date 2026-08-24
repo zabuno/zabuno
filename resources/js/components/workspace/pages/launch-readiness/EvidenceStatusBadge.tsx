@@ -7,9 +7,7 @@ import { t } from '../../../../i18n/workspace';
  * same neutral not-yet-verified status until a real evidence source exists.
  */
 export function EvidenceStatusBadge() {
-    return (
-        <Badge status="warning">{t('workspace.launchReadiness.item.status.unavailable')}</Badge>
-    );
+    return <Badge status="warning">{t('workspace.launchReadiness.item.status.unavailable')}</Badge>;
 }
 
 export default EvidenceStatusBadge;

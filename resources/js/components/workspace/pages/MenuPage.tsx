@@ -12,7 +12,9 @@ type MenuPageProps = {
 
 export function MenuPage({ workspaceId, locationId, onTreeChange }: MenuPageProps) {
     const badges: WorkspacePageStatusBadge[] =
-        locationId !== null ? [{ key: 'menu-location', status: 'success', label: `#${locationId}` }] : [];
+        locationId !== null
+            ? [{ key: 'menu-location', status: 'success', label: `#${locationId}` }]
+            : [];
 
     return (
         <div id="menu">

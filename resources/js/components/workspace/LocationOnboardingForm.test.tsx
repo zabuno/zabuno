@@ -62,7 +62,9 @@ function fillRequiredFields() {
     fireEvent.change(screen.getByLabelText(/display name/i), { target: { value: 'Kadıköy Şube' } });
     fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'TR' } });
     fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'İstanbul' } });
-    fireEvent.change(screen.getByLabelText(/address line ?1|^address$/i), { target: { value: 'Moda Cd. No:12' } });
+    fireEvent.change(screen.getByLabelText(/address line ?1|^address$/i), {
+        target: { value: 'Moda Cd. No:12' },
+    });
 }
 
 describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{workspaceId}/brand/locations', () => {
@@ -85,7 +87,10 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         vi.stubGlobal('fetch', fetchMock);
 
         const { LocationOnboardingForm } = await importWorkspaceModule<{
-            LocationOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (location: LocationProfile) => void }>;
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -123,13 +128,17 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
             calls.push({ url: String(url), init });
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (String(url) === '/api/workspaces/5/brand/locations') return jsonResponse(201, makeLocationProfile());
+            if (String(url) === '/api/workspaces/5/brand/locations')
+                return jsonResponse(201, makeLocationProfile());
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchMock);
 
         const { LocationOnboardingForm } = await importWorkspaceModule<{
-            LocationOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (location: LocationProfile) => void }>;
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -167,7 +176,10 @@ describe('LocationOnboardingForm — client-side required validation', () => {
         vi.stubGlobal('fetch', fetchMock);
 
         const { LocationOnboardingForm } = await importWorkspaceModule<{
-            LocationOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (location: LocationProfile) => void }>;
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -176,7 +188,9 @@ describe('LocationOnboardingForm — client-side required validation', () => {
         const alert = await screen.findByRole('alert');
         expect(alert).toBeInTheDocument();
 
-        const createCalls = fetchMock.mock.calls.filter((call) => String(call[0]) === '/api/workspaces/5/brand/locations');
+        const createCalls = fetchMock.mock.calls.filter(
+            (call) => String(call[0]) === '/api/workspaces/5/brand/locations',
+        );
         expect(createCalls).toHaveLength(0);
         expect(onCreated).not.toHaveBeenCalled();
 
@@ -199,7 +213,10 @@ describe('LocationOnboardingForm — disabled/busy state while the request is in
         vi.stubGlobal('fetch', fetchMock);
 
         const { LocationOnboardingForm } = await importWorkspaceModule<{
-            LocationOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (location: LocationProfile) => void }>;
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -232,7 +249,10 @@ describe('LocationOnboardingForm — server error rendering', () => {
         vi.stubGlobal('fetch', fetchMock);
 
         const { LocationOnboardingForm } = await importWorkspaceModule<{
-            LocationOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (location: LocationProfile) => void }>;
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -258,7 +278,10 @@ describe('LocationOnboardingForm — server error rendering', () => {
         vi.stubGlobal('fetch', fetchMock);
 
         const { LocationOnboardingForm } = await importWorkspaceModule<{
-            LocationOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (location: LocationProfile) => void }>;
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -282,7 +305,10 @@ describe('LocationOnboardingForm — no demo IDs or default business data', () =
         vi.stubGlobal('fetch', fetchMock);
 
         const { LocationOnboardingForm } = await importWorkspaceModule<{
-            LocationOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (location: LocationProfile) => void }>;
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={vi.fn()} />);
 

@@ -162,7 +162,9 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
 
         await waitFor(() => {
             expect(
-                fetchSpy.mock.calls.some(([calledUrl]) => String(calledUrl) === '/api/admin/workspaces/7/subscription'),
+                fetchSpy.mock.calls.some(
+                    ([calledUrl]) => String(calledUrl) === '/api/admin/workspaces/7/subscription',
+                ),
             ).toBe(true);
         });
 
@@ -176,11 +178,15 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         render(<SubscriptionManagementPage />);
 
         await waitFor(() => {
-            const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl).startsWith(WORKSPACES_ENDPOINT));
+            const call = fetchSpy.mock.calls.find(([calledUrl]) =>
+                String(calledUrl).startsWith(WORKSPACES_ENDPOINT),
+            );
             expect(call).toBeDefined();
         });
 
-        const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl).startsWith(WORKSPACES_ENDPOINT));
+        const call = fetchSpy.mock.calls.find(([calledUrl]) =>
+            String(calledUrl).startsWith(WORKSPACES_ENDPOINT),
+        );
         const init = call?.[1] as RequestInit | undefined;
         expect(init?.credentials).toBe('same-origin');
         expect(new Headers(init?.headers).get('Accept')).toBe('application/json');
@@ -210,7 +216,8 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             const parsed = new URL(String(url), 'http://localhost');
             const method = (init?.method ?? 'GET').toUpperCase();
 
-            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET') return jsonResponse(200, makeWorkspaces());
+            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeWorkspaces());
             if (parsed.pathname === PLANS_ENDPOINT && method === 'GET') {
                 return jsonResponse(200, [...makeActivePlans(), ...makeInactivePlan()]);
             }
@@ -236,8 +243,10 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             const parsed = new URL(String(url), 'http://localhost');
             const method = (init?.method ?? 'GET').toUpperCase();
 
-            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET') return jsonResponse(200, makeWorkspaces());
-            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
+            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeWorkspaces());
+            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, []);
             if (parsed.pathname === '/api/admin/workspaces/7/subscription' && method === 'GET') {
                 return jsonResponse(200, makeNoneSubscription());
             }
@@ -251,7 +260,9 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
 
         expect(await screen.findByText(/plan must be created and activated/i)).toBeInTheDocument();
 
-        const postCalls = fetchSpy.mock.calls.filter(([calledUrl]) => String(calledUrl).includes('manual-payments'));
+        const postCalls = fetchSpy.mock.calls.filter(([calledUrl]) =>
+            String(calledUrl).includes('manual-payments'),
+        );
         expect(postCalls.length).toBe(0);
     });
 
@@ -261,7 +272,9 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         await renderAndSelectWorkspace();
 
         const subscriptionRegion = screen.getByRole('region', { name: /subscription/i });
-        expect(within(subscriptionRegion).getByText(/^none$|no active subscription/i)).toBeInTheDocument();
+        expect(
+            within(subscriptionRegion).getByText(/^none$|no active subscription/i),
+        ).toBeInTheDocument();
     });
 
     it('renders the exact authoritative active subscription state for the selected workspace', async () => {
@@ -269,8 +282,10 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             const parsed = new URL(String(url), 'http://localhost');
             const method = (init?.method ?? 'GET').toUpperCase();
 
-            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET') return jsonResponse(200, makeWorkspaces());
-            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET') return jsonResponse(200, makeActivePlans());
+            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeWorkspaces());
+            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeActivePlans());
             if (parsed.pathname === '/api/admin/workspaces/7/subscription' && method === 'GET') {
                 return jsonResponse(200, makeActiveSubscription());
             }
@@ -298,7 +313,8 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             expect(field.className).toMatch(/w-full/);
 
             const heightPx = parseFloat(field.style.minHeight || field.style.height || '0');
-            const heightAttrOk = heightPx >= 44 || /h-11|min-h-\[44px\]|min-h-11/.test(field.className);
+            const heightAttrOk =
+                heightPx >= 44 || /h-11|min-h-\[44px\]|min-h-11/.test(field.className);
             expect(heightAttrOk).toBe(true);
         }
     });
@@ -316,13 +332,19 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         const submitButton = screen.getByRole('button', { name: /record manual payment|submit/i });
         await user.click(submitButton);
 
-        expect(fetchSpy.mock.calls.some(([calledUrl]) => String(calledUrl).includes('manual-payments'))).toBe(false);
+        expect(
+            fetchSpy.mock.calls.some(([calledUrl]) =>
+                String(calledUrl).includes('manual-payments'),
+            ),
+        ).toBe(false);
 
         const dialog = screen.getByRole('dialog', { name: /confirm/i });
         await user.click(within(dialog).getByRole('button', { name: /confirm/i }));
 
         await waitFor(() => {
-            expect(fetchSpy.mock.calls.some(([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT)).toBe(true);
+            expect(
+                fetchSpy.mock.calls.some(([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT),
+            ).toBe(true);
         });
 
         const postCall = await waitFor(() => {
@@ -360,13 +382,18 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             const parsed = new URL(String(url), 'http://localhost');
             const method = (init?.method ?? 'GET').toUpperCase();
 
-            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET') return jsonResponse(200, makeWorkspaces());
-            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET') return jsonResponse(200, makeActivePlans());
+            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeWorkspaces());
+            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeActivePlans());
             if (parsed.pathname === '/api/admin/workspaces/7/subscription' && method === 'GET') {
                 return jsonResponse(200, makeNoneSubscription());
             }
             if (parsed.pathname === CSRF_ENDPOINT) return jsonResponse(204, null);
-            if (parsed.pathname === '/api/admin/workspaces/7/manual-payments' && method === 'POST') {
+            if (
+                parsed.pathname === '/api/admin/workspaces/7/manual-payments' &&
+                method === 'POST'
+            ) {
                 postAttempts += 1;
                 return jsonResponse(422, { message: 'Validation failed' });
             }
@@ -403,19 +430,25 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             const parsed = new URL(String(url), 'http://localhost');
             const method = (init?.method ?? 'GET').toUpperCase();
 
-            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET') return jsonResponse(200, makeWorkspaces());
-            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET') return jsonResponse(200, makeActivePlans());
+            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeWorkspaces());
+            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeActivePlans());
             if (parsed.pathname === '/api/admin/workspaces/7/subscription' && method === 'GET') {
                 subscriptionCallCount += 1;
                 if (subscriptionCallCount === 1) {
                     return jsonResponse(200, makeNoneSubscription());
                 }
                 return new Promise((resolve) => {
-                    releaseFinalRefetch.resolve = () => resolve(jsonResponse(200, makeActiveSubscription()));
+                    releaseFinalRefetch.resolve = () =>
+                        resolve(jsonResponse(200, makeActiveSubscription()));
                 });
             }
             if (parsed.pathname === CSRF_ENDPOINT) return jsonResponse(204, null);
-            if (parsed.pathname === '/api/admin/workspaces/7/manual-payments' && method === 'POST') {
+            if (
+                parsed.pathname === '/api/admin/workspaces/7/manual-payments' &&
+                method === 'POST'
+            ) {
                 return jsonResponse(201, {});
             }
             throw new Error(`Unhandled fetch: ${method} ${String(url)}`);
@@ -441,7 +474,9 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         releaseFinalRefetch.resolve?.();
 
         await waitFor(() => {
-            expect(screen.getByRole('status', { name: /manual payment|success/i })).toHaveTextContent(/recorded|success/i);
+            expect(
+                screen.getByRole('status', { name: /manual payment|success/i }),
+            ).toHaveTextContent(/recorded|success/i);
         });
 
         expect(screen.queryByRole('dialog', { name: /confirm/i })).not.toBeInTheDocument();
@@ -455,13 +490,21 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             const parsed = new URL(String(url), 'http://localhost');
             const method = (init?.method ?? 'GET').toUpperCase();
 
-            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET') return jsonResponse(200, makeWorkspaces());
-            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET') return jsonResponse(200, makeActivePlans());
+            if (parsed.pathname === WORKSPACES_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeWorkspaces());
+            if (parsed.pathname === PLANS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, makeActivePlans());
             if (parsed.pathname === '/api/admin/workspaces/7/subscription' && method === 'GET') {
-                return jsonResponse(200, postAttempts >= 2 ? makeActiveSubscription() : makeNoneSubscription());
+                return jsonResponse(
+                    200,
+                    postAttempts >= 2 ? makeActiveSubscription() : makeNoneSubscription(),
+                );
             }
             if (parsed.pathname === CSRF_ENDPOINT) return jsonResponse(204, null);
-            if (parsed.pathname === '/api/admin/workspaces/7/manual-payments' && method === 'POST') {
+            if (
+                parsed.pathname === '/api/admin/workspaces/7/manual-payments' &&
+                method === 'POST'
+            ) {
                 postAttempts += 1;
                 const body = JSON.parse((init?.body as string) ?? '{}');
                 observedKeys.push(body.idempotency_key);
@@ -479,13 +522,21 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         await user.type(screen.getByLabelText(/document reference/i), 'DOC-100');
 
         await user.click(screen.getByRole('button', { name: /record manual payment|submit/i }));
-        await user.click(within(screen.getByRole('dialog', { name: /confirm/i })).getByRole('button', { name: /confirm/i }));
+        await user.click(
+            within(screen.getByRole('dialog', { name: /confirm/i })).getByRole('button', {
+                name: /confirm/i,
+            }),
+        );
 
         await waitFor(() => expect(postAttempts).toBe(1));
         await screen.findByRole('alert');
 
         await user.click(screen.getByRole('button', { name: /retry/i }));
-        await user.click(within(screen.getByRole('dialog', { name: /confirm/i })).getByRole('button', { name: /confirm/i }));
+        await user.click(
+            within(screen.getByRole('dialog', { name: /confirm/i })).getByRole('button', {
+                name: /confirm/i,
+            }),
+        );
 
         await waitFor(() => expect(postAttempts).toBe(2));
 
@@ -493,7 +544,9 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         expect(observedKeys[0]).toBe(observedKeys[1]);
 
         await waitFor(() => {
-            expect(screen.getByRole('status', { name: /manual payment|success/i })).toHaveTextContent(/recorded|success/i);
+            expect(
+                screen.getByRole('status', { name: /manual payment|success/i }),
+            ).toHaveTextContent(/recorded|success/i);
         });
 
         await user.click(screen.getByRole('button', { name: /record manual payment|submit/i }));
@@ -501,7 +554,11 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         await user.type(screen.getByLabelText(/payment note/i), 'Second payment');
         await user.type(screen.getByLabelText(/document reference/i), 'DOC-200');
         await user.click(screen.getByRole('button', { name: /record manual payment|submit/i }));
-        await user.click(within(screen.getByRole('dialog', { name: /confirm/i })).getByRole('button', { name: /confirm/i }));
+        await user.click(
+            within(screen.getByRole('dialog', { name: /confirm/i })).getByRole('button', {
+                name: /confirm/i,
+            }),
+        );
 
         await waitFor(() => expect(postAttempts).toBe(3));
         expect(observedKeys[2]).not.toBe(observedKeys[0]);

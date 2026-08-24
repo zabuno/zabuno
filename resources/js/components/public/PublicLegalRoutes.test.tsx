@@ -45,18 +45,9 @@ describe('PublicSiteFooter — real links to the legal pages', () => {
     it('links to /terms, /privacy, and /kvkk', () => {
         render(<AppShell coreModuleCount={7} />);
 
-        expect(screen.getByRole('link', { name: /terms/i })).toHaveAttribute(
-            'href',
-            '/terms',
-        );
-        expect(screen.getByRole('link', { name: /privacy/i })).toHaveAttribute(
-            'href',
-            '/privacy',
-        );
-        expect(screen.getByRole('link', { name: /kvkk/i })).toHaveAttribute(
-            'href',
-            '/kvkk',
-        );
+        expect(screen.getByRole('link', { name: /terms/i })).toHaveAttribute('href', '/terms');
+        expect(screen.getByRole('link', { name: /privacy/i })).toHaveAttribute('href', '/privacy');
+        expect(screen.getByRole('link', { name: /kvkk/i })).toHaveAttribute('href', '/kvkk');
     });
 });
 
@@ -109,36 +100,33 @@ describe.each([
     });
 });
 
-describe.each([
-    { path: '/terms' },
-    { path: '/privacy' },
-    { path: '/kvkk' },
-])('AppShell — public section links from a legal page at $path', ({ path }) => {
-    it('points every public section link back to the root page anchors, not dead local anchors', () => {
-        setPathname(path);
-        render(<AppShell coreModuleCount={7} />);
+describe.each([{ path: '/terms' }, { path: '/privacy' }, { path: '/kvkk' }])(
+    'AppShell — public section links from a legal page at $path',
+    ({ path }) => {
+        it('points every public section link back to the root page anchors, not dead local anchors', () => {
+            setPathname(path);
+            render(<AppShell coreModuleCount={7} />);
 
-        expect(screen.getByRole('link', { name: /features/i })).toHaveAttribute(
-            'href',
-            '/#features',
-        );
-        expect(
-            screen.getByRole('link', { name: /how it works/i }),
-        ).toHaveAttribute('href', '/#how-it-works');
-        expect(screen.getByRole('link', { name: /pricing/i })).toHaveAttribute(
-            'href',
-            '/#pricing',
-        );
-        expect(screen.getByRole('link', { name: /faq/i })).toHaveAttribute(
-            'href',
-            '/#faq',
-        );
-        expect(screen.getByRole('link', { name: /contact/i })).toHaveAttribute(
-            'href',
-            '/#contact',
-        );
-    });
-});
+            expect(screen.getByRole('link', { name: /features/i })).toHaveAttribute(
+                'href',
+                '/#features',
+            );
+            expect(screen.getByRole('link', { name: /how it works/i })).toHaveAttribute(
+                'href',
+                '/#how-it-works',
+            );
+            expect(screen.getByRole('link', { name: /pricing/i })).toHaveAttribute(
+                'href',
+                '/#pricing',
+            );
+            expect(screen.getByRole('link', { name: /faq/i })).toHaveAttribute('href', '/#faq');
+            expect(screen.getByRole('link', { name: /contact/i })).toHaveAttribute(
+                'href',
+                '/#contact',
+            );
+        });
+    },
+);
 
 describe('AppShell — no responsive breakpoint tokens across legal routing', () => {
     it.each(['/', '/terms', '/privacy', '/kvkk'])(

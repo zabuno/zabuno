@@ -106,7 +106,12 @@ describe('TeamPage — S1-WP01A real member list (TEAM_MEMBERS_FRONTEND_RED)', (
                     status: 200,
                     json: async () => [
                         { id: 1, name: 'Ayşe Yılmaz', email: 'ayse@example.test', role: 'owner' },
-                        { id: 2, name: 'Mehmet Demir', email: 'mehmet@example.test', role: 'member' },
+                        {
+                            id: 2,
+                            name: 'Mehmet Demir',
+                            email: 'mehmet@example.test',
+                            role: 'member',
+                        },
                     ],
                 } as Response;
             }
@@ -152,7 +157,9 @@ describe('TeamPage — S1-WP01A real member list (TEAM_MEMBERS_FRONTEND_RED)', (
         const membersRegion = screen.getByRole('region', { name: /team members/i });
 
         await waitFor(() => {
-            expect(within(membersRegion).getByRole('status')).toHaveTextContent(/error|failed|unable/i);
+            expect(within(membersRegion).getByRole('status')).toHaveTextContent(
+                /error|failed|unable/i,
+            );
         });
 
         expect(within(membersRegion).queryAllByRole('listitem')).toHaveLength(0);
@@ -166,7 +173,9 @@ describe('TeamPage — S1-WP01A real member list (TEAM_MEMBERS_FRONTEND_RED)', (
                 return {
                     ok: true,
                     status: 200,
-                    json: async () => [{ id: 1, name: 'Ayşe Yılmaz', email: 'ayse@example.test', role: 'owner' }],
+                    json: async () => [
+                        { id: 1, name: 'Ayşe Yılmaz', email: 'ayse@example.test', role: 'owner' },
+                    ],
                 } as Response;
             }
             if (href === INVITATIONS_ENDPOINT && method === 'GET') {
@@ -239,7 +248,9 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
                 return jsonResponse(200, []);
             }
             if (href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}` && method === 'DELETE') {
-                currentMembers = currentMembers.filter((member) => (member as { id: number }).id !== EDITOR_ID);
+                currentMembers = currentMembers.filter(
+                    (member) => (member as { id: number }).id !== EDITOR_ID,
+                );
 
                 return jsonResponse(204, null);
             }
@@ -300,9 +311,13 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
         await user.click(within(editorRow).getByRole('button', { name: /remove/i }));
 
         expect(within(editorRow).getByRole('button', { name: /^confirm/i })).toBeInTheDocument();
-        expect(within(editorRow).getByRole('button', { name: /^(keep|cancel)/i })).toBeInTheDocument();
         expect(
-            fetchSpy.mock.calls.find(([, init]) => (init as RequestInit | undefined)?.method === 'DELETE'),
+            within(editorRow).getByRole('button', { name: /^(keep|cancel)/i }),
+        ).toBeInTheDocument();
+        expect(
+            fetchSpy.mock.calls.find(
+                ([, init]) => (init as RequestInit | undefined)?.method === 'DELETE',
+            ),
         ).toBeUndefined();
     });
 
@@ -339,7 +354,9 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
         expect(deleteHeaders.get('Accept')).toBe('application/json');
         expect(deleteHeaders.get('X-XSRF-TOKEN')).toBe(readCookie('XSRF-TOKEN'));
 
-        const csrfCall = fetchSpy.mock.calls.find(([url]) => String(url) === '/sanctum/csrf-cookie');
+        const csrfCall = fetchSpy.mock.calls.find(
+            ([url]) => String(url) === '/sanctum/csrf-cookie',
+        );
         expect(csrfCall).toBeDefined();
     });
 
@@ -353,7 +370,8 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
 
         const getCallsBefore = fetchSpy.mock.calls.filter(
             ([url, init]) =>
-                String(url) === MEMBERS_ENDPOINT && ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
+                String(url) === MEMBERS_ENDPOINT &&
+                ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
         ).length;
 
         const editorRow = rowFor('Mehmet Demir');
@@ -369,7 +387,8 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
 
         const getCallsAfter = fetchSpy.mock.calls.filter(
             ([url, init]) =>
-                String(url) === MEMBERS_ENDPOINT && ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
+                String(url) === MEMBERS_ENDPOINT &&
+                ((init as RequestInit | undefined)?.method ?? 'GET') === 'GET',
         ).length;
         expect(getCallsAfter).toBeGreaterThan(getCallsBefore);
 
@@ -383,7 +402,8 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
             const href = String(url);
             const method = (init?.method ?? 'GET').toUpperCase();
             if (href === '/sanctum/csrf-cookie') return jsonResponse(204, null);
-            if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, currentMembers);
+            if (href === MEMBERS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, currentMembers);
             if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
             if (href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}` && method === 'DELETE') {
                 return jsonResponse(500, { message: 'Failed' });
@@ -442,7 +462,9 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
             if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
             if (href === `${MEMBERS_ENDPOINT}/${EDITOR_ID}` && method === 'DELETE') {
                 deleteCalls += 1;
-                currentMembers = currentMembers.filter((member) => (member as { id: number }).id !== EDITOR_ID);
+                currentMembers = currentMembers.filter(
+                    (member) => (member as { id: number }).id !== EDITOR_ID,
+                );
                 failNextGet = true;
                 return jsonResponse(204, null);
             }

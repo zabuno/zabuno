@@ -8,8 +8,16 @@ import { BrandEditForm, type BrandProfile } from './BrandEditForm';
 const BREAKPOINT_TOKEN = /(?:^|\s)(sm|md|lg|xl|2xl):/;
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        configurable: true,
+        writable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        configurable: true,
+        writable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -58,7 +66,12 @@ beforeEach(() => {
 describe('Fluid Adaptive Shell — intrinsic layout contract', () => {
     it('TopBar, AdminShell, DashboardOverview, BrandEditForm render with no breakpoint tokens', () => {
         const { container: topBarContainer } = render(
-            <TopBar brand={brand} onToggleMenu={() => {}} center={<span>Search</span>} end={<span>Profile</span>} />,
+            <TopBar
+                brand={brand}
+                onToggleMenu={() => {}}
+                center={<span>Search</span>}
+                end={<span>Profile</span>}
+            />,
         );
         const { container: shellContainer } = render(
             <AdminShell

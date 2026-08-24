@@ -57,7 +57,11 @@ function parseEvidence(payload: unknown): EvidenceState | null {
     if (typeof durationMs !== 'number' || !Number.isFinite(durationMs) || durationMs < 0) {
         return null;
     }
-    if (typeof restoredRowCount !== 'number' || !Number.isFinite(restoredRowCount) || restoredRowCount < 0) {
+    if (
+        typeof restoredRowCount !== 'number' ||
+        !Number.isFinite(restoredRowCount) ||
+        restoredRowCount < 0
+    ) {
         return null;
     }
     if (typeof claim !== 'string' || claim.length === 0) {
@@ -120,19 +124,25 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
     if (state.phase === 'loading') {
         status = (
             <span role="status">
-                <Badge status="info">{t('workspace.launchReadiness.backupRestore.status.loading')}</Badge>
+                <Badge status="info">
+                    {t('workspace.launchReadiness.backupRestore.status.loading')}
+                </Badge>
             </span>
         );
     } else if (state.phase === 'unavailable') {
         status = (
             <span role="status">
-                <Badge status="warning">{t('workspace.launchReadiness.item.status.unavailable')}</Badge>
+                <Badge status="warning">
+                    {t('workspace.launchReadiness.item.status.unavailable')}
+                </Badge>
             </span>
         );
     } else if (state.phase === 'error') {
         status = (
             <span role="alert">
-                <Badge status="error">{t('workspace.launchReadiness.backupRestore.status.error')}</Badge>
+                <Badge status="error">
+                    {t('workspace.launchReadiness.backupRestore.status.error')}
+                </Badge>
             </span>
         );
     } else {
@@ -167,7 +177,8 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
                 </div>
                 <div>
                     <dt className="inline font-medium">
-                        {t('workspace.launchReadiness.backupRestore.metadata.restoredRowCount')}:{' '}
+                        {t('workspace.launchReadiness.backupRestore.metadata.restoredRowCount')}
+                        :{' '}
                     </dt>
                     <dd className="inline">{state.restoredRowCount}</dd>
                 </div>

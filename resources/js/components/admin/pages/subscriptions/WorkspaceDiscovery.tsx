@@ -104,7 +104,10 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
 
     return (
         <div className="flex flex-col gap-3">
-            <label htmlFor="subscription-workspace-combobox" className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+            <label
+                htmlFor="subscription-workspace-combobox"
+                className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+            >
                 {t('platform.subscriptions.workspace.label')}
             </label>
             <button
@@ -116,7 +119,9 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
                 aria-controls="subscription-workspace-listbox"
                 className={FIELD_CLASSES}
             >
-                {selectedWorkspace ? selectedWorkspace.name : t('platform.subscriptions.workspace.placeholder')}
+                {selectedWorkspace
+                    ? selectedWorkspace.name
+                    : t('platform.subscriptions.workspace.placeholder')}
             </button>
 
             {workspaces.length > 0 && (
@@ -135,7 +140,9 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
                                 onClick={() => handleSelect(workspace)}
                                 className="flex w-full flex-wrap gap-2 rounded-md px-2 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                             >
-                                <span className="font-medium text-gray-900 dark:text-white">{workspace.name}</span>
+                                <span className="font-medium text-gray-900 dark:text-white">
+                                    {workspace.name}
+                                </span>
                                 <span>{workspace.slug}</span>
                                 <span>{workspace.state}</span>
                             </button>

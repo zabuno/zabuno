@@ -39,7 +39,8 @@ const en = {
     'platform.subscriptions.workspace.retry': 'Retry',
     'platform.subscriptions.workspace.placeholder': 'Select a workspace',
 
-    'platform.subscriptions.plans.blocked': 'A plan must be created and activated before recording a manual payment.',
+    'platform.subscriptions.plans.blocked':
+        'A plan must be created and activated before recording a manual payment.',
     'platform.subscriptions.plans.error': 'We could not load plans.',
 
     'platform.subscriptions.subscription.region.label': 'Subscription',
@@ -54,7 +55,8 @@ const en = {
     'platform.subscriptions.form.paymentNote.label': 'Payment note',
     'platform.subscriptions.form.documentReference.label': 'Document reference',
     'platform.subscriptions.form.submit': 'Record manual payment',
-    'platform.subscriptions.form.error': 'We could not record the manual payment. Please try again.',
+    'platform.subscriptions.form.error':
+        'We could not record the manual payment. Please try again.',
     'platform.subscriptions.form.retry': 'Retry',
 
     'platform.subscriptions.confirm.heading': 'Confirm manual payment',

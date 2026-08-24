@@ -16,7 +16,9 @@ const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 const WORKSPACE_ID = 71;
 const LOCATION_ID = 923;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -33,7 +35,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeBrand() {
@@ -168,7 +175,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         const fetchMock = buildFetchMock();
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
@@ -176,17 +185,26 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         const dashboardDestination = document.querySelector('#dashboard');
         expect(dashboardDestination).not.toBeNull();
 
-        expect(within(dashboardDestination as HTMLElement).getByText('Categories')).toBeInTheDocument();
+        expect(
+            within(dashboardDestination as HTMLElement).getByText('Categories'),
+        ).toBeInTheDocument();
         expect(within(dashboardDestination as HTMLElement).getByText('2')).toBeInTheDocument();
 
-        expect(within(dashboardDestination as HTMLElement).getByText('Menu items')).toBeInTheDocument();
+        expect(
+            within(dashboardDestination as HTMLElement).getByText('Menu items'),
+        ).toBeInTheDocument();
         expect(within(dashboardDestination as HTMLElement).getByText('3')).toBeInTheDocument();
 
-        expect(within(dashboardDestination as HTMLElement).getByText('Visible items')).toBeInTheDocument();
+        expect(
+            within(dashboardDestination as HTMLElement).getByText('Visible items'),
+        ).toBeInTheDocument();
 
-        const dashboardMenuItemTable = within(dashboardDestination as HTMLElement).getByRole('table', {
-            name: 'Menu item list',
-        });
+        const dashboardMenuItemTable = within(dashboardDestination as HTMLElement).getByRole(
+            'table',
+            {
+                name: 'Menu item list',
+            },
+        );
         expect(within(dashboardMenuItemTable).getByText('Kahve (Starters)')).toBeInTheDocument();
         expect(within(dashboardMenuItemTable).getByText('Çay (Starters)')).toBeInTheDocument();
         expect(within(dashboardMenuItemTable).getByText('Tost (Mains)')).toBeInTheDocument();
@@ -232,11 +250,15 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
             if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand` && method === 'GET') {
                 return jsonResponse(200, makeBrand());
             }
-            if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` && method === 'GET') {
+            if (
+                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` &&
+                method === 'GET'
+            ) {
                 return jsonResponse(200, [makeLocation(), makeSecondLocation()]);
             }
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu` &&
                 method === 'GET'
             ) {
                 return jsonResponse(200, makeMenuTree());
@@ -249,11 +271,15 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
                 return jsonResponse(404, {});
             }
 
-            throw new Error(`Unhandled fetch in WorkspaceApp dashboard test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unhandled fetch in WorkspaceApp dashboard test: ${method} ${String(url)}`,
+            );
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
@@ -309,24 +335,34 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
             if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand` && method === 'GET') {
                 return jsonResponse(200, makeBrand());
             }
-            if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` && method === 'GET') {
+            if (
+                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` &&
+                method === 'GET'
+            ) {
                 return jsonResponse(200, [makeLocation()]);
             }
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu` &&
                 method === 'GET'
             ) {
                 return jsonResponse(404, {});
             }
             if (method !== 'GET') {
-                throw new Error(`Unexpected mutation in dashboard resolved-empty test: ${method} ${String(url)}`);
+                throw new Error(
+                    `Unexpected mutation in dashboard resolved-empty test: ${method} ${String(url)}`,
+                );
             }
 
-            throw new Error(`Unhandled fetch in WorkspaceApp dashboard resolved-empty test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unhandled fetch in WorkspaceApp dashboard resolved-empty test: ${method} ${String(url)}`,
+            );
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
@@ -344,7 +380,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         expect(within(dashboardDestination).queryByText('0')).not.toBeInTheDocument();
 
         expect(
-            fetchMock.mock.calls.every(([, callInit]) => (callInit?.method ?? 'GET').toUpperCase() === 'GET'),
+            fetchMock.mock.calls.every(
+                ([, callInit]) => (callInit?.method ?? 'GET').toUpperCase() === 'GET',
+            ),
         ).toBe(true);
 
         vi.unstubAllGlobals();
@@ -357,7 +395,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         window.innerWidth = 320;
         window.dispatchEvent(new Event('resize'));
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
@@ -384,7 +424,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         expect(sectionClassName).not.toMatch(/(^|\s)(sm|md|lg|xl|2xl):/);
 
         expect(
-            fetchMock.mock.calls.every(([, callInit]) => (callInit?.method ?? 'GET').toUpperCase() === 'GET'),
+            fetchMock.mock.calls.every(
+                ([, callInit]) => (callInit?.method ?? 'GET').toUpperCase() === 'GET',
+            ),
         ).toBe(true);
 
         vi.unstubAllGlobals();
@@ -409,24 +451,34 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
             if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand` && method === 'GET') {
                 return jsonResponse(200, makeBrand());
             }
-            if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` && method === 'GET') {
+            if (
+                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` &&
+                method === 'GET'
+            ) {
                 return jsonResponse(200, [makeLocation()]);
             }
             if (
-                String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu` &&
+                String(url) ===
+                    `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu` &&
                 method === 'GET'
             ) {
                 return jsonResponse(404, {});
             }
             if (method !== 'GET') {
-                throw new Error(`Unexpected mutation in DASHBOARD_SETUP_JOURNEY_RED resolved-empty test: ${method} ${String(url)}`);
+                throw new Error(
+                    `Unexpected mutation in DASHBOARD_SETUP_JOURNEY_RED resolved-empty test: ${method} ${String(url)}`,
+                );
             }
 
-            throw new Error(`Unhandled fetch in DASHBOARD_SETUP_JOURNEY_RED resolved-empty test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unhandled fetch in DASHBOARD_SETUP_JOURNEY_RED resolved-empty test: ${method} ${String(url)}`,
+            );
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
@@ -438,7 +490,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         expect(within(setupSection).getByText('No menu yet')).toBeInTheDocument();
 
         expect(
-            fetchMock.mock.calls.every(([, callInit]) => (callInit?.method ?? 'GET').toUpperCase() === 'GET'),
+            fetchMock.mock.calls.every(
+                ([, callInit]) => (callInit?.method ?? 'GET').toUpperCase() === 'GET',
+            ),
         ).toBe(true);
 
         vi.unstubAllGlobals();

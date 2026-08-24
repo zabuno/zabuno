@@ -59,7 +59,10 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                     return;
                 }
 
-                setSummary({ qrResolveCount: body.qrResolveCount, menuOpenCount: body.menuOpenCount });
+                setSummary({
+                    qrResolveCount: body.qrResolveCount,
+                    menuOpenCount: body.menuOpenCount,
+                });
                 setStatus('success');
             } catch {
                 if (requestIdRef.current !== requestId) {
@@ -80,14 +83,26 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
     const statusBadge: WorkspacePageStatusBadge = (() => {
         switch (status) {
             case 'loading':
-                return { key: 'analytics-status', status: 'info', label: t('workspace.analytics.status.loading') };
+                return {
+                    key: 'analytics-status',
+                    status: 'info',
+                    label: t('workspace.analytics.status.loading'),
+                };
             case 'error':
-                return { key: 'analytics-status', status: 'error', label: t('workspace.analytics.status.error') };
+                return {
+                    key: 'analytics-status',
+                    status: 'error',
+                    label: t('workspace.analytics.status.error'),
+                };
             case 'success':
                 return { key: 'analytics-status', status: 'success', label: rangeLabel[range] };
             case 'idle':
             default:
-                return { key: 'analytics-status', status: 'info', label: t('workspace.analytics.status.notConnected') };
+                return {
+                    key: 'analytics-status',
+                    status: 'info',
+                    label: t('workspace.analytics.status.notConnected'),
+                };
         }
     })();
 
@@ -131,7 +146,10 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                     )}
 
                     {status === 'error' && (
-                        <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                        <p
+                            role="alert"
+                            className="text-sm font-medium text-red-600 dark:text-red-400"
+                        >
                             {t('workspace.analytics.report.error')}
                         </p>
                     )}

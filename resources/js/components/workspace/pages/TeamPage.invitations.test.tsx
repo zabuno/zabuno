@@ -85,13 +85,21 @@ describe('TeamPage — S1-WP01A owner invitation creation + pending list (TEAM_I
                 return jsonResponse(200, pendingInvitations);
             }
             if (href === INVITATIONS_ENDPOINT && method === 'POST') {
-                const submitted = JSON.parse(String(init?.body ?? '{}')) as { email: string; role: string };
+                const submitted = JSON.parse(String(init?.body ?? '{}')) as {
+                    email: string;
+                    role: string;
+                };
                 pendingInvitations = [
                     ...pendingInvitations,
                     { id: 900, email: submitted.email, role: submitted.role, status: 'pending' },
                 ];
 
-                return jsonResponse(201, { id: 900, email: submitted.email, role: submitted.role, status: 'pending' });
+                return jsonResponse(201, {
+                    id: 900,
+                    email: submitted.email,
+                    role: submitted.role,
+                    status: 'pending',
+                });
             }
 
             throw new Error(`Unhandled fetch: ${method} ${href}`);
@@ -132,7 +140,9 @@ describe('TeamPage — S1-WP01A owner invitation creation + pending list (TEAM_I
         render(<TeamPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(pendingRegion()).getByRole('status')).toHaveTextContent(/no pending|empty/i);
+            expect(within(pendingRegion()).getByRole('status')).toHaveTextContent(
+                /no pending|empty/i,
+            );
         });
 
         expect(within(pendingRegion()).queryAllByRole('listitem')).toHaveLength(0);
@@ -166,7 +176,9 @@ describe('TeamPage — S1-WP01A owner invitation creation + pending list (TEAM_I
         render(<TeamPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(pendingRegion()).getByRole('status')).toHaveTextContent(/error|failed|unable/i);
+            expect(within(pendingRegion()).getByRole('status')).toHaveTextContent(
+                /error|failed|unable/i,
+            );
         });
 
         expect(within(pendingRegion()).queryAllByRole('listitem')).toHaveLength(0);
@@ -216,13 +228,17 @@ describe('TeamPage — S1-WP01A owner invitation creation + pending list (TEAM_I
 
         await waitFor(() => {
             const postCall = fetchSpy.mock.calls.find(
-                ([url, init]) => String(url) === INVITATIONS_ENDPOINT && (init as RequestInit | undefined)?.method === 'POST',
+                ([url, init]) =>
+                    String(url) === INVITATIONS_ENDPOINT &&
+                    (init as RequestInit | undefined)?.method === 'POST',
             );
             expect(postCall).toBeDefined();
         });
 
         const postCall = fetchSpy.mock.calls.find(
-            ([url, init]) => String(url) === INVITATIONS_ENDPOINT && (init as RequestInit | undefined)?.method === 'POST',
+            ([url, init]) =>
+                String(url) === INVITATIONS_ENDPOINT &&
+                (init as RequestInit | undefined)?.method === 'POST',
         );
         const postInit = postCall?.[1] as RequestInit;
         const postHeaders = new Headers(postInit.headers);
@@ -245,10 +261,19 @@ describe('TeamPage — S1-WP01A owner invitation creation + pending list (TEAM_I
             const method = (init?.method ?? 'GET').toUpperCase();
             if (href === CSRF_COOKIE_URL) return jsonResponse(204, null);
             if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
-            if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, pendingInvitations);
+            if (href === INVITATIONS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, pendingInvitations);
             if (href === INVITATIONS_ENDPOINT && method === 'POST') {
                 return new Promise((resolve) => {
-                    resolvePost = () => resolve(jsonResponse(201, { id: 1, email: 'x@example.test', role: 'editor', status: 'pending' }));
+                    resolvePost = () =>
+                        resolve(
+                            jsonResponse(201, {
+                                id: 1,
+                                email: 'x@example.test',
+                                role: 'editor',
+                                status: 'pending',
+                            }),
+                        );
                 });
             }
             throw new Error(`Unhandled fetch: ${method} ${href}`);
@@ -290,7 +315,9 @@ describe('TeamPage — S1-WP01A owner invitation creation + pending list (TEAM_I
         expect(getCallsAfter.length).toBeGreaterThanOrEqual(2);
 
         expect(within(pendingRegion()).queryAllByRole('listitem')).toHaveLength(1);
-        expect(within(pendingRegion()).queryByText('newmember@example.test')).not.toBeInTheDocument();
+        expect(
+            within(pendingRegion()).queryByText('newmember@example.test'),
+        ).not.toBeInTheDocument();
 
         await waitFor(() => expect(emailInput.value).toBe(''));
 
@@ -307,7 +334,8 @@ describe('TeamPage — S1-WP01A owner invitation creation + pending list (TEAM_I
             if (href === CSRF_COOKIE_URL) return jsonResponse(204, null);
             if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
             if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
-            if (href === INVITATIONS_ENDPOINT && method === 'POST') return jsonResponse(422, { message: 'Invalid' });
+            if (href === INVITATIONS_ENDPOINT && method === 'POST')
+                return jsonResponse(422, { message: 'Invalid' });
             throw new Error(`Unhandled fetch: ${method} ${href}`);
         });
 
@@ -503,7 +531,8 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
             const method = (init?.method ?? 'GET').toUpperCase();
             if (href === CSRF_COOKIE_URL) return jsonResponse(204, null);
             if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
-            if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, pendingInvitations);
+            if (href === INVITATIONS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, pendingInvitations);
             if (href === `${INVITATIONS_ENDPOINT}/${INVITATION_ID}` && method === 'DELETE') {
                 return new Promise((resolve) => {
                     resolveDelete = () => resolve(jsonResponse(204, null));
@@ -524,7 +553,9 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
         await user.click(within(busyRow).getByRole('button', { name: /cancel invitation/i }));
         await user.click(within(busyRow).getByRole('button', { name: /^confirm/i }));
 
-        await waitFor(() => expect(within(busyRow).getByRole('button', { name: /^confirm/i })).toBeDisabled());
+        await waitFor(() =>
+            expect(within(busyRow).getByRole('button', { name: /^confirm/i })).toBeDisabled(),
+        );
         expect(within(otherRow).getByRole('button', { name: /cancel invitation/i })).toBeEnabled();
 
         resolveDelete?.();
@@ -549,7 +580,9 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
         await user.click(within(row).getByRole('button', { name: /^confirm/i }));
 
         await waitFor(() => {
-            expect(within(pendingRegion()).queryByText('aday@example.test')).not.toBeInTheDocument();
+            expect(
+                within(pendingRegion()).queryByText('aday@example.test'),
+            ).not.toBeInTheDocument();
         });
 
         expect(within(pendingRegion()).getByText('ikinci@example.test')).toBeInTheDocument();
@@ -573,7 +606,8 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
             const method = (init?.method ?? 'GET').toUpperCase();
             if (href === CSRF_COOKIE_URL) return jsonResponse(204, null);
             if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
-            if (href === INVITATIONS_ENDPOINT && method === 'GET') return jsonResponse(200, pendingInvitations);
+            if (href === INVITATIONS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, pendingInvitations);
             if (href === `${INVITATIONS_ENDPOINT}/${INVITATION_ID}` && method === 'DELETE') {
                 return jsonResponse(500, { message: 'Failed' });
             }
@@ -669,7 +703,9 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
         await user.click(retryButton);
 
         await waitFor(() => {
-            expect(within(pendingRegion()).queryByText('aday@example.test')).not.toBeInTheDocument();
+            expect(
+                within(pendingRegion()).queryByText('aday@example.test'),
+            ).not.toBeInTheDocument();
         });
 
         expect(deleteCalls).toBe(1);
@@ -695,12 +731,20 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
                 return jsonResponse(200, pendingInvitations);
             }
             if (href === INVITATIONS_ENDPOINT && method === 'POST') {
-                const submitted = JSON.parse(String(init?.body ?? '{}')) as { email: string; role: string };
+                const submitted = JSON.parse(String(init?.body ?? '{}')) as {
+                    email: string;
+                    role: string;
+                };
                 pendingInvitations = [
                     ...pendingInvitations,
                     { id: 901, email: submitted.email, role: submitted.role, status: 'pending' },
                 ];
-                return jsonResponse(201, { id: 901, email: submitted.email, role: submitted.role, status: 'pending' });
+                return jsonResponse(201, {
+                    id: 901,
+                    email: submitted.email,
+                    role: submitted.role,
+                    status: 'pending',
+                });
             }
             throw new Error(`Unhandled fetch: ${method} ${href}`);
         });
@@ -716,7 +760,9 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
         await user.click(within(row).getByRole('button', { name: /^confirm/i }));
 
         await waitFor(() => {
-            expect(within(pendingRegion()).getByRole('status')).toHaveTextContent(/cancel|removed/i);
+            expect(within(pendingRegion()).getByRole('status')).toHaveTextContent(
+                /cancel|removed/i,
+            );
         });
 
         const emailInput = screen.getByLabelText(/invite.*email/i) as HTMLInputElement;
@@ -724,7 +770,9 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
         await user.click(screen.getByRole('button', { name: /invite/i }));
 
         await waitFor(() => {
-            expect(within(pendingRegion()).getByText('staleannouncement@example.test')).toBeInTheDocument();
+            expect(
+                within(pendingRegion()).getByText('staleannouncement@example.test'),
+            ).toBeInTheDocument();
         });
 
         const statusAfterCreate = within(pendingRegion()).queryByRole('status');

@@ -70,7 +70,10 @@ export function InvitationAcceptForm({
                     {t('auth.invitation_accept.heading')}
                 </h1>
                 <p>{t('auth.invitation_accept.guest_body')}</p>
-                <a href={loginUrl} className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                <a
+                    href={loginUrl}
+                    className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                >
                     {t('auth.invitation_accept.login_link')}
                 </a>
             </div>
@@ -121,7 +124,12 @@ export function InvitationAcceptForm({
                 </div>
             </dl>
 
-            <Button type="button" className="w-full" onClick={handleAccept} disabled={!authenticated}>
+            <Button
+                type="button"
+                className="w-full"
+                onClick={handleAccept}
+                disabled={!authenticated}
+            >
                 {t('auth.invitation_accept.submit')}
             </Button>
         </div>

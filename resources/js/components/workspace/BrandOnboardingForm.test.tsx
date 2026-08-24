@@ -86,7 +86,10 @@ describe('BrandOnboardingForm — CSRF bootstrap and POST /api/workspaces/{works
         vi.stubGlobal('fetch', fetchMock);
 
         const { BrandOnboardingForm } = await importWorkspaceModule<{
-            BrandOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (brand: BrandProfile) => void }>;
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
         }>('BrandOnboardingForm');
         render(<BrandOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -108,7 +111,11 @@ describe('BrandOnboardingForm — CSRF bootstrap and POST /api/workspaces/{works
         expect(headers.get('Content-Type')).toBe('application/json');
 
         const body = JSON.parse(String(postCall?.init?.body));
-        expect(body).toEqual({ name: 'Zeytin Restoranları', timezone: 'Europe/Istanbul', currency: 'TRY' });
+        expect(body).toEqual({
+            name: 'Zeytin Restoranları',
+            timezone: 'Europe/Istanbul',
+            currency: 'TRY',
+        });
 
         vi.unstubAllGlobals();
     });
@@ -119,13 +126,17 @@ describe('BrandOnboardingForm — CSRF bootstrap and POST /api/workspaces/{works
         const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
             calls.push({ url: String(url), init });
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
-            if (String(url) === '/api/workspaces/5/brand') return jsonResponse(201, makeBrandProfile({ locale: 'tr' }));
+            if (String(url) === '/api/workspaces/5/brand')
+                return jsonResponse(201, makeBrandProfile({ locale: 'tr' }));
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchMock);
 
         const { BrandOnboardingForm } = await importWorkspaceModule<{
-            BrandOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (brand: BrandProfile) => void }>;
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
         }>('BrandOnboardingForm');
         render(<BrandOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -160,7 +171,10 @@ describe('BrandOnboardingForm — client-side required validation', () => {
         vi.stubGlobal('fetch', fetchMock);
 
         const { BrandOnboardingForm } = await importWorkspaceModule<{
-            BrandOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (brand: BrandProfile) => void }>;
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
         }>('BrandOnboardingForm');
         render(<BrandOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -169,7 +183,9 @@ describe('BrandOnboardingForm — client-side required validation', () => {
         const alert = await screen.findByRole('alert');
         expect(alert).toBeInTheDocument();
 
-        const createCalls = fetchMock.mock.calls.filter((call) => String(call[0]) === '/api/workspaces/5/brand');
+        const createCalls = fetchMock.mock.calls.filter(
+            (call) => String(call[0]) === '/api/workspaces/5/brand',
+        );
         expect(createCalls).toHaveLength(0);
         expect(onCreated).not.toHaveBeenCalled();
 
@@ -192,7 +208,10 @@ describe('BrandOnboardingForm — disabled/busy state while the request is in fl
         vi.stubGlobal('fetch', fetchMock);
 
         const { BrandOnboardingForm } = await importWorkspaceModule<{
-            BrandOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (brand: BrandProfile) => void }>;
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
         }>('BrandOnboardingForm');
         render(<BrandOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -215,14 +234,20 @@ describe('BrandOnboardingForm — server error rendering', () => {
         const fetchMock = vi.fn(async (url: string) => {
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             if (String(url) === '/api/workspaces/5/brand') {
-                return jsonResponse(422, { message: 'The given data was invalid.', errors: { name: ['The name field is required.'] } });
+                return jsonResponse(422, {
+                    message: 'The given data was invalid.',
+                    errors: { name: ['The name field is required.'] },
+                });
             }
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchMock);
 
         const { BrandOnboardingForm } = await importWorkspaceModule<{
-            BrandOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (brand: BrandProfile) => void }>;
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
         }>('BrandOnboardingForm');
         render(<BrandOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -248,7 +273,10 @@ describe('BrandOnboardingForm — server error rendering', () => {
         vi.stubGlobal('fetch', fetchMock);
 
         const { BrandOnboardingForm } = await importWorkspaceModule<{
-            BrandOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (brand: BrandProfile) => void }>;
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
         }>('BrandOnboardingForm');
         render(<BrandOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
@@ -272,7 +300,10 @@ describe('BrandOnboardingForm — no demo IDs or default business data', () => {
         vi.stubGlobal('fetch', fetchMock);
 
         const { BrandOnboardingForm } = await importWorkspaceModule<{
-            BrandOnboardingForm: React.ComponentType<{ workspaceId: number; onCreated: (brand: BrandProfile) => void }>;
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
         }>('BrandOnboardingForm');
         render(<BrandOnboardingForm workspaceId={5} onCreated={vi.fn()} />);
 

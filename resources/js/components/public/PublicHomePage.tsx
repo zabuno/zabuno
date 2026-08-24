@@ -4,7 +4,10 @@ export function PublicHomePage() {
     return (
         <main id="main-content" className="mx-auto max-w-5xl px-4 py-10">
             <section className="flex flex-col gap-6">
-                <h1 className="text-3xl font-bold" style={{ fontSize: 'clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem)' }}>
+                <h1
+                    className="text-3xl font-bold"
+                    style={{ fontSize: 'clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem)' }}
+                >
                     Run your restaurant&apos;s menu and workspace from one place
                 </h1>
                 <p className="max-w-2xl text-gray-600 dark:text-gray-300">
@@ -36,11 +39,18 @@ export function PublicHomePage() {
 
             <AccessibleSeparator className="my-10" />
 
-            <section id="features" aria-labelledby="features-heading" className="flex flex-col gap-6">
+            <section
+                id="features"
+                aria-labelledby="features-heading"
+                className="flex flex-col gap-6"
+            >
                 <h2 id="features-heading" className="text-2xl font-bold">
                     Features
                 </h2>
-                <div className="grid gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(16rem, 1fr))' }}>
+                <div
+                    className="grid gap-6"
+                    style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(16rem, 1fr))' }}
+                >
                     <div>
                         <h3 className="font-semibold">Restaurant &amp; workspace context</h3>
                         <p className="mt-1 text-gray-600 dark:text-gray-300">
@@ -65,9 +75,8 @@ export function PublicHomePage() {
                     <div>
                         <h3 className="font-semibold">Media intake &amp; analytics</h3>
                         <p className="mt-1 text-gray-600 dark:text-gray-300">
-                            Media uploads go through quarantined media intake and review before
-                            they are available, alongside basic usage analytics for the published
-                            page.
+                            Media uploads go through quarantined media intake and review before they
+                            are available, alongside basic usage analytics for the published page.
                         </p>
                     </div>
                 </div>
@@ -75,7 +84,11 @@ export function PublicHomePage() {
 
             <AccessibleSeparator className="my-10" />
 
-            <section id="how-it-works" aria-labelledby="how-it-works-heading" className="flex flex-col gap-6">
+            <section
+                id="how-it-works"
+                aria-labelledby="how-it-works-heading"
+                className="flex flex-col gap-6"
+            >
                 <h2 id="how-it-works-heading" className="text-2xl font-bold">
                     How it works
                 </h2>
@@ -84,8 +97,8 @@ export function PublicHomePage() {
                         <strong>Set up</strong> — complete your workspace and restaurant setup.
                     </li>
                     <li>
-                        <strong>Build the menu</strong> — add categories, items, prices,
-                        visibility, and allergens to your catalog.
+                        <strong>Build the menu</strong> — add categories, items, prices, visibility,
+                        and allergens to your catalog.
                     </li>
                     <li>
                         <strong>Publish &amp; get a QR</strong> — publish the menu to a stable page

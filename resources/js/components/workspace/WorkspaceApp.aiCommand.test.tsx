@@ -32,7 +32,9 @@ const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 const WORKSPACE_ID = 71;
 const AI_URL_PATTERN = /ai|assistant|command/i;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -49,7 +51,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeLocation(overrides: Partial<Record<string, unknown>> = {}) {
@@ -91,10 +98,14 @@ function buildFetchMock() {
         }
 
         if (AI_URL_PATTERN.test(String(url))) {
-            throw new Error(`Unexpected AI-related fetch in AI command center RED test: ${method} ${String(url)}`);
+            throw new Error(
+                `Unexpected AI-related fetch in AI command center RED test: ${method} ${String(url)}`,
+            );
         }
 
-        throw new Error(`Unhandled fetch in WorkspaceApp AI command center test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in WorkspaceApp AI command center test: ${method} ${String(url)}`,
+        );
     });
 }
 
@@ -119,16 +130,12 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
-        expect(
-            screen.getByRole('button', { name: 'Open AI command center' }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Open AI command center' })).toBeInTheDocument();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menu' }));
 
-        expect(
-            screen.getAllByRole('button', { name: 'Open AI command center' }),
-        ).toHaveLength(1);
+        expect(screen.getAllByRole('button', { name: 'Open AI command center' })).toHaveLength(1);
 
         vi.unstubAllGlobals();
     });
@@ -151,9 +158,7 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         const commandInput = within(dialog).getByRole('textbox', { name: /command/i });
         expect(commandInput).toBeDisabled();
 
-        expect(
-            within(dialog).queryByTestId('ai-command-affected-record-preview'),
-        ).toBeNull();
+        expect(within(dialog).queryByTestId('ai-command-affected-record-preview')).toBeNull();
         expect(within(dialog).queryByText(/suggestion|previous run/i)).toBeNull();
 
         const recentCommands = within(dialog).getByRole('region', { name: 'Recent commands' });
@@ -173,13 +178,13 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         const fetchMock = await renderCurrentWorkspace();
         const callCountBeforeOpen = fetchMock.mock.calls.length;
 
-        await userEvent.setup().click(screen.getByRole('button', { name: 'Open AI command center' }));
+        await userEvent
+            .setup()
+            .click(screen.getByRole('button', { name: 'Open AI command center' }));
         await screen.findByRole('dialog', { name: 'AI command center' });
 
         const callsAfterOpen = fetchMock.mock.calls.slice(callCountBeforeOpen);
-        expect(
-            callsAfterOpen.some(([url]) => AI_URL_PATTERN.test(String(url))),
-        ).toBe(false);
+        expect(callsAfterOpen.some(([url]) => AI_URL_PATTERN.test(String(url)))).toBe(false);
 
         vi.unstubAllGlobals();
     });
@@ -199,7 +204,9 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         await user.click(publicationAction);
 
         await waitFor(() => {
-            expect(screen.queryByRole('dialog', { name: 'AI command center' })).not.toBeInTheDocument();
+            expect(
+                screen.queryByRole('dialog', { name: 'AI command center' }),
+            ).not.toBeInTheDocument();
         });
 
         expect(window.location.hash).toBe('#publication');
@@ -207,13 +214,17 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         const main = screen.getByRole('main');
         const publicationDestination = main.querySelector('#publication');
         expect(publicationDestination).not.toBeNull();
-        expect(within(publicationDestination as HTMLElement).getAllByText(/publication/i).length).toBeGreaterThan(0);
+        expect(
+            within(publicationDestination as HTMLElement).getAllByText(/publication/i).length,
+        ).toBeGreaterThan(0);
 
         await user.click(screen.getByRole('button', { name: 'Open AI command center' }));
         const reopenedDialog = await screen.findByRole('dialog', { name: 'AI command center' });
         expect(reopenedDialog).toBeInTheDocument();
 
-        const recentCommandsAfterReopen = within(reopenedDialog).getByRole('region', { name: 'Recent commands' });
+        const recentCommandsAfterReopen = within(reopenedDialog).getByRole('region', {
+            name: 'Recent commands',
+        });
         expect(
             within(recentCommandsAfterReopen).getByText('No commands have been run yet.'),
         ).toBeInTheDocument();
@@ -233,7 +244,9 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         await user.keyboard('{Escape}');
 
         await waitFor(() => {
-            expect(screen.queryByRole('dialog', { name: 'AI command center' })).not.toBeInTheDocument();
+            expect(
+                screen.queryByRole('dialog', { name: 'AI command center' }),
+            ).not.toBeInTheDocument();
         });
 
         expect(document.activeElement).toBe(launcher);

@@ -14,7 +14,9 @@ function sectionFromHash(hash: string): PlatformSection {
 
 export function PlatformApp() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [activeSection, setActiveSection] = useState<PlatformSection>(() => sectionFromHash(window.location.hash));
+    const [activeSection, setActiveSection] = useState<PlatformSection>(() =>
+        sectionFromHash(window.location.hash),
+    );
 
     useEffect(() => {
         function handleHashChange() {
@@ -59,7 +61,11 @@ export function PlatformApp() {
             }
         >
             <h1 className="text-xl font-semibold">{t('platform.shell.heading')}</h1>
-            {activeSection === 'subscriptions' ? <SubscriptionManagementPage /> : <PlanManagementPage />}
+            {activeSection === 'subscriptions' ? (
+                <SubscriptionManagementPage />
+            ) : (
+                <PlanManagementPage />
+            )}
         </AdminShell>
     );
 }

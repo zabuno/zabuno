@@ -15,12 +15,21 @@ import type { LocationProfile } from '../LocationEditForm';
  * the props passed in (no invented data), and Publication/QR must honestly
  * read "not connected" since no backend wiring exists yet.
  */
-const FIXED_PIXEL_CLASS_PATTERN = /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
+const FIXED_PIXEL_CLASS_PATTERN =
+    /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
 const BREAKPOINT_CLASS_PATTERN = /(^|[\s"'`])(sm|md|lg|xl|2xl):/;
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -34,7 +43,13 @@ function collectClassLists(root: HTMLElement): string[] {
 }
 
 function makeBrand(): BrandProfile {
-    return { id: 12, name: 'Zabuno Kahve', slug: 'zabuno-kahve', timezone: 'Europe/Istanbul', currency: 'TRY' } as BrandProfile;
+    return {
+        id: 12,
+        name: 'Zabuno Kahve',
+        slug: 'zabuno-kahve',
+        timezone: 'Europe/Istanbul',
+        currency: 'TRY',
+    } as BrandProfile;
 }
 
 function makeLocation(): LocationProfile {
@@ -111,7 +126,13 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
     });
 
     it('shows real brand and location names derived only from props, with an honest empty menu status', () => {
-        render(<DashboardPage dashboardMenuTree={null} brand={makeBrand()} location={makeLocation()} />);
+        render(
+            <DashboardPage
+                dashboardMenuTree={null}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
 
         const region = screen.getByRole('region', { name: /dashboard setup/i });
         const regionText = region.textContent ?? '';
@@ -122,7 +143,13 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
     });
 
     it('derives the menu summary from the loaded dashboardMenuTree only', () => {
-        render(<DashboardPage dashboardMenuTree={makeMenuTree()} brand={makeBrand()} location={makeLocation()} />);
+        render(
+            <DashboardPage
+                dashboardMenuTree={makeMenuTree()}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
 
         const region = screen.getByRole('region', { name: /dashboard setup/i });
         const regionText = region.textContent ?? '';
@@ -132,7 +159,13 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
     });
 
     it('shows an honest not connected status for Publication and QR', () => {
-        render(<DashboardPage dashboardMenuTree={null} brand={makeBrand()} location={makeLocation()} />);
+        render(
+            <DashboardPage
+                dashboardMenuTree={null}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
 
         const region = screen.getByRole('region', { name: /dashboard setup/i });
         const publicationLink = within(region).getByRole('link', { name: /publication/i });
@@ -150,7 +183,13 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
     });
 
     it('renders no fake ID, token or AI-generated claim inside the Setup region', () => {
-        render(<DashboardPage dashboardMenuTree={makeMenuTree()} brand={makeBrand()} location={makeLocation()} />);
+        render(
+            <DashboardPage
+                dashboardMenuTree={makeMenuTree()}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
 
         const region = screen.getByRole('region', { name: /dashboard setup/i });
         const regionText = region.textContent ?? '';
@@ -161,12 +200,20 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
     });
 
     it('carries no fixed-pixel or breakpoint class on the Setup region at 320x480', () => {
-        render(<DashboardPage dashboardMenuTree={makeMenuTree()} brand={makeBrand()} location={makeLocation()} />);
+        render(
+            <DashboardPage
+                dashboardMenuTree={makeMenuTree()}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
 
         const region = screen.getByRole('region', { name: /dashboard setup/i });
         const classLists = collectClassLists(region);
         const offenders = classLists.filter(
-            (classList) => FIXED_PIXEL_CLASS_PATTERN.test(classList) || BREAKPOINT_CLASS_PATTERN.test(classList),
+            (classList) =>
+                FIXED_PIXEL_CLASS_PATTERN.test(classList) ||
+                BREAKPOINT_CLASS_PATTERN.test(classList),
         );
 
         expect(offenders).toEqual([]);
@@ -176,7 +223,13 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
         const fetchSpy = vi.fn();
         vi.stubGlobal('fetch', fetchSpy);
 
-        render(<DashboardPage dashboardMenuTree={makeMenuTree()} brand={makeBrand()} location={makeLocation()} />);
+        render(
+            <DashboardPage
+                dashboardMenuTree={makeMenuTree()}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
 
         expect(fetchSpy).not.toHaveBeenCalled();
         vi.unstubAllGlobals();

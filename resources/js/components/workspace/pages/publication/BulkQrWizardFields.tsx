@@ -95,7 +95,10 @@ function isValid(key: FieldKey, values: Values): boolean {
         case 'namingPrefix':
             return values.namingPrefix.trim() === '' || values.namingPrefix.trim().length <= 10;
         case 'namingSequenceStart':
-            return values.namingSequenceStart.trim() === '' || isBoundedWholeNumber(values.namingSequenceStart, 0, 9999);
+            return (
+                values.namingSequenceStart.trim() === '' ||
+                isBoundedWholeNumber(values.namingSequenceStart, 0, 9999)
+            );
         case 'namingRange': {
             const trimmed = values.namingRange.trim();
             if (trimmed === '') return true;
@@ -148,7 +151,11 @@ function isBulkResponseBody(
 
     const candidate = body as Record<string, unknown>;
 
-    return Array.isArray(candidate.areas) && Array.isArray(candidate.tables) && Array.isArray(candidate.qrCodes);
+    return (
+        Array.isArray(candidate.areas) &&
+        Array.isArray(candidate.tables) &&
+        Array.isArray(candidate.qrCodes)
+    );
 }
 
 export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
@@ -185,7 +192,9 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
         values.tableCount.trim() !== '' &&
         values.seatCountPerTable.trim() !== '';
 
-    const allFieldsValid = (Object.keys(fieldValidity) as FieldKey[]).every((key) => fieldValidity[key]);
+    const allFieldsValid = (Object.keys(fieldValidity) as FieldKey[]).every(
+        (key) => fieldValidity[key],
+    );
     const crossFieldValid = isCrossFieldValid(values);
     const allValid = allFieldsValid && crossFieldValid;
 
@@ -226,7 +235,12 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
     }
 
     async function handleSubmit() {
-        if (!canSubmit || workspaceId === undefined || locationId === undefined || menuId === undefined) {
+        if (
+            !canSubmit ||
+            workspaceId === undefined ||
+            locationId === undefined ||
+            menuId === undefined
+        ) {
             return;
         }
 
@@ -252,7 +266,8 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             if (namingRange !== '') payload.namingRange = namingRange;
 
             const namingSequenceStart = values.namingSequenceStart.trim();
-            if (namingSequenceStart !== '') payload.namingSequenceStart = Number(namingSequenceStart);
+            if (namingSequenceStart !== '')
+                payload.namingSequenceStart = Number(namingSequenceStart);
 
             const response = await fetch(
                 `/api/workspaces/${workspaceId}/brand/locations/${locationId}/tables/bulk`,
@@ -277,7 +292,13 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             const pairs: WizardResultPair[] = body.tables
                 .map((table) => {
                     const qrCode = body.qrCodes.find((item) => item.tableId === table.id);
-                    return qrCode ? { tableId: table.id, tableName: table.name, resolverUrl: qrCode.resolverUrl } : null;
+                    return qrCode
+                        ? {
+                              tableId: table.id,
+                              tableName: table.name,
+                              resolverUrl: qrCode.resolverUrl,
+                          }
+                        : null;
                 })
                 .filter((pair): pair is WizardResultPair => pair !== null);
 

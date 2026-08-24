@@ -2,7 +2,10 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, within } from 'storybook/test';
 import { LocationEditForm, type LocationProfile } from './LocationEditForm';
-import { stubFetch as stubFetchLifecycle, withFetchLifecycle } from '../../storybook/fetchLifecycle';
+import {
+    stubFetch as stubFetchLifecycle,
+    withFetchLifecycle,
+} from '../../storybook/fetchLifecycle';
 
 type LocationEditFormHarnessProps = {
     workspaceId: number;
@@ -150,7 +153,10 @@ export const Empty: Story = {
 export const Error: Story = {
     loaders: [
         async () => {
-            stubFetch(BASE_LOCATION.id, jsonResponse(422, { message: 'The given data was invalid.' }));
+            stubFetch(
+                BASE_LOCATION.id,
+                jsonResponse(422, { message: 'The given data was invalid.' }),
+            );
             return {};
         },
     ],

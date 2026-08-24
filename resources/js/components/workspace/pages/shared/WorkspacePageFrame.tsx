@@ -26,7 +26,13 @@ type WorkspacePageFrameProps = {
  * responsive breakpoint classes — so it starts adapting from a 320px
  * viewport.
  */
-export function WorkspacePageFrame({ title, description, badges = [], actions, children }: WorkspacePageFrameProps) {
+export function WorkspacePageFrame({
+    title,
+    description,
+    badges = [],
+    actions,
+    children,
+}: WorkspacePageFrameProps) {
     return (
         <div className="flex flex-col" style={{ gap: 'clamp(1rem, 3vw, 1.5rem)' }}>
             {title ? (
@@ -36,7 +42,9 @@ export function WorkspacePageFrame({ title, description, badges = [], actions, c
                     {description ? (
                         <p className="text-sm text-gray-700 dark:text-gray-300">{description}</p>
                     ) : null}
-                    {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
+                    {actions ? (
+                        <div className="flex flex-wrap items-center gap-2">{actions}</div>
+                    ) : null}
                 </>
             )}
 

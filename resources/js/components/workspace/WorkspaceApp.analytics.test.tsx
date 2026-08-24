@@ -18,7 +18,9 @@ const WORKSPACE_ID = 71;
 const LOCATION_ID = 923;
 const SUMMARY_ENDPOINT = `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/analytics/summary`;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -35,7 +37,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeLocation() {
@@ -88,8 +95,16 @@ function buildFetchMock() {
 }
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        configurable: true,
+        writable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        configurable: true,
+        writable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -106,7 +121,12 @@ async function renderCurrentWorkspace() {
 
     await screen.findByRole('navigation', { name: 'Restaurant admin' });
 
-    return { ...rendered, restoreFetch: () => { window.fetch = originalFetch; } };
+    return {
+        ...rendered,
+        restoreFetch: () => {
+            window.fetch = originalFetch;
+        },
+    };
 }
 
 describe('WorkspaceApp — Analytics destination wired to real workspace/location IDs (S1-WP05b1, RED)', () => {
@@ -126,7 +146,9 @@ describe('WorkspaceApp — Analytics destination wired to real workspace/locatio
         const analyticsRegion = main.querySelector('#analytics') as HTMLElement;
         expect(analyticsRegion).not.toBeNull();
 
-        const region = await within(analyticsRegion).findByRole('region', { name: /metric|report/i });
+        const region = await within(analyticsRegion).findByRole('region', {
+            name: /metric|report/i,
+        });
         await within(region).findByText('5');
         expect(within(region).getByText('4')).toBeInTheDocument();
 

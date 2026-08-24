@@ -82,10 +82,14 @@ function createDeferred<T>() {
     return { promise, resolve, reject };
 }
 
-const TENANT_ISOLATION_EVIDENCE_ITEM_MODULE_SPECIFIER = ['.', 'TenantIsolationEvidenceItem'].join('/');
+const TENANT_ISOLATION_EVIDENCE_ITEM_MODULE_SPECIFIER = ['.', 'TenantIsolationEvidenceItem'].join(
+    '/',
+);
 
 async function importTenantIsolationEvidenceItemModule() {
-    return import(/* @vite-ignore */ TENANT_ISOLATION_EVIDENCE_ITEM_MODULE_SPECIFIER) as unknown as Promise<{
+    return import(
+        /* @vite-ignore */ TENANT_ISOLATION_EVIDENCE_ITEM_MODULE_SPECIFIER
+    ) as unknown as Promise<{
         TenantIsolationEvidenceItem: React.ComponentType<{ workspaceId: number }>;
     }>;
 }
@@ -177,20 +181,28 @@ describe('TenantIsolationEvidenceItem — real tenant isolation evidence contrac
         ['a malformed 200 payload (invalid JSON)', () => Promise.resolve(malformedResponse(200))],
         [
             'a parsed 200 payload with data.status outside passed/failed',
-            () => Promise.resolve(jsonResponse(200, evidenceEnvelope('passed', { status: 'unknown' }))),
+            () =>
+                Promise.resolve(
+                    jsonResponse(200, evidenceEnvelope('passed', { status: 'unknown' })),
+                ),
         ],
-    ])('renders a distinct error state for %s, never passed/failed metadata', async (_label, makeResult) => {
-        const fetchSpy = vi.fn(makeResult);
-        vi.stubGlobal('fetch', fetchSpy);
+    ])(
+        'renders a distinct error state for %s, never passed/failed metadata',
+        async (_label, makeResult) => {
+            const fetchSpy = vi.fn(makeResult);
+            vi.stubGlobal('fetch', fetchSpy);
 
-        const { TenantIsolationEvidenceItem } = await importTenantIsolationEvidenceItemModule();
-        render(<TenantIsolationEvidenceItem workspaceId={WORKSPACE_ID} />);
+            const { TenantIsolationEvidenceItem } = await importTenantIsolationEvidenceItemModule();
+            render(<TenantIsolationEvidenceItem workspaceId={WORKSPACE_ID} />);
 
-        await waitFor(() => expect(screen.getByText(/error|failed to load|couldn.t load/i)).toBeInTheDocument());
-        expect(screen.queryByText(/\bpassed\b/i)).not.toBeInTheDocument();
-        expect(screen.queryByText(/\bfailed\b/i)).not.toBeInTheDocument();
-        expect(screen.queryByText(/unavailable/i)).not.toBeInTheDocument();
-    });
+            await waitFor(() =>
+                expect(screen.getByText(/error|failed to load|couldn.t load/i)).toBeInTheDocument(),
+            );
+            expect(screen.queryByText(/\bpassed\b/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/\bfailed\b/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/unavailable/i)).not.toBeInTheDocument();
+        },
+    );
 
     it('issues at most one request per mount', async () => {
         const fetchSpy = vi.fn(async () => jsonResponse(200, evidenceEnvelope('passed')));
@@ -211,8 +223,10 @@ describe('TenantIsolationEvidenceItem — real tenant isolation evidence contrac
             [OTHER_WORKSPACE_ID]: createDeferred<Response>(),
         };
         const fetchSpy = vi.fn(async (url: string) => {
-            if (String(url) === endpointFor(WORKSPACE_ID)) return deferredByWorkspace[WORKSPACE_ID].promise;
-            if (String(url) === endpointFor(OTHER_WORKSPACE_ID)) return deferredByWorkspace[OTHER_WORKSPACE_ID].promise;
+            if (String(url) === endpointFor(WORKSPACE_ID))
+                return deferredByWorkspace[WORKSPACE_ID].promise;
+            if (String(url) === endpointFor(OTHER_WORKSPACE_ID))
+                return deferredByWorkspace[OTHER_WORKSPACE_ID].promise;
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchSpy);
@@ -226,7 +240,9 @@ describe('TenantIsolationEvidenceItem — real tenant isolation evidence contrac
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith(endpointFor(OTHER_WORKSPACE_ID)));
 
-        deferredByWorkspace[OTHER_WORKSPACE_ID].resolve(jsonResponse(200, evidenceEnvelope('failed')));
+        deferredByWorkspace[OTHER_WORKSPACE_ID].resolve(
+            jsonResponse(200, evidenceEnvelope('failed')),
+        );
         await waitFor(() => expect(screen.getByText(/\bfailed\b/i)).toBeInTheDocument());
 
         deferredByWorkspace[WORKSPACE_ID].resolve(jsonResponse(200, evidenceEnvelope('passed')));

@@ -26,7 +26,9 @@ const REQUIRED_STATES = [
     'Dark',
 ] as const;
 
-function importStoriesModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importStoriesModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import(/* @vite-ignore */ './BrandEditForm.stories') as unknown as Promise<T>;
 }
 
@@ -65,8 +67,13 @@ function isCoveredByStoriesGlobs(patterns: string[], relativePath: string): bool
     return patterns.some((pattern) => globToRegExp(pattern).test(relativePath));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyStory = { args?: Record<string, unknown>; parameters?: Record<string, any>; globals?: Record<string, any> };
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type AnyStory = {
+    args?: Record<string, unknown>;
+    parameters?: Record<string, any>;
+    globals?: Record<string, any>;
+};
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 describe('BrandEditForm.stories — Storybook contract matrix', () => {
     it('is covered by the .storybook/main.ts stories globs', () => {
@@ -89,7 +96,6 @@ describe('BrandEditForm.stories — Storybook contract matrix', () => {
         expect(nestedGlobCovered).toBe(true);
     });
 
-
     it('exports a meta pointing at BrandEditForm with a Macro/Workspace title', async () => {
         const mod = await importStoriesModule<{ default: { title: string; component: unknown } }>();
         expect(mod.default).toBeDefined();
@@ -97,20 +103,29 @@ describe('BrandEditForm.stories — Storybook contract matrix', () => {
         expect(mod.default.title).toMatch(/Macro\/Workspace/);
     });
 
-    it.each(REQUIRED_STATES)('exports a %s story, or (for Empty) declares EmptyNotApplicable metadata', async (state) => {
-        const mod = await importStoriesModule<Record<string, AnyStory | undefined> & { EmptyNotApplicable?: unknown }>();
+    it.each(REQUIRED_STATES)(
+        'exports a %s story, or (for Empty) declares EmptyNotApplicable metadata',
+        async (state) => {
+            const mod = await importStoriesModule<
+                Record<string, AnyStory | undefined> & { EmptyNotApplicable?: unknown }
+            >();
 
-        if (state === 'Empty' && mod.Empty === undefined) {
-            expect(mod.EmptyNotApplicable).toBeDefined();
-            return;
-        }
+            if (state === 'Empty' && mod.Empty === undefined) {
+                expect(mod.EmptyNotApplicable).toBeDefined();
+                return;
+            }
 
-        expect(mod[state]).toBeDefined();
-    });
+            expect(mod[state]).toBeDefined();
+        },
+    );
 
     it('renders the Default story with real-shaped local fixture args', async () => {
         const mod = await importStoriesModule<{ Default: AnyStory }>();
-        const args = mod.Default.args as { workspaceId: number; brand: BrandProfile; onSaved: (brand: BrandProfile) => void };
+        const args = mod.Default.args as {
+            workspaceId: number;
+            brand: BrandProfile;
+            onSaved: (brand: BrandProfile) => void;
+        };
 
         expect(args.workspaceId).toEqual(expect.any(Number));
         expect(args.brand).toMatchObject({ id: expect.any(Number), name: expect.any(String) });
@@ -128,7 +143,11 @@ describe('BrandEditForm.stories — Storybook contract matrix', () => {
 
     it('.storybook/preview.tsx declares the xs320 viewport option at 320x640 (Storybook 10 viewport.options, not the removed viewport.viewports key)', () => {
         const xs320 = (
-            previewConfig as { parameters?: { viewport?: { options?: Record<string, { styles?: Record<string, unknown> }> } } }
+            previewConfig as {
+                parameters?: {
+                    viewport?: { options?: Record<string, { styles?: Record<string, unknown> }> };
+                };
+            }
         ).parameters?.viewport?.options?.xs320;
         expect(xs320).toBeDefined();
         expect(xs320?.styles).toMatchObject({ width: '320px', height: '640px' });
@@ -169,7 +188,11 @@ describe('BrandEditForm.stories — Storybook contract matrix', () => {
         const mod = await importStoriesModule<{ Success: AnyStory & { render?: unknown } }>();
         expect(mod.Success.render).toEqual(expect.any(Function));
 
-        const args = mod.Success.args as { workspaceId: number; brand: BrandProfile; onSaved: (brand: BrandProfile) => void };
+        const args = mod.Success.args as {
+            workspaceId: number;
+            brand: BrandProfile;
+            onSaved: (brand: BrandProfile) => void;
+        };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const rendered = (mod.Success.render as any)(args, { args } as never);
         const { getByText } = render(rendered as React.ReactElement);
@@ -198,8 +221,7 @@ describe('BrandEditForm.stories — Storybook contract matrix', () => {
         }>();
 
         const decorator = mod.default.decorators?.[0] as
-            | ((story: () => React.ReactElement, ctx: unknown) => React.ReactElement)
-            | undefined;
+            ((story: () => React.ReactElement, ctx: unknown) => React.ReactElement) | undefined;
         expect(decorator).toBeDefined();
 
         for (const loader of mod.LoadingOrSaving.loaders ?? []) {
@@ -209,7 +231,11 @@ describe('BrandEditForm.stories — Storybook contract matrix', () => {
         expect(loadingFetch).not.toBe(originalFetch);
 
         const loadingElement = decorator!(
-            () => <BrandEditForm {...(mod.LoadingOrSaving.args as React.ComponentProps<typeof BrandEditForm>)} />,
+            () => (
+                <BrandEditForm
+                    {...(mod.LoadingOrSaving.args as React.ComponentProps<typeof BrandEditForm>)}
+                />
+            ),
             { args: mod.LoadingOrSaving.args, globals: {}, parameters: {} } as never,
         );
         const { unmount } = render(loadingElement);

@@ -61,7 +61,7 @@ const SW_SOURCE_PATH = path.join(
     '..',
     '..',
     'public',
-    'public-diner-sw.js'
+    'public-diner-sw.js',
 );
 
 type StoredResponse = {
@@ -201,7 +201,7 @@ function buildSandbox(networkImpl: FetchImpl): SandboxHandle {
     const sandboxFetch = (request: unknown): Promise<FakeResponse> => {
         if (!(request instanceof FakeRequest)) {
             throw new TypeError(
-                'sandbox fetch() received a fabricated request — the worker must forward the original event.request, not rebuild a plain object'
+                'sandbox fetch() received a fabricated request — the worker must forward the original event.request, not rebuild a plain object',
             );
         }
         return currentNetworkImpl(request);
@@ -218,7 +218,10 @@ function buildSandbox(networkImpl: FetchImpl): SandboxHandle {
 
     vm.runInContext(loadSwSource(), context, { filename: 'public-diner-sw.js' });
 
-    async function triggerFetch(url: string, opts: { method?: string } = {}): Promise<FakeResponse> {
+    async function triggerFetch(
+        url: string,
+        opts: { method?: string } = {},
+    ): Promise<FakeResponse> {
         const fetchListeners = listeners['fetch'] ?? [];
         if (fetchListeners.length === 0) {
             throw new Error('service worker registered no "fetch" event listener');
@@ -266,9 +269,15 @@ describe('public-diner-sw.js classic service worker', () => {
                 });
             }
             if (request.url.includes('/q/valid-token')) {
-                return new FakeResponse('', { status: 302, headers: { location: '/menu/valid-token' } });
+                return new FakeResponse('', {
+                    status: 302,
+                    headers: { location: '/menu/valid-token' },
+                });
             }
-            return new FakeResponse('not found', { status: 404, headers: { 'content-type': 'text/html' } });
+            return new FakeResponse('not found', {
+                status: 404,
+                headers: { 'content-type': 'text/html' },
+            });
         });
     });
 
@@ -359,7 +368,9 @@ describe('public-diner-sw.js classic service worker', () => {
             throw new TypeError('network unavailable');
         });
 
-        const response = await offline.triggerFetch('https://diner.example.test/menu/never-seen-token');
+        const response = await offline.triggerFetch(
+            'https://diner.example.test/menu/never-seen-token',
+        );
         expect(response.status).toBe(503);
         const body = await response.text();
         expect(body.toLowerCase()).toContain('html');
@@ -370,7 +381,7 @@ describe('public-diner-sw.js classic service worker', () => {
         const sandbox = buildSandbox(async () => new FakeResponse('app shell', { status: 200 }));
 
         await expect(
-            sandbox.triggerFetch('https://diner.example.test/app/dashboard')
+            sandbox.triggerFetch('https://diner.example.test/app/dashboard'),
         ).rejects.toThrow();
     });
 
@@ -378,18 +389,16 @@ describe('public-diner-sw.js classic service worker', () => {
         const sandbox = buildSandbox(async () => new FakeResponse('{}', { status: 200 }));
 
         await expect(
-            sandbox.triggerFetch('https://diner.example.test/api/workspaces')
+            sandbox.triggerFetch('https://diner.example.test/api/workspaces'),
         ).rejects.toThrow();
     });
 
     it('never intercepts auth or payment paths', async () => {
         const sandbox = buildSandbox(async () => new FakeResponse('ok', { status: 200 }));
 
+        await expect(sandbox.triggerFetch('https://diner.example.test/login')).rejects.toThrow();
         await expect(
-            sandbox.triggerFetch('https://diner.example.test/login')
-        ).rejects.toThrow();
-        await expect(
-            sandbox.triggerFetch('https://diner.example.test/payments/checkout')
+            sandbox.triggerFetch('https://diner.example.test/payments/checkout'),
         ).rejects.toThrow();
     });
 
@@ -421,7 +430,10 @@ describe('public-diner-sw.js classic service worker', () => {
                     headers: { 'content-type': 'text/html' },
                 });
             }
-            return new FakeResponse('not found', { status: 404, headers: { 'content-type': 'text/html' } });
+            return new FakeResponse('not found', {
+                status: 404,
+                headers: { 'content-type': 'text/html' },
+            });
         });
 
         const response = await qOnline.triggerFetch('https://diner.example.test/q/valid-token');

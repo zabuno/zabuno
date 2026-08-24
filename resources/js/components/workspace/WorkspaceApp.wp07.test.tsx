@@ -34,9 +34,16 @@ const CANONICAL_EVIDENCE_ITEMS = [
     /shared.host/i,
 ];
 
-const OTHER_CANONICAL_EVIDENCE_ITEMS = [/owasp\s*asvs/i, /qr scan/i, /rpo.*rto|rto.*rpo/i, /shared.host/i];
+const OTHER_CANONICAL_EVIDENCE_ITEMS = [
+    /owasp\s*asvs/i,
+    /qr scan/i,
+    /rpo.*rto|rto.*rpo/i,
+    /shared.host/i,
+];
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -77,7 +84,10 @@ function evidenceEnvelope(status: 'passed' | 'failed', overrides: Record<string,
     };
 }
 
-function backupEvidenceEnvelope(status: 'passed' | 'failed', overrides: Record<string, unknown> = {}) {
+function backupEvidenceEnvelope(
+    status: 'passed' | 'failed',
+    overrides: Record<string, unknown> = {},
+) {
     return {
         data: {
             id: 2,
@@ -102,7 +112,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeLocation() {
@@ -153,8 +168,16 @@ function buildFetchMock() {
 }
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { configurable: true, writable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        configurable: true,
+        writable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        configurable: true,
+        writable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -181,7 +204,12 @@ async function renderCurrentWorkspace() {
 
     await screen.findByRole('navigation', { name: 'Restaurant admin' });
 
-    return { ...rendered, restoreFetch: () => { window.fetch = originalFetch; } };
+    return {
+        ...rendered,
+        restoreFetch: () => {
+            window.fetch = originalFetch;
+        },
+    };
 }
 
 describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED)', () => {
@@ -224,7 +252,9 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
         expect(securityRegion).not.toBeNull();
 
         expect(
-            within(securityRegion as HTMLElement).getByRole('heading', { name: /launch readiness/i }),
+            within(securityRegion as HTMLElement).getByRole('heading', {
+                name: /launch readiness/i,
+            }),
         ).toBeInTheDocument();
 
         restoreFetch();
@@ -240,7 +270,11 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
             calls.push([String(args[0]), args[1] as RequestInit | undefined]);
             return fetchCallsBefore(...args);
         };
-        Object.defineProperty(window, 'fetch', { configurable: true, writable: true, value: countingFetch });
+        Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            writable: true,
+            value: countingFetch,
+        });
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Launch readiness' }));
@@ -263,7 +297,9 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
             expect(headers.has('Authorization')).toBe(false);
             expect(headers.has('X-CSRF-TOKEN')).toBe(false);
 
-            const optionKeys = Object.keys(init ?? {}).filter((key) => key !== 'method' && key !== 'headers');
+            const optionKeys = Object.keys(init ?? {}).filter(
+                (key) => key !== 'method' && key !== 'headers',
+            );
             expect(optionKeys).toHaveLength(0);
         }
 

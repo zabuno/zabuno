@@ -40,7 +40,9 @@ describe('MenuPage', () => {
     });
 
     it('renders the menu catalog workspace with the exact workspaceId/locationId once a location is selected', () => {
-        render(<MenuPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} onTreeChange={vi.fn()} />);
+        render(
+            <MenuPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} onTreeChange={vi.fn()} />,
+        );
 
         const menuRoot = document.querySelector('#menu') as HTMLElement;
         const workspace = within(menuRoot).getByTestId('menu-catalog-workspace');
@@ -49,7 +51,9 @@ describe('MenuPage', () => {
     });
 
     it('does not swap in the loading status once a location and its catalog workspace are rendered', () => {
-        render(<MenuPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} onTreeChange={vi.fn()} />);
+        render(
+            <MenuPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} onTreeChange={vi.fn()} />,
+        );
 
         expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });

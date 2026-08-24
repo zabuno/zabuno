@@ -9,20 +9,35 @@ export function PublicSiteHeader() {
                     Zabuno
                 </a>
                 <nav aria-label="Primary" className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
-                    <a href={`${prefix}#features`} className="text-gray-700 hover:underline dark:text-gray-200">
+                    <a
+                        href={`${prefix}#features`}
+                        className="text-gray-700 hover:underline dark:text-gray-200"
+                    >
                         Features
                     </a>
-                    <a href={`${prefix}#how-it-works`} className="text-gray-700 hover:underline dark:text-gray-200">
+                    <a
+                        href={`${prefix}#how-it-works`}
+                        className="text-gray-700 hover:underline dark:text-gray-200"
+                    >
                         How it works
                     </a>
-                    <a href={`${prefix}#pricing`} className="text-gray-700 hover:underline dark:text-gray-200">
+                    <a
+                        href={`${prefix}#pricing`}
+                        className="text-gray-700 hover:underline dark:text-gray-200"
+                    >
                         Pricing
                     </a>
-                    <a href={`${prefix}#faq`} className="text-gray-700 hover:underline dark:text-gray-200">
+                    <a
+                        href={`${prefix}#faq`}
+                        className="text-gray-700 hover:underline dark:text-gray-200"
+                    >
                         FAQ
                     </a>
                     {isRoot ? (
-                        <a href="#contact" className="text-gray-700 hover:underline dark:text-gray-200">
+                        <a
+                            href="#contact"
+                            className="text-gray-700 hover:underline dark:text-gray-200"
+                        >
                             Contact
                         </a>
                     ) : null}

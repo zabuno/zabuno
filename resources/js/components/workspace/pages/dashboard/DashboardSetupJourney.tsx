@@ -23,18 +23,32 @@ function menuSummary(dashboardMenuTree: DashboardMenuTree | null): string {
     return `${categories} categories · ${items} items`;
 }
 
-export function DashboardSetupJourney({ brand, location, dashboardMenuTree }: DashboardSetupJourneyProps) {
+export function DashboardSetupJourney({
+    brand,
+    location,
+    dashboardMenuTree,
+}: DashboardSetupJourneyProps) {
     const notConnected = t('dashboard.setup.notConnected');
 
     const rows: { key: string; label: string; value: string; href: string }[] = [
-        { key: 'brand', label: t('dashboard.setup.brand'), value: brand?.name ?? '', href: '#brand' },
+        {
+            key: 'brand',
+            label: t('dashboard.setup.brand'),
+            value: brand?.name ?? '',
+            href: '#brand',
+        },
         {
             key: 'location',
             label: t('dashboard.setup.location'),
             value: location?.display_name ?? '',
             href: '#locations',
         },
-        { key: 'menu', label: t('dashboard.setup.menu'), value: menuSummary(dashboardMenuTree), href: '#menu' },
+        {
+            key: 'menu',
+            label: t('dashboard.setup.menu'),
+            value: menuSummary(dashboardMenuTree),
+            href: '#menu',
+        },
         {
             key: 'publication',
             label: t('dashboard.setup.publication'),
@@ -53,7 +67,10 @@ export function DashboardSetupJourney({ brand, location, dashboardMenuTree }: Da
                 {rows.map((row) => (
                     <div key={row.key} className="flex flex-col gap-1">
                         <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            <a href={row.href} className="text-blue-600 hover:underline dark:text-blue-400">
+                            <a
+                                href={row.href}
+                                className="text-blue-600 hover:underline dark:text-blue-400"
+                            >
                                 {row.label}
                             </a>
                         </dt>

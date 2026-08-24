@@ -54,9 +54,19 @@ type DashboardPageProps = {
     location?: LocationProfile | null;
 };
 
-export function DashboardPage({ dashboardMenuTree, brand = null, location = null }: DashboardPageProps) {
+export function DashboardPage({
+    dashboardMenuTree,
+    brand = null,
+    location = null,
+}: DashboardPageProps) {
     const badges: WorkspacePageStatusBadge[] = dashboardMenuTree
-        ? [{ key: 'dashboard-menu-state', status: dashboardMenuTree.state === 'draft' ? 'warning' : 'success', label: dashboardMenuTree.state }]
+        ? [
+              {
+                  key: 'dashboard-menu-state',
+                  status: dashboardMenuTree.state === 'draft' ? 'warning' : 'success',
+                  label: dashboardMenuTree.state,
+              },
+          ]
         : [];
 
     return (
@@ -65,7 +75,11 @@ export function DashboardPage({ dashboardMenuTree, brand = null, location = null
                 description={tWorkspace('workspace.dashboard.operational.description')}
                 badges={badges}
             >
-                <DashboardSetupJourney brand={brand} location={location} dashboardMenuTree={dashboardMenuTree} />
+                <DashboardSetupJourney
+                    brand={brand}
+                    location={location}
+                    dashboardMenuTree={dashboardMenuTree}
+                />
 
                 {dashboardMenuTree ? (
                     <DashboardOverview<DashboardMenuItemTableRow>
@@ -89,7 +103,8 @@ export function DashboardPage({ dashboardMenuTree, brand = null, location = null
                                 label: 'Visible items',
                                 value: `${dashboardMenuTree.categories.reduce(
                                     (total, category) =>
-                                        total + category.menuItems.filter((item) => item.isVisible).length,
+                                        total +
+                                        category.menuItems.filter((item) => item.isVisible).length,
                                     0,
                                 )} / ${dashboardMenuTree.categories.reduce(
                                     (total, category) => total + category.menuItems.length,
@@ -117,7 +132,10 @@ export function DashboardPage({ dashboardMenuTree, brand = null, location = null
                         <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
                             {t('dashboard.empty')}
                         </p>
-                        <a href="#menu" className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                        <a
+                            href="#menu"
+                            className="text-sm font-medium text-blue-600 dark:text-blue-400"
+                        >
                             {t('dashboard.empty.openMenu')}
                         </a>
                     </div>

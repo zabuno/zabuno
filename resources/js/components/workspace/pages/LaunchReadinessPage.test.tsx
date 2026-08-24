@@ -60,7 +60,10 @@ function evidenceEnvelope(status: 'passed' | 'failed', overrides: Record<string,
     };
 }
 
-function backupEvidenceEnvelope(status: 'passed' | 'failed', overrides: Record<string, unknown> = {}) {
+function backupEvidenceEnvelope(
+    status: 'passed' | 'failed',
+    overrides: Record<string, unknown> = {},
+) {
     return {
         data: {
             id: 2,
@@ -81,8 +84,16 @@ function backupEvidenceEnvelope(status: 'passed' | 'failed', overrides: Record<s
 }
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -149,7 +160,9 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
 
         const checklist = screen.getByRole('region', { name: /launch readiness/i });
 
-        await waitFor(() => expect(within(checklist).getAllByText(/passed/i).length).toBeGreaterThanOrEqual(2));
+        await waitFor(() =>
+            expect(within(checklist).getAllByText(/passed/i).length).toBeGreaterThanOrEqual(2),
+        );
     });
 
     it('stays 320 CSS px fluid with no breakpoint-prefixed classes anywhere in the page', async () => {

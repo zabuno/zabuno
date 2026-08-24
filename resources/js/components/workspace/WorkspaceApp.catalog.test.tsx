@@ -19,7 +19,10 @@ vi.mock('./BrandOnboardingForm', () => ({
 }));
 
 vi.mock('./LocationOnboardingForm', () => ({
-    LocationOnboardingForm: (props: { workspaceId: number; onCreated: (location: unknown) => void }) => {
+    LocationOnboardingForm: (props: {
+        workspaceId: number;
+        onCreated: (location: unknown) => void;
+    }) => {
         mockLocationOnboardingFormProps = props;
         return <div data-testid="location-onboarding-form" data-workspace-id={props.workspaceId} />;
     },
@@ -38,14 +41,22 @@ vi.mock('../catalog/menu/macro/MenuCatalogWorkspace', () => ({
     },
 }));
 
-let mockBrandOnboardingFormProps: { workspaceId: number; onCreated: (brand: unknown) => void } | null = null;
-let mockLocationOnboardingFormProps: { workspaceId: number; onCreated: (location: unknown) => void } | null = null;
+let mockBrandOnboardingFormProps: {
+    workspaceId: number;
+    onCreated: (brand: unknown) => void;
+} | null = null;
+let mockLocationOnboardingFormProps: {
+    workspaceId: number;
+    onCreated: (location: unknown) => void;
+} | null = null;
 let mockMenuCatalogWorkspaceProps: { workspaceId: number; locationId: number } | null = null;
 
 const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 const WORKSPACE_ID = 71;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -62,7 +73,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeBrand(overrides: Partial<Record<string, unknown>> = {}) {
@@ -118,13 +134,17 @@ function buildFetchMock(handlers: Handlers) {
             return jsonResponse(200, makeWorkspace());
         }
         if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand` && method === 'GET') {
-            return handlers.brand ? handlers.brand() : jsonResponse(404, { error: 'brand_not_found' });
+            return handlers.brand
+                ? handlers.brand()
+                : jsonResponse(404, { error: 'brand_not_found' });
         }
         if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` && method === 'GET') {
             return handlers.locations ? handlers.locations() : jsonResponse(200, []);
         }
 
-        throw new Error(`Unhandled fetch in WorkspaceApp catalog routing test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in WorkspaceApp catalog routing test: ${method} ${String(url)}`,
+        );
     });
 }
 
@@ -137,7 +157,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         const fetchMock = buildFetchMock({});
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         await waitFor(() => {
@@ -149,10 +171,14 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
     });
 
     it('renders BrandOnboardingForm with the workspace id when the brand fetch 404s, then loads locations after onCreated fires', async () => {
-        const fetchMock = buildFetchMock({ brand: () => jsonResponse(404, { error: 'brand_not_found' }) });
+        const fetchMock = buildFetchMock({
+            brand: () => jsonResponse(404, { error: 'brand_not_found' }),
+        });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         await screen.findByTestId('brand-onboarding-form');
@@ -176,7 +202,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         await screen.findByTestId('location-onboarding-form');
@@ -204,7 +232,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
@@ -235,7 +265,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         const alert = await screen.findByRole('alert');
@@ -256,7 +288,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });

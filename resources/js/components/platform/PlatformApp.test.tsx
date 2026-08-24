@@ -138,9 +138,16 @@ describe('PlatformApp — standalone platform admin shell (PLATFORM_SHELL_FRONTE
         const offenders = classNames.filter((cls) => breakpointPattern.test(cls));
         expect(offenders).toEqual([]);
 
-        const fixedWidthElements = Array.from(container.querySelectorAll<HTMLElement>('[style]')).filter((el) => {
+        const fixedWidthElements = Array.from(
+            container.querySelectorAll<HTMLElement>('[style]'),
+        ).filter((el) => {
             const width = el.style.width;
-            return width !== '' && !width.includes('%') && !width.startsWith('var(') && !width.includes('auto');
+            return (
+                width !== '' &&
+                !width.includes('%') &&
+                !width.startsWith('var(') &&
+                !width.includes('auto')
+            );
         });
         expect(fixedWidthElements).toEqual([]);
     });

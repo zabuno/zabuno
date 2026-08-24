@@ -96,7 +96,11 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
 
     if (!editing) {
         const summaryItems: ReadOnlySummaryItem[] = [
-            { key: 'address_line1', label: t('workspace.location.addressLine1'), value: location.address_line1 },
+            {
+                key: 'address_line1',
+                label: t('workspace.location.addressLine1'),
+                value: location.address_line1,
+            },
         ];
 
         if (location.address_line2) {
@@ -126,7 +130,11 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 title={location.display_name}
                 items={summaryItems}
                 actions={
-                    <Button size="sm" onClick={startEdit} aria-label={`Edit ${location.display_name}`}>
+                    <Button
+                        size="sm"
+                        onClick={startEdit}
+                        aria-label={`Edit ${location.display_name}`}
+                    >
                         {t('workspace.brandLocations.edit.button')}
                     </Button>
                 }

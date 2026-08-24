@@ -850,9 +850,13 @@ export function WorkspaceApp() {
                 />
             )}
 
-            {currentWorkspace && activeSection === 'team' && <TeamPage workspaceId={currentWorkspace.id} />}
+            {currentWorkspace && activeSection === 'team' && (
+                <TeamPage workspaceId={currentWorkspace.id} />
+            )}
 
-            {currentWorkspace && activeSection === 'billing' && <BillingPage workspaceId={currentWorkspace.id} />}
+            {currentWorkspace && activeSection === 'billing' && (
+                <BillingPage workspaceId={currentWorkspace.id} />
+            )}
 
             {currentWorkspace && activeSection === 'security' && (
                 <LaunchReadinessPage workspaceId={currentWorkspace.id} />

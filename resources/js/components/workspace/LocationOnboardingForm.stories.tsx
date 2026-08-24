@@ -9,7 +9,10 @@ type LocationOnboardingSuccessHarnessProps = {
     onCreated: (location: LocationProfile) => void;
 };
 
-function LocationOnboardingSuccessHarness({ workspaceId, onCreated }: LocationOnboardingSuccessHarnessProps) {
+function LocationOnboardingSuccessHarness({
+    workspaceId,
+    onCreated,
+}: LocationOnboardingSuccessHarnessProps) {
     const [created, setCreated] = useState<LocationProfile | null>(null);
 
     return (
@@ -132,7 +135,9 @@ export const Success: Story = {
         },
     ],
     args: { workspaceId: WORKSPACE_ID, onCreated: () => {} },
-    render: (args) => <LocationOnboardingSuccessHarness {...(args as LocationOnboardingSuccessHarnessProps)} />,
+    render: (args) => (
+        <LocationOnboardingSuccessHarness {...(args as LocationOnboardingSuccessHarnessProps)} />
+    ),
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 
@@ -146,7 +151,10 @@ export const Success: Story = {
             canvasElement.querySelector<HTMLInputElement>('#location-country-code')!,
             CREATED_LOCATION.country_code,
         );
-        await userEvent.type(canvasElement.querySelector<HTMLInputElement>('#location-city')!, CREATED_LOCATION.city);
+        await userEvent.type(
+            canvasElement.querySelector<HTMLInputElement>('#location-city')!,
+            CREATED_LOCATION.city,
+        );
         await userEvent.type(
             canvasElement.querySelector<HTMLInputElement>('#location-address-line1')!,
             CREATED_LOCATION.address_line1,

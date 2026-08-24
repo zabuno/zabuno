@@ -88,8 +88,10 @@ function visibilityUrl(workspaceId: number, menuItemId: number): string {
 function currencyFractionDigits(currencyCode: string): number {
     try {
         return (
-            new Intl.NumberFormat(undefined, { style: 'currency', currency: currencyCode }).resolvedOptions()
-                .maximumFractionDigits ?? 2
+            new Intl.NumberFormat(undefined, {
+                style: 'currency',
+                currency: currencyCode,
+            }).resolvedOptions().maximumFractionDigits ?? 2
         );
     } catch {
         return 2;
@@ -99,7 +101,9 @@ function currencyFractionDigits(currencyCode: string): number {
 function minorAmountToDecimalString(minorAmount: number, currencyCode: string): string {
     const digits = currencyFractionDigits(currencyCode);
     const negative = minorAmount < 0;
-    const absDigits = Math.abs(minorAmount).toString().padStart(digits + 1, '0');
+    const absDigits = Math.abs(minorAmount)
+        .toString()
+        .padStart(digits + 1, '0');
     if (digits === 0) {
         return `${negative ? '-' : ''}${absDigits}`;
     }
@@ -122,7 +126,11 @@ function parseAllergens(raw: string): string[] {
     return result;
 }
 
-async function postJson(url: string, body: unknown, method: 'POST' | 'PUT' = 'POST'): Promise<Response> {
+async function postJson(
+    url: string,
+    body: unknown,
+    method: 'POST' | 'PUT' = 'POST',
+): Promise<Response> {
     await bootstrapCsrfCookie();
     return fetch(
         url,
@@ -166,7 +174,11 @@ const sectionClass = clsx(
     'forced-colors:border-[CanvasText]',
 );
 
-export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: MenuCatalogWorkspaceProps) {
+export function MenuCatalogWorkspace({
+    workspaceId,
+    locationId,
+    onTreeChange,
+}: MenuCatalogWorkspaceProps) {
     const [initialLoading, setInitialLoading] = useState(true);
     const [initialError, setInitialError] = useState(false);
     const [retryToken, setRetryToken] = useState(0);
@@ -307,7 +319,13 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
         };
     }, [workspaceId, locationId, retryToken]);
 
-    const busy = creatingMenu || creatingCategory || creatingProduct || creatingItem || savingAllergens || savingPriceEdit;
+    const busy =
+        creatingMenu ||
+        creatingCategory ||
+        creatingProduct ||
+        creatingItem ||
+        savingAllergens ||
+        savingPriceEdit;
 
     function resetDownstreamOfCategory() {
         setProductName('');
@@ -367,7 +385,9 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
         try {
             const response = await postJson(menuUrl(workspaceId, locationId), { name: trimmed });
             if (!response.ok) {
-                setMenuSubmitError(await parseErrorMessage(response, t('menu.create.error.submit')));
+                setMenuSubmitError(
+                    await parseErrorMessage(response, t('menu.create.error.submit')),
+                );
                 return;
             }
             const created = (await response.json()) as Omit<MenuTree, 'categories'>;
@@ -393,7 +413,9 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
         try {
             const response = await postJson(categoriesUrl(workspaceId, tree.id), { name: trimmed });
             if (!response.ok) {
-                setCategorySubmitError(await parseErrorMessage(response, t('menu.category.create.error.submit')));
+                setCategorySubmitError(
+                    await parseErrorMessage(response, t('menu.category.create.error.submit')),
+                );
                 return;
             }
             const created = (await response.json()) as Omit<CategoryRow, 'menuItems'>;
@@ -401,7 +423,10 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
             resetDownstreamOfCategory();
             setTree((previous) =>
                 previous
-                    ? { ...previous, categories: [...previous.categories, { ...created, menuItems: [] }] }
+                    ? {
+                          ...previous,
+                          categories: [...previous.categories, { ...created, menuItems: [] }],
+                      }
                     : previous,
             );
         } catch {
@@ -423,9 +448,13 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
         setProductSubmitError(null);
         setCreatingProduct(true);
         try {
-            const response = await postJson(productsUrl(workspaceId, currentCategoryId), { name: trimmed });
+            const response = await postJson(productsUrl(workspaceId, currentCategoryId), {
+                name: trimmed,
+            });
             if (!response.ok) {
-                setProductSubmitError(await parseErrorMessage(response, t('menu.product.create.error.submit')));
+                setProductSubmitError(
+                    await parseErrorMessage(response, t('menu.product.create.error.submit')),
+                );
                 return;
             }
             const created = (await response.json()) as { id: number; name: string };
@@ -475,10 +504,15 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                 currency,
             });
             if (!response.ok) {
-                setItemSubmitError(await parseErrorMessage(response, t('menu.item.create.error.submit')));
+                setItemSubmitError(
+                    await parseErrorMessage(response, t('menu.item.create.error.submit')),
+                );
                 return;
             }
-            const created = (await response.json()) as Omit<MenuItemRow, 'allergens' | 'productName'>;
+            const created = (await response.json()) as Omit<
+                MenuItemRow,
+                'allergens' | 'productName'
+            >;
             setCurrentMenuItemId(created.id);
             setTree((previous) => {
                 if (!previous) return previous;
@@ -511,9 +545,15 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
         setSavingAllergens(true);
         try {
             const allergens = parseAllergens(allergensInput);
-            const response = await postJson(allergensUrl(workspaceId, currentMenuItemId), { allergens }, 'PUT');
+            const response = await postJson(
+                allergensUrl(workspaceId, currentMenuItemId),
+                { allergens },
+                'PUT',
+            );
             if (!response.ok) {
-                setAllergensSubmitError(await parseErrorMessage(response, t('menu.item.allergens.error.submit')));
+                setAllergensSubmitError(
+                    await parseErrorMessage(response, t('menu.item.allergens.error.submit')),
+                );
                 return;
             }
             const refreshed = await fetch(menuUrl(workspaceId, locationId));
@@ -530,7 +570,9 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
     async function handleSavePrice(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (priceEditItemId === null || !tree) return;
-        const item = tree.categories.flatMap((category) => category.menuItems).find((row) => row.id === priceEditItemId);
+        const item = tree.categories
+            .flatMap((category) => category.menuItems)
+            .find((row) => row.id === priceEditItemId);
         if (!item) return;
         const trimmed = priceEditValue.trim();
         setPriceEditSubmitError(null);
@@ -542,10 +584,15 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                 'PUT',
             );
             if (!response.ok) {
-                setPriceEditSubmitError(await parseErrorMessage(response, t('menu.item.price.edit.error.submit')));
+                setPriceEditSubmitError(
+                    await parseErrorMessage(response, t('menu.item.price.edit.error.submit')),
+                );
                 return;
             }
-            const updated = (await response.json()) as { priceMinorAmount: number; currencyCode: string };
+            const updated = (await response.json()) as {
+                priceMinorAmount: number;
+                currencyCode: string;
+            };
             setTree((previous) => {
                 if (!previous) return previous;
                 return {
@@ -554,7 +601,11 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                         ...category,
                         menuItems: category.menuItems.map((row) =>
                             row.id === priceEditItemId
-                                ? { ...row, priceMinorAmount: updated.priceMinorAmount, currencyCode: updated.currencyCode }
+                                ? {
+                                      ...row,
+                                      priceMinorAmount: updated.priceMinorAmount,
+                                      currencyCode: updated.currencyCode,
+                                  }
                                 : row,
                         ),
                     })),
@@ -574,9 +625,16 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
         setVisibilityErrors((previous) => ({ ...previous, [item.id]: null }));
         setVisibilityPending((previous) => ({ ...previous, [item.id]: true }));
         try {
-            const response = await postJson(visibilityUrl(workspaceId, item.id), { isVisible: nextVisible }, 'PUT');
+            const response = await postJson(
+                visibilityUrl(workspaceId, item.id),
+                { isVisible: nextVisible },
+                'PUT',
+            );
             if (!response.ok) {
-                const message = await parseErrorMessage(response, t('menu.item.visibility.error.submit'));
+                const message = await parseErrorMessage(
+                    response,
+                    t('menu.item.visibility.error.submit'),
+                );
                 setVisibilityErrors((previous) => ({ ...previous, [item.id]: message }));
                 return;
             }
@@ -595,7 +653,10 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                 onTreeChange?.(nextTree);
             }
         } catch {
-            setVisibilityErrors((previous) => ({ ...previous, [item.id]: t('menu.item.visibility.error.submit') }));
+            setVisibilityErrors((previous) => ({
+                ...previous,
+                [item.id]: t('menu.item.visibility.error.submit'),
+            }));
         } finally {
             setVisibilityPending((previous) => ({ ...previous, [item.id]: false }));
         }
@@ -640,41 +701,58 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                         value={menuName}
                         onChange={(event) => setMenuName(event.target.value)}
                     />
-                    {menuNameError ? (
-                        <FieldError message={menuNameError} />
-                    ) : null}
-                    {menuSubmitError ? (
-                        <FieldError message={menuSubmitError} />
-                    ) : null}
+                    {menuNameError ? <FieldError message={menuNameError} /> : null}
+                    {menuSubmitError ? <FieldError message={menuSubmitError} /> : null}
                     <button type="submit" className={buttonClass} disabled={creatingMenu}>
                         {t('menu.create.submit')}
                     </button>
                 </form>
             ) : (
                 <>
-                    <ol aria-label={t('menu.categories.list.label')} className="flex flex-col gap-4">
+                    <ol
+                        aria-label={t('menu.categories.list.label')}
+                        className="flex flex-col gap-4"
+                    >
                         {tree.categories.map((category) => (
                             <li key={category.id} className={sectionClass}>
                                 <div className="flex flex-wrap items-baseline gap-2">
                                     <h3 className="text-base font-semibold">{category.name}</h3>
                                     <OrderBadge
                                         position={category.position}
-                                        label={t('menu.category.order.label', { name: category.name })}
+                                        label={t('menu.category.order.label', {
+                                            name: category.name,
+                                        })}
                                     />
                                 </div>
-                                <ul aria-label={t('menu.category.items.label', { name: category.name })} className="flex flex-col gap-2">
+                                <ul
+                                    aria-label={t('menu.category.items.label', {
+                                        name: category.name,
+                                    })}
+                                    className="flex flex-col gap-2"
+                                >
                                     {category.menuItems.map((item) => (
                                         <li key={item.id} className="flex flex-col gap-1">
                                             <span>{item.productName ?? `#${item.productId}`}</span>
                                             <OrderBadge
                                                 position={item.position}
-                                                label={t('menu.item.order.label', { name: item.productName ?? '' })}
+                                                label={t('menu.item.order.label', {
+                                                    name: item.productName ?? '',
+                                                })}
                                             />
                                             <span>
-                                                {minorAmountToDecimalString(item.priceMinorAmount, item.currencyCode)} {item.currencyCode}
+                                                {minorAmountToDecimalString(
+                                                    item.priceMinorAmount,
+                                                    item.currencyCode,
+                                                )}{' '}
+                                                {item.currencyCode}
                                             </span>
                                             {item.allergens.length > 0 ? (
-                                                <ul aria-label={t('menu.item.allergens.list.label', { name: item.productName ?? '' })}>
+                                                <ul
+                                                    aria-label={t(
+                                                        'menu.item.allergens.list.label',
+                                                        { name: item.productName ?? '' },
+                                                    )}
+                                                >
                                                     {item.allergens.map((allergen) => (
                                                         <li key={allergen}>{allergen}</li>
                                                     ))}
@@ -683,32 +761,48 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                                             <label className={labelClass}>
                                                 <input
                                                     type="checkbox"
-                                                    aria-label={t('menu.item.visibility.checkbox.label', { name: item.productName ?? '' })}
+                                                    aria-label={t(
+                                                        'menu.item.visibility.checkbox.label',
+                                                        { name: item.productName ?? '' },
+                                                    )}
                                                     checked={item.isVisible}
                                                     disabled={visibilityPending[item.id] === true}
                                                     onChange={() => handleToggleVisibility(item)}
                                                 />
                                             </label>
                                             {visibilityErrors[item.id] ? (
-                                                <FieldError message={visibilityErrors[item.id] as string} />
+                                                <FieldError
+                                                    message={visibilityErrors[item.id] as string}
+                                                />
                                             ) : null}
                                             <button
                                                 type="button"
                                                 className={buttonClass}
                                                 onClick={() => handleEditAllergens(item)}
                                             >
-                                                {t('menu.item.allergens.edit.button', { name: item.productName ?? '' })}
+                                                {t('menu.item.allergens.edit.button', {
+                                                    name: item.productName ?? '',
+                                                })}
                                             </button>
                                             <button
                                                 type="button"
                                                 className={buttonClass}
                                                 onClick={() => handleEditPrice(item)}
                                             >
-                                                {t('menu.item.price.edit.button', { name: item.productName ?? '' })}
+                                                {t('menu.item.price.edit.button', {
+                                                    name: item.productName ?? '',
+                                                })}
                                             </button>
                                             {priceEditItemId === item.id ? (
-                                                <form className={sectionClass} onSubmit={handleSavePrice} noValidate>
-                                                    <label className={labelClass} htmlFor={`item-price-edit-${item.id}`}>
+                                                <form
+                                                    className={sectionClass}
+                                                    onSubmit={handleSavePrice}
+                                                    noValidate
+                                                >
+                                                    <label
+                                                        className={labelClass}
+                                                        htmlFor={`item-price-edit-${item.id}`}
+                                                    >
                                                         {t('menu.item.price.label')}
                                                     </label>
                                                     <input
@@ -717,12 +811,20 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                                                         type="text"
                                                         inputMode="decimal"
                                                         value={priceEditValue}
-                                                        onChange={(event) => setPriceEditValue(event.target.value)}
+                                                        onChange={(event) =>
+                                                            setPriceEditValue(event.target.value)
+                                                        }
                                                     />
                                                     {priceEditSubmitError ? (
-                                                        <FieldError message={priceEditSubmitError} />
+                                                        <FieldError
+                                                            message={priceEditSubmitError}
+                                                        />
                                                     ) : null}
-                                                    <button type="submit" className={buttonClass} disabled={savingPriceEdit}>
+                                                    <button
+                                                        type="submit"
+                                                        className={buttonClass}
+                                                        disabled={savingPriceEdit}
+                                                    >
                                                         {t('menu.item.price.edit.submit')}
                                                     </button>
                                                 </form>
@@ -765,12 +867,8 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                             value={categoryName}
                             onChange={(event) => setCategoryName(event.target.value)}
                         />
-                        {categoryNameError ? (
-                            <FieldError message={categoryNameError} />
-                        ) : null}
-                        {categorySubmitError ? (
-                            <FieldError message={categorySubmitError} />
-                        ) : null}
+                        {categoryNameError ? <FieldError message={categoryNameError} /> : null}
+                        {categorySubmitError ? <FieldError message={categorySubmitError} /> : null}
                         <button type="submit" className={buttonClass} disabled={creatingCategory}>
                             {t('menu.category.create.submit')}
                         </button>
@@ -788,13 +886,15 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                                 value={productName}
                                 onChange={(event) => setProductName(event.target.value)}
                             />
-                            {productNameError ? (
-                                <FieldError message={productNameError} />
-                            ) : null}
+                            {productNameError ? <FieldError message={productNameError} /> : null}
                             {productSubmitError ? (
                                 <FieldError message={productSubmitError} />
                             ) : null}
-                            <button type="submit" className={buttonClass} disabled={creatingProduct}>
+                            <button
+                                type="submit"
+                                className={buttonClass}
+                                disabled={creatingProduct}
+                            >
                                 {t('menu.product.create.submit')}
                             </button>
                         </form>
@@ -813,12 +913,8 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                                 value={price}
                                 onChange={(event) => setPrice(event.target.value)}
                             />
-                            {priceError ? (
-                                <FieldError message={priceError} />
-                            ) : null}
-                            {itemSubmitError ? (
-                                <FieldError message={itemSubmitError} />
-                            ) : null}
+                            {priceError ? <FieldError message={priceError} /> : null}
+                            {itemSubmitError ? <FieldError message={itemSubmitError} /> : null}
                             <button type="submit" className={buttonClass} disabled={creatingItem}>
                                 {t('menu.item.create.submit')}
                             </button>
@@ -840,7 +936,11 @@ export function MenuCatalogWorkspace({ workspaceId, locationId, onTreeChange }: 
                             {allergensSubmitError ? (
                                 <FieldError message={allergensSubmitError} />
                             ) : null}
-                            <button type="submit" className={buttonClass} disabled={savingAllergens}>
+                            <button
+                                type="submit"
+                                className={buttonClass}
+                                disabled={savingAllergens}
+                            >
                                 {t('menu.item.allergens.submit')}
                             </button>
                         </form>

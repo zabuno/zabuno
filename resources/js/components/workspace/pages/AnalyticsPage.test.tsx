@@ -40,8 +40,16 @@ function summaryBody(range: string, qrResolveCount: number, menuOpenCount: numbe
 }
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -181,7 +189,9 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
 
         // The initial Today request is still in flight (deferred) when the
         // user switches to 7d before it ever resolves.
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalledWith(`${SUMMARY_ENDPOINT}?range=today`));
+        await waitFor(() =>
+            expect(fetchSpy).toHaveBeenCalledWith(`${SUMMARY_ENDPOINT}?range=today`),
+        );
 
         await user.selectOptions(screen.getByRole('combobox', { name: /range/i }), '7d');
 

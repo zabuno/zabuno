@@ -27,12 +27,14 @@ const CHECKLIST_ENTRIES: ReadinessChecklistEntry[] = [
     {
         key: 'rpo-rto',
         title: 'RPO & RTO decision',
-        description: 'A recorded decision for how much data loss and downtime this system can tolerate.',
+        description:
+            'A recorded decision for how much data loss and downtime this system can tolerate.',
     },
     {
         key: 'shared-host-capability',
         title: 'Shared-host capability evidence',
-        description: 'Evidence that the application runs within its hosting plan’s resource limits.',
+        description:
+            'Evidence that the application runs within its hosting plan’s resource limits.',
     },
 ];
 
@@ -44,7 +46,11 @@ const CHECKLIST_ENTRIES: ReadinessChecklistEntry[] = [
  */
 export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
     return (
-        <div role="region" aria-label={t('workspace.launchReadiness.checklist.region')} className="flex flex-col gap-4">
+        <div
+            role="region"
+            aria-label={t('workspace.launchReadiness.checklist.region')}
+            className="flex flex-col gap-4"
+        >
             <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t('workspace.launchReadiness.checklist.explanation')}
             </p>
@@ -52,7 +58,11 @@ export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
                 <TenantIsolationEvidenceItem key="tenant-isolation" workspaceId={workspaceId} />
                 <BackupRestoreEvidenceItem key="backup-restore" workspaceId={workspaceId} />
                 {CHECKLIST_ENTRIES.map((entry) => (
-                    <ReadinessItem key={entry.key} title={entry.title} description={entry.description} />
+                    <ReadinessItem
+                        key={entry.key}
+                        title={entry.title}
+                        description={entry.description}
+                    />
                 ))}
             </ul>
         </div>

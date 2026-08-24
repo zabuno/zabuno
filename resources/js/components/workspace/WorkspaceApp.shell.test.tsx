@@ -31,7 +31,9 @@ vi.mock('../catalog/menu/macro/MenuCatalogWorkspace', () => ({
 const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 const WORKSPACE_ID = 71;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -48,7 +50,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeLocation(overrides: Partial<Record<string, unknown>> = {}) {
@@ -116,23 +123,20 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
 
         expect(screen.getByText('Zabuno')).toBeInTheDocument();
 
-        expect(
-            screen.getByRole('link', { name: 'Skip to main content' }),
-        ).toHaveAttribute('href', '#main-content');
+        expect(screen.getByRole('link', { name: 'Skip to main content' })).toHaveAttribute(
+            'href',
+            '#main-content',
+        );
 
         const main = screen.getByRole('main');
         expect(main).toHaveAttribute('id', 'main-content');
 
-        expect(
-            screen.getByRole('navigation', { name: 'Restaurant admin' }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole('navigation', { name: 'Restaurant admin' })).toBeInTheDocument();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menu' }));
 
-        expect(
-            within(main).getByTestId('menu-catalog-workspace'),
-        ).toBeInTheDocument();
+        expect(within(main).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -177,9 +181,7 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
 
         await user.click(screen.getByRole('button', { name: 'Switch workspace' }));
 
-        expect(
-            screen.getByRole('heading', { name: 'Choose a workspace' }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Choose a workspace' })).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -228,14 +230,9 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         });
 
-        expect(
-            screen.getByRole('navigation', { name: 'Restaurant admin' }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole('navigation', { name: 'Restaurant admin' })).toBeInTheDocument();
 
-        expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute(
-            'aria-current',
-            'page',
-        );
+        expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('aria-current', 'page');
         expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute(
             'aria-current',
             'page',

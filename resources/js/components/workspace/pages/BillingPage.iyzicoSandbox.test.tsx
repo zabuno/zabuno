@@ -99,7 +99,9 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         return screen.getByRole('region', { name: /iyzico sandbox/i });
     }
 
-    function baseFetchImpl(overrides: Record<string, (url: string, init?: RequestInit) => Promise<Response>>) {
+    function baseFetchImpl(
+        overrides: Record<string, (url: string, init?: RequestInit) => Promise<Response>>,
+    ) {
         return async (url: string, init?: RequestInit) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
             const handler = overrides[String(url)];
@@ -119,13 +121,19 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('heading', { name: /iyzico sandbox/i })).toBeInTheDocument();
+            expect(
+                within(iyzicoRegion()).getByRole('heading', { name: /iyzico sandbox/i }),
+            ).toBeInTheDocument();
         });
 
-        expect(within(iyzicoRegion()).getByText(/no real money|not real money|no real payment/i)).toBeInTheDocument();
+        expect(
+            within(iyzicoRegion()).getByText(/no real money|not real money|no real payment/i),
+        ).toBeInTheDocument();
 
         expect(within(iyzicoRegion()).queryByLabelText(/card number/i)).not.toBeInTheDocument();
-        expect(within(iyzicoRegion()).queryByLabelText(/expiry|expiration/i)).not.toBeInTheDocument();
+        expect(
+            within(iyzicoRegion()).queryByLabelText(/expiry|expiration/i),
+        ).not.toBeInTheDocument();
         expect(within(iyzicoRegion()).queryByLabelText(/cvv|cvc/i)).not.toBeInTheDocument();
     });
 
@@ -151,13 +159,19 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByText(/no active (plan|subscription)/i)).toBeInTheDocument();
+            expect(
+                within(iyzicoRegion()).getByText(/no active (plan|subscription)/i),
+            ).toBeInTheDocument();
         });
 
-        const startButton = within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i });
+        const startButton = within(iyzicoRegion()).getByRole('button', {
+            name: /start sandbox checkout/i,
+        });
         expect(startButton).toBeDisabled();
 
-        const iyzicoCalls = fetchSpy.mock.calls.filter(([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT);
+        const iyzicoCalls = fetchSpy.mock.calls.filter(
+            ([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT,
+        );
         expect(iyzicoCalls).toHaveLength(0);
     });
 
@@ -172,11 +186,15 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT);
+            const call = fetchSpy.mock.calls.find(
+                ([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT,
+            );
             expect(call).toBeDefined();
         });
 
-        const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT);
+        const call = fetchSpy.mock.calls.find(
+            ([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT,
+        );
         const init = call?.[1] as RequestInit | undefined;
         expect(init?.credentials).toBe('same-origin');
         expect(new Headers(init?.headers).get('Accept')).toBe('application/json');
@@ -186,7 +204,9 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
             expect(within(iyzicoRegion()).getByText(/ready/i)).toBeInTheDocument();
         });
 
-        expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+        expect(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        ).toBeEnabled();
     });
 
     it('starts checkout only on explicit human click: GET csrf-cookie then POST session with exact headers, empty body, and a UUID Idempotency-Key, sending no amount/currency/plan/card values', async () => {
@@ -223,13 +243,19 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        expect(fetchSpy.mock.calls.some(([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT)).toBe(false);
+        expect(fetchSpy.mock.calls.some(([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT)).toBe(
+            false,
+        );
         expect(postCalls).toBe(0);
 
-        await user.click(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }));
+        await user.click(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        );
 
         await waitFor(() => {
             expect(postCalls).toBe(1);
@@ -237,9 +263,13 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
 
         expect(csrfCalls).toBe(1);
 
-        const csrfCallIndex = fetchSpy.mock.calls.findIndex(([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT);
+        const csrfCallIndex = fetchSpy.mock.calls.findIndex(
+            ([calledUrl]) => String(calledUrl) === CSRF_ENDPOINT,
+        );
         const postCallIndex = fetchSpy.mock.calls.findIndex(
-            ([calledUrl, init]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT && (init as RequestInit | undefined)?.method === 'POST',
+            ([calledUrl, init]) =>
+                String(calledUrl) === IYZICO_SESSION_ENDPOINT &&
+                (init as RequestInit | undefined)?.method === 'POST',
         );
         expect(csrfCallIndex).toBeGreaterThanOrEqual(0);
         expect(postCallIndex).toBeGreaterThan(csrfCallIndex);
@@ -289,15 +319,21 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        const startButton = within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i });
+        const startButton = within(iyzicoRegion()).getByRole('button', {
+            name: /start sandbox checkout/i,
+        });
         await user.click(startButton);
         await user.click(startButton);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeDisabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeDisabled();
         });
 
         expect(within(iyzicoRegion()).getByText(/initiated|processing/i)).toBeInTheDocument();
@@ -347,23 +383,36 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        await user.click(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }));
+        await user.click(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        );
 
         await waitFor(() => {
             expect(within(iyzicoRegion()).getByText(/conv-https/i)).toBeInTheDocument();
         });
 
-        expect(within(iyzicoRegion()).getByText(/149900|1[,.]?499(?:[.,]00)?/i)).toBeInTheDocument();
+        expect(
+            within(iyzicoRegion()).getByText(/149900|1[,.]?499(?:[.,]00)?/i),
+        ).toBeInTheDocument();
         expect(within(iyzicoRegion()).getByText(/try/i)).toBeInTheDocument();
-        expect(within(iyzicoRegion()).getByText(/no real money|not real money|no real payment/i)).toBeInTheDocument();
+        expect(
+            within(iyzicoRegion()).getByText(/no real money|not real money|no real payment/i),
+        ).toBeInTheDocument();
 
         expect(window.location.href).toBe(originalLocation);
 
-        const continueLink = within(iyzicoRegion()).getByRole('link', { name: /continue to iyzico sandbox/i });
-        expect(continueLink).toHaveAttribute('href', 'https://sandbox-iyzico.example.com/checkout/conv-https');
+        const continueLink = within(iyzicoRegion()).getByRole('link', {
+            name: /continue to iyzico sandbox/i,
+        });
+        expect(continueLink).toHaveAttribute(
+            'href',
+            'https://sandbox-iyzico.example.com/checkout/conv-https',
+        );
     });
 
     it('rejects a non-https redirect_url as an accessible failure and renders no Continue link', async () => {
@@ -394,16 +443,22 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        await user.click(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }));
+        await user.click(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        );
 
         await waitFor(() => {
             expect(within(iyzicoRegion()).getByRole('alert')).toBeInTheDocument();
         });
 
-        expect(within(iyzicoRegion()).queryByRole('link', { name: /continue to iyzico sandbox/i })).not.toBeInTheDocument();
+        expect(
+            within(iyzicoRegion()).queryByRole('link', { name: /continue to iyzico sandbox/i }),
+        ).not.toBeInTheDocument();
     });
 
     it('renders existing processing and succeeded session GET states honestly', async () => {
@@ -462,10 +517,14 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        await user.click(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }));
+        await user.click(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        );
 
         await waitFor(() => {
             expect(within(iyzicoRegion()).getByRole('alert')).toBeInTheDocument();
@@ -497,7 +556,9 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
         const region = iyzicoRegion();
@@ -551,17 +612,23 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        await user.click(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }));
+        await user.click(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        );
 
         await waitFor(() => {
             expect(within(iyzicoRegion()).getByRole('alert')).toBeInTheDocument();
         });
 
         expect(within(iyzicoRegion()).queryByText(/conv-non-2xx/i)).not.toBeInTheDocument();
-        expect(within(iyzicoRegion()).queryByRole('link', { name: /continue to iyzico sandbox/i })).not.toBeInTheDocument();
+        expect(
+            within(iyzicoRegion()).queryByRole('link', { name: /continue to iyzico sandbox/i }),
+        ).not.toBeInTheDocument();
         expect(within(iyzicoRegion()).getByRole('button', { name: /retry/i })).toBeInTheDocument();
     });
 
@@ -585,7 +652,10 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
                     if (postAttempts === 1) {
                         throw new TypeError('Failed to fetch');
                     }
-                    return jsonResponse(202, { state: 'initiated', conversation_id: 'conv-retry-post' });
+                    return jsonResponse(202, {
+                        state: 'initiated',
+                        conversation_id: 'conv-retry-post',
+                    });
                 },
                 [CSRF_ENDPOINT]: async () => {
                     csrfCalls += 1;
@@ -598,10 +668,14 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        await user.click(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }));
+        await user.click(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        );
 
         await waitFor(() => {
             expect(within(iyzicoRegion()).getByRole('alert')).toBeInTheDocument();
@@ -652,10 +726,14 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+            expect(
+                within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+            ).toBeEnabled();
         });
 
-        await user.click(within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }));
+        await user.click(
+            within(iyzicoRegion()).getByRole('button', { name: /start sandbox checkout/i }),
+        );
 
         await waitFor(() => {
             expect(within(iyzicoRegion()).getByRole('alert')).toBeInTheDocument();
@@ -687,7 +765,11 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
             expect(within(iyzicoRegion()).getByRole('alert')).toBeInTheDocument();
         });
 
-        expect(fetchSpy.mock.calls.some(([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT)).toBe(false);
+        expect(
+            fetchSpy.mock.calls.some(
+                ([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT,
+            ),
+        ).toBe(false);
 
         const retryButton = within(iyzicoRegion()).getByRole('button', { name: /retry/i });
         await user.click(retryButton);
@@ -720,9 +802,13 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         const retryButton = within(iyzicoRegion()).getByRole('button', { name: /retry/i });
         expect(retryButton).toBeInTheDocument();
 
-        expect(within(iyzicoRegion()).queryByText(/no active (plan|subscription)/i)).not.toBeInTheDocument();
+        expect(
+            within(iyzicoRegion()).queryByText(/no active (plan|subscription)/i),
+        ).not.toBeInTheDocument();
 
-        const iyzicoCalls = fetchSpy.mock.calls.filter(([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT);
+        const iyzicoCalls = fetchSpy.mock.calls.filter(
+            ([calledUrl]) => String(calledUrl) === IYZICO_SESSION_ENDPOINT,
+        );
         expect(iyzicoCalls).toHaveLength(0);
     });
 });

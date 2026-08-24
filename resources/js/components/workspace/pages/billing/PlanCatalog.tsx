@@ -50,11 +50,15 @@ function isValidPlan(value: unknown): value is Plan {
         return false;
     }
 
-    if (!Array.isArray(candidate.entitlements) || !candidate.entitlements.every((item) => typeof item === 'string')) {
+    if (
+        !Array.isArray(candidate.entitlements) ||
+        !candidate.entitlements.every((item) => typeof item === 'string')
+    ) {
         return false;
     }
 
-    const amountValid = candidate.amount_minor === null || isNonNegativeInteger(candidate.amount_minor);
+    const amountValid =
+        candidate.amount_minor === null || isNonNegativeInteger(candidate.amount_minor);
     const currencyValid = candidate.currency === null || isValidCurrency(candidate.currency);
 
     if (!amountValid || !currencyValid) {
@@ -180,18 +184,25 @@ export function PlanCatalog({
             {status === 'success' && plans.length > 0 && (
                 <ul
                     className="grid gap-4"
-                    style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 16rem), 1fr))' }}
+                    style={{
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 16rem), 1fr))',
+                    }}
                 >
                     {plans.map((plan) => (
                         <li
                             key={plan.id}
                             className="flex flex-col gap-2 rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
                         >
-                            <span className="font-medium text-gray-900 dark:text-white">{plan.name}</span>
+                            <span className="font-medium text-gray-900 dark:text-white">
+                                {plan.name}
+                            </span>
                             <span className="text-gray-500 dark:text-gray-400">{plan.code}</span>
                             <ul className="flex flex-col gap-1">
                                 {plan.entitlements.map((entitlement) => (
-                                    <li key={entitlement} className="text-gray-700 dark:text-gray-300">
+                                    <li
+                                        key={entitlement}
+                                        className="text-gray-700 dark:text-gray-300"
+                                    >
                                         {entitlement}
                                     </li>
                                 ))}

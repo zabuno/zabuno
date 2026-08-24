@@ -20,7 +20,9 @@ const MENU_ITEM_ID = 101;
 const MENU_URL = `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu`;
 const VISIBILITY_URL = `/api/workspaces/${WORKSPACE_ID}/menu-items/${MENU_ITEM_ID}/visibility`;
 
-function importWorkspaceModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importWorkspaceModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
 }
 
@@ -37,7 +39,12 @@ function makeUser() {
 }
 
 function makeWorkspace() {
-    return { id: WORKSPACE_ID, name: 'Zeytin Restoranları', slug: 'zeytin-restoranlari', state: 'active' };
+    return {
+        id: WORKSPACE_ID,
+        name: 'Zeytin Restoranları',
+        slug: 'zeytin-restoranlari',
+        state: 'active',
+    };
 }
 
 function makeBrand() {
@@ -129,7 +136,9 @@ function buildFetchMock() {
             return jsonResponse(200, { id: MENU_ITEM_ID, isVisible: false });
         }
 
-        throw new Error(`Unhandled fetch in WorkspaceApp dashboardSync test: ${method} ${String(url)}`);
+        throw new Error(
+            `Unhandled fetch in WorkspaceApp dashboardSync test: ${method} ${String(url)}`,
+        );
     });
 }
 
@@ -143,7 +152,9 @@ describe('WorkspaceApp — dashboard catalog-mutation sync (S1-WP01A foundation,
         const fetchMock = buildFetchMock();
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
         render(<WorkspaceApp />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();

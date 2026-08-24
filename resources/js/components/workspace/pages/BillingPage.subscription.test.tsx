@@ -88,18 +88,23 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
     it('fetches the workspace subscription on mount with credentials same-origin and Accept application/json', async () => {
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
-            if (String(url) === SUBSCRIPTION_ENDPOINT) return jsonResponse(200, makeNoneSubscription());
+            if (String(url) === SUBSCRIPTION_ENDPOINT)
+                return jsonResponse(200, makeNoneSubscription());
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
 
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === SUBSCRIPTION_ENDPOINT);
+            const call = fetchSpy.mock.calls.find(
+                ([calledUrl]) => String(calledUrl) === SUBSCRIPTION_ENDPOINT,
+            );
             expect(call).toBeDefined();
         });
 
-        const call = fetchSpy.mock.calls.find(([calledUrl]) => String(calledUrl) === SUBSCRIPTION_ENDPOINT);
+        const call = fetchSpy.mock.calls.find(
+            ([calledUrl]) => String(calledUrl) === SUBSCRIPTION_ENDPOINT,
+        );
         const init = call?.[1] as RequestInit | undefined;
         expect(init?.credentials).toBe('same-origin');
         expect(new Headers(init?.headers).get('Accept')).toBe('application/json');
@@ -120,23 +125,29 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
     it('renders an honest none state with zero fabricated plan/date values', async () => {
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
-            if (String(url) === SUBSCRIPTION_ENDPOINT) return jsonResponse(200, makeNoneSubscription());
+            if (String(url) === SUBSCRIPTION_ENDPOINT)
+                return jsonResponse(200, makeNoneSubscription());
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
 
         render(<BillingPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
-            expect(within(currentPlanRegion()).getByRole('status')).toHaveTextContent(/no active subscription|none/i);
+            expect(within(currentPlanRegion()).getByRole('status')).toHaveTextContent(
+                /no active subscription|none/i,
+            );
         });
 
-        expect(within(currentPlanRegion()).queryByText(/\d{4}-\d{2}-\d{2}/)).not.toBeInTheDocument();
+        expect(
+            within(currentPlanRegion()).queryByText(/\d{4}-\d{2}-\d{2}/),
+        ).not.toBeInTheDocument();
     });
 
     it('renders the exact server plan code/name/version and end date for an active subscription', async () => {
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
-            if (String(url) === SUBSCRIPTION_ENDPOINT) return jsonResponse(200, makeActiveSubscription());
+            if (String(url) === SUBSCRIPTION_ENDPOINT)
+                return jsonResponse(200, makeActiveSubscription());
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
 
@@ -157,7 +168,8 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
 
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
-            if (String(url) === IYZICO_SESSION_ENDPOINT) return jsonResponse(200, { state: 'none' });
+            if (String(url) === IYZICO_SESSION_ENDPOINT)
+                return jsonResponse(200, { state: 'none' });
             if (String(url) === SUBSCRIPTION_ENDPOINT) {
                 callCount += 1;
                 if (callCount === 1) return jsonResponse(500, { message: 'Failed' });
@@ -185,7 +197,9 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
         // Two independent production consumers (CurrentSubscriptionStatus and
         // IyzicoSandboxCheckout) each fetch the subscription on initial mount,
         // then the Current-plan Retry click adds exactly one more request.
-        const subscriptionCalls = fetchSpy.mock.calls.filter(([calledUrl]) => String(calledUrl) === SUBSCRIPTION_ENDPOINT);
+        const subscriptionCalls = fetchSpy.mock.calls.filter(
+            ([calledUrl]) => String(calledUrl) === SUBSCRIPTION_ENDPOINT,
+        );
         expect(subscriptionCalls.length).toBe(3);
         expect(subscriptionCalls.length - subscriptionCallsBeforeRetry).toBe(1);
     });
@@ -193,7 +207,8 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
     it('never offers an active manual-payment mutation control and explains that platform finance records manual payments', async () => {
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
-            if (String(url) === SUBSCRIPTION_ENDPOINT) return jsonResponse(200, makeActiveSubscription());
+            if (String(url) === SUBSCRIPTION_ENDPOINT)
+                return jsonResponse(200, makeActiveSubscription());
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
 
@@ -214,8 +229,10 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
     it('shows the Iyzico sandbox region as ready with an enabled Start once the sandbox session endpoint reports state:none', async () => {
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
-            if (String(url) === SUBSCRIPTION_ENDPOINT) return jsonResponse(200, makeActiveSubscription());
-            if (String(url) === IYZICO_SESSION_ENDPOINT) return jsonResponse(200, { state: 'none' });
+            if (String(url) === SUBSCRIPTION_ENDPOINT)
+                return jsonResponse(200, makeActiveSubscription());
+            if (String(url) === IYZICO_SESSION_ENDPOINT)
+                return jsonResponse(200, { state: 'none' });
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
 
@@ -231,14 +248,18 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
             expect(within(iyzicoRegion).getByText(/ready/i)).toBeInTheDocument();
         });
 
-        expect(within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+        expect(
+            within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i }),
+        ).toBeEnabled();
     });
 
     it('honestly states the live/server-backed copy and status badge instead of the stale blanket "not connected" claim', async () => {
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
-            if (String(url) === SUBSCRIPTION_ENDPOINT) return jsonResponse(200, makeActiveSubscription());
-            if (String(url) === IYZICO_SESSION_ENDPOINT) return jsonResponse(200, { state: 'none' });
+            if (String(url) === SUBSCRIPTION_ENDPOINT)
+                return jsonResponse(200, makeActiveSubscription());
+            if (String(url) === IYZICO_SESSION_ENDPOINT)
+                return jsonResponse(200, { state: 'none' });
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
 
@@ -251,7 +272,9 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
         const page = document.getElementById('billing') ?? document.body;
 
         expect(within(page).getByText(/plan catalog/i)).toHaveTextContent(/live|server/i);
-        expect(page).toHaveTextContent(/current (plan|subscription).{0,120}(live|server)|(?:live|server).{0,120}current (plan|subscription)/i);
+        expect(page).toHaveTextContent(
+            /current (plan|subscription).{0,120}(live|server)|(?:live|server).{0,120}current (plan|subscription)/i,
+        );
         expect(within(page).getByText(/platform finance/i)).toBeInTheDocument();
 
         expect(
@@ -265,10 +288,14 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
         const iyzicoRegion = screen.getByRole('region', { name: /iyzico sandbox/i });
 
         await waitFor(() => {
-            expect(within(iyzicoRegion).getByText(/no real money|not real money|no real payment/i)).toBeInTheDocument();
+            expect(
+                within(iyzicoRegion).getByText(/no real money|not real money|no real payment/i),
+            ).toBeInTheDocument();
         });
 
         expect(within(iyzicoRegion).getByText(/ready/i)).toBeInTheDocument();
-        expect(within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i })).toBeEnabled();
+        expect(
+            within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i }),
+        ).toBeEnabled();
     });
 });

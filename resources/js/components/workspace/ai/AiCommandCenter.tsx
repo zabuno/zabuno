@@ -52,7 +52,9 @@ export function AiCommandCenter({
 
                 <div>
                     <div className="mb-2 block">
-                        <Label htmlFor={commandInputId}>{t('workspace.aiCommand.commandLabel')}</Label>
+                        <Label htmlFor={commandInputId}>
+                            {t('workspace.aiCommand.commandLabel')}
+                        </Label>
                     </div>
                     <Textarea id={commandInputId} disabled className="w-full" />
                 </div>

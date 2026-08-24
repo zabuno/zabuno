@@ -36,12 +36,18 @@ function isValidPlan(value: unknown): value is Plan {
         return false;
     }
 
-    if (!Array.isArray(candidate.entitlements) || !candidate.entitlements.every((item) => typeof item === 'string')) {
+    if (
+        !Array.isArray(candidate.entitlements) ||
+        !candidate.entitlements.every((item) => typeof item === 'string')
+    ) {
         return false;
     }
 
-    const amountValid = candidate.amount_minor === null || isNonNegativeInteger(candidate.amount_minor);
-    const currencyValid = candidate.currency === null || (typeof candidate.currency === 'string' && CURRENCY_PATTERN.test(candidate.currency));
+    const amountValid =
+        candidate.amount_minor === null || isNonNegativeInteger(candidate.amount_minor);
+    const currencyValid =
+        candidate.currency === null ||
+        (typeof candidate.currency === 'string' && CURRENCY_PATTERN.test(candidate.currency));
 
     if (!amountValid || !currencyValid) {
         return false;
@@ -182,7 +188,10 @@ export function PlanManagementPage() {
 
         try {
             await bootstrapCsrfCookie();
-            const response = await fetch(`${PLANS_ENDPOINT}/${target.id}/activate`, mutationInit('POST', {}));
+            const response = await fetch(
+                `${PLANS_ENDPOINT}/${target.id}/activate`,
+                mutationInit('POST', {}),
+            );
 
             if (!response.ok) {
                 setAnnouncement({ kind: 'error', message: t('platform.plans.activate.error') });
@@ -201,7 +210,12 @@ export function PlanManagementPage() {
 
     return (
         <div className="flex flex-col gap-6" style={{ maxWidth: '100%' }}>
-            <PlanList status={status} plans={plans} onRetry={() => void fetchPlans()} onActivateRequest={setActivationTarget} />
+            <PlanList
+                status={status}
+                plans={plans}
+                onRetry={() => void fetchPlans()}
+                onActivateRequest={setActivationTarget}
+            />
 
             <PlanForm onSubmit={(payload) => void handleCreate(payload)} submitting={creating} />
 
@@ -220,7 +234,12 @@ export function PlanManagementPage() {
                 />
             )}
 
-            <p role="status" aria-live="polite" aria-label={t('platform.plans.activate.dialog.heading')} className="sr-only">
+            <p
+                role="status"
+                aria-live="polite"
+                aria-label={t('platform.plans.activate.dialog.heading')}
+                className="sr-only"
+            >
                 {announcement?.message ?? ''}
             </p>
         </div>

@@ -58,9 +58,7 @@ export function QrExportConfigForm({
                 >
                     <option value="png">{t('workspace.publication.qrExport.formats.png')}</option>
                     <option value="svg">{t('workspace.publication.qrExport.formats.svg')}</option>
-                    <option value="pdf">
-                        {t('workspace.publication.qrExport.formats.pdf')}
-                    </option>
+                    <option value="pdf">{t('workspace.publication.qrExport.formats.pdf')}</option>
                 </select>
             </label>
 
@@ -69,9 +67,7 @@ export function QrExportConfigForm({
                 <select
                     disabled={!isPdf}
                     value={paperSize}
-                    onChange={(event) =>
-                        onPaperSizeChange?.(event.target.value as QrPaperSize)
-                    }
+                    onChange={(event) => onPaperSizeChange?.(event.target.value as QrPaperSize)}
                     className={FIELD_CLASSES}
                 >
                     {PAPER_SIZES.map((size) => (
@@ -87,9 +83,7 @@ export function QrExportConfigForm({
                 <select
                     disabled={!isPdf}
                     value={orientation}
-                    onChange={(event) =>
-                        onOrientationChange?.(event.target.value as QrOrientation)
-                    }
+                    onChange={(event) => onOrientationChange?.(event.target.value as QrOrientation)}
                     className={FIELD_CLASSES}
                 >
                     <option value="Portrait">

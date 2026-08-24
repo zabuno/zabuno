@@ -15,7 +15,11 @@ type MediaLibraryRegionProps = {
  */
 export function MediaLibraryRegion({ assets, onDelete }: MediaLibraryRegionProps) {
     return (
-        <div role="region" aria-label={t('workspace.media.library.region')} className="flex flex-col gap-3">
+        <div
+            role="region"
+            aria-label={t('workspace.media.library.region')}
+            className="flex flex-col gap-3"
+        >
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                 {t('workspace.media.library.heading')}
             </h3>
@@ -31,10 +35,18 @@ export function MediaLibraryRegion({ assets, onDelete }: MediaLibraryRegionProps
             ) : (
                 <ul className="flex flex-col gap-2">
                     {assets.map((asset) => (
-                        <li key={asset.id} className="flex flex-col gap-1 border-b border-gray-200 pb-2 dark:border-gray-700">
+                        <li
+                            key={asset.id}
+                            className="flex flex-col gap-1 border-b border-gray-200 pb-2 dark:border-gray-700"
+                        >
                             <span className="text-sm font-medium text-gray-900 dark:text-white">{`#${asset.id}`}</span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300">{asset.altText}</span>
-                            <span role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                                {asset.altText}
+                            </span>
+                            <span
+                                role="status"
+                                className="text-sm text-gray-500 dark:text-gray-400"
+                            >
                                 {t('workspace.media.library.asset.status.scanPending')}
                             </span>
                             <button

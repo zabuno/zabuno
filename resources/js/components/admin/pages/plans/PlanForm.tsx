@@ -89,7 +89,11 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        if (!validation.isValid || validation.versionValue === null || validation.sortOrderValue === null) {
+        if (
+            !validation.isValid ||
+            validation.versionValue === null ||
+            validation.sortOrderValue === null
+        ) {
             return;
         }
 
@@ -106,17 +110,32 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ maxWidth: '100%' }}>
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{t('platform.plans.form.heading')}</h2>
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t('platform.plans.form.heading')}
+            </h2>
 
-            <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 12rem), 1fr))' }}>
+            <div
+                className="grid gap-3"
+                style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 12rem), 1fr))' }}
+            >
                 <label className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
                     {t('platform.plans.form.name')}
-                    <input value={name} onChange={(event) => setName(event.target.value)} type="text" className={FIELD_CLASSES} />
+                    <input
+                        value={name}
+                        onChange={(event) => setName(event.target.value)}
+                        type="text"
+                        className={FIELD_CLASSES}
+                    />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
                     {t('platform.plans.form.code')}
-                    <input value={code} onChange={(event) => setCode(event.target.value)} type="text" className={FIELD_CLASSES} />
+                    <input
+                        value={code}
+                        onChange={(event) => setCode(event.target.value)}
+                        type="text"
+                        className={FIELD_CLASSES}
+                    />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
@@ -143,7 +162,12 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
 
                 <label className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
                     {t('platform.plans.form.currency')}
-                    <input value={currency} onChange={(event) => setCurrency(event.target.value)} type="text" className={FIELD_CLASSES} />
+                    <input
+                        value={currency}
+                        onChange={(event) => setCurrency(event.target.value)}
+                        type="text"
+                        className={FIELD_CLASSES}
+                    />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">

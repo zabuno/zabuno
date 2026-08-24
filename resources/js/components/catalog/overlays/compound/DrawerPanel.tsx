@@ -82,7 +82,10 @@ export function DrawerPanel({
             return false;
         };
         return Array.from(candidates).filter((element) => {
-            if (element.hasAttribute('disabled') || element.getAttribute('aria-hidden') === 'true') {
+            if (
+                element.hasAttribute('disabled') ||
+                element.getAttribute('aria-hidden') === 'true'
+            ) {
                 return false;
             }
             if (element.tabIndex < 0) {

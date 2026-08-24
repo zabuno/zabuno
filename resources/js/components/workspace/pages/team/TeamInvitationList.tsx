@@ -141,9 +141,15 @@ export function TeamInvitationList({
                                 key={invitation.id}
                                 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
                             >
-                                <span className="font-medium text-gray-900 dark:text-white">{invitation.email}</span>
-                                <span className="text-gray-500 dark:text-gray-400">{invitation.role}</span>
-                                <span className="text-gray-500 dark:text-gray-400">{invitation.status}</span>
+                                <span className="font-medium text-gray-900 dark:text-white">
+                                    {invitation.email}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                    {invitation.role}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400">
+                                    {invitation.status}
+                                </span>
 
                                 {stage === 'idle' && (
                                     <button
@@ -163,7 +169,9 @@ export function TeamInvitationList({
                                             disabled={stage === 'busy'}
                                             onClick={() => void confirmCancel(invitation.id)}
                                         >
-                                            {committedRows[invitation.id] ? cancelRetryText : cancelConfirmText}
+                                            {committedRows[invitation.id]
+                                                ? cancelRetryText
+                                                : cancelConfirmText}
                                         </button>
                                         <button
                                             type="button"
@@ -177,13 +185,19 @@ export function TeamInvitationList({
                                 )}
 
                                 {stage === 'busy' && (
-                                    <span role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                                    <span
+                                        role="status"
+                                        className="text-sm text-gray-500 dark:text-gray-400"
+                                    >
                                         {cancelBusyText}
                                     </span>
                                 )}
 
                                 {stage === 'error' && (
-                                    <span role="status" className="text-sm font-medium text-red-600 dark:text-red-400">
+                                    <span
+                                        role="status"
+                                        className="text-sm font-medium text-red-600 dark:text-red-400"
+                                    >
                                         {cancelErrorText}
                                     </span>
                                 )}

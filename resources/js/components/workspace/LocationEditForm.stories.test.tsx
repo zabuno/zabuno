@@ -25,12 +25,19 @@ const REQUIRED_STATES = [
     'Dark',
 ] as const;
 
-function importStoriesModule<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+function importStoriesModule<
+    T extends Record<string, unknown> = Record<string, unknown>,
+>(): Promise<T> {
     return import(/* @vite-ignore */ './LocationEditForm.stories') as unknown as Promise<T>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyStory = { args?: Record<string, unknown>; parameters?: Record<string, any>; globals?: Record<string, any> };
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type AnyStory = {
+    args?: Record<string, unknown>;
+    parameters?: Record<string, any>;
+    globals?: Record<string, any>;
+};
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 describe('LocationEditForm.stories — Storybook contract matrix', () => {
     it('exports a meta pointing at LocationEditForm with a Macro/Workspace title', async () => {
@@ -40,16 +47,21 @@ describe('LocationEditForm.stories — Storybook contract matrix', () => {
         expect(mod.default.title).toMatch(/Macro\/Workspace/);
     });
 
-    it.each(REQUIRED_STATES)('exports a %s story, or (for Empty) declares EmptyNotApplicable metadata', async (state) => {
-        const mod = await importStoriesModule<Record<string, AnyStory | undefined> & { EmptyNotApplicable?: unknown }>();
+    it.each(REQUIRED_STATES)(
+        'exports a %s story, or (for Empty) declares EmptyNotApplicable metadata',
+        async (state) => {
+            const mod = await importStoriesModule<
+                Record<string, AnyStory | undefined> & { EmptyNotApplicable?: unknown }
+            >();
 
-        if (state === 'Empty' && mod.Empty === undefined) {
-            expect(mod.EmptyNotApplicable).toBeDefined();
-            return;
-        }
+            if (state === 'Empty' && mod.Empty === undefined) {
+                expect(mod.EmptyNotApplicable).toBeDefined();
+                return;
+            }
 
-        expect(mod[state]).toBeDefined();
-    });
+            expect(mod[state]).toBeDefined();
+        },
+    );
 
     it('renders the Default story with real-shaped local fixture args', async () => {
         const mod = await importStoriesModule<{ Default: AnyStory }>();
@@ -60,7 +72,10 @@ describe('LocationEditForm.stories — Storybook contract matrix', () => {
         };
 
         expect(args.workspaceId).toEqual(expect.any(Number));
-        expect(args.location).toMatchObject({ id: expect.any(Number), display_name: expect.any(String) });
+        expect(args.location).toMatchObject({
+            id: expect.any(Number),
+            display_name: expect.any(String),
+        });
         expect(args.onSaved).toEqual(expect.any(Function));
 
         render(<LocationEditForm {...args} />);
@@ -75,7 +90,11 @@ describe('LocationEditForm.stories — Storybook contract matrix', () => {
 
     it('.storybook/preview.tsx declares the xs320 viewport option at 320x640 (Storybook 10 viewport.options, not the removed viewport.viewports key)', () => {
         const xs320 = (
-            previewConfig as { parameters?: { viewport?: { options?: Record<string, { styles?: Record<string, unknown> }> } } }
+            previewConfig as {
+                parameters?: {
+                    viewport?: { options?: Record<string, { styles?: Record<string, unknown> }> };
+                };
+            }
         ).parameters?.viewport?.options?.xs320;
         expect(xs320).toBeDefined();
         expect(xs320?.styles).toMatchObject({ width: '320px', height: '640px' });
@@ -149,8 +168,7 @@ describe('LocationEditForm.stories — Storybook contract matrix', () => {
         }>();
 
         const decorator = mod.default.decorators?.[0] as
-            | ((story: () => React.ReactElement, ctx: unknown) => React.ReactElement)
-            | undefined;
+            ((story: () => React.ReactElement, ctx: unknown) => React.ReactElement) | undefined;
         expect(decorator).toBeDefined();
 
         for (const loader of mod.LoadingOrSaving.loaders ?? []) {
@@ -161,7 +179,9 @@ describe('LocationEditForm.stories — Storybook contract matrix', () => {
 
         const loadingElement = decorator!(
             () => (
-                <LocationEditForm {...(mod.LoadingOrSaving.args as React.ComponentProps<typeof LocationEditForm>)} />
+                <LocationEditForm
+                    {...(mod.LoadingOrSaving.args as React.ComponentProps<typeof LocationEditForm>)}
+                />
             ),
             { args: mod.LoadingOrSaving.args, globals: {}, parameters: {} } as never,
         );

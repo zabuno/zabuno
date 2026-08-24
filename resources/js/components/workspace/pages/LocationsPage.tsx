@@ -32,21 +32,20 @@ export function LocationsPage({
 
     const grouped = Array.from(
         locations
-            .reduce<Map<string, { city: string; countryCode: string; locations: LocationProfile[] }>>(
-                (byCityCountry, location) => {
-                    const groupKey = `${location.city} ${location.country_code}`;
-                    const group = byCityCountry.get(groupKey) ?? {
-                        city: location.city,
-                        countryCode: location.country_code,
-                        locations: [],
-                    };
-                    group.locations.push(location);
-                    byCityCountry.set(groupKey, group);
+            .reduce<
+                Map<string, { city: string; countryCode: string; locations: LocationProfile[] }>
+            >((byCityCountry, location) => {
+                const groupKey = `${location.city} ${location.country_code}`;
+                const group = byCityCountry.get(groupKey) ?? {
+                    city: location.city,
+                    countryCode: location.country_code,
+                    locations: [],
+                };
+                group.locations.push(location);
+                byCityCountry.set(groupKey, group);
 
-                    return byCityCountry;
-                },
-                new Map(),
-            )
+                return byCityCountry;
+            }, new Map())
             .entries(),
     );
 
@@ -57,13 +56,19 @@ export function LocationsPage({
                 description={t('workspace.locations.operational.description')}
                 badges={badges}
                 actions={
-                    <Button type="button" size="sm" onClick={() => setAddingLocation((open) => !open)}>
+                    <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => setAddingLocation((open) => !open)}
+                    >
                         {t('workspace.locations.add.button')}
                     </Button>
                 }
             >
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {t('workspace.brandLocations.locations.count', { count: String(locations.length) })}
+                    {t('workspace.brandLocations.locations.count', {
+                        count: String(locations.length),
+                    })}
                 </p>
 
                 {addingLocation && (
@@ -106,8 +111,12 @@ export function LocationsPage({
 
                 {grouped.map(([groupKey, group]) => (
                     <div key={groupKey}>
-                        <p className="mb-2 font-medium text-gray-900 dark:text-white">{group.city}</p>
-                        <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">{group.countryCode}</p>
+                        <p className="mb-2 font-medium text-gray-900 dark:text-white">
+                            {group.city}
+                        </p>
+                        <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">
+                            {group.countryCode}
+                        </p>
                         <ul className="flex flex-col gap-3">
                             {group.locations.map((location) => (
                                 <li

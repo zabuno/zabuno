@@ -75,11 +75,23 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
 
     const badges: WorkspacePageStatusBadge[] = [
         checklistReady
-            ? { key: 'publication-readiness', status: 'success', label: t('workspace.publication.readiness.ready') }
-            : { key: 'publication-readiness', status: 'warning', label: t('workspace.publication.readiness.needsAttention') },
+            ? {
+                  key: 'publication-readiness',
+                  status: 'success',
+                  label: t('workspace.publication.readiness.ready'),
+              }
+            : {
+                  key: 'publication-readiness',
+                  status: 'warning',
+                  label: t('workspace.publication.readiness.needsAttention'),
+              },
         current !== null
             ? { key: 'publication-status', status: 'success', label: `#${current.id}` }
-            : { key: 'publication-status', status: 'info', label: t('workspace.publication.status.notPublished') },
+            : {
+                  key: 'publication-status',
+                  status: 'info',
+                  label: t('workspace.publication.status.notPublished'),
+              },
     ];
 
     const [prevChecklistReady, setPrevChecklistReady] = useState(checklistReady);

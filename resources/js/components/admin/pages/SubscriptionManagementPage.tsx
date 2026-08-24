@@ -2,7 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { t } from '../../../i18n/platform';
 import { WorkspaceDiscovery, type Workspace } from './subscriptions/WorkspaceDiscovery';
-import { CurrentSubscriptionCard, type Subscription, type CurrentSubscriptionStatus } from './subscriptions/CurrentSubscriptionCard';
+import {
+    CurrentSubscriptionCard,
+    type Subscription,
+    type CurrentSubscriptionStatus,
+} from './subscriptions/CurrentSubscriptionCard';
 import { ManualPaymentForm, type ManualPaymentFormValues } from './subscriptions/ManualPaymentForm';
 import { ManualPaymentConfirmDialog } from './subscriptions/ManualPaymentConfirmDialog';
 import type { Plan } from './plans/PlanList';
@@ -38,12 +42,18 @@ function isValidPlan(value: unknown): value is Plan {
         return false;
     }
 
-    if (!Array.isArray(candidate.entitlements) || !candidate.entitlements.every((item) => typeof item === 'string')) {
+    if (
+        !Array.isArray(candidate.entitlements) ||
+        !candidate.entitlements.every((item) => typeof item === 'string')
+    ) {
         return false;
     }
 
-    const amountValid = candidate.amount_minor === null || isNonNegativeInteger(candidate.amount_minor);
-    const currencyValid = candidate.currency === null || (typeof candidate.currency === 'string' && CURRENCY_PATTERN.test(candidate.currency));
+    const amountValid =
+        candidate.amount_minor === null || isNonNegativeInteger(candidate.amount_minor);
+    const currencyValid =
+        candidate.currency === null ||
+        (typeof candidate.currency === 'string' && CURRENCY_PATTERN.test(candidate.currency));
 
     if (!amountValid || !currencyValid) {
         return false;
@@ -139,7 +149,8 @@ export function SubscriptionManagementPage() {
     const [plansStatus, setPlansStatus] = useState<PlansStatus>('loading');
     const [activePlans, setActivePlans] = useState<Plan[]>([]);
 
-    const [subscriptionStatus, setSubscriptionStatus] = useState<CurrentSubscriptionStatus>('loading');
+    const [subscriptionStatus, setSubscriptionStatus] =
+        useState<CurrentSubscriptionStatus>('loading');
     const [subscription, setSubscription] = useState<Subscription | null>(null);
     const subscriptionRequestRef = useRef(0);
 
@@ -296,11 +307,16 @@ export function SubscriptionManagementPage() {
         }
     }, [pendingValues, selectedWorkspace, idempotencyKey, fetchSubscription]);
 
-    const pendingPlan = pendingValues ? activePlans.find((plan) => plan.id === pendingValues.planId) : undefined;
+    const pendingPlan = pendingValues
+        ? activePlans.find((plan) => plan.id === pendingValues.planId)
+        : undefined;
 
     return (
         <div className="flex flex-col gap-6" style={{ maxWidth: '100%' }}>
-            <WorkspaceDiscovery selectedWorkspace={selectedWorkspace} onSelect={handleWorkspaceSelect} />
+            <WorkspaceDiscovery
+                selectedWorkspace={selectedWorkspace}
+                onSelect={handleWorkspaceSelect}
+            />
 
             {selectedWorkspace && (
                 <>
@@ -311,13 +327,19 @@ export function SubscriptionManagementPage() {
                     />
 
                     {plansStatus === 'error' && (
-                        <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                        <p
+                            role="alert"
+                            className="text-sm font-medium text-red-600 dark:text-red-400"
+                        >
                             {t('platform.subscriptions.plans.error')}
                         </p>
                     )}
 
                     {plansStatus === 'success' && activePlans.length === 0 && (
-                        <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                        <p
+                            role="alert"
+                            className="text-sm font-medium text-red-600 dark:text-red-400"
+                        >
                             {t('platform.subscriptions.plans.blocked')}
                         </p>
                     )}
@@ -335,7 +357,10 @@ export function SubscriptionManagementPage() {
 
                     {submitError && (
                         <div className="flex flex-col gap-2">
-                            <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                            <p
+                                role="alert"
+                                className="text-sm font-medium text-red-600 dark:text-red-400"
+                            >
                                 {submitError}
                             </p>
                             <button
@@ -350,7 +375,9 @@ export function SubscriptionManagementPage() {
 
                     {dialogOpen && pendingValues && (
                         <ManualPaymentConfirmDialog
-                            planLabel={pendingPlan ? `${pendingPlan.name} (${pendingPlan.code})` : ''}
+                            planLabel={
+                                pendingPlan ? `${pendingPlan.name} (${pendingPlan.code})` : ''
+                            }
                             endsAt={pendingValues.endsAt}
                             confirming={submitting}
                             onCancel={() => setDialogOpen(false)}
@@ -364,7 +391,9 @@ export function SubscriptionManagementPage() {
                 role="status"
                 aria-live="polite"
                 aria-label={t('platform.subscriptions.success.region.label')}
-                className={successMessage ? 'text-sm text-green-600 dark:text-green-400' : 'sr-only'}
+                className={
+                    successMessage ? 'text-sm text-green-600 dark:text-green-400' : 'sr-only'
+                }
             >
                 {successMessage ?? ''}
             </p>

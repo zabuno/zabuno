@@ -19,12 +19,21 @@ import { MediaPage } from './MediaPage';
 const WORKSPACE_ID = 5;
 const MEDIA_ENDPOINT = `/api/workspaces/${WORKSPACE_ID}/media`;
 
-const FIXED_PIXEL_CLASS_PATTERN = /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
+const FIXED_PIXEL_CLASS_PATTERN =
+    /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
 const BREAKPOINT_CLASS_PATTERN = /(^|[\s"'`])(sm|md|lg|xl|2xl):/;
 
 function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+    Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: width,
+    });
+    Object.defineProperty(window, 'innerHeight', {
+        writable: true,
+        configurable: true,
+        value: height,
+    });
     window.dispatchEvent(new Event('resize'));
 }
 
@@ -119,7 +128,12 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
                     ok: true,
                     status: 201,
                     json: async () => ({
-                        asset: { id: 42, altText: 'A test image', slot: 'hero', status: 'quarantined' },
+                        asset: {
+                            id: 42,
+                            altText: 'A test image',
+                            slot: 'hero',
+                            status: 'quarantined',
+                        },
                     }),
                 } as Response;
             }
@@ -167,7 +181,9 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
                     ok: true,
                     status: 200,
                     json: async () => ({
-                        assets: [{ id: 7, altText: 'Owned asset', slot: 'hero', status: 'quarantined' }],
+                        assets: [
+                            { id: 7, altText: 'Owned asset', slot: 'hero', status: 'quarantined' },
+                        ],
                     }),
                 } as Response;
             }
@@ -231,7 +247,9 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
 
         const classLists = collectClassLists(root as HTMLElement);
         const offenders = classLists.filter(
-            (classList) => FIXED_PIXEL_CLASS_PATTERN.test(classList) || BREAKPOINT_CLASS_PATTERN.test(classList),
+            (classList) =>
+                FIXED_PIXEL_CLASS_PATTERN.test(classList) ||
+                BREAKPOINT_CLASS_PATTERN.test(classList),
         );
 
         expect(offenders).toEqual([]);
@@ -243,7 +261,8 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         const uploadRegion = screen.getByRole('region', { name: /media upload/i });
 
         const rightsField =
-            within(uploadRegion).queryByLabelText(/rights/i) ?? within(uploadRegion).queryByLabelText(/licen[sc]e/i);
+            within(uploadRegion).queryByLabelText(/rights/i) ??
+            within(uploadRegion).queryByLabelText(/licen[sc]e/i);
         expect(rightsField).not.toBeNull();
         expect(rightsField).toBeDisabled();
 
@@ -261,7 +280,9 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
 
         const classLists = collectClassLists(uploadRegion as HTMLElement);
         const offenders = classLists.filter(
-            (classList) => FIXED_PIXEL_CLASS_PATTERN.test(classList) || BREAKPOINT_CLASS_PATTERN.test(classList),
+            (classList) =>
+                FIXED_PIXEL_CLASS_PATTERN.test(classList) ||
+                BREAKPOINT_CLASS_PATTERN.test(classList),
         );
 
         expect(offenders).toEqual([]);
@@ -298,7 +319,9 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         categories.forEach((label) => {
             const categoryStatus = statuses.find((node) => node.textContent?.includes(label));
             expect(categoryStatus).toBeDefined();
-            expect(categoryStatus?.textContent ?? '').toMatch(/not available|unavailable|no assets? yet/i);
+            expect(categoryStatus?.textContent ?? '').toMatch(
+                /not available|unavailable|no assets? yet/i,
+            );
         });
 
         expect(within(libraryRegion).queryByText(/#\d+/)).toBeNull();
@@ -310,13 +333,17 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         expect(window.innerWidth).toBe(320);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        const inventory = libraryRegion.querySelector('[data-testid="media-slot-category-inventory"]');
+        const inventory = libraryRegion.querySelector(
+            '[data-testid="media-slot-category-inventory"]',
+        );
 
         expect(inventory).not.toBeNull();
 
         const classLists = collectClassLists(inventory as HTMLElement);
         const offenders = classLists.filter(
-            (classList) => FIXED_PIXEL_CLASS_PATTERN.test(classList) || BREAKPOINT_CLASS_PATTERN.test(classList),
+            (classList) =>
+                FIXED_PIXEL_CLASS_PATTERN.test(classList) ||
+                BREAKPOINT_CLASS_PATTERN.test(classList),
         );
 
         expect(offenders).toEqual([]);

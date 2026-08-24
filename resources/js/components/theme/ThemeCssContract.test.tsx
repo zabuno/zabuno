@@ -122,7 +122,9 @@ describe('theme CSS token contract — explicit theme beats OS preference', () =
 
     it('defines the light --border token in a base :root rule outside any media query', () => {
         const roots = topLevelRootBlocks(css);
-        const hasLightBorder = roots.some((block) => /--border\s*:\s*oklch\(0\.9\s+0\s+0\)/.test(block));
+        const hasLightBorder = roots.some((block) =>
+            /--border\s*:\s*oklch\(0\.9\s+0\s+0\)/.test(block),
+        );
         expect(hasLightBorder).toBe(true);
     });
 

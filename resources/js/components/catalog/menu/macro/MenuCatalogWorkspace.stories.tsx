@@ -48,7 +48,8 @@ const meta: Meta<typeof MenuCatalogWorkspace> = {
     parameters: {
         docs: {
             description: {
-                component: 'Owner journey for creating a menu, categories, products, menu items, and allergens.',
+                component:
+                    'Owner journey for creating a menu, categories, products, menu items, and allergens.',
             },
         },
     },

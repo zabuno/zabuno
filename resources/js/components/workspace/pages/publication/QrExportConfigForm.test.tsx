@@ -174,7 +174,9 @@ describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => 
             expect(button).toBeEnabled();
         });
 
-        const pressed = themeButtons.filter((button) => button.getAttribute('aria-pressed') === 'true');
+        const pressed = themeButtons.filter(
+            (button) => button.getAttribute('aria-pressed') === 'true',
+        );
         expect(pressed).toHaveLength(1);
         expect(pressed[0]).toHaveAccessibleName(/^classic theme$/i);
 
