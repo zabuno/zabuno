@@ -40,6 +40,7 @@ bir stage'in Exit Gate'i kanıtla GO aldığında artar.
 | AI Provider Account Vault | mimari pre-wired (kapalı) | temel (tek platform-owned hesap) | çok-hesap/BYOK | — | — | — | — | — |
 | Integration Hub | temel (yalnız Iyzico webhook altyapısı) | — | — | — | — | genişletilmiş (SSO/SCIM + API/webhook) | — | — |
 | Feedback/NPS (OPT-25) | — | — | — | ✅ | — | — | — | — |
+| DS-00 Continuous Design System Workstream (yatay, modül değil) | ✅ paralel yaşar (Wave0 dondurulmuş sözleşme + Wave1–3 uygulama, `docs/35`) | ✅ paralel yaşar | ✅ paralel yaşar | ✅ paralel yaşar | ✅ paralel yaşar | ✅ paralel yaşar | ✅ paralel yaşar | ✅ paralel yaşar |
 
 Boş hücre = o stage'de o modülde artımlı bir değişiklik planlanmadı (önceki
 seviye korunur). Stage 7 ve Stage 8, yeni "modül" eklemez — mevcut modüllerin
@@ -99,12 +100,23 @@ ilki runtime persona, ikincisi delivery function). Bu ayrım, hiçbir WP
 satırının içeriğini (outcome/scope/predecessor/status) **değiştirmez** —
 yalnız Owner sütununun nasıl okunacağını netleştirir.
 
+### OPS-00 — yatay operasyon/tooling (38 WP registry dışı, sabit sayacı etkilemez)
+
+OPS-00 kimlikleri (`OPS-00-xx`) yukarıdaki `S<stage>-WP<sıra>` isim
+uzayının **dışındadır** — sabit 38 WP'ye eklenmez, hiçbir stage'in altına
+girmez, `docs/17` §4'teki 0/8 ilerleme sayacını değiştirmez (bkz. `docs/17`
+§5a). Aşağıdaki tek satır, yürütmede bu ayrımın somut örneğidir:
+
+| ID | Outcome / Scope | Predecessor | Owner | Acceptance evidence | Status |
+|---|---|---|---|---|---|
+| OPS-00-01 | Event-driven Pane garbage collector: dry-run varsayılan, `--apply` en fazla bir tam kanıtlanmış güvenli Pane'i arşivler (`runpane panes archive --pane <ID> --source agent --yes --json`); tetikleyiciler worker admission öncesi, handoff/exit sonrası, task kapanışı, Guardian/PTX baskısı, owner isteği — asla zamanlayıcı değil | — | Engineering (delivery) | `.claude/skills/pane-garbage-collector/tests/pane_gc_test.sh` GREEN | implemented |
+
 ### Stage 1 — MVP (`docs/18`)
 
 | WP | Outcome / Scope | Predecessor | Owner | Acceptance evidence / exit-gate | Status |
 |---|---|---|---|---|---|
-| S1-WP01 | Foundation/preflight: modül registry/manifest bootstrap (CORE-05), env/config katmanlama (dev/staging/prod), temel CI iskeleti (build/lint/test), OWASP ASVS temel checklist bağlanır | — (kök WP) | Architecture + Engineering | `docs/03` ADR uygunluk kontrolü, `docs/27` genel disiplin | not-started |
-| S1-WP02 | Identity+Tenant+Permission+Admin shell: CORE-01 Identity/Sessions, CORE-02 Tenancy, CORE-03 Authorization (RBAC baseline), CORE-06 Settings/Secrets, admin panel iskeleti | S1-WP01 | Architecture + Engineering | Tenant escape testi (`docs/16` AUTH-02), IDOR testi (`docs/05` §6) | not-started |
+| S1-WP01 | Foundation/preflight: modül registry/manifest bootstrap (CORE-05), env/config katmanlama (dev/staging/prod), temel CI iskeleti (build/lint/test), OWASP ASVS temel checklist bağlanır | — (kök WP) | Architecture + Engineering | `docs/03` ADR uygunluk kontrolü, `docs/27` genel disiplin | in-progress (alt paket S1-WP01A foundation iskeleti implementation-in-progress — hedefli preflight/PHPUnit/Vitest/build kanıtı; FULL_QA_LOCAL_1 bir kez çalıştı (8/10, Pint hedefli düzeltildi); ikinci tam QA bütçesi yalnız CI için rezerve; iki bağımsız review de INDEPENDENT_REVIEW_RED sonucu verdi — ilki iki P1 blocker buldu (composer license metadata + AGENTS.md/docs/31 public-governance çelişkisi) ve iki P2 hedefli RED→GREEN düzeltildi, ikincisi (209 dosyalık dondurulmuş snapshot) bu iki P2 kapanışını GREEN doğruladı ve üçüncü bir blocker bulmadı, aynı iki P1 hâlâ açık (bkz. `docs/27` §6); WP'nin tamamı henüz `done-with-evidence` değildir) |
+| S1-WP02 | Identity+Tenant+Permission+Admin shell: CORE-01 Identity/Sessions, CORE-02 Tenancy, CORE-03 Authorization (RBAC baseline), CORE-06 Settings/Secrets, admin panel iskeleti | S1-WP01 | Architecture + Engineering | Tenant escape testi (`docs/16` AUTH-02), IDOR testi (`docs/05` §6) | in-progress (alt paket **S1-WP02A** — CORE-01-only register→verification-pending→signed/expiring email verification→authenticated cookie session→logout dikey dilimi — yerel çalıştırılabilir bir implementation candidate'tır: hedefli evidence GREEN (Vitest 23/23, odaklı PHP closure review 5 test/6 assertion, lint/build/Pint/`git diff --check` GREEN, bağımsız closure review FINAL_INDEPENDENT_REVIEW_GREEN — P0/P1/P2 yok, bkz. `docs/33` §Final durum); durum **WP02A local-candidate-targeted-green**, **public-promotion RED**. Alt paket **S1-WP02B** — bounded CORE-02 Tenancy baseline (workspace create+owner-membership tek transaction, üyelik-scope'lu liste, current/switch context, enumeration-safe tenant escape reddi) — artık **code/test-local-candidate-targeted-green**'dir: 23/23 hedefli test/72 assertion GREEN, düzeltilmiş kod üzerinde bağımsız kapanış review'ı S1_WP02B_CLOSURE_REVIEW_GREEN (P0/P1/P2 yok), yalnız API kodu + izole test kanıtı — persistent DB migrate edilmedi, workspace UI/manuel E2E yok (bkz. `docs/34` §13a). CORE-02'nin geri kalanı (state geçişleri, davet, Brand/Location/işletme profili) ve CORE-03 Authorization, CORE-06 Settings/Secrets, admin panel iskeleti bu iki bounded dilimin **dışındadır**, hâlâ not-started; bu yüzden S1-WP02 bütünü **in-progress** olarak işaretlidir; hiçbiri **done-with-evidence** değildir) |
 | S1-WP03 | Menu+Media: Menu Catalog (kategori/ürün/alerjen/görsel/fiyat/görünürlük), CORE-13 Media baseline (upload/validate/derivative **+ quarantine/security-scan zorunluluğu**, `docs/07` §5, `modules/core-file-media.md` §Phase delivery), CORE-09 Taxonomy temel, CORE-08 altı katalog scaffold+PO→MO→JSON pipeline (`docs/13` §2a) | S1-WP02 | Engineering + Design | Medya golden-file testi, quarantine/security-scan testi (`docs/16` MED-03, taranmamış asset public olamaz), i18n pipeline tutarlılık testi (6 katalog) | not-started |
 | S1-WP04 | Publication+QR Resolve+Bulk Print: Publication (draft/preview/publish/snapshot), QR Destination resolver, QR Print Export baseline (PNG/SVG/PDF, bulk wizard, 6 tema), diner PWA baseline (manifest+service-worker+salt-okunur offline-fallback+bounded analytics queue, `docs/15` §5a) | S1-WP03 | Engineering + Design | QR fiziksel scan testi (`docs/16` QR-02), PWA installability + salt-okunur offline-fallback testi | not-started |
 | S1-WP05 | Analytics+Team+Pricing entitlements: Analytics/Consent/Tagging temel (scan sayaçları, QR Resolve vs Confirmed Menu Open), Team (Owner+Editor davet), CORE-04 Entitlements, Pricing/Subscription/Billing (plan katalogu + manuel ödeme) | S1-WP02 (S1-WP03/04 ile paralel) | Engineering + Finance Operator | Consent-gated tag testi (`docs/12` §1), entitlement uygulama testi | not-started |
@@ -226,11 +238,20 @@ tekrar edilmez.
 ## 6. Status alanı sözleşmesi
 
 Her satır (§1 matrisi ve §3 WP registry'si) için status: `not-started` (bu
-külliyattaki her satırın **mevcut durumu**), `planned`, `in-progress`,
-`blocked`, `done-with-evidence`. Şu an külliyattaki **her** modül/stage/WP
-kombinasyonu `not-started` durumundadır — plan üretimi (bu düzeltme paketi
-dahil) bu durumu değiştirmez. `docs/17` §4'teki sabit **0/8** sayaç kuralı
-bu WP registry'sinden **bağımsızdır** — bir stage'in tüm WP'leri
+külliyattaki her satırın **varsayılan mevcut durumu**), `planned`,
+`in-progress`, `blocked`, `done-with-evidence`. Şu an külliyattaki bu
+varsayılanın **iki** istisnası vardır: **S1-WP01** (`in-progress` — alt
+paket S1-WP01A foundation iskeleti implementation-in-progress, §3 Stage 1
+satırı) ve **S1-WP02** (`in-progress` — alt paket S1-WP02A CORE-01-only
+dikey dilimi local-candidate-targeted-green, public-promotion RED
+(`docs/33`); alt paket S1-WP02B bounded CORE-02 Tenancy baseline
+code/test-local-candidate-targeted-green, public-promotion RED (`docs/34`
+§13a); WP02'nin geri kalanı (CORE-02 remainder, CORE-03, CORE-06, admin
+shell) hâlâ not-started, §3 Stage 1 satırı). Geri kalan
+**her** modül/stage/WP kombinasyonu hâlâ `not-started` durumundadır — plan
+üretimi (doküman genişletmesi) bu durumu değiştirmez, yalnız gerçek
+implementasyon ilerlemesi değiştirir. `docs/17` §4'teki sabit **0/8** sayaç
+kuralı bu WP registry'sinden **bağımsızdır** — bir stage'in tüm WP'leri
 `done-with-evidence` olsa bile, sayaç yalnız o stage'in Exit Gate'i **kanıtla**
 GO aldığında artar (owner kararı, otomatik değil).
 
@@ -241,3 +262,16 @@ stage×WP milestone/work-package registry'sinin tek kanonik kaynağıdır. Stage
 dokümanları (`docs/18`–`docs/25`) kendi anlatısını (`once/simdi/fark`,
 `kullaniciYolculugu` vb.) taşır ve bu registry'ye link verir; bu registry
 stage anlatısını **tekrar üretmez**, yalnız outcome/scope/kanıt bağını taşır.
+
+## 8. Fast-delivery genome overlay (SP-01, ayrı sayaç)
+
+Bu dosyanın §0'ındaki sabit paydalı ürün roadmap sayacından **bağımsız**,
+ayrı bir program-hızlandırma overlay'i vardır: madde sayısı, tamamlanan/
+aktif durumu ve madde listesi yalnız
+`config/development-speed-budget.json#fastDeliveryGenomeOverlay`'de
+sahiplenilir, burada **tekrar edilmez**. Bu iki sayaç birbirini
+**değiştirmez**; §0'daki sayaç yalnız Exit Gate kanıtıyla artar, overlay
+sayacı yalnız bu genome maddelerinin tamamlanmasıyla artar. Rasyonel ve
+kanıt: `claude_speeder_report.md`, `codex_speeder_report.md`. İşletim
+kuralı: `.claude/rules/fast-development.md`, `.claude/skills/zabuno-speeder/
+SKILL.md`.

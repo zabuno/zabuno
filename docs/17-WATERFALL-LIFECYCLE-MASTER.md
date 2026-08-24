@@ -224,11 +224,43 @@ korunur.
 
 Bu plan korpusunun üretilmiş olması (bu §3a stage panoları dahil) **hiçbir
 stage'i tamamlamaz** — bu, PLANNING ONLY bir doküman genişletmesidir, ürün
-ilerlemesi değildir. Şu an:
+ilerlemesi değildir. S1-WP01A foundation iskeletinin implementation-in-
+progress durumu da (`docs/26` S1-WP01, `README.md` §İlerleme) bu sayacı
+değiştirmez — Exit Gate kanıtla GO almadan sayaç artmaz. Şu an:
 
 ```
-0/8 tamamlandı, aktif aşama: plan-onayı (Stage 1 MVP henüz başlamadı)
+0/8 tamamlandı, 1/8 aktif: Stage 1 — MVP (S1-WP01 Foundation & preflight,
+alt paket S1-WP01A implementation-in-progress; S1-WP02..07 not-started)
 ```
+
+## 5a. OPS-00 — yatay operasyon/tooling iş akışı (sabit 38 WP dışı)
+
+OPS-00, sabit Milestone/Work Package registry'sinin (`docs/26` §3, S1–S8,
+38 WP) **dışında**, yatay bir operasyon/tooling akışıdır. Bunu açıkça
+belirtmek gerekir çünkü aksi halde bir sonraki okuyucu bunu 39. bir WP
+sanabilir:
+
+- OPS-00 bir WP **değildir**; sabit 38 WP sayısını değiştirmez, hiçbir
+  WP'yi yeniden numaralandırmaz, hiçbir stage'i yeniden sıralamaz.
+- OPS-00 §4'teki 0/8 ilerleme sayacını **etkilemez** — bu sayaç yalnız
+  Exit Gate kanıtla GO aldığında artar; OPS-00 kapsamındaki hiçbir görev
+  bir stage'in Exit Gate'i değildir, dolayısıyla hiçbir ürün readiness
+  iddiasını değiştirmez.
+- Kapsam: geliştirme ortamı operasyonel hijyeni (örn. Pane worker
+  yaşam döngüsü temizliği). İlk örneği: Pane garbage collector
+  (`.claude/skills/pane-garbage-collector/`, agent:
+  `.claude/agents/pane-garbage-collector.md`).
+- Tetikleyici modeli **event-driven**'dır — zamanlayıcı/daemon/cron/
+  sleep-loop yok; yalnız gerçek bir yaşam döngüsü olayında (yeni worker
+  kabulü öncesi, worker handoff/exit sonrası, task kapanışı, Guardian/PTX
+  baskısı, owner'ın açık isteği) çağrılır.
+- Kabul testi: `.claude/skills/pane-garbage-collector/tests/
+  pane_gc_test.sh` (RED test ayrı bir yazar tarafından sağlanmıştır, bu
+  paket onu değiştirmez); implementasyon bu testi GREEN geçirmek
+  zorundadır.
+- Sahiplik: GC01 paketi kapsamında tek Claude implementation writer;
+  invocation zorunluluğu kök `CLAUDE.md`'de (bkz. "Pane yaşam döngüsü —
+  garbage collector çağrısı zorunludur") kayıtlıdır.
 
 ## 6. Kanonik sahiplik
 

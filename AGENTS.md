@@ -5,10 +5,42 @@ Bu dosya bu depoda (`zabuno/zabuno` — bu külliyatın public GitHub kökü)
 Codex/Claude yönlendirme talimatları bu dosyanın **üzerinde** kalır; çelişki
 halinde kök talimatlar kazanır.
 
-## 1. Bu bir planlama paketidir
+## 1. Bu depo bir planlama paketi + başlayan bir Stage 1 runtime foundation'dır
 
-- Hiçbir dosya çalışan kod, kurulmuş bağımlılık veya tamamlanmış entegrasyon iddia
-  edemez. Her modül/stage dokümanı PLANNING ONLY etiketini taşımalıdır.
+- Bu depo artık iki katmanlıdır: (a) `docs/`, `modules/`, `skills/`,
+  `templates/` altındaki plan korpusu — stage dokümanları ve bir modülün
+  henüz implement edilmemiş geri kalanı PLANNING ONLY etiketini taşımaya
+  devam eder, kendi stage'i/modülü uçtan uca implement edilmeden bu etiket
+  kaldırılmaz; yalnız açıkça kanıtla desteklenmiş bounded runtime dilimleri
+  (örn. CORE-01/CORE-02'nin bu belgede tanımlı bounded alt dilimleri) kendi
+  scoped durumunu (local-candidate-targeted-green vb.) taşıyabilir — bu tek
+  başına ilgili modülün veya stage'in bütününü terfi ettirmez; (b) S1-WP01A
+  foundation iskeleti (`app/`, `config/`,
+  `routes/`, `resources/`, `tests/`, `composer.json`/`package.json` ve
+  kilit dosyaları, `.github/workflows/ci.yml`, `security/`) — bu, kurulu
+  bağımlılıklar ve hedefli kontrollerle doğrulanmış bir `/up` health route'u
+  + foundation-status ekranı taşır (`docs/26` S1-WP01). Bu paket
+  **implementation-in-progress**tir: test handoff tamamdır ve
+  FULL_QA_LOCAL_1 bir kez çalıştı (8/10; Pint hedefli düzeltme sonrası
+  mevcut snapshot'ta GREEN), ikinci tam QA bütçesi yalnız sonraki CI/full
+  QA koşusu için rezervedir (ikinci yerel tam koşu planlanmaz). İki
+  bağımsız review de INDEPENDENT_REVIEW_RED sonucu verdi; ikincisi P2
+  kapanışlarını GREEN doğruladı ve üçüncü bir blocker bulmadı — yayın,
+  hâlâ açık iki P1 owner-kararı blocker'ı (composer license metadata +
+  AGENTS.md/docs/31 public-governance çelişkisi) kapanana kadar
+  "implemented"/"complete" olarak sunulmaz (bkz. `docs/27` §6).
+  Bu ayrım stage dokümanlarının ve bir modülün implement edilmemiş geri
+  kalanının kendi "PLANNING ONLY / implement edilmedi" durumunu
+  **değiştirmez** — yalnız CORE-05 registry bootstrap, env/config
+  katmanlama, temel CI ve OWASP ASVS baseline'ı için implementation-in-
+  progress bir durum vardır. S1-WP02'nin
+  iki bounded alt dilimi de local/hedefli-test seviyesinde candidate'tır:
+  S1-WP02A (CORE-01 kimlik/oturum, docs/33) ve S1-WP02B (bounded CORE-02
+  tenancy baseline: workspace create+owner-membership, üyelik-scope'lu liste,
+  current/switch context, `docs/34` §13a). Geri kalan ürün/iş
+  kabiliyeti (menü, QR, ödeme, CORE-02 remainder, CORE-03, CORE-06 vb.)
+  hâlâ **yoktur** (`docs/17`
+  §4 sayaç kuralı, `README.md` §İlerleme).
 - Bu depo (`zabuno/zabuno`) **hiçbir `old/` arşiv dizini içermez** — güncel
   kökte böyle bir dizin yoktur. Bu külliyatın süzüldüğü tarihsel legacy
   QR-menü projesi/denemesi tamamen **bu deponun dışında**, ayrı bir dış
@@ -28,7 +60,7 @@ halinde kök talimatlar kazanır.
   link hedefi değil, yalnız biçim anlatımı), tekrar etmez. Örn: modül matrisi
   `docs/26-MILESTONE-WORK-PACKAGE-MATRIX.md`'de sahiplenilir; başka dosyalar oraya
   link verir.
-- Yeni kanonik belge gerekiyorsa oluşturulabilir, ancak önce mevcut 33 dosyadan
+- Yeni kanonik belge gerekiyorsa oluşturulabilir, ancak önce mevcut 35 dosyadan
   birinin genişletilip genişletilemeyeceği değerlendirilir.
 
 ## 3. Faz disiplini
@@ -126,6 +158,35 @@ Bağlayıcı kurallar (kategori düzeyinde, bu depo dahil her ajan için):
 - Bu ajan seti kapsam/onay/rollback/nihai kabul kararı **veremez**. Bu kararlar
   görevi veren orkestratöre (Codex Desktop MASTER) ve nihayetinde owner'a aittir.
 
+## 7a. Hız genomu (SP-01, tüm ajanlar için)
+
+- Her implementasyon paketi (docs-only hariç) RED/GREEN/checkpoint
+  adımlarında `scripts/speed-gate check --manifest <manifest.json> --config
+  config/development-speed-budget.json` ile geçmelidir; verdict
+  `PASS` değilse (`BATCH_REQUIRED`/`HIGH_RISK`/`CHECKPOINT_BLOCKED`) o
+  verdict'e göre davranılır.
+- Tek numerik politika kaynağı `config/development-speed-budget.json`'dır;
+  hiçbir belge/kural/skill/agent bu eşikleri tekrar etmez, yalnız işaret
+  eder. Yeni Codex sohbetleri bu bölüm ve yukarıdaki JSON aracılığıyla
+  miras alır; Claude oturumları ek olarak `.claude/rules/
+  fast-development.md`, `.claude/skills/zabuno-speeder/SKILL.md` ve
+  `.claude/agents/zabuno-speeder.md`'yi izler.
+- Bu genome, mevcut `docs/17` §4 ürün roadmap sayacından **bağımsız**, ayrı
+  bir program-hızlandırma sayacı taşır; tamamlanan/aktif madde sayısı ve
+  madde listesi yalnız
+  `config/development-speed-budget.json#fastDeliveryGenomeOverlay`'de
+  sahiplenilir (`docs/26` §8), burada tekrar edilmez. Rasyonel ve bağımsız
+  kanıt: `claude_speeder_report.md`, `codex_speeder_report.md`.
+- Bu genomun taahhüdü risk-ayarlı **program throughput'udur** — tek bir
+  paket için desteklenmeyen bir süre/SLA taahhüdü **değildir**
+  (`config/development-speed-budget.json#programThroughputObjective`,
+  `singlePackageDurationSlaClaimAllowed: false`).
+- Owner'a yalnız ürün/marka kapsamı, geri döndürülemez etki, dış maliyet
+  veya güvenlik risk iştahı sorulur; geri döndürülebilir teknik kararlar
+  (risk şeridi eşikleri, checkpoint kadansı, test bütçesi gibi) Codex
+  Desktop MASTER'da kalır — kök `CLAUDE.md`'deki "Owner load" maddesiyle
+  tutarlı, onu daraltmaz veya genişletmez.
+
 <!-- pane-agent-context:start -->
 ## Pane
 
@@ -174,4 +235,23 @@ Common commands:
 - `runpane panels input --panel <panel-id> --input-file <path|-> --yes --json`
 
 WSL note: if `runpane doctor --json` cannot find `/tmp/pane-daemon.../daemon.sock` or `runpane` resolves to a broken Windows shim, Pane may be running on Windows. Try `powershell.exe -NoProfile -Command 'Set-Location $env:TEMP; runpane doctor --json'`, then create Panes through the same PowerShell form using the saved WSL repo name or id. Use `runpane agents doctor --agent <agent> --repo <selector> --json` to diagnose the repo environment Pane will actually use.
+
+## Golden Rule — Storybook / UI component factory (Wave1 foundation)
+
+Kanonik sözleşme: `docs/35-UI-STORYBOOK-COMPONENT-FACTORY-CONTRACT.md`. Bu
+depoda `resources/js/components/storybook-demo/**` altında yaşayan
+bileşenler Micro/Compound/Macro granülerliğini (`docs/35` §2a) izler:
+
+- **Micro** (`storybook-demo/micro/**`): tek başına, backend/route/business
+  rule bilmeyen taş (örn. `Input`). Kendi TS props sözleşmesi, kendi story
+  seti, kendi component test'i.
+- **Compound** (`storybook-demo/compound/**`): micro'ları **compose eder**,
+  markup'larını kopyalamaz (örn. `TextField` = Label + `Input` + help/error).
+- **Macro** (`storybook-demo/macro/**`): compound'ları compose eder, route/
+  fetch/business-rule agnostic'tir — yalnız kendisine geçirilen prop/callback'i
+  render eder (örn. `DemoFormCard`).
+
+Storybook: `npm run storybook` → `http://127.0.0.1:6006`. Story kökleri
+(`Micro/…`, `Compound/…`, `Macro/…`) `docs/35` §7 taksonomisiyle birebir
+eşlenir; yeni bir kök icat edilmez.
 <!-- pane-agent-context:end -->

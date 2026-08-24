@@ -1,0 +1,22 @@
+/vendor
+/node_modules
+/public/build
+/storage
+/.flowbite-react
+/docs
+/modules
+/skills
+/templates
+/research
+/evidence
+/.github
+
+# Markdown/plan corpus and root governance docs — not JS/TS assets, out of
+# Prettier's scope; also composer.lock/package-lock.json (machine-generated).
+*.md
+composer.json
+composer.lock
+package-lock.json
+
+# Fixed test-writer files — implementation writer does not reformat them.
+resources/js/__tests__

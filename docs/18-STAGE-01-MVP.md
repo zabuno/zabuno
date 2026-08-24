@@ -1,13 +1,22 @@
 # 18 — Stage 1: MVP
 
-**PLANNING ONLY. Şu an çalıştırılamaz — hiçbir kod yazılmadı, bu bir plandır.**
+**Stage 1 aktif / implementation-in-progress.** Foundation iskeleti
+(S1-WP01A) ve CORE-01-only kimlik/oturum dikey dilimi (S1-WP02A) yerel
+olarak çalıştırılabilir durumdadır (bkz. §Owner özeti); tam MVP ve kritik
+restoran yolculuğu (tenant/menü/yayın/QR/ödeme uçtan uca) hâlâ **yoktur**
+— bu doküman o tam yolun planını taşımaya devam eder.
 
 ## Owner özeti
 
 - **once**: Restoran yöneticisi menüsünü kağıt/PDF veya elle güncellenen bir
   sistemle yönetiyor; fiyat değişikliği saatler/günler sürebiliyor; QR basıldıktan
   sonra menü güncellemesi genelde QR'ın yeniden basılmasını gerektiriyor.
-- **simdi**: Henüz hiçbir şey yok — bu doküman MVP'nin ne olacağının planıdır.
+- **simdi**: S1-WP01A foundation iskeleti ve S1-WP02A CORE-01-only kimlik/
+  oturum dikey dilimi (register→verification-pending→signed/expiring email
+  verification→authenticated cookie session→logout) yerel olarak hedefli
+  kanıtla çalışır durumdadır (`docs/33` §Final durum); MVP'nin geri kalanı
+  (tenant/menü/yayın/QR/ödeme uçtan uca) hâlâ **yoktur** — bu doküman o
+  tam yolun planını taşımaya devam eder.
 - **fark**: MVP tamamlandığında restoran yöneticisi kayıt olur, restoranını kurar,
   menüsünü girer, yayınlar, QR üretir/basar; müşteri QR'ı okutup güncel menüyü
   görür; yönetici fiyatı değiştirdiğinde müşteri **aynı QR'ı** okutarak yeni
@@ -18,13 +27,46 @@
   bir "submit → save → publish → görünür" döngüsü — reddetme/retry karşılığı
   burada "publish failure state + son başarılı sürümü koru"dur (`docs/04`
   Publication modülü).
-- **kalanEngel**: Hiçbir satır kod yazılmadı; Laravel projesi kurulmadı; veritabanı
-  yok; hiçbir entegrasyon (Iyzico dahil) bağlanmadı. Bu stage'in "engeli" —
-  teknik değil, **henüz başlanmamış olması**dır.
-- **capability_delta**: 0 → tam dikey kritik yol (kayıt→...→fiyat güncelleme
-  anlık yansıma).
-- **Şu-an-çalıştırılabilir/çalıştırılamaz iddiası**: **Çalıştırılamaz.** Runtime
-  yoktur; bu bir plan dokümanıdır.
+- **kalanEngel**: S1-WP01A foundation iskeleti (implementation-in-progress —
+  Laravel projesi kuruldu, CORE-05 registry/env katmanlama/CI/OWASP ASVS
+  baseline'ı hedefli kontrollerle doğrulandı, `docs/26` S1-WP01) üzerine artık
+  S1-WP02'nin CORE-01-only alt dilimi **S1-WP02A** (register→
+  verification-pending→signed/expiring email verification→authenticated
+  cookie session→logout) da yerel hedefli kanıtla eklenmiştir
+  (local-candidate-targeted-green, `docs/33` §Final durum) — ama tenant/
+  menü/yayın/QR/ödeme dahil **kritik restoran yolculuğunun** geri kalanı
+  hâlâ bağlanmadı; CORE-01 dikey diliminin çalışıyor olması, **kritik dikey
+  yolun tamamının** çalıştığı anlamına gelmez. Bu stage'in "engeli" — teknik
+  değil, kritik yolun geri kalanının henüz başlanmamış olmasıdır. Sayaç hâlâ
+  **0/8**; Exit GO/NO-GO **henüz değerlendirilmedi**.
+- **capability_delta**: ürün kabiliyeti **0 → bounded CORE-01 local
+  candidate** (register→verification-pending→email verification→session→
+  logout, `docs/33` §Final durum) — bu, restoran işletme kabiliyeti
+  **değildir**. İlerleme sayacı bu delta'dan **bağımsız olarak 0/8**'de
+  kalır (bkz. §İlerleme, `docs/17` §4). Hedeflenen tam delta hâlâ **tam
+  dikey kritik yol**tur (kayıt→...→fiyat güncelleme anlık yansıma);
+  S1-WP01A + S1-WP02A yalnız bu yolun üzerine kurulacağı iskeleti ve ilk
+  dilimini sağlar.
+- **Şu-an-çalıştırılabilir/çalıştırılamaz iddiası**: **Kritik restoran
+  yolculuğunun tamamı çalıştırılamaz** — tenant/menü/yayın/QR/ödeme henüz
+  yoktur; bu hâlâ büyük ölçüde bir plan dokümanıdır. İki istisna: (1)
+  S1-WP01A foundation iskeletinin health-check + foundation-status ekranı,
+  hedefli kontrollerde (implementation-in-progress; FULL_QA_LOCAL_1 bir kez
+  çalıştı — 8/10, Pint hedefli düzeltildi; Gate 1 yalnız composer license
+  metadata/owner kararı eksikliğiyle RED; ikinci tam QA bütçesi yalnız CI
+  için rezerve; iki bağımsız review de INDEPENDENT_REVIEW_RED sonucu verdi —
+  ikincisi (209 dosyalık dondurulmuş snapshot) iki P2 kapanışını kendi
+  hedefli PHPUnit 10/10/34 assertion ve Vitest 7/7 kontrolleriyle GREEN
+  doğruladı, üçüncü bir blocker bulmadı; RED yalnız aynı iki P1
+  owner-kararının açık kalmasından gelir, bkz. `docs/27` §6) çalıştığı
+  doğrulanmıştır; (2) S1-WP02A'nın CORE-01-only dikey dilimi (register→
+  verification-pending→signed/expiring email verification→authenticated
+  cookie session→logout) yerel olarak hedefli kanıtla çalıştığı
+  doğrulanmıştır — **WP02A local-candidate-targeted-green**, **public-
+  promotion RED** (`docs/33` §Final durum, `docs/27` §6). Bu iki istisna
+  **restoran işletme yolculuğunu** (menü, QR, ödeme, tenant vb.) **ispat
+  etmez** — CORE-01 kimlik/oturum dilimi gerçek ve yerel olarak çalışan bir
+  kabiliyettir, ama kritik restoran yolculuğunun kendisi değildir.
 
 ## Amaç
 
@@ -131,8 +173,11 @@ geri çekilir, Exit Gate ertelenir.
 
 ## Exit GO/NO-GO/CONDITIONAL
 
-**Henüz değerlendirilmedi** — bu stage başlamadı. Değerlendirme yalnız gerçek
-implementasyon ve kanıt üretildikten sonra yapılabilir.
+**Henüz değerlendirilmedi.** Stage 1 **aktif** ve implementation-in-progress'tir
+(S1-WP01A + S1-WP02A yerel hedefli kanıtla çalışır) — ama Exit GO/NO-GO
+değerlendirmesi yalnız §Acceptance evidence ve §Metrics'teki tam kritik yol
+kanıtı (E2E kayıt, tenant escape testi, QR fiziksel scan testi, restore
+drill) üretildiğinde yapılabilir; bu kanıt paketi hâlâ **eksiktir**.
 
 ## Next-stage admission
 

@@ -1,0 +1,49 @@
+const en = {
+    'menu.loading': 'Loading menu…',
+    'menu.status.saving': 'Saving…',
+    'menu.initial.error.load': 'We could not load your menu. Please try again.',
+    'menu.initial.error.retry': 'Retry',
+    'menu.name.label': 'Menu name',
+    'menu.name.error.required': 'Enter a menu name.',
+    'menu.create.submit': 'Create menu',
+    'menu.create.error.submit': 'We could not create the menu. Please try again.',
+    'menu.categories.list.label': 'Menu categories',
+    'menu.category.select.label': 'Category',
+    'menu.category.name.label': 'Category name',
+    'menu.category.create.submit': 'Add category',
+    'menu.category.name.error.required': 'Enter a category name.',
+    'menu.category.create.error.submit': 'We could not add the category. Please try again.',
+    'menu.category.items.label': 'Items in {name}',
+    'menu.product.name.label': 'Product name',
+    'menu.product.create.submit': 'Add product',
+    'menu.product.name.error.required': 'Enter a product name.',
+    'menu.product.create.error.submit': 'We could not add the product. Please try again.',
+    'menu.item.price.label': 'Price',
+    'menu.item.currency.label': 'Currency',
+    'menu.item.create.submit': 'Add item',
+    'menu.item.price.error.required': 'Enter a price.',
+    'menu.item.create.error.submit': 'We could not add the menu item. Please try again.',
+    'menu.item.allergens.label': 'Allergens (comma-separated)',
+    'menu.item.allergens.submit': 'Save allergens',
+    'menu.item.allergens.error.submit': 'We could not update allergens. Please try again.',
+    'menu.item.allergens.list.label': 'Allergens for {name}',
+    'menu.item.allergens.edit.button': 'Edit allergens for {name}',
+    'menu.item.price.edit.button': 'Edit price for {name}',
+    'menu.item.price.edit.submit': 'Save price',
+    'menu.item.price.edit.error.submit': 'We could not update the price. Please try again.',
+    'menu.item.visibility.checkbox.label': 'Show {name}',
+    'menu.item.visibility.error.submit': 'We could not update visibility. Please try again.',
+    'menu.category.order.label': 'Order for {name}',
+    'menu.item.order.label': 'Order for {name}',
+} as const;
+
+type TranslationKey = keyof typeof en;
+
+export function t(key: TranslationKey, vars?: Record<string, string>): string {
+    const template: string = en[key] ?? key;
+    if (!vars) return template;
+    return Object.entries(vars).reduce<string>(
+        (result, [name, value]) => result.replaceAll(`{${name}}`, value),
+        template,
+    );
+}

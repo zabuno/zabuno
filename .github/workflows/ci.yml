@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Copy local environment file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: PHP formatting check (Pint)
+        run: vendor/bin/pint --test
+
+      - name: JS/TS lint and typecheck
+        run: npm run lint
+
+      - name: JS/TS formatting check (Prettier)
+        run: npm run format
+
+      - name: S1-WP01A foundation preflight
+        run: php tests/preflight/s1-wp01a-foundation-preflight.php
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Laravel test suite
+        run: php artisan test
+
+      - name: Vitest suite
+        run: npm test

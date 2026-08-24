@@ -145,6 +145,48 @@ prompt, service worker scope, deterministic cache invalidation" kararını
 belirsizliğini **kapatmaz** — o, kaynağın var olup olmadığından bağımsız bir
 tasarım/entegrasyon kararıdır.
 
+## S1-WP01A foundation — bu oturumda canlı doğrulanan kaynaklar (2026-08-19)
+
+Bu S1-WP01A implementation-in-progress paketi kapsamında, aşağıdaki altı
+kaynak bu oturumda **canlı** olarak yeniden doğrulandı (frozen scope'un PHP
+`^8.3`/Laravel `^13.0`, Flowbite React/shadcn/Radix, Vite ve OWASP ASVS 5.0.0
+kararlarının kaynağı) — bu satırlar "Henüz bu oturumda fetch edilmemiş"
+tablosundaki eski `koşullu`/pending karşılıklarının **güncellemesidir**.
+
+| Kaynak | URL | Erişim tarihi | Doğrulanan içerik | Sınıf |
+|---|---|---|---|---|
+| Laravel 13.x release notes | `https://laravel.com/docs/13.x/releases` | 2026-08-19 | Sayfa doğrudan fetch edildi; "Laravel 13.x requires a minimum PHP version of 8.3", sürüm tablosu (Laravel 13 → PHP 8.3–8.5, release 17 Mart 2026) birebir doğrulandı | erişim doğrulandı — kanıtlanmış (resmi Laravel dokümantasyonu, composer.json `^8.3`/`^13.0` kilidiyle birebir tutarlı) |
+| Flowbite React — Vite entegrasyon rehberi | `https://www.flowbite-react.com/docs/guides/vite` | 2026-08-19 | Doğrudan `flowbite-react.com` fetch'i bu oturumda HTTP 429 (rate limit) ile reddedildi; aynı rehberin kaynak içeriği `raw.githubusercontent.com/themesberg/flowbite-react` üzerinden ve resmi `flowbite-react-template-vite` deposunun (`vite.config.ts`, `src/index.css`, `package.json`) canlı içeriğiyle doğrulandı — `flowbite-react/plugin/vite` + `flowbite-react/plugin/tailwindcss` + `@source` desenini teyit eder | erişim doğrulandı (dolaylı — GitHub raw kaynağı üzerinden, doğrudan sayfa fetch'i değil) — koşullu (kurulum doğru, ama flowbite-react hâlâ pre-release olarak kendini işaretliyor) |
+| shadcn/ui — Vite kurulum rehberi | `https://ui.shadcn.com/docs/installation/vite` | 2026-08-19 | Bileşenlerin projeye kaynak olarak kopyalandığı ("adds the Card component to your project"), npm bağımlılığı olarak kurulmadığı doğrulandı | erişim doğrulandı — kanıtlanmış (resmi shadcn/ui dokümantasyonu, source-owned kararının doğrudan kaynağı) |
+| Radix Primitives — Introduction | `https://www.radix-ui.com/primitives/docs/overview/introduction` | 2026-08-19 | "Components ship without styles" (unstyled) ve WAI-ARIA uyumlu erişilebilirlik iddiası birebir doğrulandı | erişim doğrulandı — kanıtlanmış (resmi Radix dokümantasyonu) |
+| Vite — Getting Started (Node sürüm desteği) | `https://vite.dev/guide/` | 2026-08-19 | "Vite requires Node.js version 20.19+, 22.12+" birebir doğrulandı; bu depodaki yerel Node (v24.6.0) ve CI Node (`24`) bu aralığı karşılıyor | erişim doğrulandı — kanıtlanmış (resmi Vite dokümantasyonu) |
+| OWASP ASVS 5.0.0 release | `https://github.com/OWASP/ASVS/releases/tag/v5.0.0_release` (GitHub API: `.../releases/tags/v5.0.0_release`) | 2026-08-19 | Release tag `v5.0.0_release`, GitHub API `published_at: 2025-05-30T09:35:31Z` birebir doğrulandı — `security/OWASP-ASVS-BASELINE.md` bu tarihe pinlidir | erişim doğrulandı — kanıtlanmış (doğrudan GitHub release/API yanıtı) |
+
+## S1-WP02A Identity & Sessions delivery contract — bu oturumda canlı doğrulanan kaynaklar (2026-08-19)
+
+Bu docs-only S1-WP02A kapsam sözleşmesi paketi (`docs/33-S1-WP02A-IDENTITY-SESSIONS-DELIVERY-CONTRACT.md`)
+kapsamında, aşağıdaki beş kaynak bu oturumda **canlı** olarak fetch edilip
+içeriği okunarak doğrulandı — bu, önceki turdaki "Laravel Fortify" `koşullu`/
+pending satırının (aşağıdaki §"Henüz bu oturumda fetch edilmemiş" tablosundan
+kaldırıldı) **güncellemesidir**; Sanctum ve iki composer contract satırı
+külliyatta ilk kez eklenir.
+
+| Kaynak | URL | Erişim tarihi | Doğrulanan içerik | Sınıf |
+|---|---|---|---|---|
+| Laravel 13.x Fortify | `https://laravel.com/docs/13.x/fortify` | 2026-08-19 | "Frontend agnostic authentication backend"; `EnsureLoginIsNotThrottled` login throttling (username+IP), `fortify.limiters.login` özelleştirmesi; kayıt/e-posta doğrulama/şifre sıfırlama route'larını Fortify sağlar, kullanımı **zorunlu değildir** | erişim doğrulandı — koşullu (resmi Laravel 13.x dokümantasyonu; kurulum/production kararı ayrı spike ister, `docs/03` ADR notu) |
+| Laravel 13.x Sanctum | `https://laravel.com/docs/13.x/sanctum` | 2026-08-19 | SPA authentication **token kullanmaz**, Laravel'in cookie-based session servislerini kullanır (CSRF koruması + session auth + XSS credential-leak koruması); `/sanctum/csrf-cookie` → `XSRF-TOKEN` → `X-XSRF-TOKEN` akışı; `statefulApi()` middleware; first-party SPA için API token **kullanılmaması gerektiği** birebir yazılı | erişim doğrulandı — koşullu (resmi Laravel 13.x dokümantasyonu; `docs/05` §3'teki "token değil, cookie+CSRF" kararının doğrudan kaynağı) |
+| Laravel 13.x Email Verification | `https://laravel.com/docs/13.x/verification` | 2026-08-19 | Doğrulama route'u `auth`+`signed` middleware taşır (imzalı, süreli link); `EmailVerificationRequest::fulfill()` → `markEmailAsVerified()` + `Verified` event; resend endpoint `throttle:6,1` ile sınırlı | erişim doğrulandı — koşullu (imzalı/süreli link mekanizması kanıtlanmış; aynı linkin tekrar tıklanmasının tam idempotent davranışı sayfada birebir yazılı değil — `docs/33` §12 S1WP02A-VERIFY-03 blind RED test adayıyla kilitlenecek, bkz. `docs/16` açık madde notu) |
+| laravel/fortify 1.x composer.json | `https://github.com/laravel/fortify/blob/1.x/composer.json` | 2026-08-19 | `"php": "^8.2"`, `"illuminate/console": "^11.0\|^12.0\|^13.0"`, `"illuminate/support": "^11.0\|^12.0\|^13.0"` — Laravel 13 (Illuminate 13) kontratını doğrudan destekler | erişim doğrulandı — kanıtlanmış (doğrudan resmi composer.json içeriği; bu depodaki `composer.json` PHP `^8.3`/Laravel `^13.0` kilidiyle uyumlu — `^8.2` üst küme) |
+| laravel/sanctum 4.x composer.json | `https://github.com/laravel/sanctum/blob/4.x/composer.json` | 2026-08-19 | `"php": "^8.2"`, `"illuminate/console"`, `"illuminate/contracts"`, `"illuminate/database"`, `"illuminate/support"` hepsi `"^11.0\|^12.0\|^13.0"` — Laravel 13 kontratını doğrudan destekler | erişim doğrulandı — kanıtlanmış (doğrudan resmi composer.json içeriği) |
+
+Not: Bu beş satırın "üretim kararı"nı otomatik olarak **kanıtlanmış**a
+yükseltmediği (`docs/03` ADR-L01 notundaki aynı ayrım: erişim doğrulandı ≠
+kurulu/production-onaylı) — Fortify/Sanctum'un gerçek `composer require`'ı ve
+compatibility spike'ı bu docs-only paketin kapsamı **dışındadır** (görev
+talimatı: "Dependency mutation bu turda YASAK"); iki composer contract satırı
+istisnadır çünkü onlar doğrudan sürüm kontratının kendisini kanıtlar, kurulum
+kararını değil.
+
 ## Henüz bu oturumda fetch edilmemiş, karar için referans verilen resmi kaynaklar
 
 Aşağıdaki kaynaklar görev talimatında adı geçen resmi dokümantasyon
@@ -162,15 +204,10 @@ doğrulanmıyorsa sabitleme".
 | Laravel — deployment | laravel.com/docs (deployment) | ADR-L08 (`docs/03`) | koşullu |
 | Laravel — filesystem | laravel.com/docs (filesystem) | Flysystem kararı (`docs/07`) | koşullu |
 | Laravel — images/queues/scheduling/cache/Redis | laravel.com/docs | `docs/07`, `docs/15` | koşullu |
-| Laravel Fortify | laravel.com/docs/fortify | `docs/05` §3 | koşullu |
 | Laravel Mail | laravel.com/docs/mail | `docs/11` §1 | koşullu |
 | Laravel Localization | laravel.com/docs/localization | `docs/13` | koşullu |
 | Laravel Rate Limiting | laravel.com/docs/rate-limiting | `docs/05` §3, `docs/15` §1 | koşullu |
 | Laravel Pennant | laravel.com/docs/pennant | Feature flag adayı (`docs/04` §5, henüz doğrudan referans verilmedi) | koşullu |
-| Flowbite React (Vite) | flowbite-react.com | ADR-L06 (`docs/03`), `docs/06` §2 | koşullu |
-| shadcn/ui (Vite) | ui.shadcn.com | ADR-L06 | koşullu |
-| Radix (intro, accessibility) | radix-ui.com | ADR-L06 | koşullu |
-| Vite | vitejs.dev | ADR-L06, ADR-L07 | koşullu |
 | eloquent-ifrs | github.com (ekitikela/eloquent-ifrs) | `docs/09` §2 — R&D candidate | deneysel |
 | ISO 216 | resmi ISO tanımı (genel bilgi) | `docs/08` §3 | kanıtlanmış (yaygın uluslararası standart) |
 | Spatie Media Library (responsive/conversions) | spatie.be/docs/laravel-medialibrary | `docs/07` §1 | koşullu |
@@ -196,7 +233,6 @@ doğrulanmıyorsa sabitleme".
 | php-gettext / Gettext | php.net (gettext ext), github.com/php-gettext | `docs/13` §1 | koşullu |
 | Symfony Workflow | symfony.com/doc/workflow | `docs/10` §2 | koşullu |
 | Cloudflare DDoS/WAF docs | developers.cloudflare.com | `docs/15` §2 | koşullu |
-| OWASP ASVS | owasp.org/www-project-application-security-verification-standard | `docs/15` §6 | kanıtlanmış (tanınmış standart, versiyon 5 görev talimatınca belirtilmiş) |
 | WCAG 2.2 | w3.org/TR/WCAG22 | `docs/06` §8, `docs/15` §6 | kanıtlanmış (W3C resmi standart) |
 | NIST SSDF | csrc.nist.gov/Projects/ssdf | `docs/15` §6 | kanıtlanmış (resmi NIST yayını) |
 | OpenTelemetry | opentelemetry.io | `docs/15` §6 | koşullu |
@@ -206,9 +242,15 @@ doğrulanmıyorsa sabitleme".
 Not: Laravel Boost/AI SDK/MCP/AI, Gemini API key/rate limits, OpenAI Projects
 API/Services Agreement/rate limit, Anthropic rate limit/Pro-Max/kredi, GitHub
 visibility/push-protection/lisans, Iyzico webhook/signature, iyzipay-php,
-brick/money, endroid/qr-code ve mPDF satırları burada **tekrar edilmez** — bu
-tam URL'ler artık "Fiilen bu oturumda erişilen kaynaklar" bölümünde tek
-kanonik kayıt olarak tutulur (yukarıda); tekrar önleme kuralı `AGENTS.md` §2.
+brick/money, endroid/qr-code, mPDF, Laravel 13.x release notes, Flowbite
+React (Vite), shadcn/ui (Vite), Radix (intro), Vite (Node sürüm desteği),
+OWASP ASVS, Laravel Fortify/Sanctum/Email Verification ve iki composer
+contract (fortify 1.x, sanctum 4.x) satırları burada
+**tekrar edilmez** — bu tam URL'ler artık "Fiilen bu oturumda erişilen
+kaynaklar", "S1-WP01A foundation — bu oturumda canlı doğrulanan
+kaynaklar" ve "S1-WP02A Identity & Sessions delivery contract — bu oturumda
+canlı doğrulanan kaynaklar" bölümlerinde tek kanonik kayıt olarak tutulur
+(yukarıda); tekrar önleme kuralı `AGENTS.md` §2.
 
 ## Kullanım kuralı
 

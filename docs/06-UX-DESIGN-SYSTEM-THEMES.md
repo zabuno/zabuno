@@ -84,8 +84,81 @@ WCAG 2.2 hedefi en az **AA**; kritik akışlarda (ödeme, hesap silme, veri expo
 **AAA** ölçütleri aday olarak değerlendirilir (`docs/15`). Arabic RTL tasarım ve
 test zorunludur (`docs/13`); tema token'ları LTR/RTL'i aynı anda desteklemelidir.
 
-## 9. Kanonik sahiplik
+## 10. Görsel kimlik: Operational Hospitality
 
-Beş tema domeni, bileşen kütüphanesi kararı ve davranış sözleşmeleri burada
-kanoniktir. QR'a özgü fiziksel/mm tasarım kısıtları `docs/08`'de, erişilebilirlik
-detay kontrol listesi `docs/15`'te yaşar.
+Zabuno'nun iç tasarım yönünün adı **Operational Hospitality / Operasyonel
+Misafirperverlik**dir: sıcak ama oyuncak değil, ferah ama boş değil, yoğun
+ama sıkışık değil, enterprise ama bürokratik değil, AI destekli ama
+kontrolsüz değil. Bu, beş tema domeninin (§1) ortak duygusal çerçevesidir —
+her domen kendi yüzey grameriyle bu çerçeveyi somutlaştırır:
+
+- **Dashboard**: görev, risk, aksiyon ve operasyon kartları.
+- **Menu/Media/Locations**: analytical list-detail-workspace yapısı.
+- **Brand/Settings/Billing/Team**: section-first, form-first, ferah düzen.
+- **Publication/QR**: state machine, readiness, preview, diff, approval,
+  rollback (bkz. `docs/10` §2 durum makineleri).
+- **Analytics/Audit**: data table, saved views, filters, editorial açıklama.
+- **Public Menu**: daha ifade gücü yüksek, fotoğraf ve restoran markasına
+  uyarlanabilir tema.
+
+Görsel formül: Precision Flat 2.0 + Tonal SaaS Shell + Contextual Cards +
+Glass-capable Surfaces + Status Stripes + Editorial Evidence + Expressive
+Public Menu + AI Presence.
+
+## 11. AEP mirası: primitive → semantic alias
+
+Zabuno'nun başlangıç marka/token kararları `/Users/karaca/DEV/zabuno/frontend/`
+altındaki AEP (320px-First, AI-First Enterprise SaaS) araştırmasından
+devralınır, ancak ham biçimde kopyalanmaz:
+
+- **`#FFB900`** yalnız bir **primitive** token'dır (örn. `color-brand-primitive`);
+  hiçbir component ham hex tüketmez. Semantic alias'lara (`action.primary`,
+  `ai.presence` vb., §12 token katmanları ile tutarlı — bkz. `docs/35` §1)
+  bağlanır; light/dark/forced-colors eşleri ayrıca tanımlanır. Açık zeminde
+  küçük sarı metin olarak kullanılmaz; gerekli yerde koyu foreground ile
+  eşlenir; production kabulü ölçülmüş kontrast (WCAG AA, §8) olmadan
+  yapılmaz.
+- **Roboto** başlangıç UI fontudur, typography token'ı üzerinden uygulanır;
+  Turkish glyph/numeral QA'sı ve test edilmiş Arabic script fallback'i
+  zorunludur (`docs/13` RTL disipliniyle tutarlı); para/fiyat/analitik
+  alanlarında tabular numerals desteklenir.
+- **Glass yüzeyler** form surface, data table container, validation summary,
+  global header, command palette, AI surface, contextual inspector, overlay/
+  drawer ve public menu surface'larında kullanılabilir (yasak değildir);
+  her glass yüzey minimum opacity/scrim, ölçülmüş foreground/background
+  kontrastı, `backdrop-filter` desteklenmediğinde solid fallback, forced-colors
+  fallback'i, reduced-transparency/performance fallback'i ve light/dark
+  parity taşır. Glass; okunabilirliği, form affordance'ını veya tablo satır
+  ilişkisini zayıflatamaz.
+- AEP'nin dual-renderer hazırlığı, semantic token yaklaşımı ve Storybook
+  merkezli sürdürülebilir component sistemi mirası `docs/03` ADR-L10'da
+  (dual-renderer readiness) ve `docs/35`'te (Storybook fabrika sözleşmesi)
+  ayrıca kanoniktir — burada tekrar edilmez.
+
+## 12. 320 start / fluid-first / adaptive-second
+
+320 CSS px bir **başlangıç kanıtı**dır, bir breakpoint değildir (§6'daki
+320px-first ilkesinin genişletilmiş biçimi — bu bölüm onu **çelişmez**,
+netleştirir). Görev modeli önce 320'de eksiksiz çözülür; alan büyüdükçe
+işlev değişmez, bilgi kaybolmaz, yalnız eşzamanlı gösterim kapasitesi artar
+(fluid-first). Named adaptive profiller (`mobile`, `tablet`, `laptop`,
+`desktop`, `wide-desktop`) QA, shell davranışı, platform konvansiyonu ve
+input ergonomisi için kullanılır — bu profiller cihaz adına göre davranan
+ayrı bir bileşen seti **değildir**; reusable component'ler mümkün olduğunca
+kendi container'ına göre morfolojik olarak değişir (container query
+yaklaşımı).
+
+**"Responsive" bu külliyatta bir plan/acceptance etiketi olarak
+kullanılmaz** — kabul kriteri her zaman somut adaptive profil + 320px
+reflow kanıtıdır (§8 WCAG matrisindeki "Reflow/320px" satırı, `docs/35` §9
+ile tutarlı), genel "responsive" ifadesi tek başına bir acceptance ifadesi
+sayılmaz.
+
+## 13. Kanonik sahiplik
+
+Beş tema domeni, bileşen kütüphanesi kararı, davranış sözleşmeleri, görsel
+kimlik (Operational Hospitality), AEP token mirası ve 320/fluid/adaptive
+layout ilkesi burada kanoniktir. QR'a özgü fiziksel/mm tasarım kısıtları
+`docs/08`'de, erişilebilirlik detay kontrol listesi `docs/15`'te,
+Storybook/token uygulama sözleşmesi `docs/35`'te, dual-renderer kararı
+`docs/03` ADR-L10'da yaşar.

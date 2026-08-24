@@ -56,6 +56,16 @@ Tüm modüller kendi event'lerini ve action'larını bu motora **register** eder
 (cross-module iletişim, `docs/03` ADR-L05 ile uyumlu — doğrudan çağrı değil,
 event-driven).
 
+**ECA safe-state listesi (zorunlu, her kural için geçerli)**: her ECA rule
+aşağıdaki durumların **tamamını** taşır — `draft`, `simulate`, `approve`,
+`activate`, `pause`, `resume`, `version`, `rollback`, `audit`, `history`
+(execution history), `retry`/`dead-letter` (başarısız execution kuyruğu),
+`cycle` (recursion/cycle guard), `rate-limit`, `kill-switch`. Bu liste yukarıdaki
+dry-run/version-approval/idempotency/retry/recursion-guard/audit
+kontrollerinin **somut durum envanteridir** — bir kural bu on iki durumdan
+birini atlayarak "tamamlandı" sayılmaz (`docs/27` acceptance disipliniyle
+tutarlı).
+
 ## 4. Admin CRUD varsayılanları
 
 Default CRUD table/form her yeni modül için hazır gelir (advanced filters, saved

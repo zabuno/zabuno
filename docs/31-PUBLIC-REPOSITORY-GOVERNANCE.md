@@ -59,6 +59,23 @@ archive attestation (`evidence/PUBLIC-ARCHIVE-ATTESTATION.md`) ve upstream
 provenance (`research/upstream/imageoptimization/UPSTREAM.md`) — yalnız
 provenance metni, snapshot byte'ları değil.
 
+**S1-WP01A foundation iskeleti (implementation-in-progress) eklentisi**:
+Yukarıdaki küme, S1-WP01A ile birlikte gerçek runtime/config/kaynak
+dosyalarını da kapsar — `app/`, `bootstrap/`, `config/`, `routes/`,
+`resources/`, `database/` (yalnız `factories/`/`migrations/`/`seeders/`
+kaynak dosyaları — `database.sqlite` **hariç**, §5), `public/` (yalnız
+kaynak dosyalar — `public/build/` derlenmiş çıktı **hariç**), `tests/`,
+`security/`, `composer.json`/`composer.lock`, `package.json`/
+`package-lock.json`, `vite.config.ts`, `tsconfig.json`, `components.json`,
+`eslint.config.js`, `.prettierrc.json`/`.prettierignore`, `.env.example`/
+`.env.staging.example`/`.env.production.example` (yalnız örnek dosyalar —
+gerçek `.env` asla, §5) ve `.github/workflows/ci.yml`. Bu eklenti hiçbir
+şekilde §2'deki yayınlanmayacaklar listesini gevşetmez — `vendor/`,
+`node_modules/`, `public/build/`, `storage/` runtime içeriği, gerçek `.env`,
+`database/database.sqlite` ve `.flowbite-react/` (derlenmiş/gitignored
+çıktı) hâlâ hiçbir koşulda public kümeye dahil edilmez (§5 `.gitignore`
+sözleşmesi bunları zaten dışlar).
+
 ## 4. Görünürlük ≠ lisans
 
 Public görünürlük, open-source lisans izni **değildir**. Owner kararı
