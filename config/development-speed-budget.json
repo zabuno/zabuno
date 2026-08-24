@@ -189,15 +189,20 @@
     "fastDeliveryGenomeOverlay": {
         "note": "Fixed separate 8-item denominator, independent of the product roadmap docs/17 §4 counter. See AGENTS.md and both speeder reports for rationale.",
         "totalItems": 8,
-        "completedItems": 0,
-        "activeItem": 1,
+        "completedItems": 2,
+        "activeItem": 3,
         "items": [
-            { "n": 1, "title": "speed genome + gate", "status": "active", "dependsOn": [] },
-            { "n": 2, "title": "CI structural-RED repair", "status": "pending", "dependsOn": [1] },
+            { "n": 1, "title": "speed genome + gate", "status": "completed", "dependsOn": [] },
+            {
+                "n": 2,
+                "title": "CI structural-RED repair",
+                "status": "completed",
+                "dependsOn": [1]
+            },
             {
                 "n": 3,
                 "title": "clean worktree / snapshot isolation automation",
-                "status": "pending",
+                "status": "active",
                 "dependsOn": [1]
             },
             {
