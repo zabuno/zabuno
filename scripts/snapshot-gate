@@ -1,0 +1,332 @@
+#!/usr/bin/env bash
+# scripts/snapshot-gate — deterministic per-package worktree/snapshot isolation
+# gate for SP-01. Read-only Git, no network, no LLM, no MCP.
+#
+# Usage:
+#   scripts/snapshot-gate check --manifest <package-manifest.json> [--reseal]
+#
+# manifest is JSON with required fields: packageId, worktreePath, baseCommit,
+# allowedFiles (array of paths relative to worktreePath, exact or glob).
+#
+# Prints a JSON line containing "snapshotHash" before the final verdict line.
+# The LAST stdout line is always exactly one verdict token: PASS,
+# WORKTREE_AFFINITY_DENY, BASE_DRIFT, GIT_MUTATION_DENY,
+# ALLOWED_FILES_VIOLATION, MULTI_PACKAGE_DIRTY, or SNAPSHOT_DRIFT.
+# Exit 0 only for PASS; exit 1 for any denial verdict; exit 2 for
+# usage/config/malformed-manifest errors (no verdict token is guaranteed on
+# stdout in that case).
+
+set -u
+umask 077
+
+die_usage() {
+  echo "usage: snapshot-gate check --manifest <manifest.json> [--reseal]" >&2
+  echo "$1" >&2
+  exit 2
+}
+
+deny() {
+  # $1 = verdict token; JSON summary (if any) has already been printed.
+  printf '%s\n' "$1"
+  exit 1
+}
+
+# --- arg parsing -----------------------------------------------------------
+
+[ $# -ge 1 ] || die_usage "missing subcommand"
+subcmd="$1"; shift
+[ "$subcmd" = "check" ] || die_usage "unknown subcommand: $subcmd"
+
+MANIFEST=""
+RESEAL=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --manifest)
+      [ $# -ge 2 ] || die_usage "--manifest requires a value"
+      MANIFEST="$2"
+      shift 2
+      ;;
+    --reseal)
+      RESEAL=1
+      shift
+      ;;
+    *)
+      die_usage "unknown argument: $1"
+      ;;
+  esac
+done
+
+[ -n "$MANIFEST" ] || die_usage "missing --manifest"
+[ -f "$MANIFEST" ] || die_usage "manifest file not found: $MANIFEST"
+
+command -v jq >/dev/null 2>&1 || die_usage "jq is required"
+command -v git >/dev/null 2>&1 || die_usage "git is required"
+command -v shasum >/dev/null 2>&1 || die_usage "shasum is required"
+
+jq -e . "$MANIFEST" >/dev/null 2>&1 || die_usage "manifest is not valid JSON: $MANIFEST"
+
+PACKAGE_ID=$(jq -r 'if (has("packageId") and (.packageId|type=="string") and (.packageId|length>0)) then .packageId else "" end' "$MANIFEST")
+WORKTREE_PATH=$(jq -r 'if (has("worktreePath") and (.worktreePath|type=="string") and (.worktreePath|length>0)) then .worktreePath else "" end' "$MANIFEST")
+BASE_COMMIT=$(jq -r 'if (has("baseCommit") and (.baseCommit|type=="string") and (.baseCommit|length>0)) then .baseCommit else "" end' "$MANIFEST")
+ALLOWED_OK=$(jq -r 'if (has("allowedFiles") and (.allowedFiles|type=="array")) then "1" else "0" end' "$MANIFEST")
+
+[ -n "$PACKAGE_ID" ] || die_usage "manifest missing required field: packageId"
+[ -n "$WORKTREE_PATH" ] || die_usage "manifest missing required field: worktreePath"
+[ -n "$BASE_COMMIT" ] || die_usage "manifest missing required field: baseCommit"
+[ "$ALLOWED_OK" = "1" ] || die_usage "manifest missing required field: allowedFiles"
+
+# --- path safety -------------------------------------------------------
+
+is_unsafe_path() {
+  # $1 = repo-relative path
+  local p="$1"
+  case "$p" in
+    /*|~*) return 0 ;;
+  esac
+  case "$p" in
+    ../*|*/../*|*/..|..) return 0 ;;
+  esac
+  # embedded newlines split lines under a line-oriented grep scan below, so
+  # check for them explicitly first via bash pattern matching.
+  case "$p" in
+    *$'\n'*) return 0 ;;
+  esac
+  # other control characters (including NUL, which cannot appear, and other
+  # non-printable bytes) are rejected.
+  if printf '%s' "$p" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    return 0
+  fi
+  return 1
+}
+
+glob_match() {
+  local pattern="$1" subject="$2"
+  [[ "$subject" == $pattern ]]
+}
+
+path_is_allowed() {
+  local p="$1" pat
+  for pat in "${ALLOWED_FILES[@]:-}"; do
+    if [ "$p" = "$pat" ] || glob_match "$pat" "$p"; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# --- allowedFiles validation --------------------------------------------
+
+jq -e '(.allowedFiles | all(type=="string" and length>0))' "$MANIFEST" >/dev/null 2>&1 \
+  || die_usage "manifest allowedFiles must be an array of nonempty strings"
+
+ALLOWED_FILES=()
+while IFS= read -r -d '' __line; do
+  ALLOWED_FILES+=("$__line")
+done < <(jq -j '.allowedFiles[] | ., "\u0000"' "$MANIFEST")
+
+for __pat in "${ALLOWED_FILES[@]:-}"; do
+  if is_unsafe_path "$__pat"; then
+    die_usage "manifest allowedFiles pattern is not a safe repo-relative path: $__pat"
+  fi
+done
+unset __pat
+
+# --- repo/affinity checks ---------------------------------------------
+
+TOPLEVEL=$(git rev-parse --show-toplevel 2>/dev/null) || die_usage "cwd is not inside a git repository"
+TOPLEVEL_PHYS=$(cd "$TOPLEVEL" && pwd -P)
+
+MANIFEST_WT_PHYS=""
+if [ -d "$WORKTREE_PATH" ]; then
+  MANIFEST_WT_PHYS=$(cd "$WORKTREE_PATH" && pwd -P 2>/dev/null)
+fi
+
+GIT_DIR=$(git rev-parse --git-dir 2>/dev/null)
+COMMON_DIR=$(git rev-parse --git-common-dir 2>/dev/null)
+GIT_DIR_PHYS=$(cd "$GIT_DIR" && pwd -P)
+COMMON_DIR_PHYS=$(cd "$COMMON_DIR" && pwd -P)
+IS_LINKED_WORKTREE=1
+[ "$GIT_DIR_PHYS" = "$COMMON_DIR_PHYS" ] && IS_LINKED_WORKTREE=0
+
+if [ -z "$MANIFEST_WT_PHYS" ] || [ "$TOPLEVEL_PHYS" != "$MANIFEST_WT_PHYS" ] || [ "$IS_LINKED_WORKTREE" -ne 1 ]; then
+  deny "WORKTREE_AFFINITY_DENY"
+fi
+
+# --- base drift ---------------------------------------------------------
+
+HEAD_SHA=$(git rev-parse HEAD 2>/dev/null) || die_usage "unable to resolve HEAD"
+[ "$HEAD_SHA" = "$BASE_COMMIT" ] || deny "BASE_DRIFT"
+
+# --- git index mutation --------------------------------------------------
+
+if ! git diff --cached --quiet 2>/dev/null; then
+  deny "GIT_MUTATION_DENY"
+fi
+
+# --- collect working-tree changes (tracked unstaged + untracked), NUL-safe --
+
+TRACKED_CHANGED=()
+while IFS= read -r -d '' __line; do
+  [ -n "$__line" ] && TRACKED_CHANGED+=("$__line")
+done < <(git diff --name-only -z HEAD 2>/dev/null)
+
+UNTRACKED=()
+while IFS= read -r -d '' __line; do
+  [ -n "$__line" ] && UNTRACKED+=("$__line")
+done < <(git ls-files -z --others --exclude-standard 2>/dev/null)
+
+ALL_CHANGED=()
+for p in "${TRACKED_CHANGED[@]:-}"; do
+  [ -n "$p" ] && ALL_CHANGED+=("$p")
+done
+for p in "${UNTRACKED[@]:-}"; do
+  [ -n "$p" ] && ALL_CHANGED+=("$p")
+done
+
+for p in "${ALL_CHANGED[@]:-}"; do
+  [ -n "$p" ] || continue
+  if is_unsafe_path "$p"; then
+    echo "snapshot-gate: unsafe/control/traversal path rejected: $p" >&2
+    exit 2
+  fi
+done
+
+for p in "${ALL_CHANGED[@]:-}"; do
+  [ -n "$p" ] || continue
+  if ! path_is_allowed "$p"; then
+    deny "ALLOWED_FILES_VIOLATION"
+  fi
+done
+
+DIRTY=0
+[ "${#ALL_CHANGED[@]}" -gt 0 ] && DIRTY=1
+
+# --- cache lookup ---------------------------------------------------------
+
+CACHE_ROOT="${TMPDIR:-/tmp}/zabuno-snapshot-gate-cache"
+
+if [ -L "$CACHE_ROOT" ]; then
+  echo "snapshot-gate: cache root is a symlink, refusing: $CACHE_ROOT" >&2
+  exit 2
+fi
+if [ -e "$CACHE_ROOT" ]; then
+  [ -d "$CACHE_ROOT" ] || { echo "snapshot-gate: cache root is not a directory: $CACHE_ROOT" >&2; exit 2; }
+  CACHE_OWNER=$(stat -f '%u' "$CACHE_ROOT" 2>/dev/null || stat -c '%u' "$CACHE_ROOT" 2>/dev/null)
+  [ "$CACHE_OWNER" = "$(id -u)" ] || { echo "snapshot-gate: cache root not owned by current user: $CACHE_ROOT" >&2; exit 2; }
+else
+  mkdir -m 700 "$CACHE_ROOT" 2>/dev/null || die_usage "unable to create cache directory: $CACHE_ROOT"
+fi
+chmod 700 "$CACHE_ROOT" 2>/dev/null || true
+
+CACHE_KEY=$(printf '%s' "$TOPLEVEL_PHYS" | shasum -a 256 | awk '{print $1}')
+CACHE_FILE="$CACHE_ROOT/$CACHE_KEY.json"
+LOCK_DIR="${CACHE_FILE}.lock"
+
+LOCK_HELD=0
+CLEANUP_TMP_FILES=()
+
+cleanup() {
+  local f
+  for f in "${CLEANUP_TMP_FILES[@]:-}"; do
+    [ -n "$f" ] && rm -f "$f"
+  done
+  if [ "$LOCK_HELD" -eq 1 ]; then
+    rmdir "$LOCK_DIR" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT
+
+if mkdir "$LOCK_DIR" 2>/dev/null; then
+  LOCK_HELD=1
+else
+  echo "snapshot-gate: unable to acquire cache lock (held): $LOCK_DIR" >&2
+  exit 2
+fi
+
+CACHED_PACKAGE=""
+CACHED_HASH=""
+if [ -L "$CACHE_FILE" ]; then
+  echo "snapshot-gate: cache file is a symlink, refusing: $CACHE_FILE" >&2
+  exit 2
+fi
+if [ -e "$CACHE_FILE" ]; then
+  [ -f "$CACHE_FILE" ] || { echo "snapshot-gate: cache file is not a regular file: $CACHE_FILE" >&2; exit 2; }
+  CACHE_FILE_OWNER=$(stat -f '%u' "$CACHE_FILE" 2>/dev/null || stat -c '%u' "$CACHE_FILE" 2>/dev/null)
+  [ "$CACHE_FILE_OWNER" = "$(id -u)" ] || { echo "snapshot-gate: cache file not owned by current user: $CACHE_FILE" >&2; exit 2; }
+
+  jq -e . "$CACHE_FILE" >/dev/null 2>&1 || { echo "snapshot-gate: cache file is not valid JSON: $CACHE_FILE" >&2; exit 2; }
+  jq -e '
+    type == "object"
+    and (keys_unsorted | sort) == (["packageId","snapshotHash"] | sort)
+    and (.packageId | type == "string" and length > 0)
+    and (.snapshotHash | type == "string" and test("^[0-9a-f]{64}$"))
+  ' "$CACHE_FILE" >/dev/null 2>&1 || { echo "snapshot-gate: cache file has unexpected shape: $CACHE_FILE" >&2; exit 2; }
+
+  CACHED_PACKAGE=$(jq -r '.packageId' "$CACHE_FILE")
+  CACHED_HASH=$(jq -r '.snapshotHash' "$CACHE_FILE")
+fi
+
+if [ -n "$CACHED_PACKAGE" ] && [ "$CACHED_PACKAGE" != "$PACKAGE_ID" ] && [ "$DIRTY" -eq 1 ]; then
+  deny "MULTI_PACKAGE_DIRTY"
+fi
+
+# --- deterministic snapshot hash ------------------------------------------
+
+HASH_INPUT_FILE=$(mktemp "${TMPDIR:-/tmp}/snapshot-gate-hashinput.XXXXXX")
+CLEANUP_TMP_FILES+=("$HASH_INPUT_FILE")
+
+{
+  printf 'baseCommit\t%s\n' "$BASE_COMMIT"
+  printf '%s\n' '---tracked-diff---'
+  git diff HEAD --binary --no-ext-diff --no-textconv 2>/dev/null
+  printf '%s\n' '---untracked---'
+  if [ "${#UNTRACKED[@]}" -gt 0 ]; then
+    sorted_untracked=$(printf '%s\n' "${UNTRACKED[@]}" | LC_ALL=C sort)
+    while IFS= read -r p; do
+      [ -n "$p" ] || continue
+      entry_full="$TOPLEVEL_PHYS/$p"
+      if [ -L "$entry_full" ]; then
+        target=$(readlink "$entry_full")
+        content_hash=$(printf '%s' "$target" | shasum -a 256 | awk '{print $1}')
+        printf 'symlink\t%s\t%s\n' "$p" "$content_hash"
+      elif [ -f "$entry_full" ]; then
+        content_hash=$(shasum -a 256 "$entry_full" | awk '{print $1}')
+        printf 'file\t%s\t%s\n' "$p" "$content_hash"
+      fi
+    done <<< "$sorted_untracked"
+  fi
+} > "$HASH_INPUT_FILE"
+
+SNAPSHOT_HASH=$(shasum -a 256 "$HASH_INPUT_FILE" | awk '{print $1}')
+rm -f "$HASH_INPUT_FILE"
+
+# --- seal / verify / drift ------------------------------------------------
+
+VERDICT=""
+if [ -z "$CACHED_PACKAGE" ] || [ "$CACHED_PACKAGE" != "$PACKAGE_ID" ]; then
+  # No prior binding for this worktree, or a clean-worktree handoff to a
+  # different package: (re)seal fresh for this package.
+  VERDICT="PASS"
+else
+  if [ "$SNAPSHOT_HASH" = "$CACHED_HASH" ]; then
+    VERDICT="PASS"
+  elif [ "$RESEAL" -eq 1 ]; then
+    VERDICT="PASS"
+  else
+    jq -n -c --arg pid "$PACKAGE_ID" --arg hash "$SNAPSHOT_HASH" '{packageId:$pid, snapshotHash:$hash}'
+    deny "SNAPSHOT_DRIFT"
+  fi
+fi
+
+jq -n -c --arg pid "$PACKAGE_ID" --arg hash "$SNAPSHOT_HASH" '{packageId:$pid, snapshotHash:$hash}'
+
+if [ "$VERDICT" = "PASS" ]; then
+  tmp_cache=$(mktemp "$CACHE_ROOT/snapshot-gate-cache.XXXXXX")
+  CLEANUP_TMP_FILES+=("$tmp_cache")
+  chmod 600 "$tmp_cache"
+  jq -n --arg pid "$PACKAGE_ID" --arg hash "$SNAPSHOT_HASH" '{packageId:$pid, snapshotHash:$hash}' > "$tmp_cache"
+  mv -f "$tmp_cache" "$CACHE_FILE"
+fi
+
+printf 'PASS\n'
+exit 0
