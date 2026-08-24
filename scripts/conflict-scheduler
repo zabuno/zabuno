@@ -1,0 +1,387 @@
+#!/usr/bin/env bash
+# conflict-scheduler — fast-delivery genome item 6.
+#
+#   scripts/conflict-scheduler plan --manifests <dir> --config <development-speed-budget.json>
+#
+# Pure printer: no Git mutation, no admission/queue side effects.
+# See scripts/conflict-scheduler.test.sh for the frozen CLI contract.
+
+set -u
+export LC_ALL=C
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GATE="$SCRIPT_DIR/module-graph-gate"
+
+invalid() {
+  printf 'conflict-scheduler: %s\n' "$1" >&2
+  echo "SCHEDULE_INVALID"
+  exit 1
+}
+
+require_tools() {
+  if ! command -v jq >/dev/null 2>&1; then
+    printf 'conflict-scheduler: jq is required\n' >&2
+    exit 2
+  fi
+}
+
+cmd_plan() {
+  local manifests_dir="" config=""
+  local saw_manifests=0 saw_config=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --manifests)
+        [ $# -ge 2 ] || invalid "--manifests requires a value"
+        [ "$saw_manifests" -eq 0 ] || invalid "duplicate --manifests"
+        manifests_dir="$2"; saw_manifests=1; shift 2 ;;
+      --config)
+        [ $# -ge 2 ] || invalid "--config requires a value"
+        [ "$saw_config" -eq 0 ] || invalid "duplicate --config"
+        config="$2"; saw_config=1; shift 2 ;;
+      *)
+        invalid "unknown argument: $1" ;;
+    esac
+  done
+  [ "$saw_manifests" -eq 1 ] && [ "$saw_config" -eq 1 ] || invalid "--manifests and --config are required"
+  [ -d "$manifests_dir" ] || invalid "manifests dir not found: $manifests_dir"
+  [ -f "$config" ] || invalid "config not found: $config"
+
+  local files=()
+  while IFS= read -r -d '' f; do
+    files+=("$f")
+  done < <(find "$manifests_dir" -maxdepth 1 -type f -name '*.json' -print0 | sort -z)
+
+  [ "${#files[@]}" -gt 0 ] || invalid "no manifests found in $manifests_dir"
+
+  # every manifest must individually PASS module-graph-gate validate
+  local f
+  for f in "${files[@]}"; do
+    local out
+    out=$("$GATE" validate --manifest "$f" --config "$config" 2>/dev/null)
+    local verdict
+    verdict=$(printf '%s\n' "$out" | tail -n1)
+    if [ "$verdict" != "PASS" ]; then
+      invalid "manifest failed module-graph-gate validate: $f"
+    fi
+  done
+
+  # validate every packageId and every dependsOnPackages entry (including
+  # out-of-batch identifiers) against the canonical identifier grammar,
+  # directly on the manifest JSON, before any identifier is ever extracted
+  # into a delimiter/newline-joined shell structure
+  local id_check='
+    ((.packageId // "") | test("^[A-Za-z0-9][A-Za-z0-9._-]*$")) as $pid_ok
+    | ((.dependsOnPackages // []) | all(test("^[A-Za-z0-9][A-Za-z0-9._-]*$"))) as $deps_ok
+    | $pid_ok and $deps_ok
+  '
+  for f in "${files[@]}"; do
+    jq -e "$id_check" "$f" >/dev/null 2>&1 || invalid "invalid packageId or dependsOnPackages identifier: $f"
+  done
+
+  # collect packageIds and dependsOnPackages, requiring unique nonempty ids
+  local pkg_ids=() pkg_deps=()
+  for f in "${files[@]}"; do
+    local pid
+    pid=$(jq -r '.packageId // empty' "$f" 2>/dev/null)
+    [ -n "$pid" ] || invalid "manifest missing packageId: $f"
+    local dep_json
+    dep_json=$(jq -c '.dependsOnPackages // []' "$f" 2>/dev/null)
+    [ -n "$dep_json" ] || invalid "manifest missing dependsOnPackages: $f"
+    pkg_ids+=("$pid")
+    pkg_deps+=("$dep_json")
+  done
+
+  local n=${#pkg_ids[@]}
+  local i j
+  for ((i = 0; i < n; i++)); do
+    for ((j = i + 1; j < n; j++)); do
+      if [ "${pkg_ids[$i]}" = "${pkg_ids[$j]}" ]; then
+        invalid "duplicate packageId: ${pkg_ids[$i]}"
+      fi
+    done
+  done
+
+  # run module-graph-gate conflicts and interpret its exact contract
+  local gate_out gate_ec
+  gate_out=$("$GATE" conflicts --manifests "$manifests_dir" --config "$config" 2>/dev/null)
+  gate_ec=$?
+  local gate_verdict gate_lines
+  gate_lines=$(printf '%s\n' "$gate_out" | wc -l | tr -d ' ')
+  gate_verdict=$(printf '%s\n' "$gate_out" | tail -n1)
+
+  local edges_json="[]"
+  if [ "$gate_ec" -eq 0 ] && [ "$gate_verdict" = "NO_CONFLICTS" ]; then
+    if [ "$gate_lines" -ne 1 ]; then
+      invalid "unexpected module-graph-gate conflicts output shape (NO_CONFLICTS with extra output)"
+    fi
+    edges_json="[]"
+  elif [ "$gate_ec" -eq 1 ] && [ "$gate_verdict" = "CONFLICT_EDGES_FOUND" ]; then
+    if [ "$gate_lines" -ne 2 ]; then
+      invalid "unexpected module-graph-gate conflicts output shape (CONFLICT_EDGES_FOUND without exactly one JSON line)"
+    fi
+    local candidate
+    candidate=$(printf '%s\n' "$gate_out" | sed '$d')
+    if ! printf '%s' "$candidate" | jq empty >/dev/null 2>&1; then
+      invalid "unexpected module-graph-gate conflicts output: malformed JSON"
+    fi
+    local candidate_is_array
+    candidate_is_array=$(printf '%s' "$candidate" | jq -r 'if type == "array" then "yes" else "no" end' 2>/dev/null)
+    [ "$candidate_is_array" = "yes" ] || invalid "unexpected module-graph-gate conflicts output: not a JSON array"
+    edges_json="$candidate"
+  else
+    invalid "unexpected module-graph-gate conflicts verdict/exit shape (ec=$gate_ec verdict=$gate_verdict)"
+  fi
+
+  # validate edge endpoints belong to the batch, normalize (sorted
+  # packageIds, from/to canonicalized to those endpoints, sorted-unique
+  # reason text), and sort edges by packageIds
+  local pkg_set_json
+  pkg_set_json=$(printf '%s\n' "${pkg_ids[@]}" | jq -R . | jq -s .)
+
+  local normalized_edges
+  normalized_edges=$(jq -c -n --argjson edges "$edges_json" --argjson known "$pkg_set_json" '
+    $edges | map(
+      (.packageIds // []) as $ids
+      | if ($ids | length) != 2 then error("edge missing two packageIds") else . end
+      | ($ids | sort) as $sorted
+      | if (($sorted[0] | in($known | INDEX(.))) and ($sorted[1] | in($known | INDEX(.)))) then . else error("edge endpoint not in batch") end
+      | ((.reason // "") | split("; ") | map(select(length > 0)) | unique | sort | join("; ")) as $r
+      | {packageIds: $sorted, from: $sorted[0], to: $sorted[1], reason: $r}
+    )
+    | sort_by(.packageIds[0], .packageIds[1])
+  ' 2>/dev/null)
+  if [ -z "$normalized_edges" ]; then
+    invalid "conflict edge references an unknown package or malformed edge"
+  fi
+
+  # exact conflict pair lookup: newline-separated "a\tb" for sorted pairs
+  local conflict_pairs
+  conflict_pairs=$(printf '%s' "$normalized_edges" | jq -r '.[] | .packageIds[0] + "\t" + .packageIds[1]')
+
+  conflicts() {
+    local a="$1" b="$2"
+    local lo hi
+    if [ "$a" \< "$b" ]; then lo="$a"; hi="$b"; else lo="$b"; hi="$a"; fi
+    printf '%s\n' "$conflict_pairs" | grep -Fxq "$lo	$hi"
+  }
+
+  # build in-batch dependency map: dependencies not present in the batch
+  # are already merged and never block scheduling
+  local dep_in_batch=()
+  for ((i = 0; i < n; i++)); do
+    local pkg_dep_list
+    pkg_dep_list=$(printf '%s' "${pkg_deps[$i]}" | jq -r --argjson known "$pkg_set_json" '
+      map(select(. as $d | $known | index($d) != null)) | join(",")
+    ' 2>/dev/null)
+    dep_in_batch+=("$pkg_dep_list")
+  done
+
+  dep_index_of() {
+    local id="$1"
+    local k
+    for ((k = 0; k < n; k++)); do
+      if [ "${pkg_ids[$k]}" = "$id" ]; then
+        printf '%s' "$k"
+        return 0
+      fi
+    done
+    return 1
+  }
+
+  # cycle detection over in-batch dependsOnPackages (DFS with coloring)
+  local color=()
+  for ((i = 0; i < n; i++)); do color+=("0"); done
+
+  has_cycle() {
+    local start="$1"
+    local stack=("$start")
+    local -a path=()
+    _dfs "$start"
+  }
+
+  _dfs() {
+    local u="$1"
+    color[$u]=1
+    local deps="${dep_in_batch[$u]}"
+    local old_ifs="$IFS"
+    IFS=','
+    local d
+    for d in $deps; do
+      IFS="$old_ifs"
+      [ -n "$d" ] || continue
+      local v
+      v=$(dep_index_of "$d") || continue
+      if [ "${color[$v]}" = "1" ]; then
+        return 0
+      elif [ "${color[$v]}" = "0" ]; then
+        if _dfs "$v"; then
+          return 0
+        fi
+      fi
+      IFS=','
+    done
+    IFS="$old_ifs"
+    color[$u]=2
+    return 1
+  }
+
+  for ((i = 0; i < n; i++)); do
+    if [ "${color[$i]}" = "0" ]; then
+      if _dfs "$i"; then
+        invalid "dependency cycle detected among in-batch packages"
+      fi
+    fi
+  done
+
+  # greedy deterministic waves
+  local scheduled=()
+  for ((i = 0; i < n; i++)); do scheduled+=("0"); done
+  local scheduled_count=0
+  local waves_json="[]"
+
+  local safety=0
+  while [ "$scheduled_count" -lt "$n" ]; do
+    safety=$((safety + 1))
+    if [ "$safety" -gt $((n + 5)) ]; then
+      invalid "no eligible candidate: scheduling did not terminate"
+    fi
+
+    # eligible: not scheduled, all in-batch deps already scheduled
+    local eligible_idx=()
+    for ((i = 0; i < n; i++)); do
+      if [ "${scheduled[$i]}" = "1" ]; then continue; fi
+      local deps="${dep_in_batch[$i]}"
+      local ok=1
+      local old_ifs="$IFS"
+      IFS=','
+      local d
+      for d in $deps; do
+        IFS="$old_ifs"
+        [ -n "$d" ] || continue
+        local v
+        v=$(dep_index_of "$d") || continue
+        if [ "${scheduled[$v]}" != "1" ]; then
+          ok=0
+        fi
+        IFS=','
+      done
+      IFS="$old_ifs"
+      if [ "$ok" -eq 1 ]; then
+        eligible_idx+=("$i")
+      fi
+    done
+
+    if [ "${#eligible_idx[@]}" -eq 0 ]; then
+      invalid "no eligible candidate for scheduling"
+    fi
+
+    # sort eligible indices lexically by packageId
+    local sorted_ids=()
+    for i in "${eligible_idx[@]}"; do
+      sorted_ids+=("${pkg_ids[$i]}")
+    done
+    local sorted_eligible
+    sorted_eligible=$(printf '%s\n' "${sorted_ids[@]}" | sort)
+
+    local accepted_this_wave=()
+    local id
+    while IFS= read -r id; do
+      [ -n "$id" ] || continue
+      local skip=0
+      local aid
+      for aid in "${accepted_this_wave[@]:-}"; do
+        [ -n "$aid" ] || continue
+        if conflicts "$id" "$aid"; then
+          skip=1
+          break
+        fi
+      done
+      if [ "$skip" -eq 0 ]; then
+        accepted_this_wave+=("$id")
+        local idx
+        idx=$(dep_index_of "$id")
+        scheduled[$idx]=1
+        scheduled_count=$((scheduled_count + 1))
+      fi
+    done <<<"$sorted_eligible"
+
+    if [ "${#accepted_this_wave[@]}" -eq 0 ]; then
+      invalid "no eligible candidate for scheduling"
+    fi
+
+    local wave_json
+    wave_json=$(printf '%s\n' "${accepted_this_wave[@]}" | jq -R . | jq -s 'sort')
+    waves_json=$(jq -c -n --argjson w "$waves_json" --argjson wave "$wave_json" '$w + [$wave]')
+  done
+
+  # connected components over exact normalized conflict edges, including
+  # isolated singleton packages
+  local parent=()
+  for ((i = 0; i < n; i++)); do parent+=("$i"); done
+
+  find_root() {
+    local x="$1"
+    while [ "${parent[$x]}" != "$x" ]; do
+      x="${parent[$x]}"
+    done
+    printf '%s' "$x"
+  }
+
+  union() {
+    local a b ra rb
+    a="$1"; b="$2"
+    ra=$(find_root "$a")
+    rb=$(find_root "$b")
+    if [ "$ra" != "$rb" ]; then
+      parent[$ra]=$rb
+    fi
+  }
+
+  while IFS=$'\t' read -r a b; do
+    [ -n "$a" ] || continue
+    local ia ib
+    ia=$(dep_index_of "$a") || continue
+    ib=$(dep_index_of "$b") || continue
+    union "$ia" "$ib"
+  done <<<"$conflict_pairs"
+
+  local root_json="{}"
+  for ((i = 0; i < n; i++)); do
+    local r
+    r=$(find_root "$i")
+    root_json=$(jq -c -n --argjson m "$root_json" --arg r "$r" --arg id "${pkg_ids[$i]}" '
+      $m | .[$r] = ((.[$r] // []) + [$id])
+    ')
+  done
+
+  local components_json
+  components_json=$(printf '%s' "$root_json" | jq -c '[ .[] | sort ] | sort_by(.)')
+
+  local packages_json
+  packages_json=$(printf '%s\n' "${pkg_ids[@]}" | jq -R . | jq -s 'sort')
+
+  jq -c -n \
+    --argjson packages "$packages_json" \
+    --argjson conflictEdges "$normalized_edges" \
+    --argjson components "$components_json" \
+    --argjson waves "$waves_json" \
+    '{packages: $packages, conflictEdges: $conflictEdges, components: $components, waves: $waves}'
+  echo "SCHEDULE_PLAN"
+  exit 0
+}
+
+main() {
+  require_tools
+  local cmd="${1:-}"
+  shift || true
+  case "$cmd" in
+    plan) cmd_plan "$@" ;;
+    *)
+      printf 'usage: conflict-scheduler plan --manifests <dir> --config <config>\n' >&2
+      echo "SCHEDULE_INVALID"
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
