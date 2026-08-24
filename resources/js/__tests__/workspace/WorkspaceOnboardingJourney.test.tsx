@@ -1,6 +1,6 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 
 /**
  * Blind RED test candidate for S1-WP02C. Frozen scope hash
@@ -191,7 +191,8 @@ describe('WorkspaceApp — zero workspaces, one-name creation (S1-WP02C, docs/34
         fireEvent.change(nameInput, { target: { value: 'Zeytin Restoranları' } });
         fireEvent.click(screen.getByRole('button', { name: /create/i }));
 
-        await screen.findByRole('heading', { name: /Zeytin Restoranları/ });
+        const createdBanner = await screen.findByRole('banner');
+        await within(createdBanner).findByRole('button', { name: 'Zeytin Restoranları' });
 
         const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
         const csrfIndex = calledUrls.indexOf(CSRF_COOKIE_URL);
@@ -308,7 +309,8 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         );
         render(<WorkspaceApp />);
 
-        await screen.findByText('Zeytin Restoranları');
+        const contextBanner = await screen.findByRole('banner');
+        await within(contextBanner).findByRole('button', { name: 'Zeytin Restoranları' });
         expect(screen.getByText('zeytin-restoranlari')).toBeInTheDocument();
         expect(screen.getByText(/onboarding/i)).toBeInTheDocument();
         expect(screen.getByText('ada@example.com')).toBeInTheDocument();
@@ -327,10 +329,12 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         );
         const { container } = render(<WorkspaceApp />);
 
-        await screen.findByText('Zeytin Restoranları');
+        const liveBanner = await screen.findByRole('banner');
+        await within(liveBanner).findByRole('button', { name: 'Zeytin Restoranları' });
 
         const liveRegion = container.querySelector('[aria-live]');
         expect(liveRegion).not.toBeNull();
+        expect(liveRegion).toHaveTextContent('Zeytin Restoranları is now the current workspace.');
 
         vi.unstubAllGlobals();
     });
