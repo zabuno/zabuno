@@ -57,13 +57,14 @@ return [
     ],
 
     /*
-     * S1-WP02A CORE-01 hard scope: registration + email verification only.
-     * Password reset, 2FA, passkeys, profile/password updates are explicit
-     * non-goals (docs/33 §3) and must stay disabled.
+     * S1-WP02A CORE-01 hard scope: registration + email verification.
+     * S1-WP02D adds password reset. 2FA, passkeys, profile/password
+     * updates remain explicit non-goals (docs/33 §3) and stay disabled.
      */
     'features' => [
         Features::registration(),
         Features::emailVerification(),
+        Features::resetPasswords(),
     ],
 
 ];

@@ -2,6 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { LoginForm } from './components/auth/LoginForm';
+import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
+import { ResetPasswordForm } from './components/auth/ResetPasswordForm';
 import { VerificationPending } from './components/auth/VerificationPending';
 import { VerifiedDestination } from './components/auth/VerifiedDestination';
 import { InvitationAcceptForm } from './components/auth/InvitationAcceptForm';
@@ -22,17 +24,22 @@ function renderView(container: HTMLElement) {
             return <RegisterForm />;
         case 'login':
             return <LoginForm />;
+        case 'forgot-password':
+            return <ForgotPasswordForm />;
+        case 'reset-password':
+            return (
+                <ResetPasswordForm
+                    token={container.dataset.resetToken ?? ''}
+                    email={container.dataset.resetEmail ?? ''}
+                />
+            );
         case 'verification-pending':
             return <VerificationPending email={authEmail} />;
         case 'verified':
             return <VerifiedDestination />;
         case 'invitation-accept': {
             const status = (container.dataset.invitationStatus ?? 'invalid') as
-                | 'available'
-                | 'guest'
-                | 'invalid'
-                | 'expired'
-                | 'consumed';
+                'available' | 'guest' | 'invalid' | 'expired' | 'consumed';
             const authenticated = container.dataset.authenticated === 'true';
             const loginUrl = container.dataset.loginUrl;
 
@@ -59,7 +66,10 @@ createRoot(container).render(
     <StrictMode>
         <ThemeRoot>
             <div className="min-h-screen w-full min-w-[320px] bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-                <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-gray-100 to-gray-50 dark:from-gray-950 dark:to-gray-900" />
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-gray-100 to-gray-50 dark:from-gray-950 dark:to-gray-900"
+                />
                 <div className="flex min-h-screen items-center justify-center px-4 py-8">
                     <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                         {renderView(container)}

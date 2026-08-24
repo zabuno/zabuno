@@ -146,6 +146,13 @@ export function LoginForm({
             <Button type="submit" className="w-full">
                 {t('auth.login.submit')}
             </Button>
+
+            <a
+                href="/forgot-password"
+                className="text-sm text-gray-600 hover:underline dark:text-gray-400"
+            >
+                {t('auth.login.forgot_password')}
+            </a>
         </form>
     );
 }
