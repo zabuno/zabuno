@@ -7,6 +7,7 @@ namespace App\Infrastructure\QrDestination\Rendering;
 use App\Application\QrDestination\Dto\QrRenderedImage;
 use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Domain\QrDestination\QrLayout;
+use DivisionByZeroError;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
@@ -25,7 +26,11 @@ final class EndroidQrCodeImageExportAdapter implements QrCodeImageExportPort
      * one that both renders and passes the writer's own real
      * validateResult() decode-back check wins — never a random retry, and
      * the same input data always yields the same first-passing profile
-     * (and therefore byte-identical output).
+     * (and therefore byte-identical output). A ValidationException or a
+     * DivisionByZeroError from the decode-back path (the latter can be
+     * thrown by the underlying Zxing perspective transform on some
+     * candidates) are both treated as a decode-validation miss for that
+     * candidate.
      *
      * @var list<array{size: int, margin: int, errorCorrectionLevel: ErrorCorrectionLevel}>
      */
@@ -101,7 +106,7 @@ final class EndroidQrCodeImageExportAdapter implements QrCodeImageExportPort
                     foregroundColor: $foreground,
                     backgroundColor: $background,
                 ))->build();
-            } catch (ValidationException) {
+            } catch (ValidationException|DivisionByZeroError) {
                 continue;
             }
 
