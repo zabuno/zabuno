@@ -25,8 +25,11 @@ use Tests\TestCase;
  * and Editor never carry billing.view), and further extended for
  * S1-WP01A Iyzico sandbox checkout backend (frozen MASTER contract:
  * Permission::BillingManage = billing.manage, granted to Owner only —
- * Member and Editor never carry billing.manage; bounded scope is now
- * twelve permissions).
+ * Member and Editor never carry billing.manage), and further extended for
+ * the security evidence view surface (already-shipped MASTER contract:
+ * Permission::SecurityEvidenceView = security.evidence.view, granted to
+ * Owner only — Member and Editor never carry security.evidence.view;
+ * bounded scope is now thirteen permissions).
  *
  * Proves the domain permission mapping of the implemented production code:
  *   - App\Domain\Authorization\Permission enum with cases
@@ -35,19 +38,21 @@ use Tests\TestCase;
  *     MenuPublish = 'menu.publish', QrView = 'qr.view',
  *     QrCreate = 'qr.create', QrDisable = 'qr.disable',
  *     QrDesignManage = 'qr.design.manage', AnalyticsView = 'analytics.view',
- *     BillingView = 'billing.view'.
+ *     BillingView = 'billing.view', BillingManage = 'billing.manage',
+ *     SecurityEvidenceView = 'security.evidence.view'.
  *   - App\Domain\Authorization\RolePermissions::for(MembershipRole) returning
  *     the permission set for a role: Owner -> {workspace.view,
  *     workspace.manage, menu.view, menu.manage, menu.publish, qr.view,
  *     qr.create, qr.disable, qr.design.manage, analytics.view,
- *     billing.view}, Member -> {workspace.view, menu.view, qr.view,
- *     analytics.view} (no billing.view).
+ *     billing.view, billing.manage, security.evidence.view}, Member ->
+ *     {workspace.view, menu.view, qr.view, analytics.view} (no billing.view,
+ *     billing.manage or security.evidence.view).
  */
 final class RolePermissionMappingTest extends TestCase
 {
     // --- CORE03-PERMISSION-ENUM-01 --------------------------------------
 
-    public function test_permission_enum_declares_the_eleven_frozen_scope_permission_strings(): void
+    public function test_permission_enum_declares_the_thirteen_frozen_scope_permission_strings(): void
     {
         self::assertSame('workspace.view', Permission::WorkspaceView->value, 'PERMISSION-ENUM-01: workspace.view değeri sabit string sözleşmesiyle eşleşmeli.');
         self::assertSame('workspace.manage', Permission::WorkspaceManage->value, 'PERMISSION-ENUM-01: workspace.manage değeri sabit string sözleşmesiyle eşleşmeli.');
@@ -61,10 +66,11 @@ final class RolePermissionMappingTest extends TestCase
         self::assertSame('analytics.view', Permission::AnalyticsView->value, 'PERMISSION-ENUM-01: analytics.view değeri sabit string sözleşmesiyle eşleşmeli (S1-WP05b1 location-scoped analytics).');
         self::assertSame('billing.view', Permission::BillingView->value, 'PERMISSION-ENUM-01: billing.view değeri sabit string sözleşmesiyle eşleşmeli (S1-WP05 billing authorization, frozen MASTER contract).');
         self::assertSame('billing.manage', Permission::BillingManage->value, 'PERMISSION-ENUM-01: billing.manage değeri sabit string sözleşmesiyle eşleşmeli (S1-WP01A Iyzico sandbox checkout backend, frozen MASTER contract).');
+        self::assertSame('security.evidence.view', Permission::SecurityEvidenceView->value, 'PERMISSION-ENUM-01: security.evidence.view değeri sabit string sözleşmesiyle eşleşmeli (owner-only SecurityEvidenceView, already-shipped MASTER contract).');
 
         $values = array_map(static fn (Permission $permission): string => $permission->value, Permission::cases());
 
-        self::assertCount(12, $values, 'PERMISSION-ENUM-01: S1-WP01A Iyzico sandbox checkout backend sonrası bounded scope tam olarak on iki permission tanımlar (workspace.view, workspace.manage, menu.view, menu.manage, menu.publish, qr.view, qr.create, qr.disable, qr.design.manage, analytics.view, billing.view, billing.manage) — ek permission eklenmemeli.');
+        self::assertCount(13, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak on üç permission tanımlar (workspace.view, workspace.manage, menu.view, menu.manage, menu.publish, qr.view, qr.create, qr.disable, qr.design.manage, analytics.view, billing.view, billing.manage, security.evidence.view) — ek permission eklenmemeli.');
         self::assertContains('workspace.view', $values);
         self::assertContains('workspace.manage', $values);
         self::assertContains('menu.view', $values);
@@ -77,11 +83,12 @@ final class RolePermissionMappingTest extends TestCase
         self::assertContains('analytics.view', $values);
         self::assertContains('billing.view', $values);
         self::assertContains('billing.manage', $values);
+        self::assertContains('security.evidence.view', $values);
     }
 
     // --- CORE03-ROLE-MAP-OWNER-01 -----------------------------------------
 
-    public function test_owner_role_maps_to_all_eleven_view_manage_publish_qr_analytics_and_billing_permissions(): void
+    public function test_owner_role_maps_to_all_thirteen_view_manage_publish_qr_analytics_billing_and_security_evidence_permissions(): void
     {
         $permissions = RolePermissions::for(MembershipRole::Owner);
 
@@ -97,7 +104,8 @@ final class RolePermissionMappingTest extends TestCase
         self::assertContains(Permission::AnalyticsView, $permissions, 'ROLE-MAP-OWNER-01: Owner analytics.view yetkisine sahip olmalı (S1-WP05b1 location-scoped analytics).');
         self::assertContains(Permission::BillingView, $permissions, 'ROLE-MAP-OWNER-01: Owner billing.view yetkisine sahip olmalı (S1-WP05 billing authorization).');
         self::assertContains(Permission::BillingManage, $permissions, 'ROLE-MAP-OWNER-01: Owner billing.manage yetkisine sahip olmalı (S1-WP01A Iyzico sandbox checkout backend).');
-        self::assertCount(12, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak on iki permission taşımalı (bounded scope dışında ek yetki yok).');
+        self::assertContains(Permission::SecurityEvidenceView, $permissions, 'ROLE-MAP-OWNER-01: Owner security.evidence.view yetkisine sahip olmalı (owner-only SecurityEvidenceView, already-shipped MASTER contract).');
+        self::assertCount(13, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak on üç permission taşımalı (bounded scope dışında ek yetki yok).');
     }
 
     // --- CORE03-ROLE-MAP-MEMBER-01 ----------------------------------------
@@ -118,7 +126,7 @@ final class RolePermissionMappingTest extends TestCase
         self::assertContains(Permission::AnalyticsView, $permissions, 'ROLE-MAP-MEMBER-01: Member analytics.view yetkisine sahip olmalı (S1-WP05b1 location-scoped analytics).');
         self::assertNotContains(Permission::BillingView, $permissions, 'ROLE-MAP-MEMBER-01: Member billing.view yetkisine sahip OLMAMALI (S1-WP05 billing authorization, owner-only).');
         self::assertNotContains(Permission::BillingManage, $permissions, 'ROLE-MAP-MEMBER-01: Member billing.manage yetkisine sahip OLMAMALI (S1-WP01A Iyzico sandbox checkout backend, owner-only).');
-        self::assertCount(4, $permissions, 'ROLE-MAP-MEMBER-01: Member workspace.view, menu.view, qr.view ve analytics.view taşımalı; manage/publish/create/disable/design.manage/billing.view/billing.manage taşımamalı.');
+        self::assertCount(4, $permissions, 'ROLE-MAP-MEMBER-01: Member workspace.view, menu.view, qr.view ve analytics.view taşımalı; manage/publish/create/disable/design.manage/billing.view/billing.manage/security.evidence.view taşımamalı.');
     }
 
     // --- CORE03-ROLE-MAP-EDITOR-01 -----------------------------------------
