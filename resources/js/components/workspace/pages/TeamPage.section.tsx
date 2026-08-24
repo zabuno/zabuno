@@ -1,0 +1,18 @@
+import type { ReactNode } from 'react';
+import { TeamPage } from './TeamPage';
+import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
+import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
+
+function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
+    return <TeamPage workspaceId={ctx.workspaceId} />;
+}
+
+const teamSection: WorkspaceSectionDescriptor = {
+    key: 'team',
+    hash: '#team',
+    order: 7,
+    labelKey: 'workspace.shell.nav.team',
+    render,
+};
+
+export default teamSection;

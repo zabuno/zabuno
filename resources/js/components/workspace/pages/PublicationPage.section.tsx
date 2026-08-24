@@ -1,0 +1,21 @@
+import type { ReactNode } from 'react';
+import { PublicationPage } from './PublicationPage';
+import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
+import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
+
+function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
+    return (
+        <PublicationPage workspaceId={ctx.workspaceId} dashboardMenuTree={ctx.dashboardMenuTree} />
+    );
+}
+
+const publicationSection: WorkspaceSectionDescriptor = {
+    key: 'publication',
+    hash: '#publication',
+    order: 5,
+    labelKey: 'workspace.shell.nav.publication',
+    aiQuickAction: true,
+    render,
+};
+
+export default publicationSection;
