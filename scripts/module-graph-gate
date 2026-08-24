@@ -1,0 +1,471 @@
+#!/usr/bin/env bash
+# module-graph-gate — fast-delivery genome item 4.
+#
+#   module-graph-gate validate --manifest <manifest.json> --config <development-speed-budget.json>
+#   module-graph-gate conflicts --manifests <dir> --config <development-speed-budget.json>
+#
+# --config always receives config/development-speed-budget.json (moduleFramework
+# .packageManifestSchema + steward lane names live there). The canonical
+# config/module-dependency-dag.json is self-discovered relative to repo root;
+# it is never passed on the CLI. Read-only: no Git mutation, no admission/
+# scheduling/queue side effects, no network, no LLM.
+
+set -u
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+DAG_FILE="$REPO_ROOT/config/module-dependency-dag.json"
+
+CONTRACT_REF_RE='^[A-Za-z0-9_.-]+@[0-9a-f]{64}$'
+
+die_invalid() {
+  printf 'module-graph-gate: %s\n' "$1" >&2
+  echo "MANIFEST_INVALID"
+  exit 1
+}
+
+json_valid() {
+  jq empty "$1" >/dev/null 2>&1
+}
+
+require_tools() {
+  if ! command -v jq >/dev/null 2>&1; then
+    printf 'module-graph-gate: jq is required\n' >&2
+    exit 2
+  fi
+}
+
+# is_safe_repo_relative <path>
+# rejects empty, absolute, tilde-leading, ".." traversal, and any
+# newline/control character in the path.
+is_safe_repo_relative() {
+  local p="$1"
+  [ -n "$p" ] || return 1
+  case "$p" in
+    /*) return 1 ;;
+    '~'*) return 1 ;;
+  esac
+  case "/$p/" in
+    */../*) return 1 ;;
+  esac
+  if printf '%s' "$p" | LC_ALL=C grep -q '[[:cntrl:]]'; then
+    return 1
+  fi
+  return 0
+}
+
+# array_unique_and_safe <json-array-as-compact-string>
+# prints "ok" or "dup" or "unsafe"
+check_path_array() {
+  local arr_json="$1"
+  local n
+  n=$(printf '%s' "$arr_json" | jq 'length')
+  local i=0
+  local -a seen=()
+  while [ "$i" -lt "$n" ]; do
+    local v
+    v=$(printf '%s' "$arr_json" | jq -r ".[$i]")
+    if ! is_safe_repo_relative "$v"; then
+      echo "unsafe"
+      return
+    fi
+    local s
+    for s in "${seen[@]:-}"; do
+      if [ "$s" = "$v" ]; then
+        echo "dup"
+        return
+      fi
+    done
+    seen+=("$v")
+    i=$((i + 1))
+  done
+  echo "ok"
+}
+
+# validate_config_shape <config-file>
+# requires a nonempty canonical moduleFramework.packageManifestSchema
+# (containing every canonical package field) and a nonempty
+# stewardLanes.lanes; prints reason to stderr, returns 0 valid / 1 invalid.
+validate_config_shape() {
+  local config="$1"
+  if [ ! -f "$config" ] || ! json_valid "$config"; then
+    echo "config missing or malformed JSON" >&2
+    return 1
+  fi
+  local schema_ok
+  schema_ok=$(jq -r '
+    (.moduleFramework.packageManifestSchema // {}) as $s
+    | (($s | type) == "object") and (($s | length) > 0)
+      and ((["packageId","module","writeSet","readSet",
+             "contractsConsumed","contractsChanged",
+             "tablesOrMigrationsTouched","sharedSurfacesTouched",
+             "dependsOnPackages"]) | all(. as $k | $s | has($k)))
+    | if . then "ok" else "bad" end
+  ' "$config" 2>/dev/null)
+  if [ "$schema_ok" != "ok" ]; then
+    echo "config missing or incomplete moduleFramework.packageManifestSchema" >&2
+    return 1
+  fi
+  local lanes_ok
+  lanes_ok=$(jq -r '
+    (.moduleFramework.stewardLanes.lanes // {}) as $l
+    | (($l | type) == "object") and (($l | length) > 0)
+    | if . then "ok" else "bad" end
+  ' "$config" 2>/dev/null)
+  if [ "$lanes_ok" != "ok" ]; then
+    echo "config missing or empty stewardLanes.lanes" >&2
+    return 1
+  fi
+  return 0
+}
+
+# validate_dag_shape <dag-file>
+# requires unique string nodes and edges shaped as {from,to} strings whose
+# endpoints are both known nodes; prints reason to stderr, returns 0/1.
+validate_dag_shape() {
+  local dag="$1"
+  if [ ! -f "$dag" ] || ! json_valid "$dag"; then
+    echo "canonical DAG missing or malformed JSON" >&2
+    return 1
+  fi
+  local ok
+  ok=$(jq -r '
+    (.nodes // null) as $n
+    | (.edges // null) as $e
+    | (($n != null) and ($n | type == "array") and (all($n[]?; type == "string"))
+       and (($n | length) == ($n | unique | length))) as $nodesOk
+    | (($e != null) and ($e | type == "array")
+       and ($e | all(.[];
+             (type == "object") and has("from") and has("to")
+             and ((.from | type) == "string") and ((.to | type) == "string")
+             and (.from as $f | .to as $t
+                  | ((($n // []) | index($f)) != null) and ((($n // []) | index($t)) != null))
+           ))) as $edgesOk
+    | ($nodesOk and $edgesOk) | if . then "ok" else "bad" end
+  ' "$dag" 2>/dev/null)
+  if [ "$ok" != "ok" ]; then
+    echo "canonical DAG has malformed nodes/edges shape" >&2
+    return 1
+  fi
+  return 0
+}
+
+# validate_manifest <manifest-file> <config-file>
+# prints reason to stderr, returns 0 valid / 1 invalid
+validate_manifest() {
+  local manifest="$1" config="$2"
+  local reason=""
+
+  if [ ! -f "$manifest" ] || ! json_valid "$manifest"; then
+    echo "manifest missing or malformed JSON" >&2
+    return 1
+  fi
+  if ! validate_config_shape "$config"; then
+    return 1
+  fi
+  if ! validate_dag_shape "$DAG_FILE"; then
+    return 1
+  fi
+
+  local shape_ok
+  shape_ok=$(jq -r '
+    (type == "object")
+    and (has("packageId") and (.packageId | type == "string") and (.packageId | length > 0))
+    and (has("module") and (.module | type == "string") and (.module | length > 0))
+    and (has("allowedFiles") and (.allowedFiles | type == "array") and (all(.allowedFiles[]?; type == "string")))
+    and (has("writeSet") and (.writeSet | type == "array") and (all(.writeSet[]?; type == "string")))
+    and (has("readSet") and (.readSet | type == "array") and (all(.readSet[]?; type == "string")))
+    and (has("contractsConsumed") and (.contractsConsumed | type == "array") and (all(.contractsConsumed[]?; type == "string")))
+    and (has("contractsChanged") and (.contractsChanged | type == "array") and (all(.contractsChanged[]?; type == "string")))
+    and (has("tablesOrMigrationsTouched") and (.tablesOrMigrationsTouched | type == "array") and (all(.tablesOrMigrationsTouched[]?; type == "string")))
+    and (has("sharedSurfacesTouched") and (.sharedSurfacesTouched | type == "array") and (all(.sharedSurfacesTouched[]?; type == "string")))
+    and (has("dependsOnPackages") and (.dependsOnPackages | type == "array") and (all(.dependsOnPackages[]?; type == "string")))
+    | if . then "ok" else "bad" end
+  ' "$manifest" 2>/dev/null)
+  if [ "$shape_ok" != "ok" ]; then
+    echo "manifest missing required field or wrong field type" >&2
+    return 1
+  fi
+
+  local module
+  module=$(jq -r '.module' "$manifest")
+  local known
+  known=$(jq --arg m "$module" -r '(.nodes // []) | index($m) != null' "$DAG_FILE" 2>/dev/null)
+  if [ "$known" != "true" ]; then
+    echo "unknown module: $module" >&2
+    return 1
+  fi
+
+  local allowed_json write_json read_json
+  allowed_json=$(jq -c '.allowedFiles' "$manifest")
+  write_json=$(jq -c '.writeSet' "$manifest")
+  read_json=$(jq -c '.readSet' "$manifest")
+
+  local allowed_check write_check read_check
+  allowed_check=$(check_path_array "$allowed_json")
+  if [ "$allowed_check" != "ok" ]; then
+    echo "allowedFiles $allowed_check path(s)" >&2
+    return 1
+  fi
+  write_check=$(check_path_array "$write_json")
+  if [ "$write_check" != "ok" ]; then
+    echo "writeSet $write_check path(s)" >&2
+    return 1
+  fi
+  read_check=$(check_path_array "$read_json")
+  if [ "$read_check" != "ok" ]; then
+    echo "readSet $read_check path(s)" >&2
+    return 1
+  fi
+
+  local sets_equal
+  sets_equal=$(jq -n -r --argjson a "$allowed_json" --argjson w "$write_json" '
+    (($a | sort) == ($w | sort)) | if . then "yes" else "no" end
+  ')
+  if [ "$sets_equal" != "yes" ]; then
+    echo "allowedFiles/writeSet set mismatch" >&2
+    return 1
+  fi
+
+  local contract_ok
+  contract_ok=$(jq -r --arg re "$CONTRACT_REF_RE" '
+    ((.contractsConsumed // []) + (.contractsChanged // [])) as $refs
+    | ($refs | all(test($re))) | if . then "ok" else "bad" end
+  ' "$manifest" 2>/dev/null)
+  if [ "$contract_ok" != "ok" ]; then
+    echo "malformed contract ref (expected portName@64-lowercase-hex)" >&2
+    return 1
+  fi
+
+  local known_surfaces_json
+  known_surfaces_json=$(jq -c '[(.moduleFramework.stewardLanes.lanes // {}) | keys[]?]' "$config" 2>/dev/null)
+  local surfaces_ok
+  surfaces_ok=$(jq -n -r --argjson known "$known_surfaces_json" --slurpfile m "$manifest" '
+    ($m[0].sharedSurfacesTouched // []) as $s
+    | ($s | all(. as $x | $known | index($x) != null)) | if . then "ok" else "bad" end
+  ')
+  if [ "$surfaces_ok" != "ok" ]; then
+    echo "unknown shared surface" >&2
+    return 1
+  fi
+
+  local pkg_id
+  pkg_id=$(jq -r '.packageId' "$manifest")
+  local deps_ok
+  deps_ok=$(jq -r --arg pid "$pkg_id" '
+    (.dependsOnPackages // []) as $d
+    | (($d | index($pid)) == null) and (($d | length) == ($d | unique | length))
+    | if . then "ok" else "bad" end
+  ' "$manifest" 2>/dev/null)
+  if [ "$deps_ok" != "ok" ]; then
+    echo "self-dependency or duplicate dependsOnPackages entry" >&2
+    return 1
+  fi
+
+  return 0
+}
+
+cmd_validate() {
+  local manifest="" config=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --manifest) manifest="$2"; shift 2 ;;
+      --config) config="$2"; shift 2 ;;
+      *) shift ;;
+    esac
+  done
+  if [ -z "$manifest" ] || [ -z "$config" ]; then
+    printf 'module-graph-gate validate: --manifest and --config are required\n' >&2
+    echo "MANIFEST_INVALID"
+    exit 1
+  fi
+  local reason_file
+  reason_file=$(mktemp)
+  if validate_manifest "$manifest" "$config" 2>"$reason_file"; then
+    rm -f "$reason_file"
+    echo "PASS"
+    exit 0
+  else
+    cat "$reason_file" >&2
+    rm -f "$reason_file"
+    echo "MANIFEST_INVALID"
+    exit 1
+  fi
+}
+
+cmd_conflicts() {
+  local manifests_dir="" config=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --manifests) manifests_dir="$2"; shift 2 ;;
+      --config) config="$2"; shift 2 ;;
+      *) shift ;;
+    esac
+  done
+  if [ -z "$manifests_dir" ] || [ -z "$config" ]; then
+    printf 'module-graph-gate conflicts: --manifests and --config are required\n' >&2
+    echo "CONFLICT_EDGES_FOUND"
+    exit 1
+  fi
+  if [ ! -d "$manifests_dir" ]; then
+    printf 'module-graph-gate conflicts: manifests dir not found: %s\n' "$manifests_dir" >&2
+    echo "CONFLICT_EDGES_FOUND"
+    exit 1
+  fi
+
+  # config + canonical DAG preflight, before any NO_CONFLICTS verdict
+  # (including the empty-directory case) can be reached.
+  local preflight_reason_file
+  preflight_reason_file=$(mktemp)
+  if ! validate_config_shape "$config" 2>"$preflight_reason_file" \
+    || ! validate_dag_shape "$DAG_FILE" >>"$preflight_reason_file" 2>&1; then
+    cat "$preflight_reason_file" >&2
+    rm -f "$preflight_reason_file"
+    echo "CONFLICT_EDGES_FOUND"
+    exit 1
+  fi
+  rm -f "$preflight_reason_file"
+
+  local files=()
+  while IFS= read -r -d '' f; do
+    files+=("$f")
+  done < <(find "$manifests_dir" -maxdepth 1 -type f -name '*.json' -print0 | sort -z)
+
+  if [ "${#files[@]}" -eq 0 ]; then
+    echo "NO_CONFLICTS"
+    exit 0
+  fi
+
+  # validate every manifest first; invalid manifests are treated fail-closed
+  # as conflicting with every other package in the batch.
+  local -a pkg_ids=()
+  local -a pkg_files=()
+  local -a pkg_valid=()
+  local f
+  for f in "${files[@]}"; do
+    local pid
+    if json_valid "$f"; then
+      pid=$(jq -r '.packageId // empty' "$f" 2>/dev/null)
+    fi
+    if [ -z "${pid:-}" ]; then
+      pid="__invalid__$(basename "$f")"
+    fi
+    pkg_ids+=("$pid")
+    pkg_files+=("$f")
+    if validate_manifest "$f" "$config" >/dev/null 2>&1; then
+      pkg_valid+=("1")
+    else
+      pkg_valid+=("0")
+    fi
+    unset pid
+  done
+
+  # any invalid manifest in the batch, including a single-manifest batch,
+  # must fail closed to CONFLICT_EDGES_FOUND -- never a clean verdict.
+  local any_invalid=0
+  local pv
+  for pv in "${pkg_valid[@]}"; do
+    if [ "$pv" = "0" ]; then
+      any_invalid=1
+      break
+    fi
+  done
+  if [ "$any_invalid" -eq 1 ] && [ "${#pkg_ids[@]}" -eq 1 ]; then
+    printf 'module-graph-gate conflicts: invalid manifest in single-manifest batch\n' >&2
+    echo "CONFLICT_EDGES_FOUND"
+    exit 1
+  fi
+
+  # unique packageIds required
+  local uniq_count total_count
+  total_count=${#pkg_ids[@]}
+  uniq_count=$(printf '%s\n' "${pkg_ids[@]}" | sort -u | wc -l | tr -d ' ')
+  if [ "$uniq_count" -ne "$total_count" ]; then
+    printf 'module-graph-gate conflicts: duplicate packageIds in batch\n' >&2
+    echo "CONFLICT_EDGES_FOUND"
+    exit 1
+  fi
+
+  local edges="[]"
+  local n=$total_count
+  local i j
+  for ((i = 0; i < n; i++)); do
+    for ((j = i + 1; j < n; j++)); do
+      local pi="${pkg_ids[$i]}" pj="${pkg_ids[$j]}"
+      local reasons="[]"
+
+      if [ "${pkg_valid[$i]}" = "0" ] || [ "${pkg_valid[$j]}" = "0" ]; then
+        reasons=$(jq -n --argjson r "$reasons" '$r + ["invalid manifest in batch"]')
+      else
+        local fi="${pkg_files[$i]}" fj="${pkg_files[$j]}"
+        local pair_reasons
+        pair_reasons=$(jq -n --slurpfile a <(jq -c . "$fi") --slurpfile b <(jq -c . "$fj") '
+          ($a[0]) as $A | ($b[0]) as $B
+          | [] as $init
+          | (($A.writeSet // []) as $aw | ($B.writeSet // []) as $bw
+             | if (($aw - ($aw - $bw)) | length) > 0 then ["write/write writeSet intersection"] else [] end) as $ww
+          | (($A.writeSet // []) as $aw | ($B.readSet // []) as $br
+             | if (($aw - ($aw - $br)) | length) > 0 then ["write/read: writeSet(A) intersects readSet(B)"] else [] end) as $wr1
+          | (($B.writeSet // []) as $bw | ($A.readSet // []) as $ar
+             | if (($bw - ($bw - $ar)) | length) > 0 then ["write/read: writeSet(B) intersects readSet(A)"] else [] end) as $wr2
+          | (($A.contractsChanged // []) as $ac | ($B.contractsConsumed // []) as $bc
+             | if (($ac - ($ac - $bc)) | length) > 0 then ["contract changed/consumed intersection (A changes, B consumes)"] else [] end) as $c1
+          | (($B.contractsChanged // []) as $bc | ($A.contractsConsumed // []) as $ac
+             | if (($bc - ($bc - $ac)) | length) > 0 then ["contract changed/consumed intersection (B changes, A consumes)"] else [] end) as $c2
+          | (($A.tablesOrMigrationsTouched // []) as $at | ($B.tablesOrMigrationsTouched // []) as $bt
+             | if (($at - ($at - $bt)) | length) > 0 then ["table/migration intersection"] else [] end) as $tbl
+          | (($A.sharedSurfacesTouched // []) as $as | ($B.sharedSurfacesTouched // []) as $bs
+             | if (($as - ($as - $bs)) | length) > 0 then ["sharedSurface intersection"] else [] end) as $surf
+          | ($init + $ww + $wr1 + $wr2 + $c1 + $c2 + $tbl + $surf)
+        ')
+        reasons=$(jq -n --argjson r "$reasons" --argjson pr "$pair_reasons" '$r + $pr')
+
+        # unmet in-batch dependsOnPackages: only from the dependent's manifest
+        # toward a target present in this same batch.
+        local dep_reason
+        dep_reason=$(jq -n --slurpfile a <(jq -c . "$fi") --slurpfile b <(jq -c . "$fj") --arg pi "$pi" --arg pj "$pj" '
+          ($a[0]) as $A | ($b[0]) as $B
+          | ((($A.dependsOnPackages // []) | index($pj)) != null) as $aDepOnB
+          | ((($B.dependsOnPackages // []) | index($pi)) != null) as $bDepOnA
+          | if $aDepOnB or $bDepOnA then ["in-batch unmet dependsOnPackages"] else [] end
+        ')
+        reasons=$(jq -n --argjson r "$reasons" --argjson dr "$dep_reason" '$r + $dr')
+      fi
+
+      local reason_count
+      reason_count=$(printf '%s' "$reasons" | jq 'length')
+      if [ "$reason_count" -gt 0 ]; then
+        edges=$(jq -n --argjson e "$edges" --arg a "$pi" --arg b "$pj" --argjson reasons "$reasons" '
+          $e + [{packageIds: [$a, $b] | sort, from: $a, to: $b, reason: ($reasons | join("; "))}]
+        ')
+      fi
+    done
+  done
+
+  local edge_count
+  edge_count=$(printf '%s' "$edges" | jq 'length')
+  if [ "$edge_count" -gt 0 ]; then
+    printf '%s\n' "$edges" | jq -c '. | sort_by(.packageIds[0], .packageIds[1])'
+    echo "CONFLICT_EDGES_FOUND"
+    exit 1
+  fi
+
+  echo "NO_CONFLICTS"
+  exit 0
+}
+
+main() {
+  require_tools
+  local cmd="${1:-}"
+  shift || true
+  case "$cmd" in
+    validate) cmd_validate "$@" ;;
+    conflicts) cmd_conflicts "$@" ;;
+    *)
+      printf 'usage: module-graph-gate {validate|conflicts} ...\n' >&2
+      exit 2
+      ;;
+  esac
+}
+
+main "$@"

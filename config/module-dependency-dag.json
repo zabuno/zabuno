@@ -1,0 +1,56 @@
+{
+    "$schemaNote": "Canonical module dependency DAG for SP-01 fast-delivery genome item 4. Nodes are the 13 observed module contexts. Edges are ONLY verified current source-import cross-module dependencies, each with evidence.path (repo-relative) and evidence.pattern (a literal substring present in that path). This file does not assert architecture enforcement; it is a snapshot of what the current source imports across module boundaries. Consumed by scripts/module-graph-gate, which discovers it relative to repo root; it is never passed via --config.",
+    "nodes": [
+        "Analytics",
+        "Authorization",
+        "Billing",
+        "Identity",
+        "Media",
+        "MenuCatalog",
+        "Platform",
+        "Publication",
+        "QrDestination",
+        "Security",
+        "Taxonomy",
+        "Team",
+        "Tenancy"
+    ],
+    "edges": [
+        {
+            "from": "Authorization",
+            "to": "Tenancy",
+            "verified": true,
+            "evidence": {
+                "path": "app/Domain/Authorization/RolePermissions.php",
+                "pattern": "use App\\Domain\\Tenancy\\MembershipRole;"
+            }
+        },
+        {
+            "from": "MenuCatalog",
+            "to": "Taxonomy",
+            "verified": true,
+            "evidence": {
+                "path": "app/Domain/MenuCatalog/Product.php",
+                "pattern": "use App\\Domain\\Taxonomy\\TaxonomyTerm;"
+            }
+        },
+        {
+            "from": "Publication",
+            "to": "MenuCatalog",
+            "verified": true,
+            "evidence": {
+                "path": "app/Application/Publication/UseCase/BuildPublicationSnapshot.php",
+                "pattern": "use App\\Application\\MenuCatalog\\Dto\\MenuDraftTree;"
+            }
+        },
+        {
+            "from": "Team",
+            "to": "Identity",
+            "verified": true,
+            "evidence": {
+                "path": "app/Application/Team/UseCase/AcceptTeamInvitation.php",
+                "pattern": "use App\\Domain\\Identity\\ValueObject\\EmailAddress;"
+            }
+        }
+    ]
+}
