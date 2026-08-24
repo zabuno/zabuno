@@ -189,8 +189,8 @@
     "fastDeliveryGenomeOverlay": {
         "note": "Fixed separate 8-item denominator, independent of the product roadmap docs/17 §4 counter. See AGENTS.md and both speeder reports for rationale.",
         "totalItems": 8,
-        "completedItems": 6,
-        "activeItem": 7,
+        "completedItems": 7,
+        "activeItem": 8,
         "items": [
             { "n": 1, "title": "speed genome + gate", "status": "completed", "dependsOn": [] },
             {
@@ -226,13 +226,13 @@
             {
                 "n": 7,
                 "title": "steward lanes + merge queue",
-                "status": "active",
+                "status": "completed",
                 "dependsOn": [6]
             },
             {
                 "n": 8,
                 "title": "admission-gated 4-to-12-to-25-to-50-to-100 ramp with 30-day throughput/escaped-defect evidence",
-                "status": "pending",
+                "status": "active",
                 "dependsOn": [2, 5, 6, 7]
             }
         ]
