@@ -189,8 +189,8 @@
     "fastDeliveryGenomeOverlay": {
         "note": "Fixed separate 8-item denominator, independent of the product roadmap docs/17 §4 counter. See AGENTS.md and both speeder reports for rationale.",
         "totalItems": 8,
-        "completedItems": 4,
-        "activeItem": 5,
+        "completedItems": 5,
+        "activeItem": 6,
         "items": [
             { "n": 1, "title": "speed genome + gate", "status": "completed", "dependsOn": [] },
             {
@@ -214,10 +214,10 @@
             {
                 "n": 5,
                 "title": "affected-test / module-CI selection",
-                "status": "active",
+                "status": "completed",
                 "dependsOn": [2, 4]
             },
-            { "n": 6, "title": "conflict-graph scheduler", "status": "pending", "dependsOn": [4] },
+            { "n": 6, "title": "conflict-graph scheduler", "status": "active", "dependsOn": [4] },
             {
                 "n": 7,
                 "title": "steward lanes + merge queue",

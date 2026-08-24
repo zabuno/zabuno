@@ -1,0 +1,399 @@
+#!/usr/bin/env bash
+# scripts/affected-tests — fast-delivery genome item 5: affected-test /
+# module-CI selection.
+#
+#   scripts/affected-tests select --manifest <manifest.json> --config <development-speed-budget.json>
+#
+# --config always receives config/development-speed-budget.json
+# (highRiskPathPatterns, highRiskSemanticClasses, stewardLanes live there),
+# exactly like module-graph-gate and speed-gate. The canonical
+# config/module-dependency-dag.json and config/affected-test-map.json are
+# self-discovered relative to repo root; neither is ever passed on the CLI.
+#
+# A manifest must first PASS scripts/module-graph-gate validate. An empty
+# writeSet is additionally rejected here (module-graph-gate alone permits
+# an empty allowedFiles/writeSet pair). Any high-risk path, any nonempty
+# sharedSurfacesTouched, any steward-lane coversFiles match, or any writeSet
+# path that cannot be classified into a known module (by DAG module path
+# segment or by an exact config/affected-test-map.json test-target match)
+# forces FULL_TEST_PLAN. A classified module missing from, or mapped to an
+# empty array in, config/affected-test-map.json also forces FULL_TEST_PLAN
+# (fail closed on map drift) rather than a silently empty targeted set.
+#
+# Otherwise the targeted set is the union of config/affected-test-map.json
+# test targets for the changed modules plus their transitive reverse-DAG
+# consumers (edge.to changed implies edge.from is affected).
+#
+# stdout is exactly one deterministic compact single-line JSON plan object
+# as the second-to-last line, immediately followed by exactly one of
+# TARGETED_TEST_PLAN or FULL_TEST_PLAN as the LAST line. A malformed
+# manifest, a manifest module-graph-gate itself rejects, or an empty
+# writeSet all print MANIFEST_INVALID as the LAST line and exit non-zero —
+# no plan JSON is printed in that case.
+
+set -u
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+GATE="$SCRIPT_DIR/module-graph-gate"
+DAG_FILE="$REPO_ROOT/config/module-dependency-dag.json"
+TEST_MAP_FILE="$REPO_ROOT/config/affected-test-map.json"
+
+die_invalid() {
+  printf 'affected-tests: %s\n' "$1" >&2
+  echo "MANIFEST_INVALID"
+  exit 1
+}
+
+require_tools() {
+  if ! command -v jq >/dev/null 2>&1; then
+    printf 'affected-tests: jq is required\n' >&2
+    exit 2
+  fi
+}
+
+json_valid() {
+  jq empty "$1" >/dev/null 2>&1
+}
+
+glob_match() {
+  # $1 = glob pattern, $2 = subject; '*' already matches any sequence
+  # including '/', so '**' behaves the same as '*' here.
+  local pattern="$1" subject="$2"
+  [[ "$subject" == $pattern ]]
+}
+
+cmd_select() {
+  local manifest="" config=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --manifest)
+        [ -n "${2+set}" ] || die_invalid "--manifest requires a value"
+        [ -z "$manifest" ] || die_invalid "duplicate --manifest option"
+        manifest="$2"; shift 2 ;;
+      --config)
+        [ -n "${2+set}" ] || die_invalid "--config requires a value"
+        [ -z "$config" ] || die_invalid "duplicate --config option"
+        config="$2"; shift 2 ;;
+      *)
+        die_invalid "unknown option or extra positional argument: $1" ;;
+    esac
+  done
+  if [ -z "$manifest" ] || [ -z "$config" ]; then
+    printf 'affected-tests select: --manifest and --config are required\n' >&2
+    echo "MANIFEST_INVALID"
+    exit 1
+  fi
+
+  [ -f "$manifest" ] && json_valid "$manifest" || die_invalid "manifest missing or malformed JSON"
+  [ -f "$config" ] && json_valid "$config" || die_invalid "config missing or malformed JSON: $config"
+  [ -x "$GATE" ] || die_invalid "module-graph-gate not found or not executable: $GATE"
+
+  local risk_policy_ok
+  risk_policy_ok=$(jq -r '
+    (.highRiskPathPatterns // []) as $hr
+    | (.moduleFramework.stewardLanes.lanes // {}) as $lanes
+    | ($hr | length > 0 and (all(.[]; type == "string" and length > 0)) and (($hr | length) == ($hr | unique | length))) as $hr_ok
+    | ($lanes | type == "object" and (keys | length) > 0) as $lanes_present
+    | ($lanes_present and (
+        [$lanes[] | (.coversFiles // [])] as $covers
+        | all($covers[]; type == "array" and (length > 0)
+            and (all(.[]; type == "string" and length > 0))
+            and (length == (unique | length)))
+      )) as $lanes_ok
+    | if $hr_ok and $lanes_present and $lanes_ok then "yes" else "no" end
+  ' "$config" 2>/dev/null)
+  [ "$risk_policy_ok" = "yes" ] || die_invalid "config missing/invalid highRiskPathPatterns or moduleFramework.stewardLanes.lanes policy"
+
+  local gate_out gate_ec
+  gate_out=$("$GATE" validate --manifest "$manifest" --config "$config" 2>/dev/null)
+  gate_ec=$?
+  if [ "$gate_ec" -ne 0 ] || [ "$(printf '%s\n' "$gate_out" | tail -n1)" != "PASS" ]; then
+    die_invalid "manifest failed module-graph-gate validate"
+  fi
+
+  [ -f "$DAG_FILE" ] && json_valid "$DAG_FILE" || die_invalid "canonical DAG missing or malformed JSON"
+  [ -f "$TEST_MAP_FILE" ] && json_valid "$TEST_MAP_FILE" || die_invalid "canonical affected-test-map missing or malformed JSON"
+
+  local write_count
+  write_count=$(jq -r '(.writeSet // []) | length' "$manifest" 2>/dev/null)
+  if [ -z "$write_count" ] || [ "$write_count" = "null" ] || [ "$write_count" -eq 0 ]; then
+    die_invalid "writeSet is empty"
+  fi
+
+  # every DAG node must be mapped to a nonempty array of existing test
+  # targets before this tool trusts the map for closure resolution.
+  local map_ok
+  map_ok=$(jq -n -r --slurpfile dag "$DAG_FILE" --slurpfile map "$TEST_MAP_FILE" '
+    ($dag[0].nodes // []) as $nodes
+    | ($map[0] // {}) as $m
+    | ($nodes | sort) as $nodes_sorted
+    | (($m | keys) | sort) as $keys_sorted
+    | ($nodes | length) as $n
+    | ($keys_sorted == $nodes_sorted) as $keys_match
+    | ([$nodes[] | select((($m[.]? // []) | length) > 0)] | length) as $mapped
+    | ([$m[] | select(
+          (type == "array") and (length > 0)
+          and (all(.[]; type == "string" and length > 0))
+          and (length == (unique | length))
+        )] | length) as $values_shape_ok_count
+    | (($m | length) == $values_shape_ok_count) as $values_shape_ok
+    | if $n > 0 and $keys_match and $mapped == $n and $values_shape_ok then "yes" else "no" end
+  ' 2>/dev/null)
+  if [ "$map_ok" != "yes" ]; then
+    die_invalid "config/affected-test-map.json does not exactly cover DAG nodes with nonempty unique target arrays"
+  fi
+
+  # validate every declared target: safe repo-relative path, no control
+  # chars, under tests/ or resources/js/, existing regular file, PHP or
+  # JS/TS test filename.
+  local all_targets
+  all_targets=$(jq -r '[.[]?[]?] | unique | .[]' "$TEST_MAP_FILE" 2>/dev/null)
+  if [ -n "$all_targets" ]; then
+    while IFS= read -r t; do
+      [ -n "$t" ] || continue
+      case "$t" in
+        /*|*..*) die_invalid "affected-test-map target is not a safe repo-relative path: $t" ;;
+      esac
+      if printf '%s' "$t" | LC_ALL=C grep -qP '[\x00-\x1f]'; then
+        die_invalid "affected-test-map target contains control characters: $t"
+      fi
+      case "$t" in
+        tests/*|resources/js/*) : ;;
+        *) die_invalid "affected-test-map target is not under tests/ or resources/js/: $t" ;;
+      esac
+      case "$t" in
+        *Test.php) : ;;
+        *.test.ts|*.test.tsx|*.test.js|*.test.jsx|*.spec.ts|*.spec.tsx|*.spec.js|*.spec.jsx) : ;;
+        *) die_invalid "affected-test-map target is not a recognized PHP or JS/TS test filename: $t" ;;
+      esac
+      if [ ! -f "$REPO_ROOT/$t" ]; then
+        die_invalid "affected-test-map target does not exist as a regular file: $t"
+      fi
+    done <<<"$all_targets"
+  fi
+
+  local nodes_json
+  nodes_json=$(jq -c '.nodes // []' "$DAG_FILE")
+  local write_json
+  write_json=$(jq -c '.writeSet // []' "$manifest")
+  local shared_json
+  shared_json=$(jq -c '.sharedSurfacesTouched // []' "$manifest")
+
+  local -a reasons=()
+  local force_full=0
+
+  # sharedSurfacesTouched -> always full
+  local shared_count
+  shared_count=$(printf '%s' "$shared_json" | jq 'length')
+  if [ "$shared_count" -gt 0 ]; then
+    force_full=1
+    while IFS= read -r s; do
+      [ -n "$s" ] && reasons+=("shared-surface:$s")
+    done < <(printf '%s' "$shared_json" | jq -r '.[]')
+  fi
+
+  local n write_count_n
+  write_count_n=$(printf '%s' "$write_json" | jq 'length')
+
+  # per-path classification
+  local -a changed_modules=()
+  n=0
+  while [ "$n" -lt "$write_count_n" ]; do
+    local path
+    path=$(printf '%s' "$write_json" | jq -r ".[$n]")
+
+    # high-risk path pattern check
+    local hr_hit=""
+    while IFS= read -r pat; do
+      [ -n "$pat" ] || continue
+      if glob_match "$pat" "$path"; then
+        hr_hit="$pat"
+        break
+      fi
+    done < <(jq -r '.highRiskPathPatterns[]?' "$config" 2>/dev/null)
+    if [ -n "$hr_hit" ]; then
+      force_full=1
+      reasons+=("high-risk-path:$path")
+    fi
+
+    # steward lane coversFiles check
+    local lane_hit=""
+    while IFS= read -r laneline; do
+      [ -n "$laneline" ] || continue
+      local lane_name="${laneline%%$'\t'*}"
+      local lane_pat="${laneline#*$'\t'}"
+      if glob_match "$lane_pat" "$path"; then
+        lane_hit="$lane_name"
+        force_full=1
+        reasons+=("steward-lane:$lane_name")
+      fi
+    done < <(jq -r '
+      (.moduleFramework.stewardLanes.lanes // {})
+      | to_entries[]
+      | .key as $k | (.value.coversFiles // [])[] | [$k, .] | @tsv
+    ' "$config" 2>/dev/null)
+
+    # module classification: union of every DAG module path-segment owner
+    # and every exact test-map owner (never first-match/head-only).
+    local -a owners=()
+    while IFS= read -r node; do
+      [ -n "$node" ] || continue
+      case "$path" in
+        */"$node"/*|"$node"/*)
+          owners+=("$node")
+          ;;
+      esac
+    done < <(printf '%s' "$nodes_json" | jq -r '.[]')
+
+    while IFS= read -r owner; do
+      [ -n "$owner" ] && owners+=("$owner")
+    done < <(jq -r --arg p "$path" '
+      to_entries[] | select((.value // []) | index($p) != null) | .key
+    ' "$TEST_MAP_FILE" 2>/dev/null)
+
+    if [ "${#owners[@]}" -eq 0 ]; then
+      force_full=1
+      reasons+=("unclassified-path:$path")
+    else
+      local -a uniq_owners=()
+      while IFS= read -r o; do
+        [ -n "$o" ] && uniq_owners+=("$o")
+      done < <(printf '%s\n' "${owners[@]}" | sort -u)
+      local o
+      for o in "${uniq_owners[@]}"; do
+        changed_modules+=("$o")
+        reasons+=("changed-module:$o")
+      done
+    fi
+
+    n=$((n + 1))
+  done
+
+  if [ "$force_full" -eq 1 ]; then
+    local reasons_json
+    reasons_json=$(printf '%s\n' "${reasons[@]}" | sort -u | jq -R . | jq -sc .)
+    local plan
+    plan=$(jq -n -c --argjson reasons "$reasons_json" '
+      {mode: "FULL", modules: [], targets: [], reasons: $reasons,
+       commands: {php: "php artisan test", js: "npm test"}}
+    ')
+    printf '%s\n' "$plan"
+    echo "FULL_TEST_PLAN"
+    exit 0
+  fi
+
+  # de-duplicate changed modules
+  local changed_json
+  changed_json=$(printf '%s\n' "${changed_modules[@]}" | sort -u | jq -R . | jq -sc 'map(select(length > 0))')
+
+  # transitive reverse-DAG closure: edge.to changed => edge.from affected
+  local closure_json
+  closure_json=$(jq -n -c --argjson dag "$(cat "$DAG_FILE")" --argjson start "$changed_json" '
+    ($dag.edges // []) as $edges
+    | def closure(set):
+        set as $s
+        | ($edges | map(select((.to as $t | $s | index($t)) != null) | .from)) as $new
+        | ($s + $new | unique) as $next
+        | if ($next | length) == ($s | length) then $next else closure($next) end;
+    closure($start) | sort
+  ' 2>/dev/null)
+  if [ -z "$closure_json" ] || [ "$closure_json" = "null" ]; then
+    die_invalid "reverse-DAG closure computation failed"
+  fi
+
+  local reverse_only_json
+  reverse_only_json=$(jq -n -c --argjson closure "$closure_json" --argjson changed "$changed_json" '
+    $closure - $changed
+  ')
+  local rc
+  rc=$(printf '%s' "$reverse_only_json" | jq -r '.[]' 2>/dev/null)
+  if [ -n "$rc" ]; then
+    while IFS= read -r m; do
+      [ -n "$m" ] && reasons+=("reverse-dependency:$m")
+    done <<<"$rc"
+  fi
+
+  # missing/empty map targets for any module in the closure -> fail closed to FULL
+  local closure_map_ok
+  closure_map_ok=$(jq -n -r --argjson closure "$closure_json" --slurpfile map "$TEST_MAP_FILE" '
+    ($map[0] // {}) as $m
+    | ($closure | length) as $n
+    | ([$closure[] | select((($m[.]? // []) | length) > 0)] | length) as $mapped
+    | if $n > 0 and $mapped == $n then "yes" else "no" end
+  ')
+  if [ "$closure_map_ok" != "yes" ]; then
+    force_full=1
+    reasons+=("map-drift:missing-or-empty-target")
+    local reasons_json
+    reasons_json=$(printf '%s\n' "${reasons[@]}" | sort -u | jq -R . | jq -sc .)
+    local plan
+    plan=$(jq -n -c --argjson reasons "$reasons_json" '
+      {mode: "FULL", modules: [], targets: [], reasons: $reasons,
+       commands: {php: "php artisan test", js: "npm test"}}
+    ')
+    printf '%s\n' "$plan"
+    echo "FULL_TEST_PLAN"
+    exit 0
+  fi
+
+  local targets_json
+  targets_json=$(jq -n -c --argjson closure "$closure_json" --slurpfile map "$TEST_MAP_FILE" '
+    ($map[0] // {}) as $m
+    | [$closure[] | ($m[.] // [])] | add | unique | sort
+  ')
+
+  local reasons_json
+  reasons_json=$(printf '%s\n' "${reasons[@]}" | sort -u | jq -R . | jq -sc .)
+
+  # build php/js commands with safe shell quoting, no eval
+  local -a php_targets=() js_targets=()
+  while IFS= read -r t; do
+    [ -n "$t" ] || continue
+    case "$t" in
+      *.php) php_targets+=("$t") ;;
+      *) js_targets+=("$t") ;;
+    esac
+  done < <(printf '%s' "$targets_json" | jq -r '.[]')
+
+  local php_cmd="" js_cmd=""
+  if [ "${#php_targets[@]}" -gt 0 ]; then
+    php_cmd=$(printf 'php artisan test'; printf ' %q' "${php_targets[@]}")
+  fi
+  if [ "${#js_targets[@]}" -gt 0 ]; then
+    js_cmd=$(printf 'npm test --'; printf ' %q' "${js_targets[@]}")
+  fi
+
+  local commands_json
+  commands_json=$(jq -n -c --arg php "$php_cmd" --arg js "$js_cmd" '
+    {} + (if ($php | length) > 0 then {php: $php} else {} end)
+       + (if ($js | length) > 0 then {js: $js} else {} end)
+  ')
+
+  local plan
+  plan=$(jq -n -c \
+    --argjson modules "$closure_json" \
+    --argjson targets "$targets_json" \
+    --argjson reasons "$reasons_json" \
+    --argjson commands "$commands_json" \
+    '{mode: "TARGETED", modules: $modules, targets: $targets, reasons: $reasons, commands: $commands}')
+
+  printf '%s\n' "$plan"
+  echo "TARGETED_TEST_PLAN"
+  exit 0
+}
+
+main() {
+  require_tools
+  local cmd="${1:-}"
+  shift || true
+  case "$cmd" in
+    select) cmd_select "$@" ;;
+    *)
+      printf 'usage: affected-tests select --manifest <manifest.json> --config <development-speed-budget.json>\n' >&2
+      exit 2
+      ;;
+  esac
+}
+
+main "$@"

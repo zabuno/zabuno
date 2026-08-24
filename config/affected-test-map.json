@@ -1,0 +1,75 @@
+{
+    "Analytics": [
+        "tests/Feature/Analytics/AnalyticsLedgerSummaryTest.php"
+    ],
+    "Authorization": [
+        "tests/Feature/Authorization/WorkspaceAuthorizationJourneyTest.php",
+        "tests/Unit/Authorization/RolePermissionMappingTest.php"
+    ],
+    "Billing": [
+        "tests/Feature/Billing/PlanCatalogJourneyTest.php",
+        "tests/Feature/Billing/ManualPaymentJourneyTest.php",
+        "tests/Feature/Billing/IyzicoSandboxCheckoutJourneyTest.php",
+        "tests/Feature/Billing/IyzicoSandboxCallbackTest.php",
+        "tests/Feature/Billing/IyzicoSandboxWebhookTest.php",
+        "tests/Unit/Billing/IyzipaySandboxGatewayTest.php"
+    ],
+    "Identity": [
+        "tests/Feature/Auth/IdentitySessionJourneyTest.php",
+        "tests/Feature/Auth/PasswordResetJourneyTest.php",
+        "tests/Architecture/Identity/IdentityOnionBoundaryTest.php"
+    ],
+    "Media": [
+        "tests/Feature/Media/MediaIntakeTest.php",
+        "tests/Feature/Media/MediaStorageFailureTest.php",
+        "tests/Feature/Media/MediaTenantIsolationTest.php",
+        "tests/Unit/Domain/Media/MediaAssetStatusTest.php"
+    ],
+    "MenuCatalog": [
+        "tests/Feature/MenuCatalog/MenuApiJourneyTest.php",
+        "tests/Feature/MenuCatalog/MenuDraftPersistenceTest.php",
+        "tests/Feature/MenuCatalog/MenuCatalogTenantEscapeTest.php",
+        "tests/Unit/MenuCatalog/MenuAggregateInvariantsTest.php",
+        "tests/Unit/MenuCatalog/MenuItemAggregateInvariantsTest.php"
+    ],
+    "Platform": [
+        "tests/Feature/PlatformAdmin/PlanManagementJourneyTest.php",
+        "tests/Feature/PlatformAdmin/PlatformAdminShellJourneyTest.php"
+    ],
+    "Publication": [
+        "tests/Feature/Publication/PublicationJourneyTest.php",
+        "tests/Feature/Publication/PublicationFailureAtomicityTest.php",
+        "tests/Feature/Publication/PublicationTenantIsolationTest.php",
+        "tests/Unit/Domain/Publication/PublicationStatusTest.php",
+        "tests/Unit/Architecture/PublicationApplicationBoundaryTest.php"
+    ],
+    "QrDestination": [
+        "tests/Feature/QrDestination/QrDestinationJourneyTest.php",
+        "tests/Feature/QrDestination/QrDestinationPublicResolverTest.php",
+        "tests/Feature/QrDestination/QrDestinationTenantIsolationTest.php",
+        "tests/Unit/Domain/QrDestination/QrCodeStateTest.php",
+        "tests/Unit/Architecture/QrDestinationApplicationBoundaryTest.php"
+    ],
+    "Security": [
+        "tests/Feature/Security/TenantIsolationEvidenceApiTest.php",
+        "tests/Feature/Security/BackupRestoreEvidenceApiTest.php",
+        "tests/Unit/Domain/Security/TenantIsolationEvidenceRecordTest.php",
+        "tests/Unit/Domain/Security/BackupRestoreEvidenceRecordTest.php"
+    ],
+    "Taxonomy": [
+        "tests/Feature/MenuCatalog/MenuCatalogTenantEscapeTest.php"
+    ],
+    "Team": [
+        "tests/Feature/Team/StoreTeamInvitationTest.php",
+        "tests/Feature/Team/ListTeamMembersTest.php",
+        "tests/Feature/Team/TransferWorkspaceOwnershipJourneyTest.php",
+        "tests/Feature/Team/InvitationDeliveryJourneyTest.php"
+    ],
+    "Tenancy": [
+        "tests/Feature/Tenancy/RestaurantProfileJourneyTest.php",
+        "tests/Feature/Tenancy/WorkspaceIsolationJourneyTest.php",
+        "tests/Feature/Tenancy/ListLocationsTest.php",
+        "tests/Architecture/Tenancy/TenancyOnionBoundaryTest.php",
+        "tests/Unit/Tenancy/RestaurantProfileStandardsTest.php"
+    ]
+}
