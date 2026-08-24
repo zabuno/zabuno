@@ -29,6 +29,9 @@ export function AppShell({ coreModuleCount }: AppShellProps) {
             </a>
 
             <PublicSiteHeader />
+            <p className="mx-auto max-w-5xl px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
+                {coreModuleCount}/16 modules registered
+            </p>
             {legalTitle ? <PublicLegalPage title={legalTitle} /> : <PublicHomePage />}
             <PublicSiteFooter />
         </div>
