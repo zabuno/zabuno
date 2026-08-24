@@ -5,18 +5,22 @@ import tailwindcss from '@tailwindcss/vite';
 import flowbiteReact from 'flowbite-react/plugin/vite';
 import { fileURLToPath, URL } from 'node:url';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
     plugins: [
-        laravel({
-            input: [
-                'resources/css/app.css',
-                'resources/js/app.tsx',
-                'resources/js/auth.tsx',
-                'resources/js/workspace.tsx',
-                'resources/js/platform.tsx',
-            ],
-            refresh: true,
-        }),
+        ...(mode === 'test'
+            ? []
+            : [
+                  laravel({
+                      input: [
+                          'resources/css/app.css',
+                          'resources/js/app.tsx',
+                          'resources/js/auth.tsx',
+                          'resources/js/workspace.tsx',
+                          'resources/js/platform.tsx',
+                      ],
+                      refresh: true,
+                  }),
+              ]),
         tailwindcss(),
         react(),
         flowbiteReact(),
@@ -36,4 +40,4 @@ export default defineConfig({
         globals: true,
         setupFiles: ['./resources/js/test/setup.ts'],
     },
-});
+}));
