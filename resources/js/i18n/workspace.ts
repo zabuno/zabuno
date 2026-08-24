@@ -105,6 +105,16 @@ const en = {
     'workspace.team.members.remove.error': 'Unable to remove this member. Please try again.',
     'workspace.team.members.remove.retry': 'Retry',
     'workspace.team.members.remove.success': 'Member removed.',
+    'workspace.team.members.transfer.button': 'Transfer ownership',
+    'workspace.team.members.transfer.title': 'Transfer workspace ownership',
+    'workspace.team.members.transfer.body':
+        'This member will become the workspace owner and you will become an editor. This action can be reversed later by the new owner.',
+    'workspace.team.members.transfer.confirm': 'Confirm',
+    'workspace.team.members.transfer.cancel': 'Cancel',
+    'workspace.team.members.transfer.busy': 'Transferring…',
+    'workspace.team.members.transfer.error': 'Unable to transfer ownership. Please try again.',
+    'workspace.team.members.transfer.retry': 'Retry',
+    'workspace.team.members.transfer.success': 'Ownership transferred.',
 
     'workspace.team.invitations.loading': 'Loading pending invitations…',
     'workspace.team.invitations.error': 'Pending invitations failed to load. Please try again.',
@@ -113,7 +123,8 @@ const en = {
     'workspace.team.invitations.cancel.confirm': 'Confirm cancel',
     'workspace.team.invitations.cancel.keep': 'Keep invitation',
     'workspace.team.invitations.cancel.busy': 'Cancelling…',
-    'workspace.team.invitations.cancel.error': 'Unable to cancel this invitation. Please try again.',
+    'workspace.team.invitations.cancel.error':
+        'Unable to cancel this invitation. Please try again.',
     'workspace.team.invitations.cancel.retry': 'Retry',
     'workspace.team.invitations.cancel.success': 'Invitation cancelled.',
 
@@ -127,14 +138,16 @@ const en = {
     'workspace.billing.plan.retry': 'Retry',
     'workspace.billing.plan.priceUnavailable': 'Price unavailable',
     'workspace.billing.currentPlan.region': 'Current plan',
-    'workspace.billing.currentPlan.empty': 'No billing API has been queried yet; the current plan has not been checked.',
+    'workspace.billing.currentPlan.empty':
+        'No billing API has been queried yet; the current plan has not been checked.',
     'workspace.billing.currentPlan.loading': 'Loading current plan…',
     'workspace.billing.currentPlan.none': 'No active subscription',
     'workspace.billing.currentPlan.error': 'We could not load the current plan.',
     'workspace.billing.currentPlan.retry': 'Retry',
     'workspace.billing.currentPlan.version': 'Version {version}',
     'workspace.billing.manualPayment.region': 'Manual payment',
-    'workspace.billing.manualPayment.empty': 'No billing API has been queried yet; manual payment has not been checked.',
+    'workspace.billing.manualPayment.empty':
+        'No billing API has been queried yet; manual payment has not been checked.',
     'workspace.billing.manualPayment.platformFinance':
         'Manual payments are recorded by platform finance; this workspace view is read-only.',
     'workspace.billing.changePlan.button': 'Change plan',
@@ -172,7 +185,8 @@ const en = {
     'workspace.billing.iyzicoSandbox.pendingBadge': 'Iyzico sandbox pending',
     'workspace.billing.iyzicoSandbox.button': 'Start sandbox checkout',
     'workspace.billing.iyzicoSandbox.heading': 'Iyzico sandbox',
-    'workspace.billing.iyzicoSandbox.disclaimer': 'This is a sandbox checkout — no real money is charged.',
+    'workspace.billing.iyzicoSandbox.disclaimer':
+        'This is a sandbox checkout — no real money is charged.',
     'workspace.billing.iyzicoSandbox.loading': 'Loading…',
     'workspace.billing.iyzicoSandbox.noActive': 'No active subscription or plan.',
     'workspace.billing.iyzicoSandbox.ready': 'Ready to start a sandbox checkout.',
@@ -184,7 +198,8 @@ const en = {
     'workspace.billing.iyzicoSandbox.state.failed': 'Sandbox checkout failed.',
     'workspace.billing.iyzicoSandbox.retry': 'Retry',
     'workspace.billing.iyzicoSandbox.continueLink': 'Continue to Iyzico sandbox',
-    'workspace.billing.iyzicoSandbox.invalidRedirect': 'Received an unsafe redirect link; cannot continue.',
+    'workspace.billing.iyzicoSandbox.invalidRedirect':
+        'Received an unsafe redirect link; cannot continue.',
     'workspace.billing.iyzicoSandbox.sessionError': 'Could not load the sandbox checkout session.',
     'workspace.billing.iyzicoSandbox.checkoutError': 'Could not start the sandbox checkout.',
     'workspace.billing.iyzicoSandbox.subscriptionError': 'Could not load your subscription status.',
@@ -356,7 +371,8 @@ const en = {
         '{tables} tables across {areas} areas, {seats} seats planned',
     'workspace.publication.qrExport.bulkWizard.areaSectionCount.error':
         'Enter a whole number between 1 and 50.',
-    'workspace.publication.qrExport.bulkWizard.tableCount.error': 'Enter a whole number between 1 and 500.',
+    'workspace.publication.qrExport.bulkWizard.tableCount.error':
+        'Enter a whole number between 1 and 500.',
     'workspace.publication.qrExport.bulkWizard.namingPrefix.error':
         'Naming prefix must be 10 characters or fewer.',
     'workspace.publication.qrExport.bulkWizard.namingSequenceStart.error':

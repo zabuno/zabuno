@@ -8,6 +8,7 @@ import {
     type TeamMember,
     type TeamMemberListStatus,
     type TeamMemberRemoveOutcome,
+    type TeamMemberTransferOutcome,
 } from './team/TeamMemberList';
 import {
     TeamInvitationList,
@@ -45,10 +46,12 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
     const membersRequestRef = useRef(0);
     const committedInvitationCancelsRef = useRef<Set<number>>(new Set());
     const committedMemberRemovalsRef = useRef<Set<number>>(new Set());
+    const committedMemberTransfersRef = useRef<Set<number>>(new Set());
 
     useEffect(() => {
         committedInvitationCancelsRef.current = new Set();
         committedMemberRemovalsRef.current = new Set();
+        committedMemberTransfersRef.current = new Set();
     }, [workspaceId]);
 
     const fetchInvitations = useCallback(async () => {
@@ -156,7 +159,9 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
         }
     }, [workspaceId]);
 
-    const refetchInvitationsAuthoritative = useCallback(async (): Promise<TeamInvitation[] | null> => {
+    const refetchInvitationsAuthoritative = useCallback(async (): Promise<
+        TeamInvitation[] | null
+    > => {
         if (workspaceId === undefined) {
             return null;
         }
@@ -194,10 +199,13 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                     await bootstrapCsrfCookie();
 
                     const requestInit = buildAuthRequestInit({ method: 'DELETE' });
-                    const response = await fetch(`/api/workspaces/${workspaceId}/team/members/${memberId}`, {
-                        ...requestInit,
-                        credentials: 'same-origin',
-                    });
+                    const response = await fetch(
+                        `/api/workspaces/${workspaceId}/team/members/${memberId}`,
+                        {
+                            ...requestInit,
+                            credentials: 'same-origin',
+                        },
+                    );
 
                     if (!response.ok) {
                         return 'error';
@@ -222,6 +230,63 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
         [workspaceId, refetchMembersAuthoritative],
     );
 
+    const transferOwnership = useCallback(
+        async (memberId: number): Promise<TeamMemberTransferOutcome> => {
+            if (workspaceId === undefined) {
+                return 'error';
+            }
+
+            const alreadyCommitted = committedMemberTransfersRef.current.has(memberId);
+
+            if (!alreadyCommitted) {
+                try {
+                    await bootstrapCsrfCookie();
+
+                    const requestInit = buildAuthRequestInit({ method: 'POST' });
+                    const response = await fetch(
+                        `/api/workspaces/${workspaceId}/team/members/${memberId}/transfer-ownership`,
+                        {
+                            ...requestInit,
+                            credentials: 'same-origin',
+                        },
+                    );
+
+                    if (!response.ok) {
+                        return 'error';
+                    }
+
+                    committedMemberTransfersRef.current.add(memberId);
+                } catch {
+                    return 'error';
+                }
+            }
+
+            const rows = await refetchMembersAuthoritative();
+
+            if (rows === null) {
+                return 'retry';
+            }
+
+            const promotedMember = rows.find((member) => member.id === memberId);
+            const ownerCount = rows.filter(
+                (member) => member.role.toLowerCase() === 'owner',
+            ).length;
+
+            if (
+                promotedMember === undefined ||
+                promotedMember.role.toLowerCase() !== 'owner' ||
+                ownerCount !== 1
+            ) {
+                return 'retry';
+            }
+
+            committedMemberTransfersRef.current.delete(memberId);
+
+            return 'success';
+        },
+        [workspaceId, refetchMembersAuthoritative],
+    );
+
     const cancelInvitation = useCallback(
         async (invitationId: number): Promise<TeamInvitationCancelOutcome> => {
             if (workspaceId === undefined) {
@@ -235,10 +300,13 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                     await bootstrapCsrfCookie();
 
                     const requestInit = buildAuthRequestInit({ method: 'DELETE' });
-                    const response = await fetch(`/api/workspaces/${workspaceId}/team/invitations/${invitationId}`, {
-                        ...requestInit,
-                        credentials: 'same-origin',
-                    });
+                    const response = await fetch(
+                        `/api/workspaces/${workspaceId}/team/invitations/${invitationId}`,
+                        {
+                            ...requestInit,
+                            credentials: 'same-origin',
+                        },
+                    );
 
                     if (!response.ok) {
                         return 'error';
@@ -311,7 +379,11 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
             ? { key: 'team-status', status: 'info', label: t('workspace.team.status.loading') }
             : invitationsStatus === 'error'
               ? { key: 'team-status', status: 'error', label: t('workspace.team.status.error') }
-              : { key: 'team-status', status: 'success', label: t('workspace.team.status.connected') };
+              : {
+                    key: 'team-status',
+                    status: 'success',
+                    label: t('workspace.team.status.connected'),
+                };
     const badges: WorkspacePageStatusBadge[] = [teamStatusBadge];
 
     const operationalDescription =
@@ -365,13 +437,19 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                     )}
 
                     {!submitting && submitError && (
-                        <p role="status" className="text-sm font-medium text-red-600 dark:text-red-400">
+                        <p
+                            role="status"
+                            className="text-sm font-medium text-red-600 dark:text-red-400"
+                        >
                             {t('workspace.team.invite.error')}
                         </p>
                     )}
 
                     {!submitting && submitSuccess && (
-                        <p role="status" className="text-sm font-medium text-green-600 dark:text-green-400">
+                        <p
+                            role="status"
+                            className="text-sm font-medium text-green-600 dark:text-green-400"
+                        >
                             {t('workspace.team.invite.success')}
                         </p>
                     )}
@@ -394,27 +472,32 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                     cancelRetryText={t('workspace.team.invitations.cancel.retry')}
                 />
 
-                <div
-                    role="region"
-                    aria-label={t('workspace.team.members.region')}
-                    className="flex flex-col gap-3"
-                >
-                    <TeamMemberList
-                        status={membersStatus}
-                        members={members}
-                        loadingText={t('workspace.team.members.loading')}
-                        errorText={t('workspace.team.members.error')}
-                        emptyText={t('workspace.team.members.empty')}
-                        onRemoveMember={removeMember}
-                        removeButtonText={t('workspace.team.members.remove.button')}
-                        removeConfirmText={t('workspace.team.members.remove.confirm')}
-                        removeCancelText={t('workspace.team.members.remove.cancel')}
-                        removeBusyText={t('workspace.team.members.remove.busy')}
-                        removeErrorText={t('workspace.team.members.remove.error')}
-                        removeSuccessText={t('workspace.team.members.remove.success')}
-                        removeRetryText={t('workspace.team.members.remove.retry')}
-                    />
-                </div>
+                <TeamMemberList
+                    status={membersStatus}
+                    members={members}
+                    label={t('workspace.team.members.region')}
+                    loadingText={t('workspace.team.members.loading')}
+                    errorText={t('workspace.team.members.error')}
+                    emptyText={t('workspace.team.members.empty')}
+                    onRemoveMember={removeMember}
+                    removeButtonText={t('workspace.team.members.remove.button')}
+                    removeConfirmText={t('workspace.team.members.remove.confirm')}
+                    removeCancelText={t('workspace.team.members.remove.cancel')}
+                    removeBusyText={t('workspace.team.members.remove.busy')}
+                    removeErrorText={t('workspace.team.members.remove.error')}
+                    removeSuccessText={t('workspace.team.members.remove.success')}
+                    removeRetryText={t('workspace.team.members.remove.retry')}
+                    onTransferOwnership={transferOwnership}
+                    transferButtonText={t('workspace.team.members.transfer.button')}
+                    transferDialogTitle={t('workspace.team.members.transfer.title')}
+                    transferDialogBody={t('workspace.team.members.transfer.body')}
+                    transferConfirmText={t('workspace.team.members.transfer.confirm')}
+                    transferCancelText={t('workspace.team.members.transfer.cancel')}
+                    transferBusyText={t('workspace.team.members.transfer.busy')}
+                    transferErrorText={t('workspace.team.members.transfer.error')}
+                    transferRetryText={t('workspace.team.members.transfer.retry')}
+                    transferSuccessText={t('workspace.team.members.transfer.success')}
+                />
             </WorkspacePageFrame>
         </div>
     );
