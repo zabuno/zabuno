@@ -1,0 +1,490 @@
+#!/usr/bin/env bash
+# ramp-gate — fast-delivery genome item 8A (admission-gated ramp promotion).
+#
+#   ramp-gate evaluate --ledger <ledger.json> --guardian <guardian.json> \
+#     --config <development-speed-budget.json> --now-epoch-day <integer>
+#
+# All numeric thresholds and stage criteria live only at
+# config moduleFramework.rampPromotionPolicy. This script contains generic
+# field names and comparison logic, never threshold numbers.
+#
+# Pure evaluator: never creates workers, never mutates the ledger, Guardian
+# file, config, or Git. See scripts/ramp-gate.test.sh for the frozen CLI
+# contract.
+
+set -u
+export LC_ALL=C
+
+invalid_config() {
+  printf 'ramp-gate: %s\n' "$1" >&2
+  echo "CONFIG_ERROR"
+  exit 1
+}
+
+invalid_guardian() {
+  printf 'ramp-gate: %s\n' "$1" >&2
+  echo "GUARDIAN_INVALID"
+  exit 1
+}
+
+invalid_ledger() {
+  printf 'ramp-gate: %s\n' "$1" >&2
+  echo "LEDGER_INVALID"
+  exit 1
+}
+
+require_tools() {
+  if ! command -v jq >/dev/null 2>&1; then
+    printf 'ramp-gate: jq is required\n' >&2
+    exit 2
+  fi
+}
+
+cmd_evaluate() {
+  local ledger="" guardian="" config="" now=""
+  local saw_ledger=0 saw_guardian=0 saw_config=0 saw_now=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --ledger)
+        [ $# -ge 2 ] || { printf 'ramp-gate: --ledger requires a value\n' >&2; exit 2; }
+        [ "$saw_ledger" -eq 0 ] || { printf 'ramp-gate: duplicate --ledger\n' >&2; exit 2; }
+        ledger="$2"; saw_ledger=1; shift 2 ;;
+      --guardian)
+        [ $# -ge 2 ] || { printf 'ramp-gate: --guardian requires a value\n' >&2; exit 2; }
+        [ "$saw_guardian" -eq 0 ] || { printf 'ramp-gate: duplicate --guardian\n' >&2; exit 2; }
+        guardian="$2"; saw_guardian=1; shift 2 ;;
+      --config)
+        [ $# -ge 2 ] || { printf 'ramp-gate: --config requires a value\n' >&2; exit 2; }
+        [ "$saw_config" -eq 0 ] || { printf 'ramp-gate: duplicate --config\n' >&2; exit 2; }
+        config="$2"; saw_config=1; shift 2 ;;
+      --now-epoch-day)
+        [ $# -ge 2 ] || { printf 'ramp-gate: --now-epoch-day requires a value\n' >&2; exit 2; }
+        [ "$saw_now" -eq 0 ] || { printf 'ramp-gate: duplicate --now-epoch-day\n' >&2; exit 2; }
+        now="$2"; saw_now=1; shift 2 ;;
+      *)
+        printf 'ramp-gate: unknown argument: %s\n' "$1" >&2; exit 2 ;;
+    esac
+  done
+  [ "$saw_ledger" -eq 1 ] && [ "$saw_guardian" -eq 1 ] && [ "$saw_config" -eq 1 ] && [ "$saw_now" -eq 1 ] \
+    || { printf 'ramp-gate: --ledger, --guardian, --config and --now-epoch-day are required\n' >&2; exit 2; }
+  [ -f "$ledger" ] || { printf 'ramp-gate: ledger not found: %s\n' "$ledger" >&2; exit 2; }
+  [ -f "$guardian" ] || { printf 'ramp-gate: guardian not found: %s\n' "$guardian" >&2; exit 2; }
+  [ -f "$config" ] || { printf 'ramp-gate: config not found: %s\n' "$config" >&2; exit 2; }
+  [[ "$now" =~ ^-?[0-9]+$ ]] || { printf 'ramp-gate: --now-epoch-day must be an integer\n' >&2; exit 2; }
+
+  # ---------------------------------------------------------------- config
+  jq empty "$config" >/dev/null 2>&1 || invalid_config "config is not valid JSON"
+
+  local mf_present
+  mf_present=$(jq -r '.moduleFramework != null' "$config" 2>/dev/null)
+  [ "$mf_present" = "true" ] || invalid_config "config missing moduleFramework"
+
+  local ramp_stage_cfg
+  ramp_stage_cfg=$(jq -r '.moduleFramework.rampStage // empty' "$config" 2>/dev/null)
+  [ -n "$ramp_stage_cfg" ] || invalid_config "config missing moduleFramework.rampStage"
+
+  local ramp_stage_type
+  ramp_stage_type=$(jq -r '.moduleFramework.rampStage | type' "$config" 2>/dev/null)
+  [ "$ramp_stage_type" = "string" ] || invalid_config "config moduleFramework.rampStage must be a string"
+
+  local ramp_stages_json
+  ramp_stages_json=$(jq -c '.moduleFramework.rampStages // empty' "$config" 2>/dev/null)
+  [ -n "$ramp_stages_json" ] && [ "$ramp_stages_json" != "null" ] || invalid_config "config missing moduleFramework.rampStages"
+
+  local policy_json
+  policy_json=$(jq -c '.moduleFramework.rampPromotionPolicy // empty' "$config" 2>/dev/null)
+  [ -n "$policy_json" ] && [ "$policy_json" != "null" ] || invalid_config "config missing moduleFramework.rampPromotionPolicy"
+
+  local seq_json
+  seq_json=$(printf '%s' "$policy_json" | jq -c '.stageSequence // empty' 2>/dev/null)
+  [ -n "$seq_json" ] && [ "$seq_json" != "null" ] || invalid_config "rampPromotionPolicy missing stageSequence"
+
+  # Canonical-nonnegative-integer-string array check, reused for both
+  # rampStages and stageSequence: nonempty, unique, strings matching
+  # ^(0|[1-9][0-9]*)$ (no leading zeros, no non-digit characters).
+  local canon_arr_def='def isCanonNonNegIntStrArray:
+    (type == "array") and (length > 0)
+    and (all(.[]; type == "string") )
+    and (all(.[]; test("^(0|[1-9][0-9]*)$")))
+    and ((unique | length) == length);'
+
+  local ramp_stages_ok
+  ramp_stages_ok=$(printf '%s' "$ramp_stages_json" | jq -r "$canon_arr_def"' isCanonNonNegIntStrArray' 2>/dev/null) || ramp_stages_ok="false"
+  [ "$ramp_stages_ok" = "true" ] || invalid_config "moduleFramework.rampStages must be a nonempty array of unique canonical nonnegative-integer strings"
+
+  local seq_shape_ok
+  seq_shape_ok=$(printf '%s' "$seq_json" | jq -r "$canon_arr_def"' isCanonNonNegIntStrArray and (length >= 2)' 2>/dev/null) || seq_shape_ok="false"
+  [ "$seq_shape_ok" = "true" ] || invalid_config "rampPromotionPolicy.stageSequence must be a nonempty array of unique canonical nonnegative-integer strings with at least a bootstrap stage plus one stage"
+
+  local expected_seq
+  expected_seq=$(jq -c -n --argjson rs "$ramp_stages_json" --argjson seq "$seq_json" '[$seq[0]] + $rs' 2>/dev/null)
+  [ "$expected_seq" = "$seq_json" ] || invalid_config "stage adjacency mismatch between rampStages and rampPromotionPolicy.stageSequence"
+
+  local transitions_json
+  transitions_json=$(printf '%s' "$policy_json" | jq -c '.transitions // empty' 2>/dev/null)
+  [ -n "$transitions_json" ] && [ "$transitions_json" != "null" ] || invalid_config "rampPromotionPolicy missing transitions"
+
+  local transitions_shape_ok
+  transitions_shape_ok=$(jq -n --argjson seq "$seq_json" --argjson tr "$transitions_json" '
+    ($tr | type) == "object"
+    and (($tr | keys | sort) == ($seq[0:-1] | sort))
+  ' 2>/dev/null) || transitions_shape_ok="false"
+  [ "$transitions_shape_ok" = "true" ] || invalid_config "rampPromotionPolicy.transitions keys must be exactly the non-terminal stages of stageSequence"
+
+  local bootstrap_cap
+  bootstrap_cap=$(printf '%s' "$policy_json" | jq -r '.bootstrapConcurrentWorkersMax // empty' 2>/dev/null)
+  [[ "$bootstrap_cap" =~ ^[0-9]+$ ]] || invalid_config "rampPromotionPolicy.bootstrapConcurrentWorkersMax must be a nonnegative integer"
+
+  local adjacency_ok
+  adjacency_ok=$(jq -n --argjson seq "$seq_json" --argjson tr "$transitions_json" '
+    ($seq | length) as $n
+    | [range(0; $n - 1) | ($tr[$seq[.]].nextStage == $seq[. + 1])] | all
+  ' 2>/dev/null)
+  [ "$adjacency_ok" = "true" ] || invalid_config "transition nextStage adjacency does not match stageSequence"
+
+  local checkpoint_cadence_max
+  checkpoint_cadence_max=$(jq -r '.checkpointCadenceMinutesMax // empty' "$config" 2>/dev/null)
+  local checkpoint_cadence_max_ok
+  checkpoint_cadence_max_ok=$(jq -n --argjson v "${checkpoint_cadence_max:-null}" '
+    ($v != null) and (($v | type) == "number") and (isnan | not) and (isinfinite | not) and ($v > 0)
+  ' 2>/dev/null) || checkpoint_cadence_max_ok="false"
+  [ "$checkpoint_cadence_max_ok" = "true" ] || invalid_config "config checkpointCadenceMinutesMax must be a finite positive number"
+
+  local target_multiplier_min
+  target_multiplier_min=$(jq -r '.programThroughputObjective.targetThroughputMultiplier.min // empty' "$config" 2>/dev/null)
+  local target_multiplier_min_ok
+  target_multiplier_min_ok=$(jq -n --argjson v "${target_multiplier_min:-null}" '
+    ($v != null) and (($v | type) == "number") and (isnan | not) and (isinfinite | not) and ($v > 0)
+  ' 2>/dev/null) || target_multiplier_min_ok="false"
+  [ "$target_multiplier_min_ok" = "true" ] || invalid_config "config programThroughputObjective.targetThroughputMultiplier.min must be a finite positive number"
+
+  local wave_quality_json
+  wave_quality_json=$(printf '%s' "$policy_json" | jq -c '.waveQualityThresholds // empty' 2>/dev/null)
+  [ -n "$wave_quality_json" ] && [ "$wave_quality_json" != "null" ] || invalid_config "rampPromotionPolicy missing waveQualityThresholds"
+
+  local claim_policy_json
+  claim_policy_json=$(printf '%s' "$policy_json" | jq -c '.claimEligibilityPolicy // empty' 2>/dev/null)
+  [ -n "$claim_policy_json" ] && [ "$claim_policy_json" != "null" ] || invalid_config "rampPromotionPolicy missing claimEligibilityPolicy"
+
+  # ---------------------------------------------------- strict field types
+  local wave_quality_ok
+  wave_quality_ok=$(printf '%s' "$wave_quality_json" | jq -r '
+    def isFiniteNum: (type == "number") and (isnan | not) and (isinfinite | not);
+    def isNonNegInt: isFiniteNum and . >= 0 and (. == (. | floor));
+    (.conflictFalseNegativesMaxPerWave | isNonNegInt)
+    and (.reviewerTestWriteViolationsMaxPerWave | isNonNegInt)
+    and (.rollbackTriggeredPackagesMaxPerWave | isNonNegInt)
+    and (.crossPackageFileConflictsMaxPerWave | isNonNegInt)
+    and (.highRiskProductionRegressionsMaxPerWave | isNonNegInt)
+  ' 2>/dev/null) || wave_quality_ok="false"
+  [ "$wave_quality_ok" = "true" ] || invalid_config "waveQualityThresholds ceiling fields must be nonnegative integers"
+
+  local claim_policy_ok
+  claim_policy_ok=$(printf '%s' "$claim_policy_json" | jq -r '
+    def isFiniteNum: (type == "number") and (isnan | not) and (isinfinite | not);
+    def isNonNegInt: isFiniteNum and . >= 0 and (. == (. | floor));
+    def isRatio: isFiniteNum and . >= 0 and . <= 1;
+    (.minObservedDays | isNonNegInt)
+    and (.minAbPairCount | isNonNegInt)
+    and (.minCiPassThroughRate | isRatio)
+  ' 2>/dev/null) || claim_policy_ok="false"
+  [ "$claim_policy_ok" = "true" ] || invalid_config "claimEligibilityPolicy fields must be nonnegative integers (minObservedDays, minAbPairCount) and minCiPassThroughRate in [0,1]"
+
+  local transitions_ok
+  transitions_ok=$(jq -n --argjson seq "$seq_json" --argjson tr "$transitions_json" '
+    def isFiniteNum: (type == "number") and (isnan | not) and (isinfinite | not);
+    def isNonNegInt: isFiniteNum and . >= 0 and (. == (. | floor));
+    def isPositiveFinite: isFiniteNum and . > 0;
+    def isRatio: isFiniteNum and . >= 0 and . <= 1;
+    ($seq | length) as $n
+    | [ range(0; $n - 1) as $i
+        | ($seq[$i]) as $stage
+        | ($tr[$stage]) as $t
+        | ( ($t | type) == "object"
+            and (($t.nextStage) == $seq[$i + 1])
+            and (($t.nextStage) | type == "string")
+            and ($t.minObservedDays | isNonNegInt)
+            and ($t.minReadyBacklog | isNonNegInt)
+            and ($t.minTrailingQualifyingWaves | isNonNegInt)
+            and (($t.checkpointP95MinutesMax == null) or ($t.checkpointP95MinutesMax | isPositiveFinite))
+            and (($t.stewardLaneP95RatioMax == null) or ($t.stewardLaneP95RatioMax | isRatio))
+            and (($t.minAbPairCount == null) or ($t.minAbPairCount | isNonNegInt))
+            and (($t.minCiPassThroughRate == null) or ($t.minCiPassThroughRate | isRatio))
+            and (($t.crossPackageFileConflictsMax == null) or ($t.crossPackageFileConflictsMax | isNonNegInt))
+            and (($t.rollbackTriggeredPackagesMax == null) or ($t.rollbackTriggeredPackagesMax | isNonNegInt))
+            and (($t.flowEfficiencyAtOrAboveBaselineRequired == null) or ($t.flowEfficiencyAtOrAboveBaselineRequired | type == "boolean"))
+            and (($t.unstableStewardLanesMax == null) or ($t.unstableStewardLanesMax | isNonNegInt))
+          )
+      ] | all
+  ' 2>/dev/null) || transitions_ok="false"
+  [ "$transitions_ok" = "true" ] || invalid_config "transitions entries have missing or incorrectly typed fields"
+
+  # -------------------------------------------------------------- guardian
+  jq empty "$guardian" >/dev/null 2>&1 || invalid_guardian "guardian is not valid JSON"
+
+  local g_allow_type
+  g_allow_type=$(jq -r '.allowNewWorker | type' "$guardian" 2>/dev/null)
+  [ "$g_allow_type" = "boolean" ] || invalid_guardian "guardian.allowNewWorker must be boolean"
+
+  local g_rec_ok
+  g_rec_ok=$(jq -r '
+    (.recommendedNewWorkers | type) == "number"
+    and (.recommendedNewWorkers == (.recommendedNewWorkers | floor))
+    and (.recommendedNewWorkers >= 0)
+  ' "$guardian" 2>/dev/null)
+  [ "$g_rec_ok" = "true" ] || invalid_guardian "guardian.recommendedNewWorkers must be a nonnegative integer"
+
+  local guardian_json
+  guardian_json=$(jq -c '{allowNewWorker: .allowNewWorker, recommendedNewWorkers: .recommendedNewWorkers}' "$guardian" 2>/dev/null)
+
+  # ---------------------------------------------------------------- ledger
+  jq empty "$ledger" >/dev/null 2>&1 || invalid_ledger "ledger is not valid JSON"
+
+  local top_keys
+  top_keys=$(jq -cS 'keys' "$ledger" 2>/dev/null)
+  [ "$top_keys" = '["activeWorkers","currentStage","readyBacklogCount","schemaVersion","waves","window"]' ] \
+    || invalid_ledger "ledger top-level keys must be exactly schemaVersion, currentStage, activeWorkers, readyBacklogCount, window, waves"
+
+  local ledger_struct_ok
+  ledger_struct_ok=$(jq -r --argjson stages "$seq_json" '
+    def isFiniteNum: (type == "number") and (isnan | not) and (isinfinite | not);
+    def isNonNegFiniteNum: isFiniteNum and . >= 0;
+    def isInt: isFiniteNum and (. == (. | floor));
+    def isNonNegInt: isInt and . >= 0;
+    (.schemaVersion) as $sv
+    | (.currentStage) as $cs
+    | (.activeWorkers) as $aw
+    | (.readyBacklogCount) as $rb
+    | (.window) as $w
+    | (.waves) as $waves
+    | ( ($sv | isNonNegInt) and ($sv >= 1)
+        and ($cs | type == "string") and ($stages | index($cs) != null)
+        and ($aw | isNonNegInt)
+        and ($rb | isNonNegInt)
+        and ($w | type == "object")
+        and (($w | keys | sort) == ["abPairCount","acceptedVerticalSlices","baselineAcceptedVerticalSlices","ciPassThroughRate","endEpochDay","escapedDefectBaseline","escapedDefectRate","reworkBaseline","reworkRate","startEpochDay"])
+        and ($w.startEpochDay | isNonNegInt)
+        and ($w.endEpochDay | isNonNegInt)
+        and ($w.endEpochDay >= $w.startEpochDay)
+        and ($w.abPairCount | isNonNegInt)
+        and ($w.acceptedVerticalSlices | isNonNegFiniteNum)
+        and ($w.baselineAcceptedVerticalSlices | isNonNegFiniteNum)
+        and ($w.escapedDefectRate | isNonNegFiniteNum)
+        and ($w.escapedDefectBaseline | isNonNegFiniteNum)
+        and ($w.reworkRate | isNonNegFiniteNum)
+        and ($w.reworkBaseline | isNonNegFiniteNum)
+        and ($w.ciPassThroughRate | isNonNegFiniteNum)
+        and ($waves | type == "array")
+        and (($waves | length) > 0)
+        and ( [ $waves[] | (
+              (type == "object")
+              and ((keys | sort) == ["allModulesGreen","checkpointP95Minutes","ciStable","conflictFalseNegatives","crossPackageFileConflicts","endedAtEpochDay","flowEfficiency","flowEfficiencyBaseline","highRiskProductionRegressions","mergeMetricsStable","reviewerTestWriteViolations","rollbackTriggeredPackages","stage","startedAtEpochDay","stewardLaneP95Ratio","unstableStewardLanes","waveId"])
+              and (.waveId | type == "string") and ((.waveId | length) > 0)
+              and (.stage | type == "string") and (.stage == $cs)
+              and (.startedAtEpochDay | isNonNegInt)
+              and (.endedAtEpochDay | isNonNegInt)
+              and (.endedAtEpochDay >= .startedAtEpochDay)
+              and (.checkpointP95Minutes | isNonNegFiniteNum)
+              and (.stewardLaneP95Ratio | isNonNegFiniteNum)
+              and (.conflictFalseNegatives | isNonNegInt)
+              and (.reviewerTestWriteViolations | isNonNegInt)
+              and (.mergeMetricsStable | type == "boolean")
+              and (.ciStable | type == "boolean")
+              and (.allModulesGreen | type == "boolean")
+              and (.rollbackTriggeredPackages | type == "array")
+              and (.crossPackageFileConflicts | isNonNegInt)
+              and (.highRiskProductionRegressions | isNonNegInt)
+              and (.flowEfficiency | isNonNegFiniteNum)
+              and (.flowEfficiencyBaseline | isNonNegFiniteNum)
+              and (.unstableStewardLanes | type == "array")
+            ) ] | all )
+      )
+  ' "$ledger" 2>/dev/null)
+  [ "$ledger_struct_ok" = "true" ] || invalid_ledger "ledger structural/type validation failed"
+
+  local cs
+  cs=$(jq -r '.currentStage' "$ledger" 2>/dev/null)
+  [ "$cs" = "$ramp_stage_cfg" ] || invalid_ledger "ledger currentStage does not equal config moduleFramework.rampStage"
+
+  local dup_ok
+  dup_ok=$(jq -r '(.waves | map(.waveId)) as $ids | ($ids | length) == ($ids | unique | length)' "$ledger" 2>/dev/null)
+  [ "$dup_ok" = "true" ] || invalid_ledger "duplicate waveId in ledger.waves"
+
+  local future_ok
+  future_ok=$(jq -r --argjson now "$now" '[.waves[] | (.endedAtEpochDay <= $now)] | all' "$ledger" 2>/dev/null)
+  [ "$future_ok" = "true" ] || invalid_ledger "a wave endedAtEpochDay is in the future relative to --now-epoch-day"
+
+  local window_now_ok
+  window_now_ok=$(jq -r --argjson now "$now" '.window.endEpochDay <= $now' "$ledger" 2>/dev/null)
+  [ "$window_now_ok" = "true" ] || invalid_ledger "window.endEpochDay is in the future relative to --now-epoch-day"
+
+  local order_ok
+  order_ok=$(jq -r '
+    (.window) as $w
+    | (.waves | sort_by(.startedAtEpochDay)) as $s
+    | ( [ $s[] | ((.startedAtEpochDay >= $w.startEpochDay) and (.endedAtEpochDay <= $w.endEpochDay)) ] | all )
+      and ( [ range(0; ($s | length) - 1) | ($s[. + 1].startedAtEpochDay >= $s[.].endedAtEpochDay) ] | all )
+  ' "$ledger" 2>/dev/null)
+  [ "$order_ok" = "true" ] || invalid_ledger "waves are not chronological/non-overlapping within window bounds"
+
+  local ledger_json
+  ledger_json=$(jq -c '.' "$ledger" 2>/dev/null)
+
+  # ------------------------------------------------------------- decision
+  local decision_full
+  if ! decision_full=$(jq -cS -n \
+    --argjson ledger "$ledger_json" \
+    --argjson guardian "$guardian_json" \
+    --argjson seq "$seq_json" \
+    --argjson transitions "$transitions_json" \
+    --argjson bootstrapCap "$bootstrap_cap" \
+    --argjson checkpointCadenceMax "$checkpoint_cadence_max" \
+    --argjson targetMultiplierMin "$target_multiplier_min" \
+    --argjson waveQuality "$wave_quality_json" \
+    --argjson claimPolicy "$claim_policy_json" \
+    --argjson now "$now" '
+    def qualifyingWave($tr):
+      ($tr.checkpointP95MinutesMax // $checkpointCadenceMax) as $cpMax
+      | (.mergeMetricsStable == true)
+        and (.ciStable == true)
+        and (.allModulesGreen == true)
+        and ((.rollbackTriggeredPackages | length) <= $waveQuality.rollbackTriggeredPackagesMaxPerWave)
+        and (.crossPackageFileConflicts <= $waveQuality.crossPackageFileConflictsMaxPerWave)
+        and (.highRiskProductionRegressions <= $waveQuality.highRiskProductionRegressionsMaxPerWave)
+        and (.conflictFalseNegatives <= $waveQuality.conflictFalseNegativesMaxPerWave)
+        and (.reviewerTestWriteViolations <= $waveQuality.reviewerTestWriteViolationsMaxPerWave)
+        and (.checkpointP95Minutes <= $cpMax)
+        and ($tr.stewardLaneP95RatioMax == null or .stewardLaneP95Ratio <= $tr.stewardLaneP95RatioMax);
+
+    ($ledger.currentStage) as $cs
+    | ($ledger.window) as $win
+    | ($ledger.waves) as $waves
+    | ($seq | index($cs)) as $idx
+    | ($seq[0]) as $bootstrapStage
+    | (if $idx > 0 then $seq[$idx - 1] else null end) as $prevStage
+    | ($transitions[$cs]) as $tr
+    | (if ($tr | type) == "object" then $tr.nextStage else null end) as $nextStage
+
+    | ( ([ $waves[] | (.highRiskProductionRegressions > $waveQuality.highRiskProductionRegressionsMaxPerWave or .conflictFalseNegatives > $waveQuality.conflictFalseNegativesMaxPerWave) ] | any)
+        or ($win.escapedDefectRate > $win.escapedDefectBaseline)
+        or ($win.reworkRate > $win.reworkBaseline)
+      ) as $rollbackTrigger
+
+    | ($win.endEpochDay - $win.startEpochDay) as $observedDays
+
+    | (reduce range(0; ($waves | length)) as $i
+        ({waves: ($waves | sort_by(.startedAtEpochDay)), stop: false, count: 0};
+          if .stop then .
+          else
+            (.waves[(.waves | length) - 1 - $i]) as $w
+            | if ($w | qualifyingWave($tr // {})) then
+                {waves: .waves, stop: false, count: (.count + 1)}
+              else
+                {waves: .waves, stop: true, count: .count}
+              end
+          end)
+      ).count as $trailingQualifying
+
+    | ( ($nextStage != null)
+        and ($observedDays >= $tr.minObservedDays)
+        and ($ledger.readyBacklogCount >= $tr.minReadyBacklog)
+        and ($trailingQualifying >= $tr.minTrailingQualifyingWaves)
+        and ( if $tr.minAbPairCount == null then true
+              else
+                ($win.abPairCount >= $tr.minAbPairCount)
+                and ($win.ciPassThroughRate >= $tr.minCiPassThroughRate)
+                and ($win.escapedDefectRate <= $win.escapedDefectBaseline)
+                and ($win.reworkRate <= $win.reworkBaseline)
+              end)
+        and ( if $tr.crossPackageFileConflictsMax == null then true
+              else ([ $waves[] | .crossPackageFileConflicts ] | max) <= $tr.crossPackageFileConflictsMax
+              end)
+        and ( if $tr.rollbackTriggeredPackagesMax == null then true
+              else ([ $waves[] | (.rollbackTriggeredPackages | length) ] | max) <= $tr.rollbackTriggeredPackagesMax
+              end)
+        and ( if $tr.flowEfficiencyAtOrAboveBaselineRequired != true then true
+              else ([ $waves[] | (.flowEfficiency >= .flowEfficiencyBaseline) ] | all)
+              end)
+        and ( if $tr.unstableStewardLanesMax == null then true
+              else ([ $waves[] | (.unstableStewardLanes | length) ] | max) <= $tr.unstableStewardLanesMax
+              end)
+      ) as $promotionEligible
+
+    | (if $cs == $bootstrapStage then $bootstrapCap else ($cs | tonumber) end) as $capacity
+    | ([0, ($capacity - $ledger.activeWorkers)] | max) as $remainingCapacity
+    | (if ($guardian.allowNewWorker != true) or ($guardian.recommendedNewWorkers == 0)
+       then 0
+       else ([$guardian.recommendedNewWorkers, $remainingCapacity] | min)
+       end) as $effectiveNewWorkersMax
+
+    | (if $win.baselineAcceptedVerticalSlices == 0 then null
+       else ($win.acceptedVerticalSlices / $win.baselineAcceptedVerticalSlices)
+       end) as $throughputMultiplier
+
+    | ( ($observedDays >= $claimPolicy.minObservedDays)
+        and ($win.abPairCount >= $claimPolicy.minAbPairCount)
+        and ($win.ciPassThroughRate >= $claimPolicy.minCiPassThroughRate)
+        and ($win.escapedDefectRate <= $win.escapedDefectBaseline)
+        and ($win.reworkRate <= $win.reworkBaseline)
+        and ($throughputMultiplier != null)
+        and ($throughputMultiplier >= $targetMultiplierMin)
+      ) as $claimEligible
+
+    | (if $rollbackTrigger and $cs != $bootstrapStage then "ROLLBACK"
+       elif ($rollbackTrigger | not) and $promotionEligible
+            and ($guardian.allowNewWorker == true) and ($guardian.recommendedNewWorkers > 0)
+       then "PROMOTE"
+       else "HOLD"
+       end) as $verdict
+
+    | { currentStage: $cs,
+        recommendedStage: (if $verdict == "PROMOTE" then $nextStage else null end),
+        rollbackTarget: (if $verdict == "ROLLBACK" then $prevStage else null end),
+        effectiveConcurrentWorkerCap: $capacity,
+        effectiveNewWorkersMax: $effectiveNewWorkersMax,
+        observedDays: $observedDays,
+        qualifyingTrailingWaves: $trailingQualifying,
+        throughputMultiplier: $throughputMultiplier,
+        claimEligible: $claimEligible,
+        reasons: (
+          (if $rollbackTrigger and $cs != $bootstrapStage then ["rollback-trigger"] else [] end)
+          + (if $rollbackTrigger and $cs == $bootstrapStage then ["rollback-trigger-suppressed-at-bootstrap"] else [] end)
+          + (if $verdict == "PROMOTE" then ["promotion-eligible","guardian-admitted"] else [] end)
+          + (if $verdict == "HOLD" and ($rollbackTrigger | not) and ($promotionEligible | not) then ["promotion-evidence-insufficient"] else [] end)
+          + (if $verdict == "HOLD" and (($guardian.allowNewWorker != true) or ($guardian.recommendedNewWorkers == 0)) then ["guardian-denied"] else [] end)
+        ),
+        verdict: $verdict
+      }
+  ' 2>/dev/null) || [ -z "$decision_full" ]; then
+    invalid_config "decision computation failed"
+  fi
+
+  jq empty <<<"$decision_full" >/dev/null 2>&1 || invalid_config "decision computation produced invalid JSON"
+
+  local decision_verdict
+  decision_verdict=$(jq -r '.verdict // empty' <<<"$decision_full" 2>/dev/null)
+  case "$decision_verdict" in
+    PROMOTE|HOLD|ROLLBACK) ;;
+    *) invalid_config "decision computation produced an invalid verdict" ;;
+  esac
+
+  printf '%s\n' "$decision_full" | jq -cS 'del(.verdict)'
+  printf '%s\n' "$decision_full" | jq -r '.verdict'
+
+  exit 0
+}
+
+main() {
+  require_tools
+  local cmd="${1:-}"
+  shift || true
+  case "$cmd" in
+    evaluate) cmd_evaluate "$@" ;;
+    *)
+      printf 'usage: ramp-gate evaluate --ledger <ledger.json> --guardian <guardian.json> --config <config> --now-epoch-day <int>\n' >&2
+      exit 2
+      ;;
+  esac
+}
+
+main "$@"
