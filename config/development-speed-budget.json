@@ -184,7 +184,76 @@
         "gitMutationsByPackageWorkers": "forbidden",
         "rampStage": "0",
         "rampStages": ["4", "12", "25", "50", "100"],
-        "rampStageMeaning": "max concurrently admitted workers across all roles; gated by admission evidence (docs/26, docs/27), not implemented by this JSON"
+        "rampStageMeaning": "max concurrently admitted workers across all roles; gated by admission evidence (docs/26, docs/27), not implemented by this JSON",
+        "rampPromotionPolicy": {
+            "note": "Single canonical numeric owner of ramp-stage admission thresholds, consumed by scripts/ramp-gate. scripts/ramp-gate must never hardcode a threshold number found here.",
+            "stageSequence": ["0", "4", "12", "25", "50", "100"],
+            "bootstrapConcurrentWorkersMax": 1,
+            "waveQualityThresholds": {
+                "note": "Universal per-wave safety ceilings; a wave only qualifies, and rollback only triggers, by comparison against these fields -- never a literal in scripts/ramp-gate.",
+                "conflictFalseNegativesMaxPerWave": 0,
+                "reviewerTestWriteViolationsMaxPerWave": 0,
+                "rollbackTriggeredPackagesMaxPerWave": 0,
+                "crossPackageFileConflictsMaxPerWave": 0,
+                "highRiskProductionRegressionsMaxPerWave": 0
+            },
+            "claimEligibilityPolicy": {
+                "note": "Aggregate-window thresholds for the honest throughput claimEligible boolean, separate from per-transition promotion criteria.",
+                "minObservedDays": 30,
+                "minAbPairCount": 5,
+                "minCiPassThroughRate": 0.9
+            },
+            "transitions": {
+                "0": {
+                    "nextStage": "4",
+                    "minObservedDays": 7,
+                    "minReadyBacklog": 8,
+                    "minTrailingQualifyingWaves": 2,
+                    "checkpointP95MinutesMax": 20
+                },
+                "4": {
+                    "nextStage": "12",
+                    "minObservedDays": 30,
+                    "minReadyBacklog": 20,
+                    "minTrailingQualifyingWaves": 3,
+                    "checkpointP95MinutesMax": 20,
+                    "stewardLaneP95RatioMax": 0.2,
+                    "minAbPairCount": 5,
+                    "minCiPassThroughRate": 0.9
+                },
+                "12": {
+                    "nextStage": "25",
+                    "minObservedDays": 30,
+                    "minReadyBacklog": 40,
+                    "minTrailingQualifyingWaves": 3,
+                    "checkpointP95MinutesMax": 20,
+                    "minAbPairCount": 5,
+                    "minCiPassThroughRate": 0.9,
+                    "rollbackTriggeredPackagesMax": 0
+                },
+                "25": {
+                    "nextStage": "50",
+                    "minObservedDays": 30,
+                    "minReadyBacklog": 75,
+                    "minTrailingQualifyingWaves": 5,
+                    "checkpointP95MinutesMax": 20,
+                    "minAbPairCount": 5,
+                    "minCiPassThroughRate": 0.9,
+                    "crossPackageFileConflictsMax": 0
+                },
+                "50": {
+                    "nextStage": "100",
+                    "minObservedDays": 30,
+                    "minReadyBacklog": 100,
+                    "minTrailingQualifyingWaves": 10,
+                    "checkpointP95MinutesMax": 20,
+                    "minAbPairCount": 5,
+                    "minCiPassThroughRate": 0.9,
+                    "flowEfficiencyAtOrAboveBaselineRequired": true,
+                    "unstableStewardLanesMax": 0
+                }
+            }
+        }
     },
     "fastDeliveryGenomeOverlay": {
         "note": "Fixed separate 8-item denominator, independent of the product roadmap docs/17 §4 counter. See AGENTS.md and both speeder reports for rationale.",
