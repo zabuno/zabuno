@@ -243,7 +243,7 @@ describe('BackupRestoreEvidenceItem — real backup/restore evidence contract (S
     });
 
     it('issues exactly one plain fetch call with no init/options/headers/credentials/CSRF', async () => {
-        const fetchSpy = vi.fn(async (_url: string) => jsonResponse(200, evidenceEnvelope('passed')));
+        const fetchSpy = vi.fn<(url: string) => Promise<Response>>(async () => jsonResponse(200, evidenceEnvelope('passed')));
         vi.stubGlobal('fetch', fetchSpy);
 
         const { BackupRestoreEvidenceItem } = await importBackupRestoreEvidenceItemModule();
