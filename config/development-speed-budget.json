@@ -201,7 +201,7 @@
                 "note": "Aggregate-window thresholds for the honest throughput claimEligible boolean, separate from per-transition promotion criteria.",
                 "minObservedDays": 30,
                 "minAbPairCount": 5,
-                "minCiPassThroughRate": 0.90
+                "minCiPassThroughRate": 0.9
             },
             "transitions": {
                 "0": {
@@ -217,9 +217,9 @@
                     "minReadyBacklog": 20,
                     "minTrailingQualifyingWaves": 3,
                     "checkpointP95MinutesMax": 20,
-                    "stewardLaneP95RatioMax": 0.20,
+                    "stewardLaneP95RatioMax": 0.2,
                     "minAbPairCount": 5,
-                    "minCiPassThroughRate": 0.90
+                    "minCiPassThroughRate": 0.9
                 },
                 "12": {
                     "nextStage": "25",
@@ -228,7 +228,7 @@
                     "minTrailingQualifyingWaves": 3,
                     "checkpointP95MinutesMax": 20,
                     "minAbPairCount": 5,
-                    "minCiPassThroughRate": 0.90,
+                    "minCiPassThroughRate": 0.9,
                     "rollbackTriggeredPackagesMax": 0
                 },
                 "25": {
@@ -238,7 +238,7 @@
                     "minTrailingQualifyingWaves": 5,
                     "checkpointP95MinutesMax": 20,
                     "minAbPairCount": 5,
-                    "minCiPassThroughRate": 0.90,
+                    "minCiPassThroughRate": 0.9,
                     "crossPackageFileConflictsMax": 0
                 },
                 "50": {
@@ -248,7 +248,7 @@
                     "minTrailingQualifyingWaves": 10,
                     "checkpointP95MinutesMax": 20,
                     "minAbPairCount": 5,
-                    "minCiPassThroughRate": 0.90,
+                    "minCiPassThroughRate": 0.9,
                     "flowEfficiencyAtOrAboveBaselineRequired": true,
                     "unstableStewardLanesMax": 0
                 }
