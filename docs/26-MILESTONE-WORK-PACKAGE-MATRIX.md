@@ -100,6 +100,17 @@ ilki runtime persona, ikincisi delivery function). Bu ayrım, hiçbir WP
 satırının içeriğini (outcome/scope/predecessor/status) **değiştirmez** —
 yalnız Owner sütununun nasıl okunacağını netleştirir.
 
+### OPS-00 — yatay operasyon/tooling (38 WP registry dışı, sabit sayacı etkilemez)
+
+OPS-00 kimlikleri (`OPS-00-xx`) yukarıdaki `S<stage>-WP<sıra>` isim
+uzayının **dışındadır** — sabit 38 WP'ye eklenmez, hiçbir stage'in altına
+girmez, `docs/17` §4'teki 0/8 ilerleme sayacını değiştirmez (bkz. `docs/17`
+§5a). Aşağıdaki tek satır, yürütmede bu ayrımın somut örneğidir:
+
+| ID | Outcome / Scope | Predecessor | Owner | Acceptance evidence | Status |
+|---|---|---|---|---|---|
+| OPS-00-01 | Event-driven Pane garbage collector: dry-run varsayılan, `--apply` en fazla bir tam kanıtlanmış güvenli Pane'i arşivler (`runpane panes archive --pane <ID> --source agent --yes --json`); tetikleyiciler worker admission öncesi, handoff/exit sonrası, task kapanışı, Guardian/PTX baskısı, owner isteği — asla zamanlayıcı değil | — | Engineering (delivery) | `.claude/skills/pane-garbage-collector/tests/pane_gc_test.sh` GREEN | implemented |
+
 ### Stage 1 — MVP (`docs/18`)
 
 | WP | Outcome / Scope | Predecessor | Owner | Acceptance evidence / exit-gate | Status |
