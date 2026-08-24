@@ -48,7 +48,7 @@ final class ThemeBootstrapViewTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     #[DataProvider('liveViewProvider')]
     public function test_view_emits_a_pre_paint_theme_bootstrap_script_before_any_vite_output(string $view, array $data): void
@@ -82,7 +82,7 @@ final class ThemeBootstrapViewTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     #[DataProvider('liveViewProvider')]
     public function test_bootstrap_script_reads_the_stable_storage_key_and_falls_back_to_system_media_query(string $view, array $data): void

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -217,8 +218,8 @@ final class ManualPaymentJourneyTest extends TestCase
     private function uuid(): string
     {
         $data = random_bytes(16);
-        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
-        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+        $data[6] = chr((ord($data[6]) & 0x0F) | 0x40);
+        $data[8] = chr((ord($data[8]) & 0x3F) | 0x80);
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
@@ -792,7 +793,7 @@ final class ManualPaymentJourneyTest extends TestCase
      */
     public function test_manual_payments_route_carries_throttle_middleware(): void
     {
-        $route = collect(\Illuminate\Support\Facades\Route::getRoutes())
+        $route = collect(Route::getRoutes())
             ->first(function ($route) {
                 return $route->methods()[0] === 'POST'
                     && $route->uri() === 'api/admin/workspaces/{workspace}/manual-payments';

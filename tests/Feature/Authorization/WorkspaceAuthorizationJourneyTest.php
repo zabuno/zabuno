@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Authorization;
 
+use App\Application\Authorization\Port\AuthorizationPort;
 use App\Domain\Authorization\Permission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
@@ -43,7 +45,7 @@ final class WorkspaceAuthorizationJourneyTest extends TestCase
 
     private function workspace(string $name, string $slug): int
     {
-        return (int) \Illuminate\Support\Facades\DB::table('workspaces')->insertGetId([
+        return (int) DB::table('workspaces')->insertGetId([
             'name' => $name,
             'slug' => $slug,
             'state' => 'active',
@@ -55,7 +57,7 @@ final class WorkspaceAuthorizationJourneyTest extends TestCase
 
     private function membership(int $workspaceId, int $userId, string $role): void
     {
-        \Illuminate\Support\Facades\DB::table('workspace_memberships')->insert([
+        DB::table('workspace_memberships')->insert([
             'workspace_id' => $workspaceId,
             'user_id' => $userId,
             'role' => $role,
@@ -64,9 +66,9 @@ final class WorkspaceAuthorizationJourneyTest extends TestCase
         ]);
     }
 
-    private function port(): \App\Application\Authorization\Port\AuthorizationPort
+    private function port(): AuthorizationPort
     {
-        return $this->app->make(\App\Application\Authorization\Port\AuthorizationPort::class);
+        return $this->app->make(AuthorizationPort::class);
     }
 
     // --- CORE03-PDP-OWNER-01 ------------------------------------------------

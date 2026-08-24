@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\QrDestination;
 
+use App\Domain\QrDestination\QrToken;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -39,9 +40,9 @@ final class QrTokenTest extends TestCase
 
     public function test_generate_returns_a_43_char_base64url_token_matching_the_frozen_pattern(): void
     {
-        self::assertTrue(class_exists(\App\Domain\QrDestination\QrToken::class), 'App\\Domain\\QrDestination\\QrToken sınıfı mevcut değil.');
+        self::assertTrue(class_exists(QrToken::class), 'App\\Domain\\QrDestination\\QrToken sınıfı mevcut değil.');
 
-        $token = \App\Domain\QrDestination\QrToken::generate();
+        $token = QrToken::generate();
 
         self::assertSame(43, strlen($token->value()), 'QR-TOKEN-FORMAT-01: token tam 43 karakter olmalı.');
         self::assertMatchesRegularExpression(self::TOKEN_PATTERN, $token->value(), 'QR-TOKEN-FORMAT-01: token [A-Za-z0-9_-]{43} desenine uymalı.');
@@ -56,7 +57,7 @@ final class QrTokenTest extends TestCase
     {
         $tokens = [];
         for ($i = 0; $i < 500; $i++) {
-            $tokens[] = \App\Domain\QrDestination\QrToken::generate()->value();
+            $tokens[] = QrToken::generate()->value();
         }
 
         self::assertCount(500, array_unique($tokens), 'QR-TOKEN-ENTROPY-01: 500 üretimde çakışma olmamalı (256-bit CSPRNG entropi).');
@@ -66,8 +67,8 @@ final class QrTokenTest extends TestCase
 
     public function test_generate_never_produces_a_sequential_or_predictable_token(): void
     {
-        $first = \App\Domain\QrDestination\QrToken::generate()->value();
-        $second = \App\Domain\QrDestination\QrToken::generate()->value();
+        $first = QrToken::generate()->value();
+        $second = QrToken::generate()->value();
 
         self::assertNotSame($first, $second);
 
@@ -89,7 +90,7 @@ final class QrTokenTest extends TestCase
     {
         $raw = str_repeat('a', 43);
 
-        $token = \App\Domain\QrDestination\QrToken::fromString($raw);
+        $token = QrToken::fromString($raw);
 
         self::assertSame($raw, $token->value());
     }
@@ -114,7 +115,7 @@ final class QrTokenTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        \App\Domain\QrDestination\QrToken::fromString($malformed);
+        QrToken::fromString($malformed);
     }
 
     // --- QR-TOKEN-COLLISION-01 ------------------------------------------------
@@ -128,7 +129,7 @@ final class QrTokenTest extends TestCase
             return count($seen) < 3;
         };
 
-        $token = \App\Domain\QrDestination\QrToken::generateAvoiding($isTaken, 5);
+        $token = QrToken::generateAvoiding($isTaken, 5);
 
         self::assertCount(3, $seen, 'QR-TOKEN-COLLISION-01: tam olarak taken dönmeyen ilk adaya kadar denemeli.');
         self::assertSame($seen[2], $token->value(), 'QR-TOKEN-COLLISION-01: sonunda kabul edilen aday döndürülmeli.');
@@ -140,6 +141,6 @@ final class QrTokenTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
 
-        \App\Domain\QrDestination\QrToken::generateAvoiding($alwaysTaken, 5);
+        QrToken::generateAvoiding($alwaysTaken, 5);
     }
 }

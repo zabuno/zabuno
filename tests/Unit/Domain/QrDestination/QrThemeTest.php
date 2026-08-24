@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\QrDestination;
 
+use App\Domain\QrDestination\QrLayout;
+use App\Domain\QrDestination\QrTheme;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -49,7 +51,7 @@ final class QrThemeTest extends TestCase
 
     public function test_qr_theme_enum_declares_exactly_the_six_frozen_case_sensitive_keys(): void
     {
-        $enumClass = \App\Domain\QrDestination\QrTheme::class;
+        $enumClass = QrTheme::class;
 
         self::assertTrue(enum_exists($enumClass), 'App\\Domain\\QrDestination\\QrTheme enum mevcut değil.');
 
@@ -67,11 +69,11 @@ final class QrThemeTest extends TestCase
 
     public function test_qr_layout_is_json_serializable_with_exactly_the_frozen_schema_fields(): void
     {
-        $layoutClass = \App\Domain\QrDestination\QrLayout::class;
+        $layoutClass = QrLayout::class;
 
         self::assertTrue(class_exists($layoutClass), 'App\\Domain\\QrDestination\\QrLayout sınıfı mevcut değil.');
 
-        $themeClass = \App\Domain\QrDestination\QrTheme::class;
+        $themeClass = QrTheme::class;
         self::assertTrue(enum_exists($themeClass), 'App\\Domain\\QrDestination\\QrTheme enum mevcut değil.');
 
         $layout = new $layoutClass($themeClass::from('classic'));
@@ -120,10 +122,10 @@ final class QrThemeTest extends TestCase
     #[DataProvider('themeProvider')]
     public function test_each_theme_resolves_to_its_exact_frozen_palette_with_real_wcag_contrast_at_least_seven(string $themeKey): void
     {
-        $themeClass = \App\Domain\QrDestination\QrTheme::class;
+        $themeClass = QrTheme::class;
         self::assertTrue(enum_exists($themeClass), 'App\\Domain\\QrDestination\\QrTheme enum mevcut değil.');
 
-        $layoutClass = \App\Domain\QrDestination\QrLayout::class;
+        $layoutClass = QrLayout::class;
         self::assertTrue(class_exists($layoutClass), 'App\\Domain\\QrDestination\\QrLayout sınıfı mevcut değil.');
 
         $case = $themeClass::from($themeKey);

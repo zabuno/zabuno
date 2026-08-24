@@ -64,7 +64,7 @@ final class MediaStorageFailureTest extends TestCase
             ->with('local')
             ->andReturn($diskMock);
 
-        $repository = new EloquentMediaRepository();
+        $repository = new EloquentMediaRepository;
 
         $intake = new MediaIntake(
             temporaryPath: $temporaryPath,
@@ -126,7 +126,7 @@ final class MediaStorageFailureTest extends TestCase
             ->with('local')
             ->andReturn($diskMock);
 
-        $repository = new EloquentMediaRepository();
+        $repository = new EloquentMediaRepository;
 
         $threw = false;
 

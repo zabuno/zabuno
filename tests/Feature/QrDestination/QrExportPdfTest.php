@@ -276,7 +276,7 @@ final class QrExportPdfTest extends TestCase
     }
 
     /**
-     * @param array<string, string> $query
+     * @param  array<string, string>  $query
      */
     private function pdfExportUrlWithQuery(int $workspaceId, int $qrCodeId, array $query = []): string
     {

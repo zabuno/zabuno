@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Analytics;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -224,7 +226,7 @@ final class AnalyticsLedgerSummaryTest extends TestCase
         $duplicateRejected = false;
         try {
             DB::table('analytics_events')->insert($row('beacon-idempotency-key-1'));
-        } catch (\Illuminate\Database\QueryException) {
+        } catch (QueryException) {
             $duplicateRejected = true;
         }
 
@@ -323,7 +325,7 @@ final class AnalyticsLedgerSummaryTest extends TestCase
         [$workspaceId, $locationId, $menuId, $token] = $this->workspaceWithActiveQrCode($owner, 'analytics-4');
         $qrCodeId = (int) DB::table('qr_codes')->where('token', $token)->value('id');
 
-        $frozenNow = \Illuminate\Support\Carbon::parse('2026-08-22 12:00:00');
+        $frozenNow = Carbon::parse('2026-08-22 12:00:00');
         $this->travelTo($frozenNow);
 
         try {
@@ -332,7 +334,7 @@ final class AnalyticsLedgerSummaryTest extends TestCase
             $this->get("/q/{$token}");
             $this->get("/q/{$token}");
 
-            $insertPair = function (\Illuminate\Support\Carbon $occurredAt) use ($workspaceId, $locationId, $qrCodeId, $menuId): void {
+            $insertPair = function (Carbon $occurredAt) use ($workspaceId, $locationId, $qrCodeId, $menuId): void {
                 DB::table('analytics_events')->insert([
                     ['workspace_id' => $workspaceId, 'location_id' => $locationId, 'qr_code_id' => $qrCodeId, 'menu_id' => $menuId, 'event_type' => 'qr_resolve', 'occurred_at' => $occurredAt, 'created_at' => $occurredAt, 'updated_at' => $occurredAt],
                     ['workspace_id' => $workspaceId, 'location_id' => $locationId, 'qr_code_id' => $qrCodeId, 'menu_id' => $menuId, 'event_type' => 'menu_open', 'occurred_at' => $occurredAt, 'created_at' => $occurredAt, 'updated_at' => $occurredAt],

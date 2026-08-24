@@ -6,6 +6,7 @@ namespace Tests\Feature\Team;
 
 use App\Mail\TeamInvitationMail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -185,7 +186,7 @@ final class InvitationDeliveryJourneyTest extends TestCase
         );
 
         self::assertNotNull($row->expires_at ?? null, 'TEAM-INVITATIONS-DELIVERY-MAIL-01: expires_at yazılmalı.');
-        $expiresAt = \Carbon\Carbon::parse($row->expires_at);
+        $expiresAt = Carbon::parse($row->expires_at);
         $expectedExpiry = now()->addDays(7);
         self::assertEqualsWithDelta(
             $expectedExpiry->timestamp,

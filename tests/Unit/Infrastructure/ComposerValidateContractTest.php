@@ -49,7 +49,7 @@ class ComposerValidateContractTest extends TestCase
             "composer validate --strict is expected to fail while advisory warnings remain outstanding.\nSTDOUT:\n{$process->getOutput()}\nSTDERR:\n{$process->getErrorOutput()}"
         );
 
-        $output = $process->getOutput() . $process->getErrorOutput();
+        $output = $process->getOutput().$process->getErrorOutput();
 
         $this->assertMatchesRegularExpression(
             '/No license specified/i',
@@ -132,7 +132,7 @@ class ComposerValidateContractTest extends TestCase
      */
     private function workflowRunCommands(): array
     {
-        $workflowPath = $this->repoRoot() . '/.github/workflows/ci.yml';
+        $workflowPath = $this->repoRoot().'/.github/workflows/ci.yml';
         $this->assertFileExists($workflowPath, "CI workflow file is missing at {$workflowPath}");
 
         $lines = preg_split('/\r?\n/', file_get_contents($workflowPath));
@@ -154,6 +154,7 @@ class ComposerValidateContractTest extends TestCase
                 for ($j = $i + 1; $j < $count; $j++) {
                     if (trim($lines[$j]) === '') {
                         $blockLines[] = '';
+
                         continue;
                     }
 

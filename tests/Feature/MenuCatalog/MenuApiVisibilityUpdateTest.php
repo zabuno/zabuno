@@ -168,7 +168,7 @@ final class MenuApiVisibilityUpdateTest extends TestCase
 
     // --- MENU-API-VISIBILITY-GET-PROJECTION-01 -------------------------------
 
-    public function test_the_menu_tree_get_response_exposes_isVisible_on_each_menu_item(): void
+    public function test_the_menu_tree_get_response_exposes_is_visible_on_each_menu_item(): void
     {
         $owner = $this->verifiedUser();
         [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'zeytin-visibility-get-projection');
@@ -260,7 +260,7 @@ final class MenuApiVisibilityUpdateTest extends TestCase
 
     // --- MENU-API-VISIBILITY-UPDATE-VALIDATION-01 -----------------------------
 
-    public function test_a_missing_isVisible_field_is_rejected_with_422_and_writes_nothing(): void
+    public function test_a_missing_is_visible_field_is_rejected_with_422_and_writes_nothing(): void
     {
         $owner = $this->verifiedUser();
         [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'zeytin-visibility-update-missing-field');
@@ -278,7 +278,7 @@ final class MenuApiVisibilityUpdateTest extends TestCase
         self::assertSame(0, (int) $row->is_visible, 'VISIBILITY-UPDATE-VALIDATION-01: reddedilen istek görünürlüğü değiştirmemeli.');
     }
 
-    public function test_a_non_boolean_isVisible_value_is_rejected_with_422_and_writes_nothing(): void
+    public function test_a_non_boolean_is_visible_value_is_rejected_with_422_and_writes_nothing(): void
     {
         $owner = $this->verifiedUser();
         [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'zeytin-visibility-update-non-boolean');

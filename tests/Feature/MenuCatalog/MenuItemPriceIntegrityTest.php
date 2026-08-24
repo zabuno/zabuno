@@ -6,6 +6,7 @@ namespace Tests\Feature\MenuCatalog;
 
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Models\User;
+use Brick\Money\Currency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -138,7 +139,7 @@ final class MenuItemPriceIntegrityTest extends TestCase
         self::assertSame($currencyCode, $item->currencyCode);
         self::assertSame(
             $expectedFractionDigits,
-            \Brick\Money\Currency::of($item->currencyCode)->getDefaultFractionDigits(),
+            Currency::of($item->currencyCode)->getDefaultFractionDigits(),
             'ITEM-PRICE-FRACTION-DIGITS-01: persist edilen currency code\'dan resmi küsurat basamağı türetilebilmeli.'
         );
     }

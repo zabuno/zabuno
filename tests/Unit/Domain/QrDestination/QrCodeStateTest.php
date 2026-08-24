@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\QrDestination;
 
+use App\Domain\QrDestination\QrCodeState;
 use Tests\TestCase;
 
 /**
@@ -20,7 +21,7 @@ final class QrCodeStateTest extends TestCase
 {
     public function test_state_enum_declares_exactly_active_and_disabled(): void
     {
-        $enumClass = \App\Domain\QrDestination\QrCodeState::class;
+        $enumClass = QrCodeState::class;
 
         self::assertTrue(enum_exists($enumClass), 'App\\Domain\\QrDestination\\QrCodeState enum mevcut değil.');
 
@@ -33,28 +34,28 @@ final class QrCodeStateTest extends TestCase
 
     public function test_create_operation_state_is_active(): void
     {
-        self::assertSame('active', \App\Domain\QrDestination\QrCodeState::Active->value);
+        self::assertSame('active', QrCodeState::Active->value);
     }
 
     public function test_active_may_transition_to_disabled(): void
     {
-        $state = \App\Domain\QrDestination\QrCodeState::Active;
+        $state = QrCodeState::Active;
 
-        self::assertTrue($state->canTransitionTo(\App\Domain\QrDestination\QrCodeState::Disabled));
+        self::assertTrue($state->canTransitionTo(QrCodeState::Disabled));
     }
 
     public function test_disabled_is_terminal_mvp_disable_is_one_way(): void
     {
-        $state = \App\Domain\QrDestination\QrCodeState::Disabled;
+        $state = QrCodeState::Disabled;
 
-        foreach (\App\Domain\QrDestination\QrCodeState::cases() as $target) {
+        foreach (QrCodeState::cases() as $target) {
             self::assertFalse($state->canTransitionTo($target), "QR-STATE-ONEWAY-01: Disabled -> {$target->name} geçersiz olmalı, MVP disable geri alınamaz.");
         }
     }
 
     public function test_a_state_never_transitions_to_itself(): void
     {
-        foreach (\App\Domain\QrDestination\QrCodeState::cases() as $state) {
+        foreach (QrCodeState::cases() as $state) {
             self::assertFalse($state->canTransitionTo($state), "{$state->name} kendine geçiş yapamaz.");
         }
     }

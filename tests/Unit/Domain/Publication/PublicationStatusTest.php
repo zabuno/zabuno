@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Publication;
 
+use App\Domain\Publication\PublicationStatus;
 use Tests\TestCase;
 
 /**
@@ -28,7 +29,7 @@ final class PublicationStatusTest extends TestCase
 {
     public function test_status_enum_declares_the_five_frozen_states(): void
     {
-        $enumClass = \App\Domain\Publication\PublicationStatus::class;
+        $enumClass = PublicationStatus::class;
 
         self::assertTrue(enum_exists($enumClass), 'App\\Domain\\Publication\\PublicationStatus enum mevcut değil.');
 
@@ -44,34 +45,34 @@ final class PublicationStatusTest extends TestCase
 
     public function test_pending_may_transition_to_generating(): void
     {
-        $status = \App\Domain\Publication\PublicationStatus::Pending;
+        $status = PublicationStatus::Pending;
 
-        self::assertTrue($status->canTransitionTo(\App\Domain\Publication\PublicationStatus::Generating));
+        self::assertTrue($status->canTransitionTo(PublicationStatus::Generating));
     }
 
     public function test_generating_may_transition_to_published_or_failed(): void
     {
-        $status = \App\Domain\Publication\PublicationStatus::Generating;
+        $status = PublicationStatus::Generating;
 
-        self::assertTrue($status->canTransitionTo(\App\Domain\Publication\PublicationStatus::Published));
-        self::assertTrue($status->canTransitionTo(\App\Domain\Publication\PublicationStatus::Failed));
+        self::assertTrue($status->canTransitionTo(PublicationStatus::Published));
+        self::assertTrue($status->canTransitionTo(PublicationStatus::Failed));
     }
 
     public function test_published_may_transition_to_superseded_only(): void
     {
-        $status = \App\Domain\Publication\PublicationStatus::Published;
+        $status = PublicationStatus::Published;
 
-        self::assertTrue($status->canTransitionTo(\App\Domain\Publication\PublicationStatus::Superseded));
-        self::assertFalse($status->canTransitionTo(\App\Domain\Publication\PublicationStatus::Failed));
-        self::assertFalse($status->canTransitionTo(\App\Domain\Publication\PublicationStatus::Pending));
+        self::assertTrue($status->canTransitionTo(PublicationStatus::Superseded));
+        self::assertFalse($status->canTransitionTo(PublicationStatus::Failed));
+        self::assertFalse($status->canTransitionTo(PublicationStatus::Pending));
     }
 
     public function test_failed_and_superseded_are_terminal(): void
     {
-        $failed = \App\Domain\Publication\PublicationStatus::Failed;
-        $superseded = \App\Domain\Publication\PublicationStatus::Superseded;
+        $failed = PublicationStatus::Failed;
+        $superseded = PublicationStatus::Superseded;
 
-        foreach (\App\Domain\Publication\PublicationStatus::cases() as $target) {
+        foreach (PublicationStatus::cases() as $target) {
             self::assertFalse($failed->canTransitionTo($target), "Failed -> {$target->name} geçersiz olmalı (terminal).");
             self::assertFalse($superseded->canTransitionTo($target), "Superseded -> {$target->name} geçersiz olmalı (terminal).");
         }
@@ -79,7 +80,7 @@ final class PublicationStatusTest extends TestCase
 
     public function test_a_state_never_transitions_to_itself(): void
     {
-        foreach (\App\Domain\Publication\PublicationStatus::cases() as $status) {
+        foreach (PublicationStatus::cases() as $status) {
             self::assertFalse($status->canTransitionTo($status), "{$status->name} kendine geçiş yapamaz.");
         }
     }

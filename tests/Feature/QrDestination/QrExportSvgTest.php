@@ -13,6 +13,7 @@ use DOMXPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 use Zxing\QrReader;
 
@@ -251,7 +252,7 @@ final class QrExportSvgTest extends TestCase
 
         $body = (string) $response->getContent();
 
-        $document = new DOMDocument();
+        $document = new DOMDocument;
         $loaded = @$document->loadXML($body, LIBXML_NONET | LIBXML_NOENT === 0 ? 0 : 0);
         self::assertTrue($loaded, 'QR-SVG-SAFE-01: gövde geçerli XML olmalı.');
 
@@ -531,7 +532,7 @@ final class QrExportSvgTest extends TestCase
      * and never containing the themed hex colors — or the query is rejected
      * outright), never a fabricated assertion.
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('nonClassicThemePalettes')]
+    #[DataProvider('nonClassicThemePalettes')]
     public function test_svg_uses_the_same_layout_palette_as_the_real_decoded_png_and_stays_safe(string $themeKey, string $foregroundHex, string $backgroundHex): void
     {
         self::assertTrue(
@@ -544,7 +545,7 @@ final class QrExportSvgTest extends TestCase
         [$qrCodeId, $token] = $this->createActiveQrCode($owner, $workspaceId, $locationId, $menuId);
 
         $pngResponse = $this->actingAs($owner)->get($this->themedPngExportUrl($workspaceId, $qrCodeId, $themeKey));
-        $pngResponse->assertStatus(200, "QR-SVG-THEME-01: aynı temanın PNG yolu önce 200 vermeli (cross-decode ön koşulu).");
+        $pngResponse->assertStatus(200, 'QR-SVG-THEME-01: aynı temanın PNG yolu önce 200 vermeli (cross-decode ön koşulu).');
 
         $tempPath = tempnam(sys_get_temp_dir(), 's1_wp04b6_qr_theme_svg_');
         self::assertNotFalse($tempPath);
@@ -566,7 +567,7 @@ final class QrExportSvgTest extends TestCase
 
         $body = (string) $svgResponse->getContent();
 
-        $document = new DOMDocument();
+        $document = new DOMDocument;
         $loaded = @$document->loadXML($body);
         self::assertTrue($loaded, 'QR-SVG-THEME-01: temalı gövde geçerli XML olmalı.');
         self::assertSame('svg', $document->documentElement?->localName, 'QR-SVG-THEME-01: kök eleman <svg> olmalı.');

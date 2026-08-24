@@ -7,6 +7,7 @@ namespace Tests\Feature\Tenancy;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 /**
@@ -85,7 +86,7 @@ final class RestaurantProfileConflictHandlingTest extends TestCase
         ];
     }
 
-    private function assertStableConflictJson(\Illuminate\Testing\TestResponse $response, string $message): void
+    private function assertStableConflictJson(TestResponse $response, string $message): void
     {
         self::assertContains(
             $response->getStatusCode(),

@@ -242,7 +242,7 @@ final class MediaIntakeTest extends TestCase
         $workspaceId = $this->ownerWorkspace($owner, 'zeytin-media-csrf');
 
         $middleware = collect(app('router')->getRoutes()->getRoutes())
-            ->first(fn ($route) => $route->uri() === "api/workspaces/{workspace}/media" && in_array('POST', $route->methods(), true));
+            ->first(fn ($route) => $route->uri() === 'api/workspaces/{workspace}/media' && in_array('POST', $route->methods(), true));
 
         self::assertNotNull(
             $middleware,

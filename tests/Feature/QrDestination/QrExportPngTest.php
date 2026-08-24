@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 use Zxing\QrReader;
 
@@ -402,7 +403,7 @@ final class QrExportPngTest extends TestCase
         ];
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('nonClassicThemeKeys')]
+    #[DataProvider('nonClassicThemeKeys')]
     public function test_every_nonclassic_theme_real_decodes_to_the_resolver_url_and_differs_in_bytes_from_classic(string $themeKey): void
     {
         self::assertTrue(
@@ -454,7 +455,7 @@ final class QrExportPngTest extends TestCase
         ];
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('invalidThemeKeys')]
+    #[DataProvider('invalidThemeKeys')]
     public function test_invalid_theme_returns_422_and_no_image_for_an_otherwise_authorized_request(string $invalidTheme): void
     {
         $owner = $this->verifiedUser();

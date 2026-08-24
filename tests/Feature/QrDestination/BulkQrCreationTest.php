@@ -518,7 +518,7 @@ final class BulkQrCreationTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     #[DataProvider('invalidBulkPayloadProvider')]
     public function test_invalid_bounds_and_malformed_input_returns_422_without_persistence(array $overrides): void
