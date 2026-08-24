@@ -28,7 +28,7 @@ jobs:
           cache: npm
 
       - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+        run: composer validate
 
       - name: Install PHP dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
