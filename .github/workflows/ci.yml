@@ -54,11 +54,11 @@ jobs:
       - name: S1-WP01A foundation preflight
         run: php tests/preflight/s1-wp01a-foundation-preflight.php
 
+      - name: Build frontend assets
+        run: npm run build
+
       - name: Laravel test suite
         run: php artisan test
 
       - name: Vitest suite
         run: npm test
-
-      - name: Build frontend assets
-        run: npm run build

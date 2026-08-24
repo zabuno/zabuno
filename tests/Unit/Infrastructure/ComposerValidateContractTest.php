@@ -127,6 +127,43 @@ class ComposerValidateContractTest extends TestCase
         );
     }
 
+    public function test_ci_workflow_build_step_precedes_laravel_test_step(): void
+    {
+        $runCommands = $this->workflowRunCommands();
+
+        $buildIndex = null;
+        $laravelTestIndex = null;
+        $buildCount = 0;
+
+        foreach ($runCommands as $index => $runCommand) {
+            if (preg_match('/\bnpm\s+run\s+build\b/', $runCommand)) {
+                $buildCount++;
+
+                if ($buildIndex === null) {
+                    $buildIndex = $index;
+                }
+            }
+
+            if ($laravelTestIndex === null && preg_match('/\bphp\s+artisan\s+test\b/', $runCommand)) {
+                $laravelTestIndex = $index;
+            }
+        }
+
+        $this->assertSame(
+            1,
+            $buildCount,
+            'Expected exactly one "npm run build" step in .github/workflows/ci.yml.'
+        );
+
+        $this->assertNotNull($laravelTestIndex, 'No "php artisan test" step found in .github/workflows/ci.yml.');
+
+        $this->assertLessThan(
+            $laravelTestIndex,
+            $buildIndex,
+            'The "npm run build" step must appear before the "php artisan test" step in .github/workflows/ci.yml.'
+        );
+    }
+
     /**
      * @return array<int, string> the "run:" command bodies for each workflow step, in file order
      */
