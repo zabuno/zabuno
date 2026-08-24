@@ -1,0 +1,326 @@
+#!/usr/bin/env bash
+# steward-queue — fast-delivery genome item 7.
+#
+#   steward-queue plan --manifests <dir> --intake <intake.json> \
+#     --config <development-speed-budget.json>
+#
+# Pure printer: no Git mutation, no queue/admission side effects.
+# See scripts/steward-queue.test.sh for the frozen CLI contract.
+
+set -u
+export LC_ALL=C
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCHEDULER="$SCRIPT_DIR/conflict-scheduler"
+
+ID_RE='^[A-Za-z0-9][A-Za-z0-9._-]*$'
+
+invalid() {
+  printf 'steward-queue: %s\n' "$1" >&2
+  echo "STEWARD_PLAN_INVALID"
+  exit 1
+}
+
+require_tools() {
+  if ! command -v jq >/dev/null 2>&1; then
+    printf 'steward-queue: jq is required\n' >&2
+    exit 2
+  fi
+}
+
+cmd_plan() {
+  local manifests_dir="" intake="" config=""
+  local saw_manifests=0 saw_intake=0 saw_config=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --manifests)
+        [ $# -ge 2 ] || invalid "--manifests requires a value"
+        [ "$saw_manifests" -eq 0 ] || invalid "duplicate --manifests"
+        manifests_dir="$2"; saw_manifests=1; shift 2 ;;
+      --intake)
+        [ $# -ge 2 ] || invalid "--intake requires a value"
+        [ "$saw_intake" -eq 0 ] || invalid "duplicate --intake"
+        intake="$2"; saw_intake=1; shift 2 ;;
+      --config)
+        [ $# -ge 2 ] || invalid "--config requires a value"
+        [ "$saw_config" -eq 0 ] || invalid "duplicate --config"
+        config="$2"; saw_config=1; shift 2 ;;
+      *)
+        invalid "unknown argument: $1" ;;
+    esac
+  done
+  [ "$saw_manifests" -eq 1 ] && [ "$saw_intake" -eq 1 ] && [ "$saw_config" -eq 1 ] \
+    || invalid "--manifests, --intake and --config are required"
+  [ -d "$manifests_dir" ] || invalid "manifests dir not found: $manifests_dir"
+  [ -f "$intake" ] || invalid "intake not found: $intake"
+  [ -f "$config" ] || invalid "config not found: $config"
+
+  jq empty "$intake" >/dev/null 2>&1 || invalid "intake is not valid JSON"
+
+  # intake shape: exactly {"entries": [...]}, nonempty
+  local intake_keys
+  intake_keys=$(jq -c 'keys' "$intake" 2>/dev/null)
+  [ "$intake_keys" = '["entries"]' ] || invalid "intake must have exactly one top-level key: entries"
+  local entries_type
+  entries_type=$(jq -r '.entries | type' "$intake" 2>/dev/null)
+  [ "$entries_type" = "array" ] || invalid "intake.entries must be an array"
+  local entries_count
+  entries_count=$(jq -r '.entries | length' "$intake" 2>/dev/null)
+  [ "$entries_count" -gt 0 ] 2>/dev/null || invalid "intake.entries must be nonempty"
+
+  # every entry: exact keys packageId, sequence; packageId grammar; sequence
+  # nonnegative integer
+  local entry_shape_ok
+  entry_shape_ok=$(jq -r '
+    [.entries[] | (keys == ["packageId","sequence"])] | all
+  ' "$intake" 2>/dev/null)
+  [ "$entry_shape_ok" = "true" ] || invalid "each intake entry must have exact keys packageId, sequence"
+
+  local id_grammar_ok
+  id_grammar_ok=$(jq -r --arg re "$ID_RE" '
+    [.entries[] | ((.packageId | type) == "string" and (.packageId | test($re)))] | all
+  ' "$intake" 2>/dev/null)
+  [ "$id_grammar_ok" = "true" ] || invalid "intake packageId fails grammar $ID_RE"
+
+  local seq_int_ok
+  seq_int_ok=$(jq -r '
+    [.entries[] | ((.sequence | type) == "number" and (.sequence == (.sequence | floor)) and (.sequence >= 0))] | all
+  ' "$intake" 2>/dev/null)
+  [ "$seq_int_ok" = "true" ] || invalid "intake sequence must be a nonnegative integer"
+
+  local ids_unique_ok
+  ids_unique_ok=$(jq -r '(.entries | map(.packageId)) as $ids | ($ids | length) == ($ids | unique | length)' "$intake" 2>/dev/null)
+  [ "$ids_unique_ok" = "true" ] || invalid "duplicate packageId in intake"
+
+  local seq_unique_ok
+  seq_unique_ok=$(jq -r '(.entries | map(.sequence)) as $s | ($s | length) == ($s | unique | length)' "$intake" 2>/dev/null)
+  [ "$seq_unique_ok" = "true" ] || invalid "duplicate sequence in intake"
+
+  # steward lane config validation
+  local lanes_json
+  lanes_json=$(jq -c '.moduleFramework.stewardLanes.lanes // {}' "$config" 2>/dev/null)
+  [ -n "$lanes_json" ] || invalid "config missing moduleFramework.stewardLanes.lanes"
+  local lanes_count
+  lanes_count=$(printf '%s' "$lanes_json" | jq -r 'length' 2>/dev/null)
+  [ "$lanes_count" -gt 0 ] 2>/dev/null || invalid "moduleFramework.stewardLanes.lanes must be nonempty"
+
+  local lanes_valid
+  lanes_valid=$(printf '%s' "$lanes_json" | jq -r '
+    [ to_entries[] | (
+        .value.concurrentActivePackages == 1
+        and .value.queueDiscipline == "FIFO"
+        and ((.value.coversFiles | type) == "array")
+        and ((.value.coversFiles | length) > 0)
+        and ((.value.coversFiles | length) == (.value.coversFiles | unique | length))
+      )
+    ] | all
+  ' 2>/dev/null)
+  [ "$lanes_valid" = "true" ] || invalid "steward lane config drift: concurrency/discipline/coversFiles"
+
+  local known_lanes_json
+  known_lanes_json=$(printf '%s' "$lanes_json" | jq -c 'keys')
+
+  # run conflict-scheduler
+  local sched_out sched_ec sched_verdict sched_lines
+  sched_out=$("$SCHEDULER" plan --manifests "$manifests_dir" --config "$config" 2>/dev/null)
+  sched_ec=$?
+  sched_lines=$(printf '%s\n' "$sched_out" | wc -l | tr -d ' ')
+  sched_verdict=$(printf '%s\n' "$sched_out" | tail -n1)
+  [ "$sched_ec" -eq 0 ] && [ "$sched_verdict" = "SCHEDULE_PLAN" ] && [ "$sched_lines" -eq 2 ] \
+    || invalid "conflict-scheduler did not produce a valid SCHEDULE_PLAN"
+  local sched_json
+  sched_json=$(printf '%s\n' "$sched_out" | sed '$d')
+  printf '%s' "$sched_json" | jq empty >/dev/null 2>&1 || invalid "conflict-scheduler produced malformed JSON"
+
+  local sched_packages_json
+  sched_packages_json=$(printf '%s' "$sched_json" | jq -c '.packages')
+  local conflict_edges_json
+  conflict_edges_json=$(printf '%s' "$sched_json" | jq -c '.conflictEdges')
+
+  # intake packageId set must exactly equal sched packages set
+  local intake_pkgs_json
+  intake_pkgs_json=$(jq -c '[.entries[].packageId] | sort' "$intake" 2>/dev/null)
+  local sched_pkgs_sorted_json
+  sched_pkgs_sorted_json=$(printf '%s' "$sched_packages_json" | jq -c 'sort')
+  [ "$intake_pkgs_json" = "$sched_pkgs_sorted_json" ] || invalid "intake packageId set does not match batch packages"
+
+  # collect manifests, map packageId -> sharedSurfacesTouched, dependsOnPackages
+  local files=()
+  while IFS= read -r -d '' f; do
+    files+=("$f")
+  done < <(find "$manifests_dir" -maxdepth 1 -type f -name '*.json' -print0 | sort -z)
+  [ "${#files[@]}" -gt 0 ] || invalid "no manifests found in $manifests_dir"
+
+  local manifests_merged="{}"
+  local f
+  for f in "${files[@]}"; do
+    jq empty "$f" >/dev/null 2>&1 || invalid "manifest is not valid JSON: $f"
+    local pid lanes_touched deps
+    pid=$(jq -r '.packageId // empty' "$f" 2>/dev/null)
+    [ -n "$pid" ] || invalid "manifest missing packageId: $f"
+    lanes_touched=$(jq -c '.sharedSurfacesTouched // []' "$f" 2>/dev/null)
+    deps=$(jq -c '.dependsOnPackages // []' "$f" 2>/dev/null)
+
+    local lanes_known_ok
+    lanes_known_ok=$(jq -n --argjson touched "$lanes_touched" --argjson known "$known_lanes_json" '
+      $touched | all(. as $l | $known | index($l) != null)
+    ' 2>/dev/null)
+    [ "$lanes_known_ok" = "true" ] || invalid "manifest touches unknown steward lane: $f"
+
+    manifests_merged=$(jq -c -n --argjson m "$manifests_merged" --arg pid "$pid" --argjson lanes "$lanes_touched" --argjson deps "$deps" '
+      $m + {($pid): {lanes: $lanes, deps: $deps}}
+    ')
+  done
+
+  # sanity: every intake package must have a manifest entry (guaranteed by
+  # package-set equality above, but guard against duplicate packageIds
+  # across manifests silently overwriting)
+  local merged_count
+  merged_count=$(printf '%s' "$manifests_merged" | jq 'length')
+  local files_count="${#files[@]}"
+  [ "$merged_count" -eq "$files_count" ] || invalid "duplicate packageId across manifests"
+
+  # build laneQueues: for each known lane, ordered list of packages touching
+  # it, sorted by intake sequence
+  local intake_sorted_json
+  intake_sorted_json=$(jq -c '.entries | sort_by(.sequence, .packageId)' "$intake" 2>/dev/null)
+
+  local lane_queues_json
+  lane_queues_json=$(jq -c -n \
+    --argjson intake "$intake_sorted_json" \
+    --argjson manifests "$manifests_merged" \
+    --argjson knownLanes "$known_lanes_json" '
+    reduce $knownLanes[] as $lane ({};
+      ($intake | map(select(($manifests[.packageId].lanes // []) | index($lane) != null)) | map(.packageId)) as $q
+      | if ($q | length) > 0 then . + {($lane): $q} else . end
+    )
+  ')
+
+  # prerequisites: manifest in-batch deps union lane FIFO predecessor(s)
+  local prerequisites_json
+  prerequisites_json=$(jq -c -n \
+    --argjson intake "$intake_sorted_json" \
+    --argjson manifests "$manifests_merged" \
+    --argjson laneQueues "$lane_queues_json" \
+    --argjson pkgSet "$sched_pkgs_sorted_json" '
+    reduce $intake[] as $e ({};
+      (.[$e.packageId]) as $_
+      | ($manifests[$e.packageId].deps // []) as $rawDeps
+      | ($rawDeps | map(select(. as $d | $pkgSet | index($d) != null))) as $inBatchDeps
+      | ($manifests[$e.packageId].lanes // []) as $lanes
+      | (
+          [ $lanes[] as $l
+            | ($laneQueues[$l] // []) as $q
+            | ($q | index($e.packageId)) as $idx
+            | if ($idx != null and $idx > 0) then $q[$idx - 1] else empty end
+          ]
+        ) as $lanePreds
+      | . + {($e.packageId): (($inBatchDeps + $lanePreds) | unique | sort)}
+    )
+  ')
+
+  # cycle detection over combined prerequisite graph (Kahn's algorithm:
+  # repeatedly remove nodes whose prerequisites are all removed; if any
+  # node remains, a cycle exists)
+  local has_cycle
+  has_cycle=$(jq -r -n --argjson prereq "$prerequisites_json" '
+    ($prereq | keys) as $nodes
+    | (reduce range(0; ($nodes | length) + 1) as $iter
+        ({done: {}, remaining: $nodes};
+          . as $acc
+          | if ($acc.remaining | length) == 0 then $acc
+          else
+            ($acc.remaining | map(select(
+                (($prereq[.] // []) | map(. as $p | ($acc.done[$p] // ($nodes | index($p) == null))) | all)
+              ))
+            ) as $ready
+            | if ($ready | length) == 0 then . + {remaining: (["__CYCLE__"] + .remaining)}
+              else
+                .done = (reduce $ready[] as $r (.done; . + {($r): true}))
+                | .remaining = (.remaining - $ready)
+              end
+          end
+        )) as $final
+    | if ($final.remaining | length) > 0 then "true" else "false" end
+  ' 2>/dev/null)
+  [ "$has_cycle" = "false" ] || invalid "prerequisite cycle detected"
+
+  # recompute waves: eligible = all prerequisites scheduled; scan in
+  # ascending intake sequence (tie: packageId); accept unless it is an exact
+  # conflictEdges endpoint already accepted this wave, or shares a touched
+  # lane with a package already accepted this wave
+  local waves_json
+  waves_json=$(jq -c -n \
+    --argjson intake "$intake_sorted_json" \
+    --argjson manifests "$manifests_merged" \
+    --argjson prereq "$prerequisites_json" \
+    --argjson conflictEdges "$conflict_edges_json" '
+    (reduce $conflictEdges[] as $e ({}; . + {(($e.packageIds | sort | tojson)): true})) as $conflictSet
+    | def conflicts($a; $b):
+        ([$a,$b] | sort) as $s
+        | ($conflictSet[($s | tojson)] // false);
+    ($intake | map(.packageId)) as $order
+    | (reduce range(0; ($order | length) + 1) as $iter
+        ({scheduled: {}, waves: [], remaining: $order};
+          . as $acc
+          | if ($acc.remaining | length) == 0 then $acc
+          else
+            ($acc.remaining | map(select(
+                (($prereq[.] // []) | map(. as $p | ($acc.scheduled[$p] // false)) | all)
+              ))
+            ) as $eligible
+            | if ($eligible | length) == 0 then error("no eligible candidate")
+              else
+                (reduce $eligible[] as $pid
+                  ({accepted: [], lanesUsed: {}};
+                    . as $wacc
+                    | ($manifests[$pid].lanes // []) as $ls
+                    | ($wacc.accepted | any(conflicts($pid; .))) as $hasConflict
+                    | ($ls | any(. as $l | $wacc.lanesUsed[$l] // false)) as $hasLaneClash
+                    | if ($hasConflict or $hasLaneClash) then $wacc
+                      else
+                        $wacc + {accepted: ($wacc.accepted + [$pid])}
+                        | .lanesUsed = (reduce $ls[] as $l (.lanesUsed; . + {($l): true}))
+                      end
+                  )
+                ) as $wave
+                | if ($wave.accepted | length) == 0 then error("no eligible candidate accepted")
+                  else
+                    .scheduled = (reduce $wave.accepted[] as $pid (.scheduled; . + {($pid): true}))
+                    | .waves = (.waves + [($wave.accepted | sort)])
+                    | .remaining = (.remaining - $wave.accepted)
+                  end
+              end
+          end
+        )) as $final
+    | if ($final.remaining | length) > 0 then error("scheduling did not terminate") else $final.waves end
+  ' 2>/dev/null) || invalid "wave scheduling failed (cycle or no eligible candidate)"
+  [ -n "$waves_json" ] || invalid "wave scheduling failed (cycle or no eligible candidate)"
+
+  jq -cS -n \
+    --argjson packages "$sched_pkgs_sorted_json" \
+    --argjson intake "$intake_sorted_json" \
+    --argjson laneQueues "$lane_queues_json" \
+    --argjson prerequisites "$prerequisites_json" \
+    --argjson conflictEdges "$conflict_edges_json" \
+    --argjson waves "$waves_json" \
+    '{packages: $packages, intake: $intake, laneQueues: $laneQueues, prerequisites: $prerequisites, conflictEdges: $conflictEdges, waves: $waves}'
+  echo "STEWARD_PLAN"
+  exit 0
+}
+
+main() {
+  require_tools
+  local cmd="${1:-}"
+  shift || true
+  case "$cmd" in
+    plan) cmd_plan "$@" ;;
+    *)
+      printf 'usage: steward-queue plan --manifests <dir> --intake <intake.json> --config <config>\n' >&2
+      echo "STEWARD_PLAN_INVALID"
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
