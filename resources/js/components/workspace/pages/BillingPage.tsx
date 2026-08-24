@@ -2,6 +2,7 @@ import { Button } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { UnavailableRegion } from './wp05/UnavailableRegion';
+import { DisabledField } from './wp05/DisabledField';
 import { PlanCatalog } from './billing/PlanCatalog';
 import { CurrentSubscriptionStatus } from './billing/CurrentSubscriptionStatus';
 import { IyzicoSandboxCheckout } from './billing/IyzicoSandboxCheckout';
@@ -40,6 +41,22 @@ export function BillingPage({ workspaceId }: BillingPageProps) {
                     label={t('workspace.billing.manualPayment.region')}
                     statusText={t('workspace.billing.manualPayment.platformFinance')}
                 >
+                    <DisabledField
+                        id="billing-manual-payment-plan"
+                        label={t('workspace.billing.manualPayment.field.plan')}
+                    />
+                    <DisabledField
+                        id="billing-manual-payment-end-date"
+                        label={t('workspace.billing.manualPayment.field.endDate')}
+                    />
+                    <DisabledField
+                        id="billing-manual-payment-payment-note"
+                        label={t('workspace.billing.manualPayment.field.paymentNote')}
+                    />
+                    <DisabledField
+                        id="billing-manual-payment-document-reference"
+                        label={t('workspace.billing.manualPayment.field.documentReference')}
+                    />
                     <Button disabled className="w-full">
                         {t('workspace.billing.recordPayment.button')}
                     </Button>

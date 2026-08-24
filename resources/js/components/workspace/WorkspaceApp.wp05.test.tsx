@@ -252,7 +252,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         restoreFetch();
     });
 
-    it('#billing renders BillingPage with a heading, plan/current-plan/manual-payment regions, the server-returned plan with its exact derived price, and Current plan/manual payment/Iyzico sandbox actions disabled', async () => {
+    it('#billing renders BillingPage with a heading, plan/current-plan/manual-payment regions, the server-returned plan with its exact derived price, an honest current-plan load-failure alert with an enabled Retry, disabled manual-payment actions, and an honest Iyzico subscription-status alert with enabled Retry and disabled Start sandbox checkout', async () => {
         const user = userEvent.setup();
         const { restoreFetch } = await renderCurrentWorkspace();
 
@@ -283,16 +283,26 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         expect(within(planRegion).getByText('Test entitlement')).toBeInTheDocument();
         expect(within(planRegion).getByText('999,00 TRY')).toBeInTheDocument();
 
-        for (const region of [currentPlanRegion, manualPaymentRegion]) {
-            for (const button of within(region).queryAllByRole('button')) {
-                expect(button).toBeDisabled();
-            }
+        // The mock intentionally leaves the subscription endpoint unhandled,
+        // so Current plan honestly reports the load failure with a retry
+        // instead of silently disabling every action.
+        expect(within(currentPlanRegion).getByRole('alert')).toHaveTextContent(
+            'We could not load the current plan.',
+        );
+        expect(within(currentPlanRegion).getByRole('button', { name: /retry/i })).toBeEnabled();
+
+        for (const button of within(manualPaymentRegion).queryAllByRole('button')) {
+            expect(button).toBeDisabled();
         }
 
         const iyzicoRegion = within(billingRegion).getByRole('region', { name: /iyzico sandbox/i });
-        for (const button of within(iyzicoRegion).getAllByRole('button')) {
-            expect(button).toBeDisabled();
-        }
+        expect(within(iyzicoRegion).getByRole('alert')).toHaveTextContent(
+            'Could not load your subscription status.',
+        );
+        expect(within(iyzicoRegion).getByRole('button', { name: /retry/i })).toBeEnabled();
+        expect(
+            within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i }),
+        ).toBeDisabled();
 
         restoreFetch();
     });
@@ -330,7 +340,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         restoreFetch();
     });
 
-    it('shows a shared page-frame description and honest status badge on Analytics, distinct Pending invitations/Team members regions on Team, and canonical disabled manual-payment fields plus a disabled Iyzico sandbox action on Billing (S1-WP05a page-frame batch, RED)', async () => {
+    it('shows a shared page-frame description and honest status badge on Analytics, distinct Pending invitations/Team members regions on Team, and canonical disabled manual-payment fields plus a disabled Iyzico Start sandbox checkout action with an honest subscription-status alert on Billing (S1-WP05a page-frame batch, RED)', async () => {
         const user = userEvent.setup();
         const { restoreFetch } = await renderCurrentWorkspace();
 
@@ -379,10 +389,12 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         }
 
         const iyzicoRegion = within(billingRegion).getByRole('region', { name: /iyzico sandbox/i });
-        expect(within(iyzicoRegion).getByRole('button', { name: /sandbox/i })).toBeDisabled();
         expect(
-            within(iyzicoRegion).getByText(/not available|unavailable|not connected/i),
-        ).toBeInTheDocument();
+            within(iyzicoRegion).getByRole('button', { name: /start sandbox checkout/i }),
+        ).toBeDisabled();
+        expect(within(iyzicoRegion).getByRole('alert')).toHaveTextContent(
+            'Could not load your subscription status.',
+        );
 
         restoreFetch();
     });
