@@ -6,6 +6,7 @@ export type CloseButtonProps = {
     /** Accessible name; defaults to "Close" since the icon carries no text. */
     label?: string;
     className?: string;
+    disabled?: boolean;
 };
 
 /**
@@ -14,17 +15,24 @@ export type CloseButtonProps = {
  * overlay it lives in, focus return, or Escape handling — the compound that
  * composes it owns that behavior.
  */
-export function CloseButton({ onClick, label = 'Close', className }: CloseButtonProps) {
+export function CloseButton({
+    onClick,
+    label = 'Close',
+    className,
+    disabled = false,
+}: CloseButtonProps) {
     return (
         <button
             type="button"
             onClick={onClick}
+            disabled={disabled}
             aria-label={label}
             className={clsx(
                 'inline-flex h-8 w-8 items-center justify-center rounded-md',
                 'text-gray-500 hover:bg-gray-100 hover:text-gray-900',
                 'dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+                'disabled:pointer-events-none disabled:opacity-50',
                 className,
             )}
         >

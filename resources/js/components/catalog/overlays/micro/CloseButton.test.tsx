@@ -76,6 +76,26 @@ describe('CloseButton', () => {
         expect(classTokens).toContain('text-gray-500');
     });
 
+    it('is not disabled by default', () => {
+        render(<CloseButton onClick={() => {}} />);
+        expect(screen.getByRole('button', { name: 'Close' })).not.toBeDisabled();
+    });
+
+    it('forwards native disabled semantics when disabled is true', () => {
+        render(<CloseButton onClick={() => {}} disabled />);
+        expect(screen.getByRole('button', { name: 'Close' })).toBeDisabled();
+    });
+
+    it('suppresses activation when disabled', async () => {
+        const user = userEvent.setup();
+        const onClick = vi.fn();
+        render(<CloseButton onClick={onClick} disabled />);
+
+        await user.click(screen.getByRole('button', { name: 'Close' }));
+
+        expect(onClick).not.toHaveBeenCalled();
+    });
+
     it('renders the resting dark-mode icon at a WCAG 2.2 AA non-text contrast of at least 3:1 against the Flowbite ConfirmDialog dark surface (1.4.11)', () => {
         render(<CloseButton onClick={() => {}} />);
         const button = screen.getByRole('button', { name: 'Close' });

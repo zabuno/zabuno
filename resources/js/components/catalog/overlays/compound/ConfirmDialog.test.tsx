@@ -149,6 +149,66 @@ describe('ConfirmDialog', () => {
             expect(confirmButton).toBeDisabled();
         });
 
+        it('presents the corner close control as natively disabled and not focusable/actionable', async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            render(
+                <ConfirmDialog
+                    open
+                    confirmLoading
+                    onClose={onClose}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            const closeButton = screen.getByRole('button', { name: 'Close' });
+            expect(closeButton).toBeDisabled();
+
+            closeButton.focus();
+            expect(closeButton).not.toHaveFocus();
+
+            await user.click(closeButton);
+            expect(onClose).not.toHaveBeenCalled();
+        });
+
+        it('presents the footer Cancel control as natively disabled and not focusable/actionable', async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            render(
+                <ConfirmDialog
+                    open
+                    confirmLoading
+                    onClose={onClose}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+            expect(cancelButton).toBeDisabled();
+
+            cancelButton.focus();
+            expect(cancelButton).not.toHaveFocus();
+
+            await user.click(cancelButton);
+            expect(onClose).not.toHaveBeenCalled();
+        });
+
+        it('leaves the corner Close and footer Cancel controls enabled when not busy', () => {
+            render(
+                <ConfirmDialog
+                    open
+                    onClose={() => {}}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            expect(screen.getByRole('button', { name: 'Close' })).not.toBeDisabled();
+            expect(screen.getByRole('button', { name: 'Cancel' })).not.toBeDisabled();
+        });
+
         it('does not call onClose or hide the dialog when Cancel is activated', async () => {
             const user = userEvent.setup();
             const onClose = vi.fn();

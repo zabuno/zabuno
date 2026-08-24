@@ -84,7 +84,7 @@ export function ConfirmDialog({
         >
             <div className="flex items-start justify-between p-4">
                 <ConfirmDialogTitle id={titleId}>{title}</ConfirmDialogTitle>
-                <CloseButton onClick={guardedClose} />
+                <CloseButton onClick={guardedClose} disabled={confirmLoading} />
             </div>
             <ModalBody>{children}</ModalBody>
             <ModalFooter>
@@ -103,7 +103,7 @@ export function ConfirmDialog({
                         confirmLabel
                     )}
                 </FlowbiteButton>
-                <FlowbiteButton color="gray" onClick={guardedClose}>
+                <FlowbiteButton color="gray" onClick={guardedClose} disabled={confirmLoading}>
                     {cancelLabel}
                 </FlowbiteButton>
             </ModalFooter>
