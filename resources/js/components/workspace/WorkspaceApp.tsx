@@ -14,16 +14,28 @@ import { WorkspaceContextControls } from './shell/WorkspaceContextControls';
 import { WorkspaceBreadcrumbs } from './shell/WorkspaceBreadcrumbs';
 import { GlobalUnavailableActions } from './shell/GlobalUnavailableActions';
 import type { AiAssistQuickAction } from '../../lib/aiAssistState';
-import { DashboardPage, type DashboardMenuTree } from './pages/DashboardPage';
-import { BrandPage } from './pages/BrandPage';
-import { LocationsPage } from './pages/LocationsPage';
-import { MenuPage } from './pages/MenuPage';
-import { MediaPage } from './pages/MediaPage';
-import { PublicationPage } from './pages/PublicationPage';
-import { AnalyticsPage } from './pages/AnalyticsPage';
-import { TeamPage } from './pages/TeamPage';
-import { BillingPage } from './pages/BillingPage';
-import { LaunchReadinessPage } from './pages/LaunchReadinessPage';
+import type { DashboardMenuTree } from './pages/DashboardPage.section';
+import type { BrandProfile as SectionBrandProfile } from './BrandEditForm';
+import type { LocationProfile as SectionLocationProfile } from './LocationEditForm';
+import {
+    SECTION_DESCRIPTORS,
+    resolveSectionKeyFromHash,
+    renderActiveSection,
+} from './shell/WorkspaceSectionRegistry';
+
+export type WorkspaceSectionRuntimeContext = {
+    workspaceId: number;
+    dashboardMenuTree: DashboardMenuTree | null;
+    brand: SectionBrandProfile | null;
+    location: SectionLocationProfile | null;
+    locationProfiles: SectionLocationProfile[];
+    catalogLocationId: number | null;
+    onSelectLocation: (locationId: number) => void;
+    onLocationSaved: (location: SectionLocationProfile) => void;
+    onLocationCreated: (location: SectionLocationProfile) => void;
+    onBrandSaved: (brand: SectionBrandProfile) => void;
+    onMenuTreeChange: (tree: DashboardMenuTree) => void;
+};
 
 type WorkspaceUser = { id: number; name: string; email: string };
 type Workspace = { id: number; name: string; slug: string; state: string };
@@ -33,47 +45,11 @@ type Phase = 'loading' | 'error' | 'create' | 'choose' | 'current';
 type CatalogPhase =
     'loading' | 'error' | 'brand-onboarding' | 'location-onboarding' | 'menu-catalog';
 
-type WorkspaceSection =
-    | 'dashboard'
-    | 'brand'
-    | 'locations'
-    | 'menu'
-    | 'media'
-    | 'publication'
-    | 'analytics'
-    | 'team'
-    | 'billing'
-    | 'security';
-
-const SECTION_BY_HASH: Record<string, WorkspaceSection> = {
-    '#dashboard': 'dashboard',
-    '#brand': 'brand',
-    '#locations': 'locations',
-    '#menu': 'menu',
-    '#media': 'media',
-    '#publication': 'publication',
-    '#analytics': 'analytics',
-    '#team': 'team',
-    '#billing': 'billing',
-    '#security': 'security',
-};
+type WorkspaceSection = string;
 
 function resolveSectionFromHash(hash: string): WorkspaceSection {
-    return SECTION_BY_HASH[hash] ?? 'dashboard';
+    return resolveSectionKeyFromHash(hash);
 }
-
-const SECTION_LABEL_KEY: Record<WorkspaceSection, Parameters<typeof t>[0]> = {
-    dashboard: 'workspace.shell.nav.dashboard',
-    brand: 'workspace.shell.nav.brand',
-    locations: 'workspace.shell.nav.locations',
-    menu: 'workspace.shell.nav.menu',
-    media: 'workspace.shell.nav.media',
-    publication: 'workspace.shell.nav.publication',
-    analytics: 'workspace.shell.nav.analytics',
-    team: 'workspace.shell.nav.team',
-    billing: 'workspace.shell.nav.billing',
-    security: 'workspace.shell.nav.launchReadiness',
-};
 
 export function WorkspaceApp() {
     const [phase, setPhase] = useState<Phase>('loading');
@@ -605,98 +581,15 @@ export function WorkspaceApp() {
     const navGroups: SidebarNavGroup[] = [];
 
     if (currentWorkspace) {
-        const catalogItems: SidebarNavGroup['items'] = [
-            {
-                key: 'dashboard',
-                label: t('workspace.shell.nav.dashboard'),
-                href: '#dashboard',
-                onSelect: () => {
-                    setActiveSection('dashboard');
-                    setMobileMenuOpen(false);
-                },
+        const catalogItems: SidebarNavGroup['items'] = SECTION_DESCRIPTORS.map((descriptor) => ({
+            key: descriptor.key,
+            label: t(descriptor.labelKey as Parameters<typeof t>[0]),
+            href: descriptor.hash,
+            onSelect: () => {
+                setActiveSection(descriptor.key);
+                setMobileMenuOpen(false);
             },
-            {
-                key: 'brand',
-                label: t('workspace.shell.nav.brand'),
-                href: '#brand',
-                onSelect: () => {
-                    setActiveSection('brand');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'locations',
-                label: t('workspace.shell.nav.locations'),
-                href: '#locations',
-                onSelect: () => {
-                    setActiveSection('locations');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'menu',
-                label: t('workspace.shell.nav.menu'),
-                href: '#menu',
-                onSelect: () => {
-                    setActiveSection('menu');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'media',
-                label: t('workspace.shell.nav.media'),
-                href: '#media',
-                onSelect: () => {
-                    setActiveSection('media');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'publication',
-                label: t('workspace.shell.nav.publication'),
-                href: '#publication',
-                onSelect: () => {
-                    setActiveSection('publication');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'analytics',
-                label: t('workspace.shell.nav.analytics'),
-                href: '#analytics',
-                onSelect: () => {
-                    setActiveSection('analytics');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'team',
-                label: t('workspace.shell.nav.team'),
-                href: '#team',
-                onSelect: () => {
-                    setActiveSection('team');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'billing',
-                label: t('workspace.shell.nav.billing'),
-                href: '#billing',
-                onSelect: () => {
-                    setActiveSection('billing');
-                    setMobileMenuOpen(false);
-                },
-            },
-            {
-                key: 'security',
-                label: t('workspace.shell.nav.launchReadiness'),
-                href: '#security',
-                onSelect: () => {
-                    setActiveSection('security');
-                    setMobileMenuOpen(false);
-                },
-            },
-        ];
+        }));
 
         navGroups.push({ key: 'catalog', items: catalogItems });
     }
@@ -719,12 +612,12 @@ export function WorkspaceApp() {
         ],
     });
 
-    const aiQuickActions: AiAssistQuickAction[] = [
-        { key: 'dashboard', label: t('workspace.shell.nav.dashboard') },
-        { key: 'locations', label: t('workspace.shell.nav.locations') },
-        { key: 'menu', label: t('workspace.shell.nav.menu') },
-        { key: 'publication', label: t('workspace.shell.nav.publication') },
-    ];
+    const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
+        (descriptor) => descriptor.aiQuickAction,
+    ).map((descriptor) => ({
+        key: descriptor.key as AiAssistQuickAction['key'],
+        label: t(descriptor.labelKey as Parameters<typeof t>[0]),
+    }));
 
     return (
         <AdminShell
@@ -765,7 +658,12 @@ export function WorkspaceApp() {
                         locationProfiles.find((profile) => profile.id === catalogLocationId)
                             ?.display_name ?? null
                     }
-                    sectionLabel={t(SECTION_LABEL_KEY[activeSection])}
+                    sectionLabel={t(
+                        (SECTION_DESCRIPTORS.find((descriptor) => descriptor.key === activeSection)
+                            ?.labelKey ?? 'workspace.shell.nav.dashboard') as Parameters<
+                            typeof t
+                        >[0],
+                    )}
                     onSwitchWorkspace={handleSwitch}
                     onSelectLocations={() => setActiveSection('locations')}
                 />
@@ -799,68 +697,22 @@ export function WorkspaceApp() {
                 </p>
             )}
 
-            {currentWorkspace && activeSection === 'dashboard' && (
-                <DashboardPage
-                    dashboardMenuTree={dashboardMenuTree}
-                    brand={brand}
-                    location={
-                        locationProfiles.find((profile) => profile.id === catalogLocationId) ?? null
-                    }
-                />
-            )}
-
-            {currentWorkspace && activeSection === 'brand' && (
-                <BrandPage workspaceId={currentWorkspace.id} brand={brand} onSaved={setBrand} />
-            )}
-
-            {currentWorkspace && activeSection === 'locations' && (
-                <LocationsPage
-                    workspaceId={currentWorkspace.id}
-                    locations={locationProfiles}
-                    selectedLocationId={catalogLocationId}
-                    onSelectLocation={setCatalogLocationId}
-                    onLocationSaved={handleLocationSaved}
-                    onLocationCreated={handleLocationAdded}
-                />
-            )}
-
-            {currentWorkspace && activeSection === 'menu' && (
-                <MenuPage
-                    workspaceId={currentWorkspace.id}
-                    locationId={catalogLocationId}
-                    onTreeChange={handleCatalogTreeChange}
-                />
-            )}
-
-            {currentWorkspace && activeSection === 'media' && (
-                <MediaPage workspaceId={currentWorkspace.id} />
-            )}
-
-            {currentWorkspace && activeSection === 'publication' && (
-                <PublicationPage
-                    workspaceId={currentWorkspace.id}
-                    dashboardMenuTree={dashboardMenuTree}
-                />
-            )}
-
-            {currentWorkspace && activeSection === 'analytics' && (
-                <AnalyticsPage
-                    workspaceId={currentWorkspace.id}
-                    locationId={catalogLocationId ?? undefined}
-                />
-            )}
-
-            {currentWorkspace && activeSection === 'team' && (
-                <TeamPage workspaceId={currentWorkspace.id} />
-            )}
-
-            {currentWorkspace && activeSection === 'billing' && (
-                <BillingPage workspaceId={currentWorkspace.id} />
-            )}
-
-            {currentWorkspace && activeSection === 'security' && (
-                <LaunchReadinessPage workspaceId={currentWorkspace.id} />
-            )}
+            {currentWorkspace &&
+                renderActiveSection(activeSection, {
+                    workspaceId: currentWorkspace.id,
+                    dashboardMenuTree,
+                    brand,
+                    location:
+                        locationProfiles.find((profile) => profile.id === catalogLocationId) ??
+                        null,
+                    locationProfiles,
+                    catalogLocationId,
+                    onSelectLocation: setCatalogLocationId,
+                    onLocationSaved: handleLocationSaved,
+                    onLocationCreated: handleLocationAdded,
+                    onBrandSaved: setBrand,
+                    onMenuTreeChange: handleCatalogTreeChange,
+                })}
 
             {currentWorkspace && catalogPhase === 'brand-onboarding' && (
                 <BrandOnboardingForm
