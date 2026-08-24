@@ -131,4 +131,99 @@ describe('ConfirmDialog', () => {
 
         await waitFor(() => expect(trigger).toHaveFocus());
     });
+
+    describe('when confirmLoading is true (busy lock)', () => {
+        it('marks the confirm action as busy and disabled', () => {
+            render(
+                <ConfirmDialog
+                    open
+                    confirmLoading
+                    onClose={() => {}}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            const confirmButton = screen.getByRole('button', { name: 'Confirm' });
+            expect(confirmButton).toHaveAttribute('aria-busy', 'true');
+            expect(confirmButton).toBeDisabled();
+        });
+
+        it('does not call onClose or hide the dialog when Cancel is activated', async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            render(
+                <ConfirmDialog
+                    open
+                    confirmLoading
+                    onClose={onClose}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+            expect(onClose).not.toHaveBeenCalled();
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+        });
+
+        it('does not call onClose or hide the dialog when the corner close control is activated', async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            render(
+                <ConfirmDialog
+                    open
+                    confirmLoading
+                    onClose={onClose}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            await user.click(screen.getByRole('button', { name: 'Close' }));
+
+            expect(onClose).not.toHaveBeenCalled();
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+        });
+
+        it('does not call onClose or hide the dialog on Escape', async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            render(
+                <ConfirmDialog
+                    open
+                    confirmLoading
+                    onClose={onClose}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            await user.keyboard('{Escape}');
+
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            expect(onClose).not.toHaveBeenCalled();
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+        });
+
+        it('does not call onClose or hide the dialog on backdrop dismissal', async () => {
+            const user = userEvent.setup();
+            const onClose = vi.fn();
+            render(
+                <ConfirmDialog
+                    open
+                    confirmLoading
+                    onClose={onClose}
+                    onConfirm={() => {}}
+                    title="Publish changes?"
+                />,
+            );
+
+            await user.click(screen.getByTestId('modal-overlay'));
+
+            expect(onClose).not.toHaveBeenCalled();
+            expect(screen.getByRole('dialog')).toBeInTheDocument();
+        });
+    });
 });
