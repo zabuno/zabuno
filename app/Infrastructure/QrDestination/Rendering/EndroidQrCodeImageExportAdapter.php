@@ -37,6 +37,8 @@ final class EndroidQrCodeImageExportAdapter implements QrCodeImageExportPort
     private const array PROFILES = [
         ['size' => 480, 'margin' => 16, 'errorCorrectionLevel' => ErrorCorrectionLevel::High],
         ['size' => 600, 'margin' => 24, 'errorCorrectionLevel' => ErrorCorrectionLevel::Medium],
+        ['size' => 720, 'margin' => 32, 'errorCorrectionLevel' => ErrorCorrectionLevel::Low],
+        ['size' => 400, 'margin' => 40, 'errorCorrectionLevel' => ErrorCorrectionLevel::Low],
     ];
 
     public function renderPng(string $data, ?QrLayout $layout = null): QrRenderedImage
