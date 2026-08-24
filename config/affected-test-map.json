@@ -1,7 +1,5 @@
 {
-    "Analytics": [
-        "tests/Feature/Analytics/AnalyticsLedgerSummaryTest.php"
-    ],
+    "Analytics": ["tests/Feature/Analytics/AnalyticsLedgerSummaryTest.php"],
     "Authorization": [
         "tests/Feature/Authorization/WorkspaceAuthorizationJourneyTest.php",
         "tests/Unit/Authorization/RolePermissionMappingTest.php"
@@ -56,9 +54,7 @@
         "tests/Unit/Domain/Security/TenantIsolationEvidenceRecordTest.php",
         "tests/Unit/Domain/Security/BackupRestoreEvidenceRecordTest.php"
     ],
-    "Taxonomy": [
-        "tests/Feature/MenuCatalog/MenuCatalogTenantEscapeTest.php"
-    ],
+    "Taxonomy": ["tests/Feature/MenuCatalog/MenuCatalogTenantEscapeTest.php"],
     "Team": [
         "tests/Feature/Team/StoreTeamInvitationTest.php",
         "tests/Feature/Team/ListTeamMembersTest.php",
