@@ -25,10 +25,7 @@ export function ReadOnlySummary({ title, items, actions }: ReadOnlySummaryProps)
                 <p className="text-base font-medium text-gray-900 dark:text-white">{title}</p>
                 {actions}
             </div>
-            <dl
-                className="grid gap-x-4 gap-y-2 text-sm text-gray-700 dark:text-gray-300"
-                style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 12rem), 1fr))' }}
-            >
+            <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-x-4 gap-y-2 text-sm text-gray-700 dark:text-gray-300">
                 {items.map((item) => (
                     <div key={item.key}>
                         <dt className="font-medium">{item.label}</dt>
