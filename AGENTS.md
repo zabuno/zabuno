@@ -158,6 +158,35 @@ Bağlayıcı kurallar (kategori düzeyinde, bu depo dahil her ajan için):
 - Bu ajan seti kapsam/onay/rollback/nihai kabul kararı **veremez**. Bu kararlar
   görevi veren orkestratöre (Codex Desktop MASTER) ve nihayetinde owner'a aittir.
 
+## 7a. Hız genomu (SP-01, tüm ajanlar için)
+
+- Her implementasyon paketi (docs-only hariç) RED/GREEN/checkpoint
+  adımlarında `scripts/speed-gate check --manifest <manifest.json> --config
+  config/development-speed-budget.json` ile geçmelidir; verdict
+  `PASS` değilse (`BATCH_REQUIRED`/`HIGH_RISK`/`CHECKPOINT_BLOCKED`) o
+  verdict'e göre davranılır.
+- Tek numerik politika kaynağı `config/development-speed-budget.json`'dır;
+  hiçbir belge/kural/skill/agent bu eşikleri tekrar etmez, yalnız işaret
+  eder. Yeni Codex sohbetleri bu bölüm ve yukarıdaki JSON aracılığıyla
+  miras alır; Claude oturumları ek olarak `.claude/rules/
+  fast-development.md`, `.claude/skills/zabuno-speeder/SKILL.md` ve
+  `.claude/agents/zabuno-speeder.md`'yi izler.
+- Bu genome, mevcut `docs/17` §4 ürün roadmap sayacından **bağımsız**, ayrı
+  bir program-hızlandırma sayacı taşır; tamamlanan/aktif madde sayısı ve
+  madde listesi yalnız
+  `config/development-speed-budget.json#fastDeliveryGenomeOverlay`'de
+  sahiplenilir (`docs/26` §8), burada tekrar edilmez. Rasyonel ve bağımsız
+  kanıt: `claude_speeder_report.md`, `codex_speeder_report.md`.
+- Bu genomun taahhüdü risk-ayarlı **program throughput'udur** — tek bir
+  paket için desteklenmeyen bir süre/SLA taahhüdü **değildir**
+  (`config/development-speed-budget.json#programThroughputObjective`,
+  `singlePackageDurationSlaClaimAllowed: false`).
+- Owner'a yalnız ürün/marka kapsamı, geri döndürülemez etki, dış maliyet
+  veya güvenlik risk iştahı sorulur; geri döndürülebilir teknik kararlar
+  (risk şeridi eşikleri, checkpoint kadansı, test bütçesi gibi) Codex
+  Desktop MASTER'da kalır — kök `CLAUDE.md`'deki "Owner load" maddesiyle
+  tutarlı, onu daraltmaz veya genişletmez.
+
 <!-- pane-agent-context:start -->
 ## Pane
 

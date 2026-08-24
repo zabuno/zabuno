@@ -262,3 +262,16 @@ stage×WP milestone/work-package registry'sinin tek kanonik kaynağıdır. Stage
 dokümanları (`docs/18`–`docs/25`) kendi anlatısını (`once/simdi/fark`,
 `kullaniciYolculugu` vb.) taşır ve bu registry'ye link verir; bu registry
 stage anlatısını **tekrar üretmez**, yalnız outcome/scope/kanıt bağını taşır.
+
+## 8. Fast-delivery genome overlay (SP-01, ayrı sayaç)
+
+Bu dosyanın §0'ındaki sabit paydalı ürün roadmap sayacından **bağımsız**,
+ayrı bir program-hızlandırma overlay'i vardır: madde sayısı, tamamlanan/
+aktif durumu ve madde listesi yalnız
+`config/development-speed-budget.json#fastDeliveryGenomeOverlay`'de
+sahiplenilir, burada **tekrar edilmez**. Bu iki sayaç birbirini
+**değiştirmez**; §0'daki sayaç yalnız Exit Gate kanıtıyla artar, overlay
+sayacı yalnız bu genome maddelerinin tamamlanmasıyla artar. Rasyonel ve
+kanıt: `claude_speeder_report.md`, `codex_speeder_report.md`. İşletim
+kuralı: `.claude/rules/fast-development.md`, `.claude/skills/zabuno-speeder/
+SKILL.md`.

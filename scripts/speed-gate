@@ -1,0 +1,340 @@
+#!/usr/bin/env bash
+# scripts/speed-gate — deterministic local speed-policy gate for SP-01.
+#
+# No network, no LLM, no MCP. Reads a package manifest (one checkpoint/
+# package attempt) plus a development-speed-budget.json-shaped config and
+# prints a single verdict token as the LAST stdout line: PASS,
+# BATCH_REQUIRED, HIGH_RISK, or CHECKPOINT_BLOCKED. Exits 0 on PASS,
+# non-zero otherwise. Every numeric threshold comes from --config; this
+# script carries no policy-number fallback of its own. A required policy
+# field that is missing or non-numeric fails closed (usage/config error,
+# exit 2) rather than silently substituting a default. A policy field that
+# is explicitly `null` in the config (e.g. an uncapped highRisk lane) is a
+# deliberate "no cap" signal, not a missing field, and is honored as such.
+#
+# Usage:
+#   scripts/speed-gate check --manifest <manifest.json> --config <budget.json> [--now-minutes N]
+#   scripts/speed-gate docs-scan --docs-root <dir>
+
+set -u
+
+die_usage() {
+  echo "usage: speed-gate check --manifest <manifest.json> --config <budget.json> | speed-gate docs-scan --docs-root <dir>" >&2
+  exit 2
+}
+
+glob_match() {
+  # $1 = glob pattern, $2 = subject; bash's [[ == ]] already treats '*' as
+  # matching any sequence including '/', so '**' behaves as '*'.
+  local pattern="$1" subject="$2"
+  [[ "$subject" == $pattern ]]
+}
+
+# Required policy numeric field. $1=file $2=jq path-existence+value filter
+# $3=label. Prints the value and returns 0, or prints an error to stderr
+# and returns 1 if the field is absent or non-numeric. Never supplies a
+# fallback number of its own.
+require_num_field() {
+  local file="$1" filter="$2" label="$3" val
+  val=$(jq -r "$filter" "$file" 2>/dev/null)
+  if [ -z "$val" ] || [ "$val" = "MISSING" ] || [ "$val" = "null" ]; then
+    echo "speed-gate config error: required policy field '$label' is missing or null in $file" >&2
+    return 1
+  fi
+  if ! [[ "$val" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
+    echo "speed-gate config error: policy field '$label' is not numeric in $file" >&2
+    return 1
+  fi
+  printf '%s' "$val"
+}
+
+
+# Required manifest non-negative-integer field. $1=file $2=jsonKey. Prints
+# the value (or the default "0" when absent) and returns 0, or prints a
+# manifest error to stderr and returns 1 if present but not a non-negative
+# integer. Never supplies a fallback for a malformed value.
+require_manifest_nonneg_int() {
+  local file="$1" key="$2" val
+  val=$(jq -r --arg k "$key" 'if has($k) then (.[$k]|tostring) else "0" end' "$file" 2>/dev/null)
+  if [ "$val" = "null" ] || ! [[ "$val" =~ ^[0-9]+$ ]]; then
+    echo "speed-gate manifest error: field '$key' must be a non-negative integer in $file" >&2
+    return 1
+  fi
+  printf '%s' "$val"
+}
+
+# Required manifest boolean field with default. $1=file $2=jsonKey $3=default.
+require_manifest_bool() {
+  local file="$1" key="$2" default="$3" val
+  val=$(jq -r --arg k "$key" --arg d "$default" 'if has($k) then (.[$k]|tostring) else $d end' "$file" 2>/dev/null)
+  if [ "$val" != "true" ] && [ "$val" != "false" ]; then
+    echo "speed-gate manifest error: field '$key' must be a boolean in $file" >&2
+    return 1
+  fi
+  printf '%s' "$val"
+}
+
+# Required manifest nonempty-string field. $1=file $2=jsonKey.
+require_manifest_string() {
+  local file="$1" key="$2" val
+  val=$(jq -r --arg k "$key" '.[$k] // ""' "$file" 2>/dev/null)
+  local type
+  type=$(jq -r --arg k "$key" 'if has($k) then (.[$k]|type) else "string" end' "$file" 2>/dev/null)
+  if [ "$type" != "string" ]; then
+    echo "speed-gate manifest error: field '$key' must be a string in $file" >&2
+    return 1
+  fi
+  printf '%s' "$val"
+}
+
+# Manifest array-of-strings field, optional. $1=file $2=jsonKey.
+validate_manifest_string_array() {
+  local file="$1" key="$2" ok
+  ok=$(jq -r --arg k "$key" 'if has($k) then ((.[$k]|type == "array") and ((.[$k]|map(type=="string")|all))) else true end' "$file" 2>/dev/null)
+  if [ "$ok" != "true" ]; then
+    echo "speed-gate manifest error: field '$key' must be an array of strings in $file" >&2
+    return 1
+  fi
+  return 0
+}
+
+cmd_check() {
+  local manifest="" config="" now_minutes=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --manifest) manifest="$2"; shift 2 ;;
+      --config) config="$2"; shift 2 ;;
+      --now-minutes) now_minutes="$2"; shift 2 ;;
+      *) die_usage ;;
+    esac
+  done
+  [ -n "$manifest" ] && [ -n "$config" ] || die_usage
+  [ -f "$manifest" ] || { echo "manifest not found: $manifest" >&2; exit 2; }
+  [ -f "$config" ] || { echo "config not found: $config" >&2; exit 2; }
+
+  jq empty "$manifest" 2>/dev/null || { echo "invalid manifest JSON" >&2; exit 2; }
+  jq empty "$config" 2>/dev/null || { echo "invalid config JSON" >&2; exit 2; }
+
+  # --- manifest fields: instance data for this checkpoint attempt, not
+  # policy — a zero/empty default here describes an omitted request, it
+  # does not substitute a threshold. ---
+  local lane elapsed targeted_count files_changed adjacent_count
+  local reviewer_requested snapshot_hash qa_runs_so_far request_another_qa
+
+  lane=$(require_manifest_string "$manifest" "lane") || exit 2
+  [ -n "$lane" ] || lane="normal"
+  elapsed=$(require_manifest_nonneg_int "$manifest" "elapsedCheckpointMinutes") || exit 2
+  targeted_count=$(require_manifest_nonneg_int "$manifest" "targetedTestCount") || exit 2
+  files_changed=$(require_manifest_nonneg_int "$manifest" "testFilesChanged") || exit 2
+  adjacent_count=$(require_manifest_nonneg_int "$manifest" "adjacentMicroFixCount") || exit 2
+  reviewer_requested=$(require_manifest_nonneg_int "$manifest" "reviewerFullSuiteRunsRequested") || exit 2
+  qa_runs_so_far=$(require_manifest_nonneg_int "$manifest" "fullLocalQaRunsSoFar") || exit 2
+  request_another_qa=$(require_manifest_bool "$manifest" "requestAnotherFullLocalQa" "false") || exit 2
+  snapshot_hash=$(require_manifest_string "$manifest" "snapshotHash") || exit 2
+  [ -n "$snapshot_hash" ] || { echo "speed-gate manifest error: field 'snapshotHash' must be a nonempty string in $manifest" >&2; exit 2; }
+  validate_manifest_string_array "$manifest" "changedPaths" || exit 2
+  validate_manifest_string_array "$manifest" "semanticRiskClasses" || exit 2
+
+  # --- policy fields: required from config, fail closed if absent/bad ---
+  local cadence_max
+  cadence_max=$(require_num_field "$config" 'if has("checkpointCadenceMinutesMax") then (.checkpointCadenceMinutesMax|tostring) else "MISSING" end' "checkpointCadenceMinutesMax") || exit 2
+
+  local lane_applies
+  lane_applies=$(jq -r --arg l "$lane" 'if has("checkpointCadenceAppliesTo") then ((.checkpointCadenceAppliesTo // []) | index($l) != null) else true end' "$config" 2>/dev/null)
+  if [ "$lane_applies" != "true" ]; then
+    echo "speed-gate manifest error: field 'lane' value '$lane' is not a recognized lane in $config#checkpointCadenceAppliesTo" >&2
+    exit 2
+  fi
+
+  # --- checkpoint cadence: universal across every lane, highest priority ---
+  if [ "$elapsed" -gt "$cadence_max" ]; then
+    echo "{\"reason\":\"checkpoint-overtime\",\"elapsedCheckpointMinutes\":$elapsed}"
+    echo "CHECKPOINT_BLOCKED"
+    exit 1
+  fi
+
+  # --- evidence reuse on unchanged snapshot: ephemeral user-temp cache
+  # only, keyed by the config file's realpath + content hash. This is a
+  # cache, not canonical evidence, and never touches the repo tree. ---
+  local config_realpath cache_key cache_dir state_file qa_spent=0
+  config_realpath="$(cd "$(dirname "$config")" && pwd)/$(basename "$config")"
+  cache_key=$( { printf '%s\n' "$config_realpath"; cat "$config"; } | shasum -a 256 | awk '{print $1}')
+  cache_dir="${TMPDIR:-/tmp}/zabuno-speed-gate-cache"
+  mkdir -p "$cache_dir"
+  state_file="$cache_dir/$cache_key.json"
+  [ -f "$state_file" ] || echo '{"evidencedSnapshots":[]}' >"$state_file"
+  local already_evidenced
+  already_evidenced=$(jq --arg h "$snapshot_hash" '(.evidencedSnapshots // []) | index($h) != null' "$state_file")
+
+  if [ "$qa_runs_so_far" -ge 1 ] && [ "$already_evidenced" != "true" ]; then
+    jq --arg h "$snapshot_hash" '.evidencedSnapshots = ((.evidencedSnapshots // []) + [$h] | unique)' "$state_file" >"$state_file.tmp" && mv "$state_file.tmp" "$state_file"
+    already_evidenced="true"
+  fi
+
+  if [ "$request_another_qa" = "true" ]; then
+    if [ "$already_evidenced" = "true" ]; then
+      qa_spent=0
+    else
+      qa_spent=1
+      jq --arg h "$snapshot_hash" '.evidencedSnapshots = ((.evidencedSnapshots // []) + [$h] | unique)' "$state_file" >"$state_file.tmp" && mv "$state_file.tmp" "$state_file"
+    fi
+  fi
+
+  # --- reviewer full-suite budget: required per-lane policy field, but
+  # only actually consulted (and so only required to be present) when a
+  # reviewer full-suite run is requested at all; a manifest that requests
+  # zero never needs the cap to decide anything. ---
+  if [ "$reviewer_requested" -gt 0 ]; then
+    local reviewer_max
+    reviewer_max=$(jq -r --arg lane "$lane" 'if (.lanes[$lane]? // empty) == null then "MISSING" elif (.lanes[$lane] | has("reviewerFullSuiteRunsMax") | not) then "MISSING" else (.lanes[$lane].reviewerFullSuiteRunsMax|tostring) end' "$config" 2>/dev/null)
+    if [ -z "$reviewer_max" ] || [ "$reviewer_max" = "MISSING" ] || [ "$reviewer_max" = "null" ]; then
+      echo "speed-gate config error: required policy field 'lanes.$lane.reviewerFullSuiteRunsMax' is missing or null in $config" >&2
+      exit 2
+    fi
+    if ! [[ "$reviewer_max" =~ ^-?[0-9]+$ ]]; then
+      echo "speed-gate config error: policy field 'lanes.$lane.reviewerFullSuiteRunsMax' is not numeric in $config" >&2
+      exit 2
+    fi
+    if [ "$reviewer_requested" -gt "$reviewer_max" ]; then
+      echo "{\"reason\":\"reviewer-full-suite-budget-exceeded\",\"fullLocalQaRunsSpent\":$qa_spent}"
+      echo "BATCH_REQUIRED"
+      exit 1
+    fi
+  fi
+
+  if [ "$lane" = "highRisk" ]; then
+    # Already classified high-risk: re-evaluating path/semantic triggers
+    # here would loop back to HIGH_RISK forever. Instead require an
+    # explicit, non-empty justification and an explicit approved targeted-
+    # test cap in the manifest, then enforce that cap. Missing either one
+    # fails closed as HIGH_RISK (not yet properly validated for the lane).
+    local risk_justification approved_max_raw
+    risk_justification=$(jq -r '.riskJustification // ""' "$manifest")
+    approved_max_raw=$(jq -r 'if has("approvedTargetedTestMax") then (.approvedTargetedTestMax|tostring) else "MISSING" end' "$manifest")
+    if [ -z "$risk_justification" ] || [ "$approved_max_raw" = "MISSING" ] || [ "$approved_max_raw" = "null" ]; then
+      echo "{\"reason\":\"high-risk-missing-justification-or-approval\",\"fullLocalQaRunsSpent\":$qa_spent}"
+      echo "HIGH_RISK"
+      exit 1
+    fi
+    if ! [[ "$approved_max_raw" =~ ^[0-9]+$ ]]; then
+      echo "{\"reason\":\"high-risk-approved-cap-non-numeric\",\"fullLocalQaRunsSpent\":$qa_spent}"
+      echo "HIGH_RISK"
+      exit 1
+    fi
+    if [ "$targeted_count" -gt "$approved_max_raw" ]; then
+      echo "{\"reason\":\"high-risk-approved-cap-exceeded\",\"approvedTargetedTestMax\":$approved_max_raw,\"fullLocalQaRunsSpent\":$qa_spent}"
+      echo "BATCH_REQUIRED"
+      exit 1
+    fi
+    echo "{\"reason\":\"pass\",\"fullLocalQaRunsSpent\":$qa_spent}"
+    echo "PASS"
+    exit 0
+  fi
+
+  # --- high-risk override: path pattern or semantic risk class, only
+  # meaningful for a manifest not already classified highRisk ---
+  local high_risk=0 pattern
+  while IFS= read -r pattern; do
+    [ -z "$pattern" ] && continue
+    while IFS= read -r changed_path; do
+      [ -z "$changed_path" ] && continue
+      if glob_match "$pattern" "$changed_path"; then
+        high_risk=1
+      fi
+    done < <(jq -r '.changedPaths[]? // empty' "$manifest")
+  done < <(jq -r '.highRiskPathPatterns[]? // empty' "$config")
+
+  while IFS= read -r class; do
+    [ -z "$class" ] && continue
+    while IFS= read -r semantic; do
+      [ -z "$semantic" ] && continue
+      [ "$class" = "$semantic" ] && high_risk=1
+    done < <(jq -r '.semanticRiskClasses[]? // empty' "$manifest")
+  done < <(jq -r '.highRiskSemanticClasses[]? // empty' "$config")
+
+  if [ "$high_risk" -eq 1 ]; then
+    echo "{\"reason\":\"high-risk-override\",\"fullLocalQaRunsSpent\":$qa_spent}"
+    echo "HIGH_RISK"
+    exit 1
+  fi
+
+  # --- lane budgets: required policy fields, fail closed if absent/bad ---
+  if [ "$lane" = "microHotfix" ]; then
+    local adjacent_max targeted_max_mh files_max_mh
+    adjacent_max=$(require_num_field "$config" 'if (.lanes.microHotfix? // empty) == null then "MISSING" elif (.lanes.microHotfix|has("adjacentMicroFixesMax")|not) then "MISSING" else (.lanes.microHotfix.adjacentMicroFixesMax|tostring) end' "lanes.microHotfix.adjacentMicroFixesMax") || exit 2
+    targeted_max_mh=$(require_num_field "$config" 'if (.lanes.microHotfix? // empty) == null then "MISSING" elif (.lanes.microHotfix|has("targetedTestMax")|not) then "MISSING" else (.lanes.microHotfix.targetedTestMax|tostring) end' "lanes.microHotfix.targetedTestMax") || exit 2
+    files_max_mh=$(require_num_field "$config" 'if (.lanes.microHotfix? // empty) == null then "MISSING" elif (.lanes.microHotfix|has("testFilesMax")|not) then "MISSING" else (.lanes.microHotfix.testFilesMax|tostring) end' "lanes.microHotfix.testFilesMax") || exit 2
+    if [ "$adjacent_count" -gt "$adjacent_max" ] || [ "$targeted_count" -gt "$targeted_max_mh" ] || [ "$files_changed" -gt "$files_max_mh" ]; then
+      echo "{\"reason\":\"microHotfix-budget-exceeded\",\"fullLocalQaRunsSpent\":$qa_spent}"
+      echo "BATCH_REQUIRED"
+      exit 1
+    fi
+  else
+    local targeted_max files_max
+    targeted_max=$(jq -r --arg lane "$lane" 'if (.lanes[$lane]? // empty) == null then "MISSING" elif (.lanes[$lane]|has("targetedTestMax")|not) then "MISSING" else (.lanes[$lane].targetedTestMax|tostring) end' "$config" 2>/dev/null)
+    if [ -z "$targeted_max" ] || [ "$targeted_max" = "MISSING" ]; then
+      echo "speed-gate config error: required policy field 'lanes.$lane.targetedTestMax' is missing in $config" >&2
+      exit 2
+    fi
+    files_max=$(jq -r --arg lane "$lane" 'if (.lanes[$lane]? // empty) == null then "MISSING" elif (.lanes[$lane]|has("testFilesMax")|not) then "MISSING" else (.lanes[$lane].testFilesMax|tostring) end' "$config" 2>/dev/null)
+    if [ -z "$files_max" ] || [ "$files_max" = "MISSING" ]; then
+      echo "speed-gate config error: required policy field 'lanes.$lane.testFilesMax' is missing in $config" >&2
+      exit 2
+    fi
+    # "normal"/"prototype" lanes carry non-null numeric caps in this
+    # repo's config; a null cap here is honored as "no cap" (as it is for
+    # the highRisk lane, handled separately above).
+    if [ "$targeted_max" != "null" ]; then
+      if ! [[ "$targeted_max" =~ ^-?[0-9]+$ ]]; then
+        echo "speed-gate config error: policy field 'lanes.$lane.targetedTestMax' is not numeric in $config" >&2
+        exit 2
+      fi
+      [ "$targeted_count" -gt "$targeted_max" ] && { echo "{\"reason\":\"lane-budget-exceeded\",\"fullLocalQaRunsSpent\":$qa_spent}"; echo "BATCH_REQUIRED"; exit 1; }
+    fi
+    if [ "$files_max" != "null" ]; then
+      if ! [[ "$files_max" =~ ^-?[0-9]+$ ]]; then
+        echo "speed-gate config error: policy field 'lanes.$lane.testFilesMax' is not numeric in $config" >&2
+        exit 2
+      fi
+      [ "$files_changed" -gt "$files_max" ] && { echo "{\"reason\":\"lane-budget-exceeded\",\"fullLocalQaRunsSpent\":$qa_spent}"; echo "BATCH_REQUIRED"; exit 1; }
+    fi
+  fi
+
+  echo "{\"reason\":\"pass\",\"fullLocalQaRunsSpent\":$qa_spent}"
+  echo "PASS"
+  exit 0
+}
+
+cmd_docs_scan() {
+  local docs_root=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --docs-root) docs_root="$2"; shift 2 ;;
+      *) die_usage ;;
+    esac
+  done
+  [ -n "$docs_root" ] || die_usage
+  [ -d "$docs_root" ] || { echo "docs-root not found: $docs_root" >&2; exit 2; }
+
+  # Scoped to operational speed-budget CLAIMS (a limiting phrase next to a
+  # number next to a cadence/test-count keyword), not to any mention of a
+  # number near the word "test"/"minute" — historical evidence prose
+  # ("689 test satırı", "82 dk", "targeted 23/23/72") must not trip this.
+  local hit
+  hit=$(grep -rlEi '(en fazla|up to|no more than|must not exceed|at most|exceed)[^.]{0,40}[0-9]+[^.]{0,20}(dakika|minute|test)' "$docs_root" --include='*.md' 2>/dev/null | head -n1)
+  if [ -n "$hit" ]; then
+    echo "duplicated numeric threshold found: $hit" >&2
+    echo "DUPLICATE_THRESHOLDS"
+    exit 1
+  fi
+  echo "CLEAN"
+  exit 0
+}
+
+[ $# -ge 1 ] || die_usage
+subcommand="$1"; shift
+case "$subcommand" in
+  check) cmd_check "$@" ;;
+  docs-scan) cmd_docs_scan "$@" ;;
+  *) die_usage ;;
+esac

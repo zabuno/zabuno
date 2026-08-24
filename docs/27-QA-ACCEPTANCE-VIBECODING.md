@@ -227,3 +227,14 @@ iki P1 owner-kararı blocker'ı (composer license/legal owner kararı;
 
 QA/acceptance/vibecoding disiplininin tek kanonik sahibi bu dosyadır. İzlenebilirlik
 matrisinin kendisi `docs/29`'da yaşar; bu dosya yalnız disiplini tanımlar.
+
+## 8. Hız bütçesi işaretçisi (SP-01)
+
+Checkpoint kadansı, hedefli test bütçesi, tam QA bütçesi ve risk şeridi
+eşikleri **yalnız** `config/development-speed-budget.json`'da sahiplenilir
+ve `scripts/speed-gate` ile deterministik doğrulanır; bu dosya bu sayıları
+tekrar etmez (bkz. `scripts/speed-gate docs-scan`). Yukarıdaki §1'deki
+"tam QA en fazla iki kere" ve §6'daki targeted-evidence rejimleri, o JSON'un
+lane bütçeleriyle tutarlıdır — çelişki halinde JSON kazanır. Rasyonel:
+`claude_speeder_report.md`, `codex_speeder_report.md`; işletim kuralı:
+`.claude/rules/fast-development.md`.
