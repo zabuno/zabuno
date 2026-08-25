@@ -12,6 +12,7 @@ use App\Application\Billing\Port\PlanCatalogRepositoryPort;
 use App\Application\Billing\Port\PlanManagementRepositoryPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Media\Port\MalwareScannerPort;
+use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
@@ -41,6 +42,7 @@ use App\Infrastructure\Billing\Persistence\EloquentPlanManagementRepository;
 use App\Infrastructure\Billing\Persistence\EloquentSubscriptionRepository;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
+use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
@@ -90,6 +92,7 @@ final class AppServiceProvider extends ServiceProvider
 
             return new UnavailableMalwareScanner;
         });
+        $this->app->bind(MediaAssetProcessorPort::class, UnavailableMediaAssetProcessor::class);
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
         $this->app->bind(QrCodeRepositoryPort::class, EloquentQrCodeRepository::class);
         $this->app->bind(BulkQrCreationPort::class, EloquentBulkQrCreationRepository::class);
