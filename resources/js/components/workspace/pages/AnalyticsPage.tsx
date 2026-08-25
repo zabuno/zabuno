@@ -1,5 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react';
-import { Label, Select } from 'flowbite-react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { Button, Label, Select } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { AnalyticsMetricGrid } from './analytics/AnalyticsMetricGrid';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
@@ -28,7 +28,7 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
 
     const requestIdRef = useRef(0);
 
-    useEffect(() => {
+    const fetchSummary = useCallback(() => {
         if (workspaceId === undefined || locationId === undefined) {
             return;
         }
@@ -73,6 +73,10 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
             }
         })();
     }, [workspaceId, locationId, range]);
+
+    useEffect(() => {
+        fetchSummary();
+    }, [fetchSummary]);
 
     const rangeLabel: Record<AnalyticsRange, string> = {
         today: t('workspace.analytics.range.today'),
@@ -133,6 +137,19 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                     aria-label={t('workspace.analytics.report.region')}
                     className="flex flex-col gap-2"
                 >
+                    <div>
+                        <Button
+                            size="xs"
+                            color="light"
+                            disabled={status === 'loading'}
+                            onClick={fetchSummary}
+                        >
+                            {status === 'error'
+                                ? t('workspace.analytics.action.retry')
+                                : t('workspace.analytics.action.refresh')}
+                        </Button>
+                    </div>
+
                     {status === 'idle' && (
                         <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
                             {t('workspace.analytics.report.unavailable')}

@@ -16,6 +16,8 @@ export const analytics = {
     'workspace.analytics.status.notConnected': 'Not requested yet',
     'workspace.analytics.status.loading': 'Loading',
     'workspace.analytics.status.error': 'Failed to load',
+    'workspace.analytics.action.refresh': 'Refresh',
+    'workspace.analytics.action.retry': 'Retry',
 } as const;
 
 declare module '../workspace' {
