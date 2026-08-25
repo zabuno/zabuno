@@ -12,6 +12,9 @@ type MediaLibraryRegionProps = {
     onDelete: (id: number) => void;
     loadState: MediaLibraryLoadState;
     onRetry?: () => void;
+    pendingDeleteIds?: Set<number>;
+    deleteErrorIds?: Set<number>;
+    deleteNotice?: string | null;
 };
 
 /**
@@ -24,6 +27,9 @@ export function MediaLibraryRegion({
     onDelete,
     loadState,
     onRetry,
+    pendingDeleteIds,
+    deleteErrorIds,
+    deleteNotice,
 }: MediaLibraryRegionProps) {
     return (
         <div
@@ -56,26 +62,46 @@ export function MediaLibraryRegion({
                 </p>
             ) : (
                 <ul className="flex flex-col gap-2">
-                    {assets.map((asset) => (
-                        <li
-                            key={asset.id}
-                            className="flex flex-col gap-1 border-b border-gray-200 pb-2 dark:border-gray-700"
-                        >
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">{`#${asset.id}`}</span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                                {asset.altText}
-                            </span>
-                            <MediaAssetStatusBadge status={asset.status} />
-                            <button
-                                type="button"
-                                onClick={() => onDelete(asset.id)}
-                                className="self-start rounded-lg border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    {assets.map((asset) => {
+                        const isDeleting = pendingDeleteIds?.has(asset.id) ?? false;
+                        const hasDeleteError = deleteErrorIds?.has(asset.id) ?? false;
+
+                        return (
+                            <li
+                                key={asset.id}
+                                className="flex flex-col gap-1 border-b border-gray-200 pb-2 dark:border-gray-700"
                             >
-                                {t('workspace.media.library.asset.delete')}
-                            </button>
-                        </li>
-                    ))}
+                                <span className="text-sm font-medium text-gray-900 dark:text-white">{`#${asset.id}`}</span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                    {asset.altText}
+                                </span>
+                                <MediaAssetStatusBadge status={asset.status} />
+                                <button
+                                    type="button"
+                                    disabled={isDeleting}
+                                    onClick={() => onDelete(asset.id)}
+                                    className="self-start rounded-lg border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
+                                >
+                                    {t('workspace.media.library.asset.delete')}
+                                </button>
+                                {hasDeleteError && (
+                                    <p
+                                        role="alert"
+                                        className="text-xs font-medium text-red-600 dark:text-red-400"
+                                    >
+                                        {t('workspace.media.library.asset.delete.failed')}
+                                    </p>
+                                )}
+                            </li>
+                        );
+                    })}
                 </ul>
+            )}
+
+            {deleteNotice && (
+                <p role="status" className="text-xs text-gray-500 dark:text-gray-400">
+                    {deleteNotice}
+                </p>
             )}
 
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
