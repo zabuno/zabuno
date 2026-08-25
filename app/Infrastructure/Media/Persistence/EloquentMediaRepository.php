@@ -120,7 +120,7 @@ final class EloquentMediaRepository implements MediaRepositoryPort
         return new ScannableMediaAsset(
             id: (int) $asset->getKey(),
             workspaceId: (int) $asset->workspace_id,
-            diskPath: (string) $asset->disk_path,
+            diskPath: Storage::disk(self::QUARANTINE_DISK)->path((string) $asset->disk_path),
         );
     }
 

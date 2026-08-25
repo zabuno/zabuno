@@ -9,6 +9,7 @@ use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\UseCase\ScanQuarantinedMediaAsset;
 use App\Domain\Media\MediaAssetStatus;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
+use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Models\MediaAsset;
 use App\Models\User;
@@ -119,7 +120,9 @@ final class MediaSecurityScanTest extends TestCase
         $workspaceId = $this->persistedWorkspaceId('zeytin-media-scan-transition');
 
         $diskPath = "quarantine/{$workspaceId}/existing-asset";
-        Storage::disk('local')->put($diskPath, 'fake-image-bytes');
+        $quarantinedBytes = 'fake-image-bytes';
+        Storage::disk('local')->put($diskPath, $quarantinedBytes);
+        $expectedAbsolutePath = Storage::disk('local')->path($diskPath);
 
         $asset = MediaAsset::query()->create([
             'workspace_id' => $workspaceId,
@@ -149,12 +152,29 @@ final class MediaSecurityScanTest extends TestCase
         $useCase->__invoke($workspaceId, (int) $asset->getKey());
 
         self::assertSame(
-            $diskPath,
+            $expectedAbsolutePath,
             $capturedPath,
-            'MEDIA-SCAN-TRANSITION-01: tarama, tam olarak tenant-private stored disk_path üzerinde çalışmalı.'
+            'MEDIA-SCAN-TRANSITION-01: tarama, local disk adaptörünün gerçek filesystem\'de var olan mutlak yoluna karşı çalışmalı, tenant-private relative anahtara değil.'
+        );
+
+        self::assertTrue(
+            is_string($capturedPath) && is_file($capturedPath),
+            'MEDIA-SCAN-TRANSITION-01: scanner\'a verilen yol, gerçek karantina byte\'larının bulunduğu var olan bir dosya olmalı.'
+        );
+
+        self::assertSame(
+            $quarantinedBytes,
+            is_string($capturedPath) ? file_get_contents($capturedPath) : null,
+            'MEDIA-SCAN-TRANSITION-01: scanner\'a verilen dosya, karantinaya alınmış tam byte\'ları içermeli.'
         );
 
         $asset->refresh();
+
+        self::assertSame(
+            $diskPath,
+            $asset->disk_path,
+            'MEDIA-SCAN-TRANSITION-01: media_assets.disk_path taramadan sonra da orijinal tenant-scoped relative anahtar olarak kalmalı.'
+        );
 
         self::assertSame(
             'scanning',
@@ -252,6 +272,131 @@ final class MediaSecurityScanTest extends TestCase
         self::assertArrayNotHasKey('url', $response->json() ?? [], 'MEDIA-SCAN-UPLOAD-HONEST-01: yanıt public url içermemeli.');
         self::assertArrayNotHasKey('publicUrl', $response->json() ?? [], 'MEDIA-SCAN-UPLOAD-HONEST-01: yanıt public url içermemeli.');
         self::assertArrayNotHasKey('derivatives', $response->json() ?? [], 'MEDIA-SCAN-UPLOAD-HONEST-01: yanıt derivative içermemeli.');
+    }
+
+    // --- MEDIA-SCAN-CLAMAV-REAL-PATH-01 --------------------------------------
+
+    public function test_real_clamav_scanner_reads_actual_quarantined_bytes_via_safe_argv_and_returns_clean_verdict(): void
+    {
+        Storage::fake('local');
+        $workspaceId = $this->persistedWorkspaceId('zeytin-media-scan-clamav-real');
+
+        $diskPath = "quarantine/{$workspaceId}/clamav-integration-asset";
+        $quarantinedBytes = 'real-quarantined-bytes-for-clamav-fake-executable';
+        Storage::disk('local')->put($diskPath, $quarantinedBytes);
+
+        $asset = MediaAsset::query()->create([
+            'workspace_id' => $workspaceId,
+            'disk_path' => $diskPath,
+            'original_name' => 'logo.jpg',
+            'mime_type' => 'image/jpeg',
+            'size_bytes' => strlen($quarantinedBytes),
+            'alt_text' => 'Zeytin Restoranı logosu',
+            'slot' => 'menu',
+            'status' => MediaAssetStatus::Quarantined->value,
+        ]);
+
+        $evidenceFile = tempnam(sys_get_temp_dir(), 'clamav-evidence-');
+        self::assertNotFalse($evidenceFile);
+        unlink($evidenceFile);
+
+        $fakeBinary = tempnam(sys_get_temp_dir(), 'fake-clamav-');
+        self::assertNotFalse($fakeBinary);
+
+        $script = "#!/bin/sh\ncp -- \"\$2\" ".escapeshellarg($evidenceFile)."\nexit 0\n";
+        file_put_contents($fakeBinary, $script);
+        chmod($fakeBinary, 0755);
+
+        try {
+            $scanner = new ClamavMalwareScanner($fakeBinary, 5.0);
+            $useCase = new ScanQuarantinedMediaAsset($scanner, new EloquentMediaRepository);
+
+            $useCase->__invoke($workspaceId, (int) $asset->getKey());
+
+            self::assertFileExists(
+                $evidenceFile,
+                'MEDIA-SCAN-CLAMAV-REAL-PATH-01: sahte clamav yürütülebilir dosyası, safe argv üzerinden verilen yola erişebilmeli.'
+            );
+
+            self::assertSame(
+                $quarantinedBytes,
+                file_get_contents($evidenceFile),
+                'MEDIA-SCAN-CLAMAV-REAL-PATH-01: process, karantinaya alınmış gerçek byte\'ları okumalı.'
+            );
+
+            $asset->refresh();
+
+            self::assertSame(
+                'scanning',
+                $asset->status,
+                'MEDIA-SCAN-CLAMAV-REAL-PATH-01: clean (non-indeterminate, non-infected) sonuç asset\'i reject etmemeli, scanning\'de kalmalı.'
+            );
+        } finally {
+            if (is_file($fakeBinary)) {
+                unlink($fakeBinary);
+            }
+            if (is_file($evidenceFile)) {
+                unlink($evidenceFile);
+            }
+        }
+    }
+
+    // --- MEDIA-SCAN-CROSS-WORKSPACE-NOOP-01 ----------------------------------
+
+    public function test_cross_workspace_claim_never_resolves_path_and_never_invokes_scanner(): void
+    {
+        Storage::fake('local');
+        $workspaceId = $this->persistedWorkspaceId('zeytin-media-scan-cross-ws-owner');
+        $otherWorkspaceId = $this->persistedWorkspaceId('zeytin-media-scan-cross-ws-attacker');
+
+        $diskPath = "quarantine/{$workspaceId}/cross-workspace-asset";
+        Storage::disk('local')->put($diskPath, 'fake-image-bytes');
+
+        $asset = MediaAsset::query()->create([
+            'workspace_id' => $workspaceId,
+            'disk_path' => $diskPath,
+            'original_name' => 'logo.jpg',
+            'mime_type' => 'image/jpeg',
+            'size_bytes' => 17,
+            'alt_text' => 'Zeytin Restoranı logosu',
+            'slot' => 'menu',
+            'status' => MediaAssetStatus::Quarantined->value,
+        ]);
+
+        $scannerCalled = false;
+        $spyScanner = new class($scannerCalled) implements MalwareScannerPort
+        {
+            public function __construct(private bool &$scannerCalled) {}
+
+            public function scan(string $diskPath): MediaScanResult
+            {
+                $this->scannerCalled = true;
+
+                return (new UnavailableMalwareScanner)->scan($diskPath);
+            }
+        };
+
+        $useCase = new ScanQuarantinedMediaAsset($spyScanner, new EloquentMediaRepository);
+        $useCase->__invoke($otherWorkspaceId, (int) $asset->getKey());
+
+        self::assertFalse(
+            $scannerCalled,
+            'MEDIA-SCAN-CROSS-WORKSPACE-NOOP-01: farklı bir workspace\'in id\'siyle yapılan claim scanner\'ı asla çağırmamalı.'
+        );
+
+        $asset->refresh();
+
+        self::assertSame(
+            MediaAssetStatus::Quarantined->value,
+            $asset->status,
+            'MEDIA-SCAN-CROSS-WORKSPACE-NOOP-01: cross-workspace claim asset\'i scanning\'e terfi ettirmemeli.'
+        );
+
+        self::assertSame(
+            $diskPath,
+            $asset->disk_path,
+            'MEDIA-SCAN-CROSS-WORKSPACE-NOOP-01: cross-workspace claim disk_path\'i hiç değiştirmemeli/çözümlememeli.'
+        );
     }
 
     private function persistedWorkspaceId(string $slugSeed): int
