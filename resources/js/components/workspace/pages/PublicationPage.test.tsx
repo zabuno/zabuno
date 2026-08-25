@@ -1061,13 +1061,13 @@ describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_S
             ).toBeInTheDocument();
         });
 
-        expect(
-            within(statusRegion).queryByText(/loading|checking|fetching/i),
-        ).toBeNull();
+        expect(within(statusRegion).queryByText(/loading|checking|fetching/i)).toBeNull();
     });
 
     it('shows an accessible load error plus Retry on a non-2xx failure and never claims Not published yet.', async () => {
-        const fetchSpy = vi.fn().mockResolvedValue(jsonResponse(500, { message: 'Internal error' }));
+        const fetchSpy = vi
+            .fn()
+            .mockResolvedValue(jsonResponse(500, { message: 'Internal error' }));
         vi.stubGlobal('fetch', fetchSpy);
 
         render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
@@ -1080,9 +1080,7 @@ describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_S
         expect(
             within(statusRegion).queryByText(/not published|never published|no publication/i),
         ).toBeNull();
-        expect(
-            within(statusRegion).getByRole('button', { name: /retry/i }),
-        ).toBeInTheDocument();
+        expect(within(statusRegion).getByRole('button', { name: /retry/i })).toBeInTheDocument();
     });
 
     it('shows the same retryable error on a thrown network failure, and clicking Retry can resolve to a real current publication summary', async () => {
