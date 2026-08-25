@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Media;
 
 use App\Application\Media\Dto\MediaScanResult;
+use App\Application\Media\Dto\MediaScanVerdict;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\UseCase\ScanQuarantinedMediaAsset;
 use App\Domain\Media\MediaAssetStatus;
@@ -20,19 +21,23 @@ use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
- * Blind targeted RED for the media security-scan seam (this package's frozen
- * scope: a fail-closed scan step after intake, a visible "scanning" rung, and
- * an unavailable/indeterminate adapter only — no ClamAV, no accepted/
- * processing/ready state, no public URL/decode/derivative).
+ * Blind targeted RED for the media accepted-state package (this package's
+ * frozen scope: the first clean post-scan state is `accepted`
+ * (MediaAssetStatus::Accepted, value "accepted") per docs/07 and
+ * modules/core-file-media.md; a Clean ClamAV verdict atomically moves an
+ * asset from Scanning to Accepted without touching its bytes/key; an
+ * Infected verdict moves an asset to Rejected, never Accepted; `Processing`
+ * and `Ready` remain unintroduced).
  *
- * None of App\Domain\Media\MediaAssetStatus::Scanning,
- * App\Infrastructure\Media\Scanning\UnavailableMalwareScanner, or
- * App\Application\Media\UseCase\ScanQuarantinedMediaAsset exist yet, so every
- * test below is expected to fail RED with a class/case-not-found error, not a
- * logic assertion failure or a bootstrap defect in this suite.
+ * MediaAssetStatus::Accepted does not exist yet, and the real ClamAV
+ * integration path still leaves a Clean-scanned asset in `scanning` instead
+ * of moving it to `accepted`, so the enum test and the ClamAV-clean test
+ * below are expected to fail RED. The new Infected-verdict guard may
+ * already pass against the existing Rejected transition.
  *
  * Requirement IDs: MEDIA-SCAN-STATUS-ENUM-01, MEDIA-SCAN-ADAPTER-INDETERMINATE-01,
- * MEDIA-SCAN-TRANSITION-01, MEDIA-SCAN-REJECTED-NO-REQUEUE-01, MEDIA-SCAN-UPLOAD-HONEST-01.
+ * MEDIA-SCAN-TRANSITION-01, MEDIA-SCAN-REJECTED-NO-REQUEUE-01, MEDIA-SCAN-UPLOAD-HONEST-01,
+ * MEDIA-SCAN-CLAMAV-REAL-PATH-01, MEDIA-ACCEPT-CLEAN-01, MEDIA-ACCEPT-INFECTED-01.
  */
 final class MediaSecurityScanTest extends TestCase
 {
@@ -67,7 +72,7 @@ final class MediaSecurityScanTest extends TestCase
 
     // --- MEDIA-SCAN-STATUS-ENUM-01 ------------------------------------------
 
-    public function test_scanning_status_round_trips_and_no_accepted_processing_ready_case_is_introduced(): void
+    public function test_scanning_and_accepted_status_round_trip_and_no_processing_ready_case_is_introduced(): void
     {
         self::assertSame(
             'scanning',
@@ -75,9 +80,15 @@ final class MediaSecurityScanTest extends TestCase
             'MEDIA-SCAN-STATUS-ENUM-01: Scanning enum case\'i "scanning" değerine sahip olmalı.'
         );
 
+        self::assertSame(
+            'accepted',
+            MediaAssetStatus::Accepted->value,
+            'MEDIA-ACCEPT-CLEAN-01: Accepted enum case\'i "accepted" değerine sahip olmalı (docs/07, modules/core-file-media.md).'
+        );
+
         $caseNames = array_map(static fn (MediaAssetStatus $case): string => $case->name, MediaAssetStatus::cases());
 
-        foreach (['Accepted', 'Processing', 'Ready'] as $forbidden) {
+        foreach (['Processing', 'Ready'] as $forbidden) {
             self::assertNotContains(
                 $forbidden,
                 $caseNames,
@@ -274,9 +285,9 @@ final class MediaSecurityScanTest extends TestCase
         self::assertArrayNotHasKey('derivatives', $response->json() ?? [], 'MEDIA-SCAN-UPLOAD-HONEST-01: yanıt derivative içermemeli.');
     }
 
-    // --- MEDIA-SCAN-CLAMAV-REAL-PATH-01 --------------------------------------
+    // --- MEDIA-SCAN-CLAMAV-REAL-PATH-01 / MEDIA-ACCEPT-CLEAN-01 --------------
 
-    public function test_real_clamav_scanner_reads_actual_quarantined_bytes_via_safe_argv_and_returns_clean_verdict(): void
+    public function test_real_clamav_scanner_reads_actual_quarantined_bytes_via_safe_argv_and_clean_verdict_atomically_moves_asset_to_accepted(): void
     {
         Storage::fake('local');
         $workspaceId = $this->persistedWorkspaceId('zeytin-media-scan-clamav-real');
@@ -327,9 +338,21 @@ final class MediaSecurityScanTest extends TestCase
             $asset->refresh();
 
             self::assertSame(
-                'scanning',
+                MediaAssetStatus::Accepted->value,
                 $asset->status,
-                'MEDIA-SCAN-CLAMAV-REAL-PATH-01: clean (non-indeterminate, non-infected) sonuç asset\'i reject etmemeli, scanning\'de kalmalı.'
+                'MEDIA-ACCEPT-CLEAN-01: clean sonuç asset\'i atomik olarak scanning\'den accepted\'a taşımalı.'
+            );
+
+            self::assertSame(
+                $diskPath,
+                $asset->disk_path,
+                'MEDIA-ACCEPT-CLEAN-01: clean kabul, orijinal tenant-scoped disk_path anahtarını değiştirmemeli.'
+            );
+
+            self::assertSame(
+                $quarantinedBytes,
+                Storage::disk('local')->get($diskPath),
+                'MEDIA-ACCEPT-CLEAN-01: clean kabul, gerçek karantina byte\'larını değiştirmemeli.'
             );
         } finally {
             if (is_file($fakeBinary)) {
@@ -339,6 +362,54 @@ final class MediaSecurityScanTest extends TestCase
                 unlink($evidenceFile);
             }
         }
+    }
+
+    // --- MEDIA-ACCEPT-INFECTED-01 ---------------------------------------------
+
+    public function test_infected_verdict_moves_same_workspace_asset_to_rejected_and_never_accepted(): void
+    {
+        Storage::fake('local');
+        $workspaceId = $this->persistedWorkspaceId('zeytin-media-scan-infected');
+
+        $diskPath = "quarantine/{$workspaceId}/infected-asset";
+        $quarantinedBytes = 'fake-infected-bytes';
+        Storage::disk('local')->put($diskPath, $quarantinedBytes);
+
+        $asset = MediaAsset::query()->create([
+            'workspace_id' => $workspaceId,
+            'disk_path' => $diskPath,
+            'original_name' => 'logo.jpg',
+            'mime_type' => 'image/jpeg',
+            'size_bytes' => strlen($quarantinedBytes),
+            'alt_text' => 'Zeytin Restoranı logosu',
+            'slot' => 'menu',
+            'status' => MediaAssetStatus::Quarantined->value,
+        ]);
+
+        $infectedScanner = new class implements MalwareScannerPort
+        {
+            public function scan(string $diskPath): MediaScanResult
+            {
+                return new MediaScanResult(MediaScanVerdict::Infected);
+            }
+        };
+
+        $useCase = new ScanQuarantinedMediaAsset($infectedScanner, new EloquentMediaRepository);
+        $useCase->__invoke($workspaceId, (int) $asset->getKey());
+
+        $asset->refresh();
+
+        self::assertSame(
+            MediaAssetStatus::Rejected->value,
+            $asset->status,
+            'MEDIA-ACCEPT-INFECTED-01: infected verdict aynı workspace\'in asset\'ini rejected\'a taşımalı.'
+        );
+
+        self::assertNotSame(
+            MediaAssetStatus::Accepted->value,
+            $asset->status,
+            'MEDIA-ACCEPT-INFECTED-01: infected verdict asset\'i asla accepted\'a taşımamalı.'
+        );
     }
 
     // --- MEDIA-SCAN-CROSS-WORKSPACE-NOOP-01 ----------------------------------

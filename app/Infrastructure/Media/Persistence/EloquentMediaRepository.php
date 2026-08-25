@@ -133,6 +133,15 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             ->update(['status' => MediaAssetStatus::Rejected->value]);
     }
 
+    public function markAcceptedIfScanning(int $workspaceId, int $assetId): void
+    {
+        MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Scanning->value)
+            ->update(['status' => MediaAssetStatus::Accepted->value]);
+    }
+
     private function toSummary(MediaAsset $asset): MediaAssetSummary
     {
         return new MediaAssetSummary(
