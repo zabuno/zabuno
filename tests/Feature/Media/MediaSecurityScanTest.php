@@ -26,14 +26,17 @@ use Tests\TestCase;
  * (MediaAssetStatus::Accepted, value "accepted") per docs/07 and
  * modules/core-file-media.md; a Clean ClamAV verdict atomically moves an
  * asset from Scanning to Accepted without touching its bytes/key; an
- * Infected verdict moves an asset to Rejected, never Accepted; `Processing`
- * and `Ready` remain unintroduced).
+ * Infected verdict moves an asset to Rejected, never Accepted).
  *
- * MediaAssetStatus::Accepted does not exist yet, and the real ClamAV
- * integration path still leaves a Clean-scanned asset in `scanning` instead
- * of moving it to `accepted`, so the enum test and the ClamAV-clean test
- * below are expected to fail RED. The new Infected-verdict guard may
- * already pass against the existing Rejected transition.
+ * Per the MEDIA-PROCESS-01 scope revision, `Processing`
+ * (MediaAssetStatus::Processing, value "processing") is now an introduced,
+ * required enum case for the accepted-to-processing claim package; `Ready`
+ * remains unintroduced.
+ *
+ * MEDIA-SCAN-04 is merged: the accepted-state, ClamAV-clean and
+ * infected-verdict guards below are now regression coverage, not RED
+ * targets. `Processing` is added to the enum only by the separate,
+ * later MEDIA-PROCESS-01 package.
  *
  * Requirement IDs: MEDIA-SCAN-STATUS-ENUM-01, MEDIA-SCAN-ADAPTER-INDETERMINATE-01,
  * MEDIA-SCAN-TRANSITION-01, MEDIA-SCAN-REJECTED-NO-REQUEUE-01, MEDIA-SCAN-UPLOAD-HONEST-01,
@@ -72,7 +75,7 @@ final class MediaSecurityScanTest extends TestCase
 
     // --- MEDIA-SCAN-STATUS-ENUM-01 ------------------------------------------
 
-    public function test_scanning_and_accepted_status_round_trip_and_no_processing_ready_case_is_introduced(): void
+    public function test_scanning_and_accepted_status_round_trip_and_processing_is_required_while_ready_case_is_not_introduced(): void
     {
         self::assertSame(
             'scanning',
@@ -86,15 +89,19 @@ final class MediaSecurityScanTest extends TestCase
             'MEDIA-ACCEPT-CLEAN-01: Accepted enum case\'i "accepted" değerine sahip olmalı (docs/07, modules/core-file-media.md).'
         );
 
+        self::assertSame(
+            'processing',
+            MediaAssetStatus::Processing->value,
+            'MEDIA-PROCESS-CLAIM-ACCEPTED-01: Processing enum case\'i "processing" değerine sahip olmalı.'
+        );
+
         $caseNames = array_map(static fn (MediaAssetStatus $case): string => $case->name, MediaAssetStatus::cases());
 
-        foreach (['Processing', 'Ready'] as $forbidden) {
-            self::assertNotContains(
-                $forbidden,
-                $caseNames,
-                "MEDIA-SCAN-STATUS-ENUM-01: MediaAssetStatus içinde {$forbidden} case'i tanımlanmamalı."
-            );
-        }
+        self::assertNotContains(
+            'Ready',
+            $caseNames,
+            'MEDIA-SCAN-STATUS-ENUM-01: MediaAssetStatus içinde Ready case\'i tanımlanmamalı.'
+        );
     }
 
     // --- MEDIA-SCAN-ADAPTER-INDETERMINATE-01 --------------------------------
