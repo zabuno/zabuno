@@ -11,4 +11,6 @@ enum MediaAssetStatus: string
     case Scanning = 'scanning';
     case Accepted = 'accepted';
     case Processing = 'processing';
+    case Ready = 'ready';
+    case Failed = 'failed';
 }

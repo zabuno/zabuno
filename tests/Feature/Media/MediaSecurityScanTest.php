@@ -30,13 +30,15 @@ use Tests\TestCase;
  *
  * Per the MEDIA-PROCESS-01 scope revision, `Processing`
  * (MediaAssetStatus::Processing, value "processing") is now an introduced,
- * required enum case for the accepted-to-processing claim package; `Ready`
- * remains unintroduced.
+ * required enum case for the accepted-to-processing claim package. Per the
+ * MEDIA-PROCESS-02R1 scope correction, `Ready` (value "ready") and `Failed`
+ * (value "failed") are now also required enum cases for the processing
+ * terminal-transition package.
  *
  * MEDIA-SCAN-04 is merged: the accepted-state, ClamAV-clean and
  * infected-verdict guards below are now regression coverage, not RED
- * targets. `Processing` is added to the enum only by the separate,
- * later MEDIA-PROCESS-01 package.
+ * targets. `Processing`, `Ready` and `Failed` are added to the enum only
+ * by the separate, later MEDIA-PROCESS-01/MEDIA-PROCESS-02 packages.
  *
  * Requirement IDs: MEDIA-SCAN-STATUS-ENUM-01, MEDIA-SCAN-ADAPTER-INDETERMINATE-01,
  * MEDIA-SCAN-TRANSITION-01, MEDIA-SCAN-REJECTED-NO-REQUEUE-01, MEDIA-SCAN-UPLOAD-HONEST-01,
@@ -75,7 +77,7 @@ final class MediaSecurityScanTest extends TestCase
 
     // --- MEDIA-SCAN-STATUS-ENUM-01 ------------------------------------------
 
-    public function test_scanning_and_accepted_status_round_trip_and_processing_is_required_while_ready_case_is_not_introduced(): void
+    public function test_scanning_and_accepted_status_round_trip_and_processing_ready_and_failed_are_required(): void
     {
         self::assertSame(
             'scanning',
@@ -95,12 +97,16 @@ final class MediaSecurityScanTest extends TestCase
             'MEDIA-PROCESS-CLAIM-ACCEPTED-01: Processing enum case\'i "processing" değerine sahip olmalı.'
         );
 
-        $caseNames = array_map(static fn (MediaAssetStatus $case): string => $case->name, MediaAssetStatus::cases());
+        self::assertSame(
+            'ready',
+            MediaAssetStatus::Ready->value,
+            'MEDIA-PROCESS-USECASE-SUCCEEDED-READY-01: Ready enum case\'i "ready" değerine sahip olmalı.'
+        );
 
-        self::assertNotContains(
-            'Ready',
-            $caseNames,
-            'MEDIA-SCAN-STATUS-ENUM-01: MediaAssetStatus içinde Ready case\'i tanımlanmamalı.'
+        self::assertSame(
+            'failed',
+            MediaAssetStatus::Failed->value,
+            'MEDIA-PROCESS-USECASE-FAILED-TERMINAL-01: Failed enum case\'i "failed" değerine sahip olmalı.'
         );
     }
 
