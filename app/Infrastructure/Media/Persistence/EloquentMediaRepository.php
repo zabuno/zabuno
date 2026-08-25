@@ -6,6 +6,7 @@ namespace App\Infrastructure\Media\Persistence;
 
 use App\Application\Media\Dto\MediaAssetSummary;
 use App\Application\Media\Dto\MediaIntake;
+use App\Application\Media\Dto\ScannableMediaAsset;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Domain\Media\MediaAssetStatus;
 use App\Models\MediaAsset;
@@ -93,6 +94,43 @@ final class EloquentMediaRepository implements MediaRepositoryPort
         }
 
         $asset->delete();
+    }
+
+    public function claimQuarantinedForScanning(int $workspaceId, int $assetId): ?ScannableMediaAsset
+    {
+        $asset = MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->first();
+
+        if ($asset === null) {
+            return null;
+        }
+
+        $claimed = MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Quarantined->value)
+            ->update(['status' => MediaAssetStatus::Scanning->value]);
+
+        if ($claimed === 0) {
+            return null;
+        }
+
+        return new ScannableMediaAsset(
+            id: (int) $asset->getKey(),
+            workspaceId: (int) $asset->workspace_id,
+            diskPath: (string) $asset->disk_path,
+        );
+    }
+
+    public function markRejectedIfScanning(int $workspaceId, int $assetId): void
+    {
+        MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Scanning->value)
+            ->update(['status' => MediaAssetStatus::Rejected->value]);
     }
 
     private function toSummary(MediaAsset $asset): MediaAssetSummary
