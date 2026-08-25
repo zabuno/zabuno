@@ -35,12 +35,15 @@ const FROZEN_MODULE_FILENAMES = [
 
 const FROZEN_LEGACY_KEY_COUNT = 413;
 
-// Frozen from the current resources/js/i18n/workspace/ catalogs: sha256 of
-// sorted "key=value" lines joined by "\n" over all 413 entries (media.ts
-// intentionally replaces one legacy status key with eight status-specific
-// keys, moving the catalog from 406 to 413 entries).
+// Frozen from the not-yet-applied MEDIA-LOAD-STATE-01 catalog transform:
+// sha256 of sorted "key=value" lines joined by "\n" over all 413 entries,
+// after media.ts drops the two unused legacy keys
+// workspace.media.unavailable and workspace.media.upload.unavailable, adds
+// workspace.media.library.loading and workspace.media.library.error, and
+// changes the value of workspace.media.library.unavailable — entry count
+// stays exactly 413.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '49d09ffd8e79e1b793227151e925e9a9b1a4cea758c4c5974227a6aa64255795';
+    '9e5e3da111e35486b14ffb1fa9cdba91abc2c98532b4bf1268a97bcdc3ab4d77';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

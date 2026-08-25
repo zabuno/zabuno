@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { AiAssistPanel } from '../ai/AiAssistPanel';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
-import { MediaLibraryRegion } from './media/MediaLibraryRegion';
+import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 
 export type MediaAsset = {
@@ -24,6 +24,8 @@ type MediaPageProps = {
  */
 export function MediaPage({ workspaceId }: MediaPageProps) {
     const [assets, setAssets] = useState<MediaAsset[]>([]);
+    const [loadState, setLoadState] = useState<MediaLibraryLoadState>('loading');
+    const requestSeqRef = useRef(0);
     const endpoint = `/api/workspaces/${workspaceId ?? ''}/media`;
 
     const loadAssets = useCallback(async () => {
@@ -31,18 +33,35 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             return;
         }
 
+        const requestId = (requestSeqRef.current += 1);
+        setLoadState('loading');
+
         try {
             const response = await fetch(endpoint, { credentials: 'same-origin' });
 
+            if (requestId !== requestSeqRef.current) {
+                return;
+            }
+
             if (!response.ok) {
+                setLoadState('error');
                 return;
             }
 
             const body = (await response.json()) as { data?: MediaAsset[]; assets?: MediaAsset[] };
 
+            if (requestId !== requestSeqRef.current) {
+                return;
+            }
+
             setAssets(body.data ?? body.assets ?? []);
+            setLoadState('idle');
         } catch {
-            // Library stays empty; its region still renders an honest state.
+            if (requestId !== requestSeqRef.current) {
+                return;
+            }
+
+            setLoadState('error');
         }
     }, [endpoint, workspaceId]);
 
@@ -65,7 +84,9 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
         const body = (await response.json()) as { asset?: MediaAsset } & Partial<MediaAsset>;
         const asset = (body.asset ?? body) as MediaAsset;
 
+        requestSeqRef.current += 1;
         setAssets((current) => [...current, asset]);
+        setLoadState('idle');
     }
 
     async function handleDelete(id: number) {
@@ -94,7 +115,12 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                 badges={badges}
             >
                 <MediaUploadRegion onSubmit={handleUpload} />
-                <MediaLibraryRegion assets={assets} onDelete={(id) => void handleDelete(id)} />
+                <MediaLibraryRegion
+                    assets={assets}
+                    onDelete={(id) => void handleDelete(id)}
+                    loadState={loadState}
+                    onRetry={() => void loadAssets()}
+                />
 
                 <AiAssistPanel context={t('workspace.shell.nav.media')} />
             </WorkspacePageFrame>

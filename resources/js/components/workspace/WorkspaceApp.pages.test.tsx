@@ -172,6 +172,9 @@ function buildFetchMock() {
         ) {
             return jsonResponse(404, {});
         }
+        if (String(url) === `/api/workspaces/${WORKSPACE_ID}/media` && method === 'GET') {
+            return jsonResponse(200, { assets: [] });
+        }
 
         throw new Error(`Unhandled fetch in WorkspaceApp pages test: ${method} ${String(url)}`);
     });
@@ -342,9 +345,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
         await user.click(within(nav).getByRole('link', { name: 'Media' }));
         const mediaRoot = document.querySelector('#media') as HTMLElement;
-        expect(
-            within(mediaRoot).getAllByText(/not available|no media|unavailable/i).length,
-        ).toBeGreaterThan(0);
+        const mediaEmptyNotice = within(mediaRoot).getByText('No media assets yet.');
+        expect(mediaEmptyNotice).toHaveAttribute('role', 'status');
         expect(within(mediaRoot).queryByRole('table')).not.toBeInTheDocument();
 
         await user.click(within(nav).getByRole('link', { name: 'Publication' }));
