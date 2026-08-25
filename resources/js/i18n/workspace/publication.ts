@@ -12,6 +12,7 @@ export const publication = {
     'workspace.publication.status.publishButton': 'Publish',
     'workspace.publication.status.loadError':
         'Could not load the current publication status. Try again.',
+    'workspace.publication.status.loading': 'Checking current publication status…',
     'workspace.publication.status.lifecycle.heading': 'Lifecycle',
     'workspace.publication.status.lifecycle.pending': 'Pending',
     'workspace.publication.status.lifecycle.generating': 'Generating',

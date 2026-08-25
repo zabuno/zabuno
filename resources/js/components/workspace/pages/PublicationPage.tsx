@@ -28,10 +28,12 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
     const locationId = dashboardMenuTree?.locationId ?? null;
 
     const [current, setCurrent] = useState<CurrentPublication | null>(null);
+    const [loading, setLoading] = useState(workspaceId !== undefined && menuId !== null);
     const [loadError, setLoadError] = useState(false);
     const [confirmed, setConfirmed] = useState(false);
     const [publishing, setPublishing] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [retryToken, setRetryToken] = useState(0);
 
     useEffect(() => {
         if (workspaceId === undefined || menuId === null) {
@@ -63,13 +65,21 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
                 }
             } catch {
                 if (!cancelled) setLoadError(true);
+            } finally {
+                if (!cancelled) setLoading(false);
             }
         })();
 
         return () => {
             cancelled = true;
         };
-    }, [workspaceId, menuId]);
+    }, [workspaceId, menuId, retryToken]);
+
+    function handleRetry() {
+        setLoading(true);
+        setLoadError(false);
+        setRetryToken((token) => token + 1);
+    }
 
     const checklistReady = isDraftReady(dashboardMenuTree);
 
@@ -141,7 +151,9 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
                 <PublishReadinessChecklistRegion dashboardMenuTree={dashboardMenuTree} />
                 <PublicationStatusRegion
                     current={current}
+                    loading={loading}
                     loadError={loadError}
+                    onRetry={handleRetry}
                     checklistReady={checklistReady}
                     confirmed={confirmed}
                     onConfirmedChange={setConfirmed}
