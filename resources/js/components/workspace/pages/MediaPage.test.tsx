@@ -528,3 +528,220 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
         expect(within(libraryRegion).queryByRole('alert')).toBeNull();
     });
 });
+
+/**
+ * MEDIA_UPLOAD_STATE_RED
+ *
+ * The upload region has no truthful pending/failure/retry lifecycle today —
+ * the Upload button stays enabled during the POST, a non-2xx or rejected
+ * POST is silent (no accessible alert, no field preservation), and there is
+ * no honest completion announcement. These assertions require the frozen
+ * accessible copy from the MEDIA-UPLOAD-STATE-01 scope, so they fail
+ * against current production.
+ */
+describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        setViewport(320, 480);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    async function fillUploadForm(
+        uploadRegion: HTMLElement,
+        user: ReturnType<typeof import('@testing-library/user-event').default.setup>,
+    ) {
+        const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
+        const altField = within(uploadRegion).getByLabelText(/alt text/i);
+        const slotField = within(uploadRegion).getByLabelText(/asset slot/i);
+        const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
+
+        const file = new File(['binary'], 'photo.png', { type: 'image/png' });
+        await user.upload(fileField, file);
+        await user.type(altField, 'A test image');
+        await user.selectOptions(slotField, 'hero');
+
+        return { fileField, altField, slotField, submitButton, file };
+    }
+
+    it('a pending POST announces Uploading via role=status and disables Upload', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        let resolvePost!: (response: Response) => void;
+        const pendingPost = new Promise<Response>((resolve) => {
+            resolvePost = resolve;
+        });
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
+                return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
+            }
+            if (String(url) === MEDIA_ENDPOINT && init?.method === 'POST') {
+                return pendingPost;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
+        const { submitButton } = await fillUploadForm(uploadRegion, user);
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            const uploadingNotice = within(uploadRegion).getByText('Uploading media…');
+            expect(uploadingNotice).toHaveAttribute('role', 'status');
+        });
+        expect(submitButton).toBeDisabled();
+
+        resolvePost({
+            ok: true,
+            status: 201,
+            json: async () => ({
+                asset: { id: 99, altText: 'A test image', slot: 'hero', status: 'quarantined' },
+            }),
+        } as Response);
+    });
+
+    it('a non-2xx POST shows one accessible upload alert, adds no asset, preserves file/alt/slot, and re-enables Upload', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
+                return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
+            }
+            if (String(url) === MEDIA_ENDPOINT && init?.method === 'POST') {
+                return { ok: false, status: 422, json: async () => ({}) } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
+        const { fileField, altField, slotField, submitButton, file } = await fillUploadForm(
+            uploadRegion,
+            user,
+        );
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            const alerts = within(uploadRegion).getAllByRole('alert');
+            expect(alerts).toHaveLength(1);
+            expect(alerts[0].textContent).toBe('Media upload failed. Your selection was kept.');
+        });
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        expect(within(libraryRegion).queryByText(/#\d+/)).toBeNull();
+
+        expect(fileField.files?.[0]).toBe(file);
+        expect((altField as HTMLInputElement).value).toBe('A test image');
+        expect((slotField as HTMLSelectElement).value).toBe('hero');
+        expect(submitButton).not.toBeDisabled();
+    });
+
+    it('a rejected POST shows the same alert and preserves the same fields without an unhandled rejection', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
+                return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
+            }
+            if (String(url) === MEDIA_ENDPOINT && init?.method === 'POST') {
+                throw new Error('Network failure');
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
+        const { fileField, altField, slotField, submitButton, file } = await fillUploadForm(
+            uploadRegion,
+            user,
+        );
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            const alerts = within(uploadRegion).getAllByRole('alert');
+            expect(alerts).toHaveLength(1);
+            expect(alerts[0].textContent).toBe('Media upload failed. Your selection was kept.');
+        });
+
+        expect(fileField.files?.[0]).toBe(file);
+        expect((altField as HTMLInputElement).value).toBe('A test image');
+        expect((slotField as HTMLSelectElement).value).toBe('hero');
+        expect(submitButton).not.toBeDisabled();
+    });
+
+    it('retry after one failed POST then succeeds: alert clears, completion is announced, file/alt/slot clear, and exactly the returned quarantined asset appears', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        let postCallCount = 0;
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
+                return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
+            }
+            if (String(url) === MEDIA_ENDPOINT && init?.method === 'POST') {
+                postCallCount += 1;
+                if (postCallCount === 1) {
+                    return { ok: false, status: 500, json: async () => ({}) } as Response;
+                }
+                return {
+                    ok: true,
+                    status: 201,
+                    json: async () => ({
+                        asset: {
+                            id: 77,
+                            altText: 'A test image',
+                            slot: 'hero',
+                            status: 'quarantined',
+                        },
+                    }),
+                } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
+        const { fileField, altField, slotField, submitButton } = await fillUploadForm(
+            uploadRegion,
+            user,
+        );
+        await user.click(submitButton);
+
+        await waitFor(() => expect(within(uploadRegion).getByRole('alert')).toBeInTheDocument());
+
+        await user.click(submitButton);
+
+        await waitFor(() => expect(postCallCount).toBe(2));
+
+        await waitFor(() => {
+            const completionNotice = within(uploadRegion).getByText('Media upload complete.');
+            expect(completionNotice).toHaveAttribute('role', 'status');
+        });
+        expect(within(uploadRegion).queryByRole('alert')).toBeNull();
+
+        expect(fileField.files?.length ?? 0).toBe(0);
+        expect((altField as HTMLInputElement).value).toBe('');
+        expect((slotField as HTMLSelectElement).value).toBe('');
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => {
+            expect(within(libraryRegion).getByText(/#77/)).toBeInTheDocument();
+        });
+        expect(within(libraryRegion).queryAllByText(/#\d+/)).toHaveLength(1);
+    });
+});

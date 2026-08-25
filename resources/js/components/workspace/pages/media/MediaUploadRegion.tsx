@@ -1,5 +1,7 @@
-import { useId, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 import { t } from '../../../../i18n/workspace';
+
+type UploadStatus = 'idle' | 'pending' | 'success' | 'error';
 
 const SLOT_OPTIONS = [
     ['hero', 'workspace.media.upload.field.assetSlot.hero'],
@@ -40,7 +42,8 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
     const [file, setFile] = useState<File | null>(null);
     const [altText, setAltText] = useState('');
     const [slot, setSlot] = useState('');
-    const [submitting, setSubmitting] = useState(false);
+    const [status, setStatus] = useState<UploadStatus>('idle');
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -54,15 +57,19 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         formData.set('altText', altText);
         formData.set('slot', slot);
 
-        setSubmitting(true);
+        setStatus('pending');
 
         try {
             await onSubmit(formData);
             setFile(null);
             setAltText('');
             setSlot('');
-        } finally {
-            setSubmitting(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            setStatus('success');
+        } catch {
+            setStatus('error');
         }
     }
 
@@ -86,6 +93,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     <input
                         id={fileId}
                         type="file"
+                        ref={fileInputRef}
                         className="text-sm text-gray-700 dark:text-gray-300"
                         onChange={(event) => setFile(event.target.files?.[0] ?? null)}
                     />
@@ -157,11 +165,29 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
             <button
                 type="submit"
-                disabled={submitting}
+                disabled={status === 'pending'}
                 className="self-start rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
             >
                 {t('workspace.media.upload.button')}
             </button>
+
+            {status === 'pending' && (
+                <p role="status" className="text-xs text-gray-500 dark:text-gray-400">
+                    {t('workspace.media.upload.uploading')}
+                </p>
+            )}
+
+            {status === 'error' && (
+                <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+                    {t('workspace.media.upload.failed')}
+                </p>
+            )}
+
+            {status === 'success' && (
+                <p role="status" className="text-xs text-gray-500 dark:text-gray-400">
+                    {t('workspace.media.upload.complete')}
+                </p>
+            )}
 
             <p className="text-xs text-gray-500 dark:text-gray-400">
                 {t('workspace.media.security.explanation')}

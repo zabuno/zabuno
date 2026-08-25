@@ -33,17 +33,15 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 413;
+const FROZEN_LEGACY_KEY_COUNT = 416;
 
-// Frozen from the not-yet-applied MEDIA-LOAD-STATE-01 catalog transform:
-// sha256 of sorted "key=value" lines joined by "\n" over all 413 entries,
-// after media.ts drops the two unused legacy keys
-// workspace.media.unavailable and workspace.media.upload.unavailable, adds
-// workspace.media.library.loading and workspace.media.library.error, and
-// changes the value of workspace.media.library.unavailable — entry count
-// stays exactly 413.
+// Frozen from the applied MEDIA-UPLOAD-STATE-01 catalog transform: sha256 of
+// sorted "key=value" lines joined by "\n" over all 416 entries, after
+// media.ts additively introduces three new upload-state keys for the
+// pending/failure/completion accessible copy — entry count grows from 413
+// (the prior MEDIA-LOAD-STATE-01 baseline) to exactly 416.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '9e5e3da111e35486b14ffb1fa9cdba91abc2c98532b4bf1268a97bcdc3ab4d77';
+    '84a80dbc021c4ed316246398a13af231eb3144d517092609a7da12c53173a7cd';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
