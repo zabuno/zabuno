@@ -61,7 +61,8 @@ export const media = {
     'workspace.media.library.asset.status.failed': 'Processing failed',
     'workspace.media.library.asset.status.unknown': 'Status unavailable',
     'workspace.media.library.asset.delete': 'Delete',
-    'workspace.media.library.asset.delete.failed': 'Media asset deletion failed. Your item was kept.',
+    'workspace.media.library.asset.delete.failed':
+        'Media asset deletion failed. Your item was kept.',
     'workspace.media.library.asset.delete.complete': 'Media asset deleted.',
 } as const;
 
