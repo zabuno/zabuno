@@ -1,12 +1,17 @@
+import { Button } from 'flowbite-react';
 import { t } from '../../../../i18n/workspace';
 import { MediaAssetStatusBadge } from './MediaAssetStatusBadge';
 import { MediaLifecycleList } from './MediaLifecycleList';
 import { MediaLibrarySlotList } from './MediaLibrarySlotList';
 import type { MediaAsset } from '../MediaPage';
 
+export type MediaLibraryLoadState = 'loading' | 'idle' | 'error';
+
 type MediaLibraryRegionProps = {
     assets: MediaAsset[];
     onDelete: (id: number) => void;
+    loadState: MediaLibraryLoadState;
+    onRetry?: () => void;
 };
 
 /**
@@ -14,7 +19,12 @@ type MediaLibraryRegionProps = {
  * image/img element, no public URL, no Ready/Published claim (MEDIA-INTAKE-
  * NO-PUBLIC-URL-01, MEDIA-INTAKE-STATUS-01).
  */
-export function MediaLibraryRegion({ assets, onDelete }: MediaLibraryRegionProps) {
+export function MediaLibraryRegion({
+    assets,
+    onDelete,
+    loadState,
+    onRetry,
+}: MediaLibraryRegionProps) {
     return (
         <div
             role="region"
@@ -29,7 +39,18 @@ export function MediaLibraryRegion({ assets, onDelete }: MediaLibraryRegionProps
                 {t('workspace.media.library.assets.heading')}
             </p>
 
-            {assets.length === 0 ? (
+            {loadState === 'loading' ? (
+                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                    {t('workspace.media.library.loading')}
+                </p>
+            ) : loadState === 'error' ? (
+                <div className="flex flex-col items-start gap-2">
+                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                        {t('workspace.media.library.error')}
+                    </p>
+                    <Button onClick={() => onRetry?.()}>{t('workspace.error.retry')}</Button>
+                </div>
+            ) : assets.length === 0 ? (
                 <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
                     {t('workspace.media.library.unavailable')}
                 </p>

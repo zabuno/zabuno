@@ -2,10 +2,8 @@ export const media = {
     'workspace.media.heading': 'Media',
     'workspace.media.operational.description':
         'Upload images and manage the media library that feeds your published menu — every asset is scanned before it can be used.',
-    'workspace.media.unavailable': 'Media is not available yet.',
     'workspace.media.upload.region': 'Media upload',
     'workspace.media.upload.heading': 'Upload',
-    'workspace.media.upload.unavailable': 'Media upload is not available yet.',
     'workspace.media.upload.button': 'Upload',
     'workspace.media.security.explanation':
         'A human reviews and approves every security scan result before any file can move forward; no scan approves itself.',
@@ -34,7 +32,9 @@ export const media = {
     'workspace.media.upload.field.expiry': 'Expiry date',
     'workspace.media.library.region': 'Media library',
     'workspace.media.library.heading': 'Library',
-    'workspace.media.library.unavailable': 'Media library is not available yet.',
+    'workspace.media.library.unavailable': 'No media assets yet.',
+    'workspace.media.library.loading': 'Loading media library…',
+    'workspace.media.library.error': 'Media library could not be loaded.',
     'workspace.media.lifecycle.heading': 'Lifecycle',
     'workspace.media.lifecycle.quarantine': 'Quarantine',
     'workspace.media.lifecycle.validation': 'Validation',

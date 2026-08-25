@@ -12,11 +12,15 @@ const MIXED_ASSETS: MediaAsset[] = [
 ];
 
 describe('MediaLibraryRegion — real status per asset (MEDIA-UI-STATUS-01)', () => {
-    it('renders each mixed asset through its own real status, never hard-coding quarantine, and preserves alt text and delete', async () => {
+    it('renders each mixed asset through its own real status, never hard-coding quarantine, preserves alt text and delete, and hides loading/empty/error notices', async () => {
         const user = userEvent.setup();
         const onDelete = vi.fn();
 
-        render(<MediaLibraryRegion assets={MIXED_ASSETS} onDelete={onDelete} />);
+        render(<MediaLibraryRegion assets={MIXED_ASSETS} onDelete={onDelete} loadState="idle" />);
+
+        expect(screen.queryByText('Loading media library…')).toBeNull();
+        expect(screen.queryByText('No media assets yet.')).toBeNull();
+        expect(screen.queryByRole('alert')).toBeNull();
 
         const list = screen.getAllByRole('list')[0];
         const items = within(list).getAllByRole('listitem');

@@ -349,3 +349,182 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         expect(offenders).toEqual([]);
     });
 });
+
+/**
+ * MEDIA_LOAD_STATE_RED
+ *
+ * The library region has no truthful loading/error/retry lifecycle today —
+ * it renders a single static "unavailable" line regardless of fetch
+ * outcome, and there is no Retry control. These assertions require the
+ * frozen accessible copy and roles from the MEDIA-LOAD-STATE-01 scope, so
+ * they fail against current production.
+ */
+describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        setViewport(320, 480);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('shows an accessible loading status before the initial GET resolves, with no empty or error copy present', async () => {
+        let resolveGet!: (response: Response) => void;
+        const pendingGet = new Promise<Response>((resolve) => {
+            resolveGet = resolve;
+        });
+        fetchSpy = vi.fn(async (url: string) => {
+            if (String(url) === MEDIA_ENDPOINT) {
+                return pendingGet;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        const loadingNotice = within(libraryRegion).getByText('Loading media library…');
+        expect(loadingNotice).toHaveAttribute('role', 'status');
+        expect(within(libraryRegion).queryByText('No media assets yet.')).toBeNull();
+        expect(within(libraryRegion).queryByRole('alert')).toBeNull();
+
+        resolveGet({ ok: true, status: 200, json: async () => ({ assets: [] }) } as Response);
+        await waitFor(() => {
+            const emptyNotice = within(libraryRegion).getByText('No media assets yet.');
+            expect(emptyNotice).toHaveAttribute('role', 'status');
+        });
+    });
+
+    it('resolves an HTTP 200 empty response to the accessible successful-empty status', async () => {
+        fetchSpy = vi.fn(async (url: string) => {
+            if (String(url) === MEDIA_ENDPOINT) {
+                return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => {
+            const emptyNotice = within(libraryRegion).getByText('No media assets yet.');
+            expect(emptyNotice).toHaveAttribute('role', 'status');
+        });
+        expect(within(libraryRegion).queryByRole('alert')).toBeNull();
+    });
+
+    it('resolves a thrown GET to an accessible error with a real Retry button', async () => {
+        fetchSpy = vi.fn(async (url: string) => {
+            if (String(url) === MEDIA_ENDPOINT) {
+                throw new Error('Network failure');
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => {
+            const alert = within(libraryRegion).getByRole('alert');
+            expect(alert.textContent).toBe('Media library could not be loaded.');
+        });
+        expect(within(libraryRegion).queryByText('No media assets yet.')).toBeNull();
+
+        const retryButton = within(libraryRegion).getByRole('button', { name: 'Retry' });
+        expect(retryButton.tagName).toBe('BUTTON');
+    });
+
+    it('Retry issues another GET and recovers from the error state to the successful-empty state', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        let getCallCount = 0;
+        fetchSpy = vi.fn(async (url: string) => {
+            if (String(url) === MEDIA_ENDPOINT) {
+                getCallCount += 1;
+                if (getCallCount === 1) {
+                    return { ok: false, status: 500, json: async () => ({}) } as Response;
+                }
+                return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => expect(within(libraryRegion).getByRole('alert')).toBeInTheDocument());
+
+        const retryButton = within(libraryRegion).getByRole('button', { name: 'Retry' });
+        await user.click(retryButton);
+
+        await waitFor(() => expect(getCallCount).toBe(2));
+        await waitFor(() => {
+            const emptyNotice = within(libraryRegion).getByText('No media assets yet.');
+            expect(emptyNotice).toHaveAttribute('role', 'status');
+        });
+        expect(within(libraryRegion).queryByRole('alert')).toBeNull();
+    });
+
+    it('a successful upload after an initial GET error renders the new asset and clears the library error', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
+                return { ok: false, status: 500, json: async () => ({}) } as Response;
+            }
+            if (String(url) === MEDIA_ENDPOINT && init?.method === 'POST') {
+                expect(init.body).toBeInstanceOf(FormData);
+                expect(init.credentials).toBe('same-origin');
+                return {
+                    ok: true,
+                    status: 201,
+                    json: async () => ({
+                        asset: {
+                            id: 42,
+                            altText: 'A test image',
+                            slot: 'hero',
+                            status: 'quarantined',
+                        },
+                    }),
+                } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => expect(within(libraryRegion).getByRole('alert')).toBeInTheDocument());
+
+        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
+        const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
+        const altField = within(uploadRegion).getByLabelText(/alt text/i);
+        const slotField = within(uploadRegion).getByLabelText(/asset slot/i);
+        const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
+
+        const file = new File(['binary'], 'photo.png', { type: 'image/png' });
+        await user.upload(fileField, file);
+        await user.type(altField, 'A test image');
+        await user.selectOptions(slotField, 'hero');
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            const postCall = fetchSpy.mock.calls.find((call) => call[1]?.method === 'POST');
+            expect(postCall).toBeDefined();
+        });
+
+        await waitFor(() => {
+            expect(within(libraryRegion).getByText(/#42/)).toBeInTheDocument();
+        });
+        expect(within(libraryRegion).getByText('A test image')).toBeInTheDocument();
+        expect(within(libraryRegion).getByText(/scan pending|quarantined/i)).toBeInTheDocument();
+        expect(within(libraryRegion).queryByRole('alert')).toBeNull();
+    });
+});
