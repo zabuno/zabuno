@@ -222,4 +222,111 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         }
         expect(container.textContent ?? '').not.toMatch(RESPONSIVE_WORDING);
     });
+
+    it('offers a visible accessible Refresh action in the successful report state that reissues the exact current workspace/location/range request', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+        await waitFor(() => expect(within(region).getByText('3')).toBeInTheDocument());
+
+        const refreshButton = within(region).getByRole('button', { name: /refresh/i });
+        expect(refreshButton).toBeEnabled();
+
+        fetchSpy.mockClear();
+        await user.click(refreshButton);
+
+        await waitFor(() =>
+            expect(fetchSpy).toHaveBeenCalledWith(`${SUMMARY_ENDPOINT}?range=today`),
+        );
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('disables the Refresh action with truthful loading while the refresh request is pending', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+        await waitFor(() => expect(within(region).getByText('3')).toBeInTheDocument());
+
+        let resolveRefresh: ((value: Response) => void) | undefined;
+        fetchSpy.mockImplementation(
+            () =>
+                new Promise<Response>((resolve) => {
+                    resolveRefresh = resolve;
+                }),
+        );
+
+        const refreshButton = within(region).getByRole('button', { name: /refresh/i });
+        await user.click(refreshButton);
+
+        await waitFor(() => expect(refreshButton).toBeDisabled());
+        expect(within(region).getByText(/loading/i)).toBeInTheDocument();
+        expect(within(region).queryByText(/^0$/)).not.toBeInTheDocument();
+
+        resolveRefresh?.(jsonResponse(200, summaryBody('today', 3, 2)));
+        await waitFor(() => expect(refreshButton).toBeEnabled());
+    });
+
+    it('labels the action Retry (not Refresh) on HTTP and thrown-network failures without fabricating a zero counter', async () => {
+        fetchSpy.mockImplementation(async () => jsonResponse(500, { message: 'Server Error' }));
+
+        const { unmount } = render(
+            <AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />,
+        );
+
+        let region = await screen.findByRole('region', { name: /metric|report/i });
+        await waitFor(() =>
+            expect(within(region).getByRole('button', { name: /retry/i })).toBeInTheDocument(),
+        );
+        expect(
+            within(region).queryByRole('button', { name: /^refresh$/i }),
+        ).not.toBeInTheDocument();
+        expect(within(region).queryByText(/^0$/)).not.toBeInTheDocument();
+
+        unmount();
+
+        fetchSpy.mockImplementation(async () => {
+            throw new Error('Network failure');
+        });
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        region = await screen.findByRole('region', { name: /metric|report/i });
+        await waitFor(() =>
+            expect(within(region).getByRole('button', { name: /retry/i })).toBeInTheDocument(),
+        );
+        expect(within(region).queryByText(/^0$/)).not.toBeInTheDocument();
+    });
+
+    it('reissues the same current request on Retry and renders server-authoritative counters from the successful response', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        fetchSpy.mockImplementation(async () => jsonResponse(500, { message: 'Server Error' }));
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+        const retryButton = await waitFor(() =>
+            within(region).getByRole('button', { name: /retry/i }),
+        );
+
+        fetchSpy.mockImplementation(async (url: string) => {
+            if (String(url) === `${SUMMARY_ENDPOINT}?range=today`) {
+                return jsonResponse(200, summaryBody('today', 7, 5));
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        fetchSpy.mockClear();
+
+        await user.click(retryButton);
+
+        await waitFor(() =>
+            expect(fetchSpy).toHaveBeenCalledWith(`${SUMMARY_ENDPOINT}?range=today`),
+        );
+        await waitFor(() => expect(within(region).getByText('7')).toBeInTheDocument());
+        expect(within(region).getByText('5')).toBeInTheDocument();
+    });
 });
