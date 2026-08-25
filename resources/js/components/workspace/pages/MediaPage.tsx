@@ -25,6 +25,9 @@ type MediaPageProps = {
 export function MediaPage({ workspaceId }: MediaPageProps) {
     const [assets, setAssets] = useState<MediaAsset[]>([]);
     const [loadState, setLoadState] = useState<MediaLibraryLoadState>('loading');
+    const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<number>>(new Set());
+    const [deleteErrorIds, setDeleteErrorIds] = useState<Set<number>>(new Set());
+    const [deleteNotice, setDeleteNotice] = useState<string | null>(null);
     const requestSeqRef = useRef(0);
     const endpoint = `/api/workspaces/${workspaceId ?? ''}/media`;
 
@@ -90,16 +93,43 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
     }
 
     async function handleDelete(id: number) {
-        const response = await fetch(`${endpoint}/${id}`, {
-            ...buildAuthRequestInit({ method: 'DELETE' }),
-            credentials: 'same-origin',
-        });
-
-        if (!response.ok) {
+        if (pendingDeleteIds.has(id)) {
             return;
         }
 
-        setAssets((current) => current.filter((asset) => asset.id !== id));
+        setPendingDeleteIds((current) => new Set(current).add(id));
+        setDeleteErrorIds((current) => {
+            if (!current.has(id)) {
+                return current;
+            }
+            const next = new Set(current);
+            next.delete(id);
+            return next;
+        });
+        setDeleteNotice(null);
+
+        try {
+            const response = await fetch(`${endpoint}/${id}`, {
+                ...buildAuthRequestInit({ method: 'DELETE' }),
+                credentials: 'same-origin',
+            });
+
+            if (!response.ok) {
+                setDeleteErrorIds((current) => new Set(current).add(id));
+                return;
+            }
+
+            setAssets((current) => current.filter((asset) => asset.id !== id));
+            setDeleteNotice(t('workspace.media.library.asset.delete.complete'));
+        } catch {
+            setDeleteErrorIds((current) => new Set(current).add(id));
+        } finally {
+            setPendingDeleteIds((current) => {
+                const next = new Set(current);
+                next.delete(id);
+                return next;
+            });
+        }
     }
 
     const badges: WorkspacePageStatusBadge[] =
@@ -120,6 +150,9 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                     onDelete={(id) => void handleDelete(id)}
                     loadState={loadState}
                     onRetry={() => void loadAssets()}
+                    pendingDeleteIds={pendingDeleteIds}
+                    deleteErrorIds={deleteErrorIds}
+                    deleteNotice={deleteNotice}
                 />
 
                 <AiAssistPanel context={t('workspace.shell.nav.media')} />

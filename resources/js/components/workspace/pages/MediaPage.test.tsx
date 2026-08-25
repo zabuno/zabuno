@@ -745,3 +745,184 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
         expect(within(libraryRegion).queryAllByText(/#\d+/)).toHaveLength(1);
     });
 });
+
+/**
+ * MEDIA_DELETE_STATE_RED
+ *
+ * The delete control has no truthful pending/failure/retry lifecycle today —
+ * the per-asset Delete button stays enabled during the DELETE request (so a
+ * second click fires a duplicate request), a non-2xx or rejected DELETE is
+ * silent (no accessible alert, the asset stays but nothing explains why),
+ * and there is no honest completion announcement on success. These
+ * assertions require a truthful per-asset delete lifecycle, so they fail
+ * against current production. No production, i18n, Storybook, backend or
+ * Git edits are made from this file.
+ */
+describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        setViewport(320, 480);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    function stubInitialGet(handleOther: (url: string, init?: RequestInit) => Promise<Response>) {
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
+                return {
+                    ok: true,
+                    status: 200,
+                    json: async () => ({
+                        assets: [
+                            { id: 7, altText: 'Owned asset', slot: 'hero', status: 'quarantined' },
+                            { id: 8, altText: 'Other asset', slot: 'menu', status: 'quarantined' },
+                        ],
+                    }),
+                } as Response;
+            }
+            return handleOther(url, init);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+    }
+
+    it('a pending DELETE disables only the targeted asset delete control and prevents a duplicate request', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        let resolveDelete!: (response: Response) => void;
+        const pendingDelete = new Promise<Response>((resolve) => {
+            resolveDelete = resolve;
+        });
+
+        stubInitialGet(async (url, init) => {
+            if (String(url) === `${MEDIA_ENDPOINT}/7` && init?.method === 'DELETE') {
+                return pendingDelete;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+
+        const items = within(libraryRegion).getAllByRole('listitem');
+        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
+        const otherItem = items.find((item) => item.textContent?.includes('#8')) as HTMLElement;
+
+        const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
+        const otherDeleteButton = within(otherItem).getByRole('button', { name: /delete/i });
+
+        await user.click(targetDeleteButton);
+
+        await waitFor(() => expect(targetDeleteButton).toBeDisabled());
+        expect(otherDeleteButton).not.toBeDisabled();
+
+        await user.click(targetDeleteButton);
+
+        const deleteCalls = fetchSpy.mock.calls.filter((call) => call[1]?.method === 'DELETE');
+        expect(deleteCalls).toHaveLength(1);
+
+        resolveDelete({ ok: true, status: 204, json: async () => ({}) } as Response);
+        await waitFor(() => expect(within(libraryRegion).queryByText(/#7/)).toBeNull());
+    });
+
+    it('a non-2xx DELETE keeps the asset, shows an accessible error, and permits retry', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        stubInitialGet(async (url, init) => {
+            if (String(url) === `${MEDIA_ENDPOINT}/7` && init?.method === 'DELETE') {
+                return { ok: false, status: 500, json: async () => ({}) } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+
+        const items = within(libraryRegion).getAllByRole('listitem');
+        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
+        const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
+
+        await user.click(targetDeleteButton);
+
+        await waitFor(() => {
+            const alert = within(targetItem).getByRole('alert');
+            expect(alert.textContent).toBe('Media asset deletion failed. Your item was kept.');
+        });
+
+        expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument();
+        expect(targetDeleteButton).not.toBeDisabled();
+
+        await user.click(targetDeleteButton);
+        const deleteCalls = fetchSpy.mock.calls.filter((call) => call[1]?.method === 'DELETE');
+        expect(deleteCalls).toHaveLength(2);
+    });
+
+    it('a thrown DELETE request keeps the asset, shows the same accessible error, and permits retry', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        stubInitialGet(async (url, init) => {
+            if (String(url) === `${MEDIA_ENDPOINT}/7` && init?.method === 'DELETE') {
+                throw new Error('Network failure');
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+
+        const items = within(libraryRegion).getAllByRole('listitem');
+        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
+        const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
+
+        await user.click(targetDeleteButton);
+
+        await waitFor(() => {
+            const alert = within(targetItem).getByRole('alert');
+            expect(alert.textContent).toBe('Media asset deletion failed. Your item was kept.');
+        });
+
+        expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument();
+        expect(targetDeleteButton).not.toBeDisabled();
+
+        await user.click(targetDeleteButton);
+        const deleteCalls = fetchSpy.mock.calls.filter((call) => call[1]?.method === 'DELETE');
+        expect(deleteCalls).toHaveLength(2);
+    });
+
+    it('a successful DELETE removes the asset and announces concise accessible completion', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+
+        stubInitialGet(async (url, init) => {
+            if (String(url) === `${MEDIA_ENDPOINT}/7` && init?.method === 'DELETE') {
+                return { ok: true, status: 204, json: async () => ({}) } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+
+        const items = within(libraryRegion).getAllByRole('listitem');
+        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
+        const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
+
+        await user.click(targetDeleteButton);
+
+        await waitFor(() => expect(within(libraryRegion).queryByText(/#7/)).toBeNull());
+
+        const completionNotice = within(libraryRegion).getByText('Media asset deleted.');
+        expect(completionNotice).toHaveAttribute('role', 'status');
+        expect(within(libraryRegion).queryByRole('alert')).toBeNull();
+        expect(within(libraryRegion).getByText(/#8/)).toBeInTheDocument();
+    });
+});
