@@ -11,9 +11,9 @@ import { t } from './workspace';
  * resources/js/i18n/workspace.ts (legacy flat literal catalog) is being
  * replaced by an aggregator of the same path that automatically discovers
  * module catalogs under resources/js/i18n/workspace/ via import.meta.glob,
- * merges them, and preserves all 406 legacy workspace.* key/value pairs and
- * t() runtime/type behavior exactly. Neither the ten module files nor the
- * glob-based aggregator exist yet, so the tests below fail honestly.
+ * merges them, and preserves all 413 workspace.* key/value pairs (media.ts
+ * intentionally replaces one legacy status key with eight status-specific
+ * keys) and t() runtime/type behavior exactly.
  */
 
 const WORKSPACE_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -33,12 +33,14 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 406;
+const FROZEN_LEGACY_KEY_COUNT = 413;
 
-// Frozen from the pre-refactor resources/js/i18n/workspace.ts: sha256 of
-// sorted "key=value" lines joined by "\n" over all 406 legacy entries.
+// Frozen from the current resources/js/i18n/workspace/ catalogs: sha256 of
+// sorted "key=value" lines joined by "\n" over all 413 entries (media.ts
+// intentionally replaces one legacy status key with eight status-specific
+// keys, moving the catalog from 406 to 413 entries).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '76f66d094e795cd29b11002ca9539cb98b8897eaeab85233e10c1f804f65ddaa';
+    '49d09ffd8e79e1b793227151e925e9a9b1a4cea758c4c5974227a6aa64255795';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -78,7 +80,7 @@ describe('workspace i18n modular catalog contract', () => {
         expect(aggregatorSource).toMatch(/duplicate/i);
     });
 
-    it('composes exactly 406 workspace translation entries matching the frozen normalized legacy SHA-256', async () => {
+    it('composes exactly 413 workspace translation entries matching the frozen normalized legacy SHA-256', async () => {
         const workspaceModule: typeof import('./workspace') = await import('./workspace');
         const composed = workspaceModule.workspaceTranslations as Record<string, string>;
 

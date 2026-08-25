@@ -1,4 +1,5 @@
 import { t } from '../../../../i18n/workspace';
+import { MediaAssetStatusBadge } from './MediaAssetStatusBadge';
 import { MediaLifecycleList } from './MediaLifecycleList';
 import { MediaLibrarySlotList } from './MediaLibrarySlotList';
 import type { MediaAsset } from '../MediaPage';
@@ -43,12 +44,7 @@ export function MediaLibraryRegion({ assets, onDelete }: MediaLibraryRegionProps
                             <span className="text-sm text-gray-700 dark:text-gray-300">
                                 {asset.altText}
                             </span>
-                            <span
-                                role="status"
-                                className="text-sm text-gray-500 dark:text-gray-400"
-                            >
-                                {t('workspace.media.library.asset.status.scanPending')}
-                            </span>
+                            <MediaAssetStatusBadge status={asset.status} />
                             <button
                                 type="button"
                                 onClick={() => onDelete(asset.id)}
