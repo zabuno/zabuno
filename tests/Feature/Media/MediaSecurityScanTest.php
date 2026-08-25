@@ -133,7 +133,8 @@ final class MediaSecurityScanTest extends TestCase
         ]);
 
         $capturedPath = null;
-        $spyScanner = new class($capturedPath) implements MalwareScannerPort {
+        $spyScanner = new class($capturedPath) implements MalwareScannerPort
+        {
             public function __construct(private mixed &$capturedPath) {}
 
             public function scan(string $diskPath): MediaScanResult
@@ -188,7 +189,8 @@ final class MediaSecurityScanTest extends TestCase
         ]);
 
         $scannerCalled = false;
-        $spyScanner = new class($scannerCalled) implements MalwareScannerPort {
+        $spyScanner = new class($scannerCalled) implements MalwareScannerPort
+        {
             public function __construct(private bool &$scannerCalled) {}
 
             public function scan(string $diskPath): MediaScanResult
