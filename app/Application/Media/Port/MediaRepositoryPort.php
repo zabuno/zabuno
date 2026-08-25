@@ -28,4 +28,6 @@ interface MediaRepositoryPort
     public function claimQuarantinedForScanning(int $workspaceId, int $assetId): ?ScannableMediaAsset;
 
     public function markRejectedIfScanning(int $workspaceId, int $assetId): void;
+
+    public function markAcceptedIfScanning(int $workspaceId, int $assetId): void;
 }

@@ -27,6 +27,8 @@ final class ScanQuarantinedMediaAsset
 
         if ($result->verdict === MediaScanVerdict::Infected) {
             $this->media->markRejectedIfScanning($claimed->workspaceId, $claimed->id);
+        } elseif ($result->verdict === MediaScanVerdict::Clean) {
+            $this->media->markAcceptedIfScanning($claimed->workspaceId, $claimed->id);
         }
     }
 }

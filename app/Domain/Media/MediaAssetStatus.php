@@ -9,4 +9,5 @@ enum MediaAssetStatus: string
     case Quarantined = 'quarantined';
     case Rejected = 'rejected';
     case Scanning = 'scanning';
+    case Accepted = 'accepted';
 }
