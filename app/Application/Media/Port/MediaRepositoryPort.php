@@ -37,4 +37,8 @@ interface MediaRepositoryPort
      * processing. A non-accepted or cross-workspace asset is a no-op.
      */
     public function claimAcceptedForProcessing(int $workspaceId, int $assetId): ?ProcessableMediaAsset;
+
+    public function markReadyIfProcessing(int $workspaceId, int $assetId): void;
+
+    public function markFailedIfProcessing(int $workspaceId, int $assetId): void;
 }

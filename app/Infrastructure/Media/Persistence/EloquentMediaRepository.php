@@ -171,6 +171,24 @@ final class EloquentMediaRepository implements MediaRepositoryPort
         );
     }
 
+    public function markReadyIfProcessing(int $workspaceId, int $assetId): void
+    {
+        MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Processing->value)
+            ->update(['status' => MediaAssetStatus::Ready->value]);
+    }
+
+    public function markFailedIfProcessing(int $workspaceId, int $assetId): void
+    {
+        MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Processing->value)
+            ->update(['status' => MediaAssetStatus::Failed->value]);
+    }
+
     private function toSummary(MediaAsset $asset): MediaAssetSummary
     {
         return new MediaAssetSummary(
