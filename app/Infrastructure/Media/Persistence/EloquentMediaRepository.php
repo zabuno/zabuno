@@ -6,6 +6,7 @@ namespace App\Infrastructure\Media\Persistence;
 
 use App\Application\Media\Dto\MediaAssetSummary;
 use App\Application\Media\Dto\MediaIntake;
+use App\Application\Media\Dto\ProcessableMediaAsset;
 use App\Application\Media\Dto\ScannableMediaAsset;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Domain\Media\MediaAssetStatus;
@@ -140,6 +141,34 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             ->where('workspace_id', $workspaceId)
             ->where('status', MediaAssetStatus::Scanning->value)
             ->update(['status' => MediaAssetStatus::Accepted->value]);
+    }
+
+    public function claimAcceptedForProcessing(int $workspaceId, int $assetId): ?ProcessableMediaAsset
+    {
+        $asset = MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->first();
+
+        if ($asset === null) {
+            return null;
+        }
+
+        $claimed = MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Accepted->value)
+            ->update(['status' => MediaAssetStatus::Processing->value]);
+
+        if ($claimed === 0) {
+            return null;
+        }
+
+        return new ProcessableMediaAsset(
+            id: (int) $asset->getKey(),
+            workspaceId: (int) $asset->workspace_id,
+            diskPath: Storage::disk(self::QUARANTINE_DISK)->path((string) $asset->disk_path),
+        );
     }
 
     private function toSummary(MediaAsset $asset): MediaAssetSummary

@@ -6,6 +6,7 @@ namespace App\Application\Media\Port;
 
 use App\Application\Media\Dto\MediaAssetSummary;
 use App\Application\Media\Dto\MediaIntake;
+use App\Application\Media\Dto\ProcessableMediaAsset;
 use App\Application\Media\Dto\ScannableMediaAsset;
 
 interface MediaRepositoryPort
@@ -30,4 +31,10 @@ interface MediaRepositoryPort
     public function markRejectedIfScanning(int $workspaceId, int $assetId): void;
 
     public function markAcceptedIfScanning(int $workspaceId, int $assetId): void;
+
+    /**
+     * Atomically claims the workspace's exact accepted asset into
+     * processing. A non-accepted or cross-workspace asset is a no-op.
+     */
+    public function claimAcceptedForProcessing(int $workspaceId, int $assetId): ?ProcessableMediaAsset;
 }
