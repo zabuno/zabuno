@@ -41,6 +41,7 @@ use App\Infrastructure\Billing\Persistence\EloquentPlanManagementRepository;
 use App\Infrastructure\Billing\Persistence\EloquentSubscriptionRepository;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
+use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
@@ -79,7 +80,16 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
         $this->app->bind(MenuCatalogApiContextPort::class, EloquentMenuCatalogApiContext::class);
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
-        $this->app->bind(MalwareScannerPort::class, UnavailableMalwareScanner::class);
+        $this->app->bind(MalwareScannerPort::class, function (): MalwareScannerPort {
+            if (config('media.scanner.driver') === 'clamav') {
+                return new ClamavMalwareScanner(
+                    (string) config('media.scanner.clamav.binary_path'),
+                    (float) config('media.scanner.clamav.timeout_seconds'),
+                );
+            }
+
+            return new UnavailableMalwareScanner;
+        });
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
         $this->app->bind(QrCodeRepositoryPort::class, EloquentQrCodeRepository::class);
         $this->app->bind(BulkQrCreationPort::class, EloquentBulkQrCreationRepository::class);
