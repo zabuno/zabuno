@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Media;
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Media\Dto\MediaIntake;
 use App\Application\Media\Port\MediaRepositoryPort;
+use App\Application\Media\UseCase\ScanQuarantinedMediaAsset;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Media\StoreMediaRequest;
@@ -17,6 +18,7 @@ final class StoreMediaController extends Controller
     public function __construct(
         private readonly MediaRepositoryPort $media,
         private readonly AuthorizationPort $authorization,
+        private readonly ScanQuarantinedMediaAsset $scanQuarantinedMediaAsset,
     ) {}
 
     public function __invoke(StoreMediaRequest $request, int $workspace): JsonResponse
@@ -39,6 +41,10 @@ final class StoreMediaController extends Controller
         );
 
         $asset = $this->media->intakeToQuarantine($workspace, $intake);
+
+        ($this->scanQuarantinedMediaAsset)($workspace, $asset->id);
+
+        $asset = $this->media->find($asset->id) ?? $asset;
 
         return response()->json([
             'id' => $asset->id,
