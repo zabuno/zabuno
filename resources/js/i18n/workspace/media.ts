@@ -5,6 +5,9 @@ export const media = {
     'workspace.media.upload.region': 'Media upload',
     'workspace.media.upload.heading': 'Upload',
     'workspace.media.upload.button': 'Upload',
+    'workspace.media.upload.uploading': 'Uploading media…',
+    'workspace.media.upload.failed': 'Media upload failed. Your selection was kept.',
+    'workspace.media.upload.complete': 'Media upload complete.',
     'workspace.media.security.explanation':
         'A human reviews and approves every security scan result before any file can move forward; no scan approves itself.',
     'workspace.media.upload.field.file': 'File',

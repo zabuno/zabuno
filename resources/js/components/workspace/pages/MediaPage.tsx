@@ -78,7 +78,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
         });
 
         if (!response.ok) {
-            return;
+            throw new Error(`Upload failed with status ${response.status}`);
         }
 
         const body = (await response.json()) as { asset?: MediaAsset } & Partial<MediaAsset>;
