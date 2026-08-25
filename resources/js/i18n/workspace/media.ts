@@ -49,7 +49,14 @@ export const media = {
     'workspace.media.library.slots.category.email': 'Email',
     'workspace.media.library.slots.status.noAssetsYet': '{category}: no assets yet.',
     'workspace.media.library.assets.heading': 'Assets',
-    'workspace.media.library.asset.status.scanPending': 'Scan pending (quarantined)',
+    'workspace.media.library.asset.status.quarantined': 'Scan pending (quarantined)',
+    'workspace.media.library.asset.status.scanning': 'Scanning in progress',
+    'workspace.media.library.asset.status.rejected': 'Rejected — failed security scan',
+    'workspace.media.library.asset.status.accepted': 'Accepted — awaiting processing',
+    'workspace.media.library.asset.status.processing': 'Processing',
+    'workspace.media.library.asset.status.ready': 'Ready',
+    'workspace.media.library.asset.status.failed': 'Processing failed',
+    'workspace.media.library.asset.status.unknown': 'Status unavailable',
     'workspace.media.library.asset.delete': 'Delete',
 } as const;
 
