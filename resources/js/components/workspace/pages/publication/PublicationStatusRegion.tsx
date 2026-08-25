@@ -18,7 +18,9 @@ export type CurrentPublication = {
 
 type PublicationStatusRegionProps = {
     current: CurrentPublication | null;
+    loading: boolean;
     loadError: boolean;
+    onRetry: () => void;
     checklistReady: boolean;
     confirmed: boolean;
     onConfirmedChange: (confirmed: boolean) => void;
@@ -29,7 +31,9 @@ type PublicationStatusRegionProps = {
 
 export function PublicationStatusRegion({
     current,
+    loading,
     loadError,
+    onRetry,
     checklistReady,
     confirmed,
     onConfirmedChange,
@@ -47,10 +51,23 @@ export function PublicationStatusRegion({
                 {t('workspace.publication.status.region')}
             </h3>
 
-            {current === null && loadError ? (
-                <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-                    {t('workspace.publication.status.loadError')}
+            {loading ? (
+                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                    {t('workspace.publication.status.loading')}
                 </p>
+            ) : current === null && loadError ? (
+                <div className="flex flex-col items-start gap-2">
+                    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                        {t('workspace.publication.status.loadError')}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={onRetry}
+                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    >
+                        Retry
+                    </button>
+                </div>
             ) : current === null ? (
                 <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
                     {t('workspace.publication.status.notPublished')}

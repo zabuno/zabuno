@@ -1002,3 +1002,121 @@ describe('PublicationPage — QR Destination real wiring (QR_DESTINATION_PAGE_WI
         expect(createCall).toBeUndefined();
     });
 });
+
+/**
+ * PUBLICATION_LOAD_STATE_RED — S1-WP04c
+ *
+ * RED suite for a truthful current-publication load state: while the GET is
+ * pending, an accessible loading status must be shown and must not claim
+ * "Not published yet."; today PublicationStatusRegion has no pending/loading
+ * branch, so the initial current===null/loadError===false render already
+ * shows "Not published yet." before the fetch resolves. Likewise a non-404
+ * failure (rejected status or thrown network error) shows an accessible
+ * error but has no Retry control to recover, so these assertions fail
+ * against current production, not from a syntax/bootstrap defect.
+ */
+function deferred<T>() {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((res) => {
+        resolve = res;
+    });
+    return { promise, resolve };
+}
+
+describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_STATE_RED)', () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('shows an accessible loading status while the GET is pending and never claims Not published yet.', async () => {
+        const gate = deferred<Response>();
+        const fetchSpy = vi.fn().mockReturnValue(gate.promise);
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        const statusRegion = screen.getByRole('region', { name: /publication status/i });
+        expect(within(statusRegion).getByRole('status').textContent ?? '').toMatch(
+            /loading|checking|fetching/i,
+        );
+        expect(
+            within(statusRegion).queryByText(/not published|never published|no publication/i),
+        ).toBeNull();
+
+        gate.resolve(jsonResponse(404, { message: 'Not found' }));
+    });
+
+    it('resolves an HTTP 404 to Not published yet. and removes the loading status', async () => {
+        const fetchSpy = vi.fn().mockResolvedValue(jsonResponse(404, { message: 'Not found' }));
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const statusRegion = screen.getByRole('region', { name: /publication status/i });
+        await waitFor(() => {
+            expect(
+                within(statusRegion).getByText(/not published|never published|no publication/i),
+            ).toBeInTheDocument();
+        });
+
+        expect(within(statusRegion).queryByText(/loading|checking|fetching/i)).toBeNull();
+    });
+
+    it('shows an accessible load error plus Retry on a non-2xx failure and never claims Not published yet.', async () => {
+        const fetchSpy = vi
+            .fn()
+            .mockResolvedValue(jsonResponse(500, { message: 'Internal error' }));
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const statusRegion = screen.getByRole('region', { name: /publication status/i });
+        await waitFor(() => {
+            expect(within(statusRegion).getByRole('alert')).toBeInTheDocument();
+        });
+
+        expect(
+            within(statusRegion).queryByText(/not published|never published|no publication/i),
+        ).toBeNull();
+        expect(within(statusRegion).getByRole('button', { name: /retry/i })).toBeInTheDocument();
+    });
+
+    it('shows the same retryable error on a thrown network failure, and clicking Retry can resolve to a real current publication summary', async () => {
+        const user = userEvent.setup();
+        const fetchSpy = vi.fn().mockRejectedValueOnce(new TypeError('network down'));
+        vi.stubGlobal('fetch', fetchSpy);
+
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const statusRegion = screen.getByRole('region', { name: /publication status/i });
+        await waitFor(() => {
+            expect(within(statusRegion).getByRole('alert')).toBeInTheDocument();
+        });
+        expect(
+            within(statusRegion).queryByText(/not published|never published|no publication/i),
+        ).toBeNull();
+
+        fetchSpy.mockResolvedValueOnce(
+            jsonResponse(200, {
+                id: 611,
+                workspaceId: 71,
+                menuId: 42,
+                locationId: 923,
+                version: 5,
+                state: 'published',
+                publishedAt: '2026-08-24T08:00:00Z',
+                snapshot: { categories: [] },
+            }),
+        );
+
+        await user.click(within(statusRegion).getByRole('button', { name: /retry/i }));
+
+        await waitFor(() => {
+            expect(within(statusRegion).getByText(/#611|\b611\b/)).toBeInTheDocument();
+            expect(within(statusRegion).getByText(/v5|version 5/i)).toBeInTheDocument();
+        });
+        expect(within(statusRegion).queryByRole('alert')).toBeNull();
+    });
+});
