@@ -65,12 +65,15 @@
 
 ## ⚠️ Depo dışı tasarım külliyatı — devralan ekip mutlaka okusun
 
-Zabuno'nun tasarım yaklaşımı bu depoda **sentez** hâlindedir (`docs/06`,
-`docs/35`, `docs/03`, `resources/css/app.css`). Ayrıntılı külliyat ve **çalışan
-bir referans implementasyonu** — tam DTCG token pipeline'ı (Figma/AntD/ECharts
-çıktılarıyla), foundations CSS katmanları, AEP renderer pattern'leri ve dalga
-testleri — deponun **dışında**, owner makinesinde yaşar ve bir `git clone` ile
-gelmez.
+Tasarım **gerekçesi** artık bu depoda: [`docs/design-corpus/`](docs/design-corpus/README.md)
+— 18 felsefe belgesi + 10 dosyalık varyant planı (öncelik sırası, ASG-320,
+ölçü birimi zinciri, density kuralı). `docs/06`, `docs/35` ve `docs/03` bunun
+sentezidir; külliyat kararların **neden** öyle alındığını taşır.
+
+**Çalışan referans implementasyonu ise depoda DEĞİL** — tam DTCG token
+pipeline'ı (Figma/AntD/ECharts çıktılarıyla), foundations CSS katmanları, AEP
+renderer pattern'leri, dalga testleri ve bu depoda karşılığı olmayan iki
+sözleşme owner makinesinde kalır, bir `git clone` ile gelmez.
 
 **Kanonik kayıt: [`docs/36-EXTERNAL-DESIGN-CORPUS.md`](docs/36-EXTERNAL-DESIGN-CORPUS.md)**
 — ne olduğu, nerede durduğu, hangi kararları dondurduğu ve devir/exit sırasında

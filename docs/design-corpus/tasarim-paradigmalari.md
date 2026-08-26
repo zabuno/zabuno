@@ -1,0 +1,177 @@
+# **Kurumsal SaaS Platformları İçin Gelecek Vizyonlu Arayüz (UI) ve Deneyim (UX) Tasarım Paradigmaları Raporu (2026-2035)**
+
+Kurumsal mimari platformlarının (Enterprise Architecture Platform \- EA Platform) 2026 ve 2027 yılları itibarıyla geçirmekte olduğu evrim, 2030 ve 2035 vizyon hedefleri doğrultusunda salt bir dijitalleşme sürecinden çıkarak, otonom karar destek mekanizmalarına ve hiper-kişiselleştirilmiş arayüzlere dönüşmektedir. Bu bağlamda, Kurumsal İşletme Platformu (Enterprise Business Platform \- Ebp), Kurumsal Operasyon Platformu (Enterprise Operations Platform \- Eop), Kurumsal İş Yönetimi (Enterprise Business Management \- Ebm) ve Kurumsal Kaynak Yürütme (Enterprise Resource eXecution \- ERX) modüllerinin entegre bir biçimde çalışacağı küresel ölçekli veri odaklı SaaS yazılımları, tasarım ve mühendislik disiplinlerinin kusursuz bir sentezini talep etmektedir.
+
+Alibaba Türkiye ve Amazon Türkiye gibi devasa e-ticaret ve operasyon ekosistemlerinin klonlanabilmesi veya bu ölçekteki veri yoğunluğunun yönetilebilmesi, sistemin en alt katmanından en üst arayüz katmanına kadar katı bir mimari disiplin gerektirir. Bu rapor, belirtilen katı sabitlere (renk, tipografi, köşe kavisleri) bağlı kalarak oluşturulabilecek tamamen farklı tasarım paradigmalarını, form ve veri tablosu (data table) inşasındaki doğruları belirleyen kriterleri ve yapay zeka destekli geliştirme süreçleri için Figma ile Storybook Model Context Protocol (MCP) yapılandırmalarını kapsamlı bir şekilde analiz etmektedir.
+
+## **Global Ölçekli SaaS Mimari Gereksinimleri ve Temel Dokümantasyon**
+
+Sistemin küresel ve uluslararası şirketler tarafından kullanılabilir olmasını sağlamak, görsel arayüzden önce yapısal bir standartlaştırma gerektirir. Küreselleşme (g11n), uluslararasılaştırma (i18n) ve yerelleştirme (l10n) özelliklerinin arayüze eksiksiz entegrasyonu, tasarım sisteminin çok dilli uzama/kısalma toleranslarına, sağdan sola (RTL) ve soldan sağa (LTR) okuma yönlerine ve kültürel bilişsel modellere adaptasyonunu zorunlu kılar. Aşağıda, sistemin temel gereksinimlerini tanımlayan ve geliştirme süreçlerinde referans alınması gereken Markdown (MD) tabanlı analiz belgeleri sunulmaktadır.
+
+### **Gereksinim Analizi 1: Küresel Standardizasyon ve Adaptif Grid Mimarisi**
+
+# **Sistem Mimarisi ve Uluslararasılaştırma Gereksinimleri Dokümanı**
+
+## **1\. Globalizasyon (g11n, i18n, l10n) Parametreleri**
+
+SaaS platformu, dinamik bölge adaptasyonunu arayüz seviyesinde otonom olarak yönetecek şekilde inşa edilmelidir.
+
+* **i18n (Uluslararasılaştırma):** Arayüz bileşenleri, Almanca gibi uzun kelime yapılarına sahip dillerde metin taşmalarını önleyecek esnekliğe (fluidity) sahip olmalıdır. Tüm form elemanları ve tablolar, Arapça ve İbranice dilleri için anında RTL (Right-to-Left) aynalamasını (mirroring) desteklemelidir.  
+* **l10n (Yerelleştirme):** Finansal ERX modüllerinde para birimleri, ondalık ayırıcılar ve tarih formatları donanımsal bölge verisine göre anlık şekillenecektir.  
+* **g11n (Küreselleşme):** Asya pazarlarındaki veri yoğunluğu beklentisi (yüksek yoğunluklu ekranlar) ile Batı pazarlarındaki ferahlık beklentisi (artan beyaz alan), kullanıcı tercihine bağlı "Data Dense" (Veri Yoğun) ve "Comfortable" (Rahat) modları ile yönetilecektir.
+
+## **2\. Düzen (Layout) ve Ekran Adaptasyonu (Mobile First)**
+
+Sistem, "Native Mobile First Design" disipliniyle, 320px genişliğindeki ekranlardan başlayarak hiper-ölçeklenebilir bir akıcılık (Adaptive Fluid) gösterecektir.
+
+* **Kesme Noktaları (Breakpoints) ve Akıcılık:**  
+  * Native Mobile (Ana Odak): 320px \- 479px (Tüm mimari kararlar bu dar alanda %100 işlevsellik sunmalıdır).  
+  * Plus Phone: 480px \- 767px  
+  * Mini Tablet: 768px \- 1023px  
+  * Plus Tablet & Laptop: 1024px \- 1439px  
+  * Desktop & Ultra-Wide: 1440px ve üzeri.
+
+## **3\. Panel ve Çok Katmanlı Mimari**
+
+* **Gelişmiş Çok Katmanlı Header & Mega Footer:** Kurumsal navigasyonu üstlenecek, çok katmanlı, hiyerarşik bağlam menüleri barındıran üst ve alt bilgi alanları.  
+* **Option Gallery Panel (Sol):** UX açısından kusursuz, navigasyonel, filtrelenebilir, daraltılabilir (collapsible) seçenek galerisi.  
+* **Option Information Panel (Sağ):** UX açısından kusursuz, bağlama duyarlı (context-aware), kullanıcının sol panelden veya tablodan seçtiği objeye göre anlık olarak detayları gösteren, "Motion First" geçişlere sahip bilgi ekranı.
+
+### **Gereksinim Analizi 2: Görsel Estetik, Tasarım Jetonları ve Katı Kurallar**
+
+# **Görsel Estetik ve Tasarım Sabitleri (Design Tokens) Dokümanı**
+
+## **1\. Tipografi ve İçerik Önceliği (Typography First & Content First)**
+
+Tasarımın tüm paradigmalarında değişmez tek gerçek içeriktir.
+
+* **Ana Yazı Tipi Ailesi:** Roboto.  
+* **Minimum Font Ağırlığı (Weight):** 400 (Daha ince fontlar erişilebilirlik ve okuma hızını düşürdüğü için yasaktır).  
+* **Minimum Font Boyutu:** 1rem (16px) ve üzeri. Mikro metinler veya alt etiketler dahi 1rem'in altına düşmeyecek, okuma konforu en üst seviyede tutulacaktır.
+
+## **2\. Geometri ve Form Disiplini**
+
+* **Köşe Yuvarlama (Border Radius):** Formlardaki "input field" (veri giriş alanı) haricindeki tüm UI elemanları (kartlar, butonlar, modallar, resim çerçeveleri) için maksimum 12px eşdeğeri (yaklaşık 0.5rem) kavis kullanılacaktır.  
+* **İstisna (Input Fields):** Veri giriş alanları, tasarımın "Conversion First" (Dönüşüm Öncelikli) hedefine hizmet etmesi amacıyla, çevresel UI elemanlarından net bir şekilde ayrışmak zorundadır. Bu nedenle input alanları tamamen keskin (0px) veya disipline göre tam yuvarlatılmış (pill-shape) olabilir.
+
+## **3\. Renk Uzayı ve Karanlık/Aydınlık Mod (Dark/Light Options)**
+
+Renk kodları hiçbir paradigmada değiştirilemez sabitlerdir.
+
+* **Primary Color:** Limon Sarısı (Hex: \#FFB900)  
+* **Secondary Accent Color:** Parlement Mavisi (Hex: \#003399)  
+* **Dark Background:** Derin Lacivert/Siyah (Hex: \#080616 ve daha koyu tonları)
+
+Tasarım jetonlarının (design tokens) ve görsel sabitlerin belirlenmesi sürecinde erişilebilirlik, estetiğin önünde yer alır. Yapılan fotometrik kontrast analizleri, renk paletinin matematiksel uygulanabilirliğini net bir şekilde ortaya koymaktadır. Ana vurgu rengi olan Limon Sarısı (\#FFB900) ile Koyu Arka Plan (\#080616) arasındaki kontrast oranı 11.63:1 olarak hesaplanmıştır. Bu oran, Web İçeriği Erişilebilirlik Yönergeleri (WCAG) AAA standardını fazlasıyla aşarak, metinlerin veya butonların karanlık modda kusursuz bir okunabilirlik sunmasını garanti eder. Limon Sarısı ile ikincil vurgu rengi olan Parlement Mavisi (\#003399) arasındaki kontrast oranı 6.31:1 seviyesindedir. Bu durum, sarı metinlerin veya ikonların mavi zemin üzerinde de güvenle kullanılabileceğini kanıtlamaktadır.
+
+Ancak analizin en kritik çıktısı, Parlement Mavisi (\#003399) ile Koyu Arka Plan (\#080616) arasındaki ilişkinin incelenmesiyle elde edilmiştir. Bu iki renk arasındaki kontrast oranı yalnızca 1.85:1 olarak ölçülmüştür. Bu düşük değer, Parlement Mavisinin koyu temalı ekranlarda hiçbir şekilde metin, ince ikon veya okumaya dayalı kritik veri rengi olarak kullanılamayacağını kesin olarak kanıtlar. Tasarım sisteminde Parlement Mavisi, karanlık modda yalnızca yapısal arka planlar, geniş dolgu alanları (cards), ince sınır çizgileri (borders) veya diğer bileşenleri izole eden gölge vurguları olarak değerlendirilmelidir. Beyaz metin (\#FFFFFF) kullanımı ise hem koyu arka plan üzerinde (20.04:1) hem de Parlement Mavisi üzerinde (10.86:1) maksimum kontrast sağlayarak temel veri okuma rengi olarak işlev görecektir.
+
+## **Sabit Temellere Dayalı Farklı Tasarım Paradigmaları**
+
+Kurumsal bir SaaS ekosisteminde Ebp (İşletme Platformu), Eop (Operasyon), Ebm (İş Yönetimi) ve ERX (Kaynak Yürütme) modüllerinin her birinin bilişsel yük profili ve kullanıcı etkileşim modeli birbirinden farklıdır. Renk, Roboto tipografisi, 1rem minimum font boyutu ve maksimum 12px köşe kavis kısıtlamaları sabit tutularak, bu modüllerin ihtiyaçlarına yanıt verecek, birbirinden tamamen farklı üç arayüz tasarım anlayışı (paradigması) aşağıda sunulmaktadır.
+
+### **Paradigma 1: ERX ve Eop İçin Veri Yoğunluklu "Flat 2.0" ve İşlevsel Kart Mimarisi**
+
+"Flat 2.0" (veya Almost-Flat), geleneksel düz tasarımın minimalist yapısını alıp ona ince, fizik tabanlı gölgeler, Z-endeksi katmanlaması ve "Motion First" hareket dinamikleri ekleyen bir evrimdir. Kurumsal Kaynak Yürütme (ERX) ve Operasyon (Eop) modülleri gibi aynı anda yüzlerce satır verinin, envanter kodunun veya lojistik rotasının işlendiği ekranlarda, arayüzün kendisi verinin önüne geçmemelidir.
+
+Bu mimaride içerik, net sınırları olan, maksimum 12px (0.5rem) köşe kavisine sahip katı kartlar (Card UI) içerisine yerleştirilir. Karanlık modda (\#080616 arka plan), kartların zemin renkleri hafifçe daha açık tonlara (örneğin \#110E26) kaydırılarak görsel hiyerarşi oluşturulur. Flat 2.0 yaklaşımı, "Data Dense" (Veri Yoğun) prensibine en uygun olanıdır; çünkü gereksiz hiçbir grafiksel süsleme, degrade (gradient) veya cam efekti (blur) barındırmaz. Bunun yerine, Parlement Mavisi (\#003399) rengi, çok düşük bir opaklıkta (yaklaşık %15-20) hücreleri veya kartları birbirinden ayıran ince sınır çizgileri olarak işlev görür.
+
+Etkileşim modeli "Motion First" ilkesiyle zenginleştirilir. Kullanıcı sol "Option Gallery Panel" üzerinden bir öğeye tıkladığında, sağ taraftaki "Option Information Panel" yatay düzlemde bir Flat 2.0 kartı olarak kayarak ekrana girer. Kartların üzerine gelindiğinde (hover), nesne X veya Y ekseninde büyümez, yalnızca Z ekseninde hafifçe yükselir ve altındaki gölge derinleşir. Sistemdeki tüm "Conversion First" (Dönüşüm Öncelikli) aksiyon butonları (Kaydet, Onayla, Satın Al vb.) tamamen keskin ve %100 opak Limon Sarısı (\#FFB900) ile tasarlanır ve kullanıcının dikkatini dağıtacak çevresel gürültüden izole edilir.
+
+### **Paradigma 2: Ebp ve Ebm İçin Asimetrik Hiyerarşik "Bento Grid" Modüleritesi**
+
+Japon bento kutularından ilham alan Bento Grid, dijital arayüzü farklı boyutlardaki dikdörtgen karolara (tile) bölen, yüksek derecede modüler bir UI düzenidir. Ebp (İşletme Platformu) ve Ebm (İş Yönetimi) modüllerindeki üst düzey yönetici gösterge panelleri (dashboards) ve özet raporlama ekranları için bu paradigma benzersiz bir bilişsel avantaj sağlar. Standart kart tasarımlarındaki her kartın aynı boyutta olması ve aynı ilgiyi talep etmesinin aksine, Bento Grid kasıtlı bir asimetri barındırır ve boyut aracılığıyla katı bir görsel hiyerarşi kurar.
+
+Tasarım, CSS Grid üzerine inşa edilen 12 sütunlu bir sisteme dayanır. Gestalt algı prensiplerine göre yapılandırılan bu ızgarada, en kritik veri (örneğin aylık ciro veya toplam aktif kullanıcı) "Anchor" (Çıpa) adı verilen en büyük hücreye yerleştirilir (örneğin 6 sütun x 2 satır). Destekleyici metrikler, eğilim grafikleri ve ikincil eylemler ise bu anchor hücrenin etrafında 3x1 veya 2x2'lik daha küçük hücreler halinde sıralanır. Her hücre, maksimum 12px kavis kuralına tam uyum sağlar.
+
+Bento Grid tasarımının başarısı, hücreler arası boşlukların (gutter) kusursuz bir matematiksel orana sahip olmasına bağlıdır. Bu paradigma, Adaptive AI (Uyarlanabilir Yapay Zeka) ile harmanlandığında olağanüstü sonuçlar verir. Yapay zeka, sisteme giriş yapan kullanıcının rolüne, geçmiş kullanım alışkanlıklarına veya o anki operasyonel aciliyete göre en önemli veriyi belirler ve Bento Grid'in en büyük Anchor hücresine dinamik olarak yerleştirir. Ayrıca, "Mobile First" mimarisi için bu paradigma kusursuzdur. Masaüstünde karmaşık bir 3-4 sütunlu asimetri sunan Bento yapıları, 320px mobil ekranda herhangi bir veri kaybı yaşamadan kusursuz bir dikey yığına (vertical stack) dönüşür; hücreler önem derecelerine göre alt alta sıralanır.
+
+### **Paradigma 3: Mega Katmanlar ve Çevresel Farkındalık İçin Hibrit Ekosistem (Soft Glassmorphism ve Flat 2.0 Sentezi)**
+
+Geleneksel Glassmorphism (Cam-morfizmi), veri yoğunluklu tablolarda kontrastı düşürdüğü ve tarayıcı render yükünü artırdığı için operasyonel ekranlarda tehlikeli bir yaklaşımdır. Ancak, sistemin çevresel sınırlarını belirleyen çok katmanlı Header (Mega Header), çok katmanlı Footer ve görsel odaklı "Hero" alanlarında Flat 2.0 ile harmanlandığında, derinlik ve premium bir estetik algısı yaratır.
+
+Bu hibrit mimaride, ana arka plan derin lacivert (\#080616) olarak sabit kalır. Sol "Option Gallery Panel" ve sağ "Option Information Panel" gibi ana içeriğin üzerine binen kayan (floating) öğeler, çok hafif bir arka plan bulanıklığı (background-blur) ve yarı saydam koyu zeminler ile tasarlanır. Bu panellerin içindeki asıl veri kartları ise tamamen opak, %100 Flat 2.0 kartlarıdır. Bu yaklaşım, panellerin devasa veri yığınlarının üzerinde "süzüldüğü" hissini verir. Kullanıcı sağ taraftaki bilgi panelini açtığında, alttaki devasa tablo hafifçe bulanıklaşır. Bu sayede kullanıcı, bağlamı kaybetmez (context-awareness), hangi verinin üzerine bir panel açtığını hissetmeye devam eder, ancak odaklanması gereken yeni bilgi, opak Flat 2.0 kartları üzerinde 20.04:1 kontrast oranıyla net bir şekilde okunur. "Typography First" ilkesi gereği, cam efekti üzerine denk gelen hiçbir metin saydamlaştırılamaz; Roboto 400 ve minimum 1rem büyüklük kuralı katı bir şekilde korunur.
+
+## **Temel Arayüz Disiplinleri: Form ve Veri Tablosu (Data Table) Tasarımı**
+
+SaaS admin panellerinde en yoğun etkileşim "Formlar" ve hesap tablosu (sheet) benzeri "Veri Tabloları" (Data Tables) üzerinden gerçekleşmektedir. Hangi tasarım disiplinlerinin bu yapılar için doğru olduğu sorusunun yanıtı estetik tercihlerden ziyade; bilişsel yük (cognitive load), Fitts Kanunu, Hick Kanunu ve tarama hızı (scannability) metriklerine dayanmaktadır.
+
+Doğruyu belirleyen evrensel kriterler şunlardır:
+
+1. **Tarama Hızı (Scannability):** Kullanıcının veriyi yatay ve dikey eksende gözleriyle tararken hiçbir engelle (gereksiz renkler, dikey çizgiler, hizalama hataları) karşılaşmaması.  
+2. **Veri Yoğunluğu ve Bilişsel Yük Dengesi:** Ekrana maksimum veriyi sığdırmak istenirken (Data dense), kaos yaratılmaması. Hick Kanununa göre, seçenek ve görsel karmaşa arttıkça kullanıcının karar süresi uzar ve hata payı artar.  
+3. **Hata Önleme ve Dönüşüm:** Formların, kullanıcıyı hatalı giriş yapmaktan alıkoyacak (poka-yoke) görsel ipuçları barındırması.  
+4. **Kontrast Performansı:** Saatlerce aynı ekrana bakan operasyon personelinin göz yorgunluğunu minimize edecek renk ayrımları.
+
+### **Veri Tabloları İçin Doğru Disiplin ve Yaklaşımlar**
+
+Veri tabloları (Sheet-like data tables) için Bento Grid veya Glassmorphism gibi disiplinleri kullanmak yapısal bir hatadır. Bento Grid, verileri hücrelere hapsederek satır bazlı karşılaştırmalı okuma yollarını parçalar. Glassmorphism ise binlerce satırlık bir render sürecinde tarayıcıyı kilitler ve bulanıklık sebebiyle kontrastı düşürerek veri okunabilirliğini yok eder.
+
+Veri tabloları için uygulanması gereken yegane disiplin **Veri Yoğunluklu Flat 2.0 (Data-Dense Flat 2.0)** yaklaşımıdır. Bu disiplin, karmaşık veriyi saf işlevselliğe indirger. Aşağıdaki tablo, veri tablolarında uygulanması gereken kesin tasarım yaklaşımlarını ve bunların bilişsel nedenlerini detaylandırmaktadır.
+
+| Tablo Tasarım İlkesi | Teknik Uygulama (Flat 2.0 ve Sabit Kurallar Çerçevesinde) | Bilişsel ve İşlevsel Neden |
+| ----- | ----- | ----- |
+| **Zebra Çizgilendirme (Zebra Striping)** | Temel arka plan (\#080616) ile hafif aydınlatılmış koyu lacivert (örneğin \#0C0A1A) arasında ardışık satır renkleri kullanılır. | Geniş monitörlerde kullanıcının gözünün satırdan kaymasını engeller. Dikey çizgiler olmadan yatay takibi otonom hale getirir. |
+| **Hizalama Disiplini** | Metin dizeleri sola, rakamlar ve finansal veriler sağa hizalanır. Sütun başlıkları daima altındaki veriyle aynı yöne hizalanır. | Sayısal basamakların alt alta tam hizalanması, milyonluk değerler ile binlik değerlerin anında taranmasını ve kıyaslanmasını sağlar. |
+| **Sticky (Sabit) Yüzeyler** | Tablo başlıkları (Header) ve birincil tanımlayıcı sütunlar (örneğin ID, İsim) kaydırma sırasında dikey/yatay olarak ekrana kilitlenir. "Motion First" ilkesiyle pürüzsüz kaydırma sağlanır. | Kullanıcı binlerce satırlık veya onlarca sütunluk bir veri setinde kaybolduğunda, bağlamı (neyi okuduğunu) asla unutmaz. |
+| **Tipografik Yoğunluk** | Hücre içindeki yazılar sabit Roboto, minimum 1rem (16px). Yalnızca sütun başlıkları (Header) tümü büyük harf, 0.85rem ve harf arası boşluğu (letter-spacing) artırılmış olabilir. | "Typography First" ilkesiyle okunabilirlik maksimize edilirken, veri ile başlık arasındaki görsel ayrım netleştirilir. |
+| **Sınır Çizgileri ve Kavis** | Dikey sütun çizgileri tamamen kaldırılır. Yalnızca yatay satır çizgileri (Parlement Mavisi \#003399, çok düşük opaklıkta) tutulur. Tablo dış kasası maksimum 12px yuvarlatılır. | Dikey çizgilerin oluşturduğu "hapishane parmaklığı" etkisi ortadan kalkar, tabloya bilişsel nefes alma alanı ve ferahlık (whitespace) sağlanır. |
+
+### **Formlar İçin Doğru Disiplin ve Yaklaşımlar**
+
+SaaS formlarında dönüşümü (conversion) etkileyen temel mekanizma, karmaşıklığı doğrusal ve tahmin edilebilir bir akışa indirgemektir. Form inşasında **Adaptive AI destekli Minimalist Flat 2.0** disiplini kesin olarak bulunmalıdır.
+
+Birincil kural "Tek Sütun Mimarisi"dir. İnsan gözü Z veya F paterniyle veri girmek yerine, düz bir dikey çizgi halinde aşağı inmeyi (saccadic movements) tercih eder. Çoklu sütunlar gözü yorar ve hata yapma riskini artırır. Bu durum, "Mobile first" (320px yerel genişlik) yapısına da en doğal uyum sağlayan yöntemdir.
+
+Gereksinim analizinde belirtildiği üzere, form giriş alanları (input fields), 12px köşe kavis kuralının tek istisnasıdır. Bir kurumsal formda, veri giriş alanları çevresel içerikten kopuk ve tamamen eyleme (conversion) odaklı olmalıdır. Bu alanlar, formun ruhuna göre ya tamamen keskin (0px) ya da tam yuvarlatılmış (pill-shape) olabilir. Ancak odaklanma (focus) durumunda, input alanının çevresinde %100 opaklıkta, Limon Sarısı (\#FFB900) renginde, 2px kalınlığında dış çizgi (outline) parlaması zorunludur. Bu, kullanıcıya nerede olduğunu kesin bir şekilde bildirir. Etiketler (Labels) daima input kutusunun dışında ve sol veya üst kısımda yer almalı, asla içeriye yer tutucu (placeholder) olarak gömülmemelidir. Adaptive AI (Uyarlanabilir Yapay Zeka) entegrasyonu sayesinde, formlar hataları kırmızı ile bağırarak göstermek yerine, kullanıcının alışkanlıklarına göre otonom düzeltme önerileri ("Şunu mu demek istediniz?", "Vergi numarası 10 haneli olmalıdır") sunarak sürtünmesiz bir deneyim yaratmalıdır.
+
+## **Geliştirme Otomasyonu: Figma ve Storybook MCP (Model Context Protocol) Entegrasyonu**
+
+Model Context Protocol (MCP), farklı yapay zeka ajanlarının (Claude, Cursor, Windsurf vb.) ve uygulamaların yerel veri kaynaklarıyla standart bir arayüz üzerinden iki yönlü iletişim kurmasını sağlayan devrim niteliğinde açık kaynaklı bir protokoldür. 2026-2035 vizyonunda geliştirilen kurumsal Ebp, Eop, Ebm ve ERX platformları, salt insan gücüyle değil, tasarımı koda ve kodu dokümantasyona dönüştüren bu MCP ekosistemleri üzerinden inşa edilecektir.
+
+Figma MCP sunucusu, yapay zeka ajanlarının Figma tasarım dosyalarındaki katmanları, renk değişkenlerini, otomatik düzen (auto layout) özelliklerini okumasına (`get_design_context`, `get_variable_defs`) olanak tanır. Hatta yetkilendirilmiş ajanlar, tasarım sistemi bileşenlerini kullanarak tuval üzerine (canvas) doğrudan yeni ekran tasarımları çizebilir (`write_to_canvas`). Diğer yanda Storybook MCP, ajanın geliştirilen React/Tailwind tabanlı bileşenlerin dokümantasyonlarını taramasını (`getComponentList`), aldığı özellikleri (props) öğrenmesini (`getComponentsProps`) ve otonom görsel regresyon testleri için ekran görüntüleri (`storybook_capture_screenshot`) almasını sağlar.
+
+Aşağıda, Figma mcp ve Storybook mcp kullanılarak SaaS paneli arayüzlerinin oluşturulması, kodlanması ve test edilmesi süreçleri için hazırlanmış, son derece detaylı ve profesyonel prompt (istem) kataloğu sunulmaktadır.
+
+### **Figma MCP İçin Prompt (İstem) Senaryoları**
+
+Bu istemler, kurumsal tasarım sistemini yapay zeka ajanı ile okumak, var olan bir arayüzü koda çevirmek veya ajana sıfırdan "Mobile First" mimarisinde bir sayfa tasarlatmak için kullanılır.
+
+**1\. Tasarım Sisteminden Kod Çıkarımı ve Mobil Optimizasyon Prompt'u:**
+
+> "/figma-use Figma MCP sunucusu üzerinden `get_design_context` ve `get_variable_defs` araçlarını kullanarak seçimini yaptığım (ERX Modülü \- Veri Yoğunluklu Tablo) bileşeninin tasarım bağlamını çıkar. Çıkarılan sistem değişkenlerini (Primary: \#FFB900, Secondary: \#003399, Dark BG: \#080616), tipografik kısıtlamaları (Roboto 400, min 1rem) ve köşe kavis kurallarını (max 12px) gözeterek bu tablo bileşenini React ve TailwindCSS formatında kodla. Kodu 'Mobile first' (320px tabanlı) mantığıyla yapılandır; 320px ekranlarda tablonun yatayda kaydırılabilir (horizontal scroll) olmasını sağla ve Tailwind dışı hiçbir harici kütüphane kullanma."
+
+**2\. Otonom Varyant Üretimi ve Tuvale Yazma (Write to Canvas) Prompt'u:**
+
+> "/figma-use Mevcut form input (girdi) bileşenimizi tasarım dosyasından analiz et. Bu dosyadaki 'Design System' jetonlarını referans alarak, form input bileşeni için 'Başarılı', 'Hata', 'Odaklanılmış (Focus)' ve 'Devre Dışı (Disabled)' durumlarını içeren yeni varyantlar oluştur ve bunları yeni bir Figma Auto Layout çerçevesi (frame) olarak tuvale yaz (write to canvas). Focus varyantında input alanının etrafına %100 opaklıkta \#FFB900 renginde 2px dış çizgi (outline) eklemeyi ve kavis kuralını tasarım jetonlarına göre uygulamayı unutma."
+
+**3\. Bento Grid Mimarisi Kurgulama Prompt'u:**
+
+> "/figma-use Ebm (Kurumsal İş Yönetimi) modülü için 'Conversion First' odaklı bir yönetici gösterge paneli (dashboard) tasarlayacağız. Tuval üzerinde CSS Grid mantığına uygun, 12 sütunlu sisteme oturan asimetrik bir 'Bento Grid' bölümü oluştur. Ana bir 'Anchor' hücre (6 sütun x 2 satır) ve onu sağında/altında destekleyen 4 küçük metrik kartı (3 sütun x 1 satır) içersin. Koyu tema (\#080616) üzerinde, hücreler arasındaki boşlukları (gutter) 24px, hücre köşe kavislerini kesin olarak 12px olarak ayarla ve sonucu doğrudan Figma dosyasına işle."
+
+**4\. Canlı UI Yakalama ve İyileştirme (Live Capture) Prompt'u:**
+
+> "/figma-use Localhost üzerinde çalışan Amazon Türkiye klonu SaaS uygulamam için bir sunucu başlat ve canlı kullanıcı arayüzünü (live UI) yakalayarak yeni bir Figma dosyasına aktar. Aktarım tamamlandıktan sonra, mevcut arayüzdeki tabloların dikey çizgilerini silerek ve yalnızca yatay çizgilere çok düşük bir opaklık (\#003399 / %15) atayarak arayüzü 'Flat 2.0' tablosu standartlarına göre optimize et."
+
+### **Storybook MCP İçin Prompt (İstem) Senaryoları**
+
+Bu istemler, kodlanmış UI bileşenlerinin dokümantasyonunu sorgulamak, test süreçlerini ajanlar aracılığıyla otonomlaştırmak ve görsel kalibrasyonları ölçmek (self-healing) için kullanılır.
+
+**5\. Bileşen Keşfi, Özellik (Prop) Çıkarımı ve i18n Analiz Prompt'u:**
+
+> "/storybook-use `getComponentList` aracını kullanarak sistemdeki tüm form ve tablo bileşenlerini listele. Daha sonra 'OptionInformationPanel' ve 'DataTable' bileşenleri için `getComponentsProps` aracını çalıştırarak bu bileşenlerin aldığı tüm özelliklerin (props), TypeScript tiplerinin, varsayılan değerlerinin ve required statülerinin kapsamlı bir Markdown tablosunu oluştur. Bunu yaparken, bu bileşenlerin uluslararasılaştırma (i18n) standartlarına uygun olarak RTL (sağdan sola) yönelim için bir prop desteği (örneğin `dir="rtl"`) barındırıp barındırmadığını kontrol et ve raporla."
+
+**6\. Görsel Regresyon ve Kontrast Testi (Screenshot Capture) Prompt'u:**
+
+> "/storybook-use `storybook_capture_screenshot` aracını çağırarak 'Mega Header' isimli hikayenin (story) hem 320px genişliğinde (Native Mobile), hem de 1440px genişliğinde (Desktop) ekran görüntülerini al. Çıkan ekran görüntülerini analiz et: Mobil ekranda (320px) navigasyon menüsü sorunsuz bir şekilde Hamburger menüye (veya collapsible panele) dönüşüyor mu? Tipografi Roboto fontunda ve en az 16px (1rem) boyutunda mı? Koyu lacivert (\#080616) arka plan üzerinde kullanılan Limon Sarısı (\#FFB900) ikonlar beklenen 11.63:1 kontrast oranını sağlıyor mu? Olası hizalama veya kontrast hatalarını raporla."
+
+**7\. Otonom Test Senaryosu Oluşturma ve Kendi Kendini Onarma (Self-Healing) Prompt'u:**
+
+> "/storybook-use `get-storybook-story-instructions` aracı ile mevcut projedeki test yazım kurallarını ve yönergelerini oku. Daha sonra, 'Conversion First Form' bileşeni için yeni bir Storybook hikayesi (story file) oluştur. Bu hikayeye 'Light', 'Dark' ve 'RTL' (Right-to-Left) varyantlarını argüman (args) olarak ekle. İşlem bittikten sonra `run-story-tests` aracını kullanarak tüm testleri çalıştır. Eğer karanlık modda font rengi, kavis sınırları veya kontrast başarısız (fail) olursa, ilgili React kod dosyasında düzeltmeleri yaparak süreci kendi kendine onar (self-heal)."
+
+**8\. Dinamik Önizleme ve Hata Ayıklama Prompt'u:**
+
+> "/storybook-use Storybook içindeki Ebp modülüne ait 'BentoGridDashboard' bileşeninin tüm hikayelerini `storybook_list_stories` ile listele. 'Anchor Cell Focus' isimli hikaye için `preview-stories` aracını çalıştırarak bana bir önizleme linki sun. Ardından, bu ekranı yüklerken konsola düşen hataları (console logs) veya Vite transform uyarılarını oku. Bileşen içindeki 'Adaptive AI' veri yüklemesi asenkron çalışırken grid düzeninde herhangi bir zıplama (layout shift) olup olmadığını analiz et."
+
+Tasarım stratejisinin başarısı, UI estetiğinin (Glassmorphism ve Motion First) yalnızca doğru alanlarda kullanılmasına, form ve tabloların katı işlevsel kurallara (Flat 2.0 ve tek sütun mimarisi) bağlı kalmasına ve kod geliştirme süreçlerinin Figma ve Storybook Model Context Protocol entegrasyonuyla endüstriyel bir otomasyona bağlanmasına doğrudan bağlıdır. Bu sayede 2035 vizyonuna hizmet edecek, küresel pazarlara saniyeler içinde adapte olabilen hiper-ölçeklenebilir sistemler inşa edilebilecektir.
+

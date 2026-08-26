@@ -89,6 +89,31 @@ final class ExternalDesignCorpusManifestTest extends TestCase
         }
     }
 
+    // --- CORPUS-PHILOSOPHY-IN-REPO-04 -------------------------------------
+
+    public function test_the_philosophy_corpus_now_lives_in_the_repository(): void
+    {
+        $index = 'docs/design-corpus/README.md';
+
+        self::assertFileExists(
+            base_path($index),
+            'CORPUS-PHILOSOPHY-IN-REPO-04: felsefe külliyatı 2026-08-26 owner kararıyla depoya taşındı; dizini kaybolmuş.'
+        );
+
+        foreach (['olcu-birimleri.md', 'adaptive-semantic-grid.md', 'saas-panel-tasarim-sistemi.md'] as $doc) {
+            self::assertFileExists(
+                base_path("docs/design-corpus/{$doc}"),
+                "CORPUS-PHILOSOPHY-IN-REPO-04: çekirdek felsefe belgesi {$doc} eksik."
+            );
+        }
+
+        self::assertStringContainsString(
+            'design-corpus',
+            $this->read(self::MANIFEST),
+            'CORPUS-PHILOSOPHY-IN-REPO-04: manifest, felsefenin artık depoda olduğunu söylemeli.'
+        );
+    }
+
     // --- CORPUS-HANDOVER-03 ----------------------------------------------
 
     public function test_the_manifest_warns_that_a_clone_does_not_carry_the_corpus(): void
