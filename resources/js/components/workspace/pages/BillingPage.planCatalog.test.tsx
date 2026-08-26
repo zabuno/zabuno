@@ -130,7 +130,9 @@ describe('BillingPage — S1-WP05 Plan catalog (BILLING_PLAN_CATALOG_FRONTEND_RE
         expect(within(planRegion()).getByText('growth')).toBeInTheDocument();
         expect(within(planRegion()).getByText('Unlimited menus')).toBeInTheDocument();
         expect(within(planRegion()).getByText('Priority support')).toBeInTheDocument();
-        expect(within(planRegion()).getByText('1.499,00 TRY')).toBeInTheDocument();
+        // Fiyat okuyucunun diline göre biçimlenir (CORE-12, `docs/13` §4);
+        // jsdom belgesinin dili boş olduğundan taban locale `en` uygulanır.
+        expect(within(planRegion()).getByText('TRY 1,499.00')).toBeInTheDocument();
     });
 
     it('renders an honest price-unavailable label for a plan with no published amount_minor, never a fabricated number', async () => {

@@ -258,7 +258,10 @@
                         @foreach ($category['menuItems'] as $item)
                             <li class="qr-menu-item" data-item data-item-name="{{ $item['productName'] }}">
                                 <span class="qr-menu-item-name">{{ $item['productName'] }}</span>
-                                <span class="qr-menu-item-price">{{ number_format($item['priceMinorAmount'] / 100, 2) }} {{ $item['currencyCode'] }}</span>
+                                @php($priceLabel = \App\Support\Money\PriceLabel::for((int) $item['priceMinorAmount'], (string) $item['currencyCode']))
+                                @if ($priceLabel !== null)
+                                    <span class="qr-menu-item-price">{{ $priceLabel }}</span>
+                                @endif
                                 @if (! empty($item['allergens']))
                                     <span class="qr-menu-item-allergens">
                                         @foreach ($item['allergens'] as $allergen)

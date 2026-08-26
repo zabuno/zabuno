@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from 'flowbite-react';
 
 import { t } from '../../../../i18n/workspace';
+import { formatMoneyOr } from '../../../../money/format';
 import { KeyValueList } from '../../../catalog/data-display/compound/KeyValueList';
 import {
     ResponsiveDataTable,
@@ -62,22 +63,6 @@ function isLedgerPayload(value: unknown): value is LedgerPayload {
         typeof candidate.balances === 'object' &&
         candidate.balances !== null
     );
-}
-
-/**
- * Kuruşu paraya çevirmek bölme değil, para birimi bilgisi ister: her para
- * biriminin ondalık basamağı aynı değildir (JPY 0, TRY 2, KWD 3). Bu yüzden
- * bölen sabit 100 değil, Intl'in o para birimi için bildirdiği basamak
- * sayısından türetilir — aksi hâlde tutar sessizce yanlış gösterilirdi.
- */
-function formatMinor(minor: number, currencyCode: string): string {
-    const formatter = new Intl.NumberFormat(document.documentElement.lang || 'en', {
-        style: 'currency',
-        currency: currencyCode,
-    });
-    const digits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
-
-    return formatter.format(minor / 10 ** digits);
 }
 
 /**
@@ -158,7 +143,8 @@ export function WorkspaceLedger({ workspaceId }: WorkspaceLedgerProps) {
             key: 'amount',
             header: t('workspace.billing.ledger.column.amount'),
             align: 'end',
-            render: (row) => formatMinor(row.amountMinor, row.currencyCode),
+            render: (row) =>
+                formatMoneyOr(row.amountMinor, row.currencyCode, String(row.amountMinor)),
         },
     ];
 
@@ -209,7 +195,11 @@ export function WorkspaceLedger({ workspaceId }: WorkspaceLedgerProps) {
                                 entries={balances.map(([account, minor]) => ({
                                     key: account,
                                     label: account,
-                                    value: formatMinor(minor, payload?.currency ?? 'TRY'),
+                                    value: formatMoneyOr(
+                                        minor,
+                                        payload?.currency ?? 'TRY',
+                                        String(minor),
+                                    ),
                                 }))}
                             />
                         </section>

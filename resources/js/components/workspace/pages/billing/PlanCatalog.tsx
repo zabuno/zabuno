@@ -1,3 +1,4 @@
+import { formatMoneyOr } from '../../../../money/format';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Plan = {
@@ -80,13 +81,8 @@ function derivePriceLabel(plan: Plan, priceUnavailableText: string): string {
         return priceUnavailableText;
     }
 
-    const majorAmount = plan.amount_minor / 100;
-    const formattedAmount = majorAmount.toLocaleString('tr-TR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
-
-    return `${formattedAmount} ${plan.currency}`;
+    // Biçimlendirme CORE-12'ye aittir; burada tekrar edilmez (docs/13 §4).
+    return formatMoneyOr(plan.amount_minor, plan.currency, priceUnavailableText);
 }
 
 /**
