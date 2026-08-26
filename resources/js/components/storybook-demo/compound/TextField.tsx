@@ -21,7 +21,7 @@ export function TextField({ label, helpText, errorText, id, ...inputProps }: Tex
 
     return (
         <div className="flex flex-col gap-1">
-            <label htmlFor={fieldId} className="text-sm font-medium text-gray-900">
+            <label htmlFor={fieldId} className="text-sm font-medium text-fg">
                 {label}
             </label>
             <Input
@@ -31,12 +31,12 @@ export function TextField({ label, helpText, errorText, id, ...inputProps }: Tex
                 {...inputProps}
             />
             {helpText ? (
-                <p id={helpId} className="text-xs text-gray-500">
+                <p id={helpId} className="text-xs text-fg-muted">
                     {helpText}
                 </p>
             ) : null}
             {errorText ? (
-                <p id={errorId} role="alert" aria-live="polite" className="text-xs text-red-600">
+                <p id={errorId} role="alert" aria-live="polite" className="text-xs text-fg-danger">
                     {errorText}
                 </p>
             ) : null}

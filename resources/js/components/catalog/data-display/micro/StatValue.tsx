@@ -10,7 +10,7 @@ export type StatValueProps = {
 };
 
 const TREND_COLOR: Record<StatValueTrend, string> = {
-    up: 'text-green-700 dark:text-green-400',
+    up: 'text-fg-success ',
     down: 'text-fg-danger',
     flat: 'text-fg-muted',
 };

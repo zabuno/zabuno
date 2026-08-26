@@ -120,7 +120,7 @@ kendisi depoda kalsın. Ayrıntı ve gerekçe için §3–§4'e bakılır.
 | Token zinciri | `resources/css/app.css` (semantic yüzey `@theme`'den yayınlanır), `docs/35` §1 |
 | Katman sözleşmesi | `resources/js/design-system/semantic-map.ts`, `docs/35` §2a |
 | Zorlayıcı kontrol | `resources/js/design-system/design-system.guard.test.ts` |
-| Palet borcu | `resources/js/design-system/raw-palette-debt.json` |
+| Palet yasağı | `design-system.guard.test.ts` → `DS-RAW-PALETTE-BANNED-01` (2026-08-26'da cırcırdan mutlak yasağa geçti; borç 895 → 0) |
 | Tasarım kimliği | `docs/06` |
 | AI duruşu | `docs/14`, `docs/32` |
 

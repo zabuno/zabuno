@@ -25,7 +25,7 @@ export function Skeleton({ shape = 'text', width, height, className }: SkeletonP
             role="presentation"
             aria-hidden="true"
             className={clsx(
-                'block animate-pulse bg-gray-200 dark:bg-gray-700',
+                'block animate-pulse bg-surface-active ',
                 SHAPE_CLASS[shape],
                 !height && shape === 'text' && 'h-4',
                 !width && shape === 'text' && 'w-full',

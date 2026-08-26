@@ -14,7 +14,7 @@ export function Label({ required = false, children, ...rest }: LabelProps) {
         <FlowbiteLabel {...rest}>
             {children}
             {required ? (
-                <span aria-hidden="true" className="ms-0.5 text-red-600 dark:text-red-500">
+                <span aria-hidden="true" className="ms-0.5 text-fg-danger ">
                     *
                 </span>
             ) : null}

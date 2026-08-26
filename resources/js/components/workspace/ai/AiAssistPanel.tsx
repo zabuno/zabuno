@@ -18,7 +18,7 @@ export function AiAssistPanel({ context }: AiAssistPanelProps) {
     return (
         <section
             aria-label={t('workspace.ai.panel.label', { context })}
-            className="mt-8 flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+            className="mt-8 flex flex-col gap-3 rounded-lg border border-border p-4 "
         >
             <h3 className="text-sm font-semibold text-fg">{t('workspace.ai.panel.heading')}</h3>
 

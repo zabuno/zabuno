@@ -142,10 +142,7 @@ export function LoginForm({
                 {t('auth.login.submit')}
             </PlainButton>
 
-            <a
-                href="/forgot-password"
-                className="text-sm text-gray-600 hover:underline dark:text-gray-400"
-            >
+            <a href="/forgot-password" className="text-sm text-fg-secondary hover:underline ">
                 {t('auth.login.forgot_password')}
             </a>
         </form>

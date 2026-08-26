@@ -70,10 +70,7 @@ export function InvitationAcceptForm({
                     {t('auth.invitation_accept.heading')}
                 </h1>
                 <p>{t('auth.invitation_accept.guest_body')}</p>
-                <a
-                    href={loginUrl}
-                    className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                >
+                <a href={loginUrl} className="font-medium text-fg-link hover:underline ">
                     {t('auth.invitation_accept.login_link')}
                 </a>
             </div>

@@ -34,7 +34,7 @@ export function Breadcrumbs({ items, label = 'Breadcrumb', className }: Breadcru
                     return (
                         <li key={item.key} className="flex items-center gap-1">
                             {index > 0 ? (
-                                <span aria-hidden="true" className="text-gray-400 rtl:-scale-x-100">
+                                <span aria-hidden="true" className="text-fg-muted rtl:-scale-x-100">
                                     /
                                 </span>
                             ) : null}

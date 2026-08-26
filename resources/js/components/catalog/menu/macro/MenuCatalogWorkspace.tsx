@@ -1,3 +1,4 @@
+import { NATIVE_FIELD_CLASS } from '../../forms/micro/nativeFieldStyles';
 import clsx from 'clsx';
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
@@ -151,26 +152,22 @@ async function parseErrorMessage(response: Response, fallback: string): Promise<
     }
 }
 
-const inputClass = clsx(
-    'w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900',
-    'focus:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-500',
-    'dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100',
-    'forced-colors:border-[CanvasText]',
-);
+// Bu yüzey menü kataloğunun kalbidir ve restoran sahibinin en çok gördüğü
+// ekrandır; bu yüzden kendi rengini seçmemesi özellikle önemlidir.
+const inputClass = clsx(NATIVE_FIELD_CLASS, 'forced-colors:border-[CanvasText]');
 
-const labelClass = 'block text-sm font-medium text-neutral-700 dark:text-neutral-300';
+const labelClass = 'block text-sm font-medium text-fg-secondary';
 
 const buttonClass = clsx(
-    'inline-flex items-center justify-center rounded-md bg-neutral-900 px-4 py-2 text-sm font-semibold text-white',
-    'hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500',
+    'inline-flex min-h-[var(--density-hit-area-min)] items-center justify-center rounded-md px-4 py-2 text-sm font-semibold',
+    'border border-action bg-action text-action-fg hover:brightness-95',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
     'disabled:cursor-not-allowed disabled:opacity-50',
-    'dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
     'forced-colors:border forced-colors:border-[ButtonText]',
 );
 
 const sectionClass = clsx(
-    'flex flex-col gap-3 rounded-lg border border-neutral-200 p-4',
-    'dark:border-neutral-800',
+    'flex flex-col gap-3 rounded-lg border border-border p-4',
     'forced-colors:border-[CanvasText]',
 );
 
@@ -704,7 +701,7 @@ export function MenuCatalogWorkspace({
     }
 
     return (
-        <div className={clsx('flex flex-col gap-6', 'text-neutral-900', 'dark:text-neutral-100')}>
+        <div className={clsx('flex flex-col gap-6', 'text-fg')}>
             {busy ? <p role="status">{t('menu.status.saving')}</p> : null}
 
             {!tree ? (

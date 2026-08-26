@@ -187,7 +187,7 @@ export function PlanCatalog({
                     {plans.map((plan) => (
                         <li
                             key={plan.id}
-                            className="flex flex-col gap-2 rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
+                            className="flex flex-col gap-2 rounded-lg border border-border p-3 text-sm text-fg-secondary"
                         >
                             <span className="font-medium text-fg">{plan.name}</span>
                             <span className="text-fg-muted">{plan.code}</span>

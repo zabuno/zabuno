@@ -21,8 +21,7 @@ export function StatCard({ label, value, trend, icon, loading = false, className
     return (
         <div
             className={clsx(
-                'flex items-start justify-between gap-3 rounded-lg border border-gray-200 bg-white p-4',
-                'dark:border-gray-700 dark:bg-gray-900',
+                'flex items-start justify-between gap-3 rounded-lg border border-border bg-surface p-4',
                 className,
             )}
         >
@@ -35,7 +34,7 @@ export function StatCard({ label, value, trend, icon, loading = false, className
                 )}
             </div>
             {icon ? (
-                <span aria-hidden="true" className="text-gray-400 dark:text-gray-500">
+                <span aria-hidden="true" className="text-fg-muted">
                     {icon}
                 </span>
             ) : null}

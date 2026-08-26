@@ -1,9 +1,9 @@
+import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
 import { t } from '../../../../i18n/workspace';
 
 const PAPER_SIZES = ['A4', 'B4', 'A5', 'B5', 'A6', 'B6', 'A7', 'B7'] as const;
 
-const FIELD_CLASSES =
-    'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:disabled:text-gray-500';
+const FIELD_CLASSES = NATIVE_FIELD_CLASS;
 
 const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
 

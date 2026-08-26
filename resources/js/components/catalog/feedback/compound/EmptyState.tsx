@@ -25,18 +25,14 @@ export function EmptyState({
     return (
         <div
             className={clsx(
-                'flex flex-col items-center gap-3 rounded-lg border border-dashed border-gray-300 p-8 text-center',
-                'dark:border-gray-700',
+                'flex flex-col items-center gap-3 rounded-lg border border-dashed border-border p-8 text-center',
                 className,
             )}
         >
             {loading ? (
                 <Spinner label={`${title} — loading…`} />
             ) : (
-                <div
-                    aria-hidden="true"
-                    className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700"
-                />
+                <div aria-hidden="true" className="h-8 w-8 rounded-full bg-surface-active" />
             )}
             <p className="text-sm font-medium text-fg">{title}</p>
             {description ? <p className="text-sm text-fg-muted">{description}</p> : null}

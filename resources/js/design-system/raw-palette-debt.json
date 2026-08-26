@@ -1,8 +1,0 @@
-{
-    "$note": "Ham Tailwind paleti borcunun cırcır (ratchet) taban çizgisi. Bu sayılar YALNIZ azaltılmak üzere güncellenir. Artırmak, tasarım sistemini atlayan yeni kod eklemek demektir ve review'da reddedilir. Borç sıfırlandığında bu dosya ve ilgili test kaldırılır, yerine mutlak yasak gelir.",
-    "$measuredAt": "2026-08-26",
-    "$why": "resources/css/app.css semantic token'ları :root'ta tanımlıyordu ama @theme'de yayınlamıyordu; Tailwind v4'te utility yalnız @theme'den üretildiği için geliştirici `text-fg-secondary` yazamıyor, mecburen `text-gray-500`'e düşüyordu. Utility yüzeyi açıldı; bu dosya kalan borcu görünür ve ölçülebilir tutar. 2026-08-26 ikinci geçiş: durum yüzeyleri (`--surface-info/success/warning/danger`) ve birincil eylem (`--color-action`) token olarak yayımlandı; böylece uyarı tonu ve çağrı-butonu rengi bileşende değil, kökte tanımlanır.",
-    "maxViolations": 110,
-    "maxFiles": 31,
-    "$progress": "895/89 (ilk ölçüm) -> 889/87 -> 334/50 -> 235/41 -> 203/39 -> 110/31. Son adımda kural kökü `resources/js/components`'ten `resources/js`'e genişletildi (auth.tsx gibi kök dosyalar hiçbir kurala tabi değildi), frontpage'ler ve altı katalog primitifi semantic token'a taşındı. Üçüncü geçişte üç yeni primitif eklendi (TextInput, TextLink, PlainButton, SegmentedControl) ve yayın yüzeyi bunlara taşındı; tema seçici `aria-pressed` yerine `radiogroup` oldu."
-}
