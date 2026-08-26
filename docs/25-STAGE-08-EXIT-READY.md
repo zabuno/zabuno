@@ -49,6 +49,23 @@ derlemesi.
 Bağımsız bir üçüncü tarafın (veya simüle edilmiş bir due-diligence checklist'inin)
 data room'u eksiksiz bulması.
 
+### Devir kalemi — depo dışı tasarım külliyatı (zorunlu)
+
+Bu depo PUBLIC'tir ve bir `git clone` **tasarım külliyatını getirmez.**
+Ayrıntılı tasarım külliyatı ile çalışan referans implementasyonu (tam DTCG
+token pipeline'ı, foundations CSS katmanları, AEP renderer pattern'leri, dalga
+testleri, ve bu depoda karşılığı olmayan iki sözleşme —
+`10-frontend-katman-mimarisi.md` ve `13-foundation-contract.md`) owner
+makinesinde yaşar.
+
+Envanteri ve kanonik kararları: [`docs/36-EXTERNAL-DESIGN-CORPUS.md`](36-EXTERNAL-DESIGN-CORPUS.md).
+
+**Devir/exit bu varlık ayrıca aktarılmadan tamamlanmış sayılmaz.** Aktarılmazsa
+alıcı taraf ürünün tasarım *gerekçesini* ve çalışan referans implementasyonunu
+kaybeder; `docs/06` ve `docs/35` yalnız sonucu taşır. Bu, data room tamlık
+yüzdesine dahil edilir ve key-person bağımlılık skorunu doğrudan etkiler —
+külliyat aktarılmadığı sürece tasarım sistemi tek kişiye bağlıdır.
+
 ## Metrics
 Data room tamlık yüzdesi, key-person bağımlılık skoru (kaç kritik süreç tek
 kişiye bağlı), reproducible deploy başarı oranı.
