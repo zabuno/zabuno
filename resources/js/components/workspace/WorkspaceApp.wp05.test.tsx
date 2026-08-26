@@ -353,7 +353,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // Analytics: a page-frame description plus an honest status badge
         // reflecting the real fetch/range status, not a fabricated label.
         await user.click(within(nav).getByRole('link', { name: 'Analytics' }));
-        const analyticsRegion = screen.getByRole('main').querySelector('#section-analytics') as HTMLElement;
+        const analyticsRegion = screen
+            .getByRole('main')
+            .querySelector('#section-analytics') as HTMLElement;
         await within(analyticsRegion).findAllByText('0');
         expect(
             within(analyticsRegion).getByText(/qr resolve and confirmed menu open/i),
@@ -376,7 +378,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // plan assignment, end date, payment note, document reference —
         // all disabled and empty, plus a disabled Iyzico sandbox region.
         await user.click(within(nav).getByRole('link', { name: 'Billing' }));
-        const billingRegion = screen.getByRole('main').querySelector('#section-billing') as HTMLElement;
+        const billingRegion = screen
+            .getByRole('main')
+            .querySelector('#section-billing') as HTMLElement;
         const manualPaymentRegion = within(billingRegion).getByRole('region', {
             name: /manual.payment/i,
         });

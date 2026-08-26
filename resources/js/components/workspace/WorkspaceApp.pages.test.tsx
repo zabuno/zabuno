@@ -370,7 +370,14 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         await renderCurrentWorkspace();
 
         const names = ['Brand', 'Locations', 'Menu', 'Media', 'Publication', 'Dashboard'];
-        const ids = ['section-brand', 'section-locations', 'section-menu', 'section-media', 'section-publication', 'section-dashboard'];
+        const ids = [
+            'section-brand',
+            'section-locations',
+            'section-menu',
+            'section-media',
+            'section-publication',
+            'section-dashboard',
+        ];
 
         for (let i = 0; i < names.length; i += 1) {
             await user.click(screen.getByRole('button', { name: 'Open menu' }));

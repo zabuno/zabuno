@@ -303,7 +303,9 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
             expect(optionKeys).toHaveLength(0);
         }
 
-        const securityRegion = screen.getByRole('main').querySelector('#section-security') as HTMLElement;
+        const securityRegion = screen
+            .getByRole('main')
+            .querySelector('#section-security') as HTMLElement;
 
         for (const button of within(securityRegion).queryAllByRole('button')) {
             const name = button.textContent ?? '';
@@ -325,7 +327,9 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Launch readiness' }));
 
-        const securityRegion = screen.getByRole('main').querySelector('#section-security') as HTMLElement;
+        const securityRegion = screen
+            .getByRole('main')
+            .querySelector('#section-security') as HTMLElement;
         expect(securityRegion).not.toBeNull();
 
         for (const classAttribute of allClassAttributes(securityRegion)) {
