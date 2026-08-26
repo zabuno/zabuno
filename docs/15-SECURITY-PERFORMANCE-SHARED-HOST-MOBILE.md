@@ -102,6 +102,27 @@ Sağlayıcı seçildiğinde aynı komut orada çalıştırılır ve çıktısı
 `host_capability_evidence` tablosuna yazılır; iki kayıt yan yana konarak
 sağlayıcılar karşılaştırılır. Bu belge o ölçümün yerine geçmez.
 
+### Kapı, belge değil
+
+Bu sözleşme `tests/Feature/Portability/SharedHostContractTest.php` ile
+zorlanır. Bugün her şey uyumlu; kapının amacı yarın eklenen bir satırın bunu
+sessizce bozmasını engellemektir — çünkü kırılma yerel makinede değil,
+müşterinin sunucusunda görünür.
+
+| Kural | Neyi engeller |
+| --- | --- |
+| `HOST-EXT-01` | Paylaşımlı barındırmada bulunmayan bir eklentiyi zorunlu kılmak (`composer install` orada hiç çalışmaz) |
+| `HOST-DRIVER-02` | Dağıtım örneklerinde Redis/Memcached seçmek |
+| `HOST-PROCESS-03` | `exec`/`proc_open` çağrısını planlı düşüş yolu olmadan yaymak |
+| `HOST-QUEUE-04` | Kuyruğa iş atıp onu cron ile işleyecek yol bırakmamak |
+| `HOST-SYMLINK-05` | Çalışma zamanında symlink oluşturmaya bağımlı olmak |
+| `HOST-WEBSERVER-06` | URL kuralını `nginx.conf`'a taşımak; oraya erişimin yok |
+
+`HOST-QUEUE-04` özellikle önemlidir: paylaşımlı barındırmada sürekli çalışan
+bir worker yoktur. Kuyruğa atılan bir iş, onu işleyecek zamanlanmış bir komut
+olmadan veritabanında **sonsuza kadar bekler** — hata vermez, sadece hiç
+olmaz. Bugün kuyruğa hiçbir iş atılmıyor; kapı o günü bekliyor.
+
 **Bu kararın bedeli açıkça yazılır:** paylaşımlı barındırma tabanı, gerçek
 zamanlı işleme, ağır görsel işleme ve yüksek eşzamanlılık gerektiren
 özellikleri Stage 1 kapsamı dışında tutar. Bu bir eksiklik değil, seçilen
