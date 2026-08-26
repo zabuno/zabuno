@@ -7,6 +7,7 @@ namespace Tests\Feature\QrDestination;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\GrantsPlanEntitlements;
 use Tests\TestCase;
 
 /**
@@ -25,6 +26,7 @@ use Tests\TestCase;
  */
 final class BulkQrTenantIsolationTest extends TestCase
 {
+    use GrantsPlanEntitlements;
     use RefreshDatabase;
 
     private function verifiedUser(): User
@@ -139,6 +141,11 @@ final class BulkQrTenantIsolationTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Owner 2026-08-26'da bu yeteneği plana bağladı; testler
+        // yazıldığında ücretsizdi. Kurulum burada, kurucunun içinde yapılır ki
+        // her test kendi plan kurgusunu tekrar yazmasın.
+        $this->grantEntitlements($workspaceId);
 
         return [$workspaceId, $locationId, $menuId];
     }

@@ -6,8 +6,11 @@ namespace App\Http\Controllers\Analytics;
 
 use App\Application\Analytics\Port\AnalyticsRepositoryPort;
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Entitlement\Exception\EntitlementDeniedException;
+use App\Application\Entitlement\UseCase\RequireEntitlement;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\Entitlement\Entitlement;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +24,7 @@ final class ShowAnalyticsSummaryController extends Controller
         private readonly AuthorizationPort $authorization,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AnalyticsRepositoryPort $analytics,
+        private readonly RequireEntitlement $requireEntitlement,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $location): JsonResponse
@@ -33,6 +37,19 @@ final class ShowAnalyticsSummaryController extends Controller
 
         if ($this->context->locationWorkspaceId($location) !== $workspace) {
             return response()->json(['message' => 'Not Found.'], 404);
+        }
+
+        // CORE-04: bu yetenek plana bağlıdır (owner kararı, 2026-08-26).
+        // 402 kullanılır, 403 değil: kullanıcı yetkisiz DEĞİL, planı bu
+        // yeteneği içermiyor. Çıkış yolu farklıdır — biri erişim talebi,
+        // diğeri plan yükseltmesidir.
+        try {
+            $this->requireEntitlement->handle($workspace, Entitlement::AnalyticsReporting);
+        } catch (EntitlementDeniedException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'entitlement' => $e->entitlement->value,
+            ], 402);
         }
 
         $range = (string) $request->query('range', 'today');

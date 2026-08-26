@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Entitlement\Exception\EntitlementDeniedException;
+use App\Application\Entitlement\UseCase\RequireEntitlement;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\QrDestination\Exception\BulkQrCreationFailedException;
 use App\Application\QrDestination\Port\BulkQrCreationPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\Entitlement\Entitlement;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,6 +44,7 @@ final class StoreBulkQrCodesController extends Controller
         private readonly PublicationRepositoryPort $publications,
         private readonly QrCodeRepositoryPort $qrCodes,
         private readonly BulkQrCreationPort $bulkCreation,
+        private readonly RequireEntitlement $requireEntitlement,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $location): JsonResponse
@@ -57,6 +61,20 @@ final class StoreBulkQrCodesController extends Controller
 
         if ($this->context->locationWorkspaceId($location) !== $workspace) {
             return response()->json(['message' => 'Not Found.'], 404);
+        }
+
+        // CORE-04: bu yetenek plana bağlıdır (owner kararı, 2026-08-26).
+        // 402 kullanılır, 403 değil: kullanıcı yetkisiz DEĞİL, planı bu
+        // yeteneği içermiyor. Çıkış yolu farklıdır — biri erişim talebi,
+        // diğeri plan yükseltmesidir; aynı kodu vermek kullanıcıyı yanlış
+        // yola sokar.
+        try {
+            $this->requireEntitlement->handle($workspace, Entitlement::QrBulkGeneration);
+        } catch (EntitlementDeniedException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'entitlement' => $e->entitlement->value,
+            ], 402);
         }
 
         $menuId = (int) $request->input('menuId');

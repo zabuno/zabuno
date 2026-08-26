@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Support\GrantsPlanEntitlements;
 use Tests\TestCase;
 
 /**
@@ -79,6 +80,7 @@ use Tests\TestCase;
  */
 final class BulkQrCreationTest extends TestCase
 {
+    use GrantsPlanEntitlements;
     use RefreshDatabase;
 
     private function verifiedUser(): User
@@ -197,6 +199,11 @@ final class BulkQrCreationTest extends TestCase
             'updated_at' => now(),
         ]);
 
+        // Owner 2026-08-26'da bu yeteneği plana bağladı; testler
+        // yazıldığında ücretsizdi. Kurulum burada, kurucunun içinde yapılır ki
+        // her test kendi plan kurgusunu tekrar yazmasın.
+        $this->grantEntitlements($workspaceId);
+
         return [$workspaceId, $locationId, $menuId];
     }
 
@@ -252,6 +259,8 @@ final class BulkQrCreationTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        $this->grantEntitlements($workspaceId);
 
         return [$workspaceId, $locationId];
     }

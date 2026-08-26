@@ -11,6 +11,7 @@ use App\Application\Billing\Port\IyzicoSandboxTransactionRepositoryPort;
 use App\Application\Billing\Port\PlanCatalogRepositoryPort;
 use App\Application\Billing\Port\PlanManagementRepositoryPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
+use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaRepositoryPort;
@@ -41,6 +42,7 @@ use App\Infrastructure\Billing\Persistence\EloquentPlanCatalogRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPlanManagementRepository;
 use App\Infrastructure\Billing\Persistence\EloquentSubscriptionRepository;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
+use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
@@ -74,6 +76,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
         $this->app->bind(WorkspaceRepositoryPort::class, EloquentWorkspaceRepository::class);
         $this->app->bind(WorkspaceContextSessionPort::class, SessionWorkspaceContext::class);
         $this->app->bind(AuthorizationPort::class, EloquentAuthorizationDecisionPoint::class);
