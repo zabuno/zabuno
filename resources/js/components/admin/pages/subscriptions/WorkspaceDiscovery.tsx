@@ -1,4 +1,3 @@
-import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -18,8 +17,6 @@ type WorkspaceDiscoveryProps = {
 };
 
 const WORKSPACES_ENDPOINT = '/api/admin/workspaces';
-
-const FIELD_CLASSES = `${NATIVE_FIELD_CLASS} text-start`;
 
 function isValidWorkspace(value: unknown): value is Workspace {
     if (typeof value !== 'object' || value === null) {
@@ -117,7 +114,6 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
                 aria-expanded="true"
                 aria-haspopup="listbox"
                 aria-controls="subscription-workspace-listbox"
-                className={FIELD_CLASSES}
             >
                 {selectedWorkspace
                     ? selectedWorkspace.name

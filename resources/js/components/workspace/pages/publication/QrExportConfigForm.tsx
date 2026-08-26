@@ -1,9 +1,8 @@
-import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
+import { TextInput } from '../../../catalog/forms/micro/TextInput';
+import { Select } from '../../../catalog/forms/micro/Select';
 import { t } from '../../../../i18n/workspace';
 
 const PAPER_SIZES = ['A4', 'B4', 'A5', 'B5', 'A6', 'B6', 'A7', 'B7'] as const;
-
-const FIELD_CLASSES = NATIVE_FIELD_CLASS;
 
 const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
 
@@ -40,51 +39,48 @@ export function QrExportConfigForm({
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.config.destinationType')}
-                <select disabled defaultValue="published" className={FIELD_CLASSES}>
+                <Select disabled defaultValue="published">
                     <option value="published">
                         {t('workspace.publication.qrExport.config.destinationType.published')}
                     </option>
-                </select>
+                </Select>
             </label>
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.config.outputFormat')}
-                <select
+                <Select
                     value={outputFormat}
                     onChange={(event) =>
                         onOutputFormatChange?.(event.target.value as QrOutputFormat)
                     }
-                    className={FIELD_CLASSES}
                 >
                     <option value="png">{t('workspace.publication.qrExport.formats.png')}</option>
                     <option value="svg">{t('workspace.publication.qrExport.formats.svg')}</option>
                     <option value="pdf">{t('workspace.publication.qrExport.formats.pdf')}</option>
-                </select>
+                </Select>
             </label>
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.config.paperSize')}
-                <select
+                <Select
                     disabled={!isPdf}
                     value={paperSize}
                     onChange={(event) => onPaperSizeChange?.(event.target.value as QrPaperSize)}
-                    className={FIELD_CLASSES}
                 >
                     {PAPER_SIZES.map((size) => (
                         <option key={size} value={size}>
                             {size}
                         </option>
                     ))}
-                </select>
+                </Select>
             </label>
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.config.orientation')}
-                <select
+                <Select
                     disabled={!isPdf}
                     value={orientation}
                     onChange={(event) => onOrientationChange?.(event.target.value as QrOrientation)}
-                    className={FIELD_CLASSES}
                 >
                     <option value="Portrait">
                         {t('workspace.publication.qrExport.config.orientation.portrait')}
@@ -92,17 +88,16 @@ export function QrExportConfigForm({
                     <option value="Landscape">
                         {t('workspace.publication.qrExport.config.orientation.landscape')}
                     </option>
-                </select>
+                </Select>
             </label>
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.config.bulk')}
-                <input
+                <TextInput
                     type="text"
                     disabled
                     defaultValue=""
                     placeholder={t('workspace.publication.qrExport.config.bulk.placeholder')}
-                    className={FIELD_CLASSES}
                 />
             </label>
         </fieldset>

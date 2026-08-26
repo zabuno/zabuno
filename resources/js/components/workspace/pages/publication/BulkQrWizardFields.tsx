@@ -1,18 +1,13 @@
+import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { useState } from 'react';
 
 import { t } from '../../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import type { QrCodeItem } from './qr-destination/QrCodeListItem';
 import { Button } from '../../../catalog/forms/micro/Button';
-import {
-    NATIVE_FIELD_CLASS,
-    NATIVE_LABEL_CLASS,
-} from '../../../catalog/forms/micro/nativeFieldStyles';
 import { TextLink } from '../../../catalog/navigation/micro/TextLink';
 
-const FIELD_CLASSES = NATIVE_FIELD_CLASS;
-
-const LABEL_CLASSES = NATIVE_LABEL_CLASS;
+const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
 
 const ALERT_CLASSES = 'text-xs text-fg-danger';
 
@@ -329,7 +324,7 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.bulkWizard.areaSectionCount')}
-                <input
+                <TextInput
                     type="number"
                     min={1}
                     max={50}
@@ -339,14 +334,13 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     onBlur={() => handleBlur('areaSectionCount')}
                     aria-invalid={touched.areaSectionCount && !fieldValidity.areaSectionCount}
                     aria-describedby={describedBy('areaSectionCount')}
-                    className={FIELD_CLASSES}
                 />
             </label>
             {renderError('areaSectionCount')}
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.bulkWizard.tableCount')}
-                <input
+                <TextInput
                     type="number"
                     min={1}
                     max={500}
@@ -356,14 +350,13 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     onBlur={() => handleBlur('tableCount')}
                     aria-invalid={touched.tableCount && !fieldValidity.tableCount}
                     aria-describedby={describedBy('tableCount')}
-                    className={FIELD_CLASSES}
                 />
             </label>
             {renderError('tableCount')}
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.bulkWizard.namingPrefix')}
-                <input
+                <TextInput
                     type="text"
                     maxLength={10}
                     value={values.namingPrefix}
@@ -371,14 +364,13 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     onBlur={() => handleBlur('namingPrefix')}
                     aria-invalid={touched.namingPrefix && !fieldValidity.namingPrefix}
                     aria-describedby={describedBy('namingPrefix')}
-                    className={FIELD_CLASSES}
                 />
             </label>
             {renderError('namingPrefix')}
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.bulkWizard.namingSequenceStart')}
-                <input
+                <TextInput
                     type="number"
                     min={0}
                     max={9999}
@@ -387,28 +379,26 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     onBlur={() => handleBlur('namingSequenceStart')}
                     aria-invalid={touched.namingSequenceStart && !fieldValidity.namingSequenceStart}
                     aria-describedby={describedBy('namingSequenceStart')}
-                    className={FIELD_CLASSES}
                 />
             </label>
             {renderError('namingSequenceStart')}
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.bulkWizard.namingRange')}
-                <input
+                <TextInput
                     type="text"
                     value={values.namingRange}
                     onChange={(event) => handleChange('namingRange', event.target.value)}
                     onBlur={() => handleBlur('namingRange')}
                     aria-invalid={touched.namingRange && !fieldValidity.namingRange}
                     aria-describedby={describedBy('namingRange')}
-                    className={FIELD_CLASSES}
                 />
             </label>
             {renderError('namingRange')}
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.bulkWizard.seatCountPerTable')}
-                <input
+                <TextInput
                     type="number"
                     min={1}
                     max={20}
@@ -418,7 +408,6 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     onBlur={() => handleBlur('seatCountPerTable')}
                     aria-invalid={touched.seatCountPerTable && !fieldValidity.seatCountPerTable}
                     aria-describedby={describedBy('seatCountPerTable')}
-                    className={FIELD_CLASSES}
                 />
             </label>
             {renderError('seatCountPerTable')}

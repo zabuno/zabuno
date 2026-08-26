@@ -313,13 +313,14 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
             expect(field.className).toMatch(/w-full/);
 
             const heightPx = parseFloat(field.style.minHeight || field.style.height || '0');
-            // `--density-hit-area-min` app.css'te 44px'tir ve
-            // DS-DENSITY-CONTRACT-05 onun asla küçülmemesini garanti eder —
-            // yoğunluk modu satır yüksekliğini değiştirir, dokunma hedefini
-            // DEĞİŞTİRMEZ.
+            // Kontroller `--control-height` okur; tanımı gereği
+            // `max(--density-row-height, --density-hit-area-min)`'dir, yani
+            // 44px'lik dokunma hedefinin altına hiçbir yoğunlukta inemez
+            // (DS-DENSITY-CONTRACT-05: yoğunluk satır yüksekliğini değiştirir,
+            // dokunma hedefini DEĞİŞTİRMEZ).
             const heightAttrOk =
                 heightPx >= 44 ||
-                /h-11|min-h-\[44px\]|min-h-11|min-h-\[var\(--density-hit-area-min\)\]/.test(
+                /h-11|min-h-\[44px\]|min-h-11|min-h-\[var\(--(control-height|density-hit-area-min)\)\]/.test(
                     field.className,
                 );
             expect(heightAttrOk).toBe(true);

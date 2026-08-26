@@ -345,9 +345,10 @@ doğrulama eylemlerine markayı taşıyan paket onu geçici bir kaçış yolu ol
 kullanmıştı; artık kaçış yoluna gerek yok, çünkü kaçılan şey düzeltildi.
 
 `catalog/forms/micro/nativeFieldStyles.ts` aynı gerekçeyle doğmuştu ve aynı
-notu taşıyor. Bu paket onu KALDIRMAZ: DOM yapısı testlerce dondurulmuş sekiz
-yüzeyin çıplak `<input>`/`<select>` öğelerini `TextInput`/`Select`'e taşımak
-ayrı bir iştir. Bağlama tamamlandığına göre o kapı artık açık.
+notu taşıyordu. **Sekiz yüzeyin tamamı taşındı ve dosya kaldırıldı
+(2026-08-26).** Çıplak `<input>`/`<select>` öğeleri artık `TextInput`/`Select`
+bileşenleridir; yani bir formdaki alan ile katalogtaki alan aynı şeydir, ve
+tema kökünde bir ton değiştiğinde ikisi birden değişir.
 
 **Yol boyunca çıkan üç kusur** — üçü de yalnız tarayıcıda görülebilirdi,
 tipler ve testler üçünde de sessizdi:
@@ -376,9 +377,9 @@ sıfır" AYNI ŞEY DEĞİLDİ: depoda `h-10` yazan tek satır yokken üretilen H
 `h-10` vardı. İki kural birbirinin yerine geçmez, birbirini tamamlar.
 
 Yasağın KAPSAMI da genişletildi: tarama artık `.tsx` yanında `.ts` dosyalarını
-da okur. Sınıf listesi taşıyan iki dosya (`design-system/flowbite-theme.ts` ve
-`catalog/forms/micro/nativeFieldStyles.ts`) JSX içermez, yani mutlak yasak tam
-olarak sınıfların en yoğun toplandığı yerde geçersizdi. Katman kuralları
+da okur. Sınıf listesini en yoğun taşıyan dosya (`design-system/flowbite-theme.ts`)
+JSX içermez, yani mutlak yasak tam olarak sınıfların en yoğun toplandığı yerde
+geçersizdi. Katman kuralları
 (`DS-STORY-COVERAGE-01` ve kardeşleri) `.tsx` ile sınırlı kaldı: bir katman
 kuralı BİLEŞEN hakkında konuşur, stil sabiti dışa aktaran bir modül hakkında
 değil.

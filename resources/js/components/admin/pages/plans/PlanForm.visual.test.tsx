@@ -35,9 +35,11 @@ const BORDER_PATTERN = /(^|\s)border(-[a-z0-9]+)?(\s|$)/;
 const SURFACE_PATTERN = /(^|\s)bg-surface(\s|$)/;
 const TEXT_PATTERN = /(^|\s)text-fg(\s|$)/;
 const FOCUS_VISIBLE_PATTERN = /(^|\s)focus(-visible)?:(ring|border|outline)-/;
-// `--density-hit-area-min` app.css'te 44px'tir ve DS-DENSITY-CONTRACT-05
-// onun asla küçülmemesini garanti eder.
-const MIN_HEIGHT_PATTERN = /(^|\s)min-h-\[var\(--density-hit-area-min\)\](\s|$)/;
+// Kontroller `--control-height` okur; o da tanımı gereği
+// `max(--density-row-height, --density-hit-area-min)`'dir, yani 44px'lik
+// dokunma hedefinin ALTINA hiçbir yoğunlukta inemez
+// (`resources/css/app.css`, DS-DENSITY-CONTRACT-05).
+const MIN_HEIGHT_PATTERN = /(^|\s)min-h-\[var\(--(control-height|density-hit-area-min)\)\](\s|$)/;
 
 function renderForm() {
     render(<PlanForm onSubmit={vi.fn()} submitting={false} />);

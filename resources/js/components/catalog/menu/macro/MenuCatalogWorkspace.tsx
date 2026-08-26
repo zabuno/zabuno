@@ -1,4 +1,5 @@
-import { NATIVE_FIELD_CLASS } from '../../forms/micro/nativeFieldStyles';
+import { TextInput } from '../../forms/micro/TextInput';
+import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
@@ -154,8 +155,6 @@ async function parseErrorMessage(response: Response, fallback: string): Promise<
 
 // Bu yüzey menü kataloğunun kalbidir ve restoran sahibinin en çok gördüğü
 // ekrandır; bu yüzden kendi rengini seçmemesi özellikle önemlidir.
-const inputClass = clsx(NATIVE_FIELD_CLASS, 'forced-colors:border-[CanvasText]');
-
 const labelClass = 'block text-sm font-medium text-fg-secondary';
 
 const buttonClass = clsx(
@@ -709,9 +708,8 @@ export function MenuCatalogWorkspace({
                     <label className={labelClass} htmlFor="menu-name">
                         {t('menu.name.label')}
                     </label>
-                    <input
+                    <TextInput
                         id="menu-name"
-                        className={inputClass}
                         type="text"
                         value={menuName}
                         onChange={(event) => setMenuName(event.target.value)}
@@ -775,7 +773,7 @@ export function MenuCatalogWorkspace({
                                                 </ul>
                                             ) : null}
                                             <label className={labelClass}>
-                                                <input
+                                                <TextInput
                                                     type="checkbox"
                                                     aria-label={t(
                                                         'menu.item.visibility.checkbox.label',
@@ -821,9 +819,8 @@ export function MenuCatalogWorkspace({
                                                     >
                                                         {t('menu.item.price.label')}
                                                     </label>
-                                                    <input
+                                                    <TextInput
                                                         id={`item-price-edit-${item.id}`}
-                                                        className={inputClass}
                                                         type="text"
                                                         inputMode="decimal"
                                                         value={priceEditValue}
@@ -857,9 +854,8 @@ export function MenuCatalogWorkspace({
                             <label className={labelClass} htmlFor="category-select">
                                 {t('menu.category.select.label')}
                             </label>
-                            <select
+                            <Select
                                 id="category-select"
-                                className={inputClass}
                                 value={currentCategoryId ?? ''}
                                 onChange={handleCategorySelect}
                             >
@@ -868,7 +864,7 @@ export function MenuCatalogWorkspace({
                                         {category.name}
                                     </option>
                                 ))}
-                            </select>
+                            </Select>
                         </div>
                     ) : null}
 
@@ -876,9 +872,8 @@ export function MenuCatalogWorkspace({
                         <label className={labelClass} htmlFor="category-name">
                             {t('menu.category.name.label')}
                         </label>
-                        <input
+                        <TextInput
                             id="category-name"
-                            className={inputClass}
                             type="text"
                             value={categoryName}
                             onChange={(event) => setCategoryName(event.target.value)}
@@ -895,9 +890,8 @@ export function MenuCatalogWorkspace({
                             <label className={labelClass} htmlFor="product-name">
                                 {t('menu.product.name.label')}
                             </label>
-                            <input
+                            <TextInput
                                 id="product-name"
-                                className={inputClass}
                                 type="text"
                                 value={productName}
                                 onChange={(event) => setProductName(event.target.value)}
@@ -921,9 +915,8 @@ export function MenuCatalogWorkspace({
                             <label className={labelClass} htmlFor="item-price">
                                 {t('menu.item.price.label')}
                             </label>
-                            <input
+                            <TextInput
                                 id="item-price"
-                                className={inputClass}
                                 type="text"
                                 inputMode="decimal"
                                 value={price}
@@ -942,9 +935,8 @@ export function MenuCatalogWorkspace({
                             <label className={labelClass} htmlFor="item-allergens">
                                 {t('menu.item.allergens.label')}
                             </label>
-                            <input
+                            <TextInput
                                 id="item-allergens"
-                                className={inputClass}
                                 type="text"
                                 value={allergensInput}
                                 onChange={(event) => setAllergensInput(event.target.value)}
