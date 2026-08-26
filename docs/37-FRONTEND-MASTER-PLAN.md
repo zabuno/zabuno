@@ -165,7 +165,7 @@ Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
 | G8 | Motion | Motion token + reduced-motion | ✅ **kapandı** — `DS-MOTION-CONTRACT-08` | — |
 | G9 | Akışkan değerler | Token | ✅ akışkan ölçek + display tipografisi token'da; kalan üç yerel `clamp()` izole | — |
 | G10 | RTL/logical | Logical öncelikli | ✅ **cırcır kuruldu** — `DS-LOGICAL-DIRECTION-06`, borç yükselemez | — |
-| G11 | i18n | Altı katalog + PO pipeline | ❌ yalnız `en`; kütüphane yok, elle 7 modül | 2 |
+| G11 | i18n | Altı katalog + PO pipeline | ⚠️ **scaffold + wiring kapandı** (`DS-I18N-*`, altı locale, fallback, RTL, `<html lang/dir>` türetiliyor, menü Türkçesi tam). **PO→MO→JSON pipeline hâlâ yok** | 5 |
 | G12 | X5 durum grameri | Tek R7 ailesi | ⚠️ dağınık (Error 48, Loading 33, Empty 20, Skeleton 3, Permission 1, **Offline 0**) | 3 |
 | G13 | Storybook IA | Yalnız 4 kök | ✅ **kapandı** — `DS-STORY-TAXONOMY-04`; `Workspace/` → `Surface/` | — |
 | G14 | Varyant yönetimi | A–F overlay | ❌ varyant kütüphanesi yok | 5 |
@@ -293,9 +293,23 @@ olarak düşürülerek kanıtlandı: **156 KB gzip / 200 KB bütçe**, 44 KB pay
 
 **Kapı:** motion sözleşmesi ve bütçe ölçülüyor.
 
-### Dalga 5 — i18n ve varyant (G11, G14)
-Altı katalog + pipeline; A–F varyant overlay'i token seviyesinde.
-**Kapı:** ikinci bir dil ve bir RTL akışı uçtan uca çalışır.
+### Dalga 5 — i18n ve varyant (G11, G14) — kısmen
+**i18n scaffold + wiring kapandı.** Altı locale kayıtlı (`en` complete,
+diğerleri scaffold — `docs/26` S1-WP03 bunu böyle kapsıyor), eksik çeviri
+`en`'e düşüyor, yön locale özelliği olarak çözülüyor ve `<html lang/dir>`
+artık dört Blade'de elle yazılmak yerine uygulama locale'inden türüyor.
+
+Bu sonuncusu göründüğünden önemliydi: istemci tarafı çevirici locale'i
+`<html lang>`'den okur, yani sabit kodlanmış bir etiket altı katalog kurulsa
+bile dil seçimini **sessizce dondururdu**.
+
+Menü kataloğu Türkçe olarak tamamlandı — ürünün asıl kitlesi Türk
+restoranları olduğu için ilk tamamlanan yüzey burası.
+
+**Hâlâ eksik:** PO→MO→JSON pipeline'ı ve kalan beş dilin içeriği (Stage 2,
+`docs/26` S1-WP03). A–F varyant overlay'i de bu dalgada bekliyor.
+
+**Kapı:** ikinci bir dil uçtan uca çalışıyor; pipeline ve varyant açık.
 
 ### Borç düşürme — dalgalara paralel
 G2'nin 895 ihlali her dalgada azaltılır. Cırcır artışı zaten engelliyor;
