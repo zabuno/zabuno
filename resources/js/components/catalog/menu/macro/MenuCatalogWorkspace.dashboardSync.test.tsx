@@ -31,6 +31,56 @@ function visibilityUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/visibility`;
 }
 
+function categoriesUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/categories`;
+}
+
+function menuItemsUrl(workspaceId: number, categoryId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/menu-items`;
+}
+
+function productsUrl(workspaceId: number, categoryId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/products`;
+}
+
+const NEW_CATEGORY_ID = 6;
+const NEW_PRODUCT_ID = 902;
+const NEW_MENU_ITEM_ID = 102;
+
+/**
+ * Menüsü henüz olmayan bir şube: GET menu 404 döner, POST menu yeni menüyü
+ * yaratır. Yayın sayfasını kilitleyen gerçek senaryo tam olarak budur —
+ * paylaşılan ağaç null iken menü kurulur ve bildirilmezse Publish ölü kalır.
+ */
+function buildFetchMockWithoutMenu() {
+    return vi.fn(async (url: string, init?: RequestInit) => {
+        const method = (init?.method ?? 'GET').toUpperCase();
+
+        if (String(url) === CSRF_COOKIE_URL) {
+            return jsonResponse(204, {});
+        }
+        if (String(url) === brandUrl(WORKSPACE_ID) && method === 'GET') {
+            return jsonResponse(200, makeBrand());
+        }
+        if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET') {
+            return jsonResponse(404, { message: 'Not Found.' });
+        }
+        if (String(url) === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'POST') {
+            return jsonResponse(201, {
+                id: MENU_ID,
+                workspaceId: WORKSPACE_ID,
+                locationId: LOCATION_ID,
+                name: 'Ana Menü',
+                state: 'draft',
+            });
+        }
+
+        throw new Error(
+            `Unhandled fetch in MenuCatalogWorkspace dashboardSync test: ${method} ${String(url)}`,
+        );
+    });
+}
+
 function importMenuCatalogModule<
     T extends Record<string, unknown> = Record<string, unknown>,
 >(): Promise<T> {
@@ -106,6 +156,28 @@ function buildFetchMock() {
         }
         if (String(url) === visibilityUrl(WORKSPACE_ID, MENU_ITEM_ID) && method === 'PUT') {
             return jsonResponse(200, { id: MENU_ITEM_ID, isVisible: false });
+        }
+        if (String(url) === categoriesUrl(WORKSPACE_ID, MENU_ID) && method === 'POST') {
+            return jsonResponse(201, {
+                id: NEW_CATEGORY_ID,
+                menuId: MENU_ID,
+                name: 'Çorbalar',
+                position: 1,
+            });
+        }
+        if (String(url) === productsUrl(WORKSPACE_ID, NEW_CATEGORY_ID) && method === 'POST') {
+            return jsonResponse(201, { id: NEW_PRODUCT_ID, name: 'Mercimek Çorbası' });
+        }
+        if (String(url) === menuItemsUrl(WORKSPACE_ID, NEW_CATEGORY_ID) && method === 'POST') {
+            return jsonResponse(201, {
+                id: NEW_MENU_ITEM_ID,
+                categoryId: NEW_CATEGORY_ID,
+                productId: NEW_PRODUCT_ID,
+                priceMinorAmount: 4500,
+                currencyCode: 'TRY',
+                position: 0,
+                isVisible: false,
+            });
         }
 
         throw new Error(
@@ -204,6 +276,154 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
                 ]),
             }),
         );
+
+        vi.unstubAllGlobals();
+    });
+
+    // --- DASHBOARD-SYNC-MENU-CREATE-01 ------------------------------------
+    // Yayın sayfasını kilitleyen gerçek senaryo: şubede menü yokken sahibi
+    // menüyü kurar. Bildirim gitmezse paylaşılan ağaç null kalır, Publication
+    // "No menu is loaded yet" der ve Publish düğmesi sessizce hiçbir istek
+    // atmaz. Bu, tarayıcıda gözlemlenen P1 kusurun ta kendisidir.
+    it('calls onTreeChange after a menu is created on a location that had none', async () => {
+        const fetchMock = buildFetchMockWithoutMenu();
+        vi.stubGlobal('fetch', fetchMock);
+        const onTreeChange = vi.fn();
+
+        const { MenuCatalogWorkspace } = await importMenuCatalogModule<{
+            MenuCatalogWorkspace: React.ComponentType<{
+                workspaceId: number;
+                locationId: number;
+                onTreeChange?: (tree: unknown) => void;
+            }>;
+        }>();
+
+        render(
+            <MenuCatalogWorkspace
+                workspaceId={WORKSPACE_ID}
+                locationId={LOCATION_ID}
+                onTreeChange={onTreeChange}
+            />,
+        );
+
+        const nameInput = await screen.findByLabelText('Menu name');
+        fireEvent.change(nameInput, { target: { value: 'Ana Menü' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Create menu' }));
+
+        await waitFor(() => {
+            expect(onTreeChange).toHaveBeenCalledWith(
+                expect.objectContaining({ id: MENU_ID, locationId: LOCATION_ID, categories: [] }),
+            );
+        });
+
+        vi.unstubAllGlobals();
+    });
+
+    // --- DASHBOARD-SYNC-CATEGORY-CREATE-01 --------------------------------
+    it('calls onTreeChange with the new category after a category is created', async () => {
+        const fetchMock = buildFetchMock();
+        vi.stubGlobal('fetch', fetchMock);
+        const onTreeChange = vi.fn();
+
+        const { MenuCatalogWorkspace } = await importMenuCatalogModule<{
+            MenuCatalogWorkspace: React.ComponentType<{
+                workspaceId: number;
+                locationId: number;
+                onTreeChange?: (tree: unknown) => void;
+            }>;
+        }>();
+
+        render(
+            <MenuCatalogWorkspace
+                workspaceId={WORKSPACE_ID}
+                locationId={LOCATION_ID}
+                onTreeChange={onTreeChange}
+            />,
+        );
+
+        await screen.findByText('Kahve');
+
+        fireEvent.change(screen.getByLabelText('Category name'), {
+            target: { value: 'Çorbalar' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
+
+        await waitFor(() => {
+            expect(onTreeChange).toHaveBeenLastCalledWith(
+                expect.objectContaining({
+                    id: MENU_ID,
+                    categories: expect.arrayContaining([
+                        expect.objectContaining({ id: NEW_CATEGORY_ID, name: 'Çorbalar' }),
+                    ]),
+                }),
+            );
+        });
+
+        vi.unstubAllGlobals();
+    });
+
+    // --- DASHBOARD-SYNC-ITEM-CREATE-01 ------------------------------------
+    // Kalem eklemek yayın hazırlığını doğrudan etkiler: publish en az bir
+    // görünür kalem ister. Bildirim gitmezse hazırlık listesi taslağı hiç
+    // görmez.
+    it('calls onTreeChange with the new menu item after an item is created', async () => {
+        const fetchMock = buildFetchMock();
+        vi.stubGlobal('fetch', fetchMock);
+        const onTreeChange = vi.fn();
+
+        const { MenuCatalogWorkspace } = await importMenuCatalogModule<{
+            MenuCatalogWorkspace: React.ComponentType<{
+                workspaceId: number;
+                locationId: number;
+                onTreeChange?: (tree: unknown) => void;
+            }>;
+        }>();
+
+        render(
+            <MenuCatalogWorkspace
+                workspaceId={WORKSPACE_ID}
+                locationId={LOCATION_ID}
+                onTreeChange={onTreeChange}
+            />,
+        );
+
+        await screen.findByText('Kahve');
+
+        fireEvent.change(screen.getByLabelText('Category name'), {
+            target: { value: 'Çorbalar' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
+
+        await waitFor(() => {
+            expect(screen.getByLabelText('Product name')).toBeTruthy();
+        });
+
+        fireEvent.change(screen.getByLabelText('Product name'), {
+            target: { value: 'Mercimek Çorbası' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Add product' }));
+
+        await waitFor(() => {
+            expect(screen.getByLabelText('Price')).toBeTruthy();
+        });
+
+        fireEvent.change(screen.getByLabelText('Price'), { target: { value: '45.00' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Add item' }));
+
+        await waitFor(() => {
+            expect(onTreeChange).toHaveBeenLastCalledWith(
+                expect.objectContaining({
+                    categories: expect.arrayContaining([
+                        expect.objectContaining({
+                            id: NEW_CATEGORY_ID,
+                            menuItems: expect.arrayContaining([
+                                expect.objectContaining({ id: NEW_MENU_ITEM_ID }),
+                            ]),
+                        }),
+                    ]),
+                }),
+            );
+        });
 
         vi.unstubAllGlobals();
     });
