@@ -1,6 +1,6 @@
 import { useId } from 'react';
-import { Label } from './Label';
-import { Select, type SelectProps } from './Select';
+import { Label } from '../micro/Label';
+import { Select, type SelectProps } from '../micro/Select';
 import { HelperText } from 'flowbite-react';
 
 export type SelectFieldProps = SelectProps & {

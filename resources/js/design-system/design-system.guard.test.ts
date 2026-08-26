@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import debt from './raw-palette-debt.json';
-import { RAW_PALETTE_PATTERN, layerOf, mayCompose, type Layer } from './semantic-map';
+import { RAW_PALETTE_PATTERN, findCycle, layerOf, mayCompose, type Layer } from './semantic-map';
 import {
     WCAG_AA_NORMAL_TEXT,
     contrastRatio,
@@ -34,6 +34,18 @@ function collect(dir: string, out: SourceFile[] = []): SourceFile[] {
         if (entry.isDirectory()) {
             collect(path, out);
         } else if (entry.name.endsWith('.tsx') && !/\.(test|stories)\.tsx$/.test(entry.name)) {
+            out.push({ path, body: readFileSync(path, 'utf8'), layer: layerOf(path) });
+        }
+    }
+    return out;
+}
+
+function collectStories(dir: string, out: SourceFile[] = []): SourceFile[] {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const path = join(dir, entry.name);
+        if (entry.isDirectory()) {
+            collectStories(path, out);
+        } else if (entry.name.endsWith('.stories.tsx')) {
             out.push({ path, body: readFileSync(path, 'utf8'), layer: layerOf(path) });
         }
     }
@@ -95,6 +107,35 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
                 'Bu, master component fikrini bozar ve döngüsel bağımlılık kapısını açar:\n' +
                 breaches.join('\n'),
         ).toEqual([]);
+    });
+
+    // --- DS-NO-CYCLE-03 ---------------------------------------------------
+    // Yatay yasağın gerçekte koruduğu şey budur: bir döngü, "hangisi master"
+    // sorusunu cevapsız bırakır ve yükleme sırasına bağlı, teşhisi zor
+    // hatalar üretir.
+    it('katmanlı bileşenler arasında import döngüsü yoktur', () => {
+        const graph = new Map<string, string[]>();
+
+        for (const file of LAYERED) {
+            const targets: string[] = [];
+
+            for (const [, specifier] of file.body.matchAll(/from\s+'(\.[^']+)'/g)) {
+                const resolved = join(file.path, '..', specifier);
+                const match = LAYERED.find(
+                    (candidate) => candidate.path.replace(/\.tsx$/, '') === resolved,
+                );
+                if (match) targets.push(match.path);
+            }
+
+            graph.set(file.path, targets);
+        }
+
+        const cycle = findCycle(graph);
+
+        expect(
+            cycle,
+            'DS-NO-CYCLE-03: bileşenler arası import döngüsü:\n' + (cycle ?? []).join('\n  -> '),
+        ).toBeNull();
     });
 
     // --- DS-TOKEN-INTEGRITY-01 -------------------------------------------
@@ -181,6 +222,33 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
             "DS-CONTRAST-AA-01: metin token'ı zemininde 4.5:1 altında kaldı — " +
                 'bu, okunmayan metin demektir:\n' +
                 failures.join('\n'),
+        ).toEqual([]);
+    });
+
+    // --- DS-STORY-TAXONOMY-04 ---------------------------------------------
+    // docs/35 §7: story kökü icat edilmez. Yeni bir kök, Storybook'u bir
+    // gezinti ağacından bir çöplüğe çevirir ve katman modelini görünmez kılar.
+    it('story kökleri docs/35 §7 taksonomisinin dışına çıkmaz', () => {
+        const allowed = ['Micro', 'Compound', 'Macro', 'Surface'];
+        const offenders: string[] = [];
+
+        for (const dir of ['resources/js/components']) {
+            for (const file of collectStories(dir)) {
+                const meta = /const meta[\s\S]*?title:\s*'([^']+)'/.exec(file.body);
+                if (!meta) continue;
+
+                const root = meta[1].split('/')[0];
+                if (!allowed.includes(root)) {
+                    offenders.push(`${file.path}: '${root}/'`);
+                }
+            }
+        }
+
+        expect(
+            offenders,
+            `DS-STORY-TAXONOMY-04: izinli kökler yalnız ${allowed.join(', ')}. ` +
+                'İcat edilen kök:\n' +
+                offenders.join('\n'),
         ).toEqual([]);
     });
 

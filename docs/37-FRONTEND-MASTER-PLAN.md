@@ -98,9 +98,19 @@ bu deponun micro/compound/macro modeli arasındaki eşleme:
 | R8 pattern | `catalog/**/macro/**` | DataGrid, arama+filtre, form bölümü |
 | D/E ürün | `workspace/`, `admin/`, `public/` | Surface: macro'yu use-case'e bağlar |
 
-**Bağımlılık yasası:** her katman yalnız **kendinden alttakine** bağlanır.
-Yukarı bağımlılık yasaktır. Bu depoda R4 ile R6 aynı kutuya düştüğü için yatay
-bağ şu an serbesttir; §5 Dalga 2 bunu inceltir.
+**Bağımlılık yasası:** her katman yalnız **kendinden alttakine** bağlanır;
+yukarı bağımlılık yasaktır ve ölçülür.
+
+Külliyat yatay bağı da yasaklar. O yasak R1–R8 gibi ince bir modelde doğrudur:
+orada `VisuallyHidden` R4, `IconButton` R6'dır, yani aralarındaki bağ zaten
+yatay sayılmaz. Bu deponun üç katmanlı modeli ikisini aynı kutuya koyduğu için
+düz bir yatay yasak, paylaşılan davranışı her bileşene **kopyalamaya**
+zorlardı — korumak isterken bozardı.
+
+Yatay yasağın gerçekte koruduğu şey **döngü**dür. Bu yüzden burada yukarı bağ
+ve döngü ayrı ayrı yasaklanır (`DS-NO-CYCLE-03`), döngüsüz yatay kompozisyon
+serbesttir. Model R4/R6 ayrımını kazandığında düz yasak geri getirilebilir.
+Bu, bilinçli ve kayıtlı bir sapmadır.
 
 ### 2.3 Teknoloji sınırları
 
@@ -148,8 +158,8 @@ Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
 | G1 | Semantic utility yüzeyi | Token'lar utility üretir | ✅ `@theme` yayınlıyor | — |
 | G2 | Ham palet borcu | Sıfır | ⚠️ 895 ihlal / 89 dosya; cırcır ile **artamaz** | 1 |
 | G3 | Kontrast | Her token AA | ✅ ölçülüyor, build'i kırıyor | — |
-| G4 | Katman kapsamı | Her bileşen katmanlı | ⚠️ 38/137 katmanlı; 99'u sınıflandırılmamış | 2 |
-| G5 | Yatay bağ yasağı | Yasak | ❌ model kaba olduğu için serbest | 2 |
+| G4 | Katman kapsamı | Her bileşen katmanlı | ✅ **kapandı** — `catalog/` altında katmansız dosya kalmadı | — |
+| G5 | Yatay bağ / döngü | Döngü yasak, yukarı yasak | ✅ **kapandı** — `DS-NO-CYCLE-03`; sapma §2.2'de gerekçeli | — |
 | G6 | **Density** | comfortable/standard/compact | ❌ **hiç yok** | 3 |
 | G7 | **a11y kapısı** | axe "bitti" tanımının parçası | ✅ **kapandı** — 126 story taranıyor, ihlal sıfırda kilitli | — |
 | G8 | Motion | Motion token + reduced-motion | ❌ token yok; `prefers-reduced-motion` 1 dosyada | 4 |
@@ -157,7 +167,7 @@ Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
 | G10 | RTL/logical | Logical öncelikli | ⚠️ 3 fiziksel / 3 logical, zorlayıcı yok | 3 |
 | G11 | i18n | Altı katalog + PO pipeline | ❌ yalnız `en`; kütüphane yok, elle 7 modül | 2 |
 | G12 | X5 durum grameri | Tek R7 ailesi | ⚠️ dağınık (Error 48, Loading 33, Empty 20, Skeleton 3, Permission 1, **Offline 0**) | 3 |
-| G13 | Storybook IA | Yalnız 4 kök | ⚠️ `Workspace/` icat edilmiş; `Surface/` hiç kullanılmamış | 2 |
+| G13 | Storybook IA | Yalnız 4 kök | ✅ **kapandı** — `DS-STORY-TAXONOMY-04`; `Workspace/` → `Surface/` | — |
 | G14 | Varyant yönetimi | A–F overlay | ❌ varyant kütüphanesi yok | 5 |
 | G15 | Performans bütçesi | Bütçe içinde ve **ölçülü** | ⚠️ 153 KB gzip (bütçe içinde) ama CI'da ölçülmüyor | 4 |
 | G16 | Referans implementasyon | Erişilebilir | ⚠️ depo dışında (`docs/36`) | — |
@@ -191,7 +201,8 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 | Her story render edilebilir | `DS-A11Y-RENDERABLE-02` | ✅ |
 | Bileşen ham geometri bilmez | *(yok)* | ❌ Dalga 3 |
 | Fiziksel yön sınıfı artmaz | *(yok)* | ❌ Dalga 3 |
-| Story kökü icat edilmez | *(yok)* | ❌ Dalga 2 |
+| Story kökü icat edilmez | `DS-STORY-TAXONOMY-04` | ✅ |
+| Bileşenler arası döngü yok | `DS-NO-CYCLE-03` | ✅ |
 | Bundle bütçeyi aşmaz | *(yok)* | ❌ Dalga 4 |
 
 ## 5. Geliştirme planı — dalgalar ve kapılar
@@ -218,11 +229,25 @@ düzeltildi**, cırcıra gerek kalmadı:
 **Kapı:** ihlal sıfırda kilitli; `color-contrast` jsdom'da ölçülemediği için
 o eksen token seviyesinde `DS-CONTRAST-AA-01` ile ayrıca kapalı.
 
-### Dalga 2 — Katman gerçeği (G4, G5, G13)
-`forms/`, `feedback/`, `data-display/` altındaki sınıflandırılmamış bileşenleri
-micro/compound klasörlerine taşı; R4/R6 ayrımını modele ekle ve yatay bağ
-yasağını geri getir. `Workspace/` story kökünü `Surface/`e taşı; kök icadını
-teste bağla. **Kapı:** her bileşen bir katmana ait ve yön yasası tam.
+### Dalga 2 — Katman gerçeği (G4, G5, G13) — ✅ KAPANDI
+`catalog/forms/` altındaki yedi sınıflandırılmamış bileşen micro/compound
+klasörlerine taşındı; `catalog/` altında katmansız dosya kalmadı.
+
+`PageHeader` compound'dan **macro**'ya alındı: bir compound'u (Breadcrumbs)
+compose edip slot sunan şey tanımı gereği bir pattern'dir. Bu bir kaçamak
+değil, sınıflandırma düzeltmesidir.
+
+Yatay bağ yasağı düz biçimde geri getirilmedi; yerine döngü yasağı kondu ve
+gerekçesi §2.2'ye yazıldı.
+
+`Workspace/` story kökü `Surface/` altına alındı ve kök icadı teste bağlandı.
+
+**Yol boyunca çıkan kusur:** a11y kapısı `forwardRef` ile yazılan bileşenleri
+`typeof === 'function'` kontrolü yüzünden sessizce atlıyordu — yani en çok
+sarmalanan form primitive'lerine kördü. Düzeltilince anında üç gerçek ihlal
+buldu (`Select`'in erişilebilir adı yoktu).
+
+**Kapı:** her bileşen bir katmana ait, yukarı bağ ve döngü ölçülüyor.
 
 ### Dalga 3 — Yoğunluk, geometri, yön (G6, G9, G10)
 Density token'larını (comfortable/standard/compact) kur — satır yüksekliği

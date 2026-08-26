@@ -13,7 +13,7 @@ export type PageHeaderProps = {
 };
 
 /**
- * Compound: composes Compound/Navigation/Breadcrumbs above a title/
+ * Macro: composes Compound/Navigation/Breadcrumbs above a title/
  * description/actions row. Does not reimplement Breadcrumbs' markup, and
  * takes no position on what `actions` renders — the caller supplies
  * whatever Button/IconButton nodes it needs.

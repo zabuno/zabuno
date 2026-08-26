@@ -1,6 +1,6 @@
 import { useId } from 'react';
-import { Label } from './Label';
-import { Checkbox, type CheckboxProps } from './Checkbox';
+import { Label } from '../micro/Label';
+import { Checkbox, type CheckboxProps } from '../micro/Checkbox';
 import { HelperText } from 'flowbite-react';
 
 export type CheckboxFieldProps = CheckboxProps & {

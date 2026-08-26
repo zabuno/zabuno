@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { PageHeader } from '../../../catalog/layout/compound/PageHeader';
+import { PageHeader } from '../../../catalog/layout/macro/PageHeader';
 import { Badge, type BadgeStatus } from '../../../catalog/feedback/micro/Badge';
 
 export type WorkspacePageStatusBadge = {

@@ -47,7 +47,12 @@ async function scanEveryStory(): Promise<ScanResult> {
         const meta = mod.default as StoryMeta;
         const file = path.split('/').pop() ?? path;
 
-        if (typeof meta?.component !== 'function') {
+        // `forwardRef`/`memo` ile yazılan bileşenler FONKSİYON DEĞİL nesnedir
+        // (`{$$typeof: Symbol(react.forward_ref), render}`). `typeof === 'function'`
+        // kontrolü onları sessizce taramanın dışına atardı — kapı, en çok
+        // sarmalanan form primitive'lerine tam olarak kör kalırdı.
+        const component = meta?.component;
+        if (component === null || component === undefined) {
             unrenderable.push(`${file}: meta.component yok`);
             continue;
         }
@@ -64,7 +69,7 @@ async function scanEveryStory(): Promise<ScanResult> {
                 let element = (
                     typeof story?.render === 'function'
                         ? story.render(args)
-                        : createElement(meta.component as never, args as never)
+                        : createElement(component as never, args as never)
                 ) as never;
 
                 // Decorator'lar story'nin GERÇEK bağlamını kurar (örn. bir
