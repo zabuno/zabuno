@@ -9,7 +9,7 @@ export const launchReadiness = {
     'workspace.launchReadiness.checklist.tenantIsolation.title': 'Tenant isolation evidence',
     'workspace.launchReadiness.checklist.tenantIsolation.description':
         'Proof that one restaurant workspace cannot read or write another’s data.',
-    'workspace.launchReadiness.tenantIsolation.status.loading': 'Checking evidence…',
+    'workspace.launchReadiness.tenantIsolation.status.loading': 'Loading evidence…',
     'workspace.launchReadiness.tenantIsolation.status.passed': 'Passed',
     'workspace.launchReadiness.tenantIsolation.status.failed': 'Failed',
     'workspace.launchReadiness.tenantIsolation.status.error': 'Evidence check error',
@@ -19,7 +19,7 @@ export const launchReadiness = {
     'workspace.launchReadiness.checklist.backupRestore.title': 'Backup & restore drill',
     'workspace.launchReadiness.checklist.backupRestore.description':
         'A completed drill proving production-shaped data can be recovered.',
-    'workspace.launchReadiness.backupRestore.status.loading': 'Checking evidence…',
+    'workspace.launchReadiness.backupRestore.status.loading': 'Loading evidence…',
     'workspace.launchReadiness.backupRestore.status.passed': 'Passed',
     'workspace.launchReadiness.backupRestore.status.failed': 'Failed',
     'workspace.launchReadiness.backupRestore.status.error': 'Evidence check error',
@@ -27,6 +27,7 @@ export const launchReadiness = {
     'workspace.launchReadiness.backupRestore.metadata.gitSha': 'Commit',
     'workspace.launchReadiness.backupRestore.metadata.durationMs': 'Duration',
     'workspace.launchReadiness.backupRestore.metadata.restoredRowCount': 'Restored rows',
+    'workspace.launchReadiness.refresh.button': 'Refresh evidence',
 } as const;
 
 declare module '../workspace' {
