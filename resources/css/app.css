@@ -61,6 +61,14 @@
     --space-7: 48px;
     --space-8: 64px;
 
+    /* Motion. Süreler referans implementasyonun ölçeğinden alınmıştır.
+       Bileşen ham süre bilmez; bu ölçeği bilir. */
+    --duration-fast: 120ms;
+    --duration-base: 150ms;
+    --duration-slow: 200ms;
+    --duration-max: 240ms;
+    --easing-standard: cubic-bezier(0, 0, 0.2, 1);
+
     /* Yoğunluk — varsayılan `standard`. Satır yüksekliği height + padding ile
        değişir, ASLA font-size ile değil: yoğunluk okunabilirliği düşürmez.
        `hit-area-min` üç modda da aynıdır — kompakt mod satırı görsel olarak
@@ -111,6 +119,19 @@
 .density-compact {
     --density-row-height: 36px;
     --density-padding-inline: var(--space-2);
+}
+
+/* Azaltılmış hareket. Süreleri sıfırlamak yerine tek kısa süreye indirger:
+   ani sıçrama, yumuşak geçişten daha rahatsız edicidir ve durum değişimini
+   okunmaz kılar. Referans implementasyon da aynı tercihi yapar
+   (`morph.reduced.duration`). */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --duration-fast: 1ms;
+        --duration-base: 1ms;
+        --duration-slow: 1ms;
+        --duration-max: 1ms;
+    }
 }
 
 .dark {

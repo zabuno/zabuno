@@ -162,14 +162,14 @@ Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
 | G5 | Yatay bağ / döngü | Döngü yasak, yukarı yasak | ✅ **kapandı** — `DS-NO-CYCLE-03`; sapma §2.2'de gerekçeli | — |
 | G6 | **Density** | comfortable/standard/compact | ✅ **kapandı** — üç mod + `DS-DENSITY-CONTRACT-05` | — |
 | G7 | **a11y kapısı** | axe "bitti" tanımının parçası | ✅ **kapandı** — 126 story taranıyor, ihlal sıfırda kilitli | — |
-| G8 | Motion | Motion token + reduced-motion | ❌ token yok; `prefers-reduced-motion` 1 dosyada | 4 |
+| G8 | Motion | Motion token + reduced-motion | ✅ **kapandı** — `DS-MOTION-CONTRACT-08` | — |
 | G9 | Akışkan değerler | Token | ✅ akışkan ölçek + display tipografisi token'da; kalan üç yerel `clamp()` izole | — |
 | G10 | RTL/logical | Logical öncelikli | ✅ **cırcır kuruldu** — `DS-LOGICAL-DIRECTION-06`, borç yükselemez | — |
 | G11 | i18n | Altı katalog + PO pipeline | ❌ yalnız `en`; kütüphane yok, elle 7 modül | 2 |
 | G12 | X5 durum grameri | Tek R7 ailesi | ⚠️ dağınık (Error 48, Loading 33, Empty 20, Skeleton 3, Permission 1, **Offline 0**) | 3 |
 | G13 | Storybook IA | Yalnız 4 kök | ✅ **kapandı** — `DS-STORY-TAXONOMY-04`; `Workspace/` → `Surface/` | — |
 | G14 | Varyant yönetimi | A–F overlay | ❌ varyant kütüphanesi yok | 5 |
-| G15 | Performans bütçesi | Bütçe içinde ve **ölçülü** | ⚠️ 153 KB gzip (bütçe içinde) ama CI'da ölçülmüyor | 4 |
+| G15 | Performans bütçesi | Bütçe içinde ve **ölçülü** | ✅ **kapandı** — `DS-BUNDLE-BUDGET-07`, CI'da ölçülüyor | — |
 | G16 | Referans implementasyon | Erişilebilir | ⚠️ depo dışında (`docs/36`) | — |
 
 ### 3.1 En pahalı üç boşluk
@@ -203,7 +203,8 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 | Fiziksel yön sınıfı artmaz | `DS-LOGICAL-DIRECTION-06` | ✅ |
 | Story kökü icat edilmez | `DS-STORY-TAXONOMY-04` | ✅ |
 | Bileşenler arası döngü yok | `DS-NO-CYCLE-03` | ✅ |
-| Bundle bütçeyi aşmaz | *(yok)* | ❌ Dalga 4 |
+| Bundle bütçeyi aşmaz | `DS-BUNDLE-BUDGET-07` | ✅ |
+| Bileşen ham süre bilmez, azaltılmış hareket yanıtlanır | `DS-MOTION-CONTRACT-08` | ✅ |
 
 ## 5. Geliştirme planı — dalgalar ve kapılar
 
@@ -269,9 +270,20 @@ yükselemez.
 
 **Kapı:** yoğunluk sözleşmesi ve yön borcu ölçülüyor.
 
-### Dalga 4 — Motion ve bütçe (G8, G15)
-Motion token'ları ve `prefers-reduced-motion` sözleşmesi. Bundle bütçesini
-CI'da ölç. **Kapı:** motion token'lı ve bütçe zorlayıcısı GREEN.
+### Dalga 4 — Motion ve bütçe (G8, G15) — ✅ KAPANDI
+Motion ölçeği (süre + easing) token oldu. Azaltılmış hareket süreleri
+**sıfırlamaz, kısaltır**: ani sıçrama yumuşak geçişten daha rahatsız edicidir
+ve durum değişimini okunmaz kılar — referans implementasyon da aynı tercihi
+yapar. Vestibüler rahatsızlığı olan kullanıcı için bu bir tercih değil,
+kullanılabilirlik şartıdır.
+
+Bileşenlerde gömülü süre **sıfır** ölçüldü, bu yüzden cırcır yerine doğrudan
+yasak kondu.
+
+Bundle bütçesi CI'da ölçülüyor. Ölçümün gerçekten çalıştığı, bütçe geçici
+olarak düşürülerek kanıtlandı: **156 KB gzip / 200 KB bütçe**, 44 KB pay.
+
+**Kapı:** motion sözleşmesi ve bütçe ölçülüyor.
 
 ### Dalga 5 — i18n ve varyant (G11, G14)
 Altı katalog + pipeline; A–F varyant overlay'i token seviyesinde.

@@ -343,6 +343,50 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
         ).toBeLessThanOrEqual(directionDebt.maxPhysicalDirectionClasses);
     });
 
+    // --- DS-MOTION-CONTRACT-08 --------------------------------------------
+    // İki şart: bileşen ham süre bilmez (borç şu an sıfır, bu yüzden cırcır
+    // değil yasak), ve her süre token'ının azaltılmış-hareket karşılığı
+    // vardır. Vestibüler rahatsızlığı olan bir kullanıcı için bu bir tercih
+    // değil, kullanılabilirlik şartıdır.
+    it('bileşen ham süre bilmez ve her süre azaltılmış harekette yanıtlanır', () => {
+        const hardcoded: string[] = [];
+
+        for (const file of FILES) {
+            const found = file.body.match(/\b\d+ms\b|duration-\[|cubic-bezier\(/g);
+            if (found) hardcoded.push(`${file.path}: ${found.join(', ')}`);
+        }
+
+        expect(
+            hardcoded,
+            'DS-MOTION-CONTRACT-08: bileşene gömülü süre/easing. ' +
+                "Motion token'ını kullanın (--duration-*, --easing-standard):\n" +
+                hardcoded.join('\n'),
+        ).toEqual([]);
+
+        const css = readFileSync(CSS_PATH, 'utf8');
+        const durations = Object.keys(readCustomProperties(css, ':root')).filter((token) =>
+            token.startsWith('--duration-'),
+        );
+
+        expect(
+            durations.length,
+            "DS-MOTION-CONTRACT-08: hiç süre token'ı tanımlı değil.",
+        ).toBeGreaterThan(0);
+
+        // Blok satır başındaki `}` ile kapanır; iç `:root { … }` girintilidir.
+        const reduced = /@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/.exec(css);
+
+        expect(reduced, 'DS-MOTION-CONTRACT-08: azaltılmış-hareket bloğu yok.').not.toBeNull();
+
+        const unanswered = durations.filter((token) => !(reduced?.[1] ?? '').includes(`${token}:`));
+
+        expect(
+            unanswered,
+            'DS-MOTION-CONTRACT-08: azaltılmış harekette karşılığı olmayan süre: ' +
+                unanswered.join(', '),
+        ).toEqual([]);
+    });
+
     // --- DS-NO-RAW-HEX-01 -------------------------------------------------
     it('katmanlı bileşenler ham hex rengi gömmez', () => {
         const offenders = LAYERED.filter((file) => /#[0-9a-fA-F]{3,8}\b/.test(file.body)).map(
