@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\MenuCatalog;
 
-use App\Domain\MenuCatalog\ValueObject\Money;
+use App\Domain\Money\Money;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
  * minor amount + ISO-4217 currency code and must respect each currency's
  * official minor-unit fraction digits — JPY=0, USD=2, KWD=3).
  *
- * App\Domain\MenuCatalog\ValueObject\Money does not exist yet (no
+ * App\Domain\Money\Money does not exist yet (no
  * app/Domain/MenuCatalog directory, no brick/money dependency in
  * composer.json), so every test below is expected to fail RED with a
  * class-not-found/autoload error, not a logic assertion failure.

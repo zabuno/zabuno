@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\MenuCatalog\ValueObject;
+namespace App\Domain\Money;
 
 use Brick\Money\Currency;
 use Brick\Money\Exception\UnknownCurrencyException;

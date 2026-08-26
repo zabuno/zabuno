@@ -7,7 +7,7 @@ namespace Tests\Unit\MenuCatalog;
 use App\Domain\MenuCatalog\Category;
 use App\Domain\MenuCatalog\MenuItem;
 use App\Domain\MenuCatalog\Product;
-use App\Domain\MenuCatalog\ValueObject\Money;
+use App\Domain\Money\Money;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 

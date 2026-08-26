@@ -13,7 +13,7 @@ use App\Application\MenuCatalog\Dto\TaxonomyTermSummary;
 use App\Application\MenuCatalog\Exception\DuplicateLocationMenuException;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
-use App\Domain\MenuCatalog\ValueObject\Money;
+use App\Domain\Money\Money;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;

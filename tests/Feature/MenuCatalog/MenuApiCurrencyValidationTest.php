@@ -17,7 +17,7 @@ use Tests\TestCase;
  * decimal-string price plus an ISO-4217 currency code; the currency must
  * equal the owning workspace's Brand.currency; the number of fraction
  * digits in the price must not exceed the currency's official ISO-4217
- * minor-unit digit count — see App\Domain\MenuCatalog\ValueObject\Money —
+ * minor-unit digit count — see App\Domain\Money\Money —
  * and both checks run, and reject with 422, before any conversion to minor
  * units is attempted, so no menu_items row is ever written for a rejected
  * request).
