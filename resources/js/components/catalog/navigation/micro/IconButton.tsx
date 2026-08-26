@@ -27,9 +27,8 @@ export function IconButton({ icon, label, onClick, disabled = false, className }
             disabled={disabled}
             className={clsx(
                 'inline-flex h-9 w-9 items-center justify-center rounded-md',
-                'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
-                'dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+                'text-fg-secondary hover:bg-surface-hover hover:text-fg',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                 'disabled:pointer-events-none disabled:opacity-50',
                 className,
             )}

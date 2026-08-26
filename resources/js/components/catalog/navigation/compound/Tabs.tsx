@@ -76,11 +76,7 @@ export function Tabs({ items, selectedKey, onChange, label, className }: TabsPro
 
     return (
         <div className={className}>
-            <div
-                role="tablist"
-                aria-label={label}
-                className="flex gap-1 border-b border-gray-200 dark:border-gray-700"
-            >
+            <div role="tablist" aria-label={label} className="flex gap-1 border-b border-border">
                 {items.map((item) => {
                     const isSelected = item.key === selectedItem?.key;
 
@@ -102,10 +98,10 @@ export function Tabs({ items, selectedKey, onChange, label, className }: TabsPro
                             onKeyDown={(event) => handleKeyDown(event, item.key)}
                             className={clsx(
                                 'inline-flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium',
-                                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+                                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                                 isSelected
-                                    ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                                    : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white',
+                                    ? 'border-focus text-fg-link'
+                                    : 'border-transparent text-fg-secondary hover:text-fg',
                                 item.disabled && 'pointer-events-none opacity-50',
                             )}
                         >

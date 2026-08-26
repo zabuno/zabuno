@@ -2,7 +2,7 @@ import { Navbar } from 'flowbite-react';
 
 const navbarTheme = {
     root: {
-        base: 'border-b border-gray-200 bg-white px-2 py-2.5 dark:border-gray-700 dark:bg-gray-900',
+        base: 'border-b border-border bg-surface px-2 py-2.5',
         rounded: {
             on: 'rounded',
             off: '',
@@ -36,32 +36,20 @@ export function PublicSiteHeader() {
                 Zabuno
             </a>
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
-                <a
-                    href={`${prefix}#features`}
-                    className="text-gray-700 hover:underline dark:text-gray-200"
-                >
+                <a href={`${prefix}#features`} className="text-fg-secondary hover:underline">
                     Features
                 </a>
-                <a
-                    href={`${prefix}#how-it-works`}
-                    className="text-gray-700 hover:underline dark:text-gray-200"
-                >
+                <a href={`${prefix}#how-it-works`} className="text-fg-secondary hover:underline">
                     How it works
                 </a>
-                <a
-                    href={`${prefix}#pricing`}
-                    className="text-gray-700 hover:underline dark:text-gray-200"
-                >
+                <a href={`${prefix}#pricing`} className="text-fg-secondary hover:underline">
                     Pricing
                 </a>
-                <a
-                    href={`${prefix}#faq`}
-                    className="text-gray-700 hover:underline dark:text-gray-200"
-                >
+                <a href={`${prefix}#faq`} className="text-fg-secondary hover:underline">
                     FAQ
                 </a>
                 {isRoot ? (
-                    <a href="#contact" className="text-gray-700 hover:underline dark:text-gray-200">
+                    <a href="#contact" className="text-fg-secondary hover:underline">
                         Contact
                     </a>
                 ) : null}

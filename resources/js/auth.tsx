@@ -65,13 +65,13 @@ function renderView(container: HTMLElement) {
 createRoot(container).render(
     <StrictMode>
         <ThemeRoot>
-            <div className="min-h-screen w-full min-w-[320px] bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+            <div className="min-h-screen w-full min-w-[320px] bg-surface-subtle text-fg">
                 <div
                     aria-hidden="true"
-                    className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-gray-100 to-gray-50 dark:from-gray-950 dark:to-gray-900"
+                    className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-surface-hover to-surface-subtle"
                 />
                 <div className="flex min-h-screen items-center justify-center px-4 py-8">
-                    <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <div className="w-full max-w-md rounded-lg border border-border bg-surface p-6 shadow-sm">
                         {renderView(container)}
                     </div>
                 </div>

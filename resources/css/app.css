@@ -33,6 +33,17 @@
     --color-border-strong: var(--border-strong);
     --color-border-danger: var(--border-danger);
 
+    /* Durum yüzeyleri. Bir uyarının rengi bileşenin değil, sistemin
+       kararıdır: aynı "hata" tonu her yerde aynı olmalı ve tema değişince
+       hepsi birlikte değişmelidir. */
+    --color-surface-info: var(--surface-info);
+    --color-surface-success: var(--surface-success);
+    --color-surface-warning: var(--surface-warning);
+    --color-surface-danger: var(--surface-danger);
+    --color-border-info: var(--border-info);
+    --color-border-success: var(--border-success);
+    --color-border-warning: var(--border-warning);
+
     --color-focus: var(--focus);
 
     /* Marka. docs/06 §11: sarı ASLA metin ön planı değildir — yapısal
@@ -43,6 +54,13 @@
     /* Etkileşim yüzeyleri: Flat 2.0 gölge yerine TON kullanır. */
     --color-surface-hover: var(--surface-hover);
     --color-surface-active: var(--surface-active);
+
+    /* Birincil eylem. Bu iki token utility olarak yayımlanır çünkü eylem
+       yalnız admin panelinde değil, frontpage'de de aynı görünmelidir:
+       `bg-action` değişince ikisi birden değişir. Aksi hâlde frontpage
+       kendi mavisini elle yazar ve marka iki yere ayrılır. */
+    --color-action: var(--color-action-primary-bg);
+    --color-action-fg: var(--color-action-primary-fg);
 }
 
 /* docs/06 §11 AEP mirası — #ffb900 is the ONLY primitive; every component
@@ -107,6 +125,16 @@
     --border-strong: oklch(0.76 0 0);
     --border-danger: oklch(0.58 0.19 25);
 
+    /* Durum tonları: metin okunaklılığını bozmayacak kadar açık tutulur —
+       uyarı bir arka plan işidir, metin kontrastı `--fg` ile korunur. */
+    --surface-info: oklch(0.965 0.025 255);
+    --surface-success: oklch(0.965 0.03 155);
+    --surface-warning: oklch(0.97 0.04 90);
+    --surface-danger: oklch(0.965 0.025 25);
+    --border-info: oklch(0.86 0.06 255);
+    --border-success: oklch(0.86 0.07 155);
+    --border-warning: oklch(0.87 0.09 90);
+
     --focus: oklch(0.55 0.18 255);
 
     --color-surface: var(--surface);
@@ -167,6 +195,14 @@
     --border-strong: oklch(0.46 0 0);
     --border-danger: oklch(0.62 0.17 25);
 
+    --surface-info: oklch(0.27 0.045 255);
+    --surface-success: oklch(0.27 0.05 155);
+    --surface-warning: oklch(0.28 0.055 90);
+    --surface-danger: oklch(0.27 0.05 25);
+    --border-info: oklch(0.44 0.09 255);
+    --border-success: oklch(0.44 0.1 155);
+    --border-warning: oklch(0.45 0.11 90);
+
     --focus: oklch(0.72 0.15 255);
 
     --color-surface: var(--surface);
@@ -191,6 +227,16 @@
     --surface: Canvas;
     --surface-subtle: Canvas;
     --surface-hover: Canvas;
+    /* Yüksek kontrastta durum RENKLE anlatılmaz — sistem renkleri kullanılır
+       ve ayrım kenarlıkla yapılır. Rengin tek başına anlam taşıması zaten
+       WCAG 1.4.1 ihlalidir; burada o kural mecburen görünür hâle gelir. */
+    --surface-info: Canvas;
+    --surface-success: Canvas;
+    --surface-warning: Canvas;
+    --surface-danger: Canvas;
+    --border-info: CanvasText;
+    --border-success: CanvasText;
+    --border-warning: CanvasText;
     --surface-active: Canvas;
     --focus: Highlight;
 }

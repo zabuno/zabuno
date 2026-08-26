@@ -16,11 +16,16 @@ const STATUS_LABEL: Record<BadgeStatus, string> = {
     error: 'Error',
 };
 
+/**
+ * Durum tonu bileşenin kararı DEĞİLDİR. Aynı "hata" rengi uygulamanın her
+ * yerinde aynı olmalı ve tema değiştiğinde hepsi birlikte değişmelidir; bu
+ * yüzden ton token kökünden gelir, buradan değil (`docs/37` §2).
+ */
 const STATUS_CONTAINER_CLASS: Record<BadgeStatus, string> = {
-    info: 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950',
-    success: 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950',
-    warning: 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950',
-    error: 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950',
+    info: 'border-border-info bg-surface-info',
+    success: 'border-border-success bg-surface-success',
+    warning: 'border-border-warning bg-surface-warning',
+    error: 'border-border-danger bg-surface-danger',
 };
 
 /**

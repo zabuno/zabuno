@@ -35,9 +35,9 @@ export function MenuItem({
             className={clsx(
                 'flex w-full items-center gap-2 px-4 py-2 text-left text-sm',
                 destructive
-                    ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950'
-                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600',
+                    ? 'text-fg-danger hover:bg-surface-danger'
+                    : 'text-fg-secondary hover:bg-surface-hover',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus',
                 'disabled:pointer-events-none disabled:opacity-50',
                 className,
             )}

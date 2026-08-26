@@ -1,8 +1,7 @@
 import clsx from 'clsx';
 
 const alertClass = clsx(
-    'rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800',
-    'dark:border-red-800 dark:bg-red-950 dark:text-red-200',
+    'rounded-md border border-border-danger bg-surface-danger px-3 py-2 text-sm text-fg-danger',
 );
 
 export function FieldError({ message }: { message: string }) {
