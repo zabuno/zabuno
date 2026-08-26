@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\MenuCatalog;
 
-use App\Domain\MenuCatalog\ValueObject\Money;
+use App\Domain\Money\Money;
 
 final class MenuItem
 {

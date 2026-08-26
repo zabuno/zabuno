@@ -56,6 +56,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/entitlements||App\Http\Controllers\Entitlement\ShowWorkspaceEntitlementsController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/plans||App\Http\Controllers\Billing\ListPlansController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/subscription||App\Http\Controllers\Billing\ShowSubscriptionController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/ledger||App\Http\Controllers\Ledger\ShowWorkspaceLedgerController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/iyzico-sandbox/session||App\Http\Controllers\Billing\ShowIyzicoSandboxSessionController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/iyzico-sandbox/session||App\Http\Controllers\Billing\StoreIyzicoSandboxSessionController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/media||App\Http\Controllers\Media\StoreMediaController|api,auth:sanctum,verified',

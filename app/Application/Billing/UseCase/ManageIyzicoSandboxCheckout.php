@@ -10,6 +10,9 @@ use App\Application\Billing\Exception\IyzicoSandboxConflictException;
 use App\Application\Billing\Exception\IyzicoSandboxUnavailableException;
 use App\Application\Billing\Port\IyzicoSandboxGatewayPort;
 use App\Application\Billing\Port\IyzicoSandboxTransactionRepositoryPort;
+use App\Application\Ledger\Port\LedgerPort;
+use App\Domain\Money\LedgerEntry;
+use App\Domain\Money\Money;
 use Illuminate\Support\Str;
 
 final class ManageIyzicoSandboxCheckout
@@ -17,6 +20,7 @@ final class ManageIyzicoSandboxCheckout
     public function __construct(
         private readonly IyzicoSandboxTransactionRepositoryPort $transactions,
         private readonly IyzicoSandboxGatewayPort $gateway,
+        private readonly LedgerPort $ledger,
     ) {}
 
     public function currentState(int $workspaceId): IyzicoSandboxSession
@@ -175,6 +179,10 @@ final class ManageIyzicoSandboxCheckout
             $payload['token'],
         );
 
+        if ($state === 'succeeded') {
+            $this->recordRevenue($transaction);
+        }
+
         return 200;
     }
 
@@ -230,5 +238,40 @@ final class ManageIyzicoSandboxCheckout
             (string) ($result['payment_id'] ?? ''),
             $token,
         );
+
+        if ($state === 'succeeded') {
+            $this->recordRevenue($transaction);
+        }
+    }
+
+    /**
+     * Başarılı bir tahsilatı deftere çift kayıt olarak yazar.
+     *
+     * Restoran sahibi ödemeyi yaptığında para iki yerde birden hareket eder:
+     * kasaya girer (`cash` borçlanır) ve gelir olarak tanınır (`revenue`
+     * alacaklanır). Aynı ödeme hem webhook hem tarayıcı callback'i ile iki
+     * kez bildirilebildiği için referans tekildir — ikinci bildirim deftere
+     * ikinci bir satır yazmaz.
+     *
+     * @param  array<string, mixed>  $transaction
+     */
+    private function recordRevenue(array $transaction): void
+    {
+        $reference = 'iyzico-sandbox:'.$transaction['id'];
+        $workspaceId = (int) $transaction['workspace_id'];
+
+        if ($this->ledger->hasReference($workspaceId, $reference)) {
+            return;
+        }
+
+        $this->ledger->record(LedgerEntry::record(
+            $workspaceId,
+            $reference,
+            'cash',
+            'revenue',
+            Money::fromMinorAmount((int) $transaction['amount_minor'], (string) $transaction['currency']),
+            now()->toDateTimeString(),
+            'Iyzico sandbox tahsilatı',
+        ));
     }
 }

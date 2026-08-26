@@ -9,7 +9,7 @@ use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
-use App\Domain\MenuCatalog\ValueObject\Money;
+use App\Domain\Money\Money;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuCatalog\StoreMenuItemRequest;
 use Illuminate\Http\JsonResponse;

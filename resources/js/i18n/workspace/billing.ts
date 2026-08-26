@@ -56,6 +56,20 @@ export const billing = {
     'workspace.billing.iyzicoSandbox.subscriptionError': 'Could not load your subscription status.',
     'workspace.billing.iyzicoSandbox.conversation': 'Conversation {id}',
     'workspace.billing.iyzicoSandbox.amount': 'Amount {amount} {currency}',
+    'workspace.billing.ledger.region': 'Ledger',
+    'workspace.billing.ledger.description':
+        'Every collected payment is written here as a double entry. A record is never edited or deleted; a correction is made with an opposing entry.',
+    'workspace.billing.ledger.loading': 'Loading ledger…',
+    'workspace.billing.ledger.empty':
+        'No ledger entry yet. The first successful payment writes the first entry.',
+    'workspace.billing.ledger.error': 'The ledger could not be loaded.',
+    'workspace.billing.ledger.retry': 'Retry',
+    'workspace.billing.ledger.column.reference': 'Reference',
+    'workspace.billing.ledger.column.debit': 'Debit',
+    'workspace.billing.ledger.column.credit': 'Credit',
+    'workspace.billing.ledger.column.amount': 'Amount',
+    'workspace.billing.ledger.column.occurredAt': 'Date',
+    'workspace.billing.ledger.balances': 'Balances',
 } as const;
 
 declare module '../workspace' {

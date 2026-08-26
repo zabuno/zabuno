@@ -6,6 +6,7 @@ import { DisabledField } from './wp05/DisabledField';
 import { PlanCatalog } from './billing/PlanCatalog';
 import { CurrentSubscriptionStatus } from './billing/CurrentSubscriptionStatus';
 import { IyzicoSandboxCheckout } from './billing/IyzicoSandboxCheckout';
+import { WorkspaceLedger } from './billing/WorkspaceLedger';
 
 type BillingPageProps = {
     workspaceId: number;
@@ -63,6 +64,8 @@ export function BillingPage({ workspaceId }: BillingPageProps) {
                 </UnavailableRegion>
 
                 <IyzicoSandboxCheckout workspaceId={workspaceId} />
+
+                <WorkspaceLedger workspaceId={workspaceId} />
             </WorkspacePageFrame>
         </div>
     );

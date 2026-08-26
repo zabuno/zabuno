@@ -33,15 +33,17 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 422;
+const FROZEN_LEGACY_KEY_COUNT = 434;
 
-// Frozen from the applied READINESS-EVIDENCE-REFRESH-01 catalog transform:
-// sha256 of sorted "key=value" lines joined by "\n" over all 422 entries,
-// after launch-readiness.ts additively introduces one new refresh button key
-// for the accessible Refresh evidence action — entry count grows from 421
-// (the prior ANALYTICS-RETRY-STATE-01 baseline) to exactly 422.
+// Frozen from the applied CORE-12 ledger catalog transform: sha256 of
+// sorted "key=value" lines joined by "\n" over all 434 entries, after
+// billing.ts additively introduces the twelve ledger keys (region,
+// description, loading/empty/error/retry states, five column headers and
+// the balances heading) for the workspace ledger region — entry count
+// grows from 422 (the prior READINESS-EVIDENCE-REFRESH-01 baseline) to
+// exactly 434. Additive only: no existing key or value changed.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '95888c57c634cb09eb9e265ee512a7c9c3ab65d13d873e62cbf4b58f33173750';
+    '8c407def400c0af7131429f4a8404ef47ec0136ce4de65129809a14fbfd71787';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
