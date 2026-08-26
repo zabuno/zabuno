@@ -424,7 +424,9 @@ export function WorkspaceApp() {
         [catalogLocationId],
     );
 
-    function handleBrandCreated() {
+    function handleBrandCreated(createdBrand: BrandProfile) {
+        setBrand(createdBrand);
+
         if (currentWorkspace) {
             void loadLocations(currentWorkspace.id, () => false);
         }

@@ -213,12 +213,29 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
 
         expect(document.getElementById('brand')).not.toBeInTheDocument();
 
-        mockBrandOnboardingFormProps?.onCreated(makeBrand({ id: 811 }));
+        mockBrandOnboardingFormProps?.onCreated(makeBrand({ id: 811, name: 'Zeytin' }));
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
             expect(calledUrls).toContain(`/api/workspaces/${WORKSPACE_ID}/brand/locations`);
         });
+
+        const brandSection = await waitFor(() => {
+            const el = document.getElementById('brand');
+            if (!el) {
+                throw new Error('Brand section not rendered after onCreated');
+            }
+            return el;
+        });
+        expect(within(brandSection).getByText('Zeytin')).toBeInTheDocument();
+
+        expect(within(brandSection).queryByText('Loading your brand…')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('brand-onboarding-form')).not.toBeInTheDocument();
+
+        const locationsCalls = fetchMock.mock.calls.filter(
+            (call) => String(call[0]) === `/api/workspaces/${WORKSPACE_ID}/brand/locations`,
+        );
+        expect(locationsCalls).toHaveLength(1);
 
         vi.unstubAllGlobals();
     });
