@@ -656,13 +656,23 @@ final class QrExportPdfTest extends TestCase
     /**
      * 500 döndüğünde ASIL sebebi assertion mesajına taşır.
      *
-     * Bu test CI'da iki kez 500 ile düştü ve aynı commit yeniden
-     * çalıştırılınca geçti; yerelde hiç üretilemedi. Laravel test istemcisi
-     * istisnayı yutup yalnız durum kodunu gösterdiği için elimizde "500"
-     * dışında hiçbir şey yoktu ve bellek varsayımı bu körlük yüzünden
-     * kanıtlanmadan denendi (ve çürüdü).
+     * Bu test CI'da iki kez 500 ile düştü (run 32917446564 ve 32979223816) ve
+     * aynı commit yeniden çalıştırılınca geçti; yerelde hiç üretilemedi.
+     * Laravel test istemcisi istisnayı yutup yalnız durum kodunu gösterdiği
+     * için elimizde "500" dışında hiçbir şey yoktu ve bellek varsayımı bu
+     * körlük yüzünden kanıtlanmadan denendi.
      *
-     * Tekrar düşerse artık sebebini kendisi söyleyecek.
+     * Sebep 2026-08-26'da bulundu ve bellek değildi: dışa aktarıcı kendi
+     * ürettiği QR'ı geri okurken try-harder ipucunu kullanmıyordu, bu yüzden
+     * bazı payload'lar için geçerli bir QR "okunamaz" sayılıyor, dört aday
+     * profilin dördü birden kaçırıldığında export 500 dönüyordu. İkinci CI
+     * kırılması 512M zaten yürürlükteyken oldu, ve her iki kırılmada da 16
+     * kombinasyondan tam olarak biri düştü — kaynak baskısı değil, payload
+     * başına bir hata. Yük ile ilgisi yoktur. Kanonik açıklama ve regresyon:
+     * tests/Feature/QrDestination/QrExportDecodeBackTest.php.
+     *
+     * Yardımcı yerinde kalıyor: bir daha düşerse sebebini yine kendisi
+     * söyleyecek.
      */
     private function assertPdfResponseOk(TestResponse $response, string $context): void
     {

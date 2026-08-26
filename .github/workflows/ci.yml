@@ -20,41 +20,33 @@ jobs:
         with:
           php-version: '8.3'
           coverage: none
-          # CI 2026-08-26'da QrExportPdfTest'te bir kez 500 verip kirildi ve
-          # ayni commit yeniden calistirilinca gecti. O gun sebep KANITLANMAMIS,
-          # bellek yalnizca makul bir suphe olarak buraya yazilmisti.
+          # Burada bir sure `ini-values: memory_limit=512M` durdu; kaldirildi.
+          # QrExportPdfTest'in aralikli 500'une karsi kanitlanmamis bir
+          # sigortaydi ve ise yaramadigi kayitlidir: test iki kez ayni sekilde
+          # kirildi -- run 32917446564 (7cb7938, satir henuz YOKKEN) ve run
+          # 32979223816 (597fe22, satiri EKLEYEN commit'in kendi kosusu, yani
+          # 512M zaten yururlukteyken). Ikisinde de 16 kagit/yon
+          # kombinasyonundan tam olarak biri "500 is identical to 200" ile
+          # dustu, kalan 15'i ayni bellek tavaninda gecti -- yani sinyal
+          # kaynak baskisi degil, payload basina bir hataydi.
           #
-          # SEBEP ARTIK KANITLANDI VE BELLEK DEGILDI. QR disa aktarici, urettigi
-          # QR'i teslim etmeden once gercek decoder ile geri okuyordu; bu geri
-          # okuma try-harder ipucu olmadan calisiyordu ve o modda Zxing, finder
-          # pattern ararken goruntunun yalnizca her 6. satirini tariyor
-          # (FinderPatternFinder::find(), iSkip = 3*yukseklik / (4*57)). Bazi
-          # payload'larda desenler iki taranan satirin arasina dustugu icin
-          # gecerli bir QR "okunamaz" sayiliyor; dort aday profilin dordu birden
-          # kacirdiginda export RuntimeException atiyor ve controller bunu 500'e
-          # ceviriyordu. Hangi payload'in kotu dustugunu payload'in kendisi
-          # belirler -- ayni token her seferinde kirilir -- ama tokenlar QR
-          # basina rastgele uretildigi icin kosudan kosuya rastlantisal gorunur.
-          # Makine yuku ile ilgisi yoktur.
+          # Ustelik satir bellegi ARTIRMIYOR, AZALTIYORDU: runner'in varsayilan
+          # degeri olculdu ve `memory_limit=-1` (sinirsiz) cikti (run
+          # 33010438701). Tek etkisi tavani sinirsizdan 512M'ye cekmekti.
           #
-          # Olcum (2026-08-26, CI'daki APP_URL bicimiyle, 16.000 rastgele token,
-          # duzeltme oncesi kod): ilk profilde %7.3 kacirma, dort profilde
-          # birden 8/16.000 = 1/2000. Duzeltme oncesi tam suite kosusu 45 farkli
-          # rastgele payload render ediyordu ve bunun 25'i QrExportPdfTest'e
-          # aitti; yani kosu basina ~%2.2 kirilma ihtimali, ve en cok maruz
-          # kalan tek test QrExportPdfTest. Ayni olcum duzeltilmis kodla:
-          # 16.000 tokenda 0 hata.
+          # Sebep 2026-08-26'da kanitlandi ve bellek degildi (bkz. #69). Kanonik
+          # aciklama ve regresyon:
+          # app/Infrastructure/QrDestination/Rendering/
+          # EndroidQrCodeImageExportAdapter.php ve
+          # tests/Feature/QrDestination/QrExportDecodeBackTest.php.
           #
-          # Duzeltme: app/Infrastructure/QrDestination/Rendering/
-          # EndroidQrCodeImageExportAdapter.php (geri okuma artik try-harder
-          # ipucu ile, ayni tam-esitlik sartiyla yapiliyor). Regresyon:
-          # tests/Feature/QrDestination/QrExportDecodeBackTest.php -- o hatayi
-          # gercekten ureten, dondurulmus token'lar.
+          # Not (yerel gelistirme, CI'yi ilgilendirmez): suite'in gercek tepe
+          # kullanimi 120M ile 128M arasinda -- 120M'de fatal, 128M'de gecer
+          # (bisect, 2026-08-26); en agir tuketici QR decode-back yolu. PHP CLI
+          # varsayilani 128M olan bir makinede pay dardir. CI'da limit sinirsiz
+          # oldugu icin bu bir CI sorunu degildir.
           #
-          # Asagidaki satir bu teshisin parcasi degildi ve artik bir hipotez de
-          # tasimiyor. Suite yerelde ~105 MB tepe kullanimla kosuyor; satir
-          # yalnizca bos pay olarak birakildi, bir duzeltme olarak degil.
-          ini-values: memory_limit=512M
+          # Ayni test tekrar kirilirsa cevap yine bellek degildir.
 
       - name: Set up Node
         uses: actions/setup-node@v4
