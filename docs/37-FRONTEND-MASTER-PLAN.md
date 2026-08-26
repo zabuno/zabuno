@@ -151,7 +151,7 @@ Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
 | G4 | Katman kapsamı | Her bileşen katmanlı | ⚠️ 38/137 katmanlı; 99'u sınıflandırılmamış | 2 |
 | G5 | Yatay bağ yasağı | Yasak | ❌ model kaba olduğu için serbest | 2 |
 | G6 | **Density** | comfortable/standard/compact | ❌ **hiç yok** | 3 |
-| G7 | **a11y kapısı** | axe "bitti" tanımının parçası | ❌ Storybook eklentisi var, CI'da **0 ölçüm** | 1 |
+| G7 | **a11y kapısı** | axe "bitti" tanımının parçası | ✅ **kapandı** — 126 story taranıyor, ihlal sıfırda kilitli | — |
 | G8 | Motion | Motion token + reduced-motion | ❌ token yok; `prefers-reduced-motion` 1 dosyada | 4 |
 | G9 | Akışkan değerler | Token | ⚠️ `clamp()` bileşene gömülü | 3 |
 | G10 | RTL/logical | Logical öncelikli | ⚠️ 3 fiziksel / 3 logical, zorlayıcı yok | 3 |
@@ -187,7 +187,8 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 | Katmanlı bileşende ham hex yok | `DS-NO-RAW-HEX-01` | ✅ |
 | Her katmanlı bileşenin story'si var | `DS-STORY-COVERAGE-01` | ✅ |
 | Metin token'ı AA karşılar | `DS-CONTRAST-AA-01` | ✅ |
-| Her story axe'ten geçer | *(yok)* | ❌ Dalga 1 |
+| Her story axe'ten geçer | `DS-A11Y-AXE-01` | ✅ |
+| Her story render edilebilir | `DS-A11Y-RENDERABLE-02` | ✅ |
 | Bileşen ham geometri bilmez | *(yok)* | ❌ Dalga 3 |
 | Fiziksel yön sınıfı artmaz | *(yok)* | ❌ Dalga 3 |
 | Story kökü icat edilmez | *(yok)* | ❌ Dalga 2 |
@@ -198,10 +199,24 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 Her dalga bir öncekinin zorlayıcısı GREEN olmadan açılmaz (külliyatın kapı
 kuralı). Dalga sayısı sabittir; kapsam değişirse yeni sürüm adı verilir.
 
-### Dalga 1 — Erişilebilirlik kapısı (G7)
-axe'i test hattına bağla; her katmanlı bileşenin story'si ihlalsiz geçsin.
-Mevcut ihlaller cırcırla kayda alınır, yükselemez. **Kapı:** a11y zorlayıcısı
-GREEN ve CI'da koşuyor.
+### Dalga 1 — Erişilebilirlik kapısı (G7) — ✅ KAPANDI
+axe test hattına bağlandı: 126 story gerçek bağlamıyla (CSF `render` +
+decorator) render edilip taranıyor. Tarama yedi ihlal buldu ve **üçü de
+düzeltildi**, cırcıra gerek kalmadı:
+
+- `KeyValueList` — `<dl>` sabit bir çocuk grameri dayatır; rol taşıyan hiçbir
+  doğrudan çocuk (`role="none"` dahil) kabul edilmez. Satır ayrımı Divider
+  bileşeninden grup `div`'inin kenarlığına taşındı.
+- `AdminShell` — kalıcı kenar çubuğu ile mobil çekmece aynı adı taşıyan iki
+  `<nav>` landmark'ı üretiyordu. Çekmece zaten adlandırılmış bir diyalog
+  olduğu için içindeki gezinti `asLandmark={false}` ile landmark olmaktan
+  çıkarıldı.
+- `MenuItem` — bileşen doğruydu, story bağlamı eksikti: `role="menuitem"` bir
+  `role="menu"` ebeveyni ister. Story'ye decorator eklendi ve tarama artık
+  decorator'ları uyguluyor, yoksa üründe hiç var olmayan bir DOM ölçülürdü.
+
+**Kapı:** ihlal sıfırda kilitli; `color-contrast` jsdom'da ölçülemediği için
+o eksen token seviyesinde `DS-CONTRAST-AA-01` ile ayrıca kapalı.
 
 ### Dalga 2 — Katman gerçeği (G4, G5, G13)
 `forms/`, `feedback/`, `data-display/` altındaki sınıflandırılmamış bileşenleri

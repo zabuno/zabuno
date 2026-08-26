@@ -74,7 +74,19 @@ export function AdminShell({
                     onClose={onCloseMobileMenu}
                     title={navLabel ?? 'Menu'}
                 >
-                    <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
+                    {/*
+                        Çekmece zaten `title` ile adlandırılmış bir diyalogdur;
+                        içindeki gezinti ayrı bir landmark olarak render
+                        edilirse kalıcı kenar çubuğuyla aynı adı taşıyan
+                        ikinci bir `<nav>` oluşur ve ekran okuyucu ikisini
+                        ayırt edemez.
+                    */}
+                    <SidebarNav
+                        groups={navGroups}
+                        activeKey={activeNavKey}
+                        label={navLabel}
+                        asLandmark={false}
+                    />
                 </DrawerPanel>
                 <main
                     id={mainId}

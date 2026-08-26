@@ -156,21 +156,36 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
-    it('opens the mobile drawer navigation with a Close control, then removes the drawer-hosted duplicate navigation on close while desktop navigation remains', async () => {
+    // Niyet aynı: çekmece açılınca gezinti gelir, kapanınca gider, masaüstü
+    // gezintisi kalır. Ölçüm değişti. Eskiden bu test AÇIKKEN İKİ `navigation`
+    // landmark'ı bekliyordu — yani axe'in `landmark-unique` ihlali olarak
+    // bildirdiği kusurun kendisini doğruluyordu: aynı adı taşıyan iki landmark
+    // ekran okuyucu listesinde ayırt edilemez. Çekmece zaten adlandırılmış bir
+    // diyalog olduğu için içindeki gezinti artık landmark değil; landmark
+    // sayısı HER ZAMAN bir kalır ve çekmecenin varlığı içeriğinden okunur.
+    it('opens the mobile drawer navigation with a Close control, then removes it on close while the desktop navigation landmark stays unique', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
-        expect(screen.getAllByRole('navigation', { name: 'Restaurant admin' })).toHaveLength(1);
+        const landmarks = () => screen.getAllByRole('navigation', { name: 'Restaurant admin' });
+        const dashboardLinks = () => screen.getAllByRole('link', { name: 'Dashboard' });
+
+        expect(landmarks()).toHaveLength(1);
+        expect(dashboardLinks()).toHaveLength(1);
 
         await user.click(screen.getByRole('button', { name: 'Open menu' }));
 
-        expect(screen.getAllByRole('navigation', { name: 'Restaurant admin' })).toHaveLength(2);
+        // Çekmece gezintisi geldi…
+        expect(dashboardLinks()).toHaveLength(2);
+        // …fakat ikinci bir landmark üretmedi.
+        expect(landmarks()).toHaveLength(1);
 
         await user.click(screen.getByRole('button', { name: 'Close' }));
 
         await waitFor(() => {
-            expect(screen.getAllByRole('navigation', { name: 'Restaurant admin' })).toHaveLength(1);
+            expect(dashboardLinks()).toHaveLength(1);
         });
+        expect(landmarks()).toHaveLength(1);
 
         vi.unstubAllGlobals();
     });

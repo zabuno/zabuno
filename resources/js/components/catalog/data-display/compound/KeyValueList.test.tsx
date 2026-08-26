@@ -18,8 +18,13 @@ describe('KeyValueList', () => {
         expect(screen.getByText('Owner')).toBeInTheDocument();
     });
 
-    it('composes a Divider between entries but not before the first one', () => {
-        render(
+    // Niyet değişmedi: girişler arasında görsel ayrım var, ilkinden ÖNCE yok.
+    // Değişen, ayrımın nasıl yapıldığı. Eskiden araya `role="separator"` taşıyan
+    // bir Divider konuyordu; axe bunu `definition-list` ihlali olarak bildirdi:
+    // `<dl>` rol taşıyan hiçbir doğrudan çocuğu kabul etmez. Ayrım artık grup
+    // `div`'inin üst kenarlığıyla yapılır, bu yüzden test kenarlığı doğrular.
+    it('separates entries with a top border on every row after the first', () => {
+        const { container } = render(
             <KeyValueList
                 entries={[
                     { key: 'a', label: 'A', value: '1' },
@@ -28,11 +33,43 @@ describe('KeyValueList', () => {
                 ]}
             />,
         );
-        expect(screen.getAllByRole('separator')).toHaveLength(2);
+
+        const rows = Array.from(container.querySelectorAll('dl > div'));
+
+        expect(rows).toHaveLength(3);
+        expect(rows[0].className).not.toMatch(/border-t/);
+        expect(rows[1].className).toMatch(/border-t/);
+        expect(rows[2].className).toMatch(/border-t/);
     });
 
-    it('renders no divider for a single entry', () => {
-        render(<KeyValueList entries={[{ key: 'a', label: 'A', value: '1' }]} />);
-        expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+    it('renders no separation for a single entry', () => {
+        const { container } = render(
+            <KeyValueList entries={[{ key: 'a', label: 'A', value: '1' }]} />,
+        );
+
+        const rows = Array.from(container.querySelectorAll('dl > div'));
+
+        expect(rows).toHaveLength(1);
+        expect(rows[0].className).not.toMatch(/border-t/);
+    });
+
+    // Kusurun kendisini dondurur: `<dl>` yalnız `dt`/`dd` veya bunları
+    // doğrudan saran `div` içerebilir. Rol taşıyan bir çocuk geri gelirse
+    // bu test, axe kapısından önce ve daha net bir mesajla kırılır.
+    it('keeps the dl child grammar valid — no role-bearing direct children', () => {
+        const { container } = render(
+            <KeyValueList
+                entries={[
+                    { key: 'a', label: 'A', value: '1' },
+                    { key: 'b', label: 'B', value: '2' },
+                ]}
+            />,
+        );
+
+        const invalid = Array.from(container.querySelectorAll('dl > *')).filter(
+            (child) => child.hasAttribute('role') || child.tagName.toLowerCase() !== 'div',
+        );
+
+        expect(invalid.map((el) => el.tagName.toLowerCase())).toEqual([]);
     });
 });
