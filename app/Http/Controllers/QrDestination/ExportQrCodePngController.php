@@ -50,7 +50,12 @@ final class ExportQrCodePngController extends Controller
 
         try {
             $rendered = $this->imageExport->renderPng(url("/q/{$record->token}"), $layout);
-        } catch (RuntimeException) {
+        } catch (RuntimeException $exception) {
+            // The body deliberately says nothing about why, so without this
+            // the reason for a 500 exists nowhere at all — not in the response
+            // and not in the log.
+            report($exception);
+
             return response('QR image generation failed.', 500);
         }
 

@@ -50,7 +50,9 @@ final class ExportQrCodeSvgController extends Controller
 
         try {
             $rendered = $this->imageExport->renderSvg(url("/q/{$record->token}"), $layout);
-        } catch (RuntimeException) {
+        } catch (RuntimeException $exception) {
+            report($exception);
+
             return response('QR image generation failed.', 500);
         }
 
