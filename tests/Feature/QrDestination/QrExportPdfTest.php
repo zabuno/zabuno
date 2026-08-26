@@ -13,6 +13,7 @@ use Composer\InstalledVersions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\TestResponse;
 use Mpdf\Mpdf;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -652,6 +653,37 @@ final class QrExportPdfTest extends TestCase
         $this->assertMediaBoxMatchesIsoSize((string) $response->getContent(), 'A4', 'portrait');
     }
 
+    /**
+     * 500 döndüğünde ASIL sebebi assertion mesajına taşır.
+     *
+     * Bu test CI'da iki kez 500 ile düştü ve aynı commit yeniden
+     * çalıştırılınca geçti; yerelde hiç üretilemedi. Laravel test istemcisi
+     * istisnayı yutup yalnız durum kodunu gösterdiği için elimizde "500"
+     * dışında hiçbir şey yoktu ve bellek varsayımı bu körlük yüzünden
+     * kanıtlanmadan denendi (ve çürüdü).
+     *
+     * Tekrar düşerse artık sebebini kendisi söyleyecek.
+     */
+    private function assertPdfResponseOk(TestResponse $response, string $context): void
+    {
+        if ($response->getStatusCode() !== 200) {
+            $body = (string) $response->getContent();
+            $decoded = json_decode($body, true);
+            $detail = is_array($decoded)
+                ? ($decoded['message'] ?? $decoded['exception'] ?? '')
+                : mb_substr(strip_tags($body), 0, 400);
+
+            self::fail(sprintf(
+                '%s — beklenen 200, alınan %d. Sunucu tarafı sebep: %s',
+                $context,
+                $response->getStatusCode(),
+                $detail === '' ? '(gövde boş; APP_DEBUG kapalı olabilir)' : $detail,
+            ));
+        }
+
+        $response->assertStatus(200, $context);
+    }
+
     // --- QR-PDF-SIZE-MATRIX-01 ---------------------------------------------------
 
     #[DataProvider('paperSizeOrientationCombinations')]
@@ -666,7 +698,7 @@ final class QrExportPdfTest extends TestCase
             'orientation' => $orientation,
         ]));
 
-        $response->assertStatus(200, "QR-PDF-SIZE-MATRIX-01: {$paperSize}/{$orientation} için Owner 200 application/pdf almalı.");
+        $this->assertPdfResponseOk($response, "QR-PDF-SIZE-MATRIX-01: {$paperSize}/{$orientation} için Owner 200 application/pdf almalı.");
         $response->assertHeader('Content-Type', 'application/pdf');
 
         $body = (string) $response->getContent();
