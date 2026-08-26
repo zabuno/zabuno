@@ -138,8 +138,8 @@ Bkz. `docs/15` §4 — MED-01 ile aynı kapasite-probe testine bağlı.
 
 | ID | Varsayım | Etki | Öncü sinyal | En ucuz test | Sahip | Tetikleyici | Containment |
 |---|---|---|---|---|---|---|---|
-| DR-01 | RPO/RTO hedefleri sayısal olarak belirlenmedi | Yüksek | — | Owner ile workshop | Owner + Engineering | MVP Exit Gate | Günlük backup varsayılan minimum |
-| DR-02 | Restore hiç gerçek olarak test edilmedi mi — edilecek | Yüksek | Restore drill sonucu | `docs/27` restore testi | Engineering | MVP Exit Gate | Drill zorunlu kabul kriteri |
+| DR-01 | **Kapandı (owner kararı, 2026-08-26).** RPO/RTO hedefleri sayısal olarak belirlendi: **RPO 24 saat, RTO 4 saat.** Gerekçe: Zabuno'da menülerin karanlık kalması (RTO) veri kaybından (RPO) daha pahalıdır — kesinti, müşterinin kendi misafirinin önünde yaşanır. Bu hedefler **gerçek hosting'de henüz doğrulanmadı**; yerel SQLite drill'i (DR-02) bir RPO/RTO kanıtı değildir ve kaydın kendi beyanı bunu açıkça reddeder | Yüksek | Gerçek hosting'de ölçülen restore süresinin 4 saati aşması | Hedef sağlayıcıda tek gerçek restore süresi ölçümü | Owner + Engineering | Shared-host sağlayıcı seçimi sonrası doğrulama (DEP-01) | Günlük otomatik backup varsayılan minimum; hedefler ölçümle doğrulanana kadar taahhüt değil, hedef olarak raporlanır |
+| DR-02 | **Kısmen kapandı (2026-08-26).** Restore artık gerçek olarak çalıştırıldı: `security:evidence:backup-restore` yerel SQLite online-backup + izole dosya-kopyası drill'i **passed** (git SHA `19c0373`, temiz ağaç, `backup_restore_evidence` tablosunda kayıt). Kaydın kendi beyanı kapsamı sınırlar: bu bir RPO/RTO kanıtı, production DR tatbikatı veya cross-host/point-in-time recovery testi **değildir**; drill 9 satırlık dondurulmuş bir manifest üzerinde koşmuştur. Üretim büyüklüğünde veriyle, gerçek hosting'de restore hâlâ **test edilmemiştir** | Yüksek | Üretim büyüklüğünde restore süresinin DR-01 hedefini aşması | Hedef sağlayıcıda üretim benzeri veriyle tek restore drill'i | Engineering | Shared-host sağlayıcı seçimi sonrası | Drill zorunlu kabul kriteri; yerel drill üretim kanıtı olarak sunulamaz |
 
 ## R. Observability / support
 

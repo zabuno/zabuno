@@ -33,12 +33,16 @@ restoran yolculuğu (tenant/menü/yayın/QR/ödeme uçtan uca) hâlâ **yoktur**
   S1-WP02'nin CORE-01-only alt dilimi **S1-WP02A** (register→
   verification-pending→signed/expiring email verification→authenticated
   cookie session→logout) da yerel hedefli kanıtla eklenmiştir
-  (local-candidate-targeted-green, `docs/33` §Final durum) — ama tenant/
-  menü/yayın/QR/ödeme dahil **kritik restoran yolculuğunun** geri kalanı
-  hâlâ bağlanmadı; CORE-01 dikey diliminin çalışıyor olması, **kritik dikey
-  yolun tamamının** çalıştığı anlamına gelmez. Bu stage'in "engeli" — teknik
-  değil, kritik yolun geri kalanının henüz başlanmamış olmasıdır. Sayaç hâlâ
-  **0/8**; Exit GO/NO-GO **henüz değerlendirilmedi**.
+  (local-candidate-targeted-green, `docs/33` §Final durum). **2026-08-26
+  güncellemesi:** kritik restoran yolculuğunun tenant/menü/yayın/QR ekseni
+  artık bağlanmış ve kanıtlanmıştır — kayıt→workspace→marka/şube→menü/
+  kategori/ürün→yayın→QR→public menü→fiyat değişikliği→yeniden yayın→aynı
+  QR'da yeni fiyat zinciri hem gerçek HTTP yüzeyinden otomatik testle
+  (`RestaurantCriticalJourneyTest`) hem de tarayıcıda manuel demoyla
+  yürütülmüştür. **Ödeme ekseni bu kanıtın dışındadır** ve hâlâ
+  bağlanmamıştır. Sayaç **0/8**'de kalır: ürün fazı sayacı özellik değil
+  kapanmış Exit Gate sayar ve Exit GO/NO-GO **hâlâ owner kararını
+  beklemektedir** (§Exit GO/NO-GO/CONDITIONAL).
 - **capability_delta**: ürün kabiliyeti **0 → bounded CORE-01 local
   candidate** (register→verification-pending→email verification→session→
   logout, `docs/33` §Final durum) — bu, restoran işletme kabiliyeti
@@ -173,11 +177,25 @@ geri çekilir, Exit Gate ertelenir.
 
 ## Exit GO/NO-GO/CONDITIONAL
 
-**Henüz değerlendirilmedi.** Stage 1 **aktif** ve implementation-in-progress'tir
-(S1-WP01A + S1-WP02A yerel hedefli kanıtla çalışır) — ama Exit GO/NO-GO
-değerlendirmesi yalnız §Acceptance evidence ve §Metrics'teki tam kritik yol
-kanıtı (E2E kayıt, tenant escape testi, QR fiziksel scan testi, restore
-drill) üretildiğinde yapılabilir; bu kanıt paketi hâlâ **eksiktir**.
+**Owner kararı bekliyor (2026-08-26 itibarıyla).** §Acceptance evidence'ın
+dört kaleminin dördü de artık kayıtlıdır, fakat ikisi kendi beyanıyla
+yerel kapsamlıdır. Karar owner'ındır; bu bölüm GO ilan etmez.
+
+| Kanıt | Durum | Kaydın kendi sınırı |
+|---|---|---|
+| E2E kayıt + manuel demo | **Kapandı** | `RestaurantCriticalJourneyTest` (4/4) modüller arası bileşimi gerçek HTTP yüzeyinden kanıtlar; manuel demo tarayıcıda yürütüldü |
+| Tenant escape (AUTH-02) | **Yerel otomatik: passed** | `tenant_isolation_evidence` kaydı: "not an ASVS audit, not a pentest, and not a production proof" |
+| QR fiziksel scan (QR-02) | **Kapandı** | Ürünün kendi PNG export'u gerçek telefonla LAN üzerinden okundu; yayınlanmış fiyat (52.50 TRY) doğrulandı. Basılı ölçü/scannability (A4, masa mesafesi) ayrıca ölçülmedi |
+| Restore drill (DR-02) | **Yerel: passed** | `backup_restore_evidence` kaydı: RPO/RTO kanıtı değil, production DR tatbikatı değil; 9 satırlık manifest |
+
+RPO/RTO hedefleri owner tarafından belirlenmiştir (**RPO 24 saat, RTO 4 saat**,
+`docs/16` DR-01) fakat gerçek hosting'de **ölçülmemiştir**.
+
+Bu tabloya göre olgun karar şekli **CONDITIONAL-GO**'dur: kritik yol gerçekten
+çalışır ve kanıtlıdır, ancak tenant-isolation ile restore kanıtları yerel
+kapsamdadır ve shared-host sertifikasyonu (`docs/16` DEP-01) açıktır. Nihai
+GO / CONDITIONAL-GO / NO-GO ilanı owner'a aittir ve bu belge onu peşinen
+vermez.
 
 ## Next-stage admission
 
