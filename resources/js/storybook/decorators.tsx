@@ -3,6 +3,7 @@ import type { Decorator } from '@storybook/react-vite';
 
 export type ThemeMode = 'light' | 'dark' | 'high-contrast';
 export type Direction = 'ltr' | 'rtl';
+export type Density = 'comfortable' | 'standard' | 'compact';
 
 function ThemeRootSync({ theme }: { theme: ThemeMode }) {
     useEffect(() => {
@@ -60,7 +61,35 @@ export const withDirection: Decorator = (Story, context) => {
     );
 };
 
+/**
+ * Yoğunluk, token seviyesinde çözülür ve bileşene sızmaz (docs/37 §2.2, X4).
+ * Bu decorator yalnız kapsayıcıya modun sınıfını koyar; bileşenler
+ * `var(--density-*)` okur ve hangi modda olduklarını bilmezler.
+ */
+export const withDensity: Decorator = (Story, context) => {
+    const density = (context.globals.density as Density | undefined) ?? 'standard';
+
+    return (
+        <div className={density === 'standard' ? undefined : `density-${density}`}>
+            <Story />
+        </div>
+    );
+};
+
 export const themeAndDirectionGlobalTypes = {
+    density: {
+        name: 'Density',
+        description: 'Bilgi yoğunluğu — satır yüksekliği ve iç boşluk değişir, tipografi değişmez',
+        defaultValue: 'standard',
+        toolbar: {
+            icon: 'component',
+            items: [
+                { value: 'comfortable', title: 'Comfortable' },
+                { value: 'standard', title: 'Standard' },
+                { value: 'compact', title: 'Compact' },
+            ],
+        },
+    },
     theme: {
         name: 'Theme',
         description: 'Zabuno theme mode',

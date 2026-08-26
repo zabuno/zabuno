@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react-vite';
 import {
     withTheme,
     withDirection,
+    withDensity,
     themeAndDirectionGlobalTypes,
 } from '../resources/js/storybook/decorators';
 import '../resources/css/app.css';
@@ -10,7 +11,7 @@ type PreviewGlobalTypes = NonNullable<Preview['globalTypes']>;
 
 const preview: Preview = {
     globalTypes: themeAndDirectionGlobalTypes as PreviewGlobalTypes,
-    decorators: [withDirection, withTheme],
+    decorators: [withDensity, withDirection, withTheme],
     parameters: {
         viewport: {
             options: {

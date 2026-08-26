@@ -387,6 +387,31 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
         ).toEqual([]);
     });
 
+    // --- DS-DENSITY-CONSUMED-09 -------------------------------------------
+    // Tanımlanmış ama tüketilmeyen bir token, sistem değil süstür. Yoğunluk
+    // modları CSS'te var olup hiçbir bileşen okumazsa anahtarı çevirmek
+    // hiçbir şeyi değiştirmez — tam olarak bu durumdaydık.
+    it("yoğunluk token'ları en az bir gerçek bileşen tarafından tüketilir", () => {
+        const consumers = FILES.filter((file) => /var\(--density-/.test(file.body));
+
+        expect(
+            consumers.map((file) => file.path),
+            'DS-DENSITY-CONSUMED-09: hiçbir bileşen --density-* okumuyor. ' +
+                'Yoğunluk modları tanımlı ama bağlı değil; anahtar hiçbir şeyi değiştirmez.',
+        ).not.toEqual([]);
+
+        // Yoğunluk satır yüksekliği VE iç boşlukla çözülür; yalnız biri
+        // bağlanırsa mod değişimi yarım kalır.
+        const body = consumers.map((file) => file.body).join('\n');
+
+        for (const token of ['--density-row-height', '--density-padding-inline']) {
+            expect(
+                body.includes(token),
+                `DS-DENSITY-CONSUMED-09: ${token} hiçbir bileşende tüketilmiyor.`,
+            ).toBe(true);
+        }
+    });
+
     // --- DS-NO-RAW-HEX-01 -------------------------------------------------
     it('katmanlı bileşenler ham hex rengi gömmez', () => {
         const offenders = LAYERED.filter((file) => /#[0-9a-fA-F]{3,8}\b/.test(file.body)).map(
