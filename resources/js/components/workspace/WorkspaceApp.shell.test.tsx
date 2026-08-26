@@ -190,6 +190,35 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
+    // Gezinti bağlantıları `#media` gibi hash'ler ve her bölüm aynı id'yi
+    // taşıyan bir kapsayıcı render ediyor; tarayıcı bu durumda o elemana
+    // kaydırır ve gezinti tıklaması sayfayı sıçratır. Bölüm bir "sayfa"dır,
+    // yeni sayfa baştan başlar.
+    it('returns the page to the top when the active section changes', async () => {
+        const user = userEvent.setup();
+        const scrollTo = vi.fn();
+        vi.stubGlobal('scrollTo', scrollTo);
+
+        await renderCurrentWorkspace();
+
+        scrollTo.mockClear();
+
+        await user.click(screen.getByRole('link', { name: 'Media' }));
+
+        await waitFor(() => {
+            expect(
+                scrollTo,
+                'Bölüm değiştiğinde sayfa başa dönmeli; aksi hâlde tarayıcı hash hedefine sıçrar.',
+            ).toHaveBeenCalledWith(expect.objectContaining({ top: 0 }));
+        });
+
+        // Yumuşak kaydırma her gezinmede gürültüdür ve azaltılmış hareket
+        // tercihini çiğner.
+        expect(scrollTo).not.toHaveBeenCalledWith(expect.objectContaining({ behavior: 'smooth' }));
+
+        vi.unstubAllGlobals();
+    });
+
     it('transitions to the existing choose-workspace journey when Switch workspace is activated', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();

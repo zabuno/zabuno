@@ -258,6 +258,37 @@ export function WorkspaceApp() {
         };
     }, []);
 
+    /**
+     * Bölüm değişiminde sayfayı başa al ve odağı ana bölgeye taşı.
+     *
+     * Gezinti bağlantıları `#media` gibi hash'ler ve her bölüm aynı id'yi
+     * taşıyan bir kapsayıcı render ediyor. Tarayıcı bu durumda O ELEMANA
+     * KAYDIRIYOR — yani bir gezinti öğesine tıklamak sayfayı rastgele bir
+     * yere sıçratıyordu. Kullanıcının gördüğü şey buydu.
+     *
+     * Bölüm bir "sayfa"dır; yeni sayfa baştan başlar. Odağın ana bölgeye
+     * taşınması da SPA gezinmesinde doğru davranıştır: ekran okuyucu aksi
+     * hâlde gezinti listesinde kalır ve içeriğin değiştiğini duyurmaz.
+     *
+     * İlk render'da odak taşınmaz — sayfaya yeni gelen kullanıcının odağını
+     * çalmak, çözdüğümüz sorundan daha rahatsız edicidir.
+     */
+    const hasNavigatedRef = useRef(false);
+
+    useEffect(() => {
+        // `auto`: her gezinmede yumuşak kaydırma gürültüdür ve azaltılmış
+        // hareket tercihini çiğner.
+        window.scrollTo({ top: 0, behavior: 'auto' });
+
+        if (!hasNavigatedRef.current) {
+            hasNavigatedRef.current = true;
+
+            return;
+        }
+
+        document.getElementById('main-content')?.focus();
+    }, [activeSection]);
+
     async function handleCreate(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
