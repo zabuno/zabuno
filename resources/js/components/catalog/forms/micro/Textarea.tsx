@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { Textarea as FlowbiteTextarea } from 'flowbite-react';
 import type { TextareaProps as FlowbiteTextareaProps } from 'flowbite-react';
+import { textareaTokenTheme } from '../../../../design-system/flowbite-theme';
 
 export type TextareaProps = FlowbiteTextareaProps & {
     invalid?: boolean;
@@ -16,6 +17,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
 ) {
     return (
         <FlowbiteTextarea
+            theme={textareaTokenTheme}
+            applyTheme="replace"
             ref={ref}
             disabled={disabled}
             aria-invalid={invalid || undefined}

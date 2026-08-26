@@ -171,6 +171,7 @@ Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
 | G14 | Varyant yönetimi | A–F overlay | ❌ varyant kütüphanesi yok | 5 |
 | G15 | Performans bütçesi | Bütçe içinde ve **ölçülü** | ✅ **kapandı** — `DS-BUNDLE-BUDGET-07`, CI'da ölçülüyor | — |
 | G16 | Referans implementasyon | Erişilebilir | ⚠️ depo dışında (`docs/36`) | — |
+| G17 | **Primitive kaynağının teması** | Flowbite token kökünü okur | ✅ **kapandı** — beş kontrol bağlandı, `PlainButton` kaldırıldı, `DS-FLOWBITE-TOKEN-BIND-10` | — |
 
 ### 3.1 En pahalı üç boşluk
 
@@ -206,6 +207,7 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 | Bileşenler arası döngü yok | `DS-NO-CYCLE-03` | ✅ |
 | Bundle bütçeyi aşmaz | `DS-BUNDLE-BUDGET-07` | ✅ |
 | Bileşen ham süre bilmez, azaltılmış hareket yanıtlanır | `DS-MOTION-CONTRACT-08` | ✅ |
+| Flowbite primitifi token kökünü okur (ham palet/sabit piksel üretmez) | `DS-FLOWBITE-TOKEN-BIND-10` | ✅ |
 
 ## 5. Geliştirme planı — dalgalar ve kapılar
 
@@ -310,6 +312,76 @@ restoranları olduğu için ilk tamamlanan yüzey burası.
 `docs/26` S1-WP03). A–F varyant overlay'i de bu dalgada bekliyor.
 
 **Kapı:** ikinci bir dil uçtan uca çalışıyor; pipeline ve varyant açık.
+
+### Dalga dışı — Primitive kaynağının teması (G17) — ✅ KAPANDI
+
+> Bu bir dalga DEĞİLDİR ve numara almaz: yukarıdaki dalga sayısı bu belgede
+> dondurulmuştur ve onu değiştirmek yeni bir plan sürümü gerektirir. Burada
+> anlatılan iş, Dalga 2'nin (katman gerçeği) ve Dalga 3'ün (yoğunluk)
+> zorlayıcıları GREEN olduktan sonra açığa çıkan tek bir boşluğu kapatır.
+
+`docs/37 §2.3` primitive kaynağı olarak Flowbite'ı seçmişti ama onun
+VARSAYILAN temasını hiç bağlamamıştı. Sonuç: sistem kurallıydı, ürün değildi.
+`<Button color="light">` ham palet ve sabit `h-10` üretiyordu; yani token
+kökünde bir tonu değiştirmek o butonu değiştirmiyor, yoğunluk anahtarı onu
+hiç etkilemiyordu.
+
+Beş kontrol (Button, TextInput, Select, Textarea, Checkbox) semantic ve
+yoğunluk token'larına bağlandı. Bağlama iki noktadan uygulanır, TEK yerde
+tanımlanır (`design-system/flowbite-theme.ts`): katalog primitifi kendi
+dilimini prop olarak taşır (sağlayıcısız test/story'de de bağlı kalsın diye),
+`ThemeRoot`taki `ThemeProvider` ise Flowbite'ı doğrudan import eden ~20
+dosyayı kapsar.
+
+`PlainButton` kaldırıldı ve **on beş dosyadaki on altı kullanımı** `Button`'a
+taşındı: yedi kimlik doğrulama yüzeyi (giriş, kayıt, parola sıfırlama,
+doğrulama, davet, çıkış), dört platform yönetim yüzeyi ve dört workspace
+yüzeyi. `variant="primary"` → varsayılan `Button` (aynı `--color-action`
+tonu), varyantsız kullanım → `color="light"`. Görünüm birebir korundu.
+
+O bileşen zaten geçici ilan edilmişti ve `§2.3` "duplicate yasağı"nın tam
+olarak yasakladığı şeydi: aynı aile için ikinci bir primitive. Kimlik
+doğrulama eylemlerine markayı taşıyan paket onu geçici bir kaçış yolu olarak
+kullanmıştı; artık kaçış yoluna gerek yok, çünkü kaçılan şey düzeltildi.
+
+`catalog/forms/micro/nativeFieldStyles.ts` aynı gerekçeyle doğmuştu ve aynı
+notu taşıyor. Bu paket onu KALDIRMAZ: DOM yapısı testlerce dondurulmuş sekiz
+yüzeyin çıplak `<input>`/`<select>` öğelerini `TextInput`/`Select`'e taşımak
+ayrı bir iştir. Bağlama tamamlandığına göre o kapı artık açık.
+
+**Yol boyunca çıkan üç kusur** — üçü de yalnız tarayıcıda görülebilirdi,
+tipler ve testler üçünde de sessizdi:
+
+- **Yoğunluk zinciri kopuktu.** `:root`ta `var()` ile türetilen bir custom
+  property, tanımlandığı yerde BİR KEZ ikame edilir ve alt elemanlara
+  çözülmüş hâlde miras kalır. `--control-height` `:root`ta 44px'e donuyor,
+  `.density-comfortable` içinde yeniden hesaplanmıyordu — yani yoğunluk
+  anahtarı hiçbir kontrolü değiştirmiyordu. Türetilmiş token'lar artık her
+  modda yeniden tanımlanır ve eksik bir mod build'i kırar.
+- **Hover, `base`'ten renk varyantlarına sızıyordu.** `twMerge` yalnız AYNI
+  CSS özelliğini çakıştırabildiği için `base`'e konan bir `hover:bg-*`, onu
+  yeniden tanımlamayan her varyanta geçiyordu: dolu sarı butonun üzerine
+  gelindiğinde buton nötr griye dönüyordu. Hover artık rengin kendi kararı.
+- **`ThemeProvider`'ı barrel'dan import etmek bundle'ı 226 KB'ye çıkarıyordu**
+  (bütçe 200). `ThemeRoot` paylaşılan chunk'ta olduğu için barrel bütün
+  kütüphaneyi oraya çekiyordu. Alt-yol import'uyla 160 KB'ye döndü.
+
+**Kapı:** ham palet ve sabit geometri artık KAYNAKTA değil, RENDER EDİLEN
+sınıf listesinde ölçülüyor.
+
+Bu ayrım kritik: `DS-RAW-PALETTE-BANNED-01` mutlak bir yasaktır ve bu depodaki
+kaynağı sıfır ihlalle tarar — ama Flowbite'ın paleti `node_modules` içindedir
+ve hiçbir kaynak tarayıcısı onu göremez. Yani "kaynakta sıfır" ile "üründe
+sıfır" AYNI ŞEY DEĞİLDİ: depoda `h-10` yazan tek satır yokken üretilen HTML'de
+`h-10` vardı. İki kural birbirinin yerine geçmez, birbirini tamamlar.
+
+Yasağın KAPSAMI da genişletildi: tarama artık `.tsx` yanında `.ts` dosyalarını
+da okur. Sınıf listesi taşıyan iki dosya (`design-system/flowbite-theme.ts` ve
+`catalog/forms/micro/nativeFieldStyles.ts`) JSX içermez, yani mutlak yasak tam
+olarak sınıfların en yoğun toplandığı yerde geçersizdi. Katman kuralları
+(`DS-STORY-COVERAGE-01` ve kardeşleri) `.tsx` ile sınırlı kaldı: bir katman
+kuralı BİLEŞEN hakkında konuşur, stil sabiti dışa aktaran bir modül hakkında
+değil.
 
 ### Borç düşürme — dalgalara paralel
 G2'nin 895 ihlali her dalgada azaltılır. Cırcır artışı zaten engelliyor;

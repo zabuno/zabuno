@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PlainButton } from '../catalog/forms/micro/PlainButton';
+import { Button } from '../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -38,9 +38,9 @@ export function VerificationPending({ email }: VerificationPendingProps) {
                 {t('auth.verification_pending.body', { email })}
             </p>
 
-            <PlainButton variant="primary" onClick={handleResend} className="w-full">
+            <Button onClick={handleResend} className="w-full">
                 {t('auth.verification_pending.resend')}
-            </PlainButton>
+            </Button>
 
             <p role="status" aria-live="polite" className="text-sm text-fg-secondary ">
                 {t(`auth.verification_pending.status.${status}`)}

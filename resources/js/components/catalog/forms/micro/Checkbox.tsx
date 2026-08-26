@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { Checkbox as FlowbiteCheckbox } from 'flowbite-react';
 import type { CheckboxProps as FlowbiteCheckboxProps } from 'flowbite-react';
+import { checkboxTokenTheme } from '../../../../design-system/flowbite-theme';
 
 export type CheckboxProps = FlowbiteCheckboxProps & {
     invalid?: boolean;
@@ -16,6 +17,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
 ) {
     return (
         <FlowbiteCheckbox
+            theme={checkboxTokenTheme}
+            applyTheme="replace"
             ref={ref}
             disabled={disabled}
             aria-invalid={invalid || undefined}

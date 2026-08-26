@@ -1,5 +1,4 @@
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
-import { Button } from 'flowbite-react';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { t } from '../../../../i18n/workspace';
 import { MediaAssetStatusBadge } from './MediaAssetStatusBadge';
 import { MediaLifecycleList } from './MediaLifecycleList';
@@ -75,14 +74,15 @@ export function MediaLibraryRegion({
                                 <span className="text-sm font-medium text-fg">{`#${asset.id}`}</span>
                                 <span className="text-sm text-fg-secondary">{asset.altText}</span>
                                 <MediaAssetStatusBadge status={asset.status} />
-                                <PlainButton
+                                <Button
+                                    color="light"
                                     type="button"
                                     disabled={isDeleting}
                                     onClick={() => onDelete(asset.id)}
                                     className="self-start text-xs"
                                 >
                                     {t('workspace.media.library.asset.delete')}
-                                </PlainButton>
+                                </Button>
                                 {hasDeleteError && (
                                     <p role="alert" className="text-xs font-medium text-fg-danger">
                                         {t('workspace.media.library.asset.delete.failed')}

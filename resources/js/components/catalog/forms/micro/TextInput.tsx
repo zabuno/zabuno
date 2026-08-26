@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { TextInput as FlowbiteTextInput } from 'flowbite-react';
 import type { TextInputProps as FlowbiteTextInputProps } from 'flowbite-react';
+import { textInputTokenTheme } from '../../../../design-system/flowbite-theme';
 
 export type TextInputProps = FlowbiteTextInputProps & {
     invalid?: boolean;
@@ -23,6 +24,8 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function T
 ) {
     return (
         <FlowbiteTextInput
+            theme={textInputTokenTheme}
+            applyTheme="replace"
             ref={ref}
             disabled={disabled}
             aria-invalid={invalid || undefined}

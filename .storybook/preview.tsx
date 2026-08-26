@@ -3,6 +3,7 @@ import {
     withTheme,
     withDirection,
     withDensity,
+    withFlowbiteTokenTheme,
     themeAndDirectionGlobalTypes,
 } from '../resources/js/storybook/decorators';
 import '../resources/css/app.css';
@@ -11,7 +12,7 @@ type PreviewGlobalTypes = NonNullable<Preview['globalTypes']>;
 
 const preview: Preview = {
     globalTypes: themeAndDirectionGlobalTypes as PreviewGlobalTypes,
-    decorators: [withDensity, withDirection, withTheme],
+    decorators: [withFlowbiteTokenTheme, withDensity, withDirection, withTheme],
     parameters: {
         viewport: {
             options: {

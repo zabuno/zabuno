@@ -1,4 +1,4 @@
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { formatMoneyOr } from '../../../../money/format';
 import { t } from '../../../../i18n/platform';
 
@@ -94,14 +94,13 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
                                 </span>
                             )}
                             {!plan.is_active && (
-                                <PlainButton
+                                <Button
                                     type="button"
-                                    variant="primary"
                                     className="self-start"
                                     onClick={() => onActivateRequest(plan)}
                                 >
                                     {t('platform.plans.activate.button')}
-                                </PlainButton>
+                                </Button>
                             )}
                         </li>
                     ))}

@@ -1,4 +1,4 @@
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { t } from '../../../../i18n/workspace';
@@ -138,9 +138,14 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                 </label>
             </div>
 
-            <PlainButton type="submit" disabled={status === 'pending'} className="self-start">
+            <Button
+                color="light"
+                type="submit"
+                disabled={status === 'pending'}
+                className="self-start"
+            >
                 {t('workspace.media.upload.button')}
-            </PlainButton>
+            </Button>
 
             {status === 'pending' && (
                 <p role="status" className="text-xs text-fg-muted">

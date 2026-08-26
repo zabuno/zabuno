@@ -1,4 +1,4 @@
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { useState } from 'react';
 import { t } from '../../../../i18n/workspace';
 import { BackupRestoreEvidenceItem } from './BackupRestoreEvidenceItem';
@@ -58,13 +58,14 @@ export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
             <p className="text-sm text-fg-muted">
                 {t('workspace.launchReadiness.checklist.explanation')}
             </p>
-            <PlainButton
+            <Button
+                color="light"
                 type="button"
                 onClick={() => setRefreshToken((token) => token + 1)}
                 className="self-start"
             >
                 {t('workspace.launchReadiness.refresh.button')}
-            </PlainButton>
+            </Button>
             <ul className="flex flex-col gap-4">
                 <TenantIsolationEvidenceItem
                     key={`tenant-isolation-${refreshToken}`}

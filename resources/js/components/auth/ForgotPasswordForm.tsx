@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Label, TextInput } from 'flowbite-react';
-import { PlainButton } from '../catalog/forms/micro/PlainButton';
+import { Button } from '../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -104,9 +104,9 @@ export function ForgotPasswordForm() {
                 )}
             </div>
 
-            <PlainButton variant="primary" type="submit" className="w-full">
+            <Button type="submit" className="w-full">
                 {t('auth.forgot_password.submit')}
-            </PlainButton>
+            </Button>
         </form>
     );
 }

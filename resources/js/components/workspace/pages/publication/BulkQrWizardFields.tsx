@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { t } from '../../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import type { QrCodeItem } from './qr-destination/QrCodeListItem';
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import {
     NATIVE_FIELD_CLASS,
     NATIVE_LABEL_CLASS,
@@ -478,15 +478,14 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                 </div>
             ) : null}
 
-            <PlainButton
+            <Button
                 type="button"
-                variant="primary"
                 onClick={handleSubmit}
                 disabled={!canSubmit}
                 className="self-start"
             >
                 {t('workspace.publication.qrExport.bulkWizard.createButton')}
-            </PlainButton>
+            </Button>
         </fieldset>
     );
 }

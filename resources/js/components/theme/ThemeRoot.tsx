@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { ThemeProvider } from 'flowbite-react/theme/provider';
 import { t } from '../../i18n/theme';
+import { FLOWBITE_TOKEN_APPLY, flowbiteTokenTheme } from '../../design-system/flowbite-theme';
 
 export const THEME_STORAGE_KEY = 'zabuno-theme';
 
@@ -89,7 +91,18 @@ export function ThemeRoot({ children }: ThemeRootProps) {
 
     return (
         <>
-            {children}
+            {/*
+              Flowbite'ı token köküne bağlar. `auth/`, `workspace/` ve
+              `admin/` altında Flowbite `Button`/`TextInput`/`Select`
+              DOĞRUDAN import eden dosyalar var; onlar katalog primitifinden
+              geçmediği için tek tek sarmalanamaz. Tema burada, uygulamanın
+              tepesinde bağlanınca hepsi birden `--color-*` ve `--density-*`
+              okur. Katalog primitifleri aynı tanımı ayrıca prop olarak da
+              uygular; bkz. `design-system/flowbite-theme`.
+            */}
+            <ThemeProvider theme={flowbiteTokenTheme} applyTheme={FLOWBITE_TOKEN_APPLY}>
+                {children}
+            </ThemeProvider>
             <div
                 aria-hidden="true"
                 data-theme-focus-clearance=""

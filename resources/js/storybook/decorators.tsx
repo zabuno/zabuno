@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
+import { ThemeProvider } from 'flowbite-react/theme/provider';
 import type { Decorator } from '@storybook/react-vite';
+
+import { FLOWBITE_TOKEN_APPLY, flowbiteTokenTheme } from '../design-system/flowbite-theme';
 
 export type ThemeMode = 'light' | 'dark' | 'high-contrast';
 export type Direction = 'ltr' | 'rtl';
@@ -51,6 +54,21 @@ export const withTheme: Decorator = (Story, context) => {
         </div>
     );
 };
+
+/**
+ * Storybook, ürünün gördüğü Flowbite temasını görmelidir.
+ *
+ * Bu decorator olmadan story'ler `ThemeProvider`sız render edilirdi ve
+ * katalog dışından gelen her Flowbite bileşeni (Modal, Dropdown, doğrudan
+ * import edilmiş `Button`) Storybook'ta ham palet, üründe token gösterirdi
+ * — yani geliştirme yüzeyi ürünle ilgili YANLIŞ bir şey söylerdi.
+ * `ThemeRoot`'un ürün tarafında yaptığının story karşılığı.
+ */
+export const withFlowbiteTokenTheme: Decorator = (Story) => (
+    <ThemeProvider theme={flowbiteTokenTheme} applyTheme={FLOWBITE_TOKEN_APPLY}>
+        <Story />
+    </ThemeProvider>
+);
 
 export const withDirection: Decorator = (Story, context) => {
     const direction = (context.globals.direction as Direction | undefined) ?? 'ltr';
