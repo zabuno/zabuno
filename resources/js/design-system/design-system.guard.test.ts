@@ -3,6 +3,13 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import debt from './raw-palette-debt.json';
 import { RAW_PALETTE_PATTERN, layerOf, mayCompose, type Layer } from './semantic-map';
+import {
+    WCAG_AA_NORMAL_TEXT,
+    contrastRatio,
+    oklchToLinearRgb,
+    readCustomProperties,
+    resolveColor,
+} from './contrast';
 
 /**
  * Tasarım sisteminin zorlayıcı kontrolü.
@@ -123,6 +130,57 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
             missingDark,
             `DS-TOKEN-INTEGRITY-01: karanlık temada karşılığı olmayan token: ${missingDark.join(', ')}. ` +
                 'Yarım tanımlı token, karanlık temada okunmaz metin üretir.',
+        ).toEqual([]);
+    });
+
+    // --- DS-CONTRAST-AA-01 ------------------------------------------------
+    // Token değerleri elle seçilir ve göz onları doğrulayamaz. `--fg-subtle`
+    // açık temada 2.88:1 olarak yayınlandı — AA'nın, hatta büyük-metin
+    // eşiğinin bile altında — ve hiçbir şey fark etmedi. Bu test o sessizliği
+    // kapatır.
+    it("her metin token'ı kendi temasının zemininde WCAG AA karşılar", () => {
+        const css = readFileSync(CSS_PATH, 'utf8');
+
+        // Hesabın kendisi doğrulanmalı: siyah/beyaz tam 21:1 vermelidir.
+        // Bu satır olmadan bozuk bir formül sessizce "hepsi geçti" der.
+        expect(
+            contrastRatio(oklchToLinearRgb(0, 0, 0), oklchToLinearRgb(1, 0, 0)),
+            'DS-CONTRAST-AA-01: kontrast formülü kalibre değil.',
+        ).toBeCloseTo(21, 1);
+
+        const root = readCustomProperties(css, ':root');
+        const failures: string[] = [];
+
+        for (const [theme, selector] of [
+            ['açık', ':root'],
+            ['karanlık', '.dark'],
+        ] as const) {
+            const scope = { ...root, ...readCustomProperties(css, selector) };
+            const background = resolveColor(scope['--surface'] ?? '', scope);
+
+            expect(
+                background,
+                `DS-CONTRAST-AA-01: ${theme} temada --surface çözülemedi.`,
+            ).not.toBeNull();
+
+            for (const [token, value] of Object.entries(scope)) {
+                if (!token.startsWith('--fg')) continue;
+
+                const foreground = resolveColor(value, scope);
+                if (foreground === null || background === null) continue;
+
+                const ratio = contrastRatio(foreground, background);
+                if (ratio < WCAG_AA_NORMAL_TEXT) {
+                    failures.push(`${theme}: ${token} = ${ratio.toFixed(2)}:1`);
+                }
+            }
+        }
+
+        expect(
+            failures,
+            "DS-CONTRAST-AA-01: metin token'ı zemininde 4.5:1 altında kaldı — " +
+                'bu, okunmayan metin demektir:\n' +
+                failures.join('\n'),
         ).toEqual([]);
     });
 
