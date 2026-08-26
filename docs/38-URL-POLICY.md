@@ -171,7 +171,27 @@ Kanonik adres aynı normalizer'ı kullanır. İkinci bir yerde yeniden
 yazılsaydı, kanonik etiket ile yönlendirmenin farklı adresler üretmesi an
 meselesiydi.
 
-## 14. Henüz yapılmayanlar
+## 15. Misafirin çıkmaz sokağı — ve 410'un neden kullanılmadığı
+
+Bir karekod artık bir menüye gitmiyorsa, onu tarayan kişi restoran masasında
+oturan bir müşteridir. Ona `{"message":"Not Found."}` göstermek, ürünü bozuk
+gösterir. Artık okunabilir bir sayfa görüyor ve ne yapacağı söyleniyor.
+
+**Yaygın SEO tavsiyesi burada UYGULANMAZ.** Rehberler "kalıcı olarak
+kaldırılan kaynak için 410 Gone" der. Bu depoda bilinmeyen, bozuk ve devre
+dışı bırakılmış token **ayırt edilemez** biçimde aynı 404'ü döner ve bu
+`QR-PUBLIC-404-UNIFORM-01` ile önceden dondurulmuş bir güvenlik kararıdır.
+
+Sebep: 410 "bu vardı ve gitti" der — yani saklamak istediğimiz bilgiyi tam
+olarak açık eder. Farklı yanıt vermek, saldırganın hangi token'ların bir
+zamanlar var olduğunu ölçmesine, dolayısıyla geçerli kod uzayını
+daraltmasına izin verirdi. Arama motoru faydası, bu sızıntının yanında
+önemsizdir — üstelik sayfa zaten `noindex`.
+
+Yanıt biçimi **isteyene** göre değişir (tarayıcıya HTML, API istemcisine
+JSON), **vakaya** göre değil; aksi hâlde tekdüzelik bozulurdu.
+
+## 16. Henüz yapılmayanlar
 
 Slug geçmişi ve 301 tablosu (bir işletme adını değiştirdiğinde eski adresin
 yaşaması), sitemap üretimi ve `hreflang` kümesi ayrı paketlerdir. Bu paket

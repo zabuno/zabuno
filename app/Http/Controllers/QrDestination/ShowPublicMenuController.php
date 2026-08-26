@@ -11,6 +11,7 @@ use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\QrDestination\QrToken;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
+use App\Http\Responses\GuestDeadEnd;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use InvalidArgumentException;
@@ -64,8 +65,10 @@ final class ShowPublicMenuController extends Controller
         ], 200);
     }
 
-    private function notFound(): JsonResponse
+    private function notFound(): Response|JsonResponse
     {
-        return response()->json(['message' => 'Not Found.'], 404);
+        // Tarayıcıda ham JSON gören bir misafir, ürünü bozuk sanır.
+        // Yanıt her durumda aynıdır (QR-PUBLIC-404-UNIFORM-01).
+        return GuestDeadEnd::respond(request());
     }
 }

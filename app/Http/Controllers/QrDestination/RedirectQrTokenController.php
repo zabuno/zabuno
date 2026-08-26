@@ -9,8 +9,10 @@ use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\QrDestination\QrToken;
 use App\Http\Controllers\Controller;
+use App\Http\Responses\GuestDeadEnd;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use InvalidArgumentException;
 
 final class RedirectQrTokenController extends Controller
@@ -58,8 +60,10 @@ final class RedirectQrTokenController extends Controller
             ->header('X-Robots-Tag', 'noindex, nofollow');
     }
 
-    private function notFound(): JsonResponse
+    private function notFound(): Response|JsonResponse
     {
-        return response()->json(['message' => 'Not Found.'], 404);
+        // Tarayıcıda ham JSON gören bir misafir, ürünü bozuk sanır.
+        // Yanıt her durumda aynıdır (QR-PUBLIC-404-UNIFORM-01).
+        return GuestDeadEnd::respond(request());
     }
 }
