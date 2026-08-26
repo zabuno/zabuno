@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react';
-import { Fragment } from 'react';
 import clsx from 'clsx';
-import { Divider } from '../micro/Divider';
 
 export type KeyValueEntry = {
     key: string;
@@ -15,22 +13,26 @@ export type KeyValueListProps = {
 };
 
 /**
- * Compound: composes Micro/Data Display/Divider between rows instead of
- * reimplementing a border-bottom rule.
+ * Compound: `<dl>` sabit bir çocuk grameri dayatır — doğrudan çocuk yalnız
+ * `dt`/`dd` veya bunları DOĞRUDAN saran bir `div` olabilir ve rol taşıyan
+ * hiçbir eleman (ayraç dahil, `role="none"` bile) araya giremez. Bu yüzden
+ * satır ayrımı bir Divider bileşeniyle değil, grup `div`'inin kenarlığıyla
+ * yapılır; burada bileşen tekrarı değil, erişilebilir yapı kazanır.
  */
 export function KeyValueList({ entries, className }: KeyValueListProps) {
     return (
         <dl className={clsx('flex flex-col', className)}>
             {entries.map((entry, index) => (
-                <Fragment key={entry.key}>
-                    {index > 0 ? <Divider /> : null}
-                    <div className="flex items-baseline justify-between gap-4 py-2">
-                        <dt className="text-sm text-gray-500 dark:text-gray-400">{entry.label}</dt>
-                        <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {entry.value}
-                        </dd>
-                    </div>
-                </Fragment>
+                <div
+                    key={entry.key}
+                    className={clsx(
+                        'flex items-baseline justify-between gap-4 py-2',
+                        index > 0 && 'border-t border-border',
+                    )}
+                >
+                    <dt className="text-sm text-fg-muted">{entry.label}</dt>
+                    <dd className="text-sm font-medium text-fg">{entry.value}</dd>
+                </div>
             ))}
         </dl>
     );

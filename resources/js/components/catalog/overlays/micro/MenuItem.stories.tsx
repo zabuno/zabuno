@@ -4,6 +4,17 @@ import { MenuItem } from './MenuItem';
 const meta: Meta<typeof MenuItem> = {
     title: 'Micro/Overlays/MenuItem',
     component: MenuItem,
+    // `role="menuitem"` geçerli olmak için bir `role="menu"` ebeveyni ister.
+    // Micro'yu çıplak render etmek onu gerçekte hiç bulunmadığı bir bağlama
+    // sokar ve erişilebilirlik taramasını yanıltır; gerçek kullanımda bu
+    // kalem her zaman ActionMenu'nün menü kabının içindedir.
+    decorators: [
+        (Story) => (
+            <div role="menu" aria-label="Örnek menü">
+                <Story />
+            </div>
+        ),
+    ],
 };
 
 export default meta;

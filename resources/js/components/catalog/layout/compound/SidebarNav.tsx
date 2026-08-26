@@ -24,6 +24,13 @@ export type SidebarNavProps = {
     activeKey?: string;
     /** Accessible name for the `<nav>` landmark; defaults to "Primary". */
     label?: string;
+    /**
+     * `<nav>` landmark'ı olarak render edilsin mi? Zaten adlandırılmış bir
+     * diyalog/çekmece İÇİNDE kullanıldığında `false` verilir: kapsayıcı adı
+     * bağlamı sağlar ve aynı adı taşıyan ikinci bir landmark, ekran okuyucu
+     * landmark listesinde ayırt edilemeyen bir çift üretir.
+     */
+    asLandmark?: boolean;
     className?: string;
 };
 
@@ -33,9 +40,20 @@ export type SidebarNavProps = {
  * does not know which persona (restaurant-admin/superadmin) it belongs to,
  * does not fetch a nav tree, and does not decide routing (docs/35 §4).
  */
-export function SidebarNav({ groups, activeKey, label = 'Primary', className }: SidebarNavProps) {
+export function SidebarNav({
+    groups,
+    activeKey,
+    label = 'Primary',
+    asLandmark = true,
+    className,
+}: SidebarNavProps) {
+    const Container = asLandmark ? 'nav' : 'div';
+
     return (
-        <nav aria-label={label} className={clsx('flex flex-col gap-4', className)}>
+        <Container
+            aria-label={asLandmark ? label : undefined}
+            className={clsx('flex flex-col gap-4', className)}
+        >
             {groups.map((group) => (
                 <div key={group.key} className="flex flex-col gap-1">
                     {group.label ? (
@@ -61,6 +79,6 @@ export function SidebarNav({ groups, activeKey, label = 'Primary', className }: 
                     </ul>
                 </div>
             ))}
-        </nav>
+        </Container>
     );
 }
