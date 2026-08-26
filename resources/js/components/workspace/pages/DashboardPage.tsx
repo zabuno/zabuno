@@ -72,7 +72,7 @@ export function DashboardPage({
         : [];
 
     return (
-        <div id="dashboard">
+        <div id="section-dashboard">
             <WorkspacePageFrame
                 description={tWorkspace('workspace.dashboard.operational.description')}
                 badges={badges}

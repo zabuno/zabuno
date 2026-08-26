@@ -174,7 +174,7 @@ describe('LocationsPage — fluid-first markup', () => {
             />,
         );
 
-        const root = container.querySelector('#locations') as HTMLElement;
+        const root = container.querySelector('#section-locations') as HTMLElement;
         expect(root).not.toBeNull();
 
         const classLists = collectClassLists(root);

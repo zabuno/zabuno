@@ -164,7 +164,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
 
         const destination = await screen
             .findByText('Menekşe')
-            .then(() => document.querySelector('#brand'));
+            .then(() => document.querySelector('#section-brand'));
         expect(destination).not.toBeNull();
         const scope = within(destination as HTMLElement);
 
@@ -202,9 +202,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const locationB = makeLocationB();
 
         await waitFor(() => {
-            expect(document.querySelector('#locations')).not.toBeNull();
+            expect(document.querySelector('#section-locations')).not.toBeNull();
         });
-        const destination = document.querySelector('#locations');
+        const destination = document.querySelector('#section-locations');
         expect(destination).not.toBeNull();
         const scope = within(destination as HTMLElement);
         await scope.findByText(locationA.display_name);
@@ -237,7 +237,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const navLink = within(nav).getByRole('link', { name: 'Brand' });
         fireEvent.click(navLink);
 
-        const destination = document.querySelector('#brand') as HTMLElement;
+        const destination = document.querySelector('#section-brand') as HTMLElement;
         expect(destination).not.toBeNull();
 
         return within(destination);

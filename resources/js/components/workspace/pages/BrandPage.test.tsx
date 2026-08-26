@@ -102,7 +102,7 @@ describe('BrandPage — fluid-first markup', () => {
             <BrandPage workspaceId={61} brand={makeBrand()} onSaved={vi.fn()} />,
         );
 
-        const root = container.querySelector('#brand') as HTMLElement;
+        const root = container.querySelector('#section-brand') as HTMLElement;
         expect(root).not.toBeNull();
 
         const classLists = collectClassLists(root);

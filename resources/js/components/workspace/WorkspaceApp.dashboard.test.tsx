@@ -195,7 +195,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 
-        const dashboardDestination = document.querySelector('#dashboard');
+        const dashboardDestination = document.querySelector('#section-dashboard');
         expect(dashboardDestination).not.toBeNull();
 
         expect(
@@ -380,7 +380,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 
-        const dashboardDestination = document.querySelector('#dashboard') as HTMLElement;
+        const dashboardDestination = document.querySelector('#section-dashboard') as HTMLElement;
         expect(dashboardDestination).not.toBeNull();
 
         await screen.findByText('No menu has been created for this location yet.');

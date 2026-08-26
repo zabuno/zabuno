@@ -238,7 +238,7 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
 
     it('carries no fixed-pixel or breakpoint class on the batch-owned Media surface (excluding the shared AI panel)', () => {
         const { container } = render(<MediaPage workspaceId={WORKSPACE_ID} />);
-        const root = container.querySelector('#media') as HTMLElement | null;
+        const root = container.querySelector('#section-media') as HTMLElement | null;
 
         expect(root).not.toBeNull();
 
@@ -286,7 +286,7 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         );
 
         expect(offenders).toEqual([]);
-        expect(container.querySelector('#media')).not.toBeNull();
+        expect(container.querySelector('#section-media')).not.toBeNull();
     });
 
     /**

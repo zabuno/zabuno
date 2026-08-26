@@ -141,7 +141,7 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
     }
 
     return (
-        <div id="publication">
+        <div id="section-publication">
             <WorkspacePageFrame
                 title={t('workspace.shell.nav.publication')}
                 description={t('workspace.publication.operational.description')}

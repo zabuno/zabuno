@@ -269,7 +269,7 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
             expect(within(currentPlanRegion()).getByText('Growth')).toBeInTheDocument();
         });
 
-        const page = document.getElementById('billing') ?? document.body;
+        const page = document.getElementById('section-billing') ?? document.body;
 
         expect(within(page).getByText(/plan catalog/i)).toHaveTextContent(/live|server/i);
         expect(page).toHaveTextContent(

@@ -137,7 +137,7 @@ async function renderOnLocationsPage(fetchMock: ReturnType<typeof buildFetchMock
     const navLink = await screen.findByRole('link', { name: 'Locations' });
     fireEvent.click(navLink);
 
-    const destination = document.querySelector('#locations') as HTMLElement;
+    const destination = document.querySelector('#section-locations') as HTMLElement;
     expect(destination).not.toBeNull();
 
     return within(destination);
@@ -311,7 +311,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         render(<WorkspaceApp />);
         const navLink = await screen.findByRole('link', { name: 'Locations' });
         fireEvent.click(navLink);
-        const destination = document.querySelector('#locations') as HTMLElement;
+        const destination = document.querySelector('#section-locations') as HTMLElement;
         const scope = within(destination);
 
         const rows = locationRows(scope);

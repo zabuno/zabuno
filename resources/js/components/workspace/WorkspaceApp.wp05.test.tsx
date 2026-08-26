@@ -196,9 +196,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         await user.click(within(nav).getByRole('link', { name: 'Analytics' }));
 
         const main = screen.getByRole('main');
-        expect(main.querySelector('#analytics')).not.toBeNull();
+        expect(main.querySelector('#section-analytics')).not.toBeNull();
 
-        const analyticsRegion = main.querySelector('#analytics') as HTMLElement;
+        const analyticsRegion = main.querySelector('#section-analytics') as HTMLElement;
 
         expect(
             within(analyticsRegion).getByRole('heading', { name: /Analytics/i }),
@@ -230,9 +230,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         await user.click(within(nav).getByRole('link', { name: 'Team' }));
 
         const main = screen.getByRole('main');
-        expect(main.querySelector('#team')).not.toBeNull();
+        expect(main.querySelector('#section-team')).not.toBeNull();
 
-        const teamRegion = main.querySelector('#team') as HTMLElement;
+        const teamRegion = main.querySelector('#section-team') as HTMLElement;
 
         expect(within(teamRegion).getByRole('heading', { name: /Team/i })).toBeInTheDocument();
 
@@ -260,9 +260,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         await user.click(within(nav).getByRole('link', { name: 'Billing' }));
 
         const main = screen.getByRole('main');
-        expect(main.querySelector('#billing')).not.toBeNull();
+        expect(main.querySelector('#section-billing')).not.toBeNull();
 
-        const billingRegion = main.querySelector('#billing') as HTMLElement;
+        const billingRegion = main.querySelector('#section-billing') as HTMLElement;
 
         expect(
             within(billingRegion).getByRole('heading', { name: /Billing/i }),
@@ -323,7 +323,11 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
             await user.click(within(nav).getByRole('link', { name: label }));
 
             const main = screen.getByRole('main');
-            const destination = main.querySelector(hash);
+            // Hash bir ROTA, kap id'si ise bir ELEMAN kimliğidir; ikisi
+            // artık kasten ayrıdır. Aynı olmaları tarayıcının o elemana
+            // kaydırmasına ve gezinti tıklamasında sayfanın sıçramasına yol
+            // açıyordu.
+            const destination = main.querySelector(`#section-${hash.slice(1)}`);
             expect(destination).not.toBeNull();
 
             for (const classAttribute of allClassAttributes(destination as HTMLElement)) {
@@ -349,7 +353,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // Analytics: a page-frame description plus an honest status badge
         // reflecting the real fetch/range status, not a fabricated label.
         await user.click(within(nav).getByRole('link', { name: 'Analytics' }));
-        const analyticsRegion = screen.getByRole('main').querySelector('#analytics') as HTMLElement;
+        const analyticsRegion = screen.getByRole('main').querySelector('#section-analytics') as HTMLElement;
         await within(analyticsRegion).findAllByText('0');
         expect(
             within(analyticsRegion).getByText(/qr resolve and confirmed menu open/i),
@@ -360,7 +364,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // invitations and Team members — each with its own honest
         // unavailable status, not one shared "members" region.
         await user.click(within(nav).getByRole('link', { name: 'Team' }));
-        const teamRegion = screen.getByRole('main').querySelector('#team') as HTMLElement;
+        const teamRegion = screen.getByRole('main').querySelector('#section-team') as HTMLElement;
         expect(
             within(teamRegion).getByRole('region', { name: /pending invitation/i }),
         ).toBeInTheDocument();
@@ -372,7 +376,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // plan assignment, end date, payment note, document reference —
         // all disabled and empty, plus a disabled Iyzico sandbox region.
         await user.click(within(nav).getByRole('link', { name: 'Billing' }));
-        const billingRegion = screen.getByRole('main').querySelector('#billing') as HTMLElement;
+        const billingRegion = screen.getByRole('main').querySelector('#section-billing') as HTMLElement;
         const manualPaymentRegion = within(billingRegion).getByRole('region', {
             name: /manual.payment/i,
         });

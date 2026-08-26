@@ -245,17 +245,17 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         expect(menuLink).not.toHaveAttribute('aria-current', 'page');
 
         const main = screen.getByRole('main');
-        expect(main.querySelector('#dashboard')).not.toBeNull();
-        expect(main.querySelector('#menu')).toBeNull();
+        expect(main.querySelector('#section-dashboard')).not.toBeNull();
+        expect(main.querySelector('#section-menu')).toBeNull();
 
         await user.click(menuLink);
 
-        expect(main.querySelector('#dashboard')).toBeNull();
-        expect(main.querySelector('#menu')).not.toBeNull();
+        expect(main.querySelector('#section-dashboard')).toBeNull();
+        expect(main.querySelector('#section-menu')).not.toBeNull();
 
         const catalogDestination = within(main)
             .getByTestId('menu-catalog-workspace')
-            .closest('#menu');
+            .closest('#section-menu');
         expect(catalogDestination).not.toBeNull();
 
         vi.unstubAllGlobals();
@@ -284,7 +284,7 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
 
         const main = screen.getByRole('main');
         expect(within(main).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
-        expect(main.querySelector('#menu')).not.toBeNull();
+        expect(main.querySelector('#section-menu')).not.toBeNull();
 
         vi.unstubAllGlobals();
     });
