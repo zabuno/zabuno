@@ -161,8 +161,22 @@ manuel demo kaydı), tenant escape testi (AUTH-02), QR fiziksel scan testi
 
 - Security: OWASP ASVS temel seviye, tenant isolation testi zorunlu.
 - A11y: WCAG 2.2 AA hedefi, RTL testi en az bir kritik akışta (login).
+  **Durum (2026-08-26):** RTL şartı `tests/Feature/Rtl/CriticalFlowDirectionTest.php`
+  ile karşılandı (RTL-LOGIN-DOCUMENT-01, -DERIVED-02, RTL-LTR-UNAFFECTED-03).
+  Test yazılırken gerçek bir açık bulundu: yedi auth şablonu ve iki e-posta
+  şablonu `<html lang="en">` diyordu ve hiçbirinde `dir` yoktu — yani şartın
+  adıyla andığı giriş akışı hiç RTL değildi. Dokuzu da artık yönü
+  `DocumentLocale`'den türetir.
 - Performance: `docs/06` Public Menü Performance Budget (JS < 200KB gzip, ilk
   menü JSON < 100KB, p95 < 500ms, LCP < 2.5s — mobil, load test sonrası revize).
+  **Ölçüm durumu (2026-08-26):** JS bütçesi `resources/js/design-system/bundle-budget.test.ts`
+  ile, menü yükü `tests/Feature/Performance/PublicMenuPayloadBudgetTest.php`
+  ile ölçülür. 12 kategori × 20 ürünlük gerçekçi bir menü **7,4 KB gzip**
+  (273 KB ham) iner; bütçe rahatça tutar. **Bu bütçe sıkıştırmaya bağlıdır:**
+  dağıtımda gzip/brotli kapalıysa aynı menü onlarca kat ağırdır ve bütçe
+  tutmaz — bu bir dağıtım şartıdır, bir varsayım değil. p95 gecikme ve LCP
+  gerçek bir dağıtım ölçümüdür ve **henüz yapılmamıştır**; hiçbir test bunu
+  iddia etmez.
 - i18n: altı katalog (en/tr/de/fr/ar/ru) scaffold'ı + text-domain wiring +
   PO→MO→JSON pipeline'ın tamamı hazır ve entegre; English kaynak katalog
   complete/default. tr/de/fr/ar/ru içerik-completeness'i (tam çeviri + plural/
