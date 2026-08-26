@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import directionDebt from './direction-debt.json';
 import { RAW_PALETTE_PATTERN, findCycle, layerOf, mayCompose, type Layer } from './semantic-map';
 import {
     WCAG_AA_NORMAL_TEXT,
@@ -337,27 +336,29 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
     // --- DS-LOGICAL-DIRECTION-06 ------------------------------------------
     // Külliyat RTL-native bir sistem şart koşar. Fiziksel yön sınıfı Arapça
     // gibi sağdan-sola dillerde arayüzü SESSİZCE bozar: hata vermez, yalnız
-    // yanlış tarafa hizalar. Borç düşebilir, yükselemez.
-    it('fiziksel yön sınıfı borcu taban çizgisini aşmaz', () => {
+    // yanlış tarafa hizalar.
+    //
+    // Bu da bir cırcır olarak başladı ve 2026-08-26'da sıfıra indi; artık
+    // mutlak yasaktır. Mantıksal karşılıkları kullanın: ms-/me-/ps-/pe-/
+    // text-start/text-end.
+    it('hiçbir dosya fiziksel yön sınıfı kullanmaz', () => {
         const physical = /\b(ml|mr|pl|pr)-[0-9a-z]+|text-(left|right)\b/g;
         const offenders: string[] = [];
-        let count = 0;
 
         for (const file of FILES) {
             const found = file.body.match(physical);
             if (found) {
-                count += found.length;
-                offenders.push(`${file.path} (${found.length})`);
+                offenders.push(`${file.path}: ${[...new Set(found)].join(' ')}`);
             }
         }
 
         expect(
-            count,
-            `DS-LOGICAL-DIRECTION-06: fiziksel yön kullanımı ${directionDebt.maxPhysicalDirectionClasses} ` +
-                `taban çizgisinden ${count}'e yükseldi. Logical karşılığını kullanın ` +
-                `(${directionDebt.$replaceWith}):\n` +
+            offenders,
+            'DS-LOGICAL-DIRECTION-06: fiziksel yön sınıfı sağdan-sola dillerde arayüzü ' +
+                'sessizce yanlış tarafa hizalar. Mantıksal karşılığını kullanın ' +
+                '(ms-/me-/ps-/pe-/text-start/text-end):\n' +
                 offenders.join('\n'),
-        ).toBeLessThanOrEqual(directionDebt.maxPhysicalDirectionClasses);
+        ).toEqual([]);
     });
 
     // --- DS-MOTION-CONTRACT-08 --------------------------------------------

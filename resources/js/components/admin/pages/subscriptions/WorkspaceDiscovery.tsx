@@ -19,7 +19,7 @@ type WorkspaceDiscoveryProps = {
 
 const WORKSPACES_ENDPOINT = '/api/admin/workspaces';
 
-const FIELD_CLASSES = `${NATIVE_FIELD_CLASS} text-left`;
+const FIELD_CLASSES = `${NATIVE_FIELD_CLASS} text-start`;
 
 function isValidWorkspace(value: unknown): value is Workspace {
     if (typeof value !== 'object' || value === null) {
@@ -138,7 +138,7 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
                                 role="option"
                                 aria-selected={selectedWorkspace?.id === workspace.id}
                                 onClick={() => handleSelect(workspace)}
-                                className="flex w-full flex-wrap gap-2 rounded-md px-2 py-1.5 text-left text-sm text-fg-secondary hover:bg-surface-hover"
+                                className="flex w-full flex-wrap gap-2 rounded-md px-2 py-1.5 text-start text-sm text-fg-secondary hover:bg-surface-hover"
                             >
                                 <span className="font-medium text-fg">{workspace.name}</span>
                                 <span>{workspace.slug}</span>
