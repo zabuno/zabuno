@@ -308,8 +308,7 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
         for (const pattern of OTHER_CANONICAL_ITEMS) {
             expect(findCanonicalTitle(checklist, pattern)).toBeInTheDocument();
         }
-        const unavailableCountBefore =
-            within(checklist).getAllByText(/unavailable/i).length;
+        const unavailableCountBefore = within(checklist).getAllByText(/unavailable/i).length;
         expect(unavailableCountBefore).toBeGreaterThanOrEqual(OTHER_CANONICAL_ITEMS.length);
 
         const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
@@ -320,8 +319,6 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
         for (const pattern of OTHER_CANONICAL_ITEMS) {
             expect(findCanonicalTitle(checklist, pattern)).toBeInTheDocument();
         }
-        expect(within(checklist).getAllByText(/unavailable/i).length).toBe(
-            unavailableCountBefore,
-        );
+        expect(within(checklist).getAllByText(/unavailable/i).length).toBe(unavailableCountBefore);
     });
 });
