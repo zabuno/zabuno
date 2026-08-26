@@ -34,7 +34,7 @@ export function WorkspacePageFrame({
     children,
 }: WorkspacePageFrameProps) {
     return (
-        <div className="flex flex-col" style={{ gap: 'clamp(1rem, 3vw, 1.5rem)' }}>
+        <div className="flex flex-col" style={{ gap: 'var(--space-fluid-md)' }}>
             {title ? (
                 <PageHeader title={title} description={description} actions={actions} />
             ) : (
@@ -58,7 +58,7 @@ export function WorkspacePageFrame({
                 </div>
             ) : null}
 
-            <div className="flex flex-col" style={{ gap: 'clamp(1rem, 3vw, 1.5rem)' }}>
+            <div className="flex flex-col" style={{ gap: 'var(--space-fluid-md)' }}>
                 {children}
             </div>
         </div>
