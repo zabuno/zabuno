@@ -138,7 +138,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             : [];
 
     return (
-        <div id="media">
+        <div id="section-media">
             <WorkspacePageFrame
                 title={t('workspace.media.heading')}
                 description={t('workspace.media.operational.description')}

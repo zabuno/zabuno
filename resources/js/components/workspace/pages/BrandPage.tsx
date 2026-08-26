@@ -15,7 +15,7 @@ export function BrandPage({ workspaceId, brand, onSaved }: BrandPageProps) {
         : [];
 
     return (
-        <div id="brand">
+        <div id="section-brand">
             <WorkspacePageFrame
                 title={t('workspace.shell.nav.brand')}
                 description={t('workspace.brand.operational.description')}

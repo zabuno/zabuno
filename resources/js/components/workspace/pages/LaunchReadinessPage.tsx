@@ -14,7 +14,7 @@ type LaunchReadinessPageProps = {
  */
 export function LaunchReadinessPage({ workspaceId }: LaunchReadinessPageProps) {
     return (
-        <div id="security">
+        <div id="section-security">
             <WorkspacePageFrame
                 title={t('workspace.launchReadiness.heading')}
                 description={t('workspace.launchReadiness.operational.description')}

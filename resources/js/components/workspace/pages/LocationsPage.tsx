@@ -50,7 +50,7 @@ export function LocationsPage({
     );
 
     return (
-        <div id="locations">
+        <div id="section-locations">
             <WorkspacePageFrame
                 title={t('workspace.shell.nav.locations')}
                 description={t('workspace.locations.operational.description')}

@@ -111,7 +111,7 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
     })();
 
     return (
-        <div id="analytics">
+        <div id="section-analytics">
             <WorkspacePageFrame
                 title={t('workspace.analytics.heading')}
                 description={t('workspace.analytics.operational.description')}

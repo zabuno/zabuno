@@ -400,7 +400,7 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
 
-        const root = container.querySelector('#publication') as HTMLElement | null;
+        const root = container.querySelector('#section-publication') as HTMLElement | null;
         expect(root).not.toBeNull();
 
         const aiPanel = (root as HTMLElement).querySelector('section[aria-label*="Publication"]');

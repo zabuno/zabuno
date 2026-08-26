@@ -238,7 +238,7 @@ describe('Media and Publication shells — visible unavailable status at 320x480
 
         render(<MediaPage />);
 
-        const root = document.querySelector('#media') as HTMLElement;
+        const root = document.querySelector('#section-media') as HTMLElement;
         expect(within(root).getAllByRole('status').length).toBeGreaterThan(0);
     });
 
@@ -247,7 +247,7 @@ describe('Media and Publication shells — visible unavailable status at 320x480
 
         render(<PublicationPage />);
 
-        const root = document.querySelector('#publication') as HTMLElement;
+        const root = document.querySelector('#section-publication') as HTMLElement;
         expect(within(root).getAllByRole('status').length).toBeGreaterThan(0);
     });
 });

@@ -260,12 +260,12 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
         const destinations: Array<{ name: string; heading: string; id: string }> = [
-            { name: 'Brand', heading: 'Brand', id: 'brand' },
-            { name: 'Locations', heading: 'Locations', id: 'locations' },
-            { name: 'Menu', heading: 'Menu', id: 'menu' },
-            { name: 'Media', heading: 'Media', id: 'media' },
-            { name: 'Publication', heading: 'Publication', id: 'publication' },
-            { name: 'Dashboard', heading: 'Dashboard', id: 'dashboard' },
+            { name: 'Brand', heading: 'Brand', id: 'section-brand' },
+            { name: 'Locations', heading: 'Locations', id: 'section-locations' },
+            { name: 'Menu', heading: 'Menu', id: 'section-menu' },
+            { name: 'Media', heading: 'Media', id: 'section-media' },
+            { name: 'Publication', heading: 'Publication', id: 'section-publication' },
+            { name: 'Dashboard', heading: 'Dashboard', id: 'section-dashboard' },
         ];
 
         for (const destination of destinations) {
@@ -292,7 +292,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Brand' }));
 
-        const brandRoot = document.querySelector('#brand') as HTMLElement;
+        const brandRoot = document.querySelector('#section-brand') as HTMLElement;
         expect(within(brandRoot).getByText('Zeytin')).toBeInTheDocument();
         expect(within(brandRoot).getByText('TRY')).toBeInTheDocument();
         expect(within(brandRoot).getByText('Europe/Istanbul')).toBeInTheDocument();
@@ -304,7 +304,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
         await user.click(screen.getByRole('link', { name: 'Locations' }));
 
-        const locationsRoot = document.querySelector('#locations') as HTMLElement;
+        const locationsRoot = document.querySelector('#section-locations') as HTMLElement;
         expect(within(locationsRoot).getByText('Kadıköy')).toBeInTheDocument();
         expect(within(locationsRoot).getByText('Bahariye Cd. 1')).toBeInTheDocument();
         expect(within(locationsRoot).getByText('Beşiktaş')).toBeInTheDocument();
@@ -323,14 +323,14 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
-        const dashboardRoot = document.querySelector('#dashboard') as HTMLElement;
+        const dashboardRoot = document.querySelector('#section-dashboard') as HTMLElement;
         expect(within(dashboardRoot).getByText('Categories')).toBeInTheDocument();
         expect(within(dashboardRoot).getByText('Menu items')).toBeInTheDocument();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menu' }));
 
-        const menuRoot = document.querySelector('#menu') as HTMLElement;
+        const menuRoot = document.querySelector('#section-menu') as HTMLElement;
         expect(within(menuRoot).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
         expect(within(menuRoot).getByTestId('menu-catalog-workspace')).toHaveAttribute(
             'data-location-id',
@@ -344,13 +344,13 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
         await user.click(within(nav).getByRole('link', { name: 'Media' }));
-        const mediaRoot = document.querySelector('#media') as HTMLElement;
+        const mediaRoot = document.querySelector('#section-media') as HTMLElement;
         const mediaEmptyNotice = within(mediaRoot).getByText('No media assets yet.');
         expect(mediaEmptyNotice).toHaveAttribute('role', 'status');
         expect(within(mediaRoot).queryByRole('table')).not.toBeInTheDocument();
 
         await user.click(within(nav).getByRole('link', { name: 'Publication' }));
-        const publicationRoot = document.querySelector('#publication') as HTMLElement;
+        const publicationRoot = document.querySelector('#section-publication') as HTMLElement;
         expect(
             within(publicationRoot).getAllByText(/not available|no publication|unavailable/i)
                 .length,
@@ -370,7 +370,14 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         await renderCurrentWorkspace();
 
         const names = ['Brand', 'Locations', 'Menu', 'Media', 'Publication', 'Dashboard'];
-        const ids = ['brand', 'locations', 'menu', 'media', 'publication', 'dashboard'];
+        const ids = [
+            'section-brand',
+            'section-locations',
+            'section-menu',
+            'section-media',
+            'section-publication',
+            'section-dashboard',
+        ];
 
         for (let i = 0; i < names.length; i += 1) {
             await user.click(screen.getByRole('button', { name: 'Open menu' }));
@@ -398,7 +405,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Brand' }));
-        const brandRoot = document.querySelector('#brand') as HTMLElement;
+        const brandRoot = document.querySelector('#section-brand') as HTMLElement;
         const scope = within(brandRoot);
 
         await user.click(await scope.findByRole('button', { name: 'Edit' }));
@@ -425,7 +432,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const fetchMock = await renderCurrentWorkspace();
 
         await user.click(screen.getByRole('link', { name: 'Locations' }));
-        const locationsRoot = document.querySelector('#locations') as HTMLElement;
+        const locationsRoot = document.querySelector('#section-locations') as HTMLElement;
         const scope = within(locationsRoot);
 
         await user.click(await scope.findByRole('button', { name: 'Add location' }));
@@ -547,12 +554,12 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const fetchMock = await renderCurrentWorkspace();
 
         const destinations: Array<{ name: string; id: string }> = [
-            { name: 'Dashboard', id: 'dashboard' },
-            { name: 'Brand', id: 'brand' },
-            { name: 'Locations', id: 'locations' },
-            { name: 'Menu', id: 'menu' },
-            { name: 'Media', id: 'media' },
-            { name: 'Publication', id: 'publication' },
+            { name: 'Dashboard', id: 'section-dashboard' },
+            { name: 'Brand', id: 'section-brand' },
+            { name: 'Locations', id: 'section-locations' },
+            { name: 'Menu', id: 'section-menu' },
+            { name: 'Media', id: 'section-media' },
+            { name: 'Publication', id: 'section-publication' },
         ];
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
@@ -607,7 +614,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Publication' }));
 
-        const publicationRoot = document.querySelector('#publication') as HTMLElement;
+        const publicationRoot = document.querySelector('#section-publication') as HTMLElement;
         const region = within(publicationRoot).getByRole('region', {
             name: /draft.*preview|preview.*draft/i,
         });
@@ -645,12 +652,12 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
     describe('initial URL hash selects the matching page (SPEED_BATCH_LEGACY_TESTS_ALIGNED_AND_HASH_RED)', () => {
         const hashToDestination: Array<{ hash: string; name: string; id: string }> = [
-            { hash: '#dashboard', name: 'Dashboard', id: 'dashboard' },
-            { hash: '#brand', name: 'Brand', id: 'brand' },
-            { hash: '#locations', name: 'Locations', id: 'locations' },
-            { hash: '#menu', name: 'Menu', id: 'menu' },
-            { hash: '#media', name: 'Media', id: 'media' },
-            { hash: '#publication', name: 'Publication', id: 'publication' },
+            { hash: '#dashboard', name: 'Dashboard', id: 'section-dashboard' },
+            { hash: '#brand', name: 'Brand', id: 'section-brand' },
+            { hash: '#locations', name: 'Locations', id: 'section-locations' },
+            { hash: '#menu', name: 'Menu', id: 'section-menu' },
+            { hash: '#media', name: 'Media', id: 'section-media' },
+            { hash: '#publication', name: 'Publication', id: 'section-publication' },
         ];
 
         afterEach(() => {
@@ -693,7 +700,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
             const dashboardLink = within(nav).getByRole('link', { name: 'Dashboard' });
 
             expect(dashboardLink).toHaveAttribute('aria-current', 'page');
-            expect(document.querySelector('#dashboard')).not.toBeNull();
+            expect(document.querySelector('#section-dashboard')).not.toBeNull();
         });
     });
 });

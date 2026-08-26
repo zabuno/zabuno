@@ -17,7 +17,7 @@ export function MenuPage({ workspaceId, locationId, onTreeChange }: MenuPageProp
             : [];
 
     return (
-        <div id="menu">
+        <div id="section-menu">
             <WorkspacePageFrame
                 title={t('workspace.shell.nav.menu')}
                 description={t('workspace.menu.operational.description')}

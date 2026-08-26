@@ -212,7 +212,7 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         expect(window.location.hash).toBe('#publication');
 
         const main = screen.getByRole('main');
-        const publicationDestination = main.querySelector('#publication');
+        const publicationDestination = main.querySelector('#section-publication');
         expect(publicationDestination).not.toBeNull();
         expect(
             within(publicationDestination as HTMLElement).getAllByText(/publication/i).length,

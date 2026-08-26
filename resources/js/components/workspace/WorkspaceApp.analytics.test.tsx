@@ -143,7 +143,7 @@ describe('WorkspaceApp — Analytics destination wired to real workspace/locatio
         await user.click(within(nav).getByRole('link', { name: 'Analytics' }));
 
         const main = screen.getByRole('main');
-        const analyticsRegion = main.querySelector('#analytics') as HTMLElement;
+        const analyticsRegion = main.querySelector('#section-analytics') as HTMLElement;
         expect(analyticsRegion).not.toBeNull();
 
         const region = await within(analyticsRegion).findByRole('region', {

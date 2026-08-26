@@ -20,7 +20,7 @@ type BillingPageProps = {
  */
 export function BillingPage({ workspaceId }: BillingPageProps) {
     return (
-        <div id="billing">
+        <div id="section-billing">
             <WorkspacePageFrame
                 title={t('workspace.billing.heading')}
                 description={t('workspace.billing.operational.description')}

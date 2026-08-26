@@ -231,7 +231,7 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
         expect(link).toHaveAttribute('aria-current', 'page');
 
         const main = screen.getByRole('main');
-        expect(main.querySelector('#security')).not.toBeNull();
+        expect(main.querySelector('#section-security')).not.toBeNull();
 
         restoreFetch();
     });
@@ -241,14 +241,14 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
         const { restoreFetch } = await renderCurrentWorkspace();
 
         const main = screen.getByRole('main');
-        expect(main.querySelector('#dashboard')).not.toBeNull();
-        expect(main.querySelector('#security')).toBeNull();
+        expect(main.querySelector('#section-dashboard')).not.toBeNull();
+        expect(main.querySelector('#section-security')).toBeNull();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Launch readiness' }));
 
-        expect(main.querySelector('#dashboard')).toBeNull();
-        const securityRegion = main.querySelector('#security');
+        expect(main.querySelector('#section-dashboard')).toBeNull();
+        const securityRegion = main.querySelector('#section-security');
         expect(securityRegion).not.toBeNull();
 
         expect(
@@ -303,7 +303,9 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
             expect(optionKeys).toHaveLength(0);
         }
 
-        const securityRegion = screen.getByRole('main').querySelector('#security') as HTMLElement;
+        const securityRegion = screen
+            .getByRole('main')
+            .querySelector('#section-security') as HTMLElement;
 
         for (const button of within(securityRegion).queryAllByRole('button')) {
             const name = button.textContent ?? '';
@@ -325,7 +327,9 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Launch readiness' }));
 
-        const securityRegion = screen.getByRole('main').querySelector('#security') as HTMLElement;
+        const securityRegion = screen
+            .getByRole('main')
+            .querySelector('#section-security') as HTMLElement;
         expect(securityRegion).not.toBeNull();
 
         for (const classAttribute of allClassAttributes(securityRegion)) {

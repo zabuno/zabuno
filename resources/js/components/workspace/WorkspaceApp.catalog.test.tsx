@@ -186,7 +186,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
             expect(calledUrls).toContain(`/api/workspaces/${WORKSPACE_ID}/brand`);
         });
 
-        expect(document.getElementById('dashboard')).toBeInTheDocument();
+        expect(document.getElementById('section-dashboard')).toBeInTheDocument();
         expect(screen.queryByTestId('brand-onboarding-form')).not.toBeInTheDocument();
 
         vi.unstubAllGlobals();
@@ -211,7 +211,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         expect(brandOnboardingForms).toHaveLength(1);
         expect(mockBrandOnboardingFormProps?.workspaceId).toBe(WORKSPACE_ID);
 
-        expect(document.getElementById('brand')).not.toBeInTheDocument();
+        expect(document.getElementById('section-brand')).not.toBeInTheDocument();
 
         mockBrandOnboardingFormProps?.onCreated(makeBrand({ id: 811, name: 'Zeytin' }));
 
@@ -221,7 +221,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         });
 
         const brandSection = await waitFor(() => {
-            const el = document.getElementById('brand');
+            const el = document.getElementById('section-brand');
             if (!el) {
                 throw new Error('Brand section not rendered after onCreated');
             }
@@ -257,7 +257,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
             expect(calledUrls).toContain(`/api/workspaces/${WORKSPACE_ID}/brand/locations`);
         });
 
-        expect(document.getElementById('dashboard')).toBeInTheDocument();
+        expect(document.getElementById('section-dashboard')).toBeInTheDocument();
         expect(screen.queryByTestId('location-onboarding-form')).not.toBeInTheDocument();
 
         vi.unstubAllGlobals();
@@ -283,7 +283,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         expect(locationOnboardingForms).toHaveLength(1);
         expect(mockLocationOnboardingFormProps?.workspaceId).toBe(WORKSPACE_ID);
 
-        expect(document.getElementById('locations')).not.toBeInTheDocument();
+        expect(document.getElementById('section-locations')).not.toBeInTheDocument();
 
         mockLocationOnboardingFormProps?.onCreated(makeLocation({ id: 923 }));
 
@@ -374,7 +374,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
 
         await user.click(within(nav).getByRole('link', { name: 'Locations' }));
 
-        const locationsPage = document.getElementById('locations');
+        const locationsPage = document.getElementById('section-locations');
         if (!locationsPage) {
             throw new Error('Locations page container not found');
         }

@@ -394,7 +394,7 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
               : t('workspace.team.operational.description.connected');
 
     return (
-        <div id="team">
+        <div id="section-team">
             <WorkspacePageFrame
                 title={t('workspace.team.heading')}
                 description={operationalDescription}

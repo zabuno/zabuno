@@ -44,7 +44,7 @@ describe('MenuPage', () => {
             <MenuPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} onTreeChange={vi.fn()} />,
         );
 
-        const menuRoot = document.querySelector('#menu') as HTMLElement;
+        const menuRoot = document.querySelector('#section-menu') as HTMLElement;
         const workspace = within(menuRoot).getByTestId('menu-catalog-workspace');
         expect(workspace).toHaveAttribute('data-workspace-id', String(WORKSPACE_ID));
         expect(workspace).toHaveAttribute('data-location-id', String(LOCATION_ID));
