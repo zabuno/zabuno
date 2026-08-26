@@ -10,7 +10,10 @@
         "lint": "eslint . && tsc --noEmit",
         "format": "prettier --check .",
         "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build"
+        "build-storybook": "storybook build",
+        "i18n:extract": "node scripts/i18n/index.mjs extract",
+        "i18n:build": "node scripts/i18n/index.mjs build",
+        "i18n:check": "node scripts/i18n/index.mjs check"
     },
     "dependencies": {
         "@radix-ui/react-separator": "^1.1.15",

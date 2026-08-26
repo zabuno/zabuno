@@ -1,0 +1,153 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: menu:menu.categories.list.label
+msgid "menu.categories.list.label"
+msgstr "Menü kategorileri"
+
+#: menu:menu.category.create.error.submit
+msgid "menu.category.create.error.submit"
+msgstr "Kategoriyi ekleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.category.create.submit
+msgid "menu.category.create.submit"
+msgstr "Kategori ekle"
+
+#: menu:menu.category.items.label
+msgid "menu.category.items.label"
+msgstr "{name} içindeki ürünler"
+
+#: menu:menu.category.name.error.required
+msgid "menu.category.name.error.required"
+msgstr "Bir kategori adı girin."
+
+#: menu:menu.category.name.label
+msgid "menu.category.name.label"
+msgstr "Kategori adı"
+
+#: menu:menu.category.order.label
+msgid "menu.category.order.label"
+msgstr "{name} sırası"
+
+#: menu:menu.category.select.label
+msgid "menu.category.select.label"
+msgstr "Kategori"
+
+#: menu:menu.create.error.submit
+msgid "menu.create.error.submit"
+msgstr "Menüyü oluşturamadık. Lütfen tekrar deneyin."
+
+#: menu:menu.create.submit
+msgid "menu.create.submit"
+msgstr "Menü oluştur"
+
+#: menu:menu.initial.error.load
+msgid "menu.initial.error.load"
+msgstr "Menünüzü yükleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.initial.error.retry
+msgid "menu.initial.error.retry"
+msgstr "Tekrar dene"
+
+#: menu:menu.item.allergens.edit.button
+msgid "menu.item.allergens.edit.button"
+msgstr "{name} alerjenlerini düzenle"
+
+#: menu:menu.item.allergens.error.submit
+msgid "menu.item.allergens.error.submit"
+msgstr "Alerjenleri güncelleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.item.allergens.label
+msgid "menu.item.allergens.label"
+msgstr "Alerjenler (virgülle ayrılmış)"
+
+#: menu:menu.item.allergens.list.label
+msgid "menu.item.allergens.list.label"
+msgstr "{name} alerjenleri"
+
+#: menu:menu.item.allergens.submit
+msgid "menu.item.allergens.submit"
+msgstr "Alerjenleri kaydet"
+
+#: menu:menu.item.create.error.submit
+msgid "menu.item.create.error.submit"
+msgstr "Menü kalemini ekleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.item.create.submit
+msgid "menu.item.create.submit"
+msgstr "Kalem ekle"
+
+#: menu:menu.item.currency.label
+msgid "menu.item.currency.label"
+msgstr "Para birimi"
+
+#: menu:menu.item.order.label
+msgid "menu.item.order.label"
+msgstr "{name} sırası"
+
+#: menu:menu.item.price.edit.button
+msgid "menu.item.price.edit.button"
+msgstr "{name} fiyatını düzenle"
+
+#: menu:menu.item.price.edit.error.submit
+msgid "menu.item.price.edit.error.submit"
+msgstr "Fiyatı güncelleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.item.price.edit.submit
+msgid "menu.item.price.edit.submit"
+msgstr "Fiyatı kaydet"
+
+#: menu:menu.item.price.error.required
+msgid "menu.item.price.error.required"
+msgstr "Bir fiyat girin."
+
+#: menu:menu.item.price.label
+msgid "menu.item.price.label"
+msgstr "Fiyat"
+
+#: menu:menu.item.visibility.checkbox.label
+msgid "menu.item.visibility.checkbox.label"
+msgstr "{name} ürününü göster"
+
+#: menu:menu.item.visibility.error.submit
+msgid "menu.item.visibility.error.submit"
+msgstr "Görünürlüğü güncelleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.loading
+msgid "menu.loading"
+msgstr "Menü yükleniyor…"
+
+#: menu:menu.name.error.required
+msgid "menu.name.error.required"
+msgstr "Bir menü adı girin."
+
+#: menu:menu.name.label
+msgid "menu.name.label"
+msgstr "Menü adı"
+
+#: menu:menu.product.create.error.submit
+msgid "menu.product.create.error.submit"
+msgstr "Ürünü ekleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.product.create.submit
+msgid "menu.product.create.submit"
+msgstr "Ürün ekle"
+
+#: menu:menu.product.name.error.required
+msgid "menu.product.name.error.required"
+msgstr "Bir ürün adı girin."
+
+#: menu:menu.product.name.label
+msgid "menu.product.name.label"
+msgstr "Ürün adı"
+
+#: menu:menu.status.saving
+msgid "menu.status.saving"
+msgstr "Kaydediliyor…"

@@ -1,5 +1,5 @@
 import { createTranslator } from './translator';
-import { menuTr } from './catalogs/menu.tr';
+import { overridesFor } from './generated-overrides';
 
 const en = {
     'menu.loading': 'Loading menu…',
@@ -49,5 +49,8 @@ type TranslationKey = keyof typeof en;
  */
 export const t: (key: TranslationKey, vars?: Record<string, string>) => string = createTranslator(
     en,
-    { tr: menuTr },
+    overridesFor('menu'),
 );
+
+/** Bu alanın İngilizce kaynak kataloğu — PO/MO/JSON zincirinin girdisi (CORE-08). */
+export const menuTranslations: Record<string, string> = en;

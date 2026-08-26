@@ -1,0 +1,225 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: platform:platform.plans.activate.button
+msgid "platform.plans.activate.button"
+msgstr ""
+
+#: platform:platform.plans.activate.dialog.cancel
+msgid "platform.plans.activate.dialog.cancel"
+msgstr ""
+
+#: platform:platform.plans.activate.dialog.confirm
+msgid "platform.plans.activate.dialog.confirm"
+msgstr ""
+
+#: platform:platform.plans.activate.dialog.heading
+msgid "platform.plans.activate.dialog.heading"
+msgstr ""
+
+#: platform:platform.plans.activate.error
+msgid "platform.plans.activate.error"
+msgstr ""
+
+#: platform:platform.plans.activate.success
+msgid "platform.plans.activate.success"
+msgstr ""
+
+#: platform:platform.plans.empty
+msgid "platform.plans.empty"
+msgstr ""
+
+#: platform:platform.plans.error
+msgid "platform.plans.error"
+msgstr ""
+
+#: platform:platform.plans.form.amount
+msgid "platform.plans.form.amount"
+msgstr ""
+
+#: platform:platform.plans.form.code
+msgid "platform.plans.form.code"
+msgstr ""
+
+#: platform:platform.plans.form.currency
+msgid "platform.plans.form.currency"
+msgstr ""
+
+#: platform:platform.plans.form.entitlements
+msgid "platform.plans.form.entitlements"
+msgstr ""
+
+#: platform:platform.plans.form.error
+msgid "platform.plans.form.error"
+msgstr ""
+
+#: platform:platform.plans.form.heading
+msgid "platform.plans.form.heading"
+msgstr ""
+
+#: platform:platform.plans.form.name
+msgid "platform.plans.form.name"
+msgstr ""
+
+#: platform:platform.plans.form.sortOrder
+msgid "platform.plans.form.sortOrder"
+msgstr ""
+
+#: platform:platform.plans.form.submit
+msgid "platform.plans.form.submit"
+msgstr ""
+
+#: platform:platform.plans.form.version
+msgid "platform.plans.form.version"
+msgstr ""
+
+#: platform:platform.plans.inactive
+msgid "platform.plans.inactive"
+msgstr ""
+
+#: platform:platform.plans.loading
+msgid "platform.plans.loading"
+msgstr ""
+
+#: platform:platform.plans.priceUnavailable
+msgid "platform.plans.priceUnavailable"
+msgstr ""
+
+#: platform:platform.plans.region.label
+msgid "platform.plans.region.label"
+msgstr ""
+
+#: platform:platform.plans.retry
+msgid "platform.plans.retry"
+msgstr ""
+
+#: platform:platform.shell.backToWorkspace
+msgid "platform.shell.backToWorkspace"
+msgstr ""
+
+#: platform:platform.shell.brand
+msgid "platform.shell.brand"
+msgstr ""
+
+#: platform:platform.shell.heading
+msgid "platform.shell.heading"
+msgstr ""
+
+#: platform:platform.shell.navLabel
+msgid "platform.shell.navLabel"
+msgstr ""
+
+#: platform:platform.subscriptions.confirm.cancel
+msgid "platform.subscriptions.confirm.cancel"
+msgstr ""
+
+#: platform:platform.subscriptions.confirm.confirm
+msgid "platform.subscriptions.confirm.confirm"
+msgstr ""
+
+#: platform:platform.subscriptions.confirm.heading
+msgid "platform.subscriptions.confirm.heading"
+msgstr ""
+
+#: platform:platform.subscriptions.form.documentReference.label
+msgid "platform.subscriptions.form.documentReference.label"
+msgstr ""
+
+#: platform:platform.subscriptions.form.endDate.label
+msgid "platform.subscriptions.form.endDate.label"
+msgstr ""
+
+#: platform:platform.subscriptions.form.error
+msgid "platform.subscriptions.form.error"
+msgstr ""
+
+#: platform:platform.subscriptions.form.paymentNote.label
+msgid "platform.subscriptions.form.paymentNote.label"
+msgstr ""
+
+#: platform:platform.subscriptions.form.plan.label
+msgid "platform.subscriptions.form.plan.label"
+msgstr ""
+
+#: platform:platform.subscriptions.form.retry
+msgid "platform.subscriptions.form.retry"
+msgstr ""
+
+#: platform:platform.subscriptions.form.submit
+msgid "platform.subscriptions.form.submit"
+msgstr ""
+
+#: platform:platform.subscriptions.nav.label
+msgid "platform.subscriptions.nav.label"
+msgstr ""
+
+#: platform:platform.subscriptions.plans.blocked
+msgid "platform.subscriptions.plans.blocked"
+msgstr ""
+
+#: platform:platform.subscriptions.plans.error
+msgid "platform.subscriptions.plans.error"
+msgstr ""
+
+#: platform:platform.subscriptions.subscription.active.label
+msgid "platform.subscriptions.subscription.active.label"
+msgstr ""
+
+#: platform:platform.subscriptions.subscription.error
+msgid "platform.subscriptions.subscription.error"
+msgstr ""
+
+#: platform:platform.subscriptions.subscription.loading
+msgid "platform.subscriptions.subscription.loading"
+msgstr ""
+
+#: platform:platform.subscriptions.subscription.none
+msgid "platform.subscriptions.subscription.none"
+msgstr ""
+
+#: platform:platform.subscriptions.subscription.region.label
+msgid "platform.subscriptions.subscription.region.label"
+msgstr ""
+
+#: platform:platform.subscriptions.subscription.retry
+msgid "platform.subscriptions.subscription.retry"
+msgstr ""
+
+#: platform:platform.subscriptions.success
+msgid "platform.subscriptions.success"
+msgstr ""
+
+#: platform:platform.subscriptions.success.region.label
+msgid "platform.subscriptions.success.region.label"
+msgstr ""
+
+#: platform:platform.subscriptions.workspace.empty
+msgid "platform.subscriptions.workspace.empty"
+msgstr ""
+
+#: platform:platform.subscriptions.workspace.error
+msgid "platform.subscriptions.workspace.error"
+msgstr ""
+
+#: platform:platform.subscriptions.workspace.label
+msgid "platform.subscriptions.workspace.label"
+msgstr ""
+
+#: platform:platform.subscriptions.workspace.loading
+msgid "platform.subscriptions.workspace.loading"
+msgstr ""
+
+#: platform:platform.subscriptions.workspace.placeholder
+msgid "platform.subscriptions.workspace.placeholder"
+msgstr ""
+
+#: platform:platform.subscriptions.workspace.retry
+msgid "platform.subscriptions.workspace.retry"
+msgstr ""

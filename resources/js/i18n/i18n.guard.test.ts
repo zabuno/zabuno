@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { LOCALES, FALLBACK_LOCALE, currentLocale, directionOf, isLocaleCode } from './locales';
 import { coverageOf, createTranslator } from './translator';
-import { menuTr } from './catalogs/menu.tr';
+import { menuTranslations } from './menu';
+import { overridesFor } from './generated-overrides';
 
 /**
  * i18n kapısı — CORE-08 (`docs/26` S1-WP03, `docs/37` Dalga 5).
@@ -85,18 +86,31 @@ describe('i18n kapısı', () => {
     // --- DS-I18N-OVERRIDE-KEYS-04 -----------------------------------------
     // Ölü anahtar, çeviri dosyalarının en sessiz çürüme biçimidir: kimse
     // fark etmeden birikir ve sonra hangisinin canlı olduğu bilinemez.
-    it('menü çevirisi tabanda olmayan anahtar taşımaz ve kapsamı ölçülür', async () => {
-        const menuModule = await import('./menu');
-        const enKeys = new Set(Object.keys(menuModule).includes('t') ? Object.keys(menuTr) : []);
+    // Artık çeviriler elle yazılmaz, PO'dan üretilir — bu kapı üretilmiş
+    // projeksiyonun tabandan sapmadığını doğrular.
+    it('üretilmiş menü çevirisi tabanda olmayan anahtar taşımaz ve kapsamı ölçülür', () => {
+        const overrides = overridesFor('menu');
+        const baseKeys = new Set(Object.keys(menuTranslations));
 
-        expect(enKeys.size, 'DS-I18N-OVERRIDE-KEYS-04: Türkçe menü kataloğu boş.').toBeGreaterThan(
-            0,
-        );
+        expect(
+            Object.keys(overrides).length,
+            'DS-I18N-OVERRIDE-KEYS-04: hiçbir dil için üretilmiş menü projeksiyonu yok.',
+        ).toBeGreaterThan(0);
 
-        const coverage = coverageOf(menuTr as Record<string, string>, { tr: menuTr });
+        for (const [locale, table] of Object.entries(overrides)) {
+            for (const key of Object.keys(table ?? {})) {
+                expect(
+                    baseKeys.has(key),
+                    `DS-I18N-OVERRIDE-KEYS-04: "${locale}" projeksiyonundaki "${key}" tabanda yok.`,
+                ).toBe(true);
+            }
+        }
 
-        expect(coverage.tr.translated, 'DS-I18N-OVERRIDE-KEYS-04: kapsam ölçümü çalışmıyor.').toBe(
-            coverage.tr.total,
-        );
+        const coverage = coverageOf(menuTranslations, overrides);
+
+        expect(
+            coverage.tr.translated,
+            'DS-I18N-OVERRIDE-KEYS-04: Türkçe menü kapsamı ölçülemiyor; PO içeriği kaybolmuş olabilir.',
+        ).toBe(coverage.tr.total);
     });
 });

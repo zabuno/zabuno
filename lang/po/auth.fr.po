@@ -1,0 +1,209 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: auth:auth.forgot_password.email
+msgid "auth.forgot_password.email"
+msgstr ""
+
+#: auth:auth.forgot_password.error.email
+msgid "auth.forgot_password.error.email"
+msgstr ""
+
+#: auth:auth.forgot_password.error.submit
+msgid "auth.forgot_password.error.submit"
+msgstr ""
+
+#: auth:auth.forgot_password.heading
+msgid "auth.forgot_password.heading"
+msgstr ""
+
+#: auth:auth.forgot_password.status.sent
+msgid "auth.forgot_password.status.sent"
+msgstr ""
+
+#: auth:auth.forgot_password.submit
+msgid "auth.forgot_password.submit"
+msgstr ""
+
+#: auth:auth.invitation_accept.email
+msgid "auth.invitation_accept.email"
+msgstr ""
+
+#: auth:auth.invitation_accept.error.submit
+msgid "auth.invitation_accept.error.submit"
+msgstr ""
+
+#: auth:auth.invitation_accept.guest_body
+msgid "auth.invitation_accept.guest_body"
+msgstr ""
+
+#: auth:auth.invitation_accept.heading
+msgid "auth.invitation_accept.heading"
+msgstr ""
+
+#: auth:auth.invitation_accept.login_link
+msgid "auth.invitation_accept.login_link"
+msgstr ""
+
+#: auth:auth.invitation_accept.role
+msgid "auth.invitation_accept.role"
+msgstr ""
+
+#: auth:auth.invitation_accept.submit
+msgid "auth.invitation_accept.submit"
+msgstr ""
+
+#: auth:auth.invitation_accept.unavailable_body
+msgid "auth.invitation_accept.unavailable_body"
+msgstr ""
+
+#: auth:auth.invitation_accept.workspace
+msgid "auth.invitation_accept.workspace"
+msgstr ""
+
+#: auth:auth.login.email
+msgid "auth.login.email"
+msgstr ""
+
+#: auth:auth.login.error.email
+msgid "auth.login.error.email"
+msgstr ""
+
+#: auth:auth.login.error.password
+msgid "auth.login.error.password"
+msgstr ""
+
+#: auth:auth.login.error.submit
+msgid "auth.login.error.submit"
+msgstr ""
+
+#: auth:auth.login.forgot_password
+msgid "auth.login.forgot_password"
+msgstr ""
+
+#: auth:auth.login.heading
+msgid "auth.login.heading"
+msgstr ""
+
+#: auth:auth.login.password
+msgid "auth.login.password"
+msgstr ""
+
+#: auth:auth.login.submit
+msgid "auth.login.submit"
+msgstr ""
+
+#: auth:auth.logout.error.submit
+msgid "auth.logout.error.submit"
+msgstr ""
+
+#: auth:auth.logout.submit
+msgid "auth.logout.submit"
+msgstr ""
+
+#: auth:auth.register.email
+msgid "auth.register.email"
+msgstr ""
+
+#: auth:auth.register.error.email
+msgid "auth.register.error.email"
+msgstr ""
+
+#: auth:auth.register.error.name
+msgid "auth.register.error.name"
+msgstr ""
+
+#: auth:auth.register.error.password
+msgid "auth.register.error.password"
+msgstr ""
+
+#: auth:auth.register.error.submit
+msgid "auth.register.error.submit"
+msgstr ""
+
+#: auth:auth.register.heading
+msgid "auth.register.heading"
+msgstr ""
+
+#: auth:auth.register.name
+msgid "auth.register.name"
+msgstr ""
+
+#: auth:auth.register.password
+msgid "auth.register.password"
+msgstr ""
+
+#: auth:auth.register.password_confirmation
+msgid "auth.register.password_confirmation"
+msgstr ""
+
+#: auth:auth.register.submit
+msgid "auth.register.submit"
+msgstr ""
+
+#: auth:auth.reset_password.error.password
+msgid "auth.reset_password.error.password"
+msgstr ""
+
+#: auth:auth.reset_password.error.password_confirmation
+msgid "auth.reset_password.error.password_confirmation"
+msgstr ""
+
+#: auth:auth.reset_password.error.submit
+msgid "auth.reset_password.error.submit"
+msgstr ""
+
+#: auth:auth.reset_password.heading
+msgid "auth.reset_password.heading"
+msgstr ""
+
+#: auth:auth.reset_password.password
+msgid "auth.reset_password.password"
+msgstr ""
+
+#: auth:auth.reset_password.password_confirmation
+msgid "auth.reset_password.password_confirmation"
+msgstr ""
+
+#: auth:auth.reset_password.submit
+msgid "auth.reset_password.submit"
+msgstr ""
+
+#: auth:auth.verification_pending.body
+msgid "auth.verification_pending.body"
+msgstr ""
+
+#: auth:auth.verification_pending.heading
+msgid "auth.verification_pending.heading"
+msgstr ""
+
+#: auth:auth.verification_pending.resend
+msgid "auth.verification_pending.resend"
+msgstr ""
+
+#: auth:auth.verification_pending.status.error
+msgid "auth.verification_pending.status.error"
+msgstr ""
+
+#: auth:auth.verification_pending.status.sending
+msgid "auth.verification_pending.status.sending"
+msgstr ""
+
+#: auth:auth.verification_pending.status.sent
+msgid "auth.verification_pending.status.sent"
+msgstr ""
+
+#: auth:auth.verified.body
+msgid "auth.verified.body"
+msgstr ""
+
+#: auth:auth.verified.heading
+msgid "auth.verified.heading"
+msgstr ""

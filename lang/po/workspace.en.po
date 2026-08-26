@@ -1,0 +1,1745 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: workspace:workspace.ai.affectedRecords
+msgid "workspace.ai.affectedRecords"
+msgstr "Affected records"
+
+#: workspace:workspace.ai.affectedRecords.empty
+msgid "workspace.ai.affectedRecords.empty"
+msgstr "No records are affected yet."
+
+#: workspace:workspace.ai.command.label
+msgid "workspace.ai.command.label"
+msgstr "AI command"
+
+#: workspace:workspace.ai.panel.heading
+msgid "workspace.ai.panel.heading"
+msgstr "AI assistant"
+
+#: workspace:workspace.ai.panel.label
+msgid "workspace.ai.panel.label"
+msgstr "AI assistant for {context}"
+
+#: workspace:workspace.ai.reviewAndApprove
+msgid "workspace.ai.reviewAndApprove"
+msgstr "Review and approve"
+
+#: workspace:workspace.ai.unavailable
+msgid "workspace.ai.unavailable"
+msgstr "No real AI is connected yet; suggestions cannot be generated."
+
+#: workspace:workspace.ai.whyThisSuggestion
+msgid "workspace.ai.whyThisSuggestion"
+msgstr "Why this suggestion"
+
+#: workspace:workspace.ai.whyThisSuggestion.empty
+msgid "workspace.ai.whyThisSuggestion.empty"
+msgstr "No suggestion has been generated yet."
+
+#: workspace:workspace.aiCommand.affectedRecords.empty
+msgid "workspace.aiCommand.affectedRecords.empty"
+msgstr "No records are affected."
+
+#: workspace:workspace.aiCommand.affectedRecords.heading
+msgid "workspace.aiCommand.affectedRecords.heading"
+msgstr "Affected records"
+
+#: workspace:workspace.aiCommand.approve
+msgid "workspace.aiCommand.approve"
+msgstr "Approve"
+
+#: workspace:workspace.aiCommand.commandLabel
+msgid "workspace.aiCommand.commandLabel"
+msgstr "Command"
+
+#: workspace:workspace.aiCommand.recentCommands.empty
+msgid "workspace.aiCommand.recentCommands.empty"
+msgstr "No commands have been run yet."
+
+#: workspace:workspace.aiCommand.recentCommands.heading
+msgid "workspace.aiCommand.recentCommands.heading"
+msgstr "Recent commands"
+
+#: workspace:workspace.aiCommand.status
+msgid "workspace.aiCommand.status"
+msgstr "No AI gateway is connected or available yet."
+
+#: workspace:workspace.aiCommand.title
+msgid "workspace.aiCommand.title"
+msgstr "AI command center"
+
+#: workspace:workspace.aiCommand.trigger.label
+msgid "workspace.aiCommand.trigger.label"
+msgstr "Open AI command center"
+
+#: workspace:workspace.analytics.action.refresh
+msgid "workspace.analytics.action.refresh"
+msgstr "Refresh"
+
+#: workspace:workspace.analytics.action.retry
+msgid "workspace.analytics.action.retry"
+msgstr "Retry"
+
+#: workspace:workspace.analytics.heading
+msgid "workspace.analytics.heading"
+msgstr "Analytics"
+
+#: workspace:workspace.analytics.metric.menuOpen
+msgid "workspace.analytics.metric.menuOpen"
+msgstr "Confirmed Menu Open"
+
+#: workspace:workspace.analytics.metric.qrResolve
+msgid "workspace.analytics.metric.qrResolve"
+msgstr "QR Resolve"
+
+#: workspace:workspace.analytics.operational.description
+msgid "workspace.analytics.operational.description"
+msgstr "Review real QR resolve and confirmed menu open counts for the selected location and range."
+
+#: workspace:workspace.analytics.range.30d
+msgid "workspace.analytics.range.30d"
+msgstr "Last 30 days"
+
+#: workspace:workspace.analytics.range.7d
+msgid "workspace.analytics.range.7d"
+msgstr "Last 7 days"
+
+#: workspace:workspace.analytics.range.label
+msgid "workspace.analytics.range.label"
+msgstr "Range"
+
+#: workspace:workspace.analytics.range.today
+msgid "workspace.analytics.range.today"
+msgstr "Today"
+
+#: workspace:workspace.analytics.report.error
+msgid "workspace.analytics.report.error"
+msgstr "Analytics failed to load. Please try again."
+
+#: workspace:workspace.analytics.report.loading
+msgid "workspace.analytics.report.loading"
+msgstr "Loading analytics…"
+
+#: workspace:workspace.analytics.report.region
+msgid "workspace.analytics.report.region"
+msgstr "Analytics report"
+
+#: workspace:workspace.analytics.report.unavailable
+msgid "workspace.analytics.report.unavailable"
+msgstr "Analytics reporting is not available yet; no metrics have been generated."
+
+#: workspace:workspace.analytics.status.error
+msgid "workspace.analytics.status.error"
+msgstr "Failed to load"
+
+#: workspace:workspace.analytics.status.loading
+msgid "workspace.analytics.status.loading"
+msgstr "Loading"
+
+#: workspace:workspace.analytics.status.notConnected
+msgid "workspace.analytics.status.notConnected"
+msgstr "Not requested yet"
+
+#: workspace:workspace.billing.changePlan.button
+msgid "workspace.billing.changePlan.button"
+msgstr "Change plan"
+
+#: workspace:workspace.billing.currentPlan.empty
+msgid "workspace.billing.currentPlan.empty"
+msgstr "No billing API has been queried yet; the current plan has not been checked."
+
+#: workspace:workspace.billing.currentPlan.error
+msgid "workspace.billing.currentPlan.error"
+msgstr "We could not load the current plan."
+
+#: workspace:workspace.billing.currentPlan.loading
+msgid "workspace.billing.currentPlan.loading"
+msgstr "Loading current plan…"
+
+#: workspace:workspace.billing.currentPlan.none
+msgid "workspace.billing.currentPlan.none"
+msgstr "No active subscription"
+
+#: workspace:workspace.billing.currentPlan.region
+msgid "workspace.billing.currentPlan.region"
+msgstr "Current plan"
+
+#: workspace:workspace.billing.currentPlan.retry
+msgid "workspace.billing.currentPlan.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.currentPlan.version
+msgid "workspace.billing.currentPlan.version"
+msgstr "Version {version}"
+
+#: workspace:workspace.billing.heading
+msgid "workspace.billing.heading"
+msgstr "Billing"
+
+#: workspace:workspace.billing.iyzicoSandbox.amount
+msgid "workspace.billing.iyzicoSandbox.amount"
+msgstr "Amount {amount} {currency}"
+
+#: workspace:workspace.billing.iyzicoSandbox.button
+msgid "workspace.billing.iyzicoSandbox.button"
+msgstr "Start sandbox checkout"
+
+#: workspace:workspace.billing.iyzicoSandbox.checkoutError
+msgid "workspace.billing.iyzicoSandbox.checkoutError"
+msgstr "Could not start the sandbox checkout."
+
+#: workspace:workspace.billing.iyzicoSandbox.continueLink
+msgid "workspace.billing.iyzicoSandbox.continueLink"
+msgstr "Continue to Iyzico sandbox"
+
+#: workspace:workspace.billing.iyzicoSandbox.conversation
+msgid "workspace.billing.iyzicoSandbox.conversation"
+msgstr "Conversation {id}"
+
+#: workspace:workspace.billing.iyzicoSandbox.disclaimer
+msgid "workspace.billing.iyzicoSandbox.disclaimer"
+msgstr "This is a sandbox checkout — no real money is charged."
+
+#: workspace:workspace.billing.iyzicoSandbox.heading
+msgid "workspace.billing.iyzicoSandbox.heading"
+msgstr "Iyzico sandbox"
+
+#: workspace:workspace.billing.iyzicoSandbox.invalidRedirect
+msgid "workspace.billing.iyzicoSandbox.invalidRedirect"
+msgstr "Received an unsafe redirect link; cannot continue."
+
+#: workspace:workspace.billing.iyzicoSandbox.loading
+msgid "workspace.billing.iyzicoSandbox.loading"
+msgstr "Loading…"
+
+#: workspace:workspace.billing.iyzicoSandbox.noActive
+msgid "workspace.billing.iyzicoSandbox.noActive"
+msgstr "No active subscription or plan."
+
+#: workspace:workspace.billing.iyzicoSandbox.pendingBadge
+msgid "workspace.billing.iyzicoSandbox.pendingBadge"
+msgstr "Iyzico sandbox pending"
+
+#: workspace:workspace.billing.iyzicoSandbox.processing
+msgid "workspace.billing.iyzicoSandbox.processing"
+msgstr "Sandbox checkout initiated — processing…"
+
+#: workspace:workspace.billing.iyzicoSandbox.ready
+msgid "workspace.billing.iyzicoSandbox.ready"
+msgstr "Ready to start a sandbox checkout."
+
+#: workspace:workspace.billing.iyzicoSandbox.region
+msgid "workspace.billing.iyzicoSandbox.region"
+msgstr "Iyzico sandbox"
+
+#: workspace:workspace.billing.iyzicoSandbox.retry
+msgid "workspace.billing.iyzicoSandbox.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.iyzicoSandbox.sessionError
+msgid "workspace.billing.iyzicoSandbox.sessionError"
+msgstr "Could not load the sandbox checkout session."
+
+#: workspace:workspace.billing.iyzicoSandbox.start
+msgid "workspace.billing.iyzicoSandbox.start"
+msgstr "Start sandbox checkout"
+
+#: workspace:workspace.billing.iyzicoSandbox.state.failed
+msgid "workspace.billing.iyzicoSandbox.state.failed"
+msgstr "Sandbox checkout failed."
+
+#: workspace:workspace.billing.iyzicoSandbox.state.initiated
+msgid "workspace.billing.iyzicoSandbox.state.initiated"
+msgstr "Initiated"
+
+#: workspace:workspace.billing.iyzicoSandbox.state.processing
+msgid "workspace.billing.iyzicoSandbox.state.processing"
+msgstr "Processing"
+
+#: workspace:workspace.billing.iyzicoSandbox.state.succeeded
+msgid "workspace.billing.iyzicoSandbox.state.succeeded"
+msgstr "Succeeded"
+
+#: workspace:workspace.billing.iyzicoSandbox.subscriptionError
+msgid "workspace.billing.iyzicoSandbox.subscriptionError"
+msgstr "Could not load your subscription status."
+
+#: workspace:workspace.billing.iyzicoSandbox.unavailable
+msgid "workspace.billing.iyzicoSandbox.unavailable"
+msgstr "The Iyzico sandbox checkout is unavailable and pending integration; no sandbox session can be started."
+
+#: workspace:workspace.billing.ledger.balances
+msgid "workspace.billing.ledger.balances"
+msgstr "Balances"
+
+#: workspace:workspace.billing.ledger.column.amount
+msgid "workspace.billing.ledger.column.amount"
+msgstr "Amount"
+
+#: workspace:workspace.billing.ledger.column.credit
+msgid "workspace.billing.ledger.column.credit"
+msgstr "Credit"
+
+#: workspace:workspace.billing.ledger.column.debit
+msgid "workspace.billing.ledger.column.debit"
+msgstr "Debit"
+
+#: workspace:workspace.billing.ledger.column.occurredAt
+msgid "workspace.billing.ledger.column.occurredAt"
+msgstr "Date"
+
+#: workspace:workspace.billing.ledger.column.reference
+msgid "workspace.billing.ledger.column.reference"
+msgstr "Reference"
+
+#: workspace:workspace.billing.ledger.description
+msgid "workspace.billing.ledger.description"
+msgstr "Every collected payment is written here as a double entry. A record is never edited or deleted; a correction is made with an opposing entry."
+
+#: workspace:workspace.billing.ledger.empty
+msgid "workspace.billing.ledger.empty"
+msgstr "No ledger entry yet. The first successful payment writes the first entry."
+
+#: workspace:workspace.billing.ledger.error
+msgid "workspace.billing.ledger.error"
+msgstr "The ledger could not be loaded."
+
+#: workspace:workspace.billing.ledger.loading
+msgid "workspace.billing.ledger.loading"
+msgstr "Loading ledger…"
+
+#: workspace:workspace.billing.ledger.region
+msgid "workspace.billing.ledger.region"
+msgstr "Ledger"
+
+#: workspace:workspace.billing.ledger.retry
+msgid "workspace.billing.ledger.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.manualPayment.empty
+msgid "workspace.billing.manualPayment.empty"
+msgstr "No billing API has been queried yet; manual payment has not been checked."
+
+#: workspace:workspace.billing.manualPayment.field.documentReference
+msgid "workspace.billing.manualPayment.field.documentReference"
+msgstr "Document reference"
+
+#: workspace:workspace.billing.manualPayment.field.endDate
+msgid "workspace.billing.manualPayment.field.endDate"
+msgstr "End date"
+
+#: workspace:workspace.billing.manualPayment.field.paymentNote
+msgid "workspace.billing.manualPayment.field.paymentNote"
+msgstr "Payment note"
+
+#: workspace:workspace.billing.manualPayment.field.plan
+msgid "workspace.billing.manualPayment.field.plan"
+msgstr "Plan assignment"
+
+#: workspace:workspace.billing.manualPayment.platformFinance
+msgid "workspace.billing.manualPayment.platformFinance"
+msgstr "Manual payments are recorded by platform finance; this workspace view is read-only."
+
+#: workspace:workspace.billing.manualPayment.region
+msgid "workspace.billing.manualPayment.region"
+msgstr "Manual payment"
+
+#: workspace:workspace.billing.operational.description
+msgid "workspace.billing.operational.description"
+msgstr "The plan catalog and current subscription are fetched live from the server-backed billing API. Manual payments below are recorded in Zabuno Platform administration by finance staff. The Iyzico sandbox checkout below is a sandbox-only surface — no real money is charged."
+
+#: workspace:workspace.billing.plan.empty
+msgid "workspace.billing.plan.empty"
+msgstr "No plans are available yet."
+
+#: workspace:workspace.billing.plan.error
+msgid "workspace.billing.plan.error"
+msgstr "Plans could not be loaded."
+
+#: workspace:workspace.billing.plan.loading
+msgid "workspace.billing.plan.loading"
+msgstr "Loading plans…"
+
+#: workspace:workspace.billing.plan.priceUnavailable
+msgid "workspace.billing.plan.priceUnavailable"
+msgstr "Price unavailable"
+
+#: workspace:workspace.billing.plan.region
+msgid "workspace.billing.plan.region"
+msgstr "Plan"
+
+#: workspace:workspace.billing.plan.retry
+msgid "workspace.billing.plan.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.plan.unavailable
+msgid "workspace.billing.plan.unavailable"
+msgstr "Plan information is not available yet; no billing API has been queried."
+
+#: workspace:workspace.billing.recordPayment.button
+msgid "workspace.billing.recordPayment.button"
+msgstr "Record payment"
+
+#: workspace:workspace.billing.status.notConnected
+msgid "workspace.billing.status.notConnected"
+msgstr "Not connected"
+
+#: workspace:workspace.brand.currency
+msgid "workspace.brand.currency"
+msgstr "Currency"
+
+#: workspace:workspace.brand.error.required
+msgid "workspace.brand.error.required"
+msgstr "Name, timezone, and currency are required."
+
+#: workspace:workspace.brand.error.submit
+msgid "workspace.brand.error.submit"
+msgstr "We could not create your brand. Please try again."
+
+#: workspace:workspace.brand.heading
+msgid "workspace.brand.heading"
+msgstr "Create your brand"
+
+#: workspace:workspace.brand.loading
+msgid "workspace.brand.loading"
+msgstr "Loading your brand…"
+
+#: workspace:workspace.brand.locale
+msgid "workspace.brand.locale"
+msgstr "Locale"
+
+#: workspace:workspace.brand.name
+msgid "workspace.brand.name"
+msgstr "Name"
+
+#: workspace:workspace.brand.operational.description
+msgid "workspace.brand.operational.description"
+msgstr "Edit the name, locale, timezone, currency, and contact details customers and your team see for this brand."
+
+#: workspace:workspace.brand.submit
+msgid "workspace.brand.submit"
+msgstr "Create"
+
+#: workspace:workspace.brand.timezone
+msgid "workspace.brand.timezone"
+msgstr "Timezone"
+
+#: workspace:workspace.brandLocations.brand.contactEmail
+msgid "workspace.brandLocations.brand.contactEmail"
+msgstr "Contact email"
+
+#: workspace:workspace.brandLocations.brand.contactPhone
+msgid "workspace.brandLocations.brand.contactPhone"
+msgstr "Contact phone"
+
+#: workspace:workspace.brandLocations.brand.currency
+msgid "workspace.brandLocations.brand.currency"
+msgstr "Currency"
+
+#: workspace:workspace.brandLocations.brand.description
+msgid "workspace.brandLocations.brand.description"
+msgstr "Description"
+
+#: workspace:workspace.brandLocations.brand.locale
+msgid "workspace.brandLocations.brand.locale"
+msgstr "Locale"
+
+#: workspace:workspace.brandLocations.brand.section.contact
+msgid "workspace.brandLocations.brand.section.contact"
+msgstr "Contact"
+
+#: workspace:workspace.brandLocations.brand.section.description
+msgid "workspace.brandLocations.brand.section.description"
+msgstr "Description"
+
+#: workspace:workspace.brandLocations.brand.section.identity
+msgid "workspace.brandLocations.brand.section.identity"
+msgstr "Identity"
+
+#: workspace:workspace.brandLocations.brand.section.regional
+msgid "workspace.brandLocations.brand.section.regional"
+msgstr "Regional settings"
+
+#: workspace:workspace.brandLocations.brand.slug
+msgid "workspace.brandLocations.brand.slug"
+msgstr "Slug"
+
+#: workspace:workspace.brandLocations.brand.timezone
+msgid "workspace.brandLocations.brand.timezone"
+msgstr "Timezone"
+
+#: workspace:workspace.brandLocations.edit.button
+msgid "workspace.brandLocations.edit.button"
+msgstr "Edit"
+
+#: workspace:workspace.brandLocations.edit.cancel
+msgid "workspace.brandLocations.edit.cancel"
+msgstr "Cancel"
+
+#: workspace:workspace.brandLocations.edit.error.submit
+msgid "workspace.brandLocations.edit.error.submit"
+msgstr "We could not save your brand changes. Please try again."
+
+#: workspace:workspace.brandLocations.edit.save
+msgid "workspace.brandLocations.edit.save"
+msgstr "Save"
+
+#: workspace:workspace.brandLocations.heading
+msgid "workspace.brandLocations.heading"
+msgstr "Brand & Locations"
+
+#: workspace:workspace.brandLocations.locations.count
+msgid "workspace.brandLocations.locations.count"
+msgstr "{count} locations"
+
+#: workspace:workspace.brandLocations.locations.edit.countryCode
+msgid "workspace.brandLocations.locations.edit.countryCode"
+msgstr "Country code"
+
+#: workspace:workspace.brandLocations.locations.edit.error.submit
+msgid "workspace.brandLocations.locations.edit.error.submit"
+msgstr "We could not save your location changes. Please try again."
+
+#: workspace:workspace.brandLocations.locations.heading
+msgid "workspace.brandLocations.locations.heading"
+msgstr "Locations"
+
+#: workspace:workspace.brandLocations.locations.section.address
+msgid "workspace.brandLocations.locations.section.address"
+msgstr "Address"
+
+#: workspace:workspace.brandLocations.locations.section.identity
+msgid "workspace.brandLocations.locations.section.identity"
+msgstr "Identity"
+
+#: workspace:workspace.brandLocations.locations.view.country
+msgid "workspace.brandLocations.locations.view.country"
+msgstr "Country"
+
+#: workspace:workspace.brandLocations.locations.view.postalCode
+msgid "workspace.brandLocations.locations.view.postalCode"
+msgstr "Postal code"
+
+#: workspace:workspace.catalog.error.heading
+msgid "workspace.catalog.error.heading"
+msgstr "We could not load your workspace catalog."
+
+#: workspace:workspace.catalog.error.retry
+msgid "workspace.catalog.error.retry"
+msgstr "Retry"
+
+#: workspace:workspace.catalog.location.label
+msgid "workspace.catalog.location.label"
+msgstr "Location"
+
+#: workspace:workspace.choose.heading
+msgid "workspace.choose.heading"
+msgstr "Choose a workspace"
+
+#: workspace:workspace.create.error.name
+msgid "workspace.create.error.name"
+msgstr "Enter a workspace name."
+
+#: workspace:workspace.create.error.submit
+msgid "workspace.create.error.submit"
+msgstr "We could not create your workspace. Please try again."
+
+#: workspace:workspace.create.heading
+msgid "workspace.create.heading"
+msgstr "Name your workspace"
+
+#: workspace:workspace.create.name
+msgid "workspace.create.name"
+msgstr "Workspace name"
+
+#: workspace:workspace.create.submit
+msgid "workspace.create.submit"
+msgstr "Create workspace"
+
+#: workspace:workspace.current.logout
+msgid "workspace.current.logout"
+msgstr "Log out"
+
+#: workspace:workspace.current.logout.error
+msgid "workspace.current.logout.error"
+msgstr "We could not log you out. Please try again."
+
+#: workspace:workspace.current.switch
+msgid "workspace.current.switch"
+msgstr "Switch workspace"
+
+#: workspace:workspace.dashboard.empty
+msgid "workspace.dashboard.empty"
+msgstr "No menu has been created for this location yet."
+
+#: workspace:workspace.dashboard.empty.openMenu
+msgid "workspace.dashboard.empty.openMenu"
+msgstr "Open Menu"
+
+#: workspace:workspace.dashboard.heading
+msgid "workspace.dashboard.heading"
+msgstr "Dashboard"
+
+#: workspace:workspace.dashboard.loading
+msgid "workspace.dashboard.loading"
+msgstr "Loading your dashboard summary…"
+
+#: workspace:workspace.dashboard.operational.description
+msgid "workspace.dashboard.operational.description"
+msgstr "A live overview of your setup progress and current menu — see what is connected and jump straight to what still needs work."
+
+#: workspace:workspace.dashboard.setup.brand
+msgid "workspace.dashboard.setup.brand"
+msgstr "Brand"
+
+#: workspace:workspace.dashboard.setup.heading
+msgid "workspace.dashboard.setup.heading"
+msgstr "Setup"
+
+#: workspace:workspace.dashboard.setup.location
+msgid "workspace.dashboard.setup.location"
+msgstr "Location"
+
+#: workspace:workspace.dashboard.setup.menu
+msgid "workspace.dashboard.setup.menu"
+msgstr "Menu"
+
+#: workspace:workspace.dashboard.setup.menu.empty
+msgid "workspace.dashboard.setup.menu.empty"
+msgstr "No menu yet"
+
+#: workspace:workspace.dashboard.setup.notConnected
+msgid "workspace.dashboard.setup.notConnected"
+msgstr "Not connected yet."
+
+#: workspace:workspace.dashboard.setup.publication
+msgid "workspace.dashboard.setup.publication"
+msgstr "Publication"
+
+#: workspace:workspace.dashboard.setup.qr
+msgid "workspace.dashboard.setup.qr"
+msgstr "QR"
+
+#: workspace:workspace.dashboard.setup.region
+msgid "workspace.dashboard.setup.region"
+msgstr "Dashboard Setup"
+
+#: workspace:workspace.error.heading
+msgid "workspace.error.heading"
+msgstr "We could not load your workspace."
+
+#: workspace:workspace.error.retry
+msgid "workspace.error.retry"
+msgstr "Retry"
+
+#: workspace:workspace.launchReadiness.backupRestore.metadata.durationMs
+msgid "workspace.launchReadiness.backupRestore.metadata.durationMs"
+msgstr "Duration"
+
+#: workspace:workspace.launchReadiness.backupRestore.metadata.gitSha
+msgid "workspace.launchReadiness.backupRestore.metadata.gitSha"
+msgstr "Commit"
+
+#: workspace:workspace.launchReadiness.backupRestore.metadata.ranAt
+msgid "workspace.launchReadiness.backupRestore.metadata.ranAt"
+msgstr "Ran at"
+
+#: workspace:workspace.launchReadiness.backupRestore.metadata.restoredRowCount
+msgid "workspace.launchReadiness.backupRestore.metadata.restoredRowCount"
+msgstr "Restored rows"
+
+#: workspace:workspace.launchReadiness.backupRestore.status.error
+msgid "workspace.launchReadiness.backupRestore.status.error"
+msgstr "Evidence check error"
+
+#: workspace:workspace.launchReadiness.backupRestore.status.failed
+msgid "workspace.launchReadiness.backupRestore.status.failed"
+msgstr "Failed"
+
+#: workspace:workspace.launchReadiness.backupRestore.status.loading
+msgid "workspace.launchReadiness.backupRestore.status.loading"
+msgstr "Loading evidence…"
+
+#: workspace:workspace.launchReadiness.backupRestore.status.passed
+msgid "workspace.launchReadiness.backupRestore.status.passed"
+msgstr "Passed"
+
+#: workspace:workspace.launchReadiness.checklist.backupRestore.description
+msgid "workspace.launchReadiness.checklist.backupRestore.description"
+msgstr "A completed drill proving production-shaped data can be recovered."
+
+#: workspace:workspace.launchReadiness.checklist.backupRestore.title
+msgid "workspace.launchReadiness.checklist.backupRestore.title"
+msgstr "Backup & restore drill"
+
+#: workspace:workspace.launchReadiness.checklist.explanation
+msgid "workspace.launchReadiness.checklist.explanation"
+msgstr "Evidence-backed items below resolve only from real, independently recorded checks; every other item stays unavailable until its own check is run and recorded."
+
+#: workspace:workspace.launchReadiness.checklist.region
+msgid "workspace.launchReadiness.checklist.region"
+msgstr "Launch readiness checklist"
+
+#: workspace:workspace.launchReadiness.checklist.tenantIsolation.description
+msgid "workspace.launchReadiness.checklist.tenantIsolation.description"
+msgstr "Proof that one restaurant workspace cannot read or write another’s data."
+
+#: workspace:workspace.launchReadiness.checklist.tenantIsolation.title
+msgid "workspace.launchReadiness.checklist.tenantIsolation.title"
+msgstr "Tenant isolation evidence"
+
+#: workspace:workspace.launchReadiness.heading
+msgid "workspace.launchReadiness.heading"
+msgstr "Launch readiness"
+
+#: workspace:workspace.launchReadiness.item.status.unavailable
+msgid "workspace.launchReadiness.item.status.unavailable"
+msgstr "Unavailable"
+
+#: workspace:workspace.launchReadiness.operational.description
+msgid "workspace.launchReadiness.operational.description"
+msgstr "A checklist of the evidence still needed before Stage 1 can exit. Evidence appears here only after each item’s check is run independently — nothing below is inferred from source files."
+
+#: workspace:workspace.launchReadiness.refresh.button
+msgid "workspace.launchReadiness.refresh.button"
+msgstr "Refresh evidence"
+
+#: workspace:workspace.launchReadiness.tenantIsolation.metadata.durationMs
+msgid "workspace.launchReadiness.tenantIsolation.metadata.durationMs"
+msgstr "Duration"
+
+#: workspace:workspace.launchReadiness.tenantIsolation.metadata.gitSha
+msgid "workspace.launchReadiness.tenantIsolation.metadata.gitSha"
+msgstr "Commit"
+
+#: workspace:workspace.launchReadiness.tenantIsolation.metadata.ranAt
+msgid "workspace.launchReadiness.tenantIsolation.metadata.ranAt"
+msgstr "Ran at"
+
+#: workspace:workspace.launchReadiness.tenantIsolation.status.error
+msgid "workspace.launchReadiness.tenantIsolation.status.error"
+msgstr "Evidence check error"
+
+#: workspace:workspace.launchReadiness.tenantIsolation.status.failed
+msgid "workspace.launchReadiness.tenantIsolation.status.failed"
+msgstr "Failed"
+
+#: workspace:workspace.launchReadiness.tenantIsolation.status.loading
+msgid "workspace.launchReadiness.tenantIsolation.status.loading"
+msgstr "Loading evidence…"
+
+#: workspace:workspace.launchReadiness.tenantIsolation.status.passed
+msgid "workspace.launchReadiness.tenantIsolation.status.passed"
+msgstr "Passed"
+
+#: workspace:workspace.loading
+msgid "workspace.loading"
+msgstr "Loading your workspace…"
+
+#: workspace:workspace.location.addressLine1
+msgid "workspace.location.addressLine1"
+msgstr "Address line 1"
+
+#: workspace:workspace.location.addressLine2
+msgid "workspace.location.addressLine2"
+msgstr "Address line 2"
+
+#: workspace:workspace.location.city
+msgid "workspace.location.city"
+msgstr "City"
+
+#: workspace:workspace.location.countryCode
+msgid "workspace.location.countryCode"
+msgstr "Country"
+
+#: workspace:workspace.location.displayName
+msgid "workspace.location.displayName"
+msgstr "Display name"
+
+#: workspace:workspace.location.error.required
+msgid "workspace.location.error.required"
+msgstr "Display name, country, city, and address line 1 are required."
+
+#: workspace:workspace.location.error.submit
+msgid "workspace.location.error.submit"
+msgstr "We could not create your location. Please try again."
+
+#: workspace:workspace.location.heading
+msgid "workspace.location.heading"
+msgstr "Create your location"
+
+#: workspace:workspace.location.postalCode
+msgid "workspace.location.postalCode"
+msgstr "Postal code"
+
+#: workspace:workspace.location.submit
+msgid "workspace.location.submit"
+msgstr "Create"
+
+#: workspace:workspace.locations.add.button
+msgid "workspace.locations.add.button"
+msgstr "Add location"
+
+#: workspace:workspace.locations.empty
+msgid "workspace.locations.empty"
+msgstr "No locations yet. Add your first location to get started."
+
+#: workspace:workspace.locations.heading
+msgid "workspace.locations.heading"
+msgstr "Locations"
+
+#: workspace:workspace.locations.operational.description
+msgid "workspace.locations.operational.description"
+msgstr "Add and edit the physical locations that serve your menu — grouped by city, with an onboarding flow for new ones."
+
+#: workspace:workspace.media.heading
+msgid "workspace.media.heading"
+msgstr "Media"
+
+#: workspace:workspace.media.library.asset.delete
+msgid "workspace.media.library.asset.delete"
+msgstr "Delete"
+
+#: workspace:workspace.media.library.asset.delete.complete
+msgid "workspace.media.library.asset.delete.complete"
+msgstr "Media asset deleted."
+
+#: workspace:workspace.media.library.asset.delete.failed
+msgid "workspace.media.library.asset.delete.failed"
+msgstr "Media asset deletion failed. Your item was kept."
+
+#: workspace:workspace.media.library.asset.status.accepted
+msgid "workspace.media.library.asset.status.accepted"
+msgstr "Accepted — awaiting processing"
+
+#: workspace:workspace.media.library.asset.status.failed
+msgid "workspace.media.library.asset.status.failed"
+msgstr "Processing failed"
+
+#: workspace:workspace.media.library.asset.status.processing
+msgid "workspace.media.library.asset.status.processing"
+msgstr "Processing"
+
+#: workspace:workspace.media.library.asset.status.quarantined
+msgid "workspace.media.library.asset.status.quarantined"
+msgstr "Scan pending (quarantined)"
+
+#: workspace:workspace.media.library.asset.status.ready
+msgid "workspace.media.library.asset.status.ready"
+msgstr "Ready"
+
+#: workspace:workspace.media.library.asset.status.rejected
+msgid "workspace.media.library.asset.status.rejected"
+msgstr "Rejected — failed security scan"
+
+#: workspace:workspace.media.library.asset.status.scanning
+msgid "workspace.media.library.asset.status.scanning"
+msgstr "Scanning in progress"
+
+#: workspace:workspace.media.library.asset.status.unknown
+msgid "workspace.media.library.asset.status.unknown"
+msgstr "Status unavailable"
+
+#: workspace:workspace.media.library.assets.heading
+msgid "workspace.media.library.assets.heading"
+msgstr "Assets"
+
+#: workspace:workspace.media.library.error
+msgid "workspace.media.library.error"
+msgstr "Media library could not be loaded."
+
+#: workspace:workspace.media.library.heading
+msgid "workspace.media.library.heading"
+msgstr "Library"
+
+#: workspace:workspace.media.library.loading
+msgid "workspace.media.library.loading"
+msgstr "Loading media library…"
+
+#: workspace:workspace.media.library.region
+msgid "workspace.media.library.region"
+msgstr "Media library"
+
+#: workspace:workspace.media.library.slots.category.corporateSite
+msgid "workspace.media.library.slots.category.corporateSite"
+msgstr "Corporate site"
+
+#: workspace:workspace.media.library.slots.category.email
+msgid "workspace.media.library.slots.category.email"
+msgstr "Email"
+
+#: workspace:workspace.media.library.slots.category.menu
+msgid "workspace.media.library.slots.category.menu"
+msgstr "Menu"
+
+#: workspace:workspace.media.library.slots.category.product
+msgid "workspace.media.library.slots.category.product"
+msgstr "Product"
+
+#: workspace:workspace.media.library.slots.category.qr
+msgid "workspace.media.library.slots.category.qr"
+msgstr "QR"
+
+#: workspace:workspace.media.library.slots.category.restaurant
+msgid "workspace.media.library.slots.category.restaurant"
+msgstr "Restaurant"
+
+#: workspace:workspace.media.library.slots.heading
+msgid "workspace.media.library.slots.heading"
+msgstr "Slot categories"
+
+#: workspace:workspace.media.library.slots.status.noAssetsYet
+msgid "workspace.media.library.slots.status.noAssetsYet"
+msgstr "{category}: no assets yet."
+
+#: workspace:workspace.media.library.unavailable
+msgid "workspace.media.library.unavailable"
+msgstr "No media assets yet."
+
+#: workspace:workspace.media.lifecycle.derivatives
+msgid "workspace.media.lifecycle.derivatives"
+msgstr "Derivatives"
+
+#: workspace:workspace.media.lifecycle.heading
+msgid "workspace.media.lifecycle.heading"
+msgstr "Lifecycle"
+
+#: workspace:workspace.media.lifecycle.quarantine
+msgid "workspace.media.lifecycle.quarantine"
+msgstr "Quarantine"
+
+#: workspace:workspace.media.lifecycle.securityScan
+msgid "workspace.media.lifecycle.securityScan"
+msgstr "Security scan"
+
+#: workspace:workspace.media.lifecycle.validation
+msgid "workspace.media.lifecycle.validation"
+msgstr "Validation"
+
+#: workspace:workspace.media.operational.description
+msgid "workspace.media.operational.description"
+msgstr "Upload images and manage the media library that feeds your published menu — every asset is scanned before it can be used."
+
+#: workspace:workspace.media.security.explanation
+msgid "workspace.media.security.explanation"
+msgstr "A human reviews and approves every security scan result before any file can move forward; no scan approves itself."
+
+#: workspace:workspace.media.upload.button
+msgid "workspace.media.upload.button"
+msgstr "Upload"
+
+#: workspace:workspace.media.upload.complete
+msgid "workspace.media.upload.complete"
+msgstr "Media upload complete."
+
+#: workspace:workspace.media.upload.failed
+msgid "workspace.media.upload.failed"
+msgstr "Media upload failed. Your selection was kept."
+
+#: workspace:workspace.media.upload.field.altText
+msgid "workspace.media.upload.field.altText"
+msgstr "Alt text"
+
+#: workspace:workspace.media.upload.field.assetSlot
+msgid "workspace.media.upload.field.assetSlot"
+msgstr "Asset slot"
+
+#: workspace:workspace.media.upload.field.assetSlot.appIcon
+msgid "workspace.media.upload.field.assetSlot.appIcon"
+msgstr "App icon"
+
+#: workspace:workspace.media.upload.field.assetSlot.avatar
+msgid "workspace.media.upload.field.assetSlot.avatar"
+msgstr "Avatar"
+
+#: workspace:workspace.media.upload.field.assetSlot.cards
+msgid "workspace.media.upload.field.assetSlot.cards"
+msgstr "Cards"
+
+#: workspace:workspace.media.upload.field.assetSlot.categoryHero
+msgid "workspace.media.upload.field.assetSlot.categoryHero"
+msgstr "Category hero"
+
+#: workspace:workspace.media.upload.field.assetSlot.cover
+msgid "workspace.media.upload.field.assetSlot.cover"
+msgstr "Cover"
+
+#: workspace:workspace.media.upload.field.assetSlot.emailHeader
+msgid "workspace.media.upload.field.assetSlot.emailHeader"
+msgstr "Header/splash/push"
+
+#: workspace:workspace.media.upload.field.assetSlot.favicon
+msgid "workspace.media.upload.field.assetSlot.favicon"
+msgstr "Favicon"
+
+#: workspace:workspace.media.upload.field.assetSlot.features
+msgid "workspace.media.upload.field.assetSlot.features"
+msgstr "Features"
+
+#: workspace:workspace.media.upload.field.assetSlot.gallery
+msgid "workspace.media.upload.field.assetSlot.gallery"
+msgstr "Gallery"
+
+#: workspace:workspace.media.upload.field.assetSlot.hero
+msgid "workspace.media.upload.field.assetSlot.hero"
+msgstr "Hero"
+
+#: workspace:workspace.media.upload.field.assetSlot.itemImage
+msgid "workspace.media.upload.field.assetSlot.itemImage"
+msgstr "List/card/detail item"
+
+#: workspace:workspace.media.upload.field.assetSlot.logo
+msgid "workspace.media.upload.field.assetSlot.logo"
+msgstr "Logo"
+
+#: workspace:workspace.media.upload.field.assetSlot.ogImage
+msgid "workspace.media.upload.field.assetSlot.ogImage"
+msgstr "OG image"
+
+#: workspace:workspace.media.upload.field.assetSlot.placeholder
+msgid "workspace.media.upload.field.assetSlot.placeholder"
+msgstr "Select an asset slot"
+
+#: workspace:workspace.media.upload.field.assetSlot.pricing
+msgid "workspace.media.upload.field.assetSlot.pricing"
+msgstr "Pricing"
+
+#: workspace:workspace.media.upload.field.assetSlot.printLogo
+msgid "workspace.media.upload.field.assetSlot.printLogo"
+msgstr "Print logo"
+
+#: workspace:workspace.media.upload.field.assetSlot.profileAvatar
+msgid "workspace.media.upload.field.assetSlot.profileAvatar"
+msgstr "Profile/avatar"
+
+#: workspace:workspace.media.upload.field.assetSlot.testimonial
+msgid "workspace.media.upload.field.assetSlot.testimonial"
+msgstr "Testimonial"
+
+#: workspace:workspace.media.upload.field.expiry
+msgid "workspace.media.upload.field.expiry"
+msgstr "Expiry date"
+
+#: workspace:workspace.media.upload.field.file
+msgid "workspace.media.upload.field.file"
+msgstr "File"
+
+#: workspace:workspace.media.upload.field.rights
+msgid "workspace.media.upload.field.rights"
+msgstr "Rights or license"
+
+#: workspace:workspace.media.upload.heading
+msgid "workspace.media.upload.heading"
+msgstr "Upload"
+
+#: workspace:workspace.media.upload.region
+msgid "workspace.media.upload.region"
+msgstr "Media upload"
+
+#: workspace:workspace.media.upload.uploading
+msgid "workspace.media.upload.uploading"
+msgstr "Uploading media…"
+
+#: workspace:workspace.menu.heading
+msgid "workspace.menu.heading"
+msgstr "Menu"
+
+#: workspace:workspace.menu.loading
+msgid "workspace.menu.loading"
+msgstr "Loading your menu…"
+
+#: workspace:workspace.menu.operational.description
+msgid "workspace.menu.operational.description"
+msgstr "Build and edit the categories and items on your live menu catalog for the selected location."
+
+#: workspace:workspace.publication.draftPreview.allergens
+msgid "workspace.publication.draftPreview.allergens"
+msgstr "Allergens"
+
+#: workspace:workspace.publication.draftPreview.empty
+msgid "workspace.publication.draftPreview.empty"
+msgstr "No menu is loaded yet."
+
+#: workspace:workspace.publication.draftPreview.hidden
+msgid "workspace.publication.draftPreview.hidden"
+msgstr "Hidden"
+
+#: workspace:workspace.publication.draftPreview.notice
+msgid "workspace.publication.draftPreview.notice"
+msgstr "This is a draft preview — not public or published."
+
+#: workspace:workspace.publication.draftPreview.region
+msgid "workspace.publication.draftPreview.region"
+msgstr "Draft menu preview"
+
+#: workspace:workspace.publication.draftPreview.visible
+msgid "workspace.publication.draftPreview.visible"
+msgstr "Visible"
+
+#: workspace:workspace.publication.heading
+msgid "workspace.publication.heading"
+msgstr "Publication"
+
+#: workspace:workspace.publication.operational.description
+msgid "workspace.publication.operational.description"
+msgstr "Review your draft menu, confirm it is ready, and publish it live — plus manage the QR code that links to it."
+
+#: workspace:workspace.publication.publishAction.checklistConfirmed
+msgid "workspace.publication.publishAction.checklistConfirmed"
+msgstr "I reviewed the publish checklist"
+
+#: workspace:workspace.publication.publishAction.failurePreservationNotice
+msgid "workspace.publication.publishAction.failurePreservationNotice"
+msgstr "Last successful publication is preserved if publish fails"
+
+#: workspace:workspace.publication.publishAction.mode.immediate
+msgid "workspace.publication.publishAction.mode.immediate"
+msgstr "Immediate publish"
+
+#: workspace:workspace.publication.publishAction.mode.label
+msgid "workspace.publication.publishAction.mode.label"
+msgstr "Publish mode"
+
+#: workspace:workspace.publication.publishAction.permissionNotice
+msgid "workspace.publication.publishAction.permissionNotice"
+msgstr "Requires menu.publish permission"
+
+#: workspace:workspace.publication.publishAction.region
+msgid "workspace.publication.publishAction.region"
+msgstr "Publish action"
+
+#: workspace:workspace.publication.publishAction.scheduleNotice
+msgid "workspace.publication.publishAction.scheduleNotice"
+msgstr "Scheduled publish is not available in Stage 1."
+
+#: workspace:workspace.publication.publishAction.snapshotNotice
+msgid "workspace.publication.publishAction.snapshotNotice"
+msgstr "Publishing creates an immutable snapshot"
+
+#: workspace:workspace.publication.publishedSnapshot.publishedAt
+msgid "workspace.publication.publishedSnapshot.publishedAt"
+msgstr "Published at {publishedAt}"
+
+#: workspace:workspace.publication.publishedSnapshot.region
+msgid "workspace.publication.publishedSnapshot.region"
+msgstr "Published snapshot"
+
+#: workspace:workspace.publication.qrDestination.createButton
+msgid "workspace.publication.qrDestination.createButton"
+msgstr "Create"
+
+#: workspace:workspace.publication.qrDestination.createError
+msgid "workspace.publication.qrDestination.createError"
+msgstr "Could not create QR code. Try again."
+
+#: workspace:workspace.publication.qrDestination.disableButton
+msgid "workspace.publication.qrDestination.disableButton"
+msgstr "Disable"
+
+#: workspace:workspace.publication.qrDestination.disableError
+msgid "workspace.publication.qrDestination.disableError"
+msgstr "Could not disable QR code. Try again."
+
+#: workspace:workspace.publication.qrDestination.empty
+msgid "workspace.publication.qrDestination.empty"
+msgstr "No QR code created yet."
+
+#: workspace:workspace.publication.qrDestination.explanation
+msgid "workspace.publication.qrDestination.explanation"
+msgstr "Create a QR code that resolves to the current published menu."
+
+#: workspace:workspace.publication.qrDestination.fields.unavailable
+msgid "workspace.publication.qrDestination.fields.unavailable"
+msgstr "QR destination capability is not available until a current publication exists."
+
+#: workspace:workspace.publication.qrDestination.loadError
+msgid "workspace.publication.qrDestination.loadError"
+msgstr "Could not load QR codes. Try again."
+
+#: workspace:workspace.publication.qrDestination.loading
+msgid "workspace.publication.qrDestination.loading"
+msgstr "Loading QR codes…"
+
+#: workspace:workspace.publication.qrDestination.region
+msgid "workspace.publication.qrDestination.region"
+msgstr "QR destination"
+
+#: workspace:workspace.publication.qrDestination.state.disabled
+msgid "workspace.publication.qrDestination.state.disabled"
+msgstr "Disabled"
+
+#: workspace:workspace.publication.qrExport.bulk
+msgid "workspace.publication.qrExport.bulk"
+msgstr "Bulk export"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.areaSectionCount
+msgid "workspace.publication.qrExport.bulkWizard.areaSectionCount"
+msgstr "Area/section count"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.areaSectionCount.error
+msgid "workspace.publication.qrExport.bulkWizard.areaSectionCount.error"
+msgstr "Enter a whole number between 1 and 50."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.createButton
+msgid "workspace.publication.qrExport.bulkWizard.createButton"
+msgstr "Create table QR codes"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.createError
+msgid "workspace.publication.qrExport.bulkWizard.createError"
+msgstr "Could not create table QR codes. Try again."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.crossFieldError
+msgid "workspace.publication.qrExport.bulkWizard.crossFieldError"
+msgstr "Naming range and sequence must match the table count and stay within 0-9999."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.heading
+msgid "workspace.publication.qrExport.bulkWizard.heading"
+msgstr "Bulk QR wizard"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.loading
+msgid "workspace.publication.qrExport.bulkWizard.loading"
+msgstr "Creating table QR codes..."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.namingPrefix
+msgid "workspace.publication.qrExport.bulkWizard.namingPrefix"
+msgstr "Naming prefix"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.namingPrefix.error
+msgid "workspace.publication.qrExport.bulkWizard.namingPrefix.error"
+msgstr "Naming prefix must be 10 characters or fewer."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.namingRange
+msgid "workspace.publication.qrExport.bulkWizard.namingRange"
+msgstr "Naming range"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.namingRange.error
+msgid "workspace.publication.qrExport.bulkWizard.namingRange.error"
+msgstr "Enter a range as digits-dash-digits with the start no greater than the end."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.namingSequenceStart
+msgid "workspace.publication.qrExport.bulkWizard.namingSequenceStart"
+msgstr "Naming sequence start"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.namingSequenceStart.error
+msgid "workspace.publication.qrExport.bulkWizard.namingSequenceStart.error"
+msgstr "Enter a whole number between 0 and 9999."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.notice
+msgid "workspace.publication.qrExport.bulkWizard.notice"
+msgstr "This bulk QR wizard has not been submitted; no bulk export has been created yet."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable
+msgid "workspace.publication.qrExport.bulkWizard.seatCountPerTable"
+msgstr "Seat count per table"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable.error
+msgid "workspace.publication.qrExport.bulkWizard.seatCountPerTable.error"
+msgstr "Enter a whole number between 1 and 20."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.success
+msgid "workspace.publication.qrExport.bulkWizard.success"
+msgstr "Created {areas} areas, {tables} tables, {qrCodes} QR codes."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.summary
+msgid "workspace.publication.qrExport.bulkWizard.summary"
+msgstr "{tables} tables across {areas} areas, {seats} seats planned"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.tableCount
+msgid "workspace.publication.qrExport.bulkWizard.tableCount"
+msgstr "Table count"
+
+#: workspace:workspace.publication.qrExport.bulkWizard.tableCount.error
+msgid "workspace.publication.qrExport.bulkWizard.tableCount.error"
+msgstr "Enter a whole number between 1 and 500."
+
+#: workspace:workspace.publication.qrExport.config.bulk
+msgid "workspace.publication.qrExport.config.bulk"
+msgstr "Bulk range or count"
+
+#: workspace:workspace.publication.qrExport.config.bulk.placeholder
+msgid "workspace.publication.qrExport.config.bulk.placeholder"
+msgstr "e.g. 1-50 or 25"
+
+#: workspace:workspace.publication.qrExport.config.destinationType
+msgid "workspace.publication.qrExport.config.destinationType"
+msgstr "Destination type"
+
+#: workspace:workspace.publication.qrExport.config.destinationType.menuCategory
+msgid "workspace.publication.qrExport.config.destinationType.menuCategory"
+msgstr "Menu category"
+
+#: workspace:workspace.publication.qrExport.config.destinationType.published
+msgid "workspace.publication.qrExport.config.destinationType.published"
+msgstr "Published"
+
+#: workspace:workspace.publication.qrExport.config.heading
+msgid "workspace.publication.qrExport.config.heading"
+msgstr "QR export configuration"
+
+#: workspace:workspace.publication.qrExport.config.orientation
+msgid "workspace.publication.qrExport.config.orientation"
+msgstr "Orientation"
+
+#: workspace:workspace.publication.qrExport.config.orientation.landscape
+msgid "workspace.publication.qrExport.config.orientation.landscape"
+msgstr "Landscape"
+
+#: workspace:workspace.publication.qrExport.config.orientation.portrait
+msgid "workspace.publication.qrExport.config.orientation.portrait"
+msgstr "Portrait"
+
+#: workspace:workspace.publication.qrExport.config.outputFormat
+msgid "workspace.publication.qrExport.config.outputFormat"
+msgstr "Output format"
+
+#: workspace:workspace.publication.qrExport.config.paperSize
+msgid "workspace.publication.qrExport.config.paperSize"
+msgstr "Paper size"
+
+#: workspace:workspace.publication.qrExport.downloadButton
+msgid "workspace.publication.qrExport.downloadButton"
+msgstr "Download"
+
+#: workspace:workspace.publication.qrExport.downloadPngLink
+msgid "workspace.publication.qrExport.downloadPngLink"
+msgstr "Download PNG"
+
+#: workspace:workspace.publication.qrExport.exportButton
+msgid "workspace.publication.qrExport.exportButton"
+msgstr "Export"
+
+#: workspace:workspace.publication.qrExport.formats.heading
+msgid "workspace.publication.qrExport.formats.heading"
+msgstr "Export formats"
+
+#: workspace:workspace.publication.qrExport.formats.pdf
+msgid "workspace.publication.qrExport.formats.pdf"
+msgstr "PDF"
+
+#: workspace:workspace.publication.qrExport.formats.png
+msgid "workspace.publication.qrExport.formats.png"
+msgstr "PNG"
+
+#: workspace:workspace.publication.qrExport.formats.svg
+msgid "workspace.publication.qrExport.formats.svg"
+msgstr "SVG"
+
+#: workspace:workspace.publication.qrExport.noActive
+msgid "workspace.publication.qrExport.noActive"
+msgstr "No active QR code to export yet."
+
+#: workspace:workspace.publication.qrExport.previewAlt
+msgid "workspace.publication.qrExport.previewAlt"
+msgstr "QR code preview"
+
+#: workspace:workspace.publication.qrExport.printButton
+msgid "workspace.publication.qrExport.printButton"
+msgstr "Print"
+
+#: workspace:workspace.publication.qrExport.region
+msgid "workspace.publication.qrExport.region"
+msgstr "QR print export"
+
+#: workspace:workspace.publication.qrExport.selector
+msgid "workspace.publication.qrExport.selector"
+msgstr "QR code"
+
+#: workspace:workspace.publication.qrExport.themes.bold
+msgid "workspace.publication.qrExport.themes.bold"
+msgstr "Bold theme"
+
+#: workspace:workspace.publication.qrExport.themes.branded
+msgid "workspace.publication.qrExport.themes.branded"
+msgstr "Branded theme"
+
+#: workspace:workspace.publication.qrExport.themes.classic
+msgid "workspace.publication.qrExport.themes.classic"
+msgstr "Classic theme"
+
+#: workspace:workspace.publication.qrExport.themes.heading
+msgid "workspace.publication.qrExport.themes.heading"
+msgstr "Themes"
+
+#: workspace:workspace.publication.qrExport.themes.highContrast
+msgid "workspace.publication.qrExport.themes.highContrast"
+msgstr "High contrast theme"
+
+#: workspace:workspace.publication.qrExport.themes.minimal
+msgid "workspace.publication.qrExport.themes.minimal"
+msgstr "Minimal theme"
+
+#: workspace:workspace.publication.qrExport.themes.rounded
+msgid "workspace.publication.qrExport.themes.rounded"
+msgstr "Rounded theme"
+
+#: workspace:workspace.publication.qrExport.unavailable
+msgid "workspace.publication.qrExport.unavailable"
+msgstr "QR print export is not available yet."
+
+#: workspace:workspace.publication.readiness.categoryNames
+msgid "workspace.publication.readiness.categoryNames"
+msgstr "Category names ready"
+
+#: workspace:workspace.publication.readiness.hasCategory
+msgid "workspace.publication.readiness.hasCategory"
+msgstr "Has category"
+
+#: workspace:workspace.publication.readiness.hasVisibleItem
+msgid "workspace.publication.readiness.hasVisibleItem"
+msgstr "Has visible item"
+
+#: workspace:workspace.publication.readiness.needsAttention
+msgid "workspace.publication.readiness.needsAttention"
+msgstr "Needs attention"
+
+#: workspace:workspace.publication.readiness.notLoaded
+msgid "workspace.publication.readiness.notLoaded"
+msgstr "Readiness is not loaded yet."
+
+#: workspace:workspace.publication.readiness.ready
+msgid "workspace.publication.readiness.ready"
+msgstr "Ready"
+
+#: workspace:workspace.publication.readiness.region
+msgid "workspace.publication.readiness.region"
+msgstr "Publish readiness checklist"
+
+#: workspace:workspace.publication.readiness.visiblePriceAndCurrency
+msgid "workspace.publication.readiness.visiblePriceAndCurrency"
+msgstr "Visible price and currency ready"
+
+#: workspace:workspace.publication.readiness.visibleProductNames
+msgid "workspace.publication.readiness.visibleProductNames"
+msgstr "Visible product names ready"
+
+#: workspace:workspace.publication.status.lifecycle.failed
+msgid "workspace.publication.status.lifecycle.failed"
+msgstr "Failed"
+
+#: workspace:workspace.publication.status.lifecycle.generating
+msgid "workspace.publication.status.lifecycle.generating"
+msgstr "Generating"
+
+#: workspace:workspace.publication.status.lifecycle.heading
+msgid "workspace.publication.status.lifecycle.heading"
+msgstr "Lifecycle"
+
+#: workspace:workspace.publication.status.lifecycle.pending
+msgid "workspace.publication.status.lifecycle.pending"
+msgstr "Pending"
+
+#: workspace:workspace.publication.status.lifecycle.published
+msgid "workspace.publication.status.lifecycle.published"
+msgstr "Published"
+
+#: workspace:workspace.publication.status.lifecycle.superseded
+msgid "workspace.publication.status.lifecycle.superseded"
+msgstr "Superseded"
+
+#: workspace:workspace.publication.status.loadError
+msgid "workspace.publication.status.loadError"
+msgstr "Could not load the current publication status. Try again."
+
+#: workspace:workspace.publication.status.loading
+msgid "workspace.publication.status.loading"
+msgstr "Checking current publication status…"
+
+#: workspace:workspace.publication.status.notPublished
+msgid "workspace.publication.status.notPublished"
+msgstr "Not published yet."
+
+#: workspace:workspace.publication.status.publishButton
+msgid "workspace.publication.status.publishButton"
+msgstr "Publish"
+
+#: workspace:workspace.publication.status.publishError
+msgid "workspace.publication.status.publishError"
+msgstr "Publish failed. The last successful publication is still current."
+
+#: workspace:workspace.publication.status.region
+msgid "workspace.publication.status.region"
+msgstr "Publication status"
+
+#: workspace:workspace.publication.status.summary
+msgid "workspace.publication.status.summary"
+msgstr "#{id} · v{version} · {state}"
+
+#: workspace:workspace.publication.status.unavailable
+msgid "workspace.publication.status.unavailable"
+msgstr "Publication status is not available yet."
+
+#: workspace:workspace.publication.unavailable
+msgid "workspace.publication.unavailable"
+msgstr "Publication is not available yet."
+
+#: workspace:workspace.shell.brand
+msgid "workspace.shell.brand"
+msgstr "Zabuno"
+
+#: workspace:workspace.shell.currentLocation.label
+msgid "workspace.shell.currentLocation.label"
+msgstr "Current location"
+
+#: workspace:workspace.shell.globalSearch.unavailable
+msgid "workspace.shell.globalSearch.unavailable"
+msgstr "Global search unavailable"
+
+#: workspace:workspace.shell.nav.analytics
+msgid "workspace.shell.nav.analytics"
+msgstr "Analytics"
+
+#: workspace:workspace.shell.nav.billing
+msgid "workspace.shell.nav.billing"
+msgstr "Billing"
+
+#: workspace:workspace.shell.nav.brand
+msgid "workspace.shell.nav.brand"
+msgstr "Brand"
+
+#: workspace:workspace.shell.nav.brandLocations
+msgid "workspace.shell.nav.brandLocations"
+msgstr "Brand & Locations"
+
+#: workspace:workspace.shell.nav.dashboard
+msgid "workspace.shell.nav.dashboard"
+msgstr "Dashboard"
+
+#: workspace:workspace.shell.nav.group
+msgid "workspace.shell.nav.group"
+msgstr "Account"
+
+#: workspace:workspace.shell.nav.label
+msgid "workspace.shell.nav.label"
+msgstr "Restaurant admin"
+
+#: workspace:workspace.shell.nav.launchReadiness
+msgid "workspace.shell.nav.launchReadiness"
+msgstr "Launch readiness"
+
+#: workspace:workspace.shell.nav.locations
+msgid "workspace.shell.nav.locations"
+msgstr "Locations"
+
+#: workspace:workspace.shell.nav.media
+msgid "workspace.shell.nav.media"
+msgstr "Media"
+
+#: workspace:workspace.shell.nav.menu
+msgid "workspace.shell.nav.menu"
+msgstr "Menu"
+
+#: workspace:workspace.shell.nav.menuCatalog
+msgid "workspace.shell.nav.menuCatalog"
+msgstr "Menu catalog"
+
+#: workspace:workspace.shell.nav.publication
+msgid "workspace.shell.nav.publication"
+msgstr "Publication"
+
+#: workspace:workspace.shell.nav.team
+msgid "workspace.shell.nav.team"
+msgstr "Team"
+
+#: workspace:workspace.shell.notifications.unavailable
+msgid "workspace.shell.notifications.unavailable"
+msgstr "Notifications unavailable"
+
+#: workspace:workspace.team.heading
+msgid "workspace.team.heading"
+msgstr "Team"
+
+#: workspace:workspace.team.invitations.cancel.busy
+msgid "workspace.team.invitations.cancel.busy"
+msgstr "Cancelling…"
+
+#: workspace:workspace.team.invitations.cancel.button
+msgid "workspace.team.invitations.cancel.button"
+msgstr "Cancel invitation"
+
+#: workspace:workspace.team.invitations.cancel.confirm
+msgid "workspace.team.invitations.cancel.confirm"
+msgstr "Confirm cancel"
+
+#: workspace:workspace.team.invitations.cancel.error
+msgid "workspace.team.invitations.cancel.error"
+msgstr "Unable to cancel this invitation. Please try again."
+
+#: workspace:workspace.team.invitations.cancel.keep
+msgid "workspace.team.invitations.cancel.keep"
+msgstr "Keep invitation"
+
+#: workspace:workspace.team.invitations.cancel.retry
+msgid "workspace.team.invitations.cancel.retry"
+msgstr "Retry"
+
+#: workspace:workspace.team.invitations.cancel.success
+msgid "workspace.team.invitations.cancel.success"
+msgstr "Invitation cancelled."
+
+#: workspace:workspace.team.invitations.empty
+msgid "workspace.team.invitations.empty"
+msgstr "No pending invitations."
+
+#: workspace:workspace.team.invitations.error
+msgid "workspace.team.invitations.error"
+msgstr "Pending invitations failed to load. Please try again."
+
+#: workspace:workspace.team.invitations.loading
+msgid "workspace.team.invitations.loading"
+msgstr "Loading pending invitations…"
+
+#: workspace:workspace.team.invite.button
+msgid "workspace.team.invite.button"
+msgstr "Invite"
+
+#: workspace:workspace.team.invite.email
+msgid "workspace.team.invite.email"
+msgstr "Invite by email"
+
+#: workspace:workspace.team.invite.error
+msgid "workspace.team.invite.error"
+msgstr "Unable to create the invitation. Please try again."
+
+#: workspace:workspace.team.invite.role.editor
+msgid "workspace.team.invite.role.editor"
+msgstr "Editor"
+
+#: workspace:workspace.team.invite.role.owner
+msgid "workspace.team.invite.role.owner"
+msgstr "Owner"
+
+#: workspace:workspace.team.invite.section
+msgid "workspace.team.invite.section"
+msgstr "Invite"
+
+#: workspace:workspace.team.invite.submitting
+msgid "workspace.team.invite.submitting"
+msgstr "Submitting invitation…"
+
+#: workspace:workspace.team.invite.success
+msgid "workspace.team.invite.success"
+msgstr "Invitation created successfully."
+
+#: workspace:workspace.team.invite.unavailable
+msgid "workspace.team.invite.unavailable"
+msgstr "Inviting teammates is not connected yet."
+
+#: workspace:workspace.team.members.empty
+msgid "workspace.team.members.empty"
+msgstr "No members in this workspace yet."
+
+#: workspace:workspace.team.members.error
+msgid "workspace.team.members.error"
+msgstr "Team members failed to load. Please try again."
+
+#: workspace:workspace.team.members.loading
+msgid "workspace.team.members.loading"
+msgstr "Loading team members…"
+
+#: workspace:workspace.team.members.region
+msgid "workspace.team.members.region"
+msgstr "Team members"
+
+#: workspace:workspace.team.members.remove.busy
+msgid "workspace.team.members.remove.busy"
+msgstr "Removing…"
+
+#: workspace:workspace.team.members.remove.button
+msgid "workspace.team.members.remove.button"
+msgstr "Remove"
+
+#: workspace:workspace.team.members.remove.cancel
+msgid "workspace.team.members.remove.cancel"
+msgstr "Cancel"
+
+#: workspace:workspace.team.members.remove.confirm
+msgid "workspace.team.members.remove.confirm"
+msgstr "Confirm remove"
+
+#: workspace:workspace.team.members.remove.error
+msgid "workspace.team.members.remove.error"
+msgstr "Unable to remove this member. Please try again."
+
+#: workspace:workspace.team.members.remove.retry
+msgid "workspace.team.members.remove.retry"
+msgstr "Retry"
+
+#: workspace:workspace.team.members.remove.success
+msgid "workspace.team.members.remove.success"
+msgstr "Member removed."
+
+#: workspace:workspace.team.members.transfer.body
+msgid "workspace.team.members.transfer.body"
+msgstr "This member will become the workspace owner and you will become an editor. This action can be reversed later by the new owner."
+
+#: workspace:workspace.team.members.transfer.busy
+msgid "workspace.team.members.transfer.busy"
+msgstr "Transferring…"
+
+#: workspace:workspace.team.members.transfer.button
+msgid "workspace.team.members.transfer.button"
+msgstr "Transfer ownership"
+
+#: workspace:workspace.team.members.transfer.cancel
+msgid "workspace.team.members.transfer.cancel"
+msgstr "Cancel"
+
+#: workspace:workspace.team.members.transfer.confirm
+msgid "workspace.team.members.transfer.confirm"
+msgstr "Confirm"
+
+#: workspace:workspace.team.members.transfer.error
+msgid "workspace.team.members.transfer.error"
+msgstr "Unable to transfer ownership. Please try again."
+
+#: workspace:workspace.team.members.transfer.retry
+msgid "workspace.team.members.transfer.retry"
+msgstr "Retry"
+
+#: workspace:workspace.team.members.transfer.success
+msgid "workspace.team.members.transfer.success"
+msgstr "Ownership transferred."
+
+#: workspace:workspace.team.members.transfer.title
+msgid "workspace.team.members.transfer.title"
+msgstr "Transfer workspace ownership"
+
+#: workspace:workspace.team.operational.description.connected
+msgid "workspace.team.operational.description.connected"
+msgstr "Current workspace members and pending invitations below come from the real server-authoritative lists."
+
+#: workspace:workspace.team.operational.description.error
+msgid "workspace.team.operational.description.error"
+msgstr "Pending invitations failed to load — the server-authoritative invitations list could not be reached."
+
+#: workspace:workspace.team.operational.description.loading
+msgid "workspace.team.operational.description.loading"
+msgstr "Loading pending invitations from the server-authoritative invitations list…"
+
+#: workspace:workspace.team.pendingInvitations.empty
+msgid "workspace.team.pendingInvitations.empty"
+msgstr "Pending invitations are not available yet."
+
+#: workspace:workspace.team.pendingInvitations.region
+msgid "workspace.team.pendingInvitations.region"
+msgstr "Pending invitations"
+
+#: workspace:workspace.team.status.connected
+msgid "workspace.team.status.connected"
+msgstr "Invitations connected"
+
+#: workspace:workspace.team.status.error
+msgid "workspace.team.status.error"
+msgstr "Failed to load"
+
+#: workspace:workspace.team.status.loading
+msgid "workspace.team.status.loading"
+msgstr "Loading"
