@@ -80,6 +80,29 @@ final class UrlPolicy
         return in_array(strtolower($first), $this->list('lowercase_prefixes'), true);
     }
 
+    /**
+     * Bu yol arama motoruna kapalı mı? Karar ilk segmentten verilir, yani
+     * `/app/herhangi-bir-sey` de kapalıdır.
+     */
+    public function isNoIndexPath(string $path): bool
+    {
+        $first = $this->firstSegment($path);
+
+        return $first !== null && in_array(strtolower($first), $this->list('noindex_prefixes'), true);
+    }
+
+    /** @return list<string> */
+    public function noIndexPrefixes(): array
+    {
+        return $this->list('noindex_prefixes');
+    }
+
+    /** @return list<string> */
+    public function disallowPrefixes(): array
+    {
+        return $this->list('disallow_prefixes');
+    }
+
     /** @return list<string> */
     public function trackingParameters(): array
     {

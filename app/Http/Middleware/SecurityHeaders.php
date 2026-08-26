@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Domain\Url\UrlPolicy;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Vite;
@@ -26,6 +27,8 @@ use Symfony\Component\HttpFoundation\Response;
 final class SecurityHeaders
 {
     public const NONCE_ATTRIBUTE = 'csp-nonce';
+
+    public function __construct(private readonly UrlPolicy $policy) {}
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -64,6 +67,17 @@ final class SecurityHeaders
             'Permissions-Policy' => 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()',
             'Cross-Origin-Opener-Policy' => 'same-origin',
         ];
+
+        // Yönetim ve kimlik yüzeyleri arama sonuçlarında görünmemeli.
+        //
+        // `robots.txt` bunu TEK BAŞINA çözmez: taramayı engeller, ama başka
+        // bir yerden link verilmiş bir adres taranmadan da indekslenebilir.
+        // Bu başlık ise "sonuçlarda gösterme" der ve botun sayfayı
+        // çekebilmesini gerektirir — bu yüzden ikisi birlikte kullanılır ve
+        // aynı yol robots.txt'te Disallow EDİLMEZ.
+        if ($this->policy->isNoIndexPath($request->getPathInfo())) {
+            $headers['X-Robots-Tag'] = 'noindex, nofollow, noarchive';
+        }
 
         // HSTS yalnız HTTPS üzerinden anlamlıdır ve HTTP üzerinden gönderilirse
         // yok sayılır; ayrıca yerel geliştirmede tarayıcıyı kilitlememek için

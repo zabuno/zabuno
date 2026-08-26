@@ -9,6 +9,7 @@ use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\QrDestination\QrToken;
+use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -20,6 +21,7 @@ final class ShowPublicMenuController extends Controller
         private readonly QrCodeRepositoryPort $qrCodes,
         private readonly PublicationRepositoryPort $publications,
         private readonly RecordAnalyticsEvent $recordAnalyticsEvent,
+        private readonly CanonicalUrl $canonical,
     ) {}
 
     public function __invoke(string $token): Response|JsonResponse
@@ -50,7 +52,16 @@ final class ShowPublicMenuController extends Controller
             AnalyticsEventType::MenuOpen,
         );
 
-        return response()->view('public-menu', ['snapshot' => $publication->snapshot], 200);
+        // Kanonik adres sunucuda üretilir. İstemcide üretilseydi, JavaScript
+        // çalıştırmayan tarama/önizleme botları onu hiç görmezdi — ve bu
+        // sayfayı paylaşan çoğu araç JavaScript çalıştırmaz.
+        return response()->view('public-menu', [
+            'snapshot' => $publication->snapshot,
+            'canonicalUrl' => $this->canonical->for(
+                request()->getSchemeAndHttpHost(),
+                '/menu/'.$qrToken->value(),
+            ),
+        ], 200);
     }
 
     private function notFound(): JsonResponse
