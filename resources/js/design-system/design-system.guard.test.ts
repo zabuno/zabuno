@@ -31,11 +31,10 @@ import {
  * geçerli değildir.
  *
  * Aynı delik uzantı tarafında da vardı: yalnız `.tsx` taranıyordu. Sınıf
- * listesi taşıyan iki dosya JSX İÇERMEZ, yani `.ts`tir — Flowbite tema
- * bağlaması (`design-system/flowbite-theme.ts`) ve yerel alan stilleri
- * (`catalog/forms/micro/nativeFieldStyles.ts`). Yasak MUTLAK olduğuna göre
- * kapsamı da mutlak olmalı: `.tsx` tarayan bir kural, sınıfların en yoğun
- * toplandığı iki dosyaya tam olarak kördü.
+ * listesini en yoğun taşıyan dosya JSX İÇERMEZ, yani `.ts`tir — Flowbite
+ * tema bağlaması (`design-system/flowbite-theme.ts`). Yasak MUTLAK olduğuna
+ * göre kapsamı da mutlak olmalı: `.tsx` tarayan bir kural, sınıfların en
+ * yoğun toplandığı yere tam olarak kördü.
  *
  * KATMAN kuralları ise `.tsx` ile sınırlı kalır. Bir katman kuralı bir
  * BİLEŞEN hakkında konuşur; stil sabiti dışa aktaran bir `.ts` modülünün

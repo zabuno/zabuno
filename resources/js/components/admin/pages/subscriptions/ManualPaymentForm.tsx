@@ -1,4 +1,5 @@
-import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
+import { TextInput } from '../../../catalog/forms/micro/TextInput';
+import { Select } from '../../../catalog/forms/micro/Select';
 import { useState, type FormEvent } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -19,8 +20,6 @@ type ManualPaymentFormProps = {
     onFieldChange: (field: 'endsAt' | 'paymentNote' | 'documentReference', value: string) => void;
     onSubmit: (values: ManualPaymentFormValues) => void;
 };
-
-const FIELD_CLASSES = NATIVE_FIELD_CLASS;
 
 /**
  * Manual-payment fields: Plan (server is_active plans only), end date,
@@ -61,18 +60,17 @@ export function ManualPaymentForm({
                 className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.plan.label')}
-                <select
+                <Select
                     id="manual-payment-plan"
                     value={planCode}
                     onChange={(event) => setPlanCode(event.target.value)}
-                    className={FIELD_CLASSES}
                 >
                     {activePlans.map((plan) => (
                         <option key={plan.id} value={plan.code}>
                             {plan.name} ({plan.code})
                         </option>
                     ))}
-                </select>
+                </Select>
             </label>
 
             <label
@@ -80,12 +78,11 @@ export function ManualPaymentForm({
                 className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.endDate.label')}
-                <input
+                <TextInput
                     id="manual-payment-end-date"
                     type="text"
                     value={endsAt}
                     onChange={(event) => onFieldChange('endsAt', event.target.value)}
-                    className={FIELD_CLASSES}
                 />
             </label>
 
@@ -94,12 +91,11 @@ export function ManualPaymentForm({
                 className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.paymentNote.label')}
-                <input
+                <TextInput
                     id="manual-payment-note"
                     type="text"
                     value={paymentNote}
                     onChange={(event) => onFieldChange('paymentNote', event.target.value)}
-                    className={FIELD_CLASSES}
                 />
             </label>
 
@@ -108,12 +104,11 @@ export function ManualPaymentForm({
                 className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.documentReference.label')}
-                <input
+                <TextInput
                     id="manual-payment-document-reference"
                     type="text"
                     value={documentReference}
                     onChange={(event) => onFieldChange('documentReference', event.target.value)}
-                    className={FIELD_CLASSES}
                 />
             </label>
 

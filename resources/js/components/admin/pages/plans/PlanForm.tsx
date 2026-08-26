@@ -1,4 +1,5 @@
-import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
+import { TextInput } from '../../../catalog/forms/micro/TextInput';
+import { Textarea } from '../../../catalog/forms/micro/Textarea';
 import { Button } from '../../../catalog/forms/micro/Button';
 import { useMemo, useState, type FormEvent } from 'react';
 
@@ -20,10 +21,6 @@ type PlanFormProps = {
 };
 
 const CURRENCY_PATTERN = /^[A-Z]{3}$/;
-
-const FIELD_CLASSES = NATIVE_FIELD_CLASS;
-
-const TEXTAREA_CLASSES = NATIVE_FIELD_CLASS;
 
 function parseWholeNumber(value: string): number | null {
     const trimmed = value.trim();
@@ -118,75 +115,68 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
             >
                 <label className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('platform.plans.form.name')}
-                    <input
+                    <TextInput
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                         type="text"
-                        className={FIELD_CLASSES}
                     />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('platform.plans.form.code')}
-                    <input
+                    <TextInput
                         value={code}
                         onChange={(event) => setCode(event.target.value)}
                         type="text"
-                        className={FIELD_CLASSES}
                     />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('platform.plans.form.version')}
-                    <input
+                    <TextInput
                         value={version}
                         onChange={(event) => setVersion(event.target.value)}
                         type="text"
                         inputMode="numeric"
-                        className={FIELD_CLASSES}
                     />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('platform.plans.form.amount')}
-                    <input
+                    <TextInput
                         value={amount}
                         onChange={(event) => setAmount(event.target.value)}
                         type="text"
                         inputMode="numeric"
-                        className={FIELD_CLASSES}
                     />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('platform.plans.form.currency')}
-                    <input
+                    <TextInput
                         value={currency}
                         onChange={(event) => setCurrency(event.target.value)}
                         type="text"
-                        className={FIELD_CLASSES}
                     />
                 </label>
 
                 <label className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('platform.plans.form.sortOrder')}
-                    <input
+                    <TextInput
                         value={sortOrder}
                         onChange={(event) => setSortOrder(event.target.value)}
                         type="text"
                         inputMode="numeric"
-                        className={FIELD_CLASSES}
                     />
                 </label>
             </div>
 
             <label className="flex flex-col gap-1 text-sm text-fg-secondary">
                 {t('platform.plans.form.entitlements')}
-                <textarea
+                <Textarea
                     value={entitlements}
                     onChange={(event) => setEntitlements(event.target.value)}
                     rows={4}
-                    className={TEXTAREA_CLASSES}
                 />
             </label>
 

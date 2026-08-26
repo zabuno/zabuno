@@ -1,4 +1,4 @@
-import { NATIVE_FIELD_CLASS } from '../../catalog/forms/micro/nativeFieldStyles';
+import { Select } from '../../catalog/forms/micro/Select';
 import { useState } from 'react';
 import { Button, Label } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
@@ -89,9 +89,8 @@ export function LocationsPage({
                                 {t('workspace.catalog.location.label')}
                             </Label>
                         </div>
-                        <select
+                        <Select
                             id="workspace-locations-current"
-                            className={NATIVE_FIELD_CLASS}
                             value={selectedLocationId === null ? '' : String(selectedLocationId)}
                             onChange={(event) => onSelectLocation(Number(event.target.value))}
                         >
@@ -100,7 +99,7 @@ export function LocationsPage({
                                     {`${location.display_name} (#${location.id})`}
                                 </option>
                             ))}
-                        </select>
+                        </Select>
                     </div>
                 )}
 

@@ -1,5 +1,6 @@
+import { TextInput } from '../../../catalog/forms/micro/TextInput';
+import { Select } from '../../../catalog/forms/micro/Select';
 import { Button } from '../../../catalog/forms/micro/Button';
-import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { t } from '../../../../i18n/workspace';
 
@@ -87,7 +88,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             <div className="flex flex-col gap-3">
                 <label htmlFor={fileId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.file')}
-                    <input
+                    <TextInput
                         id={fileId}
                         type="file"
                         ref={fileInputRef}
@@ -98,23 +99,21 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
                 <label htmlFor={altId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.altText')}
-                    <input
+                    <TextInput
                         id={altId}
                         type="text"
                         required
                         value={altText}
                         onChange={(event) => setAltText(event.target.value)}
-                        className={NATIVE_FIELD_CLASS}
                     />
                 </label>
 
                 <label htmlFor={slotId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.assetSlot')}
-                    <select
+                    <Select
                         id={slotId}
                         value={slot}
                         onChange={(event) => setSlot(event.target.value)}
-                        className={NATIVE_FIELD_CLASS}
                     >
                         <option value="">
                             {t('workspace.media.upload.field.assetSlot.placeholder')}
@@ -124,17 +123,17 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                                 {t(labelKey)}
                             </option>
                         ))}
-                    </select>
+                    </Select>
                 </label>
 
                 <label htmlFor={rightsId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.rights')}
-                    <input id={rightsId} type="text" disabled className={NATIVE_FIELD_CLASS} />
+                    <TextInput id={rightsId} type="text" disabled />
                 </label>
 
                 <label htmlFor={expiryId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.expiry')}
-                    <input id={expiryId} type="date" disabled className={NATIVE_FIELD_CLASS} />
+                    <TextInput id={expiryId} type="date" disabled />
                 </label>
             </div>
 
