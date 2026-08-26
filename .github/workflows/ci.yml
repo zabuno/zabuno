@@ -20,6 +20,16 @@ jobs:
         with:
           php-version: '8.3'
           coverage: none
+          # CI 2026-08-26'da QrExportPdfTest'te bir kez 500 verip kirildi ve
+          # ayni commit yeniden calistirilinca gecti. Test 8 kagit boyutu x 2
+          # yon = 16 PDF render eder, yani suitenin en agir adimidir.
+          #
+          # DURUSTCE: sebep KANITLANMADI. Ayni suite yerelde hem 128M hem 512M
+          # ile tam gecti, yani bellek yalnizca makul bir suphedir; asil sebep
+          # runner'a ozgu baska bir kaynak baskisi da olabilir. Bu satir ucuz
+          # bir sigortadir, teshis edilmis bir duzeltme degildir. Ayni test
+          # tekrar kirilirsa once bu varsayim curutulmelidir.
+          ini-values: memory_limit=512M
 
       - name: Set up Node
         uses: actions/setup-node@v4
