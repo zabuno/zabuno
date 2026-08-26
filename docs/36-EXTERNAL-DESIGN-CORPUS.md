@@ -23,13 +23,17 @@ bu varlığın **var olduğunu** öğrenir.
 
 ## 1. Devir uyarısı (exit / ekip devri)
 
-Aşağıdaki içerik **bu Git deposunda değildir** ve bir klonla birlikte gelmez.
-Depo PUBLIC'tir; külliyatın buraya taşınıp taşınmayacağı owner'ın IP/kapsam
-kararıdır ve bu belge o kararı vermez.
+**2026-08-26 owner kararı:** felsefe belgeleri depoya taşındı ve artık bir
+klonla birlikte gelir → [`docs/design-corpus/`](design-corpus/README.md)
+(18 kök belge + 10 dosyalık `ui-variant-plan/`, bayt bazında birebir).
 
-**Devir veya exit sırasında bu varlık ayrıca aktarılmalıdır.** Aktarılmazsa
-alıcı taraf, ürünün tasarım gerekçesini ve çalışan referans implementasyonunu
-kaybeder; `docs/06` ve `docs/35` yalnız sonucu taşır, gerekçeyi değil.
+**Referans implementasyonu depoda DEĞİLDİR** ve bir klonla gelmez. Owner,
+çalışan kodu (token pipeline'ı, foundations, AEP renderer) public repoya
+taşımamayı seçti; bu bilinçli bir IP kararıdır.
+
+**Devir veya exit sırasında §4'teki referans implementasyonu ayrıca
+aktarılmalıdır.** Aktarılmazsa alıcı taraf tasarım *gerekçesini* alır
+(§3 artık depoda) fakat çalışan implementasyonu kaybeder.
 
 `docs/25` (Stage 8 Exit Ready) bu aktarımı bir devir kalemi olarak kaydeder.
 
@@ -40,9 +44,11 @@ Owner makinesinde: `~/DEV/zabuno/frontend`
 İki bölümden oluşur: **felsefe külliyatı** (§3) ve **referans implementasyonu**
 (§4).
 
-## 3. Felsefe külliyatı — `~/DEV/zabuno/frontend/*.md`
+## 3. Felsefe külliyatı — ARTIK DEPODA ✅
 
-18 kök belge ve 10 dosyalık `ui-variant-plan/` dizini. Öne çıkanlar:
+Taşındı: [`docs/design-corpus/`](design-corpus/README.md). Aşağıdaki tablo
+neyin nerede olduğunu gösterir; dosya adları depo uyumlu hâle getirildi ve
+özgün adlar dizin dosyasında kayıtlıdır.
 
 | Belge | Ne dondurur |
 |---|---|
