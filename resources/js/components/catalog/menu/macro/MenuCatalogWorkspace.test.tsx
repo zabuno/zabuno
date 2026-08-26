@@ -301,6 +301,10 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
         fireEvent.click(screen.getByRole('button', { name: /create item|add item/i }));
         await waitFor(() => csrfPrecedesWrite(menuItemsUrl(WORKSPACE_ID, 5), 'POST'));
 
+        expect(
+            screen.getByRole('button', { name: 'Edit price for Mercimek Çorbası' }),
+        ).toBeInTheDocument();
+
         const allergensInput = await screen.findByLabelText(/allergens/i);
         fireEvent.change(allergensInput, { target: { value: 'gluten, süt, gluten, süt' } });
         fireEvent.click(screen.getByRole('button', { name: /save allergens|update allergens/i }));
