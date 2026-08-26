@@ -1,6 +1,7 @@
 import type React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 /**
  * LAUNCHREADINESS_TENANT_EVIDENCE_FRONTEND_RED
@@ -28,6 +29,18 @@ const BACKUP_CLAIM =
     'This evidence reflects one local SQLite online-backup and isolated file-copy restore drill against a frozen table manifest. It is not an RPO/RTO proof, not a production DR drill, and does not test cross-host or point-in-time recovery.';
 
 const OTHER_CANONICAL_ITEMS = [/owasp\s*asvs/i, /qr scan/i, /rpo.*rto|rto.*rpo/i, /shared.host/i];
+
+function findCanonicalTitle(container: HTMLElement, pattern: RegExp) {
+    return within(container).getByText((_content, element) => {
+        if (!element || element.tagName.toLowerCase() !== 'p') {
+            return false;
+        }
+        if (element.closest('dl')) {
+            return false;
+        }
+        return pattern.test(element.textContent ?? '');
+    });
+}
 
 function jsonResponse(status: number, body: unknown): Response {
     return {
@@ -175,5 +188,140 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
         for (const el of container.querySelectorAll<HTMLElement>('[class]')) {
             expect(el.getAttribute('class') ?? '').not.toMatch(BREAKPOINT_CLASS_PATTERN);
         }
+    });
+
+    it('shows an accessible, always-visible Refresh evidence control once the initial evidence has resolved', async () => {
+        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+
+        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+
+        const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
+        expect(refreshButton).toBeInTheDocument();
+        expect(refreshButton).toBeEnabled();
+    });
+
+    it('makes exactly one additional request to each existing evidence endpoint, with the exact current-workspace URLs and no other endpoint, on one click', async () => {
+        const user = userEvent.setup();
+        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+
+        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+
+        const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
+        await user.click(refreshButton);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(4));
+
+        const calledUrls = fetchSpy.mock.calls.map((call) => String(call[0]));
+        expect(calledUrls.filter((url) => url === TENANT_EVIDENCE_ENDPOINT)).toHaveLength(2);
+        expect(calledUrls.filter((url) => url === BACKUP_EVIDENCE_ENDPOINT)).toHaveLength(2);
+        expect(calledUrls).toHaveLength(4);
+        for (const url of calledUrls) {
+            expect([TENANT_EVIDENCE_ENDPOINT, BACKUP_EVIDENCE_ENDPOINT]).toContain(url);
+        }
+    });
+
+    it('truthfully returns both dynamic evidence rows to loading after a refresh click before resolving refreshed server states, without stale detail', async () => {
+        const user = userEvent.setup();
+        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+
+        let resolveTenantRefresh: ((response: Response) => void) | undefined;
+        let resolveBackupRefresh: ((response: Response) => void) | undefined;
+        let callCount = 0;
+
+        fetchSpy.mockImplementation(async (url: string) => {
+            callCount += 1;
+            if (callCount <= 2) {
+                if (String(url) === TENANT_EVIDENCE_ENDPOINT) {
+                    return jsonResponse(200, evidenceEnvelope('passed'));
+                }
+                if (String(url) === BACKUP_EVIDENCE_ENDPOINT) {
+                    return jsonResponse(200, backupEvidenceEnvelope('passed'));
+                }
+                throw new Error(`Unhandled fetch: ${String(url)}`);
+            }
+
+            if (String(url) === TENANT_EVIDENCE_ENDPOINT) {
+                return new Promise<Response>((resolve) => {
+                    resolveTenantRefresh = resolve;
+                });
+            }
+            if (String(url) === BACKUP_EVIDENCE_ENDPOINT) {
+                return new Promise<Response>((resolve) => {
+                    resolveBackupRefresh = resolve;
+                });
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+
+        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+
+        const checklist = screen.getByRole('region', { name: /launch readiness/i });
+
+        await waitFor(() =>
+            expect(within(checklist).getAllByText(/passed/i).length).toBeGreaterThanOrEqual(2),
+        );
+        expect(within(checklist).queryAllByText(/abc1234/i).length).toBeGreaterThanOrEqual(2);
+
+        const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
+        await user.click(refreshButton);
+
+        await waitFor(() =>
+            expect(within(checklist).getAllByText(/loading/i).length).toBeGreaterThanOrEqual(2),
+        );
+        expect(within(checklist).queryByText(/abc1234/i)).not.toBeInTheDocument();
+        expect(within(checklist).queryAllByText(/passed/i)).toHaveLength(0);
+
+        resolveTenantRefresh?.(
+            jsonResponse(
+                200,
+                evidenceEnvelope('failed', { git_sha: 'refreshed-tenant' }),
+            ) as unknown as Response,
+        );
+        resolveBackupRefresh?.(
+            jsonResponse(
+                200,
+                backupEvidenceEnvelope('failed', { git_sha: 'refreshed-backup' }),
+            ) as unknown as Response,
+        );
+
+        await waitFor(() =>
+            expect(within(checklist).getAllByText(/failed/i).length).toBeGreaterThanOrEqual(2),
+        );
+        expect(within(checklist).queryByText(/abc1234/i)).not.toBeInTheDocument();
+        expect(within(checklist).getAllByText(/refreshed-tenant|refreshed-backup/i).length).toBe(2);
+    });
+
+    it('leaves the other four static Unavailable requirements unchanged across a refresh', async () => {
+        const user = userEvent.setup();
+        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+
+        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+
+        const checklist = screen.getByRole('region', { name: /launch readiness/i });
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+
+        for (const pattern of OTHER_CANONICAL_ITEMS) {
+            expect(findCanonicalTitle(checklist, pattern)).toBeInTheDocument();
+        }
+        const unavailableCountBefore =
+            within(checklist).getAllByText(/unavailable/i).length;
+        expect(unavailableCountBefore).toBeGreaterThanOrEqual(OTHER_CANONICAL_ITEMS.length);
+
+        const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
+        await user.click(refreshButton);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(4));
+
+        for (const pattern of OTHER_CANONICAL_ITEMS) {
+            expect(findCanonicalTitle(checklist, pattern)).toBeInTheDocument();
+        }
+        expect(within(checklist).getAllByText(/unavailable/i).length).toBe(
+            unavailableCountBefore,
+        );
     });
 });

@@ -33,15 +33,15 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 421;
+const FROZEN_LEGACY_KEY_COUNT = 422;
 
-// Frozen from the applied ANALYTICS-RETRY-STATE-01 catalog transform: sha256
-// of sorted "key=value" lines joined by "\n" over all 421 entries, after
-// analytics.ts additively introduces two new action keys (refresh/retry) for
-// the accessible Refresh/Retry report action — entry count grows from 419
-// (the prior PUBLICATION-LOAD-STATE-01 baseline) to exactly 421.
+// Frozen from the applied READINESS-EVIDENCE-REFRESH-01 catalog transform:
+// sha256 of sorted "key=value" lines joined by "\n" over all 422 entries,
+// after launch-readiness.ts additively introduces one new refresh button key
+// for the accessible Refresh evidence action — entry count grows from 421
+// (the prior ANALYTICS-RETRY-STATE-01 baseline) to exactly 422.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '2d0641cb07af58bc75dfad03e04ad0b1d8ed729159d9e86a64d11756cb8911b6';
+    '95888c57c634cb09eb9e265ee512a7c9c3ab65d13d873e62cbf4b58f33173750';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
