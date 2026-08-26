@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
 <head>
     <meta charset="utf-8">
     <title>{{ __('auth.team_invitation_subject', ['workspace' => $workspaceName]) }}</title>
