@@ -30,12 +30,12 @@ const STATUS_COPY_KEY: Record<MediaAssetStatus, WorkspaceTranslationKey> = {
 const STATUS_TONE_CLASS: Record<MediaAssetStatus | 'unknown', string> = {
     quarantined: 'text-amber-600 dark:text-amber-400',
     scanning: 'text-amber-600 dark:text-amber-400',
-    rejected: 'text-red-600 dark:text-red-400',
-    accepted: 'text-blue-600 dark:text-blue-400',
-    processing: 'text-blue-600 dark:text-blue-400',
-    ready: 'text-green-600 dark:text-green-400',
-    failed: 'text-red-600 dark:text-red-400',
-    unknown: 'text-gray-500 dark:text-gray-400',
+    rejected: 'text-fg-danger',
+    accepted: 'text-fg-link',
+    processing: 'text-fg-link',
+    ready: 'text-fg-success',
+    failed: 'text-fg-danger',
+    unknown: 'text-fg-muted',
 };
 
 function isKnownStatus(status: string): status is MediaAssetStatus {

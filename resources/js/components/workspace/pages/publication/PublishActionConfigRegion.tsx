@@ -13,11 +13,11 @@ export function PublishActionConfigRegion() {
             aria-label={t('workspace.publication.publishAction.region')}
             className="flex w-full flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-fg">
                 {t('workspace.publication.publishAction.region')}
             </h3>
 
-            <label className="flex w-full flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+            <label className="flex w-full flex-col gap-1 text-sm text-fg-secondary">
                 {t('workspace.publication.publishAction.mode.label')}
                 <select
                     disabled
@@ -31,16 +31,16 @@ export function PublishActionConfigRegion() {
                 </select>
             </label>
 
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-fg-muted">
                 {t('workspace.publication.publishAction.permissionNotice')}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-fg-muted">
                 {t('workspace.publication.publishAction.scheduleNotice')}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-fg-muted">
                 {t('workspace.publication.publishAction.snapshotNotice')}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-fg-muted">
                 {t('workspace.publication.publishAction.failurePreservationNotice')}
             </p>
         </div>

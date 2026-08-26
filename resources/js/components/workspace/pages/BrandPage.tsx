@@ -24,7 +24,7 @@ export function BrandPage({ workspaceId, brand, onSaved }: BrandPageProps) {
                 {brand ? (
                     <BrandEditForm workspaceId={workspaceId} brand={brand} onSaved={onSaved} />
                 ) : (
-                    <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                    <p role="status" className="text-sm text-fg-muted">
                         {t('workspace.brand.loading')}
                     </p>
                 )}

@@ -263,34 +263,34 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
             aria-label={t('workspace.billing.iyzicoSandbox.heading')}
             className="flex flex-col w-full gap-3"
         >
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-sm font-semibold text-fg">
                 {t('workspace.billing.iyzicoSandbox.heading')}
             </h2>
 
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-fg-muted">
                 {t('workspace.billing.iyzicoSandbox.disclaimer')}
             </p>
 
             {subscriptionPhase === 'loading' && (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.billing.iyzicoSandbox.loading')}
                 </p>
             )}
 
             {subscriptionPhase === 'noActive' && (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.billing.iyzicoSandbox.noActive')}
                 </p>
             )}
 
             {subscriptionPhase === 'error' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {t('workspace.billing.iyzicoSandbox.subscriptionError')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-red-600 dark:text-red-400"
+                        className="self-start text-sm font-medium text-fg-danger"
                         onClick={() => void fetchSubscription()}
                     >
                         {t('workspace.billing.iyzicoSandbox.retry')}
@@ -299,19 +299,19 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
             )}
 
             {subscriptionPhase === 'active' && sessionPhase === 'loading' && (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.billing.iyzicoSandbox.loading')}
                 </p>
             )}
 
             {subscriptionPhase === 'active' && sessionPhase === 'error' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {t('workspace.billing.iyzicoSandbox.sessionError')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-red-600 dark:text-red-400"
+                        className="self-start text-sm font-medium text-fg-danger"
                         onClick={() => void fetchSession()}
                     >
                         {t('workspace.billing.iyzicoSandbox.retry')}
@@ -321,12 +321,12 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
 
             {subscriptionPhase === 'active' && sessionPhase === 'checkoutError' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {t('workspace.billing.iyzicoSandbox.checkoutError')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-red-600 dark:text-red-400"
+                        className="self-start text-sm font-medium text-fg-danger"
                         onClick={() => void startCheckout()}
                     >
                         {t('workspace.billing.iyzicoSandbox.retry')}
@@ -335,30 +335,30 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
             )}
 
             {subscriptionPhase === 'active' && sessionPhase === 'ready' && (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.billing.iyzicoSandbox.ready')}
                 </p>
             )}
 
             {posting && (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.billing.iyzicoSandbox.processing')}
                 </p>
             )}
 
             {subscriptionPhase === 'active' && sessionPhase === 'invalidRedirect' && (
-                <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                <p role="alert" className="text-sm font-medium text-fg-danger">
                     {t('workspace.billing.iyzicoSandbox.invalidRedirect')}
                 </p>
             )}
 
             {subscriptionPhase === 'active' && sessionPhase === 'failed' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {t('workspace.billing.iyzicoSandbox.state.failed')}
                     </p>
                     {session?.conversation_id && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-fg-muted">
                             {t('workspace.billing.iyzicoSandbox.conversation', {
                                 id: session.conversation_id,
                             })}
@@ -366,7 +366,7 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
                     )}
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-red-600 dark:text-red-400"
+                        className="self-start text-sm font-medium text-fg-danger"
                         onClick={() => void startCheckout()}
                     >
                         {t('workspace.billing.iyzicoSandbox.retry')}
@@ -378,7 +378,7 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
                 sessionPhase === 'transaction' &&
                 session &&
                 !posting && (
-                    <div className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
+                    <div className="flex flex-col gap-1 text-sm text-fg-secondary">
                         <span>
                             {t(
                                 `workspace.billing.iyzicoSandbox.state.${session.state as 'initiated' | 'processing' | 'succeeded'}`,
@@ -400,10 +400,7 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
                             </span>
                         )}
                         {isHttpsUrl(session.redirect_url) && (
-                            <a
-                                href={session.redirect_url}
-                                className="font-medium text-blue-600 dark:text-blue-400"
-                            >
+                            <a href={session.redirect_url} className="font-medium text-fg-link">
                                 {t('workspace.billing.iyzicoSandbox.continueLink')}
                             </a>
                         )}

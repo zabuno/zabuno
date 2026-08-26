@@ -16,30 +16,28 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
             aria-label={t('workspace.publication.draftPreview.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-fg">
                 {t('workspace.publication.draftPreview.region')}
             </h3>
 
-            <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+            <p role="status" className="text-sm text-fg-muted">
                 {t('workspace.publication.draftPreview.notice')}
             </p>
 
             {dashboardMenuTree === null ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-fg-muted">
                     {t('workspace.publication.draftPreview.empty')}
                 </p>
             ) : (
                 <div className="flex flex-col gap-4">
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {dashboardMenuTree.name}
-                    </h4>
+                    <h4 className="text-sm font-semibold text-fg">{dashboardMenuTree.name}</h4>
 
                     {dashboardMenuTree.categories
                         .slice()
                         .sort((a, b) => a.position - b.position)
                         .map((category) => (
                             <div key={category.id} className="flex flex-col gap-2">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                                     {category.name}
                                 </p>
                                 <ul className="flex flex-col gap-2">
@@ -49,7 +47,7 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
                                         .map((item) => (
                                             <li
                                                 key={item.id}
-                                                className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                                                className="flex flex-col gap-1 text-sm text-fg-secondary"
                                             >
                                                 <span>
                                                     {item.productName ?? `#${item.productId}`}
@@ -60,7 +58,7 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
                                                         item.currencyCode,
                                                     )}
                                                 </span>
-                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                <span className="text-xs text-fg-muted">
                                                     {t(
                                                         'workspace.publication.draftPreview.allergens',
                                                     )}
@@ -69,7 +67,7 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
                                                         ? item.allergens.join(', ')
                                                         : '—'}
                                                 </span>
-                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                <span className="text-xs text-fg-muted">
                                                     {item.isVisible
                                                         ? t(
                                                               'workspace.publication.draftPreview.visible',

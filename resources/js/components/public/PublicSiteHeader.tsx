@@ -32,7 +32,7 @@ export function PublicSiteHeader() {
             theme={navbarTheme}
             clearTheme={{ root: true }}
         >
-            <a href="/" className="text-xl font-semibold text-gray-900 dark:text-white">
+            <a href="/" className="text-xl font-semibold text-fg">
                 Zabuno
             </a>
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">

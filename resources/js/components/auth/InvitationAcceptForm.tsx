@@ -66,7 +66,7 @@ export function InvitationAcceptForm({
     if (status === 'guest') {
         return (
             <div className="flex flex-col gap-4">
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h1 className="text-xl font-semibold text-fg">
                     {t('auth.invitation_accept.heading')}
                 </h1>
                 <p>{t('auth.invitation_accept.guest_body')}</p>
@@ -83,7 +83,7 @@ export function InvitationAcceptForm({
     if (status !== 'available') {
         return (
             <div className="flex flex-col gap-4">
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h1 className="text-xl font-semibold text-fg">
                     {t('auth.invitation_accept.heading')}
                 </h1>
                 <p>{t('auth.invitation_accept.unavailable_body')}</p>
@@ -93,33 +93,27 @@ export function InvitationAcceptForm({
 
     return (
         <div className="flex flex-col gap-4">
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {t('auth.invitation_accept.heading')}
-            </h1>
+            <h1 className="text-xl font-semibold text-fg">{t('auth.invitation_accept.heading')}</h1>
 
             {error && (
-                <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                <p role="alert" className="text-sm font-medium text-fg-danger">
                     {error}
                 </p>
             )}
 
             <dl className="flex flex-col gap-2">
                 <div>
-                    <dt className="text-sm text-gray-500 dark:text-gray-400">
+                    <dt className="text-sm text-fg-muted">
                         {t('auth.invitation_accept.workspace')}
                     </dt>
                     <dd>{invitation.workspaceName}</dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-gray-500 dark:text-gray-400">
-                        {t('auth.invitation_accept.email')}
-                    </dt>
+                    <dt className="text-sm text-fg-muted">{t('auth.invitation_accept.email')}</dt>
                     <dd>{invitation.invitedEmail}</dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-gray-500 dark:text-gray-400">
-                        {t('auth.invitation_accept.role')}
-                    </dt>
+                    <dt className="text-sm text-fg-muted">{t('auth.invitation_accept.role')}</dt>
                     <dd>{invitation.role}</dd>
                 </div>
             </dl>

@@ -148,13 +148,11 @@ export function DashboardSetupJourney({
 
     return (
         <section aria-label={t('dashboard.setup.region')} className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {t('dashboard.setup.heading')}
-            </h2>
+            <h2 className="text-lg font-semibold text-fg">{t('dashboard.setup.heading')}</h2>
             <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
                 {rows.map((row) => (
                     <div key={row.key} className="flex flex-col gap-1">
-                        <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <dt className="text-sm font-medium text-fg-muted">
                             <a
                                 href={row.href}
                                 className="text-blue-600 hover:underline dark:text-blue-400"
@@ -162,7 +160,7 @@ export function DashboardSetupJourney({
                                 {row.label}
                             </a>
                         </dt>
-                        <dd className="text-sm text-gray-900 dark:text-white">{row.value}</dd>
+                        <dd className="text-sm text-fg">{row.value}</dd>
                     </div>
                 ))}
             </dl>

@@ -12,11 +12,11 @@ export function PublishedSnapshotRegion({ current }: PublishedSnapshotRegionProp
             aria-label={t('workspace.publication.publishedSnapshot.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-fg">
                 {t('workspace.publication.publishedSnapshot.region')}
             </h3>
 
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <p className="text-sm text-fg-secondary">
                 {t('workspace.publication.publishedSnapshot.publishedAt', {
                     publishedAt: current.publishedAt,
                 })}
@@ -25,15 +25,12 @@ export function PublishedSnapshotRegion({ current }: PublishedSnapshotRegionProp
             <div className="flex flex-col gap-4">
                 {current.snapshot.categories.map((category, categoryIndex) => (
                     <div key={categoryIndex} className="flex flex-col gap-2">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                             {category.name}
                         </p>
                         <ul className="flex flex-col gap-2">
                             {category.menuItems.map((item, itemIndex) => (
-                                <li
-                                    key={itemIndex}
-                                    className="text-sm text-gray-700 dark:text-gray-300"
-                                >
+                                <li key={itemIndex} className="text-sm text-fg-secondary">
                                     {item.productName}
                                 </li>
                             ))}

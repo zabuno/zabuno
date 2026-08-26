@@ -136,7 +136,7 @@ export function DrawerPanel({
             onKeyDown={handleKeyDown}
         >
             <div className="mb-4 flex items-center justify-between">
-                <h2 id={titleId} className="text-base font-semibold text-gray-900 dark:text-white">
+                <h2 id={titleId} className="text-base font-semibold text-fg">
                     {title}
                 </h2>
                 <CloseButton onClick={onClose} />

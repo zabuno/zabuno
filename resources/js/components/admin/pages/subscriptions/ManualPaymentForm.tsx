@@ -58,7 +58,7 @@ export function ManualPaymentForm({
         <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ maxWidth: '100%' }}>
             <label
                 htmlFor="manual-payment-plan"
-                className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.plan.label')}
                 <select
@@ -77,7 +77,7 @@ export function ManualPaymentForm({
 
             <label
                 htmlFor="manual-payment-end-date"
-                className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.endDate.label')}
                 <input
@@ -91,7 +91,7 @@ export function ManualPaymentForm({
 
             <label
                 htmlFor="manual-payment-note"
-                className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.paymentNote.label')}
                 <input
@@ -105,7 +105,7 @@ export function ManualPaymentForm({
 
             <label
                 htmlFor="manual-payment-document-reference"
-                className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                className="flex flex-col gap-1 text-sm text-fg-secondary"
             >
                 {t('platform.subscriptions.form.documentReference.label')}
                 <input

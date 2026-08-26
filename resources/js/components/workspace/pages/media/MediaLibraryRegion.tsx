@@ -37,27 +37,27 @@ export function MediaLibraryRegion({
             aria-label={t('workspace.media.library.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-fg">
                 {t('workspace.media.library.heading')}
             </h3>
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.media.library.assets.heading')}
             </p>
 
             {loadState === 'loading' ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.media.library.loading')}
                 </p>
             ) : loadState === 'error' ? (
                 <div className="flex flex-col items-start gap-2">
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {t('workspace.media.library.error')}
                     </p>
                     <Button onClick={() => onRetry?.()}>{t('workspace.error.retry')}</Button>
                 </div>
             ) : assets.length === 0 ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.media.library.unavailable')}
                 </p>
             ) : (
@@ -71,10 +71,8 @@ export function MediaLibraryRegion({
                                 key={asset.id}
                                 className="flex flex-col gap-1 border-b border-gray-200 pb-2 dark:border-gray-700"
                             >
-                                <span className="text-sm font-medium text-gray-900 dark:text-white">{`#${asset.id}`}</span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">
-                                    {asset.altText}
-                                </span>
+                                <span className="text-sm font-medium text-fg">{`#${asset.id}`}</span>
+                                <span className="text-sm text-fg-secondary">{asset.altText}</span>
                                 <MediaAssetStatusBadge status={asset.status} />
                                 <button
                                     type="button"
@@ -85,10 +83,7 @@ export function MediaLibraryRegion({
                                     {t('workspace.media.library.asset.delete')}
                                 </button>
                                 {hasDeleteError && (
-                                    <p
-                                        role="alert"
-                                        className="text-xs font-medium text-red-600 dark:text-red-400"
-                                    >
+                                    <p role="alert" className="text-xs font-medium text-fg-danger">
                                         {t('workspace.media.library.asset.delete.failed')}
                                     </p>
                                 )}
@@ -99,17 +94,17 @@ export function MediaLibraryRegion({
             )}
 
             {deleteNotice && (
-                <p role="status" className="text-xs text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-xs text-fg-muted">
                     {deleteNotice}
                 </p>
             )}
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.media.library.slots.heading')}
             </p>
             <MediaLibrarySlotList />
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.media.lifecycle.heading')}
             </p>
             <MediaLifecycleList />

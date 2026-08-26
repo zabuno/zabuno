@@ -47,17 +47,17 @@ export function PublicationStatusRegion({
             aria-label={t('workspace.publication.status.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-fg">
                 {t('workspace.publication.status.region')}
             </h3>
 
             {loading ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.publication.status.loading')}
                 </p>
             ) : current === null && loadError ? (
                 <div className="flex flex-col items-start gap-2">
-                    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm text-fg-danger">
                         {t('workspace.publication.status.loadError')}
                     </p>
                     <button
@@ -69,11 +69,11 @@ export function PublicationStatusRegion({
                     </button>
                 </div>
             ) : current === null ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.publication.status.notPublished')}
                 </p>
             ) : (
-                <p role="status" className="text-sm text-gray-700 dark:text-gray-300">
+                <p role="status" className="text-sm text-fg-secondary">
                     {t('workspace.publication.status.summary', {
                         id: String(current.id),
                         version: String(current.version),
@@ -82,7 +82,7 @@ export function PublicationStatusRegion({
                 </p>
             )}
 
-            <label className="flex w-full items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <label className="flex w-full items-center gap-2 text-sm text-fg-secondary">
                 <input
                     type="checkbox"
                     checked={confirmed}
@@ -102,7 +102,7 @@ export function PublicationStatusRegion({
             </button>
 
             {errorMessage ? (
-                <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                <p role="alert" className="text-sm text-fg-danger">
                     {errorMessage}
                 </p>
             ) : null}

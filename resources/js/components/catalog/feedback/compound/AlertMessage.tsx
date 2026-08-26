@@ -38,7 +38,7 @@ export function AlertMessage({ status, title, children, className }: AlertMessag
             aria-live={isUrgent ? 'assertive' : 'polite'}
             className={clsx(
                 'flex items-start gap-2 rounded-lg border p-4 text-sm',
-                'text-gray-900 dark:text-gray-100',
+                'text-fg',
                 STATUS_CONTAINER_CLASS[status],
                 className,
             )}
@@ -46,9 +46,7 @@ export function AlertMessage({ status, title, children, className }: AlertMessag
             <Badge status={status}>{STATUS_LABEL[status]}</Badge>
             <div className="flex flex-col gap-1">
                 <p className="font-medium">{title}</p>
-                {children ? (
-                    <div className="text-gray-700 dark:text-gray-300">{children}</div>
-                ) : null}
+                {children ? <div className="text-fg-secondary">{children}</div> : null}
             </div>
         </div>
     );

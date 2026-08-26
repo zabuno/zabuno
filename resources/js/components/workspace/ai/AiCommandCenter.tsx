@@ -36,17 +36,13 @@ export function AiCommandCenter({
         <DrawerPanel open={open} onClose={onClose} title={t('workspace.aiCommand.title')}>
             <div className="flex flex-col gap-[var(--space-fluid-md)]">
                 <div className="flex flex-col gap-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {workspaceName}
-                    </p>
+                    <p className="text-sm font-medium text-fg">{workspaceName}</p>
                     {locationDisplayName && (
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
-                            {locationDisplayName}
-                        </p>
+                        <p className="text-sm text-fg-secondary">{locationDisplayName}</p>
                     )}
                 </div>
 
-                <p role="status" className="text-sm text-gray-700 dark:text-gray-300">
+                <p role="status" className="text-sm text-fg-secondary">
                     {t('workspace.aiCommand.status')}
                 </p>
 
@@ -60,10 +56,10 @@ export function AiCommandCenter({
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    <p className="text-sm font-medium text-fg">
                         {t('workspace.aiCommand.affectedRecords.heading')}
                     </p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                    <p className="text-sm text-fg-secondary">
                         {t('workspace.aiCommand.affectedRecords.empty')}
                     </p>
                 </div>
@@ -73,13 +69,10 @@ export function AiCommandCenter({
                     aria-labelledby={recentCommandsHeadingId}
                     className="flex flex-col gap-1"
                 >
-                    <p
-                        id={recentCommandsHeadingId}
-                        className="text-sm font-medium text-gray-900 dark:text-white"
-                    >
+                    <p id={recentCommandsHeadingId} className="text-sm font-medium text-fg">
                         {t('workspace.aiCommand.recentCommands.heading')}
                     </p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                    <p className="text-sm text-fg-secondary">
                         {t('workspace.aiCommand.recentCommands.empty')}
                     </p>
                 </div>

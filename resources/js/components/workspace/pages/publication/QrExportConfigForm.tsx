@@ -5,7 +5,7 @@ const PAPER_SIZES = ['A4', 'B4', 'A5', 'B5', 'A6', 'B6', 'A7', 'B7'] as const;
 const FIELD_CLASSES =
     'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:disabled:text-gray-500';
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-gray-700 dark:text-gray-300';
+const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
 
 export type QrOutputFormat = 'png' | 'svg' | 'pdf';
 export type QrPaperSize = (typeof PAPER_SIZES)[number];
@@ -34,7 +34,7 @@ export function QrExportConfigForm({
             className="flex flex-col gap-3"
             aria-label={t('workspace.publication.qrExport.config.heading')}
         >
-            <legend className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <legend className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.publication.qrExport.config.heading')}
             </legend>
 

@@ -43,19 +43,19 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
             className="flex flex-col gap-3"
         >
             {status === 'loading' && (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('platform.plans.loading')}
                 </p>
             )}
 
             {status === 'error' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {t('platform.plans.error')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-red-600 dark:text-red-400"
+                        className="self-start text-sm font-medium text-fg-danger"
                         onClick={onRetry}
                     >
                         {t('platform.plans.retry')}
@@ -64,7 +64,7 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
             )}
 
             {status === 'success' && plans.length === 0 && (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('platform.plans.empty')}
                 </p>
             )}
@@ -81,25 +81,18 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
                             key={plan.id}
                             className="flex flex-col gap-2 rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
                         >
-                            <span className="font-medium text-gray-900 dark:text-white">
-                                {plan.name}
-                            </span>
-                            <span className="text-gray-500 dark:text-gray-400">{plan.code}</span>
+                            <span className="font-medium text-fg">{plan.name}</span>
+                            <span className="text-fg-muted">{plan.code}</span>
                             <ul className="flex flex-col gap-1">
                                 {plan.entitlements.map((entitlement) => (
-                                    <li
-                                        key={entitlement}
-                                        className="text-gray-700 dark:text-gray-300"
-                                    >
+                                    <li key={entitlement} className="text-fg-secondary">
                                         {entitlement}
                                     </li>
                                 ))}
                             </ul>
-                            <span className="font-medium text-gray-900 dark:text-white">
-                                {formatPlanPrice(plan)}
-                            </span>
+                            <span className="font-medium text-fg">{formatPlanPrice(plan)}</span>
                             {!plan.is_active && (
-                                <span className="text-gray-500 dark:text-gray-400">
+                                <span className="text-fg-muted">
                                     {t('platform.plans.inactive')}
                                 </span>
                             )}

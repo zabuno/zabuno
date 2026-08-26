@@ -91,11 +91,11 @@ export function ManualPaymentConfirmDialog({
             className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             onKeyDown={handleKeyDown}
         >
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-sm font-semibold text-fg">
                 {t('platform.subscriptions.confirm.heading')}
             </h2>
-            <span className="text-gray-700 dark:text-gray-300">{planLabel}</span>
-            <span className="text-gray-700 dark:text-gray-300">{endsAt}</span>
+            <span className="text-fg-secondary">{planLabel}</span>
+            <span className="text-fg-secondary">{endsAt}</span>
 
             <div className="flex gap-2">
                 <button

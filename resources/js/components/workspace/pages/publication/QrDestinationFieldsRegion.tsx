@@ -22,7 +22,7 @@ export function QrDestinationFieldsRegion({ disabled, onCreate }: QrDestinationF
             </button>
 
             {disabled ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.publication.qrDestination.fields.unavailable')}
                 </p>
             ) : null}

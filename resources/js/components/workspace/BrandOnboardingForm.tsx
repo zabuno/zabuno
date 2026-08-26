@@ -87,12 +87,10 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
     return (
         <div className="mx-auto max-w-2xl px-4 py-10">
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {t('workspace.brand.heading')}
-                </h1>
+                <h1 className="text-xl font-semibold text-fg">{t('workspace.brand.heading')}</h1>
 
                 {error && (
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {error}
                     </p>
                 )}

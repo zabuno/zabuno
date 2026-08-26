@@ -40,7 +40,7 @@ export function WorkspacePageFrame({
             ) : (
                 <>
                     {description ? (
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{description}</p>
+                        <p className="text-sm text-fg-secondary">{description}</p>
                     ) : null}
                     {actions ? (
                         <div className="flex flex-wrap items-center gap-2">{actions}</div>

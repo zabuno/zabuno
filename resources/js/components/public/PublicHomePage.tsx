@@ -7,7 +7,7 @@ export function PublicHomePage() {
                 <h1 className="text-3xl font-bold" style={{ fontSize: 'var(--font-size-display)' }}>
                     Run your restaurant&apos;s menu and workspace from one place
                 </h1>
-                <p className="max-w-2xl text-gray-600 dark:text-gray-300">
+                <p className="max-w-2xl text-fg-secondary">
                     Zabuno gives your team a shared workspace to manage a restaurant&apos;s menu and
                     catalog, publish it as a stable QR-linked page, and keep it updated as things
                     change.
@@ -50,28 +50,28 @@ export function PublicHomePage() {
                 >
                     <div>
                         <h3 className="font-semibold">Restaurant &amp; workspace context</h3>
-                        <p className="mt-1 text-gray-600 dark:text-gray-300">
+                        <p className="mt-1 text-fg-secondary">
                             Keep a restaurant&apos;s workspace, team, and settings organized in one
                             tenant-scoped place.
                         </p>
                     </div>
                     <div>
                         <h3 className="font-semibold">Menu &amp; catalog operations</h3>
-                        <p className="mt-1 text-gray-600 dark:text-gray-300">
+                        <p className="mt-1 text-fg-secondary">
                             Create and edit menu items, categories, and catalog details from the
                             workspace app.
                         </p>
                     </div>
                     <div>
                         <h3 className="font-semibold">Publication &amp; stable QR</h3>
-                        <p className="mt-1 text-gray-600 dark:text-gray-300">
+                        <p className="mt-1 text-fg-secondary">
                             Publish a menu to a stable, shareable page that a printed QR code can
                             keep pointing to.
                         </p>
                     </div>
                     <div>
                         <h3 className="font-semibold">Media intake &amp; analytics</h3>
-                        <p className="mt-1 text-gray-600 dark:text-gray-300">
+                        <p className="mt-1 text-fg-secondary">
                             Media uploads go through quarantined media intake and review before they
                             are available, alongside basic usage analytics for the published page.
                         </p>
@@ -114,7 +114,7 @@ export function PublicHomePage() {
                 <h2 id="pricing-heading" className="text-2xl font-bold">
                     Pricing
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-fg-secondary">
                     There are no published plan prices yet, and checkout is not available yet. We
                     will publish pricing here once it is ready.
                 </p>
@@ -129,20 +129,20 @@ export function PublicHomePage() {
                 <dl className="flex flex-col gap-4">
                     <div>
                         <dt className="font-semibold">What is Zabuno?</dt>
-                        <dd className="mt-1 text-gray-600 dark:text-gray-300">
+                        <dd className="mt-1 text-fg-secondary">
                             A workspace app for managing a restaurant&apos;s menu and catalog and
                             publishing it to a stable QR-linked page.
                         </dd>
                     </div>
                     <div>
                         <dt className="font-semibold">Do I need an account to try it?</dt>
-                        <dd className="mt-1 text-gray-600 dark:text-gray-300">
+                        <dd className="mt-1 text-fg-secondary">
                             Yes, create an account or log in to open the workspace app.
                         </dd>
                     </div>
                     <div>
                         <dt className="font-semibold">Is pricing available?</dt>
-                        <dd className="mt-1 text-gray-600 dark:text-gray-300">
+                        <dd className="mt-1 text-fg-secondary">
                             Not yet — see the Pricing section above.
                         </dd>
                     </div>
@@ -155,7 +155,7 @@ export function PublicHomePage() {
                 <h2 id="contact-heading" className="text-2xl font-bold">
                     Contact
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-fg-secondary">
                     There is no connected contact form yet. Please check back later.
                 </p>
             </section>

@@ -65,7 +65,7 @@ export function LocationsPage({
                     </Button>
                 }
             >
-                <p className="text-sm text-gray-700 dark:text-gray-300">
+                <p className="text-sm text-fg-secondary">
                     {t('workspace.brandLocations.locations.count', {
                         count: String(locations.length),
                     })}
@@ -104,19 +104,15 @@ export function LocationsPage({
                 )}
 
                 {locations.length === 0 && !addingLocation && (
-                    <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                    <p role="status" className="text-sm text-fg-muted">
                         {t('workspace.locations.empty')}
                     </p>
                 )}
 
                 {grouped.map(([groupKey, group]) => (
                     <div key={groupKey}>
-                        <p className="mb-2 font-medium text-gray-900 dark:text-white">
-                            {group.city}
-                        </p>
-                        <p className="mb-2 text-sm text-gray-700 dark:text-gray-300">
-                            {group.countryCode}
-                        </p>
+                        <p className="mb-2 font-medium text-fg">{group.city}</p>
+                        <p className="mb-2 text-sm text-fg-secondary">{group.countryCode}</p>
                         <ul className="flex flex-col gap-3">
                             {group.locations.map((location) => (
                                 <li

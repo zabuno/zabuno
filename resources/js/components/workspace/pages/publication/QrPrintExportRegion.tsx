@@ -35,7 +35,7 @@ const THEME_BUTTON_SELECTED_CLASSES =
 const FIELD_CLASSES =
     'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-gray-700 dark:text-gray-300';
+const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
 
 type QrPrintExportRegionProps = {
     items?: QrCodeItem[];
@@ -121,12 +121,12 @@ export function QrPrintExportRegion({
             aria-label={t('workspace.publication.qrExport.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-fg">
                 {t('workspace.publication.qrExport.region')}
             </h3>
 
             {selected === null ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.publication.qrExport.noActive')}
                 </p>
             ) : (
@@ -205,7 +205,7 @@ export function QrPrintExportRegion({
                 onCreated={onBulkCreated}
             />
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.publication.qrExport.themes.heading')}
             </p>
             <div className="flex flex-wrap gap-2">
