@@ -27,6 +27,17 @@ final class LocalTestAccountSeeder extends Seeder
 {
     private const ALLOWED_ENVIRONMENTS = ['local', 'testing', 'development'];
 
+    /**
+     * Kimlik bilgileri verilmiş mi? DatabaseSeeder bunu kullanarak, ortam
+     * değişkenleri yokken (CI gibi) hesabı sessizce atlar; doğrudan çağrıldığında
+     * seeder yine katı davranır ve eksik bilgiyle çalışmayı reddeder.
+     */
+    public static function isConfigured(): bool
+    {
+        return (string) (env('LOCAL_TEST_ACCOUNT_EMAIL') ?? '') !== ''
+            && (string) (env('LOCAL_TEST_ACCOUNT_PASSWORD') ?? '') !== '';
+    }
+
     public function run(): void
     {
         $environment = (string) app()->environment();
