@@ -67,3 +67,22 @@ link hedefi sıfır).
   örnekleriyle açıklanır (bkz. kök yönetişim talimatındaki "Owner persona" maddesi).
   Bu, `docs/` içindeki her stage dokümanının `kullaniciYolculugu` alanında yapılır.
 - Metafor karar/kontrat/test kanıtının yerine geçmez; yalnız anlaşılırlığı artırır.
+
+### Depo dışı tasarım külliyatı — UI'a dokunmadan ÖNCE oku
+
+Bu deponun tasarım yaklaşımı burada **sentez** hâlindedir. Ayrıntılı külliyat
+ve **çalışan bir referans implementasyonu** (tam DTCG token pipeline'ı,
+foundations CSS katmanları, AEP renderer pattern'leri, dalga testleri) deponun
+**dışında** yaşar ve klonla gelmez.
+
+**Kanonik kayıt: `docs/36-EXTERNAL-DESIGN-CORPUS.md`.**
+
+UI, tasarım sistemi, token, Storybook veya bileşen katmanı üzerinde çalışan her
+ajan/geliştirici, iş başlamadan önce `docs/36`'yı okur. Orada dondurulmuş
+kararlar (öncelik sırası, ölçü birimi zinciri, density kuralı, R1–R8 katman
+haritası, yatay/yukarı bağımlılık yasağı) bu depodaki sözleşmeleri tamamlar.
+
+Bu bölüm bir kez yaşanmış bir körlük yüzünden vardır: 2026-08-26'da bir oturum,
+aynı sistemin çalışan implementasyonunun yanı başında durduğunu fark etmeden
+sıfırdan token katmanı kurmaya başladı. Kaynak kayıp değildi, yalnız depodan
+görünmüyordu.
