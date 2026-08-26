@@ -1,3 +1,4 @@
+import { formatMoneyOr } from '../../../../money/format';
 import { t } from '../../../../i18n/platform';
 
 export type Plan = {
@@ -17,13 +18,8 @@ export function formatPlanPrice(plan: Pick<Plan, 'amount_minor' | 'currency'>): 
         return t('platform.plans.priceUnavailable');
     }
 
-    const majorAmount = plan.amount_minor / 100;
-    const formattedAmount = majorAmount.toLocaleString('tr-TR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
-
-    return `${formattedAmount} ${plan.currency}`;
+    // Biçimlendirme CORE-12'ye aittir; burada tekrar edilmez (docs/13 §4).
+    return formatMoneyOr(plan.amount_minor, plan.currency, t('platform.plans.priceUnavailable'));
 }
 
 type PlanListStatus = 'loading' | 'error' | 'success';

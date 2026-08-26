@@ -230,7 +230,13 @@ final class RestaurantCriticalJourneyTest extends TestCase
 
         $html = (string) $public->getContent();
         self::assertStringContainsString('Mercimek Çorbası', $html, 'CRIT-JOURNEY-01: gerçek ürün adı misafire ulaşmalı.');
-        self::assertStringContainsString('45.00 TRY', $html, 'CRIT-JOURNEY-01: gerçek fiyat misafire ulaşmalı.');
+        // Biçim, belgenin dilinden gelir (CORE-12 × `docs/13` §4): `lang="en"`
+        // bir belgede `TRY 45.00`, `lang="tr"` bir belgede `₺45,00`. Donan
+        // sözleşme fiyatın DOĞRU olmasıdır, belirli bir yazımı değil.
+        //
+        // Aradaki boşluk bilerek kırılmaz boşluktur (U+00A0): para birimi
+        // kodu tutardan ayrı satıra düşmemelidir.
+        self::assertStringContainsString("TRY\u{00A0}45.00", $html, 'CRIT-JOURNEY-01: gerçek fiyat misafire ulaşmalı.');
     }
 
     // --- CRIT-JOURNEY-REPUBLISH-01 ---------------------------------------
@@ -244,7 +250,7 @@ final class RestaurantCriticalJourneyTest extends TestCase
         $token = $this->createQrTokenThroughApi($owner, $r['workspaceId'], $r['locationId'], $r['menuId']);
 
         self::assertStringContainsString(
-            '45.00 TRY',
+            "TRY\u{00A0}45.00",
             (string) $this->get("/menu/{$token}")->getContent(),
             'CRIT-JOURNEY-REPUBLISH-01: yeniden yayından önce eski fiyat görünmeli.'
         );
@@ -265,12 +271,12 @@ final class RestaurantCriticalJourneyTest extends TestCase
 
         $html = (string) $public->getContent();
         self::assertStringContainsString(
-            '52.50 TRY',
+            "TRY\u{00A0}52.50",
             $html,
             'CRIT-JOURNEY-REPUBLISH-01: yeni fiyat AYNI QR token üzerinden misafire ulaşmalı — QR yeniden bastırılmamalı.'
         );
         self::assertStringNotContainsString(
-            '45.00 TRY',
+            "TRY\u{00A0}45.00",
             $html,
             'CRIT-JOURNEY-REPUBLISH-01: eski fiyat yeniden yayından sonra misafire görünmemeli.'
         );
@@ -295,12 +301,12 @@ final class RestaurantCriticalJourneyTest extends TestCase
         $html = (string) $this->get("/menu/{$token}")->getContent();
 
         self::assertStringContainsString(
-            '45.00 TRY',
+            "TRY\u{00A0}45.00",
             $html,
             'CRIT-JOURNEY-SNAPSHOT-INTEGRITY-01: yayınlanmamış taslak fiyatı misafiri etkilememeli.'
         );
         self::assertStringNotContainsString(
-            '52.50 TRY',
+            "TRY\u{00A0}52.50",
             $html,
             'CRIT-JOURNEY-SNAPSHOT-INTEGRITY-01: yeni fiyat publish edilmeden misafire sızmamalı.'
         );

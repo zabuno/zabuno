@@ -1,3 +1,4 @@
+import { formatMoneyOr } from '../../../../money/format';
 import { t } from '../../../../i18n/workspace';
 import type { DashboardMenuTree } from '../DashboardPage';
 
@@ -6,7 +7,8 @@ type DraftMenuPreviewRegionProps = {
 };
 
 function formatPrice(priceMinorAmount: number, currencyCode: string): string {
-    return `${(priceMinorAmount / 100).toFixed(2)} ${currencyCode}`;
+    // Biçimlendirme CORE-12'ye aittir; burada tekrar edilmez (docs/13 §4).
+    return formatMoneyOr(priceMinorAmount, currencyCode, `${priceMinorAmount} ${currencyCode}`);
 }
 
 export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRegionProps) {

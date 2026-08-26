@@ -77,6 +77,25 @@ describe('WorkspaceLedger', () => {
         expect(within(balances).getByText('-TRY 1,499.00')).toBeInTheDocument();
     });
 
+    it('shows a Turkish reader Turkish money formatting, from the document language alone', async () => {
+        // Biçim, bileşenin içine gömülü değildir: belge dili değişince tutar
+        // da değişir. Zabuno'nun asıl kitlesi Türk restoranlarıdır ve
+        // "TRY 1,499.00" onlara yabancıdır.
+        document.documentElement.lang = 'tr';
+        vi.mocked(fetch).mockResolvedValue(jsonResponse(200, ledgerPayload()));
+
+        try {
+            render(<WorkspaceLedger workspaceId={WORKSPACE_ID} />);
+
+            const region = await screen.findByRole('region', { name: 'Ledger' });
+            const balances = await within(region).findByRole('region', { name: 'Balances' });
+
+            expect(within(balances).getByText('₺1.499,00')).toBeInTheDocument();
+        } finally {
+            document.documentElement.lang = '';
+        }
+    });
+
     it('offers no control that could write or edit a ledger entry', async () => {
         vi.mocked(fetch).mockResolvedValue(jsonResponse(200, ledgerPayload()));
 

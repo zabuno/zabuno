@@ -281,7 +281,11 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         await within(planRegion).findByText('Zabuno Test Plan');
         expect(within(planRegion).getByText('wp05-test-plan')).toBeInTheDocument();
         expect(within(planRegion).getByText('Test entitlement')).toBeInTheDocument();
-        expect(within(planRegion).getByText('999,00 TRY')).toBeInTheDocument();
+        // Fiyat artık okuyucunun diline göre biçimlenir (CORE-12,
+        // `docs/13` §4): jsdom belgesinin dili boş olduğu için taban locale
+        // `en` uygulanır. Türkçe biçim, `lang="tr"` ile ayrıca doğrulanır
+        // (`resources/js/money/format.test.ts`).
+        expect(within(planRegion).getByText('TRY 999.00')).toBeInTheDocument();
 
         // The mock intentionally leaves the subscription endpoint unhandled,
         // so Current plan honestly reports the load failure with a retry

@@ -85,6 +85,27 @@ değişir; bunlar **Money/Ledger** (CORE-12) ve **Taxonomy** (CORE-09) modüller
 koordineli çalışır — para birimi formatlaması burada değil, CORE-12'de
 tanımlanır (tek kanonik sahip kuralı).
 
+**Bu kural 2026-08-26'da uygulandı.** O tarihte aynı işi yapan beş ayrı kod
+parçası vardı ve dördü kuruşu sabit 100'e bölüyordu. Bu her para biriminde
+doğru değildir: Japon yeninde ondalık yoktur (1499 minor = ¥1.499), Kuveyt
+dinarında üç basamak vardır (1499 minor = 1,499 KWD). Yayınlanmış bir menüde
+bu, yüz kat yanlış fiyat demektir — ve fiyat, restoranın müşterisine verdiği
+taahhüttür.
+
+Tek sahip artık şunlardır:
+
+| Taraf | Sahip | Not |
+| --- | --- | --- |
+| PHP | `App\Domain\Money\MoneyFormatter` | Bölen, para biriminin kendi `fractionDigits()` değerinden türetilir. `ext-intl` varsa kullanılır; yoksa ayırıcılar açık bir tablodan gelir (paylaşımlı barındırma). |
+| React | `resources/js/money/format.ts` | Aynı kural, `Intl.NumberFormat` ile. Para birimi kodu biçime değil, `Intl.supportedValuesOf('currency')` listesine sorulur — `Intl` iyi biçimli ama var olmayan bir kodu sessizce kabul eder. |
+| Yayınlanan menü | `App\Support\Money\PriceLabel` | Para birimi çözülemezse fiyat **gösterilmez** ve sayfa ayakta kalır: eksik fiyat görünür biçimde eksiktir, yanlış fiyat ise verilemeyecek bir sözdür. |
+
+Biçim okuyucunun dilinden gelir (`<html lang>`), geliştiricinin tercihinden
+değil. Türkçe bir belgede `₺1.499,00`, İngilizce bir belgede `TRY 1,499.00`.
+Kanıt: `MONEY-FORMAT-DIGITS-01`, `-LOCALE-02`, `-STRICT-03`,
+`MENU-PRICE-CURRENCY-04`, `-NO-BLANK-PAGE-05`, `MONEY-FE-DIGITS-06`,
+`-UNKNOWN-07`.
+
 ## 5. Kanonik sahiplik
 
 PO/MO/JSON projeksiyon zinciri ve locale planı burada kanoniktir. Uygulama
