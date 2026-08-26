@@ -21,5 +21,5 @@
             "@/*": ["resources/js/*"]
         }
     },
-    "include": ["resources/js", "vite.config.ts", ".storybook"]
+    "include": ["resources/js", "vite.config.ts", ".storybook", "scripts/i18n"]
 }

@@ -1,0 +1,81 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: dashboard:dashboard.empty
+msgid "dashboard.empty"
+msgstr "No menu has been created for this location yet."
+
+#: dashboard:dashboard.empty.openMenu
+msgid "dashboard.empty.openMenu"
+msgstr "Open Menu"
+
+#: dashboard:dashboard.heading
+msgid "dashboard.heading"
+msgstr "Dashboard"
+
+#: dashboard:dashboard.loading
+msgid "dashboard.loading"
+msgstr "Loading your dashboard summary…"
+
+#: dashboard:dashboard.setup.brand
+msgid "dashboard.setup.brand"
+msgstr "Brand"
+
+#: dashboard:dashboard.setup.checking
+msgid "dashboard.setup.checking"
+msgstr "Checking…"
+
+#: dashboard:dashboard.setup.heading
+msgid "dashboard.setup.heading"
+msgstr "Setup"
+
+#: dashboard:dashboard.setup.location
+msgid "dashboard.setup.location"
+msgstr "Location"
+
+#: dashboard:dashboard.setup.menu
+msgid "dashboard.setup.menu"
+msgstr "Menu"
+
+#: dashboard:dashboard.setup.menu.empty
+msgid "dashboard.setup.menu.empty"
+msgstr "No menu yet"
+
+#: dashboard:dashboard.setup.notConnected
+msgid "dashboard.setup.notConnected"
+msgstr "Not connected yet."
+
+#: dashboard:dashboard.setup.publication
+msgid "dashboard.setup.publication"
+msgstr "Publication"
+
+#: dashboard:dashboard.setup.published
+msgid "dashboard.setup.published"
+msgstr "Published #{id}"
+
+#: dashboard:dashboard.setup.qr
+msgid "dashboard.setup.qr"
+msgstr "QR"
+
+#: dashboard:dashboard.setup.qr.activeCount
+msgid "dashboard.setup.qr.activeCount"
+msgstr "{count} active QR"
+
+#: dashboard:dashboard.setup.qr.activeCount.plural
+msgid "dashboard.setup.qr.activeCount.plural"
+msgstr "{count} active QRs"
+
+#: dashboard:dashboard.setup.region
+msgid "dashboard.setup.region"
+msgstr "Dashboard Setup"
+
+#: dashboard:dashboard.setup.statusUnavailable
+msgid "dashboard.setup.statusUnavailable"
+msgstr "Status unavailable."

@@ -64,6 +64,9 @@ jobs:
       - name: S1-WP01A foundation preflight
         run: php tests/preflight/s1-wp01a-foundation-preflight.php
 
+      - name: Translation projections are in sync with the PO catalogs
+        run: npm run i18n:check
+
       - name: Build frontend assets
         run: npm run build
 

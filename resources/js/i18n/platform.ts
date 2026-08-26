@@ -1,3 +1,6 @@
+import { createTranslator } from './translator';
+import { overridesFor } from './generated-overrides';
+
 const en = {
     'platform.shell.brand': 'Zabuno Platform',
     'platform.shell.navLabel': 'Platform admin',
@@ -69,15 +72,10 @@ const en = {
 
 type TranslationKey = keyof typeof en;
 
-export function t(key: TranslationKey, vars?: Record<string, string>): string {
-    const template: string = en[key] ?? key;
+export const t: (key: TranslationKey, vars?: Record<string, string>) => string = createTranslator(
+    en,
+    overridesFor('platform'),
+);
 
-    if (!vars) {
-        return template;
-    }
-
-    return Object.entries(vars).reduce<string>(
-        (result, [name, value]) => result.replaceAll(`{${name}}`, value),
-        template,
-    );
-}
+/** Bu alanın İngilizce kaynak kataloğu — PO/MO/JSON zincirinin girdisi (CORE-08). */
+export const platformTranslations: Record<string, string> = en;

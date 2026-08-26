@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: theme:theme.dark
+msgid "theme.dark"
+msgstr ""
+
+#: theme:theme.group_label
+msgid "theme.group_label"
+msgstr ""
+
+#: theme:theme.light
+msgid "theme.light"
+msgstr ""
+
+#: theme:theme.system
+msgid "theme.system"
+msgstr ""

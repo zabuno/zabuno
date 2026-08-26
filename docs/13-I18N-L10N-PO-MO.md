@@ -1,6 +1,8 @@
 # 13 — i18n / l10n (PO/MO)
 
-**PLANNING ONLY.**
+**Bu sözleşmenin Stage 1 kapsamı 2026-08-26'da UYGULANDI.** Aşağıdaki plan
+artık çalışan koda karşılık gelir; §3a hangi dosyanın neyi sahiplendiğini
+gösterir.
 
 ## 1. Gettext PO canonical
 
@@ -59,6 +61,22 @@ CORE-08 satırı bu sözleşmeyi **uygular**, yeniden tanımlamaz. İzlenebilirl
 Extract → merge → fuzzy işaretleme → missing-string tespiti → plural-form
 kontrolü → context (`msgctxt`) kontrolü. Bu adımlar CI'da otomatikleştirilir
 (`skills/i18n-catalog` bu sürecin deterministik spesifikasyonunu taşır).
+
+## 3a. Uygulanan boru hattı (2026-08-26)
+
+| Adım | Nerede | Ne yapar |
+| --- | --- | --- |
+| Kaynak | `resources/js/i18n/*.ts` (`domains.ts` listeler) | İngilizce metnin **tek** sahibi. Kod burada okunur, tahmin edilmez. |
+| Extract | `npm run i18n:extract` | POT + altı locale PO'su üretir; var olan çeviriyi korur, kaynaktan düşen anahtarı siler. Kaynağı boş olan anahtar kataloğa hiç girmez — çevrilecek metin yoktur ve boş bir `msgstr` eksik sayımını kalıcı yanıltırdı. |
+| Çeviri | `lang/po/<domain>.<locale>.po` | Çevirmenin çalıştığı yer. Kod deposunu açmadan, standart PO araçlarıyla. |
+| Build | `npm run i18n:build` | `lang/mo/<locale>/<domain>.mo` (PHP) + `resources/js/i18n/generated/<domain>.<locale>.json` (React). Fuzzy satır projeksiyona **girmez**. |
+| PHP runtime | `App\Infrastructure\Localization\MoFileTranslator` | MO'yu saf PHP ile okur. `ext-gettext`/`setlocale` **kullanılmaz**: süreç geneli durum, çok kiracılı bir istekte bir tenant'ın dilini diğerine sızdırabilir. |
+| React runtime | `resources/js/i18n/generated-overrides.ts` | Üretilmiş JSON'u alan adına göre dağıtır; her katalog `overridesFor(domain)` ile alır. Kaynak locale JSON'a yazılmaz — taban zaten koddadır. |
+| Kapı | `npm run i18n:check` (CI adımı) | İşlenmiş projeksiyon PO ile aynı değilse CI kırılır. İşlenen bir üretim çıktısı, bayatladığında sessizce yanlış metin gösterir. |
+
+Düşme sırası her iki çalışma zamanında da aynıdır: **istenen dil → kaynak dil
+→ anahtarın kendisi**. Anahtarı göstermek son çaredir ve kasten çirkindir:
+eksik çeviri fark edilmeli, boş bir arayüzün arkasına saklanmamalıdır.
 
 ## 4. Yerel format kuralları
 

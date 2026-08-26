@@ -1,0 +1,153 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: menu:menu.categories.list.label
+msgid "menu.categories.list.label"
+msgstr ""
+
+#: menu:menu.category.create.error.submit
+msgid "menu.category.create.error.submit"
+msgstr ""
+
+#: menu:menu.category.create.submit
+msgid "menu.category.create.submit"
+msgstr ""
+
+#: menu:menu.category.items.label
+msgid "menu.category.items.label"
+msgstr ""
+
+#: menu:menu.category.name.error.required
+msgid "menu.category.name.error.required"
+msgstr ""
+
+#: menu:menu.category.name.label
+msgid "menu.category.name.label"
+msgstr ""
+
+#: menu:menu.category.order.label
+msgid "menu.category.order.label"
+msgstr ""
+
+#: menu:menu.category.select.label
+msgid "menu.category.select.label"
+msgstr ""
+
+#: menu:menu.create.error.submit
+msgid "menu.create.error.submit"
+msgstr ""
+
+#: menu:menu.create.submit
+msgid "menu.create.submit"
+msgstr ""
+
+#: menu:menu.initial.error.load
+msgid "menu.initial.error.load"
+msgstr ""
+
+#: menu:menu.initial.error.retry
+msgid "menu.initial.error.retry"
+msgstr ""
+
+#: menu:menu.item.allergens.edit.button
+msgid "menu.item.allergens.edit.button"
+msgstr ""
+
+#: menu:menu.item.allergens.error.submit
+msgid "menu.item.allergens.error.submit"
+msgstr ""
+
+#: menu:menu.item.allergens.label
+msgid "menu.item.allergens.label"
+msgstr ""
+
+#: menu:menu.item.allergens.list.label
+msgid "menu.item.allergens.list.label"
+msgstr ""
+
+#: menu:menu.item.allergens.submit
+msgid "menu.item.allergens.submit"
+msgstr ""
+
+#: menu:menu.item.create.error.submit
+msgid "menu.item.create.error.submit"
+msgstr ""
+
+#: menu:menu.item.create.submit
+msgid "menu.item.create.submit"
+msgstr ""
+
+#: menu:menu.item.currency.label
+msgid "menu.item.currency.label"
+msgstr ""
+
+#: menu:menu.item.order.label
+msgid "menu.item.order.label"
+msgstr ""
+
+#: menu:menu.item.price.edit.button
+msgid "menu.item.price.edit.button"
+msgstr ""
+
+#: menu:menu.item.price.edit.error.submit
+msgid "menu.item.price.edit.error.submit"
+msgstr ""
+
+#: menu:menu.item.price.edit.submit
+msgid "menu.item.price.edit.submit"
+msgstr ""
+
+#: menu:menu.item.price.error.required
+msgid "menu.item.price.error.required"
+msgstr ""
+
+#: menu:menu.item.price.label
+msgid "menu.item.price.label"
+msgstr ""
+
+#: menu:menu.item.visibility.checkbox.label
+msgid "menu.item.visibility.checkbox.label"
+msgstr ""
+
+#: menu:menu.item.visibility.error.submit
+msgid "menu.item.visibility.error.submit"
+msgstr ""
+
+#: menu:menu.loading
+msgid "menu.loading"
+msgstr ""
+
+#: menu:menu.name.error.required
+msgid "menu.name.error.required"
+msgstr ""
+
+#: menu:menu.name.label
+msgid "menu.name.label"
+msgstr ""
+
+#: menu:menu.product.create.error.submit
+msgid "menu.product.create.error.submit"
+msgstr ""
+
+#: menu:menu.product.create.submit
+msgid "menu.product.create.submit"
+msgstr ""
+
+#: menu:menu.product.name.error.required
+msgid "menu.product.name.error.required"
+msgstr ""
+
+#: menu:menu.product.name.label
+msgid "menu.product.name.label"
+msgstr ""
+
+#: menu:menu.status.saving
+msgid "menu.status.saving"
+msgstr ""

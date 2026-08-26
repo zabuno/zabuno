@@ -35,4 +35,15 @@ export default tseslint.config(
             globals: globals.node,
         },
     },
+    {
+        // Boru hattı script'leri Node'da çalışır: tarayıcı global'leri yok,
+        // Node global'leri var. Aynı kuralları tarayıcı bağlamıyla ölçmek
+        // yanlış pozitif üretirdi.
+        files: ['scripts/**/*.mjs'],
+        languageOptions: {
+            ecmaVersion: 2022,
+            sourceType: 'module',
+            globals: globals.node,
+        },
+    },
 );

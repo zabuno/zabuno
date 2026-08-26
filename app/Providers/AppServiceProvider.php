@@ -13,6 +13,7 @@ use App\Application\Billing\Port\PlanManagementRepositoryPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
+use App\Application\Localization\Port\TranslationPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaRepositoryPort;
@@ -45,6 +46,7 @@ use App\Infrastructure\Billing\Persistence\EloquentSubscriptionRepository;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
+use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
@@ -86,6 +88,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
         $this->app->bind(LedgerPort::class, DatabaseLedger::class);
+        $this->app->singleton(TranslationPort::class, static fn (): MoFileTranslator => new MoFileTranslator(base_path('lang/mo')));
         $this->app->bind(MenuCatalogApiContextPort::class, EloquentMenuCatalogApiContext::class);
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
         $this->app->bind(MalwareScannerPort::class, function (): MalwareScannerPort {
