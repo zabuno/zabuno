@@ -1,3 +1,4 @@
+import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
 import { t } from '../../../../i18n/workspace';
 
 export type CurrentPublication = {
@@ -60,13 +61,9 @@ export function PublicationStatusRegion({
                     <p role="alert" className="text-sm text-fg-danger">
                         {t('workspace.publication.status.loadError')}
                     </p>
-                    <button
-                        type="button"
-                        onClick={onRetry}
-                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
-                    >
+                    <PlainButton type="button" onClick={onRetry}>
                         Retry
-                    </button>
+                    </PlainButton>
                 </div>
             ) : current === null ? (
                 <p role="status" className="text-sm text-fg-muted">
@@ -92,14 +89,14 @@ export function PublicationStatusRegion({
                 {t('workspace.publication.publishAction.checklistConfirmed')}
             </label>
 
-            <button
+            <PlainButton
                 type="button"
                 disabled={!checklistReady || !confirmed || publishing}
                 onClick={onPublish}
-                className="self-start rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 disabled:text-gray-400 dark:border-gray-600 dark:text-gray-300 dark:disabled:text-gray-500"
+                className="self-start"
             >
                 {t('workspace.publication.status.publishButton')}
-            </button>
+            </PlainButton>
 
             {errorMessage ? (
                 <p role="alert" className="text-sm text-fg-danger">

@@ -1,3 +1,10 @@
+/*
+ * NOT (2026-08-26): tema seçimi `radiogroup`'a taşındı. Altı butonda
+ * `aria-pressed`, ekran okuyucuya "altı ayrı anahtar" der; oysa kullanıcı
+ * altı seçenekten BİRİNİ seçer. `radio` rolü bunu doğru anlatır ve
+ * "6 seçenekten 2." bilgisini taşır. Donan davranış (tek seçim, varsayılan
+ * classic, URL'e yansıması) değişmedi; yalnız doğru rol kullanılıyor.
+ */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -545,8 +552,8 @@ describe('QrPrintExportRegion theme selection (QR_THEME_SELECTION_RED)', () => {
         render(<QrPrintExportRegion items={[item]} />);
 
         const region = screen.getByRole('region', { name: /qr print export/i });
-        const classicButton = within(region).getByRole('button', { name: /^classic theme$/i });
-        expect(classicButton).toHaveAttribute('aria-pressed', 'true');
+        const classicButton = within(region).getByRole('radio', { name: /^classic theme$/i });
+        expect(classicButton).toHaveAttribute('aria-checked', 'true');
 
         const img = within(region).getByRole('img', { name: /qr/i });
         expect(img).toHaveAttribute(
@@ -567,12 +574,12 @@ describe('QrPrintExportRegion theme selection (QR_THEME_SELECTION_RED)', () => {
         render(<QrPrintExportRegion items={[item]} />);
 
         const region = screen.getByRole('region', { name: /qr print export/i });
-        const boldButton = within(region).getByRole('button', { name: /^bold theme$/i });
+        const boldButton = within(region).getByRole('radio', { name: /^bold theme$/i });
         await user.click(boldButton);
 
-        expect(boldButton).toHaveAttribute('aria-pressed', 'true');
-        expect(within(region).getByRole('button', { name: /^classic theme$/i })).toHaveAttribute(
-            'aria-pressed',
+        expect(boldButton).toHaveAttribute('aria-checked', 'true');
+        expect(within(region).getByRole('radio', { name: /^classic theme$/i })).toHaveAttribute(
+            'aria-checked',
             'false',
         );
 
@@ -600,7 +607,7 @@ describe('QrPrintExportRegion theme selection (QR_THEME_SELECTION_RED)', () => {
         const outputFormatSelect = within(region).getByLabelText(/output format/i);
         await user.selectOptions(outputFormatSelect, 'svg');
 
-        const roundedButton = within(region).getByRole('button', { name: /^rounded theme$/i });
+        const roundedButton = within(region).getByRole('radio', { name: /^rounded theme$/i });
         await user.click(roundedButton);
 
         const img = within(region).getByRole('img', { name: /qr/i });
@@ -627,7 +634,7 @@ describe('QrPrintExportRegion theme selection (QR_THEME_SELECTION_RED)', () => {
         const outputFormatSelect = within(region).getByLabelText(/output format/i);
         await user.selectOptions(outputFormatSelect, 'pdf');
 
-        const brandedButton = within(region).getByRole('button', { name: /^branded theme$/i });
+        const brandedButton = within(region).getByRole('radio', { name: /^branded theme$/i });
         await user.click(brandedButton);
 
         const downloadLink = within(region).getByRole('link', { name: /download pdf/i });
@@ -645,16 +652,16 @@ describe('QrPrintExportRegion theme selection (QR_THEME_SELECTION_RED)', () => {
         render(<QrPrintExportRegion items={[item]} />);
 
         const region = screen.getByRole('region', { name: /qr print export/i });
-        const highContrastButton = within(region).getByRole('button', {
+        const highContrastButton = within(region).getByRole('radio', {
             name: /^high contrast theme$/i,
         });
         await user.click(highContrastButton);
 
-        const classicButton = within(region).getByRole('button', { name: /^classic theme$/i });
+        const classicButton = within(region).getByRole('radio', { name: /^classic theme$/i });
         await user.click(classicButton);
 
-        expect(classicButton).toHaveAttribute('aria-pressed', 'true');
-        expect(highContrastButton).toHaveAttribute('aria-pressed', 'false');
+        expect(classicButton).toHaveAttribute('aria-checked', 'true');
+        expect(highContrastButton).toHaveAttribute('aria-checked', 'false');
 
         const img = within(region).getByRole('img', { name: /qr/i });
         expect(img).toHaveAttribute(
@@ -764,7 +771,7 @@ describe('QrPrintExportRegion browser/OS print affordance (QR_OS_PRINT_RED)', ()
         await user.selectOptions(paperSizeSelect, 'B7');
         await user.selectOptions(orientationSelect, 'Landscape');
 
-        const highContrastButton = within(region).getByRole('button', {
+        const highContrastButton = within(region).getByRole('radio', {
             name: /^high contrast theme$/i,
         });
         await user.click(highContrastButton);

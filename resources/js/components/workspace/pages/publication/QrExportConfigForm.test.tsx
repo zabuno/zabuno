@@ -1,3 +1,10 @@
+/*
+ * NOT (2026-08-26): tema seçimi `radiogroup`'a taşındı. Altı butonda
+ * `aria-pressed`, ekran okuyucuya "altı ayrı anahtar" der; oysa kullanıcı
+ * altı seçenekten BİRİNİ seçer. `radio` rolü bunu doğru anlatır ve
+ * "6 seçenekten 2." bilgisini taşır. Donan davranış (tek seçim, varsayılan
+ * classic, URL'e yansıması) değişmedi; yalnız doğru rol kullanılıyor.
+ */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -46,8 +53,8 @@ import { QrPrintExportRegion } from './QrPrintExportRegion';
  * Extended for S1-WP04b6 (six stateless basic QR themes, frozen MASTER
  * contract): the six theme buttons are now a real, enabled, stateless
  * selection control — not a disabled placeholder list. Exactly one carries
- * aria-pressed="true" at a time, classic by default. Today the buttons are
- * unconditionally disabled and none carries aria-pressed, so this assertion
+ * aria-checked="true" at a time, classic by default. Today the buttons are
+ * unconditionally disabled and none carries aria-checked, so this assertion
  * fails against current production.
  */
 
@@ -167,7 +174,7 @@ describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => 
     it('renders the six theme buttons visible and enabled, with classic pressed by default, and no second theme select', () => {
         render(<QrPrintExportRegion />);
 
-        const themeButtons = screen.getAllByRole('button', { name: /theme$/i });
+        const themeButtons = screen.getAllByRole('radio', { name: /theme$/i });
         expect(themeButtons).toHaveLength(6);
         themeButtons.forEach((button) => {
             expect(button).toBeVisible();
@@ -175,7 +182,7 @@ describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => 
         });
 
         const pressed = themeButtons.filter(
-            (button) => button.getAttribute('aria-pressed') === 'true',
+            (button) => button.getAttribute('aria-checked') === 'true',
         );
         expect(pressed).toHaveLength(1);
         expect(pressed[0]).toHaveAccessibleName(/^classic theme$/i);
