@@ -41,7 +41,33 @@
     --border: oklch(0.9 0 0);
     --color-brand-500: #ffb900;
 
+    /* Akışkan aralık ölçeği. Bileşen ham `clamp()` bilmez; bu ölçeği bilir
+       (design-corpus/olcu-birimleri.md 7. madde). */
+    --space-fluid-sm: clamp(0.75rem, 0.6rem + 0.6vw, 1rem);
     --space-fluid-md: clamp(1rem, 0.75rem + 1vw, 1.5rem);
+    --space-fluid-lg: clamp(1.5rem, 1.1rem + 1.8vw, 2.5rem);
+
+    /* Akışkan tipografi. Yoğunluk font-size'a ASLA dokunmaz; bu ölçek
+       viewport'a göre değişir, yoğunluk moduna göre değil. */
+    --font-size-display: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+
+    /* Atomik ızgara 4, ana ritim 8 (design-corpus/olcu-birimleri.md). */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    /* Yoğunluk — varsayılan `standard`. Satır yüksekliği height + padding ile
+       değişir, ASLA font-size ile değil: yoğunluk okunabilirliği düşürmez.
+       `hit-area-min` üç modda da aynıdır — kompakt mod satırı görsel olarak
+       daraltır, dokunma hedefini küçültmez. */
+    --density-row-height: 44px;
+    --density-padding-inline: var(--space-3);
+    --density-hit-area-min: 44px;
 
     /* Ham semantic değerler — TEK kaynak. Hem kısa utility'ler (@theme) hem de
        eski `var(--color-text-*)` tüketicileri buraya bağlanır, böylece bir tonu
@@ -73,6 +99,18 @@
        against --color-brand-500 in both themes. */
     --color-action-primary-bg: var(--color-brand-500);
     --color-action-primary-fg: #1c1500;
+}
+
+/* Yoğunluk modları. Bir kapsayıcıya uygulanır; token seviyesinde çözülür ve
+   bileşene sızmaz (docs/37 §2.2, kesen eksen X4). */
+.density-comfortable {
+    --density-row-height: 52px;
+    --density-padding-inline: var(--space-4);
+}
+
+.density-compact {
+    --density-row-height: 36px;
+    --density-padding-inline: var(--space-2);
 }
 
 .dark {

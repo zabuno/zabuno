@@ -4,10 +4,7 @@ export function PublicHomePage() {
     return (
         <main id="main-content" className="mx-auto max-w-5xl px-4 py-10">
             <section className="flex flex-col gap-6">
-                <h1
-                    className="text-3xl font-bold"
-                    style={{ fontSize: 'clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem)' }}
-                >
+                <h1 className="text-3xl font-bold" style={{ fontSize: 'var(--font-size-display)' }}>
                     Run your restaurant&apos;s menu and workspace from one place
                 </h1>
                 <p className="max-w-2xl text-gray-600 dark:text-gray-300">

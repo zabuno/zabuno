@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import debt from './raw-palette-debt.json';
+import directionDebt from './direction-debt.json';
 import { RAW_PALETTE_PATTERN, findCycle, layerOf, mayCompose, type Layer } from './semantic-map';
 import {
     WCAG_AA_NORMAL_TEXT,
@@ -250,6 +251,96 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
                 'İcat edilen kök:\n' +
                 offenders.join('\n'),
         ).toEqual([]);
+    });
+
+    // --- DS-DENSITY-CONTRACT-05 -------------------------------------------
+    // Külliyatın yoğunluk kararı iki maddeyle donuk: satır yüksekliği
+    // height + padding ile değişir ASLA font-size ile değil, ve dokunma
+    // hedefi hiçbir modda küçülmez. Birincisi ihlal edilirse kompakt mod
+    // okunmaz metin üretir; ikincisi ihlal edilirse dokunulamaz kontrol.
+    it('yoğunluk modları tipografiye dokunmaz ve dokunma hedefini küçültmez', () => {
+        const css = readFileSync(CSS_PATH, 'utf8');
+        const root = readCustomProperties(css, ':root');
+        const comfortable = readCustomProperties(css, '.density-comfortable');
+        const compact = readCustomProperties(css, '.density-compact');
+
+        const px = (value: string | undefined): number => parseFloat(value ?? 'NaN');
+
+        expect(
+            [
+                px(comfortable['--density-row-height']),
+                px(root['--density-row-height']),
+                px(compact['--density-row-height']),
+            ],
+            'DS-DENSITY-CONTRACT-05: üç yoğunluk modu da satır yüksekliği tanımlamalı.',
+        ).not.toContain(NaN);
+
+        expect(
+            px(comfortable['--density-row-height']),
+            "DS-DENSITY-CONTRACT-05: comfortable, standard'dan yüksek olmalı.",
+        ).toBeGreaterThan(px(root['--density-row-height']));
+
+        expect(
+            px(compact['--density-row-height']),
+            "DS-DENSITY-CONTRACT-05: compact, standard'dan alçak olmalı.",
+        ).toBeLessThan(px(root['--density-row-height']));
+
+        // Dokunma hedefi: modlar onu yeniden tanımlamamalı; tanımlarsa
+        // taban değerin altına inemez.
+        for (const [name, scope] of [
+            ['comfortable', comfortable],
+            ['compact', compact],
+        ] as const) {
+            const override = scope['--density-hit-area-min'];
+            if (override === undefined) continue;
+
+            expect(
+                px(override),
+                `DS-DENSITY-CONTRACT-05: ${name} modu dokunma hedefini küçültüyor.`,
+            ).toBeGreaterThanOrEqual(px(root['--density-hit-area-min']));
+        }
+
+        // Tipografi yoğunluğun konusu değildir.
+        for (const [name, scope] of [
+            ['comfortable', comfortable],
+            ['compact', compact],
+        ] as const) {
+            const typography = Object.keys(scope).filter((token) =>
+                /font|line-height|letter-spacing/.test(token),
+            );
+
+            expect(
+                typography,
+                `DS-DENSITY-CONTRACT-05: ${name} modu tipografi token'ı tanımlıyor. ` +
+                    'Yoğunluk height ve padding ile çözülür; font-size ile değil.',
+            ).toEqual([]);
+        }
+    });
+
+    // --- DS-LOGICAL-DIRECTION-06 ------------------------------------------
+    // Külliyat RTL-native bir sistem şart koşar. Fiziksel yön sınıfı Arapça
+    // gibi sağdan-sola dillerde arayüzü SESSİZCE bozar: hata vermez, yalnız
+    // yanlış tarafa hizalar. Borç düşebilir, yükselemez.
+    it('fiziksel yön sınıfı borcu taban çizgisini aşmaz', () => {
+        const physical = /\b(ml|mr|pl|pr)-[0-9a-z]+|text-(left|right)\b/g;
+        const offenders: string[] = [];
+        let count = 0;
+
+        for (const file of FILES) {
+            const found = file.body.match(physical);
+            if (found) {
+                count += found.length;
+                offenders.push(`${file.path} (${found.length})`);
+            }
+        }
+
+        expect(
+            count,
+            `DS-LOGICAL-DIRECTION-06: fiziksel yön kullanımı ${directionDebt.maxPhysicalDirectionClasses} ` +
+                `taban çizgisinden ${count}'e yükseldi. Logical karşılığını kullanın ` +
+                `(${directionDebt.$replaceWith}):\n` +
+                offenders.join('\n'),
+        ).toBeLessThanOrEqual(directionDebt.maxPhysicalDirectionClasses);
     });
 
     // --- DS-NO-RAW-HEX-01 -------------------------------------------------

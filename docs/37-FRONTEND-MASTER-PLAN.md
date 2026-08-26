@@ -160,11 +160,11 @@ Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
 | G3 | Kontrast | Her token AA | ✅ ölçülüyor, build'i kırıyor | — |
 | G4 | Katman kapsamı | Her bileşen katmanlı | ✅ **kapandı** — `catalog/` altında katmansız dosya kalmadı | — |
 | G5 | Yatay bağ / döngü | Döngü yasak, yukarı yasak | ✅ **kapandı** — `DS-NO-CYCLE-03`; sapma §2.2'de gerekçeli | — |
-| G6 | **Density** | comfortable/standard/compact | ❌ **hiç yok** | 3 |
+| G6 | **Density** | comfortable/standard/compact | ✅ **kapandı** — üç mod + `DS-DENSITY-CONTRACT-05` | — |
 | G7 | **a11y kapısı** | axe "bitti" tanımının parçası | ✅ **kapandı** — 126 story taranıyor, ihlal sıfırda kilitli | — |
 | G8 | Motion | Motion token + reduced-motion | ❌ token yok; `prefers-reduced-motion` 1 dosyada | 4 |
-| G9 | Akışkan değerler | Token | ⚠️ `clamp()` bileşene gömülü | 3 |
-| G10 | RTL/logical | Logical öncelikli | ⚠️ 3 fiziksel / 3 logical, zorlayıcı yok | 3 |
+| G9 | Akışkan değerler | Token | ✅ akışkan ölçek + display tipografisi token'da; kalan üç yerel `clamp()` izole | — |
+| G10 | RTL/logical | Logical öncelikli | ✅ **cırcır kuruldu** — `DS-LOGICAL-DIRECTION-06`, borç yükselemez | — |
 | G11 | i18n | Altı katalog + PO pipeline | ❌ yalnız `en`; kütüphane yok, elle 7 modül | 2 |
 | G12 | X5 durum grameri | Tek R7 ailesi | ⚠️ dağınık (Error 48, Loading 33, Empty 20, Skeleton 3, Permission 1, **Offline 0**) | 3 |
 | G13 | Storybook IA | Yalnız 4 kök | ✅ **kapandı** — `DS-STORY-TAXONOMY-04`; `Workspace/` → `Surface/` | — |
@@ -199,8 +199,8 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 | Metin token'ı AA karşılar | `DS-CONTRAST-AA-01` | ✅ |
 | Her story axe'ten geçer | `DS-A11Y-AXE-01` | ✅ |
 | Her story render edilebilir | `DS-A11Y-RENDERABLE-02` | ✅ |
-| Bileşen ham geometri bilmez | *(yok)* | ❌ Dalga 3 |
-| Fiziksel yön sınıfı artmaz | *(yok)* | ❌ Dalga 3 |
+| Yoğunluk tipografiye dokunmaz, dokunma hedefi küçülmez | `DS-DENSITY-CONTRACT-05` | ✅ |
+| Fiziksel yön sınıfı artmaz | `DS-LOGICAL-DIRECTION-06` | ✅ |
 | Story kökü icat edilmez | `DS-STORY-TAXONOMY-04` | ✅ |
 | Bileşenler arası döngü yok | `DS-NO-CYCLE-03` | ✅ |
 | Bundle bütçeyi aşmaz | *(yok)* | ❌ Dalga 4 |
@@ -249,11 +249,25 @@ buldu (`Select`'in erişilebilir adı yoktu).
 
 **Kapı:** her bileşen bir katmana ait, yukarı bağ ve döngü ölçülüyor.
 
-### Dalga 3 — Yoğunluk, geometri, yön (G6, G9, G10)
-Density token'larını (comfortable/standard/compact) kur — satır yüksekliği
-**height + padding** ile değişir, **asla font-size ile değil**. Bileşene gömülü
-`clamp()` değerlerini akışkan token'a taşı. Fiziksel yön sınıfları için cırcır
-ekle. **Kapı:** üç yoğunluk bir tabloda görünür ve ham geometri artamaz.
+### Dalga 3 — Yoğunluk, geometri, yön (G6, G9, G10) — ✅ KAPANDI
+Üç yoğunluk modu kuruldu (`.density-comfortable` / varsayılan / `.density-compact`)
+ve referans implementasyonun değerleri birebir alındı. İki madde teste bağlandı:
+
+- **Satır yüksekliği height + padding ile değişir, font-size ile asla.** Aksi
+  hâlde kompakt mod okunabilirliği düşürür; yoğunluk bir okunaklılık takası
+  değildir.
+- **Dokunma hedefi hiçbir modda küçülmez.** Kompakt mod satırı görsel olarak
+  daraltır, parmakla dokunulabilirliği değil.
+
+Atomik ızgara (4) ve ritim (8) `--space-1…8` olarak, akışkan aralık ölçeği ve
+display tipografisi token olarak tanımlandı; bileşenlere gömülü `clamp()`
+değerleri bu token'lara taşındı.
+
+Fiziksel yön sınıfları için cırcır kuruldu: RTL'de fiziksel yön hata vermez,
+yalnız **sessizce yanlış tarafa hizalar** — bu yüzden borç ölçülür ve
+yükselemez.
+
+**Kapı:** yoğunluk sözleşmesi ve yön borcu ölçülüyor.
 
 ### Dalga 4 — Motion ve bütçe (G8, G15)
 Motion token'ları ve `prefers-reduced-motion` sözleşmesi. Bundle bütçesini
