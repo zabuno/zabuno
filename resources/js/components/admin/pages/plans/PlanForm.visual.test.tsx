@@ -25,12 +25,19 @@ const BREAKPOINT_PATTERN = /(^|\s)(sm|md|lg|xl|2xl):/;
 
 const FULL_WIDTH_PATTERN = /(^|\s)w-full(\s|$)/;
 const BORDER_PATTERN = /(^|\s)border(-[a-z0-9]+)?(\s|$)/;
-const LIGHT_SURFACE_PATTERN = /(^|\s)bg-white(\s|$)/;
-const DARK_SURFACE_PATTERN = /(^|\s)dark:bg-gray-\d{3}(\s|$)/;
-const LIGHT_TEXT_PATTERN = /(^|\s)text-gray-900(\s|$)/;
-const DARK_TEXT_PATTERN = /(^|\s)dark:text-white(\s|$)/;
-const FOCUS_VISIBLE_PATTERN = /(^|\s)focus:(ring|border|outline)-/;
-const MIN_HEIGHT_PATTERN = /(^|\s)min-h-11(\s|$)/;
+// Bu desenler artık ham sınıf adı değil, SEMANTIC TOKEN arıyor.
+//
+// Eski hâli `bg-white` + `dark:bg-gray-800` çiftini şart koşuyordu; yani
+// aynı kararın iki yerde yazılmasını zorunlu kılıyordu ve tema kökü
+// devreye girdiğinde tasarım sistemine karşı çalışır hâle geldi. Korunan
+// niyet aynı: alan opak bir yüzeye, okunur bir metne, görünür bir odak
+// halkasına ve en az 44px dokunma hedefine sahip olmalı.
+const SURFACE_PATTERN = /(^|\s)bg-surface(\s|$)/;
+const TEXT_PATTERN = /(^|\s)text-fg(\s|$)/;
+const FOCUS_VISIBLE_PATTERN = /(^|\s)focus(-visible)?:(ring|border|outline)-/;
+// `--density-hit-area-min` app.css'te 44px'tir ve DS-DENSITY-CONTRACT-05
+// onun asla küçülmemesini garanti eder.
+const MIN_HEIGHT_PATTERN = /(^|\s)min-h-\[var\(--density-hit-area-min\)\](\s|$)/;
 
 function renderForm() {
     render(<PlanForm onSubmit={vi.fn()} submitting={false} />);
@@ -55,10 +62,8 @@ describe('PlanForm — visible control affordances (S1-WP01A)', () => {
 
             expect(className).toMatch(FULL_WIDTH_PATTERN);
             expect(className).toMatch(BORDER_PATTERN);
-            expect(className).toMatch(LIGHT_SURFACE_PATTERN);
-            expect(className).toMatch(DARK_SURFACE_PATTERN);
-            expect(className).toMatch(LIGHT_TEXT_PATTERN);
-            expect(className).toMatch(DARK_TEXT_PATTERN);
+            expect(className).toMatch(SURFACE_PATTERN);
+            expect(className).toMatch(TEXT_PATTERN);
             expect(className).toMatch(FOCUS_VISIBLE_PATTERN);
             expect(className).not.toMatch(BREAKPOINT_PATTERN);
         });
@@ -85,10 +90,8 @@ describe('PlanForm — visible control affordances (S1-WP01A)', () => {
 
         expect(className).toMatch(FULL_WIDTH_PATTERN);
         expect(className).toMatch(BORDER_PATTERN);
-        expect(className).toMatch(LIGHT_SURFACE_PATTERN);
-        expect(className).toMatch(DARK_SURFACE_PATTERN);
-        expect(className).toMatch(LIGHT_TEXT_PATTERN);
-        expect(className).toMatch(DARK_TEXT_PATTERN);
+        expect(className).toMatch(SURFACE_PATTERN);
+        expect(className).toMatch(TEXT_PATTERN);
         expect(className).toMatch(FOCUS_VISIBLE_PATTERN);
         expect(className).not.toMatch(BREAKPOINT_PATTERN);
     });

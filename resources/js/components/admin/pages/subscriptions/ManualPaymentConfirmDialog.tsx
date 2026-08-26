@@ -1,3 +1,4 @@
+import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
 import { useEffect, useRef, type KeyboardEvent } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -88,7 +89,7 @@ export function ManualPaymentConfirmDialog({
             role="dialog"
             aria-modal="true"
             aria-label={t('platform.subscriptions.confirm.heading')}
-            className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+            className="flex flex-col gap-3 rounded-lg border border-border p-4"
             onKeyDown={handleKeyDown}
         >
             <h2 className="text-sm font-semibold text-fg">
@@ -98,21 +99,17 @@ export function ManualPaymentConfirmDialog({
             <span className="text-fg-secondary">{endsAt}</span>
 
             <div className="flex gap-2">
-                <button
-                    type="button"
-                    className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
-                    onClick={onCancel}
-                >
+                <PlainButton type="button" onClick={onCancel}>
                     {t('platform.subscriptions.confirm.cancel')}
-                </button>
-                <button
+                </PlainButton>
+                <PlainButton
                     type="button"
+                    variant="primary"
                     disabled={confirming}
-                    className="rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-gray-900"
                     onClick={onConfirm}
                 >
                     {t('platform.subscriptions.confirm.confirm')}
-                </button>
+                </PlainButton>
             </div>
         </div>
     );

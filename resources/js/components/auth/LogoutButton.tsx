@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from 'flowbite-react';
+import { PlainButton } from '../catalog/forms/micro/PlainButton';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -39,9 +39,9 @@ export function LogoutButton({
                     {error}
                 </p>
             )}
-            <Button onClick={handleLogout} className="w-full">
+            <PlainButton variant="primary" onClick={handleLogout} className="w-full">
                 {t('auth.logout.submit')}
-            </Button>
+            </PlainButton>
         </div>
     );
 }

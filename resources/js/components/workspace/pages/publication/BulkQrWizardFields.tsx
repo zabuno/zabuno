@@ -3,16 +3,18 @@ import { useState } from 'react';
 import { t } from '../../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import type { QrCodeItem } from './qr-destination/QrCodeListItem';
+import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import {
+    NATIVE_FIELD_CLASS,
+    NATIVE_LABEL_CLASS,
+} from '../../../catalog/forms/micro/nativeFieldStyles';
+import { TextLink } from '../../../catalog/navigation/micro/TextLink';
 
-const FIELD_CLASSES =
-    'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+const FIELD_CLASSES = NATIVE_FIELD_CLASS;
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
+const LABEL_CLASSES = NATIVE_LABEL_CLASS;
 
 const ALERT_CLASSES = 'text-xs text-fg-danger';
-
-const SUBMIT_BUTTON_CLASSES =
-    'self-start rounded-lg border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500 dark:border-blue-500 dark:bg-blue-500 dark:disabled:border-gray-600 dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
 
 type FieldKey =
     | 'areaSectionCount'
@@ -467,26 +469,24 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     <ul className="flex flex-col gap-1">
                         {result.pairs.map((pair) => (
                             <li key={pair.tableId}>
-                                <a
-                                    href={pair.resolverUrl}
-                                    className="break-all text-sm text-blue-700 underline dark:text-blue-400"
-                                >
+                                <TextLink href={pair.resolverUrl} className="break-all text-sm">
                                     {pair.tableName}
-                                </a>
+                                </TextLink>
                             </li>
                         ))}
                     </ul>
                 </div>
             ) : null}
 
-            <button
+            <PlainButton
                 type="button"
+                variant="primary"
                 onClick={handleSubmit}
                 disabled={!canSubmit}
-                className={SUBMIT_BUTTON_CLASSES}
+                className="self-start"
             >
                 {t('workspace.publication.qrExport.bulkWizard.createButton')}
-            </button>
+            </PlainButton>
         </fieldset>
     );
 }

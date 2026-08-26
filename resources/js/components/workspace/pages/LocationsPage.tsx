@@ -1,3 +1,4 @@
+import { NATIVE_FIELD_CLASS } from '../../catalog/forms/micro/nativeFieldStyles';
 import { useState } from 'react';
 import { Button, Label } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
@@ -90,7 +91,7 @@ export function LocationsPage({
                         </div>
                         <select
                             id="workspace-locations-current"
-                            className="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            className={NATIVE_FIELD_CLASS}
                             value={selectedLocationId === null ? '' : String(selectedLocationId)}
                             onChange={(event) => onSelectLocation(Number(event.target.value))}
                         >
@@ -118,7 +119,7 @@ export function LocationsPage({
                                 <li
                                     key={location.id}
                                     data-testid="brand-location-row"
-                                    className="rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
+                                    className="rounded-lg border border-border p-3 text-sm text-fg-secondary"
                                 >
                                     <LocationEditForm
                                         workspaceId={workspaceId}

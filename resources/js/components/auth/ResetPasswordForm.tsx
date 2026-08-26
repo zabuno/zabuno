@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { Button, Label, TextInput } from 'flowbite-react';
+import { Label, TextInput } from 'flowbite-react';
+import { PlainButton } from '../catalog/forms/micro/PlainButton';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -143,9 +144,9 @@ export function ResetPasswordForm({
                 )}
             </div>
 
-            <Button type="submit" className="w-full">
+            <PlainButton variant="primary" type="submit" className="w-full">
                 {t('auth.reset_password.submit')}
-            </Button>
+            </PlainButton>
         </form>
     );
 }

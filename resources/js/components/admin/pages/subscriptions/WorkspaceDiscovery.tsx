@@ -1,3 +1,4 @@
+import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -18,8 +19,7 @@ type WorkspaceDiscoveryProps = {
 
 const WORKSPACES_ENDPOINT = '/api/admin/workspaces';
 
-const FIELD_CLASSES =
-    'w-full min-h-11 rounded-md border border-gray-300 bg-white px-3 py-2 text-left text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+const FIELD_CLASSES = `${NATIVE_FIELD_CLASS} text-left`;
 
 function isValidWorkspace(value: unknown): value is Workspace {
     if (typeof value !== 'object' || value === null) {
@@ -129,7 +129,7 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
                     id="subscription-workspace-listbox"
                     role="listbox"
                     aria-label={t('platform.subscriptions.workspace.label')}
-                    className="flex flex-col gap-1 rounded-md border border-gray-200 p-1 dark:border-gray-700"
+                    className="flex flex-col gap-1 rounded-md border border-border p-1"
                 >
                     {workspaces.map((workspace) => (
                         <li key={workspace.id}>
@@ -138,7 +138,7 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
                                 role="option"
                                 aria-selected={selectedWorkspace?.id === workspace.id}
                                 onClick={() => handleSelect(workspace)}
-                                className="flex w-full flex-wrap gap-2 rounded-md px-2 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                                className="flex w-full flex-wrap gap-2 rounded-md px-2 py-1.5 text-left text-sm text-fg-secondary hover:bg-surface-hover"
                             >
                                 <span className="font-medium text-fg">{workspace.name}</span>
                                 <span>{workspace.slug}</span>

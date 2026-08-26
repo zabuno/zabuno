@@ -1,3 +1,4 @@
+import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
 import { useState, type FormEvent } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -19,8 +20,7 @@ type ManualPaymentFormProps = {
     onSubmit: (values: ManualPaymentFormValues) => void;
 };
 
-const FIELD_CLASSES =
-    'w-full min-h-11 rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+const FIELD_CLASSES = NATIVE_FIELD_CLASS;
 
 /**
  * Manual-payment fields: Plan (server is_active plans only), end date,

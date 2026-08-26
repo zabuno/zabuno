@@ -1,3 +1,4 @@
+import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
 import { formatMoneyOr } from '../../../../money/format';
 import { t } from '../../../../i18n/platform';
 
@@ -75,7 +76,7 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
                     {plans.map((plan) => (
                         <li
                             key={plan.id}
-                            className="flex flex-col gap-2 rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
+                            className="flex flex-col gap-2 rounded-lg border border-border p-3 text-sm text-fg-secondary"
                         >
                             <span className="font-medium text-fg">{plan.name}</span>
                             <span className="text-fg-muted">{plan.code}</span>
@@ -93,13 +94,14 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
                                 </span>
                             )}
                             {!plan.is_active && (
-                                <button
+                                <PlainButton
                                     type="button"
-                                    className="self-start rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white dark:bg-white dark:text-gray-900"
+                                    variant="primary"
+                                    className="self-start"
                                     onClick={() => onActivateRequest(plan)}
                                 >
                                     {t('platform.plans.activate.button')}
-                                </button>
+                                </PlainButton>
                             )}
                         </li>
                     ))}
