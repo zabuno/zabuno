@@ -12,6 +12,27 @@
         'Roboto', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --color-border: var(--border);
+
+    /* Semantic utility yüzeyi. Tailwind v4'te utility YALNIZ @theme'den üretilir;
+       :root'taki token'lar hiçbir sınıf üretmez. Bu blok olmadan geliştirici
+       `text-fg-secondary` yazamaz ve mecburen `text-gray-500`'e düşer — kod
+       tabanındaki ham palet borcunun kökeni budur (docs/35 §1 token zinciri).
+       Her utility tek bir ham değere bağlanır: master değişince hepsi değişir. */
+    --color-fg: var(--fg);
+    --color-fg-secondary: var(--fg-secondary);
+    --color-fg-muted: var(--fg-muted);
+    --color-fg-subtle: var(--fg-subtle);
+    --color-fg-danger: var(--fg-danger);
+    --color-fg-success: var(--fg-success);
+    --color-fg-warning: var(--fg-warning);
+
+    --color-surface: var(--surface);
+    --color-surface-subtle: var(--surface-subtle);
+
+    --color-border-strong: var(--border-strong);
+    --color-border-danger: var(--border-danger);
+
+    --color-focus: var(--focus);
 }
 
 /* docs/06 §11 AEP mirası — #ffb900 is the ONLY primitive; every component
@@ -22,11 +43,30 @@
 
     --space-fluid-md: clamp(1rem, 0.75rem + 1vw, 1.5rem);
 
-    --color-surface: oklch(1 0 0);
+    /* Ham semantic değerler — TEK kaynak. Hem kısa utility'ler (@theme) hem de
+       eski `var(--color-text-*)` tüketicileri buraya bağlanır, böylece bir tonu
+       burada değiştirmek her iki sözdizimini birden değiştirir. */
+    --fg: oklch(0.18 0 0);
+    --fg-secondary: oklch(0.45 0 0);
+    --fg-muted: oklch(0.55 0 0);
+    --fg-subtle: oklch(0.68 0 0);
+    --fg-danger: oklch(0.52 0.19 25);
+    --fg-success: oklch(0.5 0.13 155);
+    --fg-warning: oklch(0.5 0.12 75);
+
+    --surface: oklch(1 0 0);
+    --surface-subtle: oklch(0.975 0 0);
+
+    --border-strong: oklch(0.76 0 0);
+    --border-danger: oklch(0.58 0.19 25);
+
+    --focus: oklch(0.55 0.18 255);
+
+    --color-surface: var(--surface);
     --color-surface-glass-bg: color-mix(in oklch, var(--color-surface) 72%, transparent);
     --color-surface-glass-border: var(--border);
-    --color-text-primary: oklch(0.18 0 0);
-    --color-text-secondary: oklch(0.45 0 0);
+    --color-text-primary: var(--fg);
+    --color-text-secondary: var(--fg-secondary);
 
     /* Brand yellow is never used as a foreground on light text/backgrounds
        (docs/06 §11); the action fg is an explicit dark tone measured >=4.5:1
@@ -38,11 +78,27 @@
 .dark {
     --border: oklch(0.32 0 0);
 
-    --color-surface: oklch(0.2 0 0);
+    --fg: oklch(0.95 0 0);
+    --fg-secondary: oklch(0.7 0 0);
+    --fg-muted: oklch(0.62 0 0);
+    --fg-subtle: oklch(0.52 0 0);
+    --fg-danger: oklch(0.72 0.16 25);
+    --fg-success: oklch(0.72 0.13 155);
+    --fg-warning: oklch(0.76 0.13 75);
+
+    --surface: oklch(0.2 0 0);
+    --surface-subtle: oklch(0.24 0 0);
+
+    --border-strong: oklch(0.46 0 0);
+    --border-danger: oklch(0.62 0.17 25);
+
+    --focus: oklch(0.72 0.15 255);
+
+    --color-surface: var(--surface);
     --color-surface-glass-bg: color-mix(in oklch, var(--color-surface) 60%, transparent);
     --color-surface-glass-border: var(--border);
-    --color-text-primary: oklch(0.95 0 0);
-    --color-text-secondary: oklch(0.7 0 0);
+    --color-text-primary: var(--fg);
+    --color-text-secondary: var(--fg-secondary);
 
     --color-action-primary-bg: var(--color-brand-500);
     --color-action-primary-fg: #1c1500;
@@ -50,6 +106,15 @@
 
 .high-contrast {
     --border: CanvasText;
+    --border-strong: CanvasText;
+    --border-danger: CanvasText;
+    --fg: CanvasText;
+    --fg-secondary: CanvasText;
+    --fg-muted: CanvasText;
+    --fg-subtle: CanvasText;
+    --surface: Canvas;
+    --surface-subtle: Canvas;
+    --focus: Highlight;
 }
 
 /* Container-query adaptive shell (docs/06 §12) — capacity-evidenced, not a
