@@ -1,0 +1,130 @@
+# 38 — URL politikası ve URL motoru
+
+**Bu belge NEDENİ taşır. DEĞERLER `config/url-policy.php`'dedir ve orada
+kanoniktir; bu belge hiçbir sayıyı, listeyi veya eşiği tekrar etmez.**
+Kuralları zorlayan kapılar `tests/Feature/Url` ve `tests/Unit/Url` altındadır.
+
+## 1. Neden bir "URL motoru"?
+
+URL bu üründe bir yönlendirme ayrıntısı değil, **beş ayrı sözleşmedir**:
+
+| Sözleşme | Kime karşı | Bozulunca ne olur |
+| --- | --- | --- |
+| Kullanıcı | Yer imi, paylaşım, geri tuşu | Paylaşılan bağlantı yanlış yere gider |
+| Arama motoru | Canonical, tekilleştirme | Aynı menü iki adreste, ikisi de zayıf |
+| Güvenlik | Yetki sınırı | URL'deki kimlik yetki sanılır |
+| Erişilebilirlik | Odak ve kaydırma | Ekran okuyucu değişimi duyurmaz |
+| **Fiziksel varlık** | **Basılmış QR** | **Masadaki kod ölür, kimse fark etmez** |
+
+Sonuncusu bu ürünü diğerlerinden ayırır. Bir web sayfasının adresi
+değiştiğinde 301 koyarsınız. **Basılmış bir QR kodunu geri alamazsınız.**
+Bu yüzden URL kuralları koda dağılmaz; tek bir motorda toplanır ve testle
+zorlanır.
+
+## 2. Motorun parçaları
+
+| Parça | Sorumluluk |
+| --- | --- |
+| `config/url-policy.php` | Politikanın tek kanonik kaynağı (değerler) |
+| `App\Domain\Url\UrlPolicy` | Politikayı tiplenmiş biçimde okur |
+| `App\Domain\Url\UrlNormalizer` | Saf dönüşüm: bir adresi kanonik biçimine indirger |
+| `App\Http\Middleware\CanonicalUrl` | Motoru tüm yüzeye uygular |
+| `App\Rules\NotReservedSlug` | URL ad alanını korur |
+
+Normalizer'ın **saf** olması kasıtlıdır: aynı kuralı middleware, canonical
+etiketi ve sitemap ayrı ayrı yazsaydı, üç farklı doğru ortaya çıkardı.
+
+## 3. Dış araştırmanın bu depoda GEÇERSİZ olan tavsiyesi
+
+Yaygın URL rehberleri şunu söyler: *"Path'i tamamen küçük harfe indir ve
+301 at."*
+
+**Bu üründe o kural her basılı QR kodunu öldürür.** QR token'ı
+`[A-Za-z0-9_-]{43}` biçimindedir (`App\Domain\QrDestination\QrToken`) ve
+büyük/küçük harfe **duyarlıdır**. `/q/AbC...` adresini `/q/abc...` yapan bir
+kural, masadaki kodu değiştirmez — yalnız onu hiçbir menüye gitmez hâle
+getirir. Hata da vermez: kullanıcı 404 görür, restoran neden olduğunu bilmez.
+
+Bu yüzden motorda harf katlama **yalnız politikada açıkça sayılan statik
+öneklerde** yapılır ve bilinmeyen bir yol asla katlanmaz. Kural
+`URL-NORM-OPAQUE-03` ve `URL-MW-QR-INTACT-09` ile dondurulmuştur.
+
+Aynı araştırmanın **geçerli çıkmayan** ikinci tavsiyesi: "Türkçe karakterler
+için özel çeviri katmanı yaz." Ölçüldü, gerek yok: `Str::slug()` zaten
+`"Çiğköfteci Ömer'in Şöleni"` → `cigkofteci-omerin-soleni` ve `"Işıl Şahin"`
+→ `isil-sahin` üretiyor. Çalışan bir davranışı ikinci kez yazmak, iki farklı
+doğru üretmektir.
+
+Araştırmanın **Filament** bölümü de bu depoya uygulanamaz: bu depoda Filament
+kurulu değildir, admin yüzeyi React'tir.
+
+## 4. Karar tablosu: path, query, fragment, state
+
+| Kullanıcının niyeti | Doğru yer | Örnek |
+| --- | --- | --- |
+| Başka bir ekran | Gerçek route | `/app` |
+| Paylaşılabilir görünüm | Query | `?page=2` |
+| Geçici arayüz durumu | Bileşen state'i | URL değişmez |
+| Aynı belgede bir başlık | Fragment | `#section-menu` |
+
+Fragment sunucuya **hiç gönderilmez**. Bir ekranı fragment ile temsil etmek,
+o ekranı sunucu günlüklerinden, analitikten ve arama motorundan gizlemektir.
+Bu depoda bir kez yaşandı: gezinti bağlantıları `#menu` idi ve sayfalar aynı
+`id`'yi taşıyordu; tarayıcı standart davranışıyla o elemana kaydırdı. Düzeltme
+`#54`/`#57`'de kapsayıcı id'lerini `section-*` ile ayırarak yapıldı — çünkü
+sorun kaydırma değil, **iki farklı şeyin aynı ismi taşımasıydı**.
+
+## 5. Yönlendirme kodları
+
+| Durum | Kod | Neden |
+| --- | --- | --- |
+| Kanonik biçime indirgeme | 301 | Gerçekten kalıcı |
+| QR çözümleyici → menü | 302 | Hedef değişebilir; 301 önbellekte kilitlenir |
+| Yinelenen sorgu anahtarı | 400 | Sessizce birini seçmek yetki kararını değiştirebilir |
+| POST | **asla yönlendirilmez** | Gövde kaybolur, kullanıcının formu silinir |
+
+Zincir yasaktır: hedef doğrudan nihai biçimdir (`URL-MW-SINGLE-HOP-08`).
+
+## 6. İzleme parametreleri
+
+`utm_*`, `gclid`, `fbclid` bir yönlendirme **tetiklemez**. Yönlendirmek,
+ölçüm yapılmadan parametreyi silmek olurdu. Onlar yalnız **canonical adresin
+dışında** bırakılır.
+
+## 7. Rezerve ad alanı
+
+Bir işletme kendine `menu` slug'ını alabilseydi, o yol iki şey birden ifade
+ederdi ve hangisinin kazandığı route sırasına kalırdı. Rezerve liste elle
+tutulur; `URL-RESERVED-COVERS-ROUTES-13` onun gerçek route ağacıyla uyumunu
+zorlar — yeni bir üst düzey yol eklenip listeye yazılmazsa test kırılır.
+
+Bu kural yazılırken dört yol listede olmadığı için gerçekten bulundu:
+`forgot-password`, `reset-password`, `user`, `sanctum`.
+
+## 8. Barındırma kısıtı (owner kararı, 2026-08-27)
+
+Hedef: **netcup (AMD EPYC), Hetzner, Turhost paylaşımlı, Natro paylaşımlı,
+Güzel Hosting paylaşımlı — hepsinde kalıcı olarak çalışmak.**
+
+Bunun URL motoruna doğrudan üç etkisi var:
+
+1. **Kanonik host koda gömülmez.** `enforce_host` varsayılan olarak kapalıdır
+   ve `.env` ile açılır; aksi hâlde aynı kod beş barındırıcıda çalışamaz.
+2. **Normalizasyon uygulama katmanındadır**, web sunucusu yapılandırmasında
+   değil. Paylaşımlı barındırmada `nginx.conf`'a erişemezsiniz; `.htaccess`
+   ise sağlayıcıya göre farklı davranır. Kural uygulamada olursa her yerde
+   aynı çalışır.
+3. **Ek bağımlılık yok.** Motor yalnız PHP standart kütüphanesini kullanır.
+
+## 9. Kanıt
+
+`URL-NORM-SLASH-01`, `-CASE-02`, `-OPAQUE-03`, `-QUERY-04`, `-DUPLICATE-05`,
+`-IDEMPOTENT-06`, `URL-MW-REDIRECT-07`, `-SINGLE-HOP-08`, `-QR-INTACT-09`,
+`-POST-SAFE-10`, `-DUPLICATE-11`, `URL-RESERVED-12`,
+`URL-RESERVED-COVERS-ROUTES-13`.
+
+## 10. Henüz yapılmayanlar
+
+Bu paket motoru ve normalizasyonu kurar. Sırada olanlar ayrı paketlerdir:
+canonical/hreflang/sitemap üretimi, slug geçmişi ve 301 tablosu, QR
+çözümleyicinin `no-store` ile sertleştirilmesi.

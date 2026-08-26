@@ -8,6 +8,7 @@ use App\Domain\Tenancy\ValueObject\CurrencyCode;
 use App\Domain\Tenancy\ValueObject\LocaleCode;
 use App\Domain\Tenancy\ValueObject\TimezoneIdentifier;
 use App\Models\Brand;
+use App\Rules\NotReservedSlug;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,7 +29,13 @@ final class StoreBrandRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['sometimes', 'string', 'regex:/^[a-z0-9]+(-[a-z0-9]+)*$/', 'unique:brands,slug'],
+            'slug' => [
+                'sometimes',
+                'string',
+                'regex:/^[a-z0-9]+(-[a-z0-9]+)*$/',
+                'unique:brands,slug',
+                app(NotReservedSlug::class),
+            ],
             'locale' => ['sometimes', 'string', $this->localeRule()],
             'timezone' => ['required', 'string', $this->timezoneRule()],
             'currency' => ['required', 'string', $this->currencyRule()],

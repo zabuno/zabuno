@@ -71,6 +71,42 @@ türevleri GD ile üretilir, kalite biraz düşer, akış çalışır".
 Kanıt: `tests/Feature/Platform/HostCapabilityProbeTest.php`
 (MED-01-PROBE-01…MED-01-EVIDENCE-05).
 
+### 4b. Hedef barındırma kümesi (owner kararı, 2026-08-27)
+
+Hedef tek bir sağlayıcı değil, **beşi birden**: netcup (AMD EPYC), Hetzner,
+Turhost paylaşımlı, Natro paylaşımlı, Güzel Hosting paylaşımlı. Karar
+"hepsinde **kalıcı** olarak çalışsın" biçimindedir.
+
+Bu, mimari için tek yönlü ve bağlayıcı bir kısıttır: **en dar ortam taban
+kabul edilir.** Bir özellik yalnız kök erişimi olan bir sunucuda çalışıyorsa,
+o özellik bu ürün için yoktur.
+
+| Yetenek | Paylaşımlı barındırmada | Ürünün cevabı |
+| --- | --- | --- |
+| Uzun süreli worker | Genelde yok | Kuyruk cron ile işlenir; senkron düşüş yolu korunur |
+| Redis | Genelde yok | Önbellek ve kuyruk veritabanı sürücüsü |
+| `exec`/`proc_open` | Sağlayıcıya göre değişir | ClamAV çağrılamazsa yükleme karantinada kalır (fail-closed) |
+| Imagick | Genelde yok | Görsel türevleri GD ile |
+| `nginx.conf` erişimi | Yok | URL normalizasyonu **uygulama katmanında** (`docs/38` §8) |
+| symlink | Değişken | `storage:link` yerine kopyalama/alternatif servis yolu |
+| Yükleme sınırı | Düşük olabilir (ölçülen: 2M) | Sınır ölçülür ve kullanıcıya söylenir |
+| Sertifika yönetimi | Panel üzerinden | Otomasyon varsayılmaz |
+
+Ölçüm tahminle değil komutla yapılır:
+
+```bash
+php artisan platform:evidence:host-capability
+```
+
+Sağlayıcı seçildiğinde aynı komut orada çalıştırılır ve çıktısı
+`host_capability_evidence` tablosuna yazılır; iki kayıt yan yana konarak
+sağlayıcılar karşılaştırılır. Bu belge o ölçümün yerine geçmez.
+
+**Bu kararın bedeli açıkça yazılır:** paylaşımlı barındırma tabanı, gerçek
+zamanlı işleme, ağır görsel işleme ve yüksek eşzamanlılık gerektiren
+özellikleri Stage 1 kapsamı dışında tutar. Bu bir eksiklik değil, seçilen
+taşınabilirliğin fiyatıdır.
+
 ## 5. Mobil strateji
 
 - **Diner (müşteri) tarafı**: zero-install web/PWA — native app **gerekmez**.

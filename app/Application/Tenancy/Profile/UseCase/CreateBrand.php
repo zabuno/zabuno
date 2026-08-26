@@ -10,6 +10,7 @@ use App\Domain\Tenancy\ValueObject\BrandSlug;
 use App\Domain\Tenancy\ValueObject\CurrencyCode;
 use App\Domain\Tenancy\ValueObject\LocaleCode;
 use App\Domain\Tenancy\ValueObject\TimezoneIdentifier;
+use App\Domain\Url\UrlPolicy;
 use Illuminate\Support\Str;
 
 final class CreateBrand
@@ -48,11 +49,15 @@ final class CreateBrand
 
     private function generateUniqueSlug(string $name): string
     {
+        // `Str::slug` Türkçe harfleri doğru çevirir: "Çiğköfteci Ömer'in
+        // Şöleni" -> "cigkofteci-omerin-soleni". Ayrı bir çeviri katmanı
+        // eklemek, çalışan bir davranışı ikinci kez yazmak olurdu.
         $base = Str::slug($name);
+        $policy = app(UrlPolicy::class);
 
         do {
             $candidate = $base === '' ? Str::lower(Str::random(8)) : $base.'-'.Str::lower(Str::random(6));
-        } while ($this->brands->slugExists($candidate));
+        } while ($this->brands->slugExists($candidate) || $policy->isReservedSlug($candidate));
 
         return $candidate;
     }
