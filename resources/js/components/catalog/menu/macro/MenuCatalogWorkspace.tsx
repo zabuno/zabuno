@@ -221,6 +221,18 @@ export function MenuCatalogWorkspace({
     const [visibilityPending, setVisibilityPending] = useState<Record<number, boolean>>({});
     const [visibilityErrors, setVisibilityErrors] = useState<Record<number, string | null>>({});
 
+    // Tek bildirim mekanizması. Daha önce onTreeChange yalnız ilk yüklemede ve
+    // görünürlük değişiminde elle çağrılıyordu; menü, kategori, ürün, kalem,
+    // alerjen ve fiyat mutasyonları çağırmayı "unutuyordu". Bu yüzden Publication
+    // sayfası paylaşılan menü ağacını hiç göremiyor, menuId null kalıyor ve Publish
+    // düğmesi sessizce hiçbir istek atmıyordu. Her mutasyon noktasında çağrıyı
+    // hatırlamak yerine ağacın kendisini kaynak alıyoruz.
+    useEffect(() => {
+        if (tree) {
+            onTreeChange?.(tree);
+        }
+    }, [tree, onTreeChange]);
+
     const locationKey = `${workspaceId}:${locationId}`;
     const [previousLocationKey, setPreviousLocationKey] = useState(locationKey);
     if (locationKey !== previousLocationKey) {
@@ -297,7 +309,6 @@ export function MenuCatalogWorkspace({
                 } else {
                     const loaded = (await menuResponse.json()) as MenuTree;
                     setTree(loaded);
-                    onTreeChange?.(loaded);
                     const firstCategory = loaded.categories[0] ?? null;
                     if (firstCategory) {
                         setCurrentCategoryId(firstCategory.id);
@@ -658,7 +669,6 @@ export function MenuCatalogWorkspace({
                     })),
                 };
                 setTree(nextTree);
-                onTreeChange?.(nextTree);
             }
         } catch {
             setVisibilityErrors((previous) => ({
