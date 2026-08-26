@@ -11,6 +11,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             dashboardMenuTree={ctx.dashboardMenuTree}
             brand={ctx.brand}
             location={ctx.location}
+            workspaceId={ctx.workspaceId}
         />
     );
 }

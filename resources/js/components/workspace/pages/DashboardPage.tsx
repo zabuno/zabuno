@@ -52,12 +52,14 @@ type DashboardPageProps = {
     dashboardMenuTree: DashboardMenuTree | null;
     brand?: BrandProfile | null;
     location?: LocationProfile | null;
+    workspaceId?: number;
 };
 
 export function DashboardPage({
     dashboardMenuTree,
     brand = null,
     location = null,
+    workspaceId,
 }: DashboardPageProps) {
     const badges: WorkspacePageStatusBadge[] = dashboardMenuTree
         ? [
@@ -79,6 +81,7 @@ export function DashboardPage({
                     brand={brand}
                     location={location}
                     dashboardMenuTree={dashboardMenuTree}
+                    workspaceId={workspaceId}
                 />
 
                 {dashboardMenuTree ? (

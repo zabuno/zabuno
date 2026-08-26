@@ -12,6 +12,11 @@ const en = {
     'dashboard.setup.qr': 'QR',
     'dashboard.setup.menu.empty': 'No menu yet',
     'dashboard.setup.notConnected': 'Not connected yet.',
+    'dashboard.setup.statusUnavailable': 'Status unavailable.',
+    'dashboard.setup.checking': 'Checking…',
+    'dashboard.setup.published': 'Published #{id}',
+    'dashboard.setup.qr.activeCount': '{count} active QR',
+    'dashboard.setup.qr.activeCount.plural': '{count} active QRs',
 } as const;
 
 type TranslationKey = keyof typeof en;

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { t } from '../../../../i18n/dashboard';
 import type { BrandProfile } from '../../BrandEditForm';
 import type { LocationProfile } from '../../LocationEditForm';
@@ -7,7 +8,14 @@ type DashboardSetupJourneyProps = {
     brand: BrandProfile | null;
     location: LocationProfile | null;
     dashboardMenuTree: DashboardMenuTree | null;
+    workspaceId?: number;
 };
+
+function qrLabel(count: number): string {
+    return count === 1
+        ? t('dashboard.setup.qr.activeCount', { count: String(count) })
+        : t('dashboard.setup.qr.activeCount.plural', { count: String(count) });
+}
 
 function menuSummary(dashboardMenuTree: DashboardMenuTree | null): string {
     if (!dashboardMenuTree) {
@@ -27,8 +35,88 @@ export function DashboardSetupJourney({
     brand,
     location,
     dashboardMenuTree,
+    workspaceId,
 }: DashboardSetupJourneyProps) {
     const notConnected = t('dashboard.setup.notConnected');
+    const checking = t('dashboard.setup.checking');
+    const unavailable = t('dashboard.setup.statusUnavailable');
+
+    const [publicationValue, setPublicationValue] = useState<string>(notConnected);
+    const [qrValue, setQrValue] = useState<string>(notConnected);
+
+    const menuId = dashboardMenuTree?.id;
+    const locationId = dashboardMenuTree?.locationId;
+
+    useEffect(() => {
+        let cancelled = false;
+
+        (async () => {
+            if (!workspaceId || !menuId || !locationId) {
+                if (cancelled) return;
+                setPublicationValue(notConnected);
+                setQrValue(notConnected);
+                return;
+            }
+
+            setPublicationValue(checking);
+            setQrValue(checking);
+
+            try {
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/menu/${menuId}/publications/current`,
+                    { credentials: 'include', headers: { Accept: 'application/json' } },
+                );
+
+                if (response.status === 404) {
+                    if (cancelled) return;
+                    setPublicationValue(notConnected);
+                    setQrValue(notConnected);
+                    return;
+                }
+
+                if (!response.ok) {
+                    if (cancelled) return;
+                    setPublicationValue(unavailable);
+                    setQrValue(unavailable);
+                    return;
+                }
+
+                const body = (await response.json()) as { id: number };
+                if (cancelled) return;
+                setPublicationValue(t('dashboard.setup.published', { id: String(body.id) }));
+            } catch {
+                if (cancelled) return;
+                setPublicationValue(unavailable);
+                setQrValue(unavailable);
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/brand/locations/${locationId}/qr-codes`,
+                    { credentials: 'include', headers: { Accept: 'application/json' } },
+                );
+
+                if (!response.ok) {
+                    if (cancelled) return;
+                    setQrValue(unavailable);
+                    return;
+                }
+
+                const body = (await response.json()) as { state: string }[];
+                const activeCount = body.filter((qr) => qr.state === 'active').length;
+                if (cancelled) return;
+                setQrValue(activeCount > 0 ? qrLabel(activeCount) : notConnected);
+            } catch {
+                if (cancelled) return;
+                setQrValue(unavailable);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [workspaceId, menuId, locationId, notConnected, checking, unavailable]);
 
     const rows: { key: string; label: string; value: string; href: string }[] = [
         {
@@ -52,10 +140,10 @@ export function DashboardSetupJourney({
         {
             key: 'publication',
             label: t('dashboard.setup.publication'),
-            value: notConnected,
+            value: publicationValue,
             href: '#publication',
         },
-        { key: 'qr', label: t('dashboard.setup.qr'), value: notConnected, href: '#publication' },
+        { key: 'qr', label: t('dashboard.setup.qr'), value: qrValue, href: '#publication' },
     ];
 
     return (
