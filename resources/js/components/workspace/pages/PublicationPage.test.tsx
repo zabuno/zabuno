@@ -373,7 +373,11 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         const genericExportButton = within(qrExportRegion).getByRole('button', {
             name: /^export$/i,
         });
-        const themeButtons = within(qrExportRegion).getAllByRole('button', { name: /theme$/i });
+        // Tema seçimi artık `radiogroup`'tur, altı bağımsız aç/kapa butonu
+        // değil. Altı butonda `aria-pressed`, ekran okuyucuya "altı ayrı
+        // anahtar" der; oysa kullanıcı BİRİNİ seçer. `radio` rolü bunu
+        // doğru anlatır ve "6 seçenekten 1." bilgisini taşır.
+        const themeButtons = within(qrExportRegion).getAllByRole('radio', { name: /theme$/i });
 
         expect(destinationTypeSelect).toBeDisabled();
         expect(paperSizeSelect).toBeDisabled();
@@ -383,7 +387,7 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         expect(themeButtons).toHaveLength(6);
         themeButtons.forEach((button) => expect(button).toBeEnabled());
         const pressedThemeButtons = themeButtons.filter(
-            (button) => button.getAttribute('aria-pressed') === 'true',
+            (button) => button.getAttribute('aria-checked') === 'true',
         );
         expect(pressedThemeButtons).toHaveLength(1);
         expect(pressedThemeButtons[0]).toHaveAccessibleName(/^classic theme$/i);

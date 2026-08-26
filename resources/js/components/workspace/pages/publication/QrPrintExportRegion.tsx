@@ -9,6 +9,10 @@ import {
     type QrPaperSize,
 } from './QrExportConfigForm';
 import type { QrCodeItem } from './qr-destination/QrCodeListItem';
+import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Select } from '../../../catalog/forms/micro/Select';
+import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedControl';
+import { TextLink } from '../../../catalog/navigation/micro/TextLink';
 
 const THEME_ORDER = ['classic', 'minimal', 'bold', 'rounded', 'branded', 'highContrast'] as const;
 
@@ -22,18 +26,6 @@ const THEME_LABEL_KEYS: Record<QrThemeKey, Parameters<typeof t>[0]> = {
     branded: 'workspace.publication.qrExport.themes.branded',
     highContrast: 'workspace.publication.qrExport.themes.highContrast',
 };
-
-const DISABLED_BUTTON_CLASSES =
-    'self-start rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-400 dark:border-gray-600 dark:text-gray-500';
-
-const THEME_BUTTON_CLASSES =
-    'self-start rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800';
-
-const THEME_BUTTON_SELECTED_CLASSES =
-    'self-start rounded-lg border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white dark:border-blue-500 dark:bg-blue-500';
-
-const FIELD_CLASSES =
-    'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
 
 const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
 
@@ -134,18 +126,17 @@ export function QrPrintExportRegion({
                     {activeItems.length > 1 ? (
                         <label className={LABEL_CLASSES}>
                             {t('workspace.publication.qrExport.selector')}
-                            <select
+                            <Select
                                 aria-label={t('workspace.publication.qrExport.selector')}
                                 value={selected.id}
                                 onChange={(event) => setSelectedId(Number(event.target.value))}
-                                className={FIELD_CLASSES}
                             >
                                 {activeItems.map((item) => (
                                     <option key={item.id} value={item.id}>
                                         {item.token}
                                     </option>
                                 ))}
-                            </select>
+                            </Select>
                         </label>
                     ) : null}
 
@@ -157,13 +148,13 @@ export function QrPrintExportRegion({
                         />
                     )}
 
-                    <a
+                    <TextLink
                         href={
                             isPdf
                                 ? pdfExportUrl(selected, paperSize, orientation, theme)
                                 : exportUrl(selected, previewFormat, true, theme)
                         }
-                        className="self-start text-sm text-blue-700 underline dark:text-blue-400"
+                        className="self-start text-sm"
                     >
                         {t('workspace.publication.qrExport.downloadButton')}{' '}
                         {t(
@@ -173,17 +164,17 @@ export function QrPrintExportRegion({
                                   ? 'workspace.publication.qrExport.formats.svg'
                                   : 'workspace.publication.qrExport.formats.png',
                         )}
-                    </a>
+                    </TextLink>
 
                     {isPdf ? (
-                        <a
+                        <TextLink
                             href={pdfExportUrl(selected, paperSize, orientation, theme, false)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="self-start text-sm text-blue-700 underline dark:text-blue-400"
+                            className="self-start text-sm"
                         >
                             {t('workspace.publication.qrExport.printButton')}
-                        </a>
+                        </TextLink>
                     ) : null}
                 </div>
             )}
@@ -208,26 +199,20 @@ export function QrPrintExportRegion({
             <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.publication.qrExport.themes.heading')}
             </p>
-            <div className="flex flex-wrap gap-2">
-                {THEME_ORDER.map((key) => (
-                    <button
-                        key={key}
-                        type="button"
-                        aria-pressed={theme === key}
-                        onClick={() => setTheme(key)}
-                        className={
-                            theme === key ? THEME_BUTTON_SELECTED_CLASSES : THEME_BUTTON_CLASSES
-                        }
-                    >
-                        {t(THEME_LABEL_KEYS[key])}
-                    </button>
-                ))}
-            </div>
+            <SegmentedControl
+                label={t('workspace.publication.qrExport.themes.heading')}
+                value={theme}
+                options={THEME_ORDER.map((key) => ({
+                    value: key,
+                    label: t(THEME_LABEL_KEYS[key]),
+                }))}
+                onChange={setTheme}
+            />
 
             <div className="flex flex-wrap gap-2">
-                <button type="button" disabled className={DISABLED_BUTTON_CLASSES}>
+                <PlainButton type="button" disabled className="self-start">
                     {t('workspace.publication.qrExport.exportButton')}
-                </button>
+                </PlainButton>
             </div>
         </div>
     );
