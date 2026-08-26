@@ -201,6 +201,7 @@ export function MenuCatalogWorkspace({
     const [productSubmitError, setProductSubmitError] = useState<string | null>(null);
     const [creatingProduct, setCreatingProduct] = useState(false);
     const [currentProductId, setCurrentProductId] = useState<number | null>(null);
+    const [currentProductName, setCurrentProductName] = useState('');
 
     const [price, setPrice] = useState('');
     const [priceError, setPriceError] = useState<string | null>(null);
@@ -244,6 +245,7 @@ export function MenuCatalogWorkspace({
         setProductSubmitError(null);
         setCreatingProduct(false);
         setCurrentProductId(null);
+        setCurrentProductName('');
 
         setPrice('');
         setPriceError(null);
@@ -333,6 +335,7 @@ export function MenuCatalogWorkspace({
         setProductSubmitError(null);
         setCreatingProduct(false);
         setCurrentProductId(null);
+        setCurrentProductName('');
 
         setPrice('');
         setPriceError(null);
@@ -459,6 +462,7 @@ export function MenuCatalogWorkspace({
             }
             const created = (await response.json()) as { id: number; name: string };
             setCurrentProductId(created.id);
+            setCurrentProductName(created.name);
             setProductName('');
 
             setPrice('');
@@ -524,7 +528,11 @@ export function MenuCatalogWorkspace({
                                   ...category,
                                   menuItems: [
                                       ...category.menuItems,
-                                      { ...created, productName, allergens: [] },
+                                      {
+                                          ...created,
+                                          productName: currentProductName,
+                                          allergens: [],
+                                      },
                                   ],
                               }
                             : category,
