@@ -29,6 +29,20 @@ import {
  * gibi kök seviyedeki dosyalar hiçbir kurala tabi değildi ve on bir ham
  * palet sınıfı taşıyordu. Bir tasarım sistemi, kapsamadığı dosyada
  * geçerli değildir.
+ *
+ * Aynı delik uzantı tarafında da vardı: yalnız `.tsx` taranıyordu. Sınıf
+ * listesi taşıyan iki dosya JSX İÇERMEZ, yani `.ts`tir — Flowbite tema
+ * bağlaması (`design-system/flowbite-theme.ts`) ve yerel alan stilleri
+ * (`catalog/forms/micro/nativeFieldStyles.ts`). Yasak MUTLAK olduğuna göre
+ * kapsamı da mutlak olmalı: `.tsx` tarayan bir kural, sınıfların en yoğun
+ * toplandığı iki dosyaya tam olarak kördü.
+ *
+ * KATMAN kuralları ise `.tsx` ile sınırlı kalır. Bir katman kuralı bir
+ * BİLEŞEN hakkında konuşur; stil sabiti dışa aktaran bir `.ts` modülünün
+ * story'si olamaz. Bu ayrım olmadan `DS-STORY-COVERAGE-01` sessizce
+ * "geçerdi": aradığı story yolunu üretemeyip dosyanın KENDİSİNİ okur ve
+ * kendi kendini story sanardı — yani kural, kapsamadığı yerde geçtiğini
+ * sanan bir kurala dönüşürdü.
  */
 const COMPONENT_ROOT = 'resources/js';
 const CSS_PATH = 'resources/css/app.css';
@@ -40,7 +54,11 @@ function collect(dir: string, out: SourceFile[] = []): SourceFile[] {
         const path = join(dir, entry.name);
         if (entry.isDirectory()) {
             collect(path, out);
-        } else if (entry.name.endsWith('.tsx') && !/\.(test|stories)\.tsx$/.test(entry.name)) {
+        } else if (
+            /\.tsx?$/.test(entry.name) &&
+            !/\.(test|stories)\.tsx?$/.test(entry.name) &&
+            !entry.name.endsWith('.d.ts')
+        ) {
             out.push({ path, body: readFileSync(path, 'utf8'), layer: layerOf(path) });
         }
     }
@@ -60,7 +78,9 @@ function collectStories(dir: string, out: SourceFile[] = []): SourceFile[] {
 }
 
 const FILES = collect(COMPONENT_ROOT);
-const LAYERED = FILES.filter((f) => f.layer !== null && f.layer !== 'surface');
+const LAYERED = FILES.filter(
+    (f) => f.path.endsWith('.tsx') && f.layer !== null && f.layer !== 'surface',
+);
 
 describe('tasarım sistemi — zorlayıcı kontrol', () => {
     // --- DS-RAW-PALETTE-BANNED-01 ----------------------------------------

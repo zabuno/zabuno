@@ -1,4 +1,4 @@
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { t } from '../../../../i18n/workspace';
 
 export type CurrentPublication = {
@@ -61,9 +61,9 @@ export function PublicationStatusRegion({
                     <p role="alert" className="text-sm text-fg-danger">
                         {t('workspace.publication.status.loadError')}
                     </p>
-                    <PlainButton type="button" onClick={onRetry}>
+                    <Button type="button" color="light" onClick={onRetry}>
                         Retry
-                    </PlainButton>
+                    </Button>
                 </div>
             ) : current === null ? (
                 <p role="status" className="text-sm text-fg-muted">
@@ -89,14 +89,15 @@ export function PublicationStatusRegion({
                 {t('workspace.publication.publishAction.checklistConfirmed')}
             </label>
 
-            <PlainButton
+            <Button
                 type="button"
+                color="light"
                 disabled={!checklistReady || !confirmed || publishing}
                 onClick={onPublish}
                 className="self-start"
             >
                 {t('workspace.publication.status.publishButton')}
-            </PlainButton>
+            </Button>
 
             {errorMessage ? (
                 <p role="alert" className="text-sm text-fg-danger">

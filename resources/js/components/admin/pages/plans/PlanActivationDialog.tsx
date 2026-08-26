@@ -1,4 +1,4 @@
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { useEffect, useRef, type KeyboardEvent } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -94,17 +94,12 @@ export function PlanActivationDialog({
             <span className="text-fg-secondary">{formatPlanPrice(plan)}</span>
 
             <div className="flex gap-2">
-                <PlainButton type="button" onClick={onCancel}>
+                <Button color="light" type="button" onClick={onCancel}>
                     {t('platform.plans.activate.dialog.cancel')}
-                </PlainButton>
-                <PlainButton
-                    type="button"
-                    variant="primary"
-                    disabled={confirming}
-                    onClick={onConfirm}
-                >
+                </Button>
+                <Button type="button" disabled={confirming} onClick={onConfirm}>
                     {t('platform.plans.activate.dialog.confirm')}
-                </PlainButton>
+                </Button>
             </div>
         </div>
     );

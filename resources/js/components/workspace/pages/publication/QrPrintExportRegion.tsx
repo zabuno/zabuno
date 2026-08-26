@@ -9,7 +9,7 @@ import {
     type QrPaperSize,
 } from './QrExportConfigForm';
 import type { QrCodeItem } from './qr-destination/QrCodeListItem';
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedControl';
 import { TextLink } from '../../../catalog/navigation/micro/TextLink';
@@ -210,9 +210,9 @@ export function QrPrintExportRegion({
             />
 
             <div className="flex flex-wrap gap-2">
-                <PlainButton type="button" disabled className="self-start">
+                <Button type="button" color="light" disabled className="self-start">
                     {t('workspace.publication.qrExport.exportButton')}
-                </PlainButton>
+                </Button>
             </div>
         </div>
     );

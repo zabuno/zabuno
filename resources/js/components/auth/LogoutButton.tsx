@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PlainButton } from '../catalog/forms/micro/PlainButton';
+import { Button } from '../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -39,9 +39,9 @@ export function LogoutButton({
                     {error}
                 </p>
             )}
-            <PlainButton variant="primary" onClick={handleLogout} className="w-full">
+            <Button onClick={handleLogout} className="w-full">
                 {t('auth.logout.submit')}
-            </PlainButton>
+            </Button>
         </div>
     );
 }

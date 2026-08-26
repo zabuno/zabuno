@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { PlainButton } from '../catalog/forms/micro/PlainButton';
+import { Button } from '../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -115,15 +115,14 @@ export function InvitationAcceptForm({
                 </div>
             </dl>
 
-            <PlainButton
-                variant="primary"
+            <Button
                 type="button"
                 className="w-full"
                 onClick={handleAccept}
                 disabled={!authenticated}
             >
                 {t('auth.invitation_accept.submit')}
-            </PlainButton>
+            </Button>
         </div>
     );
 }

@@ -105,6 +105,32 @@
     --density-padding-inline: var(--space-3);
     --density-hit-area-min: 44px;
 
+    /* Kontrol geometrisi — token zincirinin COMPONENT halkası (docs/37 §2.1).
+       Flowbite'ın varsayılan teması buraya sabit piksel (`h-10`) yazıyordu;
+       artık geometri yoğunluktan TÜREMEKTEDİR ve `max()` sayesinde hiçbir
+       modda dokunma hedefinin altına inemez: compact satırı görsel olarak
+       daraltır, parmak hedefini değil.
+
+       DİKKAT — bu blok her yoğunluk modunda TEKRARLANMAK ZORUNDA. Değeri
+       `var()` içeren bir custom property, tanımlandığı yerde (burada `:root`)
+       bir kez ikame edilir ve alt elemanlara ÇÖZÜLMÜŞ hâlde miras kalır;
+       `.density-comfortable` içindeki bir buton yeniden hesaplamaz. İlk
+       hâlinde tam bu yüzden yoğunluk anahtarı butonu hiç değiştirmiyordu.
+       `DS-FLOWBITE-TOKEN-BIND-10` eksik bir modu artık build'de yakalar. */
+    --control-height: max(var(--density-row-height), var(--density-hit-area-min));
+    --control-padding-inline: calc(var(--density-padding-inline) + var(--space-1));
+    --control-indicator-size: var(--space-4);
+
+    /* Kontrol ikonları. Bir `data:` URI içindeki renk `currentColor` olamaz,
+       yani ikon rengi CSS'ten gelmek ZORUNDA — bu yüzden ikon burada, token
+       kökünde, tema başına tanımlanır. Flowbite'ın kendi ikonları tek bir
+       sabit renk taşıyordu (`#6B7280` ok, beyaz onay işareti): karanlık temada
+       ok neredeyse görünmezdi, marka sarısı bir kutunun üstündeki beyaz onay
+       işareti ise okunmuyordu. Ham değer bileşende değil YALNIZ burada durur. */
+    --control-arrow-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%236b6b6b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
+    --control-check-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3E%3Cpath stroke='%231c1500' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M1 5.917 5.724 10.5 15 1.5'/%3E%3C/svg%3E");
+    --control-dash-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3E%3Cpath stroke='%231c1500' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M.5 6h15'/%3E%3C/svg%3E");
+
     /* Ham semantic değerler — TEK kaynak. Hem kısa utility'ler (@theme) hem de
        eski `var(--color-text-*)` tüketicileri buraya bağlanır, böylece bir tonu
        burada değiştirmek her iki sözdizimini birden değiştirir. */
@@ -155,11 +181,18 @@
 .density-comfortable {
     --density-row-height: 52px;
     --density-padding-inline: var(--space-4);
+
+    /* `:root`taki türetilmiş kontrol token'ları burada yeniden çözülür. */
+    --control-height: max(var(--density-row-height), var(--density-hit-area-min));
+    --control-padding-inline: calc(var(--density-padding-inline) + var(--space-1));
 }
 
 .density-compact {
     --density-row-height: 36px;
     --density-padding-inline: var(--space-2);
+
+    --control-height: max(var(--density-row-height), var(--density-hit-area-min));
+    --control-padding-inline: calc(var(--density-padding-inline) + var(--space-1));
 }
 
 /* Azaltılmış hareket. Süreleri sıfırlamak yerine tek kısa süreye indirger:
@@ -177,6 +210,12 @@
 
 .dark {
     --border: oklch(0.32 0 0);
+
+    /* Ok ikonu tema başına yeniden tanımlanır; onay/çizgi ikonları tanımlanmaz
+       çünkü altlarındaki `--color-action` zaten tema-değişmezdir (docs/06 §11).
+       Yarım tanımlı bir ikon, karanlık temada görünmeyen bir affordance
+       demektir — yoklukla aynı şey. */
+    --control-arrow-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%23ababab' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
 
     --fg: oklch(0.95 0 0);
     --fg-secondary: oklch(0.7 0 0);

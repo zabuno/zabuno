@@ -1,5 +1,5 @@
 import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
-import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { useMemo, useState, type FormEvent } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -190,14 +190,13 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                 />
             </label>
 
-            <PlainButton
+            <Button
                 type="submit"
-                variant="primary"
                 disabled={!validation.isValid || submitting}
                 className="self-start"
             >
                 {t('platform.plans.form.submit')}
-            </PlainButton>
+            </Button>
         </form>
     );
 }
