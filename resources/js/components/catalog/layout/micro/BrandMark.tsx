@@ -18,22 +18,35 @@ export type BrandMarkProps = {
  * linking back to a home/dashboard route. Knows nothing about routing,
  * tenancy, or which persona is active — the caller supplies the name/mark.
  */
+/**
+ * Varsayılan marka işareti.
+ *
+ * Marka sarısı `docs/06` §11 gereği metin ön planı olarak KULLANILAMAZ —
+ * kontrastı düşürür. Yapısal bir işaret olarak kullanıldığında ise markayı
+ * görünür kılar ve okunabilirliğe hiç dokunmaz. Kabuk şu ana kadar hiç
+ * `mark` geçirmediği için arayüzde marka varlığı sıfırdı.
+ *
+ * `aria-hidden`: ad zaten yanında metin olarak okunur, işaret dekoratiftir.
+ */
+function DefaultMark() {
+    return (
+        <span aria-hidden="true" className="inline-block size-4 shrink-0 rounded-[5px] bg-brand" />
+    );
+}
+
 export function BrandMark({ name, mark, href, hideName = false, className }: BrandMarkProps) {
     const content = (
         <>
-            {mark ? (
-                <span aria-hidden="true" className="shrink-0">
-                    {mark}
-                </span>
-            ) : null}
+            <span aria-hidden="true" className="shrink-0">
+                {mark ?? <DefaultMark />}
+            </span>
             <span className={hideName ? 'sr-only' : undefined}>{name}</span>
         </>
     );
 
     const sharedClassName = clsx(
-        'inline-flex items-center gap-2 text-base font-semibold text-gray-900',
-        'dark:text-white',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+        'inline-flex items-center gap-[var(--space-2)] text-base font-semibold text-fg',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
         className,
     );
 

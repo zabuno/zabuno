@@ -86,7 +86,7 @@ describe('AdminShell', () => {
         expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
     });
 
-    it('SidebarNav group heading consumes --color-text-secondary and not literal gray classes', () => {
+    it('SidebarNav group heading consumes a semantic foreground token and not literal gray classes', () => {
         const labeledGroups: SidebarNavGroup[] = [
             {
                 key: 'main',
@@ -96,7 +96,11 @@ describe('AdminShell', () => {
         ];
         renderShell({ navGroups: labeledGroups, activeNavKey: 'dashboard' });
         const heading = screen.getAllByText('Main')[0];
-        expect(heading.className).toMatch(/text-\[var\(--color-text-secondary\)\]/);
+        // Niyet değişmedi: başlık semantic bir token tüketmeli, ham gri değil.
+        // Token adı `--color-text-secondary` arbitrary sözdiziminden
+        // `text-fg-subtle` utility'sine taşındı; ikisi de aynı semantic
+        // katmandan gelir, ikincisi okunur ve tema/yoğunlukla birlikte akar.
+        expect(heading.className).toMatch(/text-fg-subtle/);
         expect(heading.className).not.toMatch(/(?:^|\s)text-gray-500(?:\s|$)/);
         expect(heading.className).not.toMatch(/dark:text-gray-400(?:\s|$)/);
     });

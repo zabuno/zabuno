@@ -33,6 +33,15 @@
     --color-border-danger: var(--border-danger);
 
     --color-focus: var(--focus);
+
+    /* Marka. docs/06 §11: sarı ASLA metin ön planı değildir — yapısal
+       vurgu (ray, kenarlık, gösterge) olarak kullanılır. Böylece marka
+       görünür olur ve kontrast hiçbir temada düşmez. */
+    --color-brand: var(--color-brand-500);
+
+    /* Etkileşim yüzeyleri: Flat 2.0 gölge yerine TON kullanır. */
+    --color-surface-hover: var(--surface-hover);
+    --color-surface-active: var(--surface-active);
 }
 
 /* docs/06 §11 AEP mirası — #ffb900 is the ONLY primitive; every component
@@ -90,6 +99,8 @@
 
     --surface: oklch(1 0 0);
     --surface-subtle: oklch(0.975 0 0);
+    --surface-hover: oklch(0.955 0 0);
+    --surface-active: oklch(0.93 0 0);
 
     --border-strong: oklch(0.76 0 0);
     --border-danger: oklch(0.58 0.19 25);
@@ -147,6 +158,8 @@
 
     --surface: oklch(0.2 0 0);
     --surface-subtle: oklch(0.24 0 0);
+    --surface-hover: oklch(0.27 0 0);
+    --surface-active: oklch(0.31 0 0);
 
     --border-strong: oklch(0.46 0 0);
     --border-danger: oklch(0.62 0.17 25);
@@ -161,6 +174,7 @@
 
     --color-action-primary-bg: var(--color-brand-500);
     --color-action-primary-fg: #1c1500;
+
 }
 
 .high-contrast {
@@ -173,6 +187,8 @@
     --fg-subtle: CanvasText;
     --surface: Canvas;
     --surface-subtle: Canvas;
+    --surface-hover: Canvas;
+    --surface-active: Canvas;
     --focus: Highlight;
 }
 

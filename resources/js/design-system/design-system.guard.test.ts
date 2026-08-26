@@ -161,8 +161,16 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
             `DS-TOKEN-INTEGRITY-01: @theme'de yayınlanan token :root'ta tanımsız: ${undefinedRaw.join(', ')}`,
         ).toEqual([]);
 
+        // Tema-DEĞİŞMEZ token'lar. Marka rengi kasıtlı olarak sabittir: marka
+        // kimliği aydınlık ile karanlık arasında kayarsa marka olmaktan çıkar.
+        // Ayrıca `docs/06` §11 `#ffb900`'ü TEK primitive olarak dondurur, yani
+        // `.dark` içinde tekrar tanımlanması sözleşme ihlalidir — bu liste,
+        // kuralın o sözleşmeyi zorlamak yerine ona uymasını sağlar.
+        const THEME_INVARIANT = ['--color-brand-500'];
+
         // Sistem renkleri (CanvasText vb.) tema değiştirmez; onları hariç tut.
         const needsDark = aliases.filter((raw) => {
+            if (THEME_INVARIANT.includes(raw)) return false;
             const value = rootBlock.match(new RegExp(`${raw}:\\s*([^;]+);`))?.[1] ?? '';
             return /oklch|#|rgb|color-mix/.test(value);
         });
@@ -352,7 +360,13 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
         const hardcoded: string[] = [];
 
         for (const file of FILES) {
-            const found = file.body.match(/\b\d+ms\b|duration-\[|cubic-bezier\(/g);
+            // `duration-[var(--duration-*)]` token'ı TÜKETMEKTİR, ihlal değil —
+            // ilk hâlinde bu kural onu da yasaklıyordu, yani doğru kullanımı
+            // cezalandırıyordu. Yasak ham değerlere: `150ms`, `duration-150`,
+            // ve `var()` içermeyen arbitrary süreler.
+            const found = file.body.match(
+                /\b\d+ms\b|\bduration-\d+\b|duration-\[(?!var\()|cubic-bezier\(/g,
+            );
             if (found) hardcoded.push(`${file.path}: ${found.join(', ')}`);
         }
 

@@ -35,12 +35,22 @@ export function NavLink({
     disabled = false,
     className,
 }: NavLinkProps) {
+    // Kimlik: Precision Flat 2.0 + tonal kabuk (docs/06 §11, docs/37 §1).
+    // Gölge yok; katman farkı TONLA kurulur. Aktif öğe bir MARKA RAYI taşır:
+    // marka sarısı metin zemini olarak kullanılamaz (kontrast düşer), yapısal
+    // vurgu olarak kullanılır — böylece marka görünür olur ve okunabilirlik
+    // hiçbir temada bozulmaz. Ray logical kenarlıktır, RTL'de kendiliğinden
+    // sağa geçer.
     const sharedClassName = clsx(
-        'inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium',
-        'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
-        'dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white',
+        'inline-flex w-full items-center gap-2 rounded-md text-sm font-medium',
+        'px-[var(--density-padding-inline)] py-2',
+        'min-h-[var(--density-hit-area-min)]',
+        'border-s-2 border-transparent',
+        'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
+        'text-fg-secondary hover:bg-surface-hover hover:text-fg',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
-        current && 'bg-gray-100 font-semibold text-gray-900 dark:bg-gray-800 dark:text-white',
+        current && 'border-s-brand bg-surface-active font-semibold text-fg',
         disabled && 'pointer-events-none opacity-50',
         className,
     );
