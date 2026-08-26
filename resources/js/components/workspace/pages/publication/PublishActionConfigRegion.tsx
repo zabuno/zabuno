@@ -23,7 +23,7 @@ export function PublishActionConfigRegion() {
                     disabled
                     value="immediate"
                     onChange={() => {}}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm "
                 >
                     <option value="immediate">
                         {t('workspace.publication.publishAction.mode.immediate')}

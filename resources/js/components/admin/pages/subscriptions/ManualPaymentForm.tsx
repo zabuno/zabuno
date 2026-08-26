@@ -119,7 +119,7 @@ export function ManualPaymentForm({
 
             <button
                 type="submit"
-                className="self-start rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-gray-900"
+                className="self-start rounded-md bg-action px-3 py-2 text-sm font-medium text-white disabled:opacity-50  dark:text-action-fg"
             >
                 {t('platform.subscriptions.form.submit')}
             </button>

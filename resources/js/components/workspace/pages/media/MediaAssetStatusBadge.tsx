@@ -28,8 +28,8 @@ const STATUS_COPY_KEY: Record<MediaAssetStatus, WorkspaceTranslationKey> = {
 };
 
 const STATUS_TONE_CLASS: Record<MediaAssetStatus | 'unknown', string> = {
-    quarantined: 'text-amber-600 dark:text-amber-400',
-    scanning: 'text-amber-600 dark:text-amber-400',
+    quarantined: 'text-fg-warning',
+    scanning: 'text-fg-warning',
     rejected: 'text-fg-danger',
     accepted: 'text-fg-link',
     processing: 'text-fg-link',

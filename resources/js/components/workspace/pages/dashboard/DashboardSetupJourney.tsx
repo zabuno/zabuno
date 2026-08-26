@@ -153,10 +153,7 @@ export function DashboardSetupJourney({
                 {rows.map((row) => (
                     <div key={row.key} className="flex flex-col gap-1">
                         <dt className="text-sm font-medium text-fg-muted">
-                            <a
-                                href={row.href}
-                                className="text-blue-600 hover:underline dark:text-blue-400"
-                            >
+                            <a href={row.href} className="text-fg-link hover:underline ">
                                 {row.label}
                             </a>
                         </dt>

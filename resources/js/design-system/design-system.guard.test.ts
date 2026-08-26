@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import debt from './raw-palette-debt.json';
 import directionDebt from './direction-debt.json';
 import { RAW_PALETTE_PATTERN, findCycle, layerOf, mayCompose, type Layer } from './semantic-map';
 import {
@@ -65,30 +64,32 @@ const FILES = collect(COMPONENT_ROOT);
 const LAYERED = FILES.filter((f) => f.layer !== null && f.layer !== 'surface');
 
 describe('tasarım sistemi — zorlayıcı kontrol', () => {
-    // --- DS-RATCHET-01 ---------------------------------------------------
-    it('ham palet borcu taban çizgisini aşmaz (yalnız azalabilir)', () => {
-        let violations = 0;
+    // --- DS-RAW-PALETTE-BANNED-01 ----------------------------------------
+    // Bu kural bir cırcır (ratchet) olarak başladı: 895 ihlal vardı ve sayı
+    // yalnız azalabiliyordu. 2026-08-26'da sıfıra indi, ve borç dosyasının
+    // kendi notu ne yapılacağını söylüyordu: "Borç sıfırlandığında bu dosya
+    // ve ilgili test kaldırılır, yerine MUTLAK YASAK gelir."
+    //
+    // Artık tek bir ham palet sınıfı bile kabul edilmez. Eşik yok, taban
+    // çizgisi yok, "sonra düzeltiriz" yok — çünkü bir istisna verildiği anda
+    // sayaç yeniden yürümeye başlar.
+    it('hiçbir dosya ham Tailwind paleti kullanmaz', () => {
         const offending: string[] = [];
 
         for (const file of FILES) {
             const found = file.body.match(RAW_PALETTE_PATTERN);
             if (found) {
-                violations += found.length;
-                offending.push(file.path);
+                offending.push(`${file.path}: ${[...new Set(found)].join(' ')}`);
             }
         }
 
         expect(
-            violations,
-            `DS-RATCHET-01: ham palet kullanımı ${debt.maxViolations} taban çizgisinden ${violations}'e YÜKSELDİ. ` +
-                'Semantic token kullanın (text-fg-secondary, border-border-danger, ring-focus …). ' +
-                'Taban çizgisini yükseltmeyin — o, sistemi atlayan kodu kalıcılaştırır.',
-        ).toBeLessThanOrEqual(debt.maxViolations);
-
-        expect(
-            offending.length,
-            `DS-RATCHET-01: ihlal içeren dosya sayısı ${debt.maxFiles} taban çizgisini aştı.`,
-        ).toBeLessThanOrEqual(debt.maxFiles);
+            offending,
+            'DS-RAW-PALETTE-BANNED-01: ham palet sınıfı tasarım sistemini atlar ve tema ' +
+                'değiştiğinde sessizce yanlış görünür. Semantic token kullanın ' +
+                '(text-fg-secondary, border-border-danger, bg-surface-hover, outline-focus …):\n' +
+                offending.join('\n'),
+        ).toEqual([]);
     });
 
     // --- DS-LAYER-DIRECTION-01 -------------------------------------------

@@ -24,9 +24,9 @@ export function SkipLink({
             className={clsx(
                 'sr-only focus:not-sr-only',
                 'focus:fixed focus:start-4 focus:top-4 focus:z-50',
-                'focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-gray-900 focus:shadow-lg',
-                'dark:focus:bg-gray-900 dark:focus:text-white',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+                'focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-action-fg focus:shadow-lg',
+                'dark:focus:bg-action dark:focus:text-white',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                 className,
             )}
         >

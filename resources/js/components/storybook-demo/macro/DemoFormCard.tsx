@@ -29,9 +29,9 @@ export function DemoFormCard({
     footer,
 }: DemoFormCardProps) {
     return (
-        <div className="w-full max-w-md rounded-lg border border-gray-200 p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-900">{title}</h2>
-            {description ? <p className="mt-1 text-sm text-gray-500">{description}</p> : null}
+        <div className="w-full max-w-md rounded-lg border border-border p-6 shadow-sm">
+            <h2 className="text-base font-semibold text-fg">{title}</h2>
+            {description ? <p className="mt-1 text-sm text-fg-muted">{description}</p> : null}
             <form
                 className="mt-4 flex flex-col gap-4"
                 onSubmit={(event) => {
@@ -44,7 +44,7 @@ export function DemoFormCard({
                 ))}
                 <button
                     type="submit"
-                    className="self-start rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-600"
+                    className="min-h-[var(--density-hit-area-min)] self-start rounded-md bg-action px-4 py-2 text-sm font-medium text-action-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
                 >
                     {submitLabel}
                 </button>

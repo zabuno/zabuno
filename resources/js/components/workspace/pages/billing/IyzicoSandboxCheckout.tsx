@@ -412,7 +412,7 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
                     type="button"
                     disabled={startDisabled}
                     onClick={() => void startCheckout()}
-                    className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-lg bg-action px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {t('workspace.billing.iyzicoSandbox.start')}
                 </button>

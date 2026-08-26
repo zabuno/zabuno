@@ -49,7 +49,7 @@ export function NavLink({
         'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
         'text-fg-secondary hover:bg-surface-hover hover:text-fg',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
         current && 'border-s-brand bg-surface-active font-semibold text-fg',
         disabled && 'pointer-events-none opacity-50',
         className,

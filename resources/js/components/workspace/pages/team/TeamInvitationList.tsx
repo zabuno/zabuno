@@ -139,7 +139,7 @@ export function TeamInvitationList({
                         return (
                             <li
                                 key={invitation.id}
-                                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
+                                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-border p-3 text-sm text-fg-secondary"
                             >
                                 <span className="font-medium text-fg">{invitation.email}</span>
                                 <span className="text-fg-muted">{invitation.role}</span>
