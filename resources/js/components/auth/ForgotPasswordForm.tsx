@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { Label, TextInput } from 'flowbite-react';
+import { Label } from '../catalog/forms/micro/Label';
+import { TextInput } from '../catalog/forms/micro/TextInput';
 import { Button } from '../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';

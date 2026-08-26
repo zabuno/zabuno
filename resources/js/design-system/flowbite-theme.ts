@@ -305,12 +305,33 @@ export const checkboxTokenTheme = createTheme({
  *
  * İki uygulama noktası, TEK tanım: yukarıdaki nesneler.
  */
+/**
+ * Etiket. Flowbite'ın varsayılanı açık ve karanlık tema için iki ayrı ham
+ * palet sınıfı yazar; yani aynı kararı iki kez. `--fg` her temada kendi
+ * değerini bilir, bir kez yazılır.
+ */
+export const labelTokenTheme = createTheme({
+    root: {
+        base: 'text-sm font-medium',
+        disabled: 'opacity-60',
+        colors: {
+            default: 'text-fg',
+            gray: 'text-fg-secondary',
+            info: 'text-fg-link',
+            failure: 'text-fg-danger',
+            warning: 'text-fg-warning',
+            success: 'text-fg-success',
+        },
+    },
+});
+
 export const flowbiteTokenTheme = {
     button: buttonTokenTheme,
     textInput: textInputTokenTheme,
     select: selectTokenTheme,
     textarea: textareaTokenTheme,
     checkbox: checkboxTokenTheme,
+    label: labelTokenTheme,
 };
 
 /**
@@ -325,4 +346,5 @@ export const FLOWBITE_TOKEN_APPLY = {
     select: 'replace',
     textarea: 'replace',
     checkbox: 'replace',
+    label: 'replace',
 } as const;
