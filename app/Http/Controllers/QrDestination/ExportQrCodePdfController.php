@@ -61,7 +61,9 @@ final class ExportQrCodePdfController extends Controller
         try {
             $png = $this->imageExport->renderPng(url("/q/{$record->token}"), $layout);
             $rendered = $this->pdfExport->renderPdf($png->bytes, $record->token, $paperSize, $orientation, $layout);
-        } catch (RuntimeException) {
+        } catch (RuntimeException $exception) {
+            report($exception);
+
             return response('QR PDF generation failed.', 500);
         }
 
