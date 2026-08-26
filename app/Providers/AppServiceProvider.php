@@ -38,6 +38,8 @@ use App\Application\Tenancy\Port\WorkspaceContextSessionPort;
 use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
+use App\Domain\Url\UrlNormalizer;
+use App\Domain\Url\UrlPolicy;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentIyzicoSandboxTransactionRepository;
@@ -82,6 +84,13 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(UrlPolicy::class, static fn (): UrlPolicy => new UrlPolicy(
+            (array) config('url-policy', []),
+        ));
+        $this->app->singleton(UrlNormalizer::class, static fn ($app): UrlNormalizer => new UrlNormalizer(
+            $app->make(UrlPolicy::class),
+        ));
+
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
         $this->app->bind(WorkspaceRepositoryPort::class, EloquentWorkspaceRepository::class);
         $this->app->bind(WorkspaceContextSessionPort::class, SessionWorkspaceContext::class);
