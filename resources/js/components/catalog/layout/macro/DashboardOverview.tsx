@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { PageHeader, type PageHeaderProps } from '../compound/PageHeader';
+import { PageHeader, type PageHeaderProps } from './PageHeader';
 import { StatCard, type StatCardProps } from '../../data-display/compound/StatCard';
 import {
     ResponsiveDataTable,

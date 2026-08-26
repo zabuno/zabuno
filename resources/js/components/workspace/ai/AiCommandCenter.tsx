@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import { Button, Label } from 'flowbite-react';
 import { DrawerPanel } from '../../catalog/overlays/compound/DrawerPanel';
-import { Textarea } from '../../catalog/forms/Textarea';
+import { Textarea } from '../../catalog/forms/micro/Textarea';
 import { t } from '../../../i18n/workspace';
 import type { AiAssistQuickAction } from '../../../lib/aiAssistState';
 

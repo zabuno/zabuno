@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MediaAssetStatusBadge } from './MediaAssetStatusBadge';
 
 const meta: Meta<typeof MediaAssetStatusBadge> = {
-    title: 'Workspace/Media/MediaAssetStatusBadge',
+    title: 'Surface/Workspace/Media/MediaAssetStatusBadge',
     component: MediaAssetStatusBadge,
 };
 

@@ -1,5 +1,5 @@
 import type { LocationProfile } from '../LocationEditForm';
-import { Select } from '../../catalog/forms/Select';
+import { Select } from '../../catalog/forms/micro/Select';
 import { t } from '../../../i18n/workspace';
 
 export type WorkspaceContextControlsProps = {

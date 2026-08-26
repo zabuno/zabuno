@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { PageHeader } from './PageHeader';
 
 const meta: Meta<typeof PageHeader> = {
-    title: 'Compound/Layout/PageHeader',
+    title: 'Macro/Layout/PageHeader',
     component: PageHeader,
     parameters: {
         docs: {
