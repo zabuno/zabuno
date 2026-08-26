@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Tests\Support\GrantsPlanEntitlements;
 use Tests\TestCase;
 
 /**
@@ -43,6 +44,7 @@ use Tests\TestCase;
  */
 final class AnalyticsLedgerSummaryTest extends TestCase
 {
+    use GrantsPlanEntitlements;
     use RefreshDatabase;
 
     private function verifiedUser(): User
@@ -159,6 +161,11 @@ final class AnalyticsLedgerSummaryTest extends TestCase
             ['menuId' => $menuId]
         )->assertStatus(201);
         $token = (string) $created->json('token');
+
+        // Owner 2026-08-26'da bu yeteneği plana bağladı; testler
+        // yazıldığında ücretsizdi. Kurulum burada, kurucunun içinde yapılır ki
+        // her test kendi plan kurgusunu tekrar yazmasın.
+        $this->grantEntitlements($workspaceId);
 
         return [$workspaceId, $locationId, $menuId, $token];
     }

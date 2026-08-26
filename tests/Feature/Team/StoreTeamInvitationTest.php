@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
+use Tests\Support\GrantsPlanEntitlements;
 use Tests\TestCase;
 
 /**
@@ -39,6 +40,7 @@ use Tests\TestCase;
  */
 final class StoreTeamInvitationTest extends TestCase
 {
+    use GrantsPlanEntitlements;
     use RefreshDatabase;
 
     private function jsonHeaders(): array
@@ -73,6 +75,11 @@ final class StoreTeamInvitationTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Owner 2026-08-26'da bu yeteneği plana bağladı; testler
+        // yazıldığında ücretsizdi. Kurulum burada, kurucunun içinde yapılır ki
+        // her test kendi plan kurgusunu tekrar yazmasın.
+        $this->grantEntitlements($workspaceId);
 
         return $workspaceId;
     }

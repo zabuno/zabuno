@@ -189,6 +189,73 @@ final class EntitlementResolutionTest extends TestCase
         self::assertFalse($capabilities->firstWhere('key', Entitlement::QrBulkGeneration->value)['granted']);
     }
 
+    // --- ENT-GATE-06 ------------------------------------------------------
+    // Mekanizmanın var olması yetmez; kapıların gerçekten KAPATTIĞI
+    // kanıtlanmalı. Aksi hâlde "entitlement sistemi var" demek, hiçbir şeyi
+    // engellemeyen bir sistemi var saymak olur.
+
+    public function test_bulk_qr_generation_is_refused_with_402_when_the_plan_does_not_include_it(): void
+    {
+        $owner = $this->verifiedUser();
+        $workspaceId = $this->workspaceOnPlan($owner, []);
+
+        $locationId = (int) DB::table('locations')->insertGetId([
+            'workspace_id' => $workspaceId,
+            'brand_id' => (int) DB::table('brands')->insertGetId([
+                'workspace_id' => $workspaceId, 'name' => 'Zeytin', 'slug' => 'z-'.uniqid(),
+                'locale' => 'tr', 'timezone' => 'Europe/Istanbul', 'currency' => 'TRY',
+                'created_at' => now(), 'updated_at' => now(),
+            ]),
+            'display_name' => 'Kadıköy', 'country_code' => 'TR', 'city' => 'İstanbul',
+            'address_line1' => 'Adres', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $response = $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->postJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}/tables/bulk", [
+                'areaSectionCount' => 1, 'tableCount' => 2, 'seatCountPerTable' => 4,
+            ]);
+
+        $response->assertStatus(402, 'ENT-GATE-06: plansız toplu üretim 402 almalı — 403 değil: kullanıcı yetkisiz değil, planı bu yeteneği içermiyor.');
+        $response->assertJsonPath('entitlement', Entitlement::QrBulkGeneration->value);
+
+        self::assertSame(
+            0,
+            DB::table('qr_codes')->where('workspace_id', $workspaceId)->count(),
+            'ENT-GATE-06: reddedilen istek hiçbir şey yazmamalı.'
+        );
+    }
+
+    public function test_team_invitation_is_refused_with_402_when_the_plan_does_not_include_it(): void
+    {
+        $owner = $this->verifiedUser();
+        $workspaceId = $this->workspaceOnPlan($owner, []);
+
+        $response = $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->postJson("/api/workspaces/{$workspaceId}/team/invitations", [
+                'email' => 'yeni@example.test', 'role' => 'editor',
+            ]);
+
+        $response->assertStatus(402, 'ENT-GATE-06: plansız davet 402 almalı.');
+
+        self::assertSame(
+            0,
+            DB::table('team_invitations')->where('workspace_id', $workspaceId)->count(),
+            'ENT-GATE-06: reddedilen davet kaydedilmemeli.'
+        );
+    }
+
+    public function test_the_gate_opens_once_the_plan_includes_the_capability(): void
+    {
+        $owner = $this->verifiedUser();
+        $workspaceId = $this->workspaceOnPlan($owner, [Entitlement::TeamInvitations->value]);
+
+        $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->postJson("/api/workspaces/{$workspaceId}/team/invitations", [
+                'email' => 'yeni@example.test', 'role' => 'editor',
+            ])
+            ->assertStatus(201, 'ENT-GATE-06: yetenek verildiğinde kapı açılmalı; aksi hâlde kapı değil duvar olur.');
+    }
+
     public function test_a_stranger_cannot_learn_that_the_workspace_exists(): void
     {
         $owner = $this->verifiedUser();
