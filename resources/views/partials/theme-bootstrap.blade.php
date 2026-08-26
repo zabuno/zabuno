@@ -1,4 +1,4 @@
-<script data-zabuno-theme-bootstrap>
+<script data-zabuno-theme-bootstrap nonce="{{ $cspNonce ?? '' }}">
 (function () {
     try {
         var stored = window.localStorage.getItem('zabuno-theme');
