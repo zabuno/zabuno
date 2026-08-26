@@ -170,7 +170,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.unstubAllGlobals();
     });
 
-    it('renders BrandOnboardingForm with the workspace id when the brand fetch 404s, then loads locations after onCreated fires', async () => {
+    it('keeps the default Dashboard visible and does not co-render BrandOnboardingForm when the brand fetch 404s', async () => {
         const fetchMock = buildFetchMock({
             brand: () => jsonResponse(404, { error: 'brand_not_found' }),
         });
@@ -181,8 +181,37 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         }>();
         render(<WorkspaceApp />);
 
-        await screen.findByTestId('brand-onboarding-form');
+        await waitFor(() => {
+            const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
+            expect(calledUrls).toContain(`/api/workspaces/${WORKSPACE_ID}/brand`);
+        });
+
+        expect(document.getElementById('dashboard')).toBeInTheDocument();
+        expect(screen.queryByTestId('brand-onboarding-form')).not.toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    it('renders BrandOnboardingForm exactly once with the workspace id after navigating to Brand when the brand fetch 404s, then loads locations after onCreated fires', async () => {
+        const user = userEvent.setup();
+        const fetchMock = buildFetchMock({
+            brand: () => jsonResponse(404, { error: 'brand_not_found' }),
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
+        render(<WorkspaceApp />);
+
+        const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
+        await user.click(within(nav).getByRole('link', { name: 'Brand' }));
+
+        const brandOnboardingForms = await screen.findAllByTestId('brand-onboarding-form');
+        expect(brandOnboardingForms).toHaveLength(1);
         expect(mockBrandOnboardingFormProps?.workspaceId).toBe(WORKSPACE_ID);
+
+        expect(document.getElementById('brand')).not.toBeInTheDocument();
 
         mockBrandOnboardingFormProps?.onCreated(makeBrand({ id: 811 }));
 
@@ -194,7 +223,30 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.unstubAllGlobals();
     });
 
-    it('renders LocationOnboardingForm with the workspace id when the brand exists but locations are empty, then mounts MenuCatalogWorkspace under Menu after onCreated fires', async () => {
+    it('keeps the default Dashboard visible and does not co-render LocationOnboardingForm when the brand exists but locations are empty', async () => {
+        const fetchMock = buildFetchMock({
+            brand: () => jsonResponse(200, makeBrand()),
+            locations: () => jsonResponse(200, []),
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { WorkspaceApp } = await importWorkspaceModule<{
+            WorkspaceApp: React.ComponentType;
+        }>();
+        render(<WorkspaceApp />);
+
+        await waitFor(() => {
+            const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
+            expect(calledUrls).toContain(`/api/workspaces/${WORKSPACE_ID}/brand/locations`);
+        });
+
+        expect(document.getElementById('dashboard')).toBeInTheDocument();
+        expect(screen.queryByTestId('location-onboarding-form')).not.toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    it('renders LocationOnboardingForm exactly once with the workspace id after navigating to Locations when the brand exists but locations are empty, then mounts MenuCatalogWorkspace under Menu after onCreated fires', async () => {
         const user = userEvent.setup();
         const fetchMock = buildFetchMock({
             brand: () => jsonResponse(200, makeBrand()),
@@ -207,12 +259,17 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         }>();
         render(<WorkspaceApp />);
 
-        await screen.findByTestId('location-onboarding-form');
+        const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
+        await user.click(within(nav).getByRole('link', { name: 'Locations' }));
+
+        const locationOnboardingForms = await screen.findAllByTestId('location-onboarding-form');
+        expect(locationOnboardingForms).toHaveLength(1);
         expect(mockLocationOnboardingFormProps?.workspaceId).toBe(WORKSPACE_ID);
+
+        expect(document.getElementById('locations')).not.toBeInTheDocument();
 
         mockLocationOnboardingFormProps?.onCreated(makeLocation({ id: 923 }));
 
-        const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menu' }));
 
         const menuCatalog = await screen.findByTestId('menu-catalog-workspace');

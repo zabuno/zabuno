@@ -22,6 +22,7 @@ const locationsSection: WorkspaceSectionDescriptor = {
     order: 2,
     labelKey: 'workspace.shell.nav.locations',
     aiQuickAction: true,
+    catalogOnboardingPhase: 'location-onboarding',
     render,
 };
 

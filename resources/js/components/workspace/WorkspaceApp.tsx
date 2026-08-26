@@ -20,6 +20,7 @@ import type { LocationProfile as SectionLocationProfile } from './LocationEditFo
 import {
     SECTION_DESCRIPTORS,
     resolveSectionKeyFromHash,
+    resolveSectionDescriptorForOnboardingPhase,
     renderActiveSection,
 } from './shell/WorkspaceSectionRegistry';
 
@@ -578,6 +579,16 @@ export function WorkspaceApp() {
         );
     }
 
+    const activeOnboardingDescriptor =
+        catalogPhase === 'brand-onboarding' || catalogPhase === 'location-onboarding'
+            ? resolveSectionDescriptorForOnboardingPhase(catalogPhase)
+            : null;
+
+    const showOnboardingForm =
+        currentWorkspace !== null &&
+        activeOnboardingDescriptor !== null &&
+        activeSection === activeOnboardingDescriptor.key;
+
     const navGroups: SidebarNavGroup[] = [];
 
     if (currentWorkspace) {
@@ -698,6 +709,7 @@ export function WorkspaceApp() {
             )}
 
             {currentWorkspace &&
+                !showOnboardingForm &&
                 renderActiveSection(activeSection, {
                     workspaceId: currentWorkspace.id,
                     dashboardMenuTree,
@@ -714,14 +726,14 @@ export function WorkspaceApp() {
                     onMenuTreeChange: handleCatalogTreeChange,
                 })}
 
-            {currentWorkspace && catalogPhase === 'brand-onboarding' && (
+            {showOnboardingForm && currentWorkspace && catalogPhase === 'brand-onboarding' && (
                 <BrandOnboardingForm
                     workspaceId={currentWorkspace.id}
                     onCreated={handleBrandCreated}
                 />
             )}
 
-            {currentWorkspace && catalogPhase === 'location-onboarding' && (
+            {showOnboardingForm && currentWorkspace && catalogPhase === 'location-onboarding' && (
                 <LocationOnboardingForm
                     workspaceId={currentWorkspace.id}
                     onCreated={handleLocationCreated}
