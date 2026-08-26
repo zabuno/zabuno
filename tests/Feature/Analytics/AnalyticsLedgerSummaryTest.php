@@ -279,6 +279,48 @@ final class AnalyticsLedgerSummaryTest extends TestCase
         );
     }
 
+    // --- ANALYTICS-MENU-OPEN-RECORD-01 ------------------------------------------
+
+    public function test_valid_menu_token_get_records_exactly_one_menu_open_row_never_a_qr_resolve(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId, $menuId, $token] = $this->workspaceWithActiveQrCode($owner, 'analytics-menu-open');
+
+        $response = $this->get("/menu/{$token}");
+
+        $response->assertStatus(200, 'ANALYTICS-MENU-OPEN-RECORD-01: /menu/{token} 200 dönmeli.');
+
+        $qrCodeId = (int) DB::table('qr_codes')->where('token', $token)->value('id');
+
+        $ledgerRows = DB::table('analytics_events')
+            ->where('workspace_id', $workspaceId)
+            ->where('location_id', $locationId)
+            ->where('menu_id', $menuId)
+            ->where('qr_code_id', $qrCodeId)
+            ->get();
+
+        self::assertSame(
+            1,
+            $ledgerRows->count(),
+            'ANALYTICS-MENU-OPEN-RECORD-01: geçerli /menu/{token} GET tam olarak bir ledger satırı yazmalı.',
+        );
+        self::assertSame(
+            'menu_open',
+            $ledgerRows->first()->event_type,
+            'ANALYTICS-MENU-OPEN-RECORD-01: yazılan satır menu_open türünde olmalı.',
+        );
+
+        $qrResolveCount = DB::table('analytics_events')
+            ->where('qr_code_id', $qrCodeId)
+            ->where('event_type', 'qr_resolve')
+            ->count();
+        self::assertSame(
+            0,
+            $qrResolveCount,
+            'ANALYTICS-MENU-OPEN-RECORD-01: /menu/{token} GET qr_resolve yazmamalı.',
+        );
+    }
+
     // --- ANALYTICS-INVALID-TOKEN-NO-RECORD-01 ----------------------------------
 
     public function test_invalid_token_get_records_no_ledger_row(): void

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\QrDestination;
 
+use App\Application\Analytics\UseCase\RecordAnalyticsEvent;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
+use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\QrDestination\QrToken;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +19,7 @@ final class ShowPublicMenuController extends Controller
     public function __construct(
         private readonly QrCodeRepositoryPort $qrCodes,
         private readonly PublicationRepositoryPort $publications,
+        private readonly RecordAnalyticsEvent $recordAnalyticsEvent,
     ) {}
 
     public function __invoke(string $token): Response|JsonResponse
@@ -38,6 +41,14 @@ final class ShowPublicMenuController extends Controller
         if ($publication === null) {
             return $this->notFound();
         }
+
+        $this->recordAnalyticsEvent->handle(
+            $record->workspaceId,
+            $record->locationId,
+            $record->id,
+            $record->menuId,
+            AnalyticsEventType::MenuOpen,
+        );
 
         return response()->view('public-menu', ['snapshot' => $publication->snapshot], 200);
     }
