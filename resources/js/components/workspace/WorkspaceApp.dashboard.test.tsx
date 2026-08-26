@@ -161,6 +161,19 @@ function buildFetchMock() {
         ) {
             return jsonResponse(200, makeMenuTree());
         }
+        if (
+            String(url) === `/api/workspaces/${WORKSPACE_ID}/menu/42/publications/current` &&
+            method === 'GET'
+        ) {
+            return jsonResponse(200, { id: 55 });
+        }
+        if (
+            String(url) ===
+                `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/qr-codes` &&
+            method === 'GET'
+        ) {
+            return jsonResponse(200, [{ id: 1, state: 'active' }]);
+        }
 
         throw new Error(`Unhandled fetch in WorkspaceApp dashboard test: ${method} ${String(url)}`);
     });
@@ -414,11 +427,11 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         expect(within(setupSection).getByText('Kadıköy')).toBeInTheDocument();
         expect(within(setupSection).getByText('2 categories · 3 items')).toBeInTheDocument();
 
-        const notConnectedYet = within(setupSection).getAllByText('Not connected yet.');
-        expect(notConnectedYet).toHaveLength(2);
+        expect(await within(setupSection).findByText('Published #55')).toBeInTheDocument();
+        expect(await within(setupSection).findByText('1 active QR')).toBeInTheDocument();
+        expect(within(setupSection).queryByText('Not connected yet.')).toBeNull();
 
         expect(within(setupSection).queryByText(/%/)).not.toBeInTheDocument();
-        expect(within(setupSection).queryByText(/#\d+/)).not.toBeInTheDocument();
 
         const sectionClassName = setupSection.getAttribute('class') ?? '';
         expect(sectionClassName).not.toMatch(/(^|\s)(sm|md|lg|xl|2xl):/);

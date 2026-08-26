@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 
 import { DashboardPage } from './DashboardPage';
@@ -233,5 +233,117 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
 
         expect(fetchSpy).not.toHaveBeenCalled();
         vi.unstubAllGlobals();
+    });
+});
+
+const WORKSPACE_ID = 71;
+
+function jsonResponse(status: number, body: unknown): Response {
+    return {
+        ok: status >= 200 && status < 300,
+        status,
+        json: async () => body,
+    } as Response;
+}
+
+describe('DashboardPage — Publication/QR live status (DASHBOARD_PUBLICATION_QR_LIVE_RED)', () => {
+    beforeEach(() => {
+        setViewport(320, 480);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('shows Published #<id> and active QR count when current-publication and QR-list both resolve', async () => {
+        const menuTree = makeMenuTree();
+        const fetchMock = vi.fn(async (url: string) => {
+            if (
+                String(url) ===
+                `/api/workspaces/${WORKSPACE_ID}/menu/${menuTree.id}/publications/current`
+            ) {
+                return jsonResponse(200, { id: 55 });
+            }
+            if (
+                String(url) ===
+                `/api/workspaces/${WORKSPACE_ID}/brand/locations/${menuTree.locationId}/qr-codes`
+            ) {
+                return jsonResponse(200, [{ id: 1, state: 'active' }]);
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        render(
+            <DashboardPage
+                workspaceId={WORKSPACE_ID}
+                dashboardMenuTree={menuTree}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
+
+        const region = await screen.findByRole('region', { name: /dashboard setup/i });
+
+        expect(await within(region).findByText('Published #55')).toBeInTheDocument();
+        expect(await within(region).findByText('1 active QR')).toBeInTheDocument();
+        expect(within(region).queryByText('Not connected yet.')).toBeNull();
+    });
+
+    it('shows honest not-connected status when current-publication resolves 404, without inventing a QR connection', async () => {
+        const menuTree = makeMenuTree();
+        const fetchMock = vi.fn(async (url: string) => {
+            if (
+                String(url) ===
+                `/api/workspaces/${WORKSPACE_ID}/menu/${menuTree.id}/publications/current`
+            ) {
+                return jsonResponse(404, {});
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        render(
+            <DashboardPage
+                workspaceId={WORKSPACE_ID}
+                dashboardMenuTree={menuTree}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
+
+        const region = await screen.findByRole('region', { name: /dashboard setup/i });
+
+        expect(await within(region).findAllByText('Not connected yet.')).toHaveLength(2);
+        expect(within(region).queryByText(/^Published #/)).toBeNull();
+        expect(within(region).queryByText(/active QR/)).toBeNull();
+    });
+
+    it('shows Status unavailable. for Publication and QR on a non-404 publication failure, never a false not-connected claim', async () => {
+        const menuTree = makeMenuTree();
+        const fetchMock = vi.fn(async (url: string) => {
+            if (
+                String(url) ===
+                `/api/workspaces/${WORKSPACE_ID}/menu/${menuTree.id}/publications/current`
+            ) {
+                return jsonResponse(500, {});
+            }
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        render(
+            <DashboardPage
+                workspaceId={WORKSPACE_ID}
+                dashboardMenuTree={menuTree}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
+
+        const region = await screen.findByRole('region', { name: /dashboard setup/i });
+
+        expect(await within(region).findAllByText('Status unavailable.')).toHaveLength(2);
+        expect(within(region).queryByText('Not connected yet.')).toBeNull();
     });
 });
