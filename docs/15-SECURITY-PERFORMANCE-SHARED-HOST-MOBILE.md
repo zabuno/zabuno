@@ -49,6 +49,28 @@ bağlı): Imagick, ffmpeg, `exec`/`proc_open`, symlink oluşturma, uzun süreli
 worker process. Her özellik bu yeteneklerin **yokluğunda zarif biçimde düşer**
 (graceful degradation) — hard-fail kullanıcı deneyimini kesmez.
 
+### 4a. Matrisi kim doldurur (2026-08-26'da uygulandı)
+
+Bu matris artık tahminle değil ölçümle doldurulur:
+
+```bash
+php artisan platform:evidence:host-capability
+```
+
+Komut çalıştığı host'a Imagick/GD/ffmpeg/Redis/SQLite varlığını, `exec` ve
+symlink izinlerini, bellek/yükleme/zaman aşımı sınırlarını sorar; sonucu
+`host_capability_evidence` tablosuna bir satır olarak yazar ve devreye giren
+düşüş planını adıyla basar. Prob **salt-okunurdur** ve host'ta iz bırakmaz.
+
+Eksik bir yetenek komutu başarısız ETMEZ — bu bilinçlidir. Paylaşımlı
+barındırmada eksik yetenek normaldir; hard-fail, her deploy'u kırar ve ekibi
+kontrolü tamamen kapatmaya iter. Bunun yerine her eksik yetenek, restoran
+sahibinin yaşayacağı sonuçla birlikte yazılır: "Imagick yok" değil, "görsel
+türevleri GD ile üretilir, kalite biraz düşer, akış çalışır".
+
+Kanıt: `tests/Feature/Platform/HostCapabilityProbeTest.php`
+(MED-01-PROBE-01…MED-01-EVIDENCE-05).
+
 ## 5. Mobil strateji
 
 - **Diner (müşteri) tarafı**: zero-install web/PWA — native app **gerekmez**.
