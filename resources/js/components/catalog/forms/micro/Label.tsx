@@ -1,6 +1,8 @@
 import { Label as FlowbiteLabel } from 'flowbite-react';
 import type { ComponentProps } from 'react';
 
+import { labelTokenTheme } from '../../../../design-system/flowbite-theme';
+
 export type LabelProps = ComponentProps<typeof FlowbiteLabel> & {
     required?: boolean;
 };
@@ -11,7 +13,7 @@ export type LabelProps = ComponentProps<typeof FlowbiteLabel> & {
  */
 export function Label({ required = false, children, ...rest }: LabelProps) {
     return (
-        <FlowbiteLabel {...rest}>
+        <FlowbiteLabel theme={labelTokenTheme} {...rest}>
             {children}
             {required ? (
                 <span aria-hidden="true" className="ms-0.5 text-fg-danger ">
