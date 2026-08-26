@@ -33,7 +33,7 @@ export function MenuItem({
             onClick={onSelect}
             disabled={disabled}
             className={clsx(
-                'flex w-full items-center gap-2 px-4 py-2 text-left text-sm',
+                'flex w-full items-center gap-2 px-4 py-2 text-start text-sm',
                 destructive
                     ? 'text-fg-danger hover:bg-surface-danger'
                     : 'text-fg-secondary hover:bg-surface-hover',

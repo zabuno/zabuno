@@ -1,6 +1,0 @@
-{
-    "$note": "Fiziksel yön sınıfı (ml/mr/pl/pr/text-left/text-right) borcunun cırcır taban çizgisi. YALNIZ azaltılmak üzere güncellenir. Külliyat RTL-native ve logical-property öncelikli bir sistem şart koşar (design-corpus/adaptive-semantic-grid.md); fiziksel yön, Arapça gibi sağdan-sola dillerde arayüzü sessizce bozar.",
-    "$measuredAt": "2026-08-26",
-    "$replaceWith": "ms-/me-/ps-/pe-/text-start/text-end",
-    "maxPhysicalDirectionClasses": 3
-}
