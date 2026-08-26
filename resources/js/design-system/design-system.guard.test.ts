@@ -24,7 +24,15 @@ import {
  * DS-TOKEN-INTEGRITY-01, DS-NO-RAW-HEX-01, DS-STORY-COVERAGE-01.
  */
 
-const COMPONENT_ROOT = 'resources/js/components';
+/**
+ * Kural artık `resources/js` kökünün TAMAMINI tarar.
+ *
+ * Önceden yalnız `components/` taranıyordu ve bu bir delikti: `auth.tsx`
+ * gibi kök seviyedeki dosyalar hiçbir kurala tabi değildi ve on bir ham
+ * palet sınıfı taşıyordu. Bir tasarım sistemi, kapsamadığı dosyada
+ * geçerli değildir.
+ */
+const COMPONENT_ROOT = 'resources/js';
 const CSS_PATH = 'resources/css/app.css';
 
 type SourceFile = { path: string; body: string; layer: Layer | null };

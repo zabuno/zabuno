@@ -100,7 +100,7 @@ export function ThemeRoot({ children }: ThemeRootProps) {
                 aria-label={t('theme.group_label')}
                 className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex justify-center motion-reduce:transition-none"
             >
-                <div className="flex gap-1 rounded-full border border-gray-200 bg-white/95 p-1 shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/95">
+                <div className="flex gap-1 rounded-full border border-border bg-surface/95 p-1 shadow-sm backdrop-blur-sm">
                     {THEME_OPTIONS.map((option) => {
                         const checked = preference === option;
                         return (
@@ -143,7 +143,7 @@ export function ThemeRoot({ children }: ThemeRootProps) {
                                         choose(THEME_OPTIONS[THEME_OPTIONS.length - 1], true);
                                     }
                                 }}
-                                className="flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 motion-reduce:transition-none dark:text-gray-300 dark:hover:bg-gray-700 aria-checked:bg-blue-700 aria-checked:text-white dark:aria-checked:bg-blue-600 aria-checked:forced-colors:outline aria-checked:forced-colors:outline-2 aria-checked:forced-colors:outline-offset-2"
+                                className="flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium text-fg-secondary transition-colors hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 motion-reduce:transition-none aria-checked:bg-action aria-checked:text-action-fg aria-checked:forced-colors:outline aria-checked:forced-colors:outline-2 aria-checked:forced-colors:outline-offset-2"
                             >
                                 {optionLabels[option]()}
                             </button>

@@ -1,38 +1,35 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { readFileSync } from 'node:fs';
 import { CloseButton } from './CloseButton';
+import {
+    WCAG_AA_LARGE_TEXT,
+    contrastRatio,
+    readCustomProperties,
+    resolveColor,
+} from '../../../../design-system/contrast';
 
-// Tailwind color hex values relevant to the resting light-mode icon color,
-// used for a local WCAG 2.2 AA (non-text UI component, 1.4.11) contrast
-// calculation against the button's white background — no snapshot or
-// brittle source-string check.
-const HEX = {
-    white: '#ffffff',
-    gray400: '#9ca3af',
-    gray500: '#6b7280',
-    // Flowbite ConfirmDialog dark surface (dark:bg-gray-700), the dark-mode
-    // background the icon's resting currentColor is composited against.
-    gray700: '#374151',
-} as const;
+/**
+ * Kontrast artık sabit bir Tailwind hex'ine değil, bileşenin GERÇEKTEN
+ * okuduğu token'a karşı ölçülür. Eski hâli `text-gray-500` sınıfının
+ * varlığını arıyordu; o sınıf tasarım sisteminden kaçan bir ham renkti ve
+ * test onu koruyordu. Ölçülmesi gereken şey sınıfın adı değil, kullanıcının
+ * gördüğü kontrasttır (WCAG 2.2 §1.4.11, metin dışı bileşen ≥ 3:1).
+ */
+const CSS = readFileSync('resources/css/app.css', 'utf8');
+const LIGHT = readCustomProperties(CSS, ':root');
+const DARK = { ...LIGHT, ...readCustomProperties(CSS, '.dark') };
 
-function srgbToLinear(channel: number): number {
-    const c = channel / 255;
-    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-}
+function tokenContrast(scope: Record<string, string>, fg: string, bg: string): number {
+    const foreground = resolveColor(scope[fg], scope);
+    const background = resolveColor(scope[bg], scope);
 
-function relativeLuminance(hex: string): number {
-    const value = hex.replace('#', '');
-    const r = parseInt(value.slice(0, 2), 16);
-    const g = parseInt(value.slice(2, 4), 16);
-    const b = parseInt(value.slice(4, 6), 16);
-    return 0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
-}
+    if (foreground === null || background === null) {
+        throw new Error(`Token çözülemedi: ${fg} / ${bg}`);
+    }
 
-function contrastRatio(hexA: string, hexB: string): number {
-    const lumA = relativeLuminance(hexA) + 0.05;
-    const lumB = relativeLuminance(hexB) + 0.05;
-    return lumA > lumB ? lumA / lumB : lumB / lumA;
+    return contrastRatio(foreground, background);
 }
 
 describe('CloseButton', () => {
@@ -62,18 +59,20 @@ describe('CloseButton', () => {
         expect(button.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
     });
 
-    it('renders the resting light-mode icon at a WCAG 2.2 AA non-text contrast of at least 3:1 against white (1.4.11)', () => {
+    it('renders the resting icon at a WCAG 2.2 AA non-text contrast of at least 3:1 in both themes (1.4.11)', () => {
         render(<CloseButton onClick={() => {}} />);
         const button = screen.getByRole('button', { name: 'Close' });
 
-        // gray-400 is the current production color and fails the 3:1
-        // non-text-contrast minimum; the minimal production fix is gray-500,
-        // which passes.
-        const classTokens = button.className.split(/\s+/);
-        expect(classTokens).not.toContain('text-gray-400');
-        expect(contrastRatio(HEX.gray400, HEX.white)).toBeLessThan(3);
-        expect(contrastRatio(HEX.gray500, HEX.white)).toBeGreaterThanOrEqual(3);
-        expect(classTokens).toContain('text-gray-500');
+        // Bileşen ham renk taşımaz; token okur.
+        expect(button.className).toContain('text-fg-muted');
+        expect(button.className).not.toMatch(/text-gray-\d/);
+
+        expect(tokenContrast(LIGHT, '--fg-muted', '--surface')).toBeGreaterThanOrEqual(
+            WCAG_AA_LARGE_TEXT,
+        );
+        expect(tokenContrast(DARK, '--fg-muted', '--surface')).toBeGreaterThanOrEqual(
+            WCAG_AA_LARGE_TEXT,
+        );
     });
 
     it('is not disabled by default', () => {
@@ -96,16 +95,13 @@ describe('CloseButton', () => {
         expect(onClick).not.toHaveBeenCalled();
     });
 
-    it('renders the resting dark-mode icon at a WCAG 2.2 AA non-text contrast of at least 3:1 against the Flowbite ConfirmDialog dark surface (1.4.11)', () => {
+    it('carries no dark-mode override because the token already answers for both themes', () => {
         render(<CloseButton onClick={() => {}} />);
         const button = screen.getByRole('button', { name: 'Close' });
 
-        // dark:text-gray-500 is the current production color and fails the
-        // 3:1 non-text-contrast minimum against dark:bg-gray-700; the
-        // minimal production fix is dark:text-gray-400, which passes.
-        expect(button.className).not.toContain('dark:text-gray-500');
-        expect(contrastRatio(HEX.gray500, HEX.gray700)).toBeLessThan(3);
-        expect(contrastRatio(HEX.gray400, HEX.gray700)).toBeGreaterThanOrEqual(3);
-        expect(button.className).toContain('dark:text-gray-400');
+        // `dark:` varyantı, aynı kararın iki yerde yazılması demektir ve
+        // biri güncellenip diğeri unutulduğunda karanlık tema sessizce
+        // bozulur. Token kökü zaten temaya göre çözülür.
+        expect(button.className).not.toMatch(/dark:text-/);
     });
 });

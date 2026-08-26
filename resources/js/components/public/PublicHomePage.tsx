@@ -1,4 +1,5 @@
 import { AccessibleSeparator } from '../adapters/AccessibleSeparator';
+import { ActionLink } from '../catalog/navigation/micro/ActionLink';
 
 export function PublicHomePage() {
     return (
@@ -13,24 +14,13 @@ export function PublicHomePage() {
                     change.
                 </p>
                 <nav aria-label="Account actions" className="flex flex-wrap gap-3">
-                    <a
-                        href="/app"
-                        className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 forced-colors:border forced-colors:border-[ButtonText]"
-                    >
-                        Open workspace app
-                    </a>
-                    <a
-                        href="/login"
-                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700 forced-colors:border-[ButtonText]"
-                    >
+                    <ActionLink href="/app">Open workspace app</ActionLink>
+                    <ActionLink href="/login" variant="secondary">
                         Log in
-                    </a>
-                    <a
-                        href="/register"
-                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700 forced-colors:border-[ButtonText]"
-                    >
+                    </ActionLink>
+                    <ActionLink href="/register" variant="secondary">
                         Create account
-                    </a>
+                    </ActionLink>
                 </nav>
             </section>
 
