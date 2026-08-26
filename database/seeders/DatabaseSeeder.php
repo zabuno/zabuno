@@ -21,5 +21,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Yerel QA hesabı, kimlik bilgileri verilmişse geri kurulur. Bu sayede
+        // `migrate:fresh --seed` hesabı elle müdahale olmadan geri getirir —
+        // hesabın "yine kayboldu" döngüsünü kıran adım budur. CI'da ve
+        // kimlik bilgisi verilmeyen her ortamda sessizce atlanır.
+        if (LocalTestAccountSeeder::isConfigured()) {
+            $this->call(LocalTestAccountSeeder::class);
+        }
     }
 }

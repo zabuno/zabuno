@@ -78,6 +78,24 @@ final class LocalTestAccountSeederTest extends TestCase
         (new LocalTestAccountSeeder)->run();
     }
 
+    // --- LOCAL-SEED-CI-SAFE-01 --------------------------------------------
+    // DatabaseSeeder bu bayrağa bakarak hesabı atlar. Bayrak kimlik bilgisi
+    // yokken true dönerse CI'daki her `--seed` çağrısı patlar.
+    public function test_it_reports_itself_unconfigured_when_credentials_are_absent(): void
+    {
+        self::assertFalse(
+            LocalTestAccountSeeder::isConfigured(),
+            'LOCAL-SEED-CI-SAFE-01: kimlik bilgisi yokken seeder yapılandırılmamış sayılmalı.'
+        );
+
+        $this->setCredentials(self::TEST_EMAIL, self::TEST_PASSWORD);
+
+        self::assertTrue(
+            LocalTestAccountSeeder::isConfigured(),
+            'LOCAL-SEED-CI-SAFE-01: kimlik bilgisi verildiğinde yapılandırılmış sayılmalı.'
+        );
+    }
+
     // --- LOCAL-SEED-CREATES-VERIFIED-01 -----------------------------------
 
     public function test_it_creates_a_verified_account_whose_password_actually_works(): void
