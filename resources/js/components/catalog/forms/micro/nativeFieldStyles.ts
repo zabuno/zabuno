@@ -8,9 +8,15 @@
  * kendi ham palet sınıflarını yazıyordu ve her biri kendi kararını
  * veriyordu.
  *
- * Bu dosya o kararı tek yere toplar. Flowbite teması token köküne
- * bağlandığında bu sabitler kaldırılır ve her yüzey bileşeni kullanır
- * (bkz. `PlainButton` docblock'undaki aynı not).
+ * Bu dosya o kararı tek yere toplar ve `TextInput`/`Select` ile AYNI
+ * token'ları okur, böylece yerel bir `<input>` ile bileşen yan yana
+ * durduğunda fark edilmez.
+ *
+ * Flowbite teması 2026-08-26'da token köküne bağlandı
+ * (`resources/js/design-system/flowbite-theme.ts`), yani bu sabitlerin var
+ * olma gerekçesi artık yalnız işaretleme uyumluluğudur: sekiz çağrı yerinin
+ * bileşene taşınması ayrı ve mekanik bir iştir, bittiğinde bu dosya
+ * kaldırılır.
  */
 
 /** Metin/sayı girdisi ve seçim kutusu. */

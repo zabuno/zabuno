@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
 import type { Decorator } from '@storybook/react-vite';
+import { ThemeProvider } from 'flowbite-react';
+
+import { zabunoFlowbiteApplyTheme, zabunoFlowbiteTheme } from '../design-system/flowbite-theme';
 
 export type ThemeMode = 'light' | 'dark' | 'high-contrast';
 export type Direction = 'ltr' | 'rtl';
@@ -33,6 +36,13 @@ function ThemeRootSync({ theme }: { theme: ThemeMode }) {
     return null;
 }
 
+/**
+ * Storybook, ürünle AYNI Flowbite temasını kullanır.
+ *
+ * Aksi hâlde Storybook'ta görülen buton ile üründeki buton farklı olur ve
+ * "Storybook'ta güzel görünüyordu" cümlesi kalıcı hâle gelir. Tasarım
+ * sisteminin bütün iddiası, ikisinin tek kaynaktan beslenmesidir.
+ */
 export const withTheme: Decorator = (Story, context) => {
     const theme = (context.globals.theme as ThemeMode | undefined) ?? 'light';
     return (
@@ -47,7 +57,9 @@ export const withTheme: Decorator = (Story, context) => {
             }
         >
             <ThemeRootSync theme={theme} />
-            <Story />
+            <ThemeProvider theme={zabunoFlowbiteTheme} applyTheme={zabunoFlowbiteApplyTheme}>
+                <Story />
+            </ThemeProvider>
         </div>
     );
 };

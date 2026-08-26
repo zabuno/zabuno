@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { ThemeProvider } from 'flowbite-react';
+import { zabunoFlowbiteApplyTheme, zabunoFlowbiteTheme } from '../../design-system/flowbite-theme';
 import { t } from '../../i18n/theme';
 
 export const THEME_STORAGE_KEY = 'zabuno-theme';
@@ -88,7 +90,10 @@ export function ThemeRoot({ children }: ThemeRootProps) {
     }, []);
 
     return (
-        <>
+        // Flowbite'ın teması token köküne burada bağlanır: her uygulama girişi
+        // (`app`, `auth`, `workspace`, `platform`) ThemeRoot'tan geçer, yani
+        // tek bir yerde bağlamak dört yüzeyin dördünü de kapsar.
+        <ThemeProvider theme={zabunoFlowbiteTheme} applyTheme={zabunoFlowbiteApplyTheme}>
             {children}
             <div
                 aria-hidden="true"
@@ -151,6 +156,6 @@ export function ThemeRoot({ children }: ThemeRootProps) {
                     })}
                 </div>
             </div>
-        </>
+        </ThemeProvider>
     );
 }

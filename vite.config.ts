@@ -26,9 +26,28 @@ export default defineConfig(({ mode }) => ({
         flowbiteReact(),
     ],
     resolve: {
-        alias: {
-            '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
-        },
+        alias: [
+            { find: '@', replacement: fileURLToPath(new URL('./resources/js', import.meta.url)) },
+            // Testlerde `@testing-library/react`, tema sağlayıcısını otomatik
+            // ekleyen yerel sarmalayıcıya çözülür. Aksi hâlde her bileşen
+            // testi Flowbite'ın VARSAYILAN temasını görür ve doğruladığı
+            // görünüm kullanıcının gördüğü görünüm olmaz
+            // (bkz. `resources/js/test/testing-library.tsx`).
+            //
+            // Eşleşme TAM olmalıdır: sarmalayıcının kendisi
+            // `@testing-library/react/pure` içe aktarır ve önek eşleşmesi
+            // onu kendine yönlendirip sonsuz döngü yaratır.
+            ...(mode === 'test'
+                ? [
+                      {
+                          find: /^@testing-library\/react$/,
+                          replacement: fileURLToPath(
+                              new URL('./resources/js/test/testing-library.tsx', import.meta.url),
+                          ),
+                      },
+                  ]
+                : []),
+        ],
     },
     server: {
         watch: {
