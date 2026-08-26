@@ -123,8 +123,56 @@ Bunun URL motoruna doğrudan üç etkisi var:
 `-POST-SAFE-10`, `-DUPLICATE-11`, `URL-RESERVED-12`,
 `URL-RESERVED-COVERS-ROUTES-13`.
 
-## 10. Henüz yapılmayanlar
+## 11. Tarama ile indeksleme aynı şey değildir
 
-Bu paket motoru ve normalizasyonu kurar. Sırada olanlar ayrı paketlerdir:
-canonical/hreflang/sitemap üretimi, slug geçmişi ve 301 tablosu, QR
-çözümleyicinin `no-store` ile sertleştirilmesi.
+Bu ayrım pratikte en sık karıştırılan yerdir ve iki liste bu yüzden AYRI:
+
+| Mekanizma | Ne yapar | Kim için |
+| --- | --- | --- |
+| `robots.txt` `Disallow` | Botun sayfayı ÇEKMESİNİ engeller | Kimlik korumalı yüzeyler |
+| `X-Robots-Tag: noindex` | Sonuçlarda GÖRÜNMEYİ engeller | Herkese açık ama indekslenmemesi gereken yüzeyler |
+
+QR çözümleyici (`/q/`) bilerek **taranabilir** bırakılır. `Disallow` edilseydi
+bot sayfayı hiç çekemez, dolayısıyla `noindex` başlığını da **okuyamazdı** —
+ve başka bir yerden link verilmiş bir `/q/...` adresi içeriksiz biçimde yine
+de indekslenebilirdi. Taranmasına izin verip "gösterme" demek, hiç
+taratmamaktan daha güvenilirdir.
+
+`robots.txt` elle yazılmaz, politikadan üretilir. Statik bir dosya kaçınılmaz
+olarak gerçekle ayrışır: yeni bir yönetim yolu eklenir, dosyaya yazılmaz ve o
+yol taranmaya açık kalır.
+
+Hiçbiri güvenlik değildir. Gerçek koruma kimlik doğrulamadır.
+
+## 12. QR çözümleyici neden 302 ve `no-store`?
+
+Bu, ürünün en geri alınamaz kararıdır: **basılmış bir QR kodu geri
+çağrılamaz.**
+
+- **302, 301 değil.** Bu bir kalıcı taşıma değil, işletmenin
+  değiştirebileceği bir eşlemedir (öğle/akşam menüsü, şube taşınması, kampanya).
+  301 tarayıcıda ve ara katmanlarda kalıcı olarak önbelleklenir; hedef
+  değiştiğinde masadaki kod eski adrese gitmeye devam eder.
+- **`no-store`.** Önbelleklenen bir yönlendirme, basılı kodu eski hedefe
+  kilitler.
+- **Hedef adı verilmiş route'tan üretilir**, elle birleştirilmez: yol bir gün
+  değişirse basılı kod yine doğru yere gitmelidir.
+
+Kanıt kaynağı taramasıyla değil, gerçek yanıtla alınır (`URL-QR-CACHE-19`):
+bir yorum satırındaki "301" kelimesi testi yanıltmamalıdır.
+
+## 13. Kanonik adres sunucuda üretilir
+
+`<link rel="canonical">` ve Open Graph etiketleri sunucu tarafında basılır.
+İstemcide üretilseydi, JavaScript çalıştırmayan önizleme ve tarama botları
+onları hiç görmezdi — ve bu sayfa çoğunlukla WhatsApp'ta paylaşılıyor.
+
+Kanonik adres aynı normalizer'ı kullanır. İkinci bir yerde yeniden
+yazılsaydı, kanonik etiket ile yönlendirmenin farklı adresler üretmesi an
+meselesiydi.
+
+## 14. Henüz yapılmayanlar
+
+Slug geçmişi ve 301 tablosu (bir işletme adını değiştirdiğinde eski adresin
+yaşaması), sitemap üretimi ve `hreflang` kümesi ayrı paketlerdir. Bu paket
+kanonik adresi, robots'u, noindex'i ve QR çözümleyiciyi kapsar.

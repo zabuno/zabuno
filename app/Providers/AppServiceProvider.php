@@ -38,6 +38,7 @@ use App\Application\Tenancy\Port\WorkspaceContextSessionPort;
 use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
+use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
@@ -89,6 +90,10 @@ final class AppServiceProvider extends ServiceProvider
         ));
         $this->app->singleton(UrlNormalizer::class, static fn ($app): UrlNormalizer => new UrlNormalizer(
             $app->make(UrlPolicy::class),
+        ));
+        $this->app->singleton(CanonicalUrl::class, static fn ($app): CanonicalUrl => new CanonicalUrl(
+            $app->make(UrlPolicy::class),
+            $app->make(UrlNormalizer::class),
         ));
 
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);

@@ -4,6 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Menü</title>
+    @isset($canonicalUrl)
+        {{-- Aynı menü izleme parametresiyle, farklı sorgu sırasıyla veya
+             sondaki slash ile birden çok adresten açılabilir. Kanonik
+             etiket olmadan arama motoru hangisini indeksleyeceğine kendi
+             karar verir. --}}
+        <link rel="canonical" href="{{ $canonicalUrl }}">
+        <meta property="og:url" content="{{ $canonicalUrl }}">
+    @endisset
+    {{-- Paylaşım önizlemesi: bu sayfa çoğunlukla WhatsApp'ta paylaşılır ve
+         oradaki bot JavaScript çalıştırmaz; etiketler sunucuda basılır. --}}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Menü">
+    <meta property="og:site_name" content="Zabuno">
+    <meta name="description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
+    <meta property="og:description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
     <link rel="manifest" href="/public-menu.webmanifest">
     <meta name="theme-color" content="#1f2937">
     <link rel="apple-touch-icon" href="/icons/zabuno-menu-192.svg" sizes="192x192">

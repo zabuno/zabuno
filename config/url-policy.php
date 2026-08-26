@@ -112,6 +112,57 @@ return [
     ],
 
     /*
+     * Arama motoruna kapalı yüzeyler.
+     *
+     * İki ayrı mekanizmayla korunur ve ikisi AYNI ŞEY DEĞİLDİR:
+     * `robots.txt` TARAMAYI engeller, `X-Robots-Tag: noindex` SONUÇLARDA
+     * GÖRÜNMEYİ engeller. Yalnız robots.txt yetmez — başka bir yerden link
+     * verilmiş bir adres taranmadan da indekslenebilir. Yalnız noindex de
+     * yetmez — bot onu okuyabilmek için sayfayı çekebilmelidir.
+     *
+     * Gerçek koruma kimlik doğrulamadır; bu liste onun yerine geçmez.
+     */
+    'noindex_prefixes' => [
+        'app',
+        'platform',
+        'api',
+        'q',
+        'invitations',
+        'login',
+        'register',
+        'forgot-password',
+        'reset-password',
+        'verify-email',
+    ],
+
+    /*
+     * `robots.txt` içinde TARAMASI engellenen yollar.
+     *
+     * Bu liste yukarıdakinin aynısı DEĞİLDİR ve fark bilinçlidir.
+     *
+     * Kimlik korumalı yüzeyler (`app`, `platform`, `api`, `login` …) burada
+     * yer alır: bot zaten içeriği göremez, taramak yalnız bütçe harcar.
+     *
+     * `q` ise BİLEREK burada YOKTUR. Herkese açık ve gerçekten yanıt veren
+     * bir yönlendiricidir. `Disallow` edilseydi bot sayfayı hiç çekemez,
+     * dolayısıyla `X-Robots-Tag: noindex` başlığını da OKUYAMAZDI — ve
+     * başka bir yerden link verilmiş bir `/q/...` adresi içeriksiz biçimde
+     * yine de indekslenebilirdi. Taranmasına izin verip "gösterme" demek,
+     * hiç taratmamaktan daha güvenilirdir.
+     */
+    'disallow_prefixes' => [
+        'app',
+        'platform',
+        'api',
+        'invitations',
+        'login',
+        'register',
+        'forgot-password',
+        'reset-password',
+        'verify-email',
+    ],
+
+    /*
      * Kanonik biçime yönlendirme kodu. 301 kalıcıdır ve önbelleklenir; bu
      * yüzden yalnız GERÇEKTEN kalıcı olan normalizasyonda kullanılır.
      * QR çözümleyicisi bunu KULLANMAZ (bkz. `docs/38` §4).
