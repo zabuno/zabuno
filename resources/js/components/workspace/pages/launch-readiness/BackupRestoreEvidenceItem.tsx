@@ -156,7 +156,7 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
             </span>
         );
         details = (
-            <dl className="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <dl className="flex flex-col gap-1 text-xs text-fg-muted">
                 <div>
                     <dt className="inline font-medium">
                         {t('workspace.launchReadiness.backupRestore.metadata.ranAt')}:{' '}

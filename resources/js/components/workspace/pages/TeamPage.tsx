@@ -401,7 +401,7 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                 badges={badges}
             >
                 <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
-                    <legend className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
+                    <legend className="mb-1 text-sm font-semibold text-fg">
                         {t('workspace.team.invite.section')}
                     </legend>
 
@@ -431,25 +431,19 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                     </Button>
 
                     {submitting && (
-                        <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                        <p role="status" className="text-sm text-fg-muted">
                             {t('workspace.team.invite.submitting')}
                         </p>
                     )}
 
                     {!submitting && submitError && (
-                        <p
-                            role="status"
-                            className="text-sm font-medium text-red-600 dark:text-red-400"
-                        >
+                        <p role="status" className="text-sm font-medium text-fg-danger">
                             {t('workspace.team.invite.error')}
                         </p>
                     )}
 
                     {!submitting && submitSuccess && (
-                        <p
-                            role="status"
-                            className="text-sm font-medium text-green-600 dark:text-green-400"
-                        >
+                        <p role="status" className="text-sm font-medium text-fg-success">
                             {t('workspace.team.invite.success')}
                         </p>
                     )}

@@ -108,12 +108,10 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
             }}
         >
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {t('workspace.location.heading')}
-                </h1>
+                <h1 className="text-xl font-semibold text-fg">{t('workspace.location.heading')}</h1>
 
                 {error && (
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {error}
                     </p>
                 )}

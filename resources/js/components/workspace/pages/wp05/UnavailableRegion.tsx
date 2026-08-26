@@ -15,8 +15,8 @@ type UnavailableRegionProps = {
 export function UnavailableRegion({ label, statusText, children }: UnavailableRegionProps) {
     return (
         <div role="region" aria-label={label} className="flex flex-col gap-3">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">{label}</p>
-            <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm font-semibold text-fg">{label}</p>
+            <p role="status" className="text-sm text-fg-muted">
                 {statusText}
             </p>
             {children}

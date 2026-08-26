@@ -64,18 +64,16 @@ export function ForgotPasswordForm() {
 
     return (
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {t('auth.forgot_password.heading')}
-            </h1>
+            <h1 className="text-xl font-semibold text-fg">{t('auth.forgot_password.heading')}</h1>
 
             {errors.submit && (
-                <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                <p role="alert" className="text-sm font-medium text-fg-danger">
                     {errors.submit}
                 </p>
             )}
 
             {sent && (
-                <p role="status" className="text-sm font-medium text-green-600 dark:text-green-400">
+                <p role="status" className="text-sm font-medium text-fg-success">
                     {t('auth.forgot_password.status.sent')}
                 </p>
             )}
@@ -98,7 +96,7 @@ export function ForgotPasswordForm() {
                     <p
                         id="forgot-password-email-error"
                         role="alert"
-                        className="mt-1 text-sm text-red-600 dark:text-red-400"
+                        className="mt-1 text-sm text-fg-danger"
                     >
                         {errors.email}
                     </p>

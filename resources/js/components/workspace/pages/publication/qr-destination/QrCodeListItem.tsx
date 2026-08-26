@@ -29,7 +29,7 @@ export function QrCodeListItem({ item, onDisable }: QrCodeListItemProps) {
                     {item.resolverUrl}
                 </a>
             ) : (
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-fg-muted">
                     {t('workspace.publication.qrDestination.state.disabled')}
                 </span>
             )}

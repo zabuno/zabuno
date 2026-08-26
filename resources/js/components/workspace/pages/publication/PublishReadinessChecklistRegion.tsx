@@ -72,18 +72,18 @@ export function PublishReadinessChecklistRegion({
             aria-label={t('workspace.publication.readiness.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-fg">
                 {t('workspace.publication.readiness.region')}
             </h3>
 
             {dashboardMenuTree === null ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.publication.readiness.notLoaded')}
                 </p>
             ) : (
                 <ul className="flex flex-col gap-1">
                     {buildChecks(dashboardMenuTree).map((check) => (
-                        <li key={check.key} className="text-sm text-gray-700 dark:text-gray-300">
+                        <li key={check.key} className="text-sm text-fg-secondary">
                             {check.label}:{' '}
                             {check.ready
                                 ? t('workspace.publication.readiness.ready')

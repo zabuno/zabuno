@@ -80,29 +80,21 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             onSubmit={(event) => void handleSubmit(event)}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                {t('workspace.media.upload.heading')}
-            </h3>
+            <h3 className="text-sm font-semibold text-fg">{t('workspace.media.upload.heading')}</h3>
 
             <div className="flex flex-col gap-3">
-                <label
-                    htmlFor={fileId}
-                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
-                >
+                <label htmlFor={fileId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.file')}
                     <input
                         id={fileId}
                         type="file"
                         ref={fileInputRef}
-                        className="text-sm text-gray-700 dark:text-gray-300"
+                        className="text-sm text-fg-secondary"
                         onChange={(event) => setFile(event.target.files?.[0] ?? null)}
                     />
                 </label>
 
-                <label
-                    htmlFor={altId}
-                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
-                >
+                <label htmlFor={altId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.altText')}
                     <input
                         id={altId}
@@ -114,10 +106,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     />
                 </label>
 
-                <label
-                    htmlFor={slotId}
-                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
-                >
+                <label htmlFor={slotId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.assetSlot')}
                     <select
                         id={slotId}
@@ -136,10 +125,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     </select>
                 </label>
 
-                <label
-                    htmlFor={rightsId}
-                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
-                >
+                <label htmlFor={rightsId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.rights')}
                     <input
                         id={rightsId}
@@ -149,10 +135,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     />
                 </label>
 
-                <label
-                    htmlFor={expiryId}
-                    className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
-                >
+                <label htmlFor={expiryId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.expiry')}
                     <input
                         id={expiryId}
@@ -172,26 +155,24 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             </button>
 
             {status === 'pending' && (
-                <p role="status" className="text-xs text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-xs text-fg-muted">
                     {t('workspace.media.upload.uploading')}
                 </p>
             )}
 
             {status === 'error' && (
-                <p role="alert" className="text-xs text-red-600 dark:text-red-400">
+                <p role="alert" className="text-xs text-fg-danger">
                     {t('workspace.media.upload.failed')}
                 </p>
             )}
 
             {status === 'success' && (
-                <p role="status" className="text-xs text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-xs text-fg-muted">
                     {t('workspace.media.upload.complete')}
                 </p>
             )}
 
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t('workspace.media.security.explanation')}
-            </p>
+            <p className="text-xs text-fg-muted">{t('workspace.media.security.explanation')}</p>
         </form>
     );
 }

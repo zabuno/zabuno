@@ -85,12 +85,12 @@ export function PlanActivationDialog({
             className="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             onKeyDown={handleKeyDown}
         >
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-sm font-semibold text-fg">
                 {t('platform.plans.activate.dialog.heading')}
             </h2>
-            <span className="font-medium text-gray-900 dark:text-white">{plan.name}</span>
-            <span className="text-gray-500 dark:text-gray-400">{plan.code}</span>
-            <span className="text-gray-700 dark:text-gray-300">{formatPlanPrice(plan)}</span>
+            <span className="font-medium text-fg">{plan.name}</span>
+            <span className="text-fg-muted">{plan.code}</span>
+            <span className="text-fg-secondary">{formatPlanPrice(plan)}</span>
 
             <div className="flex gap-2">
                 <button

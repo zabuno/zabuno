@@ -7,9 +7,9 @@ import type { QrCodeItem } from './qr-destination/QrCodeListItem';
 const FIELD_CLASSES =
     'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-gray-700 dark:text-gray-300';
+const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
 
-const ALERT_CLASSES = 'text-xs text-red-600 dark:text-red-400';
+const ALERT_CLASSES = 'text-xs text-fg-danger';
 
 const SUBMIT_BUTTON_CLASSES =
     'self-start rounded-lg border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-300 disabled:text-gray-500 dark:border-blue-500 dark:bg-blue-500 dark:disabled:border-gray-600 dark:disabled:bg-gray-700 dark:disabled:text-gray-400';
@@ -321,7 +321,7 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             className="flex flex-col gap-3"
             aria-label={t('workspace.publication.qrExport.bulkWizard.heading')}
         >
-            <legend className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <legend className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.publication.qrExport.bulkWizard.heading')}
             </legend>
 
@@ -422,13 +422,13 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             {renderError('seatCountPerTable')}
 
             {!hasAttempted ? (
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-fg-muted">
                     {t('workspace.publication.qrExport.bulkWizard.notice')}
                 </p>
             ) : null}
 
             {showSummary ? (
-                <p role="status" className="text-sm text-gray-700 dark:text-gray-300">
+                <p role="status" className="text-sm text-fg-secondary">
                     {t('workspace.publication.qrExport.bulkWizard.summary', {
                         tables: values.tableCount,
                         areas: values.areaSectionCount,
@@ -450,14 +450,14 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             ) : null}
 
             {submitting ? (
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {t('workspace.publication.qrExport.bulkWizard.loading')}
                 </p>
             ) : null}
 
             {result !== null ? (
                 <div className="flex flex-col gap-2">
-                    <p role="status" className="text-sm text-gray-700 dark:text-gray-300">
+                    <p role="status" className="text-sm text-fg-secondary">
                         {t('workspace.publication.qrExport.bulkWizard.success', {
                             areas: String(result.areasCount),
                             tables: String(result.tablesCount),

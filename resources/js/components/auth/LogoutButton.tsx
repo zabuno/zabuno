@@ -35,7 +35,7 @@ export function LogoutButton({
     return (
         <div className="flex flex-col gap-4">
             {error && (
-                <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                <p role="alert" className="text-sm font-medium text-fg-danger">
                     {error}
                 </p>
             )}

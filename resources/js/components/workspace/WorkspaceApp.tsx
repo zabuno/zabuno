@@ -536,7 +536,7 @@ export function WorkspaceApp() {
         return (
             <div className="mx-auto max-w-2xl px-4 py-10">
                 {liveRegion}
-                <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                <p role="alert" className="text-sm font-medium text-fg-danger">
                     {t('workspace.error.heading')}
                 </p>
                 <Button
@@ -557,15 +557,12 @@ export function WorkspaceApp() {
             <div className="mx-auto max-w-2xl px-4 py-10">
                 {liveRegion}
                 <form onSubmit={handleCreate} noValidate className="flex flex-col gap-4">
-                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    <h1 className="text-xl font-semibold text-fg">
                         {t('workspace.create.heading')}
                     </h1>
 
                     {createError && (
-                        <p
-                            role="alert"
-                            className="text-sm font-medium text-red-600 dark:text-red-400"
-                        >
+                        <p role="alert" className="text-sm font-medium text-fg-danger">
                             {createError}
                         </p>
                     )}
@@ -596,9 +593,7 @@ export function WorkspaceApp() {
         return (
             <div className="mx-auto max-w-2xl px-4 py-10">
                 {liveRegion}
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {t('workspace.choose.heading')}
-                </h1>
+                <h1 className="text-xl font-semibold text-fg">{t('workspace.choose.heading')}</h1>
                 <ul className="mt-4 flex flex-col gap-2">
                     {workspaces.map((workspace) => (
                         <li key={workspace.id}>
@@ -728,15 +723,13 @@ export function WorkspaceApp() {
             )}
 
             <div className="mb-6 flex flex-col gap-2">
-                <p className="text-sm text-gray-700 dark:text-gray-300">{currentWorkspace?.slug}</p>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {currentWorkspace?.state}
-                </p>
-                <p className="text-sm text-gray-700 dark:text-gray-300">{user?.email}</p>
+                <p className="text-sm text-fg-secondary">{currentWorkspace?.slug}</p>
+                <p className="text-sm text-fg-secondary">{currentWorkspace?.state}</p>
+                <p className="text-sm text-fg-secondary">{user?.email}</p>
             </div>
 
             {logoutError && (
-                <p role="alert" className="mb-4 text-sm font-medium text-red-600 dark:text-red-400">
+                <p role="alert" className="mb-4 text-sm font-medium text-fg-danger">
                     {logoutError}
                 </p>
             )}
@@ -775,7 +768,7 @@ export function WorkspaceApp() {
 
             {catalogPhase === 'error' && (
                 <div>
-                    <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
+                    <p role="alert" className="text-sm font-medium text-fg-danger">
                         {t('workspace.catalog.error.heading')}
                     </p>
                     <Button

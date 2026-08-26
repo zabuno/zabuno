@@ -22,10 +22,10 @@ export function ReadOnlySummary({ title, items, actions }: ReadOnlySummaryProps)
     return (
         <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between gap-4">
-                <p className="text-base font-medium text-gray-900 dark:text-white">{title}</p>
+                <p className="text-base font-medium text-fg">{title}</p>
                 {actions}
             </div>
-            <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-x-4 gap-y-2 text-sm text-gray-700 dark:text-gray-300">
+            <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-x-4 gap-y-2 text-sm text-fg-secondary">
                 {items.map((item) => (
                     <div key={item.key}>
                         <dt className="font-medium">{item.label}</dt>

@@ -38,10 +38,8 @@ export function EmptyState({
                     className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700"
                 />
             )}
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{title}</p>
-            {description ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
-            ) : null}
+            <p className="text-sm font-medium text-fg">{title}</p>
+            {description ? <p className="text-sm text-fg-muted">{description}</p> : null}
             {action ? <div className="mt-1">{action}</div> : null}
         </div>
     );

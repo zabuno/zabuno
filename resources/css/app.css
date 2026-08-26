@@ -25,6 +25,7 @@
     --color-fg-danger: var(--fg-danger);
     --color-fg-success: var(--fg-success);
     --color-fg-warning: var(--fg-warning);
+    --color-fg-link: var(--fg-link);
 
     --color-surface: var(--surface);
     --color-surface-subtle: var(--surface-subtle);
@@ -96,6 +97,7 @@
     --fg-danger: oklch(0.52 0.19 25);
     --fg-success: oklch(0.5 0.13 155);
     --fg-warning: oklch(0.5 0.12 75);
+    --fg-link: oklch(0.5 0.16 255);
 
     --surface: oklch(1 0 0);
     --surface-subtle: oklch(0.975 0 0);
@@ -155,6 +157,7 @@
     --fg-danger: oklch(0.72 0.16 25);
     --fg-success: oklch(0.72 0.13 155);
     --fg-warning: oklch(0.76 0.13 75);
+    --fg-link: oklch(0.76 0.12 255);
 
     --surface: oklch(0.2 0 0);
     --surface-subtle: oklch(0.24 0 0);
@@ -184,6 +187,7 @@
     --fg-secondary: CanvasText;
     --fg-muted: CanvasText;
     --fg-subtle: CanvasText;
+    --fg-link: LinkText;
     --surface: Canvas;
     --surface-subtle: Canvas;
     --surface-hover: Canvas;

@@ -31,10 +31,10 @@ export function VerificationPending({ email }: VerificationPendingProps) {
 
     return (
         <div className="flex flex-col gap-4">
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h1 className="text-xl font-semibold text-fg">
                 {t('auth.verification_pending.heading')}
             </h1>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <p className="text-sm text-fg-secondary">
                 {t('auth.verification_pending.body', { email })}
             </p>
 

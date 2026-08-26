@@ -30,7 +30,7 @@ export function MenuPage({ workspaceId, locationId, onTreeChange }: MenuPageProp
                         onTreeChange={onTreeChange}
                     />
                 ) : (
-                    <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                    <p role="status" className="text-sm text-fg-muted">
                         {t('workspace.menu.loading')}
                     </p>
                 )}

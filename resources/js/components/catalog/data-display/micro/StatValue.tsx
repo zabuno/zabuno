@@ -11,8 +11,8 @@ export type StatValueProps = {
 
 const TREND_COLOR: Record<StatValueTrend, string> = {
     up: 'text-green-700 dark:text-green-400',
-    down: 'text-red-600 dark:text-red-400',
-    flat: 'text-gray-500 dark:text-gray-400',
+    down: 'text-fg-danger',
+    flat: 'text-fg-muted',
 };
 
 const TREND_GLYPH: Record<StatValueTrend, string> = {
@@ -34,7 +34,7 @@ const TREND_LABEL: Record<StatValueTrend, string> = {
 export function StatValue({ value, trend, className }: StatValueProps) {
     return (
         <span className={clsx('inline-flex items-baseline gap-1.5', className)}>
-            <span className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{value}</span>
+            <span className="text-2xl font-semibold text-fg">{value}</span>
             {trend ? (
                 <span className={clsx('text-xs font-medium', TREND_COLOR[trend])}>
                     <span aria-hidden="true">{TREND_GLYPH[trend]}</span>

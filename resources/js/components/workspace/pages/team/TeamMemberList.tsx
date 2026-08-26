@@ -187,7 +187,7 @@ export function TeamMemberList({
     if (status === 'loading') {
         return (
             <div role="region" aria-label={label} className="flex flex-col gap-3">
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {loadingText}
                 </p>
             </div>
@@ -197,7 +197,7 @@ export function TeamMemberList({
     if (status === 'error') {
         return (
             <div role="region" aria-label={label} className="flex flex-col gap-3">
-                <p role="status" className="text-sm font-medium text-red-600 dark:text-red-400">
+                <p role="status" className="text-sm font-medium text-fg-danger">
                     {errorText}
                 </p>
             </div>
@@ -208,14 +208,11 @@ export function TeamMemberList({
         return (
             <div role="region" aria-label={label} className="flex flex-col gap-3">
                 {announcement && (
-                    <p
-                        role="status"
-                        className="text-sm font-medium text-green-600 dark:text-green-400"
-                    >
+                    <p role="status" className="text-sm font-medium text-fg-success">
                         {announcement}
                     </p>
                 )}
-                <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+                <p role="status" className="text-sm text-fg-muted">
                     {emptyText}
                 </p>
             </div>
@@ -225,7 +222,7 @@ export function TeamMemberList({
     return (
         <div role="region" aria-label={label} className="flex flex-col gap-3">
             {announcement && (
-                <p role="status" className="text-sm font-medium text-green-600 dark:text-green-400">
+                <p role="status" className="text-sm font-medium text-fg-success">
                     {announcement}
                 </p>
             )}
@@ -239,16 +236,14 @@ export function TeamMemberList({
                             key={member.id}
                             className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-700 dark:text-gray-300"
                         >
-                            <span className="font-medium text-gray-900 dark:text-white">
-                                {member.name}
-                            </span>
-                            <span className="text-gray-500 dark:text-gray-400">{member.email}</span>
-                            <span className="text-gray-500 dark:text-gray-400">{member.role}</span>
+                            <span className="font-medium text-fg">{member.name}</span>
+                            <span className="text-fg-muted">{member.email}</span>
+                            <span className="text-fg-muted">{member.role}</span>
 
                             {removable && stage === 'idle' && (
                                 <button
                                     type="button"
-                                    className="text-sm font-medium text-red-600 dark:text-red-400"
+                                    className="text-sm font-medium text-fg-danger"
                                     onClick={() => startRemove(member.id)}
                                 >
                                     {removeButtonText}
@@ -258,7 +253,7 @@ export function TeamMemberList({
                             {removable && stage === 'idle' && (
                                 <button
                                     type="button"
-                                    className="text-sm font-medium text-blue-600 dark:text-blue-400"
+                                    className="text-sm font-medium text-fg-link"
                                     onClick={() => startTransfer(member.id)}
                                 >
                                     {transferButtonText}
@@ -269,7 +264,7 @@ export function TeamMemberList({
                                 <div className="flex flex-wrap items-center gap-2">
                                     <button
                                         type="button"
-                                        className="text-sm font-medium text-red-600 dark:text-red-400"
+                                        className="text-sm font-medium text-fg-danger"
                                         disabled={stage === 'busy'}
                                         onClick={() => void confirmRemove(member.id)}
                                     >
@@ -279,7 +274,7 @@ export function TeamMemberList({
                                     </button>
                                     <button
                                         type="button"
-                                        className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        className="text-sm font-medium text-fg-secondary"
                                         disabled={stage === 'busy'}
                                         onClick={() => cancelRemove(member.id)}
                                     >
@@ -289,19 +284,13 @@ export function TeamMemberList({
                             )}
 
                             {removable && stage === 'busy' && (
-                                <span
-                                    role="status"
-                                    className="text-sm text-gray-500 dark:text-gray-400"
-                                >
+                                <span role="status" className="text-sm text-fg-muted">
                                     {removeBusyText}
                                 </span>
                             )}
 
                             {removable && stage === 'error' && (
-                                <span
-                                    role="status"
-                                    className="text-sm font-medium text-red-600 dark:text-red-400"
-                                >
+                                <span role="status" className="text-sm font-medium text-fg-danger">
                                     {removeErrorText}
                                 </span>
                             )}
@@ -322,15 +311,12 @@ export function TeamMemberList({
             >
                 <p>{transferDialogBody}</p>
                 {transferStage === 'busy' && (
-                    <p role="status" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p role="status" className="mt-2 text-sm text-fg-muted">
                         {transferBusyText}
                     </p>
                 )}
                 {transferStage === 'error' && (
-                    <p
-                        role="status"
-                        className="mt-2 text-sm font-medium text-red-600 dark:text-red-400"
-                    >
+                    <p role="status" className="mt-2 text-sm font-medium text-fg-danger">
                         {transferErrorText}
                     </p>
                 )}

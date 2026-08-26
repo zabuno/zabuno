@@ -41,9 +41,7 @@ export function Breadcrumbs({ items, label = 'Breadcrumb', className }: Breadcru
                             {isLast ? (
                                 <span
                                     aria-current="page"
-                                    className={clsx(
-                                        'px-3 py-2 font-semibold text-gray-900 dark:text-white',
-                                    )}
+                                    className={clsx('px-3 py-2 font-semibold text-fg')}
                                 >
                                     {item.label}
                                 </span>
