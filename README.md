@@ -83,6 +83,11 @@ UI, tasarım sistemi, token veya Storybook konusunda çalışacaksanız **önce 
 okuyun.** 2026-08-26'da bu külliyatın varlığı fark edilmeden token katmanı
 sıfırdan kurulmaya başlandı; bu bölüm o körlüğün tekrarını engellemek içindir.
 
+**Frontend'in tek planı: [`docs/37-FRONTEND-MASTER-PLAN.md`](docs/37-FRONTEND-MASTER-PLAN.md)**
+— gap raporu ve geliştirme planı birlikte: felsefe, merkezî token kökü, katman
+modeli, teknoloji ve Laravel/React sınırları, admin tema ile frontpages ayrımı,
+kural setleri ve her kuralın zorlayıcı karşılığı. UI'a dokunmadan önce okunur.
+
 ## Ana yol haritası — buradan başlayın
 
 **[`docs/17-WATERFALL-LIFECYCLE-MASTER.md`](docs/17-WATERFALL-LIFECYCLE-MASTER.md)**

@@ -1,0 +1,245 @@
+# 37 — Frontend Master Plan: Gap Raporu ve Geliştirme Planı
+
+> **Kapsam.** Bu belge frontend'in **tek** planıdır: felsefe, kural setleri,
+> semantik ilişkiler, merkezî token kökü, teknoloji sınırları, Laravel/React
+> ayrımı, admin tema ve frontpages sınırları, ve her birinin **zorlayıcı**
+> karşılığı. Ölçümler 2026-08-26 tarihli kod denetimine dayanır; hiçbiri
+> tahmin değildir.
+>
+> **Kanonik kaynaklar.** Felsefe: [`design-corpus/`](design-corpus/README.md).
+> Sözleşmeler: `docs/06` (kimlik/tema), `docs/35` (component factory),
+> `docs/03` ADR-L10 (renderer bağımsızlığı), `docs/14`/`docs/32` (AI duruşu).
+> Depo dışında kalan referans implementasyonu: `docs/36`.
+> Çeliştiklerinde `docs/` kökündeki numaralı belge kazanır.
+
+## 0. Owner özeti
+
+Frontend'in **yaklaşımı** olgun; **uygulaması** yaklaşımın gerisinde. Bunun tek
+bir yapısal sebebi var: sözleşmeler yazılıydı, fakat hiçbiri **ölçülmüyordu.**
+Ölçülmeyen kural, kural değildir — yalnız iyi niyettir.
+
+Bu tur üç şey yapıldı: semantic token yüzeyi utility olarak yayınlandı, beş
+zorlayıcı kural build'e bağlandı, ve gözle seçildiği için AA'da kalan bir metin
+token'ı ölçülüp düzeltildi. Kalan boşluklar §3'te sayılıdır ve §5'teki dalgalara
+bağlanmıştır.
+
+**Ürün karşılığı:** bir restoran sahibi menüsünü kurarken karşılaştığı her
+ekran — form, tablo, kart, boş durum, hata — bugün birbirinden bağımsız
+kararlarla boyanıyor. Merkezî kök kurulduğunda tek bir tonu değiştirmek bütün
+ürünü değiştirir; bugün 90 dosyayı elle gezmek gerekir.
+
+## 1. Felsefe — bağlayıcı öncelik sırası
+
+Külliyatın dondurduğu sıra ([`design-corpus/saas-panel-tasarim-sistemi.md`](design-corpus/saas-panel-tasarim-sistemi.md)):
+
+> **görev tamamlama → içerik → tipografi → data semantics → erişilebilirlik →
+> affordance → responsiveness → i18n → performans → dönüşüm → motion →
+> estetik**
+
+Operasyonel/yönetimsel modüllerde doğruluk, hata önleme, karşılaştırılabilirlik
+ve auditability öne geçer. Bu sıra bir çatışma çıktığında **karar kuralıdır**:
+estetik bir tercih erişilebilirliği düşürüyorsa, erişilebilirlik kazanır ve
+tartışma orada biter.
+
+**Kimlik:** Flat 2.0 tabanı + *contextual* cards. Her bilgi grubunu karta
+sokmak yasaktır — spacing ve proximity zaten gruplama üretir; gereksiz kart
+yuvalaması özellikle tablo, property editor ve master-detail ekranlarında
+zarar verir.
+
+**AI duruşu:** AI düzenin **katılımcısıdır, otoritesi değildir**. Kritik
+yolculuk AI kapalıyken deterministik yürür (`docs/14`). AI slot'lar üzerinden
+çalışır; öneri üretir, karar vermez, insan onayından geçer.
+
+## 2. Olması gereken — hedef mimari
+
+### 2.1 Merkezî kök: token zinciri
+
+Külliyatın en çok vurguladığı madde
+([`design-corpus/olcu-birimleri.md`](design-corpus/olcu-birimleri.md)):
+
+> Bileşen hiçbir zaman doğrudan `8px`, `16px`, `12px radius` **bilmez**;
+> yalnız semantic token bilir.
+
+Zincir:
+
+```
+primitive        ham değer        (tek kaynak, bileşene KAPALI)
+    ↓
+semantic         rol              (fg, surface, border, focus, danger …)
+    ↓
+component        bileşen-özgü     (button-primary-bg …)
+    ↓
+context resolver tema × density × varyant
+    ↓
+platform adapter web / Figma / chart teması
+```
+
+Birim kuralları: font `rem`; UI geometrisi logical token; web çıktısı CSS `px`;
+responsive `fr`/`%`/container unit; `mm/cm/in` yalnız print. Atomik grid 4,
+ana ritim 8.
+
+**Merkezî yönetilebilirlik testi:** bir tonu tek yerde değiştirmek onu tüketen
+her yüzeyi değiştirmelidir. Bu sağlanmıyorsa merkez yoktur.
+
+### 2.2 Katman modeli
+
+Külliyatın R1–R8 haritası ([`docs/36`](36-EXTERNAL-DESIGN-CORPUS.md) §4.1) ile
+bu deponun micro/compound/macro modeli arasındaki eşleme:
+
+| Külliyat | Bu depo | Sorumluluk |
+|---|---|---|
+| R1 token | `resources/css/app.css` + `design-system/` | Tema, density, varyant burada çözülür; bileşene **sızmaz** |
+| R2 CSS temeli | `app.css` reset/tema/logical props | RTL logical property tabanı |
+| R3 grid/layout | `catalog/layout/**` | Container-query öncelikli |
+| R4 görsel primitive | `catalog/**/micro/**` | Box/Text/Icon/VisuallyHidden; **ürün anlamı taşımaz** |
+| R5 davranış | (ayrışmamış) | Aile başına **tek sahip** |
+| R6 bileşen | `catalog/**/compound/**` | Davranış + token; **varyant-kör** |
+| R7 durum bileşenleri | (dağınık) | Skeleton/Empty/Error/Offline/Permission |
+| R8 pattern | `catalog/**/macro/**` | DataGrid, arama+filtre, form bölümü |
+| D/E ürün | `workspace/`, `admin/`, `public/` | Surface: macro'yu use-case'e bağlar |
+
+**Bağımlılık yasası:** her katman yalnız **kendinden alttakine** bağlanır.
+Yukarı bağımlılık yasaktır. Bu depoda R4 ile R6 aynı kutuya düştüğü için yatay
+bağ şu an serbesttir; §5 Dalga 2 bunu inceltir.
+
+### 2.3 Teknoloji sınırları
+
+| Katman | Karar | Gerekçe |
+|---|---|---|
+| Primitive kaynağı | **Flowbite React** varsayılan | Kurulu ve yaygın; `docs/35` §2 |
+| Erişilebilir boşluk | **Radix/headless sarmalanır** | Yalnız Flowbite'ın karşılamadığı yerde; duplicate primitive yasak |
+| Sınıf birleştirme | `clsx` + `tailwind-merge` | Kurulu |
+| Stil | Tailwind v4 `@theme` | Utility **yalnız** `@theme`'den üretilir |
+| Tip | TypeScript strict | Props sözleşmesi bileşenin kontratıdır |
+| Build | Vite + `laravel-vite-plugin` | Tek deployment |
+| Test | Vitest + Testing Library | Story + component test |
+| Görsel geliştirme | Storybook | Ana geliştirme yüzeyi |
+
+**Duplicate yasağı:** aynı primitive iki kütüphaneden alınmaz. Bir aile için
+ikinci davranış sahibi eklemek karar kapısına tabidir.
+
+### 2.4 Laravel / React sınırı
+
+| Yüzey | Sahip | Kural |
+|---|---|---|
+| Public frontpages (`/`, legal) | Blade + React ada | SEO ve ilk boyama Blade'in; etkileşim adası React |
+| Public menü (`/menu/{token}`) | **Blade** | Misafir yüzeyi; JS'siz okunabilir kalmalı, PWA katmanı üstüne biner |
+| Workspace app (`/app`) | **React SPA** | Hash-route'lu shell |
+| Platform admin (`/platform`) | **React SPA** | Ayrı bundle |
+| Auth ekranları | Blade + React | Fortify sözleşmesi Blade'de |
+
+**Sınır kuralı:** React bileşeni asla route/fetch bilmez (macro'ya kadar);
+veri ve navigasyon surface sınırından prop/context olarak girer. Blade asla
+tasarım kararı vermez — token tüketir, üretmez.
+
+### 2.5 Admin tema ve frontpages ayrımı
+
+İkisi **aynı token kökünü** paylaşır, farklı yoğunluk ve ritim kullanır.
+Frontpages editorial (geniş ritim, büyük tipografi); admin data-dense (kompakt
+satır, yüksek bilgi yoğunluğu). Ayrım **density** ve **spacing** token'ında
+çözülür, ayrı bir renk paleti veya ayrı bileşen ailesi üretilerek **değil**.
+
+## 3. Gap raporu — ölçülmüş boşluklar
+
+Durum sütunu: ✅ var ve zorlanıyor · ⚠️ var ama zorlanmıyor · ❌ yok.
+
+| # | Alan | Olması gereken | Ölçülen durum | D |
+|---|---|---|---|---|
+| G1 | Semantic utility yüzeyi | Token'lar utility üretir | ✅ `@theme` yayınlıyor | — |
+| G2 | Ham palet borcu | Sıfır | ⚠️ 895 ihlal / 89 dosya; cırcır ile **artamaz** | 1 |
+| G3 | Kontrast | Her token AA | ✅ ölçülüyor, build'i kırıyor | — |
+| G4 | Katman kapsamı | Her bileşen katmanlı | ⚠️ 38/137 katmanlı; 99'u sınıflandırılmamış | 2 |
+| G5 | Yatay bağ yasağı | Yasak | ❌ model kaba olduğu için serbest | 2 |
+| G6 | **Density** | comfortable/standard/compact | ❌ **hiç yok** | 3 |
+| G7 | **a11y kapısı** | axe "bitti" tanımının parçası | ❌ Storybook eklentisi var, CI'da **0 ölçüm** | 1 |
+| G8 | Motion | Motion token + reduced-motion | ❌ token yok; `prefers-reduced-motion` 1 dosyada | 4 |
+| G9 | Akışkan değerler | Token | ⚠️ `clamp()` bileşene gömülü | 3 |
+| G10 | RTL/logical | Logical öncelikli | ⚠️ 3 fiziksel / 3 logical, zorlayıcı yok | 3 |
+| G11 | i18n | Altı katalog + PO pipeline | ❌ yalnız `en`; kütüphane yok, elle 7 modül | 2 |
+| G12 | X5 durum grameri | Tek R7 ailesi | ⚠️ dağınık (Error 48, Loading 33, Empty 20, Skeleton 3, Permission 1, **Offline 0**) | 3 |
+| G13 | Storybook IA | Yalnız 4 kök | ⚠️ `Workspace/` icat edilmiş; `Surface/` hiç kullanılmamış | 2 |
+| G14 | Varyant yönetimi | A–F overlay | ❌ varyant kütüphanesi yok | 5 |
+| G15 | Performans bütçesi | Bütçe içinde ve **ölçülü** | ⚠️ 153 KB gzip (bütçe içinde) ama CI'da ölçülmüyor | 4 |
+| G16 | Referans implementasyon | Erişilebilir | ⚠️ depo dışında (`docs/36`) | — |
+
+### 3.1 En pahalı üç boşluk
+
+**G7 — a11y hiç ölçülmüyor.** Külliyat axe'i "bitti" tanımının parçası sayar;
+Storybook eklentisi kurulu ama testte tek kontrol yok. Erişilebilirlik öncelik
+sırasında estetiğin **çok** üstündedir ve şu an tamamen kanıtsızdır.
+
+**G6 — density yok.** Admin panelin varlık sebebi bilgi yoğunluğudur. Üç mod
+olmadan aynı tablo hem kasiyerin hem muhasebecinin ekranında aynı görünür.
+
+**G11 — i18n tek dil.** Altı katalog Stage 1 kapsamındadır; bugün `en` dışında
+hiçbiri yok ve bir pipeline kurulmamış. RTL altyapısı ise kısmen mevcut
+(story'lerde Arapça içerik var).
+
+## 4. Kural setleri — zorlayıcı karşılıklarıyla
+
+Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
+
+| Kural | Zorlayıcı | Durum |
+|---|---|---|
+| Bileşen semantic token tüketir | `DS-RATCHET-01` | ✅ |
+| Kompozisyon aşağı doğru akar | `DS-LAYER-DIRECTION-01` | ✅ |
+| Yayınlanan token ham değere + karanlık temaya bağlı | `DS-TOKEN-INTEGRITY-01` | ✅ |
+| Katmanlı bileşende ham hex yok | `DS-NO-RAW-HEX-01` | ✅ |
+| Her katmanlı bileşenin story'si var | `DS-STORY-COVERAGE-01` | ✅ |
+| Metin token'ı AA karşılar | `DS-CONTRAST-AA-01` | ✅ |
+| Her story axe'ten geçer | *(yok)* | ❌ Dalga 1 |
+| Bileşen ham geometri bilmez | *(yok)* | ❌ Dalga 3 |
+| Fiziksel yön sınıfı artmaz | *(yok)* | ❌ Dalga 3 |
+| Story kökü icat edilmez | *(yok)* | ❌ Dalga 2 |
+| Bundle bütçeyi aşmaz | *(yok)* | ❌ Dalga 4 |
+
+## 5. Geliştirme planı — dalgalar ve kapılar
+
+Her dalga bir öncekinin zorlayıcısı GREEN olmadan açılmaz (külliyatın kapı
+kuralı). Dalga sayısı sabittir; kapsam değişirse yeni sürüm adı verilir.
+
+### Dalga 1 — Erişilebilirlik kapısı (G7)
+axe'i test hattına bağla; her katmanlı bileşenin story'si ihlalsiz geçsin.
+Mevcut ihlaller cırcırla kayda alınır, yükselemez. **Kapı:** a11y zorlayıcısı
+GREEN ve CI'da koşuyor.
+
+### Dalga 2 — Katman gerçeği (G4, G5, G13)
+`forms/`, `feedback/`, `data-display/` altındaki sınıflandırılmamış bileşenleri
+micro/compound klasörlerine taşı; R4/R6 ayrımını modele ekle ve yatay bağ
+yasağını geri getir. `Workspace/` story kökünü `Surface/`e taşı; kök icadını
+teste bağla. **Kapı:** her bileşen bir katmana ait ve yön yasası tam.
+
+### Dalga 3 — Yoğunluk, geometri, yön (G6, G9, G10)
+Density token'larını (comfortable/standard/compact) kur — satır yüksekliği
+**height + padding** ile değişir, **asla font-size ile değil**. Bileşene gömülü
+`clamp()` değerlerini akışkan token'a taşı. Fiziksel yön sınıfları için cırcır
+ekle. **Kapı:** üç yoğunluk bir tabloda görünür ve ham geometri artamaz.
+
+### Dalga 4 — Motion ve bütçe (G8, G15)
+Motion token'ları ve `prefers-reduced-motion` sözleşmesi. Bundle bütçesini
+CI'da ölç. **Kapı:** motion token'lı ve bütçe zorlayıcısı GREEN.
+
+### Dalga 5 — i18n ve varyant (G11, G14)
+Altı katalog + pipeline; A–F varyant overlay'i token seviyesinde.
+**Kapı:** ikinci bir dil ve bir RTL akışı uçtan uca çalışır.
+
+### Borç düşürme — dalgalara paralel
+G2'nin 895 ihlali her dalgada azaltılır. Cırcır artışı zaten engelliyor;
+hedef, her dalgada dokunulan dosyaların semantic token'a geçirilmesidir.
+
+## 6. Non-goals
+
+- Bu plan MVP Exit Gate'i **genişletmez**. Dalga 1–2 MVP'yi destekler; 3–5
+  Post-MVP'ye taşabilir ve bu bilinçlidir.
+- Referans implementasyonunu depoya taşımak bu planın konusu değildir
+  (`docs/36`, owner IP kararı).
+- Yeni bir UI kütüphanesi seçmek bu planın konusu değildir; Flowbite+Radix
+  sınırı korunur.
+
+## 7. Kabul kriterleri
+
+- [ ] Her dalga kapısı, kendi zorlayıcı testi GREEN olmadan kapanmaz.
+- [ ] `docs/06`, `docs/35`, `docs/03` ile çelişki yok; çelişki çıkarsa numaralı
+      belge kazanır ve bu plan güncellenir.
+- [ ] Her yeni kural bir testle gelir; testsiz kural bu belgeye yazılmaz.
+- [ ] Ham palet borcu hiçbir dalgada yükselmez.

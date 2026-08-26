@@ -114,6 +114,25 @@ final class ExternalDesignCorpusManifestTest extends TestCase
         );
     }
 
+    // --- FRONTEND-PLAN-POINTERS-05 ----------------------------------------
+    // Plan da külliyat gibi yalnız işaretçileriyle bilinir. İşaretçi giderse
+    // yeni gelen, kuralların ve zorlayıcıların nerede tanımlandığını bulamaz.
+    public function test_the_frontend_master_plan_exists_and_is_discoverable(): void
+    {
+        self::assertFileExists(
+            base_path('docs/37-FRONTEND-MASTER-PLAN.md'),
+            'FRONTEND-PLAN-POINTERS-05: frontend planı kaybolmuş.'
+        );
+
+        foreach (['README.md', 'AGENTS.md', 'CLAUDE.md'] as $file) {
+            self::assertStringContainsString(
+                '37-FRONTEND-MASTER-PLAN',
+                $this->read($file),
+                "FRONTEND-PLAN-POINTERS-05: {$file} artık frontend planına işaret etmiyor."
+            );
+        }
+    }
+
     // --- CORPUS-HANDOVER-03 ----------------------------------------------
 
     public function test_the_manifest_warns_that_a_clone_does_not_carry_the_corpus(): void
