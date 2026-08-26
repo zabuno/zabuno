@@ -1,3 +1,6 @@
+import { createTranslator } from './translator';
+import { menuTr } from './catalogs/menu.tr';
+
 const en = {
     'menu.loading': 'Loading menu…',
     'menu.status.saving': 'Saving…',
@@ -39,11 +42,12 @@ const en = {
 
 type TranslationKey = keyof typeof en;
 
-export function t(key: TranslationKey, vars?: Record<string, string>): string {
-    const template: string = en[key] ?? key;
-    if (!vars) return template;
-    return Object.entries(vars).reduce<string>(
-        (result, [name, value]) => result.replaceAll(`{${name}}`, value),
-        template,
-    );
-}
+/**
+ * Altı katalog wiring'i (CORE-08). `en` taban ve tip kaynağıdır; çeviriler
+ * kısmi override'dır ve eksik anahtar `en`'e düşer. de/fr/ar/ru Stage 1'de
+ * scaffold'dur (`docs/26` S1-WP03).
+ */
+export const t: (key: TranslationKey, vars?: Record<string, string>) => string = createTranslator(
+    en,
+    { tr: menuTr },
+);
