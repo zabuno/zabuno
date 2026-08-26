@@ -52,12 +52,18 @@ export function SidebarNav({
     return (
         <Container
             aria-label={asLandmark ? label : undefined}
-            className={clsx('flex flex-col gap-4', className)}
+            className={clsx('flex flex-col gap-[var(--space-5)]', className)}
         >
             {groups.map((group) => (
-                <div key={group.key} className="flex flex-col gap-1">
+                <div key={group.key} className="flex flex-col gap-[var(--space-1)]">
+                    {/*
+                        Grup başlığı gezinti öğesinden bir kademe geride durur:
+                        hiyerarşi boyutla değil TONLA kurulur (Flat 2.0). Ray
+                        genişliği kadar içeriden başlar ki başlık ile öğeler
+                        aynı optik hizada olsun.
+                    */}
                     {group.label ? (
-                        <span className="px-3 text-xs font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]">
+                        <span className="mb-[var(--space-1)] ps-[calc(var(--density-padding-inline)+2px)] text-xs font-semibold uppercase tracking-wide text-fg-subtle">
                             {group.label}
                         </span>
                     ) : null}
