@@ -86,3 +86,7 @@ Bu bölüm bir kez yaşanmış bir körlük yüzünden vardır: 2026-08-26'da bi
 aynı sistemin çalışan implementasyonunun yanı başında durduğunu fark etmeden
 sıfırdan token katmanı kurmaya başladı. Kaynak kayıp değildi, yalnız depodan
 görünmüyordu.
+
+Frontend'in tek planı ve gap raporu: `docs/37-FRONTEND-MASTER-PLAN.md`. Katman
+modeli, token kökü, teknoloji sınırları, kural setleri ve her kuralın zorlayıcı
+testi oradadır. Yeni bir kural testsiz eklenmez.
