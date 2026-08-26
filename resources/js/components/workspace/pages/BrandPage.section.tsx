@@ -12,6 +12,7 @@ const brandSection: WorkspaceSectionDescriptor = {
     hash: '#brand',
     order: 1,
     labelKey: 'workspace.shell.nav.brand',
+    catalogOnboardingPhase: 'brand-onboarding',
     render,
 };
 

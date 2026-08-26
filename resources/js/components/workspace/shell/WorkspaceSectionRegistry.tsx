@@ -1,12 +1,15 @@
 import type { ReactNode } from 'react';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 
+export type WorkspaceCatalogOnboardingPhase = 'brand-onboarding' | 'location-onboarding';
+
 export type WorkspaceSectionDescriptor = {
     key: string;
     hash: `#${string}`;
     order: number;
     labelKey: string;
     aiQuickAction?: boolean;
+    catalogOnboardingPhase?: WorkspaceCatalogOnboardingPhase;
     render: (ctx: WorkspaceSectionRuntimeContext) => ReactNode;
 };
 
@@ -80,6 +83,15 @@ export function resolveSectionDescriptorByHash(hash: string): WorkspaceSectionDe
 
 export function resolveSectionKeyFromHash(hash: string): string {
     return resolveSectionDescriptorByHash(hash).key;
+}
+
+export function resolveSectionDescriptorForOnboardingPhase(
+    phase: WorkspaceCatalogOnboardingPhase,
+): WorkspaceSectionDescriptor | null {
+    return (
+        SECTION_DESCRIPTORS.find((descriptor) => descriptor.catalogOnboardingPhase === phase) ??
+        null
+    );
 }
 
 export function renderActiveSection(
