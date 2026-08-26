@@ -205,6 +205,26 @@ yerel kapsamlıdır. Karar owner'ındır; bu bölüm GO ilan etmez.
 RPO/RTO hedefleri owner tarafından belirlenmiştir (**RPO 24 saat, RTO 4 saat**,
 `docs/16` DR-01) fakat gerçek hosting'de **ölçülmemiştir**.
 
+### 2026-08-26 günü kapanan mühendislik kalemleri
+
+Yukarıdaki dört kanıt kalemine ek olarak, Stage 1'i açık tutan modül ve
+denetim boşlukları aynı gün kapandı. Bunlar Exit kararını owner adına
+vermez; kararın hangi zemin üzerinde verileceğini değiştirir.
+
+| Kalem | Durum | Kaydın kendi sınırı |
+|---|---|---|
+| CORE-12 Money/Ledger | **Kapandı** | Değişmez çift kayıtlı defter; başarılı tahsilat `cash`↔`revenue` yazar, aynı ödeme iki kez bildirilse tek satır olur. Tam reconciliation Stage 3'tür |
+| CORE-08 PO→MO→JSON pipeline | **Kapandı** | Altı katalog × altı alan adı derlenir; `en` complete. tr/de/fr/ar/ru **içerik** doluluğu Stage 2'dir |
+| OWASP ASVS L1 geçişi | **Kapandı** | Bölüm bölüm kod okuması; üç gerçek açık bulundu ve kapatıldı. Sertifikasyon veya sızma testi **değildir** |
+| MED-01 host yetenek probu | **Kapandı** | Ölçüm çalıştırıldığı makine hakkındadır; **hedef sağlayıcı henüz seçilmedi** (owner kararı) |
+| Para biçimlendirme (CORE-12 × `docs/13` §4) | **Kapandı** | Beş kopya tek sahibe indi; sabit 100'e bölme kaldırıldı |
+| RTL kritik akış testi | **Kapandı** | Test ilk çalıştığında dokuz şablonun yön türetmediğini buldu ve düzeltti. Arapça **görsel** completeness Stage 2'dir |
+| Menü yükü bütçesi | **Ölçüldü** | 12×20 menü 7,4 KB gzip. **Sıkıştırmaya bağlıdır**; p95/LCP ölçülmedi |
+
+Owner'ın kararı için geriye kalan tek teknik bilinmeyen **hosting sağlayıcısı
+seçimidir**: prob seçilen host'ta çalıştırılmadan shared-host sertifikasyonu
+(`docs/16` DEP-01) kapanamaz.
+
 Bu tabloya göre olgun karar şekli **CONDITIONAL-GO**'dur: kritik yol gerçekten
 çalışır ve kanıtlıdır, ancak tenant-isolation ile restore kanıtları yerel
 kapsamdadır ve shared-host sertifikasyonu (`docs/16` DEP-01) açıktır. Nihai
