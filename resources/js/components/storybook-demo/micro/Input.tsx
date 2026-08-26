@@ -24,8 +24,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
                 'block w-full rounded-md border px-3 py-2 text-sm outline-none transition-colors',
                 'focus-visible:ring-2 focus-visible:ring-offset-1',
                 invalid
-                    ? 'border-red-500 focus-visible:ring-red-500'
-                    : 'border-gray-300 focus-visible:ring-blue-500',
+                    ? 'border-border-danger focus-visible:ring-fg-danger'
+                    : 'border-border focus-visible:ring-focus',
                 disabled && 'cursor-not-allowed opacity-60',
                 className,
             )}

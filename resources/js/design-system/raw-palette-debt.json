@@ -1,0 +1,7 @@
+{
+    "$note": "Ham Tailwind paleti borcunun cırcır (ratchet) taban çizgisi. Bu sayılar YALNIZ azaltılmak üzere güncellenir. Artırmak, tasarım sistemini atlayan yeni kod eklemek demektir ve review'da reddedilir. Borç sıfırlandığında bu dosya ve ilgili test kaldırılır, yerine mutlak yasak gelir.",
+    "$measuredAt": "2026-08-26",
+    "$why": "resources/css/app.css semantic token'ları :root'ta tanımlıyordu ama @theme'de yayınlamıyordu; Tailwind v4'te utility yalnız @theme'den üretildiği için geliştirici `text-fg-secondary` yazamıyor, mecburen `text-gray-500`'e düşüyordu. Utility yüzeyi açıldı; bu dosya kalan borcu görünür ve ölçülebilir tutar.",
+    "maxViolations": 895,
+    "maxFiles": 89
+}
