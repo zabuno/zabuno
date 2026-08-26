@@ -1,3 +1,5 @@
+import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
+import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { t } from '../../../../i18n/workspace';
 
@@ -102,7 +104,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                         required
                         value={altText}
                         onChange={(event) => setAltText(event.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:text-white"
+                        className={NATIVE_FIELD_CLASS}
                     />
                 </label>
 
@@ -112,7 +114,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                         id={slotId}
                         value={slot}
                         onChange={(event) => setSlot(event.target.value)}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:text-white"
+                        className={NATIVE_FIELD_CLASS}
                     >
                         <option value="">
                             {t('workspace.media.upload.field.assetSlot.placeholder')}
@@ -127,32 +129,18 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
                 <label htmlFor={rightsId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.rights')}
-                    <input
-                        id={rightsId}
-                        type="text"
-                        disabled
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-400 dark:border-gray-600"
-                    />
+                    <input id={rightsId} type="text" disabled className={NATIVE_FIELD_CLASS} />
                 </label>
 
                 <label htmlFor={expiryId} className="flex flex-col gap-1 text-sm text-fg-secondary">
                     {t('workspace.media.upload.field.expiry')}
-                    <input
-                        id={expiryId}
-                        type="date"
-                        disabled
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-400 dark:border-gray-600"
-                    />
+                    <input id={expiryId} type="date" disabled className={NATIVE_FIELD_CLASS} />
                 </label>
             </div>
 
-            <button
-                type="submit"
-                disabled={status === 'pending'}
-                className="self-start rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 dark:border-gray-600 dark:text-gray-300"
-            >
+            <PlainButton type="submit" disabled={status === 'pending'} className="self-start">
                 {t('workspace.media.upload.button')}
-            </button>
+            </PlainButton>
 
             {status === 'pending' && (
                 <p role="status" className="text-xs text-fg-muted">

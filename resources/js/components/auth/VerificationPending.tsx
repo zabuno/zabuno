@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from 'flowbite-react';
+import { PlainButton } from '../catalog/forms/micro/PlainButton';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -38,9 +38,9 @@ export function VerificationPending({ email }: VerificationPendingProps) {
                 {t('auth.verification_pending.body', { email })}
             </p>
 
-            <Button onClick={handleResend} className="w-full">
+            <PlainButton variant="primary" onClick={handleResend} className="w-full">
                 {t('auth.verification_pending.resend')}
-            </Button>
+            </PlainButton>
 
             <p
                 role="status"

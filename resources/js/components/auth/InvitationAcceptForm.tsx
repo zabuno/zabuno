@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Button } from 'flowbite-react/components/Button';
+import { PlainButton } from '../catalog/forms/micro/PlainButton';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/auth';
 
@@ -118,14 +118,15 @@ export function InvitationAcceptForm({
                 </div>
             </dl>
 
-            <Button
+            <PlainButton
+                variant="primary"
                 type="button"
                 className="w-full"
                 onClick={handleAccept}
                 disabled={!authenticated}
             >
                 {t('auth.invitation_accept.submit')}
-            </Button>
+            </PlainButton>
         </div>
     );
 }

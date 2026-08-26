@@ -1,3 +1,5 @@
+import { NATIVE_FIELD_CLASS } from '../../../catalog/forms/micro/nativeFieldStyles';
+import { PlainButton } from '../../../catalog/forms/micro/PlainButton';
 import { useMemo, useState, type FormEvent } from 'react';
 
 import { t } from '../../../../i18n/platform';
@@ -19,11 +21,9 @@ type PlanFormProps = {
 
 const CURRENCY_PATTERN = /^[A-Z]{3}$/;
 
-const FIELD_CLASSES =
-    'w-full min-h-11 rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+const FIELD_CLASSES = NATIVE_FIELD_CLASS;
 
-const TEXTAREA_CLASSES =
-    'w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white';
+const TEXTAREA_CLASSES = NATIVE_FIELD_CLASS;
 
 function parseWholeNumber(value: string): number | null {
     const trimmed = value.trim();
@@ -190,13 +190,14 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                 />
             </label>
 
-            <button
+            <PlainButton
                 type="submit"
+                variant="primary"
                 disabled={!validation.isValid || submitting}
-                className="self-start rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-gray-900"
+                className="self-start"
             >
                 {t('platform.plans.form.submit')}
-            </button>
+            </PlainButton>
         </form>
     );
 }
