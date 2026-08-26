@@ -284,6 +284,7 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
         fireEvent.change(menuNameInput, { target: { value: 'Ana Menü' } });
         fireEvent.click(screen.getByRole('button', { name: /create menu/i }));
         await waitFor(() => csrfPrecedesWrite(menuUrl(WORKSPACE_ID, LOCATION_ID), 'POST'));
+        expect(screen.getByRole('heading', { name: 'Ana Menü' })).toBeInTheDocument();
 
         const categoryNameInput = await screen.findByLabelText(/category name/i);
         fireEvent.change(categoryNameInput, { target: { value: 'Başlangıçlar' } });
@@ -353,6 +354,7 @@ describe('MenuCatalogWorkspace — existing tree render (RED, module-not-found)'
         render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
         await screen.findByText('Başlangıçlar');
+        expect(screen.getByRole('heading', { name: tree.name })).toBeInTheDocument();
         const list = screen.getByRole('list', { name: /menu|categories/i });
         expect(list.tagName).toBe('OL');
         expect(within(list).getByText('Mercimek Çorbası')).toBeInTheDocument();

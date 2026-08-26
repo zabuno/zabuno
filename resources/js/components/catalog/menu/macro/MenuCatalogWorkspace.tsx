@@ -709,6 +709,7 @@ export function MenuCatalogWorkspace({
                 </form>
             ) : (
                 <>
+                    <h2 className="text-lg font-semibold">{tree.name}</h2>
                     <ol
                         aria-label={t('menu.categories.list.label')}
                         className="flex flex-col gap-4"
