@@ -35,6 +35,10 @@ export function ResponsiveDataTable<Row>({
     emptyMessage = 'No data to display.',
     className,
 }: ResponsiveDataTableProps<Row>) {
+    // Yoğunluk token seviyesinde çözülür: bu bileşen hangi modda olduğunu
+    // BİLMEZ, yalnız `--density-*` okur. Mod, kapsayıcıdaki sınıfla belirlenir
+    // (docs/37 §2.2, kesen eksen X4). Satır yüksekliği ve iç boşluk değişir;
+    // tipografi değişmez.
     const isEmpty = !loading && rows.length === 0;
 
     return (
@@ -46,7 +50,10 @@ export function ResponsiveDataTable<Row>({
                         {columns.map((column) => (
                             <TableHeadCell
                                 key={column.key}
-                                className={column.align === 'end' ? 'text-end' : undefined}
+                                className={clsx(
+                                    'px-[var(--density-padding-inline)]',
+                                    column.align === 'end' && 'text-end',
+                                )}
                             >
                                 {column.header}
                             </TableHeadCell>
@@ -58,7 +65,10 @@ export function ResponsiveDataTable<Row>({
                         ? Array.from({ length: 3 }, (_, rowIndex) => (
                               <TableRow key={`skeleton-${rowIndex}`}>
                                   {columns.map((column) => (
-                                      <TableCell key={column.key}>
+                                      <TableCell
+                                          key={column.key}
+                                          className="h-[var(--density-row-height)] px-[var(--density-padding-inline)]"
+                                      >
                                           <Skeleton shape="text" />
                                       </TableCell>
                                   ))}
@@ -69,9 +79,10 @@ export function ResponsiveDataTable<Row>({
                                   {columns.map((column) => (
                                       <TableCell
                                           key={column.key}
-                                          className={
-                                              column.align === 'end' ? 'text-end' : undefined
-                                          }
+                                          className={clsx(
+                                              'h-[var(--density-row-height)] px-[var(--density-padding-inline)]',
+                                              column.align === 'end' && 'text-end',
+                                          )}
                                       >
                                           {column.render(row)}
                                       </TableCell>
@@ -82,7 +93,7 @@ export function ResponsiveDataTable<Row>({
                         <TableRow>
                             <TableCell
                                 colSpan={columns.length}
-                                className="text-center text-gray-500 dark:text-gray-400"
+                                className="h-[var(--density-row-height)] text-center text-fg-muted"
                             >
                                 {emptyMessage}
                             </TableCell>

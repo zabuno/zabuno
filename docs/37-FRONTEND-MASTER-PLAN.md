@@ -200,6 +200,7 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 | Her story axe'ten geçer | `DS-A11Y-AXE-01` | ✅ |
 | Her story render edilebilir | `DS-A11Y-RENDERABLE-02` | ✅ |
 | Yoğunluk tipografiye dokunmaz, dokunma hedefi küçülmez | `DS-DENSITY-CONTRACT-05` | ✅ |
+| Yoğunluk token'ı gerçekten tüketilir | `DS-DENSITY-CONSUMED-09` | ✅ |
 | Fiziksel yön sınıfı artmaz | `DS-LOGICAL-DIRECTION-06` | ✅ |
 | Story kökü icat edilmez | `DS-STORY-TAXONOMY-04` | ✅ |
 | Bileşenler arası döngü yok | `DS-NO-CYCLE-03` | ✅ |
@@ -269,6 +270,13 @@ yalnız **sessizce yanlış tarafa hizalar** — bu yüzden borç ölçülür ve
 yükselemez.
 
 **Kapı:** yoğunluk sözleşmesi ve yön borcu ölçülüyor.
+
+**Sonradan eklenen ders.** İlk hâlinde yoğunluk modları CSS'te tanımlanmıştı
+fakat **hiçbir bileşen onları okumuyordu** — yani Storybook'ta anahtarı
+çevirmek hiçbir şeyi değiştirmiyordu. Tanımlanmış ama tüketilmeyen token
+sistem değil süstür. `ResponsiveDataTable` yoğunluğa bağlandı ve
+`DS-DENSITY-CONSUMED-09` bağlantının sessizce kopmasını engelliyor.
+Storybook araç çubuğuna yoğunluk anahtarı eklendi (tema ve yön zaten vardı).
 
 ### Dalga 4 — Motion ve bütçe (G8, G15) — ✅ KAPANDI
 Motion ölçeği (süre + easing) token oldu. Azaltılmış hareket süreleri
