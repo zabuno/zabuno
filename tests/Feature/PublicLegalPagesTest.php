@@ -13,7 +13,7 @@ use Tests\TestCase;
  * Freezes the smallest server-side contract for the synthesized Stage 1
  * legal-readiness pages: unauthenticated GET /terms, /privacy, /kvkk must
  * each resolve (not 404) and return the same React-mounting app shell as
- * GET '/' (the same #app mount div carrying a data-core-module-count
+ * GET '/' (sunucuda üretilen aynı kabuk, modül sayısını taşıyan
  * attribute), so the client-side AppShell can take over per-pathname
  * rendering. This test does not assert on rendered legal copy — that is
  * PublicLegalRoutes.test.tsx's job — only that the route exists and serves
@@ -54,7 +54,9 @@ final class PublicLegalPagesTest extends TestCase
         $response = $this->get($path);
 
         $response->assertOk();
-        $response->assertSee('id="app"', false);
-        $response->assertSee('data-core-module-count', false);
+        // Sayfa artık sunucuda üretilir: montaj noktası yerine METNİN
+        // kendisi doğrulanır (bkz. FoundationStatusDeliveryArchitectureTest).
+        $response->assertSee('pending qualified legal review', false);
+        $response->assertSee('modules registered', false);
     }
 }

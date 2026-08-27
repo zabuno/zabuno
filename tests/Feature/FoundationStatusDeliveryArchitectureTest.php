@@ -105,7 +105,11 @@ final class FoundationStatusDeliveryArchitectureTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('id="app"', false);
+        // ESKİ sözleşme "sayfa bir React montaj noktası veriyor" diyordu.
+        // Montaj noktası, içeriğin ulaşmasının VEKİLİYDİ — ve o vekil
+        // yanıltıcı çıktı: bir tarayıcı botunun gördüğü gövde 1.736 bayttı
+        // ve içerik hiç yoktu. Yeni sözleşme doğrudan içeriği ister.
+        $response->assertSee('Run your restaurant', false);
         $response->assertSee('Zabuno');
     }
 
@@ -130,7 +134,7 @@ final class FoundationStatusDeliveryArchitectureTest extends TestCase
             $expectedCount,
         );
         $response->assertSee(
-            sprintf('data-core-module-count="%d"', $expectedCount),
+            sprintf('%d/16 modules registered', $expectedCount),
             false,
         );
     }

@@ -13,7 +13,6 @@ export default defineConfig(({ mode }) => ({
                   laravel({
                       input: [
                           'resources/css/app.css',
-                          'resources/js/app.tsx',
                           'resources/js/auth.tsx',
                           'resources/js/workspace.tsx',
                           'resources/js/platform.tsx',
