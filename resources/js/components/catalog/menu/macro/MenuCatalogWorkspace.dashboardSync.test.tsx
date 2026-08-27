@@ -35,12 +35,8 @@ function categoriesUrl(workspaceId: number, menuId: number): string {
     return `/api/workspaces/${workspaceId}/menu/${menuId}/categories`;
 }
 
-function menuItemsUrl(workspaceId: number, categoryId: number): string {
-    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/menu-items`;
-}
-
-function productsUrl(workspaceId: number, categoryId: number): string {
-    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/products`;
+function menuEntriesUrl(workspaceId: number, categoryId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/menu-entries`;
 }
 
 const NEW_CATEGORY_ID = 6;
@@ -165,18 +161,17 @@ function buildFetchMock() {
                 position: 1,
             });
         }
-        if (String(url) === productsUrl(WORKSPACE_ID, NEW_CATEGORY_ID) && method === 'POST') {
-            return jsonResponse(201, { id: NEW_PRODUCT_ID, name: 'Mercimek Çorbası' });
-        }
-        if (String(url) === menuItemsUrl(WORKSPACE_ID, NEW_CATEGORY_ID) && method === 'POST') {
+        if (String(url) === menuEntriesUrl(WORKSPACE_ID, NEW_CATEGORY_ID) && method === 'POST') {
             return jsonResponse(201, {
                 id: NEW_MENU_ITEM_ID,
                 categoryId: NEW_CATEGORY_ID,
                 productId: NEW_PRODUCT_ID,
+                productName: 'Mercimek Çorbası',
                 priceMinorAmount: 4500,
                 currencyCode: 'TRY',
                 position: 0,
                 isVisible: false,
+                allergens: [],
             });
         }
 
@@ -343,6 +338,7 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
 
         await screen.findByText('Kahve');
 
+        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
         fireEvent.change(screen.getByLabelText('Category name'), {
             target: { value: 'Çorbalar' },
         });
@@ -389,26 +385,26 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
 
         await screen.findByText('Kahve');
 
+        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
         fireEvent.change(screen.getByLabelText('Category name'), {
             target: { value: 'Çorbalar' },
         });
         fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
 
+        // Kategorinin GERÇEKTEN oluşmasını bekleriz: ürün, seçili kategoriye
+        // gider ve seçim ancak sunucu cevabıyla yeni kategoriye geçer.
         await waitFor(() => {
-            expect(screen.getByLabelText('Product name')).toBeTruthy();
+            expect((screen.getByLabelText('Category') as HTMLSelectElement).value).toBe(
+                String(NEW_CATEGORY_ID),
+            );
         });
 
+        // Tek form, tek gönderim: ad ve fiyat birlikte doldurulur.
         fireEvent.change(screen.getByLabelText('Product name'), {
             target: { value: 'Mercimek Çorbası' },
         });
-        fireEvent.click(screen.getByRole('button', { name: 'Add product' }));
-
-        await waitFor(() => {
-            expect(screen.getByLabelText('Price')).toBeTruthy();
-        });
-
         fireEvent.change(screen.getByLabelText('Price'), { target: { value: '45.00' } });
-        fireEvent.click(screen.getByRole('button', { name: 'Add item' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Add to menu' }));
 
         await waitFor(() => {
             expect(onTreeChange).toHaveBeenLastCalledWith(

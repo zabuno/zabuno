@@ -17,10 +17,21 @@ const en = {
     'menu.category.name.error.required': 'Enter a category name.',
     'menu.category.create.error.submit': 'We could not add the category. Please try again.',
     'menu.category.items.label': 'Items in {name}',
+    'menu.category.add.disclose': 'Add category',
+    'menu.category.add.cancel': 'Cancel',
     'menu.product.name.label': 'Product name',
     'menu.product.create.submit': 'Add product',
     'menu.product.name.error.required': 'Enter a product name.',
     'menu.product.create.error.submit': 'We could not add the product. Please try again.',
+    // Menüye ürün eklemenin TEK adımı. Öncesinde bu iş üç ayrı formdu:
+    // ürün, fiyat, alerjen. Kullanıcı için hepsi tek bir iştir.
+    'menu.entry.section.label': 'Add a product to the menu',
+    'menu.entry.category.label': 'Category',
+    'menu.entry.category.empty': 'Add a category first — every product lives in one.',
+    'menu.entry.allergens.disclose': 'Allergens (optional)',
+    'menu.entry.submit': 'Add to menu',
+    'menu.entry.error.submit': 'We could not add the product. Please try again.',
+    'menu.entry.success': '{name} was added to {category}.',
     'menu.item.price.label': 'Price',
     'menu.item.currency.label': 'Currency',
     'menu.item.create.submit': 'Add item',
@@ -38,6 +49,14 @@ const en = {
     'menu.item.price.edit.button': 'Edit price for {name}',
     'menu.item.allergens.edit.short': 'Allergens',
     'menu.item.price.edit.short': 'Price',
+    // Satır içi düzenleyicinin etiketi ÜRÜN ADINI taşır.
+    //
+    // Ekranda aynı anda iki "Price" alanı olabilir: aşağıdaki "menüye ürün
+    // ekle" formundaki ve düzenlenen satırdaki. Aynı erişilebilir ismi
+    // taşıyan iki kontrol, ekran okuyucu kullanan birine "Price" der ve
+    // hangisi olduğunu söylemez.
+    'menu.item.price.edit.label': 'Price — {name}',
+    'menu.item.allergens.edit.label': 'Allergens — {name}',
     'menu.item.price.edit.submit': 'Save price',
     'menu.item.price.edit.error.submit': 'We could not update the price. Please try again.',
     'menu.item.visibility.checkbox.label': 'Show {name}',

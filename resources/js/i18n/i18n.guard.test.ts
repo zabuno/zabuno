@@ -108,9 +108,26 @@ describe('i18n kapısı', () => {
 
         const coverage = coverageOf(menuTranslations, overrides);
 
+        // Bu kapı çeviri EKSİKLİĞİNİ hata SAYMAZ — dosyanın başındaki
+        // açıklama da bunu söylüyordu, ama son doğrulama tam tersini
+        // yapıyordu: Türkçe kapsamı %100 olmazsa kırılıyordu.
+        //
+        // Sahibinin kararı bunu çözdü (2026-08-27, `docs/40`): kaynak dil
+        // İngilizce'dir ve PO dosyalarını sahibi olgunlaşma sonrasında ELLE
+        // dolduracaktır. Tam kapsam şartı, her yeni İngilizce dizeye karşılık
+        // bir Türkçe çeviri yazmayı zorunlu kılıyordu — yani tam olarak
+        // yapılmaması istenen şeyi.
+        //
+        // Korunan şey ne: PO içeriğinin KAYBOLMASI. Sıfır kapsam, dosyanın
+        // boşaldığı ya da üretimin bozulduğu anlamına gelir ve o bir hatadır.
+        expect(
+            coverage.tr.total,
+            'DS-I18N-OVERRIDE-KEYS-04: menü tabanı boş; katalog okunamıyor.',
+        ).toBeGreaterThan(0);
+
         expect(
             coverage.tr.translated,
-            'DS-I18N-OVERRIDE-KEYS-04: Türkçe menü kapsamı ölçülemiyor; PO içeriği kaybolmuş olabilir.',
-        ).toBe(coverage.tr.total);
+            'DS-I18N-OVERRIDE-KEYS-04: Türkçe menü projeksiyonu tamamen boş; PO içeriği kaybolmuş olabilir.',
+        ).toBeGreaterThan(0);
     });
 });

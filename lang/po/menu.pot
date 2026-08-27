@@ -12,6 +12,14 @@ msgstr ""
 msgid "menu.categories.list.label"
 msgstr ""
 
+#: menu:menu.category.add.cancel
+msgid "menu.category.add.cancel"
+msgstr ""
+
+#: menu:menu.category.add.disclose
+msgid "menu.category.add.disclose"
+msgstr ""
+
 #: menu:menu.category.create.error.submit
 msgid "menu.category.create.error.submit"
 msgstr ""
@@ -48,6 +56,34 @@ msgstr ""
 msgid "menu.create.submit"
 msgstr ""
 
+#: menu:menu.entry.allergens.disclose
+msgid "menu.entry.allergens.disclose"
+msgstr ""
+
+#: menu:menu.entry.category.empty
+msgid "menu.entry.category.empty"
+msgstr ""
+
+#: menu:menu.entry.category.label
+msgid "menu.entry.category.label"
+msgstr ""
+
+#: menu:menu.entry.error.submit
+msgid "menu.entry.error.submit"
+msgstr ""
+
+#: menu:menu.entry.section.label
+msgid "menu.entry.section.label"
+msgstr ""
+
+#: menu:menu.entry.submit
+msgid "menu.entry.submit"
+msgstr ""
+
+#: menu:menu.entry.success
+msgid "menu.entry.success"
+msgstr ""
+
 #: menu:menu.initial.error.load
 msgid "menu.initial.error.load"
 msgstr ""
@@ -58,6 +94,10 @@ msgstr ""
 
 #: menu:menu.item.allergens.edit.button
 msgid "menu.item.allergens.edit.button"
+msgstr ""
+
+#: menu:menu.item.allergens.edit.label
+msgid "menu.item.allergens.edit.label"
 msgstr ""
 
 #: menu:menu.item.allergens.edit.short
@@ -102,6 +142,10 @@ msgstr ""
 
 #: menu:menu.item.price.edit.error.submit
 msgid "menu.item.price.edit.error.submit"
+msgstr ""
+
+#: menu:menu.item.price.edit.label
+msgid "menu.item.price.edit.label"
 msgstr ""
 
 #: menu:menu.item.price.edit.short

@@ -12,6 +12,14 @@ msgstr ""
 msgid "menu.categories.list.label"
 msgstr "Menu categories"
 
+#: menu:menu.category.add.cancel
+msgid "menu.category.add.cancel"
+msgstr "Cancel"
+
+#: menu:menu.category.add.disclose
+msgid "menu.category.add.disclose"
+msgstr "Add category"
+
 #: menu:menu.category.create.error.submit
 msgid "menu.category.create.error.submit"
 msgstr "We could not add the category. Please try again."
@@ -48,6 +56,34 @@ msgstr "We could not create the menu. Please try again."
 msgid "menu.create.submit"
 msgstr "Create menu"
 
+#: menu:menu.entry.allergens.disclose
+msgid "menu.entry.allergens.disclose"
+msgstr "Allergens (optional)"
+
+#: menu:menu.entry.category.empty
+msgid "menu.entry.category.empty"
+msgstr "Add a category first — every product lives in one."
+
+#: menu:menu.entry.category.label
+msgid "menu.entry.category.label"
+msgstr "Category"
+
+#: menu:menu.entry.error.submit
+msgid "menu.entry.error.submit"
+msgstr "We could not add the product. Please try again."
+
+#: menu:menu.entry.section.label
+msgid "menu.entry.section.label"
+msgstr "Add a product to the menu"
+
+#: menu:menu.entry.submit
+msgid "menu.entry.submit"
+msgstr "Add to menu"
+
+#: menu:menu.entry.success
+msgid "menu.entry.success"
+msgstr "{name} was added to {category}."
+
 #: menu:menu.initial.error.load
 msgid "menu.initial.error.load"
 msgstr "We could not load your menu. Please try again."
@@ -59,6 +95,10 @@ msgstr "Retry"
 #: menu:menu.item.allergens.edit.button
 msgid "menu.item.allergens.edit.button"
 msgstr "Edit allergens for {name}"
+
+#: menu:menu.item.allergens.edit.label
+msgid "menu.item.allergens.edit.label"
+msgstr "Allergens — {name}"
 
 #: menu:menu.item.allergens.edit.short
 msgid "menu.item.allergens.edit.short"
@@ -103,6 +143,10 @@ msgstr "Edit price for {name}"
 #: menu:menu.item.price.edit.error.submit
 msgid "menu.item.price.edit.error.submit"
 msgstr "We could not update the price. Please try again."
+
+#: menu:menu.item.price.edit.label
+msgid "menu.item.price.edit.label"
+msgstr "Price — {name}"
 
 #: menu:menu.item.price.edit.short
 msgid "menu.item.price.edit.short"

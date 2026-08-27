@@ -82,6 +82,13 @@ token'a çevrildi (1-e).
 
 ## Faz 2 — Ekranda görünen kusurlar (Stage 1 kalanı)
 
+**2026-08-27 eki — form standardı.** Sahibinin menü ekranındaki tespiti
+(`kategori ekleme bilgileri ile ürün ekleme bilgileri aynı formda olmaz`) bu
+faza yeni bir bağlayıcı kural kazandırdı: `docs/47-FORM-VE-AKIS-STANDARDI.md`.
+Referans uygulama menü kataloğunda tamamlandı (4 form → 1 form, 3 sunucu turu
+→ 1 tur, işlem güvenli). Kalan formların listesi ve fazları o belgenin §4'ünde.
+
+
 **Bağımlılık: Faz 1.** Hepsi 1440×900 ve 800×450 ekran görüntüsüyle
 doğrulanmıştır; hiçbiri tahmin değildir.
 
