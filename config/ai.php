@@ -1,0 +1,90 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * AI Capability Plane yapılandırması — `docs/51` §3.
+ *
+ * Model adları BURADA yaşar, kodda değil. Sağlayıcılar katalogu bizim sürüm
+ * döngümüzden bağımsız değiştirir; kodda sabit bir model adı, o ad emekliye
+ * ayrıldığı gün üretimi durdurur ve düzeltmesi deploy gerektirir.
+ *
+ * Varsayılan: HİÇBİR bulut sağlayıcı bağlı değil. Ürün bu hâliyle tam
+ * çalışır; bu bir kabul ölçütüdür (`docs/51` §3.6/1).
+ */
+return [
+
+    /*
+     * Küresel kapatma anahtarı. Tek ayarla bütün AI durur; ürün etkilenmez.
+     */
+    'enabled' => (bool) env('AI_ENABLED', false),
+
+    /*
+     * Dağıtım profili (`docs/51` §4.5).
+     *
+     * `shared-host` paylaşımlı barındırma içindir: orada bir yerel çıkarım
+     * sidecar'ı VARSAYILAMAZ. Bu, deponun desteklediği gerçek bir kurulum
+     * biçimidir ve yerel modeli her yerde varsaymak onu kırardı.
+     */
+    'profile' => env('AI_PROFILE', 'shared-host'),
+
+    /*
+     * Sağlayıcı → bağlantı hiyerarşisi.
+     *
+     * Numaralı anahtar dizisi DEĞİL: bir sağlayıcının birden çok resmi
+     * bağlantısı (proje/workspace/service account) olabilir ve hesap sayısı
+     * mimari bir sabit değil, yapılandırma verisidir.
+     *
+     * TÜKETİCİ ABONELİĞİ KİMLİK BİLGİSİ DEĞİLDİR: ChatGPT Plus/Pro ya da
+     * Claude.ai aboneliği API kullanımını kapsamaz — API ayrı üründür ve
+     * ayrı faturalanır (`modules/ai-provider-account-vault.md` §149).
+     */
+    'providers' => [
+
+        'local' => [
+            'connections' => [
+                // `vps-ai-32gb` profilinde doldurulur; OpenAI-uyumlu uç nokta.
+                // Tam uyumluluk VARSAYILMAZ; uyumluluk katmanı sınar.
+            ],
+        ],
+
+        'google' => ['connections' => []],
+        'openai' => ['connections' => []],
+        'anthropic' => ['connections' => []],
+    ],
+
+    /*
+     * Yetenek → aday model yönlendirmesi.
+     *
+     * Sıra sahibinin kararıdır (`docs/51` §3.3): yerel → Gemini → OpenAI →
+     * Claude. Sebebi maliyet ve yetenek gerçekliği; tercih değil.
+     *
+     * Boş bir aday listesi, o yeteneğin `NoRoute` döndürmesi demektir —
+     * sessizce çalışmaması değil.
+     */
+    'capabilities' => [
+        'ocr.document' => ['candidates' => [], 'confidence_threshold' => 0.80],
+        'menu.extract' => ['candidates' => [], 'confidence_threshold' => 0.90],
+        'embedding.text' => ['candidates' => [], 'confidence_threshold' => 0.0],
+        'classification.text' => ['candidates' => [], 'confidence_threshold' => 0.70],
+    ],
+
+    /*
+     * Tenant başına aylık bütçe (kuruş).
+     *
+     * Global tavan DEĞİL: global bir tavan, bir tenant'ın tüketimiyle
+     * diğerlerinin AI'sını kapatırdı. Dolduğunda AI durur, ÜRÜN DURMAZ —
+     * medya kotasıyla aynı ilke (`docs/49` §10).
+     */
+    'budget' => [
+        'monthly_minor_per_tenant' => (int) env('AI_BUDGET_MONTHLY_MINOR', 0),
+    ],
+
+    /*
+     * Prompt'a girmeden temizlenecek alan adları (`docs/51` UNK-04).
+     *
+     * `dataLayer` yasağıyla aynı gerekçe: sağlayıcıya giden veri geri
+     * alınamaz.
+     */
+    'redact_fields' => ['email', 'phone', 'password', 'token', 'address', 'tax_id'],
+];
