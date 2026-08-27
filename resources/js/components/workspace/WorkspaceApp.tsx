@@ -286,7 +286,19 @@ export function WorkspaceApp() {
             return;
         }
 
-        document.getElementById('main-content')?.focus();
+        // `preventScroll` ZORUNLUDUR. `focus()` varsayılan olarak elemanı
+        // görünür alana kaydırır; `main` üst çubuğun altında başladığı için
+        // bu, bir satır önce yaptığımız "başa dön"ü geri alır ve sayfayı
+        // aşağı fırlatır.
+        //
+        // Ölçüldü (gerçek tarayıcı, 720px viewport, 2400px içerik):
+        //   scrollTo({top: 0})            -> scrollY = 0
+        //   ardından focus()              -> scrollY = 1680   ← sıçrama
+        //   focus({ preventScroll: true }) -> scrollY = 0
+        //
+        // jsdom'da `focus()` kaydırmaz, bu yüzden bu hatayı bir birim testi
+        // GÖREMEZ; sözleşme "seçeneğin verildiği" üzerinden zorlanır.
+        document.getElementById('main-content')?.focus({ preventScroll: true });
     }, [activeSection]);
 
     async function handleCreate(event: FormEvent<HTMLFormElement>) {
