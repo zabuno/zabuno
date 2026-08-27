@@ -165,6 +165,23 @@ const buttonClass = clsx(
     'forced-colors:border forced-colors:border-[ButtonText]',
 );
 
+/**
+ * Satır içi, İKİNCİL eylem.
+ *
+ * Daha önce dosyadaki her buton `buttonClass` kullanıyordu; yani "alerjen
+ * düzenle" ile "menü oluştur" aynı görsel ağırlıktaydı ve dikey yığın
+ * içinde marka sarısı tam genişlik bantlara dönüşüyordu. Bir ekranda her
+ * şey birincilse hiçbir şey birincil değildir — ve marka rengi vurgudan
+ * çıkıp gürültü olur (docs/37 §1: affordance, kimlik "Flat 2.0 + tonal").
+ */
+const inlineActionClass = clsx(
+    'inline-flex min-h-[var(--density-hit-area-min)] shrink-0 items-center rounded-md px-2 py-1',
+    'text-meta font-medium text-fg-secondary',
+    'border border-border bg-transparent hover:bg-surface-hover hover:text-fg',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+    'disabled:cursor-not-allowed disabled:opacity-50',
+);
+
 const sectionClass = clsx(
     'flex flex-col gap-3 rounded-lg border border-border p-4',
     'forced-colors:border-[CanvasText]',
@@ -745,68 +762,106 @@ export function MenuCatalogWorkspace({
                                     className="flex flex-col gap-2"
                                 >
                                     {category.menuItems.map((item) => (
-                                        <li key={item.id} className="flex flex-col gap-1">
-                                            <span>{item.productName ?? `#${item.productId}`}</span>
-                                            <OrderBadge
-                                                position={item.position}
-                                                label={t('menu.item.order.label', {
-                                                    name: item.productName ?? '',
-                                                })}
-                                            />
-                                            <span>
-                                                {minorAmountToDecimalString(
-                                                    item.priceMinorAmount,
-                                                    item.currencyCode,
-                                                )}{' '}
-                                                {item.currencyCode}
-                                            </span>
+                                        // Satır, KARŞILAŞTIRMA için hizalanır: tablo
+                                        // tasarımının temel ölçütü budur
+                                        // (`design-corpus/saas-panel-tasarim-sistemi.md`).
+                                        // Dikey yığında iki ürünün fiyatını yan yana
+                                        // görmek mümkün değildi.
+                                        <li
+                                            key={item.id}
+                                            className="flex flex-col gap-2 border-b border-border py-2 last:border-b-0"
+                                        >
+                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                                <span className="min-w-0 flex-1 truncate text-body font-medium text-fg">
+                                                    {item.productName ?? `#${item.productId}`}
+                                                </span>
+                                                <OrderBadge
+                                                    position={item.position}
+                                                    label={t('menu.item.order.label', {
+                                                        name: item.productName ?? '',
+                                                    })}
+                                                />
+                                                {/*
+                                                    `tabular-nums`: rakamlar eşit
+                                                    genişlikte olmazsa fiyatlar
+                                                    hizalanmaz ve karşılaştırma
+                                                    gözle yapılamaz.
+                                                */}
+                                                <span className="shrink-0 text-body tabular-nums text-fg-secondary">
+                                                    {minorAmountToDecimalString(
+                                                        item.priceMinorAmount,
+                                                        item.currencyCode,
+                                                    )}{' '}
+                                                    {item.currencyCode}
+                                                </span>
+                                                <label className="flex shrink-0 items-center">
+                                                    <TextInput
+                                                        type="checkbox"
+                                                        aria-label={t(
+                                                            'menu.item.visibility.checkbox.label',
+                                                            { name: item.productName ?? '' },
+                                                        )}
+                                                        checked={item.isVisible}
+                                                        disabled={
+                                                            visibilityPending[item.id] === true
+                                                        }
+                                                        onChange={() =>
+                                                            handleToggleVisibility(item)
+                                                        }
+                                                    />
+                                                </label>
+                                                <button
+                                                    type="button"
+                                                    className={inlineActionClass}
+                                                    aria-label={t(
+                                                        'menu.item.allergens.edit.button',
+                                                        { name: item.productName ?? '' },
+                                                    )}
+                                                    onClick={() => handleEditAllergens(item)}
+                                                >
+                                                    {t('menu.item.allergens.edit.short')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={inlineActionClass}
+                                                    aria-label={t('menu.item.price.edit.button', {
+                                                        name: item.productName ?? '',
+                                                    })}
+                                                    onClick={() => handleEditPrice(item)}
+                                                >
+                                                    {t('menu.item.price.edit.short')}
+                                                </button>
+                                            </div>
+
+                                            {/*
+                                                Alerjenler satırın ALTINDA, çip
+                                                olarak durur: satır içinde
+                                                hizalamayı bozar ve uzun listede
+                                                fiyat sütununu kaydırırdı.
+                                            */}
                                             {item.allergens.length > 0 ? (
                                                 <ul
                                                     aria-label={t(
                                                         'menu.item.allergens.list.label',
                                                         { name: item.productName ?? '' },
                                                     )}
+                                                    className="flex flex-wrap gap-1"
                                                 >
                                                     {item.allergens.map((allergen) => (
-                                                        <li key={allergen}>{allergen}</li>
+                                                        <li
+                                                            key={allergen}
+                                                            className="rounded-full bg-surface-active px-2 py-0.5 text-meta text-fg-muted"
+                                                        >
+                                                            {allergen}
+                                                        </li>
                                                     ))}
                                                 </ul>
                                             ) : null}
-                                            <label className={labelClass}>
-                                                <TextInput
-                                                    type="checkbox"
-                                                    aria-label={t(
-                                                        'menu.item.visibility.checkbox.label',
-                                                        { name: item.productName ?? '' },
-                                                    )}
-                                                    checked={item.isVisible}
-                                                    disabled={visibilityPending[item.id] === true}
-                                                    onChange={() => handleToggleVisibility(item)}
-                                                />
-                                            </label>
                                             {visibilityErrors[item.id] ? (
                                                 <FieldError
                                                     message={visibilityErrors[item.id] as string}
                                                 />
                                             ) : null}
-                                            <button
-                                                type="button"
-                                                className={buttonClass}
-                                                onClick={() => handleEditAllergens(item)}
-                                            >
-                                                {t('menu.item.allergens.edit.button', {
-                                                    name: item.productName ?? '',
-                                                })}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={buttonClass}
-                                                onClick={() => handleEditPrice(item)}
-                                            >
-                                                {t('menu.item.price.edit.button', {
-                                                    name: item.productName ?? '',
-                                                })}
-                                            </button>
                                             {priceEditItemId === item.id ? (
                                                 <form
                                                     className={sectionClass}

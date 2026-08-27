@@ -296,7 +296,17 @@ describe('WorkspaceApp — workspaces exist but no current context (S1-WP02C)', 
 });
 
 describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
-    it('renders workspace name, slug, state, the signed-in email, a workspace switcher and a logout control', async () => {
+    // SÖZLEŞME DEĞİŞTİ (2026-08-27): `slug` ve `state` artık İÇERİK
+    // ALANINA basılmıyor. Üç etiketsiz satır — slug, durum kodu ve
+    // kullanıcının e-postası — her sayfanın tepesinde duruyordu; bu içerik
+    // değil, hata ayıklama dökümüydü ve kullanıcının asıl işini aşağı
+    // itiyordu (docs/37 §1: görev tamamlama → içerik).
+    //
+    // Bilgi SİLİNMEDİ, yerine taşındı: çalışma alanı kimliği üst çubukta
+    // (ad + şube seçici), oturum sahibinin e-postası da kimlik alanında.
+    // "Hangi hesaptayım?" çok kiracılı bir panelde gerçek bir sorudur;
+    // cevabı içerik akışında değil, kimlik alanında durur.
+    it('renders workspace name, the signed-in email in the identity area, a workspace switcher and a logout control', async () => {
         const workspaces = [makeWorkspace({ id: 7, name: 'Zeytin Restoranları' }), makeWorkspace({ id: 8, name: 'Deniz Kebap' })];
         const fetchMock = buildFetchMock({
             workspaces: () => jsonResponse(200, workspaces),
@@ -311,9 +321,9 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
 
         const contextBanner = await screen.findByRole('banner');
         await within(contextBanner).findByRole('button', { name: 'Zeytin Restoranları' });
-        expect(screen.getByText('zeytin-restoranlari')).toBeInTheDocument();
-        expect(screen.getByText(/onboarding/i)).toBeInTheDocument();
-        expect(screen.getByText('ada@example.com')).toBeInTheDocument();
+        // E-posta kimlik alanında (üst çubuk), içerik akışında değil.
+        expect(within(contextBanner).getByText('ada@example.com')).toBeInTheDocument();
+        expect(screen.queryByText('zeytin-restoranlari')).not.toBeInTheDocument();
         expect(screen.getByRole('button', { name: /switch workspace|change workspace/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /log ?out/i })).toBeInTheDocument();
 

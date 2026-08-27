@@ -18,6 +18,46 @@
        `text-fg-secondary` yazamaz ve mecburen `text-gray-500`'e düşer — kod
        tabanındaki ham palet borcunun kökeni budur (docs/35 §1 token zinciri).
        Her utility tek bir ham değere bağlanır: master değişince hepsi değişir. */
+    /* ---------------------------------------------------------------
+       TİPOGRAFİ ÖLÇEĞİ — token zincirinin eksik halkasıydı.
+       ---------------------------------------------------------------
+       Ölçüm (2026-08-27): kod tabanında `text-sm` 259, `text-xs` 41,
+       `text-base` yalnız 10 kez geçiyordu. Yani panelin fiilî gövde
+       boyutu 14px, meta boyutu 12px'ti ve bir BAŞLIK ÖLÇEĞİ yoktu.
+       Renk ve boşluk token'lıyken tipografi her bileşende ham Tailwind
+       sınıfıyla seçiliyordu — "master değişince hepsi değişir" tipografide
+       geçerli DEĞİLDİ.
+
+       Külliyat bunu açıkça yasaklıyor: gövde metni için taban 1rem'dir ve
+       yoğunluk font küçültülerek DEĞİL, padding/hiyerarşi/ikon işlemesiyle
+       sağlanır (`design-corpus/saas-panel-tasarim-sistemi.md`
+       §"Data density nasıl yapılmalı?").
+
+       İsimler ROLE göre verilir, boyuta göre değil: bir gün gövde 17px
+       olursa `text-body` yazan hiçbir bileşen değişmez. */
+
+    /* Sayfa kimliği. Akışkan; yoğunluk moduna değil viewport'a tepki verir. */
+    --text-title: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+    --text-title--line-height: 1.2;
+
+    /* Bölüm başlığı. */
+    --text-section: clamp(1.125rem, 1rem + 0.4vw, 1.375rem);
+    --text-section--line-height: 1.3;
+
+    /* Alt başlık / kart başlığı. */
+    --text-subsection: 1.0625rem;
+    --text-subsection--line-height: 1.4;
+
+    /* GÖVDE TABANI. Bunun altına inen hiçbir okunabilir metin olmamalı. */
+    --text-body: 1rem;
+    --text-body--line-height: 1.5;
+
+    /* İKİNCİL META — yalnız gerçekten yardımcı bilgi için: zaman damgası,
+       sayaç, birim eki. Etiket, gövde, buton metni veya hata mesajı için
+       KULLANILMAZ; onlar `text-body` taşır. */
+    --text-meta: 0.875rem;
+    --text-meta--line-height: 1.45;
+
     --color-fg: var(--fg);
     --color-fg-secondary: var(--fg-secondary);
     --color-fg-muted: var(--fg-muted);
