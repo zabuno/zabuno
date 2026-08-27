@@ -68,7 +68,7 @@ alan adı birincinin adreslerine yönlendirilir ve kendi kimliğini kaybeder.
 `.env` sunucuda kalır ve depoya **girmez**. Compose dosyaları her deploy'da
 akış tarafından gönderilir.
 
-## GitHub'a eklenecek gizli değerler
+## GitHub'a eklenecek secret'lar
 
 `Settings → Secrets and variables → Actions`:
 
