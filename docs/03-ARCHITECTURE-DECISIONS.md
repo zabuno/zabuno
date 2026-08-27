@@ -99,6 +99,33 @@ yeteneklerinin var olup olmadığı host'a göre değişir; her özellik bu yete
 yokken **zarif biçimde düşer** (graceful degradation) — hard-fail yasak
 (`docs/15` §Shared-Host Capability Matrix, `skills/shared-host-capability`).
 
+## ADR-L08a: Docker ek dağıtım profilidir (ADR-L08'i daraltır, 2026-08-27)
+
+**Karar (owner)**: Birincil dağıtım hedefi **netcup VPS, AMD EPYC, Docker
+Compose, PostgreSQL** olur. ADR-L08 iptal EDİLMEZ: shared-host profili
+desteklenmeye devam eder ve varsayılan olarak kalır.
+
+**Neden kayda geçti**: ADR-L08'in metni Docker'ı yasaklamıyordu — "varsayılan
+dağıtım container'sız, shared-host uyumludur" diyordu. Ama onu zorlayan
+ön kontrol, Docker dosyalarının VARLIĞINI yasağa çevirmişti. Sahibi VPS
+dağıtımına karar verdiğinde kapı meşru bir kararı engelledi; üstelik korumak
+için var olduğu şeyi ölçmüyordu.
+
+**Korunan şey**: shared-host yolunun açık kalması. Kapı artık bunu ölçüyor —
+varsayılan profil Redis'e ya da bir container servis adına bağlanamaz.
+Docker dosyasının varlığı serbest; uygulamanın Docker olmadan çalışamaz hâle
+gelmesi yasak.
+
+**Sonuç**: iki profil birlikte yaşar.
+
+| Profil | Hedef | Veritabanı | Durum |
+| --- | --- | --- | --- |
+| Container | netcup / Hetzner VPS | PostgreSQL | Birincil, `docs/42` |
+| Container'sız | Turhost / Natro / Güzel Hosting | SQLite | Varsayılan, ADR-L08 |
+
+İkisinin de çalıştığı CI'da kanıtlanır: süit her iki veritabanı motorunda
+koşar (2026-08-27'de eklendi; o gün 18 test yalnız PostgreSQL'de düşüyordu).
+
 ## ADR-L09: Tema domenleri ayrık
 
 **Karar**: Storefront/marketing, public menu, restaurant admin, superadmin, QR
