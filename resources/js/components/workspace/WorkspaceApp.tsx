@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { Button, Label, TextInput } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/workspace';
@@ -275,7 +275,26 @@ export function WorkspaceApp() {
      */
     const hasNavigatedRef = useRef(false);
 
-    useEffect(() => {
+    /**
+     * Bölüme geçiş. Kaydırma, bölüm DEĞİŞMEDEN ÖNCE sıfırlanır.
+     *
+     * Sıra burada kritiktir ve ölçümle bulunmuştur. İçerik değiştiğinde
+     * belge kısalır (ör. Medya 1940px -> Analitik 842px) ve tarayıcı
+     * kaydırmayı zorunlu olarak kırpar: 1000 -> 122. O kırpma BİZİM
+     * kodumuzdan önce olur ve kullanıcının gördüğü sıçrama tam olarak
+     * budur. Kaydırma zaten 0'dayken içerik değişirse kırpacak bir şey
+     * kalmaz.
+     */
+    function goToSection(key: WorkspaceSection): void {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        setActiveSection(key);
+    }
+
+    // `useLayoutEffect`: DOM değiştikten SONRA ama BOYAMADAN ÖNCE çalışır.
+    // Bu yol geri/ileri tuşu ve doğrudan hash değişimi içindir; orada
+    // tıklama anında araya girecek bir yer yoktur, dolayısıyla tek çare
+    // kırpılmış konumu kullanıcı görmeden düzeltmektir.
+    useLayoutEffect(() => {
         // `auto`: her gezinmede yumuşak kaydırma gürültüdür ve azaltılmış
         // hareket tercihini çiğner.
         window.scrollTo({ top: 0, behavior: 'auto' });
@@ -522,7 +541,7 @@ export function WorkspaceApp() {
     }
 
     function handleAiQuickAction(key: AiAssistQuickAction['key']) {
-        setActiveSection(key);
+        goToSection(key);
         window.location.hash = `#${key}`;
         setAiCommandOpen(false);
     }
@@ -637,7 +656,7 @@ export function WorkspaceApp() {
             label: t(descriptor.labelKey as Parameters<typeof t>[0]),
             href: descriptor.hash,
             onSelect: () => {
-                setActiveSection(descriptor.key);
+                goToSection(descriptor.key);
                 setMobileMenuOpen(false);
             },
         }));
@@ -716,7 +735,7 @@ export function WorkspaceApp() {
                         >[0],
                     )}
                     onSwitchWorkspace={handleSwitch}
-                    onSelectLocations={() => setActiveSection('locations')}
+                    onSelectLocations={() => goToSection('locations')}
                 />
             )}
 

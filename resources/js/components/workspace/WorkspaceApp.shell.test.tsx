@@ -233,6 +233,48 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
     // GÖRÜNMEZ. Bu yüzden sözleşme davranış üzerinden değil, seçeneğin
     // verilmesi üzerinden zorlanır — kaybedilen tek şey budur ve bilerek
     // kabul edilmiştir.
+    // Sıçramanın GERÇEK sebebi buydu ve iki düzeltme denemesinden sonra
+    // ancak tarayıcıda ölçerek bulundu.
+    //
+    // İçerik değişince belge kısalır (ölçülen: Medya 3802px -> Analitik
+    // 1250px) ve tarayıcı kaydırmayı KIRPAR: 1000 -> 122. O kırpma bizim
+    // kodumuzdan ÖNCE olur; `scrollTo` çağrımız çoktan kırpılmış bir
+    // konuma varır. Kullanıcının gördüğü sıçrama tam olarak o kırpmadır.
+    //
+    // Çözüm sırayı tersine çevirmek: kaydırma zaten 0'dayken içerik
+    // değişirse kırpacak bir şey kalmaz.
+    //
+    // jsdom düzen hesaplamaz, yani kırpmayı ÜRETEMEZ. Ama SIRAYI
+    // gösterebilir: `scrollTo` çağrıldığı anda hâlâ eski bölüm mü
+    // basılı? Tutulabilen sözleşme budur.
+    it('resets the scroll while the previous section is still mounted', async () => {
+        const user = userEvent.setup();
+        let previousSectionStillMounted: boolean | null = null;
+
+        vi.stubGlobal(
+            'scrollTo',
+            vi.fn(() => {
+                if (previousSectionStillMounted === null) {
+                    previousSectionStillMounted = screen.queryByText('Dashboard') !== null;
+                }
+            }),
+        );
+
+        await renderCurrentWorkspace();
+        previousSectionStillMounted = null;
+
+        await user.click(screen.getByRole('link', { name: 'Media' }));
+
+        await waitFor(() => {
+            expect(
+                previousSectionStillMounted,
+                'Kaydırma sıfırlanmadan önce içerik değişirse tarayıcı konumu kırpar ve sayfa sıçrar.',
+            ).toBe(true);
+        });
+
+        vi.unstubAllGlobals();
+    });
+
     it('moves focus without letting the browser scroll the page back down', async () => {
         const user = userEvent.setup();
         vi.stubGlobal('scrollTo', vi.fn());
