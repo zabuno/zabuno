@@ -24,8 +24,17 @@ import {
     renderActiveSection,
 } from './shell/WorkspaceSectionRegistry';
 
+export type CatalogPhase =
+    'loading' | 'error' | 'brand-onboarding' | 'location-onboarding' | 'menu-catalog';
+
 export type WorkspaceSectionRuntimeContext = {
     workspaceId: number;
+    /**
+     * Bölümün "henüz yükleniyor" ile "kurulacak bir şey yok" durumlarını
+     * ayırt edebilmesi için gerekir. Bu ayrım olmadan bölüm, boş bir
+     * çalışma alanında sonsuza kadar yükleniyor görünür.
+     */
+    catalogPhase: CatalogPhase;
     dashboardMenuTree: DashboardMenuTree | null;
     brand: SectionBrandProfile | null;
     location: SectionLocationProfile | null;
@@ -36,15 +45,14 @@ export type WorkspaceSectionRuntimeContext = {
     onLocationCreated: (location: SectionLocationProfile) => void;
     onBrandSaved: (brand: SectionBrandProfile) => void;
     onMenuTreeChange: (tree: DashboardMenuTree) => void;
+    /** Boş durumdan çıkış yolunu sunabilmek için. */
+    onNavigateToSection: (section: string) => void;
 };
 
 type WorkspaceUser = { id: number; name: string; email: string };
 type Workspace = { id: number; name: string; slug: string; state: string };
 
 type Phase = 'loading' | 'error' | 'create' | 'choose' | 'current';
-
-type CatalogPhase =
-    'loading' | 'error' | 'brand-onboarding' | 'location-onboarding' | 'menu-catalog';
 
 type WorkspaceSection = string;
 
@@ -787,6 +795,7 @@ export function WorkspaceApp() {
                 !showOnboardingForm &&
                 renderActiveSection(activeSection, {
                     workspaceId: currentWorkspace.id,
+                    catalogPhase,
                     dashboardMenuTree,
                     brand,
                     location:
@@ -799,6 +808,7 @@ export function WorkspaceApp() {
                     onLocationCreated: handleLocationAdded,
                     onBrandSaved: setBrand,
                     onMenuTreeChange: handleCatalogTreeChange,
+                    onNavigateToSection: goToSection,
                 })}
 
             {showOnboardingForm && currentWorkspace && catalogPhase === 'brand-onboarding' && (

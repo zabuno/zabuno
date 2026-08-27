@@ -1048,6 +1048,26 @@ msgstr ""
 msgid "workspace.media.upload.uploading"
 msgstr ""
 
+#: workspace:workspace.menu.empty.brand.body
+msgid "workspace.menu.empty.brand.body"
+msgstr ""
+
+#: workspace:workspace.menu.empty.brand.cta
+msgid "workspace.menu.empty.brand.cta"
+msgstr ""
+
+#: workspace:workspace.menu.empty.location.body
+msgid "workspace.menu.empty.location.body"
+msgstr ""
+
+#: workspace:workspace.menu.empty.location.cta
+msgid "workspace.menu.empty.location.cta"
+msgstr ""
+
+#: workspace:workspace.menu.error
+msgid "workspace.menu.error"
+msgstr ""
+
 #: workspace:workspace.menu.heading
 msgid "workspace.menu.heading"
 msgstr ""

@@ -7,8 +7,10 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     return (
         <MenuPage
             workspaceId={ctx.workspaceId}
+            catalogPhase={ctx.catalogPhase}
             locationId={ctx.catalogLocationId}
             onTreeChange={ctx.onMenuTreeChange}
+            onNavigateToSection={ctx.onNavigateToSection}
         />
     );
 }

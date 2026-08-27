@@ -1,13 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 
 /**
- * Feature-local acceptance for MenuPage: the no-location honest loading
- * state (locationId === null) and the location-present delegation to
- * MenuCatalogWorkspace with the exact workspaceId/locationId contract.
- * MenuCatalogWorkspace itself is mocked here — its CRUD/price/allergen/
- * visibility contracts are frozen separately in
- * catalog/menu/macro/MenuCatalogWorkspace.test.tsx.
+ * MenuPage kabul testi.
+ *
+ * Bu dosyanın önceki hâli, konumu olmayan çalışma alanında gösterilen
+ * "Loading your menu…" yazısını *"honest loading state"* diye
+ * dondurmuştu. Dürüst değildi: konum eklenmemiş bir çalışma alanında o
+ * yazı hiç kaybolmaz, çünkü beklenen şey hiç gelmez. Kullanıcı kendisinden
+ * bir şey istendiğini bilmeden bekler.
+ *
+ * Buradaki kural artık şu: **"yükleniyor" yalnız gerçekten veri yoldayken
+ * gösterilir.** Boşluk ve hata kendi ekranlarını gösterir, ve boş durum
+ * çıkış yolunu da verir.
+ *
+ * MenuCatalogWorkspace burada taklit edilir; kendi sözleşmesi
+ * `catalog/menu/macro/MenuCatalogWorkspace.test.tsx` içinde dondurulmuştur.
  */
 
 vi.mock('../../catalog/menu/macro/MenuCatalogWorkspace', () => ({
@@ -27,22 +35,71 @@ vi.mock('../ai/AiAssistPanel', () => ({
 }));
 
 import { MenuPage } from './MenuPage';
+import type { CatalogPhase } from '../WorkspaceApp';
 
 const WORKSPACE_ID = 7;
 const LOCATION_ID = 3;
 
-describe('MenuPage', () => {
-    it('shows an honest loading status and does not mount the catalog workspace when no location is selected yet', () => {
-        render(<MenuPage workspaceId={WORKSPACE_ID} locationId={null} onTreeChange={vi.fn()} />);
+function renderPage(
+    catalogPhase: CatalogPhase,
+    locationId: number | null,
+    onNavigateToSection = vi.fn(),
+) {
+    render(
+        <MenuPage
+            workspaceId={WORKSPACE_ID}
+            catalogPhase={catalogPhase}
+            locationId={locationId}
+            onTreeChange={vi.fn()}
+            onNavigateToSection={onNavigateToSection}
+        />,
+    );
 
-        expect(screen.getByRole('status')).toBeInTheDocument();
+    return { onNavigateToSection };
+}
+
+describe('MenuPage', () => {
+    it('shows the loading status only while the catalog is genuinely being fetched', () => {
+        renderPage('loading', null);
+
+        expect(screen.getByText(/loading your menu/i)).toBeInTheDocument();
         expect(screen.queryByTestId('menu-catalog-workspace')).not.toBeInTheDocument();
     });
 
+    it('tells a workspace without a location what to do instead of pretending to load forever', () => {
+        renderPage('location-onboarding', null);
+
+        // Asıl gerileme koruması: konum yokken beklenecek bir şey yoktur.
+        expect(screen.queryByText(/loading your menu/i)).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /add a location/i })).toBeInTheDocument();
+    });
+
+    it('sends the user to the locations section from the empty state', () => {
+        const { onNavigateToSection } = renderPage('location-onboarding', null);
+
+        fireEvent.click(screen.getByRole('button', { name: /add a location/i }));
+
+        expect(onNavigateToSection).toHaveBeenCalledWith('locations');
+    });
+
+    it('sends the user one step earlier when the brand itself is missing', () => {
+        const { onNavigateToSection } = renderPage('brand-onboarding', null);
+
+        expect(screen.queryByText(/loading your menu/i)).not.toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', { name: /set up brand/i }));
+
+        expect(onNavigateToSection).toHaveBeenCalledWith('brand');
+    });
+
+    it('reports a failed load as a failure rather than as an ongoing wait', () => {
+        renderPage('error', null);
+
+        expect(screen.queryByText(/loading your menu/i)).not.toBeInTheDocument();
+        expect(screen.getByRole('alert')).toBeInTheDocument();
+    });
+
     it('renders the menu catalog workspace with the exact workspaceId/locationId once a location is selected', () => {
-        render(
-            <MenuPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} onTreeChange={vi.fn()} />,
-        );
+        renderPage('menu-catalog', LOCATION_ID);
 
         const menuRoot = document.querySelector('#section-menu') as HTMLElement;
         const workspace = within(menuRoot).getByTestId('menu-catalog-workspace');
@@ -51,9 +108,7 @@ describe('MenuPage', () => {
     });
 
     it('does not swap in the loading status once a location and its catalog workspace are rendered', () => {
-        render(
-            <MenuPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} onTreeChange={vi.fn()} />,
-        );
+        renderPage('menu-catalog', LOCATION_ID);
 
         expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });

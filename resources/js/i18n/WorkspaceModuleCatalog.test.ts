@@ -33,17 +33,20 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 434;
+const FROZEN_LEGACY_KEY_COUNT = 439;
 
-// Frozen from the applied CORE-12 ledger catalog transform: sha256 of
-// sorted "key=value" lines joined by "\n" over all 434 entries, after
-// billing.ts additively introduces the twelve ledger keys (region,
-// description, loading/empty/error/retry states, five column headers and
-// the balances heading) for the workspace ledger region — entry count
-// grows from 422 (the prior READINESS-EVIDENCE-REFRESH-01 baseline) to
-// exactly 434. Additive only: no existing key or value changed.
+// Frozen from the menu empty-state fix: sha256 of sorted "key=value"
+// lines joined by "\n" over all 439 entries, after menu.ts additively
+// introduces five keys (one load-failure message, and a body + call to
+// action for each of the two empty states — no location yet, and no brand
+// yet). They exist because MenuPage used to render "Loading your menu…"
+// whenever no location was selected; in a workspace that has never had a
+// location that wait never ends, so the first screen of every new account
+// was a spinner that resolved to nothing. Entry count grows from 434 (the
+// CORE-12 ledger baseline) to exactly 439. Additive only: no existing key
+// or value changed.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '8c407def400c0af7131429f4a8404ef47ec0136ce4de65129809a14fbfd71787';
+    '5e055ae2e6e7b65df5969293d35082fdd6ae195c108059395b9474696e07ef86';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
