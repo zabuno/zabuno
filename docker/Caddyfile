@@ -23,6 +23,13 @@
 		-Server
 	}
 
+	# Zincirin ilk halkası. Caddy varsayılanda sınırsızdır; sınırı burada
+	# koymak, 52 MB'ı aşan bir gövdenin uygulamaya hiç ulaşmadan ve
+	# sunucunun belleğini doldurmadan reddedilmesini sağlar.
+	request_body {
+		max_size 52MB
+	}
+
 	reverse_proxy app:8080 {
 		# Uygulamanın istemcinin gerçekte hangi şema ve host ile geldiğini
 		# bilmesi gerekir; aksi hâlde ürettiği adresler yanlış olur.

@@ -5,6 +5,7 @@ use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -54,6 +55,35 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        /*
+         * Gövde `post_max_size`'ı aştığında Laravel bunu ZATEN yakalıyor
+         * (`ValidatePostSize` → `PostTooLargeException`) ve 413 döndürüyor.
+         * Eksik olan tespit değil, SUNUM: varsayılan yanıt "The POST data is
+         * too large." diyor, hangi alanın sorunlu olduğunu söylemiyor ve
+         * sınırın ne olduğunu vermiyor. Form da bunu alan hatası olarak
+         * gösteremiyor, çünkü `errors` yok.
+         *
+         * Doğrulama hatalarıyla aynı biçime sokuyoruz: `errors.file`. Böylece
+         * mesaj, kullanıcının düzeltmesi gereken alanın yanında çıkar.
+         */
+        $exceptions->render(function (PostTooLargeException $exception, Request $request) {
+            if (! $request->is('api/*') && ! $request->expectsJson()) {
+                return null;
+            }
+
+            $limit = (string) ini_get('post_max_size');
+
+            return response()->json([
+                'message' => 'Upload too large.',
+                'errors' => [
+                    'file' => [sprintf(
+                        'The upload is larger than this server accepts (%s). Choose a smaller file.',
+                        $limit === '' ? 'the server limit' : $limit
+                    )],
+                ],
+            ], 413);
+        });
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );

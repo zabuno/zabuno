@@ -1,24 +1,48 @@
-# 43 — DevOps yönergesi (netcup VPS + Docker)
+# Zabuno — sunucu kurulum yönergesi
 
-Hedef kitle: sunucuyu kuracak ve işletecek mühendis. Uygulamayı bilmenize
-gerek yok; bu belge kendi kendine yeter.
+**Bu belge kendi kendine yeter.** Uygulamayı bilmenize gerek yok, başka bir
+belge okumanız gerekmez, kurulumdan sonra da dönmeniz gerekmez.
 
-## Ne kuruyorsunuz
+## Ne yapacaksınız — özet
+
+Bir sunucu hazırlayıp tek komutla projeyi ayağa kaldıracaksınız, sonra
+komutun ekrana yazdığı beş değeri GitHub'a ekleyeceksiniz. **İşiniz bu kadar.**
+
+Beş değer eklendikten sonra süreç kendi kendine yürür: proje sahibi depoyu
+güncellediğinde, testler geçtiyse sunucudaki uygulama kendini günceller.
+Kimsenin sunucuya bağlanması gerekmez.
+
+**Alan adlarının A kaydını proje sahibi ekler** — sizin işiniz değil.
+
+Toplam süre: yaklaşık 15 dakika, çoğu imaj derlenmesini beklemekle geçer.
+
+---
+
+## Ne kuruluyor
 
 Tek bir Docker Compose yığını, üç servis:
 
-| Servis | Ne yapar | Dışarı açık mı |
+| Servis | Ne yapar | Dışarı açık |
 | --- | --- | --- |
 | `proxy` | Caddy. TLS'i sonlandırır, sertifikayı kendisi alır ve yeniler | **Evet** — 80, 443 |
 | `app` | Laravel + derlenmiş React, nginx + php-fpm | Hayır |
 | `db` | PostgreSQL 17 | Hayır — yalnız iç ağ |
 
-Uygulama imajı ön yüzü (React/Vite) derleme aşamasında üretir; sunucuda
-Node yoktur ve gerekmez.
+Ön yüz (React/Vite) imaj derlenirken üretilir; **sunucuda Node gerekmez**.
 
-## Tek komut
+## Sunucu gereksinimleri
 
-Sıfırdan bir Ubuntu/Debian sunucuda, root olarak:
+- Ubuntu 22.04+ veya Debian 12+, x86_64 (netcup AMD EPYC uygundur)
+- En az 2 GB RAM, 20 GB disk
+- **80 ve 443 portları açık.** Caddy sertifika doğrulaması için 80'e ihtiyaç
+  duyar; kapalıysa HTTPS hiç çalışmaz
+- root erişimi
+
+---
+
+## Kurulum — tek komut
+
+Sunucuya root olarak bağlanın:
 
 ```bash
 git clone https://github.com/zabuno/zabuno.git /opt/zabuno
@@ -26,35 +50,87 @@ cd /opt/zabuno
 ZABUNO_DOMAINS="zabuno.com, www.zabuno.com, e-menum.net, www.e-menum.net" sudo -E ./install.sh
 ```
 
-`install.sh` sırayla: Docker'ı resmî apt deposundan kurar (`curl | sh`
-kullanmaz), `.env` yoksa üretir, uygulama anahtarı ve veritabanı parolası
-üretir, imajı derler, yığını başlatır ve **uygulamanın gerçekten cevap
-verdiğini doğrular**.
+Betik sırayla şunları yapar:
 
-Yeniden çalıştırılabilir. Var olan `.env` ASLA üzerine yazılmaz.
+1. Docker'ı resmî apt deposundan kurar (`curl | sh` kullanmaz)
+2. `.env` yoksa üretir — uygulama anahtarı ve veritabanı parolası dâhil
+3. İmajı derler
+4. Yığını başlatır
+5. **Uygulamanın gerçekten cevap verdiğini doğrular**
+6. Deploy anahtarını üretir ve GitHub'a eklenecek değerleri yazar
 
-## DNS
+Betik yeniden çalıştırılabilir. Var olan `.env` **asla** üzerine yazılmaz.
 
-Alan adlarının A kaydı sunucunun IP'sine yönlendirilir. **Bunu proje sahibi
-yapar.**
+## GitHub'a beş değer — CI/CD'yi tamamlayan adım
 
-Caddy sertifikayı ancak DNS yönlendikten sonra alabilir. Yönlenmeden önce
-`https://` hata verir; bu normaldir ve kurulumun başarısız olduğu anlamına
-gelmez. Yönlendikten sonra ilk istekte sertifika otomatik gelir.
+Kurulum bitince ekranda beş değer görürsünüz. Depoda:
 
-## İki alan adı — ve neden yazılım alan adına bağlı değil
+**Settings → Secrets and variables → Actions → New repository secret**
 
-Bu bir SaaS. Aynı yazılım **birden çok alan adında ve birden çok sunucuda**
-çalışır. Altyapı buna göre denetlendi (`MultiDomainTest`):
+| Ad | Nereden |
+| --- | --- |
+| `DEPLOY_HOST` | ekranda yazıyor (sunucunun IP'si) |
+| `DEPLOY_USER` | `root` |
+| `DEPLOY_HEALTH_URL` | ekranda yazıyor |
+| `DEPLOY_KNOWN_HOSTS` | `cat /opt/zabuno/github-secrets.txt` |
+| `DEPLOY_SSH_KEY` | aynı dosyada |
 
-- Mutlak adresler isteğin **kendi host'undan** üretilir. `e-menum.net`'ten
-  gelen ziyaretçi `e-menum.net` adresleri görür; `zabuno.com`'a
-  yönlendirilmez.
-- Kanonik host zorlaması **kapalıdır** (`URL_ENFORCE_HOST=false`). Açılırsa
-  ikinci alan adı birincinin gölgesi olur.
-- Kodun hiçbir yerinde alan adı gömülü değildir; bir test bunu zorlar.
+Ekledikten sonra **dosyayı silin** — özel anahtar içerir:
 
-Yeni bir alan adı eklemek iki satırlık iştir:
+```bash
+shred -u /opt/zabuno/github-secrets.txt
+```
+
+Bu adım bittiğinde işiniz tamamdır.
+
+## Doğrulama
+
+```bash
+curl -I https://zabuno.com/up
+curl -I https://e-menum.net/up
+```
+
+İkisi de `200` dönmeli.
+
+**DNS henüz yönlenmediyse** bu komutlar sertifika hatası verir. Bu normaldir
+ve kurulumun başarısız olduğu anlamına gelmez: Caddy sertifikayı ancak alan
+adı sunucuya yönlendikten sonra alabilir. Yönlendikten sonra ilk istekte
+sertifika kendiliğinden gelir. Sunucunun kendi içinden kontrol:
+
+```bash
+cd /opt/zabuno
+docker compose --env-file .env --env-file .image.env exec -T app \
+    curl -fsS http://127.0.0.1:8080/up && echo "  uygulama ayakta"
+```
+
+---
+
+## Bundan sonrası — otomatik
+
+Proje sahibi `main` dalına bir değişiklik birleştirdiğinde:
+
+1. CI koşar (testler, lint, iki veritabanı motorunda süit)
+2. **CI geçerse** deploy akışı kendiliğinden başlar
+3. İmaj `linux/amd64` için derlenir ve GHCR'a itilir
+4. Sunucuya bağlanılır, yeni imaj yayına alınır, migrasyonlar koşar
+5. Siteye HTTP isteği atılarak gerçekten cevap verdiği doğrulanır
+
+**CI geçmezse deploy başlamaz.** Akış `push` yerine `workflow_run` ile
+bağlıdır: doğrudan push'a bağlansaydı deploy testlerle yarışır ve kırık bir
+sürüm yayına çıkabilirdi.
+
+Süreç GitHub → **Actions** sekmesinden izlenir. Elle tetikleme de vardır
+(Deploy → Run workflow → kutuya `DEPLOY`); geri alma ve yeniden deneme için.
+
+---
+
+## Referans
+
+### Yeni alan adı eklemek
+
+Yazılım alan adına bağlı değil — bu bir SaaS ve aynı kurulum birden çok alan
+adında çalışır. Adresler isteğin **kendi host'undan** üretilir; e-menum.net
+ziyaretçisi zabuno.com'a yönlendirilmez.
 
 ```bash
 cd /opt/zabuno
@@ -64,39 +140,16 @@ docker compose --env-file .env --env-file .image.env up -d proxy
 
 Sertifika yeni alan adı için kendiliğinden alınır.
 
-## Günlük işler
+### Günlük işler
 
 ```bash
 cd /opt/zabuno
-
-# Durum
-docker compose --env-file .env --env-file .image.env ps
-
-# Günlükler (app / proxy / db)
-docker compose --env-file .env --env-file .image.env logs -f app
-
-# Yeniden başlat
-docker compose --env-file .env --env-file .image.env restart app
+docker compose --env-file .env --env-file .image.env ps          # durum
+docker compose --env-file .env --env-file .image.env logs -f app # günlük
+docker compose --env-file .env --env-file .image.env restart app # yeniden başlat
 ```
 
-## Güncelleme
-
-İki yol var; ikisi de aynı sonucu verir.
-
-**GitHub Actions ile (tercih edilen).** `Actions → Deploy → Run workflow`,
-kutuya `DEPLOY` yazılır. Akış imajı `linux/amd64` için derler, GHCR'a iter,
-sunucuya bağlanır, yeni imajı yayına alır ve siteye HTTP isteği atarak
-gerçekten cevap verdiğini doğrular. Bunun için depoya beş gizli değer
-eklenmiş olmalı: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`,
-`DEPLOY_KNOWN_HOSTS`, `DEPLOY_HEALTH_URL`.
-
-**Sunucudan elle.**
-
-```bash
-cd /opt/zabuno && sudo ./install.sh
-```
-
-## Geri alma
+### Geri alma
 
 Her imaj commit SHA'sı ile etiketlenir.
 
@@ -109,48 +162,52 @@ docker compose --env-file .env --env-file .image.env up -d app
 **Uyarı:** migrasyonlar geri alınmaz. Şema değiştiren bir sürümden dönmek
 ayrı bir karardır ve önce yedek gerektirir.
 
-## Yedek
+### Yedek
 
 ```bash
 cd /opt/zabuno
 docker compose --env-file .env --env-file .image.env exec -T db \
-    pg_dump -U zabuno zabuno | gzip > /backups/zabuno-$(date +%F).sql.gz
+    pg_dump -U zabuno zabuno | gzip > /root/zabuno-$(date +%F).sql.gz
 ```
 
-`db-backups` adlı bir Docker hacmi ayrılmıştır ama **içine yazan bir iş
-henüz yoktur**. Zamanlanmış yedek kurmak bu yönergenin dışındadır ve açık
-bir iştir.
+`db-backups` adlı bir Docker hacmi ayrılmıştır ama **içine yazan zamanlanmış
+bir iş yoktur**. Kurulması ayrı bir iştir ve bu yönergenin dışındadır.
 
-## Yapılmaması gerekenler
+### Yapılmaması gerekenler
 
 | Yapma | Neden |
 | --- | --- |
-| `.env` dosyasını depoya ekleme | Depo **açık kaynak**; parola herkese açılır |
+| `.env` dosyasını depoya ekleme | Depo **açık kaynak**; parolalar herkese açılır |
 | `APP_KEY` değerini değiştirme | Şifrelenmiş her oturum ve saklı değer okunamaz hâle gelir |
 | `db` servisine `ports:` ekleme | Veritabanını internete açar; parola tek savunma hattı kalır |
-| Uygulamaya doğrudan port yayımlama | Uygulama vekilin ilettiği başlıklara güveniyor; doğrudan erişim o güveni sömürülebilir yapar |
-| Otomatik deploy açma | Yayına çıkmak sahibinin kararı; her birleşme yayına dönerse yazım düzeltmesi ile davranış değişikliği aynı riski taşır |
+| `app` servisine port yayımlama | Uygulama vekilin ilettiği başlıklara güveniyor; doğrudan erişim o güveni sömürülebilir yapar |
+| Sunucuda elle kod düzenleme | Sonraki deploy üzerine yazar; değişiklik depoya gitmeli |
 
-## Sorun giderme
+### Sorun giderme
 
-**`https://` sertifika hatası veriyor.** DNS henüz yönlenmemiştir ya da 80
-portu kapalıdır. Caddy doğrulama için 80'e ihtiyaç duyar; güvenlik duvarında
-hem 80 hem 443 açık olmalı.
+**HTTPS sertifika hatası.** DNS henüz yönlenmemiş ya da 80 portu kapalı.
+Caddy doğrulama için 80'e ihtiyaç duyar.
 
-**Site 502 veriyor.** `app` konteyneri ayakta değil ya da açılışta migrasyon
-başarısız. `logs app` ile bakılır; açılış betiği her adımı yüksek sesle
-bildirir.
+**502.** `app` konteyneri ayakta değil ya da açılışta migrasyon başarısız.
+`logs app` ile bakın; açılış betiği her adımı bildirir.
 
 **Sayfa açılıyor ama adresler `http://`.** Vekil `X-Forwarded-Proto`
-göndermiyordur. Caddyfile'daki `header_up` satırları yerinde mi bakılır.
+göndermiyor. `docker/Caddyfile` içindeki `header_up` satırlarını kontrol edin.
 
-**Uygulama açılmıyor, "Class ... not found".** İmaj eski bir katmandan
-derlenmiş olabilir. `docker build --no-cache` ile yeniden derleyin.
+**İkinci alan adı 400 dönüyor.** `.env` içindeki `URL_TRUSTED_HOSTS` o alan
+adını içermiyor.
 
-## Güvenlik notu
+**Yükleme "çok büyük" diyor.** Zincir 50 MB'a ayarlıdır (Caddy → nginx →
+PHP → uygulama). Daha büyüğü gerekiyorsa dördünü birden yükseltmek gerekir;
+biri düşük kalırsa istek orada ölür.
 
-Sohbet üzerinden paylaşılan kullanıcı adı/parola bilgileri **döndürülmeli**
-(değiştirilmeli). Ekran görüntüsü, iletilen mesaj ve yedeklenen sohbet
-geçmişi, parolanın kaç yerde durduğunu bilinemez hâle getirir. Sunucu
-erişimi için parola yerine SSH anahtarı kullanılması, deploy akışının da
-beklediği yöntemdir.
+**Deploy akışı SSH'ta takılıyor.** `DEPLOY_KNOWN_HOSTS` değeri sunucunun
+gerçek anahtarıyla eşleşmiyor olabilir — sunucu yeniden kurulduysa yenilenir:
+`ssh-keyscan -H <IP>`.
+
+### Güvenlik notu
+
+Sohbet üzerinden paylaşılmış kullanıcı adı/parola varsa **değiştirin**. Ekran
+görüntüsü ve iletilen mesaj, parolanın kaç yerde durduğunu bilinemez hâle
+getirir. Sunucu erişimi için parola yerine SSH anahtarı kullanılır; deploy
+akışı da zaten anahtar bekler.

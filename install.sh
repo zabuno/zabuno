@@ -182,7 +182,72 @@ for attempt in $(seq 1 30); do
     sleep 3
 done
 
+# --- 7. CI/CD anahtarı -----------------------------------------------------
+#
+# Sahibi depoyu güncellediğinde site kendini güncellemeli. Bunun için
+# GitHub'ın bu sunucuya SSH ile bağlanabilmesi gerekiyor. Anahtar BURADA
+# üretilir ve yapıştırılacak değerler ekrana yazılır — böylece kurulum tek
+# oturumda biter ve mühendisin bir daha dönmesi gerekmez.
+
+readonly DEPLOY_KEY="/root/.ssh/zabuno_deploy"
+
+if [ ! -f "${DEPLOY_KEY}" ]; then
+    log "Deploy anahtarı üretiliyor"
+    install -m 700 -d /root/.ssh
+    ssh-keygen -t ed25519 -N '' -C 'zabuno-deploy' -f "${DEPLOY_KEY}" >/dev/null
+fi
+
+# Açık anahtar yetkili listeye BİR KEZ eklenir.
+touch /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+if ! grep -qF "$(cat "${DEPLOY_KEY}.pub")" /root/.ssh/authorized_keys; then
+    cat "${DEPLOY_KEY}.pub" >> /root/.ssh/authorized_keys
+fi
+
+public_ip="${ZABUNO_PUBLIC_IP:-$(curl -fsS --max-time 5 https://api.ipify.org 2>/dev/null || echo '')}"
+[ -n "${public_ip}" ] || public_ip="<sunucunun-IP-adresi>"
+
 primary_domain="$(grep '^APP_URL=' .env | cut -d/ -f3)"
+
+# Değerleri dosyaya da yaz: terminal geçmişi silinse de erişilebilsin.
+secrets_file="${INSTALL_DIR}/github-secrets.txt"
+{
+    echo "DEPLOY_HOST=${public_ip}"
+    echo "DEPLOY_USER=root"
+    echo "DEPLOY_HEALTH_URL=https://${primary_domain}/up"
+    echo
+    echo "DEPLOY_KNOWN_HOSTS:"
+    ssh-keyscan -H "${public_ip}" 2>/dev/null
+    echo
+    echo "DEPLOY_SSH_KEY:"
+    cat "${DEPLOY_KEY}"
+} > "${secrets_file}"
+chmod 600 "${secrets_file}"
+
+cat <<SECRETS
+
+  ─────────────────────────────────────────────────────────────────────
+  GitHub'a eklenecek beş değer
+  ─────────────────────────────────────────────────────────────────────
+
+  Depo → Settings → Secrets and variables → Actions → New repository secret
+
+    DEPLOY_HOST        ${public_ip}
+    DEPLOY_USER        root
+    DEPLOY_HEALTH_URL  https://${primary_domain}/up
+
+    DEPLOY_KNOWN_HOSTS ve DEPLOY_SSH_KEY uzun oldukları için dosyada:
+
+      cat ${secrets_file}
+
+  Beşi eklendiğinde CI/CD tamamlanır: sahibi \`main\`'e her birleştirdiğinde,
+  CI yeşilse site kendini günceller.
+
+  UYARI: ${secrets_file} bir ÖZEL ANAHTAR içerir. Değerleri GitHub'a
+  ekledikten sonra dosyayı silin:  shred -u ${secrets_file}
+  ─────────────────────────────────────────────────────────────────────
+
+SECRETS
 
 cat <<DONE
 

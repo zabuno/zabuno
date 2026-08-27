@@ -82,6 +82,20 @@ RUN { \
         echo 'opcache.memory_consumption=192'; \
         echo 'opcache.max_accelerated_files=20000'; \
         echo 'expose_php=Off'; \
+        # Yükleme sınırları. İmaj varsayılanı 2M/8M'dir ve uygulamanın
+        # ilan ettiği sınırın (50 MB, `StoreMediaRequest`) çok altında
+        # kalıyordu: telefonla çekilmiş neredeyse her fotoğraf reddediliyordu.
+        #
+        # Daha kötüsü, `post_max_size` aşıldığında PHP gövdeyi TAMAMEN atar;
+        # `$_FILES` boş gelir ve Laravel "dosya alanı zorunludur" der.
+        # Kullanıcı dosyayı yükler ve ona yüklemediği söylenir.
+        echo 'upload_max_filesize=50M'; \
+        # Gövde, dosyadan biraz büyük olmalı: aynı istekte alt metin, slot
+        # ve CSRF alanı da gidiyor.
+        echo 'post_max_size=52M'; \
+        # 50 MB'lık bir görüntüyü işlemek 128M'ye sığmaz.
+        echo 'memory_limit=256M'; \
+        echo 'max_execution_time=120'; \
     } > /usr/local/etc/php/conf.d/zabuno.ini
 
 WORKDIR /var/www/html
