@@ -85,21 +85,30 @@ final class EloquentIyzicoSandboxTransactionRepository implements IyzicoSandboxT
         int $amountMinor,
         string $currency,
     ): bool {
+        $row = [
+            'workspace_id' => $workspaceId,
+            'actor_user_id' => $actorUserId,
+            'plan_id' => $planId,
+            'idempotency_key' => $idempotencyKey,
+            'conversation_id' => $conversationId,
+            'token' => null,
+            'redirect_url' => null,
+            'amount_minor' => $amountMinor,
+            'currency' => $currency,
+            'state' => 'reserved',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
         try {
-            DB::table('iyzico_sandbox_transactions')->insert([
-                'workspace_id' => $workspaceId,
-                'actor_user_id' => $actorUserId,
-                'plan_id' => $planId,
-                'idempotency_key' => $idempotencyKey,
-                'conversation_id' => $conversationId,
-                'token' => null,
-                'redirect_url' => null,
-                'amount_minor' => $amountMinor,
-                'currency' => $currency,
-                'state' => 'reserved',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // İç içe işlem = SAVEPOINT. PostgreSQL'de başarısız bir INSERT
+            // içinde bulunduğu işlemin TAMAMINI zehirler (SQLSTATE 25P02):
+            // sonraki her sorgu, işlem kapanana kadar reddedilir. SQLite
+            // böyle davranmadığı için bu desen yıllarca çalışıyor göründü.
+            // Savepoint, başarısızlığı yalnız kendi kapsamına geri sarar.
+            DB::transaction(
+                static fn () => DB::table('iyzico_sandbox_transactions')->insert($row)
+            );
         } catch (QueryException) {
             return false;
         }

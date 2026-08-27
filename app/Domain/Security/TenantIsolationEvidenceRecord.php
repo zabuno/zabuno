@@ -101,6 +101,32 @@ final class TenantIsolationEvidenceRecord
         );
     }
 
+    /**
+     * Zaman damgasını depolama motorundan bağımsız tek bir biçime indirger.
+     *
+     * Bütünlük özeti bu dizeyi hash'liyor. Ham hâliyle bırakıldığında özet,
+     * veritabanı sürücüsünün metni nasıl geri verdiğine bağımlı hâle gelir:
+     * SQLite yazılan dizeyi aynen döndürür (`2026-08-27T08:00:00+00:00`),
+     * PostgreSQL kendi gösterimine çevirir (`2026-08-27 08:00:00+00`). Aynı
+     * kayıt, aynı veri, farklı özet — ve kayıt kurcalanmış görünür.
+     *
+     * Kanıt kayıtlarının varlık sebebi güvenilirliği kanıtlamaktı; özetin
+     * sürücüye bağımlı olması tam da o iddiayı çürütüyordu. Kanonik biçim
+     * UTC + ISO-8601'dir ve motor değişse de değişmez.
+     */
+    private static function canonicalTimestamp(string $value): string
+    {
+        try {
+            $moment = new \DateTimeImmutable($value);
+        } catch (\Exception) {
+            // Ayrıştırılamayan değer sessizce düzeltilmez: özet yanlış
+            // olacağına, değer olduğu gibi kalsın ve doğrulama düşsün.
+            return $value;
+        }
+
+        return $moment->setTimezone(new \DateTimeZone('UTC'))->format(\DateTimeInterface::ATOM);
+    }
+
     private static function computeIntegritySha256(
         string $status,
         string $ranAt,
@@ -117,7 +143,7 @@ final class TenantIsolationEvidenceRecord
             self::SCOPE,
             self::RUNNER,
             $status,
-            $ranAt,
+            self::canonicalTimestamp($ranAt),
             (string) $durationMs,
             (string) $exitCode,
             $gitSha,

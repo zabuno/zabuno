@@ -368,15 +368,21 @@ final class ManualPaymentJourneyTest extends TestCase
 
         $this->requireSubscriptionsTable();
 
+        // Beklenen çakışma savepoint içinde denenir. PostgreSQL'de
+        // başarısız bir INSERT, içinde bulunduğu işlemin tamamını iptal
+        // eder; testin geri kalanı da o işlemin içindedir. Savepoint
+        // başarısızlığı kendi kapsamına hapseder, testin devamı yaşar.
         try {
-            DB::table('subscriptions')->insert([
+            $duplicate = [
                 'workspace_id' => $workspaceId,
                 'plan_id' => 999999999,
                 'state' => 'active',
                 'ends_at' => now()->addMonth(),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ];
+
+            DB::transaction(static fn () => DB::table('manual_payments')->insert($duplicate));
         } catch (\Throwable $exception) {
             self::assertTrue(true, 'MANUAL-PAY-SUB-MALFORMED-01: veritabanı yetim (orphaned) plan referansını FK ile reddetti — bu da geçerli bütünlük uygulamasıdır.');
 
@@ -697,8 +703,12 @@ final class ManualPaymentJourneyTest extends TestCase
         ]);
 
         $historyDuplicateThrew = false;
+        // Beklenen çakışma savepoint içinde denenir. PostgreSQL'de
+        // başarısız bir INSERT, içinde bulunduğu işlemin tamamını iptal
+        // eder; testin geri kalanı da o işlemin içindedir. Savepoint
+        // başarısızlığı kendi kapsamına hapseder, testin devamı yaşar.
         try {
-            DB::table('manual_payments')->insert([
+            $duplicate = [
                 'workspace_id' => $workspaceId,
                 'actor_user_id' => $admin->id,
                 'plan_id' => $planId,
@@ -708,7 +718,9 @@ final class ManualPaymentJourneyTest extends TestCase
                 'idempotency_key' => $idempotencyKey,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ];
+
+            DB::transaction(static fn () => DB::table('subscriptions')->insert($duplicate));
         } catch (\Throwable $exception) {
             $historyDuplicateThrew = true;
         }
