@@ -200,16 +200,22 @@ ihtiyaç hâline gelir; o karar Faz 6'da, veriyle verilir.
 
 ## 8. Fazlar
 
-### Faz 1 — Mimari temel (kod yazmadan önce biten kararlar)
-1. Slot kataloğu ve politikaları — **belirlenmemiş slot BLOKEDİR**
-2. Üç durum ekseni sabitlenir
-3. Veri modeli: `media_assets`, `media_blobs`, `media_versions`,
-   `media_renditions`, `media_usages`, `media_policies`, `media_processing_jobs`
-4. Immutable URL şeması `docs/38`'e eklenir
-5. `ext-vips` / `ext-imagick` kararı ve Docker imajına eklenmesi
-6. INV-01..07 değişmezleri test adı olarak yazılır (RED)
+### Faz 1 — Mimari temel ✅ **TAMAMLANDI (2026-08-27)**
 
-**Kabul:** Tek satır üretim kodu yok; şema, politika ve RED testler var.
+| # | İş | Durum | Nerede |
+| --- | --- | --- | --- |
+| 1 | Slot kataloğu ve politikaları | ✅ | `config/media-slots.php` (17 slot), `app/Domain/Media/SlotPolicy.php` |
+| 2 | Üç durum ekseni | ✅ | `ProcessingStatus`, `LifecycleStatus`, `Visibility` |
+| 3 | Veri modeli | ✅ | `media_blobs`, `media_versions`, `media_renditions`, `media_usages`, `media_processing_jobs` + `media_assets` üç eksene taşındı |
+| 4 | Immutable URL şeması | ✅ | `docs/38` §4b |
+| 5 | `vips` kararı | ✅ | `docker/Dockerfile`. `composer.json`'a HENÜZ eklenmedi: motor yazılmadı ve kapı kapsama arıyor, eşitlik değil |
+| 6 | INV-01..07 test adı olarak | ✅ | `tests/Unit/Media/MediaInvariantsTest.php` (9 test) |
+
+**`media_policies` tablosu bilerek YOK.** Politikalar tenant başına
+değişmiyor: ürünün kendi kuralları. Yapılandırmada dururlar ve sürüm
+kontrolündedirler; veritabanına taşımak, aynı kuralın iki yerde yaşamasına
+ve bir gün ayrışmasına yol açardı. Tenant başına politika gerçekten
+gerekirse tablo o zaman gelir.
 
 ### Faz 2 — Güvenli alım (ingestion)
 1. `media_upload_sessions` + idempotency key
