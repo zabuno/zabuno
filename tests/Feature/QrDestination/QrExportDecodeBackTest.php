@@ -11,6 +11,7 @@ use App\Models\User;
 use DOMDocument;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -190,6 +191,7 @@ final class QrExportDecodeBackTest extends TestCase
         ]);
 
         $menuId = (int) DB::table('menus')->insertGetId([
+            'public_key' => Str::lower(Str::random(10)),
             'workspace_id' => $workspaceId, 'location_id' => $locationId, 'name' => 'Ana Menü',
             'state' => 'draft', 'created_at' => now(), 'updated_at' => now(),
         ]);

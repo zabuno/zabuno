@@ -14,6 +14,7 @@ use App\Application\MenuCatalog\Exception\DuplicateLocationMenuException;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Money\Money;
+use App\Domain\Publication\MenuPublicAddress;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -33,6 +34,10 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                 'workspace_id' => $workspaceId,
                 'location_id' => $locationId,
                 'name' => $name,
+                // Menü doğduğu anda kalıcı adresini alır. Sonradan atamak,
+                // adresi olmayan bir menünün var olabileceği bir pencere
+                // bırakırdı — ve o pencerede yayınlanırsa adres kayar.
+                'public_key' => MenuPublicAddress::generateKey(),
                 'state' => 'draft',
                 'created_at' => now(),
                 'updated_at' => now(),

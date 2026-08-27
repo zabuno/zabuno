@@ -1,0 +1,73 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\QrDestination;
+
+use App\Application\Publication\Port\PublicationRepositoryPort;
+use App\Application\Publication\Port\PublicMenuAddressPort;
+use App\Domain\Publication\MenuPublicAddress;
+use App\Domain\Url\CanonicalUrl;
+use App\Http\Controllers\Controller;
+use App\Http\Responses\GuestDeadEnd;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+
+/**
+ * Yayınlanan menünün KALICI herkese açık adresi: `/menu/{key}/{slug}`.
+ *
+ * Kimlik `key`'dir, `slug` yalnız okunabilirliktir. Yanlış veya eski bir
+ * slug ile gelen istek doğru adrese **kalıcı olarak** yönlendirilir — yani
+ * restoran adını değiştirdiğinde paylaşılmış bağlantılar ölmez, kendini
+ * onarır.
+ *
+ * Bu adres, basılı QR token'ından ayrıdır ve bilerek öyledir: token bir
+ * kodun anahtarıdır ve `/q/` yüzeyi hız sınırlıdır; onu sitemap'te
+ * yayımlamak, taranmasını engellemeye çalıştığımız uzayı teslim etmek
+ * olurdu (`docs/38` §21).
+ */
+final class ShowPublicMenuByKeyController extends Controller
+{
+    public function __construct(
+        private readonly PublicMenuAddressPort $addresses,
+        private readonly PublicationRepositoryPort $publications,
+        private readonly CanonicalUrl $canonical,
+    ) {}
+
+    public function __invoke(Request $request, string $key, ?string $slug = null): SymfonyResponse
+    {
+        if (! MenuPublicAddress::isKey($key)) {
+            return GuestDeadEnd::respond($request);
+        }
+
+        $address = $this->addresses->findByPublicKey($key);
+
+        if ($address === null) {
+            return GuestDeadEnd::respond($request);
+        }
+
+        $publication = $this->publications->current($address['workspace_id'], $address['menu_id']);
+
+        if ($publication === null) {
+            return GuestDeadEnd::respond($request);
+        }
+
+        $canonicalPath = MenuPublicAddress::fromKeyAndSlug($address['key'], $address['slug'])->path();
+
+        if ($request->getPathInfo() !== $canonicalPath) {
+            // Kalıcı: slug değiştiyse eski adres ölmez, doğru adrese taşınır.
+            return redirect($canonicalPath, 301);
+        }
+
+        // Buraya analitik YAZILMAZ ve bu bilinçlidir. Ürünün ölçtüğü şey
+        // "QR çözümlemesi" ve "menü açılışı"dır; arama motorundan gelen bir
+        // ziyaretçi bir karekod taramamıştır. Onu tarama gibi kaydetmek,
+        // ürünün birincil metriğini sessizce şişirirdi. Web ziyaret
+        // analitiği ayrı bir konudur ve bu paketin kapsamında değildir.
+
+        return response()->view('public-menu', [
+            'snapshot' => $publication->snapshot,
+            'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
+        ], 200);
+    }
+}
