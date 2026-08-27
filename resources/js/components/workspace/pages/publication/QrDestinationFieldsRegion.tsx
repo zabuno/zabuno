@@ -16,7 +16,7 @@ export function QrDestinationFieldsRegion({ disabled, onCreate }: QrDestinationF
                 type="button"
                 disabled={disabled}
                 onClick={onCreate}
-                className="min-h-[var(--density-hit-area-min)] self-start rounded border border-border bg-surface px-3 py-1 text-sm text-fg disabled:opacity-50"
+                className="min-h-[var(--density-hit-area-min)] self-start rounded-sm border border-border bg-surface px-3 py-1 text-sm text-fg disabled:opacity-50"
             >
                 {t('workspace.publication.qrDestination.createButton')}
             </button>

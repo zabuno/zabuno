@@ -10,8 +10,8 @@ export type SkeletonProps = {
 };
 
 const SHAPE_CLASS: Record<SkeletonShape, string> = {
-    text: 'rounded',
-    circle: 'rounded-full',
+    text: 'rounded-sm',
+    circle: 'rounded-pill',
     rect: 'rounded-md',
 };
 

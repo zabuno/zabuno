@@ -49,6 +49,39 @@
     --text-subsection--line-height: 1.4;
 
     /* ---------------------------------------------------------------
+       KÖŞE YARIÇAPI.
+
+       Ölçüldü: 44 kullanımın 33'ü (`rounded-md`, `rounded-lg`) ZATEN
+       `--radius-*` token'larını çarpıyordu — ama o token'lar bu depoda
+       tanımlı değildi, yani Tailwind varsayılanı yürürlükteydi. Tipografi
+       ve boşlukta olanın aynısı: sistem yayınlamıyor, ekran başka yerden
+       besleniyor.
+
+       Kalan 11'i (`rounded`, `rounded-full`) token bile çarpmıyordu; ikisi
+       de derlenmiş CSS'te sabit değer olarak çıkıyor. Onlar token'lı
+       karşılıklarına taşındı, böylece uygulamadaki HER köşe yarıçapı bu
+       kökten geçiyor.
+
+       Değerler değişmedi. Grid ile ilişkileri görünür yazıldı — `md`
+       adımının 1.5 katı olması, külliyatın atomik grid 4 kararından SAPAN
+       tek adım olduğunu gizlemek yerine gösterir.
+       --------------------------------------------------------------- */
+
+    /* Küçük öğeler: gösterge, işaret kutusu, ince yüzey. */
+    --radius-sm: var(--spacing);
+    /* Küçük kontroller: ikon düğmesi, odak halkası. Grid dışı tek adım. */
+    --radius-md: calc(var(--spacing) * 1.5);
+    /* Girdi, düğme, kart, panel — arayüzün baskın yarıçapı. */
+    --radius-lg: calc(var(--spacing) * 2);
+    /* Hap biçimi: rozet, avatar, segment kontrolü. Yarıçap değil, bir
+       biçim kararı — bu yüzden gridle ilişkisi yok.
+
+       `calc(infinity * 1px)` denendi ve Tailwind'in CSS ayrıştırıcısı
+       reddetti; Tailwind kendi `rounded-full`'ünde de sabit bir sayı
+       kullanıyor. Yeterince büyük bir sabit, aynı sonucu verir. */
+    --radius-pill: 9999px;
+
+    /* ---------------------------------------------------------------
        ÖLÇÜ — okunabilir genişlik.
 
        Dışarıdan gelen UX eleştirisi bunları sabit piksel aralıklarıyla
