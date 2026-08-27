@@ -251,6 +251,21 @@ Yeni sözleşme doğrudan içeriği ister.
 
 ## 17. Henüz yapılmayanlar
 
-Slug geçmişi ve 301 tablosu (bir işletme adını değiştirdiğinde eski adresin
-yaşaması), sitemap üretimi ve `hreflang` kümesi ayrı paketlerdir. Bu paket
-kanonik adresi, robots'u, noindex'i ve QR çözümleyiciyi kapsar.
+Bunlar unutulmuş değil, **fazlanmıştır**: `docs/39-URL-SEO-ROADMAP.md`
+(adlandırılmış ek plan `URL-SEO-v1`). Her madde bir faza, bir tetikleyiciye ve
+bir kanıta bağlıdır.
+
+Kısaca:
+
+- **Faz 1 (Stage 1 kalanı):** sitemap, `hreflang`, Schema.org, indekslenebilirlik
+  kalite kapısı. Owner kararı gerekmez — menülerin indekslenmesi kararı zaten
+  verildi, bu onun uygulanmasıdır.
+- **Faz 2 (Stage 2):** slug geçmişi/301 tablosu, admin sorgu allowlist'i,
+  tenant indeks tercihi, CSP rapor uç noktası.
+- **Faz 3 (Stage 3):** özel alan adı ve sertifika otomasyonu — **paylaşımlı
+  barındırmada teknik olarak mümkün değil**, bu yüzden hangi pakette
+  sunulacağı bir owner kararıdır.
+- **Faz 4 (Stage 5+):** URL yönetişim otomasyonu.
+
+"Sonra bakarız" listesi, bakılmayan listedir; bu yüzden liste burada değil,
+tetikleyicileriyle birlikte o belgededir.

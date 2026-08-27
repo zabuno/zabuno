@@ -37,6 +37,16 @@ Post-MVP Exit Gate GO.
 Iyzico Payment (live), SEO/Search & Discovery (temel technical+local facet'ler
 canlı), Content/Frontpages (tam), Legal Records (tam).
 
+## URL/SEO ek planı (`URL-SEO-v1` Faz 3)
+
+Özel alan adı (tenant kendi alan adını bağlar) bu stage'e eşlenir ve
+`docs/39-URL-SEO-ROADMAP.md`'de sahiplenilir.
+
+**Owner kararı gerekir:** özel alan adı hangi pakette ve hangi barındırma
+profilinde sunulacak. Sertifika otomasyonu paylaşımlı barındırmada teknik
+olarak MÜMKÜN DEĞİLDİR (`docs/15` §4b); veremeyeceğimiz bir sözü satmamak
+için karar önden alınmalıdır.
+
 ## Dependency / critical path
 Post-MVP CORE-12 Money/Ledger → Iyzico live → reconciliation job'ları canlı.
 

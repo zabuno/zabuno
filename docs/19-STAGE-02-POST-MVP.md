@@ -40,6 +40,16 @@ CORE-09 Taxonomy (tam), CORE-10 Workflow (tam), CORE-11 ECA (tam), CORE-13 Media
 (derivative pipeline tam), Mini CRM, Helpdesk/Tickets, OPT-01..12 (M1 opsiyonel
 katalog) için modül registry temeli.
 
+## URL/SEO ek planı (`URL-SEO-v1` Faz 2)
+
+Bu stage'e eşlenen URL/SEO maddeleri `docs/39-URL-SEO-ROADMAP.md`'de
+sahiplenilir: slug geçmişi + yönlendirme tablosu, admin sorgu parametresi
+allowlist'i, tenant başına indeks tercihi, CSP ihlal raporu uç noktası.
+
+Hiçbiri bugün acil değildir ve sebebi kayıtlıdır: menü adresi `key` kimliği
+sayesinde kendini onarır, admin filtresi henüz URL'de değildir. Tetikleyici
+gerçekleştiğinde zorunlu olurlar.
+
 ## Dependency / critical path
 MVP CORE modülleri → ECA engine → CRM/Helpdesk (ECA'ya event register eder).
 
