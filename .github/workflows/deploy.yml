@@ -45,7 +45,7 @@ jobs:
           # alışkanlığı yaratır, ve o alışkanlık gerçek arızaları da gizler.
           if [ -z "${DEPLOY_HOST}" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Sunucu sırları tanımlı değil; deploy atlandı. Kurulum: docs/43."
+            echo "::notice::Sunucu secret'ları tanımlı değil; deploy atlandı. Kurulum: docs/43."
           else
             echo "configured=true" >> "$GITHUB_OUTPUT"
           fi

@@ -151,14 +151,45 @@
     --font-size-display: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
 
     /* Atomik ızgara 4, ana ritim 8 (design-corpus/olcu-birimleri.md). */
-    --space-1: 4px;
-    --space-2: 8px;
-    --space-3: 12px;
-    --space-4: 16px;
-    --space-5: 24px;
-    --space-6: 32px;
-    --space-7: 48px;
-    --space-8: 64px;
+    /* ATOMİK GRID. Külliyatın kararı (`docs/36` §5.3): atomik grid 4, ana
+       ritim 8. Bu değer o gridin kendisidir ve buradan TÜREYENLER onunla
+       birlikte değişir.
+
+       `--spacing` ismi Tailwind'in isim uzayıdır ve bilerek seçildi:
+       `p-4`, `gap-2`, `mt-6` gibi 323 kullanım bu değeri çarpar. Tanımlı
+       olmadığında Tailwind kendi varsayılanına (0.25rem) düşüyordu — yani
+       tasarım sistemi `--space-4: 16px` yayınlıyor, ekranda görünen 16px
+       ise başka bir yerden geliyordu. İki ölçek sayısal olarak çakıştığı
+       için kimse fark etmemişti; ama `--space-4`'ü değiştirmek ekranda
+       hiçbir şeyi değiştirmiyordu.
+
+       Şimdi tek kök var. Bu satırı 5px yapmak, 323 kullanımı birden
+       değiştirir — owner'ın istediği "master değişince hepsi değişir"
+       davranışı budur.
+
+       BİRİM px, rem DEĞİL — ve bunun bir sonucu var: kullanıcı tarayıcı
+       yazı boyutunu büyüttüğünde metin büyür, boşluk büyümez. Bilerek
+       böyle: külliyat (`docs/36` §5.3) UI geometrisinin px olmasını
+       donduruyor ve mevcut `--space-*` ölçeği zaten px'ti. Burada
+       `0.25rem` yazmak ölçeğin anlamını değiştirirdi, bağlamazdı.
+
+       Tipografi ayrı ölçekte ve `rem`; büyüyen metnin sıkışmaması
+       yoğunluk token'larının işidir (`--density-row-height`), boşluk
+       gridinin değil. */
+    --spacing: 4px;
+
+    /* Adımlar gridin katlarıdır. Değerler DEĞİŞMEDİ (4, 8, 12, 16, 24, 32,
+       48, 64); yalnız kaynakları bağlandı. Üst adımlar doğrusal değildir
+       çünkü büyük boşlukta 4px'lik fark görünmez: 24'ten sonra 32, 48, 64.
+       Bu bir ölçek, çarpım tablosu değil. */
+    --space-1: calc(var(--spacing) * 1);
+    --space-2: calc(var(--spacing) * 2);
+    --space-3: calc(var(--spacing) * 3);
+    --space-4: calc(var(--spacing) * 4);
+    --space-5: calc(var(--spacing) * 6);
+    --space-6: calc(var(--spacing) * 8);
+    --space-7: calc(var(--spacing) * 12);
+    --space-8: calc(var(--spacing) * 16);
 
     /* Motion. Süreler referans implementasyonun ölçeğinden alınmıştır.
        Bileşen ham süre bilmez; bu ölçeği bilir. */

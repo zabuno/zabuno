@@ -10,17 +10,17 @@ belge okumanız gerekmez, kurulumdan sonra da dönmeniz gerekmez.
 | Sunucu | netcup VPS — `152.53.163.185` |
 | Alan adları | `zabuno.com`, `e-menum.net` (+ `www`) |
 | A kaydı | **Proje sahibi ekler** — sizin işiniz değil |
-| Depo yetkisi | `deploy` takımı üzerinden depo admin'i; sırları eklemek için gerekli |
+| Depo yetkisi | Depo admin'i — GitHub secret'larını eklemek için gerekli |
 
-Depo yetkiniz yoksa proje sahibinden isteyin: sırları eklemek **depo admin**
-yetkisi gerektirir, daha azı yetmez.
+Depo yetkiniz yoksa proje sahibinden isteyin: GitHub secret eklemek **depo
+admin** yetkisi gerektirir, daha azı yetmez.
 
 ## Ne yapacaksınız — özet
 
 Bir sunucu hazırlayıp tek komutla projeyi ayağa kaldıracaksınız, sonra
-komutun ekrana yazdığı beş değeri GitHub'a ekleyeceksiniz. **İşiniz bu kadar.**
+komutun ekrana yazdığı beş secret'ı GitHub'a ekleyeceksiniz. **İşiniz bu kadar.**
 
-Beş değer eklendikten sonra süreç kendi kendine yürür: proje sahibi depoyu
+Beş secret eklendikten sonra süreç kendi kendine yürür: proje sahibi depoyu
 güncellediğinde, testler geçtiyse sunucudaki uygulama kendini günceller.
 Kimsenin sunucuya bağlanması gerekmez.
 
@@ -75,7 +75,7 @@ Betik yeniden çalıştırılabilir. Var olan `.env` **asla** üzerine yazılmaz
 
 ## GitHub'a beş değer — CI/CD'yi tamamlayan adım
 
-Kurulum bitince ekranda beş değer görürsünüz. Depoda:
+Kurulum bitince ekranda beş secret görürsünüz. Depoda:
 
 **Settings → Secrets and variables → Actions → New repository secret**
 
@@ -131,7 +131,7 @@ Proje sahibi `main` dalına bir değişiklik birleştirdiğinde:
 bağlıdır: doğrudan push'a bağlansaydı deploy testlerle yarışır ve kırık bir
 sürüm yayına çıkabilirdi.
 
-**Beş değer eklenmeden önce** deploy akışı kırmızı vermez, sessizce atlar ve
+**Beş secret eklenmeden önce** deploy akışı kırmızı vermez, sessizce atlar ve
 "sunucu tanımlı değil" notu bırakır. Her birleşmede kırmızı bir X görmek,
 kırmızıyı görmezden gelme alışkanlığı yaratır — o alışkanlık da gerçek
 arızaları gizler.

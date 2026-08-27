@@ -106,7 +106,7 @@ else
 
     db_password="$(head -c 32 /dev/urandom | base64 | tr -d '/+=' | head -c 32)"
 
-    log "Gizli değerler üretiliyor"
+    log "Secret'lar üretiliyor"
 
     cat > .env <<ENV
 APP_ENV=production
@@ -227,7 +227,7 @@ chmod 600 "${secrets_file}"
 cat <<SECRETS
 
   ─────────────────────────────────────────────────────────────────────
-  GitHub'a eklenecek beş değer
+  GitHub'a eklenecek beş secret
   ─────────────────────────────────────────────────────────────────────
 
   Depo → Settings → Secrets and variables → Actions → New repository secret
