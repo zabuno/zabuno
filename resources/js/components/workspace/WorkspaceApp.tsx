@@ -575,7 +575,7 @@ export function WorkspaceApp() {
         return (
             <div className="mx-auto max-w-content px-4 py-10">
                 {liveRegion}
-                <p role="alert" className="text-sm font-medium text-fg-danger">
+                <p role="alert" className="text-body font-medium text-fg-danger">
                     {t('workspace.error.heading')}
                 </p>
                 <Button
@@ -601,7 +601,7 @@ export function WorkspaceApp() {
                     </h1>
 
                     {createError && (
-                        <p role="alert" className="text-sm font-medium text-fg-danger">
+                        <p role="alert" className="text-body font-medium text-fg-danger">
                             {createError}
                         </p>
                     )}
@@ -786,7 +786,7 @@ export function WorkspaceApp() {
             )}
 
             {logoutError && (
-                <p role="alert" className="mb-4 text-sm font-medium text-fg-danger">
+                <p role="alert" className="mb-4 text-body font-medium text-fg-danger">
                     {logoutError}
                 </p>
             )}
@@ -827,7 +827,7 @@ export function WorkspaceApp() {
 
             {catalogPhase === 'error' && (
                 <div>
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {t('workspace.catalog.error.heading')}
                     </p>
                     <Button

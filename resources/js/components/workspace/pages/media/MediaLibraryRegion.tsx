@@ -37,27 +37,27 @@ export function MediaLibraryRegion({
             aria-label={t('workspace.media.library.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-fg">
+            <h3 className="text-body font-semibold text-fg">
                 {t('workspace.media.library.heading')}
             </h3>
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+            <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.media.library.assets.heading')}
             </p>
 
             {loadState === 'loading' ? (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.media.library.loading')}
                 </p>
             ) : loadState === 'error' ? (
                 <div className="flex flex-col items-start gap-2">
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {t('workspace.media.library.error')}
                     </p>
                     <Button onClick={() => onRetry?.()}>{t('workspace.error.retry')}</Button>
                 </div>
             ) : assets.length === 0 ? (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.media.library.unavailable')}
                 </p>
             ) : (
@@ -71,20 +71,23 @@ export function MediaLibraryRegion({
                                 key={asset.id}
                                 className="flex flex-col gap-1 border-b border-border pb-2"
                             >
-                                <span className="text-sm font-medium text-fg">{`#${asset.id}`}</span>
-                                <span className="text-sm text-fg-secondary">{asset.altText}</span>
+                                <span className="text-body font-medium text-fg">{`#${asset.id}`}</span>
+                                <span className="text-body text-fg-secondary">{asset.altText}</span>
                                 <MediaAssetStatusBadge status={asset.status} />
                                 <Button
                                     color="light"
                                     type="button"
                                     disabled={isDeleting}
                                     onClick={() => onDelete(asset.id)}
-                                    className="self-start text-xs"
+                                    className="self-start text-meta"
                                 >
                                     {t('workspace.media.library.asset.delete')}
                                 </Button>
                                 {hasDeleteError && (
-                                    <p role="alert" className="text-xs font-medium text-fg-danger">
+                                    <p
+                                        role="alert"
+                                        className="text-meta font-medium text-fg-danger"
+                                    >
                                         {t('workspace.media.library.asset.delete.failed')}
                                     </p>
                                 )}
@@ -95,17 +98,17 @@ export function MediaLibraryRegion({
             )}
 
             {deleteNotice && (
-                <p role="status" className="text-xs text-fg-muted">
+                <p role="status" className="text-meta text-fg-muted">
                     {deleteNotice}
                 </p>
             )}
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+            <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.media.library.slots.heading')}
             </p>
             <MediaLibrarySlotList />
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+            <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.media.lifecycle.heading')}
             </p>
             <MediaLifecycleList />

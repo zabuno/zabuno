@@ -57,7 +57,7 @@ export function ManualPaymentForm({
         <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ maxWidth: '100%' }}>
             <label
                 htmlFor="manual-payment-plan"
-                className="flex flex-col gap-1 text-sm text-fg-secondary"
+                className="flex flex-col gap-1 text-body text-fg-secondary"
             >
                 {t('platform.subscriptions.form.plan.label')}
                 <Select
@@ -75,7 +75,7 @@ export function ManualPaymentForm({
 
             <label
                 htmlFor="manual-payment-end-date"
-                className="flex flex-col gap-1 text-sm text-fg-secondary"
+                className="flex flex-col gap-1 text-body text-fg-secondary"
             >
                 {t('platform.subscriptions.form.endDate.label')}
                 <TextInput
@@ -88,7 +88,7 @@ export function ManualPaymentForm({
 
             <label
                 htmlFor="manual-payment-note"
-                className="flex flex-col gap-1 text-sm text-fg-secondary"
+                className="flex flex-col gap-1 text-body text-fg-secondary"
             >
                 {t('platform.subscriptions.form.paymentNote.label')}
                 <TextInput
@@ -101,7 +101,7 @@ export function ManualPaymentForm({
 
             <label
                 htmlFor="manual-payment-document-reference"
-                className="flex flex-col gap-1 text-sm text-fg-secondary"
+                className="flex flex-col gap-1 text-body text-fg-secondary"
             >
                 {t('platform.subscriptions.form.documentReference.label')}
                 <TextInput
@@ -114,7 +114,7 @@ export function ManualPaymentForm({
 
             <button
                 type="submit"
-                className="self-start rounded-md bg-action px-3 py-2 text-sm font-medium text-white disabled:opacity-50  dark:text-action-fg"
+                className="self-start rounded-md bg-action px-3 py-2 text-body font-medium text-white disabled:opacity-50  dark:text-action-fg"
             >
                 {t('platform.subscriptions.form.submit')}
             </button>

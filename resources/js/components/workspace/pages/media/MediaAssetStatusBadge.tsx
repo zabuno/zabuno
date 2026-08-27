@@ -54,7 +54,7 @@ export function MediaAssetStatusBadge({ status }: MediaAssetStatusBadgeProps) {
     const toneClass = isKnownStatus(status) ? STATUS_TONE_CLASS[status] : STATUS_TONE_CLASS.unknown;
 
     return (
-        <span role="status" className={`text-sm font-medium ${toneClass}`}>
+        <span role="status" className={`text-body font-medium ${toneClass}`}>
             {label}
         </span>
     );

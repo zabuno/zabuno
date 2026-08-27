@@ -105,28 +105,28 @@ export function TeamInvitationList({
 
     return (
         <div role="region" aria-label={label} className="flex flex-col gap-3">
-            <p className="text-sm font-semibold text-fg">{label}</p>
+            <p className="text-body font-semibold text-fg">{label}</p>
 
             {status === 'loading' && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {loadingText}
                 </p>
             )}
 
             {status === 'error' && (
-                <p role="status" className="text-sm font-medium text-fg-danger">
+                <p role="status" className="text-body font-medium text-fg-danger">
                     {errorText}
                 </p>
             )}
 
             {status === 'success' && announcement && (
-                <p role="status" className="text-sm font-medium text-fg-success">
+                <p role="status" className="text-body font-medium text-fg-success">
                     {announcement}
                 </p>
             )}
 
             {status === 'success' && invitations.length === 0 && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {emptyText}
                 </p>
             )}
@@ -139,7 +139,7 @@ export function TeamInvitationList({
                         return (
                             <li
                                 key={invitation.id}
-                                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-border p-3 text-sm text-fg-secondary"
+                                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-border p-3 text-body text-fg-secondary"
                             >
                                 <span className="font-medium text-fg">{invitation.email}</span>
                                 <span className="text-fg-muted">{invitation.role}</span>
@@ -148,7 +148,7 @@ export function TeamInvitationList({
                                 {stage === 'idle' && (
                                     <button
                                         type="button"
-                                        className="text-sm font-medium text-fg-danger"
+                                        className="text-body font-medium text-fg-danger"
                                         onClick={() => startCancel(invitation.id)}
                                     >
                                         {cancelButtonText}
@@ -159,7 +159,7 @@ export function TeamInvitationList({
                                     <div className="flex flex-wrap items-center gap-2">
                                         <button
                                             type="button"
-                                            className="text-sm font-medium text-fg-danger"
+                                            className="text-body font-medium text-fg-danger"
                                             disabled={stage === 'busy'}
                                             onClick={() => void confirmCancel(invitation.id)}
                                         >
@@ -169,7 +169,7 @@ export function TeamInvitationList({
                                         </button>
                                         <button
                                             type="button"
-                                            className="text-sm font-medium text-fg-secondary"
+                                            className="text-body font-medium text-fg-secondary"
                                             disabled={stage === 'busy'}
                                             onClick={() => keepInvitation(invitation.id)}
                                         >
@@ -179,7 +179,7 @@ export function TeamInvitationList({
                                 )}
 
                                 {stage === 'busy' && (
-                                    <span role="status" className="text-sm text-fg-muted">
+                                    <span role="status" className="text-body text-fg-muted">
                                         {cancelBusyText}
                                     </span>
                                 )}
@@ -187,7 +187,7 @@ export function TeamInvitationList({
                                 {stage === 'error' && (
                                     <span
                                         role="status"
-                                        className="text-sm font-medium text-fg-danger"
+                                        className="text-body font-medium text-fg-danger"
                                     >
                                         {cancelErrorText}
                                     </span>

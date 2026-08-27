@@ -64,7 +64,7 @@ export const RestaurantAdmin: Story = {
             activeNavKey="dashboard"
             navLabel="Restaurant admin"
         >
-            <p className="text-sm text-gray-500 dark:text-gray-400">Page content goes here.</p>
+            <p className="text-body text-gray-500 dark:text-gray-400">Page content goes here.</p>
         </ControlledAdminShell>
     ),
 };
@@ -77,7 +77,7 @@ export const Superadmin: Story = {
             activeNavKey="tenants"
             navLabel="Superadmin"
         >
-            <p className="text-sm text-gray-500 dark:text-gray-400">Page content goes here.</p>
+            <p className="text-body text-gray-500 dark:text-gray-400">Page content goes here.</p>
         </ControlledAdminShell>
     ),
 };
@@ -91,7 +91,7 @@ export const MobileMenuOpen: Story = {
         onToggleMobileMenu: () => {},
         onCloseMobileMenu: () => {},
         children: (
-            <p className="text-sm text-gray-500 dark:text-gray-400">Page content goes here.</p>
+            <p className="text-body text-gray-500 dark:text-gray-400">Page content goes here.</p>
         ),
     },
     parameters: { viewport: { defaultViewport: 'mobile1' } },
@@ -112,7 +112,7 @@ export const RightToLeft: Story = {
             ]}
             activeNavKey="dashboard"
         >
-            <p className="text-sm text-gray-500 dark:text-gray-400">محتوى الصفحة هنا.</p>
+            <p className="text-body text-gray-500 dark:text-gray-400">محتوى الصفحة هنا.</p>
         </ControlledAdminShell>
     ),
     parameters: { direction: 'rtl' },

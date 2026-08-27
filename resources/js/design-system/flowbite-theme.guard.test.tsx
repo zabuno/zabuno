@@ -131,7 +131,7 @@ describe('Flowbite tema bağlaması — zorlayıcı kontrol', () => {
     // --- DS-FLOWBITE-TOKEN-BIND-10 (yoğunluk zinciri) ---------------------
     // Değeri `var()` içeren bir custom property, TANIMLANDIĞI yerde bir kez
     // ikame edilir ve alt elemanlara çözülmüş hâlde miras kalır — yani
-    // `:root`ta türetilen `--control-height`, `.density-compact` içinde
+    // `:root`ta türetilen `--control-height`, compact modu içinde
     // YENİDEN HESAPLANMAZ. İlk hâlinde tam bu yüzden yoğunluk anahtarı
     // kontrolleri hiç değiştirmiyordu: token doğruydu, zincir kopuktu.
     it("türetilmiş kontrol token'ı her yoğunluk modunda yeniden tanımlanır", () => {
@@ -154,7 +154,7 @@ describe('Flowbite tema bağlaması — zorlayıcı kontrol', () => {
                 'şeyi kaybetmiş olabilir.',
         ).not.toEqual([]);
 
-        for (const mode of ['.density-comfortable', '.density-compact']) {
+        for (const mode of [":root[data-density='comfortable']", ":root[data-density='compact']"]) {
             const scope = readCustomProperties(css, mode);
             const missing = derived.filter((token) => scope[token] === undefined);
 

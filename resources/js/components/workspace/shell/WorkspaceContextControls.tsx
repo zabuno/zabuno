@@ -27,7 +27,7 @@ export function WorkspaceContextControls({
             <button
                 type="button"
                 onClick={onSwitchWorkspace}
-                className="min-w-0 truncate rounded-md px-2 py-1 text-sm font-medium text-fg hover:bg-surface-hover"
+                className="min-w-0 truncate rounded-md px-2 py-1 text-body font-medium text-fg hover:bg-surface-hover"
             >
                 {workspaceName}
             </button>

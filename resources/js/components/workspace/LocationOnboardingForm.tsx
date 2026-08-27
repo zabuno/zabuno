@@ -136,7 +136,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                 <h1 className="text-xl font-semibold text-fg">{t('workspace.location.heading')}</h1>
 
                 {error && (
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {error}
                     </p>
                 )}

@@ -30,8 +30,8 @@ export function KeyValueList({ entries, className }: KeyValueListProps) {
                         index > 0 && 'border-t border-border',
                     )}
                 >
-                    <dt className="text-sm text-fg-muted">{entry.label}</dt>
-                    <dd className="text-sm font-medium text-fg">{entry.value}</dd>
+                    <dt className="text-body text-fg-muted">{entry.label}</dt>
+                    <dd className="text-body font-medium text-fg">{entry.value}</dd>
                 </div>
             ))}
         </dl>

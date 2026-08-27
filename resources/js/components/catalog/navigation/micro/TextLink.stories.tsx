@@ -23,7 +23,7 @@ export const Default: Story = { args: { href: '#', children: 'Download PNG' } };
 export const InParagraph: Story = {
     args: { href: '#', children: 'yayınlanan menü' },
     render: (args) => (
-        <p className="max-w-prose text-sm text-fg-secondary">
+        <p className="max-w-prose text-body text-fg-secondary">
             QR kodu bastırdıktan sonra <TextLink {...args} /> sayfasını telefonunuzla bir kez
             tarayın.
         </p>

@@ -13,17 +13,17 @@ export function PublishActionConfigRegion() {
             aria-label={t('workspace.publication.publishAction.region')}
             className="flex w-full flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-fg">
+            <h3 className="text-body font-semibold text-fg">
                 {t('workspace.publication.publishAction.region')}
             </h3>
 
-            <label className="flex w-full flex-col gap-1 text-sm text-fg-secondary">
+            <label className="flex w-full flex-col gap-1 text-body text-fg-secondary">
                 {t('workspace.publication.publishAction.mode.label')}
                 <select
                     disabled
                     value="immediate"
                     onChange={() => {}}
-                    className="w-full rounded-lg border border-border px-3 py-2 text-sm "
+                    className="w-full rounded-lg border border-border px-3 py-2 text-body "
                 >
                     <option value="immediate">
                         {t('workspace.publication.publishAction.mode.immediate')}
@@ -31,16 +31,16 @@ export function PublishActionConfigRegion() {
                 </select>
             </label>
 
-            <p className="text-xs text-fg-muted">
+            <p className="text-meta text-fg-muted">
                 {t('workspace.publication.publishAction.permissionNotice')}
             </p>
-            <p className="text-xs text-fg-muted">
+            <p className="text-meta text-fg-muted">
                 {t('workspace.publication.publishAction.scheduleNotice')}
             </p>
-            <p className="text-xs text-fg-muted">
+            <p className="text-meta text-fg-muted">
                 {t('workspace.publication.publishAction.snapshotNotice')}
             </p>
-            <p className="text-xs text-fg-muted">
+            <p className="text-meta text-fg-muted">
                 {t('workspace.publication.publishAction.failurePreservationNotice')}
             </p>
         </div>

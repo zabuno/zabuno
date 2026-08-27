@@ -104,7 +104,7 @@ export function ResetPasswordForm({
             <h1 className="text-xl font-semibold text-fg">{t('auth.reset_password.heading')}</h1>
 
             {errors.submit && (
-                <p role="alert" className="text-sm font-medium text-fg-danger">
+                <p role="alert" className="text-body font-medium text-fg-danger">
                     {errors.submit}
                 </p>
             )}
@@ -129,7 +129,7 @@ export function ResetPasswordForm({
                     <p
                         id="reset-password-password-error"
                         role="alert"
-                        className="mt-1 text-sm text-fg-danger"
+                        className="mt-1 text-body text-fg-danger"
                     >
                         {errors.password}
                     </p>
@@ -160,7 +160,7 @@ export function ResetPasswordForm({
                     <p
                         id="reset-password-password-confirmation-error"
                         role="alert"
-                        className="mt-1 text-sm text-fg-danger"
+                        className="mt-1 text-body text-fg-danger"
                     >
                         {errors.password_confirmation}
                     </p>

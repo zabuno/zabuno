@@ -35,24 +35,24 @@ export function CurrentSubscriptionCard({
             aria-label={t('platform.subscriptions.subscription.region.label')}
             className="flex flex-col gap-3"
         >
-            <p className="text-sm font-semibold text-fg">
+            <p className="text-body font-semibold text-fg">
                 {t('platform.subscriptions.subscription.region.label')}
             </p>
 
             {status === 'loading' && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('platform.subscriptions.subscription.loading')}
                 </p>
             )}
 
             {status === 'error' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {t('platform.subscriptions.subscription.error')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-fg-danger"
+                        className="self-start text-body font-medium text-fg-danger"
                         onClick={onRetry}
                     >
                         {t('platform.subscriptions.subscription.retry')}
@@ -61,13 +61,13 @@ export function CurrentSubscriptionCard({
             )}
 
             {status === 'success' && subscription?.state === 'none' && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('platform.subscriptions.subscription.none')}
                 </p>
             )}
 
             {status === 'success' && subscription?.state === 'active' && (
-                <div className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <div className="flex flex-col gap-1 text-body text-fg-secondary">
                     <span className="font-medium text-fg">{subscription.plan_name}</span>
                     <span>{subscription.plan_code}</span>
                     <span>{t('platform.subscriptions.subscription.active.label')}</span>

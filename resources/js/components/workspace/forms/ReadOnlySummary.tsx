@@ -25,7 +25,7 @@ export function ReadOnlySummary({ title, items, actions }: ReadOnlySummaryProps)
                 <p className="text-base font-medium text-fg">{title}</p>
                 {actions}
             </div>
-            <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-x-4 gap-y-2 text-sm text-fg-secondary">
+            <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-x-4 gap-y-2 text-body text-fg-secondary">
                 {items.map((item) => (
                     <div key={item.key}>
                         <dt className="font-medium">{item.label}</dt>

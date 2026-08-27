@@ -18,7 +18,10 @@ export const WithAction: Story = {
         title: 'No menu items yet',
         description: 'Add your first item to get started.',
         action: (
-            <button type="button" className="rounded-md bg-blue-600 px-3 py-1.5 text-sm text-white">
+            <button
+                type="button"
+                className="rounded-md bg-blue-600 px-3 py-1.5 text-body text-white"
+            >
                 Add item
             </button>
         ),

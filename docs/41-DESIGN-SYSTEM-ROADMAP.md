@@ -151,8 +151,15 @@ katmanı olur — külliyatın uyardığı şey tam olarak budur.
 
 ## İlerleme
 
-`DESIGN-2030-v1`: **0/6 faz tamam.** Faz 1 sıradaki iştir ve owner kararı
-gerektirmez — kararlar `docs/36` §5'te zaten donmuştur.
+`DESIGN-2030-v1`: **1/6 faz tamam.** Faz 1 (token kökü) 2026-08-27'de
+kapandı: boşluk, ölçü, yarıçap ve tipografi köke bağlandı, yoğunluk modları
+canlandırıldı. Faz 2 sıradaki iştir ve owner kararı gerektirmez.
+
+Faz 1 sırasında ortaya çıkan ve düzeltilen sessiz kusur kayda değer:
+`tailwind-merge` rol adlı `text-*` sınıflarını RENK sanıyor ve önceki
+rengi siliyordu. Ölçek yayınlandığından beri sürüyordu ve görünür bir hata
+vermiyordu — tarayıcı rengi miras alıyor, sadece yanlış olanı.
+`DS-MERGE-SAFETY` artık koruyor.
 
 Bu sayaç `docs/17` §4'teki sabit 38-WP payda sayacından ayrıdır ve onun
 yerine geçmez.

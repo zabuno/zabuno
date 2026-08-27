@@ -103,24 +103,24 @@ export function CurrentSubscriptionStatus({ workspaceId }: CurrentSubscriptionSt
             aria-label={t('workspace.billing.currentPlan.region')}
             className="flex flex-col gap-3"
         >
-            <p className="text-sm font-semibold text-fg">
+            <p className="text-body font-semibold text-fg">
                 {t('workspace.billing.currentPlan.region')}
             </p>
 
             {status === 'loading' && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.billing.currentPlan.loading')}
                 </p>
             )}
 
             {status === 'error' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {t('workspace.billing.currentPlan.error')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-fg-danger"
+                        className="self-start text-body font-medium text-fg-danger"
                         onClick={() => void fetchSubscription()}
                     >
                         {t('workspace.billing.currentPlan.retry')}
@@ -129,13 +129,13 @@ export function CurrentSubscriptionStatus({ workspaceId }: CurrentSubscriptionSt
             )}
 
             {status === 'success' && subscription?.state === 'none' && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.billing.currentPlan.none')}
                 </p>
             )}
 
             {status === 'success' && subscription?.state === 'active' && (
-                <div className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <div className="flex flex-col gap-1 text-body text-fg-secondary">
                     <span className="font-medium text-fg">{subscription.plan_name}</span>
                     <span>{subscription.plan_code}</span>
                     <span>

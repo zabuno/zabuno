@@ -29,7 +29,7 @@ export const WithEndSlot: Story = {
     args: {
         brand: { name: 'Zabuno', href: '#' },
         onToggleMenu: () => {},
-        end: <span className="text-sm text-gray-500 dark:text-gray-400">owner@example.com</span>,
+        end: <span className="text-body text-gray-500 dark:text-gray-400">owner@example.com</span>,
     },
 };
 

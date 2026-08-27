@@ -152,12 +152,12 @@ export function DashboardSetupJourney({
             <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
                 {rows.map((row) => (
                     <div key={row.key} className="flex flex-col gap-1">
-                        <dt className="text-sm font-medium text-fg-muted">
+                        <dt className="text-body font-medium text-fg-muted">
                             <a href={row.href} className="text-fg-link hover:underline ">
                                 {row.label}
                             </a>
                         </dt>
-                        <dd className="text-sm text-fg">{row.value}</dd>
+                        <dd className="text-body text-fg">{row.value}</dd>
                     </div>
                 ))}
             </dl>

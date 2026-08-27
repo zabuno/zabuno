@@ -40,19 +40,19 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
             className="flex flex-col gap-3"
         >
             {status === 'loading' && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('platform.plans.loading')}
                 </p>
             )}
 
             {status === 'error' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {t('platform.plans.error')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-fg-danger"
+                        className="self-start text-body font-medium text-fg-danger"
                         onClick={onRetry}
                     >
                         {t('platform.plans.retry')}
@@ -61,7 +61,7 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
             )}
 
             {status === 'success' && plans.length === 0 && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('platform.plans.empty')}
                 </p>
             )}
@@ -76,7 +76,7 @@ export function PlanList({ status, plans, onRetry, onActivateRequest }: PlanList
                     {plans.map((plan) => (
                         <li
                             key={plan.id}
-                            className="flex flex-col gap-2 rounded-lg border border-border p-3 text-sm text-fg-secondary"
+                            className="flex flex-col gap-2 rounded-lg border border-border p-3 text-body text-fg-secondary"
                         >
                             <span className="font-medium text-fg">{plan.name}</span>
                             <span className="text-fg-muted">{plan.code}</span>

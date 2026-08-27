@@ -7,9 +7,9 @@ import type { QrCodeItem } from './qr-destination/QrCodeListItem';
 import { Button } from '../../../catalog/forms/micro/Button';
 import { TextLink } from '../../../catalog/navigation/micro/TextLink';
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
+const LABEL_CLASSES = 'flex flex-col gap-1 text-meta font-medium text-fg-secondary';
 
-const ALERT_CLASSES = 'text-xs text-fg-danger';
+const ALERT_CLASSES = 'text-meta text-fg-danger';
 
 type FieldKey =
     | 'areaSectionCount'
@@ -318,7 +318,7 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             className="flex flex-col gap-3"
             aria-label={t('workspace.publication.qrExport.bulkWizard.heading')}
         >
-            <legend className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+            <legend className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.publication.qrExport.bulkWizard.heading')}
             </legend>
 
@@ -413,13 +413,13 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             {renderError('seatCountPerTable')}
 
             {!hasAttempted ? (
-                <p className="text-xs text-fg-muted">
+                <p className="text-meta text-fg-muted">
                     {t('workspace.publication.qrExport.bulkWizard.notice')}
                 </p>
             ) : null}
 
             {showSummary ? (
-                <p role="status" className="text-sm text-fg-secondary">
+                <p role="status" className="text-body text-fg-secondary">
                     {t('workspace.publication.qrExport.bulkWizard.summary', {
                         tables: values.tableCount,
                         areas: values.areaSectionCount,
@@ -441,14 +441,14 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             ) : null}
 
             {submitting ? (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.publication.qrExport.bulkWizard.loading')}
                 </p>
             ) : null}
 
             {result !== null ? (
                 <div className="flex flex-col gap-2">
-                    <p role="status" className="text-sm text-fg-secondary">
+                    <p role="status" className="text-body text-fg-secondary">
                         {t('workspace.publication.qrExport.bulkWizard.success', {
                             areas: String(result.areasCount),
                             tables: String(result.tablesCount),
@@ -458,7 +458,7 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     <ul className="flex flex-col gap-1">
                         {result.pairs.map((pair) => (
                             <li key={pair.tableId}>
-                                <TextLink href={pair.resolverUrl} className="break-all text-sm">
+                                <TextLink href={pair.resolverUrl} className="break-all text-body">
                                     {pair.tableName}
                                 </TextLink>
                             </li>

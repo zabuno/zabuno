@@ -93,24 +93,24 @@ export function InvitationAcceptForm({
             <h1 className="text-xl font-semibold text-fg">{t('auth.invitation_accept.heading')}</h1>
 
             {error && (
-                <p role="alert" className="text-sm font-medium text-fg-danger">
+                <p role="alert" className="text-body font-medium text-fg-danger">
                     {error}
                 </p>
             )}
 
             <dl className="flex flex-col gap-2">
                 <div>
-                    <dt className="text-sm text-fg-muted">
+                    <dt className="text-body text-fg-muted">
                         {t('auth.invitation_accept.workspace')}
                     </dt>
                     <dd>{invitation.workspaceName}</dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-fg-muted">{t('auth.invitation_accept.email')}</dt>
+                    <dt className="text-body text-fg-muted">{t('auth.invitation_accept.email')}</dt>
                     <dd>{invitation.invitedEmail}</dd>
                 </div>
                 <div>
-                    <dt className="text-sm text-fg-muted">{t('auth.invitation_accept.role')}</dt>
+                    <dt className="text-body text-fg-muted">{t('auth.invitation_accept.role')}</dt>
                     <dd>{invitation.role}</dd>
                 </div>
             </dl>

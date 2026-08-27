@@ -34,7 +34,7 @@ export function VerificationPending({ email }: VerificationPendingProps) {
             <h1 className="text-xl font-semibold text-fg">
                 {t('auth.verification_pending.heading')}
             </h1>
-            <p className="text-sm text-fg-secondary">
+            <p className="text-body text-fg-secondary">
                 {t('auth.verification_pending.body', { email })}
             </p>
 
@@ -42,7 +42,7 @@ export function VerificationPending({ email }: VerificationPendingProps) {
                 {t('auth.verification_pending.resend')}
             </Button>
 
-            <p role="status" aria-live="polite" className="text-sm text-fg-secondary ">
+            <p role="status" aria-live="polite" className="text-body text-fg-secondary ">
                 {t(`auth.verification_pending.status.${status}`)}
             </p>
         </div>

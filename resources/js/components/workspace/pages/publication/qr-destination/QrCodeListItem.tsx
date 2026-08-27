@@ -24,12 +24,12 @@ export function QrCodeListItem({ item, onDisable }: QrCodeListItemProps) {
             {isActive ? (
                 <a
                     href={item.resolverUrl}
-                    className="break-all text-sm text-fg-link underline underline-offset-2"
+                    className="break-all text-body text-fg-link underline underline-offset-2"
                 >
                     {item.resolverUrl}
                 </a>
             ) : (
-                <span className="text-sm text-fg-muted">
+                <span className="text-body text-fg-muted">
                     {t('workspace.publication.qrDestination.state.disabled')}
                 </span>
             )}
@@ -38,7 +38,7 @@ export function QrCodeListItem({ item, onDisable }: QrCodeListItemProps) {
                 <button
                     type="button"
                     onClick={() => onDisable(item.id)}
-                    className="self-start text-sm text-fg-danger underline underline-offset-2"
+                    className="self-start text-body text-fg-danger underline underline-offset-2"
                 >
                     {t('workspace.publication.qrDestination.disableButton')}
                 </button>

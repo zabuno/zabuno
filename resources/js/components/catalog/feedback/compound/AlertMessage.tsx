@@ -42,7 +42,7 @@ export function AlertMessage({ status, title, children, className }: AlertMessag
             role={isUrgent ? 'alert' : 'status'}
             aria-live={isUrgent ? 'assertive' : 'polite'}
             className={clsx(
-                'flex items-start gap-2 rounded-lg border p-4 text-sm',
+                'flex items-start gap-2 rounded-lg border p-4 text-body',
                 'text-fg',
                 STATUS_CONTAINER_CLASS[status],
                 className,

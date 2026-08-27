@@ -296,8 +296,8 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
     it('yoğunluk modları tipografiye dokunmaz ve dokunma hedefini küçültmez', () => {
         const css = readFileSync(CSS_PATH, 'utf8');
         const root = readCustomProperties(css, ':root');
-        const comfortable = readCustomProperties(css, '.density-comfortable');
-        const compact = readCustomProperties(css, '.density-compact');
+        const comfortable = readCustomProperties(css, ":root[data-density='comfortable']");
+        const compact = readCustomProperties(css, ":root[data-density='compact']");
 
         const px = (value: string | undefined): number => parseFloat(value ?? 'NaN');
 

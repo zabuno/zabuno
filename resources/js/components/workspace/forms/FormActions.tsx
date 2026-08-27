@@ -18,7 +18,7 @@ export function FormActions({ error, saving, saveLabel, cancelLabel, onCancel }:
     return (
         <>
             {error && (
-                <p role="alert" className="text-sm font-medium text-fg-danger">
+                <p role="alert" className="text-body font-medium text-fg-danger">
                     {error}
                 </p>
             )}

@@ -50,7 +50,7 @@ export function SegmentedControl<Value extends string>({
                         disabled={disabled}
                         onClick={() => onChange(option.value)}
                         className={clsx(
-                            'min-h-[var(--density-hit-area-min)] rounded-lg border px-4 py-2 text-sm font-medium',
+                            'min-h-[var(--density-hit-area-min)] rounded-lg border px-4 py-2 text-body font-medium',
                             'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
                             'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                             'disabled:cursor-not-allowed disabled:opacity-60',

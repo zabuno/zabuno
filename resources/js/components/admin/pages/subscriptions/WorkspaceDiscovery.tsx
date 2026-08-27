@@ -103,7 +103,7 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
         <div className="flex flex-col gap-3">
             <label
                 htmlFor="subscription-workspace-combobox"
-                className="flex flex-col gap-1 text-sm text-fg-secondary"
+                className="flex flex-col gap-1 text-body text-fg-secondary"
             >
                 {t('platform.subscriptions.workspace.label')}
             </label>
@@ -134,7 +134,7 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
                                 role="option"
                                 aria-selected={selectedWorkspace?.id === workspace.id}
                                 onClick={() => handleSelect(workspace)}
-                                className="flex w-full flex-wrap gap-2 rounded-md px-2 py-1.5 text-start text-sm text-fg-secondary hover:bg-surface-hover"
+                                className="flex w-full flex-wrap gap-2 rounded-md px-2 py-1.5 text-start text-body text-fg-secondary hover:bg-surface-hover"
                             >
                                 <span className="font-medium text-fg">{workspace.name}</span>
                                 <span>{workspace.slug}</span>
@@ -146,19 +146,19 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
             )}
 
             {status === 'loading' && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('platform.subscriptions.workspace.loading')}
                 </p>
             )}
 
             {status === 'error' && (
                 <div className="flex flex-col gap-2">
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {t('platform.subscriptions.workspace.error')}
                     </p>
                     <button
                         type="button"
-                        className="self-start text-sm font-medium text-fg-danger"
+                        className="self-start text-body font-medium text-fg-danger"
                         onClick={() => void fetchWorkspaces()}
                     >
                         {t('platform.subscriptions.workspace.retry')}
@@ -167,7 +167,7 @@ export function WorkspaceDiscovery({ selectedWorkspace, onSelect }: WorkspaceDis
             )}
 
             {status === 'success' && workspaces.length === 0 && (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('platform.subscriptions.workspace.empty')}
                 </p>
             )}

@@ -66,7 +66,7 @@ export function LocationsPage({
                     </Button>
                 }
             >
-                <p className="text-sm text-fg-secondary">
+                <p className="text-body text-fg-secondary">
                     {t('workspace.brandLocations.locations.count', {
                         count: String(locations.length),
                     })}
@@ -104,7 +104,7 @@ export function LocationsPage({
                 )}
 
                 {locations.length === 0 && !addingLocation && (
-                    <p role="status" className="text-sm text-fg-muted">
+                    <p role="status" className="text-body text-fg-muted">
                         {t('workspace.locations.empty')}
                     </p>
                 )}
@@ -112,13 +112,13 @@ export function LocationsPage({
                 {grouped.map(([groupKey, group]) => (
                     <div key={groupKey}>
                         <p className="mb-2 font-medium text-fg">{group.city}</p>
-                        <p className="mb-2 text-sm text-fg-secondary">{group.countryCode}</p>
+                        <p className="mb-2 text-body text-fg-secondary">{group.countryCode}</p>
                         <ul className="flex flex-col gap-3">
                             {group.locations.map((location) => (
                                 <li
                                     key={location.id}
                                     data-testid="brand-location-row"
-                                    className="rounded-lg border border-border p-3 text-sm text-fg-secondary"
+                                    className="rounded-lg border border-border p-3 text-body text-fg-secondary"
                                 >
                                     <LocationEditForm
                                         workspaceId={workspaceId}
