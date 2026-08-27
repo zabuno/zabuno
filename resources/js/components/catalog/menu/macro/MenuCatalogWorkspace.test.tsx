@@ -222,7 +222,6 @@ function openEntryForm(categoryName: string): HTMLElement {
     return category;
 }
 
-
 function assertMutationRequestInit(init: RequestInit | undefined): void {
     expect(init?.credentials).toBe('include');
     const headers = new Headers(init?.headers as HeadersInit | undefined);
