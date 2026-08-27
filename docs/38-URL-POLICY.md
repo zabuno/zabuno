@@ -123,7 +123,7 @@ Bunun URL motoruna doğrudan üç etkisi var:
 `-POST-SAFE-10`, `-DUPLICATE-11`, `URL-RESERVED-12`,
 `URL-RESERVED-COVERS-ROUTES-13`.
 
-## 11. Tarama ile indeksleme aynı şey değildir
+## 10. Tarama ile indeksleme aynı şey değildir
 
 Bu ayrım pratikte en sık karıştırılan yerdir ve iki liste bu yüzden AYRI:
 
@@ -144,7 +144,7 @@ yol taranmaya açık kalır.
 
 Hiçbiri güvenlik değildir. Gerçek koruma kimlik doğrulamadır.
 
-## 12. QR çözümleyici neden 302 ve `no-store`?
+## 11. QR çözümleyici neden 302 ve `no-store`?
 
 Bu, ürünün en geri alınamaz kararıdır: **basılmış bir QR kodu geri
 çağrılamaz.**
@@ -161,7 +161,7 @@ Bu, ürünün en geri alınamaz kararıdır: **basılmış bir QR kodu geri
 Kanıt kaynağı taramasıyla değil, gerçek yanıtla alınır (`URL-QR-CACHE-19`):
 bir yorum satırındaki "301" kelimesi testi yanıltmamalıdır.
 
-## 13. Kanonik adres sunucuda üretilir
+## 12. Kanonik adres sunucuda üretilir
 
 `<link rel="canonical">` ve Open Graph etiketleri sunucu tarafında basılır.
 İstemcide üretilseydi, JavaScript çalıştırmayan önizleme ve tarama botları
@@ -171,7 +171,7 @@ Kanonik adres aynı normalizer'ı kullanır. İkinci bir yerde yeniden
 yazılsaydı, kanonik etiket ile yönlendirmenin farklı adresler üretmesi an
 meselesiydi.
 
-## 15. Misafirin çıkmaz sokağı — ve 410'un neden kullanılmadığı
+## 13. Misafirin çıkmaz sokağı — ve 410'un neden kullanılmadığı
 
 Bir karekod artık bir menüye gitmiyorsa, onu tarayan kişi restoran masasında
 oturan bir müşteridir. Ona `{"message":"Not Found."}` göstermek, ürünü bozuk
@@ -191,7 +191,7 @@ daraltmasına izin verirdi. Arama motoru faydası, bu sızıntının yanında
 Yanıt biçimi **isteyene** göre değişir (tarayıcıya HTML, API istemcisine
 JSON), **vakaya** göre değil; aksi hâlde tekdüzelik bozulurdu.
 
-## 17. Host güveni ve QR hız sınırı
+## 14. Host güveni ve QR hız sınırı
 
 **Host başlığı istemciden gelir.** Laravel varsayılan olarak ona güvenir; bu,
 ürettiğimiz kanonik ve imzalı adreslerin saldırganın alan adına kaymasına izin
@@ -217,13 +217,39 @@ istek bir veritabanı araması yapar. Sınır cömerttir (aynı IP'den dakikada 
 bir masadaki misafirlerin arka arkaya taraması engellenmemeli — ama bir
 tarayıcı için değersizdir.
 
-## 18. QR token uzunluğu (owner kararı, 2026-08-27)
+## 15. QR token uzunluğu (owner kararı, 2026-08-27)
 
 Token 43 karakter kalır. Baskıda daha küçük/yoğun bir kod için kısaltma
 **yapılmayacaktır**. Bu bir ürün kararıdır: kısa kod QR yoğunluğunu düşürür
 ama token uzayını da daraltır, ve basılmış kodlar geriye dönük değiştirilemez.
 
-## 16. Henüz yapılmayanlar
+## 16. Herkese açık sayfalar sunucuda üretilir
+
+Ölçüm, tahmini yendi. Pazarlama ve yasal sayfalar istemcide üretilirken bir
+tarayıcı botunun gördüğü gövde **1.736 bayttı** ve içerik
+`<div id="app"></div>`'den ibaretti. Yani ürünün kendi tanıtımı ne arama
+motorunda ne de JavaScript çalıştırmayan AI botlarında görünüyordu. Sunucuda
+üretildikten sonra aynı sayfa **9.271 bayt** gerçek içerik.
+
+Bu sayfalarda etkileşim yoktur — yalnız metin ve bağlantı. Bu yüzden React
+paketi hiç yüklenmez: botun göremeyeceği bir yükü herkese indirtmenin
+karşılığı yok. Etkileşimli yüzeyler (`/app`, `/platform`) React olarak kalır.
+
+**ADR-L06 kapsamı netleşti:** "Flowbite React birincil bileşen kütüphanesidir"
+kuralı React YÜZEYLERİ için geçerlidir. Pazarlama sayfaları artık bir React
+yüzeyi değildir; aynı Tailwind sınıfları ve aynı token'lar kullanıldığı için
+görsel tutarlılık korunur.
+
+Sözleşmeler silinmedi, taşındı: `AppShellRootCta.test.tsx` içindeki her madde
+`tests/Feature/PublicSite/PublicHomeContractTest.php`'ye geçti (atlama
+bağlantısı, bölümler, dürüst fiyatlandırma/iletişim metni, uydurma sosyal
+kanıt yasağı, kırılma noktasız akışkan düzen).
+
+Eski sözleşme "sayfa bir React montaj noktası veriyor" diyordu. Montaj
+noktası, içeriğin ulaşmasının **vekiliydi** — ve o vekil yanıltıcı çıktı.
+Yeni sözleşme doğrudan içeriği ister.
+
+## 17. Henüz yapılmayanlar
 
 Slug geçmişi ve 301 tablosu (bir işletme adını değiştirdiğinde eski adresin
 yaşaması), sitemap üretimi ve `hreflang` kümesi ayrı paketlerdir. Bu paket
