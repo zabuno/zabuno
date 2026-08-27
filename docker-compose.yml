@@ -44,6 +44,18 @@ services:
             DB_DATABASE: ${DB_DATABASE}
             DB_USERNAME: ${DB_USERNAME}
             DB_PASSWORD: ${DB_PASSWORD}
+
+            # URL politikası konteynere GEÇMELİ. Geçmediğinde ikinci alan
+            # adı 400 döner: güvenilir host listesi boş kalır, uygulama
+            # `APP_URL` host'una düşer ve diğer her host'u reddeder. Bu
+            # yerelde tüm yığın çalıştırılırken bulundu — birim testleri
+            # yakalayamazdı, çünkü sorun kodda değil aktarımdaydı.
+            URL_TRUSTED_HOSTS: ${URL_TRUSTED_HOSTS:-}
+            # Kanonik host BOŞ bırakılır: bu bir SaaS, her alan adı kendi
+            # adreslerini yayar ve biri diğerine yönlendirilmez.
+            URL_ENFORCE_HOST: ${URL_ENFORCE_HOST:-false}
+            URL_ENFORCE_SCHEME: ${URL_ENFORCE_SCHEME:-true}
+            URL_CANONICAL_SCHEME: ${URL_CANONICAL_SCHEME:-https}
             LOG_CHANNEL: stderr
             SESSION_DRIVER: database
             CACHE_STORE: database
@@ -61,7 +73,7 @@ services:
             - '80:80'
             - '443:443'
         environment:
-            ZABUNO_DOMAIN: ${ZABUNO_DOMAIN:?ZABUNO_DOMAIN gerekli}
+            ZABUNO_DOMAINS: ${ZABUNO_DOMAINS:?ZABUNO_DOMAINS gerekli}
         volumes:
             - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
             # Sertifikalar kalıcı: her yeniden başlatmada yeniden almak,

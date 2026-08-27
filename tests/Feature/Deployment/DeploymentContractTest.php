@@ -147,6 +147,59 @@ final class DeploymentContractTest extends TestCase
         );
     }
 
+    // --- DEPLOY-URL-POLICY-06 ---------------------------------------------
+
+    /**
+     * URL politikası konteynere GEÇMELİ.
+     *
+     * Bu, yığın yerelde gerçekten çalıştırılırken bulundu. İkinci alan adı
+     * 400 dönüyordu: `URL_TRUSTED_HOSTS` compose'da aktarılmadığı için
+     * güvenilir host listesi boş kalıyor, uygulama `APP_URL` host'una
+     * düşüyor ve diğer her host'u reddediyordu.
+     *
+     * Birim testleri bunu yakalayamazdı — sorun kodda değil, kod ile
+     * çalıştığı ortam arasındaki aktarımdaydı. Bu yüzden kapı compose'a
+     * bakıyor.
+     */
+    public function test_the_url_policy_reaches_the_container(): void
+    {
+        $compose = $this->read('docker-compose.yml');
+
+        foreach (['URL_TRUSTED_HOSTS', 'URL_ENFORCE_HOST', 'URL_CANONICAL_SCHEME'] as $variable) {
+            self::assertStringContainsString(
+                $variable.':',
+                $compose,
+                "DEPLOY-URL-POLICY-06: `{$variable}` konteynere aktarılmıyor; "
+                .'ikinci alan adı 400 döner.'
+            );
+        }
+    }
+
+    // --- DEPLOY-MULTI-DOMAIN-07 -------------------------------------------
+
+    /**
+     * Vekil TEK alan adına kilitlenmemeli.
+     *
+     * Bu bir SaaS: aynı yazılım birden çok alan adında ve birden çok
+     * sunucuda çalışır. Caddy site adresini çoğul bir listeden okumalı,
+     * yoksa ikinci alan adı için sertifika hiç alınmaz.
+     */
+    public function test_the_proxy_serves_a_list_of_domains_not_a_single_one(): void
+    {
+        $caddyfile = $this->read('docker/Caddyfile');
+
+        self::assertStringContainsString(
+            '{$ZABUNO_DOMAINS}',
+            $caddyfile,
+            'DEPLOY-MULTI-DOMAIN-07: vekil tek alan adına kilitli.'
+        );
+
+        // Uygulamanın hangi şema ve host ile gelindiğini bilmesi gerekir;
+        // bilmezse ürettiği her mutlak adres yanlış olur.
+        self::assertStringContainsString('X-Forwarded-Proto', $caddyfile);
+        self::assertStringContainsString('X-Forwarded-Host', $caddyfile);
+    }
+
     // --- DEPLOY-MANUAL-ONLY-04 --------------------------------------------
 
     /**
