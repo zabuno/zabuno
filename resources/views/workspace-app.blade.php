@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Zabuno — Workspace</title>
     @include('partials.theme-bootstrap')
+    @include('partials.build-identity')
     @include('partials.analytics', ['analyticsContext' => [
         'zabuno_surface' => 'workspace',
         'zabuno_tenant_slug' => (string) (request()->route('workspace') ?? ''),

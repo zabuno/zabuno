@@ -2,6 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PlatformApp } from './components/platform/PlatformApp';
 import { ThemeRoot } from './components/theme/ThemeRoot';
+import { AppErrorBoundary } from './components/system/AppErrorBoundary';
+import { BuildTruthBanner } from './components/system/BuildTruthBanner';
 
 const container = document.getElementById('platform-admin-app');
 
@@ -12,7 +14,16 @@ if (!container) {
 createRoot(container).render(
     <StrictMode>
         <ThemeRoot>
-            <PlatformApp />
+            {/*
+                Şerit hata sınırının DIŞINDA duruyor, ve bilerek: uygulama
+                çöktüğünde de görünmesi gerekir. Yanlış sürümün çalışıyor
+                olması, çökmenin sebebi olabilir — tam da o an susan bir
+                uyarı, en çok ihtiyaç duyulduğu anda kaybolurdu.
+            */}
+            <BuildTruthBanner />
+            <AppErrorBoundary scope="app">
+                <PlatformApp />
+            </AppErrorBoundary>
         </ThemeRoot>
     </StrictMode>,
 );

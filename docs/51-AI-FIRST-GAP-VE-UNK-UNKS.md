@@ -399,8 +399,31 @@ Deponun paylaşımlı barındırmayı da desteklediği unutulmamalı. **Üç pro
 | Profil | Yerel AI | Kullanım |
 | --- | --- | --- |
 | `shared-host` | **Kapalı** | Paylaşımlı barındırma; sidecar varsayılamaz. Ürün deterministik çalışır, AI yalnız uzak uç noktayla |
-| `vps-ai-32gb` | Açık | `ai-local` + `queue-worker` ayrı servisler |
+| `vps-ai` | Açık | `ai-local` + `queue-worker` ayrı servisler. **Seçilen profil budur.** |
 | `private-gpu` | Açık | Enterprise; Stage 6 |
+
+### Bellek tabanı — SAHİP KARARI (2026-08-28)
+
+Sahip kararı: **yerel modeller açık; 16 GB RAM'li bir VPS'te ÇALIŞABİLMELİ,
+mevcut 32 GB'lık VPS'te ise rahat çalışmalı.**
+
+Bu iki ayrı sayıdır ve ikisinin de yazılması şart:
+
+| | Değer | Anlamı |
+| --- | --- | --- |
+| **Taban** (hard floor) | 16 GB | Bu bellekte çalışmayan bir model kurulumu **kabul edilemez**. Sığdırma hedefi budur. |
+| **Hedef** (comfort) | 32 GB | Mevcut donanım. Eşzamanlılık ve önbellek burada rahatlar. |
+
+Neden tek sayı yetmez: yalnız 32 GB yazılsaydı, model seçimi sessizce 32 GB'a
+göre yapılır ve ürün 16 GB'lık bir sunucuya taşındığında **takas alanına
+düşerek** ayakta kalır — çökmez, yalnız her istek dakikalarca sürer. Bu arıza
+biçimi izlemede "yavaşlık" gibi görünür, "yanlış boyutlandırma" gibi değil, ve
+teşhisi aylar alır.
+
+Bu yüzden `AI-S1-02`'nin kaynak tavanı 16 GB tabanına göre yazılır; 32 GB
+yalnız eşzamanlılık payı olarak kullanılır, model boyutu için değil.
+Profil adından `32gb` bilerek çıkarıldı: donanım rakamını profil adına gömmek,
+donanım değiştiğinde adı yalancı yapar.
 
 **Model dosyaları sürüm kontrolünde DEĞİL**: `install.sh` indirir, sağlaması
 doğrulanır, revizyon kaydedilir. Depoya yarım GB koymak klonlamayı ve CI'yı
@@ -694,7 +717,7 @@ geliştirilebilir; resmi bağlantılar geldikçe etkinleştirilir.
 
 | # | Karar | Ne zaman |
 | --- | --- | --- |
-| 1 | Yerel modeller aynı VPS'te mi? (`vps-ai-32gb` mi `shared-host` mu) | **Faz 1 başlarken** — dağıtım profilini belirler |
+| 1 | ~~Yerel modeller aynı VPS'te mi?~~ **KARAR VERİLDİ (2026-08-28): `vps-ai`, taban 16 GB / hedef 32 GB** | ~~Faz 1 başlarken~~ — `AI-S1-02` artık engelli değil |
 | 2 | Hangi sağlayıcılarda gerçek API bağlantısı var | `AI-S1-03` sırasında; öncesinde gerekmez |
 | 3 | Tenant başına aylık AI bütçesi | `AI-S1-05` |
 | 4 | Kullanıcı model seçebilecek mi | Öneri: **hayır** — kullanıcı `Yerel/Gizli`, `Ekonomik`, `Hızlı`, `En yüksek kalite` profili seçer; tam model seçimi SuperAdmin ve eval promosyonundadır |

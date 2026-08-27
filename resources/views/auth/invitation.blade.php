@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Zabuno — Team invitation</title>
     @include('partials.theme-bootstrap')
+    @include('partials.build-identity')
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/auth.tsx'])
 </head>

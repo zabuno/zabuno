@@ -43,7 +43,7 @@ return [
 
         'local' => [
             'connections' => [
-                // `vps-ai-32gb` profilinde doldurulur; OpenAI-uyumlu uç nokta.
+                // `vps-ai` profilinde doldurulur; OpenAI-uyumlu uç nokta.
                 // Tam uyumluluk VARSAYILMAZ; uyumluluk katmanı sınar.
             ],
         ],
