@@ -1,32 +1,34 @@
 import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { Button } from '../../../catalog/forms/micro/Button';
-import { useId, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
+import { MediaDropzone, type SelectedImage } from './MediaDropzone';
 import { FieldError } from '../../../catalog/menu/micro/FieldError';
 import { focusFirstInvalidField, ServerRejectedError } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/workspace';
 
 type UploadStatus = 'idle' | 'pending' | 'success' | 'error';
 
-const SLOT_OPTIONS = [
-    ['hero', 'workspace.media.upload.field.assetSlot.hero'],
-    ['cards', 'workspace.media.upload.field.assetSlot.cards'],
-    ['pricing', 'workspace.media.upload.field.assetSlot.pricing'],
-    ['features', 'workspace.media.upload.field.assetSlot.features'],
-    ['testimonial', 'workspace.media.upload.field.assetSlot.testimonial'],
-    ['avatar', 'workspace.media.upload.field.assetSlot.avatar'],
-    ['logo', 'workspace.media.upload.field.assetSlot.logo'],
-    ['cover', 'workspace.media.upload.field.assetSlot.cover'],
-    ['favicon', 'workspace.media.upload.field.assetSlot.favicon'],
-    ['ogImage', 'workspace.media.upload.field.assetSlot.ogImage'],
-    ['appIcon', 'workspace.media.upload.field.assetSlot.appIcon'],
-    ['profileAvatar', 'workspace.media.upload.field.assetSlot.profileAvatar'],
-    ['categoryHero', 'workspace.media.upload.field.assetSlot.categoryHero'],
-    ['itemImage', 'workspace.media.upload.field.assetSlot.itemImage'],
-    ['gallery', 'workspace.media.upload.field.assetSlot.gallery'],
-    ['printLogo', 'workspace.media.upload.field.assetSlot.printLogo'],
-    ['emailHeader', 'workspace.media.upload.field.assetSlot.emailHeader'],
-] as const;
+/**
+ * Slot politikası — nerede kullanılacağı ve o yerin ne gerektirdiği.
+ *
+ * Liste artık burada SABİT DEĞİL; sunucudan gelir
+ * (`GET /api/media/slot-policies`). İki sebebi var:
+ *
+ *   1. Minimum ölçü, format ve oran tek yerde yaşamalı; iki liste bir gün
+ *      ayrışır ve kullanıcı reddedilene kadar bunu bilmez.
+ *   2. Sunucu yalnız RESTORAN yüzeyinin slotlarını döndürür. Burada sabit
+ *      dururken "Pricing", "Features" ve "Testimonial" de listedeydi —
+ *      onlar Zabuno'nun kendi tanıtım sitesine ait (`docs/50`).
+ */
+type SlotPolicy = {
+    key: string;
+    minWidth: number;
+    minHeight: number;
+    aspect: string | null;
+    formats: string[];
+    altRequired: boolean;
+};
 
 type MediaUploadRegionProps = {
     onSubmit: (formData: FormData) => Promise<void> | void;
@@ -46,7 +48,8 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
     const altId = useId();
     const slotId = useId();
 
-    const [file, setFile] = useState<File | null>(null);
+    const [policies, setPolicies] = useState<SlotPolicy[]>([]);
+    const [selected, setSelected] = useState<SelectedImage | null>(null);
     const [altText, setAltText] = useState('');
     const [slot, setSlot] = useState('');
     const [status, setStatus] = useState<UploadStatus>('idle');
@@ -58,7 +61,48 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
      */
     const [failureMessage, setFailureMessage] = useState('');
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    // Politikalar workspace'e bağlı değil; bir kez okunur.
+    useEffect(() => {
+        let cancelled = false;
+
+        void (async () => {
+            try {
+                const response = await fetch('/api/media/slot-policies', {
+                    credentials: 'same-origin',
+                });
+
+                if (!response.ok || cancelled) return;
+
+                const body = (await response.json()) as { slots?: SlotPolicy[] };
+
+                if (!cancelled) setPolicies(body.slots ?? []);
+            } catch {
+                // Politika okunamazsa slot listesi boş kalır ve form
+                // "önce bir yer seçin" der. Sessizce yanlış bir liste
+                // göstermekten iyidir.
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const activePolicy = policies.find((candidate) => candidate.key === slot) ?? null;
+
+    /**
+     * Seçilen görsel bu slot için yeterince büyük mü?
+     *
+     * Kontrol İSTEMCİDE yapılır ama sunucunun yerine geçmez: amaç,
+     * kullanıcının yükleme bitene kadar beklemeden öğrenmesi. Reddin
+     * otoritesi sunucudadır (`docs/49` Faz 2).
+     */
+    const tooSmall =
+        selected !== null &&
+        activePolicy !== null &&
+        selected.width > 0 &&
+        (selected.width < activePolicy.minWidth || selected.height < activePolicy.minHeight);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -68,8 +112,17 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         // göremiyordu (`docs/47` Kural 5).
         const errors: Record<string, string> = {};
 
-        if (!file) {
+        if (!selected) {
             errors[fileId] = t('workspace.media.upload.error.file.required');
+        } else if (tooSmall && activePolicy) {
+            // Reddin sebebi somut söylenir: "yeterince büyük değil" değil,
+            // KAÇ olduğu ve KAÇ olması gerektiği — ve neden büyütülmediği.
+            errors[fileId] = t('workspace.media.upload.error.tooSmall', {
+                width: String(selected.width),
+                height: String(selected.height),
+                slot: activePolicy.key,
+                min: `${activePolicy.minWidth} × ${activePolicy.minHeight}`,
+            });
         }
 
         if (altText.trim() === '') {
@@ -89,7 +142,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         }
 
         const formData = new FormData();
-        formData.set('file', file as File);
+        formData.set('file', selected!.file);
         formData.set('altText', altText);
         formData.set('slot', slot);
 
@@ -99,12 +152,11 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
         try {
             await onSubmit(formData);
-            setFile(null);
+            // Girdiyi temizlemek artık damlatma alanının işi: gerçek
+            // `<input type=file>` orada yaşıyor.
+            setSelected(null);
             setAltText('');
             setSlot('');
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
             setStatus('success');
         } catch (error) {
             // YALNIZ sunucunun reddi ekrana çıkar. Ağ kopmasında `error`
@@ -135,24 +187,20 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
             <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
-                    {/* Hata `<label>`in DIŞINDA: içinde olsaydı alanın
-                        erişilebilir adına karışırdı. */}
-                    <label
-                        htmlFor={fileId}
-                        className="flex flex-col gap-1 text-body text-fg-secondary"
-                    >
+                    <span className="text-body text-fg-secondary">
                         {t('workspace.media.upload.field.file')}
-                        <TextInput
-                            id={fileId}
-                            name={fileId}
-                            type="file"
-                            ref={fileInputRef}
-                            className="text-body text-fg-secondary"
-                            aria-invalid={fieldErrors[fileId] === undefined ? undefined : true}
-                            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-                        />
-                    </label>
-                    {fieldErrors[fileId] ? <FieldError message={fieldErrors[fileId]} /> : null}
+                    </span>
+                    <MediaDropzone
+                        selected={selected}
+                        invalid={fieldErrors[fileId] !== undefined}
+                        describedBy={fieldErrors[fileId] ? `${fileId}-error` : undefined}
+                        onSelect={setSelected}
+                    />
+                    {fieldErrors[fileId] ? (
+                        <span id={`${fileId}-error`}>
+                            <FieldError message={fieldErrors[fileId]} />
+                        </span>
+                    ) : null}
                 </div>
 
                 <div className="flex flex-col gap-1">
@@ -197,13 +245,49 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                             <option value="">
                                 {t('workspace.media.upload.field.assetSlot.placeholder')}
                             </option>
-                            {SLOT_OPTIONS.map(([value, labelKey]) => (
-                                <option key={value} value={value}>
-                                    {t(labelKey)}
+                            {policies.map((policy) => (
+                                <option key={policy.key} value={policy.key}>
+                                    {t(
+                                        `workspace.media.upload.field.assetSlot.${policy.key}` as Parameters<
+                                            typeof t
+                                        >[0],
+                                    )}
                                 </option>
                             ))}
                         </Select>
                     </label>
+
+                    {/*
+                        Slot seçilince GEREKSİNİMLERİ görünür.
+
+                        Öncesinde kullanıcı 17 opak ad arasından seçim yapıyor
+                        ve hangi ölçüde görsel yükleyeceğini hiçbir yerden
+                        öğrenemiyordu; bulanık görseli ancak yayınladıktan
+                        sonra fark ediyordu.
+                    */}
+                    {activePolicy ? (
+                        <ul className="flex flex-col gap-0.5 text-meta text-fg-muted">
+                            <li>
+                                {t('workspace.media.upload.requirement.minimum', {
+                                    width: String(activePolicy.minWidth),
+                                    height: String(activePolicy.minHeight),
+                                })}
+                            </li>
+                            {activePolicy.aspect ? (
+                                <li>
+                                    {t('workspace.media.upload.requirement.aspect', {
+                                        aspect: activePolicy.aspect,
+                                    })}
+                                </li>
+                            ) : null}
+                            <li>
+                                {t('workspace.media.upload.requirement.formats', {
+                                    formats: activePolicy.formats.join(', '),
+                                })}
+                            </li>
+                        </ul>
+                    ) : null}
+
                     {fieldErrors[slotId] ? <FieldError message={fieldErrors[slotId]} /> : null}
                 </div>
             </div>

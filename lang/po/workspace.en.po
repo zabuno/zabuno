@@ -884,6 +884,22 @@ msgstr "Upload"
 msgid "workspace.media.upload.complete"
 msgstr "Media upload complete."
 
+#: workspace:workspace.media.upload.dropzone.active
+msgid "workspace.media.upload.dropzone.active"
+msgstr "Release to add this image"
+
+#: workspace:workspace.media.upload.dropzone.choose
+msgid "workspace.media.upload.dropzone.choose"
+msgstr "Choose a file"
+
+#: workspace:workspace.media.upload.dropzone.hint
+msgid "workspace.media.upload.dropzone.hint"
+msgstr "JPEG, PNG or WebP"
+
+#: workspace:workspace.media.upload.dropzone.label
+msgid "workspace.media.upload.dropzone.label"
+msgstr "Drop an image here, or choose a file"
+
 #: workspace:workspace.media.upload.error.altText.required
 msgid "workspace.media.upload.error.altText.required"
 msgstr "Enter alt text for this image."
@@ -895,6 +911,10 @@ msgstr "Choose where this image will be used."
 #: workspace:workspace.media.upload.error.file.required
 msgid "workspace.media.upload.error.file.required"
 msgstr "Choose a file to upload."
+
+#: workspace:workspace.media.upload.error.tooSmall
+msgid "workspace.media.upload.error.tooSmall"
+msgstr "This image is {width} × {height}. {slot} needs at least {min}. A smaller image would look blurred, because it is never enlarged."
 
 #: workspace:workspace.media.upload.failed
 msgid "workspace.media.upload.failed"
@@ -995,6 +1015,26 @@ msgstr "Upload"
 #: workspace:workspace.media.upload.region
 msgid "workspace.media.upload.region"
 msgstr "Media upload"
+
+#: workspace:workspace.media.upload.requirement.aspect
+msgid "workspace.media.upload.requirement.aspect"
+msgstr "Aspect ratio {aspect}"
+
+#: workspace:workspace.media.upload.requirement.formats
+msgid "workspace.media.upload.requirement.formats"
+msgstr "Formats: {formats}"
+
+#: workspace:workspace.media.upload.requirement.minimum
+msgid "workspace.media.upload.requirement.minimum"
+msgstr "At least {width} × {height} pixels"
+
+#: workspace:workspace.media.upload.selected.dimensions
+msgid "workspace.media.upload.selected.dimensions"
+msgstr "{width} × {height} pixels"
+
+#: workspace:workspace.media.upload.selected.replace
+msgid "workspace.media.upload.selected.replace"
+msgstr "Choose a different file"
 
 #: workspace:workspace.media.upload.uploading
 msgid "workspace.media.upload.uploading"

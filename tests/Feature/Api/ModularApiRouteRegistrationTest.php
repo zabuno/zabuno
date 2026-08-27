@@ -63,6 +63,8 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/workspaces/{workspace}/iyzico-sandbox/session||App\Http\Controllers\Billing\StoreIyzicoSandboxSessionController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/media||App\Http\Controllers\Media\StoreMediaController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/media||App\Http\Controllers\Media\ListMediaController|api,auth:sanctum,verified',
+        // Slot politikaları workspace'e bağlı DEĞİLDİR: ürünün kendi kuralları.
+        'GET|api/media/slot-policies||App\Http\Controllers\Media\ListSlotPoliciesController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/media/{media}||App\Http\Controllers\Media\DeleteMediaController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/team/members||App\Http\Controllers\Team\ListTeamMembersController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/team/members/{member}||App\Http\Controllers\Team\RemoveTeamMemberController|api,auth:sanctum,throttle:5,1,verified',

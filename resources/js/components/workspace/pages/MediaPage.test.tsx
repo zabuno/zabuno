@@ -46,12 +46,46 @@ function collectClassLists(root: HTMLElement): string[] {
     return classLists;
 }
 
+/**
+ * Slot politikaları ayrı bir uç noktadan gelir ve HER fetch taklidinin
+ * bunu karşılaması gerekir: slot listesi artık koda gömülü değil.
+ *
+ * Tek bir yardımcıda durur ki bir sonraki test onu unutmasın; unutulduğunda
+ * belirti "seçenek bulunamadı" olur ve sebebi bulmak zaman alır.
+ */
+function slotPoliciesResponse(url: string): Response | null {
+    if (String(url) !== '/api/media/slot-policies') {
+        return null;
+    }
+
+    return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+            slots: [
+                {
+                    key: 'itemImage',
+                    minWidth: 1000,
+                    minHeight: 1000,
+                    aspect: '1:1',
+                    formats: ['jpeg', 'png', 'webp'],
+                    altRequired: true,
+                },
+            ],
+            limits: { maxBytes: 31457280, maxMegapixels: 40 },
+        }),
+    } as Response;
+}
+
 describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
     let fetchSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
         setViewport(320, 480);
         fetchSpy = vi.fn(async (url: string) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT) {
                 return {
                     ok: true,
@@ -59,6 +93,7 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
                     json: async () => ({ assets: [] }),
                 } as Response;
             }
+
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
         vi.stubGlobal('fetch', fetchSpy);
@@ -91,7 +126,13 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
 
-        const [url, init] = fetchSpy.mock.calls[0];
+        // İlk çağrı olduğu VARSAYILMAZ: slot politikaları ayrı bir uç
+        // noktadan geliyor ve sıra garanti değil.
+        const mediaCall = fetchSpy.mock.calls.find(
+            (call: unknown[]) => String(call[0]) === MEDIA_ENDPOINT,
+        );
+        expect(mediaCall).toBeDefined();
+        const [url, init] = mediaCall as [string, RequestInit | undefined];
         expect(String(url)).toBe(MEDIA_ENDPOINT);
         expect(init).toMatchObject({ credentials: 'same-origin' });
     });
@@ -118,6 +159,9 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         const user = (await import('@testing-library/user-event')).default.setup();
 
         fetchSpy.mockImplementation(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
             }
@@ -131,7 +175,7 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
                         asset: {
                             id: 42,
                             altText: 'A test image',
-                            slot: 'hero',
+                            slot: 'itemImage',
                             status: 'quarantined',
                         },
                     }),
@@ -152,7 +196,13 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         const file = new File(['binary'], 'photo.png', { type: 'image/png' });
         await user.upload(fileField, file);
         await user.type(altField, 'A test image');
-        await user.selectOptions(slotField, 'hero');
+        // Slot listesi SUNUCUDAN geliyor; seçenek gelene kadar beklenir.
+        await waitFor(() => {
+            expect(
+                within(slotField).getByRole('option', { name: /list.card.detail item/i }),
+            ).toBeInTheDocument();
+        });
+        await user.selectOptions(slotField, 'itemImage');
         await user.click(submitButton);
 
         await waitFor(() => {
@@ -176,13 +226,21 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         const user = (await import('@testing-library/user-event')).default.setup();
 
         fetchSpy.mockImplementation(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return {
                     ok: true,
                     status: 200,
                     json: async () => ({
                         assets: [
-                            { id: 7, altText: 'Owned asset', slot: 'hero', status: 'quarantined' },
+                            {
+                                id: 7,
+                                altText: 'Owned asset',
+                                slot: 'itemImage',
+                                status: 'quarantined',
+                            },
                         ],
                     }),
                 } as Response;
@@ -390,6 +448,9 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
             resolveGet = resolve;
         });
         fetchSpy = vi.fn(async (url: string) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT) {
                 return pendingGet;
             }
@@ -414,6 +475,9 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
 
     it('resolves an HTTP 200 empty response to the accessible successful-empty status', async () => {
         fetchSpy = vi.fn(async (url: string) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT) {
                 return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
             }
@@ -433,6 +497,9 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
 
     it('resolves a thrown GET to an accessible error with a real Retry button', async () => {
         fetchSpy = vi.fn(async (url: string) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT) {
                 throw new Error('Network failure');
             }
@@ -458,6 +525,9 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
 
         let getCallCount = 0;
         fetchSpy = vi.fn(async (url: string) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT) {
                 getCallCount += 1;
                 if (getCallCount === 1) {
@@ -489,6 +559,9 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
         const user = (await import('@testing-library/user-event')).default.setup();
 
         fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return { ok: false, status: 500, json: async () => ({}) } as Response;
             }
@@ -502,7 +575,7 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
                         asset: {
                             id: 42,
                             altText: 'A test image',
-                            slot: 'hero',
+                            slot: 'itemImage',
                             status: 'quarantined',
                         },
                     }),
@@ -526,7 +599,7 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
         const file = new File(['binary'], 'photo.png', { type: 'image/png' });
         await user.upload(fileField, file);
         await user.type(altField, 'A test image');
-        await user.selectOptions(slotField, 'hero');
+        await user.selectOptions(slotField, 'itemImage');
         await user.click(submitButton);
 
         await waitFor(() => {
@@ -576,7 +649,7 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
         const file = new File(['binary'], 'photo.png', { type: 'image/png' });
         await user.upload(fileField, file);
         await user.type(altField, 'A test image');
-        await user.selectOptions(slotField, 'hero');
+        await user.selectOptions(slotField, 'itemImage');
 
         return { fileField, altField, slotField, submitButton, file };
     }
@@ -589,6 +662,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
             resolvePost = resolve;
         });
         fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
             }
@@ -616,7 +692,12 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
             ok: true,
             status: 201,
             json: async () => ({
-                asset: { id: 99, altText: 'A test image', slot: 'hero', status: 'quarantined' },
+                asset: {
+                    id: 99,
+                    altText: 'A test image',
+                    slot: 'itemImage',
+                    status: 'quarantined',
+                },
             }),
         } as Response);
     });
@@ -625,6 +706,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
         const user = (await import('@testing-library/user-event')).default.setup();
 
         fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
             }
@@ -656,7 +740,7 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         expect(fileField.files?.[0]).toBe(file);
         expect((altField as HTMLInputElement).value).toBe('A test image');
-        expect((slotField as HTMLSelectElement).value).toBe('hero');
+        expect((slotField as HTMLSelectElement).value).toBe('itemImage');
         expect(submitButton).not.toBeDisabled();
     });
 
@@ -664,6 +748,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
         const user = (await import('@testing-library/user-event')).default.setup();
 
         fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
             }
@@ -692,7 +779,7 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         expect(fileField.files?.[0]).toBe(file);
         expect((altField as HTMLInputElement).value).toBe('A test image');
-        expect((slotField as HTMLSelectElement).value).toBe('hero');
+        expect((slotField as HTMLSelectElement).value).toBe('itemImage');
         expect(submitButton).not.toBeDisabled();
     });
 
@@ -701,6 +788,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         let postCallCount = 0;
         fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return { ok: true, status: 200, json: async () => ({ assets: [] }) } as Response;
             }
@@ -716,7 +806,7 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
                         asset: {
                             id: 77,
                             altText: 'A test image',
-                            slot: 'hero',
+                            slot: 'itemImage',
                             status: 'quarantined',
                         },
                     }),
@@ -785,13 +875,21 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
 
     function stubInitialGet(handleOther: (url: string, init?: RequestInit) => Promise<Response>) {
         fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
             if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
                 return {
                     ok: true,
                     status: 200,
                     json: async () => ({
                         assets: [
-                            { id: 7, altText: 'Owned asset', slot: 'hero', status: 'quarantined' },
+                            {
+                                id: 7,
+                                altText: 'Owned asset',
+                                slot: 'itemImage',
+                                status: 'quarantined',
+                            },
                             { id: 8, altText: 'Other asset', slot: 'menu', status: 'quarantined' },
                         ],
                     }),
