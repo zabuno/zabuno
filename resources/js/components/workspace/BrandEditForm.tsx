@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Button } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
+import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/workspace';
 import { FormField } from './forms/FormField';
 import { FormSection } from './forms/FormSection';
@@ -36,6 +37,12 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
     const [contactEmail, setContactEmail] = useState(brand.contact_email ?? '');
     const [contactPhone, setContactPhone] = useState(brand.contact_phone ?? '');
     const [error, setError] = useState('');
+    /**
+     * Sunucunun 422 gövdesindeki alan hataları. Daha önce okunmadan
+     * atılıyordu: her doğrulama hatası tek bir cümleye düşüyor, kullanıcı
+     * neyi düzelteceğini bilmediği için aynı veriyi tekrar gönderiyordu.
+     */
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState(false);
 
     function startEdit() {
@@ -59,6 +66,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
         event.preventDefault();
 
         setError('');
+        setFieldErrors({});
         setSaving(true);
 
         try {
@@ -90,8 +98,27 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                 return;
             }
 
-            setError(t('workspace.brandLocations.edit.error.submit'));
+            // Sunucu neyin yanlış olduğunu SÖYLEDİ; gövdesi okunmadan
+            // atılırsa kullanıcı neyi düzelteceğini bilemez.
+            const failure = await readValidationFailure(
+                response,
+                t('workspace.brandLocations.edit.error.submit'),
+            );
+
+            setFieldErrors(failure.fields);
+            setError(failure.message ?? t('workspace.brandLocations.edit.error.submit'));
+            focusFirstInvalidField(failure.fields, [
+                'name',
+                'slug',
+                'locale',
+                'timezone',
+                'currency',
+                'description',
+                'contact_email',
+                'contact_phone',
+            ]);
         } catch {
+            // Buraya yalnız istek kurulamadığında düşülür.
             setError(t('workspace.brandLocations.edit.error.submit'));
         }
 
@@ -164,6 +191,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-slug"
                         name="slug"
+                        errorText={fieldErrors.slug}
                         label={t('workspace.brandLocations.brand.slug')}
                         value={brand.slug}
                         disabled
@@ -172,6 +200,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-name"
                         name="name"
+                        errorText={fieldErrors.name}
                         label={t('workspace.brand.name')}
                         value={name}
                         onChange={setName}
@@ -182,6 +211,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-locale"
                         name="locale"
+                        errorText={fieldErrors.locale}
                         label={t('workspace.brandLocations.brand.locale')}
                         value={locale}
                         onChange={setLocale}
@@ -189,6 +219,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-timezone"
                         name="timezone"
+                        errorText={fieldErrors.timezone}
                         label={t('workspace.brandLocations.brand.timezone')}
                         value={timezone}
                         onChange={setTimezone}
@@ -196,6 +227,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-currency"
                         name="currency"
+                        errorText={fieldErrors.currency}
                         label={t('workspace.brandLocations.brand.currency')}
                         value={currency}
                         onChange={setCurrency}
@@ -206,6 +238,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-description"
                         name="description"
+                        errorText={fieldErrors.description}
                         label={t('workspace.brandLocations.brand.description')}
                         value={description}
                         onChange={setDescription}
@@ -216,6 +249,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-contact-email"
                         name="contact_email"
+                        errorText={fieldErrors.contact_email}
                         label={t('workspace.brandLocations.brand.contactEmail')}
                         value={contactEmail}
                         onChange={setContactEmail}
@@ -223,6 +257,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                     <FormField
                         id="brand-edit-contact-phone"
                         name="contact_phone"
+                        errorText={fieldErrors.contact_phone}
                         label={t('workspace.brandLocations.brand.contactPhone')}
                         value={contactPhone}
                         onChange={setContactPhone}

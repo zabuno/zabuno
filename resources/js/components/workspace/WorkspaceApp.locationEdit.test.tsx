@@ -428,7 +428,10 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         await firstRowScope.findByLabelText('Display name');
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Save' }));
 
-        expect(await firstRowScope.findByRole('alert')).toBeInTheDocument();
+        // Alan hataları eklendiğinde bu ekranda birden fazla `alert`
+        // oluyor: bir özet, bir de hatalı alanın yanındaki mesaj. İkisi de
+        // istenen davranış — `findByRole` tekil beklediği için `findAllByRole`.
+        expect((await firstRowScope.findAllByRole('alert')).length).toBeGreaterThan(0);
 
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Cancel' }));
 
@@ -468,7 +471,10 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         await firstRowScope.findByLabelText('Display name');
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Save' }));
 
-        expect(await firstRowScope.findByRole('alert')).toBeInTheDocument();
+        // Alan hataları eklendiğinde bu ekranda birden fazla `alert`
+        // oluyor: bir özet, bir de hatalı alanın yanındaki mesaj. İkisi de
+        // istenen davranış — `findByRole` tekil beklediği için `findAllByRole`.
+        expect((await firstRowScope.findAllByRole('alert')).length).toBeGreaterThan(0);
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Cancel' }));
 
         const restoredRows = locationRows(scope);
@@ -501,7 +507,10 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         await firstRowScope.findByLabelText('Display name');
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Save' }));
 
-        expect(await firstRowScope.findByRole('alert')).toBeInTheDocument();
+        // Alan hataları eklendiğinde bu ekranda birden fazla `alert`
+        // oluyor: bir özet, bir de hatalı alanın yanındaki mesaj. İkisi de
+        // istenen davranış — `findByRole` tekil beklediği için `findAllByRole`.
+        expect((await firstRowScope.findAllByRole('alert')).length).toBeGreaterThan(0);
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Cancel' }));
 
         const restoredRows = locationRows(scope);

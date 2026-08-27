@@ -3,6 +3,7 @@ import { Label } from '../catalog/forms/micro/Label';
 import { TextInput } from '../catalog/forms/micro/TextInput';
 import { Button } from '../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
+import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/auth';
 
 type FieldErrors = Partial<Record<'password' | 'password_confirmation' | 'submit', string>>;
@@ -46,10 +47,16 @@ export function ResetPasswordForm({
             return;
         }
 
+        // Başlangıç değeri YOK: `null` ataması hiçbir zaman okunmuyor,
+        // çünkü buraya ancak fetch başarıyla döndüyse ulaşılıyor —
+        // diğer iki yol (istek kurulamadı / yanıt uygun) `return` ediyor.
+        // TypeScript bunu zaten daraltıyor.
+        let response: Response;
+
         try {
             await bootstrapCsrfCookie();
 
-            const response = await fetch(
+            response = await fetch(
                 '/reset-password',
                 buildAuthRequestInit({
                     method: 'POST',
@@ -69,12 +76,27 @@ export function ResetPasswordForm({
                 return;
             }
         } catch {
+            // Buraya yalnız İSTEK KURULAMADIĞINDA düşülür. Sunucunun
+            // reddettiği durum aşağıda, gövdesi okunarak ele alınır.
             setErrors((current) => ({ ...current, submit: t('auth.reset_password.error.submit') }));
 
             return;
         }
 
-        setErrors((current) => ({ ...current, submit: t('auth.reset_password.error.submit') }));
+        // Sunucu neyin yanlış olduğunu SÖYLEDİ; gövdesi okunmadan
+        // atılırsa kullanıcı neyi düzelteceğini bilemez.
+        const failure = await readValidationFailure(
+            response,
+            t('auth.reset_password.error.submit'),
+        );
+
+        setErrors((current) => ({
+            ...current,
+            ...failure.fields,
+            submit: failure.message ?? t('auth.reset_password.error.submit'),
+        }));
+
+        focusFirstInvalidField(failure.fields, ['email', 'password', 'password_confirmation']);
     }
 
     return (

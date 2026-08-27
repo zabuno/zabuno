@@ -130,7 +130,6 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
             cancelled = true;
         };
         // Yalnız ilk açılışta.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function handleCountryChange(next: string): void {

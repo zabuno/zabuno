@@ -185,7 +185,10 @@ describe('LocationOnboardingForm — client-side required validation', () => {
 
         fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
 
-        const alert = await screen.findByRole('alert');
+        // Alan hataları eklendiğinde bu formda birden fazla `alert`
+        // olur: bir özet, bir de hatalı alanın yanındaki mesaj.
+        // İkisi de istenen davranış.
+        const [alert] = await screen.findAllByRole('alert');
         expect(alert).toBeInTheDocument();
 
         const createCalls = fetchMock.mock.calls.filter(
@@ -259,7 +262,10 @@ describe('LocationOnboardingForm — server error rendering', () => {
         fillRequiredFields();
         fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
 
-        const alert = await screen.findByRole('alert');
+        // Alan hataları eklendiğinde bu formda birden fazla `alert`
+        // olur: bir özet, bir de hatalı alanın yanındaki mesaj.
+        // İkisi de istenen davranış.
+        const [alert] = await screen.findAllByRole('alert');
         expect(alert).toBeInTheDocument();
         expect(onCreated).not.toHaveBeenCalled();
 
@@ -288,7 +294,10 @@ describe('LocationOnboardingForm — server error rendering', () => {
         fillRequiredFields();
         fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
 
-        const alert = await screen.findByRole('alert');
+        // Alan hataları eklendiğinde bu formda birden fazla `alert`
+        // olur: bir özet, bir de hatalı alanın yanındaki mesaj.
+        // İkisi de istenen davranış.
+        const [alert] = await screen.findAllByRole('alert');
         expect(alert).toBeInTheDocument();
         expect(onCreated).not.toHaveBeenCalled();
 

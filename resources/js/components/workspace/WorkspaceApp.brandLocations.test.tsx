@@ -452,7 +452,10 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         await scope.findByLabelText('Brand name');
         fireEvent.click(scope.getByRole('button', { name: 'Save' }));
 
-        expect(await scope.findByRole('alert')).toBeInTheDocument();
+        // Alan hataları eklendiğinde bu ekranda birden fazla `alert`
+        // oluyor: bir özet, bir de hatalı alanın yanındaki mesaj. İkisi de
+        // istenen davranış — `findByRole` tekil beklediği için `findAllByRole`.
+        expect((await scope.findAllByRole('alert')).length).toBeGreaterThan(0);
 
         fireEvent.click(scope.getByRole('button', { name: 'Cancel' }));
         expect(scope.getByText(brand.name)).toBeInTheDocument();
@@ -479,7 +482,10 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         await scope.findByLabelText('Brand name');
         fireEvent.click(scope.getByRole('button', { name: 'Save' }));
 
-        expect(await scope.findByRole('alert')).toBeInTheDocument();
+        // Alan hataları eklendiğinde bu ekranda birden fazla `alert`
+        // oluyor: bir özet, bir de hatalı alanın yanındaki mesaj. İkisi de
+        // istenen davranış — `findByRole` tekil beklediği için `findAllByRole`.
+        expect((await scope.findAllByRole('alert')).length).toBeGreaterThan(0);
         fireEvent.click(scope.getByRole('button', { name: 'Cancel' }));
         expect(scope.getByText(brand.name)).toBeInTheDocument();
 
@@ -504,7 +510,10 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         await scope.findByLabelText('Brand name');
         fireEvent.click(scope.getByRole('button', { name: 'Save' }));
 
-        expect(await scope.findByRole('alert')).toBeInTheDocument();
+        // Alan hataları eklendiğinde bu ekranda birden fazla `alert`
+        // oluyor: bir özet, bir de hatalı alanın yanındaki mesaj. İkisi de
+        // istenen davranış — `findByRole` tekil beklediği için `findAllByRole`.
+        expect((await scope.findAllByRole('alert')).length).toBeGreaterThan(0);
         fireEvent.click(scope.getByRole('button', { name: 'Cancel' }));
         expect(scope.getByText(brand.name)).toBeInTheDocument();
 
