@@ -7,6 +7,7 @@ namespace App\Infrastructure\Publication\Persistence;
 use App\Application\Publication\Dto\PublicationRecord;
 use App\Application\Publication\Exception\PublicationPersistenceFailedException;
 use App\Application\Publication\Port\PublicationRepositoryPort;
+use App\Domain\Publication\MenuIndexability;
 use App\Domain\Publication\PublicationStatus;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
@@ -41,6 +42,15 @@ final class EloquentPublicationRepository implements PublicationRepositoryPort
                     'published_by' => $publishedByUserId,
                     'published_at' => $publishedAt,
                     'created_at' => $publishedAt,
+                    'updated_at' => $publishedAt,
+                ]);
+
+                // İndekslenebilirlik HER yayında yeniden hesaplanır.
+                // Bir kez açılıp öylece kalsaydı, ürünlerini kaldırıp
+                // yeniden yayınlayan bir restoranın boş menüsü arama
+                // sonuçlarında kalmaya devam ederdi.
+                DB::table('menus')->where('id', $menuId)->update([
+                    'is_indexable' => MenuIndexability::isIndexable($snapshot),
                     'updated_at' => $publishedAt,
                 ]);
 

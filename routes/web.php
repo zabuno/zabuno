@@ -10,6 +10,7 @@ use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuController;
 use App\Http\Controllers\Seo\ShowRobotsController;
+use App\Http\Controllers\Seo\ShowSitemapController;
 use App\Http\Controllers\Team\ShowTeamInvitationController;
 use App\Http\Controllers\WorkspaceAppController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
@@ -38,6 +39,7 @@ Route::get('/kvkk', [FoundationStatusController::class, '__invoke'])->name('lega
  * Neither route mutates state or requires CSRF/auth (S1-WP04b1).
  */
 Route::get('/robots.txt', ShowRobotsController::class)->name('seo.robots');
+Route::get('/sitemap.xml', ShowSitemapController::class)->name('seo.sitemap');
 
 // QR çözümleyici hız sınırlıdır: token uzayı taranabilir bir yüzeydir ve
 // her istek bir veritabanı araması yapar. Sınır cömerttir — bir masadaki

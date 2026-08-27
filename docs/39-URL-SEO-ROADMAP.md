@@ -36,11 +36,32 @@ kâğıt üstünde kalır: adres vardır ama arama motoru onu bulamaz.
 | # | İş | Neden şimdi | Kanıt |
 | --- | --- | --- | --- |
 | 1.1 | `sitemap.xml` (+ 50k üstü için index) | Arama motorunun menüleri keşfetme yolu; iç bağlantı yok | Yalnız 200 dönen, kanonik, indekslenebilir URL'ler; token İÇERMEZ |
-| 1.2 | `hreflang` kümesi | Altı locale zaten var; karşılıklı olmayan küme Google tarafından toptan yok sayılır | Karşılıklı + kendini içeren küme, `x-default` |
+| 1.2 | ~~`hreflang` kümesi~~ → **Faz 2'ye taşındı** | Ön koşulu yok (aşağıya bkz.) | — |
 | 1.3 | Schema.org `Restaurant`/`Menu` JSON-LD | Menü sayfasının zengin sonuç uygunluğu; görünür içerikle birebir | Sayfada olmayan hiçbir şey işaretlenmez |
-| 1.4 | `is_indexable` kalite kapısı | Sütun var, onu ayarlayan kural yok. Boş/deneme menüyü aramaya açmak alan adı kalitesini düşürür | Yayınlanmış + en az bir görünür ürün + deneme tenant değil |
+| 1.4 | `is_indexable` kalite kapısı | Sütun vardı, onu ayarlayan kural yoktu. Boş menüyü aramaya açmak iki tarafa da zarar verir | Yayınlanmış + en az bir görünür ürün; **her yayında yeniden hesaplanır** |
+| 1.5 | Menü sayfasının `lang`'i | Faz 1 sırasında bulundu: sayfa UYGULAMANIN dilini ilan ediyordu, oysa içerik restoranın dilinde | `<html lang>` markanın locale'inden gelir |
 
 **Owner kararı gerekmez.** Karar zaten verildi; bu, kararın uygulanması.
+
+### Durum: TAMAM (2026-08-27)
+
+Kanıt: `SEO-SITEMAP-01`, `-NO-TOKEN-02`, `-INDEXABILITY-03`, `-CONSISTENT-04`,
+`-JSONLD-05`, `-LANG-06`.
+
+**1.2 (`hreflang`) kapsamdan çıkarıldı ve Faz 2'ye taşındı.** Sebep bir tercih
+değil, ön koşul yokluğu: `hreflang` DİL SÜRÜMLERİ arasında bağ kurar. Bugün bir
+menünün tek bir sürümü vardır ve ürün adlarını restoran kendi dilinde yazar;
+çok dilli menü içeriği OPT-04 kapsamındadır. Olmayan sürümler için küme
+kurmak, işaretlemenin **tamamının** arama motoru tarafından yok sayılmasına yol
+açar — raporun uyardığı "kırık hreflang" durumu tam olarak budur.
+
+Onun yerine tek sürümlü bir sayfa için doğru olan şey yapıldı: sayfa **kendi
+dilini doğru ilan ediyor** (1.5).
+
+Faz sırasında bir kusur da bulundu ve düzeltildi: indekslenebilirlik bir kez
+açılıp öylece kalsaydı, ürünlerini kaldırıp yeniden yayınlayan bir restoranın
+boş menüsü arama sonuçlarında kalmaya devam ederdi. Artık her yayında yeniden
+hesaplanıyor.
 
 ## Faz 2 — Adres yaşam döngüsü (Stage 2)
 
@@ -54,6 +75,7 @@ değiştirmesi. Bugün menü adresi kendini onarıyor (`key` kimlik, yanlış sl
 | 2.2 | Admin sorgu parametresi allowlist | Admin filtre/sıralama durumu URL'e taşınırsa | Bugün React state'te; URL'e taşımak ayrı bir ürün kararı |
 | 2.3 | Tenant başına indeks tercihi | Bir işletme "menüm aramada çıkmasın" derse | Ürün kararı; varsayılan Faz 1.4'teki kalite kapısı |
 | 2.4 | CSP ihlal raporu uç noktası | Politika sıkılaştıkça kör noktayı görmek için | ASVS V3'ün açık bıraktığı madde |
+| 2.5 | `hreflang` kümesi | Bir menü ya da pazarlama sayfası GERÇEKTEN ikinci bir dil sürümünü kendi adresinde yayımladığında | Faz 1'den taşındı; ön koşulu OPT-04 çok dilli içerik |
 
 ## Faz 3 — Özel alan adı (Stage 3, GTM)
 
@@ -87,8 +109,13 @@ küçük. Otomasyonu erken kurmak, bakımı olan ama karşılığı olmayan bir 
 
 ## Bu planın kendi durumu
 
-`URL-SEO-v1`: **0/4 faz tamam.** Faz 1 sıradaki iştir ve owner kararı
-gerektirmez.
+`URL-SEO-v1`: **1/4 faz tamam.** Faz 1 (menü keşfi) 2026-08-27'de kapandı.
+
+Sıradaki Faz 2'dir. **Başlatılmaya hazırdır** — maddeleri, tetikleyicileri ve
+kanıt beklentileri yazılıdır. Ama tetikleyicilerin hiçbiri henüz oluşmadı:
+menü adresi `key` kimliği sayesinde kendini onarıyor, admin filtresi henüz
+URL'de değil ve ikinci bir dil sürümü yok. Bugün başlatmak, olmayan URL'ler
+için altyapı kurmak olurdu.
 
 Sayaç bu belgede sahiplenilir; `docs/17` §4'teki 0/8 stage sayacıyla
 karıştırılmaz — o, stage Exit Gate'lerini sayar, bu ise bu ek planın

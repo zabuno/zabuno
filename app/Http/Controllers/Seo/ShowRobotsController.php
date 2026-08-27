@@ -43,6 +43,9 @@ final class ShowRobotsController extends Controller
         }
 
         $lines[] = '';
+        $lines[] = '# Menüler buradan keşfedilir; iç bağlantıları yoktur.';
+        $lines[] = 'Sitemap: '.url('/sitemap.xml');
+        $lines[] = '';
         $lines[] = '# QR çözümleyici bilerek taranabilir bırakılır: engellenirse';
         $lines[] = '# bot "noindex" başlığını hiç okuyamaz ve adres yine de';
         $lines[] = '# indekslenebilir.';
