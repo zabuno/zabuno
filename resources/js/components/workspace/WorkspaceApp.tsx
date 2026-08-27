@@ -711,6 +711,30 @@ export function WorkspaceApp() {
             }
             topBarEnd={
                 <div className="flex items-center gap-1">
+                    {/*
+                        Oturum sahibinin kimliği. Daha önce her sayfanın
+                        tepesine ham metin olarak basılıyordu — slug ve durum
+                        koduyla birlikte, etiketsiz. Bilgi gereksiz değildi,
+                        YERİ yanlıştı: çok kiracılı bir panelde "hangi
+                        hesaptayım?" gerçek bir sorudur ve cevabı içerik
+                        alanında değil kimlik alanında durur.
+                    */}
+                    {user?.email ? (
+                        <span
+                            /*
+                                Kırılma noktası jetonu YOK (docs/06 §12,
+                                FluidAdaptiveLayout): düzen 320 pikselden
+                                itibaren akışkandır. Dar ekranda yer
+                                kalmayınca üst çubuk zaten sarar; metin
+                                `max-width` ile kısalır, `sm:` ile
+                                gizlenmez.
+                            */
+                            className="max-w-[18ch] truncate text-meta text-fg-muted"
+                            title={user.email}
+                        >
+                            {user.email}
+                        </span>
+                    ) : null}
                     <GlobalUnavailableActions />
                     <AiCommandTrigger
                         label={t('workspace.aiCommand.trigger.label')}
@@ -752,12 +776,6 @@ export function WorkspaceApp() {
                     onSelectQuickAction={handleAiQuickAction}
                 />
             )}
-
-            <div className="mb-6 flex flex-col gap-2">
-                <p className="text-sm text-fg-secondary">{currentWorkspace?.slug}</p>
-                <p className="text-sm text-fg-secondary">{currentWorkspace?.state}</p>
-                <p className="text-sm text-fg-secondary">{user?.email}</p>
-            </div>
 
             {logoutError && (
                 <p role="alert" className="mb-4 text-sm font-medium text-fg-danger">

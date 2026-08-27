@@ -30,8 +30,14 @@ const en = {
     'menu.item.allergens.submit': 'Save allergens',
     'menu.item.allergens.error.submit': 'We could not update allergens. Please try again.',
     'menu.item.allergens.list.label': 'Allergens for {name}',
+    // Görünen metin KISA, erişilebilir isim TAM. Ürün adını her butonun
+    // içine basmak satırı okunamaz hâle getiriyordu ("Mercimek Çorbası
+    // alerjenlerini düzenle" × her satır); ekran okuyucunun ihtiyaç
+    // duyduğu bağlam ise `aria-label`'da korunur.
     'menu.item.allergens.edit.button': 'Edit allergens for {name}',
     'menu.item.price.edit.button': 'Edit price for {name}',
+    'menu.item.allergens.edit.short': 'Allergens',
+    'menu.item.price.edit.short': 'Price',
     'menu.item.price.edit.submit': 'Save price',
     'menu.item.price.edit.error.submit': 'We could not update the price. Please try again.',
     'menu.item.visibility.checkbox.label': 'Show {name}',

@@ -170,6 +170,12 @@ function assertMutationRequestInit(init: RequestInit | undefined): void {
     expect(headers.get('Content-Type')).toBe('application/json');
 }
 
+/*
+ * `selector: 'input'` bilerek eklendi: "alerjenleri düzenle" butonu artık
+ * TAM erişilebilir isim taşıyor (görünen metin kısa, `aria-label` uzun),
+ * dolayısıyla `/allergens/i` hem alanı hem butonu eşliyor. Sorgu neyi
+ * aradığını açıkça söylemeli; belirsiz kalırsa ilk eklenen kardeşte kırılır.
+ */
 describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', () => {
     it('fetches brand currency and menu on mount, then creates menu/category/product/item and sets allergens with CSRF-before-write', async () => {
         let currentMenuId: number | null = null;
@@ -296,7 +302,7 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
         fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
         await waitFor(() => csrfPrecedesWrite(productsUrl(WORKSPACE_ID, 5), 'POST'));
 
-        const priceInput = await screen.findByLabelText(/price/i);
+        const priceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
         fireEvent.change(priceInput, { target: { value: '42.50' } });
         fireEvent.click(screen.getByRole('button', { name: /create item|add item/i }));
         await waitFor(() => csrfPrecedesWrite(menuItemsUrl(WORKSPACE_ID, 5), 'POST'));
@@ -305,7 +311,7 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
             screen.getByRole('button', { name: 'Edit price for Mercimek Çorbası' }),
         ).toBeInTheDocument();
 
-        const allergensInput = await screen.findByLabelText(/allergens/i);
+        const allergensInput = await screen.findByLabelText(/allergens/i, { selector: 'input' });
         fireEvent.change(allergensInput, { target: { value: 'gluten, süt, gluten, süt' } });
         fireEvent.click(screen.getByRole('button', { name: /save allergens|update allergens/i }));
         await waitFor(() => csrfPrecedesWrite(allergensUrl(WORKSPACE_ID, 11), 'PUT'));
@@ -678,11 +684,11 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
         fireEvent.change(aProductNameInput, { target: { value: 'Mercimek Çorbası' } });
         fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
 
-        const aPriceInput = await screen.findByLabelText(/price/i);
+        const aPriceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
         fireEvent.change(aPriceInput, { target: { value: '42.50' } });
         fireEvent.click(screen.getByRole('button', { name: /create item|add item/i }));
 
-        await screen.findByLabelText(/allergens/i);
+        await screen.findByLabelText(/allergens/i, { selector: 'input' });
 
         const preSwitchCallCount = fetchMock.mock.calls.length;
 
@@ -692,8 +698,10 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
         expect((menuNameInput as HTMLInputElement).value).toBe('');
         expect(screen.queryByLabelText(/category name/i)).not.toBeInTheDocument();
         expect(screen.queryByLabelText(/product name/i)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/price/i)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/allergens/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
+        expect(
+            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
+        ).not.toBeInTheDocument();
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
         fireEvent.change(menuNameInput, { target: { value: 'Yeni Menü' } });
@@ -702,8 +710,10 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
         await waitFor(() => {
             expect(screen.queryByLabelText(/product name/i)).not.toBeInTheDocument();
         });
-        expect(screen.queryByLabelText(/price/i)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/allergens/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
+        expect(
+            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
+        ).not.toBeInTheDocument();
 
         const categoryNameInput = await screen.findByLabelText(/category name/i);
         fireEvent.change(categoryNameInput, { target: { value: 'Tatlılar' } });
@@ -713,8 +723,10 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
 
         const bProductNameInput = await screen.findByLabelText(/product name/i);
         expect((bProductNameInput as HTMLInputElement).value).toBe('');
-        expect(screen.queryByLabelText(/price/i)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/allergens/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
+        expect(
+            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
+        ).not.toBeInTheDocument();
 
         fireEvent.change(bProductNameInput, { target: { value: 'Baklava' } });
         fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
@@ -722,7 +734,7 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
         await waitFor(() => {
             expect(bProductCreated).toBe(true);
         });
-        await screen.findByLabelText(/price/i);
+        await screen.findByLabelText(/price/i, { selector: 'input' });
 
         for (const call of fetchMock.mock.calls.slice(preSwitchCallCount)) {
             const calledUrl = String(call[0]);
@@ -936,13 +948,15 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
             /product name/i,
         )) as HTMLInputElement;
         expect(clearedProductInput.value).toBe('');
-        expect(screen.queryByLabelText(/price/i)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/allergens/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
+        expect(
+            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
+        ).not.toBeInTheDocument();
 
         fireEvent.change(clearedProductInput, { target: { value: 'Baklava' } });
         fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
 
-        const priceInput = await screen.findByLabelText(/price/i);
+        const priceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
         fireEvent.change(priceInput, { target: { value: '50.00' } });
         fireEvent.click(screen.getByRole('button', { name: /create item|add item/i }));
 
@@ -1049,7 +1063,7 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
             screen.queryByRole('textbox', { name: 'Allergens (comma-separated)' }),
         ).not.toBeInTheDocument();
 
-        await screen.findByLabelText(/price/i);
+        await screen.findByLabelText(/price/i, { selector: 'input' });
 
         const putCalls = fetchMock.mock.calls.filter(
             (call) =>
@@ -1366,11 +1380,11 @@ describe('MenuCatalogWorkspace — product name field clears only on a successfu
 
         await screen.findByRole('alert');
         expect((screen.getByLabelText(/product name/i) as HTMLInputElement).value).toBe('Kahve');
-        expect(screen.queryByLabelText(/price/i)).not.toBeInTheDocument();
+        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
 
         fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
 
-        const priceInput = await screen.findByLabelText(/price/i);
+        const priceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
         expect(priceInput).toBeInTheDocument();
         expect((screen.getByLabelText(/product name/i) as HTMLInputElement).value).toBe('');
 

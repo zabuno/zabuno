@@ -60,6 +60,10 @@ msgstr "Retry"
 msgid "menu.item.allergens.edit.button"
 msgstr "Edit allergens for {name}"
 
+#: menu:menu.item.allergens.edit.short
+msgid "menu.item.allergens.edit.short"
+msgstr "Allergens"
+
 #: menu:menu.item.allergens.error.submit
 msgid "menu.item.allergens.error.submit"
 msgstr "We could not update allergens. Please try again."
@@ -99,6 +103,10 @@ msgstr "Edit price for {name}"
 #: menu:menu.item.price.edit.error.submit
 msgid "menu.item.price.edit.error.submit"
 msgstr "We could not update the price. Please try again."
+
+#: menu:menu.item.price.edit.short
+msgid "menu.item.price.edit.short"
+msgstr "Price"
 
 #: menu:menu.item.price.edit.submit
 msgid "menu.item.price.edit.submit"

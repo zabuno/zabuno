@@ -60,6 +60,10 @@ msgstr "Tekrar dene"
 msgid "menu.item.allergens.edit.button"
 msgstr "{name} alerjenlerini düzenle"
 
+#: menu:menu.item.allergens.edit.short
+msgid "menu.item.allergens.edit.short"
+msgstr "Alerjenler"
+
 #: menu:menu.item.allergens.error.submit
 msgid "menu.item.allergens.error.submit"
 msgstr "Alerjenleri güncelleyemedik. Lütfen tekrar deneyin."
@@ -99,6 +103,10 @@ msgstr "{name} fiyatını düzenle"
 #: menu:menu.item.price.edit.error.submit
 msgid "menu.item.price.edit.error.submit"
 msgstr "Fiyatı güncelleyemedik. Lütfen tekrar deneyin."
+
+#: menu:menu.item.price.edit.short
+msgid "menu.item.price.edit.short"
+msgstr "Fiyat"
 
 #: menu:menu.item.price.edit.submit
 msgid "menu.item.price.edit.submit"

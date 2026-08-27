@@ -60,6 +60,10 @@ msgstr ""
 msgid "menu.item.allergens.edit.button"
 msgstr ""
 
+#: menu:menu.item.allergens.edit.short
+msgid "menu.item.allergens.edit.short"
+msgstr ""
+
 #: menu:menu.item.allergens.error.submit
 msgid "menu.item.allergens.error.submit"
 msgstr ""
@@ -98,6 +102,10 @@ msgstr ""
 
 #: menu:menu.item.price.edit.error.submit
 msgid "menu.item.price.edit.error.submit"
+msgstr ""
+
+#: menu:menu.item.price.edit.short
+msgid "menu.item.price.edit.short"
 msgstr ""
 
 #: menu:menu.item.price.edit.submit
