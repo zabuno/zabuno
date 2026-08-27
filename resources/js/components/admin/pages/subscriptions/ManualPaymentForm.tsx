@@ -79,7 +79,7 @@ export function ManualPaymentForm({
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex max-w-content flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex max-w-content flex-col gap-3" noValidate>
             <div className="flex flex-col gap-1">
                 <label
                     htmlFor="manual-payment-plan"

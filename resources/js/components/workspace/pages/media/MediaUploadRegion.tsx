@@ -121,6 +121,13 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             aria-label={t('workspace.media.upload.region')}
             onSubmit={(event) => void handleSubmit(event)}
             className="flex max-w-form flex-col gap-3"
+            // Tarayıcının kendi doğrulaması KAPALI. Açık kaldığında `required`
+            // taşıyan alan yüzünden tarayıcı kendi baloncuğunu gösteriyor ve
+            // BİZİM işleyicimiz hiç çalışmıyordu: ekranda ne bizim mesajımız
+            // vardı ne de odak doğru alana gidiyordu. Bu, yerelde gerçek
+            // tarayıcıyla denenerek bulundu; jsdom yerel doğrulamayı
+            // çalıştırmadığı için testler yeşildi.
+            noValidate
         >
             <h3 className="text-body font-semibold text-fg">
                 {t('workspace.media.upload.heading')}

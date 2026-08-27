@@ -32,6 +32,11 @@ const FORM_FILES = globSync('**/*.tsx', { cwd: THIS_DIR })
     .map((file) => path.join(THIS_DIR, file))
     .filter((file) => readFileSync(file, 'utf8').includes('<form'));
 
+/** Blok ve satır yorumlarını atar; yorumdaki örnek kod bulgu sayılmasın. */
+function stripComments(source: string): string {
+    return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+}
+
 describe('form standardı (docs/47)', () => {
     it('bir form dosyası bile bulunmadan geçmez', () => {
         expect(FORM_FILES.length).toBeGreaterThan(5);
@@ -87,6 +92,46 @@ describe('form standardı (docs/47)', () => {
             'FORM-ONE-OUTCOME: bu dallar boş bir alan bulunca kullanıcıya hiçbir şey ' +
                 'söylemeden vazgeçiyor. Düğmeye basılır, hiçbir şey olmaz — ve kullanıcı ' +
                 'kaydın gittiğini sanabilir (docs/47 Kural 5).',
+        ).toEqual([]);
+    });
+
+    // --- Kural 5 (b): tarayıcı doğrulaması devrede kalmaz -------------
+    //
+    // Bu kusur YEREL TARAYICIDA bulundu, testlerde değil: jsdom yerel form
+    // doğrulamasını çalıştırmadığı için birim testleri yeşildi.
+    //
+    // Gerçekte olan şuydu: `required` taşıyan bir alan yüzünden tarayıcı
+    // kendi baloncuğunu gösteriyor, `submit` olayı hiç oluşmuyor ve bizim
+    // işleyicimiz çalışmıyordu. Ekranda ne bizim mesajımız vardı, ne odak
+    // doğru alana gidiyordu — üstelik baloncuk çeviri sisteminden değil,
+    // tarayıcının dilinden geliyordu.
+    it('her form tarayıcının kendi doğrulamasını kapatır', () => {
+        const offenders: string[] = [];
+
+        for (const file of FORM_FILES) {
+            // Yorumlar ÖNCE atılır: `FormActions.tsx` açıklamasında
+            // `<form>` geçiyor ve bir form sanılıyordu.
+            const source = stripComments(readFileSync(file, 'utf8'));
+
+            // Açılış etiketini regex ile "ilk `>`e kadar" almak İŞE YARAMAZ:
+            // `onSubmit={(event) => …}` içindeki ok işareti etiketi erkenden
+            // kesiyor ve `noValidate` görünmüyordu. Bu yüzden sayı
+            // karşılaştırılır: her `<form` için bir `noValidate`.
+            const formCount = (source.match(/<form[\s>]/g) ?? []).length;
+            const noValidateCount = (source.match(/\bnoValidate\b/g) ?? []).length;
+
+            if (noValidateCount < formCount) {
+                offenders.push(
+                    `${path.relative(THIS_DIR, file)}: ${formCount} form, ${noValidateCount} noValidate`,
+                );
+            }
+        }
+
+        expect(
+            offenders,
+            'FORM-ONE-OUTCOME: `noValidate` taşımayan form bulundu. Tarayıcının kendi ' +
+                'doğrulaması, bizim mesajlarımızı ve odak taşımamızı devre dışı bırakır ' +
+                've kullanıcıya uygulamanın dilinde olmayan bir baloncuk gösterir.',
         ).toEqual([]);
     });
 
