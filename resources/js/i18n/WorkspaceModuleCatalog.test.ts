@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 435;
+const FROZEN_LEGACY_KEY_COUNT = 426;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -72,8 +72,13 @@ const FROZEN_LEGACY_KEY_COUNT = 435;
 //   Analytics ekranı 402'yi "hata" sanıyordu ve işe yaramayacak bir Retry
 //   düğmesi gösteriyordu. Plan cevabı ayrı bir durum oldu: rozet, açıklama
 //   ve çıkış yolu (+3).
+//
+// 2026-08-27, boş AI kartı — 435 → 426:
+//   Altı sayfada duran "No real AI is connected yet" kartı kaldırıldı; onun
+//   dokuz anahtarı da ölü kaldığı için silindi. Ölü anahtar, çeviri
+//   dosyalarının en sessiz çürüme biçimidir.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'cb5ad153e23813aee11f6fface013d1f6343cad0f13ad323e0ef4ff8c25938f3';
+    'e0dd2d247a0e4507761c615b2d377eabefcecef95dbd7b719637ea6b0a0630ec';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

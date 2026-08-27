@@ -105,15 +105,26 @@ describe('AdminShell', () => {
         expect(heading.className).not.toMatch(/dark:text-gray-400(?:\s|$)/);
     });
 
-    it('renders exactly one footer/contentinfo landmark for the real brand name', () => {
+    // Bu testler eskiden footer'ın HER ZAMAN render edilmesini donduruyordu.
+    //
+    // Tenant panelinde her ekranda görünen bir telif satırı hiçbir görevin
+    // parçası değildir ve 320×480'de dikey alan harcar. Public ve Auth
+    // kabuklarında gerçekten ortak alt bilgi vardır; orada istenir
+    // (`docs/50` Faz 1).
+    it('renders no footer landmark by default', () => {
         renderShell();
+        expect(screen.queryByRole('contentinfo')).toBeNull();
+    });
+
+    it('renders exactly one footer landmark when the shell asks for one', () => {
+        renderShell({ showFooter: true });
         const footers = screen.getAllByRole('contentinfo');
         expect(footers).toHaveLength(1);
         expect(footers[0]).toHaveTextContent('Zabuno');
     });
 
-    it('renders the footer landmark after the sidebar/main layout region', () => {
-        const { container } = renderShell();
+    it('places the opt-in footer after the sidebar/main layout region', () => {
+        const { container } = renderShell({ showFooter: true });
         const layout = container.querySelector('.admin-shell-layout');
         const footer = screen.getByRole('contentinfo');
         expect(layout).not.toBeNull();

@@ -2,7 +2,6 @@ import { t } from '../../../i18n/workspace';
 import { Button } from '../../catalog/forms/micro/Button';
 import { MenuCatalogWorkspace } from '../../catalog/menu/macro/MenuCatalogWorkspace';
 import type { DashboardMenuTree } from './DashboardPage';
-import { AiAssistPanel } from '../ai/AiAssistPanel';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 import type { CatalogPhase } from '../WorkspaceApp';
 
@@ -49,8 +48,6 @@ export function MenuPage({
                 badges={badges}
             >
                 {renderCatalog()}
-
-                <AiAssistPanel context={t('workspace.shell.nav.menu')} />
             </WorkspacePageFrame>
         </div>
     );

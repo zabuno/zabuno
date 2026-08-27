@@ -8,42 +8,6 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
-#: workspace:workspace.ai.affectedRecords
-msgid "workspace.ai.affectedRecords"
-msgstr ""
-
-#: workspace:workspace.ai.affectedRecords.empty
-msgid "workspace.ai.affectedRecords.empty"
-msgstr ""
-
-#: workspace:workspace.ai.command.label
-msgid "workspace.ai.command.label"
-msgstr ""
-
-#: workspace:workspace.ai.panel.heading
-msgid "workspace.ai.panel.heading"
-msgstr ""
-
-#: workspace:workspace.ai.panel.label
-msgid "workspace.ai.panel.label"
-msgstr ""
-
-#: workspace:workspace.ai.reviewAndApprove
-msgid "workspace.ai.reviewAndApprove"
-msgstr ""
-
-#: workspace:workspace.ai.unavailable
-msgid "workspace.ai.unavailable"
-msgstr ""
-
-#: workspace:workspace.ai.whyThisSuggestion
-msgid "workspace.ai.whyThisSuggestion"
-msgstr ""
-
-#: workspace:workspace.ai.whyThisSuggestion.empty
-msgid "workspace.ai.whyThisSuggestion.empty"
-msgstr ""
-
 #: workspace:workspace.aiCommand.affectedRecords.empty
 msgid "workspace.aiCommand.affectedRecords.empty"
 msgstr ""

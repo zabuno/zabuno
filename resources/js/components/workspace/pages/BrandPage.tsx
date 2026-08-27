@@ -1,6 +1,5 @@
 import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
-import { AiAssistPanel } from '../ai/AiAssistPanel';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 
 type BrandPageProps = {
@@ -28,8 +27,6 @@ export function BrandPage({ workspaceId, brand, onSaved }: BrandPageProps) {
                         {t('workspace.brand.loading')}
                     </p>
                 )}
-
-                <AiAssistPanel context={t('workspace.shell.nav.brand')} />
             </WorkspacePageFrame>
         </div>
     );

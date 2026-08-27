@@ -8,42 +8,6 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
-#: workspace:workspace.ai.affectedRecords
-msgid "workspace.ai.affectedRecords"
-msgstr "Affected records"
-
-#: workspace:workspace.ai.affectedRecords.empty
-msgid "workspace.ai.affectedRecords.empty"
-msgstr "No records are affected yet."
-
-#: workspace:workspace.ai.command.label
-msgid "workspace.ai.command.label"
-msgstr "AI command"
-
-#: workspace:workspace.ai.panel.heading
-msgid "workspace.ai.panel.heading"
-msgstr "AI assistant"
-
-#: workspace:workspace.ai.panel.label
-msgid "workspace.ai.panel.label"
-msgstr "AI assistant for {context}"
-
-#: workspace:workspace.ai.reviewAndApprove
-msgid "workspace.ai.reviewAndApprove"
-msgstr "Review and approve"
-
-#: workspace:workspace.ai.unavailable
-msgid "workspace.ai.unavailable"
-msgstr "No real AI is connected yet; suggestions cannot be generated."
-
-#: workspace:workspace.ai.whyThisSuggestion
-msgid "workspace.ai.whyThisSuggestion"
-msgstr "Why this suggestion"
-
-#: workspace:workspace.ai.whyThisSuggestion.empty
-msgid "workspace.ai.whyThisSuggestion.empty"
-msgstr "No suggestion has been generated yet."
-
 #: workspace:workspace.aiCommand.affectedRecords.empty
 msgid "workspace.aiCommand.affectedRecords.empty"
 msgstr "No records are affected."

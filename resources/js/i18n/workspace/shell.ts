@@ -40,15 +40,6 @@ export const shell = {
     'workspace.aiCommand.affectedRecords.empty': 'No records are affected.',
     'workspace.aiCommand.recentCommands.heading': 'Recent commands',
     'workspace.aiCommand.recentCommands.empty': 'No commands have been run yet.',
-    'workspace.ai.panel.heading': 'AI assistant',
-    'workspace.ai.panel.label': 'AI assistant for {context}',
-    'workspace.ai.command.label': 'AI command',
-    'workspace.ai.unavailable': 'No real AI is connected yet; suggestions cannot be generated.',
-    'workspace.ai.whyThisSuggestion': 'Why this suggestion',
-    'workspace.ai.whyThisSuggestion.empty': 'No suggestion has been generated yet.',
-    'workspace.ai.affectedRecords': 'Affected records',
-    'workspace.ai.affectedRecords.empty': 'No records are affected yet.',
-    'workspace.ai.reviewAndApprove': 'Review and approve',
 } as const;
 
 declare module '../workspace' {

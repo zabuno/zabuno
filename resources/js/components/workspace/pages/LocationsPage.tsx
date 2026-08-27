@@ -4,7 +4,6 @@ import { Button, Label } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { LocationEditForm, type LocationProfile } from '../LocationEditForm';
 import { LocationOnboardingForm } from '../LocationOnboardingForm';
-import { AiAssistPanel } from '../ai/AiAssistPanel';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 
 type LocationsPageProps = {
@@ -130,8 +129,6 @@ export function LocationsPage({
                         </ul>
                     </div>
                 ))}
-
-                <AiAssistPanel context={t('workspace.shell.nav.locations')} />
             </WorkspacePageFrame>
         </div>
     );

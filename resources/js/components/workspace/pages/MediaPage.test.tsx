@@ -228,12 +228,19 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         expect(screen.queryByText(/\bPublished\b/)).toBeNull();
     });
 
-    it('keeps the existing AI assistant present with approval still disabled', () => {
+    // Bu test eskiden BUNUN TERSİNİ donduruyordu: her sayfada bir AI
+    // yardımcı kartı olsun, alanları devre dışı olsun, "No real AI is
+    // connected yet" yazsın.
+    //
+    // Sağlayıcı bağlı değilken bu yüzey kullanıcıya değer değil,
+    // GELİŞTİRİLMEMİŞ ÖZELLİK gösterir. AI bağlandığında giriş noktası
+    // görünür hâlde gelir (`docs/50` Faz 1 ve Faz 10).
+    it('shows no AI panel while no provider is connected', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         expect(screen.getByText('Media')).toBeInTheDocument();
-        const approveButton = screen.getByRole('button', { name: /review and approve/i });
-        expect(approveButton).toBeDisabled();
+        expect(screen.queryByRole('button', { name: /review and approve/i })).toBeNull();
+        expect(screen.queryByText(/no real ai is connected/i)).toBeNull();
     });
 
     it('carries no fixed-pixel or breakpoint class on the batch-owned Media surface (excluding the shared AI panel)', () => {

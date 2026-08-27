@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 
 import { t } from '../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../lib/csrfHeader';
-import { AiAssistPanel } from '../ai/AiAssistPanel';
 import type { DashboardMenuTree } from './DashboardPage';
 import { DraftMenuPreviewRegion } from './publication/DraftMenuPreviewRegion';
 import {
@@ -171,8 +170,6 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
                         hasCurrentPublication={current !== null}
                     />
                 ) : null}
-
-                <AiAssistPanel context={t('workspace.shell.nav.publication')} />
             </WorkspacePageFrame>
         </div>
     );

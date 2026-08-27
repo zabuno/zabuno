@@ -570,11 +570,22 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         );
     });
 
-    it('every one of the six pages exposes the shared contextual AI assistant contract: command field, honest unavailable state, Why this suggestion, affected-records summary, and a disabled Review and approve control, with no mutation from navigation alone', async () => {
+    // Bu test eskiden BUNUN TERSİNİ donduruyordu: altı sayfanın HER BİRİ
+    // aynı AI yardımcı kartını göstersin — komut alanı, "Why this
+    // suggestion", "Affected records" ve devre dışı bir onay düğmesi.
+    //
+    // Kartta gerçek hiçbir şey yoktu; sağlayıcı bağlı değildi ve metin bunu
+    // açıkça söylüyordu ("No real AI is connected yet"). Yani altı ekranda
+    // altı kez, kullanıcının işine yaramayan bir yer tutucu duruyordu.
+    //
+    // AI-first, her sayfaya bir prompt kutusu koymak değildir; doğru
+    // bağlamda doğru kabiliyeti çağırmaktır (`docs/50` Faz 10). Sağlayıcı
+    // bağlandığında giriş noktaları GÖRÜNÜR hâlde gelir.
+    it('shows no AI placeholder on any page while no provider is connected', async () => {
         const user = userEvent.setup();
         const fetchMock = await renderCurrentWorkspace();
 
-        const destinations: Array<{ name: string; id: string }> = [
+        const destinations = [
             { name: 'Dashboard', id: 'section-dashboard' },
             { name: 'Brand', id: 'section-brand' },
             { name: 'Locations', id: 'section-locations' },
@@ -591,15 +602,10 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
             const root = document.querySelector(`#${destination.id}`) as HTMLElement;
             const scope = within(root);
 
-            expect(scope.getByLabelText(/AI command/i)).toBeInTheDocument();
-            expect(
-                scope.getByText(/no real AI|AI (is )?not available|AI.*unavailable/i),
-            ).toBeInTheDocument();
-            expect(scope.getByText(/why this suggestion/i)).toBeInTheDocument();
-            expect(scope.getByText(/affected records/i)).toBeInTheDocument();
-
-            const reviewButton = scope.getByRole('button', { name: /review and approve/i });
-            expect(reviewButton).toBeDisabled();
+            expect(scope.queryByLabelText(/AI command/i)).toBeNull();
+            expect(scope.queryByText(/no real AI/i)).toBeNull();
+            expect(scope.queryByText(/why this suggestion/i)).toBeNull();
+            expect(scope.queryByRole('button', { name: /review and approve/i })).toBeNull();
         }
 
         const mutationCalls = fetchMock.mock.calls.filter(([, init]) => {
