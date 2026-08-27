@@ -22,9 +22,14 @@ Owner kararı (2026-08-27): Faz 2'den önce deploy edilecek. Birincil hedef
 `internal: true` işaretli bir ağda. Bir portu açmak, parolayı tek savunma
 hattı yapar.
 
-**Deploy otomatik değil.** `main`'e her birleşme yayına dönerse, bir yazım
-düzeltmesi ile bir davranış değişikliği aynı riski taşır. Akış elle
-tetiklenir ve onay kutusuna `DEPLOY` yazılmasını ister.
+**Deploy otomatiktir ama kapılıdır** (owner kararı, 2026-08-27). `main`'e
+birleşme yayına döner — sahibi güncellemeyi GitHub'dan izler ve kimsenin
+sunucuya bağlanması gerekmez.
+
+Kapı şudur: akış `push` yerine `workflow_run` ile bağlıdır ve CI'ın
+`conclusion` değerini kontrol eder. Doğrudan push'a bağlansaydı deploy
+testlerle YARIŞIR ve kırık bir sürüm yayına çıkabilirdi. Yayına çıkan
+commit, CI'ın geçtiği commit'tir — dalın o anki ucu değil.
 
 **SSH host anahtarı sabitlenir.** Deploy kanalı üretim sunucusuna kök
 erişimdir; ilk bağlantıda host anahtarını körlemesine kabul etmek o kanalı

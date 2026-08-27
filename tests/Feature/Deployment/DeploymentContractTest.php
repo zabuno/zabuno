@@ -200,40 +200,65 @@ final class DeploymentContractTest extends TestCase
         self::assertStringContainsString('X-Forwarded-Host', $caddyfile);
     }
 
-    // --- DEPLOY-MANUAL-ONLY-04 --------------------------------------------
+    // --- DEPLOY-GATED-04 --------------------------------------------------
 
     /**
-     * Deploy otomatik olmamalı ve SSH host anahtarı sabitlenmeli.
+     * Deploy OTOMATİKTİR ama KAPILIDIR.
      *
-     * `main`'e her birleşme yayına dönerse, bir yazım düzeltmesi ile bir
-     * davranış değişikliği aynı riski taşır. Ve deploy kanalı üretim
-     * sunucusuna kök erişimdir: ilk bağlantıda host anahtarını körlemesine
-     * kabul etmek o kanalı ortadaki adama açar.
+     * Bu kapı önce "deploy elle tetiklenmeli" diyordu. Sahibi kararı
+     * değiştirdi (2026-08-27): repo güncellendiğinde site kendini
+     * güncellemeli, kimseye haber vermek gerekmemeli. Karar sahibinindir ve
+     * kapı sessizce silinmek yerine yeniden yazıldı.
+     *
+     * Değişmeyen şey: **kırık bir sürüm yayına çıkmamalı.** Akış doğrudan
+     * `push`'a bağlansaydı deploy testlerle yarışırdı. `workflow_run` ile
+     * CI'ın bitmesini bekler, ve `conclusion` kontrolü ile GEÇTİĞİNİ
+     * doğrular — `workflow_run` başarısız koşumlarda da tetiklenir.
+     *
+     * Ve deploy kanalı hâlâ üretim sunucusuna kök erişimdir: host anahtarı
+     * sabitlenmiş olmalı.
      */
-    public function test_deploying_is_a_deliberate_act_on_a_pinned_host(): void
+    public function test_a_failed_ci_run_can_never_reach_production(): void
     {
         $workflow = $this->read('.github/workflows/deploy.yml');
 
-        self::assertStringContainsString('workflow_dispatch:', $workflow);
-        self::assertStringNotContainsString(
-            'branches: [main]',
+        self::assertStringContainsString(
+            'workflow_run:',
             $workflow,
-            'DEPLOY-MANUAL-ONLY-04: deploy `main` push ile tetikleniyor.'
+            'DEPLOY-GATED-04: deploy CI ile yarışmamalı; `workflow_run` ile beklemeli.'
         );
+
+        self::assertStringContainsString(
+            'github.event.workflow_run.conclusion',
+            $workflow,
+            "DEPLOY-GATED-04: CI'ın GEÇTİĞİ doğrulanmıyor; `workflow_run` başarısız koşumlarda da tetiklenir."
+        );
+
+        // Yayına çıkan, CI'ın geçtiği commit olmalı — dalın o anki ucu değil.
+        self::assertStringContainsString(
+            'workflow_run.head_sha',
+            $workflow,
+            'DEPLOY-GATED-04: test edilen commit değil, başka bir commit deploy ediliyor.'
+        );
+    }
+
+    public function test_the_deploy_channel_talks_to_a_pinned_host(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
 
         self::assertStringContainsString(
             'DEPLOY_KNOWN_HOSTS',
             $workflow,
-            'DEPLOY-MANUAL-ONLY-04: host anahtarı sabitlenmeli.'
+            'DEPLOY-GATED-04: host anahtarı sabitlenmeli.'
         );
+
         // Yasağı dizgenin GEÇTİĞİ yerde değil, KULLANILDIĞI yerde ara:
         // ilk yazılışta bu iddia, kuralın neden var olduğunu anlatan kendi
-        // yorumuma takıldı. Bir kapının kendi gerekçesini ihlal sayması,
-        // gerekçenin silinmesine yol açar.
+        // yorumuma takılmıştı.
         self::assertSame(
             0,
             preg_match('/-o\s*StrictHostKeyChecking\s*=\s*no/', $workflow),
-            'DEPLOY-MANUAL-ONLY-04: host anahtarı doğrulaması kapatılmış.'
+            'DEPLOY-GATED-04: host anahtarı doğrulaması kapatılmış.'
         );
     }
 
