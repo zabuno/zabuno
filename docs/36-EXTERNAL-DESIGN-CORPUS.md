@@ -129,3 +129,15 @@ Bu depodaki katman modeli (micro/compound/macro) külliyattaki R1–R8 modelinin
 primitive'i ile R6 bileşeni bu depoda aynı "micro/compound" kutusuna düşer, bu
 yüzden yatay bağımlılık yasağı burada tam uygulanamaz. İnceltme yapılana kadar
 bu sapma bilinçli ve kayıtlıdır.
+
+## 7. Külliyattan koda: fazlanmış geçiş planı
+
+Bu belge kararları dondurur; kararların koda geçmesi ayrı bir iştir ve
+`docs/41-DESIGN-SYSTEM-ROADMAP.md` içinde adlandırılmış ek plan
+`DESIGN-2030-v1` olarak fazlanmıştır.
+
+Plan 2026-08-27'de ölçülen açıktan doğdu. Kök bulgu §5.4'ün ihlalidir:
+`--space-*` token'ları yayınlanıyor ama hiçbir bileşen onları tüketmiyor —
+bileşenler Tailwind'in kendi `--spacing` ölçeğini kullanıyor ve o ölçek bu
+depoda tanımlı bile değil. İki ölçek sayısal olarak çakıştığı için fark
+edilmemişti; sonuç, token kökünün geometri için gerçekten kök olmamasıdır.

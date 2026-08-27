@@ -66,6 +66,15 @@ yoksa doldurma işi boşa gider.
 Bu stage'in "i18n çok-dilli hâle gelir" hedefi bu plan olmadan
 karşılanamaz: katalog altı dile açılsa bile sahibi onları dolduramaz.
 
+## Tasarım sistemi ek planı (`DESIGN-2030-v1`, Faz 3–6)
+
+Bu stage'e eşlenen tasarım maddeleri `docs/41-DESIGN-SYSTEM-ROADMAP.md`'de
+sahiplenilir: katman sözleşmesi R1–R8, Storybook zinciri, frontpage'lerin
+aynı token zincirine alınması ve 2030 görev-uyarlamalı arayüz ufku.
+
+Faz 1–2 (token kökü ve ekranda görünen kusurlar) Stage 1 kalanına eşlenir;
+owner paneli bugün kullanıyor ve o iki faz bugünkü ekranı düzeltir.
+
 ## Dependency / critical path
 MVP CORE modülleri → ECA engine → CRM/Helpdesk (ECA'ya event register eder).
 
