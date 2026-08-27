@@ -32,7 +32,75 @@ final class RuntimeHostCapabilityProbe implements HostCapabilityProbePort
             'upload_max_filesize' => (string) ini_get('upload_max_filesize'),
             'post_max_size' => (string) ini_get('post_max_size'),
             'execution_timeout' => (string) ini_get('max_execution_time'),
+
+            // Aşağıdakiler 2026-08-27'de eklendi. Sebep: owner PO
+            // dosyalarını FTP ile yükleyip sonucu görmek istiyor
+            // (`docs/13` §7) ve MVP ilanı gerçek sunucu kanıtı bekliyor.
+            // O iş akışını sessizce bozabilecek şeyler ölçülmeden
+            // "çalışacak" denemez.
+
+            // FTP iş akışının en sinsi düşmanı. `validate_timestamps=0`
+            // ise yüklenen dosya devreye GİRMEZ ve hata da vermez:
+            // kullanıcı yükler, hiçbir şey değişmez, sebebi görünmez.
+            'opcache_enabled' => $this->opcacheEnabled(),
+            'opcache_revalidates_files' => $this->opcacheRevalidatesFiles(),
+
+            // PO önbelleğinin yazılabileceği bir yer var mı
+            // (`docs/40` Faz 1.3 buna göre düşer).
+            'storage_writable' => $this->storageWritable(),
+
+            // Locale/para/zaman biçimleme ve UTF-8. Yokluğunda çok dilli
+            // katalog sessizce bozuk çıktı verir.
+            'intl' => extension_loaded('intl'),
+            'mbstring' => extension_loaded('mbstring'),
+
+            // Temiz URL'ler tüm URL motorunun ön şartı (`docs/38`).
+            'url_rewrite' => $this->urlRewriteAvailable(),
+
+            'zip' => extension_loaded('zip'),
         ];
+    }
+
+    private function opcacheEnabled(): bool
+    {
+        return function_exists('opcache_get_status') && (bool) ini_get('opcache.enable');
+    }
+
+    /**
+     * Opcache açıkken dosya değişikliklerinin görülüp görülmediği.
+     *
+     * Kapalıysa (`validate_timestamps=0`) yüklenen her PHP dosyası,
+     * önbellek elle temizlenene kadar yok sayılır. Paylaşımlı
+     * barındırmada bunu temizlemenin yolu çoğu zaman kontrol panelidir,
+     * ve bu bilinmeden FTP tabanlı bir iş akışı vaat edilemez.
+     */
+    private function opcacheRevalidatesFiles(): bool
+    {
+        if (! $this->opcacheEnabled()) {
+            // Opcache yoksa dosya her istekte okunur: davranış zaten doğru.
+            return true;
+        }
+
+        return (bool) ini_get('opcache.validate_timestamps');
+    }
+
+    private function storageWritable(): bool
+    {
+        $path = storage_path('framework');
+
+        return is_dir($path) && is_writable($path);
+    }
+
+    private function urlRewriteAvailable(): bool
+    {
+        if (function_exists('apache_get_modules')) {
+            return in_array('mod_rewrite', (array) apache_get_modules(), true);
+        }
+
+        // nginx, LiteSpeed ve PHP-FPM altında modül listesi okunamaz.
+        // Ölçemediğimiz şeyi "var" saymıyoruz; sunucuda gerçek bir
+        // istekle doğrulanması gerektiği raporda yazılı.
+        return false;
     }
 
     private function execEnabled(): bool

@@ -176,3 +176,23 @@ ve boru hattı kurulurken gözden kaçmıştır. Çözümü `docs/40-I18N-RUNTIM
 `I18N-RUNTIME-v1` planı olarak fazlanmıştır; Stage 2'ye eşlenir çünkü
 sahibinin PO'ları doldurma zamanı olgunluk sonrasıdır ve yetenek o günden
 önce hazır olmalıdır.
+
+## 8. Yayınlanan diller (owner kararı, 2026-08-27)
+
+**Şimdilik yalnız İngilizce yayınlanır.** Altı katalog derlenmeye devam eder;
+sunulan dil bir tanedir. Tek kaynak: `config/i18n.php` → `shipped_locales`.
+
+Kararın sebebi maliyet değil, tutarlılıktır. Altı dili elle doldurmak 604
+anahtar × 5 dil = 3020 satır demektir ve yarım kalan her dil, ekranda iki dil
+yan yana gösterir. Bu varsayım değil, gözlemdir: uygulama `APP_LOCALE=tr` ile
+çalışırken `menu` kataloğu çevriliydi (38/39), `workspace` kataloğu değildi
+(0/435). Ekranda "Kategori adı" ile "Build and edit the categories…" yan yana
+duruyordu. **Yarım çeviri, çevirisizlikten kötü görünür** — çünkü
+çevirisizlik en azından tutarlıdır.
+
+`I18N-SHIPPED-COMPLETE-17` bunu yapısal olarak imkânsız kılar: bir dil
+`shipped_locales` içine ancak her alan adında sıfır eksikle girer, ve
+uygulamanın çalıştığı dil sunulan diller arasında olmak zorundadır.
+
+Bugün arayüzde dil değiştirici **yoktur**. Bir tane eklendiğinde yalnız
+`shipped_locales` listesini sunmalıdır.
