@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Tests\Support\AbortOnInsertFixture;
 use Tests\TestCase;
 
 /**
@@ -305,13 +306,11 @@ final class QrDestinationJourneyTest extends TestCase
         $owner = $this->verifiedUser();
         [$workspaceId, $locationId, $menuId] = $this->workspaceWithCurrentPublication($owner, 'qr-atomic-1');
 
-        DB::unprepared(<<<'SQL'
-            CREATE TRIGGER s1_wp04b1_abort_qr_current_destination
-            BEFORE INSERT ON qr_code_current_destinations
-            BEGIN
-                SELECT RAISE(ABORT, 'S1-WP04b1 controlled persistence failure fixture.');
-            END;
-            SQL);
+        AbortOnInsertFixture::install(
+            's1_wp04b1_abort_qr_current_destination',
+            'qr_code_current_destinations',
+            'S1-WP04b1 controlled persistence failure fixture.',
+        );
 
         try {
             $response = $this->actingAs($owner)->withHeaders($this->jsonHeaders())->postJson(
@@ -322,7 +321,7 @@ final class QrDestinationJourneyTest extends TestCase
             self::assertNotSame(201, $response->getStatusCode(), 'QR-JOURNEY-ATOMIC-01: kontrollü persistence hatasında 201 dönmemeli.');
             self::assertContains($response->getStatusCode(), [500, 503], 'QR-JOURNEY-ATOMIC-01: sunucu hatası 500/503 olmalı, sahte 2xx değil.');
         } finally {
-            DB::unprepared('DROP TRIGGER IF EXISTS s1_wp04b1_abort_qr_current_destination');
+            AbortOnInsertFixture::remove('s1_wp04b1_abort_qr_current_destination', 'qr_code_current_destinations');
         }
 
         self::assertDatabaseCount('qr_codes', 0);

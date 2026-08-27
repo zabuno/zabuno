@@ -43,13 +43,21 @@ final class WorkspaceAuthorizationJourneyTest extends TestCase
         return User::factory()->create(['email_verified_at' => now()]);
     }
 
-    private function workspace(string $name, string $slug): int
+    /**
+     * `created_by` sabit `1` yazılıydı ve o kullanıcının var olduğu
+     * varsayılıyordu. Varsayım PostgreSQL'de tutmadı: yabancı anahtar
+     * kısıtı, olmayan bir kullanıcıya bağlanan çalışma alanını reddediyor.
+     * Test verisi, kendi bağımlılığını kendisi kurmalı — sıraya güvenmemeli.
+     */
+    private function workspace(string $name, string $slug, ?int $createdBy = null): int
     {
+        $createdBy ??= $this->verifiedUser()->id;
+
         return (int) DB::table('workspaces')->insertGetId([
             'name' => $name,
             'slug' => $slug,
             'state' => 'active',
-            'created_by' => 1,
+            'created_by' => $createdBy,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

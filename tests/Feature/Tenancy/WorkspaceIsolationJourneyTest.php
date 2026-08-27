@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Support\AbortOnInsertFixture;
 use Tests\TestCase;
 
 /**
@@ -142,10 +143,10 @@ final class WorkspaceIsolationJourneyTest extends TestCase
         // whatever real INSERT the create transaction issues to fail
         // mid-transaction without assuming any auto-increment value or
         // requiring a production-only test hook.
-        DB::statement(
-            'CREATE TRIGGER wp02b_block_membership_insert '
-            .'BEFORE INSERT ON workspace_memberships '
-            .'BEGIN SELECT RAISE(ABORT, \'CREATE-TXN-01 forced membership failure\'); END;'
+        AbortOnInsertFixture::install(
+            'wp02b_block_membership_insert',
+            'workspace_memberships',
+            'CREATE-TXN-01 forced membership failure',
         );
 
         try {
@@ -157,7 +158,7 @@ final class WorkspaceIsolationJourneyTest extends TestCase
             $this->actingAs($user)->withHeaders($this->jsonHeaders())
                 ->postJson(self::WORKSPACES_URI, ['name' => 'Zeytin Restoranları']);
         } finally {
-            DB::statement('DROP TRIGGER IF EXISTS wp02b_block_membership_insert;');
+            AbortOnInsertFixture::remove('wp02b_block_membership_insert', 'workspace_memberships');
         }
 
         $afterWorkspaceCount = DB::table('workspaces')->count();

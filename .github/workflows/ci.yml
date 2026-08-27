@@ -11,6 +11,22 @@ permissions:
 jobs:
   build-lint-test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: zabuno
+          POSTGRES_PASSWORD: zabuno
+          POSTGRES_DB: zabuno_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -20,6 +36,7 @@ jobs:
         with:
           php-version: '8.3'
           coverage: none
+          extensions: pdo_pgsql, pgsql
           # Burada bir sure `ini-values: memory_limit=512M` durdu; kaldirildi.
           # QrExportPdfTest'in aralikli 500'une karsi kanitlanmamis bir
           # sigortaydi ve ise yaramadigi kayitlidir: test iki kez ayni sekilde
@@ -86,6 +103,23 @@ jobs:
 
       - name: Build frontend assets
         run: npm run build
+
+      # Ayni suit, urun motorunda. SQLite ile PostgreSQL sessizce farkli
+      # davraniyor ve fark her seferinde SQLite lehine hata gizliyordu:
+      # basarisiz bir INSERT PostgreSQL'de tum islemi iptal eder, SQLite'ta
+      # etmez; SQLSTATE kodlari ayridir (23000 / 23505); timestamp'i her motor
+      # kendi bicimiyle geri verir -- ki bu, kanit kayitlarinin butunluk
+      # ozetini gecersiz kiliyordu. 2026-08-27'de bu farklar 18 teste mal
+      # oldu ve hicbiri SQLite'ta gorunmuyordu. Bir daha gorunmezlesmesin.
+      - name: Laravel test suite (PostgreSQL, deployment target)
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: zabuno_ci
+          DB_USERNAME: zabuno
+          DB_PASSWORD: zabuno
+        run: ./vendor/bin/phpunit
 
       - name: Laravel test suite
         run: php artisan test

@@ -29,19 +29,28 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
             throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
         }
 
+        $row = [
+            'workspace_id' => $workspaceId,
+            'location_id' => $locationId,
+            'name' => $name,
+            // Menü doğduğu anda kalıcı adresini alır. Sonradan atamak,
+            // adresi olmayan bir menünün var olabileceği bir pencere
+            // bırakırdı — ve o pencerede yayınlanırsa adres kayar.
+            'public_key' => MenuPublicAddress::generateKey(),
+            'state' => 'draft',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
         try {
-            $id = (int) DB::table('menus')->insertGetId([
-                'workspace_id' => $workspaceId,
-                'location_id' => $locationId,
-                'name' => $name,
-                // Menü doğduğu anda kalıcı adresini alır. Sonradan atamak,
-                // adresi olmayan bir menünün var olabileceği bir pencere
-                // bırakırdı — ve o pencerede yayınlanırsa adres kayar.
-                'public_key' => MenuPublicAddress::generateKey(),
-                'state' => 'draft',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // İç içe işlem = SAVEPOINT. PostgreSQL'de başarısız bir INSERT
+            // içinde bulunduğu işlemin TAMAMINI zehirler (SQLSTATE 25P02):
+            // sonraki her sorgu, işlem kapanana kadar reddedilir. SQLite
+            // böyle davranmadığı için bu desen yıllarca çalışıyor göründü.
+            // Savepoint, başarısızlığı yalnız kendi kapsamına geri sarar.
+            $id = (int) DB::transaction(
+                static fn (): int => (int) DB::table('menus')->insertGetId($row)
+            );
         } catch (QueryException $e) {
             throw DuplicateLocationMenuException::forLocation($locationId);
         }

@@ -31,21 +31,35 @@ final class EloquentPlanManagementRepository implements PlanManagementRepository
         ?string $currency,
         int $sortOrder,
     ): ManagedPlan {
+        $row = [
+            'name' => $name,
+            'code' => $code,
+            'version' => $version,
+            'is_active' => false,
+            'sort_order' => $sortOrder,
+            'entitlements' => json_encode($entitlements),
+            'amount_minor' => $amountMinor,
+            'currency' => $currency,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
         try {
-            $id = DB::table('plans')->insertGetId([
-                'name' => $name,
-                'code' => $code,
-                'version' => $version,
-                'is_active' => false,
-                'sort_order' => $sortOrder,
-                'entitlements' => json_encode($entitlements),
-                'amount_minor' => $amountMinor,
-                'currency' => $currency,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // İç içe işlem = SAVEPOINT. PostgreSQL'de başarısız bir INSERT
+            // içinde bulunduğu işlemin TAMAMINI zehirler (SQLSTATE 25P02):
+            // sonraki her sorgu, işlem kapanana kadar reddedilir. SQLite
+            // böyle davranmadığı için bu desen yıllarca çalışıyor göründü.
+            // Savepoint, başarısızlığı yalnız kendi kapsamına geri sarar.
+            $id = DB::transaction(
+                static fn () => DB::table('plans')->insertGetId($row)
+            );
         } catch (QueryException $exception) {
-            if ($exception->getCode() === '23000' && $this->isCodeVersionUniqueViolation($exception)) {
+            // SQLSTATE motora göre değişir: MySQL/SQLite bütünlük ihlali
+            // için 23000, PostgreSQL benzersizlik ihlali için 23505 verir.
+            // Yalnız 23000 aranırsa PostgreSQL'de temiz bir 422 yerine ham
+            // bir 500 döner — yani hata mesajı motor değişince kaybolur.
+            if (in_array((string) $exception->getCode(), ['23000', '23505'], true)
+                && $this->isCodeVersionUniqueViolation($exception)) {
                 throw new PlanVersionConflictException('A plan with this code and version already exists.', previous: $exception);
             }
 

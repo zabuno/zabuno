@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Tests\Support\AbortOnInsertFixture;
 use Tests\TestCase;
 
 /**
@@ -44,19 +45,17 @@ final class PublicationFailureAtomicityTest extends TestCase
 
     private function installSecondInsertAbortTrigger(): void
     {
-        DB::unprepared(<<<'SQL'
-            CREATE TRIGGER s1_wp04a_abort_second_publication
-            BEFORE INSERT ON menu_publications
-            WHEN (SELECT COUNT(*) FROM menu_publications) >= 1
-            BEGIN
-                SELECT RAISE(ABORT, 'S1-WP04a controlled persistence failure fixture.');
-            END;
-            SQL);
+        AbortOnInsertFixture::install(
+            's1_wp04a_abort_second_publication',
+            'menu_publications',
+            'S1-WP04a controlled persistence failure fixture.',
+            condition: '(SELECT COUNT(*) FROM menu_publications) >= 1',
+        );
     }
 
     private function dropSecondInsertAbortTrigger(): void
     {
-        DB::unprepared('DROP TRIGGER IF EXISTS s1_wp04a_abort_second_publication');
+        AbortOnInsertFixture::remove('s1_wp04a_abort_second_publication', 'menu_publications');
     }
 
     /**
