@@ -93,9 +93,7 @@ export function MediaLibraryRegion({
                                     fotoğraf, kendi verdiği adla değil bir tablo
                                     anahtarıyla listeleniyordu.
                                 */}
-                                <span className="text-body font-medium text-fg">
-                                    {assetName}
-                                </span>
+                                <span className="text-body font-medium text-fg">{assetName}</span>
                                 <MediaAssetStatusBadge status={asset.status} />
                                 <Button
                                     color="light"

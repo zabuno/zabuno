@@ -9,7 +9,6 @@ type BrandPageProps = {
 };
 
 export function BrandPage({ workspaceId, brand, onSaved }: BrandPageProps) {
-
     return (
         <div id="section-brand">
             <WorkspacePageFrame

@@ -285,9 +285,7 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
 
         const statusRegion = screen.getByRole('region', { name: /publication status/i });
-        await waitFor(() =>
-            expect(within(statusRegion).queryByText(/#800|\b800\b/)).toBeNull(),
-        );
+        await waitFor(() => expect(within(statusRegion).queryByText(/#800|\b800\b/)).toBeNull());
 
         const checkbox = within(statusRegion).getByRole('checkbox', {
             name: /reviewed the publish checklist/i,
@@ -300,10 +298,10 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         });
 
         // Yayının VERİTABANI KİMLİĞİ ekrana çıkmaz. Bu satır önceden kimliğin
-            // GÖRÜNDÜĞÜNÜ doğruluyordu; sunucu verisinin geldiğini kanıtlamak için
-            // kullanılıyordu, ama o kanıtı sürüm numarası zaten veriyor — ve sürüm,
-            // kimliğin aksine kullanıcı için anlamlı (her yayında artar).
-            expect(within(statusRegion).queryByText(/#800|\b800\b/)).toBeNull();
+        // GÖRÜNDÜĞÜNÜ doğruluyordu; sunucu verisinin geldiğini kanıtlamak için
+        // kullanılıyordu, ama o kanıtı sürüm numarası zaten veriyor — ve sürüm,
+        // kimliğin aksine kullanıcı için anlamlı (her yayında artar).
+        expect(within(statusRegion).queryByText(/#800|\b800\b/)).toBeNull();
         expect(within(statusRegion).getByText(/v2|version 2/i)).toBeInTheDocument();
     });
 
@@ -839,9 +837,7 @@ describe('PublicationPage — reviewer-correction gaps (ZABUNO_PUBLICATION_REVIE
         const qrDestinationRegion = screen.getByRole('region', { name: /qr destination/i });
         const regionText = qrDestinationRegion.textContent ?? '';
 
-        expect(regionText).toMatch(
-            /publish your menu first/i,
-        );
+        expect(regionText).toMatch(/publish your menu first/i);
         expect(regionText).not.toMatch(/until the publication api/i);
         expect(regionText).not.toMatch(/publication api (is absent|does not exist|has not)/i);
     });

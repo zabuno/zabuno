@@ -260,7 +260,9 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const deleteButton = within(libraryRegion).getByRole('button', { name: /delete/i });
         await user.click(deleteButton);
@@ -938,11 +940,17 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('Owned asset')) as HTMLElement;
-        const otherItem = items.find((item) => item.textContent?.includes('Other asset')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
+        const otherItem = items.find((item) =>
+            item.textContent?.includes('Other asset'),
+        ) as HTMLElement;
 
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
         const otherDeleteButton = within(otherItem).getByRole('button', { name: /delete/i });
@@ -974,10 +982,14 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('Owned asset')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
 
         await user.click(targetDeleteButton);
@@ -1008,10 +1020,14 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('Owned asset')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
 
         await user.click(targetDeleteButton);
@@ -1042,10 +1058,14 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('Owned asset')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
 
         await user.click(targetDeleteButton);

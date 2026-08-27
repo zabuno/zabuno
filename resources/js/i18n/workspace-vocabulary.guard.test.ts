@@ -95,9 +95,7 @@ describe('restoran yüzeyi kelime dağarcığı (docs/53)', () => {
             for (const value of stringValues(readFileSync(file, 'utf8'))) {
                 for (const { pattern, why } of FORBIDDEN) {
                     if (pattern.test(value)) {
-                        offenders.push(
-                            `${path.basename(file)}: "${value.slice(0, 64)}" — ${why}`,
-                        );
+                        offenders.push(`${path.basename(file)}: "${value.slice(0, 64)}" — ${why}`);
                     }
                 }
             }
