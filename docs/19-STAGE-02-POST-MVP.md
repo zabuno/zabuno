@@ -37,8 +37,15 @@ MVP Exit Gate GO/CONDITIONAL-GO almış olmalı.
 
 ## Module increments
 CORE-09 Taxonomy (tam), CORE-10 Workflow (tam), CORE-11 ECA (tam), CORE-13 Media
-(derivative pipeline tam), Mini CRM, Helpdesk/Tickets, OPT-01..12 (M1 opsiyonel
-katalog) için modül registry temeli.
+(derivative pipeline tam), OPT-01..12 (M1 opsiyonel katalog) için modül registry
+temeli.
+
+**Mini CRM ve Helpdesk/Tickets bu stage'den ÇIKARILDI** (owner kararı,
+2026-08-27) ve `docs/20` GTM stage'ine taşındı. Gerekçe: aynı gün
+yeni-kullanıcı yolunda iki ölümcül kusur bulundu ve ikisinde de testler
+geçiyordu. Çekirdek yolculuk gerçek sunucuda kanıtlanmadan yeni modül
+eklemek, sağlamlaştırılmamış bir tabanın üstüne kat çıkmaktır. Ayrıca ikisi
+de ECA motoruna olay kaydeder, yani ECA'nın tam bitmesini bekler.
 
 ## URL/SEO ek planı (`URL-SEO-v1` Faz 2)
 

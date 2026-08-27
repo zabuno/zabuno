@@ -191,6 +191,39 @@ geri çekilir, Exit Gate ertelenir.
 
 ## Exit GO/NO-GO/CONDITIONAL
 
+### Owner ilanı — 2026-08-27: **NO-GO**
+
+Karar sahibinindir ve verilmiştir: **NO-GO — önce kanıt üret.** Stage 1
+kapanmaz, Stage 2 başlamaz.
+
+**Gerekçe.** "Çalışıyor" ile "senin sunucunda çalışacağını kanıtladım" aynı
+şey değildir. Bugün ikinci cümleyi kuramıyoruz:
+
+| Kanıt | Nerede üretildi | Eksik olan |
+| --- | --- | --- |
+| Kritik yolculuk (kayıt → menü → yayın → QR → misafir) | Uçtan uca test + owner'ın fiziksel QR taraması | — |
+| Kiracı izolasyonu | Yalnız geliştirme makinesi | Gerçek sunucu koşumu |
+| Yedekten geri dönme | Yalnız geliştirme makinesi | Gerçek sunucu koşumu |
+| Barındırma yetenekleri | Hiç koşulmadı | Beş sağlayıcının en az birinde koşum |
+
+**NO-GO'yu haklı çıkaran ikinci sebep** aynı gün ortaya çıktı: yeni-kullanıcı
+yolunda iki ölümcül kusur bulundu ve **ikisinde de testler geçiyordu.** Konumu
+olmayan bir çalışma alanında menü sonsuza kadar "Loading your menu…" diyordu
+(#88), ve marka formu 422 gövdesini atarak kullanıcıyı çıkışsız bir döngüde
+bırakıyordu. Yeşil bir süit, ürünün çalıştığının kanıtı değildir.
+
+**NO-GO'yu kaldıracak iş.** `tools/host-capability-probe.php` — framework,
+composer ve Node istemeyen tek dosyalık prob. Paylaşımlı barındırmada SSH
+çoğu planda yoktur; depodaki komut satırı probu tam olarak hedeflenen
+sunucularda çalıştırılamıyordu. Bu dosya FTP ile yüklenir, tarayıcıdan
+açılır, çıktısı kanıt olarak kaydedilir. Anahtar paritesi
+`MED-01-PROBE-STANDALONE` ile zorlanır: iki prob farklı şey ölçerse gelen
+çıktı kanıt olmaktan çıkar.
+
+Prob çıktısı geldikten ve iki kanıt gerçek sunucuda üretildikten sonra ilan
+yeniden sorulur.
+
+
 **Owner kararı bekliyor (2026-08-26 itibarıyla).** §Acceptance evidence'ın
 dört kaleminin dördü de artık kayıtlıdır, fakat ikisi kendi beyanıyla
 yerel kapsamlıdır. Karar owner'ındır; bu bölüm GO ilan etmez.

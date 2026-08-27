@@ -34,6 +34,12 @@ Post-MVP Exit Gate GO.
 `docs/26`.
 
 ## Module increments
+
+**Stage 2'den devralınan (owner kararı, 2026-08-27):** Mini CRM ve
+Helpdesk/Tickets. `docs/19`'dan buraya taşındılar; sebep orada kayıtlıdır.
+İkisi de ECA motoruna olay kaydeder, dolayısıyla CORE-11'in Stage 2'de
+tamamlanmış olmasını şart koşar.
+
 Iyzico Payment (live), SEO/Search & Discovery (temel technical+local facet'ler
 canlı), Content/Frontpages (tam), Legal Records (tam).
 
