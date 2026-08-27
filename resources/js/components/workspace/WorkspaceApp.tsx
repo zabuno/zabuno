@@ -10,6 +10,7 @@ import type { BrandProfile } from './BrandEditForm';
 import type { LocationProfile } from './LocationEditForm';
 import { LocationOnboardingForm } from './LocationOnboardingForm';
 import { AdminShell } from '../catalog/layout/macro/AdminShell';
+import { AppErrorBoundary } from '../system/AppErrorBoundary';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { AiCommandTrigger } from '../catalog/navigation/compound/AiCommandTrigger';
 import { AiCommandCenter } from './ai/AiCommandCenter';
@@ -868,25 +869,39 @@ export function WorkspaceApp() {
                 </p>
             )}
 
-            {currentWorkspace &&
-                !showOnboardingForm &&
-                renderActiveSection(activeSection, {
-                    workspaceId: currentWorkspace.id,
-                    catalogPhase,
-                    dashboardMenuTree,
-                    brand,
-                    location:
-                        locationProfiles.find((profile) => profile.id === catalogLocationId) ??
-                        null,
-                    locationProfiles,
-                    catalogLocationId,
-                    onSelectLocation: setCatalogLocationId,
-                    onLocationSaved: handleLocationSaved,
-                    onLocationCreated: handleLocationAdded,
-                    onBrandSaved: setBrand,
-                    onMenuTreeChange: handleCatalogTreeChange,
-                    onNavigateToSection: goToSection,
-                })}
+            {/*
+                Rota düzeyinde sınır — kök sınırdan AYRI, ve ayrı olması esas.
+
+                Kök sınır tek başına yeterli olsaydı, tek bir ekranın çökmesi
+                kenar çubuğunu ve başlığı da götürürdü; kullanıcının elinde
+                başka bir ekrana geçme imkânı kalmaz, tek çıkış yol sayfayı
+                yenilemek olurdu — o da aynı bozuk ekrana dönmek demektir.
+
+                `resetKey` bölüm anahtarıdır: kullanıcı başka bir bölüme
+                geçtiğinde sınır kendini sıfırlar. Bu olmadan React bozuk
+                ağacı kalıcı sayar ve hata ekranı sonraki bölümde de kalırdı.
+            */}
+            {currentWorkspace && !showOnboardingForm && (
+                <AppErrorBoundary scope="route" resetKey={activeSection}>
+                    {renderActiveSection(activeSection, {
+                        workspaceId: currentWorkspace.id,
+                        catalogPhase,
+                        dashboardMenuTree,
+                        brand,
+                        location:
+                            locationProfiles.find((profile) => profile.id === catalogLocationId) ??
+                            null,
+                        locationProfiles,
+                        catalogLocationId,
+                        onSelectLocation: setCatalogLocationId,
+                        onLocationSaved: handleLocationSaved,
+                        onLocationCreated: handleLocationAdded,
+                        onBrandSaved: setBrand,
+                        onMenuTreeChange: handleCatalogTreeChange,
+                        onNavigateToSection: goToSection,
+                    })}
+                </AppErrorBoundary>
+            )}
 
             {showOnboardingForm && currentWorkspace && catalogPhase === 'brand-onboarding' && (
                 <BrandOnboardingForm

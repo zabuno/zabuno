@@ -8,6 +8,8 @@ import { VerificationPending } from './components/auth/VerificationPending';
 import { VerifiedDestination } from './components/auth/VerifiedDestination';
 import { InvitationAcceptForm } from './components/auth/InvitationAcceptForm';
 import { ThemeRoot } from './components/theme/ThemeRoot';
+import { AppErrorBoundary } from './components/system/AppErrorBoundary';
+import { BuildTruthBanner } from './components/system/BuildTruthBanner';
 
 const container = document.getElementById('auth-app');
 
@@ -66,13 +68,25 @@ createRoot(container).render(
     <StrictMode>
         <ThemeRoot>
             <div className="min-h-screen w-full min-w-[320px] bg-surface-subtle text-fg">
+                {/*
+                    Şerit hata sınırının DIŞINDA: uygulama çöktüğünde de
+                    görünmesi gerekir. Yanlış sürümün çalışıyor olması,
+                    çökmenin sebebi olabilir.
+                */}
+                <BuildTruthBanner />
                 <div
                     aria-hidden="true"
                     className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-surface-hover to-surface-subtle"
                 />
                 <div className="flex min-h-screen items-center justify-center px-4 py-8">
                     <div className="w-full max-w-form rounded-lg border border-border bg-surface p-6 shadow-sm">
-                        {renderView(container)}
+                        {/*
+                            `renderView` bilinmeyen bir görünüm için HATA
+                            FIRLATIR. Sınır olmadan bu, giriş ekranını bomboş
+                            bir sayfaya çevirirdi — ve oturumu düşen bir
+                            kullanıcının gördüğü ilk ekran tam olarak burasıdır.
+                        */}
+                        <AppErrorBoundary scope="app">{renderView(container)}</AppErrorBoundary>
                     </div>
                 </div>
             </div>

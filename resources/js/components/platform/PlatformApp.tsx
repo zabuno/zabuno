@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { AdminShell } from '../catalog/layout/macro/AdminShell';
+import { AppErrorBoundary } from '../system/AppErrorBoundary';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { PlanManagementPage } from '../admin/pages/PlanManagementPage';
 import { SubscriptionManagementPage } from '../admin/pages/SubscriptionManagementPage';
@@ -128,9 +129,17 @@ export function PlatformApp() {
             }
         >
             <h1 className="text-title font-semibold">{t('platform.shell.heading')}</h1>
-            {activeSection === 'subscriptions' ? <SubscriptionManagementPage /> : null}
-            {activeSection === 'release-readiness' ? <ReleaseReadinessPage /> : null}
-            {activeSection === 'plans' ? <PlanManagementPage /> : null}
+            {/*
+                Rota düzeyinde sınır: bir platform sayfasının çökmesi kabuğu
+                götürmemeli. `resetKey` bölüm anahtarıdır — başka bölüme
+                geçildiğinde sınır sıfırlanır, aksi hâlde React bozuk ağacı
+                kalıcı sayar ve hata ekranı sonraki bölümde de kalırdı.
+            */}
+            <AppErrorBoundary scope="route" resetKey={activeSection}>
+                {activeSection === 'subscriptions' ? <SubscriptionManagementPage /> : null}
+                {activeSection === 'release-readiness' ? <ReleaseReadinessPage /> : null}
+                {activeSection === 'plans' ? <PlanManagementPage /> : null}
+            </AppErrorBoundary>
         </AdminShell>
     );
 }

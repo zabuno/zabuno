@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# scripts/preview-truth — çalışan localhost'un HANGİ kaynağı sunduğunu kanıtlar.
+#
+# Kullanım:
+#   scripts/preview-truth check --url <url> [--expect <sha|HEAD>] [--worktree <path>]
+#
+# Neden var: geliştirme checkout'u `1fea9b6` iken localhost `6a923a3` sunuyordu
+# ve bunu gösteren hiçbir şey yoktu. Sahip güncel olmayan bir arayüze bakıp
+# güncel sandı; o tur boyunca yapılan her görsel değerlendirme boşa gitti.
+# Bu kapı, "baktığım şey gerçekten yazdığım kod mu" sorusunu ölçülebilir hâle
+# getirir — bir tur UI değerlendirmesine başlamadan ÖNCE çalıştırılır.
+#
+# Ağ yok (yalnız verilen localhost URL'i), yazma yok, git salt-okunur.
+#
+# Son stdout satırı her zaman tek bir karar belirtecidir:
+#   PASS | REVISION_MISMATCH | BUILD_STALE | NO_BUILD_IDENTITY | UNREACHABLE
+# Çıkış 0 yalnız PASS; 1 her ret; 2 kullanım hatası.
+
+set -u
+
+die_usage() {
+  echo "usage: preview-truth check --url <url> [--expect <sha|HEAD>] [--worktree <path>]" >&2
+  echo "$1" >&2
+  exit 2
+}
+
+deny() {
+  printf '%s\n' "$1"
+  exit 1
+}
+
+[ $# -ge 1 ] || die_usage "missing subcommand"
+subcmd="$1"; shift
+[ "$subcmd" = "check" ] || die_usage "unknown subcommand: $subcmd"
+
+URL=""
+EXPECT=""
+WORKTREE="."
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --url)      [ $# -ge 2 ] || die_usage "--url needs a value"; URL="$2"; shift 2 ;;
+    --expect)   [ $# -ge 2 ] || die_usage "--expect needs a value"; EXPECT="$2"; shift 2 ;;
+    --worktree) [ $# -ge 2 ] || die_usage "--worktree needs a value"; WORKTREE="$2"; shift 2 ;;
+    *) die_usage "unknown argument: $1" ;;
+  esac
+done
+
+[ -n "$URL" ] || die_usage "--url is required"
+
+# Beklenen sürüm verilmediyse, karşılaştırma hedefi bu checkout'un HEAD'idir:
+# "sunucu, benim baktığım kodu mu çalıştırıyor" sorusunun varsayılan hâli budur.
+if [ -z "$EXPECT" ] || [ "$EXPECT" = "HEAD" ]; then
+  EXPECT="$(git -C "$WORKTREE" rev-parse HEAD 2>/dev/null || true)"
+fi
+
+body="$(curl -fsS --max-time 10 "$URL" 2>/dev/null || true)"
+
+if [ -z "$body" ]; then
+  echo "{\"url\":\"$URL\",\"reason\":\"no response\"}"
+  deny UNREACHABLE
+fi
+
+extract_meta() {
+  # `grep -o` ile tek satır çıkarımı: HTML ayrıştırıcısı gerekmiyor, çünkü
+  # etiketleri biz üretiyoruz ve biçimleri sabit (partials/build-identity).
+  printf '%s' "$body" \
+    | grep -o "<meta name=\"$1\" content=\"[^\"]*\"" \
+    | head -n1 \
+    | sed 's/.*content="//; s/"$//'
+}
+
+served="$(extract_meta zabuno-build-revision)"
+stale="$(extract_meta zabuno-build-stale)"
+
+if [ -z "$served" ]; then
+  # Kimlik hiç yoksa "eşit" varsaymak, kapıyı sessizce işlevsiz kılardı.
+  echo "{\"url\":\"$URL\",\"reason\":\"page carries no build identity\"}"
+  deny NO_BUILD_IDENTITY
+fi
+
+echo "{\"url\":\"$URL\",\"served\":\"$served\",\"expected\":\"$EXPECT\",\"stale\":\"${stale:-unknown}\"}"
+
+if [ -n "$EXPECT" ] && [ "$served" != "$EXPECT" ]; then
+  deny REVISION_MISMATCH
+fi
+
+if [ "$stale" = "true" ]; then
+  deny BUILD_STALE
+fi
+
+printf 'PASS\n'
+exit 0

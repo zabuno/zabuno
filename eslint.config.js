@@ -5,7 +5,10 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-    { ignores: ['vendor/**', 'node_modules/**', 'public/build/**', 'storage/**'] },
+    // `worktrees/` bu deponun ikinci bir çalışan kopyasıdır (localhost
+    // çalışma zamanı); lint edilmesi hem süreyi ikiye katlar hem de ayrık bir
+    // checkout hakkında düzeltilemeyen uyarılar üretir.
+    { ignores: ['vendor/**', 'node_modules/**', 'public/build/**', 'storage/**', 'worktrees/**'] },
     js.configs.recommended,
     ...tseslint.configs.recommended,
     {
