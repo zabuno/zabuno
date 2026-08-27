@@ -145,7 +145,37 @@ model katalogunu bizim sürüm döngümüzden bağımsız değiştirir. Kodda sa
 model adı, o ad emekliye ayrıldığı gün üretimi durdurur — ve düzeltmesi bir
 deploy gerektirir. Yapılandırmada ise bir ortam değişkenidir.
 
-### 3.3 Yetenek × model matrisi
+### 3.3 Yönlendirme sırası — sahibinin kararı (2026-08-27)
+
+Bir yetenek için hangi modelin çalışacağı **sabit bir sırayla** çözülür.
+Sıra maliyet ve yetenek gerçekliğinden gelir, tercihten değil:
+
+```
+1. YEREL     küçük açık kaynak model      → bedava, veri sunucudan çıkmaz
+2. GEMINI    bulut                        → ucuz; varsayılan bulut sağlayıcı
+3. OPENAI    bulut                        → Gemini'nin yetmediği yerde
+4. CLAUDE    bulut                        → EN SON, iki dar çerçevede
+```
+
+**Claude neden en sonda ve nerede:**
+
+| Çerçeve | Kullanılır mı |
+| --- | --- |
+| Sistemin kendi **kodlama ve teknik gelişimi** | ✅ Birincil — bu, ürün çalışma zamanı değil, GELİŞTİRME hattıdır |
+| Gemini ve OpenAI'nin **yapamadığı** iş | ✅ Yetenek matrisinde açıkça işaretlenmiş satırlar |
+| Sıradan üretim/çeviri/etiketleme | ❌ Daha ucuzu yeterliyken pahalı olan seçilmez |
+
+Bu ayrım kayda değer, çünkü iki farklı hattır: **ürün çalışma zamanı**
+(restoran sahibinin tetiklediği AI) ile **geliştirme hattı** (bu deponun
+kendi kodlama yardımı). Aynı bütçeden beslenmezler ve aynı matriste
+durmazlar.
+
+**Yükselme (escalation) kuralı:** bir alt basamak sonucu şemaya uymazsa ya
+da güven eşiğinin altındaysa bir üst basamağa çıkılır — ve bu KULLANICIYA
+GÖRÜNÜR olur (UNK-03). "Yerel model yetmedi, buluta çıkıldı" bilgisi
+saklanmaz; maliyeti ve kaliteyi açıklayan tek şey odur.
+
+### 3.4 Yetenek × model matrisi
 
 ```php
 'capabilities' => [
@@ -163,7 +193,7 @@ Kullanıcı model seçebilir — **ama matrisin sınırları içinde.** Bir yete
 için aday olmayan model seçilemez; aksi hâlde şema uyumu ve maliyet tavanı
 anlamsızlaşır.
 
-### 3.4 Faz 1'in kabul ölçütü
+### 3.5 Faz 1'in kabul ölçütü
 
 1. `TextGenerationPort` var; **hiçbir sağlayıcı bağlı değilken** ürün tam
    çalışıyor.
@@ -181,85 +211,328 @@ sahte sağlayıcı ile tüm zincir çalışır.
 
 ---
 
-## 4. Küçük açık kaynak modeller — basit VPS'te ne yapılabilir?
+## 4. Yerel küçük modeller — MVP'de indirilecek ve çalışacaklar
 
-Sahibinin sorusu bu. Dürüst cevap: **çok şey, ama üretken metin değil.**
+Sahibinin kararı: **önce yerel modeller, MVP'de gerçekten fayda sağlayanlar
+indirilip çalıştırılacak.**
 
-netcup VPS'te (AMD EPYC, GPU yok) çalışabilecek boyuttaki modeller, CPU
-üzerinde saniyeler mertebesinde cevap verir. Bu, kullanıcı beklerken yapılan
-işler için fazla yavaştır; **arka planda ve deterministik işler için ise
-fazlasıyla yeterlidir.**
+netcup VPS'te GPU yok. Bu, modelleri iki kümeye ayırır ve ayrım nettir:
+**kodlayıcı (encoder) modeller CPU'da milisaniyelerde** çalışır; **üretken
+(decoder) modeller saniyelerde.** Birincisi kullanıcı beklerken kullanılabilir,
+ikincisi yalnız arka planda.
 
-| İş | Yerel model uygun mu | Neden |
+### 4.1 Kodlayıcı sınıfı — MVP'de indirilir
+
+| Model sınıfı | Bu projede ne yapar | Gecikme |
 | --- | --- | --- |
-| **Gömme (embedding) ve benzerlik** | ✅ Çok uygun | Küçük modeller, tek geçiş, milisaniyeler. Yinelenen ürün bulma, "benzer görsel", menü içi arama |
-| **Sınıflandırma** | ✅ Uygun | "Bu ürün vejetaryen mi", "bu görsel yemek mi logo mu" — kısa çıktı, şema dar |
-| **Dil algılama** | ✅ Uygun | Menü içeriğinin dili; çeviri kuyruğunu besler |
-| **Alerjen İŞARETLEME (öneri)** | ✅ Uygun | Ürün adından aday alerjen; insan onaylı |
-| **OCR / PDF'ten metin** | ✅ Uygun | Tesseract sınıfı araçlar; LLM bile değil |
-| **Görsel kalite kontrolü** | ✅ Uygun | Bulanıklık, karanlık, yinelenen — klasik CV, LLM gerekmez |
-| **Ürün açıklaması yazma** | ⚠️ Sınırlı | Küçük model yazar ama kalite dalgalanır; öneri olarak sunulabilir |
-| **Çeviri** | ⚠️ Sınırlı | Kısa metinlerde iş görür; menü tonunu tutturmakta bulut modelleri belirgin üstün |
-| **Serbest sohbet / komut merkezi** | ❌ Uygun değil | Gecikme ve akıl yürütme yetmez |
-| **PDF'ten tam menü çıkarma** | ❌ Uygun değil | Uzun bağlam + yapılandırılmış çıktı; bulut modeli işi |
+| **Çok dilli cümle gömme** | Yinelenen ürün ("Trileçe" × 2), menü içi anlamsal arama, kategori önerisi, çeviri belleği eşleşmesi | ~10–40 ms |
+| **Görsel gömme (CLIP sınıfı)** | Yinelenen/benzer görsel, "bu görsel yemek mi logo mu", ürünle görselin uyuşması | ~50–150 ms |
+| **Metin sınıflandırıcı** | Vejetaryen/vegan/helal işareti önerisi, ürün mü kategori mi | ~10 ms |
+| **Dil algılama** | Menü içeriğinin dili; çeviri kuyruğunu besler | ~1 ms |
+| **Yeniden sıralayıcı (cross-encoder)** | Arama sonuçlarının sıralaması | ~20 ms |
+| **Alerjen NER** | Ürün adı/açıklamasından aday alerjen | ~15 ms |
 
-### 4.1 Karar
+**Bunlar LLM değil.** Şema sorunu yok (UNK-02), enjeksiyon yüzeyi yok
+(UNK-07), maliyet yok. MVP'de indirilir ve çalışır.
 
-**Yerel model bir SAĞLAYICIDIR** (UNK-05), ayrı bir yol değil. Aynı
-`TextGenerationPort` arkasında durur ve matriste bir aday olarak görünür.
+### 4.2 LLM olmayan ama AI hattının parçası
 
-**Kaynak sınırı zorunludur** (UNK-10): ayrı süreç, bellek ve CPU tavanı.
-Tavan aşılırsa AI isteği reddedilir — menü sayfası etkilenmez. Bu, "AI
-kapalıyken ürün çalışır" ilkesinin altyapı karşılığıdır.
+| Araç | İş |
+| --- | --- |
+| **OCR (Tesseract sınıfı)** | Görselden/PDF'ten ham metin — çıkarımın deterministik yarısı |
+| **Klasik CV** | Bulanıklık, karanlık, çözünürlük, yüz/nesne kadrajı |
+| **Perceptual hash** | Birebir olmayan yinelenen görsel |
 
-### 4.2 Çerçeve seçimi — hangi fazda ne
+`vips` zaten imaja giriyor (`docs/49` Faz 1); CV işlerinin çoğu onunla yapılır.
 
-| Faz | Çerçeve/araç | Neden o faz |
-| --- | --- | --- |
-| 1 | Sağlayıcı portu + HTTP istemcisi | Çerçeveye bağımlılık YOK; port kendi kodumuz |
-| 3 | Gömme modeli (yerel) + vektör alanı | Yinelenen ürün/görsel bulma; `pgvector` PostgreSQL'de |
-| 4 | Klasik CV (görsel kalite) | LLM gerekmez; `vips` zaten gelecek |
-| 5 | OCR | PDF'ten menü içe aktarmanın deterministik yarısı |
-| 6 | Bulut LLM — yapılandırılmış çıktı | PDF'ten menü çıkarma; şemaya bağlı |
-| 7 | Eval seti | Model değişimi ölçülmeden yapılmaz (UNK-08) |
+### 4.3 Üretken küçük model — sınırlı ve arka planda
 
-**Laravel'in resmi AI SDK'sı** `docs/14` §5 gereği koşullu adaptör arkasında
-kalır; port bizim, adaptör değiştirilebilir.
+1–3B sınıfı nicelenmiş bir model CPU'da saniyede birkaç kelime üretir.
+Kullanıcı beklerken **kullanılmaz**; şu işler için yeterlidir:
+
+- Alt metin taslağı (arka planda üretilir, kullanıcı onaylar)
+- Kısa alan tamamlama ("Adana" → "Adana Kebap")
+- Metin toparlama (büyük/küçük harf, noktalama)
+
+**Kalite dalgalanır ve bu gizlenmez**: çıktı her zaman öneri olarak, kaynağı
+görünür biçimde sunulur.
+
+### 4.4 Çalışma zamanı — yerel model bir SAĞLAYICIDIR
+
+```
+llama.cpp / ONNX  →  OpenAI-uyumlu HTTP uç noktası  →  aynı TextGenerationPort
+```
+
+OpenAI-uyumlu uç nokta seçilmesi bilinçli: **aynı adaptör kodu** hem bulut hem
+yerel için çalışır. İki kod yolu olsaydı biri her zaman geride kalırdı (UNK-05).
+
+**Kaynak sınırı zorunlu** (UNK-10): ayrı süreç, bellek ve CPU tavanı, istek
+kuyruğu uzunluğu sınırı. Tavan aşılırsa AI isteği reddedilir — menü sayfası
+etkilenmez.
+
+**Model dosyaları sürüm kontrolünde DEĞİL**; `install.sh` indirir ve
+sağlaması (checksum) doğrulanır. Depoya 500 MB'lık bir dosya koymak, klonlama
+süresini ve CI'yı kalıcı olarak bozar.
 
 ---
 
-## 5. Faz faz AI — her fazda çekirdek, eklenti değil
+## 4b. Büyük API modelleri — yerel modelin yapamadıkları
 
-Sahibinin talebi: *"her fazda AI ile ilgili neler yapılacak, bu fazda çekirdek
-olsun ve entegre edelim."*
+### 4b.1 Görselden menü çıkarma (sahibinin eklediği)
 
-| Faz | Ürün işi | **AI çekirdeği** | Determinist yol |
+Sahibi netleştirdi: **yalnız PDF değil — resim, fotoğraf, grafik.**
+Restoran sahibinin elinde çoğu zaman PDF yoktur; telefonla çekilmiş bir
+menü fotoğrafı vardır.
+
+Bu, iki yarımlı bir iştir ve ikisi de gereklidir:
+
+```
+DETERMİNİST YARIM                   AI YARIMI
+─────────────────                   ─────────
+görüntü düzeltme (perspektif)   →   görme modeli okur
+kontrast/eğrilik                    → yapılandırılmış JSON üretir
+OCR ham metin                       → kategori/ürün/fiyat ilişkisini kurar
+                                    → belirsiz alanları İŞARETLER
+```
+
+**Kritik kural: model belirsizliği gizlemez.** Okunamayan bir fiyat "0" ya da
+uydurma bir sayı olarak gelmez; `uncertain: true` ile gelir ve arayüz onu
+kullanıcıya sorar. Uydurulmuş bir fiyat menüye girerse, kullanıcı bunu ancak
+müşteri şikâyet edince öğrenir.
+
+| Girdi | Ele alınışı |
+| --- | --- |
+| PDF (metin katmanlı) | OCR gereksiz; doğrudan metin + yapı |
+| PDF (taranmış) | OCR + görme modeli |
+| Fotoğraf (telefon) | Perspektif düzeltme + görme modeli |
+| Ekran görüntüsü | Doğrudan görme modeli |
+| Grafik/tasarım (PNG) | Görme modeli |
+| Birden çok sayfa/fotoğraf | Sayfa sırası kullanıcıya doğrulatılır |
+
+**Sağlayıcı:** görme yeteneği Gemini'de başlar (ucuz, güçlü), yetmezse
+OpenAI, en son Claude. Yerel model bu işi yapamaz — 4.1'deki dürüst sınır.
+
+### 4b.2 Büyük modellerin yaptığı diğer işler
+
+| İş | Neden yerel model yapamaz |
+| --- | --- |
+| **Menü tonunda çeviri** | Kısa metin değil, marka sesi; küçük model düzleştirir |
+| **Uzun bağlamlı tutarlılık denetimi** | "84 üründe fiyat mantığı tutarlı mı" — tüm menü tek bağlamda |
+| **Analitik anomali açıklaması** | "Taramalar %40 düştü" → sebep hipotezi, veriyle bağ kurma |
+| **Doğal dil komut merkezi** | `docs/14` §9a 14 adımlı akış; akıl yürütme gerekir |
+| **Yayın öncesi risk taraması** | Eksik çeviri + eksik görsel + fiyat anomalisi, birlikte |
+| **Alerjen çıkarımı (metinden)** | "İçinde tereyağı geçen tarif" → süt alerjeni; bilgi gerektirir |
+
+---
+
+## 5. Token optimizasyonu — ayrı bir servis
+
+Sahibinin talebi. Bu bir "ipucu" değil, **ölçülen ve zorlanan bir katman**;
+maliyetin tek başına en büyük kaldıracı.
+
+`Application/Ai/TokenOptimizer` yedi işi yapar:
+
+| # | Teknik | Kazanç |
+| --- | --- | --- |
+| 1 | **Model doğru boyutlandırma** | En küçük model, eval'den geçtiği sürece. Çoğu iş için Haiku sınıfı yeterli |
+| 2 | **Prompt önbelleği** | Sabit ön ek (sistem yönergesi, şema) önbelleğe alınır — tenant→hesap yapışkanlığı bunun ön koşulu (UNK-01) |
+| 3 | **Getirme, doldurma değil** | Tüm menüyü prompt'a koymak yerine gömme ile ilgili 5 ürünü getir |
+| 4 | **Bağlam budama** | Yetenek için gereksiz alanlar (id, timestamp) prompt'a girmez |
+| 5 | **Şema sıkılığı** | Çıktı şeması dar; model gereksiz açıklama üretmez |
+| 6 | **Toplu işleme** | 20 ürünün alt metni tek istekte |
+| 7 | **Yinelenen iş önleme** | Aynı girdi için sonuç önbelleği (içerik sağlaması anahtarlı) |
+
+**Ölçülür:** her çağrı için giriş/çıkış token'ı ve kuruş cinsinden maliyet
+denetim kaydına yazılır. Optimizasyon iddiası ölçülmeden yapılmaz.
+
+**Skill olarak da açılır:** `skills/token-optimization.md` — geliştirme
+hattındaki AI'nın da aynı kurallara uyması için.
+
+---
+
+## 6. Yönerge katmanı — MCP, skills, .md ve ECA kuralları
+
+Sahibinin talebi: *"mcp'ler, skill'ler, .md dosyaları ile AI yönergeleri,
+sınırlar, kurallar, eca rules."*
+
+### 6.1 Dört ayrı şey — karıştırılmaz
+
+| Katman | Nedir | Nerede yaşar |
+| --- | --- | --- |
+| **Yönerge (.md)** | AI'nın uyacağı yazılı kural; insan da okur | `ai/guidelines/*.md` |
+| **Skill (.md + şema)** | Talep üzerine yüklenen yetenek tanımı: ne yapar, neyi yapamaz, hangi araçları çağırabilir | `ai/skills/*.md` |
+| **MCP server** | Dış araç erişimi — kendi allowlist'iyle | `config/ai-mcp.php` |
+| **ECA kuralı** | Olay → koşul → eylem. AI'yı NE ZAMAN çağıracağımız | `config/ai-eca.php` |
+
+**Hiçbiri "always-on" değildir** (`docs/14` §5). Yönerge bile bir yeteneğe
+bağlanır; her prompt'a her kuralı eklemek hem token yakar hem modeli
+körleştirir.
+
+### 6.2 Skill dosyasının zorunlu bölümleri
+
+```markdown
+---
+name: menu-extraction
+capability: menu.extract
+requires_human_approval: true
+allowed_tools: [media.read, menu.draft.write]
+forbidden: [menu.publish, media.delete, billing.*]
+schema: menu-extraction.v1
+escalation: [local, gemini, openai]
+---
+### Ne yapar
+### Ne YAPAMAZ
+### Belirsizlik nasıl işaretlenir
+### Örnekler (eval kümesinin çekirdeği)
+```
+
+`forbidden` listesi bir yorum değil, **çalışma zamanında zorlanır**: listede
+olmayan araç çağrısı reddedilir ve denetime yazılır (`docs/14` §6).
+
+### 6.3 ECA kuralları — AI'yı ne zaman çağırırız
+
+Proaktif öneri **yalnız gerçek sinyal varsa** görünür (`docs/50` Faz 10).
+ECA bunu bir kurala çevirir:
+
+| Olay | Koşul | Eylem |
+| --- | --- | --- |
+| `menu.item.created` | alt metin yok VE görsel var | Alt metin önerisi kuyruğa |
+| `menu.publish.requested` | eksik çeviri > 0 | Yayın öncesi tarama, insan onayı |
+| `media.uploaded` | benzer gömme mesafesi < eşik | "Bu görsel zaten var" önerisi |
+| `analytics.weekly` | değişim > %30 | Anomali açıklaması |
+| `ai.budget.threshold` | %80 | Sahibine uyarı; %100'de AI durur, ürün durmaz |
+
+ECA motoru **AI'yı çağırmaz, kuyruğa koyar.** Kullanıcı beklerken model
+çalışmaz; öneri hazır olduğunda görünür.
+
+## 7. Rol bazında AI — kim neyden yararlanır
+
+Depodaki gerçek roller ölçüldü: restoran tarafında **Owner / Member /
+Editor** (`MembershipRole`), platform tarafında **SuperAdmin**
+(`PlatformRole`), 13 izinle (`Permission`).
+
+**Temel kural:** AI hiçbir zaman rolün YAPAMADIĞI bir şeyi yapamaz. Öneri
+üretmek serbesttir; uygulamak izne bağlıdır ve izin **sunucuda yeniden**
+doğrulanır (`docs/14` §9a adım 13). Editor'a "menüyü yayınla" önerisi
+gösterilebilir — ama düğme onda çalışmaz; öneri sahibine iletilir.
+
+### 7.1 Restoran tarafı
+
+| Rol | İzinleri | AI'nın onun için yaptığı iş | AI'nın YAPAMADIĞI |
 | --- | --- | --- | --- |
-| **1** | Medya veri modeli ✅ | **LLM altyapısı**: port, hesap havuzu, matris, redaction, bütçe, kill switch, denetim | AI kapalı — her şey çalışır |
-| **2** | Güvenli alım | Yükleme sırasında **alt metin önerisi** (öneri, otomatik değil) | Kullanıcı elle yazar |
-| **3** | Sürüm/rendition | **Gömme ile yinelenen görsel** tespiti (yerel model) | Checksum ile birebir yinelenen zaten bulunur |
-| **4** | Kütüphane arayüzü | **Akıllı koleksiyon**: "alt metni eksik", "kullanılmayan", "kalitesi düşük" | Elle filtre |
-| **5** | Kullanım grafiği + yayın | **Yayın öncesi tarama**: eksik çeviri, eksik görsel, fiyat tutarsızlığı | Deterministik kontrol listesi |
-| **6** | Teslim/CDN | **PDF/görselden menü çıkarma** (bulut LLM, şemalı) | Elle giriş |
-| **7** | Yönetişim | **Anomali açıklaması**: "bu hafta taramalar %40 düştü, sebebi şu olabilir" | Ham sayılar |
-| **8** | Crop stüdyosu | **Akıllı kırpma** — odak noktası önerisi | Elle odak noktası |
-| **9** | AI önerileri | **Komut merkezi** `docs/14` §9a 14 adımlı akışıyla | Her ekranın kendi formu |
-| **10+** | İleri | Moderasyon, video anlama | — |
+| **Owner** | Hepsi | Yayın öncesi risk taraması; plan/kullanım açıklaması ("bu ay neden arttı"); analitik anomali açıklaması; ekip yetkisi önerisi (`docs/14` §9a akışı, insan onaylı + step-up) | Yayınlamak, ödeme, rol değiştirmek — hiçbiri onaysız |
+| **Editor** | `menu.manage`, `qr.*`, medya | **En çok yararlanan rol.** Fotoğraf/PDF'ten menü çıkarma; ürün açıklaması taslağı; alt metin; alerjen önerisi; çeviri taslağı; yinelenen ürün/görsel tespiti; kırpma odak noktası | `menu.publish` yok → yayın önerisi üretir, Owner'a gider |
+| **Member** | `*.view` | Okuma yüzeyi: menüde anlamsal arama ("içinde süt olan ürünler"); analitik özetini sade dille okuma | Hiçbir mutasyon önerisi gösterilmez — gösterilse boş bir umut olurdu |
+
+**Neden Editor en çok yararlanır:** günlük iş onun elinde. Menü doldurmak,
+görsel yüklemek, çeviri girmek — AI'nın gerçekten saat kazandırdığı işler
+bunlar. Owner ise ayda birkaç kez karar verir; ona lazım olan üretim değil,
+**özet ve risk**.
+
+### 7.2 Platform tarafı (SuperAdmin)
+
+Bu roldeki kişi restoran içeriğiyle ilgilenmez; **filoyu** yönetir.
+
+| İş | AI'nın katkısı |
+| --- | --- |
+| Destek | Bir tenant'ın son 20 hatasını okuyup olası sebep; "bu menü neden yayınlanamıyor" |
+| Sağlık | İşleme kuyruğundaki başarısızlıkların gruplanması: 40 ayrı hata mı, tek bir kök neden mi |
+| Kötüye kullanım | Yüklenen medyada moderasyon işareti; anormal kota tüketimi |
+| Maliyet | Hangi tenant hangi yeteneği ne kadar kullanıyor; hangi yetenek daha ucuz modele inebilir (eval geçerse) |
+| İçerik incelemesi | Halka açık menüde riskli içerik önerisi — **karar insanın** |
+
+**Sert sınır — tenant izolasyonu AI'da da geçerlidir.** SuperAdmin'in AI'sı
+bir tenant'ın içeriğini başka bir tenant'ın bağlamına KOYAMAZ. "Bütün
+tenant'ları karşılaştır" gibi bir istek, ancak toplulaştırılmış (agrega)
+veriyle cevaplanır; ham içerik çapraz okunmaz (`docs/14` §3 tenant
+isolation).
+
+### 7.3 Geliştirme hattı — ayrı bütçe, ayrı matris
+
+Sahibinin kararı gereği Claude bu hatta birincildir: **sistemin kendi
+kodlama ve teknik gelişimi.** Bu hat ürün çalışma zamanı değildir:
+
+- Tenant bütçesinden beslenmez
+- Yetenek matrisinde görünmez
+- Restoran verisine erişmez — geliştirme ortamında çalışır
+- Kendi yönergeleri `ai/guidelines/` ve `skills/` altında
+
+İki hattın karışması, en pahalı modelin en sık işi yapmasına yol açardı.
+
+## 8. Faz faz AI — her fazda çekirdek, eklenti değil
+
+Sahibinin kararı: **MVP'de AI çekirdeği güçlü olmalı.** Bu, Faz 1'in kapsamını
+belirler — çekirdek MVP'de biter, yetenekler sonra gelir.
+
+### Faz 1 — MVP AI ÇEKİRDEĞİ (kod bu fazda yazılır)
+
+| # | İş | Neden Faz 1 |
+| --- | --- | --- |
+| 1 | `TextGenerationPort` + dört adaptör (yerel, Gemini, OpenAI, Claude) | Tek arayüz; yerel de bir sağlayıcıdır |
+| 2 | Yapışkan hesap havuzu + sağlık kontrolü | Önbellek ve bağlam buna bağlı (UNK-01) |
+| 3 | Yetenek × model matrisi + yükselme sırası | Yerel → Gemini → OpenAI → Claude |
+| 4 | JSON şema doğrulaması | Şemaya uymayan cevap kullanıcıya ulaşmaz (UNK-02) |
+| 5 | Redaction | Kişisel veri prompt'a girmez (UNK-04) |
+| 6 | Enjeksiyon koruması — kullanıcı içeriği VERİ olarak işaretlenir | Menü içeriğinden gelir (UNK-07) |
+| 7 | Tenant başına bütçe + kill switch | Dolunca AI durur, ürün durmaz (UNK-06) |
+| 8 | **Token optimizasyonu servisi** (§5) | Sonradan eklenen optimizasyon, mimariyi yeniden yazdırır |
+| 9 | Denetim: hesap, model, token, maliyet | Ölçülmeyen iddia edilmez |
+| 10 | **Yerel model çalışma zamanı** + kaynak sınırı | MVP'de indirilir ve çalışır (UNK-10) |
+| 11 | Yönerge/skill/MCP/ECA kayıt defterleri (§6) | Boş ama YERİNDE; sonradan kurulan kayıt defteri hep eksik kalır |
+| 12 | Eval koşum düzeneği (altın küme boş başlar) | Model değişimi ölçülmeden yapılmaz (UNK-08) |
+
+**Faz 1 kabul ölçütü:** hiçbir sağlayıcı bağlı değilken ürün TAM çalışır; sahte
+sağlayıcıyla tüm zincir uçtan uca koşar; yerel gömme modeli indirilmiş ve
+milisaniyelerde cevap veriyor.
+
+### Faz 2–10 — yetenekler çekirdeğe takılır
+
+| Faz | Ürün işi | AI yeteneği | Sağlayıcı | Determinist yol |
+| --- | --- | --- | --- | --- |
+| **2** | Güvenli alım | Alt metin taslağı; dil algılama | **Yerel** | Kullanıcı yazar |
+| **3** | Sürüm/rendition | Yinelenen görsel/ürün (gömme); görsel-ürün uyumu | **Yerel** | Checksum |
+| **4** | Kütüphane | Anlamsal arama; akıllı koleksiyon; görsel kalite | **Yerel** | Elle filtre |
+| **5** | Kullanım + yayın | Yayın öncesi risk taraması; eksik çeviri tespiti | Yerel + **Gemini** | Kontrol listesi |
+| **6** | Teslim/CDN | **Fotoğraf/görsel/PDF'ten menü çıkarma** (§4b.1) | **Gemini** → OpenAI | Elle giriş |
+| **7** | Yönetişim | Anomali açıklaması; maliyet analizi; kuyruk hata gruplama | **Gemini** | Ham sayılar |
+| **8** | Crop stüdyosu | Akıllı kırpma, odak noktası | **Yerel** (CV) | Elle odak |
+| **9** | Komut merkezi | `docs/14` §9a 14 adımlı akış; doğal dil komut | **OpenAI/Claude** | Her ekranın formu |
+| **10+** | İleri | Moderasyon, tonlu çeviri, video anlama | Duruma göre | — |
+
+**Claude yalnız 9'da ve "diğerlerinin yapamadığı" satırlarda görünür** —
+sahibinin sırası bu. Geliştirme hattındaki Claude ayrıdır (§7.3).
 
 **Her satırda değişmez:** AI önerir, insan onaylar, sistem denetler, geri
-alınabilir (`docs/47` Kural 10).
+alınabilir.
+
+## 9. Sahibinin kararı gereken noktalar
+
+Sahibi 2026-08-27'de yönlendirme sırasını, yerel model önceliğini, token
+optimizasyonunu ve yönerge katmanını karara bağladı. Kalanlar:
+
+| # | Karar | Neden gerekli | Ne zaman |
+| --- | --- | --- | --- |
+| 1 | **Hangi sağlayıcılarda gerçekten hesap var?** Gemini / OpenAI / Claude — kaçar tane | Olmayan sağlayıcı için adaptör yazılmaz; hesap sayısı havuzun şeklini belirler | **Faz 1 başlamadan** |
+| 2 | **Yerel modeller aynı VPS'te mi?** | Aynı sunucudaysa bellek/CPU tavanı zorunlu, yoksa menü sayfası yavaşlar (UNK-10) | **Faz 1 başlamadan** |
+| 3 | Tenant başına aylık AI bütçesi | Tavansız AI maliyeti öngörülemez. Öneri: paket başına, ve dolunca AI durur ürün durmaz | Faz 1 sonunda |
+| 4 | Restoran sahibi model seçebilecek mi? | Seçim yüzeyi Faz 1'e girer ya da girmez. Öneri: **hayır** — matris seçsin, kullanıcı "hızlı/kaliteli" der | Faz 1 sonunda |
+| 5 | AI çıktısı hangi dilde? | Menü dili mi panel dili mi — çeviri yeteneğinin tanımı buna bağlı | Faz 2 |
+
+**Faz 1 kod yazımı 1. ve 2. karar olmadan başlamaz.** Diğer üçü için önerim
+yukarıda; itiraz etmezseniz onlarla ilerlerim.
 
 ---
 
-## 6. Sahibinin kararı gereken noktalar
+## 10. Ne ölçülecek — iddia edilmeyecek
 
-| # | Karar | Neden |
-| --- | --- | --- |
-| 1 | Hangi sağlayıcılarda gerçekten hesap var? | Faz 1 yapılandırması; olmayan sağlayıcı için kod yazılmaz |
-| 2 | Tenant başına aylık AI bütçesi | Fiyatlandırma; tavansız AI maliyeti öngörülemez |
-| 3 | Yerel modeller aynı VPS'te mi, ayrı sunucuda mı? | Aynı sunucuda kaynak sınırı zorunlu (UNK-10) |
-| 4 | Restoran sahibi model seçebilecek mi, yoksa biz mi seçelim? | Seçim yüzeyi Faz 1'e girer ya da girmez |
-| 5 | AI çıktısı hangi dilde? Menü dili mi, panel dili mi? | Çeviri yeteneğinin tanımı buna bağlı |
+AI planlarının en yaygın kusuru, kazancın hiç ölçülmemesidir. Bu plan üç şeyi
+ölçer ve raporlar:
 
-**Faz 1 kod yazımı 1. ve 3. karar olmadan başlamaz**; kalanlar Faz 2'de
-gerekir.
+| Ölçüm | Nasıl |
+| --- | --- |
+| **Kalite** | Yetenek başına altın küme; model değişimi o kümeden geçmeden yayınlanmaz |
+| **Maliyet** | Her çağrıda giriş/çıkış token'ı ve kuruş; tenant ve yetenek kırılımında |
+| **Kazanılan zaman** | Öneri kabul oranı ve elle düzeltme miktarı. Kimse kabul etmiyorsa yetenek işe yaramıyordur |
+
+Üçüncüsü en çok atlanan ve en önemlisidir: **kabul edilmeyen bir AI önerisi,
+kullanıcıya zaman kaybettirmiştir.**

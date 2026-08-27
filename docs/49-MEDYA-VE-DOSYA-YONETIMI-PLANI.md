@@ -167,13 +167,18 @@ ilk sıradadır (`docs/48`).
 AI **öneri üretir, yayınlamaz.** Kritik yolculuk AI kapalıyken tam çalışır
 (`docs/36` §5.7).
 
-| Yetenek | AI'ın işi | Kullanıcının işi |
-| --- | --- | --- |
-| Alt metin | Görselden taslak metin önerir | Görür, düzenler, onaylar |
-| Smart crop | Odak noktası önerir | Kabul veya elle taşır |
-| Etiketleme | Etiket önerir | Onaylar |
-| Yinelenen | Benzer görselleri işaretler | Hangisi kalacağına karar verir |
-| Kalite | "Bu görsel menüde bulanık görünecek" | Yeniden yükler ya da yok sayar |
+| Yetenek | AI'ın işi | Sağlayıcı | Kullanıcının işi |
+| --- | --- | --- | --- |
+| Alt metin | Görselden taslak metin önerir | Yerel | Görür, düzenler, onaylar |
+| Smart crop | Odak noktası önerir | Yerel (CV) | Kabul veya elle taşır |
+| Etiketleme | Etiket önerir | Yerel | Onaylar |
+| Yinelenen | Benzer görselleri gömme ile işaretler | Yerel | Hangisi kalacağına karar verir |
+| Kalite | "Bu görsel menüde bulanık görünecek" | Yerel (CV) | Yeniden yükler ya da yok sayar |
+| **Görselden menü çıkarma** | Fotoğraf/PDF/grafikten yapılandırılmış menü; belirsiz alanları İŞARETLER | **Gemini** → OpenAI | Belirsizleri doğrular, onaylar |
+
+Sağlayıcı sırası ve gerekçesi: `docs/51` §3.3. Kısaca: **yerel → Gemini →
+OpenAI → Claude**; medya işlerinin çoğu yerel modelle yapılabilir ve
+yapılmalıdır — hem bedava hem veri sunucudan çıkmaz.
 
 Her AI önerisi `docs/47` Kural 10'a uyar: kaynak, etkilenen kayıt, önizleme,
 onay, geri alma, denetim kaydı. **Otomatik yayın yok.**
