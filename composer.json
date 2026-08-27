@@ -3,9 +3,19 @@
     "name": "zabuno/zabuno",
     "type": "project",
     "description": "Zabuno — single-deployment Laravel modular-monolith foundation (S1-WP01A).",
-    "keywords": ["laravel", "framework", "zabuno"],
+    "keywords": [
+        "laravel",
+        "framework",
+        "zabuno"
+    ],
     "require": {
         "php": "^8.3",
+        "ext-bcmath": "*",
+        "ext-gd": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-zip": "*",
         "brick/money": "^0.14",
         "endroid/qr-code": "6.0.0",
         "iyzico/iyzipay-php": "2.0.61",

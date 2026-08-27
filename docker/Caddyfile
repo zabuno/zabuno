@@ -1,0 +1,17 @@
+# Otomatik HTTPS. Caddy sertifikayı kendisi alır ve yeniler; VPS'te bunu
+# elle yönetmek, unutulduğu gün siteyi düşüren türden bir iştir.
+{$ZABUNO_DOMAIN} {
+	encode zstd gzip
+
+	# Uygulama kendi güvenlik başlıklarını üretir (CSP nonce dâhil);
+	# burada onları EZMİYORUZ. Yalnız taşıma katmanına ait olan biri
+	# ekleniyor: HSTS, çünkü uygulama TLS'in sonlandığı yeri bilmez.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	reverse_proxy app:8080 {
+		header_up X-Forwarded-Proto https
+	}
+}
