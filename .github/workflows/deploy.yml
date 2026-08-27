@@ -32,29 +32,63 @@ concurrency:
 jobs:
   guard:
     runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.decide.outputs.should_deploy }}
     steps:
-      - name: Deploy edilmeli mi?
+      - name: Sunucu tanımlı mı?
+        id: server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          # Otomatik yol: yalnız CI GEÇTİYSE devam. `workflow_run`
-          # başarısız koşumlarda da tetiklenir; kontrol edilmezse kırık
-          # bir sürüm yayına çıkar.
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
-              echo "CI geçmedi (${{ github.event.workflow_run.conclusion }}); deploy edilmiyor."
-              exit 1
-            fi
-            echo "CI yeşil — deploy ediliyor."
+          # Sunucu henüz kurulmadıysa deploy BAŞARISIZ OLMAZ, ATLANIR.
+          # Her birleşmede kırmızı bir X görmek "kırmızıyı görmezden gel"
+          # alışkanlığı yaratır, ve o alışkanlık gerçek arızaları da gizler.
+          if [ -z "${DEPLOY_HOST}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Sunucu sırları tanımlı değil; deploy atlandı. Kurulum: docs/43."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy edilmeli mi?
+        id: decide
+        run: |
+          # Karar sırası önemli. "Atlama" ile "başarısızlık" ayrı şeylerdir:
+          # atlama, yapacak bir iş olmadığını söyler; başarısızlık, birinin
+          # bakması gerektiğini. İkisini karıştırmak, kırmızıyı anlamsız
+          # kılar.
+
+          # 1. Sunucu yok → yapacak iş yok.
+          if [ "${{ steps.server.outputs.configured }}" != "true" ]; then
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # Elle yol: yanlışlıkla tetiklemeye karşı onay istenir.
+          # 2. CI geçmedi → CI bunu zaten bildirdi. İkinci bir kırmızı X
+          #    bilgi eklemez, yalnız gürültü olur.
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+              echo "::notice::CI geçmedi (${{ github.event.workflow_run.conclusion }}); deploy atlandı."
+              echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # 3. Elle tetiklemede onay yoksa → bu bir kullanıcı hatası ve
+          #    görünmesi gerekir.
           if [ "${{ inputs.confirm }}" != "DEPLOY" ]; then
             echo "Elle deploy için onay kutusuna DEPLOY yazın."
             exit 1
           fi
 
+          echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+
   build:
     needs: guard
+    if: needs.guard.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.meta.outputs.image }}
@@ -99,7 +133,8 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    needs: build
+    needs: [guard, build]
+    if: needs.guard.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     environment: production
     steps:
