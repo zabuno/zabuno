@@ -227,7 +227,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                 <Button
                     type="submit"
                     disabled={submitting}
-                    className="w-full sm:w-auto sm:self-start"
+                    className="w-full max-w-[24ch] self-start"
                 >
                     {t('workspace.location.submit')}
                 </Button>

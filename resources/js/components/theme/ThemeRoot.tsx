@@ -116,15 +116,21 @@ export function ThemeRoot({ children }: ThemeRootProps) {
             <ThemeProvider theme={flowbiteTokenTheme} applyTheme={FLOWBITE_TOKEN_APPLY}>
                 {children}
             </ThemeProvider>
-            <div
-                aria-hidden="true"
-                data-theme-focus-clearance=""
-                style={{ minHeight: 'calc(44px + max(0.75rem, env(safe-area-inset-bottom)))' }}
-            />
+            {/*
+                Seçici artık SABİT DEĞİL.
+
+                320×480'de (iPhone 4) sabit bir alt çubuk ekranın kalıcı
+                olarak %12'sini kaplıyor ve içeriğin üstüne biniyordu — küçük
+                ekranda en pahalı şey dikey alandır. Ayrıca "yapıştırılmış"
+                bir kontrol, sayfanın hiçbir görevine ait değildir.
+                
+                Yerine akış içinde, sayfanın sonunda durur. Kabuklar isterse
+                kendi üst çubuklarına yerleştirir (`ThemeSwitcher`).
+            */}
             <div
                 role="radiogroup"
                 aria-label={t('theme.group_label')}
-                className="fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex justify-center motion-reduce:transition-none"
+                className="flex justify-center py-[var(--space-3)] motion-reduce:transition-none"
             >
                 <div className="flex gap-1 rounded-pill border border-border bg-surface/95 p-1 shadow-sm backdrop-blur-sm">
                     {THEME_OPTIONS.map((option) => {
