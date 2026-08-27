@@ -1,30 +1,27 @@
 export const billing = {
     'workspace.billing.heading': 'Billing',
     'workspace.billing.plan.region': 'Plan',
-    'workspace.billing.plan.unavailable':
-        'Plan information is not available yet; no billing API has been queried.',
+    'workspace.billing.plan.unavailable': 'Plan information is not available yet.',
     'workspace.billing.plan.loading': 'Loading plans…',
     'workspace.billing.plan.empty': 'No plans are available yet.',
     'workspace.billing.plan.error': 'Plans could not be loaded.',
     'workspace.billing.plan.retry': 'Retry',
     'workspace.billing.plan.priceUnavailable': 'Price unavailable',
     'workspace.billing.currentPlan.region': 'Current plan',
-    'workspace.billing.currentPlan.empty':
-        'No billing API has been queried yet; the current plan has not been checked.',
+    'workspace.billing.currentPlan.empty': 'Your current plan has not been loaded yet.',
     'workspace.billing.currentPlan.loading': 'Loading current plan…',
     'workspace.billing.currentPlan.none': 'No active subscription',
     'workspace.billing.currentPlan.error': 'We could not load the current plan.',
     'workspace.billing.currentPlan.retry': 'Retry',
     'workspace.billing.currentPlan.version': 'Version {version}',
     'workspace.billing.manualPayment.region': 'Manual payment',
-    'workspace.billing.manualPayment.empty':
-        'No billing API has been queried yet; manual payment has not been checked.',
+    'workspace.billing.manualPayment.empty': 'No manual payment has been recorded yet.',
     'workspace.billing.manualPayment.platformFinance':
         'Manual payments are recorded by platform finance; this workspace view is read-only.',
     'workspace.billing.changePlan.button': 'Change plan',
     'workspace.billing.recordPayment.button': 'Record payment',
     'workspace.billing.operational.description':
-        'The plan catalog and current subscription are fetched live from the server-backed billing API. Manual payments below are recorded in Zabuno Platform administration by finance staff. The Iyzico sandbox checkout below is a sandbox-only surface — no real money is charged.',
+        'See your plan, change it, and review payments. Payments made by bank transfer are recorded for you by our finance team.',
     'workspace.billing.status.notConnected': 'Not connected',
     'workspace.billing.manualPayment.field.plan': 'Plan assignment',
     'workspace.billing.manualPayment.field.endDate': 'End date',

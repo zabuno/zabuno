@@ -271,10 +271,16 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
 
         const page = document.getElementById('section-billing') ?? document.body;
 
-        expect(within(page).getByText(/plan catalog/i)).toHaveTextContent(/live|server/i);
-        expect(page).toHaveTextContent(
-            /current (plan|subscription).{0,120}(live|server)|(?:live|server).{0,120}current (plan|subscription)/i,
-        );
+        // Sayfa açıklaması önceden bir UYGULAMA RAPORUYDU ("fetched live from the
+        // server-backed billing API"). Kullanıcıya ne yapabileceğini söyleyen bir
+        // cümleyle değiştirildi; iddia da onu izliyor.
+        expect(within(page).getByText(/see your plan, change it/i)).toBeInTheDocument();
+        // Bu satır, metnin "live"/"server" DEMESİNİ şart koşuyordu — yani bir
+        // mimari sözcüğünün kullanıcı arayüzünde bulunmasını. Testin asıl iddiası
+        // ("sayfa artık yanlışlıkla 'bağlı değil' demiyor") aşağıdaki iki iddiada
+        // zaten duruyor; üstelik sunucudan gelen gerçek plan adının ("Growth")
+        // ekranda olması, bağlantının kurulduğuna dair prose'dan çok daha güçlü
+        // bir kanıt.
         expect(within(page).getByText(/platform finance/i)).toBeInTheDocument();
 
         expect(

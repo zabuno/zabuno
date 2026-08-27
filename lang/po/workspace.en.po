@@ -130,7 +130,7 @@ msgstr "Change plan"
 
 #: workspace:workspace.billing.currentPlan.empty
 msgid "workspace.billing.currentPlan.empty"
-msgstr "No billing API has been queried yet; the current plan has not been checked."
+msgstr "Your current plan has not been loaded yet."
 
 #: workspace:workspace.billing.currentPlan.error
 msgid "workspace.billing.currentPlan.error"
@@ -302,7 +302,7 @@ msgstr "Retry"
 
 #: workspace:workspace.billing.manualPayment.empty
 msgid "workspace.billing.manualPayment.empty"
-msgstr "No billing API has been queried yet; manual payment has not been checked."
+msgstr "No manual payment has been recorded yet."
 
 #: workspace:workspace.billing.manualPayment.field.documentReference
 msgid "workspace.billing.manualPayment.field.documentReference"
@@ -330,7 +330,7 @@ msgstr "Manual payment"
 
 #: workspace:workspace.billing.operational.description
 msgid "workspace.billing.operational.description"
-msgstr "The plan catalog and current subscription are fetched live from the server-backed billing API. Manual payments below are recorded in Zabuno Platform administration by finance staff. The Iyzico sandbox checkout below is a sandbox-only surface — no real money is charged."
+msgstr "See your plan, change it, and review payments. Payments made by bank transfer are recorded for you by our finance team."
 
 #: workspace:workspace.billing.plan.empty
 msgid "workspace.billing.plan.empty"
@@ -358,7 +358,7 @@ msgstr "Retry"
 
 #: workspace:workspace.billing.plan.unavailable
 msgid "workspace.billing.plan.unavailable"
-msgstr "Plan information is not available yet; no billing API has been queried."
+msgstr "Plan information is not available yet."
 
 #: workspace:workspace.billing.recordPayment.button
 msgid "workspace.billing.recordPayment.button"
@@ -760,6 +760,10 @@ msgstr "Media asset deleted."
 msgid "workspace.media.library.asset.delete.failed"
 msgstr "Media asset deletion failed. Your item was kept."
 
+#: workspace:workspace.media.library.asset.delete.named
+msgid "workspace.media.library.asset.delete.named"
+msgstr "Delete {name}"
+
 #: workspace:workspace.media.library.asset.status.accepted
 msgid "workspace.media.library.asset.status.accepted"
 msgstr "Accepted — awaiting processing"
@@ -791,6 +795,10 @@ msgstr "Scanning in progress"
 #: workspace:workspace.media.library.asset.status.unknown
 msgid "workspace.media.library.asset.status.unknown"
 msgstr "Status unavailable"
+
+#: workspace:workspace.media.library.asset.untitled
+msgid "workspace.media.library.asset.untitled"
+msgstr "Untitled image"
 
 #: workspace:workspace.media.library.assets.heading
 msgid "workspace.media.library.assets.heading"
@@ -874,7 +882,7 @@ msgstr "Upload images and manage the media library that feeds your published men
 
 #: workspace:workspace.media.security.explanation
 msgid "workspace.media.security.explanation"
-msgstr "A human reviews and approves every security scan result before any file can move forward; no scan approves itself."
+msgstr "Every image is scanned and checked by a person before it can appear on your menu."
 
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"
@@ -1110,7 +1118,7 @@ msgstr "I reviewed the publish checklist"
 
 #: workspace:workspace.publication.publishAction.failurePreservationNotice
 msgid "workspace.publication.publishAction.failurePreservationNotice"
-msgstr "Last successful publication is preserved if publish fails"
+msgstr "If publishing fails, guests keep seeing the menu you published last."
 
 #: workspace:workspace.publication.publishAction.mode.immediate
 msgid "workspace.publication.publishAction.mode.immediate"
@@ -1122,7 +1130,7 @@ msgstr "Publish mode"
 
 #: workspace:workspace.publication.publishAction.permissionNotice
 msgid "workspace.publication.publishAction.permissionNotice"
-msgstr "Requires menu.publish permission"
+msgstr "You need permission to publish this menu."
 
 #: workspace:workspace.publication.publishAction.region
 msgid "workspace.publication.publishAction.region"
@@ -1130,11 +1138,11 @@ msgstr "Publish action"
 
 #: workspace:workspace.publication.publishAction.scheduleNotice
 msgid "workspace.publication.publishAction.scheduleNotice"
-msgstr "Scheduled publish is not available in Stage 1."
+msgstr "Publishing at a chosen time is not available yet."
 
 #: workspace:workspace.publication.publishAction.snapshotNotice
 msgid "workspace.publication.publishAction.snapshotNotice"
-msgstr "Publishing creates an immutable snapshot"
+msgstr "Publishing saves a fixed copy. Later edits stay private until you publish again."
 
 #: workspace:workspace.publication.publishedSnapshot.publishedAt
 msgid "workspace.publication.publishedSnapshot.publishedAt"
@@ -1142,7 +1150,7 @@ msgstr "Published at {publishedAt}"
 
 #: workspace:workspace.publication.publishedSnapshot.region
 msgid "workspace.publication.publishedSnapshot.region"
-msgstr "Published snapshot"
+msgstr "Published menu"
 
 #: workspace:workspace.publication.qrDestination.createButton
 msgid "workspace.publication.qrDestination.createButton"
@@ -1170,7 +1178,7 @@ msgstr "Create a QR code that resolves to the current published menu."
 
 #: workspace:workspace.publication.qrDestination.fields.unavailable
 msgid "workspace.publication.qrDestination.fields.unavailable"
-msgstr "QR destination capability is not available until a current publication exists."
+msgstr "Publish your menu first — the QR code needs a published menu to point to."
 
 #: workspace:workspace.publication.qrDestination.loadError
 msgid "workspace.publication.qrDestination.loadError"
@@ -1246,7 +1254,7 @@ msgstr "Enter a whole number between 0 and 9999."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.notice
 msgid "workspace.publication.qrExport.bulkWizard.notice"
-msgstr "This bulk QR wizard has not been submitted; no bulk export has been created yet."
+msgstr "Fill in the table layout below, then create the codes."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable
 msgid "workspace.publication.qrExport.bulkWizard.seatCountPerTable"
@@ -1432,6 +1440,10 @@ msgstr "Visible price and currency ready"
 msgid "workspace.publication.readiness.visibleProductNames"
 msgstr "Visible product names ready"
 
+#: workspace:workspace.publication.status.draft
+msgid "workspace.publication.status.draft"
+msgstr "Draft"
+
 #: workspace:workspace.publication.status.lifecycle.failed
 msgid "workspace.publication.status.lifecycle.failed"
 msgstr "Failed"
@@ -1476,13 +1488,17 @@ msgstr "Publish"
 msgid "workspace.publication.status.publishError"
 msgstr "Publish failed. The last successful publication is still current."
 
+#: workspace:workspace.publication.status.published
+msgid "workspace.publication.status.published"
+msgstr "Published"
+
 #: workspace:workspace.publication.status.region
 msgid "workspace.publication.status.region"
 msgstr "Publication status"
 
 #: workspace:workspace.publication.status.summary
 msgid "workspace.publication.status.summary"
-msgstr "#{id} · v{version} · {state}"
+msgstr "Version {version} · {state}"
 
 #: workspace:workspace.publication.status.unavailable
 msgid "workspace.publication.status.unavailable"

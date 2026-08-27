@@ -9,7 +9,7 @@ export const media = {
     'workspace.media.upload.failed': 'Media upload failed. Your selection was kept.',
     'workspace.media.upload.complete': 'Media upload complete.',
     'workspace.media.security.explanation':
-        'A human reviews and approves every security scan result before any file can move forward; no scan approves itself.',
+        'Every image is scanned and checked by a person before it can appear on your menu.',
     'workspace.media.upload.field.file': 'File',
     // Sürükle-bırak alanı. Öncesinde ham bir `<input type=file>` vardı ve
     // tarayıcı onu İŞLETİM SİSTEMİNİN dilinde çiziyordu: uygulama İngilizce
@@ -88,6 +88,13 @@ export const media = {
     'workspace.media.library.asset.status.failed': 'Processing failed',
     'workspace.media.library.asset.status.unknown': 'Status unavailable',
     'workspace.media.library.asset.delete': 'Delete',
+    // Her satırdaki silme düğmesinin adı aynıydı ("Delete"). Ekran okuyucu
+    // kullanan biri, üç düğme arasında hangisinin hangi görseli sildiğini
+    // ayırt edemiyordu — ve bu geri alınamaz bir eylem.
+    'workspace.media.library.asset.delete.named': 'Delete {name}',
+    // Kullanıcı alt metni boş bıraktıysa bile satırın bir adı olmalı.
+    // Alternatif, veritabanı kimliğini göstermekti; o bir ad değildir.
+    'workspace.media.library.asset.untitled': 'Untitled image',
     'workspace.media.library.asset.delete.failed':
         'Media asset deletion failed. Your item was kept.',
     'workspace.media.library.asset.delete.complete': 'Media asset deleted.',

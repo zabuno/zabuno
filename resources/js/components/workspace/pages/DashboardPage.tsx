@@ -5,7 +5,7 @@ import type { DataTableColumn } from '../../catalog/data-display/compound/Respon
 import { DashboardSetupJourney } from './dashboard/DashboardSetupJourney';
 import type { BrandProfile } from '../BrandEditForm';
 import type { LocationProfile } from '../LocationEditForm';
-import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 
 export type DashboardMenuItemRow = {
     id: number;
@@ -60,21 +60,10 @@ export function DashboardPage({
     location = null,
     workspaceId,
 }: DashboardPageProps) {
-    const badges: WorkspacePageStatusBadge[] = dashboardMenuTree
-        ? [
-              {
-                  key: 'dashboard-menu-state',
-                  status: dashboardMenuTree.state === 'draft' ? 'warning' : 'success',
-                  label: dashboardMenuTree.state,
-              },
-          ]
-        : [];
-
     return (
         <div id="section-dashboard">
             <WorkspacePageFrame
                 description={tWorkspace('workspace.dashboard.operational.description')}
-                badges={badges}
             >
                 <DashboardSetupJourney
                     brand={brand}

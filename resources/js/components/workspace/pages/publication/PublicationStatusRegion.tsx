@@ -72,9 +72,16 @@ export function PublicationStatusRegion({
             ) : (
                 <p role="status" className="text-body text-fg-secondary">
                     {t('workspace.publication.status.summary', {
-                        id: String(current.id),
                         version: String(current.version),
-                        state: current.state,
+                        // Sunucunun ham durum değeri DOĞRUDAN basılmaz;
+                        // sözlükten geçer. Tanınmayan bir değer gelirse ham
+                        // hâli gösterilir — uydurmak yerine dürüstçe.
+                        state:
+                            current.state === 'published'
+                                ? t('workspace.publication.status.published')
+                                : current.state === 'draft'
+                                  ? t('workspace.publication.status.draft')
+                                  : current.state,
                     })}
                 </p>
             )}

@@ -102,13 +102,16 @@ export function AnalyticsPage({
         fetchSummary();
     }, [fetchSummary]);
 
-    const rangeLabel: Record<AnalyticsRange, string> = {
-        today: t('workspace.analytics.range.today'),
-        '7d': t('workspace.analytics.range.7d'),
-        '30d': t('workspace.analytics.range.30d'),
-    };
-
-    const statusBadge: WorkspacePageStatusBadge = (() => {
+    /**
+     * Rozet ANORMAL durumu bildirir; başarı hâlinde hiçbir şey göstermez.
+     *
+     * Önceden başarı hâlinde seçili zaman aralığı ("Today") basılıyordu —
+     * oysa o bilgi hemen altındaki `Range` seçicisinde zaten duruyor ve
+     * kullanıcının kendi seçtiği şeydir. Bir durum rozetinin işi, kullanıcının
+     * BİLMEDİĞİ bir şeyi söylemektir; bildiği şeyi tekrarladığında rozetlerin
+     * tamamı okunmayan süse dönüşür ve gerçek uyarı da fark edilmez.
+     */
+    const statusBadge: WorkspacePageStatusBadge | null = (() => {
         switch (status) {
             case 'loading':
                 return {
@@ -130,7 +133,7 @@ export function AnalyticsPage({
                     label: t('workspace.analytics.status.planRestricted'),
                 };
             case 'success':
-                return { key: 'analytics-status', status: 'success', label: rangeLabel[range] };
+                return null;
             case 'idle':
             default:
                 return {
@@ -146,7 +149,7 @@ export function AnalyticsPage({
             <WorkspacePageFrame
                 title={t('workspace.analytics.heading')}
                 description={t('workspace.analytics.operational.description')}
-                badges={[statusBadge]}
+                badges={statusBadge ? [statusBadge] : []}
             >
                 <div className="flex flex-col gap-2">
                     <div className="mb-2 block">

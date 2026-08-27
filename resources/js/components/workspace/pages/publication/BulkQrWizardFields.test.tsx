@@ -624,7 +624,7 @@ describe('BulkQrWizardFields honest-state gaps (BULK_QR_WIZARD_HONEST_STATE_RED)
         render(<BulkQrWizardFields {...DEFAULT_PROPS} />);
         const wizard = getWizard();
 
-        expect(within(wizard).getByText(/has not been submitted/i)).toBeInTheDocument();
+        expect(within(wizard).getByText(/fill in the table layout below/i)).toBeInTheDocument();
 
         await fillValidPlan(user, wizard);
         const submit = within(wizard).getByRole('button', { name: /create table qr codes/i });
@@ -635,7 +635,7 @@ describe('BulkQrWizardFields honest-state gaps (BULK_QR_WIZARD_HONEST_STATE_RED)
         );
         expect(createdMessage).toHaveAttribute('role', 'status');
 
-        expect(within(wizard).queryByText(/has not been submitted/i)).not.toBeInTheDocument();
+        expect(within(wizard).queryByText(/fill in the table layout below/i)).not.toBeInTheDocument();
     });
 
     it('(B) hides the not-submitted notice after a 422 attempt while the honest plan summary remains and an alert is shown', async () => {
@@ -658,7 +658,7 @@ describe('BulkQrWizardFields honest-state gaps (BULK_QR_WIZARD_HONEST_STATE_RED)
             expect(within(wizard).getByRole('alert')).toBeInTheDocument();
         });
 
-        expect(within(wizard).queryByText(/has not been submitted/i)).not.toBeInTheDocument();
+        expect(within(wizard).queryByText(/fill in the table layout below/i)).not.toBeInTheDocument();
         expect(within(wizard).getByText(/12 tables across 3 areas/i)).toBeInTheDocument();
     });
 

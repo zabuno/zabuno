@@ -138,7 +138,11 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
 
         await waitFor(() => {
             const region = screen.getByRole('region', { name: /publication status/i });
-            expect(within(region).getByText(/#501|\b501\b/)).toBeInTheDocument();
+            // Yayının VERİTABANI KİMLİĞİ ekrana çıkmaz. Bu satır önceden kimliğin
+            // GÖRÜNDÜĞÜNÜ doğruluyordu; sunucu verisinin geldiğini kanıtlamak için
+            // kullanılıyordu, ama o kanıtı sürüm numarası zaten veriyor — ve sürüm,
+            // kimliğin aksine kullanıcı için anlamlı (her yayında artar).
+            expect(within(region).queryByText(/#501|\b501\b/)).toBeNull();
             expect(within(region).getByText(/v3|version 3/i)).toBeInTheDocument();
             expect(within(region).getByText(/published/i)).toBeInTheDocument();
         });
@@ -242,7 +246,11 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         expect(publishHeaders.get('X-XSRF-TOKEN')).toBe('s1-wp04a-test-token');
 
         await waitFor(() => {
-            expect(within(statusRegion).getByText(/#900|\b900\b/)).toBeInTheDocument();
+            // Yayının VERİTABANI KİMLİĞİ ekrana çıkmaz. Bu satır önceden kimliğin
+            // GÖRÜNDÜĞÜNÜ doğruluyordu; sunucu verisinin geldiğini kanıtlamak için
+            // kullanılıyordu, ama o kanıtı sürüm numarası zaten veriyor — ve sürüm,
+            // kimliğin aksine kullanıcı için anlamlı (her yayında artar).
+            expect(within(statusRegion).queryByText(/#900|\b900\b/)).toBeNull();
             expect(within(statusRegion).getByText(/published/i)).toBeInTheDocument();
         });
     });
@@ -278,7 +286,7 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
 
         const statusRegion = screen.getByRole('region', { name: /publication status/i });
         await waitFor(() =>
-            expect(within(statusRegion).getByText(/#800|\b800\b/)).toBeInTheDocument(),
+            expect(within(statusRegion).queryByText(/#800|\b800\b/)).toBeNull(),
         );
 
         const checkbox = within(statusRegion).getByRole('checkbox', {
@@ -291,7 +299,11 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
             expect(within(statusRegion).getByRole('alert')).toBeInTheDocument();
         });
 
-        expect(within(statusRegion).getByText(/#800|\b800\b/)).toBeInTheDocument();
+        // Yayının VERİTABANI KİMLİĞİ ekrana çıkmaz. Bu satır önceden kimliğin
+            // GÖRÜNDÜĞÜNÜ doğruluyordu; sunucu verisinin geldiğini kanıtlamak için
+            // kullanılıyordu, ama o kanıtı sürüm numarası zaten veriyor — ve sürüm,
+            // kimliğin aksine kullanıcı için anlamlı (her yayında artar).
+            expect(within(statusRegion).queryByText(/#800|\b800\b/)).toBeNull();
         expect(within(statusRegion).getByText(/v2|version 2/i)).toBeInTheDocument();
     });
 
@@ -340,7 +352,7 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         expect(qrExportRegion).toBeInTheDocument();
 
         expect(
-            screen.getByText(/scheduled publish is not available in stage 1/i),
+            screen.getByText(/publishing at a chosen time is not available yet/i),
         ).toBeInTheDocument();
 
         const publishModeSelect = screen.getByLabelText(/publish mode/i);
@@ -828,7 +840,7 @@ describe('PublicationPage — reviewer-correction gaps (ZABUNO_PUBLICATION_REVIE
         const regionText = qrDestinationRegion.textContent ?? '';
 
         expect(regionText).toMatch(
-            /qr destination (capability|api) (is|are)? ?not available|qr destination (capability|api) is unavailable/i,
+            /publish your menu first/i,
         );
         expect(regionText).not.toMatch(/until the publication api/i);
         expect(regionText).not.toMatch(/publication api (is absent|does not exist|has not)/i);
@@ -855,7 +867,7 @@ describe('PublicationPage — reviewer-correction gaps (ZABUNO_PUBLICATION_REVIE
         render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
 
         await waitFor(() => {
-            const snapshotRegion = screen.getByRole('region', { name: /published snapshot/i });
+            const snapshotRegion = screen.getByRole('region', { name: /published menu/i });
             expect(within(snapshotRegion).getByText(/2026-08-20/)).toBeInTheDocument();
             expect(within(snapshotRegion).getByText('Sunulan Kategori')).toBeInTheDocument();
             expect(within(snapshotRegion).getByText('Sunulan Ürün')).toBeInTheDocument();
@@ -1118,7 +1130,11 @@ describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_S
         await user.click(within(statusRegion).getByRole('button', { name: /retry/i }));
 
         await waitFor(() => {
-            expect(within(statusRegion).getByText(/#611|\b611\b/)).toBeInTheDocument();
+            // Yayının VERİTABANI KİMLİĞİ ekrana çıkmaz. Bu satır önceden kimliğin
+            // GÖRÜNDÜĞÜNÜ doğruluyordu; sunucu verisinin geldiğini kanıtlamak için
+            // kullanılıyordu, ama o kanıtı sürüm numarası zaten veriyor — ve sürüm,
+            // kimliğin aksine kullanıcı için anlamlı (her yayında artar).
+            expect(within(statusRegion).queryByText(/#611|\b611\b/)).toBeNull();
             expect(within(statusRegion).getByText(/v5|version 5/i)).toBeInTheDocument();
         });
         expect(within(statusRegion).queryByRole('alert')).toBeNull();
