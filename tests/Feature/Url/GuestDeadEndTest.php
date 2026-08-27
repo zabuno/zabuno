@@ -49,6 +49,21 @@ final class GuestDeadEndTest extends TestCase
         self::assertStringContainsString('personel', $body, 'URL-DEADEND-HUMAN-20: misafire ne yapacağı söylenmeli.');
     }
 
+    public function test_the_resolver_route_renders_the_dead_end_too_not_a_server_error(): void
+    {
+        // Bu test, #79'da kaçırdığım gerçek bir hatayı dondurur: `/q/`
+        // controller'ının dönüş tipi HTML yanıtını kabul etmiyordu ve
+        // tarayıcıdan gelen her ölü karekod 500 veriyordu. Önceki testim
+        // yalnız "301 değil" diyordu — 500 de 301 değildir, yani hatayı
+        // geçirdi. Durum kodu ARTIK açıkça doğrulanıyor.
+        foreach (['/q/', '/menu/'] as $prefix) {
+            $response = $this->browserGet($prefix.self::UNKNOWN);
+
+            self::assertSame(404, $response->getStatusCode(), "URL-DEADEND-HUMAN-20: {$prefix} tarayıcıda 404 döndürmeli.");
+            self::assertStringContainsString('<html', (string) $response->getContent());
+        }
+    }
+
     // --- URL-DEADEND-UNIFORM-21 --------------------------------------------
 
     public function test_unknown_malformed_and_disabled_are_indistinguishable(): void

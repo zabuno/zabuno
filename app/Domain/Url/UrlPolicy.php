@@ -28,6 +28,39 @@ final class UrlPolicy
         return is_string($host) && $host !== '' ? strtolower($host) : null;
     }
 
+    /**
+     * Kabul edilen Host başlıkları. Boşsa çağıran `APP_URL` host'una düşer.
+     *
+     * @return list<string>
+     */
+    public function trustedHosts(): array
+    {
+        return $this->list('trusted_hosts');
+    }
+
+    /**
+     * Uygulamanın cevap vereceği Host'lar.
+     *
+     * Yapılandırma boşsa `APP_URL`'in host'una düşülür: host'u koda gömmek,
+     * aynı yapının beş barındırıcıda çalışmasını imkânsız kılardı
+     * (`docs/38` §8). Saf bir işlevdir — çerçevenin global durumuna
+     * dokunmaz, bu yüzden test edilmesi bir yan etki bırakmaz.
+     *
+     * @return list<string>
+     */
+    public function resolvedTrustedHosts(?string $applicationUrl): array
+    {
+        $configured = $this->trustedHosts();
+
+        if ($configured !== []) {
+            return $configured;
+        }
+
+        $host = is_string($applicationUrl) ? parse_url($applicationUrl, PHP_URL_HOST) : null;
+
+        return is_string($host) && $host !== '' ? [strtolower($host)] : [];
+    }
+
     public function enforcesScheme(): bool
     {
         return (bool) ($this->config['enforce_scheme'] ?? false);

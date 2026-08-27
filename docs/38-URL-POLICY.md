@@ -191,6 +191,38 @@ daraltmasına izin verirdi. Arama motoru faydası, bu sızıntının yanında
 Yanıt biçimi **isteyene** göre değişir (tarayıcıya HTML, API istemcisine
 JSON), **vakaya** göre değil; aksi hâlde tekdüzelik bozulurdu.
 
+## 17. Host güveni ve QR hız sınırı
+
+**Host başlığı istemciden gelir.** Laravel varsayılan olarak ona güvenir; bu,
+ürettiğimiz kanonik ve imzalı adreslerin saldırganın alan adına kaymasına izin
+verir. Doğrulama e-postasındaki bağlantı o alan adına giderse, kullanıcı kimlik
+bilgisini oraya yazar.
+
+Uygulama artık hangi Host'lara cevap verdiğini beyan ediyor. Liste boş
+bırakılırsa `APP_URL`'in host'una düşer — host'u koda gömmek beş barındırıcıda
+çalışmayı imkânsız kılardı.
+
+Denetim **çerçevenin `TrustHosts`'u yerine URL motorunda** yapılır. Sebep
+ölçüldü: `TrustHosts`, Symfony'nin süreç-genelinde statik `setTrustedHosts`
+çağrısını kullanır; süitte bir yer onu tetiklediğinde 16 test birden 400
+döndü ve hata, onu tetikleyen testte değil çok sonrasında göründü. Host
+politikasının zaten tek sahibi URL motorudur; ikinci bir sahip eklemek bu
+sınıf hatayı davet eder.
+
+Yerel ve test ortamı muaftır: aksi hâlde her geliştiricinin makinesi ve her
+CI koşusu ayrı yapılandırma ister, kural da ilk engelde toptan kapatılırdı.
+
+**QR çözümleyici hız sınırlıdır.** Token uzayı taranabilir bir yüzeydir ve her
+istek bir veritabanı araması yapar. Sınır cömerttir (aynı IP'den dakikada 60) —
+bir masadaki misafirlerin arka arkaya taraması engellenmemeli — ama bir
+tarayıcı için değersizdir.
+
+## 18. QR token uzunluğu (owner kararı, 2026-08-27)
+
+Token 43 karakter kalır. Baskıda daha küçük/yoğun bir kod için kısaltma
+**yapılmayacaktır**. Bu bir ürün kararıdır: kısa kod QR yoğunluğunu düşürür
+ama token uzayını da daraltır, ve basılmış kodlar geriye dönük değiştirilemez.
+
 ## 16. Henüz yapılmayanlar
 
 Slug geçmişi ve 301 tablosu (bir işletme adını değiştirdiğinde eski adresin
