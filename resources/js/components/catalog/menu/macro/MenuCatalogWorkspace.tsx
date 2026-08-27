@@ -334,10 +334,14 @@ export function MenuCatalogWorkspace({
                 } else {
                     const loaded = (await menuResponse.json()) as MenuTree;
                     setTree(loaded);
-                    const firstCategory = loaded.categories[0] ?? null;
-                    if (firstCategory) {
-                        setCurrentCategoryId(firstCategory.id);
-                    }
+
+                    // İlk kategori SEÇİLİ AÇILMAZ.
+                    //
+                    // Seçim, ürün formunun hangi kategoride açılacağını
+                    // belirliyor; yüklemede seçmek, kullanıcı istemeden
+                    // birinci kategorinin altında bir form açardı. Menüyü
+                    // GÖRMEK için gelen kişiye, sormadığı bir soruyu
+                    // gösterirdi.
                 }
             } catch {
                 if (!cancelled) {

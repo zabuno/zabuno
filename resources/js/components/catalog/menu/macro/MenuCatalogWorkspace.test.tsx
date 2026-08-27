@@ -206,6 +206,23 @@ function buildFetchMock(handlers: FetchHandlers) {
 
 type MenuCatalogWorkspaceProps = { workspaceId: number; locationId: number };
 
+/**
+ * Bir kategorinin ürün formunu açar.
+ *
+ * Kategori artık bir alan değil, tıkladığın yer: form o kategorinin
+ * ALTINDA açılır ve kategori sorulmaz.
+ */
+function openEntryForm(categoryName: string): HTMLElement {
+    const category = screen
+        .getByRole('heading', { name: categoryName })
+        .closest('li') as HTMLElement;
+
+    fireEvent.click(within(category).getByRole('button', { name: 'Add product' }));
+
+    return category;
+}
+
+
 function assertMutationRequestInit(init: RequestInit | undefined): void {
     expect(init?.credentials).toBe('include');
     const headers = new Headers(init?.headers as HeadersInit | undefined);
@@ -747,6 +764,9 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
 
         // A konumunda tek forma yazılır ama GÖNDERİLMEZ: sınanan şey,
         // yazılmış ama kaydedilmemiş verinin konum değişince taşınmamasıdır.
+        await screen.findByRole('heading', { name: 'Başlangıçlar' });
+        openEntryForm('Başlangıçlar');
+
         const aProductNameInput = await screen.findByLabelText('Product name');
         fireEvent.change(aProductNameInput, { target: { value: 'Mercimek Çorbası' } });
 
@@ -915,7 +935,7 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit allergens for Baklava' }));
         const secondAllergensInput = (await screen.findByRole('textbox', {
-            name: 'Allergens (comma-separated)',
+            name: 'Allergens — Baklava',
         })) as HTMLInputElement;
         expect(secondAllergensInput.value).toBe('');
 
@@ -1097,6 +1117,8 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
         })) as HTMLInputElement;
         expect(staleAllergensInput.value).toContain('gluten');
         expect(staleAllergensInput.value).toContain('süt');
+
+        openEntryForm('Başlangıçlar');
 
         const newProductNameInput = await screen.findByLabelText('Product name');
         fireEvent.change(newProductNameInput, { target: { value: 'Baklava' } });
