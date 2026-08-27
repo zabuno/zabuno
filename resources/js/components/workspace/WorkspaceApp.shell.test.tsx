@@ -255,7 +255,11 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
             'scrollTo',
             vi.fn(() => {
                 if (previousSectionStillMounted === null) {
-                    previousSectionStillMounted = screen.queryByText('Dashboard') !== null;
+                    // Kapsayıcı id'si ile bakıyoruz: metinle aramak
+                    // belirsizdir (nav bağlantısı ve başlık aynı kelimeyi
+                    // taşır) ve testi kırılgan yapar.
+                    previousSectionStillMounted =
+                        document.getElementById('section-dashboard') !== null;
                 }
             }),
         );
