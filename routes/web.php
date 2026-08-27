@@ -7,13 +7,16 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
+use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuController;
 use App\Http\Controllers\Seo\ShowRobotsController;
 use App\Http\Controllers\Team\ShowTeamInvitationController;
 use App\Http\Controllers\WorkspaceAppController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
+use App\Http\Responses\GuestDeadEnd;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
 
@@ -43,7 +46,26 @@ Route::get('/robots.txt', ShowRobotsController::class)->name('seo.robots');
 Route::get('/q/{token}', RedirectQrTokenController::class)
     ->middleware('throttle:qr-resolve')
     ->name('qr.resolve');
-Route::get('/menu/{token}', ShowPublicMenuController::class)->name('qr.publicMenu');
+// Basılı QR token'ının adresi. KALICI adres artık `/menu/{key}/{slug}`;
+// bu yol eski bağlantılar ve eski basılı kodlar için yaşamaya devam eder
+// ve kalıcı olarak kanonik adrese taşır (`docs/38` §21).
+Route::get('/menu/{token}', ShowPublicMenuController::class)
+    ->where('token', '[A-Za-z0-9_-]{43}')
+    ->name('qr.publicMenu');
+
+// Yayınlanan menünün herkese açık, indekslenebilir adresi.
+Route::get('/menu/{key}/{slug?}', ShowPublicMenuByKeyController::class)
+    ->where('key', '[a-z0-9]{10}')
+    ->name('publicMenu.canonical');
+
+// Biçimi tutmayan her `/menu/...` isteği AYNI çıkmaz sokağa düşer.
+// Bu olmadan Laravel'in genel 404'ü devreye girer ve iki şey birden olur:
+// tekdüzelik bozulur (QR-PUBLIC-404-UNIFORM-01) ve hata metni rota şeklini
+// ifşa eder.
+Route::get('/menu/{any}/{rest?}', static fn (Request $request) => GuestDeadEnd::respond($request))
+    ->where('any', '.*')
+    ->where('rest', '.*')
+    ->name('publicMenu.deadEnd');
 
 /**
  * Public GET invitation entry (S1-WP01A delivery journey): a guest gets

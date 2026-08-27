@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Analytics\UseCase\RecordAnalyticsEvent;
+use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\QrDestination\QrToken;
@@ -18,6 +19,7 @@ final class RedirectQrTokenController extends Controller
     public function __construct(
         private readonly QrCodeRepositoryPort $qrCodes,
         private readonly RecordAnalyticsEvent $recordAnalyticsEvent,
+        private readonly PublicMenuAddressPort $addresses,
     ) {}
 
     public function __invoke(string $token): SymfonyResponse
@@ -53,6 +55,17 @@ final class RedirectQrTokenController extends Controller
         //
         // `no-store` aynı sebeple: önbelleklenen bir yönlendirme, basılı bir
         // QR'ı sessizce eski hedefe kilitler.
+        // Hedef token yoludur ve bu bilinçlidir. QR akışı ile SEO akışı
+        // meşru biçimde AYRIDIR:
+        //
+        //   /q/{token}      → 302 → /menu/{token}   (misafir; huni ölçülür)
+        //   /menu/{key}/{slug}                       (arama; kanonik, indeksli)
+        //
+        // Taramayı kanonik adrese göndermek, "QR çözümlemesi → menü açılışı"
+        // hunisinin ikinci yarısını ölçülemez hâle getirirdi: kanonik sayfa
+        // hangi karekodun getirdiğini bilmez. Token sayfası ise `noindex`
+        // ve kanonik adrese işaret eder, yani arama motoru ikisini
+        // birleştirir.
         return redirect()->route('qr.publicMenu', ['token' => $qrToken->value()], 302)
             ->header('Cache-Control', 'no-store, private')
             ->header('X-Robots-Tag', 'noindex, nofollow');

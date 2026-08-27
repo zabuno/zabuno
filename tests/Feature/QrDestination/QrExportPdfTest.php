@@ -13,6 +13,7 @@ use Composer\InstalledVersions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Mpdf\Mpdf;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -182,6 +183,7 @@ final class QrExportPdfTest extends TestCase
         ]);
 
         $menuId = (int) DB::table('menus')->insertGetId([
+            'public_key' => Str::lower(Str::random(10)),
             'workspace_id' => $workspaceId,
             'location_id' => $locationId,
             'name' => 'Ana Menü',

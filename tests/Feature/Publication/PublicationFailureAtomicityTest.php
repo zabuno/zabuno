@@ -7,6 +7,7 @@ namespace Tests\Feature\Publication;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -103,6 +104,7 @@ final class PublicationFailureAtomicityTest extends TestCase
         ]);
 
         $menuId = (int) DB::table('menus')->insertGetId([
+            'public_key' => Str::lower(Str::random(10)),
             'workspace_id' => $workspaceId,
             'location_id' => $locationId,
             'name' => 'Ana Menü',

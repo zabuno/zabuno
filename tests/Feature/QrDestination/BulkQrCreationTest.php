@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Support\GrantsPlanEntitlements;
 use Tests\TestCase;
@@ -141,6 +142,7 @@ final class BulkQrCreationTest extends TestCase
         ]);
 
         $menuId = (int) DB::table('menus')->insertGetId([
+            'public_key' => Str::lower(Str::random(10)),
             'workspace_id' => $workspaceId,
             'location_id' => $locationId,
             'name' => 'Ana Menü',
@@ -252,6 +254,7 @@ final class BulkQrCreationTest extends TestCase
         ]);
 
         DB::table('menus')->insertGetId([
+            'public_key' => Str::lower(Str::random(10)),
             'workspace_id' => $workspaceId,
             'location_id' => $locationId,
             'name' => 'Ana Menü',
