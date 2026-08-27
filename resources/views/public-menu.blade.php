@@ -32,6 +32,10 @@
     <link rel="apple-touch-icon" href="/icons/zabuno-menu-192.svg" sizes="192x192">
     <link rel="icon" href="/icons/zabuno-menu-512.svg" sizes="512x512" type="image/svg+xml">
     @include('partials.theme-bootstrap')
+    {{-- Misafirin gördüğü sayfa. Tenant kimliği olmadan bu trafik tek bir
+         yığın olurdu ve "hangi restoranın menüsü kaç kez açıldı" sorusu
+         tarayıcı tarafında cevapsız kalırdı. --}}
+    @include('partials.analytics', ['analyticsContext' => $analyticsContext ?? ['zabuno_surface' => 'menu']])
     <style nonce="{{ $cspNonce ?? '' }}">
         :root {
             color-scheme: light dark;

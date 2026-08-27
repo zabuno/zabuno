@@ -9,7 +9,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const billingSection: WorkspaceSectionDescriptor = {
     key: 'billing',
-    hash: '#billing',
+    path: 'billing',
     order: 8,
     labelKey: 'workspace.shell.nav.billing',
     render,

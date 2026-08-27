@@ -205,7 +205,7 @@ describe('WorkspaceApp — main breadcrumb (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
-    it('activating the selected-location breadcrumb link navigates to Locations and leaves the hash at #locations', async () => {
+    it('activating the selected-location breadcrumb link navigates to Locations and leaves the address at the Locations path', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace([makeLocation({ id: 923, display_name: 'Kadıköy' })]);
 
@@ -217,7 +217,7 @@ describe('WorkspaceApp — main breadcrumb (S1-WP01A, RED)', () => {
 
         const activeCrumb = within(breadcrumb).getByText('Locations');
         expect(activeCrumb).toHaveAttribute('aria-current', 'page');
-        expect(window.location.hash).toBe('#locations');
+        expect(window.location.pathname).toBe('/app/zeytin-restoranlari/locations');
 
         vi.unstubAllGlobals();
     });

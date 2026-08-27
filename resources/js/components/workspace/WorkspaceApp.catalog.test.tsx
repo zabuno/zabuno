@@ -150,7 +150,10 @@ function buildFetchMock(handlers: Handlers) {
 
 describe('WorkspaceApp — current workspace brand/location catalog routing (S1-WP02C follow-on, RED)', () => {
     beforeEach(() => {
-        history.replaceState(null, '', window.location.pathname);
+        // Her test tarayıcıyı YENİ açmış gibi başlar: gezinti artık adresi
+        // gerçekten değiştiriyor ve bir testin bıraktığı adres sonrakini
+        // sessizce başka bir ekranda açardı.
+        history.replaceState(null, '', '/');
     });
 
     it('fetches the brand profile for the current workspace id', async () => {

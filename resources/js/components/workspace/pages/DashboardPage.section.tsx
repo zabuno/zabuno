@@ -18,7 +18,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const dashboardSection: WorkspaceSectionDescriptor = {
     key: 'dashboard',
-    hash: '#dashboard',
+    path: 'dashboard',
     order: 0,
     labelKey: 'workspace.shell.nav.dashboard',
     aiQuickAction: true,

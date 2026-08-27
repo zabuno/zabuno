@@ -127,7 +127,10 @@ function buildFetchMock() {
 
 describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () => {
     beforeEach(() => {
-        history.replaceState(null, '', window.location.pathname);
+        // Her test tarayıcıyı YENİ açmış gibi başlar: gezinti artık adresi
+        // gerçekten değiştiriyor ve bir testin bıraktığı adres sonrakini
+        // sessizce başka bir ekranda açardı.
+        history.replaceState(null, '', '/');
     });
 
     afterEach(() => {
@@ -152,7 +155,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
     });
 
     it('renders real brand detail on the Brand page and fires no write requests', async () => {
-        history.replaceState(null, '', `${window.location.pathname}#brand`);
+        history.replaceState(null, '', '/app/menekse-kahve/brand');
 
         const fetchMock = buildFetchMock();
         vi.stubGlobal('fetch', fetchMock);
@@ -188,7 +191,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
     });
 
     it('renders every real location on the Locations page and fires no write requests', async () => {
-        history.replaceState(null, '', `${window.location.pathname}#locations`);
+        history.replaceState(null, '', '/app/menekse-kahve/locations');
 
         const fetchMock = buildFetchMock();
         vi.stubGlobal('fetch', fetchMock);

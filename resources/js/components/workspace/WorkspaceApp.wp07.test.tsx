@@ -214,19 +214,22 @@ async function renderCurrentWorkspace() {
 
 describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED)', () => {
     beforeEach(() => {
-        history.replaceState(null, '', window.location.pathname);
+        // Her test tarayıcıyı YENİ açmış gibi başlar: gezinti artık adresi
+        // gerçekten değiştiriyor ve bir testin bıraktığı adres sonrakini
+        // sessizce başka bir ekranda açardı.
+        history.replaceState(null, '', '/');
         setViewport(320, 480);
     });
 
-    it('resolves initial #security and exposes an accessible Launch readiness nav link with exactly one current page', async () => {
-        history.replaceState(null, '', `${window.location.pathname}#security`);
+    it('resolves an initial /security address and exposes an accessible Launch readiness nav link with exactly one current page', async () => {
+        history.replaceState(null, '', '/app/zeytin-restoranlari/security');
 
         const { restoreFetch } = await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         const link = within(nav).getByRole('link', { name: 'Launch readiness' });
 
-        expect(link).toHaveAttribute('href', '#security');
+        expect(link).toHaveAttribute('href', '/app/zeytin-restoranlari/security');
         expect(within(nav).getAllByRole('link', { current: 'page' })).toHaveLength(1);
         expect(link).toHaveAttribute('aria-current', 'page');
 
@@ -260,7 +263,7 @@ describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED
         restoreFetch();
     });
 
-    it('entering #security triggers exactly one plain read-only GET each to the tenant-isolation and backup-restore evidence endpoints for the real current workspace, with no CSRF bootstrap, Authorization header, extra caller options, or destructive verb', async () => {
+    it('entering the Launch readiness address triggers exactly one plain read-only GET each to the tenant-isolation and backup-restore evidence endpoints for the real current workspace, with no CSRF bootstrap, Authorization header, extra caller options, or destructive verb', async () => {
         const user = userEvent.setup();
         const { restoreFetch } = await renderCurrentWorkspace();
 

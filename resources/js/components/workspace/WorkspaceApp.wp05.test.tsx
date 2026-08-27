@@ -166,29 +166,35 @@ async function renderCurrentWorkspace() {
 
 describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP05a, RED)', () => {
     beforeEach(() => {
-        history.replaceState(null, '', window.location.pathname);
+        // Her test tarayıcıyı YENİ açmış gibi başlar: gezinti artık adresi
+        // gerçekten değiştiriyor ve bir testin bıraktığı adres sonrakini
+        // sessizce başka bir ekranda açardı.
+        history.replaceState(null, '', '/');
         setViewport(320, 480);
     });
 
-    it('exposes accessible Analytics, Team, and Billing nav links pointing at #analytics, #team, #billing', async () => {
+    it('exposes accessible Analytics, Team, and Billing nav links pointing at their real section addresses', async () => {
         const { restoreFetch } = await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
         expect(within(nav).getByRole('link', { name: 'Analytics' })).toHaveAttribute(
             'href',
-            '#analytics',
+            '/app/zeytin-restoranlari/analytics',
         );
-        expect(within(nav).getByRole('link', { name: 'Team' })).toHaveAttribute('href', '#team');
+        expect(within(nav).getByRole('link', { name: 'Team' })).toHaveAttribute(
+            'href',
+            '/app/zeytin-restoranlari/team',
+        );
         expect(within(nav).getByRole('link', { name: 'Billing' })).toHaveAttribute(
             'href',
-            '#billing',
+            '/app/zeytin-restoranlari/billing',
         );
 
         restoreFetch();
     });
 
-    it('#analytics renders AnalyticsPage with a heading, a range control, and the real zero-count summary metric result', async () => {
+    it('the Analytics section renders AnalyticsPage with a heading, a range control, and the real zero-count summary metric result', async () => {
         const user = userEvent.setup();
         const { restoreFetch } = await renderCurrentWorkspace();
 
@@ -222,7 +228,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         restoreFetch();
     });
 
-    it('#team renders TeamPage with a heading, invite email input, an Editor-only invitation control (no Owner invite control), a member region, and an Invite action gated on a valid email', async () => {
+    it('the Team section renders TeamPage with a heading, invite email input, an Editor-only invitation control (no Owner invite control), a member region, and an Invite action gated on a valid email', async () => {
         const user = userEvent.setup();
         const { restoreFetch } = await renderCurrentWorkspace();
 
@@ -252,7 +258,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         restoreFetch();
     });
 
-    it('#billing renders BillingPage with a heading, plan/current-plan/manual-payment regions, the server-returned plan with its exact derived price, an honest current-plan load-failure alert with an enabled Retry, disabled manual-payment actions, and an honest Iyzico subscription-status alert with enabled Retry and disabled Start sandbox checkout', async () => {
+    it('the Billing section renders BillingPage with a heading, plan/current-plan/manual-payment regions, the server-returned plan with its exact derived price, an honest current-plan load-failure alert with an enabled Retry, disabled manual-payment actions, and an honest Iyzico subscription-status alert with enabled Retry and disabled Start sandbox checkout', async () => {
         const user = userEvent.setup();
         const { restoreFetch } = await renderCurrentWorkspace();
 
@@ -319,10 +325,10 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
-        for (const [label, hash] of [
-            ['Analytics', '#analytics'],
-            ['Team', '#team'],
-            ['Billing', '#billing'],
+        for (const [label, section] of [
+            ['Analytics', 'analytics'],
+            ['Team', 'team'],
+            ['Billing', 'billing'],
         ] as const) {
             await user.click(within(nav).getByRole('link', { name: label }));
 
@@ -331,7 +337,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
             // artık kasten ayrıdır. Aynı olmaları tarayıcının o elemana
             // kaydırmasına ve gezinti tıklamasında sayfanın sıçramasına yol
             // açıyordu.
-            const destination = main.querySelector(`#section-${hash.slice(1)}`);
+            const destination = main.querySelector(`#section-${section}`);
             expect(destination).not.toBeNull();
 
             for (const classAttribute of allClassAttributes(destination as HTMLElement)) {

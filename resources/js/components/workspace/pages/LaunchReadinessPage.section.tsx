@@ -9,7 +9,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const launchReadinessSection: WorkspaceSectionDescriptor = {
     key: 'security',
-    hash: '#security',
+    path: 'security',
     order: 9,
     labelKey: 'workspace.shell.nav.launchReadiness',
     render,

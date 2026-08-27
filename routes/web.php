@@ -90,6 +90,29 @@ Route::get('/app', WorkspaceAppController::class)
     ->middleware(['auth:web', 'verified'])
     ->name('workspace.app');
 
+/*
+ * Çalışma alanı ekranları GERÇEK adres alır.
+ *
+ * Öncesinde gezinti fragment ile yapılıyordu (`/app#menu`). `docs/38` §4 bunu
+ * açıkça reddediyor: *"Bir ekranı fragment ile temsil etmek, o ekranı sunucu
+ * günlüklerinden, analitikten ve arama motorundan gizlemektir."* Fragment
+ * sunucuya hiç gönderilmez — yani hangi ekranın kullanıldığı ölçülemez, bir
+ * ekranın bağlantısı paylaşılamaz, tarayıcı geçmişi anlamlı olmaz.
+ *
+ * Politika belgede vardı ve motor kuruluydu; uygulanmamış olan tek yer
+ * panelin kendisiydi.
+ *
+ * Bölüm adı burada DOĞRULANMAZ. Sunucu aynı kabuğu döndürür ve hangi bölümün
+ * geçerli olduğuna istemci karar verir; bilinmeyen bölüm kabuk içinde
+ * karşılanır. Sunucuda ikinci bir bölüm listesi tutmak, iki listenin
+ * ayrışacağı bir gün yaratırdı.
+ */
+Route::get('/app/{workspace}/{section?}', WorkspaceAppController::class)
+    ->where('workspace', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware(['auth:web', 'verified'])
+    ->name('workspace.app.section');
+
 /**
  * S1-WP01A follow-up: the standalone authenticated Platform Admin shell.
  * Guarded the same way as GET /app (auth:web, verified) plus the existing
@@ -99,6 +122,17 @@ Route::get('/app', WorkspaceAppController::class)
 Route::get('/platform', PlatformAdminAppController::class)
     ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
     ->name('platform.admin');
+
+/**
+ * The same panel addressed by section. The section name is deliberately NOT
+ * validated here: the client owns the section list, and a second list on the
+ * server would drift away from it silently. An unknown section renders the
+ * default section, exactly as an unknown fragment used to.
+ */
+Route::get('/platform/{section}', PlatformAdminAppController::class)
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
+    ->name('platform.admin.section');
 
 /**
  * Shadows Fortify's default GET /email/verify/{id}/{hash} (registered

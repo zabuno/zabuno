@@ -14,7 +14,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const analyticsSection: WorkspaceSectionDescriptor = {
     key: 'analytics',
-    hash: '#analytics',
+    path: 'analytics',
     order: 6,
     labelKey: 'workspace.shell.nav.analytics',
     render,

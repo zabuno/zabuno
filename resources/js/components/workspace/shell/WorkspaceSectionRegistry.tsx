@@ -5,7 +5,15 @@ export type WorkspaceCatalogOnboardingPhase = 'brand-onboarding' | 'location-onb
 
 export type WorkspaceSectionDescriptor = {
     key: string;
-    hash: `#${string}`;
+    /**
+     * Adresteki yol parçası — fragment DEĞİL.
+     *
+     * Öncesinde `hash: '#menu'` idi ve gezinti fragment ile yapılıyordu.
+     * `docs/38` §4 bunu reddediyor: fragment sunucuya hiç gönderilmez, yani
+     * hangi ekranın kullanıldığı ölçülemez, bir ekranın bağlantısı
+     * paylaşılamaz, tarayıcı geçmişi anlamlı olmaz.
+     */
+    path: string;
     order: number;
     labelKey: string;
     aiQuickAction?: boolean;
@@ -25,7 +33,7 @@ const rawDescriptors: WorkspaceSectionDescriptor[] = Object.values(sectionModule
 
 function assertNoDuplicateRegistrations(descriptors: WorkspaceSectionDescriptor[]): void {
     const seenKeys = new Set<string>();
-    const seenHashes = new Set<string>();
+    const seenPaths = new Set<string>();
     const seenOrders = new Set<number>();
 
     for (const descriptor of descriptors) {
@@ -33,9 +41,9 @@ function assertNoDuplicateRegistrations(descriptors: WorkspaceSectionDescriptor[
             throw new Error(`WorkspaceSectionRegistry: duplicate section key "${descriptor.key}"`);
         }
 
-        if (seenHashes.has(descriptor.hash)) {
+        if (seenPaths.has(descriptor.path)) {
             throw new Error(
-                `WorkspaceSectionRegistry: duplicate section hash "${descriptor.hash}"`,
+                `WorkspaceSectionRegistry: duplicate section path "${descriptor.path}"`,
             );
         }
 
@@ -46,7 +54,7 @@ function assertNoDuplicateRegistrations(descriptors: WorkspaceSectionDescriptor[
         }
 
         seenKeys.add(descriptor.key);
-        seenHashes.add(descriptor.hash);
+        seenPaths.add(descriptor.path);
         seenOrders.add(descriptor.order);
     }
 }
@@ -70,19 +78,36 @@ const DASHBOARD_SECTION_DESCRIPTOR = SECTION_DESCRIPTORS.find(
     (descriptor) => descriptor.key === 'dashboard',
 ) as WorkspaceSectionDescriptor;
 
-export function resolveSectionDescriptorByHash(hash: string): WorkspaceSectionDescriptor {
-    const match = SECTION_DESCRIPTORS.find((descriptor) => descriptor.hash === hash);
+/**
+ * Adres yolundan bölümü çözer.
+ *
+ * Beklenen biçim `/app/{workspace}/{section}`. Bölüm parçası yoksa ya da
+ * tanınmıyorsa dashboard'a düşülür — bilinmeyen bir adres kullanıcıyı boş
+ * bir ekranda bırakmamalı.
+ *
+ * Sunucu bölüm adını DOĞRULAMAZ; aynı kabuğu döndürür ve karar buraya
+ * kalır. Sunucuda ikinci bir bölüm listesi tutmak, iki listenin ayrışacağı
+ * bir gün yaratırdı.
+ */
+export function resolveSectionDescriptorByPath(pathname: string): WorkspaceSectionDescriptor {
+    const segments = pathname.split('/').filter((segment) => segment !== '');
+    const section = segments.length >= 3 ? segments[2] : '';
+    const match = SECTION_DESCRIPTORS.find((descriptor) => descriptor.path === section);
 
-    if (match) {
-        return match;
-    }
-
-    // Unknown hash: fallback to the 'dashboard' section descriptor.
-    return DASHBOARD_SECTION_DESCRIPTOR;
+    return match ?? DASHBOARD_SECTION_DESCRIPTOR;
 }
 
-export function resolveSectionKeyFromHash(hash: string): string {
-    return resolveSectionDescriptorByHash(hash).key;
+export function resolveSectionKeyFromPath(pathname: string): string {
+    return resolveSectionDescriptorByPath(pathname).key;
+}
+
+/** Bir bölümün tam adresi. Bağlantılar bunu kullanır. */
+export function sectionHref(workspaceSlug: string, sectionKey: string): string {
+    const descriptor =
+        SECTION_DESCRIPTORS.find((candidate) => candidate.key === sectionKey) ??
+        DASHBOARD_SECTION_DESCRIPTOR;
+
+    return `/app/${workspaceSlug}/${descriptor.path}`;
 }
 
 export function resolveSectionDescriptorForOnboardingPhase(

@@ -7,6 +7,7 @@
          bir kullanıcı her sayfada bir an beyaz ekran görür. Bu yüzden
          herhangi bir stil bağlantısından önce gelir. --}}
     @include('partials.theme-bootstrap')
+    @include('partials.analytics', ['analyticsContext' => ['zabuno_surface' => 'marketing']])
     <title>@yield('title') — Zabuno</title>
     <meta name="description" content="@yield('description')">
     <link rel="canonical" href="{{ $canonicalUrl }}">

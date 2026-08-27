@@ -11,7 +11,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const publicationSection: WorkspaceSectionDescriptor = {
     key: 'publication',
-    hash: '#publication',
+    path: 'publication',
     order: 5,
     labelKey: 'workspace.shell.nav.publication',
     aiQuickAction: true,

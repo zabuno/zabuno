@@ -2,6 +2,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEve
 import { Button, Label, TextInput } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { readValidationFailure } from '../../lib/validationErrors';
+import { setAnalyticsContext, trackPageView } from '../../lib/analytics';
+import { shouldInterceptNavigation } from '../../lib/navigation';
 import { t } from '../../i18n/workspace';
 import { BrandOnboardingForm } from './BrandOnboardingForm';
 import type { BrandProfile } from './BrandEditForm';
@@ -19,8 +21,9 @@ import type { DashboardMenuTree } from './pages/DashboardPage.section';
 import type { BrandProfile as SectionBrandProfile } from './BrandEditForm';
 import type { LocationProfile as SectionLocationProfile } from './LocationEditForm';
 import {
+    sectionHref,
     SECTION_DESCRIPTORS,
-    resolveSectionKeyFromHash,
+    resolveSectionKeyFromPath,
     resolveSectionDescriptorForOnboardingPhase,
     renderActiveSection,
 } from './shell/WorkspaceSectionRegistry';
@@ -57,8 +60,8 @@ type Phase = 'loading' | 'error' | 'create' | 'choose' | 'current';
 
 type WorkspaceSection = string;
 
-function resolveSectionFromHash(hash: string): WorkspaceSection {
-    return resolveSectionKeyFromHash(hash);
+function resolveSectionFromPath(pathname: string): WorkspaceSection {
+    return resolveSectionKeyFromPath(pathname);
 }
 
 export function WorkspaceApp() {
@@ -81,7 +84,7 @@ export function WorkspaceApp() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [aiCommandOpen, setAiCommandOpen] = useState(false);
     const [activeSection, setActiveSection] = useState<WorkspaceSection>(() =>
-        resolveSectionFromHash(window.location.hash),
+        resolveSectionFromPath(window.location.pathname),
     );
 
     const [dashboardMenuTree, setDashboardMenuTree] = useState<DashboardMenuTree | null>(null);
@@ -255,15 +258,54 @@ export function WorkspaceApp() {
         };
     }, [load]);
 
+    // Tenant bağlamı API'den gelir. Tek yerde bildiririz: `setCurrentWorkspace`
+    // üç ayrı yolda çağrılıyor (yükleme, workspace yaratma, workspace değiştirme)
+    // ve üçüne ayrı ayrı ölçüm koymak, dördüncüsü eklendiği gün unutulurdu.
     useEffect(() => {
-        function handleHashChange() {
-            setActiveSection(resolveSectionFromHash(window.location.hash));
+        if (currentWorkspace === null) {
+            return;
         }
 
-        window.addEventListener('hashchange', handleHashChange);
+        const section = resolveSectionFromPath(window.location.pathname);
+        const canonical = sectionHref(currentWorkspace.slug, section);
+
+        // Kullanıcı `/app` adresinden girmiş olabilir; orada hangi restoranın
+        // hangi ekranı olduğu YAZMAZ. Adresi kanonik hâline çekeriz.
+        //
+        // `replaceState`, `pushState` DEĞİL: bu bir gezinti değil, aynı yerin
+        // tam adının yazılmasıdır. `pushState` olsaydı geri tuşu kullanıcıyı
+        // aynı ekrana geri götürürdü ve panelden çıkamazdı.
+        if (window.location.pathname !== canonical) {
+            window.history.replaceState({}, '', canonical);
+        }
+
+        setAnalyticsContext({
+            tenantId: String(currentWorkspace.id),
+            tenantSlug: currentWorkspace.slug,
+        });
+
+        // Girişin ölçümü burada yapılır, bileşen ilk bindiğinde değil: o an
+        // ne tenant bilinir ne de adres kanoniktir. İkisi de bilinmeden
+        // gönderilen bir olay, "hangi restoranın hangi ekranı" sorusuna
+        // cevap vermez — yani hiç gönderilmemiş gibidir.
+        trackPageView(canonical, section);
+    }, [currentWorkspace]);
+
+    // Geri/ileri tuşu. Fragment kullanılırken `hashchange` dinleniyordu;
+    // gerçek adreslerde karşılığı `popstate`'tir. Tarayıcı geçmişi artık
+    // gerçek ekranları taşıyor, dolayısıyla geri tuşu bir önceki EKRANA
+    // döner — önceki fragment'e değil.
+    useEffect(() => {
+        function handlePopState() {
+            const key = resolveSectionFromPath(window.location.pathname);
+            setActiveSection(key);
+            trackPageView(window.location.pathname, key);
+        }
+
+        window.addEventListener('popstate', handlePopState);
 
         return () => {
-            window.removeEventListener('hashchange', handleHashChange);
+            window.removeEventListener('popstate', handlePopState);
         };
     }, []);
 
@@ -296,6 +338,23 @@ export function WorkspaceApp() {
      */
     function goToSection(key: WorkspaceSection): void {
         window.scrollTo({ top: 0, behavior: 'auto' });
+
+        // Adres bölümle birlikte değişir — tek gezinti girişi burasıdır.
+        // Çağıranın ayrıca adres yazması gerekmez; bir yerde unutulursa
+        // ekran ile adres ayrışır ve yenilemede başka bir sayfa açılır.
+        if (currentWorkspace) {
+            const href = sectionHref(currentWorkspace.slug, key);
+
+            if (window.location.pathname !== href) {
+                window.history.pushState({}, '', href);
+            }
+
+            // `pushState` tarayıcıya göre sayfa DEĞİŞTİRMEZ; GA4 ve Metrica
+            // burada kendiliğinden hiçbir şey ölçmez. Bildirmezsek panelde
+            // on ekran gezen bir kullanıcı tek sayfalık ziyaret görünür.
+            trackPageView(href, key);
+        }
+
         setActiveSection(key);
     }
 
@@ -562,7 +621,6 @@ export function WorkspaceApp() {
 
     function handleAiQuickAction(key: AiAssistQuickAction['key']) {
         goToSection(key);
-        window.location.hash = `#${key}`;
         setAiCommandOpen(false);
     }
 
@@ -674,8 +732,16 @@ export function WorkspaceApp() {
         const catalogItems: SidebarNavGroup['items'] = SECTION_DESCRIPTORS.map((descriptor) => ({
             key: descriptor.key,
             label: t(descriptor.labelKey as Parameters<typeof t>[0]),
-            href: descriptor.hash,
-            onSelect: () => {
+            // Gerçek bağlantı: klavye, yeni sekmede açma, orta tık ve
+            // "bağlantıyı kopyala" kendiliğinden çalışır. Fragment ile
+            // hiçbiri çalışmıyordu.
+            href: sectionHref(currentWorkspace.slug, descriptor.key),
+            onSelect: (event) => {
+                if (!shouldInterceptNavigation(event)) {
+                    return;
+                }
+
+                event.preventDefault();
                 goToSection(descriptor.key);
                 setMobileMenuOpen(false);
             },
@@ -778,6 +844,7 @@ export function WorkspaceApp() {
                             typeof t
                         >[0],
                     )}
+                    locationsHref={sectionHref(currentWorkspace.slug, 'locations')}
                     onSwitchWorkspace={handleSwitch}
                     onSelectLocations={() => goToSection('locations')}
                 />

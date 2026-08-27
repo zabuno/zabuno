@@ -9,7 +9,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const mediaSection: WorkspaceSectionDescriptor = {
     key: 'media',
-    hash: '#media',
+    path: 'media',
     order: 4,
     labelKey: 'workspace.shell.nav.media',
     render,

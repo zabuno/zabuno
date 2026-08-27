@@ -208,7 +208,13 @@ function setViewport(width: number, height: number) {
 
 describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_BATCH_RED)', () => {
     beforeEach(() => {
-        history.replaceState(null, '', window.location.pathname);
+        // Her test tarayıcıyı YENİ açmış gibi başlar.
+        //
+        // Gezinti fragment ile yapılırken buna gerek yoktu, çünkü tıklama
+        // adresi hiç değiştirmiyordu. Artık değiştiriyor: bir testte Menü'ye
+        // tıklamak adresi bırakır ve SONRAKİ test o ekranda açılırdı. Böyle
+        // bir sızıntı, hatayı yapan testte değil masum bir testte patlar.
+        history.replaceState(null, '', '/');
     });
 
     afterEach(() => {
@@ -238,18 +244,27 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         await renderCurrentWorkspace();
 
         const names = ['Dashboard', 'Brand', 'Locations', 'Menu', 'Media', 'Publication'];
-        const hashes = ['#dashboard', '#brand', '#locations', '#menu', '#media', '#publication'];
+        // Gerçek adresler — fragment değil. Bunlar sunucunun gördüğü,
+        // paylaşılabilen, ölçülebilen adreslerdir (docs/38 §4).
+        const paths = [
+            '/app/zeytin-restoranlari/dashboard',
+            '/app/zeytin-restoranlari/brand',
+            '/app/zeytin-restoranlari/locations',
+            '/app/zeytin-restoranlari/menu',
+            '/app/zeytin-restoranlari/media',
+            '/app/zeytin-restoranlari/publication',
+        ];
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         const links = names.map((name) => within(nav).getByRole('link', { name }));
 
         links.forEach((link, index) => {
-            expect(link).toHaveAttribute('href', hashes[index]);
+            expect(link).toHaveAttribute('href', paths[index]);
         });
 
         const current = links.filter((link) => link.getAttribute('aria-current') === 'page');
         expect(current).toHaveLength(1);
-        expect(current[0]).toHaveAttribute('href', '#dashboard');
+        expect(current[0]).toHaveAttribute('href', '/app/zeytin-restoranlari/dashboard');
     });
 
     it('renders a distinct real page root/heading per nav destination and hides the prior page', async () => {
@@ -595,14 +610,17 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
     });
 
     // ---------------------------------------------------------------------
-    // SPEED_BATCH_LEGACY_TESTS_ALIGNED_AND_HASH_RED
+    // INITIAL_PATH_SELECTS_THE_PAGE
     //
-    // Freezes that the initial URL hash selects the matching page and
-    // aria-current after render, so a browser refresh on e.g. #brand does
-    // not silently show Dashboard under a different hash. Unknown/missing
-    // hash safely falls back to Dashboard. WorkspaceApp today always starts
-    // on 'dashboard' regardless of window.location.hash, so this is
-    // expected RED until initial-hash routing is wired.
+    // Freezes that the address bar, not internal state, decides which page
+    // is shown on first render: refreshing on /app/{workspace}/brand must
+    // show Brand, and an unknown section must fall back to Dashboard rather
+    // than render nothing.
+    //
+    // This used to be expressed with fragments (#brand). It no longer can
+    // be: a fragment is never sent to the server, so the page a customer is
+    // looking at would be invisible to server logs, to analytics and to
+    // search engines (docs/38 §4, docs/46).
     // ---------------------------------------------------------------------
 
     // ---------------------------------------------------------------------
@@ -656,23 +674,35 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         });
     });
 
-    describe('initial URL hash selects the matching page (SPEED_BATCH_LEGACY_TESTS_ALIGNED_AND_HASH_RED)', () => {
-        const hashToDestination: Array<{ hash: string; name: string; id: string }> = [
-            { hash: '#dashboard', name: 'Dashboard', id: 'section-dashboard' },
-            { hash: '#brand', name: 'Brand', id: 'section-brand' },
-            { hash: '#locations', name: 'Locations', id: 'section-locations' },
-            { hash: '#menu', name: 'Menu', id: 'section-menu' },
-            { hash: '#media', name: 'Media', id: 'section-media' },
-            { hash: '#publication', name: 'Publication', id: 'section-publication' },
+    describe('the initial URL path selects the matching page', () => {
+        const pathToDestination: Array<{ path: string; name: string; id: string }> = [
+            {
+                path: '/app/zeytin-restoranlari/dashboard',
+                name: 'Dashboard',
+                id: 'section-dashboard',
+            },
+            { path: '/app/zeytin-restoranlari/brand', name: 'Brand', id: 'section-brand' },
+            {
+                path: '/app/zeytin-restoranlari/locations',
+                name: 'Locations',
+                id: 'section-locations',
+            },
+            { path: '/app/zeytin-restoranlari/menu', name: 'Menu', id: 'section-menu' },
+            { path: '/app/zeytin-restoranlari/media', name: 'Media', id: 'section-media' },
+            {
+                path: '/app/zeytin-restoranlari/publication',
+                name: 'Publication',
+                id: 'section-publication',
+            },
         ];
 
         afterEach(() => {
-            history.replaceState(null, '', window.location.pathname);
+            history.replaceState(null, '', '/');
         });
 
-        for (const destination of hashToDestination) {
-            it(`starting at ${destination.hash} selects the ${destination.name} page and its nav aria-current after render`, async () => {
-                window.location.hash = destination.hash;
+        for (const destination of pathToDestination) {
+            it(`starting at ${destination.path} selects the ${destination.name} page and its nav aria-current after render`, async () => {
+                history.replaceState(null, '', destination.path);
 
                 await renderCurrentWorkspace();
 
@@ -685,7 +715,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
                 expect(link).toHaveAttribute('aria-current', 'page');
 
-                const otherLinks = hashToDestination
+                const otherLinks = pathToDestination
                     .filter((other) => other.id !== destination.id)
                     .map((other) => within(nav).getByRole('link', { name: other.name }));
                 otherLinks.forEach((otherLink) => {
@@ -697,8 +727,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
             });
         }
 
-        it('an unknown initial hash safely falls back to Dashboard', async () => {
-            window.location.hash = '#does-not-exist';
+        it('an unknown initial section safely falls back to Dashboard', async () => {
+            history.replaceState(null, '', '/app/zeytin-restoranlari/does-not-exist');
 
             await renderCurrentWorkspace();
 
