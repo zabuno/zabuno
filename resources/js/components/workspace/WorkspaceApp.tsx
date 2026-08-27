@@ -15,7 +15,6 @@ import { AiCommandTrigger } from '../catalog/navigation/compound/AiCommandTrigge
 import { AiCommandCenter } from './ai/AiCommandCenter';
 import { WorkspaceContextControls } from './shell/WorkspaceContextControls';
 import { WorkspaceBreadcrumbs } from './shell/WorkspaceBreadcrumbs';
-import { GlobalUnavailableActions } from './shell/GlobalUnavailableActions';
 import type { AiAssistQuickAction } from '../../lib/aiAssistState';
 import type { DashboardMenuTree } from './pages/DashboardPage.section';
 import type { BrandProfile as SectionBrandProfile } from './BrandEditForm';
@@ -821,7 +820,6 @@ export function WorkspaceApp() {
                             {user.email}
                         </span>
                     ) : null}
-                    <GlobalUnavailableActions />
                     <AiCommandTrigger
                         label={t('workspace.aiCommand.trigger.label')}
                         onClick={() => setAiCommandOpen(true)}

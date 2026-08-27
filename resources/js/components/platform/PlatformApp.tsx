@@ -4,11 +4,12 @@ import { AdminShell } from '../catalog/layout/macro/AdminShell';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { PlanManagementPage } from '../admin/pages/PlanManagementPage';
 import { SubscriptionManagementPage } from '../admin/pages/SubscriptionManagementPage';
+import { ReleaseReadinessPage } from '../admin/pages/ReleaseReadinessPage';
 import { trackPageView } from '../../lib/analytics';
 import { shouldInterceptNavigation } from '../../lib/navigation';
 import { t } from '../../i18n/platform';
 
-type PlatformSection = 'plans' | 'subscriptions';
+type PlatformSection = 'plans' | 'subscriptions' | 'release-readiness';
 
 /**
  * Adresten bölüm. Fragment DEĞİL — `docs/38` §4: fragment sunucuya hiç
@@ -19,7 +20,12 @@ type PlatformSection = 'plans' | 'subscriptions';
  * fragment'in eskiden yaptığı gibi.
  */
 function sectionFromPath(pathname: string): PlatformSection {
-    return pathname.replace(/\/+$/, '').endsWith('/subscriptions') ? 'subscriptions' : 'plans';
+    const trimmed = pathname.replace(/\/+$/, '');
+
+    if (trimmed.endsWith('/subscriptions')) return 'subscriptions';
+    if (trimmed.endsWith('/release-readiness')) return 'release-readiness';
+
+    return 'plans';
 }
 
 function platformSectionHref(section: PlatformSection): string {
@@ -89,6 +95,19 @@ export function PlatformApp() {
                         goToSection('subscriptions');
                     },
                 },
+                {
+                    key: 'release-readiness',
+                    label: t('platform.releaseReadiness.nav.label'),
+                    href: platformSectionHref('release-readiness'),
+                    onSelect: (event) => {
+                        if (!shouldInterceptNavigation(event)) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        goToSection('release-readiness');
+                    },
+                },
             ],
         },
     ];
@@ -108,12 +127,10 @@ export function PlatformApp() {
                 </a>
             }
         >
-            <h1 className="text-xl font-semibold">{t('platform.shell.heading')}</h1>
-            {activeSection === 'subscriptions' ? (
-                <SubscriptionManagementPage />
-            ) : (
-                <PlanManagementPage />
-            )}
+            <h1 className="text-title font-semibold">{t('platform.shell.heading')}</h1>
+            {activeSection === 'subscriptions' ? <SubscriptionManagementPage /> : null}
+            {activeSection === 'release-readiness' ? <ReleaseReadinessPage /> : null}
+            {activeSection === 'plans' ? <PlanManagementPage /> : null}
         </AdminShell>
     );
 }

@@ -132,6 +132,114 @@ msgstr "Plans"
 msgid "platform.plans.retry"
 msgstr "Retry"
 
+#: platform:platform.releaseReadiness.backupRestore.metadata.durationMs
+msgid "platform.releaseReadiness.backupRestore.metadata.durationMs"
+msgstr "Duration"
+
+#: platform:platform.releaseReadiness.backupRestore.metadata.gitSha
+msgid "platform.releaseReadiness.backupRestore.metadata.gitSha"
+msgstr "Commit"
+
+#: platform:platform.releaseReadiness.backupRestore.metadata.ranAt
+msgid "platform.releaseReadiness.backupRestore.metadata.ranAt"
+msgstr "Ran at"
+
+#: platform:platform.releaseReadiness.backupRestore.metadata.restoredRowCount
+msgid "platform.releaseReadiness.backupRestore.metadata.restoredRowCount"
+msgstr "Restored rows"
+
+#: platform:platform.releaseReadiness.backupRestore.status.error
+msgid "platform.releaseReadiness.backupRestore.status.error"
+msgstr "Evidence check error"
+
+#: platform:platform.releaseReadiness.backupRestore.status.failed
+msgid "platform.releaseReadiness.backupRestore.status.failed"
+msgstr "Failed"
+
+#: platform:platform.releaseReadiness.backupRestore.status.loading
+msgid "platform.releaseReadiness.backupRestore.status.loading"
+msgstr "Loading evidence…"
+
+#: platform:platform.releaseReadiness.backupRestore.status.passed
+msgid "platform.releaseReadiness.backupRestore.status.passed"
+msgstr "Passed"
+
+#: platform:platform.releaseReadiness.checklist.backupRestore.description
+msgid "platform.releaseReadiness.checklist.backupRestore.description"
+msgstr "A completed drill proving production-shaped data can be recovered."
+
+#: platform:platform.releaseReadiness.checklist.backupRestore.title
+msgid "platform.releaseReadiness.checklist.backupRestore.title"
+msgstr "Backup & restore drill"
+
+#: platform:platform.releaseReadiness.checklist.explanation
+msgid "platform.releaseReadiness.checklist.explanation"
+msgstr "Evidence-backed items below resolve only from real, independently recorded checks; every other item stays unavailable until its own check is run and recorded."
+
+#: platform:platform.releaseReadiness.checklist.region
+msgid "platform.releaseReadiness.checklist.region"
+msgstr "Release readiness checklist"
+
+#: platform:platform.releaseReadiness.checklist.tenantIsolation.description
+msgid "platform.releaseReadiness.checklist.tenantIsolation.description"
+msgstr "Proof that one restaurant workspace cannot read or write another’s data."
+
+#: platform:platform.releaseReadiness.checklist.tenantIsolation.title
+msgid "platform.releaseReadiness.checklist.tenantIsolation.title"
+msgstr "Tenant isolation evidence"
+
+#: platform:platform.releaseReadiness.heading
+msgid "platform.releaseReadiness.heading"
+msgstr "Release readiness"
+
+#: platform:platform.releaseReadiness.item.status.unavailable
+msgid "platform.releaseReadiness.item.status.unavailable"
+msgstr "Unavailable"
+
+#: platform:platform.releaseReadiness.nav.label
+msgid "platform.releaseReadiness.nav.label"
+msgstr "Release readiness"
+
+#: platform:platform.releaseReadiness.operational.description
+msgid "platform.releaseReadiness.operational.description"
+msgstr "A checklist of the evidence still needed before Stage 1 can exit. Evidence appears here only after each item’s check is run independently — nothing below is inferred from source files."
+
+#: platform:platform.releaseReadiness.refresh.button
+msgid "platform.releaseReadiness.refresh.button"
+msgstr "Refresh evidence"
+
+#: platform:platform.releaseReadiness.tenantIsolation.metadata.durationMs
+msgid "platform.releaseReadiness.tenantIsolation.metadata.durationMs"
+msgstr "Duration"
+
+#: platform:platform.releaseReadiness.tenantIsolation.metadata.gitSha
+msgid "platform.releaseReadiness.tenantIsolation.metadata.gitSha"
+msgstr "Commit"
+
+#: platform:platform.releaseReadiness.tenantIsolation.metadata.ranAt
+msgid "platform.releaseReadiness.tenantIsolation.metadata.ranAt"
+msgstr "Ran at"
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.error
+msgid "platform.releaseReadiness.tenantIsolation.status.error"
+msgstr "Evidence check error"
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.failed
+msgid "platform.releaseReadiness.tenantIsolation.status.failed"
+msgstr "Failed"
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.loading
+msgid "platform.releaseReadiness.tenantIsolation.status.loading"
+msgstr "Loading evidence…"
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.passed
+msgid "platform.releaseReadiness.tenantIsolation.status.passed"
+msgstr "Passed"
+
+#: platform:platform.releaseReadiness.workspace.empty
+msgid "platform.releaseReadiness.workspace.empty"
+msgstr "Choose a workspace above to load its release evidence."
+
 #: platform:platform.shell.backToWorkspace
 msgid "platform.shell.backToWorkspace"
 msgstr "Back to workspace"

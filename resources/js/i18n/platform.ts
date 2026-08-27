@@ -85,6 +85,43 @@ const en = {
 
     'platform.subscriptions.success': 'Manual payment recorded successfully.',
     'platform.subscriptions.success.region.label': 'Manual payment status',
+
+    // Yayına hazırlık KANITI — 2026-08-27'de restoran panelinden buraya
+    // taşındı. Commit hash'i, test süresi, tenant izolasyonu ve yedek
+    // tatbikatı restoran sahibinin işi değildir; geliştirme ekibinin
+    // işidir (UX raporu §4.3, §9.10).
+    'platform.releaseReadiness.nav.label': 'Release readiness',
+    'platform.releaseReadiness.heading': 'Release readiness',
+    'platform.releaseReadiness.operational.description':
+        'A checklist of the evidence still needed before Stage 1 can exit. Evidence appears here only after each item’s check is run independently — nothing below is inferred from source files.',
+    'platform.releaseReadiness.checklist.region': 'Release readiness checklist',
+    'platform.releaseReadiness.checklist.explanation':
+        'Evidence-backed items below resolve only from real, independently recorded checks; every other item stays unavailable until its own check is run and recorded.',
+    'platform.releaseReadiness.item.status.unavailable': 'Unavailable',
+    'platform.releaseReadiness.checklist.tenantIsolation.title': 'Tenant isolation evidence',
+    'platform.releaseReadiness.checklist.tenantIsolation.description':
+        'Proof that one restaurant workspace cannot read or write another’s data.',
+    'platform.releaseReadiness.tenantIsolation.status.loading': 'Loading evidence…',
+    'platform.releaseReadiness.tenantIsolation.status.passed': 'Passed',
+    'platform.releaseReadiness.tenantIsolation.status.failed': 'Failed',
+    'platform.releaseReadiness.tenantIsolation.status.error': 'Evidence check error',
+    'platform.releaseReadiness.tenantIsolation.metadata.ranAt': 'Ran at',
+    'platform.releaseReadiness.tenantIsolation.metadata.gitSha': 'Commit',
+    'platform.releaseReadiness.tenantIsolation.metadata.durationMs': 'Duration',
+    'platform.releaseReadiness.checklist.backupRestore.title': 'Backup & restore drill',
+    'platform.releaseReadiness.checklist.backupRestore.description':
+        'A completed drill proving production-shaped data can be recovered.',
+    'platform.releaseReadiness.backupRestore.status.loading': 'Loading evidence…',
+    'platform.releaseReadiness.backupRestore.status.passed': 'Passed',
+    'platform.releaseReadiness.backupRestore.status.failed': 'Failed',
+    'platform.releaseReadiness.backupRestore.status.error': 'Evidence check error',
+    'platform.releaseReadiness.backupRestore.metadata.ranAt': 'Ran at',
+    'platform.releaseReadiness.backupRestore.metadata.gitSha': 'Commit',
+    'platform.releaseReadiness.backupRestore.metadata.durationMs': 'Duration',
+    'platform.releaseReadiness.backupRestore.metadata.restoredRowCount': 'Restored rows',
+    'platform.releaseReadiness.refresh.button': 'Refresh evidence',
+    'platform.releaseReadiness.workspace.empty':
+        'Choose a workspace above to load its release evidence.',
 } as const;
 
 type TranslationKey = keyof typeof en;

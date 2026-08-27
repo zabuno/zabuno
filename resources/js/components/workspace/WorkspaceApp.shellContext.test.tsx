@@ -200,23 +200,28 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
         vi.unstubAllGlobals();
     });
 
-    it('shows disabled "Global search unavailable" and "Notifications unavailable" banner controls with no fabricated count/result/list and no new fetch', async () => {
+    // Bu test eskiden BUNUN TERSİNİ donduruyordu: arama ve bildirim
+    // düğmeleri görünsün, devre dışı olsun, ipucunda "unavailable" yazsın.
+    //
+    // Bir kontrolü "dürüstçe devre dışı" göstermek, yapılmamış tarafı
+    // kullanıcıya taşımaktır: nasıl etkinleştireceğini bilemez, çünkü
+    // etkinleştirmenin bir yolu yoktur. Ana yüzeyde yalnız bugün iş gören
+    // hedefler durur (`docs/44` devre dışı standardı; UX raporu §8.1).
+    //
+    // Arama ve bildirim gerçekten çalıştığında GÖRÜNÜR hâlde gelirler.
+    it('shows no top-bar control that exists only to be disabled', async () => {
         const fetchMock = await renderCurrentWorkspace();
         const callCountAfterLoad = fetchMock.mock.calls.length;
 
         const banner = screen.getByRole('banner');
 
-        const searchControl = within(banner).getByRole('button', {
-            name: 'Global search unavailable',
-        });
-        const notificationsControl = within(banner).getByRole('button', {
-            name: 'Notifications unavailable',
-        });
+        expect(within(banner).queryByRole('button', { name: /search/i })).toBeNull();
+        expect(within(banner).queryByRole('button', { name: /notification/i })).toBeNull();
 
-        expect(searchControl).toBeDisabled();
-        expect(notificationsControl).toBeDisabled();
-
-        expect(within(banner).queryByText(/\d+\s*(unread|results?|notifications?)/i)).toBeNull();
+        const disabled = within(banner)
+            .queryAllByRole('button')
+            .filter((control) => (control as HTMLButtonElement).disabled);
+        expect(disabled).toEqual([]);
 
         expect(fetchMock.mock.calls.length).toBe(callCountAfterLoad);
 

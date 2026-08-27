@@ -132,6 +132,114 @@ msgstr ""
 msgid "platform.plans.retry"
 msgstr ""
 
+#: platform:platform.releaseReadiness.backupRestore.metadata.durationMs
+msgid "platform.releaseReadiness.backupRestore.metadata.durationMs"
+msgstr ""
+
+#: platform:platform.releaseReadiness.backupRestore.metadata.gitSha
+msgid "platform.releaseReadiness.backupRestore.metadata.gitSha"
+msgstr ""
+
+#: platform:platform.releaseReadiness.backupRestore.metadata.ranAt
+msgid "platform.releaseReadiness.backupRestore.metadata.ranAt"
+msgstr ""
+
+#: platform:platform.releaseReadiness.backupRestore.metadata.restoredRowCount
+msgid "platform.releaseReadiness.backupRestore.metadata.restoredRowCount"
+msgstr ""
+
+#: platform:platform.releaseReadiness.backupRestore.status.error
+msgid "platform.releaseReadiness.backupRestore.status.error"
+msgstr ""
+
+#: platform:platform.releaseReadiness.backupRestore.status.failed
+msgid "platform.releaseReadiness.backupRestore.status.failed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.backupRestore.status.loading
+msgid "platform.releaseReadiness.backupRestore.status.loading"
+msgstr ""
+
+#: platform:platform.releaseReadiness.backupRestore.status.passed
+msgid "platform.releaseReadiness.backupRestore.status.passed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.backupRestore.description
+msgid "platform.releaseReadiness.checklist.backupRestore.description"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.backupRestore.title
+msgid "platform.releaseReadiness.checklist.backupRestore.title"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.explanation
+msgid "platform.releaseReadiness.checklist.explanation"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.region
+msgid "platform.releaseReadiness.checklist.region"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.tenantIsolation.description
+msgid "platform.releaseReadiness.checklist.tenantIsolation.description"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.tenantIsolation.title
+msgid "platform.releaseReadiness.checklist.tenantIsolation.title"
+msgstr ""
+
+#: platform:platform.releaseReadiness.heading
+msgid "platform.releaseReadiness.heading"
+msgstr ""
+
+#: platform:platform.releaseReadiness.item.status.unavailable
+msgid "platform.releaseReadiness.item.status.unavailable"
+msgstr ""
+
+#: platform:platform.releaseReadiness.nav.label
+msgid "platform.releaseReadiness.nav.label"
+msgstr ""
+
+#: platform:platform.releaseReadiness.operational.description
+msgid "platform.releaseReadiness.operational.description"
+msgstr ""
+
+#: platform:platform.releaseReadiness.refresh.button
+msgid "platform.releaseReadiness.refresh.button"
+msgstr ""
+
+#: platform:platform.releaseReadiness.tenantIsolation.metadata.durationMs
+msgid "platform.releaseReadiness.tenantIsolation.metadata.durationMs"
+msgstr ""
+
+#: platform:platform.releaseReadiness.tenantIsolation.metadata.gitSha
+msgid "platform.releaseReadiness.tenantIsolation.metadata.gitSha"
+msgstr ""
+
+#: platform:platform.releaseReadiness.tenantIsolation.metadata.ranAt
+msgid "platform.releaseReadiness.tenantIsolation.metadata.ranAt"
+msgstr ""
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.error
+msgid "platform.releaseReadiness.tenantIsolation.status.error"
+msgstr ""
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.failed
+msgid "platform.releaseReadiness.tenantIsolation.status.failed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.loading
+msgid "platform.releaseReadiness.tenantIsolation.status.loading"
+msgstr ""
+
+#: platform:platform.releaseReadiness.tenantIsolation.status.passed
+msgid "platform.releaseReadiness.tenantIsolation.status.passed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.workspace.empty
+msgid "platform.releaseReadiness.workspace.empty"
+msgstr ""
+
 #: platform:platform.shell.backToWorkspace
 msgid "platform.shell.backToWorkspace"
 msgstr ""

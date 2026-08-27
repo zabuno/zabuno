@@ -1,6 +1,6 @@
 import { Button } from '../../../catalog/forms/micro/Button';
 import { useState } from 'react';
-import { t } from '../../../../i18n/workspace';
+import { t } from '../../../../i18n/platform';
 import { BackupRestoreEvidenceItem } from './BackupRestoreEvidenceItem';
 import { ReadinessItem } from './ReadinessItem';
 import { TenantIsolationEvidenceItem } from './TenantIsolationEvidenceItem';
@@ -52,11 +52,11 @@ export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
     return (
         <div
             role="region"
-            aria-label={t('workspace.launchReadiness.checklist.region')}
+            aria-label={t('platform.releaseReadiness.checklist.region')}
             className="flex flex-col gap-4"
         >
             <p className="text-body text-fg-muted">
-                {t('workspace.launchReadiness.checklist.explanation')}
+                {t('platform.releaseReadiness.checklist.explanation')}
             </p>
             <Button
                 color="light"
@@ -64,7 +64,7 @@ export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
                 onClick={() => setRefreshToken((token) => token + 1)}
                 className="self-start"
             >
-                {t('workspace.launchReadiness.refresh.button')}
+                {t('platform.releaseReadiness.refresh.button')}
             </Button>
             <ul className="flex flex-col gap-4">
                 <TenantIsolationEvidenceItem

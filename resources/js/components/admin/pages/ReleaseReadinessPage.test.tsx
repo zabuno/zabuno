@@ -6,12 +6,12 @@ import userEvent from '@testing-library/user-event';
 /**
  * LAUNCHREADINESS_TENANT_EVIDENCE_FRONTEND_RED
  *
- * S1-WP07 tenant isolation evidence — LaunchReadinessPage must accept a
+ * S1-WP07 tenant isolation evidence — ReleaseReadinessPage must accept a
  * real workspaceId prop, render the tenant isolation checklist row as a
  * TenantIsolationEvidenceItem backed by the real
  * GET /api/workspaces/{workspaceId}/security/evidence/tenant-isolation
  * contract, and leave every other canonical readiness item honestly
- * Unavailable. None of this exists yet: the current LaunchReadinessPage
+ * Unavailable. None of this exists yet: the current ReleaseReadinessPage
  * takes no props and renders a fully static checklist, so every
  * assertion below fails RED. No production, i18n, Storybook, backend or
  * Git edits are made from this file.
@@ -110,13 +110,16 @@ function setViewport(width: number, height: number) {
     window.dispatchEvent(new Event('resize'));
 }
 
-async function importLaunchReadinessPageModule() {
-    return import('./LaunchReadinessPage') as unknown as Promise<{
-        LaunchReadinessPage: React.ComponentType<{ workspaceId: number }>;
+// Kanıt LİSTESİ sınanıyor, onu saran sayfa değil: sayfa artık bir workspace
+// seçici içeriyor (kanıt uç noktaları workspace'e bağlı) ve seçicinin kendi
+// testleri abonelik ekranında yaşıyor.
+async function importReadinessChecklistModule() {
+    return import('./release-readiness/ReadinessChecklist') as unknown as Promise<{
+        ReadinessChecklist: React.ComponentType<{ workspaceId: number }>;
     }>;
 }
 
-describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07, RED)', () => {
+describe('ReleaseReadinessPage — real tenant isolation evidence wiring (S1-WP07, RED)', () => {
     let fetchSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
@@ -138,9 +141,9 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
     });
 
     it('fetches the exact workspace-scoped tenant isolation and backup-restore evidence endpoints exactly once each for a real workspaceId prop', async () => {
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
         const calledUrls = fetchSpy.mock.calls.map((call) => String(call[0])).sort();
@@ -148,11 +151,11 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
     });
 
     it('leaves the other four canonical readiness items honestly Unavailable while tenant isolation and backup-restore resolve', async () => {
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
-        const checklist = screen.getByRole('region', { name: /launch readiness/i });
+        const checklist = screen.getByRole('region', { name: /release readiness/i });
 
         for (const pattern of OTHER_CANONICAL_ITEMS) {
             const item = within(checklist).getByText(pattern);
@@ -167,11 +170,11 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
     });
 
     it('renders the resolved tenant isolation and backup-restore statuses inside the checklist region once the fetches resolve', async () => {
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
-        const checklist = screen.getByRole('region', { name: /launch readiness/i });
+        const checklist = screen.getByRole('region', { name: /release readiness/i });
 
         await waitFor(() =>
             expect(within(checklist).getAllByText(/passed/i).length).toBeGreaterThanOrEqual(2),
@@ -179,9 +182,9 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
     });
 
     it('stays 320 CSS px fluid with no breakpoint-prefixed classes anywhere in the page', async () => {
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
-        const { container } = render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        const { container } = render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
 
@@ -191,9 +194,9 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
     });
 
     it('shows an accessible, always-visible Refresh evidence control once the initial evidence has resolved', async () => {
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
 
@@ -204,9 +207,9 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
 
     it('makes exactly one additional request to each existing evidence endpoint, with the exact current-workspace URLs and no other endpoint, on one click', async () => {
         const user = userEvent.setup();
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
 
@@ -226,7 +229,7 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
 
     it('truthfully returns both dynamic evidence rows to loading after a refresh click before resolving refreshed server states, without stale detail', async () => {
         const user = userEvent.setup();
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
         let resolveTenantRefresh: ((response: Response) => void) | undefined;
         let resolveBackupRefresh: ((response: Response) => void) | undefined;
@@ -257,9 +260,9 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
 
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
-        const checklist = screen.getByRole('region', { name: /launch readiness/i });
+        const checklist = screen.getByRole('region', { name: /release readiness/i });
 
         await waitFor(() =>
             expect(within(checklist).getAllByText(/passed/i).length).toBeGreaterThanOrEqual(2),
@@ -297,11 +300,11 @@ describe('LaunchReadinessPage — real tenant isolation evidence wiring (S1-WP07
 
     it('leaves the other four static Unavailable requirements unchanged across a refresh', async () => {
         const user = userEvent.setup();
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule();
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
 
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
-        const checklist = screen.getByRole('region', { name: /launch readiness/i });
+        const checklist = screen.getByRole('region', { name: /release readiness/i });
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
 

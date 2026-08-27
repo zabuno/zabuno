@@ -38,7 +38,6 @@ const EXPECTED_SECTION_DESCRIPTOR_FILES = [
     'AnalyticsPage.section.tsx',
     'TeamPage.section.tsx',
     'BillingPage.section.tsx',
-    'LaunchReadinessPage.section.tsx',
 ];
 
 const EXPECTED_AI_QUICK_ACTION_KEYS = ['dashboard', 'locations', 'menu', 'publication'];
@@ -48,7 +47,7 @@ function readIfExists(path: string): string | null {
 }
 
 describe('WorkspaceSectionRegistry structural contract', () => {
-    it('declares exactly the ten page-local *.section.tsx descriptor files', () => {
+    it('declares exactly the nine page-local *.section.tsx descriptor files', () => {
         const missing = EXPECTED_SECTION_DESCRIPTOR_FILES.filter(
             (fileName) => !existsSync(join(PAGES_DIR, fileName)),
         );
@@ -67,7 +66,7 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         expect(source).toMatch(/eager\s*:\s*true/);
 
         const directPageImportPattern =
-            /from\s+['"]\.\.\/pages\/(DashboardPage|BrandPage|LocationsPage|MenuPage|MediaPage|PublicationPage|AnalyticsPage|TeamPage|BillingPage|LaunchReadinessPage)['"]/;
+            /from\s+['"]\.\.\/pages\/(DashboardPage|BrandPage|LocationsPage|MenuPage|MediaPage|PublicationPage|AnalyticsPage|TeamPage|BillingPage)['"]/;
 
         expect(source).not.toMatch(directPageImportPattern);
     });
@@ -125,7 +124,7 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         const source = appSource as string;
 
         const directPageImportPattern =
-            /from\s+['"]\.\/pages\/(DashboardPage|BrandPage|LocationsPage|MenuPage|MediaPage|PublicationPage|AnalyticsPage|TeamPage|BillingPage|LaunchReadinessPage)['"]/;
+            /from\s+['"]\.\/pages\/(DashboardPage|BrandPage|LocationsPage|MenuPage|MediaPage|PublicationPage|AnalyticsPage|TeamPage|BillingPage)['"]/;
 
         expect(source).not.toMatch(directPageImportPattern);
 
@@ -195,7 +194,7 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         );
 
         const hardcodedPageImportListPattern =
-            /from\s+['"]\.\.\/pages\/(DashboardPage|BrandPage|LocationsPage|MenuPage|MediaPage|PublicationPage|AnalyticsPage|TeamPage|BillingPage|LaunchReadinessPage)['"]/;
+            /from\s+['"]\.\.\/pages\/(DashboardPage|BrandPage|LocationsPage|MenuPage|MediaPage|PublicationPage|AnalyticsPage|TeamPage|BillingPage)['"]/;
 
         expect(source).not.toMatch(hardcodedPageImportListPattern);
     });
