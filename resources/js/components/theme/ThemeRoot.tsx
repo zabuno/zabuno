@@ -26,10 +26,23 @@ function resolveIsDark(preference: ThemePreference, systemPrefersDark: boolean):
     return preference === 'dark' || (preference === 'system' && systemPrefersDark);
 }
 
+/**
+ * Arayüz yoğunluğu.
+ *
+ * Külliyat üç mod tanımlıyor (comfortable / standard / compact) ve CSS'te
+ * üçü de vardı — ama hiçbir bileşen uygulamıyordu, yani mod ÖLÜYDÜ.
+ *
+ * Şimdi kök öğede bir öznitelik olarak yaşıyor. Bugün tek bir değer
+ * kullanılıyor; kullanıcıya seçim sunmak ayrı bir ÜRÜN kararıdır ve
+ * sahibinindir. Bu sabit, o karar verildiğinde bağlanacak tek yerdir.
+ */
+const INTERFACE_DENSITY = 'standard' as const;
+
 function applyToDocument(isDark: boolean) {
     const root = document.documentElement;
     root.classList.toggle('dark', isDark);
     root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    root.setAttribute('data-density', INTERFACE_DENSITY);
     root.style.colorScheme = isDark ? 'dark' : 'light';
 }
 
@@ -156,7 +169,7 @@ export function ThemeRoot({ children }: ThemeRootProps) {
                                         choose(THEME_OPTIONS[THEME_OPTIONS.length - 1], true);
                                     }
                                 }}
-                                className="flex min-h-11 min-w-11 items-center justify-center rounded-pill px-3 text-sm font-medium text-fg-secondary transition-colors hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 motion-reduce:transition-none aria-checked:bg-action aria-checked:text-action-fg aria-checked:forced-colors:outline aria-checked:forced-colors:outline-2 aria-checked:forced-colors:outline-offset-2"
+                                className="flex min-h-11 min-w-11 items-center justify-center rounded-pill px-3 text-body font-medium text-fg-secondary transition-colors hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 motion-reduce:transition-none aria-checked:bg-action aria-checked:text-action-fg aria-checked:forced-colors:outline aria-checked:forced-colors:outline-2 aria-checked:forced-colors:outline-offset-2"
                             >
                                 {optionLabels[option]()}
                             </button>

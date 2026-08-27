@@ -2,6 +2,7 @@
     "recordedAt": "2026-08-27",
     "why": "Tipografi token zincirinin eksik halkasıydı: renk ve boşluk token'lıyken yazı boyutu her bileşende ham Tailwind sınıfıyla seçiliyordu. Külliyat gövde metni için 1rem tabanı koyuyor ve yoğunluğun font küçültülerek DEĞİL padding/hiyerarşi ile sağlanmasını şart koşuyor (design-corpus/saas-panel-tasarim-sistemi.md).",
     "howToBurnDown": "Rol adlı ölçeğe geçir: text-title / text-section / text-subsection / text-body / text-meta. `text-meta` YALNIZ gerçekten yardımcı bilgi içindir (zaman damgası, sayaç, birim); etiket, gövde, buton metni ve hata mesajı text-body taşır.",
-    "belowBodyFloor": 283,
-    "otherRawSizes": 27
+    "belowBodyFloor": 2,
+    "otherRawSizes": 26,
+    "note": "2026-08-27: borc eritildi. 289 sinif rol adli olcege tasindi. Tasima sirasinda gercek bir kusur ortaya cikti: tailwind-merge rol adli text-* siniflarini RENK saniyor ve onceki rengi siliyordu; cn() birlestiriciye tanitildi, Flowbite kendi ornegini kullandigi icin orada text-[length:...] yazimina gecildi. DS-MERGE-SAFETY korur."
 }

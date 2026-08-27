@@ -63,7 +63,7 @@ export function SidebarNav({
                         aynı optik hizada olsun.
                     */}
                     {group.label ? (
-                        <span className="mb-[var(--space-1)] ps-[calc(var(--density-padding-inline)+2px)] text-xs font-semibold uppercase tracking-wide text-fg-subtle">
+                        <span className="mb-[var(--space-1)] ps-[calc(var(--density-padding-inline)+2px)] text-meta font-semibold uppercase tracking-wide text-fg-subtle">
                             {group.label}
                         </span>
                     ) : null}

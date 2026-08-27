@@ -91,13 +91,13 @@ export function ForgotPasswordForm() {
             <h1 className="text-xl font-semibold text-fg">{t('auth.forgot_password.heading')}</h1>
 
             {errors.submit && (
-                <p role="alert" className="text-sm font-medium text-fg-danger">
+                <p role="alert" className="text-body font-medium text-fg-danger">
                     {errors.submit}
                 </p>
             )}
 
             {sent && (
-                <p role="status" className="text-sm font-medium text-fg-success">
+                <p role="status" className="text-body font-medium text-fg-success">
                     {t('auth.forgot_password.status.sent')}
                 </p>
             )}
@@ -120,7 +120,7 @@ export function ForgotPasswordForm() {
                     <p
                         id="forgot-password-email-error"
                         role="alert"
-                        className="mt-1 text-sm text-fg-danger"
+                        className="mt-1 text-body text-fg-danger"
                     >
                         {errors.email}
                     </p>

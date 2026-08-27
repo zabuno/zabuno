@@ -86,7 +86,7 @@ export function PlanActivationDialog({
             className="flex flex-col gap-3 rounded-lg border border-border p-4"
             onKeyDown={handleKeyDown}
         >
-            <h2 className="text-sm font-semibold text-fg">
+            <h2 className="text-body font-semibold text-fg">
                 {t('platform.plans.activate.dialog.heading')}
             </h2>
             <span className="font-medium text-fg">{plan.name}</span>

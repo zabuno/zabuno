@@ -108,7 +108,7 @@ export function LoginForm({
             <h1 className="text-xl font-semibold text-fg">{t('auth.login.heading')}</h1>
 
             {errors.submit && (
-                <p role="alert" className="text-sm font-medium text-fg-danger">
+                <p role="alert" className="text-body font-medium text-fg-danger">
                     {errors.submit}
                 </p>
             )}
@@ -128,7 +128,11 @@ export function LoginForm({
                     aria-describedby={errors.email ? 'login-email-error' : undefined}
                 />
                 {errors.email && (
-                    <p id="login-email-error" role="alert" className="mt-1 text-sm text-fg-danger">
+                    <p
+                        id="login-email-error"
+                        role="alert"
+                        className="mt-1 text-body text-fg-danger"
+                    >
                         {errors.email}
                     </p>
                 )}
@@ -152,7 +156,7 @@ export function LoginForm({
                     <p
                         id="login-password-error"
                         role="alert"
-                        className="mt-1 text-sm text-fg-danger"
+                        className="mt-1 text-body text-fg-danger"
                     >
                         {errors.password}
                     </p>
@@ -163,7 +167,7 @@ export function LoginForm({
                 {t('auth.login.submit')}
             </Button>
 
-            <a href="/forgot-password" className="text-sm text-fg-secondary hover:underline ">
+            <a href="/forgot-password" className="text-body text-fg-secondary hover:underline ">
                 {t('auth.login.forgot_password')}
             </a>
         </form>

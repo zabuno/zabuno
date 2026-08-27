@@ -20,9 +20,9 @@ export function AiAssistPanel({ context }: AiAssistPanelProps) {
             aria-label={t('workspace.ai.panel.label', { context })}
             className="mt-8 flex flex-col gap-3 rounded-lg border border-border p-4 "
         >
-            <h3 className="text-sm font-semibold text-fg">{t('workspace.ai.panel.heading')}</h3>
+            <h3 className="text-body font-semibold text-fg">{t('workspace.ai.panel.heading')}</h3>
 
-            <p role="status" className="text-sm text-fg-muted">
+            <p role="status" className="text-body text-fg-muted">
                 {t('workspace.ai.unavailable')}
             </p>
 
@@ -40,19 +40,19 @@ export function AiAssistPanel({ context }: AiAssistPanelProps) {
             </div>
 
             <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+                <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                     {t('workspace.ai.whyThisSuggestion')}
                 </p>
-                <p className="text-sm text-fg-secondary">
+                <p className="text-body text-fg-secondary">
                     {t('workspace.ai.whyThisSuggestion.empty')}
                 </p>
             </div>
 
             <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+                <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                     {t('workspace.ai.affectedRecords')}
                 </p>
-                <p className="text-sm text-fg-secondary">
+                <p className="text-body text-fg-secondary">
                     {t('workspace.ai.affectedRecords.empty')}
                 </p>
             </div>

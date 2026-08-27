@@ -27,7 +27,7 @@ const THEME_LABEL_KEYS: Record<QrThemeKey, Parameters<typeof t>[0]> = {
     highContrast: 'workspace.publication.qrExport.themes.highContrast',
 };
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
+const LABEL_CLASSES = 'flex flex-col gap-1 text-meta font-medium text-fg-secondary';
 
 type QrPrintExportRegionProps = {
     items?: QrCodeItem[];
@@ -113,12 +113,12 @@ export function QrPrintExportRegion({
             aria-label={t('workspace.publication.qrExport.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-fg">
+            <h3 className="text-body font-semibold text-fg">
                 {t('workspace.publication.qrExport.region')}
             </h3>
 
             {selected === null ? (
-                <p role="status" className="text-sm text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.publication.qrExport.noActive')}
                 </p>
             ) : (
@@ -154,7 +154,7 @@ export function QrPrintExportRegion({
                                 ? pdfExportUrl(selected, paperSize, orientation, theme)
                                 : exportUrl(selected, previewFormat, true, theme)
                         }
-                        className="self-start text-sm"
+                        className="self-start text-body"
                     >
                         {t('workspace.publication.qrExport.downloadButton')}{' '}
                         {t(
@@ -171,7 +171,7 @@ export function QrPrintExportRegion({
                             href={pdfExportUrl(selected, paperSize, orientation, theme, false)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="self-start text-sm"
+                            className="self-start text-body"
                         >
                             {t('workspace.publication.qrExport.printButton')}
                         </TextLink>
@@ -196,7 +196,7 @@ export function QrPrintExportRegion({
                 onCreated={onBulkCreated}
             />
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+            <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.publication.qrExport.themes.heading')}
             </p>
             <SegmentedControl

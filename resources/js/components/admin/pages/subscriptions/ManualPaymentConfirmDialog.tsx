@@ -92,7 +92,7 @@ export function ManualPaymentConfirmDialog({
             className="flex flex-col gap-3 rounded-lg border border-border p-4"
             onKeyDown={handleKeyDown}
         >
-            <h2 className="text-sm font-semibold text-fg">
+            <h2 className="text-body font-semibold text-fg">
                 {t('platform.subscriptions.confirm.heading')}
             </h2>
             <span className="text-fg-secondary">{planLabel}</span>

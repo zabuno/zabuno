@@ -107,13 +107,13 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ maxWidth: '100%' }}>
-            <h2 className="text-sm font-semibold text-fg">{t('platform.plans.form.heading')}</h2>
+            <h2 className="text-body font-semibold text-fg">{t('platform.plans.form.heading')}</h2>
 
             <div
                 className="grid gap-3"
                 style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 12rem), 1fr))' }}
             >
-                <label className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('platform.plans.form.name')}
                     <TextInput
                         value={name}
@@ -122,7 +122,7 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                     />
                 </label>
 
-                <label className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('platform.plans.form.code')}
                     <TextInput
                         value={code}
@@ -131,7 +131,7 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                     />
                 </label>
 
-                <label className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('platform.plans.form.version')}
                     <TextInput
                         value={version}
@@ -141,7 +141,7 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                     />
                 </label>
 
-                <label className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('platform.plans.form.amount')}
                     <TextInput
                         value={amount}
@@ -151,7 +151,7 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                     />
                 </label>
 
-                <label className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('platform.plans.form.currency')}
                     <TextInput
                         value={currency}
@@ -160,7 +160,7 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                     />
                 </label>
 
-                <label className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('platform.plans.form.sortOrder')}
                     <TextInput
                         value={sortOrder}
@@ -171,7 +171,7 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                 </label>
             </div>
 
-            <label className="flex flex-col gap-1 text-sm text-fg-secondary">
+            <label className="flex flex-col gap-1 text-body text-fg-secondary">
                 {t('platform.plans.form.entitlements')}
                 <Textarea
                     value={entitlements}

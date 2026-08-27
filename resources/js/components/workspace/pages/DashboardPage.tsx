@@ -130,10 +130,10 @@ export function DashboardPage({
                 ) : (
                     <div className="flex flex-col gap-3">
                         <h1 className="text-xl font-semibold text-fg">{t('dashboard.heading')}</h1>
-                        <p role="status" className="text-sm text-fg-muted">
+                        <p role="status" className="text-body text-fg-muted">
                             {t('dashboard.empty')}
                         </p>
-                        <a href="#menu" className="text-sm font-medium text-fg-link">
+                        <a href="#menu" className="text-body font-medium text-fg-link">
                             {t('dashboard.empty.openMenu')}
                         </a>
                     </div>

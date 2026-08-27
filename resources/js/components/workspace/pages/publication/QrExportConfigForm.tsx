@@ -4,7 +4,7 @@ import { t } from '../../../../i18n/workspace';
 
 const PAPER_SIZES = ['A4', 'B4', 'A5', 'B5', 'A6', 'B6', 'A7', 'B7'] as const;
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-xs font-medium text-fg-secondary';
+const LABEL_CLASSES = 'flex flex-col gap-1 text-meta font-medium text-fg-secondary';
 
 export type QrOutputFormat = 'png' | 'svg' | 'pdf';
 export type QrPaperSize = (typeof PAPER_SIZES)[number];
@@ -33,7 +33,7 @@ export function QrExportConfigForm({
             className="flex flex-col gap-3"
             aria-label={t('workspace.publication.qrExport.config.heading')}
         >
-            <legend className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
+            <legend className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.publication.qrExport.config.heading')}
             </legend>
 

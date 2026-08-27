@@ -157,28 +157,28 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 aria-label={t('workspace.publication.qrDestination.region')}
                 className="flex flex-col gap-3"
             >
-                <h3 className="text-sm font-semibold text-fg">
+                <h3 className="text-body font-semibold text-fg">
                     {t('workspace.publication.qrDestination.region')}
                 </h3>
 
-                <p className="text-sm text-fg-secondary">
+                <p className="text-body text-fg-secondary">
                     {t('workspace.publication.qrDestination.explanation')}
                 </p>
 
                 {errorMessage !== null ? (
-                    <p role="alert" className="text-sm text-fg-danger">
+                    <p role="alert" className="text-body text-fg-danger">
                         {errorMessage}
                     </p>
                 ) : null}
 
                 {showLoading ? (
-                    <p role="status" className="text-sm text-fg-muted">
+                    <p role="status" className="text-body text-fg-muted">
                         {t('workspace.publication.qrDestination.loading')}
                     </p>
                 ) : null}
 
                 {showEmpty ? (
-                    <p className="text-sm text-fg-muted">
+                    <p className="text-body text-fg-muted">
                         {t('workspace.publication.qrDestination.empty')}
                     </p>
                 ) : null}

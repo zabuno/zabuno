@@ -97,7 +97,7 @@ export function Tabs({ items, selectedKey, onChange, label, className }: TabsPro
                             onClick={() => focusAndSelect(item.key)}
                             onKeyDown={(event) => handleKeyDown(event, item.key)}
                             className={clsx(
-                                'inline-flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium',
+                                'inline-flex items-center gap-2 border-b-2 px-3 py-2 text-body font-medium',
                                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                                 isSelected
                                     ? 'border-focus text-fg-link'

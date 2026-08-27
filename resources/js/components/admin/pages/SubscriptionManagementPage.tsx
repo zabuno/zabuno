@@ -327,13 +327,13 @@ export function SubscriptionManagementPage() {
                     />
 
                     {plansStatus === 'error' && (
-                        <p role="alert" className="text-sm font-medium text-fg-danger">
+                        <p role="alert" className="text-body font-medium text-fg-danger">
                             {t('platform.subscriptions.plans.error')}
                         </p>
                     )}
 
                     {plansStatus === 'success' && activePlans.length === 0 && (
-                        <p role="alert" className="text-sm font-medium text-fg-danger">
+                        <p role="alert" className="text-body font-medium text-fg-danger">
                             {t('platform.subscriptions.plans.blocked')}
                         </p>
                     )}
@@ -351,12 +351,12 @@ export function SubscriptionManagementPage() {
 
                     {submitError && (
                         <div className="flex flex-col gap-2">
-                            <p role="alert" className="text-sm font-medium text-fg-danger">
+                            <p role="alert" className="text-body font-medium text-fg-danger">
                                 {submitError}
                             </p>
                             <button
                                 type="button"
-                                className="self-start text-sm font-medium text-fg-danger"
+                                className="self-start text-body font-medium text-fg-danger"
                                 onClick={() => setDialogOpen(true)}
                             >
                                 {t('platform.subscriptions.form.retry')}
@@ -382,7 +382,7 @@ export function SubscriptionManagementPage() {
                 role="status"
                 aria-live="polite"
                 aria-label={t('platform.subscriptions.success.region.label')}
-                className={successMessage ? 'text-sm text-fg-success' : 'sr-only'}
+                className={successMessage ? 'text-body text-fg-success' : 'sr-only'}
             >
                 {successMessage ?? ''}
             </p>

@@ -24,7 +24,7 @@ export function ActionLink({ variant = 'primary', className, ...rest }: ActionLi
     return (
         <a
             className={clsx(
-                'inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium',
+                'inline-flex items-center justify-center rounded-lg px-4 py-2 text-body font-medium',
                 'min-h-[var(--density-hit-area-min)]',
                 'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',

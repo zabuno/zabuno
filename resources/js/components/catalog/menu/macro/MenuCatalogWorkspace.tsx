@@ -155,10 +155,10 @@ async function parseErrorMessage(response: Response, fallback: string): Promise<
 
 // Bu yüzey menü kataloğunun kalbidir ve restoran sahibinin en çok gördüğü
 // ekrandır; bu yüzden kendi rengini seçmemesi özellikle önemlidir.
-const labelClass = 'block text-sm font-medium text-fg-secondary';
+const labelClass = 'block text-body font-medium text-fg-secondary';
 
 const buttonClass = clsx(
-    'inline-flex min-h-[var(--density-hit-area-min)] items-center justify-center rounded-md px-4 py-2 text-sm font-semibold',
+    'inline-flex min-h-[var(--density-hit-area-min)] items-center justify-center rounded-md px-4 py-2 text-body font-semibold',
     'border border-action bg-action text-action-fg hover:brightness-95',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
     'disabled:cursor-not-allowed disabled:opacity-50',

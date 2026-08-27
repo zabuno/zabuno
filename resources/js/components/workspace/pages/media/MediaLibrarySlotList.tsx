@@ -21,8 +21,8 @@ export function MediaLibrarySlotList() {
                     const category = t(key);
                     return (
                         <li key={key} className="flex flex-col gap-1">
-                            <span className="text-sm font-medium text-fg">{category}</span>
-                            <p role="status" className="text-sm text-fg-muted">
+                            <span className="text-body font-medium text-fg">{category}</span>
+                            <p role="status" className="text-body text-fg-muted">
                                 {t('workspace.media.library.slots.status.noAssetsYet', {
                                     category,
                                 })}

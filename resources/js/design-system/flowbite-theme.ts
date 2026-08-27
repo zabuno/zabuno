@@ -45,6 +45,18 @@ import { createTheme } from 'flowbite-react/helpers/create-theme';
  * açıkça boşaltılır, yoksa `color="purple"` yazan biri ham palete sessizce
  * geri düşerdi.
  *
+ * **Yazı boyutu burada AÇIK UZUNLUK yazımıyla verilir.**
+ * `tailwind-merge`, tanımadığı bir `text-*` sınıfını RENK sanar. Rol adlı
+ * ölçeğimiz (`text-body`, `text-meta`) tam olarak bu tuzağa düşüyordu:
+ *
+ *     twMerge('text-fg', 'text-body')  →  'text-body'   ← renk KAYBOLDU
+ *
+ * `resources/js/lib/utils.ts` içindeki `cn()` bunu birleştiriciye tanıtarak
+ * çözüyor, ama Flowbite KENDİ twMerge örneğini kullanır ve ona ulaşamayız.
+ * `text-[length:…]` yazımı ise stok birleştiricinin kesinlikle yazı boyutu
+ * olarak tanıdığı biçimdir; renk hayatta kalır, iki boyut yine doğru
+ * çakışır. Bu yüzden yalnız BU dosyada bu yazım kullanılır.
+ *
  * **`base` nötr görünümü taşır.** Flowbite `twMerge(base, size, …, color)`
  * sırasıyla birleştirir, yani `color` her zaman `base`'i yener. Nötr
  * görünümü `base`'e koymak, haritada olmayan bir Flowbite palet adının
@@ -91,14 +103,14 @@ const FIELD_COLORS = {
 };
 
 const FIELD_SIZES = {
-    sm: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-1)] text-xs',
-    md: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-2)] text-sm',
+    sm: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-1)] text-[length:var(--text-meta)]',
+    md: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-2)] text-[length:var(--text-body)]',
     lg: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-3)] text-base',
 };
 
 /** Addon ve ikon kabukları — hepsi logical yön kullanır (RTL, `DS-LOGICAL-DIRECTION-06`). */
 const FIELD_ADDON =
-    'inline-flex items-center rounded-s-lg border border-e-0 border-border bg-surface-subtle px-[var(--density-padding-inline)] text-sm text-fg-secondary';
+    'inline-flex items-center rounded-s-lg border border-e-0 border-border bg-surface-subtle px-[var(--density-padding-inline)] text-[length:var(--text-body)] text-fg-secondary';
 
 const FIELD_ICON = {
     base: 'pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3',
@@ -159,9 +171,9 @@ export const buttonTokenTheme = createTheme({
      * `--density-hit-area-min`'in altına inemez (`app.css`).
      */
     size: {
-        xs: 'px-[var(--control-padding-inline)] text-xs',
-        sm: 'px-[var(--control-padding-inline)] text-sm',
-        md: 'px-[var(--control-padding-inline)] text-sm',
+        xs: 'px-[var(--control-padding-inline)] text-[length:var(--text-meta)]',
+        sm: 'px-[var(--control-padding-inline)] text-[length:var(--text-body)]',
+        md: 'px-[var(--control-padding-inline)] text-[length:var(--text-body)]',
         lg: 'px-[calc(var(--control-padding-inline)*1.5)] text-base',
         xl: 'px-[calc(var(--control-padding-inline)*2)] text-base',
     },
@@ -257,7 +269,7 @@ export const selectTokenTheme = createTheme({
 export const textareaTokenTheme = createTheme({
     base: [
         FIELD_BASE,
-        'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-2)] text-sm',
+        'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-2)] text-[length:var(--text-body)]',
     ].join(' '),
     colors: FIELD_COLORS,
     withShadow: { on: '', off: '' },
@@ -312,7 +324,7 @@ export const checkboxTokenTheme = createTheme({
  */
 export const labelTokenTheme = createTheme({
     root: {
-        base: 'text-sm font-medium',
+        base: 'text-[length:var(--text-body)] font-medium',
         disabled: 'opacity-60',
         colors: {
             default: 'text-fg',

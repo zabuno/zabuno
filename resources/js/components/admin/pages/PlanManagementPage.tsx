@@ -220,7 +220,7 @@ export function PlanManagementPage() {
             <PlanForm onSubmit={(payload) => void handleCreate(payload)} submitting={creating} />
 
             {createError && (
-                <p role="alert" className="text-sm text-fg-danger">
+                <p role="alert" className="text-body text-fg-danger">
                     {createError}
                 </p>
             )}

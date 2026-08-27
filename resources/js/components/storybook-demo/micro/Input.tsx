@@ -21,7 +21,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             aria-invalid={invalid || undefined}
             aria-disabled={disabled || undefined}
             className={clsx(
-                'block w-full rounded-md border px-3 py-2 text-sm outline-none transition-colors',
+                'block w-full rounded-md border px-3 py-2 text-body outline-none transition-colors',
                 'focus-visible:ring-2 focus-visible:ring-offset-1',
                 invalid
                     ? 'border-border-danger focus-visible:ring-fg-danger'

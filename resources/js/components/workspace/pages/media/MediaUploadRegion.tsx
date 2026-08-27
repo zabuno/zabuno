@@ -83,21 +83,23 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             onSubmit={(event) => void handleSubmit(event)}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-sm font-semibold text-fg">{t('workspace.media.upload.heading')}</h3>
+            <h3 className="text-body font-semibold text-fg">
+                {t('workspace.media.upload.heading')}
+            </h3>
 
             <div className="flex flex-col gap-3">
-                <label htmlFor={fileId} className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label htmlFor={fileId} className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('workspace.media.upload.field.file')}
                     <TextInput
                         id={fileId}
                         type="file"
                         ref={fileInputRef}
-                        className="text-sm text-fg-secondary"
+                        className="text-body text-fg-secondary"
                         onChange={(event) => setFile(event.target.files?.[0] ?? null)}
                     />
                 </label>
 
-                <label htmlFor={altId} className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label htmlFor={altId} className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('workspace.media.upload.field.altText')}
                     <TextInput
                         id={altId}
@@ -108,7 +110,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     />
                 </label>
 
-                <label htmlFor={slotId} className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label htmlFor={slotId} className="flex flex-col gap-1 text-body text-fg-secondary">
                     {t('workspace.media.upload.field.assetSlot')}
                     <Select
                         id={slotId}
@@ -126,12 +128,18 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     </Select>
                 </label>
 
-                <label htmlFor={rightsId} className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label
+                    htmlFor={rightsId}
+                    className="flex flex-col gap-1 text-body text-fg-secondary"
+                >
                     {t('workspace.media.upload.field.rights')}
                     <TextInput id={rightsId} type="text" disabled />
                 </label>
 
-                <label htmlFor={expiryId} className="flex flex-col gap-1 text-sm text-fg-secondary">
+                <label
+                    htmlFor={expiryId}
+                    className="flex flex-col gap-1 text-body text-fg-secondary"
+                >
                     {t('workspace.media.upload.field.expiry')}
                     <TextInput id={expiryId} type="date" disabled />
                 </label>
@@ -147,24 +155,24 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             </Button>
 
             {status === 'pending' && (
-                <p role="status" className="text-xs text-fg-muted">
+                <p role="status" className="text-meta text-fg-muted">
                     {t('workspace.media.upload.uploading')}
                 </p>
             )}
 
             {status === 'error' && (
-                <p role="alert" className="text-xs text-fg-danger">
+                <p role="alert" className="text-meta text-fg-danger">
                     {t('workspace.media.upload.failed')}
                 </p>
             )}
 
             {status === 'success' && (
-                <p role="status" className="text-xs text-fg-muted">
+                <p role="status" className="text-meta text-fg-muted">
                     {t('workspace.media.upload.complete')}
                 </p>
             )}
 
-            <p className="text-xs text-fg-muted">{t('workspace.media.security.explanation')}</p>
+            <p className="text-meta text-fg-muted">{t('workspace.media.security.explanation')}</p>
         </form>
     );
 }

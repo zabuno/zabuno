@@ -34,8 +34,8 @@ export function EmptyState({
             ) : (
                 <div aria-hidden="true" className="h-8 w-8 rounded-pill bg-surface-active" />
             )}
-            <p className="text-sm font-medium text-fg">{title}</p>
-            {description ? <p className="text-sm text-fg-muted">{description}</p> : null}
+            <p className="text-body font-medium text-fg">{title}</p>
+            {description ? <p className="text-body text-fg-muted">{description}</p> : null}
             {action ? <div className="mt-1">{action}</div> : null}
         </div>
     );

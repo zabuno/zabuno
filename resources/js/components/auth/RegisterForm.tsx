@@ -111,7 +111,7 @@ export function RegisterForm({
             <h1 className="text-xl font-semibold text-fg">{t('auth.register.heading')}</h1>
 
             {errors.submit && (
-                <p role="alert" className="text-sm font-medium text-fg-danger">
+                <p role="alert" className="text-body font-medium text-fg-danger">
                     {errors.submit}
                 </p>
             )}
@@ -133,7 +133,7 @@ export function RegisterForm({
                     <p
                         id="register-name-error"
                         role="alert"
-                        className="mt-1 text-sm text-fg-danger"
+                        className="mt-1 text-body text-fg-danger"
                     >
                         {errors.name}
                     </p>
@@ -158,7 +158,7 @@ export function RegisterForm({
                     <p
                         id="register-email-error"
                         role="alert"
-                        className="mt-1 text-sm text-fg-danger"
+                        className="mt-1 text-body text-fg-danger"
                     >
                         {errors.email}
                     </p>
@@ -183,7 +183,7 @@ export function RegisterForm({
                     <p
                         id="register-password-error"
                         role="alert"
-                        className="mt-1 text-sm text-fg-danger"
+                        className="mt-1 text-body text-fg-danger"
                     >
                         {errors.password}
                     </p>

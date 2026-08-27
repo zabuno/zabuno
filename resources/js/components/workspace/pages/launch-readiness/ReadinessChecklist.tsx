@@ -55,7 +55,7 @@ export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
             aria-label={t('workspace.launchReadiness.checklist.region')}
             className="flex flex-col gap-4"
         >
-            <p className="text-sm text-fg-muted">
+            <p className="text-body text-fg-muted">
                 {t('workspace.launchReadiness.checklist.explanation')}
             </p>
             <Button

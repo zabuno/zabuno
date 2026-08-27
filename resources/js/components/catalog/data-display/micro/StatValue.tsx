@@ -36,7 +36,7 @@ export function StatValue({ value, trend, className }: StatValueProps) {
         <span className={clsx('inline-flex items-baseline gap-1.5', className)}>
             <span className="text-2xl font-semibold text-fg">{value}</span>
             {trend ? (
-                <span className={clsx('text-xs font-medium', TREND_COLOR[trend])}>
+                <span className={clsx('text-meta font-medium', TREND_COLOR[trend])}>
                     <span aria-hidden="true">{TREND_GLYPH[trend]}</span>
                     <span className="sr-only"> ({TREND_LABEL[trend]})</span>
                 </span>

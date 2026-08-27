@@ -55,7 +55,7 @@ export function PlatformApp() {
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
             onCloseMobileMenu={() => setMobileMenuOpen(false)}
             topBarEnd={
-                <a href="/app" className="text-sm font-medium underline">
+                <a href="/app" className="text-body font-medium underline">
                     {t('platform.shell.backToWorkspace')}
                 </a>
             }

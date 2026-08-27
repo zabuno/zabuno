@@ -151,19 +151,19 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                     </div>
 
                     {status === 'idle' && (
-                        <p role="status" className="text-sm text-fg-muted">
+                        <p role="status" className="text-body text-fg-muted">
                             {t('workspace.analytics.report.unavailable')}
                         </p>
                     )}
 
                     {status === 'loading' && (
-                        <p role="status" className="text-sm text-fg-muted">
+                        <p role="status" className="text-body text-fg-muted">
                             {t('workspace.analytics.report.loading')}
                         </p>
                     )}
 
                     {status === 'error' && (
-                        <p role="alert" className="text-sm font-medium text-fg-danger">
+                        <p role="alert" className="text-body font-medium text-fg-danger">
                             {t('workspace.analytics.report.error')}
                         </p>
                     )}

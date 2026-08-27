@@ -311,9 +311,20 @@
     --color-action-primary-fg: #1c1500;
 }
 
-/* Yoğunluk modları. Bir kapsayıcıya uygulanır; token seviyesinde çözülür ve
-   bileşene sızmaz (docs/37 §2.2, kesen eksen X4). */
-.density-comfortable {
+/* Yoğunluk modları. Token seviyesinde çözülür ve bileşene sızmaz
+   (`docs/36` §5.8, `docs/37` §2.2 kesen eksen X4).
+   Külliyatın kararı: satır yüksekliği HEIGHT + PADDING ile değişir, ASLA
+   font-size ile.
+
+   Seçici `[data-density]` — tema ile aynı biçim. Öncesinde sınıf tabanlıydı
+   (`.density-comfortable`) ve hiçbir bileşen onu uygulamıyordu: üç mod
+   tanımlıydı ama ÖLÜYDÜ. Kök öğede bir öznitelik olması, modun tek yerden
+   ve tek satırla değişmesini sağlar — tıpkı temada olduğu gibi.
+
+   Standart mod `:root` değerleridir; ayrıca yazılmasına gerek yok, ama
+   öznitelik yine de her zaman basılır ki hangi modda olunduğu ekranda
+   görünsün ve test edilebilsin. */
+:root[data-density='comfortable'] {
     --density-row-height: 52px;
     --density-padding-inline: var(--space-4);
 
@@ -322,7 +333,7 @@
     --control-padding-inline: calc(var(--density-padding-inline) + var(--space-1));
 }
 
-.density-compact {
+:root[data-density='compact'] {
     --density-row-height: 36px;
     --density-padding-inline: var(--space-2);
 

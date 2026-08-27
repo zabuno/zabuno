@@ -15,7 +15,7 @@ export function MediaLifecycleList() {
     return (
         <ol className="flex flex-col gap-1">
             {LIFECYCLE_KEYS.map((key) => (
-                <li key={key} className="text-sm text-fg-secondary">
+                <li key={key} className="text-body text-fg-secondary">
                     {t(key)}
                 </li>
             ))}

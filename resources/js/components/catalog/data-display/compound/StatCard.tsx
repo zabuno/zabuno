@@ -26,7 +26,7 @@ export function StatCard({ label, value, trend, icon, loading = false, className
             )}
         >
             <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-fg-muted">{label}</span>
+                <span className="text-body font-medium text-fg-muted">{label}</span>
                 {loading ? (
                     <Skeleton shape="text" width="6rem" height="1.75rem" />
                 ) : (
