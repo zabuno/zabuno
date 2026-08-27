@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require __DIR__.'/api/auth.php';
 require __DIR__.'/api/webhooks.php';
+require __DIR__.'/api/reference.php';
 require __DIR__.'/api/tenancy.php';
 require __DIR__.'/api/menu-catalog.php';
 require __DIR__.'/api/publication.php';

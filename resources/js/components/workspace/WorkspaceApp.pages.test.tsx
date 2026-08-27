@@ -410,7 +410,13 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
         await user.click(await scope.findByRole('button', { name: 'Edit' }));
 
-        expect(scope.getByLabelText('Name')).toBeInTheDocument();
+        // `workspace.brand.name` 2026-08-27'de `Brand name` oldu ve
+        // düzenleme formu da onu kullanıyor. Saat dilimi ise BAŞKA bir
+        // anahtardan geliyor (`workspace.brandLocations.brand.timezone`),
+        // yani aynı kavram iki anahtarla adlandırılmış durumda. Kayıtlı
+        // olsun: bu tutarsızlık formların geri kalanıyla birlikte ele
+        // alınacak.
+        expect(scope.getByLabelText('Brand name')).toBeInTheDocument();
         expect(scope.getByLabelText('Locale')).toBeInTheDocument();
         expect(scope.getByLabelText('Timezone')).toBeInTheDocument();
         expect(scope.getByLabelText('Currency')).toBeInTheDocument();

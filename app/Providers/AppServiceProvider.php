@@ -28,6 +28,7 @@ use App\Application\QrDestination\Port\BulkQrCreationPort;
 use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Application\QrDestination\Port\QrCodePdfExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
+use App\Application\Reference\Port\MarketReferencePort;
 use App\Application\Security\Port\BackupRestoreDrillRunnerPort;
 use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
@@ -67,6 +68,7 @@ use App\Infrastructure\QrDestination\Persistence\EloquentBulkQrCreationRepositor
 use App\Infrastructure\QrDestination\Persistence\EloquentQrCodeRepository;
 use App\Infrastructure\QrDestination\Rendering\EndroidQrCodeImageExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCodePdfExportAdapter;
+use App\Infrastructure\Reference\IcuMarketReference;
 use App\Infrastructure\Security\Execution\SqliteBackupRestoreDrillRunner;
 use App\Infrastructure\Security\Execution\SymfonyTenantIsolationSuiteRunner;
 use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
@@ -109,6 +111,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
         $this->app->bind(LedgerPort::class, DatabaseLedger::class);
+        $this->app->singleton(
+            MarketReferencePort::class,
+            static fn (): IcuMarketReference => new IcuMarketReference
+        );
+
         $this->app->singleton(TranslationPort::class, static fn (): MoFileTranslator => new MoFileTranslator(base_path('lang/mo')));
         $this->app->bind(MenuCatalogApiContextPort::class, EloquentMenuCatalogApiContext::class);
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);

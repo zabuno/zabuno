@@ -22,6 +22,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/user||App\Http\Controllers\Auth\AuthenticatedUserController|api,auth:sanctum,verified',
         'POST|api/webhooks/iyzico-sandbox||App\Http\Controllers\Billing\ReceiveIyzicoSandboxWebhookController|api',
         'POST|api/billing/iyzico-sandbox/callback||App\Http\Controllers\Billing\ReceiveIyzicoSandboxCallbackController|api',
+        'GET|api/reference/markets||App\Http\Controllers\Reference\ShowMarketReferenceController|api,auth:sanctum,verified',
         'POST|api/workspaces||App\Http\Controllers\Tenancy\CreateWorkspaceController|api,auth:sanctum,throttle:5,1,verified',
         'GET|api/workspaces||App\Http\Controllers\Tenancy\ListWorkspacesController|api,auth:sanctum,verified',
         'PUT|api/workspace-context||App\Http\Controllers\Tenancy\SwitchWorkspaceContextController|api,auth:sanctum,verified',
@@ -87,6 +88,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
     private const EXPECTED_MODULE_FILES = [
         'routes/api/auth.php',
         'routes/api/webhooks.php',
+        // Marka formunun referans verisi (ülke, saat dilimi, para birimi).
+        // Kiracıya bağlı olmadığı için tenancy'den önce yükleniyor.
+        'routes/api/reference.php',
         'routes/api/tenancy.php',
         'routes/api/menu-catalog.php',
         'routes/api/publication.php',
