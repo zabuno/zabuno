@@ -1,23 +1,21 @@
 import type React from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 /**
- * RED contract for the S1-WP07 visible #security destination
- * ("Launch readiness"): WorkspaceApp nav link + section swap, plus the
- * LaunchReadinessPage component contract (checklist, six canonical
- * evidence items, no fabricated GREEN, no self-triggered network call, no
- * destructive Scan/Backup/Restore actions, 320px-fluid with no
- * breakpoint-prefixed classes). Neither WorkspaceApp nor
- * ./pages/LaunchReadinessPage carry this contract yet.
+ * SURFACE-SEPARATION — yayın kanıtı restoran ekranı DEĞİLDİR.
+ *
+ * Bu dosya eskiden tam tersini donduruyordu: tenant kabuğunda bir "Launch
+ * readiness" bölümü, `#security` adresi ve altı kanıt kalemi. Sahibi
+ * kararını verdi; ekran geliştirici paneline taşındı (UX raporu §4.3 ve
+ * §9.10). Kanıt ekranının kendi testleri taşındığı yerde yaşıyor:
+ * `components/admin/pages/ReleaseReadinessPage.test.tsx`.
  */
 
 const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 const WORKSPACE_ID = 71;
 const EVIDENCE_ENDPOINT = `/api/workspaces/${WORKSPACE_ID}/security/evidence/tenant-isolation`;
 const BACKUP_EVIDENCE_ENDPOINT = `/api/workspaces/${WORKSPACE_ID}/security/evidence/backup-restore`;
-const BREAKPOINT_TOKEN = /(?:^|\s)(sm|md|lg|xl|2xl):/;
 
 const CLAIM =
     'This evidence reflects the result of running the frozen set of selected automated local feature tests for tenant isolation. It is not an ASVS audit, not a pentest, and not a production proof.';
@@ -25,32 +23,10 @@ const CLAIM =
 const BACKUP_CLAIM =
     'This evidence reflects one local SQLite online-backup and isolated file-copy restore drill against a frozen table manifest. It is not an RPO/RTO proof, not a production DR drill, and does not test cross-host or point-in-time recovery.';
 
-const CANONICAL_EVIDENCE_ITEMS = [
-    /owasp\s*asvs/i,
-    /tenant isolation/i,
-    /qr scan/i,
-    /backup.*restore|restore.*backup/i,
-    /rpo.*rto|rto.*rpo/i,
-    /shared.host/i,
-];
-
-const OTHER_CANONICAL_EVIDENCE_ITEMS = [
-    /owasp\s*asvs/i,
-    /qr scan/i,
-    /rpo.*rto|rto.*rpo/i,
-    /shared.host/i,
-];
-
 function importWorkspaceModule<
     T extends Record<string, unknown> = Record<string, unknown>,
 >(): Promise<T> {
     return import('./WorkspaceApp') as unknown as Promise<T>;
-}
-
-function importLaunchReadinessPageModule<
-    T extends Record<string, unknown> = Record<string, unknown>,
->(): Promise<T> {
-    return import('./pages/LaunchReadinessPage') as unknown as Promise<T>;
 }
 
 function jsonResponse(status: number, body: unknown): Response {
@@ -167,30 +143,6 @@ function buildFetchMock() {
     };
 }
 
-function setViewport(width: number, height: number) {
-    Object.defineProperty(window, 'innerWidth', {
-        configurable: true,
-        writable: true,
-        value: width,
-    });
-    Object.defineProperty(window, 'innerHeight', {
-        configurable: true,
-        writable: true,
-        value: height,
-    });
-    window.dispatchEvent(new Event('resize'));
-}
-
-function allClassAttributes(container: HTMLElement): string[] {
-    return Array.from(container.querySelectorAll('[class]')).map(
-        (el) => el.getAttribute('class') ?? '',
-    );
-}
-
-function allTextContent(container: HTMLElement): string {
-    return container.textContent ?? '';
-}
-
 async function renderCurrentWorkspace() {
     const originalFetch = window.fetch;
     Object.defineProperty(window, 'fetch', {
@@ -212,206 +164,33 @@ async function renderCurrentWorkspace() {
     };
 }
 
-describe('WorkspaceApp — Launch readiness AdminShell destination (S1-WP07, RED)', () => {
-    beforeEach(() => {
-        // Her test tarayıcıyı YENİ açmış gibi başlar: gezinti artık adresi
-        // gerçekten değiştiriyor ve bir testin bıraktığı adres sonrakini
-        // sessizce başka bir ekranda açardı.
-        history.replaceState(null, '', '/');
-        setViewport(320, 480);
-    });
-
-    it('resolves an initial /security address and exposes an accessible Launch readiness nav link with exactly one current page', async () => {
-        history.replaceState(null, '', '/app/zeytin-restoranlari/security');
-
-        const { restoreFetch } = await renderCurrentWorkspace();
-
-        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        const link = within(nav).getByRole('link', { name: 'Launch readiness' });
-
-        expect(link).toHaveAttribute('href', '/app/zeytin-restoranlari/security');
-        expect(within(nav).getAllByRole('link', { current: 'page' })).toHaveLength(1);
-        expect(link).toHaveAttribute('aria-current', 'page');
-
-        const main = screen.getByRole('main');
-        expect(main.querySelector('#section-security')).not.toBeNull();
-
-        restoreFetch();
-    });
-
-    it('selecting the Launch readiness nav link renders a distinct page root and hides the prior page', async () => {
-        const user = userEvent.setup();
-        const { restoreFetch } = await renderCurrentWorkspace();
-
-        const main = screen.getByRole('main');
-        expect(main.querySelector('#section-dashboard')).not.toBeNull();
-        expect(main.querySelector('#section-security')).toBeNull();
+describe('WorkspaceApp — release evidence is not a restaurant screen', () => {
+    // Bu dosya eskiden BUNUN TERSİNİ donduruyordu: tenant kabuğunda bir
+    // "Launch readiness" bölümü olsun, `#security` adresine gitsin ve
+    // tenant izolasyonu / yedek tatbikatı kanıtlarını göstersin.
+    //
+    // Sahibi kararını verdi ve ekran geliştirici paneline taşındı. Sebebi
+    // görsel değil, YÜZEY ayrımıdır: commit hash'i, test süresi ve RPO/RTO
+    // restoran sahibinin işi değildir (UX raporu §4.3 ve §9.10).
+    //
+    // Kanıt ekranının kendi testleri taşındığı yerde yaşamaya devam ediyor:
+    // `components/admin/pages/ReleaseReadinessPage.test.tsx`.
+    it('exposes no Launch readiness destination in the restaurant navigation', async () => {
+        await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Launch readiness' }));
 
-        expect(main.querySelector('#section-dashboard')).toBeNull();
-        const securityRegion = main.querySelector('#section-security');
-        expect(securityRegion).not.toBeNull();
-
-        expect(
-            within(securityRegion as HTMLElement).getByRole('heading', {
-                name: /launch readiness/i,
-            }),
-        ).toBeInTheDocument();
-
-        restoreFetch();
+        expect(within(nav).queryByRole('link', { name: /launch readiness/i })).toBeNull();
+        expect(within(nav).queryByRole('link', { name: /readiness/i })).toBeNull();
+        expect(document.querySelector('#section-security')).toBeNull();
     });
 
-    it('entering the Launch readiness address triggers exactly one plain read-only GET each to the tenant-isolation and backup-restore evidence endpoints for the real current workspace, with no CSRF bootstrap, Authorization header, extra caller options, or destructive verb', async () => {
-        const user = userEvent.setup();
-        const { restoreFetch } = await renderCurrentWorkspace();
+    it('shows no engineering vocabulary anywhere in the restaurant shell', async () => {
+        await renderCurrentWorkspace();
 
-        const fetchCallsBefore = window.fetch;
-        const calls: Array<[string, RequestInit | undefined]> = [];
-        const countingFetch: typeof window.fetch = async (...args) => {
-            calls.push([String(args[0]), args[1] as RequestInit | undefined]);
-            return fetchCallsBefore(...args);
-        };
-        Object.defineProperty(window, 'fetch', {
-            configurable: true,
-            writable: true,
-            value: countingFetch,
-        });
-
-        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Launch readiness' }));
-
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        expect(calls).toHaveLength(2);
-        const calledUrls = calls.map(([url]) => url).sort();
-        expect(calledUrls).toEqual([BACKUP_EVIDENCE_ENDPOINT, EVIDENCE_ENDPOINT].sort());
-
-        for (const [, init] of calls) {
-            const method = (init?.method ?? 'GET').toUpperCase();
-            expect(method).toBe('GET');
-            expect(method).not.toBe('POST');
-            expect(method).not.toBe('PUT');
-            expect(method).not.toBe('PATCH');
-            expect(method).not.toBe('DELETE');
-
-            const headers = new Headers(init?.headers ?? {});
-            expect(headers.has('Authorization')).toBe(false);
-            expect(headers.has('X-CSRF-TOKEN')).toBe(false);
-
-            const optionKeys = Object.keys(init ?? {}).filter(
-                (key) => key !== 'method' && key !== 'headers',
-            );
-            expect(optionKeys).toHaveLength(0);
-        }
-
-        const securityRegion = screen
-            .getByRole('main')
-            .querySelector('#section-security') as HTMLElement;
-
-        for (const button of within(securityRegion).queryAllByRole('button')) {
-            const name = button.textContent ?? '';
-            expect(name).not.toMatch(/\bscan\b/i);
-            expect(name).not.toMatch(/\bbackup\b/i);
-            expect(name).not.toMatch(/\brestore\b/i);
-            expect(name).not.toMatch(/\brun\b/i);
-        }
-
-        restoreFetch();
-    });
-
-    it('keeps the Launch readiness destination reachable at a simulated 320x480 CSS px viewport with no breakpoint-prefixed classes', async () => {
-        const user = userEvent.setup();
-        const { restoreFetch } = await renderCurrentWorkspace();
-
-        setViewport(320, 480);
-
-        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Launch readiness' }));
-
-        const securityRegion = screen
-            .getByRole('main')
-            .querySelector('#section-security') as HTMLElement;
-        expect(securityRegion).not.toBeNull();
-
-        for (const classAttribute of allClassAttributes(securityRegion)) {
-            expect(classAttribute).not.toMatch(BREAKPOINT_TOKEN);
-        }
-
-        restoreFetch();
-    });
-});
-
-describe('LaunchReadinessPage — canonical evidence checklist contract (S1-WP07, RED)', () => {
-    afterEach(() => {
-        vi.unstubAllGlobals();
-    });
-
-    it('exposes a labeled readiness checklist, resolves the tenant isolation and backup-restore items honestly, and leaves the other four items Unavailable', async () => {
-        const fetchSpy = vi.fn(async (url: string) => {
-            if (String(url) === EVIDENCE_ENDPOINT) {
-                return jsonResponse(200, evidenceEnvelope('passed'));
-            }
-            if (String(url) === BACKUP_EVIDENCE_ENDPOINT) {
-                return jsonResponse(200, backupEvidenceEnvelope('passed'));
-            }
-            throw new Error(`Unhandled fetch: ${String(url)}`);
-        });
-        vi.stubGlobal('fetch', fetchSpy);
-
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule<{
-            LaunchReadinessPage: React.ComponentType<{ workspaceId: number }>;
-        }>();
-
-        render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
-
-        const checklist = screen.getByRole('region', { name: /launch readiness/i });
-
-        for (const pattern of CANONICAL_EVIDENCE_ITEMS) {
-            const item = within(checklist).getByText(pattern);
-            expect(item).toBeInTheDocument();
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        expect(within(checklist).getAllByText(/\bpassed\b/i).length).toBeGreaterThanOrEqual(2);
-        expect(within(checklist).getAllByText(/unavailable/i).length).toBeGreaterThanOrEqual(
-            OTHER_CANONICAL_EVIDENCE_ITEMS.length,
-        );
-
-        const text = allTextContent(checklist);
-        expect(text).not.toMatch(/\bverified\b/i);
-        expect(text).not.toMatch(/\bready\b/i);
-    });
-
-    it('renders no destructive Scan/Backup/Restore action and forbids breakpoint-prefixed classes in its own markup', async () => {
-        const fetchSpy = vi.fn(async (url: string) => {
-            if (String(url) === EVIDENCE_ENDPOINT) {
-                return jsonResponse(200, evidenceEnvelope('passed'));
-            }
-            if (String(url) === BACKUP_EVIDENCE_ENDPOINT) {
-                return jsonResponse(200, backupEvidenceEnvelope('passed'));
-            }
-            throw new Error(`Unhandled fetch: ${String(url)}`);
-        });
-        vi.stubGlobal('fetch', fetchSpy);
-
-        const { LaunchReadinessPage } = await importLaunchReadinessPageModule<{
-            LaunchReadinessPage: React.ComponentType<{ workspaceId: number }>;
-        }>();
-
-        const { container } = render(<LaunchReadinessPage workspaceId={WORKSPACE_ID} />);
-
-        for (const button of screen.queryAllByRole('button')) {
-            const name = button.textContent ?? '';
-            expect(name).not.toMatch(/\bscan\b/i);
-            expect(name).not.toMatch(/\bbackup\b/i);
-            expect(name).not.toMatch(/\brestore\b/i);
-        }
-
-        for (const classAttribute of allClassAttributes(container)) {
-            expect(classAttribute).not.toMatch(BREAKPOINT_TOKEN);
+        // Tenant metninde geçmemesi gereken kelimeler (UX raporu §11.9).
+        for (const forbidden of [/tenant isolation/i, /RPO/, /RTO/, /ASVS/]) {
+            expect(document.body.textContent ?? '').not.toMatch(forbidden);
         }
     });
 });

@@ -28,7 +28,6 @@ export const shell = {
     'workspace.shell.nav.analytics': 'Analytics',
     'workspace.shell.nav.team': 'Team',
     'workspace.shell.nav.billing': 'Billing',
-    'workspace.shell.nav.launchReadiness': 'Launch readiness',
     'workspace.shell.currentLocation.label': 'Current location',
     'workspace.shell.globalSearch.unavailable': 'Global search unavailable',
     'workspace.shell.notifications.unavailable': 'Notifications unavailable',

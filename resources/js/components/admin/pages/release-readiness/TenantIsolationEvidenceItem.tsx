@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { t } from '../../../../i18n/workspace';
+import { t } from '../../../../i18n/platform';
 import { Badge } from '../../../catalog/feedback/micro/Badge';
 import { ReadinessItem } from './ReadinessItem';
 
-type BackupRestoreEvidenceItemProps = {
+type TenantIsolationEvidenceItemProps = {
     workspaceId: number;
 };
 
@@ -18,12 +18,11 @@ type EvidenceState =
           ranAt: string;
           gitSha: string;
           durationMs: number;
-          restoredRowCount: number;
           claim: string;
       };
 
 function evidenceEndpoint(workspaceId: number): string {
-    return `/api/workspaces/${workspaceId}/security/evidence/backup-restore`;
+    return `/api/workspaces/${workspaceId}/security/evidence/tenant-isolation`;
 }
 
 function parseEvidence(payload: unknown): EvidenceState | null {
@@ -45,7 +44,6 @@ function parseEvidence(payload: unknown): EvidenceState | null {
     const ranAt = record.ran_at;
     const gitSha = record.git_sha;
     const durationMs = record.duration_ms;
-    const restoredRowCount = record.restored_row_count;
     const claim = record.claim;
 
     if (typeof ranAt !== 'string' || ranAt.length === 0) {
@@ -54,30 +52,23 @@ function parseEvidence(payload: unknown): EvidenceState | null {
     if (typeof gitSha !== 'string' || gitSha.length === 0) {
         return null;
     }
-    if (typeof durationMs !== 'number' || !Number.isFinite(durationMs) || durationMs < 0) {
-        return null;
-    }
-    if (
-        typeof restoredRowCount !== 'number' ||
-        !Number.isFinite(restoredRowCount) ||
-        restoredRowCount < 0
-    ) {
+    if (typeof durationMs !== 'number' || !Number.isFinite(durationMs)) {
         return null;
     }
     if (typeof claim !== 'string' || claim.length === 0) {
         return null;
     }
 
-    return { phase: 'resolved', status, ranAt, gitSha, durationMs, restoredRowCount, claim };
+    return { phase: 'resolved', status, ranAt, gitSha, durationMs, claim };
 }
 
 /**
- * Compound: the backup & restore drill checklist row. It alone owns the
- * real, read-only fetch of its evidence and renders an honest loading,
- * passed, failed, Unavailable (404, indistinguishable from denied/no-record)
- * or error state — never a fabricated status.
+ * Compound: the tenant isolation checklist row. It alone owns the real,
+ * read-only fetch of its evidence and renders an honest loading, passed,
+ * failed, Unavailable (404, indistinguishable from denied/no-record) or
+ * error state — never a fabricated status.
  */
-export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidenceItemProps) {
+export function TenantIsolationEvidenceItem({ workspaceId }: TenantIsolationEvidenceItemProps) {
     const [state, setState] = useState<EvidenceState>({ phase: 'loading' });
 
     useEffect(() => {
@@ -125,7 +116,7 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
         status = (
             <span role="status">
                 <Badge status="info">
-                    {t('workspace.launchReadiness.backupRestore.status.loading')}
+                    {t('platform.releaseReadiness.tenantIsolation.status.loading')}
                 </Badge>
             </span>
         );
@@ -133,7 +124,7 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
         status = (
             <span role="status">
                 <Badge status="warning">
-                    {t('workspace.launchReadiness.item.status.unavailable')}
+                    {t('platform.releaseReadiness.item.status.unavailable')}
                 </Badge>
             </span>
         );
@@ -141,7 +132,7 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
         status = (
             <span role="alert">
                 <Badge status="error">
-                    {t('workspace.launchReadiness.backupRestore.status.error')}
+                    {t('platform.releaseReadiness.tenantIsolation.status.error')}
                 </Badge>
             </span>
         );
@@ -150,8 +141,8 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
             <span role="status">
                 <Badge status={state.status === 'passed' ? 'success' : 'error'}>
                     {state.status === 'passed'
-                        ? t('workspace.launchReadiness.backupRestore.status.passed')
-                        : t('workspace.launchReadiness.backupRestore.status.failed')}
+                        ? t('platform.releaseReadiness.tenantIsolation.status.passed')
+                        : t('platform.releaseReadiness.tenantIsolation.status.failed')}
                 </Badge>
             </span>
         );
@@ -159,28 +150,21 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
             <dl className="flex flex-col gap-1 text-meta text-fg-muted">
                 <div>
                     <dt className="inline font-medium">
-                        {t('workspace.launchReadiness.backupRestore.metadata.ranAt')}:{' '}
+                        {t('platform.releaseReadiness.tenantIsolation.metadata.ranAt')}:{' '}
                     </dt>
                     <dd className="inline">{state.ranAt}</dd>
                 </div>
                 <div>
                     <dt className="inline font-medium">
-                        {t('workspace.launchReadiness.backupRestore.metadata.gitSha')}:{' '}
+                        {t('platform.releaseReadiness.tenantIsolation.metadata.gitSha')}:{' '}
                     </dt>
                     <dd className="inline">{state.gitSha}</dd>
                 </div>
                 <div>
                     <dt className="inline font-medium">
-                        {t('workspace.launchReadiness.backupRestore.metadata.durationMs')}:{' '}
+                        {t('platform.releaseReadiness.tenantIsolation.metadata.durationMs')}:{' '}
                     </dt>
                     <dd className="inline">{state.durationMs} ms</dd>
-                </div>
-                <div>
-                    <dt className="inline font-medium">
-                        {t('workspace.launchReadiness.backupRestore.metadata.restoredRowCount')}
-                        :{' '}
-                    </dt>
-                    <dd className="inline">{state.restoredRowCount}</dd>
                 </div>
                 <p>{state.claim}</p>
             </dl>
@@ -189,12 +173,12 @@ export function BackupRestoreEvidenceItem({ workspaceId }: BackupRestoreEvidence
 
     return (
         <ReadinessItem
-            title={t('workspace.launchReadiness.checklist.backupRestore.title')}
-            description={t('workspace.launchReadiness.checklist.backupRestore.description')}
+            title={t('platform.releaseReadiness.checklist.tenantIsolation.title')}
+            description={t('platform.releaseReadiness.checklist.tenantIsolation.description')}
             status={status}
             details={details}
         />
     );
 }
 
-export default BackupRestoreEvidenceItem;
+export default TenantIsolationEvidenceItem;

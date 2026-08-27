@@ -1049,12 +1049,19 @@ export function MenuCatalogWorkspace({
 
                                 {/*
                                     Ad ve fiyat yan yana: ikisi TEK bir kararın
-                                    parçasıdır ve dar ekranda alt alta düşer.
-                                    Genişlik `--container-form` ile sınırlanır;
-                                    bileşen ham piksel bilmez (docs/44 §3).
+                                    parçasıdır.
+                                    
+                                    Kırılma noktası YOK. `flex-wrap` + alanların
+                                    kendi taban genişlikleri, ekranı değil
+                                    KAPSAYICIYI dinler: 320px'te alt alta,
+                                    yer varsa yan yana düşerler — kenar çubuğu
+                                    açılıp kapandığında da doğru davranır.
+                                    `sm:` yazsaydık ekran genişliğine bakardı ve
+                                    dar bir sütunun içinde yanlış olurdu
+                                    (`docs/48` — 320px-first).
                                 */}
-                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-                                    <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                <div className="flex flex-wrap items-start gap-3">
+                                    <div className="flex min-w-[16ch] flex-[1_1_16ch] flex-col gap-1">
                                         <label className={labelClass} htmlFor="product-name">
                                             {t('menu.product.name.label')}
                                         </label>
@@ -1070,7 +1077,7 @@ export function MenuCatalogWorkspace({
                                         ) : null}
                                     </div>
 
-                                    <div className="flex w-full flex-col gap-1 sm:w-[12ch]">
+                                    <div className="flex flex-[0_1_12ch] flex-col gap-1">
                                         <label className={labelClass} htmlFor="item-price">
                                             {t('menu.item.price.label')}
                                         </label>

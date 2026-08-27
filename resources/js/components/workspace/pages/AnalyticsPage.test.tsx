@@ -329,4 +329,53 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         await waitFor(() => expect(within(region).getByText('7')).toBeInTheDocument());
         expect(within(region).getByText('5')).toBeInTheDocument();
     });
+
+    // PLAN-RESTRICTED-402 — sahibinin ekranında görülen kusur.
+    //
+    // Sunucu 402 döndürüyordu (plan bu yeteneği içermiyor) ve arayüz onu
+    // "Analytics failed to load. Please try again." diye gösterip bir
+    // Retry düğmesi koyuyordu. Yeniden denemek hiçbir zaman işe yaramaz;
+    // ekranda duran o düğme, olmayan bir yolu gösteriyordu.
+    it('tells the owner the plan does not include reporting, instead of pretending it broke', async () => {
+        const fetchSpy = vi.fn(async () =>
+            jsonResponse(402, {
+                message: 'Your plan does not include analytics reporting.',
+                entitlement: 'analytics.reporting',
+            }),
+        );
+        vi.stubGlobal('fetch', fetchSpy);
+
+        const onNavigateToSection = vi.fn();
+
+        render(
+            <AnalyticsPage
+                workspaceId={WORKSPACE_ID}
+                locationId={LOCATION_ID}
+                onNavigateToSection={onNavigateToSection}
+            />,
+        );
+
+        const region = await screen.findByRole('region', { name: /analytics report/i });
+
+        await waitFor(() => {
+            expect(within(region).getByRole('status')).toHaveTextContent(/not included in your current plan/i);
+        });
+
+        // Bir HATA değil: `role="alert"` yok, "try again" yok.
+        expect(within(region).queryByRole('alert')).toBeNull();
+        expect(within(region).queryByText(/try again/i)).toBeNull();
+
+        // Ve hiçbir zaman işe yaramayacak bir yenileme düğmesi de yok.
+        expect(within(region).queryByRole('button', { name: /retry|refresh/i })).toBeNull();
+
+        // Bunun yerine gerçek bir çıkış yolu var.
+        const wayForward = within(region).getByRole('button', { name: /view your plan/i });
+        wayForward.click();
+        expect(onNavigateToSection).toHaveBeenCalledWith('billing');
+
+        // Veri kaybı korkusu açıkça yanıtlanır.
+        expect(within(region).getByRole('status')).toHaveTextContent(/no data is lost/i);
+
+        vi.unstubAllGlobals();
+    });
 });

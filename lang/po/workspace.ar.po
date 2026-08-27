@@ -88,6 +88,10 @@ msgstr ""
 msgid "workspace.analytics.action.retry"
 msgstr ""
 
+#: workspace:workspace.analytics.action.viewPlan
+msgid "workspace.analytics.action.viewPlan"
+msgstr ""
+
 #: workspace:workspace.analytics.heading
 msgid "workspace.analytics.heading"
 msgstr ""
@@ -128,6 +132,10 @@ msgstr ""
 msgid "workspace.analytics.report.loading"
 msgstr ""
 
+#: workspace:workspace.analytics.report.planRestricted
+msgid "workspace.analytics.report.planRestricted"
+msgstr ""
+
 #: workspace:workspace.analytics.report.region
 msgid "workspace.analytics.report.region"
 msgstr ""
@@ -146,6 +154,10 @@ msgstr ""
 
 #: workspace:workspace.analytics.status.notConnected
 msgid "workspace.analytics.status.notConnected"
+msgstr ""
+
+#: workspace:workspace.analytics.status.planRestricted
+msgid "workspace.analytics.status.planRestricted"
 msgstr ""
 
 #: workspace:workspace.billing.changePlan.button
@@ -686,106 +698,6 @@ msgstr ""
 
 #: workspace:workspace.error.retry
 msgid "workspace.error.retry"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.durationMs
-msgid "workspace.launchReadiness.backupRestore.metadata.durationMs"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.gitSha
-msgid "workspace.launchReadiness.backupRestore.metadata.gitSha"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.ranAt
-msgid "workspace.launchReadiness.backupRestore.metadata.ranAt"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.restoredRowCount
-msgid "workspace.launchReadiness.backupRestore.metadata.restoredRowCount"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.status.error
-msgid "workspace.launchReadiness.backupRestore.status.error"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.status.failed
-msgid "workspace.launchReadiness.backupRestore.status.failed"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.status.loading
-msgid "workspace.launchReadiness.backupRestore.status.loading"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.backupRestore.status.passed
-msgid "workspace.launchReadiness.backupRestore.status.passed"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.checklist.backupRestore.description
-msgid "workspace.launchReadiness.checklist.backupRestore.description"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.checklist.backupRestore.title
-msgid "workspace.launchReadiness.checklist.backupRestore.title"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.checklist.explanation
-msgid "workspace.launchReadiness.checklist.explanation"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.checklist.region
-msgid "workspace.launchReadiness.checklist.region"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.checklist.tenantIsolation.description
-msgid "workspace.launchReadiness.checklist.tenantIsolation.description"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.checklist.tenantIsolation.title
-msgid "workspace.launchReadiness.checklist.tenantIsolation.title"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.heading
-msgid "workspace.launchReadiness.heading"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.item.status.unavailable
-msgid "workspace.launchReadiness.item.status.unavailable"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.operational.description
-msgid "workspace.launchReadiness.operational.description"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.refresh.button
-msgid "workspace.launchReadiness.refresh.button"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.tenantIsolation.metadata.durationMs
-msgid "workspace.launchReadiness.tenantIsolation.metadata.durationMs"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.tenantIsolation.metadata.gitSha
-msgid "workspace.launchReadiness.tenantIsolation.metadata.gitSha"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.tenantIsolation.metadata.ranAt
-msgid "workspace.launchReadiness.tenantIsolation.metadata.ranAt"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.error
-msgid "workspace.launchReadiness.tenantIsolation.status.error"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.failed
-msgid "workspace.launchReadiness.tenantIsolation.status.failed"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.loading
-msgid "workspace.launchReadiness.tenantIsolation.status.loading"
-msgstr ""
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.passed
-msgid "workspace.launchReadiness.tenantIsolation.status.passed"
 msgstr ""
 
 #: workspace:workspace.loading
@@ -1614,10 +1526,6 @@ msgstr ""
 
 #: workspace:workspace.shell.nav.label
 msgid "workspace.shell.nav.label"
-msgstr ""
-
-#: workspace:workspace.shell.nav.launchReadiness
-msgid "workspace.shell.nav.launchReadiness"
 msgstr ""
 
 #: workspace:workspace.shell.nav.locations

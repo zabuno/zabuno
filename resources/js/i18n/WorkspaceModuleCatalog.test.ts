@@ -25,7 +25,6 @@ const FROZEN_MODULE_FILENAMES = [
     'billing.ts',
     'brand-locations.ts',
     'dashboard.ts',
-    'launch-readiness.ts',
     'media.ts',
     'menu.ts',
     'publication.ts',
@@ -33,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 458;
+const FROZEN_LEGACY_KEY_COUNT = 435;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -60,8 +59,21 @@ const FROZEN_LEGACY_KEY_COUNT = 458;
 // Ayrıca iki DEĞER değişti: "Asset slot" ve onun yer tutucusu kullanıcı
 // diline çekildi ("Where will this image be used?"). İç kavram kullanıcıya
 // taşınmaz.
+//
+// 2026-08-27, yüzey ayrımı — 458 → 432:
+//   - "Launch readiness" ekranı restoran panelinden GELİŞTİRİCİ paneline
+//     taşındı (25 anahtar) ve gezinti etiketi düştü (1). Commit hash'i,
+//     test süresi, tenant izolasyonu ve yedek tatbikatı restoran sahibinin
+//     işi değildir (UX raporu §4.3, §9.10).
+//   Anahtarlar silinmedi; `platform.releaseReadiness.*` adıyla platform
+//   kataloğunda yaşıyorlar.
+//
+// 2026-08-27, plan kısıtı — 432 → 435:
+//   Analytics ekranı 402'yi "hata" sanıyordu ve işe yaramayacak bir Retry
+//   düğmesi gösteriyordu. Plan cevabı ayrı bir durum oldu: rozet, açıklama
+//   ve çıkış yolu (+3).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '9f8e674bc9852f797f33d34f3ef2a8002f9888034c428eb80cd5f85cc292062f';
+    'cb5ad153e23813aee11f6fface013d1f6343cad0f13ad323e0ef4ff8c25938f3';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -70,7 +82,7 @@ function normalizedHash(entries: Record<string, string>): string {
 }
 
 describe('workspace i18n modular catalog contract', () => {
-    it('discovers exactly the ten frozen module catalog filenames under resources/js/i18n/workspace/', () => {
+    it('discovers exactly the nine frozen module catalog filenames under resources/js/i18n/workspace/', () => {
         const actualFilenames = readdirSync(CATALOG_DIR)
             .filter((name) => name.endsWith('.ts'))
             .sort();

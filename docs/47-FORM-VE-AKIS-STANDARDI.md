@@ -3,7 +3,8 @@
 **Durum:** Standart yazıldı; referans uygulama menü kataloğunda tamamlandı.
 **Requirement ID:** `FORM-ONE-OUTCOME`
 **İlgili:** `docs/36` (külliyat, MASTER), `docs/44` (birinci uzlaştırma),
-`docs/41` (DESIGN-2030-v1), `docs/38`/`docs/46` (adres ve ölçüm)
+`docs/41` (DESIGN-2030-v1), `docs/38`/`docs/46` (adres ve ölçüm),
+`docs/48` (320px-first)
 
 ---
 

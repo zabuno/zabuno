@@ -18,6 +18,14 @@ export const analytics = {
     'workspace.analytics.status.error': 'Failed to load',
     'workspace.analytics.action.refresh': 'Refresh',
     'workspace.analytics.action.retry': 'Retry',
+    // PLAN cevabı, hata DEĞİL. Ayrı tutulmasının sebebi somut: "tekrar
+    // deneyin" demek ve bir Retry düğmesi koymak, hiçbir zaman işe
+    // yaramayacak bir yol göstermektir (`docs/44` engellenmiş durum
+    // standardı: her blocked state nedenini VE çözümünü söyler).
+    'workspace.analytics.status.planRestricted': 'Not in your plan',
+    'workspace.analytics.report.planRestricted':
+        'Analytics reporting is not included in your current plan. Your QR scans are still being recorded, so no data is lost — the reports appear as soon as the plan includes them.',
+    'workspace.analytics.action.viewPlan': 'View your plan',
 } as const;
 
 declare module '../workspace' {

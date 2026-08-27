@@ -88,6 +88,10 @@ msgstr "Refresh"
 msgid "workspace.analytics.action.retry"
 msgstr "Retry"
 
+#: workspace:workspace.analytics.action.viewPlan
+msgid "workspace.analytics.action.viewPlan"
+msgstr "View your plan"
+
 #: workspace:workspace.analytics.heading
 msgid "workspace.analytics.heading"
 msgstr "Analytics"
@@ -128,6 +132,10 @@ msgstr "Analytics failed to load. Please try again."
 msgid "workspace.analytics.report.loading"
 msgstr "Loading analytics…"
 
+#: workspace:workspace.analytics.report.planRestricted
+msgid "workspace.analytics.report.planRestricted"
+msgstr "Analytics reporting is not included in your current plan. Your QR scans are still being recorded, so no data is lost — the reports appear as soon as the plan includes them."
+
 #: workspace:workspace.analytics.report.region
 msgid "workspace.analytics.report.region"
 msgstr "Analytics report"
@@ -147,6 +155,10 @@ msgstr "Loading"
 #: workspace:workspace.analytics.status.notConnected
 msgid "workspace.analytics.status.notConnected"
 msgstr "Not requested yet"
+
+#: workspace:workspace.analytics.status.planRestricted
+msgid "workspace.analytics.status.planRestricted"
+msgstr "Not in your plan"
 
 #: workspace:workspace.billing.changePlan.button
 msgid "workspace.billing.changePlan.button"
@@ -687,106 +699,6 @@ msgstr "We could not load your workspace."
 #: workspace:workspace.error.retry
 msgid "workspace.error.retry"
 msgstr "Retry"
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.durationMs
-msgid "workspace.launchReadiness.backupRestore.metadata.durationMs"
-msgstr "Duration"
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.gitSha
-msgid "workspace.launchReadiness.backupRestore.metadata.gitSha"
-msgstr "Commit"
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.ranAt
-msgid "workspace.launchReadiness.backupRestore.metadata.ranAt"
-msgstr "Ran at"
-
-#: workspace:workspace.launchReadiness.backupRestore.metadata.restoredRowCount
-msgid "workspace.launchReadiness.backupRestore.metadata.restoredRowCount"
-msgstr "Restored rows"
-
-#: workspace:workspace.launchReadiness.backupRestore.status.error
-msgid "workspace.launchReadiness.backupRestore.status.error"
-msgstr "Evidence check error"
-
-#: workspace:workspace.launchReadiness.backupRestore.status.failed
-msgid "workspace.launchReadiness.backupRestore.status.failed"
-msgstr "Failed"
-
-#: workspace:workspace.launchReadiness.backupRestore.status.loading
-msgid "workspace.launchReadiness.backupRestore.status.loading"
-msgstr "Loading evidence…"
-
-#: workspace:workspace.launchReadiness.backupRestore.status.passed
-msgid "workspace.launchReadiness.backupRestore.status.passed"
-msgstr "Passed"
-
-#: workspace:workspace.launchReadiness.checklist.backupRestore.description
-msgid "workspace.launchReadiness.checklist.backupRestore.description"
-msgstr "A completed drill proving production-shaped data can be recovered."
-
-#: workspace:workspace.launchReadiness.checklist.backupRestore.title
-msgid "workspace.launchReadiness.checklist.backupRestore.title"
-msgstr "Backup & restore drill"
-
-#: workspace:workspace.launchReadiness.checklist.explanation
-msgid "workspace.launchReadiness.checklist.explanation"
-msgstr "Evidence-backed items below resolve only from real, independently recorded checks; every other item stays unavailable until its own check is run and recorded."
-
-#: workspace:workspace.launchReadiness.checklist.region
-msgid "workspace.launchReadiness.checklist.region"
-msgstr "Launch readiness checklist"
-
-#: workspace:workspace.launchReadiness.checklist.tenantIsolation.description
-msgid "workspace.launchReadiness.checklist.tenantIsolation.description"
-msgstr "Proof that one restaurant workspace cannot read or write another’s data."
-
-#: workspace:workspace.launchReadiness.checklist.tenantIsolation.title
-msgid "workspace.launchReadiness.checklist.tenantIsolation.title"
-msgstr "Tenant isolation evidence"
-
-#: workspace:workspace.launchReadiness.heading
-msgid "workspace.launchReadiness.heading"
-msgstr "Launch readiness"
-
-#: workspace:workspace.launchReadiness.item.status.unavailable
-msgid "workspace.launchReadiness.item.status.unavailable"
-msgstr "Unavailable"
-
-#: workspace:workspace.launchReadiness.operational.description
-msgid "workspace.launchReadiness.operational.description"
-msgstr "A checklist of the evidence still needed before Stage 1 can exit. Evidence appears here only after each item’s check is run independently — nothing below is inferred from source files."
-
-#: workspace:workspace.launchReadiness.refresh.button
-msgid "workspace.launchReadiness.refresh.button"
-msgstr "Refresh evidence"
-
-#: workspace:workspace.launchReadiness.tenantIsolation.metadata.durationMs
-msgid "workspace.launchReadiness.tenantIsolation.metadata.durationMs"
-msgstr "Duration"
-
-#: workspace:workspace.launchReadiness.tenantIsolation.metadata.gitSha
-msgid "workspace.launchReadiness.tenantIsolation.metadata.gitSha"
-msgstr "Commit"
-
-#: workspace:workspace.launchReadiness.tenantIsolation.metadata.ranAt
-msgid "workspace.launchReadiness.tenantIsolation.metadata.ranAt"
-msgstr "Ran at"
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.error
-msgid "workspace.launchReadiness.tenantIsolation.status.error"
-msgstr "Evidence check error"
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.failed
-msgid "workspace.launchReadiness.tenantIsolation.status.failed"
-msgstr "Failed"
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.loading
-msgid "workspace.launchReadiness.tenantIsolation.status.loading"
-msgstr "Loading evidence…"
-
-#: workspace:workspace.launchReadiness.tenantIsolation.status.passed
-msgid "workspace.launchReadiness.tenantIsolation.status.passed"
-msgstr "Passed"
 
 #: workspace:workspace.loading
 msgid "workspace.loading"
@@ -1615,10 +1527,6 @@ msgstr "Account"
 #: workspace:workspace.shell.nav.label
 msgid "workspace.shell.nav.label"
 msgstr "Restaurant admin"
-
-#: workspace:workspace.shell.nav.launchReadiness
-msgid "workspace.shell.nav.launchReadiness"
-msgstr "Launch readiness"
 
 #: workspace:workspace.shell.nav.locations
 msgid "workspace.shell.nav.locations"

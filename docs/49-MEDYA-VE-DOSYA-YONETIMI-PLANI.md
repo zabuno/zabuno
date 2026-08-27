@@ -1,0 +1,326 @@
+# 49 — Medya ve Dosya Yönetimi: fazlanmış geliştirme planı
+
+**Durum:** Plan. Kod yazılmadı.
+**Requirement ID:** `DAM-v1`
+**İlgili:** `docs/38` (URL politikası), `docs/44`, `docs/46` (ölçüm),
+`docs/47` (form standardı), `docs/48` (320px-first),
+`~/DEV/zabuno/imageoptimization-main` (dış şartname)
+
+---
+
+## 0. Modülün doğru adı
+
+Bu bir "dosya yükleyici" değildir:
+
+> **Zabuno Digital Asset Management & Delivery**
+> File Storage Core + Media Library + Processing Pipeline + Publication
+> Delivery + Governance
+
+---
+
+## 1. Bugün ne var — ölçüldü
+
+```sql
+media_assets(
+  id, workspace_id, disk_path, original_name, mime_type,
+  size_bytes, alt_text, slot, status, timestamps, deleted_at
+)
+```
+
+**Tek düz tablo, tek `status` sütunu.** Araştırma yönergesinin "yetersiz"
+dediği şeyin tam karşılığı. Bugün olmayanlar:
+
+| Yok | Sonucu |
+| --- | --- |
+| Asset ≠ fiziksel dosya ayrımı | Aynı görselin ikinci sürümü yok; düzenleme aslını bozar |
+| Version / Rendition | Responsive görsel üretilemez; `srcset` yazılamaz |
+| Usage (kullanım grafiği) | "Nerede kullanılıyor?" cevapsız; silme kör |
+| Publication snapshot bağı | Fotoğrafı düzenlemek CANLI menüyü habersiz değiştirir |
+| Checksum | Bozulma ve yinelenen dosya görünmez |
+| Upload session | Kesilen yükleme baştan başlar |
+| Collection / tag / arama | Kütüphane 200 dosyada kullanılamaz olur |
+| Kota | Maliyet ölçülemez |
+| Immutable URL | CDN eski görseli göstermeye devam eder |
+
+İşleme tarafında `ext-gd` var; `vips`/`imagick` yok.
+
+---
+
+## 2. `imageoptimization-main`'den ne alınacak
+
+O klasör **15 faz, 102 görevlik** bir medya motoru şartnamesi. Frappe + Vue 3
+için yazılmış; **alan bilgisi yığın-bağımsız ve doğrudan kullanılabilir.**
+
+### 2.1 Alınacaklar
+
+| Ne | Neden |
+| --- | --- |
+| **INV-01..INV-07 değişmezleri** | Upscale yasağı, DPI≠piksel, fayda kuralı, alfa korunur, idempotency. Bunlar tartışılmaz kurallar ve doğrudan bizim test adlarımız olur |
+| **İşleme boru hattı** | `PROBE → GUARD → DECODE → ORIENT → COLOR → DPI → PIXEL CAP → CLASSIFY → MASTER → CROP → RESIZE → ENCODE → BENEFIT → LQIP → REPORT` — sıra gerekçeli ve doğru |
+| **Slot kataloğu disiplini** | Her slot bir politikaya bağlanır; **belirlenmemiş slot BLOKEDİR** ve tahminle doldurulamaz. Sahibinin çalışma biçimiyle birebir aynı |
+| **Veri modeli** | Asset / Source / Version / Rendition / Crop Intent / Profile / Policy / Processing Job / Usage / Quality Report |
+| **Crop & preview simülatörü** | 13 cihaz × 5 yerleşim, odak noktası, `srcset` seçim göstergesi. Kavram ve referans uygulama olarak alınır |
+| **Golden fixture korpusu** | `fixtures/malicious/` — decode edilmeden reddedilmesi gereken dosyalar. Güvenlik testinin tabanı |
+| **Kabul kriterleri biçimi** | Her görevde ölçülebilir kriter (örn. "30 MB dosyada probe < 50 ms") |
+
+### 2.2 Alınmayacaklar — ve neden
+
+| Ne | Neden alınmıyor | Bizdeki karşılığı |
+| --- | --- | --- |
+| **pyvips** (Python) | Zabuno PHP/Laravel | `ext-vips` (jcupitt/php-vips) — aynı libvips, PHP bağlaması. Yoksa `ext-imagick`. **`ext-gd` yetmez**: sequential access ve ICC yönetimi yok |
+| **Frappe DocType** | ORM ve migration modeli farklı | Laravel migration + repository port |
+| **Vue 3 headless** | Bizde React 19 | Aynı ekranlar React'te |
+| **Frappe queue** | | Laravel queue + `media_processing_jobs` |
+
+### 2.3 Fiziksel olarak ne kopyalanacak
+
+```
+imageoptimization-main/docs/30-faz2-medya-standartlari.html   → slot katalogu
+imageoptimization-main/docs/41-faz4-veri-modeli.html          → veri modeli
+imageoptimization-main/docs/50-faz6-image-engine.html         → boru hattı + INV
+imageoptimization-main/docs/51-faz7-video-engine.html         → video profilleri
+imageoptimization-main/docs/61-faz10-crop-studio.html         → crop arayüzü
+imageoptimization-main/docs/62-faz11-simulator.html           → simülatör
+imageoptimization-main/gorseller/*                            → test fixture'ları
+```
+
+Bunlar `docs/design-corpus/` yanına **kaynak olarak** alınır; kararlar bu
+belgeye özetlenir (külliyat için `docs/36`'da uygulanan yöntemin aynısı).
+
+---
+
+## 3. Altı alt domain
+
+| Alt domain | Sorumluluk |
+| --- | --- |
+| File Storage Core | Binary, object storage, checksum, şifreleme, versiyon |
+| Upload & Ingestion | Yükleme oturumu, doğrulama, karantina, virüs taraması |
+| Media Asset Management | Metadata, koleksiyon, etiket, arama, kullanım ilişkileri |
+| Media Processing | Crop, resize, format dönüşümü, rendition üretimi |
+| Media Delivery | Public/private URL, signed URL, cache, CDN |
+| Governance & Operations | Tenant izolasyonu, kota, audit, retention, backup |
+
+Tek modüler monolit modülü; **kod ve veri modeli seviyesinde ayrı.**
+
+---
+
+## 4. Üç ayrı durum ekseni
+
+Bugünkü tek `status` sütunu üçe ayrılır. Tek alana doldurmak, ilerideki her
+sorguyu belirsiz yapar:
+
+```
+processing_status : PENDING UPLOADING UPLOADED QUARANTINED SCANNING
+                    PROCESSING READY FAILED REJECTED
+lifecycle_status  : DRAFT ACTIVE ARCHIVED TRASHED PURGED
+visibility        : PRIVATE TENANT PUBLIC SIGNED
+```
+
+---
+
+## 5. URL politikası ve SEO ile bağ (`docs/38`, `docs/46`)
+
+### 5.1 Değişmez (immutable) adres
+
+```
+YANLIŞ  /media/products/menemen.webp
+DOĞRU   /media/{asset_id}/{version_id}/product-640.webp
+```
+
+Yeni sürüm yeni adres üretir. Sonucu: CDN eski dosyayı göstermez, purge
+zorunluluğu kalkar, eski yayın snapshot'ı çalışmaya devam eder, rollback
+güvenlidir.
+
+### 5.2 Depolama anahtarı ile görünen ad ayrı
+
+```
+storage_key      tenants/{uuid}/assets/{uuid}/original   ← ASLA değişmez
+original_filename IMG_8734.JPG
+display_name      Kaşarlı Menemen                        ← değişebilir
+```
+
+Restoran adı veya koleksiyon değişince tek bayt taşınmaz.
+
+### 5.3 SEO: alt metin varlıkta DEĞİL, KULLANIMDA
+
+Aynı fotoğraf menü ürününde içerik görseli, ana sayfada dekoratif görsel
+olabilir. W3C alternatif metnin **kullanım amacına** göre belirlenmesini
+ister:
+
+```
+media_asset_translations(asset_id, locale, alt_text, title, caption)
+media_usages(..., locale, alt_text_override)
+```
+
+Fragment kullanılmaz, adres dile göre değişmez (`docs/38`).
+
+### 5.4 Responsive teslim
+
+`320w 480w 640w 960w 1280w 1600w` rendition seti; frontend `srcset`,
+`sizes`, `<picture>`, `width`/`height` (CLS), `loading`, LQIP. 320w bilerek
+ilk sıradadır (`docs/48`).
+
+---
+
+## 6. AI-first konumu
+
+AI **öneri üretir, yayınlamaz.** Kritik yolculuk AI kapalıyken tam çalışır
+(`docs/36` §5.7).
+
+| Yetenek | AI'ın işi | Kullanıcının işi |
+| --- | --- | --- |
+| Alt metin | Görselden taslak metin önerir | Görür, düzenler, onaylar |
+| Smart crop | Odak noktası önerir | Kabul veya elle taşır |
+| Etiketleme | Etiket önerir | Onaylar |
+| Yinelenen | Benzer görselleri işaretler | Hangisi kalacağına karar verir |
+| Kalite | "Bu görsel menüde bulanık görünecek" | Yeniden yükler ya da yok sayar |
+
+Her AI önerisi `docs/47` Kural 10'a uyar: kaynak, etkilenen kayıt, önizleme,
+onay, geri alma, denetim kaydı. **Otomatik yayın yok.**
+
+---
+
+## 7. Yükleme arayüzü — kütüphane kararı
+
+| Aday | Artı | Eksi | Karar |
+| --- | --- | --- | --- |
+| **react-dropzone** | Kancaya dayalı, bağımlılıksız, sürükle-bırak + pano + dosya seçici, kendi arayüzümüz | Devam ettirilebilir (resumable) yükleme yok; chunk'ı biz yazarız | **Faz 2 seçimi** |
+| Uppy (+ tus) | Devam ettirilebilir, duraklat/sürdür, çok kaynak | Ağır, kendi arayüz dili, tus sunucusu gerekir | **Faz 6'da video için yeniden değerlendir** |
+| FilePond | Hazır güzel arayüz | Kendi tasarım dilini dayatır — token zincirimizle çatışır | Hayır |
+
+**Gerekçe:** `docs/36` bileşenin ham geometri bilmemesini ve tasarım
+kimliğinin bizim olmasını şart koşuyor. Hazır arayüz getiren kütüphaneler bu
+kuralla çatışır. `react-dropzone` yalnız DAVRANIŞ verir, görünümü bize
+bırakır.
+
+Video/PDF gerçekten geldiğinde kesintili mobil bağlantı için `tus` bir
+ihtiyaç hâline gelir; o karar Faz 6'da, veriyle verilir.
+
+---
+
+## 8. Fazlar
+
+### Faz 1 — Mimari temel (kod yazmadan önce biten kararlar)
+1. Slot kataloğu ve politikaları — **belirlenmemiş slot BLOKEDİR**
+2. Üç durum ekseni sabitlenir
+3. Veri modeli: `media_assets`, `media_blobs`, `media_versions`,
+   `media_renditions`, `media_usages`, `media_policies`, `media_processing_jobs`
+4. Immutable URL şeması `docs/38`'e eklenir
+5. `ext-vips` / `ext-imagick` kararı ve Docker imajına eklenmesi
+6. INV-01..07 değişmezleri test adı olarak yazılır (RED)
+
+**Kabul:** Tek satır üretim kodu yok; şema, politika ve RED testler var.
+
+### Faz 2 — Güvenli alım (ingestion)
+1. `media_upload_sessions` + idempotency key
+2. `react-dropzone` ile sürükle-bırak, pano, çoklu seçim, ilerleme
+3. Sunucu tarafı doğrulama: uzantı allowlist + iddia edilen MIME + **magic
+   bytes** + decoder ile gerçekten açılabilme + boyut + piksel sınırı
+4. Karantina → tarama → metadata temizleme → yeniden encode
+5. `READY` olmadan public URL üretilmez
+6. SVG doğrudan servis edilmez
+
+**Kabul:** `fixtures/malicious/` içindeki her dosya **decode edilmeden**
+reddedilir. Bu testler CI kapısıdır.
+
+### Faz 3 — Asset / Version / Rendition
+1. Original **immutable**
+2. Crop/resize **non-destructive**; her düzenleme yeni version
+3. Rendition seti `320..1600w`; pipeline sürümü kaydedilir
+4. SHA-256 checksum; aynı tenant içinde yinelenen tespiti
+5. Toplu yeniden üretim (reprocess)
+
+**Kabul:** INV-01..07 yeşil; rollback çalışır.
+
+### Faz 4 — Kütüphane arayüzü
+1. Grid/liste, önizleme, arama, filtre
+2. Koleksiyon + etiket + akıllı koleksiyon ("alt metni eksik", "kullanılmayan")
+3. Asset detayı: Önizleme / Metadata / Kullanım / Sürümler / Rendition /
+   Haklar / Etkinlik / Teknik ayrıntı
+4. Formlar `docs/47`, düzen `docs/48`
+
+**Kabul:** 320×480'de kullanılabilir; teknik kelime kullanıcı metninde yok.
+
+### Faz 5 — Kullanım grafiği ve yayın bağı
+1. `media_usages`: entity, slot, location, locale, publication, override
+2. Silmeden önce **etki önizlemesi**: değiştir / bağı kes / vazgeç
+3. Trash → retention → purge
+4. **Publication snapshot asset VERSION'a bağlanır** — fotoğrafı düzenlemek
+   canlı menüyü kendiliğinden değiştirmez
+5. Fallback zinciri: ürün → kategori → tenant → sistem
+
+**Kabul:** Kullanılan bir asset doğrudan silinemez.
+
+### Faz 6 — Teslim ve CDN
+1. Immutable URL, `Cache-Control`, `ETag`
+2. Private original / public rendition ayrımı, signed URL
+3. Tenant kimliği cache anahtarında
+4. `srcset`/`sizes`/`<picture>`, LQIP, `width`/`height`
+5. Video/PDF kapsamı ve `tus` kararı
+
+**Kabul:** QR menüde LCP ölçülür ve iyileşir.
+
+### Faz 7 — Yönetişim
+1. Tenant kotası: original, rendition, asset sayısı, aylık upload, egress,
+   dönüşüm sayısı, trash
+2. **Kota dolunca canlı menü teslimi KESİLMEZ**; upload ve yeni processing durur
+3. İzin matrisi — `media.download_original` ayrı bir izindir
+4. Audit log
+5. Reconciliation: veritabanında olup storage'da olmayan, tersi
+
+**Kabul:** Restore testi geçer — "yedek alındı" değil, "geri yüklendi ve
+referanslar çalıştı".
+
+### Faz 8 — Crop stüdyosu ve simülatör
+1. Odak noktası, safe area, aspect preset, art direction
+2. 13 cihaz × yerleşim simülatörü — hangi rendition seçiliyor gösterilir
+3. Auto-orientation, ICC, sRGB, şeffaflık, watermark
+
+### Faz 9 — AI önerileri
+1. Alt metin önerisi (öneri → onay)
+2. Smart crop
+3. Etiket, yakın-yinelenen, kalite uyarısı
+4. Hepsi `docs/47` Kural 10 anatomisiyle
+
+### Faz 10+ — İleri
+OCR, içerik moderasyonu, video transcoding, harici DAM entegrasyonu, cold
+archive.
+
+---
+
+## 9. Dosya yöneticisi (görsel olmayan)
+
+`asset_kind` **hiçbir zaman image'a sabitlenmez.**
+
+| Tür | Faz | Özel gereksinim |
+| --- | --- | --- |
+| PDF | 6 | Sayfa sayısı, ilk sayfa önizleme, sanitize/CDR, aktif içerik yok |
+| DOCX/XLSX | 7 | Önizleme yok, yalnız indirme; makro içeren dosya karantinada |
+| Video | 6 | Süre, codec, poster, transcoding, `tus` |
+| Ses | 10 | Süre, waveform |
+| Üretilen | 5 | QR SVG/PNG, PDF menü, sosyal görsel — `source_type=generated`, `generator_version` |
+
+---
+
+## 10. n8n ve OpenClaw — KAPSAM DIŞI
+
+Sahibinin kararı: **medya için n8n ve OpenClaw iptal.**
+
+Upload, tarama, dönüşüm, yetkilendirme ve yayın boru hattının tamamı çekirdek
+uygulamada, Laravel queue/event altyapısıyla çalışır. Gerekçe zaten
+teknikti: işlemsel bütünlük, retry, güvenlik ve düşük gecikme. Bu kararla
+birlikte medya tarafında dış otomasyon **hiçbir aşamada** yoktur.
+
+---
+
+## 11. Sahibinin kararı gereken noktalar
+
+| # | Karar | Neden şimdi |
+| --- | --- | --- |
+| 1 | Slot kataloğu: hangi slotlar, hangi minimum ölçüler | Faz 1'i bu açar; tahmin edilmez |
+| 2 | Object storage: yerel disk mi, S3 uyumlu mu (netcup/Hetzner) | Faz 1 şeması ve maliyet |
+| 3 | Video kapsama girecek mi | `tus` ve transcoding maliyeti |
+| 4 | Tenant kota rakamları | Fiyatlandırma kararı |
+| 5 | Original indirme hangi rolde | Telif ve gizlilik |
+
+Bu beş karar verilmeden Faz 2 başlamaz.

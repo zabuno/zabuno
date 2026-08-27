@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faz 11 · Preview Simülatörü · istoc Media Engine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="bg-white dark:bg-gray-900">
+<main class="doc-main">
+
+<span class="text-[11px] font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Faz 11 · Frontend</span>
+<h1>Preview Simülatörü — Cihaz & Sayfa Yerleşimi</h1>
+<p class="text-gray-600 dark:text-gray-400">Meta Ads Manager'ın yerleşim önizlemesi ile aynı amaç: <strong>onaylamadan önce, son kullanıcının göreceği her yerde nasıl göründüğünü göster.</strong> Çalışan referans uygulama: <a href="simulator.html">▶ Canlı Simülatör</a>.</p>
+
+<blockquote>Bu bir prototip değildir. Gerçek CSS viewport genişlikleri, gerçek DPR değerleri, gerçek sayfa yerleşimleri ve gerçek srcset seçim mantığı kullanılır. Kullanıcı, yükleyeceği alan hangisiyse o alanın tüm yerleşimlerini görmeden onay veremez.</blockquote>
+
+<h2>Cihaz kataloğu</h2>
+<table>
+<thead><tr><th>Cihaz</th><th>CSS viewport</th><th>DPR</th><th>Fiziksel</th><th>Sınıf</th></tr></thead>
+<tbody>
+<tr><td>iPhone 5 / SE (1. nesil)</td><td>320×568</td><td>2</td><td>640×1136</td><td>phone</td></tr>
+<tr><td>iPhone 17</td><td>393×852</td><td>3</td><td>1179×2556</td><td>phone</td></tr>
+<tr><td>iPhone 17 Pro</td><td>402×874</td><td>3</td><td>1206×2622</td><td>phone</td></tr>
+<tr><td>iPhone 17 Pro Max</td><td>440×956</td><td>3</td><td>1320×2868</td><td>phone</td></tr>
+<tr><td>Android orta segment</td><td>412×915</td><td>2.6</td><td>1071×2379</td><td>phone</td></tr>
+<tr><td>Android tablet 8″</td><td>600×960</td><td>2</td><td>1200×1920</td><td>tablet</td></tr>
+<tr><td>Android tablet 10″</td><td>800×1280</td><td>1.5</td><td>1200×1920</td><td>tablet</td></tr>
+<tr><td>iPad 10.9″</td><td>820×1180</td><td>2</td><td>1640×2360</td><td>tablet</td></tr>
+<tr><td>MacBook Air 13″</td><td>1280×800</td><td>2</td><td>2560×1600</td><td>laptop</td></tr>
+<tr><td>MacBook Pro 16″</td><td>1728×1085</td><td>2</td><td>3456×2170</td><td>laptop</td></tr>
+<tr><td>Windows laptop 15.6″ (%125)</td><td>1536×864</td><td>1.25</td><td>1920×1080</td><td>laptop</td></tr>
+<tr><td>Masaüstü 1080p</td><td>1920×1080</td><td>1</td><td>1920×1080</td><td>desktop</td></tr>
+<tr><td>Masaüstü 1440p</td><td>2560×1440</td><td>1</td><td>2560×1440</td><td>desktop</td></tr>
+</tbody>
+</table>
+<p>Cihaz listesi <strong>veri</strong>dir (<code>devices.json</code>); yeni cihaz eklemek kod değişikliği gerektirmez. Ancak dikkat: türevler cihaza göre üretilmez; cihaz listesi yalnızca <em>önizleme</em> içindir (DD-03).</p>
+
+<h2>Sayfa yerleşimleri (placements)</h2>
+<table>
+<thead><tr><th>Sayfa</th><th>Gösterilen profiller</th><th>Kritik nokta</th></tr></thead>
+<tbody>
+<tr><td>Anasayfa</td><td>home-carousel (mobilde 16:9, masaüstünde 21:9), product-card</td><td>Art direction: mobil ve masaüstü farklı oran</td></tr>
+<tr><td>Listeleme / kategori</td><td>product-list, product-card</td><td>Grid sütun sayısı viewport'a göre değişir</td></tr>
+<tr><td>Ürün detay</td><td>product-main, similar-product (küçük resimler), logo-square, product-card</td><td>LCP elementi; zoom davranışı</td></tr>
+<tr><td>Company profile</td><td>company-cover (mobilde 16:9, masaüstünde 3:1), logo-square, product-card</td><td>Logo kapağın üstüne biner — güvenli alan ihlali riski</td></tr>
+<tr><td>Sepet</td><td>cart-thumb</td><td>En küçük kutu; ürün tanınabilir kalmalı</td></tr>
+</tbody>
+</table>
+
+<h2>Onay kapısı (zorunlu)</h2>
+<ol>
+<li>Kullanıcı, yüklediği slot'a ait <strong>tüm yerleşim sınıflarını</strong> (phone, tablet, laptop/desktop) en az bir kez görmelidir.</li>
+<li>Görülen yerleşimler <code>previewed_placements</code> olarak kaydedilir.</li>
+<li>Uyarı üreten bir yerleşim varsa (ör. güvenli alan ihlali), kullanıcı açıkça "gördüm ve kabul ediyorum" işaretlemelidir.</li>
+<li>Bu koşullar sağlanmadan <em>Onayla ve yayınla</em> düğmesi etkin olmaz.</li>
+<li>Denetim için: hangi kullanıcı, hangi yerleşimleri, ne zaman gördü — audit log'a yazılır.</li>
+</ol>
+
+<h2>Görevler</h2>
+
+<div class="task" id="T-110">
+  <div class="task-head"><span class="task-id">T-110</span><span class="task-title">Cihaz ve yerleşim kataloğunun veri olarak tanımı</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-023</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li><code>devices.json</code> ve <code>placements.json</code> mevcut; yeni cihaz/sayfa eklemek kod değişmeden çalışıyor.</li>
+      <li>Her yerleşim, gerçek uygulamanın CSS breakpoint'leriyle <strong>doğrulanmış</strong> (aynı sütun sayısı, aynı kutu ölçüleri).</li>
+      <li>Sapma varsa uygulama CSS'i kaynak kabul edilir ve katalog düzeltilir.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Cihaz ve yerleşim kataloğunu veri olarak tanımla: ui/src/simulator/devices.json ve placements.json.
+devices.json: key, label, cssWidth, cssHeight, dpr, kind (phone|tablet|laptop|desktop). Başlangıç listesi docs/62-faz11-simulator.html tablosundaki 13 cihaz.
+placements.json: sayfa (home, listing, product, company, cart) -&gt; bölgeler; her bölge { profile, widthRule (viewport'a göre hesap), aspectRule (breakpoint'e göre oran), fit, safeZones[] }.
+KRİTİK: widthRule ve aspectRule değerlerini TAHMİN ETME. Gerçek uygulamanın CSS'ini (grid sütun sayısı, gap, padding, max-width, aspect-ratio) okuyarak türet. Her değer için kaynak dosya:satır referansı yaz.
+Doğrulama testi: gerçek uygulamayı Playwright ile her cihaz genişliğinde aç, ilgili görsel kutusunun getBoundingClientRect değerini ölç, kataloğun hesapladığı değerle karşılaştır; fark &gt; 2 piksel ise test KIRMIZI olsun ve katalog düzeltilsin.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-111">
+  <div class="task-head"><span class="task-id">T-111</span><span class="task-title">Cihaz çerçevesi ve sayfa şablonu render motoru</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-110, T-102</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Her cihaz gerçek CSS genişliğinde render ediliyor, sonra ekrana sığdırmak için <code>transform: scale()</code> uygulanıyor (yeniden düzen <strong>yok</strong>).</li>
+      <li>Ölçek yüzdesi kullanıcıya gösteriliyor ("gerçek boyutun %38'i").</li>
+      <li>Sayfa şablonları gerçek grid mantığını taklit ediyor (sütun sayısı, boşluk, kenar boşluğu).</li>
+      <li>13 cihaz × 5 sayfa kombinasyonu hatasız render ediliyor.</li>
+      <li>Render performansı: cihaz matrisi modunda ilk boyama &lt;1.5 sn.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Simülatör render motorunu yaz: ui/src/simulator/
+Bileşenler: DeviceFrame.vue, PagePreview.vue, SimulatorPanel.vue, DeviceMatrix.vue.
+KURAL: Sayfa GERÇEK CSS genişliğinde (ör. 1920 piksel) render edilir, sonra küçültmek için transform: scale() uygulanır. Konteyner genişliğini küçültüp responsive davranışı bozmak YASAK — çünkü amaç gerçek yerleşimi göstermek.
+- Ölçek yüzdesini kullanıcıya göster; 1:1 görmek için "gerçek boyut" modu (yatay kaydırmalı) olsun.
+- Sayfa şablonları placements.json dosyasından üretilsin; grid sütun sayısı/gap/padding gerçek uygulamanın kurallarıyla aynı olsun.
+- Görsel kutuları PreviewCards ile aynı cropgeo hesabını kullansın (tek kaynak).
+- DeviceMatrix: tüm cihazlar yan yana; sanal kaydırma veya tembel render ile ilk boyama &lt; 1,5 sn.
+Referans çalışan uygulama: docs/simulator.html (modlar: Rendition kartları / Cihaz &amp; sayfa / Cihaz matrisi).
+Testler: 13x5 kombinasyonun hatasız render edildiği (Playwright anlık görüntü), ölçek hesabının doğruluğu.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-112">
+  <div class="task-head"><span class="task-id">T-112</span><span class="task-title">srcset seçim göstergesi ve çözünürlük yeterlilik uyarısı</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-111, T-083</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Her yerleşim için "tarayıcı hangi rendition'ı indirir" hesaplanıyor: <code>CSS genişlik × DPR → merdivende ilk ≥ değer</code>.</li>
+      <li>Kaynak o genişliği besleyemiyorsa kırmızı uyarı: "kaynak yetersiz — büyütme yapılmaz".</li>
+      <li>Tahmini indirilecek bayt gösteriliyor (gerçek rendition boyutlarından).</li>
+      <li>LCP elementi işaretleniyor ve lazy-load edilmemesi gerektiği belirtiliyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>srcset göstergesini yaz: ui/src/simulator/SrcsetInspector.vue
+1) Her yerleşim için: CSS kutu genişliği, cihaz DPR'ı, gereken piksel (css*dpr), profilin genişlik merdiveninde seçilecek basamak, seçilen rendition'ın gerçek baytı (manifest'ten), toplam sayfa görsel baytı.
+2) Kaynak kırpım genişliği seçilen basamaktan küçükse: kırmızı "kaynak yetersiz — büyütme yapılmaz" uyarısı ve kullanıcıya öneri ("yakınlaştırmayı azaltın veya daha yüksek çözünürlüklü görsel yükleyin").
+3) LCP adayını işaretle (ürün detayda product-main, anasayfada carousel ilk slayt): "bu görsel lazy-load edilmemeli, fetchpriority=high olmalı" notu.
+4) Sayfa toplamı: bu cihazda bu sayfada indirilecek tahmini görsel baytı; docs/standards içindeki bütçeyi aşıyorsa uyarı.
+Testler: seçim mantığının doğruluğu (bilinen girdilerle), bayt toplamının manifest ile tutarlılığı.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-113">
+  <div class="task-head"><span class="task-id">T-113</span><span class="task-title">Video slotu için poster/oynatma simülasyonu</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-073, T-111</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Company cover video ve ürün videosu için: poster kadrajı, otomatik oynatma davranışı, sessiz/loop, kontrol yerleşimi gösteriliyor.</li>
+      <li>Mobilde ilk 10 saniyede indirilecek tahmini bayt gösteriliyor ve standartla karşılaştırılıyor.</li>
+      <li><code>prefers-reduced-motion</code> senaryosu ayrı önizleme olarak gösteriliyor.</li>
+      <li>Kapak üzerine binen UI öğeleri (logo, başlık, buton) güvenli alan ihlali üretiyorsa uyarı çıkıyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Video slotu simülasyonunu yaz.
+1) Video yerleşimlerinde poster kadrajı crop intent ile hesaplanıp gösterilsin; üzerine gerçek oynatıcı kontrolleri ve arayüz ögeleri (logo, başlık, CTA) yerleştirilsin.
+2) Üç önizleme durumu: (a) poster (ilk kare), (b) otomatik oynatma (sessiz, döngülü, playsinline), (c) prefers-reduced-motion (yalnız poster).
+3) Mobil veri: ilk 10 saniyede indirilecek tahmini bayt (bitrate x süre) hesaplanıp standarttaki tavanla karşılaştırılsın; aşımda uyarı.
+4) Güvenli alan: kapak üzerine binen arayüz ögelerinin kapladığı bölgeler safeZones olarak tanımlı; poster kadrajı bu bölgelerde önemli içerik bırakıyorsa uyarı ("logonun altında kalan alanda ürün var").
+5) Video dosyası henüz işlenmemişse poster yerine LQIP + "işleniyor" durumu gösterilsin.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-114">
+  <div class="task-head"><span class="task-id">T-114</span><span class="task-title">Onay kapısı ve previewed_placements kaydı</span><span class="chip chip-fe">Frontend</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-082, T-111</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Kullanıcı, slot'un tüm yerleşim sınıflarını görmeden onaylayamıyor.</li>
+      <li>Görülen yerleşimler izleniyor (görünürlük eşiği: kutu en az 1 sn ekranda ve %50 görünür).</li>
+      <li>Uyarılı yerleşim varsa açık kabul (checkbox) gerekiyor.</li>
+      <li>Kayıt sunucu tarafında da doğrulanıyor: eksik <code>previewed_placements</code> ile publish reddediliyor.</li>
+      <li>Audit log: kim, ne zaman, hangi yerleşimleri gördü.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Onay kapısını yaz (frontend + backend doğrulaması).
+Frontend:
+1) Yerleşim görünürlük takibi: IntersectionObserver ile bir yerleşim kutusu &gt;= %50 görünür ve &gt;= 1 saniye ekranda kalırsa "görüldü" say. Kaydet: {device_kind, page, profile}.
+2) İlerleme göstergesi: "3/3 cihaz sınıfı görüldü" gibi; eksikler listelenir ve tıklanınca oraya gider.
+3) Uyarı üreten yerleşimler için ayrı onay: "Bu kırpımda kapakta ürünün bir kısmı görünmüyor. Gördüm ve kabul ediyorum."
+4) Tüm koşullar sağlanmadan "Onayla ve yayınla" pasif; üzerine gelince eksiği söyler.
+Backend:
+5) save_intent/publish çağrısında previewed_placements doğrulanır: slot'un gerektirdiği cihaz sınıfları (phone/tablet/desktop) eksikse 400 + MEDIA_PREVIEW_REQUIRED hatası. Frontend atlatılamaz.
+6) Denetim kaydı: kullanıcı, zaman, görülen yerleşimler, kabul edilen uyarılar.
+Testler: eksik önizlemeyle yayın denemesinin reddi, görünürlük eşiğinin doğru çalışması, denetim kaydının oluşması.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-115">
+  <div class="task-head"><span class="task-id">T-115</span><span class="task-title">Simülatörün gerçek sayfayla doğrulanması (drift testi)</span><span class="chip chip-qa">QA</span><span class="chip chip-dep">Bağımlılık: T-110…T-114</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>Simülatör, gerçek sayfa değiştikçe yalan söylemeye başlar. Bu görev, sapmayı otomatik yakalayan testi kurar.</p>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Her cihaz için gerçek sayfa ile simülatör önizlemesi otomatik karşılaştırılıyor (görsel diff).</li>
+      <li>Kutu ölçülerinde 2 px üzeri sapma CI'da kırmızı.</li>
+      <li>Sapma raporunda hangi CSS değişikliğinin sebep olduğu gösteriliyor.</li>
+      <li>Test her PR'da değil, günlük (nightly) çalışıyor ve ekip bilgilendiriliyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Simülatör sapma (drift) testini yaz: tests/e2e/simulator-drift.spec.ts (Playwright, gecelik).
+1) Her cihaz için gerçek uygulamayı ilgili viewport'ta aç, test asset'i ile bir ürün/kategori/company sayfası oluştur, ilgili görsel kutularının getBoundingClientRect ve hesaplanmış object-fit/object-position değerlerini topla.
+2) Aynı asset ve aynı cihaz için simülatör önizlemesini render et ve aynı ölçüleri topla.
+3) Karşılaştır: kutu genişlik/yükseklik farkı &gt; 2 piksel veya oran farkı &gt; %1 ise test KIRMIZI.
+4) Ek olarak görsel fark: gerçek sayfa ekran görüntüsündeki görsel bölgesi ile simülatör çıktısının algısal hash mesafesi.
+5) Rapor: hangi sayfa/cihaz/profil saptı, ölçülen ile beklenen, ve hangi CSS kuralının değiştiğini bulmaya yardım eden bilgi (ilgili seçici ve hesaplanmış stil).
+6) Gecelik CI işi olarak çalıştır ve sapma bulunursa ekibi bilgilendir.</pre></div>
+  </div>
+</div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
