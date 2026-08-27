@@ -3,6 +3,18 @@
 **Bu belge kendi kendine yeter.** Uygulamayı bilmenize gerek yok, başka bir
 belge okumanız gerekmez, kurulumdan sonra da dönmeniz gerekmez.
 
+## Bu kurulum için
+
+| | |
+| --- | --- |
+| Sunucu | netcup VPS — `152.53.163.185` |
+| Alan adları | `zabuno.com`, `e-menum.net` (+ `www`) |
+| A kaydı | **Proje sahibi ekler** — sizin işiniz değil |
+| Depo yetkisi | `deploy` takımı üzerinden depo admin'i; sırları eklemek için gerekli |
+
+Depo yetkiniz yoksa proje sahibinden isteyin: sırları eklemek **depo admin**
+yetkisi gerektirir, daha azı yetmez.
+
 ## Ne yapacaksınız — özet
 
 Bir sunucu hazırlayıp tek komutla projeyi ayağa kaldıracaksınız, sonra
