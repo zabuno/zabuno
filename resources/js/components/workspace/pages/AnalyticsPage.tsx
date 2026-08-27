@@ -208,7 +208,10 @@ export function AnalyticsPage({
                     )}
 
                     {status === 'plan-restricted' && (
-                        <div role="status" className="flex flex-col items-start gap-[var(--space-2)]">
+                        <div
+                            role="status"
+                            className="flex flex-col items-start gap-[var(--space-2)]"
+                        >
                             {/*
                                 Boş durum dört soruyu cevaplar (`docs/44`):
                                 ne yok, neden yok, kullanıcı için anlamı ne,

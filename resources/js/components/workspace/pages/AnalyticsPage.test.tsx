@@ -358,7 +358,9 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         const region = await screen.findByRole('region', { name: /analytics report/i });
 
         await waitFor(() => {
-            expect(within(region).getByRole('status')).toHaveTextContent(/not included in your current plan/i);
+            expect(within(region).getByRole('status')).toHaveTextContent(
+                /not included in your current plan/i,
+            );
         });
 
         // Bir HATA değil: `role="alert"` yok, "try again" yok.
