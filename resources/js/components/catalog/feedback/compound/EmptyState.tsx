@@ -32,7 +32,7 @@ export function EmptyState({
             {loading ? (
                 <Spinner label={`${title} — loading…`} />
             ) : (
-                <div aria-hidden="true" className="h-8 w-8 rounded-full bg-surface-active" />
+                <div aria-hidden="true" className="h-8 w-8 rounded-pill bg-surface-active" />
             )}
             <p className="text-sm font-medium text-fg">{title}</p>
             {description ? <p className="text-sm text-fg-muted">{description}</p> : null}

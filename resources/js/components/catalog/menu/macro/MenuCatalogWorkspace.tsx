@@ -850,7 +850,7 @@ export function MenuCatalogWorkspace({
                                                     {item.allergens.map((allergen) => (
                                                         <li
                                                             key={allergen}
-                                                            className="rounded-full bg-surface-active px-2 py-0.5 text-meta text-fg-muted"
+                                                            className="rounded-pill bg-surface-active px-2 py-0.5 text-meta text-fg-muted"
                                                         >
                                                             {allergen}
                                                         </li>

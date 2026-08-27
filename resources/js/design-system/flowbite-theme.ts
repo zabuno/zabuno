@@ -149,7 +149,7 @@ export const buttonTokenTheme = createTheme({
     disabled: 'pointer-events-none opacity-60',
     fullSized: 'w-full',
     grouped: 'rounded-none border-s-0 first:rounded-s-lg first:border-s last:rounded-e-lg',
-    pill: 'rounded-full',
+    pill: 'rounded-pill',
     /**
      * Boy YALNIZ tipografi ve yatay boşluğu değiştirir.
      *
@@ -265,7 +265,7 @@ export const textareaTokenTheme = createTheme({
 
 export const checkboxTokenTheme = createTheme({
     base: [
-        'size-[var(--control-indicator-size)] shrink-0 appearance-none rounded border',
+        'size-[var(--control-indicator-size)] shrink-0 appearance-none rounded-sm border',
         'border-border bg-surface',
         'bg-[length:0.55em_0.55em] bg-center bg-no-repeat',
         'checked:border-transparent checked:bg-[image:var(--control-check-icon)]',

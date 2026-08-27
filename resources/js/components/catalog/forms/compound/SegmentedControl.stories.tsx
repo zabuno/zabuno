@@ -21,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 const OPTIONS = [
     { value: 'classic', label: 'Classic' },
     { value: 'bold', label: 'Bold' },
-    { value: 'rounded', label: 'Rounded' },
+    { value: 'rounded-sm', label: 'Rounded' },
     { value: 'branded', label: 'Branded' },
 ];
 
