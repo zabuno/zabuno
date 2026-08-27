@@ -51,7 +51,11 @@ export function RegisterForm({
             return;
         }
 
-        let response: Response | null = null;
+        // Başlangıç değeri YOK: `null` ataması hiçbir zaman okunmuyor,
+        // çünkü buraya ancak fetch başarıyla döndüyse ulaşılıyor —
+        // diğer iki yol (istek kurulamadı / yanıt uygun) `return` ediyor.
+        // TypeScript bunu zaten daraltıyor.
+        let response: Response;
 
         try {
             await bootstrapCsrfCookie();
