@@ -27,6 +27,16 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
     const [currency, setCurrency] = useState('');
     const [locale, setLocale] = useState('');
     const [error, setError] = useState('');
+    /**
+     * Sunucunun 422 gövdesindeki alan bazlı hatalar.
+     *
+     * Bunlar daha önce okunmadan atılıyordu: her doğrulama hatası tek bir
+     * "Please try again" cümlesine düşüyordu. Kullanıcı neyi düzelteceğini
+     * bilmediği için aynı veriyi tekrar gönderiyor ve aynı cevabı alıyordu —
+     * çıkışı olmayan bir döngü. Sunucu zaten "The timezone must be a valid
+     * IANA timezone identifier" diyordu; söylediği yere taşınıyor.
+     */
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -44,6 +54,7 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
         }
 
         setError('');
+        setFieldErrors({});
         setSubmitting(true);
 
         const payload: Record<string, string> = {
@@ -76,12 +87,41 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                 return;
             }
 
-            setError(t('workspace.brand.error.submit'));
+            await reportFailure(response);
         } catch {
             setError(t('workspace.brand.error.submit'));
         }
 
         setSubmitting(false);
+    }
+
+    async function reportFailure(response: Response): Promise<void> {
+        try {
+            const body = (await response.json()) as {
+                message?: string;
+                errors?: Record<string, string[]>;
+            };
+
+            const entries = Object.entries(body.errors ?? {});
+
+            if (entries.length > 0) {
+                setFieldErrors(
+                    Object.fromEntries(
+                        entries.map(([field, messages]) => [field, messages[0] ?? '']),
+                    ),
+                );
+                // Özet, alan hatalarının yerini tutmaz; ekran okuyucunun
+                // gönderim sonrası bir şey duyabilmesi için var.
+                setError(body.message ?? t('workspace.brand.error.submit'));
+
+                return;
+            }
+
+            setError(body.message ?? t('workspace.brand.error.submit'));
+        } catch {
+            // Gövde JSON değilse söylenecek özel bir şey yok.
+            setError(t('workspace.brand.error.submit'));
+        }
     }
 
     return (
@@ -104,9 +144,17 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                         name="name"
                         type="text"
                         className="w-full"
+                        color={fieldErrors.name ? 'failure' : undefined}
+                        aria-invalid={fieldErrors.name ? true : undefined}
+                        aria-describedby={fieldErrors.name ? 'brand-name-error' : undefined}
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                     />
+                    {fieldErrors.name && (
+                        <p id="brand-name-error" className="mt-1 text-meta text-fg-danger">
+                            {fieldErrors.name}
+                        </p>
+                    )}
                 </div>
 
                 <div>
@@ -118,9 +166,17 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                         name="timezone"
                         type="text"
                         className="w-full"
+                        color={fieldErrors.timezone ? 'failure' : undefined}
+                        aria-invalid={fieldErrors.timezone ? true : undefined}
+                        aria-describedby={fieldErrors.timezone ? 'brand-timezone-error' : undefined}
                         value={timezone}
                         onChange={(event) => setTimezone(event.target.value)}
                     />
+                    {fieldErrors.timezone && (
+                        <p id="brand-timezone-error" className="mt-1 text-meta text-fg-danger">
+                            {fieldErrors.timezone}
+                        </p>
+                    )}
                 </div>
 
                 <div>
@@ -132,9 +188,17 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                         name="currency"
                         type="text"
                         className="w-full"
+                        color={fieldErrors.currency ? 'failure' : undefined}
+                        aria-invalid={fieldErrors.currency ? true : undefined}
+                        aria-describedby={fieldErrors.currency ? 'brand-currency-error' : undefined}
                         value={currency}
                         onChange={(event) => setCurrency(event.target.value)}
                     />
+                    {fieldErrors.currency && (
+                        <p id="brand-currency-error" className="mt-1 text-meta text-fg-danger">
+                            {fieldErrors.currency}
+                        </p>
+                    )}
                 </div>
 
                 <div>
@@ -146,9 +210,17 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                         name="locale"
                         type="text"
                         className="w-full"
+                        color={fieldErrors.locale ? 'failure' : undefined}
+                        aria-invalid={fieldErrors.locale ? true : undefined}
+                        aria-describedby={fieldErrors.locale ? 'brand-locale-error' : undefined}
                         value={locale}
                         onChange={(event) => setLocale(event.target.value)}
                     />
+                    {fieldErrors.locale && (
+                        <p id="brand-locale-error" className="mt-1 text-meta text-fg-danger">
+                            {fieldErrors.locale}
+                        </p>
+                    )}
                 </div>
 
                 <Button type="submit" disabled={submitting} className="w-full">

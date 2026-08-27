@@ -313,3 +313,83 @@ describe('BrandOnboardingForm — no demo IDs or default business data', () => {
         vi.unstubAllGlobals();
     });
 });
+
+describe('BrandOnboardingForm — the server said what was wrong, so the form must say it too', () => {
+    /**
+     * Owner bu formu "istantul" yazarak denedi. Sunucu 422 ile
+     * "The timezone must be a valid IANA timezone identifier." dedi. Ekranda
+     * yalnız "We could not create your brand. Please try again." göründü.
+     *
+     * Bu bir döngüdür: kullanıcı neyi düzelteceğini bilmez, aynı veriyi
+     * tekrar gönderir, aynı cevabı alır. Marka kurulamadığı için konum
+     * eklenemez; konum olmadığı için menü açılmaz. Yeni hesap tam burada
+     * durur.
+     */
+    async function renderForm(response: Response) {
+        const fetchMock = vi.fn(async (url: string) => {
+            if (url === CSRF_COOKIE_URL) return { ok: true, status: 204 } as Response;
+            if (url === '/api/workspaces/5/brand') return response;
+            throw new Error(`Unhandled fetch: ${String(url)}`);
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { BrandOnboardingForm } = await importWorkspaceModule<{
+            BrandOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (brand: BrandProfile) => void;
+            }>;
+        }>('BrandOnboardingForm');
+        render(<BrandOnboardingForm workspaceId={5} onCreated={vi.fn()} />);
+
+        fillRequiredFields();
+        fireEvent.change(screen.getByLabelText(/timezone/i), { target: { value: 'istantul' } });
+        fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
+    }
+
+    it('shows the field-level reason the server gave instead of a generic retry message', async () => {
+        await renderForm(
+            jsonResponse(422, {
+                message: 'The given data was invalid.',
+                errors: {
+                    timezone: ['The timezone must be a valid IANA timezone identifier.'],
+                },
+            }),
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText(/valid IANA timezone identifier/i)).toBeInTheDocument();
+        });
+
+        vi.unstubAllGlobals();
+    });
+
+    it('marks the offending field so the user can see which one to fix', async () => {
+        await renderForm(
+            jsonResponse(422, {
+                message: 'The given data was invalid.',
+                errors: {
+                    timezone: ['The timezone must be a valid IANA timezone identifier.'],
+                },
+            }),
+        );
+
+        await waitFor(() => {
+            expect(screen.getByLabelText(/timezone/i)).toHaveAttribute('aria-invalid', 'true');
+        });
+
+        // Hatasız alan suçlanmaz.
+        expect(screen.getByLabelText(/currency/i)).not.toHaveAttribute('aria-invalid');
+
+        vi.unstubAllGlobals();
+    });
+
+    it('still says something when the failure carries no field detail', async () => {
+        await renderForm(jsonResponse(500, {}));
+
+        await waitFor(() => {
+            expect(screen.getByRole('alert')).toBeInTheDocument();
+        });
+
+        vi.unstubAllGlobals();
+    });
+});
