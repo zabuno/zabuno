@@ -1048,6 +1048,26 @@ msgstr "Media upload"
 msgid "workspace.media.upload.uploading"
 msgstr "Uploading media…"
 
+#: workspace:workspace.menu.empty.brand.body
+msgid "workspace.menu.empty.brand.body"
+msgstr "A menu belongs to a location, and a location belongs to a brand. Set up your brand first, then add a location."
+
+#: workspace:workspace.menu.empty.brand.cta
+msgid "workspace.menu.empty.brand.cta"
+msgstr "Set up brand"
+
+#: workspace:workspace.menu.empty.location.body
+msgid "workspace.menu.empty.location.body"
+msgstr "A menu belongs to a location, and this workspace does not have one yet. Add a location first and the menu catalog opens here."
+
+#: workspace:workspace.menu.empty.location.cta
+msgid "workspace.menu.empty.location.cta"
+msgstr "Add a location"
+
+#: workspace:workspace.menu.error
+msgid "workspace.menu.error"
+msgstr "Your menu could not be loaded. Refresh the page to try again."
+
 #: workspace:workspace.menu.heading
 msgid "workspace.menu.heading"
 msgstr "Menu"
