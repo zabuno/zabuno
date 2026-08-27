@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Button } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
+import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/workspace';
 import { FormField } from './forms/FormField';
 import { FormSection } from './forms/FormSection';
@@ -30,6 +31,12 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
     const [addressLine2, setAddressLine2] = useState('');
     const [postalCode, setPostalCode] = useState('');
     const [error, setError] = useState('');
+    /**
+     * Sunucunun 422 gövdesindeki alan hataları. Bu form kritik yolun
+     * üstünde: konum kurulamazsa menü açılmaz. Neyin yanlış olduğunu
+     * söylemeyen bir hata, yolculuğu orada bitirir.
+     */
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -54,6 +61,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
         }
 
         setError('');
+        setFieldErrors({});
         setSubmitting(true);
 
         const payload: Record<string, string> = {
@@ -91,8 +99,25 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                 return;
             }
 
-            setError(t('workspace.location.error.submit'));
+            // Sunucu neyin yanlış olduğunu SÖYLEDİ; gövdesi okunmadan
+            // atılırsa kullanıcı neyi düzelteceğini bilemez.
+            const failure = await readValidationFailure(
+                response,
+                t('workspace.location.error.submit'),
+            );
+
+            setFieldErrors(failure.fields);
+            setError(failure.message ?? t('workspace.location.error.submit'));
+            focusFirstInvalidField(failure.fields, [
+                'display_name',
+                'country_code',
+                'city',
+                'address_line1',
+                'address_line2',
+                'postal_code',
+            ]);
         } catch {
+            // Buraya yalnız istek kurulamadığında düşülür.
             setError(t('workspace.location.error.submit'));
         }
 
@@ -120,6 +145,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                     <FormField
                         id="location-display-name"
                         name="display_name"
+                        errorText={fieldErrors.display_name}
                         label={t('workspace.location.displayName')}
                         value={displayName}
                         onChange={setDisplayName}
@@ -127,6 +153,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                     <FormField
                         id="location-country-code"
                         name="country_code"
+                        errorText={fieldErrors.country_code}
                         label={t('workspace.location.countryCode')}
                         value={countryCode}
                         onChange={setCountryCode}
@@ -134,6 +161,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                     <FormField
                         id="location-city"
                         name="city"
+                        errorText={fieldErrors.city}
                         label={t('workspace.location.city')}
                         value={city}
                         onChange={setCity}
@@ -158,6 +186,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                     <FormField
                         id="location-postal-code"
                         name="postal_code"
+                        errorText={fieldErrors.postal_code}
                         label={t('workspace.location.postalCode')}
                         value={postalCode}
                         onChange={setPostalCode}

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Button } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
+import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/workspace';
 import { FormField } from './forms/FormField';
 import { FormSection } from './forms/FormSection';
@@ -34,6 +35,12 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
     const [addressLine2, setAddressLine2] = useState(location.address_line2 ?? '');
     const [postalCode, setPostalCode] = useState(location.postal_code ?? '');
     const [error, setError] = useState('');
+    /**
+     * Sunucunun 422 gövdesindeki alan hataları. Daha önce okunmadan
+     * atılıyordu: her doğrulama hatası tek bir cümleye düşüyor, kullanıcı
+     * neyi düzelteceğini bilmediği için aynı veriyi tekrar gönderiyordu.
+     */
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [saving, setSaving] = useState(false);
 
     function startEdit() {
@@ -56,6 +63,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
         event.preventDefault();
 
         setError('');
+        setFieldErrors({});
         setSaving(true);
 
         try {
@@ -86,8 +94,25 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 return;
             }
 
-            setError(t('workspace.brandLocations.locations.edit.error.submit'));
+            // Sunucu neyin yanlış olduğunu SÖYLEDİ; gövdesi okunmadan
+            // atılırsa kullanıcı neyi düzelteceğini bilemez.
+            const failure = await readValidationFailure(
+                response,
+                t('workspace.brandLocations.locations.edit.error.submit'),
+            );
+
+            setFieldErrors(failure.fields);
+            setError(failure.message ?? t('workspace.brandLocations.locations.edit.error.submit'));
+            focusFirstInvalidField(failure.fields, [
+                'display_name',
+                'country_code',
+                'city',
+                'address_line1',
+                'address_line2',
+                'postal_code',
+            ]);
         } catch {
+            // Buraya yalnız istek kurulamadığında düşülür.
             setError(t('workspace.brandLocations.locations.edit.error.submit'));
         }
 
@@ -148,6 +173,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 <FormField
                     id={`location-edit-display-name-${location.id}`}
                     name="display_name"
+                    errorText={fieldErrors.display_name}
                     label={t('workspace.location.displayName')}
                     value={displayName}
                     onChange={setDisplayName}
@@ -155,6 +181,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 <FormField
                     id={`location-edit-country-code-${location.id}`}
                     name="country_code"
+                    errorText={fieldErrors.country_code}
                     label={t('workspace.brandLocations.locations.edit.countryCode')}
                     value={countryCode}
                     onChange={setCountryCode}
@@ -162,6 +189,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 <FormField
                     id={`location-edit-city-${location.id}`}
                     name="city"
+                    errorText={fieldErrors.city}
                     label={t('workspace.location.city')}
                     value={city}
                     onChange={setCity}
@@ -186,6 +214,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 <FormField
                     id={`location-edit-postal-code-${location.id}`}
                     name="postal_code"
+                    errorText={fieldErrors.postal_code}
                     label={t('workspace.location.postalCode')}
                     value={postalCode}
                     onChange={setPostalCode}

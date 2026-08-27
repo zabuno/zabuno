@@ -3,6 +3,7 @@ import { Label } from '../catalog/forms/micro/Label';
 import { TextInput } from '../catalog/forms/micro/TextInput';
 import { Button } from '../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
+import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/auth';
 
 type FieldErrors = Partial<Record<'email' | 'submit', string>>;
@@ -35,10 +36,12 @@ export function ForgotPasswordForm() {
             return;
         }
 
+        let response: Response | null = null;
+
         try {
             await bootstrapCsrfCookie();
 
-            const response = await fetch(
+            response = await fetch(
                 '/forgot-password',
                 buildAuthRequestInit({
                     method: 'POST',
@@ -53,6 +56,8 @@ export function ForgotPasswordForm() {
                 return;
             }
         } catch {
+            // Buraya yalnız İSTEK KURULAMADIĞINDA düşülür. Sunucunun
+            // reddettiği durum aşağıda, gövdesi okunarak ele alınır.
             setErrors((current) => ({
                 ...current,
                 submit: t('auth.forgot_password.error.submit'),
@@ -61,7 +66,20 @@ export function ForgotPasswordForm() {
             return;
         }
 
-        setErrors((current) => ({ ...current, submit: t('auth.forgot_password.error.submit') }));
+        // Sunucu neyin yanlış olduğunu SÖYLEDİ; gövdesi okunmadan
+        // atılırsa kullanıcı neyi düzelteceğini bilemez.
+        const failure = await readValidationFailure(
+            response,
+            t('auth.forgot_password.error.submit'),
+        );
+
+        setErrors((current) => ({
+            ...current,
+            ...failure.fields,
+            submit: failure.message ?? t('auth.forgot_password.error.submit'),
+        }));
+
+        focusFirstInvalidField(failure.fields, ['email']);
     }
 
     return (

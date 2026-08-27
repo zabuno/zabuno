@@ -1,4 +1,4 @@
-import { Label, TextInput } from 'flowbite-react';
+import { HelperText, Label, TextInput } from 'flowbite-react';
 
 type FormFieldProps = {
     id: string;
@@ -9,12 +9,20 @@ type FormFieldProps = {
     disabled?: boolean;
     readOnly?: boolean;
     type?: string;
+    /** Sunucunun bu alan için söylediği. */
+    errorText?: string;
 };
 
 /**
  * Micro: one labeled TextInput. Owns no fetch/route/business logic — value
  * and onChange come from the calling form, so it stays a pure presentation
  * building block reusable across Brand/Location edit and onboarding forms.
+ *
+ * `errorText` 2026-08-27'de eklendi. Öncesinde alan hatası gösterecek yeri
+ * yoktu; formlar da zaten sunucunun 422 gövdesini okumuyordu, yani hata
+ * mesajı ne üretiliyor ne gösteriliyordu. Şimdi mesaj alana `aria-describedby`
+ * ile BAĞLI: ekran okuyucu alanı ve hatasını ilgili iki şey olarak okur,
+ * ayrı ayrı değil.
  */
 export function FormField({
     id,
@@ -25,7 +33,10 @@ export function FormField({
     disabled = false,
     readOnly = false,
     type = 'text',
+    errorText,
 }: FormFieldProps) {
+    const errorId = errorText ? `${id}-error` : undefined;
+
     return (
         <div>
             <div className="mb-2 block">
@@ -36,11 +47,19 @@ export function FormField({
                 name={name}
                 type={type}
                 className="w-full"
+                color={errorText ? 'failure' : undefined}
+                aria-invalid={errorText ? true : undefined}
+                aria-describedby={errorId}
                 value={value}
                 disabled={disabled}
                 readOnly={readOnly}
                 onChange={onChange ? (event) => onChange(event.target.value) : undefined}
             />
+            {errorText ? (
+                <HelperText id={errorId} color="failure" role="alert" aria-live="polite">
+                    {errorText}
+                </HelperText>
+            ) : null}
         </div>
     );
 }
