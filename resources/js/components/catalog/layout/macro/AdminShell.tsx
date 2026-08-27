@@ -22,6 +22,14 @@ export type AdminShellProps = {
     topBarEnd?: ReactNode;
     /** id of the main landmark; also the SkipLink target. */
     mainId?: string;
+    /**
+     * Telif/yasal footer'ı gösterilsin mi? Varsayılan HAYIR.
+     *
+     * Tenant panelinde her ekranda görünen bir telif satırı hiçbir görevin
+     * parçası değildir ve küçük ekranda dikey alan harcar. Public ve Auth
+     * kabuklarında gerçekten ortak alt bilgi vardır; orada `true` geçilir.
+     */
+    showFooter?: boolean;
     children: ReactNode;
     className?: string;
 };
@@ -47,6 +55,7 @@ export function AdminShell({
     topBarCenter,
     topBarEnd,
     mainId = 'main-content',
+    showFooter = false,
     children,
     className,
 }: AdminShellProps) {
@@ -96,7 +105,20 @@ export function AdminShell({
                     {children}
                 </main>
             </div>
-            <AdminFooter productName={brand.name} currentYear={new Date().getFullYear()} />
+            {/*
+                Tenant uygulamasında kalıcı telif footer'ı YOKTUR.
+
+                Her ekranda görünen bir telif satırı, restoran sahibinin
+                hiçbir görevine ait değildir ve 320×480'de dikey alan
+                harcar. Yasal bağlantılar ve sürüm bilgisi Account → About
+                altına aittir (`docs/50` Faz 1).
+
+                `contentinfo` landmark'ı Public ve Auth kabuklarında kalır —
+                orada gerçekten ortak alt bilgi vardır.
+            */}
+            {showFooter ? (
+                <AdminFooter productName={brand.name} currentYear={new Date().getFullYear()} />
+            ) : null}
         </div>
     );
 }

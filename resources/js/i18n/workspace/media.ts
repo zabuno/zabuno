@@ -11,6 +11,23 @@ export const media = {
     'workspace.media.security.explanation':
         'A human reviews and approves every security scan result before any file can move forward; no scan approves itself.',
     'workspace.media.upload.field.file': 'File',
+    // Sürükle-bırak alanı. Öncesinde ham bir `<input type=file>` vardı ve
+    // tarayıcı onu İŞLETİM SİSTEMİNİN dilinde çiziyordu: uygulama İngilizce
+    // iken düğmede "Dosya Seç" yazıyordu. Kendi alanımızı çizince metin de
+    // katalogdan gelir.
+    'workspace.media.upload.dropzone.label': 'Drop an image here, or choose a file',
+    'workspace.media.upload.dropzone.hint': 'JPEG, PNG or WebP',
+    'workspace.media.upload.dropzone.choose': 'Choose a file',
+    'workspace.media.upload.dropzone.active': 'Release to add this image',
+    'workspace.media.upload.selected.replace': 'Choose a different file',
+    'workspace.media.upload.selected.dimensions': '{width} × {height} pixels',
+    // Slot gereksinimleri YÜKLEMEDEN ÖNCE görünür. Öncesinde kullanıcı
+    // bulanık görseli ancak yayınladıktan sonra fark ediyordu.
+    'workspace.media.upload.requirement.minimum': 'At least {width} × {height} pixels',
+    'workspace.media.upload.requirement.aspect': 'Aspect ratio {aspect}',
+    'workspace.media.upload.requirement.formats': 'Formats: {formats}',
+    'workspace.media.upload.error.tooSmall':
+        'This image is {width} × {height}. {slot} needs at least {min}. A smaller image would look blurred, because it is never enlarged.',
     // Alternatif metin bir erişilebilirlik yükümlülüğüdür; ne olduğunu
     // bilmeyen kullanıcı boş bırakır ya da dosya adını yazar.
     'workspace.media.upload.field.altText': 'Alt text',

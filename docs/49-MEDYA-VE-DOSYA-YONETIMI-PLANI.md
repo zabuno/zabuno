@@ -167,13 +167,18 @@ ilk sıradadır (`docs/48`).
 AI **öneri üretir, yayınlamaz.** Kritik yolculuk AI kapalıyken tam çalışır
 (`docs/36` §5.7).
 
-| Yetenek | AI'ın işi | Kullanıcının işi |
-| --- | --- | --- |
-| Alt metin | Görselden taslak metin önerir | Görür, düzenler, onaylar |
-| Smart crop | Odak noktası önerir | Kabul veya elle taşır |
-| Etiketleme | Etiket önerir | Onaylar |
-| Yinelenen | Benzer görselleri işaretler | Hangisi kalacağına karar verir |
-| Kalite | "Bu görsel menüde bulanık görünecek" | Yeniden yükler ya da yok sayar |
+| Yetenek | AI'ın işi | Sağlayıcı | Kullanıcının işi |
+| --- | --- | --- | --- |
+| Alt metin | Görselden taslak metin önerir | Yerel | Görür, düzenler, onaylar |
+| Smart crop | Odak noktası önerir | Yerel (CV) | Kabul veya elle taşır |
+| Etiketleme | Etiket önerir | Yerel | Onaylar |
+| Yinelenen | Benzer görselleri gömme ile işaretler | Yerel | Hangisi kalacağına karar verir |
+| Kalite | "Bu görsel menüde bulanık görünecek" | Yerel (CV) | Yeniden yükler ya da yok sayar |
+| **Görselden menü çıkarma** | Fotoğraf/PDF/grafikten yapılandırılmış menü; belirsiz alanları İŞARETLER | **Gemini** → OpenAI | Belirsizleri doğrular, onaylar |
+
+Sağlayıcı sırası ve gerekçesi: `docs/51` §3.3. Kısaca: **yerel → Gemini →
+OpenAI → Claude**; medya işlerinin çoğu yerel modelle yapılabilir ve
+yapılmalıdır — hem bedava hem veri sunucudan çıkmaz.
 
 Her AI önerisi `docs/47` Kural 10'a uyar: kaynak, etkilenen kayıt, önizleme,
 onay, geri alma, denetim kaydı. **Otomatik yayın yok.**
@@ -200,16 +205,22 @@ ihtiyaç hâline gelir; o karar Faz 6'da, veriyle verilir.
 
 ## 8. Fazlar
 
-### Faz 1 — Mimari temel (kod yazmadan önce biten kararlar)
-1. Slot kataloğu ve politikaları — **belirlenmemiş slot BLOKEDİR**
-2. Üç durum ekseni sabitlenir
-3. Veri modeli: `media_assets`, `media_blobs`, `media_versions`,
-   `media_renditions`, `media_usages`, `media_policies`, `media_processing_jobs`
-4. Immutable URL şeması `docs/38`'e eklenir
-5. `ext-vips` / `ext-imagick` kararı ve Docker imajına eklenmesi
-6. INV-01..07 değişmezleri test adı olarak yazılır (RED)
+### Faz 1 — Mimari temel ✅ **TAMAMLANDI (2026-08-27)**
 
-**Kabul:** Tek satır üretim kodu yok; şema, politika ve RED testler var.
+| # | İş | Durum | Nerede |
+| --- | --- | --- | --- |
+| 1 | Slot kataloğu ve politikaları | ✅ | `config/media-slots.php` (17 slot), `app/Domain/Media/SlotPolicy.php` |
+| 2 | Üç durum ekseni | ✅ | `ProcessingStatus`, `LifecycleStatus`, `Visibility` |
+| 3 | Veri modeli | ✅ | `media_blobs`, `media_versions`, `media_renditions`, `media_usages`, `media_processing_jobs` + `media_assets` üç eksene taşındı |
+| 4 | Immutable URL şeması | ✅ | `docs/38` §4b |
+| 5 | `vips` kararı | ✅ | `docker/Dockerfile`. `composer.json`'a HENÜZ eklenmedi: motor yazılmadı ve kapı kapsama arıyor, eşitlik değil |
+| 6 | INV-01..07 test adı olarak | ✅ | `tests/Unit/Media/MediaInvariantsTest.php` (9 test) |
+
+**`media_policies` tablosu bilerek YOK.** Politikalar tenant başına
+değişmiyor: ürünün kendi kuralları. Yapılandırmada dururlar ve sürüm
+kontrolündedirler; veritabanına taşımak, aynı kuralın iki yerde yaşamasına
+ve bir gün ayrışmasına yol açardı. Tenant başına politika gerçekten
+gerekirse tablo o zaman gelir.
 
 ### Faz 2 — Güvenli alım (ingestion)
 1. `media_upload_sessions` + idempotency key
@@ -315,12 +326,21 @@ birlikte medya tarafında dış otomasyon **hiçbir aşamada** yoktur.
 
 ## 11. Sahibinin kararı gereken noktalar
 
-| # | Karar | Neden şimdi |
-| --- | --- | --- |
-| 1 | Slot kataloğu: hangi slotlar, hangi minimum ölçüler | Faz 1'i bu açar; tahmin edilmez |
-| 2 | Object storage: yerel disk mi, S3 uyumlu mu (netcup/Hetzner) | Faz 1 şeması ve maliyet |
-| 3 | Video kapsama girecek mi | `tus` ve transcoding maliyeti |
-| 4 | Tenant kota rakamları | Fiyatlandırma kararı |
-| 5 | Original indirme hangi rolde | Telif ve gizlilik |
+**Beşi de 2026-08-27'de sahibi tarafından karara bağlandı.**
 
-Bu beş karar verilmeden Faz 2 başlamaz.
+| # | Karar | Sahibinin cevabı | Sonucu |
+| --- | --- | --- | --- |
+| 1 | Slot kataloğu | "Zaten mevcut, panelde açılır menüde geliyor. Ama o sayfa çok yetersiz ve UX felsefesine düşman." | Slot LİSTESİ sabit (17 slot). Minimum ölçüler ve politikalar **türetildi** (§12) — sahibinin verdiği bir sayı değil, benim önerim; değiştirilebilir |
+| 2 | Depolama | **netcup yerel disk** | S3 yok. `media_blobs` yine de sağlayıcıdan bağımsız kalır: disk değişirse şema değişmez |
+| 3 | Video | **Faz 2'ye bağla** | `tus` ve transcoding Faz 2 kapsamında; `asset_kind` baştan video'yu tanır |
+| 4 | Tenant kotası | **"Sen belirle"** | §13'te önerildi |
+| 5 | Original indirme | **Tamamen serbest** | `media.download_original` ayrı izin OLMAYACAK. Araştırma yönergesi bunu ayırmayı öneriyordu; sahibi aksine karar verdi ve karar sahibinindir |
+
+### Kararların planı nasıl değiştirdiği
+
+- **Faz 1 açıldı** — beklenen karar kalmadı.
+- **Faz 6'daki "video/PDF kapsamı ve `tus` kararı" Faz 2'ye taşındı.**
+- **Faz 7'deki izin matrisinden `media.download_original` çıkarıldı.**
+- S3'e özgü işler (bucket versioning, cross-region replica) **kapsam dışı**;
+  yerine disk üzerinde checksum tabanlı reconciliation ve dosya sistemi
+  yedeği gelir.

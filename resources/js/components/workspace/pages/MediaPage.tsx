@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
-import { AiAssistPanel } from '../ai/AiAssistPanel';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
@@ -166,8 +165,6 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                     deleteErrorIds={deleteErrorIds}
                     deleteNotice={deleteNotice}
                 />
-
-                <AiAssistPanel context={t('workspace.shell.nav.media')} />
             </WorkspacePageFrame>
         </div>
     );

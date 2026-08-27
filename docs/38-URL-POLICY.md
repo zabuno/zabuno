@@ -90,6 +90,36 @@ Fragment yalnız tablodaki son satır için kalır: aynı belgede bir başlığa
 atlamak (QR menüsündeki kategori bağlantıları gibi). Bir EKRANI temsil etmek
 için asla.
 
+## 4b. Medya adresleri — DEĞİŞMEZ (immutable)
+
+Bir medya adresi hiçbir zaman ÜZERİNE YAZILMAZ.
+
+```
+YANLIŞ  /media/products/menemen.webp
+DOĞRU   /media/{asset_id}/{version_id}/product-640.webp
+```
+
+Yeni bir sürüm yeni bir adres üretir. Dört sonucu vardır ve dördü de
+somuttur:
+
+- CDN eski dosyayı göstermeye devam etmez; purge zorunluluğu kalkar.
+- Yayınlanmış bir menünün anlık görüntüsü ÇALIŞMAYA DEVAM EDER: fotoğrafı
+  düzenlemek canlı menüyü habersiz değiştirmez.
+- Geri alma güvenlidir; eski sürümün adresi hâlâ geçerlidir.
+- Önbellek başlıkları uzun tutulabilir, çünkü içerik hiç değişmez.
+
+**Depolama anahtarı ile görünen ad ayrıdır:**
+
+```
+storage_key       tenants/{uuid}/assets/{uuid}/original   ← ASLA değişmez
+display_name      Kaşarlı Menemen                          ← değişebilir
+```
+
+Restoran adı ya da koleksiyon değişince tek bayt taşınmaz.
+
+**Orijinal public DEĞİLDİR.** Yayınlanan menü yalnız temizlenmiş ve optimize
+edilmiş rendition'ları kullanır; orijinal `private` kalır (`docs/49` §6).
+
 ## 5. Yönlendirme kodları
 
 | Durum | Kod | Neden |

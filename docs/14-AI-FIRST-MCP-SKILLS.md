@@ -22,6 +22,24 @@ feature × model → capability, cost, latency, privacy/residency, budget, fallb
 Bir özellik için birden fazla model aday olabilir; hangi model kullanılacağı bu
 matristen çözülür, hard-code edilmez.
 
+### 2a. Çoklu HESAP — 2026-08-27 eki
+
+Doktrin sağlayıcıyı tanımlıyordu, **hesabı tanımlamıyordu.** Sahibi her
+sağlayıcıda birden fazla hesap istedi (Claude 1/2/3, Gemini 1/2/3,
+OpenAI 1/2/3).
+
+Bu yalnız kota çoğaltma değildir ve öyle kurulursa sessizce bozar: hesaplar
+arasında **prompt cache ve oturum bağlamı paylaşılmaz.** Bir tenant'ın
+isteği bir hesaba, devamı başkasına giderse önbellek ıskalanır — maliyet
+artar ve bazı sağlayıcılarda bağlam kaybolur.
+
+**Kural: tenant → hesap eşlemesi YAPIŞKAN.** Rastgele dağıtım yasaktır.
+Sağlıksız hesap havuzdan düşer; düştüğünde o tenant yeni bir hesaba
+yapışır ve bu denetim kaydına yazılır.
+
+Ayrıntı, unknown-unknowns ve fazlanmış plan:
+`docs/51-AI-FIRST-GAP-VE-UNK-UNKS.md`.
+
 ## 3. Zorunlu güvenlik/operasyon katmanı
 
 Secrets yönetimi, prompt versiyonlama + JSON schema ile structured output, tool

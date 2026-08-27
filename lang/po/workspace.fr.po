@@ -8,42 +8,6 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
-#: workspace:workspace.ai.affectedRecords
-msgid "workspace.ai.affectedRecords"
-msgstr ""
-
-#: workspace:workspace.ai.affectedRecords.empty
-msgid "workspace.ai.affectedRecords.empty"
-msgstr ""
-
-#: workspace:workspace.ai.command.label
-msgid "workspace.ai.command.label"
-msgstr ""
-
-#: workspace:workspace.ai.panel.heading
-msgid "workspace.ai.panel.heading"
-msgstr ""
-
-#: workspace:workspace.ai.panel.label
-msgid "workspace.ai.panel.label"
-msgstr ""
-
-#: workspace:workspace.ai.reviewAndApprove
-msgid "workspace.ai.reviewAndApprove"
-msgstr ""
-
-#: workspace:workspace.ai.unavailable
-msgid "workspace.ai.unavailable"
-msgstr ""
-
-#: workspace:workspace.ai.whyThisSuggestion
-msgid "workspace.ai.whyThisSuggestion"
-msgstr ""
-
-#: workspace:workspace.ai.whyThisSuggestion.empty
-msgid "workspace.ai.whyThisSuggestion.empty"
-msgstr ""
-
 #: workspace:workspace.aiCommand.affectedRecords.empty
 msgid "workspace.aiCommand.affectedRecords.empty"
 msgstr ""
@@ -920,6 +884,22 @@ msgstr ""
 msgid "workspace.media.upload.complete"
 msgstr ""
 
+#: workspace:workspace.media.upload.dropzone.active
+msgid "workspace.media.upload.dropzone.active"
+msgstr ""
+
+#: workspace:workspace.media.upload.dropzone.choose
+msgid "workspace.media.upload.dropzone.choose"
+msgstr ""
+
+#: workspace:workspace.media.upload.dropzone.hint
+msgid "workspace.media.upload.dropzone.hint"
+msgstr ""
+
+#: workspace:workspace.media.upload.dropzone.label
+msgid "workspace.media.upload.dropzone.label"
+msgstr ""
+
 #: workspace:workspace.media.upload.error.altText.required
 msgid "workspace.media.upload.error.altText.required"
 msgstr ""
@@ -930,6 +910,10 @@ msgstr ""
 
 #: workspace:workspace.media.upload.error.file.required
 msgid "workspace.media.upload.error.file.required"
+msgstr ""
+
+#: workspace:workspace.media.upload.error.tooSmall
+msgid "workspace.media.upload.error.tooSmall"
 msgstr ""
 
 #: workspace:workspace.media.upload.failed
@@ -1030,6 +1014,26 @@ msgstr ""
 
 #: workspace:workspace.media.upload.region
 msgid "workspace.media.upload.region"
+msgstr ""
+
+#: workspace:workspace.media.upload.requirement.aspect
+msgid "workspace.media.upload.requirement.aspect"
+msgstr ""
+
+#: workspace:workspace.media.upload.requirement.formats
+msgid "workspace.media.upload.requirement.formats"
+msgstr ""
+
+#: workspace:workspace.media.upload.requirement.minimum
+msgid "workspace.media.upload.requirement.minimum"
+msgstr ""
+
+#: workspace:workspace.media.upload.selected.dimensions
+msgid "workspace.media.upload.selected.dimensions"
+msgstr ""
+
+#: workspace:workspace.media.upload.selected.replace
+msgid "workspace.media.upload.selected.replace"
 msgstr ""
 
 #: workspace:workspace.media.upload.uploading

@@ -25,7 +25,12 @@ const en = {
     'menu.product.create.error.submit': 'We could not add the product. Please try again.',
     // Menüye ürün eklemenin TEK adımı. Öncesinde bu iş üç ayrı formdu:
     // ürün, fiyat, alerjen. Kullanıcı için hepsi tek bir iştir.
-    'menu.entry.section.label': 'Add a product to the menu',
+    // Ürün ekleme artık KATEGORİNİN İÇİNDE. Kategori bir alan değil,
+    // tıkladığın yerdir — sahibinin tespitinin bir adım ötesi.
+    'menu.entry.section.label': 'Add a product to {category}',
+    'menu.entry.open': 'Add product',
+    'menu.entry.cancel': 'Cancel',
+    'menu.category.empty': 'No products in this category yet.',
     'menu.entry.category.label': 'Category',
     'menu.entry.category.empty': 'Add a category first — every product lives in one.',
     'menu.entry.allergens.disclose': 'Allergens (optional)',

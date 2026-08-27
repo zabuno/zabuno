@@ -81,9 +81,13 @@ describe('BrandPage — honest loading state before the brand has arrived', () =
     it('delegates to the real BrandEditForm once a brand is loaded, replacing the loading status', () => {
         render(<BrandPage workspaceId={61} brand={makeBrand()} onSaved={vi.fn()} />);
 
-        expect(screen.queryByRole('status', { name: '' })).not.toHaveTextContent(
-            'Loading your brand…',
-        );
+        // Niyet aynı: marka geldiğinde yükleniyor durumu KALMAZ.
+        //
+        // Öncesinde bu, adsız bir `role="status"` üzerinden ifade ediliyordu
+        // ve o rolü aslında sayfadaki AI kartı sağlıyordu. Kart kalkınca
+        // sorgu `null` döndü ve matcher patladı — yani test, ölçmek
+        // istediği şeyi hiç ölçmüyormuş. Metnin kendisi aranır.
+        expect(screen.queryByText('Loading your brand…')).toBeNull();
         expect(screen.getByText('Menekşe')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
     });

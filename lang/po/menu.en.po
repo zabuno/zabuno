@@ -28,6 +28,10 @@ msgstr "We could not add the category. Please try again."
 msgid "menu.category.create.submit"
 msgstr "Add category"
 
+#: menu:menu.category.empty
+msgid "menu.category.empty"
+msgstr "No products in this category yet."
+
 #: menu:menu.category.items.label
 msgid "menu.category.items.label"
 msgstr "Items in {name}"
@@ -60,6 +64,10 @@ msgstr "Create menu"
 msgid "menu.entry.allergens.disclose"
 msgstr "Allergens (optional)"
 
+#: menu:menu.entry.cancel
+msgid "menu.entry.cancel"
+msgstr "Cancel"
+
 #: menu:menu.entry.category.empty
 msgid "menu.entry.category.empty"
 msgstr "Add a category first — every product lives in one."
@@ -72,9 +80,13 @@ msgstr "Category"
 msgid "menu.entry.error.submit"
 msgstr "We could not add the product. Please try again."
 
+#: menu:menu.entry.open
+msgid "menu.entry.open"
+msgstr "Add product"
+
 #: menu:menu.entry.section.label
 msgid "menu.entry.section.label"
-msgstr "Add a product to the menu"
+msgstr "Add a product to {category}"
 
 #: menu:menu.entry.submit
 msgid "menu.entry.submit"

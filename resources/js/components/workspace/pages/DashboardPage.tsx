@@ -2,7 +2,6 @@ import { t } from '../../../i18n/dashboard';
 import { t as tWorkspace } from '../../../i18n/workspace';
 import { DashboardOverview } from '../../catalog/layout/macro/DashboardOverview';
 import type { DataTableColumn } from '../../catalog/data-display/compound/ResponsiveDataTable';
-import { AiAssistPanel } from '../ai/AiAssistPanel';
 import { DashboardSetupJourney } from './dashboard/DashboardSetupJourney';
 import type { BrandProfile } from '../BrandEditForm';
 import type { LocationProfile } from '../LocationEditForm';
@@ -138,8 +137,6 @@ export function DashboardPage({
                         </a>
                     </div>
                 )}
-
-                <AiAssistPanel context={t('dashboard.heading')} />
             </WorkspacePageFrame>
         </div>
     );

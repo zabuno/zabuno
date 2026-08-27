@@ -206,6 +206,22 @@ function buildFetchMock(handlers: FetchHandlers) {
 
 type MenuCatalogWorkspaceProps = { workspaceId: number; locationId: number };
 
+/**
+ * Bir kategorinin ürün formunu açar.
+ *
+ * Kategori artık bir alan değil, tıkladığın yer: form o kategorinin
+ * ALTINDA açılır ve kategori sorulmaz.
+ */
+function openEntryForm(categoryName: string): HTMLElement {
+    const category = screen
+        .getByRole('heading', { name: categoryName })
+        .closest('li') as HTMLElement;
+
+    fireEvent.click(within(category).getByRole('button', { name: 'Add product' }));
+
+    return category;
+}
+
 function assertMutationRequestInit(init: RequestInit | undefined): void {
     expect(init?.credentials).toBe('include');
     const headers = new Headers(init?.headers as HeadersInit | undefined);
@@ -747,6 +763,9 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
 
         // A konumunda tek forma yazılır ama GÖNDERİLMEZ: sınanan şey,
         // yazılmış ama kaydedilmemiş verinin konum değişince taşınmamasıdır.
+        await screen.findByRole('heading', { name: 'Başlangıçlar' });
+        openEntryForm('Başlangıçlar');
+
         const aProductNameInput = await screen.findByLabelText('Product name');
         fireEvent.change(aProductNameInput, { target: { value: 'Mercimek Çorbası' } });
 
@@ -915,7 +934,7 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit allergens for Baklava' }));
         const secondAllergensInput = (await screen.findByRole('textbox', {
-            name: 'Allergens (comma-separated)',
+            name: 'Allergens — Baklava',
         })) as HTMLInputElement;
         expect(secondAllergensInput.value).toBe('');
 
@@ -924,7 +943,7 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
 });
 
 describe('MenuCatalogWorkspace — category selection routes writes and resets downstream state (RED)', () => {
-    it('selects the second of two server categories by real id, routes the entry POST to it, and keeps what the owner already typed', async () => {
+    it('routes the entry POST to the category whose Add product was clicked, never to another', async () => {
         const CATEGORY_A_ID = 5;
         const CATEGORY_B_ID = 6;
         const tree = makeMenuTree({
@@ -984,39 +1003,30 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
         await screen.findByRole('heading', { name: 'Başlangıçlar' });
         expect(screen.getByRole('heading', { name: 'Tatlılar' })).toBeInTheDocument();
 
-        const categorySelect = (await screen.findByRole('combobox', {
-            name: /categor(y|ies)/i,
-        })) as HTMLSelectElement;
-
-        const options = within(categorySelect).getAllByRole('option') as HTMLOptionElement[];
-        expect(options.map((option) => option.textContent)).toEqual(['Başlangıçlar', 'Tatlılar']);
-        expect(options.map((option) => option.value)).toEqual([
-            String(CATEGORY_A_ID),
-            String(CATEGORY_B_ID),
-        ]);
-        expect(categorySelect.value).toBe(String(CATEGORY_A_ID));
-
-        const productNameInput = (await screen.findByLabelText('Product name')) as HTMLInputElement;
-        fireEvent.change(productNameInput, { target: { value: 'Baklava' } });
-        fireEvent.change(screen.getByLabelText('Price'), { target: { value: '50.00' } });
-
-        // Kategoriyi değiştirmek YAZILANI SİLMEZ.
+        // Kategori artık bir AÇILIR MENÜ DEĞİL, tıkladığın yer.
         //
-        // Eski zincirde silmek zorunluydu: ürün ve fiyat ayrı ayrı kaydedilmiş
-        // nesnelerdi ve kategori değişince yarım kalmış bir zincir geride
-        // kalırdı. Artık hepsi tek gönderimde oluşuyor; yanlış kategoriyi seçen
-        // kullanıcı sadece seçimi düzeltir, yazdığını baştan yazmaz.
-        fireEvent.change(categorySelect, { target: { value: String(CATEGORY_B_ID) } });
-        expect(categorySelect.value).toBe(String(CATEGORY_B_ID));
-        expect((screen.getByLabelText('Product name') as HTMLInputElement).value).toBe('Baklava');
-        expect((screen.getByLabelText('Price') as HTMLInputElement).value).toBe('50.00');
+        // Öncesinde ürün formu sayfanın en altında tek başına duruyor ve
+        // kullanıcı zaten baktığı kategoriyi bir listeden seçiyordu.
+        // "Tatlılar"a ürün eklemek için "Tatlılar"ın altındaki düğmeye
+        // basılır; seçim diye bir adım kalmadı.
+        const dessertCategory = screen
+            .getByRole('heading', { name: 'Tatlılar' })
+            .closest('li') as HTMLElement;
 
-        fireEvent.click(screen.getByRole('button', { name: 'Add to menu' }));
+        fireEvent.click(within(dessertCategory).getByRole('button', { name: 'Add product' }));
+
+        const form = await screen.findByRole('form', { name: 'Add a product to Tatlılar' });
+
+        fireEvent.change(within(form).getByLabelText('Product name'), {
+            target: { value: 'Baklava' },
+        });
+        fireEvent.change(within(form).getByLabelText('Price'), { target: { value: '50.00' } });
+        fireEvent.click(within(form).getByRole('button', { name: 'Add to menu' }));
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
             expect(calledUrls).toContain(menuEntriesUrl(WORKSPACE_ID, CATEGORY_B_ID));
-            // Seçim değiştiği için A kategorisine HİÇBİR yazma gitmemeli.
+            // Başka kategoriye HİÇBİR yazma gitmemeli.
             expect(calledUrls).not.toContain(menuEntriesUrl(WORKSPACE_ID, CATEGORY_A_ID));
         });
 
@@ -1106,6 +1116,8 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
         })) as HTMLInputElement;
         expect(staleAllergensInput.value).toContain('gluten');
         expect(staleAllergensInput.value).toContain('süt');
+
+        openEntryForm('Başlangıçlar');
 
         const newProductNameInput = await screen.findByLabelText('Product name');
         fireEvent.change(newProductNameInput, { target: { value: 'Baklava' } });

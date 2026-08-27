@@ -38,6 +38,18 @@ RUN npm run i18n:build && npm run build
 FROM php:8.3-fpm-bookworm AS php-base
 
 COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
+# `vips` KARARI (docs/49 Faz 1, 2026-08-27).
+#
+# `gd` kalıyor: QR ve PDF üretimi onu kullanıyor ve çalışıyor.
+#
+# `vips` EKLENİYOR, çünkü medya motoru `gd` ile yazılamaz:
+#   - `gd` görüntüyü tümüyle belleğe açar; tepe bellek dosya boyutuyla
+#     büyür. `vips` sequential access ile sabit bellekte çalışır — 30 MB'lık
+#     bir fotoğraf sunucuyu düşürmemeli.
+#   - `gd`'de ICC profili yönetimi yok; CMYK ya da AdobeRGB bir fotoğraf
+#     sRGB'ye çevrilmeden menüde yanlış renkte görünür.
+#   - Decompression bomb'u DECODE ETMEDEN reddetmek başlık okumayı
+#     gerektirir; `vips` bunu sağlar.
 RUN install-php-extensions \
         bcmath \
         gd \
@@ -45,6 +57,7 @@ RUN install-php-extensions \
         mbstring \
         opcache \
         pdo_pgsql \
+        vips \
         zip
 
 # --- 3) PHP bağımlılıkları -------------------------------------------------
