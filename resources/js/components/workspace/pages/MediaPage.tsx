@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
+import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
 import { AiAssistPanel } from '../ai/AiAssistPanel';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
@@ -81,7 +82,18 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
         });
 
         if (!response.ok) {
-            throw new Error(`Upload failed with status ${response.status}`);
+            // Durum kodunu metne çevirip gövdeyi atmak, sunucunun söylediği
+            // tek yararlı şeyi kaybeder. 50 MB sınırını aşan bir yüklemede
+            // kullanıcının gördüğü "Upload failed with status 413" oluyordu;
+            // oysa sunucu hangi dosyanın ne kadar büyük olduğunu söylüyor.
+            const failure = await readValidationFailure(
+                response,
+                t('workspace.media.upload.failed'),
+            );
+
+            throw new ServerRejectedError(
+                failure.fields.file ?? failure.message ?? t('workspace.media.upload.failed'),
+            );
         }
 
         const body = (await response.json()) as { asset?: MediaAsset } & Partial<MediaAsset>;

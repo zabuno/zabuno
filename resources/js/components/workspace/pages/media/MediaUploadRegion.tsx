@@ -2,6 +2,7 @@ import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { Button } from '../../../catalog/forms/micro/Button';
 import { useId, useRef, useState, type FormEvent } from 'react';
+import { ServerRejectedError } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/workspace';
 
 type UploadStatus = 'idle' | 'pending' | 'success' | 'error';
@@ -46,6 +47,13 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
     const [altText, setAltText] = useState('');
     const [slot, setSlot] = useState('');
     const [status, setStatus] = useState<UploadStatus>('idle');
+    /**
+     * Yüklemenin neden başarısız olduğu. Öncesinde yalnız bir durum vardı
+     * ve ekranda sabit bir "yükleme başarısız" cümlesi görünüyordu; sunucu
+     * dosyanın çok büyük olduğunu ya da biçiminin desteklenmediğini
+     * söylüyor olsa bile.
+     */
+    const [failureMessage, setFailureMessage] = useState('');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -61,6 +69,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         formData.set('slot', slot);
 
         setStatus('pending');
+        setFailureMessage('');
 
         try {
             await onSubmit(formData);
@@ -71,7 +80,11 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                 fileInputRef.current.value = '';
             }
             setStatus('success');
-        } catch {
+        } catch (error) {
+            // YALNIZ sunucunun reddi ekrana çıkar. Ağ kopmasında `error`
+            // ham bir JavaScript hatasıdır ("Network failure") ve onu
+            // göstermek kullanıcıya iç detay sızdırmaktır.
+            setFailureMessage(error instanceof ServerRejectedError ? error.message : '');
             setStatus('error');
         }
     }
@@ -161,8 +174,8 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             )}
 
             {status === 'error' && (
-                <p role="alert" className="text-meta text-fg-danger">
-                    {t('workspace.media.upload.failed')}
+                <p role="alert" className="text-body text-fg-danger">
+                    {failureMessage || t('workspace.media.upload.failed')}
                 </p>
             )}
 
