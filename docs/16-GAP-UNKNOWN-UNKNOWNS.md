@@ -126,6 +126,17 @@ Bkz. `docs/15` §4 — MED-01 ile aynı kapasite-probe testine bağlı.
 | AI-01 | Provider fiyat/politika değişikliği (vendor drift) izlenmiyor henüz | Orta | Maliyet sıçraması | `skills/AI-provider-evaluator` periyodik çalıştırma | Engineering | Post-MVP | Fallback provider tanımlı |
 | AI-02 | Prompt injection / content-poisoning testi otomatikleştirilmedi | Yüksek | Eval seti kırmızı sonuç | `docs/14` §3 eval seti | Security | MVP Exit Gate | Tool allowlist zaten sınırlı |
 | AI-03 | Çok-dilli AI translation kalitesi için bir eval seti (referans çeviri korpusu, kalite eşiği) tanımlanmadı (`modules/opt-22-ai-translation.md`) | Orta (düşük kaliteli otomatik çeviri riski) | Kullanıcı düzeltme oranı (post-edit rate) | Pilot dil çiftinde küçük referans korpus + BLEU/human-review karşılaştırması | Engineering | Stage 2 Post-MVP (OPT-22 devreye girmeden önce) | İnsan onayı zorunlu kalır (AI çıktısı doğrudan yayınlanmaz) |
+| AI-06 | Hesap YAPIŞKANLIĞI bir güvenlik sınırı sanılıyor | Yüksek (yanlış güven) | Tenant izolasyonu hesap seçimine bırakılmış tasarım | Kod incelemesi: izolasyon veri/önbellek/getirme katmanında mı | Security | Stage 1 `AI-S1-01` | İzolasyon politika katmanında zorlanır; yapışkanlık yalnız önbellek/residency/sözleşme için |
+| AI-07 | Model tedarik zinciri (lisans, sağlama, revizyon) doğrulanmıyor | Yüksek | Doğrulanmamış model dosyası | Manifest + checksum kapısı | Security | Stage 1 `AI-S1-02` | Doğrulanmayan dosya yüklenmez |
+| AI-08 | Nicemleme (quantization) değişimi kalite kaymasına yol açar | Orta | Aynı girdide farklı çıktı | Nicemleme model kimliğinin parçası; eval tekrarı | Engineering | Stage 1 `AI-S1-02` | Eval geçmeden dağıtım yok |
+| AI-09 | Tenant'lar arası gömme/önbellek sızıntısı | **Kritik** | Bir tenant'ın ürünü başkasının aramasında | Tenant kimliği vektör alanı + önbellek anahtarında zorunlu | Security | Stage 1 `AI-S1-01` | Getirme filtresi tenant'sız çalışmaz |
+| AI-10 | Görünmez prompt enjeksiyonu PDF/görselin içinde | Yüksek | OCR çıktısında talimat benzeri metin | Kırmızı takım fixture'ı | Security | Stage 1 `AI-S1-04` | OCR çıktısı da kullanıcı içeriğidir; veri olarak işaretlenir |
+| AI-11 | ECA özyinelemesi ve yinelenen iş uygulaması | Orta | Kuyruk şişmesi, iki kez uygulanan taslak | Idempotency anahtarı + derinlik sınırı testi | Engineering | Stage 1 `AI-S1-05` | Tenant başına oran sınırı |
+| AI-12 | Gömme modeli değişince eski vektörler karşılaştırılamaz | Orta | Arama kalitesi düşüşü | Vektör kaydında model kimliği | Engineering | Stage 2 | Yeniden indeksleme işi planlanır |
+| AI-13 | İnceleme yığılması → otomasyon yanlılığı (insan okumadan onaylar) | Yüksek | Yüksek onay oranı + yüksek düzeltme oranı | Öneri hacmi sınırı; düşük güvende öneri gösterilmez | Product | Stage 2 | Az ve doğru öneri |
+| AI-14 | **Alerjen iddiası** — AI "alerjensizdir" diyemez | **Kritik (sağlık + hukuk)** | Otomatik vegan/alerjensiz etiketi | Şema düzeyinde yasak: yalnız `candidate_allergen` alanı | Product + Legal | Stage 1 `AI-S1-04` | Çapraz bulaşma menü metninden çıkarılamaz; iddia edilemez |
+| AI-15 | Model fiyat uydurması | Yüksek | Menüde yanlış fiyat | `uncertain` bayrağı zorunlu; belirsiz fiyat yayınlanamaz | Product | Stage 1 `AI-S1-04` | Yayın kapısı |
+| AI-16 | Paylaşımlı barındırma ile 32 GB VPS davranışı sessizce ayrışır | Orta | Yerel sidecar varsayımı | Üç dağıtım profili; `shared-host`'ta yerel AI kapalı | Engineering | Stage 1 `AI-S1-02` | Profil kapısı |
 
 ## P. Modül bağımlılık / veri migrasyonu
 

@@ -68,6 +68,13 @@ geldiğinde doktrini karşılamayan bir kestirme cazip hâle gelir.
 
 ## 2. Unknown unknowns — sormadığımız için görmediğimiz riskler
 
+> **Kanonik kayıt `docs/16`'dır.** Denetim haklı olarak uyardı: iki ayrı
+> unknown-unknown kaydı tutmak, ikisinin bir gün ayrışması demektir. Aşağıdaki
+> UNK-01..18 maddeleri `docs/16` §AI'daki `AI-01..16` satırlarına **taşındı**
+> ve orada sahibi, tetikleyicisi ve containment'ı ile yaşıyorlar. Burada
+> kalanlar, o satırların **gerekçesidir** — kayıt değil, açıklama.
+
+
 Bunlar "bilmediğimizi bilmediğimiz" sınıfından; her biri ürünü sessizce
 bozabilir ve hiçbiri bugünkü planda yoktu.
 
