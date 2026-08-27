@@ -1,17 +1,32 @@
-# Otomatik HTTPS. Caddy sertifikayı kendisi alır ve yeniler; VPS'te bunu
-# elle yönetmek, unutulduğu gün siteyi düşüren türden bir iştir.
-{$ZABUNO_DOMAIN} {
+# Otomatik HTTPS, ÇOK ALAN ADI.
+#
+# `ZABUNO_DOMAINS` virgülle ayrılmış bir listedir ve Caddy site adresi
+# listesi olarak okur:
+#
+#     ZABUNO_DOMAINS="zabuno.com, www.zabuno.com, e-menum.net, www.e-menum.net"
+#
+# Her biri için sertifika ayrı alınır ve otomatik yenilenir.
+#
+# Uygulama tarafında alan adı SABİT DEĞİL: mutlak adresler isteğin kendi
+# host'undan üretilir (`ShowSitemapController` → `getSchemeAndHttpHost`),
+# kanonik host zorlaması varsayılan olarak KAPALIDIR. Yani e-menum.net'ten
+# gelen ziyaretçi e-menum.net adresleri görür, zabuno.com'a atılmaz. Bu bir
+# SaaS: aynı yazılım başka bir alan adında, başka bir sunucuda çalışabilmeli.
+{$ZABUNO_DOMAINS} {
 	encode zstd gzip
 
 	# Uygulama kendi güvenlik başlıklarını üretir (CSP nonce dâhil);
 	# burada onları EZMİYORUZ. Yalnız taşıma katmanına ait olan biri
-	# ekleniyor: HSTS, çünkü uygulama TLS'in sonlandığı yeri bilmez.
+	# ekleniyor: HSTS, çünkü uygulama TLS'in nerede sonlandığını bilmez.
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		-Server
 	}
 
 	reverse_proxy app:8080 {
+		# Uygulamanın istemcinin gerçekte hangi şema ve host ile geldiğini
+		# bilmesi gerekir; aksi hâlde ürettiği adresler yanlış olur.
 		header_up X-Forwarded-Proto https
+		header_up X-Forwarded-Host {host}
 	}
 }

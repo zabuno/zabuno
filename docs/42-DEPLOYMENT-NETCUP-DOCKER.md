@@ -44,12 +44,21 @@ VPS'te bir kullanıcı ve şu dizin gerekir: `~/zabuno/`. İçine `.env` konur:
 
 ```
 APP_KEY=base64:...          # `php artisan key:generate --show` çıktısı
-APP_URL=https://alanadin.com
-ZABUNO_DOMAIN=alanadin.com
+APP_URL=https://birinci-alanadi.com
+ZABUNO_DOMAINS=birinci-alanadi.com, www.birinci-alanadi.com, ikinci-alanadi.net
+URL_TRUSTED_HOSTS=birinci-alanadi.com,www.birinci-alanadi.com,ikinci-alanadi.net
+URL_ENFORCE_HOST=false
 DB_DATABASE=zabuno
 DB_USERNAME=zabuno
 DB_PASSWORD=...             # uzun ve rastgele
 ```
+
+**Bu dosyayı `install.sh` sizin yerinize üretir** (`docs/43`). Elle yazmak
+yalnız var olan bir kuruluma dokunurken gerekir.
+
+`ZABUNO_DOMAINS` çoğuldur ve bilinçlidir: bu bir SaaS, aynı yazılım birden
+çok alan adında çalışır. `URL_ENFORCE_HOST` kapalı kalmalı — açılırsa ikinci
+alan adı birincinin adreslerine yönlendirilir ve kendi kimliğini kaybeder.
 
 `.env` sunucuda kalır ve depoya **girmez**. Compose dosyaları her deploy'da
 akış tarafından gönderilir.
