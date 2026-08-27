@@ -66,17 +66,19 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
 
     const nameRef = useRef<HTMLInputElement>(null);
 
-    // Tarayıcı kendi saat dilimini biliyor; ülkeyi ondan ÖNERİYORUZ.
-    // Öneri seçim değildir — kullanıcı listeden değiştirebilir.
-    useEffect(() => {
-        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        void loadReference({ timezone: browserTimezone });
-        // Yalnız ilk açılışta.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    async function loadReference(query: { timezone?: string; country?: string }): Promise<void> {
+    /**
+     * Referans veriyi ÇEKER — hiçbir durum güncellemez.
+     *
+     * G/Ç ile durum güncellemesi bilerek ayrıldı. Birleşikken effect
+     * içinden çağrılması, React'in "senkron setState" uyarısını tetikliyordu
+     * ve uyarı haksız değildi: çağrının içeride bir await'ten sonra durum
+     * yazdığını dışarıdan görmek mümkün değil. Ayrıldıklarında sınır
+     * görünür hâle geliyor.
+     */
+    async function fetchReference(query: {
+        timezone?: string;
+        country?: string;
+    }): Promise<Reference | null> {
         const params = new URLSearchParams();
 
         if (query.country) params.set('country', query.country);
@@ -88,27 +90,56 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                 buildAuthRequestInit({ method: 'GET' }),
             );
 
-            if (!response.ok) return;
+            if (!response.ok) return null;
 
-            const data = (await response.json()) as Reference;
-            setReference(data);
-
-            const resolved = query.country ?? data.suggestedCountry ?? '';
-            if (resolved) setCountry(resolved);
-            if (data.defaults) {
-                setTimezone(data.defaults.timezone);
-                setCurrency(data.defaults.currency);
-            }
+            return (await response.json()) as Reference;
         } catch {
             // Referans verisi gelmezse form yine çalışır: alanlar boş kalır
             // ve sunucu doğrulaması son söz olur. Ekran boş kalmaz.
+            return null;
         }
     }
+
+    /** Gelen veriyi ekrana yazar. */
+    function applyReference(data: Reference, chosenCountry?: string): void {
+        setReference(data);
+
+        const resolved = chosenCountry ?? data.suggestedCountry ?? '';
+        if (resolved) setCountry(resolved);
+        if (data.defaults) {
+            setTimezone(data.defaults.timezone);
+            setCurrency(data.defaults.currency);
+        }
+    }
+
+    // Tarayıcı kendi saat dilimini biliyor; ülkeyi ondan ÖNERİYORUZ.
+    // Öneri seçim değildir — liste hemen yanında duruyor.
+    useEffect(() => {
+        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        let cancelled = false;
+
+        void fetchReference({ timezone: browserTimezone }).then((data) => {
+            // Bileşen sökülmüşse yazma: sökülmüş bir ağaca durum yazmak
+            // sessiz bir sızıntıdır.
+            if (cancelled || data === null) return;
+
+            applyReference(data);
+        });
+
+        return () => {
+            cancelled = true;
+        };
+        // Yalnız ilk açılışta.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     function handleCountryChange(next: string): void {
         setCountry(next);
         setFieldErrors({});
-        void loadReference({ country: next });
+
+        void fetchReference({ country: next }).then((data) => {
+            if (data !== null) applyReference(data, next);
+        });
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
