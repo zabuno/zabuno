@@ -1,7 +1,9 @@
-import { useState, type FormEvent } from 'react';
-import { Button, Label, TextInput } from 'flowbite-react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { t } from '../../i18n/workspace';
+import { Button } from '../catalog/forms/micro/Button';
+import { SelectField } from '../catalog/forms/compound/SelectField';
+import { TextField } from '../catalog/forms/compound/TextField';
 
 export type BrandProfile = {
     id: number;
@@ -16,39 +18,113 @@ export type BrandProfile = {
     contact_phone: string | null;
 };
 
+type Market = { code: string; name: string };
+type Timezone = { id: string; label: string };
+type Currency = { code: string; name: string; symbol: string };
+
+type Reference = {
+    markets: Market[];
+    currencies: Currency[];
+    timezones: Timezone[];
+    defaults: { timezone: string; currency: string } | null;
+    suggestedCountry: string | null;
+};
+
 type BrandOnboardingFormProps = {
     workspaceId: number;
     onCreated: (brand: BrandProfile) => void;
 };
 
+/**
+ * Marka oluşturma.
+ *
+ * Önceki hâli dört serbest metin alanı soruyordu: ad, `timezone`,
+ * `currency`, `locale`. Yani kullanıcıdan `Europe/Istanbul`, `TRY` ve
+ * `tr_TR` yazmasını bekliyordu. Bunlar veritabanı sütunlarının adları ve
+ * değerleridir; restoran sahibinin dili değil. Sahibi "istantul" yazdı,
+ * sunucu haklı olarak reddetti, ekran "Please try again" dedi ve yolculuk
+ * orada bitti.
+ *
+ * Kural: **kullanıcının bildiğini sor, çıkarılabileni çıkar, ertelenebileni
+ * ertele.**
+ *
+ * - Bildiği: markasının adı ve hangi ülkede iş yaptığı.
+ * - Çıkarılan: saat dilimi ve para birimi (ikisi de ülkeden güvenilir
+ *   biçimde türer) — görünür kalır ve değiştirilebilir, gizlenmez.
+ * - Ertelenen: menü içerik dili. Menü eklenene kadar bir anlamı yok ve
+ *   ülkeye bakarak dil tahmin etmek yanlış sonuç veriyor.
+ */
 export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingFormProps) {
     const [name, setName] = useState('');
+    const [country, setCountry] = useState('');
     const [timezone, setTimezone] = useState('');
     const [currency, setCurrency] = useState('');
-    const [locale, setLocale] = useState('');
+    const [reference, setReference] = useState<Reference | null>(null);
     const [error, setError] = useState('');
-    /**
-     * Sunucunun 422 gövdesindeki alan bazlı hatalar.
-     *
-     * Bunlar daha önce okunmadan atılıyordu: her doğrulama hatası tek bir
-     * "Please try again" cümlesine düşüyordu. Kullanıcı neyi düzelteceğini
-     * bilmediği için aynı veriyi tekrar gönderiyor ve aynı cevabı alıyordu —
-     * çıkışı olmayan bir döngü. Sunucu zaten "The timezone must be a valid
-     * IANA timezone identifier" diyordu; söylediği yere taşınıyor.
-     */
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
+
+    const nameRef = useRef<HTMLInputElement>(null);
+
+    // Tarayıcı kendi saat dilimini biliyor; ülkeyi ondan ÖNERİYORUZ.
+    // Öneri seçim değildir — kullanıcı listeden değiştirebilir.
+    useEffect(() => {
+        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        void loadReference({ timezone: browserTimezone });
+        // Yalnız ilk açılışta.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    async function loadReference(query: { timezone?: string; country?: string }): Promise<void> {
+        const params = new URLSearchParams();
+
+        if (query.country) params.set('country', query.country);
+        if (query.timezone) params.set('timezone', query.timezone);
+
+        try {
+            const response = await fetch(
+                `/api/reference/markets?${params.toString()}`,
+                buildAuthRequestInit({ method: 'GET' }),
+            );
+
+            if (!response.ok) return;
+
+            const data = (await response.json()) as Reference;
+            setReference(data);
+
+            const resolved = query.country ?? data.suggestedCountry ?? '';
+            if (resolved) setCountry(resolved);
+            if (data.defaults) {
+                setTimezone(data.defaults.timezone);
+                setCurrency(data.defaults.currency);
+            }
+        } catch {
+            // Referans verisi gelmezse form yine çalışır: alanlar boş kalır
+            // ve sunucu doğrulaması son söz olur. Ekran boş kalmaz.
+        }
+    }
+
+    function handleCountryChange(next: string): void {
+        setCountry(next);
+        setFieldErrors({});
+        void loadReference({ country: next });
+    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         const trimmedName = name.trim();
-        const trimmedTimezone = timezone.trim();
-        const trimmedCurrency = currency.trim();
-        const trimmedLocale = locale.trim();
 
-        if (trimmedName === '' || trimmedTimezone === '' || trimmedCurrency === '') {
-            setError(t('workspace.brand.error.required'));
+        if (trimmedName === '') {
+            setFieldErrors({ name: t('workspace.brand.error.name.required') });
+            nameRef.current?.focus();
+
+            return;
+        }
+
+        if (country === '' || timezone === '' || currency === '') {
+            setFieldErrors({ country: t('workspace.brand.error.market.required') });
 
             return;
         }
@@ -56,16 +132,6 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
         setError('');
         setFieldErrors({});
         setSubmitting(true);
-
-        const payload: Record<string, string> = {
-            name: trimmedName,
-            timezone: trimmedTimezone,
-            currency: trimmedCurrency,
-        };
-
-        if (trimmedLocale !== '') {
-            payload.locale = trimmedLocale.split(/[-_]/)[0].toLowerCase();
-        }
 
         try {
             await bootstrapCsrfCookie();
@@ -75,7 +141,7 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                 buildAuthRequestInit({
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({ name: trimmedName, timezone, currency }),
                 }),
             );
 
@@ -89,7 +155,7 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
 
             await reportFailure(response);
         } catch {
-            setError(t('workspace.brand.error.submit'));
+            setError(t('workspace.brand.error.network'));
         }
 
         setSubmitting(false);
@@ -110,125 +176,133 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                         entries.map(([field, messages]) => [field, messages[0] ?? '']),
                     ),
                 );
-                // Özet, alan hatalarının yerini tutmaz; ekran okuyucunun
-                // gönderim sonrası bir şey duyabilmesi için var.
                 setError(body.message ?? t('workspace.brand.error.submit'));
+
+                // Odak ilk hatalı alana taşınır; aksi hâlde uzun bir formda
+                // hatanın nerede olduğunu aramak kullanıcının işi olur.
+                if (entries.some(([field]) => field === 'name')) {
+                    nameRef.current?.focus();
+                }
 
                 return;
             }
 
             setError(body.message ?? t('workspace.brand.error.submit'));
         } catch {
-            // Gövde JSON değilse söylenecek özel bir şey yok.
             setError(t('workspace.brand.error.submit'));
         }
     }
 
+    const selectedTimezone = reference?.timezones.find((zone) => zone.id === timezone);
+    const selectedCurrency = reference?.currencies.find((item) => item.code === currency);
+
     return (
-        <div className="mx-auto max-w-2xl px-4 py-10">
-            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-                <h1 className="text-xl font-semibold text-fg">{t('workspace.brand.heading')}</h1>
+        <div className="mx-auto w-full max-w-xl px-4 py-10">
+            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-title font-semibold text-fg">
+                        {t('workspace.brand.heading')}
+                    </h1>
+                    {/* Başlık tek başına "şimdi ne oluşturuyorum, sonra
+                        değiştirebilir miyim" sorularını yanıtsız bırakıyordu. */}
+                    <p className="text-body text-fg-secondary">{t('workspace.brand.intro')}</p>
+                </div>
 
                 {error && (
-                    <p role="alert" className="text-sm font-medium text-fg-danger">
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {error}
                     </p>
                 )}
 
-                <div>
-                    <div className="mb-2 block">
-                        <Label htmlFor="brand-name">{t('workspace.brand.name')}</Label>
-                    </div>
-                    <TextInput
-                        id="brand-name"
-                        name="name"
-                        type="text"
-                        className="w-full"
-                        color={fieldErrors.name ? 'failure' : undefined}
-                        aria-invalid={fieldErrors.name ? true : undefined}
-                        aria-describedby={fieldErrors.name ? 'brand-name-error' : undefined}
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                    />
-                    {fieldErrors.name && (
-                        <p id="brand-name-error" className="mt-1 text-meta text-fg-danger">
-                            {fieldErrors.name}
-                        </p>
-                    )}
-                </div>
+                <TextField
+                    ref={nameRef}
+                    id="brand-name"
+                    name="name"
+                    type="text"
+                    label={t('workspace.brand.name')}
+                    helpText={t('workspace.brand.name.help')}
+                    errorText={fieldErrors.name}
+                    required
+                    autoFocus
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                />
 
-                <div>
-                    <div className="mb-2 block">
-                        <Label htmlFor="brand-timezone">{t('workspace.brand.timezone')}</Label>
-                    </div>
-                    <TextInput
-                        id="brand-timezone"
-                        name="timezone"
-                        type="text"
-                        className="w-full"
-                        color={fieldErrors.timezone ? 'failure' : undefined}
-                        aria-invalid={fieldErrors.timezone ? true : undefined}
-                        aria-describedby={fieldErrors.timezone ? 'brand-timezone-error' : undefined}
-                        value={timezone}
-                        onChange={(event) => setTimezone(event.target.value)}
-                    />
-                    {fieldErrors.timezone && (
-                        <p id="brand-timezone-error" className="mt-1 text-meta text-fg-danger">
-                            {fieldErrors.timezone}
-                        </p>
-                    )}
-                </div>
+                <SelectField
+                    id="brand-country"
+                    name="country"
+                    label={t('workspace.brand.market')}
+                    helpText={t('workspace.brand.market.help')}
+                    errorText={fieldErrors.country}
+                    required
+                    value={country}
+                    onChange={(event) => handleCountryChange(event.target.value)}
+                >
+                    <option value="">{t('workspace.brand.market.placeholder')}</option>
+                    {(reference?.markets ?? []).map((market) => (
+                        <option key={market.code} value={market.code}>
+                            {market.name}
+                        </option>
+                    ))}
+                </SelectField>
 
-                <div>
-                    <div className="mb-2 block">
-                        <Label htmlFor="brand-currency">{t('workspace.brand.currency')}</Label>
-                    </div>
-                    <TextInput
-                        id="brand-currency"
-                        name="currency"
-                        type="text"
-                        className="w-full"
-                        color={fieldErrors.currency ? 'failure' : undefined}
-                        aria-invalid={fieldErrors.currency ? true : undefined}
-                        aria-describedby={fieldErrors.currency ? 'brand-currency-error' : undefined}
-                        value={currency}
-                        onChange={(event) => setCurrency(event.target.value)}
-                    />
-                    {fieldErrors.currency && (
-                        <p id="brand-currency-error" className="mt-1 text-meta text-fg-danger">
-                            {fieldErrors.currency}
-                        </p>
-                    )}
-                </div>
+                {/* Bölgesel ayarlar TÜRETİLİR ama GİZLENMEZ: kullanıcı ne
+                    seçildiğini görür ve isterse değiştirir. Kapalı başlaması,
+                    marka adının asıl karar olduğunu söyler. */}
+                <details className="rounded-md border border-border p-4">
+                    <summary className="cursor-pointer text-body text-fg">
+                        {t('workspace.brand.regional')}
+                        {selectedTimezone && selectedCurrency ? (
+                            <span className="ms-2 text-meta text-fg-secondary">
+                                {selectedCurrency.name} · {selectedTimezone.label}
+                            </span>
+                        ) : null}
+                    </summary>
 
-                <div>
-                    <div className="mb-2 block">
-                        <Label htmlFor="brand-locale">{t('workspace.brand.locale')}</Label>
-                    </div>
-                    <TextInput
-                        id="brand-locale"
-                        name="locale"
-                        type="text"
-                        className="w-full"
-                        color={fieldErrors.locale ? 'failure' : undefined}
-                        aria-invalid={fieldErrors.locale ? true : undefined}
-                        aria-describedby={fieldErrors.locale ? 'brand-locale-error' : undefined}
-                        value={locale}
-                        onChange={(event) => setLocale(event.target.value)}
-                    />
-                    {fieldErrors.locale && (
-                        <p id="brand-locale-error" className="mt-1 text-meta text-fg-danger">
-                            {fieldErrors.locale}
-                        </p>
-                    )}
-                </div>
+                    <div className="mt-4 flex flex-col gap-4">
+                        <SelectField
+                            id="brand-timezone"
+                            name="timezone"
+                            label={t('workspace.brand.timezone')}
+                            helpText={t('workspace.brand.timezone.help')}
+                            errorText={fieldErrors.timezone}
+                            value={timezone}
+                            onChange={(event) => setTimezone(event.target.value)}
+                        >
+                            {(reference?.timezones ?? []).map((zone) => (
+                                <option key={zone.id} value={zone.id}>
+                                    {zone.label}
+                                </option>
+                            ))}
+                        </SelectField>
 
-                <Button type="submit" disabled={submitting} className="w-full">
+                        <SelectField
+                            id="brand-currency"
+                            name="currency"
+                            label={t('workspace.brand.currency')}
+                            helpText={t('workspace.brand.currency.help')}
+                            errorText={fieldErrors.currency}
+                            value={currency}
+                            onChange={(event) => setCurrency(event.target.value)}
+                        >
+                            {(reference?.currencies ?? []).map((item) => (
+                                <option key={item.code} value={item.code}>
+                                    {item.name} — {item.code}
+                                </option>
+                            ))}
+                        </SelectField>
+                    </div>
+                </details>
+
+                <Button
+                    type="submit"
+                    disabled={submitting}
+                    loading={submitting}
+                    loadingText={t('workspace.brand.submitting')}
+                >
                     {t('workspace.brand.submit')}
                 </Button>
             </form>
         </div>
     );
 }
-
-export default BrandOnboardingForm;

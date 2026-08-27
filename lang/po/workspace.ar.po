@@ -396,6 +396,22 @@ msgstr ""
 msgid "workspace.brand.currency"
 msgstr ""
 
+#: workspace:workspace.brand.currency.help
+msgid "workspace.brand.currency.help"
+msgstr ""
+
+#: workspace:workspace.brand.error.market.required
+msgid "workspace.brand.error.market.required"
+msgstr ""
+
+#: workspace:workspace.brand.error.name.required
+msgid "workspace.brand.error.name.required"
+msgstr ""
+
+#: workspace:workspace.brand.error.network
+msgid "workspace.brand.error.network"
+msgstr ""
+
 #: workspace:workspace.brand.error.required
 msgid "workspace.brand.error.required"
 msgstr ""
@@ -408,6 +424,10 @@ msgstr ""
 msgid "workspace.brand.heading"
 msgstr ""
 
+#: workspace:workspace.brand.intro
+msgid "workspace.brand.intro"
+msgstr ""
+
 #: workspace:workspace.brand.loading
 msgid "workspace.brand.loading"
 msgstr ""
@@ -416,20 +436,48 @@ msgstr ""
 msgid "workspace.brand.locale"
 msgstr ""
 
+#: workspace:workspace.brand.market
+msgid "workspace.brand.market"
+msgstr ""
+
+#: workspace:workspace.brand.market.help
+msgid "workspace.brand.market.help"
+msgstr ""
+
+#: workspace:workspace.brand.market.placeholder
+msgid "workspace.brand.market.placeholder"
+msgstr ""
+
 #: workspace:workspace.brand.name
 msgid "workspace.brand.name"
+msgstr ""
+
+#: workspace:workspace.brand.name.help
+msgid "workspace.brand.name.help"
 msgstr ""
 
 #: workspace:workspace.brand.operational.description
 msgid "workspace.brand.operational.description"
 msgstr ""
 
+#: workspace:workspace.brand.regional
+msgid "workspace.brand.regional"
+msgstr ""
+
 #: workspace:workspace.brand.submit
 msgid "workspace.brand.submit"
 msgstr ""
 
+#: workspace:workspace.brand.submitting
+msgid "workspace.brand.submitting"
+msgstr ""
+
 #: workspace:workspace.brand.timezone
 msgid "workspace.brand.timezone"
+msgstr ""
+
+#: workspace:workspace.brand.timezone.help
+msgid "workspace.brand.timezone.help"
 msgstr ""
 
 #: workspace:workspace.brandLocations.brand.contactEmail

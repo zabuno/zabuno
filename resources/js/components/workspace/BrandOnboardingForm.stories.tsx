@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { BrandOnboardingForm, type BrandProfile } from './BrandOnboardingForm';
 import { stubFetch, withFetchLifecycle } from '../../storybook/fetchLifecycle';
 
@@ -44,8 +44,29 @@ function jsonResponse(status: number, body: unknown): Response {
     } as Response;
 }
 
+/**
+ * Form açılışta referans veriyi (ülke, saat dilimi, para birimi) çeker;
+ * kullanıcıdan `Europe/Istanbul` yazmasını istemek yerine ülkeyi tarayıcının
+ * saat diliminden önerir. Story de o çağrıyı cevaplamalı, yoksa alanlar boş
+ * kalır ve senaryo gerçeği yansıtmaz.
+ */
+const REFERENCE = {
+    markets: [
+        { code: 'TR', name: 'Türkiye' },
+        { code: 'DE', name: 'Germany' },
+    ],
+    currencies: [
+        { code: 'TRY', name: 'Turkish Lira', symbol: '₺' },
+        { code: 'EUR', name: 'Euro', symbol: '€' },
+    ],
+    timezones: [{ id: 'Europe/Istanbul', label: 'Istanbul — UTC+03:00' }],
+    defaults: { timezone: 'Europe/Istanbul', currency: 'TRY' },
+    suggestedCountry: 'TR',
+};
+
 function respondWith(createResponse: Response | Promise<never>) {
     stubFetch(async (url) => {
+        if (String(url).startsWith('/api/reference/markets')) return jsonResponse(200, REFERENCE);
         if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
         if (String(url) === brandUrl()) return createResponse as Response;
         return jsonResponse(404, { message: 'Not Found.' });
@@ -136,28 +157,32 @@ export const Success: Story = {
         },
     ],
     args: { workspaceId: WORKSPACE_ID, onCreated: () => {} },
-    render: (args) => (
-        <BrandOnboardingSuccessHarness {...(args as BrandOnboardingSuccessHarnessProps)} />
-    ),
+    render: (args) => {
+        // Sunucu taklidi RENDER anında kurulur, `loaders`'da değil. Form
+        // açılışta referans veriyi çekiyor; stub bileşen monte olduktan
+        // sonra kurulursa o ilk çağrı yakalanmaz ve ülke önerisi hiç
+        // gelmez. Story'yi çalıştıran her ortam `loaders`'ı koşturmuyor.
+        respondWith(jsonResponse(201, CREATED_BRAND));
+
+        return <BrandOnboardingSuccessHarness {...(args as BrandOnboardingSuccessHarnessProps)} />;
+    },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 
-        respondWith(jsonResponse(201, CREATED_BRAND));
+        // Ülke önerisinin yerleşmesini bekle: saat dilimi ve para birimi
+        // ondan türer, kullanıcı ikisini de yazmaz.
+        await waitFor(() => {
+            expect(canvasElement.querySelector<HTMLSelectElement>('#brand-country')?.value).toBe(
+                'TR',
+            );
+        });
 
         await userEvent.type(
             canvasElement.querySelector<HTMLInputElement>('#brand-name')!,
             CREATED_BRAND.name,
         );
-        await userEvent.type(
-            canvasElement.querySelector<HTMLInputElement>('#brand-timezone')!,
-            CREATED_BRAND.timezone,
-        );
-        await userEvent.type(
-            canvasElement.querySelector<HTMLInputElement>('#brand-currency')!,
-            CREATED_BRAND.currency,
-        );
 
-        await userEvent.click(canvas.getByRole('button'));
+        await userEvent.click(canvas.getByRole('button', { name: /create brand/i }));
 
         await expect(await canvas.findByText(CREATED_BRAND.name)).toBeInTheDocument();
     },

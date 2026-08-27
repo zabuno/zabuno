@@ -256,7 +256,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
 
         fireEvent.click(await findEditButton(scope));
 
-        expect((await scope.findByLabelText('Name')) as HTMLInputElement).toHaveValue(brand.name);
+        expect((await scope.findByLabelText('Brand name')) as HTMLInputElement).toHaveValue(
+            brand.name,
+        );
         expect(scope.getByLabelText('Locale')).toHaveValue(brand.locale);
         expect(scope.getByLabelText('Timezone')).toHaveValue(brand.timezone);
         expect(scope.getByLabelText('Currency')).toHaveValue(brand.currency);
@@ -274,11 +276,11 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const scope = await renderOnBrandPage();
 
         fireEvent.click(await findEditButton(scope));
-        await scope.findByLabelText('Name');
+        await scope.findByLabelText('Brand name');
 
         fireEvent.click(scope.getByRole('button', { name: 'Cancel' }));
 
-        expect(scope.queryByLabelText('Name')).not.toBeInTheDocument();
+        expect(scope.queryByLabelText('Brand name')).not.toBeInTheDocument();
         expect(await findEditButton(scope)).toBeInTheDocument();
 
         const writeCalls = fetchMock.mock.calls.filter(([, init]) => {
@@ -350,7 +352,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const scope = await renderOnBrandPage();
 
         fireEvent.click(await findEditButton(scope));
-        const nameInput = await scope.findByLabelText('Name');
+        const nameInput = await scope.findByLabelText('Brand name');
         fireEvent.change(nameInput, { target: { value: 'Menekşe Güncel' } });
         fireEvent.change(scope.getByLabelText('Description'), {
             target: { value: 'Güncellenmiş açıklama.' },
@@ -447,7 +449,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const brand = makeBrand();
 
         fireEvent.click(await findEditButton(scope));
-        await scope.findByLabelText('Name');
+        await scope.findByLabelText('Brand name');
         fireEvent.click(scope.getByRole('button', { name: 'Save' }));
 
         expect(await scope.findByRole('alert')).toBeInTheDocument();
@@ -474,7 +476,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const brand = makeBrand();
 
         fireEvent.click(await findEditButton(scope));
-        await scope.findByLabelText('Name');
+        await scope.findByLabelText('Brand name');
         fireEvent.click(scope.getByRole('button', { name: 'Save' }));
 
         expect(await scope.findByRole('alert')).toBeInTheDocument();
@@ -499,7 +501,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const brand = makeBrand();
 
         fireEvent.click(await findEditButton(scope));
-        await scope.findByLabelText('Name');
+        await scope.findByLabelText('Brand name');
         fireEvent.click(scope.getByRole('button', { name: 'Save' }));
 
         expect(await scope.findByRole('alert')).toBeInTheDocument();

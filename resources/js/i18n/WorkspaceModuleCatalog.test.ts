@@ -33,20 +33,23 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 439;
+const FROZEN_LEGACY_KEY_COUNT = 451;
 
-// Frozen from the menu empty-state fix: sha256 of sorted "key=value"
-// lines joined by "\n" over all 439 entries, after menu.ts additively
-// introduces five keys (one load-failure message, and a body + call to
-// action for each of the two empty states — no location yet, and no brand
-// yet). They exist because MenuPage used to render "Loading your menu…"
-// whenever no location was selected; in a workspace that has never had a
-// location that wait never ends, so the first screen of every new account
-// was a spinner that resolved to nothing. Entry count grows from 434 (the
-// CORE-12 ledger baseline) to exactly 439. Additive only: no existing key
-// or value changed.
+// Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
+// joined by "\n" over all 451 entries. The brand onboarding form used to ask
+// for four free-text values — name, timezone, currency and locale — which
+// meant asking a restaurant owner to type `Europe/Istanbul`, `TRY` and
+// `tr_TR`. Those are column values, not anyone's language; the owner typed
+// "istantul" and the journey ended there.
+//
+// The form now asks what the user knows (name, country), derives what can be
+// derived (time zone, currency) and defers what can be deferred (menu content
+// language). That needed twelve keys: an intro, help text for every field,
+// the market picker, the regional section, a busy label, and three specific
+// failure messages in place of one generic retry. Entry count grows from 439
+// to exactly 451. Additive only: no existing key or value changed.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '5e055ae2e6e7b65df5969293d35082fdd6ae195c108059395b9474696e07ef86';
+    '3e51638868c81e3a9ebad5cfdb4c834358f57aafdaad0e3b36f1107d2aaa90fc';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

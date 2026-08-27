@@ -396,6 +396,22 @@ msgstr "Not connected"
 msgid "workspace.brand.currency"
 msgstr "Currency"
 
+#: workspace:workspace.brand.currency.help
+msgid "workspace.brand.currency.help"
+msgstr "Used for every price on your menu."
+
+#: workspace:workspace.brand.error.market.required
+msgid "workspace.brand.error.market.required"
+msgstr "Select the country where you do business."
+
+#: workspace:workspace.brand.error.name.required
+msgid "workspace.brand.error.name.required"
+msgstr "Enter a name for your brand."
+
+#: workspace:workspace.brand.error.network
+msgid "workspace.brand.error.network"
+msgstr "We could not reach the server. Nothing was lost — try again."
+
 #: workspace:workspace.brand.error.required
 msgid "workspace.brand.error.required"
 msgstr "Name, timezone, and currency are required."
@@ -408,6 +424,10 @@ msgstr "We could not create your brand. Please try again."
 msgid "workspace.brand.heading"
 msgstr "Create your brand"
 
+#: workspace:workspace.brand.intro
+msgid "workspace.brand.intro"
+msgstr "Your customers will see this name. You can add locations and menus in the next steps, and change any of this later."
+
 #: workspace:workspace.brand.loading
 msgid "workspace.brand.loading"
 msgstr "Loading your brand…"
@@ -416,21 +436,49 @@ msgstr "Loading your brand…"
 msgid "workspace.brand.locale"
 msgstr "Locale"
 
+#: workspace:workspace.brand.market
+msgid "workspace.brand.market"
+msgstr "Main market"
+
+#: workspace:workspace.brand.market.help
+msgid "workspace.brand.market.help"
+msgstr "Where you do business. We use it to set your time zone and currency."
+
+#: workspace:workspace.brand.market.placeholder
+msgid "workspace.brand.market.placeholder"
+msgstr "Select a country"
+
 #: workspace:workspace.brand.name
 msgid "workspace.brand.name"
-msgstr "Name"
+msgstr "Brand name"
+
+#: workspace:workspace.brand.name.help
+msgid "workspace.brand.name.help"
+msgstr "You can change this later."
 
 #: workspace:workspace.brand.operational.description
 msgid "workspace.brand.operational.description"
 msgstr "Edit the name, locale, timezone, currency, and contact details customers and your team see for this brand."
 
+#: workspace:workspace.brand.regional
+msgid "workspace.brand.regional"
+msgstr "Regional settings"
+
 #: workspace:workspace.brand.submit
 msgid "workspace.brand.submit"
-msgstr "Create"
+msgstr "Create brand"
+
+#: workspace:workspace.brand.submitting
+msgid "workspace.brand.submitting"
+msgstr "Creating brand…"
 
 #: workspace:workspace.brand.timezone
 msgid "workspace.brand.timezone"
-msgstr "Timezone"
+msgstr "Time zone"
+
+#: workspace:workspace.brand.timezone.help
+msgid "workspace.brand.timezone.help"
+msgstr "Used for opening hours and reports."
 
 #: workspace:workspace.brandLocations.brand.contactEmail
 msgid "workspace.brandLocations.brand.contactEmail"
