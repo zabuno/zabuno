@@ -279,5 +279,11 @@ try {
     }
 } catch (error) {
     console.error(`i18n ${command} failed: ${error.message}`);
+    // Yığın izi BASTIRILMAZ. Yalnız mesajı yazan bir araç, kendi arızasını
+    // teşhis edilemez kılar: bu boru hattı uzun süre "config okunamadı" diyerek
+    // bozuk kaldı ve nerede kırıldığı görünmüyordu.
+    if (error.stack) {
+        console.error(error.stack);
+    }
     process.exit(1);
 }

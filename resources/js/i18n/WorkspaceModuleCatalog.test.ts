@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 436;
+const FROZEN_LEGACY_KEY_COUNT = 440;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -82,8 +82,32 @@ const FROZEN_LEGACY_KEY_COUNT = 436;
 //   Sürükle-bırak alanı kendi metnini taşır (tarayıcı ham `<input
 //   type=file>`i işletim sisteminin dilinde çiziyordu), önizleme ölçü
 //   gösterir, ve slot GEREKSİNİMLERİ yüklemeden önce görünür.
+//
+// EKRAN ŞEMA DEĞİLDİR (docs/53). Panelde bulunan hâl: sekiz sayfanın beşinde
+// durum rozeti ya markanın VERİTABANI BİRİNCİL ANAHTARINI (`#3`) ya da `#` ile
+// kimlik kılığına sokulmuş bir SAYACI gösteriyordu — Lokasyonlar'da rozet `#1`
+// diyor, hemen altında zaten "1 locations" yazıyordu. Metinlerde ise sistemin
+// doğru çalıştığını kanıtlamak için yazılmış cümleler duruyordu: iç izin
+// anahtarı adı (`menu.publish permission`), iç yol haritası aşaması ("Stage
+// 1"), uygulama detayı ("immutable snapshot"), ve faturalandırmada üç kez "no
+// billing API has been queried".
+//
+// Bunlar yanlış değildi — yanlış YERDEYDİ: geliştiricinin "bu gerçekten bağlı"
+// kanıtı, restoran sahibinin ekranında kalıcı hâle gelmişti. Değerler kullanıcı
+// dilinde yeniden yazıldı ve bir anahtar eklendi (`status.published`), çünkü
+// yayının veritabanı kimliği yerine gösterilecek gerçek bir durum gerekiyordu.
+// Ayrıca `status.draft`: yayın durumu ham sunucu değeri olarak basılıyordu
+// ("published"), kullanıcının dili ne olursa olsun. Alan ATILMADI — "menüm
+// yayında mı" sorusunun cevabı — çevrildi.
+//
+// Son olarak medya kütüphanesi: kullanıcının yüklediği fotoğraf, kendi yazdığı
+// alt metinle DEĞİL varlığın veritabanı kimliğiyle (`#7`) listeleniyordu ve her
+// satırdaki silme düğmesinin adı aynıydı ("Delete") — ekran okuyucu kullanan
+// biri, geri alınamaz bir eylemde hangi görseli sildiğini ayırt edemiyordu.
+// İki anahtar eklendi: adsız görsel için dürüst bir yedek ve satıra özgü silme
+// adı. 436 → 440.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f95d375a61ba777c956573c5c1049c2965520573936cabb069a3ded16ec13451';
+    '281b04bd669b60eb26d37630ec5026c573509f4c821fb279696681644e2a8e53';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

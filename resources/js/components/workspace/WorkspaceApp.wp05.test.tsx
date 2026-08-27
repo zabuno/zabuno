@@ -370,7 +370,12 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         expect(
             within(analyticsRegion).getByText(/qr resolve and confirmed menu open/i),
         ).toBeInTheDocument();
-        expect(within(analyticsRegion).getByTestId('flowbite-badge')).toHaveTextContent(/today/i);
+        // Başarı hâlinde durum rozeti ÇİZİLMEZ. Önceden buraya seçili zaman
+        // aralığı ("Today") basılıyordu; oysa o bilgi hemen altındaki `Range`
+        // seçicisinde duruyor ve kullanıcının kendi seçtiği şeydir. Bildiği
+        // şeyi tekrarlayan bir rozet, rozetlerin tamamını okunmayan süse
+        // çevirir — sonra gerçek uyarı da fark edilmez.
+        expect(within(analyticsRegion).queryByTestId('flowbite-badge')).toBeNull();
 
         // Team: grouped Invite surface plus two DISTINCT regions — Pending
         // invitations and Team members — each with its own honest

@@ -95,7 +95,14 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
                   label: t('workspace.publication.readiness.needsAttention'),
               },
         current !== null
-            ? { key: 'publication-status', status: 'success', label: `#${current.id}` }
+            ? {
+                  key: 'publication-status',
+                  status: 'success',
+                  // Önceden yayının VERİTABANI KİMLİĞİ (`#12`) basılıyordu.
+                  // Kullanıcı için bir anlamı yok; menüsünün yayında olup
+                  // olmadığı ise tam olarak öğrenmek istediği şey.
+                  label: t('workspace.publication.status.published'),
+              }
             : {
                   key: 'publication-status',
                   status: 'info',

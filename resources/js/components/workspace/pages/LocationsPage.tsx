@@ -4,7 +4,7 @@ import { Button, Label } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { LocationEditForm, type LocationProfile } from '../LocationEditForm';
 import { LocationOnboardingForm } from '../LocationOnboardingForm';
-import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 
 type LocationsPageProps = {
     workspaceId: number;
@@ -24,11 +24,6 @@ export function LocationsPage({
     onLocationCreated,
 }: LocationsPageProps) {
     const [addingLocation, setAddingLocation] = useState(false);
-
-    const badges: WorkspacePageStatusBadge[] =
-        locations.length > 0
-            ? [{ key: 'locations-count', status: 'success', label: `#${locations.length}` }]
-            : [];
 
     const grouped = Array.from(
         locations
@@ -54,7 +49,6 @@ export function LocationsPage({
             <WorkspacePageFrame
                 title={t('workspace.shell.nav.locations')}
                 description={t('workspace.locations.operational.description')}
-                badges={badges}
                 actions={
                     <Button
                         type="button"

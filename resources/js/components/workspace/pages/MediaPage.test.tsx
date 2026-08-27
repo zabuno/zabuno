@@ -212,7 +212,12 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
         await waitFor(() => {
-            expect(within(libraryRegion).getByText(/#42/)).toBeInTheDocument();
+            // Satır artık kullanıcının yazdığı alt metinle tanınır. Önceden
+            // varlığın veritabanı kimliği (`#42`) birincil etiketti: kullanıcının
+            // yüklediği fotoğraf, kendi verdiği adla değil bir tablo anahtarıyla
+            // listeleniyordu.
+            expect(within(libraryRegion).getByText('A test image')).toBeInTheDocument();
+            expect(within(libraryRegion).queryByText(/#42/)).toBeNull();
         });
         expect(within(libraryRegion).getByText('A test image')).toBeInTheDocument();
         expect(within(libraryRegion).getByText(/scan pending|quarantined/i)).toBeInTheDocument();
@@ -255,7 +260,9 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const deleteButton = within(libraryRegion).getByRole('button', { name: /delete/i });
         await user.click(deleteButton);
@@ -265,7 +272,7 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
             expect(deleteCall).toBeDefined();
         });
 
-        await waitFor(() => expect(within(libraryRegion).queryByText(/#7/)).toBeNull());
+        await waitFor(() => expect(within(libraryRegion).queryByText('Owned asset')).toBeNull());
     });
 
     it('lists the media lifecycle concepts in order, with no Ready/Published implication', () => {
@@ -608,7 +615,12 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
         });
 
         await waitFor(() => {
-            expect(within(libraryRegion).getByText(/#42/)).toBeInTheDocument();
+            // Satır artık kullanıcının yazdığı alt metinle tanınır. Önceden
+            // varlığın veritabanı kimliği (`#42`) birincil etiketti: kullanıcının
+            // yüklediği fotoğraf, kendi verdiği adla değil bir tablo anahtarıyla
+            // listeleniyordu.
+            expect(within(libraryRegion).getByText('A test image')).toBeInTheDocument();
+            expect(within(libraryRegion).queryByText(/#42/)).toBeNull();
         });
         expect(within(libraryRegion).getByText('A test image')).toBeInTheDocument();
         expect(within(libraryRegion).getByText(/scan pending|quarantined/i)).toBeInTheDocument();
@@ -844,9 +856,19 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
         await waitFor(() => {
-            expect(within(libraryRegion).getByText(/#77/)).toBeInTheDocument();
+            expect(within(libraryRegion).getByText('A test image')).toBeInTheDocument();
+            expect(within(libraryRegion).queryByText(/#77/)).toBeNull();
         });
-        expect(within(libraryRegion).queryAllByText(/#\d+/)).toHaveLength(1);
+        // "Tam olarak bir varlık göründü" iddiası, önceden ekrandaki `#N`
+        // etiketlerini sayarak kuruluyordu. O etiketler kaldırıldı; sayım artık
+        // liste öğeleri üzerinden yapılıyor — ki asıl ölçülmek istenen de oydu.
+        expect(
+            within(within(libraryRegion).getByRole('list', { name: /assets/i })).getAllByRole(
+                'listitem',
+            ),
+        ).toHaveLength(1);
+        // Ve hiçbir veritabanı kimliği ekrana çıkmıyor.
+        expect(within(libraryRegion).queryAllByText(/#\d+/)).toHaveLength(0);
     });
 });
 
@@ -918,11 +940,17 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
-        const otherItem = items.find((item) => item.textContent?.includes('#8')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
+        const otherItem = items.find((item) =>
+            item.textContent?.includes('Other asset'),
+        ) as HTMLElement;
 
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
         const otherDeleteButton = within(otherItem).getByRole('button', { name: /delete/i });
@@ -938,7 +966,7 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         expect(deleteCalls).toHaveLength(1);
 
         resolveDelete({ ok: true, status: 204, json: async () => ({}) } as Response);
-        await waitFor(() => expect(within(libraryRegion).queryByText(/#7/)).toBeNull());
+        await waitFor(() => expect(within(libraryRegion).queryByText('Owned asset')).toBeNull());
     });
 
     it('a non-2xx DELETE keeps the asset, shows an accessible error, and permits retry', async () => {
@@ -954,10 +982,14 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
 
         await user.click(targetDeleteButton);
@@ -967,7 +999,7 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
             expect(alert.textContent).toBe('Media asset deletion failed. Your item was kept.');
         });
 
-        expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument();
+        expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument();
         expect(targetDeleteButton).not.toBeDisabled();
 
         await user.click(targetDeleteButton);
@@ -988,10 +1020,14 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
 
         await user.click(targetDeleteButton);
@@ -1001,7 +1037,7 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
             expect(alert.textContent).toBe('Media asset deletion failed. Your item was kept.');
         });
 
-        expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument();
+        expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument();
         expect(targetDeleteButton).not.toBeDisabled();
 
         await user.click(targetDeleteButton);
@@ -1022,19 +1058,23 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByText(/#7/)).toBeInTheDocument());
+        await waitFor(() =>
+            expect(within(libraryRegion).getByText('Owned asset')).toBeInTheDocument(),
+        );
 
         const items = within(libraryRegion).getAllByRole('listitem');
-        const targetItem = items.find((item) => item.textContent?.includes('#7')) as HTMLElement;
+        const targetItem = items.find((item) =>
+            item.textContent?.includes('Owned asset'),
+        ) as HTMLElement;
         const targetDeleteButton = within(targetItem).getByRole('button', { name: /delete/i });
 
         await user.click(targetDeleteButton);
 
-        await waitFor(() => expect(within(libraryRegion).queryByText(/#7/)).toBeNull());
+        await waitFor(() => expect(within(libraryRegion).queryByText('Owned asset')).toBeNull());
 
         const completionNotice = within(libraryRegion).getByText('Media asset deleted.');
         expect(completionNotice).toHaveAttribute('role', 'status');
         expect(within(libraryRegion).queryByRole('alert')).toBeNull();
-        expect(within(libraryRegion).getByText(/#8/)).toBeInTheDocument();
+        expect(within(libraryRegion).getByText('Other asset')).toBeInTheDocument();
     });
 });

@@ -4,7 +4,7 @@ import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
-import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 
 export type MediaAsset = {
     id: number;
@@ -143,17 +143,11 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
         }
     }
 
-    const badges: WorkspacePageStatusBadge[] =
-        assets.length > 0
-            ? [{ key: 'media-count', status: 'success', label: `#${assets.length}` }]
-            : [];
-
     return (
         <div id="section-media">
             <WorkspacePageFrame
                 title={t('workspace.media.heading')}
                 description={t('workspace.media.operational.description')}
-                badges={badges}
             >
                 <MediaUploadRegion onSubmit={handleUpload} />
                 <MediaLibraryRegion

@@ -6,7 +6,17 @@ export const publication = {
     'workspace.publication.status.region': 'Publication status',
     'workspace.publication.status.unavailable': 'Publication status is not available yet.',
     'workspace.publication.status.notPublished': 'Not published yet.',
-    'workspace.publication.status.summary': '#{id} · v{version} · {state}',
+    'workspace.publication.status.published': 'Published',
+    'workspace.publication.status.draft': 'Draft',
+    // Önceden '#{id} · v{version} · {state}' idi. İki kusur vardı ve YALNIZ
+    // BİRİ kimlikti: `{id}` kullanıcı için anlamsız bir veritabanı anahtarı,
+    // `{state}` ise çevrilmemiş ham bir sunucu değeri — kullanıcının dili ne
+    // olursa olsun İngilizce "published" görüyordu.
+    //
+    // Ama durumun KENDİSİ anlamlı: "menüm yayında mı" sorusunun cevabı. Bu
+    // yüzden alan atılmadı, çevrildi. Sürüm de kalıyor: her yayında arttığı
+    // için kullanıcı için gerçekten okunabilir tek sayı odur.
+    'workspace.publication.status.summary': 'Version {version} · {state}',
     'workspace.publication.status.publishError':
         'Publish failed. The last successful publication is still current.',
     'workspace.publication.status.publishButton': 'Publish',
@@ -23,18 +33,19 @@ export const publication = {
     'workspace.publication.publishAction.mode.label': 'Publish mode',
     'workspace.publication.publishAction.mode.immediate': 'Immediate publish',
     'workspace.publication.publishAction.checklistConfirmed': 'I reviewed the publish checklist',
-    'workspace.publication.publishAction.permissionNotice': 'Requires menu.publish permission',
+    'workspace.publication.publishAction.permissionNotice':
+        'You need permission to publish this menu.',
     'workspace.publication.publishAction.scheduleNotice':
-        'Scheduled publish is not available in Stage 1.',
+        'Publishing at a chosen time is not available yet.',
     'workspace.publication.publishAction.snapshotNotice':
-        'Publishing creates an immutable snapshot',
+        'Publishing saves a fixed copy. Later edits stay private until you publish again.',
     'workspace.publication.publishAction.failurePreservationNotice':
-        'Last successful publication is preserved if publish fails',
+        'If publishing fails, guests keep seeing the menu you published last.',
     'workspace.publication.qrDestination.region': 'QR destination',
     'workspace.publication.qrDestination.explanation':
         'Create a QR code that resolves to the current published menu.',
     'workspace.publication.qrDestination.fields.unavailable':
-        'QR destination capability is not available until a current publication exists.',
+        'Publish your menu first — the QR code needs a published menu to point to.',
     'workspace.publication.qrDestination.createButton': 'Create',
     'workspace.publication.qrDestination.disableButton': 'Disable',
     'workspace.publication.qrDestination.empty': 'No QR code created yet.',
@@ -83,7 +94,7 @@ export const publication = {
     'workspace.publication.qrExport.bulkWizard.namingRange': 'Naming range',
     'workspace.publication.qrExport.bulkWizard.seatCountPerTable': 'Seat count per table',
     'workspace.publication.qrExport.bulkWizard.notice':
-        'This bulk QR wizard has not been submitted; no bulk export has been created yet.',
+        'Fill in the table layout below, then create the codes.',
     'workspace.publication.qrExport.bulkWizard.summary':
         '{tables} tables across {areas} areas, {seats} seats planned',
     'workspace.publication.qrExport.bulkWizard.areaSectionCount.error':
@@ -122,7 +133,7 @@ export const publication = {
     'workspace.publication.readiness.visibleProductNames': 'Visible product names ready',
     'workspace.publication.readiness.visiblePriceAndCurrency': 'Visible price and currency ready',
     'workspace.publication.readiness.categoryNames': 'Category names ready',
-    'workspace.publication.publishedSnapshot.region': 'Published snapshot',
+    'workspace.publication.publishedSnapshot.region': 'Published menu',
     'workspace.publication.publishedSnapshot.publishedAt': 'Published at {publishedAt}',
 } as const;
 

@@ -2,7 +2,7 @@ import { t } from '../../../i18n/workspace';
 import { Button } from '../../catalog/forms/micro/Button';
 import { MenuCatalogWorkspace } from '../../catalog/menu/macro/MenuCatalogWorkspace';
 import type { DashboardMenuTree } from './DashboardPage';
-import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import type { CatalogPhase } from '../WorkspaceApp';
 
 type MenuPageProps = {
@@ -35,17 +35,11 @@ export function MenuPage({
     onTreeChange,
     onNavigateToSection,
 }: MenuPageProps) {
-    const badges: WorkspacePageStatusBadge[] =
-        locationId !== null
-            ? [{ key: 'menu-location', status: 'success', label: `#${locationId}` }]
-            : [];
-
     return (
         <div id="section-menu">
             <WorkspacePageFrame
                 title={t('workspace.shell.nav.menu')}
                 description={t('workspace.menu.operational.description')}
-                badges={badges}
             >
                 {renderCatalog()}
             </WorkspacePageFrame>

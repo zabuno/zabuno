@@ -760,6 +760,10 @@ msgstr ""
 msgid "workspace.media.library.asset.delete.failed"
 msgstr ""
 
+#: workspace:workspace.media.library.asset.delete.named
+msgid "workspace.media.library.asset.delete.named"
+msgstr ""
+
 #: workspace:workspace.media.library.asset.status.accepted
 msgid "workspace.media.library.asset.status.accepted"
 msgstr ""
@@ -790,6 +794,10 @@ msgstr ""
 
 #: workspace:workspace.media.library.asset.status.unknown
 msgid "workspace.media.library.asset.status.unknown"
+msgstr ""
+
+#: workspace:workspace.media.library.asset.untitled
+msgid "workspace.media.library.asset.untitled"
 msgstr ""
 
 #: workspace:workspace.media.library.assets.heading
@@ -1432,6 +1440,10 @@ msgstr ""
 msgid "workspace.publication.readiness.visibleProductNames"
 msgstr ""
 
+#: workspace:workspace.publication.status.draft
+msgid "workspace.publication.status.draft"
+msgstr ""
+
 #: workspace:workspace.publication.status.lifecycle.failed
 msgid "workspace.publication.status.lifecycle.failed"
 msgstr ""
@@ -1474,6 +1486,10 @@ msgstr ""
 
 #: workspace:workspace.publication.status.publishError
 msgid "workspace.publication.status.publishError"
+msgstr ""
+
+#: workspace:workspace.publication.status.published
+msgid "workspace.publication.status.published"
 msgstr ""
 
 #: workspace:workspace.publication.status.region

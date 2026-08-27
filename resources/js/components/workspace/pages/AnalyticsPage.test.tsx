@@ -380,4 +380,48 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
 
         vi.unstubAllGlobals();
     });
+    /**
+     * Durum rozeti ANORMAL durumu bildirir, "yüklendi" demez.
+     *
+     * Önceden başarı hâlinde seçili zaman aralığı ("Today") rozet olarak
+     * basılıyordu. O bilgi hemen altındaki `Range` seçicisinde zaten duruyor
+     * ve kullanıcının kendi seçtiği şey. Her sayfada böyle bir "her şey yolunda"
+     * rozeti bulunması rozetleri okunmayan süse çevirir — ve o noktadan sonra
+     * gerçek uyarı da fark edilmez. Bu çiftin ikisi de sınanmalı: sustuğu yer
+     * kadar konuştuğu yer de.
+     */
+    it('başarıda rozet göstermez ama plan kısıtında gösterir', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => jsonResponse(200, summaryBody('today', 4, 2))),
+        );
+
+        const { unmount } = render(
+            <AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />,
+        );
+
+        await screen.findByText('4');
+        expect(screen.queryByTestId('flowbite-badge')).toBeNull();
+
+        unmount();
+        vi.unstubAllGlobals();
+
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () =>
+                jsonResponse(402, {
+                    message: 'Your plan does not include analytics reporting.',
+                    entitlement: 'analytics.reporting',
+                }),
+            ),
+        );
+
+        render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        await waitFor(() => {
+            expect(screen.getByTestId('flowbite-badge')).toBeInTheDocument();
+        });
+
+        vi.unstubAllGlobals();
+    });
 });

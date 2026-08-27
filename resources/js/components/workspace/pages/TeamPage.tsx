@@ -374,17 +374,18 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
         }
     }
 
-    const teamStatusBadge: WorkspacePageStatusBadge =
+    const teamStatusBadge: WorkspacePageStatusBadge | null =
         invitationsStatus === 'loading'
             ? { key: 'team-status', status: 'info', label: t('workspace.team.status.loading') }
             : invitationsStatus === 'error'
               ? { key: 'team-status', status: 'error', label: t('workspace.team.status.error') }
-              : {
-                    key: 'team-status',
-                    status: 'success',
-                    label: t('workspace.team.status.connected'),
-                };
-    const badges: WorkspacePageStatusBadge[] = [teamStatusBadge];
+              : // Başarı hâlinde rozet YOK. Buraya önceden "Invitations
+                // connected" basılıyordu: bu bir kullanıcı durumu değil,
+                // kablolamanın çalıştığına dair bir MÜHENDİS notudur. Üye
+                // listesinin ekranda olması bağlantının kurulduğunu zaten
+                // kanıtlar.
+                null;
+    const badges: WorkspacePageStatusBadge[] = teamStatusBadge ? [teamStatusBadge] : [];
 
     const operationalDescription =
         invitationsStatus === 'loading'
