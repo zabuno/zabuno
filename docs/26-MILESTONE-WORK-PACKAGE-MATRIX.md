@@ -250,6 +250,13 @@ code/test-local-candidate-targeted-green, public-promotion RED (`docs/34`
 §13a); WP02'nin geri kalanı (CORE-02 remainder, CORE-03, CORE-06, admin
 shell) hâlâ not-started).
 
+**URL/SEO ek planı.** `docs/38` URL motoru kurulurken bilerek ertelenen
+işler (sitemap, `hreflang`, Schema.org, slug geçmişi, özel alan adı, yönetişim
+otomasyonu) bu matrise WP olarak EKLENMEZ — sabit 38-WP paydası ve `docs/17`
+§4 sayacı korunur. Onlar adlandırılmış ek planda sahiplenilir:
+`docs/39-URL-SEO-ROADMAP.md` (`URL-SEO-v1`), her madde bir faza,
+tetikleyiciye ve kanıta bağlı.
+
 **S1-WP03…S1-WP07, 2026-08-26 tarihli kod denetimiyle `not-started`'dan
 çıkarılmıştır.** Bu satırlar belgeye bakılarak değil, `main` üzerindeki koda
 bakılarak durumlanmıştır; her satır neyin gerçekten var olduğunu ve WP'yi
