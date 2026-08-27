@@ -12,12 +12,12 @@ interface PublicMenuAddressPort
     /**
      * Bir QR token'ının işaret ettiği menünün adresi.
      *
-     * @return array{key: string, slug: string, menu_id: int, workspace_id: int}|null
+     * @return array{key: string, slug: string, menu_id: int, workspace_id: int, brand_name: string, locale: string}|null
      */
     public function findByQrToken(string $token): ?array;
 
     /**
-     * @return array{key: string, slug: string, menu_id: int, workspace_id: int}|null
+     * @return array{key: string, slug: string, menu_id: int, workspace_id: int, brand_name: string, locale: string}|null
      */
     public function findByPublicKey(string $key): ?array;
 

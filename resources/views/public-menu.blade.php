@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
+{{-- Dil, UYGULAMANIN değil MENÜNÜN dilidir: ürün adlarını restoran kendi
+     dilinde yazar. Yanlış `lang`, ekran okuyucunun metni yanlış telaffuz
+     etmesine ve arama motorunun sayfayı yanlış dile atamasına yol açar. --}}
+<html lang="{{ $contentLocale ?? \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +22,11 @@
     <meta property="og:site_name" content="Zabuno">
     <meta name="description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
     <meta property="og:description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
+    @isset($structuredData)
+        {{-- Sayfada olmayan hiçbir şey işaretlenmez: bu veri sayfayı
+             render eden anlık görüntünün TA KENDİSİNDEN türetilir. --}}
+        <script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! $structuredData !!}</script>
+    @endisset
     <link rel="manifest" href="/public-menu.webmanifest">
     <meta name="theme-color" content="#1f2937">
     <link rel="apple-touch-icon" href="/icons/zabuno-menu-192.svg" sizes="192x192">

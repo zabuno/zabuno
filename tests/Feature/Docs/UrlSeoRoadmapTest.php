@@ -93,7 +93,16 @@ final class UrlSeoRoadmapTest extends TestCase
             $roadmap,
             'ROADMAP-COUNTER-04: ek plan, sabit sayacı değiştirmediğini açıkça söylemeli.'
         );
-        self::assertStringContainsString('0/4 faz', $roadmap);
+        // Sayacın DEĞERİ dondurulmaz — sayaç ilerlemek için vardır. İlk
+        // yazımda değeri sabitlemiştim ve Faz 1 biter bitmez kendi kapım
+        // kırıldı. Dondurulan şey BİÇİMDİR: `X/4 faz`, X ∈ [0, 4].
+        self::assertSame(
+            1,
+            preg_match('#\b([0-4])/4 faz\b#u', $roadmap, $matches),
+            'ROADMAP-COUNTER-04: plan `X/4 faz` biçiminde bir sayaç taşımalı.'
+        );
+
+        self::assertLessThanOrEqual(4, (int) $matches[1]);
     }
 
     public function test_the_shared_hosting_limit_is_stated_where_it_bites(): void

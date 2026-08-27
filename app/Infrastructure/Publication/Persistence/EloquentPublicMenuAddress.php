@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 final class EloquentPublicMenuAddress implements PublicMenuAddressPort
 {
-    /** @return array{key: string, slug: string, menu_id: int, workspace_id: int}|null */
+    /** @return array{key: string, slug: string, menu_id: int, workspace_id: int, brand_name: string, locale: string}|null */
     public function findByQrToken(string $token): ?array
     {
         // Bağ, mevcut QR deposunun kullandığı yolun aynısıdır: kod →
@@ -28,7 +28,7 @@ final class EloquentPublicMenuAddress implements PublicMenuAddressPort
         return $row === null ? null : $this->hydrate($row);
     }
 
-    /** @return array{key: string, slug: string, menu_id: int, workspace_id: int}|null */
+    /** @return array{key: string, slug: string, menu_id: int, workspace_id: int, brand_name: string, locale: string}|null */
     public function findByPublicKey(string $key): ?array
     {
         $row = $this->baseQuery()->where('menus.public_key', $key)->first();
@@ -71,11 +71,12 @@ final class EloquentPublicMenuAddress implements PublicMenuAddressPort
                 'menus.workspace_id as workspace_id',
                 'menus.public_key as public_key',
                 'brands.name as brand_name',
+                'brands.locale as brand_locale',
                 'locations.display_name as display_name',
             ]);
     }
 
-    /** @return array{key: string, slug: string, menu_id: int, workspace_id: int} */
+    /** @return array{key: string, slug: string, menu_id: int, workspace_id: int, brand_name: string, locale: string} */
     private function hydrate(object $row): array
     {
         return [
@@ -83,6 +84,10 @@ final class EloquentPublicMenuAddress implements PublicMenuAddressPort
             'slug' => MenuPublicAddress::slugFor($this->displayNameOf($row)),
             'menu_id' => (int) $row->id,
             'workspace_id' => (int) $row->workspace_id,
+            'brand_name' => trim((string) ($row->brand_name ?? '')),
+            // Menü içeriğinin dili UYGULAMANIN dili değil, RESTORANIN
+            // dilidir: ürün adlarını restoran kendi dilinde yazar.
+            'locale' => (string) ($row->brand_locale ?? ''),
         ];
     }
 

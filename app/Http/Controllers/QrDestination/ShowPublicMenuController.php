@@ -14,6 +14,7 @@ use App\Domain\QrDestination\QrToken;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
+use App\Support\Seo\MenuStructuredData;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -74,7 +75,12 @@ final class ShowPublicMenuController extends Controller
 
         return response()->view('public-menu', [
             'snapshot' => $publication->snapshot,
-            'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
+            'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
+            'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,
+            'structuredData' => json_encode(
+                MenuStructuredData::forMenu($publication->snapshot, $canonicalUrl, $address['brand_name']),
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP,
+            ),
         ], 200)->header('X-Robots-Tag', 'noindex, follow');
     }
 
