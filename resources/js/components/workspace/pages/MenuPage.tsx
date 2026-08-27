@@ -1,4 +1,5 @@
 import { t } from '../../../i18n/workspace';
+import { Button } from '../../catalog/forms/micro/Button';
 import { MenuCatalogWorkspace } from '../../catalog/menu/macro/MenuCatalogWorkspace';
 import type { DashboardMenuTree } from './DashboardPage';
 import { AiAssistPanel } from '../ai/AiAssistPanel';
@@ -93,15 +94,11 @@ export function MenuPage({
                         ? t('workspace.menu.empty.brand.body')
                         : t('workspace.menu.empty.location.body')}
                 </p>
-                <button
-                    type="button"
-                    className="rounded-md bg-action-primary-bg px-4 py-2 text-body font-medium text-action-primary-fg"
-                    onClick={() => onNavigateToSection(target)}
-                >
+                <Button type="button" onClick={() => onNavigateToSection(target)}>
                     {catalogPhase === 'brand-onboarding'
                         ? t('workspace.menu.empty.brand.cta')
                         : t('workspace.menu.empty.location.cta')}
-                </button>
+                </Button>
             </div>
         );
     }
