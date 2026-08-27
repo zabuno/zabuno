@@ -212,7 +212,25 @@ olmayan bir çalışma alanında menü sonsuza kadar "Loading your menu…" diyo
 (#88), ve marka formu 422 gövdesini atarak kullanıcıyı çıkışsız bir döngüde
 bırakıyordu. Yeşil bir süit, ürünün çalıştığının kanıtı değildir.
 
-**NO-GO'yu kaldıracak iş.** `tools/host-capability-probe.php` — framework,
+### Kanıt yolu değişti — 2026-08-27 (owner)
+
+**Prob artık beklenmiyor.** Sahibi kararı sadeleştirdi: netcup VPS kurulumu
+zaten yapılıyor ve **o kurulumun kendisi kanıttır**. Kanıt, kuran mühendisin
+geri bildiriminden gelir; ayrıca bir prob koşturmak aynı şeyi ikinci kez
+ölçmek olur.
+
+Prob silinmedi ve silinmemeli: paylaşımlı barındırma profili `ADR-L08a` ile
+desteklenmeye devam ediyor, ve o profil bir gün gerçekten hedeflenirse
+ölçüm aracı hazır durur. Değişen tek şey, **bekleyen bir owner eylemi
+olmaktan çıkması.**
+
+Exit Gate hâlâ NO-GO. Kaldıracak şey artık şu: netcup kurulumunun
+tamamlanması ve iki kanıtın (kiracı izolasyonu, yedekten dönüş) gerçek
+sunucuda üretilmesi.
+
+---
+
+**Prob (artık zorunlu değil).** `tools/host-capability-probe.php` — framework,
 composer ve Node istemeyen tek dosyalık prob. Paylaşımlı barındırmada SSH
 çoğu planda yoktur; depodaki komut satırı probu tam olarak hedeflenen
 sunucularda çalıştırılamıyordu. Bu dosya FTP ile yüklenir, tarayıcıdan

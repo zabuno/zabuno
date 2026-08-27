@@ -3,6 +3,7 @@ import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
+import { readValidationFailure } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/menu';
 import { FieldError } from '../micro/FieldError';
 import { OrderBadge } from '../micro/OrderBadge';
@@ -144,13 +145,19 @@ async function postJson(
     );
 }
 
+/**
+ * Sunucunun yanıtından gösterilecek metni çıkarır.
+ *
+ * Önceki hâli yalnız `message` alanını okuyup `errors` nesnesini atıyordu —
+ * yani "hangi alan" bilgisi yine kayboluyordu. Ortak okuyucu ikisini de
+ * getirir; burada alan hatası varsa o gösterilir, çünkü kullanıcıya
+ * düzeltmesi gereken şeyi söylemek özetten daha yararlıdır.
+ */
 async function parseErrorMessage(response: Response, fallback: string): Promise<string> {
-    try {
-        const body = (await response.json()) as { message?: string };
-        return body.message ?? fallback;
-    } catch {
-        return fallback;
-    }
+    const failure = await readValidationFailure(response, fallback);
+    const firstField = Object.values(failure.fields)[0];
+
+    return firstField ?? failure.message ?? fallback;
 }
 
 // Bu yüzey menü kataloğunun kalbidir ve restoran sahibinin en çok gördüğü

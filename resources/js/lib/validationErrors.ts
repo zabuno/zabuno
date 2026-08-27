@@ -74,3 +74,21 @@ export function focusFirstInvalidField(
     // `preventScroll` YOK: kullanıcı hatayı görmeli, sayfa oraya kaymalı.
     element?.focus();
 }
+
+/**
+ * Sunucunun REDDETTİĞİ bir isteği temsil eder.
+ *
+ * Neden ayrı bir tür: "sunucu şunu söyledi" ile "istek hiç ulaşmadı" aynı
+ * şey değil, ama ikisi de `catch` bloğuna düşer. Ayırmadan, ağ kopmasında
+ * kullanıcıya ham JavaScript metni ("Network failure", "Failed to fetch")
+ * gösterilir — bu bir iç detaydır ve kimseye bir şey anlatmaz.
+ *
+ * Yalnız bu türün mesajı ekrana çıkar; diğer her hata çağıranın kendi
+ * genel metnine düşer.
+ */
+export class ServerRejectedError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'ServerRejectedError';
+    }
+}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { Button, Label, TextInput } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
+import { readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/workspace';
 import { BrandOnboardingForm } from './BrandOnboardingForm';
 import type { BrandProfile } from './BrandEditForm';
@@ -368,8 +369,19 @@ export function WorkspaceApp() {
                 return;
             }
 
-            setCreateError(t('workspace.create.error.submit'));
+            // Sunucu neyin yanlış olduğunu SÖYLEDİ. Çalışma alanı adı çakıştıysa
+            // ya da geçersizse, kullanıcının bunu bilmesi gerekir — bu ekran
+            // ürünle ilk temas noktası.
+            const failure = await readValidationFailure(
+                response,
+                t('workspace.create.error.submit'),
+            );
+
+            setCreateError(
+                failure.fields.name ?? failure.message ?? t('workspace.create.error.submit'),
+            );
         } catch {
+            // Buraya yalnız istek kurulamadığında düşülür.
             setCreateError(t('workspace.create.error.submit'));
         }
 
