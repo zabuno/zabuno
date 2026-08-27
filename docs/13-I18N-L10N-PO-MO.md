@@ -111,3 +111,68 @@ Kanıt: `MONEY-FORMAT-DIGITS-01`, `-LOCALE-02`, `-STRICT-03`,
 PO/MO/JSON projeksiyon zinciri ve locale planı burada kanoniktir. Uygulama
 detayları `modules/core-localization.md`'de, süreç otomasyonu
 `skills/i18n-catalog`'da yaşar.
+
+## 6. Kaynak dil ve çeviri sahipliği (owner kararı, 2026-08-27)
+
+**Karar sahibinindir ve üç parçalıdır:**
+
+1. **Kaynak dil İngilizce'dir.** Kodda yazılan her dize İngilizce yazılır.
+2. **Çeviriyi sahibi yapar.** PO dosyaları olgunluk sonrasında elle
+   doldurulur. Kod tarafı — insan ya da model — bir hedef dile çeviri
+   YAZMAZ.
+3. **Ekranda görünen her dize PO dosyasından çevrilebilir olmalıdır.**
+
+Üçüncü madde ilk ikisinin bedelidir ve tek teknik şart odur. Bir dize
+kaynak katalogda yoksa PO içinde satırı da yoktur; sahibi dosyayı açtığında
+görecek bir şey bulamaz. Yani "çevrilmemiş" ile "çevrilemez" aynı şey
+değildir: birincisi beklenen durumdur, ikincisi kusurdur.
+
+### Bunun kapılara yansıması
+
+| Kural | Nasıl korunuyor |
+| --- | --- |
+| Kaynak katalog (`en`) eksiksiz | `I18N-SIX-CATALOGS-10` — her alan adı için `missingCount('en') === 0` |
+| Hedef dilin eksikliği hata değildir | `I18N-TARGET-OPTIONAL-15` — eksiklik ölçülür, şart koşulmaz |
+| Sunucuda üretilen metin de çevrilebilir | `I18N-SSR-RATCHET-16` — `lang/untranslatable-debt.json` kilidi |
+
+**Kaldırılan kural:** "Türkçe menü kataloğu tamdır" iddiası
+`TranslationPipelineTest` içinden çıkarıldı. O iddia sistemi korumuyordu;
+İngilizce'ye her yeni dize eklendiğinde CI'ı kırıyor ve tek çıkış yolu
+olarak makine çevirisini dayatıyordu — yani 2. maddenin tam tersini. Yerine
+konan `I18N-TARGET-OPTIONAL-15` aynı boşluğu ölçer ama hata saymaz.
+
+**Devralınan borç:** hedef dillerde bugün 604 anahtarın 38'i doludur ve o
+38'i model yazmıştır. Sahibi PO'ları elden geçirirken bunları da gözden
+geçirmelidir; kod bunları doğru kabul etmez, yalnız var olduklarını bilir.
+
+### Sunucu tarafındaki açık
+
+Bu karar alındığında Blade görünümlerinde **tek bir çeviri çağrısı yoktu**.
+React tarafı katalogdan besleniyordu, sunucu tarafı beslenmiyordu. Ölçülen
+boşluk **71 görünür dize**: açılış sayfası (35), ortak yerleşim (14), genel
+menü kabuğu (9), 404 (3), ve her kabuğun sekme başlığı.
+
+Bunlar tek pakette taşınmaz; kilit borcun artmasını imkânsız kılar,
+erimesini serbest bırakır. Erime planı `docs/40-I18N-RUNTIME-ROADMAP.md`'te (Faz 3) fazlanmıştır.
+
+## 7. Çalışma zamanı gereksinimi: FTP ile yüklenen PO etkili olmalı
+
+**Owner iş akışı:** PO dosyası FTP ile sunucuya yüklenir. Sistem
+güncellenmelidir — ya anında, ya belirli bir süre sonra kendiliğinden.
+
+**Bugünkü gerçek: yükleme hiçbir şey yapmaz.** Sebep mimaridir, hata değil:
+
+| Katman | Çeviriyi nereden alır | FTP ile PO yüklenince |
+| --- | --- | --- |
+| PHP (sunucuda üretilen) | `lang/mo/{locale}/{domain}.mo` | **Değişmez** — MO'yu Node üretir |
+| React (tarayıcıda) | JS paketine gömülü JSON | **Değişmez** — paket derleme anında donar |
+
+İki katman da bir **derleme adımına** bağlı. Paylaşımlı barındırmada
+(Turhost, Natro, Güzel Hosting) Node yoktur, SSH çoğu planda yoktur.
+Dolayısıyla sahibi PO'yu yükleyebilir ama hiçbir şey görmez.
+
+Bu, `docs/15` §4'teki paylaşımlı barındırma kısıtının i18n'e yansımasıdır
+ve boru hattı kurulurken gözden kaçmıştır. Çözümü `docs/40-I18N-RUNTIME-ROADMAP.md`'te
+`I18N-RUNTIME-v1` planı olarak fazlanmıştır; Stage 2'ye eşlenir çünkü
+sahibinin PO'ları doldurma zamanı olgunluk sonrasıdır ve yetenek o günden
+önce hazır olmalıdır.

@@ -50,6 +50,22 @@ Hiçbiri bugün acil değildir ve sebebi kayıtlıdır: menü adresi `key` kimli
 sayesinde kendini onarır, admin filtresi henüz URL'de değildir. Tetikleyici
 gerçekleştiğinde zorunlu olurlar.
 
+## i18n çalışma zamanı ek planı (`I18N-RUNTIME-v1`, Faz 1–4)
+
+Bu stage'e eşlenen i18n maddeleri `docs/40-I18N-RUNTIME-ROADMAP.md`'de
+sahiplenilir: PO'nun çalışma zamanında okunması, tarayıcı katalogunun ağdan
+gelmesi, sunucu tarafındaki 71 çevrilemez dizenin kataloğa taşınması, ve
+bozuk PO'ya karşı güvenlik ağı.
+
+Tetikleyici koşullu değildir. Owner çeviriyi olgunluk sonrasında PO
+dosyalarından kendisi yapacağını bildirdi (`docs/13` §6); bugünkü boru hattı
+derleme adımına bağlı olduğu için FTP ile yüklenen PO hiçbir şey yapmaz.
+Yetenek, sahibinin doldurma işine oturmasından ÖNCE hazır olmalıdır —
+yoksa doldurma işi boşa gider.
+
+Bu stage'in "i18n çok-dilli hâle gelir" hedefi bu plan olmadan
+karşılanamaz: katalog altı dile açılsa bile sahibi onları dolduramaz.
+
 ## Dependency / critical path
 MVP CORE modülleri → ECA engine → CRM/Helpdesk (ECA'ya event register eder).
 

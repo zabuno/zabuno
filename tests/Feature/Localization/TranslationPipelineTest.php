@@ -146,9 +146,45 @@ final class TranslationPipelineTest extends TestCase
     public function test_missing_translations_are_counted_rather_than_guessed(): void
     {
         $missing = $this->translator()->missingCount('menu', 'de');
-        $translated = $this->translator()->missingCount('menu', 'tr');
 
-        self::assertGreaterThan(0, $missing, 'I18N-MEASURABLE-14: scaffold bir dilde eksik sayısı sıfır olamaz.');
-        self::assertSame(0, $translated, 'I18N-MEASURABLE-14: Türkçe menü kataloğu tamdır; sayım bunu göstermeli.');
+        self::assertGreaterThan(
+            0,
+            $missing,
+            'I18N-MEASURABLE-14: çevrilmemiş bir dilde eksik sayısı ölçülebilir olmalı.'
+        );
+    }
+
+    // --- I18N-TARGET-OPTIONAL-15 ------------------------------------------
+
+    /**
+     * Hedef dilin EKSİK olması beklenen durumdur ve derlemeyi kıramaz.
+     *
+     * Buraya "Türkçe katalog tamdır" gibi bir iddia EKLENMEYECEK. Sebebi
+     * güvenlik değil, yön: böyle bir kapı, İngilizce'ye yeni bir dize
+     * eklendiği anda kırılır ve tek çıkış yolu olarak makine çevirisini
+     * dayatır. Sahiplik kararı (`docs/13` §Kaynak dil) bunun tersidir —
+     * çeviriyi sahibi yazar, kod yazmaz.
+     *
+     * Korunan şey kaynak taraftadır ve yerinde durur:
+     * `test_the_source_catalog_is_complete_for_every_domain` her alan adı
+     * için `en` kataloğunun eksiksiz olmasını şart koşar. Ekranda görünen
+     * bir dize kaynak katalogda yoksa hiçbir dile çevrilemez; asıl kayıp
+     * odur, hedef dildeki boşluk değil.
+     */
+    public function test_an_untranslated_target_locale_is_a_recorded_state_not_a_failure(): void
+    {
+        $untouched = $this->translator()->missingCount('menu', 'ru');
+
+        self::assertGreaterThan(
+            0,
+            $untouched,
+            'I18N-TARGET-OPTIONAL-15: hiç çevrilmemiş dil ölçülebilir bir boşluk göstermeli.'
+        );
+
+        self::assertSame(
+            0,
+            $this->translator()->missingCount('menu', 'en'),
+            'I18N-TARGET-OPTIONAL-15: hedef dil boşken bile kaynak katalog tam kalmalı.'
+        );
     }
 }

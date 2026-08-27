@@ -257,6 +257,11 @@ otomasyonu) bu matrise WP olarak EKLENMEZ — sabit 38-WP paydası ve `docs/17`
 `docs/39-URL-SEO-ROADMAP.md` (`URL-SEO-v1`), her madde bir faza,
 tetikleyiciye ve kanıta bağlı.
 
+İkinci adlandırılmış ek plan: `docs/40-I18N-RUNTIME-ROADMAP.md`
+(`I18N-RUNTIME-v1`). Owner'ın çeviri sahipliği kararından (`docs/13` §6)
+doğar ve dört fazının tamamı Stage 2'ye eşlenir. Bu plan da sabit 38-WP
+payda sayacını değiştirmez; kendi `0/4` sayacını taşır.
+
 **S1-WP03…S1-WP07, 2026-08-26 tarihli kod denetimiyle `not-started`'dan
 çıkarılmıştır.** Bu satırlar belgeye bakılarak değil, `main` üzerindeki koda
 bakılarak durumlanmıştır; her satır neyin gerçekten var olduğunu ve WP'yi
