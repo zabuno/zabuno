@@ -188,8 +188,8 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         expect(firstRowScope.getByLabelText('Country code')).toHaveValue(locationA.country_code);
         expect(firstRowScope.getByLabelText('City')).toHaveValue(locationA.city);
         expect(firstRowScope.getByLabelText('Address line 1')).toHaveValue(locationA.address_line1);
-        expect(firstRowScope.getByLabelText('Address line 2')).toHaveValue('');
-        expect(firstRowScope.getByLabelText('Postal code')).toHaveValue('');
+        expect(firstRowScope.getByLabelText('Address line 2 (optional)')).toHaveValue('');
+        expect(firstRowScope.getByLabelText('Postal code (optional)')).toHaveValue('');
 
         const secondRowScope = within(rows[1]);
         expect(secondRowScope.queryByLabelText('Display name')).not.toBeInTheDocument();
@@ -325,10 +325,10 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         fireEvent.change(firstRowScope.getByLabelText('Address line 1'), {
             target: { value: 'Moda Cd. 14' },
         });
-        fireEvent.change(firstRowScope.getByLabelText('Address line 2'), {
+        fireEvent.change(firstRowScope.getByLabelText('Address line 2 (optional)'), {
             target: { value: 'Zemin kat' },
         });
-        fireEvent.change(firstRowScope.getByLabelText('Postal code'), {
+        fireEvent.change(firstRowScope.getByLabelText('Postal code (optional)'), {
             target: { value: '34710' },
         });
 

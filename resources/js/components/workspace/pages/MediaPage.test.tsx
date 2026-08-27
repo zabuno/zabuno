@@ -110,7 +110,7 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         expect(altField).not.toBeDisabled();
         expect(altField).toBeRequired();
 
-        const slotField = within(uploadRegion).getByLabelText(/asset slot/i);
+        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
         expect(slotField).not.toBeDisabled();
     });
 
@@ -146,7 +146,7 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         const uploadRegion = screen.getByRole('region', { name: /media upload/i });
         const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
         const altField = within(uploadRegion).getByLabelText(/alt text/i);
-        const slotField = within(uploadRegion).getByLabelText(/asset slot/i);
+        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
         const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
 
         const file = new File(['binary'], 'photo.png', { type: 'image/png' });
@@ -255,20 +255,27 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         expect(offenders).toEqual([]);
     });
 
-    it('exposes rights/license and expiry fields, still disabled — outside the first API contract', () => {
+    // Bu test eskiden bunun TERSİNİ donduruyordu: haklar/lisans ve son
+    // kullanma alanları görünür ama kalıcı olarak devre dışı olsun.
+    //
+    // `docs/44`'ün devre dışı kontrol standardı ve `docs/47` Kural 4 bunu
+    // reddediyor: bir kontrol yalnız İLERİDE yapılacak diye devre dışı
+    // gösterilmez. Kullanıcı onu nasıl etkinleştireceğini bilemez, çünkü
+    // etkinleştirmenin bir yolu yoktur — ekranda kalıcı bir soru işareti
+    // durur. O alanlar geldiklerinde çalışır hâlde gelirler.
+    it('shows no control that exists only to be permanently disabled', () => {
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         const uploadRegion = screen.getByRole('region', { name: /media upload/i });
 
-        const rightsField =
-            within(uploadRegion).queryByLabelText(/rights/i) ??
-            within(uploadRegion).queryByLabelText(/licen[sc]e/i);
-        expect(rightsField).not.toBeNull();
-        expect(rightsField).toBeDisabled();
+        expect(within(uploadRegion).queryByLabelText(/rights/i)).toBeNull();
+        expect(within(uploadRegion).queryByLabelText(/licen[sc]e/i)).toBeNull();
+        expect(within(uploadRegion).queryByLabelText(/expiry/i)).toBeNull();
 
-        const expiryField = within(uploadRegion).queryByLabelText(/expiry/i);
-        expect(expiryField).not.toBeNull();
-        expect(expiryField).toBeDisabled();
+        const disabled = Array.from(
+            uploadRegion.querySelectorAll('input, select, textarea'),
+        ).filter((control) => (control as HTMLInputElement).disabled);
+        expect(disabled).toHaveLength(0);
     });
 
     it('keeps the metadata intake form fluid at a 320x480 start with no fixed-width or breakpoint classes', () => {
@@ -506,7 +513,7 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
         const uploadRegion = screen.getByRole('region', { name: /media upload/i });
         const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
         const altField = within(uploadRegion).getByLabelText(/alt text/i);
-        const slotField = within(uploadRegion).getByLabelText(/asset slot/i);
+        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
         const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
 
         const file = new File(['binary'], 'photo.png', { type: 'image/png' });
@@ -556,7 +563,7 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
     ) {
         const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
         const altField = within(uploadRegion).getByLabelText(/alt text/i);
-        const slotField = within(uploadRegion).getByLabelText(/asset slot/i);
+        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
         const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
 
         const file = new File(['binary'], 'photo.png', { type: 'image/png' });

@@ -11,9 +11,21 @@ export const media = {
     'workspace.media.security.explanation':
         'A human reviews and approves every security scan result before any file can move forward; no scan approves itself.',
     'workspace.media.upload.field.file': 'File',
+    // Alternatif metin bir erişilebilirlik yükümlülüğüdür; ne olduğunu
+    // bilmeyen kullanıcı boş bırakır ya da dosya adını yazar.
     'workspace.media.upload.field.altText': 'Alt text',
-    'workspace.media.upload.field.assetSlot': 'Asset slot',
-    'workspace.media.upload.field.assetSlot.placeholder': 'Select an asset slot',
+    'workspace.media.upload.field.altText.hint':
+        'Describe the image for people who cannot see it, for example "grilled lamb chops on a wooden board".',
+    'workspace.media.upload.error.file.required': 'Choose a file to upload.',
+    'workspace.media.upload.error.altText.required': 'Enter alt text for this image.',
+    'workspace.media.upload.error.assetSlot.required': 'Choose where this image will be used.',
+    // "Asset slot" bir İÇ KAVRAMDIR. Restoran sahibi bir görsel yüklerken
+    // "slot" seçmez; o görselin NEREDE görüneceğini söyler. Etiket
+    // kullanıcının dilinde yazılır, kod tarafındaki anahtarlar aynı kalır
+    // (`docs/47` Kural 4 ve `docs/44` — iç kelime dağarcığı kullanıcıya
+    // taşınmaz).
+    'workspace.media.upload.field.assetSlot': 'Where will this image be used?',
+    'workspace.media.upload.field.assetSlot.placeholder': 'Choose a place',
     'workspace.media.upload.field.assetSlot.hero': 'Hero',
     'workspace.media.upload.field.assetSlot.cards': 'Cards',
     'workspace.media.upload.field.assetSlot.pricing': 'Pricing',
@@ -31,8 +43,6 @@ export const media = {
     'workspace.media.upload.field.assetSlot.gallery': 'Gallery',
     'workspace.media.upload.field.assetSlot.printLogo': 'Print logo',
     'workspace.media.upload.field.assetSlot.emailHeader': 'Header/splash/push',
-    'workspace.media.upload.field.rights': 'Rights or license',
-    'workspace.media.upload.field.expiry': 'Expiry date',
     'workspace.media.library.region': 'Media library',
     'workspace.media.library.heading': 'Library',
     'workspace.media.library.unavailable': 'No media assets yet.',

@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 451;
+const FROZEN_LEGACY_KEY_COUNT = 458;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -46,10 +46,22 @@ const FROZEN_LEGACY_KEY_COUNT = 451;
 // derived (time zone, currency) and defers what can be deferred (menu content
 // language). That needed twelve keys: an intro, help text for every field,
 // the market picker, the regional section, a busy label, and three specific
-// failure messages in place of one generic retry. Entry count grows from 439
-// to exactly 451. Additive only: no existing key or value changed.
+// failure messages in place of one generic retry. Entry count grew from 439
+// to 451. Additive only: no existing key or value changed.
+//
+// 2026-08-27, form standardı (`docs/47`) — 451 → 458:
+//   - Konum formu tek bir "şunlar zorunludur" cümlesi yerine ALAN BAŞINA
+//     hata veriyor (+4) ve isteğe bağlı alanları etiketinde söylüyor (+1).
+//   - Medya formu iki kalıcı devre dışı alanı KALDIRDI (−2: haklar/lisans,
+//     son kullanma) — bir kontrol yalnız ileride yapılacak diye devre dışı
+//     gösterilmez.
+//   - Medya formu üç eksik-alan mesajı ve bir alternatif-metin ipucu
+//     kazandı (+4).
+// Ayrıca iki DEĞER değişti: "Asset slot" ve onun yer tutucusu kullanıcı
+// diline çekildi ("Where will this image be used?"). İç kavram kullanıcıya
+// taşınmaz.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '3e51638868c81e3a9ebad5cfdb4c834358f57aafdaad0e3b36f1107d2aaa90fc';
+    '9f8e674bc9852f797f33d34f3ef2a8002f9888034c428eb80cd5f85cc292062f';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

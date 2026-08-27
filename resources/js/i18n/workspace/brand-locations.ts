@@ -31,6 +31,14 @@ export const brandLocations = {
     'workspace.location.submit': 'Create',
     'workspace.location.error.required':
         'Display name, country, city, and address line 1 are required.',
+    // Hata ALANIN yanında durur. Formun tepesindeki tek bir "şunlar
+    // zorunludur" cümlesi, kullanıcıya hangisinin boş kaldığını aramayı
+    // bırakır — üstelik odak hiç hareket etmiyordu (`docs/47` Kural 5).
+    'workspace.location.displayName.error.required': 'Enter a display name.',
+    'workspace.location.countryCode.error.required': 'Select the country.',
+    'workspace.location.city.error.required': 'Enter the city.',
+    'workspace.location.addressLine1.error.required': 'Enter the street address.',
+    'workspace.location.optional': '{label} (optional)',
     'workspace.location.error.submit': 'We could not create your location. Please try again.',
     'workspace.brand.loading': 'Loading your brand…',
     'workspace.locations.heading': 'Locations',

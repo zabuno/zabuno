@@ -327,6 +327,31 @@ describe('SubscriptionManagementPage — S1-WP01A platform manual payment (MANUA
         }
     });
 
+    // FORM-ONE-OUTCOME (`docs/47` Kural 5) — bu forma özel sebep:
+    //
+    // Öncesinde bitiş tarihi boşken "Record manual payment" düğmesine basmak
+    // SESSİZCE hiçbir şey yapmıyordu: ne hata, ne onay penceresi, ne odak
+    // hareketi. Para hareketi kaydeden bir formda bu kusurun en kötü biçimi,
+    // kullanıcının kaydın gittiğini sanmasıdır.
+    it('says which field is missing instead of doing nothing, and opens no confirmation dialog', async () => {
+        fetchSpy.mockImplementation(defaultRouter());
+
+        const { user } = await renderAndSelectWorkspace();
+
+        await user.selectOptions(screen.getByLabelText(/^plan$/i), 'starter');
+        await user.clear(screen.getByLabelText(/end date/i));
+        await user.click(screen.getByRole('button', { name: /record manual payment/i }));
+
+        expect(await screen.findByText('Enter the end date.')).toBeInTheDocument();
+        expect(document.activeElement).toBe(screen.getByLabelText(/end date/i));
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+        const postCalls = fetchSpy.mock.calls.filter(
+            (call) => (call[1] as RequestInit | undefined)?.method === 'POST',
+        );
+        expect(postCalls).toHaveLength(0);
+    });
+
     it('requires a separate human confirmation dialog before submitting; only Confirm triggers csrf-cookie then POST manual-payments with exact headers and body keys', async () => {
         fetchSpy.mockImplementation(defaultRouter());
 

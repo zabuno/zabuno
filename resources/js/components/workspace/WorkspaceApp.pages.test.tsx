@@ -435,9 +435,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         expect(scope.getByLabelText('Locale')).toBeInTheDocument();
         expect(scope.getByLabelText('Timezone')).toBeInTheDocument();
         expect(scope.getByLabelText('Currency')).toBeInTheDocument();
-        expect(scope.getByLabelText('Description')).toBeInTheDocument();
-        expect(scope.getByLabelText('Contact email')).toBeInTheDocument();
-        expect(scope.getByLabelText('Contact phone')).toBeInTheDocument();
+        expect(scope.getByLabelText('Description (optional)')).toBeInTheDocument();
+        expect(scope.getByLabelText('Contact email (optional)')).toBeInTheDocument();
+        expect(scope.getByLabelText('Contact phone (optional)')).toBeInTheDocument();
 
         expect(scope.getByRole('button', { name: 'Save' })).toBeInTheDocument();
 
@@ -462,8 +462,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         expect(scope.getByLabelText('Country')).toBeInTheDocument();
         expect(scope.getByLabelText('City')).toBeInTheDocument();
         expect(scope.getByLabelText('Address line 1')).toBeInTheDocument();
-        expect(scope.getByLabelText('Address line 2')).toBeInTheDocument();
-        expect(scope.getByLabelText('Postal code')).toBeInTheDocument();
+        expect(scope.getByLabelText('Address line 2 (optional)')).toBeInTheDocument();
+        expect(scope.getByLabelText('Postal code (optional)')).toBeInTheDocument();
         expect(scope.getByRole('button', { name: 'Create' })).toBeInTheDocument();
 
         const THIRD_LOCATION_ID = 977;

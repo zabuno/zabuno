@@ -265,9 +265,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         expect(scope.getByLabelText('Locale')).toHaveValue(brand.locale);
         expect(scope.getByLabelText('Timezone')).toHaveValue(brand.timezone);
         expect(scope.getByLabelText('Currency')).toHaveValue(brand.currency);
-        expect(scope.getByLabelText('Description')).toHaveValue(brand.description);
-        expect(scope.getByLabelText('Contact email')).toHaveValue(brand.contact_email);
-        expect(scope.getByLabelText('Contact phone')).toHaveValue(brand.contact_phone);
+        expect(scope.getByLabelText('Description (optional)')).toHaveValue(brand.description);
+        expect(scope.getByLabelText('Contact email (optional)')).toHaveValue(brand.contact_email);
+        expect(scope.getByLabelText('Contact phone (optional)')).toHaveValue(brand.contact_phone);
 
         vi.unstubAllGlobals();
     });
@@ -357,13 +357,13 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         fireEvent.click(await findEditButton(scope));
         const nameInput = await scope.findByLabelText('Brand name');
         fireEvent.change(nameInput, { target: { value: 'Menekşe Güncel' } });
-        fireEvent.change(scope.getByLabelText('Description'), {
+        fireEvent.change(scope.getByLabelText('Description (optional)'), {
             target: { value: 'Güncellenmiş açıklama.' },
         });
-        fireEvent.change(scope.getByLabelText('Contact email'), {
+        fireEvent.change(scope.getByLabelText('Contact email (optional)'), {
             target: { value: 'yeni@menekse.example' },
         });
-        fireEvent.change(scope.getByLabelText('Contact phone'), {
+        fireEvent.change(scope.getByLabelText('Contact phone (optional)'), {
             target: { value: '+90 212 555 02 02' },
         });
 

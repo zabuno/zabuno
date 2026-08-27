@@ -183,15 +183,34 @@ onları sırayla çalıştırmasını istemekti.
 
 Depoda 15 dosyada 19 form var. Standarda göre sıradaki işler:
 
-| # | Form | Bulgu | Faz |
-| --- | --- | --- | --- |
-| 4.1 | Menü kataloğu | ✅ tamamlandı | — |
-| 4.2 | `MediaUploadRegion` | Teknik kavramlar kullanıcıya sızıyor (`asset slot`, `quarantine`, `derivatives`); kullanılmayan alanlar devre dışı gösteriliyor (Kural 4 ve `docs/44` devre dışı standardı) | Faz 2 |
-| 4.3 | `LocationOnboardingForm` / `LocationEditForm` | İki form aynı nesneyi farklı biçimde soruyor; birleştirilmeli | Faz 2 |
-| 4.4 | `BrandOnboardingForm` / `BrandEditForm` | Aynı; ayrıca timezone/currency marka alanı değil (rapor §9.2) | Faz 2 |
-| 4.5 | Ekip daveti (`WorkspaceApp` içinde) | Rol ve kapsam seçilmeden yalnız e-posta ile davet — Kural 1 ihlali değil ama eksik sonuç | Faz 2 |
-| 4.6 | `ManualPaymentForm`, `PlanForm` | Tenant yüzeyinde durmamalı; sahibinin yüzey kararına bağlı | Sahibi kararı sonrası |
-| 4.7 | Auth formları (4 adet) | Standarda uygun; yalnız Kural 5/6 doğrulaması yapılacak | Faz 3 |
+**2026-08-27: sahibinin talimatıyla platform ve `/app/*` formlarının tamamı
+standarda çekildi.** Bulgular ve yapılanlar:
+
+| # | Form | Yüzey | Bulunan | Yapılan |
+| --- | --- | --- | --- | --- |
+| 4.1 | `MenuCatalogWorkspace` | /app | 4 form, 3 sunucu turu, öksüz ürün riski | Tek form, tek işlem (§3) |
+| 4.2 | `PlanForm` | platform | **Ölü devre dışı düğme**: geçerli olana kadar kapalı, hangi alanın eksik olduğu SÖYLENMİYOR | Toptan doğrulama, alan başına hata, odak ilk hataya; düğme yalnız gönderim sırasında kapalı |
+| 4.3 | `ManualPaymentForm` | platform | **Sessiz düğme**: bitiş tarihi boşken basmak hiçbir şey yapmıyordu — para hareketi kaydeden bir formda | Alan başına hata + odak; onay penceresi açılmıyor; depo `Button` primitifi |
+| 4.4 | `MediaUploadRegion` | /app | Sessiz düğme; **kalıcı devre dışı iki alan** (haklar/lisans, son kullanma); `Asset slot` iç kavramı kullanıcıya sızıyor | Hatalar + odak; ölü alanlar KALDIRILDI; etiket "Where will this image be used?"; alternatif metin ipucu eklendi |
+| 4.5 | `BrandOnboardingForm` | /app | **Sıralı doğrulama**: iki hatalı alan = iki tur | Toptan doğrulama |
+| 4.6 | `LocationOnboardingForm` | /app | Formun tepesinde tek genel cümle, odak taşınmıyor | Alan başına hata + odak; isteğe bağlı alanlar etiketinde |
+| 4.7 | `BrandEditForm` / `LocationEditForm` | /app | Kural 5/6 zaten sağlanıyordu (sunucu hataları alan bazlı) | İsteğe bağlı alanlar etiketinde işaretlendi |
+| 4.8 | Auth formları (4 adet) | ne platform ne /app | Kapsam dışı; kapı yine de üstünden geçiyor | — |
+
+### 4.9 Zorlayıcı kapı
+
+`resources/js/components/forms.guard.test.ts`, standardın iki maddesini
+kaynak metinden zorlar:
+
+- **Kural 5** — bir metin alanının boşluğunu sınayıp hiçbir şey söylemeden
+  geri dönen dal yasaktır.
+- **Kural 4** — koşulsuz `disabled` taşıyan kontrol yasaktır.
+
+Kapı, üç gerçek kusur geri konarak **sınandı ve üçünü de yakaladı**. İlk iki
+denemesi yakalayamamıştı: biri hata belirleyicilerinin adına bakıyordu
+(`setEntrySubmitError` gibi adlar kaçıyordu), diğerinin koşul deseni
+`trim()` parantezine takılıyordu. Yakaladığını gösteremeyen bir kapı, kapı
+değildir.
 
 ---
 

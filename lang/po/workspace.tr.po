@@ -796,6 +796,10 @@ msgstr ""
 msgid "workspace.location.addressLine1"
 msgstr ""
 
+#: workspace:workspace.location.addressLine1.error.required
+msgid "workspace.location.addressLine1.error.required"
+msgstr ""
+
 #: workspace:workspace.location.addressLine2
 msgid "workspace.location.addressLine2"
 msgstr ""
@@ -804,12 +808,24 @@ msgstr ""
 msgid "workspace.location.city"
 msgstr ""
 
+#: workspace:workspace.location.city.error.required
+msgid "workspace.location.city.error.required"
+msgstr ""
+
 #: workspace:workspace.location.countryCode
 msgid "workspace.location.countryCode"
 msgstr ""
 
+#: workspace:workspace.location.countryCode.error.required
+msgid "workspace.location.countryCode.error.required"
+msgstr ""
+
 #: workspace:workspace.location.displayName
 msgid "workspace.location.displayName"
+msgstr ""
+
+#: workspace:workspace.location.displayName.error.required
+msgid "workspace.location.displayName.error.required"
 msgstr ""
 
 #: workspace:workspace.location.error.required
@@ -822,6 +838,10 @@ msgstr ""
 
 #: workspace:workspace.location.heading
 msgid "workspace.location.heading"
+msgstr ""
+
+#: workspace:workspace.location.optional
+msgid "workspace.location.optional"
 msgstr ""
 
 #: workspace:workspace.location.postalCode
@@ -988,12 +1008,28 @@ msgstr ""
 msgid "workspace.media.upload.complete"
 msgstr ""
 
+#: workspace:workspace.media.upload.error.altText.required
+msgid "workspace.media.upload.error.altText.required"
+msgstr ""
+
+#: workspace:workspace.media.upload.error.assetSlot.required
+msgid "workspace.media.upload.error.assetSlot.required"
+msgstr ""
+
+#: workspace:workspace.media.upload.error.file.required
+msgid "workspace.media.upload.error.file.required"
+msgstr ""
+
 #: workspace:workspace.media.upload.failed
 msgid "workspace.media.upload.failed"
 msgstr ""
 
 #: workspace:workspace.media.upload.field.altText
 msgid "workspace.media.upload.field.altText"
+msgstr ""
+
+#: workspace:workspace.media.upload.field.altText.hint
+msgid "workspace.media.upload.field.altText.hint"
 msgstr ""
 
 #: workspace:workspace.media.upload.field.assetSlot
@@ -1072,16 +1108,8 @@ msgstr ""
 msgid "workspace.media.upload.field.assetSlot.testimonial"
 msgstr ""
 
-#: workspace:workspace.media.upload.field.expiry
-msgid "workspace.media.upload.field.expiry"
-msgstr ""
-
 #: workspace:workspace.media.upload.field.file
 msgid "workspace.media.upload.field.file"
-msgstr ""
-
-#: workspace:workspace.media.upload.field.rights
-msgid "workspace.media.upload.field.rights"
 msgstr ""
 
 #: workspace:workspace.media.upload.heading

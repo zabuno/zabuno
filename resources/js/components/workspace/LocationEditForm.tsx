@@ -207,7 +207,9 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 <FormField
                     id={`location-edit-address-line2-${location.id}`}
                     name="address_line2"
-                    label={t('workspace.location.addressLine2')}
+                    label={t('workspace.location.optional', {
+                        label: t('workspace.location.addressLine2'),
+                    })}
                     value={addressLine2}
                     onChange={setAddressLine2}
                 />
@@ -215,7 +217,9 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                     id={`location-edit-postal-code-${location.id}`}
                     name="postal_code"
                     errorText={fieldErrors.postal_code}
-                    label={t('workspace.location.postalCode')}
+                    label={t('workspace.location.optional', {
+                        label: t('workspace.location.postalCode'),
+                    })}
                     value={postalCode}
                     onChange={setPostalCode}
                 />

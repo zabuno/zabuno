@@ -44,13 +44,25 @@ msgstr "We could not load plans."
 msgid "platform.plans.form.amount"
 msgstr "Amount (minor units)"
 
+#: platform:platform.plans.form.amount.error.invalid
+msgid "platform.plans.form.amount.error.invalid"
+msgstr "Enter the amount in minor units, digits only."
+
 #: platform:platform.plans.form.code
 msgid "platform.plans.form.code"
 msgstr "Code"
 
+#: platform:platform.plans.form.code.error.required
+msgid "platform.plans.form.code.error.required"
+msgstr "Enter a plan code."
+
 #: platform:platform.plans.form.currency
 msgid "platform.plans.form.currency"
 msgstr "Currency"
+
+#: platform:platform.plans.form.currency.error.invalid
+msgid "platform.plans.form.currency.error.invalid"
+msgstr "Use a three-letter code, for example EUR."
 
 #: platform:platform.plans.form.entitlements
 msgid "platform.plans.form.entitlements"
@@ -68,9 +80,25 @@ msgstr "Create plan"
 msgid "platform.plans.form.name"
 msgstr "Plan name"
 
+#: platform:platform.plans.form.name.error.required
+msgid "platform.plans.form.name.error.required"
+msgstr "Enter a plan name."
+
+#: platform:platform.plans.form.optional
+msgid "platform.plans.form.optional"
+msgstr "{label} (optional)"
+
+#: platform:platform.plans.form.pair.error
+msgid "platform.plans.form.pair.error"
+msgstr "Enter the amount and the currency together, or leave both empty."
+
 #: platform:platform.plans.form.sortOrder
 msgid "platform.plans.form.sortOrder"
 msgstr "Sort order"
+
+#: platform:platform.plans.form.sortOrder.error.required
+msgid "platform.plans.form.sortOrder.error.required"
+msgstr "Enter a whole number, for example 10."
 
 #: platform:platform.plans.form.submit
 msgid "platform.plans.form.submit"
@@ -79,6 +107,10 @@ msgstr "Create plan"
 #: platform:platform.plans.form.version
 msgid "platform.plans.form.version"
 msgstr "Version"
+
+#: platform:platform.plans.form.version.error.required
+msgid "platform.plans.form.version.error.required"
+msgstr "Enter a whole number, for example 1."
 
 #: platform:platform.plans.inactive
 msgid "platform.plans.inactive"
@@ -132,6 +164,10 @@ msgstr "Confirm manual payment"
 msgid "platform.subscriptions.form.documentReference.label"
 msgstr "Document reference"
 
+#: platform:platform.subscriptions.form.endDate.error.required
+msgid "platform.subscriptions.form.endDate.error.required"
+msgstr "Enter the end date."
+
 #: platform:platform.subscriptions.form.endDate.label
 msgid "platform.subscriptions.form.endDate.label"
 msgstr "End date"
@@ -140,9 +176,17 @@ msgstr "End date"
 msgid "platform.subscriptions.form.error"
 msgstr "We could not record the manual payment. Please try again."
 
+#: platform:platform.subscriptions.form.optional
+msgid "platform.subscriptions.form.optional"
+msgstr "{label} (optional)"
+
 #: platform:platform.subscriptions.form.paymentNote.label
 msgid "platform.subscriptions.form.paymentNote.label"
 msgstr "Payment note"
+
+#: platform:platform.subscriptions.form.plan.error.required
+msgid "platform.subscriptions.form.plan.error.required"
+msgstr "Choose a plan."
 
 #: platform:platform.subscriptions.form.plan.label
 msgid "platform.subscriptions.form.plan.label"
