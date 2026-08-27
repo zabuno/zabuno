@@ -239,7 +239,9 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                         id="brand-edit-description"
                         name="description"
                         errorText={fieldErrors.description}
-                        label={t('workspace.brandLocations.brand.description')}
+                        label={t('workspace.location.optional', {
+                            label: t('workspace.brandLocations.brand.description'),
+                        })}
                         value={description}
                         onChange={setDescription}
                     />
@@ -250,7 +252,9 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                         id="brand-edit-contact-email"
                         name="contact_email"
                         errorText={fieldErrors.contact_email}
-                        label={t('workspace.brandLocations.brand.contactEmail')}
+                        label={t('workspace.location.optional', {
+                            label: t('workspace.brandLocations.brand.contactEmail'),
+                        })}
                         value={contactEmail}
                         onChange={setContactEmail}
                     />
@@ -258,7 +262,9 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                         id="brand-edit-contact-phone"
                         name="contact_phone"
                         errorText={fieldErrors.contact_phone}
-                        label={t('workspace.brandLocations.brand.contactPhone')}
+                        label={t('workspace.location.optional', {
+                            label: t('workspace.brandLocations.brand.contactPhone'),
+                        })}
                         value={contactPhone}
                         onChange={setContactPhone}
                     />

@@ -25,6 +25,23 @@ const en = {
     'platform.plans.form.sortOrder': 'Sort order',
     'platform.plans.form.submit': 'Create plan',
     'platform.plans.form.error': 'We could not create the plan. Please try again.',
+    // Zorunlu/isteğe bağlı ayrımı ETİKETTE görünür. Öncesinde her alan
+    // birbirinin aynıydı ve "Create plan" düğmesi hiçbir açıklama vermeden
+    // devre dışı duruyordu: kullanıcı hangi alanın eksik olduğunu bilemezdi.
+    'platform.plans.form.optional': '{label} (optional)',
+    'platform.plans.form.name.error.required': 'Enter a plan name.',
+    'platform.plans.form.code.error.required': 'Enter a plan code.',
+    'platform.plans.form.version.error.required': 'Enter a whole number, for example 1.',
+    'platform.plans.form.sortOrder.error.required': 'Enter a whole number, for example 10.',
+    'platform.plans.form.amount.error.invalid': 'Enter the amount in minor units, digits only.',
+    'platform.plans.form.currency.error.invalid': 'Use a three-letter code, for example EUR.',
+    // Tutar ve para birimi BİRLİKTE anlamlıdır: biri olmadan diğeri fiyat
+    // değil, yarım bir kayıttır.
+    'platform.plans.form.pair.error':
+        'Enter the amount and the currency together, or leave both empty.',
+    'platform.subscriptions.form.endDate.error.required': 'Enter the end date.',
+    'platform.subscriptions.form.plan.error.required': 'Choose a plan.',
+    'platform.subscriptions.form.optional': '{label} (optional)',
 
     'platform.plans.activate.button': 'Activate',
     'platform.plans.activate.dialog.heading': 'Activate plan',

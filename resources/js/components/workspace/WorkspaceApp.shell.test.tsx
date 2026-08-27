@@ -114,7 +114,10 @@ async function renderCurrentWorkspace() {
 
 describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
     beforeEach(() => {
-        history.replaceState(null, '', window.location.pathname);
+        // Her test tarayıcıyı YENİ açmış gibi başlar: gezinti artık adresi
+        // gerçekten değiştiriyor ve bir testin bıraktığı adres sonrakini
+        // sessizce başka bir ekranda açardı.
+        history.replaceState(null, '', '/');
     });
 
     it('renders the current workspace inside the real AdminShell: brand, accessible nav, skip link, and main landmark hosting catalog content once Menu is selected', async () => {
@@ -190,10 +193,10 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
-    // Gezinti bağlantıları `#media` gibi hash'ler ve her bölüm aynı id'yi
-    // taşıyan bir kapsayıcı render ediyor; tarayıcı bu durumda o elemana
-    // kaydırır ve gezinti tıklaması sayfayı sıçratır. Bölüm bir "sayfa"dır,
-    // yeni sayfa baştan başlar.
+    // Bölüm bir "sayfa"dır ve yeni sayfa baştan başlar. Kaydırmayı elle
+    // sıfırlamak gerekir: tek sayfa uygulamasında adres değişse de tarayıcı
+    // sayfayı yeniden yüklemez, dolayısıyla kaydırma konumu olduğu yerde
+    // kalır ve kullanıcı yeni ekranın ortasına düşer.
     it('returns the page to the top when the active section changes', async () => {
         const user = userEvent.setup();
         const scrollTo = vi.fn();
@@ -208,7 +211,7 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         await waitFor(() => {
             expect(
                 scrollTo,
-                'Bölüm değiştiğinde sayfa başa dönmeli; aksi hâlde tarayıcı hash hedefine sıçrar.',
+                'Bölüm değiştiğinde sayfa başa dönmeli; aksi hâlde kullanıcı yeni ekranın ortasında açılır.',
             ).toHaveBeenCalledWith(expect.objectContaining({ top: 0 }));
         });
 
@@ -312,18 +315,18 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
-    it('shows Dashboard active by default, with a Dashboard nav item, a #dashboard destination that does not host the catalog, and a separate #menu destination for the Menu nav link once selected', async () => {
+    it('shows Dashboard active by default, with a Dashboard nav item, a dashboard destination that does not host the catalog, and a separate menu destination for the Menu nav link once selected', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
         const dashboardLink = within(nav).getByRole('link', { name: 'Dashboard' });
-        expect(dashboardLink).toHaveAttribute('href', '#dashboard');
+        expect(dashboardLink).toHaveAttribute('href', '/app/zeytin-restoranlari/dashboard');
         expect(dashboardLink).toHaveAttribute('aria-current', 'page');
 
         const menuLink = within(nav).getByRole('link', { name: 'Menu' });
-        expect(menuLink).toHaveAttribute('href', '#menu');
+        expect(menuLink).toHaveAttribute('href', '/app/zeytin-restoranlari/menu');
         expect(menuLink).not.toHaveAttribute('aria-current', 'page');
 
         const main = screen.getByRole('main');
@@ -367,6 +370,50 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         const main = screen.getByRole('main');
         expect(within(main).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
         expect(main.querySelector('#section-menu')).not.toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+    // ANALYTICS-TENANT-SEAM: sahibin kilit kuralının ürün içindeki kanıtı.
+    //
+    // Tek sayfa uygulamasında `history.pushState` tarayıcıya göre sayfa
+    // DEĞİŞTİRMEZ; GA4 ve Metrica kendiliğinden hiçbir şey ölçmez. Bu test
+    // olmadan panelde on ekran gezen bir kullanıcı, ölçümde tek sayfalık bir
+    // ziyaret gibi görünürdü — ve bunun tarayıcıda hiçbir belirtisi olmazdı.
+    it('reports every section change to the dataLayer with the tenant attached', async () => {
+        const user = userEvent.setup();
+        const dataLayer: Array<Record<string, unknown>> = [];
+        (window as unknown as { dataLayer: unknown[] }).dataLayer = dataLayer;
+
+        await renderCurrentWorkspace();
+
+        dataLayer.length = 0;
+
+        await user.click(screen.getByRole('link', { name: 'Media' }));
+
+        await waitFor(() => {
+            expect(dataLayer).toHaveLength(1);
+        });
+
+        expect(dataLayer[0]).toMatchObject({
+            event: 'page_view',
+            page_path: '/app/zeytin-restoranlari/media',
+            zabuno_tenant_slug: 'zeytin-restoranlari',
+        });
+
+        delete (window as unknown as { dataLayer?: unknown[] }).dataLayer;
+        vi.unstubAllGlobals();
+    });
+    // Kullanıcı panele `/app` adresinden girer; orada hangi restoranın hangi
+    // ekranı olduğu yazmaz. Böyle bir adres paylaşılamaz, yer imine
+    // konamaz ve sunucu günlüğünde bütün restoranlar tek satıra karışır.
+    it('rewrites the bare /app address to the tenant and section it is actually showing', async () => {
+        history.replaceState(null, '', '/app');
+
+        await renderCurrentWorkspace();
+
+        await waitFor(() => {
+            expect(window.location.pathname).toBe('/app/zeytin-restoranlari/dashboard');
+        });
 
         vi.unstubAllGlobals();
     });

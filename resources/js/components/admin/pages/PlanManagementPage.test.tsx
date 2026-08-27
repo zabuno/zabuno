@@ -198,7 +198,14 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
         expect(plansCalls.length).toBe(2);
     });
 
-    it('keeps Create plan disabled until name, code, version, sort order and paired amount/currency are all valid', async () => {
+    // Korunan niyet aynı: GEÇERSİZ girdi sunucuya gitmez.
+    //
+    // Değişen şey mekanizma. Öncesinde düğme geçerli olana kadar devre dışı
+    // duruyordu ve kullanıcıya hangi alanın eksik olduğu SÖYLENMİYORDU —
+    // `docs/44`'ün devre dışı kontrol standardının ve `docs/47` Kural 5'in
+    // ihlali. Artık düğmeye basılabilir, form eksiği söyler ve odağı oraya
+    // taşır.
+    it('refuses to submit an incomplete plan, says which field is missing, and moves focus there', async () => {
         const user = userEvent.setup();
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, []);
@@ -211,23 +218,40 @@ describe('PlanManagementPage — S1-WP01A platform plan management (PLATFORM_PLA
         });
 
         const submit = screen.getByRole('button', { name: /create plan/i });
-        expect(submit).toBeDisabled();
+        expect(submit).toBeEnabled();
+
+        const postCount = () =>
+            fetchSpy.mock.calls.filter(
+                (call) => (call[1] as RequestInit | undefined)?.method === 'POST',
+            ).length;
+
+        await user.click(submit);
+
+        expect(await screen.findByText('Enter a plan name.')).toBeInTheDocument();
+        expect(screen.getByText('Enter a plan code.')).toBeInTheDocument();
+        expect(document.activeElement).toBe(screen.getByLabelText(/plan name/i));
+        expect(postCount()).toBe(0);
 
         await user.type(screen.getByLabelText(/plan name/i), '  Growth  ');
         await user.type(screen.getByLabelText(/^code$/i), '  growth  ');
         await user.type(screen.getByLabelText(/version/i), '1');
         await user.type(screen.getByLabelText(/sort order/i), '0');
-        expect(submit).toBeEnabled();
 
+        // Tutar ve para birimi BİRLİKTE anlamlıdır; yarısı yarım bir kayıttır.
         await user.type(screen.getByLabelText(/amount/i), '1000');
-        expect(submit).toBeDisabled();
+        await user.click(submit);
+
+        const pairMessages = screen.getAllByText(
+            'Enter the amount and the currency together, or leave both empty.',
+        );
+        expect(pairMessages.length).toBeGreaterThanOrEqual(1);
+        expect(postCount()).toBe(0);
 
         await user.type(screen.getByLabelText(/currency/i), 'try');
-        expect(submit).toBeDisabled();
+        await user.click(submit);
 
-        await user.clear(screen.getByLabelText(/currency/i));
-        await user.type(screen.getByLabelText(/currency/i), 'TRY');
-        expect(submit).toBeEnabled();
+        expect(screen.getByText('Use a three-letter code, for example EUR.')).toBeInTheDocument();
+        expect(postCount()).toBe(0);
     });
 
     it('submits create via csrf-cookie then POST with trimmed/typed payload excluding id and is_active, then authoritatively refetches', async () => {

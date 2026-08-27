@@ -72,7 +72,7 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         expect(source).not.toMatch(directPageImportPattern);
     });
 
-    it('descriptors declare unique keys/hashes/order/labelKey and exactly the four AI quick-action sections', () => {
+    it('descriptors declare unique keys/paths/order/labelKey and exactly the four AI quick-action sections', () => {
         const descriptorSources = EXPECTED_SECTION_DESCRIPTOR_FILES.map((fileName) => ({
             fileName,
             source: readIfExists(join(PAGES_DIR, fileName)),
@@ -83,7 +83,7 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         }
 
         const keys: string[] = [];
-        const hashes: string[] = [];
+        const paths: string[] = [];
         const orders: number[] = [];
         const aiQuickActionSections: string[] = [];
 
@@ -91,17 +91,17 @@ describe('WorkspaceSectionRegistry structural contract', () => {
             const text = source as string;
 
             const keyMatch = text.match(/key\s*:\s*['"]([^'"]+)['"]/);
-            const hashMatch = text.match(/hash\s*:\s*['"](#[^'"]+)['"]/);
+            const pathMatch = text.match(/path\s*:\s*['"]([a-z0-9-]+)['"]/);
             const orderMatch = text.match(/order\s*:\s*(-?\d+)/);
             const labelKeyMatch = text.match(/labelKey\s*:\s*['"]([^'"]+)['"]/);
 
             expect(keyMatch, `${fileName} must declare a string key`).not.toBeNull();
-            expect(hashMatch, `${fileName} must declare a #hash`).not.toBeNull();
+            expect(pathMatch, `${fileName} must declare a URL path segment`).not.toBeNull();
             expect(orderMatch, `${fileName} must declare a numeric order`).not.toBeNull();
             expect(labelKeyMatch, `${fileName} must declare a labelKey`).not.toBeNull();
 
             if (keyMatch) keys.push(keyMatch[1]);
-            if (hashMatch) hashes.push(hashMatch[1]);
+            if (pathMatch) paths.push(pathMatch[1]);
             if (orderMatch) orders.push(Number(orderMatch[1]));
 
             const aiQuickActionMatch = text.match(/aiQuickAction\s*:\s*true/);
@@ -111,7 +111,7 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         }
 
         expect(new Set(keys).size).toBe(keys.length);
-        expect(new Set(hashes).size).toBe(hashes.length);
+        expect(new Set(paths).size).toBe(paths.length);
         expect(new Set(orders).size, 'orders must be deterministic/unique').toBe(orders.length);
 
         expect(aiQuickActionSections.sort()).toEqual([...EXPECTED_AI_QUICK_ACTION_KEYS].sort());
@@ -153,7 +153,7 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         expect(activeRenderMatches?.length).toBe(1);
     });
 
-    it('registry source sorts registrations deterministically, rejects duplicate/missing dashboard, and resolves unknown hashes to dashboard without a hardcoded page import list', () => {
+    it('registry source sorts registrations deterministically, rejects duplicate/missing dashboard, and resolves unknown paths to dashboard without a hardcoded page import list', () => {
         const registrySource = readIfExists(REGISTRY_PATH);
 
         expect(registrySource, `expected registry source at ${REGISTRY_PATH}`).not.toBeNull();
@@ -172,16 +172,27 @@ describe('WorkspaceSectionRegistry structural contract', () => {
         expect(source).toMatch(/duplicate/i);
         expect(source).toMatch(/missing/i);
 
-        // Explicit unknown-hash -> dashboard fallback: a resolver that falls back to
-        // the literal 'dashboard' key/hash when no descriptor matches the given hash,
+        // Explicit unknown-path -> dashboard fallback: a resolver that falls back to
+        // the literal 'dashboard' key when no descriptor matches the given path,
         // not merely incidental use of the word "dashboard" elsewhere in the file.
-        const fallbackToDashboardPattern =
-            /(unknown|resolve|fallback)[\s\S]{0,200}?['"]dashboard['"]/i;
+        // Bir çözümleyici, eşleşme bulamadığında dashboard'a düşmeli.
+        //
+        // Desen, düşüşün ADLANDIRILMIŞ sabit üzerinden yapılmasını arar
+        // (`?? DASHBOARD_SECTION_DESCRIPTOR`). Serbest bir 'dashboard'
+        // dizesi aramak yeterli değildi: dosyada zaten başka sebeplerle
+        // geçiyor ve test yanlışlıkla YEŞİL kalabilirdi.
+        const fallbackToDashboardPattern = /\?\?\s*DASHBOARD_SECTION_DESCRIPTOR/;
 
         expect(
             source,
-            'expected an explicit unknown-hash fallback resolving to "dashboard"',
+            'expected an explicit unknown-path fallback resolving to "dashboard"',
         ).toMatch(fallbackToDashboardPattern);
+
+        // ...ve o sabit gerçekten dashboard bölümüne bağlı olmalı; aksi
+        // hâlde yukarıdaki desen boş bir isme de uyardı.
+        expect(source).toMatch(
+            /const\s+DASHBOARD_SECTION_DESCRIPTOR[\s\S]{0,200}?['"]dashboard['"]/,
+        );
 
         const hardcodedPageImportListPattern =
             /from\s+['"]\.\.\/pages\/(DashboardPage|BrandPage|LocationsPage|MenuPage|MediaPage|PublicationPage|AnalyticsPage|TeamPage|BillingPage|LaunchReadinessPage)['"]/;

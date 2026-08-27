@@ -17,7 +17,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const menuSection: WorkspaceSectionDescriptor = {
     key: 'menu',
-    hash: '#menu',
+    path: 'menu',
     order: 3,
     labelKey: 'workspace.shell.nav.menu',
     aiQuickAction: true,

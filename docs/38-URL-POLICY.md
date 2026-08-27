@@ -62,7 +62,7 @@ kurulu değildir, admin yüzeyi React'tir.
 
 | Kullanıcının niyeti | Doğru yer | Örnek |
 | --- | --- | --- |
-| Başka bir ekran | Gerçek route | `/app` |
+| Başka bir ekran | Gerçek route | `/app/{workspace}/{section}` |
 | Paylaşılabilir görünüm | Query | `?page=2` |
 | Geçici arayüz durumu | Bileşen state'i | URL değişmez |
 | Aynı belgede bir başlık | Fragment | `#section-menu` |
@@ -73,6 +73,22 @@ Bu depoda bir kez yaşandı: gezinti bağlantıları `#menu` idi ve sayfalar ayn
 `id`'yi taşıyordu; tarayıcı standart davranışıyla o elemana kaydırdı. Düzeltme
 `#54`/`#57`'de kapsayıcı id'lerini `section-*` ile ayırarak yapıldı — çünkü
 sorun kaydırma değil, **iki farklı şeyin aynı ismi taşımasıydı**.
+
+Ama asıl ihlal orada durmadı: kapsayıcı id'leri ayrıldıktan sonra bile
+GEZİNTİNİN KENDİSİ fragment ile yapılmaya devam etti — yani politika yazıldı,
+panele uygulanmadı. Restoran paneli `#menu`, `#brand`, `#dashboard` ile
+geziniyordu; sonucu, panelde on ekran gezen bir kullanıcının ölçümde tek
+sayfalık bir ziyaret görünmesiydi.
+
+Bu, sahibinin **kilit kuralıyla** doğrudan çelişiyordu: her şey tenant
+bazında analiz edilebilmeli. Panel gezintisi 2026-08-27'de gerçek adreslere
+taşındı (`/app/{workspace}/{section}` ve `/platform/{section}`); ölçüm
+dikişi ve tenant bağlamı `docs/46-ANALYTICS-TENANT-OBSERVABILITY.md`
+belgesindedir.
+
+Fragment yalnız tablodaki son satır için kalır: aynı belgede bir başlığa
+atlamak (QR menüsündeki kategori bağlantıları gibi). Bir EKRANI temsil etmek
+için asla.
 
 ## 5. Yönlendirme kodları
 

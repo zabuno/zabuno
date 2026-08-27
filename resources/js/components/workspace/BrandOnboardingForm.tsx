@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
+import { focusFirstInvalidField } from '../../lib/validationErrors';
 import { t } from '../../i18n/workspace';
 import { Button } from '../catalog/forms/micro/Button';
 import { SelectField } from '../catalog/forms/compound/SelectField';
@@ -146,15 +147,29 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
 
         const trimmedName = name.trim();
 
-        if (trimmedName === '') {
-            setFieldErrors({ name: t('workspace.brand.error.name.required') });
-            nameRef.current?.focus();
+        // Bütün alanlar AYNI ANDA doğrulanır (`docs/47` Kural 5).
+        //
+        // Öncesi sıralıydı: önce ad kontrol ediliyor, hata varsa geri
+        // dönülüyordu. Kullanıcı adı düzeltip yeniden gönderiyor ve ANCAK O
+        // ZAMAN pazar hatasını görüyordu. İki hatalı alan, iki tur.
+        const errors: Record<string, string> = {};
 
-            return;
+        if (trimmedName === '') {
+            errors.name = t('workspace.brand.error.name.required');
         }
 
         if (country === '' || timezone === '' || currency === '') {
-            setFieldErrors({ country: t('workspace.brand.error.market.required') });
+            errors.country = t('workspace.brand.error.market.required');
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+
+            if (errors.name) {
+                nameRef.current?.focus();
+            } else {
+                focusFirstInvalidField(errors, ['country']);
+            }
 
             return;
         }

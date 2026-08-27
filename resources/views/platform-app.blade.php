@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Zabuno — Platform Admin</title>
     @include('partials.theme-bootstrap')
+    @include('partials.analytics', ['analyticsContext' => ['zabuno_surface' => 'platform']])
     @viteReactRefresh
     <!-- vite-entry: resources/js/platform.tsx -->
     @vite(['resources/css/app.css', 'resources/js/platform.tsx'])

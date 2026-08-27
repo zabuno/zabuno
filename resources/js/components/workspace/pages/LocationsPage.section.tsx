@@ -18,7 +18,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const locationsSection: WorkspaceSectionDescriptor = {
     key: 'locations',
-    hash: '#locations',
+    path: 'locations',
     order: 2,
     labelKey: 'workspace.shell.nav.locations',
     aiQuickAction: true,

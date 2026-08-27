@@ -7,6 +7,7 @@ namespace App\Infrastructure\MenuCatalog\Persistence;
 use App\Application\MenuCatalog\Dto\CategorySummary;
 use App\Application\MenuCatalog\Dto\MenuDraftSummary;
 use App\Application\MenuCatalog\Dto\MenuDraftTree;
+use App\Application\MenuCatalog\Dto\MenuEntrySummary;
 use App\Application\MenuCatalog\Dto\MenuItemSummary;
 use App\Application\MenuCatalog\Dto\ProductSummary;
 use App\Application\MenuCatalog\Dto\TaxonomyTermSummary;
@@ -197,6 +198,54 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
             ]);
 
             return new MenuItemSummary($id, $categoryId, $productId, $money->minorAmount(), $money->currencyCode(), $position, false);
+        });
+    }
+
+    public function addMenuEntry(
+        int $workspaceId,
+        int $categoryId,
+        string $productName,
+        int $priceMinorAmount,
+        string $currencyCode,
+        array $allergenNames,
+    ): MenuEntrySummary {
+        // Laravel'de iç içe `DB::transaction` SAVEPOINT üretir, yeni bir
+        // işlem değil. Bu yüzden aşağıdaki üç çağrı kendi işlemlerini açsa
+        // da hepsi BU işlemin parçasıdır: biri düşerse üçü birden geri alınır
+        // ve yarım kalmış bir ürün geride kalmaz.
+        return DB::transaction(function () use (
+            $workspaceId,
+            $categoryId,
+            $productName,
+            $priceMinorAmount,
+            $currencyCode,
+            $allergenNames,
+        ): MenuEntrySummary {
+            $product = $this->createProduct($workspaceId, $productName);
+
+            $menuItem = $this->addMenuItem(
+                $workspaceId,
+                $categoryId,
+                $product->id,
+                $priceMinorAmount,
+                $currencyCode,
+            );
+
+            $allergens = $allergenNames === []
+                ? []
+                : $this->replaceProductAllergens($workspaceId, $product->id, $allergenNames);
+
+            return new MenuEntrySummary(
+                menuItemId: $menuItem->id,
+                categoryId: $menuItem->categoryId,
+                productId: $product->id,
+                productName: $product->name,
+                priceMinorAmount: $menuItem->priceMinorAmount,
+                currencyCode: $menuItem->currencyCode,
+                position: $menuItem->position,
+                isVisible: $menuItem->isVisible,
+                allergens: array_values($allergens),
+            );
         });
     }
 

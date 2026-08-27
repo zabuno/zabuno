@@ -796,6 +796,10 @@ msgstr "Loading your workspace…"
 msgid "workspace.location.addressLine1"
 msgstr "Address line 1"
 
+#: workspace:workspace.location.addressLine1.error.required
+msgid "workspace.location.addressLine1.error.required"
+msgstr "Enter the street address."
+
 #: workspace:workspace.location.addressLine2
 msgid "workspace.location.addressLine2"
 msgstr "Address line 2"
@@ -804,13 +808,25 @@ msgstr "Address line 2"
 msgid "workspace.location.city"
 msgstr "City"
 
+#: workspace:workspace.location.city.error.required
+msgid "workspace.location.city.error.required"
+msgstr "Enter the city."
+
 #: workspace:workspace.location.countryCode
 msgid "workspace.location.countryCode"
 msgstr "Country"
 
+#: workspace:workspace.location.countryCode.error.required
+msgid "workspace.location.countryCode.error.required"
+msgstr "Select the country."
+
 #: workspace:workspace.location.displayName
 msgid "workspace.location.displayName"
 msgstr "Display name"
+
+#: workspace:workspace.location.displayName.error.required
+msgid "workspace.location.displayName.error.required"
+msgstr "Enter a display name."
 
 #: workspace:workspace.location.error.required
 msgid "workspace.location.error.required"
@@ -823,6 +839,10 @@ msgstr "We could not create your location. Please try again."
 #: workspace:workspace.location.heading
 msgid "workspace.location.heading"
 msgstr "Create your location"
+
+#: workspace:workspace.location.optional
+msgid "workspace.location.optional"
+msgstr "{label} (optional)"
 
 #: workspace:workspace.location.postalCode
 msgid "workspace.location.postalCode"
@@ -988,6 +1008,18 @@ msgstr "Upload"
 msgid "workspace.media.upload.complete"
 msgstr "Media upload complete."
 
+#: workspace:workspace.media.upload.error.altText.required
+msgid "workspace.media.upload.error.altText.required"
+msgstr "Enter alt text for this image."
+
+#: workspace:workspace.media.upload.error.assetSlot.required
+msgid "workspace.media.upload.error.assetSlot.required"
+msgstr "Choose where this image will be used."
+
+#: workspace:workspace.media.upload.error.file.required
+msgid "workspace.media.upload.error.file.required"
+msgstr "Choose a file to upload."
+
 #: workspace:workspace.media.upload.failed
 msgid "workspace.media.upload.failed"
 msgstr "Media upload failed. Your selection was kept."
@@ -996,9 +1028,13 @@ msgstr "Media upload failed. Your selection was kept."
 msgid "workspace.media.upload.field.altText"
 msgstr "Alt text"
 
+#: workspace:workspace.media.upload.field.altText.hint
+msgid "workspace.media.upload.field.altText.hint"
+msgstr "Describe the image for people who cannot see it, for example \"grilled lamb chops on a wooden board\"."
+
 #: workspace:workspace.media.upload.field.assetSlot
 msgid "workspace.media.upload.field.assetSlot"
-msgstr "Asset slot"
+msgstr "Where will this image be used?"
 
 #: workspace:workspace.media.upload.field.assetSlot.appIcon
 msgid "workspace.media.upload.field.assetSlot.appIcon"
@@ -1054,7 +1090,7 @@ msgstr "OG image"
 
 #: workspace:workspace.media.upload.field.assetSlot.placeholder
 msgid "workspace.media.upload.field.assetSlot.placeholder"
-msgstr "Select an asset slot"
+msgstr "Choose a place"
 
 #: workspace:workspace.media.upload.field.assetSlot.pricing
 msgid "workspace.media.upload.field.assetSlot.pricing"
@@ -1072,17 +1108,9 @@ msgstr "Profile/avatar"
 msgid "workspace.media.upload.field.assetSlot.testimonial"
 msgstr "Testimonial"
 
-#: workspace:workspace.media.upload.field.expiry
-msgid "workspace.media.upload.field.expiry"
-msgstr "Expiry date"
-
 #: workspace:workspace.media.upload.field.file
 msgid "workspace.media.upload.field.file"
 msgstr "File"
-
-#: workspace:workspace.media.upload.field.rights
-msgid "workspace.media.upload.field.rights"
-msgstr "Rights or license"
 
 #: workspace:workspace.media.upload.heading
 msgid "workspace.media.upload.heading"

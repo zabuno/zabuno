@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Domain\Url\UrlPolicy;
+use App\Support\Analytics\AnalyticsConfiguration;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Vite;
@@ -91,6 +92,10 @@ final class SecurityHeaders
 
     private function contentSecurityPolicy(string $nonce): string
     {
+        // Ölçüm araçları kapalıyken bu dizi tamamen boştur ve CSP aşağıdaki
+        // sıkı halinde kalır. Açıkken YALNIZ açılan aracın adresleri girer.
+        $analytics = AnalyticsConfiguration::fromConfig();
+
         $directives = [
             "default-src 'self'",
             "base-uri 'self'",
@@ -102,6 +107,11 @@ final class SecurityHeaders
             "connect-src 'self'",
             "manifest-src 'self'",
             "worker-src 'self'",
+            // `strict-dynamic`: nonce taşıyan script'in YÜKLEDİĞİ script'ler
+            // de güvenilir sayılır. Google Tag Manager tam olarak böyle
+            // çalışır — GA4/Metrica/Hotjar etiketlerini kendisi enjekte eder.
+            // Bu yüzden GTM için host beyaz listesine gerek yoktur; onu
+            // yükleyen satır zaten nonce taşır.
             "script-src 'self' 'nonce-{$nonce}' 'strict-dynamic'",
             "style-src 'self' 'nonce-{$nonce}'",
             // `style` ÖZNİTELİĞİ ayrı tutulur ve bilinçli olarak serbesttir.
@@ -114,6 +124,20 @@ final class SecurityHeaders
             "style-src-attr 'unsafe-inline'",
         ];
 
+        // Ölçüm izinleri. `connect-src`/`img-src` olmadan GTM yüklenir ama
+        // hiçbir ölçüm SUNUCUYA ULAŞAMAZ: sayfa sorunsuz görünür, raporlar
+        // boş kalır. Sessizce veri kaybetmemek için izinler açılan araçtan
+        // türetilir.
+        //
+        // `script-src-elem` bilerek YOK: `strict-dynamic` altında bir host
+        // listesi yazmak, nonce'un sağladığı güveni host güvenine indirger.
+        $directives = $this->withAnalyticsSources($directives, $analytics, [
+            'connect-src',
+            'img-src',
+            'font-src',
+            'frame-src',
+        ]);
+
         // Vite geliştirme sunucusu kendi HMR bağlantısını açar; bu izin
         // yalnız yerel geliştirmede verilir ve üretime asla sızmaz.
         if (app()->environment('local') && Vite::isRunningHot()) {
@@ -122,5 +146,47 @@ final class SecurityHeaders
         }
 
         return implode('; ', $directives);
+    }
+
+    /**
+     * Var olan bir yönergeye adres ekler; yönerge tanımlı değilse ekler.
+     *
+     * `frame-src` bugün CSP'de yoktur ve `default-src 'self'`e düşer; Metrica
+     * Webvisor açıkken bir iframe gerekir, dolayısıyla o durumda yönerge
+     * yaratılır. Aksi halde eklenmez ve varsayılan sıkılık korunur.
+     *
+     * @param  list<string>  $directives
+     * @param  list<string>  $names
+     * @return list<string>
+     */
+    private function withAnalyticsSources(
+        array $directives,
+        AnalyticsConfiguration $analytics,
+        array $names,
+    ): array {
+        foreach ($names as $name) {
+            $sources = $analytics->cspSourcesFor($name);
+
+            if ($sources === []) {
+                continue;
+            }
+
+            $appended = false;
+
+            foreach ($directives as $index => $directive) {
+                if (str_starts_with($directive, $name.' ')) {
+                    $directives[$index] = $directive.' '.implode(' ', $sources);
+                    $appended = true;
+
+                    break;
+                }
+            }
+
+            if (! $appended) {
+                $directives[] = $name." 'self' ".implode(' ', $sources);
+            }
+        }
+
+        return array_values($directives);
     }
 }

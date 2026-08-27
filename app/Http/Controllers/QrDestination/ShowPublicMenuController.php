@@ -75,6 +75,12 @@ final class ShowPublicMenuController extends Controller
 
         return response()->view('public-menu', [
             'snapshot' => $publication->snapshot,
+            'analyticsContext' => [
+                'zabuno_surface' => 'menu',
+                'zabuno_tenant_id' => (string) $record->workspaceId,
+                'zabuno_location_id' => (string) $record->locationId,
+                'zabuno_menu_id' => (string) $record->menuId,
+            ],
             'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,
             'structuredData' => json_encode(

@@ -7,17 +7,17 @@ import { render, screen, waitFor } from '@testing-library/react';
  *
  * Today PlatformApp (resources/js/components/platform/PlatformApp.tsx)
  * hard-codes a single "plans" section and renders only PlanManagementPage;
- * there is no Subscriptions nav item, no #subscriptions hash handling, and
- * no hashchange listener at all. Every assertion below must fail against
+ * there is no Subscriptions nav item, no /platform/subscriptions handling,
+ * and no popstate listener at all. Every assertion below must fail against
  * current production.
  *
  * Frozen contract:
  * - A "Subscriptions" nav item exists alongside "Plans".
  * - #subscriptions selects Subscriptions and renders the real
  *   SubscriptionManagementPage (driving its own workspace-discovery fetch).
- * - The default (no-hash) and any unknown-hash location keeps Plans
+ * - The bare /platform address and any unknown section keeps Plans
  *   selected and rendered.
- * - A hashchange event (not just initial location) switches the rendered
+ * - A popstate event (not just initial location) switches the rendered
  *   page and the selected nav item.
  * - PlatformApp itself invents no workspace, plan, price, or subscription
  *   data — every value visible comes from the mocked network responses.
@@ -81,12 +81,14 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
     beforeEach(() => {
         document.cookie = 'XSRF-TOKEN=test-xsrf-token';
         vi.stubGlobal('fetch', buildFetchMock());
-        history.replaceState(null, '', window.location.pathname);
+        // Her test panelin kök adresinde başlar; bir önceki testin bıraktığı
+        // adres sonrakini sessizce başka bir ekranda açmasın.
+        history.replaceState(null, '', '/platform');
     });
 
     afterEach(() => {
         vi.unstubAllGlobals();
-        history.replaceState(null, '', window.location.pathname);
+        history.replaceState(null, '', '/platform');
     });
 
     it('exposes a Subscriptions nav item alongside Plans', async () => {
@@ -97,7 +99,7 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         expect(screen.getByRole('link', { name: /subscriptions/i })).toBeInTheDocument();
     });
 
-    it('keeps Plans selected and rendered for the default (no-hash) location', async () => {
+    it('keeps Plans selected and rendered for the bare /platform address', async () => {
         const { PlatformApp } = await importPlatformAppModule();
         render(<PlatformApp />);
 
@@ -118,8 +120,8 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         ).toBe(false);
     });
 
-    it('keeps Plans selected and rendered for an unknown hash', async () => {
-        history.replaceState(null, '', `${window.location.pathname}#not-a-real-section`);
+    it('keeps Plans selected and rendered for an unknown section', async () => {
+        history.replaceState(null, '', '/platform/not-a-real-section');
 
         const { PlatformApp } = await importPlatformAppModule();
         render(<PlatformApp />);
@@ -128,8 +130,8 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         expect(plansNavItem).toHaveAttribute('aria-current', 'page');
     });
 
-    it('selects Subscriptions and renders SubscriptionManagementPage when the location hash is #subscriptions', async () => {
-        history.replaceState(null, '', `${window.location.pathname}#subscriptions`);
+    it('selects Subscriptions and renders SubscriptionManagementPage at /platform/subscriptions', async () => {
+        history.replaceState(null, '', '/platform/subscriptions');
 
         const { PlatformApp } = await importPlatformAppModule();
         render(<PlatformApp />);
@@ -149,7 +151,7 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         expect(await screen.findByText('Acme Corp')).toBeInTheDocument();
     });
 
-    it('switches the rendered page and selected nav item on hashchange, without a full reload', async () => {
+    it('switches the rendered page and selected nav item on back/forward, without a full reload', async () => {
         const { PlatformApp } = await importPlatformAppModule();
         render(<PlatformApp />);
 
@@ -158,8 +160,8 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
             'page',
         );
 
-        history.replaceState(null, '', `${window.location.pathname}#subscriptions`);
-        window.dispatchEvent(new HashChangeEvent('hashchange'));
+        history.replaceState(null, '', '/platform/subscriptions');
+        window.dispatchEvent(new PopStateEvent('popstate'));
 
         await waitFor(() => {
             expect(screen.getByRole('link', { name: /subscriptions/i })).toHaveAttribute(
@@ -169,8 +171,8 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
         });
         expect(await screen.findByText('Acme Corp')).toBeInTheDocument();
 
-        history.replaceState(null, '', window.location.pathname);
-        window.dispatchEvent(new HashChangeEvent('hashchange'));
+        history.replaceState(null, '', '/platform/plans');
+        window.dispatchEvent(new PopStateEvent('popstate'));
 
         await waitFor(() => {
             expect(screen.getByRole('link', { name: /^plans$/i })).toHaveAttribute(
@@ -181,7 +183,7 @@ describe('PlatformApp — Subscriptions journey (PLATFORM_SUBSCRIPTIONS_NAV_FRON
     });
 
     it('never renders a workspace, plan, price, or subscription value that was not returned by the mocked network', async () => {
-        history.replaceState(null, '', `${window.location.pathname}#subscriptions`);
+        history.replaceState(null, '', '/platform/subscriptions');
 
         const { PlatformApp } = await importPlatformAppModule();
         render(<PlatformApp />);

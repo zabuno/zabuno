@@ -9,7 +9,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 
 const brandSection: WorkspaceSectionDescriptor = {
     key: 'brand',
-    hash: '#brand',
+    path: 'brand',
     order: 1,
     labelKey: 'workspace.shell.nav.brand',
     catalogOnboardingPhase: 'brand-onboarding',

@@ -63,11 +63,20 @@ final class ShowPublicMenuByKeyController extends Controller
         // Buraya analitik YAZILMAZ ve bu bilinçlidir. Ürünün ölçtüğü şey
         // "QR çözümlemesi" ve "menü açılışı"dır; arama motorundan gelen bir
         // ziyaretçi bir karekod taramamıştır. Onu tarama gibi kaydetmek,
-        // ürünün birincil metriğini sessizce şişirirdi. Web ziyaret
-        // analitiği ayrı bir konudur ve bu paketin kapsamında değildir.
+        // ürünün birincil metriğini sessizce şişirirdi.
+        //
+        // Web ziyaret analitiği ise AYRI bir kanaldan ölçülür: sayfa
+        // `zabuno_tenant_id` ile GTM'e bir görüntüleme bildirir. Böylece
+        // "kaç kez tarandı" ile "kaç kez görüntülendi" birbirine karışmadan,
+        // ikisi de tenant bazında görünür (docs/46).
 
         return response()->view('public-menu', [
             'snapshot' => $publication->snapshot,
+            'analyticsContext' => [
+                'zabuno_surface' => 'menu',
+                'zabuno_tenant_id' => (string) $address['workspace_id'],
+                'zabuno_menu_id' => (string) $address['menu_id'],
+            ],
             'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,
             'structuredData' => json_encode(

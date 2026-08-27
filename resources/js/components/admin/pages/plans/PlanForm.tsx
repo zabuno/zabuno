@@ -1,8 +1,10 @@
 import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { Textarea } from '../../../catalog/forms/micro/Textarea';
 import { Button } from '../../../catalog/forms/micro/Button';
-import { useMemo, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 
+import { FieldError } from '../../../catalog/menu/micro/FieldError';
+import { focusFirstInvalidField } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/platform';
 
 export type PlanCreatePayload = {
@@ -47,132 +49,275 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
     const [entitlements, setEntitlements] = useState('');
     const [sortOrder, setSortOrder] = useState('');
 
-    const validation = useMemo(() => {
-        const trimmedName = name.trim();
-        const trimmedCode = code.trim();
-        const trimmedCurrency = currency.trim();
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+    /**
+     * Bütün alanları AYNI ANDA doğrular (`docs/47` Kural 5).
+     *
+     * Öncesi şöyleydi: geçerlilik sessizce hesaplanıyor ve "Create plan"
+     * düğmesi hiçbir açıklama vermeden devre dışı bırakılıyordu. Kullanıcı
+     * hangi alanın eksik olduğunu göremiyor, düğmeyi nasıl etkinleştireceğini
+     * bilemiyordu — `docs/44`'ün devre dışı kontrol standardının tam
+     * karşıtı.
+     *
+     * @return alan adı => hata mesajı (boşsa form geçerlidir)
+     */
+    function validate(): Record<string, string> {
+        const errors: Record<string, string> = {};
+
+        if (name.trim() === '') {
+            errors.name = t('platform.plans.form.name.error.required');
+        }
+
+        if (code.trim() === '') {
+            errors.code = t('platform.plans.form.code.error.required');
+        }
+
+        if (parseWholeNumber(version) === null) {
+            errors.version = t('platform.plans.form.version.error.required');
+        }
+
+        if (parseWholeNumber(sortOrder) === null) {
+            errors.sort_order = t('platform.plans.form.sortOrder.error.required');
+        }
+
         const trimmedAmount = amount.trim();
-
-        const versionValue = parseWholeNumber(version);
-        const sortOrderValue = parseWholeNumber(sortOrder);
-
+        const trimmedCurrency = currency.trim();
         const amountEmpty = trimmedAmount === '';
         const currencyEmpty = trimmedCurrency === '';
-        const amountValue = amountEmpty ? null : parseWholeNumber(trimmedAmount);
-        const currencyValid = currencyEmpty || CURRENCY_PATTERN.test(trimmedCurrency);
-        const amountValid = amountEmpty || amountValue !== null;
-        const paired = amountEmpty === currencyEmpty;
 
-        const isValid =
-            trimmedName.length > 0 &&
-            trimmedCode.length > 0 &&
-            versionValue !== null &&
-            sortOrderValue !== null &&
-            paired &&
-            amountValid &&
-            currencyValid;
+        if (!amountEmpty && parseWholeNumber(trimmedAmount) === null) {
+            errors.amount = t('platform.plans.form.amount.error.invalid');
+        }
 
-        return {
-            isValid,
-            trimmedName,
-            trimmedCode,
-            versionValue,
-            sortOrderValue,
-            amountValue: amountEmpty ? null : amountValue,
-            currency: currencyEmpty ? null : trimmedCurrency,
-        };
-    }, [name, code, version, amount, currency, sortOrder]);
+        if (!currencyEmpty && !CURRENCY_PATTERN.test(trimmedCurrency)) {
+            errors.currency = t('platform.plans.form.currency.error.invalid');
+        }
+
+        // Tutar ve para birimi birlikte anlamlıdır. Hata İKİ alana da
+        // yazılır: kullanıcı hangisini doldurduğunu zaten biliyor, eksik
+        // olanı arıyor.
+        if (amountEmpty !== currencyEmpty) {
+            const message = t('platform.plans.form.pair.error');
+            errors.amount = errors.amount ?? message;
+            errors.currency = errors.currency ?? message;
+        }
+
+        return errors;
+    }
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        if (
-            !validation.isValid ||
-            validation.versionValue === null ||
-            validation.sortOrderValue === null
-        ) {
+        const errors = validate();
+        setFieldErrors(errors);
+
+        if (Object.keys(errors).length > 0) {
+            focusFirstInvalidField(errors, [
+                'name',
+                'code',
+                'version',
+                'amount',
+                'currency',
+                'sort_order',
+            ]);
+
             return;
         }
 
         onSubmit({
-            name: validation.trimmedName,
-            code: validation.trimmedCode,
-            version: validation.versionValue,
+            name: name.trim(),
+            code: code.trim(),
+            version: parseWholeNumber(version) as number,
             entitlements: parseEntitlements(entitlements),
-            amount_minor: validation.amountValue,
-            currency: validation.currency,
-            sort_order: validation.sortOrderValue,
+            amount_minor: amount.trim() === '' ? null : (parseWholeNumber(amount) as number),
+            currency: currency.trim() === '' ? null : currency.trim(),
+            sort_order: parseWholeNumber(sortOrder) as number,
         });
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ maxWidth: '100%' }}>
+        <form onSubmit={handleSubmit} className="flex max-w-content flex-col gap-3" noValidate>
             <h2 className="text-body font-semibold text-fg">{t('platform.plans.form.heading')}</h2>
 
             <div
                 className="grid gap-3"
                 style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 12rem), 1fr))' }}
             >
-                <label className="flex flex-col gap-1 text-body text-fg-secondary">
-                    {t('platform.plans.form.name')}
-                    <TextInput
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        type="text"
-                    />
-                </label>
+                <div className="flex flex-col gap-1">
+                    {/*
+                        Hata mesajı `<label>`in DIŞINDA durur. İçinde
+                        olsaydı alanın erişilebilir adına karışırdı: ekran
+                        okuyucu "Code Enter a plan code." derdi. Bağlantı
+                        `aria-describedby` ile kurulur — ad ayrı, açıklama
+                        ayrı.
+                    */}
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
+                        {t('platform.plans.form.name')}
+                        <TextInput
+                            name="name"
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            type="text"
+                            aria-invalid={fieldErrors.name === undefined ? undefined : true}
+                            aria-describedby={fieldErrors.name ? `plan-name-error` : undefined}
+                        />
+                    </label>
+                    {fieldErrors.name ? (
+                        <span id={`plan-name-error`}>
+                            <FieldError message={fieldErrors.name} />
+                        </span>
+                    ) : null}
+                </div>
 
-                <label className="flex flex-col gap-1 text-body text-fg-secondary">
-                    {t('platform.plans.form.code')}
-                    <TextInput
-                        value={code}
-                        onChange={(event) => setCode(event.target.value)}
-                        type="text"
-                    />
-                </label>
+                <div className="flex flex-col gap-1">
+                    {/*
+                        Hata mesajı `<label>`in DIŞINDA durur. İçinde
+                        olsaydı alanın erişilebilir adına karışırdı: ekran
+                        okuyucu "Code Enter a plan code." derdi. Bağlantı
+                        `aria-describedby` ile kurulur — ad ayrı, açıklama
+                        ayrı.
+                    */}
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
+                        {t('platform.plans.form.code')}
+                        <TextInput
+                            name="code"
+                            value={code}
+                            onChange={(event) => setCode(event.target.value)}
+                            type="text"
+                            aria-invalid={fieldErrors.code === undefined ? undefined : true}
+                            aria-describedby={fieldErrors.code ? `plan-code-error` : undefined}
+                        />
+                    </label>
+                    {fieldErrors.code ? (
+                        <span id={`plan-code-error`}>
+                            <FieldError message={fieldErrors.code} />
+                        </span>
+                    ) : null}
+                </div>
 
-                <label className="flex flex-col gap-1 text-body text-fg-secondary">
-                    {t('platform.plans.form.version')}
-                    <TextInput
-                        value={version}
-                        onChange={(event) => setVersion(event.target.value)}
-                        type="text"
-                        inputMode="numeric"
-                    />
-                </label>
+                <div className="flex flex-col gap-1">
+                    {/*
+                        Hata mesajı `<label>`in DIŞINDA durur. İçinde
+                        olsaydı alanın erişilebilir adına karışırdı: ekran
+                        okuyucu "Code Enter a plan code." derdi. Bağlantı
+                        `aria-describedby` ile kurulur — ad ayrı, açıklama
+                        ayrı.
+                    */}
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
+                        {t('platform.plans.form.version')}
+                        <TextInput
+                            name="version"
+                            value={version}
+                            onChange={(event) => setVersion(event.target.value)}
+                            type="text"
+                            inputMode="numeric"
+                            aria-invalid={fieldErrors.version === undefined ? undefined : true}
+                            aria-describedby={
+                                fieldErrors.version ? `plan-version-error` : undefined
+                            }
+                        />
+                    </label>
+                    {fieldErrors.version ? (
+                        <span id={`plan-version-error`}>
+                            <FieldError message={fieldErrors.version} />
+                        </span>
+                    ) : null}
+                </div>
 
-                <label className="flex flex-col gap-1 text-body text-fg-secondary">
-                    {t('platform.plans.form.amount')}
-                    <TextInput
-                        value={amount}
-                        onChange={(event) => setAmount(event.target.value)}
-                        type="text"
-                        inputMode="numeric"
-                    />
-                </label>
+                <div className="flex flex-col gap-1">
+                    {/*
+                        Hata mesajı `<label>`in DIŞINDA durur. İçinde
+                        olsaydı alanın erişilebilir adına karışırdı: ekran
+                        okuyucu "Code Enter a plan code." derdi. Bağlantı
+                        `aria-describedby` ile kurulur — ad ayrı, açıklama
+                        ayrı.
+                    */}
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
+                        {t('platform.plans.form.optional', {
+                            label: t('platform.plans.form.amount'),
+                        })}
+                        <TextInput
+                            name="amount"
+                            value={amount}
+                            onChange={(event) => setAmount(event.target.value)}
+                            type="text"
+                            inputMode="numeric"
+                            aria-invalid={fieldErrors.amount === undefined ? undefined : true}
+                            aria-describedby={fieldErrors.amount ? `plan-amount-error` : undefined}
+                        />
+                    </label>
+                    {fieldErrors.amount ? (
+                        <span id={`plan-amount-error`}>
+                            <FieldError message={fieldErrors.amount} />
+                        </span>
+                    ) : null}
+                </div>
 
-                <label className="flex flex-col gap-1 text-body text-fg-secondary">
-                    {t('platform.plans.form.currency')}
-                    <TextInput
-                        value={currency}
-                        onChange={(event) => setCurrency(event.target.value)}
-                        type="text"
-                    />
-                </label>
+                <div className="flex flex-col gap-1">
+                    {/*
+                        Hata mesajı `<label>`in DIŞINDA durur. İçinde
+                        olsaydı alanın erişilebilir adına karışırdı: ekran
+                        okuyucu "Code Enter a plan code." derdi. Bağlantı
+                        `aria-describedby` ile kurulur — ad ayrı, açıklama
+                        ayrı.
+                    */}
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
+                        {t('platform.plans.form.optional', {
+                            label: t('platform.plans.form.currency'),
+                        })}
+                        <TextInput
+                            name="currency"
+                            value={currency}
+                            onChange={(event) => setCurrency(event.target.value)}
+                            type="text"
+                            aria-invalid={fieldErrors.currency === undefined ? undefined : true}
+                            aria-describedby={
+                                fieldErrors.currency ? `plan-currency-error` : undefined
+                            }
+                        />
+                    </label>
+                    {fieldErrors.currency ? (
+                        <span id={`plan-currency-error`}>
+                            <FieldError message={fieldErrors.currency} />
+                        </span>
+                    ) : null}
+                </div>
 
-                <label className="flex flex-col gap-1 text-body text-fg-secondary">
-                    {t('platform.plans.form.sortOrder')}
-                    <TextInput
-                        value={sortOrder}
-                        onChange={(event) => setSortOrder(event.target.value)}
-                        type="text"
-                        inputMode="numeric"
-                    />
-                </label>
+                <div className="flex flex-col gap-1">
+                    {/*
+                        Hata mesajı `<label>`in DIŞINDA durur. İçinde
+                        olsaydı alanın erişilebilir adına karışırdı: ekran
+                        okuyucu "Code Enter a plan code." derdi. Bağlantı
+                        `aria-describedby` ile kurulur — ad ayrı, açıklama
+                        ayrı.
+                    */}
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
+                        {t('platform.plans.form.sortOrder')}
+                        <TextInput
+                            name="sort_order"
+                            value={sortOrder}
+                            onChange={(event) => setSortOrder(event.target.value)}
+                            type="text"
+                            inputMode="numeric"
+                            aria-invalid={fieldErrors.sort_order === undefined ? undefined : true}
+                            aria-describedby={
+                                fieldErrors.sort_order ? `plan-sort_order-error` : undefined
+                            }
+                        />
+                    </label>
+                    {fieldErrors.sort_order ? (
+                        <span id={`plan-sort_order-error`}>
+                            <FieldError message={fieldErrors.sort_order} />
+                        </span>
+                    ) : null}
+                </div>
             </div>
 
             <label className="flex flex-col gap-1 text-body text-fg-secondary">
-                {t('platform.plans.form.entitlements')}
+                {t('platform.plans.form.optional', {
+                    label: t('platform.plans.form.entitlements'),
+                })}
                 <Textarea
                     value={entitlements}
                     onChange={(event) => setEntitlements(event.target.value)}
@@ -180,11 +325,15 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
                 />
             </label>
 
-            <Button
-                type="submit"
-                disabled={!validation.isValid || submitting}
-                className="self-start"
-            >
+            {/*
+                Düğme artık "geçersiz" diye devre dışı DEĞİL.
+                Devre dışı bir düğme, kullanıcıya neyin eksik olduğunu
+                söylemez; tıklanabilir bir düğme hatayı gösterir ve odağı
+                oraya taşır (`docs/47` Kural 5, `docs/44` devre dışı
+                standardı). Yalnız gönderim sürerken kapalıdır — o gerçek
+                bir sebeptir.
+            */}
+            <Button type="submit" disabled={submitting} className="self-start">
                 {t('platform.plans.form.submit')}
             </Button>
         </form>

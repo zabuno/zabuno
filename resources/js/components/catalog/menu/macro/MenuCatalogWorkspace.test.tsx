@@ -42,6 +42,18 @@ function menuItemsUrl(workspaceId: number, categoryId: number): string {
     return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/menu-items`;
 }
 
+/**
+ * Menüye ürün eklemenin TEK uç noktası.
+ *
+ * Öncesinde bu üç çağrıydı — ürün, satır, alerjen — ve arayüz kullanıcıya
+ * üç ayrı form gösteriyordu. Sahibi bunu reddetti: kategori eklemek ile
+ * ürün eklemek aynı formda olamaz, ve bir ürün eklemek üç kayıt değil tek
+ * bir iştir.
+ */
+function menuEntriesUrl(workspaceId: number, categoryId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/menu-entries`;
+}
+
 function allergensUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/allergens`;
 }
@@ -101,6 +113,7 @@ type FetchHandlers = {
     createCategory?: (body: unknown) => Response;
     createProduct?: (body: unknown) => Response;
     createMenuItem?: (body: unknown) => Response;
+    createMenuEntry?: (body: unknown) => Response;
     updateAllergens?: (body: unknown) => Response;
 };
 
@@ -151,6 +164,36 @@ function buildFetchMock(handlers: FetchHandlers) {
                       position: 0,
                   });
         }
+        if (String(url) === menuEntriesUrl(WORKSPACE_ID, 5) && method === 'POST') {
+            return handlers.createMenuEntry
+                ? handlers.createMenuEntry(body)
+                : jsonResponse(201, {
+                      id: 11,
+                      categoryId: 5,
+                      productId: 9,
+                      productName: body.productName,
+                      priceMinorAmount: 4250,
+                      currencyCode: 'TRY',
+                      position: 0,
+                      isVisible: false,
+                      allergens: body.allergens ?? [],
+                  });
+        }
+        if (String(url) === menuEntriesUrl(WORKSPACE_ID, 6) && method === 'POST') {
+            return handlers.createMenuEntry
+                ? handlers.createMenuEntry(body)
+                : jsonResponse(201, {
+                      id: 12,
+                      categoryId: 6,
+                      productId: 10,
+                      productName: body.productName,
+                      priceMinorAmount: 4250,
+                      currencyCode: 'TRY',
+                      position: 0,
+                      isVisible: false,
+                      allergens: body.allergens ?? [],
+                  });
+        }
         if (String(url) === allergensUrl(WORKSPACE_ID, 11) && method === 'PUT') {
             return handlers.updateAllergens
                 ? handlers.updateAllergens(body)
@@ -177,7 +220,7 @@ function assertMutationRequestInit(init: RequestInit | undefined): void {
  * aradığını açıkça söylemeli; belirsiz kalırsa ilk eklenen kardeşte kırılır.
  */
 describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', () => {
-    it('fetches brand currency and menu on mount, then creates menu/category/product/item and sets allergens with CSRF-before-write', async () => {
+    it('fetches brand currency and menu on mount, then creates the menu, one category, and adds a priced product with allergens in a SINGLE submit, CSRF-before-write', async () => {
         let currentMenuId: number | null = null;
         let allergensUpdated = false;
         const finalTree = makeMenuTree({
@@ -228,33 +271,33 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
                     position: 0,
                 });
             },
-            createProduct: (body) => {
-                expect((body as { name: string }).name).toBe('Mercimek Çorbası');
-                return jsonResponse(201, {
-                    id: 9,
-                    workspaceId: WORKSPACE_ID,
-                    name: (body as { name: string }).name,
-                });
-            },
-            createMenuItem: (body) => {
-                const typed = body as { productId: number; price: string; currency: string };
-                expect(typed.productId).toBe(9);
+            // Ürün, fiyatı ve alerjenleri TEK istekte gider. Üç ayrı
+            // istek olsaydı ikincisi düştüğünde hiçbir menüde görünmeyen
+            // öksüz bir ürün geride kalırdı.
+            createMenuEntry: (body) => {
+                const typed = body as {
+                    productName: string;
+                    price: string;
+                    currency: string;
+                    allergens: string[];
+                };
+                expect(typed.productName).toBe('Mercimek Çorbası');
                 expect(typed.price).toBe('42.50');
                 expect(typed.currency).toBe('TRY');
+                expect(typed.allergens).toEqual(['gluten', 'süt']);
+                allergensUpdated = true;
+
                 return jsonResponse(201, {
                     id: 11,
                     categoryId: 5,
-                    productId: typed.productId,
+                    productId: 9,
+                    productName: typed.productName,
                     priceMinorAmount: 4250,
                     currencyCode: 'TRY',
                     position: 0,
+                    isVisible: false,
+                    allergens: typed.allergens,
                 });
-            },
-            updateAllergens: (body) => {
-                const typed = body as { allergens: string[] };
-                expect(typed.allergens).toEqual(['gluten', 'süt']);
-                allergensUpdated = true;
-                return jsonResponse(200, { id: 11, allergens: typed.allergens });
             },
         });
         vi.stubGlobal('fetch', fetchMock);
@@ -292,32 +335,47 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
         await waitFor(() => csrfPrecedesWrite(menuUrl(WORKSPACE_ID, LOCATION_ID), 'POST'));
         expect(screen.getByRole('heading', { name: 'Ana Menü' })).toBeInTheDocument();
 
+        // Kategori ekleme KAPALI başlar ve kendi eylemidir: nadir yapılan
+        // bir iş, sürekli yapılan "ürün ekle" ile aynı ağırlıkta duramaz.
+        fireEvent.click(screen.getByRole('button', { name: /add category/i }));
         const categoryNameInput = await screen.findByLabelText(/category name/i);
         fireEvent.change(categoryNameInput, { target: { value: 'Başlangıçlar' } });
-        fireEvent.click(screen.getByRole('button', { name: /create category|add category/i }));
+        fireEvent.click(screen.getByRole('button', { name: /^add category$/i }));
         await waitFor(() => csrfPrecedesWrite(categoriesUrl(WORKSPACE_ID, 42), 'POST'));
 
+        // TEK form: ad, fiyat ve alerjen birlikte doldurulur, bir kez
+        // gönderilir. Öncesinde bu üç ayrı form ve üç ayrı kaydetmeydi.
         const productNameInput = await screen.findByLabelText(/product name/i);
         fireEvent.change(productNameInput, { target: { value: 'Mercimek Çorbası' } });
-        fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
-        await waitFor(() => csrfPrecedesWrite(productsUrl(WORKSPACE_ID, 5), 'POST'));
 
-        const priceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
+        const priceInput = screen.getByLabelText(/^price$/i, { selector: 'input' });
         fireEvent.change(priceInput, { target: { value: '42.50' } });
-        fireEvent.click(screen.getByRole('button', { name: /create item|add item/i }));
-        await waitFor(() => csrfPrecedesWrite(menuItemsUrl(WORKSPACE_ID, 5), 'POST'));
+
+        const allergensInput = screen.getByLabelText(/allergens \(comma/i, { selector: 'input' });
+        fireEvent.change(allergensInput, { target: { value: 'gluten, süt, gluten, süt' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /add to menu/i }));
+        await waitFor(() => csrfPrecedesWrite(menuEntriesUrl(WORKSPACE_ID, 5), 'POST'));
 
         expect(
             screen.getByRole('button', { name: 'Edit price for Mercimek Çorbası' }),
         ).toBeInTheDocument();
 
-        const allergensInput = await screen.findByLabelText(/allergens/i, { selector: 'input' });
-        fireEvent.change(allergensInput, { target: { value: 'gluten, süt, gluten, süt' } });
-        fireEvent.click(screen.getByRole('button', { name: /save allergens|update allergens/i }));
-        await waitFor(() => csrfPrecedesWrite(allergensUrl(WORKSPACE_ID, 11), 'PUT'));
+        // Ürünü eklemek için gereken sunucu turu SAYISI sözleşmenin
+        // parçasıdır: üçe çıkarsa zincir geri gelmiş demektir.
+        const entryWrites = fetchMock.mock.calls.filter(
+            (call) =>
+                String(call[0]).includes('/menu-entries') ||
+                String(call[0]).includes('/products') ||
+                String(call[0]).includes('/menu-items'),
+        );
+        expect(entryWrites).toHaveLength(1);
 
         await waitFor(() => {
-            expect(screen.getByText('Başlangıçlar')).toBeInTheDocument();
+            // Başlık olarak arıyoruz: kategori adı artık iki yerde geçiyor —
+            // listenin başlığında ve ürün formunun kategori seçiminde. Belirsiz
+            // bir sorgu, ikincisi eklendiği gün kırılırdı.
+            expect(screen.getByRole('heading', { name: 'Başlangıçlar' })).toBeInTheDocument();
         });
         expect(screen.getByText('Mercimek Çorbası')).toBeInTheDocument();
         expect(screen.getByText(/42[.,]50/)).toBeInTheDocument();
@@ -363,7 +421,7 @@ describe('MenuCatalogWorkspace — existing tree render (RED, module-not-found)'
         }>();
         render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
-        await screen.findByText('Başlangıçlar');
+        await screen.findByRole('heading', { name: 'Başlangıçlar' });
         expect(screen.getByRole('heading', { name: tree.name })).toBeInTheDocument();
         const list = screen.getByRole('list', { name: /menu|categories/i });
         expect(list.tagName).toBe('OL');
@@ -659,12 +717,19 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
                 });
             }
 
-            if (calledUrl === productsUrl(WORKSPACE_ID, 77) && method === 'POST') {
+            if (calledUrl === menuEntriesUrl(WORKSPACE_ID, 77) && method === 'POST') {
                 bProductCreated = true;
+
                 return jsonResponse(201, {
                     id: 88,
-                    workspaceId: WORKSPACE_ID,
-                    name: (body as { name: string }).name,
+                    categoryId: 77,
+                    productId: 88,
+                    productName: (body as { productName: string }).productName,
+                    priceMinorAmount: 3000,
+                    currencyCode: 'TRY',
+                    position: 0,
+                    isVisible: false,
+                    allergens: [],
                 });
             }
 
@@ -680,15 +745,13 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
             <MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_A} />,
         );
 
-        const aProductNameInput = await screen.findByLabelText(/product name/i);
+        // A konumunda tek forma yazılır ama GÖNDERİLMEZ: sınanan şey,
+        // yazılmış ama kaydedilmemiş verinin konum değişince taşınmamasıdır.
+        const aProductNameInput = await screen.findByLabelText('Product name');
         fireEvent.change(aProductNameInput, { target: { value: 'Mercimek Çorbası' } });
-        fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
 
-        const aPriceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
+        const aPriceInput = screen.getByLabelText('Price');
         fireEvent.change(aPriceInput, { target: { value: '42.50' } });
-        fireEvent.click(screen.getByRole('button', { name: /create item|add item/i }));
-
-        await screen.findByLabelText(/allergens/i, { selector: 'input' });
 
         const preSwitchCallCount = fetchMock.mock.calls.length;
 
@@ -696,45 +759,40 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
 
         const menuNameInput = await screen.findByLabelText(/menu name/i);
         expect((menuNameInput as HTMLInputElement).value).toBe('');
-        expect(screen.queryByLabelText(/category name/i)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/product name/i)).not.toBeInTheDocument();
-        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
-        expect(
-            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByLabelText('Category name')).not.toBeInTheDocument();
+        expect(screen.queryByLabelText('Product name')).not.toBeInTheDocument();
+        expect(screen.queryByLabelText('Price')).not.toBeInTheDocument();
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 
         fireEvent.change(menuNameInput, { target: { value: 'Yeni Menü' } });
         fireEvent.click(screen.getByRole('button', { name: /create menu/i }));
 
+        // Menü var ama kategori yok: ürün formu alanlarını göstermez, çünkü
+        // her ürün bir kategoriye ait olmak zorundadır.
         await waitFor(() => {
-            expect(screen.queryByLabelText(/product name/i)).not.toBeInTheDocument();
+            expect(screen.queryByLabelText('Product name')).not.toBeInTheDocument();
         });
-        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
-        expect(
-            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByLabelText('Price')).not.toBeInTheDocument();
 
-        const categoryNameInput = await screen.findByLabelText(/category name/i);
+        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
+        const categoryNameInput = await screen.findByLabelText('Category name');
         fireEvent.change(categoryNameInput, { target: { value: 'Tatlılar' } });
-        fireEvent.click(screen.getByRole('button', { name: /create category|add category/i }));
+        fireEvent.click(screen.getByRole('button', { name: /^add category$/i }));
 
-        await screen.findByText('Tatlılar');
+        await screen.findByRole('heading', { name: 'Tatlılar' });
 
-        const bProductNameInput = await screen.findByLabelText(/product name/i);
+        // Kategori gelince ürün formu açılır ve BOŞTUR.
+        const bProductNameInput = await screen.findByLabelText('Product name');
         expect((bProductNameInput as HTMLInputElement).value).toBe('');
-        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
-        expect(
-            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
-        ).not.toBeInTheDocument();
+        expect((screen.getByLabelText('Price') as HTMLInputElement).value).toBe('');
 
         fireEvent.change(bProductNameInput, { target: { value: 'Baklava' } });
-        fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
+        fireEvent.change(screen.getByLabelText('Price'), { target: { value: '30.00' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Add to menu' }));
 
         await waitFor(() => {
             expect(bProductCreated).toBe(true);
         });
-        await screen.findByLabelText(/price/i, { selector: 'input' });
 
         for (const call of fetchMock.mock.calls.slice(preSwitchCallCount)) {
             const calledUrl = String(call[0]);
@@ -827,7 +885,7 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
         );
 
         const allergensInput = (await screen.findByRole('textbox', {
-            name: 'Allergens (comma-separated)',
+            name: 'Allergens — Mercimek Çorbası',
         })) as HTMLInputElement;
         expect(allergensInput.value).toContain('gluten');
         expect(allergensInput.value).toContain('süt');
@@ -866,7 +924,7 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
 });
 
 describe('MenuCatalogWorkspace — category selection routes writes and resets downstream state (RED)', () => {
-    it('selects the second of two server categories by real id and routes product/item POSTs to it, clearing prior product/item/allergen state', async () => {
+    it('selects the second of two server categories by real id, routes the entry POST to it, and keeps what the owner already typed', async () => {
         const CATEGORY_A_ID = 5;
         const CATEGORY_B_ID = 6;
         const tree = makeMenuTree({
@@ -938,32 +996,28 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
         ]);
         expect(categorySelect.value).toBe(String(CATEGORY_A_ID));
 
-        const aProductNameInput = await screen.findByLabelText(/product name/i);
-        fireEvent.change(aProductNameInput, { target: { value: 'Mercimek Çorbası' } });
+        const productNameInput = (await screen.findByLabelText('Product name')) as HTMLInputElement;
+        fireEvent.change(productNameInput, { target: { value: 'Baklava' } });
+        fireEvent.change(screen.getByLabelText('Price'), { target: { value: '50.00' } });
 
+        // Kategoriyi değiştirmek YAZILANI SİLMEZ.
+        //
+        // Eski zincirde silmek zorunluydu: ürün ve fiyat ayrı ayrı kaydedilmiş
+        // nesnelerdi ve kategori değişince yarım kalmış bir zincir geride
+        // kalırdı. Artık hepsi tek gönderimde oluşuyor; yanlış kategoriyi seçen
+        // kullanıcı sadece seçimi düzeltir, yazdığını baştan yazmaz.
         fireEvent.change(categorySelect, { target: { value: String(CATEGORY_B_ID) } });
         expect(categorySelect.value).toBe(String(CATEGORY_B_ID));
+        expect((screen.getByLabelText('Product name') as HTMLInputElement).value).toBe('Baklava');
+        expect((screen.getByLabelText('Price') as HTMLInputElement).value).toBe('50.00');
 
-        const clearedProductInput = (await screen.findByLabelText(
-            /product name/i,
-        )) as HTMLInputElement;
-        expect(clearedProductInput.value).toBe('');
-        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
-        expect(
-            screen.queryByLabelText(/allergens/i, { selector: 'input' }),
-        ).not.toBeInTheDocument();
-
-        fireEvent.change(clearedProductInput, { target: { value: 'Baklava' } });
-        fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
-
-        const priceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
-        fireEvent.change(priceInput, { target: { value: '50.00' } });
-        fireEvent.click(screen.getByRole('button', { name: /create item|add item/i }));
+        fireEvent.click(screen.getByRole('button', { name: 'Add to menu' }));
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
-            expect(calledUrls).toContain(productsUrl(WORKSPACE_ID, CATEGORY_B_ID));
-            expect(calledUrls).toContain(menuItemsUrl(WORKSPACE_ID, CATEGORY_B_ID));
+            expect(calledUrls).toContain(menuEntriesUrl(WORKSPACE_ID, CATEGORY_B_ID));
+            // Seçim değiştiği için A kategorisine HİÇBİR yazma gitmemeli.
+            expect(calledUrls).not.toContain(menuEntriesUrl(WORKSPACE_ID, CATEGORY_A_ID));
         });
 
         vi.unstubAllGlobals();
@@ -971,7 +1025,7 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
 });
 
 describe('MenuCatalogWorkspace — new product creation resets a stale open existing-item allergen form (RED)', () => {
-    it('does not leave the previously opened existing-item allergen form open/usable, and does not PUT its allergens, after a new product is created', async () => {
+    it('never writes allergens to another item while a row editor is open and a new product is added', async () => {
         const EXISTING_ITEM_ID = 101;
         const NEW_PRODUCT_ID = 55;
         const tree = makeMenuTree({
@@ -1007,12 +1061,19 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
                 return jsonResponse(200, makeBrand());
             if (calledUrl === menuUrl(WORKSPACE_ID, LOCATION_ID) && method === 'GET')
                 return jsonResponse(200, tree);
-            if (calledUrl === productsUrl(WORKSPACE_ID, 5) && method === 'POST') {
-                expect((body as { name: string }).name).toBe('Baklava');
+            if (calledUrl === menuEntriesUrl(WORKSPACE_ID, 5) && method === 'POST') {
+                expect((body as { productName: string }).productName).toBe('Baklava');
+
                 return jsonResponse(201, {
-                    id: NEW_PRODUCT_ID,
-                    workspaceId: WORKSPACE_ID,
-                    name: (body as { name: string }).name,
+                    id: 555,
+                    categoryId: 5,
+                    productId: NEW_PRODUCT_ID,
+                    productName: (body as { productName: string }).productName,
+                    priceMinorAmount: 5000,
+                    currencyCode: 'TRY',
+                    position: 1,
+                    isVisible: false,
+                    allergens: [],
                 });
             }
             if (calledUrl === allergensUrl(WORKSPACE_ID, EXISTING_ITEM_ID) && method === 'PUT') {
@@ -1038,32 +1099,23 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
             screen.getByRole('button', { name: 'Edit allergens for Mercimek Çorbası' }),
         );
 
+        // Satır içi düzenleyici: alan artık ÜRÜN ADINI taşır, dolayısıyla
+        // aşağıdaki "menüye ürün ekle" formunun alerjen alanıyla karışmaz.
         const staleAllergensInput = (await screen.findByRole('textbox', {
-            name: 'Allergens (comma-separated)',
+            name: 'Allergens — Mercimek Çorbası',
         })) as HTMLInputElement;
         expect(staleAllergensInput.value).toContain('gluten');
         expect(staleAllergensInput.value).toContain('süt');
 
-        const productNameInput = await screen.findByLabelText(/product name/i);
-        fireEvent.change(productNameInput, { target: { value: 'Baklava' } });
-        fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
+        const newProductNameInput = await screen.findByLabelText('Product name');
+        fireEvent.change(newProductNameInput, { target: { value: 'Baklava' } });
+        fireEvent.change(screen.getByLabelText('Price'), { target: { value: '50.00' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Add to menu' }));
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
-            expect(calledUrls).toContain(productsUrl(WORKSPACE_ID, 5));
+            expect(calledUrls).toContain(menuEntriesUrl(WORKSPACE_ID, 5));
         });
-
-        expect(
-            screen.queryByRole('button', {
-                name: 'Edit allergens for Mercimek Çorbası',
-                pressed: true,
-            }),
-        ).not.toBeInTheDocument();
-        expect(
-            screen.queryByRole('textbox', { name: 'Allergens (comma-separated)' }),
-        ).not.toBeInTheDocument();
-
-        await screen.findByLabelText(/price/i, { selector: 'input' });
 
         const putCalls = fetchMock.mock.calls.filter(
             (call) =>
@@ -1136,8 +1188,11 @@ describe('MenuCatalogWorkspace — edit price of an existing server-returned men
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit price for Mercimek Çorbası' }));
 
+        // Satır içi düzenleyicinin adı ÜRÜNÜ söyler: ekranda aynı anda bir de
+        // "menüye ürün ekle" formunun fiyat alanı var ve ikisi aynı ismi
+        // taşısaydı ekran okuyucu kullanan biri hangisinde olduğunu bilemezdi.
         const priceInput = (await screen.findByRole('textbox', {
-            name: /price/i,
+            name: 'Price — Mercimek Çorbası',
         })) as HTMLInputElement;
         expect(priceInput.value).toBe('42.50');
 
@@ -1225,7 +1280,7 @@ describe('MenuCatalogWorkspace — edit price of an existing server-returned men
         fireEvent.click(screen.getByRole('button', { name: 'Edit price for Mercimek Çorbası' }));
 
         const priceInput = (await screen.findByRole('textbox', {
-            name: /price/i,
+            name: 'Price — Mercimek Çorbası',
         })) as HTMLInputElement;
         fireEvent.change(priceInput, { target: { value: '50.00' } });
         fireEvent.click(screen.getByRole('button', { name: /save price|update price/i }));
@@ -1296,13 +1351,13 @@ describe("MenuCatalogWorkspace — visible price uses each currency's ISO fracti
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit price for Sushi Seti' }));
         const jpyPriceInput = (await screen.findByRole('textbox', {
-            name: /price/i,
+            name: 'Price — Sushi Seti',
         })) as HTMLInputElement;
         expect(jpyPriceInput.value).toBe('125');
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit price for Makbous' }));
         const kwdPriceInput = (await screen.findByRole('textbox', {
-            name: /price/i,
+            name: 'Price — Makbous',
         })) as HTMLInputElement;
         expect(kwdPriceInput.value).toBe('12.345');
 
@@ -1310,8 +1365,8 @@ describe("MenuCatalogWorkspace — visible price uses each currency's ISO fracti
     });
 });
 
-describe('MenuCatalogWorkspace — product name field clears only on a successful create-product response (RED)', () => {
-    it('clears the product name and reveals the price/add-item step for the server-returned product after success, but keeps the typed name for retry after a failure, without a duplicate POST from the success render', async () => {
+describe('MenuCatalogWorkspace — the entry form clears only on a successful response (RED)', () => {
+    it('keeps what the owner typed when the server refuses, and clears it only after a success, without a duplicate POST from the success render', async () => {
         const RETURNED_PRODUCT_ID = 77;
         let createProductCallCount = 0;
 
@@ -1342,16 +1397,25 @@ describe('MenuCatalogWorkspace — product name field clears only on a successfu
                     position: 0,
                 });
             }
-            if (calledUrl === productsUrl(WORKSPACE_ID, 5) && method === 'POST') {
+            if (calledUrl === menuEntriesUrl(WORKSPACE_ID, 5) && method === 'POST') {
                 createProductCallCount += 1;
+
                 if (createProductCallCount === 1) {
                     return jsonResponse(500, { message: 'Server Error.' });
                 }
-                expect((body as { name: string }).name).toBe('Kahve');
+
+                expect((body as { productName: string }).productName).toBe('Kahve');
+
                 return jsonResponse(201, {
-                    id: RETURNED_PRODUCT_ID,
-                    workspaceId: WORKSPACE_ID,
-                    name: (body as { name: string }).name,
+                    id: 500,
+                    categoryId: 5,
+                    productId: RETURNED_PRODUCT_ID,
+                    productName: (body as { productName: string }).productName,
+                    priceMinorAmount: 2500,
+                    currencyCode: 'TRY',
+                    position: 0,
+                    isVisible: false,
+                    allergens: [],
                 });
             }
 
@@ -1368,34 +1432,39 @@ describe('MenuCatalogWorkspace — product name field clears only on a successfu
         fireEvent.change(menuNameInput, { target: { value: 'Ana Menü' } });
         fireEvent.click(screen.getByRole('button', { name: /create menu/i }));
 
-        const categoryNameInput = await screen.findByLabelText(/category name/i);
+        fireEvent.click(await screen.findByRole('button', { name: 'Add category' }));
+        const categoryNameInput = await screen.findByLabelText('Category name');
         fireEvent.change(categoryNameInput, { target: { value: 'Başlangıçlar' } });
-        fireEvent.click(screen.getByRole('button', { name: /create category|add category/i }));
+        fireEvent.click(screen.getByRole('button', { name: /^add category$/i }));
 
-        const productNameInput = (await screen.findByLabelText(
-            /product name/i,
-        )) as HTMLInputElement;
+        const productNameInput = (await screen.findByLabelText('Product name')) as HTMLInputElement;
         fireEvent.change(productNameInput, { target: { value: 'Kahve' } });
-        fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
+        fireEvent.change(screen.getByLabelText('Price'), { target: { value: '25.00' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Add to menu' }));
 
+        // Sunucu reddettiğinde yazılan HİÇBİR ŞEY kaybolmaz. Tek forma
+        // geçmenin bedeli buydu: eskiden yalnız ürün adı yazılmıştı, şimdi
+        // ad, fiyat ve alerjen birlikte yazılıyor — hepsini silmek
+        // kullanıcıya işi baştan yaptırırdı.
         await screen.findByRole('alert');
-        expect((screen.getByLabelText(/product name/i) as HTMLInputElement).value).toBe('Kahve');
-        expect(screen.queryByLabelText(/price/i, { selector: 'input' })).not.toBeInTheDocument();
+        expect((screen.getByLabelText('Product name') as HTMLInputElement).value).toBe('Kahve');
+        expect((screen.getByLabelText('Price') as HTMLInputElement).value).toBe('25.00');
 
-        fireEvent.click(screen.getByRole('button', { name: /create product|add product/i }));
-
-        const priceInput = await screen.findByLabelText(/price/i, { selector: 'input' });
-        expect(priceInput).toBeInTheDocument();
-        expect((screen.getByLabelText(/product name/i) as HTMLInputElement).value).toBe('');
+        fireEvent.click(screen.getByRole('button', { name: 'Add to menu' }));
 
         await waitFor(() => {
-            const productPostCalls = fetchMock.mock.calls.filter(
+            expect((screen.getByLabelText('Product name') as HTMLInputElement).value).toBe('');
+        });
+        expect((screen.getByLabelText('Price') as HTMLInputElement).value).toBe('');
+
+        await waitFor(() => {
+            const entryPostCalls = fetchMock.mock.calls.filter(
                 (call) =>
-                    String(call[0]) === productsUrl(WORKSPACE_ID, 5) &&
+                    String(call[0]) === menuEntriesUrl(WORKSPACE_ID, 5) &&
                     ((call[1] as RequestInit | undefined)?.method ?? 'GET').toUpperCase() ===
                         'POST',
             );
-            expect(productPostCalls).toHaveLength(2);
+            expect(entryPostCalls).toHaveLength(2);
         });
 
         void RETURNED_PRODUCT_ID;

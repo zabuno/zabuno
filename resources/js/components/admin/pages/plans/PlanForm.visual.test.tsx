@@ -17,9 +17,19 @@ import { PlanForm } from './PlanForm';
  * visually bounded. No invented plan data is exercised here.
  */
 
-const LABELS = ['Plan name', 'Code', 'Version', 'Amount (minor units)', 'Currency', 'Sort order'];
+// Etiketler ZORUNLULUĞU da söyler (`docs/47` Kural 4). Öncesinde altı alan
+// birbirinin aynıydı ve hangisinin doldurulması gerektiği yalnız "Create
+// plan" düğmesinin devre dışı kalmasından anlaşılıyordu — yani anlaşılmıyordu.
+const LABELS = [
+    'Plan name',
+    'Code',
+    'Version',
+    'Amount (minor units) (optional)',
+    'Currency (optional)',
+    'Sort order',
+];
 
-const ENTITLEMENTS_LABEL = 'Entitlements (one per line)';
+const ENTITLEMENTS_LABEL = 'Entitlements (one per line) (optional)';
 
 const BREAKPOINT_PATTERN = /(^|\s)(sm|md|lg|xl|2xl):/;
 

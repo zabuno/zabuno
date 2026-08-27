@@ -39,6 +39,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/workspaces/{workspace}/menu/{menu}/categories||App\Http\Controllers\MenuCatalog\StoreCategoryController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu-categories/{category}/products||App\Http\Controllers\MenuCatalog\StoreProductController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu-categories/{category}/menu-items||App\Http\Controllers\MenuCatalog\StoreMenuItemController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/menu-categories/{category}/menu-entries||App\Http\Controllers\MenuCatalog\StoreMenuEntryController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}/allergens||App\Http\Controllers\MenuCatalog\UpdateMenuItemAllergensController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}/price||App\Http\Controllers\MenuCatalog\UpdateMenuItemPriceController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}/visibility||App\Http\Controllers\MenuCatalog\UpdateMenuItemVisibilityController|api,auth:sanctum,verified',

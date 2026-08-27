@@ -209,7 +209,7 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
             ).not.toBeInTheDocument();
         });
 
-        expect(window.location.hash).toBe('#publication');
+        expect(window.location.pathname).toBe('/app/zeytin-restoranlari/publication');
 
         const main = screen.getByRole('main');
         const publicationDestination = main.querySelector('#section-publication');

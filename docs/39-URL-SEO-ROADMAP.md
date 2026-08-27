@@ -74,6 +74,7 @@ değiştirmesi. Bugün menü adresi kendini onarıyor (`key` kimlik, yanlış sl
 | 2.1 | Slug geçmişi + yönlendirme tablosu | Marka slug'ı bir URL'de görünür hâle gelirse | Bugün `key` sayesinde gerek yok; girdiği gün zorunlu |
 | 2.2 | Admin sorgu parametresi allowlist | Admin filtre/sıralama durumu URL'e taşınırsa | Bugün React state'te; URL'e taşımak ayrı bir ürün kararı |
 | 2.3 | Tenant başına indeks tercihi | **Karar verildi (2026-08-27): yapılacak** | Owner kararı: restoran seçebilmeli. Varsayılan AÇIK — Faz 1.4 kalite kapısını geçen menü indekslenir; işletme panelden kapatabilir. Artık tetikleyici beklemiyor |
+| 2.0 | **Panel gezintisini fragment'ten gerçek adrese taşı** | **Tamamlandı (2026-08-27)** | `/app/{workspace}/{section}` ve `/platform/{section}`. Ön koşuldu: fragment sunucuya gitmediği için panel ölçülemiyordu. Ölçüm dikişi `docs/46` |
 | 2.4 | CSP ihlal raporu uç noktası | Politika sıkılaştıkça kör noktayı görmek için | ASVS V3'ün açık bıraktığı madde |
 | 2.5 | `hreflang` kümesi | Bir menü ya da pazarlama sayfası GERÇEKTEN ikinci bir dil sürümünü kendi adresinde yayımladığında | Faz 1'den taşındı; ön koşulu OPT-04 çok dilli içerik |
 

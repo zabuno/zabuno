@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Domain\Platform\PlatformRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use RuntimeException;
 
@@ -64,6 +66,36 @@ final class LocalTestAccountSeeder extends Seeder
         $user->email_verified_at = $user->email_verified_at ?: now();
         $user->save();
 
-        $this->command?->info("Yerel test hesabı hazır: {$user->email} (id={$user->id}, doğrulanmış).");
+        $this->grantPlatformSuperAdmin((int) $user->getKey());
+
+        $this->command?->info("Yerel test hesabı hazır: {$user->email} (id={$user->id}, doğrulanmış, platform süper yöneticisi).");
+    }
+
+    /**
+     * Yerel hesaba platform (geliştirici) paneli erişimi verir.
+     *
+     * Neden gerekliydi: `/platform` rotası her zaman vardı ama
+     * `EnsurePlatformSuperAdmin` numaralandırmaya karşı güvenli davranıp
+     * yetkisiz herkese ÇIPLAK 404 döndürür. Yerel veritabanında hiç kimseye
+     * bu rol atanmadığı için panel "yok" gibi görünüyordu — oysa çalışıyordu
+     * ve kapı kimseyi içeri almıyordu.
+     *
+     * 404'ün kendisi doğrudur ve değiştirilmez: 403 dönmek, panelin var
+     * olduğunu yabancıya doğrulardı. Düzeltilmesi gereken şey, yerel
+     * kurulumun geliştiriciye kendi panelini açmamasıydı.
+     *
+     * Bu metot yalnız yerel ortamlarda çalışır: `run()` başında ortam
+     * kontrolü zaten fail-closed davranır.
+     */
+    private function grantPlatformSuperAdmin(int $userId): void
+    {
+        DB::table('platform_role_assignments')->updateOrInsert(
+            ['user_id' => $userId],
+            [
+                'role' => PlatformRole::SuperAdmin->value,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ],
+        );
     }
 }

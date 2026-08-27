@@ -49,13 +49,40 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
         const trimmedAddressLine2 = addressLine2.trim();
         const trimmedPostalCode = postalCode.trim();
 
-        if (
-            trimmedDisplayName === '' ||
-            trimmedCountryCode === '' ||
-            trimmedCity === '' ||
-            trimmedAddressLine1 === ''
-        ) {
-            setError(t('workspace.location.error.required'));
+        // Dört zorunlu alan AYNI ANDA doğrulanır ve hata KENDİ alanının
+        // yanında görünür (`docs/47` Kural 5).
+        //
+        // Öncesi formun tepesinde tek bir cümle gösteriyordu — "Display
+        // name, country, city, and address line 1 are required." — ve odağı
+        // hiç taşımıyordu. Kullanıcı hangisini boş bıraktığını aramak
+        // zorundaydı.
+        const clientErrors: Record<string, string> = {};
+
+        if (trimmedDisplayName === '') {
+            clientErrors.display_name = t('workspace.location.displayName.error.required');
+        }
+
+        if (trimmedCountryCode === '') {
+            clientErrors.country_code = t('workspace.location.countryCode.error.required');
+        }
+
+        if (trimmedCity === '') {
+            clientErrors.city = t('workspace.location.city.error.required');
+        }
+
+        if (trimmedAddressLine1 === '') {
+            clientErrors.address_line1 = t('workspace.location.addressLine1.error.required');
+        }
+
+        if (Object.keys(clientErrors).length > 0) {
+            setError('');
+            setFieldErrors(clientErrors);
+            focusFirstInvalidField(clientErrors, [
+                'display_name',
+                'country_code',
+                'city',
+                'address_line1',
+            ]);
 
             return;
         }
@@ -179,7 +206,9 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                     <FormField
                         id="location-address-line2"
                         name="address_line2"
-                        label={t('workspace.location.addressLine2')}
+                        label={t('workspace.location.optional', {
+                            label: t('workspace.location.addressLine2'),
+                        })}
                         value={addressLine2}
                         onChange={setAddressLine2}
                     />
@@ -187,13 +216,19 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                         id="location-postal-code"
                         name="postal_code"
                         errorText={fieldErrors.postal_code}
-                        label={t('workspace.location.postalCode')}
+                        label={t('workspace.location.optional', {
+                            label: t('workspace.location.postalCode'),
+                        })}
                         value={postalCode}
                         onChange={setPostalCode}
                     />
                 </FormSection>
 
-                <Button type="submit" disabled={submitting} className="w-full">
+                <Button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full sm:w-auto sm:self-start"
+                >
                     {t('workspace.location.submit')}
                 </Button>
             </form>

@@ -26,7 +26,10 @@ async function fillAndSubmit(): Promise<void> {
         new File(['binary'], 'photo.png', { type: 'image/png' }),
     );
     await user.type(within(region).getByLabelText(/alt text/i), 'Bir tabak');
-    await user.selectOptions(within(region).getByLabelText(/asset slot/i), 'hero');
+    await user.selectOptions(
+        within(region).getByLabelText(/where will this image be used/i),
+        'hero',
+    );
     await user.click(within(region).getByRole('button', { name: /upload/i }));
 }
 

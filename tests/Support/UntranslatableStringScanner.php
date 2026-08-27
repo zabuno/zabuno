@@ -55,6 +55,11 @@ final class UntranslatableStringScanner
         $source = (string) preg_replace('/\{\{--.*?--\}\}/s', '', $source);
         $source = (string) preg_replace('/<!--.*?-->/s', '', $source);
         $source = (string) preg_replace('/<(script|style)\b[^>]*>.*?<\/\1>/is', '<$1></$1>', $source);
+        // `@php ... @endphp` GÖVDESİ de kod: kullanıcı onu hiç görmez.
+        // Aşağıdaki yönerge temizliği yalnız `@php` ve `@endphp` etiketlerini
+        // siler, arasındaki PHP satırlarını metin olarak bırakırdı; sonuç,
+        // borcu gerçek olmayan satırlarla şişiren bir yanlış pozitifti.
+        $source = (string) preg_replace('/@php\b(?!\s*\().*?@endphp/s', '', $source);
         $source = (string) preg_replace('/@[a-zA-Z]+\s*(\((?:[^()]|(?1))*\))?/', '', $source);
 
         // Çeviriye bağlanmış ifadeler kapsam dışı: bunlar zaten kataloglu.

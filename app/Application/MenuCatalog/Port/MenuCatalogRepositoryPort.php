@@ -7,6 +7,7 @@ namespace App\Application\MenuCatalog\Port;
 use App\Application\MenuCatalog\Dto\CategorySummary;
 use App\Application\MenuCatalog\Dto\MenuDraftSummary;
 use App\Application\MenuCatalog\Dto\MenuDraftTree;
+use App\Application\MenuCatalog\Dto\MenuEntrySummary;
 use App\Application\MenuCatalog\Dto\MenuItemSummary;
 use App\Application\MenuCatalog\Dto\ProductSummary;
 use App\Application\MenuCatalog\Dto\TaxonomyTermSummary;
@@ -34,6 +35,31 @@ interface MenuCatalogRepositoryPort
      * @throws MenuCatalogTenantMismatchException
      */
     public function addMenuItem(int $workspaceId, int $categoryId, int $productId, int $priceMinorAmount, string $currencyCode): MenuItemSummary;
+
+    /**
+     * Ürünü YARATIR, menüye ekler ve alerjenlerini yazar — hepsi tek işlemde.
+     *
+     * Bunlar üç ayrı çağrı olarak da yapılabilirdi; nitekim arayüz uzun süre
+     * öyle yaptı ve kullanıcıya üç ayrı form gösterdi. Sorun yalnız tıklama
+     * sayısı değildi: ikinci çağrı başarısız olduğunda hiçbir menüde
+     * görünmeyen ÖKSÜZ bir ürün geride kalıyordu. Kullanıcı bunu göremez,
+     * dolayısıyla temizleyemez.
+     *
+     * Tek işlem, o sessiz artığı imkânsız kılar: ya satırın tamamı oluşur ya
+     * da hiçbiri.
+     *
+     * @param  list<string>  $allergenNames
+     *
+     * @throws MenuCatalogTenantMismatchException
+     */
+    public function addMenuEntry(
+        int $workspaceId,
+        int $categoryId,
+        string $productName,
+        int $priceMinorAmount,
+        string $currencyCode,
+        array $allergenNames,
+    ): MenuEntrySummary;
 
     /**
      * @throws MenuCatalogTenantMismatchException

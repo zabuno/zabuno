@@ -3,7 +3,7 @@ import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
-import { readValidationFailure } from '../../../../lib/validationErrors';
+import { focusFirstInvalidField, readValidationFailure } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/menu';
 import { FieldError } from '../micro/FieldError';
 import { OrderBadge } from '../micro/OrderBadge';
@@ -68,12 +68,9 @@ function categoriesUrl(workspaceId: number, menuId: number): string {
     return `/api/workspaces/${workspaceId}/menu/${menuId}/categories`;
 }
 
-function productsUrl(workspaceId: number, categoryId: number): string {
-    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/products`;
-}
-
-function menuItemsUrl(workspaceId: number, categoryId: number): string {
-    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/menu-items`;
+/** Ürün + menü satırı + alerjenler; tek istek, tek işlem. */
+function menuEntriesUrl(workspaceId: number, categoryId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/menu-entries`;
 }
 
 function allergensUrl(workspaceId: number, menuItemId: number): string {
@@ -216,19 +213,29 @@ export function MenuCatalogWorkspace({
     const [creatingCategory, setCreatingCategory] = useState(false);
     const [currentCategoryId, setCurrentCategoryId] = useState<number | null>(null);
 
+    // Kategori ekleme, ürün ekleme formunun İÇİNDE değil; kendi eylemidir ve
+    // kapalı durur. Öncesinde ikisi yan yana iki formdu ve kullanıcı hangi
+    // alanın hangi işe ait olduğunu ayırt edemiyordu: "kategori adı" ile
+    // "ürün adı" aynı görsel ağırlıkta, art arda iki kutuydu.
+    const [categoryFormOpen, setCategoryFormOpen] = useState(false);
+
+    // Menüye ürün eklemenin TEK durumu. Bunlar daha önce üç ayrı formun üç
+    // ayrı durum kümesiydi (ürün / fiyat / alerjen) ve her biri bir öncekinin
+    // gönderilmesini bekliyordu.
     const [productName, setProductName] = useState('');
     const [productNameError, setProductNameError] = useState<string | null>(null);
-    const [productSubmitError, setProductSubmitError] = useState<string | null>(null);
-    const [creatingProduct, setCreatingProduct] = useState(false);
-    const [currentProductId, setCurrentProductId] = useState<number | null>(null);
-    const [currentProductName, setCurrentProductName] = useState('');
-
     const [price, setPrice] = useState('');
     const [priceError, setPriceError] = useState<string | null>(null);
-    const [itemSubmitError, setItemSubmitError] = useState<string | null>(null);
-    const [creatingItem, setCreatingItem] = useState(false);
-    const [currentMenuItemId, setCurrentMenuItemId] = useState<number | null>(null);
+    const [entryAllergens, setEntryAllergens] = useState('');
+    const [entrySubmitError, setEntrySubmitError] = useState<string | null>(null);
+    const [creatingEntry, setCreatingEntry] = useState(false);
+    const [lastAddedEntry, setLastAddedEntry] = useState<string | null>(null);
 
+    // Alerjen düzenleme artık SATIRIN İÇİNDE açılır — fiyat düzenleme gibi.
+    // Öncesinde sayfanın en altında tek bir form vardı: listenin başındaki
+    // bir ürünün alerjenini düzenlemek için kullanıcı ekranın dibine iniyor,
+    // hangi ürünü düzenlediğini oradan göremiyordu.
+    const [allergenEditItemId, setAllergenEditItemId] = useState<number | null>(null);
     const [allergensInput, setAllergensInput] = useState('');
     const [allergensSubmitError, setAllergensSubmitError] = useState<string | null>(null);
     const [savingAllergens, setSavingAllergens] = useState(false);
@@ -272,19 +279,18 @@ export function MenuCatalogWorkspace({
         setCreatingCategory(false);
         setCurrentCategoryId(null);
 
+        setCategoryFormOpen(false);
+
         setProductName('');
         setProductNameError(null);
-        setProductSubmitError(null);
-        setCreatingProduct(false);
-        setCurrentProductId(null);
-        setCurrentProductName('');
-
         setPrice('');
         setPriceError(null);
-        setItemSubmitError(null);
-        setCreatingItem(false);
-        setCurrentMenuItemId(null);
+        setEntryAllergens('');
+        setEntrySubmitError(null);
+        setCreatingEntry(false);
+        setLastAddedEntry(null);
 
+        setAllergenEditItemId(null);
         setAllergensInput('');
         setAllergensSubmitError(null);
         setSavingAllergens(false);
@@ -353,42 +359,19 @@ export function MenuCatalogWorkspace({
     }, [workspaceId, locationId, retryToken]);
 
     const busy =
-        creatingMenu ||
-        creatingCategory ||
-        creatingProduct ||
-        creatingItem ||
-        savingAllergens ||
-        savingPriceEdit;
-
-    function resetDownstreamOfCategory() {
-        setProductName('');
-        setProductNameError(null);
-        setProductSubmitError(null);
-        setCreatingProduct(false);
-        setCurrentProductId(null);
-        setCurrentProductName('');
-
-        setPrice('');
-        setPriceError(null);
-        setItemSubmitError(null);
-        setCreatingItem(false);
-        setCurrentMenuItemId(null);
-
-        setAllergensInput('');
-        setAllergensSubmitError(null);
-        setSavingAllergens(false);
-
-        setPriceEditItemId(null);
-        setPriceEditValue('');
-        setPriceEditSubmitError(null);
-        setSavingPriceEdit(false);
-
-        setVisibilityPending({});
-        setVisibilityErrors({});
-    }
+        creatingMenu || creatingCategory || creatingEntry || savingAllergens || savingPriceEdit;
 
     function handleEditAllergens(item: MenuItemRow) {
-        setCurrentMenuItemId(item.id);
+        // Aynı satıra ikinci kez basmak kapatır: açılan bir düzenleyiciyi
+        // kapatmanın yolu olmalı, yoksa kullanıcı vazgeçtiğinde ekranda
+        // asılı kalır.
+        if (allergenEditItemId === item.id) {
+            setAllergenEditItemId(null);
+
+            return;
+        }
+
+        setAllergenEditItemId(item.id);
         setAllergensInput(item.allergens.join(', '));
         setAllergensSubmitError(null);
     }
@@ -402,8 +385,16 @@ export function MenuCatalogWorkspace({
     function handleCategorySelect(event: ChangeEvent<HTMLSelectElement>) {
         const selectedId = Number(event.target.value);
         if (selectedId === currentCategoryId) return;
+
+        // Kategoriyi değiştirmek YAZILANI SİLMEZ.
+        //
+        // Eski zincirde silmek zorunluydu: ürün, fiyat ve alerjen ayrı ayrı
+        // kaydedilmiş nesnelerdi ve kategori değişince yarım kalmış bir
+        // zincir geride kalırdı. Artık hepsi tek gönderimde oluşuyor, yani
+        // yanlış kategoriyi seçen kullanıcı sadece seçimi düzeltir —
+        // yazdıklarını baştan yazmaz.
         setCurrentCategoryId(selectedId);
-        resetDownstreamOfCategory();
+        setEntrySubmitError(null);
     }
 
     async function handleCreateMenu(event: FormEvent<HTMLFormElement>) {
@@ -453,8 +444,12 @@ export function MenuCatalogWorkspace({
                 return;
             }
             const created = (await response.json()) as Omit<CategoryRow, 'menuItems'>;
+
+            // Yeni kategori HEMEN seçili olur ve form kapanır: kategoriyi
+            // eklemenin sebebi neredeyse her zaman içine ürün koymaktır.
             setCurrentCategoryId(created.id);
-            resetDownstreamOfCategory();
+            setCategoryName('');
+            setCategoryFormOpen(false);
             setTree((previous) =>
                 previous
                     ? {
@@ -470,122 +465,107 @@ export function MenuCatalogWorkspace({
         }
     }
 
-    async function handleCreateProduct(event: FormEvent<HTMLFormElement>) {
+    /**
+     * Menüye bir ürün ekler — TEK gönderim.
+     *
+     * Öncesinde bu üç ayrı formdu ve sırayla doldurulurdu: ürün adı kaydet,
+     * sonra beliren fiyat formunu kaydet, sonra beliren alerjen formunu
+     * kaydet. Kullanıcı için hepsi tek bir iştir: "menüye kebap ekle".
+     *
+     * Sunucu tarafında da tek işlemdir; ikinci adım düşerse hiçbir menüde
+     * görünmeyen öksüz bir ürün geride kalmaz.
+     */
+    async function handleAddMenuEntry(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+
         if (currentCategoryId === null) return;
-        const trimmed = productName.trim();
-        if (!trimmed) {
-            setProductNameError(t('menu.product.name.error.required'));
+
+        const trimmedName = productName.trim();
+        const trimmedPrice = price.trim();
+
+        // İki alan da AYNI ANDA doğrulanır. Tek tek doğrulamak, kullanıcıyı
+        // aynı formu iki kez göndermeye zorlar: önce adı düzeltir, sonra
+        // fiyat hatasını görür.
+        const nameError = trimmedName ? '' : t('menu.product.name.error.required');
+        const priceFieldError = trimmedPrice ? '' : t('menu.item.price.error.required');
+
+        setProductNameError(nameError || null);
+        setPriceError(priceFieldError || null);
+
+        if (nameError || priceFieldError) {
+            focusFirstInvalidField({ 'product-name': nameError, 'item-price': priceFieldError }, [
+                'product-name',
+                'item-price',
+            ]);
+
             return;
         }
-        setProductNameError(null);
-        setProductSubmitError(null);
-        setCreatingProduct(true);
-        try {
-            const response = await postJson(productsUrl(workspaceId, currentCategoryId), {
-                name: trimmed,
-            });
-            if (!response.ok) {
-                setProductSubmitError(
-                    await parseErrorMessage(response, t('menu.product.create.error.submit')),
-                );
-                return;
-            }
-            const created = (await response.json()) as { id: number; name: string };
-            setCurrentProductId(created.id);
-            setCurrentProductName(created.name);
-            setProductName('');
 
-            setPrice('');
-            setPriceError(null);
-            setItemSubmitError(null);
-            setCreatingItem(false);
-            setCurrentMenuItemId(null);
+        setEntrySubmitError(null);
+        setLastAddedEntry(null);
+        setCreatingEntry(true);
 
-            setAllergensInput('');
-            setAllergensSubmitError(null);
-            setSavingAllergens(false);
-
-            setPriceEditItemId(null);
-            setPriceEditValue('');
-            setPriceEditSubmitError(null);
-            setSavingPriceEdit(false);
-
-            setVisibilityPending({});
-            setVisibilityErrors({});
-        } catch {
-            setProductSubmitError(t('menu.product.create.error.submit'));
-        } finally {
-            setCreatingProduct(false);
-        }
-    }
-
-    async function handleCreateMenuItem(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        if (currentCategoryId === null || currentProductId === null) return;
-        const trimmed = price.trim();
-        if (!trimmed) {
-            setPriceError(t('menu.item.price.error.required'));
-            return;
-        }
-        setPriceError(null);
-        setItemSubmitError(null);
-        setCreatingItem(true);
         try {
             const currency = brand?.currency ?? 'TRY';
-            const response = await postJson(menuItemsUrl(workspaceId, currentCategoryId), {
-                productId: currentProductId,
-                price: trimmed,
+            const response = await postJson(menuEntriesUrl(workspaceId, currentCategoryId), {
+                productName: trimmedName,
+                price: trimmedPrice,
                 currency,
+                allergens: parseAllergens(entryAllergens),
             });
+
             if (!response.ok) {
-                setItemSubmitError(
-                    await parseErrorMessage(response, t('menu.item.create.error.submit')),
+                setEntrySubmitError(
+                    await parseErrorMessage(response, t('menu.entry.error.submit')),
                 );
+
                 return;
             }
-            const created = (await response.json()) as Omit<
-                MenuItemRow,
-                'allergens' | 'productName'
-            >;
-            setCurrentMenuItemId(created.id);
+
+            const created = (await response.json()) as MenuItemRow & { categoryId: number };
+
             setTree((previous) => {
                 if (!previous) return previous;
+
                 return {
                     ...previous,
                     categories: previous.categories.map((category) =>
                         category.id === created.categoryId
-                            ? {
-                                  ...category,
-                                  menuItems: [
-                                      ...category.menuItems,
-                                      {
-                                          ...created,
-                                          productName: currentProductName,
-                                          allergens: [],
-                                      },
-                                  ],
-                              }
+                            ? { ...category, menuItems: [...category.menuItems, created] }
                             : category,
                     ),
                 };
             });
+
+            // Form temizlenir ki sıradaki ürün hemen yazılabilsin: menü
+            // doldurmak tek seferlik değil, ARDA ARDA yapılan bir iştir.
+            setProductName('');
+            setPrice('');
+            setEntryAllergens('');
+            setLastAddedEntry(
+                t('menu.entry.success', {
+                    name: created.productName ?? trimmedName,
+                    category:
+                        tree?.categories.find((category) => category.id === currentCategoryId)
+                            ?.name ?? '',
+                }),
+            );
         } catch {
-            setItemSubmitError(t('menu.item.create.error.submit'));
+            setEntrySubmitError(t('menu.entry.error.submit'));
         } finally {
-            setCreatingItem(false);
+            setCreatingEntry(false);
         }
     }
 
     async function handleSaveAllergens(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if (currentMenuItemId === null) return;
+        if (allergenEditItemId === null) return;
         setAllergensSubmitError(null);
         setSavingAllergens(true);
         try {
             const allergens = parseAllergens(allergensInput);
             const response = await postJson(
-                allergensUrl(workspaceId, currentMenuItemId),
+                allergensUrl(workspaceId, allergenEditItemId),
                 { allergens },
                 'PUT',
             );
@@ -599,6 +579,9 @@ export function MenuCatalogWorkspace({
             if (refreshed.ok) {
                 setTree((await refreshed.json()) as MenuTree);
             }
+            // Kaydedince düzenleyici kapanır: açık kalması, işin bitmediği
+            // izlenimi verirdi.
+            setAllergenEditItemId(null);
         } catch {
             setAllergensSubmitError(t('menu.item.allergens.error.submit'));
         } finally {
@@ -869,6 +852,43 @@ export function MenuCatalogWorkspace({
                                                     message={visibilityErrors[item.id] as string}
                                                 />
                                             ) : null}
+                                            {allergenEditItemId === item.id ? (
+                                                <form
+                                                    className={sectionClass}
+                                                    onSubmit={handleSaveAllergens}
+                                                    noValidate
+                                                >
+                                                    <label
+                                                        className={labelClass}
+                                                        htmlFor={`item-allergens-edit-${item.id}`}
+                                                    >
+                                                        {t('menu.item.allergens.edit.label', {
+                                                            name: item.productName ?? '',
+                                                        })}
+                                                    </label>
+                                                    <TextInput
+                                                        id={`item-allergens-edit-${item.id}`}
+                                                        name={`item-allergens-edit-${item.id}`}
+                                                        type="text"
+                                                        value={allergensInput}
+                                                        onChange={(event) =>
+                                                            setAllergensInput(event.target.value)
+                                                        }
+                                                    />
+                                                    {allergensSubmitError ? (
+                                                        <FieldError
+                                                            message={allergensSubmitError}
+                                                        />
+                                                    ) : null}
+                                                    <button
+                                                        type="submit"
+                                                        className={buttonClass}
+                                                        disabled={savingAllergens}
+                                                    >
+                                                        {t('menu.item.allergens.submit')}
+                                                    </button>
+                                                </form>
+                                            ) : null}
                                             {priceEditItemId === item.id ? (
                                                 <form
                                                     className={sectionClass}
@@ -879,7 +899,9 @@ export function MenuCatalogWorkspace({
                                                         className={labelClass}
                                                         htmlFor={`item-price-edit-${item.id}`}
                                                     >
-                                                        {t('menu.item.price.label')}
+                                                        {t('menu.item.price.edit.label', {
+                                                            name: item.productName ?? '',
+                                                        })}
                                                     </label>
                                                     <TextInput
                                                         id={`item-price-edit-${item.id}`}
@@ -911,110 +933,213 @@ export function MenuCatalogWorkspace({
                         ))}
                     </ol>
 
-                    {tree.categories.length > 1 ? (
-                        <div className={sectionClass}>
-                            <label className={labelClass} htmlFor="category-select">
-                                {t('menu.category.select.label')}
-                            </label>
-                            <Select
-                                id="category-select"
-                                value={currentCategoryId ?? ''}
-                                onChange={handleCategorySelect}
-                            >
-                                {tree.categories.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </Select>
-                        </div>
-                    ) : null}
+                    {/*
+                        KATEGORİ EKLEME kendi eylemidir ve KAPALI durur.
 
-                    <form className={sectionClass} onSubmit={handleCreateCategory} noValidate>
-                        <label className={labelClass} htmlFor="category-name">
-                            {t('menu.category.name.label')}
-                        </label>
-                        <TextInput
-                            id="category-name"
-                            type="text"
-                            value={categoryName}
-                            onChange={(event) => setCategoryName(event.target.value)}
-                        />
-                        {categoryNameError ? <FieldError message={categoryNameError} /> : null}
-                        {categorySubmitError ? <FieldError message={categorySubmitError} /> : null}
-                        <button type="submit" className={buttonClass} disabled={creatingCategory}>
-                            {t('menu.category.create.submit')}
-                        </button>
+                        Öncesinde "kategori adı" ile "ürün adı" art arda iki
+                        eşit ağırlıkta kutuydu; hangi alanın hangi işe ait
+                        olduğu ancak etiketi okuyarak anlaşılıyordu. Kategori
+                        eklemek nadir, ürün eklemek sürekli yapılan bir iştir;
+                        ikisi aynı yerde aynı ağırlıkta duramaz.
+                    */}
+                    <div className={sectionClass}>
+                        {categoryFormOpen ? (
+                            <form
+                                className="flex flex-col gap-3"
+                                onSubmit={handleCreateCategory}
+                                noValidate
+                            >
+                                <label className={labelClass} htmlFor="category-name">
+                                    {t('menu.category.name.label')}
+                                </label>
+                                <TextInput
+                                    id="category-name"
+                                    name="category-name"
+                                    type="text"
+                                    value={categoryName}
+                                    onChange={(event) => setCategoryName(event.target.value)}
+                                />
+                                {categoryNameError ? (
+                                    <FieldError message={categoryNameError} />
+                                ) : null}
+                                {categorySubmitError ? (
+                                    <FieldError message={categorySubmitError} />
+                                ) : null}
+                                <div className="flex flex-wrap gap-2">
+                                    <button
+                                        type="submit"
+                                        className={buttonClass}
+                                        disabled={creatingCategory}
+                                    >
+                                        {t('menu.category.create.submit')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={inlineActionClass}
+                                        onClick={() => {
+                                            setCategoryFormOpen(false);
+                                            setCategoryName('');
+                                            setCategoryNameError(null);
+                                            setCategorySubmitError(null);
+                                        }}
+                                    >
+                                        {t('menu.category.add.cancel')}
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            <button
+                                type="button"
+                                className={inlineActionClass}
+                                onClick={() => setCategoryFormOpen(true)}
+                            >
+                                {t('menu.category.add.disclose')}
+                            </button>
+                        )}
+                    </div>
+
+                    {/*
+                        ÜRÜN EKLEME: tek form, tek gönderim.
+
+                        Öncesinde üç formdu ve her biri bir öncekinin
+                        kaydedilmesini bekliyordu: ürün → fiyat → alerjen.
+                        Bir ürün eklemek dört tıklama ve üç sunucu turuydu.
+
+                        Kategori burada SEÇİLİR, yaratılmaz. Bu ayrım
+                        sahibinin sorununun ta kendisidir: "kategori ekleme
+                        bilgileri ile ürün ekleme bilgileri aynı formda
+                        olmaz."
+                    */}
+                    <form
+                        className={sectionClass}
+                        onSubmit={handleAddMenuEntry}
+                        aria-label={t('menu.entry.section.label')}
+                        noValidate
+                    >
+                        <h3 className="text-subsection font-semibold">
+                            {t('menu.entry.section.label')}
+                        </h3>
+
+                        {tree.categories.length === 0 ? (
+                            // Boş durum kullanıcıyı yalnız bilgilendirmez, ne
+                            // yapması gerektiğini söyler: her ürün bir
+                            // kategoriye ait olmak zorundadır.
+                            <p className="text-body text-fg-secondary">
+                                {t('menu.entry.category.empty')}
+                            </p>
+                        ) : (
+                            <>
+                                <div className="flex flex-col gap-1">
+                                    <label className={labelClass} htmlFor="category-select">
+                                        {t('menu.entry.category.label')}
+                                    </label>
+                                    <Select
+                                        id="category-select"
+                                        name="category-select"
+                                        value={currentCategoryId ?? ''}
+                                        onChange={handleCategorySelect}
+                                    >
+                                        {tree.categories.map((category) => (
+                                            <option key={category.id} value={category.id}>
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </div>
+
+                                {/*
+                                    Ad ve fiyat yan yana: ikisi TEK bir kararın
+                                    parçasıdır ve dar ekranda alt alta düşer.
+                                    Genişlik `--container-form` ile sınırlanır;
+                                    bileşen ham piksel bilmez (docs/44 §3).
+                                */}
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                                    <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                        <label className={labelClass} htmlFor="product-name">
+                                            {t('menu.product.name.label')}
+                                        </label>
+                                        <TextInput
+                                            id="product-name"
+                                            name="product-name"
+                                            type="text"
+                                            value={productName}
+                                            onChange={(event) => setProductName(event.target.value)}
+                                        />
+                                        {productNameError ? (
+                                            <FieldError message={productNameError} />
+                                        ) : null}
+                                    </div>
+
+                                    <div className="flex w-full flex-col gap-1 sm:w-[12ch]">
+                                        <label className={labelClass} htmlFor="item-price">
+                                            {t('menu.item.price.label')}
+                                        </label>
+                                        <TextInput
+                                            id="item-price"
+                                            name="item-price"
+                                            type="text"
+                                            inputMode="decimal"
+                                            value={price}
+                                            onChange={(event) => setPrice(event.target.value)}
+                                        />
+                                        {priceError ? <FieldError message={priceError} /> : null}
+                                    </div>
+                                </div>
+
+                                {/*
+                                    Alerjen İSTEĞE BAĞLI ve kapalı başlar.
+                                    Zorunlu kılmak, hızlı olması gereken bir
+                                    işi ilk üründe durdururdu; ama tamamen
+                                    gizlemek de yanlış olurdu — alerjen bir
+                                    yasal yükümlülüktür ve varlığı görünmeli.
+                                */}
+                                <details className="flex flex-col gap-1">
+                                    <summary className="cursor-pointer text-body text-fg-secondary">
+                                        {t('menu.entry.allergens.disclose')}
+                                    </summary>
+                                    <div className="mt-2 flex flex-col gap-1">
+                                        <label className={labelClass} htmlFor="entry-allergens">
+                                            {t('menu.item.allergens.label')}
+                                        </label>
+                                        <TextInput
+                                            id="entry-allergens"
+                                            name="entry-allergens"
+                                            type="text"
+                                            value={entryAllergens}
+                                            onChange={(event) =>
+                                                setEntryAllergens(event.target.value)
+                                            }
+                                        />
+                                    </div>
+                                </details>
+
+                                {entrySubmitError ? (
+                                    <FieldError message={entrySubmitError} />
+                                ) : null}
+
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <button
+                                        type="submit"
+                                        className={buttonClass}
+                                        disabled={creatingEntry}
+                                    >
+                                        {t('menu.entry.submit')}
+                                    </button>
+                                    {/*
+                                        Onay, formun kendi yanında durur.
+                                        Kullanıcı arka arkaya ürün eklerken
+                                        "gitti mi?" diye listeye bakmak
+                                        zorunda kalmamalı.
+                                    */}
+                                    {lastAddedEntry ? (
+                                        <p role="status" className="text-meta text-fg-secondary">
+                                            {lastAddedEntry}
+                                        </p>
+                                    ) : null}
+                                </div>
+                            </>
+                        )}
                     </form>
-
-                    {currentCategoryId !== null ? (
-                        <form className={sectionClass} onSubmit={handleCreateProduct} noValidate>
-                            <label className={labelClass} htmlFor="product-name">
-                                {t('menu.product.name.label')}
-                            </label>
-                            <TextInput
-                                id="product-name"
-                                type="text"
-                                value={productName}
-                                onChange={(event) => setProductName(event.target.value)}
-                            />
-                            {productNameError ? <FieldError message={productNameError} /> : null}
-                            {productSubmitError ? (
-                                <FieldError message={productSubmitError} />
-                            ) : null}
-                            <button
-                                type="submit"
-                                className={buttonClass}
-                                disabled={creatingProduct}
-                            >
-                                {t('menu.product.create.submit')}
-                            </button>
-                        </form>
-                    ) : null}
-
-                    {currentProductId !== null ? (
-                        <form className={sectionClass} onSubmit={handleCreateMenuItem} noValidate>
-                            <label className={labelClass} htmlFor="item-price">
-                                {t('menu.item.price.label')}
-                            </label>
-                            <TextInput
-                                id="item-price"
-                                type="text"
-                                inputMode="decimal"
-                                value={price}
-                                onChange={(event) => setPrice(event.target.value)}
-                            />
-                            {priceError ? <FieldError message={priceError} /> : null}
-                            {itemSubmitError ? <FieldError message={itemSubmitError} /> : null}
-                            <button type="submit" className={buttonClass} disabled={creatingItem}>
-                                {t('menu.item.create.submit')}
-                            </button>
-                        </form>
-                    ) : null}
-
-                    {currentMenuItemId !== null ? (
-                        <form className={sectionClass} onSubmit={handleSaveAllergens} noValidate>
-                            <label className={labelClass} htmlFor="item-allergens">
-                                {t('menu.item.allergens.label')}
-                            </label>
-                            <TextInput
-                                id="item-allergens"
-                                type="text"
-                                value={allergensInput}
-                                onChange={(event) => setAllergensInput(event.target.value)}
-                            />
-                            {allergensSubmitError ? (
-                                <FieldError message={allergensSubmitError} />
-                            ) : null}
-                            <button
-                                type="submit"
-                                className={buttonClass}
-                                disabled={savingAllergens}
-                            >
-                                {t('menu.item.allergens.submit')}
-                            </button>
-                        </form>
-                    ) : null}
                 </>
             )}
         </div>
