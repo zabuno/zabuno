@@ -119,6 +119,11 @@ Proje sahibi `main` dalına bir değişiklik birleştirdiğinde:
 bağlıdır: doğrudan push'a bağlansaydı deploy testlerle yarışır ve kırık bir
 sürüm yayına çıkabilirdi.
 
+**Beş değer eklenmeden önce** deploy akışı kırmızı vermez, sessizce atlar ve
+"sunucu tanımlı değil" notu bırakır. Her birleşmede kırmızı bir X görmek,
+kırmızıyı görmezden gelme alışkanlığı yaratır — o alışkanlık da gerçek
+arızaları gizler.
+
 Süreç GitHub → **Actions** sekmesinden izlenir. Elle tetikleme de vardır
 (Deploy → Run workflow → kutuya `DEPLOY`); geri alma ve yeniden deneme için.
 
