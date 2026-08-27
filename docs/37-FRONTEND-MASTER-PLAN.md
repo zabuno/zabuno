@@ -404,3 +404,10 @@ hedef, her dalgada dokunulan dosyaların semantic token'a geçirilmesidir.
       belge kazanır ve bu plan güncellenir.
 - [ ] Her yeni kural bir testle gelir; testsiz kural bu belgeye yazılmaz.
 - [ ] Ham palet borcu hiçbir dalgada yükselmez.
+
+## Fazlanmış tasarım geçişi
+
+Bu planın külliyata olan borcu `docs/41-DESIGN-SYSTEM-ROADMAP.md`
+(`DESIGN-2030-v1`) içinde altı faza bölünmüştür. Faz 1 token kökünü
+bağlar; ondan önce yapılan her görsel düzeltme, kök bağlanınca yeniden
+yapılır.

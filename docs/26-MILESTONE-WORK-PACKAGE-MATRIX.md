@@ -262,6 +262,12 @@ tetikleyiciye ve kanıta bağlı.
 doğar ve dört fazının tamamı Stage 2'ye eşlenir. Bu plan da sabit 38-WP
 payda sayacını değiştirmez; kendi `0/4` sayacını taşır.
 
+Üçüncü adlandırılmış ek plan: `docs/41-DESIGN-SYSTEM-ROADMAP.md`
+(`DESIGN-2030-v1`). Külliyatın sekiz kanonik kararı ile depodaki durum
+arasındaki ölçülmüş açıktan doğar; Faz 1–2 Stage 1 kalanına, Faz 3–6
+Stage 2+'ya eşlenir. Bu plan da sabit 38-WP payda sayacını değiştirmez;
+kendi `0/6` sayacını taşır.
+
 **S1-WP03…S1-WP07, 2026-08-26 tarihli kod denetimiyle `not-started`'dan
 çıkarılmıştır.** Bu satırlar belgeye bakılarak değil, `main` üzerindeki koda
 bakılarak durumlanmıştır; her satır neyin gerçekten var olduğunu ve WP'yi
