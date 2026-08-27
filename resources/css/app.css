@@ -48,6 +48,37 @@
     --text-subsection: 1.0625rem;
     --text-subsection--line-height: 1.4;
 
+    /* ---------------------------------------------------------------
+       ÖLÇÜ — okunabilir genişlik.
+
+       Dışarıdan gelen UX eleştirisi bunları sabit piksel aralıklarıyla
+       istiyordu (form 560–720px, tablo 1200–1440px). Hedef doğru, ifade
+       biçimi külliyatla çelişiyor: `docs/36` §5.3 UI geometrisinin logical
+       token olmasını, §5.4 ise bileşenin ham geometri BİLMEMESİNİ şart
+       koşuyor — ve §5.4 külliyatın kendi en önemli maddesi.
+
+       Sabit piksel ayrıca ekrana tepki verir, kapsayıcıya değil: kenar
+       çubuğu açılıp kapandığında yanlış olur.
+
+       Birim `ch`: ölçü, satırdaki karakter sayısıdır. Font değişirse
+       okunabilir genişlik kendiliğinden doğru kalır — piksel öyle kalmaz.
+       `min()` ile dar ekranda kapsayıcıya teslim olur, yani 320px-first.
+
+       İsim uzayı `--container-*`: Tailwind v4 utility'leri yalnız tanıdığı
+       uzaylardan üretir. Kendi adımızı verseydik (`--measure-*`) token
+       yayınlanır ama `max-w-form` sınıfı hiç doğmazdı — tipografide aynı
+       hataya düşülmüştü.
+       --------------------------------------------------------------- */
+
+    /* Tek sütunlu form. Uzun satır, formda okumayı değil hedef aramayı
+       zorlaştırır. */
+    --container-form: min(100%, 44ch);
+    /* Standart okuma genişliği — açıklama, boş durum, tek sütun içerik. */
+    --container-content: min(100%, 72ch);
+    /* Karşılaştırmalı veri. Tablo dar tutulursa sütunlar sıkışır ve
+       karşılaştırma imkânsızlaşır — külliyatın tablo ölçütü tam budur. */
+    --container-table: min(100%, 120ch);
+
     /* GÖVDE TABANI. Bunun altına inen hiçbir okunabilir metin olmamalı. */
     --text-body: 1rem;
     --text-body--line-height: 1.5;

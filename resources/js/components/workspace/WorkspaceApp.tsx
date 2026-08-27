@@ -562,7 +562,7 @@ export function WorkspaceApp() {
 
     if (phase === 'loading') {
         return (
-            <div className="mx-auto max-w-2xl px-4 py-10">
+            <div className="mx-auto max-w-content px-4 py-10">
                 {liveRegion}
                 <p role="status" aria-live="polite">
                     {t('workspace.loading')}
@@ -573,7 +573,7 @@ export function WorkspaceApp() {
 
     if (phase === 'error') {
         return (
-            <div className="mx-auto max-w-2xl px-4 py-10">
+            <div className="mx-auto max-w-content px-4 py-10">
                 {liveRegion}
                 <p role="alert" className="text-sm font-medium text-fg-danger">
                     {t('workspace.error.heading')}
@@ -593,7 +593,7 @@ export function WorkspaceApp() {
 
     if (phase === 'create') {
         return (
-            <div className="mx-auto max-w-2xl px-4 py-10">
+            <div className="mx-auto max-w-content px-4 py-10">
                 {liveRegion}
                 <form onSubmit={handleCreate} noValidate className="flex flex-col gap-4">
                     <h1 className="text-xl font-semibold text-fg">
@@ -630,7 +630,7 @@ export function WorkspaceApp() {
 
     if (phase === 'choose') {
         return (
-            <div className="mx-auto max-w-2xl px-4 py-10">
+            <div className="mx-auto max-w-content px-4 py-10">
                 {liveRegion}
                 <h1 className="text-xl font-semibold text-fg">{t('workspace.choose.heading')}</h1>
                 <ul className="mt-4 flex flex-col gap-2">

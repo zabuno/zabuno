@@ -1,0 +1,10 @@
+{
+    "requirement": "DS-MEASURE-RATCHET-01",
+    "total": 2,
+    "byFile": {
+        "components/storybook-demo/macro/DemoFormCard.tsx": 1,
+        "components/workspace/pages/publication/QrPrintExportRegion.tsx": 1
+    },
+    "why": "Sayfa genisligi semantik olculerden gelir (--container-form/content/table). Ham Tailwind olcegi ekrana tepki verir, kapsayiciya degil: kenar cubugu acilip kapandiginda yanlis olur. Kalan kullanimlar sayfa olcusu degil (QR gorseli, storybook demosu); yine de sayilir ki artmasin.",
+    "howToBurnDown": "Sayfa ya da form kapsayicisiysa max-w-form / max-w-content / max-w-table kullan. Bileşene ozgu bir boyutsa (gorsel, rozet) semantik bir token tanimla. Sonra buradaki sayilari dusur."
+}

@@ -65,12 +65,20 @@ Kök bağlanmadan yapılan düzeltme, kök bağlanınca yeniden yapılır.
 | **1-b** | Radius semantic token'a alınır (`--radius-control`, `--radius-surface`…) | 56 ham `rounded-*` → 0; kapı artışı engeller |
 | **1-c** | Tipografi borcu eritilir | `typography-debt.json` 283 → 0, kademeli |
 | **1-d** | Density modları canlandırılır | `.density-*` bir kapsayıcıya uygulanır; satır yüksekliği font'a dokunmadan değişir |
+| **1-e** | Okunabilir genişlik token'a alınır | `--container-form/content/table`; ham `max-w-*` kilitli (`DS-MEASURE-RATCHET-01`) |
+| **1-f** | Rozet ve devre dışı kontrol standardı | Rozet kullanıcı durumunu söyler, entegrasyon durumunu değil |
 
 **Not (1-d):** altyapı doğru yazılmış ama ölü. `.density-comfortable` 52px,
 `.density-compact` 36px tanımlı; hiçbir bileşen uygulamıyor. Yani külliyatın
 "comfortable / standard / compact" kararı bugün bir ürün yeteneği değil.
 
 ---
+
+**Dış UX eleştirisi (2026-08-27) bu plana dağıtıldı.** Uzlaştırma
+`docs/44-UX-CRITIQUE-RECONCILIATION.md`'de: hangi maddesi külliyatla aynı şeyi
+söylüyor, hangisi külliyatın ince olduğu yeri dolduruyor, hangisi çelişiyor.
+Çelişen tek madde sabit piksel genişliklerdi; hedefi kabul edildi, ifade biçimi
+token'a çevrildi (1-e).
 
 ## Faz 2 — Ekranda görünen kusurlar (Stage 1 kalanı)
 

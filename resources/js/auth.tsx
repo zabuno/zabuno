@@ -71,7 +71,7 @@ createRoot(container).render(
                     className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-surface-hover to-surface-subtle"
                 />
                 <div className="flex min-h-screen items-center justify-center px-4 py-8">
-                    <div className="w-full max-w-md rounded-lg border border-border bg-surface p-6 shadow-sm">
+                    <div className="w-full max-w-form rounded-lg border border-border bg-surface p-6 shadow-sm">
                         {renderView(container)}
                     </div>
                 </div>

@@ -227,7 +227,7 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
     const selectedCurrency = reference?.currencies.find((item) => item.code === currency);
 
     return (
-        <div className="mx-auto w-full max-w-xl px-4 py-10">
+        <div className="mx-auto w-full max-w-form px-4 py-10">
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
                     <h1 className="text-title font-semibold text-fg">
