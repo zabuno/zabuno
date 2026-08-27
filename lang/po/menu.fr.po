@@ -28,6 +28,10 @@ msgstr ""
 msgid "menu.category.create.submit"
 msgstr ""
 
+#: menu:menu.category.empty
+msgid "menu.category.empty"
+msgstr ""
+
 #: menu:menu.category.items.label
 msgid "menu.category.items.label"
 msgstr ""
@@ -60,6 +64,10 @@ msgstr ""
 msgid "menu.entry.allergens.disclose"
 msgstr ""
 
+#: menu:menu.entry.cancel
+msgid "menu.entry.cancel"
+msgstr ""
+
 #: menu:menu.entry.category.empty
 msgid "menu.entry.category.empty"
 msgstr ""
@@ -70,6 +78,10 @@ msgstr ""
 
 #: menu:menu.entry.error.submit
 msgid "menu.entry.error.submit"
+msgstr ""
+
+#: menu:menu.entry.open
+msgid "menu.entry.open"
 msgstr ""
 
 #: menu:menu.entry.section.label

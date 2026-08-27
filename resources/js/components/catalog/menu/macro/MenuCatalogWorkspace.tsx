@@ -1,7 +1,6 @@
 import { TextInput } from '../../forms/micro/TextInput';
-import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/menu';
@@ -382,19 +381,27 @@ export function MenuCatalogWorkspace({
         setPriceEditSubmitError(null);
     }
 
-    function handleCategorySelect(event: ChangeEvent<HTMLSelectElement>) {
-        const selectedId = Number(event.target.value);
-        if (selectedId === currentCategoryId) return;
+    /**
+     * Bir kategorinin ürün ekleme formunu açar veya kapatır.
+     *
+     * Kategori artık bir ALAN değil, TIKLADIĞIN YER. Sahibinin tespiti
+     * ("kategori ekleme bilgileri ile ürün ekleme bilgileri aynı formda
+     * olmaz") bir adım öteye taşındı: Kebaplar'a bakarken Kebaplar'ı
+     * listeden seçmek zorunda kalmak, sorulmayan bir soruya cevap
+     * vermektir.
+     */
+    function toggleEntryForm(categoryId: number) {
+        if (currentCategoryId === categoryId) {
+            setCurrentCategoryId(null);
 
-        // Kategoriyi değiştirmek YAZILANI SİLMEZ.
-        //
-        // Eski zincirde silmek zorunluydu: ürün, fiyat ve alerjen ayrı ayrı
-        // kaydedilmiş nesnelerdi ve kategori değişince yarım kalmış bir
-        // zincir geride kalırdı. Artık hepsi tek gönderimde oluşuyor, yani
-        // yanlış kategoriyi seçen kullanıcı sadece seçimi düzeltir —
-        // yazdıklarını baştan yazmaz.
-        setCurrentCategoryId(selectedId);
+            return;
+        }
+
+        setCurrentCategoryId(categoryId);
         setEntrySubmitError(null);
+        setProductNameError(null);
+        setPriceError(null);
+        setLastAddedEntry(null);
     }
 
     async function handleCreateMenu(event: FormEvent<HTMLFormElement>) {
@@ -929,6 +936,141 @@ export function MenuCatalogWorkspace({
                                         </li>
                                     ))}
                                 </ul>
+
+                                {category.menuItems.length === 0 ? (
+                                    <p className="text-body text-fg-secondary">
+                                        {t('menu.category.empty')}
+                                    </p>
+                                ) : null}
+
+                                {/*
+                                    ÜRÜN EKLEME, KATEGORİNİN İÇİNDE.
+
+                                    Öncesinde tek bir form sayfanın EN ALTINDA
+                                    duruyordu: dört kategori ve yirmi ürünü
+                                    olan bir menüde kullanıcı ürün eklemek
+                                    için hepsini geçip aşağı iniyor, sonra
+                                    zaten baktığı kategoriyi bir listeden
+                                    seçiyordu.
+
+                                    Şimdi kategori bir ALAN değil, TIKLADIĞIN
+                                    YER. Bu, "üç tıktan bir tıka"nın gerçek
+                                    karşılığı: gereksiz navigasyon ve
+                                    tekrarlanan karar kalktı (`docs/50` §8).
+                                */}
+                                {currentCategoryId === category.id ? (
+                                    <form
+                                        className="flex flex-col gap-3 rounded-md border border-border p-3"
+                                        onSubmit={handleAddMenuEntry}
+                                        aria-label={t('menu.entry.section.label', {
+                                            category: category.name,
+                                        })}
+                                        noValidate
+                                    >
+                                        <div className="flex flex-wrap items-start gap-3">
+                                            <div className="flex min-w-[16ch] flex-[1_1_16ch] flex-col gap-1">
+                                                <label
+                                                    className={labelClass}
+                                                    htmlFor="product-name"
+                                                >
+                                                    {t('menu.product.name.label')}
+                                                </label>
+                                                <TextInput
+                                                    id="product-name"
+                                                    name="product-name"
+                                                    type="text"
+                                                    autoFocus
+                                                    value={productName}
+                                                    onChange={(event) =>
+                                                        setProductName(event.target.value)
+                                                    }
+                                                />
+                                                {productNameError ? (
+                                                    <FieldError message={productNameError} />
+                                                ) : null}
+                                            </div>
+
+                                            <div className="flex flex-[0_1_12ch] flex-col gap-1">
+                                                <label className={labelClass} htmlFor="item-price">
+                                                    {t('menu.item.price.label')}
+                                                </label>
+                                                <TextInput
+                                                    id="item-price"
+                                                    name="item-price"
+                                                    type="text"
+                                                    inputMode="decimal"
+                                                    value={price}
+                                                    onChange={(event) =>
+                                                        setPrice(event.target.value)
+                                                    }
+                                                />
+                                                {priceError ? (
+                                                    <FieldError message={priceError} />
+                                                ) : null}
+                                            </div>
+                                        </div>
+
+                                        <details className="flex flex-col gap-1">
+                                            <summary className="cursor-pointer text-body text-fg-secondary">
+                                                {t('menu.entry.allergens.disclose')}
+                                            </summary>
+                                            <div className="mt-2 flex flex-col gap-1">
+                                                <label
+                                                    className={labelClass}
+                                                    htmlFor="entry-allergens"
+                                                >
+                                                    {t('menu.item.allergens.label')}
+                                                </label>
+                                                <TextInput
+                                                    id="entry-allergens"
+                                                    name="entry-allergens"
+                                                    type="text"
+                                                    value={entryAllergens}
+                                                    onChange={(event) =>
+                                                        setEntryAllergens(event.target.value)
+                                                    }
+                                                />
+                                            </div>
+                                        </details>
+
+                                        {entrySubmitError ? (
+                                            <FieldError message={entrySubmitError} />
+                                        ) : null}
+
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <button
+                                                type="submit"
+                                                className={buttonClass}
+                                                disabled={creatingEntry}
+                                            >
+                                                {t('menu.entry.submit')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={inlineActionClass}
+                                                onClick={() => setCurrentCategoryId(null)}
+                                            >
+                                                {t('menu.entry.cancel')}
+                                            </button>
+                                            {lastAddedEntry ? (
+                                                <p
+                                                    role="status"
+                                                    className="text-meta text-fg-secondary"
+                                                >
+                                                    {lastAddedEntry}
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                    </form>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className={inlineActionClass}
+                                        onClick={() => toggleEntryForm(category.id)}
+                                    >
+                                        {t('menu.entry.open')}
+                                    </button>
+                                )}
                             </li>
                         ))}
                     </ol>
@@ -997,156 +1139,6 @@ export function MenuCatalogWorkspace({
                             </button>
                         )}
                     </div>
-
-                    {/*
-                        ÜRÜN EKLEME: tek form, tek gönderim.
-
-                        Öncesinde üç formdu ve her biri bir öncekinin
-                        kaydedilmesini bekliyordu: ürün → fiyat → alerjen.
-                        Bir ürün eklemek dört tıklama ve üç sunucu turuydu.
-
-                        Kategori burada SEÇİLİR, yaratılmaz. Bu ayrım
-                        sahibinin sorununun ta kendisidir: "kategori ekleme
-                        bilgileri ile ürün ekleme bilgileri aynı formda
-                        olmaz."
-                    */}
-                    <form
-                        className={sectionClass}
-                        onSubmit={handleAddMenuEntry}
-                        aria-label={t('menu.entry.section.label')}
-                        noValidate
-                    >
-                        <h3 className="text-subsection font-semibold">
-                            {t('menu.entry.section.label')}
-                        </h3>
-
-                        {tree.categories.length === 0 ? (
-                            // Boş durum kullanıcıyı yalnız bilgilendirmez, ne
-                            // yapması gerektiğini söyler: her ürün bir
-                            // kategoriye ait olmak zorundadır.
-                            <p className="text-body text-fg-secondary">
-                                {t('menu.entry.category.empty')}
-                            </p>
-                        ) : (
-                            <>
-                                <div className="flex flex-col gap-1">
-                                    <label className={labelClass} htmlFor="category-select">
-                                        {t('menu.entry.category.label')}
-                                    </label>
-                                    <Select
-                                        id="category-select"
-                                        name="category-select"
-                                        value={currentCategoryId ?? ''}
-                                        onChange={handleCategorySelect}
-                                    >
-                                        {tree.categories.map((category) => (
-                                            <option key={category.id} value={category.id}>
-                                                {category.name}
-                                            </option>
-                                        ))}
-                                    </Select>
-                                </div>
-
-                                {/*
-                                    Ad ve fiyat yan yana: ikisi TEK bir kararın
-                                    parçasıdır.
-                                    
-                                    Kırılma noktası YOK. `flex-wrap` + alanların
-                                    kendi taban genişlikleri, ekranı değil
-                                    KAPSAYICIYI dinler: 320px'te alt alta,
-                                    yer varsa yan yana düşerler — kenar çubuğu
-                                    açılıp kapandığında da doğru davranır.
-                                    `sm:` yazsaydık ekran genişliğine bakardı ve
-                                    dar bir sütunun içinde yanlış olurdu
-                                    (`docs/48` — 320px-first).
-                                */}
-                                <div className="flex flex-wrap items-start gap-3">
-                                    <div className="flex min-w-[16ch] flex-[1_1_16ch] flex-col gap-1">
-                                        <label className={labelClass} htmlFor="product-name">
-                                            {t('menu.product.name.label')}
-                                        </label>
-                                        <TextInput
-                                            id="product-name"
-                                            name="product-name"
-                                            type="text"
-                                            value={productName}
-                                            onChange={(event) => setProductName(event.target.value)}
-                                        />
-                                        {productNameError ? (
-                                            <FieldError message={productNameError} />
-                                        ) : null}
-                                    </div>
-
-                                    <div className="flex flex-[0_1_12ch] flex-col gap-1">
-                                        <label className={labelClass} htmlFor="item-price">
-                                            {t('menu.item.price.label')}
-                                        </label>
-                                        <TextInput
-                                            id="item-price"
-                                            name="item-price"
-                                            type="text"
-                                            inputMode="decimal"
-                                            value={price}
-                                            onChange={(event) => setPrice(event.target.value)}
-                                        />
-                                        {priceError ? <FieldError message={priceError} /> : null}
-                                    </div>
-                                </div>
-
-                                {/*
-                                    Alerjen İSTEĞE BAĞLI ve kapalı başlar.
-                                    Zorunlu kılmak, hızlı olması gereken bir
-                                    işi ilk üründe durdururdu; ama tamamen
-                                    gizlemek de yanlış olurdu — alerjen bir
-                                    yasal yükümlülüktür ve varlığı görünmeli.
-                                */}
-                                <details className="flex flex-col gap-1">
-                                    <summary className="cursor-pointer text-body text-fg-secondary">
-                                        {t('menu.entry.allergens.disclose')}
-                                    </summary>
-                                    <div className="mt-2 flex flex-col gap-1">
-                                        <label className={labelClass} htmlFor="entry-allergens">
-                                            {t('menu.item.allergens.label')}
-                                        </label>
-                                        <TextInput
-                                            id="entry-allergens"
-                                            name="entry-allergens"
-                                            type="text"
-                                            value={entryAllergens}
-                                            onChange={(event) =>
-                                                setEntryAllergens(event.target.value)
-                                            }
-                                        />
-                                    </div>
-                                </details>
-
-                                {entrySubmitError ? (
-                                    <FieldError message={entrySubmitError} />
-                                ) : null}
-
-                                <div className="flex flex-wrap items-center gap-3">
-                                    <button
-                                        type="submit"
-                                        className={buttonClass}
-                                        disabled={creatingEntry}
-                                    >
-                                        {t('menu.entry.submit')}
-                                    </button>
-                                    {/*
-                                        Onay, formun kendi yanında durur.
-                                        Kullanıcı arka arkaya ürün eklerken
-                                        "gitti mi?" diye listeye bakmak
-                                        zorunda kalmamalı.
-                                    */}
-                                    {lastAddedEntry ? (
-                                        <p role="status" className="text-meta text-fg-secondary">
-                                            {lastAddedEntry}
-                                        </p>
-                                    ) : null}
-                                </div>
-                            </>
-                        )}
-                    </form>
                 </>
             )}
         </div>

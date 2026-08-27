@@ -391,12 +391,13 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
         });
         fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
 
-        // Kategorinin GERÇEKTEN oluşmasını bekleriz: ürün, seçili kategoriye
-        // gider ve seçim ancak sunucu cevabıyla yeni kategoriye geçer.
+        // Kategori oluşunca ürün formu ONUN İÇİNDE kendiliğinden açılır.
+        // Kategoriyi zaten içine ürün koymak için yaratıyorsun; ikinci bir
+        // tıklama istemek, sorulmayan bir soruya cevap vermektir.
         await waitFor(() => {
-            expect((screen.getByLabelText('Category') as HTMLSelectElement).value).toBe(
-                String(NEW_CATEGORY_ID),
-            );
+            expect(
+                screen.getByRole('form', { name: 'Add a product to Çorbalar' }),
+            ).toBeInTheDocument();
         });
 
         // Tek form, tek gönderim: ad ve fiyat birlikte doldurulur.
