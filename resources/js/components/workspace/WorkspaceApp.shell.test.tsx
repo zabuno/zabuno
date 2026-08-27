@@ -219,6 +219,88 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
+    // Bu test, "sıçrama düzeldi" dedikten SONRA hâlâ sıçradığı için var.
+    //
+    // Kök sebep düzeltmenin kendisiydi: sayfa başa alınıyor, ardından
+    // `focus()` onu geri aşağı çekiyordu. `focus()` varsayılan olarak
+    // elemanı görünür alana kaydırır ve `main` üst çubuğun altında başlar.
+    //
+    // Gerçek tarayıcıda ölçülen (720px viewport, 2400px içerik):
+    //   scrollTo({top: 0}) -> 0 ;  ardından focus() -> 1680 ;
+    //   focus({ preventScroll: true }) -> 0
+    //
+    // jsdom'da `focus()` kaydırmadığı için bu hata bir birim testinde
+    // GÖRÜNMEZ. Bu yüzden sözleşme davranış üzerinden değil, seçeneğin
+    // verilmesi üzerinden zorlanır — kaybedilen tek şey budur ve bilerek
+    // kabul edilmiştir.
+    // Sıçramanın GERÇEK sebebi buydu ve iki düzeltme denemesinden sonra
+    // ancak tarayıcıda ölçerek bulundu.
+    //
+    // İçerik değişince belge kısalır (ölçülen: Medya 3802px -> Analitik
+    // 1250px) ve tarayıcı kaydırmayı KIRPAR: 1000 -> 122. O kırpma bizim
+    // kodumuzdan ÖNCE olur; `scrollTo` çağrımız çoktan kırpılmış bir
+    // konuma varır. Kullanıcının gördüğü sıçrama tam olarak o kırpmadır.
+    //
+    // Çözüm sırayı tersine çevirmek: kaydırma zaten 0'dayken içerik
+    // değişirse kırpacak bir şey kalmaz.
+    //
+    // jsdom düzen hesaplamaz, yani kırpmayı ÜRETEMEZ. Ama SIRAYI
+    // gösterebilir: `scrollTo` çağrıldığı anda hâlâ eski bölüm mü
+    // basılı? Tutulabilen sözleşme budur.
+    it('resets the scroll while the previous section is still mounted', async () => {
+        const user = userEvent.setup();
+        let previousSectionStillMounted: boolean | null = null;
+
+        vi.stubGlobal(
+            'scrollTo',
+            vi.fn(() => {
+                if (previousSectionStillMounted === null) {
+                    // Kapsayıcı id'si ile bakıyoruz: metinle aramak
+                    // belirsizdir (nav bağlantısı ve başlık aynı kelimeyi
+                    // taşır) ve testi kırılgan yapar.
+                    previousSectionStillMounted =
+                        document.getElementById('section-dashboard') !== null;
+                }
+            }),
+        );
+
+        await renderCurrentWorkspace();
+        previousSectionStillMounted = null;
+
+        await user.click(screen.getByRole('link', { name: 'Media' }));
+
+        await waitFor(() => {
+            expect(
+                previousSectionStillMounted,
+                'Kaydırma sıfırlanmadan önce içerik değişirse tarayıcı konumu kırpar ve sayfa sıçrar.',
+            ).toBe(true);
+        });
+
+        vi.unstubAllGlobals();
+    });
+
+    it('moves focus without letting the browser scroll the page back down', async () => {
+        const user = userEvent.setup();
+        vi.stubGlobal('scrollTo', vi.fn());
+
+        const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus');
+
+        await renderCurrentWorkspace();
+        focusSpy.mockClear();
+
+        await user.click(screen.getByRole('link', { name: 'Media' }));
+
+        await waitFor(() => {
+            expect(
+                focusSpy.mock.calls.some(([options]) => options?.preventScroll === true),
+                'Bölüm değişiminde odak `preventScroll: true` ile taşınmalı; aksi hâlde tarayıcı sayfayı geri aşağı kaydırır.',
+            ).toBe(true);
+        });
+
+        focusSpy.mockRestore();
+        vi.unstubAllGlobals();
+    });
+
     it('transitions to the existing choose-workspace journey when Switch workspace is activated', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
