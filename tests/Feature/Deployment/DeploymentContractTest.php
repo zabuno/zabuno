@@ -121,22 +121,29 @@ final class DeploymentContractTest extends TestCase
     {
         $compose = $this->read('docker-compose.yml');
 
-        self::assertSame(
-            1,
-            preg_match('/\n  db:\n(.*?)\n  [a-z]/s', $compose, $match),
-            'DEPLOY-DB-NOT-PUBLIC-03: db servisi okunamadı.'
-        );
+        // Kapı BİÇİME değil ANLAMA bakar. İlk hâli `\n  db:\n` deseniyle
+        // servis bloğunu kesiyordu; Prettier girintiyi 2'den 4 boşluğa
+        // çevirince kapı, hiçbir şey değişmemiş olmasına rağmen düştü.
+        // Bir kapının biçimlendiriciyle kavga etmesi, kapıya güveni bitirir.
+        //
+        // Doğrulanan şey şu: ana makineye yayımlanan portlar YALNIZ HTTP ve
+        // HTTPS olmalı. Veritabanı iç ağdan konuşur; dışarıya açılan bir
+        // 5432, parolayı tek savunma hattı yapar.
+        preg_match_all('/^\s*-\s*[\x27"]?(\d+):(\d+)[\x27"]?\s*$/m', $compose, $matches);
 
-        self::assertStringNotContainsString(
-            '5432:5432',
-            $match[1],
-            'DEPLOY-DB-NOT-PUBLIC-03: veritabanı portu ana makineye yayımlanmış.'
+        $publishedPorts = array_map('intval', $matches[1]);
+        sort($publishedPorts);
+
+        self::assertSame(
+            [80, 443],
+            $publishedPorts,
+            'DEPLOY-DB-NOT-PUBLIC-03: yalnız 80 ve 443 yayımlanmalı; başka bir port dışarı açılmış.'
         );
 
         self::assertStringContainsString(
             'internal: true',
             $compose,
-            'DEPLOY-DB-NOT-PUBLIC-03: iç ağ `internal` işaretli olmalı.'
+            'DEPLOY-DB-NOT-PUBLIC-03: veritabanının bulunduğu ağ `internal` işaretli olmalı.'
         );
     }
 
