@@ -88,6 +88,10 @@ msgstr ""
 msgid "workspace.analytics.action.retry"
 msgstr ""
 
+#: workspace:workspace.analytics.action.viewPlan
+msgid "workspace.analytics.action.viewPlan"
+msgstr ""
+
 #: workspace:workspace.analytics.heading
 msgid "workspace.analytics.heading"
 msgstr ""
@@ -128,6 +132,10 @@ msgstr ""
 msgid "workspace.analytics.report.loading"
 msgstr ""
 
+#: workspace:workspace.analytics.report.planRestricted
+msgid "workspace.analytics.report.planRestricted"
+msgstr ""
+
 #: workspace:workspace.analytics.report.region
 msgid "workspace.analytics.report.region"
 msgstr ""
@@ -146,6 +154,10 @@ msgstr ""
 
 #: workspace:workspace.analytics.status.notConnected
 msgid "workspace.analytics.status.notConnected"
+msgstr ""
+
+#: workspace:workspace.analytics.status.planRestricted
+msgid "workspace.analytics.status.planRestricted"
 msgstr ""
 
 #: workspace:workspace.billing.changePlan.button

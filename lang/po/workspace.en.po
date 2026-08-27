@@ -88,6 +88,10 @@ msgstr "Refresh"
 msgid "workspace.analytics.action.retry"
 msgstr "Retry"
 
+#: workspace:workspace.analytics.action.viewPlan
+msgid "workspace.analytics.action.viewPlan"
+msgstr "View your plan"
+
 #: workspace:workspace.analytics.heading
 msgid "workspace.analytics.heading"
 msgstr "Analytics"
@@ -128,6 +132,10 @@ msgstr "Analytics failed to load. Please try again."
 msgid "workspace.analytics.report.loading"
 msgstr "Loading analytics…"
 
+#: workspace:workspace.analytics.report.planRestricted
+msgid "workspace.analytics.report.planRestricted"
+msgstr "Analytics reporting is not included in your current plan. Your QR scans are still being recorded, so no data is lost — the reports appear as soon as the plan includes them."
+
 #: workspace:workspace.analytics.report.region
 msgid "workspace.analytics.report.region"
 msgstr "Analytics report"
@@ -147,6 +155,10 @@ msgstr "Loading"
 #: workspace:workspace.analytics.status.notConnected
 msgid "workspace.analytics.status.notConnected"
 msgstr "Not requested yet"
+
+#: workspace:workspace.analytics.status.planRestricted
+msgid "workspace.analytics.status.planRestricted"
+msgstr "Not in your plan"
 
 #: workspace:workspace.billing.changePlan.button
 msgid "workspace.billing.changePlan.button"
