@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faz 4 · Veri Modeli · istoc Media Engine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="bg-white dark:bg-gray-900">
+<main class="doc-main">
+
+<span class="text-[11px] font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Faz 4 · Tasarım</span>
+<h1>Veri Modeli — DocType Şemaları</h1>
+<p class="text-gray-600 dark:text-gray-400">Frappe DocType'ları, ilişkiler, indeksler ve izin modeli. Mock veri yok; yalnızca yapı.</p>
+
+<h2>Varlık ilişkileri</h2>
+<pre><code>Media Asset ──1:1── Media Source        (yüklenen ham dosya)
+     │
+     ├──1:N── Media Version             (normalize master; yeni politika → yeni version)
+     │            └──1:N── Media Rendition   (profil × genişlik × format)
+     │
+     ├──1:1── Media Crop Intent         (focal + safe region + profil override child table)
+     ├──1:N── Media Processing Job
+     ├──1:N── Media Usage               (hangi DocType.field kullanıyor)
+     └──1:N── Media Quality Report
+
+Media Profile   (rendition reçetesi — veri)
+Media Policy    (slot kuralları — veri)
+Media Engine Settings   (Single, superadmin)
+Media Storage Settings  (Single, superadmin — S3/CDN)</code></pre>
+
+<h2>DocType tanımları</h2>
+
+<h3>Media Asset</h3>
+<table>
+<thead><tr><th>Alan</th><th>Tip</th><th>Not</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>hash</td><td>Asset kimliği</td></tr>
+<tr><td><code>slot_key</code></td><td>Link → Media Policy</td><td>Politikanın uygulandığı alan</td></tr>
+<tr><td><code>owner_seller</code></td><td>Link → Supplier/Company</td><td>Sahiplik ve izin sınırı</td></tr>
+<tr><td><code>state</code></td><td>Select</td><td>draft…archived (Faz 3 durum makinesi)</td></tr>
+<tr><td><code>media_type</code></td><td>Select</td><td>image / video / document</td></tr>
+<tr><td><code>content_sha256</code></td><td>Data, <strong>unique</strong></td><td>Dedup ve idempotency anahtarı</td></tr>
+<tr><td><code>perceptual_hash</code></td><td>Data, index</td><td>Benzer/tekrar görsel tespiti</td></tr>
+<tr><td><code>active_version</code></td><td>Link → Media Version</td><td>Yayındaki master</td></tr>
+<tr><td><code>legal_hold</code></td><td>Check</td><td>Retention'ı geçersiz kılar</td></tr>
+<tr><td><code>published_at</code>, <code>last_access_at</code></td><td>Datetime</td><td>GC ve retention girdisi</td></tr>
+<tr><td><code>rejection_code</code>, <code>rejection_note</code></td><td>Data / Text</td><td>Red sebebi (zorunlu)</td></tr>
+</tbody>
+</table>
+
+<h3>Media Source</h3>
+<p>Ham dosya kaydı: <code>file_url</code>, <code>storage_backend</code>, <code>bytes</code>, <code>mime_real</code>, <code>mime_claimed</code>, <code>width</code>, <code>height</code>, <code>megapixels</code>, <code>dpi_x/y</code>, <code>colorspace</code>, <code>has_alpha</code>, <code>frames</code>, <code>duration</code>, <code>video_codec</code>, <code>audio_codec</code>, <code>bitrate</code>, <code>exif_stripped</code>, <code>uploaded_by</code>, <code>client_report</code> (JSON: tarayıcının yaptığı işlemler). <strong>Asla değiştirilmez.</strong></p>
+
+<h3>Media Version</h3>
+<p>Normalize master: <code>version_hash</code> (içerik hash'i, URL'lerde kullanılır), <code>width</code>, <code>height</code>, <code>dpi</code> (72), <code>colorspace</code> (sRGB), <code>policy_snapshot</code> (JSON — hangi politikayla üretildi), <code>engine_version</code> (pyvips/libvips sürümü), <code>created_at</code>. Politika veya crop değişince <strong>yeni version</strong> üretilir; eski version geçmiş için kalır.</p>
+
+<h3>Media Rendition</h3>
+<p><code>version</code>, <code>profile</code>, <code>width</code>, <code>height</code>, <code>format</code>, <code>bytes</code>, <code>quality</code>, <code>ssim</code>, <code>file_url</code>, <code>storage_backend</code>, <code>generation</code> (eager/lazy), <code>last_access_at</code>, <code>benefit_gate_passed</code>. Unique index: <code>(version, profile, width, format)</code>.</p>
+
+<h3>Media Crop Intent</h3>
+<p><code>focal_x</code>, <code>focal_y</code>, <code>safe_x/y/w/h</code>, <code>method</code> (manual/smartcrop/center), <code>algorithm</code>, <code>algorithm_version</code>, <code>confidence</code>, <code>approved_by_user</code>, <code>previewed_placements</code> (JSON — simülatörde görülen yerleşimler), child table <code>Media Crop Override</code>: <code>profile</code>, <code>x</code>, <code>y</code>, <code>w</code>, <code>h</code>, <code>method</code>. <strong>Tüm koordinatlar 0–1 normalize</strong> (INV-10).</p>
+
+<h3>Media Profile</h3>
+<p><code>profile_key</code>, <code>label</code>, <code>aspect_ratio</code>, <code>widths</code> (JSON dizi), <code>formats</code> (JSON), <code>fit</code>, <code>quality_target</code>, <code>generation</code> (eager/lazy), <code>enabled</code>. Kod değişmeden yeni profil eklenebilir.</p>
+
+<h3>Media Policy</h3>
+<p>Slot politikası (Faz 2 JSON şemasının DocType karşılığı): <code>slot_key</code>, <code>roles</code>, <code>accept</code>, <code>require</code>, <code>master</code>, <code>quality</code>, <code>profiles</code> (child), <code>content_rules</code> (child), <code>on_violation</code>, <code>messages</code>.</p>
+
+<h3>Media Processing Job</h3>
+<p><code>asset</code>, <code>job_type</code>, <code>queue</code>, <code>status</code>, <code>attempt</code>, <code>started_at</code>, <code>finished_at</code>, <code>duration_ms</code>, <code>peak_memory_mb</code>, <code>error_code</code>, <code>error_trace</code>, <code>idempotency_key</code>.</p>
+
+<h3>Media Usage</h3>
+<p><code>asset</code>, <code>ref_doctype</code>, <code>ref_name</code>, <code>ref_field</code>, <code>profile_used</code>, <code>first_seen</code>, <code>last_seen</code>. Öksüz dosya GC'sinin temeli.</p>
+
+<h3>Media Quality Report</h3>
+<p><code>asset</code>, <code>version</code>, <code>input_bytes</code>, <code>output_bytes</code>, <code>saving_ratio</code>, <code>ssim</code>, <code>vmaf</code>, <code>decisions</code> (JSON — hangi kural neden uygulandı), <code>warnings</code>.</p>
+
+<h3>Media Engine Settings / Media Storage Settings (Single, superadmin)</h3>
+<p>Bkz. <a href="42-faz5-depolama-s3-cdn.html">Faz 5</a>. Bu iki Single DocType satıcı ve alıcı rollerine <strong>okuma dahil kapalıdır</strong>.</p>
+
+<h2>Görevler</h2>
+
+<div class="task" id="T-040">
+  <div class="task-head"><span class="task-id">T-040</span><span class="task-title">DocType şemalarının yazımı</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-032</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Yukarıdaki tüm DocType'lar oluşturulmuş; alan tipleri ve zorunlulukları tabloya uygun.</li>
+      <li><code>content_sha256</code> unique; <code>(version, profile, width, format)</code> unique.</li>
+      <li>İzin kuralları: satıcı yalnızca kendi asset'leri (<code>permission_query_conditions</code>), Settings'ler yalnız superadmin.</li>
+      <li>Fixture/migration ile varsayılan profiller ve politikalar yükleniyor.</li>
+      <li><code>bench migrate</code> temiz çalışıyor; geri alma (rollback) planı yazılı.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine için DocType'ları oluştur: Media Asset, Media Source, Media Version, Media Rendition, Media Crop Intent (+ child Media Crop Override), Media Profile, Media Policy (+ child Media Policy Profile, Media Content Rule), Media Processing Job, Media Usage, Media Quality Report, Media Engine Settings (Single), Media Storage Settings (Single).
+Alanlar için docs/41-faz4-veri-modeli.html tablolarını birebir uygula.
+Zorunlu kısıtlar:
+- Media Asset.content_sha256 UNIQUE + indeks
+- Media Rendition (version, profile, width, format) UNIQUE
+- Media Asset.owner_seller indeksi, state indeksi, last_access_at indeksi
+- Tüm normalize koordinat alanları Float ve 0-1 aralığında doğrulansın
+İzinler: Seller rolü yalnızca kendi asset'lerini görür (permission_query_conditions + has_permission); Media Engine Settings ve Media Storage Settings YALNIZCA "Media Superadmin" rolüne açık (diğer roller için okuma dâhil kapalı, permlevel kullan).
+Fixtures: varsayılan Media Profile kayıtları (Faz 2 profil matrisi) ve Media Policy kayıtları (policy/slots/*.json dosyalarından) migration ile yüklensin.
+Testler: benzersizlik kısıtlarının çalıştığı, satıcı izolasyonunun çalıştığı, Settings'e satıcı erişiminin engellendiği.
+`bench migrate` temiz çalışmalı; docs/plans/rollback-doctypes.md ile geri alma planını yaz.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-041">
+  <div class="task-head"><span class="task-id">T-041</span><span class="task-title">Crop intent veri modeli ve öncelik zinciri</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-040</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>Kırpma kararının nasıl seçildiğini tek bir yerde, test edilebilir şekilde uygulamak.</p>
+    <h5>Öncelik zinciri</h5>
+    <pre><code>1. Profile-specific manual crop override
+2. Safe region + focal point (kenar sıkıştırmalı)
+3. Global focal point
+4. Smart crop önerisi (güven skoru ≥ eşik)
+5. Merkez kırpım (fallback)</code></pre>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li><code>resolve_crop(asset, profile) → window</code> fonksiyonu öncelik zincirini uyguluyor.</li>
+      <li>Tüm koordinatlar oran cinsinden; kaynak yeniden normalize edilse bile görsel sonuç aynı (INV-10 property testi).</li>
+      <li>Pencere daima kaynak sınırları içinde (clamp) ve istenen orana tam uyuyor.</li>
+      <li>Smart crop önerisi <code>approved_by_user=0</code> iken de kullanılıyor ama UI'da "öneri" olarak işaretleniyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/image/crop.py içinde resolve_crop(asset, profile) -&gt; CropWindow yaz; önce tests/test_crop.py (önce test).
+Öncelik zinciri: 1) profil override 2) güvenli alan + odak noktası 3) genel odak noktası 4) smartcrop önerisi (confidence &gt;= eşik) 5) merkez.
+Algoritma (odak noktalı cover): hedef orana göre taban bölge içinde en büyük pencereyi bul, odak noktasını merkeze al, sonra pencereyi taban bölge sınırlarına sıkıştır (clamp).
+Testler:
+- özellik testi (hypothesis): rastgele kaynak boyutu/oran/odak için pencere daima sınırlar içinde ve oranı hedefle %0,5 tolerans içinde
+- INV-10: kaynak 2 kat küçültülüp aynı oran tabanlı intent uygulandığında, üretilen görüntü (normalize edilmiş) aynı kadrajı verir
+- öncelik zinciri: her seviye için bir test; üst seviye varken alt seviyenin kullanılmadığını doğrula
+- sıkıştırma: odak köşede olduğunda pencere dışarı taşmaz
+Not: bu fonksiyon docs/simulator.html içindeki cropWindow() ile AYNI matematiği uygulamalıdır; simülatör çıktısı ile backend çıktısını karşılaştıran bir altın test yaz (aynı girdi -&gt; aynı pencere).</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-042">
+  <div class="task-head"><span class="task-id">T-042</span><span class="task-title">Dedup, versiyonlama ve içerik hash'i</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-040</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Aynı SHA-256 iki kez yüklenirse ikinci yükleme yeni dosya yazmıyor, mevcut asset'e bağlanıyor.</li>
+      <li>Eşzamanlı aynı-dosya yüklemesinde yarış koşulu yok (unique index + retry testi).</li>
+      <li><code>version_hash</code> = f(source_hash, policy_snapshot, crop_intent, engine_version); girdilerden biri değişince değişiyor.</li>
+      <li>Rendition URL'i <code>version_hash</code> taşıyor (INV-09); içerik değişmeden URL değişmiyor.</li>
+      <li>pHash ile "benzer görsel" tespiti çalışıyor ve uyarı üretiyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Tekilleştirme ve sürümleme yaz: media_engine/core/dedup.py, media_engine/core/versioning.py + testler (önce test).
+1) Yükleme sırasında akış hâlinde SHA-256 hesapla (dosyayı tümüyle belleğe almadan). Aynı hash varsa yeni Media Source yazma, mevcut asset'e referans ver ve kullanıcıya "bu dosya zaten kütüphanenizde" bilgisi döndür.
+2) Eş zamanlı aynı dosya yüklemesi testi: iki paralel finalize çağrısı; tek asset oluşmalı, ikincisi mevcut kaydı döndürmeli (benzersizlik ihlalini yakalayıp idempotent dön).
+3) version_hash = sha256(source_hash + canonical_json(policy_snapshot) + canonical_json(crop_intent) + engine_version). Girdilerden biri değişince değişmeli, hiçbiri değişmeden aynı kalmalı (test).
+4) Rendition dosya yolu: /files/media/{asset}/{version_hash}/{profile}-{width}.{ext}. Cache-Control: public, max-age=31536000, immutable.
+5) pHash (algısal hash) hesapla ve aynı üründeki görsellerle mesafeyi ölç; eşik altında "tekrar görsel" uyarısı üret.
+Testler INV-06 (idempotency) ve INV-09 (değişmez URL) değişmezlerini kanıtlamalı.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-043">
+  <div class="task-head"><span class="task-id">T-043</span><span class="task-title">Kullanım takibi (Media Usage) ve öksüz dosya tespiti</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-040</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Bir asset bir DocType alanına bağlandığında/çözüldüğünde Usage kaydı güncelleniyor.</li>
+      <li>Hiçbir Usage kaydı olmayan ve N gün eski asset'ler "öksüz" raporunda listeleniyor.</li>
+      <li>Öksüz asset otomatik silinmiyor; yalnızca rapor + superadmin onayıyla silme.</li>
+      <li>Rendition erişim damgası (<code>last_access_at</code>) güncelleniyor (örnekleme ile, her istekte değil).</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Kullanım takibi yaz: media_engine/core/usage.py + testler.
+1) doc_events ile: bir DocType'ın Attach/Attach Image/Link alanı bir media asset'e işaret ettiğinde Media Usage kaydı oluştur/güncelle; referans kaldırılınca kaydı kapat (last_seen).
+2) Manifest servis edildiğinde profile_used bilgisini kaydet (hangi profil gerçekten kullanılıyor) — örnekleme ile (%1) veya toplu tampon ile yaz; her istekte veritabanına yazma.
+3) Rendition.last_access_at güncellemesi: CDN/nginx erişim log'larını işleyen günlük bir zamanlanmış iş VEYA uygulama katmanında örnekleme; hangisini seçtiğini ve maliyetini docs/ altında yaz.
+4) Öksüz tespiti: Usage kaydı olmayan, N günden eski, legal_hold=0 asset'leri raporla (Media Orphan Report). OTOMATİK SİLME YOK; superadmin onay akışı.
+5) Testler: bağlama/çözme senaryoları, öksüz raporunun doğruluğu, silinmemesi gerekenlerin (legal_hold, yeni yüklenen) raporda çıkmaması.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-044">
+  <div class="task-head"><span class="task-id">T-044</span><span class="task-title">Faz 4 kapanış: veri modeli gözden geçirme</span><span class="chip chip-arge">Analiz</span><span class="chip chip-dep">Bağımlılık: T-040…T-043</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>ER diyagramı ve indeks planı belgelenmiş; her sorgu yolu için indeks var.</li>
+      <li>1 milyon asset senaryosunda kritik sorguların <code>EXPLAIN</code> çıktısı incelenmiş.</li>
+      <li>Migration ve rollback prova edilmiş.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Faz 4 kapanışı: docs/data/data-model-review.md
+1) ER diyagramı (mermaid) ve tüm indekslerin listesi.
+2) Kritik sorgu yollarını yaz (satıcı kütüphanesi listeleme, asset detayı + rendition, öksüz raporu, saklama taraması, kuyruk durumu) ve her biri için EXPLAIN planı al. 1 milyon asset + 30 milyon rendition ölçeğinde sentetik veri üret (scripts/seed_synthetic.py) ve ölç.
+3) Yavaş sorgular için indeks veya denormalizasyon öner; kararları yaz.
+4) Migration provası: boş kurulum ve veri dolu kurulum üzerinde migrate ve geri alma çalıştır, süreleri raporla.
+5) Onay bölümü.</pre></div>
+  </div>
+</div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

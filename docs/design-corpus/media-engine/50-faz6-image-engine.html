@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faz 6 · Image Engine · istoc Media Engine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="bg-white dark:bg-gray-900">
+<main class="doc-main">
+
+<span class="text-[11px] font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Faz 6 · Uygulama</span>
+<h1>Image Engine</h1>
+<p class="text-gray-600 dark:text-gray-400">pyvips tabanlı normalize + rendition motoru. Test-first zorunlu; golden fixture korpusu regresyon tabanıdır.</p>
+
+<h2>İşleme boru hattı</h2>
+<pre><code>PROBE      → header-only: format, W×H, alfa, kare sayısı, DPI, ICC, EXIF
+GUARD      → bomb/polyglot/MIME kontrolü (decode etmeden reddet)
+DECODE     → sequential access, sınırlı bellek
+ORIENT     → EXIF orientation uygula, alanı sil
+COLOR      → CMYK/AdobeRGB → sRGB (ICC ile), ICC koru
+DPI        → metadata 72 yaz  ⚠ PİKSEL DEĞİŞMEZ
+PIXEL CAP  → max_long_edge / max_megapixels; min_long_edge korunur; upscale yok
+CLASSIFY   → foto / şeffaf / grafik / animasyon / belge
+MASTER     → Media Version yaz (+ version_hash)
+CROP       → resolve_crop(profile) → pencere
+RESIZE     → Lanczos3, premultiplied alpha
+ENCODE     → format zinciri + uyarlanabilir kalite (hedef SSIM)
+BENEFIT    → çıktı ≥ girdi ise at (INV-05 görsel karşılığı)
+LQIP       → BlurHash/ThumbHash üret
+REPORT     → Media Quality Report</code></pre>
+
+<h2>Kritik kural özetleri</h2>
+<table>
+<thead><tr><th>Kural</th><th>Uygulama</th></tr></thead>
+<tbody>
+<tr><td>DPI ≠ piksel</td><td>DPI yazımı hiçbir zaman resample tetiklemez (INV-02)</td></tr>
+<tr><td>Alt sınır</td><td>Ürün görselinde çıktı uzun kenarı 2000 px altına inmez</td></tr>
+<tr><td>Upscale yasak</td><td>Ölçek faktörü asla &gt; 1.0 (INV-01)</td></tr>
+<tr><td>Alfa korunur</td><td>Şeffaf kaynakta düz beyaz zemin yok (INV-07)</td></tr>
+<tr><td>Idempotency</td><td>Motorun çıktısı yeniden yüklenirse yeniden encode edilmez (INV-06)</td></tr>
+<tr><td>Bellek</td><td>Tepe RSS dosya boyutundan bağımsız; sequential access</td></tr>
+</tbody>
+</table>
+
+<h2>Görevler</h2>
+
+<div class="task" id="T-060">
+  <div class="task-head"><span class="task-id">T-060</span><span class="task-title">Probe + guard katmanı (decode etmeden karar)</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-017, T-032</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Probe tam decode yapmadan format/boyut/alfa/kare/DPI/ICC/EXIF döndürüyor.</li>
+      <li><code>fixtures/malicious/</code> içindeki tüm dosyalar decode edilmeden reddediliyor.</li>
+      <li>Uzantı–MIME uyuşmazlığı ve polyglot dosya reddediliyor.</li>
+      <li>Probe süresi 30 MB dosyada &lt; 50 ms.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/image/probe.py ve guard.py yaz; önce tests/image/test_probe.py ve test_guard.py (önce test, RED).
+probe(path) -&gt; MediaProbe { format, width, height, megapixels, has_alpha, frames, dpi_x, dpi_y, colorspace, icc_present, exif_present, gps_present, orientation, bytes, mime_real, mime_claimed }
+- pyvips header okumasını kullan; TAM DECODE YASAK. Testte pyvips'in decode çağrısını izle (spy) ve çağrılmadığını doğrula.
+guard(probe, policy) -&gt; None | RejectedMedia fırlatır
+- megapixels &gt; max_megapixels_hard -&gt; reddet (decompression bomb)
+- mime_real ile mime_claimed ailesi uyuşmuyor -&gt; reddet
+- polyglot imzası -&gt; reddet
+- frames &gt; max_frames -&gt; reddet
+- 0 bayt / bozuk başlık -&gt; reddet
+Her reddetme için makine kodu + Türkçe mesaj + düzeltme önerisi.
+Performans testi: 30 MB fixture'da probe &lt; 50 ms.
+fixtures/malicious/ içindeki HER dosya reddedilmeli; bu testler CI'da izole (ayrı süreç, bellek limitli) koşmalı.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-061">
+  <div class="task-head"><span class="task-id">T-061</span><span class="task-title">Normalize: orientation, renk uzayı, DPI, piksel tavanı</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-012, T-060</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>INV-01, INV-02, INV-03, INV-04, INV-07 testleri GREEN.</li>
+      <li>3000×3000@300 dpi fixture'ı → 2400×2400@72 dpi (alt sınır 2000 korunur, asla 720×720 değil).</li>
+      <li>CMYK ve AdobeRGB kaynaklar sRGB'ye doğru dönüşüyor (renk sapması ΔE ölçülüyor).</li>
+      <li>EXIF orientation uygulanmış ve alan silinmiş; GPS yok.</li>
+      <li>Alfa'lı kaynakta alfa korunuyor.</li>
+      <li>30 MB fixture'da tepe bellek &lt; 500 MB.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/image/normalize.py yaz; önce tests/image/test_normalize.py (önce test).
+normalize(src_path, policy) -&gt; NormalizeResult { path, width, height, dpi, colorspace, has_alpha, applied_steps[] }
+Adımlar ve kurallar:
+1) EXIF orientation uygula (vips autorot), Orientation alanını sil.
+2) Renk: CMYK/AdobeRGB -&gt; sRGB; ICC profili ile dönüştür ve çıktı ICC'sini göm. ΔE2000 sapmasını ölç ve raporla.
+3) DPI: metadata 72 yaz. PİKSEL BOYUTUNU DEĞİŞTİRME. (INV-02)
+4) Piksel tavanı: max_long_edge ve max_megapixels'e göre ölçekle; min_long_edge altına İNME; büyütme YOK. (INV-01, INV-03)
+5) Metadata: EXIF/GPS/XMP sil, ICC koru. (INV-04)
+6) Alfa: varsa koru; premultiply/unpremultiply doğru sırayla. (INV-07)
+Bellek: vips sequential access kullan; 30 MB fixture'da tepe RSS &lt; 500 MB olsun (testle ölç).
+Altın testler: fixtures/manifest.json içindeki her "expect" alanını doğrula.
+Özellikle şunu test et: 3000x3000@300 dpi -&gt; 2400x2400@72 dpi. 720x720 üretilirse test KIRMIZI olsun.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-062">
+  <div class="task-head"><span class="task-id">T-062</span><span class="task-title">Sınıflandırma ve format zinciri</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-061</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Foto / şeffaf ürün / logo-grafik / animasyon / belge sınıfları doğru ayrılıyor (fixtures üzerinde ≥%95 doğruluk).</li>
+      <li>Her sınıf için format zinciri ve kalite hedefi Faz 2 tablosuna uygun.</li>
+      <li>Grafik/logo sınıfında lossless seçiliyor.</li>
+      <li>Animasyonlu GIF video hattına yönlendiriliyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/image/classify.py yaz + testler (önce test).
+classify(probe, image) -&gt; "photo" | "transparent" | "graphic" | "animation" | "document"
+Özellikler: alfa varlığı ve alfa histogramı, benzersiz renk sayısı, kenar keskinliği oranı, düz alan oranı, kare sayısı, metin yoğunluğu göstergesi.
+Eşikleri fixtures/images üzerinde kalibre et; en az %95 doğruluk hedefle ve karışıklık matrisini raporla (docs/reports/60-siniflandirma.md).
+Her sınıf için format zinciri ve kalite hedefini docs/01-terimler-ve-kurallar.html içindeki tabloya göre döndür.
+Animasyon sınıfı video hattına yönlendirilsin (job_type=video_from_animation).
+Belirsiz durumda (güven düşük) en güvenli seçim: kayıpsız tarafa yaklaş.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-063">
+  <div class="task-head"><span class="task-id">T-063</span><span class="task-title">Rendition üretimi (crop + resize + encode)</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-041, T-062, T-013</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Profil × genişlik × format matrisi üretiliyor; unique kısıt ihlali yok.</li>
+      <li>Crop penceresi <code>resolve_crop</code> ile alınıyor ve simülatörle birebir aynı sonucu veriyor.</li>
+      <li>Uyarlanabilir kalite hedef SSIM'i tutturuyor; ≤4 encode denemesi.</li>
+      <li>Çıktı ≥ girdi olan rendition atılıyor ve bir alt format zincirine düşülüyor.</li>
+      <li>Kaynak yetersizse istenen genişlik <strong>üretilmiyor</strong> (upscale yok), manifest'te o basamak yok.</li>
+      <li>Eager profiller publish öncesi, lazy profiller ilk istekte üretiliyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/image/render.py yaz; önce tests/image/test_render.py (önce test).
+render(version, profile, intent) -&gt; list[Rendition]
+Akış: resolve_crop -&gt; vips extract_area -&gt; yeniden boyutlandır (Lanczos3, premultiplied alpha) -&gt; encode (format zinciri) -&gt; fayda kapısı -&gt; kaydet.
+Kurallar:
+- İstenen genişlik kaynak kırpım genişliğinden büyükse O BASAMAK ÜRETİLMEZ (büyütme yasak, INV-01). Manifest'te de görünmez.
+- Uyarlanabilir kalite: hedef SSIM'e göre ikili arama, en fazla 4 encode.
+- Fayda kapısı: çıktı baytı aynı boyuttaki kaynak eşdeğerinden büyükse o formatı atla, zincirde bir alt formata geç; hiçbiri kazanmıyorsa kaynağı passthrough et ve nedenini rapora yaz.
+- Eager/lazy: profile.generation'a göre; lazy profiller ilk istekte üretilip önbelleklenir (sürü etkisine karşı kilit).
+- Her rendition için Media Rendition kaydı + SSIM + kalite + bayt.
+KRİTİK TEST: docs/simulator.html içindeki cropWindow() matematiği ile aynı girdi için aynı pencereyi ürettiğini doğrulayan altın test (JSON fixture üzerinden).
+Performans: 2400x2400 master'dan 34 rendition üretimi tek çekirdekte &lt; 12 sn (ölç ve raporla).</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-064">
+  <div class="task-head"><span class="task-id">T-064</span><span class="task-title">Idempotency ve yeniden işleme</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-042, T-063</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Motorun çıktısı yeniden yüklendiğinde yeniden encode edilmiyor (INV-06) — sadece yeniden <em>değerlendiriliyor</em>.</li>
+      <li>Crop değişince yalnızca etkilenen rendition'lar yeniden üretiliyor.</li>
+      <li>Politika değişince toplu yeniden işleme kuyruğa alınıyor, canlı trafiği etkilemiyor.</li>
+      <li>Yeni version yayına alınırken eski version erişilebilir kalıyor; geçiş atomik.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Idempotency ve yeniden işleme akışını yaz + testler.
+1) Motorun kendi çıktısını işaretle: çıktı dosyalarına XMP/Exif yerine ayrı bir kayıt (Media Rendition.engine_signature) ve içerik hash'i ile "motor tarafından işlenmiş" tespiti. Aynı içerik yeniden yüklendiğinde yeniden ENCODE ETME; yalnızca politikaya göre YENİDEN DEĞERLENDİR ve gerekmiyorsa passthrough. (INV-06)
+2) reprocess(asset, reason): reason in (crop_changed, policy_changed, engine_upgraded). Yalnızca etkilenen rendition'ları yeniden üret; crop değişikliğinde fit=contain profilleri etkilenmiyorsa dokunma.
+3) Atomik geçiş: yeni version_hash altında tüm zorunlu rendition'lar hazır olana kadar eski version yayında kalır; hazır olunca active_version tek işlemde değişir. (INV-08)
+4) Toplu yeniden işleme düşük öncelikli kuyrukta, hız sınırlı ve iptal edilebilir olsun.
+Testler: aynı dosyanın ikinci yüklemesinde encode çağrısı sayısı 0; crop değişiminde yeniden üretilen rendition sayısının doğruluğu; geçiş sırasında hiçbir anda 404/eksik rendition oluşmadığı (eş zamanlı okuma testi).</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-065">
+  <div class="task-head"><span class="task-id">T-065</span><span class="task-title">LQIP (BlurHash/ThumbHash) ve dominant renk</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-061</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Her version için LQIP dizesi ve dominant renk üretiliyor; &lt;30 bayt.</li>
+      <li>Manifest'te LQIP dönüyor; frontend görsel yüklenene kadar bunu gösteriyor.</li>
+      <li>Şeffaf görsellerde LQIP arka planı bozmuyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>LQIP üret: media_engine/image/lqip.py + testler.
+1) ThumbHash (tercih) veya BlurHash üret; sonuç &lt; 30 bayt base64 dizesi olsun. Alfa'lı görsellerde ThumbHash'in alfa desteğini kullan.
+2) Baskın renk ve ortalama parlaklık hesapla (koyu/açık tema yer tutucusu seçimi için).
+3) Media Version'a lqip ve dominant_color alanlarını ekle; manifest'te döndür.
+4) Frontend tarafı için çözücü yardımcısını TypeScript'te yaz (ui/src/lib/lqip.ts) ve bir demo ile görsel yüklenene kadar yer tutucunun gösterildiğini doğrula.
+Testler: üretim süresi &lt; 30 ms, boyut &lt; 30 bayt, şeffaf görselde bozulma yok.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-066">
+  <div class="task-head"><span class="task-id">T-066</span><span class="task-title">Kalite raporu ve tasarruf telemetrisi</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-063</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Her asset için giriş/çıkış boyutu, tasarruf oranı, SSIM, alınan kararlar JSON olarak kaydediliyor.</li>
+      <li>Satıcıya gösterilen özet metni doğru ve anlaşılır: "3000×3000 → 2400×2400, 300→72 dpi (piksel korundu), 12.4 MB → 1.1 MB".</li>
+      <li>Aylık platform raporu: toplam tasarruf GB, ortalama LCP etkisi, en kötü 20 asset.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Kalite raporu ve telemetri yaz: media_engine/core/report.py + testler.
+1) Her işleme sonunda Media Quality Report kaydı: input_bytes, output_bytes (tüm rendition toplamı), saving_ratio, ssim (profil başına), decisions (hangi kural neden uygulandı, makine tarafından okunabilir liste), warnings.
+2) Satıcıya gösterilecek Türkçe özet üretici: "Görseliniz optimize edildi: 3000x3000 -&gt; 2400x2400 piksel; 300 dpi -&gt; 72 dpi (çözünürlük korundu); 12,4 MB -&gt; 1,1 MB (%91 tasarruf)." DPI değişiminin çözünürlüğü düşürmediğini açıkça söylesin.
+3) Aylık platform raporu işi: toplam tasarruf GB, işlenen asset sayısı, ortalama işleme süresi, hata oranı, en kötü 20 asset (en büyük çıktı / en düşük SSIM), slot bazlı dağılım. Çıktı hem DocType kaydı hem markdown.
+4) Prometheus metrikleri: media_processed_total, media_bytes_saved_total, media_job_duration_seconds, media_job_failures_total.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-067">
+  <div class="task-head"><span class="task-id">T-067</span><span class="task-title">Faz 6 kapanış: golden fixture regresyon paketi</span><span class="chip chip-qa">QA</span><span class="chip chip-dep">Bağımlılık: T-060…T-066</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Tüm fixture'lar manifest beklentilerine göre GREEN.</li>
+      <li>12 değişmezin (INV-01…INV-12) her biri en az bir testle kaplanmış; kapsam raporu var.</li>
+      <li>Performans bütçeleri ölçülmüş ve CI'da eşik olarak tanımlı.</li>
+      <li>Regresyon paketi CI'da her PR'da çalışıyor (&lt;10 dk).</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Faz 6 kapanış regresyon paketini kur: tests/golden/
+1) fixtures/manifest.json içindeki her kaydı otomatik teste çevir (pytest parametrize): beklenen aksiyon (process/passthrough/reject) ve beklenen çıktı kısıtları.
+2) Değişmez kapsamı: INV-01..INV-12 için bir izlenebilirlik dosyası yaz (tests/golden/invariants.md) — her değişmez -&gt; hangi test dosyası/fonksiyonu. Kapsanmayan değişmez kalırsa CI kırmızı.
+3) Performans bütçeleri: normalize süresi, rendition üretim süresi, tepe bellek — fixture sınıfı başına eşikler; aşılırsa CI kırmızı (eşikleri T-007 ölçümlerinden türet, %30 pay bırak).
+4) Görsel regresyon: her fixture için üretilen rendition'ların algısal hash'ini altın dosyada sakla; motor değişikliği çıktıyı değiştirirse test kırmızı olsun ve fark raporu (yan yana görsel) üretsin.
+5) Tüm paket CI'da &lt; 10 dakikada koşmalı; ağır testleri işaretleyip gecelik koşuma ayır.
+Çıktı: docs/reports/60-faz6-kapanis.md</pre></div>
+  </div>
+</div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

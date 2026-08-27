@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faz 10 · Crop Studio · istoc Media Engine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="bg-white dark:bg-gray-900">
+<main class="doc-main">
+
+<span class="text-[11px] font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Faz 10 · Frontend</span>
+<h1>Crop Studio & Focal Point</h1>
+<p class="text-gray-600 dark:text-gray-400">Tek bir alanda düzenle, diğer alanlarda canlı sonucu izle. Referans uygulama: <a href="simulator.html">canlı simülatör</a>.</p>
+
+<h2>Ekran düzeni</h2>
+<pre><code>┌─────────────────────────────┬──────────────────────────────────────────┐
+│ DÜZENLEME ALANI (tek)       │ ÖNİZLEME ALANI (çoklu, canlı)            │
+│                             │                                          │
+│ • kaynak seçimi / yükleme   │ Sekme 1: Rendition kartları              │
+│ • slot seçimi               │   her profil gerçek CSS ölçüsünde        │
+│ • crop dikdörtgeni (8 tutamak)│ Sekme 2: Cihaz & sayfa simülasyonu     │
+│ • oran kilidi               │   cihaz × sayfa yerleşimi                │
+│ • zoom (yakınlaştırıp crop) │ Sekme 3: Cihaz matrisi                   │
+│ • focal point (sürüklenir)  │   tüm cihazlar yan yana                  │
+│ • güvenli alan              │                                          │
+│ • otomatik odak önerisi     │ Her önizleme kutusunda:                  │
+│ • politika uyarıları        │   profil adı, çıktı px, srcset seçimi,   │
+│ • crop intent JSON          │   "kaynak yeterli/yetersiz" göstergesi   │
+└─────────────────────────────┴──────────────────────────────────────────┘</code></pre>
+
+<h2>Etkileşim şartnamesi</h2>
+<table>
+<thead><tr><th>Etkileşim</th><th>Davranış</th></tr></thead>
+<tbody>
+<tr><td>Crop tutamağı sürükleme</td><td>8 tutamak; oran kilidi açıkken oran korunur; kenarları aşamaz; minimum boyut kısıtı var</td></tr>
+<tr><td>Crop gövdesi sürükleme</td><td>Dikdörtgen taşınır; focal point onunla birlikte taşınır</td></tr>
+<tr><td>Zoom</td><td>Crop dikdörtgenini merkez etrafında küçültür/büyütür; <strong>hiçbir zaman kaynak pikselini büyütmez</strong></td></tr>
+<tr><td>Focal point sürükleme</td><td>Crop içinde kalır; tüm önizlemeler anında yeniden hesaplanır (&lt;16 ms)</td></tr>
+<tr><td>Oran kilidi</td><td>Slot'un kabul ettiği oranlar + serbest; slot değişince varsayılan oran uygulanır</td></tr>
+<tr><td>Otomatik öneri</td><td>smartcrop/saliency önerisi; güven skoru eşiğin altındaysa gösterilmez; kullanıcı kabul edene kadar "öneri" olarak işaretli</td></tr>
+<tr><td>Profil override</td><td>Bir profilin önizleme kartından "bu yerleşim için ayrı kırp" ile o profile özel pencere tanımlanır</td></tr>
+<tr><td>Klavye</td><td>Ok tuşları 1 px, Shift+ok 10 px; Tab ile tutamaklar arasında gezinme</td></tr>
+<tr><td>Geri al / yinele</td><td>Ctrl+Z / Ctrl+Shift+Z; en az 20 adım</td></tr>
+</tbody>
+</table>
+
+<h2>Zorunlu doğrulama</h2>
+<blockquote>Crop studio'daki <code>cropWindow()</code> matematiği ile backend <code>resolve_crop()</code> <strong>birebir aynı</strong> sonucu üretmek zorundadır. Aynı girdi için farklı pencere üreten bir durum, kabul edilemez bir hatadır ve altın testle (golden test) korunur.</blockquote>
+
+<h2>Görevler</h2>
+
+<div class="task" id="T-100">
+  <div class="task-head"><span class="task-id">T-100</span><span class="task-title">Crop çekirdeği: paylaşılan geometri kütüphanesi</span><span class="chip chip-fe">Frontend</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-041</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>TypeScript ve Python uygulamaları aynı test vektörlerinde birebir aynı sonucu veriyor.</li>
+      <li>Test vektörleri JSON dosyasında; her iki tarafta da çalıştırılıyor.</li>
+      <li>Kayan nokta farkı toleransı ≤ 0.5 px.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Paylaşılan crop geometri kütüphanesini yaz: ui/src/lib/cropgeo.ts ve media_engine/image/cropgeo.py.
+Fonksiyonlar: cropWindow(source, base, focal, targetAR) -&gt; window; clampWindow(window, bounds); ratioFit(base, ar); zoomBase(base, factor, center); overrideWindow(...)
+Algoritma docs/simulator.html içindeki cropWindow() ile birebir aynı olmalı (odak noktalı cover + sıkıştırma).
+tests/vectors/crop-vectors.json: en az 200 test vektörü (rastgele üretilmiş + elle seçilmiş köşe durumları: odak köşeye yapışık, çok dar oran, kaynak oranı hedefle aynı, 1 piksellik kaynak).
+Aynı JSON'u hem Vitest hem pytest ile koştur ve iki dilin çıktısını karşılaştır; fark toleransı &lt;= 0,5 piksel.
+CI'da bu çapraz test zorunlu olsun; bir dil diğerinden saptığında kırmızı versin.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-101">
+  <div class="task-head"><span class="task-id">T-101</span><span class="task-title">Crop stage bileşeni (tutamaklar, zoom, focal)</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-100</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>8 tutamak + gövde sürükleme + zoom + focal sürükleme çalışıyor; dokunmatik destekli (pointer events).</li>
+      <li>Oran kilidi tüm tutamaklarda doğru çalışıyor; sınır dışına taşma yok.</li>
+      <li>Etkileşim sırasında 60 fps korunuyor (requestAnimationFrame ile toplu güncelleme).</li>
+      <li>Klavye ile piksel hassasiyetinde ayar yapılabiliyor.</li>
+      <li>Geri al/yinele çalışıyor.</li>
+      <li>Yüksek çözünürlüklü kaynak sahnede downscale edilmiş önizlemeyle gösteriliyor (bellek koruması).</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>CropStage bileşenini yaz: ui/src/components/crop/CropStage.vue
+Gereksinimler:
+- 8 tutamak (nw, n, ne, e, se, s, sw, w) + gövde taşıma + odak noktası sürükleme; Pointer Events (fare + dokunmatik + kalem).
+- Oran kilidi: RATIOS listesinden; kilit açıkken her tutamak oranı korur; sınır dışına taşma engellenir; minimum kırpım boyutu (kaynak pikselinde) kısıtı.
+- Yakınlaştırma: kaydırıcı ve ctrl+tekerlek; kırpma dikdörtgenini merkez etrafında ölçekler. KAYNAK PİKSELİNİ BÜYÜTMEZ — yalnızca kırpımı küçültür.
+- Performans: tüm güncellemeler requestAnimationFrame ile toplansın; sürükleme sırasında 60 fps (Playwright + performance ile ölç).
+- Klavye: ok = 1 piksel, shift+ok = 10 piksel, tab ile tutamaklar arası gezinme, aria etiketleri.
+- Geri al/yinele: en az 20 adım (Ctrl+Z / Ctrl+Shift+Z).
+- Bellek: 40 MP kaynakta sahnede tam çözünürlük YÜKLENMEZ; createImageBitmap ile küçültülmüş önizleme kullanılır, koordinatlar normalize olduğu için doğruluk bozulmaz.
+Referans davranış: docs/simulator.html. Testler: Vitest birim testleri + Playwright etkileşim testleri.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-102">
+  <div class="task-head"><span class="task-id">T-102</span><span class="task-title">Canlı çoklu önizleme (rendition kartları)</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-101</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Slot'un tüm profilleri için kart üretiliyor; her kart <strong>gerçek CSS ölçüsünde</strong>.</li>
+      <li>Kırpma/zoom/focal değişince tüm kartlar &lt;16 ms içinde güncelleniyor (yeniden istek yok, CSS transform ile).</li>
+      <li>Her kartta: profil adı, çıktı px, fit, "kaynak yeterli/yetersiz" göstergesi.</li>
+      <li>Kaynak yetersizse kart uyarıyla işaretleniyor ve hangi genişliğin üretilemeyeceği yazıyor.</li>
+      <li>Karttan "bu yerleşim için ayrı kırp" ile profil override açılabiliyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>PreviewCards bileşenini yaz: ui/src/components/crop/PreviewCards.vue
+- Slotun profilleri için kart üret; kart boyutu profilin GERÇEK CSS ölçüsü olsun (ör. product-card 480 piksel, cart-thumb 120 piksel).
+- Güncelleme: sunucuya istek YOK; cropgeo ile hesaplanan pencere CSS ile uygulanır (img position/width/left/top). Hedef: kırpma değişiminden karta yansımaya &lt; 16 ms.
+- Her kartta: profil etiketi, çıktı pikseli (g x y), fit, kaynak kırpım genişliği ve "yeterli/yetersiz" göstergesi (yetersizse hangi genişlik basamağının üretilemeyeceğini yaz).
+- Kart üzerinde eylem: "Bu yerleşim için ayrı kırp" -&gt; o profile özel override modu; override varken kartta rozet görünür ve "genel kırpıma dön" seçeneği olur.
+- contain profillerinde letterbox davranışı doğru gösterilsin (arka plan rengi ayardan).
+Referans: docs/simulator.html "Rendition kartları" sekmesi.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-103">
+  <div class="task-head"><span class="task-id">T-103</span><span class="task-title">Otomatik odak önerisi ve güvenli alan</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-014, T-101</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Öneri Web Worker'da hesaplanıyor; ana thread bloklanmıyor.</li>
+      <li>Güven skoru eşiğin altındaysa öneri gösterilmiyor.</li>
+      <li>Öneri kabul edilene kadar "öneri" rozetiyle; kabul edilince <code>method=manual</code> olarak kaydediliyor.</li>
+      <li>Güvenli alan çiziliyor ve dar oranlı profillerde ihlal uyarısı üretiliyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Otomatik odak önerisi ve güvenli alan özelliğini yaz.
+1) FocalSuggest worker: T-014'te seçilen yöntemi (saliency/segmentasyon/entropi) Web Worker'da çalıştır; sonuç { x, y, confidence }.
+2) confidence &lt; eşik ise ÖNERİ GÖSTERME (sessizce geç). Eşik değeri ayardan okunsun.
+3) Arayüz: "Otomatik odak önerisi" düğmesi; öneri uygulandığında turuncu "öneri" rozeti; kullanıcı onaylayınca method=manual, approved_by_user=1 olarak kaydedilir; algorithm ve algorithm_version da saklanır.
+4) Güvenli alan: kullanıcının işaretlediği dikdörtgen; tüm profillerde bu alanın ne kadarının korunduğu hesaplanır; en dar profilde (ör. 3:1) güvenli alan dışına taşma varsa uyarı: "Bu kırpımda ürünün bir kısmı kapak görselinde görünmeyecek."
+5) Sunucu tarafı öneri ucu (suggest_focal) ile istemci önerisi tutarsızsa sunucu otoritedir; arayüz sunucu değerini gösterir.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-104">
+  <div class="task-head"><span class="task-id">T-104</span><span class="task-title">Politika uyarıları ve crop intent kaydı</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-082, T-102</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Uyarılar canlı: kırpım daraldıkça "en büyük rendition üretilemez" uyarısı anında çıkıyor.</li>
+      <li>DPI/piksel açıklaması gösteriliyor ve yanlış anlaşılmaya yer bırakmıyor.</li>
+      <li>Kaydetme yalnız reject seviyesinde ihlal yokken mümkün.</li>
+      <li>Kaydedilen intent JSON'u API şemasına uygun ve <code>previewed_placements</code> içeriyor.</li>
+      <li>Kaydetme sonrası hangi rendition'ların yeniden üretileceği kullanıcıya söyleniyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Politika uyarıları ve intent kaydını yaz.
+1) Canlı uyarı paneli: paylaşılan politika motoru (TS) ile her kırpma değişiminde yeniden değerlendir. Uyarı tipleri: kaynak yetersiz (reddet), kırpım çok dar (uyarı), oran kabul listesinde değil (uyarı), odak kenara çok yakın (uyarı), güvenli alan ihlali (uyarı), standart henüz sabit değil (bilgi).
+2) DPI açıklaması: "Çıktı 72 dpi olacak; çözünürlük (piksel) DEĞİŞMEYECEK" mesajı her zaman görünür.
+3) Kaydet düğmesi: reddetme seviyesinde ihlal varken pasif; üzerine gelince nedenini söyler.
+4) save_intent çağrısında gönderilecek gövde: focal, safe_region, overrides[], previewed_placements[] (kullanıcının gördüğü device/page/profil üçlüleri).
+5) Kayıt sonrası: "Şu rendition'lar yeniden üretilecek: ..." listesi ve ilerleme takibi.
+Testler: her uyarı tipi için senaryo, kaydetmenin engellendiği durumlar, gönderilen gövdenin şema uyumu.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-105">
+  <div class="task-head"><span class="task-id">T-105</span><span class="task-title">Faz 10 kapanış: crop doğruluk kabulü</span><span class="chip chip-qa">QA</span><span class="chip chip-dep">Bağımlılık: T-100…T-104</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>UI'da görülen önizleme ile sunucunun ürettiği rendition <strong>piksel düzeyinde</strong> eşleşiyor (tolerans: yeniden örnekleme farkı, algısal hash mesafesi eşik altı).</li>
+      <li>20 gerçek görselde el ile karşılaştırma yapılmış ve raporlanmış.</li>
+      <li>Etkileşim performansı hedefleri tutuyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Crop doğruluk kabul testini yaz: tests/acceptance/test_crop_fidelity.py + Playwright
+1) 20 gerçek görsel (gorseller/ + fixtures) için: arayüzde kırpma yap, intent'i kaydet, sunucunun ürettiği rendition'ı indir; arayüz önizlemesinin ekran görüntüsünü al (Playwright), aynı boyuta getirip algısal hash mesafesini ölç. Eşik altında olmalı.
+2) Farklı oranlar (1:1, 4:5, 16:9, 3:1) ve köşe durumları (odak köşede, çok dar kırpım) için tekrarla.
+3) Performans: kırpma sürüklemesi sırasında FPS; odak değişiminden önizleme güncellemesine geçen süre.
+4) Rapor: docs/reports/100-crop-dogruluk.md — her görsel için yan yana karşılaştırma görseli ve mesafe değeri.
+Eşik aşılırsa hangi tarafın (arayüz mü backend mi) saptığını teşhis eden bir bölüm ekle.</pre></div>
+  </div>
+</div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

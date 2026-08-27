@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Domain\Entitlement\Entitlement;
 use App\Domain\Platform\PlatformRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -67,6 +68,7 @@ final class LocalTestAccountSeeder extends Seeder
         $user->save();
 
         $this->grantPlatformSuperAdmin((int) $user->getKey());
+        $this->ensureLocalPlanAndSubscriptions();
 
         $this->command?->info("Yerel test hesabı hazır: {$user->email} (id={$user->id}, doğrulanmış, platform süper yöneticisi).");
     }
@@ -87,6 +89,71 @@ final class LocalTestAccountSeeder extends Seeder
      * Bu metot yalnız yerel ortamlarda çalışır: `run()` başında ortam
      * kontrolü zaten fail-closed davranır.
      */
+    /**
+     * Yerel workspace'lere plan verir — yoksa ürünün üçte biri görünmez.
+     *
+     * Bulunma biçimi: sahibi Analytics ekranını açtı ve "Analytics failed to
+     * load. Please try again." gördü. Sunucu aslında 402 döndürüyordu — plan
+     * bu yeteneği içermiyordu. Yerel veritabanında SIFIR plan ve SIFIR
+     * abonelik vardı, dolayısıyla Analytics, toplu QR ve ekip daveti kalıcı
+     * olarak kapalıydı.
+     *
+     * Bu bir ürün kusuru değil, YEREL KURULUM eksiğiydi: geliştirme ortamı
+     * ürünün tamamını çalıştırabilmeli. Aynı sınıftan bir eksik platform
+     * rolünde de vardı.
+     *
+     * Plan `local-dev` kodunu taşır ve BÜTÜN yetenekleri içerir; bu bir
+     * fiyatlandırma kararı değil, geliştirme kolaylığıdır. Üretim planları
+     * geliştirici panelinden yönetilir.
+     */
+    private function ensureLocalPlanAndSubscriptions(): void
+    {
+        $entitlements = array_map(
+            static fn (Entitlement $entitlement): string => $entitlement->value,
+            Entitlement::cases(),
+        );
+
+        $planId = (int) (DB::table('plans')->where('code', 'local-dev')->value('id') ?? 0);
+
+        if ($planId === 0) {
+            $planId = (int) DB::table('plans')->insertGetId([
+                'name' => 'Local development (all features)',
+                'code' => 'local-dev',
+                'version' => 1,
+                'is_active' => true,
+                'sort_order' => 0,
+                'entitlements' => json_encode($entitlements, JSON_THROW_ON_ERROR),
+                'amount_minor' => null,
+                'currency' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            DB::table('plans')->where('id', $planId)->update([
+                'entitlements' => json_encode($entitlements, JSON_THROW_ON_ERROR),
+                'is_active' => true,
+                'updated_at' => now(),
+            ]);
+        }
+
+        // Her workspace abone edilir: geliştirici hangi workspace'i açarsa
+        // açsın ürünün tamamını görmeli.
+        foreach (DB::table('workspaces')->pluck('id') as $workspaceId) {
+            DB::table('subscriptions')->updateOrInsert(
+                ['workspace_id' => (int) $workspaceId],
+                [
+                    'plan_id' => $planId,
+                    'state' => 'active',
+                    'ends_at' => now()->addYears(5),
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ],
+            );
+        }
+
+        $this->command?->info('Yerel plan ve abonelikler hazır: bütün yetenekler açık.');
+    }
+
     private function grantPlatformSuperAdmin(int $userId): void
     {
         DB::table('platform_role_assignments')->updateOrInsert(

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faz 2 · Medya Standartları · istoc Media Engine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="bg-white dark:bg-gray-900">
+<main class="doc-main">
+
+<span class="text-[11px] font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Faz 2 · Standartlar</span>
+<h1>Medya Standartları, Slot Politikaları ve DPI Kuralı</h1>
+<p class="text-gray-600 dark:text-gray-400">Bu fazın çıktısı <strong>sabitlenmiş sayılardır</strong>. Faz 3'ten sonraki hiçbir geliştirme bu sayıları tartışmaz; değiştirmek isteyen değişiklik talebi açar.</p>
+
+<blockquote><strong>Sıra kuralı:</strong> Ürün görseli standardı bilinmektedir (min 1000×1000 veya oran eşdeğeri). <strong>Logo ve company cover video standartları henüz belirli değildir</strong>; T-021 ve T-022 ile Faz 0/1 verisinden türetilip burada sabitlenecek, ancak ondan sonra bu slotlara dair geliştirme başlayacaktır.</blockquote>
+
+<h2>Slot kataloğu</h2>
+<p>Slot, politikanın uygulandığı birimdir. Her slot bir <code>Media Policy</code> kaydına, her slot bir veya birden çok <code>Media Profile</code> kaydına bağlanır.</p>
+<table>
+<thead><tr><th>slot_key</th><th>Kullanım</th><th>Min. giriş</th><th>Maks. giriş</th><th>Oran</th><th>Format</th><th>Durum</th></tr></thead>
+<tbody>
+<tr><td><code>product-image</code></td><td>Ürün görselleri (galeri)</td><td><strong>1000×1000</strong> veya oran eşdeğeri (uzun kenar ≥1000 ve kısa kenar ≥1000×min_ratio)</td><td>≤ 40 MP, ≤ 30 MB</td><td>1:1 tercih, 4:5 ve 3:4 kabul</td><td>JPEG/PNG/WebP/AVIF/HEIC</td><td class="text-green-700 dark:text-green-400 font-semibold">SABİT</td></tr>
+<tr><td><code>product-video</code></td><td>Ürün tanıtım videosu</td><td>720p, ≥3 sn</td><td>≤ 4K, ≤ 180 sn, ≤ 500 MB</td><td>1:1 / 16:9 / 9:16</td><td>MP4/MOV/WebM</td><td class="text-amber-600 font-semibold">TASLAK → T-023</td></tr>
+<tr><td><code>seller-logo</code></td><td>Satıcı/mağaza logosu</td><td class="text-amber-600">TBD → T-021</td><td class="text-amber-600">TBD</td><td class="text-amber-600">TBD</td><td>SVG/PNG (alfa)</td><td class="text-amber-600 font-semibold">BELİRLENECEK</td></tr>
+<tr><td><code>brand-logo</code></td><td>Marka logosu (katalog)</td><td class="text-amber-600">TBD → T-021</td><td class="text-amber-600">TBD</td><td class="text-amber-600">TBD</td><td>SVG/PNG</td><td class="text-amber-600 font-semibold">BELİRLENECEK</td></tr>
+<tr><td><code>company-cover-video</code></td><td>Company profile kapak videosu</td><td class="text-amber-600">TBD → T-022</td><td class="text-amber-600">TBD</td><td class="text-amber-600">TBD</td><td>MP4/MOV</td><td class="text-amber-600 font-semibold">BELİRLENECEK</td></tr>
+<tr><td><code>company-cover-image</code></td><td>Company profile kapak görseli</td><td>1920×640</td><td>≤ 40 MP</td><td>3:1</td><td>JPEG/WebP/AVIF</td><td class="text-amber-600 font-semibold">TASLAK → T-023</td></tr>
+<tr><td><code>category-banner</code></td><td>Kategori/kampanya banner</td><td>1920×640</td><td>≤ 40 MP</td><td>3:1, 21:9</td><td>JPEG/WebP/AVIF</td><td class="text-amber-600 font-semibold">TASLAK → T-023</td></tr>
+<tr><td><code>user-avatar</code></td><td>Kullanıcı avatarı</td><td>200×200</td><td>≤ 12 MP</td><td>1:1</td><td>JPEG/PNG/WebP</td><td class="text-amber-600 font-semibold">TASLAK → T-023</td></tr>
+<tr><td><code>document-attachment</code></td><td>Sertifika/belge</td><td>—</td><td>≤ 25 MB</td><td>—</td><td>PDF/JPEG/PNG</td><td class="text-amber-600 font-semibold">TASLAK → T-023</td></tr>
+</tbody>
+</table>
+
+<div class="rounded-lg border-2 border-amber-400 dark:border-amber-600 bg-amber-50 dark:bg-amber-950/40 p-4 my-5">
+  <div class="font-bold text-amber-900 dark:text-amber-200 text-sm mb-2">⚠ GELİŞTİRİCİ TALİMATI — "BELİRLENECEK" işaretli slotlar</div>
+  <p class="text-sm text-amber-900 dark:text-amber-100 mb-2">Tabloda <code>TBD</code> / <strong>BELİRLENECEK</strong> yazan hiçbir değer tahmin edilerek doldurulamaz. Bu slotlar şu anda <strong>bloke</strong> durumdadır.</p>
+  <table class="!my-2">
+    <thead><tr><th>Bloke slot</th><th>Kilidi açan görev</th><th>Bu görev bitene kadar YASAK olan işler</th></tr></thead>
+    <tbody>
+      <tr><td><code>seller-logo</code>, <code>brand-logo</code>, <code>logo-square</code>, <code>logo-wide</code></td><td><a href="#T-021"><strong>T-021</strong></a></td><td>Logo politika JSON'u yazmak, logo profillerinin genişlik/oran değerlerini kodlamak, logo yükleme akışını uygulamak, logo için rendition üretmek, simülatöre logo yerleşimi eklemek</td></tr>
+      <tr><td><code>company-cover-video</code>, <code>product-video</code> (kısmen)</td><td><a href="#T-022"><strong>T-022</strong></a></td><td>Video slot politikası yazmak, süre/çözünürlük/bitrate sınırlarını kodlamak, poster ve HLS eşiklerini sabitlemek, otomatik oynatma davranışını uygulamak</td></tr>
+      <tr><td><code>product-video</code>, <code>company-cover-image</code>, <code>category-banner</code>, <code>user-avatar</code>, <code>document-attachment</code></td><td><a href="#T-023"><strong>T-023</strong></a></td><td>Bu slotların politika dosyalarını yazmak; tablodaki "TASLAK" değerler bağlayıcı değildir</td></tr>
+    </tbody>
+  </table>
+  <p class="text-sm text-amber-900 dark:text-amber-100 mb-1"><strong>Ne yapacaksın:</strong></p>
+  <ol class="text-sm text-amber-900 dark:text-amber-100">
+    <li>Bloke bir slotla karşılaşırsan dur ve önce ilgili görevi (T-021 / T-022 / T-023) çalıştır.</li>
+    <li>Değerleri <strong>tahmin etme</strong>: Faz 0 çıktılarından türet — <code>docs/reports/00-upload-slot-envanteri.md</code> (gerçek CSS kutuları), <code>fixtures/media-stats.csv</code> (mevcut dağılım), <code>docs/reports/11-rakip-analizi.md</code> (rakip kuralları).</li>
+    <li>Sabitlediğin her sayının yanına hangi ölçümden geldiğini yaz.</li>
+    <li>Bu tabloyu ve politika JSON'unu güncelle, durumu <strong>SABİT</strong> yap.</li>
+    <li>Ancak ondan sonra o slotun geliştirmesine geç.</li>
+  </ol>
+  <p class="text-sm text-amber-900 dark:text-amber-100 mt-2"><strong>Kapı:</strong> <a href="#T-029">T-029</a> (SRS onayı) <code>docs/standards/</code> altında "TBD" kalmadığını programatik doğrular. Tek bir TBD kalırsa SRS "TASLAK" olarak işaretlenir ve <strong>Faz 3 başlayamaz</strong>.</p>
+</div>
+
+<h3>"Oran eşdeğeri" ne demek</h3>
+<p>Ürün görselinde kural şudur: <strong>hem kısa kenar ≥ 1000 px hem de toplam alan ≥ 1.000.000 px</strong>. Böylece 1000×1000 (1:1), 1000×1250 (4:5), 1000×1333 (3:4) kabul edilir; 1400×700 (2:1) kabul edilmez çünkü kısa kenarı 1000'in altındadır ve ürün zoom deneyimi bozulur.</p>
+<pre><code>def product_image_ok(w, h):
+    return min(w, h) &gt;= 1000 and (w * h) &gt;= 1_000_000
+</code></pre>
+
+<h3>Master (version) hedefi</h3>
+<table>
+<thead><tr><th>Parametre</th><th>Değer</th><th>Gerekçe</th></tr></thead>
+<tbody>
+<tr><td><code>max_long_edge</code></td><td>2400 px</td><td>Ürün zoom için yeterli; decode maliyeti kontrollü</td></tr>
+<tr><td><code>min_long_edge</code> (ürün)</td><td>2000 px</td><td>Kullanıcının belirlediği alt sınır; zoom kalitesi korunur</td></tr>
+<tr><td><code>max_megapixels</code> (soft)</td><td>6 MP</td><td>2400×2400 ≈ 5.76 MP</td></tr>
+<tr><td><code>max_megapixels_hard</code></td><td>80 MP</td><td>Üstü decode edilmeden reddedilir (bomb koruması)</td></tr>
+<tr><td><code>dpi_out</code></td><td>72</td><td>Metadata normalizasyonu; <strong>piksel değişmez</strong></td></tr>
+<tr><td>Renk uzayı</td><td>sRGB</td><td>CMYK/AdobeRGB dönüştürülür, ICC korunur</td></tr>
+<tr><td>Metadata</td><td>EXIF/GPS silinir, ICC korunur</td><td>INV-04</td></tr>
+</tbody>
+</table>
+
+<h2>Profil (rendition) matrisi</h2>
+<p>Cihaz değil, <strong>media slot</strong>. Tarayıcı <code>srcset</code> ile doğru dosyayı kendi seçer.</p>
+<table>
+<thead><tr><th>Profil</th><th>Oran</th><th>Genişlikler</th><th>Fit</th><th>Formatlar</th><th>Üretim</th></tr></thead>
+<tbody>
+<tr><td><code>cart-thumb</code></td><td>1:1</td><td>80, 120, 160</td><td>cover</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>similar-product</code></td><td>1:1</td><td>160, 240, 320</td><td>cover</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>product-card</code></td><td>1:1</td><td>240, 320, 480, 640</td><td>cover</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>product-list</code></td><td>4:3</td><td>320, 480, 640, 800</td><td>cover</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>product-main</code></td><td>1:1</td><td>480, 640, 800, 1024, 1280, 1600</td><td>contain</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>product-zoom</code></td><td>kaynak</td><td>2000, 2400</td><td>contain</td><td>WebP, JPEG</td><td>lazy</td></tr>
+<tr><td><code>product-modal</code></td><td>kaynak</td><td>1200, 1600, 2000</td><td>contain</td><td>AVIF, WebP, JPEG</td><td>lazy</td></tr>
+<tr><td><code>home-carousel</code></td><td>16:9</td><td>640, 960, 1280, 1600, 1920</td><td>cover</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>hero-wide</code></td><td>21:9</td><td>960, 1280, 1600, 1920</td><td>cover</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>company-cover</code></td><td>3:1</td><td>768, 1280, 1920</td><td>cover</td><td>AVIF, WebP, JPEG</td><td>eager</td></tr>
+<tr><td><code>logo-square</code></td><td>1:1</td><td>64, 128, 256</td><td>contain</td><td>WebP(lossless), PNG</td><td>eager</td></tr>
+<tr class="bg-amber-50 dark:bg-amber-950/40"><td><code>logo-wide</code></td><td class="text-amber-700 dark:text-amber-400"><strong>BLOKE</strong> → T-021</td><td class="text-amber-700 dark:text-amber-400"><strong>BLOKE</strong> → T-021</td><td>contain</td><td>SVG passthrough, WebP, PNG</td><td>T-021 bitmeden <strong>üretilmez</strong></td></tr>
+<tr><td><code>avatar</code></td><td>1:1</td><td>40, 80, 160</td><td>cover</td><td>WebP, JPEG</td><td>eager</td></tr>
+</tbody>
+</table>
+<p>Toplam eager rendition ≈ 34 dosya/asset (3 format × ortalama 11 boyut → format başına). Depolama etkisi <a href="10-faz0-codebase-arastirma.html#T-008">T-008</a>'de ölçülür; ölçüm sınırı aşarsa lazy oranı artırılır.</p>
+
+<h2>Video teslim profilleri</h2>
+<table>
+<thead><tr><th>Profil</th><th>Codec</th><th>Çözünürlük merdiveni</th><th>Hedef</th></tr></thead>
+<tbody>
+<tr><td><code>video-main</code></td><td>H.264 High, AAC 128k, faststart</td><td>480p, 720p, 1080p</td><td>Evrensel uyumluluk; CRF hedefli, VMAF ≥ 93</td></tr>
+<tr><td><code>video-modern</code></td><td>AV1 (veya VP9), Opus</td><td>720p, 1080p</td><td>Destekleyen tarayıcıda; yalnız benefit gate geçerse</td></tr>
+<tr><td><code>video-preview</code></td><td>H.264, sessiz, 3–6 sn</td><td>480p</td><td>Hover/otomatik önizleme</td></tr>
+<tr><td><code>video-poster</code></td><td>Görsel (JPEG/WebP/AVIF)</td><td>product-main profili</td><td>LCP için poster; ilk anlamlı kare seçilir</td></tr>
+<tr><td><code>video-hls</code></td><td>H.264 ABR</td><td>360p–1080p</td><td>&gt;60 sn videolarda; L4</td></tr>
+</tbody>
+</table>
+
+<h2>İçerik uygunluk kuralları (ürün görseli)</h2>
+<p>Amazon/Alibaba seviyesinin ayırt edici tarafı teknik kural değil, <strong>içerik kuralıdır</strong>. Otomatik ön kontrol yapılır, ihlal <em>uyarı</em> üretir; sert red yalnızca listede işaretli olanlardadır.</p>
+<table>
+<thead><tr><th>Kural</th><th>Ölçüm</th><th>Aksiyon</th></tr></thead>
+<tbody>
+<tr><td>Ana görselde düz/beyaz zemin</td><td>Kenar piksellerinin %90'ı tek renk toleransında mı</td><td>Uyarı</td></tr>
+<tr><td>Ürün çerçeveye oranı ≥ %70</td><td>Nesne bounding box / toplam alan</td><td>Uyarı</td></tr>
+<tr><td>Metin/filigran/logo bindirmesi yok</td><td>Metin yoğunluk tespiti (OCR veya kenar deseni)</td><td>Uyarı</td></tr>
+<tr><td>Çerçeve/kenarlık yok</td><td>Kenar şerit tespiti</td><td>Uyarı</td></tr>
+<tr><td>Bulanıklık eşiği</td><td>Laplacian varyansı</td><td>Uyarı (eşik altı: <strong>red</strong>)</td></tr>
+<tr><td>NSFW / yasaklı içerik</td><td>Sınıflandırıcı skoru</td><td><strong>Red</strong> + moderatör kuyruğu</td></tr>
+<tr><td>Aynı ürüne aynı görselin tekrarı</td><td>Algısal hash (pHash) mesafesi</td><td>Uyarı</td></tr>
+<tr><td>Minimum görsel sayısı (≥3)</td><td>Sayım</td><td>Yayın öncesi uyarı</td></tr>
+</tbody>
+</table>
+
+<h2>Görevler</h2>
+
+<div class="task" id="T-020">
+  <div class="task-head"><span class="task-id">T-020</span><span class="task-title">Ürün görseli standardının sabitlenmesi ve politika şeması</span><span class="chip chip-arge">Analiz</span><span class="chip chip-dep">Bağımlılık: T-019</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>Bilinen kuralı (min 1000×1000 veya oran eşdeğeri) makine tarafından okunabilir politika şemasına dönüştürmek ve tüm sayıları kilitlemek.</p>
+    <h5>Çıktı</h5><p><code>media_engine/policy/slots/product-image.json</code> + <code>docs/standards/product-image.md</code></p>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Şema; min kısa kenar, min alan, max MP, max byte, kabul formatları, master hedefi, kalite hedefi, içerik kuralları alanlarını içeriyor.</li>
+      <li>T-003 istatistiğine göre mevcut ürün görsellerinin kaç yüzdesinin bu kuralı ihlal ettiği raporlanmış (geçiş planı girdisi).</li>
+      <li>Politika JSON'u bir şema doğrulayıcı (jsonschema) ile doğrulanıyor.</li>
+      <li>Alt sınır 2000×2000 master kuralıyla çelişki olmadığı gösterilmiş.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Ürün görseli standardını makine tarafından okunabilir politikaya çevir.
+1) media_engine/policy/schema/slot-policy.schema.json yaz (JSON Schema draft 2020-12). Alanlar: slot_key, roles, accept (mime listesi, max_bytes, max_megapixels_hard), require (min_short_edge, min_area, allowed_ratios + tolerans), master (max_long_edge, min_long_edge, max_megapixels, dpi_out, colorspace, strip_metadata), quality (sınıf başına target_ssim), profiles (profil anahtarları), content_rules (kural + eşik + aksiyon), on_violation (reject|warn), messages (tr/en kullanıcı mesajı).
+2) media_engine/policy/slots/product-image.json yaz: min_short_edge=1000, min_area=1000000, allowed_ratios=["1:1","4:5","3:4"] tolerans %2, master.max_long_edge=2400, master.min_long_edge=2000, dpi_out=72, max_megapixels_hard=80.
+3) fixtures/media-stats.csv üzerinde bu politikayı koşarak mevcut ürün görsellerinin yüzde kaçının ihlal ettiğini raporla (docs/standards/product-image.md içinde).
+4) jsonschema ile doğrulama testi yaz; bozuk politika dosyası CI'da hata versin.
+5) Kullanıcı mesajlarını Türkçe yaz; NEDEN reddedildiğini ve NASIL düzeltileceğini içersin (ör. "Görseliniz 800x800. Ürün görselinin kısa kenarı en az 1000 piksel olmalı. Daha yüksek çözünürlüklü bir dosya yükleyin; büyütülmüş görsel kabul edilmez.").</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-021">
+  <div class="task-head"><span class="task-id">T-021</span><span class="task-title">LOGO standardının belirlenmesi (seller-logo, brand-logo)</span><span class="chip chip-arge">Analiz</span><span class="chip chip-fe">Frontend</span><span class="chip chip-dep">Bağımlılık: T-001, T-003, T-011</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>Logo standardı <strong>henüz belirli değildir</strong>. Codebase araştırmasından (logonun render edildiği tüm component'ler ve gerçek CSS ölçüleri) ve mevcut logo dağılımından türetilerek burada sabitlenir. Bu görev bitmeden logo ile ilgili hiçbir geliştirme yapılmaz.</p>
+    <h5>Yapılacaklar</h5>
+    <ul>
+      <li>T-001 çıktısından logonun göründüğü tüm yerleri çıkar: header, mağaza kartı, ürün kartı rozeti, company profile, fatura/PDF, e-posta şablonu, favicon, mobil uygulama.</li>
+      <li>Her yerde gerçek render kutusu (px) ve DPR 2/3 ihtiyacını hesapla → gereken maksimum piksel.</li>
+      <li>Mevcut logoların gerçek dağılımı (T-003): kaçı SVG, kaçı alfa'lı, kaçı yatay/kare, tipik oran.</li>
+      <li>Karar: kabul edilen oran(lar), minimum piksel, dosya formatı önceliği (SVG &gt; PNG), alfa zorunluluğu, güvenli alan (padding), koyu/açık tema varyantı gerekliliği, maksimum byte.</li>
+      <li>SVG güvenlik kuralı ve rasterize fallback.</li>
+    </ul>
+    <h5>Çıktı</h5><p><code>docs/standards/logo.md</code> + <code>media_engine/policy/slots/seller-logo.json</code>, <code>brand-logo.json</code> + <code>logo-wide</code>/<code>logo-square</code> profil tanımları</p>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Logonun render edildiği <strong>her</strong> yer listelenmiş ve en büyük gerçek ihtiyaç piksel olarak hesaplanmış (DPR 3 dahil).</li>
+      <li>Kabul edilen oran seti ve minimum piksel <strong>sayı olarak</strong> sabitlenmiş; "TBD" kalmamış.</li>
+      <li>Mevcut logoların yüzde kaçının yeni standardı ihlal ettiği ve geçiş planı yazılı.</li>
+      <li>Koyu tema varyantı gerekli mi kararı verilmiş ve gerekçelendirilmiş.</li>
+      <li>SVG kabul kuralı (sanitize + maksimum düğüm sayısı + font gömme yasağı) yazılı.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>LOGO standardını belirle. Bu görev bir ARAŞTIRMA + KARAR görevidir; standart henüz yok, sen türetip sabitleyeceksin.
+1) docs/reports/00-upload-slot-envanteri.md dosyasını ve codebase'i kullanarak satıcı/marka logosunun render edildiği TÜM yerleri bul: web header, mağaza kartı, ürün kartı rozeti, company profile, sepet, e-posta şablonları, PDF fatura/irsaliye, favicon, mobil uygulama, sosyal paylaşım (og:image).
+2) Her yer için gerçek CSS kutu ölçüsünü oku ve DPR 1/2/3 için gereken piksel genişliğini hesapla. En büyük ihtiyacı belirle.
+3) fixtures/media-stats.csv dosyasından mevcut logoların dağılımını çıkar: format (SVG/PNG/JPEG), alfa var mı, oran dağılımı (kare/yatay/dikey), tipik piksel ve bayt.
+4) Rakip analizinden (docs/reports/11-rakip-analizi.md) logo kurallarını karşılaştır.
+5) KARAR VER ve sayıları sabitle: kabul edilen oranlar (ör. 1:1 ile 4:1 arası yatay), minimum piksel, maksimum bayt, format önceliği (SVG &gt; alfa'lı PNG &gt; lossless WebP), alfa zorunlu mu, minimum güvenli alan/dolgu oranı, koyu tema varyantı zorunlu mu, maksimum SVG düğüm sayısı.
+6) Çıktılar: docs/standards/logo.md (karar + gerekçe + geçiş planı), media_engine/policy/slots/seller-logo.json ve brand-logo.json, ayrıca logo-square / logo-wide profil tanımları.
+7) Mevcut logoların yüzde kaçının ihlal ettiğini ve satıcılara nasıl bildirileceğini yaz.
+HİÇBİR ALANI "TBD" BIRAKMA. Her sayının yanında hangi ölçümden geldiğini yaz.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-022">
+  <div class="task-head"><span class="task-id">T-022</span><span class="task-title">COMPANY COVER VIDEO standardının belirlenmesi</span><span class="chip chip-arge">Analiz</span><span class="chip chip-dep">Bağımlılık: T-001, T-003, T-016</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>Company profile kapak videosu standardı <strong>henüz belirli değildir</strong>. Bu görevle sabitlenir; ondan önce company video geliştirmesi başlamaz.</p>
+    <h5>Yapılacaklar</h5>
+    <ul>
+      <li>Company profile sayfasının kapak alanının gerçek layout'unu çıkar (masaüstü/tablet/mobil kutu oranları, kırpma davranışı, otomatik oynatma var mı, sesli mi sessiz mi).</li>
+      <li>Mevcut yüklenmiş company videolarının dağılımı: süre, çözünürlük, bitrate, codec, byte, oran.</li>
+      <li>Karar: kabul oranı (16:9 mü, 21:9 mü, mobilde 9:16 alternatifi var mı), min/max süre, min/max çözünürlük, maksimum byte, ses politikası, poster kuralı, otomatik oynatma için sessiz/loop zorunluluğu, mobil veri tüketimi tavanı.</li>
+      <li>Teslim profili: hangi çözünürlük merdiveni, HLS eşiği (kaç saniyeden sonra), preview klip süresi.</li>
+      <li>Erişilebilirlik: altyazı (VTT) zorunlu mu, hareket duyarlılığı (<code>prefers-reduced-motion</code>) davranışı.</li>
+    </ul>
+    <h5>Çıktı</h5><p><code>docs/standards/company-cover-video.md</code> + <code>media_engine/policy/slots/company-cover-video.json</code></p>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Süre, çözünürlük, oran, byte, bitrate sınırları <strong>sayı olarak</strong> sabit; "TBD" yok.</li>
+      <li>Otomatik oynatma politikası (sessiz + loop + <code>playsinline</code>) ve mobil veri tavanı yazılı.</li>
+      <li>Poster üretim kuralı (hangi kare, hangi profil) tanımlı.</li>
+      <li>Mevcut videoların ihlal oranı ve geçiş planı yazılı.</li>
+      <li><code>prefers-reduced-motion</code> davranışı tanımlı.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>COMPANY COVER VIDEO standardını belirle. Standart yok; bu görevle türetip sabitleyeceksin.
+1) Company profile sayfasının kapak alanını codebase'den çıkar: masaüstü/tablet/mobil CSS kutu ölçüleri ve oranları, object-fit davranışı, üzerine binen metin/logo alanları (güvenli alan), otomatik oynatma var mı, ses durumu.
+2) fixtures/media-stats.csv ve ffprobe verisinden mevcut company videolarının dağılımını çıkar: süre (p50/p90/p99), çözünürlük, codec, bitrate, bayt, oran, ses var mı.
+3) Karar ver ve SAYILARI SABİTLE: kabul edilen oran(lar) ve mobil için alternatif oran, min/maks süre, min/maks çözünürlük, maksimum yükleme baytı, teslim bitrate tavanı, ses politikası (otomatik oynatmada zorunlu sessiz), loop, playsinline, poster seçim kuralı (ilk anlamlı kare: siyah/boş kare atlanarak), önizleme klibi süresi, HLS'e geçiş eşiği (süre veya bayt), mobil veri tüketim tavanı (ilk 10 saniyede indirilecek maksimum KB).
+4) Erişilebilirlik: altyazı (WebVTT) zorunluluğu; prefers-reduced-motion durumunda postere düşme davranışı.
+5) Çıktılar: docs/standards/company-cover-video.md ve media_engine/policy/slots/company-cover-video.json (T-020'deki slot-policy.schema.json'a uygun; video alanları için şemayı genişlet).
+6) Mevcut videoların ihlal oranı + geçiş planı + satıcıya gösterilecek Türkçe hata/uyarı metinleri.
+HİÇBİR ALAN "TBD" KALMASIN.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-023">
+  <div class="task-head"><span class="task-id">T-023</span><span class="task-title">Kalan slotların standartlarının sabitlenmesi</span><span class="chip chip-arge">Analiz</span><span class="chip chip-dep">Bağımlılık: T-020…T-022</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>Ürün videosu, company cover görseli, kategori banner, avatar, belge eki standartlarını aynı yöntemle sabitlemek.</p>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Slot kataloğundaki tüm satırlar "SABİT" durumuna geçmiş.</li>
+      <li>Her slot için politika JSON'u şema doğrulamasından geçiyor.</li>
+      <li>Her slot için Türkçe kullanıcı hata/uyarı metinleri yazılmış.</li>
+      <li>Slot → profil eşlemesi tam; profilsiz slot yok.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Kalan slotların standartlarını T-020/T-021/T-022 ile aynı yöntemle sabitle: product-video, company-cover-image, category-banner, user-avatar, document-attachment.
+Her slot için: render edildiği yerler + gerçek CSS kutuları + DPR ihtiyacı -&gt; minimum piksel; mevcut dağılım -&gt; gerçekleştirilebilir sınırlar; rakip kuralları -&gt; içerik kuralları.
+Her biri için media_engine/policy/slots/SLOT.json ve docs/standards/SLOT.md üret.
+Sonunda docs/standards/README.md ile TÜM slotların tek tabloda özetini yaz: slot | min | maks | oran | format | profil listesi | ihlal aksiyonu.
+Profilsiz slot veya slotsuz profil kalmadığını programatik olarak doğrula ve testini yaz.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-024">
+  <div class="task-head"><span class="task-id">T-024</span><span class="task-title">DPI ve piksel normalizasyon kuralının şartnameye yazılması</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-012, T-020</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>DD-02/INV-02/INV-03'ü şartname metnine, politika alanlarına ve teste bağlamak.</p>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Şartnamede "DPI değişimi piksel değiştirmez" kuralı örnekli yazılı (3000×3000@300 → 3000×3000@72).</li>
+      <li>Ürün görselinde çıktının 2000×2000 altına düşemeyeceği kural ve testle bağlı.</li>
+      <li>Politika şemasında <code>min_long_edge</code>, <code>max_long_edge</code>, <code>dpi_out</code> alanları zorunlu.</li>
+      <li>Kullanıcıya gösterilen özet ("3000×3000 → 2400×2400, 300 dpi → 72 dpi, boyut 12 MB → 1.1 MB") metni tasarlanmış.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>DPI/piksel normalizasyon kuralını şartnameye ve politikaya bağla.
+1) docs/standards/dpi-ve-cozunurluk.md yaz: kuralı, gerekçesini (DPI metadata'dır, decode maliyeti pikselle doğrusaldır) ve DOĞRU/YANLIŞ örneklerini yaz. Yanlış örnek olarak "3000x3000@300 -&gt; 720x720@72" açıkça YASAK olarak işaretlensin.
+2) slot-policy.schema.json içinde dpi_out, min_long_edge ve max_long_edge alanlarını zorunlu yap.
+3) tests/test_policy_dpi.py: her slot politikası için min_long_edge &lt;= max_long_edge ve ürün slotu için min_long_edge &gt;= 2000 doğrulaması.
+4) Kullanıcıya gösterilecek işlem özeti metnini tasarla ve i18n anahtarlarını yaz: "Görseliniz optimize edildi: 3000x3000 -&gt; 2400x2400 piksel, 300 dpi -&gt; 72 dpi (piksel korundu), 12,4 MB -&gt; 1,1 MB". Özet, DPI değişiminin çözünürlüğü DÜŞÜRMEDİĞİNİ açıkça söylesin.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-025">
+  <div class="task-head"><span class="task-id">T-025</span><span class="task-title">İçerik uygunluk kurallarının tanımı ve eşikleri</span><span class="chip chip-arge">Analiz</span><span class="chip chip-dep">Bağımlılık: T-011, T-020</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Her içerik kuralı için ölçüm yöntemi, eşik değeri ve aksiyon (uyarı/red) tabloda sabit.</li>
+      <li>Eşikler <code>gorseller/</code> ve fixtures üzerinde kalibre edilmiş; yanlış pozitif oranı ölçülmüş (&lt;%5 hedef).</li>
+      <li>NSFW ve bulanıklık dışındaki hiçbir kural sert red üretmiyor.</li>
+      <li>Satıcıya gösterilecek uyarı metinleri yazılmış ve düzeltme yolu içeriyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>İçerik uygunluk kurallarını tanımla ve kalibre et: media_engine/policy/content_rules.json + docs/standards/icerik-kurallari.md
+Kurallar: düz/beyaz zemin oranı, ürün çerçeve doluluk oranı (&gt;=%70), metin/filigran bindirmesi, çerçeve/kenarlık, bulanıklık (Laplacian varyansı), NSFW skoru, aynı üründe tekrar görsel (pHash mesafesi), minimum görsel sayısı.
+Her kural için: ölçüm fonksiyonu, eşik, aksiyon (warn|reject), kullanıcıya mesaj.
+Eşikleri gorseller/ klasöründeki gerçek ürün görselleri ve fixtures/images üzerinde KALİBRE ET: her kural için yanlış pozitif oranını ölç ve %5 altına çekecek eşiği seç. Kalibrasyon verisini rapora yaz.
+Yalnızca NSFW ve aşırı bulanıklık reddetme üretsin; diğerleri uyarı üretsin.
+scripts/calibrate_content_rules.py yaz ki eşikler ileride yeniden kalibre edilebilsin.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-026">
+  <div class="task-head"><span class="task-id">T-026</span><span class="task-title">Retention (saklama) politikası standardı</span><span class="chip chip-ops">DevOps</span><span class="chip chip-dep">Bağımlılık: T-008</span></div>
+  <div class="task-body">
+    <h5>Amaç</h5>
+    <p>Orijinal ve optimize dosyaların ne kadar süre, nerede saklanacağını ayarlanabilir hale getirmek.</p>
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>İki bağımsız politika: <code>original_retention</code> ve <code>derivative_retention</code>; her biri süre + hedef katman (yerel / S3 / soğuk arşiv / sil) içeriyor.</li>
+      <li>Varsayılanlar: orijinal süresiz yerel; 180 gün sonra S3 soğuk katmana taşınabilir (ayar açıksa); türev 90 gün erişilmezse silinir ve gerektiğinde yeniden üretilir.</li>
+      <li>Silme öncesi zorunlu bekleme (soft-delete) ve audit kaydı tanımlı.</li>
+      <li>Yasal saklama (legal hold) bayrağı politikayı geçersiz kılıyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Saklama (retention) politikası standardını yaz: docs/standards/retention.md + media_engine/policy/retention.schema.json
+İki bağımsız politika tanımla:
+- original_retention: { keep_forever: true|false, local_days: N, then: "s3_standard"|"s3_cold"|"delete", legal_hold_overrides: true }
+- derivative_retention: { unused_after_days: 90, action: "delete", regenerate_on_demand: true, always_keep_profiles: ["product-main","product-card"] }
+Kurallar: orijinal varsayılan olarak SÜREKLİ saklanır ve yalnızca superadmin ayarından değiştirilebilir; silme daima yumuşak silme (soft-delete) + N gün bekleme + denetim kaydı üretir; legal_hold=1 olan asset hiçbir politikayla silinemez.
+Ayrıca: hangi metriklerin "erişilmedi" saydığı (CDN log'u mu, uygulama log'u mu), erişim damgasının nasıl güncellendiği ve maliyeti.
+Superadmin ayar ekranında görünecek alanları ve varsayılan değerleri tablola.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-027">
+  <div class="task-head"><span class="task-id">T-027</span><span class="task-title">Kota ve oran sınırlama standardı</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-005</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Satıcı planına göre: toplam depolama, aylık yükleme sayısı, eşzamanlı iş sayısı, video toplam süresi sınırları tanımlı.</li>
+      <li>Aşım davranışı (engelle / kuyruğa al / ücretlendir) ve kullanıcı mesajı tanımlı.</li>
+      <li>Oran sınırlama: dakikada yükleme sayısı ve toplam byte; 429 yanıtı ve <code>Retry-After</code>.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Kota ve oran sınırlama standardını yaz: docs/standards/kota.md + media_engine/policy/quota.schema.json
+Plan bazlı kotalar: toplam depolama (GB), aylık yükleme adedi, eş zamanlı işleme işi, toplam video süresi (dakika), maksimum tek dosya boyutu.
+Aşım davranışı her kota için ayrı seçilebilsin: block | queue | notify_only.
+Oran sınırlama: kullanıcı başına dakikada N istek ve M MB; aşımda HTTP 429 + Retry-After + Türkçe mesaj.
+Kota tüketiminin nasıl ölçüldüğü (orijinal + türev mi, yalnızca orijinal mi) net yazılsın — önerilen: orijinal + türev toplamı, çünkü gerçek maliyet budur.
+Superadmin ekranında plan bazlı kota tablosu düzenlenebilir olsun.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-028">
+  <div class="task-head"><span class="task-id">T-028</span><span class="task-title">Geçiş (migration) planı: mevcut medyanın standarda uyumlandırılması</span><span class="chip chip-ops">DevOps</span><span class="chip chip-dep">Bağımlılık: T-020…T-023</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Mevcut medyanın kaçının uyumlu/uyumsuz olduğu slot bazında sayısal.</li>
+      <li>Uyumsuzlar için 3 kategori: otomatik düzeltilebilir / satıcıdan yeniden istenmeli / göz ardı edilebilir.</li>
+      <li>Toplu yeniden işleme (backfill) planı: parti büyüklüğü, hız, kaynak tüketimi, geri alma.</li>
+      <li>Satıcı bilgilendirme akışı ve son tarih.</li>
+      <li>Backfill sırasında canlı trafiğin etkilenmemesi için kuyruk önceliği tanımlı.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Mevcut medyanın yeni standartlara geçiş planını yaz: docs/plans/migration.md + scripts/plan_backfill.py
+1) Her slot politikasını fixtures/media-stats.csv üzerinde koşarak uyumlu/uyumsuz sayılarını çıkar.
+2) Uyumsuzları sınıfla: (a) otomatik düzeltilebilir (piksel tavanı, DPI, renk uzayı, metadata), (b) satıcıdan yeniden istenmeli (çözünürlük yetersiz, oran uygunsuz), (c) göz ardı edilebilir (arşiv, pasif ürün).
+3) Backfill planı: parti büyüklüğü, saatlik işlem kapasitesi (T-007 benchmark'ından türet), tahmini toplam süre, disk artışı, geri alma yolu (yeni türevler ayrı dizine yazılır, atomik geçiş).
+4) Kuyruk önceliği: backfill işleri düşük öncelikli ayrı kuyrukta; canlı yükleme işleri her zaman önce.
+5) Satıcı bilgilendirme: kimler etkileniyor, hangi mesaj, hangi son tarih, panelde nasıl gösterilecek.
+6) Riskler ve durdurma kriteri (ör. hata oranı %2'yi aşarsa backfill durur).</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-029">
+  <div class="task-head"><span class="task-id">T-029</span><span class="task-title">Faz 2 kapanış: SRS (yazılım gereksinim şartnamesi) onayı</span><span class="chip chip-arge">Analiz</span><span class="chip chip-dep">Bağımlılık: T-020…T-028</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>SRS belgesi: fonksiyonel gereksinimler (FR-xxx), fonksiyonel olmayan gereksinimler (NFR-xxx), her biri test edilebilir ifade.</li>
+      <li>Her gereksinim bir slot politikasına veya değişmeze izlenebilir (traceability matrisi).</li>
+      <li>Hiçbir slot "TBD" değil; logo ve company video standartları sabitlenmiş.</li>
+      <li>Platform yöneticisi onayı alınmış; bu noktadan sonra değişiklik = değişiklik talebi.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>SRS belgesini yaz: docs/srs/SRS-v1.0.md
+Yapı: 1) Amaç ve kapsam 2) Aktörler ve roller 3) Fonksiyonel gereksinimler FR-001.. (her biri "Sistem ... YAPMALIDIR" biçiminde, test edilebilir) 4) Fonksiyonel olmayan gereksinimler NFR-001.. (performans, güvenlik, erişilebilirlik, gözlemlenebilirlik, dayanıklılık) 5) Kısıtlar 6) Kabul kriterleri 7) İzlenebilirlik matrisi.
+İzlenebilirlik matrisi: her FR/NFR -&gt; ilgili slot politikası / değişmez (INV-xx) / faz / test dosyası.
+Zorunlu kontrol: docs/standards/ altındaki hiçbir dosyada "TBD" kalmadığını programatik doğrula; kaldıysa SRS'i "TASLAK" olarak işaretle ve eksikleri listele.
+Sonuna onay/imza bölümü ve "bu noktadan sonra değişiklik = değişiklik talebi" notunu ekle.</pre></div>
+  </div>
+</div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faz 7 · Video Engine · istoc Media Engine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class'}</script>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="bg-white dark:bg-gray-900">
+<main class="doc-main">
+
+<span class="text-[11px] font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Faz 7 · Uygulama</span>
+<h1>Video Engine</h1>
+<p class="text-gray-600 dark:text-gray-400">Yüzlerce codec için if/else yazmadan karar veren tablo tabanlı motor. Temel kural: <strong>format bir kalite seviyesi değildir.</strong></p>
+
+<h2>Karar akışı</h2>
+<pre><code>PROBE (ffprobe)
+  container, codec, profile/level, W×H, fps, bitrate, süre,
+  ses codec/bitrate, pix_fmt, HDR, rotation, hata sayacı
+
+VERİMLİLİK
+  bpp = video_bitrate / (W × H × fps)
+  bpp ≤ efficient_threshold  →  kaynak zaten verimli
+
+KARAR TABLOSU (decision_table.json — VERİ, kod değil)
+  A. Uygun container + uygun codec + verimli   → PASSTHROUGH (dokunma)
+  B. Uygun codec, uygunsuz container            → REMUX (yeniden encode YOK)
+  C. Uygunsuz codec veya aşırı bitrate/çözünürlük → TRANSCODE
+  D. Tarayıcı desteklemiyor (HEVC/ProRes vb.)   → TRANSCODE (H.264 tabanı)
+  E. Bozuk / riskli / süre-boyut ihlali          → REJECT
+
+TRANSCODE
+  H.264 High + AAC, faststart, CRF hedefli, çözünürlük merdiveni
+  opsiyonel AV1/VP9 ikinci profil
+
+BENEFIT GATE  (INV-05)
+  çıktı_byte ≥ girdi_byte  →  çıktıyı AT, kaynağı passthrough et, uyarı üret
+
+DOĞRULAMA
+  VMAF ≥ 93 · süre farkı ≤ 100 ms · ses senkronu · ilk kare siyah değil
+
+TÜREVLER
+  poster (ilk anlamlı kare) · preview klip (3–6 sn, sessiz) · HLS (uzun videoda)</code></pre>
+
+<h2>Neden 10 MB MP4 → 40 MB WebM oldu</h2>
+<p>MP4/H.264 kaynağı zaten düşük bpp ile iyi sıkıştırılmıştı. WebM'e dönüştürürken VP9 encoder'a <em>hedef kalite değil, varsayılan/yüksek bitrate</em> verildiğinde encoder kaynağın sıkıştırma kararlarını taklit etmez, yeniden ve daha savurgan kodlar. Çözüm üç katmanlıdır: (1) verimlilik ölçümü ile "dokunma" kararı, (2) CRF/kalite hedefli encode, (3) benefit gate ile çıktı reddi.</p>
+
+<h2>Görevler</h2>
+
+<div class="task" id="T-070">
+  <div class="task-head"><span class="task-id">T-070</span><span class="task-title">ffprobe tabanlı probe ve doğrulama</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-016, T-032</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Probe tüm karar değişkenlerini döndürüyor; eksik alanlarda güvenli varsayılan.</li>
+      <li>Bozuk/kesik dosya tespit ediliyor ve reddediliyor.</li>
+      <li>Probe zaman aşımı ve bellek limiti uygulanıyor; worker ölmüyor.</li>
+      <li>Rotation metadata'sı (dikey çekim) doğru yorumlanıyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/video/probe.py yaz + testler (önce test).
+probe(path) -&gt; VideoProbe { container, video_codec, profile, level, width, height, sar, dar, fps, bitrate, duration, audio_codec, audio_bitrate, audio_channels, pix_fmt, color_transfer, is_hdr, rotation, has_bframes, error_count }
+- ffprobe -v error -show_streams -show_format -print_format json kullan.
+- Zaman aşımı (30 sn) ve bellek limiti uygula; alt süreç olarak çalıştır, öldürülebilir olsun.
+- Bozuk/kesik dosya: ffprobe hata sayacı veya duration=0/None -&gt; reddet.
+- rotation: side_data_list rotation veya tags:rotate; etkin görüntü boyutunu (döndürülmüş) hesapla ve döndür.
+- HDR tespiti: color_transfer in (smpte2084, arib-std-b67) -&gt; is_hdr=True (SDR'ye ton eşlemesi gerekecek).
+Testler: fixtures/videos içindeki her dosya için beklenen alanlar; bozuk dosyanın reddedildiği; zaman aşımının worker'ı öldürmediği.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-071">
+  <div class="task-head"><span class="task-id">T-071</span><span class="task-title">Karar tablosu yorumlayıcısı</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-070</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Karar mantığı JSON tablodan okunuyor; kodda codec adı geçen if/else zinciri yok.</li>
+      <li>Yeni codec desteği eklemek yalnızca JSON değişikliği gerektiriyor (test ile kanıtlı).</li>
+      <li>Verimli MP4 fixture'ı PASSTHROUGH alıyor.</li>
+      <li>Her karar için gerekçe (hangi kural eşleşti) kaydediliyor.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/video/decide.py yaz: karar tablosu yorumlayıcısı + testler (önce test).
+decide(probe, policy) -&gt; Decision { action: passthrough|remux|transcode|reject, targets[], reasons[], matched_rule }
+Kurallar decision_table.json dosyasından okunur. Kural biçimi örneği:
+{ "id": "efficient-h264-mp4", "when": { "container": ["mp4","mov"], "video_codec": ["h264"], "bpp_max": 0.08, "max_height": 1080 }, "action": "passthrough", "why": "Kaynak zaten verimli ve uyumlu" }
+KODDA CODEC ADI GEÇEN if/else OLMAYACAK. Bunu bir testle kanıtla: decide.py kaynak kodunda "h264"/"vp9"/"av1" gibi sabitler aranır ve bulunursa test kırmızı olur.
+Yeni codec testi: decision_table.json dosyasına yeni bir kural ekleyerek (kod değiştirmeden) yeni bir codec'in doğru kararı aldığını gösteren test yaz.
+Her karar matched_rule ve insan tarafından okunabilir reasons listesi döndürmeli; bu bilgi Media Processing Job kaydına yazılmalı.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-072">
+  <div class="task-head"><span class="task-id">T-072</span><span class="task-title">Transcode, benefit gate ve kalite doğrulaması</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-071</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>H.264 tabanı her zaman üretiliyor; AV1/VP9 yalnızca benefit gate geçerse.</li>
+      <li>Hiçbir fixture'da çıktı girdiden büyük yayınlanmıyor (INV-05).</li>
+      <li>Şişik bitrate fixture'ında ≥%40 küçülme ve VMAF ≥ 93.</li>
+      <li>Süre farkı ≤100 ms, ses senkronu bozulmamış.</li>
+      <li>HDR kaynak SDR'ye doğru tone-map ediliyor (renk patlaması yok).</li>
+      <li><code>faststart</code> uygulanmış (moov başta).</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/video/transcode.py yaz + testler (önce test).
+1) H.264 tabanı: libx264, preset slow, CRF hedefli (çözünürlüğe göre CRF tablosu), profile high, uygun level, -movflags +faststart, AAC 128k, yuv420p.
+2) Çözünürlük merdiveni: kaynağı aşmadan (büyütme YOK) 480p/720p/1080p üret.
+3) Modern profil: AV1 (libaom veya svt-av1) veya VP9; yalnızca çıktısı H.264 muadilinden KÜÇÜKSE saklanır.
+4) FAYDA KAPISI: her çıktı için çıktı_baytı &gt;= girdi_baytı ise çıktıyı SİL, kaynağı passthrough et, uyarı üret ve Kalite Raporu'na yaz. (INV-05)
+5) Doğrulama: VMAF (libvmaf) &gt;= 93; süre farkı &lt;= 100 ms; ses akışı var mı ve senkron (ilk/son kare zaman damgası); ilk kare siyah/boş değil.
+6) HDR -&gt; SDR ton eşlemesi (zscale + tonemap) yalnızca is_hdr ise.
+7) Uzun işlerde ilerleme bildirimi (ffmpeg -progress) ve iptal edilebilirlik.
+Testler: fixtures/videos içindeki verimli MP4 dokunulmadan geçmeli; şişirilmiş dosya en az %40 küçülmeli ve VMAF &gt;= 93; hiçbir durumda çıktı girdiden büyük yayımlanmamalı.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-073">
+  <div class="task-head"><span class="task-id">T-073</span><span class="task-title">Poster, preview klip ve hareketli önizleme</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-072, T-063</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Poster "ilk anlamlı kare"den seçiliyor (siyah/bulanık kareler atlanıyor) ve görsel hattından geçip rendition'ları üretiliyor.</li>
+      <li>Preview klip 3–6 sn, sessiz, döngüye uygun, ≤1 MB.</li>
+      <li>Poster crop intent'e uyuyor; simülatörde video slotu poster üzerinden doğru gösteriliyor.</li>
+      <li><code>prefers-reduced-motion</code> için yalnız poster dönen bir teslim yolu var.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>media_engine/video/derivatives.py yaz + testler.
+1) Poster seçimi: ilk 10 saniyeden N kare örnekle; her kare için parlaklık ve kenar yoğunluğu hesapla; siyah/düşük kontrastlı/bulanık kareleri ele; en yüksek skorlu kareyi seç. Seçilen kareyi GÖRSEL HATTINA ver (normalize + rendition) ki poster de srcset ile teslim edilsin.
+2) Önizleme klibi: en hareketli 3-6 saniyelik aralığı seç (sahne değişim yoğunluğuna göre), sessiz, 480p, H.264, &lt;= 1 MB, döngü için ilk/son kare uyumu.
+3) Crop intent posterle aynı: video slotunun crop intent'i postere uygulanır ve arayüzde video kutusu aynı kadrajı gösterir.
+4) prefers-reduced-motion için manifest'te yalnızca poster döndüren bir varyant bulunsun.
+Testler: siyah ilk kareli fixture'da posterin siyah OLMADIĞI; önizleme boyut ve süre sınırları; posterin rendition'larının üretildiği.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-074">
+  <div class="task-head"><span class="task-id">T-074</span><span class="task-title">HLS / adaptif teslim (uzun videolar)</span><span class="chip chip-be">Backend</span><span class="chip chip-dep">Bağımlılık: T-072</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Süre/boyut eşiğini aşan videolar için HLS ladder üretiliyor (360p–1080p).</li>
+      <li>Master playlist ve segmentler CDN'den doğru cache header'ıyla servis ediliyor.</li>
+      <li>Mobil veri tavanı: ilk 10 saniyede indirilen bayt ölçülüp standarda uygunluğu doğrulanıyor.</li>
+      <li>Eşik altındaki videolar progresif MP4 ile servis ediliyor (HLS zorlanmıyor).</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>HLS üretimini yaz: media_engine/video/hls.py + testler.
+1) Eşik: süre veya boyut docs/standards/company-cover-video.md içindeki değeri aşıyorsa HLS üret; altındaysa progresif MP4 yeterli.
+2) Merdiven: 360p/480p/720p/1080p (kaynağı aşmadan), 4-6 saniyelik segment, master.m3u8 + varyant playlist'ler.
+3) Teslim: segmentler değişmez cache ile; playlist kısa cache. nginx/CDN başlıklarını yapılandır.
+4) Mobil veri tavanı doğrulaması: ilk 10 saniyede indirilecek baytı hesapla ve standarda uygun mu test et; değilse en düşük basamağın bitrate'ini düşür.
+5) Oynatıcı tarafı: Vue bileşeni hls.js'i yalnızca yerel HLS desteklemeyen tarayıcılarda tembel yüklesin (Safari yerel destekler).
+Testler: playlist geçerliliği (ffprobe ile oynatılabilirlik), segment sürelerinin tutarlılığı, eşik altındaki videoda HLS ÜRETİLMEDİĞİ.</pre></div>
+  </div>
+</div>
+
+<div class="task" id="T-075">
+  <div class="task-head"><span class="task-id">T-075</span><span class="task-title">Faz 7 kapanış: video regresyon ve kaynak bütçesi</span><span class="chip chip-qa">QA</span><span class="chip chip-dep">Bağımlılık: T-070…T-074</span></div>
+  <div class="task-body">
+    <h5>Kabul kriterleri</h5>
+    <ul>
+      <li>Tüm video fixture'ları manifest beklentilerine göre GREEN.</li>
+      <li>INV-05 hiçbir senaryoda ihlal edilmiyor.</li>
+      <li>Worker CPU/bellek bütçesi tanımlı; eşzamanlı transcode sayısı sınırlı ve canlı upload'ı bloklamıyor.</li>
+      <li>4K 60 fps uzun video fixture'ında işlem süresi ve kaynak tüketimi ölçülmüş, kabul edilebilir sınırda.</li>
+    </ul>
+    <h5>Geliştirici prompt'u</h5>
+    <div class="prompt-box"><pre>Faz 7 kapanış paketi: tests/golden/video/ + docs/reports/70-faz7-kapanis.md
+1) fixtures/videos manifest beklentilerini otomatik teste çevir.
+2) INV-05 (çıktı &lt;= girdi) için özel bir özellik testi: rastgele parametrelerle transcode denemelerinde hiçbir zaman daha büyük çıktı yayımlanmadığını doğrula.
+3) Kaynak bütçesi: eş zamanlı transcode sayısını sınırla (semafor/kuyruk eşmezliği); canlı görsel kuyruğunun video işleri yüzünden açlık çekmediğini bir yük testiyle göster.
+4) 4K60 fixture'ında süre, CPU-saniye ve tepe bellek ölç; kabul eşiklerini tanımla ve CI'da (gecelik) kontrol et.
+5) Raporda: her fixture için karar, çıktı boyutu, VMAF ve süre tablosu.</pre></div>
+  </div>
+</div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

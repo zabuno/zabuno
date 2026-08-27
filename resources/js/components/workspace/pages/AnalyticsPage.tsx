@@ -9,18 +9,36 @@ export type AnalyticsRange = 'today' | '7d' | '30d';
 export type AnalyticsPageProps = {
     workspaceId?: number;
     locationId?: number;
+    /**
+     * Engellenmiş durumdan ÇIKIŞ YOLU. Bir blocked state, nedenini
+     * söylemekle yetinmez; kullanıcının bugün yapabileceği şeyi de gösterir
+     * (`docs/44` engellenmiş durum standardı).
+     */
+    onNavigateToSection?: (section: string) => void;
 };
 
 type Summary = { qrResolveCount: number; menuOpenCount: number };
 
-type Status = 'idle' | 'loading' | 'error' | 'success';
+/**
+ * `plan-restricted`, `error`den AYRIDIR ve bu ayrım şart.
+ *
+ * Sunucu 402 döndürüyordu ve arayüz onu "Analytics failed to load. Please
+ * try again." diye gösterip bir Retry düğmesi koyuyordu. Yeniden denemek
+ * hiçbir zaman işe yaramaz: kullanıcı yetkisiz değil, planı bu yeteneği
+ * içermiyor. Çıkış yolu farklıdır.
+ */
+type Status = 'idle' | 'loading' | 'error' | 'plan-restricted' | 'success';
 
 /**
  * Real ledger summary surface: fetches the location-scoped analytics
  * summary once both workspaceId and locationId are known, and never
  * fabricates a zero for loading/error states.
  */
-export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
+export function AnalyticsPage({
+    workspaceId,
+    locationId,
+    onNavigateToSection,
+}: AnalyticsPageProps) {
     const rangeId = useId();
     const [range, setRange] = useState<AnalyticsRange>('today');
     const [status, setStatus] = useState<Status>('idle');
@@ -44,6 +62,12 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                 );
 
                 if (requestIdRef.current !== requestId) {
+                    return;
+                }
+
+                if (response.status === 402) {
+                    setStatus('plan-restricted');
+
                     return;
                 }
 
@@ -98,6 +122,13 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                     status: 'error',
                     label: t('workspace.analytics.status.error'),
                 };
+            case 'plan-restricted':
+                // Uyarı, hata değil: ortada bozulmuş bir şey yok.
+                return {
+                    key: 'analytics-status',
+                    status: 'warning',
+                    label: t('workspace.analytics.status.planRestricted'),
+                };
             case 'success':
                 return { key: 'analytics-status', status: 'success', label: rangeLabel[range] };
             case 'idle':
@@ -137,18 +168,26 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                     aria-label={t('workspace.analytics.report.region')}
                     className="flex flex-col gap-2"
                 >
-                    <div>
-                        <Button
-                            size="xs"
-                            color="light"
-                            disabled={status === 'loading'}
-                            onClick={fetchSummary}
-                        >
-                            {status === 'error'
-                                ? t('workspace.analytics.action.retry')
-                                : t('workspace.analytics.action.refresh')}
-                        </Button>
-                    </div>
+                    {/*
+                        Plan kısıtlıyken yenileme düğmesi GÖSTERİLMEZ.
+                        Basıldığında aynı 402 dönecekti; ekranda duran ama
+                        hiçbir zaman işe yaramayacak bir düğme, kullanıcıya
+                        olmayan bir yol gösterir.
+                    */}
+                    {status === 'plan-restricted' ? null : (
+                        <div>
+                            <Button
+                                size="xs"
+                                color="light"
+                                disabled={status === 'loading'}
+                                onClick={fetchSummary}
+                            >
+                                {status === 'error'
+                                    ? t('workspace.analytics.action.retry')
+                                    : t('workspace.analytics.action.refresh')}
+                            </Button>
+                        </div>
+                    )}
 
                     {status === 'idle' && (
                         <p role="status" className="text-body text-fg-muted">
@@ -166,6 +205,29 @@ export function AnalyticsPage({ workspaceId, locationId }: AnalyticsPageProps) {
                         <p role="alert" className="text-body font-medium text-fg-danger">
                             {t('workspace.analytics.report.error')}
                         </p>
+                    )}
+
+                    {status === 'plan-restricted' && (
+                        <div role="status" className="flex flex-col items-start gap-[var(--space-2)]">
+                            {/*
+                                Boş durum dört soruyu cevaplar (`docs/44`):
+                                ne yok, neden yok, kullanıcı için anlamı ne,
+                                şimdi ne yapabilir. "Veriniz kaybolmuyor"
+                                cümlesi bilerek var — asıl korku o.
+                            */}
+                            <p className="max-w-content text-body text-fg-secondary">
+                                {t('workspace.analytics.report.planRestricted')}
+                            </p>
+                            {onNavigateToSection ? (
+                                <Button
+                                    size="xs"
+                                    color="light"
+                                    onClick={() => onNavigateToSection('billing')}
+                                >
+                                    {t('workspace.analytics.action.viewPlan')}
+                                </Button>
+                            ) : null}
+                        </div>
                     )}
 
                     {status === 'success' && summary && (

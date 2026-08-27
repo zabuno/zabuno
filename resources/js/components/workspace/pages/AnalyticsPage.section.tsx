@@ -8,6 +8,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
         <AnalyticsPage
             workspaceId={ctx.workspaceId}
             locationId={ctx.catalogLocationId ?? undefined}
+            onNavigateToSection={ctx.onNavigateToSection}
         />
     );
 }
