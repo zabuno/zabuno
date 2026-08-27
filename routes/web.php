@@ -36,7 +36,13 @@ Route::get('/kvkk', [FoundationStatusController::class, '__invoke'])->name('lega
  */
 Route::get('/robots.txt', ShowRobotsController::class)->name('seo.robots');
 
-Route::get('/q/{token}', RedirectQrTokenController::class)->name('qr.resolve');
+// QR çözümleyici hız sınırlıdır: token uzayı taranabilir bir yüzeydir ve
+// her istek bir veritabanı araması yapar. Sınır cömerttir — bir masadaki
+// misafirlerin arka arkaya taraması engellenmemeli — ama bir tarayıcıyı
+// durdurmaya yeter.
+Route::get('/q/{token}', RedirectQrTokenController::class)
+    ->middleware('throttle:qr-resolve')
+    ->name('qr.resolve');
 Route::get('/menu/{token}', ShowPublicMenuController::class)->name('qr.publicMenu');
 
 /**

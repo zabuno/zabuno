@@ -76,6 +76,9 @@ use App\Infrastructure\Tenancy\Persistence\EloquentWorkspaceRepository;
 use App\Infrastructure\Tenancy\Persistence\SessionWorkspaceContext;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
@@ -161,6 +164,10 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Aynı IP'den dakikada 60 QR çözümlemesi: bir restoranda makul,
+        // token taraması için değersiz.
+        RateLimiter::for('qr-resolve', static fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
+
         //
     }
 }

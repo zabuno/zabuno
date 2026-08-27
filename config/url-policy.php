@@ -22,6 +22,24 @@ return [
      * koda gömmek, taşınabilirliği kaybetmektir. Üretimde `.env` ile açılır.
      */
     'canonical_scheme' => env('URL_CANONICAL_SCHEME', 'https'),
+
+    /*
+     * Uygulamanın hangi Host başlıklarına cevap vereceği.
+     *
+     * Laravel varsayılan olarak isteğin kendi Host başlığına güvenir. Bu
+     * başlık İSTEMCİ tarafından gönderilir: sahte bir Host ile gelen bir
+     * istek, ürettiğimiz kanonik adresi ve imzalı bağlantıları saldırganın
+     * alan adına kaydırabilir. Doğrulama e-postasındaki bağlantı o alan
+     * adına giderse, kullanıcı kimlik bilgisini oraya yazar.
+     *
+     * Boş bırakılırsa yalnız `APP_URL`'in host'u kabul edilir; bu, beş ayrı
+     * barındırıcıda çalışan tek bir yapının güvenli varsayılanıdır
+     * (`docs/38` §8). Ek alan adları virgülle eklenir.
+     */
+    'trusted_hosts' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('URL_TRUSTED_HOSTS', '')),
+    ))),
     'canonical_host' => env('URL_CANONICAL_HOST'),
     'enforce_scheme' => (bool) env('URL_ENFORCE_SCHEME', false),
     'enforce_host' => (bool) env('URL_ENFORCE_HOST', false),

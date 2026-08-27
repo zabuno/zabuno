@@ -12,9 +12,8 @@ use App\Domain\QrDestination\QrToken;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final class ShowPublicMenuController extends Controller
 {
@@ -25,7 +24,7 @@ final class ShowPublicMenuController extends Controller
         private readonly CanonicalUrl $canonical,
     ) {}
 
-    public function __invoke(string $token): Response|JsonResponse
+    public function __invoke(string $token): SymfonyResponse
     {
         try {
             $qrToken = QrToken::fromString($token);
@@ -65,7 +64,7 @@ final class ShowPublicMenuController extends Controller
         ], 200);
     }
 
-    private function notFound(): Response|JsonResponse
+    private function notFound(): SymfonyResponse
     {
         // Tarayıcıda ham JSON gören bir misafir, ürünü bozuk sanır.
         // Yanıt her durumda aynıdır (QR-PUBLIC-404-UNIFORM-01).

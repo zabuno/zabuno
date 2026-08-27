@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Responses;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 /**
  * Misafirin karşısına çıkan çıkmaz sokak.
@@ -26,7 +25,7 @@ use Illuminate\Http\Response;
  */
 final class GuestDeadEnd
 {
-    public static function respond(Request $request): Response|JsonResponse
+    public static function respond(Request $request): SymfonyResponse
     {
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Not Found.'], 404);

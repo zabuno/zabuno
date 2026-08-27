@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+
         // URL motoru güvenlik başlıklarından ÖNCE çalışır: kanonik olmayan
         // bir adres zaten yönlendirilecekse, o yanıtı işlemenin anlamı yok.
         $middleware->prepend(CanonicalUrl::class);

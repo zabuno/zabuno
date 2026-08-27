@@ -29,6 +29,19 @@ final class CanonicalUrl
 
     public function handle(Request $request, Closure $next): Response
     {
+        if (! $this->hostIsTrusted($request)) {
+            // Host başlığı İSTEMCİDEN gelir. Ona güvenmek, ürettiğimiz
+            // kanonik ve imzalı adreslerin saldırganın alan adına kaymasına
+            // izin verir — doğrulama e-postasındaki bağlantı oraya giderse
+            // kullanıcı kimlik bilgisini saldırgana yazar.
+            //
+            // Bu denetim çerçevenin `TrustHosts`'u yerine burada yapılır:
+            // o, süreç genelinde global statik durum kurar ve tek bir test
+            // bütün süiti kırabilir. Host politikasının zaten tek sahibi
+            // URL motorudur (`docs/38` §17).
+            return response()->json(['message' => 'Bad request.'], 400);
+        }
+
         if ($this->policy->rejectsDuplicateQueryKeys()
             && $this->normalizer->hasDuplicateQueryKeys((string) $request->server->get('QUERY_STRING', ''))
         ) {
@@ -51,6 +64,28 @@ final class CanonicalUrl
         }
 
         return $next($request);
+    }
+
+    /**
+     * Yalnız beyan edilmiş Host'lara cevap verilir.
+     *
+     * Yerel geliştirme ve test bundan muaftır: aksi hâlde her geliştiricinin
+     * makinesi ve her CI koşusu ayrı yapılandırma isterdi ve kural ilk
+     * engelde toptan kapatılırdı.
+     */
+    private function hostIsTrusted(Request $request): bool
+    {
+        if (app()->environment('local', 'testing')) {
+            return true;
+        }
+
+        $trusted = $this->policy->resolvedTrustedHosts((string) config('app.url'));
+
+        if ($trusted === []) {
+            return true; // beyan yoksa kısıt da yok; boşluk `docs/38` §17'de kayıtlı
+        }
+
+        return in_array(strtolower($request->getHost()), $trusted, true);
     }
 
     private function absolute(Request $request, string $target): string
