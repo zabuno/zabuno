@@ -1,0 +1,22 @@
+.git
+.github
+node_modules
+vendor
+# Geliştirme makinesinin önbelleği imaja GİRMEZ. `packages.php`, orada
+# kurulu olan geliştirme paketlerini (Pail gibi) listeler; üretim imajı
+# `--no-dev` ile kurulduğu için o sınıflar yoktur ve uygulama açılışta
+# "Class not found" ile ölür. Bir kez oldu, kayıtlı olsun.
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+public/build
+tests
+docs
+.env
+.env.*
+*.sqlite
+worktrees
+tools

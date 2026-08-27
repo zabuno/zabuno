@@ -33,7 +33,7 @@ function s1wp01aPreflightCases(): array
         ['name' => 'vite_laravel_asset_pipeline_configured', 'fn' => 'checkViteLaravelAssetPipelineConfigured'],
         ['name' => 'ci_workflow_declares_non_docker_build_lint_test_chain', 'fn' => 'checkCiWorkflowDeclaresNonDockerChain'],
         ['name' => 'owasp_asvs_baseline_checklist_exists', 'fn' => 'checkOwaspAsvsBaselineChecklistExists'],
-        ['name' => 'deployment_root_has_no_docker_artifacts', 'fn' => 'checkDeploymentRootHasNoDockerArtifacts'],
+        ['name' => 'docker_is_an_additive_profile_not_the_default', 'fn' => 'checkDockerIsAnAdditiveProfileNotTheDefault'],
         ['name' => 'single_deployment_root_no_nested_laravel_app', 'fn' => 'checkSingleDeploymentRootNoNestedApp'],
     ];
 }
@@ -447,16 +447,54 @@ function checkOwaspAsvsBaselineChecklistExists(string $repoRoot): ?string
     return null;
 }
 
-function checkDeploymentRootHasNoDockerArtifacts(string $repoRoot): ?string
+/**
+ * ADR-L08a (2026-08-27): Docker EK bir dağıtım profilidir, varsayılan değil.
+ *
+ * Bu kontrol daha önce Docker dosyalarının VARLIĞINI yasaklıyordu. ADR-L08'in
+ * kendi metni ise yasak koymuyor; "varsayılan dağıtım container'sız,
+ * shared-host uyumludur" diyor. Aradaki fark, sahibi netcup VPS'e Docker ile
+ * deploy etmeye karar verdiğinde ortaya çıktı: kapı meşru bir sahiplik
+ * kararını engelliyordu, üstelik korumak için var olduğu şeyi korumadan.
+ *
+ * Korunması gereken shared-host YOLUNUN AÇIK KALMASIDIR. Docker dosyası
+ * bulunması bunu bozmaz; uygulamanın Docker OLMADAN çalışamaz hâle gelmesi
+ * bozar. Kontrol artık onu ölçüyor.
+ */
+function checkDockerIsAnAdditiveProfileNotTheDefault(string $repoRoot): ?string
 {
-    $forbidden = ['Dockerfile', 'docker-compose.yml', 'docker-compose.yaml', 'compose.yml', 'compose.yaml'];
-    $found = array_values(array_filter(
-        $forbidden,
-        static fn (string $name): bool => is_file($repoRoot.'/'.$name)
-    ));
-    if ($found !== []) {
-        return 'Docker artefaktları bulundu (docs/03 ADR-L08 "No Docker, shared-host default" '
-            .'kesin yasağı ihlal ediyor): '.implode(', ', $found);
+    $envExample = $repoRoot.'/.env.example';
+
+    if (! is_file($envExample)) {
+        return '.env.example yok; shared-host varsayılanı doğrulanamıyor.';
+    }
+
+    $env = (string) file_get_contents($envExample);
+
+    // Varsayılan profil container gerektiren bir servise bağlanmamalı:
+    // paylaşımlı barındırmada Redis ve ayrı bir DB sunucusu yoktur.
+    $violations = [];
+
+    if (preg_match('/^CACHE_STORE=redis/m', $env) === 1) {
+        $violations[] = 'CACHE_STORE varsayılanı redis';
+    }
+
+    if (preg_match('/^QUEUE_CONNECTION=redis/m', $env) === 1) {
+        $violations[] = 'QUEUE_CONNECTION varsayılanı redis';
+    }
+
+    if (preg_match('/^SESSION_DRIVER=redis/m', $env) === 1) {
+        $violations[] = 'SESSION_DRIVER varsayılanı redis';
+    }
+
+    // Docker'a özgü host adları varsayılana sızmamalı: `db` ancak compose
+    // ağında çözülür, paylaşımlı barındırmada çözülmez.
+    if (preg_match('/^DB_HOST=(db|postgres|mysql)$/m', $env) === 1) {
+        $violations[] = 'DB_HOST varsayılanı bir container servis adı';
+    }
+
+    if ($violations !== []) {
+        return 'Varsayılan dağıtım profili container gerektiriyor (docs/03 ADR-L08a: '
+            .'Docker EK profildir, shared-host yolu açık kalmalı): '.implode(', ', $violations);
     }
 
     return null;

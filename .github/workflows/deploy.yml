@@ -1,0 +1,123 @@
+name: Deploy
+
+# ELLE TETİKLENİR. Otomatik deploy bilerek kapalı: canlıya çıkmak geri
+# alınması zor bir iştir ve kararı sahibinindir. `main`'e her birleşme
+# otomatik yayına dönüşürse, bir hata düzeltmesi ile bir davranış
+# değişikliği aynı riski taşır hâle gelir.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Canlıya deploy etmek için DEPLOY yazın'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  # Aynı anda iki deploy, sunucuda yarış demektir.
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Onay metnini doğrula
+        run: |
+          if [ "${{ inputs.confirm }}" != "DEPLOY" ]; then
+            echo "Onay metni 'DEPLOY' değil; çıkılıyor."
+            exit 1
+          fi
+
+  build:
+    needs: guard
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image reference
+        id: meta
+        run: |
+          repo="$(echo '${{ github.repository }}' | tr 'A-Z' 'a-z')"
+          echo "image=ghcr.io/${repo}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      # Hedef netcup AMD EPYC: linux/amd64. Runner zaten amd64 olduğu için
+      # emülasyon yok; platform yine de AÇIKÇA yazılıyor, çünkü runner
+      # mimarisinin sessizce değişmesi imajı hedefte çalışmaz hâle getirir.
+      - name: Build and push (linux/amd64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.image }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: SSH anahtarını yükle
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # Host anahtarı SABİTLENİR. `StrictHostKeyChecking=no`, ilk
+          # bağlantıda ortadaki adama kapı açar; deploy kanalı üretim
+          # sunucusuna kök erişimdir.
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Compose dosyalarını gönder
+        run: |
+          scp -i ~/.ssh/id_ed25519 \
+            docker-compose.yml docker/Caddyfile \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/zabuno/"
+
+      - name: Yeni imajı yayına al
+        run: |
+          ssh -i ~/.ssh/id_ed25519 \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "cd ~/zabuno \
+             && export ZABUNO_IMAGE='${{ needs.build.outputs.image }}' \
+             && echo \"ZABUNO_IMAGE=\$ZABUNO_IMAGE\" > .image.env \
+             && docker compose --env-file .env --env-file .image.env pull app \
+             && docker compose --env-file .env --env-file .image.env up -d \
+             && docker image prune -f"
+
+      - name: Sağlık kontrolü
+        run: |
+          # Deploy, konteyner ayağa kalktığında değil, uygulama cevap
+          # verdiğinde bitmiştir. Aksi hâlde yeşil bir iş, düşmüş bir site
+          # anlamına gelebilir.
+          for attempt in $(seq 1 20); do
+            if curl -fsS --max-time 10 "${{ secrets.DEPLOY_HEALTH_URL }}" > /dev/null; then
+              echo "Sağlık kontrolü GEÇTİ (deneme ${attempt})"
+              exit 0
+            fi
+            sleep 6
+          done
+          echo "Sağlık kontrolü 120 saniyede geçmedi."
+          exit 1

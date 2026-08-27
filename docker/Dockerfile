@@ -1,0 +1,109 @@
+# syntax=docker/dockerfile:1.7
+
+# Zabuno üretim imajı — netcup VPS (AMD EPYC, linux/amd64).
+#
+# Üç aşama var ve ayrı olmalarının sebebi boyut değil, YÜZEY: derleme
+# araçları (node, composer, git) çalışan sunucuda bulunmamalı. Son imaj
+# yalnız PHP çalışma zamanını ve derlenmiş çıktıyı taşır.
+
+# --- 1) Ön yüz varlıkları -------------------------------------------------
+FROM node:22-bookworm-slim AS assets
+
+WORKDIR /build
+
+# Önce yalnız manifest: bağımlılık katmanı, kaynak her değiştiğinde
+# yeniden kurulmasın.
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+COPY resources ./resources
+COPY lang ./lang
+COPY scripts ./scripts
+COPY vite.config.ts tsconfig.json ./
+
+# Çeviri projeksiyonları derleme zamanında üretilir. `docs/40` bunun
+# çalışma zamanına taşınmasını planlıyor; o gelene kadar imaj, katalogları
+# içinde dondurur ve PO değişikliği yeni imaj gerektirir.
+RUN npm run i18n:build && npm run build
+
+# --- 2) Ortak PHP tabanı ---------------------------------------------------
+# Eklentiler TEK yerde kurulur ve hem bağımlılık çözümü hem çalışma zamanı
+# aynı tabandan türer. Ayrı kurulsalardı, `composer install` bir kümede
+# doğrulanır, uygulama başka bir kümede koşardı — ve fark, ancak QR ya da
+# PDF üretilirken ortaya çıkardı.
+#
+# Küme `composer.json`'daki `ext-*` bildirimleriyle birebir olmalı. Bu
+# derleme, bildirim ile gerçeğin ayrıştığı gün DURUR: ilk yazıldığında tam
+# olarak öyle oldu, çünkü `composer` imajında gd yoktu.
+FROM php:8.3-fpm-bookworm AS php-base
+
+COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions \
+        bcmath \
+        gd \
+        intl \
+        mbstring \
+        opcache \
+        pdo_pgsql \
+        zip
+
+# --- 3) PHP bağımlılıkları -------------------------------------------------
+FROM php-base AS vendor
+
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
+WORKDIR /build
+COPY composer.json composer.lock ./
+
+# `--no-scripts`: artisan burada yok, paket keşfi çalışma zamanına kalır.
+# `--no-dev`: geliştirme bağımlılıkları üretim imajına girmez.
+RUN composer install \
+        --no-dev \
+        --no-scripts \
+        --no-interaction \
+        --prefer-dist \
+        --optimize-autoloader
+
+# --- 4) Çalışma zamanı -----------------------------------------------------
+FROM php-base AS runtime
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nginx supervisor curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Opcache üretim ayarı. `validate_timestamps=0` bilinçli: imaj değişmezdir,
+# dosya değişikliği yalnız yeni imajla gelir. Bu ayarın FTP iş akışını
+# sessizce öldürdüğü not edilmişti (`docs/13` §7) — orada tehlike, burada
+# doğru davranış, çünkü burada dosya elle değiştirilmiyor.
+RUN { \
+        echo 'opcache.enable=1'; \
+        echo 'opcache.validate_timestamps=0'; \
+        echo 'opcache.memory_consumption=192'; \
+        echo 'opcache.max_accelerated_files=20000'; \
+        echo 'expose_php=Off'; \
+    } > /usr/local/etc/php/conf.d/zabuno.ini
+
+WORKDIR /var/www/html
+
+COPY --from=vendor /build/vendor ./vendor
+COPY . .
+COPY --from=assets /build/public/build ./public/build
+COPY --from=assets /build/lang ./lang
+COPY --from=assets /build/resources/js/i18n/generated ./resources/js/i18n/generated
+
+COPY docker/nginx.conf /etc/nginx/sites-available/default
+COPY docker/supervisord.conf /etc/supervisor/conf.d/zabuno.conf
+COPY docker/entrypoint.sh /usr/local/bin/zabuno-entrypoint
+RUN chmod +x /usr/local/bin/zabuno-entrypoint \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+EXPOSE 8080
+
+# Sağlık kontrolü uygulamanın kendi ucundan geçer; nginx'in ayakta olması
+# uygulamanın çalıştığı anlamına gelmez.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl -fsS http://127.0.0.1:8080/up || exit 1
+
+
+ENTRYPOINT ["zabuno-entrypoint"]

@@ -67,6 +67,7 @@ dosya → hangi talimat maddesini karşıladığı.
 | React+Vite, Flowbite first, shadcn source-owned, Next.js yasak | `docs/03` ADR-L06 |
 | Public SEO envelope (SSR shell + progressive enhancement) | `docs/03` ADR-L07 |
 | No Docker, shared-host default, kapasite matrisi | `docs/03` ADR-L08, `docs/15` §4 |
+| Docker EK profil; shared-host yolu açık kalır | `docs/03` ADR-L08a, `docs/42`, `DeploymentContractTest` |
 | 5 tema domeni | `docs/03` ADR-L09, `docs/06` §1 |
 
 ## E — Modül kataloğu
