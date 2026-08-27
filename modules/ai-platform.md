@@ -38,7 +38,16 @@ CORE-12 sözleşmelerini tüketir, kendi ledger'ını icat etmez), CORE-11 (tool
 allowlist ECA ile ilişkili), [`ai-provider-account-vault`](ai-provider-account-vault.md).
 
 ## Public contracts / events
-`AIPort::invoke(feature, model, input, schema)`; `AIInvoked`, `AIKillSwitchActivated`
+`AIPort::invoke(feature, model, input, schema)` — plane'in DIŞ yüzü;
+`AIInvoked`, `AIKillSwitchActivated`
+
+**2026-08-27 düzeltmesi:** bu tek imza plane'in tamamı DEĞİLDİR. İçeride
+yetenek portlarına dağıtılır: `StructuredGenerationPort`, `OcrPort`,
+`EmbeddingPort`, `VisionExtractionPort`, `ClassificationPort`, `RerankPort`,
+`ToolIntentPort`, `EvaluationPort`. Sebebi somut: OCR, gömme ve görme
+çıkarımı metin üretimi değildir; tek portun arkasında şema, maliyet, gecikme
+ve gizlilik profilleri birbirine karışır ve sonradan ayrılamaz. Ayrıntı:
+`docs/51-AI-FIRST-GAP-VE-UNK-UNKS.md` §3.1.
 event'leri.
 
 ## Tenant isolation

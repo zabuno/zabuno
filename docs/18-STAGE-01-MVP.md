@@ -102,8 +102,20 @@ bir ilk sürüm.
 - Tenant/security/audit/backup temel operasyonu.
 
 **Non-goals (bu stage'de yok)**: Ordering, reservation, loyalty, CRM
-(genişletilmiş), marketing automation, multi-branch, custom domain, AI-destekli
-üretim özellikleri, native app.
+(genişletilmiş), marketing automation, multi-branch, custom domain, native app.
+
+**AI — 2026-08-27'de daraltıldı.** Bu satır önceden "AI-destekli üretim
+özellikleri" diyerek AI'nın tamamını kapsam dışı bırakıyordu ve `docs/26` ile
+`docs/51` ile çelişiyordu. Sahibinin talimatı (*"MVP'de AI çekirdeği çok
+güçlü olmalı"*) çelişkiyi çözdü:
+
+| Stage 1'de VAR | Stage 1'de YOK |
+| --- | --- |
+| **AI Capability Plane** — portlar, vault, yönlendirme, bütçe, kill switch, denetim, eval | Geniş AI üretim özellikleri (çeviri, açıklama, alt metin, kampanya metni) |
+| **Tek dikey:** fotoğraf/PDF → kaynaklı menü taslağı → insan incelemesi | Doğal dil komut merkezi |
+| Yerel kodlayıcı modeller (OCR, gömme, sınıflandırma) | Otomatik yayın; AI'nın onaysız mutasyonu |
+
+Gerekçe ve mimari: `docs/51-AI-FIRST-GAP-VE-UNK-UNKS.md` §8.
 
 ## Entry gate
 

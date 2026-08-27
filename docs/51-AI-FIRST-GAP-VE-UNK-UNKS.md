@@ -2,8 +2,36 @@
 
 **Durum:** Analiz + plan. Faz 1 çekirdeği tanımlı, kod yazılmadı.
 **Requirement ID:** `AI-CORE-v1`
-**İlgili:** `docs/14` (AI-First doktrini), `docs/32` (yetenek matrisi),
-`docs/47` (form standardı Kural 10), `docs/49` (medya), `docs/50` (shell)
+**İlgili:** `docs/14` (AI-First doktrini), `docs/16` (unknown-unknowns kaydı),
+`docs/18`–`docs/25` (Stage 1–8), `docs/26` (WP matrisi), `docs/32` (yetenek
+matrisi), `modules/ai-platform.md`, `modules/ai-provider-account-vault.md`
+
+---
+
+## 0. Bağımsız denetim ve bu sürümün düzelttikleri (2026-08-27)
+
+Bu belgenin ilk sürümü bağımsız bir denetimden geçti (ChatGPT Codex, salt
+okunur). Denetim **haklı çıktı** ve altı somut kusur buldu. Hepsi burada
+düzeltildi; kaydedilmeleri gerekir, çünkü ikisi mimari hataydı:
+
+| # | Bulgu | Düzeltme |
+| --- | --- | --- |
+| 1 | **"Faz 2–10" ürün fazı değildi** — medya planının (`docs/49`) kendi adımlarını ürünün Stage 1–8'i gibi sunuyordu | §8 yeniden yazıldı: **Stage 1–8** (`docs/18`–`docs/25`) |
+| 2 | **Stage 1 üç ayrı şey söylüyordu** — `docs/18` "AI üretim özellikleri non-goal", `docs/26` "pre-wired kapalı", bu belge "çekirdek Stage 1'de kodlanır" | §9'da uzlaştırıldı; `docs/18` ve `docs/26` düzeltildi |
+| 3 | **`TextGenerationPort` bütün AI çekirdeği olamaz** — OCR, gömme, görme, sınıflandırma, yeniden sıralama, tool intent metin üretimi DEĞİLDİR | §3.1 **yetenek portu matrisi** ile değiştirildi |
+| 4 | **`ANTHROPIC_KEY_1/2/3` yanlış soyutlama** — ve `modules/ai-provider-account-vault.md` zaten daha doğrusunu söylüyordu | §3.2 **Provider → Connection → ModelDeployment → CapabilityRoute**; vault kanonik |
+| 5 | **Ölçülmemiş gecikme sayıları** ("10–40 ms") | Kaldırıldı. Sayı, gerçek sunucuda ölçüldükten sonra yazılır (§4.5) |
+| 6 | **"Altın küme boş başlar" kabul edilemez** | Faz 1 teslimi: **asgari fixture kümesi**; boş eval ile model yönlendirme ölçüsüz kalır |
+
+Ayrıca denetim, mevcut UNK listesine eklenmesi gereken bir sınıf daha
+gösterdi: tedarik zinciri, nicemleme kayması, gömme yeniden indeksleme ve
+görünmez enjeksiyon (§2b).
+
+**Denetimin bir noktasında ondan ayrılıyorum:** somut model adları
+(sürüm numaralarıyla) burada **kesin gerçek olarak yazılmaz.** Sağlayıcılar
+katalogu bizim sürüm döngümüzden bağımsız değiştirir; bir model adını plana
+gömmek, o ad emekliye ayrıldığı gün planı yanlış yapar. Bağlayıcı olan
+**seçim yordamı ve eval kapısıdır** (§4.3), model kimliği yapılandırmadadır.
 
 ---
 
@@ -100,181 +128,276 @@ SINIRLI**; sınır aşılırsa AI reddedilir, menü etkilenmez.
 
 ---
 
-## 3. Faz 1 çekirdeği — LLM altyapısı
+## 2b. Denetimin eklettiği unknown-unknown sınıfları
 
-Sahibinin kararı: **temeli atmak Faz 1'in konusu.**
+UNK-01..10 yetersizdi. Bağımsız denetim altı sınıf daha gösterdi; hepsi
+gerçek ve hiçbiri ilk sürümde yoktu.
 
-### 3.1 Katmanlar
+### UNK-11 — Model tedarik zinciri
+İndirilen bir model dosyası kod kadar güvenilmez bir girdidir. **Karar:**
+lisans, sağlama (checksum) ve tam revizyon kaydedilir; doğrulanmayan dosya
+yüklenmez. Model manifesti sürüm kontrolündedir, dosyanın kendisi değil.
 
-```
-Domain/Ai
-  Capability          "ürün açıklaması üret" — YETENEK, model değil
-  ModelId             sağlayıcı + model adı (yapılandırmadan, koddan değil)
-  AiDecision          öneri: bağlam, etkilenen kayıtlar, diff, gerekçe
-Application/Ai/Port
-  TextGenerationPort  tek arayüz — bulut ve yerel AYNI portun arkasında
-  AccountPoolPort     hesap seçimi ve sağlık durumu
-  AiBudgetPort        tenant başına bütçe
-Infrastructure/Ai
-  AnthropicProvider · GeminiProvider · OpenAiProvider · LocalProvider
-  StickyAccountPool   tenant → hesap YAPIŞKAN eşlemesi (UNK-01)
-  RedactingPrompt     PII prompt'a girmeden temizlenir (UNK-04)
-  SchemaValidated     şemaya uymayan cevap başarısızdır (UNK-02)
-```
+### UNK-12 — Nicemleme (quantization) kayması
+Aynı model, farklı nicemleme düzeyinde farklı kalite verir. Sessizce
+güncellenirse çıktı bozulur ve kimse fark etmez. **Karar:** nicemleme düzeyi
+model kimliğinin PARÇASIDIR; değişirse eval tekrarlanır.
 
-### 3.2 Yapılandırma — `config/ai.php`
+### UNK-13 — Tenant'lar arası gömme ve önbellek sızıntısı
+Vektör alanı ve sonuç önbelleği tenant kimliği taşımazsa, bir restoranın
+ürünleri başkasının aramasında çıkar. **Karar:** tenant kimliği vektör
+alanının, önbellek anahtarının ve getirme filtresinin zorunlu parçasıdır —
+sonradan eklenen bir `WHERE` değil.
 
-```php
-'providers' => [
-    'anthropic' => [
-        'accounts' => [
-            ['key' => env('ANTHROPIC_KEY_1'), 'label' => 'claude-1'],
-            ['key' => env('ANTHROPIC_KEY_2'), 'label' => 'claude-2'],
-            ['key' => env('ANTHROPIC_KEY_3'), 'label' => 'claude-3'],
-        ],
-        'models' => ['claude-opus-5', 'claude-sonnet-5', 'claude-haiku-4-5-20251001'],
-    ],
-    'gemini' => ['accounts' => [...], 'models' => [...]],
-    'openai' => ['accounts' => [...], 'models' => [...]],
-    'local'  => ['endpoint' => env('AI_LOCAL_ENDPOINT'), 'models' => [...]],
-],
-```
+### UNK-14 — Görünmez enjeksiyon PDF/görselin İÇİNDEDİR
+Beyaz üstüne beyaz metin, görünmez katman, meta veri. OCR onu okur ve model
+talimat sanabilir. **Karar:** OCR çıktısı da kullanıcı içeriğidir; veri
+olarak işaretlenir (UNK-07 ile aynı kural, ama kaynağı farklı).
 
-**Model adları YAPILANDIRMADADIR, kodda değil.** Sebebi somut: sağlayıcılar
-model katalogunu bizim sürüm döngümüzden bağımsız değiştirir. Kodda sabit bir
-model adı, o ad emekliye ayrıldığı gün üretimi durdurur — ve düzeltmesi bir
-deploy gerektirir. Yapılandırmada ise bir ortam değişkenidir.
+### UNK-15 — ECA fırtınası ve yinelenen iş
+Bir kural başka bir kuralı tetikleyebilir; yeniden deneme aynı taslağı ikinci
+kez uygulayabilir. **Karar:** her AI işinin **idempotency anahtarı** var;
+ECA özyinelemesi derinlik sınırlı ve tenant başına oran sınırlı.
 
-### 3.3 Yönlendirme sırası — sahibinin kararı (2026-08-27)
+### UNK-16 — Gömme yeniden indeksleme
+Gömme modeli değişince ESKİ vektörler yeni sorgularla karşılaştırılamaz.
+**Karar:** vektör kaydı model kimliğini taşır; model değişimi bir yeniden
+indeksleme işidir ve maliyeti planlanır.
 
-Bir yetenek için hangi modelin çalışacağı **sabit bir sırayla** çözülür.
-Sıra maliyet ve yetenek gerçekliğinden gelir, tercihten değil:
+### UNK-17 — İnceleme yığılması ve otomasyon yanlılığı
+"İnsan onaylar" bir güvence değildir: yüz öneri gelirse insan hepsini
+okumadan onaylar. **Karar:** öneri hacmi sınırlı; güven düşükse öneri
+GÖSTERİLMEZ. Az ve doğru öneri, çok ve gürültülü öneriden iyidir.
 
-```
-1. YEREL     küçük açık kaynak model      → bedava, veri sunucudan çıkmaz
-2. GEMINI    bulut                        → ucuz; varsayılan bulut sağlayıcı
-3. OPENAI    bulut                        → Gemini'nin yetmediği yerde
-4. CLAUDE    bulut                        → EN SON, iki dar çerçevede
-```
+### UNK-18 — Alerjen iddiasının hukuki ağırlığı
+**En kritik sınır.** AI yalnız **"aday alerjen"** gösterebilir.
 
-**Claude neden en sonda ve nerede:**
-
-| Çerçeve | Kullanılır mı |
+| İzin verilen | YASAK |
 | --- | --- |
-| Sistemin kendi **kodlama ve teknik gelişimi** | ✅ Birincil — bu, ürün çalışma zamanı değil, GELİŞTİRME hattıdır |
-| Gemini ve OpenAI'nin **yapamadığı** iş | ✅ Yetenek matrisinde açıkça işaretlenmiş satırlar |
-| Sıradan üretim/çeviri/etiketleme | ❌ Daha ucuzu yeterliyken pahalı olan seçilmez |
+| "Bu üründe süt olabilir — kontrol edin" | "Bu ürün alerjensizdir" |
+| "Tarif tereyağı içeriyor" | "Vegan" etiketini otomatik koymak |
+| Adayı işaretlemek | Çapraz bulaşma hakkında herhangi bir iddia |
 
-Bu ayrım kayda değer, çünkü iki farklı hattır: **ürün çalışma zamanı**
-(restoran sahibinin tetiklediği AI) ile **geliştirme hattı** (bu deponun
-kendi kodlama yardımı). Aynı bütçeden beslenmezler ve aynı matriste
-durmazlar.
+Çapraz bulaşma menü metninden **çıkarılamaz** — mutfak pratiği bilgisi
+gerektirir ve bir model onu bilemez. Yanlış "alerjensiz" iddiası bir sağlık
+olayıdır ve hukuki sorumluluk doğurur.
 
-**Yükselme (escalation) kuralı:** bir alt basamak sonucu şemaya uymazsa ya
-da güven eşiğinin altındaysa bir üst basamağa çıkılır — ve bu KULLANICIYA
-GÖRÜNÜR olur (UNK-03). "Yerel model yetmedi, buluta çıkıldı" bilgisi
-saklanmaz; maliyeti ve kaliteyi açıklayan tek şey odur.
-
-### 3.4 Yetenek × model matrisi
-
-```php
-'capabilities' => [
-    'product.description' => [
-        'preferred' => 'anthropic:claude-haiku-4-5-20251001',
-        'fallback'  => ['gemini:...', 'local:...'],
-        'schema'    => 'product-description.v1',
-        'requires_human_approval' => true,
-        'max_input_tokens' => 2000,
-    ],
-],
-```
-
-Kullanıcı model seçebilir — **ama matrisin sınırları içinde.** Bir yetenek
-için aday olmayan model seçilemez; aksi hâlde şema uyumu ve maliyet tavanı
-anlamsızlaşır.
-
-### 3.5 Faz 1'in kabul ölçütü
-
-1. `TextGenerationPort` var; **hiçbir sağlayıcı bağlı değilken** ürün tam
-   çalışıyor.
-2. Hesap havuzu yapışkan eşleme yapıyor ve sağlıksız hesabı devre dışı
-   bırakıyor.
-3. Şemaya uymayan cevap kullanıcıya ULAŞMIYOR.
-4. Redaction, prompt'a giden metinden bilinen kişisel alanları çıkarıyor.
-5. Kill switch: tek ayarla bütün AI kapanıyor, ürün etkilenmiyor.
-6. Tenant başına bütçe; dolunca AI durur, ürün durmaz.
-7. Her çağrı denetim kaydı bırakıyor: hangi hesap, hangi model, kaç token,
-   kaç kuruş.
-
-**Sağlayıcı anahtarı olmadan geliştirme yapılabilir olmalı**: `local` ya da
-sahte sağlayıcı ile tüm zincir çalışır.
+Aynı sınır fiyat için de geçerlidir: **model fiyat uydurmaz.** Okunamayan
+fiyat `uncertain` ile gelir; sıfır ya da tahmin olarak değil.
 
 ---
 
-## 4. Yerel küçük modeller — MVP'de indirilecek ve çalışacaklar
+## 3. Faz 1 çekirdeği — AI Capability Plane
+
+### 3.1 Tek port DEĞİL — yetenek portu matrisi
+
+İlk sürüm `TextGenerationPort` öneriyordu. **Yanlıştı.** OCR, gömme, görme
+çıkarımı, sınıflandırma, yeniden sıralama ve tool intent metin üretimi
+değildir; tek portun arkasına konduklarında sağlayıcı bağımsızlığı değil,
+**yeteneklerin birbirine karışması** üretilir — ve şema, maliyet, gecikme,
+gizlilik profilleri birbirinden çok farklı olduğu için o karışım sonradan
+ayrılamaz.
+
+```
+Application/Ai/Port
+  StructuredGenerationPort   şemaya bağlı metin üretimi
+  OcrPort                    görüntü/PDF → metin + kutu koordinatları
+  EmbeddingPort              metin/görsel → vektör
+  VisionExtractionPort       görüntü → yapılandırılmış kayıt
+  ClassificationPort         etiket + güven
+  RerankPort                 aday sıralama
+  ToolIntentPort             doğal dil → typed komut ADAYI (yürütmez)
+  EvaluationPort             altın kümeye karşı ölçüm
+```
+
+Destek sözleşmeleri:
+
+```
+ProviderConnectionVault    kimlik bilgileri ve bağlantılar
+CapabilityRouter           yetenek + kısıt → aday model
+AiArtifactRepository       üretilen her şey, kaynağıyla
+AiBudgetPort               tenant başına bütçe
+```
+
+`modules/ai-platform.md` bugün `AIPort::invoke(feature, model, input, schema)`
+diyor. Bu imza korunur ama **plane'in dış yüzü** olur; içeride yukarıdaki
+portlara dağıtılır. Modül belgesi buna göre güncellenir.
+
+### 3.2 Sağlayıcı hiyerarşisi — `ANTHROPIC_KEY_1/2/3` değil
+
+İlk sürümdeki numaralı anahtar dizisi yanlış soyutlamaydı. Depoda zaten
+daha doğrusu vardı: `modules/ai-provider-account-vault.md`. **O kanoniktir.**
+
+```
+Provider                 anthropic | google | openai | local
+  └─ Connection          resmi API projesi/workspace/service account (N adet)
+       └─ ModelDeployment   tam model revizyonu + uç nokta
+            └─ CapabilityRoute  yetenek → aday dağıtım
+```
+
+**Bağlayıcı kural — tüketici aboneliği kimlik bilgisi DEĞİLDİR.** ChatGPT
+Plus/Pro ya da Claude.ai aboneliği API kullanımını kapsamaz; API ayrı ürün ve
+ayrı faturalamadır. Vault modülü bunu zaten yasaklıyor (§149) ve bu belge o
+yasağı tekrar etmez, ona **uyar**.
+
+Hesap sayısı koda gömülmez: `N` bağlantı, çalışma zamanında yapılandırılır.
+"Üç Claude hesabı" bir yapılandırma verisidir, bir mimari sabit değil.
+
+### 3.3 Yapışkanlık — dar ve gerekçeli
+
+İlk sürüm "tenant → hesap DAİMA yapışkan" diyordu ve bunu bir **güvenlik
+sınırı** gibi sunuyordu. İkisi de fazla kesindi.
+
+**Düzeltme:** tenant izolasyonu hesap seçiminde değil, **veri, önbellek,
+getirme ve politika** katmanlarında sağlanır. Hesap seçimi bir izolasyon
+mekanizması değildir ve öyle sunulursa yanlış güven verir.
+
+Yapışkanlık yalnız şu üç sebepten biri varsa uygulanır:
+
+| Sebep | Neden |
+| --- | --- |
+| Sağlayıcı prompt önbelleği | Önbellek bağlantıya bağlıdır; sıçrama maliyeti artırır |
+| Veri ikametgâhı (residency) | Bağlantı bölgeye bağlıysa seçim serbest değildir |
+| Sözleşme/kota taahhüdü | Belirli bağlantıya bağlı taahhüt varsa |
+
+Bunların hiçbiri yoksa yönlendirme serbesttir ve sağlıklı bağlantıyı seçer.
+
+### 3.4 Kaynak modeli — model bir BAŞVURU KAYNAĞI DEĞİLDİR
+
+Bu, denetimin en değerli maddesi ve ürün için en riskli olanı.
+
+**Kaynak şunlardır:** yüklenen belge/fotoğraf, kanonik menü kaydı, restoranın
+doğruladığı içerik, mevzuat/ontoloji kaydı. **Model yalnız bir çıkarım
+motorudur.**
+
+Bu yüzden AI'nın ürettiği her kayıt şunları taşır:
+
+```
+source_refs[]      hangi dosya, hangi sayfa, hangi koordinat (bbox)
+file_hash          kaynağın sağlaması
+model_id           tam revizyon
+prompt_version     prompt sürümü
+schema_version     çıktı şeması sürümü
+confidence         alan bazında
+uncertain          alan bazında bayrak
+```
+
+Bunlar olmadan "bu fiyat nereden geldi" sorusu cevapsız kalır — ve o soru
+menü yayınlandıktan sonra sorulur.
+
+### 3.5 İşletim katmanı — bugün YOK
+
+Denetim haklı: `docker/supervisord.conf` yalnız `php-fpm` ve `nginx`
+çalıştırıyor. AI için gereken ve bugün bulunmayanlar:
+
+| Bileşen | Neden |
+| --- | --- |
+| `queue-worker` servisi | AI işleri istek döngüsünde çalışamaz |
+| Dead-letter kuyruğu | Başarısız iş sessizce kaybolmaz |
+| Zaman aşımı + iptal | Kullanıcı vazgeçtiğinde iş de durur |
+| **Idempotency anahtarı** | Yeniden deneme aynı taslağı İKİ KEZ uygulamaz |
+| `ai-local` sidecar | Kaynak sınırlı ayrı süreç |
+| Devre kesici (circuit breaker) | Sağlayıcı çöktüğünde kuyruk şişmez |
+
+### 3.6 Faz 1 kabul ölçütü
+
+1. **Hiçbir sağlayıcı bağlı değilken ürün TAM çalışır.**
+2. Sahte sağlayıcıyla bütün zincir uçtan uca koşar (CI'da).
+3. Şemaya + anlamsal doğrulamaya uymayan cevap kullanıcıya ULAŞMAZ.
+4. Her AI kaydı kaynağını (§3.4) taşır.
+5. Kill switch: global ve tenant başına; ürün etkilenmez.
+6. Bütçe tenant başına; dolunca AI durur, ürün durmaz.
+7. **Asgari eval fixture kümesi mevcut** — boş değil.
+8. Kuyruk işçisi, dead-letter ve idempotency çalışıyor.
+9. Denetim: bağlantı, model revizyonu, token, maliyet, gecikme.
+
+## 4. Yerel küçük modeller — 32 GB sunucuda ne gerçekten çalışır
 
 Sahibinin kararı: **önce yerel modeller, MVP'de gerçekten fayda sağlayanlar
-indirilip çalıştırılacak.**
+indirilip çalıştırılacak.** Sunucuda 32 GB RAM var.
 
-netcup VPS'te GPU yok. Bu, modelleri iki kümeye ayırır ve ayrım nettir:
-**kodlayıcı (encoder) modeller CPU'da milisaniyelerde** çalışır; **üretken
-(decoder) modeller saniyelerde.** Birincisi kullanıcı beklerken kullanılabilir,
-ikincisi yalnız arka planda.
+### 4.1 32 GB bir HIZ kanıtı değildir
 
-### 4.1 Kodlayıcı sınıfı — MVP'de indirilir
+İlk sürüm "~10–40 ms" gibi sayılar yazıyordu. **Bunlar ölçülmedi ve
+kaldırıldı.** Bellek modelin sığıp sığmadığını söyler; hızı söylemez. Hızı
+belirleyen şunlardır ve hiçbiri bilinmiyor:
 
-| Model sınıfı | Bu projede ne yapar | Gecikme |
+- CPU çekirdek sayısı ve AVX/AVX-512 desteği
+- Disk türü (model yükleme ve mmap davranışı)
+- **Aynı anda koşan PHP-FPM ve PostgreSQL yükü**
+- Eşzamanlı istek sayısı
+
+**Kural:** gecikme hedefleri gerçek netcup sunucusunda ölçüldükten sonra
+yazılır. Ölçülmemiş sayı bu belgede yer almaz.
+
+### 4.2 Bellek bütçesi — 32 GB nasıl bölünür
+
+| Dilim | Ayrılan | Gerekçe |
 | --- | --- | --- |
-| **Çok dilli cümle gömme** | Yinelenen ürün ("Trileçe" × 2), menü içi anlamsal arama, kategori önerisi, çeviri belleği eşleşmesi | ~10–40 ms |
-| **Görsel gömme (CLIP sınıfı)** | Yinelenen/benzer görsel, "bu görsel yemek mi logo mu", ürünle görselin uyuşması | ~50–150 ms |
-| **Metin sınıflandırıcı** | Vejetaryen/vegan/helal işareti önerisi, ürün mü kategori mi | ~10 ms |
-| **Dil algılama** | Menü içeriğinin dili; çeviri kuyruğunu besler | ~1 ms |
-| **Yeniden sıralayıcı (cross-encoder)** | Arama sonuçlarının sıralaması | ~20 ms |
-| **Alerjen NER** | Ürün adı/açıklamasından aday alerjen | ~15 ms |
+| İşletim sistemi + PostgreSQL + PHP-FPM + proxy + dosya önbelleği | ~12 GB | Ürünün kendisi; AI için kısılamaz |
+| `ai-local` sürekli kullanım tavanı | ~8 GB | Normal çalışma |
+| `ai-local` sert sınır | ~10 GB | Aşılırsa süreç reddeder, öldürülmez |
+| Boş güvenlik payı | ≥ 8 GB | Ani yük ve sayfa önbelleği |
 
-**Bunlar LLM değil.** Şema sorunu yok (UNK-02), enjeksiyon yüzeyi yok
-(UNK-07), maliyet yok. MVP'de indirilir ve çalışır.
+**Aynı anda tek üretken model.** Bağlam 4K–8K. Üretken işler arka plan
+kuyruğunda, eşzamanlılık 1.
 
-### 4.2 LLM olmayan ama AI hattının parçası
+Sebebi UNK-10: model belleği alırsa menü sayfası yavaşlar. Sert sınır, AI
+isteğinin reddedilmesini sağlar — sunucunun takılmasını değil.
 
-| Araç | İş |
+### 4.3 Model seçimi — ad değil, YORDAM bağlayıcıdır
+
+Bu belge **somut model adı ve sürümü sabitlemez.** Sağlayıcılar katalogu
+bizim sürüm döngümüzden bağımsız değiştirir; bir adı plana gömmek, o ad
+emekliye ayrıldığı gün planı yanlış yapar.
+
+Bağlayıcı olan seçim yordamıdır:
+
+| Adım | Kural |
 | --- | --- |
-| **OCR (Tesseract sınıfı)** | Görselden/PDF'ten ham metin — çıkarımın deterministik yarısı |
-| **Klasik CV** | Bulanıklık, karanlık, çözünürlük, yüz/nesne kadrajı |
-| **Perceptual hash** | Birebir olmayan yinelenen görsel |
+| 1 | Aday, **açık lisanslı** olmalı (kapılı/gated lisans varsayılan olmaz) |
+| 2 | Aday, model kartıyla birlikte kaydedilir: lisans, boyut, sağlama, revizyon |
+| 3 | Aday, **Türkçe restoran fixture'larıyla** eval'den geçmeli |
+| 4 | Nicemleme (quantization) düzeyi kaydedilir — değişirse eval TEKRARLANIR |
+| 5 | Kabul edilen model `config/ai.php`'ye yazılır; kod model adı bilmez |
 
-`vips` zaten imaja giriyor (`docs/49` Faz 1); CV işlerinin çoğu onunla yapılır.
+### 4.4 MVP'de hangi YETENEKLER yerel çalışır
 
-### 4.3 Üretken küçük model — sınırlı ve arka planda
+Ayrım "küçük/büyük" değil, **kodlayıcı/üretken**:
 
-1–3B sınıfı nicelenmiş bir model CPU'da saniyede birkaç kelime üretir.
-Kullanıcı beklerken **kullanılmaz**; şu işler için yeterlidir:
+| Yetenek | Sınıf | MVP | Not |
+| --- | --- | --- | --- |
+| Görsel düzeltme, kalite, near-duplicate | **Model değil** (`libvips` + pHash) | ✅ Zorunlu | Daima ilk adım; LLM'den önce |
+| **OCR** (metin + kutu koordinatları) | Kodlayıcı | ✅ Zorunlu | Menü çıkarımının deterministik yarısı; kutu koordinatları kaynak izi için şart (§3.4) |
+| **Çok dilli metin gömme** | Kodlayıcı | ✅ | Yinelenen ürün, anlamsal arama, kategori adayı |
+| Dil algılama | Kodlayıcı | ✅ | Çeviri kuyruğunu besler |
+| Sınıflandırma | Kodlayıcı | ✅ | Vejetaryen/vegan adayı, "yemek mi logo mu" |
+| Yeniden sıralama | Kodlayıcı | ⬜ Stage 2 | Arama kalitesi |
+| **Görsel gömme** | Kodlayıcı | ⬜ Stage 2 | Görsel–ürün uyumu; pHash'in YERİNE değil ÜSTÜNE |
+| Kısa taslak üretimi | Üretken | ⚠️ Sınırlı | Arka planda, eşzamanlılık 1. **Fiyat ya da alerjen otoritesi olamaz** |
 
-- Alt metin taslağı (arka planda üretilir, kullanıcı onaylar)
-- Kısa alan tamamlama ("Adana" → "Adana Kebap")
-- Metin toparlama (büyük/küçük harf, noktalama)
+### 4.5 Çalışma zamanı ve dağıtım profilleri
 
-**Kalite dalgalanır ve bu gizlenmez**: çıktı her zaman öneri olarak, kaynağı
-görünür biçimde sunulur.
+Yerel model bir **sağlayıcıdır** (UNK-05), ayrı kod yolu değil. OpenAI-uyumlu
+bir HTTP uç noktası arkasında durur — böylece aynı adaptör hem bulut hem
+yerel için çalışır.
 
-### 4.4 Çalışma zamanı — yerel model bir SAĞLAYICIDIR
+**Ama tam uyumluluk varsayılmaz:** yerel sunucular OpenAI API'sinin tamamını
+uygulamaz ve çok kipli destek çoğu zaman deneyseldir. Bu yüzden bir
+**uyumluluk (conformance) katmanı** gerekir: hangi alanların desteklendiği
+sınanır, desteklenmeyen yetenek o sağlayıcı için aday olmaz.
 
-```
-llama.cpp / ONNX  →  OpenAI-uyumlu HTTP uç noktası  →  aynı TextGenerationPort
-```
+Deponun paylaşımlı barındırmayı da desteklediği unutulmamalı. **Üç profil:**
 
-OpenAI-uyumlu uç nokta seçilmesi bilinçli: **aynı adaptör kodu** hem bulut hem
-yerel için çalışır. İki kod yolu olsaydı biri her zaman geride kalırdı (UNK-05).
+| Profil | Yerel AI | Kullanım |
+| --- | --- | --- |
+| `shared-host` | **Kapalı** | Paylaşımlı barındırma; sidecar varsayılamaz. Ürün deterministik çalışır, AI yalnız uzak uç noktayla |
+| `vps-ai-32gb` | Açık | `ai-local` + `queue-worker` ayrı servisler |
+| `private-gpu` | Açık | Enterprise; Stage 6 |
 
-**Kaynak sınırı zorunlu** (UNK-10): ayrı süreç, bellek ve CPU tavanı, istek
-kuyruğu uzunluğu sınırı. Tavan aşılırsa AI isteği reddedilir — menü sayfası
-etkilenmez.
-
-**Model dosyaları sürüm kontrolünde DEĞİL**; `install.sh` indirir ve
-sağlaması (checksum) doğrulanır. Depoya 500 MB'lık bir dosya koymak, klonlama
-süresini ve CI'yı kalıcı olarak bozar.
-
----
+**Model dosyaları sürüm kontrolünde DEĞİL**: `install.sh` indirir, sağlaması
+doğrulanır, revizyon kaydedilir. Depoya yarım GB koymak klonlamayı ve CI'yı
+kalıcı bozar.
 
 ## 4b. Büyük API modelleri — yerel modelin yapamadıkları
 
@@ -459,69 +582,118 @@ kodlama ve teknik gelişimi.** Bu hat ürün çalışma zamanı değildir:
 
 İki hattın karışması, en pahalı modelin en sık işi yapmasına yol açardı.
 
-## 8. Faz faz AI — her fazda çekirdek, eklenti değil
+## 8. Stage 1–8 AI yol haritası
 
-Sahibinin kararı: **MVP'de AI çekirdeği güçlü olmalı.** Bu, Faz 1'in kapsamını
-belirler — çekirdek MVP'de biter, yetenekler sonra gelir.
+**İlk sürümün en büyük kusuru buradaydı.** "Faz 2–10" diye sunulan tablo,
+ürünün yaşam döngüsü değil `docs/49`'daki MEDYA planının kendi adımlarıydı.
+Ürün genelindeki AI yol haritası fiilen yoktu.
 
-### Faz 1 — MVP AI ÇEKİRDEĞİ (kod bu fazda yazılır)
+Ürünün kanonik aşamaları `docs/18`–`docs/25`'tedir. Doğrusu:
 
-| # | İş | Neden Faz 1 |
+| Stage | AI teslimi |
+| --- | --- |
+| **1 — MVP** | **Capability Plane** (§3): yetenek portları, N-bağlantılı vault, sahte sağlayıcı, yerel çalışma zamanı, Gemini/OpenAI/Claude adaptör sözleşmeleri, bütçe + kill switch + denetim + eval fixture'ları, kuyruk işçisi. **Tek görünür dikey:** fotoğraf/PDF → kaynaklı menü taslağı → insan incelemesi |
+| **2 — Post-MVP** | Çeviri taslağı, ürün açıklaması, alt metin, yinelenen ürün/görsel, anlamsal arama, görsel gömme, yeniden sıralama, güvenli ECA tetikleyicileri |
+| **3 — GTM** | Onboarding koçu, SEO/schema taslağı, kampanya metni, destek triyajı, çoklu bağlantı, kontrollü BYOK |
+| **4 — PMF** | Geri bildirim kümeleme, onboarding sürtünme analizi, churn açıklaması, deney sonuçlarının kanıtlı özeti |
+| **5 — Growth** | Şubeler arası katalog normalizasyonu, POS alan eşleme, kampanya segmentleri, zincir anomali analizi |
+| **6 — Enterprise** | Veri ikametgâhı, müşteri model politikası, BYOK/KMS, özel uç nokta/on-prem, denetim dışa aktarımı, legal hold, model allowlist |
+| **7 — Maturity** | ModelOps: champion/challenger, drift, AI SLO, kapasite ve maliyet tahmini, red-team, olay ve felaket tatbikatı |
+| **8 — Exit-ready** | Sağlayıcı çıkış provası, prompt/model/veri kümesi soyağacı, lisans/IP dosyası, yeniden üretilebilir model manifestosu, devralma runbook'u |
+
+**Ufuklar (kanonik sekiz aşamayı bozmadan):**
+- **Ufuk 9:** Güvenli doğal dil komut merkezi (`docs/14` §9a) ve dış tool ekosistemi
+- **Ufuk 10:** Onaylı çapraz-şube öğrenimi, gizlilik koruyan toplulaştırma
+
+### 8.1 Medya planındaki AI satırları nereye düşer
+
+`docs/49`'un fazları ürün aşaması değildir; medya modülünün kendi
+adımlarıdır. AI karşılıkları şöyle eşlenir:
+
+| `docs/49` fazı | AI işi | Ürün aşaması |
 | --- | --- | --- |
-| 1 | `TextGenerationPort` + dört adaptör (yerel, Gemini, OpenAI, Claude) | Tek arayüz; yerel de bir sağlayıcıdır |
-| 2 | Yapışkan hesap havuzu + sağlık kontrolü | Önbellek ve bağlam buna bağlı (UNK-01) |
-| 3 | Yetenek × model matrisi + yükselme sırası | Yerel → Gemini → OpenAI → Claude |
-| 4 | JSON şema doğrulaması | Şemaya uymayan cevap kullanıcıya ulaşmaz (UNK-02) |
-| 5 | Redaction | Kişisel veri prompt'a girmez (UNK-04) |
-| 6 | Enjeksiyon koruması — kullanıcı içeriği VERİ olarak işaretlenir | Menü içeriğinden gelir (UNK-07) |
-| 7 | Tenant başına bütçe + kill switch | Dolunca AI durur, ürün durmaz (UNK-06) |
-| 8 | **Token optimizasyonu servisi** (§5) | Sonradan eklenen optimizasyon, mimariyi yeniden yazdırır |
-| 9 | Denetim: hesap, model, token, maliyet | Ölçülmeyen iddia edilmez |
-| 10 | **Yerel model çalışma zamanı** + kaynak sınırı | MVP'de indirilir ve çalışır (UNK-10) |
-| 11 | Yönerge/skill/MCP/ECA kayıt defterleri (§6) | Boş ama YERİNDE; sonradan kurulan kayıt defteri hep eksik kalır |
-| 12 | Eval koşum düzeneği (altın küme boş başlar) | Model değişimi ölçülmeden yapılmaz (UNK-08) |
+| Faz 2 (alım) | Alt metin taslağı, dil algılama | Stage 2 |
+| Faz 3 (sürüm/rendition) | Gömme ile yinelenen tespiti | Stage 2 |
+| Faz 4 (kütüphane) | Anlamsal arama, akıllı koleksiyon | Stage 2 |
+| Faz 5 (yayın) | Yayın öncesi risk taraması | Stage 2 |
+| Faz 6 (teslim) | **Görsel/PDF'ten menü çıkarma** | **Stage 1** — tek dikey |
+| Faz 8 (crop) | Akıllı kırpma | Stage 2 |
 
-**Faz 1 kabul ölçütü:** hiçbir sağlayıcı bağlı değilken ürün TAM çalışır; sahte
-sağlayıcıyla tüm zincir uçtan uca koşar; yerel gömme modeli indirilmiş ve
-milisaniyelerde cevap veriyor.
+Menü çıkarımının Stage 1'e alınmasının sebebi sahibinin talimatıdır: *"MVP'de
+AI çekirdeği çok güçlü olmalı."* Çekirdeğin gerçekten çalıştığını gösteren
+tek şey, uçtan uca bir dikeydir.
 
-### Faz 2–10 — yetenekler çekirdeğe takılır
+### 8.2 Stage 1 dikeyi — kabul ölçütü
 
-| Faz | Ürün işi | AI yeteneği | Sağlayıcı | Determinist yol |
-| --- | --- | --- | --- | --- |
-| **2** | Güvenli alım | Alt metin taslağı; dil algılama | **Yerel** | Kullanıcı yazar |
-| **3** | Sürüm/rendition | Yinelenen görsel/ürün (gömme); görsel-ürün uyumu | **Yerel** | Checksum |
-| **4** | Kütüphane | Anlamsal arama; akıllı koleksiyon; görsel kalite | **Yerel** | Elle filtre |
-| **5** | Kullanım + yayın | Yayın öncesi risk taraması; eksik çeviri tespiti | Yerel + **Gemini** | Kontrol listesi |
-| **6** | Teslim/CDN | **Fotoğraf/görsel/PDF'ten menü çıkarma** (§4b.1) | **Gemini** → OpenAI | Elle giriş |
-| **7** | Yönetişim | Anomali açıklaması; maliyet analizi; kuyruk hata gruplama | **Gemini** | Ham sayılar |
-| **8** | Crop stüdyosu | Akıllı kırpma, odak noktası | **Yerel** (CV) | Elle odak |
-| **9** | Komut merkezi | `docs/14` §9a 14 adımlı akış; doğal dil komut | **OpenAI/Claude** | Her ekranın formu |
-| **10+** | İleri | Moderasyon, tonlu çeviri, video anlama | Duruma göre | — |
+```
+Fotoğraf/PDF yüklenir
+  → libvips düzeltme + kalite kontrolü
+  → OCR (metin + kutu koordinatları)
+  → görme modeli → yapılandırılmış taslak
+  → HER ALAN kaynağını taşır: dosya, sayfa, koordinat, güven
+  → belirsiz alanlar İŞARETLİ
+  → insan inceleme ekranı
+  → onay → typed komut → yetki YENİDEN doğrulanır → taslak menü
+```
 
-**Claude yalnız 9'da ve "diğerlerinin yapamadığı" satırlarda görünür** —
-sahibinin sırası bu. Geliştirme hattındaki Claude ayrıdır (§7.3).
+**Belirsiz fiyat yayınlanamaz.** Bu bir uyarı değil, bir kapıdır.
 
-**Her satırda değişmez:** AI önerir, insan onaylar, sistem denetler, geri
-alınabilir.
+## 9. Kanonik uzlaştırma ve ilk iş paketleri
 
-## 9. Sahibinin kararı gereken noktalar
+### 9.1 Çelişki çözüldü
 
-Sahibi 2026-08-27'de yönlendirme sırasını, yerel model önceliğini, token
-optimizasyonunu ve yönerge katmanını karara bağladı. Kalanlar:
+| Belge | Önce | Şimdi |
+| --- | --- | --- |
+| `docs/18` | "AI-destekli üretim özellikleri" tamamen non-goal | Daraltıldı: **çekirdek + tek dikey var**, geniş üretim özellikleri yok |
+| `docs/26` | AI Platform Stage 1'de "pre-wired (kapalı)" | "**çekirdek + tek dikey**" |
+| `docs/51` | Faz 1'de çekirdek | Aynı — ama artık Stage 1 ile aynı şeyi söylüyor |
 
-| # | Karar | Neden gerekli | Ne zaman |
-| --- | --- | --- | --- |
-| 1 | **Hangi sağlayıcılarda gerçekten hesap var?** Gemini / OpenAI / Claude — kaçar tane | Olmayan sağlayıcı için adaptör yazılmaz; hesap sayısı havuzun şeklini belirler | **Faz 1 başlamadan** |
-| 2 | **Yerel modeller aynı VPS'te mi?** | Aynı sunucudaysa bellek/CPU tavanı zorunlu, yoksa menü sayfası yavaşlar (UNK-10) | **Faz 1 başlamadan** |
-| 3 | Tenant başına aylık AI bütçesi | Tavansız AI maliyeti öngörülemez. Öneri: paket başına, ve dolunca AI durur ürün durmaz | Faz 1 sonunda |
-| 4 | Restoran sahibi model seçebilecek mi? | Seçim yüzeyi Faz 1'e girer ya da girmez. Öneri: **hayır** — matris seçsin, kullanıcı "hızlı/kaliteli" der | Faz 1 sonunda |
-| 5 | AI çıktısı hangi dilde? | Menü dili mi panel dili mi — çeviri yeteneğinin tanımı buna bağlı | Faz 2 |
+Çözümün dayanağı sahibinin talimatıdır, benim tercihim değil.
 
-**Faz 1 kod yazımı 1. ve 2. karar olmadan başlamaz.** Diğer üçü için önerim
-yukarıda; itiraz etmezseniz onlarla ilerlerim.
+### 9.2 İlk beş iş paketi
 
----
+| # | Paket | Kapsam |
+| --- | --- | --- |
+| `AI-S1-01` | Yetenek kayıt defteri | Ayrı portlar (§3.1), sahte sağlayıcı, şema + denetim + **artifact modeli** (§3.4) |
+| `AI-S1-02` | Yerel çalışma zamanı | `ai-local` sidecar, model manifestosu, OCR + gömme, kaynak sınırı, uyumluluk katmanı |
+| `AI-S1-03` | Bağlantı vault'u | N bağlantı, Gemini gerçek adaptörü, OpenAI/Claude sözleşme adaptörleri, tüketici abonelik reddi |
+| `AI-S1-04` | Menü çıkarımı dikeyi | Fotoğraf/PDF → OCR → yapılandırılmış taslak → kutu/güven → inceleme ekranı |
+| `AI-S1-05` | İşletim | Bütçe, kill switch, kuyruk + dead-letter + idempotency, kaynak sınırı, eval, gözlemlenebilirlik |
+
+### 9.3 Üç bağlayıcı entegrasyon testi
+
+Paket başına 3–8 hedefli test, artı bu üçü:
+
+1. **AI tamamen kapalıyken ürün çalışır.**
+2. **Menü fotoğrafı taslağa dönüşür; belirsiz fiyat yayınlanamaz.**
+3. **Sağlayıcı çöktüğünde / bütçe dolduğunda / tenant ihlalinde** güvenli
+   deterministik yola düşülür.
+
+Model kalitesi için 50 ayrı test değil, **12–20 anonimleştirilmiş menü
+fixture'ı** aynı veri sürümlü eval içinde koşar.
+
+### 9.4 Geri alma (rollback)
+
+Global ve tenant kill switch; yerel servisi kapatma; bulut bağlantısını devre
+dışı bırakma; AI kuyruğunu durdurma; bütün AI artifact'lerini taslakta tutma.
+
+**Hiçbir geri alma yayınlanmış menüyü ya da deterministik akışı etkilemez.**
+
+### 9.5 Sahibinin kararı gereken — ve gerekmeyen
+
+Denetimin haklı bir tespiti daha: **Faz 1'i başlatmak için bulut hesap
+sayısının bilinmesi ŞART DEĞİL.** Sahte + yerel sağlayıcıyla çekirdek hemen
+geliştirilebilir; resmi bağlantılar geldikçe etkinleştirilir.
+
+| # | Karar | Ne zaman |
+| --- | --- | --- |
+| 1 | Yerel modeller aynı VPS'te mi? (`vps-ai-32gb` mi `shared-host` mu) | **Faz 1 başlarken** — dağıtım profilini belirler |
+| 2 | Hangi sağlayıcılarda gerçek API bağlantısı var | `AI-S1-03` sırasında; öncesinde gerekmez |
+| 3 | Tenant başına aylık AI bütçesi | `AI-S1-05` |
+| 4 | Kullanıcı model seçebilecek mi | Öneri: **hayır** — kullanıcı `Yerel/Gizli`, `Ekonomik`, `Hızlı`, `En yüksek kalite` profili seçer; tam model seçimi SuperAdmin ve eval promosyonundadır |
+| 5 | AI çıktısı hangi dilde | Stage 2 |
+
+**Yalnız 1. karar Faz 1'i bekletiyor.**
 
 ## 10. Ne ölçülecek — iddia edilmeyecek
 

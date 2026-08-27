@@ -36,7 +36,7 @@ bir stage'in Exit Gate'i kanıtla GO aldığında artar.
 | SEO/Search & Discovery | — | — | ✅ temel | — | pSEO ölçek | — | — | — |
 | Mini CRM | — | ✅ | — | — | genişletilmiş (OPT-18) | — | — | — |
 | Helpdesk/Tickets | — | ✅ | — | — | — | SLA sözleşmeli | — | — |
-| AI Platform (yatay plane) | mimari pre-wired (kapalı) | temel (routing+kill switch aktif) | — | — | — | — | — | — |
+| AI Platform (yatay plane) | **çekirdek + tek dikey** (portlar, vault, yönlendirme, bütçe, kill switch, denetim, eval; menü çıkarımı) | genişleyen yetenekler (çeviri, açıklama, arama) | — | — | — | — | — | — |
 | AI Provider Account Vault | mimari pre-wired (kapalı) | temel (tek platform-owned hesap) | çok-hesap/BYOK | — | — | — | — | — |
 | Integration Hub | temel (yalnız Iyzico webhook altyapısı) | — | — | — | — | genişletilmiş (SSO/SCIM + API/webhook) | — | — |
 | Feedback/NPS (OPT-25) | — | — | — | ✅ | — | — | — | — |
