@@ -84,7 +84,13 @@ interface MenuCatalogRepositoryPort
 
     public function renameCategory(int $workspaceId, int $categoryId, string $name): CategorySummary;
 
-    public function renameMenuItemProduct(int $workspaceId, int $menuItemId, string $productName): MenuItemSummary;
+    public function renameMenuItemProduct(
+        int $workspaceId,
+        int $menuItemId,
+        string $productName,
+        ?string $description = null,
+        bool $touchDescription = false,
+    ): MenuItemSummary;
 
     /**
      * Sıralama TOPLU yapılır ve liste TAM olmalıdır.

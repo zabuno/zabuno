@@ -24,8 +24,16 @@ final class BuildPublicationSnapshot
      *
      * @throws UnreadyDraftException
      */
-    public static function fromDraftTree(MenuDraftTree $tree, ?MenuIdentity $identity = null): array
-    {
+    /**
+     * @param  array<int, array<string,mixed>>  $itemImages  menü satırı kimliği → görsel bloğu
+     * @param  array<string,mixed>|null  $logo
+     */
+    public static function fromDraftTree(
+        MenuDraftTree $tree,
+        ?MenuIdentity $identity = null,
+        array $itemImages = [],
+        ?array $logo = null,
+    ): array {
         if ($tree->categories === []) {
             throw UnreadyDraftException::noCategory();
         }
@@ -59,12 +67,24 @@ final class BuildPublicationSnapshot
 
                 $hasVisibleItem = true;
 
-                $menuItems[] = [
+                $entry = [
                     'productName' => $item['productName'],
+                    // Açıklama ve görsel DE donar: yayınlanmış menü,
+                    // sonradan düzenlenen bir fotoğrafı ya da metni
+                    // habersiz göstermez (`docs/77`).
+                    'description' => $item['description'] ?? null,
                     'priceMinorAmount' => $item['priceMinorAmount'],
                     'currencyCode' => $item['currencyCode'],
                     'allergens' => $item['allergens'],
                 ];
+
+                $image = $itemImages[$item['id']] ?? null;
+
+                if ($image !== null) {
+                    $entry['image'] = $image;
+                }
+
+                $menuItems[] = $entry;
             }
 
             if ($menuItems === []) {
@@ -85,6 +105,16 @@ final class BuildPublicationSnapshot
 
         // Kimlik BAŞA yazılır: snapshot bir insanın da okuyabileceği
         // sıradadır ve "bu hangi restoranın menüsü" ilk satırdadır.
-        return $identity === null ? $snapshot : ['identity' => $identity->toSnapshot()] + $snapshot;
+        if ($identity === null) {
+            return $snapshot;
+        }
+
+        $identityBlock = $identity->toSnapshot();
+
+        if ($logo !== null) {
+            $identityBlock['logo'] = $logo;
+        }
+
+        return ['identity' => $identityBlock] + $snapshot;
     }
 }

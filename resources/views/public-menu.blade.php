@@ -11,6 +11,13 @@
         ? \App\Domain\Publication\MenuIdentity::fromSnapshot($snapshot['identity'])
         : null;
 
+    /* `srcset` metnini PHP kurar: öznitelik içine kaçırılan bir döngü,
+       şablonu okunmaz ve kırılgan yapar. */
+    $srcset = static fn (array $sources): string => implode(', ', array_map(
+        static fn (array $source): string => $source['url'].' '.$source['width'].'w',
+        $sources,
+    ));
+
     $headline = $identity?->brandName ?: trim((string) ($fallbackBrandName ?? ''));
     $documentTitle = $headline !== '' ? $headline : 'Menü';
 @endphp
@@ -213,6 +220,31 @@
             font-weight: 600;
         }
 
+        /* Görsel satırın SOLUNDA sabit bir kutu: her satır aynı hizada
+           başlar, liste taranabilir kalır. */
+        .qr-menu-item-image {
+            width: 96px;
+            height: 96px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            background: var(--qr-chip-bg);
+            flex: 0 0 auto;
+        }
+
+        .qr-menu-item-description {
+            width: 100%;
+            font-size: 0.85rem;
+            color: var(--qr-muted);
+        }
+
+        .qr-menu-logo {
+            width: 96px;
+            height: auto;
+            max-width: 40vw;
+            align-self: flex-start;
+            margin-bottom: 0.25rem;
+        }
+
         .qr-menu-item-price {
             white-space: nowrap;
         }
@@ -289,6 +321,22 @@
         {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
              Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı
              ekran okuyucu için başlıksız bırakırdı. --}}
+        @php($logo = $identity !== null && isset($snapshot['identity']['logo']) && is_array($snapshot['identity']['logo'])
+            ? $snapshot['identity']['logo']
+            : null)
+
+        @if ($logo)
+            {{-- Ölçüler ATTRIBUTE olarak basılır: görsel inerken sayfa
+                 zıplamasın, misafir okuduğu satırı kaybetmesin. --}}
+            <img class="qr-menu-logo"
+                 src="{{ $logo['sources'][count($logo['sources']) - 1]['url'] }}"
+                 srcset="{{ $srcset($logo['sources']) }}"
+                 sizes="96px"
+                 width="{{ $logo['width'] }}" height="{{ $logo['height'] }}"
+                 alt="{{ $logo['altText'] }}"
+                 decoding="async">
+        @endif
+
         <h1 class="qr-menu-title">{{ $documentTitle }}</h1>
 
         @if ($identity !== null && $identity->locationName !== '' && $identity->locationName !== $headline)
@@ -338,10 +386,26 @@
                     <ul class="qr-menu-item-list">
                         @foreach ($category['menuItems'] as $item)
                             <li class="qr-menu-item" data-item data-item-name="{{ $item['productName'] }}">
+                                @if (! empty($item['image']['sources']))
+                                    @php($image = $item['image'])
+                                    {{-- `loading="lazy"`: kırk ürünlük bir menüde
+                                         misafir ilk ekranı görmek için kırk
+                                         fotoğraf beklemez. --}}
+                                    <img class="qr-menu-item-image"
+                                         src="{{ $image['sources'][0]['url'] }}"
+                                         srcset="{{ $srcset($image['sources']) }}"
+                                         sizes="(max-width: 480px) 96px, 128px"
+                                         width="{{ $image['width'] }}" height="{{ $image['height'] }}"
+                                         alt="{{ $image['altText'] }}"
+                                         loading="lazy" decoding="async">
+                                @endif
                                 <span class="qr-menu-item-name">{{ $item['productName'] }}</span>
                                 @php($priceLabel = \App\Support\Money\PriceLabel::for((int) $item['priceMinorAmount'], (string) $item['currencyCode']))
                                 @if ($priceLabel !== null)
                                     <span class="qr-menu-item-price">{{ $priceLabel }}</span>
+                                @endif
+                                @if (! empty($item['description']))
+                                    <span class="qr-menu-item-description">{{ $item['description'] }}</span>
                                 @endif
                                 @if (! empty($item['allergens']))
                                     <span class="qr-menu-item-allergens">
