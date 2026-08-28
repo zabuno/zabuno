@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Media\Port;
 
+use App\Application\Media\Dto\GeneratedRendition;
 use App\Application\Media\Dto\MediaAssetSummary;
 use App\Application\Media\Dto\MediaIntake;
 use App\Application\Media\Dto\ProcessableMediaAsset;
@@ -41,4 +42,43 @@ interface MediaRepositoryPort
     public function markReadyIfProcessing(int $workspaceId, int $assetId): void;
 
     public function markFailedIfProcessing(int $workspaceId, int $assetId): void;
+
+    /**
+     * Bir işleme denemesini kaydeder ve kimliğini döner.
+     *
+     * Deneme, SONUCUNDAN önce yazılır: süreç ortasında ölen bir iş de
+     * görünür kalmalı, yoksa sahip "hiç denenmedi" ile "denendi ve çöktü"
+     * arasındaki farkı göremez (`docs/76`).
+     */
+    public function openProcessingJob(int $workspaceId, int $assetId): int;
+
+    /**
+     * Tarama denemesini kaydeder.
+     *
+     * Tarayıcı yoksa ürün bunu SAKLAMAZ: sahip "taranıyor" ile
+     * "taranamıyor" arasındaki farkı görebilmeli (`docs/76`).
+     */
+    public function openScanJob(int $workspaceId, int $assetId): int;
+
+    public function closeScanJobAsCompleted(int $jobId): void;
+
+    public function closeScanJobAsHeld(int $jobId, string $reason): void;
+
+    /** Bu varlığı yayınlanmış bir menüye bağlayan bir kullanım var mı? */
+    public function isUsedByPublication(int $workspaceId, int $assetId): bool;
+
+    public function closeProcessingJobAsSucceeded(int $jobId): void;
+
+    public function closeProcessingJobAsFailed(int $jobId, string $reason): void;
+
+    /**
+     * İşlenmiş türevleri YENİ bir sürüm altında kalıcılaştırır.
+     *
+     * Sürüme bağlanır, varlığa değil: yayınlanmış bir menü, sonradan
+     * düzenlenen bir fotoğrafı kendiliğinden göstermemeli.
+     *
+     * @param  list<GeneratedRendition>  $renditions
+     * @return int Üretilen sürümün kimliği
+     */
+    public function persistRenditions(int $workspaceId, int $assetId, array $renditions): int;
 }

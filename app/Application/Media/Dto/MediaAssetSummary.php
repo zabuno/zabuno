@@ -12,5 +12,10 @@ final class MediaAssetSummary
         public readonly string $altText,
         public readonly string $slot,
         public readonly string $status,
+        /**
+         * Durumun İNSANCA açıklaması — yalnız bir şey ters gittiğinde
+         * doludur. Sorunsuz bir dosyaya sebep yazmak gürültüdür.
+         */
+        public readonly ?string $statusReason = null,
     ) {}
 }

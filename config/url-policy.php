@@ -86,6 +86,9 @@ return [
     'opaque_prefixes' => [
         'q',
         'menu',
+        // Görsel türev adresleri sağlama toplamı taşır; harf katlama ya da
+        // "temizleme" onları bozar (`docs/76`).
+        'media',
         'invitations',
         'email',
         'api',
@@ -124,7 +127,7 @@ return [
      */
     'reserved_slugs' => [
         'admin', 'api', 'app', 'assets', 'build', 'email', 'forgot-password',
-        'health', 'invitations', 'kvkk', 'login', 'logout', 'menu', 'platform',
+        'health', 'invitations', 'kvkk', 'login', 'logout', 'media', 'menu', 'platform',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
         'sitemap.xml', 'storage', 'terms', 'up', 'user', 'verify-email', 'www',
     ],

@@ -11,6 +11,7 @@ use App\Application\Media\Dto\MediaScanVerdict;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Domain\Media\MediaAssetStatus;
+use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -38,15 +39,37 @@ final class MediaUploadProcessingJourneyTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_default_container_binds_media_asset_processor_port_to_the_unavailable_processor(): void
+    /**
+     * GÜNCELLENDİ (`docs/76`, P0-08). Bu test eskiden üretim bağlamasının
+     * `UnavailableMediaAssetProcessor` OLMASINI donduruyordu.
+     *
+     * O gün doğruydu: gerçek bir işleyici henüz yoktu ve yer tutucu, sahte
+     * bir başarı üretmemek için oradaydı. Ama zamanla anlamı değişti —
+     * ürün canlıya çıkarken yüklenen HER fotoğrafı sonsuza kadar bekleten
+     * bir varsayılan, "güvenli" değil sessizce bozuk demektir.
+     *
+     * Yeni sözleşme: varsayılan GERÇEK işleyicidir; yer tutucu yalnız GD
+     * bulunmayan bir ortamda yedektir ve orada da dürüstçe "işleyemiyorum"
+     * der.
+     */
+    public function test_default_container_binds_the_real_image_processor(): void
     {
         $processor = $this->app->make(MediaAssetProcessorPort::class);
 
         self::assertInstanceOf(
-            UnavailableMediaAssetProcessor::class,
+            GdMediaAssetProcessor::class,
             $processor,
-            'MEDIA-PROCESS-03-DEFAULT-BINDING-01: default kabın MediaAssetProcessorPort bağlaması UnavailableMediaAssetProcessor olmalı.'
+            'MEDIA-PROCESS-03-DEFAULT-BINDING-01: varsayılan bağlama gerçek görsel işleyici olmalı.'
         );
+    }
+
+    public function test_the_placeholder_processor_still_holds_honestly_when_no_image_library_exists(): void
+    {
+        // Yedek yol hâlâ dürüst: sahte bir başarı üretmez, "belirsiz" der
+        // ve varlık terminal bir duruma zorlanmaz.
+        $outcome = (new UnavailableMediaAssetProcessor)->process('/yok/olan/dosya')->outcome;
+
+        self::assertSame(MediaProcessingOutcome::Indeterminate, $outcome);
     }
 
     public function test_authorized_upload_with_clean_scan_and_successful_processor_marks_asset_ready_with_key_bytes_and_no_public_output(): void
@@ -119,6 +142,11 @@ final class MediaUploadProcessingJourneyTest extends TestCase
         Storage::fake('local');
 
         $this->app->instance(MalwareScannerPort::class, new FixedVerdictScanner(MediaScanVerdict::Clean));
+
+        // GÜNCELLENDİ (`docs/76`): üretimin varsayılanı artık gerçek
+        // işleyici. Bu test, GÖRSEL İŞLEME BULUNMAYAN bir ortamın hâlâ
+        // dürüst davrandığını dondurur — yer tutucu bilerek bağlanır.
+        $this->app->instance(MediaAssetProcessorPort::class, new UnavailableMediaAssetProcessor);
 
         $owner = $this->verifiedUser();
         $workspaceId = $this->ownerWorkspace($owner, 'zeytin-media-process-safehold');
@@ -269,7 +297,7 @@ final class SpySuccessfulProcessor implements MediaAssetProcessorPort
     /** @var list<string> */
     public array $receivedAbsolutePaths = [];
 
-    public function process(string $absolutePath): MediaProcessingResult
+    public function process(string $absolutePath, string $slot = ''): MediaProcessingResult
     {
         $this->receivedAbsolutePaths[] = $absolutePath;
 

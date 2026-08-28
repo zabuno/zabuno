@@ -35,6 +35,9 @@ final class ListMediaController extends Controller
                 'status' => $asset->status,
                 'altText' => $asset->altText,
                 'slot' => $asset->slot,
+                // Neden beklediğini ya da neden başarısız olduğunu sahip
+                // ekranda okur; boşsa alan `null` kalır (`docs/76`).
+                'statusReason' => $asset->statusReason,
             ], $assets),
         ]);
     }

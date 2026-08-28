@@ -10,5 +10,8 @@ final class ProcessableMediaAsset
         public readonly int $id,
         public readonly int $workspaceId,
         public readonly string $diskPath,
+        // Türev ölçüleri SLOTUN kuralıdır: aynı fotoğraf logoda kırpılmaz,
+        // ürün kartında 1:1 kırpılır (`config/media-slots.php`).
+        public readonly string $slot = '',
     ) {}
 }

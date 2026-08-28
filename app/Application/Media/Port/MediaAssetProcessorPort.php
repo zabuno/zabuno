@@ -8,5 +8,9 @@ use App\Application\Media\Dto\MediaProcessingResult;
 
 interface MediaAssetProcessorPort
 {
-    public function process(string $absolutePath): MediaProcessingResult;
+    /**
+     * Türev ölçüleri SLOTUN kuralıdır; işleyici hangi yerde kullanılacağını
+     * bilmeden doğru kırpma yapamaz (`config/media-slots.php`).
+     */
+    public function process(string $absolutePath, string $slot = ''): MediaProcessingResult;
 }
