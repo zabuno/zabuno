@@ -25,13 +25,13 @@ import type { LocationProfile as SectionLocationProfile } from './LocationEditFo
 import {
     sectionHref,
     SECTION_DESCRIPTORS,
-    renderActiveInspector,
     resolveSectionKeyFromPath,
     resolveSubPath,
     resolveSectionDescriptorForOnboardingPhase,
     renderActiveSection,
     type WorkspaceSectionDescriptor,
 } from './shell/WorkspaceSectionRegistry';
+import type { WorkspaceInspectorMap } from './inspectors/types';
 
 export type CatalogPhase =
     'loading' | 'error' | 'brand-onboarding' | 'location-onboarding' | 'menu-catalog';
@@ -96,16 +96,17 @@ export type WorkspaceAppProps = {
         context: WorkspaceChromeContext & { open: boolean; onClose: () => void },
     ) => ReactNode;
     /**
-     * Bağlam paneli bu pakette DESTEKLENİYOR mu — `docs/50` §3.4.
+     * Bu cihaz paketine ait BAĞLAM PANELLERİ — `docs/54`, `docs/60`.
      *
-     * Yalnız masaüstü girişi `true` geçer. Telefonda 336 piksellik kalıcı bir
-     * ray, 320 piksel genişliğinde bir ekranda zaten yer bulamaz; panel orada
-     * hiç çizilmez ve temel görev bundan etkilenmez.
+     * Bayrak değil harita geçilir, çünkü bir bayrak paneli yalnız GİZLER:
+     * kod paylaşılan bölüm kaydından yine indirilirdi. Haritayı yalnız
+     * masaüstü girişi verir; mobil giriş `desktopInspectors` dosyasına hiç
+     * dokunmaz, dolayısıyla panel kodu o pakete hiç girmez.
      *
-     * Açık bir bayrak, kenar çubuğu yuvasının varlığından çıkarım yapmaktan
-     * iyidir: ikisi ayrı kararlar ve bir gün ayrışabilirler.
+     * Telefonda 336 piksellik kalıcı bir sütun 320 piksellik ekranda zaten yer
+     * bulamaz; panel orada YOKTUR ve temel görev bundan etkilenmez.
      */
-    supportsInspector?: boolean;
+    inspectors?: WorkspaceInspectorMap;
 };
 
 export type WorkspaceChromeContext = {
@@ -127,7 +128,7 @@ export type WorkspaceChromeContext = {
 export function WorkspaceApp({
     renderPersistentSidebar,
     renderNavigationDrawer,
-    supportsInspector = false,
+    inspectors,
 }: WorkspaceAppProps) {
     const [phase, setPhase] = useState<Phase>('loading');
     const [user, setUser] = useState<WorkspaceUser | null>(null);
@@ -898,8 +899,8 @@ export function WorkspaceApp({
         <AdminShell
             brand={{ name: t('workspace.shell.brand') }}
             inspector={
-                supportsInspector && sectionContext !== null && !showOnboardingForm
-                    ? renderActiveInspector(activeSection, sectionContext)
+                sectionContext !== null && !showOnboardingForm
+                    ? inspectors?.[activeSection]?.(sectionContext)
                     : undefined
             }
             inspectorLabel={t('workspace.menu.inspector.title')}

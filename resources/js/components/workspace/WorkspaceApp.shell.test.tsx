@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { desktopChrome, mobileChrome } from '../../test/workspaceChrome';
+import { desktopInspectors } from './inspectors/desktopInspectors';
 
 /**
  * RED test freezing the real AdminShell composition contract for
@@ -486,11 +487,12 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
      *
      * Her sayfanın sağ paneli olmaz: bir özet ekranında panel, doldurulacak
      * bir şey olmadığı için ya boş durur ya da uydurulmuş bilgiyle dolar.
+     * Panel haritası bu yüzden kısmîdir, her bölüm için bir giriş içermez.
      */
-    it('bölüm bildirmediyse panel hiç çizilmez', async () => {
-        await renderCurrentWorkspace();
+    it('haritada olmayan bölümde panel hiç çizilmez', async () => {
+        await renderCurrentWorkspace({ ...desktopChrome, inspectors: desktopInspectors });
 
-        // Varsayılan bölüm Home; bağlam paneli bildirmiyor.
+        // Varsayılan bölüm Home; masaüstü panel haritasında yok.
         expect(screen.queryByRole('complementary', { name: /this menu/i })).toBeNull();
 
         vi.unstubAllGlobals();
@@ -505,6 +507,8 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
      */
     it('telefon kabuğunda panel yokken menü ekranı çalışır', async () => {
         const user = userEvent.setup();
+        // Telefon girişi panel haritasını HİÇ vermez — `desktopInspectors`
+        // dosyasına dokunmadığı için panel kodu o pakete girmez (docs/54).
         await renderCurrentWorkspace(mobileChrome);
 
         await user.click(screen.getByRole('button', { name: 'Open menu' }));

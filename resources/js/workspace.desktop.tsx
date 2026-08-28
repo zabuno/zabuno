@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { WorkspaceApp } from './components/workspace/WorkspaceApp';
+import { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';
 import { ThemeRoot } from './components/theme/ThemeRoot';
 import { AppErrorBoundary } from './components/system/AppErrorBoundary';
 import { BuildTruthBanner } from './components/system/BuildTruthBanner';
@@ -35,7 +36,7 @@ createRoot(container).render(
                         bulamaz — ve temel görev ona bağımlı değildir
                         (docs/50 §3.4, docs/60).
                     */
-                    supportsInspector
+                    inspectors={desktopInspectors}
                 />
             </AppErrorBoundary>
         </ThemeRoot>

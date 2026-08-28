@@ -104,6 +104,15 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+      # Adaptive ayrım okuyarak doğrulanamaz: cihaza özgü bir bileşen,
+      # paylaşılan bir dosyadaki tek bir import satırıyla diğer pakete sızar ve
+      # ekranda görünmediği için fark edilmez (docs/54, docs/60).
+      - name: Device bundles stay separate
+        run: ./scripts/adaptive-bundle-gate
+
+      - name: Adaptive bundle gate self-test
+        run: ./scripts/adaptive-bundle-gate.test.sh
+
       # Ayni suit, urun motorunda. SQLite ile PostgreSQL sessizce farkli
       # davraniyor ve fark her seferinde SQLite lehine hata gizliyordu:
       # basarisiz bir INSERT PostgreSQL'de tum islemi iptal eder, SQLite'ta

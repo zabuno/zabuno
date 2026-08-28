@@ -60,18 +60,65 @@ Aynı sebeple `MenuInspector` menü yokken `null` döner ve kabuk `<aside>`
 
 ## 5. Nasıl bağlanır
 
-Bölüm kaydı isteğe bağlı bir `renderInspector` taşır:
+`WorkspaceApp` bir **panel haritası** alır:
 
 ```ts
-renderInspector?: (ctx: WorkspaceSectionContext) => ReactNode;
+inspectors?: WorkspaceInspectorMap;   // bölüm anahtarı → panel
 ```
 
-- Bildirmeyen bölüm panelsizdir; kabuk sütunu çizmez, orta alan genişler.
-- `WorkspaceApp` sayfa ile paneli **tek bir** `sectionContext`'ten besler; iki
-  ayrı bağlam olsaydı panel ile içerik birbirinden kayabilirdi.
-- `supportsInspector` yalnız masaüstü girişinden gelir. Mobil pakette panel kodu
-  **paketlenmez** (`docs/54`) — bir bayrakla gizlenmiş ölü kod değil, hiç
-  indirilmeyen kod.
+- Haritada olmayan bölüm panelsizdir; kabuk sütunu çizmez, orta alan genişler.
+- Sayfa ile panel **tek bir** `sectionContext`'ten beslenir; iki ayrı bağlam
+  olsaydı panel ile içerik birbirinden kayabilirdi.
+- Haritayı yalnız `workspace.desktop.tsx` verir. Mobil giriş
+  `desktopInspectors` dosyasına hiç dokunmaz, dolayısıyla panel kodu o pakete
+  hiç girmez.
+
+### 5.1 İlk denemede yapılan hata
+
+Panel önce bölüm kaydında (`MenuPage.section.tsx`) `renderInspector` olarak
+bildirildi ve kabuğa bir `supportsInspector` bayrağı eklendi. Ekranda doğru
+çalışıyordu: masaüstünde panel vardı, telefonda yoktu.
+
+Paket ölçüldüğünde yanlış olduğu görüldü. Bölüm kayıtları
+`import.meta.glob('../pages/*.section.tsx')` ile toplanır ve iki girişte de
+bulunur; panel bileşeni oradan mobil pakete de giriyordu. Bayrak `false`
+olduğu için ÇİZİLMİYOR, ama İNDİRİLİYORDU.
+
+Bu, `docs/54`'ün reddettiği şeyin ta kendisidir. Adaptive yükleme "kodu
+göstermemek" değil, "kodu indirmemek"tir. Bir bayrakla gizlenen kod adaptive
+bir ayrım değil, ölü ağırlıktır.
+
+Doğrusu bir koşul değil, bir **modül sınırı**: panel haritası yalnız masaüstü
+girişinin `import` ettiği bir dosyada durur. Sözleşme tipi (`inspectors/types.ts`)
+ayrı ve cihazdan bağımsızdır — kabuk masaüstü dosyasını adıyla anmaz, yoksa
+ayrımın doğruluğu tek bir `type` kelimesine bağlı kalırdı.
+
+### 5.2 `adaptive-bundle-gate`
+
+Yanlış cümle yazıldığı anda yanlıştı ve kimse fark etmedi. `docs/60` "mobil
+pakette bulunmaz" diyordu; ölçüm bunu yalanladı. Bir daha sessizce olmasın diye
+`scripts/adaptive-bundle-gate` eklendi.
+
+Kapı iki girişin kaynak import kapanışını (statik, dinamik **ve**
+`import.meta.glob`) gezer ve cihaza özgü bildirilen modüllerin diğer girişten
+ulaşılabilir olup olmadığına bakar.
+
+Üç şey ölçümü mümkün kılıyor:
+
+1. **Manifest değil kaynak.** Vite manifest'i yığın düzeyindedir, modül
+   düzeyinde değil; "şu dosya mobil pakete girdi mi" sorusunu cevaplayamaz.
+2. **Glob genişletilir.** Sızıntı düz bir `import` satırından değil, glob'dan
+   geldi. Glob'u atlayan bir gezgin, yazıldığı sızıntıyı kaçırırdı.
+3. **`import type` silinir.** Tip importu derlemede hiçbir bayt bırakmaz;
+   saymak sürekli yanlış alarm olurdu. Ama `type` kelimesi düştüğü gün import
+   gerçek olur ve kapı onu yakalar.
+
+Kapının kendi testi (`scripts/adaptive-bundle-gate.test.sh`) geçici bir kaynak
+ağacında sızıntıyı yeniden üretir. Buna ihtiyaç vardı: kapının ilk hâli,
+sızıntıyı geri koyduğumda **PASS diyordu** — bildirim panel HARİTASINI
+adlandırıyordu, oysa sızan şey panel BİLEŞENİYDİ. Bildirim bu yüzden artık tek
+tek dosya değil örüntüdür (`pages/**/*Inspector.tsx`), ve eşleşmeyen bir
+örüntü sessiz geçiş değil hatadır.
 
 ## 6. Kalan hedef
 

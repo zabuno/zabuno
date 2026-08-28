@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+# adaptive-bundle-gate — cihaza özgü kodun GERÇEKTEN ayrı paketlendiğini kanıtlar.
+#
+#   adaptive-bundle-gate [--root resources/js]
+#
+# Verdicts: PASS | LEAK | NO_ENTRY
+#
+# NEDEN VAR (docs/54, docs/60):
+#
+# Adaptive yükleme "kodu göstermemek" değil, "kodu İNDİRMEMEK"tir. Bu ayrım
+# okuyarak doğrulanamaz: masaüstüne özgü bir bileşen, paylaşılan bir dosyadaki
+# tek bir `import` satırıyla telefon paketine sızabilir ve ekranda hiç
+# görünmediği için kimse fark etmez. FF-03a'da tam bu oldu — bağlam paneli
+# `MenuPage.section.tsx` üzerinden mobil pakete de girmişti ve "mobil pakette
+# bulunmaz" cümlesi yazıldığı anda yanlıştı.
+#
+# NEDEN MANIFEST DEĞİL: Vite manifest'i YIĞIN düzeyindedir, modül düzeyinde
+# değil. Bir yığının hangi kaynak dosyalardan oluştuğunu söylemez, dolayısıyla
+# "şu dosya mobil pakete girdi mi" sorusunu cevaplayamaz.
+#
+# NEDEN GLOB ÖNEMLİ: ilk sızıntı düz bir `import` satırından değil,
+# `import.meta.glob('../pages/*.section.tsx')` üzerinden geldi. Glob'u
+# genişletmeyen bir gezgin, yakalamak için yazıldığı sızıntıyı kaçırırdı.
+set -u
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT="$REPO_ROOT/resources/js"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --root) ROOT="$2"; shift 2 ;;
+    *) printf 'adaptive-bundle-gate: unknown argument %s\n' "$1" >&2; exit 2 ;;
+  esac
+done
+
+ADAPTIVE_ROOT="$ROOT" python3 - <<'PY'
+import os, re, sys
+from pathlib import Path
+
+ROOT = Path(os.environ['ADAPTIVE_ROOT']).resolve()
+
+DESKTOP_ENTRY = ROOT / 'workspace.desktop.tsx'
+MOBILE_ENTRY = ROOT / 'workspace.mobile.tsx'
+
+# Cihaza özgü olduğu BİLDİRİLEN modüller — tek tek dosya değil ÖRÜNTÜ.
+#
+# Dosya listesi tutmayı ilk denemede yaptım ve kapı sızıntıyı KAÇIRDI: liste
+# panel HARİTASINI adlandırıyordu, oysa mobil pakete sızan şey panel
+# BİLEŞENİYDİ. Örüntü, yarın eklenecek ikinci panelin listeye yazılmasını
+# unutma ihtimalini ortadan kaldırır.
+DESKTOP_ONLY = [
+    'components/workspace/chrome/DesktopChrome.tsx',
+    'components/workspace/inspectors/desktopInspectors.tsx',
+    'components/workspace/pages/**/*Inspector.tsx',
+]
+MOBILE_ONLY = [
+    'components/workspace/chrome/MobileChrome.tsx',
+]
+
+# Örüntüye takılmayan bilinçli istisnalar: sözleşme tipi cihazdan bağımsızdır
+# ve testler hiçbir pakete girmez.
+EXEMPT = ('/inspectors/types.ts',)
+
+SPEC_RE = re.compile(
+    r"""(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]"""
+)
+GLOB_RE = re.compile(r"""import\.meta\.glob\(\s*['"]([^'"]+)['"]""")
+
+# `import type` ve `export type` derlemede TAMAMEN silinir: hiçbir baytı pakete
+# girmez. Bunları saymak, olmayan bir sızıntıyı bildirmek olurdu. Ama satır
+# başındaki `type` kelimesi düşerse import gerçek olur — kapı o günü yakalar,
+# çünkü silme yalnız `import type` ile BAŞLAYAN ifadeye uygulanır.
+TYPE_ONLY_RE = re.compile(r'^\s*(?:import|export)\s+type\s[^;]*?;', re.M)
+
+EXTS = ('.tsx', '.ts', '.jsx', '.js')
+
+
+def resolve(spec: str, importer: Path):
+    """Göreli bir specifier'ı dosyaya çözer; paket adlarını yok sayar."""
+    if not spec.startswith('.'):
+        return None  # node_modules — cihaz ayrımının konusu değil
+    base = (importer.parent / spec).resolve()
+    if base.is_file():
+        return base
+    for ext in EXTS:
+        cand = base.with_suffix(base.suffix + ext) if base.suffix else Path(str(base) + ext)
+        if cand.is_file():
+            return cand
+    for ext in EXTS:
+        cand = Path(str(base) + ext)
+        if cand.is_file():
+            return cand
+    for ext in EXTS:
+        cand = base / ('index' + ext)
+        if cand.is_file():
+            return cand
+    return None
+
+
+def closure(entry: Path):
+    """Girişten ulaşılan tüm kaynak dosyalar: statik, dinamik ve glob."""
+    seen, stack = set(), [entry]
+    while stack:
+        path = stack.pop()
+        if path in seen or not path.is_file():
+            continue
+        seen.add(path)
+        try:
+            source = path.read_text(encoding='utf-8')
+        except (UnicodeDecodeError, OSError):
+            continue
+
+        source = TYPE_ONLY_RE.sub('', source)
+
+        # `import.meta.glob` eşleşen HER dosyayı pakete alır.
+        for pattern in GLOB_RE.findall(source):
+            if pattern.startswith('.'):
+                for match in sorted(path.parent.glob(pattern)):
+                    if match.is_file():
+                        stack.append(match.resolve())
+
+        for spec in SPEC_RE.findall(source):
+            target = resolve(spec, path)
+            if target is not None:
+                stack.append(target)
+    return seen
+
+
+for entry in (DESKTOP_ENTRY, MOBILE_ENTRY):
+    if not entry.is_file():
+        print(f'adaptive-bundle-gate: entry {entry} not found', file=sys.stderr)
+        print('NO_ENTRY')
+        sys.exit(1)
+
+desktop_reach = closure(DESKTOP_ENTRY)
+mobile_reach = closure(MOBILE_ENTRY)
+
+leaks = []
+
+
+def expand(pattern):
+    """Örüntüyü dosyalara açar; hiç eşleşmemesi SESSİZ GEÇİŞ değil, hatadır."""
+    if any(ch in pattern for ch in '*?['):
+        matches = sorted(
+            path.resolve()
+            for path in ROOT.glob(pattern)
+            if path.is_file()
+            and not path.name.endswith(('.test.ts', '.test.tsx', '.stories.tsx'))
+            and not str(path).endswith(EXEMPT)
+        )
+        if not matches:
+            leaks.append(f'{pattern} matches no file (stale declaration)')
+        return matches
+    target = (ROOT / pattern).resolve()
+    if not target.is_file():
+        leaks.append(f'{pattern} is declared device-specific but does not exist')
+        return []
+    return [target]
+
+
+def check(patterns, own, other, own_name, other_name):
+    for pattern in patterns:
+        for target in expand(pattern):
+            rel = target.relative_to(ROOT)
+            if target in other:
+                leaks.append(f'{rel} is reachable from the {other_name} entry')
+            if target not in own:
+                leaks.append(f'{rel} is NOT reachable from the {own_name} entry (dead or misnamed)')
+
+
+check(DESKTOP_ONLY, desktop_reach, mobile_reach, 'desktop', 'MOBILE')
+check(MOBILE_ONLY, mobile_reach, desktop_reach, 'mobile', 'DESKTOP')
+
+if leaks:
+    for leak in leaks:
+        print(f'adaptive-bundle-gate: {leak}', file=sys.stderr)
+    print('LEAK')
+    sys.exit(1)
+
+desktop_count = sum(len(expand(p)) for p in DESKTOP_ONLY)
+mobile_count = sum(len(expand(p)) for p in MOBILE_ONLY)
+print(f'adaptive-bundle-gate: {desktop_count} desktop-only and '
+      f'{mobile_count} mobile-only modules stay in their own bundle '
+      f'(desktop closure {len(desktop_reach)} files, mobile {len(mobile_reach)})',
+      file=sys.stderr)
+print('PASS')
+PY
