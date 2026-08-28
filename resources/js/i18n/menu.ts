@@ -54,6 +54,15 @@ const en = {
     'menu.item.price.edit.button': 'Edit price for {name}',
     'menu.item.allergens.edit.short': 'Allergens',
     'menu.item.price.edit.short': 'Price',
+    // Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
+    'menu.export.download': 'Download menu (CSV)',
+    'menu.import.label': 'Import a CSV menu',
+    'menu.import.help':
+        'Columns: category, product, price, currency, allergens, description, visible. Nothing reaches guests until you publish.',
+    'menu.import.done': 'Imported {items} items into {categories} new categories.',
+    'menu.import.rejected': '{count} rows could not be read:',
+    'menu.import.rejected.row': 'Line {line}: {reason}',
+    'menu.import.error': 'The file could not be imported.',
     // SUNUM: açıklama ve fotoğraf tek düzenleyicide. Sahibin yaptığı iş
     // tektir — "bu ürünü misafire nasıl göstereceğim" — ve iki ayrı düğme
     // aynı satır için iki kez form açtırırdı.

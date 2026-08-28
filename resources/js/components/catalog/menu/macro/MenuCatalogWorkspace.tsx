@@ -112,6 +112,14 @@ function menuItemImageUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/image`;
 }
 
+function exportUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/export.csv`;
+}
+
+function importUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/import`;
+}
+
 function mediaUrl(workspaceId: number): string {
     return `/api/workspaces/${workspaceId}/media`;
 }
@@ -306,6 +314,15 @@ export function MenuCatalogWorkspace({
     const [presentationError, setPresentationError] = useState<string | null>(null);
     const [savingPresentation, setSavingPresentation] = useState(false);
     const [readyMedia, setReadyMedia] = useState<ReadyMediaRow[]>([]);
+
+    /* Menüyü almak ve geri koymak (`docs/80`). */
+    const [importing, setImporting] = useState(false);
+    const [importReport, setImportReport] = useState<{
+        importedItems: number;
+        importedCategories: number;
+        rejectedRows: { line: number; reason: string }[];
+    } | null>(null);
+    const [importError, setImportError] = useState<string | null>(null);
 
     const [visibilityPending, setVisibilityPending] = useState<Record<number, boolean>>({});
     const [visibilityErrors, setVisibilityErrors] = useState<Record<number, string | null>>({});
@@ -554,6 +571,66 @@ export function MenuCatalogWorkspace({
             setPresentationError(t('menu.ops.error'));
         } finally {
             setSavingPresentation(false);
+        }
+    }
+
+    /**
+     * CSV aktarımı.
+     *
+     * `postJson` kullanılmaz: bu bir dosya yüklemesidir ve `Content-Type`
+     * sınırını tarayıcının kendisi üretmeli. Elle `multipart/form-data`
+     * yazmak, sınır dizesini kaybettirir ve sunucu boş bir gövde görür.
+     */
+    async function handleImport(file: File) {
+        setImporting(true);
+        setImportError(null);
+        setImportReport(null);
+
+        try {
+            await bootstrapCsrfCookie();
+
+            const form = new FormData();
+            form.append('file', file);
+
+            const init = buildAuthRequestInit();
+            const headers = new Headers(init.headers);
+            headers.delete('Content-Type');
+
+            const response = await fetch(importUrl(workspaceId, tree?.id ?? 0), {
+                ...init,
+                method: 'POST',
+                headers,
+                body: form,
+            });
+
+            const body = (await response.json()) as {
+                message?: string;
+                importedItems?: number;
+                importedCategories?: number;
+                rejectedRows?: { line: number; reason: string }[];
+            };
+
+            if (!response.ok) {
+                setImportError(body.message ?? t('menu.import.error'));
+
+                return;
+            }
+
+            setImportReport({
+                importedItems: body.importedItems ?? 0,
+                importedCategories: body.importedCategories ?? 0,
+                rejectedRows: body.rejectedRows ?? [],
+            });
+
+            const refreshed = await fetch(menuUrl(workspaceId, locationId));
+
+            if (refreshed.ok) {
+                setTree((await refreshed.json()) as MenuTree);
+            }
+        } catch {
+            setImportError(t('menu.import.error'));
+        } finally {
+            setImporting(false);
         }
     }
 
@@ -1152,6 +1229,87 @@ export function MenuCatalogWorkspace({
             ) : (
                 <>
                     <h2 className="text-lg font-semibold">{tree.name}</h2>
+
+                    {/*
+                        Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
+
+                        İndirme düz bir bağlantıdır: tarayıcının kendi indirme
+                        yolu, bizim yeniden ürettiğimiz herhangi bir yoldan
+                        güvenilirdir.
+                    */}
+                    <div className={sectionClass}>
+                        <a
+                            className={inlineActionClass}
+                            href={exportUrl(workspaceId, tree.id)}
+                            download
+                        >
+                            {t('menu.export.download')}
+                        </a>
+                        <label className={labelClass} htmlFor="menu-import-file">
+                            {t('menu.import.label')}
+                        </label>
+                        <input
+                            id="menu-import-file"
+                            name="menu-import-file"
+                            type="file"
+                            accept=".csv,text/csv"
+                            disabled={importing}
+                            onChange={(event) => {
+                                const file = event.target.files?.[0];
+
+                                if (file) {
+                                    void handleImport(file);
+                                }
+
+                                // Aynı dosyayı ikinci kez seçmek de bir olay
+                                // üretmeli: kullanıcı dosyayı düzeltip aynı
+                                // adla yeniden yükler.
+                                event.target.value = '';
+                            }}
+                        />
+                        <p className="text-caption text-fg-secondary">{t('menu.import.help')}</p>
+
+                        {importError ? <FieldError message={importError} /> : null}
+
+                        {importReport ? (
+                            <div role="status" className="flex flex-col gap-1">
+                                <p className="text-body">
+                                    {t('menu.import.done', {
+                                        items: String(importReport.importedItems),
+                                        categories: String(importReport.importedCategories),
+                                    })}
+                                </p>
+                                {importReport.rejectedRows.length > 0 ? (
+                                    <>
+                                        {/*
+                                            Reddedilen satırlar SATIR NUMARASIYLA
+                                            listelenir: sahip hatayı kendi
+                                            dosyasında bulabilmeli, yoksa 60
+                                            satırı gözle taramak zorunda kalır.
+                                        */}
+                                        <p className="text-body">
+                                            {t('menu.import.rejected', {
+                                                count: String(importReport.rejectedRows.length),
+                                            })}
+                                        </p>
+                                        <ul className="flex flex-col gap-0.5">
+                                            {importReport.rejectedRows.map((row) => (
+                                                <li
+                                                    key={row.line}
+                                                    className="text-caption text-fg-secondary"
+                                                >
+                                                    {t('menu.import.rejected.row', {
+                                                        line: String(row.line),
+                                                        reason: row.reason,
+                                                    })}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                ) : null}
+                            </div>
+                        ) : null}
+                    </div>
                     <ol
                         aria-label={t('menu.categories.list.label')}
                         className="flex flex-col gap-4"

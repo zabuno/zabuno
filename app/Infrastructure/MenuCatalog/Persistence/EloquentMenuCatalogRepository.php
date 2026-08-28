@@ -342,6 +342,84 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
         });
     }
 
+    public function importDraftRows(int $workspaceId, int $menuId, array $rows): array
+    {
+        return DB::transaction(function () use ($workspaceId, $menuId, $rows): array {
+            $menu = DB::table('menus')->where('id', $menuId)->where('workspace_id', $workspaceId)->first();
+
+            if ($menu === null) {
+                throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
+            }
+
+            $categoryIds = [];
+            $createdCategories = 0;
+            $createdItems = 0;
+
+            foreach ($rows as $row) {
+                $name = $row['category'];
+
+                if (! isset($categoryIds[$name])) {
+                    // Var olan kategori adı YENİDEN KULLANILIR. Aynı ada
+                    // ikinci bir kategori açmak, sahibin menüsünü ikiye
+                    // bölerdi ve misafir "Kebaplar"ı iki kez görürdü.
+                    $existing = DB::table('menu_categories')
+                        ->where('menu_id', $menuId)
+                        ->where('name', $name)
+                        ->value('id');
+
+                    if ($existing === null) {
+                        $existing = DB::table('menu_categories')->insertGetId([
+                            'menu_id' => $menuId,
+                            'name' => $name,
+                            'position' => ((int) DB::table('menu_categories')->where('menu_id', $menuId)->max('position')) + 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                        $createdCategories++;
+                    }
+
+                    $categoryIds[$name] = (int) $existing;
+                }
+
+                $categoryId = $categoryIds[$name];
+
+                $productId = (int) DB::table('products')->insertGetId([
+                    'workspace_id' => $workspaceId,
+                    'name' => $row['product'],
+                    'description' => $row['description'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                foreach ($row['allergens'] as $allergen) {
+                    $term = $this->createTaxonomyTerm($allergen, 'allergen');
+
+                    DB::table('product_allergens')->insert([
+                        'product_id' => $productId,
+                        'taxonomy_term_id' => $term->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+
+                DB::table('menu_items')->insert([
+                    'category_id' => $categoryId,
+                    'product_id' => $productId,
+                    'price_minor_amount' => $row['priceMinorAmount'],
+                    'currency_code' => $row['currencyCode'],
+                    'position' => ((int) DB::table('menu_items')->where('category_id', $categoryId)->max('position')) + 1,
+                    'is_visible' => $row['isVisible'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $createdItems++;
+            }
+
+            return ['categories' => $createdCategories, 'items' => $createdItems];
+        });
+    }
+
     public function createTaxonomyTerm(string $name, string $type): TaxonomyTermSummary
     {
         $existing = DB::table('taxonomy_terms')->where('name', $name)->where('type', $type)->first();

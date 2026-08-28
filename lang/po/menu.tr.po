@@ -104,6 +104,34 @@ msgstr ""
 msgid "menu.entry.success"
 msgstr ""
 
+#: menu:menu.export.download
+msgid "menu.export.download"
+msgstr ""
+
+#: menu:menu.import.done
+msgid "menu.import.done"
+msgstr ""
+
+#: menu:menu.import.error
+msgid "menu.import.error"
+msgstr ""
+
+#: menu:menu.import.help
+msgid "menu.import.help"
+msgstr ""
+
+#: menu:menu.import.label
+msgid "menu.import.label"
+msgstr ""
+
+#: menu:menu.import.rejected
+msgid "menu.import.rejected"
+msgstr ""
+
+#: menu:menu.import.rejected.row
+msgid "menu.import.rejected.row"
+msgstr ""
+
 #: menu:menu.initial.error.load
 msgid "menu.initial.error.load"
 msgstr "Menünüzü yükleyemedik. Lütfen tekrar deneyin."

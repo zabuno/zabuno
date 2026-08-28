@@ -104,6 +104,34 @@ msgstr "Add to menu"
 msgid "menu.entry.success"
 msgstr "{name} was added to {category}."
 
+#: menu:menu.export.download
+msgid "menu.export.download"
+msgstr "Download menu (CSV)"
+
+#: menu:menu.import.done
+msgid "menu.import.done"
+msgstr "Imported {items} items into {categories} new categories."
+
+#: menu:menu.import.error
+msgid "menu.import.error"
+msgstr "The file could not be imported."
+
+#: menu:menu.import.help
+msgid "menu.import.help"
+msgstr "Columns: category, product, price, currency, allergens, description, visible. Nothing reaches guests until you publish."
+
+#: menu:menu.import.label
+msgid "menu.import.label"
+msgstr "Import a CSV menu"
+
+#: menu:menu.import.rejected
+msgid "menu.import.rejected"
+msgstr "{count} rows could not be read:"
+
+#: menu:menu.import.rejected.row
+msgid "menu.import.rejected.row"
+msgstr "Line {line}: {reason}"
+
 #: menu:menu.initial.error.load
 msgid "menu.initial.error.load"
 msgstr "We could not load your menu. Please try again."
