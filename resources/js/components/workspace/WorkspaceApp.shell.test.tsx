@@ -218,15 +218,16 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         expect(screen.getByText('ada@example.com')).toBeInTheDocument();
 
         /*
-            Hesap kontrolleri artık kenar çubuğunun dibinde değil, kimlik
-            alanındaki hesap menüsünde. Kenar çubuğu yalnız GÖREV gezintisi
-            taşıyor; hesap işleri gezinti değildir ve görev maddelerinin
-            arasına karıştığında ikisi de okunmaz olur.
+            Hesap kontrolleri tek bir MENÜDE toplandı; kenar çubuğunda iki düz
+            bağlantı olarak gezinti maddelerinin arasına karışmıyorlar.
 
-            Kontroller kaybolmadı — bu yüzden test menüyü AÇIP arıyor.
+            Menünün YERİ masaüstünde kenar çubuğunun dibi (`docs/50` §7): üst
+            çubuk zaten çalışma bağlamını (marka, lokasyon) taşıyor ve hesap
+            orada onunla yarışır. Dar ekranda kalıcı kenar çubuğu olmadığı için
+            menü üst çubuğa düşer.
         */
-        const accountMenu = within(banner).getByRole('button', { name: 'Account' });
-        expect(accountMenu).toBeInTheDocument();
+        const accountMenu = screen.getByRole('button', { name: 'Account' });
+        expect(within(banner).queryByRole('button', { name: 'Account' })).toBeNull();
 
         await userEvent.click(accountMenu);
 

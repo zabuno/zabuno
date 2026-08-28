@@ -1,13 +1,52 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+    type ReactNode,
+} from 'react';
 import { ThemeProvider } from 'flowbite-react/theme/provider';
 import { t } from '../../i18n/theme';
 import { FLOWBITE_TOKEN_APPLY, flowbiteTokenTheme } from '../../design-system/flowbite-theme';
 
 export const THEME_STORAGE_KEY = 'zabuno-theme';
 
-type ThemePreference = 'system' | 'light' | 'dark';
+export type ThemePreference = 'system' | 'light' | 'dark';
 
-const THEME_OPTIONS: ThemePreference[] = ['system', 'light', 'dark'];
+export const THEME_OPTION_ORDER: readonly ThemePreference[] = ['system', 'light', 'dark'];
+
+type ThemeControl = {
+    preference: ThemePreference;
+    choose: (next: ThemePreference) => void;
+};
+
+/**
+ * Tema tercihi bir BAĞLAM — `docs/63`.
+ *
+ * Kontrol önceden uygulamanın dibinde, her sayfanın altında duruyordu. Tema
+ * hiçbir sayfanın görevi değildir; kişisel bir tercihtir ve hesap menüsüne
+ * aittir. Ama tercihi TUTAN yer değişmedi: hâlâ `ThemeRoot`, çünkü belgeye
+ * sınıfı yazan ve `localStorage`'ı okuyan orasıdır. Bağlam yalnız kontrolü
+ * çizecek yerin değişmesini sağlar.
+ */
+const ThemeControlContext = createContext<ThemeControl | null>(null);
+
+/**
+ * Tema kontrolü — sağlayıcı yoksa `null`.
+ *
+ * İlk hâli sağlayıcı yokken HATA FIRLATIYORDU ve gerekçesi şuydu: sessizce
+ * çalışmayan bir kontrol göstermek yalandır. Gerekçe doğru, sonuç yanlıştı —
+ * fırlatmak, temayı hiç yönetmeyen bir kabuğu da çökertiyordu.
+ *
+ * Doğru cevap üçüncüsü: sağlayıcı yoksa kontrol HİÇ ÇİZİLMEZ. Çağıran
+ * `null` görür ve görünüm bölümünü atlar. Böylece ne çalışmayan bir düğme
+ * kalır, ne de temasız bir kabuk çöker.
+ */
+export function useThemeControl(): ThemeControl | null {
+    return useContext(ThemeControlContext);
+}
 
 function isThemePreference(value: string | null): value is ThemePreference {
     return value === 'system' || value === 'light' || value === 'dark';
@@ -46,7 +85,7 @@ function applyToDocument(isDark: boolean) {
     root.style.colorScheme = isDark ? 'dark' : 'light';
 }
 
-const optionLabels: Record<ThemePreference, () => string> = {
+export const themeOptionLabels: Record<ThemePreference, () => string> = {
     system: () => t('theme.system'),
     light: () => t('theme.light'),
     dark: () => t('theme.dark'),
@@ -84,26 +123,19 @@ export function ThemeRoot({ children }: ThemeRootProps) {
         applyToDocument(resolveIsDark(preference, systemPrefersDark));
     }, [preference, systemPrefersDark]);
 
-    const optionRefs = useRef<Record<ThemePreference, HTMLButtonElement | null>>({
-        system: null,
-        light: null,
-        dark: null,
-    });
-
-    const choose = useCallback((next: ThemePreference, focus = false) => {
+    const choose = useCallback((next: ThemePreference) => {
         setPreference(next);
         try {
             window.localStorage.setItem(THEME_STORAGE_KEY, next);
         } catch {
             // storage unavailable — in-memory preference still applies for this session
         }
-        if (focus) {
-            optionRefs.current[next]?.focus();
-        }
     }, []);
 
+    const control = useMemo<ThemeControl>(() => ({ preference, choose }), [preference, choose]);
+
     return (
-        <>
+        <ThemeControlContext value={control}>
             {/*
               Flowbite'ı token köküne bağlar. `auth/`, `workspace/` ve
               `admin/` altında Flowbite `Button`/`TextInput`/`Select`
@@ -116,73 +148,6 @@ export function ThemeRoot({ children }: ThemeRootProps) {
             <ThemeProvider theme={flowbiteTokenTheme} applyTheme={FLOWBITE_TOKEN_APPLY}>
                 {children}
             </ThemeProvider>
-            {/*
-                Seçici artık SABİT DEĞİL.
-
-                320×480'de (iPhone 4) sabit bir alt çubuk ekranın kalıcı
-                olarak %12'sini kaplıyor ve içeriğin üstüne biniyordu — küçük
-                ekranda en pahalı şey dikey alandır. Ayrıca "yapıştırılmış"
-                bir kontrol, sayfanın hiçbir görevine ait değildir.
-                
-                Yerine akış içinde, sayfanın sonunda durur. Kabuklar isterse
-                kendi üst çubuklarına yerleştirir (`ThemeSwitcher`).
-            */}
-            <div
-                role="radiogroup"
-                aria-label={t('theme.group_label')}
-                className="flex justify-center py-[var(--space-3)] motion-reduce:transition-none"
-            >
-                <div className="flex gap-1 rounded-pill border border-border bg-surface/95 p-1 shadow-sm backdrop-blur-sm">
-                    {THEME_OPTIONS.map((option) => {
-                        const checked = preference === option;
-                        return (
-                            <button
-                                key={option}
-                                ref={(node) => {
-                                    optionRefs.current[option] = node;
-                                }}
-                                type="button"
-                                role="radio"
-                                aria-checked={checked}
-                                aria-label={optionLabels[option]()}
-                                tabIndex={checked ? 0 : -1}
-                                onClick={() => choose(option)}
-                                onKeyDown={(event) => {
-                                    const currentIndex = THEME_OPTIONS.indexOf(option);
-                                    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-                                        event.preventDefault();
-                                        const next =
-                                            THEME_OPTIONS[
-                                                (currentIndex + 1) % THEME_OPTIONS.length
-                                            ];
-                                        choose(next, true);
-                                    } else if (
-                                        event.key === 'ArrowLeft' ||
-                                        event.key === 'ArrowUp'
-                                    ) {
-                                        event.preventDefault();
-                                        const prev =
-                                            THEME_OPTIONS[
-                                                (currentIndex - 1 + THEME_OPTIONS.length) %
-                                                    THEME_OPTIONS.length
-                                            ];
-                                        choose(prev, true);
-                                    } else if (event.key === 'Home') {
-                                        event.preventDefault();
-                                        choose(THEME_OPTIONS[0], true);
-                                    } else if (event.key === 'End') {
-                                        event.preventDefault();
-                                        choose(THEME_OPTIONS[THEME_OPTIONS.length - 1], true);
-                                    }
-                                }}
-                                className="flex min-h-11 min-w-11 items-center justify-center rounded-pill px-3 text-body font-medium text-fg-secondary transition-colors hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 motion-reduce:transition-none aria-checked:bg-action aria-checked:text-action-fg aria-checked:forced-colors:outline aria-checked:forced-colors:outline-2 aria-checked:forced-colors:outline-offset-2"
-                            >
-                                {optionLabels[option]()}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-        </>
+        </ThemeControlContext>
     );
 }

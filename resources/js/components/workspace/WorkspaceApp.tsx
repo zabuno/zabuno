@@ -11,7 +11,7 @@ import type { BrandProfile } from './BrandEditForm';
 import type { LocationProfile } from './LocationEditForm';
 import { LocationOnboardingForm } from './LocationOnboardingForm';
 import { AdminShell } from '../catalog/layout/macro/AdminShell';
-import { ActionMenu } from '../catalog/overlays/compound/ActionMenu';
+import { AccountMenu } from './chrome/AccountMenu';
 import { AppErrorBoundary } from '../system/AppErrorBoundary';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { AiCommandTrigger } from '../catalog/navigation/compound/AiCommandTrigger';
@@ -123,6 +123,15 @@ export type WorkspaceChromeContext = {
      */
     workspaceName?: string;
     onSwitchWorkspace?: () => void;
+    /**
+     * Hesap menüsü — kabuğun kendi YERLEŞTİRECEĞİ düğüm.
+     *
+     * Menünün İÇERİĞİ cihazdan bağımsızdır; değişen tek şey nerede
+     * durduğudur. Masaüstünde kalıcı kenar çubuğunun dibinde, telefonda üst
+     * çubukta. İçeriği kabuk kurmaz: iki kabuk aynı menüyü ayrı ayrı kursaydı
+     * biri diğerinden sessizce kayabilirdi.
+     */
+    accountMenu?: ReactNode;
 };
 
 export function WorkspaceApp({
@@ -904,6 +913,22 @@ export function WorkspaceApp({
             ? activeInspectorEntry.render(sectionContext)
             : null;
 
+    /*
+        Hesap menüsü BİR KEZ kurulur, iki yerde kullanılabilir — ama aynı anda
+        yalnız birinde çizilir. Kalıcı kenar çubuğu varsa oraya aittir
+        (`docs/50` §7); yoksa üst çubuğa düşer. İkisine birden vermek, aynı
+        menüyü ekranda iki kez göstermek olurdu.
+    */
+    const accountMenu =
+        user?.email !== undefined && user.email !== '' ? (
+            <AccountMenu
+                email={user.email}
+                onSwitchWorkspace={handleSwitch}
+                onLogout={() => void handleLogout()}
+                loggingOut={loggingOut}
+            />
+        ) : null;
+
     const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
         (descriptor) => descriptor.aiQuickAction,
     ).map((descriptor) => ({
@@ -926,6 +951,7 @@ export function WorkspaceApp({
                 navLabel: t('workspace.shell.nav.label'),
                 workspaceName: currentWorkspace?.name,
                 onSwitchWorkspace: handleSwitch,
+                accountMenu,
             })}
             navigationDrawer={renderNavigationDrawer?.({
                 navGroups,
@@ -960,43 +986,15 @@ export function WorkspaceApp({
                         alanında değil kimlik alanında durur.
                     */}
                     {/*
-                        Hesap menüsü — önceden burada ham bir e-posta metni ve
-                        kenar çubuğunun dibinde iki düz bağlantı vardı.
+                        Hesap menüsü ÜST ÇUBUKTA yalnız kalıcı kenar çubuğu
+                        YOKKEN durur — yani telefonda (`docs/50` §25).
 
-                        E-posta bir KONTROL değildi: ekranda duruyordu ama
-                        tıklanamıyordu, ve "hesabımla ilgili bir şey yapmak
-                        istiyorum" diyen kullanıcıyı kenar çubuğunun en altına
-                        yolluyordu — görev navigasyonunun arasına karışmış iki
-                        maddeye. Hesap işleri gezinti değildir; kimlik alanına
-                        aittir ve orada tek bir yerde toplanır.
-
-                        Kırılma noktası jetonu YOK: dar ekranda üst çubuk sarar,
-                        metin `max-width` ile kısalır, gizlenmez.
+                        Masaüstünde kenar çubuğunun dibine ait: orası yardımcı
+                        araçların yeridir ve üst çubuk zaten çalışma bağlamını
+                        (marka, lokasyon) taşıyor. İkisine birden koymak aynı
+                        menüyü ekranda iki kez göstermek olurdu.
                     */}
-                    {user?.email ? (
-                        <ActionMenu
-                            label={t('workspace.account.menu.label')}
-                            triggerContent={
-                                <span className="max-w-[18ch] truncate text-meta">
-                                    {user.email}
-                                </span>
-                            }
-                            header={user.email}
-                            items={[
-                                {
-                                    key: 'switch-workspace',
-                                    label: t('workspace.current.switch'),
-                                    onSelect: handleSwitch,
-                                },
-                                {
-                                    key: 'logout',
-                                    label: t('workspace.current.logout'),
-                                    onSelect: () => void handleLogout(),
-                                    disabled: loggingOut,
-                                },
-                            ]}
-                        />
-                    ) : null}
+                    {renderPersistentSidebar === undefined ? accountMenu : null}
                     <AiCommandTrigger
                         label={t('workspace.aiCommand.trigger.label')}
                         onClick={() => setAiCommandOpen(true)}
