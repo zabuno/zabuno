@@ -20,6 +20,7 @@ const menuSection: WorkspaceSectionDescriptor = {
     path: 'menu',
     order: 3,
     labelKey: 'workspace.shell.nav.menu',
+    group: 'menu',
     aiQuickAction: true,
     render,
 };

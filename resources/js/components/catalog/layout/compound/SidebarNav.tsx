@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { MouseEvent, ReactNode } from 'react';
 import clsx from 'clsx';
 import { NavLink } from '../../navigation/micro/NavLink';
@@ -47,6 +48,17 @@ export function SidebarNav({
     asLandmark = true,
     className,
 }: SidebarNavProps) {
+    /*
+        Örneğe özgü kimlik öneki.
+
+        `AdminShell` bu bileşeni İKİ KEZ render eder: kalıcı ray ve mobil
+        çekmece. Sabit bir `id` kullanılsaydı DOM'da yinelenen kimlikler
+        oluşur ve `aria-labelledby` her zaman İLK kopyaya bağlanırdı — yani
+        çekmeceden gezinen kullanıcı, ekranda görmediği bir listenin adını
+        duyardı.
+    */
+    const groupIdPrefix = useId();
+
     const Container = asLandmark ? 'nav' : 'div';
 
     return (
@@ -63,11 +75,26 @@ export function SidebarNav({
                         aynı optik hizada olsun.
                     */}
                     {group.label ? (
-                        <span className="mb-[var(--space-1)] ps-[calc(var(--density-padding-inline)+2px)] text-meta font-semibold uppercase tracking-wide text-fg-subtle">
+                        <span
+                            id={`${groupIdPrefix}-${group.key}`}
+                            className="mb-[var(--space-1)] ps-[calc(var(--density-padding-inline)+2px)] text-meta font-semibold uppercase tracking-wide text-fg-subtle"
+                        >
                             {group.label}
                         </span>
                     ) : null}
-                    <ul className="flex flex-col gap-0.5">
+                    {/*
+                        Başlık, listeye BAĞLANIR (`aria-labelledby`).
+
+                        Önceden yalnız başlık gibi görünen bir `<span>`di ve
+                        hiçbir şeyi etiketlemiyordu: ekran okuyucu kullanan biri
+                        kenar çubuğunda birbirinin aynı, adsız listeler duyuyordu
+                        — gruplamanın getirdiği bütün bilgi görsel katmanda
+                        kalıyor, onlara hiç ulaşmıyordu.
+                    */}
+                    <ul
+                        aria-labelledby={group.label ? `${groupIdPrefix}-${group.key}` : undefined}
+                        className="flex flex-col gap-0.5"
+                    >
                         {group.items.map((item) => (
                             <li key={item.key}>
                                 <NavLink

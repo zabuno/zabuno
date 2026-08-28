@@ -153,8 +153,23 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         ).toBeInTheDocument();
         expect(screen.getByText('ada@example.com')).toBeInTheDocument();
 
-        expect(screen.getByRole('button', { name: 'Switch workspace' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+        /*
+            Hesap kontrolleri artık kenar çubuğunun dibinde değil, kimlik
+            alanındaki hesap menüsünde. Kenar çubuğu yalnız GÖREV gezintisi
+            taşıyor; hesap işleri gezinti değildir ve görev maddelerinin
+            arasına karıştığında ikisi de okunmaz olur.
+
+            Kontroller kaybolmadı — bu yüzden test menüyü AÇIP arıyor.
+        */
+        const accountMenu = within(banner).getByRole('button', { name: 'Account' });
+        expect(accountMenu).toBeInTheDocument();
+
+        await userEvent.click(accountMenu);
+
+        expect(
+            await screen.findByRole('menuitem', { name: 'Switch workspace' }),
+        ).toBeInTheDocument();
+        expect(screen.getByRole('menuitem', { name: 'Log out' })).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -308,7 +323,9 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
-        await user.click(screen.getByRole('button', { name: 'Switch workspace' }));
+        // Hesap menüsü önce açılır: kontrol kenar çubuğundan kimlik alanına taşındı.
+        await user.click(screen.getByRole('button', { name: 'Account' }));
+        await user.click(await screen.findByRole('menuitem', { name: 'Switch workspace' }));
 
         expect(screen.getByRole('heading', { name: 'Choose a workspace' })).toBeInTheDocument();
 
@@ -414,6 +431,44 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         await waitFor(() => {
             expect(window.location.pathname).toBe('/app/zeytin-restoranlari/dashboard');
         });
+
+        vi.unstubAllGlobals();
+    });
+    /**
+     * Kenar çubuğu bir LİSTE değil, bir SIRA.
+     *
+     * Önceden dokuz madde tek ve adsız bir yığındı: Dashboard, Brand,
+     * Locations, Menu, Media, Publication, Analytics, Team, Billing — hepsi
+     * aynı görsel ağırlıkta. Dokuz eşit seçenek, kullanıcıyı her seferinde
+     * listenin tamamını okumaya zorlar. Oysa bunlar bağımsız değil, bir
+     * sıranın adımları.
+     */
+    it('kenar çubuğunu göreve göre adlandırılmış gruplara ayırır', async () => {
+        await renderCurrentWorkspace();
+
+        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
+
+        const restaurant = within(nav).getByRole('list', { name: 'Your restaurant' });
+        expect(within(restaurant).getByRole('link', { name: 'Brand' })).toBeInTheDocument();
+        expect(within(restaurant).getByRole('link', { name: 'Locations' })).toBeInTheDocument();
+
+        const menu = within(nav).getByRole('list', { name: 'Your menu' });
+        expect(within(menu).getByRole('link', { name: 'Menu' })).toBeInTheDocument();
+        expect(within(menu).getByRole('link', { name: 'Media' })).toBeInTheDocument();
+        expect(within(menu).getByRole('link', { name: 'Publication' })).toBeInTheDocument();
+
+        const business = within(nav).getByRole('list', { name: 'Your business' });
+        expect(within(business).getByRole('link', { name: 'Analytics' })).toBeInTheDocument();
+        expect(within(business).getByRole('link', { name: 'Team' })).toBeInTheDocument();
+        expect(within(business).getByRole('link', { name: 'Billing' })).toBeInTheDocument();
+
+        // Dashboard bir adım değil, giriş noktası: gruplanmaz.
+        expect(within(nav).getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
+
+        // Hesap işleri kenar çubuğunda DEĞİL. Gezinti değildirler ve görev
+        // maddelerinin arasına karıştıklarında ikisi de okunmaz olur.
+        expect(within(nav).queryByRole('link', { name: 'Log out' })).toBeNull();
+        expect(within(nav).queryByRole('button', { name: 'Log out' })).toBeNull();
 
         vi.unstubAllGlobals();
     });

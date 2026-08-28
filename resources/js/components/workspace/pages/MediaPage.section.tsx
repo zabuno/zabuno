@@ -12,6 +12,7 @@ const mediaSection: WorkspaceSectionDescriptor = {
     path: 'media',
     order: 4,
     labelKey: 'workspace.shell.nav.media',
+    group: 'menu',
     render,
 };
 

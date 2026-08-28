@@ -12,6 +12,7 @@ const brandSection: WorkspaceSectionDescriptor = {
     path: 'brand',
     order: 1,
     labelKey: 'workspace.shell.nav.brand',
+    group: 'restaurant',
     catalogOnboardingPhase: 'brand-onboarding',
     render,
 };

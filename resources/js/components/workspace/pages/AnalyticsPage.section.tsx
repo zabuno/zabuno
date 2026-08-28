@@ -18,6 +18,7 @@ const analyticsSection: WorkspaceSectionDescriptor = {
     path: 'analytics',
     order: 6,
     labelKey: 'workspace.shell.nav.analytics',
+    group: 'business',
     render,
 };
 

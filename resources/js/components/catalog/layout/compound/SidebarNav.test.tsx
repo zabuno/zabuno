@@ -46,4 +46,60 @@ describe('SidebarNav', () => {
         render(<SidebarNav groups={groups} />);
         expect(screen.getByText('Menu')).toBeInTheDocument();
     });
+    /**
+     * Grup başlığı, LİSTEYİ etiketler.
+     *
+     * Önceden başlık yalnız başlık gibi GÖRÜNEN bir `<span>`di ve hiçbir şeyi
+     * etiketlemiyordu: ekran okuyucu kullanan biri kenar çubuğunda birbirinin
+     * aynı, adsız listeler duyuyordu — gruplamanın taşıdığı bütün bilgi görsel
+     * katmanda kalıyor, onlara hiç ulaşmıyordu.
+     */
+    it('her grup başlığı kendi listesini adlandırır', () => {
+        render(
+            <SidebarNav
+                groups={[
+                    { key: 'overview', items: [{ key: 'dashboard', label: 'Dashboard' }] },
+                    {
+                        key: 'restaurant',
+                        label: 'Your restaurant',
+                        items: [{ key: 'brand', label: 'Brand' }],
+                    },
+                ]}
+            />,
+        );
+
+        expect(screen.getByRole('list', { name: 'Your restaurant' })).toBeInTheDocument();
+
+        // Başlıksız grup adlandırılmaz — uydurulmuş bir ad, olmayan bir
+        // gruplamayı varmış gibi gösterirdi.
+        const lists = screen.getAllByRole('list');
+        expect(lists.some((list) => !list.hasAttribute('aria-labelledby'))).toBe(true);
+    });
+
+    /**
+     * İki örnek yan yana render edildiğinde kimlikler ÇAKIŞMAZ.
+     *
+     * `AdminShell` bu bileşeni iki kez çizer (kalıcı ray + mobil çekmece).
+     * Sabit bir `id` kullanılsaydı `aria-labelledby` her iki kopyada da İLK
+     * başlığa bağlanırdı.
+     */
+    it('aynı anda iki kez render edildiğinde grup kimlikleri çakışmaz', () => {
+        const groups = [
+            { key: 'menu', label: 'Your menu', items: [{ key: 'menu', label: 'Menu' }] },
+        ];
+
+        render(
+            <>
+                <SidebarNav groups={groups} label="Persistent" />
+                <SidebarNav groups={groups} label="Drawer" />
+            </>,
+        );
+
+        const ids = screen
+            .getAllByRole('list', { name: 'Your menu' })
+            .map((list) => list.getAttribute('aria-labelledby'));
+
+        expect(ids).toHaveLength(2);
+        expect(new Set(ids).size).toBe(2);
+    });
 });

@@ -10,6 +10,7 @@ import type { BrandProfile } from './BrandEditForm';
 import type { LocationProfile } from './LocationEditForm';
 import { LocationOnboardingForm } from './LocationOnboardingForm';
 import { AdminShell } from '../catalog/layout/macro/AdminShell';
+import { ActionMenu } from '../catalog/overlays/compound/ActionMenu';
 import { AppErrorBoundary } from '../system/AppErrorBoundary';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { AiCommandTrigger } from '../catalog/navigation/compound/AiCommandTrigger';
@@ -26,6 +27,7 @@ import {
     resolveSectionKeyFromPath,
     resolveSectionDescriptorForOnboardingPhase,
     renderActiveSection,
+    type WorkspaceSectionDescriptor,
 } from './shell/WorkspaceSectionRegistry';
 
 export type CatalogPhase =
@@ -729,14 +731,14 @@ export function WorkspaceApp() {
     const navGroups: SidebarNavGroup[] = [];
 
     if (currentWorkspace) {
-        const catalogItems: SidebarNavGroup['items'] = SECTION_DESCRIPTORS.map((descriptor) => ({
+        const toNavItem = (descriptor: (typeof SECTION_DESCRIPTORS)[number]) => ({
             key: descriptor.key,
             label: t(descriptor.labelKey as Parameters<typeof t>[0]),
             // Gerçek bağlantı: klavye, yeni sekmede açma, orta tık ve
             // "bağlantıyı kopyala" kendiliğinden çalışır. Fragment ile
             // hiçbiri çalışmıyordu.
             href: sectionHref(currentWorkspace.slug, descriptor.key),
-            onSelect: (event) => {
+            onSelect: (event: Parameters<typeof shouldInterceptNavigation>[0]) => {
                 if (!shouldInterceptNavigation(event)) {
                     return;
                 }
@@ -745,28 +747,46 @@ export function WorkspaceApp() {
                 goToSection(descriptor.key);
                 setMobileMenuOpen(false);
             },
-        }));
+        });
 
-        navGroups.push({ key: 'catalog', items: catalogItems });
+        /*
+            Kenar çubuğu artık bir LİSTE değil, bir SIRA.
+
+            Önceden dokuz madde tek ve adsız bir yığındı: hepsi aynı görsel
+            ağırlıkta, aralarındaki ilişki gösterilmeden. Dokuz eşit seçenek,
+            kullanıcıyı her seferinde listenin tamamını okumaya zorlar. Oysa
+            bunlar bağımsız değil: önce restoranı tanımlarsın, sonra menüyü
+            kurup yayınlarsın, sonra işi yönetirsin.
+
+            Dashboard gruplanmaz ve en üstte durur — bir adım değil, giriş
+            noktasıdır.
+        */
+        const ungrouped = SECTION_DESCRIPTORS.filter((descriptor) => !descriptor.group);
+
+        if (ungrouped.length > 0) {
+            navGroups.push({ key: 'overview', items: ungrouped.map(toNavItem) });
+        }
+
+        const GROUP_ORDER: ReadonlyArray<NonNullable<WorkspaceSectionDescriptor['group']>> = [
+            'restaurant',
+            'menu',
+            'business',
+        ];
+
+        for (const group of GROUP_ORDER) {
+            const items = SECTION_DESCRIPTORS.filter(
+                (descriptor) => descriptor.group === group,
+            ).map(toNavItem);
+
+            if (items.length > 0) {
+                navGroups.push({
+                    key: group,
+                    label: t(`workspace.shell.nav.group.${group}` as Parameters<typeof t>[0]),
+                    items,
+                });
+            }
+        }
     }
-
-    navGroups.push({
-        key: 'account',
-        label: t('workspace.shell.nav.group'),
-        items: [
-            {
-                key: 'switch-workspace',
-                label: t('workspace.current.switch'),
-                onSelect: handleSwitch,
-            },
-            {
-                key: 'logout',
-                label: t('workspace.current.logout'),
-                onSelect: () => void handleLogout(),
-                disabled: loggingOut,
-            },
-        ],
-    });
 
     const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
         (descriptor) => descriptor.aiQuickAction,
@@ -805,21 +825,43 @@ export function WorkspaceApp() {
                         hesaptayım?" gerçek bir sorudur ve cevabı içerik
                         alanında değil kimlik alanında durur.
                     */}
+                    {/*
+                        Hesap menüsü — önceden burada ham bir e-posta metni ve
+                        kenar çubuğunun dibinde iki düz bağlantı vardı.
+
+                        E-posta bir KONTROL değildi: ekranda duruyordu ama
+                        tıklanamıyordu, ve "hesabımla ilgili bir şey yapmak
+                        istiyorum" diyen kullanıcıyı kenar çubuğunun en altına
+                        yolluyordu — görev navigasyonunun arasına karışmış iki
+                        maddeye. Hesap işleri gezinti değildir; kimlik alanına
+                        aittir ve orada tek bir yerde toplanır.
+
+                        Kırılma noktası jetonu YOK: dar ekranda üst çubuk sarar,
+                        metin `max-width` ile kısalır, gizlenmez.
+                    */}
                     {user?.email ? (
-                        <span
-                            /*
-                                Kırılma noktası jetonu YOK (docs/06 §12,
-                                FluidAdaptiveLayout): düzen 320 pikselden
-                                itibaren akışkandır. Dar ekranda yer
-                                kalmayınca üst çubuk zaten sarar; metin
-                                `max-width` ile kısalır, `sm:` ile
-                                gizlenmez.
-                            */
-                            className="max-w-[18ch] truncate text-meta text-fg-muted"
-                            title={user.email}
-                        >
-                            {user.email}
-                        </span>
+                        <ActionMenu
+                            label={t('workspace.account.menu.label')}
+                            triggerContent={
+                                <span className="max-w-[18ch] truncate text-meta">
+                                    {user.email}
+                                </span>
+                            }
+                            header={user.email}
+                            items={[
+                                {
+                                    key: 'switch-workspace',
+                                    label: t('workspace.current.switch'),
+                                    onSelect: handleSwitch,
+                                },
+                                {
+                                    key: 'logout',
+                                    label: t('workspace.current.logout'),
+                                    onSelect: () => void handleLogout(),
+                                    disabled: loggingOut,
+                                },
+                            ]}
+                        />
                     ) : null}
                     <AiCommandTrigger
                         label={t('workspace.aiCommand.trigger.label')}

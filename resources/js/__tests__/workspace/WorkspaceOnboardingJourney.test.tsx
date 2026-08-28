@@ -324,8 +324,15 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         // E-posta kimlik alanında (üst çubuk), içerik akışında değil.
         expect(within(contextBanner).getByText('ada@example.com')).toBeInTheDocument();
         expect(screen.queryByText('zeytin-restoranlari')).not.toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /switch workspace|change workspace/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /log ?out/i })).toBeInTheDocument();
+        // Hesap kontrolleri kenar çubuğunun dibinden kimlik alanındaki hesap
+        // menüsüne taşındı: gezinti değildirler ve görev maddelerinin arasına
+        // karıştıklarında ikisi de okunmaz olur. Kontroller kaybolmadı, bu
+        // yüzden test menüyü AÇIP arıyor.
+        fireEvent.click(within(contextBanner).getByRole('button', { name: 'Account' }));
+        expect(
+            await screen.findByRole('menuitem', { name: /switch workspace|change workspace/i }),
+        ).toBeInTheDocument();
+        expect(screen.getByRole('menuitem', { name: /log ?out/i })).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -370,7 +377,11 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         );
         render(<WorkspaceApp />);
 
-        const logoutButton = await screen.findByRole('button', { name: /log ?out/i });
+        // Hesap menüsü önce açılır (kontrol kimlik alanına taşındı).
+        fireEvent.click(
+            within(await screen.findByRole('banner')).getByRole('button', { name: 'Account' }),
+        );
+        const logoutButton = await screen.findByRole('menuitem', { name: /log ?out/i });
         fireEvent.click(logoutButton);
 
         await waitFor(() => {
