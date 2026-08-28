@@ -29,6 +29,17 @@ interface MenuMediaPort
     public function snapshotImage(int $workspaceId, string $entityType, int $entityId): ?array;
 
     /**
+     * Panelin "bu satırda hangi görsel bağlı" sorusu — TEK sorguda.
+     *
+     * Satır başına ayrı sorgu, kırk ürünlük bir menüde kırk gidiş dönüş
+     * demekti ve menü ekranını gözle görülür biçimde yavaşlatırdı.
+     *
+     * @param  list<int>  $menuItemIds
+     * @return array<int, int> menü satırı kimliği → medya varlığı kimliği
+     */
+    public function attachedAssetIds(int $workspaceId, array $menuItemIds): array;
+
+    /**
      * Yayın anında kullanım kaydı açar.
      *
      * Bu satırlar olmadan "bu görsel yayında mı" sorusu cevapsızdır ve

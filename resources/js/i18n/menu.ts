@@ -54,6 +54,21 @@ const en = {
     'menu.item.price.edit.button': 'Edit price for {name}',
     'menu.item.allergens.edit.short': 'Allergens',
     'menu.item.price.edit.short': 'Price',
+    // SUNUM: açıklama ve fotoğraf tek düzenleyicide. Sahibin yaptığı iş
+    // tektir — "bu ürünü misafire nasıl göstereceğim" — ve iki ayrı düğme
+    // aynı satır için iki kez form açtırırdı.
+    'menu.item.presentation.edit.short': 'Photo & text',
+    'menu.item.presentation.edit.button': 'Edit photo and description for {name}',
+    'menu.item.presentation.submit': 'Save presentation',
+    'menu.item.presentation.error.image':
+        'The description was saved, but the photo was not attached.',
+    'menu.item.description.label': 'Description',
+    'menu.item.description.help':
+        'A short line the guest reads under the name. Up to 500 characters.',
+    'menu.item.image.label': 'Photo',
+    'menu.item.image.none': 'No photo',
+    'menu.item.image.empty':
+        'No processed photo is available yet. Upload one on the Media page first.',
     // Satır içi düzenleyicinin etiketi ÜRÜN ADINI taşır.
     //
     // Ekranda aynı anda iki "Price" alanı olabilir: aşağıdaki "menüye ürün

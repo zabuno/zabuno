@@ -11,6 +11,12 @@ export type MediaAsset = {
     altText: string;
     slot: string;
     status: string;
+    /**
+     * Durumun İNSANCA açıklaması; yalnız bir şey ters gittiğinde dolu
+     * (`docs/76`). Sorunsuz bir dosyaya sebep yazmak gürültüdür ve sahip
+     * her satırda açıklama görmeye başlarsa gerçek uyarıyı okumaz.
+     */
+    statusReason?: string | null;
 };
 
 type MediaPageProps = {

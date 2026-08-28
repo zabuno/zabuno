@@ -58,3 +58,56 @@ describe('MediaLibraryRegion — real status per asset (MEDIA-UI-STATUS-01)', ()
         expect(onDelete).toHaveBeenCalledTimes(1);
     });
 });
+
+/**
+ * `docs/76` — rozet DURUMU söyler, sebebi söylemez.
+ *
+ * Virüs tarayıcı çalışmayan bir ortamda dosya "Scanning" rozetiyle sonsuza
+ * kadar bekliyordu ve sahip ne olduğunu hiçbir yerde okuyamıyordu. Ürün
+ * yapamadığı şeyi sessizce saklamaz.
+ */
+describe('durumun sebebi (docs/76)', () => {
+    it('sebep varsa okunur', () => {
+        render(
+            <MediaLibraryRegion
+                assets={[
+                    {
+                        id: 4,
+                        altText: 'Adana kebap',
+                        slot: 'itemImage',
+                        status: 'scanning',
+                        statusReason:
+                            'Virüs taraması bu ortamda çalışmıyor; dosya taranmadan yayına alınmaz.',
+                    },
+                ]}
+                loadState="idle"
+                onDelete={() => {}}
+            />,
+        );
+
+        expect(
+            screen.getByText(
+                'Virüs taraması bu ortamda çalışmıyor; dosya taranmadan yayına alınmaz.',
+            ),
+        ).toBeInTheDocument();
+    });
+
+    it('sorunsuz bir dosyaya sebep yazılmaz', () => {
+        render(
+            <MediaLibraryRegion
+                assets={[{ id: 5, altText: 'Lahmacun', slot: 'itemImage', status: 'ready' }]}
+                loadState="idle"
+                onDelete={() => {}}
+            />,
+        );
+
+        // Listenin ALTINDAKİ sayaç da `role="status"` taşır; iddia
+        // SATIRIN içine bakar, yoksa her zaman doğru çıkardı.
+        // Rozet her satırda var; iddia rozetin METNİNE bakar. Sorunsuz bir
+        // dosyanın rozeti yalnız durumu söyler, fazladan bir cümle taşımaz.
+        const row = screen.getByText('Lahmacun').closest('li');
+
+        expect(row).not.toBeNull();
+        expect(within(row as HTMLElement).getByRole('status')).toHaveTextContent(/^Ready$/);
+    });
+});
