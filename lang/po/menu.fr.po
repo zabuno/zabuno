@@ -256,6 +256,22 @@ msgstr ""
 msgid "menu.item.price.label"
 msgstr ""
 
+#: menu:menu.item.stock.back.button
+msgid "menu.item.stock.back.button"
+msgstr ""
+
+#: menu:menu.item.stock.back.short
+msgid "menu.item.stock.back.short"
+msgstr ""
+
+#: menu:menu.item.stock.out.button
+msgid "menu.item.stock.out.button"
+msgstr ""
+
+#: menu:menu.item.stock.out.short
+msgid "menu.item.stock.out.short"
+msgstr ""
+
 #: menu:menu.item.visibility.checkbox.label
 msgid "menu.item.visibility.checkbox.label"
 msgstr ""

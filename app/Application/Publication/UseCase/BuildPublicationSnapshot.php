@@ -68,6 +68,11 @@ final class BuildPublicationSnapshot
                 $hasVisibleItem = true;
 
                 $entry = [
+                    // Menü satırı kimliği snapshot'a YAZILIR: "bugün
+                    // tükendi" donmuş menünün üstüne konan canlı bir
+                    // nottur ve hangi satıra ait olduğunu bilmesi gerekir
+                    // (`docs/82`).
+                    'menuItemId' => $item['id'],
                     'productName' => $item['productName'],
                     // Açıklama ve görsel DE donar: yayınlanmış menü,
                     // sonradan düzenlenen bir fotoğrafı ya da metni

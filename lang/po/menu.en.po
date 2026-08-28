@@ -256,6 +256,22 @@ msgstr "Enter a price."
 msgid "menu.item.price.label"
 msgstr "Price"
 
+#: menu:menu.item.stock.back.button
+msgid "menu.item.stock.back.button"
+msgstr "Mark {name} available again"
+
+#: menu:menu.item.stock.back.short
+msgid "menu.item.stock.back.short"
+msgstr "Back in stock"
+
+#: menu:menu.item.stock.out.button
+msgid "menu.item.stock.out.button"
+msgstr "Mark {name} sold out for today"
+
+#: menu:menu.item.stock.out.short
+msgid "menu.item.stock.out.short"
+msgstr "Sold out"
+
 #: menu:menu.item.visibility.checkbox.label
 msgid "menu.item.visibility.checkbox.label"
 msgstr "Show {name}"

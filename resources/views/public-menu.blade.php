@@ -36,6 +36,10 @@
             : $identity->brandName.' · '.implode(' · ', $parts);
     };
 
+    /* "Bugün tükendi" — donmuş menünün üstündeki tebeşir notu (`docs/82`).
+       Yayından bağımsız okunur; snapshot değişmez. */
+    $soldOut = array_flip(array_map('intval', $outOfStockItemIds ?? []));
+
     $headline = $identity?->brandName ?: trim((string) ($fallbackBrandName ?? ''));
     $documentTitle = $headline !== '' ? $headline : 'Menü';
 @endphp
@@ -255,6 +259,22 @@
             flex: 0 0 auto;
         }
 
+        /* Solukluk YARDIMCIDIR, tek başına anlatmaz: durumu satırdaki
+           metnin kendisi söylüyor. */
+        .qr-menu-item-sold-out .qr-menu-item-name,
+        .qr-menu-item-sold-out .qr-menu-item-price {
+            opacity: 0.65;
+        }
+
+        .qr-menu-item-sold-out-note {
+            font-size: 0.75rem;
+            padding: 0.1rem 0.5rem;
+            border-radius: 999px;
+            border: 1px solid var(--qr-border);
+            color: var(--qr-muted);
+            white-space: nowrap;
+        }
+
         .qr-menu-item-description {
             width: 100%;
             font-size: 0.85rem;
@@ -415,7 +435,8 @@
                 @else
                     <ul class="qr-menu-item-list">
                         @foreach ($category['menuItems'] as $item)
-                            <li class="qr-menu-item" data-item data-item-name="{{ $item['productName'] }}">
+                            @php($isSoldOut = isset($item['menuItemId']) && isset($soldOut[(int) $item['menuItemId']]))
+                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}">
                                 @if (! empty($item['image']['sources']))
                                     @php($image = $item['image'])
                                     {{-- `loading="lazy"`: kırk ürünlük bir menüde
@@ -433,6 +454,13 @@
                                 @php($priceLabel = \App\Support\Money\PriceLabel::for((int) $item['priceMinorAmount'], (string) $item['currencyCode']))
                                 @if ($priceLabel !== null)
                                     <span class="qr-menu-item-price">{{ $priceLabel }}</span>
+                                @endif
+                                @if ($isSoldOut)
+                                    {{-- Tükendi METİNLE söylenir. Yalnız renk
+                                         ya da soluklukla anlatmak, renk
+                                         göremeyen misafir için hiçbir şey
+                                         anlatmaz (WCAG 1.4.1). --}}
+                                    <span class="qr-menu-item-sold-out-note">{{ $guestText['soldOut'] ?? 'Bugün tükendi' }}</span>
                                 @endif
                                 @if (! empty($item['description']))
                                     <span class="qr-menu-item-description">{{ $item['description'] }}</span>
