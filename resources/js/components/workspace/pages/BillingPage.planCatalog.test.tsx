@@ -235,10 +235,19 @@ describe('BillingPage — S1-WP05 Plan catalog (BILLING_PLAN_CATALOG_FRONTEND_RE
 
         expect(screen.getByRole('region', { name: 'Current plan' })).toBeInTheDocument();
 
-        const manualPaymentRegion = screen.getByRole('region', { name: 'Manual payment' });
-        expect(
-            within(manualPaymentRegion).getByRole('button', { name: /record payment/i }),
-        ).toBeDisabled();
+        /*
+            Manuel ödeme bölgesi ARTIK YOK.
+
+            Dört devre dışı alan ve devre dışı bir düğme duruyordu; yanında
+            "bu görünüm salt-okunur" yazıyordu. Devre dışı bir kontrol yalnız
+            kullanıcı gerekli koşulu TAMAMLAYABİLİYORSA gösterilir — manuel
+            ödemeyi yalnız platform finans ekibi kaydeder, restoran sahibi bu
+            düğmeyi hiçbir koşulda etkinleştiremez (docs/57).
+        */
+        expect(screen.queryByRole('region', { name: 'Manual payment' })).toBeNull();
+        // Manuel ödeme bölgesi artık YOK: başka bir rolün işiydi ve
+        // restoran sahibi onu hiçbir koşulda etkinleştiremezdi (docs/57).
+        expect(screen.queryByRole('button', { name: /record payment/i })).toBeNull();
 
         const iyzicoRegion = screen.getByRole('region', { name: 'Iyzico sandbox' });
         expect(
