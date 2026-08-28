@@ -187,7 +187,14 @@ function buildFetchMock() {
 
 describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundation, RED)', () => {
     beforeEach(() => {
-        history.replaceState(null, '', window.location.pathname);
+        /*
+            Adres KÖKE çekilir, "mevcut yola" değil.
+
+            `window.location.pathname` kullanmak, bir önceki testin gezindiği
+            yeri korumaktı: gerçekten gezinen bir test eklendiği anda sonraki
+            testler Home yerine o ekranda başlıyor ve sebebi görünmüyordu.
+        */
+        history.replaceState(null, '', '/');
     });
 
     it('renders an accessible dashboard header with real category/menu-item counts, a row per real item, and keeps the existing menu catalog available below', async () => {
@@ -392,8 +399,17 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
 
         await screen.findByText('No menu has been created for this location yet.');
 
-        const openMenuLink = within(dashboardDestination).getByRole('link', { name: 'Open Menu' });
-        expect(openMenuLink).toHaveAttribute('href', '#menu');
+        /*
+            ÇIKIŞ YOLU GERÇEKTEN GÖTÜRÜR — `docs/70`.
+
+            Bu iddia `href="#menu"` donduruyordu. Adres tabanlı gezintiye
+            geçildiğinden beri o bağlantı hiçbir şey yapmıyordu: menüsü olmayan
+            bir kullanıcının Home'da yapabileceği TEK şey ölü bir bağlantıydı.
+        */
+        const openMenu = within(dashboardDestination).getByRole('button', { name: 'Open Menu' });
+        await userEvent.click(openMenu);
+
+        expect(screen.getByRole('main').querySelector('#section-menu')).not.toBeNull();
 
         expect(screen.queryByText('Loading your dashboard summary…')).not.toBeInTheDocument();
         expect(dashboardDestination.querySelector('table')).toBeNull();

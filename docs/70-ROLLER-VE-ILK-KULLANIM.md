@@ -106,6 +106,21 @@ Sütunun genişliği `ch` ile ölçülüyor, pikselle değil: içindeki şey bir
 karakter, ve 320 piksellik ekranda sabit piksel genişliği yazı boyutuyla
 ölçeklenmez. 320px-first kapısı bunu `w-4` denemesinde yakaladı.
 
+## 2.3 Bir ölü bağlantı daha
+
+Süpürme kalan tek `href="#"` örneğini de buldu: Home'un boş durumundaki
+**tek çıkış yolu**. Menüsü olmayan bir kullanıcının o ekranda yapabileceği tek
+şey, hiçbir şey yapmayan bir bağlantıydı.
+
+`PageState`'e çevrildi — çıkış yolu artık tip düzeyinde zorunlu. Sayfanın `h1`
+başlığı ayrıca korundu: dolu hâlde `PageHeader` çiziyor, boş hâlde kaybolursa
+ekran okuyucunun sayfalar arası gezinme yolu kopardı.
+
+Bu değişiklik bir test kusurunu da açığa çıkardı: dosyanın `beforeEach`'i
+adresi `window.location.pathname`'e — yani BİR ÖNCEKİ testin gezindiği yere —
+çekiyordu. Gerçekten gezinen bir test eklendiği anda sonraki testler Home
+yerine o ekranda başladı ve sebebi görünmedi. Artık köke çekiliyor.
+
 ## 3. Kalan
 
 - **Lokasyon bazlı erişim kapsamı** (`docs/50` §9.8): üyelikler bugün çalışma

@@ -6,6 +6,8 @@ import { DashboardSetupJourney } from './dashboard/DashboardSetupJourney';
 import type { BrandProfile } from '../BrandEditForm';
 import type { LocationProfile } from '../LocationEditForm';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PageState } from './shared/PageState';
+import { Button } from 'flowbite-react';
 
 export type DashboardMenuItemRow = {
     id: number;
@@ -120,14 +122,37 @@ export function DashboardPage({
                         }}
                     />
                 ) : (
+                    /*
+                        Boş durumun TEK çıkış yolu bir ölü bağlantıydı:
+                        `href="#menu"`, adres tabanlı gezintiye geçildiğinden
+                        beri hiçbir şey yapmıyordu (`docs/70`). Menüsü olmayan
+                        bir kullanıcının Home'da yapabileceği tek şey buydu.
+                    */
                     <div className="flex flex-col gap-3">
-                        <h1 className="text-xl font-semibold text-fg">{t('dashboard.heading')}</h1>
-                        <p role="status" className="text-body text-fg-muted">
-                            {t('dashboard.empty')}
-                        </p>
-                        <a href="#menu" className="text-body font-medium text-fg-link">
-                            {t('dashboard.empty.openMenu')}
-                        </a>
+                        {/*
+                            Sayfanın ADI boş durumda da durmalı: `h1` ekran
+                            okuyucunun sayfalar arasında gezinme yoludur ve
+                            dolu hâlde `PageHeader` onu zaten çiziyor.
+                        */}
+                        <h1 className="text-title font-semibold text-fg">
+                            {t('dashboard.heading')}
+                        </h1>
+                        <PageState
+                            kind="empty"
+                            title={t('dashboard.empty')}
+                            {...(onNavigateToSection
+                                ? {
+                                      action: (
+                                          <Button
+                                              size="sm"
+                                              onClick={() => onNavigateToSection('menu')}
+                                          >
+                                              {t('dashboard.empty.openMenu')}
+                                          </Button>
+                                      ),
+                                  }
+                                : { whyNoAction: t('dashboard.empty') })}
+                        />
                     </div>
                 )}
             </WorkspacePageFrame>
