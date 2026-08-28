@@ -4,19 +4,19 @@ import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 export type WorkspaceCatalogOnboardingPhase = 'brand-onboarding' | 'location-onboarding';
 
 /**
- * Kenar çubuğunun bölümleri hangi başlık altında toplanacak.
+ * Kenar çubuğunun grupları — `docs/50` §5'teki hedef bilgi mimarisi.
  *
- * Önceden dokuz madde tek ve ADSIZ bir yığındı: Dashboard, Brand, Locations,
- * Menu, Media, Publication, Analytics, Team, Billing — hepsi aynı görsel
- * ağırlıkta, aralarında hiçbir ilişki gösterilmeden. Dokuz eşit seçenek,
- * kullanıcıyı her seferinde listenin tamamını okumaya zorlar; oysa bunlar
- * birbirinden bağımsız değil, bir SIRANIN adımları: önce restoranı tanımlarsın,
- * sonra menüyü kurup yayınlarsın, sonra işi yönetirsin.
+ * Gruplar keyfi değil, kullanıcının işine göre: `primary` her gün gidilen
+ * yerler, `management` ara sıra düzenlenen kayıtlar, `utility` nadiren açılan
+ * ayarlar.
  *
- * Gruplar bu sırayı görünür kılar. `undefined` bırakılan bölüm (Dashboard)
- * en üstte, kendi başına durur — bir adım değil, giriş noktasıdır.
+ * Grubu OLMAYAN bölüm kenar çubuğunda listelenmez ama adresi çalışır. Bu
+ * kasıtlı bir üçüncü hâldir: Brand, Billing ve Publication günlük operasyon
+ * değildir ve ana menüde kalıcı yer işgal etmemeleri gerekir — ama
+ * ulaşılamaz da olmamalılar. Marka ayarları Settings'in içinden, yayınlama
+ * ise menünün yanından açılır.
  */
-export type WorkspaceNavGroupKey = 'restaurant' | 'menu' | 'business';
+export type WorkspaceNavGroupKey = 'primary' | 'management' | 'utility';
 
 export type WorkspaceSectionDescriptor = {
     key: string;
@@ -31,7 +31,10 @@ export type WorkspaceSectionDescriptor = {
     path: string;
     order: number;
     labelKey: string;
-    /** Kenar çubuğu grubu; `undefined` ise gruplanmadan en üstte durur. */
+    /**
+     * Kenar çubuğu grubu. `undefined` ise bölüm LİSTELENMEZ — adresi yine
+     * çalışır ve başka bir sayfadan açılır.
+     */
     group?: WorkspaceNavGroupKey;
     aiQuickAction?: boolean;
     catalogOnboardingPhase?: WorkspaceCatalogOnboardingPhase;
@@ -118,13 +121,29 @@ export function resolveSectionKeyFromPath(pathname: string): string {
     return resolveSectionDescriptorByPath(pathname).key;
 }
 
-/** Bir bölümün tam adresi. Bağlantılar bunu kullanır. */
-export function sectionHref(workspaceSlug: string, sectionKey: string): string {
+/**
+ * Bir bölümün tam adresi. Bağlantılar bunu kullanır.
+ *
+ * `subPath` sayfa İÇİ gezinti içindir (`settings/brand` gibi). Bölüm
+ * çözümlemesi yalnız ilk parçaya bakar; alt parçayı sayfa kendisi okur.
+ * Böylece "Settings içinde Brand" gerçek bir adres olur — paylaşılabilir,
+ * yer imine eklenebilir ve tarayıcı geçmişinde anlamlıdır.
+ */
+export function sectionHref(workspaceSlug: string, sectionKey: string, subPath?: string): string {
     const descriptor =
         SECTION_DESCRIPTORS.find((candidate) => candidate.key === sectionKey) ??
         DASHBOARD_SECTION_DESCRIPTOR;
 
-    return `/app/${workspaceSlug}/${descriptor.path}`;
+    const suffix = subPath !== undefined && subPath !== '' ? `/${subPath}` : '';
+
+    return `/app/${workspaceSlug}/${descriptor.path}${suffix}`;
+}
+
+/** Adresteki bölüm-içi parça (`/app/x/settings/brand` → `brand`). */
+export function resolveSubPath(pathname: string): string {
+    const segments = pathname.split('/').filter((segment) => segment !== '');
+
+    return segments.length >= 4 ? segments[3] : '';
 }
 
 export function resolveSectionDescriptorForOnboardingPhase(

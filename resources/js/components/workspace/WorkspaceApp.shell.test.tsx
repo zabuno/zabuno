@@ -144,7 +144,7 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         expect(screen.getByRole('navigation', { name: 'Restaurant admin' })).toBeInTheDocument();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         expect(within(main).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
 
@@ -201,7 +201,7 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace(mobileChrome);
 
-        const dashboardLinks = () => screen.queryAllByRole('link', { name: 'Dashboard' });
+        const dashboardLinks = () => screen.queryAllByRole('link', { name: 'Home' });
 
         expect(dashboardLinks()).toHaveLength(0);
 
@@ -349,11 +349,11 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
-        const dashboardLink = within(nav).getByRole('link', { name: 'Dashboard' });
+        const dashboardLink = within(nav).getByRole('link', { name: 'Home' });
         expect(dashboardLink).toHaveAttribute('href', '/app/zeytin-restoranlari/dashboard');
         expect(dashboardLink).toHaveAttribute('aria-current', 'page');
 
-        const menuLink = within(nav).getByRole('link', { name: 'Menu' });
+        const menuLink = within(nav).getByRole('link', { name: 'Menus' });
         expect(menuLink).toHaveAttribute('href', '/app/zeytin-restoranlari/menu');
         expect(menuLink).not.toHaveAttribute('aria-current', 'page');
 
@@ -381,7 +381,7 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         await user.click(screen.getByRole('button', { name: 'Open menu' }));
 
         const dialog = screen.getByRole('dialog');
-        await user.click(within(dialog).getByRole('link', { name: 'Menu' }));
+        await user.click(within(dialog).getByRole('link', { name: 'Menus' }));
 
         await waitFor(() => {
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -446,27 +446,33 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
      * listenin tamamını okumaya zorlar. Oysa bunlar bağımsız değil, bir
      * sıranın adımları.
      */
-    it('kenar çubuğunu göreve göre adlandırılmış gruplara ayırır', async () => {
+    it('kenar çubuğunu docs/50 §5 bilgi mimarisine göre gruplar', async () => {
         await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
-        const restaurant = within(nav).getByRole('list', { name: 'Your restaurant' });
-        expect(within(restaurant).getByRole('link', { name: 'Brand' })).toBeInTheDocument();
-        expect(within(restaurant).getByRole('link', { name: 'Locations' })).toBeInTheDocument();
+        // Operasyon: her gün gidilen yerler.
+        const operations = within(nav).getByRole('list', { name: 'Operations' });
+        expect(within(operations).getByRole('link', { name: 'Home' })).toBeInTheDocument();
+        expect(within(operations).getByRole('link', { name: 'Menus' })).toBeInTheDocument();
+        expect(within(operations).getByRole('link', { name: 'QR codes' })).toBeInTheDocument();
+        expect(within(operations).getByRole('link', { name: 'Insights' })).toBeInTheDocument();
 
-        const menu = within(nav).getByRole('list', { name: 'Your menu' });
-        expect(within(menu).getByRole('link', { name: 'Menu' })).toBeInTheDocument();
-        expect(within(menu).getByRole('link', { name: 'Media' })).toBeInTheDocument();
-        expect(within(menu).getByRole('link', { name: 'Publication' })).toBeInTheDocument();
+        // Yönetim: ara sıra düzenlenen kayıtlar.
+        const management = within(nav).getByRole('list', { name: 'Management' });
+        expect(within(management).getByRole('link', { name: 'Locations' })).toBeInTheDocument();
+        expect(within(management).getByRole('link', { name: 'Media' })).toBeInTheDocument();
+        expect(within(management).getByRole('link', { name: 'Team' })).toBeInTheDocument();
 
-        const business = within(nav).getByRole('list', { name: 'Your business' });
-        expect(within(business).getByRole('link', { name: 'Analytics' })).toBeInTheDocument();
-        expect(within(business).getByRole('link', { name: 'Team' })).toBeInTheDocument();
-        expect(within(business).getByRole('link', { name: 'Billing' })).toBeInTheDocument();
+        // Ayarlar: nadiren açılan işler.
+        const settings = within(nav).getByRole('list', { name: 'Settings' });
+        expect(within(settings).getByRole('link', { name: 'Settings' })).toBeInTheDocument();
 
-        // Dashboard bir adım değil, giriş noktası: gruplanmaz.
-        expect(within(nav).getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
+        // Günlük operasyon OLMAYANLAR ana menüde kalıcı yer işgal etmez —
+        // ama adresleri çalışır (docs/50 §5).
+        expect(within(nav).queryByRole('link', { name: 'Brand' })).toBeNull();
+        expect(within(nav).queryByRole('link', { name: 'Billing' })).toBeNull();
+        expect(within(nav).queryByRole('link', { name: 'Publication' })).toBeNull();
 
         // Hesap işleri kenar çubuğunda DEĞİL. Gezinti değildirler ve görev
         // maddelerinin arasına karıştıklarında ikisi de okunmaz olur.

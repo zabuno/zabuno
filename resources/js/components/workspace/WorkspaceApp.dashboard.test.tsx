@@ -194,7 +194,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+        expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument();
 
         const dashboardDestination = document.querySelector('#section-dashboard');
         expect(dashboardDestination).not.toBeNull();
@@ -296,7 +296,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+        expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument();
 
         const dashboardTable = screen.getByRole('table', { name: 'Menu item list' });
         expect(within(dashboardTable).getByText('Kahve (Starters)')).toBeInTheDocument();
@@ -318,7 +318,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
             ).toBe(true);
         });
 
-        await user.click(screen.getByRole('link', { name: 'Dashboard' }));
+        await user.click(screen.getByRole('link', { name: 'Home' }));
 
         await vi.waitFor(() => {
             expect(screen.queryByText('Kahve (Starters)')).not.toBeInTheDocument();
@@ -379,7 +379,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+        expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument();
 
         const dashboardDestination = document.querySelector('#section-dashboard') as HTMLElement;
         expect(dashboardDestination).not.toBeNull();
@@ -414,7 +414,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+        expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument();
 
         const setupSection = await screen.findByRole('region', { name: 'Dashboard Setup' });
 
@@ -495,7 +495,7 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+        expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument();
 
         const setupSection = await screen.findByRole('region', { name: 'Dashboard Setup' });
 

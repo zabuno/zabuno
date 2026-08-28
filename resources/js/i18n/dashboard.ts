@@ -2,7 +2,7 @@ import { createTranslator } from './translator';
 import { overridesFor } from './generated-overrides';
 
 const en = {
-    'dashboard.heading': 'Dashboard',
+    'dashboard.heading': 'Home',
     'dashboard.loading': 'Loading your dashboard summary…',
     'dashboard.empty': 'No menu has been created for this location yet.',
     'dashboard.empty.openMenu': 'Open Menu',

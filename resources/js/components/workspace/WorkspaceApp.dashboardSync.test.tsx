@@ -158,7 +158,7 @@ describe('WorkspaceApp — dashboard catalog-mutation sync (S1-WP01A foundation,
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+        expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument();
 
         const dashboardTable = screen.getByRole('table', { name: 'Menu item list' });
         expect(within(dashboardTable).getByText('Yes')).toBeInTheDocument();
@@ -167,7 +167,7 @@ describe('WorkspaceApp — dashboard catalog-mutation sync (S1-WP01A foundation,
         expect(screen.getByText('1 / 1')).toBeInTheDocument();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         const checkbox = await screen.findByRole('checkbox', { name: 'Show Kahve' });
 
@@ -188,7 +188,7 @@ describe('WorkspaceApp — dashboard catalog-mutation sync (S1-WP01A foundation,
             ).toBe(true);
         });
 
-        await user.click(within(nav).getByRole('link', { name: 'Dashboard' }));
+        await user.click(within(nav).getByRole('link', { name: 'Home' }));
 
         const updatedDashboardTable = screen.getByRole('table', { name: 'Menu item list' });
         await waitFor(() => {

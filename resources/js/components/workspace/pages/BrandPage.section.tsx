@@ -10,9 +10,8 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 const brandSection: WorkspaceSectionDescriptor = {
     key: 'brand',
     path: 'brand',
-    order: 1,
+    order: 8,
     labelKey: 'workspace.shell.nav.brand',
-    group: 'restaurant',
     catalogOnboardingPhase: 'brand-onboarding',
     render,
 };

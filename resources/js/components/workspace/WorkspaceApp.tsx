@@ -26,6 +26,7 @@ import {
     sectionHref,
     SECTION_DESCRIPTORS,
     resolveSectionKeyFromPath,
+    resolveSubPath,
     resolveSectionDescriptorForOnboardingPhase,
     renderActiveSection,
     type WorkspaceSectionDescriptor,
@@ -54,6 +55,8 @@ export type WorkspaceSectionRuntimeContext = {
     onMenuTreeChange: (tree: DashboardMenuTree) => void;
     /** Boş durumdan çıkış yolunu sunabilmek için. */
     onNavigateToSection: (section: string) => void;
+    /** Bölüm içi konum — `settings/billing` adresinde `billing`. */
+    subPath: string;
 };
 
 type WorkspaceUser = { id: number; name: string; email: string };
@@ -97,6 +100,16 @@ export type WorkspaceChromeContext = {
     navGroups: SidebarNavGroup[];
     activeNavKey?: string;
     navLabel?: string;
+    /**
+     * Kenar çubuğunun ÜSTÜNDEKİ bağlam: hangi çalışma alanındayız.
+     *
+     * `docs/50` §6: switcher gezinti maddesi değildir, gezintinin ÜSTÜNDEKİ
+     * bağlamdır. Kenar çubuğunun dibinde bir "Switch workspace" bağlantısı
+     * olarak durduğunda, her gün gidilen hedeflerin arasına karışıyor ve
+     * "hangi restorandayım" sorusu ancak listeyi okuyarak cevaplanıyordu.
+     */
+    workspaceName?: string;
+    onSwitchWorkspace?: () => void;
 };
 
 export function WorkspaceApp({
@@ -124,6 +137,9 @@ export function WorkspaceApp({
     const [activeSection, setActiveSection] = useState<WorkspaceSection>(() =>
         resolveSectionFromPath(window.location.pathname),
     );
+    // Bölüm İÇİ konum (`settings/billing` → `billing`). Adresten okunur ki
+    // yenileme ve geri tuşu doğru sekmeyi açsın.
+    const [subPath, setSubPath] = useState<string>(() => resolveSubPath(window.location.pathname));
 
     const [dashboardMenuTree, setDashboardMenuTree] = useState<DashboardMenuTree | null>(null);
 
@@ -374,14 +390,25 @@ export function WorkspaceApp({
      * budur. Kaydırma zaten 0'dayken içerik değişirse kırpacak bir şey
      * kalmaz.
      */
-    function goToSection(key: WorkspaceSection): void {
+    /**
+     * Bölüme (ve istenirse bölüm İÇİ bir yere) gider.
+     *
+     * `key` `settings/billing` biçiminde olabilir: bölüm çözümlemesi yalnız
+     * ilk parçaya bakar, ikinci parçayı sayfa kendisi okur. Böylece sekme
+     * gerçek bir adres olur — paylaşılabilir, yer imine eklenebilir ve geri
+     * tuşu beklendiği gibi çalışır.
+     */
+    function goToSection(key: string): void {
         window.scrollTo({ top: 0, behavior: 'auto' });
+
+        const [sectionKey, ...rest] = key.split('/');
+        const subPath = rest.join('/');
 
         // Adres bölümle birlikte değişir — tek gezinti girişi burasıdır.
         // Çağıranın ayrıca adres yazması gerekmez; bir yerde unutulursa
         // ekran ile adres ayrışır ve yenilemede başka bir sayfa açılır.
         if (currentWorkspace) {
-            const href = sectionHref(currentWorkspace.slug, key);
+            const href = sectionHref(currentWorkspace.slug, sectionKey, subPath);
 
             if (window.location.pathname !== href) {
                 window.history.pushState({}, '', href);
@@ -390,10 +417,11 @@ export function WorkspaceApp({
             // `pushState` tarayıcıya göre sayfa DEĞİŞTİRMEZ; GA4 ve Metrica
             // burada kendiliğinden hiçbir şey ölçmez. Bildirmezsek panelde
             // on ekran gezen bir kullanıcı tek sayfalık ziyaret görünür.
-            trackPageView(href, key);
+            trackPageView(href, sectionKey);
         }
 
-        setActiveSection(key);
+        setActiveSection(sectionKey);
+        setSubPath(subPath);
     }
 
     // `useLayoutEffect`: DOM değiştikten SONRA ama BOYAMADAN ÖNCE çalışır.
@@ -786,27 +814,22 @@ export function WorkspaceApp({
         });
 
         /*
-            Kenar çubuğu artık bir LİSTE değil, bir SIRA.
+            Kenar çubuğu `docs/50` §5'teki hedef bilgi mimarisini izler.
 
-            Önceden dokuz madde tek ve adsız bir yığındı: hepsi aynı görsel
-            ağırlıkta, aralarındaki ilişki gösterilmeden. Dokuz eşit seçenek,
-            kullanıcıyı her seferinde listenin tamamını okumaya zorlar. Oysa
-            bunlar bağımsız değil: önce restoranı tanımlarsın, sonra menüyü
-            kurup yayınlarsın, sonra işi yönetirsin.
+            Gruplar keyfi değil, kullanıcının işine göre: `primary` her gün
+            gidilen yerler, `management` ara sıra düzenlenen kayıtlar,
+            `utility` nadiren açılan ayarlar.
 
-            Dashboard gruplanmaz ve en üstte durur — bir adım değil, giriş
-            noktasıdır.
+            Grubu olmayan bölüm burada LİSTELENMEZ. Brand, Billing ve
+            Publication günlük operasyon değildir; ana menüde kalıcı yer
+            işgal etmeleri, her gün kullanılan hedeflerin arasına gürültü
+            koymaktı. Adresleri çalışmaya devam eder — Brand ve Billing
+            Settings'in içinden, yayınlama menünün yanından açılır.
         */
-        const ungrouped = SECTION_DESCRIPTORS.filter((descriptor) => !descriptor.group);
-
-        if (ungrouped.length > 0) {
-            navGroups.push({ key: 'overview', items: ungrouped.map(toNavItem) });
-        }
-
         const GROUP_ORDER: ReadonlyArray<NonNullable<WorkspaceSectionDescriptor['group']>> = [
-            'restaurant',
-            'menu',
-            'business',
+            'primary',
+            'management',
+            'utility',
         ];
 
         for (const group of GROUP_ORDER) {
@@ -838,11 +861,15 @@ export function WorkspaceApp({
                 navGroups,
                 activeNavKey: currentWorkspace ? activeSection : undefined,
                 navLabel: t('workspace.shell.nav.label'),
+                workspaceName: currentWorkspace?.name,
+                onSwitchWorkspace: handleSwitch,
             })}
             navigationDrawer={renderNavigationDrawer?.({
                 navGroups,
                 activeNavKey: currentWorkspace ? activeSection : undefined,
                 navLabel: t('workspace.shell.nav.label'),
+                workspaceName: currentWorkspace?.name,
+                onSwitchWorkspace: handleSwitch,
                 open: mobileMenuOpen,
                 onClose: () => setMobileMenuOpen(false),
             })}
@@ -985,6 +1012,7 @@ export function WorkspaceApp({
                         onBrandSaved: setBrand,
                         onMenuTreeChange: handleCatalogTreeChange,
                         onNavigateToSection: goToSection,
+                        subPath,
                     })}
                 </AppErrorBoundary>
             )}

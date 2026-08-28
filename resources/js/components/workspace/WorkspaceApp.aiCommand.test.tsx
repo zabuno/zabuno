@@ -136,7 +136,7 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         expect(screen.getByRole('button', { name: 'Open AI command center' })).toBeInTheDocument();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         expect(screen.getAllByRole('button', { name: 'Open AI command center' })).toHaveLength(1);
 
@@ -199,9 +199,9 @@ describe('WorkspaceApp — AI command center shell (S1-WP01A, RED)', () => {
         await user.click(screen.getByRole('button', { name: 'Open AI command center' }));
         const dialog = await screen.findByRole('dialog', { name: 'AI command center' });
 
-        expect(within(dialog).getByRole('button', { name: 'Dashboard' })).toBeInTheDocument();
+        expect(within(dialog).getByRole('button', { name: 'Home' })).toBeInTheDocument();
         expect(within(dialog).getByRole('button', { name: 'Locations' })).toBeInTheDocument();
-        expect(within(dialog).getByRole('button', { name: 'Menu' })).toBeInTheDocument();
+        expect(within(dialog).getByRole('button', { name: 'Menus' })).toBeInTheDocument();
         const publicationAction = within(dialog).getByRole('button', { name: 'Publication' });
 
         await user.click(publicationAction);

@@ -1,28 +1,25 @@
 import type { ReactNode } from 'react';
-import { MenuPage } from './MenuPage';
+import { QrCodesPage } from './QrCodesPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
 
 function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     return (
-        <MenuPage
+        <QrCodesPage
             workspaceId={ctx.workspaceId}
-            catalogPhase={ctx.catalogPhase}
-            locationId={ctx.catalogLocationId}
-            onTreeChange={ctx.onMenuTreeChange}
+            dashboardMenuTree={ctx.dashboardMenuTree}
             onNavigateToSection={ctx.onNavigateToSection}
         />
     );
 }
 
-const menuSection: WorkspaceSectionDescriptor = {
-    key: 'menu',
-    path: 'menu',
-    order: 1,
-    labelKey: 'workspace.shell.nav.menus',
+const qrCodesSection: WorkspaceSectionDescriptor = {
+    key: 'qr-codes',
+    path: 'qr-codes',
+    order: 2,
+    labelKey: 'workspace.shell.nav.qrCodes',
     group: 'primary',
-    aiQuickAction: true,
     render,
 };
 
-export default menuSection;
+export default qrCodesSection;

@@ -1084,6 +1084,10 @@ msgstr ""
 msgid "workspace.menu.operational.description"
 msgstr ""
 
+#: workspace:workspace.menu.previewAndPublish
+msgid "workspace.menu.previewAndPublish"
+msgstr ""
+
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
 msgstr ""
@@ -1512,6 +1516,34 @@ msgstr ""
 msgid "workspace.publication.unavailable"
 msgstr ""
 
+#: workspace:workspace.qrCodes.empty.goToMenu
+msgid "workspace.qrCodes.empty.goToMenu"
+msgstr ""
+
+#: workspace:workspace.qrCodes.empty.needsMenu
+msgid "workspace.qrCodes.empty.needsMenu"
+msgstr ""
+
+#: workspace:workspace.qrCodes.operational.description
+msgid "workspace.qrCodes.operational.description"
+msgstr ""
+
+#: workspace:workspace.settings.operational.description
+msgid "workspace.settings.operational.description"
+msgstr ""
+
+#: workspace:workspace.settings.tab.billing
+msgid "workspace.settings.tab.billing"
+msgstr ""
+
+#: workspace:workspace.settings.tab.brand
+msgid "workspace.settings.tab.brand"
+msgstr ""
+
+#: workspace:workspace.settings.tabs.label
+msgid "workspace.settings.tabs.label"
+msgstr ""
+
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
 msgstr ""
@@ -1548,16 +1580,24 @@ msgstr ""
 msgid "workspace.shell.nav.group"
 msgstr ""
 
-#: workspace:workspace.shell.nav.group.business
-msgid "workspace.shell.nav.group.business"
+#: workspace:workspace.shell.nav.group.management
+msgid "workspace.shell.nav.group.management"
 msgstr ""
 
-#: workspace:workspace.shell.nav.group.menu
-msgid "workspace.shell.nav.group.menu"
+#: workspace:workspace.shell.nav.group.primary
+msgid "workspace.shell.nav.group.primary"
 msgstr ""
 
-#: workspace:workspace.shell.nav.group.restaurant
-msgid "workspace.shell.nav.group.restaurant"
+#: workspace:workspace.shell.nav.group.utility
+msgid "workspace.shell.nav.group.utility"
+msgstr ""
+
+#: workspace:workspace.shell.nav.home
+msgid "workspace.shell.nav.home"
+msgstr ""
+
+#: workspace:workspace.shell.nav.insights
+msgid "workspace.shell.nav.insights"
 msgstr ""
 
 #: workspace:workspace.shell.nav.label
@@ -1580,8 +1620,20 @@ msgstr ""
 msgid "workspace.shell.nav.menuCatalog"
 msgstr ""
 
+#: workspace:workspace.shell.nav.menus
+msgid "workspace.shell.nav.menus"
+msgstr ""
+
 #: workspace:workspace.shell.nav.publication
 msgid "workspace.shell.nav.publication"
+msgstr ""
+
+#: workspace:workspace.shell.nav.qrCodes
+msgid "workspace.shell.nav.qrCodes"
+msgstr ""
+
+#: workspace:workspace.shell.nav.settings
+msgid "workspace.shell.nav.settings"
 msgstr ""
 
 #: workspace:workspace.shell.nav.team

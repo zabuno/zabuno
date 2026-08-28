@@ -143,7 +143,7 @@ describe('WorkspaceApp — Analytics destination wired to real workspace/locatio
         const { restoreFetch } = await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Analytics' }));
+        await user.click(within(nav).getByRole('link', { name: 'Insights' }));
 
         const main = screen.getByRole('main');
         const analyticsRegion = main.querySelector('#section-analytics') as HTMLElement;

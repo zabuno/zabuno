@@ -1,0 +1,108 @@
+import { t } from '../../../i18n/workspace';
+import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
+import { BillingPage } from './BillingPage';
+import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+
+export type SettingsTab = 'brand' | 'billing';
+
+const TABS: ReadonlyArray<{ key: SettingsTab; labelKey: Parameters<typeof t>[0] }> = [
+    { key: 'brand', labelKey: 'workspace.settings.tab.brand' },
+    { key: 'billing', labelKey: 'workspace.settings.tab.billing' },
+];
+
+export type SettingsPageProps = {
+    workspaceId: number;
+    brand: BrandProfile | null;
+    onSaved: (brand: BrandProfile) => void;
+    activeTab: SettingsTab;
+    onSelectTab: (tab: SettingsTab) => void;
+};
+
+/**
+ * Ayarlar — nadiren açılan, günlük operasyona ait OLMAYAN işler.
+ *
+ * Marka bilgileri ve plan/faturalandırma önceden ana menüde kalıcı birer
+ * madde işgal ediyordu. İkisi de her gün yapılan işler değil: marka bir kez
+ * kurulur, plan ayda bir bakılır. Her gün gidilen dört hedefin arasında
+ * durmaları, listeyi okunması gereken dokuz maddelik bir yığına çeviriyordu
+ * (`docs/50` §5).
+ *
+ * Bölüm içi gezinti YATAY SEKME olarak duruyor, üçüncü bir kalıcı sol ray
+ * olarak değil — Carbon üç navigasyon katmanını desteklemez ve daha derin
+ * seviye için sayfa içi sekme önerir (`docs/50` §4).
+ */
+export function SettingsPage({
+    workspaceId,
+    brand,
+    onSaved,
+    activeTab,
+    onSelectTab,
+}: SettingsPageProps) {
+    return (
+        <div id="section-settings">
+            <WorkspacePageFrame
+                title={t('workspace.shell.nav.settings')}
+                description={t('workspace.settings.operational.description')}
+            >
+                {/*
+                    Sekmeler gerçek bir `tablist`. Bir dizi düğmeyi sekme gibi
+                    GÖSTERMEK yetmez: ekran okuyucu kullanan biri kaç sekme
+                    olduğunu, hangisinde bulunduğunu ve ok tuşlarıyla
+                    gezinebileceğini ancak rollerden öğrenir.
+                */}
+                <div
+                    role="tablist"
+                    aria-label={t('workspace.settings.tabs.label')}
+                    className="flex flex-wrap gap-2"
+                >
+                    {TABS.map((tab) => {
+                        const selected = tab.key === activeTab;
+
+                        return (
+                            <button
+                                key={tab.key}
+                                type="button"
+                                role="tab"
+                                id={`settings-tab-${tab.key}`}
+                                aria-selected={selected}
+                                aria-controls={`settings-panel-${tab.key}`}
+                                onClick={() => onSelectTab(tab.key)}
+                                className={
+                                    selected
+                                        ? 'min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg'
+                                        : 'min-h-[var(--density-hit-area-min)] rounded-md border border-border px-4 py-2 text-body font-medium text-fg-secondary hover:bg-surface-hover'
+                                }
+                            >
+                                {t(tab.labelKey)}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div
+                    role="tabpanel"
+                    id={`settings-panel-${activeTab}`}
+                    aria-labelledby={`settings-tab-${activeTab}`}
+                >
+                    {activeTab === 'brand' ? (
+                        brand ? (
+                            <BrandEditForm
+                                workspaceId={workspaceId}
+                                brand={brand}
+                                onSaved={onSaved}
+                            />
+                        ) : (
+                            <p role="status" className="text-body text-fg-muted">
+                                {t('workspace.brand.loading')}
+                            </p>
+                        )
+                    ) : (
+                        <BillingPage workspaceId={workspaceId} />
+                    )}
+                </div>
+            </WorkspacePageFrame>
+        </div>
+    );
+}
+
+export default SettingsPage;

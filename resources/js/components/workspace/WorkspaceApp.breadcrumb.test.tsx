@@ -153,10 +153,10 @@ describe('WorkspaceApp — main breadcrumb (S1-WP01A, RED)', () => {
         expect(within(breadcrumb).getByText('Zeytin Restoranları')).toBeInTheDocument();
         expect(within(breadcrumb).getByText('Kadıköy')).toBeInTheDocument();
 
-        const activeCrumb = within(breadcrumb).getByText('Dashboard');
+        const activeCrumb = within(breadcrumb).getByText('Home');
         expect(activeCrumb).toHaveAttribute('aria-current', 'page');
         expect(activeCrumb.tagName).not.toBe('A');
-        expect(within(breadcrumb).queryByRole('link', { name: 'Dashboard' })).toBeNull();
+        expect(within(breadcrumb).queryByRole('link', { name: 'Home' })).toBeNull();
 
         vi.unstubAllGlobals();
     });
@@ -203,7 +203,7 @@ describe('WorkspaceApp — main breadcrumb (S1-WP01A, RED)', () => {
 
         const activeCrumb = within(breadcrumb).getByText('Locations');
         expect(activeCrumb).toHaveAttribute('aria-current', 'page');
-        expect(within(breadcrumb).queryByText('Dashboard')).toBeNull();
+        expect(within(breadcrumb).queryByText('Home')).toBeNull();
 
         vi.unstubAllGlobals();
     });

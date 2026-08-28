@@ -38,8 +38,26 @@ export function MenuPage({
     return (
         <div id="section-menu">
             <WorkspacePageFrame
-                title={t('workspace.shell.nav.menu')}
+                title={t('workspace.shell.nav.menus')}
                 description={t('workspace.menu.operational.description')}
+                actions={
+                    /*
+                        Yayınlama menüye AİTTİR, ayrı bir modül değil.
+
+                        Ana menüde kalıcı bir "Publication" maddesi olarak
+                        durduğunda, hangi menüyü yayınladığı belirsizdi — bir
+                        çalışma alanında birden fazla menü olabilir. Buradan
+                        açıldığında hangi menü olduğu sorusu hiç doğmaz
+                        (`docs/50` §5).
+                    */
+                    <button
+                        type="button"
+                        onClick={() => onNavigateToSection?.('publication')}
+                        className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
+                    >
+                        {t('workspace.menu.previewAndPublish')}
+                    </button>
+                }
             >
                 {renderCatalog()}
             </WorkspacePageFrame>
