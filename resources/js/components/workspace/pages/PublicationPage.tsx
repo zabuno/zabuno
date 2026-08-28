@@ -149,6 +149,7 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
     return (
         <div id="section-publication">
             <WorkspacePageFrame
+                measure="standard"
                 title={t('workspace.shell.nav.publication')}
                 description={t('workspace.publication.operational.description')}
                 badges={badges}

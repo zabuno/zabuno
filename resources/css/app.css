@@ -112,6 +112,34 @@
        karşılaştırma imkânsızlaşır — külliyatın tablo ölçütü tam budur. */
     --container-table: min(100%, 120ch);
 
+    /* ---------------------------------------------------------------
+       SAYFA GENİŞLİKLERİ — tipografik ölçüden AYRI (docs/58).
+
+       Yukarıdaki `ch` tabanlı ölçüler METİN içindir: satır başına 45–75
+       karakter okunabilirlik kuralı. Bir formun genişliği ise okuma ölçüsü
+       değildir — form alanları düzyazı değildir ve aynı kuralla
+       ölçülemezler.
+
+       İkisini tek jetonla yönetmek somut bir arızaya yol açtı: hiçbir
+       çalışma alanı sayfası genişlik SINIRI taşımıyordu, çünkü var olan tek
+       aday (`--container-content` = 726 px) tablo ve liste sayfaları için
+       fazla dardı. Sınır konmayınca sayfalar tam genişliğe yayıldı: 1920
+       piksellik bir ekranda marka formu 1900 piksel oldu ve "Edit" düğmesi
+       içeriğin metrelerce uzağında kaldı.
+
+       Ölçüler `rem` cinsinden: `ch` yazı tipine bağlıdır ve sayfa
+       yerleşimi yazı tipi değiştiğinde kaymamalı.
+       --------------------------------------------------------------- */
+
+    /* Tek amaçlı form — onboarding, tek nesne düzenleme. 640 px. */
+    --container-page-form: min(100%, 40rem);
+    /* Ayarlar: form ile içerik arası, sekmeli. 880 px. */
+    --container-page-settings: min(100%, 55rem);
+    /* Standart sayfa — özet, açıklama, tek sütun iş alanı. 1120 px. */
+    --container-page-standard: min(100%, 70rem);
+    /* Liste, tablo ve grid: sütunların sıkışmaması gerekir. 1440 px. */
+    --container-page-wide: min(100%, 90rem);
+
     /* GÖVDE TABANI. Bunun altına inen hiçbir okunabilir metin olmamalı. */
     --text-body: 1rem;
     --text-body--line-height: 1.5;

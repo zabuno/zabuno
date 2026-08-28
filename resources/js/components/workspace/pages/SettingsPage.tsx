@@ -41,6 +41,7 @@ export function SettingsPage({
     return (
         <div id="section-settings">
             <WorkspacePageFrame
+                measure="settings"
                 title={t('workspace.shell.nav.settings')}
                 description={t('workspace.settings.operational.description')}
             >
