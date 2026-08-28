@@ -42,7 +42,7 @@ final class BuildIdentityCoverageTest extends TestCase
                     return false;
                 }
 
-                return str_contains($source, '.tsx') || str_contains($source, "entryFor(");
+                return str_contains($source, '.tsx') || str_contains($source, 'entryFor(');
             },
         );
 
