@@ -128,6 +128,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | # | Madde | Durum |
 | --- | --- | --- |
 | H1 | `qr_resolved` ve `public_menu_open_confirmed` ayrımı | ✅ |
+| H1b | MVP metrikleri: yaklaşık benzersiz, açılma oranı, lokasyon ve QR kırılımı | ✅ (`docs/68`) |
 | H2 | Ürün analitiği olay taksonomisi | ⬜ |
 | H3 | Form olayları (`form_viewed`…`form_succeeded`) | ⬜ |
 | H4 | Tenant bazında ölçülebilirlik | 🔶 |
@@ -212,6 +213,13 @@ Her tur hangi maddeleri kapattığını buraya yazar.
   okuyan her yol istisna fırlatıp ağ hatası gibi görünüyordu. 44 fikstür
   düzeltildi.
 - Belge: `docs/67`.
+
+### MVP kapanışı
+- Plan MVP için dokuz metrik sayıyordu; üçü yoktu. Yaklaşık benzersiz
+  ziyaretçi (günlük dönen tuzla türetilmiş, geri çevrilemez anahtar), açılma
+  oranı ve iki kırılım eklendi.
+- Şube kapsamı isteğe bağlı oldu: marka bütünü tek istekte görünüyor.
+- Belge: `docs/68`.
 
 ## Altı tur bitti
 

@@ -53,6 +53,10 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.svg||App\Http\Controllers\QrDestination\ExportQrCodeSvgController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.pdf||App\Http\Controllers\QrDestination\ExportQrCodePdfController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/brand/locations/{location}/analytics/summary||App\Http\Controllers\Analytics\ShowAnalyticsSummaryController|api,auth:sanctum,verified',
+        // Markanın TAMAMI (`docs/68`): iki şubesi olan bir işletme bütünü
+        // göremiyordu ve toplamı bulmak için şubeleri tek tek gezmek
+        // zorundaydı.
+        'GET|api/workspaces/{workspace}/analytics/summary||App\Http\Controllers\Analytics\ShowAnalyticsSummaryController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/tenant-isolation||App\Http\Controllers\Security\ShowTenantIsolationEvidenceController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/backup-restore||App\Http\Controllers\Security\ShowBackupRestoreEvidenceController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/entitlements||App\Http\Controllers\Entitlement\ShowWorkspaceEntitlementsController|api,auth:sanctum,verified',

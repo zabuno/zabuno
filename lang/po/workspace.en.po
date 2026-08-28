@@ -24,6 +24,18 @@ msgstr "Retry"
 msgid "workspace.analytics.action.viewPlan"
 msgstr "View your plan"
 
+#: workspace:workspace.analytics.breakdown.column.name
+msgid "workspace.analytics.breakdown.column.name"
+msgstr "Name"
+
+#: workspace:workspace.analytics.breakdown.locations
+msgid "workspace.analytics.breakdown.locations"
+msgstr "By location"
+
+#: workspace:workspace.analytics.breakdown.qrCodes
+msgid "workspace.analytics.breakdown.qrCodes"
+msgstr "By QR code"
+
 #: workspace:workspace.analytics.empty.noMenu.action
 msgid "workspace.analytics.empty.noMenu.action"
 msgstr "Build the menu"
@@ -84,9 +96,17 @@ msgstr "Analytics"
 msgid "workspace.analytics.metric.menuOpen"
 msgstr "Confirmed Menu Open"
 
+#: workspace:workspace.analytics.metric.openRate
+msgid "workspace.analytics.metric.openRate"
+msgstr "Scan to menu open"
+
 #: workspace:workspace.analytics.metric.qrResolve
 msgid "workspace.analytics.metric.qrResolve"
 msgstr "QR Resolve"
+
+#: workspace:workspace.analytics.metric.uniqueVisitors
+msgid "workspace.analytics.metric.uniqueVisitors"
+msgstr "Approx. unique visitors"
 
 #: workspace:workspace.analytics.operational.description
 msgid "workspace.analytics.operational.description"

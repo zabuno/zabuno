@@ -11,6 +11,9 @@ use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\QrDestination\QrToken;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
+use App\Support\Analytics\VisitorKey;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -22,7 +25,7 @@ final class RedirectQrTokenController extends Controller
         private readonly PublicMenuAddressPort $addresses,
     ) {}
 
-    public function __invoke(string $token): SymfonyResponse
+    public function __invoke(Request $request, string $token): SymfonyResponse
     {
         try {
             $qrToken = QrToken::fromString($token);
@@ -42,6 +45,9 @@ final class RedirectQrTokenController extends Controller
             $qrCode->id,
             $qrCode->menuId,
             AnalyticsEventType::QrResolve,
+            // Ham IP ve tarayıcı bilgisi SAKLANMAZ; yalnız günlük dönen bir
+            // tuzla türetilmiş özet yazılır (`docs/68`).
+            VisitorKey::forRequest($request, $qrCode->workspaceId, Carbon::now()),
         );
 
         // Hedef adı verilmiş route'tan üretilir, elle birleştirilmez: yol
