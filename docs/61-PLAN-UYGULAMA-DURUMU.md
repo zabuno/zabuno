@@ -30,7 +30,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | A3 | Üç kalıcı sol rail YOK | ✅ tek sidebar |
 | A4 | Sidebar görev odaklı gruplandırma (primary/management/utility) | ✅ `group` alanı |
 | A5 | Sidebar üstünde workspace switcher | ✅ `WorkspaceSwitcherTrigger` |
-| A6 | Sidebar altında account trigger + popover | ⬜ |
+| A6 | Sidebar altında account trigger + popover | ✅ masaüstünde dipte, dar ekranda üst çubukta (`docs/63`) |
 | A7 | Sağ context inspector | ✅ menü, marka, şube (`docs/60`) |
 | A8 | Inspector mobilde ayrı sheet/route | ⛔ mobil pakette panel HİÇ yok (`docs/54`); sheet gerekirse ayrı karar |
 | A9 | Global header + page header iki katman | 🔶 page header var; global header bağlam/araç katmanı eksik |
@@ -39,7 +39,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | A12 | Help merkezi | ⬜ |
 | A13 | Çalışmayan search/notifications gösterilmiyor | ✅ kaldırıldı |
 | A14 | Tenant kabuğunda kalıcı footer yok | ✅ |
-| A15 | Sabit tema seçici kaldırıldı, account'a taşındı | 🔶 sabit seçici kaldırıldı; account tercihi A6 ile gelecek |
+| A15 | Sabit tema seçici kaldırıldı, account'a taşındı | ✅ `menuitemradio` olarak menüde (`docs/63`) |
 | A16 | Adaptive cihaz paketleri | ✅ `docs/54` + `adaptive-bundle-gate` |
 | A17 | Skip link, landmark, focus, klavye | ✅ |
 
@@ -158,7 +158,19 @@ Her tur hangi maddeleri kapattığını buraya yazar.
   değerin kaybolması, ve önerilen saat diliminin gösterilip gönderilmemesi.
 - Belge: `docs/62`.
 
-### Tur 2 — sırada
-- **A6** sidebar altında account trigger + popover (tema tercihi dâhil, A15).
+### Tur 2 — tamamlandı
+- **A6** hesap menüsü masaüstünde kenar çubuğunun dibine taşındı (plan §7);
+  dar ekranda üst çubukta kalır. Önceki "her zaman üst çubuk" kararından
+  bilinçli geri dönüş, gerekçesiyle birlikte yazıldı.
+- **A15** görünüm tercihi sayfanın dibinden menüye girdi; `menuitemradio`
+  olarak, renk dışı seçim işaretiyle.
+- `ThemeRoot` artık hiçbir kontrol çizmez, yalnız tercihi tutar ve uygular.
+- Silinmiş bir deseni doğrulayan test dosyası, sahip olduğumuz sözleşmeyi
+  donduran bir dosyayla değiştirildi.
+- Kararsız bir klavye iddiası kaldırıldı (dörtte iki kırmızı veriyordu).
+- Belge: `docs/63`.
+
+### Tur 3 — sırada
 - **A9/A10** global header katmanı ve lokasyon bağlamı.
 - **A11** Global Create.
+- **A12** Help merkezi.

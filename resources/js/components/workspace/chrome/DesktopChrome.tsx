@@ -19,6 +19,7 @@ export type DesktopChromeProps = {
     navLabel?: string;
     workspaceName?: string;
     onSwitchWorkspace?: () => void;
+    accountMenu?: ReactNode;
 };
 
 /** Kalıcı birincil kenar çubuğu — `docs/50` §4: 248–272 px. */
@@ -28,6 +29,7 @@ export function DesktopSidebar({
     navLabel,
     workspaceName,
     onSwitchWorkspace,
+    accountMenu,
 }: DesktopChromeProps): ReactNode {
     return (
         <aside
@@ -41,6 +43,18 @@ export function DesktopSidebar({
                 onSwitchWorkspace={onSwitchWorkspace}
             />
             <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
+
+            {/*
+                Hesap tetikleyicisi kenar çubuğunun DİBİNDE — `docs/50` §7.
+
+                `mt-auto` ile aşağı itilir, gezintinin arasına karışmaz.
+                Buraya YALNIZ yardımcı işler konur: günlük kritik bir görev
+                burada saklanmamalıdır, çünkü dar pencerelerde kenar çubuğunun
+                alt kısmı ilk kaybolan yerdir.
+            */}
+            {accountMenu !== undefined && accountMenu !== null ? (
+                <div className="mt-auto pt-[var(--space-fluid-sm)]">{accountMenu}</div>
+            ) : null}
         </aside>
     );
 }

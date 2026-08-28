@@ -42,7 +42,7 @@ describe('ThemeRoot — global bottom focus clearance for the fixed theme contro
     });
 
     // Bu test eskiden SABİT bir alt çubuğun altında yer ayrılmasını
-    // donduruyordu. Çubuk artık sabit değil.
+    // donduruyordu. Sonra çubuk sabit olmaktan çıktı; şimdi çubuk da yok.
     //
     // 320×480'de (iPhone 4) sabit bir alt çubuk ekranın kalıcı olarak
     // %12'sini kaplıyor ve içeriğin üstüne biniyor. Küçük ekranda en pahalı
@@ -50,9 +50,9 @@ describe('ThemeRoot — global bottom focus clearance for the fixed theme contro
     // (UX raporu §8.1 ve Definition of Done: "Theme selector içerik üzerine
     // binmiyor").
     //
-    // Seçici akış içinde durduğu için altında yer AYIRMAK da gereksizdir:
-    // hiçbir şeyin üstünde değil.
-    it('reserves no bottom clearance, because nothing floats over the content any more', () => {
+    // Kontrol artık hesap menüsünde (`docs/63`). `ThemeRoot` yalnız tercihi
+    // TUTAR ve belgeye uygular; sayfaya hiçbir şey çizmez.
+    it('draws no control of its own, so there is nothing to reserve space for', () => {
         render(
             <ThemeRoot>
                 <main>
@@ -61,13 +61,14 @@ describe('ThemeRoot — global bottom focus clearance for the fixed theme contro
             </ThemeRoot>,
         );
 
-        const radiogroup = screen.getByRole('radiogroup', { name: /theme/i });
-        expect(radiogroup).toBeInTheDocument();
-
+        // Ne yüzen bir çubuk, ne akış içinde bir seçici.
+        expect(screen.queryByRole('radiogroup', { name: /theme/i })).toBeNull();
         expect(document.querySelector('[data-theme-focus-clearance]')).toBeNull();
 
-        // Ve kontrol sayfanın üstünde YÜZMEZ.
-        expect(radiogroup.className).not.toMatch(/(^|\s)fixed(\s|$)/);
-        expect(radiogroup.className).not.toMatch(/(^|\s)sticky(\s|$)/);
+        // Ama tercih UYGULANMAYA devam eder: kabuk temasız kalmaz.
+        expect(document.documentElement.getAttribute('data-theme')).not.toBeNull();
+
+        // Ve sarmalanan içerik olduğu gibi çizilir.
+        expect(screen.getByRole('button', { name: 'Add product' })).toBeInTheDocument();
     });
 });

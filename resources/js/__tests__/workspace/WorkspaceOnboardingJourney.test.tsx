@@ -322,14 +322,27 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
 
         const contextBanner = await screen.findByRole('banner');
         await within(contextBanner).findByRole('button', { name: 'Zeytin Restoranları' });
-        // E-posta kimlik alanında (üst çubuk), içerik akışında değil.
-        expect(within(contextBanner).getByText('ada@example.com')).toBeInTheDocument();
         expect(screen.queryByText('zeytin-restoranlari')).not.toBeInTheDocument();
-        // Hesap kontrolleri kenar çubuğunun dibinden kimlik alanındaki hesap
-        // menüsüne taşındı: gezinti değildirler ve görev maddelerinin arasına
-        // karıştıklarında ikisi de okunmaz olur. Kontroller kaybolmadı, bu
-        // yüzden test menüyü AÇIP arıyor.
-        fireEvent.click(within(contextBanner).getByRole('button', { name: 'Account' }));
+
+        /*
+            HESAP MENÜSÜNÜN YERİ DEĞİŞTİ — ve bu bilinçli bir geri dönüştür.
+
+            Kontroller önce kenar çubuğunun dibinden üst çubuğa taşınmıştı;
+            gerekçe doğruydu (hesap işleri gezinti değildir), ama plan farklı
+            bir yer söylüyor: masaüstünde kalıcı kenar çubuğunun DİBİ, dar
+            ekranda üst çubuk (`docs/50` §7 ve §25). Sebep, üst çubuğun zaten
+            çalışma bağlamını — marka ve lokasyon — taşıyor olması; hesap orada
+            bağlamla yarışır.
+
+            Bu yüzden e-posta artık üst çubukta DEĞİL, kenar çubuğundadır.
+        */
+        expect(within(contextBanner).queryByText('ada@example.com')).toBeNull();
+        expect(screen.getByText('ada@example.com')).toBeInTheDocument();
+
+        const accountTrigger = screen.getByRole('button', { name: 'Account' });
+        expect(within(contextBanner).queryByRole('button', { name: 'Account' })).toBeNull();
+
+        fireEvent.click(accountTrigger);
         expect(
             await screen.findByRole('menuitem', { name: /switch workspace|change workspace/i }),
         ).toBeInTheDocument();
@@ -378,10 +391,10 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         );
         render(<WorkspaceApp {...desktopChrome} />);
 
-        // Hesap menüsü önce açılır (kontrol kimlik alanına taşındı).
-        fireEvent.click(
-            within(await screen.findByRole('banner')).getByRole('button', { name: 'Account' }),
-        );
+        // Hesap menüsü önce açılır — masaüstünde kenar çubuğunun dibinde
+        // (`docs/50` §7).
+        await screen.findByRole('banner');
+        fireEvent.click(screen.getByRole('button', { name: 'Account' }));
         const logoutButton = await screen.findByRole('menuitem', { name: /log ?out/i });
         fireEvent.click(logoutButton);
 

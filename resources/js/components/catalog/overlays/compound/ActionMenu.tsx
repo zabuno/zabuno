@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Dropdown, Button as FlowbiteButton } from 'flowbite-react';
 import { MenuItem } from '../micro/MenuItem';
+import { MenuItemRadio } from '../micro/MenuItemRadio';
 
 export type ActionMenuItem = {
     key: string;
@@ -31,6 +32,19 @@ export type ActionMenuProps = {
      */
     header?: ReactNode;
     items: ActionMenuItem[];
+    /**
+     * Menü içindeki TEK SEÇİMLİK ayar — örneğin görünüm tercihi.
+     *
+     * Ayrı bir prop, çünkü bunlar `items` ile aynı şey değildir: `items`
+     * eylemlerdir ve seçildiklerinde menü bir iş yapar; bunlar bir AYARIN
+     * değerleridir ve hangisinin açık olduğu duyulmalıdır.
+     */
+    radioGroup?: {
+        label: string;
+        options: Array<{ key: string; label: string }>;
+        value: string;
+        onSelect: (key: string) => void;
+    };
     className?: string;
 };
 
@@ -40,7 +54,14 @@ export type ActionMenuProps = {
  * the trigger on close) with Micro/Overlays/MenuItem for each action row.
  * Does not reimplement Dropdown's trigger or floating-panel markup.
  */
-export function ActionMenu({ label, triggerContent, header, items, className }: ActionMenuProps) {
+export function ActionMenu({
+    label,
+    triggerContent,
+    header,
+    items,
+    radioGroup,
+    className,
+}: ActionMenuProps) {
     return (
         <Dropdown
             renderTrigger={() => (
@@ -53,6 +74,25 @@ export function ActionMenu({ label, triggerContent, header, items, className }: 
                 <div className="border-b border-border px-4 py-2 text-meta text-fg-muted">
                     {header}
                 </div>
+            ) : null}
+            {radioGroup ? (
+                <>
+                    <div
+                        className="border-t border-border px-4 pt-2 pb-1 text-meta text-fg-muted"
+                        id={`${label}-appearance`}
+                    >
+                        {radioGroup.label}
+                    </div>
+                    {radioGroup.options.map((option) => (
+                        <MenuItemRadio
+                            key={option.key}
+                            checked={radioGroup.value === option.key}
+                            onSelect={() => radioGroup.onSelect(option.key)}
+                        >
+                            {option.label}
+                        </MenuItemRadio>
+                    ))}
+                </>
             ) : null}
             {items.map((item) => (
                 <MenuItem
