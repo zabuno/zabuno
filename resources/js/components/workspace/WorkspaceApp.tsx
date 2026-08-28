@@ -57,13 +57,6 @@ export type WorkspaceSectionRuntimeContext = {
     onNavigateToSection: (section: string) => void;
     /** Bölüm içi konum — `settings/billing` adresinde `billing`. */
     subPath: string;
-    /**
-     * Kataloğu yeniden yüklemeyi dener.
-     *
-     * Hata durumları çıkış yolu olmadan sunuluyordu; bir hata ekranının işi
-     * ne olduğunu söylemek değil, kullanıcıyı oradan çıkarmaktır (docs/59).
-     */
-    onRetryCatalog: () => void;
 };
 
 type WorkspaceUser = { id: number; name: string; email: string };
@@ -1020,11 +1013,6 @@ export function WorkspaceApp({
                         onMenuTreeChange: handleCatalogTreeChange,
                         onNavigateToSection: goToSection,
                         subPath,
-                        onRetryCatalog: () => {
-                            if (currentWorkspace) {
-                                void loadCatalog(currentWorkspace.id, () => false);
-                            }
-                        },
                     })}
                 </AppErrorBoundary>
             )}

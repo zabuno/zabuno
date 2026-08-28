@@ -12,15 +12,6 @@ type MenuPageProps = {
     locationId: number | null;
     onTreeChange: (tree: DashboardMenuTree) => void;
     onNavigateToSection: (section: string) => void;
-    /**
-     * Kataloğu yeniden yüklemeyi dener.
-     *
-     * Hata durumu ÇIKIŞ YOLU olmadan sunuluyordu: kullanıcı "menü
-     * yüklenemedi" görüyor ve yapabileceği hiçbir şey bulunmuyordu. Bir hata
-     * ekranının işi ne olduğunu söylemek DEĞİL, kullanıcıyı oradan
-     * çıkarmaktır (docs/59).
-     */
-    onRetry?: () => void;
 };
 
 /**
@@ -44,7 +35,6 @@ export function MenuPage({
     locationId,
     onTreeChange,
     onNavigateToSection,
-    onRetry,
 }: MenuPageProps) {
     return (
         <div id="section-menu">
@@ -92,23 +82,22 @@ export function MenuPage({
             return <PageState kind="loading" title={t('workspace.menu.loading')} />;
         }
 
+        /*
+            Hatayı bu sayfa SAHİPLENMEZ.
+
+            Katalog yüklenemediğinde arıza yalnız menü ekranını değil, bütün
+            bölümleri etkiler — kullanıcı Dashboard'dayken de aynı şey
+            bozulmuştur. Bu yüzden hata, tek ve GENEL bir yüzeyde
+            (`WorkspaceApp`) sunulur ve çalışan bir yeniden deneme taşır.
+
+            Burada da bir hata çizmek, aynı olayı ekranda iki kez anlatırdı ve
+            kullanıcıya hangisinin gerçek olduğunu sordururdu. Bu sayfanın
+            görevi yalnız BEKLEME göstermemektir — asıl kusur buydu: hata
+            hâlinde "Loading your menu…" yazıp duruyordu ve kullanıcı sonsuza
+            kadar bekliyordu (docs/59).
+        */
         if (catalogPhase === 'error') {
-            return (
-                <PageState
-                    kind="error"
-                    title={t('workspace.menu.error')}
-                    description={t('workspace.menu.error.why')}
-                    {...(onRetry
-                        ? {
-                              action: (
-                                  <Button type="button" onClick={onRetry}>
-                                      {t('workspace.catalog.error.retry')}
-                                  </Button>
-                              ),
-                          }
-                        : { whyNoAction: t('workspace.menu.error.noRetry') })}
-                />
-            );
+            return null;
         }
 
         // Marka yoksa konum da eklenemez; kullanıcıyı bir adım öncesine

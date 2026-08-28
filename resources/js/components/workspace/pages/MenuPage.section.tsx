@@ -11,7 +11,6 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             locationId={ctx.catalogLocationId}
             onTreeChange={ctx.onMenuTreeChange}
             onNavigateToSection={ctx.onNavigateToSection}
-            onRetry={ctx.onRetryCatalog}
         />
     );
 }
