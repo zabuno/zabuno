@@ -9,7 +9,8 @@ import { FormActions } from './forms/FormActions';
 import { ReadOnlySummary, type ReadOnlySummaryItem } from './forms/ReadOnlySummary';
 import { ErrorSummary, type ErrorSummaryEntry } from './forms/ErrorSummary';
 import { SelectField } from '../catalog/forms/compound/SelectField';
-import { classifyResponse, networkFailure, type RequestFailure } from '../../lib/requestFailure';
+import { classifyResponse, networkFailure } from '../../lib/requestFailure';
+import { messageForFailure } from './forms/failureMessage';
 
 type Market = { code: string; name: string };
 type Timezone = { id: string; label: string };
@@ -81,26 +82,6 @@ function withCurrentValue<T>(
     }
 
     return [make(current), ...options];
-}
-
-function messageForFailure(failure: RequestFailure): string {
-    switch (failure.kind) {
-        case 'permission':
-            return t('workspace.form.error.permission');
-        case 'conflict':
-            return t('workspace.form.error.conflict');
-        case 'notFound':
-            return t('workspace.form.error.notFound');
-        case 'network':
-            return t('workspace.form.error.network');
-        case 'server':
-        default:
-            // Kimlik varsa gösterilir; YOKSA uydurulmaz. Destek ekibinin
-            // arayamayacağı bir kod, hiç kod olmamasından kötüdür.
-            return failure.correlationId !== null
-                ? t('workspace.form.error.serverWithId', { id: failure.correlationId })
-                : t('workspace.form.error.server');
-    }
 }
 
 type BrandEditFormProps = {

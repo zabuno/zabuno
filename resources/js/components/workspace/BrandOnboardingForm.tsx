@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
-import { focusFirstInvalidField } from '../../lib/validationErrors';
+import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
+import { classifyResponse, networkFailure } from '../../lib/requestFailure';
+import { messageForFailure } from './forms/failureMessage';
 import { t } from '../../i18n/workspace';
 import { Button } from '../catalog/forms/micro/Button';
 import { SelectField } from '../catalog/forms/compound/SelectField';
@@ -200,41 +202,41 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
 
             await reportFailure(response);
         } catch {
-            setError(t('workspace.brand.error.network'));
+            setError(messageForFailure(networkFailure()));
         }
 
         setSubmitting(false);
     }
 
     async function reportFailure(response: Response): Promise<void> {
-        try {
-            const body = (await response.json()) as {
-                message?: string;
-                errors?: Record<string, string[]>;
-            };
+        /*
+            Arıza SINIFLANDIRILIR — `docs/67`.
 
-            const entries = Object.entries(body.errors ?? {});
+            Bu form gövdeyi kendi elleriyle ayrıştırıyordu ve yalnız iki hâl
+            tanıyordu: alan hatası, ya da genel mesaj. Yetki eksikliği,
+            çakışma ve sunucu hatası hepsi aynı cümleye düşüyordu — üçünün
+            çıkış yolu farklı olduğu hâlde.
+        */
+        const failure = classifyResponse(response);
 
-            if (entries.length > 0) {
-                setFieldErrors(
-                    Object.fromEntries(
-                        entries.map(([field, messages]) => [field, messages[0] ?? '']),
-                    ),
-                );
-                setError(body.message ?? t('workspace.brand.error.submit'));
+        if (failure.kind !== 'validation') {
+            setFieldErrors({});
+            setError(messageForFailure(failure));
 
-                // Odak ilk hatalı alana taşınır; aksi hâlde uzun bir formda
-                // hatanın nerede olduğunu aramak kullanıcının işi olur.
-                if (entries.some(([field]) => field === 'name')) {
-                    nameRef.current?.focus();
-                }
+            return;
+        }
 
-                return;
-            }
+        const validation = await readValidationFailure(response, t('workspace.brand.error.submit'));
 
-            setError(body.message ?? t('workspace.brand.error.submit'));
-        } catch {
-            setError(t('workspace.brand.error.submit'));
+        setFieldErrors(validation.fields);
+        setError(validation.message ?? t('workspace.brand.error.submit'));
+
+        // Odak ilk hatalı alana taşınır; aksi hâlde uzun bir formda hatanın
+        // nerede olduğunu aramak kullanıcının işi olur.
+        if (validation.fields.name) {
+            nameRef.current?.focus();
+        } else {
+            focusFirstInvalidField(validation.fields, ['name', 'country', 'timezone', 'currency']);
         }
     }
 
