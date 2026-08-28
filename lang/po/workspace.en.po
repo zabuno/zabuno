@@ -620,13 +620,33 @@ msgstr "We could not create your workspace. Please try again."
 msgid "workspace.create.heading"
 msgstr "Name your workspace"
 
+#: workspace:workspace.create.location
+msgid "workspace.create.location"
+msgstr "Location"
+
+#: workspace:workspace.create.menu
+msgid "workspace.create.menu"
+msgstr "Menu"
+
+#: workspace:workspace.create.menu.label
+msgid "workspace.create.menu.label"
+msgstr "Create"
+
 #: workspace:workspace.create.name
 msgid "workspace.create.name"
 msgstr "Workspace name"
 
+#: workspace:workspace.create.qrCode
+msgid "workspace.create.qrCode"
+msgstr "QR code"
+
 #: workspace:workspace.create.submit
 msgid "workspace.create.submit"
 msgstr "Create workspace"
+
+#: workspace:workspace.create.teamMember
+msgid "workspace.create.teamMember"
+msgstr "Team member"
 
 #: workspace:workspace.current.logout
 msgid "workspace.current.logout"

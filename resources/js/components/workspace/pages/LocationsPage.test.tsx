@@ -77,6 +77,8 @@ describe('LocationsPage — honest 0-location empty state', () => {
                 onSelectLocation={vi.fn()}
                 onLocationSaved={vi.fn()}
                 onLocationCreated={vi.fn()}
+                addingLocation={false}
+                onToggleAddLocation={() => {}}
             />,
         );
 
@@ -95,6 +97,8 @@ describe('LocationsPage — honest 0-location empty state', () => {
                 onSelectLocation={vi.fn()}
                 onLocationSaved={vi.fn()}
                 onLocationCreated={vi.fn()}
+                addingLocation={false}
+                onToggleAddLocation={() => {}}
             />,
         );
 
@@ -120,6 +124,8 @@ describe('LocationsPage — current-location select', () => {
                 onSelectLocation={vi.fn()}
                 onLocationSaved={vi.fn()}
                 onLocationCreated={vi.fn()}
+                addingLocation={false}
+                onToggleAddLocation={() => {}}
             />,
         );
 
@@ -144,6 +150,8 @@ describe('LocationsPage — current-location select', () => {
                 onSelectLocation={onSelectLocation}
                 onLocationSaved={vi.fn()}
                 onLocationCreated={vi.fn()}
+                addingLocation={false}
+                onToggleAddLocation={() => {}}
             />,
         );
 
@@ -172,6 +180,8 @@ describe('LocationsPage — fluid-first markup', () => {
                 onSelectLocation={vi.fn()}
                 onLocationSaved={vi.fn()}
                 onLocationCreated={vi.fn()}
+                addingLocation={false}
+                onToggleAddLocation={() => {}}
             />,
         );
 

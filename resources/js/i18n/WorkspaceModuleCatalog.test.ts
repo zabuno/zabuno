@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 492;
+const FROZEN_LEGACY_KEY_COUNT = 497;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -153,8 +153,13 @@ const FROZEN_LEGACY_KEY_COUNT = 492;
 // SAAT DİLİMİ SAHİPLİĞİ (docs/62): saat dilimi markadan şubeye taşındı ve
 // şube formunda ülke serbest metin olmaktan çıkıp listeden seçilir oldu.
 // 488 → 492.
+//
+// GLOBAL OLUŞTUR (docs/64): üst çubuğa her yerden ulaşılan bir "Oluştur"
+// menüsü geldi. Yalnız ÖN KOŞULU sağlanan hedefler listelenir; şubesiz bir
+// çalışma alanında "Menü" maddesi çıkışsız bir ekrana götürürdü.
+// 492 → 497.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'cab8163599fbdaccd281d7c1f3cc77139cc49ffe4a7b04351b54d4ae98de6ad1';
+    '559983cf1189ef14e5be7326ea3b0f894fb5d7cfbef40781f7cedc5da3625aa6';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -6,7 +6,7 @@ import {
     themeOptionLabels,
     useThemeControl,
     type ThemePreference,
-} from '../../theme/ThemeRoot';
+} from '../../theme/themeControl';
 
 export type AccountMenuProps = {
     email: string;

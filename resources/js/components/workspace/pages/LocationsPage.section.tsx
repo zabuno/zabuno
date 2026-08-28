@@ -12,6 +12,15 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             onSelectLocation={ctx.onSelectLocation}
             onLocationSaved={ctx.onLocationSaved}
             onLocationCreated={ctx.onLocationCreated}
+            /*
+                Form açık/kapalı durumu ADRESTE durur: `locations/new`.
+                Bileşen içinde tutulsaydı, global "Oluştur" menüsü kullanıcıyı
+                listeye götürür ve tıkladığı şeyi ekranda ayrıca aratırdı.
+            */
+            addingLocation={ctx.subPath === 'new'}
+            onToggleAddLocation={(adding) =>
+                ctx.onNavigateToSection(adding ? 'locations/new' : 'locations')
+            }
         />
     );
 }

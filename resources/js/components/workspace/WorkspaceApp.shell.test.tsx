@@ -540,6 +540,51 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
     /**
+     * ADRESTEKİ BÖLÜM İÇİ YOL KORUNUR — `docs/64`.
+     *
+     * Kanonikleştirme alt yolu düşürüyordu: `/settings/billing` adresinden
+     * giren kullanıcı `/settings` adresine çekiliyordu. Ekran doğru açılıyordu
+     * (durum bileşende yaşıyordu), ama adres yalan söylüyordu ve BİR SONRAKİ
+     * yenilemede sekme kayboluyordu. Kusur `locations/new` ile görünür oldu.
+     */
+    it('doğrudan girilen bölüm içi adresi korur', async () => {
+        window.history.replaceState({}, '', '/app/zeytin-restoranlari/settings/billing');
+
+        await renderCurrentWorkspace();
+
+        await waitFor(() => {
+            expect(window.location.pathname).toBe('/app/zeytin-restoranlari/settings/billing');
+        });
+
+        vi.unstubAllGlobals();
+    });
+
+    /**
+     * GLOBAL OLUŞTUR gerçekten bir yere götürür — `docs/64`.
+     *
+     * Menünün değeri hedefe VARMAKTIR. "Şube" maddesi listeye götürseydi
+     * kullanıcı tıkladığı şeyi ekranda ayrıca aramak zorunda kalırdı; adres
+     * `locations/new` olduğu için form açık gelir.
+     */
+    it('global oluştur menüsü şube formunu açık getirir', async () => {
+        const user = userEvent.setup();
+        await renderCurrentWorkspace();
+
+        await user.click(screen.getByRole('button', { name: 'Create' }));
+        await user.click(await screen.findByRole('menuitem', { name: 'Location' }));
+
+        expect(window.location.pathname).toMatch(/\/locations\/new$/);
+        /*
+            Bu dosya `LocationOnboardingForm`'u mock'luyor ve doğrusu budur:
+            kabuk testi kabuğu ölçer. Burada kanıtlanan şey formun İÇİ değil,
+            adresin formu AÇMASI.
+        */
+        expect(await screen.findByTestId('location-onboarding-form')).toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    /**
      * PANEL GERÇEKTEN ÇİZİLİR.
      *
      * Bu testin yokluğu, paketin ilk hâlinde kimsenin fark etmediği boşluktu:

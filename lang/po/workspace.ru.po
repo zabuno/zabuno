@@ -620,12 +620,32 @@ msgstr ""
 msgid "workspace.create.heading"
 msgstr ""
 
+#: workspace:workspace.create.location
+msgid "workspace.create.location"
+msgstr ""
+
+#: workspace:workspace.create.menu
+msgid "workspace.create.menu"
+msgstr ""
+
+#: workspace:workspace.create.menu.label
+msgid "workspace.create.menu.label"
+msgstr ""
+
 #: workspace:workspace.create.name
 msgid "workspace.create.name"
 msgstr ""
 
+#: workspace:workspace.create.qrCode
+msgid "workspace.create.qrCode"
+msgstr ""
+
 #: workspace:workspace.create.submit
 msgid "workspace.create.submit"
+msgstr ""
+
+#: workspace:workspace.create.teamMember
+msgid "workspace.create.teamMember"
 msgstr ""
 
 #: workspace:workspace.current.logout

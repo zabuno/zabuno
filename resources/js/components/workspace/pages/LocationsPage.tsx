@@ -1,5 +1,4 @@
 import { Select } from '../../catalog/forms/micro/Select';
-import { useState } from 'react';
 import { Button, Label } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { LocationEditForm, type LocationProfile } from '../LocationEditForm';
@@ -8,6 +7,15 @@ import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 
 type LocationsPageProps = {
     workspaceId: number;
+    /**
+     * `locations/new` adresi formu AÇIK getirir — `docs/64`.
+     *
+     * Global "Oluştur" menüsü buraya yönlendirir. Adres olmadan menü yalnız
+     * listeye götürür ve kullanıcı, tıkladığı şeyi ekranda ayrıca aramak
+     * zorunda kalırdı.
+     */
+    addingLocation: boolean;
+    onToggleAddLocation: (adding: boolean) => void;
     locations: LocationProfile[];
     selectedLocationId: number | null;
     onSelectLocation: (locationId: number) => void;
@@ -17,14 +25,14 @@ type LocationsPageProps = {
 
 export function LocationsPage({
     workspaceId,
+    addingLocation,
+    onToggleAddLocation,
     locations,
     selectedLocationId,
     onSelectLocation,
     onLocationSaved,
     onLocationCreated,
 }: LocationsPageProps) {
-    const [addingLocation, setAddingLocation] = useState(false);
-
     const grouped = Array.from(
         locations
             .reduce<
@@ -54,7 +62,7 @@ export function LocationsPage({
                     <Button
                         type="button"
                         size="sm"
-                        onClick={() => setAddingLocation((open) => !open)}
+                        onClick={() => onToggleAddLocation(!addingLocation)}
                     >
                         {t('workspace.locations.add.button')}
                     </Button>
@@ -71,7 +79,7 @@ export function LocationsPage({
                         workspaceId={workspaceId}
                         onCreated={(location) => {
                             onLocationCreated(location);
-                            setAddingLocation(false);
+                            onToggleAddLocation(false);
                         }}
                     />
                 )}
