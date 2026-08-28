@@ -18,6 +18,17 @@
         </include>
     </source>
     <php>
+        <!--
+            Bellek tavanı AÇIKÇA yazılır — `docs/73`.
+
+            128M PHP'nin varsayılanıdır, bu takım için seçilmiş bir değer
+            değil. Takım 1030 teste ve bellek-içi SQLite'a ulaştığında
+            görüntü işleyen bir test sırasında süreç çöküyordu ve hata
+            "Premature end of PHP process" diyordu — yani asıl sebebi
+            söylemiyordu. Sınırı yazmak, bir gün yeniden çöktüğünde neyin
+            değiştiğini görünür kılar.
+        -->
+        <ini name="memory_limit" value="512M"/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>

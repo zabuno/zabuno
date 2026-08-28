@@ -28,6 +28,14 @@ msgstr ""
 msgid "menu.category.create.submit"
 msgstr ""
 
+#: menu:menu.category.delete.confirm
+msgid "menu.category.delete.confirm"
+msgstr ""
+
+#: menu:menu.category.delete.label
+msgid "menu.category.delete.label"
+msgstr ""
+
 #: menu:menu.category.empty
 msgid "menu.category.empty"
 msgstr ""
@@ -144,6 +152,14 @@ msgstr ""
 msgid "menu.item.currency.label"
 msgstr ""
 
+#: menu:menu.item.delete.confirm
+msgid "menu.item.delete.confirm"
+msgstr ""
+
+#: menu:menu.item.delete.label
+msgid "menu.item.delete.label"
+msgstr ""
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr ""
@@ -188,12 +204,24 @@ msgstr ""
 msgid "menu.loading"
 msgstr ""
 
+#: menu:menu.move.down
+msgid "menu.move.down"
+msgstr ""
+
+#: menu:menu.move.up
+msgid "menu.move.up"
+msgstr ""
+
 #: menu:menu.name.error.required
 msgid "menu.name.error.required"
 msgstr ""
 
 #: menu:menu.name.label
 msgid "menu.name.label"
+msgstr ""
+
+#: menu:menu.ops.error
+msgid "menu.ops.error"
 msgstr ""
 
 #: menu:menu.product.create.error.submit
@@ -210,6 +238,18 @@ msgstr ""
 
 #: menu:menu.product.name.label
 msgid "menu.product.name.label"
+msgstr ""
+
+#: menu:menu.rename.error.empty
+msgid "menu.rename.error.empty"
+msgstr ""
+
+#: menu:menu.rename.label
+msgid "menu.rename.label"
+msgstr ""
+
+#: menu:menu.rename.prompt
+msgid "menu.rename.prompt"
 msgstr ""
 
 #: menu:menu.status.saving

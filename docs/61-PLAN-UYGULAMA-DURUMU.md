@@ -233,6 +233,21 @@ Her tur hangi maddeleri kapattığını buraya yazar.
   gerçek gezintiye çevrildi ve durum listesi görev listesine dönüştü.
 - Belge: `docs/70`.
 
+### Müşteri faydası eksikleri (Masaüstü raporu `71-MVP-MUSTERI-FAYDASI-EKSIKLERI.md`)
+
+| ID | Başlık | Durum |
+| --- | --- | --- |
+| P0-01 | Menü CRUD: silme, ad düzeltme, sıralama | ✅ `docs/73` |
+| P0-02 | Varsayılan gizli ürün | ⬜ |
+| P0-03 | Misafir menüsünde restoran kimliği | ⬜ |
+| P0-04 | Açıklama + görsel yayın snapshot'ında | ⬜ |
+| P0-05 | Foto/PDF/CSV aktarma | ⬜ |
+| P0-06 | Gerçek e-posta | ⛔ sağlayıcı hesabı sahibinde |
+| P0-07 | Canlı dağıtım kanıtı | ⛔ sunucu sırları sahibinde |
+| P0-08 | Medya işleme güvenilirliği | ⬜ |
+| P0-09 | Veri dışa aktarımı | ⬜ |
+| P1-01…P1-08 | Halka açık ücretli MVP | ⬜ |
+
 ## Altı tur bitti
 
 Kalanlar `docs/61`'de ⬜ ve ⛔ olarak duruyor; hiçbiri unutulmuş değil, her

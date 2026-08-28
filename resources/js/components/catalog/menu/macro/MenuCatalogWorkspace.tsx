@@ -1,6 +1,7 @@
 import { TextInput } from '../../forms/micro/TextInput';
 import clsx from 'clsx';
 import { useEffect, useState, type FormEvent } from 'react';
+import { RowActions } from '../micro/RowActions';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/menu';
@@ -84,6 +85,29 @@ function visibilityUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/visibility`;
 }
 
+/*
+    MENÜYÜ İŞLETMEK — `docs/73` (P0-01).
+
+    Ürün bu dört yol olmadan bir menüyü yayımlayabiliyor ama işletemiyordu:
+    yanlış yazılan bir ürünü düzeltmenin yolu yoktu, sezonluk bir kategoriyi
+    kaldırmanın yolu yoktu, sıra veri modelinde vardı ama yüzeyi yoktu.
+*/
+function categoryUrl(workspaceId: number, categoryId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}`;
+}
+
+function menuItemUrl(workspaceId: number, menuItemId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}`;
+}
+
+function itemOrderUrl(workspaceId: number, categoryId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/item-order`;
+}
+
+function categoryOrderUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/category-order`;
+}
+
 function currencyFractionDigits(currencyCode: string): number {
     try {
         return (
@@ -128,7 +152,7 @@ function parseAllergens(raw: string): string[] {
 async function postJson(
     url: string,
     body: unknown,
-    method: 'POST' | 'PUT' = 'POST',
+    method: 'POST' | 'PUT' | 'DELETE' = 'POST',
 ): Promise<Response> {
     await bootstrapCsrfCookie();
     return fetch(
@@ -200,6 +224,12 @@ export function MenuCatalogWorkspace({
     const [retryToken, setRetryToken] = useState(0);
     const [brand, setBrand] = useState<Brand | null>(null);
     const [tree, setTree] = useState<MenuTree | null>(null);
+    /*
+        İŞLETME hatalarının tek yeri. Her satıra ayrı bir hata durumu koymak,
+        aynı cümleyi beş yerde tutmak olurdu; bu işlemlerin hepsi aynı sonucu
+        verir: olmadı ve sebebi sunucudan geliyor.
+    */
+    const [operationError, setOperationError] = useState<string | null>(null);
 
     const [menuName, setMenuName] = useState('');
     const [menuNameError, setMenuNameError] = useState<string | null>(null);
@@ -653,6 +683,233 @@ export function MenuCatalogWorkspace({
         }
     }
 
+    /**
+     * Ürünü menüden çıkarır.
+     *
+     * Onay istenir ve GERİ ALINAMAZ olduğu söylenir: yayınlanmış sürüm
+     * etkilenmez ama taslaktaki satır geri gelmez.
+     */
+    async function handleDeleteItem(item: MenuItemRow) {
+        if (!window.confirm(t('menu.item.delete.confirm', { name: item.productName ?? '' }))) {
+            return;
+        }
+
+        setOperationError(null);
+
+        try {
+            const response = await postJson(menuItemUrl(workspaceId, item.id), {}, 'DELETE');
+
+            if (!response.ok) {
+                setOperationError(await parseErrorMessage(response, t('menu.ops.error')));
+
+                return;
+            }
+
+            setTree((current) =>
+                current === null
+                    ? current
+                    : {
+                          ...current,
+                          categories: current.categories.map((category) => ({
+                              ...category,
+                              menuItems: category.menuItems.filter((row) => row.id !== item.id),
+                          })),
+                      },
+            );
+        } catch {
+            setOperationError(t('menu.ops.error'));
+        }
+    }
+
+    async function handleDeleteCategory(category: CategoryRow) {
+        if (!window.confirm(t('menu.category.delete.confirm', { name: category.name }))) {
+            return;
+        }
+
+        setOperationError(null);
+
+        try {
+            const response = await postJson(categoryUrl(workspaceId, category.id), {}, 'DELETE');
+
+            if (!response.ok) {
+                setOperationError(await parseErrorMessage(response, t('menu.ops.error')));
+
+                return;
+            }
+
+            setTree((current) =>
+                current === null
+                    ? current
+                    : {
+                          ...current,
+                          categories: current.categories.filter((row) => row.id !== category.id),
+                      },
+            );
+        } catch {
+            setOperationError(t('menu.ops.error'));
+        }
+    }
+
+    /**
+     * Adı düzeltir.
+     *
+     * `prompt` kullanılıyor ve bu bilinçli bir ARA ADIM: satır içi düzenleme
+     * daha iyi bir deneyimdir ama bu paketin sorunu "düzeltmenin YOLU YOK"tu.
+     * Yolu açmak, güzelleştirmekten önce gelir.
+     */
+    async function handleRename(kind: 'category' | 'item', id: number, currentName: string) {
+        const next = window.prompt(t('menu.rename.prompt'), currentName);
+
+        /*
+            İPTAL ile BOŞ BIRAKMAK aynı şey değildir.
+
+            `null` iptaldir: kullanıcı vazgeçti, söylenecek bir şey yok.
+            Boş bir metin ise bir NİYETTİR — kullanıcı Tamam'a bastı — ve
+            sessizce yutmak, düğmeye basılıp hiçbir şey olmaması demektir
+            (`docs/47` Kural 5).
+        */
+        if (next === null) {
+            return;
+        }
+
+        if (next.trim() === '') {
+            setOperationError(t('menu.rename.error.empty'));
+
+            return;
+        }
+
+        if (next.trim() === currentName) {
+            return;
+        }
+
+        setOperationError(null);
+
+        try {
+            const response = await postJson(
+                kind === 'category' ? categoryUrl(workspaceId, id) : menuItemUrl(workspaceId, id),
+                kind === 'category' ? { name: next.trim() } : { productName: next.trim() },
+                'PUT',
+            );
+
+            if (!response.ok) {
+                setOperationError(await parseErrorMessage(response, t('menu.ops.error')));
+
+                return;
+            }
+
+            setTree((current) =>
+                current === null
+                    ? current
+                    : {
+                          ...current,
+                          categories: current.categories.map((category) =>
+                              kind === 'category'
+                                  ? category.id === id
+                                      ? { ...category, name: next.trim() }
+                                      : category
+                                  : {
+                                        ...category,
+                                        menuItems: category.menuItems.map((row) =>
+                                            row.id === id
+                                                ? { ...row, productName: next.trim() }
+                                                : row,
+                                        ),
+                                    },
+                          ),
+                      },
+            );
+        } catch {
+            setOperationError(t('menu.ops.error'));
+        }
+    }
+
+    /**
+     * Bir satırı bir basamak yukarı/aşağı taşır.
+     *
+     * Sürükle-bırak değil: sürükleme dokunmatik ekranda ve klavyeyle
+     * güvenilir değildir ve ayrı bir erişilebilirlik sözleşmesi ister.
+     * Yukarı/aşağı düğmesi her girdi yöntemiyle çalışır.
+     *
+     * İstek TOPLU gider: `unique(position)` kısıtı yüzünden iki satırı tek
+     * tek güncellemek yolun ortasında çakışır.
+     */
+    async function moveItem(category: CategoryRow, index: number, direction: -1 | 1) {
+        const target = index + direction;
+
+        if (target < 0 || target >= category.menuItems.length) {
+            return;
+        }
+
+        const ids = category.menuItems.map((row) => row.id);
+        [ids[index], ids[target]] = [ids[target], ids[index]];
+
+        await applyOrder(
+            itemOrderUrl(workspaceId, category.id),
+            { menuItemIds: ids },
+            (current) => ({
+                ...current,
+                categories: current.categories.map((row) =>
+                    row.id === category.id
+                        ? {
+                              ...row,
+                              menuItems: ids
+                                  .map((id) => row.menuItems.find((item) => item.id === id))
+                                  .filter((item): item is MenuItemRow => item !== undefined),
+                          }
+                        : row,
+                ),
+            }),
+        );
+    }
+
+    async function moveCategory(index: number, direction: -1 | 1) {
+        if (tree === null) {
+            return;
+        }
+
+        const target = index + direction;
+
+        if (target < 0 || target >= tree.categories.length) {
+            return;
+        }
+
+        const ids = tree.categories.map((category) => category.id);
+        [ids[index], ids[target]] = [ids[target], ids[index]];
+
+        await applyOrder(
+            categoryOrderUrl(workspaceId, tree.id),
+            { categoryIds: ids },
+            (current) => ({
+                ...current,
+                categories: ids
+                    .map((id) => current.categories.find((category) => category.id === id))
+                    .filter((category): category is CategoryRow => category !== undefined),
+            }),
+        );
+    }
+
+    async function applyOrder(
+        url: string,
+        body: Record<string, number[]>,
+        reorder: (current: MenuTree) => MenuTree,
+    ) {
+        setOperationError(null);
+
+        try {
+            const response = await postJson(url, body, 'PUT');
+
+            if (!response.ok) {
+                setOperationError(await parseErrorMessage(response, t('menu.ops.error')));
+
+                return;
+            }
+
+            setTree((current) => (current === null ? current : reorder(current)));
+        } catch {
+            setOperationError(t('menu.ops.error'));
+        }
+    }
+
     async function handleToggleVisibility(item: MenuItemRow) {
         const nextVisible = !item.isVisible;
         setVisibilityErrors((previous) => ({ ...previous, [item.id]: null }));
@@ -721,6 +978,12 @@ export function MenuCatalogWorkspace({
         <div className={clsx('flex flex-col gap-6', 'text-fg')}>
             {busy ? <p role="status">{t('menu.status.saving')}</p> : null}
 
+            {/*
+                İşletme hatalarının TEK yeri (`docs/73`). Her satıra ayrı bir
+                hata koymak aynı cümleyi beş yerde tutmak olurdu.
+            */}
+            {operationError !== null ? <FieldError message={operationError} /> : null}
+
             {!tree ? (
                 <form className={sectionClass} onSubmit={handleCreateMenu} noValidate>
                     <label className={labelClass} htmlFor="menu-name">
@@ -755,6 +1018,36 @@ export function MenuCatalogWorkspace({
                                             name: category.name,
                                         })}
                                     />
+                                    {/*
+                                        Kategoriyi İŞLETMEK — `docs/73`.
+                                        Yukarı/aşağı, sürükle-bırak değil:
+                                        sürükleme dokunmatikte ve klavyeyle
+                                        güvenilir değildir.
+                                    */}
+                                    <RowActions
+                                        onRename={() =>
+                                            void handleRename(
+                                                'category',
+                                                category.id,
+                                                category.name,
+                                            )
+                                        }
+                                        onDelete={() => void handleDeleteCategory(category)}
+                                        onMoveUp={() =>
+                                            void moveCategory(tree.categories.indexOf(category), -1)
+                                        }
+                                        onMoveDown={() =>
+                                            void moveCategory(tree.categories.indexOf(category), 1)
+                                        }
+                                        renameLabel={t('menu.rename.label', {
+                                            name: category.name,
+                                        })}
+                                        deleteLabel={t('menu.category.delete.label', {
+                                            name: category.name,
+                                        })}
+                                        upLabel={t('menu.move.up', { name: category.name })}
+                                        downLabel={t('menu.move.down', { name: category.name })}
+                                    />
                                 </div>
                                 <ul
                                     aria-label={t('menu.category.items.label', {
@@ -779,6 +1072,42 @@ export function MenuCatalogWorkspace({
                                                 <OrderBadge
                                                     position={item.position}
                                                     label={t('menu.item.order.label', {
+                                                        name: item.productName ?? '',
+                                                    })}
+                                                />
+                                                <RowActions
+                                                    onRename={() =>
+                                                        void handleRename(
+                                                            'item',
+                                                            item.id,
+                                                            item.productName ?? '',
+                                                        )
+                                                    }
+                                                    onDelete={() => void handleDeleteItem(item)}
+                                                    onMoveUp={() =>
+                                                        void moveItem(
+                                                            category,
+                                                            category.menuItems.indexOf(item),
+                                                            -1,
+                                                        )
+                                                    }
+                                                    onMoveDown={() =>
+                                                        void moveItem(
+                                                            category,
+                                                            category.menuItems.indexOf(item),
+                                                            1,
+                                                        )
+                                                    }
+                                                    renameLabel={t('menu.rename.label', {
+                                                        name: item.productName ?? '',
+                                                    })}
+                                                    deleteLabel={t('menu.item.delete.label', {
+                                                        name: item.productName ?? '',
+                                                    })}
+                                                    upLabel={t('menu.move.up', {
+                                                        name: item.productName ?? '',
+                                                    })}
+                                                    downLabel={t('menu.move.down', {
                                                         name: item.productName ?? '',
                                                     })}
                                                 />
