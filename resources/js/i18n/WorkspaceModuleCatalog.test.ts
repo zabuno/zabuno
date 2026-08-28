@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 496;
+const FROZEN_LEGACY_KEY_COUNT = 509;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -163,8 +163,12 @@ const FROZEN_LEGACY_KEY_COUNT = 496;
 // `aiCommand` anahtarı, yüzeyle birlikte kaldırıldı; yerine sekiz omnibox
 // anahtarı geldi. Sayının DÜŞMESİ bir kayıp değil: silinen anahtarlar
 // çalışmayan bir arayüzü tarif ediyordu. 497 → 496.
+//
+// ANALİTİK BOŞ DURUMLARI (docs/66): tek bir "veri yok" cümlesi dört ayrı
+// duruma bölündü — menü yok, yayınlanmamış, hiç taranmamış, seçili aralıkta
+// yok. Dördünün ÇIKIŞ YOLU farklı. 496 → 509.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '0d689addcf64917455e0cb4830c36ef902115bc6fb3e6f47ad3dec3008c219f7';
+    '58e2d8e3ae07d4c7f144aa262124f2aff6e437446e31c06f3c12648de8447327';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

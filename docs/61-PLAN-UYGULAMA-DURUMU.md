@@ -77,8 +77,8 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | # | Madde | Durum |
 | --- | --- | --- |
 | D1 | Durum sözlüğü (loading/empty/error/permission/prerequisite/plan) | ✅ `docs/59` `PageState` |
-| D2 | `partial`, `success`, `degraded` durumları | ⬜ |
-| D3 | Şablon kataloğu (Overview/Collection/List-detail/Editor/Settings/Analytics/Task-flow/Preview/Review) | ⬜ |
+| D2 | `partial`, `success`, `degraded` durumları | ✅ tanımlı; `success` kesikli çerçeve kullanmaz (`docs/66` §3) |
+| D3 | Şablon kataloğu | 🔶 ortak iskelet var (`WorkspacePageFrame` + `PageState`); katalog soyutlaması tekrar ölçülmeden çıkarılmayacak (`docs/66` §5) |
 | D4 | Her empty state sonraki eyleme yönlendirir | 🔶 çoğu ekranda var |
 | D5 | Disabled kontrol nedenini açıklar | ✅ `whyNoAction` tip düzeyinde zorunlu |
 
@@ -89,7 +89,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | E1 | Home: onboarding görev listesi + günlük operasyon | 🔶 |
 | E2 | Menus: liste + detay sekmeleri (Overview/Content/Design/Languages/Publish/QR/Activity) | ⬜ tek düzey |
 | E3 | Publication: checkbox yerine otomatik preflight | 🔶 `isDraftReady` otomatik; ayrıntılı liste eksik |
-| E4 | Analytics: 5 ayrı boş durum | 🔶 loading/error/plan/notConnected var; "menü yayımlanmadı" ve "QR yok" ayrımı yok |
+| E4 | Analytics: ayrı boş durumlar | ✅ dört boşluk ayrıldı, her birinin çıkış yolu farklı (`docs/66`) |
 | E5 | Team: rol + lokasyon kapsamı seçen davet diyaloğu | ⬜ rol sabit `editor` |
 | E6 | Team: üye tablosu (rol/kapsam/durum/son etkinlik) | 🔶 |
 | E7 | Billing: yalnız tenant yüzeyi | ✅ ledger/manuel ödeme ayrıldı |
@@ -192,7 +192,15 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 - Bir iddia adı değil kuralı ölçecek şekilde düzeltildi.
 - Belge: `docs/65`.
 
-### Tur 5 — sırada
-- **D2/D3** sayfa şablonu kataloğu ve kalan durumlar (`partial`, `success`,
-  `degraded`).
-- **E4** analitik boş durumlarının ayrıştırılması.
+### Tur 5 — tamamlandı
+- **E4** analitiğin tek "0 / 0" ızgarası dört ayrı boş duruma bölündü; her
+  birinin çıkış yolu farklı ve en erken engel önce gelir.
+- **D2** `partial`, `degraded` ve `success` durumları tanımlandı.
+- Üç test "sıfır ızgarası" yerine çıkış yolunu ölçecek şekilde değiştirildi.
+- **D3** bilerek ertelendi: ortak iskelet zaten var, katalog soyutlaması
+  tekrarın ölçüldüğü bir turda çıkarılmalı.
+- Belge: `docs/66`.
+
+### Tur 6 — sırada
+- **C8–C12** form hata taksonomisi: 422/409/bağlantı/5xx ayrımı, idempotent
+  submit, sabit `form_id`/`field_id`/`error_code`.

@@ -24,6 +24,58 @@ msgstr "Retry"
 msgid "workspace.analytics.action.viewPlan"
 msgstr "View your plan"
 
+#: workspace:workspace.analytics.empty.noMenu.action
+msgid "workspace.analytics.empty.noMenu.action"
+msgstr "Build the menu"
+
+#: workspace:workspace.analytics.empty.noMenu.description
+msgid "workspace.analytics.empty.noMenu.description"
+msgstr "Scans are counted once customers can open a menu. Build one first."
+
+#: workspace:workspace.analytics.empty.noMenu.title
+msgid "workspace.analytics.empty.noMenu.title"
+msgstr "Analytics starts with your first menu"
+
+#: workspace:workspace.analytics.empty.noScans.action
+msgid "workspace.analytics.empty.noScans.action"
+msgstr "View QR codes"
+
+#: workspace:workspace.analytics.empty.noScans.description
+msgid "workspace.analytics.empty.noScans.description"
+msgstr "Your menu is live. Print the QR code or scan it with your own phone to test it."
+
+#: workspace:workspace.analytics.empty.noScans.title
+msgid "workspace.analytics.empty.noScans.title"
+msgstr "Waiting for the first scan"
+
+#: workspace:workspace.analytics.empty.notPublished.action
+msgid "workspace.analytics.empty.notPublished.action"
+msgstr "Preview and publish"
+
+#: workspace:workspace.analytics.empty.notPublished.description
+msgid "workspace.analytics.empty.notPublished.description"
+msgstr "Nothing is collected until the menu is live, because there is nothing for a customer to open."
+
+#: workspace:workspace.analytics.empty.notPublished.title
+msgid "workspace.analytics.empty.notPublished.title"
+msgstr "Your menu is not published yet"
+
+#: workspace:workspace.analytics.empty.range.action
+msgid "workspace.analytics.empty.range.action"
+msgstr "Show the last 30 days"
+
+#: workspace:workspace.analytics.empty.range.description
+msgid "workspace.analytics.empty.range.description"
+msgstr "There were scans outside this range, or none yet. Try a wider period."
+
+#: workspace:workspace.analytics.empty.range.title
+msgid "workspace.analytics.empty.range.title"
+msgstr "No activity in this period"
+
+#: workspace:workspace.analytics.empty.useSidebar
+msgid "workspace.analytics.empty.useSidebar"
+msgstr "Open that screen from the sidebar."
+
 #: workspace:workspace.analytics.heading
 msgid "workspace.analytics.heading"
 msgstr "Analytics"

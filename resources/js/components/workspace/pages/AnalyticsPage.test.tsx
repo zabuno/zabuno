@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { AnalyticsPage } from './AnalyticsPage';
 
@@ -149,13 +150,57 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         expect(within(region).queryByText(/^0$/)).not.toBeInTheDocument();
     });
 
-    it('renders a real zero count when the API genuinely returns zero', async () => {
+    /**
+     * SIFIR, "veri yok"un tek bir hâli değildir — `docs/66`.
+     *
+     * Bu test eskiden sıfırlardan oluşan bir ızgara bekliyordu. "0 tarama /
+     * 0 menü açılışı" teknik olarak dürüsttü ama kullanıcıya hiçbir şey
+     * söylemiyordu: neden sıfır olduğunu ve şimdi ne yapılacağını değil.
+     *
+     * Menüsüz bir çalışma alanında doğru cevap "önce menü"dür; sayaç değil.
+     */
+    it('sıfır dönen bir sonuçta sebebe göre ayrılmış boş durumu gösterir', async () => {
+        fetchSpy.mockImplementation(async () => jsonResponse(200, summaryBody('today', 0, 0)));
+
+        render(
+            <AnalyticsPage
+                workspaceId={WORKSPACE_ID}
+                locationId={LOCATION_ID}
+                onNavigateToSection={vi.fn()}
+            />,
+        );
+
+        const region = await screen.findByRole('region', { name: /metric|report/i });
+
+        await waitFor(() => {
+            expect(
+                within(region).getByText('Analytics starts with your first menu'),
+            ).toBeInTheDocument();
+        });
+        expect(within(region).getByRole('button', { name: 'Build the menu' })).toBeInTheDocument();
+
+        // Ve sıfırlardan oluşan bir ızgara ÇİZİLMEZ.
+        expect(within(region).queryAllByText('0')).toHaveLength(0);
+    });
+
+    /**
+     * Gezinti verilmediğinde durum EYLEMSİZ kalmaz: neden eylem sunulamadığını
+     * söyler. Tip seviyesinde zorlanan sözleşme budur (`docs/59`).
+     */
+    it('gezinti yolu verilmediğinde neden eylem olmadığını söyler', async () => {
         fetchSpy.mockImplementation(async () => jsonResponse(200, summaryBody('today', 0, 0)));
 
         render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
         const region = await screen.findByRole('region', { name: /metric|report/i });
-        await waitFor(() => expect(within(region).getAllByText('0').length).toBeGreaterThan(0));
+
+        await waitFor(() => {
+            expect(
+                within(region).getByText('Analytics starts with your first menu'),
+            ).toBeInTheDocument();
+        });
+        expect(within(region).queryByRole('button', { name: 'Build the menu' })).toBeNull();
+        expect(within(region).getByText('Open that screen from the sidebar.')).toBeInTheDocument();
     });
 
     it('renders real nonzero QR Resolve and Confirmed Menu Open counts in accessible metric cards', async () => {
@@ -423,5 +468,108 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         });
 
         vi.unstubAllGlobals();
+    });
+
+    /**
+     * Boşluğun sebebi DEĞİŞİNCE çıkış yolu da değişir — `docs/66`.
+     *
+     * Bu üç test ayrımın kendisini donduruyor. Tek bir "veri yok" cümlesi
+     * dördüne birden söylense, üçüne yanlış yol gösterilirdi: yayınlanmamış
+     * bir menüsü olan kişiye "QR kodunu yazdır" demek, atlayamayacağı bir
+     * adımı atlamasını istemektir.
+     */
+    describe('boş sonucun sebebi', () => {
+        const MENU_TREE = {
+            id: 4501,
+            workspaceId: WORKSPACE_ID,
+            locationId: LOCATION_ID,
+            name: 'Ana menü',
+            state: 'draft',
+            categories: [],
+        } as never;
+
+        function mockWith(published: boolean) {
+            fetchSpy.mockImplementation(async (url: string) => {
+                if (String(url).includes('/publications/current')) {
+                    return published
+                        ? jsonResponse(200, { id: 12, version: 3, state: 'published' })
+                        : jsonResponse(404, {});
+                }
+
+                return jsonResponse(200, summaryBody('today', 0, 0));
+            });
+        }
+
+        it('menü var ama yayınlanmamışsa yayın ekranına götürür', async () => {
+            mockWith(false);
+            const onNavigateToSection = vi.fn();
+
+            render(
+                <AnalyticsPage
+                    workspaceId={WORKSPACE_ID}
+                    locationId={LOCATION_ID}
+                    menuTree={MENU_TREE}
+                    onNavigateToSection={onNavigateToSection}
+                />,
+            );
+
+            const region = await screen.findByRole('region', { name: /metric|report/i });
+            const action = await within(region).findByRole('button', {
+                name: 'Preview and publish',
+            });
+            await userEvent.click(action);
+
+            expect(onNavigateToSection).toHaveBeenCalledWith('publication');
+        });
+
+        it('yayınlanmış ama hiç taranmamışsa QR ekranına götürür', async () => {
+            mockWith(true);
+            const onNavigateToSection = vi.fn();
+
+            render(
+                <AnalyticsPage
+                    workspaceId={WORKSPACE_ID}
+                    locationId={LOCATION_ID}
+                    menuTree={MENU_TREE}
+                    onNavigateToSection={onNavigateToSection}
+                />,
+            );
+
+            const region = await screen.findByRole('region', { name: /metric|report/i });
+
+            // 30 günlük aralığa geç: "bu aralıkta yok" ile "hiç yok" ayrımı budur.
+            await userEvent.selectOptions(screen.getByLabelText(/range/i), '30d');
+
+            const action = await within(region).findByRole('button', { name: 'View QR codes' });
+            await userEvent.click(action);
+
+            expect(onNavigateToSection).toHaveBeenCalledWith('qr-codes');
+        });
+
+        /**
+         * Seçili aralıkta etkinlik yoksa çıkış yolu BU SAYFANIN İÇİNDEDİR.
+         * Kullanıcıyı başka bir ekrana göndermek, cevabın burada olduğu bir
+         * soruda gereksiz bir yolculuk olurdu.
+         */
+        it('dar aralıkta boşsa aralığı genişletmeyi önerir', async () => {
+            mockWith(true);
+
+            render(
+                <AnalyticsPage
+                    workspaceId={WORKSPACE_ID}
+                    locationId={LOCATION_ID}
+                    menuTree={MENU_TREE}
+                    onNavigateToSection={vi.fn()}
+                />,
+            );
+
+            const region = await screen.findByRole('region', { name: /metric|report/i });
+            const widen = await within(region).findByRole('button', {
+                name: 'Show the last 30 days',
+            });
+            await userEvent.click(widen);
+
+            expect(screen.getByLabelText(/range/i)).toHaveValue('30d');
+        });
     });
 });
