@@ -9,6 +9,17 @@ type DashboardSetupJourneyProps = {
     location: LocationProfile | null;
     dashboardMenuTree: DashboardMenuTree | null;
     workspaceId?: number;
+    /**
+     * Adımdan hedefe GERÇEK gezinti — `docs/70`.
+     *
+     * Satırlar önceden `#brand`, `#locations`, `#menu` gibi bağlantılar
+     * taşıyordu. Uygulama adres tabanlı gezintiye geçtiğinden beri bu
+     * bağlantılar HİÇBİR ŞEY yapmıyordu: o kimlikte bir öğe yok, tarayıcı
+     * hiçbir yere kaymıyor, kullanıcı tıklıyor ve ekran duruyordu.
+     *
+     * Ölü bağlantı, kullanıcının ilk gördüğü ekranda duruyordu.
+     */
+    onNavigateToSection?: (section: string) => void;
 };
 
 function qrLabel(count: number): string {
@@ -36,6 +47,7 @@ export function DashboardSetupJourney({
     location,
     dashboardMenuTree,
     workspaceId,
+    onNavigateToSection,
 }: DashboardSetupJourneyProps) {
     const notConnected = t('dashboard.setup.notConnected');
     const checking = t('dashboard.setup.checking');
@@ -118,33 +130,68 @@ export function DashboardSetupJourney({
         };
     }, [workspaceId, menuId, locationId, notConnected, checking, unavailable]);
 
-    const rows: { key: string; label: string; value: string; href: string }[] = [
+    /*
+        Her adım TAMAMLANDI mı? Plan ilk kullanımda bir GÖREV LİSTESİ istiyor
+        (`docs/50` §6.1): kullanıcı hangi adımların bittiğini, hangisinin
+        sırada olduğunu ve oraya nasıl gideceğini görmeli.
+
+        Önceki hâli yalnız DEĞER gösteriyordu — "Publication: Not connected
+        yet" gibi. Bu bir durum bildirimi, bir yol tarifi değil.
+    */
+    const rows: {
+        key: string;
+        label: string;
+        value: string;
+        done: boolean;
+        section: string;
+    }[] = [
         {
             key: 'brand',
             label: t('dashboard.setup.brand'),
             value: brand?.name ?? '',
-            href: '#brand',
+            done: brand !== null,
+            section: 'settings/brand',
         },
         {
             key: 'location',
             label: t('dashboard.setup.location'),
             value: location?.display_name ?? '',
-            href: '#locations',
+            done: location !== null,
+            section: 'locations',
         },
         {
             key: 'menu',
             label: t('dashboard.setup.menu'),
             value: menuSummary(dashboardMenuTree),
-            href: '#menu',
+            /*
+                Menünün VARLIĞI yetmez: içi boş bir menü yayınlanamaz ve
+                misafire gösterecek bir şeyi yoktur. Adım ancak en az bir
+                ürün varken tamamlanmış sayılır.
+            */
+            done:
+                dashboardMenuTree !== null &&
+                dashboardMenuTree.categories.some((category) => category.menuItems.length > 0),
+            section: 'menu',
         },
         {
             key: 'publication',
             label: t('dashboard.setup.publication'),
             value: publicationValue,
-            href: '#publication',
+            done: publicationValue !== notConnected && publicationValue !== checking,
+            section: 'publication',
         },
-        { key: 'qr', label: t('dashboard.setup.qr'), value: qrValue, href: '#publication' },
+        {
+            key: 'qr',
+            label: t('dashboard.setup.qr'),
+            value: qrValue,
+            done: qrValue !== notConnected && qrValue !== checking,
+            section: 'qr-codes',
+        },
     ];
+
+    // Sırada olan adım: BİTMEMİŞ ilki. Kullanıcıya "şimdi ne yapmalıyım"
+    // sorusunun cevabı budur ve listede vurgulanır.
+    const nextStep = rows.find((row) => !row.done);
 
     return (
         <section aria-label={t('dashboard.setup.region')} className="flex flex-col gap-3">
@@ -152,12 +199,45 @@ export function DashboardSetupJourney({
             <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
                 {rows.map((row) => (
                     <div key={row.key} className="flex flex-col gap-1">
-                        <dt className="text-body font-medium text-fg-muted">
-                            <a href={row.href} className="text-fg-link hover:underline ">
-                                {row.label}
-                            </a>
+                        <dt className="flex items-center gap-2 text-body font-medium text-fg-muted">
+                            {/*
+                                Tamamlanma işareti RENKLE verilmez: yüksek
+                                kontrast modunda ve renk körlüğünde kaybolur.
+                                Ekran okuyucu için de metin karşılığı var.
+                            */}
+                            {/*
+                                Genişlik KARAKTERLE ölçülür (`ch`), pikselle
+                                değil: sütunun içindeki şey bir karakter ve
+                                320 piksellik ekranda sabit piksel genişliği
+                                yazı boyutuyla birlikte ölçeklenmez. Kolonun
+                                kalıcı olması satırların kaymasını önler.
+                            */}
+                            <span
+                                aria-hidden="true"
+                                className="w-[2ch] shrink-0 text-center text-fg-secondary"
+                            >
+                                {row.done ? '✓' : '○'}
+                            </span>
+                            {onNavigateToSection ? (
+                                <button
+                                    type="button"
+                                    onClick={() => onNavigateToSection(row.section)}
+                                    className="text-start text-fg-link hover:underline"
+                                >
+                                    {row.label}
+                                </button>
+                            ) : (
+                                <span>{row.label}</span>
+                            )}
+                            <span className="sr-only">
+                                {row.done
+                                    ? t('dashboard.setup.step.done')
+                                    : row.key === nextStep?.key
+                                      ? t('dashboard.setup.step.next')
+                                      : t('dashboard.setup.step.todo')}
+                            </span>
                         </dt>
-                        <dd className="text-body text-fg">{row.value}</dd>
+                        <dd className="ps-6 text-body text-fg">{row.value}</dd>
                     </div>
                 ))}
             </dl>

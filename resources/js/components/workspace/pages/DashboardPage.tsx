@@ -52,6 +52,7 @@ type DashboardPageProps = {
     brand?: BrandProfile | null;
     location?: LocationProfile | null;
     workspaceId?: number;
+    onNavigateToSection?: (section: string) => void;
 };
 
 export function DashboardPage({
@@ -59,6 +60,7 @@ export function DashboardPage({
     brand = null,
     location = null,
     workspaceId,
+    onNavigateToSection,
 }: DashboardPageProps) {
     return (
         <div id="section-dashboard">
@@ -71,6 +73,7 @@ export function DashboardPage({
                     location={location}
                     dashboardMenuTree={dashboardMenuTree}
                     workspaceId={workspaceId}
+                    onNavigateToSection={onNavigateToSection}
                 />
 
                 {dashboardMenuTree ? (

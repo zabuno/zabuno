@@ -1936,6 +1936,22 @@ msgstr "Unable to create the invitation. Please try again."
 msgid "workspace.team.invite.role.editor"
 msgstr "Editor"
 
+#: workspace:workspace.team.invite.role.editor.help
+msgid "workspace.team.invite.role.editor.help"
+msgstr "Edits menu content. Cannot publish, change locations or see billing."
+
+#: workspace:workspace.team.invite.role.label
+msgid "workspace.team.invite.role.label"
+msgstr "Role"
+
+#: workspace:workspace.team.invite.role.manager
+msgid "workspace.team.invite.role.manager"
+msgstr "Manager"
+
+#: workspace:workspace.team.invite.role.manager.help
+msgid "workspace.team.invite.role.manager.help"
+msgstr "Runs daily operations — menus, locations, QR codes and publishing. Cannot manage billing."
+
 #: workspace:workspace.team.invite.role.owner
 msgid "workspace.team.invite.role.owner"
 msgstr "Owner"

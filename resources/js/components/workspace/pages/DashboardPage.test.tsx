@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { DashboardPage } from './DashboardPage';
 import type { DashboardMenuTree } from './DashboardPage';
@@ -105,25 +106,62 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
         expect(screen.getByRole('region', { name: /dashboard setup/i })).toBeInTheDocument();
     });
 
-    it('renders every setup row as an actionable link to its real workspace hash', () => {
-        render(<DashboardPage dashboardMenuTree={null} />);
+    /**
+     * ADIMLAR GERÇEKTEN GÖTÜRÜR — `docs/70`.
+     *
+     * Bu test eskiden `href="#brand"` gibi bağlantıları donduruyordu ve o
+     * gün doğruydu: uygulama fragment ile geziniyordu. Adres tabanlı
+     * gezintiye geçildiğinde bu bağlantılar HİÇBİR ŞEY yapmaz oldu — o
+     * kimlikte bir öğe yok, tarayıcı kaymıyor, ekran duruyor.
+     *
+     * Ölü bağlantı, kullanıcının ilk gördüğü ekranda duruyordu ve testi onu
+     * koruyordu.
+     */
+    it('her kurulum adımı gerçek bölüme götürür', async () => {
+        const user = userEvent.setup();
+        const onNavigateToSection = vi.fn();
+
+        render(
+            <DashboardPage dashboardMenuTree={null} onNavigateToSection={onNavigateToSection} />,
+        );
 
         const region = screen.getByRole('region', { name: /dashboard setup/i });
 
-        const brandLink = within(region).getByRole('link', { name: /brand/i });
-        expect(brandLink).toHaveAttribute('href', '#brand');
+        await user.click(within(region).getByRole('button', { name: /brand/i }));
+        expect(onNavigateToSection).toHaveBeenLastCalledWith('settings/brand');
 
-        const locationLink = within(region).getByRole('link', { name: /location/i });
-        expect(locationLink).toHaveAttribute('href', '#locations');
+        await user.click(within(region).getByRole('button', { name: /location/i }));
+        expect(onNavigateToSection).toHaveBeenLastCalledWith('locations');
 
-        const menuLink = within(region).getByRole('link', { name: /menu/i });
-        expect(menuLink).toHaveAttribute('href', '#menu');
+        await user.click(within(region).getByRole('button', { name: /^menu$/i }));
+        expect(onNavigateToSection).toHaveBeenLastCalledWith('menu');
 
-        const publicationLink = within(region).getByRole('link', { name: /publication/i });
-        expect(publicationLink).toHaveAttribute('href', '#publication');
+        await user.click(within(region).getByRole('button', { name: /publication/i }));
+        expect(onNavigateToSection).toHaveBeenLastCalledWith('publication');
 
-        const qrLink = within(region).getByRole('link', { name: /qr/i });
-        expect(qrLink).toHaveAttribute('href', '#publication');
+        // QR artık YAYIN ekranına değil, kendi ekranına götürür.
+        await user.click(within(region).getByRole('button', { name: /qr/i }));
+        expect(onNavigateToSection).toHaveBeenLastCalledWith('qr-codes');
+    });
+
+    /**
+     * Liste bir DURUM listesi değil, GÖREV listesidir: hangi adım bitti,
+     * hangisi sırada (`docs/50` §6.1).
+     */
+    it('tamamlanan ve bekleyen adımları ayırt eder', () => {
+        render(
+            <DashboardPage
+                dashboardMenuTree={null}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
+
+        const region = screen.getByRole('region', { name: /dashboard setup/i });
+
+        // Marka ve şube var → tamamlandı. Menü yok → sıradaki adım.
+        expect(within(region).getAllByText('Done').length).toBeGreaterThanOrEqual(2);
+        expect(within(region).getByText('Next step')).toBeInTheDocument();
     });
 
     it('shows real brand and location names derived only from props, with an honest empty menu status', () => {
@@ -169,11 +207,13 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
         );
 
         const region = screen.getByRole('region', { name: /dashboard setup/i });
-        const publicationLink = within(region).getByRole('link', { name: /publication/i });
-        const qrLink = within(region).getByRole('link', { name: /qr/i });
+        const publicationRow = within(region)
+            .getByText(/^publication$/i)
+            .closest('div');
+        const qrRow = within(region).getByText(/^qr/i).closest('div');
 
-        expect(publicationLink.closest('div')?.textContent ?? '').toMatch(/not connected/i);
-        expect(qrLink.closest('div')?.textContent ?? '').toMatch(/not connected/i);
+        expect(publicationRow?.parentElement?.textContent ?? '').toMatch(/not connected/i);
+        expect(qrRow?.parentElement?.textContent ?? '').toMatch(/not connected/i);
     });
 
     it('shows empty brand/location status without inventing any name when props are absent', () => {

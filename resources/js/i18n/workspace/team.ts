@@ -2,7 +2,15 @@ export const team = {
     'workspace.team.heading': 'Team',
     'workspace.team.invite.email': 'Invite by email',
     'workspace.team.invite.role.owner': 'Owner',
+    'workspace.team.invite.role.label': 'Role',
     'workspace.team.invite.role.editor': 'Editor',
+    // Rolün NE YAPABİLDİĞİ yazılır: "Editor" kelimesi tek başına yayınlayıp
+    // yayınlayamayacağını söylemez (docs/70).
+    'workspace.team.invite.role.editor.help':
+        'Edits menu content. Cannot publish, change locations or see billing.',
+    'workspace.team.invite.role.manager': 'Manager',
+    'workspace.team.invite.role.manager.help':
+        'Runs daily operations — menus, locations, QR codes and publishing. Cannot manage billing.',
     'workspace.team.invite.button': 'Invite',
     'workspace.team.invite.unavailable': 'Inviting teammates is not connected yet.',
     'workspace.team.invite.submitting': 'Submitting invitation…',
