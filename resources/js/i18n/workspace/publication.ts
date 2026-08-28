@@ -48,6 +48,19 @@ export const publication = {
         'Publish your menu first — the QR code needs a published menu to point to.',
     'workspace.publication.qrDestination.createButton': 'Create',
     'workspace.publication.qrDestination.disableButton': 'Disable',
+    // Yanlış yayından dönmek (`docs/81`).
+    'workspace.publication.history.title': 'Published versions',
+    'workspace.publication.history.help':
+        'Going back writes a new version. Nothing is deleted, and the printed QR codes are untouched.',
+    'workspace.publication.history.version': 'Version {version}',
+    'workspace.publication.history.live': 'Live',
+    'workspace.publication.history.restore': 'Go back to this version',
+    'workspace.publication.history.restoreLabel': 'Go back to version {version}',
+    'workspace.publication.history.restoreError': 'This version could not be restored.',
+    // Kapatmanın KARŞILIĞI (`docs/81`): geri açılamayan bir kod, masadaki
+    // basılı kâğıdı kalıcı olarak öldürür.
+    'workspace.publication.qrDestination.enableButton': 'Re-enable',
+    'workspace.publication.qrDestination.enableError': 'The code could not be re-enabled.',
     'workspace.publication.qrDestination.empty': 'No QR code created yet.',
     'workspace.publication.qrDestination.loading': 'Loading QR codes…',
     'workspace.publication.qrDestination.loadError': 'Could not load QR codes. Try again.',

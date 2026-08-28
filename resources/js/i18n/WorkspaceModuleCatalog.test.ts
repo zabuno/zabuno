@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 519;
+const FROZEN_LEGACY_KEY_COUNT = 528;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -175,8 +175,16 @@ const FROZEN_LEGACY_KEY_COUNT = 519;
 // ROLLER (docs/70): davet artık rol seçtiriyor ve rolün ne yapabildiği
 // alanın altında yazıyor. Önceden her davet "editor" gidiyordu ve o rol
 // hiçbir şeyi düzenleyemiyordu. 515 → 519.
+//
+// MEDYA SEBEBİ (docs/76): rozet DURUMU söylüyordu, sebebi söylemiyordu;
+// "Scanning" rozetiyle sonsuza kadar bekleyen bir dosyanın karşısında sahip
+// ne olduğunu bilemiyordu. 519 → 520.
+//
+// KAREKOD GERİ AÇMA + YAYIN GEÇMİŞİ (docs/81): kapatmanın karşılığı yoktu ve
+// yanlış bir yayından dönmenin yolu yoktu. Sekiz anahtar: geri açma (2) ve
+// yayın geçmişi (6). 520 → 528.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '4cf762a0fd67895fbfe8c77ee9392d503fc18df5958f69c5fa2ecaabedf9e012';
+    '564099f88ea8f705561d13ec182c80b28fc08072928635d3289b410750169534';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

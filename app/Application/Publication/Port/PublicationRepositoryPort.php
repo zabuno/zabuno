@@ -17,4 +17,16 @@ interface PublicationRepositoryPort
     public function publish(int $workspaceId, int $menuId, int $locationId, array $snapshot, int $publishedByUserId): PublicationRecord;
 
     public function current(int $workspaceId, int $menuId): ?PublicationRecord;
+
+    /**
+     * Menünün yayın geçmişi — EN YENİ ÖNCE.
+     *
+     * Sıra keyfi değil: geri almayı arayan sahip panik hâlindedir ve
+     * listenin dibine inmez (`docs/81`).
+     *
+     * @return list<PublicationRecord>
+     */
+    public function history(int $workspaceId, int $menuId): array;
+
+    public function find(int $workspaceId, int $menuId, int $publicationId): ?PublicationRecord;
 }
