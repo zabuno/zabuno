@@ -1116,6 +1116,14 @@ msgstr ""
 msgid "workspace.menu.error"
 msgstr ""
 
+#: workspace:workspace.menu.error.noRetry
+msgid "workspace.menu.error.noRetry"
+msgstr ""
+
+#: workspace:workspace.menu.error.why
+msgid "workspace.menu.error.why"
+msgstr ""
+
 #: workspace:workspace.menu.heading
 msgid "workspace.menu.heading"
 msgstr ""
@@ -1566,6 +1574,10 @@ msgstr ""
 
 #: workspace:workspace.qrCodes.empty.needsMenu
 msgid "workspace.qrCodes.empty.needsMenu"
+msgstr ""
+
+#: workspace:workspace.qrCodes.empty.needsMenu.why
+msgid "workspace.qrCodes.empty.needsMenu.why"
 msgstr ""
 
 #: workspace:workspace.qrCodes.operational.description

@@ -91,11 +91,23 @@ describe('MenuPage', () => {
         expect(onNavigateToSection).toHaveBeenCalledWith('brand');
     });
 
-    it('reports a failed load as a failure rather than as an ongoing wait', () => {
+    /**
+     * Asıl kusur bir hata GÖSTERMEMEK değil, hata hâlinde BEKLEME göstermekti:
+     * sayfa "Loading your menu…" yazıp duruyordu ve kullanıcı sonsuza kadar
+     * bekliyordu.
+     *
+     * Hatanın kendisi bu sayfaya ait değil: katalog yüklenemediğinde arıza
+     * bütün bölümleri etkiler ve tek bir GENEL yüzeyde, çalışan bir yeniden
+     * deneme ile sunulur (`WorkspaceApp`). Burada da çizmek, aynı olayı
+     * ekranda iki kez anlatırdı (docs/59).
+     */
+    it('hata hâlinde bekleme göstermez ve hatayı sahiplenmez', () => {
         renderPage('error', null);
 
         expect(screen.queryByText(/loading your menu/i)).not.toBeInTheDocument();
-        expect(screen.getByRole('alert')).toBeInTheDocument();
+        expect(screen.queryByRole('alert')).toBeNull();
+        // Sayfa kabuğu yerinde kalır; içinde yalnız hata GÖSTERİLMEZ.
+        expect(document.querySelector('#section-menu')).not.toBeNull();
     });
 
     it('renders the menu catalog workspace with the exact workspaceId/locationId once a location is selected', () => {

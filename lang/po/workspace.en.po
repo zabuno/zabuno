@@ -1116,6 +1116,14 @@ msgstr "Add a location"
 msgid "workspace.menu.error"
 msgstr "Your menu could not be loaded. Refresh the page to try again."
 
+#: workspace:workspace.menu.error.noRetry
+msgid "workspace.menu.error.noRetry"
+msgstr "Reload the page to try again."
+
+#: workspace:workspace.menu.error.why
+msgid "workspace.menu.error.why"
+msgstr "Your menu is safe — this is only a problem loading it right now."
+
 #: workspace:workspace.menu.heading
 msgid "workspace.menu.heading"
 msgstr "Menu"
@@ -1566,7 +1574,11 @@ msgstr "Go to your menu"
 
 #: workspace:workspace.qrCodes.empty.needsMenu
 msgid "workspace.qrCodes.empty.needsMenu"
-msgstr "QR codes point at a published menu. Build your menu first, then come back here to print the codes."
+msgstr "You need a menu before you can print QR codes"
+
+#: workspace:workspace.qrCodes.empty.needsMenu.why
+msgid "workspace.qrCodes.empty.needsMenu.why"
+msgstr "A QR code opens your published menu, so there has to be a menu for it to open. Build yours first — it only takes a few minutes."
 
 #: workspace:workspace.qrCodes.operational.description
 msgid "workspace.qrCodes.operational.description"

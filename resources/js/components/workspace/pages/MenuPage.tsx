@@ -3,6 +3,7 @@ import { Button } from '../../catalog/forms/micro/Button';
 import { MenuCatalogWorkspace } from '../../catalog/menu/macro/MenuCatalogWorkspace';
 import type { DashboardMenuTree } from './DashboardPage';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PageState } from './shared/PageState';
 import type { CatalogPhase } from '../WorkspaceApp';
 
 type MenuPageProps = {
@@ -78,19 +79,25 @@ export function MenuPage({
 
         // Gerçek bekleme: veri yolda. Tek meşru "yükleniyor" hâli budur.
         if (catalogPhase === 'loading') {
-            return (
-                <p role="status" className="text-body text-fg-secondary">
-                    {t('workspace.menu.loading')}
-                </p>
-            );
+            return <PageState kind="loading" title={t('workspace.menu.loading')} />;
         }
 
+        /*
+            Hatayı bu sayfa SAHİPLENMEZ.
+
+            Katalog yüklenemediğinde arıza yalnız menü ekranını değil, bütün
+            bölümleri etkiler — kullanıcı Dashboard'dayken de aynı şey
+            bozulmuştur. Bu yüzden hata, tek ve GENEL bir yüzeyde
+            (`WorkspaceApp`) sunulur ve çalışan bir yeniden deneme taşır.
+
+            Burada da bir hata çizmek, aynı olayı ekranda iki kez anlatırdı ve
+            kullanıcıya hangisinin gerçek olduğunu sordururdu. Bu sayfanın
+            görevi yalnız BEKLEME göstermemektir — asıl kusur buydu: hata
+            hâlinde "Loading your menu…" yazıp duruyordu ve kullanıcı sonsuza
+            kadar bekliyordu (docs/59).
+        */
         if (catalogPhase === 'error') {
-            return (
-                <p role="alert" className="text-body text-fg-secondary">
-                    {t('workspace.menu.error')}
-                </p>
-            );
+            return null;
         }
 
         // Marka yoksa konum da eklenemez; kullanıcıyı bir adım öncesine
@@ -98,18 +105,21 @@ export function MenuPage({
         const target = catalogPhase === 'brand-onboarding' ? 'brand' : 'locations';
 
         return (
-            <div role="status" className="flex flex-col items-start gap-3">
-                <p className="text-body text-fg">
-                    {catalogPhase === 'brand-onboarding'
+            <PageState
+                kind="prerequisite"
+                title={
+                    catalogPhase === 'brand-onboarding'
                         ? t('workspace.menu.empty.brand.body')
-                        : t('workspace.menu.empty.location.body')}
-                </p>
-                <Button type="button" onClick={() => onNavigateToSection(target)}>
-                    {catalogPhase === 'brand-onboarding'
-                        ? t('workspace.menu.empty.brand.cta')
-                        : t('workspace.menu.empty.location.cta')}
-                </Button>
-            </div>
+                        : t('workspace.menu.empty.location.body')
+                }
+                action={
+                    <Button type="button" onClick={() => onNavigateToSection(target)}>
+                        {catalogPhase === 'brand-onboarding'
+                            ? t('workspace.menu.empty.brand.cta')
+                            : t('workspace.menu.empty.location.cta')}
+                    </Button>
+                }
+            />
         );
     }
 }
