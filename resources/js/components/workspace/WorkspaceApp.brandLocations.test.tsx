@@ -265,8 +265,8 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         expect((await scope.findByLabelText('Brand name')) as HTMLInputElement).toHaveValue(
             brand.name,
         );
-        expect(scope.getByLabelText('Locale')).toHaveValue(brand.locale);
-        expect(scope.getByLabelText('Timezone')).toHaveValue(brand.timezone);
+        expect(scope.getByLabelText('Menu language')).toHaveValue(brand.locale);
+        expect(scope.getByLabelText('Time zone')).toHaveValue(brand.timezone);
         expect(scope.getByLabelText('Currency')).toHaveValue(brand.currency);
         expect(scope.getByLabelText('Description (optional)')).toHaveValue(brand.description);
         expect(scope.getByLabelText('Contact email (optional)')).toHaveValue(brand.contact_email);

@@ -447,8 +447,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         // olsun: bu tutarsızlık formların geri kalanıyla birlikte ele
         // alınacak.
         expect(scope.getByLabelText('Brand name')).toBeInTheDocument();
-        expect(scope.getByLabelText('Locale')).toBeInTheDocument();
-        expect(scope.getByLabelText('Timezone')).toBeInTheDocument();
+        expect(scope.getByLabelText('Menu language')).toBeInTheDocument();
+        expect(scope.getByLabelText('Time zone')).toBeInTheDocument();
         expect(scope.getByLabelText('Currency')).toBeInTheDocument();
         expect(scope.getByLabelText('Description (optional)')).toBeInTheDocument();
         expect(scope.getByLabelText('Contact email (optional)')).toBeInTheDocument();

@@ -19,6 +19,22 @@ final class LocaleCode
         'hu', 'bg', 'uk', 'he', 'ko', 'vi', 'th', 'id', 'ms', 'hi',
     ];
 
+    /**
+     * Desteklenen dillerin listesi.
+     *
+     * Neden dışarı açılıyor: arayüz kullanıcıdan dil kodu YAZMASINI istememeli.
+     * Marka formu `tr_TR` gibi bir değer bekliyordu — bu kullanıcı dili değil,
+     * geliştirici kodudur. Seçenekleri sunabilmek için tek doğruluk kaynağının
+     * okunabilir olması gerekiyor; ikinci bir liste tutmak, iki listenin
+     * ayrışacağı bir gün yaratırdı.
+     *
+     * @return list<string>
+     */
+    public static function supported(): array
+    {
+        return self::SUPPORTED;
+    }
+
     private function __construct(private readonly string $value) {}
 
     public static function default(): self

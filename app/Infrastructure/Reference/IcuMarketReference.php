@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Infrastructure\Reference;
 
 use App\Application\Reference\Port\MarketReferencePort;
+use App\Domain\Tenancy\ValueObject\LocaleCode;
 use DateTimeZone;
 use NumberFormatter;
 use Symfony\Component\Intl\Countries;
 use Symfony\Component\Intl\Currencies;
+use Symfony\Component\Intl\Languages;
 
 final class IcuMarketReference implements MarketReferencePort
 {
@@ -30,6 +32,27 @@ final class IcuMarketReference implements MarketReferencePort
         }
 
         return $markets;
+    }
+
+    public function locales(): array
+    {
+        $locales = [];
+
+        foreach (LocaleCode::supported() as $code) {
+            $locales[] = [
+                'code' => $code,
+                // ICU adı bulunamazsa kodun kendisi gösterilir. Uydurulmuş
+                // bir ad, yanlış bir dili seçtirmekten iyidir değil —
+                // ama boş bir seçenek de seçilemez.
+                'name' => Languages::exists($code)
+                    ? Languages::getName($code, self::DISPLAY_LOCALE)
+                    : $code,
+            ];
+        }
+
+        usort($locales, static fn (array $a, array $b): int => strcmp($a['name'], $b['name']));
+
+        return $locales;
     }
 
     public function timezonesFor(string $countryCode): array

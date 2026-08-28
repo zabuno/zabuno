@@ -32,6 +32,8 @@ final class ShowMarketReferenceController extends Controller
         return response()->json([
             'markets' => $reference->markets(),
             'currencies' => $reference->currencies(),
+            // Menü içerik dilleri: sistemde kod saklanır, ekranda ad görünür.
+            'locales' => $reference->locales(),
             // Ülke verilmişse yalnız onun saat dilimleri: ABD'de 29 tane
             // var ve hepsini göstermek seçimi kolaylaştırmaz, zorlaştırır.
             'timezones' => is_string($country) && $country !== ''

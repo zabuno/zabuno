@@ -416,6 +416,10 @@ msgstr "Loading your brand…"
 msgid "workspace.brand.locale"
 msgstr "Locale"
 
+#: workspace:workspace.brand.locale.help
+msgid "workspace.brand.locale.help"
+msgstr "The main language of your menu content. You can add more languages later."
+
 #: workspace:workspace.brand.market
 msgid "workspace.brand.market"
 msgstr "Main market"
@@ -423,6 +427,10 @@ msgstr "Main market"
 #: workspace:workspace.brand.market.help
 msgid "workspace.brand.market.help"
 msgstr "Where you do business. We use it to set your time zone and currency."
+
+#: workspace:workspace.brand.market.label
+msgid "workspace.brand.market.label"
+msgstr "Main market"
 
 #: workspace:workspace.brand.market.placeholder
 msgid "workspace.brand.market.placeholder"
@@ -460,6 +468,14 @@ msgstr "Time zone"
 msgid "workspace.brand.timezone.help"
 msgstr "Used for opening hours and reports."
 
+#: workspace:workspace.brand.webAddress.help
+msgid "workspace.brand.webAddress.help"
+msgstr "Appears in the public link your guests open. Zabuno keeps it in step with your brand name."
+
+#: workspace:workspace.brand.webAddress.label
+msgid "workspace.brand.webAddress.label"
+msgstr "Menu web address"
+
 #: workspace:workspace.brandLocations.brand.contactEmail
 msgid "workspace.brandLocations.brand.contactEmail"
 msgstr "Contact email"
@@ -478,7 +494,7 @@ msgstr "Description"
 
 #: workspace:workspace.brandLocations.brand.locale
 msgid "workspace.brandLocations.brand.locale"
-msgstr "Locale"
+msgstr "Menu language"
 
 #: workspace:workspace.brandLocations.brand.section.contact
 msgid "workspace.brandLocations.brand.section.contact"
@@ -502,7 +518,7 @@ msgstr "Slug"
 
 #: workspace:workspace.brandLocations.brand.timezone
 msgid "workspace.brandLocations.brand.timezone"
-msgstr "Timezone"
+msgstr "Time zone"
 
 #: workspace:workspace.brandLocations.edit.button
 msgid "workspace.brandLocations.edit.button"
@@ -667,6 +683,34 @@ msgstr "We could not load your workspace."
 #: workspace:workspace.error.retry
 msgid "workspace.error.retry"
 msgstr "Retry"
+
+#: workspace:workspace.form.error.conflict
+msgid "workspace.form.error.conflict"
+msgstr "Someone else changed this while you were editing. Reload to see the current values, then apply your change again."
+
+#: workspace:workspace.form.error.network
+msgid "workspace.form.error.network"
+msgstr "We could not reach Zabuno. Check your connection — everything you typed is still here."
+
+#: workspace:workspace.form.error.notFound
+msgid "workspace.form.error.notFound"
+msgstr "This record no longer exists. It may have been deleted in another tab."
+
+#: workspace:workspace.form.error.permission
+msgid "workspace.form.error.permission"
+msgstr "You do not have permission to change this. Ask an owner or manager of this workspace."
+
+#: workspace:workspace.form.error.server
+msgid "workspace.form.error.server"
+msgstr "We could not save this right now. Nothing was lost — try again in a few seconds."
+
+#: workspace:workspace.form.error.serverWithId
+msgid "workspace.form.error.serverWithId"
+msgstr "We could not save this right now. Nothing was lost — try again in a few seconds. Reference: {id}"
+
+#: workspace:workspace.form.error.summary.title
+msgid "workspace.form.error.summary.title"
+msgstr "Please fix the fields below"
 
 #: workspace:workspace.loading
 msgid "workspace.loading"
