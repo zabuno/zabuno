@@ -89,6 +89,16 @@ for _ in $(seq 1 50); do
 done
 expect_verdict "ulaşılamayan sunucu" UNREACHABLE --expect "$SHA_A"
 
+# 6) Beklenen sürüm ÇÖZÜLEMEDİ → NO_EXPECTED_REVISION, sessiz PASS DEĞİL.
+#
+#    Kapının kendi körlüğü: git olmayan bir dizin (ya da yanlış bir
+#    `--worktree` yolu) karşılaştırmayı imkânsız kılar. Bunu "geçti" saymak,
+#    kapıyı hiçbir uyarı vermeden her zaman PASS döndüren bir süse çevirirdi
+#    — ve bu tam olarak kapının kurulduğu arıza sınıfıdır.
+serve "$(page "$SHA_A" false)" || exit 2
+mkdir -p "$TMP/not-a-repo"
+expect_verdict "beklenen sürüm çözülemedi" NO_EXPECTED_REVISION --worktree "$TMP/not-a-repo"
+
 echo "─────────────"
 if [ "$failures" -eq 0 ]; then
   echo "preview-truth: TÜM SENARYOLAR GEÇTİ"

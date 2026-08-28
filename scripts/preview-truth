@@ -14,6 +14,7 @@
 #
 # Son stdout satırı her zaman tek bir karar belirtecidir:
 #   PASS | REVISION_MISMATCH | BUILD_STALE | NO_BUILD_IDENTITY | UNREACHABLE
+#   | NO_EXPECTED_REVISION
 # Çıkış 0 yalnız PASS; 1 her ret; 2 kullanım hatası.
 
 set -u
@@ -81,7 +82,16 @@ fi
 
 echo "{\"url\":\"$URL\",\"served\":\"$served\",\"expected\":\"$EXPECT\",\"stale\":\"${stale:-unknown}\"}"
 
-if [ -n "$EXPECT" ] && [ "$served" != "$EXPECT" ]; then
+if [ -z "$EXPECT" ]; then
+  # Beklenen sürüm ÇÖZÜLEMEDİ — karşılaştırma yapılamaz.
+  #
+  # Bunu "geçti" saymak, kapıyı sessizce işlevsiz kılardı: yanlış bir
+  # `--worktree` yolu ya da git'siz bir ortam, hiçbir uyarı vermeden her
+  # zaman PASS döndürürdü. Kapının kendisi de kendi körlüğüne düşebilir.
+  deny NO_EXPECTED_REVISION
+fi
+
+if [ "$served" != "$EXPECT" ]; then
   deny REVISION_MISMATCH
 fi
 
