@@ -29,6 +29,7 @@ type LocationProfile = {
     brand_id: number;
     display_name: string;
     country_code: string;
+    timezone: string;
     city: string;
     address_line1: string;
     address_line2: string | null;
@@ -50,6 +51,7 @@ function makeLocationProfile(overrides: Partial<LocationProfile> = {}): Location
         brand_id: 3,
         display_name: 'Kadıköy Şube',
         country_code: 'TR',
+        timezone: 'Europe/Istanbul',
         city: 'İstanbul',
         address_line1: 'Moda Cd. No:12',
         address_line2: null,
@@ -58,9 +60,31 @@ function makeLocationProfile(overrides: Partial<LocationProfile> = {}): Location
     };
 }
 
-function fillRequiredFields() {
+const MARKET_REFERENCE = {
+    markets: [{ code: 'TR', name: 'Türkiye' }],
+    timezones: [{ id: 'Europe/Istanbul', label: 'İstanbul — UTC+03:00' }],
+    defaults: { timezone: 'Europe/Istanbul', currency: 'TRY' },
+    suggestedCountry: null,
+};
+
+function isReferenceRequest(url: string): boolean {
+    return url.startsWith('/api/reference/markets');
+}
+
+async function fillRequiredFields() {
     fireEvent.change(screen.getByLabelText(/display name/i), { target: { value: 'Kadıköy Şube' } });
+
+    /*
+        Ülke ve saat dilimi artık listeden seçiliyor. Liste sunucudan geldiği
+        için önce SEÇENEĞİN VARLIĞI beklenir; beklemeden değer atamak, boş bir
+        select'e yazmak olur ve sessizce hiçbir şey yapmaz.
+    */
+    await screen.findByRole('option', { name: 'Türkiye' });
     fireEvent.change(screen.getByLabelText(/country/i), { target: { value: 'TR' } });
+    await screen.findByRole('option', { name: /İstanbul/ });
+    fireEvent.change(screen.getByLabelText(/time zone/i), {
+        target: { value: 'Europe/Istanbul' },
+    });
     fireEvent.change(screen.getByLabelText(/city/i), { target: { value: 'İstanbul' } });
     fireEvent.change(screen.getByLabelText(/address line ?1|^address$/i), {
         target: { value: 'Moda Cd. No:12' },
@@ -75,6 +99,9 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
             calls.push({ url: String(url), init });
 
+            if (isReferenceRequest(String(url))) {
+                return jsonResponse(200, MARKET_REFERENCE);
+            }
             if (String(url) === CSRF_COOKIE_URL) {
                 return jsonResponse(204, {});
             }
@@ -94,14 +121,23 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
-        fillRequiredFields();
+        await fillRequiredFields();
         fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
 
         await waitFor(() => {
             expect(onCreated).toHaveBeenCalledWith(created);
         });
 
-        expect(calls[0].url).toBe(CSRF_COOKIE_URL);
+        /*
+            İddia "ilk istek CSRF'tir" değil, "CSRF POST'tan ÖNCEDİR". Form
+            artık açılışta ülke/saat dilimi listesini de çekiyor; onu ilk
+            sıraya koymak CSRF sözleşmesini bozmaz. Sıra iddiasını referans
+            isteğini dışarıda bırakarak kurmak, testin ölçtüğü şeyi
+            korurken kırılganlığını atar.
+        */
+        const writeCalls = calls.filter((call) => !isReferenceRequest(call.url));
+        expect(writeCalls[0].url).toBe(CSRF_COOKIE_URL);
+        expect(writeCalls[1].url).toBe('/api/workspaces/5/brand/locations');
         const postCall = calls.find((call) => call.url === '/api/workspaces/5/brand/locations');
         expect(postCall).toBeDefined();
         expect((postCall?.init?.method ?? '').toUpperCase()).toBe('POST');
@@ -115,6 +151,7 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         expect(body).toEqual({
             display_name: 'Kadıköy Şube',
             country_code: 'TR',
+            timezone: 'Europe/Istanbul',
             city: 'İstanbul',
             address_line1: 'Moda Cd. No:12',
         });
@@ -127,6 +164,7 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         const calls: Array<{ url: string; init?: RequestInit }> = [];
         const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
             calls.push({ url: String(url), init });
+            if (isReferenceRequest(String(url))) return jsonResponse(200, MARKET_REFERENCE);
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             if (String(url) === '/api/workspaces/5/brand/locations')
                 return jsonResponse(201, makeLocationProfile());
@@ -142,7 +180,7 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
-        fillRequiredFields();
+        await fillRequiredFields();
         fireEvent.change(screen.getByLabelText(/address line ?2/i), { target: { value: 'Kat 2' } });
         fireEvent.change(screen.getByLabelText(/postal code/i), { target: { value: '34710' } });
         fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
@@ -156,6 +194,7 @@ describe('LocationOnboardingForm — CSRF bootstrap and POST /api/workspaces/{wo
         expect(body).toEqual({
             display_name: 'Kadıköy Şube',
             country_code: 'TR',
+            timezone: 'Europe/Istanbul',
             city: 'İstanbul',
             address_line1: 'Moda Cd. No:12',
             address_line2: 'Kat 2',
@@ -170,6 +209,7 @@ describe('LocationOnboardingForm — client-side required validation', () => {
     it('shows an accessible validation error and does not call the create endpoint when required fields are empty', async () => {
         const onCreated = vi.fn();
         const fetchMock = vi.fn(async (url: string) => {
+            if (isReferenceRequest(String(url))) return jsonResponse(200, MARKET_REFERENCE);
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
@@ -209,6 +249,7 @@ describe('LocationOnboardingForm — disabled/busy state while the request is in
             resolveCreate = resolve;
         });
         const fetchMock = vi.fn(async (url: string) => {
+            if (isReferenceRequest(String(url))) return jsonResponse(200, MARKET_REFERENCE);
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             if (String(url) === '/api/workspaces/5/brand/locations') return pendingCreate;
             throw new Error(`Unhandled fetch: ${String(url)}`);
@@ -223,7 +264,7 @@ describe('LocationOnboardingForm — disabled/busy state while the request is in
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
-        fillRequiredFields();
+        await fillRequiredFields();
         const submit = screen.getByRole('button', { name: /create|save|continue/i });
         fireEvent.click(submit);
 
@@ -240,6 +281,7 @@ describe('LocationOnboardingForm — server error rendering', () => {
     it('renders an inline role=alert on 422 validation error without invoking onCreated', async () => {
         const onCreated = vi.fn();
         const fetchMock = vi.fn(async (url: string) => {
+            if (isReferenceRequest(String(url))) return jsonResponse(200, MARKET_REFERENCE);
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             if (String(url) === '/api/workspaces/5/brand/locations') {
                 return jsonResponse(422, {
@@ -259,7 +301,7 @@ describe('LocationOnboardingForm — server error rendering', () => {
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
-        fillRequiredFields();
+        await fillRequiredFields();
         fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
 
         // Alan hataları eklendiğinde bu formda birden fazla `alert`
@@ -275,6 +317,7 @@ describe('LocationOnboardingForm — server error rendering', () => {
     it('renders an inline role=alert on 403 forbidden without invoking onCreated', async () => {
         const onCreated = vi.fn();
         const fetchMock = vi.fn(async (url: string) => {
+            if (isReferenceRequest(String(url))) return jsonResponse(200, MARKET_REFERENCE);
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             if (String(url) === '/api/workspaces/5/brand/locations') {
                 return jsonResponse(403, { message: 'This action is unauthorized.' });
@@ -291,7 +334,7 @@ describe('LocationOnboardingForm — server error rendering', () => {
         }>('LocationOnboardingForm');
         render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
 
-        fillRequiredFields();
+        await fillRequiredFields();
         fireEvent.click(screen.getByRole('button', { name: /create|save|continue/i }));
 
         // Alan hataları eklendiğinde bu formda birden fazla `alert`
@@ -308,6 +351,7 @@ describe('LocationOnboardingForm — server error rendering', () => {
 describe('LocationOnboardingForm — no demo IDs or default business data', () => {
     it('does not prefill the display name field with placeholder demo business data', async () => {
         const fetchMock = vi.fn(async (url: string) => {
+            if (isReferenceRequest(String(url))) return jsonResponse(200, MARKET_REFERENCE);
             if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });

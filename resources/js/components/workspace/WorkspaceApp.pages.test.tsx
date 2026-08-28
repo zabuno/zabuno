@@ -91,6 +91,7 @@ function makeLocation(overrides: Partial<Record<string, unknown>> = {}) {
         brand_id: 811,
         display_name: 'Kadıköy',
         country_code: 'TR',
+        timezone: 'Europe/Istanbul',
         city: 'İstanbul',
         address_line1: 'Bahariye Cd. 1',
         address_line2: null,
@@ -177,6 +178,16 @@ function buildFetchMock() {
             return jsonResponse(200, { assets: [] });
         }
 
+        if (String(url).startsWith('/api/reference/markets')) {
+            // Ülke ve saat dilimi LİSTEDEN seçilir (docs/62); liste sunucudan
+            // gelir, bu yüzden fikstür de sunmak zorunda.
+            return jsonResponse(200, {
+                markets: [{ code: 'TR', name: 'Türkiye' }],
+                timezones: [{ id: 'Europe/Istanbul', label: 'İstanbul — UTC+03:00' }],
+                defaults: { timezone: 'Europe/Istanbul', currency: 'TRY' },
+                suggestedCountry: null,
+            });
+        }
         throw new Error(`Unhandled fetch in WorkspaceApp pages test: ${method} ${String(url)}`);
     });
 }
@@ -486,6 +497,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
             id: THIRD_LOCATION_ID,
             display_name: 'Şişli',
             country_code: 'TR',
+            timezone: 'Europe/Istanbul',
             city: 'İstanbul',
             address_line1: 'Halaskargazi Cd. 9',
             address_line2: null,
@@ -537,11 +549,28 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
                 return jsonResponse(404, {});
             }
 
+            if (String(url).startsWith('/api/reference/markets')) {
+                // Ülke ve saat dilimi LİSTEDEN seçilir (docs/62); liste sunucudan
+                // gelir, bu yüzden fikstür de sunmak zorunda.
+                return jsonResponse(200, {
+                    markets: [{ code: 'TR', name: 'Türkiye' }],
+                    timezones: [{ id: 'Europe/Istanbul', label: 'İstanbul — UTC+03:00' }],
+                    defaults: { timezone: 'Europe/Istanbul', currency: 'TRY' },
+                    suggestedCountry: null,
+                });
+            }
             throw new Error(`Unhandled fetch in WorkspaceApp pages test: ${method} ${String(url)}`);
         });
 
         await user.type(scope.getByLabelText('Display name'), 'Şişli');
-        await user.type(scope.getByLabelText('Country'), 'TR');
+
+        /*
+            Ülke artık yazılmaz, SEÇİLİR (docs/62). Seçenek sunucudan geldiği
+            için önce beklenir; beklemeden seçmek boş bir listeye yazmak olur
+            ve sessizce hiçbir şey yapmaz.
+        */
+        await scope.findByRole('option', { name: 'Türkiye' });
+        await user.selectOptions(scope.getByLabelText('Country'), 'TR');
         await user.type(scope.getByLabelText('City'), 'İstanbul');
         await user.type(scope.getByLabelText('Address line 1'), 'Halaskargazi Cd. 9');
 
@@ -567,6 +596,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         expect(postBody).toEqual({
             display_name: 'Şişli',
             country_code: 'TR',
+            timezone: 'Europe/Istanbul',
             city: 'İstanbul',
             address_line1: 'Halaskargazi Cd. 9',
         });

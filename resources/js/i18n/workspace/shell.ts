@@ -56,6 +56,14 @@ export const shell = {
 
     // Marka panelinin cevapladığı soru: bu adı değiştirirsem nereyi
     // değiştirmiş olurum (docs/60).
+    // Şubenin bölgesel alanları (docs/62): saat dilimi markanın değil
+    // şubenin alanıdır.
+    'workspace.location.timezone': 'Time zone',
+    'workspace.location.timezone.help':
+        'Opening hours and publication times use this location’s time zone.',
+    'workspace.location.regional.chooseCountry': 'Choose a country',
+    'workspace.location.regional.chooseTimezone': 'Choose a time zone',
+
     'workspace.brand.inspector.title': 'Where this brand appears',
     'workspace.brand.inspector.name': 'Brand name',
     'workspace.brand.inspector.locations': 'Locations',

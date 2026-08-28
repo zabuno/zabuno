@@ -4,6 +4,7 @@ import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader'
 import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/workspace';
 import { FormField } from './forms/FormField';
+import { RegionalFields } from './location/RegionalFields';
 import { FormSection } from './forms/FormSection';
 
 export type LocationProfile = {
@@ -12,6 +13,7 @@ export type LocationProfile = {
     brand_id: number;
     display_name: string;
     country_code: string;
+    timezone: string;
     city: string;
     address_line1: string;
     address_line2: string | null;
@@ -26,6 +28,7 @@ type LocationOnboardingFormProps = {
 export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboardingFormProps) {
     const [displayName, setDisplayName] = useState('');
     const [countryCode, setCountryCode] = useState('');
+    const [timezone, setTimezone] = useState('');
     const [city, setCity] = useState('');
     const [addressLine1, setAddressLine1] = useState('');
     const [addressLine2, setAddressLine2] = useState('');
@@ -94,6 +97,11 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
         const payload: Record<string, string> = {
             display_name: trimmedDisplayName,
             country_code: trimmedCountryCode,
+            /*
+                Boş gönderilirse sunucu markanınkini devralır — şube saat
+                dilimsiz kalmaz (docs/62).
+            */
+            ...(timezone !== '' ? { timezone } : {}),
             city: trimmedCity,
             address_line1: trimmedAddressLine1,
         };
@@ -177,13 +185,14 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                         value={displayName}
                         onChange={setDisplayName}
                     />
-                    <FormField
-                        id="location-country-code"
-                        name="country_code"
-                        errorText={fieldErrors.country_code}
-                        label={t('workspace.location.countryCode')}
-                        value={countryCode}
-                        onChange={setCountryCode}
+                    <RegionalFields
+                        idPrefix="location"
+                        countryCode={countryCode}
+                        timezone={timezone}
+                        onCountryChange={setCountryCode}
+                        onTimezoneChange={setTimezone}
+                        countryError={fieldErrors.country_code}
+                        timezoneError={fieldErrors.timezone}
                     />
                     <FormField
                         id="location-city"

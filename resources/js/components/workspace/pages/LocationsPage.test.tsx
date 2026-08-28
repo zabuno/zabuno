@@ -46,6 +46,7 @@ function makeLocation(overrides: Partial<LocationProfile> = {}): LocationProfile
         brand_id: 501,
         display_name: 'Kadıköy Şube',
         country_code: 'TR',
+        timezone: 'Europe/Istanbul',
         city: 'İstanbul',
         address_line1: 'Moda Cd. 12',
         address_line2: null,

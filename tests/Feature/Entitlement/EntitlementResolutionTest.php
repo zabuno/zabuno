@@ -206,7 +206,7 @@ final class EntitlementResolutionTest extends TestCase
                 'locale' => 'tr', 'timezone' => 'Europe/Istanbul', 'currency' => 'TRY',
                 'created_at' => now(), 'updated_at' => now(),
             ]),
-            'display_name' => 'Kadıköy', 'country_code' => 'TR', 'city' => 'İstanbul',
+            'display_name' => 'Kadıköy', 'country_code' => 'TR', 'timezone' => 'Europe/Istanbul', 'city' => 'İstanbul',
             'address_line1' => 'Adres', 'created_at' => now(), 'updated_at' => now(),
         ]);
 

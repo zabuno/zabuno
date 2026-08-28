@@ -46,6 +46,15 @@ function jsonResponse(status: number, body: unknown): Response {
 
 function respondWith(createResponse: Response | Promise<never>) {
     stubFetch(async (url) => {
+        if (String(url).startsWith('/api/reference/markets')) {
+            // Ülke ve saat dilimi LİSTEDEN seçilir (docs/62).
+            return jsonResponse(200, {
+                markets: [{ code: 'TR', name: 'Türkiye' }],
+                timezones: [{ id: 'Europe/Istanbul', label: 'İstanbul — UTC+03:00' }],
+                defaults: { timezone: 'Europe/Istanbul', currency: 'TRY' },
+                suggestedCountry: null,
+            });
+        }
         if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
         if (String(url) === locationsUrl()) return createResponse as Response;
         return jsonResponse(404, { message: 'Not Found.' });
@@ -58,6 +67,7 @@ const CREATED_LOCATION = {
     brand_id: 3,
     display_name: 'Kadıköy Şube',
     country_code: 'TR',
+    timezone: 'Europe/Istanbul',
     city: 'İstanbul',
     address_line1: 'Moda Cd. No:12',
     address_line2: null,
@@ -147,8 +157,13 @@ export const Success: Story = {
             canvasElement.querySelector<HTMLInputElement>('#location-display-name')!,
             CREATED_LOCATION.display_name,
         );
-        await userEvent.type(
-            canvasElement.querySelector<HTMLInputElement>('#location-country-code')!,
+        /*
+            Ülke artık yazılmaz, SEÇİLİR (docs/62). Seçenek sunucudan geldiği
+            için önce beklenir.
+        */
+        await canvas.findByRole('option', { name: 'Türkiye' });
+        await userEvent.selectOptions(
+            canvasElement.querySelector<HTMLSelectElement>('#location-country-code')!,
             CREATED_LOCATION.country_code,
         );
         await userEvent.type(

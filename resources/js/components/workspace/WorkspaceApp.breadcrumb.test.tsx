@@ -66,6 +66,7 @@ function makeLocation(overrides: Partial<Record<string, unknown>> = {}) {
         brand_id: 811,
         display_name: 'Kadıköy',
         country_code: 'TR',
+        timezone: 'Europe/Istanbul',
         city: 'İstanbul',
         address_line1: 'Bahariye Cd. 1',
         address_line2: null,

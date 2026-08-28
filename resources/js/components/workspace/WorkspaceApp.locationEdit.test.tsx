@@ -61,6 +61,7 @@ function makeLocationA() {
         brand_id: 501,
         display_name: 'Kadıköy Şube',
         country_code: 'TR',
+        timezone: 'Europe/Istanbul',
         city: 'İstanbul',
         address_line1: 'Moda Cd. 12',
         address_line2: null,
@@ -75,6 +76,7 @@ function makeLocationB() {
         brand_id: 501,
         display_name: 'Beşiktaş Şube',
         country_code: 'TR',
+        timezone: 'Europe/Istanbul',
         city: 'İstanbul',
         address_line1: 'Barbaros Blv. 30',
         address_line2: 'Kat 2',
@@ -188,7 +190,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         expect(
             (await firstRowScope.findByLabelText('Display name')) as HTMLInputElement,
         ).toHaveValue(locationA.display_name);
-        expect(firstRowScope.getByLabelText('Country code')).toHaveValue(locationA.country_code);
+        expect(firstRowScope.getByLabelText('Country')).toHaveValue(locationA.country_code);
         expect(firstRowScope.getByLabelText('City')).toHaveValue(locationA.city);
         expect(firstRowScope.getByLabelText('Address line 1')).toHaveValue(locationA.address_line1);
         expect(firstRowScope.getByLabelText('Address line 2 (optional)')).toHaveValue('');
@@ -367,6 +369,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         expect(JSON.parse(String(putRequestInit.body))).toEqual({
             display_name: 'Kadıköy Şube Güncel',
             country_code: 'TR',
+            timezone: 'Europe/Istanbul',
             city: 'İstanbul',
             address_line1: 'Moda Cd. 14',
             address_line2: 'Zemin kat',
