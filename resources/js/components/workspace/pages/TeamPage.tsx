@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Button, Label, TextInput } from 'flowbite-react';
+import { Button, HelperText, Label, TextInput } from 'flowbite-react';
+import { Select } from '../../catalog/forms/micro/Select';
 import { t } from '../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
@@ -31,8 +32,16 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * rows. Only an Editor invitation may be created from this UI; ownership
  * transfer is a separate flow.
  */
+type InvitableRole = 'editor' | 'manager';
+
 export function TeamPage({ workspaceId }: TeamPageProps) {
     const emailId = useId();
+    const roleId = useId();
+    /*
+        Davet edilebilir roller. `owner` YOK: sahiplik davetle verilmez,
+        devredilir (`docs/70`).
+    */
+    const [role, setRole] = useState<InvitableRole>('editor');
     const [email, setEmail] = useState('');
     const [membersStatus, setMembersStatus] = useState<TeamMemberListStatus>('loading');
     const [members, setMembers] = useState<TeamMember[]>([]);
@@ -347,7 +356,7 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
 
             const requestInit = buildAuthRequestInit({
                 method: 'POST',
-                body: JSON.stringify({ email, role: 'editor' }),
+                body: JSON.stringify({ email, role }),
             });
             const headers = new Headers(requestInit.headers);
             headers.set('Content-Type', 'application/json');
@@ -422,6 +431,49 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                                 setSubmitSuccess(false);
                             }}
                         />
+                    </div>
+
+                    {/*
+                        ROL SEÇİMİ — `docs/70`.
+
+                        Davet önceden her zaman `editor` gönderiyordu ve o rol
+                        hiçbir şeyi düzenleyemiyordu. Sahibin, faturaya
+                        dokunamayan ama günlük operasyonu yürütebilen birini
+                        davet etmesinin yolu yoktu.
+
+                        `Owner` listede DEĞİL: sahiplik davetle verilmez,
+                        devredilir — ayrı bir akışı ve ayrı bir sonucu vardır.
+                    */}
+                    <div>
+                        <div className="mb-2 block">
+                            <Label htmlFor={roleId}>{t('workspace.team.invite.role.label')}</Label>
+                        </div>
+                        <Select
+                            id={roleId}
+                            name="invite-role"
+                            value={role}
+                            onChange={(event) => {
+                                setRole(event.target.value as InvitableRole);
+                                setSubmitError(false);
+                                setSubmitSuccess(false);
+                            }}
+                        >
+                            <option value="editor">{t('workspace.team.invite.role.editor')}</option>
+                            <option value="manager">
+                                {t('workspace.team.invite.role.manager')}
+                            </option>
+                        </Select>
+                        {/*
+                            Rolün NE YAPABİLDİĞİ alanın altında yazar. "Editor"
+                            kelimesi tek başına yayınlayıp yayınlayamayacağını
+                            söylemez ve sahibi yanlış kişiye yanlış yetkiyi
+                            verebilir.
+                        */}
+                        <HelperText color="gray" className="mt-1">
+                            {role === 'manager'
+                                ? t('workspace.team.invite.role.manager.help')
+                                : t('workspace.team.invite.role.editor.help')}
+                        </HelperText>
                     </div>
 
                     <Button

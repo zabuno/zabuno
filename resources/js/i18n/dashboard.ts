@@ -7,6 +7,11 @@ const en = {
     'dashboard.empty': 'No menu has been created for this location yet.',
     'dashboard.empty.openMenu': 'Open Menu',
     'dashboard.setup.region': 'Dashboard Setup',
+    // Adım durumunun METİN karşılığı: işaret görsel, bu ekran okuyucu için
+    // (docs/70).
+    'dashboard.setup.step.done': 'Done',
+    'dashboard.setup.step.next': 'Next step',
+    'dashboard.setup.step.todo': 'Not done yet',
     'dashboard.setup.heading': 'Setup',
     'dashboard.setup.brand': 'Brand',
     'dashboard.setup.location': 'Location',

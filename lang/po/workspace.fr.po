@@ -1936,6 +1936,22 @@ msgstr ""
 msgid "workspace.team.invite.role.editor"
 msgstr ""
 
+#: workspace:workspace.team.invite.role.editor.help
+msgid "workspace.team.invite.role.editor.help"
+msgstr ""
+
+#: workspace:workspace.team.invite.role.label
+msgid "workspace.team.invite.role.label"
+msgstr ""
+
+#: workspace:workspace.team.invite.role.manager
+msgid "workspace.team.invite.role.manager"
+msgstr ""
+
+#: workspace:workspace.team.invite.role.manager.help
+msgid "workspace.team.invite.role.manager.help"
+msgstr ""
+
 #: workspace:workspace.team.invite.role.owner
 msgid "workspace.team.invite.role.owner"
 msgstr ""

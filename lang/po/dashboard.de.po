@@ -79,3 +79,15 @@ msgstr ""
 #: dashboard:dashboard.setup.statusUnavailable
 msgid "dashboard.setup.statusUnavailable"
 msgstr ""
+
+#: dashboard:dashboard.setup.step.done
+msgid "dashboard.setup.step.done"
+msgstr ""
+
+#: dashboard:dashboard.setup.step.next
+msgid "dashboard.setup.step.next"
+msgstr ""
+
+#: dashboard:dashboard.setup.step.todo
+msgid "dashboard.setup.step.todo"
+msgstr ""

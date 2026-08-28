@@ -6,9 +6,11 @@ namespace App\Http\Requests\Team;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\Tenancy\MembershipRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\Rule;
 
 final class StoreTeamInvitationRequest extends FormRequest
 {
@@ -38,7 +40,18 @@ final class StoreTeamInvitationRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email', 'max:255'],
-            'role' => ['required', 'string', 'in:editor'],
+            /*
+                Davet edilebilir roller TEK YERDEN gelir (`docs/70`).
+
+                Elle yazılmış bir liste, yeni bir rol eklendiği gün burada
+                unutulur ve rol ürünün yarısında var yarısında yok olurdu.
+                `Owner` listede değildir: sahiplik davetle verilmez,
+                devredilir.
+            */
+            'role' => ['required', 'string', Rule::in(array_map(
+                static fn (MembershipRole $role): string => $role->value,
+                MembershipRole::invitable(),
+            ))],
         ];
     }
 }

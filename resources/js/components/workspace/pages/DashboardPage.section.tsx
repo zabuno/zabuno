@@ -12,6 +12,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             brand={ctx.brand}
             location={ctx.location}
             workspaceId={ctx.workspaceId}
+            onNavigateToSection={ctx.onNavigateToSection}
         />
     );
 }

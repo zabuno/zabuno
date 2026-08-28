@@ -86,12 +86,12 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 
 | # | Madde | Durum |
 | --- | --- | --- |
-| E1 | Home: onboarding görev listesi + günlük operasyon | 🔶 |
+| E1 | Home: onboarding görev listesi | ✅ tamamlanma durumu, sıradaki adım ve gerçek gezinti (`docs/70`) |
 | E2 | Menus: liste + detay sekmeleri (Overview/Content/Design/Languages/Publish/QR/Activity) | ⬜ tek düzey |
 | E3 | Publication: checkbox yerine otomatik preflight | 🔶 `isDraftReady` otomatik; ayrıntılı liste eksik |
 | E4 | Analytics: ayrı boş durumlar | ✅ dört boşluk ayrıldı, her birinin çıkış yolu farklı (`docs/66`) |
-| E5 | Team: rol + lokasyon kapsamı seçen davet diyaloğu | ⬜ rol sabit `editor` |
-| E6 | Team: üye tablosu (rol/kapsam/durum/son etkinlik) | 🔶 |
+| E5 | Team: rol seçen davet | ✅ Editor/Manager, sınırı yazılı; lokasyon kapsamı MVP dışı (`docs/70` §3) |
+| E6 | Team: üye tablosu | 🔶 rol görünür; kapsam ve son etkinlik yok |
 | E7 | Billing: yalnız tenant yüzeyi | ✅ ledger/manuel ödeme ayrıldı |
 | E8 | Launch readiness tenant kabuğundan çıktı | ✅ |
 | E9 | Media: grid/list, filtre, upload drawer | ⬜ |
@@ -225,6 +225,13 @@ Her tur hangi maddeleri kapattığını buraya yazar.
   (`CRIT-JOURNEY-ANALYTICS-01`). Kaydedici devre dışı bırakılarak kırıldığı
   doğrulandı.
 - Definition of Done'ın 19 maddesi kanıtlarıyla `docs/69`'da.
+- **Roller düzeltildi**: davet edilen "editör" hiçbir şeyi düzenleyemiyordu;
+  planın üç rolü (Owner/Manager/Editor) gerçek izin listeleriyle tanımlandı ve
+  sekiz sınır testle donduruldu. Değişiklikten sonra 1011 testin tamamı
+  geçmişti — yani hiçbiri bu kusuru tutmuyordu.
+- **İlk kullanım ekranındaki beş ölü bağlantı** (`#brand`, `#locations`…)
+  gerçek gezintiye çevrildi ve durum listesi görev listesine dönüştü.
+- Belge: `docs/70`.
 
 ## Altı tur bitti
 
