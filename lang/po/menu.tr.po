@@ -160,9 +160,45 @@ msgstr ""
 msgid "menu.item.delete.label"
 msgstr ""
 
+#: menu:menu.item.description.help
+msgid "menu.item.description.help"
+msgstr ""
+
+#: menu:menu.item.description.label
+msgid "menu.item.description.label"
+msgstr ""
+
+#: menu:menu.item.image.empty
+msgid "menu.item.image.empty"
+msgstr ""
+
+#: menu:menu.item.image.label
+msgid "menu.item.image.label"
+msgstr ""
+
+#: menu:menu.item.image.none
+msgid "menu.item.image.none"
+msgstr ""
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr "{name} sırası"
+
+#: menu:menu.item.presentation.edit.button
+msgid "menu.item.presentation.edit.button"
+msgstr ""
+
+#: menu:menu.item.presentation.edit.short
+msgid "menu.item.presentation.edit.short"
+msgstr ""
+
+#: menu:menu.item.presentation.error.image
+msgid "menu.item.presentation.error.image"
+msgstr ""
+
+#: menu:menu.item.presentation.submit
+msgid "menu.item.presentation.submit"
+msgstr ""
 
 #: menu:menu.item.price.edit.button
 msgid "menu.item.price.edit.button"

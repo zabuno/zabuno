@@ -15,6 +15,15 @@ export const MEDIA_ASSET_STATUSES: MediaAssetStatus[] = [
 
 type MediaAssetStatusBadgeProps = {
     status: string;
+    /**
+     * Durumun İNSANCA sebebi (`docs/76`). Rozet DURUMU söyler; "Scanning"
+     * rozetiyle sonsuza kadar bekleyen bir dosyanın karşısında sahip ne
+     * olduğunu bilemez.
+     *
+     * Sebep rozetin KENDİ canlı bölgesinin içindedir: satır başına ikinci
+     * bir canlı bölge açmak, ekran okuyucuda aynı şeyi iki kez okutur.
+     */
+    reason?: string | null;
 };
 
 const STATUS_COPY_KEY: Record<MediaAssetStatus, WorkspaceTranslationKey> = {
@@ -47,15 +56,16 @@ function isKnownStatus(status: string): status is MediaAssetStatus {
  * only reinforce it. Accepts any string so unrecognized runtime statuses
  * still render a safe, non-empty fallback (MEDIA-UI-STATUS-01).
  */
-export function MediaAssetStatusBadge({ status }: MediaAssetStatusBadgeProps) {
+export function MediaAssetStatusBadge({ status, reason }: MediaAssetStatusBadgeProps) {
     const label = isKnownStatus(status)
         ? t(STATUS_COPY_KEY[status])
         : t('workspace.media.library.asset.status.unknown');
     const toneClass = isKnownStatus(status) ? STATUS_TONE_CLASS[status] : STATUS_TONE_CLASS.unknown;
 
     return (
-        <span role="status" className={`text-body font-medium ${toneClass}`}>
-            {label}
+        <span role="status" className="flex flex-col gap-0.5">
+            <span className={`text-body font-medium ${toneClass}`}>{label}</span>
+            {reason ? <span className="text-meta text-fg-muted">{reason}</span> : null}
         </span>
     );
 }

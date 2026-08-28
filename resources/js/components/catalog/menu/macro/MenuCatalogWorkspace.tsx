@@ -1,4 +1,6 @@
 import { TextInput } from '../../forms/micro/TextInput';
+import { Textarea } from '../../forms/micro/Textarea';
+import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
 import { useEffect, useState, type FormEvent } from 'react';
 import { RowActions } from '../micro/RowActions';
@@ -37,6 +39,16 @@ type MenuItemRow = {
     position: number;
     allergens: string[];
     isVisible: boolean;
+    description?: string | null;
+    imageMediaAssetId?: number | null;
+};
+
+/** Panelde seçilebilecek, İŞLENMESİ BİTMİŞ bir görsel. */
+type ReadyMediaRow = {
+    id: number;
+    altText: string;
+    slot: string;
+    status: string;
 };
 
 type CategoryRow = {
@@ -94,6 +106,14 @@ function visibilityUrl(workspaceId: number, menuItemId: number): string {
 */
 function categoryUrl(workspaceId: number, categoryId: number): string {
     return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}`;
+}
+
+function menuItemImageUrl(workspaceId: number, menuItemId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/image`;
+}
+
+function mediaUrl(workspaceId: number): string {
+    return `/api/workspaces/${workspaceId}/media`;
 }
 
 function menuItemUrl(workspaceId: number, menuItemId: number): string {
@@ -274,6 +294,19 @@ export function MenuCatalogWorkspace({
     const [priceEditSubmitError, setPriceEditSubmitError] = useState<string | null>(null);
     const [savingPriceEdit, setSavingPriceEdit] = useState(false);
 
+    /*
+        SUNUM düzenleyicisi: açıklama ve fotoğraf bir arada.
+
+        İkisi ayrı düğme olsaydı sahip aynı satır için iki kez form açardı;
+        oysa yaptığı tek bir iş: "bu ürünü misafire nasıl göstereceğim".
+    */
+    const [presentationItemId, setPresentationItemId] = useState<number | null>(null);
+    const [descriptionInput, setDescriptionInput] = useState('');
+    const [imageChoice, setImageChoice] = useState('');
+    const [presentationError, setPresentationError] = useState<string | null>(null);
+    const [savingPresentation, setSavingPresentation] = useState(false);
+    const [readyMedia, setReadyMedia] = useState<ReadyMediaRow[]>([]);
+
     const [visibilityPending, setVisibilityPending] = useState<Record<number, boolean>>({});
     const [visibilityErrors, setVisibilityErrors] = useState<Record<number, string | null>>({});
 
@@ -407,6 +440,121 @@ export function MenuCatalogWorkspace({
         setAllergenEditItemId(item.id);
         setAllergensInput(item.allergens.join(', '));
         setAllergensSubmitError(null);
+    }
+
+    /**
+     * Sunum düzenleyicisini açar/kapatır ve o anda hazır olan görselleri
+     * çeker.
+     *
+     * Liste form AÇILINCA çekilir, sayfa yüklenince değil: menü ekranını
+     * açan herkesin medya listesini indirmesi için sebep yok ve sahip
+     * arada yeni bir fotoğraf yüklemiş olabilir.
+     */
+    async function handleEditPresentation(item: MenuItemRow) {
+        if (presentationItemId === item.id) {
+            setPresentationItemId(null);
+
+            return;
+        }
+
+        setPresentationItemId(item.id);
+        setDescriptionInput(item.description ?? '');
+        setImageChoice(
+            item.imageMediaAssetId === null || item.imageMediaAssetId === undefined
+                ? ''
+                : String(item.imageMediaAssetId),
+        );
+        setPresentationError(null);
+
+        try {
+            const response = await fetch(mediaUrl(workspaceId), buildAuthRequestInit());
+
+            if (!response.ok) {
+                return;
+            }
+
+            const body = (await response.json()) as { data?: ReadyMediaRow[] };
+
+            // Yalnız İŞLENMESİ BİTMİŞ ve bu slota ait görseller seçilebilir:
+            // hazır olmayan bir görseli seçtirmek, menüye kırık bir kutu
+            // koymaya davet etmektir.
+            setReadyMedia(
+                (body.data ?? []).filter(
+                    (row) => row.status === 'ready' && row.slot === 'itemImage',
+                ),
+            );
+        } catch {
+            setReadyMedia([]);
+        }
+    }
+
+    async function handleSavePresentation(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        if (presentationItemId === null || tree === null) return;
+
+        const item = tree.categories
+            .flatMap((category) => category.menuItems)
+            .find((row) => row.id === presentationItemId);
+
+        if (!item) return;
+
+        setPresentationError(null);
+        setSavingPresentation(true);
+
+        try {
+            const description = descriptionInput.trim();
+
+            const detailsResponse = await postJson(
+                menuItemUrl(workspaceId, presentationItemId),
+                {
+                    productName: item.productName ?? '',
+                    description: description === '' ? null : description,
+                },
+                'PUT',
+            );
+
+            if (!detailsResponse.ok) {
+                setPresentationError(await parseErrorMessage(detailsResponse, t('menu.ops.error')));
+
+                return;
+            }
+
+            const imageResponse = await postJson(
+                menuItemImageUrl(workspaceId, presentationItemId),
+                { mediaAssetId: imageChoice === '' ? null : Number(imageChoice) },
+                'PUT',
+            );
+
+            if (!imageResponse.ok) {
+                // Açıklama kaydedildi, fotoğraf kaydedilemedi. Bunu tek bir
+                // "kaydedilemedi" ile anlatmak yalan olurdu; sahip neyin
+                // olduğunu ve neyin olmadığını bilmeli.
+                setPresentationError(
+                    await parseErrorMessage(imageResponse, t('menu.item.presentation.error.image')),
+                );
+
+                const partial = await fetch(menuUrl(workspaceId, locationId));
+
+                if (partial.ok) {
+                    setTree((await partial.json()) as MenuTree);
+                }
+
+                return;
+            }
+
+            const refreshed = await fetch(menuUrl(workspaceId, locationId));
+
+            if (refreshed.ok) {
+                setTree((await refreshed.json()) as MenuTree);
+            }
+
+            setPresentationItemId(null);
+        } catch {
+            setPresentationError(t('menu.ops.error'));
+        } finally {
+            setSavingPresentation(false);
+        }
     }
 
     function handleEditPrice(item: MenuItemRow) {
@@ -1161,6 +1309,19 @@ export function MenuCatalogWorkspace({
                                                 >
                                                     {t('menu.item.price.edit.short')}
                                                 </button>
+                                                <button
+                                                    type="button"
+                                                    className={inlineActionClass}
+                                                    aria-label={t(
+                                                        'menu.item.presentation.edit.button',
+                                                        { name: item.productName ?? '' },
+                                                    )}
+                                                    onClick={() =>
+                                                        void handleEditPresentation(item)
+                                                    }
+                                                >
+                                                    {t('menu.item.presentation.edit.short')}
+                                                </button>
                                             </div>
 
                                             {/*
@@ -1191,6 +1352,76 @@ export function MenuCatalogWorkspace({
                                                 <FieldError
                                                     message={visibilityErrors[item.id] as string}
                                                 />
+                                            ) : null}
+                                            {presentationItemId === item.id ? (
+                                                <form
+                                                    className={sectionClass}
+                                                    onSubmit={handleSavePresentation}
+                                                    noValidate
+                                                >
+                                                    <label
+                                                        className={labelClass}
+                                                        htmlFor={`item-description-${item.id}`}
+                                                    >
+                                                        {t('menu.item.description.label')}
+                                                    </label>
+                                                    <Textarea
+                                                        id={`item-description-${item.id}`}
+                                                        name={`item-description-${item.id}`}
+                                                        rows={3}
+                                                        maxLength={500}
+                                                        value={descriptionInput}
+                                                        onChange={(event) =>
+                                                            setDescriptionInput(event.target.value)
+                                                        }
+                                                    />
+                                                    <p className="text-caption text-fg-secondary">
+                                                        {t('menu.item.description.help')}
+                                                    </p>
+
+                                                    <label
+                                                        className={labelClass}
+                                                        htmlFor={`item-image-${item.id}`}
+                                                    >
+                                                        {t('menu.item.image.label')}
+                                                    </label>
+                                                    <Select
+                                                        id={`item-image-${item.id}`}
+                                                        name={`item-image-${item.id}`}
+                                                        value={imageChoice}
+                                                        onChange={(event) =>
+                                                            setImageChoice(event.target.value)
+                                                        }
+                                                    >
+                                                        <option value="">
+                                                            {t('menu.item.image.none')}
+                                                        </option>
+                                                        {readyMedia.map((media) => (
+                                                            <option
+                                                                key={media.id}
+                                                                value={String(media.id)}
+                                                            >
+                                                                {media.altText}
+                                                            </option>
+                                                        ))}
+                                                    </Select>
+                                                    {readyMedia.length === 0 ? (
+                                                        <p className="text-caption text-fg-secondary">
+                                                            {t('menu.item.image.empty')}
+                                                        </p>
+                                                    ) : null}
+
+                                                    {presentationError ? (
+                                                        <FieldError message={presentationError} />
+                                                    ) : null}
+                                                    <button
+                                                        type="submit"
+                                                        className={buttonClass}
+                                                        disabled={savingPresentation}
+                                                    >
+                                                        {t('menu.item.presentation.submit')}
+                                                    </button>
+                                                </form>
                                             ) : null}
                                             {allergenEditItemId === item.id ? (
                                                 <form

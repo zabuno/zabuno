@@ -94,7 +94,15 @@ export function MediaLibraryRegion({
                                     anahtarıyla listeleniyordu.
                                 */}
                                 <span className="text-body font-medium text-fg">{assetName}</span>
-                                <MediaAssetStatusBadge status={asset.status} />
+                                {/*
+                                    Sebep rozetin içindedir: satır başına ikinci
+                                    bir canlı bölge, ekran okuyucuda aynı şeyi
+                                    iki kez okutur (`docs/76`).
+                                */}
+                                <MediaAssetStatusBadge
+                                    status={asset.status}
+                                    reason={asset.statusReason}
+                                />
                                 <Button
                                     color="light"
                                     type="button"

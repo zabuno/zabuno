@@ -76,6 +76,23 @@ final class EloquentMenuMedia implements MenuMediaPort
         return true;
     }
 
+    public function attachedAssetIds(int $workspaceId, array $menuItemIds): array
+    {
+        if ($menuItemIds === []) {
+            return [];
+        }
+
+        return DB::table('media_usages')
+            ->where('workspace_id', $workspaceId)
+            ->where('entity_type', 'menu_item')
+            ->whereIn('entity_id', array_values(array_unique($menuItemIds)))
+            ->whereNull('publication_id')
+            ->orderBy('id')
+            ->pluck('media_asset_id', 'entity_id')
+            ->map(static fn ($id): int => (int) $id)
+            ->all();
+    }
+
     public function snapshotImage(int $workspaceId, string $entityType, int $entityId): ?array
     {
         $usage = DB::table('media_usages')

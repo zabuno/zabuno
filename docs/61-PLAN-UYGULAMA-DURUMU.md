@@ -240,7 +240,7 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | P0-01 | Menü CRUD: silme, ad düzeltme, sıralama | ✅ `docs/73` |
 | P0-02 | Varsayılan gizli ürün | ✅ `docs/74` |
 | P0-03 | Misafir menüsünde restoran kimliği | ✅ `docs/75` + logo `docs/77` |
-| P0-04 | Açıklama + görsel yayın snapshot'ında | ✅ `docs/77` (panel arayüzü → FF-20) |
+| P0-04 | Açıklama + görsel yayın snapshot'ında | ✅ `docs/77` + panel `docs/78` |
 | P0-05 | Foto/PDF/CSV aktarma | ⬜ |
 | P0-06 | Gerçek e-posta | ⛔ sağlayıcı hesabı sahibinde |
 | P0-07 | Canlı dağıtım kanıtı | ⛔ sunucu sırları sahibinde |

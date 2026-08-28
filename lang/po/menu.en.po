@@ -160,9 +160,45 @@ msgstr "Remove “{name}” from this menu? Already published versions keep it."
 msgid "menu.item.delete.label"
 msgstr "Remove {name}"
 
+#: menu:menu.item.description.help
+msgid "menu.item.description.help"
+msgstr "A short line the guest reads under the name. Up to 500 characters."
+
+#: menu:menu.item.description.label
+msgid "menu.item.description.label"
+msgstr "Description"
+
+#: menu:menu.item.image.empty
+msgid "menu.item.image.empty"
+msgstr "No processed photo is available yet. Upload one on the Media page first."
+
+#: menu:menu.item.image.label
+msgid "menu.item.image.label"
+msgstr "Photo"
+
+#: menu:menu.item.image.none
+msgid "menu.item.image.none"
+msgstr "No photo"
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr "Order for {name}"
+
+#: menu:menu.item.presentation.edit.button
+msgid "menu.item.presentation.edit.button"
+msgstr "Edit photo and description for {name}"
+
+#: menu:menu.item.presentation.edit.short
+msgid "menu.item.presentation.edit.short"
+msgstr "Photo & text"
+
+#: menu:menu.item.presentation.error.image
+msgid "menu.item.presentation.error.image"
+msgstr "The description was saved, but the photo was not attached."
+
+#: menu:menu.item.presentation.submit
+msgid "menu.item.presentation.submit"
+msgstr "Save presentation"
 
 #: menu:menu.item.price.edit.button
 msgid "menu.item.price.edit.button"

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
@@ -18,6 +19,7 @@ final class ShowMenuController extends Controller
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AuthorizationPort $authorization,
+        private readonly MenuMediaPort $menuMedia,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $location): JsonResponse
@@ -44,6 +46,18 @@ final class ShowMenuController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        // Bağlı görseller TEK sorguda okunur: satır başına sorgu, kırk
+        // ürünlük bir menüde kırk gidiş dönüş demekti (`docs/78`).
+        $menuItemIds = [];
+
+        foreach ($tree->categories as $category) {
+            foreach ($category['items'] as $item) {
+                $menuItemIds[] = (int) $item['id'];
+            }
+        }
+
+        $attached = $this->menuMedia->attachedAssetIds($workspace, $menuItemIds);
+
         return response()->json([
             'id' => $tree->id,
             'workspaceId' => $tree->workspaceId,
@@ -65,6 +79,8 @@ final class ShowMenuController extends Controller
                     'position' => $item['position'],
                     'isVisible' => $item['isVisible'],
                     'allergens' => $item['allergens'],
+                    'description' => $item['description'] ?? null,
+                    'imageMediaAssetId' => $attached[$item['id']] ?? null,
                 ], $category['items']),
             ], $tree->categories),
         ]);
