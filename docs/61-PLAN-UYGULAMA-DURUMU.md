@@ -47,11 +47,11 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 
 | # | Madde | Durum |
 | --- | --- | --- |
-| B1 | Tek omnibox, açık modlar (Search / Go to / Create / Command / Ask) | ⬜ |
-| B2 | Varsayılan mod DETERMİNİSTİK, AI açıkça seçilir | ⬜ |
-| B3 | Komut merkezinde görünür kapsam (workspace/lokasyon/menü/seçim) | ⬜ |
-| B4 | Riskli komutlar doğrudan çalışmaz, review yüzeyine gider | ⬜ |
-| B5 | `Cmd/Ctrl+K` | ⬜ |
+| B1 | Tek omnibox, açık modlar | 🔶 Search/Go to/Create var; Command ve Ask sağlayıcı ve inceleme yüzeyi olmadığı için yok (`docs/65` §3) |
+| B2 | Varsayılan mod DETERMİNİSTİK | ✅ AI modu hiç yok; yazılan metin isteme dönüşmez |
+| B3 | Görünür kapsam | ✅ çalışma alanı + şube; arama kapsamı grup başlığında yazılı |
+| B4 | Riskli komutlar review yüzeyine gider | ⛔ komut modu yok; yarısı yapılmış bir mod en tehlikeli işi en hızlı yola koyardı |
+| B5 | `Cmd/Ctrl+K` | ✅ |
 
 ## C. Formlar ve alan sahipliği
 
@@ -117,7 +117,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | # | Madde | Durum |
 | --- | --- | --- |
 | G1 | Boş AI assistant kartları kaldırıldı | ✅ |
-| G2 | Sağlayıcı yokken AI girişi gösterilmez | ✅ |
+| G2 | Sağlayıcı yokken AI girişi gösterilmez | ✅ kabuk seviyesindeki AI merkezi de kaldırıldı (`docs/65`) — envanterin ilk hâli bunu yanlışlıkla ✅ sayıyordu |
 | G3 | Deterministik yol AI kapalıyken çalışır | ✅ |
 | G4 | AI önerisi: kapsam + etkilenen kayıt + diff + onay + undo + audit | ⬜ |
 | G5 | Bağlamsal AI aksiyonları (ürün açıklaması, çeviri, alt metin) | ⬜ |
@@ -181,6 +181,18 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 - `ThemeRoot`'un bileşen olmayan dışa aktarımları ayrı modüle taşındı.
 - Belge: `docs/64`.
 
-### Tur 4 — sırada
-- **B1–B5** omnibox: Search / Go to / Create / Command / Ask Zabuno, açık
-  modlarla ve görünür kapsamla.
+### Tur 4 — tamamlandı
+- **B1–B3, B5** omnibox eklendi: Go to / Create / kayıt araması, görünür
+  kapsam, `Cmd/Ctrl+K`, hiç ağ isteği yapmadan.
+- Bağlı olmayan AI komut merkezi **kaldırıldı** — devre dışı bir komut kutusu
+  ve devre dışı bir onay düğmesiyle birlikte. Envanterin G2 satırı bunu
+  yanlışlıkla tamamlanmış sayıyordu; düzeltildi.
+- **B4** komut modu bilerek yapılmadı: inceleme yüzeyi olmadan riskli komutlar
+  en hızlı yola girerdi.
+- Bir iddia adı değil kuralı ölçecek şekilde düzeltildi.
+- Belge: `docs/65`.
+
+### Tur 5 — sırada
+- **D2/D3** sayfa şablonu kataloğu ve kalan durumlar (`partial`, `success`,
+  `degraded`).
+- **E4** analitik boş durumlarının ayrıştırılması.

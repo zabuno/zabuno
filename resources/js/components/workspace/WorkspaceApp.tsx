@@ -15,11 +15,10 @@ import { AccountMenu } from './chrome/AccountMenu';
 import { GlobalCreateMenu, type GlobalCreateTarget } from './chrome/GlobalCreateMenu';
 import { AppErrorBoundary } from '../system/AppErrorBoundary';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
-import { AiCommandTrigger } from '../catalog/navigation/compound/AiCommandTrigger';
-import { AiCommandCenter } from './ai/AiCommandCenter';
+import { OmniboxTrigger } from '../catalog/navigation/compound/OmniboxTrigger';
+import { Omnibox, type OmniboxGroup } from './omnibox/Omnibox';
 import { WorkspaceContextControls } from './shell/WorkspaceContextControls';
 import { WorkspaceBreadcrumbs } from './shell/WorkspaceBreadcrumbs';
-import type { AiAssistQuickAction } from '../../lib/aiAssistState';
 import type { DashboardMenuTree } from './pages/DashboardPage.section';
 import type { BrandProfile as SectionBrandProfile } from './BrandEditForm';
 import type { LocationProfile as SectionLocationProfile } from './LocationEditForm';
@@ -157,7 +156,7 @@ export function WorkspaceApp({
     const [catalogLocationId, setCatalogLocationId] = useState<number | null>(null);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [aiCommandOpen, setAiCommandOpen] = useState(false);
+    const [omniboxOpen, setOmniboxOpen] = useState(false);
     const [activeSection, setActiveSection] = useState<WorkspaceSection>(() =>
         resolveSectionFromPath(window.location.pathname),
     );
@@ -726,10 +725,32 @@ export function WorkspaceApp({
         setPhase('choose');
     }
 
-    function handleAiQuickAction(key: AiAssistQuickAction['key']) {
-        goToSection(key);
-        setAiCommandOpen(false);
-    }
+    /*
+        `Cmd/Ctrl + K` — `docs/50` §11.
+
+        Dinleyici pencerede durur, çünkü kısayolun anlamı "her yerden": bir
+        alana odaklanmışken de çalışmalıdır. `preventDefault` şart — tarayıcı
+        Chrome'da bu tuşu adres çubuğuna bağlar ve engellenmezse kullanıcı
+        omnibox yerine adres çubuğunda yazmaya başlar.
+    */
+    useEffect(() => {
+        function handleShortcut(event: KeyboardEvent): void {
+            if (event.key !== 'k' && event.key !== 'K') {
+                return;
+            }
+
+            if (!event.metaKey && !event.ctrlKey) {
+                return;
+            }
+
+            event.preventDefault();
+            setOmniboxOpen(true);
+        }
+
+        window.addEventListener('keydown', handleShortcut);
+
+        return () => window.removeEventListener('keydown', handleShortcut);
+    }, []);
 
     const liveRegion = (
         <div aria-live="polite" className="sr-only">
@@ -987,12 +1008,73 @@ export function WorkspaceApp({
         },
     ];
 
-    const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
-        (descriptor) => descriptor.aiQuickAction,
-    ).map((descriptor) => ({
-        key: descriptor.key as AiAssistQuickAction['key'],
-        label: t(descriptor.labelKey as Parameters<typeof t>[0]),
-    }));
+    /*
+        Omnibox grupları — `docs/65`.
+
+        Üçü de DETERMİNİSTİK. Kullanıcının yazdığı metin sessizce bir AI
+        istemine dönüşmez; AI grubu yok, çünkü bağlı bir sağlayıcı yok.
+    */
+    const omniboxGroups: OmniboxGroup[] = currentWorkspace
+        ? [
+              {
+                  key: 'goto',
+                  label: t('workspace.omnibox.group.goTo'),
+                  entries: SECTION_DESCRIPTORS.filter(
+                      (descriptor) => descriptor.group !== undefined,
+                  ).map((descriptor) => ({
+                      key: `goto-${descriptor.key}`,
+                      label: t(descriptor.labelKey as Parameters<typeof t>[0]),
+                      onSelect: () => goToSection(descriptor.key),
+                  })),
+              },
+              {
+                  key: 'create',
+                  label: t('workspace.omnibox.group.create'),
+                  entries: createTargets
+                      .filter((target) => target.available)
+                      .map((target) => ({
+                          key: `create-${target.key}`,
+                          label: t(target.labelKey as Parameters<typeof t>[0]),
+                          onSelect: () => goToSection(target.destination),
+                      })),
+              },
+              {
+                  /*
+                      KAYITLAR yalnız YÜKLENMİŞ veriden aranır: şubeler ve
+                      seçili şubenin menü ağacı. Sunucuda bir arama uç noktası
+                      yok; olmayan bir aramayı varmış gibi göstermek, boş
+                      dönen her sorguda kullanıcıya "bu kayıt yok" dedirtirdi.
+                  */
+                  key: 'records',
+                  label: t('workspace.omnibox.group.records'),
+                  entries: [
+                      ...locationProfiles.map((location) => ({
+                          key: `location-${String(location.id)}`,
+                          label: location.display_name,
+                          detail: `${location.city} · ${t('workspace.shell.nav.locations')}`,
+                          onSelect: () => {
+                              setCatalogLocationId(location.id);
+                              goToSection('locations');
+                          },
+                      })),
+                      ...(dashboardMenuTree?.categories ?? []).flatMap((category) => [
+                          {
+                              key: `category-${String(category.id)}`,
+                              label: category.name,
+                              detail: t('workspace.menu.inspector.categories'),
+                              onSelect: () => goToSection('menu'),
+                          },
+                          ...category.menuItems.map((item) => ({
+                              key: `item-${String(item.id)}`,
+                              label: item.productName ?? `#${String(item.productId)}`,
+                              detail: category.name,
+                              onSelect: () => goToSection('menu'),
+                          })),
+                      ]),
+                  ],
+              },
+          ]
+        : [];
 
     return (
         <AdminShell
@@ -1061,9 +1143,9 @@ export function WorkspaceApp({
                         menüyü ekranda iki kez göstermek olurdu.
                     */}
                     {renderPersistentSidebar === undefined ? accountMenu : null}
-                    <AiCommandTrigger
-                        label={t('workspace.aiCommand.trigger.label')}
-                        onClick={() => setAiCommandOpen(true)}
+                    <OmniboxTrigger
+                        label={t('workspace.omnibox.trigger.label')}
+                        onClick={() => setOmniboxOpen(true)}
                     />
                 </div>
             }
@@ -1090,16 +1172,15 @@ export function WorkspaceApp({
             )}
 
             {currentWorkspace && (
-                <AiCommandCenter
-                    open={aiCommandOpen}
-                    onClose={() => setAiCommandOpen(false)}
+                <Omnibox
+                    open={omniboxOpen}
+                    onClose={() => setOmniboxOpen(false)}
                     workspaceName={currentWorkspace.name}
                     locationDisplayName={
                         locationProfiles.find((profile) => profile.id === catalogLocationId)
                             ?.display_name ?? null
                     }
-                    quickActions={aiQuickActions}
-                    onSelectQuickAction={handleAiQuickAction}
+                    groups={omniboxGroups}
                 />
             )}
 

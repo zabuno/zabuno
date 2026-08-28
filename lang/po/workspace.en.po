@@ -12,42 +12,6 @@ msgstr ""
 msgid "workspace.account.menu.label"
 msgstr "Account"
 
-#: workspace:workspace.aiCommand.affectedRecords.empty
-msgid "workspace.aiCommand.affectedRecords.empty"
-msgstr "No records are affected."
-
-#: workspace:workspace.aiCommand.affectedRecords.heading
-msgid "workspace.aiCommand.affectedRecords.heading"
-msgstr "Affected records"
-
-#: workspace:workspace.aiCommand.approve
-msgid "workspace.aiCommand.approve"
-msgstr "Approve"
-
-#: workspace:workspace.aiCommand.commandLabel
-msgid "workspace.aiCommand.commandLabel"
-msgstr "Command"
-
-#: workspace:workspace.aiCommand.recentCommands.empty
-msgid "workspace.aiCommand.recentCommands.empty"
-msgstr "No commands have been run yet."
-
-#: workspace:workspace.aiCommand.recentCommands.heading
-msgid "workspace.aiCommand.recentCommands.heading"
-msgstr "Recent commands"
-
-#: workspace:workspace.aiCommand.status
-msgid "workspace.aiCommand.status"
-msgstr "No AI gateway is connected or available yet."
-
-#: workspace:workspace.aiCommand.title
-msgid "workspace.aiCommand.title"
-msgstr "AI command center"
-
-#: workspace:workspace.aiCommand.trigger.label
-msgid "workspace.aiCommand.trigger.label"
-msgstr "Open AI command center"
-
 #: workspace:workspace.analytics.action.refresh
 msgid "workspace.analytics.action.refresh"
 msgstr "Refresh"
@@ -1243,6 +1207,38 @@ msgstr "Build and edit the categories and items on your live menu catalog for th
 #: workspace:workspace.menu.previewAndPublish
 msgid "workspace.menu.previewAndPublish"
 msgstr "Preview & publish"
+
+#: workspace:workspace.omnibox.empty
+msgid "workspace.omnibox.empty"
+msgstr "Nothing matches that search in this workspace."
+
+#: workspace:workspace.omnibox.group.create
+msgid "workspace.omnibox.group.create"
+msgstr "Create"
+
+#: workspace:workspace.omnibox.group.goTo
+msgid "workspace.omnibox.group.goTo"
+msgstr "Go to"
+
+#: workspace:workspace.omnibox.group.records
+msgid "workspace.omnibox.group.records"
+msgstr "In this workspace"
+
+#: workspace:workspace.omnibox.input.label
+msgid "workspace.omnibox.input.label"
+msgstr "Search"
+
+#: workspace:workspace.omnibox.input.placeholder
+msgid "workspace.omnibox.input.placeholder"
+msgstr "Type to search menus, locations and screens"
+
+#: workspace:workspace.omnibox.title
+msgid "workspace.omnibox.title"
+msgstr "Search and go"
+
+#: workspace:workspace.omnibox.trigger.label
+msgid "workspace.omnibox.trigger.label"
+msgstr "Search, go to, or create"
 
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
