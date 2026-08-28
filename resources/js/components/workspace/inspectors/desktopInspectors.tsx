@@ -1,3 +1,5 @@
+import { BrandInspector } from '../pages/brand/BrandInspector';
+import { LocationInspector } from '../pages/locations/LocationInspector';
 import { MenuInspector } from '../pages/menu/MenuInspector';
 import type { WorkspaceInspectorMap } from './types';
 
@@ -18,12 +20,39 @@ import type { WorkspaceInspectorMap } from './types';
  * dolayısıyla panel kodu mobil pakete hiç girmez.
  */
 export const desktopInspectors: WorkspaceInspectorMap = {
-    menu: (ctx) => (
-        <MenuInspector
-            workspaceId={ctx.workspaceId}
-            menuTree={ctx.dashboardMenuTree}
-            locationName={ctx.location?.display_name ?? null}
-            onNavigateToSection={ctx.onNavigateToSection}
-        />
-    ),
+    brand: {
+        titleKey: 'workspace.brand.inspector.title',
+        render: (ctx) =>
+            ctx.brand === null ? null : (
+                <BrandInspector
+                    brandName={ctx.brand.name}
+                    locations={ctx.locationProfiles}
+                    onNavigateToSection={ctx.onNavigateToSection}
+                />
+            ),
+    },
+    locations: {
+        titleKey: 'workspace.locations.inspector.title',
+        render: (ctx) =>
+            ctx.location === null ? null : (
+                <LocationInspector
+                    location={ctx.location}
+                    brandName={ctx.brand?.name ?? null}
+                    menuTree={ctx.dashboardMenuTree}
+                    onNavigateToSection={ctx.onNavigateToSection}
+                />
+            ),
+    },
+    menu: {
+        titleKey: 'workspace.menu.inspector.title',
+        render: (ctx) =>
+            ctx.dashboardMenuTree === null ? null : (
+                <MenuInspector
+                    workspaceId={ctx.workspaceId}
+                    menuTree={ctx.dashboardMenuTree}
+                    locationName={ctx.location?.display_name ?? null}
+                    onNavigateToSection={ctx.onNavigateToSection}
+                />
+            ),
+    },
 };

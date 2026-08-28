@@ -404,6 +404,26 @@ msgstr "We could not create your brand. Please try again."
 msgid "workspace.brand.heading"
 msgstr "Create your brand"
 
+#: workspace:workspace.brand.inspector.cities
+msgid "workspace.brand.inspector.cities"
+msgstr "Cities"
+
+#: workspace:workspace.brand.inspector.locations
+msgid "workspace.brand.inspector.locations"
+msgstr "Locations"
+
+#: workspace:workspace.brand.inspector.manageLocations
+msgid "workspace.brand.inspector.manageLocations"
+msgstr "Manage locations"
+
+#: workspace:workspace.brand.inspector.name
+msgid "workspace.brand.inspector.name"
+msgstr "Brand name"
+
+#: workspace:workspace.brand.inspector.title
+msgid "workspace.brand.inspector.title"
+msgstr "Where this brand appears"
+
 #: workspace:workspace.brand.intro
 msgid "workspace.brand.intro"
 msgstr "Your customers will see this name. You can add locations and menus in the next steps, and change any of this later."
@@ -787,6 +807,30 @@ msgstr "No locations yet. Add your first location to get started."
 #: workspace:workspace.locations.heading
 msgid "workspace.locations.heading"
 msgstr "Locations"
+
+#: workspace:workspace.locations.inspector.brand
+msgid "workspace.locations.inspector.brand"
+msgstr "Brand"
+
+#: workspace:workspace.locations.inspector.city
+msgid "workspace.locations.inspector.city"
+msgstr "City"
+
+#: workspace:workspace.locations.inspector.menu
+msgid "workspace.locations.inspector.menu"
+msgstr "Menu"
+
+#: workspace:workspace.locations.inspector.menu.summary
+msgid "workspace.locations.inspector.menu.summary"
+msgstr "{categories} categories · {items} items"
+
+#: workspace:workspace.locations.inspector.openMenu
+msgid "workspace.locations.inspector.openMenu"
+msgstr "Open the menu"
+
+#: workspace:workspace.locations.inspector.title
+msgid "workspace.locations.inspector.title"
+msgstr "This location"
 
 #: workspace:workspace.locations.operational.description
 msgid "workspace.locations.operational.description"

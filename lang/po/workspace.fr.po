@@ -404,6 +404,26 @@ msgstr ""
 msgid "workspace.brand.heading"
 msgstr ""
 
+#: workspace:workspace.brand.inspector.cities
+msgid "workspace.brand.inspector.cities"
+msgstr ""
+
+#: workspace:workspace.brand.inspector.locations
+msgid "workspace.brand.inspector.locations"
+msgstr ""
+
+#: workspace:workspace.brand.inspector.manageLocations
+msgid "workspace.brand.inspector.manageLocations"
+msgstr ""
+
+#: workspace:workspace.brand.inspector.name
+msgid "workspace.brand.inspector.name"
+msgstr ""
+
+#: workspace:workspace.brand.inspector.title
+msgid "workspace.brand.inspector.title"
+msgstr ""
+
 #: workspace:workspace.brand.intro
 msgid "workspace.brand.intro"
 msgstr ""
@@ -786,6 +806,30 @@ msgstr ""
 
 #: workspace:workspace.locations.heading
 msgid "workspace.locations.heading"
+msgstr ""
+
+#: workspace:workspace.locations.inspector.brand
+msgid "workspace.locations.inspector.brand"
+msgstr ""
+
+#: workspace:workspace.locations.inspector.city
+msgid "workspace.locations.inspector.city"
+msgstr ""
+
+#: workspace:workspace.locations.inspector.menu
+msgid "workspace.locations.inspector.menu"
+msgstr ""
+
+#: workspace:workspace.locations.inspector.menu.summary
+msgid "workspace.locations.inspector.menu.summary"
+msgstr ""
+
+#: workspace:workspace.locations.inspector.openMenu
+msgid "workspace.locations.inspector.openMenu"
+msgstr ""
+
+#: workspace:workspace.locations.inspector.title
+msgid "workspace.locations.inspector.title"
 msgstr ""
 
 #: workspace:workspace.locations.operational.description

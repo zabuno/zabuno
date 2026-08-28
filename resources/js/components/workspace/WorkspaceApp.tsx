@@ -888,6 +888,22 @@ export function WorkspaceApp({
           }
         : null;
 
+    /*
+        Panel BİR KEZ hesaplanır ve iki yerde kullanılır: içerik ve bölgenin
+        erişilebilir adı. Ayrı ayrı hesaplansaydı, bağlam yokken kabuk yine de
+        adlandırılmış boş bir sütun çizerdi.
+
+        `render` bağlam yoksa `null` döner; kabuk `undefined` görür ve sütunu
+        HİÇ çizmez. Boş bir sütun, olmayan bir bağlamı varmış gibi gösterir
+        (docs/60 §4).
+    */
+    const activeInspectorEntry =
+        sectionContext !== null && !showOnboardingForm ? inspectors?.[activeSection] : undefined;
+    const activeInspector =
+        activeInspectorEntry !== undefined && sectionContext !== null
+            ? activeInspectorEntry.render(sectionContext)
+            : null;
+
     const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
         (descriptor) => descriptor.aiQuickAction,
     ).map((descriptor) => ({
@@ -898,12 +914,12 @@ export function WorkspaceApp({
     return (
         <AdminShell
             brand={{ name: t('workspace.shell.brand') }}
-            inspector={
-                sectionContext !== null && !showOnboardingForm
-                    ? inspectors?.[activeSection]?.(sectionContext)
+            inspector={activeInspector}
+            inspectorLabel={
+                activeInspectorEntry !== undefined
+                    ? t(activeInspectorEntry.titleKey as Parameters<typeof t>[0])
                     : undefined
             }
-            inspectorLabel={t('workspace.menu.inspector.title')}
             persistentSidebar={renderPersistentSidebar?.({
                 navGroups,
                 activeNavKey: currentWorkspace ? activeSection : undefined,

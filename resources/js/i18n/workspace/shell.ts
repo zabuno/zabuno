@@ -53,6 +53,22 @@ export const shell = {
     'workspace.menu.inspector.location': 'Location',
     'workspace.menu.inspector.categories': 'Categories',
     'workspace.menu.inspector.items': 'Items',
+
+    // Marka panelinin cevapladığı soru: bu adı değiştirirsem nereyi
+    // değiştirmiş olurum (docs/60).
+    'workspace.brand.inspector.title': 'Where this brand appears',
+    'workspace.brand.inspector.name': 'Brand name',
+    'workspace.brand.inspector.locations': 'Locations',
+    'workspace.brand.inspector.cities': 'Cities',
+    'workspace.brand.inspector.manageLocations': 'Manage locations',
+
+    // Şube panelinin cevapladığı soru: bu şubenin menüsü var mı.
+    'workspace.locations.inspector.title': 'This location',
+    'workspace.locations.inspector.brand': 'Brand',
+    'workspace.locations.inspector.city': 'City',
+    'workspace.locations.inspector.menu': 'Menu',
+    'workspace.locations.inspector.menu.summary': '{categories} categories · {items} items',
+    'workspace.locations.inspector.openMenu': 'Open the menu',
     'workspace.menu.error.why': 'Your menu is safe — this is only a problem loading it right now.',
     'workspace.menu.error.noRetry': 'Reload the page to try again.',
     // Arıza sınıfları — her biri FARKLI bir çıkış yolu gösterir. Hepsine

@@ -28,10 +28,18 @@ yetenek değildir. Yetenek, yuvanın dolduğu ekranda başlar.
 
 ## 3. Sağ panel nedir
 
-Üzerinde çalışılan nesnenin **ikincil bilgisi**: menüyü düzenlerken sürekli
-sorulan ama orta sütunda yeri olmayan sorular.
+Üzerinde çalışılan nesnenin **ikincil bilgisi**: o ekranda sürekli sorulan ama
+orta sütunda yeri olmayan sorular.
 
-Menü editöründe bunlar:
+Panel bugün üç editörde var. Her biri farklı bir soruyu cevaplar:
+
+| Ekran | Panelin cevapladığı soru |
+| --- | --- |
+| Menü | Bu menü hangi şubenin, yayında mı, ne kadar dolu? |
+| Marka | Bu adı değiştirirsem NEREYİ değiştirmiş olurum? |
+| Şube | Bu şubenin menüsü var mı, hangi markayı taşıyor? |
+
+Menü editöründe alanlar:
 
 | Alan | Kaynak |
 | --- | --- |
@@ -44,6 +52,26 @@ Menü editöründe bunlar:
 Son satır kuralın kendisidir: panelin tek eylemi **yeni bir yol açmaz**, bilinen
 bir yola kısa yol verir. Aksi hâlde panel bir kolaylık değil, gizli bir ön koşul
 olurdu.
+
+### 3.1 Marka paneli
+
+Marka formu markanın kendisini gösterir ama şunu söyleyemez: bu adı ve bu
+logoyu değiştirirsem nereyi değiştirmiş olurum. Panel markanın **kapsamını**
+gösterir — kaç şubede görünüyor ve hangi şehirlerde. Şehirler tekilleştirilir;
+üç şube iki şehir edebilir. Hiç şube yoksa şehir satırı **çizilmez**: boş bir
+satır doldurulmayı bekleyen bir alan gibi görünür, oysa ortada eksik bir alan
+değil henüz açılmamış bir şube vardır.
+
+### 3.2 Şube paneli
+
+Şube formunda adres alanları şunu söylemez: bu şubenin menüsü var mı. Panel
+markayı, şehri ve menü özetini gösterir.
+
+Menü satırının bir koşulu var ve bu koşul paneldeki en önemli karardır:
+**yüklü menü ağacı çalışma alanında SEÇİLİ şubeye aittir.** Panelde başka bir
+şube açıkken o ağacın sayısını göstermek, yanlış şubenin verisini doğru
+etiketle sunmak olurdu — hiç bilgi vermemekten kötüdür. Bu yüzden menü satırı
+ve menüye kısayol yalnız ağaç gerçekten o şubeye aitken çizilir.
 
 ## 4. Uydurulmayanlar
 
@@ -63,8 +91,22 @@ Aynı sebeple `MenuInspector` menü yokken `null` döner ve kabuk `<aside>`
 `WorkspaceApp` bir **panel haritası** alır:
 
 ```ts
-inspectors?: WorkspaceInspectorMap;   // bölüm anahtarı → panel
+type WorkspaceInspector = {
+    titleKey: string;                                  // panel başlığı VE bölge adı
+    render: (ctx) => ReactNode | null;                 // bağlam yoksa null
+};
 ```
+
+İki alan da bilinçli:
+
+- **`titleKey` tek kaynaktır.** Kabuk bölgenin erişilebilir adını buradan
+  üretir, panel aynı metni başlık olarak çizer. Başlığı iki yerde tutmak, panel
+  değişince ekran okuyucunun eski adı okuması demekti — ilk hâlde kabuk her
+  panel için "This menu" diyordu.
+- **Uygunluk kararı haritadadır**, panel bileşeninin içinde değil. Bileşenin
+  içinden `null` dönmek yetmez: kabuk elementi görür, element her zaman
+  doğrudur, ve adlandırılmış ama **boş** bir sütun çizilir. Boş bir sütun
+  olmayan bir bağlamı varmış gibi gösterir.
 
 - Haritada olmayan bölüm panelsizdir; kabuk sütunu çizmez, orta alan genişler.
 - Sayfa ile panel **tek bir** `sectionContext`'ten beslenir; iki ayrı bağlam
@@ -122,7 +164,13 @@ tek dosya değil örüntüdür (`pages/**/*Inspector.tsx`), ve eşleşmeyen bir
 
 ## 6. Kalan hedef
 
-Panel şu an tek bölümde: menü editörü. Sıradaki adım, `docs/50` §21 şablon
-kataloğu ile birlikte diğer nesne-merkezli ekranlara (lokasyon, medya varlığı,
-yayın) aynı sözleşmeyle genişletmektir — her biri yalnız o ekranda gerçekten
-var olan veriyle.
+Panel üç editörde: menü, marka, şube. Genişlemeyen ekranlar bilerek dışarıda:
+
+- **Medya** — varlık/sürüm modeli henüz yok, gösterilecek ikincil veri yok.
+- **Analitik, Ekip, Faturalama, Ayarlar** — bunlar liste ve ayar ekranları;
+  `docs/50` §3.4 paneli editörler için tarif eder.
+- **Yayın** — ekranın ANA içeriği zaten yayın durumudur. Aynı bilgiyi sağda
+  tekrarlamak ikincil bağlam değil, gürültü olurdu.
+
+Sıradaki adım `docs/50` §21 şablon kataloğudur; medya varlık modeli geldiğinde
+panel oraya da aynı sözleşmeyle girer.

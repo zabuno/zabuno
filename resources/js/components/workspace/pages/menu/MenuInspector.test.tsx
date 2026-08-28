@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MenuInspector } from './MenuInspector';
+import { desktopInspectors } from '../../inspectors/desktopInspectors';
 import type { DashboardMenuTree } from '../DashboardPage';
 
 /**
@@ -42,19 +43,22 @@ afterEach(() => {
 });
 
 describe('MenuInspector (docs/60)', () => {
-    it('menü yokken hiç çizilmez', () => {
-        stubFetch(null);
+    /**
+     * Uygunluk kararı HARİTADA verilir, bileşende değil.
+     *
+     * Kabuk, panelin içinden `null` döndüğünü göremez: elementin kendisi her
+     * zaman doğrudur. Karar haritada verilmezse kabuk adlandırılmış ama boş
+     * bir sütun çizer ve olmayan bir bağlamı varmış gibi gösterir.
+     */
+    it('menü yokken harita panel üretmez', () => {
+        const ctx = {
+            workspaceId: 41,
+            dashboardMenuTree: null,
+            location: null,
+            onNavigateToSection: vi.fn(),
+        } as unknown as Parameters<(typeof desktopInspectors)['menu']['render']>[0];
 
-        const { container } = render(
-            <MenuInspector
-                workspaceId={41}
-                menuTree={null}
-                locationName="Sefaköy"
-                onNavigateToSection={vi.fn()}
-            />,
-        );
-
-        expect(container).toBeEmptyDOMElement();
+        expect(desktopInspectors.menu.render(ctx)).toBeNull();
     });
 
     /**

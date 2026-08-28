@@ -9,7 +9,23 @@ import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
  * dosyayı adlandırdığı anda, o dosyanın adı paylaşılan kodda geçer ve ayrımın
  * doğruluğu tek bir `type` kelimesine bağlı kalırdı.
  */
-export type WorkspaceInspectorMap = Record<
-    string,
-    (ctx: WorkspaceSectionRuntimeContext) => ReactNode
->;
+export type WorkspaceInspector = {
+    /**
+     * Panelin başlığı ve `aside` bölgesinin ERİŞİLEBİLİR ADI.
+     *
+     * Tek kaynaktır: kabuk bu anahtardan bölge adını üretir, panel aynı
+     * metni başlık olarak çizer. Başlığı iki yerde tutmak, panel değişince
+     * ekran okuyucunun eski adı okuması demekti.
+     */
+    titleKey: string;
+    /**
+     * Panelin içeriği; GÖSTERİLECEK BAĞLAM YOKSA `null`.
+     *
+     * Uygunluk kararı burada verilir, panel bileşeninin içinde değil: kabuk
+     * `null` görmeden boş bir sütun çizmekten kaçınamaz. Boş bir sütun,
+     * olmayan bir bağlamı varmış gibi gösterir (`docs/60` §4).
+     */
+    render: (ctx: WorkspaceSectionRuntimeContext) => ReactNode | null;
+};
+
+export type WorkspaceInspectorMap = Record<string, WorkspaceInspector>;
