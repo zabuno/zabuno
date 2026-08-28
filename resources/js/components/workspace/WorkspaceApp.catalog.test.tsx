@@ -2,6 +2,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * Freezes the current-workspace brand/location catalog routing contract for
@@ -161,9 +162,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
@@ -180,9 +181,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
@@ -203,9 +204,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Brand' }));
@@ -251,9 +252,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
@@ -275,9 +276,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Locations' }));
@@ -310,9 +311,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menu' }));
@@ -343,9 +344,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const alert = await screen.findByRole('alert');
         expect(alert).toBeInTheDocument();
@@ -366,9 +367,9 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menu' }));

@@ -1,6 +1,7 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * Blind RED test candidate for S1-WP02C. Frozen scope hash
@@ -91,10 +92,10 @@ describe('GET /app route guard (S1-WP02C, docs frozen scope)', () => {
         const fetchMock = buildFetchMock({ context: () => jsonResponse(200, makeWorkspace()) });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         await waitFor(() => {
             const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
@@ -121,10 +122,10 @@ describe('WorkspaceApp — loading state', () => {
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(screen.getByRole('status')).toBeInTheDocument();
 
@@ -152,10 +153,10 @@ describe('WorkspaceApp — retryable error', () => {
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const alert = await screen.findByRole('alert');
         expect(alert).toBeInTheDocument();
@@ -182,10 +183,10 @@ describe('WorkspaceApp — zero workspaces, one-name creation (S1-WP02C, docs/34
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nameInput = await screen.findByLabelText(/workspace name/i);
         fireEvent.change(nameInput, { target: { value: 'Zeytin Restoranları' } });
@@ -209,10 +210,10 @@ describe('WorkspaceApp — zero workspaces, one-name creation (S1-WP02C, docs/34
         const fetchMock = buildFetchMock({ context: () => jsonResponse(409, { error: 'workspace_context_required' }) });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         await screen.findByLabelText(/workspace name/i);
         fireEvent.click(screen.getByRole('button', { name: /create/i }));
@@ -244,10 +245,10 @@ describe('WorkspaceApp — zero workspaces, one-name creation (S1-WP02C, docs/34
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nameInput = await screen.findByLabelText(/workspace name/i);
         fireEvent.change(nameInput, { target: { value: 'Zeytin Restoranları' } });
@@ -276,10 +277,10 @@ describe('WorkspaceApp — workspaces exist but no current context (S1-WP02C)', 
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const option = await screen.findByRole('button', { name: /Deniz Kebap/i });
         fireEvent.click(option);
@@ -314,10 +315,10 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const contextBanner = await screen.findByRole('banner');
         await within(contextBanner).findByRole('button', { name: 'Zeytin Restoranları' });
@@ -341,10 +342,10 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         const fetchMock = buildFetchMock({ context: () => jsonResponse(200, makeWorkspace()) });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        const { container } = render(<WorkspaceApp />);
+        const { container } = render(<WorkspaceApp {...desktopChrome} />);
 
         const liveBanner = await screen.findByRole('banner');
         await within(liveBanner).findByRole('button', { name: 'Zeytin Restoranları' });
@@ -372,10 +373,10 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>(
+        const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType<typeof desktopChrome> }>(
             'components/workspace/WorkspaceApp',
         );
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         // Hesap menüsü önce açılır (kontrol kimlik alanına taşındı).
         fireEvent.click(

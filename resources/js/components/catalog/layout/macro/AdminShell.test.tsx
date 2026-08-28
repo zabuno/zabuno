@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AdminShell } from './AdminShell';
+import { SidebarNav } from '../compound/SidebarNav';
 import type { SidebarNavGroup } from '../compound/SidebarNav';
 
 const groups: SidebarNavGroup[] = [
@@ -14,15 +15,26 @@ const groups: SidebarNavGroup[] = [
     },
 ];
 
+/*
+    Kabuk gezinti verisini BİLMEZ; kalıcı ray ona yuva olarak verilir. Tenant
+    tarafında bu parça cihaza özgü ayrı bir modülde durur ve telefon onu hiç
+    indirmez (docs/54); test de aynı sözleşmeyi kullanır.
+*/
+function sidebarSlot(navGroups = groups, activeKey = 'dashboard', label?: string) {
+    return (
+        <aside className="admin-shell-sidebar">
+            <SidebarNav groups={navGroups} activeKey={activeKey} label={label} />
+        </aside>
+    );
+}
+
 function renderShell(overrides: Partial<Parameters<typeof AdminShell>[0]> = {}) {
     return render(
         <AdminShell
             brand={{ name: 'Zabuno', href: '#' }}
-            navGroups={groups}
-            activeNavKey="dashboard"
+            persistentSidebar={sidebarSlot()}
             mobileMenuOpen={false}
             onToggleMobileMenu={vi.fn()}
-            onCloseMobileMenu={vi.fn()}
             {...overrides}
         >
             <p>Page content</p>
@@ -78,12 +90,31 @@ describe('AdminShell', () => {
         expect(main?.className ?? '').not.toMatch(/(?:^|\s)p-4(?:\s|$)/);
     });
 
-    it('CSS-hides the persistent sidebar at the 320px start, reachable via the drawer toggle', () => {
+    /**
+     * Kabuk artık HİÇBİR ŞEYİ gizlemiyor — verilmeyeni çizmiyor.
+     *
+     * Eski sözleşme şuydu: kalıcı kenar çubuğu her cihazda çizilir, sonra
+     * `hidden` sınıfıyla dar ekranda CSS ile gizlenir. Bu, telefonun o yapıyı
+     * yine de indirmesi, ayrıştırması ve DOM'a koyması demekti — hiç
+     * göstermemek için.
+     *
+     * Yeni sözleşmede cihaz ayrımı SUNUCUDA yapılır (docs/54) ve kabuğa
+     * yalnız o cihaza ait parça verilir. Verilmediğinde ortada gizlenecek bir
+     * şey de yoktur.
+     */
+    it('kendisine verilmeyen kabuk parçasını çizmez', () => {
+        const { container } = renderShell({ persistentSidebar: undefined });
+
+        expect(container.querySelector('.admin-shell-sidebar')).toBeNull();
+        expect(container.querySelector('main')).not.toBeNull();
+    });
+
+    it('verilen kalıcı kenar çubuğunu gizlemeden çizer', () => {
         const { container } = renderShell();
         const persistentAside = container.querySelector('.admin-shell-sidebar');
+
         expect(persistentAside).not.toBeNull();
-        expect(persistentAside?.className ?? '').toMatch(/(?:^|\s)hidden(?:\s|$)/);
-        expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
+        expect(persistentAside?.className ?? '').not.toMatch(/(?:^|\s)hidden(?:\s|$)/);
     });
 
     it('SidebarNav group heading consumes a semantic foreground token and not literal gray classes', () => {
@@ -94,7 +125,7 @@ describe('AdminShell', () => {
                 items: [{ key: 'dashboard', label: 'Dashboard', href: '#dashboard' }],
             },
         ];
-        renderShell({ navGroups: labeledGroups, activeNavKey: 'dashboard' });
+        renderShell({ persistentSidebar: sidebarSlot(labeledGroups) });
         const heading = screen.getAllByText('Main')[0];
         // Niyet değişmedi: başlık semantic bir token tüketmeli, ham gri değil.
         // Token adı `--color-text-secondary` arbitrary sözdiziminden

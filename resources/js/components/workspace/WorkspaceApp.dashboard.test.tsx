@@ -2,6 +2,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * Freezes the current-workspace dashboard summary contract for WorkspaceApp
@@ -189,9 +190,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 
@@ -291,9 +292,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 
@@ -374,9 +375,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 
@@ -409,9 +410,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         window.dispatchEvent(new Event('resize'));
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 
@@ -490,9 +491,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 

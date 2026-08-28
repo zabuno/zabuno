@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { AdminShell } from './AdminShell';
-import type { SidebarNavGroup } from '../compound/SidebarNav';
+import { SidebarNav, type SidebarNavGroup } from '../compound/SidebarNav';
+import { DrawerPanel } from '../../overlays/compound/DrawerPanel';
 
 const meta: Meta<typeof AdminShell> = {
     title: 'Macro/Layout/AdminShell',
@@ -39,19 +40,50 @@ const superadminGroups: SidebarNavGroup[] = [
     },
 ];
 
-function ControlledAdminShell(
-    props: Omit<
-        Parameters<typeof AdminShell>[0],
-        'mobileMenuOpen' | 'onToggleMobileMenu' | 'onCloseMobileMenu'
-    >,
-) {
+/*
+    Kabuk artık gezinti verisini BİLMEZ; kalıcı ray ve çekmece ona yuva olarak
+    verilir. Sebebi mimari: tenant tarafında bu iki parça CİHAZA ÖZGÜ ayrı
+    modüllerde durur ve telefon masaüstü rayının kodunu hiç indirmez
+    (docs/54). Hikâye de aynı sözleşmeyi kullanır.
+*/
+function sidebarSlot(groups: SidebarNavGroup[], activeKey?: string, label?: string) {
+    return (
+        <aside className="flex flex-[1_1_17rem] flex-col border-e border-[var(--color-border)] p-4">
+            <SidebarNav groups={groups} activeKey={activeKey} label={label} />
+        </aside>
+    );
+}
+
+function ControlledAdminShell({
+    navGroups,
+    activeNavKey,
+    navLabel,
+    ...props
+}: Omit<
+    Parameters<typeof AdminShell>[0],
+    'mobileMenuOpen' | 'onToggleMobileMenu' | 'persistentSidebar' | 'navigationDrawer'
+> & { navGroups: SidebarNavGroup[]; activeNavKey?: string; navLabel?: string }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
         <AdminShell
             {...props}
             mobileMenuOpen={mobileMenuOpen}
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
-            onCloseMobileMenu={() => setMobileMenuOpen(false)}
+            persistentSidebar={sidebarSlot(navGroups, activeNavKey, navLabel)}
+            navigationDrawer={
+                <DrawerPanel
+                    open={mobileMenuOpen}
+                    onClose={() => setMobileMenuOpen(false)}
+                    title={navLabel ?? 'Menu'}
+                >
+                    <SidebarNav
+                        groups={navGroups}
+                        activeKey={activeNavKey}
+                        label={navLabel}
+                        asLandmark={false}
+                    />
+                </DrawerPanel>
+            }
         />
     );
 }
@@ -85,11 +117,18 @@ export const Superadmin: Story = {
 export const MobileMenuOpen: Story = {
     args: {
         brand: { name: 'Zabuno', href: '#' },
-        navGroups: restaurantAdminGroups,
-        activeNavKey: 'dashboard',
+        persistentSidebar: sidebarSlot(restaurantAdminGroups, 'dashboard'),
+        navigationDrawer: (
+            <DrawerPanel open onClose={() => {}} title="Restaurant admin">
+                <SidebarNav
+                    groups={restaurantAdminGroups}
+                    activeKey="dashboard"
+                    asLandmark={false}
+                />
+            </DrawerPanel>
+        ),
         mobileMenuOpen: true,
         onToggleMobileMenu: () => {},
-        onCloseMobileMenu: () => {},
         children: (
             <p className="text-body text-gray-500 dark:text-gray-400">Page content goes here.</p>
         ),

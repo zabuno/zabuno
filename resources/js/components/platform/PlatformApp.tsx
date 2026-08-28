@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { AdminShell } from '../catalog/layout/macro/AdminShell';
 import { AppErrorBoundary } from '../system/AppErrorBoundary';
+import { SidebarNav } from '../catalog/layout/compound/SidebarNav';
+import { DrawerPanel } from '../catalog/overlays/compound/DrawerPanel';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { PlanManagementPage } from '../admin/pages/PlanManagementPage';
 import { SubscriptionManagementPage } from '../admin/pages/SubscriptionManagementPage';
@@ -116,12 +118,37 @@ export function PlatformApp() {
     return (
         <AdminShell
             brand={{ name: t('platform.shell.brand') }}
-            navGroups={navGroups}
-            navLabel={t('platform.shell.navLabel')}
-            activeNavKey={activeSection}
             mobileMenuOpen={mobileMenuOpen}
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
-            onCloseMobileMenu={() => setMobileMenuOpen(false)}
+            /*
+                Platform yönetimi tek pakettir; cihaz ayrımı yoktur ve
+                kabuk parçalarını kendisi verir. `AdminShell` artık gezinti
+                verisini bilmez — cihaza özgü kabuğun tenant tarafında ayrı
+                paketlere bölünebilmesi bunu gerektiriyordu (docs/54).
+            */
+            persistentSidebar={
+                <aside className="admin-shell-sidebar flex flex-[1_1_17rem] flex-col border-e border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]">
+                    <SidebarNav
+                        groups={navGroups}
+                        activeKey={activeSection}
+                        label={t('platform.shell.navLabel')}
+                    />
+                </aside>
+            }
+            navigationDrawer={
+                <DrawerPanel
+                    open={mobileMenuOpen}
+                    onClose={() => setMobileMenuOpen(false)}
+                    title={t('platform.shell.navLabel')}
+                >
+                    <SidebarNav
+                        groups={navGroups}
+                        activeKey={activeSection}
+                        label={t('platform.shell.navLabel')}
+                        asLandmark={false}
+                    />
+                </DrawerPanel>
+            }
             topBarEnd={
                 <a href="/app" className="text-body font-medium underline">
                     {t('platform.shell.backToWorkspace')}

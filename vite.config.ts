@@ -47,7 +47,12 @@ export default defineConfig(({ mode }) => ({
                       input: [
                           'resources/css/app.css',
                           'resources/js/auth.tsx',
-                          'resources/js/workspace.tsx',
+                          // Cihaz başına ayrı giriş: seçim SUNUCUDA yapılır
+                          // (App\Support\Device\DeviceClass), tarayıcıda medya
+                          // sorgusuyla değil. Ortak kod Vite tarafından paylaşılan
+                          // parçaya çıkar; cihaza özgü kabuk yalnız kendi paketinde kalır.
+                          'resources/js/workspace.mobile.tsx',
+                          'resources/js/workspace.desktop.tsx',
                           'resources/js/platform.tsx',
                       ],
                       refresh: true,

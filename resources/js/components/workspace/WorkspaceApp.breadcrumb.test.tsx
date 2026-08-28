@@ -2,6 +2,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * RED test freezing the accessible Breadcrumb contract inside <main> for
@@ -121,8 +122,10 @@ async function renderCurrentWorkspace(
     const fetchMock = buildFetchMock(locations);
     vi.stubGlobal('fetch', fetchMock);
 
-    const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
-    render(<WorkspaceApp />);
+    const { WorkspaceApp } = await importWorkspaceModule<{
+        WorkspaceApp: React.ComponentType<typeof desktopChrome>;
+    }>();
+    render(<WorkspaceApp {...desktopChrome} />);
 
     await screen.findByRole('navigation', { name: 'Restaurant admin' });
 
@@ -237,9 +240,9 @@ describe('WorkspaceApp — main breadcrumb (S1-WP01A, RED)', () => {
         );
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).toBeNull();
 

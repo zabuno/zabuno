@@ -1,6 +1,7 @@
 import type React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * Freezes the exclusive Brand (#brand) and Locations (#locations) page
@@ -143,9 +144,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
         expect(within(nav).getByRole('link', { name: 'Brand' })).toBeInTheDocument();
@@ -161,9 +162,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const destination = await screen
             .findByText('Menekşe')
@@ -197,9 +198,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const locationA = makeLocationA();
         const locationB = makeLocationB();
@@ -232,9 +233,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
 
     async function renderOnBrandPage() {
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
         const navLink = within(nav).getByRole('link', { name: 'Brand' });

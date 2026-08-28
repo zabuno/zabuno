@@ -439,6 +439,15 @@
     }
 }
 
+/* Bağlam paneli için ayrı bir kapsayıcı sorgusu YOK.
+ *
+ * Panel gizlenmiyor; yer kalmadığında `flex-wrap` ile ana içeriğin altına
+ * geçiyor. İçsel düzen burada bir kurala ihtiyaç duymuyor: `flex-basis`
+ * zaten "bu genişlik yoksa sar" diyor.
+ *
+ * Cihaz ayrımı ise CSS'te değil, SUNUCUDA yapılıyor — mobil paket bu paneli
+ * hiç içermez (docs/54). */
+
 /* Safe glass surface: solid by default, backdrop-filter only where supported,
    with explicit forced-colors and light/dark parity (docs/06 §11). */
 .surface-glass {
