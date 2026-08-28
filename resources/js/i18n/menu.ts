@@ -68,6 +68,20 @@ const en = {
     'menu.item.visibility.error.submit': 'We could not update visibility. Please try again.',
     'menu.category.order.label': 'Order for {name}',
     'menu.item.order.label': 'Order for {name}',
+
+    // Menüyü İŞLETMEK (docs/73, P0-01): silme, ad düzeltme, sıralama.
+    'menu.ops.error': 'That change could not be saved. Nothing was lost — try again.',
+    'menu.item.delete.confirm':
+        'Remove “{name}” from this menu? Already published versions keep it.',
+    'menu.category.delete.confirm':
+        'Remove “{name}” and its items from this menu? Already published versions keep them.',
+    'menu.rename.prompt': 'Correct the name',
+    'menu.rename.error.empty': 'A name cannot be empty. Nothing was changed.',
+    'menu.item.delete.label': 'Remove {name}',
+    'menu.category.delete.label': 'Remove category {name}',
+    'menu.rename.label': 'Rename {name}',
+    'menu.move.up': 'Move {name} up',
+    'menu.move.down': 'Move {name} down',
 } as const;
 
 type TranslationKey = keyof typeof en;

@@ -43,6 +43,14 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}/allergens||App\Http\Controllers\MenuCatalog\UpdateMenuItemAllergensController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}/price||App\Http\Controllers\MenuCatalog\UpdateMenuItemPriceController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}/visibility||App\Http\Controllers\MenuCatalog\UpdateMenuItemVisibilityController|api,auth:sanctum,verified',
+        // MENÜYÜ İŞLETMEK (`docs/73`, P0-01): ürün bir menüyü yayımlayabiliyor
+        // ama işletemiyordu — silme, ad düzeltme ve sıralama yoktu.
+        'PUT|api/workspaces/{workspace}/menu-categories/{category}||App\Http\Controllers\MenuCatalog\RenameCategoryController|api,auth:sanctum,verified',
+        'DELETE|api/workspaces/{workspace}/menu-categories/{category}||App\Http\Controllers\MenuCatalog\DeleteCategoryController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/menu-items/{menuItem}||App\Http\Controllers\MenuCatalog\RenameMenuItemController|api,auth:sanctum,verified',
+        'DELETE|api/workspaces/{workspace}/menu-items/{menuItem}||App\Http\Controllers\MenuCatalog\DeleteMenuItemController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/menu-categories/{category}/item-order||App\Http\Controllers\MenuCatalog\ReorderMenuItemsController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/menu/{menu}/category-order||App\Http\Controllers\MenuCatalog\ReorderCategoriesController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/publications||App\Http\Controllers\Publication\StorePublicationController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/menu/{menu}/publications/current||App\Http\Controllers\Publication\ShowCurrentPublicationController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/brand/locations/{location}/qr-codes||App\Http\Controllers\QrDestination\StoreQrCodeController|api,auth:sanctum,verified',

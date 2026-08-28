@@ -28,6 +28,14 @@ msgstr "We could not add the category. Please try again."
 msgid "menu.category.create.submit"
 msgstr "Add category"
 
+#: menu:menu.category.delete.confirm
+msgid "menu.category.delete.confirm"
+msgstr "Remove “{name}” and its items from this menu? Already published versions keep them."
+
+#: menu:menu.category.delete.label
+msgid "menu.category.delete.label"
+msgstr "Remove category {name}"
+
 #: menu:menu.category.empty
 msgid "menu.category.empty"
 msgstr "No products in this category yet."
@@ -144,6 +152,14 @@ msgstr "Add item"
 msgid "menu.item.currency.label"
 msgstr "Currency"
 
+#: menu:menu.item.delete.confirm
+msgid "menu.item.delete.confirm"
+msgstr "Remove “{name}” from this menu? Already published versions keep it."
+
+#: menu:menu.item.delete.label
+msgid "menu.item.delete.label"
+msgstr "Remove {name}"
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr "Order for {name}"
@@ -188,6 +204,14 @@ msgstr "We could not update visibility. Please try again."
 msgid "menu.loading"
 msgstr "Loading menu…"
 
+#: menu:menu.move.down
+msgid "menu.move.down"
+msgstr "Move {name} down"
+
+#: menu:menu.move.up
+msgid "menu.move.up"
+msgstr "Move {name} up"
+
 #: menu:menu.name.error.required
 msgid "menu.name.error.required"
 msgstr "Enter a menu name."
@@ -195,6 +219,10 @@ msgstr "Enter a menu name."
 #: menu:menu.name.label
 msgid "menu.name.label"
 msgstr "Menu name"
+
+#: menu:menu.ops.error
+msgid "menu.ops.error"
+msgstr "That change could not be saved. Nothing was lost — try again."
 
 #: menu:menu.product.create.error.submit
 msgid "menu.product.create.error.submit"
@@ -211,6 +239,18 @@ msgstr "Enter a product name."
 #: menu:menu.product.name.label
 msgid "menu.product.name.label"
 msgstr "Product name"
+
+#: menu:menu.rename.error.empty
+msgid "menu.rename.error.empty"
+msgstr "A name cannot be empty. Nothing was changed."
+
+#: menu:menu.rename.label
+msgid "menu.rename.label"
+msgstr "Rename {name}"
+
+#: menu:menu.rename.prompt
+msgid "menu.rename.prompt"
+msgstr "Correct the name"
 
 #: menu:menu.status.saving
 msgid "menu.status.saving"

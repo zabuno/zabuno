@@ -71,6 +71,36 @@ interface MenuCatalogRepositoryPort
      */
     public function updateMenuItemVisibility(int $workspaceId, int $menuItemId, bool $isVisible): MenuItemSummary;
 
+    /**
+     * Menüyü İŞLETMEK için gereken dört iş — `docs/73` (P0-01).
+     *
+     * Ürün bunlar olmadan bir menüyü yayımlayabiliyor ama işletemiyordu:
+     * yanlış yazılan bir ürünün tek çaresi gizleyip doğrusunu yeniden
+     * eklemekti ve yanlış olan veritabanında kalıyordu.
+     */
+    public function deleteMenuItem(int $workspaceId, int $menuItemId): void;
+
+    public function deleteCategory(int $workspaceId, int $categoryId): void;
+
+    public function renameCategory(int $workspaceId, int $categoryId, string $name): CategorySummary;
+
+    public function renameMenuItemProduct(int $workspaceId, int $menuItemId, string $productName): MenuItemSummary;
+
+    /**
+     * Sıralama TOPLU yapılır ve liste TAM olmalıdır.
+     *
+     * `unique(category_id, position)` yüzünden satırları tek tek güncellemek
+     * yolun ortasında çakışır: ikinci ürünü birinci sıraya taşımak, birinci
+     * ürün hâlâ oradayken imkânsızdır. Kısmî bir liste ise listelenmeyen
+     * satırları öngörülemez bir yere bırakırdı.
+     *
+     * @param  list<int>  $menuItemIds
+     */
+    public function reorderMenuItems(int $workspaceId, int $categoryId, array $menuItemIds): void;
+
+    /** @param  list<int>  $categoryIds */
+    public function reorderCategories(int $workspaceId, int $menuId, array $categoryIds): void;
+
     public function createTaxonomyTerm(string $name, string $type): TaxonomyTermSummary;
 
     /**

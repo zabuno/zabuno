@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\MenuCatalog\DeleteCategoryController;
+use App\Http\Controllers\MenuCatalog\DeleteMenuItemController;
+use App\Http\Controllers\MenuCatalog\RenameCategoryController;
+use App\Http\Controllers\MenuCatalog\RenameMenuItemController;
+use App\Http\Controllers\MenuCatalog\ReorderCategoriesController;
+use App\Http\Controllers\MenuCatalog\ReorderMenuItemsController;
 use App\Http\Controllers\MenuCatalog\ShowMenuController;
 use App\Http\Controllers\MenuCatalog\StoreCategoryController;
 use App\Http\Controllers\MenuCatalog\StoreMenuController;
@@ -24,4 +30,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/workspaces/{workspace}/menu-items/{menuItem}/allergens', UpdateMenuItemAllergensController::class);
     Route::put('/workspaces/{workspace}/menu-items/{menuItem}/price', UpdateMenuItemPriceController::class);
     Route::put('/workspaces/{workspace}/menu-items/{menuItem}/visibility', UpdateMenuItemVisibilityController::class);
+
+    /*
+        MENÜYÜ İŞLETMEK — `docs/73` (P0-01).
+
+        Ürün bu dört iş olmadan bir menüyü yayımlayabiliyor ama işletemiyordu:
+        yanlış yazılan bir ürünü düzeltmenin yolu yoktu, sezonluk bir
+        kategoriyi kaldırmanın yolu yoktu, sıra veri modelinde tasarlanmıştı
+        ama yüzeyi yazılmamıştı.
+    */
+    Route::put('/workspaces/{workspace}/menu-categories/{category}', RenameCategoryController::class);
+    Route::delete('/workspaces/{workspace}/menu-categories/{category}', DeleteCategoryController::class);
+    Route::put('/workspaces/{workspace}/menu-items/{menuItem}', RenameMenuItemController::class);
+    Route::delete('/workspaces/{workspace}/menu-items/{menuItem}', DeleteMenuItemController::class);
+    Route::put('/workspaces/{workspace}/menu-categories/{category}/item-order', ReorderMenuItemsController::class);
+    Route::put('/workspaces/{workspace}/menu/{menu}/category-order', ReorderCategoriesController::class);
 });

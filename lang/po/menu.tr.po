@@ -28,6 +28,14 @@ msgstr "Kategoriyi ekleyemedik. Lütfen tekrar deneyin."
 msgid "menu.category.create.submit"
 msgstr "Kategori ekle"
 
+#: menu:menu.category.delete.confirm
+msgid "menu.category.delete.confirm"
+msgstr ""
+
+#: menu:menu.category.delete.label
+msgid "menu.category.delete.label"
+msgstr ""
+
 #: menu:menu.category.empty
 msgid "menu.category.empty"
 msgstr ""
@@ -144,6 +152,14 @@ msgstr "Kalem ekle"
 msgid "menu.item.currency.label"
 msgstr "Para birimi"
 
+#: menu:menu.item.delete.confirm
+msgid "menu.item.delete.confirm"
+msgstr ""
+
+#: menu:menu.item.delete.label
+msgid "menu.item.delete.label"
+msgstr ""
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr "{name} sırası"
@@ -188,6 +204,14 @@ msgstr "Görünürlüğü güncelleyemedik. Lütfen tekrar deneyin."
 msgid "menu.loading"
 msgstr "Menü yükleniyor…"
 
+#: menu:menu.move.down
+msgid "menu.move.down"
+msgstr ""
+
+#: menu:menu.move.up
+msgid "menu.move.up"
+msgstr ""
+
 #: menu:menu.name.error.required
 msgid "menu.name.error.required"
 msgstr "Bir menü adı girin."
@@ -195,6 +219,10 @@ msgstr "Bir menü adı girin."
 #: menu:menu.name.label
 msgid "menu.name.label"
 msgstr "Menü adı"
+
+#: menu:menu.ops.error
+msgid "menu.ops.error"
+msgstr ""
 
 #: menu:menu.product.create.error.submit
 msgid "menu.product.create.error.submit"
@@ -211,6 +239,18 @@ msgstr "Bir ürün adı girin."
 #: menu:menu.product.name.label
 msgid "menu.product.name.label"
 msgstr "Ürün adı"
+
+#: menu:menu.rename.error.empty
+msgid "menu.rename.error.empty"
+msgstr ""
+
+#: menu:menu.rename.label
+msgid "menu.rename.label"
+msgstr ""
+
+#: menu:menu.rename.prompt
+msgid "menu.rename.prompt"
+msgstr ""
 
 #: menu:menu.status.saving
 msgid "menu.status.saving"

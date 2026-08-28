@@ -12,6 +12,7 @@ use App\Application\MenuCatalog\Dto\MenuItemSummary;
 use App\Application\MenuCatalog\Dto\ProductSummary;
 use App\Application\MenuCatalog\Dto\TaxonomyTermSummary;
 use App\Application\MenuCatalog\Exception\DuplicateLocationMenuException;
+use App\Application\MenuCatalog\Exception\MenuCatalogIncompleteOrderException;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Money\Money;
@@ -425,5 +426,224 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
 
             return $names;
         });
+    }
+
+    /**
+     * Ürünü menüden çıkarır.
+     *
+     * `products` satırı SİLİNMEZ: aynı ürün başka bir menüde ya da geçmiş
+     * bir yayında yaşıyor olabilir. Silinen şey, ürünün bu menüdeki YERİDİR.
+     */
+    public function deleteMenuItem(int $workspaceId, int $menuItemId): void
+    {
+        DB::transaction(function () use ($workspaceId, $menuItemId): void {
+            $row = DB::table('menu_items')
+                ->join('menu_categories', 'menu_categories.id', '=', 'menu_items.category_id')
+                ->join('menus', 'menus.id', '=', 'menu_categories.menu_id')
+                ->where('menu_items.id', $menuItemId)
+                ->select('menus.workspace_id as workspace_id')
+                ->first();
+
+            if ($row === null || (int) $row->workspace_id !== $workspaceId) {
+                throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
+            }
+
+            DB::table('menu_items')->where('id', $menuItemId)->delete();
+        });
+    }
+
+    public function deleteCategory(int $workspaceId, int $categoryId): void
+    {
+        DB::transaction(function () use ($workspaceId, $categoryId): void {
+            $row = DB::table('menu_categories')
+                ->join('menus', 'menus.id', '=', 'menu_categories.menu_id')
+                ->where('menu_categories.id', $categoryId)
+                ->select('menus.workspace_id as workspace_id')
+                ->first();
+
+            if ($row === null || (int) $row->workspace_id !== $workspaceId) {
+                throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
+            }
+
+            // Satırlar ÖNCE silinir: göçteki `cascadeOnDelete` veritabanına
+            // bağlıdır ve SQLite'ta yabancı anahtar zorlaması kapalı
+            // olabilir. Sıraya güvenmek, veritabanı ayarına güvenmekten
+            // sağlamdır.
+            DB::table('menu_items')->where('category_id', $categoryId)->delete();
+            DB::table('menu_categories')->where('id', $categoryId)->delete();
+        });
+    }
+
+    public function renameCategory(int $workspaceId, int $categoryId, string $name): CategorySummary
+    {
+        return DB::transaction(function () use ($workspaceId, $categoryId, $name): CategorySummary {
+            $row = DB::table('menu_categories')
+                ->join('menus', 'menus.id', '=', 'menu_categories.menu_id')
+                ->where('menu_categories.id', $categoryId)
+                ->select(
+                    'menus.workspace_id as workspace_id',
+                    'menu_categories.menu_id as menu_id',
+                    'menu_categories.position as position',
+                )
+                ->first();
+
+            if ($row === null || (int) $row->workspace_id !== $workspaceId) {
+                throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
+            }
+
+            DB::table('menu_categories')
+                ->where('id', $categoryId)
+                ->update(['name' => $name, 'updated_at' => now()]);
+
+            return new CategorySummary($categoryId, (int) $row->menu_id, $name, (int) $row->position);
+        });
+    }
+
+    /**
+     * Ürünün ADI `products` tablosunda durur; menü satırında değil.
+     *
+     * Bu yüzden yeniden adlandırma, o ürünü kullanan HER menü satırını
+     * etkiler — ve doğrusu budur: aynı ürün iki kategoride görünüyorsa
+     * yazım hatası ikisinde birden düzelmelidir.
+     */
+    public function renameMenuItemProduct(int $workspaceId, int $menuItemId, string $productName): MenuItemSummary
+    {
+        return DB::transaction(function () use ($workspaceId, $menuItemId, $productName): MenuItemSummary {
+            $row = DB::table('menu_items')
+                ->join('menu_categories', 'menu_categories.id', '=', 'menu_items.category_id')
+                ->join('menus', 'menus.id', '=', 'menu_categories.menu_id')
+                ->where('menu_items.id', $menuItemId)
+                ->select(
+                    'menus.workspace_id as workspace_id',
+                    'menu_items.category_id as category_id',
+                    'menu_items.product_id as product_id',
+                    'menu_items.price_minor_amount as price_minor_amount',
+                    'menu_items.currency_code as currency_code',
+                    'menu_items.is_visible as is_visible',
+                    'menu_items.position as position',
+                )
+                ->first();
+
+            if ($row === null || (int) $row->workspace_id !== $workspaceId) {
+                throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
+            }
+
+            DB::table('products')
+                ->where('id', (int) $row->product_id)
+                ->update(['name' => $productName, 'updated_at' => now()]);
+
+            return new MenuItemSummary(
+                $menuItemId,
+                (int) $row->category_id,
+                (int) $row->product_id,
+                (int) $row->price_minor_amount,
+                (string) $row->currency_code,
+                (int) $row->position,
+                (bool) $row->is_visible,
+            );
+        });
+    }
+
+    /**
+     * @param  list<int>  $menuItemIds
+     */
+    public function reorderMenuItems(int $workspaceId, int $categoryId, array $menuItemIds): void
+    {
+        DB::transaction(function () use ($workspaceId, $categoryId, $menuItemIds): void {
+            $row = DB::table('menu_categories')
+                ->join('menus', 'menus.id', '=', 'menu_categories.menu_id')
+                ->where('menu_categories.id', $categoryId)
+                ->select('menus.workspace_id as workspace_id')
+                ->first();
+
+            if ($row === null || (int) $row->workspace_id !== $workspaceId) {
+                throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
+            }
+
+            $existing = DB::table('menu_items')
+                ->where('category_id', $categoryId)
+                ->pluck('id')
+                ->map(static fn ($id): int => (int) $id)
+                ->all();
+
+            $this->assertCompleteOrder($existing, $menuItemIds);
+            $this->applyOrder('menu_items', 'category_id', $categoryId, $menuItemIds);
+        });
+    }
+
+    /**
+     * @param  list<int>  $categoryIds
+     */
+    public function reorderCategories(int $workspaceId, int $menuId, array $categoryIds): void
+    {
+        DB::transaction(function () use ($workspaceId, $menuId, $categoryIds): void {
+            $row = DB::table('menus')->where('id', $menuId)->select('workspace_id')->first();
+
+            if ($row === null || (int) $row->workspace_id !== $workspaceId) {
+                throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
+            }
+
+            $existing = DB::table('menu_categories')
+                ->where('menu_id', $menuId)
+                ->pluck('id')
+                ->map(static fn ($id): int => (int) $id)
+                ->all();
+
+            $this->assertCompleteOrder($existing, $categoryIds);
+            $this->applyOrder('menu_categories', 'menu_id', $menuId, $categoryIds);
+        });
+    }
+
+    /**
+     * Liste TAM olmalı: ne eksik ne fazla.
+     *
+     * Kısmî bir sıralama, listelenmeyen satırları öngörülemez bir yere
+     * bırakırdı — ve kullanıcı onları ekranda değil, yayınladıktan sonra
+     * misafirin menüsünde fark ederdi.
+     *
+     * @param  list<int>  $existing
+     * @param  list<int>  $requested
+     */
+    private function assertCompleteOrder(array $existing, array $requested): void
+    {
+        sort($existing);
+        $sorted = $requested;
+        sort($sorted);
+
+        if ($existing !== $sorted) {
+            throw MenuCatalogIncompleteOrderException::forCounts(count($existing), count($requested));
+        }
+    }
+
+    /**
+     * Sıralamayı İKİ AŞAMADA uygular.
+     *
+     * `unique(parent, position)` yüzünden tek tek güncellemek yolun ortasında
+     * çakışır: ikinci satırı birinci sıraya taşımak, birinci satır hâlâ
+     * oradayken imkânsızdır. Önce hepsi çakışmayacak GEÇİCİ konumlara
+     * taşınır, sonra hedef konumlarına yerleşir.
+     *
+     * Geçici aralık mevcut en büyük konumun üstünden başlar; sabit bir sayı
+     * (örneğin 1000) yeterince uzun bir menüde çakışırdı.
+     *
+     * @param  list<int>  $orderedIds
+     */
+    private function applyOrder(string $table, string $parentColumn, int $parentId, array $orderedIds): void
+    {
+        $offset = ((int) DB::table($table)->where($parentColumn, $parentId)->max('position')) + 1;
+
+        foreach ($orderedIds as $index => $id) {
+            DB::table($table)->where('id', $id)->update([
+                'position' => $offset + $index,
+                'updated_at' => now(),
+            ]);
+        }
+
+        foreach ($orderedIds as $index => $id) {
+            DB::table($table)->where('id', $id)->update([
+                'position' => $index + 1,
+                'updated_at' => now(),
+            ]);
+        }
     }
 }
