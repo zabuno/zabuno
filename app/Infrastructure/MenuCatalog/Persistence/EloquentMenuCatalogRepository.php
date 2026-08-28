@@ -84,6 +84,7 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                     'menu_items.id as id',
                     'menu_items.product_id as product_id',
                     'products.name as product_name',
+                    'products.description as product_description',
                     'menu_items.price_minor_amount as price_minor_amount',
                     'menu_items.currency_code as currency_code',
                     'menu_items.position as position',
@@ -105,6 +106,7 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                     'id' => (int) $item->id,
                     'productId' => (int) $item->product_id,
                     'productName' => (string) $item->product_name,
+                    'description' => ($d = trim((string) ($item->product_description ?? ''))) === '' ? null : $d,
                     'priceMinorAmount' => (int) $item->price_minor_amount,
                     'currencyCode' => (string) $item->currency_code,
                     'position' => (int) $item->position,
@@ -518,9 +520,14 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
      * etkiler — ve doğrusu budur: aynı ürün iki kategoride görünüyorsa
      * yazım hatası ikisinde birden düzelmelidir.
      */
-    public function renameMenuItemProduct(int $workspaceId, int $menuItemId, string $productName): MenuItemSummary
-    {
-        return DB::transaction(function () use ($workspaceId, $menuItemId, $productName): MenuItemSummary {
+    public function renameMenuItemProduct(
+        int $workspaceId,
+        int $menuItemId,
+        string $productName,
+        ?string $description = null,
+        bool $touchDescription = false,
+    ): MenuItemSummary {
+        return DB::transaction(function () use ($workspaceId, $menuItemId, $productName, $description, $touchDescription): MenuItemSummary {
             $row = DB::table('menu_items')
                 ->join('menu_categories', 'menu_categories.id', '=', 'menu_items.category_id')
                 ->join('menus', 'menus.id', '=', 'menu_categories.menu_id')
@@ -540,9 +547,17 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                 throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
             }
 
+            $changes = ['name' => $productName, 'updated_at' => now()];
+
+            // Açıklama YALNIZ gönderildiyse dokunulur: adı düzelten bir
+            // istek, sahibin yazdığı açıklamayı sessizce silmemeli.
+            if ($touchDescription) {
+                $changes['description'] = $description;
+            }
+
             DB::table('products')
                 ->where('id', (int) $row->product_id)
-                ->update(['name' => $productName, 'updated_at' => now()]);
+                ->update($changes);
 
             return new MenuItemSummary(
                 $menuItemId,

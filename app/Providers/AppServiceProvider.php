@@ -17,6 +17,7 @@ use App\Application\Localization\Port\TranslationPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaRepositoryPort;
+use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\Platform\Port\HostCapabilityProbePort;
@@ -56,6 +57,7 @@ use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
+use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
@@ -123,6 +125,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TranslationPort::class, static fn (): MoFileTranslator => new MoFileTranslator(base_path('lang/mo')));
         $this->app->bind(MenuCatalogApiContextPort::class, EloquentMenuCatalogApiContext::class);
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
+        $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);
         $this->app->bind(MalwareScannerPort::class, function (): MalwareScannerPort {
             if (config('media.scanner.driver') === 'clamav') {
                 return new ClamavMalwareScanner(

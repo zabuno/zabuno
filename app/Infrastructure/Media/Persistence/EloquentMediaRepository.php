@@ -358,7 +358,16 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             });
         } catch (Throwable $exception) {
             foreach ($written as [, $storageKey]) {
-                Storage::disk(self::QUARANTINE_DISK)->delete($storageKey);
+                // Başka bir sürüm bu dosyayı zaten kullanıyorsa silinmez:
+                // temizlik, çalışan bir yayını bozamaz.
+                $shared = DB::table('media_blobs')
+                    ->where('workspace_id', $workspaceId)
+                    ->where('storage_key', $storageKey)
+                    ->exists();
+
+                if (! $shared) {
+                    Storage::disk(self::QUARANTINE_DISK)->delete($storageKey);
+                }
             }
 
             throw $exception;
@@ -384,6 +393,24 @@ final class EloquentMediaRepository implements MediaRepositoryPort
 
     private function insertBlob(int $workspaceId, string $storageKey, string $checksum, GeneratedRendition $rendition): int
     {
+        // AYNI görselin yeniden işlenmesi aynı baytları üretir, dolayısıyla
+        // aynı depolama anahtarını. `storage_key` tekildir; körü körüne
+        // eklemek, değişmemiş bir fotoğrafın yeniden işlenmesini
+        // başarısız kılardı — oysa bu tamamen normal bir iştir (algoritma
+        // güncellenince toplu yeniden üretim).
+        //
+        // Kiracı İÇİNDE tekilleştirme yapılır; kiracılar ARASI bilerek
+        // yapılmaz (silme, kota ve "başka tenant bu dosyaya sahip mi"
+        // sızıntısı karmaşıklaşır — göç dosyasındaki not).
+        $existing = DB::table('media_blobs')
+            ->where('workspace_id', $workspaceId)
+            ->where('storage_key', $storageKey)
+            ->value('id');
+
+        if ($existing !== null) {
+            return (int) $existing;
+        }
+
         return (int) DB::table('media_blobs')->insertGetId([
             'workspace_id' => $workspaceId,
             'storage_key' => $storageKey,

@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\DB;
 
 final class EloquentMenuIdentity implements MenuIdentityPort
 {
+    public function brandIdForMenu(int $workspaceId, int $menuId): ?int
+    {
+        $id = DB::table('menus')
+            ->join('locations', 'locations.id', '=', 'menus.location_id')
+            ->where('menus.id', $menuId)
+            ->where('menus.workspace_id', $workspaceId)
+            ->value('locations.brand_id');
+
+        return $id === null ? null : (int) $id;
+    }
+
     public function forMenu(int $workspaceId, int $menuId): ?MenuIdentity
     {
         // Sütunlar açıkça adlandırılır: `menus.name`, `brands.name` ve

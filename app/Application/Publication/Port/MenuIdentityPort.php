@@ -15,4 +15,7 @@ use App\Domain\Publication\MenuIdentity;
 interface MenuIdentityPort
 {
     public function forMenu(int $workspaceId, int $menuId): ?MenuIdentity;
+
+    /** Logonun bağlı olduğu marka; menüden şubeye, şubeden markaya. */
+    public function brandIdForMenu(int $workspaceId, int $menuId): ?int;
 }

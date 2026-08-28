@@ -57,6 +57,8 @@ final class RenameMenuItemController extends Controller
                 $workspace,
                 $menuItem,
                 (string) $request->validated('productName'),
+                $request->validated('description'),
+                $request->has('description'),
             );
         } catch (MenuCatalogTenantMismatchException) {
             return response()->json(['message' => 'Not Found.'], 404);

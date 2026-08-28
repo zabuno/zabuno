@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
 use App\Http\Controllers\MenuCatalog\DeleteCategoryController;
 use App\Http\Controllers\MenuCatalog\DeleteMenuItemController;
 use App\Http\Controllers\MenuCatalog\RenameCategoryController;
@@ -43,6 +44,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/workspaces/{workspace}/menu-categories/{category}', DeleteCategoryController::class);
     Route::put('/workspaces/{workspace}/menu-items/{menuItem}', RenameMenuItemController::class);
     Route::delete('/workspaces/{workspace}/menu-items/{menuItem}', DeleteMenuItemController::class);
+    // Ürüne fotoğraf bağlar; `null` bağı kaldırır (`docs/77`).
+    Route::put('/workspaces/{workspace}/menu-items/{menuItem}/image', BindMenuItemImageController::class);
     Route::put('/workspaces/{workspace}/menu-categories/{category}/item-order', ReorderMenuItemsController::class);
     Route::put('/workspaces/{workspace}/menu/{menu}/category-order', ReorderCategoriesController::class);
 });

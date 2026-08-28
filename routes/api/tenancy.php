@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Tenancy\BindBrandLogoController;
 use App\Http\Controllers\Tenancy\CreateWorkspaceController;
 use App\Http\Controllers\Tenancy\CurrentWorkspaceContextController;
 use App\Http\Controllers\Tenancy\ListLocationsController;
@@ -24,6 +25,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/workspaces/{workspace}/brand', StoreBrandController::class);
     Route::get('/workspaces/{workspace}/brand', ShowBrandController::class);
     Route::put('/workspaces/{workspace}/brand', UpdateBrandController::class);
+    // Logo misafirin gördüğü ilk şeydir; yayın anında snapshot'a donar
+    // (`docs/77`).
+    Route::put('/workspaces/{workspace}/brand/logo', BindBrandLogoController::class);
 
     Route::post('/workspaces/{workspace}/brand/locations', StoreLocationController::class);
     Route::get('/workspaces/{workspace}/brand/locations', ListLocationsController::class);

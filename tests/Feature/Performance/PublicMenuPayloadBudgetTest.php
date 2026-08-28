@@ -64,6 +64,67 @@ final class PublicMenuPayloadBudgetTest extends TestCase
         return strlen(view('public-menu', ['snapshot' => $this->snapshot($categories, $itemsPerCategory)])->render());
     }
 
+    /**
+     * Görselli menü — `docs/77` (P0-04).
+     *
+     * Fotoğraf eklemek belgeyi de büyütür: her satır dört adres, ölçüler ve
+     * bir alternatif metin taşır. Bütçe fotoğrafla birlikte YENİDEN
+     * ölçülür; aksi hâlde "menü artık daha güzel ama açılmıyor" olurdu.
+     *
+     * @return array<string, mixed>
+     */
+    private function snapshotWithImages(int $categories, int $itemsPerCategory): array
+    {
+        $snapshot = $this->snapshot($categories, $itemsPerCategory);
+        $sequence = 0;
+
+        foreach ($snapshot['categories'] as $c => $category) {
+            foreach ($category['menuItems'] as $i => $item) {
+                $sequence++;
+                $checksum = str_repeat(dechex($sequence % 16), 32);
+
+                $snapshot['categories'][$c]['menuItems'][$i]['description'] =
+                    'Kömür ateşinde pişirilmiş, yanında bulgur pilavı, közlenmiş biber ve soğan piyazı ile servis edilir.';
+
+                $snapshot['categories'][$c]['menuItems'][$i]['image'] = [
+                    'versionId' => $sequence,
+                    'altText' => "Zeytinyağlı Enginar Dolması {$c}-{$i} tabakta",
+                    'width' => 960,
+                    'height' => 960,
+                    'sources' => array_map(
+                        static fn (int $width): array => [
+                            'width' => $width,
+                            'url' => "/media/r/{$sequence}{$width}-{$checksum}.webp",
+                        ],
+                        [320, 480, 640, 960],
+                    ),
+                ];
+            }
+        }
+
+        return $snapshot;
+    }
+
+    private function payloadBytesWithImages(int $categories, int $itemsPerCategory): int
+    {
+        $html = view('public-menu', ['snapshot' => $this->snapshotWithImages($categories, $itemsPerCategory)])->render();
+
+        return strlen((string) gzencode($html, 6));
+    }
+
+    public function test_a_menu_with_photos_and_descriptions_still_fits_in_the_budget(): void
+    {
+        // 8 kategori × 10 ürün: fotoğraflı gerçekçi bir restoran menüsü.
+        $bytes = $this->payloadBytesWithImages(8, 10);
+
+        self::assertLessThan(
+            self::MAX_PAYLOAD_BYTES,
+            $bytes,
+            'PERF-MENU-PAYLOAD-01: fotoğraflı menü de 100KB bütçesinde kalmalı; '
+            ."ölçülen {$bytes} bayt."
+        );
+    }
+
     // --- PERF-MENU-PAYLOAD-01 ---------------------------------------------
 
     public function test_a_realistic_restaurant_menu_fits_in_the_budget(): void

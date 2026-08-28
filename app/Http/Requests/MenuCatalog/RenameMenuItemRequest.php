@@ -18,6 +18,13 @@ final class RenameMenuItemRequest extends FormRequest
         if (is_string($this->input('productName'))) {
             $this->merge(['productName' => trim((string) $this->input('productName'))]);
         }
+
+        if (is_string($this->input('description'))) {
+            // Boş bir açıklama, "açıklama yok" demektir. Boş dizeyi
+            // saklamak, misafir sayfasında boş bir satır açardı.
+            $trimmed = trim((string) $this->input('description'));
+            $this->merge(['description' => $trimmed === '' ? null : $trimmed]);
+        }
     }
 
     /**
@@ -27,6 +34,9 @@ final class RenameMenuItemRequest extends FormRequest
     {
         return [
             'productName' => ['required', 'string', 'min:1', 'max:255'],
+            // Kısa, düz metin. Uzunluk sınırı keyfi değil: misafir masada
+            // paragraf okumaz, menü de yükünü taşıyamaz (`docs/06` bütçesi).
+            'description' => ['sometimes', 'nullable', 'string', 'max:500'],
         ];
     }
 }
