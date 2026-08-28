@@ -187,6 +187,31 @@ final class PublicationIdentityTest extends TestCase
         );
     }
 
+    // --- PUB-IDENTITY-NO-INTERNAL-COPY-01 ---------------------------------
+
+    public function test_the_guest_does_not_read_our_internal_vocabulary(): void
+    {
+        // "Yayınlanmış sürüm" misafirin sorduğu bir soru değil, BİZİM
+        // kavramımız. Sayfa kendi kimliğini söyleyebiliyorsa bu cümle
+        // gereksizdir (`docs/79`).
+        $named = view('public-menu', ['snapshot' => [
+            'identity' => [
+                'brandName' => 'Zeytin Restoranları',
+                'locationName' => 'Kadıköy Şubesi',
+                'addressLine' => null,
+                'phone' => null,
+            ],
+            'categories' => [],
+        ]])->render();
+
+        self::assertStringNotContainsString('güncel yayınlanmış sürüm', $named);
+
+        // Ad bilinmiyorsa misafir hiç değilse NE baktığını okur.
+        $anonymous = view('public-menu', ['snapshot' => ['categories' => []]])->render();
+
+        self::assertStringContainsString('güncel yayınlanmış sürüm', $anonymous);
+    }
+
     // --- PUB-IDENTITY-ABSENT-01 -------------------------------------------
 
     public function test_a_snapshot_without_identity_still_renders(): void
