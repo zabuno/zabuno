@@ -331,4 +331,47 @@ final class MenuOperationsTest extends TestCase
 
         self::assertDatabaseHas('menu_items', ['id' => $itemId]);
     }
+
+    // --- MENU-OPS-VISIBLE-DEFAULT-01 ----------------------------------------
+
+    /**
+     * YENİ ÜRÜN GÖRÜNÜR OLARAK EKLENİR — `docs/74` (P0-02).
+     *
+     * Önceki varsayılan gizliydi ve sessiz bir duvar kuruyordu: sahip 40 ürün
+     * giriyor, "Yayınla"ya basıyor ve "gösterilecek hiçbir şey yok" hatası
+     * alıyordu. Kırkının da görünürlüğünü tek tek açması gerekiyordu ve bunu
+     * ürün ona hiçbir yerde söylemiyordu.
+     *
+     * Menüye ürün ekleyen biri onu menüde ister. Gizlemek İSTİSNADIR
+     * (tükendi), varsayılan değil.
+     */
+    public function test_a_new_item_is_visible_so_the_first_publish_is_not_a_wall(): void
+    {
+        $r = $this->restaurant('ops-visible-default');
+        $categoryId = $this->addCategory($r, 'Çorbalar');
+        $this->addItem($r, $categoryId, 'Mercimek Çorbası');
+
+        $item = $this->tree($r)['categories'][0]['menuItems'][0];
+        self::assertTrue($item['isVisible'], 'MENU-OPS-VISIBLE-DEFAULT-01: yeni ürün görünür olmalı.');
+
+        // Ve ilk yayın, tek bir görünürlük tıklaması olmadan başarılı olur.
+        $this->actingAs($r['owner'])->postJson(
+            "/api/workspaces/{$r['workspace']}/menu/{$r['menu']}/publications",
+        )->assertStatus(201);
+    }
+
+    /** Gizlemek hâlâ mümkün: tükenen ürün menüden çıkarılmadan kaldırılır. */
+    public function test_an_item_can_still_be_hidden(): void
+    {
+        $r = $this->restaurant('ops-visible-hide');
+        $categoryId = $this->addCategory($r, 'Çorbalar');
+        $itemId = $this->addItem($r, $categoryId, 'Mercimek Çorbası');
+
+        $this->actingAs($r['owner'])->putJson(
+            "/api/workspaces/{$r['workspace']}/menu-items/{$itemId}/visibility",
+            ['isVisible' => false],
+        )->assertOk();
+
+        self::assertFalse($this->tree($r)['categories'][0]['menuItems'][0]['isVisible']);
+    }
 }

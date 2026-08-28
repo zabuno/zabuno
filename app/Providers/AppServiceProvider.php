@@ -22,6 +22,7 @@ use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\Platform\Port\HostCapabilityProbePort;
 use App\Application\Platform\Port\PlatformAuthorizationPort;
 use App\Application\Platform\Port\PlatformWorkspaceQueryPort;
+use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\BulkQrCreationPort;
@@ -62,6 +63,7 @@ use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext
 use App\Infrastructure\Platform\Capability\RuntimeHostCapabilityProbe;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformAuthorization;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformWorkspaceQuery;
+use App\Infrastructure\Publication\Persistence\EloquentMenuIdentity;
 use App\Infrastructure\Publication\Persistence\EloquentPublicationRepository;
 use App\Infrastructure\Publication\Persistence\EloquentPublicMenuAddress;
 use App\Infrastructure\QrDestination\Persistence\EloquentBulkQrCreationRepository;
@@ -132,6 +134,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MediaAssetProcessorPort::class, UnavailableMediaAssetProcessor::class);
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
         $this->app->bind(PublicMenuAddressPort::class, EloquentPublicMenuAddress::class);
+        $this->app->bind(MenuIdentityPort::class, EloquentMenuIdentity::class);
         $this->app->bind(QrCodeRepositoryPort::class, EloquentQrCodeRepository::class);
         $this->app->bind(BulkQrCreationPort::class, EloquentBulkQrCreationRepository::class);
         $this->app->bind(QrCodeImageExportPort::class, EndroidQrCodeImageExportAdapter::class);

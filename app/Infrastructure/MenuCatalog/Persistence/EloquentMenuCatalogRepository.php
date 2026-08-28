@@ -192,13 +192,25 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                 'product_id' => $productId,
                 'price_minor_amount' => $money->minorAmount(),
                 'currency_code' => $money->currencyCode(),
-                'is_visible' => false,
+                /*
+                    YENİ ÜRÜN GÖRÜNÜR — `docs/74` (P0-02).
+
+                    Önceki varsayılan gizliydi ve sessiz bir duvar kuruyordu:
+                    sahip 40 ürün giriyor, "Yayınla"ya basıyor ve
+                    "gösterilecek hiçbir şey yok" hatası alıyordu. Kırkının da
+                    görünürlüğünü tek tek açması gerekiyordu ve bunu ürün ona
+                    hiçbir yerde söylemiyordu.
+
+                    Menüye ürün ekleyen biri onu menüde ister. Gizlemek
+                    İSTİSNADIR (tükendi), varsayılan değil.
+                */
+                'is_visible' => true,
                 'position' => $position,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            return new MenuItemSummary($id, $categoryId, $productId, $money->minorAmount(), $money->currencyCode(), $position, false);
+            return new MenuItemSummary($id, $categoryId, $productId, $money->minorAmount(), $money->currencyCode(), $position, true);
         });
     }
 

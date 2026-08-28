@@ -6,6 +6,7 @@ namespace App\Application\Publication\UseCase;
 
 use App\Application\MenuCatalog\Dto\MenuDraftTree;
 use App\Application\Publication\Exception\UnreadyDraftException;
+use App\Domain\Publication\MenuIdentity;
 
 final class BuildPublicationSnapshot
 {
@@ -14,11 +15,16 @@ final class BuildPublicationSnapshot
      * draft tree, validating that the draft is ready to publish. The
      * request-supplied snapshot is never trusted.
      *
-     * @return array{categories: list<array{name:string,menuItems:list<array{productName:string,priceMinorAmount:int,currencyCode:string,allergens:list<string>}>}>}
+     * Restoran kimliği de snapshot'a YAZILIR (`docs/75`): misafirin
+     * gördüğü ad, adres ve telefon yayın anında donar. Canlı sorguyla
+     * çekilseydi, şubenin adı değiştiği gün geçmiş bir yayın da sessizce
+     * değişirdi.
+     *
+     * @return array{identity?: array{brandName:string,locationName:string,addressLine:string|null,phone:string|null}, categories: list<array{name:string,menuItems:list<array{productName:string,priceMinorAmount:int,currencyCode:string,allergens:list<string>}>}>}
      *
      * @throws UnreadyDraftException
      */
-    public static function fromDraftTree(MenuDraftTree $tree): array
+    public static function fromDraftTree(MenuDraftTree $tree, ?MenuIdentity $identity = null): array
     {
         if ($tree->categories === []) {
             throw UnreadyDraftException::noCategory();
@@ -75,6 +81,10 @@ final class BuildPublicationSnapshot
             throw UnreadyDraftException::noVisibleItem();
         }
 
-        return ['categories' => $categories];
+        $snapshot = ['categories' => $categories];
+
+        // Kimlik BAŞA yazılır: snapshot bir insanın da okuyabileceği
+        // sıradadır ve "bu hangi restoranın menüsü" ilk satırdadır.
+        return $identity === null ? $snapshot : ['identity' => $identity->toSnapshot()] + $snapshot;
     }
 }
