@@ -38,10 +38,15 @@ export const shell = {
     'workspace.settings.tab.billing': 'Plan & billing',
     'workspace.qrCodes.operational.description':
         'Create and print the QR codes your guests scan to open the menu.',
-    'workspace.qrCodes.empty.needsMenu':
-        'QR codes point at a published menu. Build your menu first, then come back here to print the codes.',
+    // Boş durum dört soruyu birden cevaplar: ne yok, neden yok, anlamı ne,
+    // şimdi ne yapabilir (docs/59).
+    'workspace.qrCodes.empty.needsMenu': 'You need a menu before you can print QR codes',
+    'workspace.qrCodes.empty.needsMenu.why':
+        'A QR code opens your published menu, so there has to be a menu for it to open. Build yours first — it only takes a few minutes.',
     'workspace.qrCodes.empty.goToMenu': 'Go to your menu',
     'workspace.menu.previewAndPublish': 'Preview & publish',
+    'workspace.menu.error.why': 'Your menu is safe — this is only a problem loading it right now.',
+    'workspace.menu.error.noRetry': 'Reload the page to try again.',
     // Arıza sınıfları — her biri FARKLI bir çıkış yolu gösterir. Hepsine
     // "tekrar deneyin" demek, yalnız birinde doğru olan tavsiyeyi diğer
     // dördünde yanlış vermektir.

@@ -3,6 +3,7 @@ import type { DashboardMenuTree } from './DashboardPage';
 import { QrDestinationRegion } from './publication/QrDestinationRegion';
 import { useCurrentPublication } from './qr/useCurrentPublication';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PageState } from './shared/PageState';
 
 export type QrCodesPageProps = {
     workspaceId?: number;
@@ -43,23 +44,28 @@ export function QrCodesPage({
                     />
                 ) : (
                     /*
-                        Boş durum yalnız "yok" demez, ÇIKIŞ YOLU verir.
+                        ÖN KOŞUL durumu — hata değil.
+
                         QR kodu yayınlanmış bir menüye işaret eder; menü yoksa
-                        kullanıcının burada yapabileceği bir şey yoktur ve
-                        yapabileceği yere götürülmesi gerekir.
+                        bozulmuş bir şey yoktur, yalnız sıradaki adım henüz
+                        yapılmamıştır. `role="alert"` ile sunmak aciliyet
+                        bildirir ve kullanıcıyı olmayan bir arızayı aramaya
+                        iter (docs/59).
                     */
-                    <div className="flex flex-col items-start gap-3">
-                        <p role="status" className="text-body text-fg-secondary">
-                            {t('workspace.qrCodes.empty.needsMenu')}
-                        </p>
-                        <button
-                            type="button"
-                            onClick={() => onNavigateToSection?.('menu')}
-                            className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
-                        >
-                            {t('workspace.qrCodes.empty.goToMenu')}
-                        </button>
-                    </div>
+                    <PageState
+                        kind="prerequisite"
+                        title={t('workspace.qrCodes.empty.needsMenu')}
+                        description={t('workspace.qrCodes.empty.needsMenu.why')}
+                        action={
+                            <button
+                                type="button"
+                                onClick={() => onNavigateToSection?.('menu')}
+                                className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
+                            >
+                                {t('workspace.qrCodes.empty.goToMenu')}
+                            </button>
+                        }
+                    />
                 )}
             </WorkspacePageFrame>
         </div>

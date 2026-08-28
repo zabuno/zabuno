@@ -3,6 +3,7 @@ import { Button } from '../../catalog/forms/micro/Button';
 import { MenuCatalogWorkspace } from '../../catalog/menu/macro/MenuCatalogWorkspace';
 import type { DashboardMenuTree } from './DashboardPage';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PageState } from './shared/PageState';
 import type { CatalogPhase } from '../WorkspaceApp';
 
 type MenuPageProps = {
@@ -11,6 +12,15 @@ type MenuPageProps = {
     locationId: number | null;
     onTreeChange: (tree: DashboardMenuTree) => void;
     onNavigateToSection: (section: string) => void;
+    /**
+     * Kataloğu yeniden yüklemeyi dener.
+     *
+     * Hata durumu ÇIKIŞ YOLU olmadan sunuluyordu: kullanıcı "menü
+     * yüklenemedi" görüyor ve yapabileceği hiçbir şey bulunmuyordu. Bir hata
+     * ekranının işi ne olduğunu söylemek DEĞİL, kullanıcıyı oradan
+     * çıkarmaktır (docs/59).
+     */
+    onRetry?: () => void;
 };
 
 /**
@@ -34,6 +44,7 @@ export function MenuPage({
     locationId,
     onTreeChange,
     onNavigateToSection,
+    onRetry,
 }: MenuPageProps) {
     return (
         <div id="section-menu">
@@ -78,18 +89,25 @@ export function MenuPage({
 
         // Gerçek bekleme: veri yolda. Tek meşru "yükleniyor" hâli budur.
         if (catalogPhase === 'loading') {
-            return (
-                <p role="status" className="text-body text-fg-secondary">
-                    {t('workspace.menu.loading')}
-                </p>
-            );
+            return <PageState kind="loading" title={t('workspace.menu.loading')} />;
         }
 
         if (catalogPhase === 'error') {
             return (
-                <p role="alert" className="text-body text-fg-secondary">
-                    {t('workspace.menu.error')}
-                </p>
+                <PageState
+                    kind="error"
+                    title={t('workspace.menu.error')}
+                    description={t('workspace.menu.error.why')}
+                    {...(onRetry
+                        ? {
+                              action: (
+                                  <Button type="button" onClick={onRetry}>
+                                      {t('workspace.catalog.error.retry')}
+                                  </Button>
+                              ),
+                          }
+                        : { whyNoAction: t('workspace.menu.error.noRetry') })}
+                />
             );
         }
 
@@ -98,18 +116,21 @@ export function MenuPage({
         const target = catalogPhase === 'brand-onboarding' ? 'brand' : 'locations';
 
         return (
-            <div role="status" className="flex flex-col items-start gap-3">
-                <p className="text-body text-fg">
-                    {catalogPhase === 'brand-onboarding'
+            <PageState
+                kind="prerequisite"
+                title={
+                    catalogPhase === 'brand-onboarding'
                         ? t('workspace.menu.empty.brand.body')
-                        : t('workspace.menu.empty.location.body')}
-                </p>
-                <Button type="button" onClick={() => onNavigateToSection(target)}>
-                    {catalogPhase === 'brand-onboarding'
-                        ? t('workspace.menu.empty.brand.cta')
-                        : t('workspace.menu.empty.location.cta')}
-                </Button>
-            </div>
+                        : t('workspace.menu.empty.location.body')
+                }
+                action={
+                    <Button type="button" onClick={() => onNavigateToSection(target)}>
+                        {catalogPhase === 'brand-onboarding'
+                            ? t('workspace.menu.empty.brand.cta')
+                            : t('workspace.menu.empty.location.cta')}
+                    </Button>
+                }
+            />
         );
     }
 }

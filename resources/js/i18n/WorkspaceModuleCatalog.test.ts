@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 468;
+const FROZEN_LEGACY_KEY_COUNT = 471;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -129,8 +129,14 @@ const FROZEN_LEGACY_KEY_COUNT = 468;
 // söyleyen yardımcı metin eklendi, "Locale" → "Menu language" ve "Slug" →
 // "Menu web address" oldu, ve arıza sınıfları (yetki/çakışma/ağ/sunucu) ayrı
 // mesajlar aldı. 457 → 468.
+//
+// SAYFA DURUMLARI (FF-02c): hata ekranları ÇIKIŞ YOLU olmadan sunuluyordu —
+// menü yüklenemediğinde kullanıcı "yüklenemedi" görüyor ve yapabileceği
+// hiçbir şey bulunmuyordu. Boş durum artık dört soruyu birden cevaplıyor (ne
+// yok, neden yok, anlamı ne, şimdi ne yapabilir) ve hataya yeniden deneme
+// eklendi. 468 → 471.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '6e159f7f1672db01d56f7ba93a8a0f8ca051d79d34bdfd48f949aba1ae046006';
+    '90b6a80cd6b6f08db909b868934c06610c4325e46c930195b85b80a2b19a2192';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
