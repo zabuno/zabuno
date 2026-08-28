@@ -12,42 +12,6 @@ msgstr ""
 msgid "workspace.account.menu.label"
 msgstr ""
 
-#: workspace:workspace.aiCommand.affectedRecords.empty
-msgid "workspace.aiCommand.affectedRecords.empty"
-msgstr ""
-
-#: workspace:workspace.aiCommand.affectedRecords.heading
-msgid "workspace.aiCommand.affectedRecords.heading"
-msgstr ""
-
-#: workspace:workspace.aiCommand.approve
-msgid "workspace.aiCommand.approve"
-msgstr ""
-
-#: workspace:workspace.aiCommand.commandLabel
-msgid "workspace.aiCommand.commandLabel"
-msgstr ""
-
-#: workspace:workspace.aiCommand.recentCommands.empty
-msgid "workspace.aiCommand.recentCommands.empty"
-msgstr ""
-
-#: workspace:workspace.aiCommand.recentCommands.heading
-msgid "workspace.aiCommand.recentCommands.heading"
-msgstr ""
-
-#: workspace:workspace.aiCommand.status
-msgid "workspace.aiCommand.status"
-msgstr ""
-
-#: workspace:workspace.aiCommand.title
-msgid "workspace.aiCommand.title"
-msgstr ""
-
-#: workspace:workspace.aiCommand.trigger.label
-msgid "workspace.aiCommand.trigger.label"
-msgstr ""
-
 #: workspace:workspace.analytics.action.refresh
 msgid "workspace.analytics.action.refresh"
 msgstr ""
@@ -1242,6 +1206,38 @@ msgstr ""
 
 #: workspace:workspace.menu.previewAndPublish
 msgid "workspace.menu.previewAndPublish"
+msgstr ""
+
+#: workspace:workspace.omnibox.empty
+msgid "workspace.omnibox.empty"
+msgstr ""
+
+#: workspace:workspace.omnibox.group.create
+msgid "workspace.omnibox.group.create"
+msgstr ""
+
+#: workspace:workspace.omnibox.group.goTo
+msgid "workspace.omnibox.group.goTo"
+msgstr ""
+
+#: workspace:workspace.omnibox.group.records
+msgid "workspace.omnibox.group.records"
+msgstr ""
+
+#: workspace:workspace.omnibox.input.label
+msgid "workspace.omnibox.input.label"
+msgstr ""
+
+#: workspace:workspace.omnibox.input.placeholder
+msgid "workspace.omnibox.input.placeholder"
+msgstr ""
+
+#: workspace:workspace.omnibox.title
+msgid "workspace.omnibox.title"
+msgstr ""
+
+#: workspace:workspace.omnibox.trigger.label
+msgid "workspace.omnibox.trigger.label"
 msgstr ""
 
 #: workspace:workspace.publication.draftPreview.allergens

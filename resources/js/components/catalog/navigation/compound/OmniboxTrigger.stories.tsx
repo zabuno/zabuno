@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { AiCommandTrigger } from './AiCommandTrigger';
+import { OmniboxTrigger } from './OmniboxTrigger';
 
-const meta: Meta<typeof AiCommandTrigger> = {
-    title: 'Compound/Navigation/AiCommandTrigger',
-    component: AiCommandTrigger,
+const meta: Meta<typeof OmniboxTrigger> = {
+    title: 'Compound/Navigation/OmniboxTrigger',
+    component: OmniboxTrigger,
     args: {
         label: 'AI komutu',
         onClick: () => {},
@@ -11,7 +11,7 @@ const meta: Meta<typeof AiCommandTrigger> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof AiCommandTrigger>;
+type Story = StoryObj<typeof OmniboxTrigger>;
 
 export const Default: Story = {};
 

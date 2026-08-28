@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 497;
+const FROZEN_LEGACY_KEY_COUNT = 496;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -158,8 +158,13 @@ const FROZEN_LEGACY_KEY_COUNT = 497;
 // menüsü geldi. Yalnız ÖN KOŞULU sağlanan hedefler listelenir; şubesiz bir
 // çalışma alanında "Menü" maddesi çıkışsız bir ekrana götürürdü.
 // 492 → 497.
+//
+// OMNIBOX (docs/65): bağlı olmayan bir AI merkezini adlandıran dokuz
+// `aiCommand` anahtarı, yüzeyle birlikte kaldırıldı; yerine sekiz omnibox
+// anahtarı geldi. Sayının DÜŞMESİ bir kayıp değil: silinen anahtarlar
+// çalışmayan bir arayüzü tarif ediyordu. 497 → 496.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '559983cf1189ef14e5be7326ea3b0f894fb5d7cfbef40781f7cedc5da3625aa6';
+    '0d689addcf64917455e0cb4830c36ef902115bc6fb3e6f47ad3dec3008c219f7';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

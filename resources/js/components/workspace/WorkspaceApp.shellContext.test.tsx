@@ -173,7 +173,7 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
         vi.unstubAllGlobals();
     });
 
-    it('selecting the second real location updates the combobox and the AI command center shares the new selection without refetching the locations list', async () => {
+    it('selecting the second real location updates the combobox and the omnibox shares the new selection without refetching the locations list', async () => {
         const user = userEvent.setup();
         const fetchMock = await renderCurrentWorkspace([
             makeLocation({ id: 923, display_name: 'Kadıköy' }),
@@ -196,8 +196,8 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
         ).length;
         expect(locationsListCallsAfter).toBe(locationsListCallsBefore);
 
-        await user.click(screen.getByRole('button', { name: 'Open AI command center' }));
-        const dialog = await screen.findByRole('dialog', { name: 'AI command center' });
+        await user.click(screen.getByRole('button', { name: 'Search, go to, or create' }));
+        const dialog = await screen.findByRole('dialog', { name: 'Search and go' });
 
         expect(within(dialog).getByText('Beşiktaş')).toBeInTheDocument();
 
@@ -219,7 +219,18 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
 
         const banner = screen.getByRole('banner');
 
-        expect(within(banner).queryByRole('button', { name: /search/i })).toBeNull();
+        /*
+            İDDİA ADA DEĞİL DURUMA BAKAR.
+
+            Eskiden "adında search geçen düğme olmasın" deniyordu, çünkü üst
+            çubukta yalnız devre dışı durmak için var olan bir arama yer
+            tutucusu vardı. Artık ÇALIŞAN bir arama girişi var (`docs/65`) ve
+            adı doğal olarak "Search, go to, or create". Adı yasaklamak, kuralı
+            değil kuralın eski belirtisini korumak olurdu.
+
+            Ölçülen şey kuralın kendisi: üst çubukta yalnız devre dışı olmak
+            için var olan bir kontrol bulunmaz.
+        */
         expect(within(banner).queryByRole('button', { name: /notification/i })).toBeNull();
 
         const disabled = within(banner)
@@ -227,15 +238,20 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
             .filter((control) => (control as HTMLButtonElement).disabled);
         expect(disabled).toEqual([]);
 
+        // Ve arama girişi gerçekten çalışır durumdadır.
+        expect(
+            within(banner).getByRole('button', { name: 'Search, go to, or create' }),
+        ).toBeEnabled();
+
         expect(fetchMock.mock.calls.length).toBe(callCountAfterLoad);
 
         vi.unstubAllGlobals();
     });
 
-    it('keeps exactly one "Open AI command center" launcher alongside the new banner controls', async () => {
+    it('keeps exactly one omnibox launcher alongside the new banner controls', async () => {
         await renderCurrentWorkspace();
 
-        expect(screen.getAllByRole('button', { name: 'Open AI command center' })).toHaveLength(1);
+        expect(screen.getAllByRole('button', { name: 'Search, go to, or create' })).toHaveLength(1);
     });
 
     it('renders the real workspace control but no Current location combobox when the server returns zero locations', async () => {

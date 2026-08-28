@@ -127,15 +127,17 @@ export const shell = {
     'workspace.shell.currentLocation.label': 'Current location',
     'workspace.shell.globalSearch.unavailable': 'Global search unavailable',
     'workspace.shell.notifications.unavailable': 'Notifications unavailable',
-    'workspace.aiCommand.trigger.label': 'Open AI command center',
-    'workspace.aiCommand.title': 'AI command center',
-    'workspace.aiCommand.status': 'No AI gateway is connected or available yet.',
-    'workspace.aiCommand.commandLabel': 'Command',
-    'workspace.aiCommand.approve': 'Approve',
-    'workspace.aiCommand.affectedRecords.heading': 'Affected records',
-    'workspace.aiCommand.affectedRecords.empty': 'No records are affected.',
-    'workspace.aiCommand.recentCommands.heading': 'Recent commands',
-    'workspace.aiCommand.recentCommands.empty': 'No commands have been run yet.',
+    // Omnibox (docs/65). Eskiden burada dokuz `aiCommand` anahtarı vardı ve
+    // hepsi bağlı olmayan bir AI merkezinin devre dışı alanlarını
+    // adlandırıyordu; yüzeyle birlikte kaldırıldılar.
+    'workspace.omnibox.trigger.label': 'Search, go to, or create',
+    'workspace.omnibox.title': 'Search and go',
+    'workspace.omnibox.input.label': 'Search',
+    'workspace.omnibox.input.placeholder': 'Type to search menus, locations and screens',
+    'workspace.omnibox.group.goTo': 'Go to',
+    'workspace.omnibox.group.create': 'Create',
+    'workspace.omnibox.group.records': 'In this workspace',
+    'workspace.omnibox.empty': 'Nothing matches that search in this workspace.',
 } as const;
 
 declare module '../workspace' {
