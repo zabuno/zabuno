@@ -79,7 +79,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | D1 | Durum sözlüğü (loading/empty/error/permission/prerequisite/plan) | ✅ `docs/59` `PageState` |
 | D2 | `partial`, `success`, `degraded` durumları | ✅ tanımlı; `success` kesikli çerçeve kullanmaz (`docs/66` §3) |
 | D3 | Şablon kataloğu | 🔶 ortak iskelet var (`WorkspacePageFrame` + `PageState`); katalog soyutlaması tekrar ölçülmeden çıkarılmayacak (`docs/66` §5) |
-| D4 | Her empty state sonraki eyleme yönlendirir | 🔶 çoğu ekranda var |
+| D4 | Her empty state sonraki eyleme yönlendirir | ✅ sayfa düzeyi boşluklar `PageState` üzerinden; liste içi metinler bilerek düz kaldı (`docs/69`) |
 | D5 | Disabled kontrol nedenini açıklar | ✅ `whyNoAction` tip düzeyinde zorunlu |
 
 ## E. Ekranlar
@@ -220,6 +220,11 @@ Her tur hangi maddeleri kapattığını buraya yazar.
   oranı ve iki kırılım eklendi.
 - Şube kapsamı isteğe bağlı oldu: marka bütünü tek istekte görünüyor.
 - Belge: `docs/68`.
+- Altın yolculuk planın BİTİŞ ÖLÇÜTÜNE kadar uzatıldı: tarama artık
+  yöneticinin Analytics ekranına yansıdığı için test ediliyor
+  (`CRIT-JOURNEY-ANALYTICS-01`). Kaydedici devre dışı bırakılarak kırıldığı
+  doğrulandı.
+- Definition of Done'ın 19 maddesi kanıtlarıyla `docs/69`'da.
 
 ## Altı tur bitti
 

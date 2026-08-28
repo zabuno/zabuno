@@ -7,6 +7,7 @@ namespace Tests\Feature\CriticalJourney;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
+use Tests\Support\GrantsPlanEntitlements;
 use Tests\TestCase;
 
 /**
@@ -45,6 +46,7 @@ use Tests\TestCase;
  */
 final class RestaurantCriticalJourneyTest extends TestCase
 {
+    use GrantsPlanEntitlements;
     use RefreshDatabase;
 
     private const REGISTER_URI = '/register';
@@ -237,6 +239,59 @@ final class RestaurantCriticalJourneyTest extends TestCase
         // Aradaki boşluk bilerek kırılmaz boşluktur (U+00A0): para birimi
         // kodu tutardan ayrı satıra düşmemelidir.
         self::assertStringContainsString("TRY\u{00A0}45.00", $html, 'CRIT-JOURNEY-01: gerçek fiyat misafire ulaşmalı.');
+    }
+
+    // --- CRIT-JOURNEY-ANALYTICS-01 ----------------------------------------
+
+    /**
+     * Altın yolculuğun BİTİŞ ÖLÇÜTÜ.
+     *
+     * Plan yolculuğu halka açık menüde bitirmiyor: "restoran yöneticisi
+     * gerçek bir telefonla karekodu taradığında yayımlanmış menüyü
+     * açabilmeli ve **bu tarama Analytics ekranına yansımalıdır**."
+     *
+     * Yukarıdaki test misafirin menüyü gördüğünü kanıtlıyor; yöneticinin
+     * bunu GÖRDÜĞÜNÜ kanıtlamıyordu. Kayıt yolu vardı, ama uçtan uca bağlı
+     * olduğunu hiçbir test görmüyordu — FF-03a'da aynı boşluk sağ paneli
+     * "hiçbir ekranda yok" sandırmıştı.
+     */
+    public function test_a_real_scan_reaches_the_owners_analytics_screen(): void
+    {
+        $owner = $this->registeredAndVerifiedOwner('ada-analytics@example.com');
+
+        $r = $this->buildRestaurantThroughApi($owner, 'Zeytin Analytics');
+        $this->publishThroughApi($owner, $r['workspaceId'], $r['menuId']);
+        $token = $this->createQrTokenThroughApi($owner, $r['workspaceId'], $r['locationId'], $r['menuId']);
+
+        $this->grantEntitlements($r['workspaceId']);
+
+        // Yayına hazır ama HENÜZ TARANMAMIŞ: sayaç sıfır olmalı, yoksa
+        // sonraki iddia bir şey kanıtlamazdı.
+        $before = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$r['workspaceId']}/analytics/summary?range=today",
+        )->assertOk();
+        self::assertSame(0, $before->json('qrResolveCount'), 'CRIT-JOURNEY-ANALYTICS-01: tarama öncesi sayaç sıfır olmalı.');
+
+        // Misafir karekodu tarar ve menüyü açar.
+        $this->get("/q/{$token}")->assertStatus(302);
+        $this->get("/menu/{$token}")->assertStatus(200);
+
+        $after = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$r['workspaceId']}/analytics/summary?range=today",
+        )->assertOk();
+
+        self::assertSame(1, $after->json('qrResolveCount'), 'CRIT-JOURNEY-ANALYTICS-01: tarama yöneticinin ekranına yansımalı.');
+        self::assertSame(1, $after->json('menuOpenCount'), 'CRIT-JOURNEY-ANALYTICS-01: menü açılışı ayrı bir olaydır ve o da yansımalı.');
+
+        /*
+            Yaklaşık benzersiz ziyaretçi (`docs/68`): tek bir misafir tarayıp
+            menüyü açtı. İki olay yazıldı ama KİŞİ bir tanedir; sayım olayları
+            değil ziyaretçileri saymalı.
+        */
+        self::assertSame(1, $after->json('uniqueVisitorCount'), 'CRIT-JOURNEY-ANALYTICS-01: iki olay tek ziyaretçiden geldi.');
+
+        // Şube kırılımı, taramanın HANGİ şubeden geldiğini söyler.
+        self::assertSame(1, $after->json('locations.0.qrResolveCount'));
     }
 
     // --- CRIT-JOURNEY-REPUBLISH-01 ---------------------------------------
