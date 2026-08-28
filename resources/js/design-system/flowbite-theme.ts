@@ -66,9 +66,22 @@ import { createTheme } from 'flowbite-react/helpers/create-theme';
  * Requirement ID: DS-FLOWBITE-TOKEN-BIND-10.
  */
 
-/** Klavye odağı: `app.css` tabanıyla aynı dil — ring değil outline. */
+/**
+ * Klavye odağı: `app.css` tabanıyla aynı dil — ring değil outline.
+ *
+ * `focus:outline-none` KALDIRILDI. Öğe hem `:focus` hem `:focus-visible`
+ * olduğunda ikisi de uygulanıyor ve `outline-none`, Tailwind'in
+ * `--tw-outline-style` değişkenini `none` yapıyordu; `outline-2` ile
+ * `outline-focus` genişliği ve rengi verse de çizgi hiç çizilmiyordu.
+ * Tarayıcının kendi halkasını kapatmak zaten `app.css`'teki `:focus`
+ * kuralının işi (docs/71).
+ *
+ * `outline-solid` AÇIKÇA yazılır: genişlik ve renk sınıfları biçimi
+ * belirlemez ve varsayılan biçim bir başkası tarafından `none`'a
+ * çekilebilir.
+ */
 const FOCUS_RING =
-    'focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
+    'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 /** Geçiş: ham süre değil motion token'ı (`DS-MOTION-CONTRACT-08`). */
 const TRANSITION =

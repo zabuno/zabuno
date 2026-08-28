@@ -21,11 +21,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             aria-invalid={invalid || undefined}
             aria-disabled={disabled || undefined}
             className={clsx(
-                'block w-full rounded-md border px-3 py-2 text-body outline-none transition-colors',
-                'focus-visible:ring-2 focus-visible:ring-offset-1',
+                // `outline-none` YOK: taban biçimi `none`a çekiyor ve
+                // `focus-visible:outline-2` genişlik verse de çizgi
+                // çizilmiyordu (docs/71).
+                'block w-full rounded-md border px-3 py-2 text-body transition-colors',
+                // Halka değil ana hat (`docs/71`).
+                'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2',
                 invalid
-                    ? 'border-border-danger focus-visible:ring-fg-danger'
-                    : 'border-border focus-visible:ring-focus',
+                    ? 'border-border-danger focus-visible:outline-fg-danger'
+                    : 'border-border focus-visible:outline-focus',
                 disabled && 'cursor-not-allowed opacity-60',
                 className,
             )}

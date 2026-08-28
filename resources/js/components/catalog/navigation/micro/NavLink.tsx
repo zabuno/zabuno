@@ -48,7 +48,16 @@ export function NavLink({
         'border-s-2 border-transparent',
         'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
         'text-fg-secondary hover:bg-surface-hover hover:text-fg',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+        /*
+            HALKA DEĞİL ANA HAT — `docs/71`.
+
+            `ring-*` Tailwind'in kutu gölgesiyle çizdiği halkadır: öğenin
+            dışına taşar, komşu kontrollerin üstüne biner ve `outline-none`
+            ile birlikte kullanıldığında tarayıcının kendi göstergesini de
+            kapatır. Uygulamanın geri kalanı `outline` kullanıyor; iki ayrı
+            dil, iki ayrı görünüm demekti.
+        */
+        'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
         current && 'border-s-brand bg-surface-active font-semibold text-fg',
         disabled && 'pointer-events-none opacity-50',
