@@ -75,6 +75,48 @@ function makeLocation(overrides: Partial<Record<string, unknown>> = {}) {
     };
 }
 
+/**
+ * Menü ağacı — bağlam panelinin GERÇEK verisi.
+ *
+ * Fikstür başta menüsüz olduğu için panel `null` dönüyordu ve hiçbir test
+ * panelin gerçekten ÇİZİLDİĞİNİ görmüyordu. Şikâyet tam buydu: "sağ sidebar
+ * hiçbir ekranda yok". Panelin var olduğunu kanıtlayan tek şey, onu menülü bir
+ * ekranda görmektir.
+ */
+function makeMenuTree() {
+    // Şekil `ShowMenuController` ile birebir: uydurma bir şekil, kanıtladığını
+    // sandığı şeyi kanıtlamaz.
+    return {
+        id: 4501,
+        workspaceId: WORKSPACE_ID,
+        locationId: 923,
+        name: 'Ana menü',
+        state: 'draft',
+        categories: [
+            {
+                id: 71,
+                menuId: 4501,
+                name: 'Kahvaltı',
+                position: 1,
+                menuItems: [
+                    {
+                        id: 900,
+                        categoryId: 71,
+                        productId: 5,
+                        productName: 'Menemen',
+                        priceMinorAmount: 18500,
+                        currencyCode: 'TRY',
+                        position: 1,
+                        isVisible: true,
+                        allergens: [],
+                    },
+                ],
+            },
+            { id: 72, menuId: 4501, name: 'İçecekler', position: 2, menuItems: [] },
+        ],
+    };
+}
+
 function buildFetchMock() {
     return vi.fn(async (url: string, init?: RequestInit) => {
         const method = (init?.method ?? 'GET').toUpperCase();
@@ -96,6 +138,19 @@ function buildFetchMock() {
         }
         if (String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations` && method === 'GET') {
             return jsonResponse(200, [makeLocation()]);
+        }
+        if (
+            String(url) === `/api/workspaces/${WORKSPACE_ID}/brand/locations/923/menu` &&
+            method === 'GET'
+        ) {
+            return jsonResponse(200, makeMenuTree());
+        }
+        if (
+            String(url) === `/api/workspaces/${WORKSPACE_ID}/menu/4501/publications/current` &&
+            method === 'GET'
+        ) {
+            // Henüz yayınlanmamış: panel sürüm satırını UYDURMAZ.
+            return jsonResponse(404, {});
         }
 
         throw new Error(`Unhandled fetch in WorkspaceApp shell test: ${method} ${String(url)}`);
@@ -482,6 +537,52 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
 
         vi.unstubAllGlobals();
     });
+    /**
+     * PANEL GERÇEKTEN ÇİZİLİR.
+     *
+     * Bu testin yokluğu, paketin ilk hâlinde kimsenin fark etmediği boşluktu:
+     * bileşenin kendi testi geçiyordu, kabuk yuvası açıktı, ama hiçbir test
+     * ikisinin BİRLEŞTİĞİNİ görmüyordu. Şikâyet de tam buydu — "sağ sidebar
+     * hiçbir ekranda yok".
+     */
+    it('menü ekranında bağlam paneli gerçek veriyle çizilir', async () => {
+        const user = userEvent.setup();
+        await renderCurrentWorkspace({ ...desktopChrome, inspectors: desktopInspectors });
+
+        await user.click(await screen.findByRole('link', { name: 'Menus' }));
+
+        const inspector = await screen.findByRole('complementary', { name: /this menu/i });
+
+        // Sayılar ağaçtan gelir: iki kategori, bir ürün.
+        expect(within(inspector).getByText(/^categories$/i).parentElement).toHaveTextContent('2');
+        expect(within(inspector).getByText(/^items$/i).parentElement).toHaveTextContent('1');
+
+        // Menünün bağlı olduğu lokasyon — panelin cevapladığı asıl soru.
+        expect(within(inspector).getByText('Kadıköy')).toBeInTheDocument();
+
+        // Yayınlanmamış menüde sürüm satırı UYDURULMAZ.
+        expect(within(inspector).queryByText(/version/i)).toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+
+    /**
+     * Panelin tek eylemi ana alanda ZATEN var olan yola götürür; yeni bir yol
+     * açsaydı panel bir kolaylık değil gizli bir ön koşul olurdu.
+     */
+    it('paneldeki kısayol bilinen yayın ekranına götürür', async () => {
+        const user = userEvent.setup();
+        await renderCurrentWorkspace({ ...desktopChrome, inspectors: desktopInspectors });
+
+        await user.click(await screen.findByRole('link', { name: 'Menus' }));
+        const inspector = await screen.findByRole('complementary', { name: /this menu/i });
+        await user.click(within(inspector).getByRole('button', { name: /preview & publish/i }));
+
+        expect(screen.getByRole('main').querySelector('#section-publication')).not.toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+
     /**
      * Panel BULUNMAYAN sayfada çizilmez.
      *
