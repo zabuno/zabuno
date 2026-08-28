@@ -23,12 +23,26 @@ final class BuildIdentityCoverageTest extends TestCase
     {
         $views = glob(resource_path('views').'/{,*/}*.blade.php', GLOB_BRACE) ?: [];
 
+        /*
+         * Bir görünümün React mount ettiği, giriş dosyasının ADINDAN değil
+         * `@vite(` çağrısından anlaşılır.
+         *
+         * Önceden yalnız `.tsx` metni aranıyordu. Cihaza göre ayrı paket
+         * sunulmaya başlandığında (docs/54) workspace görünümünde giriş adı
+         * çalışma zamanında üretilir oldu — `entryFor('workspace')` — ve bu
+         * muhafız o görünümü SESSİZCE görmez hâle geldi. Kapı, kontrol ettiği
+         * şeyin adına değil, yaptığı işe bakmalı.
+         */
         $mountsReact = array_filter(
             $views,
             static function (string $file): bool {
                 $source = file_get_contents($file);
 
-                return $source !== false && str_contains($source, '.tsx');
+                if ($source === false) {
+                    return false;
+                }
+
+                return str_contains($source, '.tsx') || str_contains($source, "entryFor(");
             },
         );
 

@@ -2,6 +2,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * Freezes the dashboard catalog-mutation sync contract for WorkspaceApp
@@ -153,9 +154,9 @@ describe('WorkspaceApp — dashboard catalog-mutation sync (S1-WP01A foundation,
         vi.stubGlobal('fetch', fetchMock);
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
 
         expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
 

@@ -2,6 +2,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * RED test freezing the shell-level AI Command Center contract
@@ -113,8 +114,10 @@ async function renderCurrentWorkspace() {
     const fetchMock = buildFetchMock();
     vi.stubGlobal('fetch', fetchMock);
 
-    const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
-    render(<WorkspaceApp />);
+    const { WorkspaceApp } = await importWorkspaceModule<{
+        WorkspaceApp: React.ComponentType<typeof desktopChrome>;
+    }>();
+    render(<WorkspaceApp {...desktopChrome} />);
 
     await screen.findByRole('navigation', { name: 'Restaurant admin' });
 

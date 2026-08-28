@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TopBar } from '../catalog/layout/compound/TopBar';
+import { SidebarNav } from '../catalog/layout/compound/SidebarNav';
 import { AdminShell } from '../catalog/layout/macro/AdminShell';
 import { DashboardOverview } from '../catalog/layout/macro/DashboardOverview';
 import { BrandEditForm, type BrandProfile } from './BrandEditForm';
@@ -76,10 +77,13 @@ describe('Fluid Adaptive Shell — intrinsic layout contract', () => {
         const { container: shellContainer } = render(
             <AdminShell
                 brand={brand}
-                navGroups={navGroups}
+                persistentSidebar={
+                    <aside className="admin-shell-sidebar">
+                        <SidebarNav groups={navGroups} />
+                    </aside>
+                }
                 mobileMenuOpen={false}
                 onToggleMobileMenu={() => {}}
-                onCloseMobileMenu={() => {}}
             >
                 <p>Content</p>
             </AdminShell>,
@@ -127,14 +131,17 @@ describe('Fluid Adaptive Shell — intrinsic layout contract', () => {
         expect(toggle.className ?? '').not.toMatch(/(?:^|\s)hidden(?:\s|$)/);
     });
 
-    it('AdminShell CSS-hides the persistent sidebar at the 320px start and keeps nav reachable via the drawer toggle', () => {
+    it('AdminShell 320 pikselde akışkan kalır; kalıcı kenar çubuğu CİHAZA göre verilir, CSS ile gizlenmez', () => {
         const { container } = render(
             <AdminShell
                 brand={brand}
-                navGroups={navGroups}
+                persistentSidebar={
+                    <aside className="admin-shell-sidebar">
+                        <SidebarNav groups={navGroups} />
+                    </aside>
+                }
                 mobileMenuOpen={false}
                 onToggleMobileMenu={() => {}}
-                onCloseMobileMenu={() => {}}
             >
                 <p>Content</p>
             </AdminShell>,
@@ -142,12 +149,13 @@ describe('Fluid Adaptive Shell — intrinsic layout contract', () => {
 
         expect(container.querySelector('main')).not.toBeNull();
 
-        // 320 CSS px is the starting proof, not a breakpoint (docs/06 §12) — the
-        // persistent aside is CSS-hidden at the start; nav stays reachable
-        // through the drawer toggle, not through the persistent aside.
+        // 320 CSS px başlangıç kanıtıdır, kırılma noktası değil (docs/06 §12).
+        // Kenar çubuğu artık CSS ile GİZLENMEZ: hangi cihaza hizmet edildiği
+        // sunucuda belirlenir ve kabuğa yalnız o cihazın parçası verilir
+        // (docs/54). Telefon bu yapıyı hiç indirmez.
         const persistentAside = container.querySelector('.admin-shell-sidebar');
         expect(persistentAside).not.toBeNull();
-        expect(persistentAside?.className ?? '').toMatch(/(?:^|\s)hidden(?:\s|$)/);
+        expect(persistentAside?.className ?? '').not.toMatch(/(?:^|\s)hidden(?:\s|$)/);
         expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
 
         const body = container.querySelector('.admin-shell-layout');

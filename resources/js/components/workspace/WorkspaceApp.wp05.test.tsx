@@ -2,6 +2,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * Regression contract for three visible AdminShell destinations added in
@@ -151,8 +152,10 @@ async function renderCurrentWorkspace() {
         value: buildFetchMock(),
     });
 
-    const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
-    const rendered = render(<WorkspaceApp />);
+    const { WorkspaceApp } = await importWorkspaceModule<{
+        WorkspaceApp: React.ComponentType<typeof desktopChrome>;
+    }>();
+    const rendered = render(<WorkspaceApp {...desktopChrome} />);
 
     await screen.findByRole('navigation', { name: 'Restaurant admin' });
 

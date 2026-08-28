@@ -2,6 +2,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome, mobileChrome } from '../../test/workspaceChrome';
 
 /**
  * RED test freezing the real AdminShell composition contract for
@@ -100,14 +101,20 @@ function buildFetchMock() {
     });
 }
 
-async function renderCurrentWorkspace() {
+async function renderCurrentWorkspace(chrome: object = desktopChrome) {
     const fetchMock = buildFetchMock();
     vi.stubGlobal('fetch', fetchMock);
 
-    const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
-    render(<WorkspaceApp />);
+    const { WorkspaceApp } = await importWorkspaceModule<{
+        WorkspaceApp: React.ComponentType<typeof desktopChrome & typeof mobileChrome>;
+    }>();
+    render(<WorkspaceApp {...chrome} />);
 
-    await screen.findByRole('navigation', { name: 'Restaurant admin' });
+    if (chrome === desktopChrome) {
+        await screen.findByRole('navigation', { name: 'Restaurant admin' });
+    } else {
+        await screen.findByRole('button', { name: 'Open menu' });
+    }
 
     return fetchMock;
 }
@@ -181,29 +188,33 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
     // ekran okuyucu listesinde ayırt edilemez. Çekmece zaten adlandırılmış bir
     // diyalog olduğu için içindeki gezinti artık landmark değil; landmark
     // sayısı HER ZAMAN bir kalır ve çekmecenin varlığı içeriğinden okunur.
-    it('opens the mobile drawer navigation with a Close control, then removes it on close while the desktop navigation landmark stays unique', async () => {
+    /**
+     * TELEFON kabuğu: kalıcı ray YOK, gezinti çekmeceden gelir.
+     *
+     * Eski sözleşmede ikisi birden çiziliyor, kalıcı olan CSS ile
+     * gizleniyordu — yani telefon her ikisinin de kodunu indiriyordu. Artık
+     * cihaz ayrımı sunucuda yapılıyor (docs/54) ve telefon paketinde kalıcı
+     * ray hiç bulunmuyor; bu yüzden test, çekmece kapalıyken gezintinin DOM'da
+     * hiç olmadığını da sınıyor.
+     */
+    it('telefon kabuğunda gezinti yalnız çekmeceden gelir ve kapanınca kaybolur', async () => {
         const user = userEvent.setup();
-        await renderCurrentWorkspace();
+        await renderCurrentWorkspace(mobileChrome);
 
-        const landmarks = () => screen.getAllByRole('navigation', { name: 'Restaurant admin' });
-        const dashboardLinks = () => screen.getAllByRole('link', { name: 'Dashboard' });
+        const dashboardLinks = () => screen.queryAllByRole('link', { name: 'Dashboard' });
 
-        expect(landmarks()).toHaveLength(1);
-        expect(dashboardLinks()).toHaveLength(1);
+        expect(dashboardLinks()).toHaveLength(0);
 
         await user.click(screen.getByRole('button', { name: 'Open menu' }));
 
-        // Çekmece gezintisi geldi…
-        expect(dashboardLinks()).toHaveLength(2);
-        // …fakat ikinci bir landmark üretmedi.
-        expect(landmarks()).toHaveLength(1);
+        expect(dashboardLinks()).toHaveLength(1);
+        expect(screen.getAllByRole('navigation', { name: 'Restaurant admin' })).toHaveLength(1);
 
         await user.click(screen.getByRole('button', { name: 'Close' }));
 
         await waitFor(() => {
-            expect(dashboardLinks()).toHaveLength(1);
+            expect(dashboardLinks()).toHaveLength(0);
         });
-        expect(landmarks()).toHaveLength(1);
 
         vi.unstubAllGlobals();
     });
@@ -363,9 +374,9 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
-    it('closes the mobile drawer when its Menu link is activated, moving aria-current to Menu while the destination and desktop nav remain', async () => {
+    it('telefon kabuğunda çekmeceden gezinmek çekmeceyi kapatır ve hedefi çizer', async () => {
         const user = userEvent.setup();
-        await renderCurrentWorkspace();
+        await renderCurrentWorkspace(mobileChrome);
 
         await user.click(screen.getByRole('button', { name: 'Open menu' }));
 
@@ -375,14 +386,6 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         await waitFor(() => {
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         });
-
-        expect(screen.getByRole('navigation', { name: 'Restaurant admin' })).toBeInTheDocument();
-
-        expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('aria-current', 'page');
-        expect(screen.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute(
-            'aria-current',
-            'page',
-        );
 
         const main = screen.getByRole('main');
         expect(within(main).getByTestId('menu-catalog-workspace')).toBeInTheDocument();

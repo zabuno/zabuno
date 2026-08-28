@@ -1,6 +1,7 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * Freezes the per-location Edit contract on the exclusive Locations
@@ -131,8 +132,10 @@ function buildFetchMock() {
 async function renderOnLocationsPage(fetchMock: ReturnType<typeof buildFetchMock>) {
     vi.stubGlobal('fetch', fetchMock);
 
-    const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
-    render(<WorkspaceApp />);
+    const { WorkspaceApp } = await importWorkspaceModule<{
+        WorkspaceApp: React.ComponentType<typeof desktopChrome>;
+    }>();
+    render(<WorkspaceApp {...desktopChrome} />);
 
     const navLink = await screen.findByRole('link', { name: 'Locations' });
     fireEvent.click(navLink);
@@ -306,9 +309,9 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC';
 
         const { WorkspaceApp } = await importWorkspaceModule<{
-            WorkspaceApp: React.ComponentType;
+            WorkspaceApp: React.ComponentType<typeof desktopChrome>;
         }>();
-        render(<WorkspaceApp />);
+        render(<WorkspaceApp {...desktopChrome} />);
         const navLink = await screen.findByRole('link', { name: 'Locations' });
         fireEvent.click(navLink);
         const destination = document.querySelector('#section-locations') as HTMLElement;

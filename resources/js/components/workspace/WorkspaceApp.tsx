@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { Button, Label, TextInput } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
@@ -66,7 +67,42 @@ function resolveSectionFromPath(pathname: string): WorkspaceSection {
     return resolveSectionKeyFromPath(pathname);
 }
 
-export function WorkspaceApp() {
+export type WorkspaceDeviceClass = 'mobile' | 'desktop';
+
+export type WorkspaceAppProps = {
+    /**
+     * Hangi cihaz için sunulduğumuz — SUNUCUNUN kararı, ölçülmüş bir pencere
+     * genişliği değil (`App\Support\Device\DeviceClass`).
+     *
+     * Bu değer bir "ekran boyutu" değildir ve öyle kullanılmamalıdır. Neyin
+     * GÖRÜNECEĞİNİ değil, hangi kodun YÜKLENDİĞİNİ anlatır: mobil paket
+     * bağlam panelini hiç içermez. Görsel uyum içeride akışkan düzenle
+     * sağlanır.
+     */
+    /**
+     * Cihaza özgü kabuk parçalarını ÜRETEN işlevler.
+     *
+     * Bileşen olarak değil, giriş noktasından geçirilen işlev olarak
+     * alınıyorlar. Sebebi tek: `WorkspaceApp` bu modülleri kendisi `import`
+     * etseydi Vite ikisini de ortak parçaya koyar ve telefon, masaüstü
+     * kabuğunu yine indirirdi (docs/54).
+     */
+    renderPersistentSidebar?: (context: WorkspaceChromeContext) => ReactNode;
+    renderNavigationDrawer?: (
+        context: WorkspaceChromeContext & { open: boolean; onClose: () => void },
+    ) => ReactNode;
+};
+
+export type WorkspaceChromeContext = {
+    navGroups: SidebarNavGroup[];
+    activeNavKey?: string;
+    navLabel?: string;
+};
+
+export function WorkspaceApp({
+    renderPersistentSidebar,
+    renderNavigationDrawer,
+}: WorkspaceAppProps) {
     const [phase, setPhase] = useState<Phase>('loading');
     const [user, setUser] = useState<WorkspaceUser | null>(null);
     const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -798,12 +834,20 @@ export function WorkspaceApp() {
     return (
         <AdminShell
             brand={{ name: t('workspace.shell.brand') }}
-            navGroups={navGroups}
-            activeNavKey={currentWorkspace ? activeSection : undefined}
-            navLabel={t('workspace.shell.nav.label')}
+            persistentSidebar={renderPersistentSidebar?.({
+                navGroups,
+                activeNavKey: currentWorkspace ? activeSection : undefined,
+                navLabel: t('workspace.shell.nav.label'),
+            })}
+            navigationDrawer={renderNavigationDrawer?.({
+                navGroups,
+                activeNavKey: currentWorkspace ? activeSection : undefined,
+                navLabel: t('workspace.shell.nav.label'),
+                open: mobileMenuOpen,
+                onClose: () => setMobileMenuOpen(false),
+            })}
             mobileMenuOpen={mobileMenuOpen}
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
-            onCloseMobileMenu={() => setMobileMenuOpen(false)}
             topBarCenter={
                 currentWorkspace && (
                     <WorkspaceContextControls

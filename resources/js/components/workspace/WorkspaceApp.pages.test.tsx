@@ -2,6 +2,7 @@ import type React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { desktopChrome, mobileChrome } from '../../test/workspaceChrome';
 
 /**
  * LIVE_SIX_PAGE_BATCH_RED
@@ -180,14 +181,20 @@ function buildFetchMock() {
     });
 }
 
-async function renderCurrentWorkspace() {
+async function renderCurrentWorkspace(chrome: object = desktopChrome) {
     const fetchMock = buildFetchMock();
     vi.stubGlobal('fetch', fetchMock);
 
-    const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
-    render(<WorkspaceApp />);
+    const { WorkspaceApp } = await importWorkspaceModule<{
+        WorkspaceApp: React.ComponentType<typeof desktopChrome & typeof mobileChrome>;
+    }>();
+    render(<WorkspaceApp {...chrome} />);
 
-    await screen.findByRole('navigation', { name: 'Restaurant admin' });
+    if (chrome === desktopChrome) {
+        await screen.findByRole('navigation', { name: 'Restaurant admin' });
+    } else {
+        await screen.findByRole('button', { name: 'Open menu' });
+    }
 
     return fetchMock;
 }
@@ -382,7 +389,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const user = userEvent.setup();
         setViewport(320, 480);
 
-        await renderCurrentWorkspace();
+        // 320 pikselde TELEFON paketi sunulur: gezinti çekmeceden gelir ve
+        // masaüstü rayının kodu bu pakette hiç bulunmaz (docs/54).
+        await renderCurrentWorkspace(mobileChrome);
 
         const names = ['Brand', 'Locations', 'Menu', 'Media', 'Publication', 'Dashboard'];
         const ids = [

@@ -2,24 +2,42 @@ import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import { SkipLink } from '../micro/SkipLink';
 import { TopBar, type TopBarProps } from '../compound/TopBar';
-import { SidebarNav, type SidebarNavGroup } from '../compound/SidebarNav';
 import { AdminFooter } from '../compound/AdminFooter';
-import { DrawerPanel } from '../../overlays/compound/DrawerPanel';
 
 export type AdminShellProps = {
     brand: TopBarProps['brand'];
-    navGroups: SidebarNavGroup[];
-    activeNavKey?: string;
-    /** Accessible name for the sidebar `<nav>` landmark, e.g. "Restaurant admin" / "Superadmin". */
-    navLabel?: string;
     /** Mobile drawer open state — externally controlled (docs/35 §9). */
     mobileMenuOpen: boolean;
     onToggleMobileMenu: () => void;
-    onCloseMobileMenu: () => void;
     /** Optional slot for search/global actions in the top bar. */
     topBarCenter?: ReactNode;
     /** Optional slot for profile menu / notifications / workspace switcher. */
     topBarEnd?: ReactNode;
+    /**
+     * Cihaza ÖZGÜ kabuk parçaları — yuva olarak alınır, burada ÜRETİLMEZ.
+     *
+     * Kabuğun içinde `deviceClass === 'desktop' ? <aside/> : null` yazmak
+     * yetmezdi: o dal çalışmasa bile KOD pakette bulunur, indirilir ve
+     * ayrıştırılır. Telefonun masaüstü kodunu indirmemesi ancak modül
+     * sınırıyla sağlanır — bu yüzden parçalar giriş noktasından geçirilir
+     * (docs/54).
+     */
+    persistentSidebar?: ReactNode;
+    navigationDrawer?: ReactNode;
+    /**
+     * Sağ panel — masaüstünde ana içeriğin YANINDA duran çalışma alanı.
+     *
+     * WordPress'in yazı düzenleyicisindeki sağ panelin karşılığı: kategoriler,
+     * görünürlük, yayın durumu gibi kayda AİT ama akışı bölmemesi gereken
+     * işler oraya gider. Ana alan böylece tek bir işe ayrılır.
+     *
+     * Bu yuva YALNIZ masaüstü paketinde doldurulur; mobil paket bu kodu hiç
+     * indirmez (docs/54, adaptive yükleme).
+     */
+    inspector?: ReactNode;
+    /** Sağ panelin erişilebilir adı ve dar ekrandaki başlığı. */
+    inspectorLabel?: string;
+
     /** id of the main landmark; also the SkipLink target. */
     mainId?: string;
     /**
@@ -36,9 +54,11 @@ export type AdminShellProps = {
 
 /**
  * Macro: composes Micro/Layout/SkipLink, Compound/Layout/TopBar,
- * Compound/Layout/SidebarNav (rendered twice — persistent alongside main via
- * intrinsic flex-wrap, and inside Compound/Overlays/DrawerPanel for the
- * drawer affordance) around a `main` content region. Route/fetch/business-rule
+ * ve cihaza özgü kabuk yuvaları (`persistentSidebar`, `navigationDrawer`,
+ * `inspector`) etrafında bir `main` içerik bölgesi kurar. Bu parçaları
+ * KENDİSİ üretmez: hangi cihaza hizmet edildiği sunucuda belirlenir ve yalnız
+ * o cihazın parçası geçirilir (docs/54). Kabuğun içinde bir cihaz dalı
+ * bırakmak yetmezdi — dal çalışmasa bile kod her pakete girerdi. Route/fetch/business-rule
  * agnostic — nav data,
  * active key, and drawer open state are all props; a surface owns wiring
  * this to a real route and persona (docs/35 §2a macro boundary, §4 shared
@@ -46,14 +66,14 @@ export type AdminShellProps = {
  */
 export function AdminShell({
     brand,
-    navGroups,
-    activeNavKey,
-    navLabel,
     mobileMenuOpen,
     onToggleMobileMenu,
-    onCloseMobileMenu,
     topBarCenter,
     topBarEnd,
+    persistentSidebar,
+    navigationDrawer,
+    inspector,
+    inspectorLabel = 'Details',
     mainId = 'main-content',
     showFooter = false,
     children,
@@ -70,33 +90,8 @@ export function AdminShell({
                 end={topBarEnd}
             />
             <div className="admin-shell-layout flex min-w-0 flex-1 flex-wrap">
-                <aside
-                    className={clsx(
-                        'admin-shell-sidebar hidden flex-[1_1_16rem] flex-col border-e',
-                        'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
-                    )}
-                >
-                    <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
-                </aside>
-                <DrawerPanel
-                    open={mobileMenuOpen}
-                    onClose={onCloseMobileMenu}
-                    title={navLabel ?? 'Menu'}
-                >
-                    {/*
-                        Çekmece zaten `title` ile adlandırılmış bir diyalogdur;
-                        içindeki gezinti ayrı bir landmark olarak render
-                        edilirse kalıcı kenar çubuğuyla aynı adı taşıyan
-                        ikinci bir `<nav>` oluşur ve ekran okuyucu ikisini
-                        ayırt edemez.
-                    */}
-                    <SidebarNav
-                        groups={navGroups}
-                        activeKey={activeNavKey}
-                        label={navLabel}
-                        asLandmark={false}
-                    />
-                </DrawerPanel>
+                {persistentSidebar}
+                {navigationDrawer}
                 <main
                     id={mainId}
                     tabIndex={-1}
@@ -104,6 +99,31 @@ export function AdminShell({
                 >
                     {children}
                 </main>
+                {inspector ? (
+                    /*
+                        Bağlam paneli — YALNIZ masaüstü paketinde bulunur.
+
+                        Gizlenmiyor, SARIYOR. Kalıcı ray için yer kalmadığında
+                        (dar bir masaüstü penceresi) panel ana içeriğin altına
+                        geçer ve okunmaya devam eder. `display: none` ile
+                        gizlemek daha kolay olurdu ama içeriği ulaşılamaz
+                        kılardı; onu geri getirmek için bir "paneli aç" düğmesi
+                        gerekirdi ve o düğme, panel zaten görünürken ölü
+                        kontrole dönüşürdü.
+
+                        `flex-basis` 21rem: `docs/50` §4'teki 336–400 px
+                        aralığının içinde.
+                    */
+                    <aside
+                        aria-label={inspectorLabel}
+                        className={clsx(
+                            'admin-shell-inspector min-w-0 flex-[1_1_21rem] flex-col gap-[var(--space-fluid-sm)] border-s',
+                            'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
+                        )}
+                    >
+                        {inspector}
+                    </aside>
+                ) : null}
             </div>
             {/*
                 Tenant uygulamasında kalıcı telif footer'ı YOKTUR.

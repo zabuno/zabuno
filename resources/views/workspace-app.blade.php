@@ -11,7 +11,15 @@
         'zabuno_tenant_slug' => (string) (request()->route('workspace') ?? ''),
     ]])
     @viteReactRefresh
-    @vite(['resources/css/app.css', 'resources/js/workspace.tsx'])
+@php
+        // Hangi paketin yükleneceğine SUNUCU karar verir. Tarayıcıya inen
+        // JavaScript, o cihaz için yazılmış olandır; diğerinin kodu hiç
+        // indirilmez (docs/54).
+        $zabunoDevice = request()->attributes->get(
+            \App\Http\Middleware\NegotiateDeviceClass::ATTRIBUTE,
+        ) ?? \App\Support\Device\DeviceClass::detect(request());
+    @endphp
+    @vite(['resources/css/app.css', $zabunoDevice->entryFor('workspace')])
 </head>
 <body>
     <div id="app"></div>

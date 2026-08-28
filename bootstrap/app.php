@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CanonicalUrl;
+use App\Http\Middleware\NegotiateDeviceClass;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -52,6 +53,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // URL motoru güvenlik başlıklarından ÖNCE çalışır: kanonik olmayan
         // bir adres zaten yönlendirilecekse, o yanıtı işlemenin anlamı yok.
         $middleware->prepend(CanonicalUrl::class);
+        // Cihaz pazarlığı, HTML üretilmeden ÖNCE çözülmeli: hangi paketin
+        // yükleneceği Blade'de karara bağlanıyor.
+        $middleware->append(NegotiateDeviceClass::class);
         $middleware->append(SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

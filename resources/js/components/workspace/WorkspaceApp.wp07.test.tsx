@@ -1,6 +1,7 @@
 import type React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
  * SURFACE-SEPARATION — yayın kanıtı restoran ekranı DEĞİLDİR.
@@ -151,8 +152,10 @@ async function renderCurrentWorkspace() {
         value: buildFetchMock(),
     });
 
-    const { WorkspaceApp } = await importWorkspaceModule<{ WorkspaceApp: React.ComponentType }>();
-    const rendered = render(<WorkspaceApp />);
+    const { WorkspaceApp } = await importWorkspaceModule<{
+        WorkspaceApp: React.ComponentType<typeof desktopChrome>;
+    }>();
+    const rendered = render(<WorkspaceApp {...desktopChrome} />);
 
     await screen.findByRole('navigation', { name: 'Restaurant admin' });
 
