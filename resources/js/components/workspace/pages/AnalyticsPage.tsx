@@ -2,6 +2,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Button, Label, Select } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { AnalyticsMetricGrid } from './analytics/AnalyticsMetricGrid';
+import { AnalyticsBreakdown, type AnalyticsBreakdownRow } from './analytics/AnalyticsBreakdown';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 import { PageState } from './shared/PageState';
 import { useCurrentPublication } from './qr/useCurrentPublication';
@@ -31,7 +32,14 @@ export type AnalyticsPageProps = {
     menuTree?: DashboardMenuTree | null;
 };
 
-type Summary = { qrResolveCount: number; menuOpenCount: number };
+type Summary = {
+    qrResolveCount: number;
+    menuOpenCount: number;
+    uniqueVisitorCount: number;
+    openRate: number | null;
+    locations: AnalyticsBreakdownRow[];
+    qrCodes: AnalyticsBreakdownRow[];
+};
 
 /** Boş sonucun HANGİ boşluk olduğu. */
 type EmptyReason = 'no-menu' | 'not-published' | 'no-scans' | 'range';
@@ -106,6 +114,17 @@ export function AnalyticsPage({
                 setSummary({
                     qrResolveCount: body.qrResolveCount,
                     menuOpenCount: body.menuOpenCount,
+                    /*
+                        Sunucu bu alanları vermezse SIFIR/boş kabul edilir,
+                        uydurulmaz. Eski bir sunucuya karşı çalışan bir
+                        istemcide "yaklaşık benzersiz" alanı hiç ölçülmemiş
+                        olabilir; onu tahmin etmek, bilinmeyeni bilinen gibi
+                        göstermek olurdu.
+                    */
+                    uniqueVisitorCount: body.uniqueVisitorCount ?? 0,
+                    openRate: body.openRate ?? null,
+                    locations: body.locations ?? [],
+                    qrCodes: body.qrCodes ?? [],
                 });
                 setStatus('success');
             } catch {
@@ -281,10 +300,28 @@ export function AnalyticsPage({
                                 onWidenRange={() => setRange('30d')}
                             />
                         ) : (
-                            <AnalyticsMetricGrid
-                                qrResolveCount={summary.qrResolveCount}
-                                menuOpenCount={summary.menuOpenCount}
-                            />
+                            <div className="flex flex-col gap-[var(--space-fluid-md)]">
+                                <AnalyticsMetricGrid
+                                    qrResolveCount={summary.qrResolveCount}
+                                    menuOpenCount={summary.menuOpenCount}
+                                    uniqueVisitorCount={summary.uniqueVisitorCount}
+                                    openRate={summary.openRate}
+                                />
+
+                                {/*
+                                    Kırılımlar yalnız KARŞILAŞTIRACAK bir şey
+                                    varken çizilir; tek satırlık bir kırılım,
+                                    üstündeki toplamın tekrarıdır (docs/68).
+                                */}
+                                <AnalyticsBreakdown
+                                    heading={t('workspace.analytics.breakdown.locations')}
+                                    rows={summary.locations}
+                                />
+                                <AnalyticsBreakdown
+                                    heading={t('workspace.analytics.breakdown.qrCodes')}
+                                    rows={summary.qrCodes}
+                                />
+                            </div>
                         ))}
                 </div>
             </WorkspacePageFrame>

@@ -194,6 +194,13 @@ final class AnalyticsLedgerSummaryTest extends TestCase
             'ANALYTICS-LEDGER-SCHEMA-01: tenant/location/QR/menu-scoped kolonlar ve idempotency için nullable unique event_id bulunmalı.',
         );
 
+        /*
+            Yasak liste HAM tanımlayıcılara karşıdır. `visitor_key` listede
+            yok ve olmamalı: o bir kimlik değil, günlük dönen bir tuzla
+            türetilmiş geri çevrilemez özettir (`docs/68`). Ham IP saklamakla
+            özet saklamak arasındaki fark, ilkinin bir kişiyi işaret etmesi,
+            ikincisinin yalnız "aynı gün aynı cihaz" diyebilmesidir.
+        */
         foreach (['ip_address', 'ip', 'user_agent', 'fingerprint', 'session_id', 'visitor_id'] as $forbiddenColumn) {
             self::assertFalse(
                 Schema::hasColumn('analytics_events', $forbiddenColumn),
@@ -428,10 +435,31 @@ final class AnalyticsLedgerSummaryTest extends TestCase
 
                 $keys = array_keys((array) $response->json());
                 sort($keys);
+                /*
+                    ŞEKİL GENİŞLEDİ ve gerekçesi değişti.
+
+                    Bu iddia eskiden "unique/visitor iddiası EKLENMEMELİ"
+                    diyordu ve haklıydı: ölçüm yoktu, dolayısıyla böyle bir
+                    alan uydurma olurdu.
+
+                    Artık ölçüm var (`docs/68`): olay satırında günlük dönen
+                    bir tuzla türetilmiş, geri çevrilemez bir ziyaretçi özeti
+                    tutuluyor. Kural değişmedi — alan ancak GERÇEKTEN
+                    ölçüldüğü için var; yasak, uydurmaya karşıydı.
+                */
                 self::assertSame(
-                    ['generatedAt', 'menuOpenCount', 'qrResolveCount', 'range'],
+                    [
+                        'generatedAt',
+                        'locations',
+                        'menuOpenCount',
+                        'openRate',
+                        'qrCodes',
+                        'qrResolveCount',
+                        'range',
+                        'uniqueVisitorCount',
+                    ],
                     $keys,
-                    'ANALYTICS-SUMMARY-SCOPED-01: yanıt yalnız bu dört alanı içermeli, unique/visitor iddiası eklenmemeli.',
+                    'ANALYTICS-SUMMARY-SCOPED-01: yanıt tam olarak bu alanları içermeli.',
                 );
             }
         } finally {

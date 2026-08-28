@@ -40,8 +40,25 @@ function jsonResponse(status: number, body: unknown): Response {
     } as Response;
 }
 
-function summaryBody(range: string, qrResolveCount: number, menuOpenCount: number) {
-    return { range, qrResolveCount, menuOpenCount, generatedAt: '2026-08-22T09:00:00.000Z' };
+function summaryBody(
+    range: string,
+    qrResolveCount: number,
+    menuOpenCount: number,
+    extra: Record<string, unknown> = {},
+) {
+    return {
+        range,
+        qrResolveCount,
+        menuOpenCount,
+        // MVP metrikleri (docs/68). Varsayılanlar sıfır/boş: ölçüm var ama
+        // bu senaryoda veri yok.
+        uniqueVisitorCount: 0,
+        openRate: qrResolveCount === 0 ? null : menuOpenCount / qrResolveCount,
+        locations: [],
+        qrCodes: [],
+        generatedAt: '2026-08-22T09:00:00.000Z',
+        ...extra,
+    };
 }
 
 function setViewport(width: number, height: number) {
@@ -215,7 +232,12 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         await waitFor(() => expect(within(region).getByText('3')).toBeInTheDocument());
         expect(within(region).getByText('2')).toBeInTheDocument();
         expect(within(region).getByText(/qr resolve/i)).toBeInTheDocument();
-        expect(within(region).getByText(/menu open/i)).toBeInTheDocument();
+        /*
+            TAM eşleşme: "Scan to menu open" oranı da eklendi (docs/68) ve
+            gevşek bir arama ikisini birden yakalıyor. Testin ölçmek istediği
+            şey sayaç kartının etiketi.
+        */
+        expect(within(region).getByText('Confirmed Menu Open')).toBeInTheDocument();
     });
 
     it('refetches on range change and, when the superseded initial request resolves late, keeps the newer range result instead of being overwritten by it', async () => {
@@ -574,6 +596,97 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             await userEvent.click(widen);
 
             expect(screen.getByLabelText(/range/i)).toHaveValue('30d');
+        });
+    });
+
+    /**
+     * MVP metrikleri — `docs/68`.
+     *
+     * Toplam sayı, iki şubesi olan bir işletmede birinin hiç taranmadığını
+     * gizler; kırılım o gizlenen şeyi görünür kılar.
+     */
+    describe('MVP metrikleri', () => {
+        it('yaklaşık benzersiz ziyaretçiyi ve açılma oranını gösterir', async () => {
+            fetchSpy.mockImplementation(async () =>
+                jsonResponse(
+                    200,
+                    summaryBody('today', 10, 7, { uniqueVisitorCount: 6, openRate: 0.7 }),
+                ),
+            );
+
+            render(
+                <AnalyticsPage
+                    workspaceId={WORKSPACE_ID}
+                    locationId={LOCATION_ID}
+                    onNavigateToSection={vi.fn()}
+                />,
+            );
+
+            const region = await screen.findByRole('region', { name: /metric|report/i });
+
+            await waitFor(() => {
+                expect(within(region).getByText('6')).toBeInTheDocument();
+            });
+            expect(within(region).getByText(/approx\. unique visitors/i)).toBeInTheDocument();
+            expect(within(region).getByText('70%')).toBeInTheDocument();
+        });
+
+        it('birden fazla şube varsa kırılımı çizer', async () => {
+            fetchSpy.mockImplementation(async () =>
+                jsonResponse(
+                    200,
+                    summaryBody('today', 15, 12, {
+                        locations: [
+                            { id: 1, label: 'Kadıköy', qrResolveCount: 12, menuOpenCount: 9 },
+                            { id: 2, label: 'Beşiktaş', qrResolveCount: 3, menuOpenCount: 3 },
+                        ],
+                    }),
+                ),
+            );
+
+            render(
+                <AnalyticsPage
+                    workspaceId={WORKSPACE_ID}
+                    locationId={LOCATION_ID}
+                    onNavigateToSection={vi.fn()}
+                />,
+            );
+
+            const region = await screen.findByRole('region', { name: /metric|report/i });
+
+            expect(
+                await within(region).findByRole('heading', { name: 'By location' }),
+            ).toBeInTheDocument();
+            expect(within(region).getByText('Beşiktaş')).toBeInTheDocument();
+        });
+
+        /**
+         * Tek şubeli bir işletmede kırılım, üstündeki toplamın tekrarıdır.
+         */
+        it('tek şube varsa kırılımı çizmez', async () => {
+            fetchSpy.mockImplementation(async () =>
+                jsonResponse(
+                    200,
+                    summaryBody('today', 12, 9, {
+                        locations: [
+                            { id: 1, label: 'Kadıköy', qrResolveCount: 12, menuOpenCount: 9 },
+                        ],
+                    }),
+                ),
+            );
+
+            render(
+                <AnalyticsPage
+                    workspaceId={WORKSPACE_ID}
+                    locationId={LOCATION_ID}
+                    onNavigateToSection={vi.fn()}
+                />,
+            );
+
+            const region = await screen.findByRole('region', { name: /metric|report/i });
+            await within(region).findByText('12');
+
+            expect(within(region).queryByRole('heading', { name: 'By location' })).toBeNull();
         });
     });
 });

@@ -24,6 +24,18 @@ msgstr ""
 msgid "workspace.analytics.action.viewPlan"
 msgstr ""
 
+#: workspace:workspace.analytics.breakdown.column.name
+msgid "workspace.analytics.breakdown.column.name"
+msgstr ""
+
+#: workspace:workspace.analytics.breakdown.locations
+msgid "workspace.analytics.breakdown.locations"
+msgstr ""
+
+#: workspace:workspace.analytics.breakdown.qrCodes
+msgid "workspace.analytics.breakdown.qrCodes"
+msgstr ""
+
 #: workspace:workspace.analytics.empty.noMenu.action
 msgid "workspace.analytics.empty.noMenu.action"
 msgstr ""
@@ -84,8 +96,16 @@ msgstr ""
 msgid "workspace.analytics.metric.menuOpen"
 msgstr ""
 
+#: workspace:workspace.analytics.metric.openRate
+msgid "workspace.analytics.metric.openRate"
+msgstr ""
+
 #: workspace:workspace.analytics.metric.qrResolve
 msgid "workspace.analytics.metric.qrResolve"
+msgstr ""
+
+#: workspace:workspace.analytics.metric.uniqueVisitors
+msgid "workspace.analytics.metric.uniqueVisitors"
 msgstr ""
 
 #: workspace:workspace.analytics.operational.description

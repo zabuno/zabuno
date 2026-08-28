@@ -23,9 +23,18 @@ final class RecordAnalyticsEvent
         int $qrCodeId,
         int $menuId,
         AnalyticsEventType $eventType,
+        ?string $visitorKey = null,
     ): void {
         try {
-            $this->analytics->record($workspaceId, $locationId, $qrCodeId, $menuId, $eventType, Carbon::now());
+            $this->analytics->record(
+                $workspaceId,
+                $locationId,
+                $qrCodeId,
+                $menuId,
+                $eventType,
+                Carbon::now(),
+                $visitorKey,
+            );
         } catch (Throwable) {
             // Analytics recording is best-effort and must not surface.
         }

@@ -27,7 +27,7 @@ final class ShowAnalyticsSummaryController extends Controller
         private readonly RequireEntitlement $requireEntitlement,
     ) {}
 
-    public function __invoke(Request $request, int $workspace, int $location): JsonResponse
+    public function __invoke(Request $request, int $workspace, ?int $location = null): JsonResponse
     {
         $userId = (int) $request->user()->getKey();
 
@@ -35,7 +35,12 @@ final class ShowAnalyticsSummaryController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        if ($this->context->locationWorkspaceId($location) !== $workspace) {
+        /*
+            Şube verilmişse KİRACIYA AİT OLDUĞU doğrulanır. Verilmemişse
+            kapsam zaten çalışma alanının kendisidir ve yetki yukarıda
+            kontrol edildi — doğrulanacak ikinci bir kimlik yok.
+        */
+        if ($location !== null && $this->context->locationWorkspaceId($location) !== $workspace) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
 

@@ -17,7 +17,15 @@ interface AnalyticsRepositoryPort
         int $menuId,
         AnalyticsEventType $eventType,
         Carbon $occurredAt,
+        /** Türetilmiş, geri çevrilemez ziyaretçi özeti; bilinmiyorsa null. */
+        ?string $visitorKey = null,
     ): void;
 
-    public function summarize(int $workspaceId, int $locationId, string $range, Carbon $now): AnalyticsSummary;
+    /** @param  int|null  $locationId  `null` ise çalışma alanının tamamı. */
+    public function summarize(
+        int $workspaceId,
+        ?int $locationId,
+        string $range,
+        Carbon $now,
+    ): AnalyticsSummary;
 }

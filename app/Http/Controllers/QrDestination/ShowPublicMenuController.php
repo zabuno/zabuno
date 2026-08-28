@@ -14,8 +14,10 @@ use App\Domain\QrDestination\QrToken;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
+use App\Support\Analytics\VisitorKey;
 use App\Support\Seo\MenuStructuredData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -61,6 +63,9 @@ final class ShowPublicMenuController extends Controller
             $record->id,
             $record->menuId,
             AnalyticsEventType::MenuOpen,
+            // Ham IP ve tarayıcı bilgisi SAKLANMAZ; yalnız günlük dönen bir
+            // tuzla türetilmiş özet yazılır (`docs/68`).
+            VisitorKey::forRequest($request, $record->workspaceId, Carbon::now()),
         );
 
         // Sayfa burada RENDER EDİLİR (yönlendirilmez): misafirin karekodu

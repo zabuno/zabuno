@@ -127,6 +127,13 @@ export const shell = {
     'workspace.shell.currentLocation.label': 'Current location',
     'workspace.shell.globalSearch.unavailable': 'Global search unavailable',
     'workspace.shell.notifications.unavailable': 'Notifications unavailable',
+    // MVP analitik metrikleri (docs/68).
+    'workspace.analytics.metric.uniqueVisitors': 'Approx. unique visitors',
+    'workspace.analytics.metric.openRate': 'Scan to menu open',
+    'workspace.analytics.breakdown.locations': 'By location',
+    'workspace.analytics.breakdown.qrCodes': 'By QR code',
+    'workspace.analytics.breakdown.column.name': 'Name',
+
     // Analitik boş durumları (docs/66). Tek bir "veri yok" cümlesi beş ayrı
     // duruma bölündü: her birinin ÇIKIŞ YOLU farklı.
     'workspace.analytics.empty.noMenu.title': 'Analytics starts with your first menu',

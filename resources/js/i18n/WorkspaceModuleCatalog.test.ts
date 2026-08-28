@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 509;
+const FROZEN_LEGACY_KEY_COUNT = 514;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -167,8 +167,12 @@ const FROZEN_LEGACY_KEY_COUNT = 509;
 // ANALİTİK BOŞ DURUMLARI (docs/66): tek bir "veri yok" cümlesi dört ayrı
 // duruma bölündü — menü yok, yayınlanmamış, hiç taranmamış, seçili aralıkta
 // yok. Dördünün ÇIKIŞ YOLU farklı. 496 → 509.
+//
+// MVP ANALİTİK METRİKLERİ (docs/68): yaklaşık benzersiz ziyaretçi, tarama →
+// menü açılış oranı ve iki kırılım (lokasyon, karekod) eklendi. Toplam sayı
+// iki şubeli bir işletmede birinin hiç taranmadığını gizliyordu. 509 → 514.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '58e2d8e3ae07d4c7f144aa262124f2aff6e437446e31c06f3c12648de8447327';
+    '717f103ad0f084c073b7978a17cc2aa4f564e507a3ec8d4eb8bd79b8e7377ee0';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
