@@ -84,6 +84,18 @@ interface MenuCatalogRepositoryPort
 
     public function renameCategory(int $workspaceId, int $categoryId, string $name): CategorySummary;
 
+    /**
+     * CSV'den gelen DOĞRULANMIŞ satırları taslağa yazar — `docs/80`.
+     *
+     * Tek işlemde: yolun ortasında ölen bir aktarım yarım menü bırakamaz.
+     * Var olan kategori adı yeniden kullanılır; aynı ada ikinci bir kategori
+     * açmak, sahibin menüsünü ikiye bölerdi.
+     *
+     * @param  list<array{category:string,product:string,priceMinorAmount:int,currencyCode:string,allergens:list<string>,description:?string,isVisible:bool}>  $rows
+     * @return array{categories:int,items:int}
+     */
+    public function importDraftRows(int $workspaceId, int $menuId, array $rows): array;
+
     public function renameMenuItemProduct(
         int $workspaceId,
         int $menuItemId,

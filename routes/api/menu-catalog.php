@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
 use App\Http\Controllers\MenuCatalog\DeleteCategoryController;
 use App\Http\Controllers\MenuCatalog\DeleteMenuItemController;
+use App\Http\Controllers\MenuCatalog\ExportMenuCsvController;
+use App\Http\Controllers\MenuCatalog\ImportMenuCsvController;
 use App\Http\Controllers\MenuCatalog\RenameCategoryController;
 use App\Http\Controllers\MenuCatalog\RenameMenuItemController;
 use App\Http\Controllers\MenuCatalog\ReorderCategoriesController;
@@ -46,6 +48,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/workspaces/{workspace}/menu-items/{menuItem}', DeleteMenuItemController::class);
     // Ürüne fotoğraf bağlar; `null` bağı kaldırır (`docs/77`).
     Route::put('/workspaces/{workspace}/menu-items/{menuItem}/image', BindMenuItemImageController::class);
+
+    /*
+        Menüyü almak ve geri koymak (`docs/80`).
+
+        Hız SINIRLI: her ikisi de menünün tamamını okuyup yazar ve tekrar
+        tekrar çağrılmaları için bir sebep yok.
+    */
+    Route::get('/workspaces/{workspace}/menu/{menu}/export.csv', ExportMenuCsvController::class)
+        ->middleware('throttle:20,1');
+    Route::post('/workspaces/{workspace}/menu/{menu}/import', ImportMenuCsvController::class)
+        ->middleware('throttle:10,1');
     Route::put('/workspaces/{workspace}/menu-categories/{category}/item-order', ReorderMenuItemsController::class);
     Route::put('/workspaces/{workspace}/menu/{menu}/category-order', ReorderCategoriesController::class);
 });

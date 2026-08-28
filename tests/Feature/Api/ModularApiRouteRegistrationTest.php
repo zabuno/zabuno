@@ -51,6 +51,8 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}||App\Http\Controllers\MenuCatalog\RenameMenuItemController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/menu-items/{menuItem}||App\Http\Controllers\MenuCatalog\DeleteMenuItemController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu-items/{menuItem}/image||App\Http\Controllers\MenuCatalog\BindMenuItemImageController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/menu/{menu}/export.csv||App\Http\Controllers\MenuCatalog\ExportMenuCsvController|api,auth:sanctum,throttle:20,1,verified',
+        'POST|api/workspaces/{workspace}/menu/{menu}/import||App\Http\Controllers\MenuCatalog\ImportMenuCsvController|api,auth:sanctum,throttle:10,1,verified',
         'PUT|api/workspaces/{workspace}/menu-categories/{category}/item-order||App\Http\Controllers\MenuCatalog\ReorderMenuItemsController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu/{menu}/category-order||App\Http\Controllers\MenuCatalog\ReorderCategoriesController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/publications||App\Http\Controllers\Publication\StorePublicationController|api,auth:sanctum,verified',
