@@ -41,6 +41,7 @@ use App\Application\Tenancy\Port\WorkspaceContextSessionPort;
 use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
+use App\Domain\Media\SlotCatalogue;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
@@ -55,6 +56,7 @@ use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
+use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
@@ -131,7 +133,22 @@ final class AppServiceProvider extends ServiceProvider
 
             return new UnavailableMalwareScanner;
         });
-        $this->app->bind(MediaAssetProcessorPort::class, UnavailableMediaAssetProcessor::class);
+        $this->app->bind(MediaAssetProcessorPort::class, function (): MediaAssetProcessorPort {
+            // Varsayılan GERÇEK işleyicidir. Eskiden burada, yüklenen her
+            // fotoğrafı sonsuza kadar bekleten bir yer tutucu bağlıydı; bu
+            // "güvenli varsayılan" değil, sessizce bozuk olmaktı (`docs/76`).
+            //
+            // GD PHP ile birlikte gelir; yine de yokluğu varsayılmaz:
+            // olmayan bir eklentiyle ölümcül hata vermektense dürüstçe
+            // "işleyemiyorum" demek gerekir.
+            if (! extension_loaded('gd')) {
+                return new UnavailableMediaAssetProcessor;
+            }
+
+            return new GdMediaAssetProcessor(
+                SlotCatalogue::fromArray((array) config('media-slots.slots', [])),
+            );
+        });
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
         $this->app->bind(PublicMenuAddressPort::class, EloquentPublicMenuAddress::class);
         $this->app->bind(MenuIdentityPort::class, EloquentMenuIdentity::class);

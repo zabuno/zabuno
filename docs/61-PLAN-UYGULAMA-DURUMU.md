@@ -244,7 +244,7 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | P0-05 | Foto/PDF/CSV aktarma | ⬜ |
 | P0-06 | Gerçek e-posta | ⛔ sağlayıcı hesabı sahibinde |
 | P0-07 | Canlı dağıtım kanıtı | ⛔ sunucu sırları sahibinde |
-| P0-08 | Medya işleme güvenilirliği | ⬜ |
+| P0-08 | Medya işleme güvenilirliği | ✅ `docs/76` |
 | P0-09 | Veri dışa aktarımı | ⬜ |
 | P1-01…P1-08 | Halka açık ücretli MVP | ⬜ |
 

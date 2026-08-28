@@ -32,6 +32,16 @@ final class DeleteMediaController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        if ($this->media->isUsedByPublication($workspace, $media)) {
+            // 409: istek geçerli, DURUM izin vermiyor. Yayın, sahibin
+            // onayladığı donmuş hâldir; bir temizlik onu misafirin gözü
+            // önünde bozamaz (`docs/76`, kriter 4).
+            return response()->json([
+                'message' => 'Bu görsel yayınlanmış bir menüde kullanılıyor. '
+                    .'Önce menüden kaldırıp yeniden yayınlayın, sonra silin.',
+            ], 409);
+        }
+
         $this->media->delete($media);
 
         return response()->json(null, 204);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FoundationStatusController;
+use App\Http\Controllers\Media\ServeRenditionController;
 use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
@@ -48,6 +49,15 @@ Route::get('/sitemap.xml', ShowSitemapController::class)->name('seo.sitemap');
 Route::get('/q/{token}', RedirectQrTokenController::class)
     ->middleware('throttle:qr-resolve')
     ->name('qr.resolve');
+// Görsel türevleri: değişmez, sağlama toplamı taşıyan, herkese açık adres
+// (`docs/76`). Misafirin menüdeki fotoğrafı görebilmesi için oturum
+// gerekmez — menünün kendisi de zaten herkese açıktır.
+Route::get('/media/r/{rendition}-{fingerprint}.{format}', ServeRenditionController::class)
+    ->where('rendition', '[0-9]+')
+    ->where('fingerprint', '[a-f0-9]{32}')
+    ->where('format', '(webp|png|jpeg)')
+    ->name('media.rendition');
+
 // Basılı QR token'ının adresi. KALICI adres artık `/menu/{key}/{slug}`;
 // bu yol eski bağlantılar ve eski basılı kodlar için yaşamaya devam eder
 // ve kalıcı olarak kanonik adrese taşır (`docs/38` §21).
