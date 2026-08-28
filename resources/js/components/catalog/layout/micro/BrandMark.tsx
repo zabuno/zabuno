@@ -46,7 +46,16 @@ export function BrandMark({ name, mark, href, hideName = false, className }: Bra
 
     const sharedClassName = clsx(
         'inline-flex items-center gap-[var(--space-2)] text-base font-semibold text-fg',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus',
+        /*
+            HALKA DEĞİL ANA HAT — `docs/71`.
+
+            `ring-*` Tailwind'in kutu gölgesiyle çizdiği halkadır: öğenin
+            dışına taşar, komşu kontrollerin üstüne biner ve `outline-none`
+            ile birlikte kullanıldığında tarayıcının kendi göstergesini de
+            kapatır. Uygulamanın geri kalanı `outline` kullanıyor; iki ayrı
+            dil, iki ayrı görünüm demekti.
+        */
+        'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
         className,
     );
 

@@ -337,7 +337,12 @@
     --border-success: oklch(0.86 0.07 155);
     --border-warning: oklch(0.87 0.09 90);
 
-    --focus: oklch(0.55 0.18 255);
+    /* Odak göstergesi KROMASIZ: chroma 0, yani hiç ton yok.
+       Mavi olmasının teknik olarak imkânsız olması kasıtlı — sahibin
+       şikâyeti tam olarak maviydi ve bir jetonun "şu an mavi değil" olması
+       yetmez, mavi OLAMAMALI (docs/71). Nötr aynı zamanda her iki temada da
+       yüksek kontrast verir; marka sarısı açık zeminde veremezdi. */
+    --focus: oklch(0.28 0 0);
 
     --color-surface: var(--surface);
     --color-surface-glass-bg: color-mix(in oklch, var(--color-surface) 72%, transparent);
@@ -431,7 +436,8 @@
     --border-success: oklch(0.44 0.1 155);
     --border-warning: oklch(0.45 0.11 90);
 
-    --focus: oklch(0.72 0.15 255);
+    /* Karanlık temada aynı kural, ters uçta (docs/71). */
+    --focus: oklch(0.96 0 0);
 
     --color-surface: var(--surface);
     --color-surface-glass-bg: color-mix(in oklch, var(--color-surface) 60%, transparent);
@@ -522,10 +528,44 @@
     }
 }
 
-/* Keyboard-visible focus baseline (docs/15 §6 WCAG 2.2 AA) — mouse/touch
-   focus stays unstyled, keyboard focus always shows a visible ring. */
+/* SIRA ÖNEMLİ: `:focus` ile `:focus-visible` aynı özgüllüktedir (0,1,0),
+   dolayısıyla SONRA gelen kazanır. İlk denemede `:focus { outline: none }`
+   sonraya yazılmıştı; kural eşleşiyor, `outline-offset` uygulanıyor ama çizgi
+   hiç çizilmiyordu. Testler geçiyordu — kusuru tarayıcıda ölçmek gösterdi
+   (docs/71).
+
+   Önce tarayıcının KENDİ halkası kapatılır: Safari `-webkit-focus-ring-color`
+   ile sistem mavisini, Chrome kendi `auto` halkasını çizer; ikisi de
+   tarayıcıya göre farklı görünür ve ikisi de mavidir. */
+:focus {
+    outline: none;
+}
+
+/* Tailwind/Flowbite HALKASI odakta hiç çizilmez.
+
+   Bu bir temizlik değil, bir GARANTİ. Flowbite'ın jetona bağlanmamış aileleri
+   (Modal, Dropdown, Badge …) kendi `focus:ring-4 focus:ring-primary-300`
+   sınıflarını taşımaya devam ediyor ve o halka mavidir. Hangi bileşenin
+   bağlandığını tek tek takip etmek, bir gün yeni bir Flowbite bileşeni
+   eklendiğinde mavinin geri gelmesi demekti.
+
+   Halka değişkenlerini sıfırlamak yalnız HALKAYI siler; `--tw-shadow` ile
+   çizilen normal gölgeler etkilenmez (docs/71). */
+*:focus,
+*:focus-visible,
+*:focus-within {
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-ring-offset-shadow: 0 0 #0000;
+}
+
+/* Sonra klavye odağı çizilir (docs/15 §6, WCAG 2.2 AA) — fare/dokunma odağı
+   stilsiz kalır.
+
+   Renk JETONDAN gelir. Önceden burada `#2563eb` yazıyordu: jeton sisteminin
+   dışına çıkmış, karanlık temayla ve yüksek kontrastla birlikte değişmeyen
+   sabit bir mavi. */
 :focus-visible {
-    outline: 2px solid #2563eb;
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
 }
 
