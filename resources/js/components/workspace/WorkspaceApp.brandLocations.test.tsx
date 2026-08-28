@@ -149,7 +149,7 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-        expect(within(nav).getByRole('link', { name: 'Brand' })).toBeInTheDocument();
+        expect(within(nav).getByRole('link', { name: 'Settings' })).toBeInTheDocument();
         expect(within(nav).getByRole('link', { name: 'Locations' })).toBeInTheDocument();
 
         vi.unstubAllGlobals();
@@ -166,6 +166,8 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
+        // `/brand` adresi hâlâ çalışır — bölüm yalnız kenar çubuğunda
+        // listelenmiyor (docs/50 §5). Doğrudan açıldığında kendi kökünü çizer.
         const destination = await screen
             .findByText('Menekşe')
             .then(() => document.querySelector('#section-brand'));
@@ -238,10 +240,10 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-        const navLink = within(nav).getByRole('link', { name: 'Brand' });
+        const navLink = within(nav).getByRole('link', { name: 'Settings' });
         fireEvent.click(navLink);
 
-        const destination = document.querySelector('#section-brand') as HTMLElement;
+        const destination = document.querySelector('#section-settings') as HTMLElement;
         expect(destination).not.toBeNull();
 
         return within(destination);

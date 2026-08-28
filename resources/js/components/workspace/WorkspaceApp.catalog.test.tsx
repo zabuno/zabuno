@@ -197,7 +197,6 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
     });
 
     it('renders BrandOnboardingForm exactly once with the workspace id after navigating to Brand when the brand fetch 404s, then loads locations after onCreated fires', async () => {
-        const user = userEvent.setup();
         const fetchMock = buildFetchMock({
             brand: () => jsonResponse(404, { error: 'brand_not_found' }),
         });
@@ -208,8 +207,15 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Brand' }));
+        await screen.findByRole('navigation', { name: 'Restaurant admin' });
+        /*
+            Marka kurulumu `brand` bölümünde yaşar ve o bölüm artık kenar
+            çubuğunda LİSTELENMEZ (docs/50 §5) — adresi ise çalışır. Kurulum
+            akışı bir gezinti hedefi değil, tek seferlik bir yolculuktur;
+            kullanıcı oraya Dashboard'daki kurulum listesinden yönlendirilir.
+        */
+        history.replaceState(null, '', '/app/zeytin-restoranlari/brand');
+        window.dispatchEvent(new PopStateEvent('popstate'));
 
         const brandOnboardingForms = await screen.findAllByTestId('brand-onboarding-form');
         expect(brandOnboardingForms).toHaveLength(1);
@@ -291,7 +297,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
 
         mockLocationOnboardingFormProps?.onCreated(makeLocation({ id: 923 }));
 
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         const menuCatalog = await screen.findByTestId('menu-catalog-workspace');
         expect(menuCatalog).toBeInTheDocument();
@@ -316,7 +322,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         const menuCatalog = await screen.findByTestId('menu-catalog-workspace');
         expect(menuCatalog).toBeInTheDocument();
@@ -372,7 +378,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
         await screen.findByTestId('menu-catalog-workspace');
         expect(mockMenuCatalogWorkspaceProps?.locationId).toBe(firstLocation.id);
 
@@ -400,7 +406,7 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
 
         await userEvent.selectOptions(locationCombobox, secondOption);
 
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         await waitFor(() => {
             expect(mockMenuCatalogWorkspaceProps?.locationId).toBe(secondLocation.id);

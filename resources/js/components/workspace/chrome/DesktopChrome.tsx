@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
 import { SidebarNav, type SidebarNavGroup } from '../../catalog/layout/compound/SidebarNav';
+import { WorkspaceSwitcherTrigger } from './WorkspaceSwitcherTrigger';
 
 /**
  * MASAÜSTÜNE ÖZGÜ kabuk parçaları.
@@ -16,6 +17,8 @@ export type DesktopChromeProps = {
     navGroups: SidebarNavGroup[];
     activeNavKey?: string;
     navLabel?: string;
+    workspaceName?: string;
+    onSwitchWorkspace?: () => void;
 };
 
 /** Kalıcı birincil kenar çubuğu — `docs/50` §4: 248–272 px. */
@@ -23,6 +26,8 @@ export function DesktopSidebar({
     navGroups,
     activeNavKey,
     navLabel,
+    workspaceName,
+    onSwitchWorkspace,
 }: DesktopChromeProps): ReactNode {
     return (
         <aside
@@ -31,6 +36,10 @@ export function DesktopSidebar({
                 'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
             )}
         >
+            <WorkspaceSwitcherTrigger
+                workspaceName={workspaceName}
+                onSwitchWorkspace={onSwitchWorkspace}
+            />
             <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
         </aside>
     );

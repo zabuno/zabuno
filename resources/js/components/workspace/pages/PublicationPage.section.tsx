@@ -12,9 +12,8 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 const publicationSection: WorkspaceSectionDescriptor = {
     key: 'publication',
     path: 'publication',
-    order: 5,
+    order: 10,
     labelKey: 'workspace.shell.nav.publication',
-    group: 'menu',
     aiQuickAction: true,
     render,
 };

@@ -1084,6 +1084,10 @@ msgstr "Loading your menu…"
 msgid "workspace.menu.operational.description"
 msgstr "Build and edit the categories and items on your live menu catalog for the selected location."
 
+#: workspace:workspace.menu.previewAndPublish
+msgid "workspace.menu.previewAndPublish"
+msgstr "Preview & publish"
+
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
 msgstr "Allergens"
@@ -1512,6 +1516,34 @@ msgstr "Publication status is not available yet."
 msgid "workspace.publication.unavailable"
 msgstr "Publication is not available yet."
 
+#: workspace:workspace.qrCodes.empty.goToMenu
+msgid "workspace.qrCodes.empty.goToMenu"
+msgstr "Go to your menu"
+
+#: workspace:workspace.qrCodes.empty.needsMenu
+msgid "workspace.qrCodes.empty.needsMenu"
+msgstr "QR codes point at a published menu. Build your menu first, then come back here to print the codes."
+
+#: workspace:workspace.qrCodes.operational.description
+msgid "workspace.qrCodes.operational.description"
+msgstr "Create and print the QR codes your guests scan to open the menu."
+
+#: workspace:workspace.settings.operational.description
+msgid "workspace.settings.operational.description"
+msgstr "Your brand details and your plan. These are set up once and rarely change."
+
+#: workspace:workspace.settings.tab.billing
+msgid "workspace.settings.tab.billing"
+msgstr "Plan & billing"
+
+#: workspace:workspace.settings.tab.brand
+msgid "workspace.settings.tab.brand"
+msgstr "Brand"
+
+#: workspace:workspace.settings.tabs.label
+msgid "workspace.settings.tabs.label"
+msgstr "Settings sections"
+
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
 msgstr "Zabuno"
@@ -1548,17 +1580,25 @@ msgstr "Dashboard"
 msgid "workspace.shell.nav.group"
 msgstr "Account"
 
-#: workspace:workspace.shell.nav.group.business
-msgid "workspace.shell.nav.group.business"
-msgstr "Your business"
+#: workspace:workspace.shell.nav.group.management
+msgid "workspace.shell.nav.group.management"
+msgstr "Management"
 
-#: workspace:workspace.shell.nav.group.menu
-msgid "workspace.shell.nav.group.menu"
-msgstr "Your menu"
+#: workspace:workspace.shell.nav.group.primary
+msgid "workspace.shell.nav.group.primary"
+msgstr "Operations"
 
-#: workspace:workspace.shell.nav.group.restaurant
-msgid "workspace.shell.nav.group.restaurant"
-msgstr "Your restaurant"
+#: workspace:workspace.shell.nav.group.utility
+msgid "workspace.shell.nav.group.utility"
+msgstr "Settings"
+
+#: workspace:workspace.shell.nav.home
+msgid "workspace.shell.nav.home"
+msgstr "Home"
+
+#: workspace:workspace.shell.nav.insights
+msgid "workspace.shell.nav.insights"
+msgstr "Insights"
 
 #: workspace:workspace.shell.nav.label
 msgid "workspace.shell.nav.label"
@@ -1580,9 +1620,21 @@ msgstr "Menu"
 msgid "workspace.shell.nav.menuCatalog"
 msgstr "Menu catalog"
 
+#: workspace:workspace.shell.nav.menus
+msgid "workspace.shell.nav.menus"
+msgstr "Menus"
+
 #: workspace:workspace.shell.nav.publication
 msgid "workspace.shell.nav.publication"
 msgstr "Publication"
+
+#: workspace:workspace.shell.nav.qrCodes
+msgid "workspace.shell.nav.qrCodes"
+msgstr "QR codes"
+
+#: workspace:workspace.shell.nav.settings
+msgid "workspace.shell.nav.settings"
+msgstr "Settings"
 
 #: workspace:workspace.shell.nav.team
 msgid "workspace.shell.nav.team"

@@ -181,7 +181,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
-        expect(within(nav).getByRole('link', { name: 'Analytics' })).toHaveAttribute(
+        expect(within(nav).getByRole('link', { name: 'Insights' })).toHaveAttribute(
             'href',
             '/app/zeytin-restoranlari/analytics',
         );
@@ -189,9 +189,12 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
             'href',
             '/app/zeytin-restoranlari/team',
         );
-        expect(within(nav).getByRole('link', { name: 'Billing' })).toHaveAttribute(
+        // Billing artık ana menüde DEĞİL: günlük operasyon değildir ve
+        // Settings'in içinde durur (docs/50 §5). Gezintideki hedef Settings.
+        expect(within(nav).queryByRole('link', { name: 'Billing' })).toBeNull();
+        expect(within(nav).getByRole('link', { name: 'Settings' })).toHaveAttribute(
             'href',
-            '/app/zeytin-restoranlari/billing',
+            '/app/zeytin-restoranlari/settings',
         );
 
         restoreFetch();
@@ -202,7 +205,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const { restoreFetch } = await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Analytics' }));
+        await user.click(within(nav).getByRole('link', { name: 'Insights' }));
 
         const main = screen.getByRole('main');
         expect(main.querySelector('#section-analytics')).not.toBeNull();
@@ -266,7 +269,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const { restoreFetch } = await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Billing' }));
+        // Billing, Settings'in ikinci sekmesi.
+        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
+        await user.click(screen.getByRole('tab', { name: 'Plan & billing' }));
 
         const main = screen.getByRole('main');
         expect(main.querySelector('#section-billing')).not.toBeNull();
@@ -328,10 +333,11 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
+        // Billing gezintide değil; Settings'in içindedir (docs/50 §5).
         for (const [label, section] of [
-            ['Analytics', 'analytics'],
+            ['Insights', 'analytics'],
             ['Team', 'team'],
-            ['Billing', 'billing'],
+            ['Settings', 'settings'],
         ] as const) {
             await user.click(within(nav).getByRole('link', { name: label }));
 
@@ -365,7 +371,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
 
         // Analytics: a page-frame description plus an honest status badge
         // reflecting the real fetch/range status, not a fabricated label.
-        await user.click(within(nav).getByRole('link', { name: 'Analytics' }));
+        await user.click(within(nav).getByRole('link', { name: 'Insights' }));
         const analyticsRegion = screen
             .getByRole('main')
             .querySelector('#section-analytics') as HTMLElement;
@@ -395,7 +401,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // Billing: manual payment carries the canonical Stage 1 fields —
         // plan assignment, end date, payment note, document reference —
         // all disabled and empty, plus a disabled Iyzico sandbox region.
-        await user.click(within(nav).getByRole('link', { name: 'Billing' }));
+        // Billing, Settings'in ikinci sekmesi.
+        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
+        await user.click(screen.getByRole('tab', { name: 'Plan & billing' }));
         const billingRegion = screen
             .getByRole('main')
             .querySelector('#section-billing') as HTMLElement;

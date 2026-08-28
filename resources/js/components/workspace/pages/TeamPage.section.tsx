@@ -10,9 +10,9 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 const teamSection: WorkspaceSectionDescriptor = {
     key: 'team',
     path: 'team',
-    order: 7,
+    order: 6,
     labelKey: 'workspace.shell.nav.team',
-    group: 'business',
+    group: 'management',
     render,
 };
 

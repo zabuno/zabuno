@@ -19,9 +19,9 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 const locationsSection: WorkspaceSectionDescriptor = {
     key: 'locations',
     path: 'locations',
-    order: 2,
+    order: 4,
     labelKey: 'workspace.shell.nav.locations',
-    group: 'restaurant',
+    group: 'management',
     aiQuickAction: true,
     catalogOnboardingPhase: 'location-onboarding',
     render,

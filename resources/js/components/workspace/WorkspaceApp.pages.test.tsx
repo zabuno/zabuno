@@ -250,16 +250,16 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
     it('exposes six accessible nav destinations with exactly one aria-current=page and consistent hrefs', async () => {
         await renderCurrentWorkspace();
 
-        const names = ['Dashboard', 'Brand', 'Locations', 'Menu', 'Media', 'Publication'];
+        const names = ['Home', 'Settings', 'Locations', 'Menus', 'Media', 'QR codes'];
         // Gerçek adresler — fragment değil. Bunlar sunucunun gördüğü,
         // paylaşılabilen, ölçülebilen adreslerdir (docs/38 §4).
         const paths = [
             '/app/zeytin-restoranlari/dashboard',
-            '/app/zeytin-restoranlari/brand',
+            '/app/zeytin-restoranlari/settings',
             '/app/zeytin-restoranlari/locations',
             '/app/zeytin-restoranlari/menu',
             '/app/zeytin-restoranlari/media',
-            '/app/zeytin-restoranlari/publication',
+            '/app/zeytin-restoranlari/qr-codes',
         ];
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
@@ -282,12 +282,16 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
         const destinations: Array<{ name: string; heading: string; id: string }> = [
-            { name: 'Brand', heading: 'Brand', id: 'section-brand' },
+            // Brand ve Publication artık GEZİNTİDE DEĞİL (docs/50 §5): marka
+            // ayarları Settings'in içinden, yayınlama menünün yanından açılır.
+            // Günlük operasyon olmayan işlerin ana menüde kalıcı yer işgal
+            // etmesi, her gün gidilen hedeflerin arasına gürültü koymaktı.
+            { name: 'Settings', heading: 'Settings', id: 'section-settings' },
             { name: 'Locations', heading: 'Locations', id: 'section-locations' },
-            { name: 'Menu', heading: 'Menu', id: 'section-menu' },
+            { name: 'Menus', heading: 'Menus', id: 'section-menu' },
             { name: 'Media', heading: 'Media', id: 'section-media' },
-            { name: 'Publication', heading: 'Publication', id: 'section-publication' },
-            { name: 'Dashboard', heading: 'Dashboard', id: 'section-dashboard' },
+            { name: 'QR codes', heading: 'QR codes', id: 'section-qr-codes' },
+            { name: 'Home', heading: 'Home', id: 'section-dashboard' },
         ];
 
         for (const destination of destinations) {
@@ -312,9 +316,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Brand' }));
+        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
 
-        const brandRoot = document.querySelector('#section-brand') as HTMLElement;
+        const brandRoot = document.querySelector('#section-settings') as HTMLElement;
         expect(within(brandRoot).getByText('Zeytin')).toBeInTheDocument();
         expect(within(brandRoot).getByText('TRY')).toBeInTheDocument();
         expect(within(brandRoot).getByText('Europe/Istanbul')).toBeInTheDocument();
@@ -350,7 +354,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         expect(within(dashboardRoot).getByText('Menu items')).toBeInTheDocument();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Menu' }));
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         const menuRoot = document.querySelector('#section-menu') as HTMLElement;
         expect(within(menuRoot).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
@@ -371,7 +375,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         expect(mediaEmptyNotice).toHaveAttribute('role', 'status');
         expect(within(mediaRoot).queryByRole('table')).not.toBeInTheDocument();
 
-        await user.click(within(nav).getByRole('link', { name: 'Publication' }));
+        // Yayınlama menüye aittir: menüye gidip oradan açılır (docs/50 §5).
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
+        await user.click(screen.getByRole('button', { name: 'Preview & publish' }));
         const publicationRoot = document.querySelector('#section-publication') as HTMLElement;
         expect(
             within(publicationRoot).getAllByText(/not available|no publication|unavailable/i)
@@ -393,13 +399,13 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         // masaüstü rayının kodu bu pakette hiç bulunmaz (docs/54).
         await renderCurrentWorkspace(mobileChrome);
 
-        const names = ['Brand', 'Locations', 'Menu', 'Media', 'Publication', 'Dashboard'];
+        const names = ['Settings', 'Locations', 'Menus', 'Media', 'QR codes', 'Home'];
         const ids = [
-            'section-brand',
+            'section-settings',
             'section-locations',
             'section-menu',
             'section-media',
-            'section-publication',
+            'section-qr-codes',
             'section-dashboard',
         ];
 
@@ -428,8 +434,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const fetchMock = await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Brand' }));
-        const brandRoot = document.querySelector('#section-brand') as HTMLElement;
+        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
+        const brandRoot = document.querySelector('#section-settings') as HTMLElement;
         const scope = within(brandRoot);
 
         await user.click(await scope.findByRole('button', { name: 'Edit' }));
@@ -595,12 +601,12 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const fetchMock = await renderCurrentWorkspace();
 
         const destinations = [
-            { name: 'Dashboard', id: 'section-dashboard' },
-            { name: 'Brand', id: 'section-brand' },
+            { name: 'Home', id: 'section-dashboard' },
+            { name: 'Settings', id: 'section-settings' },
             { name: 'Locations', id: 'section-locations' },
-            { name: 'Menu', id: 'section-menu' },
+            { name: 'Menus', id: 'section-menu' },
             { name: 'Media', id: 'section-media' },
-            { name: 'Publication', id: 'section-publication' },
+            { name: 'QR codes', id: 'section-qr-codes' },
         ];
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
@@ -651,7 +657,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Publication' }));
+        // Yayınlama menüye aittir: menüye gidip oradan açılır (docs/50 §5).
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
+        await user.click(screen.getByRole('button', { name: 'Preview & publish' }));
 
         const publicationRoot = document.querySelector('#section-publication') as HTMLElement;
         const region = within(publicationRoot).getByRole('region', {
@@ -677,7 +685,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const fetchMock = await renderCurrentWorkspace();
 
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Publication' }));
+        // Yayınlama menüye aittir: menüye gidip oradan açılır (docs/50 §5).
+        await user.click(within(nav).getByRole('link', { name: 'Menus' }));
+        await user.click(screen.getByRole('button', { name: 'Preview & publish' }));
 
         await waitFor(() => {
             const publicationCall = fetchMock.mock.calls.find(
@@ -690,25 +700,40 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
     });
 
     describe('the initial URL path selects the matching page', () => {
+        /* Kenar çubuğunda LİSTELENEN hedefler. */
         const pathToDestination: Array<{ path: string; name: string; id: string }> = [
             {
                 path: '/app/zeytin-restoranlari/dashboard',
-                name: 'Dashboard',
+                name: 'Home',
                 id: 'section-dashboard',
             },
-            { path: '/app/zeytin-restoranlari/brand', name: 'Brand', id: 'section-brand' },
             {
                 path: '/app/zeytin-restoranlari/locations',
                 name: 'Locations',
                 id: 'section-locations',
             },
-            { path: '/app/zeytin-restoranlari/menu', name: 'Menu', id: 'section-menu' },
+            { path: '/app/zeytin-restoranlari/menu', name: 'Menus', id: 'section-menu' },
             { path: '/app/zeytin-restoranlari/media', name: 'Media', id: 'section-media' },
             {
-                path: '/app/zeytin-restoranlari/publication',
-                name: 'Publication',
-                id: 'section-publication',
+                path: '/app/zeytin-restoranlari/qr-codes',
+                name: 'QR codes',
+                id: 'section-qr-codes',
             },
+        ];
+
+        /*
+            Listelenmeyen ama ADRESİ ÇALIŞAN hedefler.
+            
+            Bu üçüncü hâl kasıtlıdır (docs/50 §5): Brand, Billing ve
+            Publication günlük operasyon değildir ve ana menüde kalıcı yer
+            işgal etmemeleri gerekir — ama ulaşılamaz da olmamalılar. Bir
+            adresin çalışması ile bir hedefin listelenmesi ayrı sorulardır;
+            paylaşılan bir bağlantı, gezintide görünmediği için kırılmamalı.
+        */
+        const unlistedPaths: Array<{ path: string; id: string }> = [
+            { path: '/app/zeytin-restoranlari/brand', id: 'section-brand' },
+            { path: '/app/zeytin-restoranlari/billing', id: 'section-billing' },
+            { path: '/app/zeytin-restoranlari/publication', id: 'section-publication' },
         ];
 
         afterEach(() => {
@@ -742,13 +767,33 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
             });
         }
 
+        for (const destination of unlistedPaths) {
+            it(`${destination.path} adresi çalışır ama kenar çubuğunda listelenmez`, async () => {
+                history.replaceState(null, '', destination.path);
+
+                await renderCurrentWorkspace();
+
+                const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
+
+                // Sayfa AÇILIR…
+                expect(document.querySelector(`#${destination.id}`)).not.toBeNull();
+
+                // …ama gezintide hiçbir bağlantı ona `aria-current` taşımaz,
+                // çünkü listede yok.
+                const current = within(nav)
+                    .queryAllByRole('link')
+                    .filter((link) => link.getAttribute('aria-current') === 'page');
+                expect(current).toHaveLength(0);
+            });
+        }
+
         it('an unknown initial section safely falls back to Dashboard', async () => {
             history.replaceState(null, '', '/app/zeytin-restoranlari/does-not-exist');
 
             await renderCurrentWorkspace();
 
             const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-            const dashboardLink = within(nav).getByRole('link', { name: 'Dashboard' });
+            const dashboardLink = within(nav).getByRole('link', { name: 'Home' });
 
             expect(dashboardLink).toHaveAttribute('aria-current', 'page');
             expect(document.querySelector('#section-dashboard')).not.toBeNull();

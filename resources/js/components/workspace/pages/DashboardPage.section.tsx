@@ -20,7 +20,8 @@ const dashboardSection: WorkspaceSectionDescriptor = {
     key: 'dashboard',
     path: 'dashboard',
     order: 0,
-    labelKey: 'workspace.shell.nav.dashboard',
+    labelKey: 'workspace.shell.nav.home',
+    group: 'primary',
     aiQuickAction: true,
     render,
 };

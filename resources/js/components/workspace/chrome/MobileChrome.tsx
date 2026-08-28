@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { SidebarNav, type SidebarNavGroup } from '../../catalog/layout/compound/SidebarNav';
+import { WorkspaceSwitcherTrigger } from './WorkspaceSwitcherTrigger';
 import { DrawerPanel } from '../../catalog/overlays/compound/DrawerPanel';
 
 /**
@@ -13,6 +14,8 @@ export type MobileChromeProps = {
     navGroups: SidebarNavGroup[];
     activeNavKey?: string;
     navLabel?: string;
+    workspaceName?: string;
+    onSwitchWorkspace?: () => void;
     open: boolean;
     onClose: () => void;
 };
@@ -21,6 +24,8 @@ export function MobileNavigationDrawer({
     navGroups,
     activeNavKey,
     navLabel,
+    workspaceName,
+    onSwitchWorkspace,
     open,
     onClose,
 }: MobileChromeProps): ReactNode {
@@ -36,6 +41,10 @@ export function MobileNavigationDrawer({
                 birinin telefonda gezintiye landmark listesinden hiç
                 ulaşamaması demek olurdu.
             */}
+            <WorkspaceSwitcherTrigger
+                workspaceName={workspaceName}
+                onSwitchWorkspace={onSwitchWorkspace}
+            />
             <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
         </DrawerPanel>
     );

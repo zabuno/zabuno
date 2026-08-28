@@ -10,9 +10,9 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
 const mediaSection: WorkspaceSectionDescriptor = {
     key: 'media',
     path: 'media',
-    order: 4,
+    order: 5,
     labelKey: 'workspace.shell.nav.media',
-    group: 'menu',
+    group: 'management',
     render,
 };
 

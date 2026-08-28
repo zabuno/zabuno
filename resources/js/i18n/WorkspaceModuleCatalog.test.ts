@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 444;
+const FROZEN_LEGACY_KEY_COUNT = 457;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -112,8 +112,16 @@ const FROZEN_LEGACY_KEY_COUNT = 444;
 // dokuz eşit seçenek bir SIRAYA dönüştü. Hesap işleri kenar çubuğunun dibinden
 // kimlik alanındaki hesap menüsüne taşındı; menünün erişilebilir adı için bir
 // anahtar daha. 440 → 444.
+//
+// BİLGİ MİMARİSİ (FF-01c, docs/50 §5): dokuz düz madde `Operations /
+// Management / Settings` olarak yeniden düzenlendi. Bölüm adları yolculuğa
+// göre değişti (Dashboard→Home, Menu→Menus, Analytics→Insights), QR kodları
+// yayın sayfasının içinden çıkarılıp kendi hedefi oldu, Brand ve Billing
+// Settings sekmelerine taşındı ve yayınlama menünün yanına geçti. Günlük
+// operasyon olmayan işlerin ana menüde kalıcı yer işgal etmesi, her gün
+// gidilen hedeflerin arasına gürültü koymaktı. 444 → 457.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '431222dbb2b359747919abd12b03df9945b6fd98bfe32d0ce7878b38d9acdbc7';
+    'db77a4522582d7992e41f7610f1bdf73fca6efad9b79cea7417a798662e9554d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
