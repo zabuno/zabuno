@@ -46,7 +46,9 @@ export const brandLocations = {
     'workspace.brandLocations.heading': 'Brand & Locations',
     'workspace.brand.operational.description':
         'Edit the name, locale, timezone, currency, and contact details customers and your team see for this brand.',
-    'workspace.locations.empty': 'No locations yet. Add your first location to get started.',
+    'workspace.locations.empty': 'No locations yet',
+    'workspace.locations.empty.description':
+        'A location holds the address, opening hours and time zone that your menu is served under.',
     'workspace.locations.operational.description':
         'Add and edit the physical locations that serve your menu — grouped by city, with an onboarding flow for new ones.',
     'workspace.brandLocations.brand.slug': 'Slug',

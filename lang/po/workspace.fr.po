@@ -876,6 +876,10 @@ msgstr ""
 msgid "workspace.locations.empty"
 msgstr ""
 
+#: workspace:workspace.locations.empty.description
+msgid "workspace.locations.empty.description"
+msgstr ""
+
 #: workspace:workspace.locations.heading
 msgid "workspace.locations.heading"
 msgstr ""

@@ -874,7 +874,11 @@ msgstr "Add location"
 
 #: workspace:workspace.locations.empty
 msgid "workspace.locations.empty"
-msgstr "No locations yet. Add your first location to get started."
+msgstr "No locations yet"
+
+#: workspace:workspace.locations.empty.description
+msgid "workspace.locations.empty.description"
+msgstr "A location holds the address, opening hours and time zone that your menu is served under."
 
 #: workspace:workspace.locations.heading
 msgid "workspace.locations.heading"

@@ -4,6 +4,7 @@ import { t } from '../../../i18n/workspace';
 import { LocationEditForm, type LocationProfile } from '../LocationEditForm';
 import { LocationOnboardingForm } from '../LocationOnboardingForm';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PageState } from './shared/PageState';
 
 type LocationsPageProps = {
     workspaceId: number;
@@ -58,14 +59,24 @@ export function LocationsPage({
                 measure="standard"
                 title={t('workspace.shell.nav.locations')}
                 description={t('workspace.locations.operational.description')}
+                /*
+                    Liste BOŞKEN başlıktaki düğme çizilmez.
+
+                    Boş sayfada asıl yüzey boş durumun kendisidir ve eylemi
+                    orada taşır; başlıkta bir kopyası daha durursa aynı iş
+                    ekranda iki kez görünür. Liste dolduğunda düğme geri
+                    gelir, çünkü o zaman boş durum yoktur.
+                */
                 actions={
-                    <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => onToggleAddLocation(!addingLocation)}
-                    >
-                        {t('workspace.locations.add.button')}
-                    </Button>
+                    locations.length === 0 && !addingLocation ? undefined : (
+                        <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => onToggleAddLocation(!addingLocation)}
+                        >
+                            {t('workspace.locations.add.button')}
+                        </Button>
+                    )
                 }
             >
                 <p className="text-body text-fg-secondary">
@@ -105,10 +116,31 @@ export function LocationsPage({
                     </div>
                 )}
 
+                {/*
+                    SAYFA DÜZEYİNDE boş durum: ekranda başka içerik yok.
+                    `PageState` çıkış yolunu TİP DÜZEYİNDE zorunlu kılar
+                    (`docs/59`); düz bir paragraf, kullanıcıyı "burada
+                    yapılacak bir şey yok" diye bırakabilirdi.
+
+                    Liste İÇİ "kayıt yok" metinleri (ekip üyeleri, bekleyen
+                    davetler) karta çevrilmedi ve çevrilmemeli: onlar bir
+                    tablonun boş satırıdır, sayfanın hâli değil.
+                */}
                 {locations.length === 0 && !addingLocation && (
-                    <p role="status" className="text-body text-fg-muted">
-                        {t('workspace.locations.empty')}
-                    </p>
+                    <PageState
+                        kind="empty"
+                        title={t('workspace.locations.empty')}
+                        description={t('workspace.locations.empty.description')}
+                        action={
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => onToggleAddLocation(true)}
+                            >
+                                {t('workspace.locations.add.button')}
+                            </Button>
+                        }
+                    />
                 )}
 
                 {grouped.map(([groupKey, group]) => (
