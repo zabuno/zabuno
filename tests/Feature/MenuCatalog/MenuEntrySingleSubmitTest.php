@@ -126,8 +126,15 @@ final class MenuEntrySingleSubmitTest extends TestCase
         $response->assertJsonPath('currencyCode', 'TRY');
         $response->assertJsonPath('allergens', ['gluten', 'süt']);
 
-        // Yeni satır gizli başlar: menüye eklemek YAYINLAMAK değildir.
-        $response->assertJsonPath('isVisible', false);
+        /*
+            Yeni satır GÖRÜNÜR başlar — `docs/74` (P0-02).
+
+            Eski yorum "menüye eklemek YAYINLAMAK değildir" diyordu ve bu
+            doğru; ama o ayrımı `is_visible` korumuyor. Misafiri koruyan kapı
+            yayındır: taslakta görünür bir ürün, `POST publications` çağrılana
+            kadar hiçbir misafire ulaşmaz.
+        */
+        $response->assertJsonPath('isVisible', true);
 
         $productId = (int) $response->json('productId');
         self::assertSame(1, DB::table('products')->where('id', $productId)->count());

@@ -238,8 +238,8 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | ID | Başlık | Durum |
 | --- | --- | --- |
 | P0-01 | Menü CRUD: silme, ad düzeltme, sıralama | ✅ `docs/73` |
-| P0-02 | Varsayılan gizli ürün | ⬜ |
-| P0-03 | Misafir menüsünde restoran kimliği | ⬜ |
+| P0-02 | Varsayılan gizli ürün | ✅ `docs/74` |
+| P0-03 | Misafir menüsünde restoran kimliği | ✅ `docs/75` (logo hariç → P0-08/P0-04) |
 | P0-04 | Açıklama + görsel yayın snapshot'ında | ⬜ |
 | P0-05 | Foto/PDF/CSV aktarma | ⬜ |
 | P0-06 | Gerçek e-posta | ⛔ sağlayıcı hesabı sahibinde |

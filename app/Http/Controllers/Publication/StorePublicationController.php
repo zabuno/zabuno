@@ -8,6 +8,7 @@ use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\Publication\Exception\PublicationPersistenceFailedException;
 use App\Application\Publication\Exception\UnreadyDraftException;
+use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\UseCase\BuildPublicationSnapshot;
 use App\Domain\Authorization\Permission;
@@ -21,6 +22,7 @@ final class StorePublicationController extends Controller
         private readonly AuthorizationPort $authorization,
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly PublicationRepositoryPort $publications,
+        private readonly MenuIdentityPort $identities,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $menu): JsonResponse
@@ -42,7 +44,11 @@ final class StorePublicationController extends Controller
         }
 
         try {
-            $snapshot = BuildPublicationSnapshot::fromDraftTree($tree);
+            // Kimlik yayın ANINDA okunur ve snapshot'a donar (`docs/75`).
+            $snapshot = BuildPublicationSnapshot::fromDraftTree(
+                $tree,
+                $this->identities->forMenu($workspace, $menu),
+            );
         } catch (UnreadyDraftException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }

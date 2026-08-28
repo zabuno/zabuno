@@ -1,4 +1,19 @@
 <!DOCTYPE html>
+@php
+    /* Restoran kimliği YAYIN SNAPSHOT'INDAN okunur (`docs/75`, P0-03).
+       Canlı sorgudan okunsaydı, şubenin adı değiştiği gün geçmiş bir yayın
+       da sessizce değişirdi.
+
+       Kimlik alanı EKLENMEDEN önce yayınlanmış menüler hâlâ vardır; onlar
+       için sunucunun canlı olarak bildiği ada düşülür. Donmuş bir değer
+       YOKSA donmuşluk ihlali de yoktur. */
+    $identity = isset($snapshot['identity']) && is_array($snapshot['identity'])
+        ? \App\Domain\Publication\MenuIdentity::fromSnapshot($snapshot['identity'])
+        : null;
+
+    $headline = $identity?->brandName ?: trim((string) ($fallbackBrandName ?? ''));
+    $documentTitle = $headline !== '' ? $headline : 'Menü';
+@endphp
 {{-- Dil, UYGULAMANIN değil MENÜNÜN dilidir: ürün adlarını restoran kendi
      dilinde yazar. Yanlış `lang`, ekran okuyucunun metni yanlış telaffuz
      etmesine ve arama motorunun sayfayı yanlış dile atamasına yol açar. --}}
@@ -6,7 +21,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Menü</title>
+    <title>{{ $documentTitle }}</title>
     @isset($canonicalUrl)
         {{-- Aynı menü izleme parametresiyle, farklı sorgu sırasıyla veya
              sondaki slash ile birden çok adresten açılabilir. Kanonik
@@ -18,7 +33,7 @@
     {{-- Paylaşım önizlemesi: bu sayfa çoğunlukla WhatsApp'ta paylaşılır ve
          oradaki bot JavaScript çalıştırmaz; etiketler sunucuda basılır. --}}
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Menü">
+    <meta property="og:title" content="{{ $documentTitle }}">
     <meta property="og:site_name" content="Zabuno">
     <meta name="description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
     <meta property="og:description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
@@ -87,6 +102,25 @@
             margin: 0;
             font-size: 0.9rem;
             color: var(--qr-muted);
+        }
+
+        .qr-menu-location {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* Uzun bir cadde adı 320 px'te satırı taşırmaz: kelime kırılır. */
+        .qr-menu-address,
+        .qr-menu-phone {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--qr-muted);
+            overflow-wrap: anywhere;
+        }
+
+        .qr-menu-phone a {
+            color: inherit;
         }
 
         .qr-menu-summary {
@@ -252,7 +286,27 @@
     @endphp
 
     <header class="qr-menu-header">
-        <h1 class="qr-menu-title">Menü</h1>
+        {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
+             Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı
+             ekran okuyucu için başlıksız bırakırdı. --}}
+        <h1 class="qr-menu-title">{{ $documentTitle }}</h1>
+
+        @if ($identity !== null && $identity->locationName !== '' && $identity->locationName !== $headline)
+            <p class="qr-menu-location">{{ $identity->locationName }}</p>
+        @endif
+
+        @if ($identity?->addressLine)
+            <p class="qr-menu-address">{{ $identity->addressLine }}</p>
+        @endif
+
+        @if ($identity?->telHref())
+            {{-- Misafir masada numarayı elle yazmaz. Görünen metin insan
+                 için, bağlantı makine içindir. --}}
+            <p class="qr-menu-phone">
+                <a href="{{ $identity->telHref() }}">{{ $identity->phone }}</a>
+            </p>
+        @endif
+
         <p class="qr-menu-subtitle">Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor.</p>
         <p class="qr-menu-summary">{{ $categoryCount }} kategori, {{ $itemCount }} ürün</p>
     </header>

@@ -80,6 +80,10 @@ final class ShowPublicMenuController extends Controller
 
         return response()->view('public-menu', [
             'snapshot' => $publication->snapshot,
+            // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
+            // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
+            // bakar, buraya değil.
+            'fallbackBrandName' => $address['brand_name'],
             'analyticsContext' => [
                 'zabuno_surface' => 'menu',
                 'zabuno_tenant_id' => (string) $record->workspaceId,
@@ -89,7 +93,15 @@ final class ShowPublicMenuController extends Controller
             'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,
             'structuredData' => json_encode(
-                MenuStructuredData::forMenu($publication->snapshot, $canonicalUrl, $address['brand_name']),
+                MenuStructuredData::forMenu(
+                    $publication->snapshot,
+                    $canonicalUrl,
+                    // Arama motoruna da YAYINLANMIŞ ad gösterilir; sayfada
+                    // yazan ad ile yapılandırılmış veri ayrışmamalı.
+                    (string) ($publication->snapshot['identity']['brandName'] ?? '') !== ''
+                        ? (string) $publication->snapshot['identity']['brandName']
+                        : $address['brand_name'],
+                ),
                 JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP,
             ),
         ], 200)->header('X-Robots-Tag', 'noindex, follow');

@@ -180,12 +180,30 @@ final class RestaurantCriticalJourneyTest extends TestCase
 
         $menuItemId = (int) $created->json('id');
 
-        // Dondurulan sözleşme: kalem oluşturma ucu isVisible girdisi almaz ve
-        // menu_items.is_visible migration'da default(false)'tur. Yani yeni kalem
-        // GİZLİ doğar; sahibi görünür yapmadan menü yayınlanamaz (publish 422
-        // UnreadyDraftException::noVisibleItem). "Ürün ekle" tek başına misafire
-        // asla ulaşmaz — gerçek yolculuk açık bir görünürlük adımı içerir.
-        $created->assertJsonPath('isVisible', false);
+        /*
+            SÖZLEŞME DEĞİŞTİ ve eski gerekçesi yanlıştı — `docs/74` (P0-02).
+
+            Burada şu yazıyordu: "yeni kalem GİZLİ doğar; ürün ekle tek başına
+            misafire asla ulaşmaz." Amaç doğruydu — misafir, sahibin
+            istemediği bir şeyi görmemeli — ama korumayı YANLIŞ KAPIYA
+            bağlıyordu.
+
+            Misafiri koruyan kapı YAYINDIR, görünürlük değil. Taslakta
+            görünür olan bir ürün, `POST publications` çağrılana kadar hiçbir
+            misafire ulaşmaz; yayın ayrı ve açık bir eylemdir. Yani
+            "eklemek = yayınlamak" hiçbir zaman doğru değildi.
+
+            Bedeli sessiz bir duvardı: 40 ürün giren sahip yayınlayamıyor ve
+            sebebini hiçbir yerde okumuyordu. Yeni ürün artık görünür doğar;
+            gizlemek İSTİSNADIR (tükendi) ve aşağıda hâlâ çalışıyor.
+        */
+        $created->assertJsonPath('isVisible', true);
+
+        // Görünürlük adımı KAYBOLMADI: sahip istediğinde kapatabilir.
+        $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->putJson("/api/workspaces/{$workspaceId}/menu-items/{$menuItemId}/visibility", ['isVisible' => false])
+            ->assertStatus(200)
+            ->assertJsonPath('isVisible', false);
 
         $this->actingAs($owner)->withHeaders($this->jsonHeaders())
             ->putJson("/api/workspaces/{$workspaceId}/menu-items/{$menuItemId}/visibility", ['isVisible' => true])
