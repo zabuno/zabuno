@@ -204,7 +204,7 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
         expect(subscriptionCalls.length - subscriptionCallsBeforeRetry).toBe(1);
     });
 
-    it('never offers an active manual-payment mutation control and explains that platform finance records manual payments', async () => {
+    it('manuel ödeme yüzeyini hiç göstermez — başka bir rolün işidir', async () => {
         fetchSpy.mockImplementation(async (url: string) => {
             if (String(url) === PLANS_ENDPOINT) return jsonResponse(200, makePlans());
             if (String(url) === SUBSCRIPTION_ENDPOINT)
@@ -218,12 +218,17 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
             expect(within(currentPlanRegion()).getByText('Growth')).toBeInTheDocument();
         });
 
-        const manualPaymentRegion = screen.getByRole('region', { name: /manual payment/i });
-        const activeMutationButtons = within(manualPaymentRegion)
-            .queryAllByRole('button')
-            .filter((button) => !button.hasAttribute('disabled'));
-        expect(activeMutationButtons).toHaveLength(0);
-        expect(within(manualPaymentRegion).getByText(/platform finance/i)).toBeInTheDocument();
+        /*
+            Manuel ödeme bölgesi ARTIK YOK.
+
+            Dört devre dışı alan ve devre dışı bir düğme duruyordu; yanında
+            "bu görünüm salt-okunur" yazıyordu. Devre dışı bir kontrol yalnız
+            kullanıcı gerekli koşulu TAMAMLAYABİLİYORSA gösterilir — manuel
+            ödemeyi yalnız platform finans ekibi kaydeder, restoran sahibi bu
+            düğmeyi hiçbir koşulda etkinleştiremez (docs/57).
+        */
+        expect(screen.queryByRole('region', { name: /manual payment/i })).toBeNull();
+        expect(screen.queryByRole('button', { name: /record payment/i })).toBeNull();
     });
 
     it('shows the Iyzico sandbox region as ready with an enabled Start once the sandbox session endpoint reports state:none', async () => {
@@ -281,7 +286,10 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
         // zaten duruyor; üstelik sunucudan gelen gerçek plan adının ("Growth")
         // ekranda olması, bağlantının kurulduğuna dair prose'dan çok daha güçlü
         // bir kanıt.
-        expect(within(page).getByText(/platform finance/i)).toBeInTheDocument();
+        // "Platform finans kaydeder" cümlesi de kalktı: artık kaydedilecek
+        // bir yüzey yok, dolayısıyla kimin kaydettiğini açıklamaya da gerek
+        // yok. Var olmayan bir şeyi açıklamak, onu arattırır.
+        expect(within(page).queryByText(/platform finance/i)).toBeNull();
 
         expect(
             screen.queryByText(

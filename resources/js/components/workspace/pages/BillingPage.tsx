@@ -1,8 +1,5 @@
-import { Button } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
-import { UnavailableRegion } from './wp05/UnavailableRegion';
-import { DisabledField } from './wp05/DisabledField';
 import { PlanCatalog } from './billing/PlanCatalog';
 import { CurrentSubscriptionStatus } from './billing/CurrentSubscriptionStatus';
 import { IyzicoSandboxCheckout } from './billing/IyzicoSandboxCheckout';
@@ -38,32 +35,37 @@ export function BillingPage({ workspaceId }: BillingPageProps) {
 
                 <CurrentSubscriptionStatus workspaceId={workspaceId} />
 
-                <UnavailableRegion
-                    label={t('workspace.billing.manualPayment.region')}
-                    statusText={t('workspace.billing.manualPayment.platformFinance')}
-                >
-                    <DisabledField
-                        id="billing-manual-payment-plan"
-                        label={t('workspace.billing.manualPayment.field.plan')}
-                    />
-                    <DisabledField
-                        id="billing-manual-payment-end-date"
-                        label={t('workspace.billing.manualPayment.field.endDate')}
-                    />
-                    <DisabledField
-                        id="billing-manual-payment-payment-note"
-                        label={t('workspace.billing.manualPayment.field.paymentNote')}
-                    />
-                    <DisabledField
-                        id="billing-manual-payment-document-reference"
-                        label={t('workspace.billing.manualPayment.field.documentReference')}
-                    />
-                    <Button disabled className="w-full">
-                        {t('workspace.billing.recordPayment.button')}
-                    </Button>
-                </UnavailableRegion>
+                {/*
+                    MANUEL ÖDEME FORMU KALDIRILDI.
 
-                <IyzicoSandboxCheckout workspaceId={workspaceId} />
+                    Dört devre dışı alan ve devre dışı bir "Record payment"
+                    düğmesi duruyordu; yanında da "bu görünüm salt-okunur"
+                    yazıyordu. Devre dışı bir kontrol yalnız üç koşul birden
+                    sağlanırsa gösterilir: görünmesi kullanıcıya yolculuğu
+                    öğretiyorsa, nasıl etkinleşeceği açıksa, ve kullanıcı
+                    gerekli koşulu TAMAMLAYABİLİYORSA.
+
+                    Burada üçü de yoktu: manuel ödemeyi yalnız platform finans
+                    ekibi kaydeder, restoran sahibi bu düğmeyi hiçbir koşulda
+                    etkinleştiremez. Gösterilmesi bir beklenti yaratıyor ve
+                    karşılığı hiç gelmiyordu.
+
+                    Bu yalnız bir arayüz sorunu değildi: başka bir rolün işini
+                    bu ekranda göstermek, kapsam ve yetki sınırını bulanıklaştırır
+                    (docs/57).
+                */}
+
+                {/*
+                    Sandbox ödeme yüzeyi ÜRETİMDE bulunmaz.
+
+                    Gerçek para hareketi olmayan bir test akışını müşteri
+                    panelinde göstermek, ürünün yapılmamış tarafını kullanıcıya
+                    taşımaktır. `import.meta.env.MODE` derleme zamanında
+                    çözülür: üretim paketinde bu bileşenin kodu hiç bulunmaz.
+                */}
+                {import.meta.env?.MODE !== 'production' ? (
+                    <IyzicoSandboxCheckout workspaceId={workspaceId} />
+                ) : null}
 
                 <WorkspaceLedger workspaceId={workspaceId} />
             </WorkspacePageFrame>

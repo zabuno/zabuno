@@ -286,11 +286,10 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const currentPlanRegion = within(billingRegion).getByRole('region', {
             name: /current.plan/i,
         });
-        const manualPaymentRegion = within(billingRegion).getByRole('region', {
-            name: /manual.payment/i,
-        });
+        // Manuel ödeme bölgesi artık YOK: başka bir rolün işiydi ve
+        // restoran sahibi onu hiçbir koşulda etkinleştiremezdi (docs/57).
+        expect(within(billingRegion).queryByRole('region', { name: /manual.payment/i })).toBeNull();
         expect(currentPlanRegion).toBeInTheDocument();
-        expect(manualPaymentRegion).toBeInTheDocument();
 
         await within(planRegion).findByText('Zabuno Test Plan');
         expect(within(planRegion).getByText('wp05-test-plan')).toBeInTheDocument();
@@ -309,9 +308,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         );
         expect(within(currentPlanRegion).getByRole('button', { name: /retry/i })).toBeEnabled();
 
-        for (const button of within(manualPaymentRegion).queryAllByRole('button')) {
-            expect(button).toBeDisabled();
-        }
+        expect(
+            within(billingRegion).queryAllByRole('button', { name: /record payment/i }),
+        ).toHaveLength(0);
 
         const iyzicoRegion = within(billingRegion).getByRole('region', { name: /iyzico sandbox/i });
         expect(within(iyzicoRegion).getByRole('alert')).toHaveTextContent(
@@ -407,19 +406,13 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const billingRegion = screen
             .getByRole('main')
             .querySelector('#section-billing') as HTMLElement;
-        const manualPaymentRegion = within(billingRegion).getByRole('region', {
-            name: /manual.payment/i,
-        });
+        // Manuel ödeme bölgesi artık YOK: başka bir rolün işiydi ve
+        // restoran sahibi onu hiçbir koşulda etkinleştiremezdi (docs/57).
+        expect(within(billingRegion).queryByRole('region', { name: /manual.payment/i })).toBeNull();
 
-        for (const fieldName of [
-            /plan assignment/i,
-            /end date/i,
-            /payment note/i,
-            /document reference/i,
-        ]) {
-            const field = within(manualPaymentRegion).getByLabelText(fieldName);
-            expect(field).toBeDisabled();
-            expect(field).toHaveValue('');
+        // Alanların kendisi de yok: devre dışı gösterilmiyor, HİÇ çizilmiyor.
+        for (const fieldName of [/plan assignment/i, /end date/i, /payment note/i]) {
+            expect(within(billingRegion).queryByLabelText(fieldName)).toBeNull();
         }
 
         const iyzicoRegion = within(billingRegion).getByRole('region', { name: /iyzico sandbox/i });
