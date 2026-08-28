@@ -416,12 +416,20 @@ msgstr ""
 msgid "workspace.brand.locale"
 msgstr ""
 
+#: workspace:workspace.brand.locale.help
+msgid "workspace.brand.locale.help"
+msgstr ""
+
 #: workspace:workspace.brand.market
 msgid "workspace.brand.market"
 msgstr ""
 
 #: workspace:workspace.brand.market.help
 msgid "workspace.brand.market.help"
+msgstr ""
+
+#: workspace:workspace.brand.market.label
+msgid "workspace.brand.market.label"
 msgstr ""
 
 #: workspace:workspace.brand.market.placeholder
@@ -458,6 +466,14 @@ msgstr ""
 
 #: workspace:workspace.brand.timezone.help
 msgid "workspace.brand.timezone.help"
+msgstr ""
+
+#: workspace:workspace.brand.webAddress.help
+msgid "workspace.brand.webAddress.help"
+msgstr ""
+
+#: workspace:workspace.brand.webAddress.label
+msgid "workspace.brand.webAddress.label"
 msgstr ""
 
 #: workspace:workspace.brandLocations.brand.contactEmail
@@ -666,6 +682,34 @@ msgstr ""
 
 #: workspace:workspace.error.retry
 msgid "workspace.error.retry"
+msgstr ""
+
+#: workspace:workspace.form.error.conflict
+msgid "workspace.form.error.conflict"
+msgstr ""
+
+#: workspace:workspace.form.error.network
+msgid "workspace.form.error.network"
+msgstr ""
+
+#: workspace:workspace.form.error.notFound
+msgid "workspace.form.error.notFound"
+msgstr ""
+
+#: workspace:workspace.form.error.permission
+msgid "workspace.form.error.permission"
+msgstr ""
+
+#: workspace:workspace.form.error.server
+msgid "workspace.form.error.server"
+msgstr ""
+
+#: workspace:workspace.form.error.serverWithId
+msgid "workspace.form.error.serverWithId"
+msgstr ""
+
+#: workspace:workspace.form.error.summary.title
+msgid "workspace.form.error.summary.title"
 msgstr ""
 
 #: workspace:workspace.loading

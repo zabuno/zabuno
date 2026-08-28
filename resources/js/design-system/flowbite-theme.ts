@@ -95,7 +95,11 @@ const FIELD_BASE = [
  * `aria-invalid` ile birlikte (renk tek başına anlam taşımaz, WCAG 1.4.1).
  */
 const FIELD_COLORS = {
-    gray: 'border-border',
+    // `border-border` DEĞİL: o jeton kart ve ayraçlar için ve beyaz zemine
+    // karşı 1.35:1 veriyordu. Bir girdinin var olduğunu anlatan tek görsel
+    // ipucu kenarlığıysa, görülemeyen bir kenarlık girdiyi de görünmez yapar
+    // (WCAG 2.2 AA, metin dışı kontrast 3:1).
+    gray: 'border-border-control',
     info: 'border-border-info',
     failure: 'border-border-danger',
     warning: 'border-border-warning',

@@ -87,6 +87,18 @@ describe('BrandEditForm — visible Slug field (FrontendBlitz RED)', () => {
             ) {
                 return jsonResponse(200, { ...brand, name: 'Zeytin Renamed' });
             }
+            if (url.startsWith('/api/reference/markets')) {
+                // Form seçeneklerini sunucudan alır; liste gelmezse mevcut
+                // değerlerle çalışmaya devam eder.
+                return jsonResponse(200, {
+                    markets: [{ code: 'TR', name: 'Türkiye' }],
+                    currencies: [{ code: 'TRY', name: 'Turkish lira', symbol: '₺' }],
+                    locales: [{ code: 'en', name: 'English' }],
+                    timezones: [{ id: 'Europe/Istanbul', label: 'İstanbul — UTC+03:00' }],
+                    defaults: { timezone: 'Europe/Istanbul', currency: 'TRY' },
+                    suggestedCountry: 'TR',
+                });
+            }
             throw new Error(`unexpected fetch: ${url}`);
         });
         vi.stubGlobal('fetch', fetchMock);
@@ -95,13 +107,19 @@ describe('BrandEditForm — visible Slug field (FrontendBlitz RED)', () => {
 
         await user.click(screen.getByRole('button', { name: /edit/i }));
 
-        const slugField = screen.getByLabelText('Slug');
+        /*
+            Etiket artık "Slug" değil. Kullanıcının gördüğü şey
+            `olga-restaurant-6x4f08` ve etiketi "Slug"tı — ne olduğu, neyi
+            etkilediği ve neden değiştirilemediği hiçbir yerde yazmıyordu.
+            Alan hâlâ salt-okunur; değişen, ne olduğunun SÖYLENMESİ.
+        */
+        const slugField = screen.getByLabelText('Menu web address');
         expect(slugField).toHaveValue(brand.slug);
         expect(slugField).toBeDisabled();
 
         expect(screen.getByLabelText(/name/i)).toHaveValue(brand.name);
-        expect(screen.getByLabelText(/locale/i)).toHaveValue(brand.locale);
-        expect(screen.getByLabelText(/timezone/i)).toHaveValue(brand.timezone);
+        expect(screen.getByLabelText(/menu language/i)).toHaveValue(brand.locale);
+        expect(screen.getByLabelText(/time zone/i)).toHaveValue(brand.timezone);
         expect(screen.getByLabelText(/currency/i)).toHaveValue(brand.currency);
 
         await user.click(screen.getByRole('button', { name: /save/i }));
@@ -192,6 +210,18 @@ describe('MenuCatalogWorkspace — visible category/item ordering (FrontendBlitz
             }
             if (url === `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/menu`) {
                 return jsonResponse(200, tree);
+            }
+            if (url.startsWith('/api/reference/markets')) {
+                // Form seçeneklerini sunucudan alır; liste gelmezse mevcut
+                // değerlerle çalışmaya devam eder.
+                return jsonResponse(200, {
+                    markets: [{ code: 'TR', name: 'Türkiye' }],
+                    currencies: [{ code: 'TRY', name: 'Turkish lira', symbol: '₺' }],
+                    locales: [{ code: 'en', name: 'English' }],
+                    timezones: [{ id: 'Europe/Istanbul', label: 'İstanbul — UTC+03:00' }],
+                    defaults: { timezone: 'Europe/Istanbul', currency: 'TRY' },
+                    suggestedCountry: 'TR',
+                });
             }
             throw new Error(`unexpected fetch: ${url}`);
         });

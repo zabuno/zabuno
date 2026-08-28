@@ -50,8 +50,11 @@ export const brandLocations = {
     'workspace.locations.operational.description':
         'Add and edit the physical locations that serve your menu — grouped by city, with an onboarding flow for new ones.',
     'workspace.brandLocations.brand.slug': 'Slug',
-    'workspace.brandLocations.brand.locale': 'Locale',
-    'workspace.brandLocations.brand.timezone': 'Timezone',
+    // "Locale" bir kullanıcı sözcüğü değildir ve tek başına belirsizdir:
+    // panel dili mi, menü dili mi, tarih biçimi mi? Bu alan menünün ANA
+    // İÇERİK dilidir; adı da onu söylemeli.
+    'workspace.brandLocations.brand.locale': 'Menu language',
+    'workspace.brandLocations.brand.timezone': 'Time zone',
     'workspace.brandLocations.brand.currency': 'Currency',
     'workspace.brandLocations.brand.description': 'Description',
     'workspace.brandLocations.brand.contactEmail': 'Contact email',

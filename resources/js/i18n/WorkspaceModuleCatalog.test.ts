@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 457;
+const FROZEN_LEGACY_KEY_COUNT = 468;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -120,8 +120,17 @@ const FROZEN_LEGACY_KEY_COUNT = 457;
 // Settings sekmelerine taşındı ve yayınlama menünün yanına geçti. Günlük
 // operasyon olmayan işlerin ana menüde kalıcı yer işgal etmesi, her gün
 // gidilen hedeflerin arasına gürültü koymaktı. 444 → 457.
+//
+// FORM STANDARDI (FF-04a): marka düzenleme formu dil, saat dilimi ve para
+// birimini SERBEST METİN olarak soruyordu — kullanıcıdan `Europe/Istanbul`,
+// `TRY` ve `tr` yazmasını bekliyordu. Bunlar kullanıcı dili değil geliştirici
+// kodudur; sunucu haklı olarak reddediyor, kullanıcı ne yazacağını hiçbir
+// yerden öğrenemiyordu. Alanlar seçeneğe çevrildi, her birine ne işe yaradığını
+// söyleyen yardımcı metin eklendi, "Locale" → "Menu language" ve "Slug" →
+// "Menu web address" oldu, ve arıza sınıfları (yetki/çakışma/ağ/sunucu) ayrı
+// mesajlar aldı. 457 → 468.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'db77a4522582d7992e41f7610f1bdf73fca6efad9b79cea7417a798662e9554d';
+    '6e159f7f1672db01d56f7ba93a8a0f8ca051d79d34bdfd48f949aba1ae046006';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

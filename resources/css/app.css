@@ -135,6 +135,7 @@
     --color-surface-subtle: var(--surface-subtle);
 
     --color-border-strong: var(--border-strong);
+    --color-border-control: var(--border-control);
     --color-border-danger: var(--border-danger);
 
     /* Durum yüzeyleri. Bir uyarının rengi bileşenin değil, sistemin
@@ -284,6 +285,18 @@
     --surface-active: oklch(0.93 0 0);
 
     --border-strong: oklch(0.76 0 0);
+    /* Kontrol sınırı — WCAG 2.2 AA, metin dışı kontrast en az 3:1.
+     *
+     * Ölçüm: `--border` (0.90) beyaz zemine karşı 1.35:1 veriyordu; koyu
+     * temada 1.43:1. Bir girdinin var olduğunu ANLATAN tek görsel ipucu o
+     * kenarlıksa, görülemeyen bir kenarlık girdiyi de görünmez yapar.
+     *
+     * Neden `--border` toptan koyulaştırılmadı: aynı jeton kart ve ayraç
+     * sınırlarında da kullanılıyor. Kural metin dışı KONTROL sınırları için;
+     * hepsini kalınlaştırmak arayüzü ağırlaştırır ve hiyerarşiyi siler.
+     *
+     * 0.64 ↔ beyaz = 3.36:1. */
+    --border-control: oklch(0.64 0 0);
     --border-danger: oklch(0.58 0.19 25);
 
     /* Durum tonları: metin okunaklılığını bozmayacak kadar açık tutulur —
@@ -378,6 +391,8 @@
     --surface-active: oklch(0.31 0 0);
 
     --border-strong: oklch(0.46 0 0);
+    /* 0.52 ↔ yüzey 0.20 = 3.29:1 (açık temadaki gerekçeyle aynı). */
+    --border-control: oklch(0.52 0 0);
     --border-danger: oklch(0.62 0.17 25);
 
     --surface-info: oklch(0.27 0.045 255);
@@ -403,6 +418,7 @@
 .high-contrast {
     --border: CanvasText;
     --border-strong: CanvasText;
+    --border-control: CanvasText;
     --border-danger: CanvasText;
     --fg: CanvasText;
     --fg-secondary: CanvasText;

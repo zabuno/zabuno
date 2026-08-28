@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Reference;
 
+use App\Domain\Tenancy\ValueObject\LocaleCode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -117,5 +118,58 @@ final class MarketReferenceApiTest extends TestCase
         // varsayım, yüz katı fiyat gösterir.
         self::assertSame(2, $byCode['TRY']['fractionDigits']);
         self::assertSame(0, $byCode['JPY']['fractionDigits']);
+    }
+
+    /**
+     * Diller KOD ile değil ADLA sunulur.
+     *
+     * Marka formu kullanıcıdan dil kodu YAZMASINI istiyordu. `tr` bir kullanıcı
+     * dili değil, geliştirici kodudur — ve yanlış yazıldığında sunucu haklı
+     * olarak reddeder, kullanıcı ise ne yazması gerektiğini hiçbir yerden
+     * öğrenemez. Seçenek sunabilmek için listenin sunucudan gelmesi gerekir.
+     */
+    public function test_supported_locales_are_offered_with_human_names(): void
+    {
+        $locales = $this->actingAs($this->user())
+            ->getJson('/api/reference/markets')
+            ->json('locales');
+
+        self::assertNotEmpty($locales);
+
+        $byCode = [];
+
+        foreach ($locales as $locale) {
+            $byCode[$locale['code']] = $locale['name'];
+        }
+
+        self::assertSame('Turkish', $byCode['tr'] ?? null);
+        self::assertSame('English', $byCode['en'] ?? null);
+
+        // Ad, kodun kendisi DEĞİLDİR: aynı olsaydı listeyi sunmanın bir
+        // anlamı kalmazdı.
+        foreach ($locales as $locale) {
+            self::assertNotSame($locale['code'], $locale['name']);
+        }
+    }
+
+    /**
+     * Sunulan her dil, sunucunun KABUL ETTİĞİ bir dildir.
+     *
+     * Listede olup doğrulamadan geçmeyen bir seçenek, kullanıcıyı seçtiği
+     * şey yüzünden hataya sokardı — ve o hatadan çıkış yolu olmazdı.
+     */
+    public function test_every_offered_locale_is_accepted_by_the_domain(): void
+    {
+        $locales = $this->actingAs($this->user())
+            ->getJson('/api/reference/markets')
+            ->json('locales');
+
+        foreach ($locales as $locale) {
+            self::assertContains(
+                $locale['code'],
+                LocaleCode::supported(),
+                "Offered locale {$locale['code']} is not accepted by LocaleCode.",
+            );
+        }
     }
 }

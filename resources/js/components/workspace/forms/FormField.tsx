@@ -11,6 +11,16 @@ type FormFieldProps = {
     type?: string;
     /** Sunucunun bu alan için söylediği. */
     errorText?: string;
+    /**
+     * Alanın altında duran açıklama: ne beklendiği, sonradan
+     * değiştirilebilir mi, neyi etkiler.
+     *
+     * Bir alan adı çoğu zaman soruyu tam sormaz. "Para birimi" yazan bir
+     * kutu, kullanıcının bilmediği iki şeyi cevaplamaz: bu seçim neyi
+     * etkiler ve sonradan değiştirilebilir mi. O bilgi olmadan kullanıcı ya
+     * yanlış seçer ya da hiç seçemez.
+     */
+    helpText?: string;
 };
 
 /**
@@ -34,8 +44,13 @@ export function FormField({
     readOnly = false,
     type = 'text',
     errorText,
+    helpText,
 }: FormFieldProps) {
     const errorId = errorText ? `${id}-error` : undefined;
+    const helpId = helpText ? `${id}-help` : undefined;
+    // Hem açıklama hem hata varsa İKİSİ de bağlanır: ekran okuyucu önce ne
+    // istendiğini, sonra neyin yanlış olduğunu okur.
+    const describedBy = [helpId, errorId].filter(Boolean).join(' ') || undefined;
 
     return (
         <div>
@@ -49,12 +64,13 @@ export function FormField({
                 className="w-full"
                 color={errorText ? 'failure' : undefined}
                 aria-invalid={errorText ? true : undefined}
-                aria-describedby={errorId}
+                aria-describedby={describedBy}
                 value={value}
                 disabled={disabled}
                 readOnly={readOnly}
                 onChange={onChange ? (event) => onChange(event.target.value) : undefined}
             />
+            {helpText ? <HelperText id={helpId}>{helpText}</HelperText> : null}
             {errorText ? (
                 <HelperText id={errorId} color="failure" role="alert" aria-live="polite">
                     {errorText}

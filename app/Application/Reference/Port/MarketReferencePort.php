@@ -40,6 +40,16 @@ interface MarketReferencePort
     public function currencies(): array;
 
     /**
+     * Desteklenen menü içerik dilleri, kullanıcının okuyabileceği adlarıyla.
+     *
+     * Kod ve ad AYRI döner: sistemde `tr` saklanır, ekranda "Turkish" görünür.
+     * Kullanıcıya kodu yazdırmak, bilmediği bir şeyi hatırlamasını istemektir.
+     *
+     * @return list<array{code: string, name: string}>
+     */
+    public function locales(): array;
+
+    /**
      * Bir IANA saat diliminden ülke kodu.
      *
      * Tarayıcı kendi saat dilimini biliyor. Kullanıcıya boş bir ülke listesi

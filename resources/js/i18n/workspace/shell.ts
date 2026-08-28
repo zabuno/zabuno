@@ -42,6 +42,28 @@ export const shell = {
         'QR codes point at a published menu. Build your menu first, then come back here to print the codes.',
     'workspace.qrCodes.empty.goToMenu': 'Go to your menu',
     'workspace.menu.previewAndPublish': 'Preview & publish',
+    // Arıza sınıfları — her biri FARKLI bir çıkış yolu gösterir. Hepsine
+    // "tekrar deneyin" demek, yalnız birinde doğru olan tavsiyeyi diğer
+    // dördünde yanlış vermektir.
+    'workspace.form.error.summary.title': 'Please fix the fields below',
+    'workspace.brand.webAddress.label': 'Menu web address',
+    'workspace.brand.webAddress.help':
+        'Appears in the public link your guests open. Zabuno keeps it in step with your brand name.',
+    'workspace.brand.market.label': 'Main market',
+    'workspace.brand.locale.help':
+        'The main language of your menu content. You can add more languages later.',
+    'workspace.form.error.permission':
+        'You do not have permission to change this. Ask an owner or manager of this workspace.',
+    'workspace.form.error.conflict':
+        'Someone else changed this while you were editing. Reload to see the current values, then apply your change again.',
+    'workspace.form.error.notFound':
+        'This record no longer exists. It may have been deleted in another tab.',
+    'workspace.form.error.server':
+        'We could not save this right now. Nothing was lost — try again in a few seconds.',
+    'workspace.form.error.serverWithId':
+        'We could not save this right now. Nothing was lost — try again in a few seconds. Reference: {id}',
+    'workspace.form.error.network':
+        'We could not reach Zabuno. Check your connection — everything you typed is still here.',
     // Hesap menüsünün ERİŞİLEBİLİR adı. Tetikleyicide e-posta görünür ama
     // ekran okuyucuya bir e-posta adresi okumak, menünün ne olduğunu
     // söylemez.
