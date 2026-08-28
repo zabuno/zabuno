@@ -1344,6 +1344,34 @@ msgstr "Visible"
 msgid "workspace.publication.heading"
 msgstr "Publication"
 
+#: workspace:workspace.publication.history.help
+msgid "workspace.publication.history.help"
+msgstr "Going back writes a new version. Nothing is deleted, and the printed QR codes are untouched."
+
+#: workspace:workspace.publication.history.live
+msgid "workspace.publication.history.live"
+msgstr "Live"
+
+#: workspace:workspace.publication.history.restore
+msgid "workspace.publication.history.restore"
+msgstr "Go back to this version"
+
+#: workspace:workspace.publication.history.restoreError
+msgid "workspace.publication.history.restoreError"
+msgstr "This version could not be restored."
+
+#: workspace:workspace.publication.history.restoreLabel
+msgid "workspace.publication.history.restoreLabel"
+msgstr "Go back to version {version}"
+
+#: workspace:workspace.publication.history.title
+msgid "workspace.publication.history.title"
+msgstr "Published versions"
+
+#: workspace:workspace.publication.history.version
+msgid "workspace.publication.history.version"
+msgstr "Version {version}"
+
 #: workspace:workspace.publication.operational.description
 msgid "workspace.publication.operational.description"
 msgstr "Review your draft menu, confirm it is ready, and publish it live — plus manage the QR code that links to it."
@@ -1407,6 +1435,14 @@ msgstr "Could not disable QR code. Try again."
 #: workspace:workspace.publication.qrDestination.empty
 msgid "workspace.publication.qrDestination.empty"
 msgstr "No QR code created yet."
+
+#: workspace:workspace.publication.qrDestination.enableButton
+msgid "workspace.publication.qrDestination.enableButton"
+msgstr "Re-enable"
+
+#: workspace:workspace.publication.qrDestination.enableError
+msgid "workspace.publication.qrDestination.enableError"
+msgstr "The code could not be re-enabled."
 
 #: workspace:workspace.publication.qrDestination.explanation
 msgid "workspace.publication.qrDestination.explanation"

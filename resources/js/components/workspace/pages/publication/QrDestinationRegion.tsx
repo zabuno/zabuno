@@ -132,6 +132,33 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
         [workspaceId],
     );
 
+    const handleEnable = useCallback(
+        async (qrCodeId: number) => {
+            try {
+                await bootstrapCsrfCookie();
+
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/qr-codes/${qrCodeId}/enable`,
+                    buildAuthRequestInit({ method: 'PUT' }),
+                );
+
+                if (response.ok) {
+                    setItems((prev) =>
+                        prev.map((item) =>
+                            item.id === qrCodeId ? { ...item, state: 'active' } : item,
+                        ),
+                    );
+                    setErrorMessage(null);
+                } else {
+                    setErrorMessage(t('workspace.publication.qrDestination.enableError'));
+                }
+            } catch {
+                setErrorMessage(t('workspace.publication.qrDestination.enableError'));
+            }
+        },
+        [workspaceId],
+    );
+
     const handleBulkCreated = useCallback((created: QrCodeItem[]) => {
         setItems((prev) => {
             const seenIds = new Set(prev.map((item) => item.id));
@@ -185,7 +212,12 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
 
                 <ul className="flex flex-col gap-2">
                     {items.map((item) => (
-                        <QrCodeListItem key={item.id} item={item} onDisable={handleDisable} />
+                        <QrCodeListItem
+                            key={item.id}
+                            item={item}
+                            onDisable={handleDisable}
+                            onEnable={handleEnable}
+                        />
                     ))}
                 </ul>
 

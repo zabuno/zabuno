@@ -91,6 +91,54 @@ final class EloquentPublicationRepository implements PublicationRepositoryPort
         }
     }
 
+    public function history(int $workspaceId, int $menuId): array
+    {
+        $liveId = (int) DB::table('menu_publication_current_pointers')
+            ->where('menu_id', $menuId)
+            ->value('current_publication_id');
+
+        return DB::table('menu_publications')
+            ->where('workspace_id', $workspaceId)
+            ->where('menu_id', $menuId)
+            // EN YENİ ÖNCE: geri almayı arayan sahip panik hâlindedir ve
+            // listenin dibine inmez (`docs/81`).
+            ->orderByDesc('version')
+            ->get()
+            ->map(fn (object $row): PublicationRecord => $this->hydrate($row))
+            ->all();
+    }
+
+    public function find(int $workspaceId, int $menuId, int $publicationId): ?PublicationRecord
+    {
+        $row = DB::table('menu_publications')
+            ->where('id', $publicationId)
+            ->where('workspace_id', $workspaceId)
+            // Menü de KONTROL EDİLİR: aynı çalışma alanındaki başka bir
+            // menünün yayınını buraya geri yüklemek, iki menüyü birbirine
+            // karıştırmak olurdu.
+            ->where('menu_id', $menuId)
+            ->first();
+
+        return $row === null ? null : $this->hydrate($row);
+    }
+
+    private function hydrate(object $row): PublicationRecord
+    {
+        /** @var array<string,mixed> $snapshot */
+        $snapshot = json_decode((string) $row->snapshot, true, 512, JSON_THROW_ON_ERROR);
+
+        return new PublicationRecord(
+            (int) $row->id,
+            (int) $row->workspace_id,
+            (int) $row->menu_id,
+            (int) $row->location_id,
+            (int) $row->version,
+            (string) $row->state,
+            Carbon::parse($row->published_at)->toISOString(),
+            $snapshot,
+        );
+    }
+
     public function current(int $workspaceId, int $menuId): ?PublicationRecord
     {
         $pointer = DB::table('menu_publication_current_pointers')->where('menu_id', $menuId)->first();

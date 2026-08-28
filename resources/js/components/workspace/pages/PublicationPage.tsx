@@ -8,6 +8,7 @@ import {
     PublicationStatusRegion,
     type CurrentPublication,
 } from './publication/PublicationStatusRegion';
+import { PublicationHistoryRegion } from './publication/PublicationHistoryRegion';
 import { PublishActionConfigRegion } from './publication/PublishActionConfigRegion';
 import {
     isDraftReady,
@@ -169,6 +170,14 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
                     errorMessage={errorMessage}
                 />
                 {current !== null ? <PublishedSnapshotRegion current={current} /> : null}
+                {workspaceId !== undefined && menuId !== null ? (
+                    <PublicationHistoryRegion
+                        workspaceId={workspaceId}
+                        menuId={menuId}
+                        refreshToken={retryToken + (current?.version ?? 0)}
+                        onRestored={handleRetry}
+                    />
+                ) : null}
                 <PublishActionConfigRegion />
                 {workspaceId !== undefined && locationId !== null && menuId !== null ? (
                     <QrDestinationRegion
