@@ -18,6 +18,24 @@
         $sources,
     ));
 
+    /* Paylaşım önizlemesinin açıklaması. WhatsApp'ta bağlantıyı gören kişi
+       ÖNCE bunu okur; "yayınlanmış sürüm" orada hiçbir şey anlatmaz.
+       Kimlik biliniyorsa şube ve adres okunur. */
+    $documentDescription = static function (?\App\Domain\Publication\MenuIdentity $identity): string {
+        if ($identity === null || $identity->brandName === '') {
+            return 'Yayınlanan menü — güncel yayınlanmış sürüm.';
+        }
+
+        $parts = array_values(array_filter([
+            $identity->locationName,
+            $identity->addressLine,
+        ], static fn (?string $part): bool => $part !== null && $part !== ''));
+
+        return $parts === []
+            ? $identity->brandName.' — menü'
+            : $identity->brandName.' · '.implode(' · ', $parts);
+    };
+
     $headline = $identity?->brandName ?: trim((string) ($fallbackBrandName ?? ''));
     $documentTitle = $headline !== '' ? $headline : 'Menü';
 @endphp
@@ -42,8 +60,14 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $documentTitle }}">
     <meta property="og:site_name" content="Zabuno">
-    <meta name="description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
-    <meta property="og:description" content="Yayınlanan menü — güncel yayınlanmış sürüm.">
+    @php
+        // Blade'in tek satırlık `@php(...)` biçimi İÇ İÇE parantezi doğru
+        // kapatmıyor ve geri kalan şablonu PHP olarak yutuyor; blok biçimi
+        // kullanılır.
+        $pageDescription = $documentDescription($identity);
+    @endphp
+    <meta name="description" content="{{ $pageDescription }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
     @isset($structuredData)
         {{-- Sayfada olmayan hiçbir şey işaretlenmez: bu veri sayfayı
              render eden anlık görüntünün TA KENDİSİNDEN türetilir. --}}
@@ -355,7 +379,13 @@
             </p>
         @endif
 
-        <p class="qr-menu-subtitle">Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor.</p>
+        {{-- Bu cümle ürün-İÇİ bir cümledir: "yayınlanmış sürüm" misafirin
+             sorduğu bir soru değil, bizim kavramımız. Sayfa kendi kimliğini
+             söyleyebiliyorsa gereksizdir; söyleyemiyorsa misafire hiç
+             değilse ne baktığını anlatır (`docs/79`). --}}
+        @if ($headline === '')
+            <p class="qr-menu-subtitle">Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor.</p>
+        @endif
         <p class="qr-menu-summary">{{ $categoryCount }} kategori, {{ $itemCount }} ürün</p>
     </header>
 
