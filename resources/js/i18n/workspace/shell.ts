@@ -45,6 +45,14 @@ export const shell = {
         'A QR code opens your published menu, so there has to be a menu for it to open. Build yours first — it only takes a few minutes.',
     'workspace.qrCodes.empty.goToMenu': 'Go to your menu',
     'workspace.menu.previewAndPublish': 'Preview & publish',
+    // Bağlam paneli — menü düzenlerken sürekli sorulan ama ana alanda yeri
+    // olmayan sorular (docs/60).
+    'workspace.menu.inspector.title': 'This menu',
+    'workspace.menu.inspector.status': 'Status',
+    'workspace.menu.inspector.status.published': 'Published · version {version}',
+    'workspace.menu.inspector.location': 'Location',
+    'workspace.menu.inspector.categories': 'Categories',
+    'workspace.menu.inspector.items': 'Items',
     'workspace.menu.error.why': 'Your menu is safe — this is only a problem loading it right now.',
     'workspace.menu.error.noRetry': 'Reload the page to try again.',
     // Arıza sınıfları — her biri FARKLI bir çıkış yolu gösterir. Hepsine

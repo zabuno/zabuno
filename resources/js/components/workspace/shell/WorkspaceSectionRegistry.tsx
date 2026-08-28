@@ -39,6 +39,17 @@ export type WorkspaceSectionDescriptor = {
     aiQuickAction?: boolean;
     catalogOnboardingPhase?: WorkspaceCatalogOnboardingPhase;
     render: (ctx: WorkspaceSectionRuntimeContext) => ReactNode;
+    /**
+     * Bölümün BAĞLAM PANELİ — `docs/50` §3.4: "Editörlerde kullan".
+     *
+     * İsteğe bağlıdır ve bilerek öyle: her sayfanın sağ paneli olmaz. Bir
+     * özet ya da liste ekranında panel, doldurulacak bir şey bulunmadığı için
+     * ya boş durur ya da uydurulmuş bilgiyle dolar.
+     *
+     * Temel görev bu panele BAĞIMLI OLAMAZ: mobil pakette hiç bulunmaz ve
+     * orada ürün eksiksiz çalışmalıdır.
+     */
+    renderInspector?: (ctx: WorkspaceSectionRuntimeContext) => ReactNode;
 };
 
 type SectionModule = { default: WorkspaceSectionDescriptor };
@@ -153,6 +164,16 @@ export function resolveSectionDescriptorForOnboardingPhase(
         SECTION_DESCRIPTORS.find((descriptor) => descriptor.catalogOnboardingPhase === phase) ??
         null
     );
+}
+
+/** Aktif bölümün bağlam paneli; bölüm bildirmediyse `null`. */
+export function renderActiveInspector(
+    activeKey: string,
+    ctx: WorkspaceSectionRuntimeContext,
+): ReactNode {
+    const descriptor = SECTION_DESCRIPTORS.find((candidate) => candidate.key === activeKey);
+
+    return descriptor?.renderInspector?.(ctx) ?? null;
 }
 
 export function renderActiveSection(

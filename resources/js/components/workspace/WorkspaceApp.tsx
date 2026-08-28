@@ -25,6 +25,7 @@ import type { LocationProfile as SectionLocationProfile } from './LocationEditFo
 import {
     sectionHref,
     SECTION_DESCRIPTORS,
+    renderActiveInspector,
     resolveSectionKeyFromPath,
     resolveSubPath,
     resolveSectionDescriptorForOnboardingPhase,
@@ -94,6 +95,17 @@ export type WorkspaceAppProps = {
     renderNavigationDrawer?: (
         context: WorkspaceChromeContext & { open: boolean; onClose: () => void },
     ) => ReactNode;
+    /**
+     * Bağlam paneli bu pakette DESTEKLENİYOR mu — `docs/50` §3.4.
+     *
+     * Yalnız masaüstü girişi `true` geçer. Telefonda 336 piksellik kalıcı bir
+     * ray, 320 piksel genişliğinde bir ekranda zaten yer bulamaz; panel orada
+     * hiç çizilmez ve temel görev bundan etkilenmez.
+     *
+     * Açık bir bayrak, kenar çubuğu yuvasının varlığından çıkarım yapmaktan
+     * iyidir: ikisi ayrı kararlar ve bir gün ayrışabilirler.
+     */
+    supportsInspector?: boolean;
 };
 
 export type WorkspaceChromeContext = {
@@ -115,6 +127,7 @@ export type WorkspaceChromeContext = {
 export function WorkspaceApp({
     renderPersistentSidebar,
     renderNavigationDrawer,
+    supportsInspector = false,
 }: WorkspaceAppProps) {
     const [phase, setPhase] = useState<Phase>('loading');
     const [user, setUser] = useState<WorkspaceUser | null>(null);
@@ -847,6 +860,33 @@ export function WorkspaceApp({
         }
     }
 
+    /*
+        Bölüm bağlamı BİR KEZ kurulur.
+
+        Hem sayfa hem bağlam paneli aynı nesneyi alır. İki ayrı kopya
+        yazılsaydı biri diğerinden ayrılabilirdi: panel eski lokasyonu, sayfa
+        yenisini gösterir ve kullanıcı iki farklı gerçek görürdü.
+    */
+    const sectionContext: WorkspaceSectionRuntimeContext | null = currentWorkspace
+        ? {
+              workspaceId: currentWorkspace.id,
+              catalogPhase,
+              dashboardMenuTree,
+              brand,
+              location:
+                  locationProfiles.find((profile) => profile.id === catalogLocationId) ?? null,
+              locationProfiles,
+              catalogLocationId,
+              onSelectLocation: setCatalogLocationId,
+              onLocationSaved: handleLocationSaved,
+              onLocationCreated: handleLocationAdded,
+              onBrandSaved: setBrand,
+              onMenuTreeChange: handleCatalogTreeChange,
+              onNavigateToSection: goToSection,
+              subPath,
+          }
+        : null;
+
     const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
         (descriptor) => descriptor.aiQuickAction,
     ).map((descriptor) => ({
@@ -857,6 +897,12 @@ export function WorkspaceApp({
     return (
         <AdminShell
             brand={{ name: t('workspace.shell.brand') }}
+            inspector={
+                supportsInspector && sectionContext !== null && !showOnboardingForm
+                    ? renderActiveInspector(activeSection, sectionContext)
+                    : undefined
+            }
+            inspectorLabel={t('workspace.menu.inspector.title')}
             persistentSidebar={renderPersistentSidebar?.({
                 navGroups,
                 activeNavKey: currentWorkspace ? activeSection : undefined,
@@ -994,26 +1040,9 @@ export function WorkspaceApp({
                 geçtiğinde sınır kendini sıfırlar. Bu olmadan React bozuk
                 ağacı kalıcı sayar ve hata ekranı sonraki bölümde de kalırdı.
             */}
-            {currentWorkspace && !showOnboardingForm && (
+            {sectionContext !== null && !showOnboardingForm && (
                 <AppErrorBoundary scope="route" resetKey={activeSection}>
-                    {renderActiveSection(activeSection, {
-                        workspaceId: currentWorkspace.id,
-                        catalogPhase,
-                        dashboardMenuTree,
-                        brand,
-                        location:
-                            locationProfiles.find((profile) => profile.id === catalogLocationId) ??
-                            null,
-                        locationProfiles,
-                        catalogLocationId,
-                        onSelectLocation: setCatalogLocationId,
-                        onLocationSaved: handleLocationSaved,
-                        onLocationCreated: handleLocationAdded,
-                        onBrandSaved: setBrand,
-                        onMenuTreeChange: handleCatalogTreeChange,
-                        onNavigateToSection: goToSection,
-                        subPath,
-                    })}
+                    {renderActiveSection(activeSection, sectionContext)}
                 </AppErrorBoundary>
             )}
 

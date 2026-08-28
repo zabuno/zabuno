@@ -29,6 +29,13 @@ createRoot(container).render(
             <AppErrorBoundary scope="app">
                 <WorkspaceApp
                     renderPersistentSidebar={(context) => <DesktopSidebar {...context} />}
+                    /*
+                        Bağlam paneli YALNIZ masaüstünde. 336 piksellik kalıcı
+                        bir ray, 320 piksel genişliğinde bir ekranda zaten yer
+                        bulamaz — ve temel görev ona bağımlı değildir
+                        (docs/50 §3.4, docs/60).
+                    */
+                    supportsInspector
                 />
             </AppErrorBoundary>
         </ThemeRoot>

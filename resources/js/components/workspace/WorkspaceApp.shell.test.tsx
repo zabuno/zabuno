@@ -481,4 +481,40 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
 
         vi.unstubAllGlobals();
     });
+    /**
+     * Panel BULUNMAYAN sayfada çizilmez.
+     *
+     * Her sayfanın sağ paneli olmaz: bir özet ekranında panel, doldurulacak
+     * bir şey olmadığı için ya boş durur ya da uydurulmuş bilgiyle dolar.
+     */
+    it('bölüm bildirmediyse panel hiç çizilmez', async () => {
+        await renderCurrentWorkspace();
+
+        // Varsayılan bölüm Home; bağlam paneli bildirmiyor.
+        expect(screen.queryByRole('complementary', { name: /this menu/i })).toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+
+    /**
+     * TEMEL GÖREV panele bağımlı DEĞİLDİR.
+     *
+     * Telefon paketinde panel hiç bulunmaz. Menü ekranı orada da eksiksiz
+     * çalışmalı — aksi hâlde panel bir kolaylık değil, gizli bir ön koşul
+     * olurdu.
+     */
+    it('telefon kabuğunda panel yokken menü ekranı çalışır', async () => {
+        const user = userEvent.setup();
+        await renderCurrentWorkspace(mobileChrome);
+
+        await user.click(screen.getByRole('button', { name: 'Open menu' }));
+        await user.click(await screen.findByRole('link', { name: 'Menus' }));
+
+        expect(screen.queryByRole('complementary')).toBeNull();
+
+        const main = screen.getByRole('main');
+        expect(main.querySelector('#section-menu')).not.toBeNull();
+
+        vi.unstubAllGlobals();
+    });
 });

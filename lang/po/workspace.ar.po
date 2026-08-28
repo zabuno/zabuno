@@ -1128,6 +1128,30 @@ msgstr ""
 msgid "workspace.menu.heading"
 msgstr ""
 
+#: workspace:workspace.menu.inspector.categories
+msgid "workspace.menu.inspector.categories"
+msgstr ""
+
+#: workspace:workspace.menu.inspector.items
+msgid "workspace.menu.inspector.items"
+msgstr ""
+
+#: workspace:workspace.menu.inspector.location
+msgid "workspace.menu.inspector.location"
+msgstr ""
+
+#: workspace:workspace.menu.inspector.status
+msgid "workspace.menu.inspector.status"
+msgstr ""
+
+#: workspace:workspace.menu.inspector.status.published
+msgid "workspace.menu.inspector.status.published"
+msgstr ""
+
+#: workspace:workspace.menu.inspector.title
+msgid "workspace.menu.inspector.title"
+msgstr ""
+
 #: workspace:workspace.menu.loading
 msgid "workspace.menu.loading"
 msgstr ""

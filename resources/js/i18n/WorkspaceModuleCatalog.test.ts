@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 471;
+const FROZEN_LEGACY_KEY_COUNT = 477;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -135,8 +135,16 @@ const FROZEN_LEGACY_KEY_COUNT = 471;
 // hiçbir şey bulunmuyordu. Boş durum artık dört soruyu birden cevaplıyor (ne
 // yok, neden yok, anlamı ne, şimdi ne yapabilir) ve hataya yeniden deneme
 // eklendi. 468 → 471.
+//
+// BAĞLAM PANELİ (FF-03a): sağ panel planlarda defalarca geçiyordu (docs/50
+// §3.4, §4, §13, §21, §25) ama hiçbir ekranda yoktu — yuvası açılmış, hiç
+// doldurulmamıştı. Menü editörü artık gerçek bağlam gösteriyor: yayın durumu
+// ve sürüm, lokasyon, kategori ve ürün sayısı. Şablondaki tema, desteklenen
+// diller ve yayın zamanlaması EKLENMEDİ: ürün onları henüz tutmuyor ve
+// olmayan bir ayarı göstermek olmayan bir yetenek vaat etmek olurdu.
+// 471 → 477.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '90b6a80cd6b6f08db909b868934c06610c4325e46c930195b85b80a2b19a2192';
+    '6fdf350bbc3365e23b0521d1505d31c062eb5156279c8426acea0533d30656fd';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
