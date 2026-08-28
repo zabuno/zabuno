@@ -20,6 +20,7 @@ export function BillingPage({ workspaceId }: BillingPageProps) {
     return (
         <div id="section-billing">
             <WorkspacePageFrame
+                measure="settings"
                 title={t('workspace.billing.heading')}
                 description={t('workspace.billing.operational.description')}
             >

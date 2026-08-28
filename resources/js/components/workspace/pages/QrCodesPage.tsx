@@ -30,6 +30,7 @@ export function QrCodesPage({
     return (
         <div id="section-qr-codes">
             <WorkspacePageFrame
+                measure="standard"
                 title={t('workspace.shell.nav.qrCodes')}
                 description={t('workspace.qrCodes.operational.description')}
             >

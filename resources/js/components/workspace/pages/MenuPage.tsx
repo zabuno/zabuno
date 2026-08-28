@@ -38,6 +38,7 @@ export function MenuPage({
     return (
         <div id="section-menu">
             <WorkspacePageFrame
+                measure="wide"
                 title={t('workspace.shell.nav.menus')}
                 description={t('workspace.menu.operational.description')}
                 actions={

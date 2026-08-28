@@ -63,6 +63,7 @@ export function DashboardPage({
     return (
         <div id="section-dashboard">
             <WorkspacePageFrame
+                measure="standard"
                 description={tWorkspace('workspace.dashboard.operational.description')}
             >
                 <DashboardSetupJourney

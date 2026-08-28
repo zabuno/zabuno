@@ -397,6 +397,7 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
     return (
         <div id="section-team">
             <WorkspacePageFrame
+                measure="wide"
                 title={t('workspace.team.heading')}
                 description={operationalDescription}
                 badges={badges}

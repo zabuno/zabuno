@@ -147,6 +147,7 @@ export function AnalyticsPage({
     return (
         <div id="section-analytics">
             <WorkspacePageFrame
+                measure="wide"
                 title={t('workspace.analytics.heading')}
                 description={t('workspace.analytics.operational.description')}
                 badges={statusBadge ? [statusBadge] : []}

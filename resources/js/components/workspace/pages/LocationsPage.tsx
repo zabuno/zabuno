@@ -47,6 +47,7 @@ export function LocationsPage({
     return (
         <div id="section-locations">
             <WorkspacePageFrame
+                measure="standard"
                 title={t('workspace.shell.nav.locations')}
                 description={t('workspace.locations.operational.description')}
                 actions={
