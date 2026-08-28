@@ -31,6 +31,7 @@ import {
     renderActiveSection,
     type WorkspaceSectionDescriptor,
 } from './shell/WorkspaceSectionRegistry';
+import type { WorkspaceInspectorMap } from './inspectors/types';
 
 export type CatalogPhase =
     'loading' | 'error' | 'brand-onboarding' | 'location-onboarding' | 'menu-catalog';
@@ -94,6 +95,18 @@ export type WorkspaceAppProps = {
     renderNavigationDrawer?: (
         context: WorkspaceChromeContext & { open: boolean; onClose: () => void },
     ) => ReactNode;
+    /**
+     * Bu cihaz paketine ait BAĞLAM PANELLERİ — `docs/54`, `docs/60`.
+     *
+     * Bayrak değil harita geçilir, çünkü bir bayrak paneli yalnız GİZLER:
+     * kod paylaşılan bölüm kaydından yine indirilirdi. Haritayı yalnız
+     * masaüstü girişi verir; mobil giriş `desktopInspectors` dosyasına hiç
+     * dokunmaz, dolayısıyla panel kodu o pakete hiç girmez.
+     *
+     * Telefonda 336 piksellik kalıcı bir sütun 320 piksellik ekranda zaten yer
+     * bulamaz; panel orada YOKTUR ve temel görev bundan etkilenmez.
+     */
+    inspectors?: WorkspaceInspectorMap;
 };
 
 export type WorkspaceChromeContext = {
@@ -115,6 +128,7 @@ export type WorkspaceChromeContext = {
 export function WorkspaceApp({
     renderPersistentSidebar,
     renderNavigationDrawer,
+    inspectors,
 }: WorkspaceAppProps) {
     const [phase, setPhase] = useState<Phase>('loading');
     const [user, setUser] = useState<WorkspaceUser | null>(null);
@@ -847,6 +861,33 @@ export function WorkspaceApp({
         }
     }
 
+    /*
+        Bölüm bağlamı BİR KEZ kurulur.
+
+        Hem sayfa hem bağlam paneli aynı nesneyi alır. İki ayrı kopya
+        yazılsaydı biri diğerinden ayrılabilirdi: panel eski lokasyonu, sayfa
+        yenisini gösterir ve kullanıcı iki farklı gerçek görürdü.
+    */
+    const sectionContext: WorkspaceSectionRuntimeContext | null = currentWorkspace
+        ? {
+              workspaceId: currentWorkspace.id,
+              catalogPhase,
+              dashboardMenuTree,
+              brand,
+              location:
+                  locationProfiles.find((profile) => profile.id === catalogLocationId) ?? null,
+              locationProfiles,
+              catalogLocationId,
+              onSelectLocation: setCatalogLocationId,
+              onLocationSaved: handleLocationSaved,
+              onLocationCreated: handleLocationAdded,
+              onBrandSaved: setBrand,
+              onMenuTreeChange: handleCatalogTreeChange,
+              onNavigateToSection: goToSection,
+              subPath,
+          }
+        : null;
+
     const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
         (descriptor) => descriptor.aiQuickAction,
     ).map((descriptor) => ({
@@ -857,6 +898,12 @@ export function WorkspaceApp({
     return (
         <AdminShell
             brand={{ name: t('workspace.shell.brand') }}
+            inspector={
+                sectionContext !== null && !showOnboardingForm
+                    ? inspectors?.[activeSection]?.(sectionContext)
+                    : undefined
+            }
+            inspectorLabel={t('workspace.menu.inspector.title')}
             persistentSidebar={renderPersistentSidebar?.({
                 navGroups,
                 activeNavKey: currentWorkspace ? activeSection : undefined,
@@ -994,26 +1041,9 @@ export function WorkspaceApp({
                 geçtiğinde sınır kendini sıfırlar. Bu olmadan React bozuk
                 ağacı kalıcı sayar ve hata ekranı sonraki bölümde de kalırdı.
             */}
-            {currentWorkspace && !showOnboardingForm && (
+            {sectionContext !== null && !showOnboardingForm && (
                 <AppErrorBoundary scope="route" resetKey={activeSection}>
-                    {renderActiveSection(activeSection, {
-                        workspaceId: currentWorkspace.id,
-                        catalogPhase,
-                        dashboardMenuTree,
-                        brand,
-                        location:
-                            locationProfiles.find((profile) => profile.id === catalogLocationId) ??
-                            null,
-                        locationProfiles,
-                        catalogLocationId,
-                        onSelectLocation: setCatalogLocationId,
-                        onLocationSaved: handleLocationSaved,
-                        onLocationCreated: handleLocationAdded,
-                        onBrandSaved: setBrand,
-                        onMenuTreeChange: handleCatalogTreeChange,
-                        onNavigateToSection: goToSection,
-                        subPath,
-                    })}
+                    {renderActiveSection(activeSection, sectionContext)}
                 </AppErrorBoundary>
             )}
 

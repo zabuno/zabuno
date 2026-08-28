@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { desktopChrome, mobileChrome } from '../../test/workspaceChrome';
+import { desktopInspectors } from './inspectors/desktopInspectors';
 
 /**
  * RED test freezing the real AdminShell composition contract for
@@ -478,6 +479,45 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         // maddelerinin arasına karıştıklarında ikisi de okunmaz olur.
         expect(within(nav).queryByRole('link', { name: 'Log out' })).toBeNull();
         expect(within(nav).queryByRole('button', { name: 'Log out' })).toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+    /**
+     * Panel BULUNMAYAN sayfada çizilmez.
+     *
+     * Her sayfanın sağ paneli olmaz: bir özet ekranında panel, doldurulacak
+     * bir şey olmadığı için ya boş durur ya da uydurulmuş bilgiyle dolar.
+     * Panel haritası bu yüzden kısmîdir, her bölüm için bir giriş içermez.
+     */
+    it('haritada olmayan bölümde panel hiç çizilmez', async () => {
+        await renderCurrentWorkspace({ ...desktopChrome, inspectors: desktopInspectors });
+
+        // Varsayılan bölüm Home; masaüstü panel haritasında yok.
+        expect(screen.queryByRole('complementary', { name: /this menu/i })).toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+
+    /**
+     * TEMEL GÖREV panele bağımlı DEĞİLDİR.
+     *
+     * Telefon paketinde panel hiç bulunmaz. Menü ekranı orada da eksiksiz
+     * çalışmalı — aksi hâlde panel bir kolaylık değil, gizli bir ön koşul
+     * olurdu.
+     */
+    it('telefon kabuğunda panel yokken menü ekranı çalışır', async () => {
+        const user = userEvent.setup();
+        // Telefon girişi panel haritasını HİÇ vermez — `desktopInspectors`
+        // dosyasına dokunmadığı için panel kodu o pakete girmez (docs/54).
+        await renderCurrentWorkspace(mobileChrome);
+
+        await user.click(screen.getByRole('button', { name: 'Open menu' }));
+        await user.click(await screen.findByRole('link', { name: 'Menus' }));
+
+        expect(screen.queryByRole('complementary')).toBeNull();
+
+        const main = screen.getByRole('main');
+        expect(main.querySelector('#section-menu')).not.toBeNull();
 
         vi.unstubAllGlobals();
     });

@@ -1128,6 +1128,30 @@ msgstr "Your menu is safe — this is only a problem loading it right now."
 msgid "workspace.menu.heading"
 msgstr "Menu"
 
+#: workspace:workspace.menu.inspector.categories
+msgid "workspace.menu.inspector.categories"
+msgstr "Categories"
+
+#: workspace:workspace.menu.inspector.items
+msgid "workspace.menu.inspector.items"
+msgstr "Items"
+
+#: workspace:workspace.menu.inspector.location
+msgid "workspace.menu.inspector.location"
+msgstr "Location"
+
+#: workspace:workspace.menu.inspector.status
+msgid "workspace.menu.inspector.status"
+msgstr "Status"
+
+#: workspace:workspace.menu.inspector.status.published
+msgid "workspace.menu.inspector.status.published"
+msgstr "Published · version {version}"
+
+#: workspace:workspace.menu.inspector.title
+msgid "workspace.menu.inspector.title"
+msgstr "This menu"
+
 #: workspace:workspace.menu.loading
 msgid "workspace.menu.loading"
 msgstr "Loading your menu…"
