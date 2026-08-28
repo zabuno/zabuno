@@ -57,6 +57,7 @@ function makeLocation(): LocationProfile {
         id: 34,
         display_name: 'Kadıköy Şube',
         country_code: 'TR',
+        timezone: 'Europe/Istanbul',
         city: 'Istanbul',
         address_line1: 'Moda Cad. 1',
     } as LocationProfile;

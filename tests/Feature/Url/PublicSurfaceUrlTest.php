@@ -130,7 +130,7 @@ final class PublicSurfaceUrlTest extends TestCase
 
         $locationId = (int) DB::table('locations')->insertGetId([
             'workspace_id' => $workspaceId, 'brand_id' => $brandId, 'display_name' => 'Şube',
-            'country_code' => 'TR', 'city' => 'İstanbul', 'address_line1' => 'Adres',
+            'country_code' => 'TR', 'timezone' => 'Europe/Istanbul', 'city' => 'İstanbul', 'address_line1' => 'Adres',
             'created_at' => now(), 'updated_at' => now(),
         ]);
 

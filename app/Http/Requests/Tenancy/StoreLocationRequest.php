@@ -21,6 +21,13 @@ final class StoreLocationRequest extends FormRequest
         return [
             'display_name' => ['required', 'string', 'max:255'],
             'country_code' => ['required', 'string', 'size:2'],
+            /*
+                IANA kimliği ve YALNIZ listeden. `timezone_identifiers_list()`
+                kuralın kaynağıdır; `UTC+3` gibi sabit offsetler ve `ISTANBUL`
+                gibi serbest metinler burada reddedilir, çünkü ikisi de sivil
+                saat kurallarını (yaz saati, tarihsel değişiklikler) taşımaz.
+            */
+            'timezone' => ['sometimes', 'string', 'timezone:all'],
             'city' => ['required', 'string', 'max:255'],
             'address_line1' => ['required', 'string', 'max:255'],
             'address_line2' => ['sometimes', 'nullable', 'string', 'max:255'],

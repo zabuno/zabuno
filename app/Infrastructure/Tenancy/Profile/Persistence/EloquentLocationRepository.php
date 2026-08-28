@@ -75,6 +75,7 @@ final class EloquentLocationRepository implements LocationRepositoryPort
             (int) $location->brand_id,
             (string) $location->display_name,
             (string) $location->country_code,
+            (string) $location->timezone,
             (string) $location->city,
             (string) $location->address_line1,
             $location->address_line2,

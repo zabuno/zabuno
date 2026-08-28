@@ -69,6 +69,7 @@ final class MenuEntrySingleSubmitTest extends TestCase
             'brand_id' => $brandId,
             'display_name' => 'Kadıköy Şubesi',
             'country_code' => 'TR',
+            'timezone' => 'Europe/Istanbul',
             'city' => 'İstanbul',
             'address_line1' => 'Bahariye Cd. No:1',
             'created_at' => now(),

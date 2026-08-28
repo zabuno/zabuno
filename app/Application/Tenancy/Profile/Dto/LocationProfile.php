@@ -12,6 +12,8 @@ final class LocationProfile
         public readonly int $brandId,
         public readonly string $displayName,
         public readonly string $countryCode,
+        /** IANA kimliği (`Europe/Istanbul`) — sabit offset DEĞİL (docs/62). */
+        public readonly string $timezone,
         public readonly string $city,
         public readonly string $addressLine1,
         public readonly ?string $addressLine2,
@@ -29,6 +31,7 @@ final class LocationProfile
             'brand_id' => $this->brandId,
             'display_name' => $this->displayName,
             'country_code' => $this->countryCode,
+            'timezone' => $this->timezone,
             'city' => $this->city,
             'address_line1' => $this->addressLine1,
             'address_line2' => $this->addressLine2,

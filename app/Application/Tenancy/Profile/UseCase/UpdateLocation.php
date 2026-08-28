@@ -21,13 +21,24 @@ final class UpdateLocation
     {
         $address = StructuredAddress::fromArray($data);
 
-        return $this->locations->update($workspaceId, $locationId, [
+        $attributes = [
             'display_name' => $data['display_name'],
             'country_code' => $address->countryCode(),
             'city' => $address->city(),
             'address_line1' => $address->addressLine1(),
             'address_line2' => $address->addressLine2(),
             'postal_code' => $address->postalCode(),
-        ]);
+        ];
+
+        /*
+            Saat dilimi YALNIZ gönderildiğinde yazılır. Her istekte yazsaydı,
+            alanı taşımayan eski bir istemci şubenin saat dilimini sessizce
+            siler ve yayın saatleri o anda kayardı.
+        */
+        if (is_string($data['timezone'] ?? null) && $data['timezone'] !== '') {
+            $attributes['timezone'] = $data['timezone'];
+        }
+
+        return $this->locations->update($workspaceId, $locationId, $attributes);
     }
 }

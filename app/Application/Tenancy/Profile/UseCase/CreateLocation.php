@@ -32,6 +32,14 @@ final class CreateLocation
         return $this->locations->create($workspaceId, $brand->id, [
             'display_name' => $data['display_name'],
             'country_code' => $address->countryCode(),
+            /*
+                Saat dilimi verilmediyse markanınki DEVRALINIR.
+                Boş bırakmak, şubenin saatini sessizce sunucununkine
+                bırakmak olurdu — yayın saatleri o an yanlışa döner.
+            */
+            'timezone' => is_string($data['timezone'] ?? null) && $data['timezone'] !== ''
+                ? $data['timezone']
+                : $brand->timezone,
             'city' => $address->city(),
             'address_line1' => $address->addressLine1(),
             'address_line2' => $address->addressLine2(),

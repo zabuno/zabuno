@@ -81,6 +81,7 @@ final class QrDestinationPublicResolverTest extends TestCase
             'brand_id' => $brandId,
             'display_name' => 'Şube '.$slugSeed,
             'country_code' => 'TR',
+            'timezone' => 'Europe/Istanbul',
             'city' => 'İstanbul',
             'address_line1' => 'Adres '.$slugSeed,
             'created_at' => now(),

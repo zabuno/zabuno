@@ -792,8 +792,24 @@ msgstr ""
 msgid "workspace.location.postalCode"
 msgstr ""
 
+#: workspace:workspace.location.regional.chooseCountry
+msgid "workspace.location.regional.chooseCountry"
+msgstr ""
+
+#: workspace:workspace.location.regional.chooseTimezone
+msgid "workspace.location.regional.chooseTimezone"
+msgstr ""
+
 #: workspace:workspace.location.submit
 msgid "workspace.location.submit"
+msgstr ""
+
+#: workspace:workspace.location.timezone
+msgid "workspace.location.timezone"
+msgstr ""
+
+#: workspace:workspace.location.timezone.help
+msgid "workspace.location.timezone.help"
 msgstr ""
 
 #: workspace:workspace.locations.add.button

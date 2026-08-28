@@ -133,6 +133,7 @@ describe('LocationOnboardingForm.stories — Storybook contract matrix', () => {
     it('Success story provides a stateful render/play harness that surfaces the server-created location after the onCreated callback flow', async () => {
         const mod = await importStoriesModule<{
             Success: AnyStory & {
+                loaders?: Array<() => Promise<unknown>>;
                 render?: (args: Record<string, unknown>, ctx: unknown) => React.ReactElement;
                 play?: (ctx: { canvasElement: HTMLElement }) => Promise<void>;
             };
@@ -140,6 +141,18 @@ describe('LocationOnboardingForm.stories — Storybook contract matrix', () => {
 
         expect(mod.Success.render).toEqual(expect.any(Function));
         expect(mod.Success.play).toEqual(expect.any(Function));
+
+        /*
+            Storybook, hikâyeyi çizmeden ÖNCE loader'ları çalıştırır. Bu test
+            onları atlıyordu; hikâye açılışta veri çeken bir alan kazanır
+            kazanmaz fark ortaya çıktı: bileşen boş bir sunucuyla monte
+            oluyor, `play` ise geç kalmış bir stub kuruyordu. Loader'ları
+            burada da çalıştırmak testi Storybook'un gerçek sırasına
+            yaklaştırır — zayıflatmaz.
+        */
+        for (const load of mod.Success.loaders ?? []) {
+            await load();
+        }
 
         const args = mod.Success.args as Record<string, unknown>;
         const rendered = mod.Success.render!(args, { args } as never);

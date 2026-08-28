@@ -7,6 +7,7 @@ import { FormField } from './forms/FormField';
 import { FormSection } from './forms/FormSection';
 import { FormActions } from './forms/FormActions';
 import { ReadOnlySummary, type ReadOnlySummaryItem } from './forms/ReadOnlySummary';
+import { RegionalFields } from './location/RegionalFields';
 
 export type LocationProfile = {
     id: number;
@@ -14,6 +15,7 @@ export type LocationProfile = {
     brand_id: number;
     display_name: string;
     country_code: string;
+    timezone: string;
     city: string;
     address_line1: string;
     address_line2: string | null;
@@ -30,6 +32,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
     const [editing, setEditing] = useState(false);
     const [displayName, setDisplayName] = useState(location.display_name);
     const [countryCode, setCountryCode] = useState(location.country_code);
+    const [timezone, setTimezone] = useState(location.timezone);
     const [city, setCity] = useState(location.city);
     const [addressLine1, setAddressLine1] = useState(location.address_line1);
     const [addressLine2, setAddressLine2] = useState(location.address_line2 ?? '');
@@ -46,6 +49,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
     function startEdit() {
         setDisplayName(location.display_name);
         setCountryCode(location.country_code);
+        setTimezone(location.timezone);
         setCity(location.city);
         setAddressLine1(location.address_line1);
         setAddressLine2(location.address_line2 ?? '');
@@ -77,6 +81,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                     body: JSON.stringify({
                         display_name: displayName,
                         country_code: countryCode,
+                        timezone,
                         city,
                         address_line1: addressLine1,
                         address_line2: addressLine2,
@@ -137,6 +142,12 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
         }
 
         summaryItems.push({
+            key: 'timezone',
+            label: t('workspace.location.timezone'),
+            value: location.timezone,
+        });
+
+        summaryItems.push({
             key: 'country_code',
             label: t('workspace.brandLocations.locations.view.country'),
             value: location.country_code,
@@ -178,13 +189,14 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                     value={displayName}
                     onChange={setDisplayName}
                 />
-                <FormField
-                    id={`location-edit-country-code-${location.id}`}
-                    name="country_code"
-                    errorText={fieldErrors.country_code}
-                    label={t('workspace.brandLocations.locations.edit.countryCode')}
-                    value={countryCode}
-                    onChange={setCountryCode}
+                <RegionalFields
+                    idPrefix={`location-edit-${String(location.id)}`}
+                    countryCode={countryCode}
+                    timezone={timezone}
+                    onCountryChange={setCountryCode}
+                    onTimezoneChange={setTimezone}
+                    countryError={fieldErrors.country_code}
+                    timezoneError={fieldErrors.timezone}
                 />
                 <FormField
                     id={`location-edit-city-${location.id}`}
