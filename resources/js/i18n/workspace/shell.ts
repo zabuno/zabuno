@@ -17,6 +17,16 @@ export const shell = {
     'workspace.shell.brand': 'Zabuno',
     'workspace.shell.nav.label': 'Restaurant admin',
     'workspace.shell.nav.group': 'Account',
+    // Kenar çubuğu grup başlıkları. Dokuz madde tek ve adsız bir yığındı;
+    // bu başlıklar onları bir SIRAYA çevirir: önce restoranı tanımla, sonra
+    // menüyü kurup yayınla, sonra işi yönet.
+    'workspace.shell.nav.group.restaurant': 'Your restaurant',
+    'workspace.shell.nav.group.menu': 'Your menu',
+    'workspace.shell.nav.group.business': 'Your business',
+    // Hesap menüsünün ERİŞİLEBİLİR adı. Tetikleyicide e-posta görünür ama
+    // ekran okuyucuya bir e-posta adresi okumak, menünün ne olduğunu
+    // söylemez.
+    'workspace.account.menu.label': 'Account',
     'workspace.shell.nav.dashboard': 'Dashboard',
     'workspace.shell.nav.menuCatalog': 'Menu catalog',
     'workspace.shell.nav.brandLocations': 'Brand & Locations',

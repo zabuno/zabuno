@@ -8,6 +8,10 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: workspace:workspace.account.menu.label
+msgid "workspace.account.menu.label"
+msgstr "Account"
+
 #: workspace:workspace.aiCommand.affectedRecords.empty
 msgid "workspace.aiCommand.affectedRecords.empty"
 msgstr "No records are affected."
@@ -1543,6 +1547,18 @@ msgstr "Dashboard"
 #: workspace:workspace.shell.nav.group
 msgid "workspace.shell.nav.group"
 msgstr "Account"
+
+#: workspace:workspace.shell.nav.group.business
+msgid "workspace.shell.nav.group.business"
+msgstr "Your business"
+
+#: workspace:workspace.shell.nav.group.menu
+msgid "workspace.shell.nav.group.menu"
+msgstr "Your menu"
+
+#: workspace:workspace.shell.nav.group.restaurant
+msgid "workspace.shell.nav.group.restaurant"
+msgstr "Your restaurant"
 
 #: workspace:workspace.shell.nav.label
 msgid "workspace.shell.nav.label"

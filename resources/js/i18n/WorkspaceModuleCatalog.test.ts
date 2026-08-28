@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 440;
+const FROZEN_LEGACY_KEY_COUNT = 444;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -106,8 +106,14 @@ const FROZEN_LEGACY_KEY_COUNT = 440;
 // biri, geri alınamaz bir eylemde hangi görseli sildiğini ayırt edemiyordu.
 // İki anahtar eklendi: adsız görsel için dürüst bir yedek ve satıra özgü silme
 // adı. 436 → 440.
+//
+// KABUK (FF-01b): kenar çubuğu dokuz maddelik tek ve ADSIZ bir yığındı; üç
+// grup başlığı eklendi ("Your restaurant" / "Your menu" / "Your business") ve
+// dokuz eşit seçenek bir SIRAYA dönüştü. Hesap işleri kenar çubuğunun dibinden
+// kimlik alanındaki hesap menüsüne taşındı; menünün erişilebilir adı için bir
+// anahtar daha. 440 → 444.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '281b04bd669b60eb26d37630ec5026c573509f4c821fb279696681644e2a8e53';
+    '431222dbb2b359747919abd12b03df9945b6fd98bfe32d0ce7878b38d9acdbc7';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

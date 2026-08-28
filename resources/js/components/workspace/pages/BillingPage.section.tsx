@@ -12,6 +12,7 @@ const billingSection: WorkspaceSectionDescriptor = {
     path: 'billing',
     order: 8,
     labelKey: 'workspace.shell.nav.billing',
+    group: 'business',
     render,
 };
 

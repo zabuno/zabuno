@@ -16,21 +16,47 @@ const meta: Meta<typeof SidebarNav> = {
 export default meta;
 type Story = StoryObj<typeof SidebarNav>;
 
+/*
+    Restoran panelinin GERÇEKTEN sevk edilen gezintisi.
+
+    Fikstür önceden uydurma maddeler taşıyordu ("Orders", "QR codes") ve
+    ürün ile ilgisi yoktu. Storybook'un işi sevk edilen şeyi belgelemektir;
+    uydurulmuş bir fikstür, hem tasarım tartışmasını yanlış ekran üzerinden
+    yürütür hem de gerçek gezinti bozulduğunda hiçbir şey fark etmez.
+
+    Gruplar dokuz maddeyi bir SIRAYA çevirir: önce restoranı tanımla, sonra
+    menüyü kurup yayınla, sonra işi yönet. Dashboard gruplanmaz — bir adım
+    değil, giriş noktasıdır.
+*/
 const restaurantAdminGroups: SidebarNavGroup[] = [
     {
-        key: 'main',
+        key: 'overview',
+        items: [{ key: 'dashboard', label: 'Dashboard', href: '#dashboard' }],
+    },
+    {
+        key: 'restaurant',
+        label: 'Your restaurant',
         items: [
-            { key: 'dashboard', label: 'Dashboard', href: '#dashboard' },
-            { key: 'orders', label: 'Orders', href: '#orders' },
+            { key: 'brand', label: 'Brand', href: '#brand' },
+            { key: 'locations', label: 'Locations', href: '#locations' },
         ],
     },
     {
-        key: 'catalog',
-        label: 'Menu',
+        key: 'menu',
+        label: 'Your menu',
         items: [
-            { key: 'items', label: 'Items', href: '#items' },
-            { key: 'categories', label: 'Categories', href: '#categories' },
-            { key: 'qr', label: 'QR codes', href: '#qr', disabled: true },
+            { key: 'menu', label: 'Menu', href: '#menu' },
+            { key: 'media', label: 'Media', href: '#media' },
+            { key: 'publication', label: 'Publication', href: '#publication' },
+        ],
+    },
+    {
+        key: 'business',
+        label: 'Your business',
+        items: [
+            { key: 'analytics', label: 'Analytics', href: '#analytics' },
+            { key: 'team', label: 'Team', href: '#team' },
+            { key: 'billing', label: 'Billing', href: '#billing' },
         ],
     },
 ];

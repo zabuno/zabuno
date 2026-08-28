@@ -21,6 +21,7 @@ const locationsSection: WorkspaceSectionDescriptor = {
     path: 'locations',
     order: 2,
     labelKey: 'workspace.shell.nav.locations',
+    group: 'restaurant',
     aiQuickAction: true,
     catalogOnboardingPhase: 'location-onboarding',
     render,

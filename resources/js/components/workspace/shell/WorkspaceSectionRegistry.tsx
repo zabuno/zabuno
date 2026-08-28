@@ -3,6 +3,21 @@ import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 
 export type WorkspaceCatalogOnboardingPhase = 'brand-onboarding' | 'location-onboarding';
 
+/**
+ * Kenar çubuğunun bölümleri hangi başlık altında toplanacak.
+ *
+ * Önceden dokuz madde tek ve ADSIZ bir yığındı: Dashboard, Brand, Locations,
+ * Menu, Media, Publication, Analytics, Team, Billing — hepsi aynı görsel
+ * ağırlıkta, aralarında hiçbir ilişki gösterilmeden. Dokuz eşit seçenek,
+ * kullanıcıyı her seferinde listenin tamamını okumaya zorlar; oysa bunlar
+ * birbirinden bağımsız değil, bir SIRANIN adımları: önce restoranı tanımlarsın,
+ * sonra menüyü kurup yayınlarsın, sonra işi yönetirsin.
+ *
+ * Gruplar bu sırayı görünür kılar. `undefined` bırakılan bölüm (Dashboard)
+ * en üstte, kendi başına durur — bir adım değil, giriş noktasıdır.
+ */
+export type WorkspaceNavGroupKey = 'restaurant' | 'menu' | 'business';
+
 export type WorkspaceSectionDescriptor = {
     key: string;
     /**
@@ -16,6 +31,8 @@ export type WorkspaceSectionDescriptor = {
     path: string;
     order: number;
     labelKey: string;
+    /** Kenar çubuğu grubu; `undefined` ise gruplanmadan en üstte durur. */
+    group?: WorkspaceNavGroupKey;
     aiQuickAction?: boolean;
     catalogOnboardingPhase?: WorkspaceCatalogOnboardingPhase;
     render: (ctx: WorkspaceSectionRuntimeContext) => ReactNode;
