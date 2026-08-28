@@ -16,7 +16,36 @@ import { Spinner } from '../../../catalog/feedback/micro/Spinner';
  * yanıtında bir kez yaşandı. Bu bileşen o dersi tek yerde tutar.
  */
 export type PageStateKind =
-    'loading' | 'empty' | 'error' | 'permission' | 'planRestricted' | 'prerequisite';
+    | 'loading'
+    | 'empty'
+    | 'error'
+    | 'permission'
+    | 'planRestricted'
+    | 'prerequisite'
+    /**
+     * Veri geldi ama EKSİK: bir parçası yüklenemedi.
+     *
+     * `error` değildir, çünkü ekranda kullanılabilir bir şey var; `empty`
+     * de değildir, çünkü boş değil. İkisinden birine yuvarlamak ya var olan
+     * veriyi gizler ya da eksiği görünmez kılar.
+     */
+    | 'partial'
+    /**
+     * Sistem ÇALIŞIYOR ama tam kapasitede değil — gecikmiş ölçüm, kuyruk
+     * birikmesi, düşürülmüş bir alt servis.
+     *
+     * Kullanıcı için anlamı "bekle ve yeniden dene" değil, "gördüğün şey
+     * güncel olmayabilir"dir. Hata olarak sunmak, düzeltilecek bir şey
+     * varmış izlenimi verir.
+     */
+    | 'degraded'
+    /**
+     * Bir iş TAMAMLANDI.
+     *
+     * Boş durumların yanında yaşaması gerekiyor, çünkü aynı yeri kaplar ve
+     * aynı sözleşmeye uyar: ne oldu, ne anlama geliyor, şimdi nereye.
+     */
+    | 'success';
 
 /**
  * Hangi durum GERÇEKTEN bir arızadır?
@@ -27,6 +56,15 @@ export type PageStateKind =
  * kullanmak, gerçek uyarının değerini düşürür.
  */
 const ASSERTIVE: ReadonlySet<PageStateKind> = new Set<PageStateKind>(['error']);
+
+/**
+ * Başarı, boşluk gibi görünmemelidir.
+ *
+ * Kesikli çerçeve "burada bir şey eksik" der; tamamlanmış bir iş için yanlış
+ * sinyaldir. `degraded` ve `partial` ise kesikli kalır: ikisinde de gerçekten
+ * eksik bir şey vardır.
+ */
+const SOLID_SURFACE: ReadonlySet<PageStateKind> = new Set<PageStateKind>(['success']);
 
 type PageStateBase = {
     kind: PageStateKind;
@@ -67,7 +105,9 @@ export function PageState(props: PageStateProps) {
                 'flex flex-col items-start gap-3 rounded-lg border p-6',
                 assertive
                     ? 'border-border-danger bg-surface-danger'
-                    : 'border-dashed border-border',
+                    : SOLID_SURFACE.has(kind)
+                      ? 'border-border bg-surface'
+                      : 'border-dashed border-border',
                 className,
             )}
         >

@@ -9,6 +9,8 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             workspaceId={ctx.workspaceId}
             locationId={ctx.catalogLocationId ?? undefined}
             onNavigateToSection={ctx.onNavigateToSection}
+            // Boşluğun sebebini ayırt edebilmesi için (docs/66).
+            menuTree={ctx.dashboardMenuTree}
         />
     );
 }

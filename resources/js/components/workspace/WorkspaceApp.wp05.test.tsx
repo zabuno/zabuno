@@ -227,7 +227,22 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         });
         expect(metricRegion).toBeInTheDocument();
 
-        expect(await within(metricRegion).findAllByText('0')).toHaveLength(2);
+        /*
+            SIFIRLARDAN OLUŞAN BİR IZGARA ARTIK ÇİZİLMİYOR — `docs/66`.
+
+            "0 tarama / 0 menü açılışı" teknik olarak dürüsttü ama kullanıcıya
+            hiçbir şey söylemiyordu: ne olmadığını gösteriyor, NEDEN olmadığını
+            ve şimdi ne yapılacağını söylemiyordu. Yerine sebebe göre ayrılmış
+            bir boş durum geliyor; burada menü yok, dolayısıyla önce menü.
+
+            İddia sıfırları değil, ÇIKIŞ YOLUNU ölçüyor.
+        */
+        expect(
+            await within(metricRegion).findByText('Analytics starts with your first menu'),
+        ).toBeInTheDocument();
+        expect(
+            within(metricRegion).getByRole('button', { name: 'Build the menu' }),
+        ).toBeInTheDocument();
 
         const regionText = allTextContent(analyticsRegion);
         expect(regionText).not.toMatch(/not available|unavailable|fabricated/i);
@@ -375,7 +390,8 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const analyticsRegion = screen
             .getByRole('main')
             .querySelector('#section-analytics') as HTMLElement;
-        await within(analyticsRegion).findAllByText('0');
+        // Sıfır sayaç yerine sebebe göre ayrılmış boş durum (docs/66).
+        await within(analyticsRegion).findByText('Analytics starts with your first menu');
         expect(
             within(analyticsRegion).getByText(/qr resolve and confirmed menu open/i),
         ).toBeInTheDocument();

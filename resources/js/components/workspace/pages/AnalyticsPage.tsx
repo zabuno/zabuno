@@ -3,6 +3,9 @@ import { Button, Label, Select } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { AnalyticsMetricGrid } from './analytics/AnalyticsMetricGrid';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { PageState } from './shared/PageState';
+import { useCurrentPublication } from './qr/useCurrentPublication';
+import type { DashboardMenuTree } from './DashboardPage';
 
 export type AnalyticsRange = 'today' | '7d' | '30d';
 
@@ -15,9 +18,23 @@ export type AnalyticsPageProps = {
      * (`docs/44` engellenmiş durum standardı).
      */
     onNavigateToSection?: (section: string) => void;
+    /**
+     * "Veri yok" TEK BİR DURUM DEĞİLDİR — `docs/66`.
+     *
+     * Menü hiç yokken, menü yayınlanmamışken, yayınlanmış ama hiç
+     * taranmamışken ve seçili aralıkta etkinlik yokken kullanıcının yapması
+     * gereken şey farklıdır. Aynı cümleyi dördüne birden söylemek, üçüne
+     * yanlış çıkış yolu göstermek demektir.
+     *
+     * Bu yüzden sayfa menü ağacını da alır: ayrımı yapabilmek için.
+     */
+    menuTree?: DashboardMenuTree | null;
 };
 
 type Summary = { qrResolveCount: number; menuOpenCount: number };
+
+/** Boş sonucun HANGİ boşluk olduğu. */
+type EmptyReason = 'no-menu' | 'not-published' | 'no-scans' | 'range';
 
 /**
  * `plan-restricted`, `error`den AYRIDIR ve bu ayrım şart.
@@ -38,11 +55,14 @@ export function AnalyticsPage({
     workspaceId,
     locationId,
     onNavigateToSection,
+    menuTree = null,
 }: AnalyticsPageProps) {
     const rangeId = useId();
     const [range, setRange] = useState<AnalyticsRange>('today');
     const [status, setStatus] = useState<Status>('idle');
     const [summary, setSummary] = useState<Summary | null>(null);
+
+    const { current: publication } = useCurrentPublication(workspaceId, menuTree?.id ?? null);
 
     const requestIdRef = useRef(0);
 
@@ -111,6 +131,21 @@ export function AnalyticsPage({
      * BİLMEDİĞİ bir şeyi söylemektir; bildiği şeyi tekrarladığında rozetlerin
      * tamamı okunmayan süse dönüşür ve gerçek uyarı da fark edilmez.
      */
+    /*
+        Boşluğun SEBEBİ. Sıra önemlidir: en erken engel önce gelir, çünkü
+        kullanıcıya gösterilecek çıkış yolu odur. Yayınlanmamış bir menüsü
+        olan birine "QR kodunu yazdır" demek, atlayamayacağı bir adımı
+        atlamasını istemek olurdu.
+    */
+    const emptyReason: EmptyReason =
+        menuTree === null
+            ? 'no-menu'
+            : publication === null
+              ? 'not-published'
+              : range === '30d'
+                ? 'no-scans'
+                : 'range';
+
     const statusBadge: WorkspacePageStatusBadge | null = (() => {
         switch (status) {
             case 'loading':
@@ -237,15 +272,114 @@ export function AnalyticsPage({
                         </div>
                     )}
 
-                    {status === 'success' && summary && (
-                        <AnalyticsMetricGrid
-                            qrResolveCount={summary.qrResolveCount}
-                            menuOpenCount={summary.menuOpenCount}
-                        />
-                    )}
+                    {status === 'success' &&
+                        summary &&
+                        (summary.qrResolveCount === 0 && summary.menuOpenCount === 0 ? (
+                            <AnalyticsEmptyState
+                                reason={emptyReason}
+                                onNavigateToSection={onNavigateToSection}
+                                onWidenRange={() => setRange('30d')}
+                            />
+                        ) : (
+                            <AnalyticsMetricGrid
+                                qrResolveCount={summary.qrResolveCount}
+                                menuOpenCount={summary.menuOpenCount}
+                            />
+                        ))}
                 </div>
             </WorkspacePageFrame>
         </div>
+    );
+}
+
+/**
+ * Analitiğin boş durumları — `docs/66`.
+ *
+ * Dördü de "veri yok" der ama dördünün ÇIKIŞ YOLU farklıdır. Tek bir cümle
+ * kullanmak, üçüne yanlış yol göstermek demekti.
+ */
+function AnalyticsEmptyState({
+    reason,
+    onNavigateToSection,
+    onWidenRange,
+}: {
+    reason: EmptyReason;
+    onNavigateToSection?: (section: string) => void;
+    onWidenRange: () => void;
+}) {
+    if (reason === 'no-menu') {
+        return (
+            <PageState
+                kind="prerequisite"
+                title={t('workspace.analytics.empty.noMenu.title')}
+                description={t('workspace.analytics.empty.noMenu.description')}
+                {...(onNavigateToSection
+                    ? {
+                          action: (
+                              <Button size="xs" onClick={() => onNavigateToSection('menu')}>
+                                  {t('workspace.analytics.empty.noMenu.action')}
+                              </Button>
+                          ),
+                      }
+                    : { whyNoAction: t('workspace.analytics.empty.useSidebar') })}
+            />
+        );
+    }
+
+    if (reason === 'not-published') {
+        return (
+            <PageState
+                kind="prerequisite"
+                title={t('workspace.analytics.empty.notPublished.title')}
+                description={t('workspace.analytics.empty.notPublished.description')}
+                {...(onNavigateToSection
+                    ? {
+                          action: (
+                              <Button size="xs" onClick={() => onNavigateToSection('publication')}>
+                                  {t('workspace.analytics.empty.notPublished.action')}
+                              </Button>
+                          ),
+                      }
+                    : { whyNoAction: t('workspace.analytics.empty.useSidebar') })}
+            />
+        );
+    }
+
+    if (reason === 'no-scans') {
+        return (
+            <PageState
+                kind="empty"
+                title={t('workspace.analytics.empty.noScans.title')}
+                description={t('workspace.analytics.empty.noScans.description')}
+                {...(onNavigateToSection
+                    ? {
+                          action: (
+                              <Button size="xs" onClick={() => onNavigateToSection('qr-codes')}>
+                                  {t('workspace.analytics.empty.noScans.action')}
+                              </Button>
+                          ),
+                      }
+                    : { whyNoAction: t('workspace.analytics.empty.useSidebar') })}
+            />
+        );
+    }
+
+    /*
+        Seçili aralıkta etkinlik yok. Çıkış yolu ARALIĞI GENİŞLETMEKTİR ve bu
+        sayfanın içinde yapılır — kullanıcıyı başka bir ekrana göndermek,
+        cevabın burada olduğu bir soruda gereksiz bir yolculuk olurdu.
+    */
+    return (
+        <PageState
+            kind="empty"
+            title={t('workspace.analytics.empty.range.title')}
+            description={t('workspace.analytics.empty.range.description')}
+            action={
+                <Button size="xs" onClick={onWidenRange}>
+                    {t('workspace.analytics.empty.range.action')}
+                </Button>
+            }
+        />
     );
 }
 

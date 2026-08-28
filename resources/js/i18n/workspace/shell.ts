@@ -127,6 +127,28 @@ export const shell = {
     'workspace.shell.currentLocation.label': 'Current location',
     'workspace.shell.globalSearch.unavailable': 'Global search unavailable',
     'workspace.shell.notifications.unavailable': 'Notifications unavailable',
+    // Analitik boş durumları (docs/66). Tek bir "veri yok" cümlesi beş ayrı
+    // duruma bölündü: her birinin ÇIKIŞ YOLU farklı.
+    'workspace.analytics.empty.noMenu.title': 'Analytics starts with your first menu',
+    'workspace.analytics.empty.noMenu.description':
+        'Scans are counted once customers can open a menu. Build one first.',
+    'workspace.analytics.empty.noMenu.action': 'Build the menu',
+    'workspace.analytics.empty.notPublished.title': 'Your menu is not published yet',
+    'workspace.analytics.empty.notPublished.description':
+        'Nothing is collected until the menu is live, because there is nothing for a customer to open.',
+    'workspace.analytics.empty.notPublished.action': 'Preview and publish',
+    'workspace.analytics.empty.noScans.title': 'Waiting for the first scan',
+    'workspace.analytics.empty.noScans.description':
+        'Your menu is live. Print the QR code or scan it with your own phone to test it.',
+    'workspace.analytics.empty.noScans.action': 'View QR codes',
+    'workspace.analytics.empty.range.title': 'No activity in this period',
+    'workspace.analytics.empty.range.description':
+        'There were scans outside this range, or none yet. Try a wider period.',
+    'workspace.analytics.empty.range.action': 'Show the last 30 days',
+    // Ekran kullanıcıyı GÖTÜREMEDİĞİNDE nereye gideceğini söyler. Açıklamayı
+    // tekrarlamak, aynı cümleyi iki kez okutmak olurdu.
+    'workspace.analytics.empty.useSidebar': 'Open that screen from the sidebar.',
+
     // Omnibox (docs/65). Eskiden burada dokuz `aiCommand` anahtarı vardı ve
     // hepsi bağlı olmayan bir AI merkezinin devre dışı alanlarını
     // adlandırıyordu; yüzeyle birlikte kaldırıldılar.
