@@ -20,6 +20,7 @@ use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
+use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Platform\Port\HostCapabilityProbePort;
 use App\Application\Platform\Port\PlatformAuthorizationPort;
 use App\Application\Platform\Port\PlatformWorkspaceQueryPort;
@@ -63,6 +64,7 @@ use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
+use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
 use App\Infrastructure\Platform\Capability\RuntimeHostCapabilityProbe;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformAuthorization;
@@ -126,6 +128,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MenuCatalogApiContextPort::class, EloquentMenuCatalogApiContext::class);
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);
+        $this->app->bind(OutOfStockPort::class, EloquentOutOfStock::class);
         $this->app->bind(MalwareScannerPort::class, function (): MalwareScannerPort {
             if (config('media.scanner.driver') === 'clamav') {
                 return new ClamavMalwareScanner(

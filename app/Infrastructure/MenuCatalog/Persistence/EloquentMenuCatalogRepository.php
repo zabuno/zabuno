@@ -89,6 +89,7 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                     'menu_items.currency_code as currency_code',
                     'menu_items.position as position',
                     'menu_items.is_visible as is_visible',
+                    'menu_items.out_of_stock_since as out_of_stock_since',
                 )
                 ->get();
 
@@ -111,6 +112,7 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                     'currencyCode' => (string) $item->currency_code,
                     'position' => (int) $item->position,
                     'isVisible' => (bool) $item->is_visible,
+                    'outOfStockSince' => $item->out_of_stock_since === null ? null : (string) $item->out_of_stock_since,
                     'allergens' => array_values(array_map(static fn ($name): string => (string) $name, $allergens)),
                 ];
             }
@@ -277,6 +279,7 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
                     'menu_items.product_id as product_id',
                     'menu_items.position as position',
                     'menu_items.is_visible as is_visible',
+                    'menu_items.out_of_stock_since as out_of_stock_since',
                 )
                 ->first();
 

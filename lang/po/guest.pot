@@ -1,0 +1,13 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: guest:guest.menu.item.soldOut
+msgid "guest.menu.item.soldOut"
+msgstr ""

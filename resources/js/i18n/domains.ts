@@ -7,6 +7,7 @@
  */
 import { authTranslations } from './auth';
 import { dashboardTranslations } from './dashboard';
+import { guestTranslations } from './guest';
 import { menuTranslations } from './menu';
 import { platformTranslations } from './platform';
 import { themeTranslations } from './theme';
@@ -15,6 +16,8 @@ import { workspaceTranslations } from './workspace';
 export const DOMAIN_CATALOGS: Record<string, Record<string, string>> = {
     auth: authTranslations,
     dashboard: dashboardTranslations,
+    // MİSAFİR yüzeyi: kaynak dili TÜRKÇE (`resources/js/i18n/guest.ts`).
+    guest: guestTranslations,
     menu: menuTranslations,
     platform: platformTranslations,
     theme: themeTranslations,

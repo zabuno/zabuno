@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Analytics\UseCase\RecordAnalyticsEvent;
+use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
@@ -15,6 +16,7 @@ use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
 use App\Support\Analytics\VisitorKey;
+use App\Support\Localization\GuestText;
 use App\Support\Seo\MenuStructuredData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -29,6 +31,8 @@ final class ShowPublicMenuController extends Controller
         private readonly RecordAnalyticsEvent $recordAnalyticsEvent,
         private readonly CanonicalUrl $canonical,
         private readonly PublicMenuAddressPort $addresses,
+        private readonly OutOfStockPort $outOfStock,
+        private readonly GuestText $guestText,
     ) {}
 
     public function __invoke(Request $request, string $token): SymfonyResponse
@@ -80,6 +84,16 @@ final class ShowPublicMenuController extends Controller
 
         return response()->view('public-menu', [
             'snapshot' => $publication->snapshot,
+            // "Bugün tükendi" YAYINDAN bağımsız okunur (`docs/82`): balık
+            // servis sırasında biter ve yayın beklemek hem yavaş hem
+            // tehlikelidir — sahibin taslağında yarım kalmış bir fiyat
+            // düzenlemesi olabilir.
+            'outOfStockItemIds' => $this->outOfStock->forMenu($publication->menuId),
+            // Metin ŞABLONDA değil KATALOGDA yaşar: Blade'e yazılan bir
+            // cümleyi sahip hiçbir PO dosyasından çeviremez (`docs/82`).
+            'guestText' => [
+                'soldOut' => $this->guestText->get('guest.menu.item.soldOut', $address['locale']),
+            ],
             // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
             // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
             // bakar, buraya değil.

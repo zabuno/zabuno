@@ -23,7 +23,16 @@ final class OnionBoundaryTest extends TestCase
     public function test_domain_layer_never_imports_illuminate_namespace(): void
     {
         foreach ($this->domainPhpFiles() as $file) {
-            $contents = (string) file_get_contents($file->getPathname());
+            /*
+                YORUMLAR ÖNCE DÜŞER.
+
+                Bir yorum bağımlılık YARATMAZ. Bu kapı, "burada bilerek
+                `Illuminate\Support\Carbon` KULLANMIYORUZ" diye yazılmış bir
+                açıklamayı ihlal sayıyordu — yani kararın gerekçesini yazmayı
+                cezalandırıyordu (`docs/82`). Ölçülen şey KODUN kendisi
+                olmalı.
+            */
+            $contents = self::withoutComments((string) file_get_contents($file->getPathname()));
 
             self::assertStringNotContainsString(
                 'Illuminate\\',
@@ -44,6 +53,22 @@ final class OnionBoundaryTest extends TestCase
                 "{$file->getPathname()} declare(strict_types=1) eksik (ADR-L03)."
             );
         }
+    }
+
+    /** Blok, satır ve kabuk yorumlarını siler; dizeler olduğu gibi kalır. */
+    private static function withoutComments(string $source): string
+    {
+        $out = '';
+
+        foreach (token_get_all($source) as $token) {
+            if (is_array($token) && in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
+                continue;
+            }
+
+            $out .= is_array($token) ? $token[1] : $token;
+        }
+
+        return $out;
     }
 
     /**

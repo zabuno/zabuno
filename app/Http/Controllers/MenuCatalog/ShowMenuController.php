@@ -9,9 +9,11 @@ use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\MenuCatalog\StockState;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 final class ShowMenuController extends Controller
 {
@@ -48,6 +50,9 @@ final class ShowMenuController extends Controller
 
         // Bağlı görseller TEK sorguda okunur: satır başına sorgu, kırk
         // ürünlük bir menüde kırk gidiş dönüş demekti (`docs/78`).
+        // "Bugün" ŞUBENİN saat diliminde bir gündür.
+        $timezone = (string) (DB::table('locations')->where('id', $location)->value('timezone') ?: 'UTC');
+
         $menuItemIds = [];
 
         foreach ($tree->categories as $category) {
@@ -81,6 +86,12 @@ final class ShowMenuController extends Controller
                     'allergens' => $item['allergens'],
                     'description' => $item['description'] ?? null,
                     'imageMediaAssetId' => $attached[$item['id']] ?? null,
+                    // "Bugün tükendi" GÖRÜNÜRLÜKTEN ayrı bir eksendir
+                    // (`docs/82`); panel ikisini karıştırmamalı.
+                    'outOfStock' => StockState::isOutOfStockNow(
+                        $item['outOfStockSince'] ?? null,
+                        $timezone,
+                    ),
                 ], $category['items']),
             ], $tree->categories),
         ]);
