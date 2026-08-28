@@ -39,7 +39,15 @@ type BrandProfile = {
 };
 
 function jsonResponse(status: number, body: unknown): Response {
-    return { ok: status >= 200 && status < 300, status, json: async () => body } as Response;
+    return {
+        // Gerçek bir `Response` HER ZAMAN `headers` taşır. Sahte yanıt
+        // taşımayınca, başlık okuyan her kod yolu testte patlıyor ve
+        // ağ hatası gibi görünüyordu.
+        headers: new Headers(),
+        ok: status >= 200 && status < 300,
+        status,
+        json: async () => body,
+    } as Response;
 }
 
 /** Sunucunun döndürdüğü referans veri. */
@@ -259,9 +267,18 @@ describe('BrandOnboardingForm — failures say what happened', () => {
         fireEvent.change(screen.getByLabelText(/brand name/i), { target: { value: 'Zeytin' } });
         submit();
 
+        /*
+            Metin ORTAK sözlükten geliyor artık (`docs/67`): dört form aynı
+            arıza için aynı cümleyi söylüyor. Eskiden her form kendi cümlesini
+            taşıyordu ve biri düzeldiğinde diğerleri eski hâlinde kalıyordu.
+
+            Cümlenin kendisi de iyileşti: ürünü adıyla anıyor ve asıl korkuyu
+            cevaplıyor — girilen veri duruyor.
+        */
         await waitFor(() => {
-            expect(screen.getByText(/could not reach the server/i)).toBeInTheDocument();
+            expect(screen.getByText(/could not reach Zabuno/i)).toBeInTheDocument();
         });
+        expect(screen.getByText(/everything you typed is still here/i)).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });

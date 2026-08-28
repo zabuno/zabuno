@@ -5,6 +5,8 @@ import { focusFirstInvalidField, readValidationFailure } from '../../lib/validat
 import { t } from '../../i18n/workspace';
 import { FormField } from './forms/FormField';
 import { RegionalFields } from './location/RegionalFields';
+import { classifyResponse, networkFailure } from '../../lib/requestFailure';
+import { messageForFailure } from './forms/failureMessage';
 import { FormSection } from './forms/FormSection';
 
 export type LocationProfile = {
@@ -24,6 +26,16 @@ type LocationOnboardingFormProps = {
     workspaceId: number;
     onCreated: (location: LocationProfile) => void;
 };
+
+const SUBMIT_FIELD_ORDER = [
+    'display_name',
+    'country_code',
+    'timezone',
+    'city',
+    'address_line1',
+    'address_line2',
+    'postal_code',
+] as const;
 
 export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboardingFormProps) {
     const [displayName, setDisplayName] = useState('');
@@ -134,26 +146,26 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                 return;
             }
 
-            // Sunucu neyin yanlış olduğunu SÖYLEDİ; gövdesi okunmadan
-            // atılırsa kullanıcı neyi düzelteceğini bilemez.
-            const failure = await readValidationFailure(
-                response,
-                t('workspace.location.error.submit'),
-            );
+            // Arıza SINIFLANDIRILIR (`docs/67`): "tekrar deneyin" yalnız bir
+            // durumda doğru tavsiyedir.
+            const failure = classifyResponse(response);
 
-            setFieldErrors(failure.fields);
-            setError(failure.message ?? t('workspace.location.error.submit'));
-            focusFirstInvalidField(failure.fields, [
-                'display_name',
-                'country_code',
-                'city',
-                'address_line1',
-                'address_line2',
-                'postal_code',
-            ]);
+            if (failure.kind === 'validation') {
+                const validation = await readValidationFailure(
+                    response,
+                    t('workspace.location.error.submit'),
+                );
+
+                setFieldErrors(validation.fields);
+                setError(validation.message ?? t('workspace.location.error.submit'));
+                focusFirstInvalidField(validation.fields, SUBMIT_FIELD_ORDER);
+            } else {
+                setFieldErrors({});
+                setError(messageForFailure(failure));
+            }
         } catch {
-            // Buraya yalnız istek kurulamadığında düşülür.
-            setError(t('workspace.location.error.submit'));
+            setFieldErrors({});
+            setError(messageForFailure(networkFailure()));
         }
 
         setSubmitting(false);

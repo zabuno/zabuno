@@ -64,11 +64,11 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | C5 | Saat dilimi listeden, `Europe/Istanbul` saklar | ✅ combobox yerine ülkeye göre daraltılmış liste — gerekçe `docs/62` §4 |
 | C6 | Para birimi ISO 4217 combobox | ⬜ |
 | C7 | Alan anatomisi: label + description + control + error | ✅ `docs/56` |
-| C8 | Hata özeti + ilk hatalı alana odak | 🔶 kısmî |
+| C8 | Hata özeti + ilk hatalı alana odak | ✅ `ErrorSummary` + `focusFirstInvalidField`; dört formda (`docs/67`) |
 | C9 | `aria-invalid`, `aria-describedby`, canlı bölge | 🔶 kısmî |
-| C10 | 422 / 409 / bağlantı / 5xx ayrı ele alınır | ⬜ tek genel hata |
-| C11 | Idempotent submit, çift tıklama koruması | ⬜ |
-| C12 | Sabit `form_id` / `field_id` / `error_code` | ⬜ |
+| C10 | 422 / 409 / bağlantı / 5xx ayrı ele alınır | ✅ altı arıza sınıfı, altı ayrı cümle (`docs/67`) |
+| C11 | Idempotent submit | 🔶 çift tıklama korumalı; sunucu tarafı idempotency arka uç değişikliği ister (`docs/67` §6) |
+| C12 | Sabit `form_id` / `field_id` / `error_code` | ⬜ olay şeması önce iş sorularından türetilmeli (`docs/47`) |
 | C13 | Sayfa genişliği standardı | ✅ `--container-page-*` |
 | C14 | Kontrol kontrastı ≥ 3:1 | ✅ `--border-control` |
 
@@ -201,6 +201,19 @@ Her tur hangi maddeleri kapattığını buraya yazar.
   tekrarın ölçüldüğü bir turda çıkarılmalı.
 - Belge: `docs/66`.
 
-### Tur 6 — sırada
-- **C8–C12** form hata taksonomisi: 422/409/bağlantı/5xx ayrımı, idempotent
-  submit, sabit `form_id`/`field_id`/`error_code`.
+### Tur 6 — tamamlandı
+- Ölçüm önce: arıza taksonomisi, hata özeti ve odak taşıma **zaten vardı** ama
+  yalnız tek formda kullanılıyordu. Yazdığım kopya silindi.
+- **C10** altı arıza sınıfı üç forma daha yayıldı; "tekrar deneyin" artık
+  yalnız denemenin işe yarayabileceği yerde yazıyor.
+- **C8** hata özeti ve odak taşıma dört formda.
+- `messageForFailure` ortak modüle çıkarıldı.
+- Kusur bulundu: testlerdeki sahte `Response`'ların `headers`'ı yoktu; başlık
+  okuyan her yol istisna fırlatıp ağ hatası gibi görünüyordu. 44 fikstür
+  düzeltildi.
+- Belge: `docs/67`.
+
+## Altı tur bitti
+
+Kalanlar `docs/61`'de ⬜ ve ⛔ olarak duruyor; hiçbiri unutulmuş değil, her
+birinin ya bir arka uç ön koşulu ya da yazılı bir gerekçesi var.

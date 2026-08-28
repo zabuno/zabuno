@@ -29,6 +29,10 @@ type MockWorkspace = { id: number; name: string; slug: string; state: string };
 
 function jsonResponse(status: number, body: unknown): Response {
     return {
+        // Gerçek bir `Response` HER ZAMAN `headers` taşır. Sahte yanıt
+        // taşımayınca, başlık okuyan her kod yolu testte patlıyor ve
+        // ağ hatası gibi görünüyordu.
+        headers: new Headers(),
         ok: status >= 200 && status < 300,
         status,
         json: async () => body,

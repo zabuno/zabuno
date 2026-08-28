@@ -2,6 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { Button } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
+import { classifyResponse, networkFailure } from '../../lib/requestFailure';
+import { messageForFailure } from './forms/failureMessage';
 import { t } from '../../i18n/workspace';
 import { FormField } from './forms/FormField';
 import { FormSection } from './forms/FormSection';
@@ -27,6 +29,17 @@ type LocationEditFormProps = {
     location: LocationProfile;
     onSaved: (location: LocationProfile) => void;
 };
+
+/** Alanların ekrandaki sırası; "ilk hatalı alan" bununla belirlenir. */
+const FIELD_ORDER = [
+    'display_name',
+    'country_code',
+    'timezone',
+    'city',
+    'address_line1',
+    'address_line2',
+    'postal_code',
+] as const;
 
 export function LocationEditForm({ workspaceId, location, onSaved }: LocationEditFormProps) {
     const [editing, setEditing] = useState(false);
@@ -99,26 +112,37 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 return;
             }
 
-            // Sunucu neyin yanlış olduğunu SÖYLEDİ; gövdesi okunmadan
-            // atılırsa kullanıcı neyi düzelteceğini bilemez.
-            const failure = await readValidationFailure(
-                response,
-                t('workspace.brandLocations.locations.edit.error.submit'),
-            );
+            /*
+                Arıza SINIFLANDIRILIR — `docs/67`.
 
-            setFieldErrors(failure.fields);
-            setError(failure.message ?? t('workspace.brandLocations.locations.edit.error.submit'));
-            focusFirstInvalidField(failure.fields, [
-                'display_name',
-                'country_code',
-                'city',
-                'address_line1',
-                'address_line2',
-                'postal_code',
-            ]);
+                Önceden her başarısızlık aynı cümleye düşüyordu. Yetki yoksa
+                tekrar denemek hiçbir zaman işe yaramaz; çakışma varsa veriyi
+                değiştirmek gerekir; bağlantı koptuysa girilenler duruyordur.
+                Üçüne "tekrar deneyin" demek, ikisine yanlış tavsiye vermektir.
+            */
+            const failure = classifyResponse(response);
+
+            if (failure.kind === 'validation') {
+                const validation = await readValidationFailure(
+                    response,
+                    t('workspace.brandLocations.locations.edit.error.submit'),
+                );
+
+                setFieldErrors(validation.fields);
+                setError(
+                    validation.message ?? t('workspace.brandLocations.locations.edit.error.submit'),
+                );
+                focusFirstInvalidField(validation.fields, FIELD_ORDER);
+            } else {
+                // Alan hatası yok: eski alan hataları TEMİZLENİR, yoksa
+                // düzeltilmiş bir alan hâlâ kırmızı görünür.
+                setFieldErrors({});
+                setError(messageForFailure(failure));
+            }
         } catch {
-            // Buraya yalnız istek kurulamadığında düşülür.
-            setError(t('workspace.brandLocations.locations.edit.error.submit'));
+            // Buraya yalnız istek hiç KURULAMADIĞINDA düşülür.
+            setFieldErrors({});
+            setError(messageForFailure(networkFailure()));
         }
 
         setSaving(false);

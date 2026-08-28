@@ -38,6 +38,10 @@ type LocationProfile = {
 
 function jsonResponse(status: number, body: unknown): Response {
     return {
+        // Gerçek bir `Response` HER ZAMAN `headers` taşır. Sahte yanıt
+        // taşımayınca, başlık okuyan her kod yolu testte patlıyor ve
+        // ağ hatası gibi görünüyordu.
+        headers: new Headers(),
         ok: status >= 200 && status < 300,
         status,
         json: async () => body,
@@ -367,6 +371,66 @@ describe('LocationOnboardingForm — no demo IDs or default business data', () =
 
         const nameInput = screen.getByLabelText(/display name/i) as HTMLInputElement;
         expect(nameInput.value).toBe('');
+
+        vi.unstubAllGlobals();
+    });
+});
+
+/**
+ * Arıza sınıflandırması — `docs/67`.
+ *
+ * Bu form önceden her başarısızlığa aynı cümleyi söylüyordu. Üç ayrı arıza,
+ * üç ayrı çıkış yolu.
+ */
+describe('LocationOnboardingForm — arızalar birbirinden ayrılır', () => {
+    async function submitAgainst(status: number, body: unknown = {}) {
+        const onCreated = vi.fn();
+        const fetchMock = vi.fn(async (url: string) => {
+            if (isReferenceRequest(String(url))) return jsonResponse(200, MARKET_REFERENCE);
+            if (String(url) === CSRF_COOKIE_URL) return jsonResponse(204, {});
+
+            return jsonResponse(status, body);
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        const { LocationOnboardingForm } = await importWorkspaceModule<{
+            LocationOnboardingForm: React.ComponentType<{
+                workspaceId: number;
+                onCreated: (location: LocationProfile) => void;
+            }>;
+        }>('LocationOnboardingForm');
+
+        render(<LocationOnboardingForm workspaceId={5} onCreated={onCreated} />);
+        await fillRequiredFields();
+        fireEvent.click(screen.getByRole('button', { name: /create/i }));
+
+        return onCreated;
+    }
+
+    it('yetki yoksa tekrar denemeyi önermez, kimden isteneceğini söyler', async () => {
+        const onCreated = await submitAgainst(403);
+
+        const alert = await screen.findByRole('alert');
+        expect(alert).toHaveTextContent(/owner|manager/i);
+        expect(alert).not.toHaveTextContent(/try again/i);
+        expect(onCreated).not.toHaveBeenCalled();
+
+        vi.unstubAllGlobals();
+    });
+
+    it('çakışmada alan hatası uydurmaz', async () => {
+        await submitAgainst(409);
+
+        const alert = await screen.findByRole('alert');
+        expect(alert).toHaveTextContent(/reload|current values/i);
+
+        vi.unstubAllGlobals();
+    });
+
+    it('sunucu hatasında verinin durduğunu söyler', async () => {
+        await submitAgainst(500);
+
+        expect(await screen.findByRole('alert')).toHaveTextContent(/nothing was lost/i);
 
         vi.unstubAllGlobals();
     });
