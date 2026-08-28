@@ -12,6 +12,7 @@ import type { LocationProfile } from './LocationEditForm';
 import { LocationOnboardingForm } from './LocationOnboardingForm';
 import { AdminShell } from '../catalog/layout/macro/AdminShell';
 import { AccountMenu } from './chrome/AccountMenu';
+import { GlobalCreateMenu, type GlobalCreateTarget } from './chrome/GlobalCreateMenu';
 import { AppErrorBoundary } from '../system/AppErrorBoundary';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { AiCommandTrigger } from '../catalog/navigation/compound/AiCommandTrigger';
@@ -344,7 +345,24 @@ export function WorkspaceApp({
         }
 
         const section = resolveSectionFromPath(window.location.pathname);
-        const canonical = sectionHref(currentWorkspace.slug, section);
+
+        /*
+            ALT YOL KORUNUR.
+
+            Kanonik adres bölüm içi yolu düşürüyordu: `/settings/billing`
+            adresinden giren kullanıcı `/settings` adresine çekiliyor ve
+            yenilediğinde faturalama sekmesini kaybediyordu. Aynı kusur
+            `locations/new` ile birlikte görünür hâle geldi — form açık gelsin
+            diye adrese yazılan durum, bir sonraki karede siliniyordu.
+
+            Kanonikleştirmenin işi çalışma alanının adını adrese yazmaktır;
+            kullanıcının ekran içindeki yerini unutturmak değil.
+        */
+        const canonical = sectionHref(
+            currentWorkspace.slug,
+            section,
+            resolveSubPath(window.location.pathname),
+        );
 
         // Kullanıcı `/app` adresinden girmiş olabilir; orada hangi restoranın
         // hangi ekranı olduğu YAZMAZ. Adresi kanonik hâline çekeriz.
@@ -929,6 +947,46 @@ export function WorkspaceApp({
             />
         ) : null;
 
+    /*
+        Oluşturulabilecek şeyler ve ÖN KOŞULLARI.
+
+        Sıralama bağlama göre değil sabittir ve bu bilinçli: dört maddelik bir
+        listede sıra değiştirmek, kullanıcının kas hafızasını her sayfada
+        bozar. Plan bağlama göre sıralamayı öneriyor (`docs/50` §10); o öneri
+        listenin uzun olduğu ürünler içindir.
+    */
+    const createTargets: GlobalCreateTarget[] = [
+        {
+            key: 'location',
+            labelKey: 'workspace.create.location',
+            destination: 'locations/new',
+            // Şube için tek ön koşul markadır; marka olmadan çalışma alanı
+            // zaten kurulum akışındadır.
+            available: brand !== null,
+        },
+        {
+            key: 'menu',
+            labelKey: 'workspace.create.menu',
+            destination: 'menu',
+            // Menü bir ŞUBEYE aittir: şube yokken menü oluşturulamaz.
+            available: locationProfiles.length > 0,
+        },
+        {
+            key: 'qr-code',
+            labelKey: 'workspace.create.qrCode',
+            destination: 'qr-codes',
+            // QR kod bir menüyü işaret eder; menü yoksa gösterecek bir şey
+            // olmayan bir kod üretilirdi.
+            available: dashboardMenuTree !== null,
+        },
+        {
+            key: 'team-member',
+            labelKey: 'workspace.create.teamMember',
+            destination: 'team',
+            available: currentWorkspace !== null,
+        },
+    ];
+
     const aiQuickActions: AiAssistQuickAction[] = SECTION_DESCRIPTORS.filter(
         (descriptor) => descriptor.aiQuickAction,
     ).map((descriptor) => ({
@@ -977,6 +1035,14 @@ export function WorkspaceApp({
             }
             topBarEnd={
                 <div className="flex items-center gap-1">
+                    {/*
+                        Global oluştur — `docs/50` §10. Sayfanın birincil
+                        eylemini kopyalamaz; her yerden ulaşılabilen ikinci bir
+                        yol açar.
+                    */}
+                    {currentWorkspace ? (
+                        <GlobalCreateMenu targets={createTargets} onNavigate={goToSection} />
+                    ) : null}
                     {/*
                         Oturum sahibinin kimliği. Daha önce her sayfanın
                         tepesine ham metin olarak basılıyordu — slug ve durum

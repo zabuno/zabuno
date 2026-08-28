@@ -33,10 +33,10 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | A6 | Sidebar altında account trigger + popover | ✅ masaüstünde dipte, dar ekranda üst çubukta (`docs/63`) |
 | A7 | Sağ context inspector | ✅ menü, marka, şube (`docs/60`) |
 | A8 | Inspector mobilde ayrı sheet/route | ⛔ mobil pakette panel HİÇ yok (`docs/54`); sheet gerekirse ayrı karar |
-| A9 | Global header + page header iki katman | 🔶 page header var; global header bağlam/araç katmanı eksik |
-| A10 | Header'da location context | ⬜ |
-| A11 | Global Create düğmesi | ⬜ |
-| A12 | Help merkezi | ⬜ |
+| A9 | Global header + page header iki katman | ✅ `topBarCenter`/`topBarEnd` + `PageHeader` (`docs/64` §1) |
+| A10 | Header'da location context | ✅ `WorkspaceContextControls` |
+| A11 | Global Create düğmesi | ✅ ön koşullu hedefler (`docs/64`) |
+| A12 | Help merkezi | ⛔ arkasında içerik yok; altı ölü bağlantılı bir menü planın kendi kuralını çiğner (`docs/64` §4) |
 | A13 | Çalışmayan search/notifications gösterilmiyor | ✅ kaldırıldı |
 | A14 | Tenant kabuğunda kalıcı footer yok | ✅ |
 | A15 | Sabit tema seçici kaldırıldı, account'a taşındı | ✅ `menuitemradio` olarak menüde (`docs/63`) |
@@ -170,7 +170,17 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 - Kararsız bir klavye iddiası kaldırıldı (dörtte iki kırmızı veriyordu).
 - Belge: `docs/63`.
 
-### Tur 3 — sırada
-- **A9/A10** global header katmanı ve lokasyon bağlamı.
-- **A11** Global Create.
-- **A12** Help merkezi.
+### Tur 3 — tamamlandı
+- **A9/A10** ölçüldü: header'ın iki katmanı ve lokasyon bağlamı zaten vardı.
+- **A11** Global Create eklendi; yalnız ön koşulu sağlanan hedefler listelenir
+  ve hiçbiri uygun değilse menü hiç çizilmez.
+- **A12** Help bilerek yapılmadı — arkasında hiçbir içerik yok.
+- Kusur bulundu ve kapatıldı: adres kanonikleştirmesi bölüm içi yolu siliyordu;
+  `/settings/billing` yenilemede kayboluyordu. Gerileme testi, düzeltme geri
+  alınarak kırıldığı doğrulanarak yazıldı.
+- `ThemeRoot`'un bileşen olmayan dışa aktarımları ayrı modüle taşındı.
+- Belge: `docs/64`.
+
+### Tur 4 — sırada
+- **B1–B5** omnibox: Search / Go to / Create / Command / Ask Zabuno, açık
+  modlarla ve görünür kapsamla.

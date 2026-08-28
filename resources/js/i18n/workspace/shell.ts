@@ -56,6 +56,14 @@ export const shell = {
 
     // Marka panelinin cevapladığı soru: bu adı değiştirirsem nereyi
     // değiştirmiş olurum (docs/60).
+    // Global oluştur (docs/64): her madde gerçekten oluşturmanın yapıldığı
+    // ekrana götürür.
+    'workspace.create.menu.label': 'Create',
+    'workspace.create.location': 'Location',
+    'workspace.create.menu': 'Menu',
+    'workspace.create.qrCode': 'QR code',
+    'workspace.create.teamMember': 'Team member',
+
     // Şubenin bölgesel alanları (docs/62): saat dilimi markanın değil
     // şubenin alanıdır.
     'workspace.location.timezone': 'Time zone',
