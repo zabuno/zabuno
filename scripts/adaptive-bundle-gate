@@ -51,16 +51,13 @@ MOBILE_ENTRY = ROOT / 'workspace.mobile.tsx'
 # unutma ihtimalini ortadan kaldırır.
 DESKTOP_ONLY = [
     'components/workspace/chrome/DesktopChrome.tsx',
-    'components/workspace/inspectors/desktopInspectors.tsx',
+    'components/workspace/inspectors/*.tsx',
     'components/workspace/pages/**/*Inspector.tsx',
 ]
 MOBILE_ONLY = [
     'components/workspace/chrome/MobileChrome.tsx',
 ]
 
-# Örüntüye takılmayan bilinçli istisnalar: sözleşme tipi cihazdan bağımsızdır
-# ve testler hiçbir pakete girmez.
-EXEMPT = ('/inspectors/types.ts',)
 
 SPEC_RE = re.compile(
     r"""(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]"""
@@ -147,7 +144,6 @@ def expand(pattern):
             for path in ROOT.glob(pattern)
             if path.is_file()
             and not path.name.endswith(('.test.ts', '.test.tsx', '.stories.tsx'))
-            and not str(path).endswith(EXEMPT)
         )
         if not matches:
             leaks.append(f'{pattern} matches no file (stale declaration)')

@@ -1,10 +1,11 @@
 import { t } from '../../../../i18n/workspace';
+import { InspectorFrame, type InspectorRow } from '../../inspectors/InspectorFrame';
 import type { DashboardMenuTree } from '../DashboardPage';
 import { useCurrentPublication } from '../qr/useCurrentPublication';
 
 export type MenuInspectorProps = {
     workspaceId: number;
-    menuTree: DashboardMenuTree | null;
+    menuTree: DashboardMenuTree;
     locationName: string | null;
     onNavigateToSection: (section: string) => void;
 };
@@ -33,11 +34,7 @@ export function MenuInspector({
     locationName,
     onNavigateToSection,
 }: MenuInspectorProps) {
-    const { current } = useCurrentPublication(workspaceId, menuTree?.id ?? null);
-
-    if (menuTree === null) {
-        return null;
-    }
+    const { current } = useCurrentPublication(workspaceId, menuTree.id);
 
     const categoryCount = menuTree.categories.length;
     const itemCount = menuTree.categories.reduce(
@@ -45,61 +42,45 @@ export function MenuInspector({
         0,
     );
 
-    return (
-        <div className="flex flex-col gap-[var(--space-fluid-md)]">
-            <h2 className="text-body font-semibold text-fg">
-                {t('workspace.menu.inspector.title')}
-            </h2>
+    const rows: InspectorRow[] = [
+        {
+            key: 'status',
+            label: t('workspace.menu.inspector.status'),
+            value:
+                current !== null
+                    ? t('workspace.menu.inspector.status.published', {
+                          version: String(current.version),
+                      })
+                    : t('workspace.publication.status.notPublished'),
+        },
+    ];
 
-            <dl className="flex flex-col gap-3">
-                <InspectorRow
-                    label={t('workspace.menu.inspector.status')}
-                    value={
-                        current !== null
-                            ? t('workspace.menu.inspector.status.published', {
-                                  version: String(current.version),
-                              })
-                            : t('workspace.publication.status.notPublished')
-                    }
-                />
-                {locationName !== null ? (
-                    <InspectorRow
-                        label={t('workspace.menu.inspector.location')}
-                        value={locationName}
-                    />
-                ) : null}
-                <InspectorRow
-                    label={t('workspace.menu.inspector.categories')}
-                    value={String(categoryCount)}
-                />
-                <InspectorRow
-                    label={t('workspace.menu.inspector.items')}
-                    value={String(itemCount)}
-                />
-            </dl>
+    if (locationName !== null) {
+        rows.push({
+            key: 'location',
+            label: t('workspace.menu.inspector.location'),
+            value: locationName,
+        });
+    }
 
-            {/*
-                Panelin tek eylemi, ana alanda ZATEN bulunan yayınlama yoluna
-                götürür. Panel yeni bir yetenek eklemez; bağlamı gösterir ve
-                bilinen yola kısa yol verir.
-            */}
-            <button
-                type="button"
-                onClick={() => onNavigateToSection('publication')}
-                className="min-h-[var(--density-hit-area-min)] rounded-md border border-border px-3 py-2 text-body font-medium text-fg-secondary hover:bg-surface-hover"
-            >
-                {t('workspace.menu.previewAndPublish')}
-            </button>
-        </div>
+    rows.push(
+        {
+            key: 'categories',
+            label: t('workspace.menu.inspector.categories'),
+            value: String(categoryCount),
+        },
+        { key: 'items', label: t('workspace.menu.inspector.items'), value: String(itemCount) },
     );
-}
 
-function InspectorRow({ label, value }: { label: string; value: string }) {
     return (
-        <div className="flex flex-col gap-0.5">
-            <dt className="text-meta text-fg-muted">{label}</dt>
-            <dd className="text-body text-fg">{value}</dd>
-        </div>
+        <InspectorFrame
+            title={t('workspace.menu.inspector.title')}
+            rows={rows}
+            shortcut={{
+                label: t('workspace.menu.previewAndPublish'),
+                onSelect: () => onNavigateToSection('publication'),
+            }}
+        />
     );
 }
 

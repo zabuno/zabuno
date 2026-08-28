@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 477;
+const FROZEN_LEGACY_KEY_COUNT = 488;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -143,8 +143,14 @@ const FROZEN_LEGACY_KEY_COUNT = 477;
 // diller ve yayın zamanlaması EKLENMEDİ: ürün onları henüz tutmuyor ve
 // olmayan bir ayarı göstermek olmayan bir yetenek vaat etmek olurdu.
 // 471 → 477.
+//
+// PANEL ÜÇ EKRANDA (FF-03c): marka ve şube formlarına da bağlam paneli
+// geldi. Marka paneli markanın KAPSAMINI gösterir (kaç şubede görünüyor,
+// hangi şehirlerde); şube paneli o şubenin markasını, şehrini ve — yalnız
+// yüklü menü ağacı GERÇEKTEN o şubeye aitse — menü özetini gösterir.
+// 477 → 488.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '6fdf350bbc3365e23b0521d1505d31c062eb5156279c8426acea0533d30656fd';
+    '848b807c993d52526df4ba54604790baa200fc8e63fb16de33a16d99be705388';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
