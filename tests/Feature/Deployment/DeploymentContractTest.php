@@ -230,11 +230,7 @@ final class DeploymentContractTest extends TestCase
      */
     public function test_a_failed_ci_run_can_never_reach_production(): void
     {
-        // Yorumlar ELENİR. Kapı, dosyanın ne YAPTIĞINA bakar; bir yorumun
-        // eski hatayı anlatmak için o yolu anması, hatanın geri geldiği
-        // anlamına gelmez. Aynı dosyadaki DEPLOY-DB-NOT-PUBLIC-03 kapısı
-        // bu dersi biçimlendiriciyle kavga ederek öğrenmişti.
-        $workflow = preg_replace('/^\\s*#.*$/m', '', $this->read('.github/workflows/deploy.yml')) ?? '';
+        $workflow = $this->read('.github/workflows/deploy.yml');
 
         self::assertStringContainsString(
             'workflow_run:',
@@ -409,7 +405,11 @@ final class DeploymentContractTest extends TestCase
      */
     public function test_the_deploy_workflow_matches_the_installed_layout(): void
     {
-        $workflow = $this->read('.github/workflows/deploy.yml');
+        // Yorumlar ELENİR. Kapı, dosyanın ne YAPTIĞINA bakar; bir yorumun
+        // eski hatayı anlatmak için o yolu anması, hatanın geri geldiği
+        // anlamına gelmez. Aynı dosyadaki DEPLOY-DB-NOT-PUBLIC-03 kapısı
+        // bu dersi biçimlendiriciyle kavga ederek öğrenmişti.
+        $workflow = preg_replace('/^\\s*#.*$/m', '', $this->read('.github/workflows/deploy.yml')) ?? '';
 
         self::assertStringContainsString(
             'docker-compose*.yml',
