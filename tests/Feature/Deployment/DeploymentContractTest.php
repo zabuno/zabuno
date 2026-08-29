@@ -460,4 +460,41 @@ final class DeploymentContractTest extends TestCase
             'DEPLOY-SENDS-EVERY-TOPOLOGY-10: bir scp çağrısı yapılandırılmış portu taşımıyor.'
         );
     }
+
+    // --- DEPLOY-NO-REGISTRY-11 --------------------------------------------
+
+    /**
+     * İmaj sunucuya, deploy'un ZATEN sahip olduğu kanaldan gider.
+     *
+     * İlk hâl imajı GHCR'a itiyor ve sunucuya oradan çektiriyordu. İki
+     * bedeli vardı ve ikisi de ilk gerçek deploy'da göründü: sunucu
+     * `unauthorized` aldı, çünkü private bir paketi çekmek için orada
+     * uzun ömürlü bir registry kimlik bilgisi durması gerekiyordu — SSH
+     * kanalının yanında ikinci bir güven ilişkisi. Dahası private paketin
+     * depolaması ve her çekim, hesabın paket kotasına yazılıyordu.
+     *
+     * Deploy'un sabitlenmiş bir SSH kanalı zaten var. İmaj oradan akar.
+     */
+    public function test_the_image_never_travels_through_a_registry(): void
+    {
+        $workflow = preg_replace('/^\s*#.*$/m', '', $this->read('.github/workflows/deploy.yml')) ?? '';
+
+        self::assertStringNotContainsString(
+            'ghcr.io',
+            $workflow,
+            'DEPLOY-NO-REGISTRY-11: akış bir kayıt defterine dönmüş; sunucuda saklanacak bir kimlik bilgisi doğar.'
+        );
+
+        self::assertStringNotContainsString(
+            'push: true',
+            $workflow,
+            'DEPLOY-NO-REGISTRY-11: imaj bir kayıt defterine itiliyor.'
+        );
+
+        self::assertStringContainsString(
+            'docker load',
+            $workflow,
+            'DEPLOY-NO-REGISTRY-11: imaj sunucuya SSH ile yüklenmiyor.'
+        );
+    }
 }

@@ -123,8 +123,9 @@ Proje sahibi `main` dalına bir değişiklik birleştirdiğinde:
 
 1. CI koşar (testler, lint, iki veritabanı motorunda süit)
 2. **CI geçerse** deploy akışı kendiliğinden başlar
-3. İmaj `linux/amd64` için derlenir ve GHCR'a itilir
-4. Sunucuya bağlanılır, yeni imaj yayına alınır, migrasyonlar koşar
+3. İmaj `linux/amd64` için derlenir ve SSH ile sunucuya aktarılır — bir
+   kayıt defterine uğramaz, sunucuda saklanan bir kimlik bilgisi gerekmez
+4. Yeni imaj yayına alınır, migrasyonlar koşar
 5. Siteye HTTP isteği atılarak gerçekten cevap verdiği doğrulanır
 
 **CI geçmezse deploy başlamaz.** Akış `push` yerine `workflow_run` ile

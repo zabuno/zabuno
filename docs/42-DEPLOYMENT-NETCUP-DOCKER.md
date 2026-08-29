@@ -15,7 +15,7 @@ Owner kararı (2026-08-27): Faz 2'den önce deploy edilecek. Birincil hedef
 | Yığın | `docker-compose.yml` | `db` + `app` + `proxy`, üç ağ kuralı |
 | Topoloji katmanları | `docker-compose.local.yml`, `docker-compose.edge-proxy.yml` | Aynı yığın, farklı ortam: geliştirici makinesi ve hazır vekil arkası |
 | HTTPS | `docker/Caddyfile` | Sertifikayı Caddy alır ve yeniler |
-| Yayın akışı | `.github/workflows/deploy.yml` | **Elle tetiklenir**, GHCR'a iter, SSH ile yayına alır, sağlık kontrolü yapar |
+| Yayın akışı | `.github/workflows/deploy.yml` | CI geçince tetiklenir; imajı derler, SSH ile aktarır, yayına alır, sağlık kontrolü yapar |
 
 ## Neden bu kararlar
 
@@ -142,14 +142,34 @@ tarafımdan girilmez.
 
 ## Deploy nasıl yapılır
 
-GitHub → `Actions` → `Deploy` → `Run workflow` → kutuya `DEPLOY` yazıp
-çalıştır. Akış sırayla: imajı `linux/amd64` için derler, GHCR'a iter, VPS'e
-bağlanır, `docker compose pull && up -d` çalıştırır, sonra siteye HTTP isteği
-atarak gerçekten cevap verdiğini doğrular.
+`main`'e birleşme, CI geçtiyse deploy'u kendiliğinden başlatır. Elle
+tetikleme de durur: GitHub → `Actions` → `Deploy` → `Run workflow` → kutuya
+`DEPLOY`.
+
+Akış sırayla: imajı `linux/amd64` için derler, **bir kayıt defterine
+uğramadan** SSH üzerinden sunucuya aktarır (`gzip | ssh | docker load`),
+`up -d` çalıştırır, sonra siteye HTTP isteği atarak gerçekten cevap
+verdiğini doğrular.
+
+### İmaj neden GHCR'dan geçmiyor
+
+İlk hâl imajı GHCR'a itiyordu ve ilk gerçek deploy orada durdu: sunucu
+`unauthorized` aldı. Private bir paketi çekebilmek için sunucuda uzun ömürlü
+bir registry kimlik bilgisi durması gerekiyordu — sabitlenmiş SSH kanalının
+yanında, aynı işi yapan ikinci bir güven ilişkisi. Buna ek olarak private
+paketin depolaması ve sunucunun her çekimi hesabın paket kotasına yazılıyor;
+her commit ayrı bir SHA etiketi ürettiği için bu birikiyor.
+
+Deploy'un zaten bir kanalı var. İmaj oradan akıyor: runner'da `gzip -1` ile
+sıkıştırılıp sunucuda doğrudan `docker load`'a veriliyor, diske yazılmadan.
+Saklanacak token, dolacak süre ve ödenecek kota kalmıyor.
 
 ## Geri alma
 
-Her imaj commit SHA'sı ile etiketlenir. Geri almak, sunucuda `.image.env`
+Her imaj commit SHA'sı ile etiketlenir ve etiketler **sunucuda kalır**
+(`docker image prune -f` yalnız sahipsiz katmanları siler). Registry artık
+geri alma kaynağı olmadığı için bu yerel etiketler tek geriye dönüş yoludur;
+toptan silen bir temizlik yazılmamalı. Geri almak, sunucuda `.image.env`
 içindeki `ZABUNO_IMAGE` değerini önceki SHA ile değiştirip
 `docker compose up -d` çalıştırmaktır. Migrasyonlar geri alınmaz; şema
 değişikliği içeren bir sürümden dönüş, ayrı bir karardır.

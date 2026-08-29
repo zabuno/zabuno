@@ -20,9 +20,10 @@ on:
         required: false
         default: ''
 
+# Registry'ye yazma yetkisi YOK ve gerekmiyor: imaj GHCR'a itilmez, var
+# olan SSH kanalindan sunucuya aktarilir (bkz. `docs/42`).
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   # Aynı anda iki deploy, sunucuda yarış demektir.
@@ -86,12 +87,11 @@ jobs:
 
           echo "should_deploy=true" >> "$GITHUB_OUTPUT"
 
-  build:
+  deploy:
     needs: guard
     if: needs.guard.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.meta.outputs.image }}
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -101,47 +101,38 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Compute image reference
+      - name: İmaj etiketini hesapla
         id: meta
         run: |
-          repo="$(echo '${{ github.repository }}' | tr 'A-Z' 'a-z')"
           # `workflow_run` bağlamında GITHUB_SHA varsayılan dalın ucudur;
           # deploy edilmesi gereken, CI'ın GEÇTİĞİ commit'tir.
           sha="${{ github.event.workflow_run.head_sha || github.sha }}"
           echo "sha=${sha}" >> "$GITHUB_OUTPUT"
-          echo "image=ghcr.io/${repo}:${sha}" >> "$GITHUB_OUTPUT"
+          # Etiket yerel: registry adı YOK. İmaj bir kayıt defterine
+          # uğramadan, doğrudan sunucuya gider.
+          echo "image=zabuno:${sha}" >> "$GITHUB_OUTPUT"
 
       # Hedef netcup AMD EPYC: linux/amd64. Runner zaten amd64 olduğu için
       # emülasyon yok; platform yine de AÇIKÇA yazılıyor, çünkü runner
       # mimarisinin sessizce değişmesi imajı hedefte çalışmaz hâle getirir.
-      - name: Build and push (linux/amd64)
+      #
+      # `push: false` ve çıktı bir DOSYA: imaj GHCR'a itilmiyor. Sebep
+      # maliyet ve yüzey. Private bir paketin depolaması ve sunucunun her
+      # çekimi kotaya yazılır; dahası sunucuda uzun ömürlü bir registry
+      # kimlik bilgisi durmak zorunda kalırdı. Deploy zaten sabitlenmiş bir
+      # SSH kanalına sahip — ikinci bir güven ilişkisi kurmanın gerekçesi
+      # yok.
+      - name: İmajı derle (linux/amd64)
         uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile
           platforms: linux/amd64
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.image }}
+          outputs: type=docker,dest=${{ runner.temp }}/zabuno-image.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy:
-    needs: [guard, build]
-    if: needs.guard.outputs.should_deploy == 'true'
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: SSH anahtarını yükle
         run: |
@@ -178,6 +169,26 @@ jobs:
           scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker-compose*.yml "$DEPLOY_TARGET:$DEPLOY_DIR/"
           scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker/Caddyfile "$DEPLOY_TARGET:$DEPLOY_DIR/docker/"
 
+      # İmaj, dosya olarak DEĞİL akış olarak gider: runner'da sıkıştırılır,
+      # sunucuda açılıp doğrudan `docker load`'a verilir. Diske hiç yazılmaz,
+      # dolayısıyla sunucuda temizlenecek bir artık kalmaz ve deploy yarıda
+      # kalırsa yarım bir tar dosyası bırakmaz.
+      #
+      # `gzip -1`: katmanlar tar içinde SIKIŞTIRILMAMIŞ durur, bu yüzden en
+      # hızlı seviye bile aktarımı kabaca üçte birine indirir. Daha yüksek
+      # seviye, kazandığından fazlasını CPU'da harcar.
+      - name: İmajı SSH ile aktar
+        env:
+          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+          IMAGE_TAR: ${{ runner.temp }}/zabuno-image.tar
+        run: |
+          ls -lh "$IMAGE_TAR"
+
+          gzip -1 -c "$IMAGE_TAR" \
+            | ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" \
+              'gunzip | docker load'
+
       - name: Yeni imajı yayına al
         env:
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
@@ -187,7 +198,7 @@ jobs:
           # düşer. Varsayılan 22, çünkü çoğu kurulum öyle; taşınmışsa
           # `DEPLOY_PORT` secret'ı söyler.
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
-          ZABUNO_IMAGE: ${{ needs.build.outputs.image }}
+          ZABUNO_IMAGE: ${{ steps.meta.outputs.image }}
         run: |
           ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" \
             bash -s -- "$DEPLOY_DIR" "$ZABUNO_IMAGE" <<'REMOTE'
@@ -206,8 +217,16 @@ jobs:
               export COMPOSE_FILE="$compose_file"
           fi
 
-          docker compose --env-file .env --env-file .image.env pull app
+          # `pull` YOK: imaj bir onceki adimda SSH ile yuklendi ve yerel.
+          # Cagrilsaydi, var olmayan bir registry'de aranir ve deploy tam da
+          # imaj hazirken basarisiz olurdu.
           docker compose --env-file .env --env-file .image.env up -d --remove-orphans
+
+          # Yalniz SAHIPSIZ katmanlar silinir. Onceki SHA etiketleri
+          # sunucuda KALIR ve geri alma bunlarla yapilir: `.image.env`
+          # icindeki etiketi eskisiyle degistirip `up -d` yeter. Registry
+          # artik geri alma kaynagi olmadigi icin bu etiketler tek
+          # geriye donus yolu; toptan silen bir temizlik yazilmamali.
           docker image prune -f
           REMOTE
 
