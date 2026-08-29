@@ -13,6 +13,7 @@ Owner kararı (2026-08-27): Faz 2'den önce deploy edilecek. Birincil hedef
 | Süreç yöneticisi | `docker/supervisord.conf` | nginx + php-fpm tek konteynerde, ikisi de yeniden başlar |
 | Açılış | `docker/entrypoint.sh` | DB bekler → migrasyon → önbellek ısıtma → servis |
 | Yığın | `docker-compose.yml` | `db` + `app` + `proxy`, üç ağ kuralı |
+| Topoloji katmanları | `docker-compose.local.yml`, `docker-compose.edge-proxy.yml` | Aynı yığın, farklı ortam: geliştirici makinesi ve hazır vekil arkası |
 | HTTPS | `docker/Caddyfile` | Sertifikayı Caddy alır ve yeniler |
 | Yayın akışı | `.github/workflows/deploy.yml` | **Elle tetiklenir**, GHCR'a iter, SSH ile yayına alır, sağlık kontrolü yapar |
 
@@ -45,7 +46,7 @@ gizlememeli.
 
 ## Sunucuda bir kerelik hazırlık
 
-VPS'te bir kullanıcı ve şu dizin gerekir: `~/zabuno/`. İçine `.env` konur:
+VPS'te bir kullanıcı ve şu dizin gerekir: `/opt/zabuno/` (`install.sh` ile aynı). İçine `.env` konur:
 
 ```
 APP_KEY=base64:...          # `php artisan key:generate --show` çıktısı
@@ -68,6 +69,60 @@ alan adı birincinin adreslerine yönlendirilir ve kendi kimliğini kaybeder.
 `.env` sunucuda kalır ve depoya **girmez**. Compose dosyaları her deploy'da
 akış tarafından gönderilir.
 
+## Ortam matrisi — hangi dosya nerede
+
+Taban `docker-compose.yml` **topolojiden bağımsızdır**: servisleri, ağı ve
+hacimleri tanımlar, hiçbir kuruluma ait değer taşımaz. Ortam farkı iki
+yerde yaşar ve ikisinin ayrımı bilinçlidir:
+
+| Katman | Ne taşır | Nerede | Takipli mi |
+| --- | --- | --- | --- |
+| `docker-compose.yml` | Servis, ağ, hacim | Depo | Evet |
+| `docker-compose.local.yml` | Kaynaktan derleme, hata ayıklama, vekil kapalı | Depo | Evet |
+| `docker-compose.edge-proxy.yml` | Loopback port yayını, vekil kapalı, oturum güvenliği | Depo | Evet |
+| `.env` | Alan adı, port, parola, anahtar | Yalnız o makine | **Hayır** |
+
+Topolojinin depoda yaşaması bir tercih değil. Bu ayrım, zabuno.com yayına
+alınırken sunucuda hazır bir Caddy bulunduğu için doğdu: yığının kendi
+vekili başlatılmamalı ve uygulama portu ana makineye yayımlanmalıydı. O
+fark ilk gün yalnız sunucuda duran, hiçbir yerde kayıtlı olmayan bir
+dosyaya yazılmıştı. Dosya kaybolsaydı `up -d` yığının Caddy'sini başlatıp
+80 ve 443'ü isteyecek, o portları tutan sistem vekilini devirecekti —
+yalnız bu uygulamayı değil, aynı sunucudaki her siteyi.
+
+Sırrı gizlemek doğrudur; topolojiyi gizlemek kurulumu unutmaktır.
+
+### Hangi topolojinin geçerli olduğunu sunucu söyler
+
+Override elle `-f` ile eklenmez. O makinenin `.env`'i seçer:
+
+```
+COMPOSE_FILE=docker-compose.yml:docker-compose.edge-proxy.yml
+ZABUNO_APP_PORT=54213
+ZABUNO_HEALTH_HOST=alanadiniz.com
+```
+
+Böylece `docker compose up -d` yeter ve override'ı unutmak imkânsızlaşır.
+Deploy akışı da topolojiyi bilmez: `COMPOSE_FILE`'ı sunucunun `.env`'inden
+okur. Akışa gömülseydi, ikinci bir kurulum akışı çatallamak zorunda
+kalırdı.
+
+Vekil tarafında karşılığı `reverse_proxy 127.0.0.1:54213` ve isteğin
+gerçek şemasını taşıyan `X-Forwarded-Proto` / `X-Forwarded-Host`
+başlıklarıdır. Onlar olmadan uygulama ürettiği adreslerde `http` yazar.
+
+### Sağlık probu kendini gerçek site olarak tanıtır
+
+Dockerfile'daki `HEALTHCHECK` uygulamaya `Host: 127.0.0.1` ile gelir.
+`URL_TRUSTED_HOSTS` beyan edilen her kurulumda uygulama bunu **haklı
+olarak** 400'ler ve konteyner kalıcı `unhealthy` görünür. Çözüm güvenilir
+host listesini gevşetmek değil — o liste imzalı adreslerin başka bir alan
+adına kaymasını önleyen sınırdır — probun `Host` başlığını taşımasıdır;
+override'lar bunu yapar.
+
+Aynı tuzak `install.sh`'ın son doğrulama adımında da vardı: kurulum,
+uygulama ayaktayken bile "cevap vermedi" diyip başarısız olurdu.
+
 ## GitHub'a eklenecek secret'lar
 
 `Settings → Secrets and variables → Actions`:
@@ -79,6 +134,7 @@ akış tarafından gönderilir.
 | `DEPLOY_SSH_KEY` | O kullanıcının özel anahtarı (parolasız) |
 | `DEPLOY_KNOWN_HOSTS` | `ssh-keyscan -H <host>` çıktısı |
 | `DEPLOY_HEALTH_URL` | `https://alanadin.com/up` |
+| `DEPLOY_DIR` | İsteğe bağlı; kurulum `/opt/zabuno` dışındaysa |
 
 Bunları **sahibi ekler.** Anahtar ve parolalar bende görünmez ve benim
 tarafımdan girilmez.

@@ -23,6 +23,16 @@ final class DeploymentContractTest extends TestCase
         return (string) file_get_contents($path);
     }
 
+    /** @return list<string> Depo kökündeki her compose dosyası, tabanı dahil. */
+    private function composeFiles(): array
+    {
+        $files = glob(base_path('docker-compose*.yml')) ?: [];
+
+        self::assertNotEmpty($files, 'Depo kökünde hiç compose dosyası yok.');
+
+        return array_map(static fn (string $path): string => basename($path), $files);
+    }
+
     /** @return list<string> */
     private function declaredExtensions(): array
     {
@@ -220,7 +230,11 @@ final class DeploymentContractTest extends TestCase
      */
     public function test_a_failed_ci_run_can_never_reach_production(): void
     {
-        $workflow = $this->read('.github/workflows/deploy.yml');
+        // Yorumlar ELENİR. Kapı, dosyanın ne YAPTIĞINA bakar; bir yorumun
+        // eski hatayı anlatmak için o yolu anması, hatanın geri geldiği
+        // anlamına gelmez. Aynı dosyadaki DEPLOY-DB-NOT-PUBLIC-03 kapısı
+        // bu dersi biçimlendiriciyle kavga ederek öğrenmişti.
+        $workflow = preg_replace('/^\\s*#.*$/m', '', $this->read('.github/workflows/deploy.yml')) ?? '';
 
         self::assertStringContainsString(
             'workflow_run:',
@@ -274,6 +288,159 @@ final class DeploymentContractTest extends TestCase
             'platforms: linux/amd64',
             $this->read('.github/workflows/deploy.yml'),
             'DEPLOY-TARGET-ARCH-05: hedef mimari açıkça yazılmalı.'
+        );
+    }
+
+    // --- DEPLOY-TOPOLOGY-TRACKED-07 ---------------------------------------
+
+    /**
+     * Her dağıtım topolojisinin bir dosyası OLMALI ve o dosya depoda
+     * yaşamalı.
+     *
+     * Bu kapı, 2026-08-29'da zabuno.com yayına alınırken doğdu. Sunucuda
+     * hazır bir Caddy vardı, yani yığının kendi vekili başlatılmamalı ve
+     * uygulama portu ana makineye yayımlanmalıydı. O fark, yalnız o
+     * sunucuda duran, hiçbir yerde kayıtlı olmayan bir override dosyasına
+     * yazılmıştı.
+     *
+     * Tehlike şuydu: dosya kaybolduğunda `up -d` yığının Caddy'sini
+     * başlatmaya kalkar, 80 ve 443'ü ister ve o portları tutan sistem
+     * vekilini devirir — yalnız bu uygulamayı değil, aynı sunucudaki her
+     * siteyi. Topolojiyi takipsiz bırakmak, sırrı gizlemek değil, kurulumu
+     * unutmaktır.
+     */
+    public function test_every_deployment_topology_is_tracked_in_the_repository(): void
+    {
+        $files = $this->composeFiles();
+
+        foreach (['docker-compose.yml', 'docker-compose.local.yml', 'docker-compose.edge-proxy.yml'] as $expected) {
+            self::assertContains(
+                $expected,
+                $files,
+                "DEPLOY-TOPOLOGY-TRACKED-07: {$expected} depoda yok; bir topoloji yalnız bir makinede yaşıyor."
+            );
+        }
+    }
+
+    // --- DEPLOY-OVERRIDE-LOOPBACK-08 --------------------------------------
+
+    /**
+     * Taban dosya dışındaki hiçbir compose dosyası bir portu tüm
+     * arayüzlere açamaz.
+     *
+     * Taban dosyanın 80/443'ü istisnadır ve orası zaten
+     * DEPLOY-DB-NOT-PUBLIC-03 ile ayrıca korunuyor: o portlar gerçekten
+     * herkese açık olmalı. Override'ların yayımladığı port ise bir ters
+     * vekilin arkasına girmek içindir; `0.0.0.0`'a bağlanırsa TLS,
+     * güvenlik başlıkları ve vekilin sınırları atlanarak doğrudan
+     * uygulamaya ulaşılır.
+     */
+    public function test_overrides_publish_only_to_loopback(): void
+    {
+        foreach ($this->composeFiles() as $file) {
+            if ($file === 'docker-compose.yml') {
+                continue;
+            }
+
+            preg_match_all('/^\s*-\s*[\x27"]([^\x27"]*:)?[^\x27"]*:\d+[\x27"]\s*$/m', $this->read($file), $matches);
+
+            foreach ($matches[0] as $mapping) {
+                self::assertMatchesRegularExpression(
+                    '/[\x27"]127\.0\.0\.1:/',
+                    $mapping,
+                    "DEPLOY-OVERRIDE-LOOPBACK-08: {$file} içindeki port yayını loopback'e bağlı değil: {$mapping}"
+                );
+            }
+        }
+    }
+
+    // --- DEPLOY-NO-SITE-SPECIFICS-09 --------------------------------------
+
+    /**
+     * Override'lar tek bir kuruluma ait değer GÖMEMEZ.
+     *
+     * Alan adı ve port o makinenin `.env`'ine aittir. Dosyaya gömülürse
+     * ikinci kurulum dosyayı kopyalayıp düzenler ve o kopya, düzeltmeler
+     * geldikçe sessizce ayrışır. Aynı dosya her kurulumda çalışmalı;
+     * değişen tek şey `.env` olmalı.
+     */
+    public function test_overrides_carry_no_installation_specific_values(): void
+    {
+        foreach ($this->composeFiles() as $file) {
+            if ($file === 'docker-compose.yml') {
+                continue;
+            }
+
+            $contents = preg_replace('/^\s*#.*$/m', '', $this->read($file)) ?? '';
+
+            self::assertDoesNotMatchRegularExpression(
+                '/\bzabuno\.com\b/',
+                $contents,
+                "DEPLOY-NO-SITE-SPECIFICS-09: {$file} bir alan adı gömüyor; değer .env'e ait."
+            );
+
+            preg_match_all('/^\s*-\s*[\x27"]127\.0\.0\.1:(\d+):/m', $contents, $matches);
+
+            self::assertSame(
+                [],
+                $matches[1],
+                "DEPLOY-NO-SITE-SPECIFICS-09: {$file} ana makine portunu sabitliyor; \${...} ile .env'den gelmeli."
+            );
+        }
+    }
+
+    // --- DEPLOY-SENDS-EVERY-TOPOLOGY-10 -----------------------------------
+
+    /**
+     * Deploy akışı, kurulumun GERÇEKTEN bulunduğu yere ve her topoloji
+     * dosyasını göndermeli.
+     *
+     * Üç kusur birlikte bulundu ve üçü de tek başına deploy'u sessizce
+     * anlamsız kılıyordu:
+     *
+     * 1. Akış `~/zabuno`'ya bağlanıyordu; `DEPLOY_USER=root` olduğu için
+     *    bu `/root/zabuno` demek, kurulum ise `install.sh` ile
+     *    `/opt/zabuno`'ya yapılıyor. Deploy boş bir dizinde çalışırdı.
+     * 2. Yalnız taban compose gönderiliyordu. Sunucu `COMPOSE_FILE` ile
+     *    bir override seçtiğinde o dosya deploy anında yok olur ve yığın
+     *    ya hiç açılmaz ya da portu yayımlamayı bırakıp 502'ye düşer.
+     * 3. `docker/Caddyfile` düz kopyalanıyordu; kökte kalıyor, taban
+     *    compose'un `./docker/Caddyfile` bağlaması bir DİZİN yaratıyordu.
+     */
+    public function test_the_deploy_workflow_matches_the_installed_layout(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertStringContainsString(
+            'docker-compose*.yml',
+            $workflow,
+            'DEPLOY-SENDS-EVERY-TOPOLOGY-10: akış yalnız bazı compose dosyalarını gönderiyor.'
+        );
+
+        self::assertStringContainsString(
+            '$DEPLOY_DIR/docker/',
+            $workflow,
+            'DEPLOY-SENDS-EVERY-TOPOLOGY-10: Caddyfile bağlama noktasının beklediği dizine gitmiyor.'
+        );
+
+        preg_match('/^readonly INSTALL_DIR="\\$\{ZABUNO_DIR:-([^}]+)\}"/m', $this->read('install.sh'), $installed);
+
+        self::assertArrayHasKey(
+            1,
+            $installed,
+            'DEPLOY-SENDS-EVERY-TOPOLOGY-10: install.sh kurulum dizini okunamadı.'
+        );
+
+        self::assertStringContainsString(
+            $installed[1],
+            $workflow,
+            "DEPLOY-SENDS-EVERY-TOPOLOGY-10: akış {$installed[1]} dışında bir dizine deploy ediyor."
+        );
+
+        self::assertStringNotContainsString(
+            '~/zabuno',
+            $workflow,
+            'DEPLOY-SENDS-EVERY-TOPOLOGY-10: ev dizinine göreli yol, root olarak /root/zabuno demektir.'
         );
     }
 }

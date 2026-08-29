@@ -154,22 +154,52 @@ jobs:
           echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
+      # Dizin `install.sh` ile AYNI olmalı. İlk hâli `~/zabuno`'ydu ve
+      # `DEPLOY_USER=root` olduğu için `/root/zabuno`'ya bakıyordu; kurulum
+      # ise `/opt/zabuno`'ya yapılıyordu. Deploy boş bir dizinde çalışırdı.
       - name: Compose dosyalarını gönder
+        env:
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
+          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
         run: |
-          scp -i ~/.ssh/id_ed25519 \
-            docker-compose.yml docker/Caddyfile \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/zabuno/"
+          # `docker/` alt dizini şart: taban compose `./docker/Caddyfile`
+          # bağlıyor. İlk hâl iki dosyayı da düz kopyalıyordu, Caddyfile
+          # kökte kalıyordu ve bağlama noktası bir DİZİN olarak yaratılıyordu.
+          ssh -i ~/.ssh/id_ed25519 "$DEPLOY_TARGET" "mkdir -p $DEPLOY_DIR/docker"
+
+          # Yıldız bilinçli: sunucu hangi topolojiyi seçerse seçsin, o
+          # dosya orada olmalı. Yalnız taban gönderilseydi, override
+          # deploy anında yok olur ve site 502'ye düşerdi.
+          scp -i ~/.ssh/id_ed25519 docker-compose*.yml "$DEPLOY_TARGET:$DEPLOY_DIR/"
+          scp -i ~/.ssh/id_ed25519 docker/Caddyfile "$DEPLOY_TARGET:$DEPLOY_DIR/docker/"
 
       - name: Yeni imajı yayına al
+        env:
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
+          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+          ZABUNO_IMAGE: ${{ needs.build.outputs.image }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
-            "cd ~/zabuno \
-             && export ZABUNO_IMAGE='${{ needs.build.outputs.image }}' \
-             && echo \"ZABUNO_IMAGE=\$ZABUNO_IMAGE\" > .image.env \
-             && docker compose --env-file .env --env-file .image.env pull app \
-             && docker compose --env-file .env --env-file .image.env up -d \
-             && docker image prune -f"
+          ssh -i ~/.ssh/id_ed25519 "$DEPLOY_TARGET" \
+            bash -s -- "$DEPLOY_DIR" "$ZABUNO_IMAGE" <<'REMOTE'
+          set -euo pipefail
+          cd "$1"
+
+          echo "ZABUNO_IMAGE=$2" > .image.env
+
+          # Topolojiyi SUNUCU seçer, akış değil. Hangi override'ın geçerli
+          # olduğu makinenin kendi `.env`'inde `COMPOSE_FILE` ile yazılıdır:
+          # biri yığının Caddy'sini kullanır, diğeri sunucuda hazır duran
+          # bir vekilin arkasına girer. Akışa gömülseydi, ikinci bir
+          # kurulum akışı çatallamak zorunda kalırdı.
+          compose_file="$(sed -n 's/^COMPOSE_FILE=//p' .env | tail -n 1)"
+          if [ -n "$compose_file" ]; then
+              export COMPOSE_FILE="$compose_file"
+          fi
+
+          docker compose --env-file .env --env-file .image.env pull app
+          docker compose --env-file .env --env-file .image.env up -d --remove-orphans
+          docker image prune -f
+          REMOTE
 
       - name: Sağlık kontrolü
         run: |

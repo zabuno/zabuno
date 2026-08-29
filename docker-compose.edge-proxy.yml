@@ -1,0 +1,59 @@
+# Zabuno — sunucuda ZATEN çalışan bir ters vekilin arkasında.
+#
+# Yığının kendi Caddy'si 80 ve 443'ü ister. O portları tutan bir vekil
+# (Caddy, nginx, Traefik) sunucuda hâlihazırda varsa bu bir çakışma değil,
+# bir devirme riskidir: aynı makinedeki BÜTÜN siteler etkilenir. Bu katman
+# yığının vekilini kapatır ve uygulamayı yalnız loopback'te yayımlar;
+# TLS'i, sertifikayı ve alan adı yönlendirmelerini var olan vekil sürdürür.
+#
+# Kullanım — sunucunun `.env`'ine:
+#
+#     COMPOSE_FILE=docker-compose.yml:docker-compose.edge-proxy.yml
+#     ZABUNO_APP_PORT=54213
+#     ZABUNO_HEALTH_HOST=alanadiniz.com
+#
+# Vekil tarafında karşılığı: `reverse_proxy 127.0.0.1:54213` ve isteğin
+# gerçek şemasını/host'unu taşıyan `X-Forwarded-Proto` / `X-Forwarded-Host`
+# başlıkları. Onlar olmadan uygulama ürettiği adreslerde http yazar.
+
+services:
+    app:
+        ports:
+            # YALNIZ loopback. `bootstrap/app.php` ters vekile `at: '*'`
+            # ile güveniyor ve o güven "app hiçbir port yayımlamıyor"
+            # varsayımına dayanıyordu. Port yayımlandığı an, iletilen host
+            # başlıklarını gönderebilecek istemci kümesi büyür; loopback
+            # o kümeyi ana makinedeki süreçlerle sınırlar ve
+            # `URL_TRUSTED_HOSTS` ikinci hat olarak durur.
+            #
+            # Port `.env`'den gelir: bu dosya her kurulumda aynı kalmalı,
+            # değişen tek şey o makinenin kendi yapılandırması olmalı.
+            - '127.0.0.1:${ZABUNO_APP_PORT:?ZABUNO_APP_PORT gerekli}:8080'
+        environment:
+            # Taban compose'un `environment` listesi SABİTTİR; `.env`'e
+            # yazılan her değer konteynere geçmez. Oturum güvenliği o
+            # listede yok ve TLS dışarıda sonlandığı için uygulama isteğin
+            # şifreli geldiğini yalnız iletilen başlıktan bilir — çerezin
+            # `Secure` bayrağı bu yüzden açıkça söylenir.
+            SESSION_ENCRYPT: 'true'
+            SESSION_SECURE_COOKIE: 'true'
+            SESSION_SAME_SITE: lax
+            APP_NAME: ${APP_NAME:-Zabuno}
+        healthcheck:
+            # Bkz. docker-compose.local.yml'deki aynı gerekçe: prob kendini
+            # gerçek site olarak tanıtmalı, yoksa `URL_TRUSTED_HOSTS`
+            # beyan edilen her kurulumda konteyner kalıcı `unhealthy`
+            # görünür.
+            test:
+                [
+                    'CMD-SHELL',
+                    'curl -fsS -H "Host: ${ZABUNO_HEALTH_HOST:?ZABUNO_HEALTH_HOST gerekli}" http://127.0.0.1:8080/up || exit 1',
+                ]
+            interval: 30s
+            timeout: 5s
+            start_period: 20s
+            retries: 3
+
+    proxy:
+        # Devre dışı: 80/443 bu sunucuda başka bir vekile ait.
+        profiles: ['stack-owned-proxy']

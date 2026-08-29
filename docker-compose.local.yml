@@ -1,0 +1,63 @@
+# Zabuno — geliştirici makinesi.
+#
+# Üretim compose'unu EZER, onun yerine geçmez: taban dosya servisleri,
+# ağları ve hacimleri tanımlar; buradaki katman yalnız "bu makinede nasıl
+# çalışır" sorusunu yanıtlar. Kurulum farkı `.env`'e, topoloji farkı bu
+# dosyaya, ortak gerçek tabana yazılır.
+#
+# Kullanım — `.env` içine şunu koymak yeterlidir:
+#
+#     COMPOSE_FILE=docker-compose.yml:docker-compose.local.yml
+#
+# sonra `docker compose up -d --build`. Override'ı elle `-f` ile eklemek
+# gerekmez; unutulabilecek bir adım, unutulduğu gün yığının kendi vekilini
+# başlatır.
+
+services:
+    app:
+        # Üretimde imaj bir kayıttan çekilir; burada kaynaktan derlenir,
+        # böylece çalışan şey diskteki koddur.
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+        image: zabuno:local
+        environment:
+            # Yerelde hata sayfası saklanmaz: kırılan şeyin ne olduğu
+            # görünmeli.
+            APP_DEBUG: 'true'
+            # Sertifika yok, dolayısıyla şema zorlaması da yok; açık
+            # kalsaydı her istek var olmayan bir https adresine giderdi.
+            URL_ENFORCE_SCHEME: 'false'
+            URL_CANONICAL_SCHEME: http
+        ports:
+            # Varsayılan 80, 8080 DEĞİL — ve bu bir kolaylık değil.
+            # nginx'in kendi `fastcgi_params`'ı `HTTP_HOST`'u `$host` ile
+            # doldurur ve `$host` PORTU TAŞIMAZ. Uygulama bu yüzden mutlak
+            # adresleri portsuz üretir; varsayılan olmayan bir portta
+            # sunulan yığında her varlık ve her yönlendirme portsuz adrese
+            # düşer ve sayfa stilsiz açılır. Üretimde görünmez, çünkü TLS
+            # 443'te sonlanır ve port zaten varsayılandır.
+            - '127.0.0.1:${ZABUNO_APP_PORT:-80}:8080'
+        healthcheck:
+            # Dockerfile'daki prob `Host: 127.0.0.1` ile gelir ve
+            # `URL_TRUSTED_HOSTS` beyan edildiğinde uygulama onu HAKLI
+            # OLARAK 400'ler. Çözüm güvenilir host listesini gevşetmek
+            # değil — o liste imzalı adreslerin saldırganın alan adına
+            # kaymasını önler — probun kendini gerçek site olarak
+            # tanıtmasıdır.
+            test:
+                [
+                    'CMD-SHELL',
+                    'curl -fsS -H "Host: ${ZABUNO_HEALTH_HOST:-localhost}" http://127.0.0.1:8080/up || exit 1',
+                ]
+            interval: 30s
+            timeout: 5s
+            start_period: 20s
+            retries: 3
+
+    proxy:
+        # Yığının kendi Caddy'si yerelde başlatılmaz: sertifika doğrulaması
+        # yapılamaz ve deneme yalnız gürültü üretir. Profil verilmesi,
+        # servis adını elle yazmayı unutan bir `up -d`'nin onu yine de
+        # başlatmasını engeller.
+        profiles: ['stack-owned-proxy']
