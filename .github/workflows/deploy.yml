@@ -161,25 +161,35 @@ jobs:
         env:
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
           DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+          # SSH her sunucuda 22'de DEĞİL. Sertleştirilmiş kurulumlarda port
+          # taşınır ve akış bunu geçirmezse 22'ye bağlanıp zaman aşımına
+          # düşer. Varsayılan 22, çünkü çoğu kurulum öyle; taşınmışsa
+          # `DEPLOY_PORT` secret'ı söyler.
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
         run: |
           # `docker/` alt dizini şart: taban compose `./docker/Caddyfile`
           # bağlıyor. İlk hâl iki dosyayı da düz kopyalıyordu, Caddyfile
           # kökte kalıyordu ve bağlama noktası bir DİZİN olarak yaratılıyordu.
-          ssh -i ~/.ssh/id_ed25519 "$DEPLOY_TARGET" "mkdir -p $DEPLOY_DIR/docker"
+          ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" "mkdir -p $DEPLOY_DIR/docker"
 
           # Yıldız bilinçli: sunucu hangi topolojiyi seçerse seçsin, o
           # dosya orada olmalı. Yalnız taban gönderilseydi, override
           # deploy anında yok olur ve site 502'ye düşerdi.
-          scp -i ~/.ssh/id_ed25519 docker-compose*.yml "$DEPLOY_TARGET:$DEPLOY_DIR/"
-          scp -i ~/.ssh/id_ed25519 docker/Caddyfile "$DEPLOY_TARGET:$DEPLOY_DIR/docker/"
+          scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker-compose*.yml "$DEPLOY_TARGET:$DEPLOY_DIR/"
+          scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker/Caddyfile "$DEPLOY_TARGET:$DEPLOY_DIR/docker/"
 
       - name: Yeni imajı yayına al
         env:
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
           DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+          # SSH her sunucuda 22'de DEĞİL. Sertleştirilmiş kurulumlarda port
+          # taşınır ve akış bunu geçirmezse 22'ye bağlanıp zaman aşımına
+          # düşer. Varsayılan 22, çünkü çoğu kurulum öyle; taşınmışsa
+          # `DEPLOY_PORT` secret'ı söyler.
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
           ZABUNO_IMAGE: ${{ needs.build.outputs.image }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 "$DEPLOY_TARGET" \
+          ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" \
             bash -s -- "$DEPLOY_DIR" "$ZABUNO_IMAGE" <<'REMOTE'
           set -euo pipefail
           cd "$1"

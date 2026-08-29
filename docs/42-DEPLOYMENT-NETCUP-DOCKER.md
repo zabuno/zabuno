@@ -132,9 +132,10 @@ uygulama ayaktayken bile "cevap vermedi" diyip başarısız olurdu.
 | `DEPLOY_HOST` | VPS'in IP veya alan adı |
 | `DEPLOY_USER` | Deploy kullanıcısı |
 | `DEPLOY_SSH_KEY` | O kullanıcının özel anahtarı (parolasız) |
-| `DEPLOY_KNOWN_HOSTS` | `ssh-keyscan -H <host>` çıktısı |
+| `DEPLOY_KNOWN_HOSTS` | `ssh-keyscan -H <host>` çıktısı (port taşınmışsa `-p <port>` ile; satırlar `[host]:port` biçiminde olur) |
 | `DEPLOY_HEALTH_URL` | `https://alanadin.com/up` |
 | `DEPLOY_DIR` | İsteğe bağlı; kurulum `/opt/zabuno` dışındaysa |
+| `DEPLOY_PORT` | İsteğe bağlı; sshd 22 dışında bir portta dinliyorsa |
 
 Bunları **sahibi ekler.** Anahtar ve parolalar bende görünmez ve benim
 tarafımdan girilmez.

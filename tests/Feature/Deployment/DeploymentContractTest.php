@@ -442,5 +442,22 @@ final class DeploymentContractTest extends TestCase
             $workflow,
             'DEPLOY-SENDS-EVERY-TOPOLOGY-10: ev dizinine göreli yol, root olarak /root/zabuno demektir.'
         );
+
+        // SSH her sunucuda 22'de değil. İlk hâl portu hiç geçirmiyordu ve
+        // sertleştirilmiş bir kurulumda (sshd 5055'te) deploy 22'ye
+        // bağlanmaya çalışıp zaman aşımına düşerdi. Kapı sayıya bakar:
+        // eklenen her yeni `ssh`/`scp` çağrısı portu taşımak zorunda,
+        // yoksa tek bir unutulmuş satır kanalı sessizce kopartır.
+        self::assertSame(
+            preg_match_all('/\\bssh -i /', $workflow),
+            preg_match_all('/\\bssh -i \\S+ -p "\\$DEPLOY_PORT"/', $workflow),
+            'DEPLOY-SENDS-EVERY-TOPOLOGY-10: bir ssh çağrısı yapılandırılmış portu taşımıyor.'
+        );
+
+        self::assertSame(
+            preg_match_all('/\\bscp -i /', $workflow),
+            preg_match_all('/\\bscp -i \\S+ -P "\\$DEPLOY_PORT"/', $workflow),
+            'DEPLOY-SENDS-EVERY-TOPOLOGY-10: bir scp çağrısı yapılandırılmış portu taşımıyor.'
+        );
     }
 }
