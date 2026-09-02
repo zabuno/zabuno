@@ -119,6 +119,22 @@ function checkDomainLayerDirectoryExists(string $repoRoot): ?string
     return null;
 }
 
+/** Blok, satır ve kabuk yorumlarını siler; dizeler olduğu gibi kalır. */
+function stripPhpComments(string $source): string
+{
+    $out = '';
+
+    foreach (token_get_all($source) as $token) {
+        if (is_array($token) && in_array($token[0], [T_COMMENT, T_DOC_COMMENT], true)) {
+            continue;
+        }
+
+        $out .= is_array($token) ? $token[1] : $token;
+    }
+
+    return $out;
+}
+
 function checkDomainLayerHasNoIlluminateDependency(string $repoRoot): ?string
 {
     $domainDir = $repoRoot.'/app/Domain';
@@ -128,7 +144,18 @@ function checkDomainLayerHasNoIlluminateDependency(string $repoRoot): ?string
     }
     $offending = [];
     foreach (listPhpFilesRecursively($domainDir) as $file) {
-        $contents = (string) file_get_contents($file);
+        /*
+            YORUMLAR ÖNCE DÜŞER.
+
+            Bir yorum bağımlılık YARATMAZ. Bu kapı, "burada bilerek
+            Illuminate kullanmıyoruz" diye yazılmış bir AÇIKLAMAYI ihlal
+            sayıyordu — yani kararın gerekçesini yazmayı cezalandırıyordu
+            (`docs/82`). Ölçülen şey KODUN kendisi olmalı.
+
+            Aynı düzeltme `tests/Unit/Architecture/OnionBoundaryTest.php`
+            içinde de var; iki kapı aynı kuralı ölçüyor ve ayrışmamalı.
+        */
+        $contents = stripPhpComments((string) file_get_contents($file));
         if (str_contains($contents, 'Illuminate\\') || str_contains($contents, 'use Illuminate')) {
             $offending[] = substr($file, strlen($repoRoot) + 1);
         }
