@@ -351,7 +351,7 @@
     <span id="pwa-install-status" role="status" aria-live="polite"></span>
     <span id="pwa-offline-status" role="status" aria-live="polite"></span>
 </div>
-<main role="main">
+<main role="main"@isset($menuKey) data-menu-key="{{ $menuKey }}"@endisset>
     @php
         $categories = $snapshot['categories'] ?? [];
         $categoryCount = count($categories);
@@ -436,7 +436,7 @@
                     <ul class="qr-menu-item-list">
                         @foreach ($category['menuItems'] as $item)
                             @php($isSoldOut = isset($item['menuItemId']) && isset($soldOut[(int) $item['menuItemId']]))
-                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}">
+                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}"@isset($item['menuItemId']) data-menu-item-id="{{ $item['menuItemId'] }}"@endisset>
                                 @if (! empty($item['image']['sources']))
                                     @php($image = $item['image'])
                                     {{-- `loading="lazy"`: kırk ürünlük bir menüde
@@ -557,7 +557,137 @@
                 } else {
                     searchStatus.textContent = visibleCount + ' ürün eşleşti.';
                 }
+
+                reportNoResults(query, visibleCount);
             });
+        }
+
+        /*
+            MENÜ MÜHENDİSLİĞİ ÖLÇÜMÜ — `docs/84`.
+
+            Ölçüm misafirin işi DEĞİLDİR: hiçbir hata onun ekranında
+            görünmez, hiçbir istek sayfanın açılmasını bekletmez.
+        */
+        var menuKey = (document.querySelector('main') || {}).dataset
+            ? document.querySelector('main').dataset.menuKey
+            : null;
+
+        if (!menuKey) {
+            return;
+        }
+
+        function send(events) {
+            if (!events.length) {
+                return;
+            }
+
+            var body = JSON.stringify({ menuKey: menuKey, events: events });
+
+            /*
+                `sendBeacon` sayfa kapanırken bile gider ve sayfayı
+                bekletmez. Yoksa `fetch` ile denenir; ikisi de yoksa ölçüm
+                sessizce yapılmaz — misafirin menüsü her hâlükârda açılır.
+            */
+            try {
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon('/q/events', new Blob([body], { type: 'application/json' }));
+
+                    return;
+                }
+
+                fetch('/q/events', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body,
+                    keepalive: true,
+                }).catch(function () {});
+            } catch (error) {
+                // Ölçüm best-effort.
+            }
+        }
+
+        var pendingViews = [];
+        var reportedItems = {};
+
+        function flushViews() {
+            var batch = pendingViews;
+            pendingViews = [];
+            send(batch);
+        }
+
+        if ('IntersectionObserver' in window) {
+            var timers = {};
+
+            var observer = new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        var id = entry.target.getAttribute('data-menu-item-id');
+
+                        if (!id || reportedItems[id]) {
+                            return;
+                        }
+
+                        if (!entry.isIntersecting) {
+                            // Kaydırırken hızla geçilen satır SAYILMAZ.
+                            window.clearTimeout(timers[id]);
+                            delete timers[id];
+
+                            return;
+                        }
+
+                        timers[id] = window.setTimeout(function () {
+                            reportedItems[id] = true;
+                            observer.unobserve(entry.target);
+                            pendingViews.push({ type: 'item_view', menuItemId: Number(id) });
+                        }, 1000);
+                    });
+                },
+                // Satırın en az YARISI görünmeli: listede olması yetmez,
+                // yoksa kırk ürünlük menüde kırk görüntülenme sayılırdı ve
+                // "hangi ürün ilgi çekiyor" sorusu cevapsız kalırdı.
+                { threshold: 0.5 },
+            );
+
+            Array.prototype.slice
+                .call(document.querySelectorAll('[data-menu-item-id]'))
+                .forEach(function (node) {
+                    observer.observe(node);
+                });
+
+            // Toplu gönderim: kırk ürün için kırk istek atmak, misafirin
+            // hücresel bağlantısını menünün kendisinden çok yorardı.
+            window.setInterval(flushViews, 5000);
+            window.addEventListener('pagehide', flushViews);
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'hidden') {
+                    flushViews();
+                }
+            });
+        }
+
+        var searchTimer = null;
+        var reportedTerms = {};
+
+        function reportNoResults(query, visibleCount) {
+            window.clearTimeout(searchTimer);
+
+            if (query === '' || visibleCount !== 0) {
+                return;
+            }
+
+            /*
+                Yazarken geçilen ara adımlar gönderilmez: "kar", "kari",
+                "karid" hepsi sonuçsuzdur ama misafirin aradığı şey
+                "karides"tir. Yarım saniye beklemek, niyeti aramadan ayırır.
+            */
+            searchTimer = window.setTimeout(function () {
+                if (reportedTerms[query]) {
+                    return;
+                }
+
+                reportedTerms[query] = true;
+                send([{ type: 'search_no_results', term: query }]);
+            }, 500);
         }
     })();
 </script>

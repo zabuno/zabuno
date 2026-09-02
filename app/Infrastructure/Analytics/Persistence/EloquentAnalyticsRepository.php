@@ -18,23 +18,71 @@ final class EloquentAnalyticsRepository implements AnalyticsRepositoryPort
     public function record(
         int $workspaceId,
         int $locationId,
-        int $qrCodeId,
+        ?int $qrCodeId,
         int $menuId,
         AnalyticsEventType $eventType,
         Carbon $occurredAt,
         ?string $visitorKey = null,
+        ?int $menuItemId = null,
+        ?string $searchTerm = null,
     ): void {
         DB::table('analytics_events')->insert([
             'workspace_id' => $workspaceId,
             'location_id' => $locationId,
             'qr_code_id' => $qrCodeId,
             'menu_id' => $menuId,
+            'menu_item_id' => $menuItemId,
+            'search_term' => $searchTerm,
             'event_type' => $eventType->value,
             'visitor_key' => $visitorKey,
             'occurred_at' => $occurredAt,
             'created_at' => $occurredAt,
             'updated_at' => $occurredAt,
         ]);
+    }
+
+    public function itemViewAlreadyCounted(int $workspaceId, int $menuItemId, string $visitorKey, Carbon $on): bool
+    {
+        return DB::table('analytics_events')
+            ->where('workspace_id', $workspaceId)
+            ->where('event_type', AnalyticsEventType::ItemView->value)
+            ->where('menu_item_id', $menuItemId)
+            ->where('visitor_key', $visitorKey)
+            ->whereBetween('occurred_at', [$on->copy()->startOfDay(), $on->copy()->endOfDay()])
+            ->exists();
+    }
+
+    /**
+     * Aralık BİR YERDE tanımlıdır.
+     *
+     * İki ayrı `match` bloğu, biri güncellenip diğeri unutulduğunda özet ile
+     * ürün raporunun farklı pencerelerden konuşmasına yol açardı — ve bu
+     * ayrışma ekranda "toplam 10, ürünlerin toplamı 14" gibi görünürdü.
+     */
+    private static function cutoffFor(string $range, Carbon $now): Carbon
+    {
+        return match ($range) {
+            'today' => $now->copy()->startOfDay(),
+            '7d' => $now->copy()->subDays(7),
+            '30d' => $now->copy()->subDays(30),
+            default => throw new InvalidArgumentException("Unknown analytics range [{$range}]."),
+        };
+    }
+
+    public function itemViewersByMenuItem(int $workspaceId, string $range, Carbon $now): array
+    {
+        return DB::table('analytics_events')
+            ->where('workspace_id', $workspaceId)
+            ->where('event_type', AnalyticsEventType::ItemView->value)
+            ->whereNotNull('menu_item_id')
+            ->where('occurred_at', '>=', self::cutoffFor($range, $now))
+            ->groupBy('menu_item_id')
+            // Ham vuruş değil FARKLI ziyaretçi: hem daha anlamlı hem de
+            // herkese açık uçtan gelen ucuz şişirmeye dayanıklı (`docs/84`).
+            ->selectRaw('menu_item_id, COUNT(DISTINCT visitor_key) as viewers')
+            ->pluck('viewers', 'menu_item_id')
+            ->map(static fn ($count): int => (int) $count)
+            ->all();
     }
 
     /**
@@ -50,12 +98,7 @@ final class EloquentAnalyticsRepository implements AnalyticsRepositoryPort
         string $range,
         Carbon $now,
     ): AnalyticsSummary {
-        $cutoff = match ($range) {
-            'today' => $now->copy()->startOfDay(),
-            '7d' => $now->copy()->subDays(7),
-            '30d' => $now->copy()->subDays(30),
-            default => throw new InvalidArgumentException("Unknown analytics range [{$range}]."),
-        };
+        $cutoff = self::cutoffFor($range, $now);
 
         $scope = fn () => DB::table('analytics_events')
             ->where('workspace_id', $workspaceId)

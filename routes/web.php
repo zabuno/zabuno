@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FoundationStatusController;
@@ -49,6 +50,16 @@ Route::get('/sitemap.xml', ShowSitemapController::class)->name('seo.sitemap');
 Route::get('/q/{token}', RedirectQrTokenController::class)
     ->middleware('throttle:qr-resolve')
     ->name('qr.resolve');
+/*
+    Misafir sayfasının olay ucu (`docs/84`).
+
+    `/q/` altında duruyor çünkü misafir yüzeyine aittir ve o yüzeyin hız
+    sınırı burada da anlamlıdır. Oturum İSTEMEZ: menü de istemiyor.
+*/
+Route::post('/q/events', StoreGuestMenuEventsController::class)
+    ->middleware('throttle:60,1')
+    ->name('guest.events');
+
 // Görsel türevleri: değişmez, sağlama toplamı taşıyan, herkese açık adres
 // (`docs/76`). Misafirin menüdeki fotoğrafı görebilmesi için oturum
 // gerekmez — menünün kendisi de zaten herkese açıktır.

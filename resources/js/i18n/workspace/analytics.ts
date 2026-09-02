@@ -1,5 +1,23 @@
 export const analytics = {
     'workspace.analytics.heading': 'Analytics',
+    // MENÜ MÜHENDİSLİĞİ (`docs/84`, P1-08). "Menün 214 kez açıldı" menüyü
+    // DEĞİŞTİRMEK için hiçbir şey söylemez.
+    'workspace.analytics.menuEngineering.region': 'What works on your menu',
+    'workspace.analytics.menuEngineering.title': 'What works on your menu',
+    'workspace.analytics.menuEngineering.loading': 'Loading menu figures…',
+    'workspace.analytics.menuEngineering.error': 'Menu figures could not be loaded.',
+    // Eşik ve gözlenen sayı AÇIKÇA yazılır: kaç ziyaretçi gerektiğini
+    // bilmeyen biri, ne kadar bekleyeceğini de bilemez (`docs/66`).
+    'workspace.analytics.menuEngineering.thin':
+        'Not enough visitors yet to rank your dishes: {observed} of {threshold}. Keep the menu published and check back.',
+    'workspace.analytics.menuEngineering.mostViewed': 'Most looked at',
+    'workspace.analytics.menuEngineering.neverViewed': 'Never looked at',
+    'workspace.analytics.menuEngineering.neverViewed.none': 'Every dish was looked at.',
+    'workspace.analytics.menuEngineering.viewers': '{count} visitors',
+    'workspace.analytics.menuEngineering.searches': 'Searched for, not found',
+    'workspace.analytics.menuEngineering.searches.none':
+        'No one searched for something your menu does not have.',
+    'workspace.analytics.menuEngineering.searchCount': '{count} visitors',
     'workspace.analytics.range.label': 'Range',
     'workspace.analytics.range.today': 'Today',
     'workspace.analytics.range.7d': 'Last 7 days',

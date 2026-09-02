@@ -92,6 +92,54 @@ msgstr ""
 msgid "workspace.analytics.heading"
 msgstr ""
 
+#: workspace:workspace.analytics.menuEngineering.error
+msgid "workspace.analytics.menuEngineering.error"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.loading
+msgid "workspace.analytics.menuEngineering.loading"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.mostViewed
+msgid "workspace.analytics.menuEngineering.mostViewed"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed
+msgid "workspace.analytics.menuEngineering.neverViewed"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed.none
+msgid "workspace.analytics.menuEngineering.neverViewed.none"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.region
+msgid "workspace.analytics.menuEngineering.region"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.searchCount
+msgid "workspace.analytics.menuEngineering.searchCount"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.searches
+msgid "workspace.analytics.menuEngineering.searches"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.searches.none
+msgid "workspace.analytics.menuEngineering.searches.none"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.thin
+msgid "workspace.analytics.menuEngineering.thin"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.title
+msgid "workspace.analytics.menuEngineering.title"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.viewers
+msgid "workspace.analytics.menuEngineering.viewers"
+msgstr ""
+
 #: workspace:workspace.analytics.metric.menuOpen
 msgid "workspace.analytics.metric.menuOpen"
 msgstr ""

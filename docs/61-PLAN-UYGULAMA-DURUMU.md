@@ -253,7 +253,7 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | P1-05 | Yayın geri alma | ✅ `docs/81` |
 | P1-06 | Misafir dil seçimi | 🔶 `guest` kataloğu açıldı (`docs/82`) |
 | P1-07 | Profil/şifre/rol bakımı | ✅ `docs/83` |
-| P1-08 | Ürün seviyesi analitik | ⬜ |
+| P1-08 | Ürün seviyesi analitik | ✅ `docs/84` |
 
 ## Altı tur bitti
 
