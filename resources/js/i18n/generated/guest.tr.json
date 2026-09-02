@@ -6,7 +6,7 @@
     "guest.menu.empty": "Bu menüde henüz kategori yok.",
     "guest.menu.item.soldOut": "Bugün tükendi",
     "guest.menu.subtitle": "Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor.",
-    "guest.menu.summary": "{categories} kategori, {items} ürün",
+    "guest.menu.summary": "Kategori: {categories} · Ürün: {items}",
     "guest.pwa.install": "Uygulamayı yükle",
     "guest.pwa.installAccepted": "Yükleme kabul edildi.",
     "guest.pwa.installDismissed": "Yükleme reddedildi.",

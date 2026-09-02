@@ -38,7 +38,7 @@ msgstr "Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor."
 
 #: guest:guest.menu.summary
 msgid "guest.menu.summary"
-msgstr "{categories} kategori, {items} ürün"
+msgstr "Kategori: {categories} · Ürün: {items}"
 
 #: guest:guest.pwa.install
 msgid "guest.pwa.install"
