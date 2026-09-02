@@ -20,6 +20,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
      */
     private const FROZEN_ROUTE_SIGNATURES = [
         'GET|api/user||App\Http\Controllers\Auth\AuthenticatedUserController|api,auth:sanctum,verified',
+        // HESAP BAKIMI (`docs/83`, P1-07): kullanıcı adını ve şifresini
+        // panelden onarabiliyor. Şifre yolu hız sınırlı — mevcut şifre burada
+        // doğrulanıyor ve sınırsız deneme, açık bırakılmış bir makinede
+        // şifre tahmin etmenin yolu olurdu.
+        'PUT|api/user/profile||App\Http\Controllers\Account\UpdateProfileController|api,auth:sanctum,verified',
+        'PUT|api/user/password||App\Http\Controllers\Account\UpdatePasswordController|api,auth:sanctum,throttle:6,1,verified',
         'POST|api/webhooks/iyzico-sandbox||App\Http\Controllers\Billing\ReceiveIyzicoSandboxWebhookController|api',
         'POST|api/billing/iyzico-sandbox/callback||App\Http\Controllers\Billing\ReceiveIyzicoSandboxCallbackController|api',
         'GET|api/reference/markets||App\Http\Controllers\Reference\ShowMarketReferenceController|api,auth:sanctum,verified',
@@ -91,6 +97,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/team/members||App\Http\Controllers\Team\ListTeamMembersController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/team/members/{member}||App\Http\Controllers\Team\RemoveTeamMemberController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/workspaces/{workspace}/team/members/{member}/transfer-ownership||App\Http\Controllers\Team\TransferWorkspaceOwnershipController|api,auth:sanctum,throttle:5,1,verified',
+        // Yanlış verilmiş bir rolü düzeltmek, üyeyi silip yeniden davet
+        // etmeyi gerektirmemeli (`docs/83`).
+        'PUT|api/workspaces/{workspace}/team/members/{member}/role||App\Http\Controllers\Team\UpdateTeamMemberRoleController|api,auth:sanctum,throttle:10,1,verified',
         'GET|api/workspaces/{workspace}/team/invitations||App\Http\Controllers\Team\ListTeamInvitationsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/team/invitations||App\Http\Controllers\Team\StoreTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         'DELETE|api/workspaces/{workspace}/team/invitations/{invitation}||App\Http\Controllers\Team\CancelTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',

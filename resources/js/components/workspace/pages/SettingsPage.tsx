@@ -1,12 +1,16 @@
 import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
 import { BillingPage } from './BillingPage';
+import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 
-export type SettingsTab = 'brand' | 'billing';
+export type SettingsTab = 'brand' | 'account' | 'billing';
 
 const TABS: ReadonlyArray<{ key: SettingsTab; labelKey: Parameters<typeof t>[0] }> = [
     { key: 'brand', labelKey: 'workspace.settings.tab.brand' },
+    // Hesap, MARKA ile FATURA arasında: ikisi de "kurulur ve unutulur", hesap
+    // ise arada bir onarılır (`docs/83`).
+    { key: 'account', labelKey: 'workspace.settings.tab.account' },
     { key: 'billing', labelKey: 'workspace.settings.tab.billing' },
 ];
 
@@ -16,6 +20,8 @@ export type SettingsPageProps = {
     onSaved: (brand: BrandProfile) => void;
     activeTab: SettingsTab;
     onSelectTab: (tab: SettingsTab) => void;
+    /** Oturumdaki kullanıcının adı; hesap sekmesi onu ön-doldurur. */
+    userName?: string;
 };
 
 /**
@@ -37,6 +43,7 @@ export function SettingsPage({
     onSaved,
     activeTab,
     onSelectTab,
+    userName,
 }: SettingsPageProps) {
     return (
         <div id="section-settings">
@@ -85,8 +92,8 @@ export function SettingsPage({
                     id={`settings-panel-${activeTab}`}
                     aria-labelledby={`settings-tab-${activeTab}`}
                 >
-                    {activeTab === 'brand' ? (
-                        brand ? (
+                    {activeTab === 'brand' &&
+                        (brand ? (
                             <BrandEditForm
                                 workspaceId={workspaceId}
                                 brand={brand}
@@ -96,10 +103,11 @@ export function SettingsPage({
                             <p role="status" className="text-body text-fg-muted">
                                 {t('workspace.brand.loading')}
                             </p>
-                        )
-                    ) : (
-                        <BillingPage workspaceId={workspaceId} />
-                    )}
+                        ))}
+
+                    {activeTab === 'account' && <AccountSettingsRegion currentName={userName} />}
+
+                    {activeTab === 'billing' && <BillingPage workspaceId={workspaceId} />}
                 </div>
             </WorkspacePageFrame>
         </div>

@@ -14,6 +14,8 @@ export type TeamMemberRemoveOutcome = 'success' | 'error' | 'retry';
 
 export type TeamMemberTransferOutcome = 'success' | 'error' | 'retry';
 
+export type TeamMemberRoleOutcome = 'success' | 'error';
+
 type RowStage = 'idle' | 'confirming' | 'busy' | 'error';
 
 type TransferStage = 'idle' | 'busy' | 'error';
@@ -43,6 +45,16 @@ type TeamMemberListProps = {
     transferErrorText: string;
     transferRetryText: string;
     transferSuccessText: string;
+    /*
+        Yanlış verilmiş bir rolü DÜZELTMEK (`docs/83`, P1-07).
+
+        Önceden tek çare üyeyi silip yeniden davet etmekti: kişi erişimini
+        kaybediyor, yeni bir davet bekliyor ve bu sırada iş duruyordu.
+    */
+    onChangeRole: (memberId: number, role: string) => Promise<TeamMemberRoleOutcome>;
+    assignableRoles: { value: string; label: string }[];
+    roleLabelFor: (name: string) => string;
+    roleErrorText: string;
 };
 
 const REMOVABLE_ROLE = 'editor';
@@ -79,8 +91,29 @@ export function TeamMemberList({
     transferErrorText,
     transferRetryText,
     transferSuccessText,
+    onChangeRole,
+    assignableRoles,
+    roleLabelFor,
+    roleErrorText,
 }: TeamMemberListProps) {
     const [rowStages, setRowStages] = useState<Record<number, RowStage>>({});
+    const [roleBusyId, setRoleBusyId] = useState<number | null>(null);
+    const [roleErrorId, setRoleErrorId] = useState<number | null>(null);
+
+    async function changeRole(memberId: number, role: string): Promise<void> {
+        setRoleBusyId(memberId);
+        setRoleErrorId(null);
+
+        const outcome = await onChangeRole(memberId, role);
+
+        setRoleBusyId(null);
+
+        // Başarısızlık SESSİZ kalamaz: seçim kutusu eski değerine döner ve
+        // kullanıcı değişikliğin olduğunu sanır.
+        if (outcome === 'error') {
+            setRoleErrorId(memberId);
+        }
+    }
     const [committedRows, setCommittedRows] = useState<Record<number, boolean>>({});
     const [announcement, setAnnouncement] = useState<string | null>(null);
     const skipNextMembersClearRef = useRef(false);
@@ -229,6 +262,9 @@ export function TeamMemberList({
             <ul className="flex flex-col gap-2">
                 {members.map((member) => {
                     const stage = rowStages[member.id] ?? 'idle';
+                    // Sahibin rolü buradan değişmez: sahiplik DEVREDİLİR ve
+                    // sahipsiz kalan bir çalışma alanını kimse onaramaz.
+                    const roleEditable = member.role.toLowerCase() !== 'owner';
                     const removable = member.role.toLowerCase() === REMOVABLE_ROLE;
 
                     return (
@@ -238,7 +274,53 @@ export function TeamMemberList({
                         >
                             <span className="font-medium text-fg">{member.name}</span>
                             <span className="text-fg-muted">{member.email}</span>
-                            <span className="text-fg-muted">{member.role}</span>
+                            {roleEditable ? (
+                                <label className="flex items-center gap-1">
+                                    <span className="sr-only">{roleLabelFor(member.name)}</span>
+                                    <select
+                                        className="rounded-md border border-border bg-surface px-2 py-1 text-body text-fg"
+                                        value={member.role}
+                                        disabled={roleBusyId === member.id}
+                                        onChange={(event) =>
+                                            void changeRole(member.id, event.target.value)
+                                        }
+                                    >
+                                        {/*
+                                            MEVCUT rol dağıtılabilir listede
+                                            olmayabilir: `member`, yalnız eski
+                                            kayıtların taşıdığı salt okunur bir
+                                            roldür ve yeni kimseye verilmez.
+
+                                            Onu listeden çıkarmak, satırın
+                                            kişiyi "Editor" gibi göstermesine
+                                            yol açardı — yani ekran yalan
+                                            söylerdi. Devre dışı bir seçenek
+                                            olarak gösterilir: gerçek okunur,
+                                            ama geri seçilemez.
+                                        */}
+                                        {assignableRoles.some(
+                                            (option) => option.value === member.role,
+                                        ) ? null : (
+                                            <option value={member.role} disabled>
+                                                {member.role}
+                                            </option>
+                                        )}
+                                        {assignableRoles.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            ) : (
+                                <span className="text-fg-muted">{member.role}</span>
+                            )}
+
+                            {roleErrorId === member.id ? (
+                                <span role="alert" className="text-body text-fg-danger">
+                                    {roleErrorText}
+                                </span>
+                            ) : null}
 
                             {removable && stage === 'idle' && (
                                 <button

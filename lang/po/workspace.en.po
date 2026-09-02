@@ -1796,9 +1796,65 @@ msgstr "A QR code opens your published menu, so there has to be a menu for it to
 msgid "workspace.qrCodes.operational.description"
 msgstr "Create and print the QR codes your guests scan to open the menu."
 
+#: workspace:workspace.settings.account.name.error
+msgid "workspace.settings.account.name.error"
+msgstr "Your name could not be saved."
+
+#: workspace:workspace.settings.account.name.label
+msgid "workspace.settings.account.name.label"
+msgstr "Your name"
+
+#: workspace:workspace.settings.account.name.saved
+msgid "workspace.settings.account.name.saved"
+msgstr "Your name was saved."
+
+#: workspace:workspace.settings.account.name.submit
+msgid "workspace.settings.account.name.submit"
+msgstr "Save name"
+
+#: workspace:workspace.settings.account.password.confirm
+msgid "workspace.settings.account.password.confirm"
+msgstr "Repeat new password"
+
+#: workspace:workspace.settings.account.password.current
+msgid "workspace.settings.account.password.current"
+msgstr "Current password"
+
+#: workspace:workspace.settings.account.password.error
+msgid "workspace.settings.account.password.error"
+msgstr "Your password could not be changed. Check your current password and try again."
+
+#: workspace:workspace.settings.account.password.help
+msgid "workspace.settings.account.password.help"
+msgstr "Changing your password signs you out everywhere else. This device stays signed in."
+
+#: workspace:workspace.settings.account.password.next
+msgid "workspace.settings.account.password.next"
+msgstr "New password"
+
+#: workspace:workspace.settings.account.password.saved
+msgid "workspace.settings.account.password.saved"
+msgstr "Your password was changed."
+
+#: workspace:workspace.settings.account.password.submit
+msgid "workspace.settings.account.password.submit"
+msgstr "Change password"
+
+#: workspace:workspace.settings.account.password.title
+msgid "workspace.settings.account.password.title"
+msgstr "Change password"
+
+#: workspace:workspace.settings.account.region
+msgid "workspace.settings.account.region"
+msgstr "Your account"
+
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
 msgstr "Your brand details and your plan. These are set up once and rarely change."
+
+#: workspace:workspace.settings.tab.account
+msgid "workspace.settings.tab.account"
+msgstr "Account"
 
 #: workspace:workspace.settings.tab.billing
 msgid "workspace.settings.tab.billing"
@@ -2051,6 +2107,14 @@ msgstr "Retry"
 #: workspace:workspace.team.members.remove.success
 msgid "workspace.team.members.remove.success"
 msgstr "Member removed."
+
+#: workspace:workspace.team.members.role.error
+msgid "workspace.team.members.role.error"
+msgstr "The role could not be changed."
+
+#: workspace:workspace.team.members.role.label
+msgid "workspace.team.members.role.label"
+msgstr "Role for {name}"
 
 #: workspace:workspace.team.members.transfer.body
 msgid "workspace.team.members.transfer.body"
