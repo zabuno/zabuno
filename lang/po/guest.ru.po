@@ -8,6 +8,70 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.language.contentNotice
+msgid "guest.language.contentNotice"
+msgstr ""
+
+#: guest:guest.language.label
+msgid "guest.language.label"
+msgstr ""
+
+#: guest:guest.menu.categories.label
+msgid "guest.menu.categories.label"
+msgstr ""
+
+#: guest:guest.menu.category.empty
+msgid "guest.menu.category.empty"
+msgstr ""
+
+#: guest:guest.menu.empty
+msgid "guest.menu.empty"
+msgstr ""
+
 #: guest:guest.menu.item.soldOut
 msgid "guest.menu.item.soldOut"
+msgstr ""
+
+#: guest:guest.menu.subtitle
+msgid "guest.menu.subtitle"
+msgstr ""
+
+#: guest:guest.menu.summary
+msgid "guest.menu.summary"
+msgstr ""
+
+#: guest:guest.pwa.install
+msgid "guest.pwa.install"
+msgstr ""
+
+#: guest:guest.pwa.installAccepted
+msgid "guest.pwa.installAccepted"
+msgstr ""
+
+#: guest:guest.pwa.installDismissed
+msgid "guest.pwa.installDismissed"
+msgstr ""
+
+#: guest:guest.pwa.installed
+msgid "guest.pwa.installed"
+msgstr ""
+
+#: guest:guest.pwa.offline
+msgid "guest.pwa.offline"
+msgstr ""
+
+#: guest:guest.search.label
+msgid "guest.search.label"
+msgstr ""
+
+#: guest:guest.search.matched
+msgid "guest.search.matched"
+msgstr ""
+
+#: guest:guest.search.noMatch
+msgid "guest.search.noMatch"
+msgstr ""
+
+#: guest:guest.search.placeholder
+msgid "guest.search.placeholder"
 msgstr ""

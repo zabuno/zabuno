@@ -11,6 +11,7 @@ use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
+use App\Support\Localization\GuestLocale;
 use App\Support\Localization\GuestText;
 use App\Support\Seo\MenuStructuredData;
 use Illuminate\Http\Request;
@@ -60,7 +61,19 @@ final class ShowPublicMenuByKeyController extends Controller
         $canonicalPath = MenuPublicAddress::fromKeyAndSlug($address['key'], $address['slug'])->path();
 
         if ($request->getPathInfo() !== $canonicalPath) {
-            // Kalıcı: slug değiştiyse eski adres ölmez, doğru adrese taşınır.
+            /*
+                Kalıcı: slug değiştiyse eski adres ölmez, doğru adrese taşınır.
+
+                DİL SEÇİMİ KORUNUR (`docs/85`). Misafir dil bağlantısına
+                bastığında istek slugsuz adrese gidiyor; sorgu düşseydi seçim
+                daha yolun başında kaybolur ve düğme çalışmıyor görünürdü.
+            */
+            $requestedLanguage = $request->query('lang');
+
+            if (is_string($requestedLanguage) && GuestLocale::isSupported($requestedLanguage)) {
+                $canonicalPath .= '?lang='.strtolower($requestedLanguage);
+            }
+
             return redirect($canonicalPath, 301);
         }
 
@@ -87,9 +100,20 @@ final class ShowPublicMenuByKeyController extends Controller
             'menuKey' => $address['key'],
             // Metin ŞABLONDA değil KATALOGDA yaşar: Blade'e yazılan bir
             // cümleyi sahip hiçbir PO dosyasından çeviremez (`docs/82`).
-            'guestText' => [
-                'soldOut' => $this->guestText->get('guest.menu.item.soldOut', $address['locale']),
-            ],
+            /*
+                ARAYÜZ dili ile İÇERİK dili AYRIDIR (`docs/85`).
+
+                Ürün adlarını restoran kendi dilinde yazar ve biz onları
+                çevirmiyoruz. Arayüzü İngilizceye alan misafire menünün de
+                İngilizce olacağını ima etmek, tutulmayacak bir söz vermek
+                olurdu.
+            */
+            'guestLocale' => $guestLocale = GuestLocale::resolve($request, $address['locale']),
+            'guestText' => $this->guestText->all(
+                $guestLocale,
+                $this->countCategories($publication->snapshot),
+                $this->countItems($publication->snapshot),
+            ),
             // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
             // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
             // bakar, buraya değil.
@@ -113,6 +137,29 @@ final class ShowPublicMenuByKeyController extends Controller
                 ),
                 JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP,
             ),
-        ], 200);
+        ], 200)
+            // Seçim AYNI CİHAZDA hatırlanır: misafir her açılışta dili
+            // yeniden seçmemeli (`docs/85`). `httpOnly` değil çünkü bir
+            // kimlik taşımıyor; `Lax` çünkü başka sitelerden gelen isteklerin
+            // dili değiştirmesine gerek yok.
+            ->cookie(GuestLocale::COOKIE, $guestLocale, 60 * 24 * 365, '/', null, $request->isSecure(), false, false, 'Lax');
+    }
+
+    /** @param  array<string, mixed>  $snapshot */
+    private function countCategories(array $snapshot): int
+    {
+        return count($snapshot['categories'] ?? []);
+    }
+
+    /** @param  array<string, mixed>  $snapshot */
+    private function countItems(array $snapshot): int
+    {
+        $count = 0;
+
+        foreach ($snapshot['categories'] ?? [] as $category) {
+            $count += count($category['menuItems'] ?? []);
+        }
+
+        return $count;
     }
 }
