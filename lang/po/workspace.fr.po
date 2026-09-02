@@ -1344,6 +1344,34 @@ msgstr ""
 msgid "workspace.publication.heading"
 msgstr ""
 
+#: workspace:workspace.publication.history.help
+msgid "workspace.publication.history.help"
+msgstr ""
+
+#: workspace:workspace.publication.history.live
+msgid "workspace.publication.history.live"
+msgstr ""
+
+#: workspace:workspace.publication.history.restore
+msgid "workspace.publication.history.restore"
+msgstr ""
+
+#: workspace:workspace.publication.history.restoreError
+msgid "workspace.publication.history.restoreError"
+msgstr ""
+
+#: workspace:workspace.publication.history.restoreLabel
+msgid "workspace.publication.history.restoreLabel"
+msgstr ""
+
+#: workspace:workspace.publication.history.title
+msgid "workspace.publication.history.title"
+msgstr ""
+
+#: workspace:workspace.publication.history.version
+msgid "workspace.publication.history.version"
+msgstr ""
+
 #: workspace:workspace.publication.operational.description
 msgid "workspace.publication.operational.description"
 msgstr ""
@@ -1406,6 +1434,14 @@ msgstr ""
 
 #: workspace:workspace.publication.qrDestination.empty
 msgid "workspace.publication.qrDestination.empty"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.enableButton
+msgid "workspace.publication.qrDestination.enableButton"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.enableError
+msgid "workspace.publication.qrDestination.enableError"
 msgstr ""
 
 #: workspace:workspace.publication.qrDestination.explanation

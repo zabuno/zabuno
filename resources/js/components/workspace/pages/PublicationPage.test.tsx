@@ -1114,17 +1114,27 @@ describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_S
             within(statusRegion).queryByText(/not published|never published|no publication/i),
         ).toBeNull();
 
-        fetchSpy.mockResolvedValueOnce(
-            jsonResponse(200, {
-                id: 611,
-                workspaceId: 71,
-                menuId: 42,
-                locationId: 923,
-                version: 5,
-                state: 'published',
-                publishedAt: '2026-08-24T08:00:00Z',
-                snapshot: { categories: [] },
-            }),
+        /*
+            Sahte artık SIRAYA değil ADRESE bakıyor.
+
+            Sayfa `docs/81`'den beri yayın geçmişini de çekiyor ve React'te
+            çocuk efektleri ebeveyn efektinden ÖNCE çalışıyor: sıraya
+            dayanan bir sahte, kuyruktaki yanıtı yanlış isteğe verirdi. Bu
+            kırılganlık testin niyetiyle ilgisizdi.
+        */
+        fetchSpy.mockImplementation(async (url: string) =>
+            String(url).endsWith('/publications/current')
+                ? jsonResponse(200, {
+                      id: 611,
+                      workspaceId: 71,
+                      menuId: 42,
+                      locationId: 923,
+                      version: 5,
+                      state: 'published',
+                      publishedAt: '2026-08-24T08:00:00Z',
+                      snapshot: { categories: [] },
+                  })
+                : jsonResponse(200, { data: [] }),
         );
 
         await user.click(within(statusRegion).getByRole('button', { name: /retry/i }));

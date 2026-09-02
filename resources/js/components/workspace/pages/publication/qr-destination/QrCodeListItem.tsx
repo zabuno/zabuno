@@ -14,9 +14,10 @@ export type QrCodeItem = {
 type QrCodeListItemProps = {
     item: QrCodeItem;
     onDisable: (qrCodeId: number) => void;
+    onEnable: (qrCodeId: number) => void;
 };
 
-export function QrCodeListItem({ item, onDisable }: QrCodeListItemProps) {
+export function QrCodeListItem({ item, onDisable, onEnable }: QrCodeListItemProps) {
     const isActive = item.state === 'active';
 
     return (
@@ -34,6 +35,12 @@ export function QrCodeListItem({ item, onDisable }: QrCodeListItemProps) {
                 </span>
             )}
 
+            {/*
+                Kapatmanın KARŞILIĞI olmalı (`docs/81`). Devre dışı bir kod
+                geri açılamıyorsa, masadaki basılı kâğıt kalıcı olarak ölür
+                ve tek çare yeniden bastırmak olur — bu ürünün temel vaadinin
+                ihlali.
+            */}
             {isActive ? (
                 <button
                     type="button"
@@ -42,7 +49,15 @@ export function QrCodeListItem({ item, onDisable }: QrCodeListItemProps) {
                 >
                     {t('workspace.publication.qrDestination.disableButton')}
                 </button>
-            ) : null}
+            ) : (
+                <button
+                    type="button"
+                    onClick={() => onEnable(item.id)}
+                    className="self-start text-body text-fg-link underline underline-offset-2"
+                >
+                    {t('workspace.publication.qrDestination.enableButton')}
+                </button>
+            )}
         </li>
     );
 }

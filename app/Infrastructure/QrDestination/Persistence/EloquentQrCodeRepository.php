@@ -106,6 +106,72 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
         return $record;
     }
 
+    public function enable(int $qrCodeId): QrCodeRecord
+    {
+        try {
+            DB::table('qr_codes')->where('id', $qrCodeId)->update([
+                'state' => QrCodeState::Active->value,
+                'updated_at' => now(),
+            ]);
+        } catch (QueryException $e) {
+            throw QrCodePersistenceFailedException::fromPrevious($e);
+        }
+
+        $record = $this->findById($qrCodeId);
+
+        if ($record === null) {
+            throw QrCodePersistenceFailedException::fromPrevious(new \RuntimeException('QR code missing after enable.'));
+        }
+
+        return $record;
+    }
+
+    public function retarget(int $qrCodeId, int $menuId, int $locationId): QrCodeRecord
+    {
+        try {
+            DB::transaction(function () use ($qrCodeId, $menuId, $locationId): void {
+                $now = now();
+
+                // YENİ bir hedef satırı açılır, eskisi durur: "bu kod ne
+                // zaman nereye bakıyordu" sorusu geçmişten cevaplanabilmeli
+                // (`docs/81`).
+                $destinationId = (int) DB::table('qr_destinations')->insertGetId([
+                    'qr_code_id' => $qrCodeId,
+                    'destination_type' => self::DESTINATION_TYPE_PUBLISHED_MENU,
+                    'menu_id' => $menuId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+
+                // İşaretçi GÜNCELLENİR, ikinci bir satır açılmaz: "şu an
+                // hangi hedef geçerli" sorusunun tek bir cevabı olmalı.
+                DB::table('qr_code_current_destinations')
+                    ->where('qr_code_id', $qrCodeId)
+                    ->update([
+                        'qr_destination_id' => $destinationId,
+                        'updated_at' => $now,
+                    ]);
+
+                // Kodun şubesi menünün şubesine taşınır: aksi hâlde ölçüm,
+                // kodun artık göstermediği şubeye yazılırdı.
+                DB::table('qr_codes')->where('id', $qrCodeId)->update([
+                    'location_id' => $locationId,
+                    'updated_at' => $now,
+                ]);
+            });
+        } catch (QueryException $e) {
+            throw QrCodePersistenceFailedException::fromPrevious($e);
+        }
+
+        $record = $this->findById($qrCodeId);
+
+        if ($record === null) {
+            throw QrCodePersistenceFailedException::fromPrevious(new \RuntimeException('QR code missing after retarget.'));
+        }
+
+        return $record;
+    }
+
     public function tokenExists(string $token): bool
     {
         return DB::table('qr_codes')->where('token', $token)->exists();
