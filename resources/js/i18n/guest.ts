@@ -21,7 +21,15 @@ export const guestTranslations = {
     // Sayfa kendi kimliğini söyleyemiyorsa misafire hiç değilse ne baktığını
     // anlatır (`docs/79`).
     'guest.menu.subtitle': 'Published menu — showing the current published version.',
-    'guest.menu.summary': '{categories} categories, {items} dishes',
+    /*
+        SAYIYA BAĞLI ÇOĞUL YOK.
+
+        "1 categories, 1 dishes" İngilizcede yanlıştır ve katalogda çoğul
+        motoru yok. Bir tane eklemek, tek bir cümle için bütün dillere çoğul
+        kuralı borcu getirirdi; etiket-değer biçimi her sayıda doğru okunur
+        ve her dile aynı kolaylıkla çevrilir (`docs/86`).
+    */
+    'guest.menu.summary': 'Categories: {categories} · Dishes: {items}',
     'guest.menu.categories.label': 'Categories',
     'guest.menu.empty': 'This menu has no categories yet.',
     'guest.menu.category.empty': 'This category has no dishes yet.',

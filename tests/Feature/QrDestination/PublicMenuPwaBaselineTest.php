@@ -258,10 +258,20 @@ final class PublicMenuPwaBaselineTest extends TestCase
     {
         $html = $this->renderPublicMenuWith($this->twoCategorySnapshot());
 
-        // 2 categories, 3 items total — computed from the supplied snapshot,
-        // never a fixed or fabricated number.
-        $this->assertMatchesRegularExpression('/2\s*kategori/u', $html);
-        $this->assertMatchesRegularExpression('/3\s*ürün/u', $html);
+        /*
+            2 kategori, 3 ürün — snapshot'tan HESAPLANIR, sabit ya da uydurma
+            bir sayı değildir.
+
+            İddia SAYIYA bakar, cümlenin diline değil: özet metni artık
+            katalogdan geliyor (`docs/85`) ve "1 categories" gibi bir çoğul
+            hatasından kaçınmak için etiket-değer biçimine geçti (`docs/86`).
+            Cümleyi teste sabitlemek, metni her düzelttiğimizde testi
+            kırardı.
+        */
+        $this->assertMatchesRegularExpression(
+            '#<p class="qr-menu-summary">[^<]*\b2\b[^<]*\b3\b[^<]*</p>#u',
+            $html,
+        );
     }
 
     public function test_it_renders_accessible_category_navigation_with_deterministic_loop_index_anchors(): void
@@ -353,8 +363,12 @@ final class PublicMenuPwaBaselineTest extends TestCase
     {
         $html = $this->renderPublicMenuWith(['categories' => []]);
 
-        $this->assertMatchesRegularExpression('/0\s*kategori/u', $html);
-        $this->assertMatchesRegularExpression('/0\s*ürün/u', $html);
+        // Sıfır da hesaplanır ve GÖSTERİLİR: boş bir özet, sayfanın
+        // yüklenmediği izlenimi verirdi.
+        $this->assertMatchesRegularExpression(
+            '#<p class="qr-menu-summary">[^<]*\b0\b[^<]*\b0\b[^<]*</p>#u',
+            $html,
+        );
         $this->assertMatchesRegularExpression(
             '/[Bb]u menüde (henüz )?(ürün|kategori) (yok|bulunmuyor)/u',
             $html,
