@@ -89,6 +89,10 @@ final class ShowPublicMenuController extends Controller
             // tehlikelidir — sahibin taslağında yarım kalmış bir fiyat
             // düzenlemesi olabilir.
             'outOfStockItemIds' => $this->outOfStock->forMenu($publication->menuId),
+            // Ölçüm betiği menünün KALICI ANAHTARINI gönderir; kiracıyı
+            // istemciden almak, herkesin herkesin adına olay yazması
+            // demekti (`docs/84`).
+            'menuKey' => $address['key'],
             // Metin ŞABLONDA değil KATALOGDA yaşar: Blade'e yazılan bir
             // cümleyi sahip hiçbir PO dosyasından çeviremez (`docs/82`).
             'guestText' => [

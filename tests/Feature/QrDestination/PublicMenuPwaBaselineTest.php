@@ -306,8 +306,37 @@ final class PublicMenuPwaBaselineTest extends TestCase
             'expected a #menu-search-status role="status" element to announce result count/no matches'
         );
 
-        // No network call, storage write, or invented suggestion for search.
-        $this->assertDoesNotMatchRegularExpression('/fetch\s*\(/', $html);
+        /*
+            ARAMA SONUÇLARI AĞDAN GELMEZ.
+
+            Kural eskiden "sayfada hiç `fetch(` olmasın" diye yazılmıştı ve o
+            gün doğruydu: sayfada başka bir ağ çağrısı yoktu, dolayısıyla
+            varlığı ancak aramanın sunucuya sorması anlamına gelebilirdi.
+
+            `docs/84` ile sayfa ÖLÇÜM gönderiyor. Kuralın NİYETİ değişmedi —
+            arama tuşa her basıldığında sunucuya gitmemeli, öneri servisi
+            olmamalı — ama ifadesi artık niyeti aşıyordu.
+
+            Yeni ifade: sayfadaki ağ hedefi YALNIZ ölçüm ucudur. Arama
+            sonuçları DOM'dan gelir ve bunu bir sonraki iddia dondurur.
+        */
+        preg_match_all('#(?:fetch|sendBeacon)\s*\(\s*[\'"]([^\'"]+)[\'"]#', $html, $networkTargets);
+
+        foreach ($networkTargets[1] as $target) {
+            $this->assertSame(
+                '/q/events',
+                $target,
+                'misafir sayfası yalnız ölçüm ucuna ağ çağrısı yapmalı; arama sonuçları DOM\'dan gelir'
+            );
+        }
+
+        // Arama girdisinin dinleyicisi sonucu SAYARAK bulur, isteyerek değil.
+        $this->assertMatchesRegularExpression(
+            '/searchInput\.addEventListener\([^)]*\'input\'/',
+            $html,
+            'arama istemci tarafında, girdi olayına bağlı olmalı'
+        );
+
         $this->assertDoesNotMatchRegularExpression('/\.setItem\s*\(\s*["\']menu-search/', $html);
     }
 

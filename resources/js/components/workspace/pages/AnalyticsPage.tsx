@@ -3,6 +3,7 @@ import { Button, Label, Select } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { AnalyticsMetricGrid } from './analytics/AnalyticsMetricGrid';
 import { AnalyticsBreakdown, type AnalyticsBreakdownRow } from './analytics/AnalyticsBreakdown';
+import { MenuEngineeringRegion } from './analytics/MenuEngineeringRegion';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 import { PageState } from './shared/PageState';
 import { useCurrentPublication } from './qr/useCurrentPublication';
@@ -323,6 +324,33 @@ export function AnalyticsPage({
                                 />
                             </div>
                         ))}
+
+                    {/*
+                        MENÜ MÜHENDİSLİĞİ (`docs/84`).
+
+                        Huninin ALTINDA duruyor: önce "kaç kişi geldi",
+                        sonra "geldiklerinde neye baktılar". Ters sırada,
+                        sahip ilgi sayılarını ziyaret sayısı sanırdı.
+                    */}
+                    {/*
+                        Plan kısıtı ARIZA DEĞİLDİR (`docs/84`).
+
+                        Rapor bölümü, planın raporlamayı içermediği durumda
+                        hiç çizilmez: aksi hâlde "yüklenemedi" derdi ve sahip
+                        ürünün bozulduğunu sanardı — oysa yapması gereken şey
+                        planını yükseltmek.
+
+                        İLK yüklemede de çizilmez (`summary === null`): ekranda
+                        iki ayrı "yükleniyor" satırı, hangisinin neyi
+                        beklediğini belirsizleştirir. Ama bir kez yüklendikten
+                        sonra tazelemede AYAKTA KALIR; sökülüp yeniden kurulmak
+                        listeyi gözün önünde sıfırlardı.
+                    */}
+                    {workspaceId !== undefined &&
+                    status !== 'plan-restricted' &&
+                    summary !== null ? (
+                        <MenuEngineeringRegion workspaceId={workspaceId} range={range} />
+                    ) : null}
                 </div>
             </WorkspacePageFrame>
         </div>

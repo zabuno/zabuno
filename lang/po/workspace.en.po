@@ -92,6 +92,54 @@ msgstr "Open that screen from the sidebar."
 msgid "workspace.analytics.heading"
 msgstr "Analytics"
 
+#: workspace:workspace.analytics.menuEngineering.error
+msgid "workspace.analytics.menuEngineering.error"
+msgstr "Menu figures could not be loaded."
+
+#: workspace:workspace.analytics.menuEngineering.loading
+msgid "workspace.analytics.menuEngineering.loading"
+msgstr "Loading menu figures…"
+
+#: workspace:workspace.analytics.menuEngineering.mostViewed
+msgid "workspace.analytics.menuEngineering.mostViewed"
+msgstr "Most looked at"
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed
+msgid "workspace.analytics.menuEngineering.neverViewed"
+msgstr "Never looked at"
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed.none
+msgid "workspace.analytics.menuEngineering.neverViewed.none"
+msgstr "Every dish was looked at."
+
+#: workspace:workspace.analytics.menuEngineering.region
+msgid "workspace.analytics.menuEngineering.region"
+msgstr "What works on your menu"
+
+#: workspace:workspace.analytics.menuEngineering.searchCount
+msgid "workspace.analytics.menuEngineering.searchCount"
+msgstr "{count} visitors"
+
+#: workspace:workspace.analytics.menuEngineering.searches
+msgid "workspace.analytics.menuEngineering.searches"
+msgstr "Searched for, not found"
+
+#: workspace:workspace.analytics.menuEngineering.searches.none
+msgid "workspace.analytics.menuEngineering.searches.none"
+msgstr "No one searched for something your menu does not have."
+
+#: workspace:workspace.analytics.menuEngineering.thin
+msgid "workspace.analytics.menuEngineering.thin"
+msgstr "Not enough visitors yet to rank your dishes: {observed} of {threshold}. Keep the menu published and check back."
+
+#: workspace:workspace.analytics.menuEngineering.title
+msgid "workspace.analytics.menuEngineering.title"
+msgstr "What works on your menu"
+
+#: workspace:workspace.analytics.menuEngineering.viewers
+msgid "workspace.analytics.menuEngineering.viewers"
+msgstr "{count} visitors"
+
 #: workspace:workspace.analytics.metric.menuOpen
 msgid "workspace.analytics.metric.menuOpen"
 msgstr "Confirmed Menu Open"

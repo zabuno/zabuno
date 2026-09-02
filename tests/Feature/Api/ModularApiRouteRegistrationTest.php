@@ -81,6 +81,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // göremiyordu ve toplamı bulmak için şubeleri tek tek gezmek
         // zorundaydı.
         'GET|api/workspaces/{workspace}/analytics/summary||App\Http\Controllers\Analytics\ShowAnalyticsSummaryController|api,auth:sanctum,verified',
+        // MENÜ MÜHENDİSLİĞİ (`docs/84`, P1-08): "menün 214 kez açıldı" menüyü
+        // değiştirmek için hiçbir şey söylemiyordu.
+        'GET|api/workspaces/{workspace}/analytics/menu-engineering||App\Http\Controllers\Analytics\ShowMenuEngineeringController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/tenant-isolation||App\Http\Controllers\Security\ShowTenantIsolationEvidenceController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/backup-restore||App\Http\Controllers\Security\ShowBackupRestoreEvidenceController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/entitlements||App\Http\Controllers\Entitlement\ShowWorkspaceEntitlementsController|api,auth:sanctum,verified',

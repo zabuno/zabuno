@@ -115,8 +115,15 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
 
-        const [url] = fetchSpy.mock.calls[0];
-        expect(String(url)).toBe(`${SUMMARY_ENDPOINT}?range=today`);
+        /*
+            İddia SIRAYA değil ADRESE bakar.
+
+            Sayfa `docs/84`'ten beri menü mühendisliği raporunu da çekiyor;
+            "ilk çağrı" varsayımı testin niyetiyle ilgisiz bir kırılganlıktı.
+            Ölçülmek istenen şey, ÖZET ucunun doğru aralıkla çağrılması.
+        */
+        const urls = fetchSpy.mock.calls.map((call) => String(call[0]));
+        expect(urls).toContain(`${SUMMARY_ENDPOINT}?range=today`);
     });
 
     it('offers Today, Last 7 days, and Last 30 days range options', () => {
@@ -311,7 +318,18 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         await waitFor(() =>
             expect(fetchSpy).toHaveBeenCalledWith(`${SUMMARY_ENDPOINT}?range=today`),
         );
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+        /*
+            İddia ÖZET ucunu sayar, sayfanın toplam isteğini değil.
+
+            "Tam bir istek" yazıldığı gün sayfanın tek veri kaynağı vardı;
+            ölçülmek istenen şey, tazelemenin özeti İKİ KEZ istememesiydi.
+            `docs/84` ile sayfa menü mühendisliği raporunu da tazeliyor —
+            sahip "Tazele"ye bastığında sayfanın tamamı tazelenmeli.
+        */
+        expect(
+            fetchSpy.mock.calls.filter((call) => String(call[0]).includes('/analytics/summary')),
+        ).toHaveLength(1);
     });
 
     it('disables the Refresh action with truthful loading while the refresh request is pending', async () => {
