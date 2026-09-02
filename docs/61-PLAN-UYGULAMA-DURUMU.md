@@ -249,9 +249,9 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | P1-01 | Fiyat/deneme/destek yüzeyi | ⬜ (fiyat kararı sahipte) |
 | P1-02 | Gerçek ödeme | ⛔ Iyzico anahtarları sahibinde |
 | P1-03 | QR hedefi değiştirme + yeniden etkinleştirme | ✅ `docs/81` |
-| P1-04 | "Tükendi" durumu | ⬜ |
+| P1-04 | "Tükendi" durumu | ✅ `docs/82` |
 | P1-05 | Yayın geri alma | ✅ `docs/81` |
-| P1-06 | Misafir dil seçimi | ⬜ |
+| P1-06 | Misafir dil seçimi | 🔶 `guest` kataloğu açıldı (`docs/82`) |
 | P1-07 | Profil/şifre/rol bakımı | ⬜ |
 | P1-08 | Ürün seviyesi analitik | ⬜ |
 

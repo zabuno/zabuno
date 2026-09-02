@@ -41,6 +41,8 @@ type MenuItemRow = {
     isVisible: boolean;
     description?: string | null;
     imageMediaAssetId?: number | null;
+    /** "Bugün tükendi" — GÖRÜNÜRLÜKTEN ayrı bir eksen (`docs/82`). */
+    outOfStock?: boolean;
 };
 
 /** Panelde seçilebilecek, İŞLENMESİ BİTMİŞ bir görsel. */
@@ -110,6 +112,10 @@ function categoryUrl(workspaceId: number, categoryId: number): string {
 
 function menuItemImageUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/image`;
+}
+
+function stockUrl(workspaceId: number, menuItemId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/stock`;
 }
 
 function exportUrl(workspaceId: number, menuId: number): string {
@@ -323,6 +329,8 @@ export function MenuCatalogWorkspace({
         rejectedRows: { line: number; reason: string }[];
     } | null>(null);
     const [importError, setImportError] = useState<string | null>(null);
+
+    const [stockPending, setStockPending] = useState<Record<number, boolean>>({});
 
     const [visibilityPending, setVisibilityPending] = useState<Record<number, boolean>>({});
     const [visibilityErrors, setVisibilityErrors] = useState<Record<number, string | null>>({});
@@ -631,6 +639,52 @@ export function MenuCatalogWorkspace({
             setImportError(t('menu.import.error'));
         } finally {
             setImporting(false);
+        }
+    }
+
+    /**
+     * "Bugün tükendi" işaretler.
+     *
+     * YAYIN GEREKTİRMEZ (`docs/82`): balık servis sırasında biter ve yayın
+     * beklemek hem yavaş hem tehlikelidir — taslakta yarım kalmış bir fiyat
+     * düzenlemesi de canlıya giderdi.
+     */
+    async function handleToggleStock(item: MenuItemRow) {
+        setStockPending((current) => ({ ...current, [item.id]: true }));
+        setOperationError(null);
+
+        const next = item.outOfStock !== true;
+
+        try {
+            const response = await postJson(
+                stockUrl(workspaceId, item.id),
+                { outOfStock: next },
+                'PUT',
+            );
+
+            if (!response.ok) {
+                setOperationError(await parseErrorMessage(response, t('menu.ops.error')));
+
+                return;
+            }
+
+            setTree((current) =>
+                current === null
+                    ? current
+                    : {
+                          ...current,
+                          categories: current.categories.map((category) => ({
+                              ...category,
+                              menuItems: category.menuItems.map((row) =>
+                                  row.id === item.id ? { ...row, outOfStock: next } : row,
+                              ),
+                          })),
+                      },
+            );
+        } catch {
+            setOperationError(t('menu.ops.error'));
+        } finally {
+            setStockPending((current) => ({ ...current, [item.id]: false }));
         }
     }
 
@@ -1466,6 +1520,25 @@ export function MenuCatalogWorkspace({
                                                     onClick={() => handleEditPrice(item)}
                                                 >
                                                     {t('menu.item.price.edit.short')}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={inlineActionClass}
+                                                    disabled={stockPending[item.id] === true}
+                                                    aria-pressed={item.outOfStock === true}
+                                                    aria-label={t(
+                                                        item.outOfStock === true
+                                                            ? 'menu.item.stock.back.button'
+                                                            : 'menu.item.stock.out.button',
+                                                        { name: item.productName ?? '' },
+                                                    )}
+                                                    onClick={() => void handleToggleStock(item)}
+                                                >
+                                                    {t(
+                                                        item.outOfStock === true
+                                                            ? 'menu.item.stock.back.short'
+                                                            : 'menu.item.stock.out.short',
+                                                    )}
                                                 </button>
                                                 <button
                                                     type="button"

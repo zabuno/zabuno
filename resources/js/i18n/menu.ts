@@ -54,6 +54,12 @@ const en = {
     'menu.item.price.edit.button': 'Edit price for {name}',
     'menu.item.allergens.edit.short': 'Allergens',
     'menu.item.price.edit.short': 'Price',
+    // "Bugün tükendi" (`docs/82`) — GÖRÜNÜRLÜKTEN ayrı bir eksen. Gizli bir
+    // ürün menüde yoktur; tükenmiş bir ürün menüde vardır ama bugün alınamaz.
+    'menu.item.stock.out.short': 'Sold out',
+    'menu.item.stock.back.short': 'Back in stock',
+    'menu.item.stock.out.button': 'Mark {name} sold out for today',
+    'menu.item.stock.back.button': 'Mark {name} available again',
     // Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
     'menu.export.download': 'Download menu (CSV)',
     'menu.import.label': 'Import a CSV menu',

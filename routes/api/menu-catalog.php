@@ -19,7 +19,9 @@ use App\Http\Controllers\MenuCatalog\StoreMenuItemController;
 use App\Http\Controllers\MenuCatalog\StoreProductController;
 use App\Http\Controllers\MenuCatalog\UpdateMenuItemAllergensController;
 use App\Http\Controllers\MenuCatalog\UpdateMenuItemPriceController;
+use App\Http\Controllers\MenuCatalog\UpdateMenuItemStockController;
 use App\Http\Controllers\MenuCatalog\UpdateMenuItemVisibilityController;
+use App\Http\Controllers\MenuCatalog\UpdateMenuStockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
@@ -48,6 +50,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/workspaces/{workspace}/menu-items/{menuItem}', DeleteMenuItemController::class);
     // Ürüne fotoğraf bağlar; `null` bağı kaldırır (`docs/77`).
     Route::put('/workspaces/{workspace}/menu-items/{menuItem}/image', BindMenuItemImageController::class);
+
+    /*
+        "Bugün tükendi" (`docs/82`).
+
+        Görünürlükten AYRI bir eksen ve yayın gerektirmez: "balık bitti"
+        servis sırasında geçerli, dakikalık bir gerçektir.
+    */
+    Route::put('/workspaces/{workspace}/menu-items/{menuItem}/stock', UpdateMenuItemStockController::class);
+    Route::put('/workspaces/{workspace}/menu/{menu}/stock', UpdateMenuStockController::class);
 
     /*
         Menüyü almak ve geri koymak (`docs/80`).
