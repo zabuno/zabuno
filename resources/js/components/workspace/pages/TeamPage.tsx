@@ -9,6 +9,7 @@ import {
     type TeamMember,
     type TeamMemberListStatus,
     type TeamMemberRemoveOutcome,
+    type TeamMemberRoleOutcome,
     type TeamMemberTransferOutcome,
 } from './team/TeamMemberList';
 import {
@@ -194,6 +195,49 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
             return null;
         }
     }, [workspaceId]);
+
+    /**
+     * Yanlış verilmiş bir rolü düzeltir — `docs/83` (P1-07).
+     *
+     * Liste sunucudan YENİDEN OKUNUR: rol değişikliği anında etkilidir ve
+     * ekrandaki değerin sunucudakiyle ayrışması, sahibi olmayan bir yetkiye
+     * güvendirirdi.
+     */
+    const changeMemberRole = useCallback(
+        async (memberId: number, role: string): Promise<TeamMemberRoleOutcome> => {
+            if (workspaceId === undefined) {
+                return 'error';
+            }
+
+            try {
+                await bootstrapCsrfCookie();
+
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/team/members/${memberId}/role`,
+                    {
+                        ...buildAuthRequestInit({ method: 'PUT' }),
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ role }),
+                    },
+                );
+
+                if (!response.ok) {
+                    return 'error';
+                }
+
+                setMembers((current) =>
+                    current.map((member) =>
+                        member.id === memberId ? { ...member, role } : member,
+                    ),
+                );
+
+                return 'success';
+            } catch {
+                return 'error';
+            }
+        },
+        [workspaceId],
+    );
 
     const removeMember = useCallback(
         async (memberId: number): Promise<TeamMemberRemoveOutcome> => {
@@ -528,6 +572,13 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                     errorText={t('workspace.team.members.error')}
                     emptyText={t('workspace.team.members.empty')}
                     onRemoveMember={removeMember}
+                    onChangeRole={changeMemberRole}
+                    assignableRoles={[
+                        { value: 'editor', label: t('workspace.team.invite.role.editor') },
+                        { value: 'manager', label: t('workspace.team.invite.role.manager') },
+                    ]}
+                    roleLabelFor={(name) => t('workspace.team.members.role.label', { name })}
+                    roleErrorText={t('workspace.team.members.role.error')}
                     removeButtonText={t('workspace.team.members.remove.button')}
                     removeConfirmText={t('workspace.team.members.remove.confirm')}
                     removeCancelText={t('workspace.team.members.remove.cancel')}

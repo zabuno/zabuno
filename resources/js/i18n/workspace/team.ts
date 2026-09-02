@@ -3,6 +3,11 @@ export const team = {
     'workspace.team.invite.email': 'Invite by email',
     'workspace.team.invite.role.owner': 'Owner',
     'workspace.team.invite.role.label': 'Role',
+    // Rol DÜZELTME (`docs/83`, P1-07). Rol ADLARI yeniden kullanılır: aynı
+    // rolün iki farklı etiketi olsaydı, davet ekranıyla üye listesi
+    // birbirini yalanlardı.
+    'workspace.team.members.role.label': 'Role for {name}',
+    'workspace.team.members.role.error': 'The role could not be changed.',
     'workspace.team.invite.role.editor': 'Editor',
     // Rolün NE YAPABİLDİĞİ yazılır: "Editor" kelimesi tek başına yayınlayıp
     // yayınlayamayacağını söylemez (docs/70).

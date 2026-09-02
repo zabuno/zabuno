@@ -1796,8 +1796,64 @@ msgstr ""
 msgid "workspace.qrCodes.operational.description"
 msgstr ""
 
+#: workspace:workspace.settings.account.name.error
+msgid "workspace.settings.account.name.error"
+msgstr ""
+
+#: workspace:workspace.settings.account.name.label
+msgid "workspace.settings.account.name.label"
+msgstr ""
+
+#: workspace:workspace.settings.account.name.saved
+msgid "workspace.settings.account.name.saved"
+msgstr ""
+
+#: workspace:workspace.settings.account.name.submit
+msgid "workspace.settings.account.name.submit"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.confirm
+msgid "workspace.settings.account.password.confirm"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.current
+msgid "workspace.settings.account.password.current"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.error
+msgid "workspace.settings.account.password.error"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.help
+msgid "workspace.settings.account.password.help"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.next
+msgid "workspace.settings.account.password.next"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.saved
+msgid "workspace.settings.account.password.saved"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.submit
+msgid "workspace.settings.account.password.submit"
+msgstr ""
+
+#: workspace:workspace.settings.account.password.title
+msgid "workspace.settings.account.password.title"
+msgstr ""
+
+#: workspace:workspace.settings.account.region
+msgid "workspace.settings.account.region"
+msgstr ""
+
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
+msgstr ""
+
+#: workspace:workspace.settings.tab.account
+msgid "workspace.settings.tab.account"
 msgstr ""
 
 #: workspace:workspace.settings.tab.billing
@@ -2050,6 +2106,14 @@ msgstr ""
 
 #: workspace:workspace.team.members.remove.success
 msgid "workspace.team.members.remove.success"
+msgstr ""
+
+#: workspace:workspace.team.members.role.error
+msgid "workspace.team.members.role.error"
+msgstr ""
+
+#: workspace:workspace.team.members.role.label
+msgid "workspace.team.members.role.label"
 msgstr ""
 
 #: workspace:workspace.team.members.transfer.body

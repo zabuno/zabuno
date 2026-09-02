@@ -9,12 +9,16 @@ use App\Http\Controllers\Team\ListTeamMembersController;
 use App\Http\Controllers\Team\RemoveTeamMemberController;
 use App\Http\Controllers\Team\StoreTeamInvitationController;
 use App\Http\Controllers\Team\TransferWorkspaceOwnershipController;
+use App\Http\Controllers\Team\UpdateTeamMemberRoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/team/members', ListTeamMembersController::class);
     Route::delete('/workspaces/{workspace}/team/members/{member}', RemoveTeamMemberController::class)->middleware('throttle:5,1');
     Route::post('/workspaces/{workspace}/team/members/{member}/transfer-ownership', TransferWorkspaceOwnershipController::class)->middleware('throttle:5,1');
+    // Yanlış verilmiş bir rolü düzeltmek, üyeyi silip yeniden davet etmeyi
+    // gerektirmemeli (`docs/83`).
+    Route::put('/workspaces/{workspace}/team/members/{member}/role', UpdateTeamMemberRoleController::class)->middleware('throttle:10,1');
 
     Route::get('/workspaces/{workspace}/team/invitations', ListTeamInvitationsController::class);
     Route::post('/workspaces/{workspace}/team/invitations', StoreTeamInvitationController::class)->middleware('throttle:5,1');

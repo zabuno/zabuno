@@ -35,6 +35,27 @@ export const shell = {
         'Your brand details and your plan. These are set up once and rarely change.',
     'workspace.settings.tabs.label': 'Settings sections',
     'workspace.settings.tab.brand': 'Brand',
+    // HESAP BAKIMI (`docs/83`, P1-07). Kullanıcı kendi hesabını kendi onarır;
+    // yanlış yazılmış bir ad için destek talebi açmak zorunda kalmak, ürünün
+    // "kendi kendine yeter" iddiasını her gün çürütür.
+    'workspace.settings.tab.account': 'Account',
+    'workspace.settings.account.region': 'Your account',
+    'workspace.settings.account.name.label': 'Your name',
+    'workspace.settings.account.name.submit': 'Save name',
+    'workspace.settings.account.name.saved': 'Your name was saved.',
+    'workspace.settings.account.name.error': 'Your name could not be saved.',
+    'workspace.settings.account.password.title': 'Change password',
+    // Diğer oturumların kapanacağı ÖNCEDEN söylenir: sürpriz bir çıkış,
+    // kullanıcıya ürünün bozulduğunu düşündürür.
+    'workspace.settings.account.password.help':
+        'Changing your password signs you out everywhere else. This device stays signed in.',
+    'workspace.settings.account.password.current': 'Current password',
+    'workspace.settings.account.password.next': 'New password',
+    'workspace.settings.account.password.confirm': 'Repeat new password',
+    'workspace.settings.account.password.submit': 'Change password',
+    'workspace.settings.account.password.saved': 'Your password was changed.',
+    'workspace.settings.account.password.error':
+        'Your password could not be changed. Check your current password and try again.',
     'workspace.settings.tab.billing': 'Plan & billing',
     'workspace.qrCodes.operational.description':
         'Create and print the QR codes your guests scan to open the menu.',
