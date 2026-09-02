@@ -204,12 +204,25 @@ final class PublicationIdentityTest extends TestCase
             'categories' => [],
         ]])->render();
 
-        self::assertStringNotContainsString('güncel yayınlanmış sürüm', $named);
+        /*
+            İddia ELEMENTE bakar, ham metne değil.
+
+            Sayfa `docs/85`'ten beri metin haritasını JSON olarak taşıyor ve
+            harita bütün dizeleri içeriyor — gösterilmeyenleri de. Ham metin
+            araması, "misafir bunu OKUYOR MU" sorusunu artık cevaplamıyor.
+        */
+        self::assertDoesNotMatchRegularExpression(
+            '#<p class="qr-menu-subtitle">#',
+            $named,
+        );
 
         // Ad bilinmiyorsa misafir hiç değilse NE baktığını okur.
         $anonymous = view('public-menu', ['snapshot' => ['categories' => []]])->render();
 
-        self::assertStringContainsString('güncel yayınlanmış sürüm', $anonymous);
+        self::assertMatchesRegularExpression(
+            '#<p class="qr-menu-subtitle">\s*Yayınlanan menü#u',
+            $anonymous,
+        );
     }
 
     // --- PUB-IDENTITY-ABSENT-01 -------------------------------------------

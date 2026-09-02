@@ -1,25 +1,52 @@
 /**
  * MİSAFİR YÜZEYİ kataloğu — masadaki karekodu okutan kişinin okuduğu metin.
  *
- * KAYNAK DİL TÜRKÇE. Diğer kataloglar İngilizce kaynaklıdır ve bu bilinçli
- * bir ayrım:
+ * `docs/82` ile açıldı, `docs/85` (P1-06) ile misafir sayfasının TAMAMINI
+ * devraldı: artık şablonda tek bir sabit kullanıcı metni yok.
  *
- *   - Panel metinleri ÜRÜNÜN dilidir; ürün İngilizce kaynaktan çevrilir.
- *   - Misafir sayfası RESTORANIN dilidir. Ürün adlarını restoran kendi
- *     dilinde yazar (`contentLocale`), ve bu sayfadaki her metin bugün
- *     zaten Türkçedir.
+ * KAYNAK DİL İNGİLİZCE — diğer bütün alanlarla aynı. İlk denemede kaynağı
+ * Türkçe yapmıştım; boru hattı `en`'i kaynak saydığı için `tr` çevirisi boş
+ * kalıyor ve İngilizceye geçen misafire de Türkçe gösteriliyordu. Yani dil
+ * seçici çalışıyor gibi görünüp yalan söylerdi.
  *
- * Kaynağı İngilizce yapmak, çeviri dosyası doldurulana kadar Türk bir
- * restoranın menüsünde İngilizce bir cümle gösterirdi — var olmayan bir
- * sorunu çözmek için gerçek bir gerileme.
- *
- * Bu katalog `docs/82` ile AÇILDI ve `docs/xx` (P1-06, misafir dil seçimi)
- * ile misafir sayfasının tamamını devralacak. Bugün tek anahtar taşıyor.
+ * Sayfanın bugüne kadar taşıdığı Türkçe cümleler `lang/po/guest.tr.po`
+ * içine OLDUĞU GİBİ taşındı: bunlar çeviri değil, ürünün zaten sahip olduğu
+ * metinler.
  */
 export const guestTranslations = {
     // Tükendi METİNLE söylenir; yalnız renk ya da soluklukla anlatmak, renk
     // göremeyen misafir için hiçbir şey anlatmaz (WCAG 1.4.1).
-    'guest.menu.item.soldOut': 'Bugün tükendi',
+    'guest.menu.item.soldOut': 'Sold out today',
+
+    // Sayfa kendi kimliğini söyleyemiyorsa misafire hiç değilse ne baktığını
+    // anlatır (`docs/79`).
+    'guest.menu.subtitle': 'Published menu — showing the current published version.',
+    'guest.menu.summary': '{categories} categories, {items} dishes',
+    'guest.menu.categories.label': 'Categories',
+    'guest.menu.empty': 'This menu has no categories yet.',
+    'guest.menu.category.empty': 'This category has no dishes yet.',
+
+    'guest.search.label': 'Search the menu',
+    'guest.search.placeholder': 'Type a dish name',
+    'guest.search.noMatch': 'No dish matched.',
+    'guest.search.matched': '{count} dishes matched.',
+
+    'guest.pwa.install': 'Install the app',
+    'guest.pwa.installAccepted': 'Installation accepted.',
+    'guest.pwa.installDismissed': 'Installation dismissed.',
+    'guest.pwa.installed': 'The app was installed.',
+    'guest.pwa.offline': 'You are offline; showing the last menu you viewed.',
+
+    // DİL SEÇİMİ (`docs/85`, P1-06).
+    'guest.language.label': 'Language',
+    /*
+        İÇERİK çevirisi ARAYÜZ çevirisi değildir.
+
+        Ürün adlarını restoran kendi dilinde yazar ve onları çevirmiyoruz.
+        Arayüzü İngilizceye alan bir misafire menünün de İngilizce olacağını
+        ima etmek, tutulmayacak bir söz vermek olurdu.
+    */
+    'guest.language.contentNotice': 'Dish names are in the restaurant’s own language.',
 } as const;
 
 export type GuestTranslationKey = keyof typeof guestTranslations;

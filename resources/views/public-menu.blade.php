@@ -40,13 +40,39 @@
        Yayından bağımsız okunur; snapshot değişmez. */
     $soldOut = array_flip(array_map('intval', $outOfStockItemIds ?? []));
 
+    $categories = $snapshot['categories'] ?? [];
+    $categoryCount = count($categories);
+    $itemCount = 0;
+
+    foreach ($categories as $category) {
+        $itemCount += count($category['menuItems'] ?? []);
+    }
+
+    /* Metin ŞABLONDA değil KATALOGDA yaşar (`docs/85`): Blade'e yazılan bir
+       cümleyi sahip hiçbir PO dosyasından çeviremez.
+   
+       Harita verilmediyse görünüm ONU KENDİ ÇÖZER. Aksi hâlde haritayı
+       geçirmeyi unutan bir çağıran, sayfayı sessizce BOŞ ETİKETLERLE
+       basardı — ve bu, ekranda görülene kadar fark edilmezdi. */
+    $gt = $guestText ?? app(\App\Support\Localization\GuestText::class)->all(
+        $guestLocale ?? $contentLocale ?? 'tr',
+        $categoryCount,
+        $itemCount,
+    );
+
+    $text = static fn (string $key): string => (string) ($gt[$key] ?? '');
+
     $headline = $identity?->brandName ?: trim((string) ($fallbackBrandName ?? ''));
     $documentTitle = $headline !== '' ? $headline : 'Menü';
 @endphp
 {{-- Dil, UYGULAMANIN değil MENÜNÜN dilidir: ürün adlarını restoran kendi
      dilinde yazar. Yanlış `lang`, ekran okuyucunun metni yanlış telaffuz
      etmesine ve arama motorunun sayfayı yanlış dile atamasına yol açar. --}}
-<html lang="{{ $contentLocale ?? \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
+{{-- `lang` ARAYÜZ dilidir; menü içeriği kendi dilini ayrıca taşır
+     (aşağıdaki kategori listesinde). İkisini tek etikete sıkıştırmak, ekran
+     okuyucunun ya arayüzü ya ürün adlarını yanlış telaffuz etmesi demekti
+     (`docs/85`). --}}
+<html lang="{{ $guestLocale ?? $contentLocale ?? \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ isset($guestLocale) ? \App\Support\Localization\GuestLocale::direction($guestLocale) : \App\Support\Localization\DocumentLocale::direction() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -136,6 +162,26 @@
         .qr-menu-subtitle {
             margin: 0;
             font-size: 0.9rem;
+            color: var(--qr-muted);
+        }
+
+        .qr-menu-language {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .qr-menu-language a {
+            color: inherit;
+        }
+
+        .qr-menu-language [aria-current='true'] {
+            font-weight: 600;
+        }
+
+        .qr-menu-content-notice {
+            margin: 0;
+            font-size: 0.8rem;
             color: var(--qr-muted);
         }
 
@@ -347,20 +393,11 @@
 </head>
 <body>
 <div class="pwa-bar">
-    <button type="button" id="pwa-install-button" hidden>Uygulamayı yükle</button>
+    <button type="button" id="pwa-install-button" hidden>{{ $text('installButton') }}</button>
     <span id="pwa-install-status" role="status" aria-live="polite"></span>
     <span id="pwa-offline-status" role="status" aria-live="polite"></span>
 </div>
-<main role="main"@isset($menuKey) data-menu-key="{{ $menuKey }}"@endisset>
-    @php
-        $categories = $snapshot['categories'] ?? [];
-        $categoryCount = count($categories);
-        $itemCount = 0;
-        foreach ($categories as $category) {
-            $itemCount += count($category['menuItems'] ?? []);
-        }
-    @endphp
-
+<main role="main" @isset($menuKey) data-menu-key="{{ $menuKey }}" @endisset>
     <header class="qr-menu-header">
         {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
              Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı
@@ -403,14 +440,39 @@
              sorduğu bir soru değil, bizim kavramımız. Sayfa kendi kimliğini
              söyleyebiliyorsa gereksizdir; söyleyemiyorsa misafire hiç
              değilse ne baktığını anlatır (`docs/79`). --}}
+        @isset($guestLocale)
+            {{-- Dil seçimi düz BAĞLANTIDIR: JavaScript çalışmasa da çalışır ve
+                 seçim sunucuda hatırlanır (çerez), böylece sayfa daha ilk
+                 boyamada doğru dilde gelir.
+
+                 Başlıktan BAĞIMSIZ: restoranın adı bilinsin bilinmesin,
+                 misafirin dili değiştirebilmesi gerekir. --}}
+            <nav class="qr-menu-language" aria-label="{{ $text('languageLabel') }}">
+                @foreach (\App\Support\Localization\GuestLocale::SUPPORTED as $option)
+                    @if ($option === $guestLocale)
+                        <span aria-current="true">{{ strtoupper($option) }}</span>
+                    @else
+                        <a href="?lang={{ $option }}" rel="nofollow">{{ strtoupper($option) }}</a>
+                    @endif
+                @endforeach
+            </nav>
+
+            @if ($guestLocale !== ($contentLocale ?? $guestLocale))
+                {{-- İÇERİK çevirisi ARAYÜZ çevirisi değildir: ürün adlarını
+                     restoran kendi dilinde yazar. Bunu söylememek,
+                     tutulmayacak bir söz vermek olurdu. --}}
+                <p class="qr-menu-content-notice">{{ $text('contentNotice') }}</p>
+            @endif
+        @endisset
+
         @if ($headline === '')
-            <p class="qr-menu-subtitle">Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor.</p>
+            <p class="qr-menu-subtitle">{{ $text('subtitle') }}</p>
         @endif
-        <p class="qr-menu-summary">{{ $categoryCount }} kategori, {{ $itemCount }} ürün</p>
+        <p class="qr-menu-summary">{{ $text('summary') }}</p>
     </header>
 
     @if ($categoryCount > 0)
-        <nav class="qr-menu-nav" aria-label="Kategoriler">
+        <nav class="qr-menu-nav" aria-label="{{ $text('categoriesLabel') }}">
             @foreach ($categories as $navIndex => $category)
                 <a href="#category-{{ $navIndex }}">{{ $category['name'] }}</a>
             @endforeach
@@ -418,25 +480,28 @@
     @endif
 
     <div class="qr-menu-search">
-        <label for="menu-search">Menüde ara</label>
-        <input type="search" id="menu-search" name="menu-search" autocomplete="off" placeholder="Ürün adı yazın">
+        <label for="menu-search">{{ $text('searchLabel') }}</label>
+        <input type="search" id="menu-search" name="menu-search" autocomplete="off" placeholder="{{ $text('searchPlaceholder') }}">
         <p id="menu-search-status" role="status" aria-live="polite"></p>
     </div>
 
+    {{-- MENÜ İÇERİĞİ kendi dilini taşır: arayüz İngilizce olsa da ürün
+         adları restoranın dilindedir ve ekran okuyucu onları o dilde
+         telaffuz etmeli (`docs/85`). --}}
     @if ($categoryCount === 0)
-        <p class="qr-menu-empty-state">Bu menüde henüz kategori yok.</p>
+        <p class="qr-menu-empty-state">{{ $text('menuEmpty') }}</p>
     @else
         @foreach ($categories as $categoryIndex => $category)
-            <section class="qr-menu-category" id="category-{{ $categoryIndex }}" data-category>
+            <section class="qr-menu-category" id="category-{{ $categoryIndex }}" data-category @isset($contentLocale) lang="{{ $contentLocale }}" @endisset>
                 <h2 class="qr-menu-category-name">{{ $category['name'] }}</h2>
 
                 @if (empty($category['menuItems']))
-                    <p class="qr-menu-category-empty">Bu kategoride henüz ürün yok.</p>
+                    <p class="qr-menu-category-empty">{{ $text('categoryEmpty') }}</p>
                 @else
                     <ul class="qr-menu-item-list">
                         @foreach ($category['menuItems'] as $item)
                             @php($isSoldOut = isset($item['menuItemId']) && isset($soldOut[(int) $item['menuItemId']]))
-                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}"@isset($item['menuItemId']) data-menu-item-id="{{ $item['menuItemId'] }}"@endisset>
+                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}" @isset($item['menuItemId']) data-menu-item-id="{{ $item['menuItemId'] }}" @endisset>
                                 @if (! empty($item['image']['sources']))
                                     @php($image = $item['image'])
                                     {{-- `loading="lazy"`: kırk ürünlük bir menüde
@@ -460,7 +525,7 @@
                                          ya da soluklukla anlatmak, renk
                                          göremeyen misafir için hiçbir şey
                                          anlatmaz (WCAG 1.4.1). --}}
-                                    <span class="qr-menu-item-sold-out-note">{{ $guestText['soldOut'] ?? 'Bugün tükendi' }}</span>
+                                    <span class="qr-menu-item-sold-out-note">{{ $text('soldOut') }}</span>
                                 @endif
                                 @if (! empty($item['description']))
                                     <span class="qr-menu-item-description">{{ $item['description'] }}</span>
@@ -480,8 +545,25 @@
         @endforeach
     @endif
 </main>
+{{-- Betik gövdesindeki sabitler de KULLANICI METNİDİR (`docs/85`).
+     Harita JSON olarak basılır; betik onu okur ve tek bir cümle bile
+     şablonda kalmaz. --}}
+<script type="application/json" id="guest-text" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($gt, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 <script nonce="{{ $cspNonce ?? '' }}">
     (function () {
+        var TEXT = {};
+
+        try {
+            var textNode = document.getElementById('guest-text');
+            TEXT = textNode ? JSON.parse(textNode.textContent || '{}') : {};
+        } catch (error) {
+            // Metin okunamadıysa arayüz sessiz kalır; menü yine görünür.
+        }
+
+        function say(key) {
+            return TEXT[key] || '';
+        }
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/public-diner-sw.js', { scope: '/menu/' });
             navigator.serviceWorker.register('/public-diner-sw.js', { scope: '/q/' });
@@ -505,19 +587,20 @@
 
             deferredInstallPrompt.prompt();
             deferredInstallPrompt.userChoice.then(function (choice) {
-                installStatus.textContent = choice.outcome === 'accepted' ? 'Yükleme kabul edildi.' : 'Yükleme reddedildi.';
+                installStatus.textContent =
+                        choice.outcome === 'accepted' ? say('installAccepted') : say('installDismissed');
                 deferredInstallPrompt = null;
                 installButton.hidden = true;
             });
         });
 
         window.addEventListener('appinstalled', function () {
-            installStatus.textContent = 'Uygulama yüklendi.';
+            installStatus.textContent = say('installed');
             installButton.hidden = true;
         });
 
         function updateOfflineStatus() {
-            offlineStatus.textContent = navigator.onLine ? '' : 'Çevrimdışısınız, son görüntülenen menü gösteriliyor.';
+            offlineStatus.textContent = navigator.onLine ? '' : say('offline');
         }
 
         window.addEventListener('online', updateOfflineStatus);
@@ -553,9 +636,9 @@
                 if (query === '') {
                     searchStatus.textContent = '';
                 } else if (visibleCount === 0) {
-                    searchStatus.textContent = 'Eşleşen ürün bulunamadı.';
+                    searchStatus.textContent = say('searchNoMatch');
                 } else {
-                    searchStatus.textContent = visibleCount + ' ürün eşleşti.';
+                    searchStatus.textContent = say('searchMatched').replace('{count}', String(visibleCount));
                 }
 
                 reportNoResults(query, visibleCount);

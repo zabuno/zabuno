@@ -16,6 +16,7 @@ use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
 use App\Support\Analytics\VisitorKey;
+use App\Support\Localization\GuestLocale;
 use App\Support\Localization\GuestText;
 use App\Support\Seo\MenuStructuredData;
 use Illuminate\Http\Request;
@@ -95,9 +96,20 @@ final class ShowPublicMenuController extends Controller
             'menuKey' => $address['key'],
             // Metin ŞABLONDA değil KATALOGDA yaşar: Blade'e yazılan bir
             // cümleyi sahip hiçbir PO dosyasından çeviremez (`docs/82`).
-            'guestText' => [
-                'soldOut' => $this->guestText->get('guest.menu.item.soldOut', $address['locale']),
-            ],
+            /*
+                ARAYÜZ dili ile İÇERİK dili AYRIDIR (`docs/85`).
+
+                Ürün adlarını restoran kendi dilinde yazar ve biz onları
+                çevirmiyoruz. Arayüzü İngilizceye alan misafire menünün de
+                İngilizce olacağını ima etmek, tutulmayacak bir söz vermek
+                olurdu.
+            */
+            'guestLocale' => $guestLocale = GuestLocale::resolve($request, $address['locale']),
+            'guestText' => $this->guestText->all(
+                $guestLocale,
+                $this->countCategories($publication->snapshot),
+                $this->countItems($publication->snapshot),
+            ),
             // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
             // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
             // bakar, buraya değil.
@@ -122,7 +134,9 @@ final class ShowPublicMenuController extends Controller
                 ),
                 JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP,
             ),
-        ], 200)->header('X-Robots-Tag', 'noindex, follow');
+        ], 200)
+            ->header('X-Robots-Tag', 'noindex, follow')
+            ->cookie(GuestLocale::COOKIE, $guestLocale, 60 * 24 * 365, '/', null, $request->isSecure(), false, false, 'Lax');
     }
 
     private function notFound(): SymfonyResponse
@@ -130,5 +144,23 @@ final class ShowPublicMenuController extends Controller
         // Tarayıcıda ham JSON gören bir misafir, ürünü bozuk sanır.
         // Yanıt her durumda aynıdır (QR-PUBLIC-404-UNIFORM-01).
         return GuestDeadEnd::respond(request());
+    }
+
+    /** @param  array<string, mixed>  $snapshot */
+    private function countCategories(array $snapshot): int
+    {
+        return count($snapshot['categories'] ?? []);
+    }
+
+    /** @param  array<string, mixed>  $snapshot */
+    private function countItems(array $snapshot): int
+    {
+        $count = 0;
+
+        foreach ($snapshot['categories'] ?? [] as $category) {
+            $count += count($category['menuItems'] ?? []);
+        }
+
+        return $count;
     }
 }
