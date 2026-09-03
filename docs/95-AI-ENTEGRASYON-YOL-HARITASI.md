@@ -55,8 +55,24 @@ somut özellik/takvim ekler.
 ## Sağlayıcı kaydı — bugün ve hedef
 
 Bugün (`app/Domain/Platform/Credential/CredentialProvider.php`) dört
-sağlayıcı tanımlı: `mailgun`, `iyzico`, `openai`, `gemini`. Sorulan listeye
-göre eksik olanlar ve doğru karşılıkları:
+sağlayıcı tanımlı: `mailgun`, `iyzico`, `openai`, `gemini`. Sorulan
+listedeki dördü ayrı ayrı nerede duruyor:
+
+### Zaten kurulu — sorulan listede, kasada, aktif
+
+**Gemini** ve **OpenAI** ikisi de bugün kasada (`CredentialProvider::Gemini`,
+`CredentialProvider::OpenAi`), FF-37…FF-41'de teslim edildi. Yalnız
+"kayıtlı" değiller — **Gemini, görüntü-okuma zincirinde birincil aday**:
+`docs/51` §4b.1 sırayı açıkça veriyor, "görme yeteneği Gemini'de başlar
+(ucuz, güçlü), yetmezse OpenAI, en son Claude." Bugün kod yalnız OpenAI
+adaptörünü çalıştırıyor (`OpenAiVisionProvider`, FF-41) — Gemini'nin kendi
+adaptörü henüz yazılmadı, ama kasadaki yeri ve sıradaki önceliği (OpenAI'dan
+ÖNCE) zaten kayıtlı. Bunu aşağıya, "eksik" tablosunun dışında ayrı bir madde
+olarak ekliyorum çünkü bu bir sağlayıcı-ekleme işi değil, **var olan
+sağlayıcının ikinci bir portta (VisionExtractionPort) devreye alınması** —
+küçük iş, Faz 3'ü beklemez.
+
+### Sorulan listede olup henüz eksik
 
 | Sorulan | Doktrindeki karşılığı | Faz |
 | --- | --- | --- |
@@ -99,11 +115,16 @@ ile sınamaktır.
 yazılmadı):** çeviri taslağı (`opt-22-ai-translation`), ürün açıklaması
 taslağı (`opt-23-ai-product-description`, alerjen alanına asla yazmaz),
 taksonomi yinelenen-terim tespiti (`EmbeddingPort`, yerel-first, `docs/51`
-§4.4). Bunlar `StructuredGenerationPort`/`EmbeddingPort` üzerinden mevcut
-kasayı kullanır — yeni bir sağlayıcı/hesap mimarisi gerektirmezler.
+§4.4), ve **Gemini görüntü-okuma adaptörü** (`GeminiVisionProvider` —
+`OpenAiVisionProvider`'ın FF-41'de kurulan kalıbını izler; kasadaki `gemini`
+satırı zaten hazır, yalnız adaptör kodu yok). Sıra önemli: `docs/51` §4b.1
+görme zincirini Gemini→OpenAI→Claude olarak sıralıyor, bugün yalnız OpenAI
+bağlı — Gemini asıl **birincil** aday olduğu için bu maddenin önceliği
+diğer ikisinden yüksek. Bunların hiçbiri yeni bir sağlayıcı/hesap mimarisi
+gerektirmez, mevcut kasayı kullanır.
 
-**Tetikleyici:** yok, kasa hazır; bu üç yetenek ne zaman istenirse test-first
-eklenir.
+**Tetikleyici:** yok, kasa hazır; bu dört yetenek ne zaman istenirse
+test-first eklenir — Gemini adaptörü önce.
 
 ## Faz 3 — Çok-hesap / BYOK + yeni sağlayıcılar (Stage 3 — GTM)
 
