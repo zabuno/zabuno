@@ -4,7 +4,11 @@ import { t } from '../../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { QrDestinationFieldsRegion } from './QrDestinationFieldsRegion';
 import { QrPrintExportRegion } from './QrPrintExportRegion';
-import { QrCodeListItem, type QrCodeItem } from './qr-destination/QrCodeListItem';
+import {
+    QrCodeListItem,
+    type QrCodeItem,
+    type RetargetLocation,
+} from './qr-destination/QrCodeListItem';
 
 type QrDestinationRegionProps = {
     workspaceId: number;
@@ -25,6 +29,85 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
     const [loaded, setLoaded] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [creating, setCreating] = useState(false);
+    /*
+        ŞUBE LİSTESİ — kodu başka şubeye taşımak için (`docs/98` FF-64).
+        "Taşı" istenene kadar YÜKLENMEZ: kodların çoğu hiç taşınmaz ve her
+        açılışta bir istek daha atmak, taşımayan sahibe bedel ödetirdi.
+        Bir kez gelince saklanır.
+    */
+    const [locations, setLocations] = useState<RetargetLocation[] | null>(null);
+    const [movingId, setMovingId] = useState<number | null>(null);
+
+    const handleStartMove = useCallback(
+        async (qrCodeId: number) => {
+            setMovingId(qrCodeId);
+            if (locations !== null) return;
+
+            try {
+                const response = await fetch(`/api/workspaces/${workspaceId}/brand/locations`, {
+                    credentials: 'include',
+                    headers: { Accept: 'application/json' },
+                });
+                if (!response.ok) {
+                    setLocations([]);
+                    return;
+                }
+                const body = (await response.json()) as unknown;
+                setLocations(
+                    Array.isArray(body)
+                        ? body.map((row) => ({
+                              id: Number((row as { id: number }).id),
+                              displayName: String(
+                                  (row as { display_name?: string }).display_name ?? '',
+                              ),
+                          }))
+                        : [],
+                );
+            } catch {
+                setLocations([]);
+            }
+        },
+        [workspaceId, locations],
+    );
+
+    const handleRetarget = useCallback(
+        async (qrCodeId: number, locationId: number) => {
+            try {
+                await bootstrapCsrfCookie();
+
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/qr-codes/${qrCodeId}/destination`,
+                    buildAuthRequestInit({
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ locationId }),
+                    }),
+                );
+
+                if (response.ok) {
+                    const updated = (await response.json()) as Partial<QrCodeItem>;
+                    setItems((prev) =>
+                        prev.map((item) =>
+                            item.id === qrCodeId
+                                ? {
+                                      ...item,
+                                      locationId: updated.locationId ?? locationId,
+                                      menuId: updated.menuId ?? item.menuId,
+                                  }
+                                : item,
+                        ),
+                    );
+                    setErrorMessage(null);
+                    setMovingId(null);
+                } else {
+                    setErrorMessage(t('workspace.publication.qrDestination.move.error'));
+                }
+            } catch {
+                setErrorMessage(t('workspace.publication.qrDestination.move.error'));
+            }
+        },
+        [workspaceId],
+    );
 
     const listUrl = `/api/workspaces/${workspaceId}/brand/locations/${locationId}/qr-codes`;
 
@@ -217,6 +300,17 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                             item={item}
                             onDisable={handleDisable}
                             onEnable={handleEnable}
+                            moving={movingId === item.id}
+                            otherLocations={
+                                locations === null
+                                    ? null
+                                    : locations.filter(
+                                          (location) => location.id !== item.locationId,
+                                      )
+                            }
+                            onStartMove={(id) => void handleStartMove(id)}
+                            onCancelMove={() => setMovingId(null)}
+                            onRetarget={handleRetarget}
                         />
                     ))}
                 </ul>

@@ -21,6 +21,12 @@ interface MenuMediaPort
     public function bindBrandLogo(int $workspaceId, int $brandId, ?int $mediaAssetId): bool;
 
     /**
+     * TASLAKTA bağlı varlığın kimliği — ekranın "şu an hangi logo seçili"
+     * sorusuna cevabı (`docs/98` FF-64). Yayına yazılmış satırlara bakmaz.
+     */
+    public function draftAssetId(int $workspaceId, string $entityType, int $entityId): ?int;
+
+    /**
      * Yayına yazılacak görsel bloğu: sürüm kimliği, alternatif metin,
      * ölçüler ve her genişlik için değişmez adres.
      *

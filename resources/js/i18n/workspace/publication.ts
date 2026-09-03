@@ -66,6 +66,17 @@ export const publication = {
     'workspace.publication.qrDestination.loadError': 'Could not load QR codes. Try again.',
     'workspace.publication.qrDestination.createError': 'Could not create QR code. Try again.',
     'workspace.publication.qrDestination.disableError': 'Could not disable QR code. Try again.',
+    // KODU BAŞKA ŞUBEYE TAŞI (`docs/81` P1-03; ekranı `docs/98` FF-64).
+    'workspace.publication.qrDestination.move.start': 'Move to another location',
+    'workspace.publication.qrDestination.move.loading': 'Loading locations…',
+    'workspace.publication.qrDestination.move.noOther':
+        'This is your only location — there is nowhere else to move the code.',
+    'workspace.publication.qrDestination.move.cancel': 'Cancel',
+    'workspace.publication.qrDestination.move.label': 'Move this code to',
+    'workspace.publication.qrDestination.move.choose': 'Choose a location…',
+    'workspace.publication.qrDestination.move.button': 'Move',
+    'workspace.publication.qrDestination.move.error':
+        'The code could not be moved. The printed card still works as before.',
     'workspace.publication.qrDestination.state.disabled': 'Disabled',
     'workspace.publication.qrExport.region': 'QR print export',
     'workspace.publication.qrExport.unavailable': 'QR print export is not available yet.',

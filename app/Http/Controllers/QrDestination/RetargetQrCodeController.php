@@ -51,16 +51,25 @@ final class RetargetQrCodeController extends Controller
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
+        /*
+            Hedef iki biçimde söylenebilir: menü kimliği ya da ŞUBE kimliği.
+            Şube başına tek menü olduğu için ikisi aynı şeydir; ama ekranın
+            elinde şube listesi var, menü kimlikleri değil — her şube için
+            ayrı bir menü isteği atmak, "kodu taşı" gibi tek bir işi N isteğe
+            çevirirdi (`docs/98` FF-64).
+        */
         $validated = $request->validate([
-            'menuId' => ['required', 'integer', 'min:1'],
+            'menuId' => ['required_without:locationId', 'integer', 'min:1'],
+            'locationId' => ['required_without:menuId', 'integer', 'min:1'],
         ]);
 
-        $menuId = (int) $validated['menuId'];
+        $menuQuery = DB::table('menus')->where('workspace_id', $workspace);
 
-        $menu = DB::table('menus')
-            ->where('id', $menuId)
-            ->where('workspace_id', $workspace)
-            ->first();
+        $menu = isset($validated['menuId'])
+            ? $menuQuery->where('id', (int) $validated['menuId'])->first()
+            : $menuQuery->where('location_id', (int) $validated['locationId'])->first();
+
+        $menuId = $menu === null ? 0 : (int) $menu->id;
 
         // Menü BU çalışma alanının olmalı; olmazsa 404 — başka bir
         // restoranın menüsünün varlığı bile sızmamalı.

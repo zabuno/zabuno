@@ -524,6 +524,46 @@ msgstr "Locale"
 msgid "workspace.brand.locale.help"
 msgstr "The main language of your menu content. You can add more languages later."
 
+#: workspace:workspace.brand.logo.choose
+msgid "workspace.brand.logo.choose"
+msgstr "Choose a logo"
+
+#: workspace:workspace.brand.logo.empty
+msgid "workspace.brand.logo.empty"
+msgstr "No processed logo yet. Upload one on the Media page (slot: Logo) first."
+
+#: workspace:workspace.brand.logo.error
+msgid "workspace.brand.logo.error"
+msgstr "The logo could not be saved. Try again."
+
+#: workspace:workspace.brand.logo.heading
+msgid "workspace.brand.logo.heading"
+msgstr "Logo"
+
+#: workspace:workspace.brand.logo.help
+msgid "workspace.brand.logo.help"
+msgstr "Shown at the top of your guest menu next to the brand name. Upload the file on the Media page (slot: Logo), then pick it here."
+
+#: workspace:workspace.brand.logo.loading
+msgid "workspace.brand.logo.loading"
+msgstr "Loading your logos…"
+
+#: workspace:workspace.brand.logo.none
+msgid "workspace.brand.logo.none"
+msgstr "No logo"
+
+#: workspace:workspace.brand.logo.save
+msgid "workspace.brand.logo.save"
+msgstr "Use this logo"
+
+#: workspace:workspace.brand.logo.saved
+msgid "workspace.brand.logo.saved"
+msgstr "Logo saved. It goes live with your next publish."
+
+#: workspace:workspace.brand.logo.saving
+msgid "workspace.brand.logo.saving"
+msgstr "Saving…"
+
 #: workspace:workspace.brand.market
 msgid "workspace.brand.market"
 msgstr "Main market"
@@ -1507,6 +1547,38 @@ msgstr "Could not load QR codes. Try again."
 #: workspace:workspace.publication.qrDestination.loading
 msgid "workspace.publication.qrDestination.loading"
 msgstr "Loading QR codes…"
+
+#: workspace:workspace.publication.qrDestination.move.button
+msgid "workspace.publication.qrDestination.move.button"
+msgstr "Move"
+
+#: workspace:workspace.publication.qrDestination.move.cancel
+msgid "workspace.publication.qrDestination.move.cancel"
+msgstr "Cancel"
+
+#: workspace:workspace.publication.qrDestination.move.choose
+msgid "workspace.publication.qrDestination.move.choose"
+msgstr "Choose a location…"
+
+#: workspace:workspace.publication.qrDestination.move.error
+msgid "workspace.publication.qrDestination.move.error"
+msgstr "The code could not be moved. The printed card still works as before."
+
+#: workspace:workspace.publication.qrDestination.move.label
+msgid "workspace.publication.qrDestination.move.label"
+msgstr "Move this code to"
+
+#: workspace:workspace.publication.qrDestination.move.loading
+msgid "workspace.publication.qrDestination.move.loading"
+msgstr "Loading locations…"
+
+#: workspace:workspace.publication.qrDestination.move.noOther
+msgid "workspace.publication.qrDestination.move.noOther"
+msgstr "This is your only location — there is nowhere else to move the code."
+
+#: workspace:workspace.publication.qrDestination.move.start
+msgid "workspace.publication.qrDestination.move.start"
+msgstr "Move to another location"
 
 #: workspace:workspace.publication.qrDestination.region
 msgid "workspace.publication.qrDestination.region"

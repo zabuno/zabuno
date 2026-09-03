@@ -72,6 +72,22 @@ msgstr "{name} sırası"
 msgid "menu.category.select.label"
 msgstr "Kategori"
 
+#: menu:menu.category.stock.back.button
+msgid "menu.category.stock.back.button"
+msgstr ""
+
+#: menu:menu.category.stock.back.short
+msgid "menu.category.stock.back.short"
+msgstr ""
+
+#: menu:menu.category.stock.out.button
+msgid "menu.category.stock.out.button"
+msgstr ""
+
+#: menu:menu.category.stock.out.short
+msgid "menu.category.stock.out.short"
+msgstr ""
+
 #: menu:menu.create.error.submit
 msgid "menu.create.error.submit"
 msgstr "Menüyü oluşturamadık. Lütfen tekrar deneyin."

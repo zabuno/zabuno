@@ -90,6 +90,53 @@ async function renderWorkspace(outOfStock = false) {
     return { calls, user: userEvent.setup() };
 }
 
+describe('kategori geneli tükendi (docs/82 kriter 3, docs/98 FF-64)', () => {
+    it('bir kategorinin tamamı tek istekle tükendi işaretlenir', async () => {
+        const { calls, user } = await renderWorkspace(false);
+
+        await user.click(
+            screen.getByRole('button', { name: 'Mark everything in Balıklar sold out for today' }),
+        );
+
+        await waitFor(() => {
+            expect(calls.some((call) => call.url.endsWith(`/menu/${MENU_ID}/stock`))).toBe(true);
+        });
+
+        const put = calls.find((call) => call.url.endsWith(`/menu/${MENU_ID}/stock`))!;
+        expect(put.method).toBe('PUT');
+        // Tek istek, ürün başına değil.
+        expect(put.body).toEqual({ outOfStock: [11], inStock: [] });
+        expect(calls.filter((call) => call.url.endsWith('/menu-items/11/stock'))).toHaveLength(0);
+
+        // Kategori artık geri getirmeyi öneriyor; ürün de tükenmiş görünüyor.
+        expect(
+            await screen.findByRole('button', {
+                name: 'Mark everything in Balıklar available again',
+            }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: 'Mark Levrek available again' }),
+        ).toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    it('tamamı tükenmiş bir kategori tek istekle geri getirilir', async () => {
+        const { calls, user } = await renderWorkspace(true);
+
+        await user.click(
+            screen.getByRole('button', { name: 'Mark everything in Balıklar available again' }),
+        );
+
+        await waitFor(() => {
+            const put = calls.find((call) => call.url.endsWith(`/menu/${MENU_ID}/stock`));
+            expect(put?.body).toEqual({ outOfStock: [], inStock: [11] });
+        });
+
+        vi.unstubAllGlobals();
+    });
+});
+
 describe('bugün tükendi (docs/82)', () => {
     it('bir ürün tükendi işaretlenir ve yayın istenmez', async () => {
         const { calls, user } = await renderWorkspace(false);

@@ -71,6 +71,19 @@ export const brandLocations = {
     'workspace.brandLocations.locations.edit.error.submit':
         'We could not save your location changes. Please try again.',
     'workspace.brandLocations.locations.edit.countryCode': 'Country code',
+    // LOGO BAĞLAMA (`docs/98` FF-64): arka uç vardı, bağlayan ekran yoktu.
+    'workspace.brand.logo.heading': 'Logo',
+    'workspace.brand.logo.help':
+        'Shown at the top of your guest menu next to the brand name. Upload the file on the Media page (slot: Logo), then pick it here.',
+    'workspace.brand.logo.loading': 'Loading your logos…',
+    'workspace.brand.logo.empty':
+        'No processed logo yet. Upload one on the Media page (slot: Logo) first.',
+    'workspace.brand.logo.choose': 'Choose a logo',
+    'workspace.brand.logo.none': 'No logo',
+    'workspace.brand.logo.save': 'Use this logo',
+    'workspace.brand.logo.saving': 'Saving…',
+    'workspace.brand.logo.saved': 'Logo saved. It goes live with your next publish.',
+    'workspace.brand.logo.error': 'The logo could not be saved. Try again.',
     'workspace.brandLocations.brand.section.identity': 'Identity',
     'workspace.brandLocations.brand.section.regional': 'Regional settings',
     'workspace.brandLocations.brand.section.description': 'Description',
