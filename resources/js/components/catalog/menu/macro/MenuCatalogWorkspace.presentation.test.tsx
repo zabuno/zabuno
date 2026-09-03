@@ -59,7 +59,13 @@ function tree(overrides: Record<string, unknown> = {}) {
 
 type Call = { url: string; method: string; body: unknown };
 
-async function renderWorkspace(options: { media?: unknown[]; imageStatus?: number } = {}) {
+async function renderWorkspace(
+    options: {
+        media?: unknown[];
+        imageStatus?: number;
+        draftResponse?: Response;
+    } = {},
+) {
     const calls: Call[] = [];
 
     const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
@@ -91,6 +97,21 @@ async function renderWorkspace(options: { media?: unknown[]; imageStatus?: numbe
         }
         if (String(url).endsWith('/image') && method === 'PUT') {
             return jsonResponse(options.imageStatus ?? 200, { ok: true });
+        }
+        if (String(url).endsWith('/description-drafts') && method === 'POST') {
+            return (
+                options.draftResponse ??
+                jsonResponse(201, {
+                    id: 999,
+                    description: '',
+                    confidence: 0,
+                    uncertainFieldCount: 0,
+                    usedFallback: false,
+                })
+            );
+        }
+        if (String(url).includes('/description-drafts/') && String(url).endsWith('/apply')) {
+            return jsonResponse(200, { applied: true, alreadyApplied: false, reason: null });
         }
 
         return jsonResponse(200, { ok: true });
@@ -192,6 +213,124 @@ describe('sunum düzenleyicisi (docs/78)', () => {
         expect(
             screen.getByText(
                 'No processed photo is available yet. Upload one on the Media page first.',
+            ),
+        ).toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+});
+
+/**
+ * AI ÖNERİSİ — `docs/97` Yolculuk B, R4-R5. Backend zaten vardı (FF-46);
+ * bu ekran o backend'i ilk kez bir düğmeye bağlıyor.
+ */
+describe('AI açıklama önerisi (docs/97 Yolculuk B)', () => {
+    it('öneri kutuya yazılır ve Kaydet, düzenlenmiş metinle onay uç noktasına gider', async () => {
+        const { calls, user } = await renderWorkspace({
+            draftResponse: jsonResponse(201, {
+                id: 501,
+                description: 'Kömürde, acılı.',
+                confidence: 0.92,
+                uncertainFieldCount: 0,
+                usedFallback: false,
+            }),
+        });
+
+        const description = await openEditor(user);
+        await user.click(screen.getByRole('button', { name: 'Suggest with AI' }));
+
+        await waitFor(() => expect(description).toHaveValue('Kömürde, acılı.'));
+        expect(
+            screen.getByText('AI suggestion — feel free to edit it before saving.'),
+        ).toBeInTheDocument();
+
+        // Kullanıcı öneriyi düzenliyor — kutu gerçekten düzenlenebilir olmalı.
+        await user.clear(description);
+        await user.type(description, 'Kömürde, hafif acılı — elle düzeltildi.');
+        await user.click(screen.getByRole('button', { name: 'Save presentation' }));
+
+        await waitFor(() => {
+            expect(calls.some((call) => call.url.endsWith('/description-drafts/501/apply'))).toBe(
+                true,
+            );
+        });
+
+        const apply = calls.find((call) => call.url.endsWith('/description-drafts/501/apply'));
+        expect(apply?.body).toEqual({ description: 'Kömürde, hafif acılı — elle düzeltildi.' });
+
+        // Düz PUT yoluna GİTMEMELİ — taslak varken onay yolu tektir.
+        expect(
+            calls.some((call) => call.method === 'PUT' && call.url.endsWith('/menu-items/11')),
+        ).toBe(false);
+
+        vi.unstubAllGlobals();
+    });
+
+    it('AI kapalıyken (503) hata değil, kısa bir mesaj gösterir; elle yazma bozulmaz', async () => {
+        const { calls, user } = await renderWorkspace({
+            draftResponse: jsonResponse(503, { message: 'off', reason: 'kill_switch' }),
+        });
+
+        const description = await openEditor(user);
+        await user.click(screen.getByRole('button', { name: 'Suggest with AI' }));
+
+        expect(
+            await screen.findByText('AI suggestions are not available right now.'),
+        ).toBeInTheDocument();
+
+        // Elle yazma hâlâ çalışır — düz PUT yoluna gider.
+        await user.type(description, 'Elle yazıldı.');
+        await user.click(screen.getByRole('button', { name: 'Save presentation' }));
+
+        await waitFor(() => {
+            expect(
+                calls.some((call) => call.method === 'PUT' && call.url.endsWith('/menu-items/11')),
+            ).toBe(true);
+        });
+
+        vi.unstubAllGlobals();
+    });
+
+    it('belirsiz alan taşıyan öneri açıkça uyarır', async () => {
+        const { user } = await renderWorkspace({
+            draftResponse: jsonResponse(201, {
+                id: 502,
+                description: 'Belirsiz bir öneri.',
+                confidence: 0.3,
+                uncertainFieldCount: 1,
+                usedFallback: false,
+            }),
+        });
+
+        await openEditor(user);
+        await user.click(screen.getByRole('button', { name: 'Suggest with AI' }));
+
+        expect(
+            await screen.findByText(
+                'The AI was not confident about this one. Read it carefully before saving.',
+            ),
+        ).toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    it('yedek sağlayıcıdan gelen öneri sessizce geçmez, ayrı etiketlenir', async () => {
+        const { user } = await renderWorkspace({
+            draftResponse: jsonResponse(201, {
+                id: 503,
+                description: 'Yedekten gelen öneri.',
+                confidence: 0.8,
+                uncertainFieldCount: 0,
+                usedFallback: true,
+            }),
+        });
+
+        await openEditor(user);
+        await user.click(screen.getByRole('button', { name: 'Suggest with AI' }));
+
+        expect(
+            await screen.findByText(
+                'AI suggestion (from a backup provider) — feel free to edit it before saving.',
             ),
         ).toBeInTheDocument();
 

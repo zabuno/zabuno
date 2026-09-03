@@ -110,6 +110,14 @@ final class ProductDescriptionDraftTest extends TestCase
         self::assertNotNull($row);
         self::assertSame('product.description', $row->capability);
         self::assertNull($row->applied_at, 'PRODUCT-DESCRIPTION-DRAFT: taslak doğrudan uygulanmamalı.');
+
+        /*
+            Cevap açıklama METNİNİ taşımalı — inceleme ekranı bunu ayrı bir
+            GET olmadan, düzenlenebilir kutuda hemen göstermeli (`docs/97`
+            R4).
+        */
+        self::assertIsString($response->json('description'));
+        self::assertNotSame('', trim((string) $response->json('description')));
     }
 
     // --- PRODUCT-DESCRIPTION-DRAFT-APPLY-ONCE-01 ----------------------------
@@ -137,6 +145,31 @@ final class ProductDescriptionDraftTest extends TestCase
         );
         $second->assertStatus(200);
         self::assertTrue((bool) $second->json('alreadyApplied'));
+    }
+
+    // --- PRODUCT-DESCRIPTION-DRAFT-APPLY-EDITED-01 ---------------------------
+
+    #[Test]
+    public function the_reviewer_can_edit_the_draft_before_approving(): void
+    {
+        /*
+            İnceleme ekranının vaadi düzenlenebilir bir kutudur (`docs/97`
+            R4) — düzenleme sessizce atılırsa kutu yalan söylemiş olur.
+        */
+        $artifactId = (int) $this->api()->postJson(
+            "/api/workspaces/{$this->workspaceId}/menu-items/{$this->menuItemId}/description-drafts",
+        )->json('id');
+
+        $edited = 'Elle düzeltilmiş, sahibin kendi cümlesi.';
+
+        $this->api()->postJson(
+            "/api/workspaces/{$this->workspaceId}/description-drafts/{$artifactId}/apply",
+            ['description' => $edited],
+        )->assertStatus(200);
+
+        $productId = (int) DB::table('menu_items')->where('id', $this->menuItemId)->value('product_id');
+        $description = (string) DB::table('products')->where('id', $productId)->value('description');
+        self::assertSame($edited, $description, 'PRODUCT-DESCRIPTION-DRAFT: düzenlenmiş metin yok sayıldı.');
     }
 
     // --- PRODUCT-DESCRIPTION-DRAFT-NEVER-TOUCHES-ALLERGEN-01 ----------------

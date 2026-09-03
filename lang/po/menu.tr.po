@@ -140,6 +140,34 @@ msgstr "Menünüzü yükleyemedik. Lütfen tekrar deneyin."
 msgid "menu.initial.error.retry"
 msgstr "Tekrar dene"
 
+#: menu:menu.item.ai.description.error
+msgid "menu.item.ai.description.error"
+msgstr ""
+
+#: menu:menu.item.ai.description.loading
+msgid "menu.item.ai.description.loading"
+msgstr ""
+
+#: menu:menu.item.ai.description.request
+msgid "menu.item.ai.description.request"
+msgstr ""
+
+#: menu:menu.item.ai.description.suggested
+msgid "menu.item.ai.description.suggested"
+msgstr ""
+
+#: menu:menu.item.ai.description.suggested.fallback
+msgid "menu.item.ai.description.suggested.fallback"
+msgstr ""
+
+#: menu:menu.item.ai.description.unavailable
+msgid "menu.item.ai.description.unavailable"
+msgstr ""
+
+#: menu:menu.item.ai.description.uncertain
+msgid "menu.item.ai.description.uncertain"
+msgstr ""
+
 #: menu:menu.item.allergens.edit.button
 msgid "menu.item.allergens.edit.button"
 msgstr "{name} alerjenlerini düzenle"

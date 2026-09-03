@@ -56,8 +56,17 @@ final class StoreProductDescriptionDraftController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        $descriptionField = array_values(array_filter(
+            $result['artifact']->fields,
+            static fn ($field): bool => $field->name === 'description',
+        ))[0] ?? null;
+
         return response()->json([
             'id' => $result['id'],
+            // İnceleme ekranı bunu ayrı bir GET olmadan, düzenlenebilir
+            // kutuda hemen gösterir (`docs/97` R4).
+            'description' => $descriptionField?->value ?? '',
+            'confidence' => $descriptionField?->confidence ?? 0.0,
             'uncertainFieldCount' => count($result['artifact']->uncertainFields()),
             'usedFallback' => $result['artifact']->usedFallback,
         ], 201);

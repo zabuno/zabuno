@@ -45,7 +45,13 @@ final class ApplyProductDescriptionDraftController extends Controller
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
-        $result = $this->apply->handle($workspace, (int) $row->id);
+        // İnceleyen kişi öneriyi düzenlemiş olabilir (`docs/97` R4) —
+        // boş bırakılırsa (istekte hiç yoksa) taslağın kendi metni uygulanır.
+        $editedDescription = $request->has('description')
+            ? (string) $request->input('description')
+            : null;
+
+        $result = $this->apply->handle($workspace, (int) $row->id, $editedDescription);
 
         return response()->json($result);
     }

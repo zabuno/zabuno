@@ -134,6 +134,16 @@ function menuItemUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}`;
 }
 
+/** AI açıklama taslağı üretir — `docs/96` Faz 2 (`opt-23`). */
+function descriptionDraftUrl(workspaceId: number, menuItemId: number): string {
+    return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/description-drafts`;
+}
+
+/** Taslağı (düzenlenmiş ya da olduğu gibi) ürüne yazar. */
+function applyDescriptionDraftUrl(workspaceId: number, artifactId: number): string {
+    return `/api/workspaces/${workspaceId}/description-drafts/${artifactId}/apply`;
+}
+
 function itemOrderUrl(workspaceId: number, categoryId: number): string {
     return `/api/workspaces/${workspaceId}/menu-categories/${categoryId}/item-order`;
 }
@@ -320,6 +330,17 @@ export function MenuCatalogWorkspace({
     const [presentationError, setPresentationError] = useState<string | null>(null);
     const [savingPresentation, setSavingPresentation] = useState(false);
     const [readyMedia, setReadyMedia] = useState<ReadyMediaRow[]>([]);
+    /*
+        AI ÖNERİSİ — `docs/97` R4-R5. `aiDraftArtifactId` dolu olduğu sürece
+        "Kaydet" düz PUT yerine onay uç noktasına gider (`docs/96` `opt-23`);
+        boşsa bugüne kadarki elle-düzenleme yolu değişmeden çalışır. Form her
+        açılışta sıfırlanır — bir ürünün taslağı başka bir ürüne sızmamalı.
+    */
+    const [aiDraftArtifactId, setAiDraftArtifactId] = useState<number | null>(null);
+    const [aiSuggestionLoading, setAiSuggestionLoading] = useState(false);
+    const [aiSuggestionError, setAiSuggestionError] = useState<string | null>(null);
+    const [aiSuggestionUncertain, setAiSuggestionUncertain] = useState(false);
+    const [aiSuggestionUsedFallback, setAiSuggestionUsedFallback] = useState(false);
 
     /* Menüyü almak ve geri koymak (`docs/80`). */
     const [importing, setImporting] = useState(false);
@@ -490,6 +511,11 @@ export function MenuCatalogWorkspace({
                 : String(item.imageMediaAssetId),
         );
         setPresentationError(null);
+        setAiDraftArtifactId(null);
+        setAiSuggestionLoading(false);
+        setAiSuggestionError(null);
+        setAiSuggestionUncertain(false);
+        setAiSuggestionUsedFallback(false);
 
         try {
             const response = await fetch(mediaUrl(workspaceId), buildAuthRequestInit());
@@ -513,6 +539,60 @@ export function MenuCatalogWorkspace({
         }
     }
 
+    /**
+     * AI'dan açıklama taslağı ister — `docs/97` Yolculuk B.
+     *
+     * AI kapalıysa/bütçe yoksa (503) bu bir HATA değildir; sebep kısa bir
+     * mesajla gösterilir, kutu boş kalır, elle yazma yolu bozulmaz
+     * (`docs/96` `ai-no-credit-degradation`). Sağlayıcı yanıt vermezse
+     * (502) ayrı bir mesaj — ikisi aynı cümle olursa sahip "AI hiç yok"
+     * ile "şimdilik cevap vermedi"yi ayıramaz.
+     */
+    async function handleRequestAiDescription() {
+        if (presentationItemId === null) return;
+
+        setAiSuggestionLoading(true);
+        setAiSuggestionError(null);
+
+        try {
+            const response = await postJson(
+                descriptionDraftUrl(workspaceId, presentationItemId),
+                {},
+            );
+
+            if (response.status === 503) {
+                setAiSuggestionError(t('menu.item.ai.description.unavailable'));
+
+                return;
+            }
+
+            if (!response.ok) {
+                setAiSuggestionError(
+                    await parseErrorMessage(response, t('menu.item.ai.description.error')),
+                );
+
+                return;
+            }
+
+            const body = (await response.json()) as {
+                id: number;
+                description: string;
+                confidence: number;
+                uncertainFieldCount: number;
+                usedFallback: boolean;
+            };
+
+            setDescriptionInput(body.description);
+            setAiDraftArtifactId(body.id);
+            setAiSuggestionUncertain(body.uncertainFieldCount > 0);
+            setAiSuggestionUsedFallback(body.usedFallback);
+        } catch {
+            setAiSuggestionError(t('menu.item.ai.description.error'));
+        } finally {
+            setAiSuggestionLoading(false);
+        }
+    }
+
     async function handleSavePresentation(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -530,14 +610,25 @@ export function MenuCatalogWorkspace({
         try {
             const description = descriptionInput.trim();
 
-            const detailsResponse = await postJson(
-                menuItemUrl(workspaceId, presentationItemId),
-                {
-                    productName: item.productName ?? '',
-                    description: description === '' ? null : description,
-                },
-                'PUT',
-            );
+            /*
+                Bir AI taslağı varsa "Kaydet" ONAY uç noktasına gider —
+                düzenlenmiş metni taşır ve taslağı `applied_at` ile
+                imzalar (`docs/97` R4, `ApplyProductDescriptionDraft`).
+                Yoksa bugüne kadarki düz yazma yolu değişmeden çalışır.
+            */
+            const detailsResponse =
+                aiDraftArtifactId !== null
+                    ? await postJson(applyDescriptionDraftUrl(workspaceId, aiDraftArtifactId), {
+                          description,
+                      })
+                    : await postJson(
+                          menuItemUrl(workspaceId, presentationItemId),
+                          {
+                              productName: item.productName ?? '',
+                              description: description === '' ? null : description,
+                          },
+                          'PUT',
+                      );
 
             if (!detailsResponse.ok) {
                 setPresentationError(await parseErrorMessage(detailsResponse, t('menu.ops.error')));
@@ -575,6 +666,7 @@ export function MenuCatalogWorkspace({
             }
 
             setPresentationItemId(null);
+            setAiDraftArtifactId(null);
         } catch {
             setPresentationError(t('menu.ops.error'));
         } finally {
@@ -1602,13 +1694,57 @@ export function MenuCatalogWorkspace({
                                                         rows={3}
                                                         maxLength={500}
                                                         value={descriptionInput}
-                                                        onChange={(event) =>
-                                                            setDescriptionInput(event.target.value)
-                                                        }
+                                                        onChange={(event) => {
+                                                            setDescriptionInput(event.target.value);
+                                                            // Kullanıcı öneriyi elle değiştirdi —
+                                                            // ama taslak kimliği KALIR: "Kaydet"
+                                                            // hâlâ onay yoluna gider, düzenlenmiş
+                                                            // metni taşır (`docs/97` R4).
+                                                        }}
                                                     />
                                                     <p className="text-caption text-fg-secondary">
                                                         {t('menu.item.description.help')}
                                                     </p>
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            className={inlineActionClass}
+                                                            disabled={aiSuggestionLoading}
+                                                            onClick={handleRequestAiDescription}
+                                                        >
+                                                            {aiSuggestionLoading
+                                                                ? t(
+                                                                      'menu.item.ai.description.loading',
+                                                                  )
+                                                                : t(
+                                                                      'menu.item.ai.description.request',
+                                                                  )}
+                                                        </button>
+                                                        {aiDraftArtifactId !== null ? (
+                                                            <span className="text-caption text-fg-secondary">
+                                                                {aiSuggestionUsedFallback
+                                                                    ? t(
+                                                                          'menu.item.ai.description.suggested.fallback',
+                                                                      )
+                                                                    : t(
+                                                                          'menu.item.ai.description.suggested',
+                                                                      )}
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
+                                                    {aiSuggestionUncertain ? (
+                                                        <p
+                                                            className="text-caption text-fg-warning"
+                                                            role="status"
+                                                        >
+                                                            {t(
+                                                                'menu.item.ai.description.uncertain',
+                                                            )}
+                                                        </p>
+                                                    ) : null}
+                                                    {aiSuggestionError ? (
+                                                        <FieldError message={aiSuggestionError} />
+                                                    ) : null}
 
                                                     <label
                                                         className={labelClass}

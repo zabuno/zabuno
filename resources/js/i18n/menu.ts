@@ -80,6 +80,18 @@ const en = {
     'menu.item.description.label': 'Description',
     'menu.item.description.help':
         'A short line the guest reads under the name. Up to 500 characters.',
+    // AI önerisi — `docs/97` Yolculuk B. Öneri bir taslaktır: kutuya
+    // otomatik yazılır ama SAHİP onaylamadan (Kaydet'e basmadan) ürüne
+    // geçmez; onaylamadan önce serbestçe düzenleyebilir.
+    'menu.item.ai.description.request': 'Suggest with AI',
+    'menu.item.ai.description.loading': 'Asking AI…',
+    'menu.item.ai.description.suggested': 'AI suggestion — feel free to edit it before saving.',
+    'menu.item.ai.description.suggested.fallback':
+        'AI suggestion (from a backup provider) — feel free to edit it before saving.',
+    'menu.item.ai.description.uncertain':
+        'The AI was not confident about this one. Read it carefully before saving.',
+    'menu.item.ai.description.unavailable': 'AI suggestions are not available right now.',
+    'menu.item.ai.description.error': 'The AI suggestion failed. You can still write one yourself.',
     'menu.item.image.label': 'Photo',
     'menu.item.image.none': 'No photo',
     'menu.item.image.empty':
