@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\Media\ServeRenditionController;
 use App\Http\Controllers\PlatformAdminAppController;
+use App\Http\Controllers\PublicSite\ShowContactFormController;
+use App\Http\Controllers\PublicSite\StoreContactMessageController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuController;
@@ -31,6 +33,21 @@ Route::get('/', [FoundationStatusController::class, '__invoke'])->name('foundati
  * client-side AppShell can render the corresponding pending-review legal
  * page per pathname (S1-WP01A).
  */
+// Fiyat KAYDOLMADAN görülür (`docs/88`): fiyatı görmek için kaydolmak
+// gereken bir ürün, kaydolmayı fiyatı görmeye bağlı kılar.
+Route::get('/pricing', [FoundationStatusController::class, '__invoke'])->name('public.pricing');
+
+/*
+    "Tıkanırsam kime sorarım?" (`docs/88`).
+
+    Gönderim HIZ SINIRLI: form herkese açık ve oturum istemiyor, dolayısıyla
+    sınırsız gönderim bir tabloyu doldurmanın en ucuz yolu olurdu.
+*/
+Route::get('/contact', ShowContactFormController::class)->name('public.contact');
+Route::post('/contact', StoreContactMessageController::class)
+    ->middleware('throttle:5,1')
+    ->name('public.contact.store');
+
 Route::get('/terms', [FoundationStatusController::class, '__invoke'])->name('legal.terms');
 Route::get('/privacy', [FoundationStatusController::class, '__invoke'])->name('legal.privacy');
 Route::get('/kvkk', [FoundationStatusController::class, '__invoke'])->name('legal.kvkk');

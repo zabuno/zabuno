@@ -1,0 +1,63 @@
+{{--
+    FİYAT VERİDİR, KOD DEĞİL — `docs/88` (P1-01).
+
+    Bu bölüm plan kataloğundan okur. Rakamı sahibi girer; sayfaya elle
+    yazmak, fiyat değiştiği gün ikinci bir gerçek kaynak yaratır ve ikisi
+    ayrıştığında hangisinin doğru olduğunu kimse bilemez.
+
+    Metin de şablonda DEĞİL katalogda yaşar (`docs/85` ile aynı gerekçe).
+--}}
+<section id="pricing" aria-labelledby="pricing-heading" class="flex flex-col gap-4">
+    <h2 id="pricing-heading" class="text-2xl font-bold">{{ $st['pricingHeading'] }}</h2>
+
+    @if (empty($plans))
+        {{--
+            Boş bir fiyat tablosu, ziyaretçiye "bu ürün hazır değil"
+            dedirtir. Sayfa DURUMU söyler ve bir ÇIKIŞ YOLU bırakır: boş bir
+            hâl bir hata değildir, ama bir çıkmaz da olmamalıdır (`docs/66`).
+        --}}
+        <p class="text-fg-secondary">
+            {{ $st['pricingEmpty'] }}
+            <a class="underline underline-offset-2" href="/contact">{{ $st['pricingEmptyCta'] }}</a>
+        </p>
+    @else
+        <ul class="flex flex-col gap-4">
+            @foreach ($plans as $plan)
+                <li class="flex flex-col gap-1 rounded-lg border border-border p-4">
+                    <span class="text-lg font-semibold">{{ $plan['name'] }}</span>
+
+                    @if ($plan['price'] === null)
+                        {{--
+                            Tutarı girilmemiş bir planı "0" ya da "ücretsiz"
+                            göstermek, tutulmayacak bir söz vermek olurdu.
+                        --}}
+                        <span class="text-fg-secondary">
+                            {{ $st['perRestaurant'] }}
+                            <a class="underline underline-offset-2" href="/contact">{{ $st['perRestaurantCta'] }}</a>
+                        </span>
+                    @else
+                        {{-- `tabular-nums`: rakamlar eşit genişlikte olmazsa
+                             planlar arasında fiyat karşılaştırması gözle
+                             yapılamaz. --}}
+                        <span class="text-fg tabular-nums">{{ $plan['price'] }}</span>
+                    @endif
+
+                    @if (! empty($plan['entitlements']))
+                        <ul class="mt-2 flex flex-wrap gap-2">
+                            @foreach ($plan['entitlements'] as $entitlement)
+                                <li class="rounded-full border border-border px-2 py-0.5 text-meta text-fg-secondary">
+                                    {{ $entitlement }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+
+        <p class="text-meta text-fg-muted">
+            {{ $st['unsure'] }}
+            <a class="underline underline-offset-2" href="/contact">{{ $st['unsureCta'] }}</a>
+        </p>
+    @endif
+</section>

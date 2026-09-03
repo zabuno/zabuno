@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: site:site.contact.email
+msgid "site.contact.email"
+msgstr "Your email"
+
+#: site:site.contact.heading
+msgid "site.contact.heading"
+msgstr "Contact"
+
+#: site:site.contact.honeypot
+msgid "site.contact.honeypot"
+msgstr "Leave this empty"
+
+#: site:site.contact.lead
+msgid "site.contact.lead"
+msgstr "Ask about pricing, a pilot, or anything that is in your way. We keep every message; nothing is lost."
+
+#: site:site.contact.message
+msgid "site.contact.message"
+msgstr "Your message"
+
+#: site:site.contact.name
+msgid "site.contact.name"
+msgstr "Your name"
+
+#: site:site.contact.sent
+msgid "site.contact.sent"
+msgstr "Thank you — we received your message and will reply to the address you gave."
+
+#: site:site.contact.submit
+msgid "site.contact.submit"
+msgstr "Send message"
+
+#: site:site.home.contact.cta
+msgid "site.home.contact.cta"
+msgstr "Write to us"
+
+#: site:site.home.contact.lead
+msgid "site.home.contact.lead"
+msgstr "Ask about pricing, a pilot, or anything that is in your way. We keep every message; you get a confirmation on screen."
+
+#: site:site.home.faq.cost.answer
+msgid "site.home.faq.cost.answer"
+msgstr "Prices come from our plan catalogue, so what you read there is what we charge."
+
+#: site:site.home.faq.cost.question
+msgid "site.home.faq.cost.question"
+msgstr "What does it cost?"
+
+#: site:site.pricing.empty
+msgid "site.pricing.empty"
+msgstr "Plan prices are not published yet. Tell us about your restaurant and we will answer with a price for your case."
+
+#: site:site.pricing.empty.cta
+msgid "site.pricing.empty.cta"
+msgstr "Contact us"
+
+#: site:site.pricing.heading
+msgid "site.pricing.heading"
+msgstr "Pricing"
+
+#: site:site.pricing.lead
+msgid "site.pricing.lead"
+msgstr "What a restaurant pays to publish its menu behind a QR code."
+
+#: site:site.pricing.perRestaurant
+msgid "site.pricing.perRestaurant"
+msgstr "Priced per restaurant."
+
+#: site:site.pricing.perRestaurant.cta
+msgid "site.pricing.perRestaurant.cta"
+msgstr "Contact us"
+
+#: site:site.pricing.unsure
+msgid "site.pricing.unsure"
+msgstr "Not sure which one fits?"
+
+#: site:site.pricing.unsure.cta
+msgid "site.pricing.unsure.cta"
+msgstr "Ask us"

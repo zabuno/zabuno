@@ -127,7 +127,8 @@ return [
      */
     'reserved_slugs' => [
         'admin', 'api', 'app', 'assets', 'build', 'email', 'forgot-password',
-        'health', 'invitations', 'kvkk', 'login', 'logout', 'media', 'menu', 'platform',
+        'contact', 'health', 'help', 'invitations', 'kvkk', 'login', 'logout', 'media',
+        'menu', 'platform', 'pricing',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
         'sitemap.xml', 'storage', 'terms', 'up', 'user', 'verify-email', 'www',
     ],

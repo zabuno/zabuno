@@ -71,12 +71,33 @@ final class PublicHomeContractTest extends TestCase
 
     // --- HOME-HONEST-03 ----------------------------------------------------
 
-    public function test_pricing_and_contact_state_their_limits_instead_of_pretending(): void
+    /**
+     * GÜNCELLENDİ (`docs/88`, P1-01).
+     *
+     * Bu test eskiden ana sayfanın "henüz fiyat yok" ve "henüz iletişim
+     * formu yok" DEMESİNİ donduruyordu. O gün doğruydu: ikisi de yoktu ve
+     * varmış gibi yapmak yalan olurdu.
+     *
+     * İkisi de artık VAR. Sınırı hâlâ ilan etmek, bu kez ters yönde bir
+     * yalan olurdu — ziyaretçiyi var olan bir yoldan geri çevirirdi.
+     *
+     * Kuralın kendisi değişmedi: sayfa ne varsa onu söyler. Ölçülen şey
+     * artık cümlelerin YOKLUĞU değil, yolların VARLIĞI.
+     */
+    public function test_pricing_and_contact_point_at_paths_that_exist(): void
     {
         $html = $this->html();
 
-        self::assertStringContainsString('no published plan prices yet', $html);
-        self::assertStringContainsString('no connected contact form yet', $html);
+        self::assertStringNotContainsString('no published plan prices yet', $html);
+        self::assertStringNotContainsString('no connected contact form yet', $html);
+
+        self::assertStringContainsString('href="/pricing"', $html);
+        self::assertStringContainsString('href="/contact"', $html);
+
+        // Ve o yollar GERÇEKTEN açılır: var olmayan bir sayfaya bağlantı
+        // vermek, "henüz yok" demekten daha kötüdür.
+        $this->get('/pricing')->assertOk();
+        $this->get('/contact')->assertOk();
     }
 
     public function test_no_fabricated_social_proof_appears(): void

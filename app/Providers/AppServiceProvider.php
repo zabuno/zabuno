@@ -88,9 +88,11 @@ use App\Infrastructure\Tenancy\Persistence\EloquentWorkspaceRepository;
 use App\Infrastructure\Tenancy\Persistence\SessionWorkspaceContext;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
+use App\Support\Localization\SiteText;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
@@ -203,6 +205,29 @@ final class AppServiceProvider extends ServiceProvider
         // Aynı IP'den dakikada 60 QR çözümlemesi: bir restoranda makul,
         // token taraması için değersiz.
         RateLimiter::for('qr-resolve', static fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
+
+        /*
+            TANITIM SİTESİNİN METNİ HER ZAMAN VAR — `docs/88`.
+
+            Metin katalogdan geliyor ve her görünüme elle geçirilseydi,
+            geçirmeyi unutan bir çağıran sayfayı boş etiketlerle basar ya da
+            çökertirdi — ve bu, ekranda görülene kadar fark edilmezdi.
+            Besteci, çağıranın unutabileceği bir adım bırakmıyor.
+
+            Elle verilen değer KAZANIR: bir denetleyici ziyaretçinin diline
+            göre farklı bir harita geçirebilir.
+        */
+        View::composer('public.*', function ($view): void {
+            $data = $view->getData();
+
+            if (! array_key_exists('st', $data)) {
+                $view->with('st', app(SiteText::class)->all());
+            }
+
+            if (! array_key_exists('plans', $data)) {
+                $view->with('plans', []);
+            }
+        });
 
         //
     }

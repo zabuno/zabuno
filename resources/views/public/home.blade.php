@@ -71,13 +71,7 @@
 
         <hr class="my-10 border-border" role="separator">
 
-        <section id="pricing" aria-labelledby="pricing-heading" class="flex flex-col gap-4">
-            <h2 id="pricing-heading" class="text-2xl font-bold">Pricing</h2>
-            <p class="text-fg-secondary">
-                There are no published plan prices yet, and checkout is not available yet. We
-                will publish pricing here once it is ready.
-            </p>
-        </section>
+        @include('public.partials.pricing')
 
         <hr class="my-10 border-border" role="separator">
 
@@ -96,8 +90,11 @@
                     <dd class="mt-1 text-fg-secondary">Yes, create an account or log in to open the workspace app.</dd>
                 </div>
                 <div>
-                    <dt class="font-semibold">Is pricing available?</dt>
-                    <dd class="mt-1 text-fg-secondary">Not yet — see the Pricing section above.</dd>
+                    <dt class="font-semibold">{{ $st['faqCostQuestion'] }}</dt>
+                    <dd class="mt-1 text-fg-secondary">
+                        <a class="underline underline-offset-2" href="/pricing">{{ $st['pricingHeading'] }}</a>
+                        — {{ $st['faqCostAnswer'] }}
+                    </dd>
                 </div>
             </dl>
         </section>
@@ -105,8 +102,11 @@
         <hr class="my-10 border-border" role="separator">
 
         <section id="contact" aria-labelledby="contact-heading" class="flex flex-col gap-4">
-            <h2 id="contact-heading" class="text-2xl font-bold">Contact</h2>
-            <p class="text-fg-secondary">There is no connected contact form yet. Please check back later.</p>
+            <h2 id="contact-heading" class="text-2xl font-bold">{{ $st['contactHeading'] }}</h2>
+            <p class="text-fg-secondary">
+                {{ $st['homeContactLead'] }}
+                <a class="underline underline-offset-2" href="/contact">{{ $st['homeContactCta'] }}</a>
+            </p>
         </section>
     </main>
 @endsection

@@ -10,6 +10,7 @@ import { dashboardTranslations } from './dashboard';
 import { guestTranslations } from './guest';
 import { menuTranslations } from './menu';
 import { platformTranslations } from './platform';
+import { siteTranslations } from './site';
 import { themeTranslations } from './theme';
 import { workspaceTranslations } from './workspace';
 
@@ -20,6 +21,8 @@ export const DOMAIN_CATALOGS: Record<string, Record<string, string>> = {
     guest: guestTranslations,
     menu: menuTranslations,
     platform: platformTranslations,
+    // TANITIM SİTESİ: ürünün kendi yüzeyi, restoranınki değil (`docs/88`).
+    site: siteTranslations,
     theme: themeTranslations,
     workspace: workspaceTranslations,
 };
