@@ -56,6 +56,15 @@ services:
             URL_ENFORCE_HOST: ${URL_ENFORCE_HOST:-false}
             URL_ENFORCE_SCHEME: ${URL_ENFORCE_SCHEME:-true}
             URL_CANONICAL_SCHEME: ${URL_CANONICAL_SCHEME:-https}
+            # HANGİ COMMIT ÇALIŞIYOR — `docs/87`.
+            #
+            # Bu değer geçmediğinde üretim sayfası boş bir build kimliği
+            # basıyordu: "baktığım şey gerçekten yazdığım kod mu" sorusu,
+            # `preview-truth` kapısının cevaplamak için var olduğu soru,
+            # canlıda cevapsız kalıyordu. Geri alma da kördü — eski bir SHA
+            # etiketine dönüldüğünde sayfada hangisinin canlı olduğunu
+            # söyleyen hiçbir şey yoktu.
+            ZABUNO_BUILD_REVISION: ${ZABUNO_BUILD_REVISION:-}
             LOG_CHANNEL: stderr
             SESSION_DRIVER: database
             CACHE_STORE: database

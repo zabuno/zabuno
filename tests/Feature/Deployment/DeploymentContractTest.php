@@ -497,4 +497,64 @@ final class DeploymentContractTest extends TestCase
             'DEPLOY-NO-REGISTRY-11: imaj sunucuya SSH ile yüklenmiyor.'
         );
     }
+
+    /**
+     * ÜRETİM HANGİ COMMIT'İ SUNUYOR — `docs/87`.
+     *
+     * Deploy `.image.env`'e yalnız imaj etiketini yazıyordu ve konteynere
+     * hiçbir revizyon geçmiyordu: canlı sayfa boş bir build kimliği
+     * basıyordu. "Baktığım şey gerçekten yazdığım kod mu" sorusu —
+     * `preview-truth` kapısının cevaplamak için var olduğu soru — üretimde
+     * cevapsızdı, ve geri alma kördü.
+     */
+    public function test_the_deploy_hands_the_commit_to_the_container(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertStringContainsString(
+            'ZABUNO_BUILD_REVISION: ${{ github.sha }}',
+            $workflow,
+            'Deploy, çalıştırdığı commit\'i imaja geçirmeli.'
+        );
+
+        self::assertStringContainsString(
+            'ZABUNO_BUILD_REVISION=$3',
+            $workflow,
+            'Revizyon `.image.env` içine yazılmalı; yoksa compose onu göremez.'
+        );
+
+        // Ve compose onu konteynere GEÇİRMELİ: akışa yazmak tek başına
+        // yetmez, iki ucun da bağlı olması gerekir.
+        self::assertMatchesRegularExpression(
+            '/ZABUNO_BUILD_REVISION:\s*\$\{ZABUNO_BUILD_REVISION/',
+            $this->read('docker-compose.yml'),
+            'Compose, revizyonu uygulamanın ortamına geçirmeli.'
+        );
+    }
+
+    /**
+     * `robots.txt` UYGULAMADA üretilir — `docs/87`.
+     *
+     * Laravel'in nginx şablonundan gelen `location = /robots.txt` satırı
+     * isteği statik dosya olarak arıyor; `public/robots.txt` olmadığı için
+     * 404 dönüyor ve istek Laravel'e HİÇ ULAŞMIYORDU. Rota yerelde
+     * (`artisan serve`, nginx yok) çalıştığı için kusur yalnız canlıda
+     * görünüyordu.
+     */
+    public function test_nginx_does_not_swallow_routes_the_application_owns(): void
+    {
+        $nginx = $this->read('docker/nginx.conf');
+
+        // Yorumlar önce düşer: bir açıklama kural değildir.
+        $config = (string) preg_replace('/^\s*#.*$/m', '', $nginx);
+
+        self::assertDoesNotMatchRegularExpression(
+            '/location\s*=\s*\/robots\.txt/',
+            $config,
+            'robots.txt uygulamada üretiliyor; nginx onu statik dosya olarak aramamalı.'
+        );
+
+        // `favicon.ico` GERÇEK bir dosya, o blok kalmalı.
+        self::assertFileExists(public_path('favicon.ico'));
+    }
 }
