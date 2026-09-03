@@ -288,7 +288,9 @@ arası parçalama, collector") bir **iş boru hattı** olarak kuruldu —
   tek liste, Ayran bir kez → "Ekle".
 - **Kalan engel:** `purpose=batch` etiketini kasa formundan vermek (bugün
   bağlantının `plain_fields` alanı; superadmin ekranında ayrı bir seçici
-  yok); üretimde `queue:work` çalışanı (işletim, `docs/42`); üç planlı ajan
+  yok); kuyruk cron'la yürür (`routes/console.php`: dakikada bir
+  `queue:work --stop-when-empty`, HOST-QUEUE-04) — sunucuda `schedule:run`
+  cron satırının açık olması işletim koşuludur (`docs/42`); üç planlı ajan
   (`agents/*.md`) kodda yok — sözleşme var, kod yok, ve dosyalar bunu
   söyler.
 
