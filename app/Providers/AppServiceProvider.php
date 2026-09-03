@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Application\Ai\Port\AiAvailabilityPort;
+use App\Application\Ai\Port\StructuredGenerationPort;
 use App\Application\Ai\Port\VisionExtractionPort;
 use App\Application\Analytics\Port\AnalyticsRepositoryPort;
 use App\Application\Authorization\Port\AuthorizationPort;
@@ -55,6 +56,7 @@ use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
 use App\Infrastructure\Ai\ConfiguredAvailability;
 use App\Infrastructure\Ai\FakeProvider;
+use App\Infrastructure\Ai\GeminiTextProvider;
 use App\Infrastructure\Ai\GeminiVisionProvider;
 use App\Infrastructure\Ai\OpenAiVisionProvider;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
@@ -177,6 +179,23 @@ final class AppServiceProvider extends ServiceProvider
 
             if ($credentials->isConfigured(CredentialProvider::OpenAi)) {
                 return $app->make(OpenAiVisionProvider::class);
+            }
+
+            return $app->make(FakeProvider::class);
+        });
+
+        /*
+            Şemaya bağlı metin üretimi (ürün açıklaması, çeviri taslağı) —
+            `docs/96` Faz 2. Bugün yalnız Gemini adayı var; OpenAI/Claude
+            metin yedeği ileride aynı desenle eklenir (bkz. `docs/95` Faz 3).
+        */
+        $this->app->bind(StructuredGenerationPort::class, function ($app): StructuredGenerationPort {
+            if (config('ai.enabled') !== true) {
+                return $app->make(FakeProvider::class);
+            }
+
+            if ($app->make(CredentialResolverPort::class)->isConfigured(CredentialProvider::Gemini)) {
+                return $app->make(GeminiTextProvider::class);
             }
 
             return $app->make(FakeProvider::class);
