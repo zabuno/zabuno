@@ -183,3 +183,7 @@ Fazların kendisi `docs/95`'te, sağlayıcı/hesap mimarisi
 `modules/ai-provider-account-vault.md`'de, port tanımları `docs/51`'de,
 skill sözleşmeleri `skills/*.md`'de kanoniktir — bu belge onları tekrar
 etmez, birbirine bağlar.
+
+Bu belgedeki "Konum" kolonunun her satırı için gereken ekranın kullanıcı
+yolculuğu ve gereksinim numarası (`R1`…`R19`) —
+`docs/97-AI-ARAYUZ-KULLANIM-SENARYOLARI.md`'de kanoniktir.
