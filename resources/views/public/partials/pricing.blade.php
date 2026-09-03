@@ -7,8 +7,17 @@
 
     Metin de şablonda DEĞİL katalogda yaşar (`docs/85` ile aynı gerekçe).
 --}}
+@php
+    /* Bu bölüm hem ana sayfada (bir alt başlık olarak) hem de kendi
+       sayfasında (SAYFANIN başlığı olarak) görünür. Etiket çağırana
+       bırakılır: `/pricing` üzerinde ayrı bir `<h1>` basmak "Pricing"i üst
+       üste iki kez yazardı ve ekran okuyucuda iki ayrı bölüm gibi okunurdu
+       (`docs/89`). */
+    $pricingHeadingTag = $pricingHeadingTag ?? 'h2';
+    $pricingHeadingClass = $pricingHeadingTag === 'h1' ? 'text-3xl font-bold' : 'text-2xl font-bold';
+@endphp
 <section id="pricing" aria-labelledby="pricing-heading" class="flex flex-col gap-4">
-    <h2 id="pricing-heading" class="text-2xl font-bold">{{ $st['pricingHeading'] }}</h2>
+    <{{ $pricingHeadingTag }} id="pricing-heading" class="{{ $pricingHeadingClass }}">{{ $st['pricingHeading'] }}</{{ $pricingHeadingTag }}>
 
     @if (empty($plans))
         {{--

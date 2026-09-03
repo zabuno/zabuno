@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
+{{-- `lang` SAYFANIN dilidir, uygulamanın değil (`docs/89`).
+
+     Yardım makalesi okuyucunun dilinde geliyor; `lang` sabit kalsaydı ekran
+     okuyucu Türkçe metni İngilizce telaffuz ederdi. Sayfa bir dil bildirmezse
+     uygulamanınkine düşülür. --}}
+<html lang="{{ $pageLocale ?? \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

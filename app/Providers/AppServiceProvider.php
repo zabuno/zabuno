@@ -217,6 +217,12 @@ final class AppServiceProvider extends ServiceProvider
             Elle verilen değer KAZANIR: bir denetleyici ziyaretçinin diline
             göre farklı bir harita geçirebilir.
         */
+        /*
+            Yardım makaleleri `resources/views` DIŞINDA yaşar (`docs/89`):
+            belge, arayüz etiketi değil. Ayrı bir alan olarak kaydedilir.
+        */
+        View::addNamespace('help', resource_path('help'));
+
         View::composer('public.*', function ($view): void {
             $data = $view->getData();
 
