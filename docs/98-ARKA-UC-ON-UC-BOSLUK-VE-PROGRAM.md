@@ -83,7 +83,7 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 11/13 tamamlandı, 12/13 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 12/13 tamamlandı, 13/13 aktif.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
@@ -100,7 +100,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 9 ✅ | **FF-71 DAM Faz 6+7** | immutable URL + `Cache-Control`/`ETag`, `srcset`/`<picture>`, kota kalemleri (sahip "sen belirle" dedi → §7), izin matrisi (`download_original` serbest — sahibin kararı), reconciliation | LCP ölçülür; kota dolunca canlı menü kesilmez |
 | 10 ✅ | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
 | 11 ✅ | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
-| 12 | **FF-74 Yetki-görünürlük + registry** | gezinti kaydına `permission`/`entitlement`; ön uç `me` ucundan izin okur; yetkisiz eylem çizilmez; Pennant | Editor 403 görmez |
+| 12 ✅ | **FF-74 Yetki-görünürlük + registry** | gezinti kaydına `permission`/`entitlement`; ön uç `me` ucundan izin okur; yetkisiz eylem çizilmez; Pennant | Editor 403 görmez |
 | 13 | **FF-75 Toplu orkestra** (sahibin 2026-09-04 sorusu) | 40 sayfalık menü: `ai_batches` (kalıcı hafıza) + kuyrukta sayfa başına iş (geçici hafıza) + **parti-bazlı** yönlendirme (sağlıklı bağlantılar arasında, bağlantı başına dakikalık bütçe — yapışkanlığa "amaç" boyutu, R30'un Faz 5'e bıraktığı iş öne çekilir) + `CollectorJob` (artifact'ları tek inceleme listesine toplar, yinelenenleri ayıklar) + mevcut insan-onaylı `apply`. `docs/adr/` klasörü ve `agents/*.md` sözleşmeleri (docs/96'daki üç ajan) bu pakette resmileşir | 40 sayfa tek limitte şişmez; sonuç TEK listede incelenir; onaysız hiçbir satır yazılmaz |
 
 **Ertelenen ve nedeni:** DAM Faz 8-10 (crop stüdyosu, AI önerileri, video)
@@ -241,6 +241,27 @@ bugünkü ölçüm, 4 faz. Uygulanan Faz 1:
 - **Kalan engel:** fiyat sonrası "yayınla" hatırlatması ve yayın ekranı
   metinleri (Faz 2), QR iki tık (Faz 3), gerçek acemi ölçümü (Faz 4 — sahibin
   çevresinden 3 kişi).
+
+### FF-74 teslim notu
+
+- **Önce:** 15 `Permission` sunucuda vardı, ön uç hiçbirini okumuyordu;
+  gezinti kaydında yetki alanı yoktu; Pennant kurulu değildi. Editor "Team"i
+  görüp tıklıyor, 403 alıyordu.
+- **Şimdi:** `GET/PUT /workspace-context` gövdesi `role`, `permissions[]`,
+  `features{}` taşır (`BuildWorkspaceContextPayload`;
+  `AuthorizationPort::permissionsFor`). Bölüm kaydında `permission` alanı
+  (billing.view, analytics.view, workspace.manage ×2, menu.view ×2, qr.view);
+  kenar çubuğu, omnibox "git" grubu ve global oluştur menüsü izinsiz maddeyi
+  çizmez; liste yoksa (eski gövde) süzme yapılmaz. Pennant kuruldu
+  (`features` tablosu, `config/pennant.php`); tek gerçek bayrak `novice-home`
+  (FF-73 Home "şimdi" kutusu) kiracı kapsamında, kapatılan kiracıda kutu
+  çizilmez.
+- **Kullanıcı yolculuğu:** Editor Ayşe kabuğu açar → Team/Billing yok,
+  "Create → Location" yok; menüyü düzenler, yayınlayamaz; hiçbir 403 görmez.
+- **Kalan engel:** entitlement (plan yetkisi) alanı kayıtta yok — plan
+  kataloğu `entitlements` JSON'u ile bağ FF-71 kota deseniyle sonra;
+  `docs/50` Faz 2 navigation registry'nin sunucu tarafı kopyası yok
+  (bilerek: iki liste ayrışır).
 
 ## 6. Esnetilen kurallar — açık kayıt
 

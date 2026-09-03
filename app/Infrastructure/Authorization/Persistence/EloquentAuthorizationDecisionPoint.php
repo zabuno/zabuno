@@ -24,4 +24,14 @@ final class EloquentAuthorizationDecisionPoint implements AuthorizationPort
 
         return in_array($permission, RolePermissions::for($membership->role), true);
     }
+
+    public function permissionsFor(int $userId, int $workspaceId): array
+    {
+        $membership = WorkspaceMembership::query()
+            ->where('workspace_id', $workspaceId)
+            ->where('user_id', $userId)
+            ->first();
+
+        return $membership === null ? [] : RolePermissions::for($membership->role);
+    }
 }

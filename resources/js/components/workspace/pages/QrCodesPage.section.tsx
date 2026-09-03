@@ -18,6 +18,7 @@ const qrCodesSection: WorkspaceSectionDescriptor = {
     path: 'qr-codes',
     order: 2,
     labelKey: 'workspace.shell.nav.qrCodes',
+    permission: 'qr.view',
     group: 'primary',
     render,
 };

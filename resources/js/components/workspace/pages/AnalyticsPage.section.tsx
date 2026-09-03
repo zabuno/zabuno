@@ -20,6 +20,7 @@ const analyticsSection: WorkspaceSectionDescriptor = {
     path: 'analytics',
     order: 3,
     labelKey: 'workspace.shell.nav.insights',
+    permission: 'analytics.view',
     group: 'primary',
     render,
 };

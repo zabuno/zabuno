@@ -56,12 +56,25 @@ export type WorkspaceSectionRuntimeContext = {
     onMenuTreeChange: (tree: DashboardMenuTree) => void;
     /** Boş durumdan çıkış yolunu sunabilmek için. */
     onNavigateToSection: (section: string) => void;
+    /** Bu kullanıcı bu izne sahip mi? Liste yoksa (eski gövde) evet sayılır. */
+    can: (permission: string) => boolean;
+    /** Kiracı bayrakları (Pennant); tanımsız bayrak açık sayılır. */
+    features: Record<string, boolean>;
     /** Bölüm içi konum — `settings/billing` adresinde `billing`. */
     subPath: string;
 };
 
 type WorkspaceUser = { id: number; name: string; email: string };
-type Workspace = { id: number; name: string; slug: string; state: string };
+type Workspace = {
+    id: number;
+    name: string;
+    slug: string;
+    state: string;
+    /** `docs/98` FF-74: sunucunun verdiği izin listesi; yoksa (eski gövde) süzme yapılmaz. */
+    role?: string | null;
+    permissions?: string[];
+    features?: Record<string, boolean>;
+};
 
 type Phase = 'loading' | 'error' | 'create' | 'choose' | 'current';
 
@@ -856,6 +869,19 @@ export function WorkspaceApp({
 
     const navGroups: SidebarNavGroup[] = [];
 
+    /*
+        YETKİ-GÖRÜNÜRLÜK (`docs/98` FF-74). Sunucu `workspace-context` ile
+        izin listesini verir; bölüm kaydındaki `permission` o listede yoksa
+        bölüm hiç çizilmez. Liste yoksa (eski gövde, testler) süzme yapılmaz
+        — sessizce her şeyi gizlemek, yetkisiz göstermekten kötü olurdu.
+    */
+    const can = (permission: string): boolean =>
+        currentWorkspace?.permissions === undefined ||
+        currentWorkspace.permissions.includes(permission);
+    const visibleDescriptors = SECTION_DESCRIPTORS.filter(
+        (descriptor) => descriptor.permission === undefined || can(descriptor.permission),
+    );
+
     if (currentWorkspace) {
         const toNavItem = (descriptor: (typeof SECTION_DESCRIPTORS)[number]) => ({
             key: descriptor.key,
@@ -895,9 +921,9 @@ export function WorkspaceApp({
         ];
 
         for (const group of GROUP_ORDER) {
-            const items = SECTION_DESCRIPTORS.filter(
-                (descriptor) => descriptor.group === group,
-            ).map(toNavItem);
+            const items = visibleDescriptors
+                .filter((descriptor) => descriptor.group === group)
+                .map(toNavItem);
 
             if (items.length > 0) {
                 navGroups.push({
@@ -932,6 +958,8 @@ export function WorkspaceApp({
               onBrandSaved: setBrand,
               onMenuTreeChange: handleCatalogTreeChange,
               onNavigateToSection: goToSection,
+              can,
+              features: currentWorkspace?.features ?? {},
               subPath,
           }
         : null;
@@ -983,14 +1011,14 @@ export function WorkspaceApp({
             destination: 'locations/new',
             // Şube için tek ön koşul markadır; marka olmadan çalışma alanı
             // zaten kurulum akışındadır.
-            available: brand !== null,
+            available: brand !== null && can('workspace.manage'),
         },
         {
             key: 'menu',
             labelKey: 'workspace.create.menu',
             destination: 'menu',
             // Menü bir ŞUBEYE aittir: şube yokken menü oluşturulamaz.
-            available: locationProfiles.length > 0,
+            available: locationProfiles.length > 0 && can('menu.manage'),
         },
         {
             key: 'qr-code',
@@ -998,13 +1026,13 @@ export function WorkspaceApp({
             destination: 'qr-codes',
             // QR kod bir menüyü işaret eder; menü yoksa gösterecek bir şey
             // olmayan bir kod üretilirdi.
-            available: dashboardMenuTree !== null,
+            available: dashboardMenuTree !== null && can('qr.create'),
         },
         {
             key: 'team-member',
             labelKey: 'workspace.create.teamMember',
             destination: 'team',
-            available: currentWorkspace !== null,
+            available: currentWorkspace !== null && can('workspace.manage'),
         },
     ];
 
@@ -1019,13 +1047,13 @@ export function WorkspaceApp({
               {
                   key: 'goto',
                   label: t('workspace.omnibox.group.goTo'),
-                  entries: SECTION_DESCRIPTORS.filter(
-                      (descriptor) => descriptor.group !== undefined,
-                  ).map((descriptor) => ({
-                      key: `goto-${descriptor.key}`,
-                      label: t(descriptor.labelKey as Parameters<typeof t>[0]),
-                      onSelect: () => goToSection(descriptor.key),
-                  })),
+                  entries: visibleDescriptors
+                      .filter((descriptor) => descriptor.group !== undefined)
+                      .map((descriptor) => ({
+                          key: `goto-${descriptor.key}`,
+                          label: t(descriptor.labelKey as Parameters<typeof t>[0]),
+                          onSelect: () => goToSection(descriptor.key),
+                      })),
               },
               {
                   key: 'create',

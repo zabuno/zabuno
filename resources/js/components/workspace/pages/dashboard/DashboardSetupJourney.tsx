@@ -20,6 +20,8 @@ type DashboardSetupJourneyProps = {
      * Ölü bağlantı, kullanıcının ilk gördüğü ekranda duruyordu.
      */
     onNavigateToSection?: (section: string) => void;
+    /** Pennant `novice-home`: kiracıda kapalıysa 'şimdi' kutusu çizilmez (FF-74). */
+    noviceHome?: boolean;
 };
 
 function qrLabel(count: number): string {
@@ -48,6 +50,7 @@ export function DashboardSetupJourney({
     dashboardMenuTree,
     workspaceId,
     onNavigateToSection,
+    noviceHome = true,
 }: DashboardSetupJourneyProps) {
     const notConnected = t('dashboard.setup.notConnected');
     const checking = t('dashboard.setup.checking');
@@ -210,42 +213,46 @@ export function DashboardSetupJourney({
 
     return (
         <section aria-label={t('dashboard.setup.region')} className="flex flex-col gap-3">
-            <section
-                aria-label={t('dashboard.now.region')}
-                className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4"
-            >
-                <h2 className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
-                    {t('dashboard.now.heading')}
-                </h2>
-                {nextStep ? (
-                    onNavigateToSection ? (
-                        <button
-                            type="button"
-                            onClick={() => onNavigateToSection(nextStep.section)}
-                            className={nowButtonClass}
-                        >
-                            {nowLabel[nextStep.key]}
-                        </button>
-                    ) : (
-                        <p className="text-body font-semibold text-fg">{nowLabel[nextStep.key]}</p>
-                    )
-                ) : (
-                    <>
-                        <p role="status" className="text-body text-fg">
-                            {t('dashboard.now.allDone')}
-                        </p>
-                        {onNavigateToSection ? (
+            {noviceHome ? (
+                <section
+                    aria-label={t('dashboard.now.region')}
+                    className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4"
+                >
+                    <h2 className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                        {t('dashboard.now.heading')}
+                    </h2>
+                    {nextStep ? (
+                        onNavigateToSection ? (
                             <button
                                 type="button"
-                                onClick={() => onNavigateToSection('qr-codes')}
+                                onClick={() => onNavigateToSection(nextStep.section)}
                                 className={nowButtonClass}
                             >
-                                {t('dashboard.now.openQr')}
+                                {nowLabel[nextStep.key]}
                             </button>
-                        ) : null}
-                    </>
-                )}
-            </section>
+                        ) : (
+                            <p className="text-body font-semibold text-fg">
+                                {nowLabel[nextStep.key]}
+                            </p>
+                        )
+                    ) : (
+                        <>
+                            <p role="status" className="text-body text-fg">
+                                {t('dashboard.now.allDone')}
+                            </p>
+                            {onNavigateToSection ? (
+                                <button
+                                    type="button"
+                                    onClick={() => onNavigateToSection('qr-codes')}
+                                    className={nowButtonClass}
+                                >
+                                    {t('dashboard.now.openQr')}
+                                </button>
+                            ) : null}
+                        </>
+                    )}
+                </section>
+            ) : null}
             <h2 className="text-lg font-semibold text-fg">{t('dashboard.setup.heading')}</h2>
             <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
                 {rows.map((row) => (

@@ -137,8 +137,8 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 
 | # | Madde | Durum |
 | --- | --- | --- |
-| I1 | Navigation registry (permission/entitlement/featureFlag) | 🔶 `group`, `path`, `labelKey` var; yetki/flag alanları yok |
-| I2 | Feature flag sistemi | ⬜ Pennant kurulu değil |
+| I1 | Navigation registry (permission/entitlement/featureFlag) | 🔶 (FF-74) `permission` alanı var ve ön uç `workspace-context` izin listesiyle süzer; `featureFlag` bayrakları bağlam gövdesinde (`features`); `entitlement` ⬜ (plan yetkisi bağı sonra) |
+| I2 | Feature flag sistemi | ✅ (FF-74) Pennant, kiracı kapsamı (`workspace:{id}`), `features` tablosu; ilk bayrak `novice-home` |
 | I3 | Laravel policy/gate ile nihai yetki | ✅ |
 | I4 | Flowbite/Radix görev ayrımı | 🔶 |
 | I5 | i18n: bütün metinler katalogdan | ✅ mühürlü katalog |

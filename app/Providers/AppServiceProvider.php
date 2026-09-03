@@ -50,6 +50,7 @@ use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
 use App\Application\Team\Port\TeamInvitationRepositoryPort;
 use App\Application\Team\Port\TeamMemberRepositoryPort;
+use App\Application\Tenancy\Port\FeatureFlagPort;
 use App\Application\Tenancy\Port\WorkspaceContextSessionPort;
 use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
@@ -113,6 +114,7 @@ use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
 use App\Infrastructure\Team\Persistence\EloquentTeamInvitationRepository;
 use App\Infrastructure\Team\Persistence\EloquentTeamMemberRepository;
+use App\Infrastructure\Tenancy\Features\PennantFeatureFlags;
 use App\Infrastructure\Tenancy\Persistence\EloquentWorkspaceRepository;
 use App\Infrastructure\Tenancy\Persistence\SessionWorkspaceContext;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
@@ -125,6 +127,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Pennant\Feature;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -330,6 +333,7 @@ final class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
         $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
+        $this->app->bind(FeatureFlagPort::class, PennantFeatureFlags::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);
         $this->app->bind(OutOfStockPort::class, EloquentOutOfStock::class);
         $this->app->bind(MalwareScannerPort::class, function (): MalwareScannerPort {
@@ -403,6 +407,16 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        /*
+            ÖZELLİK BAYRAKLARI (`docs/98` FF-74, Pennant). Kapsam çalışma
+            alanı. Bugün tek gerçek bayrak var: FF-73'ün Home "şimdi"
+            kutusu — yeni bir acemi yüzeyi bir kiracıda sorun çıkarırsa
+            yalnız o kiracıda kapatılır, kod dağıtımı gerekmez. Bayrak
+            kullanılmayan bir yerde tanımlanmaz: tanımı olup okuyanı
+            olmayan bayrak ölü koddur.
+        */
+        Feature::define('novice-home', static fn (mixed $scope): bool => true);
+
         // Aynı IP'den dakikada 60 QR çözümlemesi: bir restoranda makul,
         // token taraması için değersiz.
         RateLimiter::for('qr-resolve', static fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));

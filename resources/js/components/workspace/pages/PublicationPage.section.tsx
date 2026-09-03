@@ -14,6 +14,7 @@ const publicationSection: WorkspaceSectionDescriptor = {
     path: 'publication',
     order: 10,
     labelKey: 'workspace.shell.nav.publication',
+    permission: 'menu.view',
     aiQuickAction: true,
     render,
 };
