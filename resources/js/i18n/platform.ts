@@ -122,6 +122,38 @@ const en = {
     'platform.releaseReadiness.refresh.button': 'Refresh evidence',
     'platform.releaseReadiness.workspace.empty':
         'Choose a workspace above to load its release evidence.',
+
+    'platform.credentials.region.label': 'Provider keys',
+    'platform.credentials.nav.label': 'Provider keys',
+    'platform.credentials.intro':
+        'Store the platform provider keys here. A secret is shown only as a masked hint after it is saved — it is never sent back to this screen. Leave a secret field blank to keep the current value.',
+    'platform.credentials.loading': 'Loading provider keys…',
+    'platform.credentials.error': 'We could not load the provider keys.',
+    'platform.credentials.retry': 'Retry',
+    'platform.credentials.save': 'Save',
+    'platform.credentials.saved': 'Saved.',
+    'platform.credentials.saveError': 'We could not save. Please try again.',
+    'platform.credentials.disable': 'Disable',
+    'platform.credentials.secretSet': 'Set ({mask})',
+    'platform.credentials.keepPlaceholder': 'Leave blank to keep current',
+
+    'platform.credentials.provider.mailgun': 'Mailgun (email)',
+    'platform.credentials.provider.iyzico': 'Iyzico (payments)',
+    'platform.credentials.provider.openai': 'OpenAI (ChatGPT)',
+    'platform.credentials.provider.gemini': 'Gemini (Google)',
+
+    'platform.credentials.state.active': 'Active',
+    'platform.credentials.state.disabled': 'Disabled',
+    'platform.credentials.state.unset': 'Not set',
+
+    'platform.credentials.field.domain': 'Domain',
+    'platform.credentials.field.secret': 'Secret / API key',
+    'platform.credentials.field.endpoint': 'Endpoint',
+    'platform.credentials.field.api_key': 'API key',
+    'platform.credentials.field.secret_key': 'Secret key',
+    'platform.credentials.field.base_url': 'Base URL',
+    'platform.credentials.field.organization': 'Organization',
+    'platform.credentials.field.project': 'Project',
 } as const;
 
 type TranslationKey = keyof typeof en;

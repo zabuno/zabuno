@@ -8,6 +8,114 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: platform:platform.credentials.disable
+msgid "platform.credentials.disable"
+msgstr ""
+
+#: platform:platform.credentials.error
+msgid "platform.credentials.error"
+msgstr ""
+
+#: platform:platform.credentials.field.api_key
+msgid "platform.credentials.field.api_key"
+msgstr ""
+
+#: platform:platform.credentials.field.base_url
+msgid "platform.credentials.field.base_url"
+msgstr ""
+
+#: platform:platform.credentials.field.domain
+msgid "platform.credentials.field.domain"
+msgstr ""
+
+#: platform:platform.credentials.field.endpoint
+msgid "platform.credentials.field.endpoint"
+msgstr ""
+
+#: platform:platform.credentials.field.organization
+msgid "platform.credentials.field.organization"
+msgstr ""
+
+#: platform:platform.credentials.field.project
+msgid "platform.credentials.field.project"
+msgstr ""
+
+#: platform:platform.credentials.field.secret
+msgid "platform.credentials.field.secret"
+msgstr ""
+
+#: platform:platform.credentials.field.secret_key
+msgid "platform.credentials.field.secret_key"
+msgstr ""
+
+#: platform:platform.credentials.intro
+msgid "platform.credentials.intro"
+msgstr ""
+
+#: platform:platform.credentials.keepPlaceholder
+msgid "platform.credentials.keepPlaceholder"
+msgstr ""
+
+#: platform:platform.credentials.loading
+msgid "platform.credentials.loading"
+msgstr ""
+
+#: platform:platform.credentials.nav.label
+msgid "platform.credentials.nav.label"
+msgstr ""
+
+#: platform:platform.credentials.provider.gemini
+msgid "platform.credentials.provider.gemini"
+msgstr ""
+
+#: platform:platform.credentials.provider.iyzico
+msgid "platform.credentials.provider.iyzico"
+msgstr ""
+
+#: platform:platform.credentials.provider.mailgun
+msgid "platform.credentials.provider.mailgun"
+msgstr ""
+
+#: platform:platform.credentials.provider.openai
+msgid "platform.credentials.provider.openai"
+msgstr ""
+
+#: platform:platform.credentials.region.label
+msgid "platform.credentials.region.label"
+msgstr ""
+
+#: platform:platform.credentials.retry
+msgid "platform.credentials.retry"
+msgstr ""
+
+#: platform:platform.credentials.save
+msgid "platform.credentials.save"
+msgstr ""
+
+#: platform:platform.credentials.saveError
+msgid "platform.credentials.saveError"
+msgstr ""
+
+#: platform:platform.credentials.saved
+msgid "platform.credentials.saved"
+msgstr ""
+
+#: platform:platform.credentials.secretSet
+msgid "platform.credentials.secretSet"
+msgstr ""
+
+#: platform:platform.credentials.state.active
+msgid "platform.credentials.state.active"
+msgstr ""
+
+#: platform:platform.credentials.state.disabled
+msgid "platform.credentials.state.disabled"
+msgstr ""
+
+#: platform:platform.credentials.state.unset
+msgid "platform.credentials.state.unset"
+msgstr ""
+
 #: platform:platform.plans.activate.button
 msgid "platform.plans.activate.button"
 msgstr ""
