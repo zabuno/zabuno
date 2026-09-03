@@ -39,6 +39,9 @@ final class SiteText
     public function all(?string $locale = null): array
     {
         $keys = [
+            // Mühendislik kabuğunun sekme başlığı (`docs/98` FF-66) — Blade'e
+            // sabit dize yazmak çevrilemez borcu büyütürdü (I18N-SSR-RATCHET-16).
+            'engineeringTitle' => 'site.engineering.title',
             'pricingHeading' => 'site.pricing.heading',
             'pricingLead' => 'site.pricing.lead',
             'pricingEmpty' => 'site.pricing.empty',

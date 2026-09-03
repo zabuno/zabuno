@@ -54,6 +54,7 @@ export default defineConfig(({ mode }) => ({
                           'resources/js/workspace.mobile.tsx',
                           'resources/js/workspace.desktop.tsx',
                           'resources/js/platform.tsx',
+                          'resources/js/engineering.tsx',
                       ],
                       refresh: true,
                   }),

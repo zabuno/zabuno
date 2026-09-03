@@ -2,6 +2,36 @@ import { createTranslator } from './translator';
 import { overridesFor } from './generated-overrides';
 
 const en = {
+    // MÜHENDİSLİK KABUĞU (`docs/98` FF-66): readiness ve denetim izi plan/ödeme
+    // kabuğundan ayrıldı — aynı kişi olabilir, aynı iş değil.
+    'engineering.shell.brand': 'Zabuno Engineering',
+    'engineering.shell.navLabel': 'Engineering',
+    'engineering.shell.heading': 'Engineering',
+    'engineering.shell.group.evidence': 'Evidence',
+    'engineering.shell.toPlatform': 'Platform admin',
+    'platform.shell.toEngineering': 'Engineering',
+    'platform.shell.group.commercial': 'Commercial',
+    'platform.shell.group.integrations': 'Integrations',
+    'engineering.aiAudit.nav.label': 'AI audit trail',
+    'engineering.aiAudit.heading': 'AI audit trail',
+    'engineering.aiAudit.description':
+        'Who changed which provider key and when, which account fell out of the pool, and which restaurant is pinned to which account. Read-only; nothing here carries a secret.',
+    'engineering.aiAudit.loading': 'Loading the audit trail…',
+    'engineering.aiAudit.error': 'The audit trail could not be loaded.',
+    'engineering.aiAudit.assignments.title': 'Restaurant → account pinning',
+    'engineering.aiAudit.assignments.empty':
+        'No restaurant has made an AI call yet, so nothing is pinned.',
+    'engineering.aiAudit.audits.title': 'Key and health events',
+    'engineering.aiAudit.audits.empty': 'No key has been written yet.',
+    'engineering.aiAudit.col.workspace': 'Restaurant',
+    'engineering.aiAudit.col.provider': 'Provider',
+    'engineering.aiAudit.col.connection': 'Account',
+    'engineering.aiAudit.col.health': 'Health',
+    'engineering.aiAudit.col.since': 'Pinned since',
+    'engineering.aiAudit.col.at': 'When',
+    'engineering.aiAudit.col.action': 'Event',
+    'engineering.aiAudit.col.actor': 'By',
+    'engineering.aiAudit.actor.server': 'server command',
     'platform.shell.brand': 'Zabuno Platform',
     'platform.shell.navLabel': 'Platform admin',
     'platform.shell.heading': 'Platform administration',

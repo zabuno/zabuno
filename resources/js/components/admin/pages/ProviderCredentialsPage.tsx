@@ -376,7 +376,7 @@ export function ProviderCredentialsPage() {
     if (loadError) {
         return (
             <section aria-labelledby="credentials-heading">
-                <h1 id="credentials-heading">{heading}</h1>
+                <h2 id="credentials-heading">{heading}</h2>
                 <p role="alert">{t('platform.credentials.error')}</p>
                 <button type="button" onClick={() => void load()}>
                     {t('platform.credentials.retry')}
@@ -388,7 +388,7 @@ export function ProviderCredentialsPage() {
     if (payload === null) {
         return (
             <section aria-labelledby="credentials-heading">
-                <h1 id="credentials-heading">{heading}</h1>
+                <h2 id="credentials-heading">{heading}</h2>
                 <p>{t('platform.credentials.loading')}</p>
             </section>
         );
@@ -402,10 +402,8 @@ export function ProviderCredentialsPage() {
     }));
 
     return (
-        <section aria-labelledby="credentials-heading">
-            <h1 id="credentials-heading">{heading}</h1>
-            <p>{t('platform.credentials.intro')}</p>
-
+        <section aria-label={heading}>
+            {/* Başlık ve giriş metni kabuğun sayfa başlığında (`OpsPageHeader`). */}
             {/* Panel genelinde TEK ekleme düğmesi — sağlayıcı başına değil. */}
             <div className="mt-[var(--space-fluid-md)]">
                 <button

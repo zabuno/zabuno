@@ -22,16 +22,9 @@ export function ReleaseReadinessPage() {
     const [workspace, setWorkspace] = useState<Workspace | null>(null);
 
     return (
+        // Başlık ve açıklama artık kabuğun sayfa başlığında (`OpsPageHeader`,
+        // `docs/99`); burada tekrarlamak iki h1 üretirdi.
         <div id="section-release-readiness" className="flex flex-col gap-[var(--space-4)]">
-            <header className="flex flex-col gap-[var(--space-1)]">
-                <h2 className="text-section font-semibold text-fg">
-                    {t('platform.releaseReadiness.heading')}
-                </h2>
-                <p className="text-body text-fg-secondary">
-                    {t('platform.releaseReadiness.operational.description')}
-                </p>
-            </header>
-
             <WorkspaceDiscovery selectedWorkspace={workspace} onSelect={setWorkspace} />
 
             {workspace === null ? (
