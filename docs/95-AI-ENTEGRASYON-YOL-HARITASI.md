@@ -111,20 +111,16 @@ ile sınamaktır.
 - `/platform/credentials` GUI paneli — her sağlayıcı bir kart, sır yalnız
   `••••son4` maskesiyle görünür (FF-40).
 
-**Genişleyen yetenekler (docs/26 "genişleyen yetenekler" satırı, henüz
-yazılmadı):** çeviri taslağı (`opt-22-ai-translation`), ürün açıklaması
-taslağı (`opt-23-ai-product-description`, alerjen alanına asla yazmaz),
-taksonomi yinelenen-terim tespiti (`EmbeddingPort`, yerel-first, `docs/51`
-§4.4), ve **Gemini görüntü-okuma adaptörü** (`GeminiVisionProvider` —
-`OpenAiVisionProvider`'ın FF-41'de kurulan kalıbını izler; kasadaki `gemini`
-satırı zaten hazır, yalnız adaptör kodu yok). Sıra önemli: `docs/51` §4b.1
-görme zincirini Gemini→OpenAI→Claude olarak sıralıyor, bugün yalnız OpenAI
-bağlı — Gemini asıl **birincil** aday olduğu için bu maddenin önceliği
-diğer ikisinden yüksek. Bunların hiçbiri yeni bir sağlayıcı/hesap mimarisi
-gerektirmez, mevcut kasayı kullanır.
+**Genişleyen yetenekler:** **Gemini görüntü-okuma adaptörü teslim edildi**
+(FF-45) — `GeminiVisionProvider`, `docs/51` §4b.1'in sıraladığı gibi artık
+OpenAI'dan ÖNCE denenir (`AppServiceProvider` binding'i güncellendi). Kalan
+üçü henüz yazılmadı: çeviri taslağı (`opt-22-ai-translation`), ürün
+açıklaması taslağı (`opt-23-ai-product-description`, alerjen alanına asla
+yazmaz), taksonomi yinelenen-terim tespiti (`EmbeddingPort`, yerel-first,
+`docs/51` §4.4). Hiçbiri yeni bir sağlayıcı/hesap mimarisi gerektirmez,
+mevcut kasayı kullanır.
 
-**Tetikleyici:** yok, kasa hazır; bu dört yetenek ne zaman istenirse
-test-first eklenir — Gemini adaptörü önce.
+**Tetikleyici:** yok, kasa hazır; kalan üç yetenek test-first eklenir.
 
 ## Faz 3 — Çok-hesap / BYOK + yeni sağlayıcılar (Stage 3 — GTM)
 
