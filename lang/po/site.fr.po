@@ -56,6 +56,22 @@ msgstr ""
 msgid "site.home.faq.cost.question"
 msgstr ""
 
+#: site:site.plan.analytics
+msgid "site.plan.analytics"
+msgstr ""
+
+#: site:site.plan.qrBulk
+msgid "site.plan.qrBulk"
+msgstr ""
+
+#: site:site.plan.team
+msgid "site.plan.team"
+msgstr ""
+
+#: site:site.pricing.adds
+msgid "site.pricing.adds"
+msgstr ""
+
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
 msgstr ""
@@ -64,12 +80,28 @@ msgstr ""
 msgid "site.pricing.empty.cta"
 msgstr ""
 
+#: site:site.pricing.free
+msgid "site.pricing.free"
+msgstr ""
+
 #: site:site.pricing.heading
 msgid "site.pricing.heading"
 msgstr ""
 
+#: site:site.pricing.included.body
+msgid "site.pricing.included.body"
+msgstr ""
+
+#: site:site.pricing.included.heading
+msgid "site.pricing.included.heading"
+msgstr ""
+
 #: site:site.pricing.lead
 msgid "site.pricing.lead"
+msgstr ""
+
+#: site:site.pricing.perMonth
+msgid "site.pricing.perMonth"
 msgstr ""
 
 #: site:site.pricing.perRestaurant

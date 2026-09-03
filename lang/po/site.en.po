@@ -56,6 +56,22 @@ msgstr "Prices come from our plan catalogue, so what you read there is what we c
 msgid "site.home.faq.cost.question"
 msgstr "What does it cost?"
 
+#: site:site.plan.analytics
+msgid "site.plan.analytics"
+msgstr "Analytics: what guests look at, and what they search for and cannot find"
+
+#: site:site.plan.qrBulk
+msgid "site.plan.qrBulk"
+msgstr "Bulk QR codes for a whole room of tables"
+
+#: site:site.plan.team
+msgid "site.plan.team"
+msgstr "Team members with roles you control"
+
+#: site:site.pricing.adds
+msgid "site.pricing.adds"
+msgstr "Adds"
+
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
 msgstr "Plan prices are not published yet. Tell us about your restaurant and we will answer with a price for your case."
@@ -64,13 +80,29 @@ msgstr "Plan prices are not published yet. Tell us about your restaurant and we 
 msgid "site.pricing.empty.cta"
 msgstr "Contact us"
 
+#: site:site.pricing.free
+msgid "site.pricing.free"
+msgstr "Free"
+
 #: site:site.pricing.heading
 msgid "site.pricing.heading"
 msgstr "Pricing"
 
+#: site:site.pricing.included.body
+msgid "site.pricing.included.body"
+msgstr "Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, photos, and marking a dish sold out for the day."
+
+#: site:site.pricing.included.heading
+msgid "site.pricing.included.heading"
+msgstr "Every plan includes"
+
 #: site:site.pricing.lead
 msgid "site.pricing.lead"
 msgstr "What a restaurant pays to publish its menu behind a QR code."
+
+#: site:site.pricing.perMonth
+msgid "site.pricing.perMonth"
+msgstr "per month"
 
 #: site:site.pricing.perRestaurant
 msgid "site.pricing.perRestaurant"
