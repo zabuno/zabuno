@@ -220,6 +220,18 @@ msgstr "Add these to the draft"
 msgid "menu.item.ai.import.applying"
 msgstr "Adding…"
 
+#: menu:menu.item.ai.import.batch.collected
+msgid "menu.item.ai.import.batch.collected"
+msgstr "{rows} rows from {pages} pages. {dupes} duplicate rows were skipped."
+
+#: menu:menu.item.ai.import.batch.failed
+msgid "menu.item.ai.import.batch.failed"
+msgstr "None of the pages could be read."
+
+#: menu:menu.item.ai.import.batch.progress
+msgid "menu.item.ai.import.batch.progress"
+msgstr "Reading page {done} of {total}…"
+
 #: menu:menu.item.ai.import.cancel
 msgid "menu.item.ai.import.cancel"
 msgstr "Cancel"

@@ -182,6 +182,10 @@ sözleşmenin altı adımının altısı da koda döküldü.
 - Uyumluluk yoklaması: sınanmamış özel uç nokta aday olmaz (FF-60).
 - Toplu fotoğraf okuma, kısmi başarısızlık toleranslı (FF-61).
 
+**Güncelleme (FF-75):** aşağıdaki ilk madde (toplu trafiğin ayrı hesaba
+izolasyonu) öne çekildi ve teslim edildi — `docs/adr/ADR-L11`. İkinci madde
+(ağırlıklı/maliyet yönlendirmesi) Faz 5'te kalır.
+
 **Bilinçle Faz 5'e bırakılan iki şey** (ikisi de `docs/97` R30'da yazılı):
 toplu trafiğin AYRI bir hesaba izolasyonu ve ağırlıklı/maliyet/gecikme
 yönlendirmesi. İkisi de yapışkanlığa "işin amacı" boyutunu eklemeyi

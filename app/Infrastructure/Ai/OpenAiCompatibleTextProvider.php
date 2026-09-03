@@ -51,7 +51,7 @@ final readonly class OpenAiCompatibleTextProvider implements StructuredGeneratio
 
     public function generate(AiRequest $request): AiArtifact
     {
-        $resolved = $this->credentials->resolveFor($request->workspaceId, $this->provider);
+        $resolved = $this->credentials->resolveFor($request->workspaceId, $this->provider, (string) ($request->options['purpose'] ?? 'interactive'));
         $creds = $resolved->values;
         $connectionId = $resolved->connectionId;
 

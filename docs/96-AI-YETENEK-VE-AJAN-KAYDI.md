@@ -149,7 +149,13 @@ uyar ama AI'a özgü değiller.
 
 ## Agents — hangi ajanlar olacak
 
-**Dürüst durum:** depoda bugün ayrı bir "Agent" kayıt sistemi **yok** —
+**Güncelleme (FF-75, 2026-09-04):** ajan sözleşmeleri artık dosyadır:
+`templates/AGENT-SPEC.md` + `agents/{collector,core-eca-rules,
+opt-13-pos-integrations,integration-hub}.md`. Yalnız `collector` kodda
+karşılık buldu (deterministik `MenuBatchCollector`, `docs/adr/ADR-L11`);
+üçü planlı ve dosyaları "kod yok" der.
+
+**Dürüst durum (2026-08):** depoda o gün ayrı bir "Agent" kayıt sistemi **yoktu** —
 yalnız `docs/32`'deki `agentic_guarded` duruşu, üç modülde (`core-eca-rules`,
 `opt-13-pos-integrations`, `integration-hub`). Sahibin "belirli olsun"
 isteği doğru — bunu somutlaştırıyorum: `SKILL-SPEC.md`'nin aynı disipliniyle

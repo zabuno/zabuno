@@ -57,7 +57,7 @@ final readonly class AnthropicTextProvider implements StructuredGenerationPort
 
     public function generate(AiRequest $request): AiArtifact
     {
-        $resolved = $this->credentials->resolveFor($request->workspaceId, CredentialProvider::Anthropic);
+        $resolved = $this->credentials->resolveFor($request->workspaceId, CredentialProvider::Anthropic, (string) ($request->options['purpose'] ?? 'interactive'));
         $creds = $resolved->values;
         $connectionId = $resolved->connectionId;
         $apiKey = (string) ($creds['api_key'] ?? '');

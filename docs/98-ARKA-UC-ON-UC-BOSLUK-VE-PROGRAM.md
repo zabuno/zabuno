@@ -83,7 +83,7 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 12/13 tamamlandı, 13/13 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 13/13 tamamlandı.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
@@ -101,7 +101,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 10 ✅ | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
 | 11 ✅ | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
 | 12 ✅ | **FF-74 Yetki-görünürlük + registry** | gezinti kaydına `permission`/`entitlement`; ön uç `me` ucundan izin okur; yetkisiz eylem çizilmez; Pennant | Editor 403 görmez |
-| 13 | **FF-75 Toplu orkestra** (sahibin 2026-09-04 sorusu) | 40 sayfalık menü: `ai_batches` (kalıcı hafıza) + kuyrukta sayfa başına iş (geçici hafıza) + **parti-bazlı** yönlendirme (sağlıklı bağlantılar arasında, bağlantı başına dakikalık bütçe — yapışkanlığa "amaç" boyutu, R30'un Faz 5'e bıraktığı iş öne çekilir) + `CollectorJob` (artifact'ları tek inceleme listesine toplar, yinelenenleri ayıklar) + mevcut insan-onaylı `apply`. `docs/adr/` klasörü ve `agents/*.md` sözleşmeleri (docs/96'daki üç ajan) bu pakette resmileşir | 40 sayfa tek limitte şişmez; sonuç TEK listede incelenir; onaysız hiçbir satır yazılmaz |
+| 13 ✅ | **FF-75 Toplu orkestra** (sahibin 2026-09-04 sorusu) | 40 sayfalık menü: `ai_batches` (kalıcı hafıza) + kuyrukta sayfa başına iş (geçici hafıza) + **parti-bazlı** yönlendirme (sağlıklı bağlantılar arasında, bağlantı başına dakikalık bütçe — yapışkanlığa "amaç" boyutu, R30'un Faz 5'e bıraktığı iş öne çekilir) + `CollectorJob` (artifact'ları tek inceleme listesine toplar, yinelenenleri ayıklar) + mevcut insan-onaylı `apply`. `docs/adr/` klasörü ve `agents/*.md` sözleşmeleri (docs/96'daki üç ajan) bu pakette resmileşir | 40 sayfa tek limitte şişmez; sonuç TEK listede incelenir; onaysız hiçbir satır yazılmaz |
 
 **Ertelenen ve nedeni:** DAM Faz 8-10 (crop stüdyosu, AI önerileri, video)
 `docs/49`'un kendi fazlamasıyla sonra; video sahibin kararıyla Faz 2'ye
@@ -262,6 +262,35 @@ bugünkü ölçüm, 4 faz. Uygulanan Faz 1:
   kataloğu `entitlements` JSON'u ile bağ FF-71 kota deseniyle sonra;
   `docs/50` Faz 2 navigation registry'nin sunucu tarafı kopyası yok
   (bilerek: iki liste ayrışır).
+
+### FF-75 teslim notu
+
+Sahibin sorusu ("multi agents, skills, ADR, kalıcı/geçici hafıza, hesaplar
+arası parçalama, collector") bir **iş boru hattı** olarak kuruldu —
+`docs/adr/ADR-L11` neden ajan sürüsü değil, iş boru hattı olduğunu yazar.
+
+- **Önce:** toplu okuma en çok 10 fotoğraf, tek istekte, eşzamanlı; 40 sayfa
+  sığmıyordu; tek kiracı sağlayıcının dakikalık limitini tüketebiliyordu;
+  toplu trafik etkileşimli hesapla aynı bağlantıya gidiyordu (`docs/97` R30
+  "Faz 5'e bırakıldı"); ADR klasörü ve ajan sözleşme dosyaları yoktu.
+- **Şimdi:** `POST menu/{menu}/ai-batches` (40 sayfa) → `ai_batches` +
+  `ai_batch_pages` (kalıcı hafıza) → sayfa başına kuyruk işi
+  (`ExtractMenuBatchPageJob`, geçici hafıza; `RateLimiter('ai-batch')`
+  kiracı başına dakikada N, `config/ai.php`) → `purpose=batch` amaç boyutu
+  (`ai_connection_assignments.purpose`; `plain_fields.purpose=batch` etiketli
+  bağlantı öne) → `MenuBatchCollector` (deterministik: yinelenen
+  `kategori|ürün` sayılır ve atlanır, düşen sayfa sebebiyle listelenir) →
+  `GET ai-batches/{batch}` ile ilerleme → aynı insan-onaylı `apply`. Ekran
+  11+ fotoğrafta partiyi izler: "Reading page 3 of 11…" → "2 rows from 10
+  pages. 9 duplicate rows were skipped." `docs/adr/`, `templates/AGENT-SPEC.md`,
+  `agents/{collector,core-eca-rules,opt-13-pos-integrations,integration-hub}.md`.
+- **Kullanıcı yolculuğu:** Mehmet Usta 12 sayfayı yükler → "Oku" → ilerleme →
+  tek liste, Ayran bir kez → "Ekle".
+- **Kalan engel:** `purpose=batch` etiketini kasa formundan vermek (bugün
+  bağlantının `plain_fields` alanı; superadmin ekranında ayrı bir seçici
+  yok); üretimde `queue:work` çalışanı (işletim, `docs/42`); üç planlı ajan
+  (`agents/*.md`) kodda yok — sözleşme var, kod yok, ve dosyalar bunu
+  söyler.
 
 ## 6. Esnetilen kurallar — açık kayıt
 

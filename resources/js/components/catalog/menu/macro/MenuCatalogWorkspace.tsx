@@ -238,6 +238,18 @@ function aiAvailabilityUrl(workspaceId: number): string {
  * Bir restoranın menüsü tek fotoğrafa sığmaz; dört sayfayı tek tek
  * okutmak, sahibin aynı işi dört kez yapması demekti.
  */
+/** Toplu orkestra (FF-75): 10'dan çok sayfa kuyruğa gider, parti izlenir. */
+function aiBatchesUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/ai-batches`;
+}
+
+function showAiBatchUrl(workspaceId: number, batchId: number): string {
+    return `/api/workspaces/${workspaceId}/ai-batches/${batchId}`;
+}
+
+const INTERACTIVE_IMPORT_MAX_PHOTOS = 10;
+const BATCH_POLL_MS = 2000;
+
 function bulkAiImportsUrl(workspaceId: number, menuId: number): string {
     return `/api/workspaces/${workspaceId}/menu/${menuId}/ai-imports/batch`;
 }
@@ -477,6 +489,15 @@ export function MenuCatalogWorkspace({
     const [aiImportOpen, setAiImportOpen] = useState(false);
     const [importSourceMedia, setImportSourceMedia] = useState<ReadyMediaRow[]>([]);
     const [importMediaChoices, setImportMediaChoices] = useState<number[]>([]);
+    const [aiBatchProgress, setAiBatchProgress] = useState<{
+        done: number;
+        total: number;
+    } | null>(null);
+    const [aiBatchSummary, setAiBatchSummary] = useState<{
+        rows: number;
+        pages: number;
+        dupes: number;
+    } | null>(null);
     const [aiImportArtifactIds, setAiImportArtifactIds] = useState<number[]>([]);
     /** Okunamayan fotoğraflar: medya kimliği → sebep (`docs/96` Faz 3). */
     const [aiImportFailures, setAiImportFailures] = useState<
@@ -964,6 +985,19 @@ export function MenuCatalogWorkspace({
         setAiImportArtifactIds([]);
         setAiImportFailures([]);
         setAiImportApplyReport(null);
+        setAiBatchProgress(null);
+        setAiBatchSummary(null);
+
+        /*
+            TOPLU ORKESTRA (`docs/98` FF-75, `docs/adr/ADR-L11`): 10 sayfaya
+            kadar tek istekte eşzamanlı; ötesi kuyruğa gider, parti kalıcı
+            hafızada izlenir, toplayıcı yinelenenleri ayıklayıp TEK liste
+            döner. Uygulama iki yolda da aynı insan-onaylı düğmedir.
+        */
+        if (importMediaChoices.length > INTERACTIVE_IMPORT_MAX_PHOTOS) {
+            await handleReadAiBatch();
+            return;
+        }
 
         try {
             const storeResponse = await postJson(bulkAiImportsUrl(workspaceId, tree.id), {
@@ -1066,6 +1100,85 @@ export function MenuCatalogWorkspace({
             setAiImportReviewError(t('menu.item.ai.import.error'));
         } finally {
             setAiImportReviewLoading(false);
+        }
+    }
+
+    async function handleReadAiBatch() {
+        if (tree === null) return;
+        try {
+            const started = await postJson(aiBatchesUrl(workspaceId, tree.id), {
+                mediaAssetIds: importMediaChoices,
+            });
+            if (started.status === 503) {
+                setAiImportReviewError(t('menu.item.ai.import.unavailable'));
+                return;
+            }
+            if (!started.ok) {
+                setAiImportReviewError(
+                    await parseErrorMessage(started, t('menu.item.ai.import.error')),
+                );
+                return;
+            }
+            const { id: batchId, totalPages } = (await started.json()) as {
+                id: number;
+                totalPages: number;
+            };
+            setAiBatchProgress({ done: 0, total: totalPages });
+
+            // Parti kapanana kadar izle: ilerleme sayfa sayısıyla okunur.
+            for (;;) {
+                const shown = await fetch(
+                    showAiBatchUrl(workspaceId, batchId),
+                    buildAuthRequestInit(),
+                );
+                if (!shown.ok) {
+                    setAiImportReviewError(t('menu.item.ai.import.error'));
+                    return;
+                }
+                const batch = (await shown.json()) as {
+                    state: string;
+                    donePages: number;
+                    failedPages: number;
+                    totalPages: number;
+                    summary: {
+                        rows: AiImportRow[];
+                        artifactIds: number[];
+                        duplicatesSkipped: number;
+                        failedPages: { mediaAssetId: number; reason: string }[];
+                    } | null;
+                };
+                setAiBatchProgress({
+                    done: batch.donePages + batch.failedPages,
+                    total: batch.totalPages,
+                });
+
+                if (batch.state === 'collected' && batch.summary) {
+                    setAiImportFailures(
+                        batch.summary.failedPages.map((page) => ({
+                            mediaAssetId: page.mediaAssetId,
+                            error: page.reason,
+                        })),
+                    );
+                    setAiImportArtifactIds(batch.summary.artifactIds);
+                    setAiImportRows(batch.summary.rows);
+                    setAiBatchSummary({
+                        rows: batch.summary.rows.length,
+                        pages: batch.donePages,
+                        dupes: batch.summary.duplicatesSkipped,
+                    });
+                    return;
+                }
+                if (batch.state === 'failed') {
+                    setAiImportReviewError(t('menu.item.ai.import.batch.failed'));
+                    return;
+                }
+                await new Promise((resolve) => setTimeout(resolve, BATCH_POLL_MS));
+            }
+        } catch {
+            setAiImportReviewError(t('menu.item.ai.import.error'));
+        } finally {
+            setAiImportReviewLoading(false);
+            setAiBatchProgress(null);
         }
     }
 
@@ -2043,6 +2156,29 @@ export function MenuCatalogWorkspace({
                                                 : t('menu.item.ai.import.read')}
                                         </button>
 
+                                        {aiBatchProgress ? (
+                                            <p
+                                                role="status"
+                                                className="text-caption text-fg-secondary"
+                                            >
+                                                {t('menu.item.ai.import.batch.progress', {
+                                                    done: String(aiBatchProgress.done),
+                                                    total: String(aiBatchProgress.total),
+                                                })}
+                                            </p>
+                                        ) : null}
+                                        {aiBatchSummary ? (
+                                            <p
+                                                role="status"
+                                                className="text-caption text-fg-secondary"
+                                            >
+                                                {t('menu.item.ai.import.batch.collected', {
+                                                    rows: String(aiBatchSummary.rows),
+                                                    pages: String(aiBatchSummary.pages),
+                                                    dupes: String(aiBatchSummary.dupes),
+                                                })}
+                                            </p>
+                                        ) : null}
                                         {aiImportReviewError ? (
                                             <FieldError message={aiImportReviewError} />
                                         ) : null}

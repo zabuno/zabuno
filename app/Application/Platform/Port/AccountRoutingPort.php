@@ -31,10 +31,16 @@ interface AccountRoutingPort
      *
      * @return list<int>
      */
-    public function candidates(int $workspaceId, CredentialProvider $provider): array;
+    /*
+        AMAÇ boyutu (`docs/97` R30, FF-75): toplu trafik (`batch`) etkileşimli
+        trafikten ayrı yapışır; `plain_fields.purpose = batch` etiketli bir
+        bağlantı varsa toplu iş önce oraya gider. Yeni bir hesap YARATMAZ,
+        kota aşmak için hesap DEĞİŞTİRMEZ — skill yasağı aynen durur.
+    */
+    public function candidates(int $workspaceId, CredentialProvider $provider, string $purpose = 'interactive'): array;
 
     /** Seçimi kalıcılaştırır — bir sonraki istek aynı yere gitsin diye. */
-    public function remember(int $workspaceId, CredentialProvider $provider, int $connectionId): void;
+    public function remember(int $workspaceId, CredentialProvider $provider, int $connectionId, string $purpose = 'interactive'): void;
 
     public function markHealthy(int $connectionId): void;
 

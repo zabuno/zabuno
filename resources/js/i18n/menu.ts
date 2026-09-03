@@ -120,6 +120,11 @@ const en = {
     // FOTOĞRAFTAN İÇE AKTARMA (AI) — `docs/92`/`docs/97` Yolculuk A. Yükleme
     // Media sayfasında olur (`menuImportSource` slotu, yeniden icat
     // edilmez); burası yalnız OKUR ve İNCELETİR.
+    // FF-75 toplu orkestra: 10'dan çok sayfa kuyruğa gider, ilerleme okunur.
+    'menu.item.ai.import.batch.progress': 'Reading page {done} of {total}…',
+    'menu.item.ai.import.batch.collected':
+        '{rows} rows from {pages} pages. {dupes} duplicate rows were skipped.',
+    'menu.item.ai.import.batch.failed': 'None of the pages could be read.',
     'menu.item.ai.import.disclose': 'Import from a photo (AI)',
     'menu.item.ai.import.cancel': 'Cancel',
     // TOPLU okuma (`docs/96` Faz 3): bir restoranın menüsü tek fotoğrafa

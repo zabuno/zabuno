@@ -41,7 +41,8 @@ final class ExtractMenuFromImage
     /**
      * @return array{id: int, artifact: AiArtifact}
      */
-    public function handle(int $workspaceId, int $menuId, string $absolutePath): array
+    /** @param  array<string, mixed>  $options  ör. `purpose: batch` (`docs/98` FF-75) */
+    public function handle(int $workspaceId, int $menuId, string $absolutePath, array $options = []): array
     {
         $artifact = $this->vision->extract(
             new AiRequest(
@@ -54,7 +55,7 @@ final class ExtractMenuFromImage
                 */
                 instruction: 'Extract menu rows: category, product, price, currency.',
                 userContent: [],
-                options: ['menuId' => $menuId],
+                options: ['menuId' => $menuId] + $options,
             ),
             [$absolutePath],
         );

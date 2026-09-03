@@ -7,8 +7,10 @@ use App\Http\Controllers\Ai\ApplyMenuAiImportController;
 use App\Http\Controllers\Ai\ApplyProductDescriptionDraftController;
 use App\Http\Controllers\Ai\ShowAiAvailabilityController;
 use App\Http\Controllers\Ai\ShowDuplicateProductCandidatesController;
+use App\Http\Controllers\Ai\ShowMenuAiBatchController;
 use App\Http\Controllers\Ai\ShowMenuAiImportController;
 use App\Http\Controllers\Ai\StoreBulkMenuAiImportController;
+use App\Http\Controllers\Ai\StoreMenuAiBatchController;
 use App\Http\Controllers\Ai\StoreMenuAiImportController;
 use App\Http\Controllers\Ai\StoreProductDescriptionDraftController;
 use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
@@ -96,6 +98,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     */
     Route::post('/workspaces/{workspace}/menu/{menu}/ai-imports/batch', StoreBulkMenuAiImportController::class)
         ->middleware('throttle:2,1');
+
+    // TOPLU ORKESTRA (`docs/98` FF-75): 40 sayfa kuyruğa, parti kalıcı
+    // hafızada, toplayıcı tek listede; uygulama yine insan onaylı `apply`.
+    Route::post('/workspaces/{workspace}/menu/{menu}/ai-batches', StoreMenuAiBatchController::class)
+        ->middleware('throttle:2,1');
+    Route::get('/workspaces/{workspace}/ai-batches/{batch}', ShowMenuAiBatchController::class);
     Route::post('/workspaces/{workspace}/ai-imports/batch/apply', ApplyBulkMenuAiImportController::class)
         ->middleware('throttle:10,1');
 

@@ -420,6 +420,9 @@ final class AppServiceProvider extends ServiceProvider
         // Aynı IP'den dakikada 60 QR çözümlemesi: bir restoranda makul,
         // token taraması için değersiz.
         RateLimiter::for('qr-resolve', static fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
+        // Toplu AI sayfa işleri: kiracı başına dakikalık bütçe (`docs/98` FF-75).
+        RateLimiter::for('ai-batch', static fn (object $job): Limit => Limit::perMinute((int) config('ai.batch.per_minute', 6))
+            ->by('ws:'.((int) ($job->workspaceId ?? 0))));
 
         /*
             TANITIM SİTESİNİN METNİ HER ZAMAN VAR — `docs/88`.

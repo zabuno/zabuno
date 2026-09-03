@@ -32,7 +32,7 @@ final readonly class StickyAccountRouter implements AccountRoutingPort
 
     private const AUDITS = 'platform_credential_audits';
 
-    public function candidates(int $workspaceId, CredentialProvider $provider): array
+    public function candidates(int $workspaceId, CredentialProvider $provider, string $purpose = 'interactive'): array
     {
         /*
             Aday havuzu SORGUDA daralır, bir `if` ile değil: başka bir
@@ -71,13 +71,29 @@ final readonly class StickyAccountRouter implements AccountRoutingPort
             // doğru sırayı vermez, bu yüzden açık bir sıralama ifadesi.
             ->orderByRaw("case when scope = '".CredentialScope::TenantByok->value."' then 0 else 1 end")
             ->orderBy('id')
-            ->pluck('id')
-            ->map(static fn ($id): int => (int) $id)
-            ->all();
+            ->get(['id', 'plain_fields']);
+
+        /*
+            AMAÇ TERCİHİ (FF-75): `batch` gibi etkileşimli olmayan bir amaç
+            için, superadmin'in `purpose` etiketi verdiği bağlantılar öne
+            alınır (BYOK sırası korunarak: kararlı sıralama). Etiketli
+            bağlantı yoksa liste değişmez — toplu iş yine çalışır, yalnız
+            ayrı hesaba izole olmaz.
+        */
+        if ($purpose !== 'interactive') {
+            $rows = $rows->sortBy(static function (object $row) use ($purpose): int {
+                $fields = json_decode((string) ($row->plain_fields ?? ''), true);
+
+                return is_array($fields) && ($fields['purpose'] ?? null) === $purpose ? 0 : 1;
+            }, SORT_NUMERIC, false)->values();
+        }
+
+        $rows = $rows->map(static fn (object $row): int => (int) $row->id)->all();
 
         $sticky = DB::table(self::ASSIGNMENTS)
             ->where('workspace_id', $workspaceId)
             ->where('provider', $provider->value)
+            ->where('purpose', $purpose)
             ->value('connection_id');
 
         if ($sticky === null) {
@@ -98,10 +114,10 @@ final readonly class StickyAccountRouter implements AccountRoutingPort
         return array_values(array_merge([$sticky], $rows));
     }
 
-    public function remember(int $workspaceId, CredentialProvider $provider, int $connectionId): void
+    public function remember(int $workspaceId, CredentialProvider $provider, int $connectionId, string $purpose = 'interactive'): void
     {
         DB::table(self::ASSIGNMENTS)->updateOrInsert(
-            ['workspace_id' => $workspaceId, 'provider' => $provider->value],
+            ['workspace_id' => $workspaceId, 'provider' => $provider->value, 'purpose' => $purpose],
             ['connection_id' => $connectionId, 'updated_at' => now(), 'created_at' => now()],
         );
     }
