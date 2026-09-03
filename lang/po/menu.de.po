@@ -224,6 +224,10 @@ msgstr ""
 msgid "menu.item.ai.import.media.label"
 msgstr ""
 
+#: menu:menu.item.ai.import.photo.failed
+msgid "menu.item.ai.import.photo.failed"
+msgstr ""
+
 #: menu:menu.item.ai.import.preview.heading
 msgid "menu.item.ai.import.preview.heading"
 msgstr ""

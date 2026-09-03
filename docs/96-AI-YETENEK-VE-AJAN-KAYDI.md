@@ -68,7 +68,23 @@ uç nokta. Ucuzdan pahalıya, sonra son çare. Yeteneğe göre model seçen
 ağırlıklı/maliyet/gecikme yönlendirmesi **Faz 5'in işi** — ölçülmemiş bir
 politikayı bugün yazmak, hangi hesabın ne kadar harcadığını bilmeden karar
 vermek olurdu.
-| **Toplu fotoğraf içe aktarma** (bir restoranın 40+ ürünü tek seferde) | OpenAI `gpt-4o-mini` (aynı model, **ayrı hesap**) | **Yeni, izole bağlantı:** "OpenAI — Toplu İçe Aktarma" | Menü > Toplu İçe Aktarma (yeni ekran) | Aynı `VisionExtractionPort`; izolasyonun amacı paylaşılan kotayı korumak, model değil |
+| **Toplu fotoğraf içe aktarma** — **teslim edildi (FF-61)** | Zincirdeki görme adayı (Gemini → OpenAI), aynı model | Bugün: workspace'in yapışkan bağlantısı. **İzole "Toplu İçe Aktarma" hesabı HENÜZ YOK** — bkz. aşağıdaki dürüst boşluk | Menü Kataloğu > "Import from a photo (AI)" — artık **çok seçimli** (ayrı bir ekran değil) | Aynı `VisionExtractionPort`, tek istekte 10 fotoğrafa kadar; **kısmi başarısızlık tolere edilir** |
+
+**Kapsam düzeltmesi — iki nokta.**
+
+1. **Ayrı bir "Toplu İçe Aktarma" ekranı yapılmadı.** Var olan bölüm çok
+   seçimli hâle getirildi: sahibin işi "bu dört sayfayı oku"dur, iki ayrı yer
+   öğrenmek değil. Bu geri döndürülebilir bir kapsam kararıdır.
+2. **Hesap izolasyonu henüz gerçek değil — dürüst boşluk.** Bu satırın
+   orijinal amacı toplu trafiği ayrı bir OpenAI hesabına yönlendirip
+   paylaşılan kotayı korumaktı. Bugünkü yönlendirme **tenant başına**
+   yapışkandır (`docs/14` §2a, FF-58): aynı workspace'in bütün istekleri —
+   tekil de toplu da — aynı bağlantıya gider. "İşin amacına göre farklı
+   hesap" seçmek, yapışkanlığa ikinci bir boyut (purpose) eklemeyi gerektirir
+   ve bu **Faz 5'in ağırlıklı/maliyet/gecikme yönlendirmesi** kapsamındadır.
+   Bugün teslim edilen, toplu okuma YETENEĞİNİN kendisidir; kota koruması
+   için istek sınırı (tek çağrıda en fazla 10 fotoğraf + dakikada 2 istek)
+   kullanılıyor.
 | Kural taslağı + sandbox simülasyonu (`core-eca-rules`) | **Claude Opus 5** — bkz. Agents §1 "Kural Taslağı Ajanı" | Yeni bağlantı: "Anthropic — Otomasyon" (yüksek-stake işler ayrı izlenir) | Otomasyon Stüdyosu (ECA kural editörü) | `ToolIntentPort`, sandbox, **her zaman insan onaylı** |
 | POS alan eşleme + sandbox test (`opt-13`) | **Claude Opus 5** — bkz. Agents §2 "Entegrasyon Eşleme Ajanı" | aynı "Anthropic — Otomasyon" bağlantısı | Entegrasyonlar > POS Kurulumu | `ToolIntentPort`, sandbox, insan onaylı |
 | Özel uç nokta (Qwen vb.) | Superadmin'in girdiği model — sistem model adını **bilmez**; `config('ai.custom_endpoint.text_model')` boş başlar ve boşken çağrı hiç kurulmaz (uydurulmuş bir ad sessizce 404 alırdı). **Adaptör teslim edildi (FF-59)** | Bağlantı: "Özel uç nokta" (OpenAI-uyumlu) | `/platform/credentials` — "Özel uç nokta" seçeneği | OpenAI-uyumlu `/chat/completions`; **uyumluluk VARSAYILMAZ** — beklenmeyen yanıt şekli `unparseable` ile reddedilir, "belki çalışmıştır" diye yarım sonuç üretilmez (`docs/51` §4.5) |

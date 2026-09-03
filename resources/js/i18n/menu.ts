@@ -111,10 +111,14 @@ const en = {
     // edilmez); burası yalnız OKUR ve İNCELETİR.
     'menu.item.ai.import.disclose': 'Import from a photo (AI)',
     'menu.item.ai.import.cancel': 'Cancel',
-    'menu.item.ai.import.media.label': 'Choose a photo',
+    // TOPLU okuma (`docs/96` Faz 3): bir restoranın menüsü tek fotoğrafa
+    // sığmaz. Dört sayfayı tek tek okutmak aynı işi dört kez yapmaktı.
+    'menu.item.ai.import.media.label': 'Choose the photos to read',
+    'menu.item.ai.import.photo.failed':
+        '“{name}” could not be read — the other photos still went through.',
     'menu.item.ai.import.media.empty':
         'No processed photo is available yet. Upload one on the Media page (slot: Import source) first.',
-    'menu.item.ai.import.read': 'Read this photo',
+    'menu.item.ai.import.read': 'Read these photos',
     'menu.item.ai.import.reading': 'Reading…',
     'menu.item.ai.import.unavailable': 'Reading menu photos is not available right now.',
     'menu.item.ai.import.error': 'The photo could not be read. You can still add items by hand.',

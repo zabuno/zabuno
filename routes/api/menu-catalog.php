@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Ai\ApplyBulkMenuAiImportController;
 use App\Http\Controllers\Ai\ApplyMenuAiImportController;
 use App\Http\Controllers\Ai\ApplyProductDescriptionDraftController;
 use App\Http\Controllers\Ai\ShowAiAvailabilityController;
 use App\Http\Controllers\Ai\ShowDuplicateProductCandidatesController;
 use App\Http\Controllers\Ai\ShowMenuAiImportController;
+use App\Http\Controllers\Ai\StoreBulkMenuAiImportController;
 use App\Http\Controllers\Ai\StoreMenuAiImportController;
 use App\Http\Controllers\Ai\StoreProductDescriptionDraftController;
 use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
@@ -87,6 +89,16 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     */
     Route::post('/workspaces/{workspace}/menu/{menu}/ai-imports', StoreMenuAiImportController::class)
         ->middleware('throttle:6,1');
+    /*
+        TOPLU okuma (`docs/96` Faz 3). Hız sınırı TEKİL yoldan daha SIKI:
+        tek istek 10 fotoğrafa kadar dış sağlayıcı çağrısı yapar, yani
+        dakikada 2 istek zaten 20 çağrı demektir.
+    */
+    Route::post('/workspaces/{workspace}/menu/{menu}/ai-imports/batch', StoreBulkMenuAiImportController::class)
+        ->middleware('throttle:2,1');
+    Route::post('/workspaces/{workspace}/ai-imports/batch/apply', ApplyBulkMenuAiImportController::class)
+        ->middleware('throttle:10,1');
+
     Route::get('/workspaces/{workspace}/ai-imports/{artifact}', ShowMenuAiImportController::class);
     Route::post('/workspaces/{workspace}/ai-imports/{artifact}/apply', ApplyMenuAiImportController::class)
         ->middleware('throttle:10,1');

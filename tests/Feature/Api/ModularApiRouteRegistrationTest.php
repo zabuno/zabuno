@@ -65,6 +65,10 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // sınırlı: her çağrı dış bir sağlayıcıya para ödetir. Onay AYRI bir
         // yoldur ve yetki orada yeniden doğrulanır.
         'POST|api/workspaces/{workspace}/menu/{menu}/ai-imports||App\Http\Controllers\Ai\StoreMenuAiImportController|api,auth:sanctum,throttle:6,1,verified',
+        // TOPLU okuma (`docs/96` Faz 3): tek istek 10 fotoğrafa kadar dış
+        // çağrı yapar, bu yüzden tekil yoldan daha sıkı hız sınırı taşır.
+        'POST|api/workspaces/{workspace}/menu/{menu}/ai-imports/batch||App\Http\Controllers\Ai\StoreBulkMenuAiImportController|api,auth:sanctum,throttle:2,1,verified',
+        'POST|api/workspaces/{workspace}/ai-imports/batch/apply||App\Http\Controllers\Ai\ApplyBulkMenuAiImportController|api,auth:sanctum,throttle:10,1,verified',
         'GET|api/workspaces/{workspace}/ai-imports/{artifact}||App\Http\Controllers\Ai\ShowMenuAiImportController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/ai-imports/{artifact}/apply||App\Http\Controllers\Ai\ApplyMenuAiImportController|api,auth:sanctum,throttle:10,1,verified',
         'POST|api/workspaces/{workspace}/menu-items/{menuItem}/description-drafts||App\Http\Controllers\Ai\StoreProductDescriptionDraftController|api,auth:sanctum,throttle:6,1,verified',
