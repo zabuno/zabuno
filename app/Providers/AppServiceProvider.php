@@ -29,6 +29,7 @@ use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Application\Platform\Port\HostCapabilityProbePort;
 use App\Application\Platform\Port\PlatformAuthorizationPort;
+use App\Application\Platform\Port\PlatformConnectionAdminPort;
 use App\Application\Platform\Port\PlatformCredentialAdminPort;
 use App\Application\Platform\Port\PlatformWorkspaceQueryPort;
 use App\Application\Publication\Port\MenuIdentityPort;
@@ -276,6 +277,13 @@ final class AppServiceProvider extends ServiceProvider
         );
         $this->app->bind(
             CredentialResolverPort::class,
+            EloquentPlatformCredentialStore::class,
+        );
+        // Faz 3 (`docs/95`): aynı depo, çok-bağlantı yüzeyi. Ayrı bir port,
+        // çünkü eski sağlayıcı-düzeyi yüzey çalışan bir paneli besliyor ve
+        // onu kırmanın bir kazancı yok.
+        $this->app->bind(
+            PlatformConnectionAdminPort::class,
             EloquentPlatformCredentialStore::class,
         );
 

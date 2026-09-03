@@ -120,8 +120,10 @@ final class ProviderCredentialApiTest extends TestCase
         self::assertStringNotContainsString(self::SECRET, $store->getContent(), 'CRED-API: sır PUT cevabında görünüyor.');
         self::assertTrue($store->json('configured'));
 
-        // Diskte şifreli — düz sır yok.
-        $row = DB::table('platform_credentials')->where('provider', 'mailgun')->first();
+        // Diskte şifreli — düz sır yok. (Faz 3'ten beri veri
+        // `platform_credential_connections`'ta; sağlayıcı-düzeyi yazma o
+        // sağlayıcının varsayılan bağlantısına gider.)
+        $row = DB::table('platform_credential_connections')->where('provider', 'mailgun')->first();
         self::assertStringNotContainsString(self::SECRET, (string) json_encode($row));
 
         // Sonraki GET de sırrı sızdırmaz, ama configured=true gösterir.
@@ -199,8 +201,12 @@ final class ProviderCredentialApiTest extends TestCase
         $audits = DB::table('platform_credential_audits')->where('provider', 'mailgun')->get();
         self::assertCount(2, $audits);
 
+        // İlk yazma artık `created`: boş kasada sağlayıcı-düzeyi yazma o
+        // sağlayıcının varsayılan BAĞLANTISINI yaratır (Faz 3 şema evrimi).
+        // Denetim sözcüğü zenginleşti — "yarattı" ile "güncelledi" farkı
+        // artık izde görünüyor.
         $actions = $audits->pluck('action')->sort()->values()->all();
-        self::assertSame(['disabled', 'set'], $actions);
+        self::assertSame(['created', 'disabled'], $actions);
 
         foreach ($audits as $audit) {
             self::assertSame($admin->id, (int) $audit->actor_user_id);
