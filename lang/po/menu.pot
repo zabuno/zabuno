@@ -8,6 +8,18 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: menu:menu.ai.unavailable.budget_exhausted
+msgid "menu.ai.unavailable.budget_exhausted"
+msgstr ""
+
+#: menu:menu.ai.unavailable.kill_switch
+msgid "menu.ai.unavailable.kill_switch"
+msgstr ""
+
+#: menu:menu.ai.unavailable.no_route
+msgid "menu.ai.unavailable.no_route"
+msgstr ""
+
 #: menu:menu.categories.list.label
 msgid "menu.categories.list.label"
 msgstr ""

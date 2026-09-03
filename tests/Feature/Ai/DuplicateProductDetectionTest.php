@@ -7,6 +7,7 @@ namespace Tests\Feature\Ai;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -143,5 +144,85 @@ final class DuplicateProductDetectionTest extends TestCase
 
         $this->api($stranger)->getJson("/api/workspaces/{$this->workspaceId}/menu/duplicate-candidates")
             ->assertStatus(404);
+    }
+
+    // --- AI-09 / `docs/97` R16 ------------------------------------------------
+
+    /**
+     * İKİ TENANT AYNI ÜRÜN ADINI TAŞIYABİLİR — ve bu bir "tekrar" DEĞİLDİR.
+     *
+     * `docs/16` AI-09'un kritik senaryosu: iki restoranın ikisinde de "Adana
+     * Kebap" vardır. Gömme vektörleri neredeyse aynıdır; eşleştirme
+     * workspace sınırını görmezse, A restoranının paneli B restoranının
+     * ürününü "olası tekrar" diye gösterirdi — bu, menü içeriğinin
+     * tenant'lar arası SIZMASI olurdu.
+     *
+     * Üstteki 404 testi YETKİYİ kanıtlıyor; bu test EŞLEŞTİRMENİN kendisini
+     * kanıtlıyor — yetkili bir kullanıcı kendi workspace'ini sorduğunda bile
+     * karşı tarafın verisi asla adaya girmez.
+     */
+    #[Test]
+    public function two_workspaces_with_the_same_product_name_never_pair_across_the_boundary(): void
+    {
+        $neighbourOwner = User::factory()->create(['email_verified_at' => now()]);
+
+        $neighbourId = (int) DB::table('workspaces')->insertGetId([
+            'name' => 'Komşu', 'slug' => 'dup-n-'.Str::lower(Str::random(6)), 'state' => 'active',
+            'created_by' => $neighbourOwner->id, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        // Komşuda AYNI iki ad — bizim tarafta hiç yok.
+        foreach (['Adana Kebap', 'adana kebap'] as $name) {
+            DB::table('products')->insert([
+                'workspace_id' => $neighbourId, 'name' => $name,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+
+        // Bizim tarafta yalnız tek, eşsiz bir ad.
+        $this->product('Mercimek Çorbası');
+
+        $response = $this->api()->getJson(
+            "/api/workspaces/{$this->workspaceId}/menu/duplicate-candidates",
+        );
+
+        $response->assertStatus(200);
+        self::assertSame(
+            [],
+            $response->json('candidates'),
+            'AI-09: komşu workspace’in ürünleri bizim aday listemize sızdı.',
+        );
+    }
+
+    /**
+     * GÖMME SONUCU KALICI OLARAK SAKLANMAZ — bugünün kapanış kanıtı.
+     *
+     * `docs/97` R16: gömmeler ileride önbelleğe alınırsa önbellek anahtarı
+     * `workspace_id` içermek ZORUNDA. Bugün önbellek yok; bu test o gerçeği
+     * kilitler, böylece bir gün paylaşılan bir önbellek tablosu eklenirse
+     * (workspace kolonu olmadan) kırılır ve karar bilinçli alınır.
+     */
+    #[Test]
+    public function embeddings_are_request_scoped_and_leave_no_shared_cache_row(): void
+    {
+        $this->product('Adana Kebap');
+        $this->product('adana kebap');
+
+        $this->api()->getJson("/api/workspaces/{$this->workspaceId}/menu/duplicate-candidates")
+            ->assertStatus(200);
+
+        // Sürücüden bağımsız tablo listesi — testin sürücüye çakılmaması için.
+        $tables = Schema::getTableListing();
+
+        $cacheLike = array_values(array_filter(
+            $tables,
+            static fn (string $name): bool => str_contains($name, 'embedding'),
+        ));
+
+        self::assertSame(
+            [],
+            $cacheLike,
+            'AI-09/R16: bir gömme önbelleği eklenmiş — anahtarı workspace_id taşımalı ve bu test güncellenmeli.',
+        );
     }
 }

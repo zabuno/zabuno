@@ -92,6 +92,14 @@ const en = {
         'The AI was not confident about this one. Read it carefully before saving.',
     'menu.item.ai.description.unavailable': 'AI suggestions are not available right now.',
     'menu.item.ai.description.error': 'The AI suggestion failed. You can still write one yourself.',
+    // AI KULLANILAMIYORSA — `docs/97` R9 / AIV-07. Eylem gösterilmez, YERİNE
+    // sebebi yazılır: üç sebep üç FARKLI çözüme işaret eder (yönetici açar /
+    // ay biter ya da bütçe artırılır / sağlayıcı anahtarı girilir). Tek bir
+    // "kullanılamıyor" metni, sahibi kime gideceğini bilmeden bırakırdı.
+    'menu.ai.unavailable.kill_switch': 'AI help is turned off right now.',
+    'menu.ai.unavailable.budget_exhausted':
+        'This month’s AI budget is used up. Everything else keeps working.',
+    'menu.ai.unavailable.no_route': 'No AI provider is set up yet.',
     // OLASI TEKRARLAR — `docs/97` Yolculuk C. Salt okunur bir öneridir;
     // bir "birleştir" eylemi kasıtlı olarak yok (`docs/96` Faz 2 kapsamı).
     'menu.duplicates.heading': 'Possible duplicates ({count})',

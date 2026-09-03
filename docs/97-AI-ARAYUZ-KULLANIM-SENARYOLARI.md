@@ -243,8 +243,8 @@ gereksinim yok.
 | R5 | **Teslim edildi (FF-51).** Düşük güvenli öneri için görünür uyarı metni (`uncertainFieldCount > 0`); ayrıca yedek sağlayıcıdan gelen öneri ayrı etiketlenir (R12'nin UI karşılığı, ilk kullanım yeri) | Yolculuk B.5 |
 | R6 | **Teslim edildi (FF-52).** Menü Kataloğu'nda "Olası tekrarlar" — yalnız aday varsa görünen, salt-okunur liste | Yolculuk C.1-3 |
 | R7 | **Tam kapandı (FF-51/52/53).** Üç ekranın üçü de teslim edildi, hiçbiri toplu/otomatik onay sunmuyor: C salt-okunur (eylem yok), B satır-tek onay, A tek "Add these to the draft" — çok-satırlı olsa da satır-bazlı bir onay/seçim yok, tümü ya da hiçbiri değil, veri-bütünlüğü otomatiği (R2'nin düzeltmesiyle tutarlı) | AI-13 |
-| R8 | Alerjen alanı hiçbir ekranda onay kontrolü olarak render edilmez | AI-14 |
-| R9 | AI kapalı/bütçe yokken ilgili eylem görünmez ve **neden** kısa metinle belirtilir | AIV-07 (kısmi — §5'e bkz.) |
+| R8 | **Teslim edildi (FF-54).** Alerjen alanı hiçbir ekranda onay kontrolü olarak render edilmez — artık ZORLAYICI bir kapısı var: `resources/js/components/ai-allergen.guard.test.ts` tüm `.tsx` kaynağını tarar, backend'in `FORBIDDEN_FIELDS` listesindeki bir adı ya da "alerjen + onay kutusu" aynı satırda bulursa kırılır. Backend kilidi taslağı reddediyordu ama ekranın kendi başına bir "alerjensiz (AI onayladı)" kutusu ÇİZMESİNİ engellemiyordu | AI-14 |
+| R9 | **Teslim edildi (FF-54).** Yeni uç: `GET .../ai/availability` (sağlayıcı çağrısı yapmaz, bedava, hız sınırsız). Ekran tıklamadan ÖNCE sorar; kullanılamıyorsa eylemi hiç göstermez ve yerine SEBEBE ÖZEL tek satır koyar (kapalı / bütçe bitti / sağlayıcı yok — üçü üç farklı çözüme işaret eder). **Bilinmeyen durum "kapalı" sayılmaz**: istek başarısız olursa eylem gizlenmez, iyimser davranır — ağ yavaş diye çalışan bir özelliği gizlemek, sahibin onu bir daha aramamasına yol açardı. §5.1'in ölçülmemiş sorusu (gizle mi, gri düğme+tooltip mi) hâlâ açık; bu teslimat o soruyu KAPATMAZ, yalnız "hiçbir şey söylememe" seçeneğini eler | AIV-07 (§5'e bkz.) |
 
 ### 4.2 İşlevsel — çalışma zamanı yedek zinciri (Yolculuk D)
 
@@ -266,7 +266,7 @@ gereksinim yok.
 
 | # | Gereksinim | Kaynak |
 | --- | --- | --- |
-| R16 | Gömme sonuçları ileride önbelleğe alınırsa, önbellek anahtarı `workspace_id` içermek ZORUNDA | AI-09 (bugün kapalı, önbellek eklenirse geçerli) |
+| R16 | **Kapı eklendi (FF-54).** Gömme sonuçları ileride önbelleğe alınırsa, önbellek anahtarı `workspace_id` içermek ZORUNDA. İki yeni test bunu artık kanıtla tutuyor: (a) iki workspace'te AYNI ürün adı varken çapraz eşleşme oluşmuyor — 404 testi yalnız YETKİYİ kanıtlıyordu, bu EŞLEŞTİRMENİN kendisini kanıtlıyor; (b) çağrıdan sonra adında `embedding` geçen hiçbir tablo doğmuyor, yani bir gün paylaşılan bir önbellek eklenirse test kırılır ve karar bilinçli alınır | AI-09 (bugün kapalı, önbellek eklenirse geçerli) |
 
 ### 4.5 Non-functional
 

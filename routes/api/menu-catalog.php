@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Ai\ApplyMenuAiImportController;
 use App\Http\Controllers\Ai\ApplyProductDescriptionDraftController;
+use App\Http\Controllers\Ai\ShowAiAvailabilityController;
 use App\Http\Controllers\Ai\ShowDuplicateProductCandidatesController;
 use App\Http\Controllers\Ai\ShowMenuAiImportController;
 use App\Http\Controllers\Ai\StoreMenuAiImportController;
@@ -105,6 +106,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     */
     Route::get('/workspaces/{workspace}/menu/duplicate-candidates', ShowDuplicateProductCandidatesController::class)
         ->middleware('throttle:10,1');
+
+    /*
+        AI kullanılabilirliği (`docs/97` R9). Hız sınırı YOK — hiçbir
+        sağlayıcı çağrısı yapmaz, yalnız yapılandırma/bütçe okur; ekran bunu
+        her açılışta sorabilmeli, yoksa eylemi gizleyip gizlemeyeceğini
+        bilemez.
+    */
+    Route::get('/workspaces/{workspace}/ai/availability', ShowAiAvailabilityController::class);
 
     Route::put('/workspaces/{workspace}/menu-categories/{category}/item-order', ReorderMenuItemsController::class);
     Route::put('/workspaces/{workspace}/menu/{menu}/category-order', ReorderCategoriesController::class);

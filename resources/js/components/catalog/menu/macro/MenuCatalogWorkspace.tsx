@@ -68,6 +68,20 @@ type DuplicateCandidate = {
     similarity: number;
 };
 
+/**
+ * BİR YETENEĞİN ŞU ANKİ DURUMU — `docs/97` R9 / AIV-07.
+ *
+ * `reason` bir hata kodu DEĞİL: "kapalı", "bütçe bitti" ve "sağlayıcı yok"
+ * farklı durumlardır ve farklı çözümleri vardır (`docs/47` Kural 5'in AI
+ * karşılığı). Ekran bu yüzden tek bir "kullanılamıyor" metni değil, sebebe
+ * göre değişen tek satırlık bir açıklama gösterir.
+ */
+type AiCapabilityState = {
+    capability: string;
+    available: boolean;
+    reason: string;
+};
+
 /** AI'nın fotoğraftan okuduğu TEK satır — inceleme ekranının ham verisi. */
 type AiImportRow = {
     name: string;
@@ -184,6 +198,16 @@ function applyDescriptionDraftUrl(workspaceId: number, artifactId: number): stri
 /** Yinelenen ürün adayları — salt okunur öneri (`docs/96` Faz 2). */
 function duplicateCandidatesUrl(workspaceId: number): string {
     return `/api/workspaces/${workspaceId}/menu/duplicate-candidates`;
+}
+
+/**
+ * AI şu an ne yapabilir — TIKLAMADAN ÖNCE (`docs/97` R9).
+ *
+ * Bu olmadan ekran ancak düğmeye basıp 503 alarak öğrenebiliyordu: kullanıcı,
+ * var olmayan bir işi denemek zorunda kalırdı.
+ */
+function aiAvailabilityUrl(workspaceId: number): string {
+    return `/api/workspaces/${workspaceId}/ai/availability`;
 }
 
 /** Fotoğraf/PDF'ten menü taslağı okur — `docs/92` (P0-05). */
@@ -406,6 +430,16 @@ export function MenuCatalogWorkspace({
     */
     const [duplicateCandidates, setDuplicateCandidates] = useState<DuplicateCandidate[]>([]);
     /*
+        AI KULLANILABİLİRLİĞİ — `docs/97` R9.
+
+        `null` = HENÜZ BİLİNMİYOR (istek sürüyor ya da cevap okunamadı) ve
+        bu bilinçli olarak "kullanılabilir" gibi davranır: bilinmeyeni
+        "kapalı" saymak, ağ yavaşken çalışan bir özelliği gizler ve sahip
+        onu bir daha aramaz. Yalnız AÇIKÇA "kullanılamaz" cevabı geldiğinde
+        eylem kaldırılır ve yerine sebebi yazılır.
+    */
+    const [aiCapabilities, setAiCapabilities] = useState<AiCapabilityState[] | null>(null);
+    /*
         FOTOĞRAFTAN İÇE AKTARMA (AI) — `docs/97` Yolculuk A. Yükleme Media
         sayfasında olur; burası yalnız HAZIR bir görseli seçip okutur ve
         sonucu incelettirir. `ApplyMenuArtifact` toplu/otomatik uygular —
@@ -496,6 +530,7 @@ export function MenuCatalogWorkspace({
         setVisibilityErrors({});
 
         setDuplicateCandidates([]);
+        setAiCapabilities(null);
 
         setAiImportOpen(false);
         setImportSourceMedia([]);
@@ -575,6 +610,47 @@ export function MenuCatalogWorkspace({
         `tree` NESNESİNE değil, sahip olup olmamasına bakar — aksi hâlde
         her satır düzenlemesi (ad, fiyat, sıra...) yeni bir sorgu tetikler.
     */
+    /*
+        AI kullanılabilirliğini menüden BAĞIMSIZ sorar: menü henüz yokken de
+        (ilk kurulum) doğru cevabı bilmek gerekir, çünkü fotoğraftan içe
+        aktarma tam o anda en çok işe yarayan eylemdir. Hiçbir sağlayıcı
+        çağrısı yapmaz — yalnız yapılandırma/bütçe okur, bedava.
+    */
+    useEffect(() => {
+        let cancelled = false;
+
+        void (async () => {
+            try {
+                const response = await fetch(aiAvailabilityUrl(workspaceId));
+                if (cancelled || !response.ok) return;
+
+                const body = (await response.json()) as { capabilities?: AiCapabilityState[] };
+                if (Array.isArray(body.capabilities)) {
+                    setAiCapabilities(body.capabilities);
+                }
+            } catch {
+                // Bilinmiyor kalır — iyimser davranır (bkz. state yorumu).
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [workspaceId]);
+
+    /**
+     * Bu yetenek AÇIKÇA kullanılamaz mı? Bilinmiyorsa `null` döner ve eylem
+     * olduğu gibi gösterilir.
+     */
+    function aiBlockedReason(capability: string): string | null {
+        if (aiCapabilities === null) return null;
+
+        const row = aiCapabilities.find((entry) => entry.capability === capability);
+        if (row === undefined || row.available) return null;
+
+        return row.reason;
+    }
+
     const hasTree = tree !== null;
     useEffect(() => {
         if (!hasTree) return;
@@ -1709,15 +1785,30 @@ export function MenuCatalogWorkspace({
                         yalnız hazır bir görseli okutur ve inceletir.
                     */}
                     <div className={sectionClass}>
-                        <button
-                            type="button"
-                            className={inlineActionClass}
-                            onClick={() => void handleToggleAiImport()}
-                        >
-                            {aiImportOpen
-                                ? t('menu.item.ai.import.cancel')
-                                : t('menu.item.ai.import.disclose')}
-                        </button>
+                        {/*
+                            AI kapalı/bütçesiz/rotasızsa eylem HİÇ GÖSTERİLMEZ
+                            (`skills/ai-no-credit-degradation.md`) — ama yerine
+                            tek satırlık bir SEBEP konur (`docs/97` R9): yok
+                            olan bir düğme, sahibin "burada bir şey vardı"
+                            diye aramasına yol açardı.
+                        */}
+                        {aiBlockedReason('menu.extract') !== null ? (
+                            <p className="text-caption text-fg-secondary">
+                                {t(
+                                    `menu.ai.unavailable.${aiBlockedReason('menu.extract')}` as never,
+                                )}
+                            </p>
+                        ) : (
+                            <button
+                                type="button"
+                                className={inlineActionClass}
+                                onClick={() => void handleToggleAiImport()}
+                            >
+                                {aiImportOpen
+                                    ? t('menu.item.ai.import.cancel')
+                                    : t('menu.item.ai.import.disclose')}
+                            </button>
+                        )}
 
                         {aiImportOpen ? (
                             <>
@@ -2186,20 +2277,30 @@ export function MenuCatalogWorkspace({
                                                         {t('menu.item.description.help')}
                                                     </p>
                                                     <div className="flex flex-wrap items-center gap-2">
-                                                        <button
-                                                            type="button"
-                                                            className={inlineActionClass}
-                                                            disabled={aiSuggestionLoading}
-                                                            onClick={handleRequestAiDescription}
-                                                        >
-                                                            {aiSuggestionLoading
-                                                                ? t(
-                                                                      'menu.item.ai.description.loading',
-                                                                  )
-                                                                : t(
-                                                                      'menu.item.ai.description.request',
-                                                                  )}
-                                                        </button>
+                                                        {/* `docs/97` R9 — bkz. fotoğraf bölümündeki aynı kural. */}
+                                                        {aiBlockedReason('product.description') !==
+                                                        null ? (
+                                                            <p className="text-caption text-fg-secondary">
+                                                                {t(
+                                                                    `menu.ai.unavailable.${aiBlockedReason('product.description')}` as never,
+                                                                )}
+                                                            </p>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                className={inlineActionClass}
+                                                                disabled={aiSuggestionLoading}
+                                                                onClick={handleRequestAiDescription}
+                                                            >
+                                                                {aiSuggestionLoading
+                                                                    ? t(
+                                                                          'menu.item.ai.description.loading',
+                                                                      )
+                                                                    : t(
+                                                                          'menu.item.ai.description.request',
+                                                                      )}
+                                                            </button>
+                                                        )}
                                                         {aiDraftArtifactId !== null ? (
                                                             <span className="text-caption text-fg-secondary">
                                                                 {aiSuggestionUsedFallback
