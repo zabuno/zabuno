@@ -31,6 +31,32 @@ final class StoreMediaController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        /*
+            IDEMPOTENCY (`docs/49` Faz 2 madde 1). Telefonda bağlantı koparsa
+            istemci aynı dosyayı aynı anahtarla yeniden gönderir; sunucu onu
+            ikinci bir görsel sanmaz, var olanı döner. Anahtar İSTEMCİNİN
+            işidir — sunucunun içerikten türetmesi (checksum) "aynı fotoğrafı
+            iki ürüne yükledim" gibi meşru tekrarı da yutardı.
+        */
+        $idempotencyKey = trim((string) $request->header('X-Idempotency-Key', ''));
+
+        if ($idempotencyKey !== '' && strlen($idempotencyKey) <= 64) {
+            $existing = $this->media->findByIdempotencyKey($workspace, $idempotencyKey);
+
+            if ($existing !== null) {
+                return response()->json([
+                    'id' => $existing->id,
+                    'workspaceId' => $existing->workspaceId,
+                    'status' => $existing->status,
+                    'altText' => $existing->altText,
+                    'slot' => $existing->slot,
+                    'replayed' => true,
+                ], 200);
+            }
+        } else {
+            $idempotencyKey = null;
+        }
+
         $file = $request->file('file');
 
         $intake = new MediaIntake(
@@ -40,6 +66,7 @@ final class StoreMediaController extends Controller
             sizeBytes: $file->getSize() ?: 0,
             altText: (string) $request->validated('altText'),
             slot: (string) $request->validated('slot'),
+            idempotencyKey: $idempotencyKey,
         );
 
         $asset = $this->media->intakeToQuarantine($workspace, $intake);

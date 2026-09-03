@@ -1176,6 +1176,14 @@ msgstr "Choose where this image will be used."
 msgid "workspace.media.upload.error.file.required"
 msgstr "Choose a file to upload."
 
+#: workspace:workspace.media.upload.error.tooLarge
+msgid "workspace.media.upload.error.tooLarge"
+msgstr "This file is {size} MB; the limit is {max} MB. Export a smaller copy and try again."
+
+#: workspace:workspace.media.upload.error.tooManyPixels
+msgid "workspace.media.upload.error.tooManyPixels"
+msgstr "This image is {width} × {height} pixels — more than {max} megapixels. Export a smaller copy and try again."
+
 #: workspace:workspace.media.upload.error.tooSmall
 msgid "workspace.media.upload.error.tooSmall"
 msgstr "This image is {width} × {height}. {slot} needs at least {min}. A smaller image would look blurred, because it is never enlarged."
@@ -1292,6 +1300,10 @@ msgstr "Formats: {formats}"
 msgid "workspace.media.upload.requirement.minimum"
 msgstr "At least {width} × {height} pixels"
 
+#: workspace:workspace.media.upload.retry
+msgid "workspace.media.upload.retry"
+msgstr "Try again"
+
 #: workspace:workspace.media.upload.selected.dimensions
 msgid "workspace.media.upload.selected.dimensions"
 msgstr "{width} × {height} pixels"
@@ -1303,6 +1315,10 @@ msgstr "Choose a different file"
 #: workspace:workspace.media.upload.uploading
 msgid "workspace.media.upload.uploading"
 msgstr "Uploading media…"
+
+#: workspace:workspace.media.upload.uploading.progress
+msgid "workspace.media.upload.uploading.progress"
+msgstr "Uploading… {percent}%"
 
 #: workspace:workspace.menu.empty.brand.body
 msgid "workspace.menu.empty.brand.body"

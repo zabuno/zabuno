@@ -13,5 +13,7 @@ final class MediaIntake
         public readonly int $sizeBytes,
         public readonly string $altText,
         public readonly string $slot,
+        /** İstemcinin ürettiği yeniden-deneme anahtarı; yoksa null (`docs/49` Faz 2). */
+        public readonly ?string $idempotencyKey = null,
     ) {}
 }

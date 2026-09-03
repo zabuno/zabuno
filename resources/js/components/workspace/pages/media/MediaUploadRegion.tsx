@@ -30,9 +30,25 @@ type SlotPolicy = {
     altRequired: boolean;
 };
 
-type MediaUploadRegionProps = {
-    onSubmit: (formData: FormData) => Promise<void> | void;
+type UploadLimits = { maxBytes: number; maxMegapixels: number };
+
+export type UploadOptions = {
+    /** Yeniden denemede AYNI kalır — sunucu ikinci gönderimi ikinci görsel sanmaz (FF-68). */
+    idempotencyKey: string;
+    onProgress: (fraction: number) => void;
 };
+
+type MediaUploadRegionProps = {
+    onSubmit: (formData: FormData, options: UploadOptions) => Promise<void> | void;
+};
+
+function newIdempotencyKey(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
 
 /**
  * Görsel yükleme formu.
@@ -49,6 +65,13 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
     const slotId = useId();
 
     const [policies, setPolicies] = useState<SlotPolicy[]>([]);
+    const [limits, setLimits] = useState<UploadLimits | null>(null);
+    const [progress, setProgress] = useState(0);
+    /*
+        Anahtar SEÇİMLE doğar, denemeyle değil: aynı dosyanın ikinci
+        denemesi aynı anahtarı taşır. Yeni bir dosya seçilince yenilenir.
+    */
+    const [idempotencyKey, setIdempotencyKey] = useState(() => newIdempotencyKey());
     const [selected, setSelected] = useState<SelectedImage | null>(null);
     const [altText, setAltText] = useState('');
     const [slot, setSlot] = useState('');
@@ -74,9 +97,15 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
                 if (!response.ok || cancelled) return;
 
-                const body = (await response.json()) as { slots?: SlotPolicy[] };
+                const body = (await response.json()) as {
+                    slots?: SlotPolicy[];
+                    limits?: UploadLimits;
+                };
 
-                if (!cancelled) setPolicies(body.slots ?? []);
+                if (!cancelled) {
+                    setPolicies(body.slots ?? []);
+                    setLimits(body.limits ?? null);
+                }
             } catch {
                 // Politika okunamazsa slot listesi boş kalır ve form
                 // "önce bir yer seçin" der. Sessizce yanlış bir liste
@@ -104,6 +133,19 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         selected.width > 0 &&
         (selected.width < activePolicy.minWidth || selected.height < activePolicy.minHeight);
 
+    /*
+        SUNUCUNUN SINIRLARI YÜKLEMEDEN ÖNCE söylenir. 30 MB'lık bir dosyayı
+        gönderip 422 almak, telefonda bir dakika ve bir kota harcamaktır;
+        sınır zaten sunucudan (`limits`) geliyor, aynı sayı burada da geçerli.
+        Sunucu yine son sözü söyler (`docs/47`: istemci yalnız hızlı yardım).
+    */
+    const tooLarge = selected !== null && limits !== null && selected.file.size > limits.maxBytes;
+    const tooManyPixels =
+        selected !== null &&
+        limits !== null &&
+        selected.width > 0 &&
+        selected.width * selected.height > limits.maxMegapixels * 1_000_000;
+
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -114,6 +156,17 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
         if (!selected) {
             errors[fileId] = t('workspace.media.upload.error.file.required');
+        } else if (tooLarge && limits) {
+            errors[fileId] = t('workspace.media.upload.error.tooLarge', {
+                size: String(Math.round(selected.file.size / 1_048_576)),
+                max: String(Math.round(limits.maxBytes / 1_048_576)),
+            });
+        } else if (tooManyPixels && limits) {
+            errors[fileId] = t('workspace.media.upload.error.tooManyPixels', {
+                width: String(selected.width),
+                height: String(selected.height),
+                max: String(limits.maxMegapixels),
+            });
         } else if (tooSmall && activePolicy) {
             // Reddin sebebi somut söylenir: "yeterince büyük değil" değil,
             // KAÇ olduğu ve KAÇ olması gerektiği — ve neden büyütülmediği.
@@ -147,11 +200,14 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         formData.set('slot', slot);
 
         setStatus('pending');
+        setProgress(0);
         setFailureMessage('');
         setFieldErrors({});
 
         try {
-            await onSubmit(formData);
+            await onSubmit(formData, { idempotencyKey, onProgress: setProgress });
+            // Başarılı yükleme anahtarı TÜKETİR; bir sonraki dosya yenisini alır.
+            setIdempotencyKey(newIdempotencyKey());
             // Girdiyi temizlemek artık damlatma alanının işi: gerçek
             // `<input type=file>` orada yaşıyor.
             setSelected(null);
@@ -194,7 +250,11 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                         selected={selected}
                         invalid={fieldErrors[fileId] !== undefined}
                         describedBy={fieldErrors[fileId] ? `${fileId}-error` : undefined}
-                        onSelect={setSelected}
+                        onSelect={(image) => {
+                            setSelected(image);
+                            // Yeni dosya, yeni anahtar; yeniden deneme eskisini korur.
+                            setIdempotencyKey(newIdempotencyKey());
+                        }}
                     />
                     {fieldErrors[fileId] ? (
                         <span id={`${fileId}-error`}>
@@ -302,15 +362,35 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             </Button>
 
             {status === 'pending' && (
-                <p role="status" className="text-meta text-fg-muted">
-                    {t('workspace.media.upload.uploading')}
-                </p>
+                <div className="flex flex-col gap-1">
+                    <p role="status" className="text-meta text-fg-muted">
+                        {progress > 0 && progress < 1
+                            ? t('workspace.media.upload.uploading.progress', {
+                                  percent: String(Math.round(progress * 100)),
+                              })
+                            : t('workspace.media.upload.uploading')}
+                    </p>
+                    <progress
+                        aria-label={t('workspace.media.upload.uploading')}
+                        className="h-2 w-full"
+                        max={100}
+                        value={Math.round(progress * 100)}
+                    />
+                </div>
             )}
 
             {status === 'error' && (
-                <p role="alert" className="text-body text-fg-danger">
-                    {failureMessage || t('workspace.media.upload.failed')}
-                </p>
+                <div className="flex flex-col gap-2">
+                    <p role="alert" className="text-body text-fg-danger">
+                        {failureMessage || t('workspace.media.upload.failed')}
+                    </p>
+                    {/* Seçim korunur; tekrar denemek AYNI anahtarla gider. */}
+                    {selected ? (
+                        <Button color="light" type="submit" className="self-start">
+                            {t('workspace.media.upload.retry')}
+                        </Button>
+                    ) : null}
+                </div>
             )}
 
             {status === 'success' && (

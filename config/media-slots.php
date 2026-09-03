@@ -40,7 +40,8 @@ return [
             'surface' => MediaSurface::Menu,
             'min_width' => 512, 'min_height' => 512,
             'aspect' => null,               // logo kırpılmaz
-            'formats' => ['png', 'svg', 'webp'],
+            // SVG yok: sanitize eden katman olmadan kabul edilmez (`docs/49` Faz 2 madde 6).
+            'formats' => ['png', 'webp'],
             'transparency' => 'preserve',   // alfa düz beyaza çevrilmez (INV-07)
             'renditions' => [64, 128, 256, 512],
             'alt_required' => true,
@@ -118,7 +119,7 @@ return [
             'surface' => MediaSurface::Menu,
             'min_width' => 1024, 'min_height' => 1024,
             'aspect' => null,
-            'formats' => ['svg', 'png'],
+            'formats' => ['png'],   // svg: bkz. logo slotu
             'transparency' => 'preserve',
             'renditions' => [512, 1024, 2048],
             'alt_required' => false,
@@ -136,7 +137,7 @@ return [
             'surface' => MediaSurface::Menu,
             'min_width' => 512, 'min_height' => 512,
             'aspect' => '1:1',
-            'formats' => ['png', 'svg'],
+            'formats' => ['png'],   // svg: bkz. logo slotu
             'transparency' => 'preserve',
             'renditions' => [16, 32, 180, 512],
             'alt_required' => false,

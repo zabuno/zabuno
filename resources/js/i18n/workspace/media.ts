@@ -6,6 +6,13 @@ export const media = {
     'workspace.media.upload.heading': 'Upload',
     'workspace.media.upload.button': 'Upload',
     'workspace.media.upload.uploading': 'Uploading media…',
+    // FF-68 (`docs/49` Faz 2): ilerleme görünür, yeniden deneme aynı anahtarla.
+    'workspace.media.upload.uploading.progress': 'Uploading… {percent}%',
+    'workspace.media.upload.retry': 'Try again',
+    'workspace.media.upload.error.tooLarge':
+        'This file is {size} MB; the limit is {max} MB. Export a smaller copy and try again.',
+    'workspace.media.upload.error.tooManyPixels':
+        'This image is {width} × {height} pixels — more than {max} megapixels. Export a smaller copy and try again.',
     'workspace.media.upload.failed': 'Media upload failed. Your selection was kept.',
     'workspace.media.upload.complete': 'Media upload complete.',
     'workspace.media.security.explanation':
