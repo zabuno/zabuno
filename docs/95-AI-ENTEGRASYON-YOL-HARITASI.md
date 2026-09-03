@@ -164,8 +164,30 @@ belirlenene kadar bilinçli olarak bekliyor.
 
 ## Faz 3 — Çok-hesap / BYOK + yeni sağlayıcılar (Stage 3 — GTM)
 
-**Durum: planlı, henüz başlanmadı.** `docs/26`'nın kendi sözü tam burada:
-"çok-hesap/BYOK". Sorulan UX'in gerçek karşılığı bu fazdır.
+**Durum: teslim edildi** (FF-54…FF-61). `docs/26`'nın kendi sözü tam burada:
+"çok-hesap/BYOK". Sorulan UX'in gerçek karşılığı bu fazdı ve aşağıdaki
+sözleşmenin altı adımının altısı da koda döküldü.
+
+**Bu fazda teslim edilenler:**
+
+- Yeni sağlayıcılar: Anthropic, Kimi, özel uç nokta (FF-55); tüketici
+  abonelik yasağı artık şemanın kendisi.
+- `platform_credential_connections` — bir sağlayıcı → N bağlantı; göç
+  veriyi taşır ve bu ayrıca test edilir (FF-56).
+- Bağlantı API'si + panelin sağlayıcı→N-kart görünümü (FF-57).
+- Yapışkan tenant→hesap eşlemesi, BYOK yapısal izolasyonu, gerçek sağlık
+  geri beslemesi (FF-58).
+- Anthropic ve OpenAI-uyumlu metin adaptörleri; yetenek↔sağlayıcı eşlemesi
+  artık yeteneğe göre (FF-59).
+- Uyumluluk yoklaması: sınanmamış özel uç nokta aday olmaz (FF-60).
+- Toplu fotoğraf okuma, kısmi başarısızlık toleranslı (FF-61).
+
+**Bilinçle Faz 5'e bırakılan iki şey** (ikisi de `docs/97` R30'da yazılı):
+toplu trafiğin AYRI bir hesaba izolasyonu ve ağırlıklı/maliyet/gecikme
+yönlendirmesi. İkisi de yapışkanlığa "işin amacı" boyutunu eklemeyi
+gerektirir; ölçülmemiş bir routing politikasını bugün yazmak, hangi hesabın
+ne kadar harcadığını bilmeden karar vermek olurdu (Faz 4'ün maliyet panosu
+tam bunun için var).
 
 ### Şema evrimi
 
@@ -234,9 +256,17 @@ tasarım dili icat edilmez.
   istek yedeğe düşerse, öneri ekranında "bu öneri yedek bağlantıdan geldi"
   ibaresi çıkar.
 
-**Tetikleyici:** Stage 3 GTM'e giriş — ya da daha erken, eğer Faz 2'nin tek
-hesabı gerçek trafikte kotaya/kesintiye takılırsa (bkz. önceki tur, paylaşılan
-kota vakası).
+**Tetikleyici:** karşılandı — kapasite gerçek trafiği beklemeden kuruldu,
+çünkü tek hesabın kotaya takıldığı anda şema evrimi yapmak, en kötü zamanda
+en riskli göçü yapmak olurdu.
+
+**Bu fazın kendi bulduğu kusur:** `ConfiguredAvailability::vaultServes()`
+sağlayıcıları tek bir listede tutuyordu. Anthropic/Kimi/özel uç noktayı o
+listeye eklemek, yalnız Kimi anahtarı girilmiş bir kurulumda "fotoğraftan
+menü oku" eylemini AÇIK gösterirdi — kullanıcı basar, arkada o yeteneği
+karşılayan hiçbir adaptör olmadığı için sahte üretici devreye girerdi. Bu,
+FF-34'ün düzelttiği "para ödedik ama çalışmıyor" arızasının tersi.
+Eşleme artık yeteneğe göre yapılıyor (FF-59) ve iki test kilitliyor.
 
 ## Faz 4 — Görünür maliyet + geri bildirim özeti (Stage 4 — PMF)
 
@@ -340,7 +370,7 @@ tablosudur (`fastDeliveryGenomeOverlay` ile aynı ilke — ayrı payda).
 | --- | --- | --- |
 | 1 | Stage 1 MVP | ✅ teslim edildi |
 | 2 | Stage 2 Post-MVP | ✅ teslim edildi (kasa çekirdeği) — çeviri/açıklama/taksonomi yetenekleri planlı |
-| 3 | Stage 3 GTM | ⬜ planlı — çok-hesap/BYOK, yeni sağlayıcılar, UX sözleşmesi bu belgede |
+| 3 | Stage 3 GTM | ✅ teslim edildi (FF-54…FF-61) — çok-hesap/BYOK, Anthropic/Kimi/özel uç nokta, yapışkan yönlendirme, uyumluluk yoklaması, toplu okuma. **Faz 5'e bilinçle bırakılan:** amaca-göre hesap izolasyonu ve ağırlıklı/maliyet/gecikme yönlendirmesi |
 | 4 | Stage 4 PMF | ⬜ planlı |
 | 5 | Stage 5 Growth | ⬜ planlı |
 | 6 | Stage 6 Enterprise | ⬜ planlı |

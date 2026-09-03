@@ -54,7 +54,8 @@ sınır, eksik bir gözden kaçırma değil.
 "Gemini, birincil aday" satırı artık yalnız bağlanma-anı tercihi değil:
 `VisionExtractionRouter`/`StructuredGenerationRouter` Gemini çalışma
 zamanında başarısız olursa aynı isteği OpenAI'a canlı yeniden dener,
-sonucu `usedFallback` ile işaretler. UI tarafı henüz yok (bkz. `docs/97`).
+sonucu `usedFallback` ile işaretler. **UI tarafı da teslim edildi** (FF-51/53):
+yedekten gelen sonuç ekranda ayrıca etiketlenir (`docs/97` R12).
 
 ## Faz 3 — Stage 3 GTM (planlı — çok-hesap/BYOK)
 
