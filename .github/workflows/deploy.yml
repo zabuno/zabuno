@@ -199,13 +199,19 @@ jobs:
           # `DEPLOY_PORT` secret'ı söyler.
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
           ZABUNO_IMAGE: ${{ steps.meta.outputs.image }}
+          ZABUNO_BUILD_REVISION: ${{ github.sha }}
         run: |
           ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" \
-            bash -s -- "$DEPLOY_DIR" "$ZABUNO_IMAGE" <<'REMOTE'
+            bash -s -- "$DEPLOY_DIR" "$ZABUNO_IMAGE" "$ZABUNO_BUILD_REVISION" <<'REMOTE'
           set -euo pipefail
           cd "$1"
 
           echo "ZABUNO_IMAGE=$2" > .image.env
+
+          # Sayfanın hangi commit'i sunduğu, sayfanın KENDİSİNDEN okunabilmeli
+          # (`docs/87`). İmaj etiketi sunucuda duruyor ama tarayıcıya inmiyor;
+          # bu satır olmadan üretimde build kimliği boş kalıyordu.
+          echo "ZABUNO_BUILD_REVISION=$3" >> .image.env
 
           # Topolojiyi SUNUCU seçer, akış değil. Hangi override'ın geçerli
           # olduğu makinenin kendi `.env`'inde `COMPOSE_FILE` ile yazılıdır:
