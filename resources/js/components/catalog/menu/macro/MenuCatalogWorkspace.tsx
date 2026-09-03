@@ -84,6 +84,13 @@ type AiCapabilityState = {
 
 /** AI'nın fotoğraftan okuduğu TEK satır — inceleme ekranının ham verisi. */
 type AiImportRow = {
+    /*
+        Satır adı (`row.1`) yalnız KENDİ taslağı içinde eşsizdir. Toplu
+        okumada dört fotoğrafın dördünde de `row.1` vardır; hangi taslaktan
+        geldiğini taşımazsa React aynı anahtarı dört kez görür ve listeyi
+        yanlış eşler.
+    */
+    artifactId: number;
     name: string;
     category: string;
     product: string;
@@ -101,7 +108,7 @@ type AiImportRow = {
 type AiImportApplyReport = {
     importedItems: number;
     importedCategories: number;
-    rejectedRows: { row: string; reason: string }[];
+    rejectedRows: { row: string; reason: string; artifactId?: number }[];
 };
 
 type CategoryRow = {
@@ -210,19 +217,31 @@ function aiAvailabilityUrl(workspaceId: number): string {
     return `/api/workspaces/${workspaceId}/ai/availability`;
 }
 
-/** Fotoğraf/PDF'ten menü taslağı okur — `docs/92` (P0-05). */
-function aiImportsUrl(workspaceId: number, menuId: number): string {
-    return `/api/workspaces/${workspaceId}/menu/${menuId}/ai-imports`;
+/**
+ * Fotoğraf/PDF'ten menü taslağı okur — `docs/96` Faz 3.
+ *
+ * Tekil `.../ai-imports` ucu API'de DURUYOR (yayınlanmış yüzey, kendi
+ * testleri var) ama ekran artık onu kullanmıyor: bir restoranın menüsü tek
+ * fotoğrafa sığmaz ve tek seçim, sahibi aynı işi sayfa sayısı kadar
+ * tekrarlamaya zorluyordu. Kullanılmayan bir istemci yardımcısını
+ * "ileride lazım olur" diye bırakmak, iki yol arasında hangisinin geçerli
+ * olduğunu belirsiz kılardı.
+ *
+ * Bir restoranın menüsü tek fotoğrafa sığmaz; dört sayfayı tek tek
+ * okutmak, sahibin aynı işi dört kez yapması demekti.
+ */
+function bulkAiImportsUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/ai-imports/batch`;
+}
+
+/** Okunan taslakların tamamını tek onayla taslağa yazar. */
+function bulkApplyAiImportUrl(workspaceId: number): string {
+    return `/api/workspaces/${workspaceId}/ai-imports/batch/apply`;
 }
 
 /** Okunan taslağın alanları — capability-agnostic, generic. */
 function showAiImportUrl(workspaceId: number, artifactId: number): string {
     return `/api/workspaces/${workspaceId}/ai-imports/${artifactId}`;
-}
-
-/** İnsan onayı — taslağa yazar, yayına dokunmaz. */
-function applyAiImportUrl(workspaceId: number, artifactId: number): string {
-    return `/api/workspaces/${workspaceId}/ai-imports/${artifactId}/apply`;
 }
 
 function itemOrderUrl(workspaceId: number, categoryId: number): string {
@@ -449,8 +468,12 @@ export function MenuCatalogWorkspace({
     */
     const [aiImportOpen, setAiImportOpen] = useState(false);
     const [importSourceMedia, setImportSourceMedia] = useState<ReadyMediaRow[]>([]);
-    const [importMediaChoice, setImportMediaChoice] = useState('');
-    const [aiImportArtifactId, setAiImportArtifactId] = useState<number | null>(null);
+    const [importMediaChoices, setImportMediaChoices] = useState<number[]>([]);
+    const [aiImportArtifactIds, setAiImportArtifactIds] = useState<number[]>([]);
+    /** Okunamayan fotoğraflar: medya kimliği → sebep (`docs/96` Faz 3). */
+    const [aiImportFailures, setAiImportFailures] = useState<
+        { mediaAssetId: number; error: string }[]
+    >([]);
     const [aiImportRows, setAiImportRows] = useState<AiImportRow[]>([]);
     const [aiImportUsedFallback, setAiImportUsedFallback] = useState(false);
     const [aiImportReviewLoading, setAiImportReviewLoading] = useState(false);
@@ -534,8 +557,9 @@ export function MenuCatalogWorkspace({
 
         setAiImportOpen(false);
         setImportSourceMedia([]);
-        setImportMediaChoice('');
-        setAiImportArtifactId(null);
+        setImportMediaChoices([]);
+        setAiImportArtifactIds([]);
+        setAiImportFailures([]);
         setAiImportRows([]);
         setAiImportUsedFallback(false);
         setAiImportReviewLoading(false);
@@ -921,20 +945,20 @@ export function MenuCatalogWorkspace({
     async function handleReadAiImport() {
         // Form henüz ekranda değilse söylenecek bir şey yok (`docs/47`
         // Kural 5 kapsamı dışı). Seçim boşluğu ayrıca sınanmaz: "Oku"
-        // düğmesi zaten `importMediaChoice === ''` iken devre dışıdır —
-        // aynı kontrolü burada sessizce tekrarlamak, kapının aradığı
-        // desenin ta kendisi olurdu.
+        // düğmesi zaten seçim yokken devre dışıdır — aynı kontrolü burada
+        // sessizce tekrarlamak, kapının aradığı desenin ta kendisi olurdu.
         if (tree === null) return;
 
         setAiImportReviewLoading(true);
         setAiImportReviewError(null);
         setAiImportRows([]);
-        setAiImportArtifactId(null);
+        setAiImportArtifactIds([]);
+        setAiImportFailures([]);
         setAiImportApplyReport(null);
 
         try {
-            const storeResponse = await postJson(aiImportsUrl(workspaceId, tree.id), {
-                mediaAssetId: Number(importMediaChoice),
+            const storeResponse = await postJson(bulkAiImportsUrl(workspaceId, tree.id), {
+                mediaAssetIds: importMediaChoices,
             });
 
             if (storeResponse.status === 503) {
@@ -951,46 +975,84 @@ export function MenuCatalogWorkspace({
                 return;
             }
 
-            const stored = (await storeResponse.json()) as { id: number; usedFallback: boolean };
-
-            const showResponse = await fetch(
-                showAiImportUrl(workspaceId, stored.id),
-                buildAuthRequestInit(),
-            );
-
-            if (!showResponse.ok) {
-                setAiImportReviewError(t('menu.item.ai.import.error'));
-
-                return;
-            }
-
-            const artifact = (await showResponse.json()) as {
-                fields: {
-                    name: string;
-                    value: {
-                        category?: string;
-                        product?: string;
-                        priceMinorAmount?: number | null;
-                        currencyCode?: string;
-                    };
-                    confidence: number;
-                    uncertain: boolean;
+            const stored = (await storeResponse.json()) as {
+                results: {
+                    mediaAssetId: number;
+                    id?: number;
+                    usedFallback?: boolean;
+                    error?: string;
                 }[];
             };
 
-            setAiImportArtifactId(stored.id);
-            setAiImportUsedFallback(stored.usedFallback);
-            setAiImportRows(
-                artifact.fields.map((field) => ({
-                    name: field.name,
-                    category: field.value.category ?? '',
-                    product: field.value.product ?? '',
-                    priceMinorAmount: field.value.priceMinorAmount ?? null,
-                    currencyCode: field.value.currencyCode ?? '',
-                    confidence: field.confidence,
-                    uncertain: field.uncertain,
-                })),
+            /*
+                KISMİ BAŞARISIZLIK: bir fotoğraf okunamazsa diğerlerinin
+                sonucu ÇÖPE GİTMEZ — o satır sebebiyle listelenir, kalanlar
+                incelemeye girer. Tümünü reddetmek, sahibi hiçbir şey
+                kazanmadan baştan başlatırdı.
+            */
+            const failures = stored.results
+                .filter((result) => result.id === undefined)
+                .map((result) => ({
+                    mediaAssetId: result.mediaAssetId,
+                    error: result.error ?? 'unknown',
+                }));
+
+            const readable = stored.results.filter(
+                (result): result is { mediaAssetId: number; id: number; usedFallback?: boolean } =>
+                    typeof result.id === 'number',
             );
+
+            setAiImportFailures(failures);
+            setAiImportUsedFallback(readable.some((result) => result.usedFallback === true));
+
+            const rows: AiImportRow[] = [];
+            const artifactIds: number[] = [];
+
+            for (const result of readable) {
+                const showResponse = await fetch(
+                    showAiImportUrl(workspaceId, result.id),
+                    buildAuthRequestInit(),
+                );
+
+                if (!showResponse.ok) {
+                    failures.push({ mediaAssetId: result.mediaAssetId, error: 'unreadable' });
+
+                    continue;
+                }
+
+                const artifact = (await showResponse.json()) as {
+                    fields: {
+                        name: string;
+                        value: {
+                            category?: string;
+                            product?: string;
+                            priceMinorAmount?: number | null;
+                            currencyCode?: string;
+                        };
+                        confidence: number;
+                        uncertain: boolean;
+                    }[];
+                };
+
+                artifactIds.push(result.id);
+
+                for (const field of artifact.fields) {
+                    rows.push({
+                        artifactId: result.id,
+                        name: field.name,
+                        category: field.value.category ?? '',
+                        product: field.value.product ?? '',
+                        priceMinorAmount: field.value.priceMinorAmount ?? null,
+                        currencyCode: field.value.currencyCode ?? '',
+                        confidence: field.confidence,
+                        uncertain: field.uncertain,
+                    });
+                }
+            }
+
+            setAiImportFailures([...failures]);
+            setAiImportArtifactIds(artifactIds);
+            setAiImportRows(rows);
         } catch {
             setAiImportReviewError(t('menu.item.ai.import.error'));
         } finally {
@@ -1005,13 +1067,21 @@ export function MenuCatalogWorkspace({
      * sonucu göstermek.
      */
     async function handleApplyAiImport() {
-        if (aiImportArtifactId === null) return;
-
+        /*
+            Boş liste kontrolü BİLEREK yok (`docs/47` Kural 5): "Ekle"
+            düğmesi yalnız okunan satır varken çizilir, satır varsa taslak
+            da vardır. Aynı koşulu burada sessizce tekrarlamak, kapının
+            aradığı "basıldı ama hiçbir şey olmadı" desenini yaratırdı —
+            ve olmayacak bir durum için sessiz kalmaktansa, sunucudan
+            gelecek hatayı göstermek dürüst olan.
+        */
         setAiImportApplying(true);
         setAiImportReviewError(null);
 
         try {
-            const response = await postJson(applyAiImportUrl(workspaceId, aiImportArtifactId), {});
+            const response = await postJson(bulkApplyAiImportUrl(workspaceId), {
+                artifactIds: aiImportArtifactIds,
+            });
 
             if (!response.ok) {
                 setAiImportReviewError(
@@ -1026,7 +1096,7 @@ export function MenuCatalogWorkspace({
             // Uygulandı — taslak artık geçmiş; satırlar tekrar
             // uygulanabilir görünmemeli.
             setAiImportRows([]);
-            setAiImportArtifactId(null);
+            setAiImportArtifactIds([]);
 
             const refreshed = await fetch(menuUrl(workspaceId, locationId));
 
@@ -1812,36 +1882,67 @@ export function MenuCatalogWorkspace({
 
                         {aiImportOpen ? (
                             <>
-                                <label className={labelClass} htmlFor="ai-import-media">
-                                    {t('menu.item.ai.import.media.label')}
-                                </label>
-                                {importSourceMedia.length === 0 ? (
-                                    <p className="text-caption text-fg-secondary">
-                                        {t('menu.item.ai.import.media.empty')}
-                                    </p>
-                                ) : (
-                                    <Select
-                                        id="ai-import-media"
-                                        name="ai-import-media"
-                                        value={importMediaChoice}
-                                        onChange={(event) =>
-                                            setImportMediaChoice(event.target.value)
-                                        }
-                                    >
-                                        <option value="" />
-                                        {importSourceMedia.map((media) => (
-                                            <option key={media.id} value={String(media.id)}>
-                                                {media.altText || `#${media.id}`}
-                                            </option>
-                                        ))}
-                                    </Select>
-                                )}
+                                {/*
+                                    Artık tek bir alan değil, bir GRUP: bu
+                                    yüzden `label`/`for` yerine `fieldset`/
+                                    `legend`. Hedefi olmayan bir `for`,
+                                    ekran okuyucuya var olmayan bir kontrol
+                                    vaat ederdi.
+                                */}
+                                <fieldset>
+                                    <legend className={labelClass}>
+                                        {t('menu.item.ai.import.media.label')}
+                                    </legend>
+                                    {importSourceMedia.length === 0 ? (
+                                        <p className="text-caption text-fg-secondary">
+                                            {t('menu.item.ai.import.media.empty')}
+                                        </p>
+                                    ) : (
+                                        /*
+                                        ÇOK SEÇİM — `docs/96` Faz 3. Bir
+                                        restoranın menüsü tek fotoğrafa
+                                        sığmaz; dört sayfayı tek tek
+                                        okutmak, aynı işi dört kez yapmaktı.
+                                        Onay kutusu listesi, açılır listeye
+                                        yeğlendi: seçilenlerin hepsi aynı
+                                        anda görünür kalmalı.
+                                    */
+                                        <ul className="flex flex-col gap-1">
+                                            {importSourceMedia.map((media) => (
+                                                <li key={media.id}>
+                                                    <label className="flex items-center gap-2">
+                                                        <TextInput
+                                                            type="checkbox"
+                                                            name={`ai-import-media-${media.id}`}
+                                                            checked={importMediaChoices.includes(
+                                                                media.id,
+                                                            )}
+                                                            onChange={(event) =>
+                                                                setImportMediaChoices((previous) =>
+                                                                    event.target.checked
+                                                                        ? [...previous, media.id]
+                                                                        : previous.filter(
+                                                                              (id) =>
+                                                                                  id !== media.id,
+                                                                          ),
+                                                                )
+                                                            }
+                                                        />
+                                                        <span className="text-body">
+                                                            {media.altText || `#${media.id}`}
+                                                        </span>
+                                                    </label>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </fieldset>
 
                                 <button
                                     type="button"
                                     className={buttonClass}
                                     disabled={
-                                        importMediaChoice === '' ||
+                                        importMediaChoices.length === 0 ||
                                         aiImportReviewLoading ||
                                         aiImportApplying
                                     }
@@ -1856,6 +1957,29 @@ export function MenuCatalogWorkspace({
                                     <FieldError message={aiImportReviewError} />
                                 ) : null}
 
+                                {/*
+                                    Okunamayan fotoğraflar AYRI listelenir ve
+                                    okunabilenlerin sonucunu gölgelemez.
+                                */}
+                                {aiImportFailures.length > 0 ? (
+                                    <ul className="flex flex-col gap-0.5">
+                                        {aiImportFailures.map((failure) => (
+                                            <li
+                                                key={failure.mediaAssetId}
+                                                className="text-caption text-fg-warning"
+                                            >
+                                                {t('menu.item.ai.import.photo.failed', {
+                                                    name:
+                                                        importSourceMedia.find(
+                                                            (media) =>
+                                                                media.id === failure.mediaAssetId,
+                                                        )?.altText || `#${failure.mediaAssetId}`,
+                                                })}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : null}
+
                                 {aiImportRows.length > 0 ? (
                                     <div className="flex flex-col gap-2">
                                         <h3 className="text-body font-semibold">
@@ -1868,7 +1992,10 @@ export function MenuCatalogWorkspace({
                                         ) : null}
                                         <ul className="flex flex-col gap-1">
                                             {aiImportRows.map((row) => (
-                                                <li key={row.name} className="text-body">
+                                                <li
+                                                    key={`${row.artifactId}-${row.name}`}
+                                                    className="text-body"
+                                                >
                                                     {row.category} — {row.product}
                                                     {row.priceMinorAmount === null ? (
                                                         <span className="ms-2 text-fg-warning">

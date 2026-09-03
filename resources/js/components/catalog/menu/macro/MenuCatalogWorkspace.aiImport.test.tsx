@@ -64,6 +64,11 @@ type Options = {
     applyResponse?: Response;
 };
 
+/** Toplu okuma cevabının tek-fotoğraflı, başarılı biçimi. */
+function batchOk(id = 501, usedFallback = false) {
+    return { results: [{ mediaAssetId: 71, id, usedFallback }] };
+}
+
 async function renderWorkspace(options: Options = {}) {
     const calls: { url: string; method: string; body: unknown }[] = [];
 
@@ -99,16 +104,13 @@ async function renderWorkspace(options: Options = {}) {
                     ],
                 });
             }
-            if (String(url).endsWith('/ai-imports') && method === 'POST') {
-                return (
-                    options.storeResponse ??
-                    jsonResponse(201, { id: 501, uncertainFieldCount: 0, usedFallback: false })
-                );
+            if (String(url).endsWith('/ai-imports/batch') && method === 'POST') {
+                return options.storeResponse ?? jsonResponse(201, batchOk());
             }
             if (String(url).endsWith('/ai-imports/501') && method === 'GET') {
                 return options.showResponse ?? jsonResponse(200, { fields: [] });
             }
-            if (String(url).endsWith('/ai-imports/501/apply') && method === 'POST') {
+            if (String(url).endsWith('/ai-imports/batch/apply') && method === 'POST') {
                 return (
                     options.applyResponse ??
                     jsonResponse(200, { importedItems: 0, importedCategories: 0, rejectedRows: [] })
@@ -131,7 +133,12 @@ async function renderWorkspace(options: Options = {}) {
 
 async function openSection(user: ReturnType<typeof userEvent.setup>) {
     await user.click(screen.getByRole('button', { name: 'Import from a photo (AI)' }));
-    await screen.findByLabelText('Choose a photo');
+    await screen.findByText('Choose the photos to read');
+}
+
+/** Bir fotoğrafı seçer — artık açılır liste değil, onay kutusu (`docs/96` Faz 3). */
+async function choosePhoto(user: ReturnType<typeof userEvent.setup>, name = 'Menü fotoğrafı') {
+    await user.click(screen.getByRole('checkbox', { name }));
 }
 
 describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
@@ -180,8 +187,8 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
         });
 
         await openSection(user);
-        await user.selectOptions(screen.getByLabelText('Choose a photo'), '71');
-        await user.click(screen.getByRole('button', { name: 'Read this photo' }));
+        await choosePhoto(user);
+        await user.click(screen.getByRole('button', { name: 'Read these photos' }));
 
         expect(
             await screen.findByText('What the AI read — review before adding'),
@@ -193,9 +200,9 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
 
         await waitFor(() => {
             const store = calls.find(
-                (call) => call.url.endsWith('/ai-imports') && call.method === 'POST',
+                (call) => call.url.endsWith('/ai-imports/batch') && call.method === 'POST',
             );
-            expect(store?.body).toEqual({ mediaAssetId: 71 });
+            expect(store?.body).toEqual({ mediaAssetIds: [71] });
         });
 
         vi.unstubAllGlobals();
@@ -207,8 +214,8 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
         });
 
         await openSection(user);
-        await user.selectOptions(screen.getByLabelText('Choose a photo'), '71');
-        await user.click(screen.getByRole('button', { name: 'Read this photo' }));
+        await choosePhoto(user);
+        await user.click(screen.getByRole('button', { name: 'Read these photos' }));
 
         expect(
             await screen.findByText('Reading menu photos is not available right now.'),
@@ -219,11 +226,7 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
 
     it('yedek sağlayıcıdan okunduysa ayrı belirtilir', async () => {
         const { user } = await renderWorkspace({
-            storeResponse: jsonResponse(201, {
-                id: 501,
-                uncertainFieldCount: 0,
-                usedFallback: true,
-            }),
+            storeResponse: jsonResponse(201, batchOk(501, true)),
             showResponse: jsonResponse(200, {
                 fields: [
                     {
@@ -242,8 +245,8 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
         });
 
         await openSection(user);
-        await user.selectOptions(screen.getByLabelText('Choose a photo'), '71');
-        await user.click(screen.getByRole('button', { name: 'Read this photo' }));
+        await choosePhoto(user);
+        await user.click(screen.getByRole('button', { name: 'Read these photos' }));
 
         expect(await screen.findByText('Read by a backup provider.')).toBeInTheDocument();
 
@@ -277,8 +280,8 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
         });
 
         await openSection(user);
-        await user.selectOptions(screen.getByLabelText('Choose a photo'), '71');
-        await user.click(screen.getByRole('button', { name: 'Read this photo' }));
+        await choosePhoto(user);
+        await user.click(screen.getByRole('button', { name: 'Read these photos' }));
         await screen.findByText('What the AI read — review before adding');
 
         await user.click(screen.getByRole('button', { name: 'Add these to the draft' }));
@@ -286,7 +289,8 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
         await waitFor(() => {
             expect(
                 calls.some(
-                    (call) => call.url.endsWith('/ai-imports/501/apply') && call.method === 'POST',
+                    (call) =>
+                        call.url.endsWith('/ai-imports/batch/apply') && call.method === 'POST',
                 ),
             ).toBe(true);
         });
@@ -302,6 +306,94 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
         expect(
             screen.queryByRole('button', { name: 'Add these to the draft' }),
         ).not.toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    // --- TOPLU OKUMA (`docs/96` Faz 3) ------------------------------------
+
+    it('birden çok fotoğraf seçilip tek istekte okunur', async () => {
+        const { calls, user } = await renderWorkspace({
+            media: [
+                { id: 71, altText: 'Sayfa 1', slot: 'menuImportSource', status: 'ready' },
+                { id: 72, altText: 'Sayfa 2', slot: 'menuImportSource', status: 'ready' },
+            ],
+            storeResponse: jsonResponse(201, {
+                results: [
+                    { mediaAssetId: 71, id: 501, usedFallback: false },
+                    { mediaAssetId: 72, id: 502, usedFallback: false },
+                ],
+            }),
+        });
+
+        await openSection(user);
+        await choosePhoto(user, 'Sayfa 1');
+        await choosePhoto(user, 'Sayfa 2');
+        await user.click(screen.getByRole('button', { name: 'Read these photos' }));
+
+        await waitFor(() => {
+            const store = calls.find(
+                (call) => call.url.endsWith('/ai-imports/batch') && call.method === 'POST',
+            );
+            expect(store?.body).toEqual({ mediaAssetIds: [71, 72] });
+        });
+
+        vi.unstubAllGlobals();
+    });
+
+    it('okunamayan fotoğraf ayrıca söylenir, okunanların sonucu durur', async () => {
+        const { user } = await renderWorkspace({
+            media: [
+                { id: 71, altText: 'Sayfa 1', slot: 'menuImportSource', status: 'ready' },
+                { id: 72, altText: 'Bulanık sayfa', slot: 'menuImportSource', status: 'ready' },
+            ],
+            storeResponse: jsonResponse(201, {
+                results: [
+                    { mediaAssetId: 71, id: 501, usedFallback: false },
+                    { mediaAssetId: 72, error: 'unparseable' },
+                ],
+            }),
+            showResponse: jsonResponse(200, {
+                fields: [
+                    {
+                        name: 'row.1',
+                        value: {
+                            category: 'Çorbalar',
+                            product: 'Mercimek',
+                            priceMinorAmount: 5000,
+                            currencyCode: 'TRY',
+                        },
+                        confidence: 0.96,
+                        uncertain: false,
+                    },
+                ],
+            }),
+        });
+
+        await openSection(user);
+        await choosePhoto(user, 'Sayfa 1');
+        await choosePhoto(user, 'Bulanık sayfa');
+        await user.click(screen.getByRole('button', { name: 'Read these photos' }));
+
+        // Okunamayan söylenir…
+        expect(
+            await screen.findByText(
+                '“Bulanık sayfa” could not be read — the other photos still went through.',
+            ),
+        ).toBeInTheDocument();
+
+        // …ve okunanın sonucu ÇÖPE GİTMEZ.
+        expect(screen.getByText(/Mercimek/)).toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    it('hiç fotoğraf seçilmeden okuma düğmesi çalışmaz', async () => {
+        const { user } = await renderWorkspace();
+
+        await openSection(user);
+
+        expect(screen.getByRole('button', { name: 'Read these photos' })).toBeDisabled();
 
         vi.unstubAllGlobals();
     });
@@ -326,8 +418,8 @@ describe('fotoğraftan içe aktarma (docs/97 Yolculuk A)', () => {
         });
 
         await openSection(user);
-        await user.selectOptions(screen.getByLabelText('Choose a photo'), '71');
-        await user.click(screen.getByRole('button', { name: 'Read this photo' }));
+        await choosePhoto(user);
+        await user.click(screen.getByRole('button', { name: 'Read these photos' }));
         const preview = (
             await screen.findByText('What the AI read — review before adding')
         ).closest('div') as HTMLElement;

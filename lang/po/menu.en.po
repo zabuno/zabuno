@@ -222,7 +222,11 @@ msgstr "No processed photo is available yet. Upload one on the Media page (slot:
 
 #: menu:menu.item.ai.import.media.label
 msgid "menu.item.ai.import.media.label"
-msgstr "Choose a photo"
+msgstr "Choose the photos to read"
+
+#: menu:menu.item.ai.import.photo.failed
+msgid "menu.item.ai.import.photo.failed"
+msgstr "“{name}” could not be read — the other photos still went through."
 
 #: menu:menu.item.ai.import.preview.heading
 msgid "menu.item.ai.import.preview.heading"
@@ -230,7 +234,7 @@ msgstr "What the AI read — review before adding"
 
 #: menu:menu.item.ai.import.read
 msgid "menu.item.ai.import.read"
-msgstr "Read this photo"
+msgstr "Read these photos"
 
 #: menu:menu.item.ai.import.reading
 msgid "menu.item.ai.import.reading"
