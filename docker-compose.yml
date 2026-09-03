@@ -69,6 +69,30 @@ services:
             SESSION_DRIVER: database
             CACHE_STORE: database
             QUEUE_CONNECTION: database
+
+            # POSTA KANALI konteynere GEÇMELİ — `docs/93` (P0-06).
+            #
+            # `.env` üretimde konteynerin İÇİNDE yaşamaz; değerler yalnız
+            # buradan gelir ve giriş betiği `config:cache`'i o değerler
+            # enjekte edildikten SONRA çalıştırır. Bu satırlar olmadan
+            # sunucunun `.env`'i doğru doldurulsa bile uygulama `log`
+            # sürücüsüne düşer: iletişim mesajı KAYDEDİLİR ama kimseye
+            # ULAŞMAZ. Arıza kodda değil aktarımdadır; birim testleri
+            # göremez, `DEPLOY-MAIL-TRANSPORT-08` bekçiler.
+            #
+            # GİZLİ DEĞER BURADA YOK. Her satır sunucunun kendi `.env`'ine
+            # başvurur (`--env-file .env`); Mailgun anahtarı depoya asla
+            # yazılmaz. Sürücü ayarlanana kadar varsayılan `log`'tur:
+            # yapılandırılmamış bir deploy çökmez, sadece göndermez.
+            MAIL_MAILER: ${MAIL_MAILER:-log}
+            MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-noreply@example.invalid}
+            MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Zabuno}
+            MAILGUN_DOMAIN: ${MAILGUN_DOMAIN:-}
+            MAILGUN_SECRET: ${MAILGUN_SECRET:-}
+            MAILGUN_ENDPOINT: ${MAILGUN_ENDPOINT:-api.mailgun.net}
+            # İletişim formu bildirimi kime gider — boşsa gönderim yok, bu
+            # bir hata değil (`docs/93`).
+            CONTACT_NOTIFICATION_ADDRESS: ${CONTACT_NOTIFICATION_ADDRESS:-}
         volumes:
             # Yüklenen medya imajın içinde yaşamaz; imaj değişince kaybolurdu.
             - app-storage:/var/www/html/storage/app
