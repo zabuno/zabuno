@@ -26,6 +26,7 @@ use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
+use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Application\Platform\Port\HostCapabilityProbePort;
 use App\Application\Platform\Port\PlatformAuthorizationPort;
@@ -88,6 +89,7 @@ use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
 use App\Infrastructure\Platform\Capability\RuntimeHostCapabilityProbe;
 use App\Infrastructure\Platform\Credential\EloquentPlatformCredentialStore;
+use App\Infrastructure\Platform\Credential\StickyAccountRouter;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformAuthorization;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformWorkspaceQuery;
 use App\Infrastructure\Publication\Persistence\EloquentMenuIdentity;
@@ -270,6 +272,7 @@ final class AppServiceProvider extends ServiceProvider
             portunu alır ve çözer. Singleton, çünkü şifreleyici durumu ve
             sorgu tekrarını tek yerde toplar.
         */
+        $this->app->bind(AccountRoutingPort::class, StickyAccountRouter::class);
         $this->app->singleton(EloquentPlatformCredentialStore::class);
         $this->app->bind(
             PlatformCredentialAdminPort::class,

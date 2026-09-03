@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Platform\Credential;
 
+use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Application\Platform\Port\PlatformConnectionAdminPort;
 use App\Application\Platform\Port\PlatformCredentialAdminPort;
@@ -13,6 +14,7 @@ use App\Domain\Platform\Credential\CredentialFieldStatus;
 use App\Domain\Platform\Credential\CredentialProvider;
 use App\Domain\Platform\Credential\CredentialScope;
 use App\Domain\Platform\Credential\CredentialStatus;
+use App\Domain\Platform\Credential\ResolvedCredential;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 
@@ -37,7 +39,10 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
 
     private const DEFAULT_LABEL = 'Varsayılan';
 
-    public function __construct(private Encrypter $encrypter) {}
+    public function __construct(
+        private Encrypter $encrypter,
+        private AccountRoutingPort $routing,
+    ) {}
 
     // === Bağlantı portu (Faz 3) =========================================
 
@@ -292,6 +297,38 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
         $row = $this->routableRow($provider);
 
         return $this->resolveRow($provider, $row);
+    }
+
+    public function resolveFor(int $workspaceId, CredentialProvider $provider): ResolvedCredential
+    {
+        foreach ($this->routing->candidates($workspaceId, $provider) as $id) {
+            $row = DB::table(self::TABLE)->where('id', $id)->first();
+
+            if ($row === null) {
+                continue;
+            }
+
+            $values = $this->resolveRow($provider, $row);
+
+            if ($values === []) {
+                // Aday listede ama zorunlu alanı eksik: yarım bir
+                // yapılandırma sessizce "çalışıyor" görünmemeli, sıradakine
+                // geçilir.
+                continue;
+            }
+
+            $this->routing->remember($workspaceId, $provider, (int) $row->id);
+
+            return new ResolvedCredential($values, (int) $row->id);
+        }
+
+        /*
+            Hiçbir bağlantı hizmet edemedi. Yine de env yedeğine bakılır:
+            kasa henüz doldurulmamış bir dağıtımda posta göndermek gibi
+            işler çalışmaya devam etmeli (`docs/93` FF-36 aktarımı). Bunun
+            bir bağlantı kimliği YOKTUR ve olmamalıdır.
+        */
+        return new ResolvedCredential($this->resolveRow($provider, null), null);
     }
 
     public function isConfigured(CredentialProvider $provider): bool

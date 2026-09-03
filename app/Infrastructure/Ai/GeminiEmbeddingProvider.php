@@ -6,6 +6,7 @@ namespace App\Infrastructure\Ai;
 
 use App\Application\Ai\Exception\ProviderCallException;
 use App\Application\Ai\Port\EmbeddingPort;
+use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Domain\Ai\ModelDeployment;
 use App\Domain\Platform\Credential\CredentialProvider;
@@ -34,6 +35,7 @@ final readonly class GeminiEmbeddingProvider implements EmbeddingPort
 {
     public function __construct(
         private CredentialResolverPort $credentials,
+        private AccountRoutingPort $routing,
         private HttpFactory $http,
         private ConfigRepository $config,
     ) {}
@@ -48,7 +50,15 @@ final readonly class GeminiEmbeddingProvider implements EmbeddingPort
             return [];
         }
 
-        $creds = $this->credentials->resolve(CredentialProvider::Gemini);
+        /*
+            YAPIŞKAN HESAP SEÇİMİ (`docs/14` §2a): bu tenant hangi
+            bağlantıya yapıştıysa oraya gider; kendi anahtarı (BYOK)
+            varsa o kazanır. Dönen kimlik, çağrı başarısız olursa
+            HANGİ hesabın düştüğünü söyleyebilmek için gerekli.
+        */
+        $resolved = $this->credentials->resolveFor($workspaceId, CredentialProvider::Gemini);
+        $creds = $resolved->values;
+        $connectionId = $resolved->connectionId;
         $apiKey = (string) ($creds['api_key'] ?? '');
 
         if ($apiKey === '') {
@@ -75,12 +85,21 @@ final readonly class GeminiEmbeddingProvider implements EmbeddingPort
             $response = $client->post("{$baseUrl}/v1beta/models/{$model}:batchEmbedContents", $payload);
         } catch (Throwable) {
             $this->record($workspaceId, $model, 'failed', count($texts), 'network');
+            $this->dropIfAccountFault($connectionId, ProviderHealthVerdict::networkFailureDropsAccount());
             throw new ProviderCallException('gemini', 'network');
         }
 
         if (! $response->successful()) {
             $this->record($workspaceId, $model, 'failed', count($texts), 'http-'.$response->status());
+            $this->dropIfAccountFault(
+                $connectionId,
+                ProviderHealthVerdict::httpStatusDropsAccount($response->status()),
+            );
             throw new ProviderCallException('gemini', 'http-'.$response->status());
+        }
+
+        if ($connectionId !== null) {
+            $this->routing->markHealthy($connectionId);
         }
 
         $json = (array) $response->json();
@@ -124,5 +143,19 @@ final readonly class GeminiEmbeddingProvider implements EmbeddingPort
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+    }
+
+    /**
+     * Hesabı havuzdan düşür — ama YALNIZ hata hesaba aitse.
+     *
+     * Kendi gövdemiz bozuk olduğu için (400) çalışan bir hesabı
+     * düşürmek, sahibin ödediği bir hesabı kullanılamaz kılardı ve
+     * sıradaki hesap da aynı 400'ü alırdı.
+     */
+    private function dropIfAccountFault(?int $connectionId, bool $accountFault): void
+    {
+        if ($connectionId !== null && $accountFault) {
+            $this->routing->markUnhealthy($connectionId);
+        }
     }
 }

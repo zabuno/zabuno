@@ -7,6 +7,7 @@ namespace App\Infrastructure\Ai;
 use App\Application\Ai\Exception\ProviderCallException;
 use App\Application\Ai\Port\AiRequest;
 use App\Application\Ai\Port\VisionExtractionPort;
+use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Domain\Ai\AiArtifact;
 use App\Domain\Ai\FieldValue;
@@ -37,6 +38,7 @@ final readonly class OpenAiVisionProvider implements VisionExtractionPort
 
     public function __construct(
         private CredentialResolverPort $credentials,
+        private AccountRoutingPort $routing,
         private HttpFactory $http,
         private ConfigRepository $config,
     ) {}
@@ -44,7 +46,15 @@ final readonly class OpenAiVisionProvider implements VisionExtractionPort
     /** @param list<string> $filePaths */
     public function extract(AiRequest $request, array $filePaths): AiArtifact
     {
-        $creds = $this->credentials->resolve(CredentialProvider::OpenAi);
+        /*
+            YAPIŞKAN HESAP SEÇİMİ (`docs/14` §2a): bu tenant hangi
+            bağlantıya yapıştıysa oraya gider; kendi anahtarı (BYOK)
+            varsa o kazanır. Dönen kimlik, çağrı başarısız olursa
+            HANGİ hesabın düştüğünü söyleyebilmek için gerekli.
+        */
+        $resolved = $this->credentials->resolveFor($request->workspaceId, CredentialProvider::OpenAi);
+        $creds = $resolved->values;
+        $connectionId = $resolved->connectionId;
         $apiKey = (string) ($creds['api_key'] ?? '');
 
         if ($apiKey === '') {
@@ -86,12 +96,21 @@ final readonly class OpenAiVisionProvider implements VisionExtractionPort
             $response = $client->post("{$baseUrl}/chat/completions", $payload);
         } catch (Throwable) {
             $this->record($request, $model, 'failed', 0, 0, 0, 'network');
+            $this->dropIfAccountFault($connectionId, ProviderHealthVerdict::networkFailureDropsAccount());
             throw new ProviderCallException('openai', 'network');
         }
 
         if (! $response->successful()) {
             $this->record($request, $model, 'failed', 0, 0, 0, 'http-'.$response->status());
+            $this->dropIfAccountFault(
+                $connectionId,
+                ProviderHealthVerdict::httpStatusDropsAccount($response->status()),
+            );
             throw new ProviderCallException('openai', 'http-'.$response->status());
+        }
+
+        if ($connectionId !== null) {
+            $this->routing->markHealthy($connectionId);
         }
 
         $json = (array) $response->json();
@@ -267,5 +286,19 @@ final readonly class OpenAiVisionProvider implements VisionExtractionPort
                 ],
             ],
         ];
+    }
+
+    /**
+     * Hesabı havuzdan düşür — ama YALNIZ hata hesaba aitse.
+     *
+     * Kendi gövdemiz bozuk olduğu için (400) çalışan bir hesabı
+     * düşürmek, sahibin ödediği bir hesabı kullanılamaz kılardı ve
+     * sıradaki hesap da aynı 400'ü alırdı.
+     */
+    private function dropIfAccountFault(?int $connectionId, bool $accountFault): void
+    {
+        if ($connectionId !== null && $accountFault) {
+            $this->routing->markUnhealthy($connectionId);
+        }
     }
 }
