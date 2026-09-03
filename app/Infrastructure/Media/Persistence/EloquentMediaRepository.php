@@ -154,9 +154,10 @@ final class EloquentMediaRepository implements MediaRepositoryPort
         return true;
     }
 
-    public function purgeTrash(int $olderThanDays): int
+    public function purgeTrash(int $olderThanDays, ?int $workspaceId = null): int
     {
         $rows = MediaAsset::onlyTrashed()
+            ->when($workspaceId !== null, fn ($query) => $query->where('workspace_id', $workspaceId))
             ->where('lifecycle_status', LifecycleStatus::Trashed->value)
             ->where('deleted_at', '<', now()->subDays($olderThanDays))
             ->get();
@@ -519,7 +520,7 @@ final class EloquentMediaRepository implements MediaRepositoryPort
         ]);
     }
 
-    public function persistRenditions(int $workspaceId, int $assetId, array $renditions): int
+    public function persistRenditions(int $workspaceId, int $assetId, array $renditions, ?string $lqip = null): int
     {
         // Türev baytları ÖNCE diske yazılır, sonra satırlar açılır. Ters
         // sırada bir çökme, var olmayan dosyaya işaret eden bir kayıt
@@ -545,7 +546,7 @@ final class EloquentMediaRepository implements MediaRepositoryPort
                 $written[] = [$rendition, $storageKey, $checksum];
             }
 
-            return DB::transaction(function () use ($workspaceId, $assetId, $written): int {
+            return DB::transaction(function () use ($workspaceId, $assetId, $written, $lqip): int {
                 $nextVersion = ((int) DB::table('media_versions')
                     ->where('media_asset_id', $assetId)
                     ->max('version_number')) + 1;
@@ -564,6 +565,7 @@ final class EloquentMediaRepository implements MediaRepositoryPort
                     // İlk sürüm yüklemeden doğar; sonrakiler yeniden üretimdir
                     // (asıl aynı, boru hattı yeni) — geçmişte hangisi olduğu okunur.
                     'created_by_kind' => $nextVersion === 1 ? 'upload' : 'reprocess',
+                    'lqip' => $lqip,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

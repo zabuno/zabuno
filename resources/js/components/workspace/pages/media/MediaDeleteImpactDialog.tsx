@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ConfirmDialog } from '../../../catalog/overlays/compound/ConfirmDialog';
 import { t } from '../../../../i18n/workspace';
+import { displayName } from './mediaFormat';
+import { MediaUsageList } from './MediaRemoteSection';
 import type { MediaAsset, MediaUsage } from '../MediaPage';
 
 type MediaDeleteImpactDialogProps = {
@@ -57,8 +59,7 @@ function ImpactDialog({
         };
     }, [asset.id, loadUsages]);
 
-    const name =
-        asset.altText.trim() !== '' ? asset.altText : t('workspace.media.library.asset.untitled');
+    const name = displayName(asset);
     const publishedCount = usages?.filter((u) => u.published).length ?? 0;
     const draftCount = usages?.filter((u) => !u.published).length ?? 0;
     const blocked = publishedCount > 0;
@@ -95,24 +96,7 @@ function ImpactDialog({
                             count: String(usages?.length ?? 0),
                         })}
                     </p>
-                    <ul
-                        aria-label={t('workspace.media.library.usages.heading')}
-                        className="flex flex-col gap-1"
-                    >
-                        {usages?.map((usage) => (
-                            <li
-                                key={`${usage.entityType}-${usage.entityId}-${usage.slot}`}
-                                className="flex items-center justify-between gap-2 text-body"
-                            >
-                                <span className="text-fg">{usage.label}</span>
-                                <span className="text-meta text-fg-muted">
-                                    {usage.published
-                                        ? t('workspace.media.library.usages.live')
-                                        : t('workspace.media.library.usages.draft')}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
+                    <MediaUsageList usages={usages ?? []} />
                     {blocked ? (
                         <p role="alert" className="text-body font-medium text-fg-danger">
                             {t('workspace.media.library.impact.blocked')}

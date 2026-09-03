@@ -1,3 +1,5 @@
+import { t } from '../../../../i18n/workspace';
+
 /**
  * Kütüphane ekranının küçük biçimleyicileri (`docs/49` Faz 4).
  *
@@ -21,6 +23,13 @@ export function formatBytes(bytes: number | undefined): string {
 
     const mb = kb / 1024;
     return `${mb.toFixed(mb < 10 ? 1 : 0)} MB`;
+}
+
+/** Satırın adı: kullanıcının yazdığı alt metin; boşsa "Untitled image". */
+export function displayName(asset: { altText: string }): string {
+    return asset.altText.trim() !== ''
+        ? asset.altText
+        : t('workspace.media.library.asset.untitled');
 }
 
 export function formatDate(iso: string | null | undefined): string {

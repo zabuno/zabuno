@@ -27,6 +27,10 @@ final class RestoreMediaController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        if (! $this->authorization->can($userId, Permission::MediaManage, $workspace)) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
         if (! $this->media->restore($workspace, $media)) {
             return response()->json(['message' => 'Not Found.'], 404);
         }

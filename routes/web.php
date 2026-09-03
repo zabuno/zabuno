@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\EngineeringAppController;
 use App\Http\Controllers\FoundationStatusController;
+use App\Http\Controllers\Media\ServeOriginalController;
 use App\Http\Controllers\Media\ServeRenditionController;
 use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
@@ -91,6 +92,14 @@ Route::get('/media/r/{rendition}-{fingerprint}.{format}', ServeRenditionControll
     ->where('fingerprint', '[a-f0-9]{32}')
     ->where('format', '(webp|png|jpeg)')
     ->name('media.rendition');
+
+// Aslın İMZALI adresi (`docs/49` Faz 6 madde 2): 10 dakikalık imza,
+// kiracı + varlık; süresi dolunca 403. Oturum gerekmez — imza yetkidir.
+Route::get('/media/original/{workspace}/{asset}', ServeOriginalController::class)
+    ->where('workspace', '[0-9]+')
+    ->where('asset', '[0-9]+')
+    ->middleware('signed')
+    ->name('media.original');
 
 // Basılı QR token'ının adresi. KALICI adres artık `/menu/{key}/{slug}`;
 // bu yol eski bağlantılar ve eski basılı kodlar için yaşamaya devam eder

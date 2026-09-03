@@ -80,7 +80,7 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
                 return MediaProcessingResult::failed('Bu görselden hiçbir boyut üretilemedi.');
             }
 
-            return MediaProcessingResult::succeeded($renditions, $sourceWidth, $sourceHeight);
+            return MediaProcessingResult::succeeded($renditions, $sourceWidth, $sourceHeight, $this->lqip($source, $sourceWidth, $sourceHeight));
         } finally {
             imagedestroy($source);
         }
@@ -213,6 +213,24 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
      *
      * @return array{0:string,1:string,2:string|null}
      */
+    /**
+     * LQIP: 16 px genişlikte, düşük kaliteli JPEG, data URI (~300 bayt).
+     * Misafir fotoğraf inene kadar boş kutu değil, yemeğin rengini görür.
+     * Üretilemezse null — yer tutucu süs, başarısızlığı boru hattını
+     * durdurmaz.
+     */
+    private function lqip(GdImage $source, int $sourceWidth, int $sourceHeight): ?string
+    {
+        $width = 16;
+        $height = max(1, (int) round($sourceHeight * $width / max(1, $sourceWidth)));
+        $tiny = imagecreatetruecolor($width, $height);
+        imagecopyresampled($tiny, $source, 0, 0, 0, 0, $width, $height, $sourceWidth, $sourceHeight);
+        $bytes = $this->capture(static fn (): bool => imagejpeg($tiny, null, 40));
+        imagedestroy($tiny);
+
+        return $bytes === null || $bytes === '' ? null : 'data:image/jpeg;base64,'.base64_encode($bytes);
+    }
+
     private function encode(GdImage $canvas, bool $preserveAlpha): array
     {
         if ($preserveAlpha) {

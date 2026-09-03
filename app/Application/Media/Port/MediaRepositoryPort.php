@@ -32,7 +32,7 @@ interface MediaRepositoryPort
      * Süresi dolan çöpü KALICI siler: dosya + satır. Döner: silinen sayı.
      * Yayında kullanılan varlığa dokunmaz.
      */
-    public function purgeTrash(int $olderThanDays): int;
+    public function purgeTrash(int $olderThanDays, ?int $workspaceId = null): int;
 
     /**
      * "Nerede kullanılıyor?" — taslak ve yayın bağları, insan adıyla.
@@ -105,7 +105,7 @@ interface MediaRepositoryPort
      * @param  list<GeneratedRendition>  $renditions
      * @return int Üretilen sürümün kimliği
      */
-    public function persistRenditions(int $workspaceId, int $assetId, array $renditions): int;
+    public function persistRenditions(int $workspaceId, int $assetId, array $renditions, ?string $lqip = null): int;
 
     /**
      * HAZIR bir varlığı yeniden üretim için kilitler (ready → processing).

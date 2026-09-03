@@ -1076,6 +1076,14 @@ msgstr "Assets"
 msgid "workspace.media.library.detail.actionFailed"
 msgstr "That did not work. Nothing was changed."
 
+#: workspace:workspace.media.library.detail.download
+msgid "workspace.media.library.detail.download"
+msgstr "Download original"
+
+#: workspace:workspace.media.library.detail.downloadReady
+msgid "workspace.media.library.detail.downloadReady"
+msgstr "Download link opened. It stays valid for 10 minutes."
+
 #: workspace:workspace.media.library.detail.duplicate
 msgid "workspace.media.library.detail.duplicate"
 msgstr "Same file as asset #{id} in this workspace."
@@ -1367,6 +1375,42 @@ msgstr "Validation"
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
 msgstr "Upload images and manage the media library that feeds your published menu — every asset is scanned before it can be used."
+
+#: workspace:workspace.media.quota.assets
+msgid "workspace.media.quota.assets"
+msgstr "Images"
+
+#: workspace:workspace.media.quota.heading
+msgid "workspace.media.quota.heading"
+msgstr "Storage"
+
+#: workspace:workspace.media.quota.monthly
+msgid "workspace.media.quota.monthly"
+msgstr "Uploads this month"
+
+#: workspace:workspace.media.quota.note
+msgid "workspace.media.quota.note"
+msgstr "Deleted images stay in trash for {days} days and still count until then. Generated sizes are free."
+
+#: workspace:workspace.media.quota.plan
+msgid "workspace.media.quota.plan"
+msgstr "Plan: {plan}"
+
+#: workspace:workspace.media.quota.ratio
+msgid "workspace.media.quota.ratio"
+msgstr "{used} of {limit}"
+
+#: workspace:workspace.media.quota.region
+msgid "workspace.media.quota.region"
+msgstr "Media quota"
+
+#: workspace:workspace.media.quota.storage
+msgid "workspace.media.quota.storage"
+msgstr "Originals"
+
+#: workspace:workspace.media.quota.unlimited
+msgid "workspace.media.quota.unlimited"
+msgstr "no limit"
 
 #: workspace:workspace.media.security.explanation
 msgid "workspace.media.security.explanation"

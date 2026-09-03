@@ -508,6 +508,7 @@
                                          misafir ilk ekranı görmek için kırk
                                          fotoğraf beklemez. --}}
                                     <img class="qr-menu-item-image"
+                                         @if (! empty($image['lqip'])) style="background: url({{ $image['lqip'] }}) center / cover no-repeat" @endif
                                          src="{{ $image['sources'][0]['url'] }}"
                                          srcset="{{ $srcset($image['sources']) }}"
                                          sizes="(max-width: 480px) 96px, 128px"

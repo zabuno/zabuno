@@ -52,7 +52,7 @@ final class RolePermissionMappingTest extends TestCase
 {
     // --- CORE03-PERMISSION-ENUM-01 --------------------------------------
 
-    public function test_permission_enum_declares_the_thirteen_frozen_scope_permission_strings(): void
+    public function test_permission_enum_declares_the_fifteen_frozen_scope_permission_strings(): void
     {
         self::assertSame('workspace.view', Permission::WorkspaceView->value, 'PERMISSION-ENUM-01: workspace.view değeri sabit string sözleşmesiyle eşleşmeli.');
         self::assertSame('workspace.manage', Permission::WorkspaceManage->value, 'PERMISSION-ENUM-01: workspace.manage değeri sabit string sözleşmesiyle eşleşmeli.');
@@ -70,7 +70,10 @@ final class RolePermissionMappingTest extends TestCase
 
         $values = array_map(static fn (Permission $permission): string => $permission->value, Permission::cases());
 
-        self::assertCount(13, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak on üç permission tanımlar (workspace.view, workspace.manage, menu.view, menu.manage, menu.publish, qr.view, qr.create, qr.disable, qr.design.manage, analytics.view, billing.view, billing.manage, security.evidence.view) — ek permission eklenmemeli.');
+        self::assertSame('media.manage', Permission::MediaManage->value);
+        self::assertSame('media.download_original', Permission::MediaDownloadOriginal->value);
+        // FF-71 (docs/49 Faz 7 madde 3): iki medya izni eklendi. 13 → 15.
+        self::assertCount(15, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak on beş permission tanımlar (on üç çekirdek + media.manage + media.download_original) — ek permission eklenmemeli.');
         self::assertContains('workspace.view', $values);
         self::assertContains('workspace.manage', $values);
         self::assertContains('menu.view', $values);
@@ -88,7 +91,7 @@ final class RolePermissionMappingTest extends TestCase
 
     // --- CORE03-ROLE-MAP-OWNER-01 -----------------------------------------
 
-    public function test_owner_role_maps_to_all_thirteen_view_manage_publish_qr_analytics_billing_and_security_evidence_permissions(): void
+    public function test_owner_role_maps_to_all_fifteen_view_manage_publish_qr_analytics_billing_security_evidence_and_media_permissions(): void
     {
         $permissions = RolePermissions::for(MembershipRole::Owner);
 
@@ -105,7 +108,9 @@ final class RolePermissionMappingTest extends TestCase
         self::assertContains(Permission::BillingView, $permissions, 'ROLE-MAP-OWNER-01: Owner billing.view yetkisine sahip olmalı (S1-WP05 billing authorization).');
         self::assertContains(Permission::BillingManage, $permissions, 'ROLE-MAP-OWNER-01: Owner billing.manage yetkisine sahip olmalı (S1-WP01A Iyzico sandbox checkout backend).');
         self::assertContains(Permission::SecurityEvidenceView, $permissions, 'ROLE-MAP-OWNER-01: Owner security.evidence.view yetkisine sahip olmalı (owner-only SecurityEvidenceView, already-shipped MASTER contract).');
-        self::assertCount(13, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak on üç permission taşımalı (bounded scope dışında ek yetki yok).');
+        self::assertContains(Permission::MediaManage, $permissions);
+        self::assertContains(Permission::MediaDownloadOriginal, $permissions);
+        self::assertCount(15, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak on beş permission taşımalı (bounded scope dışında ek yetki yok).');
     }
 
     // --- CORE03-ROLE-MAP-MEMBER-01 ----------------------------------------
@@ -126,7 +131,10 @@ final class RolePermissionMappingTest extends TestCase
         self::assertContains(Permission::AnalyticsView, $permissions, 'ROLE-MAP-MEMBER-01: Member analytics.view yetkisine sahip olmalı (S1-WP05b1 location-scoped analytics).');
         self::assertNotContains(Permission::BillingView, $permissions, 'ROLE-MAP-MEMBER-01: Member billing.view yetkisine sahip OLMAMALI (S1-WP05 billing authorization, owner-only).');
         self::assertNotContains(Permission::BillingManage, $permissions, 'ROLE-MAP-MEMBER-01: Member billing.manage yetkisine sahip OLMAMALI (S1-WP01A Iyzico sandbox checkout backend, owner-only).');
-        self::assertCount(4, $permissions, 'ROLE-MAP-MEMBER-01: Member workspace.view, menu.view, qr.view ve analytics.view taşımalı; manage/publish/create/disable/design.manage/billing.view/billing.manage/security.evidence.view taşımamalı.');
+        // Sahip kararı (FF-71): asıl indirme her role serbest; Member yine yükleyemez.
+        self::assertContains(Permission::MediaDownloadOriginal, $permissions);
+        self::assertNotContains(Permission::MediaManage, $permissions);
+        self::assertCount(5, $permissions, 'ROLE-MAP-MEMBER-01: Member workspace.view, menu.view, qr.view, analytics.view ve media.download_original taşımalı; manage/publish/create/disable/design.manage/billing/security.evidence/media.manage taşımamalı.');
     }
 
     // --- CORE03-ROLE-MAP-EDITOR-01 -----------------------------------------

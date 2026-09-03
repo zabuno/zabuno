@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Media\Dto\MediaIntake;
+use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\UseCase\ProcessAcceptedMediaAsset;
 use App\Application\Media\UseCase\ScanQuarantinedMediaAsset;
@@ -21,6 +22,7 @@ final class StoreMediaController extends Controller
         private readonly AuthorizationPort $authorization,
         private readonly ScanQuarantinedMediaAsset $scanQuarantinedMediaAsset,
         private readonly ProcessAcceptedMediaAsset $processAcceptedMediaAsset,
+        private readonly MediaQuotaPort $quota,
     ) {}
 
     public function __invoke(StoreMediaRequest $request, int $workspace): JsonResponse
@@ -29,6 +31,10 @@ final class StoreMediaController extends Controller
 
         if (! $this->authorization->can($userId, Permission::WorkspaceView, $workspace)) {
             return response()->json(['message' => 'Not Found.'], 404);
+        }
+
+        if (! $this->authorization->can($userId, Permission::MediaManage, $workspace)) {
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         /*
@@ -58,6 +64,20 @@ final class StoreMediaController extends Controller
         }
 
         $file = $request->file('file');
+
+        /*
+            KOTA (`docs/49` Faz 7 madde 1-2). Dolunca yalnız YENİ yükleme
+            durur; canlı menü teslimi bu kapıdan geçmez. Sebep, alan
+            hatası biçiminde döner ki ekran onu dosyanın altında okutsun.
+        */
+        $blocked = $this->quota->admits($workspace, (int) ($file->getSize() ?: 0));
+
+        if ($blocked !== null) {
+            return response()->json([
+                'message' => $blocked,
+                'errors' => ['file' => [$blocked]],
+            ], 422);
+        }
 
         $intake = new MediaIntake(
             temporaryPath: (string) $file->getRealPath(),
