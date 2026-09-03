@@ -60,6 +60,12 @@ const en = {
     'menu.item.stock.back.short': 'Back in stock',
     'menu.item.stock.out.button': 'Mark {name} sold out for today',
     'menu.item.stock.back.button': 'Mark {name} available again',
+    // KATEGORİ GENELİ (`docs/82` kriter 3, ekranı `docs/98` FF-64): "balıklar
+    // bitti" altı ayrı tıklama olmamalı.
+    'menu.category.stock.out.short': 'All sold out',
+    'menu.category.stock.back.short': 'All available',
+    'menu.category.stock.out.button': 'Mark everything in {name} sold out for today',
+    'menu.category.stock.back.button': 'Mark everything in {name} available again',
     // Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
     'menu.export.download': 'Download menu (CSV)',
     'menu.import.label': 'Import a CSV menu',

@@ -83,14 +83,14 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 1/12 tamamlandı, 2/12 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 2/13 tamamlandı, 3/13 aktif.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
 | # | Paket | Kapsam | Kapı |
 | --- | --- | --- | --- |
 | 1 ✅ | **FF-63 Readiness kanıtı** | host-capability HTTP ucu + ekran; `release_evidence` genel kayıt tablosu (QR fiziksel tarama, RPO/RTO kararı, ASVS raporu) + `platform:evidence:record` komutu + ekran; sahibin gerçek taramasını kaydet | 6 maddenin 6'sı gerçek kayıttan okunur; kayıtsız madde dürüstçe "Unavailable" |
-| 2 | **FF-64 Rota boşlukları** | menü-geneli stok, brand/logo ve QR destination doğrulaması; bilinçli-eski rotalar belgeli | Tur 1 listesi sıfır "doğrulanacak" |
+| 2 ✅ | **FF-64 Rota boşlukları** | menü-geneli stok, brand/logo ve QR destination doğrulaması; bilinçli-eski rotalar belgeli | Tur 1 listesi sıfır "doğrulanacak" |
 | 3 | **FF-65 Envanter tazeleme** | `docs/61` G4/G5, E9/E10, A2 güncellemesi; FF-49..62'nin izi | envanter gerçeği söylüyor |
 | 4 | **FF-66 Engineering kabuğu** | `/engineering/*` ayrı kabuk: readiness, güvenlik kanıtı, yedek tatbikatı, host-capability, AI denetim izi | `docs/69` madde 3 ✅ |
 | 5 | **FF-67 Superadmin estetiği (Metronic-esinli)** | plan belgesi (`docs/99`) + uygulama: yoğunluk, kart/tablo dili, rozet sistemi, sol rail, üst çubuk; Zabuno token'larıyla, Metronic kopyası değil | platform ve engineering kabukları aynı dili konuşur |
@@ -101,6 +101,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 10 | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
 | 11 | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
 | 12 | **FF-74 Yetki-görünürlük + registry** | gezinti kaydına `permission`/`entitlement`; ön uç `me` ucundan izin okur; yetkisiz eylem çizilmez; Pennant | Editor 403 görmez |
+| 13 | **FF-75 Toplu orkestra** (sahibin 2026-09-04 sorusu) | 40 sayfalık menü: `ai_batches` (kalıcı hafıza) + kuyrukta sayfa başına iş (geçici hafıza) + **parti-bazlı** yönlendirme (sağlıklı bağlantılar arasında, bağlantı başına dakikalık bütçe — yapışkanlığa "amaç" boyutu, R30'un Faz 5'e bıraktığı iş öne çekilir) + `CollectorJob` (artifact'ları tek inceleme listesine toplar, yinelenenleri ayıklar) + mevcut insan-onaylı `apply`. `docs/adr/` klasörü ve `agents/*.md` sözleşmeleri (docs/96'daki üç ajan) bu pakette resmileşir | 40 sayfa tek limitte şişmez; sonuç TEK listede incelenir; onaysız hiçbir satır yazılmaz |
 
 **Ertelenen ve nedeni:** DAM Faz 8-10 (crop stüdyosu, AI önerileri, video)
 `docs/49`'un kendi fazlamasıyla sonra; video sahibin kararıyla Faz 2'ye
@@ -127,6 +128,24 @@ Kayıt üretimde bir insan tarafından düşülür — bu belge onu düşmüş s
 **ASVS:** `security/OWASP-ASVS-BASELINE.md` bir öz-değerlendirmedir, üçüncü
 taraf denetim DEĞİLDİR; kayıt "recorded" durumuyla ve bu cümleyle yapılır,
 form yardım metni sertifika iddiasını açıkça yasaklar.
+
+### FF-64 teslim notu
+
+Tur 1'in üç "doğrulanacak" satırı üçü de GERÇEK boşluk çıktı ve kapandı:
+
+- **Marka logosu:** arka uç 2026-08-29'dan beri bağlıyordu, hiçbir ekran
+  bağlamıyordu ve hiçbir uç bağlı olanı geri söylemiyordu. `GET brand`
+  artık `logoMediaAssetId` taşır; Settings → Brand altında seçici var
+  (yükleme yine Media'da, `logo` slotu).
+- **QR kodu başka şubeye taşıma:** `docs/81` P1-03 "teslim edildi" diyordu —
+  arka uç için doğruydu, ekran yoktu. Kart artık "Move to another location"
+  ile taşınır; şube listesi ancak istenince yüklenir; uç `locationId` de
+  kabul eder (ekranın elinde menü kimlikleri yok, N istek atılmaz).
+- **Kategori geneli tükendi:** `docs/82` kriter 3'ün arka ucu vardı; ekran
+  ürün ürün işaretletiyordu. "Balıklar bitti" tek tıklama, tek istek.
+
+Bilinçli-eski rotalar (`products`/`menu-items` tekil uçları, `admin/credentials*`)
+kalır ve Tur 1 tablosunda gerekçeli.
 
 ## 6. Esnetilen kurallar — açık kayıt
 

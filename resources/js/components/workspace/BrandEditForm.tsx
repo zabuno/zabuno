@@ -37,6 +37,8 @@ export type BrandProfile = {
     description: string | null;
     contact_email: string | null;
     contact_phone: string | null;
+    /** Taslakta bağlı logo; sunucu okur, form değiştirmez (`docs/98` FF-64). */
+    logoMediaAssetId?: number | null;
 };
 
 /** Hata özetinde ve odak sırasında kullanılan alan sırası — ekrandaki sıra. */

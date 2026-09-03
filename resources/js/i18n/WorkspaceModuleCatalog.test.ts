@@ -11,7 +11,7 @@ import { t } from './workspace';
  * resources/js/i18n/workspace.ts (legacy flat literal catalog) is being
  * replaced by an aggregator of the same path that automatically discovers
  * module catalogs under resources/js/i18n/workspace/ via import.meta.glob,
- * merges them, and preserves all 413 workspace.* key/value pairs (media.ts
+ * merges them, and preserves all workspace.* key/value pairs (media.ts
  * intentionally replaces one legacy status key with eight status-specific
  * keys) and t() runtime/type behavior exactly.
  */
@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 556;
+const FROZEN_LEGACY_KEY_COUNT = 574;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -191,8 +191,12 @@ const FROZEN_LEGACY_KEY_COUNT = 556;
 // MENÜ MÜHENDİSLİĞİ (docs/84): "menün 214 kez açıldı" menüyü DEĞİŞTİRMEK için
 // hiçbir şey söylemiyordu. On iki anahtar: en çok/hiç bakılmayan listeleri,
 // sonuçsuz aramalar ve veri yetersizken sebebi+eşiği yazan durum. 544 → 556.
+//
+// FF-64 (docs/98): arka uçta var olup ekranı olmayan üç iş — marka logosu
+// bağlama (11 anahtar), QR kodunu başka şubeye taşıma (9), kategori geneli
+// tükendi (menu.ts'te, burada değil). 556 → 574.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'baf4e081190408a77423b66f80dfdb0f5243f68e82b0ab5477155baba191240b';
+    'e308877bb7d2bf93fd336cfc18cb4027d2317114fab0de95bf21c57dc10a06b6';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -232,7 +236,7 @@ describe('workspace i18n modular catalog contract', () => {
         expect(aggregatorSource).toMatch(/duplicate/i);
     });
 
-    it('composes exactly 413 workspace translation entries matching the frozen normalized legacy SHA-256', async () => {
+    it('composes exactly the frozen number of workspace translation entries matching the frozen normalized legacy SHA-256', async () => {
         const workspaceModule: typeof import('./workspace') = await import('./workspace');
         const composed = workspaceModule.workspaceTranslations as Record<string, string>;
 

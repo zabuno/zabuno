@@ -181,6 +181,32 @@ final class QrCodeLifecycleTest extends TestCase
         );
     }
 
+    public function test_a_code_can_be_moved_by_naming_the_branch_instead_of_the_menu(): void
+    {
+        // Ekranın elinde şube listesi var, menü kimlikleri değil; her şube
+        // için ayrı bir menü isteği atmak "kodu taşı" gibi tek bir işi N
+        // isteğe çevirirdi (`docs/98` FF-64). Şube başına tek menü olduğu
+        // için iki ad aynı hedefi gösterir.
+        $s = $this->scenario('qr-branch-move-by-location');
+        $locationB = (int) DB::table('menus')->where('id', $s['menuB'])->value('location_id');
+
+        $this->api($s['owner'])->putJson(
+            "/api/workspaces/{$s['workspaceId']}/qr-codes/{$s['qrId']}/destination",
+            ['locationId' => $locationB]
+        )->assertOk();
+
+        self::assertSame(
+            $s['menuB'],
+            (int) DB::table('qr_destinations')->where('qr_code_id', $s['qrId'])->orderByDesc('id')->value('menu_id'),
+        );
+
+        // İkisi de yoksa 422 — "hedefsiz taşıma" diye bir şey yok.
+        $this->api($s['owner'])->putJson(
+            "/api/workspaces/{$s['workspaceId']}/qr-codes/{$s['qrId']}/destination",
+            []
+        )->assertStatus(422);
+    }
+
     // --- QR-ENABLE-01 / QR-DISABLED-DEAD-END-01 ---------------------------
 
     public function test_a_disabled_code_can_be_brought_back(): void

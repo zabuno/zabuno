@@ -72,6 +72,22 @@ msgstr "Order for {name}"
 msgid "menu.category.select.label"
 msgstr "Category"
 
+#: menu:menu.category.stock.back.button
+msgid "menu.category.stock.back.button"
+msgstr "Mark everything in {name} available again"
+
+#: menu:menu.category.stock.back.short
+msgid "menu.category.stock.back.short"
+msgstr "All available"
+
+#: menu:menu.category.stock.out.button
+msgid "menu.category.stock.out.button"
+msgstr "Mark everything in {name} sold out for today"
+
+#: menu:menu.category.stock.out.short
+msgid "menu.category.stock.out.short"
+msgstr "All sold out"
+
 #: menu:menu.create.error.submit
 msgid "menu.create.error.submit"
 msgstr "We could not create the menu. Please try again."

@@ -1,5 +1,6 @@
 import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
+import { BrandLogoRegion } from './brand/BrandLogoRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 
 type BrandPageProps = {
@@ -17,7 +18,13 @@ export function BrandPage({ workspaceId, brand, onSaved }: BrandPageProps) {
                 description={t('workspace.brand.operational.description')}
             >
                 {brand ? (
-                    <BrandEditForm workspaceId={workspaceId} brand={brand} onSaved={onSaved} />
+                    <>
+                        <BrandEditForm workspaceId={workspaceId} brand={brand} onSaved={onSaved} />
+                        <BrandLogoRegion
+                            workspaceId={workspaceId}
+                            initialMediaAssetId={brand.logoMediaAssetId ?? null}
+                        />
+                    </>
                 ) : (
                     <p role="status" className="text-body text-fg-muted">
                         {t('workspace.brand.loading')}

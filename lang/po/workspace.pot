@@ -524,6 +524,46 @@ msgstr ""
 msgid "workspace.brand.locale.help"
 msgstr ""
 
+#: workspace:workspace.brand.logo.choose
+msgid "workspace.brand.logo.choose"
+msgstr ""
+
+#: workspace:workspace.brand.logo.empty
+msgid "workspace.brand.logo.empty"
+msgstr ""
+
+#: workspace:workspace.brand.logo.error
+msgid "workspace.brand.logo.error"
+msgstr ""
+
+#: workspace:workspace.brand.logo.heading
+msgid "workspace.brand.logo.heading"
+msgstr ""
+
+#: workspace:workspace.brand.logo.help
+msgid "workspace.brand.logo.help"
+msgstr ""
+
+#: workspace:workspace.brand.logo.loading
+msgid "workspace.brand.logo.loading"
+msgstr ""
+
+#: workspace:workspace.brand.logo.none
+msgid "workspace.brand.logo.none"
+msgstr ""
+
+#: workspace:workspace.brand.logo.save
+msgid "workspace.brand.logo.save"
+msgstr ""
+
+#: workspace:workspace.brand.logo.saved
+msgid "workspace.brand.logo.saved"
+msgstr ""
+
+#: workspace:workspace.brand.logo.saving
+msgid "workspace.brand.logo.saving"
+msgstr ""
+
 #: workspace:workspace.brand.market
 msgid "workspace.brand.market"
 msgstr ""
@@ -1506,6 +1546,38 @@ msgstr ""
 
 #: workspace:workspace.publication.qrDestination.loading
 msgid "workspace.publication.qrDestination.loading"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.button
+msgid "workspace.publication.qrDestination.move.button"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.cancel
+msgid "workspace.publication.qrDestination.move.cancel"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.choose
+msgid "workspace.publication.qrDestination.move.choose"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.error
+msgid "workspace.publication.qrDestination.move.error"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.label
+msgid "workspace.publication.qrDestination.move.label"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.loading
+msgid "workspace.publication.qrDestination.move.loading"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.noOther
+msgid "workspace.publication.qrDestination.move.noOther"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.move.start
+msgid "workspace.publication.qrDestination.move.start"
 msgstr ""
 
 #: workspace:workspace.publication.qrDestination.region

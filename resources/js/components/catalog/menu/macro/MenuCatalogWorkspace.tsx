@@ -176,6 +176,14 @@ function stockUrl(workspaceId: number, menuItemId: number): string {
     return `/api/workspaces/${workspaceId}/menu-items/${menuItemId}/stock`;
 }
 
+/**
+ * Tek istekte çoklu işaretleme — `docs/82` kriter 3, ekranı `docs/98` FF-64.
+ * "Balıklar bitti" altı ürünü altı istekle işaretlemek değildir.
+ */
+function menuStockUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/stock`;
+}
+
 function exportUrl(workspaceId: number, menuId: number): string {
     return `/api/workspaces/${workspaceId}/menu/${menuId}/export.csv`;
 }
@@ -493,6 +501,7 @@ export function MenuCatalogWorkspace({
     const [importError, setImportError] = useState<string | null>(null);
 
     const [stockPending, setStockPending] = useState<Record<number, boolean>>({});
+    const [categoryStockPending, setCategoryStockPending] = useState<Record<number, boolean>>({});
 
     const [visibilityPending, setVisibilityPending] = useState<Record<number, boolean>>({});
     const [visibilityErrors, setVisibilityErrors] = useState<Record<number, string | null>>({});
@@ -1177,6 +1186,57 @@ export function MenuCatalogWorkspace({
      * beklemek hem yavaş hem tehlikelidir — taslakta yarım kalmış bir fiyat
      * düzenlemesi de canlıya giderdi.
      */
+    /**
+     * Bir kategorinin TAMAMINI tükendi/mevcut işaretle — `docs/82` kriter 3.
+     * Arka uç (`PUT .../menu/{menu}/stock`) 2026-08-30'dan beri vardı; ekran
+     * yalnız tek ürünü işaretliyordu. Akşam servisinde "balıklar bitti"
+     * demek altı ayrı tıklama olmamalı.
+     */
+    async function handleCategoryStock(category: CategoryRow, outOfStock: boolean) {
+        if (tree === null) return;
+
+        const ids = category.menuItems.map((item) => item.id);
+        setOperationError(null);
+        setCategoryStockPending((current) => ({ ...current, [category.id]: true }));
+
+        try {
+            const response = await postJson(
+                menuStockUrl(workspaceId, tree.id),
+                outOfStock ? { outOfStock: ids, inStock: [] } : { outOfStock: [], inStock: ids },
+                'PUT',
+            );
+
+            if (!response.ok) {
+                setOperationError(await parseErrorMessage(response, t('menu.ops.error')));
+
+                return;
+            }
+
+            setTree((current) =>
+                current === null
+                    ? current
+                    : {
+                          ...current,
+                          categories: current.categories.map((row) =>
+                              row.id === category.id
+                                  ? {
+                                        ...row,
+                                        menuItems: row.menuItems.map((item) => ({
+                                            ...item,
+                                            outOfStock,
+                                        })),
+                                    }
+                                  : row,
+                          ),
+                      },
+            );
+        } catch {
+            setOperationError(t('menu.ops.error'));
+        } finally {
+            setCategoryStockPending((current) => ({ ...current, [category.id]: false }));
+        }
+    }
+
     async function handleToggleStock(item: MenuItemRow) {
         setStockPending((current) => ({ ...current, [item.id]: true }));
         setOperationError(null);
@@ -2198,6 +2258,43 @@ export function MenuCatalogWorkspace({
                                         upLabel={t('menu.move.up', { name: category.name })}
                                         downLabel={t('menu.move.down', { name: category.name })}
                                     />
+                                    {/*
+                                        KATEGORİ GENELİ STOK — `docs/82` kriter 3.
+                                        Yalnız ürün varken çizilir; boş bir kategoride
+                                        "hepsi tükendi" demenin anlamı yok. Tümü tükenmişse
+                                        yalnız geri getirme sunulur, tersi de öyle.
+                                    */}
+                                    {category.menuItems.length > 0 ? (
+                                        <button
+                                            type="button"
+                                            className={inlineActionClass}
+                                            disabled={categoryStockPending[category.id] === true}
+                                            onClick={() =>
+                                                void handleCategoryStock(
+                                                    category,
+                                                    !category.menuItems.every(
+                                                        (item) => item.outOfStock === true,
+                                                    ),
+                                                )
+                                            }
+                                            aria-label={t(
+                                                category.menuItems.every(
+                                                    (item) => item.outOfStock === true,
+                                                )
+                                                    ? 'menu.category.stock.back.button'
+                                                    : 'menu.category.stock.out.button',
+                                                { name: category.name },
+                                            )}
+                                        >
+                                            {t(
+                                                category.menuItems.every(
+                                                    (item) => item.outOfStock === true,
+                                                )
+                                                    ? 'menu.category.stock.back.short'
+                                                    : 'menu.category.stock.out.short',
+                                            )}
+                                        </button>
+                                    ) : null}
                                 </div>
                                 <ul
                                     aria-label={t('menu.category.items.label', {
