@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Ai\ApplyMenuAiImportController;
+use App\Http\Controllers\Ai\ShowMenuAiImportController;
+use App\Http\Controllers\Ai\StoreMenuAiImportController;
 use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
 use App\Http\Controllers\MenuCatalog\DeleteCategoryController;
 use App\Http\Controllers\MenuCatalog\DeleteMenuItemController;
@@ -69,6 +72,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/menu/{menu}/export.csv', ExportMenuCsvController::class)
         ->middleware('throttle:20,1');
     Route::post('/workspaces/{workspace}/menu/{menu}/import', ImportMenuCsvController::class)
+        ->middleware('throttle:10,1');
+
+    /*
+        Fotoğraftan menü okuma (`docs/92`).
+
+        Okuma HIZ SINIRLI: her çağrı dış bir sağlayıcıya para ödetir ve
+        sınırsız deneme, faturayı bir betiğe bıraktırırdı. Onay ayrı bir
+        yoldur ve yetki orada YENİDEN doğrulanır.
+    */
+    Route::post('/workspaces/{workspace}/menu/{menu}/ai-imports', StoreMenuAiImportController::class)
+        ->middleware('throttle:6,1');
+    Route::get('/workspaces/{workspace}/ai-imports/{artifact}', ShowMenuAiImportController::class);
+    Route::post('/workspaces/{workspace}/ai-imports/{artifact}/apply', ApplyMenuAiImportController::class)
         ->middleware('throttle:10,1');
     Route::put('/workspaces/{workspace}/menu-categories/{category}/item-order', ReorderMenuItemsController::class);
     Route::put('/workspaces/{workspace}/menu/{menu}/category-order', ReorderCategoriesController::class);

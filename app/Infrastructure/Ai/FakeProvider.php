@@ -7,6 +7,7 @@ namespace App\Infrastructure\Ai;
 use App\Application\Ai\Port\AiRequest;
 use App\Application\Ai\Port\OcrPort;
 use App\Application\Ai\Port\StructuredGenerationPort;
+use App\Application\Ai\Port\VisionExtractionPort;
 use App\Domain\Ai\AiArtifact;
 use App\Domain\Ai\FieldValue;
 use App\Domain\Ai\ModelDeployment;
@@ -23,7 +24,7 @@ use App\Domain\Ai\SourceRef;
  * DETERMİNİSTİKTİR: aynı girdi aynı çıktıyı verir. Rastgele davranan bir
  * sahte sağlayıcı, testleri kırılgan yapardı.
  */
-final readonly class FakeProvider implements OcrPort, StructuredGenerationPort
+final readonly class FakeProvider implements OcrPort, StructuredGenerationPort, VisionExtractionPort
 {
     private function deployment(): ModelDeployment
     {
@@ -47,6 +48,52 @@ final readonly class FakeProvider implements OcrPort, StructuredGenerationPort
                     uncertain: false,
                     source: new SourceRef($hash, page: 1, boundingBox: null),
                 ),
+            ],
+        );
+    }
+
+    /**
+     * Görselden menü çıkarımı — sağlayıcı gelene kadarki dayanak.
+     *
+     * Şekil GERÇEKÇİ tutulur: her alan bir MENÜ SATIRIDIR ve satır başına
+     * güven taşır. Düz bir metin döndürseydi, onay hattının geri kalanı
+     * gerçek sağlayıcıya kadar hiç çalıştırılamazdı.
+     */
+    public function extract(AiRequest $request, array $filePaths): AiArtifact
+    {
+        $source = new SourceRef(hash('sha256', implode('|', $filePaths)), page: 1, boundingBox: null);
+
+        return new AiArtifact(
+            capability: $request->capability,
+            model: $this->deployment(),
+            promptVersion: 'fake.v1',
+            schemaVersion: $request->capability->schemaVersion(),
+            fields: [
+                new FieldValue('row.1', [
+                    'category' => 'Çorbalar',
+                    'product' => 'Mercimek Çorbası',
+                    'priceMinorAmount' => 5250,
+                    'currencyCode' => 'TRY',
+                ], 0.97, false, $source),
+                new FieldValue('row.2', [
+                    'category' => 'Çorbalar',
+                    'product' => 'Ezogelin Çorbası',
+                    'priceMinorAmount' => 5250,
+                    'currencyCode' => 'TRY',
+                ], 0.94, false, $source),
+                /*
+                 * Fiyatı OKUNAMAYAN bir satır her koşuda üretilir.
+                 *
+                 * Sebebi `generate()` ile aynı: her zaman kesin cevap veren
+                 * bir sahte sağlayıcı, ürünün belirsizlik yolunu hiç
+                 * çalıştırmaz ve o yol ilk kez üretimde denenirdi.
+                 */
+                new FieldValue('row.3', [
+                    'category' => 'Kebaplar',
+                    'product' => 'Adana Kebap',
+                    'priceMinorAmount' => null,
+                    'currencyCode' => 'TRY',
+                ], 0.41, true, $source),
             ],
         );
     }

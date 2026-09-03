@@ -25,7 +25,24 @@ final readonly class ConfiguredAvailability implements AiAvailabilityPort
             return AiAvailability::KillSwitch;
         }
 
-        $candidates = (array) config("ai.capabilities.{$capability->value}.candidates", []);
+        /*
+            YETENEK ADLARI NOKTA İÇERİR — `config()` onları iç içe anahtar sanar.
+
+            `config("ai.capabilities.menu.extract.candidates")` çağrısı
+            `capabilities → menu → extract → candidates` yolunu arar; oysa
+            gerçek anahtar `'menu.extract'` düz metnidir. Dört yeteneğin
+            DÖRDÜ de nokta taşıdığı için bu çağrı HER ZAMAN varsayılana
+            düşüyordu: sağlayıcı tam yapılandırılmış olsa bile cevap
+            "rota yok" olurdu.
+
+            Kusur bugün görünmüyordu çünkü AI kapalı ve gerçek sağlayıcı yok;
+            ilk kez anahtar girildiği gün, "para ödedik ama çalışmıyor"
+            olarak ortaya çıkardı (`docs/92`).
+
+            Dizi bir kez okunur, sonra DÜZ anahtarla indekslenir.
+        */
+        $capabilities = (array) config('ai.capabilities', []);
+        $candidates = (array) ($capabilities[$capability->value]['candidates'] ?? []);
 
         if ($candidates === []) {
             return AiAvailability::NoRoute;

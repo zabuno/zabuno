@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Application\Ai\Port\AiAvailabilityPort;
+use App\Application\Ai\Port\VisionExtractionPort;
 use App\Application\Analytics\Port\AnalyticsRepositoryPort;
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Billing\Port\IyzicoSandboxGatewayPort;
@@ -47,6 +49,8 @@ use App\Domain\Media\SlotCatalogue;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
+use App\Infrastructure\Ai\ConfiguredAvailability;
+use App\Infrastructure\Ai\FakeProvider;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentIyzicoSandboxTransactionRepository;
@@ -128,6 +132,16 @@ final class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(TranslationPort::class, static fn (): MoFileTranslator => new MoFileTranslator(base_path('lang/mo')));
         $this->app->bind(MenuCatalogApiContextPort::class, EloquentMenuCatalogApiContext::class);
+        /*
+            AI sağlayıcısı: bugün SAHTE olan, deterministik dayanak.
+
+            Gerçek sağlayıcı (OpenAI) ayrı bir paket ve anahtar olmadan
+            gerçek API'ye karşı doğrulanamaz. Bağlama burada tek satırdır —
+            anahtar geldiği gün değişecek yer burası (`docs/92`).
+        */
+        $this->app->bind(AiAvailabilityPort::class, ConfiguredAvailability::class);
+        $this->app->bind(VisionExtractionPort::class, FakeProvider::class);
+
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);
         $this->app->bind(OutOfStockPort::class, EloquentOutOfStock::class);

@@ -61,6 +61,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/workspaces/{workspace}/menu/{menu}/stock||App\Http\Controllers\MenuCatalog\UpdateMenuStockController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/menu/{menu}/export.csv||App\Http\Controllers\MenuCatalog\ExportMenuCsvController|api,auth:sanctum,throttle:20,1,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/import||App\Http\Controllers\MenuCatalog\ImportMenuCsvController|api,auth:sanctum,throttle:10,1,verified',
+        // FOTOĞRAFTAN MENÜ OKUMA (`docs/92`, P0-05 foto yolu). Okuma hız
+        // sınırlı: her çağrı dış bir sağlayıcıya para ödetir. Onay AYRI bir
+        // yoldur ve yetki orada yeniden doğrulanır.
+        'POST|api/workspaces/{workspace}/menu/{menu}/ai-imports||App\Http\Controllers\Ai\StoreMenuAiImportController|api,auth:sanctum,throttle:6,1,verified',
+        'GET|api/workspaces/{workspace}/ai-imports/{artifact}||App\Http\Controllers\Ai\ShowMenuAiImportController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/ai-imports/{artifact}/apply||App\Http\Controllers\Ai\ApplyMenuAiImportController|api,auth:sanctum,throttle:10,1,verified',
         'PUT|api/workspaces/{workspace}/menu-categories/{category}/item-order||App\Http\Controllers\MenuCatalog\ReorderMenuItemsController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu/{menu}/category-order||App\Http\Controllers\MenuCatalog\ReorderCategoriesController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/publications||App\Http\Controllers\Publication\StorePublicationController|api,auth:sanctum,verified',

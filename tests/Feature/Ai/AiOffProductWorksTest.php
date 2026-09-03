@@ -81,7 +81,22 @@ final class AiOffProductWorksTest extends TestCase
 
         config([
             'ai.enabled' => true,
-            'ai.capabilities.menu.extract.candidates' => ['local:fake:m'],
+            /*
+                DÜZ anahtar — `config/ai.php` içindeki gerçek şekil.
+
+                Bu satır önceden `'ai.capabilities.menu.extract.candidates'`
+                yazıyordu ve noktalı yazıcı `capabilities → menu → extract`
+                diye İÇ İÇE bir yapı kuruyordu. Okuyucu da aynı şekilde
+                yanlış olduğu için test geçiyordu: kusurun TUTARLI olduğunu
+                kanıtlıyordu, doğru olduğunu değil.
+
+                Gerçek yapılandırma dosyasında anahtar `'menu.extract'` düz
+                metnidir; üretimde cevap her zaman "rota yok" olurdu
+                (`docs/92`).
+            */
+            'ai.capabilities' => [
+                'menu.extract' => ['candidates' => ['local:fake:m'], 'confidence_threshold' => 0.90],
+            ],
             'ai.budget.monthly_minor_per_tenant' => 100,
         ]);
 
@@ -108,7 +123,22 @@ final class AiOffProductWorksTest extends TestCase
     {
         config([
             'ai.enabled' => true,
-            'ai.capabilities.menu.extract.candidates' => ['local:fake:m'],
+            /*
+                DÜZ anahtar — `config/ai.php` içindeki gerçek şekil.
+
+                Bu satır önceden `'ai.capabilities.menu.extract.candidates'`
+                yazıyordu ve noktalı yazıcı `capabilities → menu → extract`
+                diye İÇ İÇE bir yapı kuruyordu. Okuyucu da aynı şekilde
+                yanlış olduğu için test geçiyordu: kusurun TUTARLI olduğunu
+                kanıtlıyordu, doğru olduğunu değil.
+
+                Gerçek yapılandırma dosyasında anahtar `'menu.extract'` düz
+                metnidir; üretimde cevap her zaman "rota yok" olurdu
+                (`docs/92`).
+            */
+            'ai.capabilities' => [
+                'menu.extract' => ['candidates' => ['local:fake:m'], 'confidence_threshold' => 0.90],
+            ],
             'ai.budget.monthly_minor_per_tenant' => 0,
         ]);
 
