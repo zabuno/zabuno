@@ -130,11 +130,27 @@ ile sınamaktır.
   bir parçası değil. AI taslağı üretmenin bir anlamı yok, yazacağı bir
   alan yok. **Doğru sıra: OPT-04 önce inşa edilmeli**, AI taslağı ondan
   sonra üstüne biner. `docs/96`'da bu netleştirildi.
-- Taksonomi yinelenen-terim tespiti (`EmbeddingPort`, yerel-first, `docs/51`
-  §4.4) — henüz yazılmadı, sıradaki iş.
+- **Taksonomi yinelenen-terim tespiti teslim edildi** (FF-47) —
+  `GeminiEmbeddingProvider` (`EmbeddingPort`), `DetectDuplicateProductNames`
+  (kosinüs benzerliği, salt okunur öneri — hiçbir kaydı birleştirmez/silmez).
+  **`docs/51` §4.4'ten bilinçli bir sapma:** yerel-first şart koşuluyordu
+  ama `ai-local` sidecar bugün yok (§3.5) — Gemini geçici bulut yedeği;
+  port aynı kaldığı için `vps-ai` kurulunca yalnız binding değişir.
 
-**Tetikleyici:** yok, kasa hazır; taksonomi tespiti test-first eklenir.
-Çeviri taslağı OPT-04'ün gerçek kapsamı belirlenene kadar bekler.
+**Faz 2 fiilen tamam** — çeviri taslağı hariç, o OPT-04'ün gerçek kapsamı
+belirlenene kadar bilinçli olarak bekliyor.
+
+**Yol boyunca bulunan iki gerçek kusur (ikisi de düzeltildi):**
+1. FF-46 sırasında: `ConfiguredAvailability` yeni yeteneklerin adını
+   `vaultServes()` allowlist'ine eklemeden "paid but doesn't work" kalıyordu
+   — FF-34'ün dotted-config-key sınıfıyla aynı arıza biçimi, bu sefer
+   eksik bir liste girdisi olarak. Artık her yeni gerçek adaptör eklenirken
+   bu listenin güncellenmesi gerektiği docblock'ta açıkça yazıyor.
+2. Faz 2 boyunca üç kez aynı iki-dal (branch) çakışması yaşandı — paralel
+   FF-45/46/47 dalları aynı satırlara (`AppServiceProvider` binding bloğu,
+   `vaultServes()` allowlist'i, route dosyası, FROZEN route imzaları)
+   ekleme yaptı. Hiçbiri veri kaybı değildi — git birleştirme çakışması,
+   elle çözüldü, her çözümden sonra tam paket yeniden koşturuldu.
 
 ## Faz 3 — Çok-hesap / BYOK + yeni sağlayıcılar (Stage 3 — GTM)
 

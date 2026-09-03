@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Application\Ai\Port\AiAvailabilityPort;
+use App\Application\Ai\Port\EmbeddingPort;
 use App\Application\Ai\Port\StructuredGenerationPort;
 use App\Application\Ai\Port\VisionExtractionPort;
 use App\Application\Analytics\Port\AnalyticsRepositoryPort;
@@ -56,6 +57,7 @@ use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
 use App\Infrastructure\Ai\ConfiguredAvailability;
 use App\Infrastructure\Ai\FakeProvider;
+use App\Infrastructure\Ai\GeminiEmbeddingProvider;
 use App\Infrastructure\Ai\GeminiTextProvider;
 use App\Infrastructure\Ai\GeminiVisionProvider;
 use App\Infrastructure\Ai\OpenAiVisionProvider;
@@ -196,6 +198,25 @@ final class AppServiceProvider extends ServiceProvider
 
             if ($app->make(CredentialResolverPort::class)->isConfigured(CredentialProvider::Gemini)) {
                 return $app->make(GeminiTextProvider::class);
+            }
+
+            return $app->make(FakeProvider::class);
+        });
+
+        /*
+            Metin gömme — taksonomi yinelenen-terim tespiti (`docs/96` Faz 2).
+
+            `docs/51` §4.4 yerel-first şart koşuyor ama `ai-local` sidecar
+            bugün yok (§3.5); Gemini GEÇİCİ bulut yedeği — port aynı kaldığı
+            için `vps-ai` kurulunca binding değişir, tüketici kod değişmez.
+        */
+        $this->app->bind(EmbeddingPort::class, function ($app): EmbeddingPort {
+            if (config('ai.enabled') !== true) {
+                return $app->make(FakeProvider::class);
+            }
+
+            if ($app->make(CredentialResolverPort::class)->isConfigured(CredentialProvider::Gemini)) {
+                return $app->make(GeminiEmbeddingProvider::class);
             }
 
             return $app->make(FakeProvider::class);
