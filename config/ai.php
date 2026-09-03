@@ -97,6 +97,10 @@ return [
         // `docs/96` Faz 2. Görüntü modeliyle aynı aile ama ayrı env anahtarı:
         // ikisi farklı günlerde farklı sürüme yükseltilebilir.
         'text_model' => env('AI_GEMINI_TEXT_MODEL', 'gemini-flash-latest'),
+        // Taksonomi yinelenen-terim tespiti (`docs/96` Faz 2). `docs/51`
+        // §4.4 yerel-first şart koşuyor ama `ai-local` sidecar bugün yok
+        // (§3.5) — bu geçici bir bulut yedeği, kalıcı mimari karar değil.
+        'embedding_model' => env('AI_GEMINI_EMBEDDING_MODEL', 'text-embedding-004'),
         'request_timeout' => (int) env('AI_GEMINI_TIMEOUT', 60),
     ],
 
