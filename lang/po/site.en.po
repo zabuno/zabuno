@@ -40,6 +40,10 @@ msgstr "Thank you — we received your message and will reply to the address you
 msgid "site.contact.submit"
 msgstr "Send message"
 
+#: site:site.engineering.title
+msgid "site.engineering.title"
+msgstr "Zabuno — Engineering"
+
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
 msgstr "Write to us"

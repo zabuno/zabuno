@@ -93,9 +93,14 @@ describe('PlatformApp — standalone platform admin shell (PLATFORM_SHELL_FRONTE
         const { PlatformApp } = await importPlatformAppModule();
         render(<PlatformApp />);
 
-        expect(
-            screen.getByRole('heading', { name: /platform administration/i }),
-        ).toBeInTheDocument();
+        // Sayfa başlığı bölümün kimliğini taşır; kabuk kimliği breadcrumb'da
+        // (`docs/50` §9.2, `docs/99`).
+        expect(screen.getByRole('heading', { name: /^plans$/i })).toBeInTheDocument();
+        expect(screen.getByText(/platform administration/i)).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /engineering/i })).toHaveAttribute(
+            'href',
+            '/engineering',
+        );
 
         const plansNavItem = await screen.findByRole('link', { name: /plans/i });
         expect(plansNavItem).toHaveAttribute('aria-current', 'page');

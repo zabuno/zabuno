@@ -10,6 +10,7 @@ use App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController;
 use App\Http\Controllers\PlatformAdmin\ListProviderCredentialsController;
 use App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController;
 use App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController;
+use App\Http\Controllers\PlatformAdmin\ShowAiAuditController;
 use App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController;
 use App\Http\Controllers\PlatformAdmin\StoreManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\StoreManualPaymentController;
@@ -32,6 +33,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         // Sağlayıcı kimlik-bilgisi kasası — `docs/94`. Yazma uçları
         // superadmin arkasında ve throttle'lı; yine de sır cevaba çıkmaz.
+        // AI denetim izi (`docs/98` FF-66): kim hangi anahtarı ne zaman
+        // yazdı, hangi tenant hangi hesaba yapıştı. Sır taşımaz.
+        Route::get('/admin/ai/audit', ShowAiAuditController::class);
+
         // İnsan tanıklığı kaydı (`docs/98` FF-63) — yalnız superadmin.
         Route::post('/admin/release-attestations', StoreReleaseAttestationController::class)->middleware('throttle:20,1');
 

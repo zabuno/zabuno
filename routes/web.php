@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\EngineeringAppController;
 use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\Media\ServeRenditionController;
 use App\Http\Controllers\PlatformAdminAppController;
@@ -176,6 +177,20 @@ Route::get('/platform/{section}', PlatformAdminAppController::class)
     ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
     ->name('platform.admin.section');
+
+/*
+    Mühendislik kabuğu (`docs/98` FF-66): release readiness, güvenlik
+    kanıtı, AI denetim izi. Platform (plan/ödeme/anahtar) kabuğundan AYRI —
+    aynı kişi olabilir, aynı iş değil. Yetki aynı: superadmin, aynı
+    enumeration-safe 404.
+*/
+Route::get('/engineering', EngineeringAppController::class)
+    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
+    ->name('engineering');
+Route::get('/engineering/{section}', EngineeringAppController::class)
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
+    ->name('engineering.section');
 
 /**
  * Shadows Fortify's default GET /email/verify/{id}/{hash} (registered

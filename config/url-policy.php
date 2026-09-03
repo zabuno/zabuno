@@ -72,6 +72,7 @@ return [
         'kvkk',
         'app',
         'platform',
+        'engineering',
         'login',
         'register',
         'forgot-password',
@@ -128,7 +129,7 @@ return [
     'reserved_slugs' => [
         'admin', 'api', 'app', 'assets', 'build', 'email', 'forgot-password',
         'contact', 'health', 'help', 'invitations', 'kvkk', 'login', 'logout', 'media',
-        'menu', 'platform', 'pricing',
+        'menu', 'platform', 'engineering', 'pricing',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
         'sitemap.xml', 'storage', 'terms', 'up', 'user', 'verify-email', 'www',
     ],
@@ -147,6 +148,7 @@ return [
     'noindex_prefixes' => [
         'app',
         'platform',
+        'engineering',
         'api',
         'q',
         'invitations',
@@ -175,6 +177,7 @@ return [
     'disallow_prefixes' => [
         'app',
         'platform',
+        'engineering',
         'api',
         'invitations',
         'login',

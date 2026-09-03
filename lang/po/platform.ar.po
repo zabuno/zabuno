@@ -8,6 +8,98 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: platform:engineering.aiAudit.actor.server
+msgid "engineering.aiAudit.actor.server"
+msgstr ""
+
+#: platform:engineering.aiAudit.assignments.empty
+msgid "engineering.aiAudit.assignments.empty"
+msgstr ""
+
+#: platform:engineering.aiAudit.assignments.title
+msgid "engineering.aiAudit.assignments.title"
+msgstr ""
+
+#: platform:engineering.aiAudit.audits.empty
+msgid "engineering.aiAudit.audits.empty"
+msgstr ""
+
+#: platform:engineering.aiAudit.audits.title
+msgid "engineering.aiAudit.audits.title"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.action
+msgid "engineering.aiAudit.col.action"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.actor
+msgid "engineering.aiAudit.col.actor"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.at
+msgid "engineering.aiAudit.col.at"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.connection
+msgid "engineering.aiAudit.col.connection"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.health
+msgid "engineering.aiAudit.col.health"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.provider
+msgid "engineering.aiAudit.col.provider"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.since
+msgid "engineering.aiAudit.col.since"
+msgstr ""
+
+#: platform:engineering.aiAudit.col.workspace
+msgid "engineering.aiAudit.col.workspace"
+msgstr ""
+
+#: platform:engineering.aiAudit.description
+msgid "engineering.aiAudit.description"
+msgstr ""
+
+#: platform:engineering.aiAudit.error
+msgid "engineering.aiAudit.error"
+msgstr ""
+
+#: platform:engineering.aiAudit.heading
+msgid "engineering.aiAudit.heading"
+msgstr ""
+
+#: platform:engineering.aiAudit.loading
+msgid "engineering.aiAudit.loading"
+msgstr ""
+
+#: platform:engineering.aiAudit.nav.label
+msgid "engineering.aiAudit.nav.label"
+msgstr ""
+
+#: platform:engineering.shell.brand
+msgid "engineering.shell.brand"
+msgstr ""
+
+#: platform:engineering.shell.group.evidence
+msgid "engineering.shell.group.evidence"
+msgstr ""
+
+#: platform:engineering.shell.heading
+msgid "engineering.shell.heading"
+msgstr ""
+
+#: platform:engineering.shell.navLabel
+msgid "engineering.shell.navLabel"
+msgstr ""
+
+#: platform:engineering.shell.toPlatform
+msgid "engineering.shell.toPlatform"
+msgstr ""
+
 #: platform:platform.connections.add
 msgid "platform.connections.add"
 msgstr ""
@@ -600,12 +692,24 @@ msgstr ""
 msgid "platform.shell.brand"
 msgstr ""
 
+#: platform:platform.shell.group.commercial
+msgid "platform.shell.group.commercial"
+msgstr ""
+
+#: platform:platform.shell.group.integrations
+msgid "platform.shell.group.integrations"
+msgstr ""
+
 #: platform:platform.shell.heading
 msgid "platform.shell.heading"
 msgstr ""
 
 #: platform:platform.shell.navLabel
 msgid "platform.shell.navLabel"
+msgstr ""
+
+#: platform:platform.shell.toEngineering
+msgid "platform.shell.toEngineering"
 msgstr ""
 
 #: platform:platform.subscriptions.confirm.cancel

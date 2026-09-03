@@ -16,6 +16,7 @@
         "i18n:check": "node scripts/i18n/index.mjs check"
     },
     "dependencies": {
+        "@phosphor-icons/react": "^2.1.10",
         "@radix-ui/react-separator": "^1.1.15",
         "clsx": "^2.1.1",
         "flowbite-react": "^0.12.17",

@@ -11,6 +11,7 @@
  */
 export const siteTranslations = {
     // --- Fiyat -----------------------------------------------------------
+    'site.engineering.title': 'Zabuno — Engineering',
     'site.pricing.heading': 'Pricing',
     'site.pricing.lead': 'What a restaurant pays to publish its menu behind a QR code.',
     /*
