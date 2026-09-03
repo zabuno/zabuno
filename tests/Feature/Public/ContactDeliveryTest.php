@@ -145,7 +145,15 @@ final class ContactDeliveryTest extends TestCase
             );
         }
 
-        self::assertNull(
+        /*
+            ÖLÇÜLEN ŞEY "GERÇEK BİR SIR YOK", "tam olarak null" DEĞİL.
+
+            İlk hâl `assertNull` idi ve yerelde geçip CI'da kırıldı: CI
+            `.env.example`'ı `.env` olarak kopyalıyor, dolayısıyla boş bir
+            `MAILGUN_SECRET=` satırı `null` değil BOŞ DİZE üretiyor. İkisi de
+            "sır yok" demektir; iddia ortamdan bağımsız olmalı.
+        */
+        self::assertEmpty(
             config('services.mailgun.secret'),
             'Testte gizli anahtar olmamalı; ortamdan gelir.'
         );
