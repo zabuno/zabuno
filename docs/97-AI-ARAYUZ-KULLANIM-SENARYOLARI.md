@@ -166,22 +166,26 @@ var.
 
 **Eksik adım:** 1, 2, 3'ün ekranı. Backend zaten salt-okunur ve tam.
 
-### Yolculuk D — Sağlayıcı çalışma zamanında başarısız olur (bugün YOK, gereksinim)
+### Yolculuk D — Sağlayıcı çalışma zamanında başarısız olur (mekanizma teslim edildi — FF-49)
 
 **Persona:** Sistem (arka plan), sonucu gören: Yolculuk A/B'deki kullanıcı.
 
-1. İstek Gemini'ye gider (bağlanma-anı tercihi kazandı).
+1. İstek Gemini'ye gider (öncelik sırasındaki ilk aday).
 2. Gemini 500/ağ hatası döner.
-3. **Bugün:** `ProviderCallException` → 502 → kullanıcı hata görür, işlem
-   biter. **Olması gereken:** aynı istek, aynı içerikle, OpenAI'a (varsa
-   yapılandırılmış) yeniden denenir — kullanıcı bunu görmez, yalnız
+3. **Artık:** `VisionExtractionRouter`/`StructuredGenerationRouter`
+   (`app/Infrastructure/Ai/`) aynı isteği **otomatik olarak** OpenAI'a
+   (varsa yapılandırılmış) yeniden dener — kullanıcı bunu görmez, yalnız
    sonucu görür.
 4. OpenAI da başarısız olursa **ancak o zaman** 502 + "her iki sağlayıcı
    da yanıt vermedi" mesajı.
-5. Başarılı yedek çağrısının sonucu **"bu öneri yedek sağlayıcıdan
-   geldi"** etiketiyle işaretlenir (`docs/51` UNK-03) — sessiz geçiş yok.
+5. Başarılı yedek çağrısının sonucu `AiArtifact.usedFallback = true` ile
+   işaretlenir ve `ai_artifacts.used_fallback`'e kalıcı yazılır
+   (`docs/51` UNK-03) — sessiz geçiş yok. **UI'da gösterimi henüz yok**
+   (Yolculuk A/B/C'nin ekranı yazılınca bu alanı okumalı).
 6. Denetim kaydı (`ai_invocations`) her iki denemeyi de taşır — ilk
    başarısız, ikinci başarılı; maliyet yalnız başarılı olandan sayılır.
+   **Teslim edildi**, ayrıca test edildi (`VaultAiRoutingTest`,
+   `VisionExtractionRouterTest`, `StructuredGenerationRouterTest`).
 
 ## 4. Gereksinim analizi
 
@@ -206,10 +210,10 @@ gereksinim yok.
 
 | # | Gereksinim | Kaynak |
 | --- | --- | --- |
-| R10 | Bir `VisionExtractionPort`/`StructuredGenerationPort` çağrısı `ProviderCallException` fırlatırsa, yapılandırılmış bir sonraki sağlayıcıya **aynı istekle** otomatik yeniden denenir | Yolculuk D.3, AI-01/AIV-02 |
-| R11 | Yalnız TÜM adaylar tükendiğinde 502 döner | Yolculuk D.4 |
-| R12 | Yedek sağlayıcıdan gelen sonuç `AiArtifact`'te işaretlenir (`usedFallback: true` gibi) ve UI bunu kullanıcıya gösterir | Yolculuk D.5, `docs/51` UNK-03 |
-| R13 | Her deneme (başarılı/başarısız) `ai_invocations`'a ayrı satır yazar; maliyet yalnız başarılı denemeden | Yolculuk D.6 |
+| R10 | **Teslim edildi (FF-49).** Bir `VisionExtractionPort`/`StructuredGenerationPort` çağrısı `ProviderCallException` fırlatırsa, yapılandırılmış bir sonraki sağlayıcıya **aynı istekle** otomatik yeniden denenir | Yolculuk D.3, AI-01/AIV-02 |
+| R11 | **Teslim edildi (FF-49).** Yalnız TÜM adaylar tükendiğinde 502 döner | Yolculuk D.4 |
+| R12 | **Backend teslim edildi (FF-49)** — `AiArtifact.usedFallback`, `ai_artifacts.used_fallback`, üç controller cevabında `usedFallback`. **UI tarafı R1-R9 ile birlikte bekliyor** — üç inceleme ekranı yazılınca bu alanı okuyup göstermeleri gerekir | Yolculuk D.5, `docs/51` UNK-03 |
+| R13 | **Teslim edildi (FF-49).** Her deneme (başarılı/başarısız) `ai_invocations`'a ayrı satır yazar (her adaptörün kendi `record()` çağrısı); maliyet yalnız başarılı denemeden | Yolculuk D.6 |
 
 ### 4.3 İşlevsel — doğrulama katmanının gerçek bağlanması
 

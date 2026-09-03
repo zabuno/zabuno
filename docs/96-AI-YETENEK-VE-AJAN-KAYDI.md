@@ -50,6 +50,12 @@ sağlayıcı bağlı değilken ürün TAM çalışır" (`docs/51` §3.6/1).
 geliştirici "Claude kullan" derse, sistem onu **çözemez**; bu bilinçli bir
 sınır, eksik bir gözden kaçırma değil.
 
+**Canlı yedek zinciri teslim edildi (FF-49, `docs/97` R10-R13).** Yukarıdaki
+"Gemini, birincil aday" satırı artık yalnız bağlanma-anı tercihi değil:
+`VisionExtractionRouter`/`StructuredGenerationRouter` Gemini çalışma
+zamanında başarısız olursa aynı isteği OpenAI'a canlı yeniden dener,
+sonucu `usedFallback` ile işaretler. UI tarafı henüz yok (bkz. `docs/97`).
+
 ## Faz 3 — Stage 3 GTM (planlı — çok-hesap/BYOK)
 
 | Yetenek | LLM + Model | Hesap | Konum | Mekanizma |

@@ -91,6 +91,7 @@ final class StoreMenuAiImportController extends Controller
         return response()->json([
             'id' => $result['id'],
             'uncertainFieldCount' => count($result['artifact']->uncertainFields()),
+            'usedFallback' => $result['artifact']->usedFallback,
         ], 201);
     }
 }

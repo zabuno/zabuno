@@ -24,6 +24,14 @@ final readonly class AiArtifact
         public string $promptVersion,
         public string $schemaVersion,
         public array $fields,
+        /*
+            Birincil aday çalışma zamanında başarısız olup istek ikinci bir
+            sağlayıcıya düştüğünde `true` olur (`docs/97` R12). Sessiz geçiş
+            yasak (`docs/51` UNK-03) — inceleme ekranı bunu kullanıcıya
+            gösterir. Varsayılan `false`: yedeğe düşmeyen her çağrı için
+            mevcut çağıranlar değişmeden kalır.
+        */
+        public bool $usedFallback = false,
     ) {}
 
     /** Belirsiz işaretli alanlar — inceleme ekranı bunları öne çıkarır. */
@@ -59,6 +67,7 @@ final readonly class AiArtifact
                 static fn (FieldValue $field): array => $field->toArray(),
                 $this->fields,
             ),
+            'usedFallback' => $this->usedFallback,
         ];
     }
 }

@@ -61,6 +61,8 @@ use App\Infrastructure\Ai\GeminiEmbeddingProvider;
 use App\Infrastructure\Ai\GeminiTextProvider;
 use App\Infrastructure\Ai\GeminiVisionProvider;
 use App\Infrastructure\Ai\OpenAiVisionProvider;
+use App\Infrastructure\Ai\StructuredGenerationRouter;
+use App\Infrastructure\Ai\VisionExtractionRouter;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentIyzicoSandboxTransactionRepository;
@@ -174,16 +176,26 @@ final class AppServiceProvider extends ServiceProvider
             }
 
             $credentials = $app->make(CredentialResolverPort::class);
+            $candidates = [];
 
             if ($credentials->isConfigured(CredentialProvider::Gemini)) {
-                return $app->make(GeminiVisionProvider::class);
+                $candidates[] = $app->make(GeminiVisionProvider::class);
             }
 
             if ($credentials->isConfigured(CredentialProvider::OpenAi)) {
-                return $app->make(OpenAiVisionProvider::class);
+                $candidates[] = $app->make(OpenAiVisionProvider::class);
             }
 
-            return $app->make(FakeProvider::class);
+            if ($candidates === []) {
+                return $app->make(FakeProvider::class);
+            }
+
+            /*
+                Yalnız BAĞLANMA ANI seçimi değil, CANLI yedek zinciri
+                (`docs/97` R10-R12). Bir aday çalışma zamanında başarısız
+                olursa aynı istek listedeki bir sonrakine gider.
+            */
+            return new VisionExtractionRouter($candidates);
         });
 
         /*
@@ -196,11 +208,17 @@ final class AppServiceProvider extends ServiceProvider
                 return $app->make(FakeProvider::class);
             }
 
+            $candidates = [];
+
             if ($app->make(CredentialResolverPort::class)->isConfigured(CredentialProvider::Gemini)) {
-                return $app->make(GeminiTextProvider::class);
+                $candidates[] = $app->make(GeminiTextProvider::class);
             }
 
-            return $app->make(FakeProvider::class);
+            if ($candidates === []) {
+                return $app->make(FakeProvider::class);
+            }
+
+            return new StructuredGenerationRouter($candidates);
         });
 
         /*
