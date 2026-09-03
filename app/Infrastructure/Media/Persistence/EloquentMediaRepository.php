@@ -52,10 +52,15 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             throw new RuntimeException("Unable to write media file to quarantine at [{$diskPath}].");
         }
 
+        // Aslın parmak izi ALINDIĞI ANDA — sonradan "değişmedi" iddiasının
+        // tek kanıtı budur (`docs/49` Faz 3 madde 1).
+        $checksum = (string) hash_file('sha256', $intake->temporaryPath);
+
         try {
             $asset = MediaAsset::query()->create([
                 'workspace_id' => $workspaceId,
                 'disk_path' => $diskPath,
+                'original_checksum_sha256' => $checksum,
                 'original_name' => $intake->originalName,
                 'mime_type' => $intake->detectedMimeType,
                 'size_bytes' => $intake->sizeBytes,
@@ -190,6 +195,110 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             diskPath: Storage::disk(self::QUARANTINE_DISK)->path((string) $asset->disk_path),
             slot: (string) $asset->slot,
         );
+    }
+
+    public function claimReadyForReprocessing(int $workspaceId, int $assetId): ?ProcessableMediaAsset
+    {
+        $asset = MediaAsset::query()->where('id', $assetId)->where('workspace_id', $workspaceId)->first();
+
+        if ($asset === null) {
+            return null;
+        }
+
+        $claimed = MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Ready->value)
+            ->update(['status' => MediaAssetStatus::Processing->value]);
+
+        if ($claimed === 0) {
+            return null;
+        }
+
+        return new ProcessableMediaAsset(
+            id: (int) $asset->getKey(),
+            workspaceId: (int) $asset->workspace_id,
+            diskPath: Storage::disk(self::QUARANTINE_DISK)->path((string) $asset->disk_path),
+            slot: (string) $asset->slot,
+        );
+    }
+
+    public function versionsFor(int $workspaceId, int $assetId): array
+    {
+        $owned = MediaAsset::query()->where('id', $assetId)->where('workspace_id', $workspaceId)->exists();
+
+        if (! $owned) {
+            return [];
+        }
+
+        return DB::table('media_versions as v')
+            ->leftJoin('media_renditions as r', 'r.media_version_id', '=', 'v.id')
+            ->where('v.media_asset_id', $assetId)
+            ->groupBy('v.id', 'v.version_number', 'v.created_by_kind', 'v.created_at')
+            ->orderByDesc('v.version_number')
+            ->get(['v.id', 'v.version_number', 'v.created_by_kind', 'v.created_at', DB::raw('count(r.id) as rendition_count')])
+            ->map(static fn (object $row): array => [
+                'number' => (int) $row->version_number,
+                'id' => (int) $row->id,
+                'createdBy' => (string) $row->created_by_kind,
+                'createdAt' => (string) $row->created_at,
+                'renditionCount' => (int) $row->rendition_count,
+            ])
+            ->all();
+    }
+
+    public function restoreVersion(int $workspaceId, int $assetId, int $versionNumber): ?int
+    {
+        $owned = MediaAsset::query()->where('id', $assetId)->where('workspace_id', $workspaceId)->exists();
+
+        if (! $owned) {
+            return null;
+        }
+
+        $source = DB::table('media_versions')
+            ->where('media_asset_id', $assetId)
+            ->where('version_number', $versionNumber)
+            ->first();
+
+        if ($source === null) {
+            return null;
+        }
+
+        /*
+            GERİ ALMA = YENİ SÜRÜM. Eski satırı "geçerli" işaretlemek yerine
+            onun rendition'ları yeni bir sürüme kopyalanır: blob'lar aynıdır
+            (adres parmak izi de aynı kalır, önbellek bozulmaz), yalnız sürüm
+            satırları yenidir. Geçmiş asla yeniden yazılmaz — bir yayın
+            snapshot'ı hâlâ v2'yi gösteriyorsa v2 orada durur.
+        */
+        return DB::transaction(function () use ($assetId, $source): int {
+            $next = ((int) DB::table('media_versions')->where('media_asset_id', $assetId)->max('version_number')) + 1;
+
+            $versionId = (int) DB::table('media_versions')->insertGetId([
+                'media_asset_id' => $assetId,
+                'media_blob_id' => (int) $source->media_blob_id,
+                'version_number' => $next,
+                'created_by_kind' => 'restore:v'.$source->version_number,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            foreach (DB::table('media_renditions')->where('media_version_id', $source->id)->get() as $rendition) {
+                DB::table('media_renditions')->insert([
+                    'media_version_id' => $versionId,
+                    'media_blob_id' => (int) $rendition->media_blob_id,
+                    'profile' => (string) $rendition->profile,
+                    'width' => (int) $rendition->width,
+                    'height' => (int) $rendition->height,
+                    'format' => (string) $rendition->format,
+                    'pipeline_version' => (string) $rendition->pipeline_version,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return $versionId;
+        });
     }
 
     public function markReadyIfProcessing(int $workspaceId, int $assetId): void
@@ -340,7 +449,9 @@ final class EloquentMediaRepository implements MediaRepositoryPort
                     'media_asset_id' => $assetId,
                     'media_blob_id' => $sourceBlobId,
                     'version_number' => $nextVersion,
-                    'created_by_kind' => 'upload',
+                    // İlk sürüm yüklemeden doğar; sonrakiler yeniden üretimdir
+                    // (asıl aynı, boru hattı yeni) — geçmişte hangisi olduğu okunur.
+                    'created_by_kind' => $nextVersion === 1 ? 'upload' : 'reprocess',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -445,7 +556,31 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             slot: (string) $asset->slot,
             status: (string) $asset->status,
             statusReason: $this->latestBlockingReason((int) $asset->getKey()),
+            duplicateOfId: $this->duplicateOf($asset),
         );
+    }
+
+    /**
+     * Aynı kiracıda aynı parmak izli DAHA ESKİ bir varlık — "bu fotoğraf
+     * zaten var" (`docs/49` Faz 3 madde 4). Kiracılar arası bakılmaz: başka
+     * bir restoranın aynı dosyaya sahip olduğunu söylemek bile sızıntıdır.
+     */
+    private function duplicateOf(MediaAsset $asset): ?int
+    {
+        $checksum = $asset->original_checksum_sha256;
+
+        if ($checksum === null || $checksum === '') {
+            return null;
+        }
+
+        $earlier = MediaAsset::query()
+            ->where('workspace_id', (int) $asset->workspace_id)
+            ->where('original_checksum_sha256', (string) $checksum)
+            ->where('id', '<', (int) $asset->getKey())
+            ->orderBy('id')
+            ->value('id');
+
+        return $earlier === null ? null : (int) $earlier;
     }
 
     /**

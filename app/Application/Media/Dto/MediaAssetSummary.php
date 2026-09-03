@@ -17,5 +17,7 @@ final class MediaAssetSummary
          * doludur. Sorunsuz bir dosyaya sebep yazmak gürültüdür.
          */
         public readonly ?string $statusReason = null,
+        /** Aynı kiracıda, aynı parmak izli daha eski bir varlık — yoksa null (`docs/49` Faz 3). */
+        public readonly ?int $duplicateOfId = null,
     ) {}
 }

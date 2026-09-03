@@ -38,6 +38,8 @@ final class ListMediaController extends Controller
                 // Neden beklediğini ya da neden başarısız olduğunu sahip
                 // ekranda okur; boşsa alan `null` kalır (`docs/76`).
                 'statusReason' => $asset->statusReason,
+                // "Bu fotoğraf kütüphanende zaten var" (`docs/49` Faz 3).
+                'duplicateOfId' => $asset->duplicateOfId,
             ], $assets),
         ]);
     }
