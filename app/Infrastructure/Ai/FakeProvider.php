@@ -10,6 +10,7 @@ use App\Application\Ai\Port\OcrPort;
 use App\Application\Ai\Port\StructuredGenerationPort;
 use App\Application\Ai\Port\VisionExtractionPort;
 use App\Domain\Ai\AiArtifact;
+use App\Domain\Ai\Capability;
 use App\Domain\Ai\FieldValue;
 use App\Domain\Ai\ModelDeployment;
 use App\Domain\Ai\SourceRef;
@@ -102,7 +103,26 @@ final readonly class FakeProvider implements EmbeddingPort, OcrPort, StructuredG
     public function generate(AiRequest $request): AiArtifact
     {
         /*
-         * Sahte sağlayıcı BİLEREK `uncertain` bir alan döndürür.
+         * `product.description` gerçek bir alan şekli döndürür — CI'da bu
+         * yeteneğin onay/uygulama yolunun (`ApplyProductDescriptionDraft`)
+         * gerçekten çalıştığı, sağlayıcı anahtarı OLMADAN sınanabilsin diye
+         * (`docs/51` §3.6/2 ile aynı kabul ölçütü).
+         */
+        if ($request->capability === Capability::ProductDescription) {
+            return new AiArtifact(
+                capability: $request->capability,
+                model: $this->deployment(),
+                promptVersion: 'fake.v1',
+                schemaVersion: $request->capability->schemaVersion(),
+                fields: [
+                    new FieldValue('description', 'Taze malzemelerle hazırlanır.', 0.85, false),
+                ],
+            );
+        }
+
+        /*
+         * Diğer yetenekler için sahte sağlayıcı BİLEREK `uncertain` bir alan
+         * döndürür.
          *
          * Sebebi: belirsizliğin taşındığı yolun her koşuda sınanması. Her
          * zaman kesin cevap veren bir sahte sağlayıcı, ürünün belirsizlik

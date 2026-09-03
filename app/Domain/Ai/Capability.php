@@ -21,6 +21,9 @@ enum Capability: string
     case TextEmbedding = 'embedding.text';
     case Classification = 'classification.text';
 
+    // --- Faz 2 genişleyen yetenekler — docs/95/96 ------------------------
+    case ProductDescription = 'product.description';
+
     /**
      * Bu yeteneğin çıktısı KULLANICI ONAYI olmadan uygulanabilir mi?
      *
@@ -44,6 +47,7 @@ enum Capability: string
             self::MenuExtract => 'menu-extract.v1',
             self::TextEmbedding => 'embedding.v1',
             self::Classification => 'classification.v1',
+            self::ProductDescription => 'product-description.v1',
         };
     }
 }

@@ -93,6 +93,10 @@ return [
      */
     'gemini' => [
         'vision_model' => env('AI_GEMINI_VISION_MODEL', 'gemini-flash-latest'),
+        // Şemaya bağlı metin üretimi (ürün açıklaması, çeviri taslağı) —
+        // `docs/96` Faz 2. Görüntü modeliyle aynı aile ama ayrı env anahtarı:
+        // ikisi farklı günlerde farklı sürüme yükseltilebilir.
+        'text_model' => env('AI_GEMINI_TEXT_MODEL', 'gemini-flash-latest'),
         'request_timeout' => (int) env('AI_GEMINI_TIMEOUT', 60),
     ],
 

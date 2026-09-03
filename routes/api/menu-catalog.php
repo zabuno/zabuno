@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Ai\ApplyMenuAiImportController;
+use App\Http\Controllers\Ai\ApplyProductDescriptionDraftController;
 use App\Http\Controllers\Ai\ShowDuplicateProductCandidatesController;
 use App\Http\Controllers\Ai\ShowMenuAiImportController;
 use App\Http\Controllers\Ai\StoreMenuAiImportController;
+use App\Http\Controllers\Ai\StoreProductDescriptionDraftController;
 use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
 use App\Http\Controllers\MenuCatalog\DeleteCategoryController;
 use App\Http\Controllers\MenuCatalog\DeleteMenuItemController;
@@ -86,6 +88,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->middleware('throttle:6,1');
     Route::get('/workspaces/{workspace}/ai-imports/{artifact}', ShowMenuAiImportController::class);
     Route::post('/workspaces/{workspace}/ai-imports/{artifact}/apply', ApplyMenuAiImportController::class)
+        ->middleware('throttle:10,1');
+
+    /*
+        Ürün açıklaması taslağı (`docs/96`, Faz 2, `opt-23`). Aynı hız
+        sınırı gerekçesi: her çağrı dış sağlayıcıya para ödetir.
+    */
+    Route::post('/workspaces/{workspace}/menu-items/{menuItem}/description-drafts', StoreProductDescriptionDraftController::class)
+        ->middleware('throttle:6,1');
+    Route::post('/workspaces/{workspace}/description-drafts/{artifact}/apply', ApplyProductDescriptionDraftController::class)
         ->middleware('throttle:10,1');
 
     /*

@@ -111,16 +111,30 @@ ile sınamaktır.
 - `/platform/credentials` GUI paneli — her sağlayıcı bir kart, sır yalnız
   `••••son4` maskesiyle görünür (FF-40).
 
-**Genişleyen yetenekler:** **Gemini görüntü-okuma adaptörü teslim edildi**
-(FF-45) — `GeminiVisionProvider`, `docs/51` §4b.1'in sıraladığı gibi artık
-OpenAI'dan ÖNCE denenir (`AppServiceProvider` binding'i güncellendi). Kalan
-üçü henüz yazılmadı: çeviri taslağı (`opt-22-ai-translation`), ürün
-açıklaması taslağı (`opt-23-ai-product-description`, alerjen alanına asla
-yazmaz), taksonomi yinelenen-terim tespiti (`EmbeddingPort`, yerel-first,
-`docs/51` §4.4). Hiçbiri yeni bir sağlayıcı/hesap mimarisi gerektirmez,
-mevcut kasayı kullanır.
+**Genişleyen yetenekler:**
 
-**Tetikleyici:** yok, kasa hazır; kalan üç yetenek test-first eklenir.
+- **Gemini görüntü-okuma adaptörü teslim edildi** (FF-45) —
+  `GeminiVisionProvider`, `docs/51` §4b.1'in sıraladığı gibi artık
+  OpenAI'dan ÖNCE denenir.
+- **Ürün açıklaması taslağı teslim edildi** (FF-46) — `GeminiTextProvider`
+  (yeni `StructuredGenerationPort` adaptörü), `Capability::ProductDescription`,
+  onay hattı (`GenerateProductDescriptionDraft` → insan onayı →
+  `ApplyProductDescriptionDraft`, `renameMenuItemProduct`'ın var olan
+  yolunu kullanır). Alerjen alanına asla yazmaz — şema doğrulayıcının
+  yasak-alan listesi ve ayrı bir test bunu kilitler.
+- **Çeviri taslağı (`opt-22-ai-translation`) ERTELENDİ, atlanmadı.** Gerçek
+  bulgu: bu yeteneğin hedefi — çok-dilli ürün/kategori içeriği — bugün
+  yazılı değil. `modules/opt-04-multi-language-content.md` (çeviri
+  tablosu, dil sekmeleri, `missing→draft→reviewed→published` durum
+  makinesi) kendisi "PLANNING ONLY" ve OPT katalogda M1'dir — Faz 2'nin
+  bir parçası değil. AI taslağı üretmenin bir anlamı yok, yazacağı bir
+  alan yok. **Doğru sıra: OPT-04 önce inşa edilmeli**, AI taslağı ondan
+  sonra üstüne biner. `docs/96`'da bu netleştirildi.
+- Taksonomi yinelenen-terim tespiti (`EmbeddingPort`, yerel-first, `docs/51`
+  §4.4) — henüz yazılmadı, sıradaki iş.
+
+**Tetikleyici:** yok, kasa hazır; taksonomi tespiti test-first eklenir.
+Çeviri taslağı OPT-04'ün gerçek kapsamı belirlenene kadar bekler.
 
 ## Faz 3 — Çok-hesap / BYOK + yeni sağlayıcılar (Stage 3 — GTM)
 
