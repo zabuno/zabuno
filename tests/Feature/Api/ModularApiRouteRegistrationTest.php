@@ -118,6 +118,10 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/media/{media}/versions||App\Http\Controllers\Media\ListMediaVersionsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/media/{media}/reprocess||App\Http\Controllers\Media\ReprocessMediaController|api,auth:sanctum,throttle:10,1,verified',
         'POST|api/workspaces/{workspace}/media/{media}/versions/{version}/restore||App\Http\Controllers\Media\RestoreMediaVersionController|api,auth:sanctum,verified',
+        // KULLANIM GRAFİĞİ ve ÇÖP (`docs/49` Faz 4-5, FF-70).
+        'GET|api/workspaces/{workspace}/media/{media}/usages||App\Http\Controllers\Media\ShowMediaUsagesController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/media/{media}/detach||App\Http\Controllers\Media\DetachMediaUsagesController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/media/{media}/restore||App\Http\Controllers\Media\RestoreMediaController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/team/members||App\Http\Controllers\Team\ListTeamMembersController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/team/members/{member}||App\Http\Controllers\Team\RemoveTeamMemberController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/workspaces/{workspace}/team/members/{member}/transfer-ownership||App\Http\Controllers\Team\TransferWorkspaceOwnershipController|api,auth:sanctum,throttle:5,1,verified',

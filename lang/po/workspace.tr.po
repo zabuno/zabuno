@@ -1020,6 +1020,14 @@ msgstr ""
 msgid "workspace.media.library.asset.delete.named"
 msgstr ""
 
+#: workspace:workspace.media.library.asset.delete.trashed
+msgid "workspace.media.library.asset.delete.trashed"
+msgstr ""
+
+#: workspace:workspace.media.library.asset.details.named
+msgid "workspace.media.library.asset.details.named"
+msgstr ""
+
 #: workspace:workspace.media.library.asset.status.accepted
 msgid "workspace.media.library.asset.status.accepted"
 msgstr ""
@@ -1056,16 +1064,124 @@ msgstr ""
 msgid "workspace.media.library.asset.untitled"
 msgstr ""
 
+#: workspace:workspace.media.library.asset.usageCount
+msgid "workspace.media.library.asset.usageCount"
+msgstr ""
+
 #: workspace:workspace.media.library.assets.heading
 msgid "workspace.media.library.assets.heading"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.actionFailed
+msgid "workspace.media.library.detail.actionFailed"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.duplicate
+msgid "workspace.media.library.detail.duplicate"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.file
+msgid "workspace.media.library.detail.file"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.noPreview
+msgid "workspace.media.library.detail.noPreview"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.reprocess
+msgid "workspace.media.library.detail.reprocess"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.reprocessed
+msgid "workspace.media.library.detail.reprocessed"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.size
+msgid "workspace.media.library.detail.size"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.slot
+msgid "workspace.media.library.detail.slot"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.uploaded
+msgid "workspace.media.library.detail.uploaded"
 msgstr ""
 
 #: workspace:workspace.media.library.error
 msgid "workspace.media.library.error"
 msgstr ""
 
+#: workspace:workspace.media.library.filters.any
+msgid "workspace.media.library.filters.any"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.count
+msgid "workspace.media.library.filters.count"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.label
+msgid "workspace.media.library.filters.label"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.noMatch
+msgid "workspace.media.library.filters.noMatch"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.search
+msgid "workspace.media.library.filters.search"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.searchPlaceholder
+msgid "workspace.media.library.filters.searchPlaceholder"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.slot
+msgid "workspace.media.library.filters.slot"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.status
+msgid "workspace.media.library.filters.status"
+msgstr ""
+
+#: workspace:workspace.media.library.filters.unusedOnly
+msgid "workspace.media.library.filters.unusedOnly"
+msgstr ""
+
 #: workspace:workspace.media.library.heading
 msgid "workspace.media.library.heading"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.blocked
+msgid "workspace.media.library.impact.blocked"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.cancel
+msgid "workspace.media.library.impact.cancel"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.confirm
+msgid "workspace.media.library.impact.confirm"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.failed
+msgid "workspace.media.library.impact.failed"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.lead
+msgid "workspace.media.library.impact.lead"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.loading
+msgid "workspace.media.library.impact.loading"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.title
+msgid "workspace.media.library.impact.title"
+msgstr ""
+
+#: workspace:workspace.media.library.impact.trashNote
+msgid "workspace.media.library.impact.trashNote"
 msgstr ""
 
 #: workspace:workspace.media.library.loading
@@ -1108,8 +1224,124 @@ msgstr ""
 msgid "workspace.media.library.slots.status.noAssetsYet"
 msgstr ""
 
+#: workspace:workspace.media.library.tabs.label
+msgid "workspace.media.library.tabs.label"
+msgstr ""
+
+#: workspace:workspace.media.library.tabs.library
+msgid "workspace.media.library.tabs.library"
+msgstr ""
+
+#: workspace:workspace.media.library.tabs.trash
+msgid "workspace.media.library.tabs.trash"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.empty
+msgid "workspace.media.library.trash.empty"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.failed
+msgid "workspace.media.library.trash.failed"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.heading
+msgid "workspace.media.library.trash.heading"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.lead
+msgid "workspace.media.library.trash.lead"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.loading
+msgid "workspace.media.library.trash.loading"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.restore
+msgid "workspace.media.library.trash.restore"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.restore.named
+msgid "workspace.media.library.trash.restore.named"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.restoreFailed
+msgid "workspace.media.library.trash.restoreFailed"
+msgstr ""
+
+#: workspace:workspace.media.library.trash.restored
+msgid "workspace.media.library.trash.restored"
+msgstr ""
+
 #: workspace:workspace.media.library.unavailable
 msgid "workspace.media.library.unavailable"
+msgstr ""
+
+#: workspace:workspace.media.library.usages.draft
+msgid "workspace.media.library.usages.draft"
+msgstr ""
+
+#: workspace:workspace.media.library.usages.failed
+msgid "workspace.media.library.usages.failed"
+msgstr ""
+
+#: workspace:workspace.media.library.usages.heading
+msgid "workspace.media.library.usages.heading"
+msgstr ""
+
+#: workspace:workspace.media.library.usages.live
+msgid "workspace.media.library.usages.live"
+msgstr ""
+
+#: workspace:workspace.media.library.usages.loading
+msgid "workspace.media.library.usages.loading"
+msgstr ""
+
+#: workspace:workspace.media.library.usages.none
+msgid "workspace.media.library.usages.none"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.current
+msgid "workspace.media.library.versions.current"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.failed
+msgid "workspace.media.library.versions.failed"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.heading
+msgid "workspace.media.library.versions.heading"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.loading
+msgid "workspace.media.library.versions.loading"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.none
+msgid "workspace.media.library.versions.none"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.restore
+msgid "workspace.media.library.versions.restore"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.restored
+msgid "workspace.media.library.versions.restored"
+msgstr ""
+
+#: workspace:workspace.media.library.versions.row
+msgid "workspace.media.library.versions.row"
+msgstr ""
+
+#: workspace:workspace.media.library.view.grid
+msgid "workspace.media.library.view.grid"
+msgstr ""
+
+#: workspace:workspace.media.library.view.label
+msgid "workspace.media.library.view.label"
+msgstr ""
+
+#: workspace:workspace.media.library.view.list
+msgid "workspace.media.library.view.list"
 msgstr ""
 
 #: workspace:workspace.media.lifecycle.derivatives
