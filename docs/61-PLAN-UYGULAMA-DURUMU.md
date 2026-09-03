@@ -246,7 +246,7 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | P0-07 | Canlı dağıtım kanıtı | ✅ zabuno.com canlı (Hüseyin); iki üretim kusuru `docs/87` |
 | P0-08 | Medya işleme güvenilirliği | ✅ `docs/76` |
 | P0-09 | Veri dışa aktarımı | ✅ `docs/80` |
-| P1-01 | Fiyat/deneme/destek yüzeyi | ⬜ (fiyat kararı sahipte) |
+| P1-01 | Fiyat/deneme/destek yüzeyi | 🔶 fiyat+iletişim ✅ `docs/88`; yardım içeriği → sonraki tur |
 | P1-02 | Gerçek ödeme | ⛔ Iyzico anahtarları sahibinde |
 | P1-03 | QR hedefi değiştirme + yeniden etkinleştirme | ✅ `docs/81` |
 | P1-04 | "Tükendi" durumu | ✅ `docs/82` |

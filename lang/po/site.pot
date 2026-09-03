@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zabuno\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"X-Source-Locale: en\n"
+"X-Generator: scripts/i18n\n"
+
+#: site:site.contact.email
+msgid "site.contact.email"
+msgstr ""
+
+#: site:site.contact.heading
+msgid "site.contact.heading"
+msgstr ""
+
+#: site:site.contact.honeypot
+msgid "site.contact.honeypot"
+msgstr ""
+
+#: site:site.contact.lead
+msgid "site.contact.lead"
+msgstr ""
+
+#: site:site.contact.message
+msgid "site.contact.message"
+msgstr ""
+
+#: site:site.contact.name
+msgid "site.contact.name"
+msgstr ""
+
+#: site:site.contact.sent
+msgid "site.contact.sent"
+msgstr ""
+
+#: site:site.contact.submit
+msgid "site.contact.submit"
+msgstr ""
+
+#: site:site.home.contact.cta
+msgid "site.home.contact.cta"
+msgstr ""
+
+#: site:site.home.contact.lead
+msgid "site.home.contact.lead"
+msgstr ""
+
+#: site:site.home.faq.cost.answer
+msgid "site.home.faq.cost.answer"
+msgstr ""
+
+#: site:site.home.faq.cost.question
+msgid "site.home.faq.cost.question"
+msgstr ""
+
+#: site:site.pricing.empty
+msgid "site.pricing.empty"
+msgstr ""
+
+#: site:site.pricing.empty.cta
+msgid "site.pricing.empty.cta"
+msgstr ""
+
+#: site:site.pricing.heading
+msgid "site.pricing.heading"
+msgstr ""
+
+#: site:site.pricing.lead
+msgid "site.pricing.lead"
+msgstr ""
+
+#: site:site.pricing.perRestaurant
+msgid "site.pricing.perRestaurant"
+msgstr ""
+
+#: site:site.pricing.perRestaurant.cta
+msgid "site.pricing.perRestaurant.cta"
+msgstr ""
+
+#: site:site.pricing.unsure
+msgid "site.pricing.unsure"
+msgstr ""
+
+#: site:site.pricing.unsure.cta
+msgid "site.pricing.unsure.cta"
+msgstr ""
