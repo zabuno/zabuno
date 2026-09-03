@@ -33,6 +33,15 @@ done
 log "migrasyonlar çalıştırılıyor"
 php artisan migrate --force
 
+# Plan kataloğu ŞEMA DEĞİL VERİDİR; ayrı bir tohumdur (`docs/90`).
+#
+# Çalıştırması güvenli: var olan bir plan koduna dokunmaz, dolayısıyla
+# sahibin panelden yaptığı fiyat düzenlemesi her dağıtımda geri alınmaz.
+# Buraya konmasaydı üretimde katalog boş kalır ve fiyat sayfası "henüz
+# yayımlanmadı" demeye devam ederdi.
+log "plan kataloğu tohumlanıyor"
+php artisan db:seed --class=Database\\Seeders\\PlanCatalogueSeeder --force
+
 # Önbellekler migrasyondan SONRA: config ve route önbelleği şemayı değil
 # ama view ve event keşfi kod durumunu dondurur.
 log "önbellekler ısıtılıyor"

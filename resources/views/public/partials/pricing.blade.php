@@ -30,12 +30,29 @@
             <a class="underline underline-offset-2" href="/contact">{{ $st['pricingEmptyCta'] }}</a>
         </p>
     @else
+        {{--
+            HER PLANDA OLAN, bir kez söylenir.
+
+            Yetenek listesi EK yetkileri anlatır; temel zinciri değil. Yalnız
+            onları göstermek, ücretsiz kademeyi "hiçbir şey içermiyor" gibi
+            gösterirdi — oysa menü, yayın, karekod ve misafir sayfası her
+            planda var (`docs/90`).
+        --}}
+        <div class="rounded-lg border border-border p-4">
+            <p class="font-semibold">{{ $st['includedHeading'] }}</p>
+            <p class="mt-1 text-fg-secondary">{{ $st['includedBody'] }}</p>
+        </div>
+
         <ul class="flex flex-col gap-4">
             @foreach ($plans as $plan)
                 <li class="flex flex-col gap-1 rounded-lg border border-border p-4">
                     <span class="text-lg font-semibold">{{ $plan['name'] }}</span>
 
-                    @if ($plan['price'] === null)
+                    @if (! empty($plan['free']))
+                        {{-- `0,00 TRY` teknik olarak doğru ama insan onu
+                             "ücretsiz" diye okumaz, bir hata sanır. --}}
+                        <span class="text-fg">{{ $st['free'] }}</span>
+                    @elseif ($plan['price'] === null)
                         {{--
                             Tutarı girilmemiş bir planı "0" ya da "ücretsiz"
                             göstermek, tutulmayacak bir söz vermek olurdu.
@@ -48,15 +65,17 @@
                         {{-- `tabular-nums`: rakamlar eşit genişlikte olmazsa
                              planlar arasında fiyat karşılaştırması gözle
                              yapılamaz. --}}
-                        <span class="text-fg tabular-nums">{{ $plan['price'] }}</span>
+                        <span class="text-fg">
+                            <span class="tabular-nums">{{ $plan['price'] }}</span>
+                            <span class="text-meta text-fg-muted">{{ $st['perMonth'] }}</span>
+                        </span>
                     @endif
 
                     @if (! empty($plan['entitlements']))
-                        <ul class="mt-2 flex flex-wrap gap-2">
+                        <p class="mt-2 text-meta font-medium text-fg-secondary">{{ $st['adds'] }}</p>
+                        <ul class="flex list-disc flex-col gap-1 pl-5 text-fg-secondary">
                             @foreach ($plan['entitlements'] as $entitlement)
-                                <li class="rounded-full border border-border px-2 py-0.5 text-meta text-fg-secondary">
-                                    {{ $entitlement }}
-                                </li>
+                                <li>{{ $entitlement }}</li>
                             @endforeach
                         </ul>
                     @endif

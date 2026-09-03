@@ -55,7 +55,9 @@ final class FoundationStatusController extends Controller
                 ardındaydı: fiyatı görmek için kaydolmak gerekiyordu, yani
                 ürün kaydolmayı fiyatı görmeye bağlı kılıyordu.
             */
-            'plans' => $this->publicPlans(),
+            'plans' => $this->publicPlans(
+                SiteText::pick($request->getPreferredLanguage(['en', 'tr'])),
+            ),
             // Metin ŞABLONDA değil KATALOGDA yaşar (`docs/85` ile aynı
             // gerekçe): Blade'e yazılan bir cümleyi sahip hiçbir PO
             // dosyasından çeviremez.
@@ -83,7 +85,7 @@ final class FoundationStatusController extends Controller
      *
      * @return list<array{name: string, price: ?string, entitlements: list<string>}>
      */
-    private function publicPlans(): array
+    private function publicPlans(string $locale): array
     {
         try {
             $plans = $this->plans->handle();
@@ -103,16 +105,41 @@ final class FoundationStatusController extends Controller
             return [];
         }
 
+        $siteText = $this->siteText;
+
         return array_map(
-            static fn ($plan): array => [
-                'name' => $plan->name,
-                // Tutarı GİRİLMEMİŞ bir plan `null` kalır; "0" göstermek
-                // tutulmayacak bir söz vermek olurdu.
-                'price' => $plan->amountMinor === null || $plan->currency === null
-                    ? null
-                    : PriceLabel::for($plan->amountMinor, $plan->currency),
-                'entitlements' => $plan->entitlements,
-            ],
+            static function ($plan) use ($siteText, $locale): array {
+                /*
+                    ÜÇ AYRI DURUM, üç ayrı cevap.
+
+                    - Tutar YOK (`null`): fiyatlanmamış — "bize yazın".
+                    - Tutar SIFIR: ücretsiz. `0,00 TRY` teknik olarak doğru
+                      ama insan onu "ücretsiz" diye okumaz, bir hata sanır.
+                    - Tutar var: biçimlendirilmiş fiyat.
+                */
+                if ($plan->amountMinor === null || $plan->currency === null) {
+                    $price = null;
+                    $free = false;
+                } elseif ($plan->amountMinor === 0) {
+                    $price = null;
+                    $free = true;
+                } else {
+                    $price = PriceLabel::for($plan->amountMinor, $plan->currency);
+                    $free = false;
+                }
+
+                return [
+                    'name' => $plan->name,
+                    'price' => $price,
+                    'free' => $free,
+                    // Ham anahtar basmak sessizce geliştirici dilini
+                    // sızdırmak olurdu; tanınmayan anahtar hiç gösterilmez.
+                    'entitlements' => array_values(array_filter(array_map(
+                        static fn (string $key): ?string => $siteText->entitlementLabel($key, $locale),
+                        $plan->entitlements,
+                    ))),
+                ];
+            },
             $plans,
         );
     }

@@ -28,6 +28,28 @@ export const siteTranslations = {
     'site.pricing.unsure': 'Not sure which one fits?',
     'site.pricing.unsure.cta': 'Ask us',
 
+    /*
+        HER PLANDA OLAN, bir kez söylenir.
+
+        Yetenek listesi EK yetkileri anlatır; temel zinciri değil. Yalnız
+        onları göstermek, ücretsiz kademeyi "hiçbir şey içermiyor" gibi
+        gösterirdi — oysa menü, yayın, karekod ve misafir sayfası her planda
+        var ve bunu bir test donduruyor (`docs/90`).
+    */
+    'site.pricing.included.heading': 'Every plan includes',
+    'site.pricing.included.body':
+        'Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, photos, and marking a dish sold out for the day.',
+    'site.pricing.free': 'Free',
+    'site.pricing.perMonth': 'per month',
+    'site.pricing.adds': 'Adds',
+
+    // Yetenek anahtarları GELİŞTİRİCİ dilidir (`qr.bulk-generation`);
+    // müşteri sayfasında insanca karşılıkları görünür.
+    'site.plan.qrBulk': 'Bulk QR codes for a whole room of tables',
+    'site.plan.analytics':
+        'Analytics: what guests look at, and what they search for and cannot find',
+    'site.plan.team': 'Team members with roles you control',
+
     // --- İletişim --------------------------------------------------------
     'site.contact.heading': 'Contact',
     'site.contact.lead':

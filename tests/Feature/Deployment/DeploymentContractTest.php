@@ -557,4 +557,30 @@ final class DeploymentContractTest extends TestCase
         // `favicon.ico` GERÇEK bir dosya, o blok kalmalı.
         self::assertFileExists(public_path('favicon.ico'));
     }
+
+    /**
+     * ÜRETİMDE PLAN KATALOĞU BOŞ KALMAZ — `docs/90`.
+     *
+     * Katalog şema değil VERİDİR ve ayrı bir tohumdur. Giriş betiği onu
+     * çalıştırmasaydı üretimde fiyat sayfası "henüz yayımlanmadı" demeye
+     * devam ederdi — ve bunu kimse fark etmezdi, çünkü göçler geçmiş ve
+     * dağıtım yeşil görünürdü.
+     */
+    public function test_the_container_seeds_the_plan_catalogue_after_migrating(): void
+    {
+        $entrypoint = $this->read('docker/entrypoint.sh');
+
+        self::assertStringContainsString(
+            'PlanCatalogueSeeder',
+            $entrypoint,
+            'Giriş betiği plan kataloğunu tohumlamalı; yoksa üretimde fiyat sayfası boş kalır.'
+        );
+
+        // SIRA önemli: tohum, tablonun var olmasını bekler.
+        self::assertLessThan(
+            strpos($entrypoint, 'PlanCatalogueSeeder'),
+            (int) strpos($entrypoint, 'artisan migrate --force'),
+            'Tohum göçlerden SONRA çalışmalı.'
+        );
+    }
 }

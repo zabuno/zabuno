@@ -47,6 +47,11 @@ final class SiteText
             'perRestaurantCta' => 'site.pricing.perRestaurant.cta',
             'unsure' => 'site.pricing.unsure',
             'unsureCta' => 'site.pricing.unsure.cta',
+            'includedHeading' => 'site.pricing.included.heading',
+            'includedBody' => 'site.pricing.included.body',
+            'free' => 'site.pricing.free',
+            'perMonth' => 'site.pricing.perMonth',
+            'adds' => 'site.pricing.adds',
             'contactHeading' => 'site.contact.heading',
             'contactLead' => 'site.contact.lead',
             'contactSent' => 'site.contact.sent',
@@ -68,6 +73,24 @@ final class SiteText
         }
 
         return $out;
+    }
+
+    /**
+     * Yetenek anahtarının müşteri diline çevrilmiş hâli.
+     *
+     * `qr.bulk-generation` geliştirici dilidir ve müşteri sayfasında
+     * görünmemeli; tanınmayan bir anahtar da GÖSTERİLMEZ (null döner),
+     * çünkü ham anahtar basmak sessizce sızdırmak olurdu.
+     */
+    public function entitlementLabel(string $key, ?string $locale = null): ?string
+    {
+        $map = [
+            'qr.bulk-generation' => 'site.plan.qrBulk',
+            'analytics.reporting' => 'site.plan.analytics',
+            'team.invitations' => 'site.plan.team',
+        ];
+
+        return isset($map[$key]) ? $this->get($map[$key], $locale) : null;
     }
 
     /** @param  list<string>  $accepted */
