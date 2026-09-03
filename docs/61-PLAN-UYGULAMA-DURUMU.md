@@ -26,7 +26,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | # | Madde | Durum |
 | --- | --- | --- |
 | A1 | Hash navigation yerine gerçek adresler | ✅ `sectionHref(slug, section)`, `replaceState` |
-| A2 | Tenant / platform / engineering kabuk ayrımı | 🔶 tenant ayrı; platform ve engineering yüzeyleri henüz ayrı kabuk değil |
+| A2 | Tenant / platform / engineering kabuk ayrımı | 🔶 tenant ayrı; `/platform` ayrı kabuk; engineering içeriği (readiness, kanıtlar) platform kabuğunda yaşıyor, kendi kabuğu yok — `docs/98` FF-66 |
 | A3 | Üç kalıcı sol rail YOK | ✅ tek sidebar |
 | A4 | Sidebar görev odaklı gruplandırma (primary/management/utility) | ✅ `group` alanı |
 | A5 | Sidebar üstünde workspace switcher | ✅ `WorkspaceSwitcherTrigger` |
@@ -94,23 +94,23 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | E6 | Team: üye tablosu | 🔶 rol görünür; kapsam ve son etkinlik yok |
 | E7 | Billing: yalnız tenant yüzeyi | ✅ ledger/manuel ödeme ayrıldı |
 | E8 | Launch readiness tenant kabuğundan çıktı | ✅ |
-| E9 | Media: grid/list, filtre, upload drawer | ⬜ |
-| E10 | Media: teknik iç süreçler kullanıcıdan gizli | 🔶 |
+| E9 | Media: grid/list, filtre, upload drawer | ⬜ düz liste; sürükle-bırak yükleme var (`MediaDropzone`), ızgara/filtre/arama yok — `docs/98` FF-70 |
+| E10 | Media: teknik iç süreçler kullanıcıdan gizli | 🔶 durum rozeti sahibin diliyle (`MediaAssetStatusBadge`); işleme kuyruğu/rendition'lar görünmüyor — bu DOĞRU, ama "neden hazır değil" sebebi de görünmüyor |
 
 ## F. Medya / DAM
 
 | # | Madde | Durum |
 | --- | --- | --- |
 | F1 | asset / blob / version / rendition / usage / job tabloları | ✅ göç mevcut |
-| F2 | Üç durum ekseni (processing / lifecycle / visibility) | 🔶 |
-| F3 | Slot bazlı medya politikası | 🔶 slot kavramı var |
+| F2 | Üç durum ekseni (processing / lifecycle / visibility) | ✅ `ProcessingStatus` (9), `LifecycleStatus` (5), `Visibility` (4) + `media_assets` üç sütun — envanter eskimişti, `docs/49` Faz 1 bunu 2026-08-27'de kapatmıştı |
+| F3 | Slot bazlı medya politikası | ✅ `config/media-slots.php` 17 slot + `SlotPolicy` (min ölçü, oran, format, şeffaflık, rendition, alt zorunluluğu); yükleme ekranı slot listesini API'den çeker |
 | F4 | Upload session, resumable, idempotency | ⬜ |
-| F5 | Sunucu tarafı doğrulama + karantina + AV | 🔶 |
-| F6 | Responsive rendition seti + `srcset` | ⬜ |
-| F7 | Immutable/versioned URL | ⬜ |
+| F5 | Sunucu tarafı doğrulama + karantina + AV | 🔶 magic-byte (`StoreMediaRequest`, decode etmeden), karantina→tarama→işleme zinciri, ClamAV (yoksa fail-closed) ✅; **decoder ile yeniden encode, SVG reddi, piksel-bombası sınırı, `fixtures/malicious` CI kapısı ⬜** — `docs/98` FF-68 |
+| F6 | Responsive rendition seti + `srcset` | ✅ `GdMediaAssetProcessor` slot politikasındaki genişliklerde `{w}w` profilleri üretir (upscale yok, INV-01); misafir menüsü `srcset` yazar (`public-menu.blade.php`) |
+| F7 | Immutable/versioned URL | ✅ `/media/r/{rendition}-{fingerprint}.{format}` + `Cache-Control: public, max-age=31536000, immutable` (`ServeRenditionController`); `ETag` ⬜ |
 | F8 | Use mapping'e göre silme etki analizi | ⬜ |
 | F9 | Tenant kotası kalemleri | ⬜ |
-| F10 | Yayın snapshot'ı asset version'a bağlı | ⬜ |
+| F10 | Yayın snapshot'ı asset version'a bağlı | ✅ `recordPublicationUsages` her yayında `media_version_id`'yi dondurur; snapshot görselleri `docs/77` ile yayına yazılır — fotoğrafı düzenlemek canlı menüyü değiştirmez |
 
 ## G. AI-first
 
@@ -119,8 +119,8 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | G1 | Boş AI assistant kartları kaldırıldı | ✅ |
 | G2 | Sağlayıcı yokken AI girişi gösterilmez | ✅ kabuk seviyesindeki AI merkezi de kaldırıldı (`docs/65`) — envanterin ilk hâli bunu yanlışlıkla ✅ sayıyordu |
 | G3 | Deterministik yol AI kapalıyken çalışır | ✅ |
-| G4 | AI önerisi: kapsam + etkilenen kayıt + diff + onay + undo + audit | ⬜ |
-| G5 | Bağlamsal AI aksiyonları (ürün açıklaması, çeviri, alt metin) | ⬜ |
+| G4 | AI önerisi: kapsam + etkilenen kayıt + diff + onay + undo + audit | 🔶 kapsam+etkilenen kayıt+onay+audit ✅ (`docs/97` Yolculuk A/B/C, FF-51…53; `ai_artifacts.applied_at`, `ai_invocations`); **diff görünümü ve undo ⬜** |
+| G5 | Bağlamsal AI aksiyonları (ürün açıklaması, çeviri, alt metin) | 🔶 ürün açıklaması ✅ (FF-51), fotoğraftan menü ✅ (FF-53/61), yinelenen ürün ✅ (FF-52); çeviri ⛔ OPT-04 yok (`docs/95`); alt metin ⬜ (`docs/49` Faz 9) |
 | G6 | AI işareti yalnız gerçek AI içeriğinde | ✅ |
 
 ## H. Ölçüm
@@ -241,19 +241,30 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | P0-02 | Varsayılan gizli ürün | ✅ `docs/74` |
 | P0-03 | Misafir menüsünde restoran kimliği | ✅ `docs/75` + logo `docs/77` |
 | P0-04 | Açıklama + görsel yayın snapshot'ında | ✅ `docs/77` + panel `docs/78` |
-| P0-05 | Foto/PDF/CSV aktarma | 🔶 CSV ✅ `docs/80`; foto onay hattı ✅ `docs/92`; OpenAI adaptörü + anahtar bekliyor |
+| P0-05 | Foto/PDF/CSV aktarma | ✅ CSV `docs/80`; foto: Gemini→OpenAI canlı zinciri (FF-45/49), inceleme ekranı (FF-53), toplu okuma (FF-61); **anahtar sahipte** — adaptörler gerçek API'ye karşı doğrulanmadı (`docs/94`) |
 | P0-06 | Gerçek e-posta | 🔶 Mailgun kurulu `docs/93`; kum havuzu alanı kaydolmayı açmaz |
 | P0-07 | Canlı dağıtım kanıtı | ✅ zabuno.com canlı (Hüseyin); iki üretim kusuru `docs/87` |
 | P0-08 | Medya işleme güvenilirliği | ✅ `docs/76` |
 | P0-09 | Veri dışa aktarımı | ✅ `docs/80` |
 | P1-01 | Fiyat/deneme/destek yüzeyi | ✅ `docs/88` + `docs/89` (e-posta gönderimi P0-06'ya bağlı) |
 | P1-02 | Gerçek ödeme | ⛔ Iyzico anahtarları sahibinde |
-| P1-03 | QR hedefi değiştirme + yeniden etkinleştirme | ✅ `docs/81` |
+| P1-03 | QR hedefi değiştirme + yeniden etkinleştirme | ✅ `docs/81` arka uç; **hedef değiştirme EKRANI FF-64'te geldi** (`docs/98`) — envanter arka ucu ekran sanıyordu |
 | P1-04 | "Tükendi" durumu | ✅ `docs/82` |
 | P1-05 | Yayın geri alma | ✅ `docs/81` |
 | P1-06 | Misafir dil seçimi | ✅ `docs/85` (içerik çevirisi kapsam dışı) |
 | P1-07 | Profil/şifre/rol bakımı | ✅ `docs/83` |
 | P1-08 | Ürün seviyesi analitik | ✅ `docs/84` |
+
+### Tur 7 — 2026-09-04, `docs/98` SURFACE-CLOSE-v1 (FF-63…FF-65)
+- **Envanter üç yerde eskimişti ve düzeltildi:** F2/F3/F6/F7/F10 aslında
+  `docs/49` Faz 1'de (2026-08-27) kapanmıştı; G4/G5 FF-51…53 ile büyük ölçüde
+  kapandı; P1-03 arka ucu ekran sanılıyordu. "Kanıtı olmayan ✅ olmaz"
+  kuralının tersi de geçerli: kanıtı olan ⬜ kalmamalı.
+- **FF-63** readiness'ın altı maddesi gerçek kayıttan okunur; makine kanıtı ile
+  insan tanıklığı ayrı etiketlenir.
+- **FF-64** üç gerçek boşluk: marka logosu bağlama ekranı, QR kodunu başka
+  şubeye taşıma ekranı, kategori geneli tükendi.
+- Programın kalanı `docs/98` §5'te sayılıyor (13 paket).
 
 ## Altı tur bitti
 

@@ -1,6 +1,6 @@
 # 49 — Medya ve Dosya Yönetimi: fazlanmış geliştirme planı
 
-**Durum:** Plan. Kod yazılmadı.
+**Durum:** Faz 1 ✅ (2026-08-27). Faz 2-7'nin BAZI maddeleri başka paketlerde kapandı — aşağıda her fazın başında yazılı. Kalan program `docs/98` FF-68…FF-71.
 **Requirement ID:** `DAM-v1`
 **İlgili:** `docs/38` (URL politikası), `docs/44`, `docs/46` (ölçüm),
 `docs/47` (form standardı), `docs/48` (320px-first),
@@ -223,6 +223,11 @@ ve bir gün ayrışmasına yol açardı. Tenant başına politika gerçekten
 gerekirse tablo o zaman gelir.
 
 ### Faz 2 — Güvenli alım (ingestion)
+
+**Durum (2026-09-04):** 3'ün magic-byte kısmı ve 4'ün karantina→tarama→işleme
+zinciri ✅ (`StoreMediaRequest`, `ScanQuarantinedMediaAsset`, ClamAV fail-closed);
+1, 2 (dropzone var, session yok), 3'ün decoder/piksel sınırı, 5, 6 ⬜ → FF-68.
+
 1. `media_upload_sessions` + idempotency key
 2. `react-dropzone` ile sürükle-bırak, pano, çoklu seçim, ilerleme
 3. Sunucu tarafı doğrulama: uzantı allowlist + iddia edilen MIME + **magic
@@ -235,6 +240,10 @@ gerekirse tablo o zaman gelir.
 reddedilir. Bu testler CI kapısıdır.
 
 ### Faz 3 — Asset / Version / Rendition
+
+**Durum (2026-09-04):** 3 ✅ (`{w}w` rendition seti, upscale yok, pipeline
+sürümü kaydı); 1, 2, 4, 5 ⬜ → FF-69.
+
 1. Original **immutable**
 2. Crop/resize **non-destructive**; her düzenleme yeni version
 3. Rendition seti `320..1600w`; pipeline sürümü kaydedilir
@@ -253,6 +262,10 @@ reddedilir. Bu testler CI kapısıdır.
 **Kabul:** 320×480'de kullanılabilir; teknik kelime kullanıcı metninde yok.
 
 ### Faz 5 — Kullanım grafiği ve yayın bağı
+
+**Durum (2026-09-04):** 1 ✅ (`media_usages` entity/slot/publication); 4 ✅
+(`recordPublicationUsages` version'ı dondurur, `docs/77`); 2, 3, 5 ⬜ → FF-70.
+
 1. `media_usages`: entity, slot, location, locale, publication, override
 2. Silmeden önce **etki önizlemesi**: değiştir / bağı kes / vazgeç
 3. Trash → retention → purge
@@ -263,6 +276,11 @@ reddedilir. Bu testler CI kapısıdır.
 **Kabul:** Kullanılan bir asset doğrudan silinemez.
 
 ### Faz 6 — Teslim ve CDN
+
+**Durum (2026-09-04):** 1'in immutable URL + `Cache-Control` kısmı ✅
+(`ServeRenditionController`); 4'ün `srcset` kısmı ✅ (misafir menüsü); `ETag`,
+signed URL, LQIP, `width`/`height`, 5 ⬜ → FF-71.
+
 1. Immutable URL, `Cache-Control`, `ETag`
 2. Private original / public rendition ayrımı, signed URL
 3. Tenant kimliği cache anahtarında
