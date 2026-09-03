@@ -49,11 +49,13 @@ use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
 use App\Domain\Media\SlotCatalogue;
+use App\Domain\Platform\Credential\CredentialProvider;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
 use App\Infrastructure\Ai\ConfiguredAvailability;
 use App\Infrastructure\Ai\FakeProvider;
+use App\Infrastructure\Ai\OpenAiVisionProvider;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentIyzicoSandboxTransactionRepository;
@@ -145,7 +147,23 @@ final class AppServiceProvider extends ServiceProvider
             anahtar geldiği gün değişecek yer burası (`docs/92`).
         */
         $this->app->bind(AiAvailabilityPort::class, ConfiguredAvailability::class);
-        $this->app->bind(VisionExtractionPort::class, FakeProvider::class);
+        /*
+            Görüntü çıkarımı: kasada OpenAI yapılandırılmış VE AI açıksa gerçek
+            adaptör, aksi hâlde deterministik sahte sağlayıcı. Karar her istekte
+            kasadan okunur — superadmin anahtarı girdiği an sağlayıcı değişir,
+            deploy gerekmez. Anahtar yokken (CI, yerel) sahte sağlayıcı kalır
+            ve bütün zincir çalışmaya devam eder (`docs/94` Faz 5).
+        */
+        $this->app->bind(VisionExtractionPort::class, function ($app): VisionExtractionPort {
+            $configured = $app->make(CredentialResolverPort::class)
+                ->isConfigured(CredentialProvider::OpenAi);
+
+            if (config('ai.enabled') === true && $configured) {
+                return $app->make(OpenAiVisionProvider::class);
+            }
+
+            return $app->make(FakeProvider::class);
+        });
 
         /*
             Platform kimlik-bilgisi kasası — iki port, TEK örnek.

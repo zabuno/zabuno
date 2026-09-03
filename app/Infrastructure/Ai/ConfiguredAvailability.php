@@ -6,7 +6,9 @@ namespace App\Infrastructure\Ai;
 
 use App\Application\Ai\Port\AiAvailability;
 use App\Application\Ai\Port\AiAvailabilityPort;
+use App\Application\Platform\Port\CredentialResolverPort;
 use App\Domain\Ai\Capability;
+use App\Domain\Platform\Credential\CredentialProvider;
 
 /**
  * Kullanılabilirlik kararı — sırası ÖNEMLİ.
@@ -17,7 +19,10 @@ use App\Domain\Ai\Capability;
  */
 final readonly class ConfiguredAvailability implements AiAvailabilityPort
 {
-    public function __construct(private AiBudgetLedger $budget) {}
+    public function __construct(
+        private AiBudgetLedger $budget,
+        private CredentialResolverPort $credentials,
+    ) {}
 
     public function isAvailable(int $workspaceId, Capability $capability): AiAvailability
     {
@@ -44,7 +49,10 @@ final readonly class ConfiguredAvailability implements AiAvailabilityPort
         $capabilities = (array) config('ai.capabilities', []);
         $candidates = (array) ($capabilities[$capability->value]['candidates'] ?? []);
 
-        if ($candidates === []) {
+        // Rota iki kaynaktan gelebilir: config aday listesi VEYA kasada
+        // yapılandırılmış, bu yeteneğe bakan bir sağlayıcı. Superadmin UI'dan
+        // OpenAI anahtarı girdiğinde config'e dokunmadan rota açılmalı.
+        if ($candidates === [] && ! $this->vaultServes($capability)) {
             return AiAvailability::NoRoute;
         }
 
@@ -53,5 +61,21 @@ final readonly class ConfiguredAvailability implements AiAvailabilityPort
         }
 
         return AiAvailability::Available;
+    }
+
+    /**
+     * Kasada bu yeteneğe bakan, açık bir sağlayıcı var mı?
+     *
+     * Görüntü/OCR yetenekleri OpenAI (ve ileride Gemini) ile karşılanır.
+     * Diğer yetenekler config aday listesine bağlı kalır.
+     */
+    private function vaultServes(Capability $capability): bool
+    {
+        if (! in_array($capability, [Capability::MenuExtract, Capability::OcrDocument], true)) {
+            return false;
+        }
+
+        return $this->credentials->isConfigured(CredentialProvider::OpenAi)
+            || $this->credentials->isConfigured(CredentialProvider::Gemini);
     }
 }
