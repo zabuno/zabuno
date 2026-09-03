@@ -74,16 +74,48 @@ final readonly class ConfiguredAvailability implements AiAvailabilityPort
      * dotted-config-key sınıfıyla aynı arıza biçimi). Yeni bir gerçek
      * adaptör her eklendiğinde bu liste GÜNCELLENMELİDİR.
      *
-     * Listede olmayan yetenekler (bugün: gömme, sınıflandırma) yalnız
-     * config aday listesine bağlı kalır.
+     * Listede olmayan yetenekler (bugün: sınıflandırma, yeniden sıralama)
+     * yalnız config aday listesine bağlı kalır.
      */
     private function vaultServes(Capability $capability): bool
     {
-        if (! in_array($capability, [Capability::MenuExtract, Capability::OcrDocument, Capability::ProductDescription, Capability::TextEmbedding], true)) {
-            return false;
+        /*
+            EŞLEME YETENEĞE GÖRE, SAĞLAYICIYA GÖRE DEĞİL — ve bu ayrım
+            Faz 3'te zorunlu hâle geldi.
+
+            Anthropic/Kimi/özel uç noktanın YALNIZ metin adaptörü var
+            (`StructuredGenerationPort`); görüntü okuyamazlar, gömme
+            üretemezler. Hepsini tek bir listeye koymak, yalnız Kimi
+            anahtarı girilmiş bir kurulumda "fotoğraftan menü oku"
+            eylemini AÇIK gösterirdi — kullanıcı basar, arkada o yeteneği
+            karşılayan hiçbir adaptör olmadığı için sahte üretici devreye
+            girerdi. Bu, docblock'un uyardığı arızanın tersi: rota açık
+            görünür, çağrı yapacak kod yoktur.
+        */
+        $servingProviders = match ($capability) {
+            // Görme: yalnız gerçek görüntü adaptörü olanlar.
+            Capability::MenuExtract, Capability::OcrDocument => [
+                CredentialProvider::Gemini,
+                CredentialProvider::OpenAi,
+            ],
+            // Şemaya bağlı metin: Faz 3'te dört adayı var.
+            Capability::ProductDescription => [
+                CredentialProvider::Gemini,
+                CredentialProvider::Anthropic,
+                CredentialProvider::Kimi,
+                CredentialProvider::CustomEndpoint,
+            ],
+            // Gömme: bugün yalnız Gemini (`docs/51` §4.4 geçici bulut yedeği).
+            Capability::TextEmbedding => [CredentialProvider::Gemini],
+            default => [],
+        };
+
+        foreach ($servingProviders as $provider) {
+            if ($this->credentials->isConfigured($provider)) {
+                return true;
+            }
         }
 
-        return $this->credentials->isConfigured(CredentialProvider::OpenAi)
-            || $this->credentials->isConfigured(CredentialProvider::Gemini);
+        return false;
     }
 }
