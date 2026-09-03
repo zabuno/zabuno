@@ -55,6 +55,7 @@ use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
 use App\Infrastructure\Ai\ConfiguredAvailability;
 use App\Infrastructure\Ai\FakeProvider;
+use App\Infrastructure\Ai\GeminiVisionProvider;
 use App\Infrastructure\Ai\OpenAiVisionProvider;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
@@ -154,11 +155,27 @@ final class AppServiceProvider extends ServiceProvider
             deploy gerekmez. Anahtar yokken (CI, yerel) sahte sağlayıcı kalır
             ve bütün zincir çalışmaya devam eder (`docs/94` Faz 5).
         */
-        $this->app->bind(VisionExtractionPort::class, function ($app): VisionExtractionPort {
-            $configured = $app->make(CredentialResolverPort::class)
-                ->isConfigured(CredentialProvider::OpenAi);
+        /*
+            Görme zinciri sırası GEMİNİ → OPENAI → sahte sağlayıcı.
 
-            if (config('ai.enabled') === true && $configured) {
+            `docs/51` §4b.1: "görme yeteneği Gemini'de başlar (ucuz, güçlü),
+            yetmezse OpenAI, en son Claude." Kasada hangi sağlayıcı
+            yapılandırılmışsa o kullanılır; ikisi de varsa Gemini kazanır.
+            AI kapalıyken (kill switch) ikisi de bağlanmaz — sahte sağlayıcı
+            kalır (`docs/94`).
+        */
+        $this->app->bind(VisionExtractionPort::class, function ($app): VisionExtractionPort {
+            if (config('ai.enabled') !== true) {
+                return $app->make(FakeProvider::class);
+            }
+
+            $credentials = $app->make(CredentialResolverPort::class);
+
+            if ($credentials->isConfigured(CredentialProvider::Gemini)) {
+                return $app->make(GeminiVisionProvider::class);
+            }
+
+            if ($credentials->isConfigured(CredentialProvider::OpenAi)) {
                 return $app->make(OpenAiVisionProvider::class);
             }
 

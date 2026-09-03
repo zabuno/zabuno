@@ -11,6 +11,7 @@ use App\Application\Platform\Port\PlatformCredentialAdminPort;
 use App\Domain\Ai\Capability;
 use App\Domain\Platform\Credential\CredentialProvider;
 use App\Infrastructure\Ai\FakeProvider;
+use App\Infrastructure\Ai\GeminiVisionProvider;
 use App\Infrastructure\Ai\OpenAiVisionProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -82,5 +83,26 @@ final class VaultAiRoutingTest extends TestCase
         // AI kapalıyken anahtar olsa bile sahte sağlayıcı (kill switch kazanır).
         Config::set('ai.enabled', false);
         self::assertInstanceOf(FakeProvider::class, $this->app->make(VisionExtractionPort::class));
+    }
+
+    // --- VAULT-AI-GEMINI-FIRST-01 -----------------------------------------
+
+    #[Test]
+    public function gemini_is_tried_before_openai_when_both_are_configured(): void
+    {
+        Config::set('ai.enabled', true);
+
+        $this->configureOpenAi();
+        self::assertInstanceOf(OpenAiVisionProvider::class, $this->app->make(VisionExtractionPort::class));
+
+        // Gemini de yapılandırılınca — docs/51 §4b.1: "Gemini'de başlar,
+        // yetmezse OpenAI" — Gemini kazanır, OpenAI hâlâ kayıtlı kalır.
+        $this->app->make(PlatformCredentialAdminPort::class)->put(
+            CredentialProvider::Gemini,
+            ['api_key' => 'gm-test-key'],
+            byUserId: null,
+        );
+
+        self::assertInstanceOf(GeminiVisionProvider::class, $this->app->make(VisionExtractionPort::class));
     }
 }

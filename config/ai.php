@@ -87,6 +87,16 @@ return [
     ],
 
     /*
+     * Gemini görüntü adaptörü — `docs/96` (Faz 2, ÖNCELİKLİ). `docs/51`
+     * §4b.1 görme zincirini Gemini→OpenAI→Claude sıralıyor; bu yüzden
+     * `AppServiceProvider` binding'i Gemini'yi OpenAI'dan önce dener.
+     */
+    'gemini' => [
+        'vision_model' => env('AI_GEMINI_VISION_MODEL', 'gemini-flash-latest'),
+        'request_timeout' => (int) env('AI_GEMINI_TIMEOUT', 60),
+    ],
+
+    /*
      * Model başına fiyat (1.000.000 token başına, KURUŞ). Bütçe bu tablodan
      * türetilen maliyetle düşer; ayarlanmazsa maliyet 0 yazılır ve bütçe
      * yalnız aç/kapa görevi görür (miktar bazlı değil). Fotoğraf okuma
