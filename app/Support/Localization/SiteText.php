@@ -42,6 +42,21 @@ final class SiteText
             // Mühendislik kabuğunun sekme başlığı (`docs/98` FF-66) — Blade'e
             // sabit dize yazmak çevrilemez borcu büyütürdü (I18N-SSR-RATCHET-16).
             'engineeringTitle' => 'site.engineering.title',
+            // Masterpage (`docs/100` §2): gezinti ve altbilgi metni katalogdan.
+            'skipToContent' => 'site.skipToContent',
+            'navFeatures' => 'site.nav.features',
+            'navHowItWorks' => 'site.nav.howItWorks',
+            'navPricing' => 'site.nav.pricing',
+            'navHelp' => 'site.nav.help',
+            'navContact' => 'site.nav.contact',
+            'navLogin' => 'site.nav.login',
+            'navRegister' => 'site.nav.register',
+            'footerProduct' => 'site.footer.product',
+            'footerLegal' => 'site.footer.legal',
+            'footerTerms' => 'site.footer.terms',
+            'footerPrivacy' => 'site.footer.privacy',
+            'footerKvkk' => 'site.footer.kvkk',
+            'footerTagline' => 'site.footer.tagline',
             'pricingHeading' => 'site.pricing.heading',
             'pricingLead' => 'site.pricing.lead',
             'pricingEmpty' => 'site.pricing.empty',

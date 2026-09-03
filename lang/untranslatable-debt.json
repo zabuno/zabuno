@@ -1,6 +1,6 @@
 {
     "requirement": "I18N-SSR-RATCHET-16",
-    "total": 56,
+    "total": 48,
     "byFile": {
         "auth/forgot-password.blade.php": 1,
         "auth/invitation.blade.php": 1,
@@ -12,8 +12,10 @@
         "platform-app.blade.php": 1,
         "public-not-found.blade.php": 3,
         "public/home.blade.php": 29,
-        "public/layout.blade.php": 14,
+        "public/layout.blade.php": 1,
         "public/legal.blade.php": 1,
+        "public/partials/footer.blade.php": 3,
+        "public/partials/header.blade.php": 2,
         "workspace-app.blade.php": 1
     },
     "why": "Sahibi çeviriyi PO dosyasindan yapar. Bir dize kaynak katalogda yoksa PO icinde satiri da yoktur; yani hicbir dile cevrilemez. React tarafi katalogdan besleniyor, sunucuda uretilen Blade gorunumleri beslenmiyordu. Bu sayi o boslugun buyuklugudur.",

@@ -10,6 +10,21 @@
  * çünkü borcu büyütmemek onu bir seferde kapatmaktan önce gelir.
  */
 export const siteTranslations = {
+    // --- Masterpage: gezinti ve altbilgi (`docs/100` §2) ------------------
+    'site.skipToContent': 'Skip to main content',
+    'site.nav.features': 'Features',
+    'site.nav.howItWorks': 'How it works',
+    'site.nav.pricing': 'Pricing',
+    'site.nav.help': 'Help',
+    'site.nav.contact': 'Contact',
+    'site.nav.login': 'Log in',
+    'site.nav.register': 'Create account',
+    'site.footer.product': 'Product',
+    'site.footer.legal': 'Legal',
+    'site.footer.terms': 'Terms',
+    'site.footer.privacy': 'Privacy',
+    'site.footer.kvkk': 'KVKK',
+    'site.footer.tagline': 'Your menu behind a QR code, kept up to date by your own team.',
     // --- Fiyat -----------------------------------------------------------
     'site.engineering.title': 'Zabuno — Engineering',
     'site.pricing.heading': 'Pricing',

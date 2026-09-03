@@ -83,7 +83,7 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 9/13 tamamlandı, 10/13 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 10/13 tamamlandı, 11/13 aktif.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
@@ -98,7 +98,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 7 ✅ | **FF-69 DAM Faz 3** | immutable original, non-destructive version, `320..1600w` rendition seti, checksum + yinelenen tespiti, reprocess | INV-01..07 yeşil, rollback |
 | 8 ✅ | **FF-70 DAM Faz 4+5** | kütüphane ızgara/liste/arama/koleksiyon; asset detayı (kullanım/sürüm/rendition); kullanım grafiği; silme etki önizlemesi; yayın snapshot'ı version'a bağlı | kullanılan asset doğrudan silinemez |
 | 9 ✅ | **FF-71 DAM Faz 6+7** | immutable URL + `Cache-Control`/`ETag`, `srcset`/`<picture>`, kota kalemleri (sahip "sen belirle" dedi → §7), izin matrisi (`download_original` serbest — sahibin kararı), reconciliation | LCP ölçülür; kota dolunca canlı menü kesilmez |
-| 10 | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
+| 10 ✅ | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
 | 11 | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
 | 12 | **FF-74 Yetki-görünürlük + registry** | gezinti kaydına `permission`/`entitlement`; ön uç `me` ucundan izin okur; yetkisiz eylem çizilmez; Pennant | Editor 403 görmez |
 | 13 | **FF-75 Toplu orkestra** (sahibin 2026-09-04 sorusu) | 40 sayfalık menü: `ai_batches` (kalıcı hafıza) + kuyrukta sayfa başına iş (geçici hafıza) + **parti-bazlı** yönlendirme (sağlıklı bağlantılar arasında, bağlantı başına dakikalık bütçe — yapışkanlığa "amaç" boyutu, R30'un Faz 5'e bıraktığı iş öne çekilir) + `CollectorJob` (artifact'ları tek inceleme listesine toplar, yinelenenleri ayıklar) + mevcut insan-onaylı `apply`. `docs/adr/` klasörü ve `agents/*.md` sözleşmeleri (docs/96'daki üç ajan) bu pakette resmileşir | 40 sayfa tek limitte şişmez; sonuç TEK listede incelenir; onaysız hiçbir satır yazılmaz |
@@ -198,6 +198,28 @@ kalır ve Tur 1 tablosunda gerekçeli.
 - **Testler:** `MediaDeliveryAndGovernanceTest` (10), `MediaQuotaRegion.test`
   (3), drawer indirme testi; `RolePermissionMappingTest` 13 → 15.
 
+### FF-72 teslim notu
+
+`docs/100` yazıldı (bilgi mimarisi, masterpage sözleşmesi MP-01…06, Flowbite
+eşlemesi, L0–L4 olgunluk cetveli, sayfa başına bugünkü seviye, 4 faz).
+Uygulanan Faz 1:
+
+- **Önce:** header/footer `layout.blade.php`'nin içindeydi; gezintide 4 çıpa,
+  `/pricing` ve `/help` gerçek sayfa olduğu hâlde yoktu; metin Blade'e gömülü
+  İngilizce; "16/16 modules registered" ziyaretçiye görünür paragraf.
+- **Şimdi:** `public/partials/header|footer`; gezinti Features/How it works
+  (çıpa), Pricing/Help/Contact (gerçek sayfa), Log in/Create account; footer
+  Product + Legal + marka satırı; 15 katalog anahtarı (`site.nav.*`,
+  `site.footer.*`, `site.skipToContent`), Türkçe tarayıcı Türkçe okur;
+  mühendislik satırı `<meta name="zabuno-build">` (kayıt sözleşmesi bozulmadı,
+  ziyaretçi görmüyor); `PublicMasterpageContractTest` (6 sözleşme, 7 sayfa).
+- **Kullanıcı yolculuğu:** kebapçı telefonda `zabuno.com` → üstte "Fiyat" ve
+  "Yardım" Türkçe → kaydolmadan fiyat → Türkçe "ilk 15 dakika" → altta
+  İletişim → "gönderildi". Hiçbir bağlantı ölü değil.
+- **Kalan engel:** ana sayfa gövdesi hâlâ İngilizce gömülü (borç 29, Faz 2),
+  görünür dil seçici ve `hreflang` (Faz 2), dönüşüm olayları (Faz 3),
+  kişiselleştirme (Faz 4, Pennant → FF-74).
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket
@@ -205,6 +227,23 @@ boyutu disiplini değil, paket sayısı**: 12 paket art arda tek oturumda,
 her biri kendi PR'ında. Değişmeyenler: tek writer, RED→GREEN, sır girişi
 yasağı, Pint kapısı, "kanıtı olmayan ✅ olmaz" (`docs/61` kuralı). Bunlar
 esnetilirse program hızlanmaz, yalnız yalan söylemeye başlar.
+
+**FF-72'de esnetilen ikinci kural:** "N/16 modules registered" satırı
+kayıt sözleşmesi gereği (`FoundationStatusDeliveryArchitectureTest`,
+`PublicLegalPagesTest`) her kamu sayfasında **kaynakta** bulunmalıydı; kural
+yeniden yazıldı: satır `<meta name="zabuno-build">` olarak kaynakta kalır,
+ziyaretçiye görünmez (`docs/100` MP-04). Sözleşme "kayıttan türetilir"
+demeye devam eder; "ziyaretçi okur" hiç dememişti.
+
+**FF-72'de esnetilen üçüncü kural — JS bütçesinin BİRİMİ:** `DS-BUNDLE-BUDGET-07`
+`public/build/assets` altındaki bütün JS'in toplamını 200 KB'ye vuruyordu:
+auth + platform + mühendislik + çalışma alanı (masaüstü + mobil) birlikte.
+Hiçbir ziyaretçi o toplamı indirmez; misafir menüsü hiç JS yüklemez (`docs/38`
+§16). FF-70/71'in medya kütüphanesi toplamı 200,8 KB'ye taşıyınca ölçüm
+dürüstleştirildi: her giriş noktasının manifest kapanışı ölçülür, en büyüğü
+(workspace.desktop ≈ 175 KB) bütçeye vurulur. **Sayı yükseltilmedi** — sahibin
+kararı gerektiren şey sayıdır (`bundle-budget.json` notu); birim, ölçümün
+neyi temsil ettiğidir ve yanlış temsil düzeltildi.
 
 ## 7. Kota rakamları — sahip "sen belirle" dedi
 

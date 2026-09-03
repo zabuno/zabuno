@@ -44,6 +44,30 @@ msgstr ""
 msgid "site.engineering.title"
 msgstr ""
 
+#: site:site.footer.kvkk
+msgid "site.footer.kvkk"
+msgstr "KVKK"
+
+#: site:site.footer.legal
+msgid "site.footer.legal"
+msgstr "Yasal"
+
+#: site:site.footer.privacy
+msgid "site.footer.privacy"
+msgstr "Gizlilik"
+
+#: site:site.footer.product
+msgid "site.footer.product"
+msgstr "Ürün"
+
+#: site:site.footer.tagline
+msgid "site.footer.tagline"
+msgstr "QR kodun arkasındaki menünüz, kendi ekibinizce güncel tutulur."
+
+#: site:site.footer.terms
+msgid "site.footer.terms"
+msgstr "Kullanım koşulları"
+
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
 msgstr ""
@@ -59,6 +83,34 @@ msgstr ""
 #: site:site.home.faq.cost.question
 msgid "site.home.faq.cost.question"
 msgstr ""
+
+#: site:site.nav.contact
+msgid "site.nav.contact"
+msgstr "İletişim"
+
+#: site:site.nav.features
+msgid "site.nav.features"
+msgstr "Özellikler"
+
+#: site:site.nav.help
+msgid "site.nav.help"
+msgstr "Yardım"
+
+#: site:site.nav.howItWorks
+msgid "site.nav.howItWorks"
+msgstr "Nasıl çalışır"
+
+#: site:site.nav.login
+msgid "site.nav.login"
+msgstr "Giriş yap"
+
+#: site:site.nav.pricing
+msgid "site.nav.pricing"
+msgstr "Fiyat"
+
+#: site:site.nav.register
+msgid "site.nav.register"
+msgstr "Hesap oluştur"
 
 #: site:site.plan.analytics
 msgid "site.plan.analytics"
@@ -123,3 +175,7 @@ msgstr ""
 #: site:site.pricing.unsure.cta
 msgid "site.pricing.unsure.cta"
 msgstr ""
+
+#: site:site.skipToContent
+msgid "site.skipToContent"
+msgstr "Ana içeriğe atla"

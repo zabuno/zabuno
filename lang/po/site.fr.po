@@ -44,6 +44,30 @@ msgstr ""
 msgid "site.engineering.title"
 msgstr ""
 
+#: site:site.footer.kvkk
+msgid "site.footer.kvkk"
+msgstr ""
+
+#: site:site.footer.legal
+msgid "site.footer.legal"
+msgstr ""
+
+#: site:site.footer.privacy
+msgid "site.footer.privacy"
+msgstr ""
+
+#: site:site.footer.product
+msgid "site.footer.product"
+msgstr ""
+
+#: site:site.footer.tagline
+msgid "site.footer.tagline"
+msgstr ""
+
+#: site:site.footer.terms
+msgid "site.footer.terms"
+msgstr ""
+
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
 msgstr ""
@@ -58,6 +82,34 @@ msgstr ""
 
 #: site:site.home.faq.cost.question
 msgid "site.home.faq.cost.question"
+msgstr ""
+
+#: site:site.nav.contact
+msgid "site.nav.contact"
+msgstr ""
+
+#: site:site.nav.features
+msgid "site.nav.features"
+msgstr ""
+
+#: site:site.nav.help
+msgid "site.nav.help"
+msgstr ""
+
+#: site:site.nav.howItWorks
+msgid "site.nav.howItWorks"
+msgstr ""
+
+#: site:site.nav.login
+msgid "site.nav.login"
+msgstr ""
+
+#: site:site.nav.pricing
+msgid "site.nav.pricing"
+msgstr ""
+
+#: site:site.nav.register
+msgid "site.nav.register"
 msgstr ""
 
 #: site:site.plan.analytics
@@ -122,4 +174,8 @@ msgstr ""
 
 #: site:site.pricing.unsure.cta
 msgid "site.pricing.unsure.cta"
+msgstr ""
+
+#: site:site.skipToContent
+msgid "site.skipToContent"
 msgstr ""

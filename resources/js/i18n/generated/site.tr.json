@@ -1,1 +1,16 @@
-{}
+{
+    "site.footer.kvkk": "KVKK",
+    "site.footer.legal": "Yasal",
+    "site.footer.privacy": "Gizlilik",
+    "site.footer.product": "Ürün",
+    "site.footer.tagline": "QR kodun arkasındaki menünüz, kendi ekibinizce güncel tutulur.",
+    "site.footer.terms": "Kullanım koşulları",
+    "site.nav.contact": "İletişim",
+    "site.nav.features": "Özellikler",
+    "site.nav.help": "Yardım",
+    "site.nav.howItWorks": "Nasıl çalışır",
+    "site.nav.login": "Giriş yap",
+    "site.nav.pricing": "Fiyat",
+    "site.nav.register": "Hesap oluştur",
+    "site.skipToContent": "Ana içeriğe atla"
+}
