@@ -126,6 +126,13 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/admin/credentials||App\Http\Controllers\PlatformAdmin\ListProviderCredentialsController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'PUT|api/admin/credentials/{provider}||App\Http\Controllers\PlatformAdmin\StoreProviderCredentialController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
         'POST|api/admin/credentials/{provider}/disable||App\Http\Controllers\PlatformAdmin\DisableProviderCredentialController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        // ÇOK-BAĞLANTI YÜZEYİ (`docs/95` Faz 3). Üstteki sağlayıcı-düzeyi
+        // uçlar kaldırılmadı — onlar aynı verinin "varsayılan bağlantı"
+        // kısayolu. Silme ucu bilerek yok: kapatmak silmek değildir.
+        'GET|api/admin/connections||App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
+        'POST|api/admin/connections||App\Http\Controllers\PlatformAdmin\StoreProviderConnectionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        'PUT|api/admin/connections/{connection}||App\Http\Controllers\PlatformAdmin\UpdateProviderConnectionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        'POST|api/admin/connections/{connection}/{state}||App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
     ];
 
     /**

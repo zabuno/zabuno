@@ -149,6 +149,35 @@ const en = {
     'platform.credentials.provider.kimi': 'Kimi (Moonshot)',
     'platform.credentials.provider.custom_endpoint': 'Custom endpoint (OpenAI-compatible)',
 
+    // ÇOK-BAĞLANTI PANELİ — `docs/95` Faz 3. Etiket zorunludur çünkü sır
+    // görünmediği için aynı sağlayıcının iki kartını ayırt eden tek şey odur.
+    'platform.connections.add': '+ Add a connection',
+    'platform.connections.add.cancel': 'Cancel',
+    'platform.connections.add.heading': 'New connection',
+    'platform.connections.provider.label': 'Provider',
+    'platform.connections.provider.choose': 'Choose a provider…',
+    'platform.connections.label.label': 'Connection name',
+    'platform.connections.label.help':
+        'Your own name for this account, e.g. “OpenAI — bulk import”. It is the only way to tell two cards apart.',
+    'platform.connections.scope.label': 'Who owns this key',
+    'platform.connections.scope.platform': 'Platform account',
+    'platform.connections.scope.byok': 'A customer’s own key (BYOK)',
+    'platform.connections.scope.platform_owned': 'Platform account',
+    'platform.connections.scope.tenant_byok': 'Customer’s own key',
+    'platform.connections.workspace.label': 'Workspace ID',
+    'platform.connections.workspace.help':
+        'A customer key only ever serves that one workspace. It never appears as a candidate for anyone else.',
+    'platform.connections.create': 'Save connection',
+    'platform.connections.create.error': 'The connection could not be saved.',
+    'platform.connections.enable': 'Enable',
+    'platform.connections.empty': 'No connection yet.',
+    // Sağlık: "bilinmiyor" ile "sağlıklı" AYRI durumlar. Hiç sınanmamış bir
+    // bağlantıyı sağlıklı göstermek, ilk gerçek isteği bir tahmine
+    // dayandırmak olurdu.
+    'platform.connections.health.unknown': 'Not checked yet',
+    'platform.connections.health.healthy': 'Healthy',
+    'platform.connections.health.unhealthy': 'Not responding',
+
     'platform.credentials.state.active': 'Active',
     'platform.credentials.state.disabled': 'Disabled',
     'platform.credentials.state.unset': 'Not set',

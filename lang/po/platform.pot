@@ -8,6 +8,90 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: platform:platform.connections.add
+msgid "platform.connections.add"
+msgstr ""
+
+#: platform:platform.connections.add.cancel
+msgid "platform.connections.add.cancel"
+msgstr ""
+
+#: platform:platform.connections.add.heading
+msgid "platform.connections.add.heading"
+msgstr ""
+
+#: platform:platform.connections.create
+msgid "platform.connections.create"
+msgstr ""
+
+#: platform:platform.connections.create.error
+msgid "platform.connections.create.error"
+msgstr ""
+
+#: platform:platform.connections.empty
+msgid "platform.connections.empty"
+msgstr ""
+
+#: platform:platform.connections.enable
+msgid "platform.connections.enable"
+msgstr ""
+
+#: platform:platform.connections.health.healthy
+msgid "platform.connections.health.healthy"
+msgstr ""
+
+#: platform:platform.connections.health.unhealthy
+msgid "platform.connections.health.unhealthy"
+msgstr ""
+
+#: platform:platform.connections.health.unknown
+msgid "platform.connections.health.unknown"
+msgstr ""
+
+#: platform:platform.connections.label.help
+msgid "platform.connections.label.help"
+msgstr ""
+
+#: platform:platform.connections.label.label
+msgid "platform.connections.label.label"
+msgstr ""
+
+#: platform:platform.connections.provider.choose
+msgid "platform.connections.provider.choose"
+msgstr ""
+
+#: platform:platform.connections.provider.label
+msgid "platform.connections.provider.label"
+msgstr ""
+
+#: platform:platform.connections.scope.byok
+msgid "platform.connections.scope.byok"
+msgstr ""
+
+#: platform:platform.connections.scope.label
+msgid "platform.connections.scope.label"
+msgstr ""
+
+#: platform:platform.connections.scope.platform
+msgid "platform.connections.scope.platform"
+msgstr ""
+
+#: platform:platform.connections.scope.platform_owned
+msgid "platform.connections.scope.platform_owned"
+msgstr ""
+
+#: platform:platform.connections.scope.tenant_byok
+msgid "platform.connections.scope.tenant_byok"
+msgstr ""
+
+#: platform:platform.connections.workspace.help
+msgid "platform.connections.workspace.help"
+msgstr ""
+
+#: platform:platform.connections.workspace.label
+msgid "platform.connections.workspace.label"
+msgstr ""
+
 #: platform:platform.credentials.disable
 msgid "platform.credentials.disable"
 msgstr ""

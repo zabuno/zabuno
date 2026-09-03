@@ -8,6 +8,90 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: platform:platform.connections.add
+msgid "platform.connections.add"
+msgstr "+ Add a connection"
+
+#: platform:platform.connections.add.cancel
+msgid "platform.connections.add.cancel"
+msgstr "Cancel"
+
+#: platform:platform.connections.add.heading
+msgid "platform.connections.add.heading"
+msgstr "New connection"
+
+#: platform:platform.connections.create
+msgid "platform.connections.create"
+msgstr "Save connection"
+
+#: platform:platform.connections.create.error
+msgid "platform.connections.create.error"
+msgstr "The connection could not be saved."
+
+#: platform:platform.connections.empty
+msgid "platform.connections.empty"
+msgstr "No connection yet."
+
+#: platform:platform.connections.enable
+msgid "platform.connections.enable"
+msgstr "Enable"
+
+#: platform:platform.connections.health.healthy
+msgid "platform.connections.health.healthy"
+msgstr "Healthy"
+
+#: platform:platform.connections.health.unhealthy
+msgid "platform.connections.health.unhealthy"
+msgstr "Not responding"
+
+#: platform:platform.connections.health.unknown
+msgid "platform.connections.health.unknown"
+msgstr "Not checked yet"
+
+#: platform:platform.connections.label.help
+msgid "platform.connections.label.help"
+msgstr "Your own name for this account, e.g. “OpenAI — bulk import”. It is the only way to tell two cards apart."
+
+#: platform:platform.connections.label.label
+msgid "platform.connections.label.label"
+msgstr "Connection name"
+
+#: platform:platform.connections.provider.choose
+msgid "platform.connections.provider.choose"
+msgstr "Choose a provider…"
+
+#: platform:platform.connections.provider.label
+msgid "platform.connections.provider.label"
+msgstr "Provider"
+
+#: platform:platform.connections.scope.byok
+msgid "platform.connections.scope.byok"
+msgstr "A customer’s own key (BYOK)"
+
+#: platform:platform.connections.scope.label
+msgid "platform.connections.scope.label"
+msgstr "Who owns this key"
+
+#: platform:platform.connections.scope.platform
+msgid "platform.connections.scope.platform"
+msgstr "Platform account"
+
+#: platform:platform.connections.scope.platform_owned
+msgid "platform.connections.scope.platform_owned"
+msgstr "Platform account"
+
+#: platform:platform.connections.scope.tenant_byok
+msgid "platform.connections.scope.tenant_byok"
+msgstr "Customer’s own key"
+
+#: platform:platform.connections.workspace.help
+msgid "platform.connections.workspace.help"
+msgstr "A customer key only ever serves that one workspace. It never appears as a candidate for anyone else."
+
+#: platform:platform.connections.workspace.label
+msgid "platform.connections.workspace.label"
+msgstr "Workspace ID"
+
 #: platform:platform.credentials.disable
 msgid "platform.credentials.disable"
 msgstr "Disable"
