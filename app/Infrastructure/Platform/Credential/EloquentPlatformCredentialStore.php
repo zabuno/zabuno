@@ -25,6 +25,8 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
 {
     private const TABLE = 'platform_credentials';
 
+    private const AUDITS = 'platform_credential_audits';
+
     public function __construct(private Encrypter $encrypter) {}
 
     // === Admin portu (sır GERİ OKUNMAZ) ==================================
@@ -127,13 +129,17 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
                 'created_at' => $row->created_at ?? now(),
             ],
         );
+
+        $this->audit($provider, 'set', $byUserId);
     }
 
-    public function disable(CredentialProvider $provider): void
+    public function disable(CredentialProvider $provider, ?int $byUserId = null): void
     {
         DB::table(self::TABLE)
             ->where('provider', $provider->value)
             ->update(['state' => 'disabled', 'updated_at' => now()]);
+
+        $this->audit($provider, 'disabled', $byUserId);
     }
 
     // === Resolver portu (yalnız tüketici) ===============================
@@ -184,6 +190,19 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
     }
 
     // === İç yardımcılar =================================================
+
+    /**
+     * Append-only denetim satırı — SIRSIZ. Yalnız kim/ne/ne zaman.
+     */
+    private function audit(CredentialProvider $provider, string $action, ?int $actor): void
+    {
+        DB::table(self::AUDITS)->insert([
+            'provider' => $provider->value,
+            'action' => $action,
+            'actor_user_id' => $actor,
+            'created_at' => now(),
+        ]);
+    }
 
     private function row(CredentialProvider $provider): ?object
     {
