@@ -38,6 +38,11 @@ function findCanonicalTitle(container: HTMLElement, pattern: RegExp) {
         if (element.closest('dl')) {
             return false;
         }
+        // Yalnız BAŞLIK satırı — FF-63'ün kayıt formundaki yardım metni de
+        // "RPO … RTO" içeriyor ve bir <p>; başlık kalın olanıdır.
+        if (!element.classList.contains('font-semibold')) {
+            return false;
+        }
         return pattern.test(element.textContent ?? '');
     });
 }
@@ -129,11 +134,22 @@ describe('ReleaseReadinessPage — real tenant isolation evidence wiring (S1-WP0
     beforeEach(() => {
         setViewport(320, 480);
         fetchSpy = vi.fn(async (url: string) => {
+            if (String(url) === '/sanctum/csrf-cookie') {
+                return jsonResponse(204, {});
+            }
+            if (String(url) === '/api/admin/release-attestations') {
+                return jsonResponse(201, { id: 1, key: 'rpo-rto-decision' });
+            }
             if (String(url) === TENANT_EVIDENCE_ENDPOINT) {
                 return jsonResponse(200, evidenceEnvelope('passed'));
             }
             if (String(url) === BACKUP_EVIDENCE_ENDPOINT) {
                 return jsonResponse(200, backupEvidenceEnvelope('passed'));
+            }
+            // FF-63: kalan dört madde de artık gerçek bir uçtan okunur; kayıt
+            // yoksa 404 gelir ve satır dürüstçe "Unavailable" kalır.
+            if (String(url).includes('/security/evidence/')) {
+                return jsonResponse(404, { message: 'Not Found.' });
             }
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
@@ -144,17 +160,116 @@ describe('ReleaseReadinessPage — real tenant isolation evidence wiring (S1-WP0
         vi.unstubAllGlobals();
     });
 
-    it('fetches the exact workspace-scoped tenant isolation and backup-restore evidence endpoints exactly once each for a real workspaceId prop', async () => {
+    it('fetches every one of the six evidence endpoints exactly once for a real workspaceId prop', async () => {
         const { ReadinessChecklist } = await importReadinessChecklistModule();
 
         render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(6));
         const calledUrls = fetchSpy.mock.calls.map((call) => String(call[0])).sort();
-        expect(calledUrls).toEqual([BACKUP_EVIDENCE_ENDPOINT, TENANT_EVIDENCE_ENDPOINT].sort());
+        expect(calledUrls).toEqual(
+            [
+                BACKUP_EVIDENCE_ENDPOINT,
+                TENANT_EVIDENCE_ENDPOINT,
+                `/api/workspaces/${WORKSPACE_ID}/security/evidence/host-capability`,
+                `/api/workspaces/${WORKSPACE_ID}/security/evidence/attestations/qr-physical-scan`,
+                `/api/workspaces/${WORKSPACE_ID}/security/evidence/attestations/rpo-rto-decision`,
+                `/api/workspaces/${WORKSPACE_ID}/security/evidence/attestations/owasp-asvs-audit`,
+            ].sort(),
+        );
     });
 
-    it('leaves the other four canonical readiness items honestly Unavailable while tenant isolation and backup-restore resolve', async () => {
+    it('renders a recorded attestation as "Attested", never as a machine "Passed"', async () => {
+        fetchSpy.mockImplementation(async (url: string) => {
+            if (String(url).endsWith('/attestations/qr-physical-scan')) {
+                return jsonResponse(200, {
+                    data: {
+                        id: 9,
+                        key: 'qr-physical-scan',
+                        kind: 'attestation',
+                        status: 'passed',
+                        summary: 'Basılı QR iPhone ile tarandı, menü açıldı.',
+                        reference: null,
+                        payload: { device: 'iPhone 15' },
+                        attested_by: 'İsmail',
+                        attested_at: '2026-09-04T10:00:00+03:00',
+                        integrity_sha256: 'e'.repeat(64),
+                    },
+                });
+            }
+            return jsonResponse(404, { message: 'Not Found.' });
+        });
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
+
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
+
+        expect(await screen.findByText('Attested — worked')).toBeInTheDocument();
+        expect(screen.getByText(/device: iPhone 15/)).toBeInTheDocument();
+        expect(screen.getByText(/Recorded by/)).toBeInTheDocument();
+        expect(
+            screen.getByText('This is a human attestation, not an automated check.'),
+        ).toBeInTheDocument();
+    });
+
+    it('offers a record form under an unavailable attestation and posts it as the signed-in superadmin', async () => {
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
+        document.cookie = 'XSRF-TOKEN=test-token';
+
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
+
+        const rpoInput = await screen.findByLabelText(/RPO/);
+        await userEvent.type(rpoInput, '24');
+        await userEvent.type(screen.getByLabelText(/RTO/), '4');
+        const summaries = screen.getAllByLabelText('What was done, in your own words');
+        // RPO/RTO satırı listede ikinci tanıklıktır (QR, RPO/RTO, ASVS).
+        await userEvent.type(summaries[1], 'Günlük yedek; 24 saat kayıp, 4 saat kesinti.');
+        await userEvent.click(screen.getAllByRole('button', { name: 'Record this' })[1]);
+
+        await waitFor(() => {
+            const post = fetchSpy.mock.calls.find(
+                (call) =>
+                    String(call[0]) === '/api/admin/release-attestations' &&
+                    (call[1] as RequestInit)?.method === 'POST',
+            );
+            expect(post).toBeTruthy();
+            const body = JSON.parse(String((post![1] as RequestInit).body));
+            expect(body.key).toBe('rpo-rto-decision');
+            expect(body.status).toBe('decided');
+            expect(body.payload).toEqual({ rpo_hours: '24', rto_hours: '4' });
+        });
+    });
+
+    it('shows the host degradation plan instead of painting a degraded host green', async () => {
+        fetchSpy.mockImplementation(async (url: string) => {
+            if (String(url).endsWith('/host-capability')) {
+                return jsonResponse(200, {
+                    data: {
+                        id: 3,
+                        key: 'host-capability',
+                        kind: 'automated',
+                        php_version: '8.4.1',
+                        capabilities: { imagick: false, gd: true },
+                        degradations: [
+                            'image-derivatives:gd — Imagick yok; görsel türevleri GD ile üretilir.',
+                        ],
+                        claim: 'Read-only capability probe of the host running this process.',
+                        ran_at: '2026-09-04T09:00:00+03:00',
+                    },
+                });
+            }
+            return jsonResponse(404, { message: 'Not Found.' });
+        });
+        const { ReadinessChecklist } = await importReadinessChecklistModule();
+
+        render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
+
+        expect(
+            await screen.findByText('Running with 1 planned degradation(s)'),
+        ).toBeInTheDocument();
+        expect(screen.getByText(/Imagick yok/)).toBeInTheDocument();
+    });
+
+    it('leaves the other four canonical readiness items honestly Unavailable when they have no record', async () => {
         const { ReadinessChecklist } = await importReadinessChecklistModule();
 
         render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
@@ -166,11 +281,13 @@ describe('ReleaseReadinessPage — real tenant isolation evidence wiring (S1-WP0
             expect(item).toBeInTheDocument();
         }
 
-        expect(within(checklist).getAllByText(/unavailable/i).length).toBeGreaterThanOrEqual(
-            OTHER_CANONICAL_ITEMS.length,
+        // Dört madde artık gerçek uçtan okunur; 404 gelince "Unavailable"
+        // olur — yükleme bitmeden sayılmaz.
+        await waitFor(() =>
+            expect(within(checklist).getAllByText(/unavailable/i).length).toBeGreaterThanOrEqual(
+                OTHER_CANONICAL_ITEMS.length,
+            ),
         );
-
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
     });
 
     it('renders the resolved tenant isolation and backup-restore statuses inside the checklist region once the fetches resolve', async () => {
@@ -202,7 +319,7 @@ describe('ReleaseReadinessPage — real tenant isolation evidence wiring (S1-WP0
 
         render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(6));
 
         const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
         expect(refreshButton).toBeInTheDocument();
@@ -215,19 +332,20 @@ describe('ReleaseReadinessPage — real tenant isolation evidence wiring (S1-WP0
 
         render(<ReadinessChecklist workspaceId={WORKSPACE_ID} />);
 
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(6));
 
         const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
         await user.click(refreshButton);
 
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(4));
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(12));
 
         const calledUrls = fetchSpy.mock.calls.map((call) => String(call[0]));
         expect(calledUrls.filter((url) => url === TENANT_EVIDENCE_ENDPOINT)).toHaveLength(2);
         expect(calledUrls.filter((url) => url === BACKUP_EVIDENCE_ENDPOINT)).toHaveLength(2);
-        expect(calledUrls).toHaveLength(4);
+        // Altı uç, her biri tam iki kez — başka hiçbir adres yok.
+        expect(calledUrls).toHaveLength(12);
         for (const url of calledUrls) {
-            expect([TENANT_EVIDENCE_ENDPOINT, BACKUP_EVIDENCE_ENDPOINT]).toContain(url);
+            expect(url).toMatch(new RegExp(`^/api/workspaces/${WORKSPACE_ID}/security/evidence/`));
         }
     });
 
@@ -310,22 +428,30 @@ describe('ReleaseReadinessPage — real tenant isolation evidence wiring (S1-WP0
 
         const checklist = screen.getByRole('region', { name: /release readiness/i });
 
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(6));
 
         for (const pattern of OTHER_CANONICAL_ITEMS) {
             expect(findCanonicalTitle(checklist, pattern)).toBeInTheDocument();
         }
+        await waitFor(() =>
+            expect(within(checklist).getAllByText(/unavailable/i).length).toBeGreaterThanOrEqual(
+                OTHER_CANONICAL_ITEMS.length,
+            ),
+        );
         const unavailableCountBefore = within(checklist).getAllByText(/unavailable/i).length;
-        expect(unavailableCountBefore).toBeGreaterThanOrEqual(OTHER_CANONICAL_ITEMS.length);
 
         const refreshButton = await screen.findByRole('button', { name: /refresh evidence/i });
         await user.click(refreshButton);
 
-        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(4));
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(12));
 
         for (const pattern of OTHER_CANONICAL_ITEMS) {
             expect(findCanonicalTitle(checklist, pattern)).toBeInTheDocument();
         }
-        expect(within(checklist).getAllByText(/unavailable/i).length).toBe(unavailableCountBefore);
+        await waitFor(() =>
+            expect(within(checklist).getAllByText(/unavailable/i).length).toBe(
+                unavailableCountBefore,
+            ),
+        );
     });
 });

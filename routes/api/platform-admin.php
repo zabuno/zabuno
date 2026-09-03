@@ -15,6 +15,7 @@ use App\Http\Controllers\PlatformAdmin\StoreManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\StoreManualPaymentController;
 use App\Http\Controllers\PlatformAdmin\StoreProviderConnectionController;
 use App\Http\Controllers\PlatformAdmin\StoreProviderCredentialController;
+use App\Http\Controllers\PlatformAdmin\StoreReleaseAttestationController;
 use App\Http\Controllers\PlatformAdmin\UpdateProviderConnectionController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         // Sağlayıcı kimlik-bilgisi kasası — `docs/94`. Yazma uçları
         // superadmin arkasında ve throttle'lı; yine de sır cevaba çıkmaz.
+        // İnsan tanıklığı kaydı (`docs/98` FF-63) — yalnız superadmin.
+        Route::post('/admin/release-attestations', StoreReleaseAttestationController::class)->middleware('throttle:20,1');
+
         Route::get('/admin/credentials', ListProviderCredentialsController::class);
         Route::put('/admin/credentials/{provider}', StoreProviderCredentialController::class)->middleware('throttle:20,1');
         Route::post('/admin/credentials/{provider}/disable', DisableProviderCredentialController::class)->middleware('throttle:20,1');

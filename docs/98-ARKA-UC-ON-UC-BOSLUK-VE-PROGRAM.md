@@ -83,13 +83,13 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 0/12 tamamlandı, 1/12 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 1/12 tamamlandı, 2/12 aktif.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
 | # | Paket | Kapsam | Kapı |
 | --- | --- | --- | --- |
-| 1 | **FF-63 Readiness kanıtı** | host-capability HTTP ucu + ekran; `release_evidence` genel kayıt tablosu (QR fiziksel tarama, RPO/RTO kararı, ASVS raporu) + `platform:evidence:record` komutu + ekran; sahibin gerçek taramasını kaydet | 6 maddenin 6'sı gerçek kayıttan okunur; kayıtsız madde dürüstçe "Unavailable" |
+| 1 ✅ | **FF-63 Readiness kanıtı** | host-capability HTTP ucu + ekran; `release_evidence` genel kayıt tablosu (QR fiziksel tarama, RPO/RTO kararı, ASVS raporu) + `platform:evidence:record` komutu + ekran; sahibin gerçek taramasını kaydet | 6 maddenin 6'sı gerçek kayıttan okunur; kayıtsız madde dürüstçe "Unavailable" |
 | 2 | **FF-64 Rota boşlukları** | menü-geneli stok, brand/logo ve QR destination doğrulaması; bilinçli-eski rotalar belgeli | Tur 1 listesi sıfır "doğrulanacak" |
 | 3 | **FF-65 Envanter tazeleme** | `docs/61` G4/G5, E9/E10, A2 güncellemesi; FF-49..62'nin izi | envanter gerçeği söylüyor |
 | 4 | **FF-66 Engineering kabuğu** | `/engineering/*` ayrı kabuk: readiness, güvenlik kanıtı, yedek tatbikatı, host-capability, AI denetim izi | `docs/69` madde 3 ✅ |
@@ -106,6 +106,27 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 `docs/49`'un kendi fazlamasıyla sonra; video sahibin kararıyla Faz 2'ye
 bağlı ama `tus` sunucusu kurulu değil — FF-68 `asset_kind=video`'yu tanır,
 transcoding kurmaz.
+
+### FF-63 teslim notu
+
+Altı madde de artık gerçek kayıttan okunuyor. Üçü makine kanıtı (komut
+koşturulur), üçü **insan tanıklığı** — ve ikisi ekranda farklı etiketlenir:
+"Attested" ile "Passed" aynı rozet değildir. Tanıklık kaydı `kim/ne zaman`
+taşır, düzeltilmez, yenisi eklenir; satır elle değiştirilirse uç 500 verir.
+
+**Sahibin fiziksel QR taraması** için kayıt artık 30 saniyelik iş: readiness
+sayfasında "Physical QR scan evidence" altındaki formu doldur (cihaz + bir
+cümle) → "Record this". Ya da sunucudan:
+`php artisan platform:evidence:attest qr-physical-scan --status=passed --summary="…" --payload=device=iPhone`.
+
+**RPO/RTO kararı (MASTER, geri döndürülebilir):** `docs/42`'deki günlük
+`db-backups` hacmiyle tutarlı olarak **RPO 24 saat, RTO 4 saat**. Aynı formdan
+ya da `--payload=rpo_hours=24 --payload=rto_hours=4` ile kaydedilir.
+Kayıt üretimde bir insan tarafından düşülür — bu belge onu düşmüş saymaz.
+
+**ASVS:** `security/OWASP-ASVS-BASELINE.md` bir öz-değerlendirmedir, üçüncü
+taraf denetim DEĞİLDİR; kayıt "recorded" durumuyla ve bu cümleyle yapılır,
+form yardım metni sertifika iddiasını açıkça yasaklar.
 
 ## 6. Esnetilen kurallar — açık kayıt
 
