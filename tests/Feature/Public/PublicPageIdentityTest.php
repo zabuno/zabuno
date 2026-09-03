@@ -99,4 +99,29 @@ final class PublicPageIdentityTest extends TestCase
             'PUBLIC-PAGE-SINGLE-H1-01: "Pricing" başlığı bir kez görünmeli.'
         );
     }
+
+    public function test_a_page_introduces_itself_after_its_title_not_before(): void
+    {
+        $html = $this->get('/pricing')->getContent();
+
+        /*
+            Giriş cümlesi BAŞLIĞIN ALTINDA durur.
+
+            Sayfa başlığı bölüme devredilince cümle yukarıda kalmıştı:
+            okuyucu neyin açıklamasını okuduğunu ancak sonraki satırda
+            öğreniyordu (`docs/91`).
+        */
+        // İddia GÖVDEYE bakar: aynı cümle `<head>` içindeki `meta`
+        // açıklamasında da geçiyor ve ham konum araması onu bulur.
+        preg_match('#<main\b.*?</main>#s', $html, $body);
+
+        self::assertNotEmpty($body, 'Sayfanın bir gövdesi olmalı.');
+
+        $heading = strpos($body[0], '<h1');
+        $lead = strpos($body[0], 'What a restaurant pays');
+
+        self::assertIsInt($heading);
+        self::assertIsInt($lead);
+        self::assertLessThan($lead, $heading, 'Başlık, açıklamasından önce gelmeli.');
+    }
 }
