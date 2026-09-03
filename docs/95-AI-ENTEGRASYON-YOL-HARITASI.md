@@ -349,3 +349,7 @@ kanoniktir — bu belge onları tekrar etmez, yalnız birine bağlar.
 `docs/96-AI-YETENEK-VE-AJAN-KAYDI.md`'de kanoniktir: hangi LLM, hangi hesap,
 hangi ekran, hangi port, hangi Skill/Agent. Bu belge fazı planlar, `docs/96`
 fazın içindeki her satırı somutlaştırır.
+
+**Faz 2'nin üç özelliğinin de artık frontend'i var (FF-51/52/53)** — kullanım
+senaryosu, kullanıcı yolculuğu ve gereksinim izlenebilirliği
+`docs/97-AI-ARAYUZ-KULLANIM-SENARYOLARI.md`'de kanoniktir.

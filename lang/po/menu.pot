@@ -180,6 +180,66 @@ msgstr ""
 msgid "menu.item.ai.description.uncertain"
 msgstr ""
 
+#: menu:menu.item.ai.import.apply
+msgid "menu.item.ai.import.apply"
+msgstr ""
+
+#: menu:menu.item.ai.import.applying
+msgid "menu.item.ai.import.applying"
+msgstr ""
+
+#: menu:menu.item.ai.import.cancel
+msgid "menu.item.ai.import.cancel"
+msgstr ""
+
+#: menu:menu.item.ai.import.disclose
+msgid "menu.item.ai.import.disclose"
+msgstr ""
+
+#: menu:menu.item.ai.import.error
+msgid "menu.item.ai.import.error"
+msgstr ""
+
+#: menu:menu.item.ai.import.fallback
+msgid "menu.item.ai.import.fallback"
+msgstr ""
+
+#: menu:menu.item.ai.import.media.empty
+msgid "menu.item.ai.import.media.empty"
+msgstr ""
+
+#: menu:menu.item.ai.import.media.label
+msgid "menu.item.ai.import.media.label"
+msgstr ""
+
+#: menu:menu.item.ai.import.preview.heading
+msgid "menu.item.ai.import.preview.heading"
+msgstr ""
+
+#: menu:menu.item.ai.import.read
+msgid "menu.item.ai.import.read"
+msgstr ""
+
+#: menu:menu.item.ai.import.reading
+msgid "menu.item.ai.import.reading"
+msgstr ""
+
+#: menu:menu.item.ai.import.rejected.row
+msgid "menu.item.ai.import.rejected.row"
+msgstr ""
+
+#: menu:menu.item.ai.import.row.price.missing
+msgid "menu.item.ai.import.row.price.missing"
+msgstr ""
+
+#: menu:menu.item.ai.import.row.uncertain
+msgid "menu.item.ai.import.row.uncertain"
+msgstr ""
+
+#: menu:menu.item.ai.import.unavailable
+msgid "menu.item.ai.import.unavailable"
+msgstr ""
+
 #: menu:menu.item.allergens.edit.button
 msgid "menu.item.allergens.edit.button"
 msgstr ""

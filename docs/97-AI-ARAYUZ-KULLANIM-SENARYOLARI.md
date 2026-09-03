@@ -1,11 +1,14 @@
 # 97 — AI arayüz boşluğu: kullanım senaryoları, kullanıcı yolculukları, gereksinim analizi
 
-**Bu belge bir GEREKSİNİM analizidir, uygulama değil.** Önceki turda bulunan
-dört boşluğun (üç AI özelliğinin frontend'i yok, çalışma-zamanı yedek zinciri
-yok, `ArtifactSchemaValidator` bağlı değil, çeviri OPT-04 bekliyor) ilk ikisini
-**inşa edilebilir** hâle getirir: her UNK satırını somut bir senaryoya, her
-senaryoyu bir kullanıcı yolculuğuna, her yolculuğu da bir gereksinime bağlar.
-Bir sonraki adım (frontend inşası) bu belgeye karşı yapılır.
+**Bu belge bir GEREKSİNİM analizi olarak başladı; şimdi kendi kanıtını da
+taşıyor.** Bulunan dört boşluğun (üç AI özelliğinin frontend'i yok,
+çalışma-zamanı yedek zinciri yok, `ArtifactSchemaValidator` bağlı değil,
+çeviri OPT-04 bekliyor) **tamamı kapandı** (FF-49…FF-53) — yalnız çeviri
+bilinçli ertelendi (OPT-04 hâlâ yok). R1-R19'un tamamı ya "teslim edildi"
+ya da gerekçeli bir owner-kararı bekliyor (§5). Uygulama sırasında iki
+kez, bu belgenin İLK yazımının gerçek backend'i yanlış tarif ettiği
+ortaya çıktı (R2/Yolculuk A.8, R7) — düzeltmeler yerinde işaretli, kayıp
+değil.
 
 ## 1. Kapsam
 
@@ -102,33 +105,47 @@ bu, §4'e ileriye dönük bir gereksinim olarak yazılır, bugünkü koda değil
 Format `docs/14` §9a'daki 17 adımlı akışla aynı disiplinde: numaralı adım,
 her adımda kim/ne/hangi kapı. Persona'lar `docs/02` §1.2'den — uydurma değil.
 
-### Yolculuk A — Menü fotoğrafını inceleyip onaylama (Faz 1, backend var, UI YOK)
+### Yolculuk A — Menü fotoğrafını okutup taslağa ekleme (teslim edildi — FF-53)
 
 **Persona:** Brand/Location Manager (ya da Account/Workspace Owner) —
 `Permission::MenuManage`.
 
-1. Kullanıcı Menü Kataloğu ekranında **"Fotoğraftan içe aktar"** eylemini
-   görür (bugün bu buton **yok**).
-2. Fotoğraf/PDF yükler — mevcut medya yükleme yolunu kullanır (CORE-13,
-   yeniden icat edilmez).
-3. "Oku" düğmesine basar → `POST .../ai-imports` (zaten var, FF-32-34).
-4. AI kapalıysa/bütçe yoksa 503 + sebep gösterilir, düğme kaybolmaz ama
-   devre dışı görünür ve neden yazar (`ai-no-credit-degradation`).
-5. Sağlayıcı hata verirse (502) — **bugün burada yedek yok** (§2 AI-01
-   senaryosu); yolculuk "tekrar dene" ile devam eder.
-6. Okuma bitince **inceleme ekranı** açılır: her satır kategori/ürün/fiyat/
-   güven ile listelenir.
-7. Fiyatı okunamayan satırlar (AI-15) görsel ayrışır, onay devre dışı.
-8. Kullanıcı satır satır **kabul/düzenle/reddet** yapar (`docs/06` §7 —
-   tek tık kabul, ama her satır ayrı; toplu onay yok, AI-13).
-9. "Taslağa uygula" → `POST .../ai-imports/{id}/apply` (zaten var).
-10. Sonuç: taslak güncellendi, **yayına dokunulmadı** — kullanıcı ayrıca
-    "Yayınla" demeli.
-11. Reddedilen satırlar (`rejectedRows`) ayrı bir listede kalır, kayıp
-    olmaz — kullanıcı elle tamamlayabilir.
+1. **Teslim edildi, kapsamı düzeltilerek.** Kullanıcı Menü Kataloğu
+   ekranında **"Import from a photo (AI)"** eylemini görür. Fotoğraf
+   yükleme burada **değil** — Media sayfasında (`menuImportSource` slotu,
+   FF-53'te eklendi); bu bölüm yalnız **hazır** bir görseli seçtirir
+   (mevcut "sunum düzenleyici" fotoğraf seçici ile aynı desen).
+2. Fotoğraf zaten yüklüdür (CORE-13 — yeniden icat edilmedi, gerçekten
+   kullanıldı).
+3. "Read this photo" düğmesine basar → `POST .../ai-imports` (FF-32-34).
+4. **Teslim edildi.** AI kapalıysa/bütçe yoksa 503 + kısa bir mesaj
+   gösterilir, ekran çökmez.
+5. **Teslim edildi (FF-49 sayesinde).** Sağlayıcı hata verirse artık canlı
+   yedek zinciri devreye girer (Gemini→OpenAI) — kullanıcı bunu görmez,
+   yalnız sonucu görür; yedekten geldiyse "Read by a backup provider."
+   notu çıkar.
+6. Okuma bitince **inceleme listesi** açılır: her satır kategori/ürün/fiyat
+   ile gösterilir.
+7. **Teslim edildi.** Fiyatı okunamayan satırlar (AI-15) görsel ayrışır
+   ("this row will be skipped").
+8. **Kapsam düzeltmesi — önemli.** İlk yazımdaki "kullanıcı satır satır
+   kabul/düzenle/reddet yapar" **gerçek backend'i yanlış tarif ediyordu.**
+   `ApplyMenuArtifact::readRows()` bir insan kararı almaz — veri
+   bütünlüğüne (kategori+ürün+geçerli fiyat+para birimi) göre **kendisi**
+   otomatik uygular ya da atlar. Ekran bunu olduğu gibi yansıtıyor: tek bir
+   **"Add these to the draft"** eylemi var, satır başına kontrol yok. Bu
+   hâlâ AI-13'ü karşılıyor (toplu/otomatik ONAY yok — çünkü zaten insan
+   onayı olan tek şey "ekle" kararının kendisi, satır seçimi değil).
+9. "Add these to the draft" → `POST .../ai-imports/{id}/apply`.
+10. **Teslim edildi.** Sonuç: taslak güncellendi, **yayına dokunulmadı**.
+11. **Teslim edildi.** Reddedilen satırlar (backend'in kendi otomatik
+    kararıyla) sebepleriyle listelenir ("Row 2: Fiyat okunamadı; bu satırı
+    elle ekleyin.") — kullanıcı elle tamamlayabilir.
 
-**Eksik adım (bugün yok):** 1, 6-8, 11'in ekranı. 3, 4, 5, 9, 10 backend'de
-var.
+**Kapı:** `MenuCatalogWorkspace.aiImport.test.tsx` (6): boş medya mesajı,
+satır önizleme + fiyat-eksik uyarısı, AI kapalı zarafeti, yedek etiketi,
+uygula+reddedilen-satır listesi, toplu/otomatik onay kontrolü olmadığının
+doğrulanması.
 
 ### Yolculuk B — Ürün açıklaması taslağı isteme ve onaylama (teslim edildi — FF-51)
 
@@ -219,13 +236,13 @@ gereksinim yok.
 
 | # | Gereksinim | Kaynak |
 | --- | --- | --- |
-| R1 | Menü Kataloğu'nda "Fotoğraftan içe aktar" eylemi ve yükleme akışı | Yolculuk A.1-2 |
-| R2 | Fotoğraf inceleme ekranı: satır listesi, güven göstergesi, satır-bazlı kabul/düzenle/reddet | Yolculuk A.6-8, AI-13 |
-| R3 | Fiyatı/gerekli alanı okunamayan satır görsel ayrışması + onay kilidi | AI-15 |
+| R1 | **Teslim edildi (FF-53).** Menü Kataloğu'nda "Import from a photo (AI)" eylemi. **Kapsam düzeltmesi:** yükleme akışı yeniden icat edilmedi — bu bölüm yalnız `menuImportSource` slotuna (FF-53'te eklendi) zaten yüklenmiş, hazır bir fotoğrafı seçtirir; yükleme Media sayfasında olur | Yolculuk A.1-2 |
+| R2 | **Teslim edildi (FF-53), kapsamı düzeltilerek.** Fotoğraf inceleme ekranı: satır listesi + güven/belirsizlik göstergesi var. **"Satır-bazlı kabul/düzenle/reddet" YANLIŞ bir vaatti** — gerçek backend (`ApplyMenuArtifact::readRows`) satır düzeyinde bir insan kararı almaz; veri bütünlüğüne (kategori+ürün+geçerli fiyat+para birimi) göre kendisi otomatik uygular ya da atlar. Ekran bunu OLDUĞU gibi yansıtır: tek "Add these to the draft" eylemi, satır başına onay/düzenle kontrolü yok | Yolculuk A.6-8, AI-13 |
+| R3 | **Teslim edildi (FF-53).** Fiyatı okunamayan satır görsel ayrışması (`text-fg-warning` + "will be skipped" metni) — kilit ayrıca gerekmiyor, zaten backend o satırı otomatik atlıyor | AI-15 |
 | R4 | **Teslim edildi (FF-51).** Ürün formunda "AI ile öner" (açıklama) — düzenlenebilir öneri kutusu. Sunum düzenleyicideki mevcut `Textarea` yeniden kullanıldı, ikinci bir kutu icat edilmedi; öneri geldiğinde aynı alanı doldurur, kullanıcı serbestçe düzenler. Apply uç noktası **düzenlenmiş metni** kabul edecek şekilde genişletildi (önceden yalnız taslağın kendi metnini uyguluyordu — düzenleme sessizce atılırdı) | Yolculuk B.1, 4 |
 | R5 | **Teslim edildi (FF-51).** Düşük güvenli öneri için görünür uyarı metni (`uncertainFieldCount > 0`); ayrıca yedek sağlayıcıdan gelen öneri ayrı etiketlenir (R12'nin UI karşılığı, ilk kullanım yeri) | Yolculuk B.5 |
 | R6 | **Teslim edildi (FF-52).** Menü Kataloğu'nda "Olası tekrarlar" — yalnız aday varsa görünen, salt-okunur liste | Yolculuk C.1-3 |
-| R7 | **Karşılandı (R1/R6 kapsamında).** Üç ekrandan ikisi (B, C) teslim edildi ve hiçbiri toplu/otomatik onay sunmuyor; C zaten hiçbir eylem sunmuyor (salt-okunur), B satır satır tek onaydır. A (fotoğraf inceleme, çok-satırlı) henüz yok — bu madde A yazılınca tam kapanır | AI-13 |
+| R7 | **Tam kapandı (FF-51/52/53).** Üç ekranın üçü de teslim edildi, hiçbiri toplu/otomatik onay sunmuyor: C salt-okunur (eylem yok), B satır-tek onay, A tek "Add these to the draft" — çok-satırlı olsa da satır-bazlı bir onay/seçim yok, tümü ya da hiçbiri değil, veri-bütünlüğü otomatiği (R2'nin düzeltmesiyle tutarlı) | AI-13 |
 | R8 | Alerjen alanı hiçbir ekranda onay kontrolü olarak render edilmez | AI-14 |
 | R9 | AI kapalı/bütçe yokken ilgili eylem görünmez ve **neden** kısa metinle belirtilir | AIV-07 (kısmi — §5'e bkz.) |
 

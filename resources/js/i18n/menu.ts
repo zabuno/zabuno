@@ -98,6 +98,25 @@ const en = {
     'menu.duplicates.help':
         'These product names look alike. Nothing is merged automatically — rename or remove one yourself if they really are the same.',
     'menu.duplicates.pair': '“{a}” and “{b}”',
+    // FOTOĞRAFTAN İÇE AKTARMA (AI) — `docs/92`/`docs/97` Yolculuk A. Yükleme
+    // Media sayfasında olur (`menuImportSource` slotu, yeniden icat
+    // edilmez); burası yalnız OKUR ve İNCELETİR.
+    'menu.item.ai.import.disclose': 'Import from a photo (AI)',
+    'menu.item.ai.import.cancel': 'Cancel',
+    'menu.item.ai.import.media.label': 'Choose a photo',
+    'menu.item.ai.import.media.empty':
+        'No processed photo is available yet. Upload one on the Media page (slot: Import source) first.',
+    'menu.item.ai.import.read': 'Read this photo',
+    'menu.item.ai.import.reading': 'Reading…',
+    'menu.item.ai.import.unavailable': 'Reading menu photos is not available right now.',
+    'menu.item.ai.import.error': 'The photo could not be read. You can still add items by hand.',
+    'menu.item.ai.import.fallback': 'Read by a backup provider.',
+    'menu.item.ai.import.preview.heading': 'What the AI read — review before adding',
+    'menu.item.ai.import.row.price.missing': 'Price could not be read — this row will be skipped',
+    'menu.item.ai.import.row.uncertain': 'Not confident about this one',
+    'menu.item.ai.import.apply': 'Add these to the draft',
+    'menu.item.ai.import.applying': 'Adding…',
+    'menu.item.ai.import.rejected.row': 'Row {row}: {reason}',
     'menu.item.image.label': 'Photo',
     'menu.item.image.none': 'No photo',
     'menu.item.image.empty':

@@ -68,6 +68,28 @@ type DuplicateCandidate = {
     similarity: number;
 };
 
+/** AI'nın fotoğraftan okuduğu TEK satır — inceleme ekranının ham verisi. */
+type AiImportRow = {
+    name: string;
+    category: string;
+    product: string;
+    priceMinorAmount: number | null;
+    currencyCode: string;
+    confidence: number;
+    uncertain: boolean;
+};
+
+/**
+ * `ApplyMenuArtifact`'in cevabı — `rejectedRows[].row` bir SATIR NUMARASI
+ * DEĞİL, alan adıdır ("row.3"); CSV içe aktarmanın `{line, reason}`
+ * şeklinden farklı, bu yüzden `importReport` yeniden kullanılmaz.
+ */
+type AiImportApplyReport = {
+    importedItems: number;
+    importedCategories: number;
+    rejectedRows: { row: string; reason: string }[];
+};
+
 type CategoryRow = {
     id: number;
     menuId: number;
@@ -162,6 +184,21 @@ function applyDescriptionDraftUrl(workspaceId: number, artifactId: number): stri
 /** Yinelenen ürün adayları — salt okunur öneri (`docs/96` Faz 2). */
 function duplicateCandidatesUrl(workspaceId: number): string {
     return `/api/workspaces/${workspaceId}/menu/duplicate-candidates`;
+}
+
+/** Fotoğraf/PDF'ten menü taslağı okur — `docs/92` (P0-05). */
+function aiImportsUrl(workspaceId: number, menuId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/${menuId}/ai-imports`;
+}
+
+/** Okunan taslağın alanları — capability-agnostic, generic. */
+function showAiImportUrl(workspaceId: number, artifactId: number): string {
+    return `/api/workspaces/${workspaceId}/ai-imports/${artifactId}`;
+}
+
+/** İnsan onayı — taslağa yazar, yayına dokunmaz. */
+function applyAiImportUrl(workspaceId: number, artifactId: number): string {
+    return `/api/workspaces/${workspaceId}/ai-imports/${artifactId}/apply`;
 }
 
 function itemOrderUrl(workspaceId: number, categoryId: number): string {
@@ -368,6 +405,26 @@ export function MenuCatalogWorkspace({
         (birincil "AI ile öner" eylemi gibi ayrı hata mesajı gerektirmez).
     */
     const [duplicateCandidates, setDuplicateCandidates] = useState<DuplicateCandidate[]>([]);
+    /*
+        FOTOĞRAFTAN İÇE AKTARMA (AI) — `docs/97` Yolculuk A. Yükleme Media
+        sayfasında olur; burası yalnız HAZIR bir görseli seçip okutur ve
+        sonucu incelettirir. `ApplyMenuArtifact` toplu/otomatik uygular —
+        okunamayan satır ATLANIR, kullanıcı tek tek düzenlemez (bu, satır
+        satır düzenleme öngören ilk taslaktan bilinçli bir sapmadır: geri
+        döndürülebilir bir teknik/kapsam kararı, `docs/97`'de not edildi).
+    */
+    const [aiImportOpen, setAiImportOpen] = useState(false);
+    const [importSourceMedia, setImportSourceMedia] = useState<ReadyMediaRow[]>([]);
+    const [importMediaChoice, setImportMediaChoice] = useState('');
+    const [aiImportArtifactId, setAiImportArtifactId] = useState<number | null>(null);
+    const [aiImportRows, setAiImportRows] = useState<AiImportRow[]>([]);
+    const [aiImportUsedFallback, setAiImportUsedFallback] = useState(false);
+    const [aiImportReviewLoading, setAiImportReviewLoading] = useState(false);
+    const [aiImportReviewError, setAiImportReviewError] = useState<string | null>(null);
+    const [aiImportApplying, setAiImportApplying] = useState(false);
+    const [aiImportApplyReport, setAiImportApplyReport] = useState<AiImportApplyReport | null>(
+        null,
+    );
 
     /* Menüyü almak ve geri koymak (`docs/80`). */
     const [importing, setImporting] = useState(false);
@@ -439,6 +496,17 @@ export function MenuCatalogWorkspace({
         setVisibilityErrors({});
 
         setDuplicateCandidates([]);
+
+        setAiImportOpen(false);
+        setImportSourceMedia([]);
+        setImportMediaChoice('');
+        setAiImportArtifactId(null);
+        setAiImportRows([]);
+        setAiImportUsedFallback(false);
+        setAiImportReviewLoading(false);
+        setAiImportReviewError(null);
+        setAiImportApplying(false);
+        setAiImportApplyReport(null);
     }
 
     useEffect(() => {
@@ -731,6 +799,168 @@ export function MenuCatalogWorkspace({
             setPresentationError(t('menu.ops.error'));
         } finally {
             setSavingPresentation(false);
+        }
+    }
+
+    /**
+     * Fotoğraftan içe aktarma bölümünü açar/kapatır — `docs/97` Yolculuk A.1.
+     *
+     * Açılınca HAZIR olan `menuImportSource` görsellerini çeker; sunum
+     * düzenleyicideki `handleEditPresentation`'la aynı gecikmeli-yükleme
+     * disiplini (form kapalıyken kimsenin listeyi indirmesine sebep yok).
+     */
+    async function handleToggleAiImport() {
+        if (aiImportOpen) {
+            setAiImportOpen(false);
+
+            return;
+        }
+
+        setAiImportOpen(true);
+        setAiImportReviewError(null);
+
+        try {
+            const response = await fetch(mediaUrl(workspaceId), buildAuthRequestInit());
+
+            if (!response.ok) return;
+
+            const body = (await response.json()) as { data?: ReadyMediaRow[] };
+
+            setImportSourceMedia(
+                (body.data ?? []).filter(
+                    (row) => row.status === 'ready' && row.slot === 'menuImportSource',
+                ),
+            );
+        } catch {
+            setImportSourceMedia([]);
+        }
+    }
+
+    /**
+     * Seçilen fotoğrafı okur ve taslağı İNCELEMEYE açar — `docs/97`
+     * Yolculuk A.3-6. Ham `fields`'i inceleme satırına çevirir; fiyatı
+     * okunamayan/eksik satır da GÖSTERİLİR (AI-15) — kullanıcı "Ekle"ye
+     * basmadan önce ne atlanacağını görür.
+     */
+    async function handleReadAiImport() {
+        // Form henüz ekranda değilse söylenecek bir şey yok (`docs/47`
+        // Kural 5 kapsamı dışı). Seçim boşluğu ayrıca sınanmaz: "Oku"
+        // düğmesi zaten `importMediaChoice === ''` iken devre dışıdır —
+        // aynı kontrolü burada sessizce tekrarlamak, kapının aradığı
+        // desenin ta kendisi olurdu.
+        if (tree === null) return;
+
+        setAiImportReviewLoading(true);
+        setAiImportReviewError(null);
+        setAiImportRows([]);
+        setAiImportArtifactId(null);
+        setAiImportApplyReport(null);
+
+        try {
+            const storeResponse = await postJson(aiImportsUrl(workspaceId, tree.id), {
+                mediaAssetId: Number(importMediaChoice),
+            });
+
+            if (storeResponse.status === 503) {
+                setAiImportReviewError(t('menu.item.ai.import.unavailable'));
+
+                return;
+            }
+
+            if (!storeResponse.ok) {
+                setAiImportReviewError(
+                    await parseErrorMessage(storeResponse, t('menu.item.ai.import.error')),
+                );
+
+                return;
+            }
+
+            const stored = (await storeResponse.json()) as { id: number; usedFallback: boolean };
+
+            const showResponse = await fetch(
+                showAiImportUrl(workspaceId, stored.id),
+                buildAuthRequestInit(),
+            );
+
+            if (!showResponse.ok) {
+                setAiImportReviewError(t('menu.item.ai.import.error'));
+
+                return;
+            }
+
+            const artifact = (await showResponse.json()) as {
+                fields: {
+                    name: string;
+                    value: {
+                        category?: string;
+                        product?: string;
+                        priceMinorAmount?: number | null;
+                        currencyCode?: string;
+                    };
+                    confidence: number;
+                    uncertain: boolean;
+                }[];
+            };
+
+            setAiImportArtifactId(stored.id);
+            setAiImportUsedFallback(stored.usedFallback);
+            setAiImportRows(
+                artifact.fields.map((field) => ({
+                    name: field.name,
+                    category: field.value.category ?? '',
+                    product: field.value.product ?? '',
+                    priceMinorAmount: field.value.priceMinorAmount ?? null,
+                    currencyCode: field.value.currencyCode ?? '',
+                    confidence: field.confidence,
+                    uncertain: field.uncertain,
+                })),
+            );
+        } catch {
+            setAiImportReviewError(t('menu.item.ai.import.error'));
+        } finally {
+            setAiImportReviewLoading(false);
+        }
+    }
+
+    /**
+     * İnsan onayı — TASLAĞA yazar, yayına dokunmaz (`docs/97` Yolculuk
+     * A.9-11). `ApplyMenuArtifact` fiyatı/kategori-ürün adı okunamayan
+     * satırı otomatik atlar ve sebebini döner; burada tek yapılan bu
+     * sonucu göstermek.
+     */
+    async function handleApplyAiImport() {
+        if (aiImportArtifactId === null) return;
+
+        setAiImportApplying(true);
+        setAiImportReviewError(null);
+
+        try {
+            const response = await postJson(applyAiImportUrl(workspaceId, aiImportArtifactId), {});
+
+            if (!response.ok) {
+                setAiImportReviewError(
+                    await parseErrorMessage(response, t('menu.item.ai.import.error')),
+                );
+
+                return;
+            }
+
+            const result = (await response.json()) as AiImportApplyReport;
+            setAiImportApplyReport(result);
+            // Uygulandı — taslak artık geçmiş; satırlar tekrar
+            // uygulanabilir görünmemeli.
+            setAiImportRows([]);
+            setAiImportArtifactId(null);
+
+            const refreshed = await fetch(menuUrl(workspaceId, locationId));
+
+            if (refreshed.ok) {
+                setTree((await refreshed.json()) as MenuTree);
+            }
+        } catch {
+            setAiImportReviewError(t('menu.item.ai.import.error'));
+        } finally {
+            setAiImportApplying(false);
         }
     }
 
@@ -1472,6 +1702,159 @@ export function MenuCatalogWorkspace({
                             </ul>
                         </section>
                     ) : null}
+
+                    {/*
+                        FOTOĞRAFTAN İÇE AKTARMA (AI) — `docs/92`/`docs/97`
+                        Yolculuk A. Yükleme Media sayfasında olur; burası
+                        yalnız hazır bir görseli okutur ve inceletir.
+                    */}
+                    <div className={sectionClass}>
+                        <button
+                            type="button"
+                            className={inlineActionClass}
+                            onClick={() => void handleToggleAiImport()}
+                        >
+                            {aiImportOpen
+                                ? t('menu.item.ai.import.cancel')
+                                : t('menu.item.ai.import.disclose')}
+                        </button>
+
+                        {aiImportOpen ? (
+                            <>
+                                <label className={labelClass} htmlFor="ai-import-media">
+                                    {t('menu.item.ai.import.media.label')}
+                                </label>
+                                {importSourceMedia.length === 0 ? (
+                                    <p className="text-caption text-fg-secondary">
+                                        {t('menu.item.ai.import.media.empty')}
+                                    </p>
+                                ) : (
+                                    <Select
+                                        id="ai-import-media"
+                                        name="ai-import-media"
+                                        value={importMediaChoice}
+                                        onChange={(event) =>
+                                            setImportMediaChoice(event.target.value)
+                                        }
+                                    >
+                                        <option value="" />
+                                        {importSourceMedia.map((media) => (
+                                            <option key={media.id} value={String(media.id)}>
+                                                {media.altText || `#${media.id}`}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                )}
+
+                                <button
+                                    type="button"
+                                    className={buttonClass}
+                                    disabled={
+                                        importMediaChoice === '' ||
+                                        aiImportReviewLoading ||
+                                        aiImportApplying
+                                    }
+                                    onClick={() => void handleReadAiImport()}
+                                >
+                                    {aiImportReviewLoading
+                                        ? t('menu.item.ai.import.reading')
+                                        : t('menu.item.ai.import.read')}
+                                </button>
+
+                                {aiImportReviewError ? (
+                                    <FieldError message={aiImportReviewError} />
+                                ) : null}
+
+                                {aiImportRows.length > 0 ? (
+                                    <div className="flex flex-col gap-2">
+                                        <h3 className="text-body font-semibold">
+                                            {t('menu.item.ai.import.preview.heading')}
+                                        </h3>
+                                        {aiImportUsedFallback ? (
+                                            <p className="text-caption text-fg-secondary">
+                                                {t('menu.item.ai.import.fallback')}
+                                            </p>
+                                        ) : null}
+                                        <ul className="flex flex-col gap-1">
+                                            {aiImportRows.map((row) => (
+                                                <li key={row.name} className="text-body">
+                                                    {row.category} — {row.product}
+                                                    {row.priceMinorAmount === null ? (
+                                                        <span className="ms-2 text-fg-warning">
+                                                            {t(
+                                                                'menu.item.ai.import.row.price.missing',
+                                                            )}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="ms-2 text-fg-secondary">
+                                                            {minorAmountToDecimalString(
+                                                                row.priceMinorAmount,
+                                                                row.currencyCode || 'TRY',
+                                                            )}{' '}
+                                                            {row.currencyCode}
+                                                        </span>
+                                                    )}
+                                                    {row.uncertain &&
+                                                    row.priceMinorAmount !== null ? (
+                                                        <span className="ms-2 text-fg-warning">
+                                                            {t('menu.item.ai.import.row.uncertain')}
+                                                        </span>
+                                                    ) : null}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <button
+                                            type="button"
+                                            className={buttonClass}
+                                            disabled={aiImportApplying}
+                                            onClick={() => void handleApplyAiImport()}
+                                        >
+                                            {aiImportApplying
+                                                ? t('menu.item.ai.import.applying')
+                                                : t('menu.item.ai.import.apply')}
+                                        </button>
+                                    </div>
+                                ) : null}
+
+                                {aiImportApplyReport ? (
+                                    <div role="status" className="flex flex-col gap-1">
+                                        <p className="text-body">
+                                            {t('menu.import.done', {
+                                                items: String(aiImportApplyReport.importedItems),
+                                                categories: String(
+                                                    aiImportApplyReport.importedCategories,
+                                                ),
+                                            })}
+                                        </p>
+                                        {aiImportApplyReport.rejectedRows.length > 0 ? (
+                                            <>
+                                                <p className="text-body">
+                                                    {t('menu.import.rejected', {
+                                                        count: String(
+                                                            aiImportApplyReport.rejectedRows.length,
+                                                        ),
+                                                    })}
+                                                </p>
+                                                <ul className="flex flex-col gap-0.5">
+                                                    {aiImportApplyReport.rejectedRows.map((row) => (
+                                                        <li
+                                                            key={row.row}
+                                                            className="text-caption text-fg-secondary"
+                                                        >
+                                                            {t('menu.item.ai.import.rejected.row', {
+                                                                row: row.row.replace('row.', ''),
+                                                                reason: row.reason,
+                                                            })}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </>
+                                        ) : null}
+                                    </div>
+                                ) : null}
+                            </>
+                        ) : null}
+                    </div>
 
                     {/*
                         Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
