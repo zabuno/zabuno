@@ -9,6 +9,7 @@ use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\Media\ServeRenditionController;
 use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
+use App\Http\Controllers\PublicSite\ShowHelpController;
 use App\Http\Controllers\PublicSite\StoreContactMessageController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
@@ -43,6 +44,10 @@ Route::get('/pricing', [FoundationStatusController::class, '__invoke'])->name('p
     Gönderim HIZ SINIRLI: form herkese açık ve oturum istemiyor, dolayısıyla
     sınırsız gönderim bir tabloyu doldurmanın en ucuz yolu olurdu.
 */
+// "İlk 15 dakika" — menüyü aktarmak, karekod basmak, fiyat değiştirmek.
+// Oturum İSTEMEZ: tıkanan biri oturum açamıyor olabilir (`docs/89`).
+Route::get('/help', ShowHelpController::class)->name('public.help');
+
 Route::get('/contact', ShowContactFormController::class)->name('public.contact');
 Route::post('/contact', StoreContactMessageController::class)
     ->middleware('throttle:5,1')
