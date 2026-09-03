@@ -318,3 +318,8 @@ detayını taşır. AI mimarisi `modules/ai-platform.md` ve `docs/14`'te, hesap/
 bağlantı spesifikasyonu `modules/ai-provider-account-vault.md`'de, 61
 modülün AI duruşu `docs/32`'de, port matrisi ve unknown-unknowns `docs/51`'de
 kanoniktir — bu belge onları tekrar etmez, yalnız birine bağlar.
+
+**Her satırın tam model/hesap/mekanizma detayı** —
+`docs/96-AI-YETENEK-VE-AJAN-KAYDI.md`'de kanoniktir: hangi LLM, hangi hesap,
+hangi ekran, hangi port, hangi Skill/Agent. Bu belge fazı planlar, `docs/96`
+fazın içindeki her satırı somutlaştırır.
