@@ -145,6 +145,15 @@ Bu satır tüm CORE bağlamlarının MVP'de özellik-tam olduğunu **iddia etmez
 kesin kapsam `docs/26` §1 modül×stage matrisinde kanoniktir, burada yalnız
 özetlenir.
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 1)
+
+Bu stage'e eşlenen AI maddeleri `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: sekiz yetenek portu, sağlayıcısız (`FakeProvider`) uçtan uca CI
+akışı ve ilk dikey — fotoğraf/PDF'ten menü taslağı, insan onaylı.
+
+**Teslim edildi** (FF-32…FF-34); `docs/26` §1'deki "AI Platform: çekirdek +
+tek dikey" satırının karşılığıdır.
+
 ## Dependency / critical path
 
 ```

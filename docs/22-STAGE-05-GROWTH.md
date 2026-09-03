@@ -38,6 +38,15 @@ OPT-27 Marketplace (erken aşama), OPT-28 Metabase Embed, Analytics/Consent/
 Tagging (GA4/Yandex Metrica inbound reporting adaptörü, salt-okunur,
 tenant-authorized — `docs/12` §5a, `docs/16` ANL-03).
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 5)
+
+Bu stage'e eşlenen AI maddeleri `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: ölçekte weighted/cost/latency routing politikası, trend/anomali
+içgörü anlatımı (`opt-06-advanced-analytics`) ve görsel gömme.
+
+Tetikleyici: ölçülen aylık AI çağrı hacminin tek-bağlantı-yeterli eşiğini
+aşması.
+
 ## Dependency / critical path
 PMF analytics altyapısı → capacity planlaması → multi-branch veri modeli
 genişlemesi (zaten `docs/05`'te 1:N olarak hazırlanmıştı).

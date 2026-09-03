@@ -45,6 +45,15 @@ Growth Exit Gate GO.
 CORE-03 Authorization'a SSO/SCIM adaptörleri, Integration Hub genişlemesi,
 Audit/Event Outbox'a enterprise export formatı.
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 6)
+
+Bu stage'e eşlenen AI maddeleri `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: kurumsal tenant için ayrılmış (dedicated) bağlantı havuzu, veri
+ikametgâhı/sözleşme taahhüdü yapışkanlığı ve `private-gpu` dağıtım profili.
+
+Tetikleyici: ilk enterprise sözleşme, veri ikametgâhı ya da özel SLA şartı
+taşıyor olmalı.
+
 ## Dependency / critical path
 Growth'taki CORE-03/CORE-07 → SSO/SCIM adaptör katmanı (mevcut RBAC+ABAC+ReBAC
 PDP'nin üzerine eklenir, yeniden yazılmaz).

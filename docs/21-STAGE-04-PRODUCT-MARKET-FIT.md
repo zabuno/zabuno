@@ -40,6 +40,16 @@ Analytics/Consent/Tagging (cohort/retention görünümleri, first-party ledger
 **değil**, Growth Stage'de eklenir, `docs/12` §5a, `docs/22`), Feedback/NPS
 (OPT-25).
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 4)
+
+Bu stage'e eşlenen AI maddeleri `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: hesap bazlı maliyet/gecikme panosu (Faz 3'ün routing
+kararlarını görünür kılar) ve ilk `advisory` kullanım örneği — geri bildirim
+duygu/tema özeti (`opt-25-feedback-nps`).
+
+Tetikleyici: Faz 3'ün çok-hesap yapısı en az bir tam ay gerçek trafik görmüş
+olmalı.
+
 ## Dependency / critical path
 GTM'deki first-party event ledger → cohort/retention hesaplama job'ları.
 

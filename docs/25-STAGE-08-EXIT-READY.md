@@ -41,6 +41,14 @@ Yok — bu stage mevcut tüm modüllerin **belge/kanıt envanterini** derler
 (`docs/28-SOURCE-REGISTER.md` ve `docs/29-TRACEABILITY-MATRIX.md` bu envanterin
 teknik omurgasıdır).
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 8)
+
+Bu stage'e eşlenen AI maddesi `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: yeni özellik yok — mevcut AI kararlarının (model, hesap,
+maliyet, denetim izi) belge/kanıt envanteri derlenir.
+
+`docs/25`'in kendi "yeni modül yok, envanter derlenir" deseniyle aynı.
+
 ## Dependency / critical path
 Tüm önceki stage'lerin audit/observability/finansal kayıtları → data room
 derlemesi.

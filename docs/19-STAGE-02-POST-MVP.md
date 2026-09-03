@@ -82,6 +82,16 @@ aynı token zincirine alınması ve 2030 görev-uyarlamalı arayüz ufku.
 Faz 1–2 (token kökü ve ekranda görünen kusurlar) Stage 1 kalanına eşlenir;
 owner paneli bugün kullanıyor ve o iki faz bugünkü ekranı düzeltir.
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 2)
+
+Bu stage'e eşlenen AI maddeleri `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: şifreli sağlayıcı kasası, superadmin write-only API,
+`/platform/credentials` paneli, Mailgun ve OpenAI'ın kasadan tüketimi.
+
+**Kasa çekirdeği teslim edildi** (FF-37…FF-41, `docs/94`). Genişleyen
+yetenekler — çeviri taslağı, ürün açıklaması taslağı, taksonomi yinelenen-
+terim tespiti — planlı, tetikleyici koşullu değil.
+
 ## Dependency / critical path
 MVP CORE modülleri → ECA engine → CRM/Helpdesk (ECA'ya event register eder).
 
