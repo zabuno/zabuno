@@ -15,9 +15,18 @@
        (`docs/89`). */
     $pricingHeadingTag = $pricingHeadingTag ?? 'h2';
     $pricingHeadingClass = $pricingHeadingTag === 'h1' ? 'text-3xl font-bold' : 'text-2xl font-bold';
+
+    /* Giriş cümlesi BAŞLIĞIN ALTINDA durur. Sayfa başlığı parçaya
+       devredilince cümle yukarıda kalmıştı: okuyucu neyin açıklamasını
+       okuduğunu, ancak sonraki satırda öğreniyordu. */
+    $pricingLead = $pricingLead ?? null;
 @endphp
 <section id="pricing" aria-labelledby="pricing-heading" class="flex flex-col gap-4">
     <{{ $pricingHeadingTag }} id="pricing-heading" class="{{ $pricingHeadingClass }}">{{ $st['pricingHeading'] }}</{{ $pricingHeadingTag }}>
+
+    @if ($pricingLead)
+        <p class="text-fg-secondary">{{ $pricingLead }}</p>
+    @endif
 
     @if (empty($plans))
         {{--
