@@ -76,15 +76,25 @@ küçük iş, Faz 3'ü beklemez.
 
 | Sorulan | Doktrindeki karşılığı | Faz |
 | --- | --- | --- |
-| Claude / Anthropic | Yeni `CredentialProvider::Anthropic` — doktrinde zaten adı geçiyor (`docs/51` §3.2 `Provider: anthropic \| google \| openai \| local`) | Faz 3 |
-| Kimi (K3 dahil) | Yeni `CredentialProvider::Kimi` — doktrin bunu adıyla zaten aday gösteriyor (`docs/14` §2: "OpenAI, Claude, Gemini, Kimi, private/self-host…") | Faz 3 |
+| Claude / Anthropic | **Teslim edildi (FF-55)** — `CredentialProvider::Anthropic`; alanları `api_key` (zorunlu) + `base_url` (varsayılanlı) | Faz 3 |
+| Kimi (K3 dahil) | **Teslim edildi (FF-55)** — `CredentialProvider::Kimi`, aynı alan şeması | Faz 3 |
 | **Qwen** | **Kendi başına bir sağlayıcı DEĞİL.** Doktrin onu `local`/self-host/OpenAI-uyumlu-uç-nokta sınıfına koyuyor (`docs/51` §3.2, §4.5 `vps-ai`/`private-gpu` profilleri). Dropdown'da "Qwen" değil, **"Özel uç nokta (OpenAI-uyumlu)"** seçeneği olur; superadmin o seçeneğin `base_url` alanına Qwen'in kendi uç noktasını (kendi barındırdığı ya da bir bulut sağlayıcıdan aldığı) yazar. | Faz 3 |
 
 Bu ayrım kozmetik değil: Qwen'i "Gemini gibi" bir sağlayıcı olarak modellemek,
 o hesabın sağlık kontrolü/kota davranışının OpenAI-uyumlu olduğunu **varsayar**
 — ama uyumluluk garanti değildir (`docs/51` §4.5 "tam uyumluluk varsayılmaz").
 Doğru model, onu genel "özel uç nokta" sınıfına koyup bir **uyumluluk katmanı**
-ile sınamaktır.
+ile sınamaktır. **Teslim edildi (FF-55):** kasada `CredentialProvider::CustomEndpoint`
+var ve şemasında **zorunlu olan `base_url`, anahtar OPSİYONEL** — kendi
+barındırılan bir sunucu (Qwen/vLLM/Ollama) çoğu kurulumda anahtarsız çalışır,
+ağ sınırında korunur; anahtarı zorunlu kılmak o kurulumu kasaya hiç giremez
+hâle getirirdi. `base_url`'in varsayılanı bilerek **yoktur**: uydurulmuş bir
+adres sessizce yanlış bir yere çağrı yapardı.
+
+**Kasa şeması tüketici aboneliğini artık YAPISAL olarak reddediyor** (FF-55
+kapısı): hiçbir sağlayıcının şemasında e-posta/parola/oturum alanı yok,
+dolayısıyla Claude.ai Pro/Max ya da ChatGPT Plus girişi fiziksel olarak
+kaydedilemez — bu artık yalnız bir kural değil, bir test.
 
 ---
 

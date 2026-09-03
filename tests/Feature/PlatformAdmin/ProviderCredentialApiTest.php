@@ -92,7 +92,10 @@ final class ProviderCredentialApiTest extends TestCase
 
         $providers = array_column($response->json(), 'provider');
         sort($providers);
-        self::assertSame(['gemini', 'iyzico', 'mailgun', 'openai'], $providers);
+        self::assertSame(
+            ['anthropic', 'custom_endpoint', 'gemini', 'iyzico', 'kimi', 'mailgun', 'openai'],
+            $providers,
+        );
 
         foreach ($response->json() as $entry) {
             self::assertFalse($entry['configured']);

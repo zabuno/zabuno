@@ -184,7 +184,10 @@ final class PlatformCredentialVaultTest extends TestCase
         $providers = array_map(static fn (CredentialStatus $s): string => $s->provider->value, $all);
         sort($providers);
 
-        self::assertSame(['gemini', 'iyzico', 'mailgun', 'openai'], $providers);
+        self::assertSame(
+            ['anthropic', 'custom_endpoint', 'gemini', 'iyzico', 'kimi', 'mailgun', 'openai'],
+            $providers,
+        );
         foreach ($all as $status) {
             self::assertFalse($status->configured, 'Hiçbiri yapılandırılmadan configured=true olmamalı.');
         }
