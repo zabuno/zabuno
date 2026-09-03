@@ -53,7 +53,7 @@ final class ProcessAcceptedMediaAsset
 
         try {
             if ($result->renditions !== []) {
-                $this->media->persistRenditions($claimed->workspaceId, $claimed->id, $result->renditions);
+                $this->media->persistRenditions($claimed->workspaceId, $claimed->id, $result->renditions, $result->lqip);
             }
         } catch (Throwable $exception) {
             // Türevler üretildi ama kaydedilemedi. Varlığı "hazır" demek,

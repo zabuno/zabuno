@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Media\CreateOriginalDownloadLinkController;
 use App\Http\Controllers\Media\DeleteMediaController;
 use App\Http\Controllers\Media\DetachMediaUsagesController;
 use App\Http\Controllers\Media\ListMediaController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Media\ListSlotPoliciesController;
 use App\Http\Controllers\Media\ReprocessMediaController;
 use App\Http\Controllers\Media\RestoreMediaController;
 use App\Http\Controllers\Media\RestoreMediaVersionController;
+use App\Http\Controllers\Media\ShowMediaQuotaController;
 use App\Http\Controllers\Media\ShowMediaUsagesController;
 use App\Http\Controllers\Media\StoreMediaController;
 use Illuminate\Support\Facades\Route;
@@ -39,4 +41,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/media/{media}/usages', ShowMediaUsagesController::class);
     Route::post('/workspaces/{workspace}/media/{media}/detach', DetachMediaUsagesController::class);
     Route::post('/workspaces/{workspace}/media/{media}/restore', RestoreMediaController::class);
+
+    // KOTA ve ASIL İNDİRME (`docs/49` Faz 6-7, `docs/98` FF-71).
+    Route::get('/workspaces/{workspace}/media/quota', ShowMediaQuotaController::class);
+    Route::post('/workspaces/{workspace}/media/{media}/download-link', CreateOriginalDownloadLinkController::class);
 });

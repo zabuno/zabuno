@@ -69,6 +69,7 @@ function actionsStub(overrides: Partial<MediaLibraryActions> = {}): MediaLibrary
         detach: vi.fn(async () => {}),
         loadTrash: vi.fn(async () => []),
         restoreFromTrash: vi.fn(async () => {}),
+        downloadOriginal: vi.fn(async () => 'https://zabuno.test/media/original/1/1?signature=x'),
         ...overrides,
     };
 }
@@ -159,6 +160,34 @@ describe('detay çekmecesi (FAZ4-ASSET-DETAIL-01)', () => {
             await within(drawer).findByText('v1 restored as a new version.'),
         ).toBeInTheDocument();
         expect(onRetry).toHaveBeenCalled();
+    });
+
+    it('"Download original" imzalı adresi alır ve yeni sekmede açar', async () => {
+        const user = userEvent.setup();
+        const actions = actionsStub();
+        const open = vi.fn();
+        vi.stubGlobal('open', open);
+        render(
+            <MediaLibraryRegion
+                assets={ASSETS}
+                onDelete={() => {}}
+                loadState="idle"
+                actions={actions}
+            />,
+        );
+
+        await user.click(screen.getByRole('button', { name: 'Open details for Adana kebap' }));
+        const drawer = await screen.findByRole('dialog');
+        await user.click(within(drawer).getByRole('button', { name: 'Download original' }));
+
+        expect(actions.downloadOriginal).toHaveBeenCalledWith(1);
+        expect(open).toHaveBeenCalledWith(
+            'https://zabuno.test/media/original/1/1?signature=x',
+            '_blank',
+            'noopener',
+        );
+        expect(await within(drawer).findByText(/stays valid for 10 minutes/)).toBeInTheDocument();
+        vi.unstubAllGlobals();
     });
 
     it('hazır varlıkta "Regenerate sizes" var, karantinadakinde yok', async () => {

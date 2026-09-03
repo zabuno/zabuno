@@ -10,22 +10,25 @@ use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 /**
- * Eski sürümü geri getir — YENİ sürüm olarak (`docs/49` Faz 3 madde 2).
+ * Aslın indirme bağlantısı (`docs/49` Faz 6 madde 2, Faz 7 madde 3).
  *
- * Geçmiş yeniden yazılmaz: bir yayın snapshot'ı hâlâ eski sürümü
- * gösteriyorsa o satır olduğu yerde durur. Geri alma, o sürümün
- * rendition'larını en üste kopyalar.
+ * Asıl dosya karantina diskindedir, herkese açık adresi yoktur. Buradan
+ * 10 dakikalık İMZALI bir adres verilir; imza kiracıyı ve varlığı
+ * taşır, süresi dolunca 403. Sahibin kararı: asıl indirme
+ * "tamamen serbest" — her rol `media.download_original` iznine sahiptir;
+ * izin yine de AYRI tutulur ki bir gün daraltmak bir satır olsun.
  */
-final class RestoreMediaVersionController extends Controller
+final class CreateOriginalDownloadLinkController extends Controller
 {
     public function __construct(
         private readonly MediaRepositoryPort $media,
         private readonly AuthorizationPort $authorization,
     ) {}
 
-    public function __invoke(Request $request, int $workspace, int $media, int $version): JsonResponse
+    public function __invoke(Request $request, int $workspace, int $media): JsonResponse
     {
         $userId = (int) $request->user()->getKey();
 
@@ -33,7 +36,7 @@ final class RestoreMediaVersionController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        if (! $this->authorization->can($userId, Permission::MediaManage, $workspace)) {
+        if (! $this->authorization->can($userId, Permission::MediaDownloadOriginal, $workspace)) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
@@ -43,15 +46,11 @@ final class RestoreMediaVersionController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        $restored = $this->media->restoreVersion($workspace, $media, $version);
-
-        if ($restored === null) {
-            return response()->json(['message' => 'Not Found.'], 404);
-        }
+        $expiresAt = now()->addMinutes(10);
 
         return response()->json([
-            'restoredVersionId' => $restored,
-            'versions' => $this->media->versionsFor($workspace, $media),
+            'url' => URL::temporarySignedRoute('media.original', $expiresAt, ['workspace' => $workspace, 'asset' => $media]),
+            'expiresAt' => $expiresAt->toIso8601String(),
         ]);
     }
 }

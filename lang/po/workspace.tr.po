@@ -1076,6 +1076,14 @@ msgstr ""
 msgid "workspace.media.library.detail.actionFailed"
 msgstr ""
 
+#: workspace:workspace.media.library.detail.download
+msgid "workspace.media.library.detail.download"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.downloadReady
+msgid "workspace.media.library.detail.downloadReady"
+msgstr ""
+
 #: workspace:workspace.media.library.detail.duplicate
 msgid "workspace.media.library.detail.duplicate"
 msgstr ""
@@ -1366,6 +1374,42 @@ msgstr ""
 
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
+msgstr ""
+
+#: workspace:workspace.media.quota.assets
+msgid "workspace.media.quota.assets"
+msgstr ""
+
+#: workspace:workspace.media.quota.heading
+msgid "workspace.media.quota.heading"
+msgstr ""
+
+#: workspace:workspace.media.quota.monthly
+msgid "workspace.media.quota.monthly"
+msgstr ""
+
+#: workspace:workspace.media.quota.note
+msgid "workspace.media.quota.note"
+msgstr ""
+
+#: workspace:workspace.media.quota.plan
+msgid "workspace.media.quota.plan"
+msgstr ""
+
+#: workspace:workspace.media.quota.ratio
+msgid "workspace.media.quota.ratio"
+msgstr ""
+
+#: workspace:workspace.media.quota.region
+msgid "workspace.media.quota.region"
+msgstr ""
+
+#: workspace:workspace.media.quota.storage
+msgid "workspace.media.quota.storage"
+msgstr ""
+
+#: workspace:workspace.media.quota.unlimited
+msgid "workspace.media.quota.unlimited"
 msgstr ""
 
 #: workspace:workspace.media.security.explanation

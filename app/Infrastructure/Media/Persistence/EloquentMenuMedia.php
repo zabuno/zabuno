@@ -167,6 +167,8 @@ final class EloquentMenuMedia implements MenuMediaPort
             'width' => (int) $largest->width,
             'height' => (int) $largest->height,
             'sources' => $sources,
+            // Bulanık yer tutucu (`docs/49` Faz 6 madde 4); eski sürümlerde null.
+            'lqip' => DB::table('media_versions')->where('id', $versionId)->value('lqip'),
         ];
     }
 

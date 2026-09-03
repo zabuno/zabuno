@@ -318,9 +318,15 @@ politikası kota/izinle birlikte).
 
 ### Faz 6 — Teslim ve CDN
 
-**Durum (2026-09-04):** 1'in immutable URL + `Cache-Control` kısmı ✅
-(`ServeRenditionController`); 4'ün `srcset` kısmı ✅ (misafir menüsü); `ETag`,
-signed URL, LQIP, `width`/`height`, 5 ⬜ → FF-71.
+**Durum (FF-71, 2026-09-04):** 1 ✅ immutable URL + `Cache-Control` +
+`ETag`/`If-None-Match` → 304 (ikinci açılışta sıfır bayt); 2 ✅ asıl özel
+(karantina diski, adres yok), rendition açık; asıl indirme 10 dakikalık
+İMZALI adres (`POST media/{id}/download-link` → `GET
+/media/original/{ws}/{id}?signature=…`, `no-store`, `attachment`); 3 ⬜ (CDN
+yok — netcup yerel disk kararı; önbellek anahtarında kiracı kimliği CDN
+gelince); 4 ✅ `srcset` + `width`/`height` + LQIP (16 px JPEG data URI,
+`media_versions.lqip`, misafir menüsünde arka plan olarak); 5 ⬜ video/PDF
+Faz 2'ye bağlı (sahip kararı: video sonra).
 
 1. Immutable URL, `Cache-Control`, `ETag`
 2. Private original / public rendition ayrımı, signed URL
@@ -331,6 +337,19 @@ signed URL, LQIP, `width`/`height`, 5 ⬜ → FF-71.
 **Kabul:** QR menüde LCP ölçülür ve iyileşir.
 
 ### Faz 7 — Yönetişim
+
+**Durum (FF-71, 2026-09-04):** 1 ✅ plan → kota (`config/media-quota.php`:
+`starter`=Free, `restaurant`=Standart, `team`=Pro; aboneliksiz → `starter`);
+asıl bayt + görsel sayısı + aylık yükleme + çöp süresi; rendition kota dışı,
+çöp kota içi (`docs/98` §7); egress/dönüşüm sayısı ⬜ (ölçüm altyapısı yok);
+2 ✅ dolunca yalnız yükleme 422 ile durur, sebep sahibin cümlesi; teslim
+kapıdan geçmez; `GET media/quota` sayaçları ekranda; 3 ✅ `media.manage`
+(Owner/Manager/Editor) ve `media.download_original` (her rol — sahip kararı
+"tamamen serbest", izin yine ayrı); Member yükleyemez/silemez; 4 ⬜ audit log
+(medya eylemleri henüz denetim defterine yazılmıyor); 5 ✅ `media:reconcile
+[--fix]`: kırık kayıt (satır var, dosya yok) ve yetim dosya raporu; `--fix`
+yetimi siler, kırığı `failed`'a çeker, satır silmez.
+
 1. Tenant kotası: original, rendition, asset sayısı, aylık upload, egress,
    dönüşüm sayısı, trash
 2. **Kota dolunca canlı menü teslimi KESİLMEZ**; upload ve yeni processing durur

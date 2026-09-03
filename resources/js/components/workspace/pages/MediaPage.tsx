@@ -4,6 +4,7 @@ import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
+import { MediaQuotaRegion, type MediaQuota } from './media/MediaQuotaRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 
 export type MediaAsset = {
@@ -57,6 +58,8 @@ export type MediaLibraryActions = {
     detach: (id: number) => Promise<void>;
     loadTrash: () => Promise<MediaAsset[]>;
     restoreFromTrash: (id: number) => Promise<void>;
+    /** 10 dakikalık imzalı asıl indirme adresi (`docs/49` Faz 6 madde 2). */
+    downloadOriginal: (id: number) => Promise<string>;
 };
 
 type MediaPageProps = {
@@ -74,6 +77,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
     const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<number>>(new Set());
     const [deleteErrorIds, setDeleteErrorIds] = useState<Set<number>>(new Set());
     const [deleteNotice, setDeleteNotice] = useState<string | null>(null);
+    const [trashRetentionDays, setTrashRetentionDays] = useState(30);
     const requestSeqRef = useRef(0);
     const endpoint = `/api/workspaces/${workspaceId ?? ''}/media`;
 
@@ -241,8 +245,21 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             restoreFromTrash: async (id) => {
                 await post(`${endpoint}/${id}/restore`);
             },
+            downloadOriginal: async (id) => {
+                const body = (await (await post(`${endpoint}/${id}/download-link`)).json()) as {
+                    url?: string;
+                };
+                if (typeof body.url !== 'string') {
+                    throw new Error('no-url');
+                }
+                return body.url;
+            },
         };
     }, [endpoint]);
+
+    const handleQuotaLoaded = useCallback((quota: MediaQuota) => {
+        setTrashRetentionDays(quota.trashRetentionDays);
+    }, []);
 
     async function handleDelete(id: number) {
         if (pendingDeleteIds.has(id)) {
@@ -291,6 +308,9 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                 title={t('workspace.media.heading')}
                 description={t('workspace.media.operational.description')}
             >
+                {workspaceId !== undefined ? (
+                    <MediaQuotaRegion workspaceId={workspaceId} onLoaded={handleQuotaLoaded} />
+                ) : null}
                 <MediaUploadRegion onSubmit={handleUpload} />
                 <MediaLibraryRegion
                     assets={assets}
@@ -301,6 +321,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                     deleteErrorIds={deleteErrorIds}
                     deleteNotice={deleteNotice}
                     actions={workspaceId === undefined ? undefined : actions}
+                    trashRetentionDays={trashRetentionDays}
                 />
             </WorkspacePageFrame>
         </div>

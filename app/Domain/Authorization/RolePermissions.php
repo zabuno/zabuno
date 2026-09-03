@@ -44,6 +44,8 @@ final class RolePermissions
                 Permission::BillingView,
                 Permission::BillingManage,
                 Permission::SecurityEvidenceView,
+                Permission::MediaManage,
+                Permission::MediaDownloadOriginal,
             ],
             MembershipRole::Manager => [
                 Permission::WorkspaceView,
@@ -60,6 +62,8 @@ final class RolePermissions
                 // Görmeyi de engellemek, planın söylemediği bir kısıt eklemek
                 // olurdu.
                 Permission::BillingView,
+                Permission::MediaManage,
+                Permission::MediaDownloadOriginal,
             ],
             MembershipRole::Editor => [
                 Permission::WorkspaceView,
@@ -68,12 +72,17 @@ final class RolePermissions
                 Permission::MenuManage,
                 Permission::QrView,
                 Permission::AnalyticsView,
+                // Görsel yüklemek içerik düzenlemektir; yayınlamak değildir.
+                Permission::MediaManage,
+                Permission::MediaDownloadOriginal,
             ],
             MembershipRole::Member => [
                 Permission::WorkspaceView,
                 Permission::MenuView,
                 Permission::QrView,
                 Permission::AnalyticsView,
+                // Salt okunur; yine de aslı indirebilir (sahip kararı).
+                Permission::MediaDownloadOriginal,
             ],
         };
     }

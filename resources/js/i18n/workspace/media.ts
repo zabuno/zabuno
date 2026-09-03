@@ -169,6 +169,20 @@ export const media = {
     'workspace.media.library.trash.restore.named': 'Restore {name}',
     'workspace.media.library.trash.restored': 'Restored. It is back in the library.',
     'workspace.media.library.trash.restoreFailed': 'Restore failed. It is still in the trash.',
+    // FF-71: asıl indirme + kota göstergesi (`docs/49` Faz 6-7).
+    'workspace.media.library.detail.download': 'Download original',
+    'workspace.media.library.detail.downloadReady':
+        'Download link opened. It stays valid for 10 minutes.',
+    'workspace.media.quota.region': 'Media quota',
+    'workspace.media.quota.heading': 'Storage',
+    'workspace.media.quota.plan': 'Plan: {plan}',
+    'workspace.media.quota.storage': 'Originals',
+    'workspace.media.quota.assets': 'Images',
+    'workspace.media.quota.monthly': 'Uploads this month',
+    'workspace.media.quota.ratio': '{used} of {limit}',
+    'workspace.media.quota.unlimited': 'no limit',
+    'workspace.media.quota.note':
+        'Deleted images stay in trash for {days} days and still count until then. Generated sizes are free.',
 } as const;
 
 declare module '../workspace' {

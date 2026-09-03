@@ -257,6 +257,28 @@ function DetailDrawer({
                 ) : null}
 
                 <div className="flex flex-wrap gap-2">
+                    {/*
+                        Asıl dosya: sahibin kararıyla "tamamen serbest". Adres
+                        10 dakika geçerli, yeni sekmede açılır; sayfa kendi
+                        durumunu kaybetmez.
+                    */}
+                    <Button
+                        color="light"
+                        type="button"
+                        disabled={busy !== null}
+                        onClick={() =>
+                            void run(
+                                'download',
+                                async () => {
+                                    const url = await actions.downloadOriginal(asset.id);
+                                    window.open(url, '_blank', 'noopener');
+                                },
+                                t('workspace.media.library.detail.downloadReady'),
+                            )
+                        }
+                    >
+                        {t('workspace.media.library.detail.download')}
+                    </Button>
                     {asset.status === 'ready' ? (
                         <Button
                             color="light"

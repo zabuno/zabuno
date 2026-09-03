@@ -26,6 +26,10 @@ final class DeleteMediaController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        if (! $this->authorization->can($userId, Permission::MediaManage, $workspace)) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
         $asset = $this->media->find($media);
 
         if ($asset === null || $asset->workspaceId !== $workspace) {

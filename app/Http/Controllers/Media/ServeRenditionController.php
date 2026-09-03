@@ -6,13 +6,14 @@ namespace App\Http\Controllers\Media;
 
 use App\Http\Controllers\Controller;
 use App\Support\Media\RenditionUrl;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final class ServeRenditionController extends Controller
 {
-    public function __invoke(int $rendition, string $fingerprint, string $format): SymfonyResponse
+    public function __invoke(Request $request, int $rendition, string $fingerprint, string $format): SymfonyResponse
     {
         $row = DB::table('media_renditions')
             ->join('media_blobs', 'media_blobs.id', '=', 'media_renditions.media_blob_id')
@@ -30,6 +31,18 @@ final class ServeRenditionController extends Controller
             abort(404);
         }
 
+        // ETag sağlama toplamının kendisidir (`docs/49` Faz 6 madde 1):
+        // içerik aynıysa gövde yeniden gönderilmez — telefonda ikinci
+        // açılışta menü fotoğrafları için 304, sıfır bayt.
+        $etag = '"'.substr((string) $row->checksum_sha256, 0, 32).'"';
+
+        if (in_array($etag, array_map('trim', explode(',', (string) $request->headers->get('If-None-Match', ''))), true)) {
+            return response('', 304, [
+                'ETag' => $etag,
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+            ]);
+        }
+
         $disk = Storage::disk((string) $row->disk);
 
         if (! $disk->exists((string) $row->storage_key)) {
@@ -41,6 +54,7 @@ final class ServeRenditionController extends Controller
             // Adres içeriğin parmak izini taşır; içerik değişirse adres de
             // değişir. Bu yüzden bir yıl ve `immutable` güvenlidir.
             'Cache-Control' => 'public, max-age=31536000, immutable',
+            'ETag' => $etag,
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }

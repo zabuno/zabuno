@@ -83,7 +83,7 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 8/13 tamamlandı, 9/13 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 9/13 tamamlandı, 10/13 aktif.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
@@ -97,7 +97,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 6 ✅ | **FF-68 DAM Faz 2** | upload session + idempotency, magic-bytes/decoder doğrulama, karantina zinciri, SVG reddi, `fixtures/malicious` CI kapısı | `docs/49` Faz 2 kabulü |
 | 7 ✅ | **FF-69 DAM Faz 3** | immutable original, non-destructive version, `320..1600w` rendition seti, checksum + yinelenen tespiti, reprocess | INV-01..07 yeşil, rollback |
 | 8 ✅ | **FF-70 DAM Faz 4+5** | kütüphane ızgara/liste/arama/koleksiyon; asset detayı (kullanım/sürüm/rendition); kullanım grafiği; silme etki önizlemesi; yayın snapshot'ı version'a bağlı | kullanılan asset doğrudan silinemez |
-| 9 | **FF-71 DAM Faz 6+7** | immutable URL + `Cache-Control`/`ETag`, `srcset`/`<picture>`, kota kalemleri (sahip "sen belirle" dedi → §7), izin matrisi (`download_original` serbest — sahibin kararı), reconciliation | LCP ölçülür; kota dolunca canlı menü kesilmez |
+| 9 ✅ | **FF-71 DAM Faz 6+7** | immutable URL + `Cache-Control`/`ETag`, `srcset`/`<picture>`, kota kalemleri (sahip "sen belirle" dedi → §7), izin matrisi (`download_original` serbest — sahibin kararı), reconciliation | LCP ölçülür; kota dolunca canlı menü kesilmez |
 | 10 | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
 | 11 | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
 | 12 | **FF-74 Yetki-görünürlük + registry** | gezinti kaydına `permission`/`entitlement`; ön uç `me` ucundan izin okur; yetkisiz eylem çizilmez; Pennant | Editor 403 görmez |
@@ -172,6 +172,31 @@ kalır ve Tur 1 tablosunda gerekçeli.
   `lifecycle` taşır. Testler: `MediaLibraryTrashAndUsagesTest` (7),
   `MediaLibraryRegion.library.test.tsx` (8); eski `MediaStorageFailureTest`
   silme senaryosu purge'a taşındı (dosya silinemezse satır kalır).
+
+### FF-71 teslim notu
+
+`docs/49` Faz 6-7: teslim ve yönetişim.
+
+- **Önce:** rendition adresi değişmezdi ama tarayıcı her seferinde gövdeyi
+  çekiyordu; asıl dosyaya hiçbir yoldan ulaşılamıyordu; fotoğraf inene kadar
+  misafir boş kutu görüyordu; kota yoktu (bir kiracı diski doldurabilirdi);
+  Member dahil herkes yükleyip silebiliyordu; diskle tablo arasındaki
+  tutarsızlığı kimse ölçmüyordu.
+- **Şimdi:** `ETag` → 304; imzalı 10 dakikalık asıl indirme (her rol,
+  sahip kararı); LQIP arka planı; plan bazlı kota (`config/media-quota.php`,
+  rakamlar §7) — dolunca yalnız yükleme durur, sebep okunur, ekranda sayaç;
+  `media.manage` / `media.download_original` izinleri (15 izin); purge her
+  çalışma alanının kendi plan süresiyle; `media:reconcile [--fix]`.
+- **Kullanıcı yolculuğu:** Ayşe telefonda menüyü ikinci kez açar → fotoğraflar
+  sıfır bayt (304); 100. görseli yüklemeye kalkar → "sınıra ulaşıldı, çöpü
+  boşaltın ya da planı yükseltin", canlı menü yine açık; "aslı ver" → 10
+  dakikalık bağlantı yeni sekmede.
+- **Kalan engel:** CDN/önbellek anahtarı (netcup yerel disk kararı; CDN
+  gelince), egress/dönüşüm ölçümü, medya audit log, video/PDF, koleksiyon/
+  etiket, "yerine başka görsel seç", fallback zinciri — DAM Faz 8-10 ile
+  birlikte ayrı bir program.
+- **Testler:** `MediaDeliveryAndGovernanceTest` (10), `MediaQuotaRegion.test`
+  (3), drawer indirme testi; `RolePermissionMappingTest` 13 → 15.
 
 ## 6. Esnetilen kurallar — açık kayıt
 

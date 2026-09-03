@@ -18,12 +18,14 @@ final class MediaProcessingResult
         public readonly ?string $failureReason = null,
         public readonly ?int $sourceWidth = null,
         public readonly ?int $sourceHeight = null,
+        /** Çok küçük bulanık yer tutucu, data URI (`docs/49` Faz 6 madde 4). */
+        public readonly ?string $lqip = null,
     ) {}
 
     /** @param  list<GeneratedRendition>  $renditions */
-    public static function succeeded(array $renditions, int $sourceWidth, int $sourceHeight): self
+    public static function succeeded(array $renditions, int $sourceWidth, int $sourceHeight, ?string $lqip = null): self
     {
-        return new self(MediaProcessingOutcome::Succeeded, $renditions, null, $sourceWidth, $sourceHeight);
+        return new self(MediaProcessingOutcome::Succeeded, $renditions, null, $sourceWidth, $sourceHeight, $lqip);
     }
 
     public static function failed(string $reason): self

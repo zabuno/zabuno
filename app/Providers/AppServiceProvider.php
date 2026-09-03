@@ -21,6 +21,7 @@ use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
+use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
@@ -85,6 +86,7 @@ use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
+use App\Infrastructure\Media\Quota\ConfigMediaQuota;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
@@ -327,6 +329,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MailTransportSelectorPort::class, VaultMailTransportSelector::class);
 
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
+        $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);
         $this->app->bind(OutOfStockPort::class, EloquentOutOfStock::class);
         $this->app->bind(MalwareScannerPort::class, function (): MalwareScannerPort {

@@ -50,7 +50,7 @@ final class ReprocessMediaAsset
         }
 
         try {
-            $this->media->persistRenditions($claimed->workspaceId, $claimed->id, $result->renditions);
+            $this->media->persistRenditions($claimed->workspaceId, $claimed->id, $result->renditions, $result->lqip);
         } catch (Throwable $exception) {
             $this->media->closeProcessingJobAsFailed($jobId, 'Yeni sürüm kaydedilemedi: '.$exception->getMessage());
             $this->media->markReadyIfProcessing($claimed->workspaceId, $claimed->id);
