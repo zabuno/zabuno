@@ -32,7 +32,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 578;
+const FROZEN_LEGACY_KEY_COUNT = 636;
 
 // Frozen from the brand form rewrite: sha256 of sorted "key=value" lines
 // joined by "\n" over all 451 entries. The brand onboarding form used to ask
@@ -198,8 +198,11 @@ const FROZEN_LEGACY_KEY_COUNT = 578;
 //
 // FF-68 (docs/49 Faz 2): yükleme ilerlemesi, yeniden deneme, boyut/piksel ön
 // kontrolü — dört anahtar. 574 → 578.
+//
+// FF-70 (docs/49 Faz 4-5): kütüphane süzgeçleri, detay çekmecesi (kullanım,
+// sürüm), silme etki önizlemesi, çöp sekmesi — 58 anahtar. 578 → 636.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '8a17c8ce6a2d5af8b161932da806b465d97134e08114a10fd6e5edabb66490c8';
+    '7adff536b52ae8c5c3417b096db0c2fa8fcb801f4b80df7da77f37f7d2b427a4';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

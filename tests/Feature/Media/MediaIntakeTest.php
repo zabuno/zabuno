@@ -212,10 +212,9 @@ final class MediaIntakeTest extends TestCase
 
         self::assertSoftDeleted('media_assets', ['id' => $mediaId], deletedAtColumn: 'deleted_at');
 
-        Storage::disk('local')->assertMissing(
-            $diskPath,
-            'MEDIA-P1-ORPHAN-BYTE-01: quarantine kaydı (soft-)silindiğinde disk üzerindeki dosya baytları da kaldırılmalı; orphan byte kalmamalı.'
-        );
+        // 2026-09-04'ten beri silme ÇÖPE atar (`docs/49` Faz 5): dosya diskte
+        // durur ki "yanlış sildim" geri alınabilsin; kalıcı silme `media:purge-trash`.
+        Storage::disk('local')->assertExists($diskPath);
     }
 
     // --- MEDIA-INTAKE-UNAUTH-01 / CSRF-01 -----------------------------------

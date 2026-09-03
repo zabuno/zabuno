@@ -1072,7 +1072,7 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
 
         await waitFor(() => expect(within(libraryRegion).queryByText('Owned asset')).toBeNull());
 
-        const completionNotice = within(libraryRegion).getByText('Media asset deleted.');
+        const completionNotice = within(libraryRegion).getByText('Moved to trash. You can restore it from the Trash tab.');
         expect(completionNotice).toHaveAttribute('role', 'status');
         expect(within(libraryRegion).queryByRole('alert')).toBeNull();
         expect(within(libraryRegion).getByText('Other asset')).toBeInTheDocument();

@@ -83,7 +83,7 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 7/13 tamamlandı, 8/13 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 8/13 tamamlandı, 9/13 aktif.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
@@ -96,7 +96,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 5 ✅ | **FF-67 Superadmin estetiği (Metronic-esinli)** | plan belgesi (`docs/99`) + uygulama: yoğunluk, kart/tablo dili, rozet sistemi, sol rail, üst çubuk; Zabuno token'larıyla, Metronic kopyası değil | platform ve engineering kabukları aynı dili konuşur |
 | 6 ✅ | **FF-68 DAM Faz 2** | upload session + idempotency, magic-bytes/decoder doğrulama, karantina zinciri, SVG reddi, `fixtures/malicious` CI kapısı | `docs/49` Faz 2 kabulü |
 | 7 ✅ | **FF-69 DAM Faz 3** | immutable original, non-destructive version, `320..1600w` rendition seti, checksum + yinelenen tespiti, reprocess | INV-01..07 yeşil, rollback |
-| 8 | **FF-70 DAM Faz 4+5** | kütüphane ızgara/liste/arama/koleksiyon; asset detayı (kullanım/sürüm/rendition); kullanım grafiği; silme etki önizlemesi; yayın snapshot'ı version'a bağlı | kullanılan asset doğrudan silinemez |
+| 8 ✅ | **FF-70 DAM Faz 4+5** | kütüphane ızgara/liste/arama/koleksiyon; asset detayı (kullanım/sürüm/rendition); kullanım grafiği; silme etki önizlemesi; yayın snapshot'ı version'a bağlı | kullanılan asset doğrudan silinemez |
 | 9 | **FF-71 DAM Faz 6+7** | immutable URL + `Cache-Control`/`ETag`, `srcset`/`<picture>`, kota kalemleri (sahip "sen belirle" dedi → §7), izin matrisi (`download_original` serbest — sahibin kararı), reconciliation | LCP ölçülür; kota dolunca canlı menü kesilmez |
 | 10 | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
 | 11 | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
@@ -146,6 +146,32 @@ Tur 1'in üç "doğrulanacak" satırı üçü de GERÇEK boşluk çıktı ve kap
 
 Bilinçli-eski rotalar (`products`/`menu-items` tekil uçları, `admin/credentials*`)
 kalır ve Tur 1 tablosunda gerekçeli.
+
+### FF-70 teslim notu
+
+`docs/49` Faz 4-5'in ekranı ve kullanım grafiği. Önce/şimdi:
+
+- **Önce:** Media sayfası düz bir listeydi; küçük resim yok, arama yok,
+  "nerede kullanılıyor" yok. Silme dosyayı ANINDA diskten siliyordu — geri
+  yolu yoktu; kullanılan görselde sunucu 409 döner, ekran "silinemedi" derdi.
+- **Şimdi:** liste/ızgara + küçük resim + arama + slot/durum/"kullanılmayan"
+  süzgeci; ada tıklayınca çekmece (dosya bilgisi, kullanım, sürümler, geri al,
+  yeniden üret); silmede etki önizlemesi ("Adana Kebap ve Urfa Kebap bu
+  fotoğrafı kullanıyor → bağı kes ve çöpe at / vazgeç"); silme çöpe atar, Çöp
+  sekmesinden geri gelir; `media:purge-trash` 30 gün sonra kalıcı siler,
+  yayında olanı hiç silmez.
+- **Kullanıcı yolculuğu:** Ayşe yanlış fotoğrafı siler → ürün kartı yer
+  tutucuya düşer → ertesi gün Çöp → Geri al → fotoğraf ve bağ aynen döner,
+  çünkü dosya hiç silinmemişti.
+- **Kalan engel:** koleksiyon/etiket, "yerine başka görsel seç", fallback
+  zinciri, asıl indirme (imzalı adres), kota sayaçları → FF-71. Purge komutu
+  zamanlayıcıya bağlı değil (işletim kararı, `docs/42`).
+- **Arka uç:** `GET media/{id}/usages`, `POST media/{id}/detach`,
+  `POST media/{id}/restore`, `GET media?trashed=1`; liste `previewUrl`,
+  `usageCount`, `versionCount`, `originalName`, `sizeBytes`, `createdAt`,
+  `lifecycle` taşır. Testler: `MediaLibraryTrashAndUsagesTest` (7),
+  `MediaLibraryRegion.library.test.tsx` (8); eski `MediaStorageFailureTest`
+  silme senaryosu purge'a taşındı (dosya silinemezse satır kalır).
 
 ## 6. Esnetilen kurallar — açık kayıt
 

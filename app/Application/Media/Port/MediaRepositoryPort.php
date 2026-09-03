@@ -22,6 +22,28 @@ interface MediaRepositoryPort
 
     public function listForWorkspace(int $workspaceId): array;
 
+    /** Çöpteki varlıklar — geri alınabilir, süre dolunca purge (`docs/49` Faz 5). @return list<MediaAssetSummary> */
+    public function listTrashed(int $workspaceId): array;
+
+    /** Çöpten geri al — dosya hiç silinmemişti. */
+    public function restore(int $workspaceId, int $assetId): bool;
+
+    /**
+     * Süresi dolan çöpü KALICI siler: dosya + satır. Döner: silinen sayı.
+     * Yayında kullanılan varlığa dokunmaz.
+     */
+    public function purgeTrash(int $olderThanDays): int;
+
+    /**
+     * "Nerede kullanılıyor?" — taslak ve yayın bağları, insan adıyla.
+     *
+     * @return list<array{entityType:string, entityId:int, slot:string, label:string, published:bool}>
+     */
+    public function usagesFor(int $workspaceId, int $assetId): array;
+
+    /** Taslak bağları koparır (yayın kayıtlarına dokunmaz). Döner: koparılan sayı. */
+    public function detachDraftUsages(int $workspaceId, int $assetId): int;
+
     public function find(int $id): ?MediaAssetSummary;
 
     public function delete(int $id): void;
