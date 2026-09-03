@@ -18,7 +18,8 @@ export const siteTranslations = {
         Sayfa DURUMU söyler ve bir ÇIKIŞ YOLU bırakır: boş bir hâl bir hata
         değildir, ama bir çıkmaz da olmamalıdır (`docs/66`).
     */
-    'site.pricing.empty': 'Plan prices are not published yet. Tell us about your restaurant and we will answer with a price for your case.',
+    'site.pricing.empty':
+        'Plan prices are not published yet. Tell us about your restaurant and we will answer with a price for your case.',
     'site.pricing.empty.cta': 'Contact us',
     // Tutarı girilmemiş bir planı "0" ya da "ücretsiz" göstermek,
     // tutulmayacak bir söz vermek olurdu.
@@ -29,10 +30,12 @@ export const siteTranslations = {
 
     // --- İletişim --------------------------------------------------------
     'site.contact.heading': 'Contact',
-    'site.contact.lead': 'Ask about pricing, a pilot, or anything that is in your way. We keep every message; nothing is lost.',
+    'site.contact.lead':
+        'Ask about pricing, a pilot, or anything that is in your way. We keep every message; nothing is lost.',
     // Teyit EKRANDA: "gönderildi" demeyen bir form, gönderilip
     // gönderilmediğini bilmeyen bir kullanıcı bırakır.
-    'site.contact.sent': 'Thank you — we received your message and will reply to the address you gave.',
+    'site.contact.sent':
+        'Thank you — we received your message and will reply to the address you gave.',
     // Etiket ŞART: yer tutucu bir etiket değildir ve ekran okuyucu onu alan
     // adı olarak okumaz.
     'site.contact.name': 'Your name',
@@ -45,8 +48,10 @@ export const siteTranslations = {
 
     // --- Ana sayfadaki iki yeni cümle ------------------------------------
     'site.home.faq.cost.question': 'What does it cost?',
-    'site.home.faq.cost.answer': 'Prices come from our plan catalogue, so what you read there is what we charge.',
-    'site.home.contact.lead': 'Ask about pricing, a pilot, or anything that is in your way. We keep every message; you get a confirmation on screen.',
+    'site.home.faq.cost.answer':
+        'Prices come from our plan catalogue, so what you read there is what we charge.',
+    'site.home.contact.lead':
+        'Ask about pricing, a pilot, or anything that is in your way. We keep every message; you get a confirmation on screen.',
     'site.home.contact.cta': 'Write to us',
 } as const;
 
