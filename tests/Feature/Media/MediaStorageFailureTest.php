@@ -99,10 +99,11 @@ final class MediaStorageFailureTest extends TestCase
         }
     }
 
-    public function test_delete_throws_and_leaves_metadata_row_not_soft_deleted_when_storage_delete_returns_false(): void
+    public function test_purge_keeps_the_row_when_storage_delete_returns_false(): void
     {
         $workspaceId = $this->persistedWorkspaceId('zeytin-media-storage-delete-failure');
 
+        // Çöpte 45 gündür bekleyen bir varlık: purge sırası geldi.
         $asset = MediaAsset::query()->create([
             'workspace_id' => $workspaceId,
             'disk_path' => 'quarantine/1/existing-asset',
@@ -113,6 +114,9 @@ final class MediaStorageFailureTest extends TestCase
             'slot' => 'menu',
             'status' => 'quarantined',
         ]);
+        $asset->forceFill(['lifecycle_status' => 'trashed'])->save();
+        $asset->delete();
+        DB::table('media_assets')->where('id', $asset->getKey())->update(['deleted_at' => now()->subDays(45)]);
 
         $diskMock = $this->createMock(Filesystem::class);
         $diskMock->expects(self::once())
@@ -128,22 +132,11 @@ final class MediaStorageFailureTest extends TestCase
 
         $repository = new EloquentMediaRepository;
 
-        $threw = false;
+        self::assertSame(0, $repository->purgeTrash(30), 'Dosya silinemediyse purge saymaz.');
 
-        try {
-            $repository->delete((int) $asset->getKey());
-        } catch (RuntimeException) {
-            $threw = true;
-        }
-
-        self::assertTrue(
-            $threw,
-            'MEDIA-STORAGE-DELETE-FAILURE-01: delete() Storage::delete() false döndürdüğünde RuntimeException fırlatmalı.'
-        );
-
-        self::assertNull(
-            DB::table('media_assets')->where('id', $asset->getKey())->value('deleted_at'),
-            'MEDIA-STORAGE-DELETE-FAILURE-01: disk silme başarısız olduğunda metadata satırı soft-delete edilmemeli.'
+        self::assertNotNull(
+            DB::table('media_assets')->where('id', $asset->getKey())->first(),
+            'MEDIA-STORAGE-DELETE-FAILURE-01: disk silme başarısız olduğunda satır kalıcı silinmemeli — yetim dosya izi kaybolmasın.'
         );
     }
 }

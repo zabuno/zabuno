@@ -1,9 +1,18 @@
+import { useMemo, useState } from 'react';
 import { Button } from '../../../catalog/forms/micro/Button';
+import { Checkbox } from '../../../catalog/forms/micro/Checkbox';
+import { Select } from '../../../catalog/forms/micro/Select';
+import { TextInput } from '../../../catalog/forms/micro/TextInput';
+import { Tabs } from '../../../catalog/navigation/compound/Tabs';
 import { t } from '../../../../i18n/workspace';
+import { MediaAssetDetailDrawer } from './MediaAssetDetailDrawer';
 import { MediaAssetStatusBadge } from './MediaAssetStatusBadge';
+import { MediaDeleteImpactDialog } from './MediaDeleteImpactDialog';
 import { MediaLifecycleList } from './MediaLifecycleList';
 import { MediaLibrarySlotList } from './MediaLibrarySlotList';
-import type { MediaAsset } from '../MediaPage';
+import { MediaTrashList } from './MediaTrashList';
+import { formatBytes } from './mediaFormat';
+import type { MediaAsset, MediaLibraryActions } from '../MediaPage';
 
 export type MediaLibraryLoadState = 'loading' | 'idle' | 'error';
 
@@ -15,12 +24,35 @@ type MediaLibraryRegionProps = {
     pendingDeleteIds?: Set<number>;
     deleteErrorIds?: Set<number>;
     deleteNotice?: string | null;
+    /**
+     * Kütüphane eylemleri (kullanım, sürüm, çöp). Verilmezse bölge yalnız
+     * listeler ve siler — bileşen tek başına da çalışır.
+     */
+    actions?: MediaLibraryActions;
+    trashRetentionDays?: number;
 };
 
+type ViewMode = 'list' | 'grid';
+
+const STATUS_ORDER = [
+    'ready',
+    'processing',
+    'accepted',
+    'scanning',
+    'quarantined',
+    'failed',
+    'rejected',
+] as const;
+
 /**
- * Only real quarantined assets returned by the API are rendered here — no
- * image/img element, no public URL, no Ready/Published claim (MEDIA-INTAKE-
- * NO-PUBLIC-URL-01, MEDIA-INTAKE-STATUS-01).
+ * Kütüphane (`docs/49` Faz 4-5, `docs/98` FF-70): ara, slot/durum süz,
+ * "kullanılmayanlar", liste/ızgara; satıra tıkla → detay çekmecesi; sil →
+ * kullanılıyorsa etki önizlemesi, kullanılmıyorsa çöpe; Çöp sekmesi →
+ * geri al.
+ *
+ * Yalnız API'nin döndürdüğü gerçek varlıklar çizilir; önizleme yalnız hazır
+ * bir rendition varsa `<img>` olur — karantinadaki dosyanın herkese açık
+ * adresi yoktur (MEDIA-INTAKE-NO-PUBLIC-URL-01).
  */
 export function MediaLibraryRegion({
     assets,
@@ -30,27 +62,220 @@ export function MediaLibraryRegion({
     pendingDeleteIds,
     deleteErrorIds,
     deleteNotice,
+    actions,
+    trashRetentionDays = 30,
 }: MediaLibraryRegionProps) {
-    return (
-        <div
-            role="region"
-            aria-label={t('workspace.media.library.region')}
-            className="flex flex-col gap-3"
-        >
-            <h3 className="text-body font-semibold text-fg">
-                {t('workspace.media.library.heading')}
-            </h3>
+    const [query, setQuery] = useState('');
+    const [slot, setSlot] = useState('');
+    const [status, setStatus] = useState('');
+    const [unusedOnly, setUnusedOnly] = useState(false);
+    const [view, setView] = useState<ViewMode>('list');
+    const [tab, setTab] = useState<'library' | 'trash'>('library');
+    const [detailId, setDetailId] = useState<number | null>(null);
+    const [impactId, setImpactId] = useState<number | null>(null);
 
-            {/*
-                Gerçek bir başlık, başlık GİBİ GÖRÜNEN bir paragraf değil.
-                Önceden `<p>` idi: ekranda başlık gibi duruyor ama anlamsal
-                olarak hiçbir şeyi etiketlemiyordu — ekran okuyucu kullanan biri
-                bu bölgedeki üç listeyi (varlıklar, slot kategorileri, yaşam
-                döngüsü) birbirinden ayıramıyordu.
-            */}
+    const slots = useMemo(() => Array.from(new Set(assets.map((a) => a.slot))).sort(), [assets]);
+    const statuses = useMemo(() => {
+        const present = new Set(assets.map((a) => a.status));
+        return STATUS_ORDER.filter((s) => present.has(s));
+    }, [assets]);
+
+    const visible = useMemo(() => {
+        const needle = query.trim().toLocaleLowerCase();
+        return assets.filter((asset) => {
+            if (slot !== '' && asset.slot !== slot) return false;
+            if (status !== '' && asset.status !== status) return false;
+            if (unusedOnly && (asset.usageCount ?? 0) > 0) return false;
+            if (needle === '') return true;
+            return (
+                asset.altText.toLocaleLowerCase().includes(needle) ||
+                (asset.originalName ?? '').toLocaleLowerCase().includes(needle)
+            );
+        });
+    }, [assets, query, slot, status, unusedOnly]);
+
+    const detailAsset = assets.find((a) => a.id === detailId) ?? null;
+    const impactAsset = assets.find((a) => a.id === impactId) ?? null;
+    const filtersActive = query !== '' || slot !== '' || status !== '' || unusedOnly;
+
+    /*
+        Kullanılmayan görsel doğrudan çöpe gider — çöp geri alınabilir, bir
+        onay diyaloğu daha kullanıcıyı yormaktan başka iş görmez. Kullanılan
+        görselde önce etki önizlemesi açılır (`docs/49` Faz 5 madde 2).
+    */
+    function requestDelete(id: number) {
+        const asset = assets.find((a) => a.id === id);
+        if (actions && asset && (asset.usageCount ?? 0) > 0) {
+            setImpactId(id);
+            return;
+        }
+        setDetailId(null);
+        onDelete(id);
+    }
+
+    function assetName(asset: MediaAsset) {
+        return asset.altText.trim() !== ''
+            ? asset.altText
+            : t('workspace.media.library.asset.untitled');
+    }
+
+    function renderRow(asset: MediaAsset) {
+        const isDeleting = pendingDeleteIds?.has(asset.id) ?? false;
+        const hasDeleteError = deleteErrorIds?.has(asset.id) ?? false;
+        const name = assetName(asset);
+        const meta = [
+            asset.originalName,
+            formatBytes(asset.sizeBytes),
+            asset.usageCount !== undefined
+                ? t('workspace.media.library.asset.usageCount', { count: String(asset.usageCount) })
+                : null,
+        ].filter(Boolean);
+
+        return (
+            <li
+                key={asset.id}
+                className={
+                    view === 'grid'
+                        ? 'flex flex-col gap-2 rounded-lg border border-border bg-surface p-2'
+                        : 'flex flex-col gap-1 border-b border-border pb-2'
+                }
+            >
+                {asset.previewUrl ? (
+                    <img
+                        src={asset.previewUrl}
+                        alt=""
+                        className={
+                            view === 'grid'
+                                ? 'aspect-square w-full rounded-md bg-surface-muted object-cover'
+                                : 'h-[3rem] w-[3rem] rounded-md bg-surface-muted object-cover'
+                        }
+                    />
+                ) : view === 'grid' ? (
+                    <div
+                        aria-hidden="true"
+                        className="flex aspect-square w-full items-center justify-center rounded-md bg-surface-muted text-meta text-fg-muted"
+                    >
+                        {t('workspace.media.library.detail.noPreview')}
+                    </div>
+                ) : null}
+                {/*
+                    Satırın adı, kullanıcının KENDİ yazdığı alt metindir; tablo
+                    anahtarı (`#7`) bir ad değildir. Ad bir düğmedir: tıklayınca
+                    detay çekmecesi açılır (kullanım, sürüm, yeniden üretim).
+                */}
+                {actions ? (
+                    <button
+                        type="button"
+                        onClick={() => setDetailId(asset.id)}
+                        className="self-start text-start text-body font-medium text-fg underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                        aria-label={t('workspace.media.library.asset.details.named', { name })}
+                    >
+                        {name}
+                    </button>
+                ) : (
+                    <span className="text-body font-medium text-fg">{name}</span>
+                )}
+                {meta.length > 0 ? (
+                    <span className="text-meta text-fg-muted">{meta.join(' · ')}</span>
+                ) : null}
+                {/* Sebep rozetin içindedir; ikinci canlı bölge aynı şeyi iki kez okutur (`docs/76`). */}
+                <MediaAssetStatusBadge status={asset.status} reason={asset.statusReason} />
+                <Button
+                    color="light"
+                    type="button"
+                    disabled={isDeleting}
+                    onClick={() => requestDelete(asset.id)}
+                    className="self-start text-meta"
+                    aria-label={t('workspace.media.library.asset.delete.named', { name })}
+                >
+                    {t('workspace.media.library.asset.delete')}
+                </Button>
+                {hasDeleteError && (
+                    <p role="alert" className="text-meta font-medium text-fg-danger">
+                        {t('workspace.media.library.asset.delete.failed')}
+                    </p>
+                )}
+            </li>
+        );
+    }
+
+    const libraryPanel = (
+        <div className="flex flex-col gap-3">
             <h4 className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                 {t('workspace.media.library.assets.heading')}
             </h4>
+
+            {/* Tek varlıkta arama/süzgeç anlamsızdır; iki ve üzerinde açılır. */}
+            {loadState === 'idle' && assets.length > 1 ? (
+                <div
+                    role="group"
+                    aria-label={t('workspace.media.library.filters.label')}
+                    className="flex flex-wrap items-end gap-2"
+                >
+                    <label className="flex min-w-0 flex-1 flex-col gap-1 text-meta text-fg-muted">
+                        {t('workspace.media.library.filters.search')}
+                        <TextInput
+                            type="search"
+                            value={query}
+                            onChange={(event) => setQuery(event.target.value)}
+                            placeholder={t('workspace.media.library.filters.searchPlaceholder')}
+                        />
+                    </label>
+                    <label className="flex flex-col gap-1 text-meta text-fg-muted">
+                        {t('workspace.media.library.filters.slot')}
+                        <Select value={slot} onChange={(event) => setSlot(event.target.value)}>
+                            <option value="">{t('workspace.media.library.filters.any')}</option>
+                            {slots.map((value) => (
+                                <option key={value} value={value}>
+                                    {value}
+                                </option>
+                            ))}
+                        </Select>
+                    </label>
+                    <label className="flex flex-col gap-1 text-meta text-fg-muted">
+                        {t('workspace.media.library.filters.status')}
+                        <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+                            <option value="">{t('workspace.media.library.filters.any')}</option>
+                            {statuses.map((value) => (
+                                <option key={value} value={value}>
+                                    {t(`workspace.media.library.asset.status.${value}`)}
+                                </option>
+                            ))}
+                        </Select>
+                    </label>
+                    <label className="flex items-center gap-2 text-body text-fg">
+                        <Checkbox
+                            checked={unusedOnly}
+                            onChange={(event) => setUnusedOnly(event.target.checked)}
+                        />
+                        {t('workspace.media.library.filters.unusedOnly')}
+                    </label>
+                    <div
+                        role="group"
+                        aria-label={t('workspace.media.library.view.label')}
+                        className="flex gap-1"
+                    >
+                        <Button
+                            color="light"
+                            type="button"
+                            className="text-meta"
+                            aria-pressed={view === 'list'}
+                            onClick={() => setView('list')}
+                        >
+                            {t('workspace.media.library.view.list')}
+                        </Button>
+                        <Button
+                            color="light"
+                            type="button"
+                            className="text-meta"
+                            aria-pressed={view === 'grid'}
+                            onClick={() => setView('grid')}
+                        >
+                            {t('workspace.media.library.view.grid')}
+                        </Button>
+                    </div>
+                </div>
+            ) : null}
 
             {loadState === 'loading' ? (
                 <p role="status" className="text-body text-fg-muted">
@@ -67,75 +292,78 @@ export function MediaLibraryRegion({
                 <p role="status" className="text-body text-fg-muted">
                     {t('workspace.media.library.unavailable')}
                 </p>
+            ) : visible.length === 0 ? (
+                <p role="status" className="text-body text-fg-muted">
+                    {t('workspace.media.library.filters.noMatch')}
+                </p>
             ) : (
                 <ul
                     aria-label={t('workspace.media.library.assets.heading')}
-                    className="flex flex-col gap-2"
+                    className={
+                        view === 'grid'
+                            ? 'grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-3'
+                            : 'flex flex-col gap-2'
+                    }
                 >
-                    {assets.map((asset) => {
-                        const isDeleting = pendingDeleteIds?.has(asset.id) ?? false;
-                        const hasDeleteError = deleteErrorIds?.has(asset.id) ?? false;
-                        const assetName =
-                            asset.altText.trim() !== ''
-                                ? asset.altText
-                                : t('workspace.media.library.asset.untitled');
-
-                        return (
-                            <li
-                                key={asset.id}
-                                className="flex flex-col gap-1 border-b border-border pb-2"
-                            >
-                                {/*
-                                    Satırın adı, kullanıcının KENDİ yazdığı alt
-                                    metindir. Önceden birincil etiket varlığın
-                                    veritabanı kimliğiydi (`#7`) ve alt metin onun
-                                    altında ikincil duruyordu: kullanıcının yüklediği
-                                    fotoğraf, kendi verdiği adla değil bir tablo
-                                    anahtarıyla listeleniyordu.
-                                */}
-                                <span className="text-body font-medium text-fg">{assetName}</span>
-                                {/*
-                                    Sebep rozetin içindedir: satır başına ikinci
-                                    bir canlı bölge, ekran okuyucuda aynı şeyi
-                                    iki kez okutur (`docs/76`).
-                                */}
-                                <MediaAssetStatusBadge
-                                    status={asset.status}
-                                    reason={asset.statusReason}
-                                />
-                                <Button
-                                    color="light"
-                                    type="button"
-                                    disabled={isDeleting}
-                                    onClick={() => onDelete(asset.id)}
-                                    className="self-start text-meta"
-                                    // Silme geri alınamaz. Üç satırın üçünde de
-                                    // "Delete" yazan düğme, ekran okuyucuda hangi
-                                    // görseli sildiğini söylemiyordu.
-                                    aria-label={t('workspace.media.library.asset.delete.named', {
-                                        name: assetName,
-                                    })}
-                                >
-                                    {t('workspace.media.library.asset.delete')}
-                                </Button>
-                                {hasDeleteError && (
-                                    <p
-                                        role="alert"
-                                        className="text-meta font-medium text-fg-danger"
-                                    >
-                                        {t('workspace.media.library.asset.delete.failed')}
-                                    </p>
-                                )}
-                            </li>
-                        );
-                    })}
+                    {visible.map(renderRow)}
                 </ul>
             )}
+
+            {filtersActive && loadState === 'idle' && assets.length > 1 ? (
+                <p className="text-meta text-fg-muted">
+                    {t('workspace.media.library.filters.count', {
+                        shown: String(visible.length),
+                        total: String(assets.length),
+                    })}
+                </p>
+            ) : null}
 
             {deleteNotice && (
                 <p role="status" className="text-meta text-fg-muted">
                     {deleteNotice}
                 </p>
+            )}
+        </div>
+    );
+
+    return (
+        <div
+            role="region"
+            aria-label={t('workspace.media.library.region')}
+            className="flex flex-col gap-3"
+        >
+            <h3 className="text-body font-semibold text-fg">
+                {t('workspace.media.library.heading')}
+            </h3>
+
+            {actions ? (
+                <Tabs
+                    label={t('workspace.media.library.tabs.label')}
+                    selectedKey={tab}
+                    onChange={(key) => setTab(key === 'trash' ? 'trash' : 'library')}
+                    items={[
+                        {
+                            key: 'library',
+                            label: t('workspace.media.library.tabs.library'),
+                            panel: libraryPanel,
+                        },
+                        {
+                            key: 'trash',
+                            label: t('workspace.media.library.tabs.trash'),
+                            panel:
+                                tab === 'trash' ? (
+                                    <MediaTrashList
+                                        loadTrash={actions.loadTrash}
+                                        restore={actions.restoreFromTrash}
+                                        onRestored={() => onRetry?.()}
+                                        retentionDays={trashRetentionDays}
+                                    />
+                                ) : null,
+                        },
+                    ]}
+                />
+            ) : (
+                libraryPanel
             )}
 
             <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
@@ -147,6 +375,30 @@ export function MediaLibraryRegion({
                 {t('workspace.media.lifecycle.heading')}
             </p>
             <MediaLifecycleList />
+
+            {actions ? (
+                <MediaAssetDetailDrawer
+                    asset={detailAsset}
+                    actions={actions}
+                    onClose={() => setDetailId(null)}
+                    onDelete={requestDelete}
+                    onChanged={() => onRetry?.()}
+                />
+            ) : null}
+
+            {actions ? (
+                <MediaDeleteImpactDialog
+                    asset={impactAsset}
+                    loadUsages={actions.loadUsages}
+                    onDetachAndDelete={async (id) => {
+                        await actions.detach(id);
+                        setImpactId(null);
+                        setDetailId(null);
+                        onDelete(id);
+                    }}
+                    onClose={() => setImpactId(null)}
+                />
+            ) : null}
         </div>
     );
 }

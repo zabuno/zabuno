@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
@@ -17,6 +17,46 @@ export type MediaAsset = {
      * her satırda açıklama görmeye başlarsa gerçek uyarıyı okumaz.
      */
     statusReason?: string | null;
+    /** Aynı kiracıda daha eski bir kopya varsa onun kimliği (`docs/49` Faz 3). */
+    duplicateOfId?: number | null;
+    /** En küçük hazır rendition — yalnız `ready` varlıkta dolu (`docs/49` Faz 4). */
+    previewUrl?: string | null;
+    usageCount?: number;
+    versionCount?: number;
+    originalName?: string | null;
+    sizeBytes?: number;
+    createdAt?: string | null;
+    lifecycle?: string;
+};
+
+export type MediaUsage = {
+    entityType: string;
+    entityId: number;
+    slot: string;
+    label: string;
+    published: boolean;
+};
+
+export type MediaVersion = {
+    number: number;
+    id: number;
+    createdBy: string;
+    createdAt: string;
+    renditionCount: number;
+};
+
+/**
+ * Kütüphane bölgesinin sayfadan aldığı eylemler (`docs/49` Faz 4-5). Hepsi
+ * kiracı adresine bağlıdır; bölge adres bilmez, yalnız çağırır.
+ */
+export type MediaLibraryActions = {
+    loadUsages: (id: number) => Promise<MediaUsage[]>;
+    loadVersions: (id: number) => Promise<MediaVersion[]>;
+    reprocess: (id: number) => Promise<void>;
+    restoreVersion: (id: number, versionNumber: number) => Promise<void>;
+    detach: (id: number) => Promise<void>;
+    loadTrash: () => Promise<MediaAsset[]>;
+    restoreFromTrash: (id: number) => Promise<void>;
 };
 
 type MediaPageProps = {
@@ -152,6 +192,58 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
         setLoadState('idle');
     }
 
+    /*
+        Eylemler `useMemo` ile SABİT: çekmece ve çöp sekmesi bu nesneye
+        bağımlılık olarak bakar; her render'da yeni nesne, her render'da
+        yeniden yükleme demekti.
+    */
+    const actions = useMemo<MediaLibraryActions>(() => {
+        async function getJson<T>(url: string): Promise<T> {
+            const response = await fetch(url, { credentials: 'same-origin' });
+            if (!response.ok) {
+                throw new Error(String(response.status));
+            }
+            return (await response.json()) as T;
+        }
+
+        async function post(url: string): Promise<Response> {
+            const response = await fetch(url, {
+                ...buildAuthRequestInit({ method: 'POST' }),
+                credentials: 'same-origin',
+            });
+            if (!response.ok) {
+                throw new Error(String(response.status));
+            }
+            return response;
+        }
+
+        return {
+            loadUsages: async (id) =>
+                (await getJson<{ usages: MediaUsage[] }>(`${endpoint}/${id}/usages`)).usages,
+            loadVersions: async (id) =>
+                (await getJson<{ versions: MediaVersion[] }>(`${endpoint}/${id}/versions`))
+                    .versions,
+            reprocess: async (id) => {
+                await post(`${endpoint}/${id}/reprocess`);
+            },
+            restoreVersion: async (id, versionNumber) => {
+                await post(`${endpoint}/${id}/versions/${versionNumber}/restore`);
+            },
+            detach: async (id) => {
+                await post(`${endpoint}/${id}/detach`);
+            },
+            loadTrash: async () => {
+                const body = await getJson<{ data?: MediaAsset[]; assets?: MediaAsset[] }>(
+                    `${endpoint}?trashed=1`,
+                );
+                return body.data ?? body.assets ?? [];
+            },
+            restoreFromTrash: async (id) => {
+                await post(`${endpoint}/${id}/restore`);
+            },
+        };
+    }, [endpoint]);
+
     async function handleDelete(id: number) {
         if (pendingDeleteIds.has(id)) {
             return;
@@ -180,7 +272,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             }
 
             setAssets((current) => current.filter((asset) => asset.id !== id));
-            setDeleteNotice(t('workspace.media.library.asset.delete.complete'));
+            setDeleteNotice(t('workspace.media.library.asset.delete.trashed'));
         } catch {
             setDeleteErrorIds((current) => new Set(current).add(id));
         } finally {
@@ -208,6 +300,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                     pendingDeleteIds={pendingDeleteIds}
                     deleteErrorIds={deleteErrorIds}
                     deleteNotice={deleteNotice}
+                    actions={workspaceId === undefined ? undefined : actions}
                 />
             </WorkspacePageFrame>
         </div>

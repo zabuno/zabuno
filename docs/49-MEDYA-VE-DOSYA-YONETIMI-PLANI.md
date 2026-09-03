@@ -274,6 +274,16 @@ göstermiyor → FF-70.
 **Kabul:** INV-01..07 yeşil; rollback çalışır.
 
 ### Faz 4 — Kütüphane arayüzü
+
+**Durum (FF-70, 2026-09-04):** 1 ✅ liste/ızgara, küçük resim (en küçük hazır
+rendition), arama (alt metin + dosya adı), slot/durum süzgeci; 2 kısmen ✅
+"kullanılmayanlar" akıllı süzgeci var, koleksiyon/etiket ⬜ (FF-71'e
+ertelendi — kota ve izin matrisiyle birlikte); 3 ✅ detay çekmecesi:
+önizleme, metadata (dosya, boyut, tarih, slot, kopya uyarısı), kullanım,
+sürümler (geri al), "boyutları yeniden üret" — Haklar/Etkinlik ⬜ (Faz 7);
+4 ✅ catalog bileşenleri (`TextInput`/`Select`/`Checkbox`/`Tabs`/`DrawerPanel`/
+`ConfirmDialog`), piksel/breakpoint sınıfı yok (MediaPage kapısı).
+
 1. Grid/liste, önizleme, arama, filtre
 2. Koleksiyon + etiket + akıllı koleksiyon ("alt metni eksik", "kullanılmayan")
 3. Asset detayı: Önizleme / Metadata / Kullanım / Sürümler / Rendition /
@@ -284,8 +294,18 @@ göstermiyor → FF-70.
 
 ### Faz 5 — Kullanım grafiği ve yayın bağı
 
-**Durum (2026-09-04):** 1 ✅ (`media_usages` entity/slot/publication); 4 ✅
-(`recordPublicationUsages` version'ı dondurur, `docs/77`); 2, 3, 5 ⬜ → FF-70.
+**Durum (FF-70, 2026-09-04):** 1 ✅ (`media_usages` entity/slot/publication;
+`GET media/{id}/usages` insan adıyla — "Adana Kebap", "#7" değil); 2 ✅ silme
+etki önizlemesi: kullanılmayan görsel doğrudan çöpe, kullanılan görselde
+diyalog "nerede kullanılıyor" + "bağı kes ve çöpe at" / vazgeç; yayındaki
+menüde olan görselde düğme kapalı ve sebep yazılı (sunucudaki 409 kullanıcıya
+yaşatılmaz); "değiştir" (yerine başka görsel seç) ⬜ → FF-71; 3 ✅ silme çöpe
+atar (dosya diskte kalır, `lifecycle_status=trashed`), Çöp sekmesi + geri al,
+`media:purge-trash --days` (varsayılan `config/media-slots.php`
+`trash_retention_days=30`; yayında kullanılan asla purge edilmez;
+dosya silinemezse satır da kalır); 4 ✅ (`recordPublicationUsages` version'ı
+dondurur, `docs/77`); 5 ⬜ fallback zinciri → FF-71 (yer tutucu görsel
+politikası kota/izinle birlikte).
 
 1. `media_usages`: entity, slot, location, locale, publication, override
 2. Silmeden önce **etki önizlemesi**: değiştir / bağı kes / vazgeç

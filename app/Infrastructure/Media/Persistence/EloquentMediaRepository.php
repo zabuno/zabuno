@@ -10,8 +10,10 @@ use App\Application\Media\Dto\MediaIntake;
 use App\Application\Media\Dto\ProcessableMediaAsset;
 use App\Application\Media\Dto\ScannableMediaAsset;
 use App\Application\Media\Port\MediaRepositoryPort;
+use App\Domain\Media\LifecycleStatus;
 use App\Domain\Media\MediaAssetStatus;
 use App\Models\MediaAsset;
+use App\Support\Media\RenditionUrl;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -113,13 +115,123 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             return;
         }
 
-        $deleted = Storage::disk(self::QUARANTINE_DISK)->delete((string) $asset->disk_path);
+        /*
+            ÇÖP, SİLME DEĞİLDİR (`docs/49` Faz 5 madde 3). Dosya diskte kalır;
+            satır yaşam döngüsünde `trashed` olur ve listeden düşer. Yanlış
+            silinen bir fotoğraf `restore` ile geri gelir; süresi dolan çöpü
+            `media:purge-trash` kalıcı temizler. 2026-09-04'e kadar burada
+            dosya hemen siliniyordu — "sildim, geri alamıyorum".
+        */
+        $asset->forceFill(['lifecycle_status' => LifecycleStatus::Trashed->value])->save();
+        $asset->delete();
+    }
 
-        if ($deleted === false) {
-            throw new RuntimeException("Unable to delete media file from disk at [{$asset->disk_path}].");
+    public function listTrashed(int $workspaceId): array
+    {
+        return MediaAsset::onlyTrashed()
+            ->where('workspace_id', $workspaceId)
+            ->where('lifecycle_status', LifecycleStatus::Trashed->value)
+            ->orderByDesc('deleted_at')
+            ->get()
+            ->map(fn (MediaAsset $asset) => $this->toSummary($asset))
+            ->all();
+    }
+
+    public function restore(int $workspaceId, int $assetId): bool
+    {
+        $asset = MediaAsset::onlyTrashed()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->first();
+
+        if ($asset === null) {
+            return false;
         }
 
-        $asset->delete();
+        $asset->forceFill(['lifecycle_status' => LifecycleStatus::Active->value])->save();
+        $asset->restore();
+
+        return true;
+    }
+
+    public function purgeTrash(int $olderThanDays): int
+    {
+        $rows = MediaAsset::onlyTrashed()
+            ->where('lifecycle_status', LifecycleStatus::Trashed->value)
+            ->where('deleted_at', '<', now()->subDays($olderThanDays))
+            ->get();
+
+        $purged = 0;
+
+        foreach ($rows as $asset) {
+            // Yayında kullanılan bir görsel çöpte bile purge edilmez: yayın
+            // snapshot'ı onu gösteriyor olabilir (`docs/76` kriter 4).
+            if ($this->isUsedByPublication((int) $asset->workspace_id, (int) $asset->getKey())) {
+                continue;
+            }
+
+            // Dosya gitmediyse satır da gitmez: yetim dosyanın izi kaybolmasın.
+            if (Storage::disk(self::QUARANTINE_DISK)->delete((string) $asset->disk_path) === false) {
+                continue;
+            }
+
+            $storageKeys = DB::table('media_blobs')
+                ->join('media_renditions', 'media_renditions.media_blob_id', '=', 'media_blobs.id')
+                ->join('media_versions', 'media_versions.id', '=', 'media_renditions.media_version_id')
+                ->where('media_versions.media_asset_id', $asset->getKey())
+                ->pluck('media_blobs.storage_key');
+
+            foreach ($storageKeys as $storageKey) {
+                Storage::disk(self::QUARANTINE_DISK)->delete((string) $storageKey);
+            }
+
+            $asset->forceFill(['lifecycle_status' => LifecycleStatus::Purged->value])->save();
+            $asset->forceDelete();
+            $purged++;
+        }
+
+        return $purged;
+    }
+
+    public function usagesFor(int $workspaceId, int $assetId): array
+    {
+        $rows = DB::table('media_usages')
+            ->where('workspace_id', $workspaceId)
+            ->where('media_asset_id', $assetId)
+            ->orderBy('id')
+            ->get();
+
+        $out = [];
+
+        foreach ($rows as $row) {
+            $label = match ((string) $row->entity_type) {
+                'menu_item' => (string) (DB::table('menu_items')
+                    ->join('products', 'products.id', '=', 'menu_items.product_id')
+                    ->where('menu_items.id', (int) $row->entity_id)
+                    ->value('products.name') ?? "#{$row->entity_id}"),
+                'brand' => (string) (DB::table('brands')->where('id', (int) $row->entity_id)->value('name') ?? "#{$row->entity_id}"),
+                default => (string) $row->entity_type.' #'.$row->entity_id,
+            };
+
+            $out[] = [
+                'entityType' => (string) $row->entity_type,
+                'entityId' => (int) $row->entity_id,
+                'slot' => (string) $row->slot,
+                'label' => $label,
+                'published' => $row->publication_id !== null,
+            ];
+        }
+
+        return $out;
+    }
+
+    public function detachDraftUsages(int $workspaceId, int $assetId): int
+    {
+        return DB::table('media_usages')
+            ->where('workspace_id', $workspaceId)
+            ->where('media_asset_id', $assetId)
+            ->whereNull('publication_id')
+            ->delete();
     }
 
     public function claimQuarantinedForScanning(int $workspaceId, int $assetId): ?ScannableMediaAsset
@@ -557,7 +669,38 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             status: (string) $asset->status,
             statusReason: $this->latestBlockingReason((int) $asset->getKey()),
             duplicateOfId: $this->duplicateOf($asset),
+            previewUrl: $this->previewUrl($asset),
+            usageCount: (int) DB::table('media_usages')
+                ->where('media_asset_id', $asset->getKey())
+                ->whereNull('publication_id')
+                ->count(),
+            versionCount: (int) DB::table('media_versions')->where('media_asset_id', $asset->getKey())->count(),
+            originalName: (string) $asset->original_name,
+            sizeBytes: (int) $asset->size_bytes,
+            createdAt: $asset->created_at?->toIso8601String(),
+            lifecycle: (string) ($asset->lifecycle_status ?? 'draft'),
         );
+    }
+
+    /** Geçerli sürümün EN KÜÇÜK rendition'ı — kütüphane küçük resmi için yeter (`docs/49` Faz 4). */
+    private function previewUrl(MediaAsset $asset): ?string
+    {
+        $versionId = DB::table('media_versions')
+            ->where('media_asset_id', $asset->getKey())
+            ->orderByDesc('version_number')
+            ->value('id');
+
+        if ($versionId === null) {
+            return null;
+        }
+
+        $row = DB::table('media_renditions')
+            ->join('media_blobs', 'media_blobs.id', '=', 'media_renditions.media_blob_id')
+            ->where('media_renditions.media_version_id', $versionId)
+            ->orderBy('media_renditions.width')
+            ->first(['media_renditions.id', 'media_renditions.format', 'media_blobs.checksum_sha256']);
+
+        return $row === null ? null : RenditionUrl::for((int) $row->id, (string) $row->checksum_sha256, (string) $row->format);
     }
 
     /**
