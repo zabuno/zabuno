@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Application\Platform\Port;
+
+use App\Domain\Platform\Credential\CredentialProvider;
+
+/**
+ * Sırrı ÇÖZEN taraf — yalnız tüketici altyapı içindir.
+ *
+ * Posta göndericisi ya da OpenAI adaptörü bir çağrı yaparken buradan gerçek
+ * değeri okur. HTTP controller'ları bu portu ASLA enjekte etmez; onların
+ * portu `PlatformCredentialAdminPort`'tur ve sır geri okumaz.
+ *
+ * Kasa boşsa (ya da sağlayıcı kapalıysa) `env` yedeğine düşer: mevcut
+ * dağıtımlar sunucu `.env`'iyle çalışmaya devam eder, kasa doldurulduğu an
+ * onun önüne geçer. Öncelik: KASA > env.
+ */
+interface CredentialResolverPort
+{
+    /**
+     * @return array<string, string> Alan adı → çözülmüş değer. Hiç yapılandırma
+     *                               yoksa boş dizi. Değerler SIRDIR — log'a,
+     *                               cevaba, denetim metnine yazılmaz.
+     */
+    public function resolve(CredentialProvider $provider): array;
+
+    public function isConfigured(CredentialProvider $provider): bool;
+}
