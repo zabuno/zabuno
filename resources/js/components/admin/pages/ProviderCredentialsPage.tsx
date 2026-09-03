@@ -168,6 +168,8 @@ export function ProviderCredentialsPage() {
     const [busyId, setBusyId] = useState<number | null>(null);
     const [savedId, setSavedId] = useState<number | null>(null);
     const [saveError, setSaveError] = useState<number | null>(null);
+    /** Bağlantı kimliği → son yoklamanın sonucu (`reachable`/`rejected`/`unsupported`). */
+    const [probeOutcome, setProbeOutcome] = useState<Record<number, string | null>>({});
 
     /*
         EKLEME FORMU — `docs/95` Faz 3 UX sözleşmesi.
@@ -256,6 +258,42 @@ export function ProviderCredentialsPage() {
             }
         },
         [drafts, load],
+    );
+
+    /*
+        UYUMLULUK YOKLAMASI — `docs/95` Faz 3.
+
+        Superadmin bugüne kadar anahtarı kaydedip "kaydedildi" görüyor, ama
+        yanlış olduğunu ancak ilk MÜŞTERİ isteğinde öğreniyordu. Bu düğme o
+        soruyu şimdi, tek ve ücretsiz bir çağrıyla yanıtlar.
+    */
+    const probe = useCallback(
+        async (id: number) => {
+            setBusyId(id);
+            setProbeOutcome((prev) => ({ ...prev, [id]: null }));
+            try {
+                await bootstrapCsrfCookie();
+                const response = await fetch(`${ENDPOINT}/${id}/probe`, mutationInit('POST', {}));
+                if (!response.ok) {
+                    throw new Error('probe failed');
+                }
+                const body: unknown = await response.json();
+                const outcome =
+                    typeof body === 'object' &&
+                    body !== null &&
+                    typeof (body as { probe?: { outcome?: unknown } }).probe?.outcome === 'string'
+                        ? String((body as { probe: { outcome: string } }).probe.outcome)
+                        : 'rejected';
+
+                setProbeOutcome((prev) => ({ ...prev, [id]: outcome }));
+                await load();
+            } catch {
+                setSaveError(id);
+            } finally {
+                setBusyId(null);
+            }
+        },
+        [load],
     );
 
     const setState = useCallback(
@@ -626,6 +664,23 @@ export function ProviderCredentialsPage() {
                                                 ? t('platform.credentials.disable')
                                                 : t('platform.connections.enable')}
                                         </button>
+
+                                        <button
+                                            type="button"
+                                            className={secondaryButtonClass}
+                                            disabled={busyId === connection.id}
+                                            onClick={() => void probe(connection.id)}
+                                        >
+                                            {t('platform.connections.probe')}
+                                        </button>
+
+                                        {probeOutcome[connection.id] ? (
+                                            <span role="status">
+                                                {t(
+                                                    `platform.connections.probe.${probeOutcome[connection.id]}` as never,
+                                                )}
+                                            </span>
+                                        ) : null}
 
                                         {savedId === connection.id ? (
                                             <span role="status">

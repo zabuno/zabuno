@@ -132,6 +132,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/admin/connections||App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/connections||App\Http\Controllers\PlatformAdmin\StoreProviderConnectionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
         'PUT|api/admin/connections/{connection}||App\Http\Controllers\PlatformAdmin\UpdateProviderConnectionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        // Uyumluluk yoklaması (`docs/95` Faz 3): dışarıya gerçek bir ağ
+        // çağrısı yaptığı için daha sıkı hız sınırı taşır.
+        'POST|api/admin/connections/{connection}/probe||App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:10,1,verified',
         'POST|api/admin/connections/{connection}/{state}||App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
     ];
 

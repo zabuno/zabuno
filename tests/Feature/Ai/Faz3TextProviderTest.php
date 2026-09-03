@@ -72,6 +72,20 @@ final class Faz3TextProviderTest extends TestCase
     private function configure(CredentialProvider $provider, array $values): void
     {
         $this->app->make(PlatformCredentialAdminPort::class)->put($provider, $values, null);
+
+        /*
+            ÖZEL UÇ NOKTA, SINANMADAN ADAY OLMAZ (FF-60, `docs/51` §4.5) —
+            superadmin'in yazdığı keyfi bir adrese, ne konuştuğunu bilmeden
+            üretim trafiği gitmez. Bu testlerin konusu adaptörün KENDİ
+            davranışı olduğu için, kapıyı yoklama yapılmış gibi açıyoruz;
+            kapının kendisi `ConnectionProbeTest`'te sınanıyor.
+        */
+        if ($provider === CredentialProvider::CustomEndpoint) {
+            $id = DB::table('platform_credential_connections')
+                ->where('provider', $provider->value)->value('id');
+
+            $this->app->make(AccountRoutingPort::class)->markHealthy((int) $id);
+        }
     }
 
     // --- ANTHROPIC ---------------------------------------------------------

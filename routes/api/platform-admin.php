@@ -8,6 +8,7 @@ use App\Http\Controllers\PlatformAdmin\ListManagedPlansController;
 use App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController;
 use App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController;
 use App\Http\Controllers\PlatformAdmin\ListProviderCredentialsController;
+use App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController;
 use App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController;
 use App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController;
 use App\Http\Controllers\PlatformAdmin\StoreManagedPlanController;
@@ -44,6 +45,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/admin/connections', ListProviderConnectionsController::class);
         Route::post('/admin/connections', StoreProviderConnectionController::class)->middleware('throttle:20,1');
         Route::put('/admin/connections/{connection}', UpdateProviderConnectionController::class)->middleware('throttle:20,1');
+        /*
+            Uyumluluk yoklaması (`docs/95` Faz 3). Ayrı ve DAHA SIKI hız
+            sınırı: dışarıya gerçek bir ağ çağrısı yapar, token harcamasa
+            bile sınırsız denemeye açık bırakılmaz.
+        */
+        Route::post('/admin/connections/{connection}/probe', ProbeProviderConnectionController::class)
+            ->middleware('throttle:10,1');
         Route::post('/admin/connections/{connection}/{state}', SetProviderConnectionStateController::class)
             ->whereIn('state', ['disable', 'enable'])
             ->middleware('throttle:20,1');
