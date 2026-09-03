@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Platform\Port;
 
 use App\Domain\Platform\Credential\CredentialProvider;
+use App\Domain\Platform\Credential\ResolvedCredential;
 
 /**
  * Sırrı ÇÖZEN taraf — yalnız tüketici altyapı içindir.
@@ -25,6 +26,18 @@ interface CredentialResolverPort
      *                               cevaba, denetim metnine yazılmaz.
      */
     public function resolve(CredentialProvider $provider): array;
+
+    /**
+     * BİR TENANT İÇİN çözer — `docs/95` Faz 3, `docs/14` §2a.
+     *
+     * `resolve()`'dan üç farkı var ve üçü de çok-hesap dünyasında zorunlu:
+     * tenant kendi anahtarını (BYOK) getirdiyse o kullanılır; seçim
+     * YAPIŞKANDIR (aynı tenant hep aynı hesaba gider, çünkü prompt
+     * önbelleği hesaba bağlı); ve dönen nesne hangi bağlantının seçildiğini
+     * söyler, böylece çağrı başarısız olduğunda "hangi hesap düştü"
+     * yanıtlanabilir.
+     */
+    public function resolveFor(int $workspaceId, CredentialProvider $provider): ResolvedCredential;
 
     public function isConfigured(CredentialProvider $provider): bool;
 }

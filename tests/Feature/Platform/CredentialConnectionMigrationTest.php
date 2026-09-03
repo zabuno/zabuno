@@ -32,11 +32,29 @@ final class CredentialConnectionMigrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Göçü ADIYLA geriye alır, `--step` sayısıyla değil.
+     *
+     * `--step` kırılgan olurdu: bu göçten sonra eklenen HER yeni migration
+     * sayıyı kaydırır ve bu test, ilgisiz bir değişiklikle kırılırdı.
+     * Yapışkan-eşleme tablosu bağlantı tablosuna FK ile bağlı olduğu için
+     * sırası da önemli — önce o gider.
+     */
+    private function rollbackConnectionMigrations(): void
+    {
+        foreach ([
+            'database/migrations/2026_09_04_000200_create_ai_connection_assignments_table.php',
+            'database/migrations/2026_09_04_000100_create_platform_credential_connections_table.php',
+        ] as $path) {
+            Artisan::call('migrate:rollback', ['--path' => $path]);
+        }
+    }
+
     #[Test]
     public function an_existing_single_row_vault_becomes_a_default_connection_without_losing_the_secret(): void
     {
         // Göçü geriye al: eski `platform_credentials` tablosu geri gelir.
-        Artisan::call('migrate:rollback', ['--step' => 1]);
+        $this->rollbackConnectionMigrations();
 
         self::assertTrue(Schema::hasTable('platform_credentials'), 'Geri alma eski tabloyu kurmadı.');
         self::assertFalse(Schema::hasTable('platform_credential_connections'));
@@ -104,7 +122,7 @@ final class CredentialConnectionMigrationTest extends TestCase
             null,
         );
 
-        Artisan::call('migrate:rollback', ['--step' => 1]);
+        $this->rollbackConnectionMigrations();
 
         $rows = DB::table('platform_credentials')->where('provider', 'openai')->get();
 
