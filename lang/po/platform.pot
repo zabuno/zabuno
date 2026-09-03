@@ -56,6 +56,22 @@ msgstr ""
 msgid "platform.connections.label.label"
 msgstr ""
 
+#: platform:platform.connections.probe
+msgid "platform.connections.probe"
+msgstr ""
+
+#: platform:platform.connections.probe.reachable
+msgid "platform.connections.probe.reachable"
+msgstr ""
+
+#: platform:platform.connections.probe.rejected
+msgid "platform.connections.probe.rejected"
+msgstr ""
+
+#: platform:platform.connections.probe.unsupported
+msgid "platform.connections.probe.unsupported"
+msgstr ""
+
 #: platform:platform.connections.provider.choose
 msgid "platform.connections.provider.choose"
 msgstr ""

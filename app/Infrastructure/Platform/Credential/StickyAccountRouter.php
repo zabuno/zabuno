@@ -39,10 +39,27 @@ final readonly class StickyAccountRouter implements AccountRoutingPort
             tenant'ın BYOK satırı buraya hiç gelmez. Filtre unutulabilir,
             `where` unutulursa test kırılır.
         */
-        $rows = DB::table(self::CONNECTIONS)
+        $query = DB::table(self::CONNECTIONS)
             ->where('provider', $provider->value)
             ->where('state', 'active')
-            ->where('health_status', '!=', ConnectionHealth::Unhealthy->value)
+            ->where('health_status', '!=', ConnectionHealth::Unhealthy->value);
+
+        /*
+            ÖZEL UÇ NOKTA, DENENMEDEN ADAY OLMAZ — `docs/51` §4.5:
+            "hangi portları desteklediği test edilmeden aday olmaz".
+
+            Bilinen sağlayıcılar için "henüz sınanmadı" aday olmaya yeter:
+            OpenAI'ın adresini ve sözleşmesini biliyoruz. Ama özel uç nokta
+            superadmin'in yazdığı KEYFİ bir adrestir — ne konuştuğunu
+            bilmiyoruz. Sınanmamış böyle bir adrese üretim trafiği
+            göndermek, müşterinin menüsünü tanımadığımız bir sunucuya
+            yollamak olurdu.
+        */
+        if ($provider === CredentialProvider::CustomEndpoint) {
+            $query->where('health_status', ConnectionHealth::Healthy->value);
+        }
+
+        $rows = $query
             ->where(function ($query) use ($workspaceId): void {
                 $query->where('scope', CredentialScope::PlatformOwned->value)
                     ->orWhere(function ($inner) use ($workspaceId): void {

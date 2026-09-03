@@ -343,6 +343,65 @@ describe('ProviderCredentialsPage', () => {
         ).toBeInTheDocument();
     });
 
+    it('tests a connection and reports what the provider said', async () => {
+        const fetchMock = vi
+            .spyOn(globalThis, 'fetch')
+            .mockResolvedValueOnce(jsonResponse(payload()))
+            .mockResolvedValueOnce(jsonResponse({})) // csrf
+            .mockResolvedValueOnce(
+                jsonResponse({
+                    probe: { outcome: 'reachable', httpStatus: 200, detail: null },
+                    connection: { ...connections()[1], health: 'healthy' },
+                }),
+            )
+            .mockResolvedValueOnce(jsonResponse(payload()));
+
+        render(<ProviderCredentialsPage />);
+        await waitFor(() =>
+            expect(
+                screen.getByRole('heading', { name: 'OpenAI — Menü İçe Aktarma' }),
+            ).toBeInTheDocument(),
+        );
+
+        const card = screen
+            .getByRole('heading', { name: 'OpenAI — Menü İçe Aktarma' })
+            .closest('li')!;
+        await userEvent.click(within(card).getByRole('button', { name: 'Test this connection' }));
+
+        expect(await screen.findByText('Reached it — the key works.')).toBeInTheDocument();
+
+        const probeCall = fetchMock.mock.calls.find((call) =>
+            String(call[0]).endsWith('/connections/2/probe'),
+        );
+        expect(probeCall).toBeTruthy();
+        expect((probeCall![1] as RequestInit)?.method).toBe('POST');
+    });
+
+    it('says plainly when a provider has nothing to test', async () => {
+        vi.spyOn(globalThis, 'fetch')
+            .mockResolvedValueOnce(jsonResponse(payload()))
+            .mockResolvedValueOnce(jsonResponse({}))
+            .mockResolvedValueOnce(
+                jsonResponse({
+                    probe: { outcome: 'unsupported', httpStatus: null, detail: null },
+                    connection: connections()[0],
+                }),
+            )
+            .mockResolvedValueOnce(jsonResponse(payload()));
+
+        render(<ProviderCredentialsPage />);
+        await waitFor(() =>
+            expect(screen.getByRole('heading', { name: 'Varsayılan' })).toBeInTheDocument(),
+        );
+
+        const card = screen.getByRole('heading', { name: 'Varsayılan' }).closest('li')!;
+        await userEvent.click(within(card).getByRole('button', { name: 'Test this connection' }));
+
+        // "Yoklanacak bir şey yok" bir HATA değildir — Mailgun'un model
+        // listesi yoktur ve bu onu bozuk yapmaz.
+        expect(await screen.findByText('Nothing to test for this provider.')).toBeInTheDocument();
+    });
+
     it('shows an error with retry when loading fails', async () => {
         vi.spyOn(globalThis, 'fetch').mockResolvedValue(jsonResponse({}, false));
 

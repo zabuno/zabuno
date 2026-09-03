@@ -56,6 +56,22 @@ msgstr "Your own name for this account, e.g. “OpenAI — bulk import”. It is
 msgid "platform.connections.label.label"
 msgstr "Connection name"
 
+#: platform:platform.connections.probe
+msgid "platform.connections.probe"
+msgstr "Test this connection"
+
+#: platform:platform.connections.probe.reachable
+msgid "platform.connections.probe.reachable"
+msgstr "Reached it — the key works."
+
+#: platform:platform.connections.probe.rejected
+msgid "platform.connections.probe.rejected"
+msgstr "The provider refused this key."
+
+#: platform:platform.connections.probe.unsupported
+msgid "platform.connections.probe.unsupported"
+msgstr "Nothing to test for this provider."
+
 #: platform:platform.connections.provider.choose
 msgid "platform.connections.provider.choose"
 msgstr "Choose a provider…"

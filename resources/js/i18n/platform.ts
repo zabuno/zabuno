@@ -174,6 +174,13 @@ const en = {
     // Sağlık: "bilinmiyor" ile "sağlıklı" AYRI durumlar. Hiç sınanmamış bir
     // bağlantıyı sağlıklı göstermek, ilk gerçek isteği bir tahmine
     // dayandırmak olurdu.
+    // Yoklama: kaydettikten sonra "gerçekten çalışıyor mu" sorusunu tek ve
+    // ücretsiz bir çağrıyla yanıtlar. "Yoklanacak bir şey yok" bir HATA
+    // değildir — Mailgun'un model listesi yoktur ve bu onu bozuk yapmaz.
+    'platform.connections.probe': 'Test this connection',
+    'platform.connections.probe.reachable': 'Reached it — the key works.',
+    'platform.connections.probe.rejected': 'The provider refused this key.',
+    'platform.connections.probe.unsupported': 'Nothing to test for this provider.',
     'platform.connections.health.unknown': 'Not checked yet',
     'platform.connections.health.healthy': 'Healthy',
     'platform.connections.health.unhealthy': 'Not responding',
