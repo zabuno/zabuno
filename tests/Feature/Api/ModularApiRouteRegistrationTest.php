@@ -67,6 +67,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/workspaces/{workspace}/menu/{menu}/ai-imports||App\Http\Controllers\Ai\StoreMenuAiImportController|api,auth:sanctum,throttle:6,1,verified',
         'GET|api/workspaces/{workspace}/ai-imports/{artifact}||App\Http\Controllers\Ai\ShowMenuAiImportController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/ai-imports/{artifact}/apply||App\Http\Controllers\Ai\ApplyMenuAiImportController|api,auth:sanctum,throttle:10,1,verified',
+        'GET|api/workspaces/{workspace}/menu/duplicate-candidates||App\Http\Controllers\Ai\ShowDuplicateProductCandidatesController|api,auth:sanctum,throttle:10,1,verified',
         'PUT|api/workspaces/{workspace}/menu-categories/{category}/item-order||App\Http\Controllers\MenuCatalog\ReorderMenuItemsController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu/{menu}/category-order||App\Http\Controllers\MenuCatalog\ReorderCategoriesController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/publications||App\Http\Controllers\Publication\StorePublicationController|api,auth:sanctum,verified',

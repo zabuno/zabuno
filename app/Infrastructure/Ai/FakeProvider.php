@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Ai;
 
 use App\Application\Ai\Port\AiRequest;
+use App\Application\Ai\Port\EmbeddingPort;
 use App\Application\Ai\Port\OcrPort;
 use App\Application\Ai\Port\StructuredGenerationPort;
 use App\Application\Ai\Port\VisionExtractionPort;
@@ -24,7 +25,7 @@ use App\Domain\Ai\SourceRef;
  * DETERMİNİSTİKTİR: aynı girdi aynı çıktıyı verir. Rastgele davranan bir
  * sahte sağlayıcı, testleri kırılgan yapardı.
  */
-final readonly class FakeProvider implements OcrPort, StructuredGenerationPort, VisionExtractionPort
+final readonly class FakeProvider implements EmbeddingPort, OcrPort, StructuredGenerationPort, VisionExtractionPort
 {
     private function deployment(): ModelDeployment
     {
@@ -118,5 +119,47 @@ final readonly class FakeProvider implements OcrPort, StructuredGenerationPort, 
                 new FieldValue('price', null, 0.0, true),
             ],
         );
+    }
+
+    /**
+     * Metin → sahte vektör — harf-frekans histogramı.
+     *
+     * Rastgele DEĞİL: benzer metinler (büyük/küçük harf farkı gibi) benzer
+     * vektör üretmeli ki yinelenen-terim tespitinin benzerlik matematiği
+     * (kosinüs benzerliği) sağlayıcı anahtarı OLMADAN CI'da gerçekten
+     * sınanabilsin — aynı kabul ölçütü: `docs/51` §3.6/2.
+     *
+     * @param  list<string>  $texts
+     * @return list<array{vector: list<float>, model: string}>
+     */
+    public function embed(int $workspaceId, array $texts): array
+    {
+        return array_map(
+            fn (string $text): array => [
+                'vector' => $this->letterHistogram($text),
+                'model' => $this->deployment()->identity(),
+            ],
+            $texts,
+        );
+    }
+
+    /** @return list<float> */
+    private function letterHistogram(string $text): array
+    {
+        $buckets = array_fill(0, 32, 0.0);
+        $lower = mb_strtolower($text);
+
+        foreach (mb_str_split($lower) as $char) {
+            $bucket = ord($char[0] ?? "\0") % 32;
+            $buckets[$bucket]++;
+        }
+
+        $magnitude = sqrt(array_sum(array_map(static fn (float $v): float => $v * $v, $buckets)));
+
+        if ($magnitude === 0.0) {
+            return $buckets;
+        }
+
+        return array_map(static fn (float $v): float => $v / $magnitude, $buckets);
     }
 }

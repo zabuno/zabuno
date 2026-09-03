@@ -71,7 +71,7 @@ final readonly class ConfiguredAvailability implements AiAvailabilityPort
      */
     private function vaultServes(Capability $capability): bool
     {
-        if (! in_array($capability, [Capability::MenuExtract, Capability::OcrDocument], true)) {
+        if (! in_array($capability, [Capability::MenuExtract, Capability::OcrDocument, Capability::TextEmbedding], true)) {
             return false;
         }
 

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Ai\ApplyMenuAiImportController;
+use App\Http\Controllers\Ai\ShowDuplicateProductCandidatesController;
 use App\Http\Controllers\Ai\ShowMenuAiImportController;
 use App\Http\Controllers\Ai\StoreMenuAiImportController;
 use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
@@ -86,6 +87,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/ai-imports/{artifact}', ShowMenuAiImportController::class);
     Route::post('/workspaces/{workspace}/ai-imports/{artifact}/apply', ApplyMenuAiImportController::class)
         ->middleware('throttle:10,1');
+
+    /*
+        Yinelenen ürün adı tespiti (`docs/96`, Faz 2, core-taxonomy). Hız
+        sınırlı: her çağrı gömme sağlayıcısına gider.
+    */
+    Route::get('/workspaces/{workspace}/menu/duplicate-candidates', ShowDuplicateProductCandidatesController::class)
+        ->middleware('throttle:10,1');
+
     Route::put('/workspaces/{workspace}/menu-categories/{category}/item-order', ReorderMenuItemsController::class);
     Route::put('/workspaces/{workspace}/menu/{menu}/category-order', ReorderCategoriesController::class);
 });
