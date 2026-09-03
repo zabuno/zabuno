@@ -74,6 +74,26 @@ return [
             'renditions' => [320, 480, 640, 960],
             'alt_required' => true,
         ],
+        /*
+            AI FOTOĞRAF İÇE AKTARMA KAYNAĞI — `docs/92`/`docs/97` Yolculuk A.
+
+            Diğer Menu slotları GÖSTERİM içindir (misafirin göreceği kart/
+            liste görseli) — bu yüzden sıkı en-boy oranı ve minimum
+            piksel taşırlar. Bu slot bir ÇALIŞMA BELGESİDİR: elle tutulan
+            bir kâğıt menünün fotoğrafı, ekran görüntüsü, taranmış PDF
+            sayfası. Sabit oran dayatmak geçerli bir kaynak fotoğrafı
+            reddedebilirdi (`docs/51` §4b.1: "resim, fotoğraf, grafik").
+            `alt_required: false` — bu görsel misafire hiç gösterilmez.
+        */
+        'menuImportSource' => [
+            'surface' => MediaSurface::Menu,
+            'min_width' => 600, 'min_height' => 600,
+            'aspect' => null,
+            'formats' => ['jpeg', 'png', 'webp', 'heic'],
+            'transparency' => 'flatten',
+            'renditions' => [960],
+            'alt_required' => false,
+        ],
         'gallery' => [
             'surface' => MediaSurface::Menu,
             'min_width' => 1000, 'min_height' => 1000,

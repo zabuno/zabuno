@@ -180,6 +180,66 @@ msgstr "AI suggestions are not available right now."
 msgid "menu.item.ai.description.uncertain"
 msgstr "The AI was not confident about this one. Read it carefully before saving."
 
+#: menu:menu.item.ai.import.apply
+msgid "menu.item.ai.import.apply"
+msgstr "Add these to the draft"
+
+#: menu:menu.item.ai.import.applying
+msgid "menu.item.ai.import.applying"
+msgstr "Adding…"
+
+#: menu:menu.item.ai.import.cancel
+msgid "menu.item.ai.import.cancel"
+msgstr "Cancel"
+
+#: menu:menu.item.ai.import.disclose
+msgid "menu.item.ai.import.disclose"
+msgstr "Import from a photo (AI)"
+
+#: menu:menu.item.ai.import.error
+msgid "menu.item.ai.import.error"
+msgstr "The photo could not be read. You can still add items by hand."
+
+#: menu:menu.item.ai.import.fallback
+msgid "menu.item.ai.import.fallback"
+msgstr "Read by a backup provider."
+
+#: menu:menu.item.ai.import.media.empty
+msgid "menu.item.ai.import.media.empty"
+msgstr "No processed photo is available yet. Upload one on the Media page (slot: Import source) first."
+
+#: menu:menu.item.ai.import.media.label
+msgid "menu.item.ai.import.media.label"
+msgstr "Choose a photo"
+
+#: menu:menu.item.ai.import.preview.heading
+msgid "menu.item.ai.import.preview.heading"
+msgstr "What the AI read — review before adding"
+
+#: menu:menu.item.ai.import.read
+msgid "menu.item.ai.import.read"
+msgstr "Read this photo"
+
+#: menu:menu.item.ai.import.reading
+msgid "menu.item.ai.import.reading"
+msgstr "Reading…"
+
+#: menu:menu.item.ai.import.rejected.row
+msgid "menu.item.ai.import.rejected.row"
+msgstr "Row {row}: {reason}"
+
+#: menu:menu.item.ai.import.row.price.missing
+msgid "menu.item.ai.import.row.price.missing"
+msgstr "Price could not be read — this row will be skipped"
+
+#: menu:menu.item.ai.import.row.uncertain
+msgid "menu.item.ai.import.row.uncertain"
+msgstr "Not confident about this one"
+
+#: menu:menu.item.ai.import.unavailable
+msgid "menu.item.ai.import.unavailable"
+msgstr "Reading menu photos is not available right now."
+
 #: menu:menu.item.allergens.edit.button
 msgid "menu.item.allergens.edit.button"
 msgstr "Edit allergens for {name}"
