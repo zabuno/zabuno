@@ -27,7 +27,7 @@ final class ApplyProductDescriptionDraft
     /**
      * @return array{applied: bool, alreadyApplied: bool, reason: ?string}
      */
-    public function handle(int $workspaceId, int $artifactId): array
+    public function handle(int $workspaceId, int $artifactId, ?string $editedDescription = null): array
     {
         $artifact = DB::table('ai_artifacts')
             ->where('id', $artifactId)
@@ -43,7 +43,19 @@ final class ApplyProductDescriptionDraft
             return ['applied' => false, 'alreadyApplied' => true, 'reason' => null];
         }
 
-        $description = $this->readDescription($artifact);
+        /*
+            İnceleyen kişi öneriyi DÜZENLEYEBİLİR (`docs/97` R4) — kutu
+            "düzenlenebilir" diyorsa düzenlemeyi sessizce atmak kutuyu
+            yalancı yapar. Boş bırakılırsa (null) taslağın kendi metni
+            uygulanır — geriye dönük uyumlu.
+
+            $editedDescription trim'lenmiş VE boş string ile null farklı
+            ele alınır: boş string "kullanıcı açıklamayı sildi" demektir,
+            null "kullanıcı hiç değiştirmedi" demektir.
+        */
+        $description = $editedDescription !== null
+            ? (trim($editedDescription) === '' ? null : trim($editedDescription))
+            : $this->readDescription($artifact);
 
         if ($description === null) {
             return ['applied' => false, 'alreadyApplied' => false, 'reason' => 'empty-draft'];

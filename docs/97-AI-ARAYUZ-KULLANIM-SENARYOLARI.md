@@ -130,22 +130,35 @@ her adımda kim/ne/hangi kapı. Persona'lar `docs/02` §1.2'den — uydurma değ
 **Eksik adım (bugün yok):** 1, 6-8, 11'in ekranı. 3, 4, 5, 9, 10 backend'de
 var.
 
-### Yolculuk B — Ürün açıklaması taslağı isteme ve onaylama (FF-46, backend var, UI YOK)
+### Yolculuk B — Ürün açıklaması taslağı isteme ve onaylama (teslim edildi — FF-51)
 
 **Persona:** Editor ya da Brand/Location Manager — `Permission::MenuManage`.
 
-1. Ürün düzenleme formunda açıklama alanının yanında **"AI ile öner"**
-   bağlantısı görünür (bugün yok).
-2. Tıklanınca `POST .../menu-items/{id}/description-drafts` (var, FF-46).
-3. AI kapalıysa bağlantı görünmez/devre dışı, sebep tooltip'te.
-4. Öneri gelince **düzenlenebilir bir metin kutusunda** gösterilir —
-   doğrudan alana yazılmaz (`docs/01` §3: taslak, kalıcı değil).
-5. Güven düşükse (`uncertain: true`) kutunun üstünde uyarı: "bu öneri
-   emin değil, gözden geçirin."
-6. Kullanıcı düzenler ya da olduğu gibi kabul eder → `POST
-   .../description-drafts/{artifact}/apply` (var, FF-46).
-7. Kaydedilen açıklama normal "Kaydet" akışıyla aynı; AI burada yalnız
-   **öneri kaynağı**, ayrı bir kalıcı durum değil.
+1. **Teslim edildi.** Sunum düzenleyicide (fotoğraf+açıklama formu) açıklama
+   alanının altında **"Suggest with AI"** düğmesi var.
+2. Tıklanınca `POST .../menu-items/{id}/description-drafts` (FF-46) —
+   cevap artık açıklama METNİNİ de taşıyor (FF-51'de eklendi; önceden yalnız
+   `id`/`uncertainFieldCount` dönüyordu, ekran ayrı bir GET yapmak zorunda
+   kalırdı).
+3. **Teslim edildi.** AI kapalıysa (503) düğme hata göstermez, kısa bir
+   mesaj gösterir ("AI suggestions are not available right now.") ve elle
+   yazma yolu bozulmadan çalışır.
+4. **Teslim edildi.** Öneri gelince **var olan açıklama kutusunu** doldurur
+   (ikinci bir kutu icat edilmedi) — kullanıcı serbestçe düzenler.
+5. **Teslim edildi.** Güven düşükse (`uncertainFieldCount > 0`) kutunun
+   altında uyarı metni; yedek sağlayıcıdan geldiyse (`usedFallback`) ayrı
+   bir etiket (R12'nin ilk UI kullanımı).
+6. **Teslim edildi.** "Save presentation" artık taslak varken düz PUT
+   yerine `POST .../description-drafts/{artifact}/apply` çağırır —
+   **düzenlenmiş metni** taşır. Bu, apply uç noktasının FF-51'de genişleyen
+   tarafı: önceden yalnız taslağın kendi metnini yeniden okuyordu, kullanıcı
+   düzenlemesi sessizce atılırdı.
+7. Kaydedilen açıklama normal "Kaydet" akışıyla aynı ürün alanına gider; AI
+   burada yalnız **öneri kaynağı**, ayrı bir kalıcı durum değil.
+
+**Kapı:** `MenuCatalogWorkspace.presentation.test.tsx` +4 (öneri→kutu→onay,
+503 zarifçe, belirsiz uyarı, yedek etiketi); `ProductDescriptionDraftTest`
++2 (düzenlenmiş metnin uygulanması, cevabın metni taşıması).
 
 **Eksik adım:** 1, 4, 5, 6'nın ekranı. 2, 3, 6 (backend), 7 zaten var.
 
@@ -199,8 +212,8 @@ gereksinim yok.
 | R1 | Menü Kataloğu'nda "Fotoğraftan içe aktar" eylemi ve yükleme akışı | Yolculuk A.1-2 |
 | R2 | Fotoğraf inceleme ekranı: satır listesi, güven göstergesi, satır-bazlı kabul/düzenle/reddet | Yolculuk A.6-8, AI-13 |
 | R3 | Fiyatı/gerekli alanı okunamayan satır görsel ayrışması + onay kilidi | AI-15 |
-| R4 | Ürün formunda "AI ile öner" (açıklama) — düzenlenebilir öneri kutusu | Yolculuk B.1, 4 |
-| R5 | Düşük güvenli öneri için görünür uyarı metni | Yolculuk B.5 |
+| R4 | **Teslim edildi (FF-51).** Ürün formunda "AI ile öner" (açıklama) — düzenlenebilir öneri kutusu. Sunum düzenleyicideki mevcut `Textarea` yeniden kullanıldı, ikinci bir kutu icat edilmedi; öneri geldiğinde aynı alanı doldurur, kullanıcı serbestçe düzenler. Apply uç noktası **düzenlenmiş metni** kabul edecek şekilde genişletildi (önceden yalnız taslağın kendi metnini uyguluyordu — düzenleme sessizce atılırdı) | Yolculuk B.1, 4 |
+| R5 | **Teslim edildi (FF-51).** Düşük güvenli öneri için görünür uyarı metni (`uncertainFieldCount > 0`); ayrıca yedek sağlayıcıdan gelen öneri ayrı etiketlenir (R12'nin UI karşılığı, ilk kullanım yeri) | Yolculuk B.5 |
 | R6 | Menü Kataloğu'nda "Olası tekrarlar" — yalnız aday varsa görünen, salt-okunur liste | Yolculuk C.1-3 |
 | R7 | Üç ekranın hiçbiri toplu/otomatik onay sunmaz | AI-13 |
 | R8 | Alerjen alanı hiçbir ekranda onay kontrolü olarak render edilmez | AI-14 |

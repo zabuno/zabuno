@@ -140,6 +140,34 @@ msgstr "We could not load your menu. Please try again."
 msgid "menu.initial.error.retry"
 msgstr "Retry"
 
+#: menu:menu.item.ai.description.error
+msgid "menu.item.ai.description.error"
+msgstr "The AI suggestion failed. You can still write one yourself."
+
+#: menu:menu.item.ai.description.loading
+msgid "menu.item.ai.description.loading"
+msgstr "Asking AI…"
+
+#: menu:menu.item.ai.description.request
+msgid "menu.item.ai.description.request"
+msgstr "Suggest with AI"
+
+#: menu:menu.item.ai.description.suggested
+msgid "menu.item.ai.description.suggested"
+msgstr "AI suggestion — feel free to edit it before saving."
+
+#: menu:menu.item.ai.description.suggested.fallback
+msgid "menu.item.ai.description.suggested.fallback"
+msgstr "AI suggestion (from a backup provider) — feel free to edit it before saving."
+
+#: menu:menu.item.ai.description.unavailable
+msgid "menu.item.ai.description.unavailable"
+msgstr "AI suggestions are not available right now."
+
+#: menu:menu.item.ai.description.uncertain
+msgid "menu.item.ai.description.uncertain"
+msgstr "The AI was not confident about this one. Read it carefully before saving."
+
 #: menu:menu.item.allergens.edit.button
 msgid "menu.item.allergens.edit.button"
 msgstr "Edit allergens for {name}"
