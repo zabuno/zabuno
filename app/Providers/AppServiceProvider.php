@@ -58,12 +58,14 @@ use App\Domain\Platform\Credential\CredentialProvider;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
+use App\Infrastructure\Ai\AnthropicTextProvider;
 use App\Infrastructure\Ai\ArtifactSchemaValidator;
 use App\Infrastructure\Ai\ConfiguredAvailability;
 use App\Infrastructure\Ai\FakeProvider;
 use App\Infrastructure\Ai\GeminiEmbeddingProvider;
 use App\Infrastructure\Ai\GeminiTextProvider;
 use App\Infrastructure\Ai\GeminiVisionProvider;
+use App\Infrastructure\Ai\OpenAiCompatibleTextProvider;
 use App\Infrastructure\Ai\OpenAiVisionProvider;
 use App\Infrastructure\Ai\StructuredGenerationRouter;
 use App\Infrastructure\Ai\VisionExtractionRouter;
@@ -113,6 +115,8 @@ use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
 use App\Support\Localization\SiteText;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -223,18 +227,44 @@ final class AppServiceProvider extends ServiceProvider
 
         /*
             Şemaya bağlı metin üretimi (ürün açıklaması, çeviri taslağı) —
-            `docs/96` Faz 2. Bugün yalnız Gemini adayı var; OpenAI/Claude
-            metin yedeği ileride aynı desenle eklenir (bkz. `docs/95` Faz 3).
+            `docs/96` Faz 2 + Faz 3.
+
+            SIRA UCUZDAN PAHALIYA, sonra son çare. Gemini önce (ucuz, yüksek
+            hacim), Anthropic sonra (marka sesi için en güçlü ama en pahalı —
+            `docs/51` §4b.2), Kimi ardından (ucuz yedek), özel uç nokta en
+            sonda (uyumluluğu garanti DEĞİL, `docs/51` §4.5).
+
+            Bu SABİT bir sıradır ve bilinçli olarak öyle: yeteneğe göre model
+            seçen ağırlıklı/maliyet/gecikme yönlendirmesi Faz 5'in işi
+            (`docs/95`), ve ölçülmemiş bir politikayı bugün yazmak, hangi
+            hesabın ne kadar harcadığını bilmeden karar vermek olurdu.
         */
         $this->app->bind(StructuredGenerationPort::class, function ($app): StructuredGenerationPort {
             if (config('ai.enabled') !== true) {
                 return $app->make(FakeProvider::class);
             }
 
+            $credentials = $app->make(CredentialResolverPort::class);
             $candidates = [];
 
-            if ($app->make(CredentialResolverPort::class)->isConfigured(CredentialProvider::Gemini)) {
+            if ($credentials->isConfigured(CredentialProvider::Gemini)) {
                 $candidates[] = $app->make(GeminiTextProvider::class);
+            }
+
+            if ($credentials->isConfigured(CredentialProvider::Anthropic)) {
+                $candidates[] = $app->make(AnthropicTextProvider::class);
+            }
+
+            foreach ([CredentialProvider::Kimi, CredentialProvider::CustomEndpoint] as $compatible) {
+                if ($credentials->isConfigured($compatible)) {
+                    $candidates[] = new OpenAiCompatibleTextProvider(
+                        $compatible,
+                        $credentials,
+                        $app->make(AccountRoutingPort::class),
+                        $app->make(HttpFactory::class),
+                        $app->make(ConfigRepository::class),
+                    );
+                }
             }
 
             if ($candidates === []) {

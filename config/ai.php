@@ -105,6 +105,37 @@ return [
     ],
 
     /*
+     * Anthropic (Claude) metin adaptörü — `docs/96` Faz 3.
+     *
+     * `max_tokens` burada YAŞAR çünkü Messages API'de zorunlu bir alandır;
+     * atlanırsa 400 döner ve bu hesabın değil bizim hatamız olurdu.
+     */
+    'anthropic' => [
+        'text_model' => env('AI_ANTHROPIC_TEXT_MODEL', 'claude-sonnet-5'),
+        'max_tokens' => (int) env('AI_ANTHROPIC_MAX_TOKENS', 1024),
+        'request_timeout' => (int) env('AI_ANTHROPIC_TIMEOUT', 60),
+    ],
+
+    /*
+     * Kimi ve ÖZEL UÇ NOKTA — ikisi de OpenAI-uyumlu `/chat/completions`
+     * konuşur (`docs/96` Faz 3).
+     *
+     * `custom_endpoint`'in model adı BOŞ başlar ve bu bilinçlidir: sistem o
+     * sunucuda hangi modelin çalıştığını bilemez, superadmin söylemek
+     * zorundadır. Uydurulmuş bir varsayılan, çalışmayan bir model adıyla
+     * sessizce 404 alırdı.
+     */
+    'kimi' => [
+        'text_model' => env('AI_KIMI_TEXT_MODEL', 'kimi-k2-0905-preview'),
+        'request_timeout' => (int) env('AI_KIMI_TIMEOUT', 60),
+    ],
+
+    'custom_endpoint' => [
+        'text_model' => env('AI_CUSTOM_ENDPOINT_TEXT_MODEL', ''),
+        'request_timeout' => (int) env('AI_CUSTOM_ENDPOINT_TIMEOUT', 60),
+    ],
+
+    /*
      * Model başına fiyat (1.000.000 token başına, KURUŞ). Bütçe bu tablodan
      * türetilen maliyetle düşer; ayarlanmazsa maliyet 0 yazılır ve bütçe
      * yalnız aç/kapa görevi görür (miktar bazlı değil). Fotoğraf okuma

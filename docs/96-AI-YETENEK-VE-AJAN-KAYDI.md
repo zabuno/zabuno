@@ -60,12 +60,26 @@ sonucu `usedFallback` ile işaretler. UI tarafı henüz yok (bkz. `docs/97`).
 
 | Yetenek | LLM + Model | Hesap | Konum | Mekanizma |
 | --- | --- | --- | --- | --- |
-| Çeviri/açıklama taslağı — marka sesi yüksek risk | **Claude Sonnet 5** (`docs/51` §4b.2: "küçük model marka sesini düzleştirir") | Yeni bağlantı: "Anthropic — İçerik" | aynı ekranlar, artık iki model arasından seçilebilir | `StructuredGenerationPort`, insan onaylı |
-| Ucuz taslak üretimi, yüksek hacim | **Kimi** (model adı henüz belirsiz — Kimi K3 ailesinden biri, superadmin karar verir) | Yeni bağlantı: "Kimi — Taslak" | Onboarding metni, bildirim şablonu gibi düşük-risk StructuredGenerationPort işleri | insan onaylı |
+| Açıklama taslağı — marka sesi yüksek risk | **Claude Sonnet 5** — `config('ai.anthropic.text_model')`; **adaptör teslim edildi (FF-59)**, gerçek API'ye karşı doğrulanmadı | Bağlantı adı superadmin'in verdiği etiket (öneri: "Anthropic — İçerik") | Ürün açıklaması taslağı — Gemini başarısız olursa canlı yedek | `StructuredGenerationPort`, insan onaylı |
+| Ucuz taslak üretimi, yüksek hacim | **Kimi** — `config('ai.kimi.text_model')`, varsayılan `kimi-k2-0905-preview`; **adaptör teslim edildi (FF-59)**, doğrulanmadı | Bağlantı adı superadmin'in (öneri: "Kimi — Taslak") | Aynı zincirin üçüncü adayı | OpenAI-uyumlu `/chat/completions`, insan onaylı |
+
+**Zincir sırası SABİT ve bilinçli** (FF-59): Gemini → Anthropic → Kimi → özel
+uç nokta. Ucuzdan pahalıya, sonra son çare. Yeteneğe göre model seçen
+ağırlıklı/maliyet/gecikme yönlendirmesi **Faz 5'in işi** — ölçülmemiş bir
+politikayı bugün yazmak, hangi hesabın ne kadar harcadığını bilmeden karar
+vermek olurdu.
 | **Toplu fotoğraf içe aktarma** (bir restoranın 40+ ürünü tek seferde) | OpenAI `gpt-4o-mini` (aynı model, **ayrı hesap**) | **Yeni, izole bağlantı:** "OpenAI — Toplu İçe Aktarma" | Menü > Toplu İçe Aktarma (yeni ekran) | Aynı `VisionExtractionPort`; izolasyonun amacı paylaşılan kotayı korumak, model değil |
 | Kural taslağı + sandbox simülasyonu (`core-eca-rules`) | **Claude Opus 5** — bkz. Agents §1 "Kural Taslağı Ajanı" | Yeni bağlantı: "Anthropic — Otomasyon" (yüksek-stake işler ayrı izlenir) | Otomasyon Stüdyosu (ECA kural editörü) | `ToolIntentPort`, sandbox, **her zaman insan onaylı** |
 | POS alan eşleme + sandbox test (`opt-13`) | **Claude Opus 5** — bkz. Agents §2 "Entegrasyon Eşleme Ajanı" | aynı "Anthropic — Otomasyon" bağlantısı | Entegrasyonlar > POS Kurulumu | `ToolIntentPort`, sandbox, insan onaylı |
-| Özel uç nokta (Qwen vb.) | Superadmin'in girdiği model — sistem model adını bilmez, yalnız `base_url`'i çağırır | Yeni bağlantı: "Özel uç nokta" (OpenAI-uyumlu) | `/platform/credentials` — "Özel uç nokta" seçeneği | Uyumluluk katmanından geçer, hangi portları desteklediği test edilmeden aday olmaz |
+| Özel uç nokta (Qwen vb.) | Superadmin'in girdiği model — sistem model adını **bilmez**; `config('ai.custom_endpoint.text_model')` boş başlar ve boşken çağrı hiç kurulmaz (uydurulmuş bir ad sessizce 404 alırdı). **Adaptör teslim edildi (FF-59)** | Bağlantı: "Özel uç nokta" (OpenAI-uyumlu) | `/platform/credentials` — "Özel uç nokta" seçeneği | OpenAI-uyumlu `/chat/completions`; **uyumluluk VARSAYILMAZ** — beklenmeyen yanıt şekli `unparseable` ile reddedilir, "belki çalışmıştır" diye yarım sonuç üretilmez (`docs/51` §4.5) |
+
+**Neden Anthropic ayrı bir sınıf, Kimi ile özel uç nokta aynı sınıf** (FF-59):
+Kimi de kendi barındırılan bir Qwen/vLLM sunucusu da `/chat/completions`
+konuşur — fark yalnız adres ve anahtar, ikisi için ayrı sınıf yazmak aynı kodu
+iki kez bakımda tutmak olurdu. Anthropic Messages API ise bu biçimle uyumlu
+**değil**: talimat ayrı bir `system` alanında gider, `max_tokens` zorunludur ve
+yanıt blok dizisidir. Bunları bir bayrakla tek sınıfa sığdırmak, iki
+sağlayıcının da yanlış çalıştığı bir sınıf üretirdi.
 
 ## Faz 4 — Stage 4 PMF (planlı)
 
