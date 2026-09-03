@@ -81,6 +81,7 @@ final class GenerateProductDescriptionDraft
                 $artifact->fields,
             ), JSON_UNESCAPED_UNICODE),
             'uncertain_field_count' => count($artifact->uncertainFields()),
+            'used_fallback' => $artifact->usedFallback,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -46,6 +46,7 @@ final class ShowMenuAiImportController extends Controller
             'promptVersion' => (string) $row->prompt_version,
             'schemaVersion' => (string) $row->schema_version,
             'uncertainFieldCount' => (int) $row->uncertain_field_count,
+            'usedFallback' => (bool) $row->used_fallback,
             'appliedAt' => $row->applied_at,
             'fields' => (array) json_decode((string) $row->fields, true),
         ]);
