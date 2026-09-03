@@ -422,3 +422,28 @@ birlikte medya tarafında dış otomasyon **hiçbir aşamada** yoktur.
 - S3'e özgü işler (bucket versioning, cross-region replica) **kapsam dışı**;
   yerine disk üzerinde checksum tabanlı reconciliation ve dosya sistemi
   yedeği gelir.
+
+---
+
+## 12. Olgunluk cetveli — sahibin sorduğu başlıklar nerede? (2026-09-04)
+
+Sahip: "file manager, media library, size optimization, media file SEO/ASEO,
+re-naming, enumeration security… onlar nerede, dokümanlarda var mı?" Her
+başlığın **bu belgede** karşılığı, bugünkü seviyesi ve kodu:
+
+| Başlık | Nerede | Bugün | Kod / kanıt |
+| --- | --- | --- | --- |
+| **Media management (kütüphane)** | §7, Faz 4-5 | **L2** — liste/ızgara, arama, süzgeç, detay, kullanım, sürüm, çöp/geri al | `MediaLibraryRegion`, `MediaAssetDetailDrawer`, `MediaLibraryTrashAndUsagesTest` |
+| **File management (görsel olmayan)** | §9, Faz 6-7 | **L0** — veri modeli `asset_kind` serbest; PDF/DOCX/XLSX alımı KAPALI (sahip kararı: video/PDF Faz 2 programına) | `config/media-slots.php` yalnız görsel MIME; `MaliciousIntakeGateTest` |
+| **Size optimization** | §5.4, Faz 3 | **L3** — slot politikasına göre `{w}w` rendition seti, upscale yasağı, WebP, LQIP; istemci ön-kontrol (boyut/piksel) | `GdMediaAssetProcessor`, `MediaUploadRegion` precheck, `MediaRenditionPipelineTest` |
+| **Media file SEO / alt metin** | §5.3 | **L2** — alt metin yüklemede zorunlu, kullanımda `alt_text_override`, misafir menüsünde `srcset`+`width/height`+LQIP; çok dilli `media_asset_translations` ⬜ (Faz 8+) | `EloquentMenuMedia::imageForVersion`, `public-menu.blade.php` |
+| **Re-naming** | §5.2 | **L2** — `storage_key` değişmez, `original_name` ve `display_name` ayrı sütunlar; ekranda ad = alt metin; görünen adı ayrı düzenleme ⬜ (Faz 8 detay formu) | `media_assets.display_name`, `MediaAssetDetailDrawer` |
+| **Enumeration security** | §5.1, `docs/38` §4b | **L3** — rendition adresi `/media/r/{id}-{32 hex parmak izi}.{fmt}`: kimlik sayılarak taranamaz, yanlış parmak izi 404; asıl dosyanın herkese açık adresi YOK, yalnız 10 dk imzalı bağlantı; kiracı dışı varlık 404 | `RenditionUrl::matches` (sabit süreli), `ServeOriginalController` (`signed`), `MediaDeliveryAndGovernanceTest` |
+| **Dropzone / yükleme deneyimi** | Faz 2 | **L2** — sürükle-bırak, ilerleme çubuğu (XHR), yeniden deneme, idempotency, zararlı dosya kapısı; çoklu dosya ve `tus` ⬜ (Faz 2 programı, video ile) | `MediaDropzone`, `MediaUploadRegion`, `MediaIntakeTest` |
+| **Kota / yönetişim** | §7 karar, Faz 7 | **L2** — plan bazlı kota, çöp süresi, izin matrisi, uzlaştırma; audit log ⬜ | `config/media-quota.php`, `media:reconcile` |
+
+Seviye tanımı: **L0** veri modeli var, ürün yok · **L1** tek yol çalışır ·
+**L2** günlük iş tam, ileri araçlar eksik · **L3** ölçülmüş ve kapılı ·
+**L4** otomatik/AI destekli. Sahibin "yapmamışsın" dediği başlıkların hiçbiri
+L0'da değil; L0 olan tek şey görsel olmayan dosya alımıdır ve o, sahibin
+kendi "video/PDF Faz 2'ye" kararıyla oradadır.
