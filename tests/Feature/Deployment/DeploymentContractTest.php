@@ -185,6 +185,58 @@ final class DeploymentContractTest extends TestCase
         }
     }
 
+    // --- DEPLOY-MAIL-TRANSPORT-08 -----------------------------------------
+
+    /**
+     * Posta ayarları konteynere GEÇMELİ.
+     *
+     * `config/services.php` Mailgun anahtarını `env('MAILGUN_SECRET')` ile
+     * okur; ama üretimde `.env` konteynerin İÇİNDE yaşamaz — değerler
+     * `docker-compose` `environment:` bloğundan gelir ve giriş betiği
+     * `config:cache`'i o değerler enjekte edildikten SONRA çalıştırır.
+     * Aktarım satırı olmadan sunucunun `.env`'i ne kadar doğru doldurulsa
+     * da uygulama `MAIL_MAILER=log`'a düşer: mesaj kaydedilir ama hiçbir
+     * yere gitmez. Bu, birim testlerinin göremeyeceği bir arıza — hata
+     * kodda değil, aktarımda.
+     *
+     * Ve gizli değer BURAYA yazılamaz: her satır `${...}` başvurusu
+     * olmalı, deponun içine sızan tek bir Mailgun anahtarı olmamalı.
+     * Bunu `ContactDeliveryTest` de ayrıca korur; buradaki kapı aktarım
+     * kanalının kendisini bekçiler.
+     */
+    public function test_the_mail_transport_reaches_the_container(): void
+    {
+        $compose = $this->read('docker-compose.yml');
+
+        $variables = [
+            'MAIL_MAILER',
+            'MAIL_FROM_ADDRESS',
+            'MAIL_FROM_NAME',
+            'MAILGUN_DOMAIN',
+            'MAILGUN_SECRET',
+            'MAILGUN_ENDPOINT',
+            'CONTACT_NOTIFICATION_ADDRESS',
+        ];
+
+        foreach ($variables as $variable) {
+            self::assertMatchesRegularExpression(
+                '/^\s*'.$variable.':\s*\$\{'.$variable.'\b/m',
+                $compose,
+                "DEPLOY-MAIL-TRANSPORT-08: `{$variable}` konteynere "
+                .'`${...}` başvurusu olarak aktarılmıyor; sunucunun `.env`\'i '
+                .'doğru olsa bile posta `log` sürücüsüne düşer.'
+            );
+        }
+
+        // Gizli değerin kendisi ASLA burada olmamalı: canlı bir Mailgun
+        // anahtarı ya da sandbox alan adı depoya sızmasın.
+        self::assertDoesNotMatchRegularExpression(
+            '/[a-z0-9]+\.mailgun\.org|MAILGUN_SECRET:\s*[\'\"]?[0-9a-f]{16,}/i',
+            $compose,
+            'DEPLOY-MAIL-TRANSPORT-08: docker-compose.yml içinde düz gizli değer var.'
+        );
+    }
+
     // --- DEPLOY-MULTI-DOMAIN-07 -------------------------------------------
 
     /**

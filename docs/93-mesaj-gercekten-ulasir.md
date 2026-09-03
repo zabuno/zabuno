@@ -92,6 +92,24 @@ da kapıyı kırmızıya çeviriyor.
    kum havuzu bildirimi de gitmez.
 4. Kaydolmayı açmak istediğinde **gerçek alan adını doğrula**.
 
+## Değer sunucudan konteynere nasıl geçer
+
+Üretimde `.env` konteynerin İÇİNDE yaşamaz. Deploy `docker compose
+--env-file .env ... up` ile açar ve giriş betiği `config:cache`'i o
+değerler enjekte edildikten SONRA çalıştırır. Ama enjekte edilmesi için
+`docker-compose.yml`'nin o değişkenleri konteynere **aktarması** gerekir.
+
+FF-36'dan önce bu aktarım satırları yoktu: sahip `.env`'i eksiksiz
+doldursa bile `MAIL_MAILER`, `MAILGUN_SECRET` ve arkadaşları konteynere
+hiç girmiyordu — uygulama `log` sürücüsüne düşüyordu, mesaj kaydediliyor
+ama gönderilmiyordu. Bu, kodda değil aktarımda bir arızaydı; birim
+testleri göremezdi.
+
+Şimdi `docker-compose.yml` her değeri sunucunun kendi `.env`'inden
+`${...}` başvurusuyla okur. **Depoya tek bir gizli değer yazılmadı**;
+başvuru güvenlidir, değer sunucuda kalır. `DEPLOY-MAIL-TRANSPORT-08` bu
+kanalı bekçiler ve düz bir anahtarın sızmadığını da doğrular.
+
 ## Kanıt
 
 `ContactDeliveryTest` (4)
@@ -102,6 +120,7 @@ da kapıyı kırmızıya çeviriyor.
 | `CONTACT-DELIVERY-FAILURE-KEPT-01` | Gönderim düşse de mesaj durur, sebebi kayda geçer |
 | `CONTACT-DELIVERY-OFF-IS-NOT-AN-ERROR-01` | Sağlayıcı yokken damga atılmaz |
 | `CONTACT-DELIVERY-NO-SECRET-01` | Depoda gizli değer yok |
+| `DEPLOY-MAIL-TRANSPORT-08` | Posta değerleri konteynere `${...}` ile geçer, düz gizli yok |
 
 ## Ürün iddiası
 
