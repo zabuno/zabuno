@@ -119,6 +119,50 @@ const en = {
     'platform.releaseReadiness.backupRestore.metadata.gitSha': 'Commit',
     'platform.releaseReadiness.backupRestore.metadata.durationMs': 'Duration',
     'platform.releaseReadiness.backupRestore.metadata.restoredRowCount': 'Restored rows',
+    // FF-63 (`docs/98`): altı madde de gerçek kayıttan okunur. Makine kanıtı
+    // ile insan tanıklığı AYRI etiketlenir — "Attested" ≠ "Passed".
+    'platform.releaseReadiness.evidence.loading': 'Loading evidence…',
+    'platform.releaseReadiness.evidence.error': 'Evidence check error',
+    'platform.releaseReadiness.evidence.recordedAt': 'Recorded at',
+    'platform.releaseReadiness.checklist.hostCapability.title': 'Shared-host capability evidence',
+    'platform.releaseReadiness.checklist.hostCapability.description':
+        'Evidence that the application runs within its hosting plan’s resource limits.',
+    'platform.releaseReadiness.hostCapability.status.full': 'All capabilities present',
+    'platform.releaseReadiness.hostCapability.status.degraded':
+        'Running with {count} planned degradation(s)',
+    'platform.releaseReadiness.checklist.qr-physical-scan.title': 'Physical QR scan evidence',
+    'platform.releaseReadiness.checklist.qr-physical-scan.description':
+        'A field test of a printed code scanned with a real device.',
+    'platform.releaseReadiness.checklist.rpo-rto-decision.title': 'RPO & RTO decision',
+    'platform.releaseReadiness.checklist.rpo-rto-decision.description':
+        'A recorded decision for how much data loss and downtime this system can tolerate.',
+    'platform.releaseReadiness.checklist.owasp-asvs-audit.title': 'OWASP ASVS audit',
+    'platform.releaseReadiness.checklist.owasp-asvs-audit.description':
+        'A security audit reference for this application — self-assessment or third-party, stated as which.',
+    'platform.releaseReadiness.attest.help.qr-physical-scan':
+        'Record the scan you actually did: which phone, which printed code, did the published menu open.',
+    'platform.releaseReadiness.attest.help.rpo-rto-decision':
+        'Record the decision in hours: how much data may be lost (RPO) and how long the system may be down (RTO).',
+    'platform.releaseReadiness.attest.help.owasp-asvs-audit':
+        'Point to the audit record. Say plainly whether it is a self-assessment or a third-party audit — never claim certification.',
+    'platform.releaseReadiness.attest.field.status': 'Outcome',
+    'platform.releaseReadiness.attest.field.device': 'Device',
+    'platform.releaseReadiness.attest.field.rpoHours': 'RPO (hours of data loss tolerated)',
+    'platform.releaseReadiness.attest.field.rtoHours': 'RTO (hours of downtime tolerated)',
+    'platform.releaseReadiness.attest.field.summary': 'What was done, in your own words',
+    'platform.releaseReadiness.attest.field.reference': 'Reference (link or repo path, optional)',
+    'platform.releaseReadiness.attest.status.passed': 'It worked',
+    'platform.releaseReadiness.attest.status.failed': 'It did not work',
+    'platform.releaseReadiness.attest.submit': 'Record this',
+    'platform.releaseReadiness.attest.error': 'The record could not be saved.',
+    'platform.releaseReadiness.attest.badge.passed': 'Attested — worked',
+    'platform.releaseReadiness.attest.badge.failed': 'Attested — failed',
+    'platform.releaseReadiness.attest.badge.decided': 'Decided',
+    'platform.releaseReadiness.attest.badge.recorded': 'Recorded',
+    'platform.releaseReadiness.attest.by': 'Recorded by',
+    'platform.releaseReadiness.attest.by.server': 'server command',
+    'platform.releaseReadiness.attest.disclaimer':
+        'This is a human attestation, not an automated check.',
     'platform.releaseReadiness.refresh.button': 'Refresh evidence',
     'platform.releaseReadiness.workspace.empty':
         'Choose a workspace above to load its release evidence.',

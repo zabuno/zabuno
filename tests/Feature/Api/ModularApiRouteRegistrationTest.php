@@ -100,6 +100,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/analytics/menu-engineering||App\Http\Controllers\Analytics\ShowMenuEngineeringController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/tenant-isolation||App\Http\Controllers\Security\ShowTenantIsolationEvidenceController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/backup-restore||App\Http\Controllers\Security\ShowBackupRestoreEvidenceController|api,auth:sanctum,verified',
+        // FF-63 (`docs/98`): host yeteneği okuma ucu + insan tanıklıkları.
+        'GET|api/workspaces/{workspace}/security/evidence/host-capability||App\Http\Controllers\Security\ShowHostCapabilityEvidenceController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/security/evidence/attestations/{key}||App\Http\Controllers\Security\ShowReleaseAttestationController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/entitlements||App\Http\Controllers\Entitlement\ShowWorkspaceEntitlementsController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/plans||App\Http\Controllers\Billing\ListPlansController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/subscription||App\Http\Controllers\Billing\ShowSubscriptionController|api,auth:sanctum,verified',
@@ -127,6 +130,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/admin/workspaces||App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'GET|api/admin/workspaces/{workspace}/subscription||App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/workspaces/{workspace}/manual-payments||App\Http\Controllers\PlatformAdmin\StoreManualPaymentController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:5,1,verified',
+        'POST|api/admin/release-attestations||App\Http\Controllers\PlatformAdmin\StoreReleaseAttestationController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
         'GET|api/admin/credentials||App\Http\Controllers\PlatformAdmin\ListProviderCredentialsController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'PUT|api/admin/credentials/{provider}||App\Http\Controllers\PlatformAdmin\StoreProviderCredentialController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
         'POST|api/admin/credentials/{provider}/disable||App\Http\Controllers\PlatformAdmin\DisableProviderCredentialController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',

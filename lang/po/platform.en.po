@@ -352,6 +352,86 @@ msgstr "Plans"
 msgid "platform.plans.retry"
 msgstr "Retry"
 
+#: platform:platform.releaseReadiness.attest.badge.decided
+msgid "platform.releaseReadiness.attest.badge.decided"
+msgstr "Decided"
+
+#: platform:platform.releaseReadiness.attest.badge.failed
+msgid "platform.releaseReadiness.attest.badge.failed"
+msgstr "Attested — failed"
+
+#: platform:platform.releaseReadiness.attest.badge.passed
+msgid "platform.releaseReadiness.attest.badge.passed"
+msgstr "Attested — worked"
+
+#: platform:platform.releaseReadiness.attest.badge.recorded
+msgid "platform.releaseReadiness.attest.badge.recorded"
+msgstr "Recorded"
+
+#: platform:platform.releaseReadiness.attest.by
+msgid "platform.releaseReadiness.attest.by"
+msgstr "Recorded by"
+
+#: platform:platform.releaseReadiness.attest.by.server
+msgid "platform.releaseReadiness.attest.by.server"
+msgstr "server command"
+
+#: platform:platform.releaseReadiness.attest.disclaimer
+msgid "platform.releaseReadiness.attest.disclaimer"
+msgstr "This is a human attestation, not an automated check."
+
+#: platform:platform.releaseReadiness.attest.error
+msgid "platform.releaseReadiness.attest.error"
+msgstr "The record could not be saved."
+
+#: platform:platform.releaseReadiness.attest.field.device
+msgid "platform.releaseReadiness.attest.field.device"
+msgstr "Device"
+
+#: platform:platform.releaseReadiness.attest.field.reference
+msgid "platform.releaseReadiness.attest.field.reference"
+msgstr "Reference (link or repo path, optional)"
+
+#: platform:platform.releaseReadiness.attest.field.rpoHours
+msgid "platform.releaseReadiness.attest.field.rpoHours"
+msgstr "RPO (hours of data loss tolerated)"
+
+#: platform:platform.releaseReadiness.attest.field.rtoHours
+msgid "platform.releaseReadiness.attest.field.rtoHours"
+msgstr "RTO (hours of downtime tolerated)"
+
+#: platform:platform.releaseReadiness.attest.field.status
+msgid "platform.releaseReadiness.attest.field.status"
+msgstr "Outcome"
+
+#: platform:platform.releaseReadiness.attest.field.summary
+msgid "platform.releaseReadiness.attest.field.summary"
+msgstr "What was done, in your own words"
+
+#: platform:platform.releaseReadiness.attest.help.owasp-asvs-audit
+msgid "platform.releaseReadiness.attest.help.owasp-asvs-audit"
+msgstr "Point to the audit record. Say plainly whether it is a self-assessment or a third-party audit — never claim certification."
+
+#: platform:platform.releaseReadiness.attest.help.qr-physical-scan
+msgid "platform.releaseReadiness.attest.help.qr-physical-scan"
+msgstr "Record the scan you actually did: which phone, which printed code, did the published menu open."
+
+#: platform:platform.releaseReadiness.attest.help.rpo-rto-decision
+msgid "platform.releaseReadiness.attest.help.rpo-rto-decision"
+msgstr "Record the decision in hours: how much data may be lost (RPO) and how long the system may be down (RTO)."
+
+#: platform:platform.releaseReadiness.attest.status.failed
+msgid "platform.releaseReadiness.attest.status.failed"
+msgstr "It did not work"
+
+#: platform:platform.releaseReadiness.attest.status.passed
+msgid "platform.releaseReadiness.attest.status.passed"
+msgstr "It worked"
+
+#: platform:platform.releaseReadiness.attest.submit
+msgid "platform.releaseReadiness.attest.submit"
+msgstr "Record this"
+
 #: platform:platform.releaseReadiness.backupRestore.metadata.durationMs
 msgid "platform.releaseReadiness.backupRestore.metadata.durationMs"
 msgstr "Duration"
@@ -396,9 +476,41 @@ msgstr "Backup & restore drill"
 msgid "platform.releaseReadiness.checklist.explanation"
 msgstr "Evidence-backed items below resolve only from real, independently recorded checks; every other item stays unavailable until its own check is run and recorded."
 
+#: platform:platform.releaseReadiness.checklist.hostCapability.description
+msgid "platform.releaseReadiness.checklist.hostCapability.description"
+msgstr "Evidence that the application runs within its hosting plan’s resource limits."
+
+#: platform:platform.releaseReadiness.checklist.hostCapability.title
+msgid "platform.releaseReadiness.checklist.hostCapability.title"
+msgstr "Shared-host capability evidence"
+
+#: platform:platform.releaseReadiness.checklist.owasp-asvs-audit.description
+msgid "platform.releaseReadiness.checklist.owasp-asvs-audit.description"
+msgstr "A security audit reference for this application — self-assessment or third-party, stated as which."
+
+#: platform:platform.releaseReadiness.checklist.owasp-asvs-audit.title
+msgid "platform.releaseReadiness.checklist.owasp-asvs-audit.title"
+msgstr "OWASP ASVS audit"
+
+#: platform:platform.releaseReadiness.checklist.qr-physical-scan.description
+msgid "platform.releaseReadiness.checklist.qr-physical-scan.description"
+msgstr "A field test of a printed code scanned with a real device."
+
+#: platform:platform.releaseReadiness.checklist.qr-physical-scan.title
+msgid "platform.releaseReadiness.checklist.qr-physical-scan.title"
+msgstr "Physical QR scan evidence"
+
 #: platform:platform.releaseReadiness.checklist.region
 msgid "platform.releaseReadiness.checklist.region"
 msgstr "Release readiness checklist"
+
+#: platform:platform.releaseReadiness.checklist.rpo-rto-decision.description
+msgid "platform.releaseReadiness.checklist.rpo-rto-decision.description"
+msgstr "A recorded decision for how much data loss and downtime this system can tolerate."
+
+#: platform:platform.releaseReadiness.checklist.rpo-rto-decision.title
+msgid "platform.releaseReadiness.checklist.rpo-rto-decision.title"
+msgstr "RPO & RTO decision"
 
 #: platform:platform.releaseReadiness.checklist.tenantIsolation.description
 msgid "platform.releaseReadiness.checklist.tenantIsolation.description"
@@ -408,9 +520,29 @@ msgstr "Proof that one restaurant workspace cannot read or write another’s dat
 msgid "platform.releaseReadiness.checklist.tenantIsolation.title"
 msgstr "Tenant isolation evidence"
 
+#: platform:platform.releaseReadiness.evidence.error
+msgid "platform.releaseReadiness.evidence.error"
+msgstr "Evidence check error"
+
+#: platform:platform.releaseReadiness.evidence.loading
+msgid "platform.releaseReadiness.evidence.loading"
+msgstr "Loading evidence…"
+
+#: platform:platform.releaseReadiness.evidence.recordedAt
+msgid "platform.releaseReadiness.evidence.recordedAt"
+msgstr "Recorded at"
+
 #: platform:platform.releaseReadiness.heading
 msgid "platform.releaseReadiness.heading"
 msgstr "Release readiness"
+
+#: platform:platform.releaseReadiness.hostCapability.status.degraded
+msgid "platform.releaseReadiness.hostCapability.status.degraded"
+msgstr "Running with {count} planned degradation(s)"
+
+#: platform:platform.releaseReadiness.hostCapability.status.full
+msgid "platform.releaseReadiness.hostCapability.status.full"
+msgstr "All capabilities present"
 
 #: platform:platform.releaseReadiness.item.status.unavailable
 msgid "platform.releaseReadiness.item.status.unavailable"

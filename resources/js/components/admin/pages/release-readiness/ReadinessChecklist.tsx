@@ -1,50 +1,24 @@
 import { Button } from '../../../catalog/forms/micro/Button';
 import { useState } from 'react';
 import { t } from '../../../../i18n/platform';
+import { AttestationEvidenceItem } from './AttestationEvidenceItem';
 import { BackupRestoreEvidenceItem } from './BackupRestoreEvidenceItem';
-import { ReadinessItem } from './ReadinessItem';
+import { HostCapabilityEvidenceItem } from './HostCapabilityEvidenceItem';
 import { TenantIsolationEvidenceItem } from './TenantIsolationEvidenceItem';
 
 type ReadinessChecklistProps = {
     workspaceId: number;
 };
 
-type ReadinessChecklistEntry = {
-    key: string;
-    title: string;
-    description: string;
-};
-
-const CHECKLIST_ENTRIES: ReadinessChecklistEntry[] = [
-    {
-        key: 'owasp-asvs',
-        title: 'OWASP ASVS audit',
-        description: 'A third-party security audit result for this application.',
-    },
-    {
-        key: 'qr-scan',
-        title: 'Physical QR scan evidence',
-        description: 'A field test of a printed code scanned with a real device.',
-    },
-    {
-        key: 'rpo-rto',
-        title: 'RPO & RTO decision',
-        description:
-            'A recorded decision for how much data loss and downtime this system can tolerate.',
-    },
-    {
-        key: 'shared-host-capability',
-        title: 'Shared-host capability evidence',
-        description:
-            'Evidence that the application runs within its hosting plan’s resource limits.',
-    },
-];
-
 /**
- * Compound: the six canonical Stage 1 exit readiness items. Tenant
- * isolation resolves from a real, independently run check
- * (TenantIsolationEvidenceItem); the remaining five stay a static,
- * truthful "Unavailable" until their own checks exist.
+ * Compound: the six canonical Stage 1 exit readiness items — `docs/98` FF-63.
+ *
+ * Altısı da artık gerçek bir kayıttan okunur; hiçbiri statik değil. Üçü
+ * MAKİNE kanıtı (tenant izolasyonu, yedek tatbikatı, host yeteneği — bir
+ * komut koşturulur, satır düşer), üçü İNSAN tanıklığı (QR saha taraması,
+ * RPO/RTO kararı, ASVS raporu — biri "yaptım/karar verdim/işte rapor" der
+ * ve kim/ne zaman dediği kaydın kendisidir). Ekran ikisini farklı
+ * etiketler; "Attested" ile "Passed" aynı rozet değildir.
  */
 export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
     const [refreshToken, setRefreshToken] = useState(0);
@@ -75,13 +49,25 @@ export function ReadinessChecklist({ workspaceId }: ReadinessChecklistProps) {
                     key={`backup-restore-${refreshToken}`}
                     workspaceId={workspaceId}
                 />
-                {CHECKLIST_ENTRIES.map((entry) => (
-                    <ReadinessItem
-                        key={entry.key}
-                        title={entry.title}
-                        description={entry.description}
-                    />
-                ))}
+                <HostCapabilityEvidenceItem
+                    key={`host-capability-${refreshToken}`}
+                    workspaceId={workspaceId}
+                />
+                <AttestationEvidenceItem
+                    key={`qr-physical-scan-${refreshToken}`}
+                    workspaceId={workspaceId}
+                    attestationKey="qr-physical-scan"
+                />
+                <AttestationEvidenceItem
+                    key={`rpo-rto-decision-${refreshToken}`}
+                    workspaceId={workspaceId}
+                    attestationKey="rpo-rto-decision"
+                />
+                <AttestationEvidenceItem
+                    key={`owasp-asvs-audit-${refreshToken}`}
+                    workspaceId={workspaceId}
+                    attestationKey="owasp-asvs-audit"
+                />
             </ul>
         </div>
     );

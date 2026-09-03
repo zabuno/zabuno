@@ -352,6 +352,86 @@ msgstr ""
 msgid "platform.plans.retry"
 msgstr ""
 
+#: platform:platform.releaseReadiness.attest.badge.decided
+msgid "platform.releaseReadiness.attest.badge.decided"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.badge.failed
+msgid "platform.releaseReadiness.attest.badge.failed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.badge.passed
+msgid "platform.releaseReadiness.attest.badge.passed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.badge.recorded
+msgid "platform.releaseReadiness.attest.badge.recorded"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.by
+msgid "platform.releaseReadiness.attest.by"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.by.server
+msgid "platform.releaseReadiness.attest.by.server"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.disclaimer
+msgid "platform.releaseReadiness.attest.disclaimer"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.error
+msgid "platform.releaseReadiness.attest.error"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.field.device
+msgid "platform.releaseReadiness.attest.field.device"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.field.reference
+msgid "platform.releaseReadiness.attest.field.reference"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.field.rpoHours
+msgid "platform.releaseReadiness.attest.field.rpoHours"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.field.rtoHours
+msgid "platform.releaseReadiness.attest.field.rtoHours"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.field.status
+msgid "platform.releaseReadiness.attest.field.status"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.field.summary
+msgid "platform.releaseReadiness.attest.field.summary"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.help.owasp-asvs-audit
+msgid "platform.releaseReadiness.attest.help.owasp-asvs-audit"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.help.qr-physical-scan
+msgid "platform.releaseReadiness.attest.help.qr-physical-scan"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.help.rpo-rto-decision
+msgid "platform.releaseReadiness.attest.help.rpo-rto-decision"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.status.failed
+msgid "platform.releaseReadiness.attest.status.failed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.status.passed
+msgid "platform.releaseReadiness.attest.status.passed"
+msgstr ""
+
+#: platform:platform.releaseReadiness.attest.submit
+msgid "platform.releaseReadiness.attest.submit"
+msgstr ""
+
 #: platform:platform.releaseReadiness.backupRestore.metadata.durationMs
 msgid "platform.releaseReadiness.backupRestore.metadata.durationMs"
 msgstr ""
@@ -396,8 +476,40 @@ msgstr ""
 msgid "platform.releaseReadiness.checklist.explanation"
 msgstr ""
 
+#: platform:platform.releaseReadiness.checklist.hostCapability.description
+msgid "platform.releaseReadiness.checklist.hostCapability.description"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.hostCapability.title
+msgid "platform.releaseReadiness.checklist.hostCapability.title"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.owasp-asvs-audit.description
+msgid "platform.releaseReadiness.checklist.owasp-asvs-audit.description"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.owasp-asvs-audit.title
+msgid "platform.releaseReadiness.checklist.owasp-asvs-audit.title"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.qr-physical-scan.description
+msgid "platform.releaseReadiness.checklist.qr-physical-scan.description"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.qr-physical-scan.title
+msgid "platform.releaseReadiness.checklist.qr-physical-scan.title"
+msgstr ""
+
 #: platform:platform.releaseReadiness.checklist.region
 msgid "platform.releaseReadiness.checklist.region"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.rpo-rto-decision.description
+msgid "platform.releaseReadiness.checklist.rpo-rto-decision.description"
+msgstr ""
+
+#: platform:platform.releaseReadiness.checklist.rpo-rto-decision.title
+msgid "platform.releaseReadiness.checklist.rpo-rto-decision.title"
 msgstr ""
 
 #: platform:platform.releaseReadiness.checklist.tenantIsolation.description
@@ -408,8 +520,28 @@ msgstr ""
 msgid "platform.releaseReadiness.checklist.tenantIsolation.title"
 msgstr ""
 
+#: platform:platform.releaseReadiness.evidence.error
+msgid "platform.releaseReadiness.evidence.error"
+msgstr ""
+
+#: platform:platform.releaseReadiness.evidence.loading
+msgid "platform.releaseReadiness.evidence.loading"
+msgstr ""
+
+#: platform:platform.releaseReadiness.evidence.recordedAt
+msgid "platform.releaseReadiness.evidence.recordedAt"
+msgstr ""
+
 #: platform:platform.releaseReadiness.heading
 msgid "platform.releaseReadiness.heading"
+msgstr ""
+
+#: platform:platform.releaseReadiness.hostCapability.status.degraded
+msgid "platform.releaseReadiness.hostCapability.status.degraded"
+msgstr ""
+
+#: platform:platform.releaseReadiness.hostCapability.status.full
+msgid "platform.releaseReadiness.hostCapability.status.full"
 msgstr ""
 
 #: platform:platform.releaseReadiness.item.status.unavailable
