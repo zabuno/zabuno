@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Application\Ai\UseCase;
 
+use App\Application\Ai\Exception\ProviderCallException;
+use App\Application\Ai\Exception\SchemaViolationException;
 use App\Application\Ai\Port\AiAvailability;
 use App\Application\Ai\Port\AiAvailabilityPort;
 use App\Application\Ai\Port\AiRequest;
 use App\Application\Ai\Port\VisionExtractionPort;
 use App\Domain\Ai\AiArtifact;
 use App\Domain\Ai\Capability;
+use App\Infrastructure\Ai\ArtifactSchemaValidator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -26,6 +29,7 @@ final class ExtractMenuFromImage
     public function __construct(
         private readonly AiAvailabilityPort $availability,
         private readonly VisionExtractionPort $vision,
+        private readonly ArtifactSchemaValidator $schema = new ArtifactSchemaValidator,
     ) {}
 
     /** Yetenek kapalıysa `null` döner; SEBEBİ çağıranın işidir. */
@@ -54,6 +58,19 @@ final class ExtractMenuFromImage
             ),
             [$absolutePath],
         );
+
+        /*
+            Sağlayıcının cevabı şemaya uymuyorsa BURADA durur — kaydedilmez,
+            kullanıcıya ulaşmaz (`docs/51` UNK-02, `docs/97` R14-R15). Daha
+            önce bu doğrulayıcı yazılmıştı ama hiçbir yerden çağrılmıyordu;
+            arayüzün izin-listesi eşleyicileri riski örtüyordu, garanti
+            etmiyordu.
+        */
+        try {
+            $this->schema->validate($artifact);
+        } catch (SchemaViolationException $violation) {
+            throw new ProviderCallException($artifact->model->provider, 'invalid-schema: '.$violation->getMessage());
+        }
 
         $id = (int) DB::table('ai_artifacts')->insertGetId([
             'workspace_id' => $workspaceId,
