@@ -224,9 +224,21 @@ gerekirse tablo o zaman gelir.
 
 ### Faz 2 — Güvenli alım (ingestion)
 
-**Durum (2026-09-04):** 3'ün magic-byte kısmı ve 4'ün karantina→tarama→işleme
-zinciri ✅ (`StoreMediaRequest`, `ScanQuarantinedMediaAsset`, ClamAV fail-closed);
-1, 2 (dropzone var, session yok), 3'ün decoder/piksel sınırı, 5, 6 ⬜ → FF-68.
+**Durum (FF-68, 2026-09-04):** 1 ✅ idempotency anahtarı (`X-Idempotency-Key`,
+tenant başına tekil; yeniden deneme ikinci görsel yaratmaz) — `media_upload_sessions`
+tablosu BİLEREK yok: tus/resumable olmadan bir oturum tablosu tiyatro olurdu,
+§7 kararı gereği resumable Faz 6'da video ile gelir. 2 🔶 ilerleme çubuğu +
+aynı anahtarla yeniden deneme + istemci tarafı boyut/piksel ön kontrolü ✅;
+**çoklu dosya FF-70'e** (kütüphane yeniden tasarımıyla — tek alt metinli
+çoklu yükleme, alt metni işlevsiz kılardı). 3 ✅ magic-byte + **piksel tavanı
+decode edilmeden** (`max_megapixels` config'de vardı, alımda UYGULANMIYORDU —
+gerçek boşluk) + bayt sınırı config'den (sabit 50 MB ile config'in 30 MB'ı
+çelişiyordu). 4 ✅ zincir. 5 ✅ (`ServeRendition` yalnız rendition; asıl
+karantinada). 6 ✅ SVG alımda reddedilir **ve slot politikalarından
+çıkarıldı** — kabul edilmeyen biçimi "izin verilen" diye listelemek yalandı.
+Kabul ölçütü ✅: `tests/fixtures/malicious/*` (PHP-jpg, HTML-png, betikli SVG,
+100000×100000 PNG başlığı) `MaliciousIntakeGateTest` ile CI kapısı; polyglot
+GIF+PHP kabul edilir ama gövdesi hiçbir rendition'a sızmaz (test).
 
 1. `media_upload_sessions` + idempotency key
 2. `react-dropzone` ile sürükle-bırak, pano, çoklu seçim, ilerleme

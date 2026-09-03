@@ -17,6 +17,9 @@ interface MediaRepositoryPort
     /**
      * @return list<MediaAssetSummary>
      */
+    /** Aynı anahtarla daha önce alınmış varlık — yeniden deneme tekrar yaratmaz (`docs/49` Faz 2). */
+    public function findByIdempotencyKey(int $workspaceId, string $key): ?MediaAssetSummary;
+
     public function listForWorkspace(int $workspaceId): array;
 
     public function find(int $id): ?MediaAssetSummary;

@@ -1176,6 +1176,14 @@ msgstr ""
 msgid "workspace.media.upload.error.file.required"
 msgstr ""
 
+#: workspace:workspace.media.upload.error.tooLarge
+msgid "workspace.media.upload.error.tooLarge"
+msgstr ""
+
+#: workspace:workspace.media.upload.error.tooManyPixels
+msgid "workspace.media.upload.error.tooManyPixels"
+msgstr ""
+
 #: workspace:workspace.media.upload.error.tooSmall
 msgid "workspace.media.upload.error.tooSmall"
 msgstr ""
@@ -1292,6 +1300,10 @@ msgstr ""
 msgid "workspace.media.upload.requirement.minimum"
 msgstr ""
 
+#: workspace:workspace.media.upload.retry
+msgid "workspace.media.upload.retry"
+msgstr ""
+
 #: workspace:workspace.media.upload.selected.dimensions
 msgid "workspace.media.upload.selected.dimensions"
 msgstr ""
@@ -1302,6 +1314,10 @@ msgstr ""
 
 #: workspace:workspace.media.upload.uploading
 msgid "workspace.media.upload.uploading"
+msgstr ""
+
+#: workspace:workspace.media.upload.uploading.progress
+msgid "workspace.media.upload.uploading.progress"
 msgstr ""
 
 #: workspace:workspace.menu.empty.brand.body

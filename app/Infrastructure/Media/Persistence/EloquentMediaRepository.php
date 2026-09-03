@@ -61,6 +61,7 @@ final class EloquentMediaRepository implements MediaRepositoryPort
                 'size_bytes' => $intake->sizeBytes,
                 'alt_text' => $intake->altText,
                 'slot' => $intake->slot,
+                'idempotency_key' => $intake->idempotencyKey,
                 'status' => MediaAssetStatus::Quarantined->value,
             ]);
         } catch (Throwable $exception) {
@@ -70,6 +71,16 @@ final class EloquentMediaRepository implements MediaRepositoryPort
         }
 
         return $this->toSummary($asset);
+    }
+
+    public function findByIdempotencyKey(int $workspaceId, string $key): ?MediaAssetSummary
+    {
+        $asset = MediaAsset::query()
+            ->where('workspace_id', $workspaceId)
+            ->where('idempotency_key', $key)
+            ->first();
+
+        return $asset === null ? null : $this->toSummary($asset);
     }
 
     public function listForWorkspace(int $workspaceId): array
