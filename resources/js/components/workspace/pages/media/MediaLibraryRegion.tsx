@@ -11,7 +11,7 @@ import { MediaDeleteImpactDialog } from './MediaDeleteImpactDialog';
 import { MediaLifecycleList } from './MediaLifecycleList';
 import { MediaLibrarySlotList } from './MediaLibrarySlotList';
 import { MediaTrashList } from './MediaTrashList';
-import { formatBytes } from './mediaFormat';
+import { displayName, formatBytes } from './mediaFormat';
 import type { MediaAsset, MediaLibraryActions } from '../MediaPage';
 
 export type MediaLibraryLoadState = 'loading' | 'idle' | 'error';
@@ -113,16 +113,10 @@ export function MediaLibraryRegion({
         onDelete(id);
     }
 
-    function assetName(asset: MediaAsset) {
-        return asset.altText.trim() !== ''
-            ? asset.altText
-            : t('workspace.media.library.asset.untitled');
-    }
-
     function renderRow(asset: MediaAsset) {
         const isDeleting = pendingDeleteIds?.has(asset.id) ?? false;
         const hasDeleteError = deleteErrorIds?.has(asset.id) ?? false;
-        const name = assetName(asset);
+        const name = displayName(asset);
         const meta = [
             asset.originalName,
             formatBytes(asset.sizeBytes),

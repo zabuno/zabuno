@@ -1,6 +1,6 @@
 {
     "$note": "docs/06 Public Menü Performance Budget'ından türetilen JS bütçesi. Bu dosya bütçeyi SAHİPLENMEZ; docs/06 sahiplenir. Buradaki sayı ölçüm eşiğidir ve yalnız owner kararıyla yükseltilir — yükseltmek, kullanıcının bekleme süresini uzatmak demektir.",
-    "$measuredAt": "2026-08-26",
-    "$unit": "KB gzip, tüm giriş bundle'ları toplamı",
+    "$measuredAt": "2026-09-04",
+    "$unit": "KB gzip, TEK giriş noktasının kapanışı (kendi dosyası + manifest imports); en büyük yüzey ölçülür. 2026-09-04 öncesi: tüm giriş bundle'larının toplamı.",
     "maxTotalGzipKb": 200
 }

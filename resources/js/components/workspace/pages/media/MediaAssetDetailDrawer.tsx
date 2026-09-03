@@ -3,7 +3,8 @@ import { Button } from '../../../catalog/forms/micro/Button';
 import { DrawerPanel } from '../../../catalog/overlays/compound/DrawerPanel';
 import { t } from '../../../../i18n/workspace';
 import { MediaAssetStatusBadge } from './MediaAssetStatusBadge';
-import { formatBytes, formatDate } from './mediaFormat';
+import { displayName, formatBytes, formatDate } from './mediaFormat';
+import { MediaRemoteSection, MediaUsageList, type Remote } from './MediaRemoteSection';
 import type { MediaAsset, MediaLibraryActions, MediaUsage, MediaVersion } from '../MediaPage';
 
 type MediaAssetDetailDrawerProps = {
@@ -14,8 +15,6 @@ type MediaAssetDetailDrawerProps = {
     /** Sürüm/yeniden üretim sonrası liste satırının tazelenmesi için. */
     onChanged: () => void;
 };
-
-type Remote<T> = { state: 'loading' } | { state: 'error' } | { state: 'ready'; rows: T[] };
 
 /**
  * Varlık detayı (`docs/49` Faz 4 madde 3): önizleme, dosya bilgisi,
@@ -74,8 +73,7 @@ function DetailDrawer({
         };
     }, [assetId, actions]);
 
-    const name =
-        asset.altText.trim() !== '' ? asset.altText : t('workspace.media.library.asset.untitled');
+    const name = displayName(asset);
     const latestVersion = versions.state === 'ready' ? (versions.rows[0]?.number ?? null) : null;
 
     async function run(key: string, work: () => Promise<unknown>, done: string) {
@@ -132,78 +130,31 @@ function DetailDrawer({
                     </p>
                 ) : null}
 
-                <section
-                    aria-labelledby={`media-usages-${asset.id}`}
-                    className="flex flex-col gap-2"
+                <MediaRemoteSection
+                    id={`media-usages-${asset.id}`}
+                    heading={t('workspace.media.library.usages.heading')}
+                    remote={usages}
+                    loading={t('workspace.media.library.usages.loading')}
+                    failed={t('workspace.media.library.usages.failed')}
+                    empty={t('workspace.media.library.usages.none')}
                 >
-                    <h4
-                        id={`media-usages-${asset.id}`}
-                        className="text-meta font-semibold uppercase tracking-wide text-fg-muted"
-                    >
-                        {t('workspace.media.library.usages.heading')}
-                    </h4>
-                    {usages.state === 'loading' ? (
-                        <p role="status" className="text-body text-fg-muted">
-                            {t('workspace.media.library.usages.loading')}
-                        </p>
-                    ) : usages.state === 'error' ? (
-                        <p role="alert" className="text-body text-fg-danger">
-                            {t('workspace.media.library.usages.failed')}
-                        </p>
-                    ) : usages.rows.length === 0 ? (
-                        <p className="text-body text-fg-muted">
-                            {t('workspace.media.library.usages.none')}
-                        </p>
-                    ) : (
-                        <ul
-                            aria-label={t('workspace.media.library.usages.heading')}
-                            className="flex flex-col gap-1"
-                        >
-                            {usages.rows.map((usage) => (
-                                <li
-                                    key={`${usage.entityType}-${usage.entityId}-${usage.slot}`}
-                                    className="flex items-center justify-between gap-2 text-body"
-                                >
-                                    <span className="text-fg">{usage.label}</span>
-                                    <span className="text-meta text-fg-muted">
-                                        {usage.published
-                                            ? t('workspace.media.library.usages.live')
-                                            : t('workspace.media.library.usages.draft')}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </section>
+                    {(rows) => <MediaUsageList usages={rows} />}
+                </MediaRemoteSection>
 
-                <section
-                    aria-labelledby={`media-versions-${asset.id}`}
-                    className="flex flex-col gap-2"
+                <MediaRemoteSection
+                    id={`media-versions-${asset.id}`}
+                    heading={t('workspace.media.library.versions.heading')}
+                    remote={versions}
+                    loading={t('workspace.media.library.versions.loading')}
+                    failed={t('workspace.media.library.versions.failed')}
+                    empty={t('workspace.media.library.versions.none')}
                 >
-                    <h4
-                        id={`media-versions-${asset.id}`}
-                        className="text-meta font-semibold uppercase tracking-wide text-fg-muted"
-                    >
-                        {t('workspace.media.library.versions.heading')}
-                    </h4>
-                    {versions.state === 'loading' ? (
-                        <p role="status" className="text-body text-fg-muted">
-                            {t('workspace.media.library.versions.loading')}
-                        </p>
-                    ) : versions.state === 'error' ? (
-                        <p role="alert" className="text-body text-fg-danger">
-                            {t('workspace.media.library.versions.failed')}
-                        </p>
-                    ) : versions.rows.length === 0 ? (
-                        <p className="text-body text-fg-muted">
-                            {t('workspace.media.library.versions.none')}
-                        </p>
-                    ) : (
+                    {(rows) => (
                         <ul
                             aria-label={t('workspace.media.library.versions.heading')}
                             className="flex flex-col gap-1"
                         >
-                            {versions.rows.map((version) => (
+                            {rows.map((version) => (
                                 <li
                                     key={version.number}
                                     className="flex items-center justify-between gap-2 text-body"
@@ -248,7 +199,7 @@ function DetailDrawer({
                             ))}
                         </ul>
                     )}
-                </section>
+                </MediaRemoteSection>
 
                 {notice ? (
                     <p role="status" className="text-meta text-fg-secondary">

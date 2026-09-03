@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../../../catalog/forms/micro/Button';
 import { t } from '../../../../i18n/workspace';
-import { formatBytes } from './mediaFormat';
+import { displayName, formatBytes } from './mediaFormat';
 import type { MediaAsset } from '../MediaPage';
 
 type MediaTrashListProps = {
@@ -81,10 +81,7 @@ export function MediaTrashList({
                     className="flex flex-col gap-2"
                 >
                     {rows.map((row) => {
-                        const name =
-                            row.altText.trim() !== ''
-                                ? row.altText
-                                : t('workspace.media.library.asset.untitled');
+                        const name = displayName(row);
                         return (
                             <li
                                 key={row.id}
