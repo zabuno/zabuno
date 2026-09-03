@@ -44,6 +44,30 @@ msgstr "Send message"
 msgid "site.engineering.title"
 msgstr "Zabuno — Engineering"
 
+#: site:site.footer.kvkk
+msgid "site.footer.kvkk"
+msgstr "KVKK"
+
+#: site:site.footer.legal
+msgid "site.footer.legal"
+msgstr "Legal"
+
+#: site:site.footer.privacy
+msgid "site.footer.privacy"
+msgstr "Privacy"
+
+#: site:site.footer.product
+msgid "site.footer.product"
+msgstr "Product"
+
+#: site:site.footer.tagline
+msgid "site.footer.tagline"
+msgstr "Your menu behind a QR code, kept up to date by your own team."
+
+#: site:site.footer.terms
+msgid "site.footer.terms"
+msgstr "Terms"
+
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
 msgstr "Write to us"
@@ -59,6 +83,34 @@ msgstr "Prices come from our plan catalogue, so what you read there is what we c
 #: site:site.home.faq.cost.question
 msgid "site.home.faq.cost.question"
 msgstr "What does it cost?"
+
+#: site:site.nav.contact
+msgid "site.nav.contact"
+msgstr "Contact"
+
+#: site:site.nav.features
+msgid "site.nav.features"
+msgstr "Features"
+
+#: site:site.nav.help
+msgid "site.nav.help"
+msgstr "Help"
+
+#: site:site.nav.howItWorks
+msgid "site.nav.howItWorks"
+msgstr "How it works"
+
+#: site:site.nav.login
+msgid "site.nav.login"
+msgstr "Log in"
+
+#: site:site.nav.pricing
+msgid "site.nav.pricing"
+msgstr "Pricing"
+
+#: site:site.nav.register
+msgid "site.nav.register"
+msgstr "Create account"
 
 #: site:site.plan.analytics
 msgid "site.plan.analytics"
@@ -123,3 +175,7 @@ msgstr "Not sure which one fits?"
 #: site:site.pricing.unsure.cta
 msgid "site.pricing.unsure.cta"
 msgstr "Ask us"
+
+#: site:site.skipToContent
+msgid "site.skipToContent"
+msgstr "Skip to main content"

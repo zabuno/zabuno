@@ -1,22 +1,24 @@
 {
-    "requirement": "I18N-SSR-RATCHET-16",
-    "total": 56,
-    "byFile": {
-        "auth/forgot-password.blade.php": 1,
-        "auth/invitation.blade.php": 1,
-        "auth/login.blade.php": 1,
-        "auth/register.blade.php": 1,
-        "auth/reset-password.blade.php": 1,
-        "auth/verified.blade.php": 1,
-        "auth/verify.blade.php": 1,
-        "platform-app.blade.php": 1,
-        "public-not-found.blade.php": 3,
-        "public/home.blade.php": 29,
-        "public/layout.blade.php": 14,
-        "public/legal.blade.php": 1,
-        "workspace-app.blade.php": 1
-    },
-    "why": "Sahibi çeviriyi PO dosyasindan yapar. Bir dize kaynak katalogda yoksa PO icinde satiri da yoktur; yani hicbir dile cevrilemez. React tarafi katalogdan besleniyor, sunucuda uretilen Blade gorunumleri beslenmiyordu. Bu sayi o boslugun buyuklugudur.",
-    "howToBurnDown": "Gorunumdeki dizeyi bir katalog anahtarina tasi, gorunumu o anahtari cagiracak bicimde degistir, npm run i18n:extract ile POT icine girdigini dogrula, sonra buradaki total ve byFile degerlerini dusur. Kapi yalniz azalmaya izin verir.",
-    "note": "Sayi yalniz kullaniciya GORUNEN metni kapsar: metin dugumleri, sekme basligi ve alt/placeholder/aria-label/title oznitelikleri. Blade direktifleri, yorumlar, script/style govdesi ve zaten ceviri cagrisi iceren ifadeler kapsam disidir."
+  "requirement": "I18N-SSR-RATCHET-16",
+  "total": 48,
+  "byFile": {
+    "auth/forgot-password.blade.php": 1,
+    "auth/invitation.blade.php": 1,
+    "auth/login.blade.php": 1,
+    "auth/register.blade.php": 1,
+    "auth/reset-password.blade.php": 1,
+    "auth/verified.blade.php": 1,
+    "auth/verify.blade.php": 1,
+    "platform-app.blade.php": 1,
+    "public-not-found.blade.php": 3,
+    "public/home.blade.php": 29,
+    "public/layout.blade.php": 1,
+    "public/legal.blade.php": 1,
+    "public/partials/footer.blade.php": 3,
+    "public/partials/header.blade.php": 2,
+    "workspace-app.blade.php": 1
+  },
+  "why": "Sahibi çeviriyi PO dosyasindan yapar. Bir dize kaynak katalogda yoksa PO icinde satiri da yoktur; yani hicbir dile cevrilemez. React tarafi katalogdan besleniyor, sunucuda uretilen Blade gorunumleri beslenmiyordu. Bu sayi o boslugun buyuklugudur.",
+  "howToBurnDown": "Gorunumdeki dizeyi bir katalog anahtarina tasi, gorunumu o anahtari cagiracak bicimde degistir, npm run i18n:extract ile POT icine girdigini dogrula, sonra buradaki total ve byFile degerlerini dusur. Kapi yalniz azalmaya izin verir.",
+  "note": "Sayi yalniz kullaniciya GORUNEN metni kapsar: metin dugumleri, sekme basligi ve alt/placeholder/aria-label/title oznitelikleri. Blade direktifleri, yorumlar, script/style govdesi ve zaten ceviri cagrisi iceren ifadeler kapsam disidir."
 }

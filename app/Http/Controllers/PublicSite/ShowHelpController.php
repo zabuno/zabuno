@@ -7,6 +7,7 @@ namespace App\Http\Controllers\PublicSite;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Support\Localization\HelpLibrary;
+use App\Support\Localization\SiteText;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -18,7 +19,10 @@ use Illuminate\View\View;
  */
 final class ShowHelpController extends Controller
 {
-    public function __construct(private readonly CanonicalUrl $canonical) {}
+    public function __construct(
+        private readonly CanonicalUrl $canonical,
+        private readonly SiteText $siteText,
+    ) {}
 
     public function __invoke(Request $request): View
     {
@@ -31,6 +35,8 @@ final class ShowHelpController extends Controller
             'helpView' => HelpLibrary::viewFor($locale),
             'helpLocale' => $locale,
             'pageLocale' => $locale,
+            // Masterpage metni de makalenin dilinde (`docs/100` MP-03).
+            'st' => $this->siteText->all(SiteText::pick($locale)),
         ]);
     }
 }

@@ -36,7 +36,7 @@ FF-03a'da yazılmış ve çalışan bir panel, testi olmadığı için ekranda y
 | A9 | Global header + page header iki katman | ✅ `topBarCenter`/`topBarEnd` + `PageHeader` (`docs/64` §1) |
 | A10 | Header'da location context | ✅ `WorkspaceContextControls` |
 | A11 | Global Create düğmesi | ✅ ön koşullu hedefler (`docs/64`) |
-| A12 | Help merkezi | ⛔ arkasında içerik yok; altı ölü bağlantılı bir menü planın kendi kuralını çiğner (`docs/64` §4) |
+| A12 | Help merkezi | ✅ (FF-72) `/help` arkasında gerçek makale var (`resources/help/{en,tr}/first-15-minutes`, `docs/89`); kamu masterpage gezintisinde ve altbilgide (`docs/100`). Uygulama içi Help menüsü hâlâ yok — orada da ilk gerçek içerikle gelir (`docs/64` §4) |
 | A13 | Çalışmayan search/notifications gösterilmiyor | ✅ kaldırıldı |
 | A14 | Tenant kabuğunda kalıcı footer yok | ✅ |
 | A15 | Sabit tema seçici kaldırıldı, account'a taşındı | ✅ `menuitemradio` olarak menüde (`docs/63`) |
