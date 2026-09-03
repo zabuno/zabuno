@@ -50,11 +50,13 @@ use App\Application\Tenancy\Port\WorkspaceContextSessionPort;
 use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
+use App\Domain\Ai\Capability;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Platform\Credential\CredentialProvider;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
+use App\Infrastructure\Ai\ArtifactSchemaValidator;
 use App\Infrastructure\Ai\ConfiguredAvailability;
 use App\Infrastructure\Ai\FakeProvider;
 use App\Infrastructure\Ai\GeminiEmbeddingProvider;
@@ -154,6 +156,24 @@ final class AppServiceProvider extends ServiceProvider
             anahtar geldiği gün değişecek yer burası (`docs/92`).
         */
         $this->app->bind(AiAvailabilityPort::class, ConfiguredAvailability::class);
+
+        /*
+            Şema doğrulayıcı — GERÇEKTEN YAPILANDIRILMIŞ (`docs/97` R14-R15).
+
+            Sınıf uzun süredir vardı ama hiçbir yerden çağrılmıyordu — sağlayıcı
+            cevabının "şemaya uymayan asla kullanıcıya ulaşmaz" garantisi
+            (`docs/51` UNK-02) çalışma zamanında aktif değildi. Yasak alan
+            kontrolü (alerjen vb.) her şemada geçerlidir; zorunlu alan listesi
+            yalnız ADI SABİT şemalara anlamlıdır — `product-description.v1`'in
+            tek alanı `description`. `menu-extract.v1`'in satırları dinamik
+            adlıdır (`row.1`, `row.2`...); zorunluluk orada ayrı bir katmanda
+            (`ApplyMenuArtifact::readRows`) zaten zorlanıyor. `embedding.v1`
+            bu doğrulayıcıdan hiç geçmez — `EmbeddingPort` bir `AiArtifact`
+            değil, çıplak vektör döner; FieldValue/forbidden-field yüzeyi yok.
+        */
+        $this->app->singleton(ArtifactSchemaValidator::class, static fn (): ArtifactSchemaValidator => (new ArtifactSchemaValidator)
+            ->withRequired(Capability::ProductDescription, ['description']));
+
         /*
             Görüntü çıkarımı: kasada OpenAI yapılandırılmış VE AI açıksa gerçek
             adaptör, aksi hâlde deterministik sahte sağlayıcı. Karar her istekte

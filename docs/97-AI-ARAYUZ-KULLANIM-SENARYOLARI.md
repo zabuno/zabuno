@@ -219,8 +219,8 @@ gereksinim yok.
 
 | # | Gereksinim | Kaynak |
 | --- | --- | --- |
-| R14 | `ArtifactSchemaValidator`, her `AiArtifact` üretiminden hemen sonra (provider dönüşünde, use case içinde) gerçekten çağrılır — bugün hiçbir yerde çağrılmıyor | önceki tur bulgusu |
-| R15 | `requiredFieldsBySchema` her aktif şema (`menu-extract.v1`, `product-description.v1`, `embedding.v1`) için gerçek bir liste ile yapılandırılıp bağlanır | önceki tur bulgusu |
+| R14 | **Teslim edildi (FF-50).** `ArtifactSchemaValidator`, her `AiArtifact` üretiminden hemen sonra, use case içinde (`ExtractMenuFromImage`, `GenerateProductDescriptionDraft`) gerçekten çağrılır; ihlal `ProviderCallException('...', 'invalid-schema: ...')`'e çevrilir, taslak **kaydedilmez**. | önceki tur bulgusu |
+| R15 | **Teslim edildi (FF-50), kapsamı düzeltilerek.** `requiredFieldsBySchema`, adı SABİT alan taşıyan tek şema için (`product-description.v1` → `description`) yapılandırıldı. `menu-extract.v1`'in satırları dinamik adlıdır (`row.1`, `row.2`…) — zorunluluk zaten ayrı bir katmanda (`ApplyMenuArtifact::readRows`) zorlanıyor, bu doğrulayıcıya taşınmadı. `embedding.v1` bu doğrulayıcıdan **hiç geçmez** — `EmbeddingPort` bir `AiArtifact` değil, çıplak vektör döner (`vector`, `model`); `FieldValue`/forbidden-field yüzeyi yok. İlk yazımdaki "üç şema da" ifadesi yanlıştı, düzeltildi. | önceki tur bulgusu |
 
 ### 4.4 Gelecek-korumalı (bugün eylem gerektirmez, kayıt altına alınır)
 
