@@ -253,8 +253,17 @@ reddedilir. Bu testler CI kapısıdır.
 
 ### Faz 3 — Asset / Version / Rendition
 
-**Durum (2026-09-04):** 3 ✅ (`{w}w` rendition seti, upscale yok, pipeline
-sürümü kaydı); 1, 2, 4, 5 ⬜ → FF-69.
+**Durum (FF-69, 2026-09-04):** 1 ✅ asıl karantinada değişmez ve parmak izi
+(`original_checksum_sha256`) alım anında alınır — "değişmedi" iddiasının tek
+kanıtı. 2 🔶 sürüm append-only: yeniden üretim v2 açar, **geri alma v3 açar**
+(geçmiş yeniden yazılmaz; yayın snapshot'ı hâlâ eski sürümü gösterir) —
+**crop/resize düzenleyicisi Faz 8'de**, o yüzden "non-destructive edit"in
+bugünkü iki biçimi yeniden üretim ve geri alma. 3 ✅. 4 ✅ aynı parmak izi
+ikinci kez gelince `duplicateOfId` — kiracı İÇİNDE, komşu bilmez. 5 ✅
+`media:reprocess --workspace=` + `POST .../reprocess`; başarısız yeniden
+üretim varlığı `failed` yapmaz, `ready` kalır ve sebep iş kaydında.
+Kabul: `MediaVersioningTest` (7). Kütüphane ekranı bunların hiçbirini henüz
+göstermiyor → FF-70.
 
 1. Original **immutable**
 2. Crop/resize **non-destructive**; her düzenleme yeni version

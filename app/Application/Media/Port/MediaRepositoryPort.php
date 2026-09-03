@@ -84,4 +84,22 @@ interface MediaRepositoryPort
      * @return int Üretilen sürümün kimliği
      */
     public function persistRenditions(int $workspaceId, int $assetId, array $renditions): int;
+
+    /**
+     * HAZIR bir varlığı yeniden üretim için kilitler (ready → processing).
+     * Asıl dosyaya dokunulmaz; sonuç YENİ bir sürüm olur (`docs/49` Faz 3).
+     */
+    public function claimReadyForReprocessing(int $workspaceId, int $assetId): ?ProcessableMediaAsset;
+
+    /**
+     * @return list<array{number:int, id:int, createdBy:string, createdAt:string, renditionCount:int}>
+     */
+    public function versionsFor(int $workspaceId, int $assetId): array;
+
+    /**
+     * Eski bir sürümü geri getirir — YENİ bir sürüm olarak. Sürüm geçmişi
+     * append-only: "en büyük sürüm = geçerli" kuralı bozulmaz, hiçbir satır
+     * silinmez. Sürüm yoksa null döner.
+     */
+    public function restoreVersion(int $workspaceId, int $assetId, int $versionNumber): ?int;
 }
