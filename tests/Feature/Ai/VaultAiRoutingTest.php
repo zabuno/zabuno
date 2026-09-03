@@ -105,4 +105,37 @@ final class VaultAiRoutingTest extends TestCase
 
         self::assertInstanceOf(GeminiVisionProvider::class, $this->app->make(VisionExtractionPort::class));
     }
+
+    // --- VAULT-AI-PRODUCT-DESCRIPTION-ROUTE-OPENS-01 -----------------------
+
+    #[Test]
+    public function the_vault_gemini_key_opens_the_product_description_route_too(): void
+    {
+        /*
+            Gerçek kusur: `vaultServes()` yalnız görüntü yeteneklerini
+            tanıyordu. Kasada Gemini anahtarı olsa bile
+            `config('ai.capabilities.product.description.candidates')` boş
+            olduğu için rota HİÇBİR ZAMAN açılmıyordu — FF-34'ün düzelttiği
+            "paid but doesn't work" sınıfıyla aynı arıza.
+        */
+        Config::set('ai.enabled', true);
+        Config::set('ai.budget.monthly_minor_per_tenant', 100000);
+
+        $availability = $this->app->make(AiAvailabilityPort::class);
+        self::assertSame(
+            AiAvailability::NoRoute,
+            $availability->isAvailable(1, Capability::ProductDescription),
+        );
+
+        $this->app->make(PlatformCredentialAdminPort::class)->put(
+            CredentialProvider::Gemini,
+            ['api_key' => 'gm-test-key'],
+            byUserId: null,
+        );
+
+        self::assertSame(
+            AiAvailability::Available,
+            $availability->isAvailable(1, Capability::ProductDescription),
+        );
+    }
 }

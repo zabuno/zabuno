@@ -66,12 +66,20 @@ final readonly class ConfiguredAvailability implements AiAvailabilityPort
     /**
      * Kasada bu yeteneğe bakan, açık bir sağlayıcı var mı?
      *
-     * Görüntü/OCR yetenekleri OpenAI (ve ileride Gemini) ile karşılanır.
-     * Diğer yetenekler config aday listesine bağlı kalır.
+     * BURAYA EKLENMEYEN bir yetenek, kasada anahtar olsa bile `NoRoute`
+     * döner — `docs/96` Faz 2'de bulunan gerçek arıza tam buydu: yeni bir
+     * `StructuredGenerationPort`/`VisionExtractionPort` adaptörü yazılıp
+     * kasaya bağlandığında, o yeteneğin adı burada da listelenmezse "para
+     * ödedik ama çalışmıyor" sessizce geri döner (FF-34'ün düzelttiği
+     * dotted-config-key sınıfıyla aynı arıza biçimi). Yeni bir gerçek
+     * adaptör her eklendiğinde bu liste GÜNCELLENMELİDİR.
+     *
+     * Listede olmayan yetenekler (bugün: gömme, sınıflandırma) yalnız
+     * config aday listesine bağlı kalır.
      */
     private function vaultServes(Capability $capability): bool
     {
-        if (! in_array($capability, [Capability::MenuExtract, Capability::OcrDocument], true)) {
+        if (! in_array($capability, [Capability::MenuExtract, Capability::OcrDocument, Capability::ProductDescription], true)) {
             return false;
         }
 
