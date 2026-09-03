@@ -242,7 +242,7 @@ Her tur hangi maddeleri kapattığını buraya yazar.
 | P0-03 | Misafir menüsünde restoran kimliği | ✅ `docs/75` + logo `docs/77` |
 | P0-04 | Açıklama + görsel yayın snapshot'ında | ✅ `docs/77` + panel `docs/78` |
 | P0-05 | Foto/PDF/CSV aktarma | 🔶 CSV ✅ `docs/80`; foto onay hattı ✅ `docs/92`; OpenAI adaptörü + anahtar bekliyor |
-| P0-06 | Gerçek e-posta | ⛔ sağlayıcı hesabı sahibinde |
+| P0-06 | Gerçek e-posta | 🔶 Mailgun kurulu `docs/93`; kum havuzu alanı kaydolmayı açmaz |
 | P0-07 | Canlı dağıtım kanıtı | ✅ zabuno.com canlı (Hüseyin); iki üretim kusuru `docs/87` |
 | P0-08 | Medya işleme güvenilirliği | ✅ `docs/76` |
 | P0-09 | Veri dışa aktarımı | ✅ `docs/80` |

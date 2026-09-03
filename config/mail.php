@@ -49,6 +49,12 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        // Mailgun API taşıyıcısı — SMTP DEĞİL (`docs/93`). Bir sunucuda
+        // 25/587 giden portları sıklıkla kapalıdır; HTTPS her yerde açıktır.
+        'mailgun' => [
+            'transport' => 'mailgun',
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

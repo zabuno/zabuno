@@ -3,6 +3,24 @@
 return [
 
     /*
+     * MAILGUN — `docs/93` (P0-06).
+     *
+     * Değerler ORTAMDAN gelir; bu dosyaya hiçbir anahtar yazılmaz. Bir
+     * anahtarın depoya girmesi, onu gören herkese vermek demektir ve
+     * geçmişten silmek pratikte imkânsızdır. Bir test bunu kontrol eder.
+     *
+     * `endpoint` açıkça yapılandırılabilir: Mailgun'un ABD ve AB uçları
+     * ayrıdır (`api.mailgun.net` / `api.eu.mailgun.net`) ve yanlış uç,
+     * "kimlik doğrulanamadı" olarak görünen bir bölge hatası verir.
+     */
+    'mailgun' => [
+        'domain' => env('MAILGUN_DOMAIN'),
+        'secret' => env('MAILGUN_SECRET'),
+        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+        'scheme' => 'https',
+    ],
+
+    /*
     |--------------------------------------------------------------------------
     | Third Party Services
     |--------------------------------------------------------------------------
