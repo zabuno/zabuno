@@ -64,6 +64,14 @@ msgstr "Loading provider keys…"
 msgid "platform.credentials.nav.label"
 msgstr "Provider keys"
 
+#: platform:platform.credentials.provider.anthropic
+msgid "platform.credentials.provider.anthropic"
+msgstr "Anthropic (Claude)"
+
+#: platform:platform.credentials.provider.custom_endpoint
+msgid "platform.credentials.provider.custom_endpoint"
+msgstr "Custom endpoint (OpenAI-compatible)"
+
 #: platform:platform.credentials.provider.gemini
 msgid "platform.credentials.provider.gemini"
 msgstr "Gemini (Google)"
@@ -71,6 +79,10 @@ msgstr "Gemini (Google)"
 #: platform:platform.credentials.provider.iyzico
 msgid "platform.credentials.provider.iyzico"
 msgstr "Iyzico (payments)"
+
+#: platform:platform.credentials.provider.kimi
+msgid "platform.credentials.provider.kimi"
+msgstr "Kimi (Moonshot)"
 
 #: platform:platform.credentials.provider.mailgun
 msgid "platform.credentials.provider.mailgun"

@@ -141,6 +141,13 @@ const en = {
     'platform.credentials.provider.iyzico': 'Iyzico (payments)',
     'platform.credentials.provider.openai': 'OpenAI (ChatGPT)',
     'platform.credentials.provider.gemini': 'Gemini (Google)',
+    // Faz 3 (`docs/95`). "Custom endpoint" bir marka adı taşımaz BİLEREK:
+    // Qwen, vLLM, Ollama ya da başka bir OpenAI-uyumlu sunucu aynı kutuya
+    // girer; tek bir markanın adını yazmak, diğerlerini dışlıyormuş gibi
+    // okunurdu.
+    'platform.credentials.provider.anthropic': 'Anthropic (Claude)',
+    'platform.credentials.provider.kimi': 'Kimi (Moonshot)',
+    'platform.credentials.provider.custom_endpoint': 'Custom endpoint (OpenAI-compatible)',
 
     'platform.credentials.state.active': 'Active',
     'platform.credentials.state.disabled': 'Disabled',
