@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\PublicSite;
 
+use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\StoreContactMessageRequest;
 use App\Mail\ContactMessageReceived;
@@ -22,6 +23,10 @@ use Throwable;
  */
 final class StoreContactMessageController extends Controller
 {
+    public function __construct(
+        private readonly MailTransportSelectorPort $mailTransport,
+    ) {}
+
     public function __invoke(StoreContactMessageRequest $request): RedirectResponse
     {
         $honeypot = trim((string) $request->validated('website'));
@@ -70,7 +75,9 @@ final class StoreContactMessageController extends Controller
         }
 
         try {
-            Mail::to($to)->send(new ContactMessageReceived($name, $email, $body));
+            Mail::mailer($this->mailTransport->select())
+                ->to($to)
+                ->send(new ContactMessageReceived($name, $email, $body));
 
             DB::table('contact_messages')->where('id', $id)->update([
                 'delivered_at' => now(),

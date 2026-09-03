@@ -89,9 +89,33 @@ STORE + SECRET-NEVER-IN-RESPONSE, UNKNOWN-FIELD (422), UNKNOWN-PROVIDER
 (404), DISABLE, AUDIT (sırsız). Route imzaları `ModularApiRouteRegistrationTest`
 mührüne eklendi. Tam yerel paket **1183 yeşil**.
 
+## Faz 3/5 — Mailgun gönderici kasadan okur (bu commit)
+
+FF-36 aktarımı Mailgun'u sunucu `.env`'inden getiriyordu. Bu faz, kasadan
+girilen anahtarı env'in **önüne** geçiriyor. Sorun şuydu: üretimde config
+önyüklemede dondurulur (`config:cache`), kasa ise çalışma zamanında değişir
+— o yüzden değeri göndermeden **hemen önce** çözmek gerek.
+
+`MailTransportSelectorPort::select()` gönderimden önce Mailgun kimliğini
+resolver'dan (KASA > env) çözer, `services.mailgun.*` config'ini tazeler ve
+`mailgun` sürücüsünü seçer. Zorunlu alanlar (domain + secret) hiçbir
+kaynaktan gelmiyorsa varsayılan sürücü (`mail.default`, genelde `log`)
+kalır — kimlik yokken gönderici uydurmayız. İletişim formu artık bu porttan
+geçiyor.
+
+Sonuç: superadmin UI'dan (Faz 2 API) Mailgun anahtarı girdiği an, iletişim
+bildirimi o anahtarla çıkar — sunucuya dokunmadan, yeniden deploy etmeden.
+FF-35'in "sağlayıcı yoksa mesaj yine saklanır" davranışı korunuyor.
+
+### Kapı (test-first)
+
+`VaultMailConsumptionTest` (4): USES-VAULT (kasa env'i ezer), ENV-FALLBACK,
+NONE-IS-DEFAULT, CONTACT-USES-SELECTED (uçtan uca, sır iletişim tablosuna
+sızmaz). FF-35 `ContactDeliveryTest` (4) hâlâ yeşil. Tam yerel paket **1187**.
+
 ## Sırada
 
-- **Faz 3/5** — Mailgun runtime tüketimi (kasadan okuyan gönderici).
+- **Faz 4/5** — OpenAI adaptörü + Gemini + routing (kasadan anahtar).
 - **Faz 3/5** — Mailgun runtime tüketimi (kasadan okuyan gönderici).
 - **Faz 4/5** — OpenAI adaptörü + Gemini + routing (kasadan anahtar).
 - **Faz 5/5** — GUI ayarlar paneli + i18n.
@@ -101,6 +125,7 @@ mührüne eklendi. Tam yerel paket **1183 yeşil**.
 Çalışır: kasa çekirdeği + superadmin API. Bir superadmin sırrı API üzerinden
 girebilir/döndürebilir/kapatabilir; şifreli saklanıyor, maskeli okunuyor,
 her yazma denetime geçiyor, env yedeği bozulmadan duruyor.
-Henüz çalışmaz: bunun bir **GUI paneli** yok (Faz 5/5), ve posta/AI henüz
-kasadan OKUMUYOR (Faz 3–4) — API'dan girilen Mailgun anahtarı gönderici
-tarafından kullanılmıyor, çünkü gönderici hâlâ env'den okuyor.
+Çalışır (Faz 3): API'dan girilen Mailgun anahtarı artık gönderici tarafından
+KULLANILIYOR — iletişim bildirimi kasadaki anahtarla çıkar.
+Henüz çalışmaz: bunun bir **GUI paneli** yok (Faz 5/5), ve AI adaptörleri
+(OpenAI/Gemini) henüz kasadan okumuyor (Faz 4).

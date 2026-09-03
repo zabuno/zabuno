@@ -16,6 +16,7 @@ use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Localization\Port\TranslationPort;
+use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaRepositoryPort;
@@ -63,6 +64,7 @@ use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
+use App\Infrastructure\Mail\VaultMailTransportSelector;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
@@ -163,6 +165,9 @@ final class AppServiceProvider extends ServiceProvider
             CredentialResolverPort::class,
             EloquentPlatformCredentialStore::class,
         );
+
+        // Posta sürücüsü seçimi kasadan beslenir (`docs/94` Faz 3).
+        $this->app->bind(MailTransportSelectorPort::class, VaultMailTransportSelector::class);
 
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);
