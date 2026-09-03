@@ -43,6 +43,16 @@ Yeni bir "modül" değil — mevcut `docs/15` §6'daki yatay observability stand
 disiplini maksimal). CORE-14 burada Notifications'tır (`docs/04`), bu stage'in
 konusu değildir.
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 7)
+
+Bu stage'e eşlenen AI maddeleri `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: bugüne kadar eksik kalan işletim katmanı (kuyruk-işçisi,
+dead-letter, devre kesici, idempotency) ve otomatikleştirilmiş prompt-
+injection/kalite eval seti.
+
+Bu stage'in kendi deseniyle aynı: kod değişikliği minimal, süreç/kanıt
+disiplini maksimal.
+
 ## Dependency / critical path
 Tüm önceki stage'lerin observability/audit altyapısı → SRE süreçlerinin bu
 veriyi tüketmesi.

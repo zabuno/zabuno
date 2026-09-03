@@ -53,6 +53,17 @@ profilinde sunulacak. Sertifika otomasyonu paylaşımlı barındırmada teknik
 olarak MÜMKÜN DEĞİLDİR (`docs/15` §4b); veremeyeceğimiz bir sözü satmamak
 için karar önden alınmalıdır.
 
+## AI entegrasyonu ek planı (`AI-INTEGRATION-v1` Faz 3)
+
+Bu stage'e eşlenen AI maddeleri `docs/95-AI-ENTEGRASYON-YOL-HARITASI.md`'de
+sahiplenilir: çok-hesap/BYOK şema evrimi, yeni sağlayıcılar (Anthropic/Kimi)
+ve superadmin "sağlayıcı ekle" UX sözleşmesi (dropdown → koşullu form →
+N bağlantı).
+
+`docs/26` §1'deki "AI Provider Account Vault: çok-hesap/BYOK" satırının somut
+karşılığıdır. Tetikleyici: Stage 3 girişi — ya da Faz 2'nin tek hesabı gerçek
+trafikte kotaya takılırsa daha erken.
+
 ## Dependency / critical path
 Post-MVP CORE-12 Money/Ledger → Iyzico live → reconciliation job'ları canlı.
 
