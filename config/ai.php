@@ -76,6 +76,27 @@ return [
      * diğerlerinin AI'sını kapatırdı. Dolduğunda AI durur, ÜRÜN DURMAZ —
      * medya kotasıyla aynı ilke (`docs/49` §10).
      */
+    /*
+     * OpenAI görüntü adaptörü (Vault Faz 5). Model adı KODDA değil burada:
+     * sağlayıcı kataloğu bizim sürüm döngümüzden bağımsız değişir. Anahtar
+     * burada YOK — o kasada (`platform_credentials`) ya da env'de.
+     */
+    'openai' => [
+        'vision_model' => env('AI_OPENAI_VISION_MODEL', 'gpt-4o-mini'),
+        'request_timeout' => (int) env('AI_OPENAI_TIMEOUT', 60),
+    ],
+
+    /*
+     * Model başına fiyat (1.000.000 token başına, KURUŞ). Bütçe bu tablodan
+     * türetilen maliyetle düşer; ayarlanmazsa maliyet 0 yazılır ve bütçe
+     * yalnız aç/kapa görevi görür (miktar bazlı değil). Fotoğraf okuma
+     * İNSAN TETİKLİDİR (onay hattı), o yüzden kontrolsüz döngü riski düşüktür;
+     * yine de gerçek tavan için buraya fiyat girilmeli.
+     */
+    'pricing' => [
+        // 'gpt-4o-mini' => ['input_per_million' => 0, 'output_per_million' => 0],
+    ],
+
     'budget' => [
         'monthly_minor_per_tenant' => (int) env('AI_BUDGET_MONTHLY_MINOR', 0),
     ],

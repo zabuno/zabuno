@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Ai;
 
 use App\Application\Ai\Port\AiAvailability;
+use App\Application\Platform\Port\CredentialResolverPort;
 use App\Domain\Ai\Capability;
 use App\Infrastructure\Ai\AiBudgetLedger;
 use App\Infrastructure\Ai\ConfiguredAvailability;
@@ -41,7 +42,7 @@ final class AiOffProductWorksTest extends TestCase
 
     private function availability(): ConfiguredAvailability
     {
-        return new ConfiguredAvailability(new AiBudgetLedger);
+        return new ConfiguredAvailability(new AiBudgetLedger, $this->app->make(CredentialResolverPort::class));
     }
 
     public function test_with_ai_disabled_the_plane_reports_kill_switch_and_nothing_throws(): void

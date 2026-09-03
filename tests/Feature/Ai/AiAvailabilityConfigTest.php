@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Ai;
 
 use App\Application\Ai\Port\AiAvailability;
+use App\Application\Platform\Port\CredentialResolverPort;
 use App\Domain\Ai\Capability;
 use App\Infrastructure\Ai\AiBudgetLedger;
 use App\Infrastructure\Ai\ConfiguredAvailability;
@@ -42,7 +43,7 @@ final class AiAvailabilityConfigTest extends TestCase
         ]]);
         config(['ai.budget.monthly_minor_per_tenant' => 100000]);
 
-        $availability = (new ConfiguredAvailability(new AiBudgetLedger))
+        $availability = (new ConfiguredAvailability(new AiBudgetLedger, $this->app->make(CredentialResolverPort::class)))
             ->isAvailable(1, Capability::MenuExtract);
 
         self::assertSame(
@@ -59,7 +60,7 @@ final class AiAvailabilityConfigTest extends TestCase
 
         self::assertSame(
             AiAvailability::NoRoute,
-            (new ConfiguredAvailability(new AiBudgetLedger))->isAvailable(1, Capability::MenuExtract),
+            (new ConfiguredAvailability(new AiBudgetLedger, $this->app->make(CredentialResolverPort::class)))->isAvailable(1, Capability::MenuExtract),
         );
     }
 
@@ -80,7 +81,7 @@ final class AiAvailabilityConfigTest extends TestCase
 
         self::assertSame(
             AiAvailability::BudgetExhausted,
-            (new ConfiguredAvailability(new AiBudgetLedger))->isAvailable(1, Capability::MenuExtract),
+            (new ConfiguredAvailability(new AiBudgetLedger, $this->app->make(CredentialResolverPort::class)))->isAvailable(1, Capability::MenuExtract),
         );
     }
 }

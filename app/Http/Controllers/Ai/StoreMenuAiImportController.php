@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Ai;
 
+use App\Application\Ai\Exception\ProviderCallException;
 use App\Application\Ai\UseCase\ExtractMenuFromImage;
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Domain\Authorization\Permission;
@@ -68,11 +69,24 @@ final class StoreMenuAiImportController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        $result = $this->extract->handle(
-            $workspace,
-            $menu,
-            Storage::disk('local')->path((string) $asset->disk_path),
-        );
+        try {
+            $result = $this->extract->handle(
+                $workspace,
+                $menu,
+                Storage::disk('local')->path((string) $asset->disk_path),
+            );
+        } catch (ProviderCallException $exception) {
+            /*
+                502: yetenek AÇIKTI, çağrı yapıldı ama sağlayıcı hata verdi.
+                503'ten (yetenek yok) farklıdır ve çıkış yolu da farklı:
+                anahtarı/kotayı kontrol et, ya da tekrar dene. Sağlayıcının
+                ham hatası ya da anahtarı sızdırılmaz — yalnız sebep kodu.
+            */
+            return response()->json([
+                'message' => 'Fotoğraf okunmaya çalışıldı ama sağlayıcı yanıt vermedi.',
+                'reason' => $exception->reason,
+            ], 502);
+        }
 
         return response()->json([
             'id' => $result['id'],

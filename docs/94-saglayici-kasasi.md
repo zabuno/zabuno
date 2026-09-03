@@ -142,11 +142,54 @@ hatasında yeniden-dener. `PlatformApp` gezinti testi hâlâ yeşil. i18n
 projeksiyonları (`i18n:check`), lint, prettier, build, bundle-gate hepsi
 yeşil. Frontend paketi **1124**, PHP paketi **1187**.
 
-## Sırada
+## Faz 5/5 — OpenAI görüntü adaptörü (bu commit)
 
-- **Faz 5/5** — OpenAI adaptörü + routing (kasadan anahtar). Baştan söylüyorum:
-  gerçek API'ye karşı **doğrulanmamış** olacak; ilk gerçek çağrıyı anahtarı
-  olan kişi tek sayfalık bir denemeyle yapmalı.
+Son parça: kasadaki OpenAI anahtarını gerçek foto-menü okumaya bağlamak.
+
+**⚠️ DOĞRULAMA DAMGASI (baştan söylediğim gibi):** bu adaptör **gerçek OpenAI
+API'sine karşı doğrulanmadı.** İstek şekli OpenAI'ın belgelenmiş Chat
+Completions + yapılandırılmış çıktı biçimine göre yazıldı ve `Http::fake` ile
+sınandı — yani sahtesine karşı. **Kod yeşil olması "çalışıyor" demek değil.**
+İlk gerçek çağrıyı anahtarı olan kişi tek sayfalık bir menüyle yapmalı;
+o denemeye kadar "doğrulanmadı" damgası durur.
+
+Ne kuruldu:
+
+- `OpenAiVisionProvider` — anahtarı kasadan (resolver) okur, görseli data-URI
+  olarak `user` kanalına, talimatı `system` kanalına koyar (talimat/veri
+  ayrımı tür düzeyinde), yapılandırılmış JSON çıktı zorlar, satırları
+  `FieldValue`'ya eşler. Fiyatı okunamayan satır **belirsiz** işaretlenir —
+  uydurma fiyat menüye geçmez.
+- **Rota kasadan açılır.** `ConfiguredAvailability` artık config aday listesi
+  boş olsa da kasada OpenAI yapılandırılmışsa yeteneği açık sayar. Superadmin
+  anahtarı girdiği an rota açılır, config'e dokunmadan.
+- **Bütçe hâlâ kapı.** Anahtar var ama aylık bütçe 0 ise cevap yine
+  `BudgetExhausted` — sıfır bütçe "kapalı" demek, "sınırsız" değil. Her çağrı
+  `ai_invocations`'a token + maliyet + sonuç bırakır (bütçe bundan türer).
+- **Sağlayıcı hatası 502.** Yetenek açıkken çağrı başarısız olursa (ağ /
+  http / anlaşılmaz cevap) uç 502 döner — 503'ten (yetenek yok) farklı,
+  çıkış yolu farklı. Ham hata/anahtar sızmaz.
+- **Model adı koda gömülü değil**, `config('ai.openai.vision_model')` — env'den
+  güncellenir. Maliyet tavanı için `config('ai.pricing')` doldurulur; boşsa
+  maliyet 0 yazılır ve bütçe yalnız aç/kapa görevi görür. Foto okuma
+  İNSAN TETİKLİDİR (onay hattı, `docs/92`), o yüzden kontrolsüz döngü riski
+  düşük.
+
+### Kapı (test-first)
+
+`OpenAiVisionProviderTest` (5): istek şekli (talimat=system, görsel=user,
+json_schema), talimat/veri ayrımı (kötü niyetli veri system'e sızmaz), satır
+eşleme (null fiyat → belirsiz), maliyet kaydı (75 kuruş), http hatası → failed
+kaydı + fırlatma. `VaultAiRoutingTest` (3): kasa anahtarı rotayı açar, bütçe
+hâlâ kapı, binding kasaya göre. Mevcut AI testleri (26) yeşil. Tam PHP paketi
+**1195**.
+
+## Program tamamlandı — 5/5
+
+Kasa artık uçtan uca: superadmin panelden anahtar girer (Faz 4), şifreli
+saklanır (Faz 1), API yalnız-yazılır ve denetimli (Faz 2), posta onu kullanır
+(Faz 3), OpenAI foto-okuma onu kullanır (Faz 5). Iyzico anahtarı kasada
+saklanır ve gösterilir ama ödeme akışı ayrı iştir (P1-02, bekliyor).
 - **Faz 3/5** — Mailgun runtime tüketimi (kasadan okuyan gönderici).
 - **Faz 4/5** — OpenAI adaptörü + Gemini + routing (kasadan anahtar).
 - **Faz 5/5** — GUI ayarlar paneli + i18n.
@@ -156,8 +199,9 @@ yeşil. Frontend paketi **1124**, PHP paketi **1187**.
 Çalışır: kasa çekirdeği + superadmin API. Bir superadmin sırrı API üzerinden
 girebilir/döndürebilir/kapatabilir; şifreli saklanıyor, maskeli okunuyor,
 her yazma denetime geçiyor, env yedeği bozulmadan duruyor.
-Çalışır (Faz 4): superadmin artık **panelden** her sağlayıcının anahtarını
-girip/döndürüp/kapatabilir; Mailgun anahtarı girildiği an iletişim bildirimi
-onunla çıkar (uçtan uca, UI'dan sunucuya dokunmadan).
-Henüz çalışmaz: OpenAI/Gemini adaptörleri henüz kasadan okumuyor (Faz 5) —
-anahtar panelde saklanıyor ama foto-menü okuma o adaptör yazılınca çalışır.
+Çalışır (Faz 5): kasa uçtan uca. Panelden girilen Mailgun anahtarı postayı,
+OpenAI anahtarı foto-menü okumayı besler — sunucuya dokunmadan.
+**Doğrulanmadı:** OpenAI adaptörü gerçek API'ye karşı test edilmedi; ilk
+gerçek çağrı anahtar sahibinin tek sayfalık denemesini bekliyor.
+Ayrı iş: Gemini adaptörü (anahtar saklanıyor, tüketim yazılmadı) ve Iyzico
+ödeme akışı (P1-02).
