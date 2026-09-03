@@ -1,14 +1,19 @@
 # 97 — AI arayüz boşluğu: kullanım senaryoları, kullanıcı yolculukları, gereksinim analizi
 
 **Bu belge bir GEREKSİNİM analizi olarak başladı; şimdi kendi kanıtını da
-taşıyor.** Bulunan dört boşluğun (üç AI özelliğinin frontend'i yok,
-çalışma-zamanı yedek zinciri yok, `ArtifactSchemaValidator` bağlı değil,
-çeviri OPT-04 bekliyor) **tamamı kapandı** (FF-49…FF-53) — yalnız çeviri
-bilinçli ertelendi (OPT-04 hâlâ yok). R1-R19'un tamamı ya "teslim edildi"
-ya da gerekçeli bir owner-kararı bekliyor (§5). Uygulama sırasında iki
-kez, bu belgenin İLK yazımının gerçek backend'i yanlış tarif ettiği
-ortaya çıktı (R2/Yolculuk A.8, R7) — düzeltmeler yerinde işaretli, kayıp
-değil.
+taşıyor.** İki uygulama turunu kapsar:
+
+- **§1-§4 — Faz 2'nin arayüz boşluğu (R1-R19, FF-49…FF-53).** Bulunan dört
+  boşluğun (üç AI özelliğinin frontend'i yok, çalışma-zamanı yedek zinciri
+  yok, `ArtifactSchemaValidator` bağlı değil, çeviri OPT-04 bekliyor)
+  tamamı kapandı — yalnız çeviri bilinçli ertelendi (OPT-04 hâlâ yok).
+- **§4b — Faz 3'ün çok-hesap/BYOK kapsamı (R20-R30, FF-54…FF-61).**
+
+R1-R30'un tamamı ya "teslim edildi" ya da gerekçeli bir owner-kararı
+bekliyor (§5). Uygulama sırasında üç kez, bu belgenin ya da `docs/16`'nın
+gerçeği yanlış tarif ettiği ortaya çıktı (R2/Yolculuk A.8, R7 ve
+AI-01/AIV-02'nin "fallback provider tanımlı" iddiası) — düzeltmeler
+yerinde işaretli, kayıp değil.
 
 ## 1. Kapsam
 
@@ -117,7 +122,10 @@ her adımda kim/ne/hangi kapı. Persona'lar `docs/02` §1.2'den — uydurma değ
    (mevcut "sunum düzenleyici" fotoğraf seçici ile aynı desen).
 2. Fotoğraf zaten yüklüdür (CORE-13 — yeniden icat edilmedi, gerçekten
    kullanıldı).
-3. "Read this photo" düğmesine basar → `POST .../ai-imports` (FF-32-34).
+3. "Read these photos" düğmesine basar → `POST .../ai-imports/batch`.
+   **Kapsam genişlemesi (FF-61):** bu adım tekil `.../ai-imports` ucunu
+   kullanıyordu; artık çok seçimli, çünkü bir restoranın menüsü tek
+   fotoğrafa sığmıyor. Tekil uç API'de duruyor, ekran kullanmıyor.
 4. **Teslim edildi.** AI kapalıysa/bütçe yoksa 503 + kısa bir mesaj
    gösterilir, ekran çökmez.
 5. **Teslim edildi (FF-49 sayesinde).** Sağlayıcı hata verirse artık canlı
@@ -136,13 +144,13 @@ her adımda kim/ne/hangi kapı. Persona'lar `docs/02` §1.2'den — uydurma değ
    **"Add these to the draft"** eylemi var, satır başına kontrol yok. Bu
    hâlâ AI-13'ü karşılıyor (toplu/otomatik ONAY yok — çünkü zaten insan
    onayı olan tek şey "ekle" kararının kendisi, satır seçimi değil).
-9. "Add these to the draft" → `POST .../ai-imports/{id}/apply`.
+9. "Add these to the draft" → `POST .../ai-imports/batch/apply` (FF-61).
 10. **Teslim edildi.** Sonuç: taslak güncellendi, **yayına dokunulmadı**.
 11. **Teslim edildi.** Reddedilen satırlar (backend'in kendi otomatik
     kararıyla) sebepleriyle listelenir ("Row 2: Fiyat okunamadı; bu satırı
     elle ekleyin.") — kullanıcı elle tamamlayabilir.
 
-**Kapı:** `MenuCatalogWorkspace.aiImport.test.tsx` (6): boş medya mesajı,
+**Kapı:** `MenuCatalogWorkspace.aiImport.test.tsx` (9): boş medya mesajı,
 satır önizleme + fiyat-eksik uyarısı, AI kapalı zarafeti, yedek etiketi,
 uygula+reddedilen-satır listesi, toplu/otomatik onay kontrolü olmadığının
 doğrulanması.
@@ -276,6 +284,133 @@ gereksinim yok.
 | R18 | Üç ekran de i18n kataloğundan okur, hardcoded dize yok (`UntranslatableStringScanner` kapısı) | standart |
 | R19 | İnceleme ekranlarında hiçbir satır **otomatik** uygulanmaz — her satır ayrı insan eylemi gerektirir | `docs/01` §3, AI-13 |
 
+---
+
+## 4b. FAZ 3 — çok-hesap, BYOK, yeni sağlayıcılar
+
+Bu bölüm ikinci uygulama turunda (FF-54…FF-61) eklendi. Aynı disiplin: her
+gereksinim bir UNK satırına ve/veya bir kullanıcı yolculuğu adımına bağlı.
+
+### 4b.1 UNK → kullanım senaryosu (yeni satırlar)
+
+#### AI-06 — Yapışkanlığın güvenlik sınırı sanılması (Yüksek)
+
+> **Verilen** bir tenant'ın istekleri hep aynı hesaba gidiyor,
+> **ne zaman** biri "demek ki izolasyon bununla sağlanıyor" diye düşünür,
+> **o zaman** yanılmış olur — ve bu yanılgı, yapışkanlık bir gün
+> performans için değiştirildiğinde sessiz bir sızıntıya dönüşür.
+
+**Teslim edildiği hâl (FF-58):** ikisi ayrı mekanizma ve bu KODDA görünür.
+İzolasyon `where('scope', ...)` ile SORGUDA — başka bir tenant'ın BYOK
+satırı aday havuzuna hiç gelmez. Yapışkanlık ayrı bir tabloda
+(`ai_connection_assignments`) ve yalnız önbellek/bağlam içindir. Yapışkanlık
+tablosunu silmek izolasyonu bozmaz; bu, ikisinin gerçekten ayrı olduğunun
+sınanabilir kanıtıdır.
+
+#### AIV-03 — BYOK'un hangi plan katmanında açılacağı (owner kararı)
+
+> **Verilen** bir tenant kendi API anahtarını getirmek istiyor,
+> **ne zaman** bunu kendi panelinden yapmak ister,
+> **o zaman** hangi plandan itibaren buna izin verildiği bir ÜRÜN kararıdır.
+
+**Teslim edildiği hâl:** yapısal taraf hazır (kapsam alanı, izolasyon,
+yönlendirme). Tenant'ın KENDİ ekranı (`/settings/ai`) bilinçli olarak
+yazılmadı — `docs/96` onu Faz 6'ya koyuyor ve plan katmanı kararı owner'ın
+(§5). Bugün BYOK bağlantısını superadmin, tenant adına ekler.
+
+#### AIV-06 — Sağlık kontrolünün kendi maliyeti (ölçülmedi)
+
+> **Verilen** her sağlık yoklaması bir sağlayıcı çağrısıdır,
+> **ne zaman** bu düzenli/otomatik çalışır,
+> **o zaman** kontrolün kendisi bir maliyet kalemi olur.
+
+**Teslim edildiği hâl (FF-58/FF-60), kapsamı daraltılarak:** periyodik bir
+sağlık taraması BİLEREK yapılmadı — maliyeti ölçülmemiş bir işi otomatiğe
+bağlamak, tam da AIV-06'nın uyardığı şey olurdu. Onun yerine iki ücretsiz
+kaynak: (a) gerçek çağrıların sonucu (başarı→sağlıklı, 401/403/429/5xx/ağ→
+sağlıksız — hiçbiri EK çağrı değil), (b) superadmin'in elle tetiklediği
+model-listesi yoklaması (token harcamaz). Periyodik tarama, maliyeti
+ölçüldükten sonra ayrı bir karardır.
+
+#### Tüketici abonelik yasağı — artık şemanın kendisi
+
+> **Verilen** superadmin elinde bir Claude.ai Pro aboneliği var,
+> **ne zaman** onu kasaya girmeye çalışır,
+> **o zaman** girecek bir ALAN bulamaz.
+
+**Teslim edildiği hâl (FF-55):** hiçbir sağlayıcı şemasında e-posta/parola/
+oturum alanı yok ve bir test bunu kilitliyor. Kural bir belgede değil,
+yapıda (`modules/ai-provider-account-vault.md` §Tüketici abonelik yasağı).
+
+### 4b.2 Kullanıcı yolculukları
+
+#### Yolculuk E — Superadmin ikinci bir hesap ekler (teslim edildi — FF-56/57)
+
+**Persona:** Platform superadmin.
+
+1. `/platform/credentials` açılır; görünüm artık **sağlayıcı → altında N
+   bağlantı kartı** (FF-57).
+2. Panel genelinde tek bir **"+ Add a connection"** düğmesi — sağlayıcı
+   başına değil.
+3. Sağlayıcı seçilene kadar ortak alanlar (ad, kapsam) **gerçek `disabled`**;
+   sağlayıcıya özel alanlar hiç çizilmez.
+4. Sağlayıcı seçilince o sağlayıcının kendi şeması açılır
+   (`CredentialProvider::fields()`); ortak alanlar etkinleşir.
+5. Ad zorunlu — sır görünmediği için iki kartı ayırt eden tek şey odur.
+6. Kaydet → kart listede belirir; durum ve **sağlık** rozetiyle.
+   "Not checked yet" ile "Healthy" ayrı gösterilir.
+7. **"Test this connection"** (FF-60) tek ve ücretsiz bir çağrıyla anahtarı
+   doğrular; sonuç sağlığa yazılır.
+
+**Kapı:** `ConnectionApiTest` (11), `ConnectionProbeTest` (7),
+`ProviderCredentialsPage.test.tsx` (9).
+
+#### Yolculuk F — Bir restoran kendi anahtarını getirir (yapısal taraf teslim edildi — FF-56/58)
+
+**Persona:** Platform superadmin, tenant adına (tenant'ın kendi ekranı Faz 6).
+
+1. Yeni bağlantı formunda kapsam **"A customer's own key (BYOK)"** seçilir.
+2. Workspace kimliği sorulur — yalnız bu kapsamda görünür.
+3. O anahtar **yalnız** o workspace'in isteklerine hizmet eder; başka bir
+   tenant'ın aday listesinde **asla** görünmez (sorgu sınırı, filtre değil).
+4. Tenant'ın kendi anahtarı platform hesabını **yener** — yoksa girmenin bir
+   etkisi olmazdı.
+5. Anahtar kapatılırsa **ürün durmaz**: platform hesabına döner.
+   (Faturalandırma politikası ayrı bir konudur ve burada karar verilmez.)
+
+**Kapı:** `CredentialConnectionsTest` (12), `StickyAccountRoutingTest` (9).
+
+#### Yolculuk G — Sahip dört sayfalık menüyü okutur (teslim edildi — FF-61)
+
+**Persona:** Brand/Location Manager.
+
+1. Media sayfasında dört sayfa `menuImportSource` slotuna yüklenir.
+2. Menü Kataloğu'nda "Import from a photo (AI)" açılır; liste artık **çok
+   seçimli** (onay kutuları — seçilenlerin hepsi aynı anda görünür kalmalı).
+3. "Read these photos" → tek istek, dört okuma.
+4. **Kısmi başarısızlık:** bulanık sayfa ayrıca listelenir, diğerlerinin
+   sonucu incelemeye girer.
+5. Tek "Add these to the draft" — dört ayrı onay düğmesi aynı kararı dört
+   kez sormak olurdu.
+
+**Kapı:** `BulkMenuImportTest` (9), `MenuCatalogWorkspace.aiImport.test.tsx` (9).
+
+### 4b.3 Gereksinimler
+
+| # | Gereksinim | Kaynak |
+| --- | --- | --- |
+| R20 | **Teslim edildi (FF-55).** Kasa Anthropic, Kimi ve "özel uç nokta"yı tanır. Qwen kendi case'ini ALMAZ — `local`/OpenAI-uyumlu sınıfına girer (`docs/51` §3.2, §4.5) | `docs/95` Faz 3 |
+| R21 | **Teslim edildi (FF-55).** Hiçbir şemada tüketici-giriş alanı (e-posta/parola/oturum) yok — testle kilitli | vault modülü |
+| R22 | **Teslim edildi (FF-56).** Bir sağlayıcı → N adlandırılmış bağlantı; göç veriyi taşır ve bu ayrıca test edilir (boş DB'de kopyalama döngüsü hiç çalışmaz, dolayısıyla "yeşil paket" onu kanıtlamaz) | `docs/95` Faz 3 §Şema evrimi |
+| R23 | **Teslim edildi (FF-57).** Panel: sağlayıcı → N kart; tek "ekle" düğmesi; sağlayıcı seçilene kadar gerçek `disabled`; ad zorunlu | `docs/95` Faz 3 §UX sözleşmesi |
+| R24 | **Teslim edildi (FF-58).** Tenant→bağlantı eşlemesi yapışkan; rastgele dağıtım yok | `docs/14` §2a |
+| R25 | **Teslim edildi (FF-56/58).** BYOK yapısal izolasyon — sorgu sınırı, filtre değil; yapışkanlıktan AYRI mekanizma | AI-06 |
+| R26 | **Teslim edildi (FF-58).** Sağlıksız bağlantı havuzdan geçici düşer, silinmez; yalnız DEĞİŞİM denetime yazılır. Hesaba ait olmayan hata (400/404/422) hesabı düşürmez | `docs/14` §2a |
+| R27 | **Teslim edildi (FF-59).** Anthropic + OpenAI-uyumlu adaptörler; metin zinciri dört adaylı. Yetenek↔sağlayıcı eşlemesi yeteneğe göre — metin-yalnız bir sağlayıcı görme rotasını AÇMAZ | `docs/96` Faz 3 |
+| R28 | **Teslim edildi (FF-60).** Sınanmamış özel uç nokta yönlendirme adayı DEĞİLDİR; bilinen sağlayıcı sınanmadan da adaydır | `docs/51` §4.5 |
+| R29 | **Teslim edildi (FF-61).** Toplu okuma; kısmi başarısızlık tolere edilir; istek başına 10 fotoğraf sınırı | `docs/96` Faz 3 |
+| R30 | **Kısmen — bilinçli.** Toplu trafiğin AYRI bir hesaba izolasyonu yapılmadı: yapışkanlık bugün tenant başına, "işin amacına göre hesap" ikinci bir boyut gerektirir ve o Faz 5 kapsamıdır. Bugünkü kota koruması istek sınırı | `docs/96` Faz 3 |
+
 ## 5. Owner kararı gerekir mi?
 
 1. **AIV-07'nin ölçülmemiş sorusu**: AI kapalıyken düğmenin tamamen
@@ -286,12 +421,22 @@ gereksinim yok.
    "farklı bir yapay zeka kullanıldı" mı, yoksa teknik detay vermeden
    "biraz gecikti ama tamamlandı" mı denecek — marka sesi kararı.
 
-Geri kalan tüm gereksinimler (R1-R11, R13-R19) geri döndürülebilir teknik
+3. **BYOK hangi plan katmanında açılır** (`docs/16` AIV-03) — yalnız
+   Enterprise mi, daha erken bir ücretli katman mı? Yapısal taraf hazır
+   (FF-56/58); tenant'ın kendi ekranı bu karar verilene kadar yazılmadı.
+4. **Anthropic/Kimi anahtarlarının bütçesi** — platform-owned tek havuz mu,
+   özellik başına ayrı tavan mı (`docs/95` §Owner kararı 2).
+5. **Özel uç nokta (Qwen vb.) barındırma kararı** — `vps-ai` mi,
+   `private-gpu` mu (`docs/51` §4.5 üç profil).
+
+Geri kalan tüm gereksinimler (R1-R11, R13-R30) geri döndürülebilir teknik
 kararlardır, MASTER'da kalır.
 
 ## 6. Kanonik sahiplik
 
 Bu belge UNK kayıtlarını (`docs/16`) tekrar etmez, yalnız ilgili satırları
 somutlaştırır. Persona/rol tanımları `docs/02`'de, AI yetenek/model/hesap
-eşlemesi `docs/96`'da, faz sırası `docs/95`'te kanoniktir. R1-R19 burada
+eşlemesi `docs/96`'da, faz sırası `docs/95`'te kanoniktir. **R1-R30** burada
 kanoniktir — bir sonraki uygulama turu bu numaralara referans verir.
+R1-R19 ilk turda (Faz 2 arayüz boşluğu, FF-49…FF-53), R20-R30 ikinci turda
+(Faz 3 çok-hesap/BYOK, FF-54…FF-61) yazıldı.
