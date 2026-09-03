@@ -53,6 +53,21 @@ type ReadyMediaRow = {
     status: string;
 };
 
+/**
+ * Yinelenen ürün ADAYI — `docs/96`/`docs/97` Yolculuk C.
+ *
+ * SALT OKUNUR bir öneridir, bir eylem değil: hiçbir alan bir düğmeye
+ * bağlanmaz, sahip isterse mevcut "adı değiştir"/"sil" akışlarına
+ * kendisi geçer.
+ */
+type DuplicateCandidate = {
+    productAId: number;
+    productAName: string;
+    productBId: number;
+    productBName: string;
+    similarity: number;
+};
+
 type CategoryRow = {
     id: number;
     menuId: number;
@@ -142,6 +157,11 @@ function descriptionDraftUrl(workspaceId: number, menuItemId: number): string {
 /** Taslağı (düzenlenmiş ya da olduğu gibi) ürüne yazar. */
 function applyDescriptionDraftUrl(workspaceId: number, artifactId: number): string {
     return `/api/workspaces/${workspaceId}/description-drafts/${artifactId}/apply`;
+}
+
+/** Yinelenen ürün adayları — salt okunur öneri (`docs/96` Faz 2). */
+function duplicateCandidatesUrl(workspaceId: number): string {
+    return `/api/workspaces/${workspaceId}/menu/duplicate-candidates`;
 }
 
 function itemOrderUrl(workspaceId: number, categoryId: number): string {
@@ -341,6 +361,13 @@ export function MenuCatalogWorkspace({
     const [aiSuggestionError, setAiSuggestionError] = useState<string | null>(null);
     const [aiSuggestionUncertain, setAiSuggestionUncertain] = useState(false);
     const [aiSuggestionUsedFallback, setAiSuggestionUsedFallback] = useState(false);
+    /*
+        YİNELENEN ÜRÜN ADAYLARI — `docs/97` Yolculuk C. Aday yoksa (ya da
+        istek başarısız olursa) bölüm HİÇ görünmez — bu ikincil, salt
+        okunur bir öneridir; sessizce gizlenmesi kritik bir hata değildir
+        (birincil "AI ile öner" eylemi gibi ayrı hata mesajı gerektirmez).
+    */
+    const [duplicateCandidates, setDuplicateCandidates] = useState<DuplicateCandidate[]>([]);
 
     /* Menüyü almak ve geri koymak (`docs/80`). */
     const [importing, setImporting] = useState(false);
@@ -410,6 +437,8 @@ export function MenuCatalogWorkspace({
 
         setVisibilityPending({});
         setVisibilityErrors({});
+
+        setDuplicateCandidates([]);
     }
 
     useEffect(() => {
@@ -469,6 +498,37 @@ export function MenuCatalogWorkspace({
             cancelled = true;
         };
     }, [workspaceId, locationId, retryToken]);
+
+    /*
+        Yinelenen ürün adaylarını menü yüklenince BİR KEZ çeker — her
+        satır mutasyonunda yeniden sorgulamaz. Bu ikincil, bilgilendirici
+        bir öneridir; sahip menüyü yeniden açtığında tazelenir, o kadarı
+        yeterli (`docs/97` Yolculuk C kapsam kararı). Bağımlılık dizisi
+        `tree` NESNESİNE değil, sahip olup olmamasına bakar — aksi hâlde
+        her satır düzenlemesi (ad, fiyat, sıra...) yeni bir sorgu tetikler.
+    */
+    const hasTree = tree !== null;
+    useEffect(() => {
+        if (!hasTree) return;
+
+        let cancelled = false;
+
+        void (async () => {
+            try {
+                const response = await fetch(duplicateCandidatesUrl(workspaceId));
+                if (cancelled || !response.ok) return;
+
+                const body = (await response.json()) as { candidates?: DuplicateCandidate[] };
+                setDuplicateCandidates(body.candidates ?? []);
+            } catch {
+                // Sessizce boş kalır — bkz. yukarıdaki state yorumu.
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [workspaceId, hasTree]);
 
     const busy =
         creatingMenu || creatingCategory || creatingEntry || savingAllergens || savingPriceEdit;
@@ -1375,6 +1435,43 @@ export function MenuCatalogWorkspace({
             ) : (
                 <>
                     <h2 className="text-lg font-semibold">{tree.name}</h2>
+
+                    {/*
+                        OLASI TEKRARLAR — `docs/97` Yolculuk C. Aday yoksa
+                        bölüm HİÇ yer kaplamaz; bir eylem sunmaz, yalnız
+                        bilgi verir.
+                    */}
+                    {duplicateCandidates.length > 0 ? (
+                        <section
+                            className={sectionClass}
+                            aria-labelledby="duplicate-candidates-heading"
+                        >
+                            <h3
+                                id="duplicate-candidates-heading"
+                                className="text-body font-semibold"
+                            >
+                                {t('menu.duplicates.heading', {
+                                    count: String(duplicateCandidates.length),
+                                })}
+                            </h3>
+                            <p className="text-caption text-fg-secondary">
+                                {t('menu.duplicates.help')}
+                            </p>
+                            <ul className="flex flex-col gap-1">
+                                {duplicateCandidates.map((pair) => (
+                                    <li
+                                        key={`${pair.productAId}-${pair.productBId}`}
+                                        className="text-body"
+                                    >
+                                        {t('menu.duplicates.pair', {
+                                            a: pair.productAName,
+                                            b: pair.productBName,
+                                        })}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    ) : null}
 
                     {/*
                         Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).

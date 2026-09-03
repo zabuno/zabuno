@@ -162,20 +162,30 @@ var.
 
 **Eksik adım:** 1, 4, 5, 6'nın ekranı. 2, 3, 6 (backend), 7 zaten var.
 
-### Yolculuk C — Yinelenen ürün adaylarını gözden geçirme (FF-47, backend var, UI YOK)
+### Yolculuk C — Yinelenen ürün adaylarını gözden geçirme (teslim edildi — FF-52)
 
 **Persona:** Editor ya da Brand/Location Manager.
 
-1. Menü Kataloğu'nda **"Olası tekrarlar"** bölümü/rozeti görünür (bugün
-   yok) — yalnız aday sayısı > 0 ise görünür, boşsa hiç yer kaplamaz.
-2. Tıklanınca `GET .../menu/duplicate-candidates` (var, FF-47) — aday
-   çiftleri benzerlik skoruyla listelenir.
-3. Kullanıcı her çift için **hiçbir otomatik eylem görmez** — yalnız
-   "bu ikisi aynı ürün olabilir" bilgisi; birleştirme/silme **bu ekranın
-   sorumluluğu değil** (backend hiçbir kaydı değiştirmiyor, salt-okunur
-   öneri).
+1. **Teslim edildi.** Menü Kataloğu'nda **"Possible duplicates (N)"**
+   bölümü — yalnız aday sayısı > 0 ise görünür, boşsa hiç yer kaplamaz
+   (koşullu render, iskelet/boş durum yok).
+2. **Teslim edildi.** Menü yüklenince `GET .../menu/duplicate-candidates`
+   (FF-47) **bir kez** çekilir — her satır düzenlemesinde yeniden
+   sorgulanmaz (bilinçli kapsam kararı: bu ikincil bir öneri, sahip menüyü
+   yeniden açtığında tazelenir).
+3. **Teslim edildi.** Her çift ada göre listelenir, **hiçbir otomatik
+   eylem yok** — "bu ikisi aynı ürün olabilir" bilgisi; birleştirme/silme
+   düğmesi **kasıtlı olarak eklenmedi** (backend hiçbir kaydı
+   değiştirmiyor, salt-okunur öneri).
 4. Kullanıcı isterse mevcut "ürün adını değiştir" ya da "ürünü sil"
-   akışlarına (zaten var) manuel geçer.
+   akışlarına (zaten var) manuel geçer — bu ekran onlara dokunmaz.
+5. **Teslim edildi.** İstek başarısız olursa (503/502/ağ) bölüm sessizce
+   görünmez, ana ekranı bozmaz — ikincil bir öneri için ayrı bir hata
+   ekranı orantısız olurdu.
+
+**Kapı:** `MenuCatalogWorkspace.duplicates.test.tsx` (4): aday varsa
+listelenir, aday yoksa bölüm yok, istek başarısız olursa sessizce boş
+kalır, birleştir/sil düğmesi yok.
 
 **Eksik adım:** 1, 2, 3'ün ekranı. Backend zaten salt-okunur ve tam.
 
@@ -214,8 +224,8 @@ gereksinim yok.
 | R3 | Fiyatı/gerekli alanı okunamayan satır görsel ayrışması + onay kilidi | AI-15 |
 | R4 | **Teslim edildi (FF-51).** Ürün formunda "AI ile öner" (açıklama) — düzenlenebilir öneri kutusu. Sunum düzenleyicideki mevcut `Textarea` yeniden kullanıldı, ikinci bir kutu icat edilmedi; öneri geldiğinde aynı alanı doldurur, kullanıcı serbestçe düzenler. Apply uç noktası **düzenlenmiş metni** kabul edecek şekilde genişletildi (önceden yalnız taslağın kendi metnini uyguluyordu — düzenleme sessizce atılırdı) | Yolculuk B.1, 4 |
 | R5 | **Teslim edildi (FF-51).** Düşük güvenli öneri için görünür uyarı metni (`uncertainFieldCount > 0`); ayrıca yedek sağlayıcıdan gelen öneri ayrı etiketlenir (R12'nin UI karşılığı, ilk kullanım yeri) | Yolculuk B.5 |
-| R6 | Menü Kataloğu'nda "Olası tekrarlar" — yalnız aday varsa görünen, salt-okunur liste | Yolculuk C.1-3 |
-| R7 | Üç ekranın hiçbiri toplu/otomatik onay sunmaz | AI-13 |
+| R6 | **Teslim edildi (FF-52).** Menü Kataloğu'nda "Olası tekrarlar" — yalnız aday varsa görünen, salt-okunur liste | Yolculuk C.1-3 |
+| R7 | **Karşılandı (R1/R6 kapsamında).** Üç ekrandan ikisi (B, C) teslim edildi ve hiçbiri toplu/otomatik onay sunmuyor; C zaten hiçbir eylem sunmuyor (salt-okunur), B satır satır tek onaydır. A (fotoğraf inceleme, çok-satırlı) henüz yok — bu madde A yazılınca tam kapanır | AI-13 |
 | R8 | Alerjen alanı hiçbir ekranda onay kontrolü olarak render edilmez | AI-14 |
 | R9 | AI kapalı/bütçe yokken ilgili eylem görünmez ve **neden** kısa metinle belirtilir | AIV-07 (kısmi — §5'e bkz.) |
 

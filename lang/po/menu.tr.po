@@ -68,6 +68,18 @@ msgstr "Menüyü oluşturamadık. Lütfen tekrar deneyin."
 msgid "menu.create.submit"
 msgstr "Menü oluştur"
 
+#: menu:menu.duplicates.heading
+msgid "menu.duplicates.heading"
+msgstr ""
+
+#: menu:menu.duplicates.help
+msgid "menu.duplicates.help"
+msgstr ""
+
+#: menu:menu.duplicates.pair
+msgid "menu.duplicates.pair"
+msgstr ""
+
 #: menu:menu.entry.allergens.disclose
 msgid "menu.entry.allergens.disclose"
 msgstr ""

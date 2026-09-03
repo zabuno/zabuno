@@ -68,6 +68,18 @@ msgstr "We could not create the menu. Please try again."
 msgid "menu.create.submit"
 msgstr "Create menu"
 
+#: menu:menu.duplicates.heading
+msgid "menu.duplicates.heading"
+msgstr "Possible duplicates ({count})"
+
+#: menu:menu.duplicates.help
+msgid "menu.duplicates.help"
+msgstr "These product names look alike. Nothing is merged automatically — rename or remove one yourself if they really are the same."
+
+#: menu:menu.duplicates.pair
+msgid "menu.duplicates.pair"
+msgstr "“{a}” and “{b}”"
+
 #: menu:menu.entry.allergens.disclose
 msgid "menu.entry.allergens.disclose"
 msgstr "Allergens (optional)"

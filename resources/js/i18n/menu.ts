@@ -92,6 +92,12 @@ const en = {
         'The AI was not confident about this one. Read it carefully before saving.',
     'menu.item.ai.description.unavailable': 'AI suggestions are not available right now.',
     'menu.item.ai.description.error': 'The AI suggestion failed. You can still write one yourself.',
+    // OLASI TEKRARLAR — `docs/97` Yolculuk C. Salt okunur bir öneridir;
+    // bir "birleştir" eylemi kasıtlı olarak yok (`docs/96` Faz 2 kapsamı).
+    'menu.duplicates.heading': 'Possible duplicates ({count})',
+    'menu.duplicates.help':
+        'These product names look alike. Nothing is merged automatically — rename or remove one yourself if they really are the same.',
+    'menu.duplicates.pair': '“{a}” and “{b}”',
     'menu.item.image.label': 'Photo',
     'menu.item.image.none': 'No photo',
     'menu.item.image.empty':
