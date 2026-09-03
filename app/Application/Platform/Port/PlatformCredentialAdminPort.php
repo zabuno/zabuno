@@ -34,5 +34,5 @@ interface PlatformCredentialAdminPort
      */
     public function put(CredentialProvider $provider, array $values, ?int $byUserId): void;
 
-    public function disable(CredentialProvider $provider): void;
+    public function disable(CredentialProvider $provider, ?int $byUserId = null): void;
 }

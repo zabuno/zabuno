@@ -60,16 +60,47 @@ anahtarlı bir sağlayıcı "kurulu" sanılıp ilk gerçek çağrıda patlamaz.
 | `VAULT-UNKNOWN-FIELD-REJECTED-01` | Şema dışı alan reddedilir |
 | `VAULT-ALL-LISTS-EVERY-PROVIDER-01` | Panel her sağlayıcıyı listeler, kurulu olmasa da |
 
+## Faz 2/5 — Superadmin write-only API + audit (bu commit)
+
+Çekirdek artık bir superadmin API'ının arkasında. Üç uç, hepsi
+`EnsurePlatformSuperAdmin` + `auth:sanctum` + `verified` arkasında:
+
+- `GET /api/admin/credentials` — her sağlayıcının **maskeli** durumu.
+- `PUT /api/admin/credentials/{provider}` — yaz/döndür (throttle 20/dk).
+- `POST /api/admin/credentials/{provider}/disable` — kapat (throttle 20/dk).
+
+Güvenlik kararları:
+
+- **Sır hiçbir cevaba çıkmaz.** Controller'lar yalnız admin portunu alır
+  (geri okuyamaz) ve yalnız maskeli durumu döner. Testler PUT ve GET
+  gövdelerinde ham sırrın olmadığını dondurur.
+- **Enumeration-safe.** Platform rolü olmayan doğrulanmış kullanıcı 404
+  alır — "burada bir şey var ama giremezsin" bile sızmaz.
+- **Şema dışı alan 422, 500 değil.** Panel yalnız o sağlayıcının tanıdığı
+  alanları yazabilir; bilinmeyen sağlayıcı 404.
+- **Her yazma bir denetim satırı bırakır — SIRSIZ.** `platform_credential_audits`
+  append-only: kim, hangi sağlayıcı, `set`/`disabled`, ne zaman. Sır değeri,
+  alan içeriği ya da maske oraya yazılmaz.
+
+### Kapı (test-first)
+
+`ProviderCredentialApiTest` (8): AUTHZ (guest 401 / non-admin 404), LIST,
+STORE + SECRET-NEVER-IN-RESPONSE, UNKNOWN-FIELD (422), UNKNOWN-PROVIDER
+(404), DISABLE, AUDIT (sırsız). Route imzaları `ModularApiRouteRegistrationTest`
+mührüne eklendi. Tam yerel paket **1183 yeşil**.
+
 ## Sırada
 
-- **Faz 2/5** — superadmin write-only API + audit + route mührü.
+- **Faz 3/5** — Mailgun runtime tüketimi (kasadan okuyan gönderici).
 - **Faz 3/5** — Mailgun runtime tüketimi (kasadan okuyan gönderici).
 - **Faz 4/5** — OpenAI adaptörü + Gemini + routing (kasadan anahtar).
 - **Faz 5/5** — GUI ayarlar paneli + i18n.
 
 ## Ürün iddiası
 
-Çalışır: kasa çekirdeği; bir sır şifreli saklanıyor, maskeli okunuyor, tüketici
-çözebiliyor, env yedeği bozulmadan duruyor.
-Henüz çalışmaz: superadmin bunu **UI'dan** giremez (Faz 2/5 API + Faz 5/5
-panel), ve posta/AI henüz kasadan OKUMUYOR (Faz 3–4).
+Çalışır: kasa çekirdeği + superadmin API. Bir superadmin sırrı API üzerinden
+girebilir/döndürebilir/kapatabilir; şifreli saklanıyor, maskeli okunuyor,
+her yazma denetime geçiyor, env yedeği bozulmadan duruyor.
+Henüz çalışmaz: bunun bir **GUI paneli** yok (Faz 5/5), ve posta/AI henüz
+kasadan OKUMUYOR (Faz 3–4) — API'dan girilen Mailgun anahtarı gönderici
+tarafından kullanılmıyor, çünkü gönderici hâlâ env'den okuyor.
