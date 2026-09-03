@@ -83,7 +83,7 @@ elle doğrulama sonrası sınıflandırma:
 
 ## 5. Program — `SURFACE-CLOSE-v1`
 
-**Sayaç: 10/13 tamamlandı, 11/13 aktif.** Her paket tek writer, RED→GREEN,
+**Sayaç: 11/13 tamamlandı, 12/13 aktif.** Her paket tek writer, RED→GREEN,
 Pint+tam QA, kendi PR'ı. Sıra bağımlılığa göre; kurallar arasından
 esnetilen tek şey **paket kapsamı** (bkz. §6).
 
@@ -99,7 +99,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 8 ✅ | **FF-70 DAM Faz 4+5** | kütüphane ızgara/liste/arama/koleksiyon; asset detayı (kullanım/sürüm/rendition); kullanım grafiği; silme etki önizlemesi; yayın snapshot'ı version'a bağlı | kullanılan asset doğrudan silinemez |
 | 9 ✅ | **FF-71 DAM Faz 6+7** | immutable URL + `Cache-Control`/`ETag`, `srcset`/`<picture>`, kota kalemleri (sahip "sen belirle" dedi → §7), izin matrisi (`download_original` serbest — sahibin kararı), reconciliation | LCP ölçülür; kota dolunca canlı menü kesilmez |
 | 10 ✅ | **FF-72 Frontpages planı + masterpage** | `docs/100`: kamu sayfaları bilgi mimarisi, header/footer masterpage sözleşmesi, Flowbite bileşen eşlemesi, SEO/URL (`docs/38`) bağı, **maturity seviyeleri** (L0 statik → L4 kişiselleştirilmiş); uygulama: `public.layout` header/footer yeniden | 5 sayfa tek masterpage'den |
-| 11 | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
+| 11 ✅ | **FF-73 Acemi-UX programı ("kebapçı")** | `docs/101`: persona, 5 çekirdek yolculuk (menü kur → ürün ekle → fiyat değiştir → yayınla → QR bas), her adımda tek karar/tek ekran, büyük hedefler, sesli-dil metin, hata yerine geri alma; uygulama: Home görev listesi + menü kataloğu sadeleştirme | 5 yolculuk 320px'te ölçülür |
 | 12 | **FF-74 Yetki-görünürlük + registry** | gezinti kaydına `permission`/`entitlement`; ön uç `me` ucundan izin okur; yetkisiz eylem çizilmez; Pennant | Editor 403 görmez |
 | 13 | **FF-75 Toplu orkestra** (sahibin 2026-09-04 sorusu) | 40 sayfalık menü: `ai_batches` (kalıcı hafıza) + kuyrukta sayfa başına iş (geçici hafıza) + **parti-bazlı** yönlendirme (sağlıklı bağlantılar arasında, bağlantı başına dakikalık bütçe — yapışkanlığa "amaç" boyutu, R30'un Faz 5'e bıraktığı iş öne çekilir) + `CollectorJob` (artifact'ları tek inceleme listesine toplar, yinelenenleri ayıklar) + mevcut insan-onaylı `apply`. `docs/adr/` klasörü ve `agents/*.md` sözleşmeleri (docs/96'daki üç ajan) bu pakette resmileşir | 40 sayfa tek limitte şişmez; sonuç TEK listede incelenir; onaysız hiçbir satır yazılmaz |
 
@@ -219,6 +219,28 @@ Uygulanan Faz 1:
 - **Kalan engel:** ana sayfa gövdesi hâlâ İngilizce gömülü (borç 29, Faz 2),
   görünür dil seçici ve `hreflang` (Faz 2), dönüşüm olayları (Faz 3),
   kişiselleştirme (Faz 4, Pennant → FF-74).
+
+### FF-73 teslim notu
+
+`docs/101` yazıldı: persona (Mehmet Usta), 5 çekirdek yolculuk (menü kur →
+ürün ekle → fiyat değiştir → yayınla → QR bas), 8 acemi kuralı (A1 tek
+"şimdi", A3 hata yerine geri alma, A5 nadir iş kapalı…), yolculuk başına
+bugünkü ölçüm, 4 faz. Uygulanan Faz 1:
+
+- **Önce:** Home'daki görev listesi beş satırla durumu gösteriyordu; "şimdi
+  ne yapmalıyım" sorusunun cevabı listeyi okuyup çıkarsamaktı. Menü ekranı
+  boş menüde bile AI içe aktarma, CSV indir/yükle ve kategori formunu aynı
+  ağırlıkta gösteriyordu.
+- **Şimdi:** Home'da tek büyük "Şimdi" düğmesi — bitmemiş ilk adımın fiiliyle
+  ("Add your first product") ve tek tıkla oraya; hepsi bitince "Everything is
+  set up" + karekod ekranı. Menüde fotoğraftan/CSV içe aktarma tek `<details>`
+  kutusunda: boş menüde açık ve tek cümlelik yol tarifi, ürün varken kapalı.
+- **Kullanıcı yolculuğu:** Mehmet Usta girer → "Restoranının adını yaz" →
+  "Şubeni ekle" → "İlk ürününü ekle" → boş menüde açık kutu: fotoğrafı yükler,
+  40 ürün gelir → "Menünü yayınla" → "Karekodlarını bas" → "Her şey hazır".
+- **Kalan engel:** fiyat sonrası "yayınla" hatırlatması ve yayın ekranı
+  metinleri (Faz 2), QR iki tık (Faz 3), gerçek acemi ölçümü (Faz 4 — sahibin
+  çevresinden 3 kişi).
 
 ## 6. Esnetilen kurallar — açık kayıt
 

@@ -108,6 +108,10 @@ msgstr "These product names look alike. Nothing is merged automatically — rena
 msgid "menu.duplicates.pair"
 msgstr "“{a}” and “{b}”"
 
+#: menu:menu.empty.guide
+msgid "menu.empty.guide"
+msgstr "Start here: bring in your whole menu from a photo or a CSV below, or add a category and a product one at a time."
+
 #: menu:menu.entry.allergens.disclose
 msgid "menu.entry.allergens.disclose"
 msgstr "Allergens (optional)"
@@ -467,3 +471,11 @@ msgstr "Correct the name"
 #: menu:menu.status.saving
 msgid "menu.status.saving"
 msgstr "Saving…"
+
+#: menu:menu.tools.help
+msgid "menu.tools.help"
+msgstr "From a photo of your printed menu, or from a CSV file."
+
+#: menu:menu.tools.summary
+msgid "menu.tools.summary"
+msgstr "Bring in a whole menu"

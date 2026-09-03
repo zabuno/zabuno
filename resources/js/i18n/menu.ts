@@ -67,6 +67,11 @@ const en = {
     'menu.category.stock.out.button': 'Mark everything in {name} sold out for today',
     'menu.category.stock.back.button': 'Mark everything in {name} available again',
     // Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
+    // `docs/101` A5/A8 (FF-73): içe aktarma TEK kutuda; boş menüde açık.
+    'menu.tools.summary': 'Bring in a whole menu',
+    'menu.tools.help': 'From a photo of your printed menu, or from a CSV file.',
+    'menu.empty.guide':
+        'Start here: bring in your whole menu from a photo or a CSV below, or add a category and a product one at a time.',
     'menu.export.download': 'Download menu (CSV)',
     'menu.import.label': 'Import a CSV menu',
     'menu.import.help':

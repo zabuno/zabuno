@@ -7,6 +7,16 @@ const en = {
     'dashboard.empty': 'No menu has been created for this location yet.',
     'dashboard.empty.openMenu': 'Open Menu',
     'dashboard.setup.region': 'Dashboard Setup',
+    // `docs/101` A1/A6 (FF-73): Home'da TEK "şimdi" — bitmemiş ilk adım, fiiliyle.
+    'dashboard.now.region': 'What to do now',
+    'dashboard.now.heading': 'Now',
+    'dashboard.now.brand': 'Name your restaurant',
+    'dashboard.now.location': 'Add your location',
+    'dashboard.now.menu': 'Add your first product',
+    'dashboard.now.publication': 'Publish your menu',
+    'dashboard.now.qr': 'Print your QR codes',
+    'dashboard.now.allDone': 'Everything is set up. Your guests can scan the menu.',
+    'dashboard.now.openQr': 'Open QR codes',
     // Adım durumunun METİN karşılığı: işaret görsel, bu ekran okuyucu için
     // (docs/70).
     'dashboard.setup.step.done': 'Done',

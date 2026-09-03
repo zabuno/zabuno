@@ -193,8 +193,59 @@ export function DashboardSetupJourney({
     // sorusunun cevabı budur ve listede vurgulanır.
     const nextStep = rows.find((row) => !row.done);
 
+    /*
+        `docs/101` A1: ekranda TEK "şimdi". Liste durumu gösterir; bu kutu
+        ne yapılacağını FİİLLE söyler ve tek düğmeyle oraya götürür. İki
+        büyük düğme "hangisi?" sorusu, o soru da donma demektir.
+    */
+    const nowLabel: Record<string, string> = {
+        brand: t('dashboard.now.brand'),
+        location: t('dashboard.now.location'),
+        menu: t('dashboard.now.menu'),
+        publication: t('dashboard.now.publication'),
+        qr: t('dashboard.now.qr'),
+    };
+    const nowButtonClass =
+        'inline-flex min-h-[var(--density-hit-area-min)] items-center justify-center rounded-md bg-action px-5 py-3 text-body font-semibold text-action-fg hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
+
     return (
         <section aria-label={t('dashboard.setup.region')} className="flex flex-col gap-3">
+            <section
+                aria-label={t('dashboard.now.region')}
+                className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4"
+            >
+                <h2 className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                    {t('dashboard.now.heading')}
+                </h2>
+                {nextStep ? (
+                    onNavigateToSection ? (
+                        <button
+                            type="button"
+                            onClick={() => onNavigateToSection(nextStep.section)}
+                            className={nowButtonClass}
+                        >
+                            {nowLabel[nextStep.key]}
+                        </button>
+                    ) : (
+                        <p className="text-body font-semibold text-fg">{nowLabel[nextStep.key]}</p>
+                    )
+                ) : (
+                    <>
+                        <p role="status" className="text-body text-fg">
+                            {t('dashboard.now.allDone')}
+                        </p>
+                        {onNavigateToSection ? (
+                            <button
+                                type="button"
+                                onClick={() => onNavigateToSection('qr-codes')}
+                                className={nowButtonClass}
+                            >
+                                {t('dashboard.now.openQr')}
+                            </button>
+                        ) : null}
+                    </>
+                )}
+            </section>
             <h2 className="text-lg font-semibold text-fg">{t('dashboard.setup.heading')}</h2>
             <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
                 {rows.map((row) => (

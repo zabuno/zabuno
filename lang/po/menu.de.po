@@ -108,6 +108,10 @@ msgstr ""
 msgid "menu.duplicates.pair"
 msgstr ""
 
+#: menu:menu.empty.guide
+msgid "menu.empty.guide"
+msgstr ""
+
 #: menu:menu.entry.allergens.disclose
 msgid "menu.entry.allergens.disclose"
 msgstr ""
@@ -466,4 +470,12 @@ msgstr ""
 
 #: menu:menu.status.saving
 msgid "menu.status.saving"
+msgstr ""
+
+#: menu:menu.tools.help
+msgid "menu.tools.help"
+msgstr ""
+
+#: menu:menu.tools.summary
+msgid "menu.tools.summary"
 msgstr ""
