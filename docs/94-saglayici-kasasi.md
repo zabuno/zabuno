@@ -113,9 +113,40 @@ FF-35'in "sağlayıcı yoksa mesaj yine saklanır" davranışı korunuyor.
 NONE-IS-DEFAULT, CONTACT-USES-SELECTED (uçtan uca, sır iletişim tablosuna
 sızmaz). FF-35 `ContactDeliveryTest` (4) hâlâ yeşil. Tam yerel paket **1187**.
 
+## Faz 4/5 — Superadmin GUI paneli (bu commit)
+
+Kullanıcının asıl istediği ekran: platform panelinde **Sağlayıcı anahtarları**
+bölümü. Her sağlayıcı (Mailgun, Iyzico, OpenAI, Gemini) bir kart; alanları
+API'nin döndürdüğü şemadan gelir (frontend'e gömülü değil).
+
+Not: bu iki kalan fazın sırasını bilerek değiştirdim. GUI, kullanıcının
+gördüğü ve istediği parça ve **tamamen doğrulanabilir**; OpenAI adaptörü ise
+"gerçek API'ye karşı doğrulanamayan" parça, onu en sona bıraktım. Denominatör
+5 sabit; yalnız 4 ve 5 yer değiştirdi.
+
+Güvenlik, ekranda:
+
+- **Sır asla değer olarak görünmez.** Sır alanı `password` tipinde ve boş
+  başlar; kayıtlıysa yanında yalnız `••••son4` maskesi durur. Boş bırakılan
+  bir sır **gönderilmez** — mevcut değer korunur, çünkü panel onu zaten
+  okuyamaz.
+- Düz alanlar (domain, endpoint) tam değeriyle görünüp düzenlenebilir.
+- Yazma istekleri CSRF önyüklemesi + `X-XSRF-TOKEN` ile gider.
+- Kapatma düğmesi yalnız kurulu sağlayıcıda görünür.
+
+### Kapı (test-first)
+
+`ProviderCredentialsPage.test.tsx` (5): listeler ve ham sır göstermez, boş
+sırrı göndermez ama yazılanı gönderir, girilen sırrı gönderir, kapatır, yükleme
+hatasında yeniden-dener. `PlatformApp` gezinti testi hâlâ yeşil. i18n
+projeksiyonları (`i18n:check`), lint, prettier, build, bundle-gate hepsi
+yeşil. Frontend paketi **1124**, PHP paketi **1187**.
+
 ## Sırada
 
-- **Faz 4/5** — OpenAI adaptörü + Gemini + routing (kasadan anahtar).
+- **Faz 5/5** — OpenAI adaptörü + routing (kasadan anahtar). Baştan söylüyorum:
+  gerçek API'ye karşı **doğrulanmamış** olacak; ilk gerçek çağrıyı anahtarı
+  olan kişi tek sayfalık bir denemeyle yapmalı.
 - **Faz 3/5** — Mailgun runtime tüketimi (kasadan okuyan gönderici).
 - **Faz 4/5** — OpenAI adaptörü + Gemini + routing (kasadan anahtar).
 - **Faz 5/5** — GUI ayarlar paneli + i18n.
@@ -125,7 +156,8 @@ sızmaz). FF-35 `ContactDeliveryTest` (4) hâlâ yeşil. Tam yerel paket **1187*
 Çalışır: kasa çekirdeği + superadmin API. Bir superadmin sırrı API üzerinden
 girebilir/döndürebilir/kapatabilir; şifreli saklanıyor, maskeli okunuyor,
 her yazma denetime geçiyor, env yedeği bozulmadan duruyor.
-Çalışır (Faz 3): API'dan girilen Mailgun anahtarı artık gönderici tarafından
-KULLANILIYOR — iletişim bildirimi kasadaki anahtarla çıkar.
-Henüz çalışmaz: bunun bir **GUI paneli** yok (Faz 5/5), ve AI adaptörleri
-(OpenAI/Gemini) henüz kasadan okumuyor (Faz 4).
+Çalışır (Faz 4): superadmin artık **panelden** her sağlayıcının anahtarını
+girip/döndürüp/kapatabilir; Mailgun anahtarı girildiği an iletişim bildirimi
+onunla çıkar (uçtan uca, UI'dan sunucuya dokunmadan).
+Henüz çalışmaz: OpenAI/Gemini adaptörleri henüz kasadan okumuyor (Faz 5) —
+anahtar panelde saklanıyor ama foto-menü okuma o adaptör yazılınca çalışır.

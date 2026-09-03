@@ -8,11 +8,12 @@ import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { PlanManagementPage } from '../admin/pages/PlanManagementPage';
 import { SubscriptionManagementPage } from '../admin/pages/SubscriptionManagementPage';
 import { ReleaseReadinessPage } from '../admin/pages/ReleaseReadinessPage';
+import { ProviderCredentialsPage } from '../admin/pages/ProviderCredentialsPage';
 import { trackPageView } from '../../lib/analytics';
 import { shouldInterceptNavigation } from '../../lib/navigation';
 import { t } from '../../i18n/platform';
 
-type PlatformSection = 'plans' | 'subscriptions' | 'release-readiness';
+type PlatformSection = 'plans' | 'subscriptions' | 'release-readiness' | 'credentials';
 
 /**
  * Adresten bölüm. Fragment DEĞİL — `docs/38` §4: fragment sunucuya hiç
@@ -27,6 +28,7 @@ function sectionFromPath(pathname: string): PlatformSection {
 
     if (trimmed.endsWith('/subscriptions')) return 'subscriptions';
     if (trimmed.endsWith('/release-readiness')) return 'release-readiness';
+    if (trimmed.endsWith('/credentials')) return 'credentials';
 
     return 'plans';
 }
@@ -111,6 +113,19 @@ export function PlatformApp() {
                         goToSection('release-readiness');
                     },
                 },
+                {
+                    key: 'credentials',
+                    label: t('platform.credentials.nav.label'),
+                    href: platformSectionHref('credentials'),
+                    onSelect: (event) => {
+                        if (!shouldInterceptNavigation(event)) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        goToSection('credentials');
+                    },
+                },
             ],
         },
     ];
@@ -166,6 +181,7 @@ export function PlatformApp() {
                 {activeSection === 'subscriptions' ? <SubscriptionManagementPage /> : null}
                 {activeSection === 'release-readiness' ? <ReleaseReadinessPage /> : null}
                 {activeSection === 'plans' ? <PlanManagementPage /> : null}
+                {activeSection === 'credentials' ? <ProviderCredentialsPage /> : null}
             </AppErrorBoundary>
         </AdminShell>
     );
