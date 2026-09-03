@@ -48,7 +48,9 @@ final class PlatformCredentialVaultTest extends TestCase
             'endpoint' => 'api.mailgun.net',
         ], byUserId: null);
 
-        $row = DB::table('platform_credentials')->where('provider', 'mailgun')->first();
+        // Faz 3'ten beri veri `platform_credential_connections`'ta durur;
+        // sağlayıcı-düzeyi yazma varsayılan bağlantıya gider (`docs/95`).
+        $row = DB::table('platform_credential_connections')->where('provider', 'mailgun')->first();
         self::assertNotNull($row, 'VAULT: satır yazılmadı.');
 
         $blob = json_encode($row, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
