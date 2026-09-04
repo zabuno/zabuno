@@ -1040,6 +1040,30 @@ msgstr "Who did what"
 msgid "workspace.media.audit.help"
 msgstr "Every upload, rename, deletion and restore is recorded here. Records are never edited or removed."
 
+#: workspace:workspace.media.crop.frame
+msgid "workspace.media.crop.frame"
+msgstr "Crop frame — drag to move"
+
+#: workspace:workspace.media.crop.heading
+msgid "workspace.media.crop.heading"
+msgstr "Choose the part you want"
+
+#: workspace:workspace.media.crop.help
+msgid "workspace.media.crop.help"
+msgstr "This slot uses a fixed shape, so part of the photo is cut off. Drag to move the frame and use the slider to zoom in."
+
+#: workspace:workspace.media.crop.reset
+msgid "workspace.media.crop.reset"
+msgstr "Centre the frame"
+
+#: workspace:workspace.media.crop.result
+msgid "workspace.media.crop.result"
+msgstr "Will be uploaded as {width} × {height} pixels."
+
+#: workspace:workspace.media.crop.zoom
+msgid "workspace.media.crop.zoom"
+msgstr "Zoom"
+
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
 msgstr "Media"

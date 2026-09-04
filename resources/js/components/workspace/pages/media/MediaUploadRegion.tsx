@@ -1,7 +1,9 @@
 import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { Button } from '../../../catalog/forms/micro/Button';
-import { useEffect, useId, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useId, useState, type FormEvent } from 'react';
+import { canCropInto, parseAspect } from './cropGeometry';
+import { ImageCropField } from './ImageCropField';
 import { MediaDropzone, type SelectedImage } from './MediaDropzone';
 import { FieldError } from '../../../catalog/menu/micro/FieldError';
 import { focusFirstInvalidField, ServerRejectedError } from '../../../../lib/validationErrors';
@@ -83,6 +85,24 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
     */
     const [idempotencyKey, setIdempotencyKey] = useState(() => newIdempotencyKey());
     const [selected, setSelected] = useState<SelectedImage | null>(null);
+    /*
+        KIRPILMIŞ ÇIKTI (FF-129) — varsa yüklenen budur, seçilen dosya değil.
+
+        Sunucudaki işleyici slotun oranına göre MERKEZDEN kırpıyor ve bunu
+        kullanıcıya hiç sormuyordu; bir kapak görselinde tabak çoğu zaman
+        merkezde durmaz ve sahibi yanlış çerçeveyi ancak yayımladıktan sonra
+        görür. Artık çerçeveyi kullanıcı seçiyor.
+    */
+    const [cropped, setCropped] = useState<{ blob: Blob; width: number; height: number } | null>(
+        null,
+    );
+
+    // Kimliği SABİT tutulur: `ImageCropField` bunu bir etkinin bağımlılığı
+    // olarak kullanır ve her çizimde yeni bir işlev vermek, kırpmayı sonsuz
+    // döngüye sokardı.
+    const handleCropped = useCallback((blob: Blob, size: { width: number; height: number }) => {
+        setCropped({ blob, width: size.width, height: size.height });
+    }, []);
     const [altText, setAltText] = useState('');
     const [slot, setSlot] = useState('');
     const [status, setStatus] = useState<UploadStatus>('idle');
@@ -146,11 +166,24 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
      * kullanıcının yükleme bitene kadar beklemeden öğrenmesi. Reddin
      * otoritesi sunucudadır (`docs/49` Faz 2).
      */
+    /*
+        Kontrol ORANDAN SONRA yapılır (FF-129).
+
+        Öncesi yalnız kenarları en küçük ölçüyle karşılaştırıyordu ve sessiz
+        bir delik bırakıyordu: 1250×1250 bir fotoğraf, 1200×500 isteyen 3:1
+        bir slot için her iki kenarda da yeterli görünür — ama 3:1 çerçeve
+        1250×417 olur ve yükseklik yetmez. Kullanıcı yüklerdi, sunucu
+        kırpardı ve sonuç istenen ölçünün altında kalırdı.
+    */
     const tooSmall =
         selected !== null &&
         activePolicy !== null &&
         selected.width > 0 &&
-        (selected.width < activePolicy.minWidth || selected.height < activePolicy.minHeight);
+        !canCropInto(
+            { width: selected.width, height: selected.height },
+            { width: activePolicy.minWidth, height: activePolicy.minHeight },
+            parseAspect(activePolicy.aspect),
+        );
 
     /*
         SUNUCUNUN SINIRLARI YÜKLEMEDEN ÖNCE söylenir. 30 MB'lık bir dosyayı
@@ -214,7 +247,17 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         }
 
         const formData = new FormData();
-        formData.set('file', selected!.file);
+        /*
+            Kırpılmış çıktı VARSA yüklenen odur. Dosya adı korunur: sunucu
+            uzantıdan biçim çıkarır ve kullanıcının kütüphanede tanıdığı ad
+            değişmemeli.
+        */
+        formData.set(
+            'file',
+            cropped === null
+                ? selected!.file
+                : new File([cropped.blob], selected!.file.name, { type: cropped.blob.type }),
+        );
         formData.set('altText', altText);
         formData.set('slot', slot);
 
@@ -301,6 +344,9 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                         describedBy={fieldErrors[fileId] ? `${fileId}-error` : undefined}
                         onSelect={(image) => {
                             setSelected(image);
+                            // Yeni dosya, yeni çerçeve: eski kırpma bir
+                            // öncekinin karesini taşırdı.
+                            setCropped(null);
                             // Yeni dosya, yeni anahtar; yeniden deneme eskisini korur.
                             setIdempotencyKey(newIdempotencyKey());
                         }}
@@ -313,6 +359,28 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                             )
                         }
                     />
+
+                    {/*
+                        KIRPMA, slot SEÇİLDİKTEN sonra görünür: hangi oranın
+                        isteneceği slota bağlıdır ve slotsuz bir çerçeve
+                        keyfî olurdu. `tooSmall` iken de çizilmez — kırpma
+                        piksel eklemez, o durumda hata metni doğru olanı
+                        zaten söylüyor.
+                    */}
+                    {selected !== null && activePolicy !== null && !tooSmall ? (
+                        <ImageCropField
+                            objectUrl={selected.previewUrl}
+                            source={{ width: selected.width, height: selected.height }}
+                            aspect={activePolicy.aspect}
+                            minimum={{
+                                width: activePolicy.minWidth,
+                                height: activePolicy.minHeight,
+                            }}
+                            mimeType={selected.file.type}
+                            onCropped={handleCropped}
+                        />
+                    ) : null}
+
                     {extra.length > 0 ? (
                         <ul
                             aria-label={t('workspace.media.upload.more.label')}

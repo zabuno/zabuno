@@ -33,6 +33,20 @@ export const media = {
     'workspace.media.upload.requirement.minimum': 'At least {width} × {height} pixels',
     'workspace.media.upload.requirement.aspect': 'Aspect ratio {aspect}',
     'workspace.media.upload.requirement.formats': 'Formats: {formats}',
+    /*
+        KIRPMA (FF-129). Sunucudaki işleyici slotun oranına göre MERKEZDEN
+        kırpıyor ve bunu kullanıcıya hiç sormuyordu. Yemek fotoğrafında bu
+        masum bir varsayım değil: tabak çoğu zaman merkezde durmaz ve
+        sahibi sonucu ancak yayımladıktan sonra görür.
+    */
+    'workspace.media.crop.heading': 'Choose the part you want',
+    'workspace.media.crop.help':
+        'This slot uses a fixed shape, so part of the photo is cut off. Drag to move the frame and use the slider to zoom in.',
+    'workspace.media.crop.zoom': 'Zoom',
+    'workspace.media.crop.reset': 'Centre the frame',
+    'workspace.media.crop.result': 'Will be uploaded as {width} × {height} pixels.',
+    'workspace.media.crop.frame': 'Crop frame — drag to move',
+
     'workspace.media.upload.error.tooSmall':
         'This image is {width} × {height}. {slot} needs at least {min}. A smaller image would look blurred, because it is never enlarged.',
     // Alternatif metin bir erişilebilirlik yükümlülüğüdür; ne olduğunu
