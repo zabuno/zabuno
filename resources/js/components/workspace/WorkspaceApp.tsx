@@ -1005,6 +1005,7 @@ export function WorkspaceApp({
         user?.email !== undefined && user.email !== '' ? (
             <AccountMenu
                 email={user.email}
+                onOpenSettings={currentWorkspace ? () => goToSection('settings') : undefined}
                 onSwitchWorkspace={handleSwitch}
                 onLogout={() => void handleLogout()}
                 loggingOut={loggingOut}

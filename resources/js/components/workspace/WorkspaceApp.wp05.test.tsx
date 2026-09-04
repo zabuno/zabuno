@@ -172,6 +172,19 @@ async function renderCurrentWorkspace() {
     };
 }
 
+/**
+ * FF-84: Ayarlar KENAR ÇUBUĞUNDA değil, hesap (sistem) menüsünde.
+ *
+ * Sahibin kararı: tek maddelik "Settings" grubu her ekranda dikey alan
+ * harcıyordu. Adres değişmedi (`/app/{ws}/settings`); yalnız oraya giden
+ * kontrolün yeri değişti. Testler bu yardımcıdan geçer ki gelecekte yer
+ * bir kez daha değişirse tek dosyada güncellensin.
+ */
+async function openSettingsFromAccountMenu(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(await screen.findByRole('button', { name: 'Account' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Settings' }));
+}
+
 describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP05a, RED)', () => {
     beforeEach(() => {
         // Her test tarayıcıyı YENİ açmış gibi başlar: gezinti artık adresi
@@ -197,10 +210,11 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // Billing artık ana menüde DEĞİL: günlük operasyon değildir ve
         // Settings'in içinde durur (docs/50 §5). Gezintideki hedef Settings.
         expect(within(nav).queryByRole('link', { name: 'Billing' })).toBeNull();
-        expect(within(nav).getByRole('link', { name: 'Settings' })).toHaveAttribute(
-            'href',
-            '/app/zeytin-restoranlari/settings',
-        );
+        /*
+            FF-84: Ayarlar kenar çubuğundan hesap (sistem) menüsüne taşındı
+            (sahibin kararı). Kayıtta grubu yok; adresi çalışmaya devam eder.
+        */
+        expect(within(nav).queryByRole('link', { name: 'Settings' })).toBeNull();
 
         restoreFetch();
     });
@@ -288,9 +302,9 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const user = userEvent.setup();
         const { restoreFetch } = await renderCurrentWorkspace();
 
-        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
+        screen.getByRole('navigation', { name: 'Restaurant admin' });
         // Billing, Settings'in ikinci sekmesi.
-        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
+        await openSettingsFromAccountMenu(user);
         await user.click(screen.getByRole('tab', { name: 'Plan & billing' }));
 
         const main = screen.getByRole('main');
@@ -353,10 +367,10 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
         // Billing gezintide değil; Settings'in içindedir (docs/50 §5).
+        // FF-84: Settings de gezintide değil — hesap (sistem) menüsünde.
         for (const [label, section] of [
             ['Insights', 'analytics'],
             ['Team', 'team'],
-            ['Settings', 'settings'],
         ] as const) {
             await user.click(within(nav).getByRole('link', { name: label }));
 
@@ -422,7 +436,7 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // plan assignment, end date, payment note, document reference —
         // all disabled and empty, plus a disabled Iyzico sandbox region.
         // Billing, Settings'in ikinci sekmesi.
-        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
+        await openSettingsFromAccountMenu(user);
         await user.click(screen.getByRole('tab', { name: 'Plan & billing' }));
         const billingRegion = screen
             .getByRole('main')

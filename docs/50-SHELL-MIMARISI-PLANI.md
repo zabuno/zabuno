@@ -150,6 +150,14 @@ sorunu varsa Home'da bağlamsal uyarı çıkar.
 
 ---
 
+> **Güncelleme (FF-84, 2026-09-04, sahibin kararı):** `Settings` ana
+> gezintiden çıkarıldı ve **hesap (sistem) menüsüne** alındı. Bu belge §8'de
+> onu "utility" grubunda tutuyordu; tek maddelik bir grup, her ekranda başlık
+> + satır olarak yer kaplıyordu. Adres (`/app/{ws}/settings`) ve sayfanın
+> kendisi değişmedi. Account menüsünün "yalnız kişisel tercih ve oturum"
+> kuralı bu kararla genişledi: çalışma alanı ayarlarına giden TEK bağlantı da
+> burada durur.
+
 ## 6. Fazlar
 
 ### Faz 1 — Temizlik (görünür, düşük risk)

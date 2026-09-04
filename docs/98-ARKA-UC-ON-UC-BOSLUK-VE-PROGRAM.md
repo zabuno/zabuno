@@ -366,6 +366,15 @@ süzülüyor). Bölge iki gerçek cümleye indi ve adı "What publishing does"
 oldu. İki donmuş test daha güçlü sözleşmeyle güncellendi: böyle bir kontrol
 HİÇ olmayacak.
 
+### FF-84 ek paket — sistem menüsü ve Ayarlar'ın yeri (2026-09-04)
+
+Sahibin kararı: Ayarlar kenar çubuğundan sistem (hesap) menüsüne taşındı;
+`docs/50` §8 kuralı bu yönde güncellendi (kayıt notu belgenin başında).
+Menü baştan tasarlandı: kimlik başlığı (baş harf dairesi + e-posta), ikonlu
+satırlar, dokunma yüksekliği, içeriden yuvarlanan vurgu, tema seçiminde
+hizasız nokta yerine onay imi. Yedi donmuş test yeni yerleşimle güncellendi;
+yeni test `AccountMenu.test`.
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket

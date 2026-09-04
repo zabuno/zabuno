@@ -538,8 +538,12 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         expect(within(management).getByRole('link', { name: 'Team' })).toBeInTheDocument();
 
         // Ayarlar: nadiren açılan işler.
-        const settings = within(nav).getByRole('list', { name: 'Settings' });
-        expect(within(settings).getByRole('link', { name: 'Settings' })).toBeInTheDocument();
+        /*
+            FF-84: Ayarlar kenar çubuğundan hesap (sistem) menüsüne taşındı
+            (sahibin kararı). Kayıtta grubu yok; adresi çalışmaya devam eder.
+        */
+        expect(within(nav).queryByRole('list', { name: 'Settings' })).toBeNull();
+        expect(within(nav).queryByRole('link', { name: 'Settings' })).toBeNull();
 
         // Günlük operasyon OLMAYANLAR ana menüde kalıcı yer işgal etmez —
         // ama adresleri çalışır (docs/50 §5).

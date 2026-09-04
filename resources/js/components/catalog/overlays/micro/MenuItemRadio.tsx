@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import clsx from 'clsx';
+import { Check } from '@phosphor-icons/react';
 
 export type MenuItemRadioProps = {
     children: ReactNode;
@@ -33,7 +34,8 @@ export function MenuItemRadio({
             onClick={onSelect}
             disabled={disabled}
             className={clsx(
-                'flex w-full items-center gap-2 px-4 py-2 text-start text-body',
+                'flex min-h-[var(--density-hit-area-min)] w-full items-center gap-[var(--space-3)] rounded-[var(--radius-md)]',
+                'px-[var(--space-3)] py-[var(--space-2)] text-start text-body',
                 checked ? 'text-fg' : 'text-fg-secondary',
                 'hover:bg-surface-hover',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus',
@@ -46,8 +48,13 @@ export function MenuItemRadio({
                 kaybolur. Kalıcı genişlikte bir sütun, satırların da
                 kaymamasını sağlar.
             */}
-            <span aria-hidden="true" className="w-4 shrink-0 text-center">
-                {checked ? '•' : ''}
+            {/*
+                İşaret bir ONAY imidir, nokta değil: nokta hem küçüktü hem de
+                satırın soluna kaymış görünüyordu (2026-09-04 ekran incelemesi).
+                Sütun kalıcı genişlikte kalır ki satırlar kaymasın.
+            */}
+            <span aria-hidden="true" className="flex w-[1.25rem] shrink-0 justify-center">
+                {checked ? <Check size={16} weight="bold" /> : null}
             </span>
             <span>{children}</span>
         </button>

@@ -26,7 +26,11 @@ const settingsSection: WorkspaceSectionDescriptor = {
     order: 7,
     labelKey: 'workspace.shell.nav.settings',
     icon: <Gear size={18} weight="regular" />,
-    group: 'utility',
+    /*
+        Kenar çubuğunda LİSTELENMEZ (FF-84, sahibin kararı): ayarlar sistem
+        (hesap) menüsünden açılır. Grubu olmayan bölümün adresi çalışmaya
+        devam eder — kayıt bu üçüncü hâli zaten tanımlıyor.
+    */
     render,
 };
 
