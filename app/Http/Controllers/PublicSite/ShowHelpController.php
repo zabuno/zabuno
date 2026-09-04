@@ -29,6 +29,8 @@ final class ShowHelpController extends Controller
         $locale = HelpLibrary::localeFor($request->getPreferredLanguage(HelpLibrary::SUPPORTED));
 
         return view('public.help', [
+            // Ölçüm kimliği (`docs/100` Faz 3).
+            'pageKey' => 'help',
             'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), '/help'),
             'anchorPrefix' => '/',
             'coreModuleCount' => count(config('core-modules')),

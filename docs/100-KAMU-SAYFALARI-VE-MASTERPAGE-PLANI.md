@@ -172,7 +172,24 @@ onları beklemez.
 `?lang=` **değil** — `docs/38` §6: dil, sorgu parametresi değil, yol ya da
 tercih); `hreflang` (`docs/39` Faz 1). Kapı: `byFile['public/home.blade.php'] = 0`.
 
-### Faz 3 — Ölçüm (L3)
+### Faz 3 — Ölçüm (L3) ✅ (FF-99, 2026-09-04)
+Her kamu sayfası artık KİM OLDUĞUNU söylüyor (`zabuno_page`: `home`,
+`pricing`, `legal_terms`, `legal_privacy`, `legal_kvkk`, `contact`, `help`)
+ve üç dönüşüm olayı akıyor: `zabuno_pricing_viewed` (sayfa açılışında),
+`zabuno_register_started` (kayıt bağlantısına tıklamada),
+`zabuno_contact_sent` (form gönderiminde).
+
+Kararlar: (1) sayfa kimliği SUNUCUDAN gelir, adresten türetilmez — adres
+yarın değişirse geçmiş raporlar ikiye bölünmemeli; (2) olaylar tıklamada
+yazılır, sayfa görüntülemede değil: "kaydol düğmesine bastı" ile "kayıt
+sayfasını gördü" aynı şey değildir; (3) ölçüm dikişine kişisel veri
+GİRMEZ ve bir test bunu dondurur — `dataLayer` içeriği üçüncü taraflara akar
+ve oraya giren veri geri alınamaz (`docs/46` §4); (4) kap kimliği yokken tek
+bir satır bile gönderilmez.
+
+LCP bütçesi bu turda yapılmadı; ölçüm altyapısı (RUM) ayrı bir karar.
+
+### Faz 3 (özgün tanım) — Ölçüm (L3)
 Her kamu sayfasına `zabuno_page` bağlamı ve üç dönüşüm olayı; LCP bütçesi
 kamu sayfaları için `docs/42`'ye eklenir. Kapı: GA4 DebugView'da üç olay.
 

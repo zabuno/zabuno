@@ -12,7 +12,23 @@
          bir kullanıcı her sayfada bir an beyaz ekran görür. Bu yüzden
          herhangi bir stil bağlantısından önce gelir. --}}
     @include('partials.theme-bootstrap')
-    @include('partials.analytics', ['analyticsContext' => ['zabuno_surface' => 'marketing']])
+    {{--
+        HANGİ SAYFA ölçüme geçer (`docs/100` Faz 3).
+
+        Bugüne kadar bütün kamu sayfaları tek bir yüzey olarak ("marketing")
+        akıyordu: "fiyatı kaç kişi okudu, sonra kaçı iletişime geçti"
+        sorusunun cevabı raporda yoktu, çünkü sayfalar birbirinden ayrılmıyordu.
+
+        Kimlik SUNUCUDAN gelir, adres çubuğundan türetilmez: adres yarın
+        değişebilir ve o gün geçmiş raporlar sessizce ikiye bölünürdü.
+        Bilinmeyen bir sayfa `unknown` olarak akar — ölçüme hiç girmemekten
+        iyidir, çünkü eksik satır fark edilmez, `unknown` fark edilir.
+    --}}
+    @include('partials.analytics', ['analyticsContext' => [
+        'zabuno_surface' => 'marketing',
+        'zabuno_page' => $pageKey ?? 'unknown',
+    ]])
+    @include('public.partials.measurement')
     <title>@yield('title') — {{ $st['titleSuffix'] }}</title>
     <meta name="description" content="@yield('description')">
     <link rel="canonical" href="{{ $canonicalUrl }}">
