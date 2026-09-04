@@ -48,7 +48,7 @@ const superadminGroups: SidebarNavGroup[] = [
 */
 function sidebarSlot(groups: SidebarNavGroup[], activeKey?: string, label?: string) {
     return (
-        <aside className="flex flex-[1_1_17rem] flex-col border-e border-[var(--color-border)] p-4">
+        <aside className="flex shrink-0 grow-0 basis-[17rem] flex-col border-e border-[var(--color-border)] p-4">
             <SidebarNav groups={groups} activeKey={activeKey} label={label} />
         </aside>
     );

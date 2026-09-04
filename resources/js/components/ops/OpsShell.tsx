@@ -114,7 +114,11 @@ export function OpsShell<Key extends string>({
             // Soluk zemin: kartlar bu tonun üstünde beyaz durur (Metronic "app-bg").
             className="bg-[var(--color-canvas)]"
             persistentSidebar={
-                <aside className="admin-shell-sidebar flex flex-[1_1_16rem] flex-col border-e border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-3)] py-[var(--space-4)]">
+                // Genişlik SABİT (FF-86). Öncesi bir BÜYÜME oranıydı (`flex` kısayolu):
+                // ray, ana içerikle kalan alanı yarı yarıya paylaşıyor ve geniş
+                // ekranda ekranın yarısını kaplıyordu. Kiracı kabuğunda aynı hata
+                // FF-83'te düzeltilmişti; bu kabuk atlanmıştı.
+                <aside className="admin-shell-sidebar flex shrink-0 grow-0 basis-[16rem] flex-col border-e border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-3)] py-[var(--space-4)]">
                     {nav(true)}
                 </aside>
             }

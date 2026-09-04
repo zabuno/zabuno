@@ -160,6 +160,18 @@ satırlar):
 - Tema seçimi: hizasız `•` yerine sabit genişlikte sütunda onay imi (Check);
   bölüm başlığı `text-caption` büyük harf ve altında ayraç.
 
+## 5g. FF-86 — platform kabuğunda da sabit ray (2026-09-04)
+
+FF-83 kiracı kabuğunun raylarını sabitledi; **platform/mühendislik kabuğu
+(`OpsShell`) atlandı** ve orada ray `flex-[1_1_16rem]` ile büyümeye devam
+etti: geniş ekranda kenar çubuğu ana içerikle alanı paylaşıp ekranın yarısını
+kaplıyordu (sahibin `/platform/credentials` ekranı).
+
+Artık kural bir TESTLE korunuyor (`OpsShell.layout.test`): kabuk ailesinin
+hiçbir dosyasında büyüyen ray yazımı (`flex-[N_1_Xrem]`) bulunamaz; ray
+`basis` + `grow-0 shrink-0` ile ölçülür, büyüyen tek bölge ana içeriktir.
+Hikâye dosyasındaki örnek de düzeltildi — yanlış deseni öğretiyordu.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük
