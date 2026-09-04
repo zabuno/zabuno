@@ -720,3 +720,83 @@ describe('Masa kartı sihirbazı (FF-120, FF-122)', () => {
         expect(within(wizard).queryByRole('link', { name: /zip/i })).toBeNull();
     });
 });
+
+describe('Salonun bölümleri (FF-123)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    function stub(areas: unknown) {
+        fetchSpy.mockImplementation((url: unknown) =>
+            Promise.resolve(
+                /dining-areas/.test(String(url))
+                    ? jsonResponse(200, areas)
+                    : jsonResponse(200, [{ ...ITEM, tableName: 'T1' }]),
+            ),
+        );
+    }
+
+    it('sahip "Area 1" yerine kendi adını yazabilir', async () => {
+        /*
+            Toplu üretim bölümleri "Area 1", "Area 2" diye açıyor ve bu bir YER
+            TUTUCUDUR: hiçbir restoran sahibi salonunu böyle adlandırmaz. Kart
+            basarken alanı seçen kişi kendi kullandığı adı görmeli.
+        */
+        const user = userEvent.setup();
+        stub([{ id: 10, label: 'Area 1', tableCount: 12 }]);
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const areasRegion = await screen.findByRole('region', {
+            name: /areas in your dining room/i,
+        });
+
+        // Masa sayısı hangi alan olduğunu hatırlatır.
+        expect(within(areasRegion).getByText(/12 tables/i)).toBeInTheDocument();
+
+        await user.click(within(areasRegion).getByRole('button', { name: /rename area 1/i }));
+        const field = within(areasRegion).getByRole('textbox');
+        await user.clear(field);
+        await user.type(field, 'Bahçe{Enter}');
+
+        await waitFor(() => {
+            const call = fetchSpy.mock.calls.find(
+                ([url, init]) =>
+                    /dining-areas\/10$/.test(String(url)) &&
+                    (init as RequestInit | undefined)?.method === 'PUT',
+            );
+            expect(call).toBeDefined();
+        });
+    });
+
+    it('hiç bölüm yoksa başlık HİÇ çizilmez', async () => {
+        // Boş bir başlık, olmayan bir işi varmış gibi gösterir.
+        stub([]);
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        await screen.findByText('T1');
+        expect(screen.queryByText(/areas in your dining room/i)).toBeNull();
+    });
+});

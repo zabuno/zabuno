@@ -1872,6 +1872,38 @@ msgstr "Your details"
 msgid "workspace.profile.title"
 msgstr "Profile"
 
+#: workspace:workspace.publication.diningAreas.cancel
+msgid "workspace.publication.diningAreas.cancel"
+msgstr "Cancel"
+
+#: workspace:workspace.publication.diningAreas.empty
+msgid "workspace.publication.diningAreas.empty"
+msgstr "An area needs a name. Nothing was changed."
+
+#: workspace:workspace.publication.diningAreas.heading
+msgid "workspace.publication.diningAreas.heading"
+msgstr "Areas in your dining room"
+
+#: workspace:workspace.publication.diningAreas.help
+msgid "workspace.publication.diningAreas.help"
+msgstr "Bulk creation names them Area 1, Area 2. Rename them the way your team says them out loud — garden, upstairs, terrace. Renaming never breaks a printed card."
+
+#: workspace:workspace.publication.diningAreas.rename
+msgid "workspace.publication.diningAreas.rename"
+msgstr "Rename {name}"
+
+#: workspace:workspace.publication.diningAreas.renameError
+msgid "workspace.publication.diningAreas.renameError"
+msgstr "The area could not be renamed. Try again."
+
+#: workspace:workspace.publication.diningAreas.save
+msgid "workspace.publication.diningAreas.save"
+msgstr "Save"
+
+#: workspace:workspace.publication.diningAreas.tableCount
+msgid "workspace.publication.diningAreas.tableCount"
+msgstr "{count} tables"
+
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
 msgstr "Allergens"

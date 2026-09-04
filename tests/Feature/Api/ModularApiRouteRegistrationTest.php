@@ -88,6 +88,10 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/workspaces/{workspace}/brand/locations/{location}/qr-codes||App\Http\Controllers\QrDestination\StoreQrCodeController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/brand/locations/{location}/tables/bulk||App\Http\Controllers\QrDestination\StoreBulkQrCodesController|api,auth:sanctum,throttle:5,1,verified',
         'GET|api/workspaces/{workspace}/brand/locations/{location}/qr-codes||App\Http\Controllers\QrDestination\ListQrCodesController|api,auth:sanctum,verified',
+        // FF-123: salon bölümleri. Liste AYRI bir uçtur çünkü masası olmayan
+        // bir bölüm QR kod listesinde hiç görünmez ve yeniden adlandırılamazdı.
+        'GET|api/workspaces/{workspace}/brand/locations/{location}/dining-areas||App\Http\Controllers\QrDestination\ListDiningAreasController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/brand/locations/{location}/dining-areas/{area}||App\Http\Controllers\QrDestination\RenameDiningAreaController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/qr-codes/{qrCode}/disable||App\Http\Controllers\QrDestination\DisableQrCodeController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/qr-codes/{qrCode}/enable||App\Http\Controllers\QrDestination\EnableQrCodeController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/qr-codes/{qrCode}/destination||App\Http\Controllers\QrDestination\RetargetQrCodeController|api,auth:sanctum,verified',

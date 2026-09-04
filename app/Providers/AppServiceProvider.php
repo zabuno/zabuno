@@ -40,6 +40,7 @@ use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\BulkQrCreationPort;
+use App\Application\QrDestination\Port\DiningAreaRepositoryPort;
 use App\Application\QrDestination\Port\QrCardExportPort;
 use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Application\QrDestination\Port\QrCodePdfExportPort;
@@ -107,6 +108,7 @@ use App\Infrastructure\Publication\Persistence\EloquentMenuIdentity;
 use App\Infrastructure\Publication\Persistence\EloquentPublicationRepository;
 use App\Infrastructure\Publication\Persistence\EloquentPublicMenuAddress;
 use App\Infrastructure\QrDestination\Persistence\EloquentBulkQrCreationRepository;
+use App\Infrastructure\QrDestination\Persistence\EloquentDiningAreaRepository;
 use App\Infrastructure\QrDestination\Persistence\EloquentQrCodeRepository;
 use App\Infrastructure\QrDestination\Rendering\EndroidQrCodeImageExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCardPdfAdapter;
@@ -383,6 +385,8 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(QrPrintSheetPort::class, MpdfQrPrintSheetAdapter::class);
         // Kart PDF'i, kartın SVG'sinden üretilir — ikinci bir besteci yok.
         $this->app->bind(QrCardExportPort::class, MpdfQrCardPdfAdapter::class);
+        // Salonun bölümleri: "Area 1" bir yer tutucudur, salon adı değil.
+        $this->app->bind(DiningAreaRepositoryPort::class, EloquentDiningAreaRepository::class);
         $this->app->bind(AnalyticsRepositoryPort::class, EloquentAnalyticsRepository::class);
         $this->app->bind(TeamMemberRepositoryPort::class, EloquentTeamMemberRepository::class);
         $this->app->bind(TeamInvitationRepositoryPort::class, EloquentTeamInvitationRepository::class);

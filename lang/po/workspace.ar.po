@@ -1872,6 +1872,38 @@ msgstr ""
 msgid "workspace.profile.title"
 msgstr ""
 
+#: workspace:workspace.publication.diningAreas.cancel
+msgid "workspace.publication.diningAreas.cancel"
+msgstr ""
+
+#: workspace:workspace.publication.diningAreas.empty
+msgid "workspace.publication.diningAreas.empty"
+msgstr ""
+
+#: workspace:workspace.publication.diningAreas.heading
+msgid "workspace.publication.diningAreas.heading"
+msgstr ""
+
+#: workspace:workspace.publication.diningAreas.help
+msgid "workspace.publication.diningAreas.help"
+msgstr ""
+
+#: workspace:workspace.publication.diningAreas.rename
+msgid "workspace.publication.diningAreas.rename"
+msgstr ""
+
+#: workspace:workspace.publication.diningAreas.renameError
+msgid "workspace.publication.diningAreas.renameError"
+msgstr ""
+
+#: workspace:workspace.publication.diningAreas.save
+msgid "workspace.publication.diningAreas.save"
+msgstr ""
+
+#: workspace:workspace.publication.diningAreas.tableCount
+msgid "workspace.publication.diningAreas.tableCount"
+msgstr ""
+
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
 msgstr ""

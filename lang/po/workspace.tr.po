@@ -1872,6 +1872,38 @@ msgstr "Bilgileriniz"
 msgid "workspace.profile.title"
 msgstr "Profil"
 
+#: workspace:workspace.publication.diningAreas.cancel
+msgid "workspace.publication.diningAreas.cancel"
+msgstr "Vazgeç"
+
+#: workspace:workspace.publication.diningAreas.empty
+msgid "workspace.publication.diningAreas.empty"
+msgstr "Bölümün bir adı olmalı. Hiçbir şey değişmedi."
+
+#: workspace:workspace.publication.diningAreas.heading
+msgid "workspace.publication.diningAreas.heading"
+msgstr "Salonunuzdaki bölümler"
+
+#: workspace:workspace.publication.diningAreas.help
+msgid "workspace.publication.diningAreas.help"
+msgstr "Toplu üretim onları Area 1, Area 2 diye adlandırır. Ekibinizin ağzından çıktığı gibi yazın — bahçe, üst kat, teras. Yeniden adlandırmak basılı hiçbir kartı bozmaz."
+
+#: workspace:workspace.publication.diningAreas.rename
+msgid "workspace.publication.diningAreas.rename"
+msgstr "{name} adını değiştir"
+
+#: workspace:workspace.publication.diningAreas.renameError
+msgid "workspace.publication.diningAreas.renameError"
+msgstr "Bölüm yeniden adlandırılamadı. Tekrar deneyin."
+
+#: workspace:workspace.publication.diningAreas.save
+msgid "workspace.publication.diningAreas.save"
+msgstr "Kaydet"
+
+#: workspace:workspace.publication.diningAreas.tableCount
+msgid "workspace.publication.diningAreas.tableCount"
+msgstr "{count} masa"
+
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
 msgstr "Alerjenler"

@@ -364,7 +364,24 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
                 state: 'active',
             },
         ];
-        fetchSpy.mockResolvedValueOnce(jsonResponse(200, kadikoy));
+        /*
+            MOCK SIRAYLA DEĞİL ADRESE GÖRE cevap verir (FF-123).
+
+            Önceki hâl `mockResolvedValueOnce` zinciriydi ve "her render tam
+            olarak bir istek atar" varsayıyordu. Ekrana salon bölümleri listesi
+            eklendiğinde o varsayım kırıldı ve test, ürün doğru çalışırken
+            kırmızıya döndü. Sırayla kurulan bir sahte sunucu, ekranın istek
+            sayısını donduran gizli bir sözleşmedir; oysa ölçülen şey bu değil.
+        */
+        let listResponse = jsonResponse(200, kadikoy);
+
+        fetchSpy.mockImplementation((url: unknown) =>
+            Promise.resolve(
+                QR_LIST_PATH.test(String(url)) || /qr-codes$/.test(String(url))
+                    ? listResponse
+                    : jsonResponse(200, []),
+            ),
+        );
 
         const { rerender } = render(
             <QrDestinationRegion
@@ -381,7 +398,7 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
             ).toHaveAttribute('href', kadikoy[0].resolverUrl);
         });
 
-        fetchSpy.mockResolvedValueOnce(jsonResponse(500, { message: 'Internal error' }));
+        listResponse = jsonResponse(500, { message: 'Internal error' });
         rerender(
             <QrDestinationRegion
                 workspaceId={71}
