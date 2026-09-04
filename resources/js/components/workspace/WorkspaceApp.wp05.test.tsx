@@ -180,9 +180,18 @@ async function renderCurrentWorkspace() {
  * kontrolün yeri değişti. Testler bu yardımcıdan geçer ki gelecekte yer
  * bir kez daha değişirse tek dosyada güncellensin.
  */
+/*
+    FF-130: Ayarlar hesap menüsünden RAYIN dibindeki sabit bloğa taşındı
+    (teslim paketinin kuralı: menü yalnız çalışma alanı değiştirme ve çıkış
+    taşır). Yardımcının adı korunuyor çünkü çağıran testler "Ayarlar'ı aç"
+    demek istiyor, "menüyü aç" değil.
+*/
 async function openSettingsFromAccountMenu(user: ReturnType<typeof userEvent.setup>) {
-    await user.click(await screen.findByRole('button', { name: 'Account' }));
-    await user.click(await screen.findByRole('menuitem', { name: 'Settings' }));
+    await user.click(
+        within(await screen.findByRole('navigation', { name: 'Account' })).getByRole('link', {
+            name: 'Settings',
+        }),
+    );
 }
 
 describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP05a, RED)', () => {

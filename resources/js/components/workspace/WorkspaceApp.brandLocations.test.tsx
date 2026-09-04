@@ -255,8 +255,17 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
             FF-84: Ayarlar kenar çubuğundan hesap (sistem) menüsüne taşındı
             (sahibin kararı). Kayıtta grubu yok; adresi çalışmaya devam eder.
         */
-        fireEvent.click(screen.getByRole('button', { name: 'Account' }));
-        fireEvent.click(await screen.findByRole('menuitem', { name: 'Settings' }));
+        /*
+            FF-130: Ayarlar hesap menüsünden RAYIN dibindeki sabit bloğa
+            taşındı (teslim paketinin kuralı). Menü artık yalnız çalışma
+            alanı değiştirme ve çıkış taşır; testin izlediği yol da
+            kullanıcının gerçekte izlediği yol olmalı.
+        */
+        fireEvent.click(
+            within(screen.getByRole('navigation', { name: 'Account' })).getByRole('link', {
+                name: 'Settings',
+            }),
+        );
 
         const destination = document.querySelector('#section-settings') as HTMLElement;
         expect(destination).not.toBeNull();
