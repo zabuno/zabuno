@@ -192,7 +192,19 @@ export function SidebarMenu({
                 onClick={() => (open ? close(false) : setState('open'))}
                 className={cn(
                     'flex min-h-[var(--density-hit-area-min)] w-full items-center gap-[var(--space-2)]',
-                    'rounded-[var(--radius-md)] border border-border bg-[var(--color-surface-subtle)]',
+                    /*
+                        ÇERÇEVE YOK (FF-119, sahibin bildirimi 2026-09-04:
+                        "sol alt dropdown, etrafında çizgi çıkmasın").
+
+                        Kenar çubuğunun geri kalanı çerçevesiz: gezinti
+                        maddeleri düz yüzeyde duruyor. Tek bir kontrolün
+                        etrafına kutu çizmek onu rayın diline yabancı
+                        kılıyordu — ekranın dibinde, gezintinin altında duran
+                        bir kutu, oraya sonradan yapıştırılmış gibi görünür.
+                        Tıklanabilirlik ÜZERİNE GELİNCE ve ODAKTA söylenir;
+                        kalıcı bir çerçeveyle değil.
+                    */
+                    'rounded-[var(--radius-md)] bg-[var(--color-surface-subtle)]',
                     'px-[var(--space-3)] py-[var(--space-2)] text-start',
                     'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-inout)]',
                     'hover:bg-surface-hover',
