@@ -1,7 +1,7 @@
 # 101 — Acemi-UX programı: "Adana'dan gelmiş kebapçı" için tasarım
 
-**Durum:** Faz 1 ✅ (FF-73), Faz 2 kısmen ✅ (FF-81: Y3 hatırlatması).
-Sayaç: **1/4 tamamlandı, 2/4 aktif.**
+**Durum:** Faz 1 ✅ (FF-73), Faz 2 ✅ (FF-81 Y3 hatırlatması, FF-82 yayın
+dili). Sayaç: **2/4 tamamlandı, 3/4 aktif.**
 **Sahibin sözü:** "Adana'dan, Urfa'dan gelmiş kebapçı hedef kitle… aptallar
 için tasarım." Buradaki "aptal" bir hakaret değil, bir **tasarım kısıtıdır**:
 kullanıcı yazılım bilmez, bilmek de istemez; işi kebap satmaktır. Ekran ona
@@ -58,7 +58,7 @@ kaydettikten sonra marka şeritli bir satır çıkar: "Kaydedildi. Misafirler
 hâlâ son yayınlanan menüyü görüyor." yanında "Şimdi yayınla" düğmesiyle
 (`MenuCatalogWorkspace.publishReminder.test`).
 
-### Y4 — Yayınla
+### Y4 — Yayınla ✅ (FF-82, 2026-09-04)
 Menü → "Önizle ve yayınla" (tek düğme, `docs/50` §5: yayın menüye aittir) →
 Yayınla. Yanlış yayınlandıysa **geri al** (`docs/81`) — "hata" değil, "geri al".
 **Ölçü:** `PublicationPage` tek birincil eylem; geri alma bir tıklama.
@@ -92,7 +92,7 @@ Basılı kod ölmez: menü değişse de aynı kod çalışır (`docs/81`).
 | Y1 Menü kur | ✅ | ✅ (FF-73 Home "şimdi") | 🔶 "Brand/Location" hâlâ terim | — | Faz 1 ✅ |
 | Y2 Ürün ekle | ✅ | ✅ (`docs/47` §3) | 🔶 "Allergens" | ✅ K6 | ✅ |
 | Y3 Fiyat değiştir | ✅ | ✅ satır içi | ✅ yayın hatırlatması (FF-81) | ✅ | Faz 2 ✅ |
-| Y4 Yayınla | ✅ | ✅ tek düğme | 🔶 "snapshot/immediate" metinleri | ✅ `docs/81` | Faz 2 |
+| Y4 Yayınla | ✅ | ✅ tek düğme | ✅ sesli dil (FF-82) | ✅ `docs/81` | Faz 2 ✅ |
 | Y5 QR bas | ✅ | 🔶 tema/boyut seçenekleri önde | 🔶 | ✅ kod ölmez | Faz 3 |
 
 ---
@@ -108,7 +108,7 @@ Basılı kod ölmez: menü değişse de aynı kod çalışır (`docs/81`).
   yol tarifi.
 - Testler: `DashboardSetupJourney.novice.test.tsx`, `MenuCatalogWorkspace.novice.test.tsx`.
 
-### Faz 2 — Sesli dil ve hatırlatmalar
+### Faz 2 — Sesli dil ve hatırlatmalar ✅ (FF-81, FF-82)
 - Fiyat kaydedilince "Masada görünmesi için yayınla" satır içi hatırlatma +
   yayın ekranına düğme.
 - Yayın ekranındaki "snapshot/immediate/schedule" metinleri tek cümleye:

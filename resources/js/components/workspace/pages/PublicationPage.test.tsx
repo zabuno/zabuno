@@ -353,15 +353,21 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         expect(qrDestinationRegion).toBeInTheDocument();
         expect(qrExportRegion).toBeInTheDocument();
 
-        expect(
-            screen.getByText(/publishing at a chosen time is not available yet/i),
-        ).toBeInTheDocument();
+        /*
+            GÜNCELLENDİ (FF-82, `docs/101` A5 + `docs/44`).
 
-        const publishModeSelect = screen.getByLabelText(/publish mode/i);
-        const optionLabels = within(publishModeSelect as HTMLElement)
-            .getAllByRole('option')
-            .map((option) => option.textContent ?? '');
-        expect(optionLabels.some((label) => /scheduled/i.test(label))).toBe(false);
+            Eski sözleşme "zamanlanmış yayın yok" cümlesinin EKRANDA DURMASINI
+            ve kalıcı devre dışı bir "yayın kipi" seçiminin seçenekleri
+            arasında `scheduled` bulunmamasını istiyordu. İkisi de yapılmamış
+            bir özelliği kullanıcının ekranına taşıyordu; devre dışı seçim
+            ayrıca `docs/44`'ün yasağıydı — kullanıcı onu etkinleştiremez.
+
+            Yeni sözleşme daha güçlü: böyle bir kontrol HİÇ YOK ve yapılmamış
+            özelliği duyuran cümle de yok.
+        */
+        expect(screen.queryByLabelText(/publish mode/i)).toBeNull();
+        expect(screen.queryByText(/publishing at a chosen time is not available yet/i)).toBeNull();
+        expect(screen.queryByText(/scheduled/i)).toBeNull();
 
         const expectedExportUrl = `/api/workspaces/${activeQrItem.workspaceId}/qr-codes/${activeQrItem.id}/export.png`;
 
@@ -823,7 +829,10 @@ describe('PublicationPage — reviewer-correction gaps (ZABUNO_PUBLICATION_REVIE
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
 
-        const publishActionRegion = screen.getByRole('region', { name: /^publish action$/i });
+        // FF-82: bölge adı sesli dile çevrildi — "Publish action" bir eylem
+        // vaat ediyordu; bölge eylem taşımıyor, yayınlamanın ne ANLAMA
+        // geldiğini söylüyor (`docs/101` A2).
+        const publishActionRegion = screen.getByRole('region', { name: /^what publishing does$/i });
 
         expect(within(publishActionRegion).queryAllByRole('checkbox')).toHaveLength(0);
         expect(within(publishActionRegion).queryAllByRole('button')).toHaveLength(0);

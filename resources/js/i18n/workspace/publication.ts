@@ -29,7 +29,7 @@ export const publication = {
     'workspace.publication.status.lifecycle.published': 'Published',
     'workspace.publication.status.lifecycle.failed': 'Failed',
     'workspace.publication.status.lifecycle.superseded': 'Superseded',
-    'workspace.publication.publishAction.region': 'Publish action',
+    'workspace.publication.publishAction.region': 'What publishing does',
     'workspace.publication.publishAction.mode.label': 'Publish mode',
     'workspace.publication.publishAction.mode.immediate': 'Immediate publish',
     'workspace.publication.publishAction.checklistConfirmed': 'I reviewed the publish checklist',
@@ -37,10 +37,11 @@ export const publication = {
         'You need permission to publish this menu.',
     'workspace.publication.publishAction.scheduleNotice':
         'Publishing at a chosen time is not available yet.',
+    // `docs/101` A2: terim kalır, yanına tek cümlelik karşılığı gelir.
     'workspace.publication.publishAction.snapshotNotice':
-        'Publishing saves a fixed copy. Later edits stay private until you publish again.',
+        'Publish makes what you see here the menu your guests see. Anything you edit afterwards stays private until you publish again.',
     'workspace.publication.publishAction.failurePreservationNotice':
-        'If publishing fails, guests keep seeing the menu you published last.',
+        'If publishing fails, guests keep seeing the menu you published last — nothing breaks at the table.',
     'workspace.publication.qrDestination.region': 'QR destination',
     'workspace.publication.qrDestination.explanation':
         'Create a QR code that resolves to the current published menu.',

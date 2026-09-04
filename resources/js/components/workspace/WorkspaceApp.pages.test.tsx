@@ -394,9 +394,17 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         await user.click(within(nav).getByRole('link', { name: 'Menus' }));
         await user.click(screen.getByRole('button', { name: 'Preview & publish' }));
         const publicationRoot = document.querySelector('#section-publication') as HTMLElement;
+        /*
+            FF-82: eşleşme listesine "not published yet" eklendi. Önceki
+            eşleşme, yapılmamış bir özelliği duyuran "zamanlanmış yayın henüz
+            yok" cümlesinden geliyordu; o cümle kaldırıldı (`docs/64` §4).
+            Testin ASIL iddiası değişmedi: sayfa uydurma kayıt göstermez,
+            gerçek durumunu dürüstçe söyler.
+        */
         expect(
-            within(publicationRoot).getAllByText(/not available|no publication|unavailable/i)
-                .length,
+            within(publicationRoot).getAllByText(
+                /not available|no publication|unavailable|not published yet/i,
+            ).length,
         ).toBeGreaterThan(0);
 
         const mutationCalls = fetchMock.mock.calls.filter(([, init]) => {

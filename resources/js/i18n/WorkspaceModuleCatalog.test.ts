@@ -205,8 +205,9 @@ const FROZEN_LEGACY_KEY_COUNT = 656;
 // FF-71 (docs/49 Faz 6-7): asıl indirme + kota göstergesi — 11 anahtar. 636 → 647.
 //
 // FF-76 (docs/49 Faz 4, docs/101 A5): çoklu yükleme, ad düzeltme, gürültü katlanır — 9 anahtar. 647 → 656.
+// FF-82: yayın bölgesi sadeleşti (kip seçimi ve iki teknik cümle gitti).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '01436769a7b82b72108008be2b4efd06dc207a268fd5331e55fb78cb71292e5e';
+    'b32a3e327501216efa61dc0909349a43edee706fc972cbcec783c6fd90eb26dc';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
