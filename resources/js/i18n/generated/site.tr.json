@@ -70,5 +70,14 @@
     "site.pricing.perRestaurant.cta": "Bize yazın",
     "site.pricing.unsure": "Hangisi size uyar, emin değil misiniz?",
     "site.pricing.unsure.cta": "Bize sorun",
-    "site.skipToContent": "Ana içeriğe geç"
+    "site.skipToContent": "Ana içeriğe geç",
+    "site.title.emailVerified": "Zabuno — E-posta doğrulandı",
+    "site.title.forgotPassword": "Zabuno — Parolamı unuttum",
+    "site.title.invitation": "Zabuno — Ekip daveti",
+    "site.title.login": "Zabuno — Giriş",
+    "site.title.platform": "Zabuno — Platform Yönetimi",
+    "site.title.register": "Zabuno — Kayıt",
+    "site.title.resetPassword": "Zabuno — Parola sıfırlama",
+    "site.title.verifyEmail": "Zabuno — E-posta doğrulama",
+    "site.title.workspace": "Zabuno — Çalışma alanı"
 }

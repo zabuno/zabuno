@@ -295,3 +295,39 @@ msgstr "Ask us"
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr "Skip to main content"
+
+#: site:site.title.emailVerified
+msgid "site.title.emailVerified"
+msgstr "Zabuno — Email verified"
+
+#: site:site.title.forgotPassword
+msgid "site.title.forgotPassword"
+msgstr "Zabuno — Forgot password"
+
+#: site:site.title.invitation
+msgid "site.title.invitation"
+msgstr "Zabuno — Team invitation"
+
+#: site:site.title.login
+msgid "site.title.login"
+msgstr "Zabuno — Log in"
+
+#: site:site.title.platform
+msgid "site.title.platform"
+msgstr "Zabuno — Platform Admin"
+
+#: site:site.title.register
+msgid "site.title.register"
+msgstr "Zabuno — Register"
+
+#: site:site.title.resetPassword
+msgid "site.title.resetPassword"
+msgstr "Zabuno — Reset password"
+
+#: site:site.title.verifyEmail
+msgid "site.title.verifyEmail"
+msgstr "Zabuno — Verify your email"
+
+#: site:site.title.workspace
+msgid "site.title.workspace"
+msgstr "Zabuno — Workspace"

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Zabuno — Log in</title>
+    <title>{{ $st['titleLogin'] }}</title>
     @include('partials.theme-bootstrap')
     @include('partials.build-identity')
     @viteReactRefresh

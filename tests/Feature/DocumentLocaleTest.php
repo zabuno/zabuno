@@ -22,11 +22,17 @@ final class DocumentLocaleTest extends TestCase
 
     public function test_every_shell_derives_its_language_from_the_application_locale(): void
     {
-        config(['app.locale' => 'tr']);
+        /*
+            Dil ARTIK istekte bildirilir (FF-93): `NegotiateLocale` her
+            istekte tarayıcının `Accept-Language` başlığından seçer. Testin
+            ölçtüğü sözleşme değişmedi — belge dili/yönü şablonun kendi
+            kararı değil, locale'den türer — yalnız locale'in nereden geldiği
+            gerçek bir istemcinin yaptığı gibi ifade ediliyor.
+        */
         $checked = 0;
 
         foreach (['/', '/app', '/platform'] as $uri) {
-            $response = $this->get($uri);
+            $response = $this->withHeaders(['Accept-Language' => 'tr'])->get($uri);
 
             // Yalnız gerçekten belge döndüren kabuklar ölçülür: yetki
             // gerektiren yüzeyler 302 ile giriş sayfasına düşer ve o
@@ -71,9 +77,14 @@ final class DocumentLocaleTest extends TestCase
 
     public function test_an_rtl_locale_reaches_the_rendered_document(): void
     {
-        config(['app.locale' => 'ar']);
-
-        $response = $this->get('/');
+        /*
+            Dil ARTIK istekte bildirilir (FF-93): `NegotiateLocale` her
+            istekte tarayıcının `Accept-Language` başlığından seçer. Testin
+            ölçtüğü sözleşme değişmedi — belge dili/yönü şablonun kendi
+            kararı değil, locale'den türer — yalnız locale'in nereden geldiği
+            gerçek bir istemcinin yaptığı gibi ifade ediliyor.
+        */
+        $response = $this->withHeaders(['Accept-Language' => 'ar'])->get('/');
         $response->assertSuccessful();
 
         self::assertStringContainsString(

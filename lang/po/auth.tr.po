@@ -10,200 +10,200 @@ msgstr ""
 
 #: auth:auth.forgot_password.email
 msgid "auth.forgot_password.email"
-msgstr ""
+msgstr "E-posta"
 
 #: auth:auth.forgot_password.error.email
 msgid "auth.forgot_password.error.email"
-msgstr ""
+msgstr "Geçerli bir e-posta adresi girin."
 
 #: auth:auth.forgot_password.error.submit
 msgid "auth.forgot_password.error.submit"
-msgstr ""
+msgstr "İsteğinizi işleyemedik. Lütfen tekrar deneyin."
 
 #: auth:auth.forgot_password.heading
 msgid "auth.forgot_password.heading"
-msgstr ""
+msgstr "Parolanızı mı unuttunuz?"
 
 #: auth:auth.forgot_password.status.sent
 msgid "auth.forgot_password.status.sent"
-msgstr ""
+msgstr "Bu e-postaya ait bir hesap varsa, sıfırlama bağlantısı gönderildi."
 
 #: auth:auth.forgot_password.submit
 msgid "auth.forgot_password.submit"
-msgstr ""
+msgstr "Sıfırlama bağlantısı gönder"
 
 #: auth:auth.invitation_accept.email
 msgid "auth.invitation_accept.email"
-msgstr ""
+msgstr "Davet edilen e-posta"
 
 #: auth:auth.invitation_accept.error.submit
 msgid "auth.invitation_accept.error.submit"
-msgstr ""
+msgstr "Bu daveti kabul edemedik. Lütfen tekrar deneyin."
 
 #: auth:auth.invitation_accept.guest_body
 msgid "auth.invitation_accept.guest_body"
-msgstr ""
+msgstr "Bu daveti kabul etmek için giriş yapın."
 
 #: auth:auth.invitation_accept.heading
 msgid "auth.invitation_accept.heading"
-msgstr ""
+msgstr "Çalışma alanı daveti"
 
 #: auth:auth.invitation_accept.login_link
 msgid "auth.invitation_accept.login_link"
-msgstr ""
+msgstr "Giriş yap"
 
 #: auth:auth.invitation_accept.role
 msgid "auth.invitation_accept.role"
-msgstr ""
+msgstr "Rol"
 
 #: auth:auth.invitation_accept.submit
 msgid "auth.invitation_accept.submit"
-msgstr ""
+msgstr "Daveti kabul et"
 
 #: auth:auth.invitation_accept.unavailable_body
 msgid "auth.invitation_accept.unavailable_body"
-msgstr ""
+msgstr "Bu davet artık geçerli değil."
 
 #: auth:auth.invitation_accept.workspace
 msgid "auth.invitation_accept.workspace"
-msgstr ""
+msgstr "Çalışma alanı"
 
 #: auth:auth.login.email
 msgid "auth.login.email"
-msgstr ""
+msgstr "E-posta"
 
 #: auth:auth.login.error.email
 msgid "auth.login.error.email"
-msgstr ""
+msgstr "Geçerli bir e-posta adresi girin."
 
 #: auth:auth.login.error.password
 msgid "auth.login.error.password"
-msgstr ""
+msgstr "Parolanızı girin."
 
 #: auth:auth.login.error.submit
 msgid "auth.login.error.submit"
-msgstr ""
+msgstr "Giriş yapamadık. Lütfen tekrar deneyin."
 
 #: auth:auth.login.forgot_password
 msgid "auth.login.forgot_password"
-msgstr ""
+msgstr "Parolanızı mı unuttunuz?"
 
 #: auth:auth.login.heading
 msgid "auth.login.heading"
-msgstr ""
+msgstr "Giriş yap"
 
 #: auth:auth.login.password
 msgid "auth.login.password"
-msgstr ""
+msgstr "Parola"
 
 #: auth:auth.login.submit
 msgid "auth.login.submit"
-msgstr ""
+msgstr "Giriş yap"
 
 #: auth:auth.logout.error.submit
 msgid "auth.logout.error.submit"
-msgstr ""
+msgstr "Çıkış yapamadık. Lütfen tekrar deneyin."
 
 #: auth:auth.logout.submit
 msgid "auth.logout.submit"
-msgstr ""
+msgstr "Çıkış yap"
 
 #: auth:auth.register.email
 msgid "auth.register.email"
-msgstr ""
+msgstr "E-posta"
 
 #: auth:auth.register.error.email
 msgid "auth.register.error.email"
-msgstr ""
+msgstr "Geçerli bir e-posta adresi girin."
 
 #: auth:auth.register.error.name
 msgid "auth.register.error.name"
-msgstr ""
+msgstr "Adınızı girin."
 
 #: auth:auth.register.error.password
 msgid "auth.register.error.password"
-msgstr ""
+msgstr "Bir parola girin."
 
 #: auth:auth.register.error.submit
 msgid "auth.register.error.submit"
-msgstr ""
+msgstr "Hesabınızı oluşturamadık. Lütfen tekrar deneyin."
 
 #: auth:auth.register.heading
 msgid "auth.register.heading"
-msgstr ""
+msgstr "Hesabınızı oluşturun"
 
 #: auth:auth.register.name
 msgid "auth.register.name"
-msgstr ""
+msgstr "Ad"
 
 #: auth:auth.register.password
 msgid "auth.register.password"
-msgstr ""
+msgstr "Parola"
 
 #: auth:auth.register.password_confirmation
 msgid "auth.register.password_confirmation"
-msgstr ""
+msgstr "Parolayı doğrulayın"
 
 #: auth:auth.register.submit
 msgid "auth.register.submit"
-msgstr ""
+msgstr "Kaydol"
 
 #: auth:auth.reset_password.error.password
 msgid "auth.reset_password.error.password"
-msgstr ""
+msgstr "Yeni bir parola girin."
 
 #: auth:auth.reset_password.error.password_confirmation
 msgid "auth.reset_password.error.password_confirmation"
-msgstr ""
+msgstr "Yeni parolanızı doğrulayın."
 
 #: auth:auth.reset_password.error.submit
 msgid "auth.reset_password.error.submit"
-msgstr ""
+msgstr "Parolanızı sıfırlayamadık. Lütfen tekrar deneyin."
 
 #: auth:auth.reset_password.heading
 msgid "auth.reset_password.heading"
-msgstr ""
+msgstr "Parolanızı sıfırlayın"
 
 #: auth:auth.reset_password.password
 msgid "auth.reset_password.password"
-msgstr ""
+msgstr "Parola"
 
 #: auth:auth.reset_password.password_confirmation
 msgid "auth.reset_password.password_confirmation"
-msgstr ""
+msgstr "Parolayı doğrulayın"
 
 #: auth:auth.reset_password.submit
 msgid "auth.reset_password.submit"
-msgstr ""
+msgstr "Parolayı sıfırla"
 
 #: auth:auth.verification_pending.body
 msgid "auth.verification_pending.body"
-msgstr ""
+msgstr "{email} adresine bir doğrulama bağlantısı gönderdik. Hesabınızı etkinleştirmek için bağlantıya tıklayın."
 
 #: auth:auth.verification_pending.heading
 msgid "auth.verification_pending.heading"
-msgstr ""
+msgstr "Doğrulama bekleniyor"
 
 #: auth:auth.verification_pending.resend
 msgid "auth.verification_pending.resend"
-msgstr ""
+msgstr "Doğrulama e-postasını yeniden gönder"
 
 #: auth:auth.verification_pending.status.error
 msgid "auth.verification_pending.status.error"
-msgstr ""
+msgstr "Doğrulama e-postası yeniden gönderilemedi."
 
 #: auth:auth.verification_pending.status.sending
 msgid "auth.verification_pending.status.sending"
-msgstr ""
+msgstr "Doğrulama e-postası gönderiliyor…"
 
 #: auth:auth.verification_pending.status.sent
 msgid "auth.verification_pending.status.sent"
-msgstr ""
+msgstr "Doğrulama e-postası gönderildi."
 
 #: auth:auth.verified.body
 msgid "auth.verified.body"
-msgstr ""
+msgstr "E-posta adresiniz doğrulandı."
 
 #: auth:auth.verified.heading
 msgid "auth.verified.heading"
-msgstr ""
+msgstr "E-posta doğrulandı"

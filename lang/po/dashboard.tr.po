@@ -10,148 +10,148 @@ msgstr ""
 
 #: dashboard:dashboard.empty
 msgid "dashboard.empty"
-msgstr ""
+msgstr "Bu şube için henüz menü oluşturulmadı."
 
 #: dashboard:dashboard.empty.openMenu
 msgid "dashboard.empty.openMenu"
-msgstr ""
+msgstr "Menüyü aç"
 
 #: dashboard:dashboard.heading
 msgid "dashboard.heading"
-msgstr ""
+msgstr "Ana sayfa"
 
 #: dashboard:dashboard.loading
 msgid "dashboard.loading"
-msgstr ""
+msgstr "Özet yükleniyor…"
 
 #: dashboard:dashboard.now.allDone
 msgid "dashboard.now.allDone"
-msgstr ""
+msgstr "Her şey hazır. Misafirleriniz menüyü okutabilir."
 
 #: dashboard:dashboard.now.brand
 msgid "dashboard.now.brand"
-msgstr ""
+msgstr "Restoranınıza ad verin"
 
 #: dashboard:dashboard.now.heading
 msgid "dashboard.now.heading"
-msgstr ""
+msgstr "Şimdi"
 
 #: dashboard:dashboard.now.location
 msgid "dashboard.now.location"
-msgstr ""
+msgstr "Şubenizi ekleyin"
 
 #: dashboard:dashboard.now.menu
 msgid "dashboard.now.menu"
-msgstr ""
+msgstr "İlk ürününüzü ekleyin"
 
 #: dashboard:dashboard.now.openQr
 msgid "dashboard.now.openQr"
-msgstr ""
+msgstr "Karekodları aç"
 
 #: dashboard:dashboard.now.publication
 msgid "dashboard.now.publication"
-msgstr ""
+msgstr "Menünüzü yayınlayın"
 
 #: dashboard:dashboard.now.qr
 msgid "dashboard.now.qr"
-msgstr ""
+msgstr "Karekodlarınızı yazdırın"
 
 #: dashboard:dashboard.now.region
 msgid "dashboard.now.region"
-msgstr ""
+msgstr "Şimdi ne yapmalı"
 
 #: dashboard:dashboard.setup.brand
 msgid "dashboard.setup.brand"
-msgstr ""
+msgstr "Marka"
 
 #: dashboard:dashboard.setup.checking
 msgid "dashboard.setup.checking"
-msgstr ""
+msgstr "Kontrol ediliyor…"
 
 #: dashboard:dashboard.setup.heading
 msgid "dashboard.setup.heading"
-msgstr ""
+msgstr "Kurulum"
 
 #: dashboard:dashboard.setup.location
 msgid "dashboard.setup.location"
-msgstr ""
+msgstr "Şube"
 
 #: dashboard:dashboard.setup.menu
 msgid "dashboard.setup.menu"
-msgstr ""
+msgstr "Menü"
 
 #: dashboard:dashboard.setup.menu.empty
 msgid "dashboard.setup.menu.empty"
-msgstr ""
+msgstr "Henüz menü yok"
 
 #: dashboard:dashboard.setup.notConnected
 msgid "dashboard.setup.notConnected"
-msgstr ""
+msgstr "Henüz bağlanmadı."
 
 #: dashboard:dashboard.setup.publication
 msgid "dashboard.setup.publication"
-msgstr ""
+msgstr "Yayın"
 
 #: dashboard:dashboard.setup.published
 msgid "dashboard.setup.published"
-msgstr ""
+msgstr "Yayınlandı #{id}"
 
 #: dashboard:dashboard.setup.qr
 msgid "dashboard.setup.qr"
-msgstr ""
+msgstr "Karekod"
 
 #: dashboard:dashboard.setup.qr.activeCount
 msgid "dashboard.setup.qr.activeCount"
-msgstr ""
+msgstr "{count} etkin karekod"
 
 #: dashboard:dashboard.setup.qr.activeCount.plural
 msgid "dashboard.setup.qr.activeCount.plural"
-msgstr ""
+msgstr "{count} etkin karekod"
 
 #: dashboard:dashboard.setup.region
 msgid "dashboard.setup.region"
-msgstr ""
+msgstr "Kurulum durumu"
 
 #: dashboard:dashboard.setup.statusUnavailable
 msgid "dashboard.setup.statusUnavailable"
-msgstr ""
+msgstr "Durum okunamadı."
 
 #: dashboard:dashboard.setup.step.done
 msgid "dashboard.setup.step.done"
-msgstr ""
+msgstr "Tamam"
 
 #: dashboard:dashboard.setup.step.next
 msgid "dashboard.setup.step.next"
-msgstr ""
+msgstr "Sıradaki adım"
 
 #: dashboard:dashboard.setup.step.todo
 msgid "dashboard.setup.step.todo"
-msgstr ""
+msgstr "Henüz yapılmadı"
 
 #: dashboard:dashboard.stats.categories
 msgid "dashboard.stats.categories"
-msgstr ""
+msgstr "Kategori"
 
 #: dashboard:dashboard.stats.items
 msgid "dashboard.stats.items"
-msgstr ""
+msgstr "Menü ürünü"
 
 #: dashboard:dashboard.stats.visible
 msgid "dashboard.stats.visible"
-msgstr ""
+msgstr "Görünen ürün"
 
 #: dashboard:dashboard.table.caption
 msgid "dashboard.table.caption"
-msgstr ""
+msgstr "Menü ürün listesi"
 
 #: dashboard:dashboard.table.column.item
 msgid "dashboard.table.column.item"
-msgstr ""
+msgstr "Ürün"
 
 #: dashboard:dashboard.table.column.visible
 msgid "dashboard.table.column.visible"
-msgstr ""
+msgstr "Görünür"
 
 #: dashboard:dashboard.table.heading
 msgid "dashboard.table.heading"
-msgstr ""
+msgstr "Menüye bakış"

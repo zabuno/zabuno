@@ -441,7 +441,11 @@ final class AppServiceProvider extends ServiceProvider
         */
         View::addNamespace('help', resource_path('help'));
 
-        View::composer('public.*', function ($view): void {
+        /*
+            Kabuk ve kimlik şablonları da katalog metnine erişir (FF-93):
+            sekme başlıkları Blade'e sabit yazılıydı ve çevrilemiyordu.
+        */
+        View::composer(['public.*', 'auth.*', 'workspace-app', 'platform-app'], function ($view): void {
             $data = $view->getData();
 
             if (! array_key_exists('st', $data)) {
