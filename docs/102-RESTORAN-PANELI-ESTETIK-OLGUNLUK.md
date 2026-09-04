@@ -360,6 +360,46 @@ sıkışık 36px satır / 44px kontrol, standart 44/44, rahat 52/52. Yani dokunm
 hedefi hiçbir modda 44'ün altına inmiyor — yardım metninin sözü artık ekranda
 kanıtlı.
 
+## 5m. FF-129 — yükleme öncesi kırpma (2026-09-04)
+
+**Sorun.** Sunucudaki işleyici (`GdMediaAssetProcessor`) slotun oranına göre
+MERKEZDEN kırpıyor ve bunu kullanıcıya hiç sormuyordu. Bir yemek
+fotoğrafında bu masum bir varsayım değil: 3:1 bir kapak görselinde tabak çoğu
+zaman merkezde durmaz ve restoran sahibi yanlış çerçeveyi ancak yayımladıktan
+sonra görür.
+
+**Kırpma İSTEMCİDE yapılır ve bu bir güvenlik kararıdır.** Dosya kullanıcının
+kendi makinesindedir, sunucudan servis edilmez. Taranmamış bir dosyayı
+"önizleme" diye sunucudan geri vermek, virüs taramasının engellemeye
+çalıştığı şeyin ta kendisidir.
+
+**Araç imkânsız durumda hiç açılmaz.** Kırpma piksel EKLEMEZ; 800×600 bir
+fotoğraf 1200×400 isteyen bir slota hiçbir çerçeveyle sığmaz. Küçük bir
+kaynağa çerçeve seçtirip sonunda "olmadı" demek emeği boşa harcatmaktır.
+
+**Sessiz delik kapandı.** İstemci kontrolü yalnız kenarları en küçük ölçüyle
+karşılaştırıyordu: 1250×1250 bir fotoğraf, 1200×500 isteyen 3:1 bir slot için
+her iki kenarda da yeterli görünür — ama 3:1 çerçeve 1250×417 olur ve
+yükseklik yetmez. Kontrol artık ORANDAN SONRA yapılıyor.
+
+**Ekranı görünce çıkan hata.** Çerçeve kutusu doğru, sayı doğru, gösterilen
+kare YANLIŞTI: taban stil sayfası her görüntüye `max-width: 100%` koyuyor ve
+yakınlaştırılmış görüntü sessizce eziliyordu — yani önizleme, yüklenecek
+şeyden başka bir kare gösteriyordu. Hiçbir test bunu ölçmüyordu; yalnız
+ekrana bakınca görüldü.
+
+**Ekranda ölçüldü** (yeni `Surface/Workspace/ImageCropField` hikâyesi):
+2400×1200 kaynak, 3:1 slot → en geniş çerçeve 2400×800, en fazla 2 kat
+yakınlaştırma ve tam en küçük ölçüde 1200×400. Görüntü çerçevenin iki katı
+genişlikte ve seçilen kare önizlemede birebir görünüyor.
+
+**Hâlâ eksik olan (ürün değil, dağıtım).** Yüklenen dosya `accepted` olmadan
+işlenmez; `accepted` olması için virüs taramasının temiz dönmesi gerekir ve
+`MEDIA_SCANNER_DRIVER` varsayılanı `unavailable`'dır. Sunucuda ClamAV kurulu
+ve sürücü `clamav` değilse hiçbir görsel türev üretilmez — kütüphanede
+önizleme çıkmaz ve fotoğraf menüde kullanılamaz. Ürün doğru davranıyor
+(taranmamış dosyayı yayına almıyor); eksik olan dağıtımdır.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük
