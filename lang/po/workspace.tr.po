@@ -2008,6 +2008,10 @@ msgstr "Yayındaki menüye giden bir karekod oluşturun."
 msgid "workspace.publication.qrDestination.fields.unavailable"
 msgstr "Önce menünüzü yayınlayın — karekodun göstereceği yayınlanmış bir menü gerekir."
 
+#: workspace:workspace.publication.qrDestination.item.entrance
+msgid "workspace.publication.qrDestination.item.entrance"
+msgstr "Giriş kodu"
+
 #: workspace:workspace.publication.qrDestination.loadError
 msgid "workspace.publication.qrDestination.loadError"
 msgstr "Karekodlar yüklenemedi. Tekrar deneyin."
@@ -2055,6 +2059,14 @@ msgstr "Karekod hedefi"
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"
 msgstr "Devre dışı"
+
+#: workspace:workspace.publication.qrDestination.url.copied
+msgid "workspace.publication.qrDestination.url.copied"
+msgstr "Kopyalandı"
+
+#: workspace:workspace.publication.qrDestination.url.copy
+msgid "workspace.publication.qrDestination.url.copy"
+msgstr "Bağlantıyı kopyala"
 
 #: workspace:workspace.publication.qrExport.bulk
 msgid "workspace.publication.qrExport.bulk"
@@ -2219,6 +2231,10 @@ msgstr "SVG"
 #: workspace:workspace.publication.qrExport.noActive
 msgid "workspace.publication.qrExport.noActive"
 msgstr "Çıktısı alınacak etkin karekod yok."
+
+#: workspace:workspace.publication.qrExport.preview.failed
+msgid "workspace.publication.qrExport.preview.failed"
+msgstr "Önizleme üretilemedi. Kodunuz çalışmaya devam ediyor; başka bir biçim deneyin ya da sayfayı yenileyin."
 
 #: workspace:workspace.publication.qrExport.previewAlt
 msgid "workspace.publication.qrExport.previewAlt"

@@ -5,6 +5,23 @@
  * "6 seçenekten 2." bilgisini taşır. Donan davranış (tek seçim, varsayılan
  * classic, URL'e yansıması) değişmedi; yalnız doğru rol kullanılıyor.
  */
+/*
+ * FF-107 (2026-09-04, sahibin bildirimi: "bu sayfa atıl kalmış").
+ *
+ * Bu paketten önce bu dosya, ekranın ÖLÜ KONTROLLERİNİ sözleşme olarak
+ * donduruyordu: tek seçenekli devre dışı bir "hedef türü", hiçbir zaman
+ * etkinleşmeyen bir "bulk range" alanı, kalıcı devre dışı bir "Export"
+ * düğmesi ve PNG/SVG'de devre dışı çizilen kâğıt/yön alanları.
+ *
+ * Devre dışı bir kontrol ekranda yer kaplar, okunur, tıklanır ve hiçbir şey
+ * yapmaz — kullanıcı onu "bozuk" diye öğrenir. Tek seçenekli bir açılır liste
+ * ise soru sormayan bir sorudur.
+ *
+ * Yeni sözleşme: olmayan seçenek ÇİZİLMEZ. Kâğıt ve yön yalnız PDF'te
+ * görünür; hedef türü, bulk alanı ve ölü Export düğmesi kaldırıldı. Gerçek
+ * yetenekler (üç biçim, sekiz kâğıt, iki yön, altı tema) aynen ölçülmeye
+ * devam ediyor.
+ */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -85,6 +102,28 @@ function collectClassLists(root: HTMLElement): string[] {
     return classLists;
 }
 
+/*
+    AYARLAR ARTIK BİR KODUN AYARIDIR (FF-107).
+
+    Önceden biçim/kâğıt/yön formu, hiç QR kodu yokken de çiziliyordu: var
+    olmayan bir şeyin ayarları. Artık form seçili kodun yanında yaşıyor, o
+    yüzden bu testler gerçek bir kodla çiziyor.
+*/
+const ACTIVE_ITEM = {
+    id: 1,
+    workspaceId: 7,
+    locationId: 3,
+    menuId: 11,
+    destinationType: 'published',
+    token: 'tkn-1',
+    resolverUrl: 'https://zabuno.com/q/tkn-1',
+    state: 'active' as const,
+};
+
+function renderRegion() {
+    return render(<QrPrintExportRegion items={[ACTIVE_ITEM]} />);
+}
+
 describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => {
     let fetchSpy: ReturnType<typeof vi.fn>;
 
@@ -99,24 +138,13 @@ describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => 
     });
 
     it('exposes an accessible QR export configuration group', () => {
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         expect(screen.getByRole('group', { name: /qr export configuration/i })).toBeInTheDocument();
     });
 
-    it('fixes the Destination type to the single, non-selectable Published option (no Menu category choice)', () => {
-        render(<QrPrintExportRegion />);
-
-        const destination = screen.getByLabelText(/destination type/i) as HTMLSelectElement;
-        expect(destination).toBeDisabled();
-
-        const options = within(destination).getAllByRole('option');
-        expect(options.map((option) => option.textContent)).toEqual(['Published']);
-        expect(destination.value).toBe(options[0].getAttribute('value') ?? options[0].textContent);
-    });
-
     it('renders an enabled Output format select with PNG, SVG and PDF all selectable and none disabled', () => {
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         const outputFormat = screen.getByLabelText(/output format/i) as HTMLSelectElement;
         expect(outputFormat).toBeEnabled();
@@ -134,11 +162,19 @@ describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => 
         expect(outputFormat.value).toBe(png?.value ?? 'PNG');
     });
 
-    it('renders a disabled Paper size select with exactly A4, B4, A5, B5, A6, B6, A7, B7 in order', () => {
-        render(<QrPrintExportRegion />);
+    it('PDF seçilince kâğıt boyu tam olarak A4, B4, A5, B5, A6, B6, A7, B7 sırasını taşır', async () => {
+        const user = userEvent.setup();
+        renderRegion();
+
+        /*
+            FF-107: kâğıt ve yön artık PNG/SVG'de DEVRE DIŞI değil, HİÇ
+            ÇİZİLMİYOR. Ölçülen sözleşme aynı: bu iki alan yalnız PDF'in
+            özelliğidir ve PDF seçilene kadar bir soru sormazlar.
+        */
+        await user.selectOptions(screen.getByLabelText(/output format/i), 'pdf');
 
         const paperSize = screen.getByLabelText(/paper size/i) as HTMLSelectElement;
-        expect(paperSize).toBeDisabled();
+        expect(paperSize).toBeEnabled();
 
         const options = within(paperSize).getAllByRole('option');
         expect(options.map((option) => option.textContent)).toEqual([
@@ -153,26 +189,21 @@ describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => 
         ]);
     });
 
-    it('renders a disabled Orientation select with exactly Portrait, Landscape', () => {
-        render(<QrPrintExportRegion />);
+    it('PDF seçilince yön tam olarak Portrait, Landscape taşır', async () => {
+        const user = userEvent.setup();
+        renderRegion();
+
+        await user.selectOptions(screen.getByLabelText(/output format/i), 'pdf');
 
         const orientation = screen.getByLabelText(/orientation/i) as HTMLSelectElement;
-        expect(orientation).toBeDisabled();
+        expect(orientation).toBeEnabled();
 
         const options = within(orientation).getAllByRole('option');
         expect(options.map((option) => option.textContent)).toEqual(['Portrait', 'Landscape']);
     });
 
-    it('renders a disabled empty Bulk range or count input with no default value', () => {
-        render(<QrPrintExportRegion />);
-
-        const bulk = screen.getByLabelText(/bulk range or count/i) as HTMLInputElement;
-        expect(bulk).toBeDisabled();
-        expect(bulk.value).toBe('');
-    });
-
     it('renders the six theme buttons visible and enabled, with classic pressed by default, and no second theme select', () => {
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         const themeButtons = screen.getAllByRole('radio', { name: /theme$/i });
         expect(themeButtons).toHaveLength(6);
@@ -190,20 +221,14 @@ describe('QrPrintExportRegion configuration form (QR_EXPORT_CONFIG_RED)', () => 
         expect(screen.queryByLabelText(/theme/i, { selector: 'select' })).not.toBeInTheDocument();
     });
 
-    it('keeps the generic Export trigger disabled — PNG delivery is a direct img/download link, not a fetch-driven export button', () => {
-        render(<QrPrintExportRegion />);
-
-        expect(screen.getByRole('button', { name: /^export$/i })).toBeDisabled();
-    });
-
     it('performs zero fetch calls on mount', () => {
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         expect(fetchSpy).not.toHaveBeenCalled();
     });
 
     it('renders a configuration subtree free of images, urls, tokens, ids, versions, artifacts, numeric defaults, fixed-pixel or breakpoint classes', () => {
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         const configGroup = screen.getByRole('group', { name: /qr export configuration/i });
 
@@ -242,35 +267,31 @@ describe('QrPrintExportRegion paper size and orientation enable only for PDF (QR
         vi.unstubAllGlobals();
     });
 
-    it('keeps Paper size and Orientation disabled, defaulting to A4/Portrait, while Output format is PNG', () => {
-        render(<QrPrintExportRegion />);
+    it('PNG seçiliyken kâğıt ve yön HİÇ ÇİZİLMEZ', () => {
+        renderRegion();
 
-        const paperSize = screen.getByLabelText(/paper size/i) as HTMLSelectElement;
-        const orientation = screen.getByLabelText(/orientation/i) as HTMLSelectElement;
-
-        expect(paperSize).toBeDisabled();
-        expect(orientation).toBeDisabled();
-        expect(paperSize.value).toBe('A4');
-        expect(orientation.value.toLowerCase()).toBe('portrait');
+        /*
+            FF-107: kâğıt ve yön artık PNG/SVG'de DEVRE DIŞI değil, HİÇ
+            ÇİZİLMİYOR. Ölçülen sözleşme aynı: bu iki alan yalnız PDF'in
+            özelliğidir ve PDF seçilene kadar bir soru sormazlar.
+        */
+        expect(screen.queryByLabelText(/paper size/i)).toBeNull();
+        expect(screen.queryByLabelText(/orientation/i)).toBeNull();
     });
 
-    it('keeps Paper size and Orientation disabled while Output format is SVG', async () => {
+    it('SVG seçiliyken de kâğıt ve yön çizilmez', async () => {
         const user = userEvent.setup();
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
-        const outputFormat = screen.getByLabelText(/output format/i);
-        await user.selectOptions(outputFormat, 'svg');
+        await user.selectOptions(screen.getByLabelText(/output format/i), 'svg');
 
-        const paperSize = screen.getByLabelText(/paper size/i) as HTMLSelectElement;
-        const orientation = screen.getByLabelText(/orientation/i) as HTMLSelectElement;
-
-        expect(paperSize).toBeDisabled();
-        expect(orientation).toBeDisabled();
+        expect(screen.queryByLabelText(/paper size/i)).toBeNull();
+        expect(screen.queryByLabelText(/orientation/i)).toBeNull();
     });
 
     it('enables Paper size and Orientation, still defaulting to A4/Portrait with all 8 sizes and both orientations, once PDF is selected', async () => {
         const user = userEvent.setup();
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         const outputFormat = screen.getByLabelText(/output format/i);
         await user.selectOptions(outputFormat, 'pdf');
@@ -304,7 +325,7 @@ describe('QrPrintExportRegion paper size and orientation enable only for PDF (QR
 
     it('allows selecting a nondefault Paper size and Orientation once PDF is selected, as a controlled select', async () => {
         const user = userEvent.setup();
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         const outputFormat = screen.getByLabelText(/output format/i);
         await user.selectOptions(outputFormat, 'pdf');
@@ -319,30 +340,32 @@ describe('QrPrintExportRegion paper size and orientation enable only for PDF (QR
         expect(orientation.value.toLowerCase()).toBe('landscape');
     });
 
-    it('disables Paper size and Orientation again, resetting them to A4/Portrait, after switching back from PDF to PNG', async () => {
+    it("PDF'den PNG'ye dönünce kâğıt ve yön yeniden ÇİZİLMEZ ve varsayılana döner", async () => {
         const user = userEvent.setup();
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         const outputFormat = screen.getByLabelText(/output format/i);
         await user.selectOptions(outputFormat, 'pdf');
-
-        const paperSize = screen.getByLabelText(/paper size/i) as HTMLSelectElement;
-        const orientation = screen.getByLabelText(/orientation/i) as HTMLSelectElement;
-
-        await user.selectOptions(paperSize, 'B7');
-        await user.selectOptions(orientation, 'Landscape');
+        await user.selectOptions(screen.getByLabelText(/paper size/i), 'A6');
 
         await user.selectOptions(outputFormat, 'png');
 
-        expect(paperSize).toBeDisabled();
-        expect(orientation).toBeDisabled();
-        expect(paperSize.value).toBe('A4');
-        expect(orientation.value.toLowerCase()).toBe('portrait');
-    });
+        // Alanlar kalkar…
+        expect(screen.queryByLabelText(/paper size/i)).toBeNull();
+        expect(screen.queryByLabelText(/orientation/i)).toBeNull();
 
+        // …ve tekrar PDF seçilince kullanıcının eski seçimi DEĞİL, güvenli
+        // varsayılan gelir: A6 bir masa kartı için fazla küçüktür ve sessizce
+        // hatırlanması, sahibin farkında olmadan onu basması demekti.
+        await user.selectOptions(outputFormat, 'pdf');
+        expect((screen.getByLabelText(/paper size/i) as HTMLSelectElement).value).toBe('A4');
+        expect(
+            (screen.getByLabelText(/orientation/i) as HTMLSelectElement).value.toLowerCase(),
+        ).toBe('portrait');
+    });
     it('performs zero fetch calls while switching output format and controlling paper size/orientation', async () => {
         const user = userEvent.setup();
-        render(<QrPrintExportRegion />);
+        renderRegion();
 
         const outputFormat = screen.getByLabelText(/output format/i);
         await user.selectOptions(outputFormat, 'pdf');

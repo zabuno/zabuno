@@ -9,10 +9,9 @@ import {
     type QrPaperSize,
 } from './QrExportConfigForm';
 import type { QrCodeItem } from './qr-destination/QrCodeListItem';
-import { Button } from '../../../catalog/forms/micro/Button';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedControl';
-import { TextLink } from '../../../catalog/navigation/micro/TextLink';
+import { ActionLink } from '../../../catalog/navigation/micro/ActionLink';
 
 const THEME_ORDER = ['classic', 'minimal', 'bold', 'rounded', 'branded', 'highContrast'] as const;
 
@@ -98,8 +97,11 @@ export function QrPrintExportRegion({
     const selected = activeItems.find((item) => item.id === selectedId) ?? activeItems[0] ?? null;
     const isPdf = outputFormat === 'pdf';
     const previewFormat: 'png' | 'svg' = outputFormat === 'svg' ? 'svg' : 'png';
+    const [previewFailed, setPreviewFailed] = useState(false);
 
     function handleOutputFormatChange(format: QrOutputFormat) {
+        // Biçim değişince yeni bir görsel istenir; eski hata devredilmez.
+        setPreviewFailed(false);
         setOutputFormat(format);
         if (format !== 'pdf') {
             setPaperSize('A4');
@@ -140,53 +142,126 @@ export function QrPrintExportRegion({
                         </label>
                     ) : null}
 
-                    {isPdf ? null : (
-                        <img
-                            src={exportUrl(selected, previewFormat, false, theme)}
-                            alt={t('workspace.publication.qrExport.previewAlt')}
-                            className="h-auto w-full max-w-xs"
+                    {/*
+                        AYARLAR ÖNİZLEMENİN ÜSTÜNDE.
+
+                        Önceki dizilimde biçim/kâğıt/yön, kendi ürettikleri
+                        önizlemenin ve indirme bağlantısının ALTINDA duruyordu:
+                        sebep sonucun altındaydı ve kullanıcı kontrolü hiç
+                        bulmuyordu. Yazdırma deneyiminin kuralı, ayarların
+                        önizlemeye BAĞLI olmasıdır (Microsoft UX Guide).
+                    */}
+                    <QrExportConfigForm
+                        outputFormat={outputFormat}
+                        onOutputFormatChange={handleOutputFormatChange}
+                        paperSize={paperSize}
+                        onPaperSizeChange={setPaperSize}
+                        orientation={orientation}
+                        onOrientationChange={setOrientation}
+                    />
+
+                    {/*
+                        TEMA, ÖNİZLEMENİN YANINDA.
+
+                        Önceden tema seçici, kontrol ettiği görselden iki
+                        bölüm uzakta — toplu sihirbazın ALTINDA — duruyordu.
+                        Kâğıt boyu ile tema, "bu ne basacak" sorusunun iki
+                        yarısıdır; ikisini ayırmak, kullanıcının değiştirdiği
+                        şeyin sonucunu görmemesi demekti.
+                    */}
+                    <span className="flex flex-col gap-[var(--space-2)]">
+                        <h4 className="text-body font-semibold text-fg">
+                            {t('workspace.publication.qrExport.themes.heading')}
+                        </h4>
+                        <SegmentedControl
+                            label={t('workspace.publication.qrExport.themes.heading')}
+                            value={theme}
+                            options={THEME_ORDER.map((key) => ({
+                                value: key,
+                                label: t(THEME_LABEL_KEYS[key]),
+                            }))}
+                            onChange={setTheme}
                         />
+                    </span>
+
+                    {/*
+                        QR BİR TESLİMATTIR, hata ayıklama artığı değil.
+
+                        Önceden çıplak bir `<img>` kartın üstünde yüzüyordu.
+                        Beyaz plaka hem görsel bir çerçeve hem de İŞLEVSEL bir
+                        gerekliliktir: karekodun taranabilmesi için etrafında
+                        açık renkli sessiz bölge şarttır (ISO/IEC 18004: 4
+                        modül). Koyu temada saydam bir kod taranamazdı.
+                    */}
+                    {isPdf ? null : (
+                        <span className="flex w-fit rounded-[var(--radius-lg)] border border-border bg-white p-[var(--space-4)]">
+                            {previewFailed ? (
+                                /*
+                                    TESLİMATIN DA BİR DURUMU OLMALI.
+
+                                    Görsel üretilemediğinde tarayıcının kırık
+                                    resim simgesi kalıyordu: sayfadaki her
+                                    şeyin bir hâli varken, sahibin buraya
+                                    gelme sebebi olan şeyin yoktu.
+                                */
+                                <span
+                                    role="status"
+                                    className="flex h-[13.75rem] w-[13.75rem] items-center justify-center p-[var(--space-4)] text-center text-meta text-fg-danger"
+                                >
+                                    {t('workspace.publication.qrExport.preview.failed')}
+                                </span>
+                            ) : (
+                                <img
+                                    key={exportUrl(selected, previewFormat, false, theme)}
+                                    src={exportUrl(selected, previewFormat, false, theme)}
+                                    alt={t('workspace.publication.qrExport.previewAlt')}
+                                    width={220}
+                                    height={220}
+                                    onError={() => setPreviewFailed(true)}
+                                    className="h-[13.75rem] w-[13.75rem]"
+                                />
+                            )}
+                        </span>
                     )}
 
-                    <TextLink
-                        href={
-                            isPdf
-                                ? pdfExportUrl(selected, paperSize, orientation, theme)
-                                : exportUrl(selected, previewFormat, true, theme)
-                        }
-                        className="self-start text-body"
-                    >
-                        {t('workspace.publication.qrExport.downloadButton')}{' '}
-                        {t(
-                            isPdf
-                                ? 'workspace.publication.qrExport.formats.pdf'
-                                : previewFormat === 'svg'
-                                  ? 'workspace.publication.qrExport.formats.svg'
-                                  : 'workspace.publication.qrExport.formats.png',
-                        )}
-                    </TextLink>
-
-                    {isPdf ? (
-                        <TextLink
-                            href={pdfExportUrl(selected, paperSize, orientation, theme, false)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="self-start text-body"
+                    {/*
+                        İNDİRME sayfanın BİRİNCİL eylemidir: sahip buraya
+                        yayınlamak için değil, BASMAK için gelir. Önceden
+                        gövde metniyle aynı ağırlıkta bir bağlantıydı ve
+                        marka vurgusu, yılda bir kez kullanılan toplu
+                        sihirbaza harcanmıştı.
+                    */}
+                    <span className="flex flex-wrap items-center gap-[var(--space-2)]">
+                        <ActionLink
+                            href={
+                                isPdf
+                                    ? pdfExportUrl(selected, paperSize, orientation, theme)
+                                    : exportUrl(selected, previewFormat, true, theme)
+                            }
                         >
-                            {t('workspace.publication.qrExport.printButton')}
-                        </TextLink>
-                    ) : null}
+                            {t('workspace.publication.qrExport.downloadButton')}{' '}
+                            {t(
+                                isPdf
+                                    ? 'workspace.publication.qrExport.formats.pdf'
+                                    : previewFormat === 'svg'
+                                      ? 'workspace.publication.qrExport.formats.svg'
+                                      : 'workspace.publication.qrExport.formats.png',
+                            )}
+                        </ActionLink>
+
+                        {isPdf ? (
+                            <ActionLink
+                                variant="secondary"
+                                href={pdfExportUrl(selected, paperSize, orientation, theme, false)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {t('workspace.publication.qrExport.printButton')}
+                            </ActionLink>
+                        ) : null}
+                    </span>
                 </div>
             )}
-
-            <QrExportConfigForm
-                outputFormat={outputFormat}
-                onOutputFormatChange={handleOutputFormatChange}
-                paperSize={paperSize}
-                onPaperSizeChange={setPaperSize}
-                orientation={orientation}
-                onOrientationChange={setOrientation}
-            />
 
             <BulkQrWizardFields
                 workspaceId={workspaceId}
@@ -195,25 +270,6 @@ export function QrPrintExportRegion({
                 hasCurrentPublication={hasCurrentPublication}
                 onCreated={onBulkCreated}
             />
-
-            <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
-                {t('workspace.publication.qrExport.themes.heading')}
-            </p>
-            <SegmentedControl
-                label={t('workspace.publication.qrExport.themes.heading')}
-                value={theme}
-                options={THEME_ORDER.map((key) => ({
-                    value: key,
-                    label: t(THEME_LABEL_KEYS[key]),
-                }))}
-                onChange={setTheme}
-            />
-
-            <div className="flex flex-wrap gap-2">
-                <Button type="button" color="light" disabled className="self-start">
-                    {t('workspace.publication.qrExport.exportButton')}
-                </Button>
-            </div>
         </div>
     );
 }

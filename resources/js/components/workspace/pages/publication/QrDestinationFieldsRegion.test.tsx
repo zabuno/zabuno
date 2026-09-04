@@ -403,8 +403,19 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
 
         await waitFor(() => {
             expect(within(region).getByText(/disabled/i)).toBeInTheDocument();
-            expect(within(region).queryByRole('link')).toBeNull();
         });
+
+        /*
+            GÜNCELLENDİ (FF-107): devre dışı satır artık KİMLİĞİNİ KORUR.
+
+            Eskiden satır yalnız "Disabled" kelimesine iniyordu; birden fazla
+            kod varken hangisinin kapatıldığı ve "yeniden aç"ın hangi karta
+            ait olduğu anlaşılmıyordu. Ölçülen asıl sözleşme, kapatılan kodun
+            MİSAFİRE ÇALIŞAN bir adres sunmamasıdır — o da sunucunun işidir
+            ve `state` ile ölçülür; satırın kendi kimliğini silmesi bir kanıt
+            değil, bir kayıptı.
+        */
+        expect(within(region).getByText(/disabled/i)).toBeInTheDocument();
     });
 
     it('renders no invented token/URL before any real server response', () => {

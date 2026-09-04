@@ -327,7 +327,13 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             className="flex flex-col gap-3"
             aria-label={t('workspace.publication.qrExport.bulkWizard.heading')}
         >
-            <legend className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+            {/*
+                Bölüm başlığı GERÇEK bir başlık gibi yazılır. Büyük harfli
+                `text-meta` bu sistemde ölçüm etiketi ve tablo başlığı için
+                ayrılmıştır (`docs/102` §1); bölüm başlığı olarak kullanılması
+                tek kartın içinde dört ayrı başlık dili doğuruyordu.
+            */}
+            <legend className="text-body font-semibold text-fg">
                 {t('workspace.publication.qrExport.bulkWizard.heading')}
             </legend>
 
@@ -500,8 +506,19 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                 </div>
             ) : null}
 
+            {/*
+                İKİNCİL AĞIRLIK (FF-107).
+
+                Bu düğme marka rengini taşıyordu ve sayfanın en yüksek sesli
+                kontrolüydü — oysa toplu masa kodu üretimi bir restoranın
+                ömründe bir ya da iki kez yaptığı iştir. Sayfanın birincil
+                eylemi İNDİRMEDİR: sahip buraya yayınlamak için değil, basmak
+                için gelir. Marka vurgusu tek eylem için ayrılmıştır
+                (`docs/101` A1).
+            */}
             <Button
                 type="button"
+                color="light"
                 onClick={handleSubmit}
                 disabled={!canSubmit}
                 className="self-start"

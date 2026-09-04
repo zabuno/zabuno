@@ -79,10 +79,20 @@ export const publication = {
     'workspace.publication.qrDestination.move.error':
         'The code could not be moved. The printed card still works as before.',
     'workspace.publication.qrDestination.state.disabled': 'Disabled',
+    /*
+        Kodun İNSAN ADI (FF-107). Ham çözümleyici adresi satırın başlığıydı;
+        bir restoran sahibi 43 karakterlik bir dizeden hiçbir şey öğrenmez.
+    */
+    'workspace.publication.qrDestination.item.entrance': 'Entrance code',
+    'workspace.publication.qrDestination.url.copy': 'Copy link',
+    'workspace.publication.qrDestination.url.copied': 'Copied',
     'workspace.publication.qrExport.region': 'QR print export',
     'workspace.publication.qrExport.unavailable': 'QR print export is not available yet.',
     'workspace.publication.qrExport.noActive': 'No active QR code to export yet.',
     'workspace.publication.qrExport.selector': 'QR code',
+    /* Teslimatın da bir hâli olmalı (FF-107). */
+    'workspace.publication.qrExport.preview.failed':
+        'The preview could not be produced. Your code still works; try another format or reload.',
     'workspace.publication.qrExport.previewAlt': 'QR code preview',
     'workspace.publication.qrExport.downloadPngLink': 'Download PNG',
     'workspace.publication.qrExport.formats.heading': 'Export formats',
