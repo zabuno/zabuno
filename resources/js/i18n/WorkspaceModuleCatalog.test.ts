@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 718;
+const FROZEN_LEGACY_KEY_COUNT = 742;
 
-// FF-114: tek kod bölümünün ikincil başlığı (ekran bir kütük, üreteç değil).
+// FF-120: masa kartı sihirbazı — tasarım, ölçü, yön ve indirme metinleri.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'ce1028412473c93497efbcbf4e6f3e3cdec7e564b094ba36b634f5b54fb63c0e';
+    '54c99fc935c6bbfeeb4abe4b2d6ad08e1a3cd490e77b67d07744665ee550f990';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

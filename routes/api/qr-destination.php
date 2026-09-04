@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\QrDestination\DisableQrCodeController;
 use App\Http\Controllers\QrDestination\EnableQrCodeController;
+use App\Http\Controllers\QrDestination\ExportQrCardController;
 use App\Http\Controllers\QrDestination\ExportQrCodePdfController;
 use App\Http\Controllers\QrDestination\ExportQrCodePngController;
 use App\Http\Controllers\QrDestination\ExportQrCodeSvgController;
@@ -27,6 +28,16 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/qr-codes/{qrCode}/export.png', ExportQrCodePngController::class);
     Route::get('/workspaces/{workspace}/qr-codes/{qrCode}/export.svg', ExportQrCodeSvgController::class);
     Route::get('/workspaces/{workspace}/qr-codes/{qrCode}/export.pdf', ExportQrCodePdfController::class);
+    /*
+        MASADAKİ KART (FF-120) — tek kodun eski `export.pdf` ucundan AYRIDIR:
+        o, A4'ün ortasına konan çıplak bir kare (duvara asılacak afiş); bu ise
+        kesilip pleksiglasa girecek, marka kimliği taşıyan bir kart.
+
+        Biçim ADRESTEDİR, sorguda değil: `card.svg` ile `card.pdf` iki ayrı
+        çıktıdır ve önbellek de onları ayrı görmelidir.
+    */
+    Route::get('/workspaces/{workspace}/qr-codes/{qrCode}/card.{format}', ExportQrCardController::class)
+        ->where('format', 'svg|pdf');
     /*
         BASILABİLİR DESTE (`docs/104` Döngü 8) — tek kodun kâğıdından ayrı bir
         iş: kesilip masalara dağıtılacak kartlar. Her kart bir PNG üretir,

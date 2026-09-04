@@ -391,7 +391,16 @@ describe('QrPrintExportRegion output format switching to real PDF export (QR_PDF
 
         await user.selectOptions(outputFormatSelect, 'pdf');
 
-        expect(within(region).queryByRole('img')).not.toBeInTheDocument();
+        /*
+            İDDİA HAM KODUN ÖNİZLEMESİNE AİT (FF-120).
+
+            Bölgede artık ikinci bir görsel var: masaya konacak KARTIN
+            önizlemesi. "Bölgede hiç resim yok" iddiası o kart geldiği anda
+            yanlış olur ve ölçmek istediği şeyi ölçmez. Ölçülen sözleşme
+            değişmedi: PDF seçildiğinde HAM KODUN önizlemesi kalkar, çünkü bir
+            PDF `<img>` ile gösterilemez.
+        */
+        expect(within(region).queryByAltText(/qr code preview|karekod önizlemesi/i)).toBeNull();
 
         const pdfDownloadLink = within(region).getByRole('link', { name: /download pdf/i });
         expect(pdfDownloadLink).toHaveAttribute(

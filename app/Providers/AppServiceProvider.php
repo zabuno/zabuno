@@ -40,6 +40,7 @@ use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\BulkQrCreationPort;
+use App\Application\QrDestination\Port\QrCardExportPort;
 use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Application\QrDestination\Port\QrCodePdfExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
@@ -108,6 +109,7 @@ use App\Infrastructure\Publication\Persistence\EloquentPublicMenuAddress;
 use App\Infrastructure\QrDestination\Persistence\EloquentBulkQrCreationRepository;
 use App\Infrastructure\QrDestination\Persistence\EloquentQrCodeRepository;
 use App\Infrastructure\QrDestination\Rendering\EndroidQrCodeImageExportAdapter;
+use App\Infrastructure\QrDestination\Rendering\MpdfQrCardPdfAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCodePdfExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrPrintSheetAdapter;
 use App\Infrastructure\Reference\IcuMarketReference;
@@ -379,6 +381,8 @@ final class AppServiceProvider extends ServiceProvider
         // Tek kodun kâğıdı ile kesilip dağıtılacak kart destesi AYRI işlerdir
         // (`docs/104` Döngü 8).
         $this->app->bind(QrPrintSheetPort::class, MpdfQrPrintSheetAdapter::class);
+        // Kart PDF'i, kartın SVG'sinden üretilir — ikinci bir besteci yok.
+        $this->app->bind(QrCardExportPort::class, MpdfQrCardPdfAdapter::class);
         $this->app->bind(AnalyticsRepositoryPort::class, EloquentAnalyticsRepository::class);
         $this->app->bind(TeamMemberRepositoryPort::class, EloquentTeamMemberRepository::class);
         $this->app->bind(TeamInvitationRepositoryPort::class, EloquentTeamInvitationRepository::class);

@@ -94,6 +94,10 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.png||App\Http\Controllers\QrDestination\ExportQrCodePngController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.svg||App\Http\Controllers\QrDestination\ExportQrCodeSvgController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.pdf||App\Http\Controllers\QrDestination\ExportQrCodePdfController|api,auth:sanctum,verified',
+        // FF-120: masaya konacak KART — tek kodun `export.pdf`'inden ayrı bir
+        // çıktı. O, A4'ün ortasına konan çıplak bir kare; bu, kesilip
+        // pleksiglasa girecek, marka kimliği taşıyan bir kart.
+        'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/card.{format}||App\Http\Controllers\QrDestination\ExportQrCardController|api,auth:sanctum,verified',
         // FF-111: kesilip masalara dağıtılacak kart destesi. Kendi hız
         // sınırını taşır — her kart ayrı bir PNG üretir.
         'GET|api/workspaces/{workspace}/brand/locations/{location}/qr-codes/print.pdf||App\Http\Controllers\QrDestination\ExportQrPrintSheetController|api,auth:sanctum,throttle:10,1,verified',

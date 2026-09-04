@@ -1972,6 +1972,102 @@ msgstr ""
 msgid "workspace.publication.publishedSnapshot.region"
 msgstr ""
 
+#: workspace:workspace.publication.qrCard.back
+msgid "workspace.publication.qrCard.back"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.explanation
+msgid "workspace.publication.qrCard.explanation"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.export.help
+msgid "workspace.publication.qrCard.export.help"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.export.noPng
+msgid "workspace.publication.qrCard.export.noPng"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.export.pdf
+msgid "workspace.publication.qrCard.export.pdf"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.export.svg
+msgid "workspace.publication.qrCard.export.svg"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.heading
+msgid "workspace.publication.qrCard.heading"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.headline.default
+msgid "workspace.publication.qrCard.headline.default"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.headline.label
+msgid "workspace.publication.qrCard.headline.label"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.next
+msgid "workspace.publication.qrCard.next"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.orientation.label
+msgid "workspace.publication.qrCard.orientation.label"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.orientation.landscape
+msgid "workspace.publication.qrCard.orientation.landscape"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.orientation.portrait
+msgid "workspace.publication.qrCard.orientation.portrait"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.preview.alt
+msgid "workspace.publication.qrCard.preview.alt"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.preview.size
+msgid "workspace.publication.qrCard.preview.size"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.size.paper
+msgid "workspace.publication.qrCard.size.paper"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.size.ratio
+msgid "workspace.publication.qrCard.size.ratio"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.step.design
+msgid "workspace.publication.qrCard.step.design"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.step.export
+msgid "workspace.publication.qrCard.step.export"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.step.size
+msgid "workspace.publication.qrCard.step.size"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.theme.banner
+msgid "workspace.publication.qrCard.theme.banner"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.theme.classic
+msgid "workspace.publication.qrCard.theme.classic"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.theme.frame
+msgid "workspace.publication.qrCard.theme.frame"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.theme.minimal
+msgid "workspace.publication.qrCard.theme.minimal"
+msgstr ""
+
 #: workspace:workspace.publication.qrDestination.createButton
 msgid "workspace.publication.qrDestination.createButton"
 msgstr ""
@@ -2292,6 +2388,10 @@ msgstr ""
 msgid "workspace.publication.qrExport.printButton"
 msgstr ""
 
+#: workspace:workspace.publication.qrExport.raw.heading
+msgid "workspace.publication.qrExport.raw.heading"
+msgstr ""
+
 #: workspace:workspace.publication.qrExport.region
 msgid "workspace.publication.qrExport.region"
 msgstr ""
@@ -2314,10 +2414,6 @@ msgstr ""
 
 #: workspace:workspace.publication.qrExport.sheet.heading
 msgid "workspace.publication.qrExport.sheet.heading"
-msgstr ""
-
-#: workspace:workspace.publication.qrExport.single.heading
-msgid "workspace.publication.qrExport.single.heading"
 msgstr ""
 
 #: workspace:workspace.publication.qrExport.themes.bold

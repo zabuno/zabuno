@@ -1972,6 +1972,102 @@ msgstr "{publishedAt} tarihinde yayınlandı"
 msgid "workspace.publication.publishedSnapshot.region"
 msgstr "Yayınlanan menü"
 
+#: workspace:workspace.publication.qrCard.back
+msgid "workspace.publication.qrCard.back"
+msgstr "Geri"
+
+#: workspace:workspace.publication.qrCard.explanation
+msgid "workspace.publication.qrCard.explanation"
+msgstr "Kesip masadaki standın içine koyacağınız kart. Kendi adınızı ve renginizi taşır; kodun kendisi taranabilir kalsın diye her zaman beyaz üstüne siyah basılır."
+
+#: workspace:workspace.publication.qrCard.export.help
+msgid "workspace.publication.qrCard.export.help"
+msgstr "İki dosya da ekranda yazan ölçüde basılır. PDF doğrudan yazıcıya gider; matbaanız isterse SVG'yi tasarım programında açar."
+
+#: workspace:workspace.publication.qrCard.export.noPng
+msgid "workspace.publication.qrCard.export.noPng"
+msgstr "Burada bilerek PNG yok: raster bir görsel 4 cm'lik bir kodun modül kenarlarını bulanıklaştırır. Baskı için PDF ya da SVG kullanın."
+
+#: workspace:workspace.publication.qrCard.export.pdf
+msgid "workspace.publication.qrCard.export.pdf"
+msgstr "Kartı indir (PDF)"
+
+#: workspace:workspace.publication.qrCard.export.svg
+msgid "workspace.publication.qrCard.export.svg"
+msgstr "Kartı indir (SVG)"
+
+#: workspace:workspace.publication.qrCard.heading
+msgid "workspace.publication.qrCard.heading"
+msgstr "Masa kartı"
+
+#: workspace:workspace.publication.qrCard.headline.default
+msgid "workspace.publication.qrCard.headline.default"
+msgstr "Menü için okutun"
+
+#: workspace:workspace.publication.qrCard.headline.label
+msgid "workspace.publication.qrCard.headline.label"
+msgstr "Kartın üzerindeki cümle"
+
+#: workspace:workspace.publication.qrCard.next
+msgid "workspace.publication.qrCard.next"
+msgstr "İleri"
+
+#: workspace:workspace.publication.qrCard.orientation.label
+msgid "workspace.publication.qrCard.orientation.label"
+msgstr "Yön"
+
+#: workspace:workspace.publication.qrCard.orientation.landscape
+msgid "workspace.publication.qrCard.orientation.landscape"
+msgstr "Yatay"
+
+#: workspace:workspace.publication.qrCard.orientation.portrait
+msgid "workspace.publication.qrCard.orientation.portrait"
+msgstr "Dikey"
+
+#: workspace:workspace.publication.qrCard.preview.alt
+msgid "workspace.publication.qrCard.preview.alt"
+msgstr "Basılacak kartın önizlemesi"
+
+#: workspace:workspace.publication.qrCard.preview.size
+msgid "workspace.publication.qrCard.preview.size"
+msgstr "{width} × {height} mm basılır"
+
+#: workspace:workspace.publication.qrCard.size.paper
+msgid "workspace.publication.qrCard.size.paper"
+msgstr "Kâğıt boyu — standart bir sayfaya basmak için"
+
+#: workspace:workspace.publication.qrCard.size.ratio
+msgid "workspace.publication.qrCard.size.ratio"
+msgstr "Kart oranı — pleksiglas stant için, uzun kenar 150 mm"
+
+#: workspace:workspace.publication.qrCard.step.design
+msgid "workspace.publication.qrCard.step.design"
+msgstr "Tasarım"
+
+#: workspace:workspace.publication.qrCard.step.export
+msgid "workspace.publication.qrCard.step.export"
+msgstr "İndir"
+
+#: workspace:workspace.publication.qrCard.step.size
+msgid "workspace.publication.qrCard.step.size"
+msgstr "Ölçü"
+
+#: workspace:workspace.publication.qrCard.theme.banner
+msgid "workspace.publication.qrCard.theme.banner"
+msgstr "Şeritli"
+
+#: workspace:workspace.publication.qrCard.theme.classic
+msgid "workspace.publication.qrCard.theme.classic"
+msgstr "Klasik"
+
+#: workspace:workspace.publication.qrCard.theme.frame
+msgid "workspace.publication.qrCard.theme.frame"
+msgstr "Çerçeveli"
+
+#: workspace:workspace.publication.qrCard.theme.minimal
+msgid "workspace.publication.qrCard.theme.minimal"
+msgstr "Sade"
+
 #: workspace:workspace.publication.qrDestination.createButton
 msgid "workspace.publication.qrDestination.createButton"
 msgstr "Oluştur"
@@ -2292,6 +2388,10 @@ msgstr "Karekod önizlemesi"
 msgid "workspace.publication.qrExport.printButton"
 msgstr "Yazdır"
 
+#: workspace:workspace.publication.qrExport.raw.heading
+msgid "workspace.publication.qrExport.raw.heading"
+msgstr "Kodun ham dosyasını indir (PNG, SVG, PDF)"
+
 #: workspace:workspace.publication.qrExport.region
 msgid "workspace.publication.qrExport.region"
 msgstr "Karekod baskı çıktısı"
@@ -2315,10 +2415,6 @@ msgstr "{codes} kod, {pages} A4 sayfada, sayfa başına 12 kart. Her kod 4 cm ba
 #: workspace:workspace.publication.qrExport.sheet.heading
 msgid "workspace.publication.qrExport.sheet.heading"
 msgstr "Masalarınız için baskı sayfası"
-
-#: workspace:workspace.publication.qrExport.single.heading
-msgid "workspace.publication.qrExport.single.heading"
-msgstr "Tek bir kodu ayrı basın ya da indirin"
 
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
@@ -2346,7 +2442,7 @@ msgstr "Marka renginizi belirleyin"
 
 #: workspace:workspace.publication.qrExport.themes.heading
 msgid "workspace.publication.qrExport.themes.heading"
-msgstr "Temalar"
+msgstr "Kodun kendi rengi"
 
 #: workspace:workspace.publication.qrExport.themes.highContrast
 msgid "workspace.publication.qrExport.themes.highContrast"

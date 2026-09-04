@@ -14,6 +14,7 @@ import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedContr
 import { ActionLink } from '../../../catalog/navigation/micro/ActionLink';
 import type { QrCreateReasonKind } from './QrDestinationFieldsRegion';
 import { QrPrintPreview } from './QrPrintPreview';
+import { QrCardWizard } from './QrCardWizard';
 import { isBrandColorPrintable } from '../../../../lib/qrContrast';
 
 /** `App\\Domain\\QrDestination\\QrPrintSheet` ile aynı sayılar. */
@@ -229,14 +230,14 @@ export function QrPrintExportRegion({
                     />
 
                     {/*
-                            TEMA, ÖNİZLEMENİN YANINDA.
-
-                            Önceden tema seçici, kontrol ettiği görselden iki
-                            bölüm uzakta — toplu sihirbazın ALTINDA — duruyordu.
-                            Kâğıt boyu ile tema, "bu ne basacak" sorusunun iki
-                            yarısıdır; ikisini ayırmak, kullanıcının değiştirdiği
-                            şeyin sonucunu görmemesi demekti.
-                        */}
+                        BURASI KODUN KENDİSİNİN RENGİ — kartın teması DEĞİL
+                        (FF-120). İkisi bir zamanlar aynı kelimeyle
+                        adlandırılıyordu ("Themes") ve sahibin sorduğu şey
+                        hiçbir zaman bu değildi: o, masaya konacak kartın
+                        görünümünü soruyordu. Kart artık kendi sihirbazında;
+                        burada kalan şey, ham dosyayı indirenler için kodun
+                        palet seçeneği.
+                    */}
                     <span className="flex flex-col gap-[var(--space-2)]">
                         <h4 className="text-body font-semibold text-fg">
                             {t('workspace.publication.qrExport.themes.heading')}
@@ -402,6 +403,16 @@ export function QrPrintExportRegion({
             </h3>
 
             {/*
+                MASADAKİ KART BİRİNCİL İŞTİR (FF-120, sahibin talebi).
+
+                Sahip buraya "dosya biçimi seçmeye" gelmez; masaya koyacağı
+                kartı basmaya gelir. Eski dizilimde en üstte biçim/kâğıt/yön
+                ve karekodun piksel renkleri vardı — hiçbiri onun sorduğu soru
+                değildi.
+            */}
+            {selected === null ? null : <QrCardWizard item={selected} />}
+
+            {/*
                 DESTE, TEK KARTTAN ÖNCE GELİR.
 
                 Sahibin buraya gelme sebebi çoğunlukla "masalara koyacak
@@ -455,7 +466,7 @@ export function QrPrintExportRegion({
             {sheetCount > 1 ? (
                 <details className="rounded-[var(--radius-md)] border border-border p-[var(--space-3)]">
                     <summary className="cursor-pointer text-body font-medium text-fg-secondary">
-                        {t('workspace.publication.qrExport.single.heading')}
+                        {t('workspace.publication.qrExport.raw.heading')}
                     </summary>
                     <div className="flex flex-col gap-[var(--space-3)] pt-[var(--space-3)]">
                         {singleCodeSection}
