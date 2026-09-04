@@ -36,13 +36,24 @@ final class PublicMenuAddressTest extends TestCase
 
         self::assertSame('abc1234567', $address->key);
         self::assertSame('cigkofteci-omer-subesi', $address->slug);
-        self::assertSame('/menu/abc1234567/cigkofteci-omer-subesi', $address->path());
+        /*
+            ADRES BİÇİMİ 2026-09-04'te DEĞİŞTİ (FF-116, sahibin talebi).
+
+            Eski hâl `/menu/abc1234567/cigkofteci-omer-subesi` idi: en anlamlı
+            parça (işletme adı) en sonda, en anlamsız parça (10 karakterlik
+            anahtar) ortadaydı. Kartvizite yazıldığında ya da telefonda
+            söylendiğinde önce anlamsız kısım geliyordu. Baştaki tür segmenti
+            ayrıca kiracıya kendi kökünü verir: kurumsal site `/tr/urun/...`
+            altında yaşayacak ve bir işletme slug'ı hiçbir zaman `/pricing`
+            ile çakışamaz (`docs/105` §4.2).
+        */
+        self::assertSame('/restoran/cigkofteci-omer-subesi/menu/abc1234567', $address->path());
     }
 
     public function test_a_nameless_menu_still_has_a_working_address(): void
     {
         // Uydurulmuş bir slug, yanlış bir slug'dan iyi değildir.
-        self::assertSame('/menu/abc1234567', MenuPublicAddress::create('abc1234567', '   ')->path());
+        self::assertSame('/restoran/menu/abc1234567', MenuPublicAddress::create('abc1234567', '   ')->path());
     }
 
     public function test_a_malformed_key_is_refused(): void
@@ -84,29 +95,56 @@ final class PublicMenuAddressTest extends TestCase
     {
         [$key, $slug] = $this->publishedMenu();
 
-        $response = $this->get('/menu/'.$key.'/eski-isim');
+        $response = $this->get('/restoran/eski-isim/menu/'.$key);
 
         // Restoran adını değiştirdiğinde paylaşılmış her bağlantı ölmez;
         // kendini onarır.
         $response->assertStatus(301);
-        $response->assertRedirect('/menu/'.$key.'/'.$slug);
+        $response->assertRedirect('/restoran/'.$slug.'/menu/'.$key);
     }
 
     public function test_the_bare_key_also_reaches_the_canonical_address(): void
     {
         [$key, $slug] = $this->publishedMenu();
 
-        $this->get('/menu/'.$key)->assertRedirect('/menu/'.$key.'/'.$slug);
+        $this->get('/restoran/menu/'.$key)->assertRedirect('/restoran/'.$slug.'/menu/'.$key);
+    }
+
+    public function test_the_old_address_shape_is_permanently_moved_not_broken(): void
+    {
+        /*
+            BİÇİM DEĞİŞTİ AMA ESKİ ADRESLER ÖLMEDİ (FF-116).
+
+            `/menu/{key}/{slug}` biçimi paylaşılmış bağlantılarda, dış
+            linklerde ve arama motorunun indeksinde duruyor. Yeni biçime
+            geçmek onları kırsaydı, ürünün en güçlü vaadi ("basılı kart
+            çalışmaya devam eder") kendi elimizle bozulurdu.
+        */
+        [$key, $slug] = $this->publishedMenu();
+
+        $this->get('/menu/'.$key.'/'.$slug)
+            ->assertStatus(301)
+            ->assertRedirect('/restoran/'.$slug.'/menu/'.$key);
+
+        $this->get('/menu/'.$key)
+            ->assertStatus(301)
+            ->assertRedirect('/restoran/'.$slug.'/menu/'.$key);
     }
 
     public function test_the_canonical_address_renders_the_published_menu(): void
     {
         [$key, $slug] = $this->publishedMenu();
 
-        $response = $this->get('/menu/'.$key.'/'.$slug);
+        $response = $this->get('/restoran/'.$slug.'/menu/'.$key);
 
         $response->assertStatus(200);
         self::assertStringContainsString('Kahve', (string) $response->getContent());
+    }
+
+    public function test_the_type_segment_never_swallows_a_corporate_address(): void
+    {
+        // İlk segment serbest bırakılsaydı bu rota `/pricing`'i de yutardı.
+        $this->get('/pricing')->assertStatus(200);
     }
 
     // --- MENU-ADDR-TOKEN-SPLIT-29 ------------------------------------------
@@ -119,7 +157,7 @@ final class PublicMenuAddressTest extends TestCase
 
         $response->assertStatus(200);
         self::assertStringContainsString('rel="canonical" href="', (string) $response->getContent());
-        self::assertStringContainsString('/menu/'.$key.'/'.$slug, (string) $response->getContent());
+        self::assertStringContainsString('/restoran/'.$slug.'/menu/'.$key, (string) $response->getContent());
         self::assertStringContainsString(
             'noindex',
             (string) $response->headers->get('X-Robots-Tag'),

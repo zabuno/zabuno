@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Publication\BusinessType;
 use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\PublicSite\StoreContactMessageController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuController;
+use App\Http\Controllers\QrDestination\ShowPublicMenuItemController;
 use App\Http\Controllers\Seo\ShowRobotsController;
 use App\Http\Controllers\Seo\ShowSitemapController;
 use App\Http\Controllers\Team\ShowTeamInvitationController;
@@ -108,10 +110,63 @@ Route::get('/menu/{token}', ShowPublicMenuController::class)
     ->where('token', '[A-Za-z0-9_-]{43}')
     ->name('qr.publicMenu');
 
-// Yayınlanan menünün herkese açık, indekslenebilir adresi.
+/*
+    ESKİ KANONİK ADRES — kalıcı olarak yenisine taşınır (FF-116).
+
+    `/menu/{key}/{slug}` biçimi 2026-09-04'te değişti: en anlamlı parça
+    (işletme adı) en sondaydı, en anlamsız parça (10 karakterlik anahtar)
+    ortadaydı. Bu yol ölmez; paylaşılmış her bağlantı ve dış link 301 ile
+    yeni adrese taşınır. Yönlendirmeyi denetleyici yapar (`getPathInfo()`
+    kanonikle karşılaştırılır), bu yüzden ayrı bir denetleyici gerekmez.
+*/
 Route::get('/menu/{key}/{slug?}', ShowPublicMenuByKeyController::class)
     ->where('key', '[a-z0-9]{10}')
+    ->name('publicMenu.legacy');
+
+/*
+    YAYINLANAN MENÜNÜN KANONİK ADRESİ (`docs/105` §4.2):
+
+        /restoran/pasa-doner/menu/ab12cd34ef
+
+    Baştaki segment iki iş yapar: insana ne olduğunu söyler ve kiracıya kendi
+    kökünü verir. Kurumsal site `/tr/urun/...` altında yaşayacak; kiracı
+    adresleri ayrı bir kökte durduğu için bir işletme slug'ı hiçbir zaman
+    `/pricing` ile çakışamaz.
+
+    İlk segment SERBEST DEĞİLDİR — yalnız bilinen tür segmentleriyle eşleşir.
+    Serbest bıraksaydık bu rota `/pricing` dahil her şeyi yutardı.
+*/
+Route::get('/{type}/{business}/menu/{key}', ShowPublicMenuByKeyController::class)
+    ->where('type', BusinessType::segmentPattern())
+    ->where('business', '[a-z0-9-]+')
+    ->where('key', '[a-z0-9]{10}')
     ->name('publicMenu.canonical');
+
+// Adı okunamayan işletme: slug uydurulmaz, adres kısalır.
+Route::get('/{type}/menu/{key}', ShowPublicMenuByKeyController::class)
+    ->where('type', BusinessType::segmentPattern())
+    ->where('key', '[a-z0-9]{10}')
+    ->name('publicMenu.canonicalNoSlug');
+
+/*
+    TEK ÜRÜNÜN ADRESİ (`docs/105` §4.3):
+
+        /restoran/pasa-doner/menu/ab12cd34ef/urun/101-adana-kebap
+
+    Sahibin ilk örneği `#item=101` idi; fragment sunucuya hiç ulaşmadığı için
+    indekslenemez, ölçülemez ve paylaşıldığında hangi ürün olduğu sunucuda
+    bilinemez. Menü sayfasının kendi çıpası (`#item-101`) yerinde kalır.
+
+    Kimlik segmentin BAŞINDADIR: slug yalnız okunabilirliktir ve yanlışsa
+    adres kendini onarır.
+*/
+Route::get('/{type}/{business}/menu/{key}/{itemSegment}/{item}', ShowPublicMenuItemController::class)
+    ->where('type', BusinessType::segmentPattern())
+    ->where('business', '[a-z0-9-]+')
+    ->where('key', '[a-z0-9]{10}')
+    ->where('itemSegment', BusinessType::itemSegmentPattern())
+    ->where('item', '[0-9]+(?:-[a-z0-9-]*)?')
+    ->name('publicMenu.item');
 
 // Biçimi tutmayan her `/menu/...` isteği AYNI çıkmaz sokağa düşer.
 // Bu olmadan Laravel'in genel 404'ü devreye girer ve iki şey birden olur:

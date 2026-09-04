@@ -199,7 +199,7 @@ alamaz, yoksa `/restoran/menu/...` gibi çözülemeyen adresler doğar.
 | # | Paket | Kapsam | Durum |
 | --- | --- | --- | --- |
 | 1 | FF-115 | Kabuk standardı: gezinme çekmecesi her yerde SOLDAN. Bu belge. | ✅ |
-| 2 | FF-116 | Kiracı menü adresi: dile göre işletme türü öneki, işletme slug'ı, ürün yolu, eski adreslerden 301, canonical/hreflang/sitemap | ⬜ |
+| 2 | FF-116 | Kiracı menü adresi: dile göre işletme türü öneki, işletme slug'ı, ürün yolu, eski adreslerden 301, canonical/sitemap | ✅ |
 | 3 | FF-117 | Sayfa registry + PageGate + "Zabuno Service Pass" hazırlanıyor bileşeni + çeviri kilidi iskeleti (414 yol seed'lenir, hiçbiri yayına açılmaz) | ⬜ |
 
 Üç döngünün DIŞINDA kalanlar — ve bunun açıkça söylenmesi:
@@ -229,3 +229,75 @@ yer tersti. Aynı ürünün iki farklı zihinsel haritası.
   `OpsShell.layout.test.tsx` aynı deseni kullanıyor.
 - RTL notu koda düşüldü: Arapça arayüz açıldığında kural "başlangıç kenarı"
   olarak yeniden yazılmalı, fiziksel `left` olarak değil.
+
+
+---
+
+## 7. Tur 2 kaydı (FF-116) — kiracı adresi
+
+Eski adres `/menu/ab12cd34ef/pasa-doner` idi: en anlamlı parça (işletme adı)
+en sonda, en anlamsız parça (10 karakterlik anahtar) ortadaydı. Kartvizite
+yazıldığında ya da telefonda söylendiğinde önce anlamsız kısım geliyordu.
+
+Yeni adres:
+
+```text
+/restoran/pasa-doner/menu/ab12cd34ef
+/restoran/pasa-doner/menu/ab12cd34ef/urun/101-adana-kebap
+```
+
+**Tür segmentinin dili işletmenin dilidir**, ziyaretçinin değil. Bir Türk
+restoranının adresi, misafir arayüzü İngilizceye aldı diye `/restaurant/`
+olmaz: menünün tek bir kanonik adresi vardır. Çevirisi tanımlı olmayan bir
+dilde uydurma kelime üretilmez, uluslararası hâl kullanılır.
+
+**Tek tür var ve bu dürüst bir ifadedir.** Zabuno'nun bugün bildiği her kiracı
+bir yeme-içme işletmesidir. Ürün başka türleri gerçekten öğrendiğinde
+(`kafe`, `bar`, `otel`) `BusinessType`'a yeni bir `case` eklenir; bugün olmayan
+bir ayrımı veri modeline yazmak, doldurulmayacak bir sütun üretmek olurdu.
+
+**Eski adresler ölmedi.** `/menu/{key}/{slug}` biçimi paylaşılmış
+bağlantılarda, dış linklerde ve arama motorunun indeksinde duruyor; hepsi tek
+atımlı 301 ile yeni adrese taşınıyor. Bunu kırmak, ürünün en güçlü vaadini
+("basılı kart çalışmaya devam eder") kendi elimizle bozmak olurdu.
+
+**İlk segment serbest değildir.** Rota yalnız bilinen tür segmentleriyle
+eşleşir; serbest bıraksaydık `/pricing` dahil her şeyi yutardı. Segmentler
+ayrıca rezerve kelimedir ve bunun kendi testi var — bir işletme `restoran`
+slug'ını alırsa `/restoran/restoran/menu/...` gibi çözülemeyen adresler doğardı.
+
+### Ürün sayfası ve `#item=101`
+
+Sahibin örneği `#item=101` idi. Fragment sunucuya HİÇ ulaşmaz: indekslenmez,
+ayrı bir görüntüleme olarak ölçülemez ve paylaşılan bağlantıda hangi ürün
+olduğu sunucu tarafından bilinemez — deponun kendi kilitli kuralı da bunu
+söylüyor ("ekran adresi asla fragment olamaz").
+
+Bu yüzden ürünün gerçek adresi bir yol segmenti oldu. Fragment de çalışıyor:
+menü sayfasındaki her satır artık `id="item-101"` taşıyor (tarayıcının kendi
+çıpası, JavaScript gerektirmez) ve küçük bir betik `#item=101` biçimini o
+çıpaya bağlıyor. Adres değiştirilmiyor: misafirin paylaştığı bağlantı elinde ne
+ise o kalıyor.
+
+**Kalite kapısı — burada bir tuzak vardı.** Ürün sayfası menü sayfasının
+gövdesini kopyalayıp yalnız başlığı değiştirseydi, yüzlerce neredeyse aynı
+sayfa doğardı; yönergenin §13.4'te yasakladığı şeyin ta kendisi. İki karar
+alındı:
+
+1. Ürün sayfası AYRI bir şablondur ve asıl içeriği ürünün kendisidir.
+2. Anlatacak şeyi olmayan ürün (açıklaması, görseli ve alerjeni olmayan)
+   indekslenmez — `noindex, follow` alır — ve menü sayfasından ona bağlantı
+   VERİLMEZ. Hiçbir yere götürmeyen bir bağlantı bir yalandır.
+
+Ürün adresleri bu pakette sitemap'e GİRMİYOR. Binlerce ürün adresini sitemap'e
+dökmek kendi kalite kapısını ve sayfalanmış bir sitemap index'ini gerektirir;
+keşif için menü sayfasındaki gerçek `<a href>` bağlantıları yeterli. Bu, kararı
+ertelemek değil doğru sıraya koymaktır.
+
+`kullaniciYolculugu`: Paşa Döner sahibinin Instagram'da paylaşacağı adres artık
+`zabuno.com/restoran/pasa-doner/menu/ab12cd34ef`. Bir müşteri Adana Kebap'ı
+arkadaşına göndermek istediğinde
+`.../urun/101-adana-kebap` bağlantısını paylaşıyor; açan kişi ürünün fotoğrafını,
+açıklamasını, fiyatını ve alerjenlerini görüyor ve tam menüye tek tıkla
+geçebiliyor. Eskiden paylaşılabilecek tek adres `/menu/ab12cd34ef` idi ve
+arkadaşının kırk ürün arasından o kebabı bulması gerekiyordu.

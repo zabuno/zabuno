@@ -18,7 +18,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 /**
- * Yayınlanan menünün KALICI herkese açık adresi: `/menu/{key}/{slug}`.
+ * Yayınlanan menünün KALICI herkese açık adresi:
+ * `/restoran/pasa-doner/menu/ab12cd34ef` (`docs/105` §4.2).
  *
  * Kimlik `key`'dir, `slug` yalnız okunabilirliktir. Yanlış veya eski bir
  * slug ile gelen istek doğru adrese **kalıcı olarak** yönlendirilir — yani
@@ -40,8 +41,17 @@ final class ShowPublicMenuByKeyController extends Controller
         private readonly GuestText $guestText,
     ) {}
 
-    public function __invoke(Request $request, string $key, ?string $slug = null): SymfonyResponse
+    public function __invoke(Request $request): SymfonyResponse
     {
+        /*
+            Anahtar ROTA ADINDAN okunur, konumdan değil (FF-116). Üç rota bu
+            denetleyiciye bağlı ve segment sayıları farklı:
+            `/menu/{key}/{slug?}`, `/{type}/{business}/menu/{key}` ve
+            `/{type}/menu/{key}`. Konumsal parametre kullanmak, bir gün
+            yanlış segmenti anahtar sanmak demekti.
+        */
+        $key = (string) $request->route('key');
+
         if (! MenuPublicAddress::isKey($key)) {
             return GuestDeadEnd::respond($request);
         }
@@ -58,7 +68,16 @@ final class ShowPublicMenuByKeyController extends Controller
             return GuestDeadEnd::respond($request);
         }
 
-        $canonicalPath = MenuPublicAddress::fromKeyAndSlug($address['key'], $address['slug'])->path();
+        $menuAddress = MenuPublicAddress::fromKeyAndSlug(
+            $address['key'],
+            $address['slug'],
+            // Segmentin dili İŞLETMENİN dilidir: bir Türk restoranının adresi
+            // ziyaretçi İngilizce seçti diye `/restaurant/` olmaz. Menünün tek
+            // bir kanonik adresi vardır.
+            $address['locale'],
+        );
+
+        $canonicalPath = $menuAddress->path();
 
         if ($request->getPathInfo() !== $canonicalPath) {
             /*
@@ -98,6 +117,9 @@ final class ShowPublicMenuByKeyController extends Controller
             // istemciden almak, herkesin herkesin adına olay yazması
             // demekti (`docs/84`).
             'menuKey' => $address['key'],
+            // Ürün adresini ŞABLON KURMAZ: adres kuralı alan katmanındadır ve
+            // Blade'e sızarsa bir gün ikisi ayrışır (FF-116).
+            'itemPathFor' => fn (int $menuItemId, string $productName): string => $menuAddress->itemPath($menuItemId, $productName),
             // Metin ŞABLONDA değil KATALOGDA yaşar: Blade'e yazılan bir
             // cümleyi sahip hiçbir PO dosyasından çeviremez (`docs/82`).
             /*

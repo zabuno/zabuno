@@ -24,7 +24,7 @@ interface PublicMenuAddressPort
     /**
      * Sitemap'e girecek yayınlanmış, indekslenebilir menüler.
      *
-     * @return list<array{key: string, slug: string, published_at: string}>
+     * @return list<array{key: string, slug: string, locale: string, published_at: string}>
      */
     public function indexableMenus(): array;
 }

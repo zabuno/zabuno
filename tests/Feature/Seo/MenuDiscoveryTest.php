@@ -37,7 +37,9 @@ final class MenuDiscoveryTest extends TestCase
 
         $response->assertStatus(200);
         self::assertStringContainsString('application/xml', (string) $response->headers->get('Content-Type'));
-        self::assertStringContainsString('/menu/'.$key.'/'.$slug, (string) $response->getContent());
+        // ADRES BİÇİMİ FF-116'da değişti; sitemap kanonik adresin AYNISINI
+        // yazmak zorunda (`docs/105` §4.2).
+        self::assertStringContainsString('/restoran/'.$slug.'/menu/'.$key, (string) $response->getContent());
     }
 
     public function test_the_sitemap_also_carries_the_marketing_pages(): void
@@ -103,9 +105,9 @@ final class MenuDiscoveryTest extends TestCase
         [$key, $slug] = $this->publishedMenu(true);
 
         $xml = (string) $this->get('/sitemap.xml')->getContent();
-        $page = $this->get('/menu/'.$key.'/'.$slug);
+        $page = $this->get('/restoran/'.$slug.'/menu/'.$key);
 
-        self::assertStringContainsString('/menu/'.$key.'/'.$slug, $xml);
+        self::assertStringContainsString('/restoran/'.$slug.'/menu/'.$key, $xml);
         self::assertNull($page->headers->get('X-Robots-Tag'), 'SEO-CONSISTENT-04: sitemap\'teki sayfa noindex dönüyor.');
     }
 
@@ -115,7 +117,7 @@ final class MenuDiscoveryTest extends TestCase
     {
         [$key, $slug] = $this->publishedMenu(true);
 
-        $html = (string) $this->get('/menu/'.$key.'/'.$slug)->getContent();
+        $html = (string) $this->get('/restoran/'.$slug.'/menu/'.$key)->getContent();
 
         self::assertSame(
             1,
@@ -143,7 +145,7 @@ final class MenuDiscoveryTest extends TestCase
     {
         [$key, $slug] = $this->publishedMenu(true);
 
-        $html = (string) $this->get('/menu/'.$key.'/'.$slug)->getContent();
+        $html = (string) $this->get('/restoran/'.$slug.'/menu/'.$key)->getContent();
 
         self::assertStringContainsString('<html lang="tr"', $html);
     }

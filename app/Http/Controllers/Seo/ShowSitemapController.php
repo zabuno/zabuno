@@ -49,7 +49,15 @@ final class ShowSitemapController extends Controller
             $entries[] = [
                 'loc' => $this->canonical->for(
                     $base,
-                    MenuPublicAddress::fromKeyAndSlug($menu['key'], $menu['slug'])->path(),
+                    // Sitemap adresi, sayfanın kanonik ilan ettiği adresin
+                    // AYNISI olmalı — biri `/restoran/`, diğeri `/restaurant/`
+                    // derse tarayıcı iki farklı sayfa görür ve ikisini de
+                    // yarım indeksler.
+                    MenuPublicAddress::fromKeyAndSlug(
+                        $menu['key'],
+                        $menu['slug'],
+                        $menu['locale'],
+                    )->path(),
                 ),
                 'lastmod' => $this->lastModified($menu['published_at']),
             ];

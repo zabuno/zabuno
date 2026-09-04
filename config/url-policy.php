@@ -126,12 +126,18 @@ return [
      * Slug olarak kullanılamayacak kelimeler. Bir işletme kendine `api` veya
      * `admin` slug'ı alırsa, o yol artık iki şey birden ifade eder.
      */
+    /*
+        Tür segmentleri REZERVEDİR (FF-116, `docs/105` §4.4). Bir işletme
+        `restoran` slug'ını alırsa `/restoran/restoran/menu/...` gibi
+        çözülemeyen adresler doğar. Liste `BusinessType::allSegments()` ile
+        eşleşmek zorunda ve bunun testi var.
+    */
     'reserved_slugs' => [
-        'admin', 'api', 'app', 'assets', 'build', 'email', 'forgot-password',
+        'admin', 'api', 'app', 'assets', 'build', 'dish', 'email', 'forgot-password',
         'contact', 'health', 'help', 'invitations', 'kvkk', 'login', 'logout', 'media',
-        'menu', 'platform', 'engineering', 'pricing',
+        'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
-        'sitemap.xml', 'storage', 'terms', 'up', 'user', 'verify-email', 'www',
+        'sitemap.xml', 'storage', 'terms', 'up', 'urun', 'user', 'verify-email', 'www',
     ],
 
     /*
