@@ -208,6 +208,7 @@ Bir kural, testi yoksa kural değildir. Mevcut ve gereken zorlayıcılar:
 | Bundle bütçeyi aşmaz | `DS-BUNDLE-BUDGET-07` | ✅ |
 | Bileşen ham süre bilmez, azaltılmış hareket yanıtlanır | `DS-MOTION-CONTRACT-08` | ✅ |
 | Flowbite primitifi token kökünü okur (ham palet/sabit piksel üretmez) | `DS-FLOWBITE-TOKEN-BIND-10` | ✅ |
+| AEP mürekkep merdiveni: ilişki bozulmaz, her metin jetonu KART ve ZEMİN üstünde AA geçer, odak kromasız kalır | `DS-AEP-INK-11` | ✅ |
 
 ## 5. Geliştirme planı — dalgalar ve kapılar
 

@@ -120,18 +120,29 @@ describe('theme CSS token contract — explicit theme beats OS preference', () =
 
     const css = stripComments(appCss);
 
+    /*
+        SÖZLEŞME JETONUN DEĞERİ DEĞİL, NEREDE TANIMLANDIĞIDIR (FF-125).
+
+        Bu iki test `oklch(0.9 0 0)` ve `oklch(0.32 0 0)` değerlerini
+        donduruyordu; AEP merdivenine geçince ürün doğru çalışırken kırmızıya
+        döndüler. Ölçmek istedikleri şey ise hiç değişmedi: açık değer medya
+        sorgusunun DIŞINDA bir `:root` içinde durmalı ve koyu değer AÇIK bir
+        `.dark` sınıfı altında yeniden tanımlanmalı — yoksa kullanıcının
+        seçtiği tema, işletim sisteminin tercihine yenilir.
+
+        Değerlerin kendisi `tokens.aep.guard.test.ts`'te donduruluyor; aynı
+        sayıyı iki yerde tutmak, bir gün ikisinin ayrışması demekti.
+    */
     it('defines the light --border token in a base :root rule outside any media query', () => {
         const roots = topLevelRootBlocks(css);
-        const hasLightBorder = roots.some((block) =>
-            /--border\s*:\s*oklch\(0\.9\s+0\s+0\)/.test(block),
-        );
+        const hasLightBorder = roots.some((block) => /--border\s*:\s*\S+/.test(block));
         expect(hasLightBorder).toBe(true);
     });
 
     it('defines the dark --border token under an explicit .dark class selector', () => {
         const darkScoped = darkClassScopedBlocks(css);
         const hasDarkBorderUnderDarkClass = darkScoped.some((block) =>
-            /--border\s*:\s*oklch\(0\.32\s+0\s+0\)/.test(block),
+            /--border\s*:\s*\S+/.test(block),
         );
         expect(hasDarkBorderUnderDarkClass).toBe(true);
     });

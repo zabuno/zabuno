@@ -49,7 +49,10 @@
      boş bir kabuk görüyordu — yani ürünün kendi tanıtımı arama motorunda ve
      JavaScript çalıştırmayan AI botlarında görünmüyordu. --}}
 <a href="#main-content"
-   class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-action focus:px-4 focus:py-2 focus:text-white">
+   {{-- Sarı üstüne beyaz metin ~1.75:1 idi; marka sarısının tek doğru
+       mürekkebi `--color-action-fg`. Panel tarafındaki SkipLink ile aynı
+       kural (FF-125). --}}
+   class="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-50 focus:rounded focus:bg-action focus:px-4 focus:py-2 focus:text-action-fg">
     {{ $st['skipToContent'] }}
 </a>
 

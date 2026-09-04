@@ -222,6 +222,52 @@ kabuğunda; kiracı kabuğu persona vermez; persona blokları yüzey dışında 
 jetona dokunmaz. Ayrıca üç katman ailesinin bağlı kalması ve tema
 üstyazımlarında Flowbite gri paletinin bulunmaması da test edilir.
 
+## 5i. FF-125 — AEP mürekkep merdiveni ve ölçümün nereye karşı yapıldığı (2026-09-04)
+
+**Ne değişti.** `:root` ve `.dark` içindeki ham renk değerleri AEP teslim
+paketinin merdiveniyle değiştirildi (`--canvas` `#f7f7fb`, `--surface`
+`#ffffff`, `--surface-subtle` `#ededf4`, `--border` `#e4e4ee`; koyu tarafta
+`#080616` / `#0d0a24` / `#16123a` / `#26224a`). Mürekkep artık boyutla değil
+RENKLE ayrışıyor: `--text-meta` `0.875rem`'den **`1rem`**'e çıktı, taban her
+yerde 16px. Takma adlar ve `@theme` bloğu değişmedi — zincir zaten doğruydu.
+
+**Ölçüm aracındaki kendi hatam.** Yeni mürekkep alfalı (`rgb(8 6 22 / 66%)`).
+Kapı testinin okuyucusu alfayı hiç görmüyordu, bu yüzden `compositeOver`
+eklendi — ve ilk hâli LİNEER uzayda harmanlıyordu: `--fg-secondary` 6.60
+yerine 2.68:1 ölçüldü. CSS alfa harmanı **gama (sRGB) uzayında** olur.
+Düzeltildi ve bir kalibrasyon iddiası eklendi (%50 siyah, beyaz üstünde
+3.98:1); yanlış uzay bir daha sessizce geri dönemez.
+
+**Ekranda ölçülen (Storybook, `macro-layout-adminshell--restaurant-admin`).**
+Açık tema en düşük 4.52:1, koyu tema en düşük 6.86:1, gövde metni 7.89:1,
+kelime işareti 14.76:1 — hepsi 16px.
+
+**Ölçüm neye karşı yapılır.** Kapı testi mürekkebi yalnız `--surface`
+üstünde ölçüyordu; orada `--fg-muted` 6.60:1. Aynı metnin ekrandaki gerçek
+zemini `--canvas`'tı ve ölçüm **4.52:1**'e düştü — hâlâ AA, ama pay 0.02.
+Artık her metin jetonu hem kartta hem zeminde ölçülüyor; zemin bir ton
+koyulaşırsa test kırılır, kullanıcı değil.
+
+**Ekranı görünce çıkan gerçek hata.** Atlama bağlantısı (`SkipLink` ve
+`public/layout.blade.php`) koyu temada marka sarısı üstüne **beyaz** metin
+yazıyordu: ~1.75:1. Klavye kullanan birinin her sayfada ilk karşılaştığı
+kontrol okunmuyordu. Sarının üstündeki tek doğru mürekkep
+`--color-action-fg`'dir (#1c1500, 11.63:1); iki dosya da jetona bağlandı ve
+kural teste yazıldı — bu bağlantı ham renk sınıfı kullanamaz.
+
+**Uygulanmayan bir jeton, sebebiyle birlikte.** AEP paketi odak halkasını
+parlamento mavisine (#003399) çeviriyor ve "halka metin değildir" diyor.
+Uygulanmadı: `docs/71` sahibin şikâyetini ve alınan kararı kaydediyor —
+karar "şu an mavi değil" değil, **"mavi OLAMAZ"** idi. Bir jetonu tasarım
+paketi istedi diye geri çevirmek o kararı sessizce iptal etmek olurdu.
+Sahip isterse tek satır; ama o satır bilerek atılacak.
+
+**Değeri iki yerde tutmamak.** `ThemeCssContract.test` `--border`'ın iki ham
+değerini donduruyordu ve merdiven değişince ürün doğru çalışırken kırmızıya
+döndü. O testin ölçtüğü şey değer değil KONUM'dur (açık değer medya
+sorgusunun dışında, koyu değer açık `.dark` altında); değer dondurma işi
+`tokens.aep.guard.test`'e bırakıldı.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük
