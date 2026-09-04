@@ -14,5 +14,18 @@ final class QrCodeRecord
         public readonly string $token,
         public readonly string $destinationType,
         public readonly string $state,
+        /**
+         * Kodun ait olduğu masanın adı ve alanının etiketi (FF-109).
+         *
+         * `qr_codes.dining_table_id` zaten yazılıyordu ama okuma tarafı onu
+         * düşürüyordu: sahip 40 kod arasından "Masa 12"yi bulamıyor, ekranda
+         * yalnız 43 karakterlik token'lar görüyordu. Yeniden bastırmak —
+         * ürünün asıl işi — fiilen imkânsızdı.
+         *
+         * Masaya bağlı olmayan kod (giriş kodu) için `null`; uydurulmuş bir
+         * ad, hiç ad olmamasından kötüdür.
+         */
+        public readonly ?string $tableName = null,
+        public readonly ?string $areaLabel = null,
     ) {}
 }

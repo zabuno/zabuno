@@ -221,3 +221,91 @@ describe('BulkQrWizardFields — plan kısıtı hata değildir (QR-HONEST-STATE)
         });
     });
 });
+
+describe('QR kodun insan adı (FF-109)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('satırda masa adını ve alanını gösterir, seçicide token yazmaz', async () => {
+        /*
+            Masanın adı veritabanında vardı (`qr_codes.dining_table_id`) ama
+            liste DTO'su onu düşürüyordu: sahip 40 kod arasından "T12"yi
+            bulamıyor, ekranda yalnız 43 karakterlik token'lar görüyordu.
+            Yeniden bastırmak — ürünün asıl işi — imkânsızdı.
+        */
+        fetchSpy.mockResolvedValue(
+            jsonResponse(200, [
+                { ...ITEM, id: 1, tableName: 'T12', areaLabel: 'Bahçe' },
+                {
+                    ...ITEM,
+                    id: 2,
+                    token: 'k2LmNoPqRsTuVwXyZ01234567890abc',
+                    resolverUrl: 'https://zabuno.test/q/k2LmNoPqRsTuVwXyZ01234567890abc',
+                    tableName: 'T13',
+                    areaLabel: 'Bahçe',
+                },
+            ]),
+        );
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const region = await screen.findByRole('region', { name: /qr destination/i });
+
+        await waitFor(() => {
+            expect(within(region).getByText('T12')).toBeInTheDocument();
+        });
+        expect(within(region).getAllByText('Bahçe')).toHaveLength(2);
+
+        const selector = screen.getByRole('combobox', { name: /qr code/i });
+        expect(selector.textContent ?? '').not.toMatch(new RegExp(ITEM.token));
+        expect(within(selector).getByRole('option', { name: 'T12 · Bahçe' })).toBeInTheDocument();
+    });
+
+    it('adsız kodlar birden fazlaysa seçicide birbirinden ayrılır', async () => {
+        fetchSpy.mockResolvedValue(
+            jsonResponse(200, [
+                { ...ITEM, id: 1, tableName: null },
+                {
+                    ...ITEM,
+                    id: 2,
+                    token: 'k2LmNoPqRsTuVwXyZ01234567890abc',
+                    resolverUrl: 'https://zabuno.test/q/k2LmNoPqRsTuVwXyZ01234567890abc',
+                    tableName: null,
+                },
+            ]),
+        );
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const selector = await screen.findByRole('combobox', { name: /qr code/i });
+
+        expect(
+            within(selector).getByRole('option', { name: /entrance code 1/i }),
+        ).toBeInTheDocument();
+        expect(
+            within(selector).getByRole('option', { name: /entrance code 2/i }),
+        ).toBeInTheDocument();
+    });
+});

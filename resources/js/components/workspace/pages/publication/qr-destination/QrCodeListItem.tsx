@@ -17,6 +17,8 @@ export type QrCodeItem = {
      * DTO'su onu düşürüyordu; sahip 40 kod arasından birini seçemiyordu.
      */
     tableName?: string | null;
+    /** Masanın bulunduğu alan/bölüm: "Bahçe", "Üst kat" (FF-109). */
+    areaLabel?: string | null;
     destinationType: string;
     state: string;
 };
@@ -104,6 +106,14 @@ export function QrCodeListItem({
                 <span className="text-body font-medium text-fg">
                     {item.tableName ?? t('workspace.publication.qrDestination.item.entrance')}
                 </span>
+                {/*
+                    Alan, adın YANINDA ve daha sessiz (FF-109). 40 masalı bir
+                    salonda "T12" tek başına yetmez — sahip kartı fiziksel
+                    olarak bulmak için hangi bölümde olduğunu bilmek ister.
+                */}
+                {item.areaLabel ? (
+                    <span className="text-meta text-fg-muted">{item.areaLabel}</span>
+                ) : null}
                 {isActive ? null : (
                     <span className="rounded-pill bg-surface-active px-[var(--space-2)] text-meta text-fg-muted">
                         {t('workspace.publication.qrDestination.state.disabled')}

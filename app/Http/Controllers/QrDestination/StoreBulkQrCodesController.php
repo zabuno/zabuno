@@ -146,6 +146,14 @@ final class StoreBulkQrCodesController extends Controller
                     'resolverUrl' => url("/q/{$qrCode->token}"),
                     'destinationType' => $qrCode->destinationType,
                     'state' => $qrCode->state,
+                    /*
+                        Ad, ÜRETİLDİĞİ ANDA döner (FF-109). Sihirbaz sonucu
+                        listeye birleştiriliyor; ad olmadan 40 yeni satır
+                        anonim token olarak beliriyor ve sahip listeyi
+                        yenileyene kadar hangisinin hangi masa olduğunu
+                        göremiyordu.
+                    */
+                    'tableName' => $table->name,
                 ];
             }, $result->qrCodes, $result->tables),
         ], 201);

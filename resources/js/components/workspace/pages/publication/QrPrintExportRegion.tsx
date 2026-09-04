@@ -42,6 +42,27 @@ type QrPrintExportRegionProps = {
     onUpgrade?: () => void;
 };
 
+/**
+ * Bir kodun İNSAN ADI (FF-109).
+ *
+ * Seçici, seçeneklerin metni olarak 43 karakterlik token'ı yazıyordu: sahip
+ * "hangisini basacağım" sorusunu o listeden yanıtlayamıyordu. Ad artık masa
+ * adıdır; masaya bağlı olmayan kod "giriş kodu"dur.
+ *
+ * Birden fazla adsız kod varsa sıra numarası eklenir — iki özdeş seçenek,
+ * hiç ad olmamasından daha kötüdür: kullanıcı yanlış olanı seçer ve bunu
+ * ancak baskıdan sonra fark eder.
+ */
+function itemLabel(item: QrCodeItem, unnamedIndex: number, unnamedTotal: number): string {
+    if (item.tableName) {
+        return item.areaLabel ? `${item.tableName} · ${item.areaLabel}` : item.tableName;
+    }
+
+    const base = t('workspace.publication.qrDestination.item.entrance');
+
+    return unnamedTotal > 1 ? `${base} ${String(unnamedIndex + 1)}` : base;
+}
+
 function exportUrl(
     item: QrCodeItem,
     format: QrOutputFormat,
@@ -96,6 +117,7 @@ export function QrPrintExportRegion({
     onUpgrade,
 }: QrPrintExportRegionProps) {
     const activeItems = items.filter((item) => item.state === 'active');
+    const unnamedItems = activeItems.filter((item) => !item.tableName);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [outputFormat, setOutputFormat] = useState<QrOutputFormat>('png');
     const [paperSize, setPaperSize] = useState<QrPaperSize>('A4');
@@ -142,7 +164,11 @@ export function QrPrintExportRegion({
                             >
                                 {activeItems.map((item) => (
                                     <option key={item.id} value={item.id}>
-                                        {item.token}
+                                        {itemLabel(
+                                            item,
+                                            unnamedItems.indexOf(item),
+                                            unnamedItems.length,
+                                        )}
                                     </option>
                                 ))}
                             </Select>
