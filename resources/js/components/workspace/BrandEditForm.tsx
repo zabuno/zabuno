@@ -39,6 +39,13 @@ export type BrandProfile = {
     contact_phone: string | null;
     /** Taslakta bağlı logo; sunucu okur, form değiştirmez (`docs/98` FF-64). */
     logoMediaAssetId?: number | null;
+    /**
+     * Marka renkleri (`#rrggbb`) — Profil ekranından düzenlenir (FF-88).
+     * Bu form onları DEĞİŞTİRMEZ, yalnız taşır: renk bir kimlik kararıdır ve
+     * adres/telefon alanlarının arasına sıkıştırılmaz.
+     */
+    primary_color?: string | null;
+    secondary_color?: string | null;
 };
 
 /** Hata özetinde ve odak sırasında kullanılan alan sırası — ekrandaki sıra. */

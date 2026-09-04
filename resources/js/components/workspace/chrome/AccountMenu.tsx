@@ -1,4 +1,4 @@
-import { ArrowsLeftRight, Gear, SignOut } from '@phosphor-icons/react';
+import { ArrowsLeftRight, Gear, SignOut, UserCircle } from '@phosphor-icons/react';
 import { t } from '../../../i18n/workspace';
 import { t as themeText } from '../../../i18n/theme';
 import { ActionMenu } from '../../catalog/overlays/compound/ActionMenu';
@@ -10,6 +10,11 @@ import {
 } from '../../theme/themeControl';
 
 export type AccountMenuProps = {
+    /**
+     * Profil ekranına geçiş — sahibin isteği (2026-09-04). Kişi kendi adını,
+     * fotoğrafını, temasını ve markasının renklerini oradan düzenler.
+     */
+    onOpenProfile?: () => void;
     /** Ayarlar ekranına geçiş — sahibin kararı: ayarlar sistem menüsünde (FF-84). */
     onOpenSettings?: () => void;
     email: string;
@@ -34,6 +39,7 @@ export type AccountMenuProps = {
  */
 export function AccountMenu({
     email,
+    onOpenProfile,
     onOpenSettings,
     onSwitchWorkspace,
     onLogout,
@@ -96,6 +102,22 @@ export function AccountMenu({
                       }
             }
             items={[
+                /*
+                    PROFİL en üstte: menünün başlığı zaten kişinin kendisidir
+                    (baş harf + e-posta), ve oradan devam eden ilk madde de
+                    kişiye ait olmalıdır. Ayarlar çalışma alanına aittir ve
+                    onun altında durur.
+                */
+                ...(onOpenProfile
+                    ? [
+                          {
+                              key: 'profile',
+                              label: t('workspace.profile.title'),
+                              icon: <UserCircle size={18} />,
+                              onSelect: onOpenProfile,
+                          },
+                      ]
+                    : []),
                 /*
                     AYARLAR sistem menüsünde — sahibin kararı (2026-09-04).
                     `docs/50` §8 onu kenar çubuğunun "utility" grubuna

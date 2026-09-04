@@ -1732,6 +1732,106 @@ msgstr "Search and go"
 msgid "workspace.omnibox.trigger.label"
 msgstr "Search, go to, or create"
 
+#: workspace:workspace.profile.appearance.heading
+msgid "workspace.profile.appearance.heading"
+msgstr "Appearance"
+
+#: workspace:workspace.profile.appearance.help
+msgid "workspace.profile.appearance.help"
+msgstr "Light or dark is your own choice — it changes nothing for your guests. “System” follows your device setting."
+
+#: workspace:workspace.profile.avatar.alt_default
+msgid "workspace.profile.avatar.alt_default"
+msgstr "Profile photo"
+
+#: workspace:workspace.profile.avatar.current_alt
+msgid "workspace.profile.avatar.current_alt"
+msgstr "Your current profile photo"
+
+#: workspace:workspace.profile.avatar.error
+msgid "workspace.profile.avatar.error"
+msgstr "The photo could not be saved. Try again."
+
+#: workspace:workspace.profile.avatar.formats
+msgid "workspace.profile.avatar.formats"
+msgstr "JPEG, PNG or WebP."
+
+#: workspace:workspace.profile.avatar.heading
+msgid "workspace.profile.avatar.heading"
+msgstr "Profile photo"
+
+#: workspace:workspace.profile.avatar.help
+msgid "workspace.profile.avatar.help"
+msgstr "Choose a photo of yourself. It is stored in your media library, scanned like every other image, and shown next to your name."
+
+#: workspace:workspace.profile.avatar.processing
+msgid "workspace.profile.avatar.processing"
+msgstr "Your photo is still being processed. It may take a moment to appear everywhere."
+
+#: workspace:workspace.profile.avatar.remove
+msgid "workspace.profile.avatar.remove"
+msgstr "Remove photo"
+
+#: workspace:workspace.profile.avatar.save
+msgid "workspace.profile.avatar.save"
+msgstr "Use this photo"
+
+#: workspace:workspace.profile.avatar.saved
+msgid "workspace.profile.avatar.saved"
+msgstr "Profile photo updated."
+
+#: workspace:workspace.profile.avatar.saving
+msgid "workspace.profile.avatar.saving"
+msgstr "Saving…"
+
+#: workspace:workspace.profile.colors.clear
+msgid "workspace.profile.colors.clear"
+msgstr "Clear"
+
+#: workspace:workspace.profile.colors.error
+msgid "workspace.profile.colors.error"
+msgstr "The colours could not be saved. Use a six-digit code such as #C8102E and try again."
+
+#: workspace:workspace.profile.colors.heading
+msgid "workspace.profile.colors.heading"
+msgstr "Brand colours"
+
+#: workspace:workspace.profile.colors.help
+msgid "workspace.profile.colors.help"
+msgstr "These two colours are used on your published guest menu. Pick them here, or type the exact code from your brand guide."
+
+#: workspace:workspace.profile.colors.primary
+msgid "workspace.profile.colors.primary"
+msgstr "Primary colour"
+
+#: workspace:workspace.profile.colors.save
+msgid "workspace.profile.colors.save"
+msgstr "Save colours"
+
+#: workspace:workspace.profile.colors.saved
+msgid "workspace.profile.colors.saved"
+msgstr "Brand colours saved. They go live with your next publish."
+
+#: workspace:workspace.profile.colors.saving
+msgid "workspace.profile.colors.saving"
+msgstr "Saving…"
+
+#: workspace:workspace.profile.colors.secondary
+msgid "workspace.profile.colors.secondary"
+msgstr "Secondary colour"
+
+#: workspace:workspace.profile.description
+msgid "workspace.profile.description"
+msgstr "Your name, photo and appearance. Changes here follow you into every workspace you belong to."
+
+#: workspace:workspace.profile.details.heading
+msgid "workspace.profile.details.heading"
+msgstr "Your details"
+
+#: workspace:workspace.profile.title
+msgid "workspace.profile.title"
+msgstr "Profile"
+
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
 msgstr "Allergens"

@@ -1732,6 +1732,106 @@ msgstr ""
 msgid "workspace.omnibox.trigger.label"
 msgstr ""
 
+#: workspace:workspace.profile.appearance.heading
+msgid "workspace.profile.appearance.heading"
+msgstr ""
+
+#: workspace:workspace.profile.appearance.help
+msgid "workspace.profile.appearance.help"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.alt_default
+msgid "workspace.profile.avatar.alt_default"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.current_alt
+msgid "workspace.profile.avatar.current_alt"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.error
+msgid "workspace.profile.avatar.error"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.formats
+msgid "workspace.profile.avatar.formats"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.heading
+msgid "workspace.profile.avatar.heading"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.help
+msgid "workspace.profile.avatar.help"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.processing
+msgid "workspace.profile.avatar.processing"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.remove
+msgid "workspace.profile.avatar.remove"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.save
+msgid "workspace.profile.avatar.save"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.saved
+msgid "workspace.profile.avatar.saved"
+msgstr ""
+
+#: workspace:workspace.profile.avatar.saving
+msgid "workspace.profile.avatar.saving"
+msgstr ""
+
+#: workspace:workspace.profile.colors.clear
+msgid "workspace.profile.colors.clear"
+msgstr ""
+
+#: workspace:workspace.profile.colors.error
+msgid "workspace.profile.colors.error"
+msgstr ""
+
+#: workspace:workspace.profile.colors.heading
+msgid "workspace.profile.colors.heading"
+msgstr ""
+
+#: workspace:workspace.profile.colors.help
+msgid "workspace.profile.colors.help"
+msgstr ""
+
+#: workspace:workspace.profile.colors.primary
+msgid "workspace.profile.colors.primary"
+msgstr ""
+
+#: workspace:workspace.profile.colors.save
+msgid "workspace.profile.colors.save"
+msgstr ""
+
+#: workspace:workspace.profile.colors.saved
+msgid "workspace.profile.colors.saved"
+msgstr ""
+
+#: workspace:workspace.profile.colors.saving
+msgid "workspace.profile.colors.saving"
+msgstr ""
+
+#: workspace:workspace.profile.colors.secondary
+msgid "workspace.profile.colors.secondary"
+msgstr ""
+
+#: workspace:workspace.profile.description
+msgid "workspace.profile.description"
+msgstr ""
+
+#: workspace:workspace.profile.details.heading
+msgid "workspace.profile.details.heading"
+msgstr ""
+
+#: workspace:workspace.profile.title
+msgid "workspace.profile.title"
+msgstr ""
+
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
 msgstr ""

@@ -25,6 +25,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // doğrulanıyor ve sınırsız deneme, açık bırakılmış bir makinede
         // şifre tahmin etmenin yolu olurdu.
         'PUT|api/user/profile||App\Http\Controllers\Account\UpdateProfileController|api,auth:sanctum,verified',
+        'PUT|api/user/avatar||App\Http\Controllers\Account\BindAvatarController|api,auth:sanctum,verified',
         'PUT|api/user/password||App\Http\Controllers\Account\UpdatePasswordController|api,auth:sanctum,throttle:6,1,verified',
         'POST|api/webhooks/iyzico-sandbox||App\Http\Controllers\Billing\ReceiveIyzicoSandboxWebhookController|api',
         'POST|api/billing/iyzico-sandbox/callback||App\Http\Controllers\Billing\ReceiveIyzicoSandboxCallbackController|api',

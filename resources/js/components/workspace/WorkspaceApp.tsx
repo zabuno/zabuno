@@ -62,9 +62,24 @@ export type WorkspaceSectionRuntimeContext = {
     features: Record<string, boolean>;
     /** Bölüm içi konum — `settings/billing` adresinde `billing`. */
     subPath: string;
+    /*
+        Oturumdaki kişi. Profil ekranı (FF-88) kendi adını, e-postasını ve
+        profil fotoğrafını buradan okur; ikinci bir `/api/user` çağrısı
+        yapsaydı aynı gerçeğin iki kopyası olur ve biri eskirdi.
+    */
+    email: string;
+    userName?: string;
+    avatarMediaAssetId: number | null;
+    avatarUrl: string | null;
 };
 
-type WorkspaceUser = { id: number; name: string; email: string };
+type WorkspaceUser = {
+    id: number;
+    name: string;
+    email: string;
+    avatarMediaAssetId?: number | null;
+    avatarUrl?: string | null;
+};
 type Workspace = {
     id: number;
     name: string;
@@ -976,6 +991,10 @@ export function WorkspaceApp({
               can,
               features: currentWorkspace?.features ?? {},
               subPath,
+              email: user?.email ?? '',
+              userName: user?.name,
+              avatarMediaAssetId: user?.avatarMediaAssetId ?? null,
+              avatarUrl: user?.avatarUrl ?? null,
           }
         : null;
 
@@ -1005,6 +1024,7 @@ export function WorkspaceApp({
         user?.email !== undefined && user.email !== '' ? (
             <AccountMenu
                 email={user.email}
+                onOpenProfile={currentWorkspace ? () => goToSection('profile') : undefined}
                 onOpenSettings={currentWorkspace ? () => goToSection('settings') : undefined}
                 onSwitchWorkspace={handleSwitch}
                 onLogout={() => void handleLogout()}

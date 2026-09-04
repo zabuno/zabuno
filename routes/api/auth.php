@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Account\BindAvatarController;
 use App\Http\Controllers\Account\UpdatePasswordController;
 use App\Http\Controllers\Account\UpdateProfileController;
 use App\Http\Controllers\Auth\AuthenticatedUserController;
@@ -18,5 +19,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         yolu olurdu.
     */
     Route::put('/user/profile', UpdateProfileController::class);
+    // Profil fotoğrafı bir medya varlığına bağlanır (`docs/49`), ayrı dosya değil.
+    Route::put('/user/avatar', BindAvatarController::class);
     Route::put('/user/password', UpdatePasswordController::class)->middleware('throttle:6,1');
 });
