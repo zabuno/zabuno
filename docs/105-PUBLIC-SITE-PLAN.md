@@ -200,7 +200,7 @@ alamaz, yoksa `/restoran/menu/...` gibi çözülemeyen adresler doğar.
 | --- | --- | --- | --- |
 | 1 | FF-115 | Kabuk standardı: gezinme çekmecesi her yerde SOLDAN. Bu belge. | ✅ |
 | 2 | FF-116 | Kiracı menü adresi: dile göre işletme türü öneki, işletme slug'ı, ürün yolu, eski adreslerden 301, canonical/sitemap | ✅ |
-| 3 | FF-117 | Sayfa registry + PageGate + "Zabuno Service Pass" hazırlanıyor bileşeni + çeviri kilidi iskeleti (414 yol seed'lenir, hiçbiri yayına açılmaz) | ⬜ |
+| 3 | FF-117 | Sayfa registry + PageGate + "Zabuno Service Pass" hazırlanıyor bileşeni + çeviri kilidi iskeleti (386 yol seed'lenir, hiçbiri yayına açılmaz) | ✅ |
 
 Üç döngünün DIŞINDA kalanlar — ve bunun açıkça söylenmesi:
 
@@ -301,3 +301,91 @@ arkadaşına göndermek istediğinde
 açıklamasını, fiyatını ve alerjenlerini görüyor ve tam menüye tek tıkla
 geçebiliyor. Eskiden paylaşılabilecek tek adres `/menu/ab12cd34ef` idi ve
 arkadaşının kırk ürün arasından o kebabı bulması gerekiyordu.
+
+
+---
+
+## 8. Tur 3 kaydı (FF-117) — sayfa kütüğü, kapı ve kilit
+
+**Site haritası artık bir belge değil, bir kütük.** `docs/106-SITE-MAP-INPUT.md`
+(sahibin verdiği girdi, depoya kopyalandı ki üretim tekrar edilebilsin) saf bir
+ayrıştırıcıdan geçip `content_pages` tablosuna yazılıyor:
+`php artisan site:import-map` → **386 sayfa**, hepsi `planned`.
+
+Ayrıştırıcı iki kararı kendisi verdi ve ikisi de belgeden değil gerçeklikten
+geliyor:
+
+- **Ebeveyn girintiden değil YOLDAN türer.** Belgede `/tr/` ile `/tr/urun/`
+  aynı girintide — kardeş yazılmışlar — oysa adres hiyerarşisinde biri
+  diğerinin altında. Girintiye güvenmek, belgedeki bir biçim tercihini ürünün
+  bilgi mimarisi sanmak olurdu.
+- **`## 5` bölümü ağaç değildir.** Oradaki `/sitemap.xml` bir sayfa değil;
+  sınırı bilmeyen bir ayrıştırıcı kütüğe olmayan sayfalar yazardı.
+
+Komut YIKICI DEĞİLDİR: var olan bir kaydın yayın durumuna, tarihine ya da
+geçmişine dokunmaz. Aksi hâlde belgeyi her yeniden içe aktarmak, yayındaki
+sayfaları taslağa düşürürdü.
+
+### Kapı
+
+414 yol için 414 rota ya da 414 Blade dosyası yok. Tek bir denetleyici kütüğe
+bakıyor, `PageGate`'e soruyor ve kararı uyguluyor. Bir sayfayı açmak için
+koddan bileşen silinmiyor — yalnız yayın durumu değişiyor.
+
+Kapının en önemli kararı: **yayınlanmamış URL `404` döner, `200` değil.** 414
+URL'ye aynı "hazırlanıyor" metnini 200 ile vermek soft-404'tür ve alan adının
+kalitesini topluca düşürür. Hazırlanıyor ekranı o 404'ün GÖVDESİDİR.
+
+İki karar daha yazılı:
+
+- **`approved` yayın değildir.** Aradaki farkı silmek, kalite kapısını
+  atlamanın en kolay yolu olurdu.
+- **503 yalnız gerçekten yayınlanmış bir sayfanın kısa bakımı içindir.** Hiç
+  yayınlanmamış bir sayfada kullanmak, arama motoruna var olmayan bir şeyin
+  geri geleceğini söylemektir; geçmişi olmayan sayfa 404'e düşer.
+
+**Ortam yapılandırmadan okunur, `APP_ENV`'den türetilmez ve varsayılanı
+production'dır.** Türetseydik yerelde ve testte staging davranışı çıkardı; asıl
+tehlike ise tersidir — yapılandırması unutulmuş bir sunucunun taslakları 200
+ile sunması.
+
+Kapı **yalnız `/tr/` ve `/en/` altında** çalışıyor; bugün yayında olan
+`/pricing`, `/help`, `/terms` adreslerine dokunmuyor. Onların dil dizinine
+taşınması 301'leriyle birlikte ayrı bir paketin işi (§4.1).
+
+### Yönergenin kendi çelişkisi kapandı
+
+Plan hem "yayınlanmamış sayfa 404 döner" hem de CI'da "broken link scan"
+istiyordu; menüde ya da içerik içinde duran her yayınlanmamış bağlantı kendi
+CI'ını kırardı. Kural artık tek yerde: `PageRenderDecision::isLinkable()` —
+bağlantı verilebilirlik, gerçekten çalışan bir sayfa olmakla aynı şey.
+
+### İki guard yeni kodu yakaladı
+
+Yazarken deponun kendi kapıları iki hata buldu ve ikisi de gerçekti:
+
+1. `I18N-SSR-RATCHET-16`: hazırlanıyor sayfasına "Zabuno" kelimesi doğrudan
+   yazılmıştı — sahip onu hiçbir PO dosyasında bulamazdı. Katalog anahtarına
+   taşındı.
+2. `RTL-LOGIN-DERIVED-02`: iki yeni şablon `dir="ltr"` sabitliyordu. Yön bir
+   locale özelliğidir ve `DocumentLocale`'den türer; Arapça arayüz açıldığında
+   sabit bir `ltr` sessizce yanlış olurdu.
+
+### Çeviri kilidi — kurulu, kapalı
+
+`TranslationGenerationLock` varsayılanı KAPALI. Yalnız kesin `true` açar:
+`"1"`, `"true"`, `"yes"` gibi bir `.env` yazım hatasıyla kolayca oluşan değerler
+kapalı sayılır. Kilit `env()` OKUMAZ — ortam değişkeni, kilidi bir sunucu
+yapılandırmasıyla açılabilir hâle getirirdi; oysa bu bir dağıtım ayarı değil bir
+ürün kararıdır ve kod incelemesinden geçmelidir. Deponun gerçek yapılandırma
+dosyasının kapalı olduğunu ölçen bir test var.
+
+**Bu pakette tek bir çeviri üretilmedi ve tek bir çeviri işi kuyruklanmadı.**
+Sahip açıkça `ÇEVİRİLERE BAŞLA` demeden Faz 8'e geçilmeyecek.
+
+`kullaniciYolculugu`: Sahip bugün `zabuno.com/tr/urun/qr-menu/` adresini
+açtığında "Bu sayfa henüz servise çıkmadı — Sayfa: QR Menü, Durum: Sıraya
+alındı" yazan bir servis fişi görüyor ve ana sayfaya, fiyatlandırmaya ya da
+iletişime tek tıkla dönebiliyor. Arama motoru aynı adreste 404 görüyor ve onu
+indekslemiyor. Sayfa yazıldığında tek bir alan `published` yapılacak ve aynı
+adres gerçek içeriği sunmaya başlayacak — hiçbir dosya silinmeden.

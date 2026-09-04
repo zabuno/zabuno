@@ -244,6 +244,94 @@ msgstr ""
 msgid "site.nav.register"
 msgstr ""
 
+#: site:site.pageState.approved
+msgid "site.pageState.approved"
+msgstr ""
+
+#: site:site.pageState.contact
+msgid "site.pageState.contact"
+msgstr ""
+
+#: site:site.pageState.content_draft
+msgid "site.pageState.content_draft"
+msgstr ""
+
+#: site:site.pageState.content_review
+msgid "site.pageState.content_review"
+msgstr ""
+
+#: site:site.pageState.design_review
+msgid "site.pageState.design_review"
+msgstr ""
+
+#: site:site.pageState.explore
+msgid "site.pageState.explore"
+msgstr ""
+
+#: site:site.pageState.headline
+msgid "site.pageState.headline"
+msgstr ""
+
+#: site:site.pageState.home
+msgid "site.pageState.home"
+msgstr ""
+
+#: site:site.pageState.lede
+msgid "site.pageState.lede"
+msgstr ""
+
+#: site:site.pageState.maintenance
+msgid "site.pageState.maintenance"
+msgstr ""
+
+#: site:site.pageState.maintenanceHeadline
+msgid "site.pageState.maintenanceHeadline"
+msgstr ""
+
+#: site:site.pageState.maintenanceLede
+msgid "site.pageState.maintenanceLede"
+msgstr ""
+
+#: site:site.pageState.pageLabel
+msgid "site.pageState.pageLabel"
+msgstr ""
+
+#: site:site.pageState.planned
+msgid "site.pageState.planned"
+msgstr ""
+
+#: site:site.pageState.published
+msgid "site.pageState.published"
+msgstr ""
+
+#: site:site.pageState.qa
+msgid "site.pageState.qa"
+msgstr ""
+
+#: site:site.pageState.retired
+msgid "site.pageState.retired"
+msgstr ""
+
+#: site:site.pageState.scaffolded
+msgid "site.pageState.scaffolded"
+msgstr ""
+
+#: site:site.pageState.seo_review
+msgid "site.pageState.seo_review"
+msgstr ""
+
+#: site:site.pageState.stageLabel
+msgid "site.pageState.stageLabel"
+msgstr ""
+
+#: site:site.pageState.title
+msgid "site.pageState.title"
+msgstr ""
+
+#: site:site.pageState.updatedLabel
+msgid "site.pageState.updatedLabel"
+msgstr ""
+
 #: site:site.plan.analytics
 msgid "site.plan.analytics"
 msgstr ""

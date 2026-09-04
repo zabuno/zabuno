@@ -6,6 +6,7 @@ use App\Domain\Publication\BusinessType;
 use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Content\ShowCorporatePageController;
 use App\Http\Controllers\EngineeringAppController;
 use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\Media\ServeOriginalController;
@@ -176,6 +177,22 @@ Route::get('/menu/{any}/{rest?}', static fn (Request $request) => GuestDeadEnd::
     ->where('any', '.*')
     ->where('rest', '.*')
     ->name('publicMenu.deadEnd');
+
+/*
+    KURUMSAL SİTENİN TEK GİRİŞ KAPISI (`docs/105` §3, yönerge §7).
+
+    Site haritasındaki 414 yol için 414 rota yazılmaz: hepsi kütükte bir
+    kayıttır ve tek bir denetleyici `PageGate`'e sorup kararı uygular. Bir
+    sayfayı açmak için koddan bileşen silinmez, yalnız yayın durumu değişir.
+
+    Kapı YALNIZ `/tr/` ve `/en/` altında çalışır: bugün yayında olan `/pricing`,
+    `/help` gibi adreslere dokunmaz. O adreslerin dil dizinine taşınması ayrı
+    bir paketin işi (`docs/105` §4.1) ve 301'leriyle birlikte planlanacak.
+*/
+Route::get('/{locale}/{path?}', ShowCorporatePageController::class)
+    ->where('locale', 'tr|en')
+    ->where('path', '.*')
+    ->name('corporate.page');
 
 /**
  * Public GET invitation entry (S1-WP01A delivery journey): a guest gets
