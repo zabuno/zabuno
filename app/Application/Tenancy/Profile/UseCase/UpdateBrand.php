@@ -36,6 +36,16 @@ final class UpdateBrand
             'description' => $data['description'] ?? null,
             'contact_email' => $data['contact_email'] ?? null,
             'contact_phone' => $data['contact_phone'] ?? null,
+            'primary_color' => self::normaliseColor($data['primary_color'] ?? null),
+            'secondary_color' => self::normaliseColor($data['secondary_color'] ?? null),
         ]);
+    }
+
+    /** Boş dize NULL demektir: "renk seçmedim" ile "boş renk" aynı şey değildir. */
+    private static function normaliseColor(mixed $value): ?string
+    {
+        $color = is_string($value) ? strtolower(trim($value)) : '';
+
+        return $color === '' ? null : $color;
     }
 }

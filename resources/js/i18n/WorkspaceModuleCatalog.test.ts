@@ -27,16 +27,17 @@ const FROZEN_MODULE_FILENAMES = [
     'dashboard.ts',
     'media.ts',
     'menu.ts',
+    'profile.ts',
     'publication.ts',
     'shell.ts',
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 658;
+const FROZEN_LEGACY_KEY_COUNT = 682;
 
-// FF-85: QR sihirbazında 'Advanced options' başlığı.
+// FF-88: Profil ekranı (fotoğraf, görünüm, marka renkleri) katalog modülü.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '719130e00edbc01200640b1d13f9be5ee5a208a132fae80daacb1e9768e13957';
+    'b043269dad799bfd92de25753bf050236d04e44ee04df65e16f5b09fa0b04d74';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

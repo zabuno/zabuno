@@ -32,6 +32,13 @@ final class UpdateBrandRequest extends FormRequest
             'description' => ['sometimes', 'nullable', 'string'],
             'contact_email' => ['sometimes', 'nullable', 'email'],
             'contact_phone' => ['sometimes', 'nullable', 'string', 'max:50'],
+            /*
+                Marka renkleri: `#rrggbb`. Kısa biçim (`#abc`) ve ad (`red`)
+                kabul edilmez — depolanan değer tek biçimde olmalı ki menü
+                şablonu onu doğrudan kullanabilsin.
+            */
+            'primary_color' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'secondary_color' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
         ];
     }
 

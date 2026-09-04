@@ -434,3 +434,60 @@ bağlanır (FF-71).
 Rota/tablo envanteri burada; DAM planı `docs/49`; shell `docs/50`; envanter
 `docs/61`; AI `docs/95-97`. Yeni planlar: `docs/99` (superadmin estetiği),
 `docs/100` (frontpages), `docs/101` (acemi-UX).
+
+## 9. FF-88 — Profil ekranı (kişisel bilgi, fotoğraf, tema, marka rengi)
+
+Sahibin isteği (2026-09-04): "bu menüde 'profile' adlı menü item olsun, kişi
+profil bilgilerini buradan düzenleyebilsin. Ve tokens (renk, theme) buradan
+değiştirebilsin. Restoran yöneticisi olarak marka renklerimi (primary color,
+secondary color) değiştirebilmeliyim, profil ve kişisel bilgilerimi
+güncelleyebilmeliyim, avatar profil fotoğrafımı (media components ile)
+yükleyebilmeliyim."
+
+**Boşluk neydi:** hesap menüsünde kişinin kendisine ait TEK bir hedef yoktu.
+Ad değiştirme, Ayarlar'ın "Hesap" sekmesinde saklıydı ve o sekmenin adresi
+bile çalışmıyordu (`settings/account` sessizce Marka sekmesine düşüyordu).
+Profil fotoğrafı ve marka rengi ise hiç yoktu — ne tabloda, ne uçta, ne
+ekranda.
+
+**Ne yapıldı:**
+
+| Katman | Değişiklik |
+| --- | --- |
+| Şema | `brands.primary_color`, `brands.secondary_color` (`#rrggbb`, boş olabilir), `users.avatar_media_asset_id` |
+| Uç | `PUT /api/user/avatar` (bağla/kaldır), `/api/user` gövdesine `avatarMediaAssetId` + `avatarUrl` |
+| Marka ucu | `PUT .../brand` artık iki rengi de kabul eder; biçim `#rrggbb`, kısa biçim ve renk adı reddedilir |
+| Ekran | `/app/{ws}/profile` — fotoğraf, kişisel bilgi, görünüm (tema), marka renkleri |
+| Menü | Hesap menüsünde en üstte **Profil**; Ayarlar onun altında |
+| Onarım | `settings/account` adresi artık gerçekten Hesap sekmesini açar ve mevcut adı ön-doldurur |
+
+**Kararlar ve gerekçeleri:**
+
+1. **Profil, Ayarlar'ın sekmesi DEĞİL, kendi ekranı.** Ayarlar çalışma alanına
+   aittir ve çalışma alanı değişince içeriği değişir; profil kişiye aittir ve
+   kişi hangi restorana geçerse geçsin aynı kalır. Tek ekranda toplamak "adımı
+   değiştirdim, diğer restoranda da değişti mi?" sorusunu her seferinde
+   doğururdu.
+2. **Marka rengi profil ekranında bir istisnadır.** Renk çalışma alanına
+   aittir, kişiye değil. Sahibin istediği yer burası olduğu için buradadır ve
+   bölüm `workspace.manage` izni olmayana HİÇ çizilmez — dokunamayacağı bir
+   kontrolü görüp deneyen kullanıcı, 403 ile karşılaşır ve ürüne güvenini
+   kaybeder.
+3. **Fotoğraf ayrı bir dosya yolu değil, MEDYA VARLIĞIDIR.** Karantina,
+   tarama, türev üretimi ve kota zaten `docs/49` boru hattındadır; ikinci bir
+   yükleme yolu açmak, taranmamış bir dosyanın ürüne girebileceği ikinci bir
+   kapı olurdu. Yükleme alanı Media sayfasının bileşenidir (`MediaDropzone`),
+   yalnız yuvası `profileAvatar` olarak sabitlenir.
+4. **Yabancı çalışma alanının görseli profil fotoğrafı yapılamaz** ve bu
+   reddediliş 404'tür, 403 değil: 403 "o kayıt var" bilgisini sızdırırdı
+   (`ACCOUNT-AVATAR-ESCAPE-01`).
+5. **Renk seçici iki girdilidir:** renk kutusu ve altı haneli kod alanı, aynı
+   değeri paylaşır. Kurumsal kimliği `#C8102E` olarak yazılı bir restoran
+   sahibi o kodu YAZMAK ister; rengi hiç bilmeyen ise kutuyu kullanır.
+6. **Tema kişisel, renk kurumsaldır.** Gündüz müdürü açık temayı, gece
+   kapanışı yapan koyu temayı seçer; ikisi de aynı menüyü aynı renklerde
+   yayınlar. Bu yüzden iki ayrı bölümdür.
+
+**Kanıt:** `tests/Feature/Account/ProfileAvatarTest.php` (bağla/kaldır,
+yabancı varlık 404, kimliksiz çağrı 401), `ProfilePage.test.tsx` (bölümler,
+izin kapısı, zorunlu alanlarla kayıt), `AccountMenu.test.tsx` (madde sırası).

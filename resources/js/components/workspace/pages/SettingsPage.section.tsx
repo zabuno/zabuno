@@ -7,7 +7,10 @@ import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegist
 function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     // Sekme ADRESTEN okunur, bileşen durumundan değil: `settings/billing`
     // paylaşılabilir, yer imine eklenebilir ve tarayıcı geçmişinde anlamlıdır.
-    const activeTab: SettingsTab = ctx.subPath === 'billing' ? 'billing' : 'brand';
+    const activeTab: SettingsTab =
+        ctx.subPath === 'billing' || ctx.subPath === 'account'
+            ? (ctx.subPath as SettingsTab)
+            : 'brand';
 
     return (
         <SettingsPage
@@ -16,6 +19,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             onSaved={ctx.onBrandSaved}
             activeTab={activeTab}
             onSelectTab={(tab) => ctx.onNavigateToSection(`settings/${tab}`)}
+            userName={ctx.userName}
         />
     );
 }

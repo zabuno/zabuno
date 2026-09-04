@@ -17,6 +17,9 @@ final class BrandProfile
         public readonly ?string $description,
         public readonly ?string $contactEmail,
         public readonly ?string $contactPhone,
+        /** `#rrggbb` ya da null — marka rengi seçilmemişse ürün kendi tonuyla çalışır. */
+        public readonly ?string $primaryColor = null,
+        public readonly ?string $secondaryColor = null,
     ) {}
 
     /**
@@ -35,6 +38,8 @@ final class BrandProfile
             'description' => $this->description,
             'contact_email' => $this->contactEmail,
             'contact_phone' => $this->contactPhone,
+            'primary_color' => $this->primaryColor,
+            'secondary_color' => $this->secondaryColor,
         ];
     }
 }
