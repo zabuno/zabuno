@@ -316,6 +316,16 @@ main zemini `surface-subtle`, aside `surface`, sekiz bölüme Phosphor ikonu
 `StatCard`'lar + tablo kartı (`OpsCard`, thead tonlu). Media/Menus/QR/Insights
 gövdeleri Faz 2 (FF-78).
 
+### FF-78 ek paket — Faz 2 kart grameri + koyu tema zemini (2026-09-04)
+
+`PanelCard` (= `OpsCard`) ve `WorkspacePageFrame.cardChildren`; Menus, Media,
+QR, Insights, Locations, Team, Settings, Publication gövdeleri kartta —
+`docs/102` yüzey tablosu L1 → L2. Ayrıca kök neden: koyu temada `surface`
+(0.20) kart, `surface-subtle` (0.24) zemin — kart zeminden KOYU, derinlik
+ters; sahip her ekranı koyu temada görüyordu ve kart grameri görünmüyordu.
+Yeni `--canvas` token'ı (açık 0.975 / koyu 0.15) uygulama zeminidir; kart
+her iki temada zeminden açıktır.
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket

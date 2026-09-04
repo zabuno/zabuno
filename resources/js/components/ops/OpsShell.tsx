@@ -112,7 +112,7 @@ export function OpsShell<Key extends string>({
             mobileMenuOpen={mobileMenuOpen}
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
             // Soluk zemin: kartlar bu tonun üstünde beyaz durur (Metronic "app-bg").
-            className="bg-[var(--color-surface-subtle)]"
+            className="bg-[var(--color-canvas)]"
             persistentSidebar={
                 <aside className="admin-shell-sidebar flex flex-[1_1_16rem] flex-col border-e border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-3)] py-[var(--space-4)]">
                     {nav(true)}

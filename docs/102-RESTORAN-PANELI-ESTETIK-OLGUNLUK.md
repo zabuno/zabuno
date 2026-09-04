@@ -1,7 +1,7 @@
 # 102 — Restoran paneli estetik olgunluğu (kabuk + sayfalar)
 
-**Durum:** Seviye cetveli yazıldı; Faz 1 ✅ (FF-77, 2026-09-04). Sayaç:
-**1/4 tamamlandı, 2/4 aktif.**
+**Durum:** Faz 1 ✅ (FF-77), Faz 2 ✅ (FF-78, 2026-09-04). Sayaç:
+**2/4 tamamlandı, 3/4 aktif.**
 **Sahibin tespiti (canlı ekran görüntüsü, Home):** "maturity level bir UX
 estetiği istedim, yapmadın." Doğru: FF-63…FF-76 yapı ve davranış getirdi;
 `docs/99` yalnız superadmin/mühendislik kabuğunu Metronic'ten esinle kurdu.
@@ -51,9 +51,9 @@ Metronic ikon/renk seti, suite rail, Bootstrap).
 | --- | --- | --- | --- |
 | Kabuk (header/sidebar/main) | L1 | **L2** — main `surface-subtle`, sidebar `surface`, ikonlu gezinti | L3: yoğunluk token'ları header'da |
 | Home | L0 | **L2** — tek `h1`, "Şimdi" vurgu kartı, Setup kartı, istatistik kartları, tablo kartı | L3: boş/yükleniyor durumları kartta |
-| Media | L1 (FF-76) | L1 → L2 için kart grameri gerekir | FF-78 |
-| Menus | L1 | L1 | FF-78: kategori kartları, satır yoğunluğu |
-| QR codes / Insights / Locations / Team / Settings | L1 | L1 | FF-78 |
+| Media | L1 (FF-76) | **L2** — yükleme ve kütüphane iki kart | L3 |
+| Menus | L1 | **L2** — katalog kartta | L3: kategori kartları, satır yoğunluğu |
+| QR codes / Insights / Locations / Team / Settings / Publication | L1 | **L2** — bölgeler `PanelCard`; Publication `cardChildren` | L3 |
 
 ---
 
@@ -77,8 +77,10 @@ Metronic ikon/renk seti, suite rail, Bootstrap).
 
 ## 5. Faz 2-4
 
-- **Faz 2 (FF-78):** Menus/Media/QR/Insights sayfa gövdeleri kart gramerine;
-  liste satırı yoğunluğu; boş/yükleniyor/hata durumları `PageState` ile kartta.
+- **Faz 2 (FF-78) ✅:** `PanelCard` (= `OpsCard`, kopya değil) ve
+  `WorkspacePageFrame.cardChildren`; Menus/Media/QR/Insights/Locations/Team/
+  Settings/Publication gövdeleri kartta. Satır yoğunluğu ve durumların kart
+  içi tasarımı Faz 3'e.
 - **Faz 3:** header yoğunluk token'ları, omnibox görünümü, account popover.
 - **Faz 4:** marka ifadesi (sıcak vurgu, illüstrasyon), tema uyumu, gerçek
   kebapçı testi (`docs/101` Faz 4 ile aynı oturum).

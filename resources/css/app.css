@@ -159,6 +159,7 @@
     --color-fg-warning: var(--fg-warning);
     --color-fg-link: var(--fg-link);
 
+    --color-canvas: var(--canvas);
     --color-surface: var(--surface);
     --color-surface-subtle: var(--surface-subtle);
 
@@ -307,6 +308,9 @@
     --fg-warning: oklch(0.5 0.12 75);
     --fg-link: oklch(0.5 0.16 255);
 
+    /* Uygulama ZEMİNİ (`docs/102` §1): kart her iki temada zeminden açıktır.
+       `surface-subtle` kart İÇİ soluk dolgudur (tablo başlığı); zemin değildir. */
+    --canvas: oklch(0.975 0 0);
     --surface: oklch(1 0 0);
     --surface-subtle: oklch(0.975 0 0);
     --surface-hover: oklch(0.955 0 0);
@@ -418,6 +422,9 @@
     --fg-warning: oklch(0.76 0.13 75);
     --fg-link: oklch(0.76 0.12 255);
 
+    /* Koyu temada zemin karttan KOYU: 0.15 < 0.20. Eskiden zemin `surface-subtle`
+       (0.24) idi ve kart zeminden koyu kalıyordu — derinlik tersti. */
+    --canvas: oklch(0.15 0 0);
     --surface: oklch(0.2 0 0);
     --surface-subtle: oklch(0.24 0 0);
     --surface-hover: oklch(0.27 0 0);
@@ -459,6 +466,7 @@
     --fg-muted: CanvasText;
     --fg-subtle: CanvasText;
     --fg-link: LinkText;
+    --canvas: Canvas;
     --surface: Canvas;
     --surface-subtle: Canvas;
     --surface-hover: Canvas;
