@@ -68,6 +68,10 @@ const en = {
     'menu.category.stock.back.button': 'Mark everything in {name} available again',
     // Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
     // `docs/101` A5/A8 (FF-73): içe aktarma TEK kutuda; boş menüde açık.
+    // `docs/101` Y3: kaydetmek masaya yansımaz; yayınlamak yansıtır.
+    'menu.publishReminder.text': 'Saved. Guests still see the last published menu.',
+    'menu.publishReminder.action': 'Publish now',
+    'menu.publishReminder.dismiss': 'Later',
     'menu.tools.summary': 'Bring in a whole menu',
     'menu.tools.help': 'From a photo of your printed menu, or from a CSV file.',
     'menu.empty.guide':

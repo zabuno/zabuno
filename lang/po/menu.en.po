@@ -468,6 +468,18 @@ msgstr "Enter a product name."
 msgid "menu.product.name.label"
 msgstr "Product name"
 
+#: menu:menu.publishReminder.action
+msgid "menu.publishReminder.action"
+msgstr "Publish now"
+
+#: menu:menu.publishReminder.dismiss
+msgid "menu.publishReminder.dismiss"
+msgstr "Later"
+
+#: menu:menu.publishReminder.text
+msgid "menu.publishReminder.text"
+msgstr "Saved. Guests still see the last published menu."
+
 #: menu:menu.rename.error.empty
 msgid "menu.rename.error.empty"
 msgstr "A name cannot be empty. Nothing was changed."

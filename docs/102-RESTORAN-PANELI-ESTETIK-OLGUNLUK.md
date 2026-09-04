@@ -52,7 +52,7 @@ Metronic ikon/renk seti, suite rail, Bootstrap).
 | Kabuk (header/sidebar/main) | L1 | **L2** — main `surface-subtle`, sidebar `surface`, ikonlu gezinti | L3: yoğunluk token'ları header'da |
 | Home | L0 | **L2** — tek `h1`, "Şimdi" vurgu kartı, Setup kartı, istatistik kartları, tablo kartı | L3: boş/yükleniyor durumları kartta |
 | Media | L1 (FF-76) | **L2** — yükleme ve kütüphane iki kart | L3 |
-| Menus | L1 | **L2** — katalog kartta | L3: kategori kartları, satır yoğunluğu |
+| Menus | L1 | **L2→L3** — katalog kartta, kategori kutuları kart yüzeyinde (FF-81) | L3: satır yoğunluğu |
 | QR codes / Insights / Locations / Team / Settings / Publication | L1 | **L2** — bölgeler `PanelCard`; Publication `cardChildren` | L3 |
 
 ---
@@ -114,6 +114,12 @@ tarayıcıda açıldı ve şu iki şey görüldü:
 
 `docs/102` yüzey tablosunda kabuk ve Home **L3**'e yaklaşır; kalan L3 işi
 form alan ritmi ve liste satır yoğunluğudur.
+
+## 5d. FF-81 — menü kataloğu yoğunluğu (2026-09-04)
+
+Kategori/bölüm kutuları panel kart grameriyle aynı yüzeye taşındı
+(`radius-lg`, `surface`, `space-5` dolgu, `space-4` iç boşluk); kategori
+başlığı `text-section`. Menus yüzeyi tabloda **L3**'e yaklaşır.
 
 ## 6. Kullanıcı yolculuğu
 

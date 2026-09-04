@@ -74,6 +74,7 @@ export function MenuPage({
                     workspaceId={workspaceId}
                     locationId={locationId}
                     onTreeChange={onTreeChange}
+                    onNavigateToSection={onNavigateToSection}
                 />
             );
         }

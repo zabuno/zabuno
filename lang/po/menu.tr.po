@@ -468,6 +468,18 @@ msgstr "Bir ürün adı girin."
 msgid "menu.product.name.label"
 msgstr "Ürün adı"
 
+#: menu:menu.publishReminder.action
+msgid "menu.publishReminder.action"
+msgstr ""
+
+#: menu:menu.publishReminder.dismiss
+msgid "menu.publishReminder.dismiss"
+msgstr ""
+
+#: menu:menu.publishReminder.text
+msgid "menu.publishReminder.text"
+msgstr ""
+
 #: menu:menu.rename.error.empty
 msgid "menu.rename.error.empty"
 msgstr ""

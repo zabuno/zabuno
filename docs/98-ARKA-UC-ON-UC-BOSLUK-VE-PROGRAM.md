@@ -340,6 +340,13 @@ başlığı hizası ve satır hover'ı (`docs/102` §5b).
 `PageState` ortalandı ve ferahladı (boş/hata/kısıt yüzeyleri); sayfa başlığı
 ile gövde arası ve kabuk ana alanı dolgusu `space-fluid-lg`. `docs/102` §5c.
 
+### FF-81 ek paket — Y3 yayın hatırlatması + menü kataloğu yoğunluğu (2026-09-04)
+
+`docs/101` Y3'ün unutulan adımı ekranda: fiyat kaydedilince marka şeritli bir
+satır "Misafirler hâlâ son yayınlanan menüyü görüyor" der ve yayın ekranına
+götürür. Kategori kutuları panel kart grameriyle aynı yüzeye taşındı
+(`docs/102` §5d).
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket
