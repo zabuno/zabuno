@@ -2008,6 +2008,10 @@ msgstr "Create a QR code that resolves to the current published menu."
 msgid "workspace.publication.qrDestination.fields.unavailable"
 msgstr "Publish your menu first — the QR code needs a published menu to point to."
 
+#: workspace:workspace.publication.qrDestination.item.entrance
+msgid "workspace.publication.qrDestination.item.entrance"
+msgstr "Entrance code"
+
 #: workspace:workspace.publication.qrDestination.loadError
 msgid "workspace.publication.qrDestination.loadError"
 msgstr "Could not load QR codes. Try again."
@@ -2055,6 +2059,14 @@ msgstr "QR destination"
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"
 msgstr "Disabled"
+
+#: workspace:workspace.publication.qrDestination.url.copied
+msgid "workspace.publication.qrDestination.url.copied"
+msgstr "Copied"
+
+#: workspace:workspace.publication.qrDestination.url.copy
+msgid "workspace.publication.qrDestination.url.copy"
+msgstr "Copy link"
 
 #: workspace:workspace.publication.qrExport.bulk
 msgid "workspace.publication.qrExport.bulk"
@@ -2219,6 +2231,10 @@ msgstr "SVG"
 #: workspace:workspace.publication.qrExport.noActive
 msgid "workspace.publication.qrExport.noActive"
 msgstr "No active QR code to export yet."
+
+#: workspace:workspace.publication.qrExport.preview.failed
+msgid "workspace.publication.qrExport.preview.failed"
+msgstr "The preview could not be produced. Your code still works; try another format or reload."
 
 #: workspace:workspace.publication.qrExport.previewAlt
 msgid "workspace.publication.qrExport.previewAlt"

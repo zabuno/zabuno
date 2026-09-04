@@ -2008,6 +2008,10 @@ msgstr ""
 msgid "workspace.publication.qrDestination.fields.unavailable"
 msgstr ""
 
+#: workspace:workspace.publication.qrDestination.item.entrance
+msgid "workspace.publication.qrDestination.item.entrance"
+msgstr ""
+
 #: workspace:workspace.publication.qrDestination.loadError
 msgid "workspace.publication.qrDestination.loadError"
 msgstr ""
@@ -2054,6 +2058,14 @@ msgstr ""
 
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.url.copied
+msgid "workspace.publication.qrDestination.url.copied"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.url.copy
+msgid "workspace.publication.qrDestination.url.copy"
 msgstr ""
 
 #: workspace:workspace.publication.qrExport.bulk
@@ -2218,6 +2230,10 @@ msgstr ""
 
 #: workspace:workspace.publication.qrExport.noActive
 msgid "workspace.publication.qrExport.noActive"
+msgstr ""
+
+#: workspace:workspace.publication.qrExport.preview.failed
+msgid "workspace.publication.qrExport.preview.failed"
 msgstr ""
 
 #: workspace:workspace.publication.qrExport.previewAlt

@@ -386,24 +386,26 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
         expect(svgOption).not.toBeDisabled();
         expect(pdfOption).not.toBeDisabled();
 
-        const destinationTypeSelect = within(qrExportRegion).getByLabelText(/destination type/i);
-        const paperSizeSelect = within(qrExportRegion).getByLabelText(/paper/i);
-        const orientationSelect = within(qrExportRegion).getByLabelText(/orientation/i);
-        const bulkInput = within(qrExportRegion).getByLabelText(/bulk range or count/i);
-        const genericExportButton = within(qrExportRegion).getByRole('button', {
-            name: /^export$/i,
-        });
+        /*
+            GÜNCELLENDİ (FF-107). Bu blok, ekranın ÖLÜ KONTROLLERİNİ
+            donduruyordu: tek seçenekli devre dışı "hedef türü", hiçbir zaman
+            etkinleşmeyen "bulk range" alanı ve kalıcı devre dışı "Export"
+            düğmesi. Devre dışı bir kontrol yer kaplar, okunur, tıklanır ve
+            hiçbir şey yapmaz — kullanıcı onu bozuk diye öğrenir. Üçü de
+            kaldırıldı; kâğıt ve yön ise yalnız PDF'in özelliği olduğu için
+            PNG'de HİÇ çizilmiyor.
+        */
+        expect(within(qrExportRegion).queryByLabelText(/destination type/i)).toBeNull();
+        expect(within(qrExportRegion).queryByLabelText(/paper/i)).toBeNull();
+        expect(within(qrExportRegion).queryByLabelText(/orientation/i)).toBeNull();
+        expect(within(qrExportRegion).queryByLabelText(/bulk range or count/i)).toBeNull();
+        expect(within(qrExportRegion).queryByRole('button', { name: /^export$/i })).toBeNull();
         // Tema seçimi artık `radiogroup`'tur, altı bağımsız aç/kapa butonu
         // değil. Altı butonda `aria-pressed`, ekran okuyucuya "altı ayrı
         // anahtar" der; oysa kullanıcı BİRİNİ seçer. `radio` rolü bunu
         // doğru anlatır ve "6 seçenekten 1." bilgisini taşır.
         const themeButtons = within(qrExportRegion).getAllByRole('radio', { name: /theme$/i });
 
-        expect(destinationTypeSelect).toBeDisabled();
-        expect(paperSizeSelect).toBeDisabled();
-        expect(orientationSelect).toBeDisabled();
-        expect(bulkInput).toBeDisabled();
-        expect(genericExportButton).toBeDisabled();
         expect(themeButtons).toHaveLength(6);
         themeButtons.forEach((button) => expect(button).toBeEnabled());
         const pressedThemeButtons = themeButtons.filter(

@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 693;
+const FROZEN_LEGACY_KEY_COUNT = 697;
 
-// FF-97: medya denetim izi metinleri (kim ne yaptı).
+// FF-107: QR kodunun insan adı ve adres kopyalama metinleri.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '8e4a24731ced9773ec57fa0bfdb349784aac8f31ea6f6265865634efbd9752a8';
+    'b52589d88f185d1e5abda52667625f77a52c4499da96ad2d36f3b3d1678d5fb9';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Check, Copy } from '@phosphor-icons/react';
 
 import { t } from '../../../../../i18n/workspace';
 
@@ -9,6 +10,13 @@ export type QrCodeItem = {
     menuId: number;
     token: string;
     resolverUrl: string;
+    /**
+     * Kodun İNSAN ADI: "Masa 12" ya da girişteki kod için `null`.
+     *
+     * Veritabanında `qr_codes.dining_table_id` zaten yazılıyordu ve liste
+     * DTO'su onu düşürüyordu; sahip 40 kod arasından birini seçemiyordu.
+     */
+    tableName?: string | null;
     destinationType: string;
     state: string;
 };
@@ -31,6 +39,38 @@ type QrCodeListItemProps = {
     onRetarget?: (qrCodeId: number, locationId: number) => void;
 };
 
+/**
+ * Adresi panoya kopyalar.
+ *
+ * Ham adresi ekranda göstermenin tek meşru sebebi, sahibin onu bir yere
+ * yapıştırmak istemesidir — elle seçtirmek yerine tek dokunuşla vermek.
+ * Pano API'si olmayan ya da izin vermeyen bir ortamda düğme SESSİZCE
+ * başarısız olmaz; adres zaten yanında seçilebilir hâlde durur.
+ */
+function CopyUrlButton({ url }: { url: string }) {
+    const [copied, setCopied] = useState(false);
+
+    return (
+        <button
+            type="button"
+            onClick={() => {
+                void navigator.clipboard
+                    ?.writeText(url)
+                    .then(() => setCopied(true))
+                    .catch(() => setCopied(false));
+            }}
+            className="inline-flex min-h-[var(--density-hit-area-min)] items-center gap-[var(--space-1)] rounded-[var(--radius-md)] px-[var(--space-2)] text-meta text-fg-secondary hover:bg-surface-hover hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+            {copied ? <Check size={14} weight="bold" /> : <Copy size={14} />}
+            {t(
+                copied
+                    ? 'workspace.publication.qrDestination.url.copied'
+                    : 'workspace.publication.qrDestination.url.copy',
+            )}
+        </button>
+    );
+}
+
 export function QrCodeListItem({
     item,
     onDisable,
@@ -45,19 +85,47 @@ export function QrCodeListItem({
     const [target, setTarget] = useState('');
 
     return (
-        <li className="flex flex-col gap-1">
-            {isActive ? (
+        <li className="flex flex-col gap-[var(--space-1)] border-b border-border py-[var(--space-2)] last:border-b-0">
+            {/*
+                KODUN ADI ÖNDE, ADRES ARKADA — sahibin bildirimi (2026-09-04).
+
+                Önceden satırın başlığı 43 karakterlik ham çözümleyici
+                adresiydi ve ortasından kırılarak sarıyordu. Bir restoran
+                sahibi o dizeden hiçbir şey öğrenmez; öğrenmesi gereken şey
+                "bu hangi masanın kodu". Ad yoksa dürüst olan, adres yerine
+                "menü kodu" demek ve adresi kopyalanabilir bir ayrıntıya
+                indirmektir.
+
+                Devre dışı satır da KİMLİĞİNİ KORUR: eskiden yalnız "Disabled"
+                kelimesine iniyordu ve birden fazla kod varken hangisinin
+                kapatıldığı anlaşılmıyordu.
+            */}
+            <span className="flex flex-wrap items-baseline gap-[var(--space-2)]">
+                <span className="text-body font-medium text-fg">
+                    {item.tableName ?? t('workspace.publication.qrDestination.item.entrance')}
+                </span>
+                {isActive ? null : (
+                    <span className="rounded-pill bg-surface-active px-[var(--space-2)] text-meta text-fg-muted">
+                        {t('workspace.publication.qrDestination.state.disabled')}
+                    </span>
+                )}
+            </span>
+
+            <span className="flex flex-wrap items-center gap-[var(--space-2)]">
+                {/*
+                    Adres YENİ SEKMEDE açılır: kodu denemek için tıklayan
+                    sahip, yönetim panelinden çıkıp gitmemeli.
+                */}
                 <a
                     href={item.resolverUrl}
-                    className="break-all text-body text-fg-link underline underline-offset-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="max-w-full truncate text-meta text-fg-link underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                     {item.resolverUrl}
                 </a>
-            ) : (
-                <span className="text-body text-fg-muted">
-                    {t('workspace.publication.qrDestination.state.disabled')}
-                </span>
-            )}
+                <CopyUrlButton url={item.resolverUrl} />
+            </span>
 
             {/*
                 Kapatmanın KARŞILIĞI olmalı (`docs/81`). Devre dışı bir kod

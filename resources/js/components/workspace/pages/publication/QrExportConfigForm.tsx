@@ -1,4 +1,3 @@
-import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { t } from '../../../../i18n/workspace';
 
@@ -33,18 +32,15 @@ export function QrExportConfigForm({
             className="flex flex-col gap-3"
             aria-label={t('workspace.publication.qrExport.config.heading')}
         >
-            <legend className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+            {/*
+                BAŞLIK gerçek bir başlık gibi yazılır. Büyük harfli `text-meta`
+                bu sistemde ölçüm etiketi ve tablo başlığı içindir
+                (`docs/102` §1); bölüm başlığı olarak kullanılması, bir kartın
+                içinde dört ayrı başlık dili doğuruyordu.
+            */}
+            <legend className="text-body font-semibold text-fg">
                 {t('workspace.publication.qrExport.config.heading')}
             </legend>
-
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.config.destinationType')}
-                <Select disabled defaultValue="published">
-                    <option value="published">
-                        {t('workspace.publication.qrExport.config.destinationType.published')}
-                    </option>
-                </Select>
-            </label>
 
             <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.config.outputFormat')}
@@ -60,46 +56,49 @@ export function QrExportConfigForm({
                 </Select>
             </label>
 
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.config.paperSize')}
-                <Select
-                    disabled={!isPdf}
-                    value={paperSize}
-                    onChange={(event) => onPaperSizeChange?.(event.target.value as QrPaperSize)}
-                >
-                    {PAPER_SIZES.map((size) => (
-                        <option key={size} value={size}>
-                            {size}
-                        </option>
-                    ))}
-                </Select>
-            </label>
+            {/*
+                Kâğıt ve yön YALNIZ PDF'te ÇİZİLİR — devre dışı çizilmez.
 
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.config.orientation')}
-                <Select
-                    disabled={!isPdf}
-                    value={orientation}
-                    onChange={(event) => onOrientationChange?.(event.target.value as QrOrientation)}
-                >
-                    <option value="Portrait">
-                        {t('workspace.publication.qrExport.config.orientation.portrait')}
-                    </option>
-                    <option value="Landscape">
-                        {t('workspace.publication.qrExport.config.orientation.landscape')}
-                    </option>
-                </Select>
-            </label>
+                Devre dışı bir kontrol ekranda yer kaplar, okunur, üzerine
+                tıklanır ve hiçbir şey yapmaz; kullanıcı onu "bozuk" diye
+                öğrenir. Görünmeyen bir kontrol ise soru sormaz.
+            */}
+            {isPdf ? (
+                <>
+                    <label className={LABEL_CLASSES}>
+                        {t('workspace.publication.qrExport.config.paperSize')}
+                        <Select
+                            value={paperSize}
+                            onChange={(event) =>
+                                onPaperSizeChange?.(event.target.value as QrPaperSize)
+                            }
+                        >
+                            {PAPER_SIZES.map((size) => (
+                                <option key={size} value={size}>
+                                    {size}
+                                </option>
+                            ))}
+                        </Select>
+                    </label>
 
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.config.bulk')}
-                <TextInput
-                    type="text"
-                    disabled
-                    defaultValue=""
-                    placeholder={t('workspace.publication.qrExport.config.bulk.placeholder')}
-                />
-            </label>
+                    <label className={LABEL_CLASSES}>
+                        {t('workspace.publication.qrExport.config.orientation')}
+                        <Select
+                            value={orientation}
+                            onChange={(event) =>
+                                onOrientationChange?.(event.target.value as QrOrientation)
+                            }
+                        >
+                            <option value="Portrait">
+                                {t('workspace.publication.qrExport.config.orientation.portrait')}
+                            </option>
+                            <option value="Landscape">
+                                {t('workspace.publication.qrExport.config.orientation.landscape')}
+                            </option>
+                        </Select>
+                    </label>
+                </>
+            ) : null}
         </fieldset>
     );
 }
