@@ -68,6 +68,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // TOPLU okuma (`docs/96` Faz 3): tek istek 10 fotoğrafa kadar dış
         // çağrı yapar, bu yüzden tekil yoldan daha sıkı hız sınırı taşır.
         'POST|api/workspaces/{workspace}/menu/{menu}/ai-imports/batch||App\Http\Controllers\Ai\StoreBulkMenuAiImportController|api,auth:sanctum,throttle:2,1,verified',
+        // TOPLU ORKESTRA (FF-75).
+        'POST|api/workspaces/{workspace}/menu/{menu}/ai-batches||App\Http\Controllers\Ai\StoreMenuAiBatchController|api,auth:sanctum,throttle:2,1,verified',
+        'GET|api/workspaces/{workspace}/ai-batches/{batch}||App\Http\Controllers\Ai\ShowMenuAiBatchController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/ai-imports/batch/apply||App\Http\Controllers\Ai\ApplyBulkMenuAiImportController|api,auth:sanctum,throttle:10,1,verified',
         'GET|api/workspaces/{workspace}/ai-imports/{artifact}||App\Http\Controllers\Ai\ShowMenuAiImportController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/ai-imports/{artifact}/apply||App\Http\Controllers\Ai\ApplyMenuAiImportController|api,auth:sanctum,throttle:10,1,verified',

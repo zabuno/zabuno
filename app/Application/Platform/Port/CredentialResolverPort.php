@@ -37,7 +37,7 @@ interface CredentialResolverPort
      * söyler, böylece çağrı başarısız olduğunda "hangi hesap düştü"
      * yanıtlanabilir.
      */
-    public function resolveFor(int $workspaceId, CredentialProvider $provider): ResolvedCredential;
+    public function resolveFor(int $workspaceId, CredentialProvider $provider, string $purpose = 'interactive'): ResolvedCredential;
 
     public function isConfigured(CredentialProvider $provider): bool;
 }

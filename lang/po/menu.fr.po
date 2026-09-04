@@ -220,6 +220,18 @@ msgstr ""
 msgid "menu.item.ai.import.applying"
 msgstr ""
 
+#: menu:menu.item.ai.import.batch.collected
+msgid "menu.item.ai.import.batch.collected"
+msgstr ""
+
+#: menu:menu.item.ai.import.batch.failed
+msgid "menu.item.ai.import.batch.failed"
+msgstr ""
+
+#: menu:menu.item.ai.import.batch.progress
+msgid "menu.item.ai.import.batch.progress"
+msgstr ""
+
 #: menu:menu.item.ai.import.cancel
 msgid "menu.item.ai.import.cancel"
 msgstr ""

@@ -409,7 +409,7 @@ yapıda (`modules/ai-provider-account-vault.md` §Tüketici abonelik yasağı).
 | R27 | **Teslim edildi (FF-59).** Anthropic + OpenAI-uyumlu adaptörler; metin zinciri dört adaylı. Yetenek↔sağlayıcı eşlemesi yeteneğe göre — metin-yalnız bir sağlayıcı görme rotasını AÇMAZ | `docs/96` Faz 3 |
 | R28 | **Teslim edildi (FF-60).** Sınanmamış özel uç nokta yönlendirme adayı DEĞİLDİR; bilinen sağlayıcı sınanmadan da adaydır | `docs/51` §4.5 |
 | R29 | **Teslim edildi (FF-61).** Toplu okuma; kısmi başarısızlık tolere edilir; istek başına 10 fotoğraf sınırı | `docs/96` Faz 3 |
-| R30 | **Kısmen — bilinçli.** Toplu trafiğin AYRI bir hesaba izolasyonu yapılmadı: yapışkanlık bugün tenant başına, "işin amacına göre hesap" ikinci bir boyut gerektirir ve o Faz 5 kapsamıdır. Bugünkü kota koruması istek sınırı | `docs/96` Faz 3 |
+| R30 | **Teslim edildi (FF-75, 2026-09-04).** Yapışkanlığa `purpose` boyutu eklendi (`ai_connection_assignments.purpose`); toplu trafik `purpose=batch` etiketli bağlantıya yapışır; kiracı başına dakikalık bütçe `RateLimiter('ai-batch')`. Ağırlıklı/maliyet yönlendirmesi hâlâ yok (ölçüm önce) | `docs/adr/ADR-L11` |
 
 ## 5. Owner kararı gerekir mi?
 

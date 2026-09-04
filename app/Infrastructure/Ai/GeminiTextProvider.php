@@ -50,7 +50,7 @@ final readonly class GeminiTextProvider implements StructuredGenerationPort
             varsa o kazanır. Dönen kimlik, çağrı başarısız olursa
             HANGİ hesabın düştüğünü söyleyebilmek için gerekli.
         */
-        $resolved = $this->credentials->resolveFor($request->workspaceId, CredentialProvider::Gemini);
+        $resolved = $this->credentials->resolveFor($request->workspaceId, CredentialProvider::Gemini, (string) ($request->options['purpose'] ?? 'interactive'));
         $creds = $resolved->values;
         $connectionId = $resolved->connectionId;
         $apiKey = (string) ($creds['api_key'] ?? '');

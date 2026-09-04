@@ -299,9 +299,9 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
         return $this->resolveRow($provider, $row);
     }
 
-    public function resolveFor(int $workspaceId, CredentialProvider $provider): ResolvedCredential
+    public function resolveFor(int $workspaceId, CredentialProvider $provider, string $purpose = 'interactive'): ResolvedCredential
     {
-        foreach ($this->routing->candidates($workspaceId, $provider) as $id) {
+        foreach ($this->routing->candidates($workspaceId, $provider, $purpose) as $id) {
             $row = DB::table(self::TABLE)->where('id', $id)->first();
 
             if ($row === null) {
@@ -317,7 +317,7 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
                 continue;
             }
 
-            $this->routing->remember($workspaceId, $provider, (int) $row->id);
+            $this->routing->remember($workspaceId, $provider, (int) $row->id, $purpose);
 
             return new ResolvedCredential($values, (int) $row->id);
         }

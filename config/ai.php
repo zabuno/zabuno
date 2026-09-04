@@ -81,6 +81,16 @@ return [
      * sağlayıcı kataloğu bizim sürüm döngümüzden bağımsız değişir. Anahtar
      * burada YOK — o kasada (`platform_credentials`) ya da env'de.
      */
+    /*
+        TOPLU ORKESTRA (`docs/98` FF-75). `per_minute`: kiracı başına dakikada
+        kuyruktan sağlayıcıya giden sayfa — "limit şişmesin". Sayı dağıtım
+        ortamının sağlayıcı sözleşmesine göre `.env`'den ayarlanır.
+    */
+    'batch' => [
+        'max_pages' => (int) env('AI_BATCH_MAX_PAGES', 40),
+        'per_minute' => (int) env('AI_BATCH_PER_MINUTE', 6),
+        'poll_seconds' => (int) env('AI_BATCH_POLL_SECONDS', 2),
+    ],
     'openai' => [
         'vision_model' => env('AI_OPENAI_VISION_MODEL', 'gpt-4o-mini'),
         'request_timeout' => (int) env('AI_OPENAI_TIMEOUT', 60),
