@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { LOCALES, FALLBACK_LOCALE, currentLocale, directionOf, isLocaleCode } from './locales';
 import { coverageOf, createTranslator } from './translator';
 import { menuTranslations } from './menu';
-import { overridesFor } from './generated-overrides';
+import { loadLocaleOverrides, overridesFor } from './generated-overrides';
 
 /**
  * i18n kapısı — CORE-08 (`docs/26` S1-WP03, `docs/37` Dalga 5).
@@ -88,7 +88,14 @@ describe('i18n kapısı', () => {
     // fark etmeden birikir ve sonra hangisinin canlı olduğu bilinemez.
     // Artık çeviriler elle yazılmaz, PO'dan üretilir — bu kapı üretilmiş
     // projeksiyonun tabandan sapmadığını doğrular.
-    it('üretilmiş menü çevirisi tabanda olmayan anahtar taşımaz ve kapsamı ölçülür', () => {
+    /*
+        Projeksiyonlar artık İSTEĞE BAĞLI indiriliyor (FF-94): ana pakete
+        altı dilin tamamını gömmek, kullanıcıya okumadığı dilleri
+        indirtiyordu. Kapının ölçtüğü sözleşme değişmedi — üretilmiş tablo
+        tabandan sapmamalı — yalnız tablo, ölçülmeden önce yüklenmeli.
+    */
+    it('üretilmiş menü çevirisi tabanda olmayan anahtar taşımaz ve kapsamı ölçülür', async () => {
+        await loadLocaleOverrides('tr');
         const overrides = overridesFor('menu');
         const baseKeys = new Set(Object.keys(menuTranslations));
 

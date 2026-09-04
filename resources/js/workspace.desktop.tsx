@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { readyForRender } from './i18n/mount';
 import { WorkspaceApp } from './components/workspace/WorkspaceApp';
 import { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';
 import { ThemeRoot } from './components/theme/ThemeRoot';
@@ -23,22 +24,28 @@ if (!container) {
     throw new Error('Root mount element #app not found.');
 }
 
-createRoot(container).render(
-    <StrictMode>
-        <ThemeRoot>
-            <BuildTruthBanner />
-            <AppErrorBoundary scope="app">
-                <WorkspaceApp
-                    renderPersistentSidebar={(context) => <DesktopSidebar {...context} />}
-                    /*
-                        Bağlam paneli YALNIZ masaüstünde. 336 piksellik kalıcı
-                        bir ray, 320 piksel genişliğinde bir ekranda zaten yer
-                        bulamaz — ve temel görev ona bağımlı değildir
-                        (docs/50 §3.4, docs/60).
-                    */
-                    inspectors={desktopInspectors}
-                />
-            </AppErrorBoundary>
-        </ThemeRoot>
-    </StrictMode>,
-);
+/*
+    Çeviri tablosu İNDİRİLMEDEN çizilmez (FF-94): önce İngilizce, sonra
+    Türkçe bir ekran göstermek, dili hiç bilmemekten daha kötü görünür.
+*/
+void readyForRender().then(() => {
+    createRoot(container).render(
+        <StrictMode>
+            <ThemeRoot>
+                <BuildTruthBanner />
+                <AppErrorBoundary scope="app">
+                    <WorkspaceApp
+                        renderPersistentSidebar={(context) => <DesktopSidebar {...context} />}
+                        /*
+                            Bağlam paneli YALNIZ masaüstünde. 336 piksellik kalıcı
+                            bir ray, 320 piksel genişliğinde bir ekranda zaten yer
+                            bulamaz — ve temel görev ona bağımlı değildir
+                            (docs/50 §3.4, docs/60).
+                        */
+                        inspectors={desktopInspectors}
+                    />
+                </AppErrorBoundary>
+            </ThemeRoot>
+        </StrictMode>,
+    );
+});

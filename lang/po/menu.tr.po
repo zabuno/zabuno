@@ -10,15 +10,15 @@ msgstr ""
 
 #: menu:menu.ai.unavailable.budget_exhausted
 msgid "menu.ai.unavailable.budget_exhausted"
-msgstr ""
+msgstr "Bu ayki yapay zekâ bütçesi bitti. Diğer her şey çalışmaya devam ediyor."
 
 #: menu:menu.ai.unavailable.kill_switch
 msgid "menu.ai.unavailable.kill_switch"
-msgstr ""
+msgstr "Yapay zekâ yardımı şu anda kapalı."
 
 #: menu:menu.ai.unavailable.no_route
 msgid "menu.ai.unavailable.no_route"
-msgstr ""
+msgstr "Henüz bir yapay zekâ sağlayıcısı kurulmadı."
 
 #: menu:menu.categories.list.label
 msgid "menu.categories.list.label"
@@ -26,11 +26,11 @@ msgstr "Menü kategorileri"
 
 #: menu:menu.category.add.cancel
 msgid "menu.category.add.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: menu:menu.category.add.disclose
 msgid "menu.category.add.disclose"
-msgstr ""
+msgstr "Kategori ekle"
 
 #: menu:menu.category.create.error.submit
 msgid "menu.category.create.error.submit"
@@ -42,15 +42,15 @@ msgstr "Kategori ekle"
 
 #: menu:menu.category.delete.confirm
 msgid "menu.category.delete.confirm"
-msgstr ""
+msgstr "“{name}” ve içindeki ürünler bu menüden kaldırılsın mı? Yayınlanmış sürümlerde kalmaya devam eder."
 
 #: menu:menu.category.delete.label
 msgid "menu.category.delete.label"
-msgstr ""
+msgstr "{name} kategorisini kaldır"
 
 #: menu:menu.category.empty
 msgid "menu.category.empty"
-msgstr ""
+msgstr "Bu kategoride henüz ürün yok."
 
 #: menu:menu.category.items.label
 msgid "menu.category.items.label"
@@ -74,19 +74,19 @@ msgstr "Kategori"
 
 #: menu:menu.category.stock.back.button
 msgid "menu.category.stock.back.button"
-msgstr ""
+msgstr "{name} içindeki her şeyi tekrar mevcut yap"
 
 #: menu:menu.category.stock.back.short
 msgid "menu.category.stock.back.short"
-msgstr ""
+msgstr "Hepsi mevcut"
 
 #: menu:menu.category.stock.out.button
 msgid "menu.category.stock.out.button"
-msgstr ""
+msgstr "{name} içindeki her şeyi bugünlük tükendi işaretle"
 
 #: menu:menu.category.stock.out.short
 msgid "menu.category.stock.out.short"
-msgstr ""
+msgstr "Hepsi tükendi"
 
 #: menu:menu.create.error.submit
 msgid "menu.create.error.submit"
@@ -98,83 +98,83 @@ msgstr "Menü oluştur"
 
 #: menu:menu.duplicates.heading
 msgid "menu.duplicates.heading"
-msgstr ""
+msgstr "Olası tekrarlar ({count})"
 
 #: menu:menu.duplicates.help
 msgid "menu.duplicates.help"
-msgstr ""
+msgstr "Bu ürün adları birbirine benziyor. Hiçbiri kendiliğinden birleştirilmez — gerçekten aynıysa birini siz yeniden adlandırın ya da kaldırın."
 
 #: menu:menu.duplicates.pair
 msgid "menu.duplicates.pair"
-msgstr ""
+msgstr "“{a}” ve “{b}”"
 
 #: menu:menu.empty.guide
 msgid "menu.empty.guide"
-msgstr ""
+msgstr "Buradan başlayın: aşağıdan tüm menünüzü bir fotoğraftan ya da CSV dosyasından alın, veya teker teker kategori ve ürün ekleyin."
 
 #: menu:menu.entry.allergens.disclose
 msgid "menu.entry.allergens.disclose"
-msgstr ""
+msgstr "Alerjenler (isteğe bağlı)"
 
 #: menu:menu.entry.cancel
 msgid "menu.entry.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: menu:menu.entry.category.empty
 msgid "menu.entry.category.empty"
-msgstr ""
+msgstr "Önce bir kategori ekleyin — her ürün bir kategoride durur."
 
 #: menu:menu.entry.category.label
 msgid "menu.entry.category.label"
-msgstr ""
+msgstr "Kategori"
 
 #: menu:menu.entry.error.submit
 msgid "menu.entry.error.submit"
-msgstr ""
+msgstr "Ürünü ekleyemedik. Lütfen tekrar deneyin."
 
 #: menu:menu.entry.open
 msgid "menu.entry.open"
-msgstr ""
+msgstr "Ürün ekle"
 
 #: menu:menu.entry.section.label
 msgid "menu.entry.section.label"
-msgstr ""
+msgstr "{category} kategorisine ürün ekle"
 
 #: menu:menu.entry.submit
 msgid "menu.entry.submit"
-msgstr ""
+msgstr "Menüye ekle"
 
 #: menu:menu.entry.success
 msgid "menu.entry.success"
-msgstr ""
+msgstr "{name}, {category} kategorisine eklendi."
 
 #: menu:menu.export.download
 msgid "menu.export.download"
-msgstr ""
+msgstr "Menüyü indir (CSV)"
 
 #: menu:menu.import.done
 msgid "menu.import.done"
-msgstr ""
+msgstr "{categories} yeni kategoriye {items} ürün aktarıldı."
 
 #: menu:menu.import.error
 msgid "menu.import.error"
-msgstr ""
+msgstr "Dosya içe aktarılamadı."
 
 #: menu:menu.import.help
 msgid "menu.import.help"
-msgstr ""
+msgstr "Sütunlar: kategori, ürün, fiyat, para birimi, alerjenler, açıklama, görünür. Siz yayınlamadan hiçbiri misafire ulaşmaz."
 
 #: menu:menu.import.label
 msgid "menu.import.label"
-msgstr ""
+msgstr "CSV menü içe aktar"
 
 #: menu:menu.import.rejected
 msgid "menu.import.rejected"
-msgstr ""
+msgstr "{count} satır okunamadı:"
 
 #: menu:menu.import.rejected.row
 msgid "menu.import.rejected.row"
-msgstr ""
+msgstr "Satır {line}: {reason}"
 
 #: menu:menu.initial.error.load
 msgid "menu.initial.error.load"
@@ -186,107 +186,107 @@ msgstr "Tekrar dene"
 
 #: menu:menu.item.ai.description.error
 msgid "menu.item.ai.description.error"
-msgstr ""
+msgstr "Yapay zekâ önerisi alınamadı. Yine de kendiniz yazabilirsiniz."
 
 #: menu:menu.item.ai.description.loading
 msgid "menu.item.ai.description.loading"
-msgstr ""
+msgstr "Yapay zekâya soruluyor…"
 
 #: menu:menu.item.ai.description.request
 msgid "menu.item.ai.description.request"
-msgstr ""
+msgstr "Yapay zekâ ile öner"
 
 #: menu:menu.item.ai.description.suggested
 msgid "menu.item.ai.description.suggested"
-msgstr ""
+msgstr "Yapay zekâ önerisi — kaydetmeden önce dilediğiniz gibi düzenleyin."
 
 #: menu:menu.item.ai.description.suggested.fallback
 msgid "menu.item.ai.description.suggested.fallback"
-msgstr ""
+msgstr "Yapay zekâ önerisi (yedek sağlayıcıdan) — kaydetmeden önce dilediğiniz gibi düzenleyin."
 
 #: menu:menu.item.ai.description.unavailable
 msgid "menu.item.ai.description.unavailable"
-msgstr ""
+msgstr "Yapay zekâ önerileri şu anda kullanılamıyor."
 
 #: menu:menu.item.ai.description.uncertain
 msgid "menu.item.ai.description.uncertain"
-msgstr ""
+msgstr "Yapay zekâ bu öneriden emin olamadı. Kaydetmeden önce dikkatle okuyun."
 
 #: menu:menu.item.ai.import.apply
 msgid "menu.item.ai.import.apply"
-msgstr ""
+msgstr "Bunları taslağa ekle"
 
 #: menu:menu.item.ai.import.applying
 msgid "menu.item.ai.import.applying"
-msgstr ""
+msgstr "Ekleniyor…"
 
 #: menu:menu.item.ai.import.batch.collected
 msgid "menu.item.ai.import.batch.collected"
-msgstr ""
+msgstr "{pages} sayfadan {rows} satır. {dupes} tekrar eden satır atlandı."
 
 #: menu:menu.item.ai.import.batch.failed
 msgid "menu.item.ai.import.batch.failed"
-msgstr ""
+msgstr "Sayfaların hiçbiri okunamadı."
 
 #: menu:menu.item.ai.import.batch.progress
 msgid "menu.item.ai.import.batch.progress"
-msgstr ""
+msgstr "{total} sayfadan {done} tanesi okunuyor…"
 
 #: menu:menu.item.ai.import.cancel
 msgid "menu.item.ai.import.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: menu:menu.item.ai.import.disclose
 msgid "menu.item.ai.import.disclose"
-msgstr ""
+msgstr "Fotoğraftan aktar (yapay zekâ)"
 
 #: menu:menu.item.ai.import.error
 msgid "menu.item.ai.import.error"
-msgstr ""
+msgstr "Fotoğraf okunamadı. Ürünleri yine de elle ekleyebilirsiniz."
 
 #: menu:menu.item.ai.import.fallback
 msgid "menu.item.ai.import.fallback"
-msgstr ""
+msgstr "Yedek sağlayıcı tarafından okundu."
 
 #: menu:menu.item.ai.import.media.empty
 msgid "menu.item.ai.import.media.empty"
-msgstr ""
+msgstr "Henüz işlenmiş fotoğraf yok. Önce Görseller sayfasından (yuva: Aktarım kaynağı) bir tane yükleyin."
 
 #: menu:menu.item.ai.import.media.label
 msgid "menu.item.ai.import.media.label"
-msgstr ""
+msgstr "Okunacak fotoğrafları seçin"
 
 #: menu:menu.item.ai.import.photo.failed
 msgid "menu.item.ai.import.photo.failed"
-msgstr ""
+msgstr "“{name}” okunamadı — diğer fotoğraflar yine de işlendi."
 
 #: menu:menu.item.ai.import.preview.heading
 msgid "menu.item.ai.import.preview.heading"
-msgstr ""
+msgstr "Yapay zekânın okuduğu — eklemeden önce gözden geçirin"
 
 #: menu:menu.item.ai.import.read
 msgid "menu.item.ai.import.read"
-msgstr ""
+msgstr "Bu fotoğrafları oku"
 
 #: menu:menu.item.ai.import.reading
 msgid "menu.item.ai.import.reading"
-msgstr ""
+msgstr "Okunuyor…"
 
 #: menu:menu.item.ai.import.rejected.row
 msgid "menu.item.ai.import.rejected.row"
-msgstr ""
+msgstr "Satır {row}: {reason}"
 
 #: menu:menu.item.ai.import.row.price.missing
 msgid "menu.item.ai.import.row.price.missing"
-msgstr ""
+msgstr "Fiyat okunamadı — bu satır atlanacak"
 
 #: menu:menu.item.ai.import.row.uncertain
 msgid "menu.item.ai.import.row.uncertain"
-msgstr ""
+msgstr "Bu satırdan emin değil"
 
 #: menu:menu.item.ai.import.unavailable
 msgid "menu.item.ai.import.unavailable"
-msgstr ""
+msgstr "Menü fotoğrafı okuma şu anda kullanılamıyor."
 
 #: menu:menu.item.allergens.edit.button
 msgid "menu.item.allergens.edit.button"
@@ -294,7 +294,7 @@ msgstr "{name} alerjenlerini düzenle"
 
 #: menu:menu.item.allergens.edit.label
 msgid "menu.item.allergens.edit.label"
-msgstr ""
+msgstr "Alerjenler — {name}"
 
 #: menu:menu.item.allergens.edit.short
 msgid "menu.item.allergens.edit.short"
@@ -330,31 +330,31 @@ msgstr "Para birimi"
 
 #: menu:menu.item.delete.confirm
 msgid "menu.item.delete.confirm"
-msgstr ""
+msgstr "“{name}” bu menüden kaldırılsın mı? Yayınlanmış sürümlerde kalmaya devam eder."
 
 #: menu:menu.item.delete.label
 msgid "menu.item.delete.label"
-msgstr ""
+msgstr "{name} ürününü kaldır"
 
 #: menu:menu.item.description.help
 msgid "menu.item.description.help"
-msgstr ""
+msgstr "Misafirin adın altında okuduğu kısa bir satır. En fazla 500 karakter."
 
 #: menu:menu.item.description.label
 msgid "menu.item.description.label"
-msgstr ""
+msgstr "Açıklama"
 
 #: menu:menu.item.image.empty
 msgid "menu.item.image.empty"
-msgstr ""
+msgstr "Henüz işlenmiş fotoğraf yok. Önce Görseller sayfasından bir tane yükleyin."
 
 #: menu:menu.item.image.label
 msgid "menu.item.image.label"
-msgstr ""
+msgstr "Fotoğraf"
 
 #: menu:menu.item.image.none
 msgid "menu.item.image.none"
-msgstr ""
+msgstr "Fotoğraf yok"
 
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
@@ -362,19 +362,19 @@ msgstr "{name} sırası"
 
 #: menu:menu.item.presentation.edit.button
 msgid "menu.item.presentation.edit.button"
-msgstr ""
+msgstr "{name} için fotoğraf ve açıklamayı düzenle"
 
 #: menu:menu.item.presentation.edit.short
 msgid "menu.item.presentation.edit.short"
-msgstr ""
+msgstr "Fotoğraf ve metin"
 
 #: menu:menu.item.presentation.error.image
 msgid "menu.item.presentation.error.image"
-msgstr ""
+msgstr "Açıklama kaydedildi ama fotoğraf eklenemedi."
 
 #: menu:menu.item.presentation.submit
 msgid "menu.item.presentation.submit"
-msgstr ""
+msgstr "Sunumu kaydet"
 
 #: menu:menu.item.price.edit.button
 msgid "menu.item.price.edit.button"
@@ -386,7 +386,7 @@ msgstr "Fiyatı güncelleyemedik. Lütfen tekrar deneyin."
 
 #: menu:menu.item.price.edit.label
 msgid "menu.item.price.edit.label"
-msgstr ""
+msgstr "Fiyat — {name}"
 
 #: menu:menu.item.price.edit.short
 msgid "menu.item.price.edit.short"
@@ -406,19 +406,19 @@ msgstr "Fiyat"
 
 #: menu:menu.item.stock.back.button
 msgid "menu.item.stock.back.button"
-msgstr ""
+msgstr "{name} ürününü tekrar mevcut yap"
 
 #: menu:menu.item.stock.back.short
 msgid "menu.item.stock.back.short"
-msgstr ""
+msgstr "Tekrar mevcut"
 
 #: menu:menu.item.stock.out.button
 msgid "menu.item.stock.out.button"
-msgstr ""
+msgstr "{name} ürününü bugünlük tükendi işaretle"
 
 #: menu:menu.item.stock.out.short
 msgid "menu.item.stock.out.short"
-msgstr ""
+msgstr "Tükendi"
 
 #: menu:menu.item.visibility.checkbox.label
 msgid "menu.item.visibility.checkbox.label"
@@ -434,11 +434,11 @@ msgstr "Menü yükleniyor…"
 
 #: menu:menu.move.down
 msgid "menu.move.down"
-msgstr ""
+msgstr "{name} ürününü aşağı taşı"
 
 #: menu:menu.move.up
 msgid "menu.move.up"
-msgstr ""
+msgstr "{name} ürününü yukarı taşı"
 
 #: menu:menu.name.error.required
 msgid "menu.name.error.required"
@@ -450,7 +450,7 @@ msgstr "Menü adı"
 
 #: menu:menu.ops.error
 msgid "menu.ops.error"
-msgstr ""
+msgstr "Bu değişiklik kaydedilemedi. Hiçbir şey kaybolmadı — tekrar deneyin."
 
 #: menu:menu.product.create.error.submit
 msgid "menu.product.create.error.submit"
@@ -470,27 +470,27 @@ msgstr "Ürün adı"
 
 #: menu:menu.publishReminder.action
 msgid "menu.publishReminder.action"
-msgstr ""
+msgstr "Şimdi yayınla"
 
 #: menu:menu.publishReminder.dismiss
 msgid "menu.publishReminder.dismiss"
-msgstr ""
+msgstr "Sonra"
 
 #: menu:menu.publishReminder.text
 msgid "menu.publishReminder.text"
-msgstr ""
+msgstr "Kaydedildi. Misafirler hâlâ son yayınlanan menüyü görüyor."
 
 #: menu:menu.rename.error.empty
 msgid "menu.rename.error.empty"
-msgstr ""
+msgstr "Ad boş olamaz. Hiçbir şey değişmedi."
 
 #: menu:menu.rename.label
 msgid "menu.rename.label"
-msgstr ""
+msgstr "{name} adını değiştir"
 
 #: menu:menu.rename.prompt
 msgid "menu.rename.prompt"
-msgstr ""
+msgstr "Adı düzeltin"
 
 #: menu:menu.status.saving
 msgid "menu.status.saving"
@@ -498,8 +498,8 @@ msgstr "Kaydediliyor…"
 
 #: menu:menu.tools.help
 msgid "menu.tools.help"
-msgstr ""
+msgstr "Basılı menünüzün fotoğrafından ya da bir CSV dosyasından."
 
 #: menu:menu.tools.summary
 msgid "menu.tools.summary"
-msgstr ""
+msgstr "Tüm menüyü aktar"

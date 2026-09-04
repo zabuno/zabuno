@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { readyForRender } from './i18n/mount';
 import { WorkspaceApp } from './components/workspace/WorkspaceApp';
 import { ThemeRoot } from './components/theme/ThemeRoot';
 import { AppErrorBoundary } from './components/system/AppErrorBoundary';
@@ -26,16 +27,24 @@ if (!container) {
     throw new Error('Root mount element #app not found.');
 }
 
-createRoot(container).render(
-    <StrictMode>
-        <ThemeRoot>
-            <BuildTruthBanner />
-            <AppErrorBoundary scope="app">
-                <WorkspaceApp
-                    renderNavigationDrawer={(context) => <MobileNavigationDrawer {...context} />}
-                    renderBottomBar={(context) => <MobileBottomNav {...context} />}
-                />
-            </AppErrorBoundary>
-        </ThemeRoot>
-    </StrictMode>,
-);
+/*
+    Çeviri tablosu İNDİRİLMEDEN çizilmez (FF-94): önce İngilizce, sonra
+    Türkçe bir ekran göstermek, dili hiç bilmemekten daha kötü görünür.
+*/
+void readyForRender().then(() => {
+    createRoot(container).render(
+        <StrictMode>
+            <ThemeRoot>
+                <BuildTruthBanner />
+                <AppErrorBoundary scope="app">
+                    <WorkspaceApp
+                        renderNavigationDrawer={(context) => (
+                            <MobileNavigationDrawer {...context} />
+                        )}
+                        renderBottomBar={(context) => <MobileBottomNav {...context} />}
+                    />
+                </AppErrorBoundary>
+            </ThemeRoot>
+        </StrictMode>,
+    );
+});

@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { readyForRender } from './i18n/mount';
 import { EngineeringApp } from './components/engineering/EngineeringApp';
 import { ThemeRoot } from './components/theme/ThemeRoot';
 import { AppErrorBoundary } from './components/system/AppErrorBoundary';
@@ -11,14 +12,20 @@ if (!container) {
     throw new Error('Root mount element #engineering-app not found.');
 }
 
-createRoot(container).render(
-    <StrictMode>
-        <ThemeRoot>
-            {/* Şerit hata sınırının DIŞINDA — çökünce de görünmeli (`docs/52`). */}
-            <BuildTruthBanner />
-            <AppErrorBoundary scope="app">
-                <EngineeringApp />
-            </AppErrorBoundary>
-        </ThemeRoot>
-    </StrictMode>,
-);
+/*
+    Çeviri tablosu İNDİRİLMEDEN çizilmez (FF-94): önce İngilizce, sonra
+    Türkçe bir ekran göstermek, dili hiç bilmemekten daha kötü görünür.
+*/
+void readyForRender().then(() => {
+    createRoot(container).render(
+        <StrictMode>
+            <ThemeRoot>
+                {/* Şerit hata sınırının DIŞINDA — çökünce de görünmeli (`docs/52`). */}
+                <BuildTruthBanner />
+                <AppErrorBoundary scope="app">
+                    <EngineeringApp />
+                </AppErrorBoundary>
+            </ThemeRoot>
+        </StrictMode>,
+    );
+});
