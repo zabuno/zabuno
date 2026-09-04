@@ -68,10 +68,23 @@ export function SettingsPage({
                     olduğunu, hangisinde bulunduğunu ve ok tuşlarıyla
                     gezinebileceğini ancak rollerden öğrenir.
                 */}
+                {/*
+                    BÖLÜMLÜ KONTROL (FF-131, teslim paketinin düzeni).
+
+                    Sekmeler serbest duran, her biri kendi kenarlığını taşıyan
+                    düğmelerdi ve "üç ayrı eylem" gibi okunuyordu. Oysa bunlar
+                    birbirini DIŞLAYAN seçenekler: biri seçilince diğerleri
+                    kapanır. Kenarlık dışarı alınınca o ilişki görünür oluyor
+                    ve `tablist` semantiğiyle örtüşüyor — göz ile kulak aynı
+                    şeyi söylüyor.
+
+                    Kutu `w-fit` ve taşarsa yatay kayar: dört sekme dar bir
+                    telefonda alt satıra düşseydi "bölüm" fikri dağılırdı.
+                */}
                 <div
                     role="tablist"
                     aria-label={t('workspace.settings.tabs.label')}
-                    className="flex flex-wrap gap-2"
+                    className="flex w-fit max-w-full gap-[var(--space-1)] overflow-x-auto rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-1)]"
                 >
                     {TABS.map((tab) => {
                         const selected = tab.key === activeTab;
@@ -87,8 +100,8 @@ export function SettingsPage({
                                 onClick={() => onSelectTab(tab.key)}
                                 className={
                                     selected
-                                        ? 'min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg'
-                                        : 'min-h-[var(--density-hit-area-min)] rounded-md border border-border px-4 py-2 text-body font-medium text-fg-secondary hover:bg-surface-hover'
+                                        ? 'min-h-[var(--control-height)] rounded-[var(--radius-lg)] bg-action px-[var(--space-4)] py-[var(--space-1)] text-body font-bold whitespace-nowrap text-action-fg'
+                                        : 'min-h-[var(--control-height)] rounded-[var(--radius-lg)] px-[var(--space-4)] py-[var(--space-1)] text-body font-medium whitespace-nowrap text-fg-secondary hover:bg-surface-hover'
                                 }
                             >
                                 {t(tab.labelKey)}
