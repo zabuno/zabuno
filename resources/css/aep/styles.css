@@ -9,9 +9,25 @@
 @import "tokens/density.css";
 @import "tokens/variants.css";
 @import "tokens/base.css";
-@import "components/primitives/primitives.css";
-@import "components/forms/forms.css";
-@import "components/data/data.css";
-@import "components/navigation/navigation.css";
-@import "components/feedback/feedback.css";
-@import "components/ai/ai.css";
+/* ZABUNO SAPMASI (FF-131) — bileşen CSS'i zincire ALINMADI.
+
+   Paketin `components/*.css` dosyaları sınıf tabanlıdır (`.aep-btn`,
+   `.aep-shell`, `.aep-table` …). Bu depoda bileşenler Flowbite'a bağlı ve
+   aynı jetonları okuyor; sınıfları da yüklemek her kontrolü İKİ kez
+   biçimlendirir ve hangisinin kazandığı kaynak sırasına kalırdı.
+
+   Belirleyici gözlem: PAKETİN KENDİ PANELİ de bu sınıfları kullanmıyor.
+   `Restoran Paneli v2.dc.html` yalnız TOKEN'ları tüketip görünümü kendi
+   `.z-*` katmanıyla kuruyor. Yani sözleşme jetonlardır; bileşen CSS'i
+   paketin bir teslim biçimi, bir şartı değil.
+
+   Dosyalar klasörde REFERANS olarak duruyor: bir bileşenin nasıl görünmesi
+   gerektiği tartışılırsa bakılacak yer orası.
+
+   Orijinal satırlar:
+     @import "components/primitives/primitives.css";
+     @import "components/forms/forms.css";
+     @import "components/data/data.css";
+     @import "components/navigation/navigation.css";
+     @import "components/feedback/feedback.css";
+     @import "components/ai/ai.css"; */

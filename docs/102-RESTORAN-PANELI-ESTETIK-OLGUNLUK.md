@@ -433,6 +433,48 @@ ve iki bölüm kayıtta grupsuz olduğu için çekmecede de çizilmez; menüden
 tamamen kaldırmak ikisini de ULAŞILAMAZ yapardı. Kural bu yüzden "menüden
 kaldır" değil, **"menüde yalnız ray yokken dursun"**.
 
+## 5o. FF-131 — teslim paketi bir brief değil, çalışan bir sistemmiş (2026-09-04)
+
+**Kök hata bendeydi.** Paketi bir tarif sanıp jetonları ELLE yeniden
+türetiyordum. Paketin içinde `_ds/` altında çalışan bir tasarım sistemi
+vardı: ilkel palet, semantic jetonlar, yoğunluk, tipografi ve bileşen CSS'i.
+Aynı sayılar iki yerde yazılıyordu ve ilk ayrışmada hangisinin doğru olduğu
+belirsizdi.
+
+**Artık kaynak paket.** `resources/css/aep/` paketin kopyasıdır; depodaki
+semantic jetonlar onun üstüne geçiş takma adı olarak oturur
+(`--canvas: var(--aep-surface-canvas)`). Tailwind ve Flowbite zinciri hiç
+değişmeden AEP değerlerini okur.
+
+**Geçişin ortaya çıkardığı iki gerçek hata:**
+
+1. **Roboto hiç yüklenmiyordu.** Depo yazı yığınında `'Roboto'` yazıyordu
+   ama hiçbir yerden indirmiyordu; panel sistem yazı tipiyle çiziliyordu.
+   Yani "yazı tipi kararı" yalnız bir dize olarak vardı.
+2. **600 ağırlık AEP ölçeğinde yok.** Bütün başlıklar `font-semibold` (600)
+   idi; izinli ağırlıklar 400/500/700 ve Roboto'da 600 ayrı kesim olarak
+   yüklenmediği için tarayıcı onu SENTEZLİYORDU — başlıklar hem daha ince
+   hem her tarayıcıda biraz farklı çiziliyordu.
+
+**Paketten iki sapma, ikisi de yazılı:**
+
+- Paketin `fonts.css`'i Phosphor'u ikon WEB YAZI TİPİ olarak yüklüyor; depo
+  Phosphor'u zaten React bileşeni olarak kullanıyor, üç dış istek indirilip
+  hiç kullanılmıyordu.
+- Paketin `components/*.css` dosyaları zincire alınmadı. Belirleyici gözlem:
+  PAKETİN KENDİ PANELİ de o sınıfları kullanmıyor — yalnız jetonları tüketip
+  görünümü kendi katmanıyla kuruyor. Sözleşme jetonlardır.
+
+**Persona geçişin dışında.** Platform panelinin lacivert kimliği AEP
+jetonlarına bağlansaydı kiracı paneliyle birebir aynı renge düşer ve
+öznitelik hiçbir şey yapmaz olurdu.
+
+**Kapı testleri iki katmanı da okuyor.** Tek katman okuyan ölçüm
+`var(--aep-*)` metnini renk sanıp çözemiyor ve "ölçülemedi" sessizce
+"geçti"ye dönüşüyordu. Ayrıca eski okuyucu bir seçicinin yalnız İLK bloğunu
+alıyordu; AEP aynı seçiciyi birden çok kez açtığı için jetonların yarısı
+"tanımsız" görünüyordu.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük
