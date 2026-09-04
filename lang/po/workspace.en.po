@@ -1980,6 +1980,14 @@ msgstr "Create"
 msgid "workspace.publication.qrDestination.createError"
 msgstr "Could not create QR code. Try again."
 
+#: workspace:workspace.publication.qrDestination.disable.confirmBody
+msgid "workspace.publication.qrDestination.disable.confirmBody"
+msgstr "Guests who scan the printed card will no longer see your menu. The card itself keeps its address — you can re-enable this code later without reprinting anything."
+
+#: workspace:workspace.publication.qrDestination.disable.confirmTitle
+msgid "workspace.publication.qrDestination.disable.confirmTitle"
+msgstr "Disable {name}?"
+
 #: workspace:workspace.publication.qrDestination.disableButton
 msgid "workspace.publication.qrDestination.disableButton"
 msgstr "Disable"
@@ -2063,6 +2071,10 @@ msgstr "QR destination"
 #: workspace:workspace.publication.qrDestination.retry
 msgid "workspace.publication.qrDestination.retry"
 msgstr "Try again"
+
+#: workspace:workspace.publication.qrDestination.rowActions
+msgid "workspace.publication.qrDestination.rowActions"
+msgstr "More actions for {name}"
 
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"

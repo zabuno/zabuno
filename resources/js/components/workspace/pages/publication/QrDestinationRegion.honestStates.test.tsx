@@ -116,7 +116,9 @@ describe('QrDestinationRegion — üç hâl ayrı (QR-HONEST-STATE)', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByRole('link', { name: new RegExp(ITEM.token) })).toBeInTheDocument();
+            expect(
+                within(screen.getByRole('region', { name: /qr destination/i })).getByRole('link'),
+            ).toHaveAttribute('href', ITEM.resolverUrl);
         });
 
         expect(
@@ -307,5 +309,57 @@ describe('QR kodun insan adı (FF-109)', () => {
         expect(
             within(selector).getByRole('option', { name: /entrance code 2/i }),
         ).toBeInTheDocument();
+    });
+});
+
+describe('Yıkıcı eylem onay ister (FF-110)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('menüden "Disable" seçmek tek başına kodu kapatmaz; vazgeçilebilir', async () => {
+        /*
+            Kapatma, satırın altında "Taşı"nın yanında duran ve ondan yalnız
+            RENKLE ayrılan küçük bir yazıydı. Renk tek başına bir ayrım
+            değildir ve iki hedef bitişikti; yanlış tıklamanın bedeli, o
+            masadaki basılı kartın misafir için ölmesi.
+        */
+        const user = userEvent.setup();
+        fetchSpy.mockImplementation((url: unknown) =>
+            Promise.resolve(
+                /qr-codes$/.test(String(url))
+                    ? jsonResponse(200, [{ ...ITEM, tableName: 'T12' }])
+                    : jsonResponse(200, []),
+            ),
+        );
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        await screen.findByText('T12');
+
+        await user.click(screen.getByRole('button', { name: /more actions for t12/i }));
+        await user.click(screen.getByRole('menuitem', { name: /disable/i }));
+
+        const dialog = await screen.findByRole('dialog');
+        expect(dialog).toHaveTextContent(/no longer see your menu/i);
+        expect(dialog).toHaveTextContent(/without reprinting/i);
+
+        await user.click(within(dialog).getByRole('button', { name: /cancel/i }));
+
+        expect(fetchSpy.mock.calls.some(([url]) => /\/disable$/.test(String(url)))).toBe(false);
     });
 });

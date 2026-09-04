@@ -72,12 +72,12 @@ kanıtıyla kapanır.
 | 4 | Dürüst durumlar | yükleniyor/hata "önce yayınlayın" demez; 402 hakkı yükseltmeye yönlendirir | ✅ FF-108 |
 | 5 | Ham URL ve token gizlenir | kodun adı öne, URL kopyala düğmesiyle ayrıntıya | ✅ FF-107 + FF-109 |
 | 6 | Masanın adı listeye ulaşır | DTO join; satır başlığı ve seçici etiketi | ✅ FF-109 |
-| 7 | Yıkıcı eylem taşma menüsüne + onay | `ActionMenu` + `ConfirmDialog` | ⬜ |
+| 7 | Yıkıcı eylem taşma menüsüne + onay | `ActionMenu` + `ConfirmDialog` | ✅ FF-110 |
 | 8 | Basılabilir sayfa: N-up, ad, kesme çizgisi | PDF adaptörü + toplu uç | ⬜ |
 | 9 | Baskı önizlemesi ve MİLİMETRE | kâğıt/yerleşim önizlemenin kontrolleri olur; kod boyu mm olarak yazılır | ⬜ |
 | 10 | Temalar: marka + taranabilirlik kuralı | kontrast ≥ %40, logo varsa EC=H, ters kontrast yasak | ⬜ |
 | 11 | Sözleşme metni: dinamik kod güvencesi | "bastırdıktan sonra da hedefi değişir; basılı kartlar çalışmaya devam eder" | ⬜ |
-| 12 | Story'ler ve görsel kapı | beş dosyaya story; yüzey katmanı bir daha kapının dışında kalmaz | ◐ FF-107 (baskı bölgesi) |
+| 12 | Story'ler ve görsel kapı | beş dosyaya story; yüzey katmanı bir daha kapının dışında kalmaz | ◐ FF-107 + FF-110 (baskı bölgesi, satır) |
 
 ---
 
@@ -254,3 +254,40 @@ bunun kendi testi vardır (`QrCodeListTableNameTest`).
 ekranını açar, listede "T12 · Bahçe" satırını görür, baskı seçicisinden aynı
 adı seçer ve tek kartı yeniden bastırır. Eskiden bu iş, 40 token'ı tek tek
 tarayıp hangisinin o masa olduğunu bulmayı gerektiriyordu — yani yapılamıyordu.
+
+
+---
+
+## Tur 2 kaydı (FF-110) — Döngü 7: yıkıcı eylem sıradan eylemin yanında durmaz
+
+Satırın altında iki küçük altı çizili yazı vardı: **"Disable"** ve **"Move to
+another location"**. Aynı boyutta, aynı ağırlıkta, bitişik ve birbirinden
+yalnız RENKLE ayrılıyorlardı. Renk tek başına bir ayrım değildir — renk körlüğü,
+güneş altındaki telefon, düşük kontrastlı bir ekran. Bir masanın kodunu
+yanlışlıkla kapatmanın bedeli ise şudur: o masadaki basılı kart misafir için
+ölür ve sahibin bunu fark etme yolu, bir misafirin şikâyet etmesidir.
+
+Katalogda bu kararın YAZILI hâli zaten vardı (`RowActions`): "silme, taşımanın
+yanından alındı… artık taşma menüsünde ve iki adım uzakta." QR ekranı o
+karardan habersizdi. Tekrarlanan desen budur: **bu ekran ürünün kendi
+kataloğunu görmezden geliyor.**
+
+- Eylemler tek bir taşma menüsünde toplandı (`ActionMenu`, sessiz tonda).
+  Menünün erişilebilir adı kodun adını taşır: 40 satırlık listede "diğer
+  işlemler" başlıklı 40 düğme, ekran okuyucu kullanan biri için tek bir düğmeye
+  eşdeğerdir.
+- Kapatma bir ONAY adımının arkasında (`ConfirmDialog`, `destructive`). Onay
+  metni "emin misiniz?" demez — hiçbir şey öğretmeyen bir sorudur; ne olacağını
+  somut söyler: *basılı kartı okutan misafirler menünüzü artık göremez; kartın
+  adresi değişmez, kodu sonra yeniden açabilirsiniz.* İkinci cümle en az
+  birincisi kadar önemli: sahibin "kartı yeniden bastırmam gerekir mi?"
+  sorusunun yanıtı hayırdır.
+- Ham adres kısaldı: `zabuno.com/q/yDeMVV…`. Tam adres `href`'te, `title`'da ve
+  "Bağlantıyı kopyala"da durur. 43 karakterlik token satırda kodun adından çok
+  yer kaplıyor ve daha çok dikkat çekiyordu; sahibin okuması gereken şey "T12".
+- `QrCodeListItem.stories.tsx` eklendi (adlı/adsız/kapalı/taşınıyor).
+
+`kullaniciYolculugu`: Sahip bahçedeki T12'nin kartını yenilemek ister, satırın
+sağındaki menüyü açar. "Kapat" kırmızı ve tek başına durur; seçtiğinde bir onay
+kutusu ne olacağını yazar. Vazgeçerse hiçbir istek gitmez. Eskiden "Kapat",
+"Taşı"nın iki milimetre yanındaydı ve tek tıkla geri dönüşü olmayan bir işti.

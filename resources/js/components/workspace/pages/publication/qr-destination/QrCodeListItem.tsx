@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Check, Copy } from '@phosphor-icons/react';
+import { ArrowsLeftRight, Check, Copy, DotsThree, Power } from '@phosphor-icons/react';
 
 import { t } from '../../../../../i18n/workspace';
+import { ActionMenu } from '../../../../catalog/overlays/compound/ActionMenu';
+import { ConfirmDialog } from '../../../../catalog/overlays/compound/ConfirmDialog';
 
 export type QrCodeItem = {
     id: number;
@@ -24,6 +26,25 @@ export type QrCodeItem = {
 };
 
 export type RetargetLocation = { id: number; displayName: string };
+
+/**
+ * Adresin KISALTILMIŞ hâli — `zabuno.com/q/yDeMVV…` (FF-110).
+ *
+ * Ham adres 43 karakterlik bir token taşır ve satırda tam hâliyle
+ * yazıldığında kodun adından çok yer kaplayıp çok dikkat çekiyordu: sahibin
+ * okuması gereken şey "T12". Kısaltma bir yalan değildir — bağlantının
+ * `href`'i tam adrestir, "Bağlantıyı kopyala" tam adresi verir ve üç nokta
+ * metnin kesildiğini söyler.
+ */
+function shortUrl(url: string): string {
+    const withoutScheme = url.replace(/^https?:\/\//, '');
+    const parts = withoutScheme.split('/');
+    const token = parts.at(-1) ?? '';
+
+    if (token.length <= 10) return withoutScheme;
+
+    return `${parts.slice(0, -1).join('/')}/${token.slice(0, 6)}…`;
+}
 
 type QrCodeListItemProps = {
     item: QrCodeItem;
@@ -85,6 +106,13 @@ export function QrCodeListItem({
 }: QrCodeListItemProps) {
     const isActive = item.state === 'active';
     const [target, setTarget] = useState('');
+    const [confirmingDisable, setConfirmingDisable] = useState(false);
+    /*
+        Erişilebilir adlar KODUN ADINI taşır: 40 satırlık bir listede "diğer
+        işlemler" başlıklı 40 düğme, ekran okuyucu kullanan biri için tek bir
+        düğmeye eşdeğerdir.
+    */
+    const name = item.tableName ?? t('workspace.publication.qrDestination.item.entrance');
 
     return (
         <li className="flex flex-col gap-[var(--space-1)] border-b border-border py-[var(--space-2)] last:border-b-0">
@@ -102,23 +130,72 @@ export function QrCodeListItem({
                 kelimesine iniyordu ve birden fazla kod varken hangisinin
                 kapatıldığı anlaşılmıyordu.
             */}
-            <span className="flex flex-wrap items-baseline gap-[var(--space-2)]">
-                <span className="text-body font-medium text-fg">
-                    {item.tableName ?? t('workspace.publication.qrDestination.item.entrance')}
+            <span className="flex items-center gap-[var(--space-2)]">
+                <span className="flex min-w-0 flex-wrap items-center gap-[var(--space-2)]">
+                    <span className="text-body font-medium text-fg">{name}</span>
+                    {/*
+                        Alan, adın YANINDA ve daha sessiz (FF-109). 40 masalı
+                        bir salonda "T12" tek başına yetmez — sahip kartı
+                        fiziksel olarak bulmak için bölümü bilmek ister.
+                    */}
+                    {item.areaLabel ? (
+                        <span className="text-meta text-fg-muted">{item.areaLabel}</span>
+                    ) : null}
+                    {isActive ? null : (
+                        <span className="rounded-pill bg-surface-active px-[var(--space-2)] text-meta text-fg-muted">
+                            {t('workspace.publication.qrDestination.state.disabled')}
+                        </span>
+                    )}
                 </span>
                 {/*
-                    Alan, adın YANINDA ve daha sessiz (FF-109). 40 masalı bir
-                    salonda "T12" tek başına yetmez — sahip kartı fiziksel
-                    olarak bulmak için hangi bölümde olduğunu bilmek ister.
+                    YIKICI EYLEM, SIRADAN EYLEMİN YANINDA DURMAZ (FF-110).
+
+                    Önceki hâlde "Disable" ile "Move", satırın altında yan yana
+                    iki küçük altı çizili yazıydı ve yalnız RENKLE ayrılıyordu.
+                    Renk tek başına bir ayrım değildir (renk körlüğü, düşük
+                    kontrastlı ekran, güneş altındaki telefon) ve iki hedef
+                    birbirine bitişikti. Bir masanın kodunu yanlışlıkla kapatmak,
+                    o masadaki basılı kartın misafir için ölmesi demek —
+                    kullanıcının bunu fark etme yolu, bir misafirin şikâyet
+                    etmesi.
+
+                    Kapatma artık taşma menüsünde ve bir ONAY adımı arkasında.
+                    Onay metni ne olacağını SOMUT söyler: kart taranınca menü
+                    açılmaz. Yeniden açmak da menüde — kapatmanın karşılığı
+                    olmalı (`docs/81`), yoksa basılı kâğıt kalıcı ölür.
                 */}
-                {item.areaLabel ? (
-                    <span className="text-meta text-fg-muted">{item.areaLabel}</span>
-                ) : null}
-                {isActive ? null : (
-                    <span className="rounded-pill bg-surface-active px-[var(--space-2)] text-meta text-fg-muted">
-                        {t('workspace.publication.qrDestination.state.disabled')}
-                    </span>
-                )}
+                <ActionMenu
+                    label={t('workspace.publication.qrDestination.rowActions', { name })}
+                    tone="quiet"
+                    triggerContent={<DotsThree size={18} weight="bold" aria-hidden="true" />}
+                    className="ms-auto min-h-[var(--density-hit-area-min)] min-w-[var(--density-hit-area-min)]"
+                    items={[
+                        ...(isActive && onStartMove !== undefined && !moving
+                            ? [
+                                  {
+                                      key: 'move',
+                                      label: t('workspace.publication.qrDestination.move.start'),
+                                      icon: <ArrowsLeftRight size={18} />,
+                                      onSelect: () => onStartMove(item.id),
+                                  },
+                              ]
+                            : []),
+                        isActive
+                            ? {
+                                  key: 'disable',
+                                  label: t('workspace.publication.qrDestination.disableButton'),
+                                  icon: <Power size={18} />,
+                                  destructive: true,
+                                  onSelect: () => setConfirmingDisable(true),
+                              }
+                            : {
+                                  key: 'enable',
+                                  label: t('workspace.publication.qrDestination.enableButton'),
+                                  icon: <Power size={18} />,
+                                  onSelect: () => onEnable(item.id),
+                              },
+                    ]}
+                />
             </span>
 
             <span className="flex flex-wrap items-center gap-[var(--space-2)]">
@@ -130,50 +207,28 @@ export function QrCodeListItem({
                     href={item.resolverUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="max-w-full truncate text-meta text-fg-link underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                    title={item.resolverUrl}
+                    className="inline-flex min-h-[var(--density-hit-area-min)] max-w-full items-center truncate text-meta text-fg-muted underline underline-offset-2 hover:text-fg-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
-                    {item.resolverUrl}
+                    {shortUrl(item.resolverUrl)}
                 </a>
                 <CopyUrlButton url={item.resolverUrl} />
             </span>
 
-            {/*
-                Kapatmanın KARŞILIĞI olmalı (`docs/81`). Devre dışı bir kod
-                geri açılamıyorsa, masadaki basılı kâğıt kalıcı olarak ölür
-                ve tek çare yeniden bastırmak olur — bu ürünün temel vaadinin
-                ihlali.
-            */}
-            <div className="flex flex-wrap items-center gap-3">
-                {isActive ? (
-                    <button
-                        type="button"
-                        onClick={() => onDisable(item.id)}
-                        className="text-body text-fg-danger underline underline-offset-2"
-                    >
-                        {t('workspace.publication.qrDestination.disableButton')}
-                    </button>
-                ) : (
-                    <button
-                        type="button"
-                        onClick={() => onEnable(item.id)}
-                        className="text-body text-fg-link underline underline-offset-2"
-                    >
-                        {t('workspace.publication.qrDestination.enableButton')}
-                    </button>
-                )}
-
-                {/* Kart fiziksel olarak başka şubeye gittiğinde tek çare
-                    yeniden bastırmak olmamalı. Token DEĞİŞMEZ. */}
-                {isActive && onStartMove !== undefined && !moving ? (
-                    <button
-                        type="button"
-                        onClick={() => onStartMove(item.id)}
-                        className="text-body text-fg-link underline underline-offset-2"
-                    >
-                        {t('workspace.publication.qrDestination.move.start')}
-                    </button>
-                ) : null}
-            </div>
+            <ConfirmDialog
+                open={confirmingDisable}
+                onClose={() => setConfirmingDisable(false)}
+                onConfirm={() => {
+                    setConfirmingDisable(false);
+                    onDisable(item.id);
+                }}
+                title={t('workspace.publication.qrDestination.disable.confirmTitle', { name })}
+                confirmLabel={t('workspace.publication.qrDestination.disableButton')}
+                cancelLabel={t('workspace.publication.qrDestination.move.cancel')}
+                destructive
+            >
+                {t('workspace.publication.qrDestination.disable.confirmBody')}
+            </ConfirmDialog>
 
             {moving && onRetarget !== undefined ? (
                 otherLocations === null ? (
