@@ -4,6 +4,7 @@ import { BrandLogoRegion } from './brand/BrandLogoRegion';
 import { BillingPage } from './BillingPage';
 import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PanelCard } from './shared/PanelCard';
 
 export type SettingsTab = 'brand' | 'account' | 'billing';
 
@@ -93,28 +94,32 @@ export function SettingsPage({
                     id={`settings-panel-${activeTab}`}
                     aria-labelledby={`settings-tab-${activeTab}`}
                 >
-                    {activeTab === 'brand' &&
-                        (brand ? (
-                            <>
-                                <BrandEditForm
-                                    workspaceId={workspaceId}
-                                    brand={brand}
-                                    onSaved={onSaved}
-                                />
-                                <BrandLogoRegion
-                                    workspaceId={workspaceId}
-                                    initialMediaAssetId={brand.logoMediaAssetId ?? null}
-                                />
-                            </>
-                        ) : (
-                            <p role="status" className="text-body text-fg-muted">
-                                {t('workspace.brand.loading')}
-                            </p>
-                        ))}
+                    <PanelCard>
+                        {activeTab === 'brand' &&
+                            (brand ? (
+                                <>
+                                    <BrandEditForm
+                                        workspaceId={workspaceId}
+                                        brand={brand}
+                                        onSaved={onSaved}
+                                    />
+                                    <BrandLogoRegion
+                                        workspaceId={workspaceId}
+                                        initialMediaAssetId={brand.logoMediaAssetId ?? null}
+                                    />
+                                </>
+                            ) : (
+                                <p role="status" className="text-body text-fg-muted">
+                                    {t('workspace.brand.loading')}
+                                </p>
+                            ))}
 
-                    {activeTab === 'account' && <AccountSettingsRegion currentName={userName} />}
+                        {activeTab === 'account' && (
+                            <AccountSettingsRegion currentName={userName} />
+                        )}
 
-                    {activeTab === 'billing' && <BillingPage workspaceId={workspaceId} />}
+                        {activeTab === 'billing' && <BillingPage workspaceId={workspaceId} />}
+                    </PanelCard>
                 </div>
             </WorkspacePageFrame>
         </div>

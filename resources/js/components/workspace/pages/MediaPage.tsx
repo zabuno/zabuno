@@ -6,6 +6,7 @@ import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
 import { MediaQuotaRegion, type MediaQuota } from './media/MediaQuotaRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PanelCard } from './shared/PanelCard';
 
 export type MediaAsset = {
     id: number;
@@ -331,18 +332,22 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                 ) : null}
                 {/* İki sütun: solda ekle, sağda kütüphane; 320 px'te tek sütuna sarar (auto-fit). */}
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,22rem),1fr))] gap-6">
-                    <MediaUploadRegion onSubmit={handleUpload} />
-                    <MediaLibraryRegion
-                        assets={assets}
-                        onDelete={(id) => void handleDelete(id)}
-                        loadState={loadState}
-                        onRetry={() => void loadAssets()}
-                        pendingDeleteIds={pendingDeleteIds}
-                        deleteErrorIds={deleteErrorIds}
-                        deleteNotice={deleteNotice}
-                        actions={workspaceId === undefined ? undefined : actions}
-                        trashRetentionDays={trashRetentionDays}
-                    />
+                    <PanelCard>
+                        <MediaUploadRegion onSubmit={handleUpload} />
+                    </PanelCard>
+                    <PanelCard>
+                        <MediaLibraryRegion
+                            assets={assets}
+                            onDelete={(id) => void handleDelete(id)}
+                            loadState={loadState}
+                            onRetry={() => void loadAssets()}
+                            pendingDeleteIds={pendingDeleteIds}
+                            deleteErrorIds={deleteErrorIds}
+                            deleteNotice={deleteNotice}
+                            actions={workspaceId === undefined ? undefined : actions}
+                            trashRetentionDays={trashRetentionDays}
+                        />
+                    </PanelCard>
                 </div>
             </WorkspacePageFrame>
         </div>

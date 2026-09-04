@@ -3,6 +3,7 @@ import { Button } from '../../catalog/forms/micro/Button';
 import { MenuCatalogWorkspace } from '../../catalog/menu/macro/MenuCatalogWorkspace';
 import type { DashboardMenuTree } from './DashboardPage';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PanelCard } from './shared/PanelCard';
 import { PageState } from './shared/PageState';
 import type { CatalogPhase } from '../WorkspaceApp';
 
@@ -61,7 +62,7 @@ export function MenuPage({
                     </button>
                 }
             >
-                {renderCatalog()}
+                <PanelCard>{renderCatalog()}</PanelCard>
             </WorkspacePageFrame>
         </div>
     );

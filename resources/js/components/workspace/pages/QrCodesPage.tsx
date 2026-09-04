@@ -3,6 +3,7 @@ import type { DashboardMenuTree } from './DashboardPage';
 import { QrDestinationRegion } from './publication/QrDestinationRegion';
 import { useCurrentPublication } from './qr/useCurrentPublication';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PanelCard } from './shared/PanelCard';
 import { PageState } from './shared/PageState';
 
 export type QrCodesPageProps = {
@@ -35,15 +36,16 @@ export function QrCodesPage({
                 title={t('workspace.shell.nav.qrCodes')}
                 description={t('workspace.qrCodes.operational.description')}
             >
-                {workspaceId !== undefined && locationId !== null && menuId !== null ? (
-                    <QrDestinationRegion
-                        workspaceId={workspaceId}
-                        locationId={locationId}
-                        menuId={menuId}
-                        hasCurrentPublication={current !== null}
-                    />
-                ) : (
-                    /*
+                <PanelCard>
+                    {workspaceId !== undefined && locationId !== null && menuId !== null ? (
+                        <QrDestinationRegion
+                            workspaceId={workspaceId}
+                            locationId={locationId}
+                            menuId={menuId}
+                            hasCurrentPublication={current !== null}
+                        />
+                    ) : (
+                        /*
                         ÖN KOŞUL durumu — hata değil.
 
                         QR kodu yayınlanmış bir menüye işaret eder; menü yoksa
@@ -52,21 +54,22 @@ export function QrCodesPage({
                         bildirir ve kullanıcıyı olmayan bir arızayı aramaya
                         iter (docs/59).
                     */
-                    <PageState
-                        kind="prerequisite"
-                        title={t('workspace.qrCodes.empty.needsMenu')}
-                        description={t('workspace.qrCodes.empty.needsMenu.why')}
-                        action={
-                            <button
-                                type="button"
-                                onClick={() => onNavigateToSection?.('menu')}
-                                className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
-                            >
-                                {t('workspace.qrCodes.empty.goToMenu')}
-                            </button>
-                        }
-                    />
-                )}
+                        <PageState
+                            kind="prerequisite"
+                            title={t('workspace.qrCodes.empty.needsMenu')}
+                            description={t('workspace.qrCodes.empty.needsMenu.why')}
+                            action={
+                                <button
+                                    type="button"
+                                    onClick={() => onNavigateToSection?.('menu')}
+                                    className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
+                                >
+                                    {t('workspace.qrCodes.empty.goToMenu')}
+                                </button>
+                            }
+                        />
+                    )}
+                </PanelCard>
             </WorkspacePageFrame>
         </div>
     );

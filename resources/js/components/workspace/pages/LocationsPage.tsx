@@ -4,6 +4,7 @@ import { t } from '../../../i18n/workspace';
 import { LocationEditForm, type LocationProfile } from '../LocationEditForm';
 import { LocationOnboardingForm } from '../LocationOnboardingForm';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { PanelCard } from './shared/PanelCard';
 import { PageState } from './shared/PageState';
 
 type LocationsPageProps = {
@@ -144,7 +145,7 @@ export function LocationsPage({
                 )}
 
                 {grouped.map(([groupKey, group]) => (
-                    <div key={groupKey}>
+                    <PanelCard key={groupKey}>
                         <p className="mb-2 font-medium text-fg">{group.city}</p>
                         <p className="mb-2 text-body text-fg-secondary">{group.countryCode}</p>
                         <ul className="flex flex-col gap-3">
@@ -162,7 +163,7 @@ export function LocationsPage({
                                 </li>
                             ))}
                         </ul>
-                    </div>
+                    </PanelCard>
                 ))}
             </WorkspacePageFrame>
         </div>

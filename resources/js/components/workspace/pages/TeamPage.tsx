@@ -4,6 +4,7 @@ import { Select } from '../../catalog/forms/micro/Select';
 import { t } from '../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { PanelCard } from './shared/PanelCard';
 import {
     TeamMemberList,
     type TeamMember,
@@ -455,29 +456,30 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                 description={operationalDescription}
                 badges={badges}
             >
-                <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
-                    <legend className="mb-1 text-body font-semibold text-fg">
-                        {t('workspace.team.invite.section')}
-                    </legend>
+                <PanelCard>
+                    <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
+                        <legend className="mb-1 text-body font-semibold text-fg">
+                            {t('workspace.team.invite.section')}
+                        </legend>
 
-                    <div>
-                        <div className="mb-2 block">
-                            <Label htmlFor={emailId}>{t('workspace.team.invite.email')}</Label>
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor={emailId}>{t('workspace.team.invite.email')}</Label>
+                            </div>
+                            <TextInput
+                                id={emailId}
+                                name="invite-email"
+                                type="email"
+                                value={email}
+                                onChange={(event) => {
+                                    setEmail(event.target.value);
+                                    setSubmitError(false);
+                                    setSubmitSuccess(false);
+                                }}
+                            />
                         </div>
-                        <TextInput
-                            id={emailId}
-                            name="invite-email"
-                            type="email"
-                            value={email}
-                            onChange={(event) => {
-                                setEmail(event.target.value);
-                                setSubmitError(false);
-                                setSubmitSuccess(false);
-                            }}
-                        />
-                    </div>
 
-                    {/*
+                        {/*
                         ROL SEÇİMİ — `docs/70`.
 
                         Davet önceden her zaman `editor` gönderiyordu ve o rol
@@ -488,115 +490,122 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                         `Owner` listede DEĞİL: sahiplik davetle verilmez,
                         devredilir — ayrı bir akışı ve ayrı bir sonucu vardır.
                     */}
-                    <div>
-                        <div className="mb-2 block">
-                            <Label htmlFor={roleId}>{t('workspace.team.invite.role.label')}</Label>
-                        </div>
-                        <Select
-                            id={roleId}
-                            name="invite-role"
-                            value={role}
-                            onChange={(event) => {
-                                setRole(event.target.value as InvitableRole);
-                                setSubmitError(false);
-                                setSubmitSuccess(false);
-                            }}
-                        >
-                            <option value="editor">{t('workspace.team.invite.role.editor')}</option>
-                            <option value="manager">
-                                {t('workspace.team.invite.role.manager')}
-                            </option>
-                        </Select>
-                        {/*
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor={roleId}>
+                                    {t('workspace.team.invite.role.label')}
+                                </Label>
+                            </div>
+                            <Select
+                                id={roleId}
+                                name="invite-role"
+                                value={role}
+                                onChange={(event) => {
+                                    setRole(event.target.value as InvitableRole);
+                                    setSubmitError(false);
+                                    setSubmitSuccess(false);
+                                }}
+                            >
+                                <option value="editor">
+                                    {t('workspace.team.invite.role.editor')}
+                                </option>
+                                <option value="manager">
+                                    {t('workspace.team.invite.role.manager')}
+                                </option>
+                            </Select>
+                            {/*
                             Rolün NE YAPABİLDİĞİ alanın altında yazar. "Editor"
                             kelimesi tek başına yayınlayıp yayınlayamayacağını
                             söylemez ve sahibi yanlış kişiye yanlış yetkiyi
                             verebilir.
                         */}
-                        <HelperText color="gray" className="mt-1">
-                            {role === 'manager'
-                                ? t('workspace.team.invite.role.manager.help')
-                                : t('workspace.team.invite.role.editor.help')}
-                        </HelperText>
-                    </div>
+                            <HelperText color="gray" className="mt-1">
+                                {role === 'manager'
+                                    ? t('workspace.team.invite.role.manager.help')
+                                    : t('workspace.team.invite.role.editor.help')}
+                            </HelperText>
+                        </div>
 
-                    <Button
-                        className="w-full"
-                        disabled={!emailIsValid || submitting}
-                        onClick={() => void handleInvite()}
-                    >
-                        {t('workspace.team.invite.button')}
-                    </Button>
+                        <Button
+                            className="w-full"
+                            disabled={!emailIsValid || submitting}
+                            onClick={() => void handleInvite()}
+                        >
+                            {t('workspace.team.invite.button')}
+                        </Button>
 
-                    {submitting && (
-                        <p role="status" className="text-body text-fg-muted">
-                            {t('workspace.team.invite.submitting')}
-                        </p>
-                    )}
+                        {submitting && (
+                            <p role="status" className="text-body text-fg-muted">
+                                {t('workspace.team.invite.submitting')}
+                            </p>
+                        )}
 
-                    {!submitting && submitError && (
-                        <p role="status" className="text-body font-medium text-fg-danger">
-                            {t('workspace.team.invite.error')}
-                        </p>
-                    )}
+                        {!submitting && submitError && (
+                            <p role="status" className="text-body font-medium text-fg-danger">
+                                {t('workspace.team.invite.error')}
+                            </p>
+                        )}
 
-                    {!submitting && submitSuccess && (
-                        <p role="status" className="text-body font-medium text-fg-success">
-                            {t('workspace.team.invite.success')}
-                        </p>
-                    )}
-                </fieldset>
-
-                <TeamInvitationList
-                    status={invitationsStatus}
-                    invitations={invitations}
-                    label={t('workspace.team.pendingInvitations.region')}
-                    loadingText={t('workspace.team.invitations.loading')}
-                    errorText={t('workspace.team.invitations.error')}
-                    emptyText={t('workspace.team.invitations.empty')}
-                    onCancelInvitation={cancelInvitation}
-                    cancelButtonText={t('workspace.team.invitations.cancel.button')}
-                    cancelConfirmText={t('workspace.team.invitations.cancel.confirm')}
-                    cancelKeepText={t('workspace.team.invitations.cancel.keep')}
-                    cancelBusyText={t('workspace.team.invitations.cancel.busy')}
-                    cancelErrorText={t('workspace.team.invitations.cancel.error')}
-                    cancelSuccessText={t('workspace.team.invitations.cancel.success')}
-                    cancelRetryText={t('workspace.team.invitations.cancel.retry')}
-                />
-
-                <TeamMemberList
-                    status={membersStatus}
-                    members={members}
-                    label={t('workspace.team.members.region')}
-                    loadingText={t('workspace.team.members.loading')}
-                    errorText={t('workspace.team.members.error')}
-                    emptyText={t('workspace.team.members.empty')}
-                    onRemoveMember={removeMember}
-                    onChangeRole={changeMemberRole}
-                    assignableRoles={[
-                        { value: 'editor', label: t('workspace.team.invite.role.editor') },
-                        { value: 'manager', label: t('workspace.team.invite.role.manager') },
-                    ]}
-                    roleLabelFor={(name) => t('workspace.team.members.role.label', { name })}
-                    roleErrorText={t('workspace.team.members.role.error')}
-                    removeButtonText={t('workspace.team.members.remove.button')}
-                    removeConfirmText={t('workspace.team.members.remove.confirm')}
-                    removeCancelText={t('workspace.team.members.remove.cancel')}
-                    removeBusyText={t('workspace.team.members.remove.busy')}
-                    removeErrorText={t('workspace.team.members.remove.error')}
-                    removeSuccessText={t('workspace.team.members.remove.success')}
-                    removeRetryText={t('workspace.team.members.remove.retry')}
-                    onTransferOwnership={transferOwnership}
-                    transferButtonText={t('workspace.team.members.transfer.button')}
-                    transferDialogTitle={t('workspace.team.members.transfer.title')}
-                    transferDialogBody={t('workspace.team.members.transfer.body')}
-                    transferConfirmText={t('workspace.team.members.transfer.confirm')}
-                    transferCancelText={t('workspace.team.members.transfer.cancel')}
-                    transferBusyText={t('workspace.team.members.transfer.busy')}
-                    transferErrorText={t('workspace.team.members.transfer.error')}
-                    transferRetryText={t('workspace.team.members.transfer.retry')}
-                    transferSuccessText={t('workspace.team.members.transfer.success')}
-                />
+                        {!submitting && submitSuccess && (
+                            <p role="status" className="text-body font-medium text-fg-success">
+                                {t('workspace.team.invite.success')}
+                            </p>
+                        )}
+                    </fieldset>
+                </PanelCard>
+                <PanelCard>
+                    <TeamInvitationList
+                        status={invitationsStatus}
+                        invitations={invitations}
+                        label={t('workspace.team.pendingInvitations.region')}
+                        loadingText={t('workspace.team.invitations.loading')}
+                        errorText={t('workspace.team.invitations.error')}
+                        emptyText={t('workspace.team.invitations.empty')}
+                        onCancelInvitation={cancelInvitation}
+                        cancelButtonText={t('workspace.team.invitations.cancel.button')}
+                        cancelConfirmText={t('workspace.team.invitations.cancel.confirm')}
+                        cancelKeepText={t('workspace.team.invitations.cancel.keep')}
+                        cancelBusyText={t('workspace.team.invitations.cancel.busy')}
+                        cancelErrorText={t('workspace.team.invitations.cancel.error')}
+                        cancelSuccessText={t('workspace.team.invitations.cancel.success')}
+                        cancelRetryText={t('workspace.team.invitations.cancel.retry')}
+                    />
+                </PanelCard>
+                <PanelCard>
+                    <TeamMemberList
+                        status={membersStatus}
+                        members={members}
+                        label={t('workspace.team.members.region')}
+                        loadingText={t('workspace.team.members.loading')}
+                        errorText={t('workspace.team.members.error')}
+                        emptyText={t('workspace.team.members.empty')}
+                        onRemoveMember={removeMember}
+                        onChangeRole={changeMemberRole}
+                        assignableRoles={[
+                            { value: 'editor', label: t('workspace.team.invite.role.editor') },
+                            { value: 'manager', label: t('workspace.team.invite.role.manager') },
+                        ]}
+                        roleLabelFor={(name) => t('workspace.team.members.role.label', { name })}
+                        roleErrorText={t('workspace.team.members.role.error')}
+                        removeButtonText={t('workspace.team.members.remove.button')}
+                        removeConfirmText={t('workspace.team.members.remove.confirm')}
+                        removeCancelText={t('workspace.team.members.remove.cancel')}
+                        removeBusyText={t('workspace.team.members.remove.busy')}
+                        removeErrorText={t('workspace.team.members.remove.error')}
+                        removeSuccessText={t('workspace.team.members.remove.success')}
+                        removeRetryText={t('workspace.team.members.remove.retry')}
+                        onTransferOwnership={transferOwnership}
+                        transferButtonText={t('workspace.team.members.transfer.button')}
+                        transferDialogTitle={t('workspace.team.members.transfer.title')}
+                        transferDialogBody={t('workspace.team.members.transfer.body')}
+                        transferConfirmText={t('workspace.team.members.transfer.confirm')}
+                        transferCancelText={t('workspace.team.members.transfer.cancel')}
+                        transferBusyText={t('workspace.team.members.transfer.busy')}
+                        transferErrorText={t('workspace.team.members.transfer.error')}
+                        transferRetryText={t('workspace.team.members.transfer.retry')}
+                        transferSuccessText={t('workspace.team.members.transfer.success')}
+                    />
+                </PanelCard>
             </WorkspacePageFrame>
         </div>
     );

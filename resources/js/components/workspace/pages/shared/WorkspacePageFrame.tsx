@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { Children, isValidElement, type ReactNode } from 'react';
+import { PanelCard } from './PanelCard';
 import { PageHeader } from '../../../catalog/layout/macro/PageHeader';
 import { Badge, type BadgeStatus } from '../../../catalog/feedback/micro/Badge';
 
@@ -38,6 +39,8 @@ type WorkspacePageFrameProps = {
     actions?: ReactNode;
     /** Sayfanın genişlik sınıfı; varsayılan `standard`. */
     measure?: WorkspacePageMeasure;
+    /** Her doğrudan çocuk bir kartta (`docs/102` Faz 2) — bölge listesi olan sayfalar için. */
+    cardChildren?: boolean;
     children: ReactNode;
 };
 
@@ -54,6 +57,7 @@ export function WorkspacePageFrame({
     badges = [],
     actions,
     measure = 'standard',
+    cardChildren = false,
     children,
 }: WorkspacePageFrameProps) {
     return (
@@ -85,7 +89,11 @@ export function WorkspacePageFrame({
             ) : null}
 
             <div className="flex flex-col" style={{ gap: 'var(--space-fluid-md)' }}>
-                {children}
+                {cardChildren
+                    ? Children.map(children, (child) =>
+                          isValidElement(child) ? <PanelCard>{child}</PanelCard> : child,
+                      )
+                    : children}
             </div>
         </div>
     );
