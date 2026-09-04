@@ -67,3 +67,85 @@ varlık `accepted` olmuyor, işlenmiyor, türev üretilmiyor — yani kütüphan
 önizleme çıkmıyor ve fotoğraf menüde kullanılamıyor. Bu bir ÜRÜN hatası
 değil, sunucuda ClamAV kurulu olmamasıdır (`docs/102` §5m). Medya yöneticisi
 ne kadar tamamlanırsa tamamlansın, o kurulmadan hat ölü kalır.
+
+## 6. Kaynağın somut verisi (ajanlar yeniden türetmesin)
+
+Aşağıdakiler `Medya Yonetimi v2.dc.html` içindeki gerçek veri
+tanımlarından alınmıştır. Ekranda ne yazacağının kararı burada verilmiştir;
+bir ajan bunları yeniden uydurmamalıdır.
+
+### 6.1 Boyut motoru — türev kuralları
+
+| Ad | Genişlik | Sığdırma | Kullanım | Biçimler |
+| --- | --- | --- | --- | --- |
+| thumb | 160 px | kırp | Liste satırı | AVIF, WebP |
+| small | 320 px | sığdır | Menü kartı, telefon | AVIF, WebP |
+| medium | 768 px | sığdır | Ürün ayrıntısı | AVIF, WebP, JPEG |
+| large | 1440 px | sığdır | Tam ekran görsel | AVIF, WebP, JPEG |
+| social | 1200 px | 1200×630 kırp | Paylaşım önizlemesi | JPEG |
+| print | 2480 px | sığdır | QR kartı, afiş | JPEG |
+
+Depodaki `config/media-slots.php` bugün slot başına düz bir genişlik
+listesi tutuyor (`renditions: [320, 640, …]`). Kaynak ise türevleri
+ADLANDIRIYOR ve her birine bir İŞ veriyor. Fark önemli: `320` bir sayıdır,
+`small · menü kartı · telefon` bir karardır — ve kural değiştiğinde hangi
+ekranın etkileneceğini yalnız ikincisi söyler.
+
+### 6.2 Desteklenen türler
+
+| Aile | Azami | Uzantılar | Not |
+| --- | --- | --- | --- |
+| Görseller | 25 MB | jpg, png, heic, heif, webp, avif, tiff, svg | HEIC/HEIF telefonda JPEG'e çevrilir; AVIF ve WebP olduğu gibi alınır |
+| Video | 200 MB | mp4, webm, mov, m4v | MOV/MP4 sunucuda WebM'e çevrilebilir; ilk kare kapak olur |
+| Belgeler | 25 MB | pdf, csv, xlsx, docx | PDF panelde sayfa sayfa okunur; ilk sayfa kapak görseli olur |
+| Ses | 50 MB | — | — |
+
+DİKKAT — depo bugün SVG'yi REDDEDİYOR (`config/media-slots.php`: "SVG yok:
+sanitize eden katman olmadan kabul edilmez", `docs/49` Faz 2 madde 6).
+Kaynak SVG'yi listede gösteriyor. Bu bir ÇELİŞKİDİR ve sahibin kuralı
+gereği kaynak kazanır — ama SVG'yi kabul etmek, önce bir temizleyici
+katman yazmayı gerektirir. Temizleyici olmadan kabul edilmemeli;
+"kaynak öyle diyor" bir güvenlik açığını haklı çıkarmaz. Karar sahibe
+sorulacak bir üründür, sessizce açılacak bir kapı değil.
+
+### 6.3 Dönüştürme hedefleri
+
+AVIF (~%74 küçük, en küçük) · WebP (~%58, en geniş destek) ·
+WebM (~%62, video VP9/AV1) · JPEG (~%40, her yerde açılan yedek).
+**Asıl korunur; dönüşen dosya yeni sürüm olur.**
+
+### 6.4 Kota kartları ve "yeri ne dolduruyor"
+
+Kartlar: Depolama, Dosya sayısı, Dönüştürme, CDN trafiği — her biri
+kullanılan/sınır, yüzde ve bir not taşır; sınıra yakınken not uyarı
+rengine döner. Kırılım: Ürünler, Kampanyalar, Video, Belgeler, **Çöp**
+(çöp uyarı renginde, çünkü boşaltılabilir bir yer kaplar).
+
+### 6.5 Ayarlar — desen alanları
+
+- **Dizin yapısı:** yıl/ay · tek klasör · klasör ağacı
+- **Dosya adı:** slug + karma · yalnız slug · özgün ad
+- **Tarih biçimi:** 4 Eylül 2026 · 2026-09-04 · göreli — hepsi
+  `Europe/Istanbul`
+
+### 6.6 Güvenlik anahtarları
+
+| Anahtar | Ne yapar | Önerilen |
+| --- | --- | --- |
+| Virüs taraması | Temiz çıkmayan dosya karantinaya alınır | evet |
+| İçerik imzası kontrolü | Uzantıya güvenilmez; "resim.jpg" aslında betikse reddedilir | evet |
+| Gömülü veriyi temizle | Konum, cihaz ve seri numarası silinir | evet |
+| Özel dosyalarda imzalı bağlantı | Belgeler süresi dolan adresle açılır | hayır |
+| Filigran | Paylaşım boyutuna küçük logo basılır | hayır |
+
+İlk üçü depoda ZATEN var (tarama, MIME doğrulama, EXIF temizleme) ama
+kullanıcıya gösterilmiyor ve kapatılamıyor. Anahtar yapmak, kapatılabilir
+yapmak demektir: **"virüs taraması" anahtarı kapatılabilir OLMAMALI** —
+kapatılabilir bir güvenlik anahtarı, kapatıldığı gün bir güvenlik açığıdır.
+Ekranda durumu GÖSTERİLİR, kapatılamaz.
+
+### 6.7 Olgunluk seviyeleri
+
+L0 Yok (henüz yapılmadı) · L1 Çalışıyor (mutlu yol tamam) ·
+L2 Güvenli (hata ve kısıt durumları var) · L3 Ölçülüyor (sayı ve kanıt
+üretiyor) · L4 Olgun (kendini onarıyor, kullanıcıya anlatıyor).
