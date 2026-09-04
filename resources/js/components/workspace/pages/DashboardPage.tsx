@@ -55,6 +55,8 @@ type DashboardPageProps = {
     location?: LocationProfile | null;
     workspaceId?: number;
     onNavigateToSection?: (section: string) => void;
+    /** Pennant `novice-home` (FF-74): kiracıda kapatılırsa 'şimdi' kutusu çizilmez. */
+    noviceHome?: boolean;
 };
 
 export function DashboardPage({
@@ -63,6 +65,7 @@ export function DashboardPage({
     location = null,
     workspaceId,
     onNavigateToSection,
+    noviceHome = true,
 }: DashboardPageProps) {
     return (
         <div id="section-dashboard">
@@ -76,6 +79,7 @@ export function DashboardPage({
                     dashboardMenuTree={dashboardMenuTree}
                     workspaceId={workspaceId}
                     onNavigateToSection={onNavigateToSection}
+                    noviceHome={noviceHome}
                 />
 
                 {dashboardMenuTree ? (

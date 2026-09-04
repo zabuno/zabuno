@@ -12,6 +12,7 @@ const teamSection: WorkspaceSectionDescriptor = {
     path: 'team',
     order: 6,
     labelKey: 'workspace.shell.nav.team',
+    permission: 'workspace.manage',
     group: 'management',
     render,
 };

@@ -36,6 +36,13 @@ export type WorkspaceSectionDescriptor = {
      * çalışır ve başka bir sayfadan açılır.
      */
     group?: WorkspaceNavGroupKey;
+    /**
+     * Bölümü GÖRMEK için gereken izin (`docs/98` FF-74). Sunucunun
+     * `workspace-context` ile verdiği listede yoksa bölüm kenar çubuğunda,
+     * omnibox'ta ve oluştur menüsünde ÇİZİLMEZ — Editor 403 görmez.
+     * Tanımsızsa bölüm herkese açıktır (workspace.view yeter).
+     */
+    permission?: string;
     aiQuickAction?: boolean;
     catalogOnboardingPhase?: WorkspaceCatalogOnboardingPhase;
     render: (ctx: WorkspaceSectionRuntimeContext) => ReactNode;

@@ -12,6 +12,7 @@ const brandSection: WorkspaceSectionDescriptor = {
     path: 'brand',
     order: 8,
     labelKey: 'workspace.shell.nav.brand',
+    permission: 'workspace.manage',
     catalogOnboardingPhase: 'brand-onboarding',
     render,
 };

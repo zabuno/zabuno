@@ -8,6 +8,7 @@ export type { DashboardMenuTree } from './DashboardPage';
 function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     return (
         <DashboardPage
+            noviceHome={ctx.features['novice-home'] !== false}
             dashboardMenuTree={ctx.dashboardMenuTree}
             brand={ctx.brand}
             location={ctx.location}

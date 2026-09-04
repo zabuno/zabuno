@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Tenancy;
 
+use App\Application\Tenancy\UseCase\BuildWorkspaceContextPayload;
 use App\Application\Tenancy\UseCase\GetCurrentWorkspaceContext;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +14,7 @@ final class CurrentWorkspaceContextController extends Controller
 {
     public function __construct(
         private readonly GetCurrentWorkspaceContext $getCurrentWorkspaceContext,
+        private readonly BuildWorkspaceContextPayload $payload,
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -23,6 +25,6 @@ final class CurrentWorkspaceContextController extends Controller
             return response()->json(['error' => 'workspace_context_required'], 409);
         }
 
-        return response()->json($summary->toArray());
+        return response()->json($this->payload->for((int) $request->user()->getKey(), $summary));
     }
 }
