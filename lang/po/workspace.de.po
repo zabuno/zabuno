@@ -1860,12 +1860,40 @@ msgstr ""
 msgid "workspace.profile.colors.secondary"
 msgstr ""
 
+#: workspace:workspace.profile.density.heading
+msgid "workspace.profile.density.heading"
+msgstr ""
+
+#: workspace:workspace.profile.density.help
+msgid "workspace.profile.density.help"
+msgstr ""
+
 #: workspace:workspace.profile.description
 msgid "workspace.profile.description"
 msgstr ""
 
 #: workspace:workspace.profile.details.heading
 msgid "workspace.profile.details.heading"
+msgstr ""
+
+#: workspace:workspace.profile.preview.heading
+msgid "workspace.profile.preview.heading"
+msgstr ""
+
+#: workspace:workspace.profile.preview.help
+msgid "workspace.profile.preview.help"
+msgstr ""
+
+#: workspace:workspace.profile.preview.sampleAction
+msgid "workspace.profile.preview.sampleAction"
+msgstr ""
+
+#: workspace:workspace.profile.preview.sampleLabel
+msgid "workspace.profile.preview.sampleLabel"
+msgstr ""
+
+#: workspace:workspace.profile.preview.sampleValue
+msgid "workspace.profile.preview.sampleValue"
 msgstr ""
 
 #: workspace:workspace.profile.title

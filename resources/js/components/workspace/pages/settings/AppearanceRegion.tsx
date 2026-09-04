@@ -1,6 +1,8 @@
 import { Check } from '@phosphor-icons/react';
 
 import { t } from '../../../../i18n/workspace';
+import { AppearancePreview } from './AppearancePreview';
+import { DensityRegion } from './DensityRegion';
 import { t as themeText } from '../../../../i18n/theme';
 import {
     THEME_OPTION_ORDER,
@@ -81,6 +83,15 @@ export function AppearanceRegion() {
                     })}
                 </div>
             </fieldset>
+
+            {/*
+                Yoğunluk ve önizleme AYNI bölümün içinde (FF-128). Kullanıcı
+                "bu ekran bana nasıl görünsün" sorusunu bir kez sorar; temayı
+                bir yerde, satır aralığını başka bir yerde aramak zorunda
+                kalmamalı. Önizleme ikisinin de sonucunu aynı anda gösterir.
+            */}
+            <DensityRegion />
+            <AppearancePreview />
         </section>
     );
 }

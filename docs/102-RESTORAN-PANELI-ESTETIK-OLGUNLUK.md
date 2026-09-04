@@ -333,6 +333,33 @@ yüksekliği 44px (`--control-height`, `min-height` olarak), etkin satır
 **Neden hikâye eklendi.** Bu bölüm ürüne girmeden görülemeyen tek kabuk
 parçasıydı; "değişikliği ekranda gör" kuralı tam burada uygulanamıyordu.
 
+## 5l. FF-128 — satır aralığı: ölü bir sabitten gerçek bir tercihe (2026-09-04)
+
+**Sorun.** Üç yoğunluk modu CSS'te tanımlıydı, ölçülüydü, test ediliydi — ve
+hiç kimse değiştiremiyordu: `ThemeRoot` içinde `INTERFACE_DENSITY = 'standard'`
+diye yazılıydı. Bir ayarın var olması, ona erişilebilmesi demek değildir.
+
+**Çözüm.** Yoğunluk artık tema ile aynı ailede: kişisel, tarayıcıda saklanan,
+kök öğeye `[data-density]` olarak yazılan bir tercih. Bozuk bir saklanan değer
+varsayılana düşer — elle kurcalanmış bir tarayıcıda hiçbir yoğunluk kuralıyla
+eşleşmeyen bir kök doğmaz.
+
+**Görünüm'ün içinde, ayrı bir bölüm değil.** Kullanıcı "bu ekran bana nasıl
+görünsün" sorusunu bir kez sorar; temayı bir yerde, satır aralığını başka bir
+yerde aramak zorunda kalmamalı.
+
+**Canlı önizleme şeridi ve ilk hâlindeki yalan.** Seçiciler kendi
+görünümlerini değiştirmez; kullanıcı "sıkışık"a bastığında sonucu göremiyordu.
+Şerit bunun için eklendi — ama ilk hâlinde her satırda bir düğme vardı ve
+şerit yoğunluğa HİÇ tepki vermedi: satırın yüksekliğini dolgu değil, içindeki
+44 piksellik dokunma hedefi belirliyordu. Yani önizleme, göstermediğini
+gizliyordu. Satırlar metne indirildi, kontrol ayrı durdu.
+
+**Ekranda ölçüldü** (yeni `Surface/Workspace/AppearanceRegion` hikâyesi):
+sıkışık 36px satır / 44px kontrol, standart 44/44, rahat 52/52. Yani dokunma
+hedefi hiçbir modda 44'ün altına inmiyor — yardım metninin sözü artık ekranda
+kanıtlı.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük

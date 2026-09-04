@@ -6,6 +6,19 @@ const en = {
     'theme.system': 'System',
     'theme.light': 'Light',
     'theme.dark': 'Dark',
+    /*
+        YOĞUNLUK, tema ile aynı ailede durur: ikisi de kişiseldir, ikisi de
+        tarayıcıda saklanır ve ikisi de "bu ekran bana nasıl görünsün"
+        sorusunu cevaplar (FF-128).
+
+        Etiketler boyut değil İŞ anlatır. "Rahat" parmakla dokunulacak bir
+        tablette, "sıkışık" gün boyu tabloya bakan bir masaüstünde işe
+        yarar; kullanıcı piksel seçmez, çalışma biçimini seçer.
+    */
+    'density.group_label': 'Density',
+    'density.comfortable': 'Comfortable',
+    'density.standard': 'Standard',
+    'density.compact': 'Compact',
 } as const;
 
 type TranslationKey = keyof typeof en;
