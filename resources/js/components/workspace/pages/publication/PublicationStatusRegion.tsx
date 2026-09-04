@@ -48,7 +48,7 @@ export function PublicationStatusRegion({
             aria-label={t('workspace.publication.status.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-body font-semibold text-fg">
+            <h3 className="text-body font-bold text-fg">
                 {t('workspace.publication.status.region')}
             </h3>
 

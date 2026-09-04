@@ -21,7 +21,7 @@ const meta: Meta<typeof SettingsPage> = {
         workspaceId: 1,
         userName: 'Mehmet Usta',
         brand: null,
-        onBrandSaved: () => undefined,
+        onSaved: () => undefined,
         onSelectTab: () => undefined,
     },
     decorators: [

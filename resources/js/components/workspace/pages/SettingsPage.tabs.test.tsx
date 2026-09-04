@@ -24,7 +24,7 @@ describe('SettingsPage — sekme grameri', () => {
                 workspaceId={1}
                 userName="Mehmet"
                 brand={null}
-                onBrandSaved={vi.fn()}
+                onSaved={vi.fn()}
                 activeTab="brand"
                 onSelectTab={vi.fn()}
             />,

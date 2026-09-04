@@ -72,7 +72,7 @@ export function PublishReadinessChecklistRegion({
             aria-label={t('workspace.publication.readiness.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-body font-semibold text-fg">
+            <h3 className="text-body font-bold text-fg">
                 {t('workspace.publication.readiness.region')}
             </h3>
 

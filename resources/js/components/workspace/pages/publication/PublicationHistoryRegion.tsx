@@ -105,7 +105,7 @@ export function PublicationHistoryRegion({
 
     return (
         <section className="flex flex-col gap-2">
-            <h3 className="text-body font-semibold text-fg">
+            <h3 className="text-body font-bold text-fg">
                 {t('workspace.publication.history.title')}
             </h3>
             <p className="text-meta text-fg-muted">{t('workspace.publication.history.help')}</p>

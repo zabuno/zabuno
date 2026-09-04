@@ -3,7 +3,11 @@ import { t } from '../../../../i18n/workspace';
 
 const PAPER_SIZES = ['A4', 'B4', 'A5', 'B5', 'A6', 'B6', 'A7', 'B7'] as const;
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-meta font-medium text-fg-secondary';
+/*
+    ETİKET GÖVDE ÖLÇEĞİNDEDİR — `--text-meta` zaman damgası ve sayaç içindir,
+    kullanıcının cevaplayacağı soru için değil (`app.css` §text-meta).
+*/
+const LABEL_CLASSES = 'flex flex-col gap-1 text-body font-medium text-fg-secondary';
 
 export type QrOutputFormat = 'png' | 'svg' | 'pdf';
 export type QrPaperSize = (typeof PAPER_SIZES)[number];
@@ -38,7 +42,7 @@ export function QrExportConfigForm({
                 (`docs/102` §1); bölüm başlığı olarak kullanılması, bir kartın
                 içinde dört ayrı başlık dili doğuruyordu.
             */}
-            <legend className="text-body font-semibold text-fg">
+            <legend className="text-body font-bold text-fg">
                 {t('workspace.publication.qrExport.config.heading')}
             </legend>
 

@@ -350,7 +350,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 aria-label={t('workspace.publication.qrDestination.region')}
                 className="flex flex-col gap-3"
             >
-                <h3 className="text-body font-semibold text-fg">
+                <h3 className="text-body font-bold text-fg">
                     {t('workspace.publication.qrDestination.region')}
                 </h3>
 

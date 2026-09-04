@@ -151,7 +151,7 @@ export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
             className="flex flex-col gap-[var(--space-4)]"
         >
             <div className="flex flex-col gap-[var(--space-1)]">
-                <h3 className="text-body font-semibold text-fg">
+                <h3 className="text-body font-bold text-fg">
                     {t('workspace.publication.qrCard.heading')}
                 </h3>
                 <p className="text-body text-fg-secondary">
@@ -163,6 +163,17 @@ export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
                 ADIM LİSTESİ bir süs değil: kullanıcı kaçıncı adımda olduğunu
                 ve kaç adım kaldığını görmeden çok adımlı bir formu bitirmez.
                 `aria-current` ekran okuyucuya da aynı şeyi söyler.
+
+                BİÇİM teslim paketinin çok adımlı sihirbazından alındı
+                (`Restoran Paneli v2`, `importSteps`): adımlar AĞIRLIKLA değil
+                DOLGUYLA ayrışır — geçerli adım koyu dolgudur, diğerleri soluk
+                dolgudur, hepsi 700'dür.
+
+                Önceki hâlde geçerli olmayan adımlar hiç dolgusuzdu ve zemini
+                yalnız `hover` sırasında kazanıyordu. Dokunmatik bir tablette
+                `hover` yoktur: sahip dört adımın üçünü zeminsiz soluk bir yazı
+                olarak görüyor ve tıklanabilir olduklarını anlamıyordu. Dolgu
+                "burası bir hedeftir" bilgisini fareye sormadan verir.
             */}
             <ol className="flex flex-wrap gap-[var(--space-2)]">
                 {steps.map((label, index) => (
@@ -173,8 +184,8 @@ export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
                             onClick={() => setStep(index)}
                             className={
                                 index === step
-                                    ? 'min-h-[var(--density-hit-area-min)] rounded-pill bg-surface-active px-[var(--space-3)] text-meta font-semibold text-fg'
-                                    : 'min-h-[var(--density-hit-area-min)] rounded-pill px-[var(--space-3)] text-meta text-fg-muted hover:bg-surface-hover'
+                                    ? 'min-h-[var(--density-hit-area-min)] rounded-pill bg-fg px-[var(--space-3)] text-body font-bold text-surface'
+                                    : 'min-h-[var(--density-hit-area-min)] rounded-pill bg-surface-subtle px-[var(--space-3)] text-body font-bold text-fg-muted hover:text-fg'
                             }
                         >
                             {String(index + 1)}. {label}
@@ -250,7 +261,7 @@ export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
                                 }))}
                                 onChange={setTheme}
                             />
-                            <label className="flex flex-col gap-[var(--space-1)] text-meta font-medium text-fg-secondary">
+                            <label className="flex flex-col gap-[var(--space-1)] text-body font-medium text-fg-secondary">
                                 {t('workspace.publication.qrCard.headline.label')}
                                 {/*
                                     Kartın cümlesi RESTORANIN cümlesidir. Boş
@@ -271,7 +282,7 @@ export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
                     {step === 2 ? (
                         <>
                             <fieldset className="flex flex-col gap-[var(--space-2)]">
-                                <legend className="text-meta font-medium text-fg-secondary">
+                                <legend className="text-body font-medium text-fg-secondary">
                                     {t('workspace.publication.qrCard.size.paper')}
                                 </legend>
                                 <SegmentedControl
@@ -283,7 +294,7 @@ export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
                             </fieldset>
 
                             <fieldset className="flex flex-col gap-[var(--space-2)]">
-                                <legend className="text-meta font-medium text-fg-secondary">
+                                <legend className="text-body font-medium text-fg-secondary">
                                     {t('workspace.publication.qrCard.size.ratio')}
                                 </legend>
                                 {/*
@@ -395,6 +406,17 @@ export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
                     karanlıkta bırakırdı.
                 */}
                 <figure className="flex flex-col items-start gap-[var(--space-2)]">
+                    {/*
+                        ZEMİN JETON DEĞİL, KÂĞITTIR.
+
+                        Buradaki `bg-white` bir tema rengi değil bir BASKI
+                        gerçeğidir: kart beyaz kâğıda basılır ve karekod ISO/IEC
+                        18004 gereği koyu modül / açık zemin olmak zorundadır.
+                        Zemini `surface` jetonuna bağlasaydık koyu temada
+                        önizleme koyu bir kâğıt gösterirdi — yani sahip, eline
+                        hiç geçmeyecek bir kartı görür ve kontrast kararını
+                        yanlış veri üstünden verirdi.
+                    */}
                     <img
                         key={cardUrl('svg', false)}
                         src={cardUrl('svg', false)}

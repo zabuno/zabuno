@@ -18,7 +18,7 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
             aria-label={t('workspace.publication.draftPreview.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-body font-semibold text-fg">
+            <h3 className="text-body font-bold text-fg">
                 {t('workspace.publication.draftPreview.region')}
             </h3>
 
@@ -32,16 +32,14 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
                 </p>
             ) : (
                 <div className="flex flex-col gap-4">
-                    <h4 className="text-body font-semibold text-fg">{dashboardMenuTree.name}</h4>
+                    <h4 className="text-body font-bold text-fg">{dashboardMenuTree.name}</h4>
 
                     {dashboardMenuTree.categories
                         .slice()
                         .sort((a, b) => a.position - b.position)
                         .map((category) => (
                             <div key={category.id} className="flex flex-col gap-2">
-                                <p className="text-meta font-semibold text-fg-muted">
-                                    {category.name}
-                                </p>
+                                <p className="text-meta font-bold text-fg-muted">{category.name}</p>
                                 <ul className="flex flex-col gap-2">
                                     {category.menuItems
                                         .slice()

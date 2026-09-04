@@ -239,7 +239,7 @@ export function QrPrintExportRegion({
                         palet seçeneği.
                     */}
                     <span className="flex flex-col gap-[var(--space-2)]">
-                        <h4 className="text-body font-semibold text-fg">
+                        <h4 className="text-body font-bold text-fg">
                             {t('workspace.publication.qrExport.themes.heading')}
                         </h4>
                         <SegmentedControl
@@ -398,7 +398,7 @@ export function QrPrintExportRegion({
             aria-label={t('workspace.publication.qrExport.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-body font-semibold text-fg">
+            <h3 className="text-body font-bold text-fg">
                 {t('workspace.publication.qrExport.region')}
             </h3>
 
@@ -422,7 +422,7 @@ export function QrPrintExportRegion({
             */}
             {sheetCount > 1 && workspaceId !== undefined && locationId !== undefined ? (
                 <div className="flex flex-col gap-[var(--space-2)] border-t border-border pt-[var(--space-3)]">
-                    <h4 className="text-body font-semibold text-fg">
+                    <h4 className="text-body font-bold text-fg">
                         {t('workspace.publication.qrExport.sheet.heading')}
                     </h4>
                     <p className="text-body text-fg-secondary">

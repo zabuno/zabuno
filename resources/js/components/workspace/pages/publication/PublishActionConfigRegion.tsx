@@ -26,7 +26,7 @@ export function PublishActionConfigRegion() {
             aria-label={t('workspace.publication.publishAction.region')}
             className="flex w-full flex-col gap-[var(--space-2)]"
         >
-            <h3 className="text-body font-semibold text-fg">
+            <h3 className="text-body font-bold text-fg">
                 {t('workspace.publication.publishAction.region')}
             </h3>
             <p className="max-w-[60ch] text-body text-fg-secondary">
