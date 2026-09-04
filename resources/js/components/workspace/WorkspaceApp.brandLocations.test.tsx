@@ -228,11 +228,20 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
 
         for (const location of [locationA, locationB]) {
             expect(scope.getByText(location.display_name)).toBeInTheDocument();
-            expect(scope.getByText(location.city)).toBeInTheDocument();
             expect(scope.getByText(location.address_line1)).toBeInTheDocument();
         }
 
-        expect(scope.getAllByText(locationA.country_code).length).toBeGreaterThanOrEqual(1);
+        /*
+            ŞEHİR VE ÜLKE ARTIK KARTIN BAŞLIĞINDA, TEK PARÇA (FF-131).
+
+            Öncesi ikisini ayrı ayrı arıyordu ve bu, ekranda ikisinin ayrı
+            metin düğümü olmasını zorunlu kılıyordu — yani bir düzen kararını
+            donduruyordu. Ölçülmek istenen şey ise "şehir ve ülke görünüyor
+            mu": başlık `İstanbul · TR` biçiminde tek bir ad olduğu için
+            aranan şey de o ad.
+        */
+        const cityHeading = `${locationA.city} · ${locationA.country_code}`;
+        expect(scope.getAllByText(cityHeading).length).toBeGreaterThanOrEqual(1);
         expect(destination?.querySelectorAll('[data-testid="brand-location-row"]')).toHaveLength(2);
 
         const writeCalls = fetchMock.mock.calls.filter(([, init]) => {
