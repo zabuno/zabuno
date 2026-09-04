@@ -76,6 +76,14 @@ msgstr "Write to us"
 msgid "site.home.contact.lead"
 msgstr "Ask about pricing, a pilot, or anything that is in your way. We keep every message; you get a confirmation on screen."
 
+#: site:site.home.faq.account.answer
+msgid "site.home.faq.account.answer"
+msgstr "Yes, create an account or log in to open the workspace app."
+
+#: site:site.home.faq.account.question
+msgid "site.home.faq.account.question"
+msgstr "Do I need an account to try it?"
+
 #: site:site.home.faq.cost.answer
 msgid "site.home.faq.cost.answer"
 msgstr "Prices come from our plan catalogue, so what you read there is what we charge."
@@ -83,6 +91,114 @@ msgstr "Prices come from our plan catalogue, so what you read there is what we c
 #: site:site.home.faq.cost.question
 msgid "site.home.faq.cost.question"
 msgstr "What does it cost?"
+
+#: site:site.home.faq.heading
+msgid "site.home.faq.heading"
+msgstr "FAQ"
+
+#: site:site.home.faq.what.answer
+msgid "site.home.faq.what.answer"
+msgstr "A workspace app for managing a restaurant's menu and catalog and publishing it to a stable QR-linked page."
+
+#: site:site.home.faq.what.question
+msgid "site.home.faq.what.question"
+msgstr "What is Zabuno?"
+
+#: site:site.home.features.heading
+msgid "site.home.features.heading"
+msgstr "Features"
+
+#: site:site.home.features.media.body
+msgid "site.home.features.media.body"
+msgstr "Media uploads go through quarantined media intake and review before they are available, alongside basic usage analytics for the published page."
+
+#: site:site.home.features.media.title
+msgid "site.home.features.media.title"
+msgstr "Media intake & analytics"
+
+#: site:site.home.features.menu.body
+msgid "site.home.features.menu.body"
+msgstr "Create and edit menu items, categories, and catalog details from the workspace app."
+
+#: site:site.home.features.menu.title
+msgid "site.home.features.menu.title"
+msgstr "Menu & catalog operations"
+
+#: site:site.home.features.publication.body
+msgid "site.home.features.publication.body"
+msgstr "Publish a menu to a stable, shareable page that a printed QR code can keep pointing to."
+
+#: site:site.home.features.publication.title
+msgid "site.home.features.publication.title"
+msgstr "Publication & stable QR"
+
+#: site:site.home.features.workspace.body
+msgid "site.home.features.workspace.body"
+msgstr "Keep a restaurant's workspace, team, and settings organized in one tenant-scoped place."
+
+#: site:site.home.features.workspace.title
+msgid "site.home.features.workspace.title"
+msgstr "Restaurant & workspace context"
+
+#: site:site.home.hero.actions.label
+msgid "site.home.hero.actions.label"
+msgstr "Account actions"
+
+#: site:site.home.hero.heading
+msgid "site.home.hero.heading"
+msgstr "Run your restaurant's menu and workspace from one place"
+
+#: site:site.home.hero.lead
+msgid "site.home.hero.lead"
+msgstr "Zabuno gives your team a shared workspace to manage a restaurant's menu and catalog, publish it as a stable QR-linked page, and keep it updated as things change."
+
+#: site:site.home.hero.openApp
+msgid "site.home.hero.openApp"
+msgstr "Open workspace app"
+
+#: site:site.home.howItWorks.build.body
+msgid "site.home.howItWorks.build.body"
+msgstr "add categories, items, prices, visibility, and allergens to your catalog."
+
+#: site:site.home.howItWorks.build.title
+msgid "site.home.howItWorks.build.title"
+msgstr "Build the menu"
+
+#: site:site.home.howItWorks.heading
+msgid "site.home.howItWorks.heading"
+msgstr "How it works"
+
+#: site:site.home.howItWorks.publish.body
+msgid "site.home.howItWorks.publish.body"
+msgstr "publish the menu to a stable page with a QR code."
+
+#: site:site.home.howItWorks.publish.title
+msgid "site.home.howItWorks.publish.title"
+msgstr "Publish & get a QR"
+
+#: site:site.home.howItWorks.setup.body
+msgid "site.home.howItWorks.setup.body"
+msgstr "complete your workspace and restaurant setup."
+
+#: site:site.home.howItWorks.setup.title
+msgid "site.home.howItWorks.setup.title"
+msgstr "Set up"
+
+#: site:site.home.howItWorks.update.body
+msgid "site.home.howItWorks.update.body"
+msgstr "edit the menu and the published page and QR code stay the same."
+
+#: site:site.home.howItWorks.update.title
+msgid "site.home.howItWorks.update.title"
+msgstr "Update anytime"
+
+#: site:site.home.meta.description
+msgid "site.home.meta.description"
+msgstr "Zabuno gives your team a shared workspace to manage a restaurant's menu and catalog, publish it as a stable QR-linked page, and keep it updated as things change."
+
+#: site:site.home.meta.title
+msgid "site.home.meta.title"
+msgstr "Restaurant menu & workspace"
 
 #: site:site.nav.contact
 msgid "site.nav.contact"

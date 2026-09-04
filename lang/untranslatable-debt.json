@@ -1,6 +1,6 @@
 {
     "requirement": "I18N-SSR-RATCHET-16",
-    "total": 48,
+    "total": 19,
     "byFile": {
         "auth/forgot-password.blade.php": 1,
         "auth/invitation.blade.php": 1,
@@ -11,7 +11,6 @@
         "auth/verify.blade.php": 1,
         "platform-app.blade.php": 1,
         "public-not-found.blade.php": 3,
-        "public/home.blade.php": 29,
         "public/layout.blade.php": 1,
         "public/legal.blade.php": 1,
         "public/partials/footer.blade.php": 3,

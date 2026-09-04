@@ -76,12 +76,128 @@ msgstr ""
 msgid "site.home.contact.lead"
 msgstr ""
 
+#: site:site.home.faq.account.answer
+msgid "site.home.faq.account.answer"
+msgstr ""
+
+#: site:site.home.faq.account.question
+msgid "site.home.faq.account.question"
+msgstr ""
+
 #: site:site.home.faq.cost.answer
 msgid "site.home.faq.cost.answer"
 msgstr ""
 
 #: site:site.home.faq.cost.question
 msgid "site.home.faq.cost.question"
+msgstr ""
+
+#: site:site.home.faq.heading
+msgid "site.home.faq.heading"
+msgstr ""
+
+#: site:site.home.faq.what.answer
+msgid "site.home.faq.what.answer"
+msgstr ""
+
+#: site:site.home.faq.what.question
+msgid "site.home.faq.what.question"
+msgstr ""
+
+#: site:site.home.features.heading
+msgid "site.home.features.heading"
+msgstr ""
+
+#: site:site.home.features.media.body
+msgid "site.home.features.media.body"
+msgstr ""
+
+#: site:site.home.features.media.title
+msgid "site.home.features.media.title"
+msgstr ""
+
+#: site:site.home.features.menu.body
+msgid "site.home.features.menu.body"
+msgstr ""
+
+#: site:site.home.features.menu.title
+msgid "site.home.features.menu.title"
+msgstr ""
+
+#: site:site.home.features.publication.body
+msgid "site.home.features.publication.body"
+msgstr ""
+
+#: site:site.home.features.publication.title
+msgid "site.home.features.publication.title"
+msgstr ""
+
+#: site:site.home.features.workspace.body
+msgid "site.home.features.workspace.body"
+msgstr ""
+
+#: site:site.home.features.workspace.title
+msgid "site.home.features.workspace.title"
+msgstr ""
+
+#: site:site.home.hero.actions.label
+msgid "site.home.hero.actions.label"
+msgstr ""
+
+#: site:site.home.hero.heading
+msgid "site.home.hero.heading"
+msgstr ""
+
+#: site:site.home.hero.lead
+msgid "site.home.hero.lead"
+msgstr ""
+
+#: site:site.home.hero.openApp
+msgid "site.home.hero.openApp"
+msgstr ""
+
+#: site:site.home.howItWorks.build.body
+msgid "site.home.howItWorks.build.body"
+msgstr ""
+
+#: site:site.home.howItWorks.build.title
+msgid "site.home.howItWorks.build.title"
+msgstr ""
+
+#: site:site.home.howItWorks.heading
+msgid "site.home.howItWorks.heading"
+msgstr ""
+
+#: site:site.home.howItWorks.publish.body
+msgid "site.home.howItWorks.publish.body"
+msgstr ""
+
+#: site:site.home.howItWorks.publish.title
+msgid "site.home.howItWorks.publish.title"
+msgstr ""
+
+#: site:site.home.howItWorks.setup.body
+msgid "site.home.howItWorks.setup.body"
+msgstr ""
+
+#: site:site.home.howItWorks.setup.title
+msgid "site.home.howItWorks.setup.title"
+msgstr ""
+
+#: site:site.home.howItWorks.update.body
+msgid "site.home.howItWorks.update.body"
+msgstr ""
+
+#: site:site.home.howItWorks.update.title
+msgid "site.home.howItWorks.update.title"
+msgstr ""
+
+#: site:site.home.meta.description
+msgid "site.home.meta.description"
+msgstr ""
+
+#: site:site.home.meta.title
+msgid "site.home.meta.title"
 msgstr ""
 
 #: site:site.nav.contact

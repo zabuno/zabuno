@@ -159,7 +159,15 @@ Header/footer parça; katalog anahtarları (`site.nav.*`, `site.footer.*`,
 mühendislik satırı meta'ya; sözleşme testi. `layout.blade.php` çevrilemez
 borcu 14 → 1 (yalnız marka adı).
 
-### Faz 2 — Ana sayfa gövdesi katalogdan (L2)
+### Faz 2 — Ana sayfa gövdesi katalogdan (L2) ✅ (FF-91, 2026-09-04)
+Ana sayfanın 29 dizesi `site.home.*` altına taşındı; çevrilemez borç 48'den
+19'a düştü ve mandal o değere sıkıldı. Özellik ve adım kartları artık tek bir
+döngüden çizilir: aynı kalıbın dört kez kopyalanması, bir kartın metni
+değişince diğer üçünün unutulduğu yerdi. Görünür dil seçici ve `hreflang`
+BU TURDA YAPILMADI — onlar ayrı bir karar (`docs/38` §6) ve borcun kapanması
+onları beklemez.
+
+### Faz 2 (özgün tanım) — Ana sayfa gövdesi katalogdan (L2)
 `home.blade.php` 29 dize → `site.home.*`; görünür dil seçici (header,
 `?lang=` **değil** — `docs/38` §6: dil, sorgu parametresi değil, yol ya da
 tercih); `hreflang` (`docs/39` Faz 1). Kapı: `byFile['public/home.blade.php'] = 0`.
