@@ -129,6 +129,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PATCH|api/workspaces/{workspace}/media/{media}||App\Http\Controllers\Media\UpdateMediaAltTextController|api,auth:sanctum,verified',
         // KOTA ve ASIL İNDİRME (FF-71).
         'GET|api/workspaces/{workspace}/media/quota||App\Http\Controllers\Media\ShowMediaQuotaController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/media/audits||App\Http\Controllers\Media\ListMediaAuditsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/media/{media}/download-link||App\Http\Controllers\Media\CreateOriginalDownloadLinkController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/team/members||App\Http\Controllers\Team\ListTeamMembersController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/team/members/{member}||App\Http\Controllers\Team\RemoveTeamMemberController|api,auth:sanctum,throttle:5,1,verified',

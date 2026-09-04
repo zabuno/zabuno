@@ -108,4 +108,28 @@ describe('hesap (sistem) menüsü', () => {
         expect(trigger.querySelector('img')).toBeNull();
         expect(trigger.textContent).toContain('A');
     });
+
+    /*
+        Menünün yönü DURDUĞU YERE bağlıdır. Telefonda menü üst çubuktadır;
+        yukarı açsaydı panel ekranın dışında kalır ve hiç görünmezdi.
+    */
+    it('telefon yerleşiminde menü AŞAĞI açılır', async () => {
+        const user = userEvent.setup();
+
+        render(<AccountMenu email="admin@zabuno.com" placement="down" onLogout={() => {}} />);
+
+        await user.click(screen.getByRole('button', { name: 'Account' }));
+
+        expect(screen.getByRole('menu', { name: 'Account' }).className).toContain('top-full');
+    });
+
+    it('varsayılan yerleşim YUKARI açılır — kenar çubuğunun dibi', async () => {
+        const user = userEvent.setup();
+
+        render(<AccountMenu email="admin@zabuno.com" onLogout={() => {}} />);
+
+        await user.click(screen.getByRole('button', { name: 'Account' }));
+
+        expect(screen.getByRole('menu', { name: 'Account' }).className).toContain('bottom-full');
+    });
 });

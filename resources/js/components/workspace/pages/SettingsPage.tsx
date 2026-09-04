@@ -1,10 +1,18 @@
+import { lazy, Suspense } from 'react';
+
 import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
 import { BrandLogoRegion } from './brand/BrandLogoRegion';
-import { BillingPage } from './BillingPage';
 import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
+
+/*
+    Plan ve fatura ekranı İSTENDİĞİNDE iner (FF-97). Ayarların üç sekmesinden
+    biri için tüm faturalandırma kodunu her açılışta indirmek, günde bir kez
+    menü düzenleyen restoranın beklediği süreyi uzatıyordu.
+*/
+const BillingPage = lazy(async () => ({ default: (await import('./BillingPage')).BillingPage }));
 
 export type SettingsTab = 'brand' | 'account' | 'billing';
 
@@ -118,7 +126,11 @@ export function SettingsPage({
                             <AccountSettingsRegion currentName={userName} />
                         )}
 
-                        {activeTab === 'billing' && <BillingPage workspaceId={workspaceId} />}
+                        {activeTab === 'billing' && (
+                            <Suspense fallback={null}>
+                                <BillingPage workspaceId={workspaceId} />
+                            </Suspense>
+                        )}
                     </PanelCard>
                 </div>
             </WorkspacePageFrame>

@@ -351,8 +351,12 @@ asıl bayt + görsel sayısı + aylık yükleme + çöp süresi; rendition kota 
 2 ✅ dolunca yalnız yükleme 422 ile durur, sebep sahibin cümlesi; teslim
 kapıdan geçmez; `GET media/quota` sayaçları ekranda; 3 ✅ `media.manage`
 (Owner/Manager/Editor) ve `media.download_original` (her rol — sahip kararı
-"tamamen serbest", izin yine ayrı); Member yükleyemez/silemez; 4 ⬜ audit log
-(medya eylemleri henüz denetim defterine yazılmıyor); 5 ✅ `media:reconcile
+"tamamen serbest", izin yine ayrı); Member yükleyemez/silemez; 4 ✅ (FF-97)
+denetim izi: `media_audits` append-only tablosu — yükleme, ad değişikliği,
+çöpe atma, geri alma, yeniden üretme, sürüme dönme ve asıl-dosya indirme
+isteği; fail e-postasıyla; varlık silinse de kayıt yaşar; Media sayfasında
+kapalı bir bölüm olarak okunur (`GET media/audits`, `media.manage` ister);
+5 ✅ `media:reconcile
 [--fix]`: kırık kayıt (satır var, dosya yok) ve yetim dosya raporu; `--fix`
 yetimi siler, kırığı `failed`'a çeker, satır silmez.
 

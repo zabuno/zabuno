@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
-import clsx from 'clsx';
+import { cn } from '../../../../lib/utils';
 import { CaretDown } from '@phosphor-icons/react';
 import { MenuItem } from '../micro/MenuItem';
 import { MenuItemRadio } from '../micro/MenuItemRadio';
@@ -181,7 +181,7 @@ export function SidebarMenu({
     const attachedEdge = placement === 'down' ? 'rounded-b-none' : 'rounded-t-none';
 
     return (
-        <div ref={rootRef} className={clsx('relative w-full', className)}>
+        <div ref={rootRef} className={cn('relative w-full', className)}>
             <button
                 ref={triggerRef}
                 type="button"
@@ -190,7 +190,7 @@ export function SidebarMenu({
                 aria-controls={mounted ? panelId : undefined}
                 aria-label={label}
                 onClick={() => (open ? close(false) : setState('open'))}
-                className={clsx(
+                className={cn(
                     'flex min-h-[var(--density-hit-area-min)] w-full items-center gap-[var(--space-2)]',
                     'rounded-[var(--radius-md)] border border-border bg-[var(--color-surface-subtle)]',
                     'px-[var(--space-3)] py-[var(--space-2)] text-start',
@@ -207,7 +207,7 @@ export function SidebarMenu({
                     aria-hidden="true"
                     size={16}
                     weight="bold"
-                    className={clsx(
+                    className={cn(
                         'shrink-0 text-fg-muted transition-transform duration-[var(--duration-base)] ease-[var(--easing-inout)]',
                         // Kapalıyken ok, panelin AÇILACAĞI yönü gösterir;
                         // açıkken ters döner. Kullanıcı oka bakıp panelin
@@ -225,7 +225,7 @@ export function SidebarMenu({
                     role="menu"
                     aria-label={label}
                     onKeyDown={onPanelKeyDown}
-                    className={clsx(
+                    className={cn(
                         'absolute inset-x-0 z-30 overflow-hidden border border-border bg-surface',
                         // Gölge YOK: panel tetikleyiciye yapışık ve kenarlıklı,
                         // yani zaten tek bir yüzey olarak okunuyor. Sahibin
@@ -238,7 +238,7 @@ export function SidebarMenu({
                             : 'bottom-full origin-bottom rounded-t-[var(--radius-md)] border-b-0',
                         open
                             ? 'translate-y-0 opacity-100'
-                            : clsx(
+                            : cn(
                                   'pointer-events-none opacity-0',
                                   placement === 'down' ? '-translate-y-1' : 'translate-y-1',
                               ),

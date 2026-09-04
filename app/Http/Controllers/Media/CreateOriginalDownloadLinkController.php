@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MediaAuditPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
@@ -26,6 +27,7 @@ final class CreateOriginalDownloadLinkController extends Controller
     public function __construct(
         private readonly MediaRepositoryPort $media,
         private readonly AuthorizationPort $authorization,
+        private readonly MediaAuditPort $audit,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $media): JsonResponse
@@ -45,6 +47,15 @@ final class CreateOriginalDownloadLinkController extends Controller
         if ($asset === null || $asset->workspaceId !== $workspace) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
+
+        /*
+            İNDİRME İSTEĞİ de ize yazılır ve bu bilinçli: asıl dosya
+            restoranın en pahalı varlığıdır (yüksek çözünürlüklü fotoğraf) ve
+            "kim indirdi" sorusu bir gün sorulur. Yazılan şey İSTEKTİR;
+            imzalı adresin gerçekten kullanılıp kullanılmadığını bu kayıt
+            iddia etmez.
+        */
+        $this->audit->record($workspace, $media, 'original_download_requested', $userId);
 
         $expiresAt = now()->addMinutes(10);
 

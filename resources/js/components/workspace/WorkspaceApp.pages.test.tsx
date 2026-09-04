@@ -324,8 +324,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         for (const destination of destinations) {
             await user.click(within(nav).getByRole('link', { name: destination.name }));
 
+            // FF-97: ekran `lazy` ile iniyor — bir tık beklemek gerekiyor.
+            await waitFor(() => expect(main.querySelector(`#${destination.id}`)).not.toBeNull());
             const root = main.querySelector(`#${destination.id}`);
-            expect(root).not.toBeNull();
             expect(
                 within(root as HTMLElement).getByRole('heading', { name: destination.heading }),
             ).toBeInTheDocument();
@@ -397,6 +398,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
 
         await user.click(within(nav).getByRole('link', { name: 'Media' }));
+        // FF-97: ekran `lazy` ile iniyor — bir tık beklemek gerekiyor.
+        await waitFor(() => expect(document.querySelector('#section-media')).not.toBeNull());
         const mediaRoot = document.querySelector('#section-media') as HTMLElement;
         const mediaEmptyNotice = within(mediaRoot).getByText('No media assets yet.');
         expect(mediaEmptyNotice).toHaveAttribute('role', 'status');
@@ -405,6 +408,7 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         // Yayınlama menüye aittir: menüye gidip oradan açılır (docs/50 §5).
         await user.click(within(nav).getByRole('link', { name: 'Menus' }));
         await user.click(screen.getByRole('button', { name: 'Preview & publish' }));
+        await waitFor(() => expect(document.querySelector('#section-publication')).not.toBeNull());
         const publicationRoot = document.querySelector('#section-publication') as HTMLElement;
         /*
             FF-82: eşleşme listesine "not published yet" eklendi. Önceki
@@ -828,8 +832,10 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
                 const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
 
-                // Sayfa AÇILIR…
-                expect(document.querySelector(`#${destination.id}`)).not.toBeNull();
+                // Sayfa AÇILIR… (FF-97: `lazy`, bir tık beklenir)
+                await waitFor(() =>
+                    expect(document.querySelector(`#${destination.id}`)).not.toBeNull(),
+                );
 
                 // …ama gezintide hiçbir bağlantı ona `aria-current` taşımaz,
                 // çünkü listede yok.

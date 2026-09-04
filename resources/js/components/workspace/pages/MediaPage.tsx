@@ -4,6 +4,7 @@ import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
+import { MediaAuditRegion } from './media/MediaAuditRegion';
 import { MediaQuotaRegion, type MediaQuota } from './media/MediaQuotaRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
@@ -349,6 +350,12 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                         />
                     </PanelCard>
                 </div>
+
+                {/*
+                    Denetim izi EN ALTTA ve kapalı: günlük iş değildir, bir
+                    şey ters gittiğinde açılır (`docs/49` Faz 7 madde 4).
+                */}
+                {workspaceId === undefined ? null : <MediaAuditRegion workspaceId={workspaceId} />}
             </WorkspacePageFrame>
         </div>
     );

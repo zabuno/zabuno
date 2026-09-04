@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Media\Dto\MediaIntake;
+use App\Application\Media\Port\MediaAuditPort;
 use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\UseCase\ProcessAcceptedMediaAsset;
@@ -23,6 +24,7 @@ final class StoreMediaController extends Controller
         private readonly ScanQuarantinedMediaAsset $scanQuarantinedMediaAsset,
         private readonly ProcessAcceptedMediaAsset $processAcceptedMediaAsset,
         private readonly MediaQuotaPort $quota,
+        private readonly MediaAuditPort $audit,
     ) {}
 
     public function __invoke(StoreMediaRequest $request, int $workspace): JsonResponse
@@ -96,6 +98,14 @@ final class StoreMediaController extends Controller
         ($this->processAcceptedMediaAsset)($workspace, $asset->id);
 
         $asset = $this->media->find($asset->id) ?? $asset;
+
+        /*
+            Denetim izi (`docs/49` Faz 7 madde 4): eylem başarıyla
+            tamamlandıktan SONRA yazılır. Denenip başarısız olmuş bir
+            eylemi ize yazmak, olmamış bir şeyi olmuş gibi kaydetmek
+            olurdu.
+        */
+        $this->audit->record($workspace, $asset->id, 'uploaded', $userId);
 
         return response()->json([
             'id' => $asset->id,

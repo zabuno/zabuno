@@ -996,6 +996,50 @@ msgstr "This location"
 msgid "workspace.locations.operational.description"
 msgstr "Add and edit the physical locations that serve your menu — grouped by city, with an onboarding flow for new ones."
 
+#: workspace:workspace.media.audit.action.downloaded
+msgid "workspace.media.audit.action.downloaded"
+msgstr "Requested the original of photo #{id}"
+
+#: workspace:workspace.media.audit.action.renamed
+msgid "workspace.media.audit.action.renamed"
+msgstr "Renamed photo #{id}"
+
+#: workspace:workspace.media.audit.action.reprocessed
+msgid "workspace.media.audit.action.reprocessed"
+msgstr "Regenerated sizes for photo #{id}"
+
+#: workspace:workspace.media.audit.action.restored
+msgid "workspace.media.audit.action.restored"
+msgstr "Restored photo #{id} from trash"
+
+#: workspace:workspace.media.audit.action.trashed
+msgid "workspace.media.audit.action.trashed"
+msgstr "Moved photo #{id} to trash"
+
+#: workspace:workspace.media.audit.action.unknown
+msgid "workspace.media.audit.action.unknown"
+msgstr "Acted on photo #{id}"
+
+#: workspace:workspace.media.audit.action.uploaded
+msgid "workspace.media.audit.action.uploaded"
+msgstr "Uploaded photo #{id}"
+
+#: workspace:workspace.media.audit.action.versionRestored
+msgid "workspace.media.audit.action.versionRestored"
+msgstr "Restored an older version of photo #{id}"
+
+#: workspace:workspace.media.audit.actor.unknown
+msgid "workspace.media.audit.actor.unknown"
+msgstr "unknown person"
+
+#: workspace:workspace.media.audit.heading
+msgid "workspace.media.audit.heading"
+msgstr "Who did what"
+
+#: workspace:workspace.media.audit.help
+msgid "workspace.media.audit.help"
+msgstr "Every upload, rename, deletion and restore is recorded here. Records are never edited or removed."
+
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
 msgstr "Media"

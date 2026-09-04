@@ -662,7 +662,10 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         const inspector = await screen.findByRole('complementary', { name: /this menu/i });
         await user.click(within(inspector).getByRole('button', { name: /preview & publish/i }));
 
-        expect(screen.getByRole('main').querySelector('#section-publication')).not.toBeNull();
+        // FF-97: ekran `lazy` ile iniyor — bir tık beklemek gerekiyor.
+        await waitFor(() =>
+            expect(screen.getByRole('main').querySelector('#section-publication')).not.toBeNull(),
+        );
 
         vi.unstubAllGlobals();
     });

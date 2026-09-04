@@ -1017,6 +1017,22 @@ export function WorkspaceApp({
             <AccountMenu
                 email={user.email}
                 avatarUrl={user.avatarUrl ?? null}
+                /*
+                    Menünün yönü DURDUĞU YERE bağlıdır: kalıcı kenar çubuğu
+                    varsa menü onun dibindedir ve yukarı açılır; yoksa üst
+                    çubuktadır ve aşağı açılmalıdır. Telefonda yukarı açsaydı
+                    panel ekranın dışında kalırdı.
+                */
+                placement={renderPersistentSidebar === undefined ? 'down' : 'up'}
+                /*
+                    Kenar çubuğunda menü rayın TAM GENİŞLİĞİNİ alır; üst
+                    çubukta ise yanındaki arama tetikleyicisiyle bir sırada
+                    durur ve genişliğini içeriğinden almalıdır. Tam genişlik
+                    orada çubuğu tek bir düğmeye çevirirdi.
+                */
+                className={
+                    renderPersistentSidebar === undefined ? 'w-auto max-w-[14rem]' : undefined
+                }
                 onOpenProfile={currentWorkspace ? () => goToSection('profile') : undefined}
                 onOpenSettings={currentWorkspace ? () => goToSection('settings') : undefined}
                 onLogout={() => void handleLogout()}

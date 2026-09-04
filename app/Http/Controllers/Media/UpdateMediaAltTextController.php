@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MediaAuditPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
@@ -23,6 +24,7 @@ final class UpdateMediaAltTextController extends Controller
     public function __construct(
         private readonly MediaRepositoryPort $media,
         private readonly AuthorizationPort $authorization,
+        private readonly MediaAuditPort $audit,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $media): JsonResponse
@@ -42,6 +44,10 @@ final class UpdateMediaAltTextController extends Controller
         if (! $this->media->updateAltText($workspace, $media, trim((string) $validated['altText']))) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
+
+        // Denetim izi (`docs/49` Faz 7 madde 4): eylem BAŞARIYLA bittikten
+        // sonra yazılır — denenip olmamış bir şeyi kaydetmek yanlış olurdu.
+        $this->audit->record($workspace, $media, 'renamed', $userId);
 
         $asset = $this->media->find($media);
 

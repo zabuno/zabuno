@@ -1,6 +1,6 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { desktopChrome } from '../../test/workspaceChrome';
 
@@ -226,8 +226,14 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Insights' }));
 
+        /*
+            EKRAN İSTENDİĞİNDE İNER (FF-97): bölüm artık `lazy` ile
+            yükleniyor, yani gezindikten sonra bir tık BEKLEMEK gerekiyor.
+            Ölçülen sözleşme değişmedi; değişen tek şey, ekranın senkron
+            değil asenkron gelmesi.
+        */
         const main = screen.getByRole('main');
-        expect(main.querySelector('#section-analytics')).not.toBeNull();
+        await waitFor(() => expect(main.querySelector('#section-analytics')).not.toBeNull());
 
         const analyticsRegion = main.querySelector('#section-analytics') as HTMLElement;
 
@@ -275,8 +281,14 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Team' }));
 
+        /*
+            EKRAN İSTENDİĞİNDE İNER (FF-97): bölüm artık `lazy` ile
+            yükleniyor, yani gezindikten sonra bir tık BEKLEMEK gerekiyor.
+            Ölçülen sözleşme değişmedi; değişen tek şey, ekranın senkron
+            değil asenkron gelmesi.
+        */
         const main = screen.getByRole('main');
-        expect(main.querySelector('#section-team')).not.toBeNull();
+        await waitFor(() => expect(main.querySelector('#section-team')).not.toBeNull());
 
         const teamRegion = main.querySelector('#section-team') as HTMLElement;
 
@@ -307,8 +319,14 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         await openSettingsFromAccountMenu(user);
         await user.click(screen.getByRole('tab', { name: 'Plan & billing' }));
 
+        /*
+            EKRAN İSTENDİĞİNDE İNER (FF-97): bölüm artık `lazy` ile
+            yükleniyor, yani gezindikten sonra bir tık BEKLEMEK gerekiyor.
+            Ölçülen sözleşme değişmedi; değişen tek şey, ekranın senkron
+            değil asenkron gelmesi.
+        */
         const main = screen.getByRole('main');
-        expect(main.querySelector('#section-billing')).not.toBeNull();
+        await waitFor(() => expect(main.querySelector('#section-billing')).not.toBeNull());
 
         const billingRegion = main.querySelector('#section-billing') as HTMLElement;
 

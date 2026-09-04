@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MediaAuditPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\UseCase\ReprocessMediaAsset;
 use App\Domain\Authorization\Permission;
@@ -24,6 +25,7 @@ final class ReprocessMediaController extends Controller
         private readonly MediaRepositoryPort $media,
         private readonly ReprocessMediaAsset $reprocess,
         private readonly AuthorizationPort $authorization,
+        private readonly MediaAuditPort $audit,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $media): JsonResponse
@@ -49,6 +51,10 @@ final class ReprocessMediaController extends Controller
         if ($outcome === 'not-ready') {
             return response()->json(['message' => 'Yalnız hazır bir görsel yeniden üretilebilir.'], 409);
         }
+
+        // Denetim izi (`docs/49` Faz 7 madde 4): eylem BAŞARIYLA bittikten
+        // sonra yazılır — denenip olmamış bir şeyi kaydetmek yanlış olurdu.
+        $this->audit->record($workspace, $media, 'reprocessed', $userId);
 
         return response()->json([
             'outcome' => $outcome,
