@@ -1,6 +1,7 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import { clickRowMenuItem } from '../../test/menuRow';
 import userEvent from '@testing-library/user-event';
 import { desktopChrome } from '../../test/workspaceChrome';
 
@@ -174,14 +175,20 @@ describe('WorkspaceApp — dashboard catalog-mutation sync (S1-WP01A foundation,
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
-        const checkbox = await screen.findByRole('checkbox', { name: 'Show Kahve' });
+        await screen.findByText('Kahve');
 
         const menuTreeFetchCountBefore = fetchMock.mock.calls.filter(
             ([calledUrl, init]) =>
                 String(calledUrl) === MENU_URL && (init?.method ?? 'GET').toUpperCase() === 'GET',
         ).length;
 
-        fireEvent.click(checkbox);
+        /*
+            GÜNCELLENDİ (FF-102): görünürlük etiketsiz bir kutu değil, satırın
+            taşma menüsünde ADIYLA duran bir madde. Ölçülen sözleşme aynı:
+            mutasyondan sonra pano sayacı ekstra bir menü isteği OLMADAN
+            güncellenir.
+        */
+        await clickRowMenuItem('Kahve', 'Hide from the menu');
 
         await waitFor(() => {
             expect(

@@ -130,9 +130,13 @@ async function renderWorkspace(
 }
 
 async function openEditor(user: ReturnType<typeof userEvent.setup>) {
-    await user.click(
-        screen.getByRole('button', { name: 'Edit photo and description for Adana Kebap' }),
-    );
+    /*
+        GÜNCELLENDİ (FF-102): "fotoğraf ve metin" satırda kalıcı bir düğme
+        değil, taşma menüsünde ADIYLA duran bir madde. Satır dokuz kontrol
+        taşıyordu ve hepsi aynı ağırlıktaydı.
+    */
+    await user.click(screen.getByRole('button', { name: 'More actions for Adana Kebap' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Photo & text' }));
 
     return screen.findByLabelText('Description');
 }

@@ -112,6 +112,8 @@
     "menu.item.stock.out.short": "Tükendi",
     "menu.item.visibility.checkbox.label": "{name} ürününü göster",
     "menu.item.visibility.error.submit": "Görünürlüğü güncelleyemedik. Lütfen tekrar deneyin.",
+    "menu.item.visibility.hide": "Menüden gizle",
+    "menu.item.visibility.show": "Menüde göster",
     "menu.loading": "Menü yükleniyor…",
     "menu.move.down": "{name} ürününü aşağı taşı",
     "menu.move.up": "{name} ürününü yukarı taşı",

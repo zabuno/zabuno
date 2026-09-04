@@ -89,25 +89,43 @@ Dokuz kontrol, hepsi aynı görsel ağırlıkta. Üç ayrı sorun:
 - `RowActions` `micro`'dan `compound`'a taşındı, çünkü artık bir compound
   (`ActionMenu`) besteliyor — katman kuralı yukarı bağımlılığı yasaklar.
 
-**Bu turda YAPILMADI:** kalan beş kontrolün (Allergens / Price / Sold out /
-Photo & text / görünürlük kutusu) yeniden dizilmesi. Sıradaki döngü.
+**İkinci tur (FF-102) — kalan beş kontrol.**
+
+Bir restoran sahibinin bu satırda gün içinde defalarca yaptığı TEK iş
+"tükendi"dir. Fiyat ara sıra, fotoğraf kurulumda, alerjen nadiren, görünürlük
+nadiren değişir. Buna göre:
+
+| Kontrol | Karar | Gerekçe |
+| --- | --- | --- |
+| Tükendi | Satırda kalır | Günlük iş; iki adım uzağa konamaz |
+| Fiyat | Fiyatın KENDİSİ tıklanır | Yanında ayrı bir "Price" düğmesi durması, aynı bilgiyi iki kez göstermekti — biri okunacak, diğeri tıklanacak |
+| Fotoğraf ve metin | Taşma menüsü | Kurulumda yapılır, her gün değil |
+| Alerjenler | Taşma menüsü | Nadiren değişir |
+| Görünürlük | Taşma menüsü, CÜMLEYLE | Etiketsiz bir kutu, yanındaki "tükendi" düğmesiyle karışıyordu: ikisi de "misafir bunu görmüyor" demek ama biri bugünlük, diğeri kalıcı |
+
+Satır **dokuz kontrolden beşe** indi: sıra, ad, fiyat, tükendi, eylemler.
 
 ---
 
 ## Döngü 3 — Yolculuk: ekranın sırası kullanıcının sırası değil
 
-**Bulgu.** Ekranın tepesinde "Bring in a whole menu" (CSV/fotoğraftan toplu
-aktarım) duruyor. Bu, bir restoranın **hayatında bir kez** yaptığı iştir;
-menü düzenlemek ise her gün yapılır. Ekranın en değerli yeri (üst) en nadir
-işe verilmiş.
+**Bulgu — ve bir DÜZELTME.** İlk okumada "toplu aktarım kutusu ekranın
+tepesini işgal ediyor" diye yazmıştım. Koda bakınca yanlış olduğu görüldü:
+kutu `<details open={!menuHasItems}>` — yani menüde ürün varken KAPALI
+geliyor, yalnız boş menüde açılıyor. Sahibin ekran görüntüsünde açık
+görünmesinin sebebi kutuyu kendisinin açmış olması. Karar zaten doğruydu ve
+gerekçesi kodda yazılı.
 
-Ayrıca "Add product" her kategorinin dibinde, "Add category" en altta: menüsü
-uzun bir restoranda yeni ürün eklemek için her seferinde sayfanın sonuna
-inmek gerekir.
+**Gerçek bulgu.** "Add product" ve "Add category" düğmeleri dikey bir yığının
+içinde `inline-flex` ile çiziliyordu ve esneyip TAM GENİŞLİK kutulara
+dönüşüyorlardı: ekranda boş bir metin alanı gibi duruyorlardı. Bir düğmenin
+metin alanı gibi görünmesi, kullanıcıyı içine yazmaya davet eder.
 
-**Karar:** toplu aktarım bölümü kapalı açılmalı (bir `<details>` olarak zaten
-sarılı; varsayılanı kapalı olmalı) ve "ürün ekle" kategori başlığının yanında
-da bulunmalı. **Sıradaki döngüde**, ölçülerek.
+**Uygulanan (FF-102).** Ekleme düğmeleri kendi sınıfını aldı: içeriği kadar
+geniş, başında bir artı işareti, kesikli kenarlık ("burası bir şey ekler").
+
+**Kalan:** "ürün ekle"nin kategori başlığının yanında da bulunması — uzun bir
+menüde her seferinde kategorinin sonuna inmek gerekiyor.
 
 ---
 
@@ -129,7 +147,15 @@ ister.
 
 ## Döngü 5 — Yoğunluk, ritim, para birimi
 
-**Bulgu.** Fiyat `250.00 TRY` olarak yazılıyor. Türkçe yazım `250,00 ₺`dir:
+**Bulgu (FF-102'de düzeltildi).** Satırdaki dizilim `ad → sıra → EYLEMLER →
+fiyat → durum` idi: göz addan fiyata giderken üç düğmenin üstünden atlamak
+zorundaydı ve iki ürünün fiyatı hizalanmadığı için karşılaştırılamıyordu.
+
+Yeni dizilim `sıra → ad → fiyat → tükendi → eylemler`; kategori başlığı da
+aynı grameri kullanır. İçerik solda, sayı sağda, eylemler en sağda — iki
+farklı sıralama, gözü her satırda yeniden eğitmek olurdu.
+
+**Bulgu (açık).** Fiyat `250.00 TRY` olarak yazılıyor. Türkçe yazım `250,00 ₺`dir:
 ondalık ayırıcı virgül, simge sonda. Türk bir restoran sahibi için bu, her
 satırda görünen küçük bir yabancılık.
 
@@ -157,12 +183,14 @@ var) ve dokunmatikte 44 px hedef doğrulaması.
 
 ## Kapanmayan liste (sıradaki tur)
 
-| # | İş | Döngü |
-| --- | --- | --- |
-| 1 | Satırdaki beş ikincil kontrolün yeniden dizilmesi | 2 |
-| 2 | Toplu aktarımın kapalı açılması, "ürün ekle"nin başlığa taşınması | 3 |
-| 3 | Silmeyi çöpe alma + geri alma | 4 |
-| 4 | Türkçe para biçimi (`250,00 ₺`) | 5 |
-| 5 | Ok düğmelerine ipucu, dokunmatik hedef ölçümü | 6 |
+| # | İş | Döngü | Durum |
+| --- | --- | --- | --- |
+| 1 | Satırdaki beş ikincil kontrolün yeniden dizilmesi | 2 | ✅ FF-102 |
+| 2 | Satır ve başlık grameri (sıra → ad → fiyat → durum → eylem) | 5 | ✅ FF-102 |
+| 3 | Ekleme düğmelerinin düğme gibi görünmesi | 3 | ✅ FF-102 |
+| 4 | "Ürün ekle"nin kategori başlığına da taşınması | 3 | ⬜ |
+| 5 | Silmeyi çöpe alma + geri alma (arka uç kararı) | 4 | ⬜ |
+| 6 | Türkçe para biçimi (`250,00 ₺`) | 5 | ⬜ |
+| 7 | Ok düğmelerine ipucu, dokunmatik hedef ölçümü | 6 | ⬜ |
 
 Her madde ayrı bir pakettir ve kendi kanıtıyla kapanır.

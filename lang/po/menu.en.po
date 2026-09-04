@@ -460,6 +460,14 @@ msgstr "Show {name}"
 msgid "menu.item.visibility.error.submit"
 msgstr "We could not update visibility. Please try again."
 
+#: menu:menu.item.visibility.hide
+msgid "menu.item.visibility.hide"
+msgstr "Hide from the menu"
+
+#: menu:menu.item.visibility.show
+msgid "menu.item.visibility.show"
+msgstr "Show on the menu"
+
 #: menu:menu.loading
 msgid "menu.loading"
 msgstr "Loading menu…"

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -252,7 +252,16 @@ describe('MenuCatalogWorkspace — visible category/item ordering (FrontendBlitz
         expect(screen.getByText(/50\.00/)).toBeInTheDocument();
         expect(screen.getAllByText(/TRY/).length).toBeGreaterThan(0);
         expect(screen.getByText('milk')).toBeInTheDocument();
-        expect(screen.getByRole('checkbox', { name: /Espresso/i })).toBeChecked();
+        /*
+            GÜNCELLENDİ (FF-102): görünürlük etiketsiz bir kutu değil, satırın
+            taşma menüsünde ADIYLA duran bir madde. Görünen bir ürünün maddesi
+            "menüden gizle" der — durum kutunun işaretinden değil, cümleden
+            okunur.
+        */
+        fireEvent.click(screen.getByRole('button', { name: 'More actions for Espresso' }));
+        expect(
+            await screen.findByRole('menuitem', { name: 'Hide from the menu' }),
+        ).toBeInTheDocument();
 
         const mutationCalls = fetchMock.mock.calls.filter((call) => String(call[0]).length > 0);
         mutationCalls.forEach((call) => {

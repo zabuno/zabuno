@@ -2,6 +2,7 @@ import { TextInput } from '../../forms/micro/TextInput';
 import { Textarea } from '../../forms/micro/Textarea';
 import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
+import { Eye, EyeSlash, ImageSquare, Plus, Warning } from '@phosphor-icons/react';
 import { useEffect, useState, type FormEvent } from 'react';
 import { RowActions } from '../compound/RowActions';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
@@ -376,6 +377,23 @@ const buttonClass = clsx(
  * şey birincilse hiçbir şey birincil değildir — ve marka rengi vurgudan
  * çıkıp gürültü olur (docs/37 §1: affordance, kimlik "Flat 2.0 + tonal").
  */
+/*
+    EKLEME düğmeleri kendi sınıfını taşır (FF-102).
+
+    `inlineActionClass` ile çizildiklerinde, dikey bir yığının içinde
+    `inline-flex` esneyip TAM GENİŞLİK bir kutuya dönüşüyordu: ekranda boş
+    bir metin alanı gibi duruyor ve kullanıcı içine yazmayı deniyordu. Bir
+    düğme, düğme gibi görünmelidir — içeriği kadar geniş ve başında bir artı
+    işaretiyle.
+*/
+const addActionClass = clsx(
+    'inline-flex min-h-[var(--density-hit-area-min)] w-fit shrink-0 items-center gap-[var(--space-2)]',
+    'self-start rounded-[var(--radius-md)] px-[var(--space-3)] py-[var(--space-1)]',
+    'text-meta font-medium text-fg-secondary',
+    'border border-dashed border-border bg-transparent hover:bg-surface-hover hover:text-fg',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+);
+
 const inlineActionClass = clsx(
     'inline-flex min-h-[var(--density-hit-area-min)] shrink-0 items-center rounded-md px-2 py-1',
     'text-meta font-medium text-fg-secondary',
@@ -2462,7 +2480,19 @@ export function MenuCatalogWorkspace({
                     >
                         {tree.categories.map((category) => (
                             <li key={category.id} className={sectionClass}>
-                                <div className="flex flex-wrap items-baseline gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    {/*
+                                        SIRA → BAŞLIK → TOPLU STOK → EYLEMLER.
+                                        Ürün satırıyla AYNI dizilim: iki farklı
+                                        sıralama, gözü her kategoride yeniden
+                                        eğitmek olurdu (`docs/103` Döngü 5).
+                                    */}
+                                    <OrderBadge
+                                        position={category.position}
+                                        label={t('menu.category.order.label', {
+                                            name: category.name,
+                                        })}
+                                    />
                                     {/*
                                         Başlığın KENDİSİ düzenlenir: adı
                                         değiştirmek için ayrı bir kalem
@@ -2488,36 +2518,7 @@ export function MenuCatalogWorkspace({
                                             }
                                         />
                                     </h3>
-                                    <OrderBadge
-                                        position={category.position}
-                                        label={t('menu.category.order.label', {
-                                            name: category.name,
-                                        })}
-                                    />
-                                    {/*
-                                        Kategoriyi İŞLETMEK — `docs/73`.
-                                        Yukarı/aşağı, sürükle-bırak değil:
-                                        sürükleme dokunmatikte ve klavyeyle
-                                        güvenilir değildir.
-                                    */}
-                                    <RowActions
-                                        onDelete={() =>
-                                            setPendingDelete({ kind: 'category', category })
-                                        }
-                                        onMoveUp={() =>
-                                            void moveCategory(tree.categories.indexOf(category), -1)
-                                        }
-                                        onMoveDown={() =>
-                                            void moveCategory(tree.categories.indexOf(category), 1)
-                                        }
-                                        deleteLabel={t('menu.category.delete.label', {
-                                            name: category.name,
-                                        })}
-                                        deleteText={t('menu.row.delete')}
-                                        moreLabel={t('menu.row.more', { name: category.name })}
-                                        upLabel={t('menu.move.up', { name: category.name })}
-                                        downLabel={t('menu.move.down', { name: category.name })}
-                                    />
+                                    <span className="flex-1" />
                                     {/*
                                         KATEGORİ GENELİ STOK — `docs/82` kriter 3.
                                         Yalnız ürün varken çizilir; boş bir kategoride
@@ -2555,6 +2556,30 @@ export function MenuCatalogWorkspace({
                                             )}
                                         </button>
                                     ) : null}
+                                    {/*
+                                        Kategoriyi İŞLETMEK — `docs/73`.
+                                        Yukarı/aşağı, sürükle-bırak değil:
+                                        sürükleme dokunmatikte ve klavyeyle
+                                        güvenilir değildir.
+                                    */}
+                                    <RowActions
+                                        onDelete={() =>
+                                            setPendingDelete({ kind: 'category', category })
+                                        }
+                                        onMoveUp={() =>
+                                            void moveCategory(tree.categories.indexOf(category), -1)
+                                        }
+                                        onMoveDown={() =>
+                                            void moveCategory(tree.categories.indexOf(category), 1)
+                                        }
+                                        deleteLabel={t('menu.category.delete.label', {
+                                            name: category.name,
+                                        })}
+                                        deleteText={t('menu.row.delete')}
+                                        moreLabel={t('menu.row.more', { name: category.name })}
+                                        upLabel={t('menu.move.up', { name: category.name })}
+                                        downLabel={t('menu.move.down', { name: category.name })}
+                                    />
                                 </div>
                                 <ul
                                     aria-label={t('menu.category.items.label', {
@@ -2573,6 +2598,23 @@ export function MenuCatalogWorkspace({
                                             className="flex flex-col gap-2 border-b border-border py-2 last:border-b-0"
                                         >
                                             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                                {/*
+                                                    SIRA → AD → FİYAT → TÜKENDİ → EYLEMLER.
+
+                                                    Önceki dizilim eylemleri satırın
+                                                    ORTASINA koyuyordu: göz addan fiyata
+                                                    giderken üç düğmenin üstünden atlamak
+                                                    zorundaydı. İçerik solda, sayı sağda,
+                                                    eylemler en sağda — liste ancak böyle
+                                                    okunur ve iki ürünün fiyatı ancak böyle
+                                                    karşılaştırılır (`docs/103` Döngü 5).
+                                                */}
+                                                <OrderBadge
+                                                    position={item.position}
+                                                    label={t('menu.item.order.label', {
+                                                        name: item.productName ?? '',
+                                                    })}
+                                                />
                                                 <span className="flex min-w-0 flex-1">
                                                     <InlineRename
                                                         value={
@@ -2595,12 +2637,65 @@ export function MenuCatalogWorkspace({
                                                         }
                                                     />
                                                 </span>
-                                                <OrderBadge
-                                                    position={item.position}
-                                                    label={t('menu.item.order.label', {
+                                                {/*
+                                                    FİYATIN KENDİSİ düzenlenir
+                                                    (FF-102): yanında ayrı bir
+                                                    "Price" düğmesi durması,
+                                                    aynı bilgiyi iki kez
+                                                    göstermekti — biri okunacak,
+                                                    diğeri tıklanacak.
+
+                                                    `tabular-nums`: rakamlar eşit
+                                                    genişlikte olmazsa fiyatlar
+                                                    hizalanmaz ve karşılaştırma
+                                                    gözle yapılamaz.
+                                                */}
+                                                <button
+                                                    type="button"
+                                                    aria-label={t('menu.item.price.edit.button', {
                                                         name: item.productName ?? '',
                                                     })}
-                                                />
+                                                    onClick={() => handleEditPrice(item)}
+                                                    className={clsx(
+                                                        'shrink-0 rounded-[var(--radius-sm)] px-[var(--space-1)]',
+                                                        'text-body tabular-nums text-fg-secondary',
+                                                        'hover:bg-surface-hover hover:text-fg',
+                                                        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                                                    )}
+                                                >
+                                                    {minorAmountToDecimalString(
+                                                        item.priceMinorAmount,
+                                                        item.currencyCode,
+                                                    )}{' '}
+                                                    {item.currencyCode}
+                                                </button>
+                                                {/*
+                                                    TÜKENDİ satırda kalır: bir
+                                                    restoranın gün içinde
+                                                    defalarca yaptığı tek iş
+                                                    budur. Diğer her şey seyrek
+                                                    ve taşma menüsünde adıyla
+                                                    duruyor (`docs/103` Döngü 2).
+                                                */}
+                                                <button
+                                                    type="button"
+                                                    className={inlineActionClass}
+                                                    disabled={stockPending[item.id] === true}
+                                                    aria-pressed={item.outOfStock === true}
+                                                    aria-label={t(
+                                                        item.outOfStock === true
+                                                            ? 'menu.item.stock.back.button'
+                                                            : 'menu.item.stock.out.button',
+                                                        { name: item.productName ?? '' },
+                                                    )}
+                                                    onClick={() => void handleToggleStock(item)}
+                                                >
+                                                    {t(
+                                                        item.outOfStock === true
+                                                            ? 'menu.item.stock.back.short'
+                                                            : 'menu.item.stock.out.short',
+                                                    )}
+                                                </button>
                                                 <RowActions
                                                     onDelete={() =>
                                                         setPendingDelete({ kind: 'item', item })
@@ -2626,6 +2721,62 @@ export function MenuCatalogWorkspace({
                                                     moreLabel={t('menu.row.more', {
                                                         name: item.productName ?? '',
                                                     })}
+                                                    /*
+                                                        SEYREK İŞLER menüde ve
+                                                        ADIYLA durur (FF-102).
+                                                        Satırda kalıcı düğme
+                                                        olduklarında dokuz
+                                                        kontrollük bir duvar
+                                                        oluşuyordu; acemi
+                                                        kullanıcı için bir
+                                                        simgeyi tahmin etmekten
+                                                        iyisi, kelimeyi
+                                                        okumaktır.
+                                                    */
+                                                    extraItems={[
+                                                        {
+                                                            key: 'presentation',
+                                                            label: t(
+                                                                'menu.item.presentation.edit.short',
+                                                            ),
+                                                            icon: <ImageSquare size={18} />,
+                                                            onSelect: () =>
+                                                                void handleEditPresentation(item),
+                                                        },
+                                                        {
+                                                            key: 'allergens',
+                                                            label: t(
+                                                                'menu.item.allergens.edit.short',
+                                                            ),
+                                                            icon: <Warning size={18} />,
+                                                            onSelect: () =>
+                                                                handleEditAllergens(item),
+                                                        },
+                                                        {
+                                                            key: 'visibility',
+                                                            /*
+                                                                İstek uçarken
+                                                                madde kapalı:
+                                                                iki kez basmak
+                                                                iki ters istek
+                                                                gönderirdi.
+                                                            */
+                                                            disabled:
+                                                                visibilityPending[item.id] === true,
+                                                            label: t(
+                                                                item.isVisible
+                                                                    ? 'menu.item.visibility.hide'
+                                                                    : 'menu.item.visibility.show',
+                                                            ),
+                                                            icon: item.isVisible ? (
+                                                                <EyeSlash size={18} />
+                                                            ) : (
+                                                                <Eye size={18} />
+                                                            ),
+                                                            onSelect: () =>
+                                                                handleToggleVisibility(item),
+                                                        },
+                                                    ]}
                                                     upLabel={t('menu.move.up', {
                                                         name: item.productName ?? '',
                                                     })}
@@ -2633,88 +2784,6 @@ export function MenuCatalogWorkspace({
                                                         name: item.productName ?? '',
                                                     })}
                                                 />
-                                                {/*
-                                                    `tabular-nums`: rakamlar eşit
-                                                    genişlikte olmazsa fiyatlar
-                                                    hizalanmaz ve karşılaştırma
-                                                    gözle yapılamaz.
-                                                */}
-                                                <span className="shrink-0 text-body tabular-nums text-fg-secondary">
-                                                    {minorAmountToDecimalString(
-                                                        item.priceMinorAmount,
-                                                        item.currencyCode,
-                                                    )}{' '}
-                                                    {item.currencyCode}
-                                                </span>
-                                                <label className="flex shrink-0 items-center">
-                                                    <TextInput
-                                                        type="checkbox"
-                                                        aria-label={t(
-                                                            'menu.item.visibility.checkbox.label',
-                                                            { name: item.productName ?? '' },
-                                                        )}
-                                                        checked={item.isVisible}
-                                                        disabled={
-                                                            visibilityPending[item.id] === true
-                                                        }
-                                                        onChange={() =>
-                                                            handleToggleVisibility(item)
-                                                        }
-                                                    />
-                                                </label>
-                                                <button
-                                                    type="button"
-                                                    className={inlineActionClass}
-                                                    aria-label={t(
-                                                        'menu.item.allergens.edit.button',
-                                                        { name: item.productName ?? '' },
-                                                    )}
-                                                    onClick={() => handleEditAllergens(item)}
-                                                >
-                                                    {t('menu.item.allergens.edit.short')}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className={inlineActionClass}
-                                                    aria-label={t('menu.item.price.edit.button', {
-                                                        name: item.productName ?? '',
-                                                    })}
-                                                    onClick={() => handleEditPrice(item)}
-                                                >
-                                                    {t('menu.item.price.edit.short')}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className={inlineActionClass}
-                                                    disabled={stockPending[item.id] === true}
-                                                    aria-pressed={item.outOfStock === true}
-                                                    aria-label={t(
-                                                        item.outOfStock === true
-                                                            ? 'menu.item.stock.back.button'
-                                                            : 'menu.item.stock.out.button',
-                                                        { name: item.productName ?? '' },
-                                                    )}
-                                                    onClick={() => void handleToggleStock(item)}
-                                                >
-                                                    {t(
-                                                        item.outOfStock === true
-                                                            ? 'menu.item.stock.back.short'
-                                                            : 'menu.item.stock.out.short',
-                                                    )}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className={inlineActionClass}
-                                                    aria-label={t(
-                                                        'menu.item.presentation.edit.button',
-                                                        { name: item.productName ?? '' },
-                                                    )}
-                                                    onClick={() =>
-                                                        void handleEditPresentation(item)
-                                                    }
-                                                >
-                                                    {t('menu.item.presentation.edit.short')}
-                                                </button>
                                             </div>
 
                                             {/*
@@ -3076,9 +3145,10 @@ export function MenuCatalogWorkspace({
                                 ) : (
                                     <button
                                         type="button"
-                                        className={inlineActionClass}
+                                        className={addActionClass}
                                         onClick={() => toggleEntryForm(category.id)}
                                     >
+                                        <Plus size={14} weight="bold" aria-hidden="true" />
                                         {t('menu.entry.open')}
                                     </button>
                                 )}
@@ -3143,9 +3213,10 @@ export function MenuCatalogWorkspace({
                         ) : (
                             <button
                                 type="button"
-                                className={inlineActionClass}
+                                className={addActionClass}
                                 onClick={() => setCategoryFormOpen(true)}
                             >
+                                <Plus size={14} weight="bold" aria-hidden="true" />
                                 {t('menu.category.add.disclose')}
                             </button>
                         )}

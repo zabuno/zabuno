@@ -1,5 +1,14 @@
+import type { ReactNode } from 'react';
 import { ArrowDown, ArrowUp, DotsThree, Trash } from '@phosphor-icons/react';
 import { ActionMenu } from '../../overlays/compound/ActionMenu';
+
+export type RowActionsExtraItem = {
+    key: string;
+    label: string;
+    onSelect: () => void;
+    icon?: ReactNode;
+    disabled?: boolean;
+};
 
 export type RowActionsProps = {
     onDelete: () => void;
@@ -12,6 +21,14 @@ export type RowActionsProps = {
     moreLabel: string;
     /** Menüdeki silme satırının görünen metni. */
     deleteText: string;
+    /**
+     * Silmeden ÖNCE gelen seyrek işler (alerjen, fotoğraf, gizle).
+     *
+     * Satırda kalıcı düğme olarak durduklarında dokuz kontrollük bir duvar
+     * oluşuyordu; menüde ADLARIYLA duruyorlar ve acemi kullanıcı için bir
+     * simgeyi tahmin etmekten iyisi budur.
+     */
+    extraItems?: RowActionsExtraItem[];
 };
 
 /**
@@ -47,6 +64,7 @@ export function RowActions({
     downLabel,
     moreLabel,
     deleteText,
+    extraItems,
 }: RowActionsProps) {
     /*
         Simge düğmeleri METİN TAŞIR (`aria-label`): bir ok simgesi neyin
@@ -70,6 +88,13 @@ export function RowActions({
                 className={base}
                 triggerContent={<DotsThree size={18} weight="bold" aria-hidden="true" />}
                 items={[
+                    ...(extraItems ?? []).map((item) => ({
+                        key: item.key,
+                        label: item.label,
+                        icon: item.icon,
+                        disabled: item.disabled,
+                        onSelect: item.onSelect,
+                    })),
                     {
                         key: 'delete',
                         label: deleteText,
