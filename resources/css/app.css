@@ -359,12 +359,18 @@
     --border-success: rgb(21 128 61 / 30%);
     --border-warning: rgb(180 83 9 / 30%);
 
-    /* Odak göstergesi KROMASIZ: chroma 0, yani hiç ton yok.
-       Mavi olmasının teknik olarak imkânsız olması kasıtlı — sahibin
-       şikâyeti tam olarak maviydi ve bir jetonun "şu an mavi değil" olması
-       yetmez, mavi OLAMAMALI (docs/71). Nötr aynı zamanda her iki temada da
-       yüksek kontrast verir; marka sarısı açık zeminde veremezdi. */
-    --focus: oklch(0.28 0 0);
+    /* ODAK HALKASI — AEP parlamento mavisi (FF-130, sahibin kararı 2026-09-04:
+       "zip dosyaları bu işin tanrısıdır").
+
+       `docs/71` bunun tersini kaydediyordu: odak KROMASIZ kalacaktı ve
+       gerekçe "mavi OLAMAZ" idi. O karar sahibin kendi sözüyle geri alındı.
+       Ayrım şurada duruyor ve önemli: yasak METİN mavisiydi — okunacak bir
+       yazının markadan kopuk bir maviye kayması. Halka metin değildir; bir
+       kenarlıktır ve `#003399` açık zeminde 12.4:1 verir.
+
+       Koyu temada bu değer METİN OLARAK kullanılamaz (1.85:1) ama halka
+       olarak da zayıf kalır; orada blue/300 kullanılır (aşağıda). */
+    --focus: #003399;
 
     /* `--color-canvas` de burada YENİDEN tanımlanır: `@theme` içindeki takma
        ad kök değere donar; tema bloğunda tekrar edilmezse koyu temada açık
@@ -470,8 +476,9 @@
     --border-success: rgb(34 197 94 / 34%);
     --border-warning: rgb(251 191 36 / 34%);
 
-    /* Karanlık temada aynı kural, ters uçta (docs/71). */
-    --focus: oklch(0.96 0 0);
+    /* Koyu temada halka blue/300: `#003399` koyu zeminde 1.85:1 verir, yani
+       halka olarak da görünmez olurdu (AEP TOKEN_MAP'in kendi uyarısı). */
+    --focus: #93a8f4;
 
     --color-canvas: var(--canvas);
     --color-surface: var(--surface);

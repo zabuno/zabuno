@@ -162,24 +162,40 @@ describe('AEP ink merdiveni', () => {
         expect(css).toMatch(/--text-meta:\s*1rem/);
     });
 
-    it('odak halkası KROMASIZ kalır — AEP paleti bu kararı değiştirmez', () => {
-        /*
-            AEP teslim paketi odak halkasını parlamento mavisine (#003399)
-            çeviriyor ve "halka metin değildir, yasak kapsamı dışında" diyor.
-            BU DEPODA UYGULANMADI ve sebebi kayıtlı: `docs/71`, sahibin
-            şikâyeti tam olarak maviydi ve alınan karar "şu an mavi değil"
-            değil, "mavi OLAMAZ" idi. Bir jetonu tasarım paketi istedi diye
-            geri çevirmek, o kararı sessizce iptal etmek olurdu.
+    /*
+        ODAK HALKASI — AEP mavisi, sahibin kararıyla (FF-130).
 
-            Sahip isterse tek satırlık bir değişiklik; ama o satır bilerek
-            atılacak, kazayla değil.
-        */
+        Bu testin önceki hâli tersini donduruyordu: halka kromasız kalacaktı
+        ve gerekçesi `docs/71`deki "mavi OLAMAZ" kararıydı. Sahip 2026-09-04'te
+        o kararı kendi sözüyle geri aldı ("zip dosyaları bu işin tanrısıdır"),
+        yani burada donan şey değişti — ve testin AMACI değişmedi: halka
+        rengi kazayla kaymasın.
+
+        Ayrım korunuyor ve asıl kural budur: yasak olan METİN mavisiydi.
+        Halka metin değil bir kenarlıktır; bu yüzden ölçüsü de metin eşiği
+        değil METİN DIŞI 3:1'dir (WCAG 2.2 AA). İki temada da ölçülür,
+        çünkü aynı mavi koyu zeminde 1.85:1 verir — AEP paketinin kendi
+        uyarısı.
+    */
+    it('odak halkası AEP mavisidir ve iki temada da görülebilir', () => {
+        const expected: Record<string, string> = { ':root': '#003399', '.dark': '#93a8f4' };
+
         for (const selector of [':root', '.dark'] as const) {
             const scope = scopeOf(selector);
             const focus = scope['--focus'] ?? '';
 
-            expect(focus, `DS-AEP-INK-11: ${selector} odak jetonu tanımsız.`).not.toBe('');
-            expect(focus).toMatch(/oklch\([\d.]+\s+0\s+0\)/);
+            expect(focus, `DS-AEP-INK-11: ${selector} odak jetonu tanımsız.`).toBe(
+                expected[selector],
+            );
+
+            const ring = resolveColorWithAlpha(focus, scope);
+            const background = resolveColorWithAlpha(scope['--canvas'] ?? '', scope);
+            const ratio = contrastRatio(compositeOver(ring!, background!.rgb), background!.rgb);
+
+            expect(
+                ratio,
+                `DS-AEP-INK-11: ${selector} temada odak halkası zemine karşı ${ratio.toFixed(2)}:1 — görülemeyen bir halka, halka değildir.`,
+            ).toBeGreaterThanOrEqual(WCAG_AA_LARGE_TEXT);
         }
     });
 });

@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeRoot } from './ThemeRoot';
 import { AccountMenu } from '../workspace/chrome/AccountMenu';
-import { AppearanceRegion } from '../workspace/pages/settings/AppearanceRegion';
+import { AppearanceRegion } from '../workspace/pages/profile/AppearanceRegion';
 
 /**
  * Görünüm tercihinin semantiği — `docs/63`, FF-119.
