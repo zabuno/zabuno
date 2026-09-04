@@ -4,10 +4,12 @@ import { join } from 'node:path';
 import { RAW_PALETTE_PATTERN, findCycle, layerOf, mayCompose, type Layer } from './semantic-map';
 import {
     WCAG_AA_NORMAL_TEXT,
+    compositeOver,
     contrastRatio,
     oklchToLinearRgb,
     readCustomProperties,
     resolveColor,
+    resolveColorWithAlpha,
 } from './contrast';
 
 /**
@@ -225,6 +227,30 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
             'DS-CONTRAST-AA-01: kontrast formülü kalibre değil.',
         ).toBeCloseTo(21, 1);
 
+        /*
+            HARMANLAMA DA KALİBRE EDİLMELİ (FF-125).
+
+            Tarayıcı saydamlığı GAMMA KODLU sRGB'de harmanlar. Lineer ışıkta
+            harmanlayan bir ölçüm, ekranda gayet okunur olan bir metni
+            "okunmuyor" diye reddeder: %66 opak ink beyaz üstünde lineer
+            harmanlanınca 2.68:1, gerçekte 6.6:1 verir.
+
+            %50 siyah beyaz üstünde tam olarak 0.5 kodlanmış değer verir;
+            oradan hesaplanan oran 3.98:1'dir. Bu satır olmadan yanlış uzayda
+            harmanlayan bir formül sessizce "hepsi geçti" ya da "hepsi kaldı"
+            der.
+        */
+        expect(
+            contrastRatio(
+                compositeOver(
+                    { rgb: oklchToLinearRgb(0, 0, 0), alpha: 0.5 },
+                    oklchToLinearRgb(1, 0, 0),
+                ),
+                oklchToLinearRgb(1, 0, 0),
+            ),
+            'DS-CONTRAST-AA-01: saydam harmanlama yanlış uzayda yapılıyor.',
+        ).toBeCloseTo(3.98, 1);
+
         const root = readCustomProperties(css, ':root');
         const failures: string[] = [];
 
@@ -243,8 +269,19 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
             for (const [token, value] of Object.entries(scope)) {
                 if (!token.startsWith('--fg')) continue;
 
-                const foreground = resolveColor(value, scope);
-                if (foreground === null || background === null) continue;
+                /*
+                    SAYDAM METİN ZEMİNE YERLEŞTİRİLEREK ölçülür (FF-125).
+
+                    AEP merdiveni ikincil metni `rgb(8 6 22 / 66%)` yazıyor.
+                    Saydamlığı düşürüp ölçmek 19:1 verir; beyaz zeminin üstünde
+                    gerçek değer ~5:1'dir. Daha kötüsü: çözemediği bir değeri bu
+                    döngü sessizce ATLIYORDU, yani jeton yazımı değişince kapı
+                    ölçmeyi bırakır ve hiç kimse fark etmezdi.
+                */
+                const resolved = resolveColorWithAlpha(value, scope);
+                if (resolved === null || background === null) continue;
+
+                const foreground = compositeOver(resolved, background);
 
                 const ratio = contrastRatio(foreground, background);
                 if (ratio < WCAG_AA_NORMAL_TEXT) {

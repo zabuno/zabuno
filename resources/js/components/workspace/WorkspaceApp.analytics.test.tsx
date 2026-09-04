@@ -151,8 +151,20 @@ describe('WorkspaceApp — Analytics destination wired to real workspace/locatio
         await user.click(within(nav).getByRole('link', { name: 'Insights' }));
 
         const main = screen.getByRole('main');
-        // FF-97: ekran `lazy` ile iniyor — bir tık beklemek gerekiyor.
-        await waitFor(() => expect(main.querySelector('#section-analytics')).not.toBeNull());
+        /*
+            FF-97: ekran `lazy` ile iniyor — bir tık beklemek gerekiyor.
+
+            Bekleme süresi AÇIKÇA uzun (FF-125): varsayılan 1 sn, 179 dosyalık
+            paralel koşuda `React.lazy` zincirinin inmesine yetmiyordu ve bu
+            test yaklaşık iki koşudan birinde kırmızıya dönüyordu. Kırılan
+            şey ürün değil, testin gizli hız varsayımıydı — burada ölçülen
+            şey "ne kadar hızlı indiği" değil, "indiğinde doğru kimliklerle
+            indiği". Süreyi gizli bir başarım sözleşmesi olarak bırakmak,
+            CI'ı gerçek bir hata yokken kırmak demekti.
+        */
+        await waitFor(() => expect(main.querySelector('#section-analytics')).not.toBeNull(), {
+            timeout: 10_000,
+        });
         const analyticsRegion = main.querySelector('#section-analytics') as HTMLElement;
 
         const region = await within(analyticsRegion).findByRole('region', {

@@ -147,8 +147,13 @@
     /* İKİNCİL META — yalnız gerçekten yardımcı bilgi için: zaman damgası,
        sayaç, birim eki. Etiket, gövde, buton metni veya hata mesajı için
        KULLANILMAZ; onlar `text-body` taşır. */
-    --text-meta: 0.875rem;
-    --text-meta--line-height: 1.45;
+    /* 16px TABAN (FF-125). Eski değer 0.875rem idi ve ekranın yarısı 14px
+       yazıyordu; AEP tabanı her yerde 1rem. İkincil bilgi artık boyutla değil
+       RENKLE ayrışır (`--fg-secondary`). Bu, kontrol geometrisinde bir kök
+       neden de düzeltir: 16px etiket sabit yükseklikli bir kutuda iki satıra
+       çıkıp dışarı akıyordu. */
+    --text-meta: 1rem;
+    --text-meta--line-height: 1.5;
 
     --color-fg: var(--fg);
     --color-fg-secondary: var(--fg-secondary);
@@ -200,7 +205,7 @@
 /* docs/06 §11 AEP mirası — #ffb900 is the ONLY primitive; every component
    consumes the semantic aliases below, never the raw hex. */
 :root {
-    --border: oklch(0.9 0 0);
+    --border: #e4e4ee;
     --color-brand-500: #ffb900;
 
     /* Akışkan aralık ölçeği. Bileşen ham `clamp()` bilmez; bu ölçeği bilir
@@ -304,24 +309,30 @@
     /* Ham semantic değerler — TEK kaynak. Hem kısa utility'ler (@theme) hem de
        eski `var(--color-text-*)` tüketicileri buraya bağlanır, böylece bir tonu
        burada değiştirmek her iki sözdizimini birden değiştirir. */
-    --fg: oklch(0.18 0 0);
-    --fg-secondary: oklch(0.45 0 0);
-    --fg-muted: oklch(0.55 0 0);
-    --fg-subtle: oklch(0.55 0 0);
-    --fg-danger: oklch(0.52 0.19 25);
-    --fg-success: oklch(0.5 0.13 155);
-    --fg-warning: oklch(0.5 0.12 75);
-    --fg-link: oklch(0.5 0.16 255);
+    /* AEP ink merdiveni (FF-125). İkincil bilgi artık BOYUTLA değil RENKLE
+       ayrışır: `--text-meta` 16px tabana çıktı, ayrımı bu üç ton taşıyor ve
+       üçü de aynı değerdir — üç ayrı gri tonu, hiyerarşi kurmuyor, yalnız
+       "hangi grinin hangisi olduğu" sorusunu üretiyordu. */
+    --fg: #080616;
+    --fg-secondary: rgb(8 6 22 / 66%);
+    --fg-muted: rgb(8 6 22 / 66%);
+    --fg-subtle: rgb(8 6 22 / 66%);
+    --fg-danger: #dc2626;
+    --fg-success: #15803d;
+    --fg-warning: #b45309;
+    --fg-link: #1d4ed8;
 
     /* Uygulama ZEMİNİ (`docs/102` §1): kart her iki temada zeminden açıktır.
        `surface-subtle` kart İÇİ soluk dolgudur (tablo başlığı); zemin değildir. */
-    --canvas: oklch(0.975 0 0);
-    --surface: oklch(1 0 0);
-    --surface-subtle: oklch(0.975 0 0);
-    --surface-hover: oklch(0.955 0 0);
-    --surface-active: oklch(0.93 0 0);
+    --canvas: #f7f7fb;
+    --surface: #ffffff;
+    --surface-subtle: #ededf4;
+    /* Vurgu TONLA verilir, gölgeyle değil (Flat 2.0): saydam bir katman her
+       yüzeyin üstünde çalışır ve kartın kendi rengini bilmesi gerekmez. */
+    --surface-hover: rgb(8 6 22 / 4%);
+    --surface-active: rgb(8 6 22 / 8%);
 
-    --border-strong: oklch(0.76 0 0);
+    --border-strong: #26224a;
     /* Kontrol sınırı — WCAG 2.2 AA, metin dışı kontrast en az 3:1.
      *
      * Ölçüm: `--border` (0.90) beyaz zemine karşı 1.35:1 veriyordu; koyu
@@ -332,19 +343,21 @@
      * sınırlarında da kullanılıyor. Kural metin dışı KONTROL sınırları için;
      * hepsini kalınlaştırmak arayüzü ağırlaştırır ve hiyerarşiyi siler.
      *
-     * 0.64 ↔ beyaz = 3.36:1. */
-    --border-control: oklch(0.64 0 0);
-    --border-danger: oklch(0.58 0.19 25);
+     * AEP merdiveninde aynı kural saydamlıkla kurulur: %46 opaklıkta ink,
+     * beyaz üstünde 3.4:1 verir ve koyu temada da aynı oranı korur — iki ayrı
+     * ton tutmaya gerek kalmaz. */
+    --border-control: rgb(8 6 22 / 46%);
+    --border-danger: #dc2626;
 
     /* Durum tonları: metin okunaklılığını bozmayacak kadar açık tutulur —
        uyarı bir arka plan işidir, metin kontrastı `--fg` ile korunur. */
-    --surface-info: oklch(0.965 0.025 255);
-    --surface-success: oklch(0.965 0.03 155);
-    --surface-warning: oklch(0.97 0.04 90);
-    --surface-danger: oklch(0.965 0.025 25);
-    --border-info: oklch(0.86 0.06 255);
-    --border-success: oklch(0.86 0.07 155);
-    --border-warning: oklch(0.87 0.09 90);
+    --surface-info: rgb(29 78 216 / 10%);
+    --surface-success: rgb(21 128 61 / 10%);
+    --surface-warning: rgb(180 83 9 / 10%);
+    --surface-danger: rgb(220 38 38 / 10%);
+    --border-info: rgb(29 78 216 / 30%);
+    --border-success: rgb(21 128 61 / 30%);
+    --border-warning: rgb(180 83 9 / 30%);
 
     /* Odak göstergesi KROMASIZ: chroma 0, yani hiç ton yok.
        Mavi olmasının teknik olarak imkânsız olması kasıtlı — sahibin
@@ -414,7 +427,7 @@
 }
 
 .dark {
-    --border: oklch(0.32 0 0);
+    --border: #26224a;
 
     /* Ok ikonu tema başına yeniden tanımlanır; onay/çizgi ikonları tanımlanmaz
        çünkü altlarındaki `--color-action` zaten tema-değişmezdir (docs/06 §11).
@@ -422,35 +435,40 @@
        demektir — yoklukla aynı şey. */
     --control-arrow-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%23ababab' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
 
-    --fg: oklch(0.95 0 0);
-    --fg-secondary: oklch(0.7 0 0);
-    --fg-muted: oklch(0.62 0 0);
-    --fg-subtle: oklch(0.615 0 0);
-    --fg-danger: oklch(0.72 0.16 25);
-    --fg-success: oklch(0.72 0.13 155);
-    --fg-warning: oklch(0.76 0.13 75);
-    --fg-link: oklch(0.76 0.12 255);
+    /* Koyu temada metin SAF BEYAZ değildir: %87 opaklık, koyu zeminde göz
+       yorgunluğunu azaltır ve AEP merdiveninin kendi kararıdır. */
+    --fg: rgb(255 255 255 / 87%);
+    --fg-secondary: rgb(255 255 255 / 60%);
+    --fg-muted: rgb(255 255 255 / 60%);
+    --fg-subtle: rgb(255 255 255 / 60%);
+    --fg-danger: #f87171;
+    --fg-success: #22c55e;
+    --fg-warning: #fbbf24;
+    /* AEP'nin parlamento mavisi (#003399) koyu temada METİN OLAMAZ: yüzeye
+       karşı 1.85:1 verir. Metin seviyesi mavi blue/300'dür. */
+    --fg-link: #93a8f4;
 
-    /* Koyu temada zemin karttan KOYU: 0.15 < 0.20. Eskiden zemin `surface-subtle`
-       (0.24) idi ve kart zeminden koyu kalıyordu — derinlik tersti. */
-    --canvas: oklch(0.15 0 0);
-    --surface: oklch(0.2 0 0);
-    --surface-subtle: oklch(0.24 0 0);
-    --surface-hover: oklch(0.27 0 0);
-    --surface-active: oklch(0.31 0 0);
+    /* Koyu temada zemin karttan KOYU. Eskiden zemin `surface-subtle` idi ve
+       kart zeminden koyu kalıyordu — derinlik tersti. AEP ink merdiveni aynı
+       ilişkiyi taşır: 950 zemin < 900 kart < 800 kart içi dolgu. */
+    --canvas: #080616;
+    --surface: #0d0a24;
+    --surface-subtle: #16123a;
+    --surface-hover: rgb(255 255 255 / 4%);
+    --surface-active: rgb(255 255 255 / 8%);
 
-    --border-strong: oklch(0.46 0 0);
-    /* 0.52 ↔ yüzey 0.20 = 3.29:1 (açık temadaki gerekçeyle aynı). */
-    --border-control: oklch(0.52 0 0);
-    --border-danger: oklch(0.62 0.17 25);
+    --border-strong: rgb(255 255 255 / 46%);
+    /* Açık temadaki gerekçeyle aynı, ters uçta: %46 opaklıkta beyaz. */
+    --border-control: rgb(255 255 255 / 46%);
+    --border-danger: #f87171;
 
-    --surface-info: oklch(0.27 0.045 255);
-    --surface-success: oklch(0.27 0.05 155);
-    --surface-warning: oklch(0.28 0.055 90);
-    --surface-danger: oklch(0.27 0.05 25);
-    --border-info: oklch(0.44 0.09 255);
-    --border-success: oklch(0.44 0.1 155);
-    --border-warning: oklch(0.45 0.11 90);
+    --surface-info: rgb(147 168 244 / 14%);
+    --surface-success: rgb(34 197 94 / 14%);
+    --surface-warning: rgb(251 191 36 / 14%);
+    --surface-danger: rgb(248 113 113 / 14%);
+    --border-info: rgb(147 168 244 / 34%);
+    --border-success: rgb(34 197 94 / 34%);
+    --border-warning: rgb(251 191 36 / 34%);
 
     /* Karanlık temada aynı kural, ters uçta (docs/71). */
     --focus: oklch(0.96 0 0);
