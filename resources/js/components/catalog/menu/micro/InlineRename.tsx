@@ -62,20 +62,27 @@ export function InlineRename({
     const inputRef = useRef<HTMLInputElement | null>(null);
     const triggerRef = useRef<HTMLButtonElement | null>(null);
 
-    // Dışarıdan gelen ad değişirse (başka bir sekmede düzenlenmişse) taslak
-    // onu izler; aksi hâlde düzenlemeye eski adla başlanırdı.
-    useEffect(() => {
-        if (!editing) {
-            setDraft(value);
-        }
-    }, [editing, value]);
-
     useEffect(() => {
         if (editing) {
             inputRef.current?.focus();
             inputRef.current?.select();
         }
     }, [editing]);
+
+    /*
+        Taslak, düzenleme AÇILIRKEN kurulur — bir efektle değil.
+
+        İlk hâlde `useEffect` her `value` değişiminde `setDraft` çağırıyordu;
+        bu, efektin içinde senkron durum güncellemesidir ve React'i ardışık
+        render'lara sokar (lint kuralı da tam olarak bunu yakaladı). Oysa
+        taslağın dış dünyayla eşitlenmesi gereken tek an, kullanıcının
+        düzenlemeye başladığı andır.
+    */
+    function startEditing(): void {
+        setDraft(value);
+        setError(null);
+        setEditing(true);
+    }
 
     function cancel(): void {
         setEditing(false);
@@ -137,7 +144,7 @@ export function InlineRename({
                 ref={triggerRef}
                 type="button"
                 aria-label={label}
-                onClick={() => setEditing(true)}
+                onClick={startEditing}
                 className={cn(
                     'min-w-0 truncate rounded-[var(--radius-sm)] text-start',
                     // Tıklanabilirlik ÜZERİNE GELİNCE söylenir: her satırda
