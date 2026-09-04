@@ -6,6 +6,7 @@ import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfH
 import type { QrCodeItem } from './qr-destination/QrCodeListItem';
 import { Button } from '../../../catalog/forms/micro/Button';
 import { TextLink } from '../../../catalog/navigation/micro/TextLink';
+import type { QrCreateReasonKind } from './QrDestinationFieldsRegion';
 
 const LABEL_CLASSES = 'flex flex-col gap-1 text-meta font-medium text-fg-secondary';
 
@@ -41,7 +42,11 @@ type BulkQrWizardFieldsProps = {
     locationId?: number;
     menuId?: number;
     hasCurrentPublication?: boolean;
+    /** Düğme neden kapalı — "önce yayınlayın" her zaman doğru değil (FF-108). */
+    unavailableReason?: QrCreateReasonKind;
     onCreated?: (qrCodes: QrCodeItem[]) => void;
+    /** Plan bu yeteneği içermiyorsa çıkış yolu: faturalama ekranı. */
+    onUpgrade?: () => void;
 };
 
 /*
@@ -78,6 +83,12 @@ const FIELD_ERROR_KEYS: Record<FieldKey, Parameters<typeof t>[0]> = {
     namingSequenceStart: 'workspace.publication.qrExport.bulkWizard.namingSequenceStart.error',
     namingRange: 'workspace.publication.qrExport.bulkWizard.namingRange.error',
     seatCountPerTable: 'workspace.publication.qrExport.bulkWizard.seatCountPerTable.error',
+};
+
+const REASON_KEYS: Record<QrCreateReasonKind, Parameters<typeof t>[0]> = {
+    notPublished: 'workspace.publication.qrExport.bulkWizard.needsPublication',
+    loading: 'workspace.publication.qrDestination.fields.checking',
+    unknown: 'workspace.publication.qrDestination.statusUnknown',
 };
 
 function parseWholeNumber(raw: string): number | null {
@@ -165,12 +176,31 @@ function isBulkResponseBody(
 }
 
 export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
-    const { workspaceId, locationId, menuId, hasCurrentPublication = false, onCreated } = props;
+    const {
+        workspaceId,
+        locationId,
+        menuId,
+        hasCurrentPublication = false,
+        unavailableReason = 'notPublished',
+        onCreated,
+        onUpgrade,
+    } = props;
 
     const [values, setValues] = useState<Values>(INITIAL_VALUES);
     const [touched, setTouched] = useState(INITIAL_TOUCHED);
     const [submitting, setSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    /*
+        PLAN KISITI, HATA DEĞİLDİR (FF-108).
+
+        Sunucu bu uç için bilerek 402 + `entitlement` döndürüyor; istemci ise
+        201 olmayan HER cevabı "Oluşturulamadı. Tekrar deneyin." diye
+        gösteriyordu. Tekrar denemek hiçbir zaman işe yaramaz: kullanıcı
+        yetkisiz değil, planı bu yeteneği içermiyor. Çıkış yolu farklıdır —
+        biri tekrar deneme, diğeri plan yükseltmesidir (`AnalyticsPage`
+        aynı ayrımı zaten yapıyor).
+    */
+    const [planRestricted, setPlanRestricted] = useState(false);
     const [result, setResult] = useState<WizardResult | null>(null);
     const [hasAttempted, setHasAttempted] = useState(false);
 
@@ -253,6 +283,7 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
         setHasAttempted(true);
         setSubmitting(true);
         setErrorMessage(null);
+        setPlanRestricted(false);
         setResult(null);
 
         try {
@@ -283,6 +314,11 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                     body: JSON.stringify(payload),
                 }),
             );
+
+            if (response.status === 402) {
+                setPlanRestricted(true);
+                return;
+            }
 
             if (response.status !== 201) {
                 setErrorMessage(t('workspace.publication.qrExport.bulkWizard.createError'));
@@ -479,6 +515,23 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                 </p>
             ) : null}
 
+            {planRestricted ? (
+                <div className="flex flex-col items-start gap-[var(--space-2)]">
+                    {/*
+                        `role="status"`, `alert` değil: ortada bozulmuş bir şey
+                        yok, yalnız bu yetenek planın dışında.
+                    */}
+                    <p role="status" className="text-body text-fg-secondary">
+                        {t('workspace.publication.qrExport.bulkWizard.planRestricted')}
+                    </p>
+                    {onUpgrade ? (
+                        <Button type="button" color="light" onClick={onUpgrade}>
+                            {t('workspace.publication.qrExport.bulkWizard.planRestricted.action')}
+                        </Button>
+                    ) : null}
+                </div>
+            ) : null}
+
             {submitting ? (
                 <p role="status" className="text-body text-fg-muted">
                     {t('workspace.publication.qrExport.bulkWizard.loading')}
@@ -525,6 +578,19 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             >
                 {t('workspace.publication.qrExport.bulkWizard.createButton')}
             </Button>
+
+            {/*
+                KAPALI DÜĞMENİN SEBEBİ SÖYLENİR (FF-108). Düğme, yayın
+                bilgisi gelmediği ya da sunucuya ulaşılamadığı için de
+                kapanabiliyordu ve ekranda hiçbir açıklama yoktu: kullanıcı
+                onu bozuk sanıyordu. Alan doğrulaması yüzünden kapalıysa
+                sebep zaten alanların altında yazılı — burada tekrarlanmaz.
+            */}
+            {!hasCurrentPublication ? (
+                <p role="status" className="text-meta text-fg-muted">
+                    {t(REASON_KEYS[unavailableReason])}
+                </p>
+            ) : null}
         </fieldset>
     );
 }

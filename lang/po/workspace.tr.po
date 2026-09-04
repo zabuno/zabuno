@@ -2004,6 +2004,10 @@ msgstr "Kod yeniden etkinleştirilemedi."
 msgid "workspace.publication.qrDestination.explanation"
 msgstr "Yayındaki menüye giden bir karekod oluşturun."
 
+#: workspace:workspace.publication.qrDestination.fields.checking
+msgid "workspace.publication.qrDestination.fields.checking"
+msgstr "Menünüzün yayında olup olmadığı kontrol ediliyor…"
+
 #: workspace:workspace.publication.qrDestination.fields.unavailable
 msgid "workspace.publication.qrDestination.fields.unavailable"
 msgstr "Önce menünüzü yayınlayın — karekodun göstereceği yayınlanmış bir menü gerekir."
@@ -2056,9 +2060,17 @@ msgstr "Başka bir şubeye taşı"
 msgid "workspace.publication.qrDestination.region"
 msgstr "Karekod hedefi"
 
+#: workspace:workspace.publication.qrDestination.retry
+msgid "workspace.publication.qrDestination.retry"
+msgstr "Tekrar dene"
+
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"
 msgstr "Devre dışı"
+
+#: workspace:workspace.publication.qrDestination.statusUnknown
+msgid "workspace.publication.qrDestination.statusUnknown"
+msgstr "Menünüzü kontrol etmek için sunucuya ulaşamadık. Basılı kodlarınız çalışmaya devam ediyor — güncel durumu görmek için sayfayı yenileyin."
 
 #: workspace:workspace.publication.qrDestination.url.copied
 msgid "workspace.publication.qrDestination.url.copied"
@@ -2128,9 +2140,21 @@ msgstr "Numaralandırma başlangıcı"
 msgid "workspace.publication.qrExport.bulkWizard.namingSequenceStart.error"
 msgstr "0 ile 9999 arasında tam sayı girin."
 
+#: workspace:workspace.publication.qrExport.bulkWizard.needsPublication
+msgid "workspace.publication.qrExport.bulkWizard.needsPublication"
+msgstr "Önce menünüzü yayınlayın — karekod, canlı bir menüyü göstermek zorunda."
+
 #: workspace:workspace.publication.qrExport.bulkWizard.notice
 msgid "workspace.publication.qrExport.bulkWizard.notice"
 msgstr "Aşağıdaki masa düzenini doldurun, sonra kodları oluşturun."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.planRestricted
+msgid "workspace.publication.qrExport.bulkWizard.planRestricted"
+msgstr "Masa kodlarını toplu üretmek mevcut planınıza dahil değil."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.planRestricted.action
+msgid "workspace.publication.qrExport.bulkWizard.planRestricted.action"
+msgstr "Planları gör"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable
 msgid "workspace.publication.qrExport.bulkWizard.seatCountPerTable"

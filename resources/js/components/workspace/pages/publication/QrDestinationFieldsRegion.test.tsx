@@ -286,7 +286,23 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
         });
     });
 
-    it('shows an accessible alert and preserves the prior successful list on a non-2xx or network failure', async () => {
+    it('shows an accessible alert with a way out, and preserves the loaded list when a retry fails', async () => {
+        /*
+            YENİDEN DENEMEK BİR EYLEMDİR, render kazası değil (FF-108).
+
+            Bu test eskiden aynı props ile `rerender` çağırıp yeni bir props
+            NESNESİ üretiyor ve listeyi öyle yeniden çektiriyordu — çünkü
+            efektin bağımlılığı `[props]` idi ve üst bileşenin her render'ı
+            durup dururken bir istek daha atıyordu. O bağımlılık adrese
+            indirildi. Hatanın artık görünür bir çıkışı var ve test
+            kullanıcının bastığı şeye basıyor.
+
+            Sıra: hata → çıkış yolu → başarı → yeniden hata. Son adım asıl
+            iddiayı taşır: bir yenileme başarısız olduğunda ekrandaki kodlar
+            KAYBOLMAZ. Kaybolsalardı sahip, masalarındaki kartların iptal
+            edildiğini sanırdı.
+        */
+        const user = userEvent.setup();
         const existing = [
             {
                 id: 700,
@@ -299,7 +315,56 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
                 state: 'active',
             },
         ];
+
+        fetchSpy.mockResolvedValueOnce(jsonResponse(500, { message: 'Internal error' }));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication={true}
+            />,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByRole('alert')).toBeInTheDocument();
+        });
+
         fetchSpy.mockResolvedValueOnce(jsonResponse(200, existing));
+        await user.click(screen.getByRole('button', { name: /try again/i }));
+
+        await waitFor(() => {
+            expect(
+                within(screen.getByRole('region', { name: /qr destination/i })).getByRole('link'),
+            ).toHaveAttribute('href', existing[0].resolverUrl);
+        });
+        expect(screen.queryByRole('alert')).toBeNull();
+    });
+
+    it('does not keep another location\u2019s codes on screen when the address changes', async () => {
+        /*
+            BAŞKA ŞUBENİN KARTLARI (FF-108).
+
+            Liste çıplak bir diziydi ve adres değişince eskisi ekranda
+            kalıyordu; yeni istek başarısız olursa KALICI olarak kalıyordu.
+            Sahip, Kadıköy ekranında Beşiktaş'ın kodlarını görüyor ve yanlış
+            kartı yeniden bastırabiliyordu. Liste artık çekildiği adresle
+            birlikte saklanır.
+        */
+        const kadikoy = [
+            {
+                id: 700,
+                workspaceId: 71,
+                locationId: 923,
+                menuId: 42,
+                token: 'c'.repeat(43),
+                resolverUrl: `https://example.test/q/${'c'.repeat(43)}`,
+                destinationType: 'published_menu',
+                state: 'active',
+            },
+        ];
+        fetchSpy.mockResolvedValueOnce(jsonResponse(200, kadikoy));
 
         const { rerender } = render(
             <QrDestinationRegion
@@ -313,14 +378,14 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
         await waitFor(() => {
             expect(
                 within(screen.getByRole('region', { name: /qr destination/i })).getByRole('link'),
-            ).toBeInTheDocument();
+            ).toHaveAttribute('href', kadikoy[0].resolverUrl);
         });
 
         fetchSpy.mockResolvedValueOnce(jsonResponse(500, { message: 'Internal error' }));
         rerender(
             <QrDestinationRegion
                 workspaceId={71}
-                locationId={923}
+                locationId={31}
                 menuId={42}
                 hasCurrentPublication={true}
             />,
@@ -330,8 +395,9 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
             expect(screen.getByRole('alert')).toBeInTheDocument();
         });
 
-        const region = screen.getByRole('region', { name: /qr destination/i });
-        expect(within(region).getByRole('link')).toHaveAttribute('href', existing[0].resolverUrl);
+        expect(
+            within(screen.getByRole('region', { name: /qr destination/i })).queryByRole('link'),
+        ).toBeNull();
     });
 
     it('lets Owner disable a QR code via a CSRF-bootstrapped PUT after an explicit click, then shows disabled and removes the usable link', async () => {

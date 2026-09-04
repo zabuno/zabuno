@@ -943,7 +943,21 @@ describe('PublicationPage — reviewer-correction gaps (ZABUNO_PUBLICATION_REVIE
             ).toBeInTheDocument();
         });
 
-        expect(screen.queryByRole('alert')).toBeNull();
+        /*
+            İDDİA YAYIN DURUMU BÖLGESİNE AİTTİR (FF-108).
+
+            Eskiden sayfanın TAMAMINDA hiç uyarı olmadığı iddia ediliyordu ve
+            bu yalnız tesadüfen doğruydu: QR listesi, yayın yokken hiç
+            çekilmiyordu. Artık çekiliyor (basılı kodlar yayından bağımsız
+            var olabilir) ve bu testin blanket 404 mock'u ona da 404 dönüyor
+            — gerçek bir hata, doğru şekilde bildiriliyor. Testin konusu
+            yayın durumunun dürüstlüğüdür; onu ölçer.
+        */
+        expect(
+            within(screen.getByRole('region', { name: /publication status/i })).queryByRole(
+                'alert',
+            ),
+        ).toBeNull();
     });
 });
 

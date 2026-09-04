@@ -2004,6 +2004,10 @@ msgstr "The code could not be re-enabled."
 msgid "workspace.publication.qrDestination.explanation"
 msgstr "Create a QR code that resolves to the current published menu."
 
+#: workspace:workspace.publication.qrDestination.fields.checking
+msgid "workspace.publication.qrDestination.fields.checking"
+msgstr "Checking whether your menu is published…"
+
 #: workspace:workspace.publication.qrDestination.fields.unavailable
 msgid "workspace.publication.qrDestination.fields.unavailable"
 msgstr "Publish your menu first — the QR code needs a published menu to point to."
@@ -2056,9 +2060,17 @@ msgstr "Move to another location"
 msgid "workspace.publication.qrDestination.region"
 msgstr "QR destination"
 
+#: workspace:workspace.publication.qrDestination.retry
+msgid "workspace.publication.qrDestination.retry"
+msgstr "Try again"
+
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"
 msgstr "Disabled"
+
+#: workspace:workspace.publication.qrDestination.statusUnknown
+msgid "workspace.publication.qrDestination.statusUnknown"
+msgstr "We could not reach the server to check your menu. Your printed codes keep working — reload to see the current state."
 
 #: workspace:workspace.publication.qrDestination.url.copied
 msgid "workspace.publication.qrDestination.url.copied"
@@ -2128,9 +2140,21 @@ msgstr "Naming sequence start"
 msgid "workspace.publication.qrExport.bulkWizard.namingSequenceStart.error"
 msgstr "Enter a whole number between 0 and 9999."
 
+#: workspace:workspace.publication.qrExport.bulkWizard.needsPublication
+msgid "workspace.publication.qrExport.bulkWizard.needsPublication"
+msgstr "Publish your menu first — a QR code has to point at a live menu."
+
 #: workspace:workspace.publication.qrExport.bulkWizard.notice
 msgid "workspace.publication.qrExport.bulkWizard.notice"
 msgstr "Fill in the table layout below, then create the codes."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.planRestricted
+msgid "workspace.publication.qrExport.bulkWizard.planRestricted"
+msgstr "Creating table codes in bulk is not included in your current plan."
+
+#: workspace:workspace.publication.qrExport.bulkWizard.planRestricted.action
+msgid "workspace.publication.qrExport.bulkWizard.planRestricted.action"
+msgstr "See plans"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable
 msgid "workspace.publication.qrExport.bulkWizard.seatCountPerTable"

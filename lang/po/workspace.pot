@@ -2004,6 +2004,10 @@ msgstr ""
 msgid "workspace.publication.qrDestination.explanation"
 msgstr ""
 
+#: workspace:workspace.publication.qrDestination.fields.checking
+msgid "workspace.publication.qrDestination.fields.checking"
+msgstr ""
+
 #: workspace:workspace.publication.qrDestination.fields.unavailable
 msgid "workspace.publication.qrDestination.fields.unavailable"
 msgstr ""
@@ -2056,8 +2060,16 @@ msgstr ""
 msgid "workspace.publication.qrDestination.region"
 msgstr ""
 
+#: workspace:workspace.publication.qrDestination.retry
+msgid "workspace.publication.qrDestination.retry"
+msgstr ""
+
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.statusUnknown
+msgid "workspace.publication.qrDestination.statusUnknown"
 msgstr ""
 
 #: workspace:workspace.publication.qrDestination.url.copied
@@ -2128,8 +2140,20 @@ msgstr ""
 msgid "workspace.publication.qrExport.bulkWizard.namingSequenceStart.error"
 msgstr ""
 
+#: workspace:workspace.publication.qrExport.bulkWizard.needsPublication
+msgid "workspace.publication.qrExport.bulkWizard.needsPublication"
+msgstr ""
+
 #: workspace:workspace.publication.qrExport.bulkWizard.notice
 msgid "workspace.publication.qrExport.bulkWizard.notice"
+msgstr ""
+
+#: workspace:workspace.publication.qrExport.bulkWizard.planRestricted
+msgid "workspace.publication.qrExport.bulkWizard.planRestricted"
+msgstr ""
+
+#: workspace:workspace.publication.qrExport.bulkWizard.planRestricted.action
+msgid "workspace.publication.qrExport.bulkWizard.planRestricted.action"
 msgstr ""
 
 #: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable

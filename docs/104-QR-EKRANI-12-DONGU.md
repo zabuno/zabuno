@@ -69,7 +69,7 @@ kanıtıyla kapanır.
 | 1 | Ölü kontrolleri sil | tek seçenekli select, çalışmayan bulk alanı, kalıcı devre dışı Export | ✅ FF-107 |
 | 2 | Hiyerarşi: indirme birincil olur | `ActionLink` primary; toplu sihirbaz ikincil | ✅ FF-107 |
 | 3 | QR görseli bir TESLİMAT olur | beyaz plaka, sessiz bölge, boyut token'ı, hata durumu | ✅ FF-107 |
-| 4 | Dürüst durumlar | yükleniyor/hata "önce yayınlayın" demez; 402 hakkı yükseltmeye yönlendirir | ⬜ |
+| 4 | Dürüst durumlar | yükleniyor/hata "önce yayınlayın" demez; 402 hakkı yükseltmeye yönlendirir | ✅ FF-108 |
 | 5 | Ham URL ve token gizlenir | kodun adı öne, URL kopyala düğmesiyle ayrıntıya | ◐ FF-107 (ad alanı hazır, veri Döngü 6'da bağlanacak) |
 | 6 | Masanın adı listeye ulaşır | DTO join; satır başlığı ve seçici etiketi | ⬜ |
 | 7 | Yıkıcı eylem taşma menüsüne + onay | `ActionMenu` + `ConfirmDialog` | ⬜ |
@@ -154,3 +154,64 @@ hangi kodun kapatıldığı anlaşılmıyordu.
 
 Ve `QrPrintExportRegion.stories.tsx` eklendi: bu dosyaların hiç story'si
 yoktu ve kök sebep buydu — `surface` katmanı her görsel kapının dışındaydı.
+
+
+---
+
+## Tur 2 kaydı (FF-108) — Döngü 4: sayfa yalan söylemez
+
+Bu ekranda dört ayrı yalan vardı ve dördü de aynı kökten geliyordu: **bilmemek
+ile yok olmak aynı şeye indirgenmişti.**
+
+**1. "Önce menünüzü yayınlayın", üç ayrı dünyanın tek cümlesiydi.**
+`useCurrentPublication`, cevap YOLDAYKEN de sunucu 500 DÖNDÜĞÜNDE de
+`current: null` verir. Sayfa yalnız ona bakıyordu. Yayında bir menüsü ve
+masalarında çalışan kartları olan sahip, sayfayı her açtığında bir an için —
+sunucu yavaşsa uzunca bir an — kodlarının var olmadığını okuyordu. Oradan
+çıkaracağı sonuç "yeniden yayınlayayım" ya da "yeniden bastırayım" olurdu;
+ikisi de para ve zaman.
+
+Üç hâl artık ayrı: *biliniyor*, *henüz bilinmiyor* ("Menünüzün yayında olup
+olmadığı kontrol ediliyor…"), *sorulamadı* ("Sunucuya ulaşamadık. **Basılı
+kodlarınız çalışmaya devam ediyor.**"). Üçüncüsündeki ikinci cümle bu ekranın
+en önemli cümlesidir: kullanıcının aklına ilk gelen soruyu, sorulmadan yanıtlar.
+
+**2. Kod listesi, yayın bilinmediğinde hiç ÇEKİLMİYORDU.** `loaded` false
+kaldığı için ne "yükleniyor" ne "boş" yazıyordu — ekranda hiçbir şey ve hiçbir
+açıklama yoktu. Oysa QR kodları yayından AYRI kayıtlardır: menü geri çekilmiş
+olabilir, kartlar hâlâ masadadır. Yayın durumu artık yalnız **yeni kod
+üretmeyi** kısıtlar, var olanı görmeyi değil.
+
+**3. Liste hatasının çıkışı yoktu.** "Kodlar yüklenemedi. Tekrar deneyin."
+yazıyor ama tekrar denemenin bir yolu yoktu; kullanıcının bildiği tek çare
+sayfayı yenilemekti ve bunu da ona kimse söylemiyordu. Artık hatanın yanında
+bir **Tekrar dene** düğmesi var ve basıldığında ekran dürüstçe yeniden
+"yükleniyor" oluyor.
+
+**4. Plan kısıtı, hata gibi gösteriliyordu.** Sunucu toplu masa kodu üretimi
+için bilerek `402 + entitlement` döndürüyor (`StoreBulkQrCodesController`);
+istemci 201 olmayan HER cevabı "Oluşturulamadı. Tekrar deneyin." diye
+gösteriyordu. Tekrar denemek hiçbir zaman işe yaramaz — kullanıcı yetkisiz
+değil, planı bu yeteneği içermiyor; çıkış yolu farklıdır. Artık kısıt bir
+uyarı olarak söyleniyor ve yanında **Planları gör** düğmesi duruyor.
+`AnalyticsPage` bu ayrımı zaten yapıyordu; QR ekranı ondan habersizdi.
+
+**Yan bulgu — başka şubenin kartları.** Liste çıplak bir diziydi; sahip başka
+bir şubeye geçtiğinde eski şubenin kodları ekranda kalıyor, yeni istek
+başarısız olursa KALICI olarak kalıyordu. Liste artık çekildiği adresle
+birlikte saklanıyor: cevap şu anki adrese ait değilse "henüz yüklenmedi"
+sayılır. Aynı desen `useCurrentPublication`'da da kullanılıyor.
+
+**Bir de sessiz bir performans arızası.** Liste çekme efektinin bağımlılığı
+`[props]` idi — üst bileşenin her render'ı yeni bir nesne ürettiği için liste
+durup dururken yeniden çekiliyordu. Bağımlılık adrese indirildi. Buna dayanan
+tek test, "yeniden çekmeyi" bir render kazasıyla değil, kullanıcının bastığı
+**Tekrar dene** düğmesiyle tetikleyecek şekilde yeniden yazıldı.
+
+`kullaniciYolculugu`: Kadıköy şubesinin sahibi sabah paneli açar. Sunucu o an
+yavaştır. Eskiden ekranda "Önce menünüzü yayınlayın" ve boş bir liste görür,
+paniğe kapılıp menüyü yeniden yayınlardı. Şimdi "kontrol ediliyor…" yazısını
+görür, bir saniye sonra kodları listelenir. Sunucu gerçekten çökmüşse
+"ulaşamadık, basılı kodlarınız çalışıyor" yazısını ve bir **Tekrar dene**
+düğmesini görür. 40 masa için toplu üretim planına dahil değilse "Planları gör"
+düğmesine basar — sonsuza kadar "tekrar deneyin" duvarına toslamaz.
