@@ -4,7 +4,10 @@ import { WorkspaceApp } from './components/workspace/WorkspaceApp';
 import { ThemeRoot } from './components/theme/ThemeRoot';
 import { AppErrorBoundary } from './components/system/AppErrorBoundary';
 import { BuildTruthBanner } from './components/system/BuildTruthBanner';
-import { MobileNavigationDrawer } from './components/workspace/chrome/MobileChrome';
+import {
+    MobileBottomNav,
+    MobileNavigationDrawer,
+} from './components/workspace/chrome/MobileChrome';
 
 /**
  * MOBİL giriş noktası — 320 px genişlik esas alınarak.
@@ -30,6 +33,7 @@ createRoot(container).render(
             <AppErrorBoundary scope="app">
                 <WorkspaceApp
                     renderNavigationDrawer={(context) => <MobileNavigationDrawer {...context} />}
+                    renderBottomBar={(context) => <MobileBottomNav {...context} />}
                 />
             </AppErrorBoundary>
         </ThemeRoot>

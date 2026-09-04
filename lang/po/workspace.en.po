@@ -2396,6 +2396,10 @@ msgstr "Menu catalog"
 msgid "workspace.shell.nav.menus"
 msgstr "Menus"
 
+#: workspace:workspace.shell.nav.more
+msgid "workspace.shell.nav.more"
+msgstr "More"
+
 #: workspace:workspace.shell.nav.publication
 msgid "workspace.shell.nav.publication"
 msgstr "Publication"

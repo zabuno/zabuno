@@ -3,49 +3,45 @@ import { Select } from '../../catalog/forms/micro/Select';
 import { t } from '../../../i18n/workspace';
 
 export type WorkspaceContextControlsProps = {
-    workspaceName: string;
     locationProfiles: LocationProfile[];
     catalogLocationId: number | null;
-    onSwitchWorkspace: () => void;
     onSelectLocation: (locationId: number) => void;
 };
 
 /**
- * Workspace-shell compound: top-bar current-workspace / current-location
- * context, orchestrated entirely from props (docs/35 workspace-shell
- * boundary). No fetch or route ownership — WorkspaceApp owns state.
+ * Üst çubuktaki BAĞLAM — yalnız gerçekten seçim gerektiren şey.
+ *
+ * 2026-09-04'e kadar burada üç ad üst üste geliyordu: ürün adı (marka
+ * işareti), çalışma alanı adı ve şube seçici. Üçü de "Zabuno" olan bir
+ * kiracıda başlık "Zabuno Zabuno Zabuno" diye okunuyordu.
+ *
+ * Karar (`docs/50` §5 kapsam tablosu): çalışma alanı adı KENAR ÇUBUĞUNUN
+ * üstündeki değiştiriciye aittir ve orada zaten duruyor; başlıkta ikinci bir
+ * kopyası olmaz. Şube seçici bir SEÇİMDİR ve yalnız seçilecek birden fazla
+ * şube varken anlamlıdır — tek şubede açılır liste, tek seçenekli bir
+ * kontrol olarak yer kaplar ve hiçbir şey yapmaz.
  */
 export function WorkspaceContextControls({
-    workspaceName,
     locationProfiles,
     catalogLocationId,
-    onSwitchWorkspace,
     onSelectLocation,
 }: WorkspaceContextControlsProps) {
-    return (
-        <div className="flex min-w-0 flex-wrap items-center gap-[var(--space-fluid-sm)]">
-            <button
-                type="button"
-                onClick={onSwitchWorkspace}
-                className="min-w-0 truncate rounded-md px-2 py-1 text-body font-medium text-fg hover:bg-surface-hover"
-            >
-                {workspaceName}
-            </button>
+    if (locationProfiles.length < 2 || catalogLocationId === null) {
+        return null;
+    }
 
-            {locationProfiles.length > 0 && catalogLocationId !== null && (
-                <Select
-                    aria-label={t('workspace.shell.currentLocation.label')}
-                    className="min-w-0"
-                    value={String(catalogLocationId)}
-                    onChange={(event) => onSelectLocation(Number(event.target.value))}
-                >
-                    {locationProfiles.map((location) => (
-                        <option key={location.id} value={location.id}>
-                            {location.display_name}
-                        </option>
-                    ))}
-                </Select>
-            )}
-        </div>
+    return (
+        <Select
+            aria-label={t('workspace.shell.currentLocation.label')}
+            className="min-w-0 max-w-[16rem]"
+            value={String(catalogLocationId)}
+            onChange={(event) => onSelectLocation(Number(event.target.value))}
+        >
+            {locationProfiles.map((location) => (
+                <option key={location.id} value={location.id}>
+                    {location.display_name}
+                </option>
+            ))}
+        </Select>
     );
 }

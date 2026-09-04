@@ -8,6 +8,8 @@ export const shell = {
     'workspace.create.error.name': 'Enter a workspace name.',
     'workspace.create.error.submit': 'We could not create your workspace. Please try again.',
     'workspace.choose.heading': 'Choose a workspace',
+    // Telefon alt gezintisi (`docs/50` §20): dört hedef + geri kalanı.
+    'workspace.shell.nav.more': 'More',
     'workspace.current.switch': 'Switch workspace',
     'workspace.current.logout': 'Log out',
     'workspace.current.logout.error': 'We could not log you out. Please try again.',

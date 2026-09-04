@@ -34,7 +34,8 @@ export function DesktopSidebar({
     return (
         <aside
             className={clsx(
-                'admin-shell-sidebar flex flex-[1_1_17rem] flex-col border-e bg-[var(--color-surface)]',
+                // Genişlik SABİT (`docs/102`): sayfa bağlam paneli açsa da ray daralmaz.
+                'admin-shell-sidebar flex shrink-0 grow-0 basis-[17rem] flex-col border-e bg-[var(--color-surface)]',
                 'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
             )}
         >
