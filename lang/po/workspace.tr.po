@@ -1040,6 +1040,30 @@ msgstr "Kim ne yaptı"
 msgid "workspace.media.audit.help"
 msgstr "Her yükleme, ad değişikliği, silme ve geri alma buraya yazılır. Kayıtlar hiçbir zaman düzenlenmez ya da silinmez."
 
+#: workspace:workspace.media.crop.frame
+msgid "workspace.media.crop.frame"
+msgstr ""
+
+#: workspace:workspace.media.crop.heading
+msgid "workspace.media.crop.heading"
+msgstr ""
+
+#: workspace:workspace.media.crop.help
+msgid "workspace.media.crop.help"
+msgstr ""
+
+#: workspace:workspace.media.crop.reset
+msgid "workspace.media.crop.reset"
+msgstr ""
+
+#: workspace:workspace.media.crop.result
+msgid "workspace.media.crop.result"
+msgstr ""
+
+#: workspace:workspace.media.crop.zoom
+msgid "workspace.media.crop.zoom"
+msgstr ""
+
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
 msgstr "Görseller"
