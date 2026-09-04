@@ -219,7 +219,6 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
     // eşiğinin bile altında — ve hiçbir şey fark etmedi. Bu test o sessizliği
     // kapatır.
     it("her metin token'ı kendi temasının zemininde WCAG AA karşılar", () => {
-        const css = readFileSync(CSS_PATH, 'utf8');
 
         // Hesabın kendisi doğrulanmalı: siyah/beyaz tam 21:1 vermelidir.
         // Bu satır olmadan bozuk bir formül sessizce "hepsi geçti" der.
