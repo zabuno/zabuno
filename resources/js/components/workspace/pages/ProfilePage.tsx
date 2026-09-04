@@ -1,7 +1,6 @@
 import { t } from '../../../i18n/workspace';
 import type { BrandProfile } from '../BrandEditForm';
 import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
-import { AppearanceRegion } from './profile/AppearanceRegion';
 import { BrandColorsRegion } from './profile/BrandColorsRegion';
 import { ProfileAvatarRegion } from './profile/ProfileAvatarRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
@@ -77,8 +76,6 @@ export function ProfilePage({
                     </h3>
                     <AccountSettingsRegion currentName={userName} />
                 </section>
-
-                <AppearanceRegion />
 
                 {canManageBrand && brand !== null ? (
                     <BrandColorsRegion

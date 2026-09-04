@@ -1,13 +1,6 @@
 import { Gear, SignOut, UserCircle } from '@phosphor-icons/react';
 import { t } from '../../../i18n/workspace';
-import { t as themeText } from '../../../i18n/theme';
 import { SidebarMenu } from '../../catalog/overlays/compound/SidebarMenu';
-import {
-    THEME_OPTION_ORDER,
-    themeOptionLabels,
-    useThemeControl,
-    type ThemePreference,
-} from '../../theme/themeControl';
 
 export type AccountMenuProps = {
     /**
@@ -45,10 +38,14 @@ export type AccountMenuProps = {
  * buraya GİRMEZ. Girdikleri anda menü bir "her şey çekmecesi"ne döner ve
  * kullanıcı bir ayarı ararken önce menünün kendisini aramaya başlar.
  *
- * Görünüm tercihi buraya taşındı. Önceden uygulamanın dibinde, her sayfanın
- * altında yüzen bir çubuktu: 320×480'de ekranın kalıcı olarak yaklaşık
- * %12'sini kaplıyor ve içeriğin üstüne biniyordu. Tema hiçbir sayfanın görevi
- * değildir; kişisel bir tercihtir.
+ * GÖRÜNÜM TERCİHİ BURADAN KALKTI (FF-119, sahibin bildirimi 2026-09-04:
+ * "theme options, ayarlara taşınsın, dropdown içerisinde kalmasın").
+ *
+ * Tema bir ayardır, bir eylem değil. Menü eylemler içindir: profile git,
+ * ayarlara git, çıkış yap. Bir ayarın değerini menünün içinde tutmak, aynı
+ * ayarın iki evi olması demekti — biri "hızlı çevir", diğeri "ne olduğunu
+ * anlat" — ve kullanıcı hangisinin gerçek olduğunu bilemezdi. Tek ev artık
+ * Ayarlar → Hesap.
  */
 export function AccountMenu({
     email,
@@ -60,8 +57,6 @@ export function AccountMenu({
     loggingOut = false,
     className,
 }: AccountMenuProps) {
-    const theme = useThemeControl();
-
     return (
         <SidebarMenu
             label={t('workspace.account.menu.label')}
@@ -120,24 +115,6 @@ export function AccountMenu({
                         </span>
                     </span>
                 </span>
-            }
-            /*
-                Görünüm bölümü YALNIZ tema sağlayıcısı varsa çizilir. Yoksa
-                tercih hiçbir yere yazılamaz ve düğme tıklanır ama hiçbir şey
-                olmaz — çalışmayan bir kontrol, olmayan bir kontroldan kötüdür.
-            */
-            radioGroup={
-                theme === null
-                    ? undefined
-                    : {
-                          label: themeText('theme.group_label'),
-                          value: theme.preference,
-                          options: THEME_OPTION_ORDER.map((option) => ({
-                              key: option,
-                              label: themeOptionLabels[option](),
-                          })),
-                          onSelect: (key) => theme.choose(key as ThemePreference),
-                      }
             }
             items={[
                 /*

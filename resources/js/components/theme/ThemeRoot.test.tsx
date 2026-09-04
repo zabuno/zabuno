@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeRoot } from './ThemeRoot';
-import { AccountMenu } from '../workspace/chrome/AccountMenu';
+import { AppearanceRegion } from '../workspace/pages/settings/AppearanceRegion';
 
 /**
  * ZABUNO_THEME_FOUNDATION_RED
@@ -74,22 +74,22 @@ function installMatchMediaMock(initialPrefersDark: boolean) {
 function renderThemeControl() {
     return render(
         <ThemeRoot>
-            <AccountMenu email="ada@example.com" onLogout={() => {}} />
+            <AppearanceRegion />
         </ThemeRoot>,
     );
 }
 
-async function openAccountMenu(user: ReturnType<typeof userEvent.setup>) {
-    /*
-        Menü zaten açıksa tetikleyiciye basmak onu KAPATIR. Bir seçenek
-        tıklandıktan sonra menünün açık kalıp kalmadığı Flowbite'ın kararıdır;
-        bu yardımcı o karara bağımlı olmamak için önce duruma bakar.
-    */
-    if (screen.queryByRole('menu') === null) {
-        await user.click(screen.getByRole('button', { name: /account/i }));
-    }
+/*
+    KONTROL ARTIK MENÜNÜN İÇİNDE DEĞİL (FF-119, sahibin bildirimi 2026-09-04:
+    "theme options, ayarlara taşınsın, dropdown içerisinde kalmasın").
 
-    await screen.findByRole('menu');
+    Bu yardımcı bir zamanlar hesap menüsünü açıyordu. Tema bir ayardır, bir
+    eylem değil; ayarın evi Ayarlar → Hesap oldu ve kontrol orada, açılıp
+    kapanan bir panelin arkasında değil, doğrudan sayfada duruyor. Menüyü
+    açmaya gerek kalmadı.
+*/
+async function waitForThemeControl() {
+    await screen.findByRole('radio', { name: /system/i });
 }
 
 function resetDocumentThemeState() {
@@ -130,9 +130,9 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
         installMatchMediaMock(false);
         const user = userEvent.setup();
         renderThemeControl();
-        await openAccountMenu(user);
+        await waitForThemeControl();
 
-        await user.click(screen.getByRole('menuitemradio', { name: 'Dark' }));
+        await user.click(screen.getByRole('radio', { name: /dark/i }));
 
         expect(document.documentElement.classList.contains('dark')).toBe(true);
         expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
@@ -142,9 +142,9 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
         installMatchMediaMock(true);
         const user = userEvent.setup();
         renderThemeControl();
-        await openAccountMenu(user);
+        await waitForThemeControl();
 
-        await user.click(screen.getByRole('menuitemradio', { name: 'Light' }));
+        await user.click(screen.getByRole('radio', { name: /light/i }));
 
         expect(document.documentElement.classList.contains('dark')).toBe(false);
         expect(document.documentElement.getAttribute('data-theme')).toBe('light');
@@ -154,9 +154,9 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
         installMatchMediaMock(false);
         const user = userEvent.setup();
         const { unmount } = renderThemeControl();
-        await openAccountMenu(user);
+        await waitForThemeControl();
 
-        await user.click(screen.getByRole('menuitemradio', { name: 'Dark' }));
+        await user.click(screen.getByRole('radio', { name: /dark/i }));
         expect(window.localStorage.getItem(STORAGE_KEY)).toBe('dark');
         unmount();
 
@@ -169,11 +169,8 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
         expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
 
         // Yeniden monte edilen kabukta menü KAPALI başlar.
-        await openAccountMenu(user);
-        expect(screen.getByRole('menuitemradio', { name: 'Dark' })).toHaveAttribute(
-            'aria-checked',
-            'true',
-        );
+        await waitForThemeControl();
+        expect(screen.getByRole('radio', { name: /dark/i })).toBeChecked();
     });
 
     it('reacts live to an OS scheme change while the preference is system', async () => {
@@ -193,29 +190,26 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
         installMatchMediaMock(false);
         const user = userEvent.setup();
         renderThemeControl();
-        await openAccountMenu(user);
+        await waitForThemeControl();
 
-        const group = screen.getByRole('menu');
-        const options = within(group).getAllByRole('menuitemradio');
-        expect(
-            options.map((option) => option.getAttribute('aria-label') ?? option.textContent),
-        ).toEqual(
-            expect.arrayContaining([
-                expect.stringMatching(/system/i),
-                expect.stringMatching(/light/i),
-                expect.stringMatching(/dark/i),
-            ]),
-        );
+        const group = screen.getByRole('group', { name: /theme|görünüm/i });
+        const options = within(group).getAllByRole('radio');
+
+        // Erişilebilir ad SARMALAYAN ETİKETTEN gelir; girdinin kendi metni
+        // yoktur ve olmamalıdır (görsel etiket tek yerde yaşar).
+        for (const name of [/system/i, /light/i, /dark/i]) {
+            expect(within(group).getByRole('radio', { name })).toBeInTheDocument();
+        }
 
         /*
-            Seçenekler gerçek `button` öğeleridir ve devre dışı değildir; yani
-            klavyeyle erişilebilirler. Menü içindeki ok tuşu dolaşımı Flowbite
-            Dropdown'ın işidir — onu burada doğrulamak kendi kodumuzu değil
-            kütüphaneyi test etmek olurdu.
+            Seçenekler artık NATIVE radyo düğmeleri (FF-119). Ok tuşuyla
+            dolaşım, grup semantiği ve `checked` durumunun ekran okuyucuya
+            bildirilmesi platformun kendi işidir; menü içindeki roving
+            tabindex'i elle taklit etmeye gerek kalmadı.
         */
         expect(options).toHaveLength(3);
         for (const option of options) {
-            expect(option.tagName).toBe('BUTTON');
+            expect(option.tagName).toBe('INPUT');
             expect(option).not.toBeDisabled();
         }
 
@@ -232,14 +226,10 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
         installMatchMediaMock(true);
         window.localStorage.setItem(STORAGE_KEY, 'not-a-real-theme');
 
-        const user = userEvent.setup();
         renderThemeControl();
-        await openAccountMenu(user);
+        await waitForThemeControl();
 
-        expect(screen.getByRole('menuitemradio', { name: 'System' })).toHaveAttribute(
-            'aria-checked',
-            'true',
-        );
+        expect(screen.getByRole('radio', { name: /system/i })).toBeChecked();
         expect(document.documentElement.classList.contains('dark')).toBe(true);
         expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
     });
@@ -248,26 +238,27 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
         installMatchMediaMock(false);
         const user = userEvent.setup();
         renderThemeControl();
-        await openAccountMenu(user);
+        await waitForThemeControl();
 
-        await user.click(screen.getByRole('menuitemradio', { name: 'Light' }));
-        await openAccountMenu(user);
+        await user.click(screen.getByRole('radio', { name: /light/i }));
+        await waitForThemeControl();
 
-        const checked = screen.getByRole('menuitemradio', { name: 'Light' });
-        const unchecked = screen.getByRole('menuitemradio', { name: 'Dark' });
+        const checked = screen.getByRole('radio', { name: /light/i });
+        const unchecked = screen.getByRole('radio', { name: /dark/i });
 
-        expect(checked).toHaveAttribute('aria-checked', 'true');
-        expect(unchecked).toHaveAttribute('aria-checked', 'false');
+        expect(checked).toBeChecked();
+        expect(unchecked).not.toBeChecked();
 
         /*
-            Seçim renkten BAŞKA bir kanalda da görünmelidir. Kontrol kenar
-            çubuğundaki radyo grubundan menüye taşınırken mekanizma da
-            değişti: eskiden `forced-colors:outline` sınıfıydı, şimdi görünür
-            bir işaret karakteri. İddia bu yüzden sınıf adını değil GÖZLENEBİLİR
-            FARKI ölçüyor — Windows Yüksek Kontrast'ta arka plan/metin çiftleri
-            işletim sistemi paletine düşer ve renge dayanan her ayrım kaybolur.
+            SEÇİM RENKTEN BAŞKA BİR KANALDA DA GÖRÜNMELİDİR.
+
+            Windows Yüksek Kontrast kipinde arka plan/metin çiftleri işletim
+            sistemi paletine düşer ve yalnız renge dayanan her ayrım kaybolur
+            (WCAG 1.4.1). Seçili seçenek görünür bir işaret taşır; iddia sınıf
+            adını değil o işaretin VARLIĞINI ölçer — mekanizma değişebilir,
+            sözleşme değişmez.
         */
-        expect(checked.textContent).not.toBe(unchecked.textContent);
-        expect((checked.textContent ?? '').replace(unchecked.textContent ?? '', '')).not.toBe('');
+        expect(checked.closest('label')?.querySelector('svg')).not.toBeNull();
+        expect(unchecked.closest('label')?.querySelector('svg')).toBeNull();
     });
 });

@@ -4,6 +4,7 @@ import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
 import { BrandLogoRegion } from './brand/BrandLogoRegion';
 import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
+import { AppearanceRegion } from './settings/AppearanceRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
 
@@ -123,7 +124,23 @@ export function SettingsPage({
                             ))}
 
                         {activeTab === 'account' && (
-                            <AccountSettingsRegion currentName={userName} />
+                            <div className="flex flex-col gap-[var(--space-6)]">
+                                <AccountSettingsRegion currentName={userName} />
+                                {/*
+                                    GÖRÜNÜM BURAYA TAŞINDI (FF-119, sahibin
+                                    bildirimi 2026-09-04). Önceden hem hesap
+                                    menüsünün içinde hem profil ekranındaydı:
+                                    aynı ayarın iki evi vardı ve kullanıcı
+                                    hangisinin gerçek olduğunu bilemezdi.
+
+                                    Hesap sekmesi doğru ev, çünkü tema KİŞİYE
+                                    aittir, markaya değil: aynı restoranın
+                                    gündüz müdürü açık, gece kapanışı yapan
+                                    kişi koyu temayı seçebilir ve ikisi de aynı
+                                    menüyü aynı renklerde yayınlar.
+                                */}
+                                <AppearanceRegion />
+                            </div>
                         )}
 
                         {activeTab === 'billing' && (
