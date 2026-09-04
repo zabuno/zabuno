@@ -28,6 +28,21 @@ export const profile = {
     'workspace.profile.appearance.help':
         'Light or dark is your own choice — it changes nothing for your guests. “System” follows your device setting.',
 
+    /*
+        YOĞUNLUK, kullanıcıya PİKSEL değil İŞ anlatır (FF-128). "Rahat"
+        parmakla dokunulacak bir tablette, "sıkışık" gün boyu tabloya bakan
+        bir masaüstünde işe yarar. Dokunma hedefi hiçbir modda küçülmez;
+        değişen yalnız dolgudur.
+    */
+    'workspace.profile.density.heading': 'Row spacing',
+    'workspace.profile.density.help':
+        'How much breathing room lists and tables get. Buttons stay the same size to tap in every mode.',
+    'workspace.profile.preview.heading': 'Preview',
+    'workspace.profile.preview.help': 'How your choices look right now.',
+    'workspace.profile.preview.sampleLabel': 'Table',
+    'workspace.profile.preview.sampleValue': 'Terrace 4',
+    'workspace.profile.preview.sampleAction': 'Open',
+
     'workspace.profile.colors.heading': 'Brand colours',
     'workspace.profile.colors.help':
         'These two colours are used on your published guest menu. Pick them here, or type the exact code from your brand guide.',

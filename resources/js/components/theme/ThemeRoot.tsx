@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ThemeProvider } from 'flowbite-react/theme/provider';
+import {
+    DEFAULT_DENSITY,
+    DENSITY_STORAGE_KEY,
+    DensityControlContext,
+    isDensityPreference,
+    type DensityControl,
+    type DensityPreference,
+} from './densityControl';
 import { ThemeControlContext, type ThemeControl, type ThemePreference } from './themeControl';
 import { FLOWBITE_TOKEN_APPLY, flowbiteTokenTheme } from '../../design-system/flowbite-theme';
 
@@ -23,22 +31,32 @@ function resolveIsDark(preference: ThemePreference, systemPrefersDark: boolean):
 }
 
 /**
- * Arayüz yoğunluğu.
+ * Arayüz yoğunluğu — artık SABİT değil, tercih (FF-128).
  *
- * Külliyat üç mod tanımlıyor (comfortable / standard / compact) ve CSS'te
- * üçü de vardı — ama hiçbir bileşen uygulamıyordu, yani mod ÖLÜYDÜ.
- *
- * Şimdi kök öğede bir öznitelik olarak yaşıyor. Bugün tek bir değer
- * kullanılıyor; kullanıcıya seçim sunmak ayrı bir ÜRÜN kararıdır ve
- * sahibinindir. Bu sabit, o karar verildiğinde bağlanacak tek yerdir.
+ * Külliyat üç mod tanımlıyor ve CSS'te üçü de vardı, ama burada
+ * `INTERFACE_DENSITY = 'standard'` diye yazılıydı: mod tanımlıydı, ölçülüydü,
+ * test ediliydi ve hiç kimse değiştiremiyordu. Sahibin isteği üzerine
+ * (2026-09-04 teslim paketi) seçim kullanıcıya açıldı; tercih tema ile aynı
+ * yerde, aynı biçimde saklanır.
  */
-const INTERFACE_DENSITY = 'standard' as const;
+function readStoredDensity(): DensityPreference {
+    try {
+        const stored: unknown = window.localStorage.getItem(DENSITY_STORAGE_KEY);
 
-function applyToDocument(isDark: boolean) {
+        // Bilinmeyen bir değer VARSAYILANA düşer. Saklanan metne güvenip
+        // özniteliğe yazsaydık, elle kurcalanmış bir tarayıcıda hiçbir
+        // yoğunluk kuralıyla eşleşmeyen bir kök doğardı.
+        return isDensityPreference(stored) ? stored : DEFAULT_DENSITY;
+    } catch {
+        return DEFAULT_DENSITY;
+    }
+}
+
+function applyToDocument(isDark: boolean, density: DensityPreference) {
     const root = document.documentElement;
     root.classList.toggle('dark', isDark);
     root.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    root.setAttribute('data-density', INTERFACE_DENSITY);
+    root.setAttribute('data-density', density);
     root.style.colorScheme = isDark ? 'dark' : 'light';
 }
 
@@ -48,6 +66,7 @@ type ThemeRootProps = {
 
 export function ThemeRoot({ children }: ThemeRootProps) {
     const [preference, setPreference] = useState<ThemePreference>(() => readStoredPreference());
+    const [density, setDensity] = useState<DensityPreference>(() => readStoredDensity());
     const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(() => {
         if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
             return false;
@@ -71,8 +90,8 @@ export function ThemeRoot({ children }: ThemeRootProps) {
     }, []);
 
     useEffect(() => {
-        applyToDocument(resolveIsDark(preference, systemPrefersDark));
-    }, [preference, systemPrefersDark]);
+        applyToDocument(resolveIsDark(preference, systemPrefersDark), density);
+    }, [preference, systemPrefersDark, density]);
 
     const choose = useCallback((next: ThemePreference) => {
         setPreference(next);
@@ -83,11 +102,25 @@ export function ThemeRoot({ children }: ThemeRootProps) {
         }
     }, []);
 
+    const chooseDensity = useCallback((next: DensityPreference) => {
+        setDensity(next);
+        try {
+            window.localStorage.setItem(DENSITY_STORAGE_KEY, next);
+        } catch {
+            // storage unavailable — in-memory preference still applies for this session
+        }
+    }, []);
+
     const control = useMemo<ThemeControl>(() => ({ preference, choose }), [preference, choose]);
+    const densityControl = useMemo<DensityControl>(
+        () => ({ preference: density, choose: chooseDensity }),
+        [density, chooseDensity],
+    );
 
     return (
         <ThemeControlContext value={control}>
-            {/*
+            <DensityControlContext value={densityControl}>
+                {/*
               Flowbite'ı token köküne bağlar. `auth/`, `workspace/` ve
               `admin/` altında Flowbite `Button`/`TextInput`/`Select`
               DOĞRUDAN import eden dosyalar var; onlar katalog primitifinden
@@ -96,9 +129,10 @@ export function ThemeRoot({ children }: ThemeRootProps) {
               okur. Katalog primitifleri aynı tanımı ayrıca prop olarak da
               uygular; bkz. `design-system/flowbite-theme`.
             */}
-            <ThemeProvider theme={flowbiteTokenTheme} applyTheme={FLOWBITE_TOKEN_APPLY}>
-                {children}
-            </ThemeProvider>
+                <ThemeProvider theme={flowbiteTokenTheme} applyTheme={FLOWBITE_TOKEN_APPLY}>
+                    {children}
+                </ThemeProvider>
+            </DensityControlContext>
         </ThemeControlContext>
     );
 }

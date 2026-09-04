@@ -1860,6 +1860,14 @@ msgstr "Saving…"
 msgid "workspace.profile.colors.secondary"
 msgstr "Secondary colour"
 
+#: workspace:workspace.profile.density.heading
+msgid "workspace.profile.density.heading"
+msgstr "Row spacing"
+
+#: workspace:workspace.profile.density.help
+msgid "workspace.profile.density.help"
+msgstr "How much breathing room lists and tables get. Buttons stay the same size to tap in every mode."
+
 #: workspace:workspace.profile.description
 msgid "workspace.profile.description"
 msgstr "Your name, photo and appearance. Changes here follow you into every workspace you belong to."
@@ -1867,6 +1875,26 @@ msgstr "Your name, photo and appearance. Changes here follow you into every work
 #: workspace:workspace.profile.details.heading
 msgid "workspace.profile.details.heading"
 msgstr "Your details"
+
+#: workspace:workspace.profile.preview.heading
+msgid "workspace.profile.preview.heading"
+msgstr "Preview"
+
+#: workspace:workspace.profile.preview.help
+msgid "workspace.profile.preview.help"
+msgstr "How your choices look right now."
+
+#: workspace:workspace.profile.preview.sampleAction
+msgid "workspace.profile.preview.sampleAction"
+msgstr "Open"
+
+#: workspace:workspace.profile.preview.sampleLabel
+msgid "workspace.profile.preview.sampleLabel"
+msgstr "Table"
+
+#: workspace:workspace.profile.preview.sampleValue
+msgid "workspace.profile.preview.sampleValue"
+msgstr "Terrace 4"
 
 #: workspace:workspace.profile.title
 msgid "workspace.profile.title"

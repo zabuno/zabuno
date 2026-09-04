@@ -8,6 +8,22 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: theme:density.comfortable
+msgid "density.comfortable"
+msgstr ""
+
+#: theme:density.compact
+msgid "density.compact"
+msgstr ""
+
+#: theme:density.group_label
+msgid "density.group_label"
+msgstr ""
+
+#: theme:density.standard
+msgid "density.standard"
+msgstr ""
+
 #: theme:theme.dark
 msgid "theme.dark"
 msgstr ""

@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 759;
+const FROZEN_LEGACY_KEY_COUNT = 766;
 
-// FF-127: rayın dibindeki sabit bloğun kendi gezinti adı ("Account").
+// FF-128: satır aralığı seçicisi ve canlı önizleme şeridi.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f4a18d14a52ececdd5ed672f2a1677599a19e4a116c91d02514d8eb4a0c9144b';
+    '9b149aed829a5b0193efcdc93ad5523db92c7fa7011a0bff5293cb67a167f0bd';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
