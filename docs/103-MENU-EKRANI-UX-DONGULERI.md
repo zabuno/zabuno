@@ -152,7 +152,9 @@ fiyat → durum` idi: göz addan fiyata giderken üç düğmenin üstünden atla
 zorundaydı ve iki ürünün fiyatı hizalanmadığı için karşılaştırılamıyordu.
 
 Yeni dizilim `sıra → ad → fiyat → tükendi → eylemler`; kategori başlığı da
-aynı grameri kullanır. İçerik solda, sayı sağda, eylemler en sağda — iki
+aynı grameri kullanır (FF-105: "hepsi tükendi" çipi de başlığa yapışık
+durmaktan çıkıp sağa, eylemlerden hemen öncesine geçti — böylece durum
+bilgisi başlıkta ve satırda AYNI yerde aranır). İçerik solda, sayı sağda, eylemler en sağda — iki
 farklı sıralama, gözü her satırda yeniden eğitmek olurdu.
 
 **Bulgu (FF-103'te düzeltildi).** Fiyat `42.50 TRY` olarak yazılıyordu.
