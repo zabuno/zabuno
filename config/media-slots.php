@@ -40,8 +40,23 @@ return [
             'surface' => MediaSurface::Menu,
             'min_width' => 512, 'min_height' => 512,
             'aspect' => null,               // logo kırpılmaz
-            // SVG yok: sanitize eden katman olmadan kabul edilmez (`docs/49` Faz 2 madde 6).
-            'formats' => ['png', 'webp'],
+            /*
+                SVG AÇIK — sahibin kararı, 2026-09-05 (`docs/108` §6.2).
+
+                2026-09-04'e kadar burada "SVG yok" yazıyordu ve gerekçesi
+                doğruydu: SVG bir görsel değil BELGEDİR, içinden betik
+                çalışır ve menü sayfaları herkese açıktır. O gerekçe
+                kalkmadı — KARŞILANDI. Sahip "şimdi aç" dedi ve kabul,
+                temizleyiciyle AYNI pakette açıldı: `App\Domain\Media\
+                SvgSanitizer` (allowlist; betik, olay özniteliği, dış
+                bağlantı, gömülü HTML ve XML varlığı taşıyan gövde
+                REDDEDİLİR — temizlenip kabul edilmez).
+
+                Vektör YALNIZ vektör slotlarındadır: `logo`, `printLogo`,
+                `favicon`. Bir yemek fotoğrafı slotunda (`itemImage`) SVG
+                yoktur, çünkü orada vektör diye bir şey yoktur.
+            */
+            'formats' => ['svg', 'png', 'webp'],
             'transparency' => 'preserve',   // alfa düz beyaza çevrilmez (INV-07)
             'renditions' => [64, 128, 256, 512],
             'alt_required' => true,
@@ -119,7 +134,9 @@ return [
             'surface' => MediaSurface::Menu,
             'min_width' => 1024, 'min_height' => 1024,
             'aspect' => null,
-            'formats' => ['png'],   // svg: bkz. logo slotu
+            // Baskıda vektör tek doğru cevaptır: kâğıt, ekranın piksel
+            // ızgarasını tanımaz (SVG kararı: bkz. `logo` slotu).
+            'formats' => ['svg', 'png'],
             'transparency' => 'preserve',
             'renditions' => [512, 1024, 2048],
             'alt_required' => false,
@@ -137,7 +154,7 @@ return [
             'surface' => MediaSurface::Menu,
             'min_width' => 512, 'min_height' => 512,
             'aspect' => '1:1',
-            'formats' => ['png'],   // svg: bkz. logo slotu
+            'formats' => ['svg', 'png'],    // SVG kararı: bkz. `logo` slotu
             'transparency' => 'preserve',
             'renditions' => [16, 32, 180, 512],
             'alt_required' => false,
@@ -217,6 +234,98 @@ return [
             'renditions' => [64, 128, 200],
             'alt_required' => false,
         ],
+    ],
+
+    /*
+     * ADLANDIRILMIŞ TÜREV KURALLARI — "Boyut motoru" (kanonik kaynak:
+     * `docs/reference/media-manager/Medya Yonetimi v2.dc.html`, ekran
+     * etiketi "Boyut motoru"; somut tablo `docs/108` §6.1).
+     *
+     * NEDEN AYRI BİR BÖLÜM, slot `renditions` listesinin İÇİ DEĞİL:
+     *
+     *   - Slot `renditions` listesi bir SLOTUN ihtiyacıdır: "menü ürünü
+     *     kartı 320'den 960'a kadar dört ölçü ister". O liste bir yükleme
+     *     kapısıdır (`min_width` onun en büyüğünden türer) ve çalışan bir
+     *     boru hattını besliyor. Oraya ad yazmak, var olan slot davranışını
+     *     kırardı.
+     *   - Bu bölüm ise ÜRÜNÜN ölçü dağarcığıdır: `320` bir sayıdır,
+     *     `small · menü kartı · telefon` bir karardır. Kural değiştiğinde
+     *     hangi ekranın etkileneceğini yalnız ikincisi söyler.
+     *
+     * Kural DOMAIN'de okunur (`App\Domain\Media\DerivativeCatalogue`) —
+     * yapılandırma çerçeveye, karar domain'e aittir; `SlotPolicy` ile aynı
+     * ayrım.
+     *
+     * DÜRÜSTLÜK NOTU. Bu ad dağarcığı bugün boru hattına BAĞLI DEĞİLDİR:
+     * `GdMediaAssetProcessor` hâlâ slot `renditions` listesinden üretiyor.
+     * Bu yüzden uç, her kuralın hangi slotlarda GERÇEKTEN üretildiğini de
+     * söyler ve ekran bunu gizlemez. Adlandırılmış kuralı boru hattına
+     * bağlamak ayrı bir pakettir; onu sessizce yapmak, on binlerce var olan
+     * türevi habersiz geçersizleştirirdi.
+     *
+     * DEĞİŞMEZ (`docs/108` §4): buradaki bir değişiklik YALNIZ YENİ
+     * yüklemelere uygulanır. Eskiler ancak açık bir yeniden üretim işiyle
+     * değişir ve o iş asılları korur, yeni SÜRÜM açar.
+     */
+    'derivatives' => [
+        'thumb' => [
+            'width' => 160,
+            // Liste satırı sabit kare bir kutudur; sığdırmak boşluk bırakır.
+            'fit' => 'crop',
+            'height' => null,
+            'formats' => ['avif', 'webp'],
+        ],
+        'small' => [
+            'width' => 320,
+            'fit' => 'contain',
+            'height' => null,
+            'formats' => ['avif', 'webp'],
+        ],
+        'medium' => [
+            'width' => 768,
+            'fit' => 'contain',
+            'height' => null,
+            // JPEG buradan itibaren yedektir: ürün ayrıntısı sayfası eski
+            // bir tarayıcıda da açılmalı.
+            'formats' => ['avif', 'webp', 'jpeg'],
+        ],
+        'large' => [
+            'width' => 1440,
+            'fit' => 'contain',
+            'height' => null,
+            'formats' => ['avif', 'webp', 'jpeg'],
+        ],
+        'social' => [
+            // Paylaşım önizlemesinin çerçevesi SABİTTİR ve bizim değil:
+            // 1200×630'u paylaşılan yer dayatır, sığdırma bir seçenek değil.
+            'width' => 1200,
+            'fit' => 'crop',
+            'height' => 630,
+            // AVIF/WebP yok: paylaşım kazıyıcılarının çoğu okumaz.
+            'formats' => ['jpeg'],
+        ],
+        'print' => [
+            'width' => 2480,
+            'fit' => 'contain',
+            'height' => null,
+            'formats' => ['jpeg'],
+        ],
+    ],
+
+    /*
+     * TOPLU YENİDEN ÜRETİM sınırı.
+     *
+     * Tek çağrı, kaç dosyayı işleyebilir? Bu bir performans ayarı değil bir
+     * DÜRÜSTLÜK sınırıdır: yeniden üretim SENKRONDUR (`ReprocessMediaAsset`
+     * çağrıldığı istekte görsel işler). Sınırsız bir toplu iş, iki yüz
+     * fotoğraflu bir kiracıda isteği zaman aşımına uğratır ve sahip işin
+     * yarıda kaldığını hiçbir yerden öğrenemez.
+     *
+     * Sınıra takılan kalan dosyalar cevapta SAYILIR; sahip düğmeye yeniden
+     * basar ve kaldığı yerden devam eder.
+     */
+    'regeneration' => [
+        'batch_limit' => 25,
     ],
 
     /*

@@ -260,6 +260,106 @@ export const media = {
     // Karantinadaki ya da henüz işlenmemiş dosyanın herkese açık adresi
     // yoktur; bu bir gecikme değil, bir güvenlik kararıdır.
     'workspace.media.library.access.private': 'Not publicly available yet',
+
+    /*
+        BOYUT MOTORU (kaynak ekranı "Boyut motoru", somut tablo `docs/108`
+        §6.1). Kural bugün `config/media-slots.php` içinde bir SAYI
+        LİSTESİYDİ; `320` bir sayıdır, `small · menü kartı · telefon` bir
+        karardır. Kullanım metinleri kural ADINDAN türetilir, sunucudan
+        gelmez: sunucu ölçüyü bilir, o ölçünün hangi ekranı beslediğini
+        ürün bilir.
+    */
+    'workspace.media.engine.tab': 'Sizes',
+    'workspace.media.engine.region': 'Size engine',
+    'workspace.media.engine.lead':
+        'Which sizes are produced from every image you upload? The rule is written once.',
+    'workspace.media.engine.loading': 'Loading size rules…',
+    'workspace.media.engine.failed': 'Size rules could not be loaded.',
+    'workspace.media.engine.rule.width': '{width} px',
+    // Yalnız sabit çerçeveli kural (paylaşım önizlemesi) iki ölçü taşır.
+    'workspace.media.engine.rule.frame': '{width} × {height} px',
+    'workspace.media.engine.fit.crop': 'Cropped',
+    'workspace.media.engine.fit.contain': 'Fitted',
+    'workspace.media.engine.rule.thumb.usage': 'List row',
+    'workspace.media.engine.rule.small.usage': 'Menu card, phone',
+    'workspace.media.engine.rule.medium.usage': 'Product detail',
+    'workspace.media.engine.rule.large.usage': 'Full-screen image',
+    'workspace.media.engine.rule.social.usage': 'Share preview',
+    'workspace.media.engine.rule.print.usage': 'QR card, poster',
+    'workspace.media.engine.rule.usage.unknown': 'No place assigned yet',
+    /*
+        DÜRÜSTLÜK. Kuralın adı olması, o ölçünün üretildiği anlamına
+        gelmez: boru hattı bugün slot başına genişlik listesinden üretiyor.
+        "print · 2480 px" yazıp o dosyanın hiç var olmadığını söylememek,
+        sahibi olmayan bir yeteneğe güvendirirdi.
+    */
+    'workspace.media.engine.rule.notProduced': 'Not produced yet',
+    'workspace.media.engine.rule.producedBy': 'Produced in {count} place(s)',
+    'workspace.media.engine.regen.heading': 'I changed the rule — what about the old files?',
+    'workspace.media.engine.regen.lead':
+        'A new rule applies to new uploads only. To refresh older files a job is started; originals are kept and each file gains a new version.',
+    'workspace.media.engine.regen.affected': 'Files that would be touched',
+    'workspace.media.engine.regen.renditions': 'Sizes that exist today',
+    'workspace.media.engine.regen.batch': 'Files per run',
+    'workspace.media.engine.regen.start': 'Start regeneration',
+    'workspace.media.engine.regen.running': 'Regenerating…',
+    'workspace.media.engine.regen.done':
+        '{count} file(s) regenerated as a new version. The originals are untouched.',
+    'workspace.media.engine.regen.someFailed':
+        '{count} file(s) could not be regenerated. Open the queue to see why.',
+    // Senkron çalışıyor: tek çağrı hepsini bitirmeyebilir ve sahip bunu
+    // sonradan değil, o anda öğrenmeli.
+    'workspace.media.engine.regen.remaining': '{count} file(s) left. Press again to continue.',
+    'workspace.media.engine.regen.failed': 'That did not work. Nothing was changed.',
+    'workspace.media.engine.regen.nothing':
+        'No processed file yet, so there is nothing to refresh.',
+    /*
+        ÖLÇÜLEN KAZANÇ — kaynak "AVIF ~%74 küçük" gibi rakamlar gösteriyor;
+        onlar biçimlerin genel iddiasıdır, BU kiracının dosyalarının ölçümü
+        değil. Ölçüm yoksa bölüm hiç çizilmez.
+    */
+    'workspace.media.engine.measured.heading': 'Measured saving',
+    'workspace.media.engine.measured.lead':
+        'Measured on your own {count} file(s): the original against the largest size actually served.',
+    'workspace.media.engine.measured.originals': 'Originals',
+    'workspace.media.engine.measured.served': 'Largest size served',
+    'workspace.media.engine.measured.delta': '{percent}% smaller',
+
+    /*
+        KUYRUK (kaynak ekranı "Kuyruk", gerekçe `docs/108` §3 madde 5).
+        "Takıldı mı, yoksa hâlâ çalışıyor mu?" — cevabı olmayan bu soru,
+        sahibi aynı fotoğrafı tekrar tekrar yüklemeye ve kotasını kendi
+        eliyle doldurmaya itiyordu.
+    */
+    'workspace.media.queue.region': 'Processing queue',
+    'workspace.media.queue.lead':
+        'Uploads and regeneration create jobs. This is where you see whether one is still running or stopped.',
+    'workspace.media.queue.loading': 'Loading the queue…',
+    'workspace.media.queue.failed': 'The queue could not be loaded.',
+    'workspace.media.queue.empty': 'No jobs yet.',
+    'workspace.media.queue.count.running': 'Running',
+    'workspace.media.queue.count.succeeded': 'Done',
+    'workspace.media.queue.count.failed': 'Failed',
+    // `held` `failed`ten AYRI: dosyada sorun yok, tarayıcı konuşamadı.
+    // İkisini aynı sayaçta toplamak "dosyalarım bozuk" dedirtirdi.
+    'workspace.media.queue.count.held': 'On hold',
+    'workspace.media.queue.kind.rendition': 'Generating sizes',
+    'workspace.media.queue.kind.scan': 'Security scan',
+    'workspace.media.queue.kind.unknown': 'Processing',
+    'workspace.media.queue.state.pending': 'Waiting',
+    'workspace.media.queue.state.running': 'Running',
+    'workspace.media.queue.state.succeeded': 'Done',
+    'workspace.media.queue.state.failed': 'Failed',
+    'workspace.media.queue.state.held': 'On hold',
+    'workspace.media.queue.state.unknown': 'Unknown',
+    // Yüzde sütunu tabloda YOK; olmayan sayı uydurulmaz.
+    'workspace.media.queue.progress.unknown': 'Still running — no progress figure is recorded.',
+    'workspace.media.queue.attempts': 'attempt {count}',
+    'workspace.media.queue.retry': 'Try again',
+    'workspace.media.queue.retry.named': 'Try {name} again',
+    'workspace.media.queue.retried': 'Started again. This row updates with the result.',
+    'workspace.media.queue.retryFailed': 'Could not start it again. Nothing was changed.',
+    'workspace.media.queue.refresh': 'Refresh the queue',
 } as const;
 
 declare module '../workspace' {

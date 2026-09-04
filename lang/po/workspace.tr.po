@@ -1064,6 +1064,146 @@ msgstr ""
 msgid "workspace.media.crop.zoom"
 msgstr ""
 
+#: workspace:workspace.media.engine.failed
+msgid "workspace.media.engine.failed"
+msgstr ""
+
+#: workspace:workspace.media.engine.fit.contain
+msgid "workspace.media.engine.fit.contain"
+msgstr ""
+
+#: workspace:workspace.media.engine.fit.crop
+msgid "workspace.media.engine.fit.crop"
+msgstr ""
+
+#: workspace:workspace.media.engine.lead
+msgid "workspace.media.engine.lead"
+msgstr ""
+
+#: workspace:workspace.media.engine.loading
+msgid "workspace.media.engine.loading"
+msgstr ""
+
+#: workspace:workspace.media.engine.measured.delta
+msgid "workspace.media.engine.measured.delta"
+msgstr ""
+
+#: workspace:workspace.media.engine.measured.heading
+msgid "workspace.media.engine.measured.heading"
+msgstr ""
+
+#: workspace:workspace.media.engine.measured.lead
+msgid "workspace.media.engine.measured.lead"
+msgstr ""
+
+#: workspace:workspace.media.engine.measured.originals
+msgid "workspace.media.engine.measured.originals"
+msgstr ""
+
+#: workspace:workspace.media.engine.measured.served
+msgid "workspace.media.engine.measured.served"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.affected
+msgid "workspace.media.engine.regen.affected"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.batch
+msgid "workspace.media.engine.regen.batch"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.done
+msgid "workspace.media.engine.regen.done"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.failed
+msgid "workspace.media.engine.regen.failed"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.heading
+msgid "workspace.media.engine.regen.heading"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.lead
+msgid "workspace.media.engine.regen.lead"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.nothing
+msgid "workspace.media.engine.regen.nothing"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.remaining
+msgid "workspace.media.engine.regen.remaining"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.renditions
+msgid "workspace.media.engine.regen.renditions"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.running
+msgid "workspace.media.engine.regen.running"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.someFailed
+msgid "workspace.media.engine.regen.someFailed"
+msgstr ""
+
+#: workspace:workspace.media.engine.regen.start
+msgid "workspace.media.engine.regen.start"
+msgstr ""
+
+#: workspace:workspace.media.engine.region
+msgid "workspace.media.engine.region"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.frame
+msgid "workspace.media.engine.rule.frame"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.large.usage
+msgid "workspace.media.engine.rule.large.usage"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.medium.usage
+msgid "workspace.media.engine.rule.medium.usage"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.notProduced
+msgid "workspace.media.engine.rule.notProduced"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.print.usage
+msgid "workspace.media.engine.rule.print.usage"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.producedBy
+msgid "workspace.media.engine.rule.producedBy"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.small.usage
+msgid "workspace.media.engine.rule.small.usage"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.social.usage
+msgid "workspace.media.engine.rule.social.usage"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.thumb.usage
+msgid "workspace.media.engine.rule.thumb.usage"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.usage.unknown
+msgid "workspace.media.engine.rule.usage.unknown"
+msgstr ""
+
+#: workspace:workspace.media.engine.rule.width
+msgid "workspace.media.engine.rule.width"
+msgstr ""
+
+#: workspace:workspace.media.engine.tab
+msgid "workspace.media.engine.tab"
+msgstr ""
+
 #: workspace:workspace.media.folders.all
 msgid "workspace.media.folders.all"
 msgstr ""
@@ -1531,6 +1671,106 @@ msgstr "Doğrulama"
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
 msgstr "Fotoğraf yükleyin ve yayınlanan menünüzü besleyen görsel kütüphanesini yönetin — her dosya kullanılmadan önce taranır."
+
+#: workspace:workspace.media.queue.attempts
+msgid "workspace.media.queue.attempts"
+msgstr ""
+
+#: workspace:workspace.media.queue.count.failed
+msgid "workspace.media.queue.count.failed"
+msgstr ""
+
+#: workspace:workspace.media.queue.count.held
+msgid "workspace.media.queue.count.held"
+msgstr ""
+
+#: workspace:workspace.media.queue.count.running
+msgid "workspace.media.queue.count.running"
+msgstr ""
+
+#: workspace:workspace.media.queue.count.succeeded
+msgid "workspace.media.queue.count.succeeded"
+msgstr ""
+
+#: workspace:workspace.media.queue.empty
+msgid "workspace.media.queue.empty"
+msgstr ""
+
+#: workspace:workspace.media.queue.failed
+msgid "workspace.media.queue.failed"
+msgstr ""
+
+#: workspace:workspace.media.queue.kind.rendition
+msgid "workspace.media.queue.kind.rendition"
+msgstr ""
+
+#: workspace:workspace.media.queue.kind.scan
+msgid "workspace.media.queue.kind.scan"
+msgstr ""
+
+#: workspace:workspace.media.queue.kind.unknown
+msgid "workspace.media.queue.kind.unknown"
+msgstr ""
+
+#: workspace:workspace.media.queue.lead
+msgid "workspace.media.queue.lead"
+msgstr ""
+
+#: workspace:workspace.media.queue.loading
+msgid "workspace.media.queue.loading"
+msgstr ""
+
+#: workspace:workspace.media.queue.progress.unknown
+msgid "workspace.media.queue.progress.unknown"
+msgstr ""
+
+#: workspace:workspace.media.queue.refresh
+msgid "workspace.media.queue.refresh"
+msgstr ""
+
+#: workspace:workspace.media.queue.region
+msgid "workspace.media.queue.region"
+msgstr ""
+
+#: workspace:workspace.media.queue.retried
+msgid "workspace.media.queue.retried"
+msgstr ""
+
+#: workspace:workspace.media.queue.retry
+msgid "workspace.media.queue.retry"
+msgstr ""
+
+#: workspace:workspace.media.queue.retry.named
+msgid "workspace.media.queue.retry.named"
+msgstr ""
+
+#: workspace:workspace.media.queue.retryFailed
+msgid "workspace.media.queue.retryFailed"
+msgstr ""
+
+#: workspace:workspace.media.queue.state.failed
+msgid "workspace.media.queue.state.failed"
+msgstr ""
+
+#: workspace:workspace.media.queue.state.held
+msgid "workspace.media.queue.state.held"
+msgstr ""
+
+#: workspace:workspace.media.queue.state.pending
+msgid "workspace.media.queue.state.pending"
+msgstr ""
+
+#: workspace:workspace.media.queue.state.running
+msgid "workspace.media.queue.state.running"
+msgstr ""
+
+#: workspace:workspace.media.queue.state.succeeded
+msgid "workspace.media.queue.state.succeeded"
+msgstr ""
+
+#: workspace:workspace.media.queue.state.unknown
+msgid "workspace.media.queue.state.unknown"
+msgstr ""
 
 #: workspace:workspace.media.quota.assets
 msgid "workspace.media.quota.assets"

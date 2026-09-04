@@ -11,7 +11,6 @@ use App\Application\Media\Dto\MediaScanVerdict;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Domain\Media\MediaAssetStatus;
-use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -56,11 +55,34 @@ final class MediaUploadProcessingJourneyTest extends TestCase
     {
         $processor = $this->app->make(MediaAssetProcessorPort::class);
 
-        self::assertInstanceOf(
-            GdMediaAssetProcessor::class,
+        /*
+            SINIF ADI DEĞİL, DAVRANIŞ. 2026-09-05'e kadar burada
+            `GdMediaAssetProcessor` sınıfı aranıyordu; SVG kabulü açılınca
+            (sahip kararı, `docs/108` §6.2) GD bir sarmalayıcının içine
+            girdi. Sözleşme "şu sınıf bağlı olsun" değil, "bağlı olan şey
+            GERÇEKTEN görsel işlesin"dir — o yüzden gerçek bir JPEG verilip
+            gerçek bir türev bekleniyor. Bu, sınıf kontrolünden daha zor
+            kandırılır.
+        */
+        self::assertNotInstanceOf(
+            UnavailableMediaAssetProcessor::class,
             $processor,
             'MEDIA-PROCESS-03-DEFAULT-BINDING-01: varsayılan bağlama gerçek görsel işleyici olmalı.'
         );
+
+        $jpeg = tempnam(sys_get_temp_dir(), 'jpg');
+        $image = imagecreatetruecolor(1200, 1200);
+        imagejpeg($image, (string) $jpeg, 90);
+        imagedestroy($image);
+
+        $result = $processor->process((string) $jpeg, 'itemImage');
+
+        self::assertSame(
+            MediaProcessingOutcome::Succeeded,
+            $result->outcome,
+            'MEDIA-PROCESS-03-DEFAULT-BINDING-01: varsayılan bağlama gerçek bir fotoğrafı işleyemedi.'
+        );
+        self::assertNotSame([], $result->renditions);
     }
 
     public function test_the_placeholder_processor_still_holds_honestly_when_no_image_library_exists(): void

@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Images, UploadSimple } from '@phosphor-icons/react';
+import { Images, Queue, Resize, UploadSimple } from '@phosphor-icons/react';
 import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
 import { MediaAuditRegion } from './media/MediaAuditRegion';
+import { MediaSizeEngineRegion } from './media/MediaSizeEngineRegion';
+import { MediaJobQueueRegion } from './media/MediaJobQueueRegion';
 import { MediaQuotaRegion, type MediaQuota } from './media/MediaQuotaRegion';
 import { MediaManagerShell, type MediaManagerSection } from './media/MediaManagerShell';
 import { MediaFolderRail, type MediaFolderId } from './media/MediaFolderRail';
@@ -341,10 +343,14 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
     }
 
     /*
-        BÖLÜMLER: kaynak dokuz bölüm gösteriyor, depoda bugün İKİSİ gerçek
+        BÖLÜMLER: kaynak dokuz bölüm gösteriyor, depoda bugün DÖRDÜ gerçek
         (`docs/108` §2). Var olmayan bir bölüme giden sekme, kullanıcıyı boş
         bir odaya sokar ve "burası ne zaman açılacak?" diye kalıcı bir soru
         işareti bırakır — o yüzden yalnız çalışan bölümler yazılıdır.
+
+        "Boyut motoru" ve "Kuyruk" kiracı adresine bağlıdır: `workspaceId`
+        bilinmiyorsa o iki bölüm hiç yazılmaz. Adressiz bir bölüm sekmesi,
+        açıldığında yalnız bir hata gösterirdi.
     */
     const sections: MediaManagerSection[] = [
         {
@@ -382,6 +388,31 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             ),
         },
     ];
+
+    if (workspaceId !== undefined) {
+        sections.push(
+            {
+                key: 'sizes',
+                label: t('workspace.media.engine.tab'),
+                icon: <Resize aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaSizeEngineRegion workspaceId={workspaceId} />
+                    </PanelCard>
+                ),
+            },
+            {
+                key: 'queue',
+                label: t('workspace.media.shell.queue'),
+                icon: <Queue aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaJobQueueRegion workspaceId={workspaceId} />
+                    </PanelCard>
+                ),
+            },
+        );
+    }
 
     return (
         <div id="section-media">
