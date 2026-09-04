@@ -215,9 +215,20 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
     it('surfaces the current workspace name and user email, and preserves accessible Switch workspace and Log out controls', async () => {
         await renderCurrentWorkspace();
 
+        /*
+            GÜNCELLENDİ (FF-83). Eski sözleşme çalışma alanı adının ÜST
+            ÇUBUKTA bir düğme olmasını istiyordu. Marka adıyla aynı olan bir
+            kiracıda başlık "Zabuno Zabuno Zabuno" diye okunuyordu: ürün adı,
+            çalışma alanı adı ve şube seçici alt alta aynı kelimeydi.
+
+            `docs/50` §5 kapsam tablosu: çalışma alanı KENAR ÇUBUĞUNUN
+            üstündeki değiştiriciye aittir. Yeni sözleşme: ad kabukta BİR KEZ
+            görünür ve oradan çalışma alanı değiştirme ekranına gidilir.
+        */
         const banner = screen.getByRole('banner');
+        expect(within(banner).queryByRole('button', { name: 'Zeytin Restoranları' })).toBeNull();
         expect(
-            within(banner).getByRole('button', { name: 'Zeytin Restoranları' }),
+            screen.getByRole('button', { name: /Zeytin Restoranları.*Switch workspace/s }),
         ).toBeInTheDocument();
         expect(screen.getByText('ada@example.com')).toBeInTheDocument();
 

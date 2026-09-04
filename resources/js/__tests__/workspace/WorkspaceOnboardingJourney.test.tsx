@@ -196,8 +196,15 @@ describe('WorkspaceApp — zero workspaces, one-name creation (S1-WP02C, docs/34
         fireEvent.change(nameInput, { target: { value: 'Zeytin Restoranları' } });
         fireEvent.click(screen.getByRole('button', { name: /create/i }));
 
-        const createdBanner = await screen.findByRole('banner');
-        await within(createdBanner).findByRole('button', { name: 'Zeytin Restoranları' });
+        /*
+            FF-83: çalışma alanı adı ÜST ÇUBUKTAN kenar çubuğunun üstündeki
+            değiştiriciye taşındı (`docs/50` §5). Marka adıyla aynı olan bir
+            kiracıda başlık "Zabuno Zabuno Zabuno" diye okunuyordu. İddia
+            aynı kaldı: ad kabukta görünür ve çalışma alanı değiştirmeye
+            götürür — yalnız yeri kayda uygun hâle geldi.
+        */
+        await screen.findByRole('banner');
+        await screen.findByRole('button', { name: /Zeytin Restoranları.*Switch workspace/s });
 
         const calledUrls = fetchMock.mock.calls.map((call) => String(call[0]));
         const csrfIndex = calledUrls.indexOf(CSRF_COOKIE_URL);
@@ -324,8 +331,15 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         );
         render(<WorkspaceApp {...desktopChrome} />);
 
+        /*
+            FF-83: çalışma alanı adı ÜST ÇUBUKTAN kenar çubuğunun üstündeki
+            değiştiriciye taşındı (`docs/50` §5). Marka adıyla aynı olan bir
+            kiracıda başlık "Zabuno Zabuno Zabuno" diye okunuyordu. İddia
+            aynı kaldı: ad kabukta görünür ve çalışma alanı değiştirmeye
+            götürür — yalnız yeri kayda uygun hâle geldi.
+        */
         const contextBanner = await screen.findByRole('banner');
-        await within(contextBanner).findByRole('button', { name: 'Zeytin Restoranları' });
+        await screen.findByRole('button', { name: /Zeytin Restoranları.*Switch workspace/s });
         expect(screen.queryByText('zeytin-restoranlari')).not.toBeInTheDocument();
 
         /*
@@ -364,8 +378,15 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         );
         const { container } = render(<WorkspaceApp {...desktopChrome} />);
 
-        const liveBanner = await screen.findByRole('banner');
-        await within(liveBanner).findByRole('button', { name: 'Zeytin Restoranları' });
+        /*
+            FF-83: çalışma alanı adı ÜST ÇUBUKTAN kenar çubuğunun üstündeki
+            değiştiriciye taşındı (`docs/50` §5). Marka adıyla aynı olan bir
+            kiracıda başlık "Zabuno Zabuno Zabuno" diye okunuyordu. İddia
+            aynı kaldı: ad kabukta görünür ve çalışma alanı değiştirmeye
+            götürür — yalnız yeri kayda uygun hâle geldi.
+        */
+        await screen.findByRole('banner');
+        await screen.findByRole('button', { name: /Zeytin Restoranları.*Switch workspace/s });
 
         const liveRegion = container.querySelector('[aria-live]');
         expect(liveRegion).not.toBeNull();

@@ -49,7 +49,7 @@ Metronic ikon/renk seti, suite rail, Bootstrap).
 
 | Yüzey | Önce | Şimdi | Sonra |
 | --- | --- | --- | --- |
-| Kabuk (header/sidebar/main) | L1 | **L2** — main `surface-subtle`, sidebar `surface`, ikonlu gezinti | L3: yoğunluk token'ları header'da |
+| Kabuk (header/sidebar/main) | L1 | **L3** — tonal zemin, ikonlu gezinti, SABİT ray genişliği, başlıkta tek kimlik, telefonda alt gezinti (FF-83) | L4: marka ifadesi |
 | Home | L0 | **L2** — tek `h1`, "Şimdi" vurgu kartı, Setup kartı, istatistik kartları, tablo kartı | L3: boş/yükleniyor durumları kartta |
 | Media | L1 (FF-76) | **L2** — yükleme ve kütüphane iki kart | L3 |
 | Menus | L1 | **L2→L3** — katalog kartta, kategori kutuları kart yüzeyinde (FF-81) | L3: satır yoğunluğu |
@@ -120,6 +120,26 @@ form alan ritmi ve liste satır yoğunluğudur.
 Kategori/bölüm kutuları panel kart grameriyle aynı yüzeye taşındı
 (`radius-lg`, `surface`, `space-5` dolgu, `space-4` iç boşluk); kategori
 başlığı `text-section`. Menus yüzeyi tabloda **L3**'e yaklaşır.
+
+## 5e. FF-83 — kabuk tutarlılığı, başlık tekrarı, telefon alt gezintisi (2026-09-04)
+
+Sahibin canlı ekranlarından üç kusur:
+
+1. **Kenar çubuğu sayfadan sayfaya daralıyordu.** Ana alan, kenar çubuğu ve
+   bağlam paneli üçü de esnek BÜYÜME oranı taşıyordu (`4_1_32rem` /
+   `1_1_17rem` / `1_1_21rem`); bağlam paneli açılan sayfada oranlar yeniden
+   dağılıyordu. Şimdi raylar sabit (`basis` + `grow-0 shrink-0`), yalnız ana
+   alan büyür. Kabuk her sayfada aynı.
+2. **Başlıkta "Zabuno Zabuno Zabuno".** Ürün adı (marka işareti), çalışma
+   alanı adı ve şube seçici üst üste geliyordu. `docs/50` §5 kapsam tablosu:
+   çalışma alanı adı kenar çubuğunun üstündeki değiştiriciye aittir ve orada
+   zaten var. Başlıktaki kopya kaldırıldı; şube seçici yalnız birden çok şube
+   varken çizilir (tek şubede tek seçenekli bir kontrol, yer kaplayıp hiçbir
+   şey yapmıyordu).
+3. **Telefonda gezinti üst köşedeki hamburgerdeydi.** Alt sticky çubuk
+   eklendi: dört günlük hedef (Home, Menus, QR codes, Insights) tek dokunuş,
+   beşinci düğme "More" çekmeceyi açar. Hedefler bölüm kaydından okunur;
+   alt çubuk varken hamburger üst çubuktan KALKAR.
 
 ## 6. Kullanıcı yolculuğu
 

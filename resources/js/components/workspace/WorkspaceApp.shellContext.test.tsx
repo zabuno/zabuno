@@ -143,13 +143,19 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
         history.replaceState(null, '', window.location.pathname);
     });
 
-    it('exposes the real current-workspace name as a banner control that reaches the Choose a workspace screen', async () => {
+    it('exposes the real current-workspace name as a sidebar control that reaches the Choose a workspace screen', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
-        const banner = screen.getByRole('banner');
-        const workspaceControl = within(banner).getByRole('button', {
-            name: 'Zeytin Restoranları',
+        /*
+            GÜNCELLENDİ (FF-83): kontrol ÜST ÇUBUKTAN kenar çubuğunun üstüne
+            taşındı (`docs/50` §5). Üst çubukta durduğunda marka adının
+            yanında ikinci bir "Zabuno" oluyordu; test o yeri donduruyordu.
+            İddia değişmedi: ad görünür ve tıklayınca çalışma alanı seçimine
+            götürür.
+        */
+        const workspaceControl = screen.getByRole('button', {
+            name: /Zeytin Restoranları.*Switch workspace/s,
         });
 
         await user.click(workspaceControl);
@@ -261,10 +267,21 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
     it('renders the real workspace control but no Current location combobox when the server returns zero locations', async () => {
         await renderCurrentWorkspace([]);
 
+        /*
+            GÜNCELLENDİ (FF-83). Eski sözleşme çalışma alanı adının ÜST
+            ÇUBUKTA bir düğme olmasını istiyordu. Marka adıyla aynı olan bir
+            kiracıda başlık "Zabuno Zabuno Zabuno" diye okunuyordu: ürün adı,
+            çalışma alanı adı ve şube seçici alt alta aynı kelimeydi.
+
+            `docs/50` §5 kapsam tablosu: çalışma alanı KENAR ÇUBUĞUNUN
+            üstündeki değiştiriciye aittir. Yeni sözleşme: ad kabukta BİR KEZ
+            görünür ve oradan çalışma alanı değiştirme ekranına gidilir.
+        */
         const banner = screen.getByRole('banner');
 
+        expect(within(banner).queryByRole('button', { name: 'Zeytin Restoranları' })).toBeNull();
         expect(
-            within(banner).getByRole('button', { name: 'Zeytin Restoranları' }),
+            screen.getByRole('button', { name: /Zeytin Restoranları.*Switch workspace/s }),
         ).toBeInTheDocument();
         expect(within(banner).queryByRole('combobox', { name: 'Current location' })).toBeNull();
 

@@ -109,6 +109,19 @@ export type WorkspaceAppProps = {
         context: WorkspaceChromeContext & { open: boolean; onClose: () => void },
     ) => ReactNode;
     /**
+     * TELEFON alt gezintisi — yalnız mobil giriş noktası verir (`docs/54`).
+     *
+     * Hedefler bölüm KAYDINDAN gelir (`docs/50` §22 tek kaynak): sıralama,
+     * etiket ve ikon kenar çubuğuyla aynı yerden okunur.
+     */
+    renderBottomBar?: (context: {
+        items: { key: string; label: string; icon?: ReactNode; onSelect: () => void }[];
+        activeKey?: string;
+        moreLabel: string;
+        onOpenMore: () => void;
+        label: string;
+    }) => ReactNode;
+    /**
      * Bu cihaz paketine ait BAĞLAM PANELLERİ — `docs/54`, `docs/60`.
      *
      * Bayrak değil harita geçilir, çünkü bir bayrak paneli yalnız GİZLER:
@@ -150,6 +163,7 @@ export type WorkspaceChromeContext = {
 export function WorkspaceApp({
     renderPersistentSidebar,
     renderNavigationDrawer,
+    renderBottomBar,
     inspectors,
 }: WorkspaceAppProps) {
     const [phase, setPhase] = useState<Phase>('loading');
@@ -1131,15 +1145,31 @@ export function WorkspaceApp({
                 open: mobileMenuOpen,
                 onClose: () => setMobileMenuOpen(false),
             })}
+            bottomBar={
+                currentWorkspace
+                    ? renderBottomBar?.({
+                          items: visibleDescriptors
+                              .filter((descriptor) => descriptor.group === 'primary')
+                              .map((descriptor) => ({
+                                  key: descriptor.key,
+                                  label: t(descriptor.labelKey as Parameters<typeof t>[0]),
+                                  icon: descriptor.icon,
+                                  onSelect: () => goToSection(descriptor.key),
+                              })),
+                          activeKey: activeSection,
+                          moreLabel: t('workspace.shell.nav.more'),
+                          onOpenMore: () => setMobileMenuOpen(true),
+                          label: t('workspace.shell.nav.label'),
+                      })
+                    : undefined
+            }
             mobileMenuOpen={mobileMenuOpen}
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
             topBarCenter={
                 currentWorkspace && (
                     <WorkspaceContextControls
-                        workspaceName={currentWorkspace.name}
                         locationProfiles={locationProfiles}
                         catalogLocationId={catalogLocationId}
-                        onSwitchWorkspace={handleSwitch}
                         onSelectLocation={setCatalogLocationId}
                     />
                 )

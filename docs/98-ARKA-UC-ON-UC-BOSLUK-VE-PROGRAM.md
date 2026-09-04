@@ -347,6 +347,15 @@ satır "Misafirler hâlâ son yayınlanan menüyü görüyor" der ve yayın ekra
 götürür. Kategori kutuları panel kart grameriyle aynı yüzeye taşındı
 (`docs/102` §5d).
 
+### FF-83 ek paket — kabuk tutarlılığı ve telefon alt gezintisi (2026-09-04)
+
+Sahibin ekran görüntülerinden üç kusur kapandı: (1) kenar çubuğu bağlam
+paneli açılan sayfada daralıyordu — raylar sabit genişliğe alındı; (2)
+başlıkta ürün adı + çalışma alanı adı + şube seçici üst üste "Zabuno" diye
+okunuyordu — çalışma alanı adı kenar çubuğundaki tek yerine bırakıldı, şube
+seçici yalnız birden çok şubede çizilir; (3) telefonda gezinti üst köşedeki
+hamburgerdeydi — alt sticky çubuk geldi (dört hedef + More), hamburger üst
+çubuktan kalktı. Dört donmuş test yeni yerleşimle güncellendi (`docs/102` §5e).
 ### FF-82 ek paket — yayın ekranı sesli dile geçti (2026-09-04)
 
 `PublishActionConfigRegion` dört teknik cümle ve KALICI DEVRE DIŞI bir

@@ -25,6 +25,15 @@ export type AdminShellProps = {
     persistentSidebar?: ReactNode;
     navigationDrawer?: ReactNode;
     /**
+     * TELEFONA özgü alt gezinti — ekranın altına YAPIŞIR.
+     *
+     * Telefonda gezinti hedefi başparmağın altındadır; üst çubuktaki hamburger
+     * ekranın en uzak köşesindeydi ve her gezinti iki adım (aç → seç)
+     * gerektiriyordu (`docs/50` §20, `docs/101` A4). Bu yuva verildiğinde üst
+     * çubuktaki hamburger de KALKAR: aynı iş iki yerde durmaz.
+     */
+    bottomBar?: ReactNode;
+    /**
      * Sağ panel — masaüstünde ana içeriğin YANINDA duran çalışma alanı.
      *
      * WordPress'in yazı düzenleyicisindeki sağ panelin karşılığı: kategoriler,
@@ -72,6 +81,7 @@ export function AdminShell({
     topBarEnd,
     persistentSidebar,
     navigationDrawer,
+    bottomBar,
     inspector,
     inspectorLabel = 'Details',
     mainId = 'main-content',
@@ -84,7 +94,7 @@ export function AdminShell({
             <SkipLink targetId={mainId} />
             <TopBar
                 brand={brand}
-                onToggleMenu={onToggleMobileMenu}
+                onToggleMenu={bottomBar ? undefined : onToggleMobileMenu}
                 menuOpen={mobileMenuOpen}
                 center={topBarCenter}
                 end={topBarEnd}
@@ -96,7 +106,15 @@ export function AdminShell({
                     id={mainId}
                     tabIndex={-1}
                     // Tonal SaaS Shell (`docs/06` §10, `docs/102` §1): soluk zemin, üstünde kartlar.
-                    className="admin-shell-main min-w-0 flex-[4_1_32rem] bg-[var(--color-canvas)] p-[var(--space-fluid-lg)] outline-none"
+                    /*
+                        Ana alan BÜYÜR, raylar büyümez. Öncesinde üçü de esnek
+                        büyüme oranı taşıyordu (`4_1_32rem` / `1_1_17rem` /
+                        `1_1_21rem`): bağlam paneli olan sayfada oranlar
+                        yeniden dağılıyor ve KENAR ÇUBUĞU DARALIYORDU. Aynı
+                        kabuk, sayfadan sayfaya farklı genişlikte görünüyordu
+                        (2026-09-04 ekran incelemesi).
+                    */
+                    className="admin-shell-main min-w-0 flex-1 basis-[32rem] bg-[var(--color-canvas)] p-[var(--space-fluid-lg)] outline-none"
                 >
                     {children}
                 </main>
@@ -118,7 +136,7 @@ export function AdminShell({
                     <aside
                         aria-label={inspectorLabel}
                         className={clsx(
-                            'admin-shell-inspector min-w-0 flex-[1_1_21rem] flex-col gap-[var(--space-fluid-sm)] border-s',
+                            'admin-shell-inspector min-w-0 shrink-0 grow-0 basis-[21rem] flex-col gap-[var(--space-fluid-sm)] border-s',
                             'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
                         )}
                     >
@@ -137,6 +155,15 @@ export function AdminShell({
                 `contentinfo` landmark'ı Public ve Auth kabuklarında kalır —
                 orada gerçekten ortak alt bilgi vardır.
             */}
+            {/*
+                Alt gezinti ana içeriğin DIŞINDA ve `main`'den sonra: ekran
+                okuyucu önce içeriği okur. `sticky` değil `fixed` de değil —
+                kabuk zaten tam yükseklikte; alt çubuk normal akışta durur ve
+                içeriğin üstüne binmez (`docs/50` §20: hiçbir kontrol içeriğin
+                üstüne kalıcı olarak binmez).
+            */}
+            {bottomBar}
+
             {showFooter ? (
                 <AdminFooter productName={brand.name} currentYear={new Date().getFullYear()} />
             ) : null}
