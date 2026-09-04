@@ -156,6 +156,22 @@ msgstr ""
 msgid "menu.import.done"
 msgstr ""
 
+#: menu:menu.import.dropzone.active
+msgid "menu.import.dropzone.active"
+msgstr ""
+
+#: menu:menu.import.dropzone.choose
+msgid "menu.import.dropzone.choose"
+msgstr ""
+
+#: menu:menu.import.dropzone.hint
+msgid "menu.import.dropzone.hint"
+msgstr ""
+
+#: menu:menu.import.dropzone.label
+msgid "menu.import.dropzone.label"
+msgstr ""
+
 #: menu:menu.import.error
 msgid "menu.import.error"
 msgstr ""

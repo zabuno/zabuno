@@ -276,14 +276,27 @@ describe('WorkspaceApp — zero workspaces, one-name creation (S1-WP02C, docs/34
 });
 
 describe('WorkspaceApp — workspaces exist but no current context (S1-WP02C)', () => {
-    it('offers an accessible chooser listing every workspace and PUTs the selected id to /api/workspace-context', async () => {
+    /*
+        GÜNCELLENDİ (2026-09-04, sahibin kararı): ayrı "çalışma alanı seç"
+        SAYFASI kaldırıldı. Bağlam yoksa ilki açılır ve seçim, kenar
+        çubuğunun tepesindeki menüden yapılır. Sözleşmenin ölçtüğü şey aynı:
+        her çalışma alanı listelenir ve seçilen kimlik sunucuya PUT edilir.
+    */
+    it('lists every workspace in the sidebar menu and PUTs the selected id to /api/workspace-context', async () => {
         const workspaces = [makeWorkspace({ id: 7, name: 'Zeytin Restoranları' }), makeWorkspace({ id: 8, name: 'Deniz Kebap' })];
         const fetchMock = buildFetchMock({
             workspaces: () => jsonResponse(200, workspaces),
             context: () => jsonResponse(409, { error: 'workspace_context_required' }),
+            /*
+                Bağlam yokken ilk alan KENDİLİĞİNDEN açılır (2026-09-04), yani
+                sunucuya iki PUT gider: önce 7 (otomatik), sonra kullanıcının
+                seçtiği 8. Mock ikisini de karşılar; iddia, kullanıcının
+                seçiminin gerçekten gönderildiğidir.
+            */
             switchContext: (body) => {
-                expect((body as { workspace_id: number }).workspace_id).toBe(8);
-                return jsonResponse(200, workspaces[1]);
+                const id = (body as { workspace_id: number }).workspace_id;
+
+                return jsonResponse(200, workspaces.find((w) => w.id === id) ?? workspaces[0]);
             },
         });
         vi.stubGlobal('fetch', fetchMock);
@@ -293,14 +306,20 @@ describe('WorkspaceApp — workspaces exist but no current context (S1-WP02C)', 
         );
         render(<WorkspaceApp {...desktopChrome} />);
 
-        const option = await screen.findByRole('button', { name: /Deniz Kebap/i });
-        fireEvent.click(option);
+        fireEvent.click(
+            await screen.findByRole('button', { name: /Zeytin Restoranları.*Switch workspace/s }),
+        );
+        fireEvent.click(await screen.findByRole('menuitemradio', { name: 'Deniz Kebap' }));
 
         await waitFor(() => {
             const putCalls = fetchMock.mock.calls.filter(
                 (call) => String(call[0]) === '/api/workspace-context' && (call[1] as RequestInit | undefined)?.method === 'PUT',
             );
-            expect(putCalls).toHaveLength(1);
+            const lastBody = JSON.parse(
+                String((putCalls.at(-1)?.[1] as RequestInit | undefined)?.body ?? '{}'),
+            ) as { workspace_id?: number };
+
+            expect(lastBody.workspace_id).toBe(8);
         });
 
         vi.unstubAllGlobals();
@@ -361,10 +380,16 @@ describe('WorkspaceApp — current workspace context render (S1-WP02C)', () => {
         expect(within(contextBanner).queryByRole('button', { name: 'Account' })).toBeNull();
 
         fireEvent.click(accountTrigger);
+        /*
+            "Çalışma alanı değiştir" hesap menüsünden ÇIKTI (2026-09-04):
+            seçim, hangi alanda olduğumuzu söyleyen kutunun kendisinde
+            yapılıyor. Aynı işi iki yerde sunmak iki farklı yol varmış gibi
+            gösteriyordu.
+        */
         expect(
-            await screen.findByRole('menuitem', { name: /switch workspace|change workspace/i }),
-        ).toBeInTheDocument();
-        expect(screen.getByRole('menuitem', { name: /log ?out/i })).toBeInTheDocument();
+            screen.queryByRole('menuitem', { name: /switch workspace|change workspace/i }),
+        ).toBeNull();
+        expect(await screen.findByRole('menuitem', { name: /log ?out/i })).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });

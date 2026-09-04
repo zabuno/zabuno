@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
 import { SidebarNav, type SidebarNavGroup } from '../../catalog/layout/compound/SidebarNav';
-import { WorkspaceSwitcherTrigger } from './WorkspaceSwitcherTrigger';
+import { WorkspaceSwitcherTrigger, type WorkspaceSwitcherOption } from './WorkspaceSwitcherTrigger';
 
 /**
  * MASAÜSTÜNE ÖZGÜ kabuk parçaları.
@@ -18,7 +18,10 @@ export type DesktopChromeProps = {
     activeNavKey?: string;
     navLabel?: string;
     workspaceName?: string;
-    onSwitchWorkspace?: () => void;
+    /** Seçilebilir çalışma alanları; tek taneyse seçici menü açılmaz. */
+    workspaces?: WorkspaceSwitcherOption[];
+    currentWorkspaceId?: number;
+    onSelectWorkspace?: (workspaceId: number) => void;
     accountMenu?: ReactNode;
 };
 
@@ -28,7 +31,9 @@ export function DesktopSidebar({
     activeNavKey,
     navLabel,
     workspaceName,
-    onSwitchWorkspace,
+    workspaces,
+    currentWorkspaceId,
+    onSelectWorkspace,
     accountMenu,
 }: DesktopChromeProps): ReactNode {
     return (
@@ -41,7 +46,9 @@ export function DesktopSidebar({
         >
             <WorkspaceSwitcherTrigger
                 workspaceName={workspaceName}
-                onSwitchWorkspace={onSwitchWorkspace}
+                workspaces={workspaces}
+                currentWorkspaceId={currentWorkspaceId}
+                onSelectWorkspace={onSelectWorkspace}
             />
             <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
 

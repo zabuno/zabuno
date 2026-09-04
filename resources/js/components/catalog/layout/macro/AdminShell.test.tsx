@@ -63,9 +63,20 @@ describe('AdminShell', () => {
         expect(screen.getAllByRole('link', { name: 'Dashboard' }).length).toBeGreaterThan(0);
     });
 
+    /*
+        Sahibin isteği (2026-09-04): "desktop'ta bu burger icon, kaldır."
+        Kalıcı ray ekrandayken hamburger hiçbir şey açmıyordu.
+    */
+    it('kalıcı kenar çubuğu varken hamburger ÇİZİLMEZ', () => {
+        renderShell({ onToggleMobileMenu: vi.fn() });
+
+        expect(screen.queryByRole('button', { name: 'Open menu' })).toBeNull();
+    });
+
     it('calls onToggleMobileMenu when the mobile menu button is clicked', async () => {
         const onToggleMobileMenu = vi.fn();
-        renderShell({ onToggleMobileMenu });
+        // Hamburger yalnız kalıcı ray ve alt çubuk YOKKEN çizilir (2026-09-04).
+        renderShell({ onToggleMobileMenu, persistentSidebar: undefined });
         await userEvent.setup().click(screen.getByRole('button', { name: 'Open menu' }));
         expect(onToggleMobileMenu).toHaveBeenCalledTimes(1);
     });

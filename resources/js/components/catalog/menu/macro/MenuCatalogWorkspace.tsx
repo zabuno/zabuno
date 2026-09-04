@@ -7,6 +7,7 @@ import { RowActions } from '../micro/RowActions';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/menu';
+import { FileDropzone } from '../../forms/compound/FileDropzone';
 import { FieldError } from '../micro/FieldError';
 import { OrderBadge } from '../micro/OrderBadge';
 
@@ -2344,26 +2345,31 @@ export function MenuCatalogWorkspace({
                                 >
                                     {t('menu.export.download')}
                                 </a>
-                                <label className={labelClass} htmlFor="menu-import-file">
-                                    {t('menu.import.label')}
-                                </label>
-                                <input
-                                    id="menu-import-file"
+                                {/*
+                                    DOSYA SEÇME YÜZEYİ, görsel yüklemeyle AYNI
+                                    bileşendir (sahibin isteği, 2026-09-04).
+
+                                    Burada ham bir `<input type="file">` vardı
+                                    ve tarayıcı onu işletim sisteminin dilinde
+                                    çiziyordu: uygulama Türkçe iken düğmede
+                                    "Dosya Seç · Dosya seçilmedi" yazıyordu ve
+                                    dosyayı sürükleyip bırakmak mümkün değildi.
+                                */}
+                                <span className={labelClass}>{t('menu.import.label')}</span>
+                                <FileDropzone
                                     name="menu-import-file"
-                                    type="file"
                                     accept=".csv,text/csv"
                                     disabled={importing}
-                                    onChange={(event) => {
-                                        const file = event.target.files?.[0];
+                                    label={t('menu.import.dropzone.label')}
+                                    activeLabel={t('menu.import.dropzone.active')}
+                                    hint={t('menu.import.dropzone.hint')}
+                                    chooseLabel={t('menu.import.dropzone.choose')}
+                                    onSelect={(files) => {
+                                        const file = files[0];
 
                                         if (file) {
                                             void handleImport(file);
                                         }
-
-                                        // Aynı dosyayı ikinci kez seçmek de bir olay
-                                        // üretmeli: kullanıcı dosyayı düzeltip aynı
-                                        // adla yeniden yükler.
-                                        event.target.value = '';
                                     }}
                                 />
                                 <p className="text-caption text-fg-secondary">

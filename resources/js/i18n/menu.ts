@@ -77,6 +77,14 @@ const en = {
     'menu.empty.guide':
         'Start here: bring in your whole menu from a photo or a CSV below, or add a category and a product one at a time.',
     'menu.export.download': 'Download menu (CSV)',
+    /*
+        CSV bırakma alanı (FF-96). Öncesinde burada ham bir dosya girdisi
+        vardı ve metnini tarayıcı işletim sisteminin dilinde yazıyordu.
+    */
+    'menu.import.dropzone.label': 'Drop a CSV file here, or choose one',
+    'menu.import.dropzone.active': 'Release to import this file',
+    'menu.import.dropzone.hint': 'CSV only',
+    'menu.import.dropzone.choose': 'Choose a file',
     'menu.import.label': 'Import a CSV menu',
     'menu.import.help':
         'Columns: category, product, price, currency, allergens, description, visible. Nothing reaches guests until you publish.',

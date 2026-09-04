@@ -728,10 +728,6 @@ msgstr "Tekrar dene"
 msgid "workspace.catalog.location.label"
 msgstr "Şube"
 
-#: workspace:workspace.choose.heading
-msgid "workspace.choose.heading"
-msgstr "Bir çalışma alanı seçin"
-
 #: workspace:workspace.create.error.name
 msgid "workspace.create.error.name"
 msgstr "Bir çalışma alanı adı girin."

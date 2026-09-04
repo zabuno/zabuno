@@ -728,10 +728,6 @@ msgstr ""
 msgid "workspace.catalog.location.label"
 msgstr ""
 
-#: workspace:workspace.choose.heading
-msgid "workspace.choose.heading"
-msgstr ""
-
 #: workspace:workspace.create.error.name
 msgid "workspace.create.error.name"
 msgstr ""

@@ -12,7 +12,6 @@ describe('hesap (sistem) menüsü', () => {
         const user = userEvent.setup();
         const onOpenProfile = vi.fn();
         const onOpenSettings = vi.fn();
-        const onSwitchWorkspace = vi.fn();
         const onLogout = vi.fn();
 
         render(
@@ -20,7 +19,6 @@ describe('hesap (sistem) menüsü', () => {
                 email="admin@zabuno.com"
                 onOpenProfile={onOpenProfile}
                 onOpenSettings={onOpenSettings}
-                onSwitchWorkspace={onSwitchWorkspace}
                 onLogout={onLogout}
             />,
         );
@@ -33,12 +31,7 @@ describe('hesap (sistem) menüsü', () => {
             yüzden ilk madde de kişiye ait olmalı. Ayarlar çalışma alanına ait
             olduğu için onun altındadır.
         */
-        expect(items.map((item) => item.textContent)).toEqual([
-            'Profile',
-            'Settings',
-            'Switch workspace',
-            'Log out',
-        ]);
+        expect(items.map((item) => item.textContent)).toEqual(['Profile', 'Settings', 'Log out']);
 
         await user.click(within(items[1]).getByText('Settings'));
         expect(onOpenSettings).toHaveBeenCalledTimes(1);
@@ -53,7 +46,6 @@ describe('hesap (sistem) menüsü', () => {
             <AccountMenu
                 email="admin@zabuno.com"
                 onOpenProfile={onOpenProfile}
-                onSwitchWorkspace={() => {}}
                 onLogout={() => {}}
             />,
         );
@@ -66,13 +58,7 @@ describe('hesap (sistem) menüsü', () => {
 
     it('profil geri çağrısı yoksa menüde Profil maddesi ÇİZİLMEZ', async () => {
         const user = userEvent.setup();
-        render(
-            <AccountMenu
-                email="admin@zabuno.com"
-                onSwitchWorkspace={() => {}}
-                onLogout={() => {}}
-            />,
-        );
+        render(<AccountMenu email="admin@zabuno.com" onLogout={() => {}} />);
 
         await user.click(screen.getByRole('button', { name: 'Account' }));
 
@@ -81,13 +67,7 @@ describe('hesap (sistem) menüsü', () => {
 
     it('ayarlar geri çağrısı yoksa menüde Ayarlar maddesi ÇİZİLMEZ', async () => {
         const user = userEvent.setup();
-        render(
-            <AccountMenu
-                email="admin@zabuno.com"
-                onSwitchWorkspace={() => {}}
-                onLogout={() => {}}
-            />,
-        );
+        render(<AccountMenu email="admin@zabuno.com" onLogout={() => {}} />);
 
         await user.click(screen.getByRole('button', { name: 'Account' }));
 
@@ -105,7 +85,6 @@ describe('hesap (sistem) menüsü', () => {
             <AccountMenu
                 email="admin@zabuno.com"
                 avatarUrl="https://cdn.example.test/avatar.webp"
-                onSwitchWorkspace={() => {}}
                 onLogout={() => {}}
             />,
         );
@@ -123,13 +102,7 @@ describe('hesap (sistem) menüsü', () => {
     });
 
     it('fotoğraf yoksa baş harf dairesi çizilir', () => {
-        render(
-            <AccountMenu
-                email="admin@zabuno.com"
-                onSwitchWorkspace={() => {}}
-                onLogout={() => {}}
-            />,
-        );
+        render(<AccountMenu email="admin@zabuno.com" onLogout={() => {}} />);
 
         const trigger = screen.getByRole('button', { name: 'Account' });
         expect(trigger.querySelector('img')).toBeNull();

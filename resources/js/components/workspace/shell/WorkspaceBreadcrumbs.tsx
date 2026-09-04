@@ -13,7 +13,6 @@ export type WorkspaceBreadcrumbsProps = {
      * yalnız props ile çalışır, veri çekmez, rota sahibi değildir).
      */
     locationsHref: string;
-    onSwitchWorkspace: () => void;
     onSelectLocations: () => void;
 };
 
@@ -27,18 +26,19 @@ export function WorkspaceBreadcrumbs({
     locationDisplayName,
     sectionLabel,
     locationsHref,
-    onSwitchWorkspace,
     onSelectLocations,
 }: WorkspaceBreadcrumbsProps) {
     const items: BreadcrumbItem[] = [
+        /*
+            Çalışma alanı adı bir HEDEF DEĞİL, bağlamdır (sahibin kararı,
+            2026-09-04). Önceden buraya tıklamak "çalışma alanı seç"
+            sayfasına götürüyordu; o sayfa kaldırıldı ve seçim kenar
+            çubuğunun tepesindeki seçiciye taşındı. Hiçbir yere gitmeyen bir
+            bağlantı bırakmak, tıklayanı boşluğa düşürürdü.
+        */
         {
             key: 'workspace',
             label: workspaceName,
-            href: '#',
-            onSelect: (event) => {
-                event.preventDefault();
-                onSwitchWorkspace();
-            },
         },
     ];
 

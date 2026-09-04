@@ -45,6 +45,15 @@ export function Breadcrumbs({ items, label = 'Breadcrumb', className }: Breadcru
                                 >
                                     {item.label}
                                 </span>
+                            ) : item.href === undefined && item.onSelect === undefined ? (
+                                /*
+                                    Gidilecek yeri olmayan kırıntı DÜZ METİNDİR.
+                                    Öncesinde bu durumda hiçbir şey yapmayan bir
+                                    düğme çiziliyordu: tıklanabilir görünen ama
+                                    tıklanınca hiçbir şey olmayan bir kontrol,
+                                    kullanıcıya ürünün bozuk olduğunu öğretir.
+                                */
+                                <span className="px-3 py-2 text-fg-secondary">{item.label}</span>
                             ) : (
                                 <NavLink href={item.href} onSelect={item.onSelect}>
                                     {item.label}

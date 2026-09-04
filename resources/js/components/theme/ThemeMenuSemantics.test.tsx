@@ -49,7 +49,7 @@ async function openMenu() {
 
     render(
         <ThemeRoot>
-            <AccountMenu email="ada@example.com" onSwitchWorkspace={() => {}} onLogout={() => {}} />
+            <AccountMenu email="ada@example.com" onLogout={() => {}} />
         </ThemeRoot>,
     );
 

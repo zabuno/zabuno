@@ -179,7 +179,6 @@
     "workspace.catalog.error.heading": "Çalışma alanı kataloğunuzu yükleyemedik.",
     "workspace.catalog.error.retry": "Tekrar dene",
     "workspace.catalog.location.label": "Şube",
-    "workspace.choose.heading": "Bir çalışma alanı seçin",
     "workspace.create.error.name": "Bir çalışma alanı adı girin.",
     "workspace.create.error.submit": "Çalışma alanınızı oluşturamadık. Lütfen tekrar deneyin.",
     "workspace.create.heading": "Çalışma alanınıza ad verin",

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { List } from '@phosphor-icons/react';
 import { SidebarNav, type SidebarNavGroup } from '../../catalog/layout/compound/SidebarNav';
-import { WorkspaceSwitcherTrigger } from './WorkspaceSwitcherTrigger';
+import { WorkspaceSwitcherTrigger, type WorkspaceSwitcherOption } from './WorkspaceSwitcherTrigger';
 import { DrawerPanel } from '../../catalog/overlays/compound/DrawerPanel';
 
 /**
@@ -16,7 +16,10 @@ export type MobileChromeProps = {
     activeNavKey?: string;
     navLabel?: string;
     workspaceName?: string;
-    onSwitchWorkspace?: () => void;
+    /** Seçilebilir çalışma alanları; tek taneyse seçici menü açılmaz. */
+    workspaces?: WorkspaceSwitcherOption[];
+    currentWorkspaceId?: number;
+    onSelectWorkspace?: (workspaceId: number) => void;
     open: boolean;
     onClose: () => void;
 };
@@ -26,7 +29,9 @@ export function MobileNavigationDrawer({
     activeNavKey,
     navLabel,
     workspaceName,
-    onSwitchWorkspace,
+    workspaces,
+    currentWorkspaceId,
+    onSelectWorkspace,
     open,
     onClose,
 }: MobileChromeProps): ReactNode {
@@ -44,7 +49,9 @@ export function MobileNavigationDrawer({
             */}
             <WorkspaceSwitcherTrigger
                 workspaceName={workspaceName}
-                onSwitchWorkspace={onSwitchWorkspace}
+                workspaces={workspaces}
+                currentWorkspaceId={currentWorkspaceId}
+                onSelectWorkspace={onSelectWorkspace}
             />
             <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
         </DrawerPanel>

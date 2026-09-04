@@ -91,7 +91,7 @@ type Workspace = {
     features?: Record<string, boolean>;
 };
 
-type Phase = 'loading' | 'error' | 'create' | 'choose' | 'current';
+type Phase = 'loading' | 'error' | 'create' | 'current';
 
 type WorkspaceSection = string;
 
@@ -163,7 +163,14 @@ export type WorkspaceChromeContext = {
      * "hangi restorandayım" sorusu ancak listeyi okuyarak cevaplanıyordu.
      */
     workspaceName?: string;
-    onSwitchWorkspace?: () => void;
+    /**
+     * Seçilebilir çalışma alanları ve içinde bulunulan. Seçim artık ayrı bir
+     * sayfada değil, bu kutunun kendisinde yapılır (sahibin kararı,
+     * 2026-09-04).
+     */
+    workspaces?: Array<{ id: number; name: string }>;
+    currentWorkspaceId?: number;
+    onSelectWorkspace?: (workspaceId: number) => void;
     /**
      * Hesap menüsü — kabuğun kendi YERLEŞTİRECEĞİ düğüm.
      *
@@ -355,7 +362,15 @@ export function WorkspaceApp({
                 return;
             }
 
-            setPhase('choose');
+            /*
+                Sunucunun seçtiği bir çalışma alanı yoksa BİRİNCİSİ açılır
+                (sahibin kararı, 2026-09-04). Önceden burada ayrı bir "çalışma
+                alanı seç" sayfası vardı: kullanıcı kabuğu hiç görmeden boş
+                bir listeye düşüyordu. Seçim artık kenar çubuğunun tepesinde
+                her an görünür ve tek dokunuşla değiştirilebilir — bu yüzden
+                bir sayfa dolusu soru sormanın karşılığı kalmadı.
+            */
+            await handleChoose(nextWorkspaces[0]);
         } catch {
             setPhase('error');
         }
@@ -762,11 +777,6 @@ export function WorkspaceApp({
         setLoggingOut(false);
     }
 
-    function handleSwitch() {
-        setMobileMenuOpen(false);
-        setPhase('choose');
-    }
-
     /*
         `Cmd/Ctrl + K` — `docs/50` §11.
 
@@ -864,24 +874,6 @@ export function WorkspaceApp({
                         {t('workspace.create.submit')}
                     </Button>
                 </form>
-            </div>
-        );
-    }
-
-    if (phase === 'choose') {
-        return (
-            <div className="mx-auto max-w-content px-4 py-10">
-                {liveRegion}
-                <h1 className="text-xl font-semibold text-fg">{t('workspace.choose.heading')}</h1>
-                <ul className="mt-4 flex flex-col gap-2">
-                    {workspaces.map((workspace) => (
-                        <li key={workspace.id}>
-                            <Button onClick={() => void handleChoose(workspace)} className="w-full">
-                                {workspace.name}
-                            </Button>
-                        </li>
-                    ))}
-                </ul>
             </div>
         );
     }
@@ -1027,7 +1019,6 @@ export function WorkspaceApp({
                 avatarUrl={user.avatarUrl ?? null}
                 onOpenProfile={currentWorkspace ? () => goToSection('profile') : undefined}
                 onOpenSettings={currentWorkspace ? () => goToSection('settings') : undefined}
-                onSwitchWorkspace={handleSwitch}
                 onLogout={() => void handleLogout()}
                 loggingOut={loggingOut}
             />
@@ -1155,7 +1146,15 @@ export function WorkspaceApp({
                 activeNavKey: currentWorkspace ? activeSection : undefined,
                 navLabel: t('workspace.shell.nav.label'),
                 workspaceName: currentWorkspace?.name,
-                onSwitchWorkspace: handleSwitch,
+                workspaces,
+                currentWorkspaceId: currentWorkspace?.id,
+                onSelectWorkspace: (workspaceId) => {
+                    const target = workspaces.find((candidate) => candidate.id === workspaceId);
+
+                    if (target !== undefined) {
+                        void handleChoose(target);
+                    }
+                },
                 accountMenu,
             })}
             navigationDrawer={renderNavigationDrawer?.({
@@ -1163,7 +1162,16 @@ export function WorkspaceApp({
                 activeNavKey: currentWorkspace ? activeSection : undefined,
                 navLabel: t('workspace.shell.nav.label'),
                 workspaceName: currentWorkspace?.name,
-                onSwitchWorkspace: handleSwitch,
+                workspaces,
+                currentWorkspaceId: currentWorkspace?.id,
+                onSelectWorkspace: (workspaceId) => {
+                    const target = workspaces.find((candidate) => candidate.id === workspaceId);
+
+                    if (target !== undefined) {
+                        setMobileMenuOpen(false);
+                        void handleChoose(target);
+                    }
+                },
                 open: mobileMenuOpen,
                 onClose: () => setMobileMenuOpen(false),
             })}
@@ -1247,7 +1255,6 @@ export function WorkspaceApp({
                         >[0],
                     )}
                     locationsHref={sectionHref(currentWorkspace.slug, 'locations')}
-                    onSwitchWorkspace={handleSwitch}
                     onSelectLocations={() => goToSection('locations')}
                 />
             )}

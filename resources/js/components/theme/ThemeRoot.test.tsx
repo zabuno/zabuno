@@ -74,7 +74,7 @@ function installMatchMediaMock(initialPrefersDark: boolean) {
 function renderThemeControl() {
     return render(
         <ThemeRoot>
-            <AccountMenu email="ada@example.com" onSwitchWorkspace={() => {}} onLogout={() => {}} />
+            <AccountMenu email="ada@example.com" onLogout={() => {}} />
         </ThemeRoot>,
     );
 }

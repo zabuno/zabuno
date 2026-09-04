@@ -156,7 +156,14 @@ describe('Fluid Adaptive Shell — intrinsic layout contract', () => {
         const persistentAside = container.querySelector('.admin-shell-sidebar');
         expect(persistentAside).not.toBeNull();
         expect(persistentAside?.className ?? '').not.toMatch(/(?:^|\s)hidden(?:\s|$)/);
-        expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
+
+        /*
+            GÜNCELLENDİ (2026-09-04, sahibin isteği): kalıcı ray ekrandayken
+            HAMBURGER ÇİZİLMEZ. Aynı gezinti zaten açık hâlde duruyorken
+            hamburger hiçbir şey açmıyordu. Akışkanlık iddiası değişmedi;
+            değişen şey, ölçülen kabukta artık iki gezinti girişi olmaması.
+        */
+        expect(screen.queryByRole('button', { name: 'Open menu' })).toBeNull();
 
         const body = container.querySelector('.admin-shell-layout');
         expect(body).not.toBeNull();

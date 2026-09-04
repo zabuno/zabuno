@@ -588,3 +588,45 @@ tablosu ayrı bir parça olarak iniyor. İngilizce okuyan kullanıcı hiçbir
 bir ekran göstermek, dili hiç bilmemekten kötü görünürdü. Yükleme başarısız
 olursa uygulama yine çizilir ve İngilizce metne düşer — çizilmeyen bir
 uygulamanın düşeceği bir yer yoktur.
+
+## 13. FF-96 — Kabuk menüleri, hamburger ve dosya seçme
+
+Sahibin ekran görüntüleriyle bildirdiği altı iş (2026-09-04):
+
+| İstek | Ne yapıldı |
+| --- | --- |
+| "Workspace değiştirmek için ayrı bir sayfaya gidiyor, dropdown olsun ve o sayfayı kaldır" | Seçim kenar çubuğunun tepesindeki menüde; `choose` sayfası ve fazı silindi |
+| "Burayı UX estetiği olarak geliştir, atıl kalmış" | İki satırlık gri "SWITCH WORKSPACE" yazısı kalktı; yerine baş harf karosu + ad |
+| "Chevron sağda, yukarı bakıyor, panel aynı genişlikte ve bütünleşik, ease başlasın ease bitsin" | `SidebarMenu` bileşeni: `inset-x-0` panel, yapışık köşeler, `--easing-inout` ile giriş/çıkış |
+| "Desktop'ta bu burger icon, kaldır" | Kalıcı ray varken hamburger çizilmiyor |
+| "Burada media component olmalıydı; file-manager ile media component aynı modül" | `FileDropzone` katalog bileşeni; görsel yükleme ve CSV içe aktarma aynı modülü kullanıyor |
+| "Restoran panelinde bu dropdown neden lacivert?" | Hesap menüsü Flowbite `Dropdown`/`Button` yerine token'lı `SidebarMenu`; koyu temada zemin `oklch(0.2 0 0)` — kromasız |
+
+**Kararlar ve gerekçeleri:**
+
+1. **`ActionMenu` (Flowbite `Dropdown`) kullanılmadı, yanına yeni bir bileşen
+   kondu.** Yüzen bir panel genişliğini kendi içeriğinden alır; tetikleyiciyle
+   aynı genişlik ancak her açılışta ölçümle taklit edilebilirdi ve ölçüm bir
+   kare geç geldiğinde panel önce yanlış genişlikte görünürdü. Normal akışta
+   konumlanan panelde genişlik eşitliği bir hesap değil, bir sonuçtur. Satır
+   eylemleri ve "oluştur" menüsü `ActionMenu` olarak kalır.
+2. **Gölge yok.** Panel tetikleyiciye yapışık ve kenarlıklı; yüzen bir gölge
+   onu ekrandan koparıp düz (flat 2.0) yönden uzaklaştırırdı.
+3. **Ayrı "çalışma alanı seç" sayfası silindi.** Bağlam yoksa ilk alan
+   kendiliğinden açılır. Önceden kullanıcı kabuğu hiç görmeden boş bir listeye
+   düşüyordu; seçim artık her an görünür ve tek dokunuşla değişir.
+4. **"Çalışma alanı değiştir" hesap menüsünden çıktı.** Aynı işi iki yerde
+   sunmak, iki farklı yol varmış gibi gösterirdi.
+5. **Kırıntıdaki çalışma alanı adı artık bağlantı değil.** Gittiği sayfa
+   silindi; hiçbir yere gitmeyen bir bağlantı bırakmak tıklayanı boşluğa
+   düşürürdü.
+6. **Hamburger kuralı yeniden yazıldı:** yalnız gezintiye başka yol yokken
+   çizilir. Kalıcı ray ekrandayken de, alt çubuk varken de kalkar.
+7. **Ham `<input type="file">` iki yerden birden kalktı.** Tarayıcı onu
+   işletim sisteminin dilinde çiziyordu: uygulama Türkçeyken düğmede "Dosya
+   Seç · Dosya seçilmedi" yazıyordu ve sürükle-bırak hiç yoktu.
+
+**Kanıt:** `SidebarMenu.test.tsx` (genişlik, yön, yapışıklık, Escape, ok
+tuşları, seçim), `AdminShell.test.tsx` (kalıcı ray varken hamburger yok),
+`WorkspaceApp.shell.test.tsx` ve `WorkspaceOnboardingJourney.test.tsx`
+(seçim menüde yapılır, sayfa yok), `MenuCatalogWorkspace.csv.test.tsx`.

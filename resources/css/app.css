@@ -261,6 +261,11 @@
     --duration-slow: 200ms;
     --duration-max: 240ms;
     --easing-standard: cubic-bezier(0, 0, 0.2, 1);
+    /* Açılıp kapanan yüzeyler için: yavaş başlar, yavaş biter (sahibin
+       isteği, 2026-09-04 — "ease başlasın ease bitsin"). `--easing-standard`
+       yalnız çıkışta yumuşaktır; girişi ani başlar ve panel yerinden
+       fırlamış gibi görünür. */
+    --easing-inout: cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Yoğunluk — varsayılan `standard`. Satır yüksekliği height + padding ile
        değişir, ASLA font-size ile değil: yoğunluk okunabilirliği düşürmez.
