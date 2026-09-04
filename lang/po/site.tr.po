@@ -10,39 +10,39 @@ msgstr ""
 
 #: site:site.contact.email
 msgid "site.contact.email"
-msgstr ""
+msgstr "E-posta adresiniz"
 
 #: site:site.contact.heading
 msgid "site.contact.heading"
-msgstr ""
+msgstr "İletişim"
 
 #: site:site.contact.honeypot
 msgid "site.contact.honeypot"
-msgstr ""
+msgstr "Burayı boş bırakın"
 
 #: site:site.contact.lead
 msgid "site.contact.lead"
-msgstr ""
+msgstr "Fiyat, pilot kullanım ya da önünüzü kesen her şey için yazın. Her mesajı saklarız; hiçbiri kaybolmaz."
 
 #: site:site.contact.message
 msgid "site.contact.message"
-msgstr ""
+msgstr "Mesajınız"
 
 #: site:site.contact.name
 msgid "site.contact.name"
-msgstr ""
+msgstr "Adınız"
 
 #: site:site.contact.sent
 msgid "site.contact.sent"
-msgstr ""
+msgstr "Teşekkürler — mesajınızı aldık, verdiğiniz adrese döneceğiz."
 
 #: site:site.contact.submit
 msgid "site.contact.submit"
-msgstr ""
+msgstr "Mesajı gönder"
 
 #: site:site.engineering.title
 msgid "site.engineering.title"
-msgstr ""
+msgstr "Zabuno — Mühendislik"
 
 #: site:site.footer.kvkk
 msgid "site.footer.kvkk"
@@ -62,7 +62,7 @@ msgstr "Ürün"
 
 #: site:site.footer.tagline
 msgid "site.footer.tagline"
-msgstr "QR kodun arkasındaki menünüz, kendi ekibinizce güncel tutulur."
+msgstr "Menünüz bir karekodun arkasında; güncel tutan kendi ekibiniz."
 
 #: site:site.footer.terms
 msgid "site.footer.terms"
@@ -70,135 +70,135 @@ msgstr "Kullanım koşulları"
 
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
-msgstr ""
+msgstr "Bize yazın"
 
 #: site:site.home.contact.lead
 msgid "site.home.contact.lead"
-msgstr ""
+msgstr "Fiyat, pilot kullanım ya da önünüzü kesen her şey için yazın. Her mesajı saklarız; ekranda onay görürsünüz."
 
 #: site:site.home.faq.account.answer
 msgid "site.home.faq.account.answer"
-msgstr ""
+msgstr "Evet, çalışma alanını açmak için hesap oluşturun ya da giriş yapın."
 
 #: site:site.home.faq.account.question
 msgid "site.home.faq.account.question"
-msgstr ""
+msgstr "Denemek için hesap gerekir mi?"
 
 #: site:site.home.faq.cost.answer
 msgid "site.home.faq.cost.answer"
-msgstr ""
+msgstr "Fiyatlar plan kataloğumuzdan gelir; orada okuduğunuz neyse aldığımız odur."
 
 #: site:site.home.faq.cost.question
 msgid "site.home.faq.cost.question"
-msgstr ""
+msgstr "Ücreti ne kadar?"
 
 #: site:site.home.faq.heading
 msgid "site.home.faq.heading"
-msgstr ""
+msgstr "Sık sorulanlar"
 
 #: site:site.home.faq.what.answer
 msgid "site.home.faq.what.answer"
-msgstr ""
+msgstr "Restoranın menüsünü ve kataloğunu yöneten, onu karekoda bağlı sabit bir sayfada yayınlayan bir çalışma alanı uygulaması."
 
 #: site:site.home.faq.what.question
 msgid "site.home.faq.what.question"
-msgstr ""
+msgstr "Zabuno nedir?"
 
 #: site:site.home.features.heading
 msgid "site.home.features.heading"
-msgstr ""
+msgstr "Özellikler"
 
 #: site:site.home.features.media.body
 msgid "site.home.features.media.body"
-msgstr ""
+msgstr "Yüklenen görseller kullanılabilir olmadan önce karantinadan ve incelemeden geçer; yayınlanan sayfa için temel kullanım analitiği de yanında gelir."
 
 #: site:site.home.features.media.title
 msgid "site.home.features.media.title"
-msgstr ""
+msgstr "Görsel girişi ve analitik"
 
 #: site:site.home.features.menu.body
 msgid "site.home.features.menu.body"
-msgstr ""
+msgstr "Menü ürünlerini, kategorileri ve katalog ayrıntılarını çalışma alanından oluşturun ve düzenleyin."
 
 #: site:site.home.features.menu.title
 msgid "site.home.features.menu.title"
-msgstr ""
+msgstr "Menü ve katalog işleri"
 
 #: site:site.home.features.publication.body
 msgid "site.home.features.publication.body"
-msgstr ""
+msgstr "Menüyü sabit ve paylaşılabilir bir sayfaya yayınlayın; basılı karekod hep aynı yeri göstermeye devam eder."
 
 #: site:site.home.features.publication.title
 msgid "site.home.features.publication.title"
-msgstr ""
+msgstr "Yayın ve sabit karekod"
 
 #: site:site.home.features.workspace.body
 msgid "site.home.features.workspace.body"
-msgstr ""
+msgstr "Restoranın çalışma alanı, ekibi ve ayarları tek bir yerde, birbirine karışmadan durur."
 
 #: site:site.home.features.workspace.title
 msgid "site.home.features.workspace.title"
-msgstr ""
+msgstr "Restoran ve çalışma alanı"
 
 #: site:site.home.hero.actions.label
 msgid "site.home.hero.actions.label"
-msgstr ""
+msgstr "Hesap işlemleri"
 
 #: site:site.home.hero.heading
 msgid "site.home.hero.heading"
-msgstr ""
+msgstr "Restoranınızın menüsünü ve çalışma alanını tek yerden yönetin"
 
 #: site:site.home.hero.lead
 msgid "site.home.hero.lead"
-msgstr ""
+msgstr "Zabuno ekibinize ortak bir çalışma alanı verir: restoranın menüsünü ve kataloğunu yönetin, karekoda bağlı sabit bir sayfa olarak yayınlayın, değiştikçe güncel tutun."
 
 #: site:site.home.hero.openApp
 msgid "site.home.hero.openApp"
-msgstr ""
+msgstr "Çalışma alanını aç"
 
 #: site:site.home.howItWorks.build.body
 msgid "site.home.howItWorks.build.body"
-msgstr ""
+msgstr "kategorileri, ürünleri, fiyatları, görünürlüğü ve alerjenleri kataloğunuza ekleyin."
 
 #: site:site.home.howItWorks.build.title
 msgid "site.home.howItWorks.build.title"
-msgstr ""
+msgstr "Menüyü kurun"
 
 #: site:site.home.howItWorks.heading
 msgid "site.home.howItWorks.heading"
-msgstr ""
+msgstr "Nasıl çalışır"
 
 #: site:site.home.howItWorks.publish.body
 msgid "site.home.howItWorks.publish.body"
-msgstr ""
+msgstr "menüyü sabit bir sayfaya yayınlayın, karekodunu alın."
 
 #: site:site.home.howItWorks.publish.title
 msgid "site.home.howItWorks.publish.title"
-msgstr ""
+msgstr "Yayınlayın ve karekodu alın"
 
 #: site:site.home.howItWorks.setup.body
 msgid "site.home.howItWorks.setup.body"
-msgstr ""
+msgstr "çalışma alanınızı ve restoran bilgilerinizi tamamlayın."
 
 #: site:site.home.howItWorks.setup.title
 msgid "site.home.howItWorks.setup.title"
-msgstr ""
+msgstr "Kurun"
 
 #: site:site.home.howItWorks.update.body
 msgid "site.home.howItWorks.update.body"
-msgstr ""
+msgstr "menüyü düzenleyin; yayınlanan sayfa ve karekod aynı kalır."
 
 #: site:site.home.howItWorks.update.title
 msgid "site.home.howItWorks.update.title"
-msgstr ""
+msgstr "İstediğiniz zaman güncelleyin"
 
 #: site:site.home.meta.description
 msgid "site.home.meta.description"
-msgstr ""
+msgstr "Zabuno ekibinize ortak bir çalışma alanı verir: restoranın menüsünü ve kataloğunu yönetin, karekoda bağlı sabit bir sayfa olarak yayınlayın, değiştikçe güncel tutun."
 
 #: site:site.home.meta.title
 msgid "site.home.meta.title"
-msgstr ""
+msgstr "Restoran menüsü ve çalışma alanı"
 
 #: site:site.nav.contact
 msgid "site.nav.contact"
@@ -230,68 +230,68 @@ msgstr "Hesap oluştur"
 
 #: site:site.plan.analytics
 msgid "site.plan.analytics"
-msgstr ""
+msgstr "Analitik: misafirler neye bakıyor, ne arayıp bulamıyor"
 
 #: site:site.plan.qrBulk
 msgid "site.plan.qrBulk"
-msgstr ""
+msgstr "Bütün bir salonun masaları için toplu karekod"
 
 #: site:site.plan.team
 msgid "site.plan.team"
-msgstr ""
+msgstr "Yetkisini sizin belirlediğiniz ekip üyeleri"
 
 #: site:site.pricing.adds
 msgid "site.pricing.adds"
-msgstr ""
+msgstr "Ek olarak"
 
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
-msgstr ""
+msgstr "Plan fiyatları henüz yayımlanmadı. Restoranınızı anlatın, size özel bir fiyatla dönelim."
 
 #: site:site.pricing.empty.cta
 msgid "site.pricing.empty.cta"
-msgstr ""
+msgstr "Bize yazın"
 
 #: site:site.pricing.free
 msgid "site.pricing.free"
-msgstr ""
+msgstr "Ücretsiz"
 
 #: site:site.pricing.heading
 msgid "site.pricing.heading"
-msgstr ""
+msgstr "Fiyat"
 
 #: site:site.pricing.included.body
 msgid "site.pricing.included.body"
-msgstr ""
+msgstr "Menünüz, tek tıkla geri alınabilen yayınlama, karekodlar ve misafir sayfası, CSV içe ve dışa aktarma, fotoğraflar ve bir yemeği o gün için tükendi olarak işaretleme."
 
 #: site:site.pricing.included.heading
 msgid "site.pricing.included.heading"
-msgstr ""
+msgstr "Her planda var"
 
 #: site:site.pricing.lead
 msgid "site.pricing.lead"
-msgstr ""
+msgstr "Bir restoranın menüsünü karekodun arkasında yayınlamak için ödediği tutar."
 
 #: site:site.pricing.perMonth
 msgid "site.pricing.perMonth"
-msgstr ""
+msgstr "aylık"
 
 #: site:site.pricing.perRestaurant
 msgid "site.pricing.perRestaurant"
-msgstr ""
+msgstr "Fiyat restoran başınadır."
 
 #: site:site.pricing.perRestaurant.cta
 msgid "site.pricing.perRestaurant.cta"
-msgstr ""
+msgstr "Bize yazın"
 
 #: site:site.pricing.unsure
 msgid "site.pricing.unsure"
-msgstr ""
+msgstr "Hangisi size uyar, emin değil misiniz?"
 
 #: site:site.pricing.unsure.cta
 msgid "site.pricing.unsure.cta"
-msgstr ""
+msgstr "Bize sorun"
 
 #: site:site.skipToContent
 msgid "site.skipToContent"
-msgstr "Ana içeriğe atla"
+msgstr "Ana içeriğe geç"
