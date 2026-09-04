@@ -8,6 +8,8 @@ export const profile = {
     'workspace.profile.description':
         'Your name, photo and appearance. Changes here follow you into every workspace you belong to.',
 
+    'workspace.profile.details.heading': 'Your details',
+
     'workspace.profile.avatar.heading': 'Profile photo',
     'workspace.profile.avatar.help':
         'Choose a photo of yourself. It is stored in your media library, scanned like every other image, and shown next to your name.',

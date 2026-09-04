@@ -1824,6 +1824,10 @@ msgstr "Secondary colour"
 msgid "workspace.profile.description"
 msgstr "Your name, photo and appearance. Changes here follow you into every workspace you belong to."
 
+#: workspace:workspace.profile.details.heading
+msgid "workspace.profile.details.heading"
+msgstr "Your details"
+
 #: workspace:workspace.profile.title
 msgid "workspace.profile.title"
 msgstr "Profile"

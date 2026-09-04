@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 682;
+const FROZEN_LEGACY_KEY_COUNT = 683;
 
 // FF-88: Profil ekranı (fotoğraf, görünüm, marka renkleri) katalog modülü.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'b043269dad799bfd92de25753bf050236d04e44ee04df65e16f5b09fa0b04d74';
+    '939d11c1578f05e2738f67fcdb2962780c71c35c72ee3a724cfd0996e2b25288';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -81,11 +81,10 @@ describe('profil ekranı', () => {
     it('renk kodu yazılınca markayı zorunlu alanlarıyla birlikte kaydeder', async () => {
         const user = userEvent.setup();
         const saved = { ...brand, primary_color: '#C8102E' };
-        const fetchMock = vi.fn(
-            async (...args: [input: RequestInfo | URL, init?: RequestInit]) =>
-                String(args[0]).includes('/brand')
-                    ? new Response(JSON.stringify(saved), { status: 200 })
-                    : new Response('{}', { status: 200 }),
+        const fetchMock = vi.fn(async (...args: [input: RequestInfo | URL, init?: RequestInit]) =>
+            String(args[0]).includes('/brand')
+                ? new Response(JSON.stringify(saved), { status: 200 })
+                : new Response('{}', { status: 200 }),
         );
         vi.stubGlobal('fetch', fetchMock);
 

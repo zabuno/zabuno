@@ -153,7 +153,7 @@ export function BrandColorsRegion({ workspaceId, brand, onSaved }: BrandColorsRe
                 <div className="flex flex-wrap items-center gap-[var(--space-2)]">
                     <button
                         type="submit"
-                        className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg disabled:opacity-60"
+                        className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg disabled:border-border disabled:bg-[var(--color-surface-subtle)] disabled:text-fg-muted"
                         disabled={saving || !dirty}
                     >
                         {saving

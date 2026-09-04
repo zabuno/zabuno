@@ -175,20 +175,25 @@ export function ProfileAvatarRegion({
                 ) : null}
             </div>
 
+            {/*
+                Biçim listesi bırakma alanının KENDİ metnindedir; burada
+                tekrar edilmez. İki kez yazılmış bir kural, kullanıcıya iki
+                farklı kural varmış gibi görünür.
+            */}
             <MediaDropzone
                 selected={selected}
                 invalid={false}
                 describedBy={dropzoneId}
                 onSelect={setSelected}
             />
-            <p id={dropzoneId} className="text-meta text-fg-muted">
+            <p id={dropzoneId} className="sr-only">
                 {t('workspace.profile.avatar.formats')}
             </p>
 
             <div className="flex flex-wrap items-center gap-[var(--space-2)]">
                 <button
                     type="button"
-                    className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg disabled:opacity-60"
+                    className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg disabled:border-border disabled:bg-[var(--color-surface-subtle)] disabled:text-fg-muted"
                     disabled={busy || selected === null}
                     onClick={() => void upload()}
                 >

@@ -1824,6 +1824,10 @@ msgstr ""
 msgid "workspace.profile.description"
 msgstr ""
 
+#: workspace:workspace.profile.details.heading
+msgid "workspace.profile.details.heading"
+msgstr ""
+
 #: workspace:workspace.profile.title
 msgid "workspace.profile.title"
 msgstr ""

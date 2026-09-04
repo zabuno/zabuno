@@ -63,7 +63,20 @@ export function ProfilePage({
                     fallbackInitial={(userName || email).slice(0, 1).toLocaleUpperCase()}
                 />
 
-                <AccountSettingsRegion currentName={userName} />
+                {/*
+                    Kişisel bilgi kartının da BAŞLIĞI olmalı. Başlıksız tek
+                    kart, diğer üçünün arasında "bu bölüm neyin nesi?" sorusunu
+                    doğuruyordu; göz kartları başlıklarından tarar.
+                */}
+                <section
+                    aria-labelledby="profile-details-heading"
+                    className="flex flex-col gap-[var(--space-3)]"
+                >
+                    <h3 id="profile-details-heading" className="text-body font-semibold text-fg">
+                        {t('workspace.profile.details.heading')}
+                    </h3>
+                    <AccountSettingsRegion currentName={userName} />
+                </section>
 
                 <AppearanceRegion />
 
