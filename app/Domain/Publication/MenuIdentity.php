@@ -19,7 +19,26 @@ final class MenuIdentity
         public readonly string $locationName,
         public readonly ?string $addressLine,
         public readonly ?string $phone,
+        /*
+            Marka renkleri de kimliğin parçasıdır ve yayınla birlikte DONAR
+            (FF-89). Renk yarın değişirse dünkü yayın değişmez; misafirin
+            gördüğü sayfa, sahibin onayladığı hâldir.
+
+            Biçim tek: `#rrggbb`, küçük harf. Tanınmayan bir değer `null`
+            olur — geçersiz bir dizeyi CSS'e yazmak, sayfanın vurgu rengini
+            tarayıcının insafına bırakırdı.
+        */
+        public readonly ?string $primaryColor = null,
+        public readonly ?string $secondaryColor = null,
     ) {}
+
+    /** `#RRGGBB` → `#rrggbb`; tanınmayan her şey `null`. */
+    public static function normaliseColor(?string $value): ?string
+    {
+        $value = strtolower(trim((string) $value));
+
+        return preg_match('/^#[0-9a-f]{6}$/', $value) === 1 ? $value : null;
+    }
 
     /**
      * Adres tek satırda kurulur: misafir bir form değil, bir adres okur.
@@ -33,6 +52,8 @@ final class MenuIdentity
         ?string $postalCode,
         ?string $city,
         ?string $phone,
+        ?string $primaryColor = null,
+        ?string $secondaryColor = null,
     ): self {
         $street = array_values(array_filter([
             trim((string) $addressLine1),
@@ -52,6 +73,8 @@ final class MenuIdentity
             locationName: trim($locationName),
             addressLine: $street === [] ? null : implode(', ', $street),
             phone: $phone === '' ? null : $phone,
+            primaryColor: self::normaliseColor($primaryColor),
+            secondaryColor: self::normaliseColor($secondaryColor),
         );
     }
 
@@ -74,7 +97,7 @@ final class MenuIdentity
         return 'tel:'.(str_starts_with(trim($this->phone), '+') ? '+' : '').$digits;
     }
 
-    /** @return array{brandName:string,locationName:string,addressLine:string|null,phone:string|null} */
+    /** @return array{brandName:string,locationName:string,addressLine:string|null,phone:string|null,primaryColor:string|null,secondaryColor:string|null} */
     public function toSnapshot(): array
     {
         return [
@@ -82,6 +105,8 @@ final class MenuIdentity
             'locationName' => $this->locationName,
             'addressLine' => $this->addressLine,
             'phone' => $this->phone,
+            'primaryColor' => $this->primaryColor,
+            'secondaryColor' => $this->secondaryColor,
         ];
     }
 
@@ -93,6 +118,17 @@ final class MenuIdentity
             locationName: trim((string) ($identity['locationName'] ?? '')),
             addressLine: ($line = trim((string) ($identity['addressLine'] ?? ''))) === '' ? null : $line,
             phone: ($phone = trim((string) ($identity['phone'] ?? ''))) === '' ? null : $phone,
+            /*
+                Eski yayınlarda renk alanı YOKTUR ve olmaması normaldir.
+                Onları geriye dönük boyamak, "yayın donmuş hâldir" sözünü
+                bozardı.
+            */
+            primaryColor: self::normaliseColor(
+                is_string($identity['primaryColor'] ?? null) ? $identity['primaryColor'] : null
+            ),
+            secondaryColor: self::normaliseColor(
+                is_string($identity['secondaryColor'] ?? null) ? $identity['secondaryColor'] : null
+            ),
         );
     }
 }

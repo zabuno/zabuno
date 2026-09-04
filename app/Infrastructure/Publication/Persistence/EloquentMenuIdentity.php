@@ -36,6 +36,8 @@ final class EloquentMenuIdentity implements MenuIdentityPort
             ->select([
                 'brands.name as brand_name',
                 'brands.contact_phone as contact_phone',
+                'brands.primary_color as primary_color',
+                'brands.secondary_color as secondary_color',
                 'locations.display_name as display_name',
                 'locations.address_line1 as address_line1',
                 'locations.address_line2 as address_line2',
@@ -56,6 +58,8 @@ final class EloquentMenuIdentity implements MenuIdentityPort
             postalCode: $row->postal_code === null ? null : (string) $row->postal_code,
             city: $row->city === null ? null : (string) $row->city,
             phone: $row->contact_phone === null ? null : (string) $row->contact_phone,
+            primaryColor: $row->primary_color === null ? null : (string) $row->primary_color,
+            secondaryColor: $row->secondary_color === null ? null : (string) $row->secondary_color,
         );
     }
 }

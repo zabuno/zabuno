@@ -499,3 +499,33 @@ ekranda.
 **Kanıt:** `tests/Feature/Account/ProfileAvatarTest.php` (bağla/kaldır,
 yabancı varlık 404, kimliksiz çağrı 401), `ProfilePage.test.tsx` (bölümler,
 izin kapısı, zorunlu alanlarla kayıt), `AccountMenu.test.tsx` (madde sırası).
+
+## 10. FF-89 — Marka rengi misafirin gördüğü menüye ulaştı
+
+FF-88 renkleri düzenlenebilir yaptı ama hiçbir yer onları ÇİZMİYORDU. Profil
+ekranındaki cümle ("bu iki renk yayınlanan menünüzde kullanılır") tutulmayan
+bir sözdü; düzenlenip hiçbir yerde görünmeyen bir alan, kullanıcıya ürünün
+onu dinlemediğini öğretir.
+
+**Ne yapıldı:** renkler yayın kimliğine (`MenuIdentity`) eklendi ve yayınla
+birlikte DONDU. Misafir sayfası onları iki yerde kullanır: sayfanın üstündeki
+4 piksellik marka şeridi (birincil) ve kategori başlıklarının altındaki çizgi
+(ikincil).
+
+**Kararlar:**
+
+1. **Renk yayınla donar, canlı markadan okunmaz.** Renk yarın değişirse dünkü
+   yayın değişmez — yayın, sahibin "bunu onayladım" dediği hâldir (`docs/75`).
+   Aynı gerekçe marka adı ve telefonu için zaten geçerliydi.
+2. **Renk yalnız DEKORASYONDUR; metin ya da metin arkası değildir.** Restoran
+   açık sarı bir kurumsal renk seçebilir; onu yazı rengi yapmak menüyü beyaz
+   üstünde okunmaz hâle getirirdi ve kontrastı biz garanti edemeyiz. Şerit ve
+   çizgi, kontrast kaybı olmadan markayı taşır.
+3. **Renk seçmemiş restoran seçmiş gibi gösterilmez.** Değişken hiç yazılmaz,
+   şerit yüksekliği sıfır kalır, kategori çizgisi nötr sınıra düşer.
+4. **Eski yayınlarda renk alanı yoktur ve olmaması normaldir.** Onları geriye
+   dönük boyamak, donmuşluk sözünü bozardı.
+
+**Kanıt:** `tests/Feature/Publication/PublicationBrandColorsTest.php` —
+snapshot taşıma, renk değişince eski yayının değişmemesi, misafir sayfasının
+rengi çizmesi, renksiz markanın nötr kalması.
