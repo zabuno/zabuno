@@ -182,8 +182,21 @@ ile `✕` arasındaki fark bir tahmindir.
 menü satırıdır; tahmin gerektirmez. Ad düzenleme ise simge bile istemez —
 ada tıklanır.
 
-**Sıradaki döngü:** oklara üzerine-gelince ipucu (`TooltipHint` katalogda
-var) ve dokunmatikte 44 px hedef doğrulaması.
+**İkinci tur (FF-104).** İki iş yapıldı ve ikincisi bir kusur ortaya çıkardı:
+
+1. **İpucu.** Ok düğmelerine `TooltipHint` bağlandı — `aria-label` doğruydu
+   ama yalnız ekran okuyucuya ulaşıyordu; gözle bakan acemi için ok hâlâ
+   tahmindi.
+2. **Dokunma hedefi ÖLÇÜLDÜ, tahmin edilmedi.** 420 px genişlikte tarayıcıda
+   her düğmenin kutusu okundu. Sonuç: satır içi düzenleme tetikleyicileri
+   (ad ve fiyat) **23–24 px** çıktı — 44 px kuralının yarısı. Kural CSS'te
+   yazılıydı ama bu iki tetikleyici onu tüketmiyordu. Parmakla vurulamayan
+   bir hedef, klavyeyle ve fareyle çalışıyor olsa bile çalışmıyor demektir.
+   Düzeltildikten sonra ölçüm tekrarlandı: 44 px altında hedef kalmadı.
+
+Ayrıca dar ekranda satır iki parçaya bölünüyor ve eylem kümesi adın altında
+başıboş kalıyordu; küme sağ kenara yaslandı ve dikey boşluk küçüldü — iki
+parça artık tek satır gibi okunuyor.
 
 ---
 
@@ -194,9 +207,14 @@ var) ve dokunmatikte 44 px hedef doğrulaması.
 | 1 | Satırdaki beş ikincil kontrolün yeniden dizilmesi | 2 | ✅ FF-102 |
 | 2 | Satır ve başlık grameri (sıra → ad → fiyat → durum → eylem) | 5 | ✅ FF-102 |
 | 3 | Ekleme düğmelerinin düğme gibi görünmesi | 3 | ✅ FF-102 |
-| 4 | "Ürün ekle"nin kategori başlığına da taşınması | 3 | ⬜ |
+| 4 | "Ürün ekle"nin kategori başlığına da taşınması | 3 | ❌ vazgeçildi |
 | 5 | Silmeyi çöpe alma + geri alma (arka uç kararı) | 4 | ⬜ |
 | 6 | Türkçe para biçimi (`₺42,50`) | 5 | ✅ FF-103 |
-| 7 | Ok düğmelerine ipucu, dokunmatik hedef ölçümü | 6 | ⬜ |
+| 7 | Ok düğmelerine ipucu, dokunmatik hedef ölçümü | 6 | ✅ FF-104 |
+
+**4 numaradan neden vazgeçildi.** "Ürün ekle"yi başlığa da koymak, aynı
+eylemi iki yerde sunmak olurdu — kalem düğmesine yaptığım itirazın aynısı.
+Üstelik düğme şu an yeni satırın ÇIKACAĞI yerde duruyor: kategorinin sonunda.
+Sonucun göründüğü yerde duran bir düğme, kısa yol değil doğru yerdir.
 
 Her madde ayrı bir pakettir ve kendi kanıtıyla kapanır.
