@@ -112,6 +112,20 @@
          yığın olurdu ve "hangi restoranın menüsü kaç kez açıldı" sorusu
          tarayıcı tarafında cevapsız kalırdı. --}}
     @include('partials.analytics', ['analyticsContext' => $analyticsContext ?? ['zabuno_surface' => 'menu']])
+    @if ($identity?->primaryColor !== null || $identity?->secondaryColor !== null)
+        {{-- MARKA RENGİ yayından okunur (FF-89), canlı markadan değil: renk
+             yarın değişirse dünkü yayın değişmez. Renk yalnız DEKORASYONDUR
+             (üst şerit ve kategori altı çizgisi); metin ya da metin arkası
+             olarak kullanılmaz, çünkü restoranın seçtiği açık sarı bir renk
+             beyaz üstünde okunmaz hâle gelirdi ve kontrastı biz garanti
+             edemeyiz. --}}
+        <style nonce="{{ $cspNonce ?? '' }}">
+            :root {
+                @if ($identity->primaryColor !== null) --qr-brand: {{ $identity->primaryColor }}; @endif
+                @if ($identity->secondaryColor !== null) --qr-brand-secondary: {{ $identity->secondaryColor }}; @endif
+            }
+        </style>
+    @endif
     <style nonce="{{ $cspNonce ?? '' }}">
         :root {
             color-scheme: light dark;
@@ -145,6 +159,21 @@
             background: var(--qr-bg);
             color: var(--qr-fg);
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+
+        /* Marka şeridi: renk seçilmemişse `--qr-brand` tanımsızdır ve şerit
+           yüksekliği sıfır kalır — seçmeyen restoran, seçmiş gibi
+           gösterilmez. */
+        .qr-brand-bar {
+            height: 0;
+        }
+
+        @supports (height: 4px) {
+            .qr-brand-bar {
+                height: 4px;
+                margin: calc(-1 * clamp(0.75rem, 4vw, 1.5rem)) calc(-1 * clamp(0.75rem, 4vw, 1.5rem)) 1rem;
+                background: var(--qr-brand, transparent);
+            }
         }
 
         .qr-menu-header {
@@ -265,6 +294,8 @@
         .qr-menu-category-name {
             font-size: 1.1rem;
             margin: 0 0 0.5rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid var(--qr-brand-secondary, var(--qr-border));
         }
 
         .qr-menu-category-empty {
@@ -392,6 +423,10 @@
     </style>
 </head>
 <body>
+{{-- Marka şeridi sayfanın EN ÜSTÜNDE durur. `main` içinde dururken kurulum
+     çubuğunun altına düşüyor ve sayfanın ortasında başıboş bir çizgi gibi
+     görünüyordu. --}}
+<div class="qr-brand-bar" aria-hidden="true"></div>
 <div class="pwa-bar">
     <button type="button" id="pwa-install-button" hidden>{{ $text('installButton') }}</button>
     <span id="pwa-install-status" role="status" aria-live="polite"></span>
