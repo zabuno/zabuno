@@ -93,4 +93,46 @@ describe('hesap (sistem) menüsü', () => {
 
         expect(screen.queryByRole('menuitem', { name: 'Settings' })).toBeNull();
     });
+
+    /*
+        FF-90: yüklenen fotoğraf hesap menüsünde GÖRÜNÜR. Görünmezse
+        kullanıcı yüklemenin bir işe yaramadığını düşünür ve tekrar yükler.
+    */
+    it('profil fotoğrafı varsa baş harf yerine fotoğrafı gösterir', async () => {
+        const user = userEvent.setup();
+
+        render(
+            <AccountMenu
+                email="admin@zabuno.com"
+                avatarUrl="https://cdn.example.test/avatar.webp"
+                onSwitchWorkspace={() => {}}
+                onLogout={() => {}}
+            />,
+        );
+
+        const trigger = screen.getByRole('button', { name: 'Account' });
+        expect(trigger.querySelector('img')?.getAttribute('src')).toBe(
+            'https://cdn.example.test/avatar.webp',
+        );
+        expect(trigger.textContent).not.toContain('A');
+
+        await user.click(trigger);
+        expect(
+            document.querySelectorAll('img[src="https://cdn.example.test/avatar.webp"]').length,
+        ).toBeGreaterThan(1);
+    });
+
+    it('fotoğraf yoksa baş harf dairesi çizilir', () => {
+        render(
+            <AccountMenu
+                email="admin@zabuno.com"
+                onSwitchWorkspace={() => {}}
+                onLogout={() => {}}
+            />,
+        );
+
+        const trigger = screen.getByRole('button', { name: 'Account' });
+        expect(trigger.querySelector('img')).toBeNull();
+        expect(trigger.textContent).toContain('A');
+    });
 });

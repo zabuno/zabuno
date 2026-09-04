@@ -1024,6 +1024,7 @@ export function WorkspaceApp({
         user?.email !== undefined && user.email !== '' ? (
             <AccountMenu
                 email={user.email}
+                avatarUrl={user.avatarUrl ?? null}
                 onOpenProfile={currentWorkspace ? () => goToSection('profile') : undefined}
                 onOpenSettings={currentWorkspace ? () => goToSection('settings') : undefined}
                 onSwitchWorkspace={handleSwitch}
