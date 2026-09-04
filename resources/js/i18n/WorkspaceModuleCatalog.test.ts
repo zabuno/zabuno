@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 750;
+const FROZEN_LEGACY_KEY_COUNT = 758;
 
-// FF-122: toplu kart arşivi — kapsam, alan süzgeci ve ZIP metinleri.
+// FF-123: salon bölümlerinin adları — "Area 1" bir yer tutucudur.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '185b5e82d6bc27ea2a05b4834f386a8e53fff8b5ff9368cf1ba4a41c4d9a4760';
+    '21bb84d10a7dccffa23655cb2295f5241fbf3c3c14aa550109bf32100e678d5c';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -10,7 +10,9 @@ use App\Http\Controllers\QrDestination\ExportQrCodePdfController;
 use App\Http\Controllers\QrDestination\ExportQrCodePngController;
 use App\Http\Controllers\QrDestination\ExportQrCodeSvgController;
 use App\Http\Controllers\QrDestination\ExportQrPrintSheetController;
+use App\Http\Controllers\QrDestination\ListDiningAreasController;
 use App\Http\Controllers\QrDestination\ListQrCodesController;
+use App\Http\Controllers\QrDestination\RenameDiningAreaController;
 use App\Http\Controllers\QrDestination\RetargetQrCodeController;
 use App\Http\Controllers\QrDestination\StoreBulkQrCodesController;
 use App\Http\Controllers\QrDestination\StoreQrCodeController;
@@ -20,6 +22,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/workspaces/{workspace}/brand/locations/{location}/qr-codes', StoreQrCodeController::class);
     Route::post('/workspaces/{workspace}/brand/locations/{location}/tables/bulk', StoreBulkQrCodesController::class)->middleware('throttle:5,1');
     Route::get('/workspaces/{workspace}/brand/locations/{location}/qr-codes', ListQrCodesController::class);
+    /*
+        SALON BÖLÜMLERİ (FF-123). Toplu üretim onları "Area 1" diye açıyor ve
+        bu bir yer tutucudur; sahip kendi adını yazabilmeli ("bahçe", "üst
+        kat"). Liste ayrı bir uçtur çünkü masası olmayan bir bölüm QR kod
+        listesinde hiç görünmez.
+    */
+    Route::get('/workspaces/{workspace}/brand/locations/{location}/dining-areas', ListDiningAreasController::class);
+    Route::put('/workspaces/{workspace}/brand/locations/{location}/dining-areas/{area}', RenameDiningAreaController::class)
+        ->where('area', '[0-9]+');
     Route::put('/workspaces/{workspace}/qr-codes/{qrCode}/disable', DisableQrCodeController::class);
     // Kapatmanın KARŞILIĞI: yanlışlıkla kapatılan bir kod masadaki kâğıdı
     // kalıcı olarak öldürmemeli (`docs/81`).

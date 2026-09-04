@@ -5,6 +5,7 @@ import { Button } from '../../../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { QrDestinationFieldsRegion, type QrCreateReasonKind } from './QrDestinationFieldsRegion';
 import { QrPrintExportRegion } from './QrPrintExportRegion';
+import { DiningAreasRegion } from './DiningAreasRegion';
 import {
     QrCodeListItem,
     type QrCodeItem,
@@ -445,6 +446,18 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                         />
                     ))}
                 </ul>
+
+                {/*
+                    SALONUN BÖLÜMLERİ (FF-123). Kart basarken alan seçen kişi
+                    kendi kullandığı adı görmeli; "Area 1" bir yer tutucudur.
+                    Yeniden adlandırma listeyi de tazeler — etiket orada da
+                    yazıyor ve iki yüzey ayrışmamalı.
+                */}
+                <DiningAreasRegion
+                    workspaceId={workspaceId}
+                    locationId={locationId}
+                    onRenamed={() => setReloadToken((token) => token + 1)}
+                />
 
                 <QrDestinationFieldsRegion
                     disabled={!hasCurrentPublication || creating}

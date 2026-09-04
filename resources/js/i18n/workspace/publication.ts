@@ -210,6 +210,21 @@ export const publication = {
         "tema" diyordu. Karekodun rengi bir tema değil bir KISITTIR; tema,
         masaya konacak kartın kendisidir ve markadan beslenir.
     */
+    /*
+        SALONUN BÖLÜMLERİ (FF-123). Toplu üretim onları "Area 1" diye açıyor ve
+        bu bir yer tutucudur: hiçbir restoran sahibi salonunu böyle
+        adlandırmaz. Kart basarken alanı seçen kişi kendi kullandığı adı
+        görmeli.
+    */
+    'workspace.publication.diningAreas.heading': 'Areas in your dining room',
+    'workspace.publication.diningAreas.help':
+        'Bulk creation names them Area 1, Area 2. Rename them the way your team says them out loud — garden, upstairs, terrace. Renaming never breaks a printed card.',
+    'workspace.publication.diningAreas.rename': 'Rename {name}',
+    'workspace.publication.diningAreas.tableCount': '{count} tables',
+    'workspace.publication.diningAreas.empty': 'An area needs a name. Nothing was changed.',
+    'workspace.publication.diningAreas.save': 'Save',
+    'workspace.publication.diningAreas.cancel': 'Cancel',
+    'workspace.publication.diningAreas.renameError': 'The area could not be renamed. Try again.',
     'workspace.publication.qrCard.heading': 'Table card',
     'workspace.publication.qrCard.explanation':
         'The card you cut out and slide into the stand on the table. It carries your own name and colour; the code itself always prints black on white so it stays scannable.',
