@@ -1,6 +1,7 @@
 # 101 — Acemi-UX programı: "Adana'dan gelmiş kebapçı" için tasarım
 
-**Durum:** Faz 1 ✅ (FF-73, 2026-09-04). Sayaç: **1/4 tamamlandı, 2/4 aktif.**
+**Durum:** Faz 1 ✅ (FF-73), Faz 2 kısmen ✅ (FF-81: Y3 hatırlatması).
+Sayaç: **1/4 tamamlandı, 2/4 aktif.**
 **Sahibin sözü:** "Adana'dan, Urfa'dan gelmiş kebapçı hedef kitle… aptallar
 için tasarım." Buradaki "aptal" bir hakaret değil, bir **tasarım kısıtıdır**:
 kullanıcı yazılım bilmez, bilmek de istemez; işi kebap satmaktır. Ekran ona
@@ -49,10 +50,13 @@ Kategori seç (varsa), ad, fiyat → Kaydet. Alerjen kapalı ama görünür
 **Ölçü:** `MenuCatalogWorkspace.test.tsx` (tek işlem); yeni ürün formun yanında
 "eklendi" der (Kural 7).
 
-### Y3 — Fiyat değiştir
+### Y3 — Fiyat değiştir ✅ (FF-81, 2026-09-04)
 Satırda "Fiyat" → yeni rakam → Kaydet → **"Masada görünmesi için yayınla"**
 hatırlatması. Unutulan adım budur (`resources/help/tr/first-15-minutes`).
-**Ölçü:** fiyat düzenleyici satırın içinde, kaydın adıyla (Kural 8-9).
+**Ölçü:** fiyat düzenleyici satırın içinde, kaydın adıyla (Kural 8-9);
+kaydettikten sonra marka şeritli bir satır çıkar: "Kaydedildi. Misafirler
+hâlâ son yayınlanan menüyü görüyor." yanında "Şimdi yayınla" düğmesiyle
+(`MenuCatalogWorkspace.publishReminder.test`).
 
 ### Y4 — Yayınla
 Menü → "Önizle ve yayınla" (tek düğme, `docs/50` §5: yayın menüye aittir) →
@@ -87,7 +91,7 @@ Basılı kod ölmez: menü değişse de aynı kod çalışır (`docs/81`).
 | --- | --- | --- | --- | --- | --- |
 | Y1 Menü kur | ✅ | ✅ (FF-73 Home "şimdi") | 🔶 "Brand/Location" hâlâ terim | — | Faz 1 ✅ |
 | Y2 Ürün ekle | ✅ | ✅ (`docs/47` §3) | 🔶 "Allergens" | ✅ K6 | ✅ |
-| Y3 Fiyat değiştir | ✅ | ✅ satır içi | 🔶 yayın hatırlatması yok | ✅ | Faz 2 |
+| Y3 Fiyat değiştir | ✅ | ✅ satır içi | ✅ yayın hatırlatması (FF-81) | ✅ | Faz 2 ✅ |
 | Y4 Yayınla | ✅ | ✅ tek düğme | 🔶 "snapshot/immediate" metinleri | ✅ `docs/81` | Faz 2 |
 | Y5 QR bas | ✅ | 🔶 tema/boyut seçenekleri önde | 🔶 | ✅ kod ölmez | Faz 3 |
 

@@ -14,6 +14,14 @@ export type MenuCatalogWorkspaceProps = {
     workspaceId: number;
     locationId: number;
     onTreeChange?: (tree: MenuTree) => void;
+    /**
+     * Yayın ekranına geçiş — `docs/101` Y3.
+     *
+     * Kebapçının UNUTTUĞU adım fiyatı değiştirdikten sonra YAYINLAMAKTIR;
+     * düzenleme taslağı değiştirir, masadaki misafir son yayınlanan sürümü
+     * görmeye devam eder. Kaydettikten sonra hatırlatma burada doğar.
+     */
+    onNavigateToSection?: (section: string) => void;
 };
 
 type Brand = {
@@ -373,8 +381,9 @@ const inlineActionClass = clsx(
     'disabled:cursor-not-allowed disabled:opacity-50',
 );
 
+// Kategori/bölüm kutusu — panel kart grameriyle aynı (`docs/102` §1).
 const sectionClass = clsx(
-    'flex flex-col gap-3 rounded-lg border border-border p-4',
+    'flex flex-col gap-[var(--space-4)] rounded-[var(--radius-lg)] border border-border bg-[var(--color-surface)] p-[var(--space-5)]',
     'forced-colors:border-[CanvasText]',
 );
 
@@ -382,6 +391,7 @@ export function MenuCatalogWorkspace({
     workspaceId,
     locationId,
     onTreeChange,
+    onNavigateToSection,
 }: MenuCatalogWorkspaceProps) {
     const [initialLoading, setInitialLoading] = useState(true);
     const [initialError, setInitialError] = useState(false);
@@ -489,6 +499,8 @@ export function MenuCatalogWorkspace({
     const [aiImportOpen, setAiImportOpen] = useState(false);
     const [importSourceMedia, setImportSourceMedia] = useState<ReadyMediaRow[]>([]);
     const [importMediaChoices, setImportMediaChoices] = useState<number[]>([]);
+    /** Taslak değişti, yayınlanmadı — fiyat kaydından sonra görünür (`docs/101` Y3). */
+    const [pendingPublishNotice, setPendingPublishNotice] = useState(false);
     const [aiBatchProgress, setAiBatchProgress] = useState<{
         done: number;
         total: number;
@@ -1656,6 +1668,8 @@ export function MenuCatalogWorkspace({
             });
             setPriceEditItemId(null);
             setPriceEditValue('');
+            // Kaydedildi ≠ masada göründü (`docs/101` Y3/A2).
+            setPendingPublishNotice(true);
         } catch {
             setPriceEditSubmitError(t('menu.item.price.edit.error.submit'));
         } finally {
@@ -2401,6 +2415,35 @@ export function MenuCatalogWorkspace({
                             </div>
                         </div>
                     </details>
+                    {pendingPublishNotice ? (
+                        <div
+                            role="status"
+                            className="flex flex-wrap items-center justify-between gap-[var(--space-3)] rounded-[var(--radius-md)] border border-s-4 border-border border-s-brand bg-[var(--color-surface-subtle)] px-[var(--space-4)] py-[var(--space-3)]"
+                        >
+                            <span className="text-body text-fg">
+                                {t('menu.publishReminder.text')}
+                            </span>
+                            <span className="flex items-center gap-[var(--space-2)]">
+                                {onNavigateToSection ? (
+                                    <button
+                                        type="button"
+                                        className={buttonClass}
+                                        onClick={() => onNavigateToSection('publication')}
+                                    >
+                                        {t('menu.publishReminder.action')}
+                                    </button>
+                                ) : null}
+                                <button
+                                    type="button"
+                                    className={inlineActionClass}
+                                    onClick={() => setPendingPublishNotice(false)}
+                                >
+                                    {t('menu.publishReminder.dismiss')}
+                                </button>
+                            </span>
+                        </div>
+                    ) : null}
+
                     <ol
                         aria-label={t('menu.categories.list.label')}
                         className="flex flex-col gap-4"
@@ -2408,7 +2451,9 @@ export function MenuCatalogWorkspace({
                         {tree.categories.map((category) => (
                             <li key={category.id} className={sectionClass}>
                                 <div className="flex flex-wrap items-baseline gap-2">
-                                    <h3 className="text-base font-semibold">{category.name}</h3>
+                                    <h3 className="text-section font-semibold tracking-tight text-fg">
+                                        {category.name}
+                                    </h3>
                                     <OrderBadge
                                         position={category.position}
                                         label={t('menu.category.order.label', {
