@@ -21,6 +21,7 @@ use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
+use App\Application\Media\Port\MediaAuditPort;
 use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MenuMediaPort;
@@ -83,6 +84,7 @@ use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
+use App\Infrastructure\Media\Persistence\EloquentMediaAudit;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
@@ -332,6 +334,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MailTransportSelectorPort::class, VaultMailTransportSelector::class);
 
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
+        // Medya denetim izi (`docs/49` Faz 7 madde 4): "bu fotoğrafı kim
+        // sildi?" sorusunun cevabını tutan yer.
+        $this->app->bind(MediaAuditPort::class, EloquentMediaAudit::class);
         $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
         $this->app->bind(FeatureFlagPort::class, PennantFeatureFlags::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);

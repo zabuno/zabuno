@@ -996,6 +996,50 @@ msgstr "Bu şube"
 msgid "workspace.locations.operational.description"
 msgstr "Menünüzü sunan fiziksel şubeleri ekleyin ve düzenleyin — şehre göre gruplanır, yenileri için adım adım kurulum vardır."
 
+#: workspace:workspace.media.audit.action.downloaded
+msgid "workspace.media.audit.action.downloaded"
+msgstr "#{id} numaralı fotoğrafın aslını istedi"
+
+#: workspace:workspace.media.audit.action.renamed
+msgid "workspace.media.audit.action.renamed"
+msgstr "#{id} numaralı fotoğrafın adını değiştirdi"
+
+#: workspace:workspace.media.audit.action.reprocessed
+msgid "workspace.media.audit.action.reprocessed"
+msgstr "#{id} numaralı fotoğrafın boyutlarını yeniden üretti"
+
+#: workspace:workspace.media.audit.action.restored
+msgid "workspace.media.audit.action.restored"
+msgstr "#{id} numaralı fotoğrafı çöpten geri aldı"
+
+#: workspace:workspace.media.audit.action.trashed
+msgid "workspace.media.audit.action.trashed"
+msgstr "#{id} numaralı fotoğrafı çöpe taşıdı"
+
+#: workspace:workspace.media.audit.action.unknown
+msgid "workspace.media.audit.action.unknown"
+msgstr "#{id} numaralı fotoğraf üzerinde işlem yaptı"
+
+#: workspace:workspace.media.audit.action.uploaded
+msgid "workspace.media.audit.action.uploaded"
+msgstr "#{id} numaralı fotoğrafı yükledi"
+
+#: workspace:workspace.media.audit.action.versionRestored
+msgid "workspace.media.audit.action.versionRestored"
+msgstr "#{id} numaralı fotoğrafın eski bir sürümüne döndü"
+
+#: workspace:workspace.media.audit.actor.unknown
+msgid "workspace.media.audit.actor.unknown"
+msgstr "bilinmeyen kişi"
+
+#: workspace:workspace.media.audit.heading
+msgid "workspace.media.audit.heading"
+msgstr "Kim ne yaptı"
+
+#: workspace:workspace.media.audit.help
+msgid "workspace.media.audit.help"
+msgstr "Her yükleme, ad değişikliği, silme ve geri alma buraya yazılır. Kayıtlar hiçbir zaman düzenlenmez ya da silinmez."
+
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
 msgstr "Görseller"

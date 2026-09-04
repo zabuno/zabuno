@@ -630,3 +630,35 @@ Sahibin ekran görüntüleriyle bildirdiği altı iş (2026-09-04):
 tuşları, seçim), `AdminShell.test.tsx` (kalıcı ray varken hamburger yok),
 `WorkspaceApp.shell.test.tsx` ve `WorkspaceOnboardingJourney.test.tsx`
 (seçim menüde yapılır, sayfa yok), `MenuCatalogWorkspace.csv.test.tsx`.
+
+## 14. FF-97 — "Bu fotoğrafı kim sildi?" ve ekranların istendiğinde inmesi
+
+**Denetim izi (`docs/49` Faz 7 madde 4).** Menüden bir yemeğin görseli
+kaybolduğunda restoran sahibinin sorduğu ilk soru budur ve cevabı hiçbir
+yerde yoktu: kota vardı, izin vardı, mutabakat vardı; kaydı tutan yoktu.
+
+`media_audits` append-only tablosu yedi eylemi kaydeder: yükleme, ad
+değişikliği, çöpe atma, geri alma, boyut yeniden üretme, eski sürüme dönme
+ve asıl dosya indirme isteği. Kayıt Media sayfasında **kapalı** bir bölümde
+okunur; `media.manage` izni ister.
+
+Kararlar:
+
+1. **Satır bir kez yazılır** (`updated_at` yok). Düzeltilebilen bir denetim
+   izi, denetim izi değildir.
+2. **`media_asset_id` yabancı anahtar DEĞİL.** Varlık silinse de kayıt yaşar —
+   asıl değeri olan an, varlığın artık orada olmadığı andır.
+3. **Fail e-postasıyla yazılır, adıyla değil.** Bir ekipte iki "Mehmet"
+   olabilir ve "Mehmet sildi" cümlesi hiçbir soruyu kapatmaz.
+4. **İz eylem BAŞARIYLA bittikten sonra yazılır.** Denenip başarısız olmuş
+   bir eylemi kaydetmek, olmamış bir şeyi olmuş göstermek olurdu.
+5. **İndirme İSTEĞİ kaydedilir**, indirmenin kendisi değil; imzalı adresin
+   kullanıldığını bu kayıt iddia etmez.
+
+**Ekranlar istendiğinde iniyor.** Denetim izi eklenince çalışma alanı paketi
+202 KB'ye çıkıp 200 KB bütçesini aştı. Bütçeyi yükseltmek yerine ölçülen şey
+düzeltildi: Media, Fatura, Analitik, Ekip, Yayın ve Profil ekranları artık
+`lazy` iner. Kaydın METADATASI (ad, ikon, sıra, izin) kenar çubuğunu çizmek
+için hâlâ eager; yalnız çizim ertelenir. Sonuç: **202 → 185 KB**. Her gün
+panosunu açan bir restoran, hiç girmediği ekranların kodunu artık
+indirmiyor.

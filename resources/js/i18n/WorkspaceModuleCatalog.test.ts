@@ -33,12 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 682;
+const FROZEN_LEGACY_KEY_COUNT = 693;
 
-// FF-96: 'Choose a workspace' başlığı kaldırıldı — o sayfa artık yok;
-// seçim kenar çubuğunun tepesindeki menüde yapılıyor.
+// FF-97: medya denetim izi metinleri (kim ne yaptı).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '80f00cb94898316f423a13e48dbc5fe7d2987656ff6f2e39047e60e7172bb8e9';
+    '8e4a24731ced9773ec57fa0bfdb349784aac8f31ea6f6265865634efbd9752a8';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

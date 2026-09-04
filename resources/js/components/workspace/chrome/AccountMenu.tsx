@@ -19,6 +19,14 @@ export type AccountMenuProps = {
     onOpenSettings?: () => void;
     email: string;
     /**
+     * Menü NEREDE duruyor.
+     *
+     * Masaüstünde kenar çubuğunun dibinde (`up`), telefonda üst çubukta
+     * (`down`). Yön bir stil tercihi değil: üst çubukta yukarı açılan bir
+     * panel ekranın dışında kalır ve menü hiç görünmez.
+     */
+    placement?: 'up' | 'down';
+    /**
      * Profil fotoğrafının önizleme adresi (FF-90). Yoksa baş harf dairesi
      * çizilir — yükleyen kişi fotoğrafını burada görmeli, yoksa yükleme
      * hiçbir yere varmamış gibi durur.
@@ -44,6 +52,7 @@ export type AccountMenuProps = {
  */
 export function AccountMenu({
     email,
+    placement = 'up',
     avatarUrl = null,
     onOpenProfile,
     onOpenSettings,
@@ -58,11 +67,12 @@ export function AccountMenu({
             label={t('workspace.account.menu.label')}
             className={className}
             /*
-                YUKARI açılır: düğme kenar çubuğunun dibinde durur ve aşağı
-                açılan bir panel ekranın dışında kalırdı (sahibin isteği,
-                2026-09-04).
+                Varsayılan YUKARI: düğme kenar çubuğunun dibinde durur ve
+                aşağı açılan bir panel ekranın dışında kalırdı (sahibin
+                isteği, 2026-09-04). Telefonda menü üst çubuğa taşındığı için
+                kabuk `down` verir.
             */
-            placement="up"
+            placement={placement}
             triggerContent={
                 <span className="flex w-full items-center gap-[var(--space-2)]">
                     {/* Fotoğraf varsa o, yoksa baş harf: e-posta uzun, göz önce kime ait olduğunu arar. */}

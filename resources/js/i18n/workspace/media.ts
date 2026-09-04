@@ -195,6 +195,23 @@ export const media = {
     'workspace.media.library.detail.altText': 'Name (alt text)',
     'workspace.media.library.detail.rename': 'Save name',
     'workspace.media.library.detail.renamed': 'Name saved.',
+    /*
+        Denetim izi (FF-97, `docs/49` Faz 7 madde 4). "Bu fotoğrafı kim
+        sildi?" bir restoranda gerçek bir sorudur ve cevabı hiçbir ekranda
+        yoktu.
+    */
+    'workspace.media.audit.heading': 'Who did what',
+    'workspace.media.audit.help':
+        'Every upload, rename, deletion and restore is recorded here. Records are never edited or removed.',
+    'workspace.media.audit.actor.unknown': 'unknown person',
+    'workspace.media.audit.action.uploaded': 'Uploaded photo #{id}',
+    'workspace.media.audit.action.renamed': 'Renamed photo #{id}',
+    'workspace.media.audit.action.trashed': 'Moved photo #{id} to trash',
+    'workspace.media.audit.action.restored': 'Restored photo #{id} from trash',
+    'workspace.media.audit.action.reprocessed': 'Regenerated sizes for photo #{id}',
+    'workspace.media.audit.action.versionRestored': 'Restored an older version of photo #{id}',
+    'workspace.media.audit.action.downloaded': 'Requested the original of photo #{id}',
+    'workspace.media.audit.action.unknown': 'Acted on photo #{id}',
 } as const;
 
 declare module '../workspace' {

@@ -1,21 +1,38 @@
 import { UserCircle } from '@phosphor-icons/react';
-import type { ReactNode } from 'react';
-import { ProfilePage } from './ProfilePage';
+import { lazy, Suspense, type ReactNode } from 'react';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
 
+/*
+    EKRAN İSTENDİĞİNDE İNER (FF-97).
+
+    Bölüm kayıtları eskiden sayfayı doğrudan içeri alıyordu; yani her gün
+    panosunu açan bir restoran, hiç girmediği bu ekranın kodunu da
+    indiriyordu. Kaydın METADATASI (ad, ikon, sıra, izin) kenar çubuğunu
+    çizmek için hâlâ eager; yalnız ÇİZİM ertelenir.
+*/
+const ProfilePage = lazy(async () => ({ default: (await import('./ProfilePage')).ProfilePage }));
+
 function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     return (
-        <ProfilePage
-            workspaceId={ctx.workspaceId}
-            email={ctx.email}
-            userName={ctx.userName}
-            avatarMediaAssetId={ctx.avatarMediaAssetId}
-            avatarUrl={ctx.avatarUrl}
-            brand={ctx.brand}
-            onBrandSaved={ctx.onBrandSaved}
-            canManageBrand={ctx.can('workspace.manage')}
-        />
+        /*
+            Bekleme metni YOK: ekran zaten kendi yükleme durumunu
+            anlatır ve parça milisaniyeler içinde iner. İki katmanlı
+            "yükleniyor" yazısı, kullanıcıya bir şeyin takıldığını
+            düşündürür.
+        */
+        <Suspense fallback={null}>
+            <ProfilePage
+                workspaceId={ctx.workspaceId}
+                email={ctx.email}
+                userName={ctx.userName}
+                avatarMediaAssetId={ctx.avatarMediaAssetId}
+                avatarUrl={ctx.avatarUrl}
+                brand={ctx.brand}
+                onBrandSaved={ctx.onBrandSaved}
+                canManageBrand={ctx.can('workspace.manage')}
+            />
+        </Suspense>
     );
 }
 

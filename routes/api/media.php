@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Media\CreateOriginalDownloadLinkController;
 use App\Http\Controllers\Media\DeleteMediaController;
 use App\Http\Controllers\Media\DetachMediaUsagesController;
+use App\Http\Controllers\Media\ListMediaAuditsController;
 use App\Http\Controllers\Media\ListMediaController;
 use App\Http\Controllers\Media\ListMediaVersionsController;
 use App\Http\Controllers\Media\ListSlotPoliciesController;
@@ -47,5 +48,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // KOTA ve ASIL İNDİRME (`docs/49` Faz 6-7, `docs/98` FF-71).
     Route::get('/workspaces/{workspace}/media/quota', ShowMediaQuotaController::class);
+    // Denetim izi (`docs/49` Faz 7 madde 4): kim ne zaman ne yaptı.
+    Route::get('/workspaces/{workspace}/media/audits', ListMediaAuditsController::class);
     Route::post('/workspaces/{workspace}/media/{media}/download-link', CreateOriginalDownloadLinkController::class);
 });

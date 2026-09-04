@@ -1,6 +1,6 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { desktopChrome } from '../../test/workspaceChrome';
 
@@ -151,8 +151,9 @@ describe('WorkspaceApp — Analytics destination wired to real workspace/locatio
         await user.click(within(nav).getByRole('link', { name: 'Insights' }));
 
         const main = screen.getByRole('main');
+        // FF-97: ekran `lazy` ile iniyor — bir tık beklemek gerekiyor.
+        await waitFor(() => expect(main.querySelector('#section-analytics')).not.toBeNull());
         const analyticsRegion = main.querySelector('#section-analytics') as HTMLElement;
-        expect(analyticsRegion).not.toBeNull();
 
         const region = await within(analyticsRegion).findByRole('region', {
             name: /metric|report/i,

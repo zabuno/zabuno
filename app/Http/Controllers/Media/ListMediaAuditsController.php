@@ -6,22 +6,26 @@ namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Media\Port\MediaAuditPort;
-use App\Application\Media\Port\MediaRepositoryPort;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/** Çöpten geri al — dosya hiç silinmemişti (`docs/49` Faz 5 madde 3). */
-final class RestoreMediaController extends Controller
+/**
+ * Medya denetim izi — "bu fotoğrafı kim sildi?" (`docs/49` Faz 7 madde 4).
+ *
+ * İzi OKUMAK yönetme izni ister: kimin ne yaptığı, ekipteki herkesin
+ * göreceği bir şey değildir. Görme izni olmayan için 404 döner, 403 değil —
+ * 403 "böyle bir kayıt var ama sana kapalı" der ve bu da bir bilgidir.
+ */
+final class ListMediaAuditsController extends Controller
 {
     public function __construct(
-        private readonly MediaRepositoryPort $media,
+        private readonly MediaAuditPort $audits,
         private readonly AuthorizationPort $authorization,
-        private readonly MediaAuditPort $audit,
     ) {}
 
-    public function __invoke(Request $request, int $workspace, int $media): JsonResponse
+    public function __invoke(Request $request, int $workspace): JsonResponse
     {
         $userId = (int) $request->user()->getKey();
 
@@ -33,14 +37,6 @@ final class RestoreMediaController extends Controller
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
-        if (! $this->media->restore($workspace, $media)) {
-            return response()->json(['message' => 'Not Found.'], 404);
-        }
-
-        // Denetim izi (`docs/49` Faz 7 madde 4): eylem BAŞARIYLA bittikten
-        // sonra yazılır — denenip olmamış bir şeyi kaydetmek yanlış olurdu.
-        $this->audit->record($workspace, $media, 'restored', $userId);
-
-        return response()->json(['restored' => true]);
+        return response()->json(['data' => $this->audits->recent($workspace)]);
     }
 }

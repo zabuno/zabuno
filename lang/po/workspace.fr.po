@@ -996,6 +996,50 @@ msgstr ""
 msgid "workspace.locations.operational.description"
 msgstr ""
 
+#: workspace:workspace.media.audit.action.downloaded
+msgid "workspace.media.audit.action.downloaded"
+msgstr ""
+
+#: workspace:workspace.media.audit.action.renamed
+msgid "workspace.media.audit.action.renamed"
+msgstr ""
+
+#: workspace:workspace.media.audit.action.reprocessed
+msgid "workspace.media.audit.action.reprocessed"
+msgstr ""
+
+#: workspace:workspace.media.audit.action.restored
+msgid "workspace.media.audit.action.restored"
+msgstr ""
+
+#: workspace:workspace.media.audit.action.trashed
+msgid "workspace.media.audit.action.trashed"
+msgstr ""
+
+#: workspace:workspace.media.audit.action.unknown
+msgid "workspace.media.audit.action.unknown"
+msgstr ""
+
+#: workspace:workspace.media.audit.action.uploaded
+msgid "workspace.media.audit.action.uploaded"
+msgstr ""
+
+#: workspace:workspace.media.audit.action.versionRestored
+msgid "workspace.media.audit.action.versionRestored"
+msgstr ""
+
+#: workspace:workspace.media.audit.actor.unknown
+msgid "workspace.media.audit.actor.unknown"
+msgstr ""
+
+#: workspace:workspace.media.audit.heading
+msgid "workspace.media.audit.heading"
+msgstr ""
+
+#: workspace:workspace.media.audit.help
+msgid "workspace.media.audit.help"
+msgstr ""
+
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
 msgstr ""
