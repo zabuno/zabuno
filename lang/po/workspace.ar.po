@@ -2732,6 +2732,10 @@ msgstr ""
 msgid "workspace.shell.globalSearch.unavailable"
 msgstr ""
 
+#: workspace:workspace.shell.nav.account
+msgid "workspace.shell.nav.account"
+msgstr ""
+
 #: workspace:workspace.shell.nav.analytics
 msgid "workspace.shell.nav.analytics"
 msgstr ""

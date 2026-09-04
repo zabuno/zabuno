@@ -2732,6 +2732,10 @@ msgstr "Current location"
 msgid "workspace.shell.globalSearch.unavailable"
 msgstr "Global search unavailable"
 
+#: workspace:workspace.shell.nav.account
+msgid "workspace.shell.nav.account"
+msgstr "Account"
+
 #: workspace:workspace.shell.nav.analytics
 msgid "workspace.shell.nav.analytics"
 msgstr "Analytics"
