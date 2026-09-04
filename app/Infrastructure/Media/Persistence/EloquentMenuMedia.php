@@ -8,6 +8,7 @@ use App\Application\Media\Port\MenuMediaPort;
 use App\Domain\Media\MediaAssetStatus;
 use App\Support\Media\RenditionUrl;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 final class EloquentMenuMedia implements MenuMediaPort
 {
@@ -121,6 +122,70 @@ final class EloquentMenuMedia implements MenuMediaPort
         }
 
         return $this->imageForVersion($workspaceId, (int) $usage->media_version_id, (int) $usage->media_asset_id, $usage->alt_text_override);
+    }
+
+    /** @return array{bytes: string, mimeType: string}|null */
+    public function brandLogoBytes(int $workspaceId, int $brandId, int $minimumWidth): ?array
+    {
+        $usage = DB::table('media_usages')
+            ->where('workspace_id', $workspaceId)
+            ->where('entity_type', 'brand')
+            ->where('entity_id', $brandId)
+            ->whereNull('publication_id')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($usage === null || $usage->media_version_id === null) {
+            return null;
+        }
+
+        /*
+            EN KÜÇÜK YETERLİ sürüm. Kartta logo 2 cm; 2000 piksellik bir dosyayı
+            base64'e çevirip her karta gömmek, kırk kartlık bir arşivi
+            gereksiz yere onlarca megabayt yapardı. Yeterli genişlikte sürüm
+            yoksa en büyüğü kullanılır — logoyu hiç basmamaktansa biraz
+            bulanık basmak yeğdir.
+        */
+        $rendition = DB::table('media_renditions')
+            ->join('media_blobs', 'media_blobs.id', '=', 'media_renditions.media_blob_id')
+            ->where('media_renditions.media_version_id', (int) $usage->media_version_id)
+            ->where('media_blobs.workspace_id', $workspaceId)
+            ->orderBy('media_renditions.width')
+            ->select([
+                'media_renditions.width as width',
+                'media_blobs.disk as disk',
+                'media_blobs.storage_key as storage_key',
+                'media_blobs.mime_type as mime_type',
+            ])
+            ->get()
+            ->sortBy('width')
+            ->first(fn (object $row): bool => (int) $row->width >= $minimumWidth)
+            ?? DB::table('media_renditions')
+                ->join('media_blobs', 'media_blobs.id', '=', 'media_renditions.media_blob_id')
+                ->where('media_renditions.media_version_id', (int) $usage->media_version_id)
+                ->where('media_blobs.workspace_id', $workspaceId)
+                ->orderByDesc('media_renditions.width')
+                ->select([
+                    'media_blobs.disk as disk',
+                    'media_blobs.storage_key as storage_key',
+                    'media_blobs.mime_type as mime_type',
+                ])
+                ->first();
+
+        if ($rendition === null) {
+            return null;
+        }
+
+        $disk = Storage::disk((string) $rendition->disk);
+
+        if (! $disk->exists((string) $rendition->storage_key)) {
+            return null;
+        }
+
+        return [
+            'bytes' => (string) $disk->get((string) $rendition->storage_key),
+            'mimeType' => (string) $rendition->mime_type,
+        ];
     }
 
     /** @return array{versionId:int,altText:string,width:int,height:int,sources:list<array{width:int,url:string}>}|null */

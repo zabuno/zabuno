@@ -153,6 +153,58 @@ final class QrCardSvgTest extends TestCase
         self::assertStringContainsString('Paşa Döner', $this->compose(theme: CardTheme::Classic));
     }
 
+    public function test_the_logo_is_embedded_in_the_file_not_linked_from_the_internet(): void
+    {
+        /*
+            Kart SVG'si matbaaya gider ve orada internet bağlantısı
+            olmayabilir. `<image href="https://…">` yazan bir kart, matbaanın
+            bilgisayarında LOGOSUZ basılır ve bunu ancak baskıdan sonra fark
+            ederiz.
+        */
+        $svg = QrCardSvg::compose(
+            self::QR_SVG,
+            CardTheme::Classic,
+            CardSize::A6,
+            CardOrientation::Portrait,
+            'Paşa Döner',
+            'Menü için okutun',
+            '#1B4332',
+            ['bytes' => 'logo-bytes', 'mimeType' => 'image/png'],
+        );
+
+        self::assertStringContainsString('data:image/png;base64,'.base64_encode('logo-bytes'), $svg);
+        self::assertStringNotContainsString('href="http', $svg);
+    }
+
+    public function test_the_logo_is_declared_for_old_and_new_svg_readers(): void
+    {
+        // SVG 2 `href` okur, eski ayrıştırıcılar (mPDF dahil) `xlink:href`.
+        // Birini atlamak, kartın bazı programlarda logosuz açılması demekti.
+        $svg = QrCardSvg::compose(
+            self::QR_SVG,
+            CardTheme::Banner,
+            CardSize::A6,
+            CardOrientation::Portrait,
+            'Paşa',
+            'Okutun',
+            null,
+            ['bytes' => 'x', 'mimeType' => 'image/png'],
+        );
+
+        self::assertStringContainsString(' href="data:', $svg);
+        self::assertStringContainsString('xlink:href="data:', $svg);
+        self::assertStringContainsString('xmlns:xlink=', $svg);
+        // Kare olmayan bir logo EZİLMEZ, kutuya sığdırılır.
+        self::assertStringContainsString('preserveAspectRatio="xMinYMid meet"', $svg);
+    }
+
+    public function test_a_brand_with_no_logo_prints_a_card_without_one(): void
+    {
+        // Logo yoksa yer tutucu bir kutu çizilmez: boş bir çerçeve, basıldıktan
+        // sonra hata gibi görünür.
+        self::assertStringNotContainsString('<image', $this->compose());
+    }
+
     public function test_a_name_with_markup_can_never_break_the_document(): void
     {
         $svg = $this->compose(brandName: '<script>x</script>');

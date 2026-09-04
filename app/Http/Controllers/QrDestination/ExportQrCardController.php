@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MenuMediaPort;
 use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\QrCardExportPort;
@@ -50,6 +51,7 @@ final class ExportQrCardController extends Controller
         private readonly QrCodeImageExportPort $imageExport,
         private readonly QrCardExportPort $cardExport,
         private readonly MenuIdentityPort $identities,
+        private readonly MenuMediaPort $media,
         private readonly PublicMenuAddressPort $addresses,
         private readonly GuestText $guestText,
     ) {}
@@ -101,6 +103,13 @@ final class ExportQrCardController extends Controller
             $headline = $this->guestText->get('guest.print.scanForMenu', $address['locale'] ?? null);
         }
 
+        /*
+            LOGO KARTA GÖMÜLÜR (FF-124). Genişlik isteği kartın gerçek
+            ölçüsünden türer: 2 cm'lik bir logo için 2000 piksellik dosyayı
+            gömmek, arşivi gereksiz yere şişirirdi.
+        */
+        $logo = $this->brandLogo($workspace, $record->menuId);
+
         try {
             $qrSvg = $this->imageExport->renderSvg(
                 url("/q/{$record->token}"),
@@ -117,6 +126,7 @@ final class ExportQrCardController extends Controller
                 $brandName,
                 $headline,
                 $identity?->primaryColor,
+                $logo,
             );
 
             if ($format === 'svg') {
@@ -138,6 +148,23 @@ final class ExportQrCardController extends Controller
             'Content-Type' => $rendered->mimeType,
             'Content-Disposition' => $this->disposition($request, $record->token, 'pdf'),
         ]);
+    }
+
+    /**
+     * Markanın logosu, karta gömülebilecek hâlde.
+     *
+     * @return array{bytes: string, mimeType: string}|null
+     */
+    private function brandLogo(int $workspace, int $menuId): ?array
+    {
+        $brandId = $this->identities->brandIdForMenu($workspace, $menuId);
+
+        if ($brandId === null) {
+            return null;
+        }
+
+        // Kartta logo yaklaşık 2 cm; 300 DPI'da ~240 piksel yeter.
+        return $this->media->brandLogoBytes($workspace, $brandId, 240);
     }
 
     private function disposition(Request $request, string $token, string $extension): string

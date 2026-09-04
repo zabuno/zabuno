@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
@@ -51,6 +52,7 @@ final class ExportQrCardsZipController extends Controller
         private readonly QrCodeImageExportPort $imageExport,
         private readonly QrCardExportPort $cardExport,
         private readonly MenuIdentityPort $identities,
+        private readonly MenuMediaPort $media,
         private readonly PublicMenuAddressPort $addresses,
         private readonly GuestText $guestText,
     ) {}
@@ -117,6 +119,11 @@ final class ExportQrCardsZipController extends Controller
 
         [$width, $height] = $orientation->apply($size);
 
+        // Logo BİR KEZ okunur ve her karta gömülür: kırk kart için kırk kez
+        // diskten okumak, arşivi üretme süresini gereksiz uzatırdı.
+        $brandId = $this->identities->brandIdForMenu($workspace, $slice[0]->menuId);
+        $logo = $brandId === null ? null : $this->media->brandLogoBytes($workspace, $brandId, 240);
+
         $path = tempnam(sys_get_temp_dir(), 'zabuno-cards-');
 
         if ($path === false) {
@@ -148,6 +155,7 @@ final class ExportQrCardsZipController extends Controller
                     $brandName,
                     $headline,
                     $identity?->primaryColor,
+                    $logo,
                 );
 
                 $bytes = $format === 'svg'

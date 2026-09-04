@@ -53,6 +53,16 @@ final class QrCardSvg
         string $brandName,
         string $headline,
         ?string $brandColor,
+        /**
+         * Markanın logosu — BAYT olarak, adres olarak değil (FF-124).
+         *
+         * Kart SVG'si matbaaya gider ve orada internet bağlantısı olmayabilir.
+         * `<image href="https://…">` yazan bir kart, matbaanın bilgisayarında
+         * logosuz basılır ve bunu ancak baskıdan sonra fark ederiz.
+         *
+         * @var array{bytes: string, mimeType: string}|null
+         */
+        ?array $logo = null,
     ): string {
         [$width, $height] = $orientation->apply($size);
 
@@ -69,17 +79,37 @@ final class QrCardSvg
             $top = max($top, $height * 0.16 + $margin * 0.5);
         }
 
-        if ($theme->showsBrandName() && trim($brandName) !== '') {
-            $brandSize = self::brandFontSize($width, $height);
+        $brandSize = self::brandFontSize($width, $height);
+        $logoSide = $logo === null ? 0.0 : $brandSize * 1.6;
+        $textLeft = $margin;
 
+        if ($logo !== null) {
+            /*
+                LOGO ADIN SOLUNDA. Üstüne koymak kartın dikey alanını yer ve
+                karekodu küçültürdü; karekodu küçültmek taranabilirliği
+                düşürür ve logo bunun bedelini ödettiremez.
+            */
+            $logoY = $theme === CardTheme::Banner
+                ? $height * 0.16 * 0.5 - $logoSide / 2
+                : $top;
+
+            $body .= self::image($logo, $margin, $logoY, $logoSide);
+            $textLeft = $margin + $logoSide + $margin * 0.4;
+        }
+
+        if ($theme->showsBrandName() && trim($brandName) !== '') {
             if ($theme === CardTheme::Banner) {
                 // Şeridin İÇİNDE, dikeyde ortalanmış: şeridin altında duran
                 // beyaz bir yazı okunmazdı.
-                $body .= self::text($brandName, $margin, $height * 0.16 * 0.5 + $brandSize * 0.36, $brandSize, 'bold', '#FFFFFF');
+                $body .= self::text($brandName, $textLeft, $height * 0.16 * 0.5 + $brandSize * 0.36, $brandSize, 'bold', '#FFFFFF');
             } else {
-                $body .= self::text($brandName, $margin, $top + $brandSize * 0.8, $brandSize, 'bold', $accent);
-                $top += $brandSize * 1.6;
+                $body .= self::text($brandName, $textLeft, $top + $brandSize * 0.8, $brandSize, 'bold', $accent);
             }
+        }
+
+        if ($theme !== CardTheme::Banner && ($logo !== null || $theme->showsBrandName())) {
+            // Satır yüksekliği, logo ile ad hangisi uzunsa ona göre.
+            $top += max($logoSide, $theme->showsBrandName() && trim($brandName) !== '' ? $brandSize * 1.6 : 0.0);
         }
 
         $captionSize = self::captionFontSize($width, $height);
@@ -103,7 +133,7 @@ final class QrCardSvg
         }
 
         return '<?xml version="1.0" encoding="UTF-8"?>'
-            .'<svg xmlns="http://www.w3.org/2000/svg" '
+            .'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
             ."width=\"{$width}mm\" height=\"{$height}mm\" "
             .'viewBox="0 0 '.self::number($width).' '.self::number($height).'">'
             .$body
@@ -191,6 +221,27 @@ final class QrCardSvg
         }
 
         return $match[1];
+    }
+
+    /**
+     * Logoyu SVG'ye GÖMER.
+     *
+     * `href` ve `xlink:href` birlikte yazılır: SVG 2 birincisini, eski
+     * ayrıştırıcılar (mPDF dahil) ikincisini okur. Birini atlamak, kartın bazı
+     * programlarda logosuz açılması demekti — ve bunu fark eden kişi matbaacı
+     * olurdu.
+     *
+     * @param  array{bytes: string, mimeType: string}  $logo
+     */
+    private static function image(array $logo, float $x, float $y, float $side): string
+    {
+        $uri = 'data:'.$logo['mimeType'].';base64,'.base64_encode($logo['bytes']);
+
+        return '<image x="'.self::number($x).'" y="'.self::number($y).'" '
+            .'width="'.self::number($side).'" height="'.self::number($side).'" '
+            // Oran KORUNUR: kare olmayan bir logo ezilmez, kutuya sığdırılır.
+            .'preserveAspectRatio="xMinYMid meet" '
+            .'href="'.$uri.'" xlink:href="'.$uri.'"/>';
     }
 
     private static function text(
