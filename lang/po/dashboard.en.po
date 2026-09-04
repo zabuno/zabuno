@@ -68,6 +68,14 @@ msgstr "Brand"
 msgid "dashboard.setup.checking"
 msgstr "Checking…"
 
+#: dashboard:dashboard.setup.complete
+msgid "dashboard.setup.complete"
+msgstr "Setup complete"
+
+#: dashboard:dashboard.setup.complete.summary
+msgid "dashboard.setup.complete.summary"
+msgstr "Your restaurant is ready for guests."
+
 #: dashboard:dashboard.setup.heading
 msgid "dashboard.setup.heading"
 msgstr "Setup"
@@ -87,6 +95,14 @@ msgstr "No menu yet"
 #: dashboard:dashboard.setup.notConnected
 msgid "dashboard.setup.notConnected"
 msgstr "Not connected yet."
+
+#: dashboard:dashboard.setup.progress
+msgid "dashboard.setup.progress"
+msgstr "{done}/{total} done"
+
+#: dashboard:dashboard.setup.progress.next
+msgid "dashboard.setup.progress.next"
+msgstr "next: {step}"
 
 #: dashboard:dashboard.setup.publication
 msgid "dashboard.setup.publication"
@@ -127,6 +143,10 @@ msgstr "Next step"
 #: dashboard:dashboard.setup.step.todo
 msgid "dashboard.setup.step.todo"
 msgstr "Not done yet"
+
+#: dashboard:dashboard.setup.toggle
+msgid "dashboard.setup.toggle"
+msgstr "Show the steps"
 
 #: dashboard:dashboard.stats.categories
 msgid "dashboard.stats.categories"

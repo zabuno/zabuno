@@ -40,6 +40,10 @@ msgstr "Kategoriyi ekleyemedik. Lütfen tekrar deneyin."
 msgid "menu.category.create.submit"
 msgstr "Kategori ekle"
 
+#: menu:menu.category.delete.body
+msgid "menu.category.delete.body"
+msgstr "Yayınlanmış sürümlerde kalmaya devam ederler — siz tekrar yayınlayana kadar misafirleriniz bir değişiklik görmez. Taslaktaki satırlar geri gelmez."
+
 #: menu:menu.category.delete.confirm
 msgid "menu.category.delete.confirm"
 msgstr "“{name}” ve içindeki ürünler bu menüden kaldırılsın mı? Yayınlanmış sürümlerde kalmaya devam eder."
@@ -47,6 +51,10 @@ msgstr "“{name}” ve içindeki ürünler bu menüden kaldırılsın mı? Yay�
 #: menu:menu.category.delete.label
 msgid "menu.category.delete.label"
 msgstr "{name} kategorisini kaldır"
+
+#: menu:menu.category.delete.title
+msgid "menu.category.delete.title"
+msgstr "“{name}” ve içindeki ürünler kaldırılsın mı?"
 
 #: menu:menu.category.empty
 msgid "menu.category.empty"
@@ -344,6 +352,10 @@ msgstr "Kalem ekle"
 msgid "menu.item.currency.label"
 msgstr "Para birimi"
 
+#: menu:menu.item.delete.body
+msgid "menu.item.delete.body"
+msgstr "Yayınlanmış sürümlerde kalmaya devam eder — siz tekrar yayınlayana kadar misafirleriniz bir değişiklik görmez. Taslaktaki satır geri gelmez."
+
 #: menu:menu.item.delete.confirm
 msgid "menu.item.delete.confirm"
 msgstr "“{name}” bu menüden kaldırılsın mı? Yayınlanmış sürümlerde kalmaya devam eder."
@@ -351,6 +363,10 @@ msgstr "“{name}” bu menüden kaldırılsın mı? Yayınlanmış sürümlerde
 #: menu:menu.item.delete.label
 msgid "menu.item.delete.label"
 msgstr "{name} ürününü kaldır"
+
+#: menu:menu.item.delete.title
+msgid "menu.item.delete.title"
+msgstr "“{name}” bu menüden kaldırılsın mı?"
 
 #: menu:menu.item.description.help
 msgid "menu.item.description.help"
@@ -496,6 +512,10 @@ msgstr "Sonra"
 msgid "menu.publishReminder.text"
 msgstr "Kaydedildi. Misafirler hâlâ son yayınlanan menüyü görüyor."
 
+#: menu:menu.rename.cancel
+msgid "menu.rename.cancel"
+msgstr "Vazgeç"
+
 #: menu:menu.rename.error.empty
 msgid "menu.rename.error.empty"
 msgstr "Ad boş olamaz. Hiçbir şey değişmedi."
@@ -507,6 +527,18 @@ msgstr "{name} adını değiştir"
 #: menu:menu.rename.prompt
 msgid "menu.rename.prompt"
 msgstr "Adı düzeltin"
+
+#: menu:menu.rename.save
+msgid "menu.rename.save"
+msgstr "Kaydet"
+
+#: menu:menu.row.delete
+msgid "menu.row.delete"
+msgstr "Kaldır"
+
+#: menu:menu.row.more
+msgid "menu.row.more"
+msgstr "{name} için diğer işlemler"
 
 #: menu:menu.status.saving
 msgid "menu.status.saving"

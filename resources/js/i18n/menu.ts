@@ -182,6 +182,22 @@ const en = {
         'Remove “{name}” from this menu? Already published versions keep it.',
     'menu.category.delete.confirm':
         'Remove “{name}” and its items from this menu? Already published versions keep them.',
+    /* Satır içi düzenleme düğmeleri (FF-101). */
+    /* Satır taşma menüsü (FF-101): silme, taşımanın yanından alındı. */
+    /*
+        Silme onayı (FF-101): tarayıcı kutusu yerine ürünün kendi diyaloğu.
+        Başlık NEYİ sildiğimizi, gövde SONUCUNU söyler.
+    */
+    'menu.item.delete.title': 'Remove “{name}” from this menu?',
+    'menu.item.delete.body':
+        'Already published versions keep it — your guests see no change until you publish again. The draft row does not come back.',
+    'menu.category.delete.title': 'Remove “{name}” and its products?',
+    'menu.category.delete.body':
+        'Already published versions keep them — your guests see no change until you publish again. The draft rows do not come back.',
+    'menu.row.more': 'More actions for {name}',
+    'menu.row.delete': 'Remove',
+    'menu.rename.save': 'Save',
+    'menu.rename.cancel': 'Cancel',
     'menu.rename.prompt': 'Correct the name',
     'menu.rename.error.empty': 'A name cannot be empty. Nothing was changed.',
     'menu.item.delete.label': 'Remove {name}',

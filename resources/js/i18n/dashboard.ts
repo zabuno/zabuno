@@ -31,6 +31,17 @@ const en = {
     'dashboard.setup.step.next': 'Next step',
     'dashboard.setup.step.todo': 'Not done yet',
     'dashboard.setup.heading': 'Setup',
+    /*
+        KURULUM ŞERİDİ (FF-100). Beş adım eşit ağırlıkta, mavi bağlantılar
+        hâlinde duruyordu: hangisinin bittiği yalnız ekran okuyucuya
+        söyleniyor, gözle bakan kişi beş aynı satır görüyordu. Ve kurulum
+        bittikten sonra kart her gün aynı yeri kaplamaya devam ediyordu.
+    */
+    'dashboard.setup.progress': '{done}/{total} done',
+    'dashboard.setup.progress.next': 'next: {step}',
+    'dashboard.setup.complete': 'Setup complete',
+    'dashboard.setup.complete.summary': 'Your restaurant is ready for guests.',
+    'dashboard.setup.toggle': 'Show the steps',
     'dashboard.setup.brand': 'Brand',
     'dashboard.setup.location': 'Location',
     'dashboard.setup.menu': 'Menu',

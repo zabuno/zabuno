@@ -107,6 +107,37 @@ function write(calls: Call[], method: string): Call | undefined {
     return calls.find((call) => call.method === method && !call.url.includes('csrf'));
 }
 
+/*
+    ADI DÜZELTMEK artık tarayıcı diyaloğu değil, SATIR İÇİ düzenlemedir
+    (FF-101). Yardımcı, testlerin niyetini tek yerde tutar: adı aç, yaz,
+    kaydet. Sözleşme değişmedi — PUT gider, boş ad reddedilir; değişen tek
+    şey, kullanıcının bunu ürünün içinde yapması.
+*/
+async function renameInline(
+    user: ReturnType<typeof userEvent.setup>,
+    label: string,
+    next: string,
+): Promise<void> {
+    await user.click(screen.getByRole('button', { name: label }));
+    const field = await screen.findByRole('textbox', { name: label });
+    await user.clear(field);
+
+    if (next !== '') {
+        await user.type(field, next);
+    }
+
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+}
+
+/* SİLME de ürünün kendi diyaloğuyla onaylanır: taşma menüsü → Kaldır → onay. */
+async function openDeleteDialog(
+    user: ReturnType<typeof userEvent.setup>,
+    moreLabel: string,
+): Promise<void> {
+    await user.click(screen.getByRole('button', { name: moreLabel }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Remove' }));
+}
+
 describe('menüyü işletmek (docs/73)', () => {
     /**
      * "Mercimek Çorbsı" yazan bir sahibin tek çaresi ürünü gizleyip
@@ -114,9 +145,8 @@ describe('menüyü işletmek (docs/73)', () => {
      */
     it('ürün adı düzeltilebilir', async () => {
         const { calls, user } = await renderWorkspace();
-        vi.spyOn(window, 'prompt').mockReturnValue('Mercimek Çorbası');
 
-        await user.click(screen.getByRole('button', { name: 'Rename Mercimek Çorbsı' }));
+        await renameInline(user, 'Rename Mercimek Çorbsı', 'Mercimek Çorbası');
 
         await waitFor(() => {
             expect(write(calls, 'PUT')).toBeDefined();
@@ -137,13 +167,18 @@ describe('menüyü işletmek (docs/73)', () => {
     it('iptal sessizdir, boş ad ise söylenir', async () => {
         const { calls, user } = await renderWorkspace();
 
-        const prompt = vi.spyOn(window, 'prompt').mockReturnValue(null);
+        // VAZGEÇMEK sessizdir: hiçbir istek gitmez, hiçbir uyarı çıkmaz.
         await user.click(screen.getByRole('button', { name: 'Rename Mercimek Çorbsı' }));
+        await user.click(screen.getByRole('button', { name: 'Cancel' }));
         expect(write(calls, 'PUT')).toBeUndefined();
         expect(screen.queryByText(/cannot be empty/i)).toBeNull();
 
-        prompt.mockReturnValue('   ');
-        await user.click(screen.getByRole('button', { name: 'Rename Mercimek Çorbsı' }));
+        /*
+            BOŞ AD bir niyettir — kullanıcı kaydet'e bastı — ve sessizce
+            yutulamaz. Uyarı, yazdığı alanın hemen altında çıkar; `prompt`
+            ile sayfanın başka bir yerinde beliriyordu.
+        */
+        await renameInline(user, 'Rename Mercimek Çorbsı', '');
         expect(await screen.findByText(/cannot be empty/i)).toBeInTheDocument();
         expect(write(calls, 'PUT')).toBeUndefined();
 
@@ -153,9 +188,15 @@ describe('menüyü işletmek (docs/73)', () => {
     /** Silme ONAY ister: yayınlanmış sürüm korunur ama taslak satır geri gelmez. */
     it('ürün onaydan sonra silinir ve listeden kalkar', async () => {
         const { calls, user } = await renderWorkspace();
-        vi.spyOn(window, 'confirm').mockReturnValue(true);
 
-        await user.click(screen.getByRole('button', { name: 'Remove Mercimek Çorbsı' }));
+        await openDeleteDialog(user, 'More actions for Mercimek Çorbsı');
+
+        // Diyalog NEYİ sildiğini adıyla söyler — `confirm` bunu yapamıyordu.
+        expect(
+            await screen.findByText(/Remove “Mercimek Çorbsı” from this menu\?/),
+        ).toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: 'Remove', hidden: false }));
 
         await waitFor(() => {
             expect(write(calls, 'DELETE')).toBeDefined();
@@ -172,9 +213,9 @@ describe('menüyü işletmek (docs/73)', () => {
 
     it('onay verilmezse hiçbir istek gitmez', async () => {
         const { calls, user } = await renderWorkspace();
-        vi.spyOn(window, 'confirm').mockReturnValue(false);
 
-        await user.click(screen.getByRole('button', { name: 'Remove Mercimek Çorbsı' }));
+        await openDeleteDialog(user, 'More actions for Mercimek Çorbsı');
+        await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
         expect(write(calls, 'DELETE')).toBeUndefined();
         expect(screen.getByText('Mercimek Çorbsı')).toBeInTheDocument();
@@ -250,7 +291,6 @@ describe('menüyü işletmek (docs/73)', () => {
     it('sunucu reddederse hata gösterilir', async () => {
         const { user } = await renderWorkspace();
 
-        vi.spyOn(window, 'confirm').mockReturnValue(true);
         vi.stubGlobal(
             'fetch',
             vi.fn(async (url: string) =>
@@ -260,7 +300,8 @@ describe('menüyü işletmek (docs/73)', () => {
             ),
         );
 
-        await user.click(screen.getByRole('button', { name: 'Remove Mercimek Çorbsı' }));
+        await openDeleteDialog(user, 'More actions for Mercimek Çorbsı');
+        await user.click(screen.getByRole('button', { name: 'Remove', hidden: false }));
 
         expect(await screen.findByText(/Forbidden|could not be saved/i)).toBeInTheDocument();
         expect(screen.getByText('Mercimek Çorbsı')).toBeInTheDocument();

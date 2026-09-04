@@ -133,7 +133,13 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
         await user.click(within(region).getByRole('button', { name: /location/i }));
         expect(onNavigateToSection).toHaveBeenLastCalledWith('locations');
 
-        await user.click(within(region).getByRole('button', { name: /^menu$/i }));
+        /*
+            GÜNCELLENDİ (FF-100): adımın erişilebilir adı artık yalnız etiket
+            değil — durumu ve değeri de taşıyor ("Menu · No menu yet · Next
+            step"). Ekran okuyucu kullanan biri için doğrusu budur: adımın
+            adı tek başına "nerede kaldım" sorusunu cevaplamaz.
+        */
+        await user.click(within(region).getByRole('button', { name: /^menu\b/i }));
         expect(onNavigateToSection).toHaveBeenLastCalledWith('menu');
 
         await user.click(within(region).getByRole('button', { name: /publication/i }));
