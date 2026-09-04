@@ -688,8 +688,13 @@ describe('QrDestinationRegion bulk wizard merge (QR_BULK_WIZARD_MERGE_RED)', () 
         const areaSectionCount = within(wizard).getByLabelText(/area\/section count/i);
         const tableCount = within(wizard).getByLabelText(/table count/i);
         const seatCountPerTable = within(wizard).getByLabelText(/seat count per table/i);
+        // FF-85: bölge ve koltuk alanları varsayılan gelir; üstüne yazmak
+        // birleşmiş bir sayı üretir, önce temizlenir.
+        await user.clear(areaSectionCount);
         await user.type(areaSectionCount, '1');
+        await user.clear(tableCount);
         await user.type(tableCount, '1');
+        await user.clear(seatCountPerTable);
         await user.type(seatCountPerTable, '2');
 
         const submit = within(wizard).getByRole('button', { name: /create table qr codes/i });
@@ -771,8 +776,13 @@ describe('QrDestinationRegion bulk wizard merge (QR_BULK_WIZARD_MERGE_RED)', () 
         const areaSectionCount = within(wizard).getByLabelText(/area\/section count/i);
         const tableCount = within(wizard).getByLabelText(/table count/i);
         const seatCountPerTable = within(wizard).getByLabelText(/seat count per table/i);
+        // FF-85: bölge ve koltuk alanları varsayılan gelir; üstüne yazmak
+        // birleşmiş bir sayı üretir, önce temizlenir.
+        await user.clear(areaSectionCount);
         await user.type(areaSectionCount, '1');
+        await user.clear(tableCount);
         await user.type(tableCount, '1');
+        await user.clear(seatCountPerTable);
         await user.type(seatCountPerTable, '2');
 
         const submit = within(wizard).getByRole('button', { name: /create table qr codes/i });

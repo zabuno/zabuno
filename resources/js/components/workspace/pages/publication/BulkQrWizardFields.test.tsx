@@ -81,10 +81,20 @@ function getFields(wizard: HTMLElement) {
     };
 }
 
+/*
+    FF-85 (`docs/101` Y5): sihirbaz artık TEK soru sorar. Bölge sayısı ve
+    masa başına koltuk varsayılan gelir ("ileri" başlığı altında
+    değiştirilebilir), bu yüzden test önce alanları TEMİZLER, sonra kendi
+    değerlerini yazar — varsayılanın üstüne yazmak "14" gibi birleşmiş bir
+    sayı üretirdi.
+*/
 async function fillValidPlan(user: ReturnType<typeof userEvent.setup>, wizard: HTMLElement) {
     const { areaSectionCount, tableCount, seatCountPerTable } = getFields(wizard);
+    await user.clear(areaSectionCount);
     await user.type(areaSectionCount, '3');
+    await user.clear(tableCount);
     await user.type(tableCount, '12');
+    await user.clear(seatCountPerTable);
     await user.type(seatCountPerTable, '2');
 }
 

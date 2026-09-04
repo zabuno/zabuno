@@ -1,7 +1,8 @@
 # 101 — Acemi-UX programı: "Adana'dan gelmiş kebapçı" için tasarım
 
-**Durum:** Faz 1 ✅ (FF-73), Faz 2 ✅ (FF-81 Y3 hatırlatması, FF-82 yayın
-dili). Sayaç: **2/4 tamamlandı, 3/4 aktif.**
+**Durum:** Faz 1 ✅ (FF-73), Faz 2 ✅ (FF-81, FF-82), Faz 3 ✅ (FF-85).
+Sayaç: **3/4 tamamlandı, 4/4 aktif** (Faz 4 gerçek acemi ölçümü — sahibin
+çevresinden üç kişi gerektirir).
 **Sahibin sözü:** "Adana'dan, Urfa'dan gelmiş kebapçı hedef kitle… aptallar
 için tasarım." Buradaki "aptal" bir hakaret değil, bir **tasarım kısıtıdır**:
 kullanıcı yazılım bilmez, bilmek de istemez; işi kebap satmaktır. Ekran ona
@@ -93,7 +94,7 @@ Basılı kod ölmez: menü değişse de aynı kod çalışır (`docs/81`).
 | Y2 Ürün ekle | ✅ | ✅ (`docs/47` §3) | 🔶 "Allergens" | ✅ K6 | ✅ |
 | Y3 Fiyat değiştir | ✅ | ✅ satır içi | ✅ yayın hatırlatması (FF-81) | ✅ | Faz 2 ✅ |
 | Y4 Yayınla | ✅ | ✅ tek düğme | ✅ sesli dil (FF-82) | ✅ `docs/81` | Faz 2 ✅ |
-| Y5 QR bas | ✅ | 🔶 tema/boyut seçenekleri önde | 🔶 | ✅ kod ölmez | Faz 3 |
+| Y5 QR bas | ✅ | ✅ tek soru (FF-85) | 🔶 | ✅ kod ölmez | Faz 3 ✅ |
 
 ---
 
@@ -115,8 +116,12 @@ Basılı kod ölmez: menü değişse de aynı kod çalışır (`docs/81`).
   "Yayınla — müşteri bundan sonra bunu görür."
 - Terim sözlüğü tek yerde (`i18n` katalog yorumu): terim + tek cümle.
 
-### Faz 3 — QR'ı iki tıka indir
-- "Masa sayısı" tek soru; tema/boyut "ileri" arkasında; PDF ilk çıktı.
+### Faz 3 — QR'ı iki tıka indir ✅ (FF-85, 2026-09-04)
+- "Masa sayısı" TEK görünür soru; bölge sayısı (1), masa başına koltuk (4),
+  ad öneki, sıra başlangıcı ve aralık varsayılan gelir ve "Advanced options"
+  altında değiştirilebilir. Altı zorunlu alan → bir soru.
+- Tema/boyut ve PDF çıktısı sırası `docs/08` kapsamında; bu paket alan
+  sayısını indirdi.
 
 ### Faz 4 — Ölçülü acemi testi
 - 3 gerçek acemi (sahibin çevresi), 5 yolculuk, 320 px telefon; ölçü:

@@ -375,6 +375,15 @@ satırlar, dokunma yüksekliği, içeriden yuvarlanan vurgu, tema seçiminde
 hizasız nokta yerine onay imi. Yedi donmuş test yeni yerleşimle güncellendi;
 yeni test `AccountMenu.test`.
 
+### FF-85 ek paket — QR sihirbazı tek soruya indi (2026-09-04)
+
+`docs/101` Y5: karekod bastırmak için altı zorunlu alan vardı (bölge sayısı,
+masa sayısı, koltuk, ad öneki, sıra başlangıcı, aralık). Beşinin makul bir
+varsayılanı var; varsayılanı olan alan kullanıcıya sorulmaz (`docs/47` Kural
+4). Görünen tek soru "kaç masa", gerisi "Advanced options" altında ve DOM'da
+kalır (klavye/ekran okuyucu). Dört donmuş test yeni sıra ve varsayılanlarla
+güncellendi.
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket
