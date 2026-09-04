@@ -1070,8 +1070,30 @@ export function WorkspaceApp({
                 className={
                     renderPersistentSidebar === undefined ? 'w-auto max-w-[14rem]' : undefined
                 }
-                onOpenProfile={currentWorkspace ? () => goToSection('profile') : undefined}
-                onOpenSettings={currentWorkspace ? () => goToSection('settings') : undefined}
+                /*
+                    HESAP MENÜSÜ YALNIZ: çalışma alanı değiştir, çıkış
+                    (FF-130, teslim paketinin kuralı).
+
+                    Profil ve Ayarlar masaüstünde rayın dibindeki sabit
+                    blokta açıkta duruyor (FF-127); menüde de durmaları,
+                    aynı hedefin iki evi olması demekti.
+
+                    TELEFONDA RAY YOKTUR. İki maddeyi orada da kaldırmak,
+                    ikisini de ULAŞILAMAZ yapardı: kayıtta grupları olmadığı
+                    için çekmecede ve alt çubukta da çizilmiyorlar. Kural bu
+                    yüzden "menüden kaldır" değil, "menüde yalnız ray
+                    yokken dursun".
+                */
+                onOpenProfile={
+                    currentWorkspace && renderPersistentSidebar === undefined
+                        ? () => goToSection('profile')
+                        : undefined
+                }
+                onOpenSettings={
+                    currentWorkspace && renderPersistentSidebar === undefined
+                        ? () => goToSection('settings')
+                        : undefined
+                }
                 onLogout={() => void handleLogout()}
                 loggingOut={loggingOut}
             />

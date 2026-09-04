@@ -1,5 +1,29 @@
 # 71 — Mavi çerçeve: üç ayrı kaynak
 
+## GÜNCELLEME — 2026-09-04: karar sahibi tarafından geri alındı (FF-130)
+
+Bu belgedeki "mavi **olamaz**" kararı **artık geçerli değildir**. Sahip,
+AEP teslim paketini kanonik ilan etti: *"zip dosyaları bu işin tanrısıdır"*.
+Paket odak halkasını parlamento mavisi `#003399` (koyu temada `#93a8f4`)
+olarak tanımlıyor ve uygulandı.
+
+Belgenin geri kalanı SİLİNMEDİ, çünkü kaydettiği şikâyet gerçekti ve ayrımı
+hâlâ doğru: yasaklanan şey **metin** mavisiydi — okunacak bir yazının
+markadan kopuk bir maviye kayması — ve **tarayıcının kendi** halkasıydı,
+yani ürünün seçmediği, temayla değişmeyen bir renk. Şimdi çizilen halka
+ürünün KENDİ seçtiği bir kenarlıktır, metin değildir ve iki temada da
+ölçülmüştür.
+
+Ölçüm (`tokens.aep.guard.test`, `DS-AEP-INK-11`): halka, zemine karşı metin
+dışı 3:1 eşiğini iki temada da geçer. Aynı mavi koyu zeminde 1.85:1 verirdi;
+orada blue/300 kullanılır.
+
+Bu güncelleme, belgenin kalanındaki teknik kuralları (tarayıcının kendi
+halkasının kapatılması, `:focus` ile `:focus-visible` sıra kuralı, offset)
+DEĞİŞTİRMEZ; yalnız rengi değiştirir.
+
+---
+
 **Talep:** girdinin, kartın ya da düğmenin etrafında mavi bir çizgi olmayacak —
 ne sekmeyle gezilirken ne fareyle tıklanınca.
 

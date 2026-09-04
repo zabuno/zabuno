@@ -400,6 +400,39 @@ ve sürücü `clamav` değilse hiçbir görsel türev üretilmez — kütüphane
 önizleme çıkmaz ve fotoğraf menüde kullanılamaz. Ürün doğru davranıyor
 (taranmamış dosyayı yayına almıyor); eksik olan dağıtımdır.
 
+## 5n. FF-130 — teslim paketi kanonik ilan edildi (2026-09-04)
+
+**Sahibin kararı:** *"herşeyin üstünde zip dosyaları UI var… zip dosyaları bu
+işin tanrısıdır."* Depodaki iki karar teslim paketiyle çelişiyordu; ikisi de
+pakete çevrildi.
+
+**1. Odak halkası artık parlamento mavisi.** `--focus` `#003399` (koyu temada
+`#93a8f4`). `docs/71` bunun tersini —"mavi OLAMAZ"— kaydediyordu ve o belge
+SİLİNMEDİ, başına geri alma notu eklendi: kaydettiği şikâyet gerçekti ve
+ayrımı hâlâ doğru. Yasaklanan şey METİN mavisiydi ve TARAYICININ KENDİ
+halkasıydı; şimdi çizilen halka ürünün kendi seçtiği bir kenarlıktır. İki
+temada da metin dışı 3:1 eşiği ölçülüyor (`DS-AEP-INK-11`), çünkü aynı mavi
+koyu zeminde 1.85:1 verirdi.
+
+**Ekranda ölçüldü — ve ölçüm aracı yanılttı.** `getComputedStyle` odaklanmış
+düğmede halka rengini metnin rengi diye bildiriyordu; ekran görüntüsünde
+halka net biçimde maviydi. Bu yüzden yanlış teşhise dayanan bir "düzeltme"
+eklenip geri alındı: doğrulama ekran görüntüsüyle yapıldı, hesaplanan stille
+değil.
+
+**2. Görünüm Profil ekranına taşındı.** FF-119'da Ayarlar > Hesap'a
+konmuştu ve gerekçesi doğruydu (tema kişiye aittir). Teslim paketi aynı
+gerekçeyi bir adım öteye götürüyor: kişiye ait olan HER ŞEY Profil
+ekranındadır; Ayarlar çalışma alanına aittir ve çalışma alanı değişince
+içeriği değişir. Tema orada dururken, kişisel bir tercih restoran değişince
+değişecekmiş gibi görünüyordu. Tek ev kuralı korundu.
+
+**3. Hesap menüsü sadeleşti** — yalnız çalışma alanı değiştirme ve çıkış.
+Profil ve Ayarlar rayın dibindeki blokta (FF-127). AMA telefonda ray yoktur
+ve iki bölüm kayıtta grupsuz olduğu için çekmecede de çizilmez; menüden
+tamamen kaldırmak ikisini de ULAŞILAMAZ yapardı. Kural bu yüzden "menüden
+kaldır" değil, **"menüde yalnız ray yokken dursun"**.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük

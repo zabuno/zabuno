@@ -1,6 +1,7 @@
 import { t } from '../../../i18n/workspace';
 import type { BrandProfile } from '../BrandEditForm';
 import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
+import { AppearanceRegion } from './profile/AppearanceRegion';
 import { BrandColorsRegion } from './profile/BrandColorsRegion';
 import { ProfileAvatarRegion } from './profile/ProfileAvatarRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
@@ -76,6 +77,15 @@ export function ProfilePage({
                     </h3>
                     <AccountSettingsRegion currentName={userName} />
                 </section>
+
+                {/*
+                    GÖRÜNÜM BURADA (FF-130). Kişiye ait olan her şey bu
+                    ekrandadır: ad, fotoğraf, tema ve satır aralığı. Ayarlar
+                    çalışma alanına aittir ve çalışma alanı değişince içeriği
+                    değişir; tema orada dururken kişisel bir tercih, restoran
+                    değişince değişecekmiş gibi görünüyordu.
+                */}
+                <AppearanceRegion />
 
                 {canManageBrand && brand !== null ? (
                     <BrandColorsRegion

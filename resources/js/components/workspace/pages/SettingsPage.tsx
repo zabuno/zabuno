@@ -4,7 +4,6 @@ import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
 import { BrandLogoRegion } from './brand/BrandLogoRegion';
 import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
-import { AppearanceRegion } from './settings/AppearanceRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
 
@@ -127,19 +126,22 @@ export function SettingsPage({
                             <div className="flex flex-col gap-[var(--space-6)]">
                                 <AccountSettingsRegion currentName={userName} />
                                 {/*
-                                    GÖRÜNÜM BURAYA TAŞINDI (FF-119, sahibin
-                                    bildirimi 2026-09-04). Önceden hem hesap
-                                    menüsünün içinde hem profil ekranındaydı:
-                                    aynı ayarın iki evi vardı ve kullanıcı
-                                    hangisinin gerçek olduğunu bilemezdi.
+                                    GÖRÜNÜM BURADAN GİTTİ (FF-130, sahibin
+                                    kararı 2026-09-04: "zip dosyaları bu işin
+                                    tanrısıdır").
 
-                                    Hesap sekmesi doğru ev, çünkü tema KİŞİYE
-                                    aittir, markaya değil: aynı restoranın
-                                    gündüz müdürü açık, gece kapanışı yapan
-                                    kişi koyu temayı seçebilir ve ikisi de aynı
-                                    menüyü aynı renklerde yayınlar.
+                                    FF-119'da buraya taşınmıştı ve gerekçesi
+                                    doğruydu: tema kişiye aittir. Ama teslim
+                                    paketi aynı gerekçeyi bir adım öteye
+                                    götürüyor — KİŞİYE ait olan her şey Profil
+                                    ekranındadır; Ayarlar çalışma alanına
+                                    aittir. Tema Ayarlar'da kaldıkça, kişisel
+                                    bir tercih çalışma alanı değişince
+                                    değişecekmiş gibi görünüyordu.
+
+                                    Tek ev kuralı korunuyor: ayar iki yerde
+                                    değil, Profil > Görünüm'de.
                                 */}
-                                <AppearanceRegion />
                             </div>
                         )}
 
