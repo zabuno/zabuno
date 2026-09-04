@@ -186,10 +186,48 @@ ve yapay zekâ sistemlerine "bu bir ürün sayfası" demez. Yol segmenti üçün
 yapar. Eski biçimi kıran bir şey yok: sayfa açılırken `#item=101` okunur, o
 ürüne kaydırılır ve adres sessizce canonical hâline yükseltilir.
 
-### 4.4 Rezerve kelimeler
+### 4.4 Uygulama ve kimlik adresleri — dil dizini YOK
+
+Sahibin sorusu (2026-09-04): *"yeni url adreslerine göre, login, register,
+urls, panels, urls?"*
+
+Sitede **üç ayrı adres uzayı** var ve üçünün kuralı farklıdır. Karışmaları
+kazayla değil kararla engelleniyor.
+
+| Uzay | Örnek | Dil adreste mi? | İndekslenir mi? |
+| --- | --- | --- | --- |
+| Kurumsal site | `/tr/urun/qr-menu/` | **Evet** | Evet |
+| Uygulama ve kimlik | `/login`, `/app/{ws}/qr-codes` | **Hayır** | Hayır |
+| Kiracı (misafir) | `/restoran/pasa-doner/menu/ab12cd34ef` | Hayır | Evet |
+
+**Uygulama ve kimlik adresleri dil dizini ALMAZ.** Bu bir eksiklik değil, üç
+gerekçesi olan bir karar:
+
+1. **Zaten indekslenmiyorlar.** `/app`, `/login`, `/register`, `/platform`
+   hem `noindex` hem robots.txt'te kapalı. Dil segmenti SEO'ya hiçbir şey
+   kazandırmaz; yalnız aynı ekranın iki adresi olur.
+2. **Uygulamanın dili KULLANICININ ayarıdır**, adresin değil. Adrese yazmak,
+   kaydedilmiş tercihle adresin çekişmesi demekti: `/tr/app/…` açan İngilizce
+   bir kullanıcı hangisini görecek? İkisinden biri sessizce kaybeder.
+3. **E-postayla giden bağlantılar dilden bağımsız ve kalıcı olmak zorunda.**
+   Davet, şifre sıfırlama ve e-posta doğrulama bağlantıları alıcının diline
+   göre üretilemez: `/tr/sifre-sifirla/{token}` alıcı İngilizceye geçtiğinde
+   ya kırılır ya da ikinci bir yönlendirme gerektirir.
+
+Aynı gerekçe **kiracı menüsü** için de geçerli: menünün tek bir kanonik adresi
+vardır, tür segmentinin dili işletmenin kendi dilidir ve misafirin arayüz dili
+çerezle taşınır (`?lang=` yalnız değiştirme bağlantısıdır ve `nofollow`).
+
+Çakışma **ilk segmentte** çözülür: kiracı adresi bir tür segmentiyle
+(`restoran`), kurumsal site bir dil koduyla (`tr`), uygulama ise sabit
+kelimelerle (`login`, `app`) başlar. Üçünün kökü de rezerve listesindedir ve
+bunun kendi testi var (`AddressSpaceTest`) — biri eksik kalsaydı bir işletme
+slug'ı bir gün `/login`'i gölgelerdi.
+
+### 4.5 Rezerve kelimeler
 
 `restoran`, `restaurant`, `menu`, `urun`, `product` ve dil kodları
-`config/url-policy.php` rezerve listesine girer: hiçbir işletme bu slug'ı
+`config/url-policy.php` rezerve listesine girer (§4.4): hiçbir işletme bu slug'ı
 alamaz, yoksa `/restoran/menu/...` gibi çözülemeyen adresler doğar.
 
 ---

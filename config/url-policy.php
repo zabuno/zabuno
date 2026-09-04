@@ -135,9 +135,11 @@ return [
     'reserved_slugs' => [
         'admin', 'api', 'app', 'assets', 'build', 'dish', 'email', 'forgot-password',
         'contact', 'health', 'help', 'invitations', 'kvkk', 'login', 'logout', 'media',
-        'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
+        'en', 'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
-        'sitemap.xml', 'storage', 'terms', 'up', 'urun', 'user', 'verify-email', 'www',
+        // Dil dizinleri de rezerve: kurumsal site `/tr/` ve `/en/` altında
+        // yaşıyor ve bir kiracı slug'ı o kökü gölgeleyemez (FF-121).
+        'sitemap.xml', 'storage', 'terms', 'tr', 'up', 'urun', 'user', 'verify-email', 'www',
     ],
 
     /*
