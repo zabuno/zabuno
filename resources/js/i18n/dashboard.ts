@@ -3,6 +3,20 @@ import { overridesFor } from './generated-overrides';
 
 const en = {
     'dashboard.heading': 'Home',
+    /*
+        KARŞILAMA (FF-131, AEP `DESIGN_SPEC` §2).
+
+        Teslim paketinin Home ekranı bir SELAMLAMAYLA açılıyor; depodaki
+        hâl panelin ne yaptığını anlatan bir paragrafla açılıyordu. Her
+        sabah aynı ekranı açan bir restoran sahibine ürünün kendini
+        tanıtması, ikinci günden itibaren gürültüdür.
+
+        İki biçim var çünkü ad HER ZAMAN bilinmez: ilk gün marka henüz
+        yazılmamıştır ve o boşluğa yer tutucu bir ad koymak, kullanıcının
+        adını bildiğimizi ima etmek olurdu.
+    */
+    'dashboard.greeting': 'Have a good shift.',
+    'dashboard.greeting.named': 'Have a good shift, {name}.',
     'dashboard.loading': 'Loading your dashboard summary…',
     'dashboard.empty': 'No menu has been created for this location yet.',
     'dashboard.empty.openMenu': 'Open Menu',

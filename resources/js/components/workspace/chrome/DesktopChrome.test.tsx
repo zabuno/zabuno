@@ -69,3 +69,68 @@ describe('masaüstü kenar çubuğu', () => {
         expect(container.querySelector('.sticky')).toBeNull();
     });
 });
+
+/**
+ * AEP kabuk grameri — teslim paketinin `DESIGN_SPEC.md` §1 "Kenar çubuğu".
+ *
+ * Referans kabukta ray 264px'tir ve iç dolgusu 12px'te sabittir. Depodaki hâl
+ * akışkan bir dolgu (`--space-fluid-md`, 16→24px) kullanıyordu: geniş ekranda
+ * ray içeriden şişiyor, aynı gezinti maddesi 1280px'te ve 1920px'te farklı
+ * yerden başlıyordu. Ray bir ÇIPADIR; ekran büyüdükçe büyümesi gereken yer
+ * içeriktir, çıpanın kendisi değil.
+ */
+describe('masaüstü kenar çubuğu — AEP grameri (FF-131)', () => {
+    const navGroups = [
+        {
+            key: 'primary',
+            label: 'Operations',
+            items: [{ key: 'home', label: 'Home', href: '/app/x/dashboard' }],
+        },
+    ];
+
+    it('ray 264px genişliktedir ve iç dolgusu ekranla birlikte büyümez', () => {
+        const { container } = render(
+            <DesktopSidebar navGroups={navGroups} navLabel="Restaurant admin" />,
+        );
+
+        const aside = container.querySelector('aside') as HTMLElement;
+
+        expect(aside.className).toContain('basis-[16.5rem]');
+        expect(aside.className).toContain('px-[var(--space-3)]');
+        expect(aside.className).not.toContain('px-[var(--space-fluid-md)]');
+    });
+
+    /**
+     * Dipteki Profil/Ayarlar satırları AKTİF İŞARETİNİ gezinti maddeleriyle
+     * AYNI dille taşır: marka rengi bir ray olarak satırın başına iner.
+     *
+     * Önceki hâlde bu satırlar yalnız zemin tonu alıyordu; hemen üstlerindeki
+     * `NavLink` maddeleri ise ton + marka rayı. Aynı kenar çubuğunda "buradasın"
+     * demenin iki ayrı işareti vardı ve alttaki daha zayıftı — Ayarlar'a geçen
+     * kullanıcı, gezinti maddelerindeki kadar net bir onay alamıyordu.
+     */
+    it('dipteki hedeflerin aktif satırı marka rayı taşır', () => {
+        render(
+            <DesktopSidebar
+                navGroups={navGroups}
+                navLabel="Restaurant admin"
+                railSections={[
+                    { key: 'profile', label: 'Profile', href: '/app/x/profile' },
+                    { key: 'settings', label: 'Settings', href: '/app/x/settings', active: true },
+                ]}
+            />,
+        );
+
+        const active = screen.getByRole('link', { name: 'Settings' });
+        const idle = screen.getByRole('link', { name: 'Profile' });
+
+        expect(active.className).toContain('border-s-brand');
+        expect(active.className).toContain('rounded-[var(--radius-lg)]');
+        /*
+            Pasif satır da rayın YERİNİ ayırır (saydam kenarlık): ayırmasaydı
+            aktif satır 2px kayar ve etiketler tek tek yerinden oynardı.
+        */
+        expect(idle.className).toContain('border-s-2');
+        expect(idle.className).not.toContain('border-s-brand');
+    });
+});

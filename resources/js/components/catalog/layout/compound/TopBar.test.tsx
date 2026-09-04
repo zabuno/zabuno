@@ -80,6 +80,28 @@ describe('TopBar', () => {
         expect(header?.className ?? '').not.toMatch(/(?:^|\s)bg-white(?:\s|$)/);
         expect(header?.className ?? '').not.toMatch(/dark:bg-gray-900(?:\s|$)/);
     });
+
+    /**
+     * Başlık çubuğunun bir TABAN yüksekliği vardır — teslim paketinin
+     * `DESIGN_SPEC.md` §1 "Üst çubuk": `min-height: 64px`.
+     *
+     * Taban olmadan çubuk içeriğine göre büzülüyordu: komut alanı olmayan bir
+     * ekranda (giriş, hata sayfası, henüz çalışma alanı seçilmemiş hâl) yalnız
+     * marka satırı kalıyor ve çubuk ince gri bir şeride dönüşüyordu. Aynı
+     * uygulamada sayfadan sayfaya farklı kalınlıkta bir başlık, kullanıcıya
+     * "başka bir yere geldim" dedirtir.
+     *
+     * Rakam elle yazılmaz, TÜRETİLİR: çubuk bir kontrol boyu artı iki yanında
+     * birer 8pt nefestir. Yoğunluk ayarı kontrol boyunu değiştirdiğinde çubuk
+     * da onunla birlikte değişir; sabit bir 64px, ferah moddaki 52px'lik komut
+     * alanını kırpardı.
+     */
+    it('çubuğun taban yüksekliği kontrol boyundan türetilir', () => {
+        const { container } = render(<TopBar brand={{ name: 'Zabuno' }} />);
+        const header = container.querySelector('header');
+
+        expect(header?.className ?? '').toMatch(/min-h-\[calc\(var\(--control-height\)/);
+    });
 });
 
 describe('app.css token contract (docs/06 §11 AEP mirası)', () => {

@@ -30,7 +30,14 @@ export function StatCard({ label, value, trend, icon, loading = false, className
             <div className="flex flex-col gap-1">
                 <span className="text-meta font-semibold text-fg-muted">{label}</span>
                 {loading ? (
-                    <Skeleton shape="text" width="6rem" height="1.75rem" />
+                    /*
+                        Yer tutucu, YERİNİ TUTACAĞI ŞEYİN ölçüsünü bilir.
+                        Sabit `1.75rem` idi; rakam AEP metrik ölçeğine (2–3rem)
+                        çıkınca veri geldiği anda kart uzuyor, altındaki her şey
+                        aşağı kayıyor ve kullanıcı tam o sırada tıkladığı hedefi
+                        kaybediyordu.
+                    */
+                    <Skeleton shape="text" width="6rem" height="var(--aep-text-metric)" />
                 ) : (
                     <StatValue value={value} trend={trend} />
                 )}

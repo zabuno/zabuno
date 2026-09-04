@@ -40,6 +40,23 @@ export function TopBar({
                 */
                 'surface-glass flex flex-wrap items-center gap-[var(--space-3)] border-b',
                 'px-[var(--space-fluid-md)] py-[var(--space-3)]',
+                /*
+                    ÇUBUĞUN BİR TABANI VAR — AEP `DESIGN_SPEC` §1: `min-height:
+                    64px`.
+
+                    Taban olmadan çubuk içeriğine göre büzülüyordu: komut alanı
+                    olmayan bir ekranda (giriş, hata, henüz çalışma alanı
+                    seçilmemiş hâl) geriye yalnız marka satırı kalıyor ve
+                    başlık ince gri bir şeride dönüşüyordu. Aynı uygulamada
+                    sayfadan sayfaya farklı kalınlıkta bir başlık, kullanıcıya
+                    "başka bir yere geldim" dedirtir.
+
+                    Rakam elle yazılmaz, TÜRETİLİR: çubuk bir kontrol boyu artı
+                    iki yanında birer 8pt nefestir. Ferah yoğunlukta kontrol
+                    52px'e çıkınca çubuk da onunla büyür; sabit bir 64px orada
+                    komut alanını kırpardı.
+                */
+                'min-h-[calc(var(--control-height)+(var(--space-2)*2))]',
                 className,
             )}
         >
@@ -69,7 +86,9 @@ export function TopBar({
             ) : (
                 <div className="flex-[1_1_0%]" />
             )}
-            {end ? <div className="flex items-center gap-2">{end}</div> : null}
+            {/* Boşluk jetondan gelir: `gap-2` Tailwind'in kendi ölçeğiydi ve
+                yoğunluk ayarı değiştiğinde çubuğun geri kalanıyla ayrışırdı. */}
+            {end ? <div className="flex items-center gap-[var(--space-2)]">{end}</div> : null}
         </header>
     );
 }

@@ -283,6 +283,88 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
     });
 });
 
+/**
+ * HOME BAŞLIK BLOĞU — AEP teslim paketi (`Restoran Paneli v2.dc.html`,
+ * `DESIGN_SPEC.md` §2).
+ *
+ * Referans ekran iki satırla açılıyor: küçük ve sakin bir üst satır, onun
+ * altında büyük bir KARŞILAMA. Depodaki hâl tek bir "Ana sayfa" başlığı ve
+ * altında panelin ne yaptığını anlatan bir paragraftı — yani her sabah
+ * açılan ekran, kullanıcıya kendisini değil KENDİNİ anlatıyordu.
+ *
+ * Başlığın erişilebilir adı DEĞİŞMEZ ("Home"): kabuk sözleşmesi gezinti
+ * etiketi ile sayfa başlığının aynı olmasını şart koşuyor
+ * (`WorkspaceApp.pages.test.tsx`). Karşılama bu yüzden başlığın YERİNE
+ * geçmez, altına gelir — h1 sayfayı adlandırmayı sürdürür, karşılama ise
+ * ekranın ilk baktığın yerdeki insan sesidir.
+ */
+describe('Home karşılama başlığı (AEP_HOME_GREETING_RED)', () => {
+    beforeEach(() => {
+        setViewport(320, 480);
+    });
+
+    it('sayfayı adlandıran h1 hâlâ "Home" olarak okunur', () => {
+        render(<DashboardPage dashboardMenuTree={null} brand={makeBrand()} />);
+
+        expect(screen.getByRole('heading', { level: 1, name: 'Home' })).toBeInTheDocument();
+    });
+
+    it('marka adı biliniyorsa karşılama o adı kullanır', () => {
+        render(<DashboardPage dashboardMenuTree={null} brand={makeBrand()} />);
+
+        expect(screen.getByText('Have a good shift, Zabuno Kahve.')).toBeInTheDocument();
+    });
+
+    /*
+        Ad YOKKEN uydurulmaz. "Have a good shift, İşletmeniz." gibi bir
+        yer tutucu, kullanıcının adını bildiğimizi ima eder ve ilk gün
+        tam olarak bilmediğimiz tek şey odur.
+    */
+    it('marka yokken karşılama ad uydurmaz', () => {
+        render(<DashboardPage dashboardMenuTree={null} />);
+
+        expect(screen.getByText('Have a good shift.')).toBeInTheDocument();
+        expect(screen.queryByText(/Have a good shift,/)).toBeNull();
+    });
+
+    /*
+        Karşılama BAŞLIK BLOĞUNUN İÇİNDE. Sayfanın herhangi bir yerinde
+        duran bir cümle, referanstaki "üst satır + büyük satır" ritmini
+        vermez; iki satır aynı kapsayıcıda ve dar bir boşlukla durmalı.
+    */
+    it('karşılama, h1 ile aynı başlık bloğunda durur', () => {
+        render(<DashboardPage dashboardMenuTree={null} brand={makeBrand()} />);
+
+        const header = screen.getByRole('heading', { level: 1, name: 'Home' }).parentElement;
+
+        expect(header?.textContent).toContain('Have a good shift, Zabuno Kahve.');
+    });
+
+    /*
+        Sayı kartları AEP metrik ölçeğini GERÇEKTEN kullanmalı. Bu test
+        `StatValue`'nun kendi testini tekrar etmiyor: Home'un o bileşeni
+        hâlâ kullandığını, yani ölçeğin ekrana ULAŞTIĞINI doğruluyor.
+    */
+    it('sayı kartlarındaki rakam metrik ölçekte ve tabular çizilir', () => {
+        render(
+            <DashboardPage
+                dashboardMenuTree={makeMenuTree()}
+                brand={makeBrand()}
+                location={makeLocation()}
+            />,
+        );
+
+        // Kategori ve ürün sayısı da 1; ikisi de aynı ölçeği taşımalı.
+        const values = screen.getAllByText('1');
+
+        expect(values.length).toBeGreaterThan(0);
+        for (const value of values) {
+            expect(value.style.fontSize).toBe('var(--aep-text-metric)');
+            expect(value.className).toContain('tabular-nums');
+        }
+    });
+});
+
 const WORKSPACE_ID = 71;
 
 function jsonResponse(status: number, body: unknown): Response {

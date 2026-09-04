@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import { TeamMemberList } from './TeamMemberList';
@@ -29,7 +29,7 @@ describe('TeamMemberList — satır grameri', () => {
     function renderList() {
         return render(
             <TeamMemberList
-                status="ready"
+                status="success"
                 members={members}
                 label="Üyeler"
                 loadingText="Yükleniyor"

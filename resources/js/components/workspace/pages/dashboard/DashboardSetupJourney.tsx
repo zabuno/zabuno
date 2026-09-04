@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CaretDown, Check } from '@phosphor-icons/react';
+import { ArrowRight, CaretDown, CheckCircle, Circle } from '@phosphor-icons/react';
 import { cn } from '../../../../lib/utils';
 import { t } from '../../../../i18n/dashboard';
 import type { BrandProfile } from '../../BrandEditForm';
@@ -77,20 +77,34 @@ function StepButton({
     isNext: boolean;
     onNavigateToSection?: (section: string) => void;
 }) {
-    const marker = (
-        <span
+    /*
+        DURUM İŞARETİ — AEP `DESIGN_SPEC` §2 "Kurulum kartı": biten adım DOLU
+        bir onay dairesi, bekleyen adım BOŞ bir daire.
+
+        Elle kurulan daire+onay yerine paketin adlandırdığı iki simge
+        kullanılıyor. Üç hâl hâlâ üç AYRI biçimle ayrışıyor ve hiçbiri yalnız
+        renge dayanmıyor (WCAG 1.4.1): dolu gövde, kalın halka, ince halka.
+        Renk körü bir kullanıcı da, yüksek kontrast modundaki biri de üçünü
+        ayırt eder.
+
+        Sıradaki adımın halkası MARKA RENGİNDE DEĞİL. Marka vurgusu artık
+        hemen üstteki "şimdi" kartının ZEMİNİ; aynı rengi burada ikinci kez
+        kullanmak, sayfadaki tek eylemin ne olduğunu bulanıklaştırırdı.
+    */
+    const marker = row.done ? (
+        <CheckCircle
             aria-hidden="true"
-            className={cn(
-                'flex h-[1.5rem] w-[1.5rem] shrink-0 items-center justify-center rounded-pill border',
-                row.done
-                    ? 'border-transparent bg-[var(--color-fg)] text-[var(--color-surface)]'
-                    : isNext
-                      ? 'border-2 border-action bg-surface'
-                      : 'border-border bg-surface',
-            )}
-        >
-            {row.done ? <Check size={13} weight="bold" /> : null}
-        </span>
+            size={22}
+            weight="fill"
+            className="shrink-0 text-fg-success"
+        />
+    ) : (
+        <Circle
+            aria-hidden="true"
+            size={22}
+            weight={isNext ? 'bold' : 'regular'}
+            className={cn('shrink-0', isNext ? 'text-fg' : 'text-fg-muted')}
+        />
     );
 
     const body = (
@@ -100,9 +114,22 @@ function StepButton({
                 <span
                     className={cn(
                         'truncate text-body',
-                        // Sıradaki adım KALIN: "şimdi neredeyim" sorusunun
-                        // cevabı listeyi okumadan görünmeli.
-                        isNext ? 'font-semibold text-fg' : 'font-medium text-fg',
+                        /*
+                            BİTEN ADIM soluk VE üstü çizili (`DESIGN_SPEC` §2).
+                            Üstü çizgi, "bu iş kapandı"yı renkten bağımsız
+                            söyleyen ikinci işarettir; tek başına soluk renk,
+                            yüksek kontrast modunda kaybolur.
+
+                            Sıradaki adım KALIN: "şimdi neredeyim" sorusunun
+                            cevabı listeyi okumadan görünmeli. Ağırlık 700 —
+                            AEP merdiveni 400/500/700; 600 o merdivende yok ve
+                            tarayıcı tarafından sentezleniyordu.
+                        */
+                        row.done
+                            ? 'font-medium text-fg-secondary line-through'
+                            : isNext
+                              ? 'font-bold text-fg'
+                              : 'font-medium text-fg',
                     )}
                 >
                     {row.label}
@@ -148,7 +175,9 @@ function StepButton({
             aria-current={isNext ? 'step' : undefined}
             className={cn(
                 shared,
-                'min-h-[var(--density-hit-area-min)] text-start',
+                // Satır yüksekliği yoğunluk jetonundan (`DESIGN_SPEC` §1):
+                // kompakt modda satır alçalır, dokunma hedefi ASLA küçülmez.
+                'min-h-[var(--control-height)] text-start',
                 'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-inout)]',
                 'hover:bg-surface-hover',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
@@ -320,20 +349,40 @@ export function DashboardSetupJourney({
         publication: t('dashboard.now.publication'),
         qr: t('dashboard.now.qr'),
     };
+    /*
+        DÜĞME MÜREKKEP DOLGULU. Kart artık marka zeminli olduğu için, marka
+        zeminli bir düğme onun üstünde KAYBOLURDU — sarı üstünde sarı. AEP
+        referansı da tam bunu yapıyor: zemin marka, birincil eylem ters
+        (mürekkep dolgu, yüzey rengi metin).
+    */
     const nowButtonClass =
-        'inline-flex min-h-[var(--density-hit-area-min)] items-center justify-center rounded-md bg-action px-5 py-3 text-body font-semibold text-action-fg hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
+        'inline-flex min-h-[var(--control-height)] items-center justify-center gap-[var(--space-2)] rounded-[var(--radius-lg)] bg-[var(--color-fg)] px-[var(--space-5)] py-[var(--space-3)] text-section font-bold text-[var(--color-surface)] transition-opacity duration-[var(--duration-fast)] ease-[var(--easing-inout)] hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
     return (
         <section aria-label={t('dashboard.setup.region')} className="flex flex-col gap-3">
             {noviceHome ? (
                 <section
                     aria-label={t('dashboard.now.region')}
-                    // Marka şeridi: sayfadaki TEK vurgu (`docs/102` §1, `docs/101` A1).
-                    className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-border border-s-4 border-s-brand bg-surface p-4"
+                    /*
+                        MARKA ZEMİN, ince şerit değil (FF-131, AEP
+                        `DESIGN_SPEC` §2 "Şimdi kartı").
+
+                        Önceki hâl nötr bir yüzeyin sol kenarında 4 piksellik
+                        bir marka şeridiydi. Ölçülen sonuç: ekranın TEK eylemi,
+                        hemen altındaki beş kurulum satırıyla aynı görsel
+                        ağırlıktaydı — ikisi de beyaz kart, ikisi de aynı
+                        kenarlık. "Önce neye bakayım?" sorusu cevapsız
+                        kalıyordu ve cevapsız kalan o soru, kullanıcının
+                        donduğu andır.
+
+                        Külliyat sarıyı YAPISAL vurgu olarak dondurur: açık
+                        zeminde küçük sarı metin asla, ama tam bir zemin evet.
+                        Sarı üstünde mürekkep metin, panelin en yüksek
+                        kontrastlı yüzeyidir.
+                    */
+                    className="flex flex-col items-start gap-[var(--space-3)] rounded-[var(--radius-lg)] bg-action p-[var(--space-6)] text-action-fg"
                 >
-                    <h2 className="text-meta font-semibold text-fg-muted">
-                        {t('dashboard.now.heading')}
-                    </h2>
+                    <h2 className="text-meta font-bold">{t('dashboard.now.heading')}</h2>
                     {nextStep ? (
                         onNavigateToSection ? (
                             <button
@@ -342,15 +391,19 @@ export function DashboardSetupJourney({
                                 className={nowButtonClass}
                             >
                                 {nowLabel[nextStep.key]}
+                                <ArrowRight aria-hidden="true" size={20} weight="bold" />
                             </button>
                         ) : (
-                            <p className="text-body font-semibold text-fg">
-                                {nowLabel[nextStep.key]}
-                            </p>
+                            /*
+                                Gezinti bağlı değilse düğme çizilmez: hiçbir
+                                yere götürmeyen bir düğme, tıklanana kadar
+                                çalışıyor görünür. Cümle kalır, eylem kalmaz.
+                            */
+                            <p className="text-section font-bold">{nowLabel[nextStep.key]}</p>
                         )
                     ) : (
                         <>
-                            <p role="status" className="text-body text-fg">
+                            <p role="status" className="text-body">
                                 {t('dashboard.now.allDone')}
                             </p>
                             {onNavigateToSection ? (
@@ -360,6 +413,7 @@ export function DashboardSetupJourney({
                                     className={nowButtonClass}
                                 >
                                     {t('dashboard.now.openQr')}
+                                    <ArrowRight aria-hidden="true" size={20} weight="bold" />
                                 </button>
                             ) : null}
                         </>
@@ -390,10 +444,10 @@ export function DashboardSetupJourney({
             */}
             <details
                 open={!allDone}
-                className="group rounded-[var(--radius-md)] border border-border bg-surface"
+                className="group rounded-[var(--radius-lg)] border border-border bg-surface"
             >
-                <summary className="flex cursor-pointer flex-wrap items-center gap-[var(--space-3)] p-4">
-                    <h2 className="text-section font-semibold text-fg">
+                <summary className="flex cursor-pointer flex-wrap items-center gap-[var(--space-3)] p-[var(--space-5)]">
+                    <h2 className="text-section font-bold text-fg">
                         {allDone ? t('dashboard.setup.complete') : t('dashboard.setup.heading')}
                     </h2>
 
@@ -417,7 +471,7 @@ export function DashboardSetupJourney({
 
                     <span
                         aria-hidden="true"
-                        className="h-[0.25rem] min-w-[6rem] flex-1 overflow-hidden rounded-pill bg-[var(--color-surface-active)]"
+                        className="h-[0.375rem] min-w-[6rem] flex-1 overflow-hidden rounded-pill bg-[var(--color-surface-active)]"
                     >
                         <span
                             className={cn(
@@ -453,7 +507,7 @@ export function DashboardSetupJourney({
                 </summary>
 
                 {allDone ? (
-                    <p className="px-4 pb-2 text-body text-fg-secondary">
+                    <p className="px-[var(--space-5)] pb-[var(--space-2)] text-body text-fg-secondary">
                         {t('dashboard.setup.complete.summary')}
                     </p>
                 ) : null}
@@ -464,7 +518,7 @@ export function DashboardSetupJourney({
                         // sıradır ve ikinci satıra düşen adım, sıranın parçası
                         // gibi görünmez. Dar ekranda kendiliğinden alt alta iner.
                         'grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))]',
-                        'gap-[var(--space-2)] p-4 pt-0',
+                        'gap-[var(--space-2)] p-[var(--space-5)] pt-0',
                     )}
                 >
                     {rows.map((row) => {

@@ -300,7 +300,7 @@ export function TeamMemberList({
                                     Teslim paketinin kendi paneli de tam 40
                                     kullanıyor, bu yüzden ölçü ondan alındı.
                                 */
-                                className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-surface-subtle text-body font-bold text-fg-secondary"
+                                className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-pill bg-surface-subtle text-body font-bold text-fg-secondary"
                             >
                                 {member.name.slice(0, 1).toLocaleUpperCase('tr-TR')}
                             </span>

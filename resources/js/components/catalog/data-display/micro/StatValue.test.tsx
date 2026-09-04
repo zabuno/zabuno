@@ -7,7 +7,7 @@ import {
     readCustomProperties,
     resolveColor,
 } from '../../../../design-system/contrast';
-import { themeScope } from '../../../../design-system/cssSources';
+import { themeScope, readStyleLayers } from '../../../../design-system/cssSources';
 
 /**
  * Kontrast, sabit bir Tailwind hex'ine değil, bileşenin GERÇEKTEN okuduğu
@@ -52,6 +52,56 @@ describe('StatValue', () => {
     ] as const)('announces the %s trend to assistive tech', (trend, label) => {
         render(<StatValue value="1,204" trend={trend} />);
         expect(screen.getByText(label)).toBeInTheDocument();
+    });
+
+    /*
+        RAKAM METRİK ÖLÇEKTE (FF-131, AEP `DESIGN_SPEC` §2 "Sayı kartları").
+
+        Teslim paketinin çalışan Home ekranında sayı kartındaki rakam
+        34 piksel, 700 ağırlıkta ve `tabular-nums`. Depodaki karşılığı
+        `text-title` taşıyordu: aynı ölçek SAYFA BAŞLIĞININ ölçeğidir.
+        Yani bir sayının, bir başlığın ve bir kart başlığının hepsi
+        birbirine yakın büyüklükteydi ve gözün "burada bir ÖLÇÜM var"
+        diyebileceği tek bir işaret kalmıyordu.
+
+        AEP bu iş için ayrı bir basamak yayınlıyor: `--aep-text-metric`.
+        Test onu ADIYLA donduruyor, ham piksel değeriyle değil — ölçek
+        yarın değişirse bu test değil, jetonun kendisi değişir.
+
+        `tabular-nums` ayrı bir şart: oransal rakamlarda "1" diğer
+        rakamlardan dar olduğu için alt alta duran iki kartın sayıları
+        farklı genişlikte görünür ve sütun kayar.
+    */
+    it('rakamı AEP metrik ölçeğinde ve tabular rakamlarla çizer', () => {
+        render(<StatValue value="1,204" />);
+        const valueNode = screen.getByText('1,204');
+
+        expect(valueNode.style.fontSize).toBe('var(--aep-text-metric)');
+        expect(valueNode.style.lineHeight).toBe('var(--aep-text-metric-lh)');
+        expect(valueNode.className).toContain('tabular-nums');
+
+        /*
+            Jeton GERÇEKTEN var mı? `var()` çözülemezse tarayıcı hata
+            vermez, öğe ebeveyninin boyutunu sessizce miras alır — yani
+            yukarıdaki üç satır "geçti" der ve ekranda hiçbir şey değişmez.
+        */
+        const styles = readStyleLayers();
+        expect(styles).toContain('--aep-text-metric:');
+        expect(styles).toContain('--aep-text-metric-lh:');
+    });
+
+    /*
+        AĞIRLIK 700. AEP yalnız üç ağırlık yayınlıyor (400/500/700) ve
+        `font-semibold` (600) o üçünün dışında: seçilen ağırlık yazı
+        tipinde yoksa tarayıcı onu SENTEZLER ve rakamlar kalınlaşırken
+        biçimleri hafifçe bozulur.
+    */
+    it('rakamı AEP ağırlık merdiveninin dışına çıkmadan kalınlaştırır', () => {
+        render(<StatValue value="1,204" />);
+        const valueNode = screen.getByText('1,204');
+
+        expect(valueNode.className).toContain('font-bold');
+        expect(valueNode.className).not.toContain('font-semibold');
     });
 
     it('renders the "up" trend at WCAG 2.2 AA text contrast in both themes (1.4.3)', () => {

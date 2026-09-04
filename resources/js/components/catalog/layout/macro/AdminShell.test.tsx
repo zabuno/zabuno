@@ -167,11 +167,20 @@ describe('AdminShell', () => {
         ];
         renderShell({ persistentSidebar: sidebarSlot(labeledGroups) });
         const heading = screen.getAllByText('Main')[0];
-        // Niyet değişmedi: başlık semantic bir token tüketmeli, ham gri değil.
-        // Token adı `--color-text-secondary` arbitrary sözdiziminden
-        // `text-fg-subtle` utility'sine taşındı; ikisi de aynı semantic
-        // katmandan gelir, ikincisi okunur ve tema/yoğunlukla birlikte akar.
-        expect(heading.className).toMatch(/text-fg-subtle/);
+        /*
+            Niyet değişmedi: başlık SEMANTIC bir ön plan jetonu tüketmeli, ham
+            gri değil. Donan şey jetonun ADI değil, ham rengin kabuğa
+            sızmamasıdır — ad bir kez zaten taşındı (`--color-text-secondary`
+            arbitrary sözdiziminden `text-fg-subtle` utility'sine).
+
+            FF-131'de bir kez daha taşındı: AEP teslim paketinin `DESIGN_SPEC`
+            §1'i grup başlığını `fg-secondary` diye adlandırıyor ve `TOKEN_MAP`
+            ikisine de AYNI değeri veriyor (`rgb(8 6 22 / 66%)`). Yani ekranda
+            hiçbir şey değişmedi; kabuk artık teslim paketiyle aynı kelimeyi
+            kullanıyor. Bu yüzden ölçüm ikisini de kabul eder ve asıl kuralı —
+            ham gri yasağını — olduğu gibi korur.
+        */
+        expect(heading.className).toMatch(/text-fg-(?:subtle|secondary)/);
         expect(heading.className).not.toMatch(/(?:^|\s)text-gray-500(?:\s|$)/);
         expect(heading.className).not.toMatch(/dark:text-gray-400(?:\s|$)/);
     });

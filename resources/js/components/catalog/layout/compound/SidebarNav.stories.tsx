@@ -80,6 +80,38 @@ export const Superadmin: Story = {
     args: { groups: superadminGroups, activeKey: 'tenants', label: 'Superadmin' },
 };
 
+/*
+    ROZET DİLİ — AEP teslim paketinin `DESIGN_SPEC` §1'i "Menüler" satırına
+    yayınlanmamış değişiklik sayısını koyar.
+
+    Bu hikâye rozetin GERÇEK kullanımını gösterir: bekleyen iş, kullanıcı o
+    ekrana girmeden önce kenar çubuğundan görünür. Rozet bir süs değil, "seni
+    burada bir şey bekliyor" cümlesinin en kısa hâlidir — ve sayının anlamı
+    ekran okuyucuya `badgeLabel` ile tam cümle olarak ulaşır.
+*/
+export const WithBadge: Story = {
+    args: {
+        groups: [
+            {
+                key: 'overview',
+                items: [
+                    { key: 'dashboard', label: 'Dashboard', href: '#dashboard' },
+                    {
+                        key: 'menu',
+                        label: 'Menu',
+                        href: '#menu',
+                        badge: '3',
+                        badgeLabel: '3 changes are not published yet',
+                    },
+                    { key: 'media', label: 'Media', href: '#media' },
+                ],
+            },
+        ],
+        activeKey: 'menu',
+        label: 'Restaurant admin',
+    },
+};
+
 export const RightToLeft: Story = {
     args: {
         groups: [
