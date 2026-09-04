@@ -25,6 +25,8 @@ final class ShowContactFormController extends Controller
     public function __invoke(Request $request): View
     {
         return view('public.contact', [
+            // Ölçüm kimliği (`docs/100` Faz 3).
+            'pageKey' => 'contact',
             'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), '/contact'),
             'anchorPrefix' => '/',
             'coreModuleCount' => count(config('core-modules')),

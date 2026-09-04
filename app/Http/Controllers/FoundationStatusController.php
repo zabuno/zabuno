@@ -34,6 +34,15 @@ final class FoundationStatusController extends Controller
         "Terms" yazan bir sayfaya varıyordu. Aynı sayfanın adı iki yerde iki
         türlü okunuyordu.
     */
+    /** Adres → ölçüm kimliği. Rapor bu adları okur, adresleri değil. */
+    private const PAGE_KEYS = [
+        '' => 'home',
+        'pricing' => 'pricing',
+        'terms' => 'legal_terms',
+        'privacy' => 'legal_privacy',
+        'kvkk' => 'legal_kvkk',
+    ];
+
     private const LEGAL_TITLE_KEYS = [
         'terms' => 'site.footer.terms',
         'privacy' => 'site.footer.privacy',
@@ -55,6 +64,12 @@ final class FoundationStatusController extends Controller
             // Yasal sayfalarda gezinti çıpaları ana sayfaya işaret eder;
             // burada o başlıklar yok.
             'anchorPrefix' => $path === '' ? '' : '/',
+            /*
+                Ölçüm kimliği (`docs/100` Faz 3). Sabit bir sözlükten gelir,
+                adresten türetilmez: adres yarın değişirse geçmiş raporlar
+                ikiye bölünmemeli.
+            */
+            'pageKey' => self::PAGE_KEYS[$path] ?? 'unknown',
             /*
                 FİYAT KAYDOLMADAN GÖRÜLÜR — `docs/88` (P1-01).
 
