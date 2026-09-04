@@ -32,7 +32,18 @@ final class EloquentMediaFolderRepository implements MediaFolderRepositoryPort
             ->whereNull('deleted_at')
             ->whereNotNull('media_folder_id')
             ->groupBy('media_folder_id')
-            ->pluck(DB::raw('count(*)'), 'media_folder_id');
+            /*
+                Sayaç sütunu ADLANDIRILIR (`as file_count`).
+
+                Öncesi `DB::raw('count(*)')` ile çekiyordu ve SQLite'ta
+                çalışıyordu: sürücü sütuna `count(*)` adını veriyor. CI'daki
+                PostgreSQL koşusu ise `Undefined property: stdClass::$count(*)`
+                ile patladı — yani hata YEREL takımda görünmüyordu, yalnız
+                dağıtım hedefinde. Adlandırılmış sütun iki sürücüde de aynı
+                adı taşır.
+            */
+            ->selectRaw('media_folder_id, count(*) as file_count')
+            ->pluck('file_count', 'media_folder_id');
 
         return $this->inSidebarOrder($folders, $counts);
     }
