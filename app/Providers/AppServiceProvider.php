@@ -23,7 +23,9 @@ use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaAuditPort;
 use App\Application\Media\Port\MediaFolderRepositoryPort;
+use App\Application\Media\Port\MediaProcessingJobPort;
 use App\Application\Media\Port\MediaQuotaPort;
+use App\Application\Media\Port\MediaRegenerationPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
@@ -63,6 +65,7 @@ use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
 use App\Application\Workspace\Port\WorkspaceAuditTrailPort;
 use App\Domain\Ai\Capability;
 use App\Domain\Media\SlotCatalogue;
+use App\Domain\Media\SvgSanitizer;
 use App\Domain\Platform\Credential\CredentialProvider;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
@@ -91,9 +94,12 @@ use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
 use App\Infrastructure\Media\Persistence\EloquentMediaAudit;
 use App\Infrastructure\Media\Persistence\EloquentMediaFolderRepository;
+use App\Infrastructure\Media\Persistence\EloquentMediaProcessingJobs;
+use App\Infrastructure\Media\Persistence\EloquentMediaRegeneration;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
+use App\Infrastructure\Media\Processing\SvgMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Quota\ConfigMediaQuota;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
@@ -350,6 +356,13 @@ final class AppServiceProvider extends ServiceProvider
         // Medya denetim izi (`docs/49` Faz 7 madde 4): "bu fotoğrafı kim
         // sildi?" sorusunun cevabını tutan yer.
         $this->app->bind(MediaAuditPort::class, EloquentMediaAudit::class);
+        // KUYRUK (`docs/108` §3 madde 5): "takıldı mı, yoksa hâlâ çalışıyor
+        // mu?" — işler tabloya yazılıyordu, hiçbir ekranda görünmüyordu.
+        // SALT OKUNUR bir port: burada iş başlatılmaz.
+        $this->app->bind(MediaProcessingJobPort::class, EloquentMediaProcessingJobs::class);
+        // BOYUT MOTORU (`docs/108` §6.1): "yeniden üretimi başlatırsam kaç
+        // dosya etkilenir" sorusunun GERÇEK cevabını sayan yer.
+        $this->app->bind(MediaRegenerationPort::class, EloquentMediaRegeneration::class);
         $this->app->bind(WorkspaceAuditTrailPort::class, EloquentWorkspaceAuditTrail::class);
         $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
         $this->app->bind(FeatureFlagPort::class, PennantFeatureFlags::class);
@@ -373,13 +386,20 @@ final class AppServiceProvider extends ServiceProvider
             // GD PHP ile birlikte gelir; yine de yokluğu varsayılmaz:
             // olmayan bir eklentiyle ölümcül hata vermektense dürüstçe
             // "işleyemiyorum" demek gerekir.
-            if (! extension_loaded('gd')) {
-                return new UnavailableMediaAssetProcessor;
-            }
+            $slots = SlotCatalogue::fromArray((array) config('media-slots.slots', []));
 
-            return new GdMediaAssetProcessor(
-                SlotCatalogue::fromArray((array) config('media-slots.slots', [])),
-            );
+            /*
+                SVG, GD'nin ÖNÜNDE ele alınır (sahip kararı 2026-09-05,
+                `docs/108` §6.2). GD bir raster kütüphanesidir ve SVG'yi hiç
+                çözemez; vektörün türevi de kendisidir — temizlenmiş hâliyle.
+                GD yoksa bile SVG işlenebilir olmalı, bu yüzden sarmalayıcı
+                her iki iç işleyicinin de üstüne geçer.
+            */
+            $inner = extension_loaded('gd')
+                ? new GdMediaAssetProcessor($slots)
+                : new UnavailableMediaAssetProcessor;
+
+            return new SvgMediaAssetProcessor($inner, new SvgSanitizer, $slots);
         });
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
         $this->app->bind(PublicMenuAddressPort::class, EloquentPublicMenuAddress::class);

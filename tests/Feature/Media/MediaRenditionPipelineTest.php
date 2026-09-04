@@ -8,7 +8,7 @@ use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\UseCase\ProcessAcceptedMediaAsset;
 use App\Domain\Media\MediaAssetStatus;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
-use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
+use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Models\MediaAsset;
 use App\Models\User;
 use App\Support\Media\RenditionUrl;
@@ -104,8 +104,20 @@ final class MediaRenditionPipelineTest extends TestCase
         // örneğini kurması iddiayı boşa çıkarırdı.
         $processor = $this->app->make(MediaAssetProcessorPort::class);
 
-        self::assertInstanceOf(
-            GdMediaAssetProcessor::class,
+        /*
+            2026-09-05'e kadar burada `GdMediaAssetProcessor` SINIFI
+            aranıyordu. SVG kabulü açılınca (sahip kararı, `docs/108` §6.2)
+            GD bir sarmalayıcının içine girdi — sınıf adı değişti ama bu
+            testin KORUDUĞU şey değişmedi.
+
+            Korunan şey hiçbir zaman "hangi sınıf" değildi: "varsayılan
+            bağlama, yüklenen fotoğrafı sonsuza kadar bekleten yer tutucu
+            OLMASIN"dı (`docs/76`, P0-08). Sınıf adına bakan bir test, her
+            kompozisyon değişikliğinde iddiasını kaybederek kırılır; asıl
+            iddia zaten aşağıda, üretilen türevlerde sınanıyor.
+        */
+        self::assertNotInstanceOf(
+            UnavailableMediaAssetProcessor::class,
             $processor,
             'MEDIA-RENDITION-SET-01: üretim bağlaması gerçek görsel işleyici olmalı.'
         );

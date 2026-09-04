@@ -1064,6 +1064,146 @@ msgstr "Will be uploaded as {width} × {height} pixels."
 msgid "workspace.media.crop.zoom"
 msgstr "Zoom"
 
+#: workspace:workspace.media.engine.failed
+msgid "workspace.media.engine.failed"
+msgstr "Size rules could not be loaded."
+
+#: workspace:workspace.media.engine.fit.contain
+msgid "workspace.media.engine.fit.contain"
+msgstr "Fitted"
+
+#: workspace:workspace.media.engine.fit.crop
+msgid "workspace.media.engine.fit.crop"
+msgstr "Cropped"
+
+#: workspace:workspace.media.engine.lead
+msgid "workspace.media.engine.lead"
+msgstr "Which sizes are produced from every image you upload? The rule is written once."
+
+#: workspace:workspace.media.engine.loading
+msgid "workspace.media.engine.loading"
+msgstr "Loading size rules…"
+
+#: workspace:workspace.media.engine.measured.delta
+msgid "workspace.media.engine.measured.delta"
+msgstr "{percent}% smaller"
+
+#: workspace:workspace.media.engine.measured.heading
+msgid "workspace.media.engine.measured.heading"
+msgstr "Measured saving"
+
+#: workspace:workspace.media.engine.measured.lead
+msgid "workspace.media.engine.measured.lead"
+msgstr "Measured on your own {count} file(s): the original against the largest size actually served."
+
+#: workspace:workspace.media.engine.measured.originals
+msgid "workspace.media.engine.measured.originals"
+msgstr "Originals"
+
+#: workspace:workspace.media.engine.measured.served
+msgid "workspace.media.engine.measured.served"
+msgstr "Largest size served"
+
+#: workspace:workspace.media.engine.regen.affected
+msgid "workspace.media.engine.regen.affected"
+msgstr "Files that would be touched"
+
+#: workspace:workspace.media.engine.regen.batch
+msgid "workspace.media.engine.regen.batch"
+msgstr "Files per run"
+
+#: workspace:workspace.media.engine.regen.done
+msgid "workspace.media.engine.regen.done"
+msgstr "{count} file(s) regenerated as a new version. The originals are untouched."
+
+#: workspace:workspace.media.engine.regen.failed
+msgid "workspace.media.engine.regen.failed"
+msgstr "That did not work. Nothing was changed."
+
+#: workspace:workspace.media.engine.regen.heading
+msgid "workspace.media.engine.regen.heading"
+msgstr "I changed the rule — what about the old files?"
+
+#: workspace:workspace.media.engine.regen.lead
+msgid "workspace.media.engine.regen.lead"
+msgstr "A new rule applies to new uploads only. To refresh older files a job is started; originals are kept and each file gains a new version."
+
+#: workspace:workspace.media.engine.regen.nothing
+msgid "workspace.media.engine.regen.nothing"
+msgstr "No processed file yet, so there is nothing to refresh."
+
+#: workspace:workspace.media.engine.regen.remaining
+msgid "workspace.media.engine.regen.remaining"
+msgstr "{count} file(s) left. Press again to continue."
+
+#: workspace:workspace.media.engine.regen.renditions
+msgid "workspace.media.engine.regen.renditions"
+msgstr "Sizes that exist today"
+
+#: workspace:workspace.media.engine.regen.running
+msgid "workspace.media.engine.regen.running"
+msgstr "Regenerating…"
+
+#: workspace:workspace.media.engine.regen.someFailed
+msgid "workspace.media.engine.regen.someFailed"
+msgstr "{count} file(s) could not be regenerated. Open the queue to see why."
+
+#: workspace:workspace.media.engine.regen.start
+msgid "workspace.media.engine.regen.start"
+msgstr "Start regeneration"
+
+#: workspace:workspace.media.engine.region
+msgid "workspace.media.engine.region"
+msgstr "Size engine"
+
+#: workspace:workspace.media.engine.rule.frame
+msgid "workspace.media.engine.rule.frame"
+msgstr "{width} × {height} px"
+
+#: workspace:workspace.media.engine.rule.large.usage
+msgid "workspace.media.engine.rule.large.usage"
+msgstr "Full-screen image"
+
+#: workspace:workspace.media.engine.rule.medium.usage
+msgid "workspace.media.engine.rule.medium.usage"
+msgstr "Product detail"
+
+#: workspace:workspace.media.engine.rule.notProduced
+msgid "workspace.media.engine.rule.notProduced"
+msgstr "Not produced yet"
+
+#: workspace:workspace.media.engine.rule.print.usage
+msgid "workspace.media.engine.rule.print.usage"
+msgstr "QR card, poster"
+
+#: workspace:workspace.media.engine.rule.producedBy
+msgid "workspace.media.engine.rule.producedBy"
+msgstr "Produced in {count} place(s)"
+
+#: workspace:workspace.media.engine.rule.small.usage
+msgid "workspace.media.engine.rule.small.usage"
+msgstr "Menu card, phone"
+
+#: workspace:workspace.media.engine.rule.social.usage
+msgid "workspace.media.engine.rule.social.usage"
+msgstr "Share preview"
+
+#: workspace:workspace.media.engine.rule.thumb.usage
+msgid "workspace.media.engine.rule.thumb.usage"
+msgstr "List row"
+
+#: workspace:workspace.media.engine.rule.usage.unknown
+msgid "workspace.media.engine.rule.usage.unknown"
+msgstr "No place assigned yet"
+
+#: workspace:workspace.media.engine.rule.width
+msgid "workspace.media.engine.rule.width"
+msgstr "{width} px"
+
+#: workspace:workspace.media.engine.tab
+msgid "workspace.media.engine.tab"
+msgstr "Sizes"
+
 #: workspace:workspace.media.folders.all
 msgid "workspace.media.folders.all"
 msgstr "All files"
@@ -1531,6 +1671,106 @@ msgstr "Validation"
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
 msgstr "Upload images and manage the media library that feeds your published menu — every asset is scanned before it can be used."
+
+#: workspace:workspace.media.queue.attempts
+msgid "workspace.media.queue.attempts"
+msgstr "attempt {count}"
+
+#: workspace:workspace.media.queue.count.failed
+msgid "workspace.media.queue.count.failed"
+msgstr "Failed"
+
+#: workspace:workspace.media.queue.count.held
+msgid "workspace.media.queue.count.held"
+msgstr "On hold"
+
+#: workspace:workspace.media.queue.count.running
+msgid "workspace.media.queue.count.running"
+msgstr "Running"
+
+#: workspace:workspace.media.queue.count.succeeded
+msgid "workspace.media.queue.count.succeeded"
+msgstr "Done"
+
+#: workspace:workspace.media.queue.empty
+msgid "workspace.media.queue.empty"
+msgstr "No jobs yet."
+
+#: workspace:workspace.media.queue.failed
+msgid "workspace.media.queue.failed"
+msgstr "The queue could not be loaded."
+
+#: workspace:workspace.media.queue.kind.rendition
+msgid "workspace.media.queue.kind.rendition"
+msgstr "Generating sizes"
+
+#: workspace:workspace.media.queue.kind.scan
+msgid "workspace.media.queue.kind.scan"
+msgstr "Security scan"
+
+#: workspace:workspace.media.queue.kind.unknown
+msgid "workspace.media.queue.kind.unknown"
+msgstr "Processing"
+
+#: workspace:workspace.media.queue.lead
+msgid "workspace.media.queue.lead"
+msgstr "Uploads and regeneration create jobs. This is where you see whether one is still running or stopped."
+
+#: workspace:workspace.media.queue.loading
+msgid "workspace.media.queue.loading"
+msgstr "Loading the queue…"
+
+#: workspace:workspace.media.queue.progress.unknown
+msgid "workspace.media.queue.progress.unknown"
+msgstr "Still running — no progress figure is recorded."
+
+#: workspace:workspace.media.queue.refresh
+msgid "workspace.media.queue.refresh"
+msgstr "Refresh the queue"
+
+#: workspace:workspace.media.queue.region
+msgid "workspace.media.queue.region"
+msgstr "Processing queue"
+
+#: workspace:workspace.media.queue.retried
+msgid "workspace.media.queue.retried"
+msgstr "Started again. This row updates with the result."
+
+#: workspace:workspace.media.queue.retry
+msgid "workspace.media.queue.retry"
+msgstr "Try again"
+
+#: workspace:workspace.media.queue.retry.named
+msgid "workspace.media.queue.retry.named"
+msgstr "Try {name} again"
+
+#: workspace:workspace.media.queue.retryFailed
+msgid "workspace.media.queue.retryFailed"
+msgstr "Could not start it again. Nothing was changed."
+
+#: workspace:workspace.media.queue.state.failed
+msgid "workspace.media.queue.state.failed"
+msgstr "Failed"
+
+#: workspace:workspace.media.queue.state.held
+msgid "workspace.media.queue.state.held"
+msgstr "On hold"
+
+#: workspace:workspace.media.queue.state.pending
+msgid "workspace.media.queue.state.pending"
+msgstr "Waiting"
+
+#: workspace:workspace.media.queue.state.running
+msgid "workspace.media.queue.state.running"
+msgstr "Running"
+
+#: workspace:workspace.media.queue.state.succeeded
+msgid "workspace.media.queue.state.succeeded"
+msgstr "Done"
+
+#: workspace:workspace.media.queue.state.unknown
+msgid "workspace.media.queue.state.unknown"
+msgstr "Unknown"
 
 #: workspace:workspace.media.quota.assets
 msgid "workspace.media.quota.assets"

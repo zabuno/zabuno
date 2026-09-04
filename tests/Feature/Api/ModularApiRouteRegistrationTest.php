@@ -166,6 +166,32 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PATCH|api/workspaces/{workspace}/media/folders/{folder}||App\Http\Controllers\Media\RenameMediaFolderController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/media/folders/{folder}||App\Http\Controllers\Media\DeleteMediaFolderController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/media/{media}/folder||App\Http\Controllers\Media\MoveMediaToFolderController|api,auth:sanctum,verified',
+        /*
+            BOYUT MOTORU ve KUYRUK (`docs/108` §3 madde 4-5, §6.1).
+
+            Üç yol donduruluyor çünkü medya yöneticisinin iki bölümü
+            adreslerini doğrudan kuruyor:
+
+              - `media/derivative-rules` SALT OKUNUR: adlandırılmış türev
+                kuralı + "kaç dosya etkilenir" istatistiği. Okumak tek bir
+                dosyayı bile değiştirmediği için hız sınırı yok.
+              - `media/reprocess` TOPLU yeniden üretimdir ve `throttle:2,1`
+                taşır — tek varlık ucundan (`throttle:10,1`) DAHA SIKI,
+                çünkü tek çağrı bütün hazır dosyaları işler. Aynı hız
+                sınırını vermek, on kat işi on kat sık çalıştırmaya izin
+                verirdi.
+              - `media/jobs` kuyruğun salt okunur listesidir; "yeniden dene"
+                var olan `media/{media}/reprocess` ucuna gider, kuyruğun
+                kendi işleme hattı YOKTUR.
+
+            Üçü de `folders` gibi sabit segmentle başlıyor; `/media/{media}`
+            yolları her zaman bir alt segmentle devam ettiği için çakışma
+            yok (`media/{media}/reprocess` üç segment, `media/reprocess`
+            iki).
+        */
+        'GET|api/workspaces/{workspace}/media/derivative-rules||App\Http\Controllers\Media\ListDerivativeRulesController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/media/reprocess||App\Http\Controllers\Media\ReprocessMediaBatchController|api,auth:sanctum,throttle:2,1,verified',
+        'GET|api/workspaces/{workspace}/media/jobs||App\Http\Controllers\Media\ListMediaProcessingJobsController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/team/members||App\Http\Controllers\Team\ListTeamMembersController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/team/members/{member}||App\Http\Controllers\Team\RemoveTeamMemberController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/workspaces/{workspace}/team/members/{member}/transfer-ownership||App\Http\Controllers\Team\TransferWorkspaceOwnershipController|api,auth:sanctum,throttle:5,1,verified',

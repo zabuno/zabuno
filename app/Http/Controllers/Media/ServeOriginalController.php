@@ -40,6 +40,14 @@ final class ServeOriginalController extends Controller
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             'Cache-Control' => 'private, no-store',
             'X-Content-Type-Options' => 'nosniff',
+            /*
+                Asıl, TEMİZLENMEMİŞ dosyadır (bu depoda asıl hiç değişmez —
+                `docs/49` Faz 3). Bir SVG asıl olarak indirildiğinde
+                `attachment` zaten tarayıcıda açılmasını engeller; CSP
+                ikinci hattır: bir istemci `attachment`ı yok sayarsa bile
+                bu adreste betik çalışmaz, dış kaynak yüklenmez.
+            */
+            'Content-Security-Policy' => "default-src 'none'; sandbox",
         ]);
     }
 }

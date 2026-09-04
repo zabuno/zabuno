@@ -49,13 +49,47 @@ final class ServeRenditionController extends Controller
             abort(404);
         }
 
-        return response($disk->get((string) $row->storage_key), 200, [
+        $headers = [
             'Content-Type' => (string) $row->mime_type,
             // Adres içeriğin parmak izini taşır; içerik değişirse adres de
             // değişir. Bu yüzden bir yıl ve `immutable` güvenlidir.
             'Cache-Control' => 'public, max-age=31536000, immutable',
             'ETag' => $etag,
             'X-Content-Type-Options' => 'nosniff',
-        ]);
+        ];
+
+        return response($disk->get((string) $row->storage_key), 200, $headers + $this->documentSafetyHeaders((string) $row->mime_type));
+    }
+
+    /**
+     * SVG için ikinci savunma hattı.
+     *
+     * Bir PNG tarayıcıda yalnız piksel olur. Bir SVG, kendi adresinden
+     * açıldığında BELGE olur: içindeki betik çalışır, dış kaynağa bağlanır,
+     * çerez okuyabilir. Alım kapısındaki temizleyici bunu zaten engelliyor
+     * (`App\Domain\Media\SvgSanitizer`), ama tek hatta yaslanılmaz: bir gün
+     * temizleyicide bir boşluk çıkarsa CSP hâlâ ayaktadır.
+     *
+     *   - `default-src 'none'` — betik yok, ağ yok, çerçeve yok.
+     *   - `style-src 'unsafe-inline'` — SVG'nin kendi içindeki stil
+     *     çalışsın diye; dış stil zaten temizleyicide düşüyor.
+     *   - `sandbox` — belge kendi köken yetkilerinden yoksun açılır.
+     *   - `inline` disposition — menüdeki `<img>` etiketi onu göstersin;
+     *     `attachment` olsaydı logo hiç görünmezdi.
+     *
+     * @return array<string, string>
+     */
+    private function documentSafetyHeaders(string $mimeType): array
+    {
+        if (! str_contains(strtolower($mimeType), 'svg')) {
+            // Raster türevler her istekte milyonlarca kez gider; onlara
+            // gereksiz bayt eklenmez.
+            return [];
+        }
+
+        return [
+            'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+            'Content-Disposition' => 'inline',
+        ];
     }
 }

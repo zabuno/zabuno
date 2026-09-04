@@ -93,7 +93,10 @@ Route::post('/q/events', StoreGuestMenuEventsController::class)
 Route::get('/media/r/{rendition}-{fingerprint}.{format}', ServeRenditionController::class)
     ->where('rendition', '[0-9]+')
     ->where('fingerprint', '[a-f0-9]{32}')
-    ->where('format', '(webp|png|jpeg)')
+    // `svg`: sahibin 2026-09-05 kararı. Gövde alımda temizlendi, adres
+    // parmak izi taşıyor ve denetleyici onu betik çalıştıramaz başlıklarla
+    // veriyor (`ServeRenditionController`).
+    ->where('format', '(webp|png|jpeg|svg)')
     ->name('media.rendition');
 
 // Aslın İMZALI adresi (`docs/49` Faz 6 madde 2): 10 dakikalık imza,

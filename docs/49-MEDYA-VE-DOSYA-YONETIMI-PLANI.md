@@ -234,11 +234,33 @@ aynı anahtarla yeniden deneme + istemci tarafı boyut/piksel ön kontrolü ✅;
 decode edilmeden** (`max_megapixels` config'de vardı, alımda UYGULANMIYORDU —
 gerçek boşluk) + bayt sınırı config'den (sabit 50 MB ile config'in 30 MB'ı
 çelişiyordu). 4 ✅ zincir. 5 ✅ (`ServeRendition` yalnız rendition; asıl
-karantinada). 6 ✅ SVG alımda reddedilir **ve slot politikalarından
-çıkarıldı** — kabul edilmeyen biçimi "izin verilen" diye listelemek yalandı.
-Kabul ölçütü ✅: `tests/fixtures/malicious/*` (PHP-jpg, HTML-png, betikli SVG,
-100000×100000 PNG başlığı) `MaliciousIntakeGateTest` ile CI kapısı; polyglot
-GIF+PHP kabul edilir ama gövdesi hiçbir rendition'a sızmaz (test).
+karantinada).
+
+6 ⚠️ **DEĞİŞTİ — sahibin kararı, 2026-09-05: SVG AÇILDI** (`docs/108` §6.2).
+2026-09-04'te buraya "SVG alımda reddedilir ve slot politikalarından
+çıkarıldı" yazılmıştı; o cümlenin gerekçesi (sanitize eden katman yok)
+kalkmadı, KARŞILANDI. Sahibe açıkça soruldu, "şimdi aç" dedi ve kabul
+temizleyiciyle AYNI pakette açıldı: `App\Domain\Media\SvgSanitizer` —
+allowlist tabanlı, saf, bağımlılıksız. Betik, olay özniteliği (`on*`),
+`#` dışına çıkan `href`/`xlink:href`, `<foreignObject>`, harici `<use>`,
+`<animate>`/`<set>`, `@import`/dış `url(…)` ve XML varlığı (XXE, milyar
+gülüş) taşıyan gövde **reddedilir** (fail-closed) — temizlenip kabul
+EDİLMEZ. SVG yalnız vektör slotlarında serbesttir (`logo`, `printLogo`,
+`favicon`); `itemImage` gibi fotoğraf slotları SVG'yi hâlâ reddeder.
+Temizlenmiş gövde asla aslın üzerine yazılmaz: asıl karantinada
+değişmeden durur (Faz 3), temizlenmiş hâl `vector` profilli bir
+**rendition** olarak saklanır ve halka giden tek şey odur. Türevler
+`ServeRenditionController` üzerinden `default-src 'none'; sandbox` CSP'si
+ile verilir — temizleyicide bir gün boşluk çıksa bile tarayıcı o adreste
+betik çalıştırmaz.
+
+Kabul ölçütü ✅: `tests/fixtures/malicious/*` (PHP-jpg, HTML-png, betikli
+SVG, `onload`lu SVG, harici `use`, `foreignObject`, XXE, 100000×100000 PNG
+başlığı) `MaliciousIntakeGateTest` ile CI kapısı; ayrıca
+`SvgIntakeAndDeliveryTest` aynı SVG fixture'larını SVG'nin SERBEST olduğu
+slotta da reddettirir (slot kuralı arkasına saklanmasınlar diye) ve
+`SvgSanitizerTest` temizleyiciyi HTTP olmadan saldırı gövdeleriyle sınar.
+Polyglot GIF+PHP kabul edilir ama gövdesi hiçbir rendition'a sızmaz (test).
 
 1. `media_upload_sessions` + idempotency key
 2. `react-dropzone` ile sürükle-bırak, pano, çoklu seçim, ilerleme
@@ -246,7 +268,8 @@ GIF+PHP kabul edilir ama gövdesi hiçbir rendition'a sızmaz (test).
    bytes** + decoder ile gerçekten açılabilme + boyut + piksel sınırı
 4. Karantina → tarama → metadata temizleme → yeniden encode
 5. `READY` olmadan public URL üretilmez
-6. SVG doğrudan servis edilmez
+6. SVG **temizlenmeden** servis edilmez (asıl hiç servis edilmez; halka
+   giden yalnız temizlenmiş türevdir, o da CSP'li)
 
 **Kabul:** `fixtures/malicious/` içindeki her dosya **decode edilmeden**
 reddedilir. Bu testler CI kapısıdır.

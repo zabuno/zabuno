@@ -6,13 +6,16 @@ use App\Http\Controllers\Media\CreateOriginalDownloadLinkController;
 use App\Http\Controllers\Media\DeleteMediaController;
 use App\Http\Controllers\Media\DeleteMediaFolderController;
 use App\Http\Controllers\Media\DetachMediaUsagesController;
+use App\Http\Controllers\Media\ListDerivativeRulesController;
 use App\Http\Controllers\Media\ListMediaAuditsController;
 use App\Http\Controllers\Media\ListMediaController;
 use App\Http\Controllers\Media\ListMediaFoldersController;
+use App\Http\Controllers\Media\ListMediaProcessingJobsController;
 use App\Http\Controllers\Media\ListMediaVersionsController;
 use App\Http\Controllers\Media\ListSlotPoliciesController;
 use App\Http\Controllers\Media\MoveMediaToFolderController;
 use App\Http\Controllers\Media\RenameMediaFolderController;
+use App\Http\Controllers\Media\ReprocessMediaBatchController;
 use App\Http\Controllers\Media\ReprocessMediaController;
 use App\Http\Controllers\Media\RestoreMediaController;
 use App\Http\Controllers\Media\RestoreMediaVersionController;
@@ -71,4 +74,23 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::patch('/workspaces/{workspace}/media/folders/{folder}', RenameMediaFolderController::class);
     Route::delete('/workspaces/{workspace}/media/folders/{folder}', DeleteMediaFolderController::class);
     Route::put('/workspaces/{workspace}/media/{media}/folder', MoveMediaToFolderController::class);
+
+    /*
+        BOYUT MOTORU ve KUYRUK (`docs/108` §3 madde 4-5, §6.1).
+
+        Kural OKUMAK bir dosyayı bile değiştirmez, o yüzden hız sınırsızdır.
+        TOPLU yeniden üretim ise tek çağrıda bütün hazır dosyaları işler;
+        sınırı tek-varlık ucundan (`throttle:10,1`) daha sıkıdır — on kat
+        işi on kat sık çalıştırmaya izin vermenin bir gerekçesi yok.
+
+        Kuyruk salt okunurdur: "yeniden dene" var olan
+        `media/{media}/reprocess` ucuna gider, burada iş başlatılmaz.
+
+        Yollar `folders` gibi sabit segmentle başlıyor ve `/media/{media}`
+        yollarıyla çakışmıyor.
+    */
+    Route::get('/workspaces/{workspace}/media/derivative-rules', ListDerivativeRulesController::class);
+    Route::post('/workspaces/{workspace}/media/reprocess', ReprocessMediaBatchController::class)
+        ->middleware('throttle:2,1');
+    Route::get('/workspaces/{workspace}/media/jobs', ListMediaProcessingJobsController::class);
 });
