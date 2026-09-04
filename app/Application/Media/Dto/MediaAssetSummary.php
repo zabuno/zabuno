@@ -29,5 +29,11 @@ final class MediaAssetSummary
         public readonly ?string $createdAt = null,
         /** draft | active | archived | trashed | purged */
         public readonly string $lifecycle = 'draft',
+        /**
+         * Bulunduğu klasör; klasörsüz varlıkta `null` (`docs/108` §3
+         * madde 1). Listenin sonunda ve varsayılanı `null` — bugünkü
+         * klasörsüz elli fotoğraf hiçbir çağıran değişmeden yerinde kalır.
+         */
+        public readonly ?int $folderId = null,
     ) {}
 }

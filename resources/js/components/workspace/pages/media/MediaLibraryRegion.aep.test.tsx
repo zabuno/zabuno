@@ -120,6 +120,8 @@ describe('MediaLibraryRegion — ölçek ve ağırlık disiplini', () => {
         const user = userEvent.setup();
         mount();
 
+        // Süzgeçler kapalı başlar; "Süz" onları açan kapıdır (FF-131).
+        await user.click(screen.getByRole('button', { name: 'Filter' }));
         await user.click(screen.getByRole('checkbox', { name: 'Unused only' }));
 
         const count = screen.getByText('Showing 1 of 2.');

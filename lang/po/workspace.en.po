@@ -1064,9 +1064,33 @@ msgstr "Will be uploaded as {width} × {height} pixels."
 msgid "workspace.media.crop.zoom"
 msgstr "Zoom"
 
+#: workspace:workspace.media.folders.all
+msgid "workspace.media.folders.all"
+msgstr "All files"
+
+#: workspace:workspace.media.folders.heading
+msgid "workspace.media.folders.heading"
+msgstr "Folders"
+
+#: workspace:workspace.media.folders.next
+msgid "workspace.media.folders.next"
+msgstr "More folders"
+
+#: workspace:workspace.media.folders.page
+msgid "workspace.media.folders.page"
+msgstr "Page {page} of {total}"
+
+#: workspace:workspace.media.folders.previous
+msgid "workspace.media.folders.previous"
+msgstr "Previous folders"
+
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
 msgstr "Media"
+
+#: workspace:workspace.media.library.access.private
+msgid "workspace.media.library.access.private"
+msgstr "Not publicly available yet"
 
 #: workspace:workspace.media.library.asset.delete
 msgid "workspace.media.library.asset.delete"
@@ -1232,6 +1256,10 @@ msgstr "Slot"
 msgid "workspace.media.library.filters.status"
 msgstr "Status"
 
+#: workspace:workspace.media.library.filters.toggle
+msgid "workspace.media.library.filters.toggle"
+msgstr "Filter"
+
 #: workspace:workspace.media.library.filters.unusedOnly
 msgid "workspace.media.library.filters.unusedOnly"
 msgstr "Unused only"
@@ -1284,6 +1312,34 @@ msgstr "Loading media library…"
 msgid "workspace.media.library.region"
 msgstr "Media library"
 
+#: workspace:workspace.media.library.result.count
+msgid "workspace.media.library.result.count"
+msgstr "{count} file(s)"
+
+#: workspace:workspace.media.library.select.all
+msgid "workspace.media.library.select.all"
+msgstr "Select all"
+
+#: workspace:workspace.media.library.select.clear
+msgid "workspace.media.library.select.clear"
+msgstr "Clear selection"
+
+#: workspace:workspace.media.library.select.count
+msgid "workspace.media.library.select.count"
+msgstr "{count} selected"
+
+#: workspace:workspace.media.library.select.delete
+msgid "workspace.media.library.select.delete"
+msgstr "Delete selected"
+
+#: workspace:workspace.media.library.select.kept
+msgid "workspace.media.library.select.kept"
+msgstr "{count} in use were kept. Open each one to see where it is used."
+
+#: workspace:workspace.media.library.select.named
+msgid "workspace.media.library.select.named"
+msgstr "Select {name}"
+
 #: workspace:workspace.media.library.slots.category.corporateSite
 msgid "workspace.media.library.slots.category.corporateSite"
 msgstr "Corporate site"
@@ -1315,6 +1371,22 @@ msgstr "Slot categories"
 #: workspace:workspace.media.library.slots.status.noAssetsYet
 msgid "workspace.media.library.slots.status.noAssetsYet"
 msgstr "{category}: no assets yet."
+
+#: workspace:workspace.media.library.sort
+msgid "workspace.media.library.sort"
+msgstr "Sort: {label}"
+
+#: workspace:workspace.media.library.sort.largest
+msgid "workspace.media.library.sort.largest"
+msgstr "Largest"
+
+#: workspace:workspace.media.library.sort.name
+msgid "workspace.media.library.sort.name"
+msgstr "Name"
+
+#: workspace:workspace.media.library.sort.newest
+msgid "workspace.media.library.sort.newest"
+msgstr "Newest"
 
 #: workspace:workspace.media.library.tabs.label
 msgid "workspace.media.library.tabs.label"
@@ -1499,6 +1571,26 @@ msgstr "no limit"
 #: workspace:workspace.media.security.explanation
 msgid "workspace.media.security.explanation"
 msgstr "Every image is scanned and checked by a person before it can appear on your menu."
+
+#: workspace:workspace.media.shell.queue
+msgid "workspace.media.shell.queue"
+msgstr "Queue"
+
+#: workspace:workspace.media.shell.search
+msgid "workspace.media.shell.search"
+msgstr "Search media"
+
+#: workspace:workspace.media.shell.search.clear
+msgid "workspace.media.shell.search.clear"
+msgstr "Clear search"
+
+#: workspace:workspace.media.shell.search.placeholder
+msgid "workspace.media.shell.search.placeholder"
+msgstr "File name or description"
+
+#: workspace:workspace.media.shell.sections
+msgid "workspace.media.shell.sections"
+msgstr "Media sections"
 
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"

@@ -22,6 +22,19 @@ interface MediaRepositoryPort
 
     public function listForWorkspace(int $workspaceId): array;
 
+    /**
+     * Tek bir klasördeki varlıklar; `$folderId` null ise KLASÖRSÜZ olanlar
+     * (`docs/108` §3 madde 1).
+     *
+     * Süzgeç ayrı bir metottur çünkü süzülmemiş liste ürünün varsayılanı
+     * olarak kalmalı: klasör bir GÖRÜNÜM'dür, deponun kendisi değil.
+     * Yabancı ya da olmayan bir klasör kimliği boş liste döndürür — "bu
+     * kimlik başka bir depoda var" bilgisi sızmaz.
+     *
+     * @return list<MediaAssetSummary>
+     */
+    public function listInFolder(int $workspaceId, ?int $folderId): array;
+
     /** Çöpteki varlıklar — geri alınabilir, süre dolunca purge (`docs/49` Faz 5). @return list<MediaAssetSummary> */
     public function listTrashed(int $workspaceId): array;
 

@@ -95,6 +95,13 @@ describe('kütüphane: arama, süzgeç, ızgara (FAZ4-LIBRARY-UI-01)', () => {
         expect(screen.getByText('Showing 1 of 3.')).toBeInTheDocument();
         await user.clear(screen.getByRole('searchbox'));
 
+        /*
+            Süzgeçler artık KAPALI başlar (FF-131, kanonik kaynağın "Süz"
+            düğmesi). Üç açılır kutuyu her açılışta ekrana sermek,
+            kütüphaneyi bir forma çevirip asıl iş olan dosyaları aşağı iter.
+        */
+        await user.click(screen.getByRole('button', { name: 'Filter' }));
+
         await user.click(screen.getByRole('checkbox', { name: 'Unused only' }));
         expect(within(list()).getAllByRole('listitem')).toHaveLength(2);
         expect(within(list()).queryByText('Adana kebap')).toBeNull();

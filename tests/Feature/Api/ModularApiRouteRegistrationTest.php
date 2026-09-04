@@ -146,6 +146,26 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/media/quota||App\Http\Controllers\Media\ShowMediaQuotaController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/media/audits||App\Http\Controllers\Media\ListMediaAuditsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/media/{media}/download-link||App\Http\Controllers\Media\CreateOriginalDownloadLinkController|api,auth:sanctum,verified',
+        /*
+            KLASÖRLER (`docs/108` §3 madde 1). Bu beş yol donduruluyor
+            çünkü kütüphane ekranı adreslerini doğrudan kuruyor: bir
+            yeniden adlandırma, sahibin klasör ağacını sessizce kaybetmesi
+            demek olurdu.
+
+            Yollar `/media/folders` altında toplanıyor ve `/media/{media}`
+            yollarıyla çakışmıyor: klasör yolları `folders` sabit
+            segmentiyle başlıyor, varlık yolları ise her zaman bir alt
+            segmentle (`/versions`, `/folder`, ...) devam ediyor.
+
+            Hız sınırı YOK — okuma listeleme kadar ucuz, yazma tek satır
+            günceller ve dış bir maliyet doğurmaz (karşılaştır:
+            `reprocess` her çağrıda görsel işlediği için sınırlı).
+        */
+        'GET|api/workspaces/{workspace}/media/folders||App\Http\Controllers\Media\ListMediaFoldersController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/media/folders||App\Http\Controllers\Media\StoreMediaFolderController|api,auth:sanctum,verified',
+        'PATCH|api/workspaces/{workspace}/media/folders/{folder}||App\Http\Controllers\Media\RenameMediaFolderController|api,auth:sanctum,verified',
+        'DELETE|api/workspaces/{workspace}/media/folders/{folder}||App\Http\Controllers\Media\DeleteMediaFolderController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/media/{media}/folder||App\Http\Controllers\Media\MoveMediaToFolderController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/team/members||App\Http\Controllers\Team\ListTeamMembersController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/team/members/{member}||App\Http\Controllers\Team\RemoveTeamMemberController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/workspaces/{workspace}/team/members/{member}/transfer-ownership||App\Http\Controllers\Team\TransferWorkspaceOwnershipController|api,auth:sanctum,throttle:5,1,verified',

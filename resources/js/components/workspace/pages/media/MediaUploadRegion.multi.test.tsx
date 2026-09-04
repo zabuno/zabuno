@@ -47,6 +47,20 @@ describe('çoklu yükleme (ACEMI-MEDIA-MULTI-01)', () => {
             new File(['c'], 'ayran-buyuk.jpg', { type: 'image/jpeg' }),
         ]);
 
+        /*
+            Ekran artık dört adımlı bir sihirbaz: dosya seçilince 2. adıma
+            (küçültme) geçilir, yer 3. adımda seçilir, alt metinler ve
+            gönderme 4. adımdadır.
+        */
+        await user.click(await screen.findByRole('button', { name: /^continue$/i }));
+
+        const slotField = within(region).getByLabelText(/where will this image be used/i);
+        await waitFor(() =>
+            expect(within(slotField).getAllByRole('option').length).toBeGreaterThan(1),
+        );
+        await user.selectOptions(slotField, 'itemImage');
+        await user.click(screen.getByRole('button', { name: /^continue$/i }));
+
         const more = screen.getByRole('list', { name: 'More photos to upload' });
         expect(within(more).getByLabelText('Name for IMG_8734.jpg')).toHaveValue('IMG 8734');
         expect(within(more).getByLabelText('Name for ayran-buyuk.jpg')).toHaveValue('ayran buyuk');
@@ -54,11 +68,6 @@ describe('çoklu yükleme (ACEMI-MEDIA-MULTI-01)', () => {
         await user.clear(within(more).getByLabelText('Name for IMG_8734.jpg'));
         await user.type(within(more).getByLabelText('Name for IMG_8734.jpg'), 'Lahmacun');
         await user.type(within(region).getByLabelText(/alt text/i), 'Adana kebap');
-        const slotField = within(region).getByLabelText(/where will this image be used/i);
-        await waitFor(() =>
-            expect(within(slotField).getAllByRole('option').length).toBeGreaterThan(1),
-        );
-        await user.selectOptions(slotField, 'itemImage');
         await user.click(within(region).getByRole('button', { name: /^upload$/i }));
 
         await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(3));

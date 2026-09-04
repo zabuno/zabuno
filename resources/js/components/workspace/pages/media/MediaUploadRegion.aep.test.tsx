@@ -47,6 +47,27 @@ function mount() {
     render(<MediaUploadRegion onSubmit={vi.fn(async () => {})} />);
 }
 
+/**
+ * Ekran dört adımlı bir sihirbaz oldu; alan artık kendi adımında yaşıyor.
+ * Ölçek disiplini iddiası değişmedi, yalnız cümleye ulaşmak için adımı
+ * yürümek gerekiyor.
+ */
+async function goToStep(step: 'frame' | 'send'): Promise<void> {
+    const user = userEvent.setup();
+
+    await user.upload(
+        (await screen.findByLabelText(/choose a file/i)) as HTMLInputElement,
+        new File(['a'], 'kebap.jpg', { type: 'image/jpeg' }),
+    );
+
+    // Küçültme adımından çerçeveye.
+    await user.click(await screen.findByRole('button', { name: /^continue$/i }));
+
+    if (step === 'send') {
+        await user.click(screen.getByRole('button', { name: /^continue$/i }));
+    }
+}
+
 afterEach(() => {
     vi.unstubAllGlobals();
 });
@@ -54,6 +75,7 @@ afterEach(() => {
 describe('MediaUploadRegion — cümleler gövde, sayılar hizalı', () => {
     it('alternatif metin ipucu gövde metnidir', async () => {
         mount();
+        await goToStep('send');
 
         const hint = await screen.findByText(/Describe the image for people/i);
 
@@ -77,6 +99,7 @@ describe('MediaUploadRegion — cümleler gövde, sayılar hizalı', () => {
         */
         const user = userEvent.setup();
         mount();
+        await goToStep('frame');
 
         await user.selectOptions(
             await screen.findByLabelText(/Where will this image be used/i),

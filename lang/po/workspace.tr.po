@@ -1064,9 +1064,33 @@ msgstr ""
 msgid "workspace.media.crop.zoom"
 msgstr ""
 
+#: workspace:workspace.media.folders.all
+msgid "workspace.media.folders.all"
+msgstr ""
+
+#: workspace:workspace.media.folders.heading
+msgid "workspace.media.folders.heading"
+msgstr ""
+
+#: workspace:workspace.media.folders.next
+msgid "workspace.media.folders.next"
+msgstr ""
+
+#: workspace:workspace.media.folders.page
+msgid "workspace.media.folders.page"
+msgstr ""
+
+#: workspace:workspace.media.folders.previous
+msgid "workspace.media.folders.previous"
+msgstr ""
+
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
 msgstr "Görseller"
+
+#: workspace:workspace.media.library.access.private
+msgid "workspace.media.library.access.private"
+msgstr ""
 
 #: workspace:workspace.media.library.asset.delete
 msgid "workspace.media.library.asset.delete"
@@ -1232,6 +1256,10 @@ msgstr "Yuva"
 msgid "workspace.media.library.filters.status"
 msgstr "Durum"
 
+#: workspace:workspace.media.library.filters.toggle
+msgid "workspace.media.library.filters.toggle"
+msgstr ""
+
 #: workspace:workspace.media.library.filters.unusedOnly
 msgid "workspace.media.library.filters.unusedOnly"
 msgstr "Yalnız kullanılmayanlar"
@@ -1284,6 +1312,34 @@ msgstr "Görsel kütüphanesi yükleniyor…"
 msgid "workspace.media.library.region"
 msgstr "Görsel kütüphanesi"
 
+#: workspace:workspace.media.library.result.count
+msgid "workspace.media.library.result.count"
+msgstr ""
+
+#: workspace:workspace.media.library.select.all
+msgid "workspace.media.library.select.all"
+msgstr ""
+
+#: workspace:workspace.media.library.select.clear
+msgid "workspace.media.library.select.clear"
+msgstr ""
+
+#: workspace:workspace.media.library.select.count
+msgid "workspace.media.library.select.count"
+msgstr ""
+
+#: workspace:workspace.media.library.select.delete
+msgid "workspace.media.library.select.delete"
+msgstr ""
+
+#: workspace:workspace.media.library.select.kept
+msgid "workspace.media.library.select.kept"
+msgstr ""
+
+#: workspace:workspace.media.library.select.named
+msgid "workspace.media.library.select.named"
+msgstr ""
+
 #: workspace:workspace.media.library.slots.category.corporateSite
 msgid "workspace.media.library.slots.category.corporateSite"
 msgstr "Kurumsal site"
@@ -1315,6 +1371,22 @@ msgstr "Yuva kategorileri"
 #: workspace:workspace.media.library.slots.status.noAssetsYet
 msgid "workspace.media.library.slots.status.noAssetsYet"
 msgstr "{category}: henüz görsel yok."
+
+#: workspace:workspace.media.library.sort
+msgid "workspace.media.library.sort"
+msgstr ""
+
+#: workspace:workspace.media.library.sort.largest
+msgid "workspace.media.library.sort.largest"
+msgstr ""
+
+#: workspace:workspace.media.library.sort.name
+msgid "workspace.media.library.sort.name"
+msgstr ""
+
+#: workspace:workspace.media.library.sort.newest
+msgid "workspace.media.library.sort.newest"
+msgstr ""
 
 #: workspace:workspace.media.library.tabs.label
 msgid "workspace.media.library.tabs.label"
@@ -1499,6 +1571,26 @@ msgstr "sınırsız"
 #: workspace:workspace.media.security.explanation
 msgid "workspace.media.security.explanation"
 msgstr "Her görsel, menünüzde görünmeden önce taranır ve bir kişi tarafından kontrol edilir."
+
+#: workspace:workspace.media.shell.queue
+msgid "workspace.media.shell.queue"
+msgstr ""
+
+#: workspace:workspace.media.shell.search
+msgid "workspace.media.shell.search"
+msgstr ""
+
+#: workspace:workspace.media.shell.search.clear
+msgid "workspace.media.shell.search.clear"
+msgstr ""
+
+#: workspace:workspace.media.shell.search.placeholder
+msgid "workspace.media.shell.search.placeholder"
+msgstr ""
+
+#: workspace:workspace.media.shell.sections
+msgid "workspace.media.shell.sections"
+msgstr ""
 
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"

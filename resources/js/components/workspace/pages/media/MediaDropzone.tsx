@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
+import { Camera } from '@phosphor-icons/react';
 
 import { t } from '../../../../i18n/workspace';
+import { wizardText } from './uploadWizardCopy';
 import { FileDropzone } from '../../../catalog/forms/compound/FileDropzone';
 
 export type SelectedImage = {
@@ -42,6 +44,8 @@ export function MediaDropzone({
     onSelect,
     onSelectMore,
 }: MediaDropzoneProps) {
+    const cameraId = useId();
+
     /*
         Önizleme URL'i belgeye bağlıdır ve kendiliğinden serbest kalmaz.
         Menü doldururken arka arkaya yirmi görsel seçen bir kullanıcıda
@@ -112,6 +116,35 @@ export function MediaDropzone({
 
     return (
         <div className="flex flex-col gap-[var(--space-2)]">
+            {/*
+                FOTOĞRAF ÇEKME AYRI BİR YOLDUR (kanonik kaynak: "Yükle" ekranı,
+                "Fotoğraf çek" / "Galeriden seç").
+
+                Görsel bir tercih değil: `capture` niteliği telefonda doğrudan
+                kamerayı açar. Tek bir "dosya seç" düğmesi, mutfakta tabağın
+                başında duran sahibi önce galeriye, oradan kameraya götürür —
+                fotoğrafı henüz çekmemişken.
+
+                Girdi ayrı tutuluyor çünkü `capture` masaüstünde bir işe
+                yaramaz ve ortak girdiye eklenseydi galeriden seçme yolunu da
+                etkilerdi.
+            */}
+            <label
+                htmlFor={cameraId}
+                className="inline-flex min-h-[var(--control-height)] cursor-pointer items-center justify-center gap-[var(--space-2)] self-stretch rounded-[var(--radius-md)] border border-border px-[var(--space-3)] py-[var(--space-1)] text-body font-medium text-fg-secondary hover:bg-surface-hover focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus"
+            >
+                <Camera size={20} aria-hidden="true" />
+                {wizardText('workspace.media.upload.pick.camera')}
+                <input
+                    id={cameraId}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="sr-only"
+                    onChange={(event) => readAll(Array.from(event.target.files ?? []))}
+                />
+            </label>
+
             <FileDropzone
                 name="media-file"
                 accept="image/*"

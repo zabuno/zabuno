@@ -22,6 +22,7 @@ use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaAuditPort;
+use App\Application\Media\Port\MediaFolderRepositoryPort;
 use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MenuMediaPort;
@@ -89,6 +90,7 @@ use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
 use App\Infrastructure\Media\Persistence\EloquentMediaAudit;
+use App\Infrastructure\Media\Persistence\EloquentMediaFolderRepository;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
@@ -342,6 +344,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MailTransportSelectorPort::class, VaultMailTransportSelector::class);
 
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
+        // Medya klasörleri (`docs/108` §3 madde 1): kütüphanede gezinmeyi
+        // aramaya bağımlı olmaktan kurtaran raf düzeni.
+        $this->app->bind(MediaFolderRepositoryPort::class, EloquentMediaFolderRepository::class);
         // Medya denetim izi (`docs/49` Faz 7 madde 4): "bu fotoğrafı kim
         // sildi?" sorusunun cevabını tutan yer.
         $this->app->bind(MediaAuditPort::class, EloquentMediaAudit::class);
