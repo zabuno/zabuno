@@ -13,6 +13,7 @@ import { Select } from '../../../catalog/forms/micro/Select';
 import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedControl';
 import { ActionLink } from '../../../catalog/navigation/micro/ActionLink';
 import type { QrCreateReasonKind } from './QrDestinationFieldsRegion';
+import { QrPrintPreview } from './QrPrintPreview';
 import { isBrandColorPrintable } from '../../../../lib/qrContrast';
 
 /** `App\\Domain\\QrDestination\\QrPrintSheet` ile aynı sayılar. */
@@ -312,6 +313,20 @@ export function QrPrintExportRegion({
                         açık renkli sessiz bölge şarttır (ISO/IEC 18004: 4
                         modül). Koyu temada saydam bir kod taranamazdı.
                     */}
+                    {/*
+                        PDF'İN DE BİR ÖNİZLEMESİ VAR (FF-113, Döngü 9).
+
+                        Kâğıt ve yön seçicileri, kontrol ettikleri sonucu
+                        hiçbir yerde göstermiyordu: sahip "A6 yatay" seçiyor
+                        ve ne olacağını ancak yazıcıdan kâğıt çıkınca
+                        öğreniyordu. PNG/SVG'nin gerçek bir görüntüsü var;
+                        PDF'in şeması var — ve şema, asıl bilgiyi taşır:
+                        milimetre.
+                    */}
+                    {isPdf ? (
+                        <QrPrintPreview paperSize={paperSize} orientation={orientation} />
+                    ) : null}
+
                     {isPdf ? null : (
                         <span className="flex w-fit rounded-[var(--radius-lg)] border border-border bg-white p-[var(--space-4)]">
                             {previewFailed ? (

@@ -188,6 +188,13 @@ export const publication = {
         Okunmayan bir karekod masadaki ölü kâğıttır ve bunu ilk fark eden
         kişi misafirdir.
     */
+    /*
+        YAZICIDAN NE ÇIKACAK (`docs/104` Döngü 9). "A4 dikey" bir restoran
+        sahibine hiçbir şey anlatmaz; milimetre ve okuma mesafesi anlatır.
+    */
+    'workspace.publication.qrExport.preview.paper': '{paper} — {width} × {height} mm',
+    'workspace.publication.qrExport.preview.size':
+        'The code prints {mm} mm wide, so it can be scanned from about {distance} cm away. Put a sheet this size on a wall or a window, not on a table.',
     'workspace.publication.qrExport.themes.scannability':
         'Every theme here prints dark on light and keeps the quiet zone around the code, so all of them scan. Colour never comes at the cost of a code that cannot be read.',
     'workspace.publication.qrExport.themes.brandTooPale':

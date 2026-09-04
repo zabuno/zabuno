@@ -566,6 +566,8 @@
     "workspace.publication.qrExport.formats.svg": "SVG",
     "workspace.publication.qrExport.noActive": "Çıktısı alınacak etkin karekod yok.",
     "workspace.publication.qrExport.preview.failed": "Önizleme üretilemedi. Kodunuz çalışmaya devam ediyor; başka bir biçim deneyin ya da sayfayı yenileyin.",
+    "workspace.publication.qrExport.preview.paper": "{paper} — {width} × {height} mm",
+    "workspace.publication.qrExport.preview.size": "Kod {mm} mm genişliğinde basılır, yani yaklaşık {distance} cm mesafeden okutulabilir. Bu boyuttaki bir sayfayı masaya değil, duvara ya da vitrine asın.",
     "workspace.publication.qrExport.previewAlt": "Karekod önizlemesi",
     "workspace.publication.qrExport.printButton": "Yazdır",
     "workspace.publication.qrExport.region": "Karekod baskı çıktısı",
