@@ -95,7 +95,13 @@ function DetailDrawer({
     }
 
     return (
-        <DrawerPanel open onClose={onClose} title={name}>
+        /*
+            DENETÇİ paneli, gezinme değil (FF-115). Kabuk standardı çekmeceyi
+            SOLDAN açar; burası istisnadır ve istisna açıkça yazılır: soldaki
+            medya listesinden seçilen dosyanın ayrıntısı sağda açılır, böylece
+            liste ekranda kalır ve kullanıcı hangi dosyaya baktığını görür.
+        */
+        <DrawerPanel open onClose={onClose} title={name} position="right">
             <div className="flex flex-col gap-4">
                 {asset.previewUrl ? (
                     <img

@@ -1,0 +1,231 @@
+# 105 — Kurumsal site, URL politikası ve yayın sistemi: durum raporu ve plan
+
+**Girdiler:** `zabuno-com-tam-site-haritasi.md` (414 canonical yol) ve
+`zabuno-frontend-claude-uygulama-yonergesi.md` (ChatGPT'nin ürettiği uygulama
+yönergesi), sahibin 2026-09-04 tarihli üç talebiyle birlikte:
+
+1. Kenar çubuğu her sayfada SOLDAN açılmalı; kabuk standardı bu olsun.
+2. Yönergedeki planı uygula, üç döngü tekrarla, test-first ilerle.
+3. Herkese açık menü adresi şu biçimde olsun:
+   `restoran/pasa-doner/menu/aB245iKj/#item=101` — başındaki segment dile göre
+   değişsin (`restoran` / `restaurant`).
+
+---
+
+## 1. Mevcut durum (ölçülmüş, varsayılmamış)
+
+Bu bölüm depo taranarak çıkarıldı; yönergedeki varsayımların hangilerinin bu
+depoda karşılığı olduğunu belirler.
+
+| Konu | Yönergenin varsayımı | Depodaki gerçek |
+| --- | --- | --- |
+| Public frontend | Yeni Astro uygulaması kurulacak | **Blade zaten çalışıyor**: `/`, `/pricing`, `/help`, `/contact`, `/terms`, `/privacy`, `/kvkk` sunucuda render ediliyor, React paketi hiç yüklenmiyor |
+| Depo yapısı | `apps/backend` + `apps/web` monorepo | Tek Laravel uygulaması; onion mimari, `catalog/` tasarım sistemi, guard testleri |
+| Çeviri | Yeni `content_page_localizations` tabloları | **PO/MO gettext boru hattı zaten var**: `lang/po` → `lang/mo` → JSON projeksiyonları, `TranslationPort`, `MoFileTranslator`, `I18N-SSR-RATCHET` kapısı |
+| Dil URL'i | `/tr/` ve `/en/` dizinleri | Dizin YOK; dil `Accept-Language`, çerez ve `?lang=` ile çözülüyor |
+| hreflang | Kurulacak | Depoda tek bir `hreflang` yok |
+| Sitemap | Türe ve dile bölünmüş index | Tek `/sitemap.xml`; sabit yollar elle yazılmış (`/pricing`, `/help`, `/contact` **eksik**) |
+| Menü adresi | Kapsam dışı sayılmış | `/q/{token}` → 302 → `/menu/{token}` (noindex) ve canonical `/menu/{key}/{slug?}` |
+| İşletme slug'ı | Hiç konuşulmamış | `locations` tablosunda slug **yok**; `brands.slug` global benzersiz ve çalışma alanı başına tek marka |
+| Rezerve kelimeler | Konuşulmamış | `config/url-policy.php` içinde gerçek bir `reserved_slugs` listesi var |
+
+---
+
+## 2. ChatGPT'nin planı — neyi doğru gördü, neyi eksik düşündü
+
+### 2.1 Doğru ve korunacak kararlar
+
+- **70 SEO etiketini 8 sisteme indirmesi.** "AEO, GEO, LLMO, AIO, AISO" için 70
+  ayrı onay kutusu değil; crawl/render, on-page/entity, cevap sistemleri,
+  programatik, uluslararası, medya, dağıtım ve yasaklı yöntemler olarak
+  gruplaması doğrudur ve aynen korunuyor.
+- **Yayınlanmamış yüzlerce sayfaya `200` ile aynı "hazırlanıyor" metnini
+  vermemek.** Bu soft-404 ve ince içerik üretir; `404 + noindex,follow` kararı
+  doğrudur.
+- **Çeviri kilidinin dört katmanlı olması** (config, servis, kuyruk, panel).
+- **Alan bazında Türkçe fallback** ve **kısmen çevrilmiş locale sayfasının
+  noindex kalması, hreflang alternatifi ilan edilmemesi.**
+- **Tek canonical, kopya landing page yasağı, black-hat yasağı.**
+
+### 2.2 Eksik düşündükleri
+
+**(1) Ana teknoloji kararını yanlış dalda verdi.** Yönergenin kendi §2.3'ü
+"çalışan bir Blade public site varsa Astro açma" diyor — ve bu depoda o site
+var. ChatGPT depoyu görmediği için birincil önerisini Astro yaptı. Astro'ya
+geçmek bu depoda üç şeyi çatallar: tasarım sistemi (`catalog/` katmanları ve
+katman guard'ları), i18n boru hattı (PO/MO) ve CI kapıları. `docs/36` bir kez
+yaşanmış körlüğü kaydediyor: çalışan bir sistemin yanı başında ikincisini
+kurmak. **Karar: Blade + Tailwind + Alpine kalıyor.**
+
+**(2) İkinci bir çeviri sistemi icat etti.** `content_page_localizations`,
+`translation_jobs`, `translation_glossary` tabloları, PO/MO boru hattının
+yaptığı işi ikinci kez yapar. İki çeviri sistemi, bir gün iki farklı cümle
+gösterir. **Karar: arayüz metni PO/MO'da kalır; yalnız EDİTORYAL sayfa içeriği
+(uzun metin, bloklar) veritabanında dile göre saklanır.** İkisinin sınırı
+yazılı olmalı.
+
+**(3) Kendi CI listesiyle kendi 404 kararı çelişiyor.** "Broken link scan" CI
+adımı istiyor; ama yayınlanmamış sayfalar 404 dönecek. Menüde/altbilgide/iç
+bağlantıda duran her yayınlanmamış sayfa, kendi CI'ını kırar. **Eksik kural:
+yayınlanmamış sayfa hiçbir yerden iç bağlantı almaz** — `navigation_visibility`
+tek başına yetmez, içerik içi bağlantılar da kapıdan geçmelidir.
+
+**(4) Yaşayan URL'lerin göçünü hiç planlamamış.** Bugün `/pricing` yayında,
+`/sitemap.xml` içinde ve robots.txt'te. `/tr/fiyatlandirma/` yapmak; 301
+zinciri, sitemap, canonical host politikası ve rezerve kelime listesiyle
+birlikte planlanmak zorunda. Planda "redirects" tablosu var ama **mevcut canlı
+adreslerin göç listesi yok.**
+
+**(5) Kiracı adresini kapsam dışı bıraktı — oysa sahibin asıl talebi o.**
+Sahibin istediği `restoran/pasa-doner/menu/aB245iKj/` adresi bir kurumsal sayfa
+değil, bir KİRACI adresidir. Yönerge bunu hiç konuşmuyor; dolayısıyla işletme
+slug'ının veri modeli, benzersizliği, rezerve kelimelerle çakışması ve eski
+adreslerden 301'i planda yok. Bu belge onu §4'te tanımlıyor.
+
+**(6) `#item=101` fragment'i bir adres değildir.** Fragment sunucuya hiç
+ulaşmaz: indekslenmez, ayrı bir sayfa olarak ölçülemez, paylaşıldığında hangi
+ürün olduğu sunucu tarafından bilinemez. Bu, deponun kendi kilitli kuralıyla da
+çelişir ("ekran adresi asla fragment olamaz"). **Karar: ürün gerçek bir yol
+segmenti olur; `#item=` çalışmaya devam eder ve istemci onu sessizce gerçek
+adrese yükseltir.** Ayrıntı §4.3'te.
+
+**(7) İkon yasağı ile deponun kendi kuralı çelişiyor.** Yönerge "ikon
+kullanılmayacaktır" diyor; deponun kuralı "emoji yasak, önce Phosphor ikonları".
+**Karar: yasak yalnız KURUMSAL SİTE için geçerli; yönetim paneli Phosphor
+kullanmaya devam eder.** İki yüzeyin görsel dili zaten farklıdır.
+
+**(8) Ölçüm hiç yok.** Sahibin kilitli kuralı: her şey kiracı bazında
+ölçülebilmeli (GA4/Metrica/GTM/dataLayer). Kurumsal sitenin ölçüm sözleşmesi
+planda yok; sayfa görüntüleme, form gönderimi ve CTA tıklaması aynı sözleşmeye
+bağlanmalı.
+
+**(9) 414 sayfayı KİMİN yazacağı yok.** Plan "her sayfa tamamlandığında durumu
+ilerlet" diyor ama içerik üretim hattı yok. Tek kişilik, kod bilmeyen bir sahip
+için gerçek darboğaz budur. İçerik taslağı üretmek ÇEVİRİ DEĞİLDİR ve çeviri
+kilidine tabi değildir; bu ayrım yazılı olmalı.
+
+**(10) CI bütçesi yok.** 13 ayrı CI adımı (Lighthouse CI, axe, Playwright,
+schema doğrulama, broken link, duplicate scan) öneriyor. Bu deponun CI'ı bugün
+tek işte ~7 dakika. Hepsini bir anda eklemek CI'ı kullanılamaz hâle getirir;
+adımlar kademeli ve bütçeli eklenmeli.
+
+**(11) `x-default`'un ne olacağını söylemiyor.** İngilizce tamamlanana kadar
+`x-default` Türkçe canonical olmalıdır; plan bunu boş bırakıyor.
+
+---
+
+## 3. Uygulanacak mimari (bu depoya uyarlanmış)
+
+```text
+Laravel (tek uygulama)
+  -> content_pages registry        (414 canonical yol, tek kayıt/tek yol)
+  -> PageGate                      (durum -> HTTP + robots + sitemap + menü)
+  -> Blade şablonları              (sayfa türü başına bir şablon)
+  -> UnderConstruction bileşeni    (tek örnek, kopyalanmaz)
+  -> PO/MO                         (arayüz metni)
+  -> içerik yerelleştirmesi        (editoryal metin, kilitli)
+  -> URL politikası                (canonical, 301, rezerve kelime)
+  -> sitemap + robots + hreflang
+```
+
+Alpine.js yalnız gerçekten etkileşim gereken yerde. React bu yüzeye
+sokulmayacak. SmoothUI/Aceternity/Magic UI React bileşenleridir ve bu karara
+göre kurumsal siteye **girmiyor**; hareket ihtiyacı CSS ve `prefers-reduced-motion`
+uyumlu küçük geçişlerle karşılanacak.
+
+---
+
+## 4. URL politikası
+
+### 4.1 Kurumsal site
+
+```text
+/tr/urun/qr-menu/
+/en/product/qr-menu/
+```
+
+- Dil dizini açık; her locale kendi canonical'ına sahip.
+- Türkçe tamamlanana kadar `/en/` sayfaları `noindex,follow` ve sitemap dışı.
+- `x-default` → Türkçe canonical.
+- Mevcut `/pricing`, `/help`, `/contact`, `/terms`, `/privacy`, `/kvkk`
+  adresleri tek atımlı 301 ile yeni adreslerine taşınır; zincir kurulmaz.
+
+### 4.2 Kiracı menü adresi (sahibin talebi)
+
+```text
+/restoran/pasa-doner/menu/ab12cd34ef/
+/restaurant/pasa-doner/menu/ab12cd34ef/
+```
+
+| Segment | Nedir | Neden |
+| --- | --- | --- |
+| `restoran` / `restaurant` | İşletme türünün dile göre yazılmış hâli | İnsanın okuduğunda ne olduğunu anladığı tek segment; arama motoru ve dil modeli için de varlık ipucu |
+| `pasa-doner` | İşletmenin slug'ı | Pazarlamada söylenebilir, karta yazılabilir, hatırlanabilir |
+| `menu` | Sabit | Aynı işletme altında ileride başka kaynaklar açılabilir |
+| `ab12cd34ef` | Menünün kalıcı anahtarı | Ad değişse bile adres ölmez; anahtar sabittir |
+
+**Anahtar biçimi küçük harf kalıyor.** Sahibin örneği `aB245iKj` karışık
+harfliydi. Karışık harfli anahtar üç sorun üretir: telefonda sözlü olarak
+aktarılamaz ("büyük B, küçük i"), URL'ler büyük/küçük harfe duyarlı olduğu için
+`/AB245/` ile `/ab245/` iki ayrı sayfa olur ve kopya içerik doğurur, ve mevcut
+basılı kodların anahtarları zaten küçük harflidir. **Bu yüzden `[a-z0-9]{10}`
+korunuyor** — deponun bugünkü biçimi.
+
+### 4.3 Ürün (yemek) adresi
+
+Sahibin istediği `#item=101` fragment'i **çalışmaya devam eder** ama canonical
+adres bir yol segmentidir:
+
+```text
+/restoran/pasa-doner/menu/ab12cd34ef/urun/101-adana-kebap
+```
+
+Sebep: fragment sunucuya hiç ulaşmaz. `#item=101` ile paylaşılan bir bağlantı
+arama motorunda ayrı bir sayfa değildir, ölçümde ayrı bir görüntüleme değildir
+ve yapay zekâ sistemlerine "bu bir ürün sayfası" demez. Yol segmenti üçünü de
+yapar. Eski biçimi kıran bir şey yok: sayfa açılırken `#item=101` okunur, o
+ürüne kaydırılır ve adres sessizce canonical hâline yükseltilir.
+
+### 4.4 Rezerve kelimeler
+
+`restoran`, `restaurant`, `menu`, `urun`, `product` ve dil kodları
+`config/url-policy.php` rezerve listesine girer: hiçbir işletme bu slug'ı
+alamaz, yoksa `/restoran/menu/...` gibi çözülemeyen adresler doğar.
+
+---
+
+## 5. Üç döngü
+
+| # | Paket | Kapsam | Durum |
+| --- | --- | --- | --- |
+| 1 | FF-115 | Kabuk standardı: gezinme çekmecesi her yerde SOLDAN. Bu belge. | ✅ |
+| 2 | FF-116 | Kiracı menü adresi: dile göre işletme türü öneki, işletme slug'ı, ürün yolu, eski adreslerden 301, canonical/hreflang/sitemap | ⬜ |
+| 3 | FF-117 | Sayfa registry + PageGate + "Zabuno Service Pass" hazırlanıyor bileşeni + çeviri kilidi iskeleti (414 yol seed'lenir, hiçbiri yayına açılmaz) | ⬜ |
+
+Üç döngünün DIŞINDA kalanlar — ve bunun açıkça söylenmesi:
+
+- 414 sayfanın Türkçe içeriği. Registry ve kapı kurulur; içerik yazımı ayrı bir
+  programdır ve sayfa sayfa ilerler.
+- `/tr/` ve `/en/` dizinlerine göç. Politikası bu belgede kararlaştırıldı;
+  uygulaması FF-117'den sonra kendi paketinde yapılır.
+- Çeviri üretimi. Kilit kurulur, **çalıştırılmaz**. Sahibin açık `ÇEVİRİLERE
+  BAŞLA` komutu olmadan tek bir çeviri işi başlatılmaz.
+
+---
+
+## 6. Tur 1 kaydı (FF-115) — kabuk standardı
+
+Telefonda gezinme çekmecesi SAĞDAN giriyordu. Masaüstünde kenar çubuğu solda
+duruyor ve onu açan düğme de solda: parmağın bastığı yer ile panelin açıldığı
+yer tersti. Aynı ürünün iki farklı zihinsel haritası.
+
+- `DrawerPanel`'in varsayılanı `left` oldu; kural bileşenin içine gerekçesiyle
+  yazıldı.
+- Medya denetçisi tek istisna ve istisna ÇAĞRI NOKTASINDA açıkça yazılı: soldaki
+  listeden seçilen dosyanın ayrıntısı sağda açılır, böylece liste ekranda kalır.
+- İki kapı eklendi: telefon kabuğunun çıktısı gerçekten soldan mı geliyor, ve
+  hiçbir gezinme yüzeyi `position="right"` yazmıyor mu. İkincisi kaynak tarar,
+  çünkü bu bir bileşenin çıktısı değil KABUK AİLESİNİN yazım kuralıdır —
+  `OpsShell.layout.test.tsx` aynı deseni kullanıyor.
+- RTL notu koda düşüldü: Arapça arayüz açıldığında kural "başlangıç kenarı"
+  olarak yeniden yazılmalı, fiziksel `left` olarak değil.

@@ -10,6 +10,25 @@ export type DrawerPanelProps = {
     onClose: () => void;
     title: string;
     children: ReactNode;
+    /**
+     * Hangi kenardan girer — VARSAYILAN SOLDUR (FF-115).
+     *
+     * Sahibin bildirimi (2026-09-04): "sidebar, sağdan değil, soldan
+     * açılmalı. tüm sayfalarda. shell standardı bu olsun."
+     *
+     * Kural keyfi değil: masaüstünde kenar çubuğu SOLDA duruyor ve onu açan
+     * düğme de solda. Telefonda aynı menünün sağdan girmesi, parmağın
+     * bastığı yerle panelin açıldığı yerin ters olması demek — aynı ürünün
+     * iki farklı zihinsel haritası. Gezinme her yerde aynı kenardan gelir.
+     *
+     * `right` yalnız DENETÇİ panelleri içindir (soldaki listeden seçilen bir
+     * öğenin ayrıntısı): orada listeyi ekranda tutmak ve okuma yönünü
+     * korumak gerekir. O istisna çağrı noktasında AÇIKÇA yazılır.
+     *
+     * RTL notu: bugün panelde `dir="rtl"` yok. Arapça arayüz açıldığında bu
+     * kural "başlangıç kenarı" olarak yeniden yazılmalı (mantıksal
+     * konumlandırma), fiziksel `left` olarak değil.
+     */
     position?: 'left' | 'right' | 'top' | 'bottom';
     className?: string;
 };
@@ -41,7 +60,7 @@ export function DrawerPanel({
     onClose,
     title,
     children,
-    position = 'right',
+    position = 'left',
     className,
 }: DrawerPanelProps) {
     const titleId = useId();
