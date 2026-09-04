@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { t } from '../../../../i18n/workspace';
 import {
@@ -118,12 +118,21 @@ export function ImageCropField({
         };
     }, [objectUrl, rect, possible, onCropped, mimeType]);
 
-    const onPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    /*
+        Bu üç işleyici KASITLI olarak `useCallback` ile sarılmıyor.
+
+        İçlerinde `ref.current` yazılıyor ve React derleyicisi böyle bir
+        gövdede elle kurulmuş bir hafızayı koruyamıyor (CI kapısı:
+        `react-hooks/preserve-manual-memoization`). Sarmalayıcı zaten bir
+        kazanç da sağlamıyordu — bu işleyiciler bir etkinin bağımlılığı
+        değil, doğrudan JSX'e verilen olay işleyicileridir.
+    */
+    function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
         dragRef.current = { pointerX: event.clientX, pointerY: event.clientY };
         event.currentTarget.setPointerCapture(event.pointerId);
-    }, []);
+    }
 
-    const onPointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    function onPointerMove(event: React.PointerEvent<HTMLDivElement>) {
         const drag = dragRef.current;
         const frame = frameRef.current;
 
@@ -131,21 +140,21 @@ export function ImageCropField({
 
         const box = frame.getBoundingClientRect();
 
-        // Kayma NORMALİZE edilir (-1…1): yakınlaştırma değişince
-        // kullanıcının seçtiği yer orantılı kalır. Piksel tutulsaydı
-        // her yakınlaştırmada çerçeve sıçrardı.
+        // Kayma NORMALİZE edilir (-1…1): yakınlaştırma değişince kullanıcının
+        // seçtiği yer orantılı kalır. Piksel tutulsaydı her yakınlaştırmada
+        // çerçeve sıçrardı.
         setOffset((previous) => ({
             x: clamp(previous.x - ((event.clientX - drag.pointerX) * 2) / Math.max(1, box.width)),
             y: clamp(previous.y - ((event.clientY - drag.pointerY) * 2) / Math.max(1, box.height)),
         }));
 
         dragRef.current = { pointerX: event.clientX, pointerY: event.clientY };
-    }, []);
+    }
 
-    const onPointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    function onPointerUp(event: React.PointerEvent<HTMLDivElement>) {
         dragRef.current = null;
         event.currentTarget.releasePointerCapture(event.pointerId);
-    }, []);
+    }
 
     if (!possible || ratio === null) {
         /*
