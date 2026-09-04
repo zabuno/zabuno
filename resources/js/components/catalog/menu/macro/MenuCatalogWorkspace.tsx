@@ -6,6 +6,7 @@ import { Eye, EyeSlash, ImageSquare, Plus, Warning } from '@phosphor-icons/react
 import { useEffect, useState, type FormEvent } from 'react';
 import { RowActions } from '../compound/RowActions';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
+import { formatMoneyOr } from '../../../../money/format';
 import { focusFirstInvalidField, readValidationFailure } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/menu';
 import { FileDropzone } from '../../forms/compound/FileDropzone';
@@ -2638,6 +2639,21 @@ export function MenuCatalogWorkspace({
                                                     />
                                                 </span>
                                                 {/*
+                                                    BİÇİMLENDİRME ürünün kanonik
+                                                    biçimlendiricisinden gelir
+                                                    (`money/format`, CORE-12).
+
+                                                    Bu ekran onu görmezden gelip
+                                                    kendi dizesini kuruyordu:
+                                                    "42.50 TRY". Türkçe yazım
+                                                    "₺42,50"dir ve bunu tahmin
+                                                    etmek değil, dilin kendi
+                                                    kurallarına sormak gerekir.
+                                                    Biçimlendirilemeyen para
+                                                    biriminde eski dizeye
+                                                    düşülür — uydurmak yerine
+                                                    ham gerçeği göstermek.
+
                                                     FİYATIN KENDİSİ düzenlenir
                                                     (FF-102): yanında ayrı bir
                                                     "Price" düğmesi durması,
@@ -2663,11 +2679,14 @@ export function MenuCatalogWorkspace({
                                                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                                                     )}
                                                 >
-                                                    {minorAmountToDecimalString(
+                                                    {formatMoneyOr(
                                                         item.priceMinorAmount,
                                                         item.currencyCode,
-                                                    )}{' '}
-                                                    {item.currencyCode}
+                                                        `${minorAmountToDecimalString(
+                                                            item.priceMinorAmount,
+                                                            item.currencyCode,
+                                                        )} ${item.currencyCode}`,
+                                                    )}
                                                 </button>
                                                 {/*
                                                     TÜKENDİ satırda kalır: bir

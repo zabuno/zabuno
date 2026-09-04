@@ -1357,10 +1357,20 @@ describe("MenuCatalogWorkspace — visible price uses each currency's ISO fracti
         await screen.findByText('Sushi Seti');
         await screen.findByText('Makbous');
 
-        expect(screen.getByText('125 JPY')).toBeInTheDocument();
-        expect(screen.getByText('12.345 KWD')).toBeInTheDocument();
-        expect(screen.queryByText('1.25 JPY')).not.toBeInTheDocument();
-        expect(screen.queryByText('123.45 KWD')).not.toBeInTheDocument();
+        /*
+            GÜNCELLENDİ (FF-103): görünen fiyat artık ürünün kanonik
+            biçimlendiricisinden geçiyor (`money/format`, CORE-12) — yani para
+            birimi simgesi ve ayırıcılar DİLİN kurallarına göre yazılıyor
+            ("¥125", "KWD 1.499"). Bu testin dondurduğu sözleşme simge değil,
+            BASAMAK SAYISIDIR: yende ondalık yoktur, dinarda üç basamak vardır.
+            Sabit bir 100 böleni ikisinde de yüz kat yanlış tutar gösterirdi.
+
+            O yüzden iddia rakama bakar, simgeye değil.
+        */
+        expect(screen.getByText(/(^|\D)125(\D|$)/)).toBeInTheDocument();
+        expect(screen.getByText(/12[.,]345/)).toBeInTheDocument();
+        expect(screen.queryByText(/1[.,]25(\D|$)/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/123[.,]45/)).not.toBeInTheDocument();
 
         fireEvent.click(screen.getByRole('button', { name: 'Edit price for Sushi Seti' }));
         const jpyPriceInput = (await screen.findByRole('textbox', {
