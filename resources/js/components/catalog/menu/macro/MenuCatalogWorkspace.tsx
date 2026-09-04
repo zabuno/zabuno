@@ -2528,7 +2528,15 @@ export function MenuCatalogWorkspace({
                                     {category.menuItems.length > 0 ? (
                                         <button
                                             type="button"
-                                            className={inlineActionClass}
+                                            /*
+                                                DURUM, ÜRÜN SATIRIYLA AYNI
+                                                YERDE: sağda, eylemlerden hemen
+                                                önce. Başlığa yapışık durduğunda
+                                                kategori adı sıkışık okunuyor ve
+                                                aynı bilgi iki satırda iki ayrı
+                                                yerde aranıyordu.
+                                            */
+                                            className={clsx(inlineActionClass, 'ms-auto')}
                                             disabled={categoryStockPending[category.id] === true}
                                             onClick={() =>
                                                 void handleCategoryStock(
