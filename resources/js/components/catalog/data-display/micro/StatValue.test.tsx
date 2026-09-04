@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { readFileSync } from 'node:fs';
 import { StatValue } from './StatValue';
 import {
     WCAG_AA_NORMAL_TEXT,
@@ -8,6 +7,7 @@ import {
     readCustomProperties,
     resolveColor,
 } from '../../../../design-system/contrast';
+import { themeScope } from '../../../../design-system/cssSources';
 
 /**
  * Kontrast, sabit bir Tailwind hex'ine değil, bileşenin GERÇEKTEN okuduğu
@@ -15,9 +15,13 @@ import {
  * arıyordu; o sınıf tasarım sisteminden kaçan bir ham renkti ve test onu
  * koruyordu.
  */
-const CSS = readFileSync('resources/css/app.css', 'utf8');
-const LIGHT = readCustomProperties(CSS, ':root');
-const DARK = { ...LIGHT, ...readCustomProperties(CSS, '.dark') };
+/*
+    Jetonlar iki katmanda yaşıyor (FF-131): ham değerler `resources/css/aep/`,
+    takma adlar `app.css`. Yalnız `app.css` okumak, `var(--aep-*)` metnini
+    renk sanıp ölçümü sessizce boşa çıkarırdı.
+*/
+const LIGHT = themeScope(':root', readCustomProperties);
+const DARK = themeScope('.dark', readCustomProperties);
 
 function tokenContrast(scope: Record<string, string>, fg: string, bg: string): number {
     const foreground = resolveColor(scope[fg], scope);

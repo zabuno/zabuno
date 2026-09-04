@@ -1,0 +1,10 @@
+/* AEP typeface: Roboto (Latin) + Noto Sans (script fallback).
+   SPEC REQUIRES SELF-HOSTING. No binaries were supplied with the source material,
+   so these @font-face rules point at the Google Fonts CDN copies as a stand-in.
+   Replace the src: url() targets with local /assets/fonts/*.woff2 files when available. */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap");
+/* Phosphor icon set (spec: Phosphor SVG, emoji forbidden). Loaded as the official icon webfont. */
+@import url("https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css");
+@import url("https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css");
+@import url("https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css");
+:root{--aep-font-sans:"Roboto","Noto Sans",system-ui,sans-serif;--aep-font-mono:ui-monospace,SFMono-Regular,Menlo,monospace}

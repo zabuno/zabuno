@@ -1,0 +1,24 @@
+/* 320px-first bands: 320 / 480 / 768 / 1024 / 1440. */
+:root{
+--aep-bp-xxs:320px;
+--aep-bp-xs:430px;
+--aep-bp-sm:768px;
+--aep-bp-md:1024px;
+--aep-bp-lg:1440px;
+--aep-grid-columns:4; /* @kind other */
+--aep-grid-gutter:16px;
+--aep-grid-margin:clamp(16px,5vw,72px);
+--aep-container-max:1296px;
+--aep-form-max:720px;
+--aep-z-base:0; /* @kind other */
+--aep-z-sticky:100; /* @kind other */
+--aep-z-header:200; /* @kind other */
+--aep-z-bottomnav:200; /* @kind other */
+--aep-z-panel:300; /* @kind other */
+--aep-z-overlay:400; /* @kind other */
+--aep-z-modal:500; /* @kind other */
+--aep-z-toast:600; /* @kind other */
+--aep-z-tooltip:700; /* @kind other */
+}
+@media (min-width:768px){:root{--aep-grid-columns:8; /* @kind other */--aep-grid-gutter:24px}}
+@media (min-width:1024px){:root{--aep-grid-columns:12 /* @kind other */}}

@@ -1,0 +1,10 @@
+:root{
+--aep-duration-1:120ms; /* @kind other */
+--aep-duration-2:150ms; /* @kind other */
+--aep-duration-3:200ms; /* @kind other */
+--aep-duration-4:240ms; /* @kind other */
+--aep-ease:cubic-bezier(0,0,.2,1); /* @kind other */
+}
+@media (prefers-reduced-motion:reduce){
+:root{--aep-duration-1:1ms; /* @kind other */--aep-duration-2:1ms; /* @kind other */--aep-duration-3:1ms; /* @kind other */--aep-duration-4:1ms /* @kind other */}
+}

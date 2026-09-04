@@ -1,5 +1,48 @@
 @import 'tailwindcss';
 @import 'flowbite-react/plugin/tailwindcss';
+
+/*
+    AEP TASARIM SİSTEMİ — teslim paketinin KENDİ CSS'i (FF-131).
+
+    Sahibin kararı: "zip dosyaları bu işin tanrısıdır." Paket bir brief
+    DEĞİL, çalışan bir tasarım sistemi taşıyor: `_ds/` altında ilkel palet,
+    semantic jetonlar, yoğunluk, tipografi ve bileşen CSS'i. Önceki
+    paketlerde bu sistem ELLE yeniden türetiliyordu — yani aynı sayılar iki
+    yerde yazılıyordu ve ilk ayrışmada hangisinin doğru olduğu belirsizdi.
+
+    Artık kaynak burada: `resources/css/aep/` paketin bire bir kopyasıdır ve
+    ELLE DÜZENLENMEZ. Depodaki semantic jetonlar (`--canvas`, `--fg`, …)
+    onun üstüne geçiş takma adları olarak oturur; böylece Tailwind ve
+    Flowbite zinciri hiç değişmeden AEP değerlerini okur.
+
+    Paket güncellenirse bu klasör yeniden kopyalanır ve fark tek yerde
+    görünür.
+*/
+@import './aep/styles.css';
+
+/*
+    AEP `base.css` her `<a>` etiketini MAVİ ve ALTI ÇİZİLİ yapar — bu, bir
+    içerik sayfası için doğru, bir panel için değil. Teslim paketinin kendi
+    panel HTML'i de aynı düzeltmeyi kendi `<style>` bloğunda yapıyor:
+    `a{color:var(--fg);text-decoration:none}`. Yani bu bir sapma değil,
+    paketin panel katmanının kendi kuralı.
+
+    Ölçüldü (2026-09-04): kural olmadan kenar çubuğundaki her gezinti
+    maddesi mavi ve altı çizili çiziliyordu; gezinti bir bağlantı listesidir,
+    metin içindeki bir referans değil.
+*/
+a {
+    color: inherit;
+    text-decoration: none;
+    text-underline-offset: 2px;
+}
+
+/* Metin AKIŞI içindeki bağlantı, paketin mavi bağlantı dilini korur. */
+.prose a,
+[data-content] a {
+    color: var(--aep-accent-secondary-text);
+    text-decoration: underline;
+}
 @source '../../.flowbite-react/class-list.json';
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -205,8 +248,8 @@
 /* docs/06 §11 AEP mirası — #ffb900 is the ONLY primitive; every component
    consumes the semantic aliases below, never the raw hex. */
 :root {
-    --border: #e4e4ee;
-    --color-brand-500: #ffb900;
+    --border: var(--aep-border);
+    --color-brand-500: var(--aep-yellow-500);
 
     /* Akışkan aralık ölçeği. Bileşen ham `clamp()` bilmez; bu ölçeği bilir
        (design-corpus/olcu-birimleri.md 7. madde). */
@@ -313,24 +356,24 @@
        ayrışır: `--text-meta` 16px tabana çıktı, ayrımı bu üç ton taşıyor ve
        üçü de aynı değerdir — üç ayrı gri tonu, hiyerarşi kurmuyor, yalnız
        "hangi grinin hangisi olduğu" sorusunu üretiyordu. */
-    --fg: #080616;
-    --fg-secondary: rgb(8 6 22 / 66%);
-    --fg-muted: rgb(8 6 22 / 66%);
-    --fg-subtle: rgb(8 6 22 / 66%);
-    --fg-danger: #dc2626;
-    --fg-success: #15803d;
-    --fg-warning: #b45309;
-    --fg-link: #1d4ed8;
+    --fg: var(--aep-text-primary);
+    --fg-secondary: var(--aep-text-secondary);
+    --fg-muted: var(--aep-text-secondary);
+    --fg-subtle: var(--aep-text-secondary);
+    --fg-danger: var(--aep-status-error);
+    --fg-success: var(--aep-status-success);
+    --fg-warning: var(--aep-status-warning);
+    --fg-link: var(--aep-status-info);
 
     /* Uygulama ZEMİNİ (`docs/102` §1): kart her iki temada zeminden açıktır.
        `surface-subtle` kart İÇİ soluk dolgudur (tablo başlığı); zemin değildir. */
-    --canvas: #f7f7fb;
-    --surface: #ffffff;
-    --surface-subtle: #ededf4;
+    --canvas: var(--aep-surface-canvas);
+    --surface: var(--aep-surface-raised);
+    --surface-subtle: var(--aep-surface-sunken);
     /* Vurgu TONLA verilir, gölgeyle değil (Flat 2.0): saydam bir katman her
        yüzeyin üstünde çalışır ve kartın kendi rengini bilmesi gerekmez. */
-    --surface-hover: rgb(8 6 22 / 4%);
-    --surface-active: rgb(8 6 22 / 8%);
+    --surface-hover: var(--aep-surface-tint);
+    --surface-active: var(--aep-surface-tint-strong);
 
     --border-strong: #26224a;
     /* Kontrol sınırı — WCAG 2.2 AA, metin dışı kontrast en az 3:1.
@@ -351,10 +394,10 @@
 
     /* Durum tonları: metin okunaklılığını bozmayacak kadar açık tutulur —
        uyarı bir arka plan işidir, metin kontrastı `--fg` ile korunur. */
-    --surface-info: rgb(29 78 216 / 10%);
-    --surface-success: rgb(21 128 61 / 10%);
-    --surface-warning: rgb(180 83 9 / 10%);
-    --surface-danger: rgb(220 38 38 / 10%);
+    --surface-info: var(--aep-status-info-fill);
+    --surface-success: var(--aep-status-success-fill);
+    --surface-warning: var(--aep-status-warning-fill);
+    --surface-danger: var(--aep-status-error-fill);
     --border-info: rgb(29 78 216 / 30%);
     --border-success: rgb(21 128 61 / 30%);
     --border-warning: rgb(180 83 9 / 30%);
@@ -370,7 +413,7 @@
 
        Koyu temada bu değer METİN OLARAK kullanılamaz (1.85:1) ama halka
        olarak da zayıf kalır; orada blue/300 kullanılır (aşağıda). */
-    --focus: #003399;
+    --focus: var(--aep-focus-ring);
 
     /* `--color-canvas` de burada YENİDEN tanımlanır: `@theme` içindeki takma
        ad kök değere donar; tema bloğunda tekrar edilmezse koyu temada açık
@@ -386,7 +429,7 @@
        (docs/06 §11); the action fg is an explicit dark tone measured >=4.5:1
        against --color-brand-500 in both themes. */
     --color-action-primary-bg: var(--color-brand-500);
-    --color-action-primary-fg: #1c1500;
+    --color-action-primary-fg: var(--aep-on-accent-primary);
 }
 
 /* Yoğunluk modları. Token seviyesinde çözülür ve bileşene sızmaz
@@ -433,7 +476,7 @@
 }
 
 .dark {
-    --border: #26224a;
+    --border: var(--aep-border);
 
     /* Ok ikonu tema başına yeniden tanımlanır; onay/çizgi ikonları tanımlanmaz
        çünkü altlarındaki `--color-action` zaten tema-değişmezdir (docs/06 §11).
@@ -443,42 +486,42 @@
 
     /* Koyu temada metin SAF BEYAZ değildir: %87 opaklık, koyu zeminde göz
        yorgunluğunu azaltır ve AEP merdiveninin kendi kararıdır. */
-    --fg: rgb(255 255 255 / 87%);
-    --fg-secondary: rgb(255 255 255 / 60%);
-    --fg-muted: rgb(255 255 255 / 60%);
-    --fg-subtle: rgb(255 255 255 / 60%);
-    --fg-danger: #f87171;
-    --fg-success: #22c55e;
-    --fg-warning: #fbbf24;
+    --fg: var(--aep-text-primary);
+    --fg-secondary: var(--aep-text-secondary);
+    --fg-muted: var(--aep-text-secondary);
+    --fg-subtle: var(--aep-text-secondary);
+    --fg-danger: var(--aep-status-error);
+    --fg-success: var(--aep-status-success);
+    --fg-warning: var(--aep-status-warning);
     /* AEP'nin parlamento mavisi (#003399) koyu temada METİN OLAMAZ: yüzeye
        karşı 1.85:1 verir. Metin seviyesi mavi blue/300'dür. */
-    --fg-link: #93a8f4;
+    --fg-link: var(--aep-status-info);
 
     /* Koyu temada zemin karttan KOYU. Eskiden zemin `surface-subtle` idi ve
        kart zeminden koyu kalıyordu — derinlik tersti. AEP ink merdiveni aynı
        ilişkiyi taşır: 950 zemin < 900 kart < 800 kart içi dolgu. */
-    --canvas: #080616;
-    --surface: #0d0a24;
-    --surface-subtle: #16123a;
-    --surface-hover: rgb(255 255 255 / 4%);
-    --surface-active: rgb(255 255 255 / 8%);
+    --canvas: var(--aep-surface-canvas);
+    --surface: var(--aep-surface-raised);
+    --surface-subtle: var(--aep-surface-sunken);
+    --surface-hover: var(--aep-surface-tint);
+    --surface-active: var(--aep-surface-tint-strong);
 
     --border-strong: rgb(255 255 255 / 46%);
     /* Açık temadaki gerekçeyle aynı, ters uçta: %46 opaklıkta beyaz. */
     --border-control: rgb(255 255 255 / 46%);
     --border-danger: #f87171;
 
-    --surface-info: rgb(147 168 244 / 14%);
-    --surface-success: rgb(34 197 94 / 14%);
-    --surface-warning: rgb(251 191 36 / 14%);
-    --surface-danger: rgb(248 113 113 / 14%);
+    --surface-info: var(--aep-status-info-fill);
+    --surface-success: var(--aep-status-success-fill);
+    --surface-warning: var(--aep-status-warning-fill);
+    --surface-danger: var(--aep-status-error-fill);
     --border-info: rgb(147 168 244 / 34%);
     --border-success: rgb(34 197 94 / 34%);
     --border-warning: rgb(251 191 36 / 34%);
 
     /* Koyu temada halka blue/300: `#003399` koyu zeminde 1.85:1 verir, yani
        halka olarak da görünmez olurdu (AEP TOKEN_MAP'in kendi uyarısı). */
-    --focus: #93a8f4;
+    --focus: var(--aep-focus-ring);
 
     --color-canvas: var(--canvas);
     --color-surface: var(--surface);
@@ -488,7 +531,7 @@
     --color-text-secondary: var(--fg-secondary);
 
     --color-action-primary-bg: var(--color-brand-500);
-    --color-action-primary-fg: #1c1500;
+    --color-action-primary-fg: var(--aep-on-accent-primary);
 }
 
 .high-contrast {
@@ -536,6 +579,12 @@
    kontrastı nötr temayla aynı bantta kalır.
 */
 [data-persona='platform'] {
+    /* PERSONA, AEP GEÇİŞİNİN DIŞINDADIR (FF-131).
+
+       Buradaki değerler AEP paletinden GELMEZ ve gelmemelidir: personanın
+       işi, iki panelin aynı tarayıcıda açıkken birbirinden ayrılmasıdır.
+       AEP jetonlarına bağlansaydı platform paneli kiracı paneliyle birebir
+       aynı renge düşer ve öznitelik hiçbir şey yapmaz olurdu. */
     --canvas: oklch(0.955 0.018 258);
     --surface: oklch(0.99 0.008 258);
     --surface-subtle: oklch(0.94 0.022 258);
@@ -565,7 +614,7 @@
     */
     --canvas: #001133;
     --surface: oklch(0.244 0.073 258.9);
-    --surface-subtle: oklch(0.217 0.073 258.9);
+    --surface-subtle: oklch(0.264 0.073 258.9);
     --surface-hover: oklch(0.284 0.073 258.9);
     --surface-active: oklch(0.334 0.073 258.9);
     --border: oklch(0.364 0.073 258.9);

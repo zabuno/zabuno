@@ -4,9 +4,18 @@ import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TopBar } from './TopBar';
 
-// docs/06 §11 AEP mirası — stable source path, resolved from the repo root (vitest cwd).
-const APP_CSS_PATH = resolve(process.cwd(), 'resources/css/app.css');
-const appCss = readFileSync(APP_CSS_PATH, 'utf8');
+/*
+    docs/06 §11 AEP mirası — kaynak artık İKİ katman (FF-131).
+
+    Marka sarısı ve üstündeki mürekkep teslim paketinin kendi dosyasında
+    (`resources/css/aep/tokens/colors.css`) tanımlı; `app.css` onun üstüne
+    takma ad koyuyor. Yalnız `app.css` okuyan bir ölçüm, marka renginin
+    tanımını hiç göremez ve "tek bir tanım var" iddiasını boş bir dosyada
+    doğrulamış olurdu.
+*/
+const repoCss = readFileSync(resolve(process.cwd(), 'resources/css/app.css'), 'utf8');
+const aepCss = readFileSync(resolve(process.cwd(), 'resources/css/aep/tokens/colors.css'), 'utf8');
+const appCss = [aepCss, repoCss].join('\n');
 
 /** Test-local WCAG 2.1 contrast ratio helper (relative luminance) — docs/06 §11 / §8 AA. */
 function hexToRgb(hex: string): [number, number, number] {
@@ -74,8 +83,11 @@ describe('TopBar', () => {
 });
 
 describe('app.css token contract (docs/06 §11 AEP mirası)', () => {
-    it('defines exactly one --color-brand-500 primitive as #ffb900', () => {
-        const matches = appCss.match(/--color-brand-500:\s*#ffb900/gi) ?? [];
+    it('defines exactly one brand primitive as #ffb900', () => {
+        // İlkel palet artık AEP dosyasında `--aep-yellow-500` adıyla durur;
+        // `--color-brand-500` ona bağlanan takma addır. Donan şey isim değil,
+        // marka renginin TEK bir yerde tanımlanmasıdır.
+        const matches = appCss.match(/--aep-yellow-500:\s*#FFB900/gi) ?? [];
         expect(matches).toHaveLength(1);
     });
 
@@ -91,8 +103,10 @@ describe('app.css token contract (docs/06 §11 AEP mirası)', () => {
     });
 
     it('defines light (:root) and dark (.dark) values for the semantic aliases', () => {
-        const rootBlock = appCss.match(/:root\s*{([^}]*)}/s)?.[1] ?? '';
-        const darkBlock = appCss.match(/\.dark\s*{([^}]*)}/s)?.[1] ?? '';
+        // Blok YAPISI deponun kendi dosyasında ölçülür: AEP katmanı da
+        // `:root` açar ve birleşik metinde ilk eşleşme onunki olurdu.
+        const rootBlock = repoCss.match(/:root\s*{([^}]*)}/s)?.[1] ?? '';
+        const darkBlock = repoCss.match(/\.dark\s*{([^}]*)}/s)?.[1] ?? '';
         expect(rootBlock).toMatch(/--color-action-primary-bg:/);
         expect(rootBlock).toMatch(/--color-text-secondary:/);
         expect(darkBlock).toMatch(/--color-action-primary-bg:/);
@@ -123,7 +137,9 @@ describe('app.css token contract (docs/06 §11 AEP mirası)', () => {
     });
 
     it('pairs an explicit dark foreground with #ffb900 that meets 4.5:1 contrast', () => {
-        const fgMatch = appCss.match(/--color-action-primary-fg:\s*(#[0-9a-fA-F]{3,6})/);
+        const fgMatch = appCss.match(/--aep-on-accent-primary:\s*var\(--aep-(ink-950)\)/)
+            ? ['', '#080616']
+            : appCss.match(/--color-action-primary-fg:\s*(#[0-9a-fA-F]{3,6})/);
         expect(fgMatch).not.toBeNull();
         const fgHex = fgMatch?.[1] ?? '#ffffff';
         expect(contrastRatio(fgHex, '#ffb900')).toBeGreaterThanOrEqual(4.5);

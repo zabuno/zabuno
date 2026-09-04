@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { themeScope } from './cssSources';
 import { RAW_PALETTE_PATTERN, findCycle, layerOf, mayCompose, type Layer } from './semantic-map';
 import {
     WCAG_AA_NORMAL_TEXT,
@@ -251,14 +252,19 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
             'DS-CONTRAST-AA-01: saydam harmanlama yanlış uzayda yapılıyor.',
         ).toBeCloseTo(3.98, 1);
 
-        const root = readCustomProperties(css, ':root');
         const failures: string[] = [];
 
         for (const [theme, selector] of [
             ['açık', ':root'],
             ['karanlık', '.dark'],
         ] as const) {
-            const scope = { ...root, ...readCustomProperties(css, selector) };
+            /*
+                Jetonlar İKİ katmanda (FF-131): ham değerler AEP paketinde,
+                takma adlar `app.css`'te. Tek katman okuyan bir ölçüm
+                `var(--aep-*)` metnini renk sanıp çözemez ve "ölçülemedi"
+                sessizce "geçti"ye dönüşürdü.
+            */
+            const scope = themeScope(selector, readCustomProperties);
             const background = resolveColor(scope['--surface'] ?? '', scope);
 
             expect(

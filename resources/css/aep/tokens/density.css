@@ -1,0 +1,4 @@
+/* Density changes padding only — fonts never shrink. Touch target stays >=44px. */
+:root,[data-density="standard"]{--aep-control-h:44px;--aep-row-h:44px;--aep-control-pad-block:10px;--aep-control-pad-inline:12px}
+[data-density="comfortable"]{--aep-control-h:52px;--aep-row-h:52px;--aep-control-pad-block:14px;--aep-control-pad-inline:16px}
+[data-density="compact"]{--aep-control-h:36px;--aep-row-h:36px;--aep-control-pad-block:6px;--aep-control-pad-inline:8px}

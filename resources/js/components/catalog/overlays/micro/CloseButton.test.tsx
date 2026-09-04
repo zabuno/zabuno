@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { readFileSync } from 'node:fs';
 import { CloseButton } from './CloseButton';
 import {
     WCAG_AA_LARGE_TEXT,
@@ -9,6 +8,7 @@ import {
     readCustomProperties,
     resolveColor,
 } from '../../../../design-system/contrast';
+import { themeScope } from '../../../../design-system/cssSources';
 
 /**
  * Kontrast artık sabit bir Tailwind hex'ine değil, bileşenin GERÇEKTEN
@@ -17,9 +17,10 @@ import {
  * test onu koruyordu. Ölçülmesi gereken şey sınıfın adı değil, kullanıcının
  * gördüğü kontrasttır (WCAG 2.2 §1.4.11, metin dışı bileşen ≥ 3:1).
  */
-const CSS = readFileSync('resources/css/app.css', 'utf8');
-const LIGHT = readCustomProperties(CSS, ':root');
-const DARK = { ...LIGHT, ...readCustomProperties(CSS, '.dark') };
+// Jetonlar iki katmanda (FF-131): ham değerler AEP paketinde, takma adlar
+// `app.css`'te. Tek katman okumak ölçümü sessizce boşa çıkarırdı.
+const LIGHT = themeScope(':root', readCustomProperties);
+const DARK = themeScope('.dark', readCustomProperties);
 
 function tokenContrast(scope: Record<string, string>, fg: string, bg: string): number {
     const foreground = resolveColor(scope[fg], scope);
