@@ -21,12 +21,16 @@ export function StatCard({ label, value, trend, icon, loading = false, className
     return (
         <div
             className={clsx(
-                'flex items-start justify-between gap-3 rounded-lg border border-border bg-surface p-4',
+                // Veri-hassas kart (`docs/102`): etiket küçük ve sakin, değer büyük ve
+                // tabular; sayı okunurken göz satır kaymaz.
+                'flex items-start justify-between gap-3 rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-5)]',
                 className,
             )}
         >
             <div className="flex flex-col gap-1">
-                <span className="text-body font-medium text-fg-muted">{label}</span>
+                <span className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                    {label}
+                </span>
                 {loading ? (
                     <Skeleton shape="text" width="6rem" height="1.75rem" />
                 ) : (

@@ -32,8 +32,14 @@ export function TopBar({
     return (
         <header
             className={clsx(
-                'surface-glass flex flex-wrap items-center gap-3 border-b',
-                'px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
+                /*
+                    Cam yüzey KALIR (`docs/06` §11 sözleşmesi, `TopBar.test`):
+                    solid fallback'i ve ölçülmüş kontrastı var. Değişen şey
+                    RİTİM: dikey dolgu `space-3`'e indi, boşluklar 8pt ızgaraya
+                    oturdu — çubuk artık gri bir şerit değil, ince bir başlık.
+                */
+                'surface-glass flex flex-wrap items-center gap-[var(--space-3)] border-b',
+                'px-[var(--space-fluid-md)] py-[var(--space-3)]',
                 className,
             )}
         >

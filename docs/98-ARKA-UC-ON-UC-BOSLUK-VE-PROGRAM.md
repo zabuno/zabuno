@@ -326,6 +326,15 @@ ters; sahip her ekranı koyu temada görüyordu ve kart grameri görünmüyordu.
 Yeni `--canvas` token'ı (açık 0.975 / koyu 0.15) uygulama zeminidir; kart
 her iki temada zeminden açıktır.
 
+### FF-79 ek paket — görsel dil pası ve `--color-canvas` hatası (2026-09-04)
+
+Storybook statik derlenip tarayıcıda AÇILDI (bu turda ilk kez): koyu temada
+zemin açık kalıyordu, çünkü `--color-canvas` takma adı `.dark` bloğunda
+yeniden tanımlanmamıştı (Tailwind v4 `@theme` takma adı kök değere donar).
+Düzeltildi. Ardından görsel dil pası: kart yarıçapı/dolgusu, kart başlığı
+ölçeği, sayı kartı tipografisi, gezinti ritmi, üst çubuk dolgusu, tablo
+başlığı hizası ve satır hover'ı (`docs/102` §5b).
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket

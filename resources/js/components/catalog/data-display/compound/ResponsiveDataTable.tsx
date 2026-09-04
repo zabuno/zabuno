@@ -52,7 +52,7 @@ export function ResponsiveDataTable<Row>({
                                 key={column.key}
                                 className={clsx(
                                     // Metronic tablo dili (`docs/102` §1): soluk başlık satırı, meta büyük harf.
-                                    'bg-[var(--color-surface-subtle)] px-[var(--density-padding-inline)] text-meta font-semibold uppercase tracking-wide text-fg-muted',
+                                    'bg-[var(--color-surface-subtle)] px-[var(--space-5)] py-[var(--space-3)] text-caption font-semibold uppercase tracking-[0.08em] text-fg-muted',
                                     column.align === 'end' && 'text-end',
                                 )}
                             >
@@ -61,14 +61,14 @@ export function ResponsiveDataTable<Row>({
                         ))}
                     </TableRow>
                 </TableHead>
-                <TableBody className="divide-y">
+                <TableBody className="divide-y divide-[var(--color-border)]">
                     {loading
                         ? Array.from({ length: 3 }, (_, rowIndex) => (
                               <TableRow key={`skeleton-${rowIndex}`}>
                                   {columns.map((column) => (
                                       <TableCell
                                           key={column.key}
-                                          className="h-[var(--density-row-height)] px-[var(--density-padding-inline)]"
+                                          className="h-[var(--density-row-height)] px-[var(--space-5)]"
                                       >
                                           <Skeleton shape="text" />
                                       </TableCell>
@@ -76,7 +76,11 @@ export function ResponsiveDataTable<Row>({
                               </TableRow>
                           ))
                         : rows.map((row, rowIndex) => (
-                              <TableRow key={getRowKey(row, rowIndex)}>
+                              // Satır vurgusu: göz uzun listede satır kaybetmesin.
+                              <TableRow
+                                  key={getRowKey(row, rowIndex)}
+                                  className="transition-colors duration-[var(--duration-fast)] hover:bg-[var(--color-surface-hover)]"
+                              >
                                   {columns.map((column) => (
                                       <TableCell
                                           key={column.key}
