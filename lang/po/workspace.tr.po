@@ -2316,6 +2316,10 @@ msgstr "{codes} kod, {pages} A4 sayfada, sayfa başına 12 kart. Her kod 4 cm ba
 msgid "workspace.publication.qrExport.sheet.heading"
 msgstr "Masalarınız için baskı sayfası"
 
+#: workspace:workspace.publication.qrExport.single.heading
+msgid "workspace.publication.qrExport.single.heading"
+msgstr "Tek bir kodu ayrı basın ya da indirin"
+
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr "Kalın tema"

@@ -181,16 +181,8 @@ export function QrPrintExportRegion({
         }
     }
 
-    return (
-        <div
-            role="region"
-            aria-label={t('workspace.publication.qrExport.region')}
-            className="flex flex-col gap-3"
-        >
-            <h3 className="text-body font-semibold text-fg">
-                {t('workspace.publication.qrExport.region')}
-            </h3>
-
+    const singleCodeSection = (
+        <>
             {selected === null ? (
                 <p role="status" className="text-body text-fg-muted">
                     {t('workspace.publication.qrExport.noActive')}
@@ -219,14 +211,14 @@ export function QrPrintExportRegion({
                     ) : null}
 
                     {/*
-                        AYARLAR ÖNİZLEMENİN ÜSTÜNDE.
+                            AYARLAR ÖNİZLEMENİN ÜSTÜNDE.
 
-                        Önceki dizilimde biçim/kâğıt/yön, kendi ürettikleri
-                        önizlemenin ve indirme bağlantısının ALTINDA duruyordu:
-                        sebep sonucun altındaydı ve kullanıcı kontrolü hiç
-                        bulmuyordu. Yazdırma deneyiminin kuralı, ayarların
-                        önizlemeye BAĞLI olmasıdır (Microsoft UX Guide).
-                    */}
+                            Önceki dizilimde biçim/kâğıt/yön, kendi ürettikleri
+                            önizlemenin ve indirme bağlantısının ALTINDA duruyordu:
+                            sebep sonucun altındaydı ve kullanıcı kontrolü hiç
+                            bulmuyordu. Yazdırma deneyiminin kuralı, ayarların
+                            önizlemeye BAĞLI olmasıdır (Microsoft UX Guide).
+                        */}
                     <QrExportConfigForm
                         outputFormat={outputFormat}
                         onOutputFormatChange={handleOutputFormatChange}
@@ -237,14 +229,14 @@ export function QrPrintExportRegion({
                     />
 
                     {/*
-                        TEMA, ÖNİZLEMENİN YANINDA.
+                            TEMA, ÖNİZLEMENİN YANINDA.
 
-                        Önceden tema seçici, kontrol ettiği görselden iki
-                        bölüm uzakta — toplu sihirbazın ALTINDA — duruyordu.
-                        Kâğıt boyu ile tema, "bu ne basacak" sorusunun iki
-                        yarısıdır; ikisini ayırmak, kullanıcının değiştirdiği
-                        şeyin sonucunu görmemesi demekti.
-                    */}
+                            Önceden tema seçici, kontrol ettiği görselden iki
+                            bölüm uzakta — toplu sihirbazın ALTINDA — duruyordu.
+                            Kâğıt boyu ile tema, "bu ne basacak" sorusunun iki
+                            yarısıdır; ikisini ayırmak, kullanıcının değiştirdiği
+                            şeyin sonucunu görmemesi demekti.
+                        */}
                     <span className="flex flex-col gap-[var(--space-2)]">
                         <h4 className="text-body font-semibold text-fg">
                             {t('workspace.publication.qrExport.themes.heading')}
@@ -259,29 +251,29 @@ export function QrPrintExportRegion({
                             onChange={setTheme}
                         />
                         {/*
-                            TEMA BİR ZEVK MESELESİ DEĞİLDİR (FF-112).
+                                TEMA BİR ZEVK MESELESİ DEĞİLDİR (FF-112).
 
-                            Altı tema adı, hiçbir açıklama olmadan duruyordu.
-                            Oysa buradaki tek gerçek kısıt taranabilirliktir:
-                            okunmayan bir karekod, masadaki ölü kâğıttır ve
-                            bunu ilk fark eden kişi telefonunu kartın üstünde
-                            sallayan misafirdir. Ürün, sunduğu her temanın
-                            taranabilir olduğunu SÖYLER — çünkü söylemezse
-                            sahip "acaba bu renk okunur mu?" diye
-                            düşünmediğinden değil, düşündüğü için tedirgin
-                            olur ve en güvenli görüneni seçer.
-                        */}
+                                Altı tema adı, hiçbir açıklama olmadan duruyordu.
+                                Oysa buradaki tek gerçek kısıt taranabilirliktir:
+                                okunmayan bir karekod, masadaki ölü kâğıttır ve
+                                bunu ilk fark eden kişi telefonunu kartın üstünde
+                                sallayan misafirdir. Ürün, sunduğu her temanın
+                                taranabilir olduğunu SÖYLER — çünkü söylemezse
+                                sahip "acaba bu renk okunur mu?" diye
+                                düşünmediğinden değil, düşündüğü için tedirgin
+                                olur ve en güvenli görüneni seçer.
+                            */}
                         <p className="text-meta text-fg-muted">
                             {t('workspace.publication.qrExport.themes.scannability')}
                         </p>
                         {theme === 'branded' && !isBrandColorPrintable(brandPrimaryColor) ? (
                             /*
-                                MARKA RENGİ KULLANILAMIYORSA SÖYLENİR.
-                                Sunucu bu durumda sessizce klasiğe düşer;
-                                sessizlik, sahibin "markalı"yı seçip siyah bir
-                                kod indirmesi ve bunu bir hata sanması demek
-                                olurdu.
-                            */
+                                    MARKA RENGİ KULLANILAMIYORSA SÖYLENİR.
+                                    Sunucu bu durumda sessizce klasiğe düşer;
+                                    sessizlik, sahibin "markalı"yı seçip siyah bir
+                                    kod indirmesi ve bunu bir hata sanması demek
+                                    olurdu.
+                                */
                             <p
                                 role="status"
                                 className="flex flex-col items-start gap-[var(--space-1)] text-meta text-fg-secondary"
@@ -305,24 +297,24 @@ export function QrPrintExportRegion({
                     </span>
 
                     {/*
-                        QR BİR TESLİMATTIR, hata ayıklama artığı değil.
+                            QR BİR TESLİMATTIR, hata ayıklama artığı değil.
 
-                        Önceden çıplak bir `<img>` kartın üstünde yüzüyordu.
-                        Beyaz plaka hem görsel bir çerçeve hem de İŞLEVSEL bir
-                        gerekliliktir: karekodun taranabilmesi için etrafında
-                        açık renkli sessiz bölge şarttır (ISO/IEC 18004: 4
-                        modül). Koyu temada saydam bir kod taranamazdı.
-                    */}
+                            Önceden çıplak bir `<img>` kartın üstünde yüzüyordu.
+                            Beyaz plaka hem görsel bir çerçeve hem de İŞLEVSEL bir
+                            gerekliliktir: karekodun taranabilmesi için etrafında
+                            açık renkli sessiz bölge şarttır (ISO/IEC 18004: 4
+                            modül). Koyu temada saydam bir kod taranamazdı.
+                        */}
                     {/*
-                        PDF'İN DE BİR ÖNİZLEMESİ VAR (FF-113, Döngü 9).
+                            PDF'İN DE BİR ÖNİZLEMESİ VAR (FF-113, Döngü 9).
 
-                        Kâğıt ve yön seçicileri, kontrol ettikleri sonucu
-                        hiçbir yerde göstermiyordu: sahip "A6 yatay" seçiyor
-                        ve ne olacağını ancak yazıcıdan kâğıt çıkınca
-                        öğreniyordu. PNG/SVG'nin gerçek bir görüntüsü var;
-                        PDF'in şeması var — ve şema, asıl bilgiyi taşır:
-                        milimetre.
-                    */}
+                            Kâğıt ve yön seçicileri, kontrol ettikleri sonucu
+                            hiçbir yerde göstermiyordu: sahip "A6 yatay" seçiyor
+                            ve ne olacağını ancak yazıcıdan kâğıt çıkınca
+                            öğreniyordu. PNG/SVG'nin gerçek bir görüntüsü var;
+                            PDF'in şeması var — ve şema, asıl bilgiyi taşır:
+                            milimetre.
+                        */}
                     {isPdf ? (
                         <QrPrintPreview paperSize={paperSize} orientation={orientation} />
                     ) : null}
@@ -331,13 +323,13 @@ export function QrPrintExportRegion({
                         <span className="flex w-fit rounded-[var(--radius-lg)] border border-border bg-white p-[var(--space-4)]">
                             {previewFailed ? (
                                 /*
-                                    TESLİMATIN DA BİR DURUMU OLMALI.
+                                        TESLİMATIN DA BİR DURUMU OLMALI.
 
-                                    Görsel üretilemediğinde tarayıcının kırık
-                                    resim simgesi kalıyordu: sayfadaki her
-                                    şeyin bir hâli varken, sahibin buraya
-                                    gelme sebebi olan şeyin yoktu.
-                                */
+                                        Görsel üretilemediğinde tarayıcının kırık
+                                        resim simgesi kalıyordu: sayfadaki her
+                                        şeyin bir hâli varken, sahibin buraya
+                                        gelme sebebi olan şeyin yoktu.
+                                    */
                                 <span
                                     role="status"
                                     className="flex h-[13.75rem] w-[13.75rem] items-center justify-center p-[var(--space-4)] text-center text-meta text-fg-danger"
@@ -359,12 +351,12 @@ export function QrPrintExportRegion({
                     )}
 
                     {/*
-                        İNDİRME sayfanın BİRİNCİL eylemidir: sahip buraya
-                        yayınlamak için değil, BASMAK için gelir. Önceden
-                        gövde metniyle aynı ağırlıkta bir bağlantıydı ve
-                        marka vurgusu, yılda bir kez kullanılan toplu
-                        sihirbaza harcanmıştı.
-                    */}
+                            İNDİRME sayfanın BİRİNCİL eylemidir: sahip buraya
+                            yayınlamak için değil, BASMAK için gelir. Önceden
+                            gövde metniyle aynı ağırlıkta bir bağlantıydı ve
+                            marka vurgusu, yılda bir kez kullanılan toplu
+                            sihirbaza harcanmıştı.
+                        */}
                     <span className="flex flex-wrap items-center gap-[var(--space-2)]">
                         <ActionLink
                             href={
@@ -396,6 +388,18 @@ export function QrPrintExportRegion({
                     </span>
                 </div>
             )}
+        </>
+    );
+
+    return (
+        <div
+            role="region"
+            aria-label={t('workspace.publication.qrExport.region')}
+            className="flex flex-col gap-3"
+        >
+            <h3 className="text-body font-semibold text-fg">
+                {t('workspace.publication.qrExport.region')}
+            </h3>
 
             {/*
                 DESTE, TEK KARTTAN ÖNCE GELİR.
@@ -434,6 +438,32 @@ export function QrPrintExportRegion({
                     </span>
                 </div>
             ) : null}
+
+            {/*
+                TEK KOD, İKİNCİL BİR İŞTİR (FF-114).
+
+                Bu ekran bir ÜRETEÇ gibi kuruluydu: en üstte biçim, kâğıt, yön
+                ve tek bir kodun önizlemesi; sahibin asıl işi — masalara
+                dağıtılacak kartları basmak — en alttaydı. Oysa restoran
+                sahibi buraya "QR ayarı yapmaya" gelmez: kırk masası, bir
+                mukavvası ve bir yazıcısı vardır.
+
+                Deste varken tek kod bölümü KAPALI başlar. `<details>` içeriği
+                DOM'da kalır — klavye, ekran okuyucu ve form doğrulaması
+                etkilenmez; yalnız ilk bakışta görünmez.
+            */}
+            {sheetCount > 1 ? (
+                <details className="rounded-[var(--radius-md)] border border-border p-[var(--space-3)]">
+                    <summary className="cursor-pointer text-body font-medium text-fg-secondary">
+                        {t('workspace.publication.qrExport.single.heading')}
+                    </summary>
+                    <div className="flex flex-col gap-[var(--space-3)] pt-[var(--space-3)]">
+                        {singleCodeSection}
+                    </div>
+                </details>
+            ) : (
+                singleCodeSection
+            )}
 
             <BulkQrWizardFields
                 workspaceId={workspaceId}

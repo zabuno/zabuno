@@ -428,3 +428,34 @@ dışındaydı — "ekrana hiç bakılmadı" körlüğü. Bu turda QR yüzeyinin
 dosyasına story eklendi: baskı bölgesi (FF-107), liste satırı (FF-110), baskı
 önizlemesi, dışa aktarım ayarları ve kod oluşturma alanı (FF-113). Artık bu
 ekranın her parçası izole olarak görülebiliyor.
+
+
+---
+
+## Kapanış (FF-114) — ekran bir KÜTÜK oldu
+
+Teşhis raporunun başlığı şuydu: *"ekran bir ÜRETEÇ, oysa bir KÜTÜK olmalı."*
+On üç paketten sonra veri ve çıktı yerine oturmuştu ama DİZİLİM hâlâ eski
+mantığı taşıyordu: en üstte biçim, kâğıt, yön ve tek bir kodun önizlemesi;
+sahibin asıl işi — masalara dağıtılacak kartları basmak — en altta.
+
+Artık birden fazla etkin kod varken **deste önce gelir** ve tek kod bölümü
+`<details>` içinde kapalı başlar. Kapalı başlamak içeriği yok etmez: DOM'da
+kalır, klavye ve ekran okuyucu etkilenmez, yalnız ilk bakışta görünmez
+(`docs/47` Kural 4). Tek kodlu bir kafede deste hiç önerilmez ve tek kod
+bölümü açıkta durur — orada saklanacak bir şey yoktur.
+
+## "Bitti" testi
+
+Teşhis raporundaki hedef cümle şuydu:
+
+> İlk kez giren bir restoran sahibi bir LİSTEYE iner, tek bir düğmeye basar,
+> "1" ve "40" yazar, A4 sayfanın *Masa 1 … Masa 40* ile dolduğunu ve her kodun
+> 4,2 cm olduğunu görür, birini kendi telefonuyla okutması söylenir, Yazdır'a
+> basar — ve *format*, *yön*, *URL* kelimelerini hiç görmez.
+
+Bugün: liste adlarla iniyor ✅ · sihirbaz tek soru soruyor ("kaç masa?") ✅ ·
+A4 sayfa *T1 … T40* ile doluyor ✅ · her kod 4 cm ve bu ekranda yazıyor ✅ ·
+biçim/yön/URL kapalı bir bölümün arkasında ✅. Eksik kalan tek şey, sahibe
+"birini kendi telefonunla okut" diyen doğrulama adımı — bir sonraki tur için
+kayıtlı.

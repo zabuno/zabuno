@@ -2316,6 +2316,10 @@ msgstr ""
 msgid "workspace.publication.qrExport.sheet.heading"
 msgstr ""
 
+#: workspace:workspace.publication.qrExport.single.heading
+msgid "workspace.publication.qrExport.single.heading"
+msgstr ""
+
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr ""
