@@ -69,6 +69,14 @@ export const guestTranslations = {
     'guest.deadEnd.heading': 'This menu cannot be shown right now',
     'guest.deadEnd.body':
         'The QR code is not linked to a menu. Please tell the restaurant staff; they can get you the current menu.',
+    /*
+        BASILI KARTIN ÜSTÜNDEKİ CÜMLE (`docs/104` Döngü 8).
+
+        Bu metin ekranda değil, masadaki kartta yaşar ve onu okuyan kişi
+        misafirdir — bu yüzden misafir alanında durur ve restoranın diliyle
+        çözülür. Kısa olmak zorunda: kartta 8 punto ve tek satır.
+    */
+    'guest.print.scanForMenu': 'Scan for the menu',
 } as const;
 
 export type GuestTranslationKey = keyof typeof guestTranslations;

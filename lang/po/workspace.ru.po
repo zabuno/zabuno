@@ -2288,6 +2288,22 @@ msgstr ""
 msgid "workspace.publication.qrExport.selector"
 msgstr ""
 
+#: workspace:workspace.publication.qrExport.sheet.download
+msgid "workspace.publication.qrExport.sheet.download"
+msgstr ""
+
+#: workspace:workspace.publication.qrExport.sheet.downloadPart
+msgid "workspace.publication.qrExport.sheet.downloadPart"
+msgstr ""
+
+#: workspace:workspace.publication.qrExport.sheet.explanation
+msgid "workspace.publication.qrExport.sheet.explanation"
+msgstr ""
+
+#: workspace:workspace.publication.qrExport.sheet.heading
+msgid "workspace.publication.qrExport.sheet.heading"
+msgstr ""
+
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr ""

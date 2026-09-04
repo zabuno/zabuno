@@ -2288,6 +2288,22 @@ msgstr "Karekod baskı çıktısı"
 msgid "workspace.publication.qrExport.selector"
 msgstr "Karekod"
 
+#: workspace:workspace.publication.qrExport.sheet.download
+msgid "workspace.publication.qrExport.sheet.download"
+msgstr "Baskı sayfasını indir (PDF)"
+
+#: workspace:workspace.publication.qrExport.sheet.downloadPart
+msgid "workspace.publication.qrExport.sheet.downloadPart"
+msgstr "Baskı sayfası {part}/{total} (PDF)"
+
+#: workspace:workspace.publication.qrExport.sheet.explanation
+msgid "workspace.publication.qrExport.sheet.explanation"
+msgstr "{codes} kod, {pages} A4 sayfada, sayfa başına 12 kart. Her kod 4 cm basılır — masada oturan birinin mesafesi olan yaklaşık 40 cm'den okunur. Kesikli çizgilerden kesin."
+
+#: workspace:workspace.publication.qrExport.sheet.heading
+msgid "workspace.publication.qrExport.sheet.heading"
+msgstr "Masalarınız için baskı sayfası"
+
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr "Kalın tema"

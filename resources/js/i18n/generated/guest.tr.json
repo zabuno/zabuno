@@ -10,6 +10,7 @@
     "guest.menu.item.soldOut": "Bugün tükendi",
     "guest.menu.subtitle": "Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor.",
     "guest.menu.summary": "Kategori: {categories} · Ürün: {items}",
+    "guest.print.scanForMenu": "Menü için okutun",
     "guest.pwa.install": "Uygulamayı yükle",
     "guest.pwa.installAccepted": "Yükleme kabul edildi.",
     "guest.pwa.installDismissed": "Yükleme reddedildi.",

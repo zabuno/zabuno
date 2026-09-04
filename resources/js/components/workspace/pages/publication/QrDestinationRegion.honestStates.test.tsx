@@ -363,3 +363,91 @@ describe('Yıkıcı eylem onay ister (FF-110)', () => {
         expect(fetchSpy.mock.calls.some(([url]) => /\/disable$/.test(String(url)))).toBe(false);
     });
 });
+
+describe('Basılabilir deste (FF-111)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    function codes(count: number) {
+        return Array.from({ length: count }, (_unused, index) => ({
+            ...ITEM,
+            id: index + 1,
+            token: `token${String(index).padStart(27, '0')}`,
+            resolverUrl: `https://zabuno.test/q/token${String(index)}`,
+            tableName: `T${String(index + 1)}`,
+        }));
+    }
+
+    it('birden fazla kod varsa deste birincil eylem olur ve milimetreyi YAZAR', async () => {
+        /*
+            Tek çıktı A4'ün ortasında tek bir kareydi: 40 masa = 40 sayfa,
+            her biri %97 beyaz ve baskıdan sonra ayırt edilemez. Sahip
+            kartları dağıtırken hangisinin hangi masa olduğunu bilemiyordu.
+        */
+        fetchSpy.mockResolvedValue(jsonResponse(200, codes(3)));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const link = await screen.findByRole('link', { name: /download print sheet/i });
+        expect(link).toHaveAttribute(
+            'href',
+            '/api/workspaces/71/brand/locations/923/qr-codes/print.pdf',
+        );
+
+        // Milimetre ekranda yazar — kâğıt boyu açılır listesinin yapamadığı iş.
+        expect(screen.getByText(/each code prints at 4 cm/i)).toBeInTheDocument();
+        expect(screen.getByText(/3 codes on 1 A4 page/i)).toBeInTheDocument();
+    });
+
+    it('tek kod varsa deste ÖNERİLMEZ', async () => {
+        fetchSpy.mockResolvedValue(jsonResponse(200, codes(1)));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        await screen.findByText('T1');
+        expect(screen.queryByRole('link', { name: /print sheet/i })).toBeNull();
+    });
+
+    it('deste tek istekte sığmıyorsa parçalar AYRI AYRI sunulur, sessizce kırpılmaz', async () => {
+        fetchSpy.mockResolvedValue(jsonResponse(200, codes(60)));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        expect(
+            await screen.findByRole('link', { name: /print sheet 1 of 2/i }),
+        ).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /print sheet 2 of 2/i })).toHaveAttribute(
+            'href',
+            '/api/workspaces/71/brand/locations/923/qr-codes/print.pdf?chunk=2',
+        );
+    });
+});

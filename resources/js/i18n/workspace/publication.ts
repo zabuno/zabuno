@@ -171,6 +171,16 @@ export const publication = {
         'Enter a whole number between 1 and 20.',
     'workspace.publication.qrExport.bulkWizard.createButton': 'Create table QR codes',
     'workspace.publication.qrExport.bulkWizard.loading': 'Creating table QR codes...',
+    /*
+        BASILABİLİR DESTE (`docs/104` Döngü 8). Milimetre EKRANDA YAZAR:
+        "4 cm" sayısı, kâğıt boyu açılır listesinin yapamadığı işi yapar —
+        sahip kartın masada nasıl duracağını gözünde canlandırır.
+    */
+    'workspace.publication.qrExport.sheet.heading': 'Print sheet for your tables',
+    'workspace.publication.qrExport.sheet.explanation':
+        '{codes} codes on {pages} A4 page(s), 12 cards per page. Each code prints at 4 cm — readable from about 40 cm, the distance of someone sitting at the table. Cut along the dashed lines.',
+    'workspace.publication.qrExport.sheet.download': 'Download print sheet (PDF)',
+    'workspace.publication.qrExport.sheet.downloadPart': 'Print sheet {part} of {total} (PDF)',
     'workspace.publication.qrExport.bulkWizard.needsPublication':
         'Publish your menu first — a QR code has to point at a live menu.',
     /*

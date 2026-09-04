@@ -73,8 +73,8 @@ kanıtıyla kapanır.
 | 5 | Ham URL ve token gizlenir | kodun adı öne, URL kopyala düğmesiyle ayrıntıya | ✅ FF-107 + FF-109 |
 | 6 | Masanın adı listeye ulaşır | DTO join; satır başlığı ve seçici etiketi | ✅ FF-109 |
 | 7 | Yıkıcı eylem taşma menüsüne + onay | `ActionMenu` + `ConfirmDialog` | ✅ FF-110 |
-| 8 | Basılabilir sayfa: N-up, ad, kesme çizgisi | PDF adaptörü + toplu uç | ⬜ |
-| 9 | Baskı önizlemesi ve MİLİMETRE | kâğıt/yerleşim önizlemenin kontrolleri olur; kod boyu mm olarak yazılır | ⬜ |
+| 8 | Basılabilir sayfa: N-up, ad, kesme çizgisi | PDF adaptörü + toplu uç | ✅ FF-111 |
+| 9 | Baskı önizlemesi ve MİLİMETRE | kâğıt/yerleşim önizlemenin kontrolleri olur; kod boyu mm olarak yazılır | ◐ FF-111 (mm yazıldı; önizleme kaldı) |
 | 10 | Temalar: marka + taranabilirlik kuralı | kontrast ≥ %40, logo varsa EC=H, ters kontrast yasak | ⬜ |
 | 11 | Sözleşme metni: dinamik kod güvencesi | "bastırdıktan sonra da hedefi değişir; basılı kartlar çalışmaya devam eder" | ⬜ |
 | 12 | Story'ler ve görsel kapı | beş dosyaya story; yüzey katmanı bir daha kapının dışında kalmaz | ◐ FF-107 + FF-110 (baskı bölgesi, satır) |
@@ -291,3 +291,58 @@ kataloğunu görmezden geliyor.**
 sağındaki menüyü açar. "Kapat" kırmızı ve tek başına durur; seçtiğinde bir onay
 kutusu ne olacağını yazar. Vazgeçerse hiçbir istek gitmez. Eskiden "Kapat",
 "Taşı"nın iki milimetre yanındaydı ve tek tıkla geri dönüşü olmayan bir işti.
+
+
+---
+
+## Tur 2 kaydı (FF-111) — Döngü 8: basılabilir sayfa
+
+Teşhis raporunun ikinci maddesi ve bu ürünün asıl çıktısı: **basılabilir sayfa
+yoktu.** PDF çıktısı A4'ün ortasına tek bir çıplak kare koyuyordu — masa adı
+yok, restoran adı yok, "menü için okutun" yok, kesme çizgisi yok ve sayfada tek
+kod. 40 masa = 40 ayrı A4, her biri %97 beyaz. Baskıdan sonra o kırk kâğıt
+birbirinden ayırt edilemez; sahip onları masalara dağıtırken hangisinin hangi
+masa olduğunu bilemez. Yani ürünün çıktısı **kullanılamıyordu.**
+
+Yeni uç nokta bir DESTE üretir:
+
+    GET /api/workspaces/{w}/brand/locations/{l}/qr-codes/print.pdf
+
+Sayfa başına on iki kart (3×4), her kartta restoran adı, karekod, masa adı,
+alan etiketi ve misafire hitap eden bir cümle; her kartın çevresinde kesikli
+kesme çizgisi. 40 masa artık dört sayfa.
+
+Ölçüler tercih değil kısıttır ve `QrPrintSheet` içinde gerekçeleriyle
+donduruldu. **Bir ölçü hatası basılı çıktıda yakalandı:** ilk denemede kod
+40 mm yazılmış, üretilen PDF ölçüldüğünde koyu modül alanı 34 mm çıkmıştı —
+çünkü PNG'nin içindeki sessiz bölge de o 40 mm'nin içindeydi. Sessiz bölgeyi
+unutmak, vaat edilenden küçük bir kod basmaktır. Görsel 45 mm'ye çıkarıldı;
+koyu alan artık ~38 mm ≈ 4 cm ve 10:1 kuralınca masa mesafesinden (≈40 cm)
+okunur.
+
+Diğer kararlar:
+
+- **Yalnız etkin kodlar basılır.** Kapatılmış bir kodu kâğıda dökmek, sahibi
+  kendi eliyle ölü bir kart bastırmaya davet etmek olurdu.
+- **Kartın dili restoranın dilidir**, uygulamanın değil: kartı okuyan kişi
+  masadadır. Metin `guest` alanında yaşar ve markanın yerel ayarıyla çözülür.
+- **Son satır doldurulur.** Eksik hücre bırakılırsa mPDF son satırı sayfa
+  genişliğine yayar ve kartlar farklı boyda basılır — kesildiklerinde
+  birbirine uymazlar.
+- **İstek sınırlıdır (48 kart).** Her kart ayrı bir PNG üretir; 500 masalık bir
+  istek zaman aşımına uğrar ve kullanıcıya hiçbir şey vermez. Sınır aşıldığında
+  ürün sessizce kırpmaz — ekran "3 parçadan 1." der ve her parçayı ayrı verir.
+- **Milimetre ekranda yazar** (Döngü 9'un yarısı): "her kod 4 cm basılır —
+  masada oturan birinin mesafesi olan yaklaşık 40 cm'den okunur". Bu cümle,
+  kâğıt boyu açılır listesinin yapamadığı işi yapar.
+- Sayfanın HTML'i saf ve doğrudan test edilebilir bir sınıfta
+  (`QrPrintSheetHtml`): PDF'in içinden metin çıkarmak sıkıştırmaya ve font
+  altkümesine bağlıdır, sayfanın sözleşmesi ise okunabilir olmalı.
+
+`kullaniciYolculugu`: Kebapçı Ali 14 masası için kod bastıracak. QR ekranında
+"Masalarınız için baskı sayfası — 14 kod, 2 A4 sayfada, sayfa başına 12 kart.
+Her kod 4 cm basılır" yazısını görür, tek düğmeye basar, iki sayfa çıktı alır,
+kesikli çizgilerden keser ve on dört kartı masalara dağıtır. Her kartın üstünde
+"Kebapçı Ali", altında "T7 · Bahçe" ve "Menü için okutun" yazar. Eskiden bu iş,
+on dört kez ayrı ayrı PDF indirip on dört boş A4 basmak ve sonra hangisinin
+hangi masa olduğunu tahmin etmekti.

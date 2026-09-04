@@ -43,6 +43,7 @@ use App\Application\QrDestination\Port\BulkQrCreationPort;
 use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Application\QrDestination\Port\QrCodePdfExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
+use App\Application\QrDestination\Port\QrPrintSheetPort;
 use App\Application\Reference\Port\MarketReferencePort;
 use App\Application\Security\Port\BackupRestoreDrillRunnerPort;
 use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
@@ -108,6 +109,7 @@ use App\Infrastructure\QrDestination\Persistence\EloquentBulkQrCreationRepositor
 use App\Infrastructure\QrDestination\Persistence\EloquentQrCodeRepository;
 use App\Infrastructure\QrDestination\Rendering\EndroidQrCodeImageExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCodePdfExportAdapter;
+use App\Infrastructure\QrDestination\Rendering\MpdfQrPrintSheetAdapter;
 use App\Infrastructure\Reference\IcuMarketReference;
 use App\Infrastructure\Security\Execution\SqliteBackupRestoreDrillRunner;
 use App\Infrastructure\Security\Execution\SymfonyTenantIsolationSuiteRunner;
@@ -374,6 +376,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(BulkQrCreationPort::class, EloquentBulkQrCreationRepository::class);
         $this->app->bind(QrCodeImageExportPort::class, EndroidQrCodeImageExportAdapter::class);
         $this->app->bind(QrCodePdfExportPort::class, MpdfQrCodePdfExportAdapter::class);
+        // Tek kodun kâğıdı ile kesilip dağıtılacak kart destesi AYRI işlerdir
+        // (`docs/104` Döngü 8).
+        $this->app->bind(QrPrintSheetPort::class, MpdfQrPrintSheetAdapter::class);
         $this->app->bind(AnalyticsRepositoryPort::class, EloquentAnalyticsRepository::class);
         $this->app->bind(TeamMemberRepositoryPort::class, EloquentTeamMemberRepository::class);
         $this->app->bind(TeamInvitationRepositoryPort::class, EloquentTeamInvitationRepository::class);

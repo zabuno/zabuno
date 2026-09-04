@@ -94,6 +94,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.png||App\Http\Controllers\QrDestination\ExportQrCodePngController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.svg||App\Http\Controllers\QrDestination\ExportQrCodeSvgController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/qr-codes/{qrCode}/export.pdf||App\Http\Controllers\QrDestination\ExportQrCodePdfController|api,auth:sanctum,verified',
+        // FF-111: kesilip masalara dağıtılacak kart destesi. Kendi hız
+        // sınırını taşır — her kart ayrı bir PNG üretir.
+        'GET|api/workspaces/{workspace}/brand/locations/{location}/qr-codes/print.pdf||App\Http\Controllers\QrDestination\ExportQrPrintSheetController|api,auth:sanctum,throttle:10,1,verified',
         'GET|api/workspaces/{workspace}/brand/locations/{location}/analytics/summary||App\Http\Controllers\Analytics\ShowAnalyticsSummaryController|api,auth:sanctum,verified',
         // Markanın TAMAMI (`docs/68`): iki şubesi olan bir işletme bütünü
         // göremiyordu ve toplamı bulmak için şubeleri tek tek gezmek
