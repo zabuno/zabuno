@@ -384,6 +384,12 @@ varsayılanı var; varsayılanı olan alan kullanıcıya sorulmaz (`docs/47` Kur
 kalır (klavye/ekran okuyucu). Dört donmuş test yeni sıra ve varsayılanlarla
 güncellendi.
 
+### FF-86 ek paket — platform kabuğunda sabit ray + kural testi (2026-09-04)
+
+FF-83 yalnız kiracı kabuğunu düzeltmişti; `OpsShell` atlanmış ve orada ray
+ekranın yarısını kaplıyordu. Düzeltildi ve kural `OpsShell.layout.test` ile
+dondu: kabuk dosyalarında büyüyen ray yazımı bulunamaz.
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket
