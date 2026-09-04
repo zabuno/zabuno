@@ -155,13 +155,19 @@ Yeni dizilim `sıra → ad → fiyat → tükendi → eylemler`; kategori başl�
 aynı grameri kullanır. İçerik solda, sayı sağda, eylemler en sağda — iki
 farklı sıralama, gözü her satırda yeniden eğitmek olurdu.
 
-**Bulgu (açık).** Fiyat `250.00 TRY` olarak yazılıyor. Türkçe yazım `250,00 ₺`dir:
-ondalık ayırıcı virgül, simge sonda. Türk bir restoran sahibi için bu, her
-satırda görünen küçük bir yabancılık.
+**Bulgu (FF-103'te düzeltildi).** Fiyat `42.50 TRY` olarak yazılıyordu.
+Türkçede doğrusu `₺42,50` — ve bunu tahmin etmek değil, dilin kendi
+kurallarına sormak gerekir.
 
-**Bu turda YAPILMADI:** para biçimlendirme `docs/Money` sözleşmesine ve
-mevcut testlere bağlı; değiştirmek ayrı bir karar ve ayrı bir pakettir.
-Sıradaki döngüde ölçülecek.
+Asıl mesele biçim değil, **ürünün kendi aracını görmezden gelmesiydi**:
+`money/format` (CORE-12) tam da bu iş için var ve bu ekran onu kullanmıyor,
+kendi dizesini kuruyordu. Aynı hata `ConfirmDialog`'da da yapılmıştı —
+katalogda hazır bileşen dururken ekran onu atlıyordu. İkisi de aynı sınıfa
+girer: **bu sayfa ürünün geri kalanından kopmuş.**
+
+Girdi ön dolgusu değişmedi ve değişmemeliydi: form makine tarafından
+okunacak bir ondalık ister (`12.345`), gösterim ise insan tarafından. İkisini
+tek fonksiyona bağlamak, bugüne kadar süren karışıklığın kaynağıydı.
 
 ---
 
@@ -190,7 +196,7 @@ var) ve dokunmatikte 44 px hedef doğrulaması.
 | 3 | Ekleme düğmelerinin düğme gibi görünmesi | 3 | ✅ FF-102 |
 | 4 | "Ürün ekle"nin kategori başlığına da taşınması | 3 | ⬜ |
 | 5 | Silmeyi çöpe alma + geri alma (arka uç kararı) | 4 | ⬜ |
-| 6 | Türkçe para biçimi (`250,00 ₺`) | 5 | ⬜ |
+| 6 | Türkçe para biçimi (`₺42,50`) | 5 | ✅ FF-103 |
 | 7 | Ok düğmelerine ipucu, dokunmatik hedef ölçümü | 6 | ⬜ |
 
 Her madde ayrı bir pakettir ve kendi kanıtıyla kapanır.
