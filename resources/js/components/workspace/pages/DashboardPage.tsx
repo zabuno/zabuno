@@ -1,6 +1,8 @@
 import { t } from '../../../i18n/dashboard';
 import { t as tWorkspace } from '../../../i18n/workspace';
-import { DashboardOverview } from '../../catalog/layout/macro/DashboardOverview';
+import { StatCard } from '../../catalog/data-display/compound/StatCard';
+import { ResponsiveDataTable } from '../../catalog/data-display/compound/ResponsiveDataTable';
+import { OpsCard } from '../../ops/OpsCard';
 import type { DataTableColumn } from '../../catalog/data-display/compound/ResponsiveDataTable';
 import { DashboardSetupJourney } from './dashboard/DashboardSetupJourney';
 import type { BrandProfile } from '../BrandEditForm';
@@ -43,10 +45,14 @@ type DashboardMenuItemTableRow = DashboardMenuItemRow & { categoryName: string }
 const DASHBOARD_MENU_ITEM_COLUMNS: readonly DataTableColumn<DashboardMenuItemTableRow>[] = [
     {
         key: 'productName',
-        header: 'Item',
+        header: t('dashboard.table.column.item'),
         render: (row) => `${row.productName ?? `#${row.productId}`} (${row.categoryName})`,
     },
-    { key: 'isVisible', header: 'Visible', render: (row) => (row.isVisible ? 'Yes' : 'No') },
+    {
+        key: 'isVisible',
+        header: t('dashboard.table.column.visible'),
+        render: (row) => (row.isVisible ? 'Yes' : 'No'),
+    },
 ];
 
 type DashboardPageProps = {
@@ -69,8 +75,10 @@ export function DashboardPage({
 }: DashboardPageProps) {
     return (
         <div id="section-dashboard">
+            {/* Tek `h1` sayfanın başında (`docs/102` §4); gövde kart gramerinde. */}
             <WorkspacePageFrame
                 measure="standard"
+                title={t('dashboard.heading')}
                 description={tWorkspace('workspace.dashboard.operational.description')}
             >
                 <DashboardSetupJourney
@@ -83,26 +91,22 @@ export function DashboardPage({
                 />
 
                 {dashboardMenuTree ? (
-                    <DashboardOverview<DashboardMenuItemTableRow>
-                        header={{ title: t('dashboard.heading') }}
-                        stats={[
-                            {
-                                key: 'categories',
-                                label: 'Categories',
-                                value: dashboardMenuTree.categories.length,
-                            },
-                            {
-                                key: 'menu-items',
-                                label: 'Menu items',
-                                value: dashboardMenuTree.categories.reduce(
+                    <>
+                        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
+                            <StatCard
+                                label={t('dashboard.stats.categories')}
+                                value={dashboardMenuTree.categories.length}
+                            />
+                            <StatCard
+                                label={t('dashboard.stats.items')}
+                                value={dashboardMenuTree.categories.reduce(
                                     (total, category) => total + category.menuItems.length,
                                     0,
-                                ),
-                            },
-                            {
-                                key: 'visible-items',
-                                label: 'Visible items',
-                                value: `${dashboardMenuTree.categories.reduce(
+                                )}
+                            />
+                            <StatCard
+                                label={t('dashboard.stats.visible')}
+                                value={`${dashboardMenuTree.categories.reduce(
                                     (total, category) =>
                                         total +
                                         category.menuItems.filter((item) => item.isVisible).length,
@@ -110,21 +114,23 @@ export function DashboardPage({
                                 )} / ${dashboardMenuTree.categories.reduce(
                                     (total, category) => total + category.menuItems.length,
                                     0,
-                                )}`,
-                            },
-                        ]}
-                        table={{
-                            caption: 'Menu item list',
-                            columns: DASHBOARD_MENU_ITEM_COLUMNS,
-                            rows: dashboardMenuTree.categories.flatMap((category) =>
-                                category.menuItems.map((item) => ({
-                                    ...item,
-                                    categoryName: category.name,
-                                })),
-                            ),
-                            getRowKey: (row) => String(row.id),
-                        }}
-                    />
+                                )}`}
+                            />
+                        </div>
+                        <OpsCard title={t('dashboard.table.heading')} padded={false}>
+                            <ResponsiveDataTable<DashboardMenuItemTableRow>
+                                caption={t('dashboard.table.caption')}
+                                columns={DASHBOARD_MENU_ITEM_COLUMNS}
+                                rows={dashboardMenuTree.categories.flatMap((category) =>
+                                    category.menuItems.map((item) => ({
+                                        ...item,
+                                        categoryName: category.name,
+                                    })),
+                                )}
+                                getRowKey={(row) => String(row.id)}
+                            />
+                        </OpsCard>
+                    </>
                 ) : (
                     /*
                         Boş durumun TEK çıkış yolu bir ölü bağlantıydı:
@@ -133,14 +139,6 @@ export function DashboardPage({
                         bir kullanıcının Home'da yapabileceği tek şey buydu.
                     */
                     <div className="flex flex-col gap-3">
-                        {/*
-                            Sayfanın ADI boş durumda da durmalı: `h1` ekran
-                            okuyucunun sayfalar arasında gezinme yoludur ve
-                            dolu hâlde `PageHeader` onu zaten çiziyor.
-                        */}
-                        <h1 className="text-title font-semibold text-fg">
-                            {t('dashboard.heading')}
-                        </h1>
                         <PageState
                             kind="empty"
                             title={t('dashboard.empty')}

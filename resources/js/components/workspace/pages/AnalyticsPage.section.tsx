@@ -1,3 +1,4 @@
+import { ChartBar } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { AnalyticsPage } from './AnalyticsPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
@@ -20,6 +21,7 @@ const analyticsSection: WorkspaceSectionDescriptor = {
     path: 'analytics',
     order: 3,
     labelKey: 'workspace.shell.nav.insights',
+    icon: <ChartBar size={18} weight="regular" />,
     permission: 'analytics.view',
     group: 'primary',
     render,

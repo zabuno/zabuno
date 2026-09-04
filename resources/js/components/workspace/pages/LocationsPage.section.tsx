@@ -1,3 +1,4 @@
+import { MapPin } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { LocationsPage } from './LocationsPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
@@ -30,6 +31,7 @@ const locationsSection: WorkspaceSectionDescriptor = {
     path: 'locations',
     order: 4,
     labelKey: 'workspace.shell.nav.locations',
+    icon: <MapPin size={18} weight="regular" />,
     group: 'management',
     aiQuickAction: true,
     catalogOnboardingPhase: 'location-onboarding',

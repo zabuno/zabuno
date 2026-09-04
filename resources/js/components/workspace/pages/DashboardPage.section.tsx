@@ -1,3 +1,4 @@
+import { House } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { DashboardPage } from './DashboardPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
@@ -23,6 +24,7 @@ const dashboardSection: WorkspaceSectionDescriptor = {
     path: 'dashboard',
     order: 0,
     labelKey: 'workspace.shell.nav.home',
+    icon: <House size={18} weight="regular" />,
     group: 'primary',
     aiQuickAction: true,
     render,

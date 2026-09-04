@@ -51,7 +51,8 @@ export function ResponsiveDataTable<Row>({
                             <TableHeadCell
                                 key={column.key}
                                 className={clsx(
-                                    'px-[var(--density-padding-inline)]',
+                                    // Metronic tablo dili (`docs/102` §1): soluk başlık satırı, meta büyük harf.
+                                    'bg-[var(--color-surface-subtle)] px-[var(--density-padding-inline)] text-meta font-semibold uppercase tracking-wide text-fg-muted',
                                     column.align === 'end' && 'text-end',
                                 )}
                             >

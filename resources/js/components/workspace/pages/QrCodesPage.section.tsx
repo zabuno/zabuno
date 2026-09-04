@@ -1,3 +1,4 @@
+import { QrCode } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { QrCodesPage } from './QrCodesPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
@@ -18,6 +19,7 @@ const qrCodesSection: WorkspaceSectionDescriptor = {
     path: 'qr-codes',
     order: 2,
     labelKey: 'workspace.shell.nav.qrCodes',
+    icon: <QrCode size={18} weight="regular" />,
     permission: 'qr.view',
     group: 'primary',
     render,

@@ -305,6 +305,17 @@ ad düzeltme (`PATCH media/{id}`), slot/yaşam döngüsü listeleri katlanır,
 boş durum yol tarifi. Testler: `MediaUploadRegion.multi.test` (1),
 `MediaLibraryTrashAndUsagesTest::alt_text_can_be_corrected_later…`.
 
+### FF-77 ek paket — Restoran paneli estetik olgunluğu (2026-09-04)
+
+Sahip Home ekranını gönderdi: "maturity level bir UX estetiği istedim,
+yapmadın." Kök neden: 13 paket yapı/davranıştı, estetik yalnız superadmin
+kabuğuna (`docs/99`) uygulandı, sayfaya tarayıcıda hiç bakılmadı. `docs/102`
+yazıldı (aynı Metronic dili iki kabukta; yüzey başına L0–L4; kabul). Faz 1:
+main zemini `surface-subtle`, aside `surface`, sekiz bölüme Phosphor ikonu
+(kayıt `icon`), Home tek `h1` + "Şimdi" marka şeritli kart + Setup kartı +
+`StatCard`'lar + tablo kartı (`OpsCard`, thead tonlu). Media/Menus/QR/Insights
+gövdeleri Faz 2 (FF-78).
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket

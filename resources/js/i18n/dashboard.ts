@@ -17,6 +17,14 @@ const en = {
     'dashboard.now.qr': 'Print your QR codes',
     'dashboard.now.allDone': 'Everything is set up. Your guests can scan the menu.',
     'dashboard.now.openQr': 'Open QR codes',
+    // FF-77 (`docs/102`): kartlar ve tablo başlığı katalogdan.
+    'dashboard.stats.categories': 'Categories',
+    'dashboard.stats.items': 'Menu items',
+    'dashboard.stats.visible': 'Visible items',
+    'dashboard.table.heading': 'Menu at a glance',
+    'dashboard.table.caption': 'Menu item list',
+    'dashboard.table.column.item': 'Item',
+    'dashboard.table.column.visible': 'Visible',
     // Adım durumunun METİN karşılığı: işaret görsel, bu ekran okuyucu için
     // (docs/70).
     'dashboard.setup.step.done': 'Done',

@@ -886,6 +886,7 @@ export function WorkspaceApp({
         const toNavItem = (descriptor: (typeof SECTION_DESCRIPTORS)[number]) => ({
             key: descriptor.key,
             label: t(descriptor.labelKey as Parameters<typeof t>[0]),
+            icon: descriptor.icon,
             // Gerçek bağlantı: klavye, yeni sekmede açma, orta tık ve
             // "bağlantıyı kopyala" kendiliğinden çalışır. Fragment ile
             // hiçbiri çalışmıyordu.
