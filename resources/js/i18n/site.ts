@@ -85,6 +85,51 @@ export const siteTranslations = {
     'site.contact.honeypot': 'Leave this empty',
 
     // --- Ana sayfadaki iki yeni cümle ------------------------------------
+    // --- Ana sayfa gövdesi (`docs/100` Faz 2) -----------------------------
+    /*
+        Ana sayfanın 29 dizesi Blade'e gömülüydü ve
+        `lang/untranslatable-debt.json` içinde borç olarak duruyordu: sahibi
+        onları hiçbir PO dosyasından açıp çeviremiyordu, çünkü görecek satır
+        yoktu. Bu tur o borcu kapatıyor.
+    */
+    'site.home.meta.title': 'Restaurant menu & workspace',
+    'site.home.meta.description':
+        "Zabuno gives your team a shared workspace to manage a restaurant's menu and catalog, publish it as a stable QR-linked page, and keep it updated as things change.",
+    'site.home.hero.heading': "Run your restaurant's menu and workspace from one place",
+    'site.home.hero.lead':
+        "Zabuno gives your team a shared workspace to manage a restaurant's menu and catalog, publish it as a stable QR-linked page, and keep it updated as things change.",
+    'site.home.hero.actions.label': 'Account actions',
+    'site.home.hero.openApp': 'Open workspace app',
+    'site.home.features.heading': 'Features',
+    'site.home.features.workspace.title': 'Restaurant & workspace context',
+    'site.home.features.workspace.body':
+        "Keep a restaurant's workspace, team, and settings organized in one tenant-scoped place.",
+    'site.home.features.menu.title': 'Menu & catalog operations',
+    'site.home.features.menu.body':
+        'Create and edit menu items, categories, and catalog details from the workspace app.',
+    'site.home.features.publication.title': 'Publication & stable QR',
+    'site.home.features.publication.body':
+        'Publish a menu to a stable, shareable page that a printed QR code can keep pointing to.',
+    'site.home.features.media.title': 'Media intake & analytics',
+    'site.home.features.media.body':
+        'Media uploads go through quarantined media intake and review before they are available, alongside basic usage analytics for the published page.',
+    'site.home.howItWorks.heading': 'How it works',
+    'site.home.howItWorks.setup.title': 'Set up',
+    'site.home.howItWorks.setup.body': 'complete your workspace and restaurant setup.',
+    'site.home.howItWorks.build.title': 'Build the menu',
+    'site.home.howItWorks.build.body':
+        'add categories, items, prices, visibility, and allergens to your catalog.',
+    'site.home.howItWorks.publish.title': 'Publish & get a QR',
+    'site.home.howItWorks.publish.body': 'publish the menu to a stable page with a QR code.',
+    'site.home.howItWorks.update.title': 'Update anytime',
+    'site.home.howItWorks.update.body':
+        'edit the menu and the published page and QR code stay the same.',
+    'site.home.faq.heading': 'FAQ',
+    'site.home.faq.what.question': 'What is Zabuno?',
+    'site.home.faq.what.answer':
+        "A workspace app for managing a restaurant's menu and catalog and publishing it to a stable QR-linked page.",
+    'site.home.faq.account.question': 'Do I need an account to try it?',
+    'site.home.faq.account.answer': 'Yes, create an account or log in to open the workspace app.',
     'site.home.faq.cost.question': 'What does it cost?',
     'site.home.faq.cost.answer':
         'Prices come from our plan catalogue, so what you read there is what we charge.',
