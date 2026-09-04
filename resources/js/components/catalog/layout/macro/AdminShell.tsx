@@ -34,6 +34,15 @@ export type AdminShellProps = {
      */
     bottomBar?: ReactNode;
     /**
+     * Kabuğun PERSONASI — `docs/102` §5h.
+     *
+     * `platform` verildiğinde kök öğeye `data-persona="platform"` yazılır ve
+     * yüzey token'ları lacivert bandına geçer. Varsayılan (verilmezse)
+     * restoran kabuğudur ve KROMASIZ kalır; bir kapı testi bu ayrımı
+     * dondurur.
+     */
+    persona?: 'platform';
+    /**
      * Sağ panel — masaüstünde ana içeriğin YANINDA duran çalışma alanı.
      *
      * WordPress'in yazı düzenleyicisindeki sağ panelin karşılığı: kategoriler,
@@ -82,6 +91,7 @@ export function AdminShell({
     persistentSidebar,
     navigationDrawer,
     bottomBar,
+    persona,
     inspector,
     inspectorLabel = 'Details',
     mainId = 'main-content',
@@ -90,7 +100,7 @@ export function AdminShell({
     className,
 }: AdminShellProps) {
     return (
-        <div className={clsx('flex min-h-screen flex-col', className)}>
+        <div data-persona={persona} className={clsx('flex min-h-screen flex-col', className)}>
             <SkipLink targetId={mainId} />
             <TopBar
                 brand={brand}

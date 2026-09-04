@@ -77,7 +77,8 @@ export function ActionMenu({
         <Dropdown
             // Panelin kendi dolgusu: satırlar kenara yapışmaz, hover vurgusu
             // içeriden yuvarlanır (`docs/102` §5f).
-            className="min-w-[16rem] rounded-[var(--radius-lg)] border border-[var(--color-border)] p-[var(--space-1)]"
+            // Yüzey token'dan: Flowbite'ın mavi tonlu varsayılan grisi değil (`docs/102` §5h).
+            className="min-w-[16rem] rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-1)] text-fg-secondary"
             renderTrigger={() => (
                 <FlowbiteButton
                     aria-label={label}

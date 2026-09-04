@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import clsx from 'clsx';
 import { useEffect, useId } from 'react';
 import {
     Modal,
@@ -56,6 +57,21 @@ export type ConfirmDialogProps = {
  * Micro/Overlays/CloseButton for the corner dismiss control. Does not
  * reimplement Modal's overlay/backdrop/focus-trap markup.
  */
+/*
+    YÜZEY BİZİM, KÜTÜPHANENİN DEĞİL — `docs/102` §5h.
+
+    Flowbite'ın `gray` paleti Tailwind'in varsayılan grisidir ve MAVİYE
+    ÇALAR (chroma > 0, hue ~260); Zabuno'nun yüzey token'ları kromasızdır.
+    Bağlanmamış ailelerde (açılır menü, çekmece, diyalog) bu fark ekranda
+    görüldü: sayfa nötr siyahken menü lacivert-gri bir yüzeyde açılıyordu.
+    Aile teması `replace` gerektirir (DS-FLOWBITE-TOKEN-BIND-10) ve tam bir
+    tema yazmak burada gereğinden büyük bir taahhüt; yüzey rengi ÇAĞRI
+    NOKTASINDA token'la geçilir — `twMerge` aynı özelliği çakıştırdığı için
+    kütüphanenin `bg-*`/`text-*` sınıfları düşer, konumlandırma ve
+    animasyon kalır.
+*/
+const TOKEN_SURFACE = 'border-border bg-surface text-fg-secondary';
+
 export function ConfirmDialog({
     open,
     onClose,
@@ -80,7 +96,7 @@ export function ConfirmDialog({
             onClose={guardedClose}
             dismissible={!confirmLoading}
             popup
-            className={className}
+            className={clsx(TOKEN_SURFACE, className)}
         >
             <div className="flex items-start justify-between p-4">
                 <ConfirmDialogTitle id={titleId}>{title}</ConfirmDialogTitle>

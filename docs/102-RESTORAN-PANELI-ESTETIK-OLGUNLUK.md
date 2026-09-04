@@ -172,6 +172,56 @@ hiçbir dosyasında büyüyen ray yazımı (`flex-[N_1_Xrem]`) bulunamaz; ray
 `basis` + `grow-0 shrink-0` ile ölçülür, büyüyen tek bölge ana içeriktir.
 Hikâye dosyasındaki örnek de düzeltildi — yanlış deseni öğretiyordu.
 
+## 5h. FF-87 — persona rengi ve mavi kaçağı (2026-09-04, sahibin kararı)
+
+**Sahibin kararı:** superadmin/mühendislik paneli **lacivere çalan** bir
+zeminde çalışır; restoran paneli **kromasız** kalır ve orada mavi görünmez.
+Amaç estetik değil oryantasyon: iki panel aynı tarayıcıda açıkken hangi
+tarafta olunduğunu renk söyler.
+
+**Bulunan kaçak.** Restoran panelinde sayfa nötr siyahken hesap menüsü ve
+gezinti çekmecesi lacivert-gri bir yüzeyde açılıyordu. Sebep: açılır menü,
+çekmece ve diyalog aileleri Flowbite'ın VARSAYILAN temasıyla çiziliyordu;
+o palet Tailwind'in varsayılan grisidir ve maviye çalar (`gray-700` =
+`rgb(55 65 81)`, hue ~260). Zabuno'nun yüzey token'ları kromasızdır.
+
+Çağrı noktasında `className` ile geçmek **işe yaramadı** — tarayıcıda
+ölçüldü, panel `rgb(55,65,81)` kaldı: Flowbite tema sınıfını aynı öğeye
+basar ve kazananı sınıf sırası değil CSS kaynak sırası belirler. Bu yüzden
+üç aile de **bağlandı**: kütüphanenin kendi teması taban alınıp yalnız renk
+taşıyan yapraklar üstüne yazıldı, böylece `replace` eksiksiz oldu
+(DS-FLOWBITE-TOKEN-BIND-10 korundu). Ölçüm sonrası: panel `oklch(0.2 0 0)`,
+kenarlık `oklch(0.32 0 0)` — kroma sıfır.
+
+**Persona.** `[data-persona='platform']` yalnız YÜZEY jetonlarını (zemin,
+kart, hover, aktif, kenarlık) değiştirir. Koyu temanın ÇIPASI sahibin verdiği
+renktir: **`#001133`** (oklch 0.1886 0.0728 258.9). Zemin birebir o renktir;
+kart, hover, aktif ve kenarlık aynı kroma ve tonda, yalnız açıklık artırılarak
+türetilir (0.244 / 0.284 / 0.334 / 0.364) — merdiven tek bir karardan çıkar.
+Tarayıcıda ölçüldü: zemin `rgb(0, 17, 51)`. İlk iki deneme (chroma 0.022 ve
+0.042) ekranda hâlâ "düz siyah" okunuyordu. Kiracı tarafı ölçümle kromasız kalır
+(zemin `oklch(0.15 0 0)`, kart `oklch(0.2 0 0)`, kenarlık `oklch(0.32 0 0)`);
+marka, odak, durum ve metin jetonları ortak kalır — ikinci bir tasarım
+sistemi doğmaz. Öznitelik `AdminShell`'in `persona` prop'uyla verilir ve
+yalnız `OpsShell` verir. Ayrıca `OpsShell` aynı özniteliği **kök öğeye** de
+yazar ve ayrılırken siler: çekmece ve diyalog PORTALLA `document.body`
+altına çizilir, kabuk `div`ine yazılan öznitelik onlara miras kalmazdı.
+
+**Tüm sayfalarda.** Öznitelik üç yerde bulunur: platform ve mühendislik
+Blade şablonlarının **`<body>`** etiketinde (ilk boyama doğru olsun diye —
+React yüklenene kadar sayfa kiracı tonunda başlayıp sonra renk
+değiştiremez; `<html>` kullanılmaz, çünkü RTL kapısı o etiketi birebir
+donduruyor), `AdminShell`'in kök `div`inde ve `OpsShell`'in `<body>`ye
+yazdığı çalışma zamanı özniteliğinde (portala çıkan katmanlar `body`
+altına çizilir).
+`PersonaSurfaceTest` (PHP) hem superadmin şablonlarının persona bildirmesini
+hem de kiracı/kamu/misafir şablonlarının bildirmemesini dondurur.
+
+**Kalıcılık.** `persona.guard.test` üç şeyi dondurur: persona yalnız platform
+kabuğunda; kiracı kabuğu persona vermez; persona blokları yüzey dışında bir
+jetona dokunmaz. Ayrıca üç katman ailesinin bağlı kalması ve tema
+üstyazımlarında Flowbite gri paletinin bulunmaması da test edilir.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük

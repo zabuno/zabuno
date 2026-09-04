@@ -106,12 +106,41 @@ export function OpsShell<Key extends string>({
         <SidebarNav groups={groups} activeKey={active} label={navLabel} asLandmark={asLandmark} />
     );
 
+    /*
+        PERSONA KÖKTE de işaretlenir — `docs/102` §5h.
+
+        Çekmece ve diyalog gibi katmanlar PORTALLA `document.body` altına
+        çizilir; kabuk `div`ine yazılan bir öznitelik onlara miras kalmaz ve
+        o yüzeyler kiracı tonunda açılırdı. Öznitelik ayrılırken temizlenir:
+        aynı sekmede restoran paneline dönen kullanıcıya lacivert kalamaz.
+    */
+    useEffect(() => {
+        // `<body>`: Blade zaten burada bildiriyor; çalışma zamanı yazımı
+        // Blade'siz bağlamlar (Storybook, testler) için aynı yeri kullanır ki
+        // iki kaynak çelişmesin. `<html>` KULLANILMAZ — RTL kapısı o etiketi
+        // birebir donduruyor (`RTL-LOGIN-DERIVED-02`).
+        const root = document.body;
+        const had = root.getAttribute('data-persona');
+        root.setAttribute('data-persona', 'platform');
+
+        return () => {
+            if (had === null) {
+                root.removeAttribute('data-persona');
+            }
+        };
+    }, []);
+
     return (
         <AdminShell
             brand={{ name: brandName }}
             mobileMenuOpen={mobileMenuOpen}
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
-            // Soluk zemin: kartlar bu tonun üstünde beyaz durur (Metronic "app-bg").
+            /*
+                PERSONA: platform/mühendislik yüzeyi lacivere çalan zeminde
+                çalışır (`docs/102` §5h). Öznitelik YALNIZ burada; restoran
+                kabuğu kromasız kalır ve `persona.guard.test` bunu dondurur.
+            */
+            persona="platform"
             className="bg-[var(--color-canvas)]"
             persistentSidebar={
                 // Genişlik SABİT (FF-86). Öncesi bir BÜYÜME oranıydı (`flex` kısayolu):

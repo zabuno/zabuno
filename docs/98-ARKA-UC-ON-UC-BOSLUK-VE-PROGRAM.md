@@ -390,6 +390,14 @@ FF-83 yalnız kiracı kabuğunu düzeltmişti; `OpsShell` atlanmış ve orada ra
 ekranın yarısını kaplıyordu. Düzeltildi ve kural `OpsShell.layout.test` ile
 dondu: kabuk dosyalarında büyüyen ray yazımı bulunamaz.
 
+### FF-87 ek paket — persona rengi ve mavi kaçağı (2026-09-04)
+
+Sahibin kararı: superadmin lacivert zemin, restoran kromasız. Kaçağın kaynağı
+bulundu (açılır menü/çekmece/diyalog Flowbite'ın mavi tonlu gri paletiyle
+çiziliyordu) ve üç aile token temasına bağlandı; persona `[data-persona]`
+altında yalnız yüzey jetonlarını değiştirir. `persona.guard.test` kapsamı ve
+kalıcılığı dondurur (`docs/102` §5h).
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket

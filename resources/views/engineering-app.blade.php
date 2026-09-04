@@ -11,7 +11,11 @@
     <!-- vite-entry: resources/js/engineering.tsx -->
     @vite(['resources/css/app.css', 'resources/js/engineering.tsx'])
 </head>
-<body>
+{{-- PERSONA: superadmin yüzeyi lacivert zeminde çalışır (`docs/102` §5h).
+     Öznitelik `<body>` üzerindedir: `<html>` etiketi RTL kapısında birebir
+     donmuş (`RTL-LOGIN-DERIVED-02`) ve portalla açılan katmanlar zaten
+     `body` altına çizilir. İlk boyamada doğru olsun diye SUNUCUDAN gelir. --}}
+<body data-persona="platform">
     <div id="engineering-app"></div>
 </body>
 </html>

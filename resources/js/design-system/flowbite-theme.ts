@@ -2,6 +2,11 @@
 // tamamını çeker; bu dosyayı `ThemeRoot` üzerinden PAYLAŞILAN chunk'a bağlı
 // olduğu için o fark ~67 KB gzip'e mal oluyordu (`DS-BUNDLE-BUDGET-07`).
 // `createTheme` kimlik fonksiyonudur; yalnız Tailwind IntelliSense içindir.
+// Varsayılan temalar da ALT YOLDAN gelir; barrel bu dosyayı paylaşılan
+// chunk'a bağladığı için ~67 KB gzip'e mal olurdu (`DS-BUNDLE-BUDGET-07`).
+import { dropdownTheme } from 'flowbite-react/components/Dropdown';
+import { drawerTheme } from 'flowbite-react/components/Drawer';
+import { modalTheme } from 'flowbite-react/components/Modal';
 import { createTheme } from 'flowbite-react/helpers/create-theme';
 
 /**
@@ -354,6 +359,96 @@ export const labelTokenTheme = createTheme({
     },
 });
 
+/**
+ * AÇILIR MENÜ, ÇEKMECE ve DİYALOG — `docs/102` §5h.
+ *
+ * Bu üç aile 2026-09-04'e kadar Flowbite'ın VARSAYILANIYLA çiziliyordu.
+ * Flowbite'ın `gray` paleti Tailwind'in varsayılan grisidir ve MAVİYE
+ * ÇALAR (`gray-700` = `rgb(55 65 81)`, hue ~260); Zabuno'nun yüzey
+ * token'ları kromasızdır. Sonuç ekranda görüldü: restoran panelinde sayfa
+ * nötr siyahken hesap menüsü ve gezinti çekmecesi lacivert-gri bir yüzeyde
+ * açılıyordu — iki ayrı tasarım sistemi aynı ekranda.
+ *
+ * Çağrı noktasında `className` ile geçmek İŞE YARAMADI: Flowbite tema
+ * sınıfını da aynı öğeye basar ve kazananı sınıf sırası değil CSS kaynak
+ * sırası belirler (tarayıcıda ölçüldü: panel `rgb(55,65,81)` kaldı).
+ *
+ * Bu yüzden aile BAĞLANIR. Kapı (DS-FLOWBITE-TOKEN-BIND-10) bağlanan ailenin
+ * `replace` olmasını şart koşar — haklı: yarım `merge`, geometri sınıflarını
+ * üst üste yayınlar. Bu yüzden kütüphanenin KENDİ varsayılan teması taban
+ * alınır ve yalnız renk taşıyan yapraklar üstüne yazılır; sonuç eksiksiz bir
+ * tema olduğu için `replace` güvenlidir.
+ */
+type ThemeLeaf = string | { [key: string]: ThemeLeaf };
+
+function overrideLeaves<T>(base: T, overrides: Record<string, ThemeLeaf>): T {
+    const result: Record<string, ThemeLeaf> = { ...(base as Record<string, ThemeLeaf>) };
+
+    for (const [key, value] of Object.entries(overrides)) {
+        const current = result[key];
+
+        result[key] =
+            typeof value === 'string' || typeof current !== 'object' || current === null
+                ? value
+                : overrideLeaves(current, value as Record<string, ThemeLeaf>);
+    }
+
+    return result as T;
+}
+
+/** Flowbite'ın mavi tonlu gri yüzeyleri → Zabuno kromasız token'ları. */
+export const dropdownTokenTheme = createTheme(
+    overrideLeaves(dropdownTheme, {
+        floating: {
+            base: 'z-10 w-fit rounded-lg border border-border bg-surface text-fg-secondary focus:outline-none',
+            content: 'py-1 text-body',
+            divider: 'my-1 h-px bg-border',
+            header: 'block px-4 py-2 text-meta text-fg-muted',
+            item: {
+                base: 'flex w-full cursor-pointer items-center justify-start px-4 py-2 text-body text-fg-secondary hover:bg-surface-hover focus:bg-surface-hover focus:outline-none',
+            },
+            style: {
+                auto: 'border border-border bg-surface text-fg-secondary',
+                dark: 'border border-border bg-surface text-fg-secondary',
+                light: 'border border-border bg-surface text-fg-secondary',
+            },
+        },
+    }),
+);
+
+export const drawerTokenTheme = createTheme(
+    overrideLeaves(drawerTheme, {
+        root: {
+            base: 'fixed z-40 overflow-y-auto bg-surface p-4 text-fg-secondary transition-transform',
+            backdrop: 'fixed inset-0 z-30 bg-[color-mix(in_oklch,var(--color-fg)_45%,transparent)]',
+        },
+        header: {
+            inner: {
+                titleText:
+                    'mb-4 inline-flex items-center text-meta font-semibold uppercase tracking-wide text-fg-muted',
+                closeButton:
+                    'absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-fg-muted hover:bg-surface-hover hover:text-fg',
+            },
+        },
+    }),
+);
+
+export const modalTokenTheme = createTheme(
+    overrideLeaves(modalTheme, {
+        content: {
+            inner: 'relative flex max-h-[90dvh] flex-col rounded-lg border border-border bg-surface',
+        },
+        header: {
+            base: 'flex items-start justify-between rounded-t border-b border-border p-5',
+            title: 'text-xl font-medium text-fg',
+            close: {
+                base: 'ms-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-fg-muted hover:bg-surface-hover hover:text-fg',
+            },
+        },
+        footer: { base: 'flex items-center space-x-2 rounded-b border-t border-border p-6' },
+    }),
+);
+
 export const flowbiteTokenTheme = {
     button: buttonTokenTheme,
     textInput: textInputTokenTheme,
@@ -361,6 +456,9 @@ export const flowbiteTokenTheme = {
     textarea: textareaTokenTheme,
     checkbox: checkboxTokenTheme,
     label: labelTokenTheme,
+    dropdown: dropdownTokenTheme,
+    drawer: drawerTokenTheme,
+    modal: modalTokenTheme,
 };
 
 /**
@@ -376,4 +474,8 @@ export const FLOWBITE_TOKEN_APPLY = {
     textarea: 'replace',
     checkbox: 'replace',
     label: 'replace',
+    // Taban kütüphanenin kendi teması olduğu için `replace` eksiksizdir.
+    dropdown: 'replace',
+    drawer: 'replace',
+    modal: 'replace',
 } as const;
