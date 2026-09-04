@@ -3,7 +3,7 @@ export const media = {
     'workspace.media.operational.description':
         'Upload images and manage the media library that feeds your published menu — every asset is scanned before it can be used.',
     'workspace.media.upload.region': 'Media upload',
-    'workspace.media.upload.heading': 'Upload',
+    'workspace.media.upload.heading': 'Add photos',
     'workspace.media.upload.button': 'Upload',
     'workspace.media.upload.uploading': 'Uploading media…',
     // FF-68 (`docs/49` Faz 2): ilerleme görünür, yeniden deneme aynı anahtarla.
@@ -68,7 +68,7 @@ export const media = {
     'workspace.media.upload.field.assetSlot.printLogo': 'Print logo',
     'workspace.media.upload.field.assetSlot.emailHeader': 'Header/splash/push',
     'workspace.media.library.region': 'Media library',
-    'workspace.media.library.heading': 'Library',
+    'workspace.media.library.heading': 'Your photos',
     'workspace.media.library.unavailable': 'No media assets yet.',
     'workspace.media.library.loading': 'Loading media library…',
     'workspace.media.library.error': 'Media library could not be loaded.',
@@ -183,6 +183,18 @@ export const media = {
     'workspace.media.quota.unlimited': 'no limit',
     'workspace.media.quota.note':
         'Deleted images stay in trash for {days} days and still count until then. Generated sizes are free.',
+    // FF-76 (`docs/101` A5/A8): çoklu yükleme, ad düzeltme, gürültü katlanır.
+    'workspace.media.upload.more.label': 'More photos to upload',
+    'workspace.media.upload.more.lead':
+        '{count} more photo(s) will be uploaded with the same place. Name each one:',
+    'workspace.media.upload.more.altFor': 'Name for {name}',
+    'workspace.media.upload.more.progress': 'Uploading photo {done} of {total}…',
+    'workspace.media.library.empty.hint':
+        'Drop your first photo on the left. It shows up here as soon as it is checked.',
+    'workspace.media.library.how.summary': 'How photos are handled (places and checks)',
+    'workspace.media.library.detail.altText': 'Name (alt text)',
+    'workspace.media.library.detail.rename': 'Save name',
+    'workspace.media.library.detail.renamed': 'Name saved.',
 } as const;
 
 declare module '../workspace' {

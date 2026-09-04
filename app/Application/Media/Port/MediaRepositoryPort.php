@@ -25,6 +25,9 @@ interface MediaRepositoryPort
     /** Çöpteki varlıklar — geri alınabilir, süre dolunca purge (`docs/49` Faz 5). @return list<MediaAssetSummary> */
     public function listTrashed(int $workspaceId): array;
 
+    /** Alt metni (insanın okuduğu adı) değiştirir; depolama anahtarına dokunmaz (`docs/49` §5.2). */
+    public function updateAltText(int $workspaceId, int $assetId, string $altText): bool;
+
     /** Çöpten geri al — dosya hiç silinmemişti. */
     public function restore(int $workspaceId, int $assetId): bool;
 

@@ -42,6 +42,16 @@ type MediaUploadRegionProps = {
     onSubmit: (formData: FormData, options: UploadOptions) => Promise<void> | void;
 };
 
+/** "IMG_8734.jpg" → "IMG 8734": boş alt metin bırakmaktansa dosya adı; sonra düzeltilir. */
+function nameFromFile(fileName: string): string {
+    return (
+        fileName
+            .replace(/\.[a-z0-9]+$/i, '')
+            .replace(/[-_]+/g, ' ')
+            .trim() || fileName
+    );
+}
+
 function newIdempotencyKey(): string {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
         return crypto.randomUUID();
@@ -83,6 +93,15 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
      * söylüyor olsa bile.
      */
     const [failureMessage, setFailureMessage] = useState('');
+    /**
+     * Çoklu yüklemenin kalan dosyaları (FF-76). Her birinin alt metni dosya
+     * adından türer ("IMG_8734.jpg" → "IMG 8734") ve satırda düzeltilebilir;
+     * sonradan da kütüphane çekmecesinden değişir. Slot hepsine ortaktır.
+     */
+    const [extra, setExtra] = useState<{ image: SelectedImage; altText: string }[]>([]);
+    const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(
+        null,
+    );
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     // Politikalar workspace'e bağlı değil; bir kez okunur.
@@ -206,6 +225,36 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
         try {
             await onSubmit(formData, { idempotencyKey, onProgress: setProgress });
+
+            // Kalan dosyalar SIRAYLA: aynı slot, kendi alt metni, kendi anahtarı.
+            // Biri düşerse kalanlar durur ve düşen dosya ilk sıraya alınır.
+            if (extra.length > 0) {
+                const total = extra.length + 1;
+                for (let index = 0; index < extra.length; index++) {
+                    setBatchProgress({ done: index + 1, total });
+                    const row = extra[index];
+                    const more = new FormData();
+                    more.set('file', row.image.file);
+                    more.set('altText', row.altText.trim() || nameFromFile(row.image.file.name));
+                    more.set('slot', slot);
+                    try {
+                        await onSubmit(more, {
+                            idempotencyKey: newIdempotencyKey(),
+                            onProgress: setProgress,
+                        });
+                    } catch (error) {
+                        setExtra(extra.slice(index));
+                        setBatchProgress(null);
+                        setFailureMessage(
+                            error instanceof ServerRejectedError ? error.message : '',
+                        );
+                        setStatus('error');
+                        return;
+                    }
+                }
+                setExtra([]);
+                setBatchProgress(null);
+            }
             // Başarılı yükleme anahtarı TÜKETİR; bir sonraki dosya yenisini alır.
             setIdempotencyKey(newIdempotencyKey());
             // Girdiyi temizlemek artık damlatma alanının işi: gerçek
@@ -255,7 +304,56 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                             // Yeni dosya, yeni anahtar; yeniden deneme eskisini korur.
                             setIdempotencyKey(newIdempotencyKey());
                         }}
+                        onSelectMore={(images) =>
+                            setExtra(
+                                images.map((image) => ({
+                                    image,
+                                    altText: nameFromFile(image.file.name),
+                                })),
+                            )
+                        }
                     />
+                    {extra.length > 0 ? (
+                        <ul
+                            aria-label={t('workspace.media.upload.more.label')}
+                            className="flex flex-col gap-2 rounded-lg border border-border p-2"
+                        >
+                            <li className="text-meta text-fg-muted">
+                                {t('workspace.media.upload.more.lead', {
+                                    count: String(extra.length),
+                                })}
+                            </li>
+                            {extra.map((row, index) => (
+                                <li
+                                    key={`${row.image.file.name}-${index}`}
+                                    className="flex flex-col gap-1"
+                                >
+                                    <label className="flex flex-col gap-1 text-meta text-fg-secondary">
+                                        {row.image.file.name}
+                                        <TextInput
+                                            type="text"
+                                            value={row.altText}
+                                            aria-label={t('workspace.media.upload.more.altFor', {
+                                                name: row.image.file.name,
+                                            })}
+                                            onChange={(event) =>
+                                                setExtra((current) =>
+                                                    current.map((item, i) =>
+                                                        i === index
+                                                            ? {
+                                                                  ...item,
+                                                                  altText: event.target.value,
+                                                              }
+                                                            : item,
+                                                    ),
+                                                )
+                                            }
+                                        />
+                                    </label>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : null}
                     {fieldErrors[fileId] ? (
                         <span id={`${fileId}-error`}>
                             <FieldError message={fieldErrors[fileId]} />
@@ -364,11 +462,16 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             {status === 'pending' && (
                 <div className="flex flex-col gap-1">
                     <p role="status" className="text-meta text-fg-muted">
-                        {progress > 0 && progress < 1
-                            ? t('workspace.media.upload.uploading.progress', {
-                                  percent: String(Math.round(progress * 100)),
+                        {batchProgress
+                            ? t('workspace.media.upload.more.progress', {
+                                  done: String(batchProgress.done + 1),
+                                  total: String(batchProgress.total),
                               })
-                            : t('workspace.media.upload.uploading')}
+                            : progress > 0 && progress < 1
+                              ? t('workspace.media.upload.uploading.progress', {
+                                    percent: String(Math.round(progress * 100)),
+                                })
+                              : t('workspace.media.upload.uploading')}
                     </p>
                     <progress
                         aria-label={t('workspace.media.upload.uploading')}

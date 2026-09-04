@@ -1076,6 +1076,10 @@ msgstr ""
 msgid "workspace.media.library.detail.actionFailed"
 msgstr ""
 
+#: workspace:workspace.media.library.detail.altText
+msgid "workspace.media.library.detail.altText"
+msgstr ""
+
 #: workspace:workspace.media.library.detail.download
 msgid "workspace.media.library.detail.download"
 msgstr ""
@@ -1096,6 +1100,14 @@ msgstr ""
 msgid "workspace.media.library.detail.noPreview"
 msgstr ""
 
+#: workspace:workspace.media.library.detail.rename
+msgid "workspace.media.library.detail.rename"
+msgstr ""
+
+#: workspace:workspace.media.library.detail.renamed
+msgid "workspace.media.library.detail.renamed"
+msgstr ""
+
 #: workspace:workspace.media.library.detail.reprocess
 msgid "workspace.media.library.detail.reprocess"
 msgstr ""
@@ -1114,6 +1126,10 @@ msgstr ""
 
 #: workspace:workspace.media.library.detail.uploaded
 msgid "workspace.media.library.detail.uploaded"
+msgstr ""
+
+#: workspace:workspace.media.library.empty.hint
+msgid "workspace.media.library.empty.hint"
 msgstr ""
 
 #: workspace:workspace.media.library.error
@@ -1158,6 +1174,10 @@ msgstr ""
 
 #: workspace:workspace.media.library.heading
 msgid "workspace.media.library.heading"
+msgstr ""
+
+#: workspace:workspace.media.library.how.summary
+msgid "workspace.media.library.how.summary"
 msgstr ""
 
 #: workspace:workspace.media.library.impact.blocked
@@ -1558,6 +1578,22 @@ msgstr ""
 
 #: workspace:workspace.media.upload.heading
 msgid "workspace.media.upload.heading"
+msgstr ""
+
+#: workspace:workspace.media.upload.more.altFor
+msgid "workspace.media.upload.more.altFor"
+msgstr ""
+
+#: workspace:workspace.media.upload.more.label
+msgid "workspace.media.upload.more.label"
+msgstr ""
+
+#: workspace:workspace.media.upload.more.lead
+msgid "workspace.media.upload.more.lead"
+msgstr ""
+
+#: workspace:workspace.media.upload.more.progress
+msgid "workspace.media.upload.more.progress"
 msgstr ""
 
 #: workspace:workspace.media.upload.region

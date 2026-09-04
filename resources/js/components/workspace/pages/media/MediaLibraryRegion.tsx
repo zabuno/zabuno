@@ -283,9 +283,14 @@ export function MediaLibraryRegion({
                     <Button onClick={() => onRetry?.()}>{t('workspace.error.retry')}</Button>
                 </div>
             ) : assets.length === 0 ? (
-                <p role="status" className="text-body text-fg-muted">
-                    {t('workspace.media.library.unavailable')}
-                </p>
+                <div className="flex flex-col gap-1 rounded-lg border border-dashed border-border p-4">
+                    <p role="status" className="text-body text-fg-muted">
+                        {t('workspace.media.library.unavailable')}
+                    </p>
+                    <p className="text-meta text-fg-muted">
+                        {t('workspace.media.library.empty.hint')}
+                    </p>
+                </div>
             ) : visible.length === 0 ? (
                 <p role="status" className="text-body text-fg-muted">
                     {t('workspace.media.library.filters.noMatch')}
@@ -360,15 +365,27 @@ export function MediaLibraryRegion({
                 libraryPanel
             )}
 
-            <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
-                {t('workspace.media.library.slots.heading')}
-            </p>
-            <MediaLibrarySlotList />
+            {/*
+                `docs/101` A5: slot envanteri ve yaşam döngüsü uzman bilgisidir;
+                kebapçının ilk ekranında listelenmez, katlanır durur. İçerik
+                DOM'da kalır (ekran okuyucu ve sözleşme testleri).
+            */}
+            <details className="rounded-lg border border-border p-3">
+                <summary className="cursor-pointer text-body font-medium text-fg-secondary">
+                    {t('workspace.media.library.how.summary')}
+                </summary>
+                <div className="flex flex-col gap-3 pt-3">
+                    <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                        {t('workspace.media.library.slots.heading')}
+                    </p>
+                    <MediaLibrarySlotList />
 
-            <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
-                {t('workspace.media.lifecycle.heading')}
-            </p>
-            <MediaLifecycleList />
+                    <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                        {t('workspace.media.lifecycle.heading')}
+                    </p>
+                    <MediaLifecycleList />
+                </div>
+            </details>
 
             {actions ? (
                 <MediaAssetDetailDrawer

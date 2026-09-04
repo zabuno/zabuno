@@ -14,6 +14,8 @@ type MediaDropzoneProps = {
     invalid: boolean;
     describedBy?: string;
     onSelect: (image: SelectedImage | null) => void;
+    /** Birden çok dosya bırakıldığında İLKİ `onSelect`, kalanlar buraya (FF-76 çoklu yükleme). */
+    onSelectMore?: (images: SelectedImage[]) => void;
 };
 
 /**
@@ -32,7 +34,13 @@ type MediaDropzoneProps = {
  * görünümün bizde kalmasını şart koşuyor. Kesintili yükleme gerçekten
  * gerektiğinde (video, Faz 2) karar veriyle yeniden verilir.
  */
-export function MediaDropzone({ selected, invalid, describedBy, onSelect }: MediaDropzoneProps) {
+export function MediaDropzone({
+    selected,
+    invalid,
+    describedBy,
+    onSelect,
+    onSelectMore,
+}: MediaDropzoneProps) {
     const inputId = useId();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [dragging, setDragging] = useState(false);
@@ -101,10 +109,27 @@ export function MediaDropzone({ selected, invalid, describedBy, onSelect }: Medi
         probe.src = previewUrl;
     }
 
+    /*
+        ÇOKLU SEÇİM (FF-76): 40 fotoğrafı tek tek seçtirmek, kebapçıya 40 kez
+        aynı işi yaptırmaktı. İlk dosya bugünkü tek-dosya yolundan geçer
+        (önizleme, ölçü); kalanlar liste olarak yukarı verilir ve sırayla
+        yüklenir.
+    */
+    function readAll(list: FileList | null | undefined) {
+        const files = Array.from(list ?? []);
+        read(files[0]);
+
+        if (files.length > 1 && onSelectMore) {
+            onSelectMore(
+                files.slice(1).map((file) => ({ file, previewUrl: '', width: 0, height: 0 })),
+            );
+        }
+    }
+
     function handleDrop(event: DragEvent<HTMLDivElement>) {
         event.preventDefault();
         setDragging(false);
-        read(event.dataTransfer.files[0]);
+        readAll(event.dataTransfer.files);
     }
 
     return (
@@ -181,10 +206,11 @@ export function MediaDropzone({ selected, invalid, describedBy, onSelect }: Medi
                         name="media-file"
                         type="file"
                         accept="image/*"
+                        multiple={onSelectMore !== undefined}
                         aria-invalid={invalid ? true : undefined}
                         aria-describedby={describedBy}
                         className="sr-only"
-                        onChange={(event) => read(event.target.files?.[0])}
+                        onChange={(event) => readAll(event.target.files)}
                     />
                 </label>
             </div>

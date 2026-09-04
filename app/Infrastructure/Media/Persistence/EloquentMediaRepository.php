@@ -137,6 +137,14 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             ->all();
     }
 
+    public function updateAltText(int $workspaceId, int $assetId, string $altText): bool
+    {
+        return MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->update(['alt_text' => $altText, 'updated_at' => now()]) === 1;
+    }
+
     public function restore(int $workspaceId, int $assetId): bool
     {
         $asset = MediaAsset::onlyTrashed()

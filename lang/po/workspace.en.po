@@ -1076,6 +1076,10 @@ msgstr "Assets"
 msgid "workspace.media.library.detail.actionFailed"
 msgstr "That did not work. Nothing was changed."
 
+#: workspace:workspace.media.library.detail.altText
+msgid "workspace.media.library.detail.altText"
+msgstr "Name (alt text)"
+
 #: workspace:workspace.media.library.detail.download
 msgid "workspace.media.library.detail.download"
 msgstr "Download original"
@@ -1096,6 +1100,14 @@ msgstr "File"
 msgid "workspace.media.library.detail.noPreview"
 msgstr "No preview yet"
 
+#: workspace:workspace.media.library.detail.rename
+msgid "workspace.media.library.detail.rename"
+msgstr "Save name"
+
+#: workspace:workspace.media.library.detail.renamed
+msgid "workspace.media.library.detail.renamed"
+msgstr "Name saved."
+
 #: workspace:workspace.media.library.detail.reprocess
 msgid "workspace.media.library.detail.reprocess"
 msgstr "Regenerate sizes"
@@ -1115,6 +1127,10 @@ msgstr "Slot"
 #: workspace:workspace.media.library.detail.uploaded
 msgid "workspace.media.library.detail.uploaded"
 msgstr "Uploaded"
+
+#: workspace:workspace.media.library.empty.hint
+msgid "workspace.media.library.empty.hint"
+msgstr "Drop your first photo on the left. It shows up here as soon as it is checked."
 
 #: workspace:workspace.media.library.error
 msgid "workspace.media.library.error"
@@ -1158,7 +1174,11 @@ msgstr "Unused only"
 
 #: workspace:workspace.media.library.heading
 msgid "workspace.media.library.heading"
-msgstr "Library"
+msgstr "Your photos"
+
+#: workspace:workspace.media.library.how.summary
+msgid "workspace.media.library.how.summary"
+msgstr "How photos are handled (places and checks)"
 
 #: workspace:workspace.media.library.impact.blocked
 msgid "workspace.media.library.impact.blocked"
@@ -1558,7 +1578,23 @@ msgstr "File"
 
 #: workspace:workspace.media.upload.heading
 msgid "workspace.media.upload.heading"
-msgstr "Upload"
+msgstr "Add photos"
+
+#: workspace:workspace.media.upload.more.altFor
+msgid "workspace.media.upload.more.altFor"
+msgstr "Name for {name}"
+
+#: workspace:workspace.media.upload.more.label
+msgid "workspace.media.upload.more.label"
+msgstr "More photos to upload"
+
+#: workspace:workspace.media.upload.more.lead
+msgid "workspace.media.upload.more.lead"
+msgstr "{count} more photo(s) will be uploaded with the same place. Name each one:"
+
+#: workspace:workspace.media.upload.more.progress
+msgid "workspace.media.upload.more.progress"
+msgstr "Uploading photo {done} of {total}…"
 
 #: workspace:workspace.media.upload.region
 msgid "workspace.media.upload.region"
