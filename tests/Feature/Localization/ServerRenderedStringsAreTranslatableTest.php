@@ -20,10 +20,15 @@ use Tests\TestCase;
  * geliyor. Sunucu tarafı sağlamıyordu ve kimse ölçmemişti: Blade
  * görünümlerinde tek bir çeviri çağrısı yoktu.
  *
- * Neden yasak değil de kilit: 71 dize var ve çoğu tek bir pakette
- * taşınamayacak kadar dağınık. Kilit borcun artmasını imkânsız kılar,
- * azalmasını serbest bırakır. `lang/untranslatable-debt.json` borcu
- * gerekçesiyle ve nasıl eritileceğiyle taşır.
+ * Neden başta yasak değil de kilit: 71 dize vardı ve çoğu tek bir pakette
+ * taşınamayacak kadar dağınıktı. Kilit borcun artmasını imkânsız kıldı,
+ * azalmasını serbest bıraktı.
+ *
+ * **2026-09-04 (FF-98): borç SIFIRA indi ve kural MUTLAK YASAĞA döndü.**
+ * Artık Blade içine yazılan tek bir görünür dize bile testi kırar. Eşik yok,
+ * taban çizgisi yok, "sonra düzeltiriz" yok — bir istisna verildiği anda
+ * sayaç yeniden yürümeye başlar (aynı gerekçe `DS-RAW-PALETTE-BANNED-01`
+ * için de yazılmıştı ve orada da çalıştı).
  */
 final class ServerRenderedStringsAreTranslatableTest extends TestCase
 {
@@ -75,6 +80,26 @@ final class ServerRenderedStringsAreTranslatableTest extends TestCase
             "I18N-SSR-RATCHET-16: borç {$recorded} → {$measured} düştü — bu iyi haber. "
             .'`lang/untranslatable-debt.json` içindeki `total` ve `byFile` değerlerini yeni ölçüme çek '
             .'ki kazanım geri alınamasın.'
+        );
+    }
+
+    /*
+        MUTLAK YASAK (FF-98). Borç sıfırlandığı gün, borç dosyasının kendi
+        notu ne yapılacağını söylüyordu: kilit yerine yasak. Bu test onu
+        sayıdan bağımsız olarak zorlar — kayıtlı borç yanlışlıkla yükseltilse
+        bile ölçüm sıfır olmak zorundadır.
+    */
+    public function test_no_user_visible_string_lives_in_a_blade_view(): void
+    {
+        $measured = $this->measured();
+        $offending = array_filter($measured, static fn (int $count): bool => $count > 0);
+
+        self::assertSame(
+            [],
+            $offending,
+            'I18N-SSR-RATCHET-16: Blade içine görünür bir dize yazıldı. Sahibi onu hiçbir PO '
+            .'dosyasında bulamaz ve çeviremez. Dizeyi bir katalog anahtarına taşı: '
+            .json_encode($offending, JSON_UNESCAPED_UNICODE)
         );
     }
 

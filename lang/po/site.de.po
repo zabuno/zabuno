@@ -8,6 +8,10 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: site:site.brand
+msgid "site.brand"
+msgstr ""
+
 #: site:site.contact.email
 msgid "site.contact.email"
 msgstr ""
@@ -200,6 +204,14 @@ msgstr ""
 msgid "site.home.meta.title"
 msgstr ""
 
+#: site:site.legal.pending
+msgid "site.legal.pending"
+msgstr ""
+
+#: site:site.legal.pending.description
+msgid "site.legal.pending.description"
+msgstr ""
+
 #: site:site.nav.contact
 msgid "site.nav.contact"
 msgstr ""
@@ -222,6 +234,10 @@ msgstr ""
 
 #: site:site.nav.pricing
 msgid "site.nav.pricing"
+msgstr ""
+
+#: site:site.nav.primary
+msgid "site.nav.primary"
 msgstr ""
 
 #: site:site.nav.register
@@ -322,6 +338,10 @@ msgstr ""
 
 #: site:site.title.resetPassword
 msgid "site.title.resetPassword"
+msgstr ""
+
+#: site:site.title.suffix
+msgid "site.title.suffix"
 msgstr ""
 
 #: site:site.title.verifyEmail

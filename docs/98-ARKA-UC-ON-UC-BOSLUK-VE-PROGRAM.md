@@ -662,3 +662,23 @@ düzeltildi: Media, Fatura, Analitik, Ekip, Yayın ve Profil ekranları artık
 için hâlâ eager; yalnız çizim ertelenir. Sonuç: **202 → 185 KB**. Her gün
 panosunu açan bir restoran, hiç girmediği ekranların kodunu artık
 indirmiyor.
+
+
+## 15. FF-98 — Çevrilemez borç sıfır; mandal yasağa döndü
+
+`I18N-SSR-RATCHET-16` bir cırcır olarak başlamıştı: 71 dize vardı, sayı
+yalnız azalabiliyordu. Bugün **sıfıra** indi ve borç dosyasının kendi notu ne
+yapılacağını söylüyordu — kilit yerine YASAK. Artık Blade içine yazılan tek
+bir görünür dize bile testi kırar; eşik yok, taban çizgisi yok.
+
+Kalan on dize üç gruptaydı:
+
+| Grup | Karar |
+| --- | --- |
+| Marka adı ("Zabuno", üç yerde) | Katalogda (`site.brand`). Bir marka adı çoğu dilde aynı kalır; ama şablona gömüldüğü sürece sahibi onu hiçbir yerden değiştiremez. Aynı karar çalışma alanı kabuğunda (`workspace.shell.brand`) zaten verilmişti. |
+| Gezinti bölge etiketleri (`aria-label`) | Katalogda. Ekran okuyucunun duyduğu metin de metindir; görünmüyor olması onu çevirisiz bırakmanın gerekçesi değil. |
+| Misafirin çıkmaz sokağı (3 Türkçe cümle) | `guest` kataloğuna taşındı; kaynak dili Türkçe olan tek alan orası. |
+| Yasal sayfa gövdesi ve başlıkları | Katalogda. Başlıklar denetleyicide İngilizce sabitti: Türkçe ziyaretçi altbilgide "Kullanım koşulları" yazan bağlantıya tıklayıp başlığında "Terms" yazan bir sayfaya varıyordu. |
+
+**Sonuç:** kullanıcının gördüğü hiçbir cümle artık şablona gömülü değil.
+Sahibi ürünün tamamını PO dosyalarından değiştirebilir.

@@ -1,4 +1,7 @@
 {
+    "guest.deadEnd.body": "Karekod bir menüye bağlı değil. Lütfen restoran personeline bildirin; size güncel menüyü ulaştırabilirler.",
+    "guest.deadEnd.heading": "Bu menü şu anda görüntülenemiyor",
+    "guest.deadEnd.title": "Menü bulunamadı",
     "guest.language.contentNotice": "Ürün adları restoranın kendi dilindedir.",
     "guest.language.label": "Dil",
     "guest.menu.categories.label": "Kategoriler",

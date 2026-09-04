@@ -8,6 +8,18 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.deadEnd.body
+msgid "guest.deadEnd.body"
+msgstr "Karekod bir menüye bağlı değil. Lütfen restoran personeline bildirin; size güncel menüyü ulaştırabilirler."
+
+#: guest:guest.deadEnd.heading
+msgid "guest.deadEnd.heading"
+msgstr "Bu menü şu anda görüntülenemiyor"
+
+#: guest:guest.deadEnd.title
+msgid "guest.deadEnd.title"
+msgstr "Menü bulunamadı"
+
 #: guest:guest.language.contentNotice
 msgid "guest.language.contentNotice"
 msgstr "Ürün adları restoranın kendi dilindedir."

@@ -11,6 +11,20 @@
  */
 export const siteTranslations = {
     // --- Masterpage: gezinti ve altbilgi (`docs/100` §2) ------------------
+    /*
+        MARKA ADI da katalogdadır (FF-98). Bir marka adı çoğu dilde aynı
+        kalır; ama şablona gömüldüğü sürece sahibi onu hiçbir yerden
+        değiştiremez ve çevrilemez borç sıfıra inmez. Aynı karar çalışma
+        alanı kabuğunda zaten verilmişti (`workspace.shell.brand`).
+    */
+    'site.brand': 'Zabuno',
+    /* Belge başlığının son eki: "Fiyat — Zabuno". */
+    'site.title.suffix': 'Zabuno',
+    'site.nav.primary': 'Primary',
+    'site.legal.pending':
+        'This page is pending qualified legal review and is not yet published. It does not contain binding legal terms.',
+    'site.legal.pending.description':
+        'This page is pending qualified legal review and is not yet published.',
     'site.skipToContent': 'Skip to main content',
     'site.nav.features': 'Features',
     'site.nav.howItWorks': 'How it works',

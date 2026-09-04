@@ -27,10 +27,17 @@ use Throwable;
 final class FoundationStatusController extends Controller
 {
     /** Yasal sayfa yollarının başlıkları. */
-    private const LEGAL_TITLES = [
-        'terms' => 'Terms',
-        'privacy' => 'Privacy',
-        'kvkk' => 'KVKK',
+    /*
+        Yasal sayfa başlıkları KATALOG ANAHTARIDIR, düz metin değil (FF-98).
+        Öncesinde burada İngilizce dizeler duruyordu ve Türkçe bir ziyaretçi
+        altbilgide "Kullanım koşulları" yazan bağlantıya tıklayıp başlığında
+        "Terms" yazan bir sayfaya varıyordu. Aynı sayfanın adı iki yerde iki
+        türlü okunuyordu.
+    */
+    private const LEGAL_TITLE_KEYS = [
+        'terms' => 'site.footer.terms',
+        'privacy' => 'site.footer.privacy',
+        'kvkk' => 'site.footer.kvkk',
     ];
 
     public function __construct(
@@ -70,8 +77,10 @@ final class FoundationStatusController extends Controller
             return view('public.pricing', $shared);
         }
 
-        if (isset(self::LEGAL_TITLES[$path])) {
-            return view('public.legal', $shared + ['title' => self::LEGAL_TITLES[$path]]);
+        if (isset(self::LEGAL_TITLE_KEYS[$path])) {
+            return view('public.legal', $shared + [
+                'title' => app(SiteText::class)->get(self::LEGAL_TITLE_KEYS[$path]),
+            ]);
         }
 
         return view('public.home', $shared);

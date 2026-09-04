@@ -55,6 +55,20 @@ export const guestTranslations = {
         ima etmek, tutulmayacak bir söz vermek olurdu.
     */
     'guest.language.contentNotice': 'Dish names are in the restaurant’s own language.',
+
+    /*
+        ÇIKMAZ SOKAK (`QR-PUBLIC-404-UNIFORM-01`). Kodu tarayan kişi bir
+        restoran masasında oturuyor; ona ham bir 404 göstermek ürünü bozuk
+        gösterirdi. Metin BİLEREK tek bir durumu anlatmaz: bilinmeyen, bozuk
+        ve devre dışı kod aynı cümleyi görür.
+
+        Bu üç dize şablona gömülüydü ve sahibi onları hiçbir PO dosyasından
+        çeviremiyordu (FF-98).
+    */
+    'guest.deadEnd.title': 'Menu not found',
+    'guest.deadEnd.heading': 'This menu cannot be shown right now',
+    'guest.deadEnd.body':
+        'The QR code is not linked to a menu. Please tell the restaurant staff; they can get you the current menu.',
 } as const;
 
 export type GuestTranslationKey = keyof typeof guestTranslations;

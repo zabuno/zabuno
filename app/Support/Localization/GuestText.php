@@ -80,4 +80,22 @@ final class GuestText
 
         return $out;
     }
+
+    /**
+     * Çıkmaz sokak sayfasının metinleri (FF-98).
+     *
+     * Menü metinlerinden AYRI bir harita: o sayfada menü yoktur, dolayısıyla
+     * "kategori boş" ya da "arama" gibi anahtarları yüklemek, olmayan bir
+     * ekranın sözlüğünü taşımak olurdu.
+     *
+     * @return array<string, string>
+     */
+    public function deadEnd(?string $locale = null): array
+    {
+        return [
+            'title' => $this->get('guest.deadEnd.title', $locale),
+            'heading' => $this->get('guest.deadEnd.heading', $locale),
+            'body' => $this->get('guest.deadEnd.body', $locale),
+        ];
+    }
 }
