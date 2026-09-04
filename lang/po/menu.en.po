@@ -40,6 +40,10 @@ msgstr "We could not add the category. Please try again."
 msgid "menu.category.create.submit"
 msgstr "Add category"
 
+#: menu:menu.category.delete.body
+msgid "menu.category.delete.body"
+msgstr "Already published versions keep them — your guests see no change until you publish again. The draft rows do not come back."
+
 #: menu:menu.category.delete.confirm
 msgid "menu.category.delete.confirm"
 msgstr "Remove “{name}” and its items from this menu? Already published versions keep them."
@@ -47,6 +51,10 @@ msgstr "Remove “{name}” and its items from this menu? Already published vers
 #: menu:menu.category.delete.label
 msgid "menu.category.delete.label"
 msgstr "Remove category {name}"
+
+#: menu:menu.category.delete.title
+msgid "menu.category.delete.title"
+msgstr "Remove “{name}” and its products?"
 
 #: menu:menu.category.empty
 msgid "menu.category.empty"
@@ -344,6 +352,10 @@ msgstr "Add item"
 msgid "menu.item.currency.label"
 msgstr "Currency"
 
+#: menu:menu.item.delete.body
+msgid "menu.item.delete.body"
+msgstr "Already published versions keep it — your guests see no change until you publish again. The draft row does not come back."
+
 #: menu:menu.item.delete.confirm
 msgid "menu.item.delete.confirm"
 msgstr "Remove “{name}” from this menu? Already published versions keep it."
@@ -351,6 +363,10 @@ msgstr "Remove “{name}” from this menu? Already published versions keep it."
 #: menu:menu.item.delete.label
 msgid "menu.item.delete.label"
 msgstr "Remove {name}"
+
+#: menu:menu.item.delete.title
+msgid "menu.item.delete.title"
+msgstr "Remove “{name}” from this menu?"
 
 #: menu:menu.item.description.help
 msgid "menu.item.description.help"
@@ -496,6 +512,10 @@ msgstr "Later"
 msgid "menu.publishReminder.text"
 msgstr "Saved. Guests still see the last published menu."
 
+#: menu:menu.rename.cancel
+msgid "menu.rename.cancel"
+msgstr "Cancel"
+
 #: menu:menu.rename.error.empty
 msgid "menu.rename.error.empty"
 msgstr "A name cannot be empty. Nothing was changed."
@@ -507,6 +527,18 @@ msgstr "Rename {name}"
 #: menu:menu.rename.prompt
 msgid "menu.rename.prompt"
 msgstr "Correct the name"
+
+#: menu:menu.rename.save
+msgid "menu.rename.save"
+msgstr "Save"
+
+#: menu:menu.row.delete
+msgid "menu.row.delete"
+msgstr "Remove"
+
+#: menu:menu.row.more
+msgid "menu.row.more"
+msgstr "More actions for {name}"
 
 #: menu:menu.status.saving
 msgid "menu.status.saving"

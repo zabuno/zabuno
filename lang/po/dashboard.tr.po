@@ -68,6 +68,14 @@ msgstr "Marka"
 msgid "dashboard.setup.checking"
 msgstr "Kontrol ediliyor…"
 
+#: dashboard:dashboard.setup.complete
+msgid "dashboard.setup.complete"
+msgstr "Kurulum tamam"
+
+#: dashboard:dashboard.setup.complete.summary
+msgid "dashboard.setup.complete.summary"
+msgstr "Restoranınız misafirlere hazır."
+
 #: dashboard:dashboard.setup.heading
 msgid "dashboard.setup.heading"
 msgstr "Kurulum"
@@ -87,6 +95,14 @@ msgstr "Henüz menü yok"
 #: dashboard:dashboard.setup.notConnected
 msgid "dashboard.setup.notConnected"
 msgstr "Henüz bağlanmadı."
+
+#: dashboard:dashboard.setup.progress
+msgid "dashboard.setup.progress"
+msgstr "{total} adımdan {done} tanesi tamam"
+
+#: dashboard:dashboard.setup.progress.next
+msgid "dashboard.setup.progress.next"
+msgstr "sırada: {step}"
 
 #: dashboard:dashboard.setup.publication
 msgid "dashboard.setup.publication"
@@ -127,6 +143,10 @@ msgstr "Sıradaki adım"
 #: dashboard:dashboard.setup.step.todo
 msgid "dashboard.setup.step.todo"
 msgstr "Henüz yapılmadı"
+
+#: dashboard:dashboard.setup.toggle
+msgid "dashboard.setup.toggle"
+msgstr "Adımları göster"
 
 #: dashboard:dashboard.stats.categories
 msgid "dashboard.stats.categories"

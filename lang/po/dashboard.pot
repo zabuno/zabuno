@@ -68,6 +68,14 @@ msgstr ""
 msgid "dashboard.setup.checking"
 msgstr ""
 
+#: dashboard:dashboard.setup.complete
+msgid "dashboard.setup.complete"
+msgstr ""
+
+#: dashboard:dashboard.setup.complete.summary
+msgid "dashboard.setup.complete.summary"
+msgstr ""
+
 #: dashboard:dashboard.setup.heading
 msgid "dashboard.setup.heading"
 msgstr ""
@@ -86,6 +94,14 @@ msgstr ""
 
 #: dashboard:dashboard.setup.notConnected
 msgid "dashboard.setup.notConnected"
+msgstr ""
+
+#: dashboard:dashboard.setup.progress
+msgid "dashboard.setup.progress"
+msgstr ""
+
+#: dashboard:dashboard.setup.progress.next
+msgid "dashboard.setup.progress.next"
 msgstr ""
 
 #: dashboard:dashboard.setup.publication
@@ -126,6 +142,10 @@ msgstr ""
 
 #: dashboard:dashboard.setup.step.todo
 msgid "dashboard.setup.step.todo"
+msgstr ""
+
+#: dashboard:dashboard.setup.toggle
+msgid "dashboard.setup.toggle"
 msgstr ""
 
 #: dashboard:dashboard.stats.categories

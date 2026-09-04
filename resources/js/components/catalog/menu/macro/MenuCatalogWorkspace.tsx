@@ -3,11 +3,13 @@ import { Textarea } from '../../forms/micro/Textarea';
 import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
 import { useEffect, useState, type FormEvent } from 'react';
-import { RowActions } from '../micro/RowActions';
+import { RowActions } from '../compound/RowActions';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/menu';
 import { FileDropzone } from '../../forms/compound/FileDropzone';
+import { InlineRename } from '../micro/InlineRename';
+import { ConfirmDialog } from '../../overlays/compound/ConfirmDialog';
 import { FieldError } from '../micro/FieldError';
 import { OrderBadge } from '../micro/OrderBadge';
 
@@ -405,6 +407,23 @@ export function MenuCatalogWorkspace({
         verir: olmadı ve sebebi sunucudan geliyor.
     */
     const [operationError, setOperationError] = useState<string | null>(null);
+
+    /*
+        SİLME ONAYI ürünün kendi diyaloğuyla sorulur (FF-101).
+
+        Önceki hâl `window.confirm` idi. Tarayıcının kendi kutusu ürünün
+        dışında çizilir, sayfayı dondurur, hangi satırın silineceğini
+        gösteremez ve kullanıcı bir kez "bu sayfa başka diyalog açmasın"
+        derse SESSİZCE "iptal" döndürür — yani silme düğmesi çalışır görünüp
+        hiçbir şey yapmaz.
+
+        Beklemekte olan silme burada tutulur: hangi satır, hangi tür. `null`
+        ise diyalog kapalıdır.
+    */
+    const [pendingDelete, setPendingDelete] = useState<
+        { kind: 'item'; item: MenuItemRow } | { kind: 'category'; category: CategoryRow } | null
+    >(null);
+    const [deleting, setDeleting] = useState(false);
 
     const [menuName, setMenuName] = useState('');
     const [menuNameError, setMenuNameError] = useState<string | null>(null);
@@ -1685,10 +1704,6 @@ export function MenuCatalogWorkspace({
      * etkilenmez ama taslaktaki satır geri gelmez.
      */
     async function handleDeleteItem(item: MenuItemRow) {
-        if (!window.confirm(t('menu.item.delete.confirm', { name: item.productName ?? '' }))) {
-            return;
-        }
-
         setOperationError(null);
 
         try {
@@ -1717,10 +1732,6 @@ export function MenuCatalogWorkspace({
     }
 
     async function handleDeleteCategory(category: CategoryRow) {
-        if (!window.confirm(t('menu.category.delete.confirm', { name: category.name }))) {
-            return;
-        }
-
         setOperationError(null);
 
         try {
@@ -1746,35 +1757,32 @@ export function MenuCatalogWorkspace({
     }
 
     /**
-     * Adı düzeltir.
+     * Adı düzeltir — SATIR İÇİNDE, tarayıcı diyaloguyla değil.
      *
-     * `prompt` kullanılıyor ve bu bilinçli bir ARA ADIM: satır içi düzenleme
-     * daha iyi bir deneyimdir ama bu paketin sorunu "düzeltmenin YOLU YOK"tu.
-     * Yolu açmak, güzelleştirmekten önce gelir.
+     * Önceki hâl `window.prompt` idi ve o bir ara adımdı: sorun "düzeltmenin
+     * YOLU YOK"tu, yol açıldı. Ama tarayıcı diyalogu ürünün dışında çizilir,
+     * düzenlenen satırı gizler, doğrulama gösteremez ve kullanıcı bir kez
+     * "bu sayfa başka diyalog açmasın" derse SESSİZCE ölür — düğme çalışır
+     * görünüp hiçbir şey yapmaz (sahibin bildirimi, 2026-09-04).
+     *
+     * Artık ad, durduğu yerde bir alana dönüşür. Bu fonksiyon yalnız
+     * KAYDETMEYİ bilir: hata mesajını döndürür, `null` başarıdır — mesajı
+     * kimin nereye çizeceği çağıranın işidir ve o da satırın altıdır.
      */
-    async function handleRename(kind: 'category' | 'item', id: number, currentName: string) {
-        const next = window.prompt(t('menu.rename.prompt'), currentName);
+    async function handleRename(
+        kind: 'category' | 'item',
+        id: number,
+        currentName: string,
+        next: string,
+    ): Promise<string | null> {
+        const trimmed = next.trim();
 
-        /*
-            İPTAL ile BOŞ BIRAKMAK aynı şey değildir.
-
-            `null` iptaldir: kullanıcı vazgeçti, söylenecek bir şey yok.
-            Boş bir metin ise bir NİYETTİR — kullanıcı Tamam'a bastı — ve
-            sessizce yutmak, düğmeye basılıp hiçbir şey olmaması demektir
-            (`docs/47` Kural 5).
-        */
-        if (next === null) {
-            return;
+        if (trimmed === '') {
+            return t('menu.rename.error.empty');
         }
 
-        if (next.trim() === '') {
-            setOperationError(t('menu.rename.error.empty'));
-
-            return;
-        }
-
-        if (next.trim() === currentName) {
-            return;
+        if (trimmed === currentName) {
+            return null;
         }
 
         setOperationError(null);
@@ -1782,14 +1790,12 @@ export function MenuCatalogWorkspace({
         try {
             const response = await postJson(
                 kind === 'category' ? categoryUrl(workspaceId, id) : menuItemUrl(workspaceId, id),
-                kind === 'category' ? { name: next.trim() } : { productName: next.trim() },
+                kind === 'category' ? { name: trimmed } : { productName: trimmed },
                 'PUT',
             );
 
             if (!response.ok) {
-                setOperationError(await parseErrorMessage(response, t('menu.ops.error')));
-
-                return;
+                return await parseErrorMessage(response, t('menu.ops.error'));
             }
 
             setTree((current) =>
@@ -1800,21 +1806,21 @@ export function MenuCatalogWorkspace({
                           categories: current.categories.map((category) =>
                               kind === 'category'
                                   ? category.id === id
-                                      ? { ...category, name: next.trim() }
+                                      ? { ...category, name: trimmed }
                                       : category
                                   : {
                                         ...category,
                                         menuItems: category.menuItems.map((row) =>
-                                            row.id === id
-                                                ? { ...row, productName: next.trim() }
-                                                : row,
+                                            row.id === id ? { ...row, productName: trimmed } : row,
                                         ),
                                     },
                           ),
                       },
             );
+
+            return null;
         } catch {
-            setOperationError(t('menu.ops.error'));
+            return t('menu.ops.error');
         }
     }
 
@@ -2457,8 +2463,30 @@ export function MenuCatalogWorkspace({
                         {tree.categories.map((category) => (
                             <li key={category.id} className={sectionClass}>
                                 <div className="flex flex-wrap items-baseline gap-2">
-                                    <h3 className="text-section font-semibold tracking-tight text-fg">
-                                        {category.name}
+                                    {/*
+                                        Başlığın KENDİSİ düzenlenir: adı
+                                        değiştirmek için ayrı bir kalem
+                                        simgesi aramak gerekmez ve düzeltme,
+                                        adın durduğu yerde olur.
+                                    */}
+                                    <h3 className="min-w-0 text-section font-semibold tracking-tight text-fg">
+                                        <InlineRename
+                                            value={category.name}
+                                            label={t('menu.rename.label', {
+                                                name: category.name,
+                                            })}
+                                            emptyMessage={t('menu.rename.error.empty')}
+                                            saveLabel={t('menu.rename.save')}
+                                            cancelLabel={t('menu.rename.cancel')}
+                                            onSubmit={(next) =>
+                                                handleRename(
+                                                    'category',
+                                                    category.id,
+                                                    category.name,
+                                                    next,
+                                                )
+                                            }
+                                        />
                                     </h3>
                                     <OrderBadge
                                         position={category.position}
@@ -2473,26 +2501,20 @@ export function MenuCatalogWorkspace({
                                         güvenilir değildir.
                                     */}
                                     <RowActions
-                                        onRename={() =>
-                                            void handleRename(
-                                                'category',
-                                                category.id,
-                                                category.name,
-                                            )
+                                        onDelete={() =>
+                                            setPendingDelete({ kind: 'category', category })
                                         }
-                                        onDelete={() => void handleDeleteCategory(category)}
                                         onMoveUp={() =>
                                             void moveCategory(tree.categories.indexOf(category), -1)
                                         }
                                         onMoveDown={() =>
                                             void moveCategory(tree.categories.indexOf(category), 1)
                                         }
-                                        renameLabel={t('menu.rename.label', {
-                                            name: category.name,
-                                        })}
                                         deleteLabel={t('menu.category.delete.label', {
                                             name: category.name,
                                         })}
+                                        deleteText={t('menu.row.delete')}
+                                        moreLabel={t('menu.row.more', { name: category.name })}
                                         upLabel={t('menu.move.up', { name: category.name })}
                                         downLabel={t('menu.move.down', { name: category.name })}
                                     />
@@ -2551,8 +2573,27 @@ export function MenuCatalogWorkspace({
                                             className="flex flex-col gap-2 border-b border-border py-2 last:border-b-0"
                                         >
                                             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                                                <span className="min-w-0 flex-1 truncate text-body font-medium text-fg">
-                                                    {item.productName ?? `#${item.productId}`}
+                                                <span className="flex min-w-0 flex-1">
+                                                    <InlineRename
+                                                        value={
+                                                            item.productName ?? `#${item.productId}`
+                                                        }
+                                                        label={t('menu.rename.label', {
+                                                            name: item.productName ?? '',
+                                                        })}
+                                                        emptyMessage={t('menu.rename.error.empty')}
+                                                        saveLabel={t('menu.rename.save')}
+                                                        cancelLabel={t('menu.rename.cancel')}
+                                                        textClassName="text-body font-medium text-fg"
+                                                        onSubmit={(next) =>
+                                                            handleRename(
+                                                                'item',
+                                                                item.id,
+                                                                item.productName ?? '',
+                                                                next,
+                                                            )
+                                                        }
+                                                    />
                                                 </span>
                                                 <OrderBadge
                                                     position={item.position}
@@ -2561,14 +2602,9 @@ export function MenuCatalogWorkspace({
                                                     })}
                                                 />
                                                 <RowActions
-                                                    onRename={() =>
-                                                        void handleRename(
-                                                            'item',
-                                                            item.id,
-                                                            item.productName ?? '',
-                                                        )
+                                                    onDelete={() =>
+                                                        setPendingDelete({ kind: 'item', item })
                                                     }
-                                                    onDelete={() => void handleDeleteItem(item)}
                                                     onMoveUp={() =>
                                                         void moveItem(
                                                             category,
@@ -2583,10 +2619,11 @@ export function MenuCatalogWorkspace({
                                                             1,
                                                         )
                                                     }
-                                                    renameLabel={t('menu.rename.label', {
+                                                    deleteLabel={t('menu.item.delete.label', {
                                                         name: item.productName ?? '',
                                                     })}
-                                                    deleteLabel={t('menu.item.delete.label', {
+                                                    deleteText={t('menu.row.delete')}
+                                                    moreLabel={t('menu.row.more', {
                                                         name: item.productName ?? '',
                                                     })}
                                                     upLabel={t('menu.move.up', {
@@ -3115,6 +3152,57 @@ export function MenuCatalogWorkspace({
                     </div>
                 </>
             )}
+
+            {/*
+                SİLME ONAYI — ürünün kendi diyaloğu (FF-101).
+
+                Diyalog neyin silineceğini ADIYLA söyler ve sonucunu yazar:
+                yayınlanmış sürümler etkilenmez, taslaktaki satır geri gelmez.
+                `window.confirm` bunların hiçbirini gösteremiyordu — tek bir
+                cümle ve iki tarayıcı düğmesi vardı.
+            */}
+            <ConfirmDialog
+                open={pendingDelete !== null}
+                onClose={() => (deleting ? undefined : setPendingDelete(null))}
+                destructive
+                confirmLoading={deleting}
+                title={
+                    pendingDelete === null
+                        ? ''
+                        : pendingDelete.kind === 'item'
+                          ? t('menu.item.delete.title', {
+                                name: pendingDelete.item.productName ?? '',
+                            })
+                          : t('menu.category.delete.title', { name: pendingDelete.category.name })
+                }
+                confirmLabel={t('menu.row.delete')}
+                cancelLabel={t('menu.rename.cancel')}
+                onConfirm={() => {
+                    if (pendingDelete === null) {
+                        return;
+                    }
+
+                    setDeleting(true);
+                    void (async () => {
+                        if (pendingDelete.kind === 'item') {
+                            await handleDeleteItem(pendingDelete.item);
+                        } else {
+                            await handleDeleteCategory(pendingDelete.category);
+                        }
+
+                        setDeleting(false);
+                        setPendingDelete(null);
+                    })();
+                }}
+            >
+                <p className="text-body text-fg-secondary">
+                    {pendingDelete === null
+                        ? ''
+                        : pendingDelete.kind === 'item'
+                          ? t('menu.item.delete.body')
+                          : t('menu.category.delete.body')}
+                </p>
+            </ConfirmDialog>
         </div>
     );
 }
