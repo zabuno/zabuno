@@ -1,6 +1,7 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { clickRowMenuItem } from '../../../../test/menuRow';
 
 /**
  * RED test freezing the dashboard catalog-mutation sync contract for
@@ -255,8 +256,12 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
             expect(onTreeChange).toHaveBeenCalledTimes(1);
         });
 
-        const checkbox = screen.getByRole('checkbox', { name: 'Show Kahve' });
-        fireEvent.click(checkbox);
+        /*
+            GÜNCELLENDİ (FF-102): görünürlük etiketsiz bir kutu değil, taşma
+            menüsünde bir cümle. Ölçülen sözleşme aynı: başarılı mutasyondan
+            sonra ağaç yukarı bildirilir.
+        */
+        await clickRowMenuItem('Kahve', /Hide from the menu|Show on the menu/);
 
         await waitFor(() => {
             expect(onTreeChange).toHaveBeenCalledTimes(2);

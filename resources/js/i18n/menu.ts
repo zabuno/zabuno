@@ -172,6 +172,13 @@ const en = {
     'menu.item.price.edit.submit': 'Save price',
     'menu.item.price.edit.error.submit': 'We could not update the price. Please try again.',
     'menu.item.visibility.checkbox.label': 'Show {name}',
+    /*
+        Görünürlük artık ETİKETSİZ BİR KUTU değil, menüde bir cümle (FF-102).
+        Kutu, yanındaki "tükendi" düğmesiyle karışıyordu: ikisi de "misafir
+        bunu görmüyor" anlamına geliyor ama biri bugünlük, diğeri kalıcıdır.
+    */
+    'menu.item.visibility.hide': 'Hide from the menu',
+    'menu.item.visibility.show': 'Show on the menu',
     'menu.item.visibility.error.submit': 'We could not update visibility. Please try again.',
     'menu.category.order.label': 'Order for {name}',
     'menu.item.order.label': 'Order for {name}',

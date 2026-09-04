@@ -1,6 +1,7 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { clickRowMenuItem } from '../../../../test/menuRow';
 
 /**
  * Blind RED test candidate. No ./MenuCatalogWorkspace module exists in this
@@ -903,9 +904,7 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
         });
         expect(writeCallsBeforeInteraction).toHaveLength(0);
 
-        fireEvent.click(
-            screen.getByRole('button', { name: 'Edit allergens for Mercimek Çorbası' }),
-        );
+        await clickRowMenuItem('Mercimek Çorbası', 'Allergens');
 
         const allergensInput = (await screen.findByRole('textbox', {
             name: 'Allergens — Mercimek Çorbası',
@@ -936,7 +935,7 @@ describe('MenuCatalogWorkspace — edit allergens of an existing server-returned
         expect(csrfIndex).toBeGreaterThanOrEqual(0);
         expect(putIndex).toBeGreaterThan(csrfIndex);
 
-        fireEvent.click(screen.getByRole('button', { name: 'Edit allergens for Baklava' }));
+        await clickRowMenuItem('Baklava', 'Allergens');
         const secondAllergensInput = (await screen.findByRole('textbox', {
             name: 'Allergens — Baklava',
         })) as HTMLInputElement;
@@ -1109,9 +1108,7 @@ describe('MenuCatalogWorkspace — new product creation resets a stale open exis
 
         await screen.findByText('Mercimek Çorbası');
 
-        fireEvent.click(
-            screen.getByRole('button', { name: 'Edit allergens for Mercimek Çorbası' }),
-        );
+        await clickRowMenuItem('Mercimek Çorbası', 'Allergens');
 
         // Satır içi düzenleyici: alan artık ÜRÜN ADINI taşır, dolayısıyla
         // aşağıdaki "menüye ürün ekle" formunun alerjen alanıyla karışmaz.
@@ -1557,16 +1554,21 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
         }>();
         render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
-        const visibleToggle = (await screen.findByRole('checkbox', {
-            name: 'Show Mercimek Çorbası',
-        })) as HTMLInputElement;
-        const hiddenToggle = (await screen.findByRole('checkbox', {
-            name: 'Show Baklava',
-        })) as HTMLInputElement;
-        expect(visibleToggle.checked).toBe(true);
-        expect(hiddenToggle.checked).toBe(false);
+        /*
+            GÜNCELLENDİ (FF-102): görünürlük artık ETİKETSİZ BİR KUTU değil,
+            taşma menüsünde bir cümle. Kutu, yanındaki "tükendi" düğmesiyle
+            karışıyordu: ikisi de "misafir bunu görmüyor" demek ama biri
+            bugünlük, diğeri kalıcıdır. Ölçülen sözleşme aynı: sunucudan gelen
+            durum okunur, PUT yazılır ve ekran ancak 200'den sonra değişir.
+        */
+        await screen.findByText('Mercimek Çorbası');
 
-        fireEvent.click(hiddenToggle);
+        /*
+            Gizli ürünün maddesi "göster" der. Maddenin metnini bulmak, aynı
+            zamanda sunucudan gelen durumu okumaktır — ayrı bir iddia
+            gerekmez.
+        */
+        await clickRowMenuItem('Baklava', 'Show on the menu');
 
         await waitFor(() => {
             const putCalls = fetchMock.mock.calls.filter(
@@ -1588,17 +1590,14 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
         expect(csrfIndex).toBeGreaterThanOrEqual(0);
         expect(putIndex).toBeGreaterThan(csrfIndex);
 
-        expect(
-            (screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement).checked,
-        ).toBe(false);
-
         resolvePut(jsonResponse(200, { id: HIDDEN_ITEM_ID, isVisible: true }));
 
+        // 200'den SONRA madde tersine döner: ekran sunucuyu izler, isteği değil.
         await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: 'More actions for Baklava' }));
             expect(
-                (screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement)
-                    .checked,
-            ).toBe(true);
+                screen.getByRole('menuitem', { name: 'Hide from the menu' }),
+            ).toBeInTheDocument();
         });
 
         vi.unstubAllGlobals();
@@ -1652,18 +1651,23 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
         }>();
         render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
-        const toggle = (await screen.findByRole('checkbox', {
-            name: 'Show Baklava',
-        })) as HTMLInputElement;
-        expect(toggle.checked).toBe(false);
+        await screen.findByText('Baklava');
 
-        fireEvent.click(toggle);
+        await clickRowMenuItem('Baklava', 'Show on the menu');
 
         const alert = await screen.findByRole('alert');
         expect(alert).toBeInTheDocument();
-        expect(
-            (screen.getByRole('checkbox', { name: 'Show Baklava' }) as HTMLInputElement).checked,
-        ).toBe(false);
+
+        /*
+            SUNUCU REDDETTİ, EKRAN DEĞİŞMEDİ: madde hâlâ "göster" diyor.
+            Ekranın isteği değil, sunucunun cevabını izlemesi bu testin asıl
+            iddiasıdır ve görünürlük etiketsiz bir kutudan menü maddesine
+            taşınırken (FF-102) korunmuştur.
+        */
+        await waitFor(() => {
+            fireEvent.click(screen.getByRole('button', { name: 'More actions for Baklava' }));
+            expect(screen.getByRole('menuitem', { name: 'Show on the menu' })).toBeInTheDocument();
+        });
 
         vi.unstubAllGlobals();
     });

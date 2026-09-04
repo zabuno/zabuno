@@ -460,6 +460,14 @@ msgstr ""
 msgid "menu.item.visibility.error.submit"
 msgstr ""
 
+#: menu:menu.item.visibility.hide
+msgid "menu.item.visibility.hide"
+msgstr ""
+
+#: menu:menu.item.visibility.show
+msgid "menu.item.visibility.show"
+msgstr ""
+
 #: menu:menu.loading
 msgid "menu.loading"
 msgstr ""

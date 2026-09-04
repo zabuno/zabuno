@@ -460,6 +460,14 @@ msgstr "{name} ürününü göster"
 msgid "menu.item.visibility.error.submit"
 msgstr "Görünürlüğü güncelleyemedik. Lütfen tekrar deneyin."
 
+#: menu:menu.item.visibility.hide
+msgid "menu.item.visibility.hide"
+msgstr "Menüden gizle"
+
+#: menu:menu.item.visibility.show
+msgid "menu.item.visibility.show"
+msgstr "Menüde göster"
+
 #: menu:menu.loading
 msgid "menu.loading"
 msgstr "Menü yükleniyor…"

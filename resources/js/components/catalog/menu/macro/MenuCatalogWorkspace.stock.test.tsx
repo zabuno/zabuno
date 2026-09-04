@@ -1,6 +1,6 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -183,11 +183,22 @@ describe('bugün tükendi (docs/82)', () => {
     it('tükendi ile gizlemek iki ayrı denetimdir', async () => {
         await renderWorkspace(false);
 
-        // Görünürlük kutusu duruyor ve tükendi düğmesinden AYRI: gizli bir
-        // ürün menüde yoktur, tükenmiş bir ürün menüde vardır.
-        expect(screen.getByLabelText('Show Levrek')).toBeInTheDocument();
+        /*
+            İki denetim AYRI kalır: gizli bir ürün menüde YOKTUR, tükenmiş bir
+            ürün menüde VARDIR ama bugün verilemez.
+
+            GÜNCELLENDİ (FF-102): "tükendi" günlük iş olduğu için satırda
+            kalır; görünürlük seyrek olduğu için taşma menüsünde ADIYLA durur.
+            Etiketsiz bir kutu ile "tükendi" düğmesi yan yana dururken ikisi
+            de "misafir bunu görmüyor" gibi okunuyordu.
+        */
         expect(
             screen.getByRole('button', { name: 'Mark Levrek sold out for today' }),
+        ).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'More actions for Levrek' }));
+        expect(
+            await screen.findByRole('menuitem', { name: /Hide from the menu|Show on the menu/ }),
         ).toBeInTheDocument();
 
         vi.unstubAllGlobals();
