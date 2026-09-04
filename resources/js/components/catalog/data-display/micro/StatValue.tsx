@@ -34,7 +34,7 @@ const TREND_LABEL: Record<StatValueTrend, string> = {
 export function StatValue({ value, trend, className }: StatValueProps) {
     return (
         <span className={clsx('inline-flex items-baseline gap-1.5', className)}>
-            <span className="text-2xl font-semibold text-fg">{value}</span>
+            <span className="text-title font-semibold text-fg">{value}</span>
             {trend ? (
                 <span className={clsx('text-meta font-medium', TREND_COLOR[trend])}>
                     <span aria-hidden="true">{TREND_GLYPH[trend]}</span>

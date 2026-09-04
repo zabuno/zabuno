@@ -45,7 +45,7 @@ export function BrandMark({ name, mark, href, hideName = false, className }: Bra
     );
 
     const sharedClassName = clsx(
-        'inline-flex items-center gap-[var(--space-2)] text-base font-semibold text-fg',
+        'inline-flex items-center gap-[var(--space-2)] text-body font-semibold text-fg',
         /*
             HALKA DEĞİL ANA HAT — `docs/71`.
 

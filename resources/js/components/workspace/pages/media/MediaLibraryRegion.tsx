@@ -195,7 +195,7 @@ export function MediaLibraryRegion({
 
     const libraryPanel = (
         <div className="flex flex-col gap-3">
-            <h4 className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+            <h4 className="text-meta font-semibold text-fg-muted">
                 {t('workspace.media.library.assets.heading')}
             </h4>
 
@@ -375,12 +375,12 @@ export function MediaLibraryRegion({
                     {t('workspace.media.library.how.summary')}
                 </summary>
                 <div className="flex flex-col gap-3 pt-3">
-                    <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                    <p className="text-meta font-semibold text-fg-muted">
                         {t('workspace.media.library.slots.heading')}
                     </p>
                     <MediaLibrarySlotList />
 
-                    <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                    <p className="text-meta font-semibold text-fg-muted">
                         {t('workspace.media.lifecycle.heading')}
                     </p>
                     <MediaLifecycleList />

@@ -97,7 +97,7 @@ export function ActionMenu({
             {radioGroup ? (
                 <>
                     <div
-                        className="px-[var(--space-3)] pt-[var(--space-3)] pb-[var(--space-1)] text-caption font-semibold uppercase tracking-[0.08em] text-fg-muted"
+                        className="px-[var(--space-3)] pt-[var(--space-3)] pb-[var(--space-1)] text-meta font-semibold text-fg-muted"
                         id={`${label}-appearance`}
                     >
                         {radioGroup.label}

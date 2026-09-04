@@ -417,6 +417,117 @@ describe('tasarım sistemi — zorlayıcı kontrol', () => {
         ).toEqual([]);
     });
 
+    // --- DS-NO-UPPERCASE-12 -----------------------------------------------
+    // Hiçbir etiket CSS ile BÜYÜK HARFE çevrilmez.
+    //
+    // Bu bir zevk kuralı değil, bir TÜRKÇE kuralıdır. `text-transform:
+    // uppercase` küçük i'yi Türkçede İ'ye çevirmek zorundadır ve bunu
+    // yalnız öğenin dili doğru bildirilmişse yapar. Zabuno'nun panelinde
+    // dil kullanıcıya göre değişir; "işletme" etiketi bir tarayıcıda
+    // "İŞLETME", diğerinde "ISLETME" okunur — ürünün kendi dili
+    // rastgeleleşir. Aynı şey ı/I çiftinde ters yönde olur.
+    //
+    // İkinci sebep okunurluk: büyük harf sözcüğün siluetini düzleştirir ve
+    // tarama hızını düşürür.
+    //
+    // AEP karşılığı: hiyerarşi büyük harfle değil AĞIRLIK ve RENKLE kurulur
+    // (`font-semibold` + `--fg-muted`). Harf aralığı (`tracking`) de büyük
+    // harfin telafisiydi; onunla birlikte gider.
+    it('hiçbir etiket CSS ile büyük harfe çevrilmez', () => {
+        const offenders: string[] = [];
+
+        for (const file of FILES) {
+            if (/\buppercase\b/.test(file.body)) {
+                offenders.push(file.path);
+            }
+        }
+
+        expect(
+            offenders,
+            'DS-NO-UPPERCASE-12: CSS ile büyük harfe çevirme, Türkçede i/İ ve ı/I ' +
+                'eşlemesini tarayıcının dil tahminine bırakır. Hiyerarşiyi ağırlık ve ' +
+                'renkle kurun (font-semibold + text-fg-muted):\n' +
+                offenders.join('\n'),
+        ).toEqual([]);
+    });
+
+    // --- DS-TEXT-ROLE-EXISTS-13 -------------------------------------------
+    // Yazılan her rol adlı yazı sınıfının CSS'te bir karşılığı OLMALIDIR.
+    //
+    // 2026-09-04'te `text-caption` 24 yerde yazılıydı ve `app.css` içinde
+    // `--text-caption` diye bir jeton YOKTU. Tailwind var olmayan bir jeton
+    // için sınıf üretmez; derlenmiş CSS'te tek bir `text-caption` kuralı
+    // bulunmuyordu. Yani yirmi dört yer boyut seçtiğini SANIYORDU ve
+    // aslında ebeveyninin boyutunu miras alıyordu — hata vermeden, gözle de
+    // fark edilmeden.
+    //
+    // Bir yazı tipi ölçeğinin değeri, dışında kalınamamasındadır. Uydurulmuş
+    // bir rol adı ölçeği delmez, ölçeği GÖRÜNMEZ kılar.
+    it('yazılan her rol adlı yazı sınıfının CSS karşılığı vardır', () => {
+        const css = readFileSync(CSS_PATH, 'utf8');
+        const defined = new Set(
+            [...css.matchAll(/--text-([a-z0-9-]+):/g)]
+                .map((match) => match[1])
+                .filter((name) => !name.includes('--')),
+        );
+
+        // Bilinen yazı-DIŞI `text-*` aileleri: renk, hizalama, sarma ve
+        // dekorasyon aynı önekle başlar ama yazı ölçeğine ait değildir.
+        const notASize =
+            /^(fg|action|surface|canvas|brand|white|black|start|end|center|justify|left|right|wrap|nowrap|balance|pretty|ellipsis|clip|inherit|current|transparent|top|bottom|middle)/;
+
+        const used = new Map<string, Set<string>>();
+
+        for (const file of FILES) {
+            // Eşleşme bir tireden SONRA gelemez: `--color-text-muted` bir
+            // değişken adıdır, `text-muted` sınıfı değil. Bu ayrım olmadan
+            // kural kendi uydurduğu ihlalleri raporlardı.
+            for (const [, role] of file.body.matchAll(/(?<![\w-])text-([a-z][a-z-]*[a-z])\b/g)) {
+                if (defined.has(role) || notASize.test(role)) continue;
+
+                if (!used.has(role)) used.set(role, new Set());
+                used.get(role)!.add(file.path);
+            }
+        }
+
+        const ghosts = [...used.keys()];
+
+        expect(
+            ghosts,
+            'DS-TEXT-ROLE-EXISTS-13: CSS karşılığı olmayan rol adlı yazı sınıfı. ' +
+                'Tailwind bu sınıf için hiçbir kural üretmez; öğe ebeveyninin boyutunu ' +
+                'sessizce miras alır. Ya jetonu `app.css` içinde tanımlayın ya da var ' +
+                `olan bir rolü kullanın (${[...defined].join(', ')}):\n` +
+                ghosts.map((role) => `text-${role}: ${[...used.get(role)!].join(', ')}`).join('\n'),
+        ).toEqual([]);
+
+        /*
+            AYNI SESSİZ HATANIN İKİNCİ BİÇİMİ: `text-[var(--olmayan-jeton)]`.
+
+            `ProviderCredentialsPage` üç yerde `--color-text-muted` yazıyordu;
+            o değişken `app.css` içinde HİÇ tanımlı değil. Tailwind sınıfı
+            üretir, tarayıcı değişkeni çözemez, metin rengi ebeveyninden
+            gelir. Rol adı uydurmakla değişken adı uydurmak aynı kapıya
+            çıkar; kural ikisini birlikte kapatır.
+        */
+        const declared = new Set([...css.matchAll(/(--[a-z0-9-]+):/g)].map((match) => match[1]));
+        const danglingVars: string[] = [];
+
+        for (const file of FILES) {
+            for (const [, variable] of file.body.matchAll(/\[var\((--[a-z0-9-]+)[),]/g)) {
+                if (!declared.has(variable)) danglingVars.push(`${file.path}: var(${variable})`);
+            }
+        }
+
+        expect(
+            [...new Set(danglingVars)],
+            'DS-TEXT-ROLE-EXISTS-13: `app.css` içinde tanımlı olmayan bir CSS ' +
+                'değişkenine yapılan başvuru. Tarayıcı değeri çözemez ve özellik ' +
+                'sessizce miras alınır:\n' +
+                [...new Set(danglingVars)].join('\n'),
+        ).toEqual([]);
+    });
+
     // --- DS-MOTION-CONTRACT-08 --------------------------------------------
     // İki şart: bileşen ham süre bilmez (borç şu an sıfır, bu yüzden cırcır
     // değil yasak), ve her süre token'ının azaltılmış-hareket karşılığı

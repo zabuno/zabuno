@@ -157,7 +157,7 @@ export function ProfileAvatarRegion({
                 {avatarUrl === null ? (
                     <span
                         aria-hidden="true"
-                        className="flex h-[4rem] w-[4rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-heading font-semibold text-fg"
+                        className="flex h-[4rem] w-[4rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-section font-semibold text-fg"
                     >
                         {fallbackInitial}
                     </span>

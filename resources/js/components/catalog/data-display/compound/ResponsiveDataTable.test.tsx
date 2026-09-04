@@ -76,6 +76,34 @@ describe('ResponsiveDataTable', () => {
         expect(directChildTagNames).not.toContain('th');
     });
 
+    /*
+        BAŞLIK HİZASI AÇIKÇA YAZILIR (FF-126).
+
+        Tarayıcının kendi varsayfa kuralı `th`i ORTALAR. Flowbite'ın eski
+        teması bunu fiziksel bir sola-hizalama ile bastırıyordu; o sınıf
+        sağdan-sola dillerde yanlış olduğu için kaldırıldı ve yerine kök
+        yaprağa mantıksal hizalama kondu. Ama miras alınan hizalama, `th`
+        üzerindeki tarayıcı kuralını YENEMEZ: başlıklar sessizce ortalandı
+        ve bunu ancak ekrana bakınca gördük.
+
+        Bu yüzden hizalama artık her başlık hücresinde AÇIKÇA yazılır.
+        Ortalanmış bir başlık, kimsenin seçmediği üçüncü bir hizalamadır.
+    */
+    it('her başlık hücresi hizasını açıkça yazar — tarayıcı ortalaması devralamaz', () => {
+        render(
+            <ResponsiveDataTable
+                caption="Menu items"
+                columns={columns}
+                rows={[]}
+                getRowKey={(row) => row.id}
+            />,
+        );
+
+        for (const header of screen.getAllByRole('columnheader')) {
+            expect(header.className).toMatch(/\btext-(start|end)\b/);
+        }
+    });
+
     it('composes Skeleton placeholder rows while loading, instead of the empty message', () => {
         render(
             <ResponsiveDataTable

@@ -331,7 +331,7 @@ export function DashboardSetupJourney({
                     // Marka şeridi: sayfadaki TEK vurgu (`docs/102` §1, `docs/101` A1).
                     className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-border border-s-4 border-s-brand bg-surface p-4"
                 >
-                    <h2 className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                    <h2 className="text-meta font-semibold text-fg-muted">
                         {t('dashboard.now.heading')}
                     </h2>
                     {nextStep ? (

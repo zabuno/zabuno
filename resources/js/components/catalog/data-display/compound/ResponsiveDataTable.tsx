@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import clsx from 'clsx';
+import { tableTokenTheme } from '../../../../design-system/flowbite-theme';
 import { Skeleton } from '../micro/Skeleton';
 
 export type DataTableColumn<Row> = {
@@ -43,18 +44,30 @@ export function ResponsiveDataTable<Row>({
 
     return (
         <div className={clsx('overflow-x-auto', className)}>
-            <Table>
+            {/*
+                Tema PROP olarak da verilir, yalnız sağlayıcıya güvenilmez:
+                sağlayıcısız bir test veya story'de tablo Flowbite
+                varsayılanına düşerdi ve o varsayılan metni fiziksel SOLA
+                hizalıyor — yani sağdan-sola dillerde yanlış hizalanmış tablo,
+                hiçbir kaynak taramasının göremeyeceği bir yerden gelirdi
+                (`DS-FLOWBITE-TOKEN-BIND-10`).
+            */}
+            <Table theme={tableTokenTheme} applyTheme="replace">
                 <caption className="sr-only">{caption}</caption>
                 <TableHead>
                     <TableRow>
                         {columns.map((column) => (
                             <TableHeadCell
                                 key={column.key}
-                                className={clsx(
-                                    // Metronic tablo dili (`docs/102` §1): soluk başlık satırı, meta büyük harf.
-                                    'bg-[var(--color-surface-subtle)] px-[var(--space-5)] py-[var(--space-3)] text-caption font-semibold uppercase tracking-[0.08em] text-fg-muted',
-                                    column.align === 'end' && 'text-end',
-                                )}
+                                /*
+                                    Görsel dil tema yaprağında; burada yalnız
+                                    hizalama kalır ve HER İKİ hâli de açıkça
+                                    yazılır. Tarayıcının kendi kuralı `th`i
+                                    ortalar; miras alınan mantıksal hizalama
+                                    onu yenemez, bu yüzden "varsayılan" bırakmak
+                                    kimsenin seçmediği bir hizalama demektir.
+                                */
+                                className={column.align === 'end' ? 'text-end' : 'text-start'}
                             >
                                 {column.header}
                             </TableHeadCell>

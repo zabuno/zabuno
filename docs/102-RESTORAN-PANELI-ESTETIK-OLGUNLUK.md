@@ -26,7 +26,7 @@ paneli sıkı ve karşılaştırmalı, restoran paneli ferah ve tek-odaklı
 | Soluk uygulama zemini, üstünde beyaz kartlar | `<main>` zemini `surface-subtle`, kartlar `surface` | `--color-surface-subtle` / `--color-surface` |
 | İkonlu, gruplu sol aside | `SidebarNav` gruplar + Phosphor ikon (kayıt: `icon`) | `--space-*`, `--density-*` |
 | Kart: başlık satırı + ince ayraç + sağ üst araç | `OpsCard` (ops ile ortak bileşen) | `--radius-md`, `--color-border` |
-| Tablo: soluk başlık satırı | `ResponsiveDataTable` thead `surface-subtle`, meta büyük harf | `--color-surface-subtle` |
+| Tablo: soluk başlık satırı | `ResponsiveDataTable` thead `surface-subtle`, meta ağırlıklı (büyük harf YOK — `DS-NO-UPPERCASE-12`) | `--color-surface-subtle` |
 | Vurgu şeridi | "Şimdi" kartında marka rengi sol şerit (`border-s-brand`) | `--color-brand` |
 | Gölge | **Yok** — derinlik tonla (Flat 2.0) | — |
 
@@ -66,7 +66,7 @@ Metronic ikon/renk seti, suite rail, Bootstrap).
 - Home: `WorkspacePageFrame` başlığı "Home" (tek `h1`); "Şimdi" kartı marka
   şeritli; Setup görev listesi kartta; istatistikler `StatCard`; ürün tablosu
   kartta, başlık satırı tonlu.
-- Tablo başlığı: `ResponsiveDataTable` thead `surface-subtle` + meta büyük harf.
+- Tablo başlığı: `ResponsiveDataTable` thead `surface-subtle` + meta ağırlık ve renk (büyük harf kaldırıldı, FF-126).
 
 ## 4. Kabul (Faz 1)
 
@@ -99,7 +99,7 @@ tarayıcıda açıldı ve şu iki şey görüldü:
    Düzeltildi (`.dark` ve forced-colors bloklarında yeniden tanımlandı).
 2. **Görsel dil:** kartlar `radius-lg` + `space-5` dolgu; kart başlığı
    `text-body` (sayfa başlığıyla yarışmaz); sayı kartında etiket
-   `text-meta` büyük harf/harf aralıklı, değer büyük ve tabular; gezinti
+   `text-meta` ağırlıklı ve soluk (büyük harf yok), değer büyük ve tabular; gezinti
    öğeleri `radius-md` + 8pt ritim, grup başlıkları `text-caption`
    0.08em; üst çubuk dikey dolgusu `space-3` (cam yüzey sözleşmesi
    `docs/06` §11 korundu); tablo başlığı `space-5` hizalı, satırda hover.
@@ -158,7 +158,7 @@ satırlar):
 - Satırlar dokunma yüksekliğinde, 12 px ikon boşluğuyla; Ayarlar (Gear),
   Çalışma alanı değiştir (ArrowsLeftRight), Çıkış (SignOut).
 - Tema seçimi: hizasız `•` yerine sabit genişlikte sütunda onay imi (Check);
-  bölüm başlığı `text-caption` büyük harf ve altında ayraç.
+  bölüm başlığı `text-meta` ağırlıklı ve soluk, altında ayraç (`text-caption` diye bir jeton hiç var olmamıştı, FF-126).
 
 ## 5g. FF-86 — platform kabuğunda da sabit ray (2026-09-04)
 
@@ -267,6 +267,45 @@ değerini donduruyordu ve merdiven değişince ürün doğru çalışırken kır
 döndü. O testin ölçtüğü şey değer değil KONUM'dur (açık değer medya
 sorgusunun dışında, koyu değer açık `.dark` altında); değer dondurma işi
 `tokens.aep.guard.test`'e bırakıldı.
+
+## 5j. FF-126 — büyük harf, hayalet sınıflar ve bağlanmamış tablo (2026-09-04)
+
+**Büyük harf kalktı.** Bu bir zevk kararı değil, bir Türkçe kararıdır. CSS'in
+büyük harfe çevirmesi küçük i'yi Türkçede İ'ye çevirmek zorundadır ve bunu
+yalnız öğenin dili doğru bildirilmişse yapar; panelin dili kullanıcıya göre
+değiştiği için aynı etiket bir tarayıcıda "İŞLETME", diğerinde "ISLETME"
+okunuyordu. Hiyerarşi artık ağırlık ve renkle kurulur; harf aralığı da büyük
+harfin telafisiydi, onunla birlikte gitti. `DS-NO-UPPERCASE-12` dondurur.
+
+**Hayalet sınıflar.** `text-caption` yirmi dört yerde yazılıydı ve `app.css`
+içinde `--text-caption` diye bir jeton YOKTU: derlenmiş CSS'te tek bir kural
+bile üretilmemişti. Yirmi dört yer boyut seçtiğini sanıyor, aslında
+ebeveyninin boyutunu miras alıyordu. Aynı sessiz hatanın ikinci biçimi
+değişken adında çıktı: sağlayıcı kasası sayfası tanımsız üç değişkene
+başvuruyordu, yani kasanın birincil düğmesi zeminsiz ve renksiz çiziliyordu.
+`DS-TEXT-ROLE-EXISTS-13` ikisini birlikte kapatır.
+
+**Sayacın kendisi hatalıydı.** Tipografi cırcırı `text-meta`yı SINIF ADINA
+bakarak taban altı sayıyordu; AEP tabanı onu 1rem'e çıkarınca sayaç tam
+olarak istediği düzeltmeyi cezalandırdı (2 → 149). Eşik artık `app.css`'ten
+okunur: bir rol adı, gerçekten 1rem altında bir değere bağlıysa borçtur.
+
+**Tablo hiç bağlanmamıştı.** Depoda tek bir ham gri sınıfı yazılı olmadığı
+hâlde her tablo başlığı kütüphanenin gri paletiyle, 12 piksel ve büyük harf
+çiziliyordu; kök yaprak metni fiziksel SOLA hizalıyordu, yani Arapçada her
+tablo yanlış taraftaydı. Üç sözleşme (ham palet, 16px taban, fiziksel yön)
+kaynakta GREEN, üründe geçersizdi — çünkü ihlal `node_modules` içindeydi.
+Tablo ailesi `replace` ile bağlandı ve kural, render edilen sınıf listesine
+bakan fixture'a eklendi.
+
+**Ekranı görünce çıkan ikinci hata.** Fiziksel hizalamayı kaldırınca
+başlıklar ORTALANDI: tarayıcının kendi `th` kuralı ortalar ve miras alınan
+mantıksal hizalama onu yenmez. Hizalama artık her başlık hücresinde açıkça
+yazılır — ortalanmış bir başlık, kimsenin seçmediği üçüncü bir hizalamadır.
+
+**Ekranda ölçülen.** Açık tema: başlık 16px, büyük harf yok, `surface-subtle`
+zemin. Koyu tema: başlık `#16123a` üstünde beyaz %60 (6.5:1), gövde satırları
+zemin üstünde 7.30:1.
 
 ## 6. Kullanıcı yolculuğu
 

@@ -97,7 +97,7 @@ export function MobileBottomNav({
                     aria-current={item.key === activeKey ? 'page' : undefined}
                     className={[
                         'flex min-h-[var(--density-hit-area-min)] flex-1 flex-col items-center justify-center gap-[var(--space-1)]',
-                        'rounded-[var(--radius-md)] px-[var(--space-1)] py-[var(--space-1)] text-caption',
+                        'rounded-[var(--radius-md)] px-[var(--space-1)] py-[var(--space-1)] text-meta',
                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                         item.key === activeKey
                             ? 'bg-surface-active font-semibold text-fg'
@@ -115,7 +115,7 @@ export function MobileBottomNav({
             <button
                 type="button"
                 onClick={onOpenMore}
-                className="flex min-h-[var(--density-hit-area-min)] flex-1 flex-col items-center justify-center gap-[var(--space-1)] rounded-[var(--radius-md)] px-[var(--space-1)] py-[var(--space-1)] text-caption text-fg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                className="flex min-h-[var(--density-hit-area-min)] flex-1 flex-col items-center justify-center gap-[var(--space-1)] rounded-[var(--radius-md)] px-[var(--space-1)] py-[var(--space-1)] text-meta text-fg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
             >
                 <span aria-hidden="true" className="shrink-0">
                     <List size={18} />
