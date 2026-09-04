@@ -24,6 +24,42 @@ msgstr ""
 msgid "dashboard.loading"
 msgstr ""
 
+#: dashboard:dashboard.now.allDone
+msgid "dashboard.now.allDone"
+msgstr ""
+
+#: dashboard:dashboard.now.brand
+msgid "dashboard.now.brand"
+msgstr ""
+
+#: dashboard:dashboard.now.heading
+msgid "dashboard.now.heading"
+msgstr ""
+
+#: dashboard:dashboard.now.location
+msgid "dashboard.now.location"
+msgstr ""
+
+#: dashboard:dashboard.now.menu
+msgid "dashboard.now.menu"
+msgstr ""
+
+#: dashboard:dashboard.now.openQr
+msgid "dashboard.now.openQr"
+msgstr ""
+
+#: dashboard:dashboard.now.publication
+msgid "dashboard.now.publication"
+msgstr ""
+
+#: dashboard:dashboard.now.qr
+msgid "dashboard.now.qr"
+msgstr ""
+
+#: dashboard:dashboard.now.region
+msgid "dashboard.now.region"
+msgstr ""
+
 #: dashboard:dashboard.setup.brand
 msgid "dashboard.setup.brand"
 msgstr ""

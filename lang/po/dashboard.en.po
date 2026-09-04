@@ -24,6 +24,42 @@ msgstr "Home"
 msgid "dashboard.loading"
 msgstr "Loading your dashboard summary…"
 
+#: dashboard:dashboard.now.allDone
+msgid "dashboard.now.allDone"
+msgstr "Everything is set up. Your guests can scan the menu."
+
+#: dashboard:dashboard.now.brand
+msgid "dashboard.now.brand"
+msgstr "Name your restaurant"
+
+#: dashboard:dashboard.now.heading
+msgid "dashboard.now.heading"
+msgstr "Now"
+
+#: dashboard:dashboard.now.location
+msgid "dashboard.now.location"
+msgstr "Add your location"
+
+#: dashboard:dashboard.now.menu
+msgid "dashboard.now.menu"
+msgstr "Add your first product"
+
+#: dashboard:dashboard.now.openQr
+msgid "dashboard.now.openQr"
+msgstr "Open QR codes"
+
+#: dashboard:dashboard.now.publication
+msgid "dashboard.now.publication"
+msgstr "Publish your menu"
+
+#: dashboard:dashboard.now.qr
+msgid "dashboard.now.qr"
+msgstr "Print your QR codes"
+
+#: dashboard:dashboard.now.region
+msgid "dashboard.now.region"
+msgstr "What to do now"
+
 #: dashboard:dashboard.setup.brand
 msgid "dashboard.setup.brand"
 msgstr "Brand"

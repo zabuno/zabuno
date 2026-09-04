@@ -1841,6 +1841,9 @@ export function MenuCatalogWorkspace({
         );
     }
 
+    const menuHasItems =
+        tree !== null && tree.categories.some((category) => category.menuItems.length > 0);
+
     return (
         <div className={clsx('flex flex-col gap-6', 'text-fg')}>
             {busy ? <p role="status">{t('menu.status.saving')}</p> : null}
@@ -1910,55 +1913,76 @@ export function MenuCatalogWorkspace({
                     ) : null}
 
                     {/*
+                        `docs/101` A5/A8 (FF-73): uzman araçları (fotoğraftan
+                        ve CSV'den içe aktarma) TEK kutuda. Menü boşken kutu
+                        AÇIK gelir — ilk adım oradadır, 60 ürünü tek tek
+                        yazdırmayız; ürün varken KAPALI durur, ilk ekran
+                        kalabalıklaşmaz. `<details>`: JS'siz, klavyeyle,
+                        ekran okuyucuyla çalışır.
+                    */}
+                    {menuHasItems ? null : (
+                        <p className="text-body text-fg-secondary">{t('menu.empty.guide')}</p>
+                    )}
+                    <details className={sectionClass} open={!menuHasItems}>
+                        <summary className="cursor-pointer text-body font-semibold text-fg">
+                            {t('menu.tools.summary')}
+                        </summary>
+                        <div
+                            role="group"
+                            aria-label={t('menu.tools.summary')}
+                            className="flex flex-col gap-4 pt-2"
+                        >
+                            <p className="text-caption text-fg-secondary">{t('menu.tools.help')}</p>
+                            {/*
                         FOTOĞRAFTAN İÇE AKTARMA (AI) — `docs/92`/`docs/97`
                         Yolculuk A. Yükleme Media sayfasında olur; burası
                         yalnız hazır bir görseli okutur ve inceletir.
                     */}
-                    <div className={sectionClass}>
-                        {/*
+                            <div className={sectionClass}>
+                                {/*
                             AI kapalı/bütçesiz/rotasızsa eylem HİÇ GÖSTERİLMEZ
                             (`skills/ai-no-credit-degradation.md`) — ama yerine
                             tek satırlık bir SEBEP konur (`docs/97` R9): yok
                             olan bir düğme, sahibin "burada bir şey vardı"
                             diye aramasına yol açardı.
                         */}
-                        {aiBlockedReason('menu.extract') !== null ? (
-                            <p className="text-caption text-fg-secondary">
-                                {t(
-                                    `menu.ai.unavailable.${aiBlockedReason('menu.extract')}` as never,
+                                {aiBlockedReason('menu.extract') !== null ? (
+                                    <p className="text-caption text-fg-secondary">
+                                        {t(
+                                            `menu.ai.unavailable.${aiBlockedReason('menu.extract')}` as never,
+                                        )}
+                                    </p>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className={inlineActionClass}
+                                        onClick={() => void handleToggleAiImport()}
+                                    >
+                                        {aiImportOpen
+                                            ? t('menu.item.ai.import.cancel')
+                                            : t('menu.item.ai.import.disclose')}
+                                    </button>
                                 )}
-                            </p>
-                        ) : (
-                            <button
-                                type="button"
-                                className={inlineActionClass}
-                                onClick={() => void handleToggleAiImport()}
-                            >
-                                {aiImportOpen
-                                    ? t('menu.item.ai.import.cancel')
-                                    : t('menu.item.ai.import.disclose')}
-                            </button>
-                        )}
 
-                        {aiImportOpen ? (
-                            <>
-                                {/*
+                                {aiImportOpen ? (
+                                    <>
+                                        {/*
                                     Artık tek bir alan değil, bir GRUP: bu
                                     yüzden `label`/`for` yerine `fieldset`/
                                     `legend`. Hedefi olmayan bir `for`,
                                     ekran okuyucuya var olmayan bir kontrol
                                     vaat ederdi.
                                 */}
-                                <fieldset>
-                                    <legend className={labelClass}>
-                                        {t('menu.item.ai.import.media.label')}
-                                    </legend>
-                                    {importSourceMedia.length === 0 ? (
-                                        <p className="text-caption text-fg-secondary">
-                                            {t('menu.item.ai.import.media.empty')}
-                                        </p>
-                                    ) : (
-                                        /*
+                                        <fieldset>
+                                            <legend className={labelClass}>
+                                                {t('menu.item.ai.import.media.label')}
+                                            </legend>
+                                            {importSourceMedia.length === 0 ? (
+                                                <p className="text-caption text-fg-secondary">
+                                                    {t('menu.item.ai.import.media.empty')}
+                                                </p>
+                                            ) : (
+                                                /*
                                         ÇOK SEÇİM — `docs/96` Faz 3. Bir
                                         restoranın menüsü tek fotoğrafa
                                         sığmaz; dört sayfayı tek tek
@@ -1967,160 +1991,268 @@ export function MenuCatalogWorkspace({
                                         yeğlendi: seçilenlerin hepsi aynı
                                         anda görünür kalmalı.
                                     */
-                                        <ul className="flex flex-col gap-1">
-                                            {importSourceMedia.map((media) => (
-                                                <li key={media.id}>
-                                                    <label className="flex items-center gap-2">
-                                                        <TextInput
-                                                            type="checkbox"
-                                                            name={`ai-import-media-${media.id}`}
-                                                            checked={importMediaChoices.includes(
-                                                                media.id,
-                                                            )}
-                                                            onChange={(event) =>
-                                                                setImportMediaChoices((previous) =>
-                                                                    event.target.checked
-                                                                        ? [...previous, media.id]
-                                                                        : previous.filter(
-                                                                              (id) =>
-                                                                                  id !== media.id,
-                                                                          ),
-                                                                )
-                                                            }
-                                                        />
-                                                        <span className="text-body">
-                                                            {media.altText || `#${media.id}`}
-                                                        </span>
-                                                    </label>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </fieldset>
+                                                <ul className="flex flex-col gap-1">
+                                                    {importSourceMedia.map((media) => (
+                                                        <li key={media.id}>
+                                                            <label className="flex items-center gap-2">
+                                                                <TextInput
+                                                                    type="checkbox"
+                                                                    name={`ai-import-media-${media.id}`}
+                                                                    checked={importMediaChoices.includes(
+                                                                        media.id,
+                                                                    )}
+                                                                    onChange={(event) =>
+                                                                        setImportMediaChoices(
+                                                                            (previous) =>
+                                                                                event.target.checked
+                                                                                    ? [
+                                                                                          ...previous,
+                                                                                          media.id,
+                                                                                      ]
+                                                                                    : previous.filter(
+                                                                                          (id) =>
+                                                                                              id !==
+                                                                                              media.id,
+                                                                                      ),
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <span className="text-body">
+                                                                    {media.altText ||
+                                                                        `#${media.id}`}
+                                                                </span>
+                                                            </label>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+                                        </fieldset>
 
-                                <button
-                                    type="button"
-                                    className={buttonClass}
-                                    disabled={
-                                        importMediaChoices.length === 0 ||
-                                        aiImportReviewLoading ||
-                                        aiImportApplying
-                                    }
-                                    onClick={() => void handleReadAiImport()}
-                                >
-                                    {aiImportReviewLoading
-                                        ? t('menu.item.ai.import.reading')
-                                        : t('menu.item.ai.import.read')}
-                                </button>
-
-                                {aiImportReviewError ? (
-                                    <FieldError message={aiImportReviewError} />
-                                ) : null}
-
-                                {/*
-                                    Okunamayan fotoğraflar AYRI listelenir ve
-                                    okunabilenlerin sonucunu gölgelemez.
-                                */}
-                                {aiImportFailures.length > 0 ? (
-                                    <ul className="flex flex-col gap-0.5">
-                                        {aiImportFailures.map((failure) => (
-                                            <li
-                                                key={failure.mediaAssetId}
-                                                className="text-caption text-fg-warning"
-                                            >
-                                                {t('menu.item.ai.import.photo.failed', {
-                                                    name:
-                                                        importSourceMedia.find(
-                                                            (media) =>
-                                                                media.id === failure.mediaAssetId,
-                                                        )?.altText || `#${failure.mediaAssetId}`,
-                                                })}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : null}
-
-                                {aiImportRows.length > 0 ? (
-                                    <div className="flex flex-col gap-2">
-                                        <h3 className="text-body font-semibold">
-                                            {t('menu.item.ai.import.preview.heading')}
-                                        </h3>
-                                        {aiImportUsedFallback ? (
-                                            <p className="text-caption text-fg-secondary">
-                                                {t('menu.item.ai.import.fallback')}
-                                            </p>
-                                        ) : null}
-                                        <ul className="flex flex-col gap-1">
-                                            {aiImportRows.map((row) => (
-                                                <li
-                                                    key={`${row.artifactId}-${row.name}`}
-                                                    className="text-body"
-                                                >
-                                                    {row.category} — {row.product}
-                                                    {row.priceMinorAmount === null ? (
-                                                        <span className="ms-2 text-fg-warning">
-                                                            {t(
-                                                                'menu.item.ai.import.row.price.missing',
-                                                            )}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="ms-2 text-fg-secondary">
-                                                            {minorAmountToDecimalString(
-                                                                row.priceMinorAmount,
-                                                                row.currencyCode || 'TRY',
-                                                            )}{' '}
-                                                            {row.currencyCode}
-                                                        </span>
-                                                    )}
-                                                    {row.uncertain &&
-                                                    row.priceMinorAmount !== null ? (
-                                                        <span className="ms-2 text-fg-warning">
-                                                            {t('menu.item.ai.import.row.uncertain')}
-                                                        </span>
-                                                    ) : null}
-                                                </li>
-                                            ))}
-                                        </ul>
                                         <button
                                             type="button"
                                             className={buttonClass}
-                                            disabled={aiImportApplying}
-                                            onClick={() => void handleApplyAiImport()}
+                                            disabled={
+                                                importMediaChoices.length === 0 ||
+                                                aiImportReviewLoading ||
+                                                aiImportApplying
+                                            }
+                                            onClick={() => void handleReadAiImport()}
                                         >
-                                            {aiImportApplying
-                                                ? t('menu.item.ai.import.applying')
-                                                : t('menu.item.ai.import.apply')}
+                                            {aiImportReviewLoading
+                                                ? t('menu.item.ai.import.reading')
+                                                : t('menu.item.ai.import.read')}
                                         </button>
-                                    </div>
-                                ) : null}
 
-                                {aiImportApplyReport ? (
+                                        {aiImportReviewError ? (
+                                            <FieldError message={aiImportReviewError} />
+                                        ) : null}
+
+                                        {/*
+                                    Okunamayan fotoğraflar AYRI listelenir ve
+                                    okunabilenlerin sonucunu gölgelemez.
+                                */}
+                                        {aiImportFailures.length > 0 ? (
+                                            <ul className="flex flex-col gap-0.5">
+                                                {aiImportFailures.map((failure) => (
+                                                    <li
+                                                        key={failure.mediaAssetId}
+                                                        className="text-caption text-fg-warning"
+                                                    >
+                                                        {t('menu.item.ai.import.photo.failed', {
+                                                            name:
+                                                                importSourceMedia.find(
+                                                                    (media) =>
+                                                                        media.id ===
+                                                                        failure.mediaAssetId,
+                                                                )?.altText ||
+                                                                `#${failure.mediaAssetId}`,
+                                                        })}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : null}
+
+                                        {aiImportRows.length > 0 ? (
+                                            <div className="flex flex-col gap-2">
+                                                <h3 className="text-body font-semibold">
+                                                    {t('menu.item.ai.import.preview.heading')}
+                                                </h3>
+                                                {aiImportUsedFallback ? (
+                                                    <p className="text-caption text-fg-secondary">
+                                                        {t('menu.item.ai.import.fallback')}
+                                                    </p>
+                                                ) : null}
+                                                <ul className="flex flex-col gap-1">
+                                                    {aiImportRows.map((row) => (
+                                                        <li
+                                                            key={`${row.artifactId}-${row.name}`}
+                                                            className="text-body"
+                                                        >
+                                                            {row.category} — {row.product}
+                                                            {row.priceMinorAmount === null ? (
+                                                                <span className="ms-2 text-fg-warning">
+                                                                    {t(
+                                                                        'menu.item.ai.import.row.price.missing',
+                                                                    )}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="ms-2 text-fg-secondary">
+                                                                    {minorAmountToDecimalString(
+                                                                        row.priceMinorAmount,
+                                                                        row.currencyCode || 'TRY',
+                                                                    )}{' '}
+                                                                    {row.currencyCode}
+                                                                </span>
+                                                            )}
+                                                            {row.uncertain &&
+                                                            row.priceMinorAmount !== null ? (
+                                                                <span className="ms-2 text-fg-warning">
+                                                                    {t(
+                                                                        'menu.item.ai.import.row.uncertain',
+                                                                    )}
+                                                                </span>
+                                                            ) : null}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                                <button
+                                                    type="button"
+                                                    className={buttonClass}
+                                                    disabled={aiImportApplying}
+                                                    onClick={() => void handleApplyAiImport()}
+                                                >
+                                                    {aiImportApplying
+                                                        ? t('menu.item.ai.import.applying')
+                                                        : t('menu.item.ai.import.apply')}
+                                                </button>
+                                            </div>
+                                        ) : null}
+
+                                        {aiImportApplyReport ? (
+                                            <div role="status" className="flex flex-col gap-1">
+                                                <p className="text-body">
+                                                    {t('menu.import.done', {
+                                                        items: String(
+                                                            aiImportApplyReport.importedItems,
+                                                        ),
+                                                        categories: String(
+                                                            aiImportApplyReport.importedCategories,
+                                                        ),
+                                                    })}
+                                                </p>
+                                                {aiImportApplyReport.rejectedRows.length > 0 ? (
+                                                    <>
+                                                        <p className="text-body">
+                                                            {t('menu.import.rejected', {
+                                                                count: String(
+                                                                    aiImportApplyReport.rejectedRows
+                                                                        .length,
+                                                                ),
+                                                            })}
+                                                        </p>
+                                                        <ul className="flex flex-col gap-0.5">
+                                                            {aiImportApplyReport.rejectedRows.map(
+                                                                (row) => (
+                                                                    <li
+                                                                        key={row.row}
+                                                                        className="text-caption text-fg-secondary"
+                                                                    >
+                                                                        {t(
+                                                                            'menu.item.ai.import.rejected.row',
+                                                                            {
+                                                                                row: row.row.replace(
+                                                                                    'row.',
+                                                                                    '',
+                                                                                ),
+                                                                                reason: row.reason,
+                                                                            },
+                                                                        )}
+                                                                    </li>
+                                                                ),
+                                                            )}
+                                                        </ul>
+                                                    </>
+                                                ) : null}
+                                            </div>
+                                        ) : null}
+                                    </>
+                                ) : null}
+                            </div>
+
+                            {/*
+                        Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
+
+                        İndirme düz bir bağlantıdır: tarayıcının kendi indirme
+                        yolu, bizim yeniden ürettiğimiz herhangi bir yoldan
+                        güvenilirdir.
+                    */}
+                            <div className={sectionClass}>
+                                <a
+                                    className={inlineActionClass}
+                                    href={exportUrl(workspaceId, tree.id)}
+                                    download
+                                >
+                                    {t('menu.export.download')}
+                                </a>
+                                <label className={labelClass} htmlFor="menu-import-file">
+                                    {t('menu.import.label')}
+                                </label>
+                                <input
+                                    id="menu-import-file"
+                                    name="menu-import-file"
+                                    type="file"
+                                    accept=".csv,text/csv"
+                                    disabled={importing}
+                                    onChange={(event) => {
+                                        const file = event.target.files?.[0];
+
+                                        if (file) {
+                                            void handleImport(file);
+                                        }
+
+                                        // Aynı dosyayı ikinci kez seçmek de bir olay
+                                        // üretmeli: kullanıcı dosyayı düzeltip aynı
+                                        // adla yeniden yükler.
+                                        event.target.value = '';
+                                    }}
+                                />
+                                <p className="text-caption text-fg-secondary">
+                                    {t('menu.import.help')}
+                                </p>
+
+                                {importError ? <FieldError message={importError} /> : null}
+
+                                {importReport ? (
                                     <div role="status" className="flex flex-col gap-1">
                                         <p className="text-body">
                                             {t('menu.import.done', {
-                                                items: String(aiImportApplyReport.importedItems),
-                                                categories: String(
-                                                    aiImportApplyReport.importedCategories,
-                                                ),
+                                                items: String(importReport.importedItems),
+                                                categories: String(importReport.importedCategories),
                                             })}
                                         </p>
-                                        {aiImportApplyReport.rejectedRows.length > 0 ? (
+                                        {importReport.rejectedRows.length > 0 ? (
                                             <>
+                                                {/*
+                                            Reddedilen satırlar SATIR NUMARASIYLA
+                                            listelenir: sahip hatayı kendi
+                                            dosyasında bulabilmeli, yoksa 60
+                                            satırı gözle taramak zorunda kalır.
+                                        */}
                                                 <p className="text-body">
                                                     {t('menu.import.rejected', {
                                                         count: String(
-                                                            aiImportApplyReport.rejectedRows.length,
+                                                            importReport.rejectedRows.length,
                                                         ),
                                                     })}
                                                 </p>
                                                 <ul className="flex flex-col gap-0.5">
-                                                    {aiImportApplyReport.rejectedRows.map((row) => (
+                                                    {importReport.rejectedRows.map((row) => (
                                                         <li
-                                                            key={row.row}
+                                                            key={row.line}
                                                             className="text-caption text-fg-secondary"
                                                         >
-                                                            {t('menu.item.ai.import.rejected.row', {
-                                                                row: row.row.replace('row.', ''),
+                                                            {t('menu.import.rejected.row', {
+                                                                line: String(row.line),
                                                                 reason: row.reason,
                                                             })}
                                                         </li>
@@ -2130,90 +2262,9 @@ export function MenuCatalogWorkspace({
                                         ) : null}
                                     </div>
                                 ) : null}
-                            </>
-                        ) : null}
-                    </div>
-
-                    {/*
-                        Menüyü ALMAK ve GERİ KOYMAK (`docs/80`).
-
-                        İndirme düz bir bağlantıdır: tarayıcının kendi indirme
-                        yolu, bizim yeniden ürettiğimiz herhangi bir yoldan
-                        güvenilirdir.
-                    */}
-                    <div className={sectionClass}>
-                        <a
-                            className={inlineActionClass}
-                            href={exportUrl(workspaceId, tree.id)}
-                            download
-                        >
-                            {t('menu.export.download')}
-                        </a>
-                        <label className={labelClass} htmlFor="menu-import-file">
-                            {t('menu.import.label')}
-                        </label>
-                        <input
-                            id="menu-import-file"
-                            name="menu-import-file"
-                            type="file"
-                            accept=".csv,text/csv"
-                            disabled={importing}
-                            onChange={(event) => {
-                                const file = event.target.files?.[0];
-
-                                if (file) {
-                                    void handleImport(file);
-                                }
-
-                                // Aynı dosyayı ikinci kez seçmek de bir olay
-                                // üretmeli: kullanıcı dosyayı düzeltip aynı
-                                // adla yeniden yükler.
-                                event.target.value = '';
-                            }}
-                        />
-                        <p className="text-caption text-fg-secondary">{t('menu.import.help')}</p>
-
-                        {importError ? <FieldError message={importError} /> : null}
-
-                        {importReport ? (
-                            <div role="status" className="flex flex-col gap-1">
-                                <p className="text-body">
-                                    {t('menu.import.done', {
-                                        items: String(importReport.importedItems),
-                                        categories: String(importReport.importedCategories),
-                                    })}
-                                </p>
-                                {importReport.rejectedRows.length > 0 ? (
-                                    <>
-                                        {/*
-                                            Reddedilen satırlar SATIR NUMARASIYLA
-                                            listelenir: sahip hatayı kendi
-                                            dosyasında bulabilmeli, yoksa 60
-                                            satırı gözle taramak zorunda kalır.
-                                        */}
-                                        <p className="text-body">
-                                            {t('menu.import.rejected', {
-                                                count: String(importReport.rejectedRows.length),
-                                            })}
-                                        </p>
-                                        <ul className="flex flex-col gap-0.5">
-                                            {importReport.rejectedRows.map((row) => (
-                                                <li
-                                                    key={row.line}
-                                                    className="text-caption text-fg-secondary"
-                                                >
-                                                    {t('menu.import.rejected.row', {
-                                                        line: String(row.line),
-                                                        reason: row.reason,
-                                                    })}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </>
-                                ) : null}
                             </div>
-                        ) : null}
-                    </div>
+                        </div>
+                    </details>
                     <ol
                         aria-label={t('menu.categories.list.label')}
                         className="flex flex-col gap-4"
