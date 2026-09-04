@@ -43,6 +43,10 @@ final class ListQrCodesController extends Controller
                 'resolverUrl' => url("/q/{$record->token}"),
                 'destinationType' => $record->destinationType,
                 'state' => $record->state,
+                // FF-109: kodun insan adı. `null` da bir cevaptır — masaya
+                // bağlı olmayan kod için ad uydurulmaz.
+                'tableName' => $record->tableName,
+                'areaLabel' => $record->areaLabel,
             ],
             $this->qrCodes->listForLocation($workspace, $location),
         );

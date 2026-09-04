@@ -70,8 +70,8 @@ kanıtıyla kapanır.
 | 2 | Hiyerarşi: indirme birincil olur | `ActionLink` primary; toplu sihirbaz ikincil | ✅ FF-107 |
 | 3 | QR görseli bir TESLİMAT olur | beyaz plaka, sessiz bölge, boyut token'ı, hata durumu | ✅ FF-107 |
 | 4 | Dürüst durumlar | yükleniyor/hata "önce yayınlayın" demez; 402 hakkı yükseltmeye yönlendirir | ✅ FF-108 |
-| 5 | Ham URL ve token gizlenir | kodun adı öne, URL kopyala düğmesiyle ayrıntıya | ◐ FF-107 (ad alanı hazır, veri Döngü 6'da bağlanacak) |
-| 6 | Masanın adı listeye ulaşır | DTO join; satır başlığı ve seçici etiketi | ⬜ |
+| 5 | Ham URL ve token gizlenir | kodun adı öne, URL kopyala düğmesiyle ayrıntıya | ✅ FF-107 + FF-109 |
+| 6 | Masanın adı listeye ulaşır | DTO join; satır başlığı ve seçici etiketi | ✅ FF-109 |
 | 7 | Yıkıcı eylem taşma menüsüne + onay | `ActionMenu` + `ConfirmDialog` | ⬜ |
 | 8 | Basılabilir sayfa: N-up, ad, kesme çizgisi | PDF adaptörü + toplu uç | ⬜ |
 | 9 | Baskı önizlemesi ve MİLİMETRE | kâğıt/yerleşim önizlemenin kontrolleri olur; kod boyu mm olarak yazılır | ⬜ |
@@ -215,3 +215,42 @@ görür, bir saniye sonra kodları listelenir. Sunucu gerçekten çökmüşse
 "ulaşamadık, basılı kodlarınız çalışıyor" yazısını ve bir **Tekrar dene**
 düğmesini görür. 40 masa için toplu üretim planına dahil değilse "Planları gör"
 düğmesine basar — sonsuza kadar "tekrar deneyin" duvarına toslamaz.
+
+
+---
+
+## Tur 2 kaydı (FF-109) — Döngü 6 ve 5: masanın adı listeye ulaştı
+
+Teşhis raporunun ilk maddesiydi ve bu ekranın en pahalı kusuruydu: **masanın
+adı veritabanına yazılıyor, okurken düşürülüyordu.** `qr_codes.dining_table_id`
+toplu üretimde dolduruluyor (`EloquentBulkQrCreationRepository`), ama
+`ListQrCodesController`'ın DTO'su o alanı hiç okumuyordu. Sonuç: 40 masalı bir
+restoranın sahibi ekranda 40 tane 43 karakterlik token görüyordu. "Masa 12'nin
+kartı yırtıldı, yeniden bastırayım" cümlesi — ürünün asıl işi — fiilen
+imkânsızdı.
+
+Değişenler:
+
+- `QrCodeRecord` masanın adını ve alanın etiketini taşır. İkisi de
+  `nullable`'dır: her kod bir masaya ait değildir (giriş kodu, tek kodlu kafe)
+  ve olmayan bir ad uydurulmaz.
+- Depo sorgusu masa ve alanı **LEFT JOIN** ile alır. INNER join, masasız
+  kodları listeden düşürürdü — sahip kendi kodunun kaybolduğunu görürdü.
+- Toplu sihirbazın 201 cevabı da adı taşır. Sonuç listeye birleştiriliyor;
+  ad olmadan 40 yeni satır anonim token olarak beliriyor ve sahip sayfayı
+  yenileyene kadar hangisinin hangi masa olduğunu göremiyordu.
+- Baskı seçicisinin seçenek metni artık masa adı (ve alanı): "T12 · Bahçe".
+  Adsız kod birden fazlaysa sıra numarası eklenir — iki özdeş seçenek, hiç ad
+  olmamasından kötüdür: kullanıcı yanlış olanı seçer ve bunu ancak baskıdan
+  sonra fark eder.
+- Satırda alan etiketi adın yanında, daha sessiz bir tonda durur. 40 masalı
+  bir salonda "T12" tek başına yetmez; sahip kartı fiziksel olarak bulmak için
+  bölümü bilmek ister.
+
+Kiracı sınırı: birleştirme `qr_codes.workspace_id` filtresinin altında kalır ve
+bunun kendi testi vardır (`QrCodeListTableNameTest`).
+
+`kullaniciYolculugu`: Bahçedeki 12 numaralı masanın kartı yırtılır. Sahip QR
+ekranını açar, listede "T12 · Bahçe" satırını görür, baskı seçicisinden aynı
+adı seçer ve tek kartı yeniden bastırır. Eskiden bu iş, 40 token'ı tek tek
+tarayıp hangisinin o masa olduğunu bulmayı gerektiriyordu — yani yapılamıyordu.

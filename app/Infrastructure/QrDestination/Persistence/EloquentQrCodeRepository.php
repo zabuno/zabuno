@@ -189,9 +189,17 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
 
     private function baseQuery(): Builder
     {
+        /*
+            Masa ve alan LEFT JOIN'dir (FF-109): her kod bir masaya ait
+            değildir — giriş kodu ya da tek kodlu bir kafe için
+            `dining_table_id` boştur. INNER join, o kodları listeden
+            düşürürdü; sahip kendi kodunun kaybolduğunu görürdü.
+        */
         return DB::table('qr_codes')
             ->join('qr_code_current_destinations', 'qr_code_current_destinations.qr_code_id', '=', 'qr_codes.id')
             ->join('qr_destinations', 'qr_destinations.id', '=', 'qr_code_current_destinations.qr_destination_id')
+            ->leftJoin('dining_tables', 'dining_tables.id', '=', 'qr_codes.dining_table_id')
+            ->leftJoin('dining_areas', 'dining_areas.id', '=', 'dining_tables.area_id')
             ->select(
                 'qr_codes.id as id',
                 'qr_codes.workspace_id as workspace_id',
@@ -200,6 +208,8 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
                 'qr_codes.state as state',
                 'qr_destinations.destination_type as destination_type',
                 'qr_destinations.menu_id as menu_id',
+                'dining_tables.name as table_name',
+                'dining_areas.label as area_label',
             );
     }
 
@@ -213,6 +223,8 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
             (string) $row->token,
             (string) $row->destination_type,
             (string) $row->state,
+            $row->table_name === null ? null : (string) $row->table_name,
+            $row->area_label === null ? null : (string) $row->area_label,
         );
     }
 }

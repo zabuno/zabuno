@@ -9,13 +9,20 @@ import type { QrCodeItem } from './qr-destination/QrCodeListItem';
  * katmanı her görsel kapının dışında kalıyor, ekrana kimse bakmıyordu. Story
  * artık var: üç hâl (tek kod, çok kod, hiç kod) izole olarak görülebilir.
  */
-const item = (id: number, token: string): QrCodeItem => ({
+const item = (
+    id: number,
+    token: string,
+    tableName: string | null = null,
+    areaLabel: string | null = null,
+): QrCodeItem => ({
     id,
     workspaceId: 7,
     locationId: 3,
     menuId: 11,
     token,
     resolverUrl: `https://zabuno.com/q/${token}`,
+    tableName,
+    areaLabel,
     destinationType: 'published_menu',
     state: 'active',
 });
@@ -46,12 +53,12 @@ export const SingleCode: Story = {
     args: { items: [item(1, 'yDeMVVWFnsMcK1wdiru3rP4sqbrhEcf')] },
 };
 
-/** Birden çok kod: seçici belirir. */
+/** Birden çok kod: seçici belirir ve seçenekler MASA ADIYLA yazılır (FF-109). */
 export const ManyCodes: Story = {
     args: {
         items: [
-            item(1, 'yDeMVVWFnsMcK1wdiru3rP4sqbrhEcf'),
-            item(2, 'k2LmNoPqRsTuVwXyZ01234567890abc'),
+            item(1, 'yDeMVVWFnsMcK1wdiru3rP4sqbrhEcf', 'T12', 'Bahçe'),
+            item(2, 'k2LmNoPqRsTuVwXyZ01234567890abc', 'T13', 'Bahçe'),
         ],
     },
 };
