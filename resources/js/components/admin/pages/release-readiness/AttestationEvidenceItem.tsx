@@ -208,7 +208,7 @@ export function AttestationEvidenceItem({
             </span>
         );
         const inputClass =
-            'min-h-[44px] w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3';
+            'min-h-[var(--control-height)] w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3';
         details = (
             <div className="mt-2 flex flex-col gap-2">
                 <p className="text-meta text-fg-muted">
@@ -269,7 +269,7 @@ export function AttestationEvidenceItem({
                 </label>
                 <button
                     type="button"
-                    className="min-h-[44px] self-start rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-4 text-[var(--color-on-accent)]"
+                    className="min-h-[var(--control-height)] self-start rounded-[var(--radius-sm)] bg-action px-4 text-action-fg"
                     disabled={saving}
                     onClick={() => void handleRecord()}
                 >

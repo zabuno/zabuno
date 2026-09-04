@@ -846,7 +846,7 @@ export function WorkspaceApp({
             <div className="mx-auto max-w-content px-4 py-10">
                 {liveRegion}
                 <form onSubmit={handleCreate} noValidate className="flex flex-col gap-4">
-                    <h1 className="text-xl font-semibold text-fg">
+                    <h1 className="text-section font-semibold text-fg">
                         {t('workspace.create.heading')}
                     </h1>
 

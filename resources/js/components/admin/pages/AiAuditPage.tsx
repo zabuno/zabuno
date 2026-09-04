@@ -33,7 +33,7 @@ const ENDPOINT = '/api/admin/ai/audit';
 
 const cellClass = 'px-[var(--space-3)] py-[var(--space-2)] text-body align-top';
 const headClass =
-    'px-[var(--space-3)] py-[var(--space-2)] text-meta font-semibold uppercase tracking-wide text-fg-subtle text-start';
+    'px-[var(--space-3)] py-[var(--space-2)] text-meta font-semibold text-fg-subtle text-start';
 
 /**
  * AI denetim izi — `docs/98` Tur 3'ün iki ekransız tablosu.

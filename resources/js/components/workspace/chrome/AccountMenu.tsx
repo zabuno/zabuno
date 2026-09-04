@@ -110,7 +110,7 @@ export function AccountMenu({
                     )}
                     <span className="flex min-w-0 flex-col">
                         <span className="truncate text-body font-medium text-fg">{email}</span>
-                        <span className="text-caption uppercase tracking-[0.08em] text-fg-muted">
+                        <span className="text-meta text-fg-muted">
                             {t('workspace.account.menu.label')}
                         </span>
                     </span>

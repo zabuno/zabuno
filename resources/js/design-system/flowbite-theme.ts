@@ -7,6 +7,7 @@
 import { dropdownTheme } from 'flowbite-react/components/Dropdown';
 import { drawerTheme } from 'flowbite-react/components/Drawer';
 import { modalTheme } from 'flowbite-react/components/Modal';
+import { tableTheme } from 'flowbite-react/components/Table';
 import { createTheme } from 'flowbite-react/helpers/create-theme';
 
 /**
@@ -127,7 +128,7 @@ const FIELD_COLORS = {
 const FIELD_SIZES = {
     sm: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-1)] text-[length:var(--text-meta)]',
     md: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-2)] text-[length:var(--text-body)]',
-    lg: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-3)] text-base',
+    lg: 'min-h-[var(--control-height)] px-[var(--density-padding-inline)] py-[var(--space-3)] text-body',
 };
 
 /** Addon ve ikon kabukları — hepsi logical yön kullanır (RTL, `DS-LOGICAL-DIRECTION-06`). */
@@ -196,8 +197,8 @@ export const buttonTokenTheme = createTheme({
         xs: 'px-[var(--control-padding-inline)] text-[length:var(--text-meta)]',
         sm: 'px-[var(--control-padding-inline)] text-[length:var(--text-body)]',
         md: 'px-[var(--control-padding-inline)] text-[length:var(--text-body)]',
-        lg: 'px-[calc(var(--control-padding-inline)*1.5)] text-base',
-        xl: 'px-[calc(var(--control-padding-inline)*2)] text-base',
+        lg: 'px-[calc(var(--control-padding-inline)*1.5)] text-body',
+        xl: 'px-[calc(var(--control-padding-inline)*2)] text-body',
     },
     /**
      * Renk adları Flowbite'ın sözlüğünden gelir; anlamları BU sistemden.
@@ -424,8 +425,7 @@ export const drawerTokenTheme = createTheme(
         },
         header: {
             inner: {
-                titleText:
-                    'mb-4 inline-flex items-center text-meta font-semibold uppercase tracking-wide text-fg-muted',
+                titleText: 'mb-4 inline-flex items-center text-meta font-semibold text-fg-muted',
                 closeButton:
                     'absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-fg-muted hover:bg-surface-hover hover:text-fg',
             },
@@ -440,12 +440,57 @@ export const modalTokenTheme = createTheme(
         },
         header: {
             base: 'flex items-start justify-between rounded-t border-b border-border p-5',
-            title: 'text-xl font-medium text-fg',
+            title: 'text-section font-medium text-fg',
             close: {
                 base: 'ms-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-fg-muted hover:bg-surface-hover hover:text-fg',
             },
         },
         footer: { base: 'flex items-center space-x-2 rounded-b border-t border-border p-6' },
+    }),
+);
+
+/**
+ * TABLO — panelin belkemiği, en geç bağlanan aile (FF-126).
+ *
+ * Depoda tek bir ham gri sınıfı yazılı olmadığı hâlde ekrandaki her tablo
+ * başlığı kütüphanenin kendi gri paletiyle, 12 piksel ve büyük harf
+ * çiziliyordu. Üç ayrı sözleşme aynı anda üründe geçersizdi ve kaynak
+ * taraması üçünü de GREEN görüyordu:
+ *
+ * 1. Ham palet yasağı (`DS-RAW-PALETTE-BANNED-01`).
+ * 2. 16px taban — başlık 12 piksel çiziliyordu.
+ * 3. Fiziksel yön yasağı (`DS-LOGICAL-DIRECTION-06`): kütüphanenin kök
+ *    yaprağı metni fiziksel SOLA hizalıyor, yani Arapçada her tablo yanlış
+ *    tarafa hizalanıyordu.
+ *
+ * Kök yaprağın gölge kısmı da beyaz zemin ve düşen gölgeyle geliyordu;
+ * AEP'te derinlik gölgeyle değil TONLA verilir, bu yüzden yüzey jetonuna
+ * bağlandı.
+ */
+export const tableTokenTheme = createTheme(
+    overrideLeaves(tableTheme, {
+        root: {
+            base: 'w-full text-start text-body text-fg-secondary',
+            shadow: 'absolute start-0 top-0 -z-10 h-full w-full rounded-lg bg-surface',
+        },
+        body: {
+            cell: {
+                base: 'px-[var(--space-5)] py-[var(--space-3)] group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg',
+            },
+        },
+        head: {
+            // Büyük harf ve 12 piksel gitti: hiyerarşi ağırlık ve renkle
+            // kurulur (`DS-NO-UPPERCASE-12`, `DS-TYPE-SCALE-01`).
+            base: 'group/head text-meta font-semibold text-fg-muted',
+            cell: {
+                base: 'bg-surface-subtle px-[var(--space-5)] py-[var(--space-3)] group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg',
+            },
+        },
+        row: {
+            base: 'group/row',
+            hovered: 'hover:bg-surface-hover',
+            striped: 'odd:bg-surface even:bg-surface-subtle',
+        },
     }),
 );
 
@@ -459,6 +504,7 @@ export const flowbiteTokenTheme = {
     dropdown: dropdownTokenTheme,
     drawer: drawerTokenTheme,
     modal: modalTokenTheme,
+    table: tableTokenTheme,
 };
 
 /**
@@ -478,4 +524,5 @@ export const FLOWBITE_TOKEN_APPLY = {
     dropdown: 'replace',
     drawer: 'replace',
     modal: 'replace',
+    table: 'replace',
 } as const;

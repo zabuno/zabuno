@@ -155,11 +155,11 @@ function draftFor(connection: Connection): Record<string, string> {
 }
 
 const inputClass =
-    'min-h-[44px] w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3';
+    'min-h-[var(--control-height)] w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3';
 const primaryButtonClass =
-    'min-h-[44px] rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-4 text-[var(--color-on-accent)]';
+    'min-h-[var(--control-height)] rounded-[var(--radius-sm)] bg-action px-4 text-action-fg';
 const secondaryButtonClass =
-    'min-h-[44px] rounded-[var(--radius-sm)] border border-[var(--color-border)] px-4';
+    'min-h-[var(--control-height)] rounded-[var(--radius-sm)] border border-[var(--color-border)] px-4';
 
 export function ProviderCredentialsPage() {
     const [payload, setPayload] = useState<Payload | null>(null);
@@ -465,9 +465,7 @@ export function ProviderCredentialsPage() {
                             value={newLabel}
                             onChange={(event) => setNewLabel(event.target.value)}
                         />
-                        <p className="text-[var(--color-text-muted)]">
-                            {t('platform.connections.label.help')}
-                        </p>
+                        <p className="text-fg-muted">{t('platform.connections.label.help')}</p>
                     </div>
 
                     <div className="mt-[var(--space-fluid-sm)]">
@@ -504,7 +502,7 @@ export function ProviderCredentialsPage() {
                                 value={newWorkspaceId}
                                 onChange={(event) => setNewWorkspaceId(event.target.value)}
                             />
-                            <p className="text-[var(--color-text-muted)]">
+                            <p className="text-fg-muted">
                                 {t('platform.connections.workspace.help')}
                             </p>
                         </div>
@@ -560,9 +558,7 @@ export function ProviderCredentialsPage() {
                     <h2 id={`provider-${schema.provider}`}>{providerLabel(schema.provider)}</h2>
 
                     {connections.length === 0 ? (
-                        <p className="text-[var(--color-text-muted)]">
-                            {t('platform.connections.empty')}
-                        </p>
+                        <p className="text-fg-muted">{t('platform.connections.empty')}</p>
                     ) : (
                         <ul className="flex flex-col gap-[var(--space-fluid-md)]">
                             {connections.map((connection) => (
@@ -579,7 +575,7 @@ export function ProviderCredentialsPage() {
                                         </span>
                                     </div>
 
-                                    <p className="text-[var(--color-text-muted)]">
+                                    <p className="text-fg-muted">
                                         {t(
                                             `platform.connections.scope.${connection.scope}` as never,
                                         )}
@@ -600,7 +596,7 @@ export function ProviderCredentialsPage() {
                                                 <label htmlFor={inputId} className="block">
                                                     {fieldLabel(field.name)}
                                                     {field.secret && field.isSet ? (
-                                                        <span className="ms-2 text-[var(--color-text-muted)]">
+                                                        <span className="ms-2 text-fg-muted">
                                                             {t('platform.credentials.secretSet', {
                                                                 mask: field.preview ?? '',
                                                             })}

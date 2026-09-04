@@ -4,7 +4,7 @@ import { LogoutButton } from './LogoutButton';
 export function VerifiedDestination() {
     return (
         <div className="flex flex-col gap-4">
-            <h1 className="text-xl font-semibold text-fg">{t('auth.verified.heading')}</h1>
+            <h1 className="text-section font-semibold text-fg">{t('auth.verified.heading')}</h1>
             <p className="text-body text-fg-secondary">{t('auth.verified.body')}</p>
             <LogoutButton />
         </div>

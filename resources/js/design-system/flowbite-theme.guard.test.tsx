@@ -10,6 +10,7 @@ import { Checkbox } from '../components/catalog/forms/micro/Checkbox';
 import { Select } from '../components/catalog/forms/micro/Select';
 import { Textarea } from '../components/catalog/forms/micro/Textarea';
 import { TextInput } from '../components/catalog/forms/micro/TextInput';
+import { ResponsiveDataTable } from '../components/catalog/data-display/compound/ResponsiveDataTable';
 import { readCustomProperties } from './contrast';
 import { FLOWBITE_TOKEN_APPLY, flowbiteTokenTheme } from './flowbite-theme';
 import { RAW_PALETTE_PATTERN } from './semantic-map';
@@ -83,6 +84,27 @@ describe('Flowbite tema bağlaması — zorlayıcı kontrol', () => {
             ['Select/invalid', <Select aria-label="Şube" invalid />],
             ['Textarea', <Textarea aria-label="Açıklama" />],
             ['Checkbox', <Checkbox aria-label="Onaylıyorum" />],
+            /*
+                TABLO, panelin belkemiğidir ve en uzun süre bağlanmadan
+                kaldı (FF-126). Ekranda ölçüldüğünde başlık hücresi 12
+                piksel, büyük harf ve kütüphanenin gri paletiyle
+                çiziliyordu — hiçbiri depoda yazılı değildi. Kök yaprak
+                ayrıca metni fiziksel SOLA hizalıyordu, yani sağdan-sola
+                dillerde her tablo yanlış taraftaydı; fiziksel yön yasağı
+                kaynakta GREEN'di ama üründe değildi.
+            */
+            [
+                'ResponsiveDataTable',
+                <ResponsiveDataTable
+                    caption="Ürünler"
+                    columns={[
+                        { key: 'name', header: 'Ad', render: () => 'Margarita' },
+                        { key: 'price', header: 'Fiyat', align: 'end', render: () => '₺120' },
+                    ]}
+                    rows={[{ id: 1 }]}
+                    getRowKey={(row: { id: number }) => String(row.id)}
+                />,
+            ],
         ];
 
         const offenders = cases.flatMap(([name, element]) => {

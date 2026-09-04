@@ -2026,7 +2026,7 @@ export function MenuCatalogWorkspace({
                 </form>
             ) : (
                 <>
-                    <h2 className="text-lg font-semibold">{tree.name}</h2>
+                    <h2 className="text-subsection font-semibold">{tree.name}</h2>
 
                     {/*
                         OLASI TEKRARLAR — `docs/97` Yolculuk C. Aday yoksa
@@ -2046,7 +2046,7 @@ export function MenuCatalogWorkspace({
                                     count: String(duplicateCandidates.length),
                                 })}
                             </h3>
-                            <p className="text-caption text-fg-secondary">
+                            <p className="text-meta text-fg-secondary">
                                 {t('menu.duplicates.help')}
                             </p>
                             <ul className="flex flex-col gap-1">
@@ -2085,7 +2085,7 @@ export function MenuCatalogWorkspace({
                             aria-label={t('menu.tools.summary')}
                             className="flex flex-col gap-4 pt-2"
                         >
-                            <p className="text-caption text-fg-secondary">{t('menu.tools.help')}</p>
+                            <p className="text-meta text-fg-secondary">{t('menu.tools.help')}</p>
                             {/*
                         FOTOĞRAFTAN İÇE AKTARMA (AI) — `docs/92`/`docs/97`
                         Yolculuk A. Yükleme Media sayfasında olur; burası
@@ -2100,7 +2100,7 @@ export function MenuCatalogWorkspace({
                             diye aramasına yol açardı.
                         */}
                                 {aiBlockedReason('menu.extract') !== null ? (
-                                    <p className="text-caption text-fg-secondary">
+                                    <p className="text-meta text-fg-secondary">
                                         {t(
                                             `menu.ai.unavailable.${aiBlockedReason('menu.extract')}` as never,
                                         )}
@@ -2131,7 +2131,7 @@ export function MenuCatalogWorkspace({
                                                 {t('menu.item.ai.import.media.label')}
                                             </legend>
                                             {importSourceMedia.length === 0 ? (
-                                                <p className="text-caption text-fg-secondary">
+                                                <p className="text-meta text-fg-secondary">
                                                     {t('menu.item.ai.import.media.empty')}
                                                 </p>
                                             ) : (
@@ -2199,7 +2199,7 @@ export function MenuCatalogWorkspace({
                                         {aiBatchProgress ? (
                                             <p
                                                 role="status"
-                                                className="text-caption text-fg-secondary"
+                                                className="text-meta text-fg-secondary"
                                             >
                                                 {t('menu.item.ai.import.batch.progress', {
                                                     done: String(aiBatchProgress.done),
@@ -2210,7 +2210,7 @@ export function MenuCatalogWorkspace({
                                         {aiBatchSummary ? (
                                             <p
                                                 role="status"
-                                                className="text-caption text-fg-secondary"
+                                                className="text-meta text-fg-secondary"
                                             >
                                                 {t('menu.item.ai.import.batch.collected', {
                                                     rows: String(aiBatchSummary.rows),
@@ -2232,7 +2232,7 @@ export function MenuCatalogWorkspace({
                                                 {aiImportFailures.map((failure) => (
                                                     <li
                                                         key={failure.mediaAssetId}
-                                                        className="text-caption text-fg-warning"
+                                                        className="text-meta text-fg-warning"
                                                     >
                                                         {t('menu.item.ai.import.photo.failed', {
                                                             name:
@@ -2254,7 +2254,7 @@ export function MenuCatalogWorkspace({
                                                     {t('menu.item.ai.import.preview.heading')}
                                                 </h3>
                                                 {aiImportUsedFallback ? (
-                                                    <p className="text-caption text-fg-secondary">
+                                                    <p className="text-meta text-fg-secondary">
                                                         {t('menu.item.ai.import.fallback')}
                                                     </p>
                                                 ) : null}
@@ -2331,7 +2331,7 @@ export function MenuCatalogWorkspace({
                                                                 (row) => (
                                                                     <li
                                                                         key={row.row}
-                                                                        className="text-caption text-fg-secondary"
+                                                                        className="text-meta text-fg-secondary"
                                                                     >
                                                                         {t(
                                                                             'menu.item.ai.import.rejected.row',
@@ -2397,7 +2397,7 @@ export function MenuCatalogWorkspace({
                                         }
                                     }}
                                 />
-                                <p className="text-caption text-fg-secondary">
+                                <p className="text-meta text-fg-secondary">
                                     {t('menu.import.help')}
                                 </p>
 
@@ -2430,7 +2430,7 @@ export function MenuCatalogWorkspace({
                                                     {importReport.rejectedRows.map((row) => (
                                                         <li
                                                             key={row.line}
-                                                            className="text-caption text-fg-secondary"
+                                                            className="text-meta text-fg-secondary"
                                                         >
                                                             {t('menu.import.rejected.row', {
                                                                 line: String(row.line),
@@ -2879,14 +2879,14 @@ export function MenuCatalogWorkspace({
                                                             // metni taşır (`docs/97` R4).
                                                         }}
                                                     />
-                                                    <p className="text-caption text-fg-secondary">
+                                                    <p className="text-meta text-fg-secondary">
                                                         {t('menu.item.description.help')}
                                                     </p>
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         {/* `docs/97` R9 — bkz. fotoğraf bölümündeki aynı kural. */}
                                                         {aiBlockedReason('product.description') !==
                                                         null ? (
-                                                            <p className="text-caption text-fg-secondary">
+                                                            <p className="text-meta text-fg-secondary">
                                                                 {t(
                                                                     `menu.ai.unavailable.${aiBlockedReason('product.description')}` as never,
                                                                 )}
@@ -2908,7 +2908,7 @@ export function MenuCatalogWorkspace({
                                                             </button>
                                                         )}
                                                         {aiDraftArtifactId !== null ? (
-                                                            <span className="text-caption text-fg-secondary">
+                                                            <span className="text-meta text-fg-secondary">
                                                                 {aiSuggestionUsedFallback
                                                                     ? t(
                                                                           'menu.item.ai.description.suggested.fallback',
@@ -2921,7 +2921,7 @@ export function MenuCatalogWorkspace({
                                                     </div>
                                                     {aiSuggestionUncertain ? (
                                                         <p
-                                                            className="text-caption text-fg-warning"
+                                                            className="text-meta text-fg-warning"
                                                             role="status"
                                                         >
                                                             {t(
@@ -2960,7 +2960,7 @@ export function MenuCatalogWorkspace({
                                                         ))}
                                                     </Select>
                                                     {readyMedia.length === 0 ? (
-                                                        <p className="text-caption text-fg-secondary">
+                                                        <p className="text-meta text-fg-secondary">
                                                             {t('menu.item.image.empty')}
                                                         </p>
                                                     ) : null}

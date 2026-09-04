@@ -39,7 +39,7 @@ export function DraftMenuPreviewRegion({ dashboardMenuTree }: DraftMenuPreviewRe
                         .sort((a, b) => a.position - b.position)
                         .map((category) => (
                             <div key={category.id} className="flex flex-col gap-2">
-                                <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
+                                <p className="text-meta font-semibold text-fg-muted">
                                     {category.name}
                                 </p>
                                 <ul className="flex flex-col gap-2">

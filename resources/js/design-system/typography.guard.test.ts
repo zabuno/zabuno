@@ -8,8 +8,8 @@ import debt from './typography-debt.json';
 /**
  * Tipografi kapısı — token zincirinin en son kapanan halkası.
  *
- * Ölçüm (2026-08-27): kod tabanında `text-sm` 259, `text-xs` 41,
- * `text-base` yalnız 10 kez geçiyordu. Yani panelin fiilî gövde boyutu
+ * Ölçüm (2026-08-27): kod tabanında `text-meta` 259, `text-xs` 41,
+ * `text-body` yalnız 10 kez geçiyordu. Yani panelin fiilî gövde boyutu
  * 14px, meta boyutu 12px'ti ve bir başlık ölçeği yoktu. Renk ve boşluk
  * token'lıyken tipografi ham sınıflarla seçiliyordu; "master değişince
  * hepsi değişir" tipografide GEÇERLİ DEĞİLDİ.
@@ -27,7 +27,13 @@ import debt from './typography-debt.json';
  */
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..', 'js');
-const RAW_SIZE = /\b(text-xs|text-sm|text-base|text-lg|text-xl|text-2xl|text-3xl|text-4xl)\b/g;
+/*
+    HAM ölçek = Tailwind'in kendi t-shirt boyutları. Rol adları (`text-body`,
+    `text-meta`, `text-section` …) buraya GİRMEZ: onlar ölçeğin kendisidir,
+    ölçeği delen şey değil. Önceki liste ikisini karıştırıyordu ve rol adına
+    geçen her dosya borcu artırmış sayılıyordu.
+*/
+const RAW_SIZE = /\b(text-(?:xs|sm|base|lg|xl|2xl|3xl|4xl|5xl))\b/g;
 
 function sourceFiles(dir: string, found: string[] = []): string[] {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -47,13 +53,41 @@ function sourceFiles(dir: string, found: string[] = []): string[] {
     return found;
 }
 
+/**
+ * "Taban altı" bir SINIF ADI değil, bir DEĞERDİR (FF-125).
+ *
+ * Bu sayaç `text-meta`yı sabit biçimde taban altı sayıyordu, çünkü yazıldığı
+ * gün `--text-meta` 0.875rem'di. AEP tabanı her yeri 1rem'e çıkarınca sayaç
+ * ürünü yanlış suçladı: 14px'ten 16px'e ÇIKAN her sınıf, borcu artırmış gibi
+ * göründü (2 → 149) — yani kural, tam olarak istediği düzeltmeyi cezalandırdı.
+ *
+ * Artık eşik `app.css`'ten okunur. Bir rol adı taban altı sayılmak için
+ * gerçekten 1rem'in altında bir değere bağlı olmalıdır.
+ */
+function belowFloorRoles(): Set<string> {
+    const css = readFileSync(path.resolve(ROOT, '../css/app.css'), 'utf8');
+    const below = new Set<string>();
+
+    for (const [, role, value] of css.matchAll(/--text-([a-z]+):\s*([\d.]+)rem/g)) {
+        if (Number(value) < 1) below.add(`text-${role}`);
+    }
+
+    // Ham Tailwind ölçeğinin taban altı basamakları: 0.75rem ve 0.875rem.
+    below.add('text-xs');
+    below.add('text-sm');
+
+    return below;
+}
+
 function countRawSizes(): { belowBodyFloor: number; otherRawSizes: number } {
     let belowBodyFloor = 0;
     let otherRawSizes = 0;
 
+    const below = belowFloorRoles();
+
     for (const file of sourceFiles(ROOT)) {
         for (const hit of readFileSync(file, 'utf8').match(RAW_SIZE) ?? []) {
-            if (hit === 'text-xs' || hit === 'text-sm') belowBodyFloor++;
+            if (below.has(hit)) belowBodyFloor++;
             else otherRawSizes++;
         }
     }

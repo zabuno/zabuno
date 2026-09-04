@@ -26,9 +26,7 @@ const meta: Meta<typeof SidebarMenu> = {
         triggerContent: (
             <span className="flex min-w-0 flex-col">
                 <span className="truncate text-body font-semibold text-fg">Zeytin Kebap</span>
-                <span className="text-caption uppercase tracking-[0.08em] text-fg-muted">
-                    Restaurant admin
-                </span>
+                <span className="text-meta text-fg-muted">Restaurant admin</span>
             </span>
         ),
         items: [

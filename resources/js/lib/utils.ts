@@ -10,7 +10,7 @@ import { extendTailwindMerge } from 'tailwind-merge';
  * ve aynı gruptaki önceki sınıfı siliyordu:
  *
  *     twMerge('text-fg', 'text-body')  →  'text-body'      ← renk KAYBOLDU
- *     twMerge('text-fg', 'text-sm')    →  'text-fg text-sm' ← doğru
+ *     twMerge('text-fg', 'text-[13px]') →  'text-fg text-[13px]' ← doğru
  *
  * Yani ölçeği yayınladığımız günden beri, `cn()` kullanılan her yerde metin
  * rengi sessizce düşüyordu. Görünür bir hata vermiyordu çünkü tarayıcı

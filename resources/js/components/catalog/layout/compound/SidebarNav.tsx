@@ -77,7 +77,7 @@ export function SidebarNav({
                     {group.label ? (
                         <span
                             id={`${groupIdPrefix}-${group.key}`}
-                            className="mb-[var(--space-2)] ps-[var(--space-3)] text-caption font-semibold uppercase tracking-[0.08em] text-fg-subtle"
+                            className="mb-[var(--space-2)] ps-[var(--space-3)] text-meta font-semibold text-fg-subtle"
                         >
                             {group.label}
                         </span>

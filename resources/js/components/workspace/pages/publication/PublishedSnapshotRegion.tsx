@@ -25,9 +25,7 @@ export function PublishedSnapshotRegion({ current }: PublishedSnapshotRegionProp
             <div className="flex flex-col gap-4">
                 {current.snapshot.categories.map((category, categoryIndex) => (
                     <div key={categoryIndex} className="flex flex-col gap-2">
-                        <p className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
-                            {category.name}
-                        </p>
+                        <p className="text-meta font-semibold text-fg-muted">{category.name}</p>
                         <ul className="flex flex-col gap-2">
                             {category.menuItems.map((item, itemIndex) => (
                                 <li key={itemIndex} className="text-body text-fg-secondary">
