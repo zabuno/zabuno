@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { ArrowDown, ArrowUp, DotsThree, Trash } from '@phosphor-icons/react';
 import { ActionMenu } from '../../overlays/compound/ActionMenu';
+import { TooltipHint } from '../../overlays/compound/TooltipHint';
 
 export type RowActionsExtraItem = {
     key: string;
@@ -75,13 +76,31 @@ export function RowActions({
         'flex min-h-[var(--density-hit-area-min)] min-w-[var(--density-hit-area-min)] items-center justify-center rounded-[var(--radius-md)] text-fg-muted hover:bg-surface-hover hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
     return (
-        <span className="flex shrink-0 items-center gap-[var(--space-1)]">
-            <button type="button" aria-label={upLabel} className={base} onClick={onMoveUp}>
-                <ArrowUp size={16} weight="bold" aria-hidden="true" />
-            </button>
-            <button type="button" aria-label={downLabel} className={base} onClick={onMoveDown}>
-                <ArrowDown size={16} weight="bold" aria-hidden="true" />
-            </button>
+        /*
+            SAĞA YASLI. Dar ekranda satır kırılıyor ve eylem kümesi kendi
+            satırına düşüyor; sola yaslı kaldığında adın altında başıboş
+            duruyor ve hangi satıra ait olduğu okunmuyordu. Sağ kenara
+            yaslanınca kırılma kasıtlı görünür ve küme hep aynı yerde durur.
+        */
+        <span className="ms-auto flex shrink-0 items-center gap-[var(--space-1)]">
+            {/*
+                İPUCU, ekran okuyucunun zaten duyduğu şeyi GÖZE de söyler.
+
+                `aria-label` doğruydu ama yalnız ekran okuyucuya ulaşıyordu;
+                `docs/101`'in acemi kullanıcısı için bir ok simgesi hâlâ
+                tahmin gerektiriyordu. Tooltip üzerine gelince ve klavye
+                odağında görünür — ikisi de aynı sözü verir.
+            */}
+            <TooltipHint content={upLabel}>
+                <button type="button" aria-label={upLabel} className={base} onClick={onMoveUp}>
+                    <ArrowUp size={16} weight="bold" aria-hidden="true" />
+                </button>
+            </TooltipHint>
+            <TooltipHint content={downLabel}>
+                <button type="button" aria-label={downLabel} className={base} onClick={onMoveDown}>
+                    <ArrowDown size={16} weight="bold" aria-hidden="true" />
+                </button>
+            </TooltipHint>
             <ActionMenu
                 label={moreLabel}
                 tone="quiet"

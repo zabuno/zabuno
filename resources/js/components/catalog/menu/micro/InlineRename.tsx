@@ -146,7 +146,17 @@ export function InlineRename({
                 aria-label={label}
                 onClick={startEditing}
                 className={cn(
-                    'min-w-0 truncate rounded-[var(--radius-sm)] text-start',
+                    'flex min-w-0 items-center rounded-[var(--radius-sm)] text-start',
+                    /*
+                        DOKUNMA HEDEFİ 44 px (`--density-hit-area-min`).
+
+                        İlk hâlde tetikleyici yalnız metin yüksekliğindeydi:
+                        telefonda ölçüldüğünde 24 px çıktı. Parmakla
+                        vurulamayan bir hedef, klavyeyle ve fareyle
+                        çalışıyor olsa bile çalışmıyor demektir.
+                    */
+                    'min-h-[var(--density-hit-area-min)] px-[var(--space-1)]',
+                    '[&>span]:truncate',
                     // Tıklanabilirlik ÜZERİNE GELİNCE söylenir: her satırda
                     // kalıcı bir çerçeve, listeyi kutular ormanına çevirirdi.
                     'hover:bg-surface-hover',
@@ -154,7 +164,7 @@ export function InlineRename({
                     textClassName,
                 )}
             >
-                {value}
+                <span className="truncate">{value}</span>
             </button>
         );
     }

@@ -2519,7 +2519,6 @@ export function MenuCatalogWorkspace({
                                             }
                                         />
                                     </h3>
-                                    <span className="flex-1" />
                                     {/*
                                         KATEGORİ GENELİ STOK — `docs/82` kriter 3.
                                         Yalnız ürün varken çizilir; boş bir kategoride
@@ -2598,7 +2597,17 @@ export function MenuCatalogWorkspace({
                                             key={item.id}
                                             className="flex flex-col gap-2 border-b border-border py-2 last:border-b-0"
                                         >
-                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                            <div
+                                                className={clsx(
+                                                    'flex flex-wrap items-center gap-x-3 gap-y-1',
+                                                    // Dar ekranda satır iki
+                                                    // parçaya bölünür; dikey
+                                                    // boşluk küçük kalmalı ki
+                                                    // iki parça TEK satır gibi
+                                                    // okunsun, iki ayrı satır
+                                                    // gibi değil.
+                                                )}
+                                            >
                                                 {/*
                                                     SIRA → AD → FİYAT → TÜKENDİ → EYLEMLER.
 
@@ -2673,7 +2682,9 @@ export function MenuCatalogWorkspace({
                                                     })}
                                                     onClick={() => handleEditPrice(item)}
                                                     className={clsx(
-                                                        'shrink-0 rounded-[var(--radius-sm)] px-[var(--space-1)]',
+                                                        // Dokunma hedefi 44 px: telefonda ölçüldü.
+                                                        'flex min-h-[var(--density-hit-area-min)] shrink-0 items-center',
+                                                        'rounded-[var(--radius-sm)] px-[var(--space-1)]',
                                                         'text-body tabular-nums text-fg-secondary',
                                                         'hover:bg-surface-hover hover:text-fg',
                                                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
