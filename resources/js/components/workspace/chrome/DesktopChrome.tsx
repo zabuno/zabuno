@@ -42,6 +42,15 @@ export function DesktopSidebar({
                 // Genişlik SABİT (`docs/102`): sayfa bağlam paneli açsa da ray daralmaz.
                 'admin-shell-sidebar flex shrink-0 grow-0 basis-[17rem] flex-col border-e bg-[var(--color-surface)]',
                 'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
+                /*
+                    RAY GÖRÜNTÜ ALANI KADAR (sahibin bildirimi, 2026-09-04).
+
+                    Kabuk artık tam ekran yüksekliğinde ve kaydırma ana alanda
+                    (`AdminShell`). Ray da kendi içinde kayar: gezinti uzarsa
+                    ray kayar, ama dibindeki hesap düğmesi HER ZAMAN ekranda
+                    kalır — çünkü ray sayfa kadar değil, ekran kadar uzun.
+                */
+                'min-h-0 overflow-y-auto',
             )}
         >
             <WorkspaceSwitcherTrigger
@@ -61,7 +70,22 @@ export function DesktopSidebar({
                 alt kısmı ilk kaybolan yerdir.
             */}
             {accountMenu !== undefined && accountMenu !== null ? (
-                <div className="mt-auto pt-[var(--space-fluid-sm)]">{accountMenu}</div>
+                /*
+                    YAPIŞKAN (sahibin isteği, 2026-09-04).
+
+                    `mt-auto` düğmeyi rayın dibine iter, ama gezinti uzayıp ray
+                    kendi içinde kaydığında düğme yukarı kayıp ekrandan
+                    çıkardı. `sticky bottom-0` onu rayın görünen alanının
+                    dibine çiviler; gezinti altından akar.
+
+                    Zemin ŞART: yapışkan bir öğe saydam olsaydı, altından
+                    geçen gezinti maddeleri düğmenin içinden okunurdu. Üst
+                    kenarlık, kaydırılacak içerik olduğunu söyleyen ince bir
+                    işarettir.
+                */
+                <div className="sticky bottom-0 mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-fluid-sm)]">
+                    {accountMenu}
+                </div>
             ) : null}
         </aside>
     );

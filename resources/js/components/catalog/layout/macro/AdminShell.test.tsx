@@ -67,6 +67,35 @@ describe('AdminShell', () => {
         Sahibin isteği (2026-09-04): "desktop'ta bu burger icon, kaldır."
         Kalıcı ray ekrandayken hamburger hiçbir şey açmıyordu.
     */
+    /*
+        KABUK GÖRÜNTÜ ALANINA KİLİTLİ — sahibin bildirimi (2026-09-04):
+        "yükseklik statik ve çok fazla, ekrana göre dinamik olmalı".
+
+        Önceki hâl `min-h-screen` idi ve içerik uzayınca kabuk da uzuyordu;
+        kenar çubuğunun dibindeki hesap düğmesi sayfanın dibine gidiyor, yani
+        uzun bir sayfada ekrandan çıkıyordu. Bu test o kararı dondurur:
+        kök tam ekran yüksekliğinde, kaydırma ANA ALANDA.
+    */
+    it('kabuk ekran yüksekliğine kilitlenir ve kaydırma ana alandadır', () => {
+        const { container } = renderShell();
+
+        const root = container.firstElementChild as HTMLElement;
+        expect(root.className).toContain('h-dvh');
+        expect(root.className).toContain('overflow-hidden');
+        // Yazdırmada kilit AÇILIR: aksi hâlde çıktı tek sayfaya kırpılırdı.
+        expect(root.className).toContain('print:overflow-visible');
+
+        const main = screen.getByRole('main');
+        expect(main.className).toContain('overflow-y-auto');
+
+        /*
+            `min-h-0` olmadan bir flex çocuğunun en küçük boyu İÇERİĞİ
+            kadardır ve uzun bir sayfa kabuğu yine gerdirirdi.
+        */
+        const layout = container.querySelector('.admin-shell-layout') as HTMLElement;
+        expect(layout.className).toContain('min-h-0');
+    });
+
     it('kalıcı kenar çubuğu varken hamburger ÇİZİLMEZ', () => {
         renderShell({ onToggleMobileMenu: vi.fn() });
 
