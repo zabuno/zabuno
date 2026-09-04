@@ -127,3 +127,31 @@ msgstr "Next step"
 #: dashboard:dashboard.setup.step.todo
 msgid "dashboard.setup.step.todo"
 msgstr "Not done yet"
+
+#: dashboard:dashboard.stats.categories
+msgid "dashboard.stats.categories"
+msgstr "Categories"
+
+#: dashboard:dashboard.stats.items
+msgid "dashboard.stats.items"
+msgstr "Menu items"
+
+#: dashboard:dashboard.stats.visible
+msgid "dashboard.stats.visible"
+msgstr "Visible items"
+
+#: dashboard:dashboard.table.caption
+msgid "dashboard.table.caption"
+msgstr "Menu item list"
+
+#: dashboard:dashboard.table.column.item
+msgid "dashboard.table.column.item"
+msgstr "Item"
+
+#: dashboard:dashboard.table.column.visible
+msgid "dashboard.table.column.visible"
+msgstr "Visible"
+
+#: dashboard:dashboard.table.heading
+msgid "dashboard.table.heading"
+msgstr "Menu at a glance"

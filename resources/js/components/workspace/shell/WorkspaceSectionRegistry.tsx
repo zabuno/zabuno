@@ -43,6 +43,8 @@ export type WorkspaceSectionDescriptor = {
      * Tanımsızsa bölüm herkese açıktır (workspace.view yeter).
      */
     permission?: string;
+    /** Gezinti ikonu (Phosphor), `aria-hidden`; kenar çubuğu, çekmece ve omnibox aynı kayıttan okur (`docs/102`). */
+    icon?: ReactNode;
     aiQuickAction?: boolean;
     catalogOnboardingPhase?: WorkspaceCatalogOnboardingPhase;
     render: (ctx: WorkspaceSectionRuntimeContext) => ReactNode;

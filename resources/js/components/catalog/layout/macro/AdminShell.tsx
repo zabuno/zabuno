@@ -95,7 +95,8 @@ export function AdminShell({
                 <main
                     id={mainId}
                     tabIndex={-1}
-                    className="admin-shell-main min-w-0 flex-[4_1_32rem] p-[var(--space-fluid-md)] outline-none"
+                    // Tonal SaaS Shell (`docs/06` §10, `docs/102` §1): soluk zemin, üstünde kartlar.
+                    className="admin-shell-main min-w-0 flex-[4_1_32rem] bg-[var(--color-surface-subtle)] p-[var(--space-fluid-md)] outline-none"
                 >
                     {children}
                 </main>

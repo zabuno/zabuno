@@ -1,3 +1,4 @@
+import { Gear } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { SettingsPage, type SettingsTab } from './SettingsPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
@@ -24,6 +25,7 @@ const settingsSection: WorkspaceSectionDescriptor = {
     path: 'settings',
     order: 7,
     labelKey: 'workspace.shell.nav.settings',
+    icon: <Gear size={18} weight="regular" />,
     group: 'utility',
     render,
 };

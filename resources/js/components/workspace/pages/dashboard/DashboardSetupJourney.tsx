@@ -216,7 +216,8 @@ export function DashboardSetupJourney({
             {noviceHome ? (
                 <section
                     aria-label={t('dashboard.now.region')}
-                    className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4"
+                    // Marka şeridi: sayfadaki TEK vurgu (`docs/102` §1, `docs/101` A1).
+                    className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-border border-s-4 border-s-brand bg-surface p-4"
                 >
                     <h2 className="text-meta font-semibold uppercase tracking-wide text-fg-muted">
                         {t('dashboard.now.heading')}
@@ -253,52 +254,56 @@ export function DashboardSetupJourney({
                     )}
                 </section>
             ) : null}
-            <h2 className="text-lg font-semibold text-fg">{t('dashboard.setup.heading')}</h2>
-            <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
-                {rows.map((row) => (
-                    <div key={row.key} className="flex flex-col gap-1">
-                        <dt className="flex items-center gap-2 text-body font-medium text-fg-muted">
-                            {/*
+            <div className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-border bg-surface p-4">
+                <h2 className="text-section font-semibold text-fg">
+                    {t('dashboard.setup.heading')}
+                </h2>
+                <dl className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-3">
+                    {rows.map((row) => (
+                        <div key={row.key} className="flex flex-col gap-1">
+                            <dt className="flex items-center gap-2 text-body font-medium text-fg-muted">
+                                {/*
                                 Tamamlanma işareti RENKLE verilmez: yüksek
                                 kontrast modunda ve renk körlüğünde kaybolur.
                                 Ekran okuyucu için de metin karşılığı var.
                             */}
-                            {/*
+                                {/*
                                 Genişlik KARAKTERLE ölçülür (`ch`), pikselle
                                 değil: sütunun içindeki şey bir karakter ve
                                 320 piksellik ekranda sabit piksel genişliği
                                 yazı boyutuyla birlikte ölçeklenmez. Kolonun
                                 kalıcı olması satırların kaymasını önler.
                             */}
-                            <span
-                                aria-hidden="true"
-                                className="w-[2ch] shrink-0 text-center text-fg-secondary"
-                            >
-                                {row.done ? '✓' : '○'}
-                            </span>
-                            {onNavigateToSection ? (
-                                <button
-                                    type="button"
-                                    onClick={() => onNavigateToSection(row.section)}
-                                    className="text-start text-fg-link hover:underline"
+                                <span
+                                    aria-hidden="true"
+                                    className="w-[2ch] shrink-0 text-center text-fg-secondary"
                                 >
-                                    {row.label}
-                                </button>
-                            ) : (
-                                <span>{row.label}</span>
-                            )}
-                            <span className="sr-only">
-                                {row.done
-                                    ? t('dashboard.setup.step.done')
-                                    : row.key === nextStep?.key
-                                      ? t('dashboard.setup.step.next')
-                                      : t('dashboard.setup.step.todo')}
-                            </span>
-                        </dt>
-                        <dd className="ps-6 text-body text-fg">{row.value}</dd>
-                    </div>
-                ))}
-            </dl>
+                                    {row.done ? '✓' : '○'}
+                                </span>
+                                {onNavigateToSection ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => onNavigateToSection(row.section)}
+                                        className="text-start text-fg-link hover:underline"
+                                    >
+                                        {row.label}
+                                    </button>
+                                ) : (
+                                    <span>{row.label}</span>
+                                )}
+                                <span className="sr-only">
+                                    {row.done
+                                        ? t('dashboard.setup.step.done')
+                                        : row.key === nextStep?.key
+                                          ? t('dashboard.setup.step.next')
+                                          : t('dashboard.setup.step.todo')}
+                                </span>
+                            </dt>
+                            <dd className="ps-6 text-body text-fg">{row.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </div>
         </section>
     );
 }

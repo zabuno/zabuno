@@ -1,3 +1,4 @@
+import { Image } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { MediaPage } from './MediaPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
@@ -12,6 +13,7 @@ const mediaSection: WorkspaceSectionDescriptor = {
     path: 'media',
     order: 5,
     labelKey: 'workspace.shell.nav.media',
+    icon: <Image size={18} weight="regular" />,
     group: 'management',
     render,
 };

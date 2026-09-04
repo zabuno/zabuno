@@ -127,3 +127,31 @@ msgstr ""
 #: dashboard:dashboard.setup.step.todo
 msgid "dashboard.setup.step.todo"
 msgstr ""
+
+#: dashboard:dashboard.stats.categories
+msgid "dashboard.stats.categories"
+msgstr ""
+
+#: dashboard:dashboard.stats.items
+msgid "dashboard.stats.items"
+msgstr ""
+
+#: dashboard:dashboard.stats.visible
+msgid "dashboard.stats.visible"
+msgstr ""
+
+#: dashboard:dashboard.table.caption
+msgid "dashboard.table.caption"
+msgstr ""
+
+#: dashboard:dashboard.table.column.item
+msgid "dashboard.table.column.item"
+msgstr ""
+
+#: dashboard:dashboard.table.column.visible
+msgid "dashboard.table.column.visible"
+msgstr ""
+
+#: dashboard:dashboard.table.heading
+msgid "dashboard.table.heading"
+msgstr ""

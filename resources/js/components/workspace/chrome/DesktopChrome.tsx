@@ -34,7 +34,7 @@ export function DesktopSidebar({
     return (
         <aside
             className={clsx(
-                'admin-shell-sidebar flex flex-[1_1_17rem] flex-col border-e',
+                'admin-shell-sidebar flex flex-[1_1_17rem] flex-col border-e bg-[var(--color-surface)]',
                 'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
             )}
         >

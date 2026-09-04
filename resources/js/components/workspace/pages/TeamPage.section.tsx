@@ -1,3 +1,4 @@
+import { Users } from '@phosphor-icons/react';
 import type { ReactNode } from 'react';
 import { TeamPage } from './TeamPage';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
@@ -12,6 +13,7 @@ const teamSection: WorkspaceSectionDescriptor = {
     path: 'team',
     order: 6,
     labelKey: 'workspace.shell.nav.team',
+    icon: <Users size={18} weight="regular" />,
     permission: 'workspace.manage',
     group: 'management',
     render,
