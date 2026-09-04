@@ -33,11 +33,12 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 697;
+const FROZEN_LEGACY_KEY_COUNT = 703;
 
-// FF-107: QR kodunun insan adı ve adres kopyalama metinleri.
+// FF-108: dürüst durumlar — yayın bilgisi yolda/sorulamadı ayrımı, liste
+// hatasının çıkış yolu, toplu üretimde plan kısıtı (402) metinleri.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'b52589d88f185d1e5abda52667625f77a52c4499da96ad2d36f3b3d1678d5fb9';
+    'f64289eedd91e30acad59958cd3fbba0c27bc36e9785cab21bad1009fe28e236';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

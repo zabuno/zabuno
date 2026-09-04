@@ -65,6 +65,7 @@ export const publication = {
     'workspace.publication.qrDestination.empty': 'No QR code created yet.',
     'workspace.publication.qrDestination.loading': 'Loading QR codes…',
     'workspace.publication.qrDestination.loadError': 'Could not load QR codes. Try again.',
+    'workspace.publication.qrDestination.retry': 'Try again',
     'workspace.publication.qrDestination.createError': 'Could not create QR code. Try again.',
     'workspace.publication.qrDestination.disableError': 'Could not disable QR code. Try again.',
     // KODU BAŞKA ŞUBEYE TAŞI (`docs/81` P1-03; ekranı `docs/98` FF-64).
@@ -84,6 +85,14 @@ export const publication = {
         bir restoran sahibi 43 karakterlik bir dizeden hiçbir şey öğrenmez.
     */
     'workspace.publication.qrDestination.item.entrance': 'Entrance code',
+    /*
+        ÜÇ HÂL AYRI (FF-108). "Bilinmiyor", kodların yok olduğu anlamına
+        gelmez: masadaki basılı kartlar çalışmaya devam ediyor olabilir.
+    */
+    'workspace.publication.qrDestination.fields.checking':
+        'Checking whether your menu is published…',
+    'workspace.publication.qrDestination.statusUnknown':
+        'We could not reach the server to check your menu. Your printed codes keep working — reload to see the current state.',
     'workspace.publication.qrDestination.url.copy': 'Copy link',
     'workspace.publication.qrDestination.url.copied': 'Copied',
     'workspace.publication.qrExport.region': 'QR print export',
@@ -148,6 +157,15 @@ export const publication = {
         'Enter a whole number between 1 and 20.',
     'workspace.publication.qrExport.bulkWizard.createButton': 'Create table QR codes',
     'workspace.publication.qrExport.bulkWizard.loading': 'Creating table QR codes...',
+    'workspace.publication.qrExport.bulkWizard.needsPublication':
+        'Publish your menu first — a QR code has to point at a live menu.',
+    /*
+        Plan kısıtı bir HATA DEĞİLDİR: tekrar denemek işe yaramaz, çıkış
+        yolu plan yükseltmesidir (FF-108).
+    */
+    'workspace.publication.qrExport.bulkWizard.planRestricted':
+        'Creating table codes in bulk is not included in your current plan.',
+    'workspace.publication.qrExport.bulkWizard.planRestricted.action': 'See plans',
     'workspace.publication.qrExport.bulkWizard.createError':
         'Could not create table QR codes. Try again.',
     'workspace.publication.qrExport.bulkWizard.success':

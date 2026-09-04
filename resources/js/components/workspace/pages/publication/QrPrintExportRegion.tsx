@@ -12,6 +12,7 @@ import type { QrCodeItem } from './qr-destination/QrCodeListItem';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedControl';
 import { ActionLink } from '../../../catalog/navigation/micro/ActionLink';
+import type { QrCreateReasonKind } from './QrDestinationFieldsRegion';
 
 const THEME_ORDER = ['classic', 'minimal', 'bold', 'rounded', 'branded', 'highContrast'] as const;
 
@@ -34,7 +35,11 @@ type QrPrintExportRegionProps = {
     locationId?: number;
     menuId?: number;
     hasCurrentPublication?: boolean;
+    /** Toplu sihirbazın kapalı olma sebebi (FF-108). */
+    bulkUnavailableReason?: QrCreateReasonKind;
     onBulkCreated?: (qrCodes: QrCodeItem[]) => void;
+    /** Plan kısıtı çıkışı: faturalama ekranı. */
+    onUpgrade?: () => void;
 };
 
 function exportUrl(
@@ -86,7 +91,9 @@ export function QrPrintExportRegion({
     locationId,
     menuId,
     hasCurrentPublication,
+    bulkUnavailableReason,
     onBulkCreated,
+    onUpgrade,
 }: QrPrintExportRegionProps) {
     const activeItems = items.filter((item) => item.state === 'active');
     const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -268,7 +275,9 @@ export function QrPrintExportRegion({
                 locationId={locationId}
                 menuId={menuId}
                 hasCurrentPublication={hasCurrentPublication}
+                unavailableReason={bulkUnavailableReason}
                 onCreated={onBulkCreated}
+                onUpgrade={onUpgrade}
             />
         </div>
     );

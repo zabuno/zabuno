@@ -27,7 +27,7 @@ export function QrCodesPage({
 }: QrCodesPageProps) {
     const menuId = dashboardMenuTree?.id ?? null;
     const locationId = dashboardMenuTree?.locationId ?? null;
-    const { current } = useCurrentPublication(workspaceId, menuId);
+    const { current, loading, loadError } = useCurrentPublication(workspaceId, menuId);
 
     return (
         <div id="section-qr-codes">
@@ -43,6 +43,23 @@ export function QrCodesPage({
                             locationId={locationId}
                             menuId={menuId}
                             hasCurrentPublication={current !== null}
+                            /*
+                                SAYFA YALAN SÖYLEMEZ (FF-108).
+
+                                `useCurrentPublication` yayın bilgisini
+                                getirirken de, sunucu 500 dönerken de
+                                `current: null` verir. Sayfa yalnız ona
+                                bakıyordu ve ikisini de "önce menünüzü
+                                yayınlayın" diye okuyordu — yani yayında bir
+                                menüsü ve masalarda çalışan kodları olan
+                                sahibe, kodlarının var olmadığı söyleniyordu.
+
+                                Üç hâl artık ayrı: biliniyor, henüz
+                                bilinmiyor, sorulamadı.
+                            */
+                            publicationLoading={loading}
+                            publicationLoadFailed={loadError}
+                            onUpgrade={() => onNavigateToSection?.('billing')}
                         />
                     ) : (
                         /*

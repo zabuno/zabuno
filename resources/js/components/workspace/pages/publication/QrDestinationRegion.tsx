@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { t } from '../../../../i18n/workspace';
+import { Button } from '../../../catalog/forms/micro/Button';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
-import { QrDestinationFieldsRegion } from './QrDestinationFieldsRegion';
+import { QrDestinationFieldsRegion, type QrCreateReasonKind } from './QrDestinationFieldsRegion';
 import { QrPrintExportRegion } from './QrPrintExportRegion';
 import {
     QrCodeListItem,
@@ -15,6 +16,18 @@ type QrDestinationRegionProps = {
     locationId: number;
     menuId: number;
     hasCurrentPublication: boolean;
+    /**
+     * Yayın bilgisi HENÜZ gelmedi mi, yoksa SORULAMADI mı (FF-108)?
+     *
+     * İkisi de `hasCurrentPublication: false` üretir ama anlamları zıttır:
+     * biri "bekle", diğeri "sunucuya ulaşamadık". Ayırmayınca ekran, yayında
+     * bir menüsü ve masalarında çalışan kartları olan sahibe "önce
+     * yayınlayın" diyordu.
+     */
+    publicationLoading?: boolean;
+    publicationLoadFailed?: boolean;
+    /** Plan kısıtının çıkış yolu: faturalama ekranı. */
+    onUpgrade?: () => void;
 };
 
 /**
@@ -23,10 +36,59 @@ type QrDestinationRegionProps = {
  * from a real server response.
  */
 export function QrDestinationRegion(props: QrDestinationRegionProps) {
-    const { workspaceId, locationId, menuId, hasCurrentPublication } = props;
+    const {
+        workspaceId,
+        locationId,
+        menuId,
+        hasCurrentPublication,
+        publicationLoading = false,
+        publicationLoadFailed = false,
+        onUpgrade,
+    } = props;
 
-    const [items, setItems] = useState<QrCodeItem[]>([]);
-    const [loaded, setLoaded] = useState(false);
+    const listUrl = `/api/workspaces/${workspaceId}/brand/locations/${locationId}/qr-codes`;
+
+    /*
+        LİSTE, ÇEKİLDİĞİ ADRESLE BİRLİKTE SAKLANIR (FF-108).
+
+        Önceden kodlar çıplak bir dizideydi ve adres değişince — sahip başka
+        bir şubeye geçtiğinde — eski şubenin kodları ekranda kalıyordu; yeni
+        istek başarısız olursa KALICI olarak kalıyordu. Sahip, Kadıköy
+        ekranında Beşiktaş'ın kartlarını görüyordu.
+
+        Anahtarı durumun İÇİNE koymak bunu imkânsız kılar: elimizdeki cevap şu
+        anki adrese ait değilse liste "henüz yüklenmedi" sayılır. Aynı desen
+        `useCurrentPublication`'da da var — efektin başında `setState`
+        çağırmadan, fazladan render turu üretmeden.
+
+        Anahtara `reloadToken` de girer: "tekrar dene" yeni bir istektir ve
+        ekran o an dürüstçe yeniden "yükleniyor" olur.
+    */
+    const [reloadToken, setReloadToken] = useState(0);
+    const requestKey = `${listUrl}#${String(reloadToken)}`;
+    const [list, setList] = useState<{
+        key: string;
+        items: QrCodeItem[];
+        failed: boolean;
+    } | null>(null);
+
+    const currentList = list?.key === requestKey ? list : null;
+    const items = currentList?.items ?? [];
+    const loaded = currentList !== null;
+    const listFailed = currentList?.failed ?? false;
+
+    /** Sunucu cevabı olmadan listeyi değiştirmenin tek yolu (create/disable/move). */
+    const updateItems = useCallback(
+        (updater: (previous: QrCodeItem[]) => QrCodeItem[]) => {
+            setList((previous) =>
+                previous === null || previous.key !== requestKey
+                    ? previous
+                    : { ...previous, items: updater(previous.items) },
+            );
+        },
+        [requestKey],
+    );
+
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [creating, setCreating] = useState(false);
     /*
@@ -86,7 +148,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
 
                 if (response.ok) {
                     const updated = (await response.json()) as Partial<QrCodeItem>;
-                    setItems((prev) =>
+                    updateItems((prev) =>
                         prev.map((item) =>
                             item.id === qrCodeId
                                 ? {
@@ -106,16 +168,21 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 setErrorMessage(t('workspace.publication.qrDestination.move.error'));
             }
         },
-        [workspaceId],
+        [workspaceId, updateItems],
     );
 
-    const listUrl = `/api/workspaces/${workspaceId}/brand/locations/${locationId}/qr-codes`;
+    /*
+        KODLAR HER ZAMAN OKUNUR (FF-108).
 
+        Eskiden bu istek `hasCurrentPublication` false iken hiç atılmıyordu.
+        Oysa QR kodları yayından AYRI kayıtlardır: sahip menüsünü geri çekmiş
+        ya da yayın sorgusu 500 dönmüş olabilir — masalardaki kartlar yine
+        basılıdır ve yine bu hesaba aittir. Liste "yükleniyor" bile demeden
+        boş kalıyordu: ekranda hiçbir şey ve hiçbir açıklama yoktu. Yayın
+        durumu artık yalnız YENİ KOD ÜRETMEYİ kısıtlar, var olanı görmeyi
+        değil.
+    */
     useEffect(() => {
-        if (!hasCurrentPublication) {
-            return;
-        }
-
         let cancelled = false;
 
         (async () => {
@@ -127,34 +194,29 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
 
                 if (cancelled) return;
 
-                if (response.ok) {
-                    const body = (await response.json()) as unknown;
+                const body: unknown = response.ok ? await response.json() : null;
 
-                    if (Array.isArray(body)) {
-                        setItems(body as QrCodeItem[]);
-                        setErrorMessage(null);
-                    } else {
-                        setErrorMessage(t('workspace.publication.qrDestination.loadError'));
-                    }
+                if (cancelled) return;
+
+                if (Array.isArray(body)) {
+                    setList({ key: requestKey, items: body as QrCodeItem[], failed: false });
                 } else {
-                    setErrorMessage(t('workspace.publication.qrDestination.loadError'));
+                    setList({ key: requestKey, items: [], failed: true });
                 }
             } catch {
-                if (!cancelled) setErrorMessage(t('workspace.publication.qrDestination.loadError'));
-            } finally {
-                if (!cancelled) {
-                    setLoaded(true);
-                }
+                if (!cancelled) setList({ key: requestKey, items: [], failed: true });
             }
         })();
 
         return () => {
             cancelled = true;
         };
-        // Refetch whenever the parent hands us a fresh props object (e.g. once
-        // a current publication becomes available), not on internal re-renders.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props]);
+        /*
+            Bağımlılık ADRESTİR, props NESNESİ değil. Önceki hâl `[props]` idi
+            ve üst bileşenin her render'ı yeni bir nesne ürettiği için liste
+            durup dururken yeniden çekiliyordu.
+        */
+    }, [listUrl, requestKey]);
 
     const handleCreate = useCallback(async () => {
         if (!hasCurrentPublication) return;
@@ -176,7 +238,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
 
             if (response.ok) {
                 const created = (await response.json()) as QrCodeItem;
-                setItems((prev) => [...prev, created]);
+                updateItems((prev) => [...prev, created]);
                 setErrorMessage(null);
             } else {
                 setErrorMessage(t('workspace.publication.qrDestination.createError'));
@@ -186,7 +248,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
         } finally {
             setCreating(false);
         }
-    }, [hasCurrentPublication, listUrl, menuId]);
+    }, [hasCurrentPublication, listUrl, menuId, updateItems]);
 
     const handleDisable = useCallback(
         async (qrCodeId: number) => {
@@ -199,7 +261,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 );
 
                 if (response.ok) {
-                    setItems((prev) =>
+                    updateItems((prev) =>
                         prev.map((item) =>
                             item.id === qrCodeId ? { ...item, state: 'disabled' } : item,
                         ),
@@ -212,7 +274,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 setErrorMessage(t('workspace.publication.qrDestination.disableError'));
             }
         },
-        [workspaceId],
+        [workspaceId, updateItems],
     );
 
     const handleEnable = useCallback(
@@ -226,7 +288,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 );
 
                 if (response.ok) {
-                    setItems((prev) =>
+                    updateItems((prev) =>
                         prev.map((item) =>
                             item.id === qrCodeId ? { ...item, state: 'active' } : item,
                         ),
@@ -239,26 +301,40 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 setErrorMessage(t('workspace.publication.qrDestination.enableError'));
             }
         },
-        [workspaceId],
+        [workspaceId, updateItems],
     );
 
-    const handleBulkCreated = useCallback((created: QrCodeItem[]) => {
-        setItems((prev) => {
-            const seenIds = new Set(prev.map((item) => item.id));
-            const additions: QrCodeItem[] = [];
+    const handleBulkCreated = useCallback(
+        (created: QrCodeItem[]) => {
+            updateItems((prev) => {
+                const seenIds = new Set(prev.map((item) => item.id));
+                const additions: QrCodeItem[] = [];
 
-            for (const item of created) {
-                if (seenIds.has(item.id)) continue;
-                seenIds.add(item.id);
-                additions.push(item);
-            }
+                for (const item of created) {
+                    if (seenIds.has(item.id)) continue;
+                    seenIds.add(item.id);
+                    additions.push(item);
+                }
 
-            return additions.length === 0 ? prev : [...prev, ...additions];
-        });
-    }, []);
+                return additions.length === 0 ? prev : [...prev, ...additions];
+            });
+        },
+        [updateItems],
+    );
 
-    const showEmpty = hasCurrentPublication && loaded && items.length === 0;
-    const showLoading = hasCurrentPublication && !loaded;
+    const showEmpty = loaded && !listFailed && items.length === 0;
+    const showLoading = !loaded;
+
+    /*
+        SEBEP TEK YERDE TÜRETİLİR (FF-108): "Oluştur" düğmesi ile toplu
+        sihirbaz aynı cümleyi söyler. İki ayrı yerde hesaplamak, ikisinin bir
+        gün ayrışacağı anlamına gelirdi.
+    */
+    const reasonKind: QrCreateReasonKind = publicationLoading
+        ? 'loading'
+        : publicationLoadFailed
+          ? 'unknown'
+          : 'notPublished';
 
     return (
         <>
@@ -281,9 +357,43 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                     </p>
                 ) : null}
 
+                {/*
+                    HATANIN BİR ÇIKIŞI OLMALI (FF-108). Liste çekilemediğinde
+                    ekranda yalnız bir cümle kalıyordu; kullanıcının
+                    yapabileceği tek şey sayfayı yenilemekti ve bunu ona kimse
+                    söylemiyordu. Çıkışı olmayan bir hata, hatanın kendisinden
+                    pahalıdır.
+                */}
+                {listFailed ? (
+                    <div className="flex flex-col items-start gap-[var(--space-2)]">
+                        <p role="alert" className="text-body text-fg-danger">
+                            {t('workspace.publication.qrDestination.loadError')}
+                        </p>
+                        <Button
+                            type="button"
+                            color="light"
+                            onClick={() => setReloadToken((token) => token + 1)}
+                        >
+                            {t('workspace.publication.qrDestination.retry')}
+                        </Button>
+                    </div>
+                ) : null}
+
+                {/*
+                    ÜÇ HÂL AYRI (FF-108): biliniyor, henüz bilinmiyor,
+                    sorulamadı. "Sorulamadı", kodların yok olduğu anlamına
+                    GELMEZ — masadaki basılı kartlar çalışmaya devam ediyor
+                    olabilir ve sahibe aksini söylemek en pahalı yalandır.
+                */}
                 {showLoading ? (
                     <p role="status" className="text-body text-fg-muted">
                         {t('workspace.publication.qrDestination.loading')}
+                    </p>
+                ) : null}
+
+                {publicationLoadFailed ? (
+                    <p role="alert" className="text-body text-fg-danger">
+                        {t('workspace.publication.qrDestination.statusUnknown')}
                     </p>
                 ) : null}
 
@@ -317,6 +427,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
 
                 <QrDestinationFieldsRegion
                     disabled={!hasCurrentPublication || creating}
+                    reasonKind={reasonKind}
                     onCreate={handleCreate}
                 />
             </div>
@@ -327,7 +438,9 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 locationId={locationId}
                 menuId={menuId}
                 hasCurrentPublication={hasCurrentPublication}
+                bulkUnavailableReason={reasonKind}
                 onBulkCreated={handleBulkCreated}
+                onUpgrade={onUpgrade}
             />
         </>
     );
