@@ -2672,6 +2672,10 @@ msgstr "Published"
 msgid "workspace.publication.status.region"
 msgstr "Publication status"
 
+#: workspace:workspace.publication.status.retry
+msgid "workspace.publication.status.retry"
+msgstr "Try again"
+
 #: workspace:workspace.publication.status.summary
 msgid "workspace.publication.status.summary"
 msgstr "Version {version} · {state}"
@@ -2752,6 +2756,42 @@ msgstr "Change password"
 msgid "workspace.settings.account.region"
 msgstr "Your account"
 
+#: workspace:workspace.settings.audit.empty
+msgid "workspace.settings.audit.empty"
+msgstr "Nothing recorded yet."
+
+#: workspace:workspace.settings.audit.error
+msgid "workspace.settings.audit.error"
+msgstr "The trail could not be loaded."
+
+#: workspace:workspace.settings.audit.help
+msgid "workspace.settings.audit.help"
+msgstr "Every recorded change, newest first. This list is not a promise that everything is here — only what the system already writes down appears."
+
+#: workspace:workspace.settings.audit.loading
+msgid "workspace.settings.audit.loading"
+msgstr "Loading the trail…"
+
+#: workspace:workspace.settings.audit.region
+msgid "workspace.settings.audit.region"
+msgstr "What happened here"
+
+#: workspace:workspace.settings.audit.retry
+msgid "workspace.settings.audit.retry"
+msgstr "Try again"
+
+#: workspace:workspace.settings.audit.source.media
+msgid "workspace.settings.audit.source.media"
+msgstr "Photo"
+
+#: workspace:workspace.settings.audit.source.publication
+msgid "workspace.settings.audit.source.publication"
+msgstr "Publishing"
+
+#: workspace:workspace.settings.audit.unknownActor
+msgid "workspace.settings.audit.unknownActor"
+msgstr "Unknown"
+
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
 msgstr "Your brand details and your plan. These are set up once and rarely change."
@@ -2759,6 +2799,10 @@ msgstr "Your brand details and your plan. These are set up once and rarely chang
 #: workspace:workspace.settings.tab.account
 msgid "workspace.settings.tab.account"
 msgstr "Account"
+
+#: workspace:workspace.settings.tab.audit
+msgid "workspace.settings.tab.audit"
+msgstr "Audit"
 
 #: workspace:workspace.settings.tab.billing
 msgid "workspace.settings.tab.billing"

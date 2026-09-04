@@ -4,6 +4,7 @@ import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
 import { BrandLogoRegion } from './brand/BrandLogoRegion';
 import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
+import { AuditTrailRegion } from './settings/AuditTrailRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
 
@@ -14,7 +15,7 @@ import { PanelCard } from './shared/PanelCard';
 */
 const BillingPage = lazy(async () => ({ default: (await import('./BillingPage')).BillingPage }));
 
-export type SettingsTab = 'brand' | 'account' | 'billing';
+export type SettingsTab = 'brand' | 'account' | 'billing' | 'audit';
 
 const TABS: ReadonlyArray<{ key: SettingsTab; labelKey: Parameters<typeof t>[0] }> = [
     { key: 'brand', labelKey: 'workspace.settings.tab.brand' },
@@ -22,6 +23,12 @@ const TABS: ReadonlyArray<{ key: SettingsTab; labelKey: Parameters<typeof t>[0] 
     // ise arada bir onarılır (`docs/83`).
     { key: 'account', labelKey: 'workspace.settings.tab.account' },
     { key: 'billing', labelKey: 'workspace.settings.tab.billing' },
+    /*
+        DENETİM (FF-132) — dördüncü sekme. En SONDA duruyor ve bu bilinçli:
+        günlük bir iş değil, bir soru çıktığında açılan bir yer. Başa
+        konsaydı sahibi her Ayarlar açtığında önce geçmişe bakardı.
+    */
+    { key: 'audit', labelKey: 'workspace.settings.tab.audit' },
 ];
 
 export type SettingsPageProps = {
@@ -157,6 +164,8 @@ export function SettingsPage({
                                 */}
                             </div>
                         )}
+
+                        {activeTab === 'audit' && <AuditTrailRegion workspaceId={workspaceId} />}
 
                         {activeTab === 'billing' && (
                             <Suspense fallback={null}>

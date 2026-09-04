@@ -32,6 +32,10 @@ msgstr ""
 msgid "menu.category.add.disclose"
 msgstr ""
 
+#: menu:menu.category.count
+msgid "menu.category.count"
+msgstr ""
+
 #: menu:menu.category.create.error.submit
 msgid "menu.category.create.error.submit"
 msgstr ""
@@ -74,6 +78,10 @@ msgstr ""
 
 #: menu:menu.category.order.label
 msgid "menu.category.order.label"
+msgstr ""
+
+#: menu:menu.category.reorder.handle
+msgid "menu.category.reorder.handle"
 msgstr ""
 
 #: menu:menu.category.select.label
@@ -206,6 +214,10 @@ msgstr ""
 
 #: menu:menu.initial.error.retry
 msgid "menu.initial.error.retry"
+msgstr ""
+
+#: menu:menu.inspector.title
+msgid "menu.inspector.title"
 msgstr ""
 
 #: menu:menu.item.ai.description.error
@@ -388,6 +400,14 @@ msgstr ""
 msgid "menu.item.image.none"
 msgstr ""
 
+#: menu:menu.item.meta.noPhoto
+msgid "menu.item.meta.noPhoto"
+msgstr ""
+
+#: menu:menu.item.open.button
+msgid "menu.item.open.button"
+msgstr ""
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr ""
@@ -444,6 +464,10 @@ msgstr ""
 msgid "menu.item.stock.back.short"
 msgstr ""
 
+#: menu:menu.item.stock.badge
+msgid "menu.item.stock.badge"
+msgstr ""
+
 #: menu:menu.item.stock.out.button
 msgid "menu.item.stock.out.button"
 msgstr ""
@@ -466,6 +490,10 @@ msgstr ""
 
 #: menu:menu.item.visibility.show
 msgid "menu.item.visibility.show"
+msgstr ""
+
+#: menu:menu.item.visibility.switch.label
+msgid "menu.item.visibility.switch.label"
 msgstr ""
 
 #: menu:menu.loading

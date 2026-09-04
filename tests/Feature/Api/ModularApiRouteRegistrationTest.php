@@ -156,6 +156,13 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/workspaces/{workspace}/team/invitations||App\Http\Controllers\Team\StoreTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         'DELETE|api/workspaces/{workspace}/team/invitations/{invitation}||App\Http\Controllers\Team\CancelTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/invitations/accept/{token}||App\Http\Controllers\Team\AcceptTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
+        /*
+            DENETİM İZİ (FF-132) — medya izinden AYRI bir uç ve bu bilinçli:
+            iz iki kaynağı birleştirir (medya + yayın) ve yarın üçüncüsü
+            eklenebilir. Medya modülünün altına konsaydı, medyanın parçası
+            sanılırdı. Sıra dosya yükleme sırasını izler: `team.php`den sonra.
+        */
+        'GET|api/workspaces/{workspace}/audit-trail||App\Http\Controllers\Workspace\ShowWorkspaceAuditTrailController|api,auth:sanctum,verified',
         'GET|api/admin/plans||App\Http\Controllers\PlatformAdmin\ListManagedPlansController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/plans||App\Http\Controllers\PlatformAdmin\StoreManagedPlanController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/plans/{plan}/activate||App\Http\Controllers\PlatformAdmin\ActivateManagedPlanController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
@@ -201,6 +208,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'routes/api/billing.php',
         'routes/api/media.php',
         'routes/api/team.php',
+        'routes/api/workspace-audit.php',
         'routes/api/platform-admin.php',
     ];
 

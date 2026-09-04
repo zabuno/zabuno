@@ -2672,6 +2672,10 @@ msgstr "Yayında"
 msgid "workspace.publication.status.region"
 msgstr "Yayın durumu"
 
+#: workspace:workspace.publication.status.retry
+msgid "workspace.publication.status.retry"
+msgstr ""
+
 #: workspace:workspace.publication.status.summary
 msgid "workspace.publication.status.summary"
 msgstr "Sürüm {version} · {state}"
@@ -2752,6 +2756,42 @@ msgstr "Parola değiştir"
 msgid "workspace.settings.account.region"
 msgstr "Hesabınız"
 
+#: workspace:workspace.settings.audit.empty
+msgid "workspace.settings.audit.empty"
+msgstr ""
+
+#: workspace:workspace.settings.audit.error
+msgid "workspace.settings.audit.error"
+msgstr ""
+
+#: workspace:workspace.settings.audit.help
+msgid "workspace.settings.audit.help"
+msgstr ""
+
+#: workspace:workspace.settings.audit.loading
+msgid "workspace.settings.audit.loading"
+msgstr ""
+
+#: workspace:workspace.settings.audit.region
+msgid "workspace.settings.audit.region"
+msgstr ""
+
+#: workspace:workspace.settings.audit.retry
+msgid "workspace.settings.audit.retry"
+msgstr ""
+
+#: workspace:workspace.settings.audit.source.media
+msgid "workspace.settings.audit.source.media"
+msgstr ""
+
+#: workspace:workspace.settings.audit.source.publication
+msgid "workspace.settings.audit.source.publication"
+msgstr ""
+
+#: workspace:workspace.settings.audit.unknownActor
+msgid "workspace.settings.audit.unknownActor"
+msgstr ""
+
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
 msgstr "Marka bilgileriniz ve planınız. Bunlar bir kez kurulur ve nadiren değişir."
@@ -2759,6 +2799,10 @@ msgstr "Marka bilgileriniz ve planınız. Bunlar bir kez kurulur ve nadiren değ
 #: workspace:workspace.settings.tab.account
 msgid "workspace.settings.tab.account"
 msgstr "Hesap"
+
+#: workspace:workspace.settings.tab.audit
+msgid "workspace.settings.tab.audit"
+msgstr ""
 
 #: workspace:workspace.settings.tab.billing
 msgid "workspace.settings.tab.billing"

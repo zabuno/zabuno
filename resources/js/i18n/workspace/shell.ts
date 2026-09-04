@@ -64,6 +64,22 @@ export const shell = {
     'workspace.settings.account.password.error':
         'Your password could not be changed. Check your current password and try again.',
     'workspace.settings.tab.billing': 'Plan & billing',
+    /*
+        DENETİM (FF-132) — bir ekran değil, bir SORUYA cevap: "menü bir gece
+        değişti, sabah kimse hatırlamıyor". Kayıtlar zaten vardı ama her biri
+        kendi köşesindeydi.
+    */
+    'workspace.settings.tab.audit': 'Audit',
+    'workspace.settings.audit.region': 'What happened here',
+    'workspace.settings.audit.help':
+        'Every recorded change, newest first. This list is not a promise that everything is here — only what the system already writes down appears.',
+    'workspace.settings.audit.loading': 'Loading the trail…',
+    'workspace.settings.audit.error': 'The trail could not be loaded.',
+    'workspace.settings.audit.retry': 'Try again',
+    'workspace.settings.audit.empty': 'Nothing recorded yet.',
+    'workspace.settings.audit.unknownActor': 'Unknown',
+    'workspace.settings.audit.source.media': 'Photo',
+    'workspace.settings.audit.source.publication': 'Publishing',
     'workspace.qrCodes.operational.description':
         'Create and print the QR codes your guests scan to open the menu.',
     // Boş durum dört soruyu birden cevaplar: ne yok, neden yok, anlamı ne,

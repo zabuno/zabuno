@@ -16,6 +16,14 @@ msgstr "No menu has been created for this location yet."
 msgid "dashboard.empty.openMenu"
 msgstr "Open Menu"
 
+#: dashboard:dashboard.greeting
+msgid "dashboard.greeting"
+msgstr "Have a good shift."
+
+#: dashboard:dashboard.greeting.named
+msgid "dashboard.greeting.named"
+msgstr "Have a good shift, {name}."
+
 #: dashboard:dashboard.heading
 msgid "dashboard.heading"
 msgstr "Home"

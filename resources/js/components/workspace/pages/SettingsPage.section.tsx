@@ -8,7 +8,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     // Sekme ADRESTEN okunur, bileşen durumundan değil: `settings/billing`
     // paylaşılabilir, yer imine eklenebilir ve tarayıcı geçmişinde anlamlıdır.
     const activeTab: SettingsTab =
-        ctx.subPath === 'billing' || ctx.subPath === 'account'
+        ctx.subPath === 'billing' || ctx.subPath === 'account' || ctx.subPath === 'audit'
             ? (ctx.subPath as SettingsTab)
             : 'brand';
 

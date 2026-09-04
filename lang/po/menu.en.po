@@ -32,6 +32,10 @@ msgstr "Cancel"
 msgid "menu.category.add.disclose"
 msgstr "Add category"
 
+#: menu:menu.category.count
+msgid "menu.category.count"
+msgstr "{count} products"
+
 #: menu:menu.category.create.error.submit
 msgid "menu.category.create.error.submit"
 msgstr "We could not add the category. Please try again."
@@ -75,6 +79,10 @@ msgstr "Category name"
 #: menu:menu.category.order.label
 msgid "menu.category.order.label"
 msgstr "Order for {name}"
+
+#: menu:menu.category.reorder.handle
+msgid "menu.category.reorder.handle"
+msgstr "Drag {name} to reorder"
 
 #: menu:menu.category.select.label
 msgid "menu.category.select.label"
@@ -207,6 +215,10 @@ msgstr "We could not load your menu. Please try again."
 #: menu:menu.initial.error.retry
 msgid "menu.initial.error.retry"
 msgstr "Retry"
+
+#: menu:menu.inspector.title
+msgid "menu.inspector.title"
+msgstr "{name} — details"
 
 #: menu:menu.item.ai.description.error
 msgid "menu.item.ai.description.error"
@@ -388,6 +400,14 @@ msgstr "Photo"
 msgid "menu.item.image.none"
 msgstr "No photo"
 
+#: menu:menu.item.meta.noPhoto
+msgid "menu.item.meta.noPhoto"
+msgstr "No photo"
+
+#: menu:menu.item.open.button
+msgid "menu.item.open.button"
+msgstr "Open {name}"
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr "Order for {name}"
@@ -444,6 +464,10 @@ msgstr "Mark {name} available again"
 msgid "menu.item.stock.back.short"
 msgstr "Back in stock"
 
+#: menu:menu.item.stock.badge
+msgid "menu.item.stock.badge"
+msgstr "Sold out today"
+
 #: menu:menu.item.stock.out.button
 msgid "menu.item.stock.out.button"
 msgstr "Mark {name} sold out for today"
@@ -467,6 +491,10 @@ msgstr "Hide from the menu"
 #: menu:menu.item.visibility.show
 msgid "menu.item.visibility.show"
 msgstr "Show on the menu"
+
+#: menu:menu.item.visibility.switch.label
+msgid "menu.item.visibility.switch.label"
+msgstr "Show {name} on the menu"
 
 #: menu:menu.loading
 msgid "menu.loading"

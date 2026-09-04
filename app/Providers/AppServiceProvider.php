@@ -95,6 +95,8 @@ use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Quota\ConfigMediaQuota;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
+use App\Application\Workspace\Port\WorkspaceAuditTrailPort;
+use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
@@ -343,6 +345,7 @@ final class AppServiceProvider extends ServiceProvider
         // Medya denetim izi (`docs/49` Faz 7 madde 4): "bu fotoğrafı kim
         // sildi?" sorusunun cevabını tutan yer.
         $this->app->bind(MediaAuditPort::class, EloquentMediaAudit::class);
+        $this->app->bind(WorkspaceAuditTrailPort::class, EloquentWorkspaceAuditTrail::class);
         $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
         $this->app->bind(FeatureFlagPort::class, PennantFeatureFlags::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);

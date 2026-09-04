@@ -14,4 +14,5 @@ require __DIR__.'/api/security.php';
 require __DIR__.'/api/billing.php';
 require __DIR__.'/api/media.php';
 require __DIR__.'/api/team.php';
+require __DIR__.'/api/workspace-audit.php';
 require __DIR__.'/api/platform-admin.php';

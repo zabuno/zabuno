@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 772;
+const FROZEN_LEGACY_KEY_COUNT = 783;
 
-// FF-129: yükleme öncesi kırpma çerçevesi.
+// FF-132: denetim izi sekmesinin metinleri.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '0409b52c1f42637fafce8f7bff939a87f1c13ecde4828e2ab7ecbf450ab370f9';
+    '9f2491cceeb30ceb60ae43aa8b0b7c23f8de03909c7fb34cc2f34a818cb61494';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
