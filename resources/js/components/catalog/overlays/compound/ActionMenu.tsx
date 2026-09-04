@@ -33,6 +33,16 @@ export type ActionMenuProps = {
     header?: ReactNode;
     items: ActionMenuItem[];
     /**
+     * Tetikleyicinin AĞIRLIĞI.
+     *
+     * `primary` marka rengiyle çizer ve sayfanın ana eylemi için ayrılmıştır
+     * (global "Create"). `quiet` sessiz bir yüzey düğmesidir: hesap menüsü
+     * gibi YARDIMCI girişler marka rengini tüketmemeli — 2026-09-04'te sol
+     * alttaki hesap düğmesi parlak sarı bir çağrı gibi duruyordu ve
+     * sayfadaki gerçek birincil eylemle yarışıyordu (`docs/102` §1).
+     */
+    tone?: 'primary' | 'quiet';
+    /**
      * Menü içindeki TEK SEÇİMLİK ayar — örneğin görünüm tercihi.
      *
      * Ayrı bir prop, çünkü bunlar `items` ile aynı şey değildir: `items`
@@ -60,12 +70,17 @@ export function ActionMenu({
     header,
     items,
     radioGroup,
+    tone = 'primary',
     className,
 }: ActionMenuProps) {
     return (
         <Dropdown
             renderTrigger={() => (
-                <FlowbiteButton aria-label={label} className={className}>
+                <FlowbiteButton
+                    aria-label={label}
+                    color={tone === 'quiet' ? 'light' : undefined}
+                    className={className}
+                >
                     {triggerContent ?? label}
                 </FlowbiteButton>
             )}
