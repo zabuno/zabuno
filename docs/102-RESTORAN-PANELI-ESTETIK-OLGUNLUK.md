@@ -140,6 +140,25 @@ Sahibin canlı ekranlarından üç kusur:
    eklendi: dört günlük hedef (Home, Menus, QR codes, Insights) tek dokunuş,
    beşinci düğme "More" çekmeceyi açar. Hedefler bölüm kaydından okunur;
    alt çubuk varken hamburger üst çubuktan KALKAR.
+## 5f. FF-84 — sistem (hesap) menüsü ve Ayarlar'ın yeri (2026-09-04)
+
+**Sahibin kararı:** Ayarlar kenar çubuğundan **sistem menüsüne** taşındı.
+`docs/50` §8 onu "utility" grubunda tutuyordu; tek maddelik bir grup başlığı
+her ekranda dikey alan harcıyordu. Kayıttaki adres değişmedi
+(`/app/{ws}/settings`), yalnız oraya giden kontrolün yeri değişti; bölümün
+`group` alanı kaldırıldı (kayıt bu üçüncü hâli — "listelenmez ama adresi
+çalışır" — zaten tanımlıyordu).
+
+**Menünün estetiği** (öncesi: düz beyaz kutu, hizasız bir nokta, ikonsuz
+satırlar):
+
+- Panel `radius-lg`, 4 px iç dolgu, en az 16 rem genişlik; satırlar içeriden
+  yuvarlanan vurguyla (kenara yapışmaz).
+- Başlık artık bir KİMLİK bloğu: baş harf dairesi + e-posta + "Account".
+- Satırlar dokunma yüksekliğinde, 12 px ikon boşluğuyla; Ayarlar (Gear),
+  Çalışma alanı değiştir (ArrowsLeftRight), Çıkış (SignOut).
+- Tema seçimi: hizasız `•` yerine sabit genişlikte sütunda onay imi (Check);
+  bölüm başlığı `text-caption` büyük harf ve altında ayraç.
 
 ## 6. Kullanıcı yolculuğu
 

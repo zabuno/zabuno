@@ -1,3 +1,4 @@
+import { ArrowsLeftRight, Gear, SignOut } from '@phosphor-icons/react';
 import { t } from '../../../i18n/workspace';
 import { t as themeText } from '../../../i18n/theme';
 import { ActionMenu } from '../../catalog/overlays/compound/ActionMenu';
@@ -9,6 +10,8 @@ import {
 } from '../../theme/themeControl';
 
 export type AccountMenuProps = {
+    /** Ayarlar ekranına geçiş — sahibin kararı: ayarlar sistem menüsünde (FF-84). */
+    onOpenSettings?: () => void;
     email: string;
     onSwitchWorkspace: () => void;
     onLogout: () => void;
@@ -31,6 +34,7 @@ export type AccountMenuProps = {
  */
 export function AccountMenu({
     email,
+    onOpenSettings,
     onSwitchWorkspace,
     onLogout,
     loggingOut = false,
@@ -57,7 +61,22 @@ export function AccountMenu({
                     </span>
                 </span>
             }
-            header={email}
+            header={
+                <span className="flex items-center gap-[var(--space-3)]">
+                    <span
+                        aria-hidden="true"
+                        className="flex h-[2rem] w-[2rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-body font-semibold text-fg"
+                    >
+                        {email.slice(0, 1).toLocaleUpperCase()}
+                    </span>
+                    <span className="flex min-w-0 flex-col">
+                        <span className="truncate text-body font-medium text-fg">{email}</span>
+                        <span className="text-caption uppercase tracking-[0.08em] text-fg-muted">
+                            {t('workspace.account.menu.label')}
+                        </span>
+                    </span>
+                </span>
+            }
             /*
                 Görünüm bölümü YALNIZ tema sağlayıcısı varsa çizilir. Yoksa
                 tercih hiçbir yere yazılamaz ve düğme tıklanır ama hiçbir şey
@@ -77,14 +96,33 @@ export function AccountMenu({
                       }
             }
             items={[
+                /*
+                    AYARLAR sistem menüsünde — sahibin kararı (2026-09-04).
+                    `docs/50` §8 onu kenar çubuğunun "utility" grubuna
+                    koyuyordu; ayrı bir grup başlığı altında tek bir madde,
+                    her ekranda dikey alan harcayan bir bölüm üretiyordu.
+                    Kayıttaki adres değişmedi: `/app/{ws}/settings` aynı yer.
+                */
+                ...(onOpenSettings
+                    ? [
+                          {
+                              key: 'settings',
+                              label: t('workspace.shell.nav.settings'),
+                              icon: <Gear size={18} />,
+                              onSelect: onOpenSettings,
+                          },
+                      ]
+                    : []),
                 {
                     key: 'switch-workspace',
                     label: t('workspace.current.switch'),
+                    icon: <ArrowsLeftRight size={18} />,
                     onSelect: onSwitchWorkspace,
                 },
                 {
                     key: 'logout',
                     label: t('workspace.current.logout'),
+                    icon: <SignOut size={18} />,
                     onSelect: onLogout,
                     disabled: loggingOut,
                 },

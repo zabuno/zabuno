@@ -228,6 +228,19 @@ function setViewport(width: number, height: number) {
     window.dispatchEvent(new Event('resize'));
 }
 
+/**
+ * FF-84: Ayarlar KENAR ÇUBUĞUNDA değil, hesap (sistem) menüsünde.
+ *
+ * Sahibin kararı: tek maddelik "Settings" grubu her ekranda dikey alan
+ * harcıyordu. Adres değişmedi (`/app/{ws}/settings`); yalnız oraya giden
+ * kontrolün yeri değişti. Testler bu yardımcıdan geçer ki gelecekte yer
+ * bir kez daha değişirse tek dosyada güncellensin.
+ */
+async function openSettingsFromAccountMenu(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(await screen.findByRole('button', { name: 'Account' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Settings' }));
+}
+
 describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_BATCH_RED)', () => {
     beforeEach(() => {
         // Her test tarayıcıyı YENİ açmış gibi başlar.
@@ -265,12 +278,12 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
     it('exposes six accessible nav destinations with exactly one aria-current=page and consistent hrefs', async () => {
         await renderCurrentWorkspace();
 
-        const names = ['Home', 'Settings', 'Locations', 'Menus', 'Media', 'QR codes'];
+        // FF-84: Settings kenar çubuğunda değil — hesap (sistem) menüsünde.
+        const names = ['Home', 'Locations', 'Menus', 'Media', 'QR codes'];
         // Gerçek adresler — fragment değil. Bunlar sunucunun gördüğü,
         // paylaşılabilen, ölçülebilen adreslerdir (docs/38 §4).
         const paths = [
             '/app/zeytin-restoranlari/dashboard',
-            '/app/zeytin-restoranlari/settings',
             '/app/zeytin-restoranlari/locations',
             '/app/zeytin-restoranlari/menu',
             '/app/zeytin-restoranlari/media',
@@ -301,7 +314,6 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
             // ayarları Settings'in içinden, yayınlama menünün yanından açılır.
             // Günlük operasyon olmayan işlerin ana menüde kalıcı yer işgal
             // etmesi, her gün gidilen hedeflerin arasına gürültü koymaktı.
-            { name: 'Settings', heading: 'Settings', id: 'section-settings' },
             { name: 'Locations', heading: 'Locations', id: 'section-locations' },
             { name: 'Menus', heading: 'Menus', id: 'section-menu' },
             { name: 'Media', heading: 'Media', id: 'section-media' },
@@ -330,8 +342,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
-        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
+        screen.getByRole('navigation', { name: 'Restaurant admin' });
+        await openSettingsFromAccountMenu(user);
 
         const brandRoot = document.querySelector('#section-settings') as HTMLElement;
         expect(within(brandRoot).getByText('Zeytin')).toBeInTheDocument();
@@ -422,9 +434,9 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         // masaüstü rayının kodu bu pakette hiç bulunmaz (docs/54).
         await renderCurrentWorkspace(mobileChrome);
 
-        const names = ['Settings', 'Locations', 'Menus', 'Media', 'QR codes', 'Home'];
+        // FF-84: Settings kenar çubuğunda değil — hesap (sistem) menüsünde.
+        const names = ['Locations', 'Menus', 'Media', 'QR codes', 'Home'];
         const ids = [
-            'section-settings',
             'section-locations',
             'section-menu',
             'section-media',
@@ -456,8 +468,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         const user = userEvent.setup();
         const fetchMock = await renderCurrentWorkspace();
 
-        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
-        await user.click(within(nav).getByRole('link', { name: 'Settings' }));
+        screen.getByRole('navigation', { name: 'Restaurant admin' });
+        await openSettingsFromAccountMenu(user);
         const brandRoot = document.querySelector('#section-settings') as HTMLElement;
         const scope = within(brandRoot);
 
@@ -644,7 +656,6 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
 
         const destinations = [
             { name: 'Home', id: 'section-dashboard' },
-            { name: 'Settings', id: 'section-settings' },
             { name: 'Locations', id: 'section-locations' },
             { name: 'Menus', id: 'section-menu' },
             { name: 'Media', id: 'section-media' },

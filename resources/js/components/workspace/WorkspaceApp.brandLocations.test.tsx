@@ -155,7 +155,12 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         render(<WorkspaceApp {...desktopChrome} />);
 
         const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-        expect(within(nav).getByRole('link', { name: 'Settings' })).toBeInTheDocument();
+        /*
+            FF-84: Ayarlar kenar çubuğundan hesap (sistem) menüsüne taşındı
+            (sahibin kararı). Kayıtta grubu yok; adresi çalışmaya devam eder.
+        */
+        expect(within(nav).queryByRole('link', { name: 'Settings' })).toBeNull();
+        expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument();
         expect(within(nav).getByRole('link', { name: 'Locations' })).toBeInTheDocument();
 
         vi.unstubAllGlobals();
@@ -245,9 +250,13 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         }>();
         render(<WorkspaceApp {...desktopChrome} />);
 
-        const nav = await screen.findByRole('navigation', { name: 'Restaurant admin' });
-        const navLink = within(nav).getByRole('link', { name: 'Settings' });
-        fireEvent.click(navLink);
+        await screen.findByRole('navigation', { name: 'Restaurant admin' });
+        /*
+            FF-84: Ayarlar kenar çubuğundan hesap (sistem) menüsüne taşındı
+            (sahibin kararı). Kayıtta grubu yok; adresi çalışmaya devam eder.
+        */
+        fireEvent.click(screen.getByRole('button', { name: 'Account' }));
+        fireEvent.click(await screen.findByRole('menuitem', { name: 'Settings' }));
 
         const destination = document.querySelector('#section-settings') as HTMLElement;
         expect(destination).not.toBeNull();

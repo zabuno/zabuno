@@ -33,7 +33,10 @@ export function MenuItem({
             onClick={onSelect}
             disabled={disabled}
             className={clsx(
-                'flex w-full items-center gap-2 px-4 py-2 text-start text-body',
+                // 2026 menü satırı: içeriden yuvarlak vurgu, dokunma yüksekliği,
+                // ikon için sabit sütun (`docs/102` §5f).
+                'flex min-h-[var(--density-hit-area-min)] w-full items-center gap-[var(--space-3)] rounded-[var(--radius-md)]',
+                'px-[var(--space-3)] py-[var(--space-2)] text-start text-body',
                 destructive
                     ? 'text-fg-danger hover:bg-surface-danger'
                     : 'text-fg-secondary hover:bg-surface-hover',

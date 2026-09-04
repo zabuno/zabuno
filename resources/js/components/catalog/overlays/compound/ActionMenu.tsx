@@ -75,6 +75,9 @@ export function ActionMenu({
 }: ActionMenuProps) {
     return (
         <Dropdown
+            // Panelin kendi dolgusu: satırlar kenara yapışmaz, hover vurgusu
+            // içeriden yuvarlanır (`docs/102` §5f).
+            className="min-w-[16rem] rounded-[var(--radius-lg)] border border-[var(--color-border)] p-[var(--space-1)]"
             renderTrigger={() => (
                 <FlowbiteButton
                     aria-label={label}
@@ -86,14 +89,14 @@ export function ActionMenu({
             )}
         >
             {header ? (
-                <div className="border-b border-border px-4 py-2 text-meta text-fg-muted">
+                <div className="border-b border-border px-[var(--space-3)] py-[var(--space-3)]">
                     {header}
                 </div>
             ) : null}
             {radioGroup ? (
                 <>
                     <div
-                        className="border-t border-border px-4 pt-2 pb-1 text-meta text-fg-muted"
+                        className="px-[var(--space-3)] pt-[var(--space-3)] pb-[var(--space-1)] text-caption font-semibold uppercase tracking-[0.08em] text-fg-muted"
                         id={`${label}-appearance`}
                     >
                         {radioGroup.label}
@@ -107,6 +110,7 @@ export function ActionMenu({
                             {option.label}
                         </MenuItemRadio>
                     ))}
+                    <div className="my-[var(--space-1)] border-t border-border" />
                 </>
             ) : null}
             {items.map((item) => (
