@@ -568,3 +568,23 @@ kabuklar hiç çözmüyordu — aynı üründe iki farklı gerçek vardı.
 **Kanıt:** `tests/Feature/Localization/RequestLocaleNegotiationTest.php`
 (Türkçe tarayıcı, bölgeli etiket, desteklenmeyen dil, başlıksız istek, Arapça
 RTL, çalışma alanı kabuğu).
+
+## 12. FF-94…FF-95 — bütün yüzeyler Türkçe
+
+| Paket | Ne yaptı |
+| --- | --- |
+| FF-94 | `workspace` (683) ve `menu` (86) Türkçeye çevrildi; çeviri tabloları isteğe bağlı indirilir |
+| FF-95 | `platform` ve `engineering` (206) Türkçeye çevrildi |
+
+Bugün altı katalogda da Türkçe boş `msgstr` YOKTUR: `site`, `auth`,
+`dashboard`, `workspace`, `menu`, `platform`, `guest`.
+
+**Paket bütçesi neden aynı kaldı.** Türkçe tamamlanınca çalışma alanı paketi
+207 KB'ye çıkıp 200 KB bütçesini aştı — ve o ağırlığın çoğu hiçbir
+kullanıcının okumadığı dillerdi. Sayıyı yükseltmek yerine ölçülen şey
+düzeltildi: projeksiyonlar ana pakete gömülmüyor, yalnız AÇIK OLAN dilin
+tablosu ayrı bir parça olarak iniyor. İngilizce okuyan kullanıcı hiçbir
+çeviri indirmez. Uygulama tablo inmeden çizilmez; önce İngilizce sonra Türkçe
+bir ekran göstermek, dili hiç bilmemekten kötü görünürdü. Yükleme başarısız
+olursa uygulama yine çizilir ve İngilizce metne düşer — çizilmeyen bir
+uygulamanın düşeceği bir yer yoktur.

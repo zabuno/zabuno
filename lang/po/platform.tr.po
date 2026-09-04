@@ -10,824 +10,824 @@ msgstr ""
 
 #: platform:engineering.aiAudit.actor.server
 msgid "engineering.aiAudit.actor.server"
-msgstr ""
+msgstr "sunucu komutu"
 
 #: platform:engineering.aiAudit.assignments.empty
 msgid "engineering.aiAudit.assignments.empty"
-msgstr ""
+msgstr "Henüz hiçbir restoran yapay zekâ çağrısı yapmadı, bu yüzden hiçbir eşleştirme yok."
 
 #: platform:engineering.aiAudit.assignments.title
 msgid "engineering.aiAudit.assignments.title"
-msgstr ""
+msgstr "Restoran → hesap eşleştirmesi"
 
 #: platform:engineering.aiAudit.audits.empty
 msgid "engineering.aiAudit.audits.empty"
-msgstr ""
+msgstr "Henüz hiçbir anahtar yazılmadı."
 
 #: platform:engineering.aiAudit.audits.title
 msgid "engineering.aiAudit.audits.title"
-msgstr ""
+msgstr "Anahtar ve sağlık olayları"
 
 #: platform:engineering.aiAudit.col.action
 msgid "engineering.aiAudit.col.action"
-msgstr ""
+msgstr "Olay"
 
 #: platform:engineering.aiAudit.col.actor
 msgid "engineering.aiAudit.col.actor"
-msgstr ""
+msgstr "Yapan"
 
 #: platform:engineering.aiAudit.col.at
 msgid "engineering.aiAudit.col.at"
-msgstr ""
+msgstr "Ne zaman"
 
 #: platform:engineering.aiAudit.col.connection
 msgid "engineering.aiAudit.col.connection"
-msgstr ""
+msgstr "Hesap"
 
 #: platform:engineering.aiAudit.col.health
 msgid "engineering.aiAudit.col.health"
-msgstr ""
+msgstr "Sağlık"
 
 #: platform:engineering.aiAudit.col.provider
 msgid "engineering.aiAudit.col.provider"
-msgstr ""
+msgstr "Sağlayıcı"
 
 #: platform:engineering.aiAudit.col.since
 msgid "engineering.aiAudit.col.since"
-msgstr ""
+msgstr "Eşleştirme tarihi"
 
 #: platform:engineering.aiAudit.col.workspace
 msgid "engineering.aiAudit.col.workspace"
-msgstr ""
+msgstr "Restoran"
 
 #: platform:engineering.aiAudit.description
 msgid "engineering.aiAudit.description"
-msgstr ""
+msgstr "Hangi sağlayıcı anahtarını kim ne zaman değiştirdi, hangi hesap havuzdan düştü ve hangi restoran hangi hesaba bağlı. Salt okunur; burada hiçbir gizli bilgi yer almaz."
 
 #: platform:engineering.aiAudit.error
 msgid "engineering.aiAudit.error"
-msgstr ""
+msgstr "Denetim kaydı yüklenemedi."
 
 #: platform:engineering.aiAudit.heading
 msgid "engineering.aiAudit.heading"
-msgstr ""
+msgstr "Yapay zekâ denetim kaydı"
 
 #: platform:engineering.aiAudit.loading
 msgid "engineering.aiAudit.loading"
-msgstr ""
+msgstr "Denetim kaydı yükleniyor…"
 
 #: platform:engineering.aiAudit.nav.label
 msgid "engineering.aiAudit.nav.label"
-msgstr ""
+msgstr "Yapay zekâ denetim kaydı"
 
 #: platform:engineering.shell.brand
 msgid "engineering.shell.brand"
-msgstr ""
+msgstr "Zabuno Mühendislik"
 
 #: platform:engineering.shell.group.evidence
 msgid "engineering.shell.group.evidence"
-msgstr ""
+msgstr "Kanıt"
 
 #: platform:engineering.shell.heading
 msgid "engineering.shell.heading"
-msgstr ""
+msgstr "Mühendislik"
 
 #: platform:engineering.shell.navLabel
 msgid "engineering.shell.navLabel"
-msgstr ""
+msgstr "Mühendislik"
 
 #: platform:engineering.shell.toPlatform
 msgid "engineering.shell.toPlatform"
-msgstr ""
+msgstr "Platform yönetimi"
 
 #: platform:platform.connections.add
 msgid "platform.connections.add"
-msgstr ""
+msgstr "+ Bağlantı ekle"
 
 #: platform:platform.connections.add.cancel
 msgid "platform.connections.add.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: platform:platform.connections.add.heading
 msgid "platform.connections.add.heading"
-msgstr ""
+msgstr "Yeni bağlantı"
 
 #: platform:platform.connections.create
 msgid "platform.connections.create"
-msgstr ""
+msgstr "Bağlantıyı kaydet"
 
 #: platform:platform.connections.create.error
 msgid "platform.connections.create.error"
-msgstr ""
+msgstr "Bağlantı kaydedilemedi."
 
 #: platform:platform.connections.empty
 msgid "platform.connections.empty"
-msgstr ""
+msgstr "Henüz bağlantı yok."
 
 #: platform:platform.connections.enable
 msgid "platform.connections.enable"
-msgstr ""
+msgstr "Etkinleştir"
 
 #: platform:platform.connections.health.healthy
 msgid "platform.connections.health.healthy"
-msgstr ""
+msgstr "Sağlıklı"
 
 #: platform:platform.connections.health.unhealthy
 msgid "platform.connections.health.unhealthy"
-msgstr ""
+msgstr "Yanıt vermiyor"
 
 #: platform:platform.connections.health.unknown
 msgid "platform.connections.health.unknown"
-msgstr ""
+msgstr "Henüz kontrol edilmedi"
 
 #: platform:platform.connections.label.help
 msgid "platform.connections.label.help"
-msgstr ""
+msgstr "Bu hesap için kendi verdiğiniz ad, örneğin “OpenAI — toplu aktarım”. İki kartı birbirinden ayırmanın tek yolu budur."
 
 #: platform:platform.connections.label.label
 msgid "platform.connections.label.label"
-msgstr ""
+msgstr "Bağlantı adı"
 
 #: platform:platform.connections.probe
 msgid "platform.connections.probe"
-msgstr ""
+msgstr "Bu bağlantıyı sına"
 
 #: platform:platform.connections.probe.reachable
 msgid "platform.connections.probe.reachable"
-msgstr ""
+msgstr "Ulaşıldı — anahtar çalışıyor."
 
 #: platform:platform.connections.probe.rejected
 msgid "platform.connections.probe.rejected"
-msgstr ""
+msgstr "Sağlayıcı bu anahtarı reddetti."
 
 #: platform:platform.connections.probe.unsupported
 msgid "platform.connections.probe.unsupported"
-msgstr ""
+msgstr "Bu sağlayıcı için sınanacak bir şey yok."
 
 #: platform:platform.connections.provider.choose
 msgid "platform.connections.provider.choose"
-msgstr ""
+msgstr "Bir sağlayıcı seçin…"
 
 #: platform:platform.connections.provider.label
 msgid "platform.connections.provider.label"
-msgstr ""
+msgstr "Sağlayıcı"
 
 #: platform:platform.connections.scope.byok
 msgid "platform.connections.scope.byok"
-msgstr ""
+msgstr "Müşterinin kendi anahtarı (BYOK)"
 
 #: platform:platform.connections.scope.label
 msgid "platform.connections.scope.label"
-msgstr ""
+msgstr "Bu anahtar kime ait"
 
 #: platform:platform.connections.scope.platform
 msgid "platform.connections.scope.platform"
-msgstr ""
+msgstr "Platform hesabı"
 
 #: platform:platform.connections.scope.platform_owned
 msgid "platform.connections.scope.platform_owned"
-msgstr ""
+msgstr "Platform hesabı"
 
 #: platform:platform.connections.scope.tenant_byok
 msgid "platform.connections.scope.tenant_byok"
-msgstr ""
+msgstr "Müşterinin kendi anahtarı"
 
 #: platform:platform.connections.workspace.help
 msgid "platform.connections.workspace.help"
-msgstr ""
+msgstr "Müşteri anahtarı yalnız o tek çalışma alanına hizmet eder. Başka hiç kimse için aday olarak görünmez."
 
 #: platform:platform.connections.workspace.label
 msgid "platform.connections.workspace.label"
-msgstr ""
+msgstr "Çalışma alanı kimliği"
 
 #: platform:platform.credentials.disable
 msgid "platform.credentials.disable"
-msgstr ""
+msgstr "Devre dışı bırak"
 
 #: platform:platform.credentials.error
 msgid "platform.credentials.error"
-msgstr ""
+msgstr "Sağlayıcı anahtarlarını yükleyemedik."
 
 #: platform:platform.credentials.field.api_key
 msgid "platform.credentials.field.api_key"
-msgstr ""
+msgstr "API anahtarı"
 
 #: platform:platform.credentials.field.base_url
 msgid "platform.credentials.field.base_url"
-msgstr ""
+msgstr "Temel adres"
 
 #: platform:platform.credentials.field.domain
 msgid "platform.credentials.field.domain"
-msgstr ""
+msgstr "Alan adı"
 
 #: platform:platform.credentials.field.endpoint
 msgid "platform.credentials.field.endpoint"
-msgstr ""
+msgstr "Uç nokta"
 
 #: platform:platform.credentials.field.organization
 msgid "platform.credentials.field.organization"
-msgstr ""
+msgstr "Kuruluş"
 
 #: platform:platform.credentials.field.project
 msgid "platform.credentials.field.project"
-msgstr ""
+msgstr "Proje"
 
 #: platform:platform.credentials.field.secret
 msgid "platform.credentials.field.secret"
-msgstr ""
+msgstr "Gizli anahtar / API anahtarı"
 
 #: platform:platform.credentials.field.secret_key
 msgid "platform.credentials.field.secret_key"
-msgstr ""
+msgstr "Gizli anahtar"
 
 #: platform:platform.credentials.intro
 msgid "platform.credentials.intro"
-msgstr ""
+msgstr "Platform sağlayıcı anahtarlarını burada saklayın. Kaydedildikten sonra gizli bilgi yalnız maskelenmiş bir ipucu olarak görünür — bu ekrana asla geri gönderilmez. Mevcut değeri korumak için gizli alanı boş bırakın."
 
 #: platform:platform.credentials.keepPlaceholder
 msgid "platform.credentials.keepPlaceholder"
-msgstr ""
+msgstr "Mevcut değeri korumak için boş bırakın"
 
 #: platform:platform.credentials.loading
 msgid "platform.credentials.loading"
-msgstr ""
+msgstr "Sağlayıcı anahtarları yükleniyor…"
 
 #: platform:platform.credentials.nav.label
 msgid "platform.credentials.nav.label"
-msgstr ""
+msgstr "Sağlayıcı anahtarları"
 
 #: platform:platform.credentials.provider.anthropic
 msgid "platform.credentials.provider.anthropic"
-msgstr ""
+msgstr "Anthropic (Claude)"
 
 #: platform:platform.credentials.provider.custom_endpoint
 msgid "platform.credentials.provider.custom_endpoint"
-msgstr ""
+msgstr "Özel uç nokta (OpenAI uyumlu)"
 
 #: platform:platform.credentials.provider.gemini
 msgid "platform.credentials.provider.gemini"
-msgstr ""
+msgstr "Gemini (Google)"
 
 #: platform:platform.credentials.provider.iyzico
 msgid "platform.credentials.provider.iyzico"
-msgstr ""
+msgstr "Iyzico (ödeme)"
 
 #: platform:platform.credentials.provider.kimi
 msgid "platform.credentials.provider.kimi"
-msgstr ""
+msgstr "Kimi (Moonshot)"
 
 #: platform:platform.credentials.provider.mailgun
 msgid "platform.credentials.provider.mailgun"
-msgstr ""
+msgstr "Mailgun (e-posta)"
 
 #: platform:platform.credentials.provider.openai
 msgid "platform.credentials.provider.openai"
-msgstr ""
+msgstr "OpenAI (ChatGPT)"
 
 #: platform:platform.credentials.region.label
 msgid "platform.credentials.region.label"
-msgstr ""
+msgstr "Sağlayıcı anahtarları"
 
 #: platform:platform.credentials.retry
 msgid "platform.credentials.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.credentials.save
 msgid "platform.credentials.save"
-msgstr ""
+msgstr "Kaydet"
 
 #: platform:platform.credentials.saveError
 msgid "platform.credentials.saveError"
-msgstr ""
+msgstr "Kaydedemedik. Lütfen tekrar deneyin."
 
 #: platform:platform.credentials.saved
 msgid "platform.credentials.saved"
-msgstr ""
+msgstr "Kaydedildi."
 
 #: platform:platform.credentials.secretSet
 msgid "platform.credentials.secretSet"
-msgstr ""
+msgstr "Ayarlı ({mask})"
 
 #: platform:platform.credentials.state.active
 msgid "platform.credentials.state.active"
-msgstr ""
+msgstr "Etkin"
 
 #: platform:platform.credentials.state.disabled
 msgid "platform.credentials.state.disabled"
-msgstr ""
+msgstr "Devre dışı"
 
 #: platform:platform.credentials.state.unset
 msgid "platform.credentials.state.unset"
-msgstr ""
+msgstr "Ayarlı değil"
 
 #: platform:platform.plans.activate.button
 msgid "platform.plans.activate.button"
-msgstr ""
+msgstr "Etkinleştir"
 
 #: platform:platform.plans.activate.dialog.cancel
 msgid "platform.plans.activate.dialog.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: platform:platform.plans.activate.dialog.confirm
 msgid "platform.plans.activate.dialog.confirm"
-msgstr ""
+msgstr "Etkinleştirmeyi onayla"
 
 #: platform:platform.plans.activate.dialog.heading
 msgid "platform.plans.activate.dialog.heading"
-msgstr ""
+msgstr "Planı etkinleştir"
 
 #: platform:platform.plans.activate.error
 msgid "platform.plans.activate.error"
-msgstr ""
+msgstr "Bu plan etkinleştirilemedi. Lütfen tekrar deneyin."
 
 #: platform:platform.plans.activate.success
 msgid "platform.plans.activate.success"
-msgstr ""
+msgstr "Plan etkinleştirildi."
 
 #: platform:platform.plans.empty
 msgid "platform.plans.empty"
-msgstr ""
+msgstr "Henüz plan yok."
 
 #: platform:platform.plans.error
 msgid "platform.plans.error"
-msgstr ""
+msgstr "Planları yükleyemedik."
 
 #: platform:platform.plans.form.amount
 msgid "platform.plans.form.amount"
-msgstr ""
+msgstr "Tutar (en küçük birim)"
 
 #: platform:platform.plans.form.amount.error.invalid
 msgid "platform.plans.form.amount.error.invalid"
-msgstr ""
+msgstr "Tutarı en küçük birimde, yalnız rakamla girin."
 
 #: platform:platform.plans.form.code
 msgid "platform.plans.form.code"
-msgstr ""
+msgstr "Kod"
 
 #: platform:platform.plans.form.code.error.required
 msgid "platform.plans.form.code.error.required"
-msgstr ""
+msgstr "Bir plan kodu girin."
 
 #: platform:platform.plans.form.currency
 msgid "platform.plans.form.currency"
-msgstr ""
+msgstr "Para birimi"
 
 #: platform:platform.plans.form.currency.error.invalid
 msgid "platform.plans.form.currency.error.invalid"
-msgstr ""
+msgstr "Üç harfli kod kullanın, örneğin EUR."
 
 #: platform:platform.plans.form.entitlements
 msgid "platform.plans.form.entitlements"
-msgstr ""
+msgstr "Haklar (her satıra bir tane)"
 
 #: platform:platform.plans.form.error
 msgid "platform.plans.form.error"
-msgstr ""
+msgstr "Planı oluşturamadık. Lütfen tekrar deneyin."
 
 #: platform:platform.plans.form.heading
 msgid "platform.plans.form.heading"
-msgstr ""
+msgstr "Plan oluştur"
 
 #: platform:platform.plans.form.name
 msgid "platform.plans.form.name"
-msgstr ""
+msgstr "Plan adı"
 
 #: platform:platform.plans.form.name.error.required
 msgid "platform.plans.form.name.error.required"
-msgstr ""
+msgstr "Bir plan adı girin."
 
 #: platform:platform.plans.form.optional
 msgid "platform.plans.form.optional"
-msgstr ""
+msgstr "{label} (isteğe bağlı)"
 
 #: platform:platform.plans.form.pair.error
 msgid "platform.plans.form.pair.error"
-msgstr ""
+msgstr "Tutarı ve para birimini birlikte girin ya da ikisini de boş bırakın."
 
 #: platform:platform.plans.form.sortOrder
 msgid "platform.plans.form.sortOrder"
-msgstr ""
+msgstr "Sıralama"
 
 #: platform:platform.plans.form.sortOrder.error.required
 msgid "platform.plans.form.sortOrder.error.required"
-msgstr ""
+msgstr "Bir tam sayı girin, örneğin 10."
 
 #: platform:platform.plans.form.submit
 msgid "platform.plans.form.submit"
-msgstr ""
+msgstr "Planı oluştur"
 
 #: platform:platform.plans.form.version
 msgid "platform.plans.form.version"
-msgstr ""
+msgstr "Sürüm"
 
 #: platform:platform.plans.form.version.error.required
 msgid "platform.plans.form.version.error.required"
-msgstr ""
+msgstr "Bir tam sayı girin, örneğin 1."
 
 #: platform:platform.plans.inactive
 msgid "platform.plans.inactive"
-msgstr ""
+msgstr "Etkin değil"
 
 #: platform:platform.plans.loading
 msgid "platform.plans.loading"
-msgstr ""
+msgstr "Planlar yükleniyor…"
 
 #: platform:platform.plans.priceUnavailable
 msgid "platform.plans.priceUnavailable"
-msgstr ""
+msgstr "Fiyat yok"
 
 #: platform:platform.plans.region.label
 msgid "platform.plans.region.label"
-msgstr ""
+msgstr "Planlar"
 
 #: platform:platform.plans.retry
 msgid "platform.plans.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.releaseReadiness.attest.badge.decided
 msgid "platform.releaseReadiness.attest.badge.decided"
-msgstr ""
+msgstr "Karara bağlandı"
 
 #: platform:platform.releaseReadiness.attest.badge.failed
 msgid "platform.releaseReadiness.attest.badge.failed"
-msgstr ""
+msgstr "Beyan edildi — başarısız"
 
 #: platform:platform.releaseReadiness.attest.badge.passed
 msgid "platform.releaseReadiness.attest.badge.passed"
-msgstr ""
+msgstr "Beyan edildi — çalıştı"
 
 #: platform:platform.releaseReadiness.attest.badge.recorded
 msgid "platform.releaseReadiness.attest.badge.recorded"
-msgstr ""
+msgstr "Kaydedildi"
 
 #: platform:platform.releaseReadiness.attest.by
 msgid "platform.releaseReadiness.attest.by"
-msgstr ""
+msgstr "Kaydeden"
 
 #: platform:platform.releaseReadiness.attest.by.server
 msgid "platform.releaseReadiness.attest.by.server"
-msgstr ""
+msgstr "sunucu komutu"
 
 #: platform:platform.releaseReadiness.attest.disclaimer
 msgid "platform.releaseReadiness.attest.disclaimer"
-msgstr ""
+msgstr "Bu bir insan beyanıdır, otomatik bir kontrol değil."
 
 #: platform:platform.releaseReadiness.attest.error
 msgid "platform.releaseReadiness.attest.error"
-msgstr ""
+msgstr "Kayıt saklanamadı."
 
 #: platform:platform.releaseReadiness.attest.field.device
 msgid "platform.releaseReadiness.attest.field.device"
-msgstr ""
+msgstr "Cihaz"
 
 #: platform:platform.releaseReadiness.attest.field.reference
 msgid "platform.releaseReadiness.attest.field.reference"
-msgstr ""
+msgstr "Referans (bağlantı ya da depo yolu, isteğe bağlı)"
 
 #: platform:platform.releaseReadiness.attest.field.rpoHours
 msgid "platform.releaseReadiness.attest.field.rpoHours"
-msgstr ""
+msgstr "RPO (kabul edilen veri kaybı, saat)"
 
 #: platform:platform.releaseReadiness.attest.field.rtoHours
 msgid "platform.releaseReadiness.attest.field.rtoHours"
-msgstr ""
+msgstr "RTO (kabul edilen kesinti, saat)"
 
 #: platform:platform.releaseReadiness.attest.field.status
 msgid "platform.releaseReadiness.attest.field.status"
-msgstr ""
+msgstr "Sonuç"
 
 #: platform:platform.releaseReadiness.attest.field.summary
 msgid "platform.releaseReadiness.attest.field.summary"
-msgstr ""
+msgstr "Kendi cümlelerinizle ne yapıldı"
 
 #: platform:platform.releaseReadiness.attest.help.owasp-asvs-audit
 msgid "platform.releaseReadiness.attest.help.owasp-asvs-audit"
-msgstr ""
+msgstr "Denetim kaydını gösterin. Bunun bir öz değerlendirme mi yoksa üçüncü taraf denetimi mi olduğunu açıkça yazın — asla sertifika iddia etmeyin."
 
 #: platform:platform.releaseReadiness.attest.help.qr-physical-scan
 msgid "platform.releaseReadiness.attest.help.qr-physical-scan"
-msgstr ""
+msgstr "Gerçekten yaptığınız okutmayı kaydedin: hangi telefon, hangi basılı kod, yayınlanan menü açıldı mı."
 
 #: platform:platform.releaseReadiness.attest.help.rpo-rto-decision
 msgid "platform.releaseReadiness.attest.help.rpo-rto-decision"
-msgstr ""
+msgstr "Kararı saat cinsinden kaydedin: ne kadar veri kaybedilebilir (RPO) ve sistem ne kadar süre kapalı kalabilir (RTO)."
 
 #: platform:platform.releaseReadiness.attest.status.failed
 msgid "platform.releaseReadiness.attest.status.failed"
-msgstr ""
+msgstr "Çalışmadı"
 
 #: platform:platform.releaseReadiness.attest.status.passed
 msgid "platform.releaseReadiness.attest.status.passed"
-msgstr ""
+msgstr "Çalıştı"
 
 #: platform:platform.releaseReadiness.attest.submit
 msgid "platform.releaseReadiness.attest.submit"
-msgstr ""
+msgstr "Bunu kaydet"
 
 #: platform:platform.releaseReadiness.backupRestore.metadata.durationMs
 msgid "platform.releaseReadiness.backupRestore.metadata.durationMs"
-msgstr ""
+msgstr "Süre"
 
 #: platform:platform.releaseReadiness.backupRestore.metadata.gitSha
 msgid "platform.releaseReadiness.backupRestore.metadata.gitSha"
-msgstr ""
+msgstr "Commit"
 
 #: platform:platform.releaseReadiness.backupRestore.metadata.ranAt
 msgid "platform.releaseReadiness.backupRestore.metadata.ranAt"
-msgstr ""
+msgstr "Çalıştırıldı"
 
 #: platform:platform.releaseReadiness.backupRestore.metadata.restoredRowCount
 msgid "platform.releaseReadiness.backupRestore.metadata.restoredRowCount"
-msgstr ""
+msgstr "Geri yüklenen satır"
 
 #: platform:platform.releaseReadiness.backupRestore.status.error
 msgid "platform.releaseReadiness.backupRestore.status.error"
-msgstr ""
+msgstr "Kanıt kontrolü hatası"
 
 #: platform:platform.releaseReadiness.backupRestore.status.failed
 msgid "platform.releaseReadiness.backupRestore.status.failed"
-msgstr ""
+msgstr "Başarısız"
 
 #: platform:platform.releaseReadiness.backupRestore.status.loading
 msgid "platform.releaseReadiness.backupRestore.status.loading"
-msgstr ""
+msgstr "Kanıt yükleniyor…"
 
 #: platform:platform.releaseReadiness.backupRestore.status.passed
 msgid "platform.releaseReadiness.backupRestore.status.passed"
-msgstr ""
+msgstr "Başarılı"
 
 #: platform:platform.releaseReadiness.checklist.backupRestore.description
 msgid "platform.releaseReadiness.checklist.backupRestore.description"
-msgstr ""
+msgstr "Üretim benzeri verinin geri alınabildiğini kanıtlayan tamamlanmış bir tatbikat."
 
 #: platform:platform.releaseReadiness.checklist.backupRestore.title
 msgid "platform.releaseReadiness.checklist.backupRestore.title"
-msgstr ""
+msgstr "Yedekleme ve geri yükleme tatbikatı"
 
 #: platform:platform.releaseReadiness.checklist.explanation
 msgid "platform.releaseReadiness.checklist.explanation"
-msgstr ""
+msgstr "Aşağıdaki kanıta dayalı maddeler yalnız gerçek, bağımsız olarak kaydedilmiş kontrollerden çözülür; diğer her madde kendi kontrolü çalıştırılıp kaydedilene kadar kullanılamaz kalır."
 
 #: platform:platform.releaseReadiness.checklist.hostCapability.description
 msgid "platform.releaseReadiness.checklist.hostCapability.description"
-msgstr ""
+msgstr "Uygulamanın barındırma planının kaynak sınırları içinde çalıştığına dair kanıt."
 
 #: platform:platform.releaseReadiness.checklist.hostCapability.title
 msgid "platform.releaseReadiness.checklist.hostCapability.title"
-msgstr ""
+msgstr "Paylaşımlı sunucu yeterlilik kanıtı"
 
 #: platform:platform.releaseReadiness.checklist.owasp-asvs-audit.description
 msgid "platform.releaseReadiness.checklist.owasp-asvs-audit.description"
-msgstr ""
+msgstr "Bu uygulama için bir güvenlik denetimi referansı — öz değerlendirme ya da üçüncü taraf, hangisi olduğu belirtilerek."
 
 #: platform:platform.releaseReadiness.checklist.owasp-asvs-audit.title
 msgid "platform.releaseReadiness.checklist.owasp-asvs-audit.title"
-msgstr ""
+msgstr "OWASP ASVS denetimi"
 
 #: platform:platform.releaseReadiness.checklist.qr-physical-scan.description
 msgid "platform.releaseReadiness.checklist.qr-physical-scan.description"
-msgstr ""
+msgstr "Basılı bir kodun gerçek bir cihazla okutulduğu saha denemesi."
 
 #: platform:platform.releaseReadiness.checklist.qr-physical-scan.title
 msgid "platform.releaseReadiness.checklist.qr-physical-scan.title"
-msgstr ""
+msgstr "Fiziksel karekod okutma kanıtı"
 
 #: platform:platform.releaseReadiness.checklist.region
 msgid "platform.releaseReadiness.checklist.region"
-msgstr ""
+msgstr "Yayına hazırlık listesi"
 
 #: platform:platform.releaseReadiness.checklist.rpo-rto-decision.description
 msgid "platform.releaseReadiness.checklist.rpo-rto-decision.description"
-msgstr ""
+msgstr "Bu sistemin ne kadar veri kaybı ve kesinti kaldırabileceğine dair kayıtlı bir karar."
 
 #: platform:platform.releaseReadiness.checklist.rpo-rto-decision.title
 msgid "platform.releaseReadiness.checklist.rpo-rto-decision.title"
-msgstr ""
+msgstr "RPO ve RTO kararı"
 
 #: platform:platform.releaseReadiness.checklist.tenantIsolation.description
 msgid "platform.releaseReadiness.checklist.tenantIsolation.description"
-msgstr ""
+msgstr "Bir restoranın çalışma alanının başka birininkini okuyamadığının ya da yazamadığının kanıtı."
 
 #: platform:platform.releaseReadiness.checklist.tenantIsolation.title
 msgid "platform.releaseReadiness.checklist.tenantIsolation.title"
-msgstr ""
+msgstr "Kiracı yalıtımı kanıtı"
 
 #: platform:platform.releaseReadiness.evidence.error
 msgid "platform.releaseReadiness.evidence.error"
-msgstr ""
+msgstr "Kanıt kontrolü hatası"
 
 #: platform:platform.releaseReadiness.evidence.loading
 msgid "platform.releaseReadiness.evidence.loading"
-msgstr ""
+msgstr "Kanıt yükleniyor…"
 
 #: platform:platform.releaseReadiness.evidence.recordedAt
 msgid "platform.releaseReadiness.evidence.recordedAt"
-msgstr ""
+msgstr "Kaydedildiği an"
 
 #: platform:platform.releaseReadiness.heading
 msgid "platform.releaseReadiness.heading"
-msgstr ""
+msgstr "Yayına hazırlık"
 
 #: platform:platform.releaseReadiness.hostCapability.status.degraded
 msgid "platform.releaseReadiness.hostCapability.status.degraded"
-msgstr ""
+msgstr "{count} planlı kısıtla çalışıyor"
 
 #: platform:platform.releaseReadiness.hostCapability.status.full
 msgid "platform.releaseReadiness.hostCapability.status.full"
-msgstr ""
+msgstr "Bütün yetenekler yerinde"
 
 #: platform:platform.releaseReadiness.item.status.unavailable
 msgid "platform.releaseReadiness.item.status.unavailable"
-msgstr ""
+msgstr "Kullanılamıyor"
 
 #: platform:platform.releaseReadiness.nav.label
 msgid "platform.releaseReadiness.nav.label"
-msgstr ""
+msgstr "Yayına hazırlık"
 
 #: platform:platform.releaseReadiness.operational.description
 msgid "platform.releaseReadiness.operational.description"
-msgstr ""
+msgstr "Stage 1'in kapanabilmesi için hâlâ gereken kanıtların listesi. Kanıt buraya ancak her maddenin kontrolü bağımsız olarak çalıştırıldıktan sonra düşer — aşağıdaki hiçbir şey kaynak dosyalardan çıkarım yoluyla üretilmez."
 
 #: platform:platform.releaseReadiness.refresh.button
 msgid "platform.releaseReadiness.refresh.button"
-msgstr ""
+msgstr "Kanıtı yenile"
 
 #: platform:platform.releaseReadiness.tenantIsolation.metadata.durationMs
 msgid "platform.releaseReadiness.tenantIsolation.metadata.durationMs"
-msgstr ""
+msgstr "Süre"
 
 #: platform:platform.releaseReadiness.tenantIsolation.metadata.gitSha
 msgid "platform.releaseReadiness.tenantIsolation.metadata.gitSha"
-msgstr ""
+msgstr "Commit"
 
 #: platform:platform.releaseReadiness.tenantIsolation.metadata.ranAt
 msgid "platform.releaseReadiness.tenantIsolation.metadata.ranAt"
-msgstr ""
+msgstr "Çalıştırıldı"
 
 #: platform:platform.releaseReadiness.tenantIsolation.status.error
 msgid "platform.releaseReadiness.tenantIsolation.status.error"
-msgstr ""
+msgstr "Kanıt kontrolü hatası"
 
 #: platform:platform.releaseReadiness.tenantIsolation.status.failed
 msgid "platform.releaseReadiness.tenantIsolation.status.failed"
-msgstr ""
+msgstr "Başarısız"
 
 #: platform:platform.releaseReadiness.tenantIsolation.status.loading
 msgid "platform.releaseReadiness.tenantIsolation.status.loading"
-msgstr ""
+msgstr "Kanıt yükleniyor…"
 
 #: platform:platform.releaseReadiness.tenantIsolation.status.passed
 msgid "platform.releaseReadiness.tenantIsolation.status.passed"
-msgstr ""
+msgstr "Başarılı"
 
 #: platform:platform.releaseReadiness.workspace.empty
 msgid "platform.releaseReadiness.workspace.empty"
-msgstr ""
+msgstr "Yayın kanıtını yüklemek için yukarıdan bir çalışma alanı seçin."
 
 #: platform:platform.shell.backToWorkspace
 msgid "platform.shell.backToWorkspace"
-msgstr ""
+msgstr "Çalışma alanına dön"
 
 #: platform:platform.shell.brand
 msgid "platform.shell.brand"
-msgstr ""
+msgstr "Zabuno Platform"
 
 #: platform:platform.shell.group.commercial
 msgid "platform.shell.group.commercial"
-msgstr ""
+msgstr "Ticari"
 
 #: platform:platform.shell.group.integrations
 msgid "platform.shell.group.integrations"
-msgstr ""
+msgstr "Entegrasyonlar"
 
 #: platform:platform.shell.heading
 msgid "platform.shell.heading"
-msgstr ""
+msgstr "Platform yönetimi"
 
 #: platform:platform.shell.navLabel
 msgid "platform.shell.navLabel"
-msgstr ""
+msgstr "Platform yönetimi"
 
 #: platform:platform.shell.toEngineering
 msgid "platform.shell.toEngineering"
-msgstr ""
+msgstr "Mühendislik"
 
 #: platform:platform.subscriptions.confirm.cancel
 msgid "platform.subscriptions.confirm.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: platform:platform.subscriptions.confirm.confirm
 msgid "platform.subscriptions.confirm.confirm"
-msgstr ""
+msgstr "Onayla"
 
 #: platform:platform.subscriptions.confirm.heading
 msgid "platform.subscriptions.confirm.heading"
-msgstr ""
+msgstr "Elden ödemeyi onayla"
 
 #: platform:platform.subscriptions.form.documentReference.label
 msgid "platform.subscriptions.form.documentReference.label"
-msgstr ""
+msgstr "Belge referansı"
 
 #: platform:platform.subscriptions.form.endDate.error.required
 msgid "platform.subscriptions.form.endDate.error.required"
-msgstr ""
+msgstr "Bitiş tarihini girin."
 
 #: platform:platform.subscriptions.form.endDate.label
 msgid "platform.subscriptions.form.endDate.label"
-msgstr ""
+msgstr "Bitiş tarihi"
 
 #: platform:platform.subscriptions.form.error
 msgid "platform.subscriptions.form.error"
-msgstr ""
+msgstr "Elden ödemeyi kaydedemedik. Lütfen tekrar deneyin."
 
 #: platform:platform.subscriptions.form.optional
 msgid "platform.subscriptions.form.optional"
-msgstr ""
+msgstr "{label} (isteğe bağlı)"
 
 #: platform:platform.subscriptions.form.paymentNote.label
 msgid "platform.subscriptions.form.paymentNote.label"
-msgstr ""
+msgstr "Ödeme notu"
 
 #: platform:platform.subscriptions.form.plan.error.required
 msgid "platform.subscriptions.form.plan.error.required"
-msgstr ""
+msgstr "Bir plan seçin."
 
 #: platform:platform.subscriptions.form.plan.label
 msgid "platform.subscriptions.form.plan.label"
-msgstr ""
+msgstr "Plan"
 
 #: platform:platform.subscriptions.form.retry
 msgid "platform.subscriptions.form.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.subscriptions.form.submit
 msgid "platform.subscriptions.form.submit"
-msgstr ""
+msgstr "Elden ödemeyi kaydet"
 
 #: platform:platform.subscriptions.nav.label
 msgid "platform.subscriptions.nav.label"
-msgstr ""
+msgstr "Abonelikler"
 
 #: platform:platform.subscriptions.plans.blocked
 msgid "platform.subscriptions.plans.blocked"
-msgstr ""
+msgstr "Elden ödeme kaydetmeden önce bir plan oluşturulup etkinleştirilmelidir."
 
 #: platform:platform.subscriptions.plans.error
 msgid "platform.subscriptions.plans.error"
-msgstr ""
+msgstr "Planları yükleyemedik."
 
 #: platform:platform.subscriptions.subscription.active.label
 msgid "platform.subscriptions.subscription.active.label"
-msgstr ""
+msgstr "Etkin"
 
 #: platform:platform.subscriptions.subscription.error
 msgid "platform.subscriptions.subscription.error"
-msgstr ""
+msgstr "Aboneliği yükleyemedik."
 
 #: platform:platform.subscriptions.subscription.loading
 msgid "platform.subscriptions.subscription.loading"
-msgstr ""
+msgstr "Abonelik yükleniyor…"
 
 #: platform:platform.subscriptions.subscription.none
 msgid "platform.subscriptions.subscription.none"
-msgstr ""
+msgstr "Etkin abonelik yok"
 
 #: platform:platform.subscriptions.subscription.region.label
 msgid "platform.subscriptions.subscription.region.label"
-msgstr ""
+msgstr "Abonelik"
 
 #: platform:platform.subscriptions.subscription.retry
 msgid "platform.subscriptions.subscription.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.subscriptions.success
 msgid "platform.subscriptions.success"
-msgstr ""
+msgstr "Elden ödeme kaydedildi."
 
 #: platform:platform.subscriptions.success.region.label
 msgid "platform.subscriptions.success.region.label"
-msgstr ""
+msgstr "Elden ödeme durumu"
 
 #: platform:platform.subscriptions.workspace.empty
 msgid "platform.subscriptions.workspace.empty"
-msgstr ""
+msgstr "Hiç çalışma alanı bulunamadı."
 
 #: platform:platform.subscriptions.workspace.error
 msgid "platform.subscriptions.workspace.error"
-msgstr ""
+msgstr "Çalışma alanlarını yükleyemedik."
 
 #: platform:platform.subscriptions.workspace.label
 msgid "platform.subscriptions.workspace.label"
-msgstr ""
+msgstr "Çalışma alanı"
 
 #: platform:platform.subscriptions.workspace.loading
 msgid "platform.subscriptions.workspace.loading"
-msgstr ""
+msgstr "Çalışma alanları yükleniyor…"
 
 #: platform:platform.subscriptions.workspace.placeholder
 msgid "platform.subscriptions.workspace.placeholder"
-msgstr ""
+msgstr "Bir çalışma alanı seçin"
 
 #: platform:platform.subscriptions.workspace.retry
 msgid "platform.subscriptions.workspace.retry"
-msgstr ""
+msgstr "Tekrar dene"
