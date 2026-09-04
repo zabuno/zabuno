@@ -106,6 +106,23 @@ export function OpsShell<Key extends string>({
         <SidebarNav groups={groups} activeKey={active} label={navLabel} asLandmark={asLandmark} />
     );
 
+    /*
+        PERSONA KÖKTE de işaretlenir — `docs/102` §5h.
+
+        Çekmece ve diyalog gibi katmanlar PORTALLA `document.body` altına
+        çizilir; kabuk `div`ine yazılan bir öznitelik onlara miras kalmaz ve
+        o yüzeyler kiracı tonunda açılırdı. Öznitelik ayrılırken temizlenir:
+        aynı sekmede restoran paneline dönen kullanıcıya lacivert kalamaz.
+    */
+    useEffect(() => {
+        const root = document.documentElement;
+        root.setAttribute('data-persona', 'platform');
+
+        return () => {
+            root.removeAttribute('data-persona');
+        };
+    }, []);
+
     return (
         <AdminShell
             brand={{ name: brandName }}

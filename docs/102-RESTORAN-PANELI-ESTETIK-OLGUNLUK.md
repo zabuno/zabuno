@@ -194,10 +194,17 @@ taşıyan yapraklar üstüne yazıldı, böylece `replace` eksiksiz oldu
 kenarlık `oklch(0.32 0 0)` — kroma sıfır.
 
 **Persona.** `[data-persona='platform']` yalnız YÜZEY jetonlarını (zemin,
-kart, hover, aktif, kenarlık) hue 255 / chroma 0.012-0.03 bandına taşır;
+kart, hover, aktif, kenarlık) sahibin işaret ettiği lacivert bandına taşır:
+koyu temada zemin `oklch(0.21 0.042 262)`, kart `oklch(0.275 0.041 260)` —
+yani `#111827`/`#1f2937` tonu. İlk deneme chroma 0.022 ile yapılmıştı ve
+ekranda hâlâ "düz siyah" okunuyordu; kroma gözle görülür bir laciverde
+çıkacak kadar yükseltildi. Kiracı tarafı ölçümle kromasız kalır
+(zemin `oklch(0.15 0 0)`, kart `oklch(0.2 0 0)`, kenarlık `oklch(0.32 0 0)`);
 marka, odak, durum ve metin jetonları ortak kalır — ikinci bir tasarım
 sistemi doğmaz. Öznitelik `AdminShell`'in `persona` prop'uyla verilir ve
-yalnız `OpsShell` verir.
+yalnız `OpsShell` verir. Ayrıca `OpsShell` aynı özniteliği **kök öğeye** de
+yazar ve ayrılırken siler: çekmece ve diyalog PORTALLA `document.body`
+altına çizilir, kabuk `div`ine yazılan öznitelik onlara miras kalmazdı.
 
 **Kalıcılık.** `persona.guard.test` üç şeyi dondurur: persona yalnız platform
 kabuğunda; kiracı kabuğu persona vermez; persona blokları yüzey dışında bir
