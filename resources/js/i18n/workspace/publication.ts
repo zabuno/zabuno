@@ -130,7 +130,7 @@ export const publication = {
     'workspace.publication.qrExport.formats.svg': 'SVG',
     'workspace.publication.qrExport.formats.pdf': 'PDF',
     'workspace.publication.qrExport.bulk': 'Bulk export',
-    'workspace.publication.qrExport.themes.heading': 'Themes',
+    'workspace.publication.qrExport.themes.heading': 'Colour of the code itself',
     'workspace.publication.qrExport.themes.classic': 'Classic theme',
     'workspace.publication.qrExport.themes.minimal': 'Minimal theme',
     'workspace.publication.qrExport.themes.bold': 'Bold theme',
@@ -196,10 +196,53 @@ export const publication = {
         TEK KOD İKİNCİL BİR İŞTİR (FF-114). Restoran sahibi buraya "QR ayarı
         yapmaya" gelmez; kırk masası, bir mukavvası ve bir yazıcısı vardır.
     */
-    'workspace.publication.qrExport.single.heading': 'Print or download one code on its own',
+    /*
+        HAM DOSYA (FF-120): kartı değil, kodun kendisini indirmek isteyenler
+        için. Matbaa kendi tasarımını yapacaksa kodu çıplak ister.
+    */
+    'workspace.publication.qrExport.raw.heading': 'Download the bare code file (PNG, SVG, PDF)',
     'workspace.publication.qrExport.preview.paper': '{paper} — {width} × {height} mm',
     'workspace.publication.qrExport.preview.size':
         'The code prints {mm} mm wide, so it can be scanned from about {distance} cm away. Put a sheet this size on a wall or a window, not on a table.',
+    /*
+        MASADAKİ KART (FF-120, sahibin talebi). Eski "Themes" bloğu YANLIŞ ŞEYİ
+        adlandırıyordu: altı düğme karekodun piksel renklerini değiştiriyor ve
+        "tema" diyordu. Karekodun rengi bir tema değil bir KISITTIR; tema,
+        masaya konacak kartın kendisidir ve markadan beslenir.
+    */
+    'workspace.publication.qrCard.heading': 'Table card',
+    'workspace.publication.qrCard.explanation':
+        'The card you cut out and slide into the stand on the table. It carries your own name and colour; the code itself always prints black on white so it stays scannable.',
+    'workspace.publication.qrCard.step.design': 'Design',
+    'workspace.publication.qrCard.step.size': 'Size',
+    'workspace.publication.qrCard.step.export': 'Download',
+    'workspace.publication.qrCard.theme.classic': 'Classic',
+    'workspace.publication.qrCard.theme.minimal': 'Minimal',
+    'workspace.publication.qrCard.theme.banner': 'Banner',
+    'workspace.publication.qrCard.theme.frame': 'Framed',
+    'workspace.publication.qrCard.headline.label': 'Sentence on the card',
+    'workspace.publication.qrCard.headline.default': 'Scan for the menu',
+    'workspace.publication.qrCard.size.paper': 'Paper size — for printing on a standard sheet',
+    'workspace.publication.qrCard.size.ratio':
+        'Card proportion — for a plexiglass stand, 150 mm along the long edge',
+    'workspace.publication.qrCard.orientation.label': 'Orientation',
+    'workspace.publication.qrCard.orientation.portrait': 'Portrait',
+    'workspace.publication.qrCard.orientation.landscape': 'Landscape',
+    'workspace.publication.qrCard.export.help':
+        'Both files print at the exact size shown. PDF goes straight to a printer; SVG opens in a design tool if your printer wants one.',
+    'workspace.publication.qrCard.export.pdf': 'Download card (PDF)',
+    'workspace.publication.qrCard.export.svg': 'Download card (SVG)',
+    /*
+        PNG YOK ve söylenmezse kullanıcı onu arar, bulamayınca ürünü eksik
+        sanır. Sebep gerçek: raster bir görsel 4 cm'lik bir karekodda modül
+        kenarlarını bulanıklaştırır.
+    */
+    'workspace.publication.qrCard.export.noPng':
+        'There is no PNG here on purpose: a raster image blurs the module edges of a 4 cm code. For print, use PDF or SVG.',
+    'workspace.publication.qrCard.preview.alt': 'Preview of the printed card',
+    'workspace.publication.qrCard.preview.size': 'Prints at {width} × {height} mm',
+    'workspace.publication.qrCard.back': 'Back',
+    'workspace.publication.qrCard.next': 'Next',
     'workspace.publication.qrExport.themes.scannability':
         'Every theme here prints dark on light and keeps the quiet zone around the code, so all of them scan. Colour never comes at the cost of a code that cannot be read.',
     'workspace.publication.qrExport.themes.brandTooPale':

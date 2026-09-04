@@ -1972,6 +1972,102 @@ msgstr "Published at {publishedAt}"
 msgid "workspace.publication.publishedSnapshot.region"
 msgstr "Published menu"
 
+#: workspace:workspace.publication.qrCard.back
+msgid "workspace.publication.qrCard.back"
+msgstr "Back"
+
+#: workspace:workspace.publication.qrCard.explanation
+msgid "workspace.publication.qrCard.explanation"
+msgstr "The card you cut out and slide into the stand on the table. It carries your own name and colour; the code itself always prints black on white so it stays scannable."
+
+#: workspace:workspace.publication.qrCard.export.help
+msgid "workspace.publication.qrCard.export.help"
+msgstr "Both files print at the exact size shown. PDF goes straight to a printer; SVG opens in a design tool if your printer wants one."
+
+#: workspace:workspace.publication.qrCard.export.noPng
+msgid "workspace.publication.qrCard.export.noPng"
+msgstr "There is no PNG here on purpose: a raster image blurs the module edges of a 4 cm code. For print, use PDF or SVG."
+
+#: workspace:workspace.publication.qrCard.export.pdf
+msgid "workspace.publication.qrCard.export.pdf"
+msgstr "Download card (PDF)"
+
+#: workspace:workspace.publication.qrCard.export.svg
+msgid "workspace.publication.qrCard.export.svg"
+msgstr "Download card (SVG)"
+
+#: workspace:workspace.publication.qrCard.heading
+msgid "workspace.publication.qrCard.heading"
+msgstr "Table card"
+
+#: workspace:workspace.publication.qrCard.headline.default
+msgid "workspace.publication.qrCard.headline.default"
+msgstr "Scan for the menu"
+
+#: workspace:workspace.publication.qrCard.headline.label
+msgid "workspace.publication.qrCard.headline.label"
+msgstr "Sentence on the card"
+
+#: workspace:workspace.publication.qrCard.next
+msgid "workspace.publication.qrCard.next"
+msgstr "Next"
+
+#: workspace:workspace.publication.qrCard.orientation.label
+msgid "workspace.publication.qrCard.orientation.label"
+msgstr "Orientation"
+
+#: workspace:workspace.publication.qrCard.orientation.landscape
+msgid "workspace.publication.qrCard.orientation.landscape"
+msgstr "Landscape"
+
+#: workspace:workspace.publication.qrCard.orientation.portrait
+msgid "workspace.publication.qrCard.orientation.portrait"
+msgstr "Portrait"
+
+#: workspace:workspace.publication.qrCard.preview.alt
+msgid "workspace.publication.qrCard.preview.alt"
+msgstr "Preview of the printed card"
+
+#: workspace:workspace.publication.qrCard.preview.size
+msgid "workspace.publication.qrCard.preview.size"
+msgstr "Prints at {width} × {height} mm"
+
+#: workspace:workspace.publication.qrCard.size.paper
+msgid "workspace.publication.qrCard.size.paper"
+msgstr "Paper size — for printing on a standard sheet"
+
+#: workspace:workspace.publication.qrCard.size.ratio
+msgid "workspace.publication.qrCard.size.ratio"
+msgstr "Card proportion — for a plexiglass stand, 150 mm along the long edge"
+
+#: workspace:workspace.publication.qrCard.step.design
+msgid "workspace.publication.qrCard.step.design"
+msgstr "Design"
+
+#: workspace:workspace.publication.qrCard.step.export
+msgid "workspace.publication.qrCard.step.export"
+msgstr "Download"
+
+#: workspace:workspace.publication.qrCard.step.size
+msgid "workspace.publication.qrCard.step.size"
+msgstr "Size"
+
+#: workspace:workspace.publication.qrCard.theme.banner
+msgid "workspace.publication.qrCard.theme.banner"
+msgstr "Banner"
+
+#: workspace:workspace.publication.qrCard.theme.classic
+msgid "workspace.publication.qrCard.theme.classic"
+msgstr "Classic"
+
+#: workspace:workspace.publication.qrCard.theme.frame
+msgid "workspace.publication.qrCard.theme.frame"
+msgstr "Framed"
+
+#: workspace:workspace.publication.qrCard.theme.minimal
+msgid "workspace.publication.qrCard.theme.minimal"
+msgstr "Minimal"
+
 #: workspace:workspace.publication.qrDestination.createButton
 msgid "workspace.publication.qrDestination.createButton"
 msgstr "Create"
@@ -2292,6 +2388,10 @@ msgstr "QR code preview"
 msgid "workspace.publication.qrExport.printButton"
 msgstr "Print"
 
+#: workspace:workspace.publication.qrExport.raw.heading
+msgid "workspace.publication.qrExport.raw.heading"
+msgstr "Download the bare code file (PNG, SVG, PDF)"
+
 #: workspace:workspace.publication.qrExport.region
 msgid "workspace.publication.qrExport.region"
 msgstr "QR print export"
@@ -2315,10 +2415,6 @@ msgstr "{codes} codes on {pages} A4 page(s), 12 cards per page. Each code prints
 #: workspace:workspace.publication.qrExport.sheet.heading
 msgid "workspace.publication.qrExport.sheet.heading"
 msgstr "Print sheet for your tables"
-
-#: workspace:workspace.publication.qrExport.single.heading
-msgid "workspace.publication.qrExport.single.heading"
-msgstr "Print or download one code on its own"
 
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
@@ -2346,7 +2442,7 @@ msgstr "Set your brand colour"
 
 #: workspace:workspace.publication.qrExport.themes.heading
 msgid "workspace.publication.qrExport.themes.heading"
-msgstr "Themes"
+msgstr "Colour of the code itself"
 
 #: workspace:workspace.publication.qrExport.themes.highContrast
 msgid "workspace.publication.qrExport.themes.highContrast"

@@ -585,7 +585,9 @@ describe('Ekran bir KÜTÜK, üreteç değil (FF-114)', () => {
         );
 
         const sheetLink = await screen.findByRole('link', { name: /download print sheet/i });
-        const single = screen.getByText(/print or download one code on its own/i);
+        // FF-120: bölümün adı değişti — orada kartın teması değil, kodun HAM
+        // dosyası var. Kart artık kendi sihirbazında ve birincil iş o.
+        const single = screen.getByText(/download the bare code file/i);
 
         // Deste, tek kod bölümünün ÜSTÜNDE durur.
         expect(
@@ -611,7 +613,7 @@ describe('Ekran bir KÜTÜK, üreteç değil (FF-114)', () => {
         );
 
         await screen.findByText('T1');
-        expect(screen.queryByText(/print or download one code on its own/i)).toBeNull();
+        expect(screen.queryByText(/download the bare code file/i)).toBeNull();
         expect(screen.getByLabelText(/output format/i)).toBeInTheDocument();
     });
 });
