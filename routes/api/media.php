@@ -14,6 +14,7 @@ use App\Http\Controllers\Media\RestoreMediaVersionController;
 use App\Http\Controllers\Media\ShowMediaQuotaController;
 use App\Http\Controllers\Media\ShowMediaUsagesController;
 use App\Http\Controllers\Media\StoreMediaController;
+use App\Http\Controllers\Media\UpdateMediaAltTextController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
@@ -41,6 +42,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/media/{media}/usages', ShowMediaUsagesController::class);
     Route::post('/workspaces/{workspace}/media/{media}/detach', DetachMediaUsagesController::class);
     Route::post('/workspaces/{workspace}/media/{media}/restore', RestoreMediaController::class);
+    // Alt metni düzelt (`docs/49` §5.2 re-naming, FF-76).
+    Route::patch('/workspaces/{workspace}/media/{media}', UpdateMediaAltTextController::class);
 
     // KOTA ve ASIL İNDİRME (`docs/49` Faz 6-7, `docs/98` FF-71).
     Route::get('/workspaces/{workspace}/media/quota', ShowMediaQuotaController::class);

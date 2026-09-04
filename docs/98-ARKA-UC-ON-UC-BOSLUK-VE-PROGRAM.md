@@ -295,6 +295,16 @@ arası parçalama, collector") bir **iş boru hattı** olarak kuruldu —
   (`agents/*.md`) kodda yok — sözleşme var, kod yok, ve dosyalar bunu
   söyler.
 
+### FF-76 ek paket — Media sayfası: "burada değişen bir şey yok" (2026-09-04)
+
+Sahip canlıdaki Media ekranını gönderdi: kota kutusu ve Library/Trash sekmesi
+gelmişti ama boş kütüphanede sayfa hâlâ tek sütun eski form + altında slot
+envanteri gürültüsüydü. Düzeltme: iki sütun düzen (ekle | fotoğraflar),
+çoklu dosya yükleme (dosya adından ad, satırda düzeltme, sırayla), çekmecede
+ad düzeltme (`PATCH media/{id}`), slot/yaşam döngüsü listeleri katlanır,
+boş durum yol tarifi. Testler: `MediaUploadRegion.multi.test` (1),
+`MediaLibraryTrashAndUsagesTest::alt_text_can_be_corrected_later…`.
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket

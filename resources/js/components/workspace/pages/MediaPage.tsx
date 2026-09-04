@@ -60,6 +60,8 @@ export type MediaLibraryActions = {
     restoreFromTrash: (id: number) => Promise<void>;
     /** 10 dakikalık imzalı asıl indirme adresi (`docs/49` Faz 6 madde 2). */
     downloadOriginal: (id: number) => Promise<string>;
+    /** Alt metni (adı) düzelt — `docs/49` §5.2 re-naming (FF-76). */
+    updateAltText: (id: number, altText: string) => Promise<void>;
 };
 
 type MediaPageProps = {
@@ -245,6 +247,22 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             restoreFromTrash: async (id) => {
                 await post(`${endpoint}/${id}/restore`);
             },
+            updateAltText: async (id, altText) => {
+                const response = await fetch(`${endpoint}/${id}`, {
+                    ...buildAuthRequestInit({
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ altText }),
+                    }),
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) {
+                    throw new Error(String(response.status));
+                }
+                setAssets((current) =>
+                    current.map((row) => (row.id === id ? { ...row, altText } : row)),
+                );
+            },
             downloadOriginal: async (id) => {
                 const body = (await (await post(`${endpoint}/${id}/download-link`)).json()) as {
                     url?: string;
@@ -311,18 +329,21 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                 {workspaceId !== undefined ? (
                     <MediaQuotaRegion workspaceId={workspaceId} onLoaded={handleQuotaLoaded} />
                 ) : null}
-                <MediaUploadRegion onSubmit={handleUpload} />
-                <MediaLibraryRegion
-                    assets={assets}
-                    onDelete={(id) => void handleDelete(id)}
-                    loadState={loadState}
-                    onRetry={() => void loadAssets()}
-                    pendingDeleteIds={pendingDeleteIds}
-                    deleteErrorIds={deleteErrorIds}
-                    deleteNotice={deleteNotice}
-                    actions={workspaceId === undefined ? undefined : actions}
-                    trashRetentionDays={trashRetentionDays}
-                />
+                {/* İki sütun: solda ekle, sağda kütüphane; 320 px'te tek sütuna sarar (auto-fit). */}
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,22rem),1fr))] gap-6">
+                    <MediaUploadRegion onSubmit={handleUpload} />
+                    <MediaLibraryRegion
+                        assets={assets}
+                        onDelete={(id) => void handleDelete(id)}
+                        loadState={loadState}
+                        onRetry={() => void loadAssets()}
+                        pendingDeleteIds={pendingDeleteIds}
+                        deleteErrorIds={deleteErrorIds}
+                        deleteNotice={deleteNotice}
+                        actions={workspaceId === undefined ? undefined : actions}
+                        trashRetentionDays={trashRetentionDays}
+                    />
+                </div>
             </WorkspacePageFrame>
         </div>
     );

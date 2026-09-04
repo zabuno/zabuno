@@ -245,4 +245,24 @@ final class MediaLibraryTrashAndUsagesTest extends TestCase
         self::assertNotNull(DB::table('media_assets')->where('id', $published)->first(), 'Yayında olan asla purge edilmez.');
         self::assertStringContainsString('1', Artisan::output());
     }
+
+    // --- FAZ4-RENAME-ALT-01 -----------------------------------------------------
+
+    #[Test]
+    public function alt_text_can_be_corrected_later_without_touching_the_storage_key(): void
+    {
+        $id = $this->upload();
+        $before = DB::table('media_assets')->where('id', $id)->first();
+
+        $this->api()->patchJson("/api/workspaces/{$this->workspaceId}/media/{$id}", ['altText' => 'Adana kebap, közde'])
+            ->assertOk()->assertJson(['altText' => 'Adana kebap, közde']);
+
+        $after = DB::table('media_assets')->where('id', $id)->first();
+        self::assertSame('Adana kebap, közde', $after->alt_text);
+        self::assertSame($before->disk_path, $after->disk_path, 'Depolama anahtarı değişmez.');
+
+        $stranger = User::factory()->create(['email_verified_at' => now()]);
+        $strangerWs = $this->workspace($stranger);
+        $this->api($stranger)->patchJson("/api/workspaces/{$strangerWs}/media/{$id}", ['altText' => 'x'])->assertStatus(404);
+    }
 }

@@ -70,6 +70,7 @@ function actionsStub(overrides: Partial<MediaLibraryActions> = {}): MediaLibrary
         loadTrash: vi.fn(async () => []),
         restoreFromTrash: vi.fn(async () => {}),
         downloadOriginal: vi.fn(async () => 'https://zabuno.test/media/original/1/1?signature=x'),
+        updateAltText: vi.fn(async () => {}),
         ...overrides,
     };
 }

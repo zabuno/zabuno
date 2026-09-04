@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../../../catalog/forms/micro/Button';
+import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { DrawerPanel } from '../../../catalog/overlays/compound/DrawerPanel';
 import { t } from '../../../../i18n/workspace';
 import { MediaAssetStatusBadge } from './MediaAssetStatusBadge';
@@ -45,6 +46,7 @@ function DetailDrawer({
     const [versions, setVersions] = useState<Remote<MediaVersion>>({ state: 'loading' });
     const [busy, setBusy] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
+    const [altDraft, setAltDraft] = useState(asset.altText);
 
     const assetId = asset.id;
 
@@ -108,6 +110,38 @@ function DetailDrawer({
                 )}
 
                 <MediaAssetStatusBadge status={asset.status} reason={asset.statusReason} />
+
+                {/* Ad = alt metin; sonradan düzeltilir, adres değişmez (`docs/49` §5.2). */}
+                <form
+                    noValidate
+                    className="flex flex-wrap items-end gap-2"
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        void run(
+                            'rename',
+                            () => actions.updateAltText(asset.id, altDraft.trim()),
+                            t('workspace.media.library.detail.renamed'),
+                        );
+                    }}
+                >
+                    <label className="flex min-w-0 flex-1 flex-col gap-1 text-meta text-fg-muted">
+                        {t('workspace.media.library.detail.altText')}
+                        <TextInput
+                            type="text"
+                            value={altDraft}
+                            onChange={(event) => setAltDraft(event.target.value)}
+                        />
+                    </label>
+                    <Button
+                        color="light"
+                        type="submit"
+                        disabled={
+                            busy !== null || altDraft.trim() === '' || altDraft === asset.altText
+                        }
+                    >
+                        {t('workspace.media.library.detail.rename')}
+                    </Button>
+                </form>
 
                 <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-body">
                     <dt className="text-fg-muted">{t('workspace.media.library.detail.file')}</dt>

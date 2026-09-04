@@ -283,6 +283,12 @@ ertelendi — kota ve izin matrisiyle birlikte); 3 ✅ detay çekmecesi:
 sürümler (geri al), "boyutları yeniden üret" — Haklar/Etkinlik ⬜ (Faz 7);
 4 ✅ catalog bileşenleri (`TextInput`/`Select`/`Checkbox`/`Tabs`/`DrawerPanel`/
 `ConfirmDialog`), piksel/breakpoint sınıfı yok (MediaPage kapısı).
+**FF-76 (2026-09-04, sahibin "burada değişen bir şey yok" ekranı):** sayfa iki
+sütun (solda "Add photos", sağda "Your photos"); çoklu dosya sürükle-bırak
+(kalan dosyalar dosya adından türeyen adla listelenir, sırayla yüklenir);
+çekmecede ad (alt metin) düzeltme (`PATCH media/{id}`, depolama anahtarı
+değişmez); slot envanteri ve yaşam döngüsü "How photos are handled" altında
+katlanır; boş kütüphane yol tarifi verir.
 
 1. Grid/liste, önizleme, arama, filtre
 2. Koleksiyon + etiket + akıllı koleksiyon ("alt metni eksik", "kullanılmayan")
