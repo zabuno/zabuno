@@ -489,6 +489,75 @@
     --focus: Highlight;
 }
 
+/*
+   PERSONA RENGİ — `docs/102` §5h (sahibin kararı, 2026-09-04).
+
+   Superadmin/mühendislik yüzeyi lacivere çalan bir zeminde çalışır; restoran
+   paneli KROMASIZ kalır. Amaç estetik değil ORYANTASYON: iki panel aynı
+   tarayıcıda açıkken hangi tarafta olduğunu renk söyler, başlık okumadan.
+
+   Neden `[data-persona='platform']` altında ve neden yalnız YÜZEY jetonları:
+   marka rengi, odak halkası, durum renkleri ve metin tonları ortak kalır —
+   ikinci bir tasarım sistemi doğmaz. Restoran tarafına sızma imkânı yok,
+   çünkü öznitelik yalnız platform/mühendislik kabuklarının kökünde bulunur
+   ve bir kapı testi bunu dondurur (`persona.guard.test`).
+
+   Ton: hue 255, chroma 0.012-0.02 — "lacivert gibi", saf mavi değil; metin
+   kontrastı nötr temayla aynı bantta kalır.
+*/
+[data-persona='platform'] {
+    --canvas: oklch(0.965 0.01 255);
+    --surface: oklch(0.995 0.004 255);
+    --surface-subtle: oklch(0.955 0.012 255);
+    --surface-hover: oklch(0.935 0.014 255);
+    --surface-active: oklch(0.905 0.018 255);
+    --border: oklch(0.88 0.014 255);
+    --border-strong: oklch(0.74 0.02 255);
+
+    --color-canvas: var(--canvas);
+    --color-surface: var(--surface);
+    --color-surface-subtle: var(--surface-subtle);
+    --color-surface-hover: var(--surface-hover);
+    --color-surface-active: var(--surface-active);
+    --color-border: var(--border);
+}
+
+.dark [data-persona='platform'],
+[data-persona='platform'].dark,
+.dark[data-persona='platform'] {
+    --canvas: oklch(0.185 0.022 255);
+    --surface: oklch(0.235 0.024 255);
+    --surface-subtle: oklch(0.275 0.026 255);
+    --surface-hover: oklch(0.305 0.028 255);
+    --surface-active: oklch(0.345 0.03 255);
+    --border: oklch(0.36 0.026 255);
+    --border-strong: oklch(0.5 0.03 255);
+
+    --color-canvas: var(--canvas);
+    --color-surface: var(--surface);
+    --color-surface-subtle: var(--surface-subtle);
+    --color-surface-hover: var(--surface-hover);
+    --color-surface-active: var(--surface-active);
+    --color-border: var(--border);
+}
+
+@media (forced-colors: active) {
+    [data-persona='platform'] {
+        --canvas: Canvas;
+        --surface: Canvas;
+        --surface-subtle: Canvas;
+        --surface-hover: Canvas;
+        --surface-active: Canvas;
+        --border: CanvasText;
+        --color-canvas: var(--canvas);
+        --color-surface: var(--surface);
+        --color-surface-subtle: var(--surface-subtle);
+        --color-surface-hover: var(--surface-hover);
+        --color-surface-active: var(--surface-active);
+        --color-border: var(--border);
+    }
+}
+
 /* Container-query adaptive shell (docs/06 §12) — capacity-evidenced, not a
    device/browser breakpoint: the persistent sidebar only reveals once the
    shell's own inline size has room for the sidebar plus useful main content. */

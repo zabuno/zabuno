@@ -111,7 +111,12 @@ export function OpsShell<Key extends string>({
             brand={{ name: brandName }}
             mobileMenuOpen={mobileMenuOpen}
             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
-            // Soluk zemin: kartlar bu tonun üstünde beyaz durur (Metronic "app-bg").
+            /*
+                PERSONA: platform/mühendislik yüzeyi lacivere çalan zeminde
+                çalışır (`docs/102` §5h). Öznitelik YALNIZ burada; restoran
+                kabuğu kromasız kalır ve `persona.guard.test` bunu dondurur.
+            */
+            persona="platform"
             className="bg-[var(--color-canvas)]"
             persistentSidebar={
                 // Genişlik SABİT (FF-86). Öncesi bir BÜYÜME oranıydı (`flex` kısayolu):

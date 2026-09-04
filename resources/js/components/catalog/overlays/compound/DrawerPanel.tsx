@@ -1,5 +1,6 @@
 import type { KeyboardEvent, ReactNode } from 'react';
 import { useEffect, useId, useRef } from 'react';
+import clsx from 'clsx';
 import { Drawer, DrawerItems } from 'flowbite-react';
 import { CloseButton } from '../micro/CloseButton';
 
@@ -20,6 +21,21 @@ export type DrawerPanelProps = {
  * compound moves focus into the panel on open and restores the previously
  * focused element on close.
  */
+/*
+    YÜZEY BİZİM, KÜTÜPHANENİN DEĞİL — `docs/102` §5h.
+
+    Flowbite'ın `gray` paleti Tailwind'in varsayılan grisidir ve MAVİYE
+    ÇALAR (chroma > 0, hue ~260); Zabuno'nun yüzey token'ları kromasızdır.
+    Bağlanmamış ailelerde (açılır menü, çekmece, diyalog) bu fark ekranda
+    görüldü: sayfa nötr siyahken menü lacivert-gri bir yüzeyde açılıyordu.
+    Aile teması `replace` gerektirir (DS-FLOWBITE-TOKEN-BIND-10) ve tam bir
+    tema yazmak burada gereğinden büyük bir taahhüt; yüzey rengi ÇAĞRI
+    NOKTASINDA token'la geçilir — `twMerge` aynı özelliği çakıştırdığı için
+    kütüphanenin `bg-*`/`text-*` sınıfları düşer, konumlandırma ve
+    animasyon kalır.
+*/
+const TOKEN_SURFACE = 'border-border bg-surface text-fg-secondary';
+
 export function DrawerPanel({
     open,
     onClose,
@@ -132,7 +148,7 @@ export function DrawerPanel({
             position={position}
             aria-labelledby={titleId}
             aria-describedby={undefined}
-            className={className}
+            className={clsx(TOKEN_SURFACE, className)}
             onKeyDown={handleKeyDown}
         >
             <div className="mb-4 flex items-center justify-between">
