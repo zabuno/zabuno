@@ -103,7 +103,7 @@ export function CurrentSubscriptionStatus({ workspaceId }: CurrentSubscriptionSt
             aria-label={t('workspace.billing.currentPlan.region')}
             className="flex flex-col gap-3"
         >
-            <p className="text-body font-semibold text-fg">
+            <p className="text-body font-bold text-fg">
                 {t('workspace.billing.currentPlan.region')}
             </p>
 

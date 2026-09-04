@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { t } from '../../../../i18n/workspace';
 import { PageState } from '../shared/PageState';
@@ -29,33 +29,54 @@ export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
     const [status, setStatus] = useState<Status>('loading');
     const [events, setEvents] = useState<AuditEvent[]>([]);
 
-    const load = useCallback(async () => {
-        setStatus('loading');
+    /*
+        YÜKLEME ETKİNİN İÇİNDE (FF-132).
 
-        try {
-            const response = await fetch(`/api/workspaces/${String(workspaceId)}/audit-trail`, {
-                credentials: 'include',
-                headers: { Accept: 'application/json' },
-            });
+        Dışarıda tanımlanmış bir `load` işlevini etkiden çağırmak, derleyici
+        kapısının "etki içinde eşzamanlı setState" uyarısını tetikliyor:
+        `await` sınırını göremediği için durum güncellemelerini çizim
+        sırasında sanıyor. `DiningAreasRegion` aynı sorunu aynı biçimde
+        çözüyor — iş etkinin içinde, iptal bayrağıyla.
 
-            if (!response.ok) {
-                setStatus('error');
-
-                return;
-            }
-
-            const body = (await response.json()) as { data?: AuditEvent[] };
-
-            setEvents(body.data ?? []);
-            setStatus('ready');
-        } catch {
-            setStatus('error');
-        }
-    }, [workspaceId]);
+        Yeniden deneme bir SAYAÇLA yapılır: kullanıcı düğmeye bastığında
+        sayaç artar, etki yeniden koşar. Böylece "yeniden yükle" ile "ilk
+        yükleme" aynı yoldan geçer ve ikisi ayrışamaz.
+    */
+    const [attempt, setAttempt] = useState(0);
 
     useEffect(() => {
-        void load();
-    }, [load]);
+        let cancelled = false;
+
+        (async () => {
+            try {
+                const response = await fetch(`/api/workspaces/${String(workspaceId)}/audit-trail`, {
+                    credentials: 'include',
+                    headers: { Accept: 'application/json' },
+                });
+
+                if (cancelled) return;
+
+                if (!response.ok) {
+                    setStatus('error');
+
+                    return;
+                }
+
+                const body = (await response.json()) as { data?: AuditEvent[] };
+
+                if (cancelled) return;
+
+                setEvents(body.data ?? []);
+                setStatus('ready');
+            } catch {
+                if (!cancelled) setStatus('error');
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [workspaceId, attempt]);
 
     return (
         <section
@@ -77,7 +98,10 @@ export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
                     action={
                         <button
                             type="button"
-                            onClick={() => void load()}
+                            onClick={() => {
+                                setStatus('loading');
+                                setAttempt((previous) => previous + 1);
+                            }}
                             className="min-h-[var(--control-height)] rounded-[var(--radius-md)] border border-border px-[var(--space-3)] py-[var(--space-2)] text-body font-medium whitespace-nowrap text-fg-secondary hover:bg-surface-hover"
                         >
                             {t('workspace.settings.audit.retry')}

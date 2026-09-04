@@ -263,7 +263,7 @@ export function IyzicoSandboxCheckout({ workspaceId }: IyzicoSandboxCheckoutProp
             aria-label={t('workspace.billing.iyzicoSandbox.heading')}
             className="flex flex-col w-full gap-3"
         >
-            <h2 className="text-body font-semibold text-fg">
+            <h2 className="text-body font-bold text-fg">
                 {t('workspace.billing.iyzicoSandbox.heading')}
             </h2>
 

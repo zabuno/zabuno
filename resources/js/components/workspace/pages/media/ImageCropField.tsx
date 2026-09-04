@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { t } from '../../../../i18n/workspace';
 import {
@@ -118,12 +118,21 @@ export function ImageCropField({
         };
     }, [objectUrl, rect, possible, onCropped, mimeType]);
 
-    const onPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    /*
+        Bu üç işleyici KASITLI olarak `useCallback` ile sarılmıyor (FF-129).
+
+        İçlerinde `ref.current` yazılıyor ve React derleyicisi böyle bir
+        gövdede elle kurulmuş hafızayı koruyamıyor; CI kapısı bunu hata
+        olarak bildiriyor. Sarmalayıcı zaten bir kazanç sağlamıyordu — bunlar
+        bir etkinin bağımlılığı değil, doğrudan JSX'e verilen olay
+        işleyicileridir.
+    */
+    function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
         dragRef.current = { pointerX: event.clientX, pointerY: event.clientY };
         event.currentTarget.setPointerCapture(event.pointerId);
-    }, []);
+    }
 
-    const onPointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    function onPointerMove(event: React.PointerEvent<HTMLDivElement>) {
         const drag = dragRef.current;
         const frame = frameRef.current;
 
@@ -140,12 +149,12 @@ export function ImageCropField({
         }));
 
         dragRef.current = { pointerX: event.clientX, pointerY: event.clientY };
-    }, []);
+    }
 
-    const onPointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    function onPointerUp(event: React.PointerEvent<HTMLDivElement>) {
         dragRef.current = null;
         event.currentTarget.releasePointerCapture(event.pointerId);
-    }, []);
+    }
 
     if (!possible || ratio === null) {
         /*
@@ -238,7 +247,12 @@ export function ImageCropField({
                     piksel kaybettiğini bilmeli, çünkü slotun en küçük
                     ölçüsüne yaklaşan bir çerçeve yayında bulanık görünür.
                 */}
-                <p aria-live="polite" className="text-meta text-fg-muted">
+                {/*
+                    `tabular-nums` ŞARTTIR: sayı yakınlaştırma çubuğu
+                    sürüklenirken HER karede değişir ve orantılı rakamda satır
+                    yatayda oynar — okunması gereken sayı okunamaz olur.
+                */}
+                <p aria-live="polite" className="text-meta text-fg-muted tabular-nums">
                     {t('workspace.media.crop.result', {
                         width: String(rect.width),
                         height: String(rect.height),

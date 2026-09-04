@@ -108,7 +108,7 @@ export function RegisterForm({
 
     return (
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-            <h1 className="text-section font-semibold text-fg">{t('auth.register.heading')}</h1>
+            <h1 className="text-section font-bold text-fg">{t('auth.register.heading')}</h1>
 
             {errors.submit && (
                 <p role="alert" className="text-body font-medium text-fg-danger">

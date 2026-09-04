@@ -20,7 +20,7 @@ export function ReadinessItem({ title, description, status, details }: Readiness
     return (
         <li className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
-                <p className="text-body font-semibold text-fg">{title}</p>
+                <p className="text-body font-bold text-fg">{title}</p>
                 <p className="text-body text-fg-muted">{description}</p>
                 {details}
             </div>

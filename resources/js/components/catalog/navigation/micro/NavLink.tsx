@@ -59,7 +59,7 @@ export function NavLink({
         */
         'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-        current && 'border-s-brand bg-surface-active font-semibold text-fg',
+        current && 'border-s-brand bg-surface-active font-bold text-fg',
         disabled && 'pointer-events-none opacity-50',
         className,
     );

@@ -127,7 +127,7 @@ export function PageState(props: PageStateProps) {
 
             <p
                 className={clsx(
-                    'text-section font-semibold tracking-tight',
+                    'text-section font-bold tracking-tight',
                     assertive ? 'text-fg-danger' : 'text-fg',
                 )}
             >

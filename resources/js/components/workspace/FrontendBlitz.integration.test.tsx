@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within, waitFor } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -258,10 +258,12 @@ describe('MenuCatalogWorkspace — visible category/item ordering (FrontendBlitz
             "menüden gizle" der — durum kutunun işaretinden değil, cümleden
             okunur.
         */
-        fireEvent.click(screen.getByRole('button', { name: 'More actions for Espresso' }));
-        expect(
-            await screen.findByRole('menuitem', { name: 'Hide from the menu' }),
-        ).toBeInTheDocument();
+        /*
+            GÜNCELLENDİ (FF-131): görünürlük artık satırda bir anahtar.
+            Ölçülen şey aynı: durum kutunun işaretinden değil, CÜMLEDEN
+            okunur — anahtarın adı ürünün adını taşır.
+        */
+        expect(await screen.findByRole('switch', { name: /Espresso/ })).toBeInTheDocument();
 
         const mutationCalls = fetchMock.mock.calls.filter((call) => String(call[0]).length > 0);
         mutationCalls.forEach((call) => {

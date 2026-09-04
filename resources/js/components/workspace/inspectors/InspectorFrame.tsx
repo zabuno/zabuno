@@ -29,7 +29,7 @@ export type InspectorFrameProps = {
 export function InspectorFrame({ title, rows, shortcut, children }: InspectorFrameProps) {
     return (
         <div className="flex flex-col gap-[var(--space-fluid-md)]">
-            <h2 className="text-body font-semibold text-fg">{title}</h2>
+            <h2 className="text-body font-bold text-fg">{title}</h2>
 
             <dl className="flex flex-col gap-3">
                 {rows.map((row) => (

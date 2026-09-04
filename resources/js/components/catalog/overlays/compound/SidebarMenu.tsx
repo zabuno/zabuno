@@ -264,7 +264,7 @@ export function SidebarMenu({
 
                     {radioGroup ? (
                         <>
-                            <div className="px-[var(--space-3)] pt-[var(--space-3)] pb-[var(--space-1)] text-meta font-semibold text-fg-muted">
+                            <div className="px-[var(--space-3)] pt-[var(--space-3)] pb-[var(--space-1)] text-meta font-bold text-fg-muted">
                                 {radioGroup.label}
                             </div>
                             {radioGroup.options.map((option) => (

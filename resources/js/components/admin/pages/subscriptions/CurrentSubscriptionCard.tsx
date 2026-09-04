@@ -35,7 +35,7 @@ export function CurrentSubscriptionCard({
             aria-label={t('platform.subscriptions.subscription.region.label')}
             className="flex flex-col gap-3"
         >
-            <p className="text-body font-semibold text-fg">
+            <p className="text-body font-bold text-fg">
                 {t('platform.subscriptions.subscription.region.label')}
             </p>
 

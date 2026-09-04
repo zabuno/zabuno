@@ -1,7 +1,6 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
-import { clickRowMenuItem } from '../../test/menuRow';
 import userEvent from '@testing-library/user-event';
 import { desktopChrome } from '../../test/workspaceChrome';
 
@@ -188,7 +187,17 @@ describe('WorkspaceApp — dashboard catalog-mutation sync (S1-WP01A foundation,
             mutasyondan sonra pano sayacı ekstra bir menü isteği OLMADAN
             güncellenir.
         */
-        await clickRowMenuItem('Kahve', 'Hide from the menu');
+        /*
+            GÜNCELLENDİ (FF-131): görünürlük taşma menüsünden SATIRA döndü.
+
+            FF-102 onu menüye saklamıştı çünkü etiketsiz bir kutu "tükendi"
+            ile karışıyordu — sorun etiketsizlikti, satırda durması değil.
+            Anahtar artık tam cümleyi taşıyor ("Kahve menüde görünsün").
+
+            Ölçülen sözleşme HİÇ değişmedi: mutasyondan sonra pano sayacı
+            ekstra bir menü isteği OLMADAN güncellenir.
+        */
+        await user.click(screen.getByRole('switch', { name: /Kahve/ }));
 
         await waitFor(() => {
             expect(

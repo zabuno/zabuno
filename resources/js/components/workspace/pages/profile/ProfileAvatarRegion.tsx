@@ -148,7 +148,7 @@ export function ProfileAvatarRegion({
             aria-labelledby="profile-avatar-heading"
             className="flex flex-col gap-[var(--space-3)]"
         >
-            <h3 id="profile-avatar-heading" className="text-body font-semibold text-fg">
+            <h3 id="profile-avatar-heading" className="text-body font-bold text-fg">
                 {t('workspace.profile.avatar.heading')}
             </h3>
             <p className="text-body text-fg-secondary">{t('workspace.profile.avatar.help')}</p>
@@ -157,7 +157,7 @@ export function ProfileAvatarRegion({
                 {avatarUrl === null ? (
                     <span
                         aria-hidden="true"
-                        className="flex h-[4rem] w-[4rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-section font-semibold text-fg"
+                        className="flex h-[4rem] w-[4rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-section font-bold text-fg"
                     >
                         {fallbackInitial}
                     </span>
@@ -193,7 +193,7 @@ export function ProfileAvatarRegion({
             <div className="flex flex-wrap items-center gap-[var(--space-2)]">
                 <button
                     type="button"
-                    className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg disabled:border-border disabled:bg-[var(--color-surface-subtle)] disabled:text-fg-muted"
+                    className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg disabled:border-border disabled:bg-[var(--color-surface-subtle)] disabled:text-fg-muted"
                     disabled={busy || selected === null}
                     onClick={() => void upload()}
                 >

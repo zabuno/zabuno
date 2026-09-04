@@ -48,7 +48,7 @@ export function ErrorSummary({ entries, title }: ErrorSummaryProps) {
             <h3
                 ref={headingRef}
                 tabIndex={-1}
-                className="text-body font-semibold text-fg-danger outline-none"
+                className="text-body font-bold text-fg-danger outline-none"
             >
                 {title}
             </h3>

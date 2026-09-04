@@ -135,9 +135,10 @@ export function MediaDropzone({
                             <img
                                 src={selected.previewUrl}
                                 alt=""
-                                className="max-h-[12rem] max-w-full rounded-md object-contain"
+                                className="max-h-[12rem] max-w-full rounded-[var(--radius-md)] object-contain"
                             />
-                            <p className="text-meta text-fg-muted">
+                            {/* Dosya adı + ölçü: ölçü değişir, rakam hizalanır. */}
+                            <p className="text-meta text-fg-muted tabular-nums">
                                 {selected.file.name}
                                 {selected.width > 0
                                     ? ` — ${t('workspace.media.upload.selected.dimensions', {

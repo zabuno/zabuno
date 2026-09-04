@@ -110,7 +110,7 @@ export function BrandLogoRegion({ workspaceId, initialMediaAssetId }: BrandLogoR
             aria-labelledby="brand-logo-heading"
             className="mt-6 flex flex-col gap-3 border-t border-border pt-6"
         >
-            <h3 id="brand-logo-heading" className="text-body font-semibold text-fg">
+            <h3 id="brand-logo-heading" className="text-body font-bold text-fg">
                 {t('workspace.brand.logo.heading')}
             </h3>
             <p className="text-body text-fg-secondary">{t('workspace.brand.logo.help')}</p>
@@ -143,7 +143,7 @@ export function BrandLogoRegion({ workspaceId, initialMediaAssetId }: BrandLogoR
                     <div className="flex flex-wrap items-center gap-2">
                         <button
                             type="button"
-                            className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
+                            className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg"
                             disabled={saving || !dirty}
                             onClick={() => void bind(choice === '' ? null : Number(choice))}
                         >

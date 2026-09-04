@@ -382,9 +382,9 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     {extra.length > 0 ? (
                         <ul
                             aria-label={t('workspace.media.upload.more.label')}
-                            className="flex flex-col gap-2 rounded-lg border border-border p-2"
+                            className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-border p-[var(--space-2)]"
                         >
-                            <li className="text-meta text-fg-muted">
+                            <li className="text-body text-fg-muted">
                                 {t('workspace.media.upload.more.lead', {
                                     count: String(extra.length),
                                 })}
@@ -394,7 +394,8 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                                     key={`${row.image.file.name}-${index}`}
                                     className="flex flex-col gap-1"
                                 >
-                                    <label className="flex flex-col gap-1 text-meta text-fg-secondary">
+                                    {/* Dosya adı bir ETİKETTİR, sayaç değil. */}
+                                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
                                         {row.image.file.name}
                                         <TextInput
                                             type="text"
@@ -447,7 +448,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     {/* Alternatif metin bir yasal/erişilebilirlik
                         yükümlülüğüdür; ne yazılacağını bilmeyen kullanıcı
                         dosya adını yazar ve alan işlevini kaybeder. */}
-                    <p id={`${altId}-hint`} className="text-meta text-fg-muted">
+                    <p id={`${altId}-hint`} className="text-body text-fg-muted">
                         {t('workspace.media.upload.field.altText.hint')}
                     </p>
                     {fieldErrors[altId] ? <FieldError message={fieldErrors[altId]} /> : null}
@@ -490,7 +491,13 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                         sonra fark ediyordu.
                     */}
                     {activePolicy ? (
-                        <ul className="flex flex-col gap-0.5 text-meta text-fg-muted">
+                        /*
+                            Gereksinimler bir DİPNOT değil, kullanıcının
+                            kararını değiştiren cümlelerdir: "yeter mi,
+                            yetmez mi?" Rakamları slot değiştikçe değişir,
+                            bu yüzden `tabular-nums`.
+                        */
+                        <ul className="flex flex-col gap-0.5 text-body text-fg-muted tabular-nums">
                             <li>
                                 {t('workspace.media.upload.requirement.minimum', {
                                     width: String(activePolicy.minWidth),
@@ -527,7 +534,8 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
             {status === 'pending' && (
                 <div className="flex flex-col gap-1">
-                    <p role="status" className="text-meta text-fg-muted">
+                    {/* Yüzde her karede değişir: sabit genişlikli rakam. */}
+                    <p role="status" className="text-meta text-fg-muted tabular-nums">
                         {batchProgress
                             ? t('workspace.media.upload.more.progress', {
                                   done: String(batchProgress.done + 1),
@@ -563,12 +571,18 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             )}
 
             {status === 'success' && (
-                <p role="status" className="text-meta text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.media.upload.complete')}
                 </p>
             )}
 
-            <p className="text-meta text-fg-muted">{t('workspace.media.security.explanation')}</p>
+            {/*
+                Güvenlik açıklaması dipnot DEĞİLDİR: yüklediği fotoğrafın
+                neden hemen menüde görünmediğini soran kullanıcının cevabı
+                budur. "Taranıyor" durumu olduğu gibi kalır — bu ortamda
+                tarama kapalı olsa bile ekran "hazır" demez.
+            */}
+            <p className="text-body text-fg-muted">{t('workspace.media.security.explanation')}</p>
         </form>
     );
 }

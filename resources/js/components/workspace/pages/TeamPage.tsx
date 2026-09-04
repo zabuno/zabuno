@@ -458,7 +458,7 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
             >
                 <PanelCard>
                     <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
-                        <legend className="mb-1 text-body font-semibold text-fg">
+                        <legend className="mb-1 text-body font-bold text-fg">
                             {t('workspace.team.invite.section')}
                         </legend>
 

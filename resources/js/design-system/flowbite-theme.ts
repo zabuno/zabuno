@@ -425,7 +425,7 @@ export const drawerTokenTheme = createTheme(
         },
         header: {
             inner: {
-                titleText: 'mb-4 inline-flex items-center text-meta font-semibold text-fg-muted',
+                titleText: 'mb-4 inline-flex items-center text-meta font-bold text-fg-muted',
                 closeButton:
                     'absolute end-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-fg-muted hover:bg-surface-hover hover:text-fg',
             },
@@ -481,7 +481,7 @@ export const tableTokenTheme = createTheme(
         head: {
             // Büyük harf ve 12 piksel gitti: hiyerarşi ağırlık ve renkle
             // kurulur (`DS-NO-UPPERCASE-12`, `DS-TYPE-SCALE-01`).
-            base: 'group/head text-meta font-semibold text-fg-muted',
+            base: 'group/head text-meta font-bold text-fg-muted',
             cell: {
                 base: 'bg-surface-subtle px-[var(--space-5)] py-[var(--space-3)] group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg',
             },

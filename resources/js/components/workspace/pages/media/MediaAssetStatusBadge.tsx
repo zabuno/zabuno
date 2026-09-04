@@ -65,7 +65,12 @@ export function MediaAssetStatusBadge({ status, reason }: MediaAssetStatusBadgeP
     return (
         <span role="status" className="flex flex-col gap-0.5">
             <span className={`text-body font-medium ${toneClass}`}>{label}</span>
-            {reason ? <span className="text-meta text-fg-muted">{reason}</span> : null}
+            {/*
+                Sebep bir CÜMLEDİR ("HEIC dönüştürülüyor; 1–2 dakika") ve
+                sahibin bekleyip beklemeyeceğine karar verdiği tek bilgidir;
+                dipnot ölçeğine düşürülemez.
+            */}
+            {reason ? <span className="text-body text-fg-muted">{reason}</span> : null}
         </span>
     );
 }

@@ -247,9 +247,7 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
         <div className="mx-auto w-full max-w-form px-4 py-10">
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-title font-semibold text-fg">
-                        {t('workspace.brand.heading')}
-                    </h1>
+                    <h1 className="text-title font-bold text-fg">{t('workspace.brand.heading')}</h1>
                     {/* Başlık tek başına "şimdi ne oluşturuyorum, sonra
                         değiştirebilir miyim" sorularını yanıtsız bırakıyordu. */}
                     <p className="text-body text-fg-secondary">{t('workspace.brand.intro')}</p>

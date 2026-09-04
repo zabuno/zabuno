@@ -58,7 +58,7 @@ export function AppearanceRegion() {
             aria-labelledby="profile-appearance-heading"
             className="flex flex-col gap-[var(--space-3)]"
         >
-            <h3 id="profile-appearance-heading" className="text-body font-semibold text-fg">
+            <h3 id="profile-appearance-heading" className="text-body font-bold text-fg">
                 {t('workspace.profile.appearance.heading')}
             </h3>
             <p className="text-body text-fg-secondary">{t('workspace.profile.appearance.help')}</p>

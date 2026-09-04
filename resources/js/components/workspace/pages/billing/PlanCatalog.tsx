@@ -148,7 +148,7 @@ export function PlanCatalog({
 
     return (
         <div role="region" aria-label={label} className="flex flex-col gap-3">
-            <p className="text-body font-semibold text-fg">{label}</p>
+            <p className="text-body font-bold text-fg">{label}</p>
 
             {status === 'loading' && (
                 <p role="status" className="text-body text-fg-muted">

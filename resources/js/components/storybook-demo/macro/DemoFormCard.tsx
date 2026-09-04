@@ -30,7 +30,7 @@ export function DemoFormCard({
 }: DemoFormCardProps) {
     return (
         <div className="w-full max-w-md rounded-lg border border-border p-6 shadow-sm">
-            <h2 className="text-body font-semibold text-fg">{title}</h2>
+            <h2 className="text-body font-bold text-fg">{title}</h2>
             {description ? <p className="mt-1 text-body text-fg-muted">{description}</p> : null}
             <form
                 className="mt-4 flex flex-col gap-4"

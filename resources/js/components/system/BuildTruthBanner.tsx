@@ -56,7 +56,7 @@ export function BuildTruthBanner(): React.JSX.Element | null {
             role="alert"
             className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-border-warning bg-surface-warning px-4 py-2 text-body text-fg-warning"
         >
-            <strong className="font-semibold">
+            <strong className="font-bold">
                 {divergence.kind === 'stale-build'
                     ? 'This page is running an older build.'
                     : 'This page and its assets come from different revisions.'}

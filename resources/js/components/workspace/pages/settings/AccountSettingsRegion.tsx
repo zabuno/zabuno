@@ -132,7 +132,7 @@ export function AccountSettingsRegion({ currentName = '' }: AccountSettingsRegio
             </form>
 
             <form className="flex flex-col gap-2" onSubmit={savePassword} noValidate>
-                <h3 className="text-body font-semibold text-fg">
+                <h3 className="text-body font-bold text-fg">
                     {t('workspace.settings.account.password.title')}
                 </h3>
                 {/*

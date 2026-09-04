@@ -155,7 +155,7 @@ export function PublicationHistoryRegion({
                                     tartışan sahip tam olarak bunu sorar.
 
                                     Rozet HAP biçimlidir (`rounded-pill`;
-                                    `rounded-full` bu depoda jeton çarpmıyordu)
+                                    tam yuvarlak sınıfı bu depoda jeton çarpmıyordu)
                                     ve yalnız renge yaslanmaz: kelime metin
                                     olarak orada durur, dolgu ikinci kanaldır.
                                 */

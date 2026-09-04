@@ -146,14 +146,20 @@ export function MediaLibraryRegion({
                         alt=""
                         className={
                             view === 'grid'
-                                ? 'aspect-square w-full rounded-md bg-surface-muted object-cover'
-                                : 'h-[3rem] w-[3rem] rounded-md bg-surface-muted object-cover'
+                                ? 'aspect-square w-full rounded-[var(--radius-md)] bg-surface-muted object-cover'
+                                : 'h-[3rem] w-[3rem] rounded-[var(--radius-md)] bg-surface-muted object-cover'
                         }
                     />
                 ) : view === 'grid' ? (
                     <div
                         aria-hidden="true"
-                        className="flex aspect-square w-full items-center justify-center rounded-md bg-surface-muted text-meta text-fg-muted"
+                        /*
+                            Önizlemesi olmayan varlığa UYDURMA GÖRSEL çizilmez
+                            (MEDIA-INTAKE-NO-PUBLIC-URL-01): burada duran şey
+                            bir fotoğraf değil bir CÜMLEDİR — "henüz önizleme
+                            yok" — ve o yüzden gövde ölçeğindedir.
+                        */
+                        className="flex aspect-square w-full items-center justify-center rounded-[var(--radius-md)] bg-surface-muted text-body text-fg-muted"
                     >
                         {t('workspace.media.library.detail.noPreview')}
                     </div>
@@ -176,7 +182,8 @@ export function MediaLibraryRegion({
                     <span className="text-body font-medium text-fg">{name}</span>
                 )}
                 {meta.length > 0 ? (
-                    <span className="text-meta text-fg-muted">{meta.join(' · ')}</span>
+                    /* Boyut ve kullanım sayısı alt alta okunur: sabit rakam. */
+                    <span className="text-meta text-fg-muted tabular-nums">{meta.join(' · ')}</span>
                 ) : null}
                 {/* Sebep rozetin içindedir; ikinci canlı bölge aynı şeyi iki kez okutur (`docs/76`). */}
                 <MediaAssetStatusBadge status={asset.status} reason={asset.statusReason} />
@@ -185,13 +192,14 @@ export function MediaLibraryRegion({
                     type="button"
                     disabled={isDeleting}
                     onClick={() => requestDelete(asset.id)}
-                    className="self-start text-meta"
+                    className="self-start"
                     aria-label={t('workspace.media.library.asset.delete.named', { name })}
                 >
                     {t('workspace.media.library.asset.delete')}
                 </Button>
                 {hasDeleteError && (
-                    <p role="alert" className="text-meta font-medium text-fg-danger">
+                    /* Hata metni GÖVDE ölçeğindedir; meta rolü sayaç içindir. */
+                    <p role="alert" className="text-body font-medium text-fg-danger">
                         {t('workspace.media.library.asset.delete.failed')}
                     </p>
                 )}
@@ -201,7 +209,7 @@ export function MediaLibraryRegion({
 
     const libraryPanel = (
         <div className="flex flex-col gap-3">
-            <h4 className="text-meta font-bold text-fg-muted">
+            <h4 className="text-body font-bold text-fg">
                 {t('workspace.media.library.assets.heading')}
             </h4>
 
@@ -212,7 +220,12 @@ export function MediaLibraryRegion({
                     aria-label={t('workspace.media.library.filters.label')}
                     className="flex flex-wrap items-end gap-2"
                 >
-                    <label className="flex min-w-0 flex-1 flex-col gap-1 text-meta text-fg-muted">
+                    {/*
+                        Süzgeç ETİKETLERİ gövde metnidir: "Search", "Slot",
+                        "Status" birer sayaç değil, kullanıcının okuduğu addır
+                        (`app.css` meta rolünü zaman damgası/sayaçla sınırlar).
+                    */}
+                    <label className="flex min-w-0 flex-1 flex-col gap-1 text-body text-fg-secondary">
                         {t('workspace.media.library.filters.search')}
                         <TextInput
                             type="search"
@@ -221,7 +234,7 @@ export function MediaLibraryRegion({
                             placeholder={t('workspace.media.library.filters.searchPlaceholder')}
                         />
                     </label>
-                    <label className="flex flex-col gap-1 text-meta text-fg-muted">
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
                         {t('workspace.media.library.filters.slot')}
                         <Select value={slot} onChange={(event) => setSlot(event.target.value)}>
                             <option value="">{t('workspace.media.library.filters.any')}</option>
@@ -232,7 +245,7 @@ export function MediaLibraryRegion({
                             ))}
                         </Select>
                     </label>
-                    <label className="flex flex-col gap-1 text-meta text-fg-muted">
+                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
                         {t('workspace.media.library.filters.status')}
                         <Select value={status} onChange={(event) => setStatus(event.target.value)}>
                             <option value="">{t('workspace.media.library.filters.any')}</option>
@@ -258,7 +271,6 @@ export function MediaLibraryRegion({
                         <Button
                             color="light"
                             type="button"
-                            className="text-meta"
                             aria-pressed={view === 'list'}
                             onClick={() => setView('list')}
                         >
@@ -267,7 +279,6 @@ export function MediaLibraryRegion({
                         <Button
                             color="light"
                             type="button"
-                            className="text-meta"
                             aria-pressed={view === 'grid'}
                             onClick={() => setView('grid')}
                         >
@@ -289,11 +300,11 @@ export function MediaLibraryRegion({
                     <Button onClick={() => onRetry?.()}>{t('workspace.error.retry')}</Button>
                 </div>
             ) : assets.length === 0 ? (
-                <div className="flex flex-col gap-1 rounded-lg border border-dashed border-border p-4">
+                <div className="flex flex-col gap-1 rounded-[var(--radius-lg)] border border-dashed border-border p-[var(--space-4)]">
                     <p role="status" className="text-body text-fg-muted">
                         {t('workspace.media.library.unavailable')}
                     </p>
-                    <p className="text-meta text-fg-muted">
+                    <p className="text-body text-fg-muted">
                         {t('workspace.media.library.empty.hint')}
                     </p>
                 </div>
@@ -306,8 +317,13 @@ export function MediaLibraryRegion({
                     aria-label={t('workspace.media.library.assets.heading')}
                     className={
                         view === 'grid'
-                            ? 'grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-3'
-                            : 'flex flex-col gap-2'
+                            ? 'grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-[var(--space-3)]'
+                            : /*
+                                  LİSTEDE SATIRLAR ARASINDA BOŞLUK YOKTUR:
+                                  boşluk + ayraç birlikte çizgiyi satırdan
+                                  koparır. Ritim `border-t` ile kurulur.
+                              */
+                              'flex flex-col'
                     }
                 >
                     {visible.map(renderRow)}
@@ -315,7 +331,7 @@ export function MediaLibraryRegion({
             )}
 
             {filtersActive && loadState === 'idle' && assets.length > 1 ? (
-                <p className="text-meta text-fg-muted">
+                <p className="text-meta text-fg-muted tabular-nums">
                     {t('workspace.media.library.filters.count', {
                         shown: String(visible.length),
                         total: String(assets.length),
@@ -324,7 +340,7 @@ export function MediaLibraryRegion({
             ) : null}
 
             {deleteNotice && (
-                <p role="status" className="text-meta text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {deleteNotice}
                 </p>
             )}
@@ -374,17 +390,17 @@ export function MediaLibraryRegion({
                 kebapçının ilk ekranında listelenmez, katlanır durur. İçerik
                 DOM'da kalır (ekran okuyucu ve sözleşme testleri).
             */}
-            <details className="rounded-lg border border-border p-3">
+            <details className="rounded-[var(--radius-lg)] border border-border p-[var(--space-3)]">
                 <summary className="cursor-pointer text-body font-medium text-fg-secondary">
                     {t('workspace.media.library.how.summary')}
                 </summary>
                 <div className="flex flex-col gap-3 pt-3">
-                    <p className="text-meta font-bold text-fg-muted">
+                    <p className="text-body font-bold text-fg">
                         {t('workspace.media.library.slots.heading')}
                     </p>
                     <MediaLibrarySlotList />
 
-                    <p className="text-meta font-bold text-fg-muted">
+                    <p className="text-body font-bold text-fg">
                         {t('workspace.media.lifecycle.heading')}
                     </p>
                     <MediaLifecycleList />
