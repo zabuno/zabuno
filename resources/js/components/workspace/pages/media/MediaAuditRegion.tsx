@@ -78,7 +78,7 @@ export function MediaAuditRegion({ workspaceId }: MediaAuditRegionProps) {
 
     return (
         <details className="rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-4)]">
-            <summary className="cursor-pointer text-body font-semibold text-fg">
+            <summary className="cursor-pointer text-body font-bold text-fg">
                 {t('workspace.media.audit.heading')}
             </summary>
             <p className="mt-[var(--space-2)] text-meta text-fg-muted">

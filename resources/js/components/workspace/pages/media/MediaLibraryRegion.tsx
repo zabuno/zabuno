@@ -130,8 +130,14 @@ export function MediaLibraryRegion({
                 key={asset.id}
                 className={
                     view === 'grid'
-                        ? 'flex flex-col gap-2 rounded-lg border border-border bg-surface p-2'
-                        : 'flex flex-col gap-1 border-b border-border pb-2'
+                        ? 'flex flex-col gap-2 rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-2)]'
+                        : /*
+                              LİSTE GÖRÜNÜMÜNDE SATIR KART DEĞİLDİR (FF-131).
+                              Izgara görünümünde kutu anlamlıdır — her kutu bir
+                              görselin sınırıdır. Listede ise sınır bilgi
+                              taşımaz; satırlar zaten alt alta ve tek ritimde.
+                          */
+                          'flex min-h-[var(--density-row-height)] flex-col justify-center gap-[var(--space-1)] border-t border-border px-[var(--density-padding-inline)] py-[var(--space-2)] first:border-t-0'
                 }
             >
                 {asset.previewUrl ? (
@@ -195,7 +201,7 @@ export function MediaLibraryRegion({
 
     const libraryPanel = (
         <div className="flex flex-col gap-3">
-            <h4 className="text-meta font-semibold text-fg-muted">
+            <h4 className="text-meta font-bold text-fg-muted">
                 {t('workspace.media.library.assets.heading')}
             </h4>
 
@@ -331,9 +337,7 @@ export function MediaLibraryRegion({
             aria-label={t('workspace.media.library.region')}
             className="flex flex-col gap-3"
         >
-            <h3 className="text-body font-semibold text-fg">
-                {t('workspace.media.library.heading')}
-            </h3>
+            <h3 className="text-body font-bold text-fg">{t('workspace.media.library.heading')}</h3>
 
             {actions ? (
                 <Tabs
@@ -375,12 +379,12 @@ export function MediaLibraryRegion({
                     {t('workspace.media.library.how.summary')}
                 </summary>
                 <div className="flex flex-col gap-3 pt-3">
-                    <p className="text-meta font-semibold text-fg-muted">
+                    <p className="text-meta font-bold text-fg-muted">
                         {t('workspace.media.library.slots.heading')}
                     </p>
                     <MediaLibrarySlotList />
 
-                    <p className="text-meta font-semibold text-fg-muted">
+                    <p className="text-meta font-bold text-fg-muted">
                         {t('workspace.media.lifecycle.heading')}
                     </p>
                     <MediaLifecycleList />

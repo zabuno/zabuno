@@ -148,6 +148,14 @@ export function LocationsPage({
                     <PanelCard key={groupKey}>
                         <p className="mb-2 font-medium text-fg">{group.city}</p>
                         <p className="mb-2 text-body text-fg-secondary">{group.countryCode}</p>
+                        {/*
+                            ŞUBE SATIRI KUTU KALIR ve bu bilinçli bir ayrım
+                            (FF-131): satırın içinde DÜZENLENEBİLİR bir form
+                            var. Kenarlık burada gürültü değil, formun nerede
+                            başlayıp bittiğini söyleyen tek işaret — takım
+                            listesindeki salt-okunur satırlarla aynı şey
+                            değil.
+                        */}
                         <ul className="flex flex-col gap-3">
                             {group.locations.map((location) => (
                                 <li

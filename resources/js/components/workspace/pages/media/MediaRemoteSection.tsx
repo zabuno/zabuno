@@ -30,7 +30,7 @@ export function MediaRemoteSection<T>({
 }: MediaRemoteSectionProps<T>) {
     return (
         <section aria-labelledby={id} className="flex flex-col gap-2">
-            <h4 id={id} className="text-meta font-semibold text-fg-muted">
+            <h4 id={id} className="text-meta font-bold text-fg-muted">
                 {heading}
             </h4>
             {remote.state === 'loading' ? (

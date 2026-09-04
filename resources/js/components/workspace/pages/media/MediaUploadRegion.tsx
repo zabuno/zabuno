@@ -329,9 +329,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             // çalıştırmadığı için testler yeşildi.
             noValidate
         >
-            <h3 className="text-body font-semibold text-fg">
-                {t('workspace.media.upload.heading')}
-            </h3>
+            <h3 className="text-body font-bold text-fg">{t('workspace.media.upload.heading')}</h3>
 
             <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-1">

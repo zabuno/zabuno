@@ -165,7 +165,7 @@ export function ImageCropField({
             aria-labelledby="media-crop-heading"
             className="flex flex-col gap-[var(--space-2)]"
         >
-            <h4 id="media-crop-heading" className="text-body font-semibold text-fg">
+            <h4 id="media-crop-heading" className="text-body font-bold text-fg">
                 {t('workspace.media.crop.heading')}
             </h4>
             <p className="text-body text-fg-secondary">{t('workspace.media.crop.help')}</p>
