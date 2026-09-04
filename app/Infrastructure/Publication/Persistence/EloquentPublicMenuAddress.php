@@ -36,7 +36,7 @@ final class EloquentPublicMenuAddress implements PublicMenuAddressPort
         return $row === null ? null : $this->hydrate($row);
     }
 
-    /** @return list<array{key: string, slug: string, published_at: string}> */
+    /** @return list<array{key: string, slug: string, locale: string, published_at: string}> */
     public function indexableMenus(): array
     {
         return $this->baseQuery()
@@ -53,6 +53,11 @@ final class EloquentPublicMenuAddress implements PublicMenuAddressPort
             ->map(fn (object $row): array => [
                 'key' => (string) $row->public_key,
                 'slug' => MenuPublicAddress::slugFor($this->displayNameOf($row)),
+                // Sitemap'teki adres, kanonik adresin AYNISI olmak zorunda
+                // (FF-116). Tür segmenti işletmenin diline göre yazıldığı için
+                // dil buradan da taşınır; yoksa sitemap `/restaurant/...`
+                // derken sayfa `/restoran/...` kanonik ilan eder.
+                'locale' => (string) ($row->brand_locale ?? ''),
                 'published_at' => (string) $row->published_at,
             ])
             ->all();

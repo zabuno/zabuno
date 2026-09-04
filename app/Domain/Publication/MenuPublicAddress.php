@@ -9,16 +9,26 @@ use InvalidArgumentException;
 /**
  * Yayınlanan bir menünün herkese açık adresi.
  *
- * İki parçadan oluşur ve ikisinin rolü farklıdır:
+ *     /restoran/pasa-doner/menu/ab12cd34ef
+ *     /restoran/pasa-doner/menu/ab12cd34ef/urun/101-adana-kebap
  *
- * - `key` **kimliktir**. Değişmez. İşletme adını değiştirse, şubesini
- *   taşısa, menüsünü baştan yazsa bile aynı kalır.
+ * Parçaların rolleri farklıdır:
+ *
+ * - `type` segmenti **ne olduğunu söyler** ve kiracıya kendi kökünü verir
+ *   (`docs/105` §4.2). Dile göre yazılır: `restoran` / `restaurant`.
  * - `slug` **okunabilirliktir**. Değişebilir. Yanlış veya eski bir slug ile
- *   gelen istek, doğru adrese kalıcı olarak yönlendirilir — yani bağlantı
- *   ölmez, kendini onarır.
+ *   gelen istek doğru adrese kalıcı olarak yönlendirilir — bağlantı ölmez,
+ *   kendini onarır.
+ * - `key` **kimliktir**. Değişmez. İşletme adını değiştirse, şubesini taşısa,
+ *   menüsünü baştan yazsa bile aynı kalır.
  *
  * Bu ayrım olmasaydı, bir restoranın adını değiştirmesi paylaşılmış her
  * bağlantıyı ve her dış linki kırardı.
+ *
+ * SIRA 2026-09-04'te DEĞİŞTİ (FF-116, sahibin talebi). Önceki hâl
+ * `/menu/ab12cd34ef/pasa-doner` idi: en anlamlı parça (işletme adı) en sonda,
+ * en anlamsız parça (10 karakterlik anahtar) ortadaydı. Kartvizite yazıldığında
+ * ya da telefonda söylendiğinde önce anlamsız kısım geliyordu.
  */
 final class MenuPublicAddress
 {
@@ -27,25 +37,36 @@ final class MenuPublicAddress
     private function __construct(
         public readonly string $key,
         public readonly string $slug,
+        public readonly BusinessType $type,
+        /** Segmentlerin yazıldığı dil: işletmenin KENDİ dili. */
+        public readonly string $locale,
     ) {}
 
     /** Kimlik ve hazır slug'dan kurar (depodan okunan hâl). */
-    public static function fromKeyAndSlug(string $key, string $slug): self
-    {
+    public static function fromKeyAndSlug(
+        string $key,
+        string $slug,
+        string $locale = 'tr',
+        BusinessType $type = BusinessType::Restaurant,
+    ): self {
         if (preg_match(self::KEY_PATTERN, $key) !== 1) {
             throw new InvalidArgumentException('Menu public key must be 10 lowercase alphanumeric characters.');
         }
 
-        return new self($key, $slug);
+        return new self($key, $slug, $type, $locale);
     }
 
-    public static function create(string $key, string $displayName): self
-    {
+    public static function create(
+        string $key,
+        string $displayName,
+        string $locale = 'tr',
+        BusinessType $type = BusinessType::Restaurant,
+    ): self {
         if (preg_match(self::KEY_PATTERN, $key) !== 1) {
             throw new InvalidArgumentException('Menu public key must be 10 lowercase alphanumeric characters.');
         }
 
-        return new self($key, self::slugFor($displayName));
+        return new self($key, self::slugFor($displayName), $type, $locale);
     }
 
     /** Yeni bir kimlik üretir. Sıralı değildir: sıralı kimlik işletme sayısını ilan eder. */
@@ -91,8 +112,29 @@ final class MenuPublicAddress
 
     public function path(): string
     {
+        $prefix = '/'.$this->type->segment($this->locale);
+
         return $this->slug === ''
-            ? '/menu/'.$this->key
-            : '/menu/'.$this->key.'/'.$this->slug;
+            ? $prefix.'/menu/'.$this->key
+            : $prefix.'/'.$this->slug.'/menu/'.$this->key;
+    }
+
+    /**
+     * Tek bir ürünün adresi.
+     *
+     * Sahibin ilk örneği `#item=101` idi. Fragment sunucuya HİÇ ulaşmaz:
+     * indekslenmez, ayrı bir görüntüleme olarak ölçülemez ve paylaşılan
+     * bağlantıda hangi ürün olduğu sunucu tarafından bilinemez. Yol segmenti
+     * üçünü de yapar (`docs/105` §4.3).
+     *
+     * Kimlik BAŞTADIR: adı okunamayan bir ürün (yalnız emoji, yalnız Çince)
+     * bile çalışan bir adrese sahip olur ve slug boşsa adres kısalır.
+     */
+    public function itemPath(int $menuItemId, string $productName): string
+    {
+        $slug = self::slugFor($productName);
+        $segment = $slug === '' ? (string) $menuItemId : $menuItemId.'-'.$slug;
+
+        return $this->path().'/'.$this->type->itemSegment($this->locale).'/'.$segment;
     }
 }

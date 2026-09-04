@@ -81,7 +81,16 @@ final class ShowPublicMenuController extends Controller
         // adresi gösterilir ve bu sayfa indekslenmez. Böylece token hiçbir
         // zaman sitemap'e girmez ve `/q/` için koyulan hız sınırı anlamlı
         // kalır (`docs/38` §21).
-        $canonicalPath = MenuPublicAddress::fromKeyAndSlug($address['key'], $address['slug'])->path();
+        // Tür segmentinin dili İŞLETMENİN dilidir (FF-116): token sayfası da
+        // aynı kanonik adresi göstermek zorunda, yoksa iki yüzey birbirine
+        // farklı adres ilan eder.
+        $menuAddress = MenuPublicAddress::fromKeyAndSlug(
+            $address['key'],
+            $address['slug'],
+            $address['locale'],
+        );
+
+        $canonicalPath = $menuAddress->path();
 
         return response()->view('public-menu', [
             'snapshot' => $publication->snapshot,
@@ -94,6 +103,7 @@ final class ShowPublicMenuController extends Controller
             // istemciden almak, herkesin herkesin adına olay yazması
             // demekti (`docs/84`).
             'menuKey' => $address['key'],
+            'itemPathFor' => fn (int $menuItemId, string $productName): string => $menuAddress->itemPath($menuItemId, $productName),
             // Metin ŞABLONDA değil KATALOGDA yaşar: Blade'e yazılan bir
             // cümleyi sahip hiçbir PO dosyasından çeviremez (`docs/82`).
             /*

@@ -536,7 +536,11 @@
                     <ul class="qr-menu-item-list">
                         @foreach ($category['menuItems'] as $item)
                             @php($isSoldOut = isset($item['menuItemId']) && isset($soldOut[(int) $item['menuItemId']]))
-                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}" @isset($item['menuItemId']) data-menu-item-id="{{ $item['menuItemId'] }}" @endisset>
+                            {{-- ÇIPA: `#item-101` tarayıcının kendi işidir ve
+                                 JavaScript gerektirmez. Sahibin örneğindeki
+                                 `#item=101` biçimi de aşağıdaki küçük betikle
+                                 buraya bağlanır (FF-116). --}}
+                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}" @isset($item['menuItemId']) id="item-{{ $item['menuItemId'] }}" data-menu-item-id="{{ $item['menuItemId'] }}" @endisset>
                                 @if (! empty($item['image']['sources']))
                                     @php($image = $item['image'])
                                     {{-- `loading="lazy"`: kırk ürünlük bir menüde
@@ -551,7 +555,16 @@
                                          alt="{{ $image['altText'] }}"
                                          loading="lazy" decoding="async">
                                 @endif
-                                <span class="qr-menu-item-name">{{ $item['productName'] }}</span>
+                                {{-- ÜRÜN ADI, ANLATACAK ŞEYİ VARSA bağlantıdır
+                                     (FF-116). Açıklaması, görseli ve alerjeni
+                                     olmayan bir ürünün sayfası bu satırın
+                                     kopyasıdır; hiçbir yere götürmeyen bir
+                                     bağlantı kurmak bir yalandır. --}}
+                                @if (isset($item['menuItemId']) && isset($itemPathFor) && \App\Http\Controllers\QrDestination\ShowPublicMenuItemController::hasSomethingToSay($item))
+                                    <a class="qr-menu-item-name" href="{{ $itemPathFor((int) $item['menuItemId'], (string) $item['productName']) }}">{{ $item['productName'] }}</a>
+                                @else
+                                    <span class="qr-menu-item-name">{{ $item['productName'] }}</span>
+                                @endif
                                 @php($priceLabel = \App\Support\Money\PriceLabel::for((int) $item['priceMinorAmount'], (string) $item['currencyCode']))
                                 @if ($priceLabel !== null)
                                     <span class="qr-menu-item-price">{{ $priceLabel }}</span>
@@ -599,6 +612,26 @@
         function say(key) {
             return TEXT[key] || '';
         }
+
+        /*
+            `#item=101` BİÇİMİNİ TARAYICININ ANLADIĞI ÇIPAYA BAĞLA (FF-116).
+
+            Sahibin örneği bu biçimdeydi. Tarayıcı `#item=101` diye bir çıpa
+            tanımaz; sayfadaki gerçek kimlik `item-101`. Fragment sunucuya hiç
+            ulaşmadığı için bunu ancak istemci çözebilir. Adres DEĞİŞTİRİLMEZ:
+            misafirin paylaştığı bağlantı elinde ne ise o kalır.
+        */
+        (function () {
+            var match = /^#item=(\d+)$/.exec(window.location.hash || '');
+
+            if (match) {
+                var target = document.getElementById('item-' + match[1]);
+
+                if (target && typeof target.scrollIntoView === 'function') {
+                    target.scrollIntoView();
+                }
+            }
+        })();
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/public-diner-sw.js', { scope: '/menu/' });
