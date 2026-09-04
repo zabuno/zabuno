@@ -728,10 +728,6 @@ msgstr "Retry"
 msgid "workspace.catalog.location.label"
 msgstr "Location"
 
-#: workspace:workspace.choose.heading
-msgid "workspace.choose.heading"
-msgstr "Choose a workspace"
-
 #: workspace:workspace.create.error.name
 msgid "workspace.create.error.name"
 msgstr "Enter a workspace name."

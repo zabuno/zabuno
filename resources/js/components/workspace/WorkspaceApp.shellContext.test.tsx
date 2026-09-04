@@ -143,7 +143,7 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
         history.replaceState(null, '', window.location.pathname);
     });
 
-    it('exposes the real current-workspace name as a sidebar control that reaches the Choose a workspace screen', async () => {
+    it('exposes the real current-workspace name as a sidebar control that opens the workspace menu', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
@@ -158,11 +158,18 @@ describe('WorkspaceApp — AdminShell current-workspace / current-location conte
             name: /Zeytin Restoranları.*Switch workspace/s,
         });
 
+        /*
+            GÜNCELLENDİ (2026-09-04, sahibin kararı): "çalışma alanı seç"
+            SAYFASI kaldırıldı. Aynı iş artık yerinde yapılıyor — kutu bir
+            menü açar ve seçim oradan yapılır. İddia değişmedi: ad görünür ve
+            kontrol çalışma alanı seçimine götürür; değişen tek şey seçimin
+            ayrı bir sayfada değil, bağlamın kendisinde yapılması.
+        */
         await user.click(workspaceControl);
 
         expect(
-            await screen.findByRole('heading', { name: 'Choose a workspace' }),
-        ).toBeInTheDocument();
+            await screen.findByRole('menuitemradio', { name: 'Zeytin Restoranları' }),
+        ).toBeChecked();
 
         vi.unstubAllGlobals();
     });

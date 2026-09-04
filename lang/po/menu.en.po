@@ -156,6 +156,22 @@ msgstr "Download menu (CSV)"
 msgid "menu.import.done"
 msgstr "Imported {items} items into {categories} new categories."
 
+#: menu:menu.import.dropzone.active
+msgid "menu.import.dropzone.active"
+msgstr "Release to import this file"
+
+#: menu:menu.import.dropzone.choose
+msgid "menu.import.dropzone.choose"
+msgstr "Choose a file"
+
+#: menu:menu.import.dropzone.hint
+msgid "menu.import.dropzone.hint"
+msgstr "CSV only"
+
+#: menu:menu.import.dropzone.label
+msgid "menu.import.dropzone.label"
+msgstr "Drop a CSV file here, or choose one"
+
 #: menu:menu.import.error
 msgid "menu.import.error"
 msgstr "The file could not be imported."

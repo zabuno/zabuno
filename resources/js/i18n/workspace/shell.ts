@@ -7,7 +7,6 @@ export const shell = {
     'workspace.create.submit': 'Create workspace',
     'workspace.create.error.name': 'Enter a workspace name.',
     'workspace.create.error.submit': 'We could not create your workspace. Please try again.',
-    'workspace.choose.heading': 'Choose a workspace',
     // Telefon alt gezintisi (`docs/50` §20): dört hedef + geri kalanı.
     'workspace.shell.nav.more': 'More',
     'workspace.current.switch': 'Switch workspace',

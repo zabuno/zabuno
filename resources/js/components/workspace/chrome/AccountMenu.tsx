@@ -1,7 +1,7 @@
-import { ArrowsLeftRight, Gear, SignOut, UserCircle } from '@phosphor-icons/react';
+import { Gear, SignOut, UserCircle } from '@phosphor-icons/react';
 import { t } from '../../../i18n/workspace';
 import { t as themeText } from '../../../i18n/theme';
-import { ActionMenu } from '../../catalog/overlays/compound/ActionMenu';
+import { SidebarMenu } from '../../catalog/overlays/compound/SidebarMenu';
 import {
     THEME_OPTION_ORDER,
     themeOptionLabels,
@@ -24,7 +24,6 @@ export type AccountMenuProps = {
      * hiçbir yere varmamış gibi durur.
      */
     avatarUrl?: string | null;
-    onSwitchWorkspace: () => void;
     onLogout: () => void;
     loggingOut?: boolean;
     className?: string;
@@ -48,7 +47,6 @@ export function AccountMenu({
     avatarUrl = null,
     onOpenProfile,
     onOpenSettings,
-    onSwitchWorkspace,
     onLogout,
     loggingOut = false,
     className,
@@ -56,10 +54,15 @@ export function AccountMenu({
     const theme = useThemeControl();
 
     return (
-        <ActionMenu
+        <SidebarMenu
             label={t('workspace.account.menu.label')}
             className={className}
-            tone="quiet"
+            /*
+                YUKARI açılır: düğme kenar çubuğunun dibinde durur ve aşağı
+                açılan bir panel ekranın dışında kalırdı (sahibin isteği,
+                2026-09-04).
+            */
+            placement="up"
             triggerContent={
                 <span className="flex w-full items-center gap-[var(--space-2)]">
                     {/* Fotoğraf varsa o, yoksa baş harf: e-posta uzun, göz önce kime ait olduğunu arar. */}
@@ -150,6 +153,13 @@ export function AccountMenu({
                     her ekranda dikey alan harcayan bir bölüm üretiyordu.
                     Kayıttaki adres değişmedi: `/app/{ws}/settings` aynı yer.
                 */
+                /*
+                    ÇALIŞMA ALANI DEĞİŞTİR buradan kalktı (sahibin kararı,
+                    2026-09-04): seçim artık kenar çubuğunun tepesindeki
+                    seçicide, hangi alanda olduğumuzu söyleyen kutunun
+                    kendisinde yapılıyor. Aynı işi iki yerde sunmak,
+                    kullanıcıya iki farklı yol varmış gibi gösterirdi.
+                */
                 ...(onOpenSettings
                     ? [
                           {
@@ -160,12 +170,6 @@ export function AccountMenu({
                           },
                       ]
                     : []),
-                {
-                    key: 'switch-workspace',
-                    label: t('workspace.current.switch'),
-                    icon: <ArrowsLeftRight size={18} />,
-                    onSelect: onSwitchWorkspace,
-                },
                 {
                     key: 'logout',
                     label: t('workspace.current.logout'),

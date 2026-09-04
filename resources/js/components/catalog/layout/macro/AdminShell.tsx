@@ -104,7 +104,17 @@ export function AdminShell({
             <SkipLink targetId={mainId} />
             <TopBar
                 brand={brand}
-                onToggleMenu={bottomBar ? undefined : onToggleMobileMenu}
+                /*
+                    HAMBURGER yalnız gezintiye BAŞKA yol yokken çizilir.
+
+                    Kalıcı kenar çubuğu zaten ekrandayken (masaüstü) hamburger
+                    hiçbir şey açmıyordu: aynı gezinti bir tık ötede, açık
+                    hâlde duruyordu. Sahibin isteği (2026-09-04) bunu
+                    kaldırmaktı. Telefonda alt çubuk varsa da kalkar — aynı iş
+                    iki yerde durmaz. Geriye tek meşru durum kalır: ne kalıcı
+                    ray ne alt çubuk varken açılan çekmece.
+                */
+                onToggleMenu={bottomBar || persistentSidebar ? undefined : onToggleMobileMenu}
                 menuOpen={mobileMenuOpen}
                 center={topBarCenter}
                 end={topBarEnd}

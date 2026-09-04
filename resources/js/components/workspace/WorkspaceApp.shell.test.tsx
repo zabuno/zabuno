@@ -171,7 +171,13 @@ async function renderCurrentWorkspace(chrome: object = desktopChrome) {
     }>();
     render(<WorkspaceApp {...chrome} />);
 
-    if (chrome === desktopChrome) {
+    /*
+        Hangi kabuk çizildi: NESNE KİMLİĞİNE değil, verilen parçaya bakılır.
+        `{...desktopChrome, inspectors}` yayılımı kimliği bozuyordu ve
+        masaüstü kabuğu telefon gibi beklenmeye başlıyordu — hamburger
+        masaüstünden kalkınca (2026-09-04) bu sessiz hata görünür oldu.
+    */
+    if ('renderPersistentSidebar' in chrome) {
         await screen.findByRole('navigation', { name: 'Restaurant admin' });
     } else {
         await screen.findByRole('button', { name: 'Open menu' });
@@ -246,10 +252,14 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
 
         await userEvent.click(accountMenu);
 
-        expect(
-            await screen.findByRole('menuitem', { name: 'Switch workspace' }),
-        ).toBeInTheDocument();
-        expect(screen.getByRole('menuitem', { name: 'Log out' })).toBeInTheDocument();
+        /*
+            GÜNCELLENDİ (2026-09-04): "çalışma alanı değiştir" hesap
+            menüsünden ÇIKTI. Seçim artık kenar çubuğunun tepesindeki
+            bağlam kutusunda yapılıyor; aynı işi iki yerde sunmak, kullanıcıya
+            iki farklı yol varmış gibi gösteriyordu.
+        */
+        expect(screen.queryByRole('menuitem', { name: 'Switch workspace' })).toBeNull();
+        expect(await screen.findByRole('menuitem', { name: 'Log out' })).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -403,15 +413,23 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
-    it('transitions to the existing choose-workspace journey when Switch workspace is activated', async () => {
+    /*
+        Sahibin kararı (2026-09-04): ayrı "çalışma alanı seç" SAYFASI
+        kaldırıldı. Seçim, hangi alanda olduğumuzu söyleyen kutunun kendisinde
+        yapılır — bir yolculuk değil, bir seçimdir.
+    */
+    it('çalışma alanı seçimi ayrı bir sayfaya gitmeden, bağlam kutusunun menüsünde yapılır', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
-        // Hesap menüsü önce açılır: kontrol kenar çubuğundan kimlik alanına taşındı.
-        await user.click(screen.getByRole('button', { name: 'Account' }));
-        await user.click(await screen.findByRole('menuitem', { name: 'Switch workspace' }));
+        await user.click(
+            screen.getByRole('button', { name: /Zeytin Restoranları.*Switch workspace/s }),
+        );
 
-        expect(screen.getByRole('heading', { name: 'Choose a workspace' })).toBeInTheDocument();
+        expect(
+            await screen.findByRole('menuitemradio', { name: 'Zeytin Restoranları' }),
+        ).toBeChecked();
+        expect(screen.queryByRole('heading', { name: 'Choose a workspace' })).toBeNull();
 
         vi.unstubAllGlobals();
     });

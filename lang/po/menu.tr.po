@@ -156,6 +156,22 @@ msgstr "Menüyü indir (CSV)"
 msgid "menu.import.done"
 msgstr "{categories} yeni kategoriye {items} ürün aktarıldı."
 
+#: menu:menu.import.dropzone.active
+msgid "menu.import.dropzone.active"
+msgstr "Bu dosyayı aktarmak için bırakın"
+
+#: menu:menu.import.dropzone.choose
+msgid "menu.import.dropzone.choose"
+msgstr "Dosya seç"
+
+#: menu:menu.import.dropzone.hint
+msgid "menu.import.dropzone.hint"
+msgstr "Yalnız CSV"
+
+#: menu:menu.import.dropzone.label
+msgid "menu.import.dropzone.label"
+msgstr "Bir CSV dosyasını buraya bırakın ya da seçin"
+
 #: menu:menu.import.error
 msgid "menu.import.error"
 msgstr "Dosya içe aktarılamadı."

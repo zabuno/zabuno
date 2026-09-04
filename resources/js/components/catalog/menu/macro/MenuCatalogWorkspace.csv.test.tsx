@@ -106,7 +106,7 @@ describe('menüyü almak ve geri koymak (docs/80)', () => {
             },
         });
 
-        await user.upload(screen.getByLabelText('Import a CSV menu'), csvFile());
+        await user.upload(screen.getByLabelText('Choose a file'), csvFile());
 
         await waitFor(() => {
             expect(calls.some((call) => call.url.endsWith('/import'))).toBe(true);
@@ -128,7 +128,7 @@ describe('menüyü almak ve geri koymak (docs/80)', () => {
             body: { message: 'Dosyadaki hiçbir satır okunamadı.' },
         });
 
-        await user.upload(screen.getByLabelText('Import a CSV menu'), csvFile());
+        await user.upload(screen.getByLabelText('Choose a file'), csvFile());
 
         expect(await screen.findByText('Dosyadaki hiçbir satır okunamadı.')).toBeInTheDocument();
         expect(screen.queryByText(/Imported/)).toBeNull();
