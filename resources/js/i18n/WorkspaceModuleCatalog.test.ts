@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 706;
+const FROZEN_LEGACY_KEY_COUNT = 710;
 
-// FF-110: satır taşma menüsünün erişilebilir adı ve kod kapatma onayı.
+// FF-111: basılabilir kart destesi (sayfa başına 12 kart, 4 cm kod).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'e0ca08bfc1847ac4f68a11273c7891f002c5827dacfa3a46db56d0868fc71152';
+    '4841c444a371455d534b820f14fdbb9ecc12fe2199f6f4d682db8879759e56bd';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

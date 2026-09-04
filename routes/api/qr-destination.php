@@ -7,6 +7,7 @@ use App\Http\Controllers\QrDestination\EnableQrCodeController;
 use App\Http\Controllers\QrDestination\ExportQrCodePdfController;
 use App\Http\Controllers\QrDestination\ExportQrCodePngController;
 use App\Http\Controllers\QrDestination\ExportQrCodeSvgController;
+use App\Http\Controllers\QrDestination\ExportQrPrintSheetController;
 use App\Http\Controllers\QrDestination\ListQrCodesController;
 use App\Http\Controllers\QrDestination\RetargetQrCodeController;
 use App\Http\Controllers\QrDestination\StoreBulkQrCodesController;
@@ -26,4 +27,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/qr-codes/{qrCode}/export.png', ExportQrCodePngController::class);
     Route::get('/workspaces/{workspace}/qr-codes/{qrCode}/export.svg', ExportQrCodeSvgController::class);
     Route::get('/workspaces/{workspace}/qr-codes/{qrCode}/export.pdf', ExportQrCodePdfController::class);
+    /*
+        BASILABİLİR DESTE (`docs/104` Döngü 8) — tek kodun kâğıdından ayrı bir
+        iş: kesilip masalara dağıtılacak kartlar. Her kart bir PNG üretir,
+        dolayısıyla istek pahalıdır ve kendi hız sınırını taşır.
+    */
+    Route::get('/workspaces/{workspace}/brand/locations/{location}/qr-codes/print.pdf', ExportQrPrintSheetController::class)->middleware('throttle:10,1');
 });

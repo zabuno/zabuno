@@ -52,6 +52,10 @@ msgstr "Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor."
 msgid "guest.menu.summary"
 msgstr "Kategori: {categories} · Ürün: {items}"
 
+#: guest:guest.print.scanForMenu
+msgid "guest.print.scanForMenu"
+msgstr "Menü için okutun"
+
 #: guest:guest.pwa.install
 msgid "guest.pwa.install"
 msgstr "Uygulamayı yükle"

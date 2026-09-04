@@ -2288,6 +2288,22 @@ msgstr "QR print export"
 msgid "workspace.publication.qrExport.selector"
 msgstr "QR code"
 
+#: workspace:workspace.publication.qrExport.sheet.download
+msgid "workspace.publication.qrExport.sheet.download"
+msgstr "Download print sheet (PDF)"
+
+#: workspace:workspace.publication.qrExport.sheet.downloadPart
+msgid "workspace.publication.qrExport.sheet.downloadPart"
+msgstr "Print sheet {part} of {total} (PDF)"
+
+#: workspace:workspace.publication.qrExport.sheet.explanation
+msgid "workspace.publication.qrExport.sheet.explanation"
+msgstr "{codes} codes on {pages} A4 page(s), 12 cards per page. Each code prints at 4 cm — readable from about 40 cm, the distance of someone sitting at the table. Cut along the dashed lines."
+
+#: workspace:workspace.publication.qrExport.sheet.heading
+msgid "workspace.publication.qrExport.sheet.heading"
+msgstr "Print sheet for your tables"
+
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr "Bold theme"

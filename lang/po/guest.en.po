@@ -52,6 +52,10 @@ msgstr "Published menu — showing the current published version."
 msgid "guest.menu.summary"
 msgstr "Categories: {categories} · Dishes: {items}"
 
+#: guest:guest.print.scanForMenu
+msgid "guest.print.scanForMenu"
+msgstr "Scan for the menu"
+
 #: guest:guest.pwa.install
 msgid "guest.pwa.install"
 msgstr "Install the app"

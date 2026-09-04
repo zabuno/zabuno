@@ -14,6 +14,10 @@ import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedContr
 import { ActionLink } from '../../../catalog/navigation/micro/ActionLink';
 import type { QrCreateReasonKind } from './QrDestinationFieldsRegion';
 
+/** `App\\Domain\\QrDestination\\QrPrintSheet` ile aynı sayılar. */
+const CARDS_PER_PAGE = 12;
+const CARDS_PER_REQUEST = 48;
+
 const THEME_ORDER = ['classic', 'minimal', 'bold', 'rounded', 'branded', 'highContrast'] as const;
 
 type QrThemeKey = (typeof THEME_ORDER)[number];
@@ -61,6 +65,30 @@ function itemLabel(item: QrCodeItem, unnamedIndex: number, unnamedTotal: number)
     const base = t('workspace.publication.qrDestination.item.entrance');
 
     return unnamedTotal > 1 ? `${base} ${String(unnamedIndex + 1)}` : base;
+}
+
+/**
+ * Kesilip masalara dağıtılacak KART DESTESİ (`docs/104` Döngü 8).
+ *
+ * Tek kodun PDF'inden ayrı bir çıktıdır: o, A4'ün ortasında tek bir kare —
+ * 40 masa için 40 ayrı sayfa, her biri %97 beyaz ve baskıdan sonra
+ * birbirinden ayırt edilemez. Bu, sayfa başına on iki kart; her kartta
+ * restoran adı, 40 mm karekod, masa adı ve kesme çizgisi.
+ */
+function printSheetUrl(
+    workspaceId: number,
+    locationId: number,
+    theme: QrThemeKey,
+    chunk: number,
+): string {
+    const params = new URLSearchParams();
+    if (theme !== 'classic') params.set('theme', theme);
+    if (chunk > 1) params.set('chunk', String(chunk));
+
+    const query = params.toString();
+    const base = `/api/workspaces/${String(workspaceId)}/brand/locations/${String(locationId)}/qr-codes/print.pdf`;
+
+    return query ? `${base}?${query}` : base;
 }
 
 function exportUrl(
@@ -118,6 +146,14 @@ export function QrPrintExportRegion({
 }: QrPrintExportRegionProps) {
     const activeItems = items.filter((item) => item.state === 'active');
     const unnamedItems = activeItems.filter((item) => !item.tableName);
+    const sheetCount = activeItems.length;
+    /*
+        Sunucu tek istekte en fazla 48 kart basar (her kart ayrı bir PNG
+        üretir; 500 masalık bir istek kullanıcıya hiçbir şey vermeden zaman
+        aşımına uğrardı). Sayı istemcide de biliniyor ki ekran "3 parçadan
+        1." diyebilsin — sessizce kırpılmış bir PDF vermek yerine.
+    */
+    const chunkCount = Math.max(1, Math.ceil(sheetCount / CARDS_PER_REQUEST));
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [outputFormat, setOutputFormat] = useState<QrOutputFormat>('png');
     const [paperSize, setPaperSize] = useState<QrPaperSize>('A4');
@@ -295,6 +331,44 @@ export function QrPrintExportRegion({
                     </span>
                 </div>
             )}
+
+            {/*
+                DESTE, TEK KARTTAN ÖNCE GELİR.
+
+                Sahibin buraya gelme sebebi çoğunlukla "masalara koyacak
+                kartları basmak"tır; tek bir kodu indirmek istisnadır. Deste
+                ancak birden fazla etkin kod varken belirir — tek kodlu bir
+                kafeye "12'li sayfa" önermek, olmayan bir işi önermektir.
+            */}
+            {sheetCount > 1 && workspaceId !== undefined && locationId !== undefined ? (
+                <div className="flex flex-col gap-[var(--space-2)] border-t border-border pt-[var(--space-3)]">
+                    <h4 className="text-body font-semibold text-fg">
+                        {t('workspace.publication.qrExport.sheet.heading')}
+                    </h4>
+                    <p className="text-body text-fg-secondary">
+                        {t('workspace.publication.qrExport.sheet.explanation', {
+                            codes: String(sheetCount),
+                            pages: String(Math.ceil(sheetCount / CARDS_PER_PAGE)),
+                        })}
+                    </p>
+                    <span className="flex flex-wrap items-center gap-[var(--space-2)]">
+                        {Array.from({ length: chunkCount }, (_unused, index) => (
+                            <ActionLink
+                                key={index}
+                                variant={index === 0 ? 'primary' : 'secondary'}
+                                href={printSheetUrl(workspaceId, locationId, theme, index + 1)}
+                            >
+                                {chunkCount === 1
+                                    ? t('workspace.publication.qrExport.sheet.download')
+                                    : t('workspace.publication.qrExport.sheet.downloadPart', {
+                                          part: String(index + 1),
+                                          total: String(chunkCount),
+                                      })}
+                            </ActionLink>
+                        ))}
+                    </span>
+                </div>
+            ) : null}
 
             <BulkQrWizardFields
                 workspaceId={workspaceId}
