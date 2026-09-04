@@ -13,6 +13,7 @@ import { Select } from '../../../catalog/forms/micro/Select';
 import { SegmentedControl } from '../../../catalog/forms/compound/SegmentedControl';
 import { ActionLink } from '../../../catalog/navigation/micro/ActionLink';
 import type { QrCreateReasonKind } from './QrDestinationFieldsRegion';
+import { isBrandColorPrintable } from '../../../../lib/qrContrast';
 
 /** `App\\Domain\\QrDestination\\QrPrintSheet` ile aynı sayılar. */
 const CARDS_PER_PAGE = 12;
@@ -44,6 +45,9 @@ type QrPrintExportRegionProps = {
     onBulkCreated?: (qrCodes: QrCodeItem[]) => void;
     /** Plan kısıtı çıkışı: faturalama ekranı. */
     onUpgrade?: () => void;
+    /** Markanın ana rengi — "markalı" tema bunu kullanır (FF-112). */
+    brandPrimaryColor?: string | null;
+    onEditBrand?: () => void;
 };
 
 /**
@@ -143,6 +147,8 @@ export function QrPrintExportRegion({
     bulkUnavailableReason,
     onBulkCreated,
     onUpgrade,
+    brandPrimaryColor = null,
+    onEditBrand,
 }: QrPrintExportRegionProps) {
     const activeItems = items.filter((item) => item.state === 'active');
     const unnamedItems = activeItems.filter((item) => !item.tableName);
@@ -251,6 +257,50 @@ export function QrPrintExportRegion({
                             }))}
                             onChange={setTheme}
                         />
+                        {/*
+                            TEMA BİR ZEVK MESELESİ DEĞİLDİR (FF-112).
+
+                            Altı tema adı, hiçbir açıklama olmadan duruyordu.
+                            Oysa buradaki tek gerçek kısıt taranabilirliktir:
+                            okunmayan bir karekod, masadaki ölü kâğıttır ve
+                            bunu ilk fark eden kişi telefonunu kartın üstünde
+                            sallayan misafirdir. Ürün, sunduğu her temanın
+                            taranabilir olduğunu SÖYLER — çünkü söylemezse
+                            sahip "acaba bu renk okunur mu?" diye
+                            düşünmediğinden değil, düşündüğü için tedirgin
+                            olur ve en güvenli görüneni seçer.
+                        */}
+                        <p className="text-meta text-fg-muted">
+                            {t('workspace.publication.qrExport.themes.scannability')}
+                        </p>
+                        {theme === 'branded' && !isBrandColorPrintable(brandPrimaryColor) ? (
+                            /*
+                                MARKA RENGİ KULLANILAMIYORSA SÖYLENİR.
+                                Sunucu bu durumda sessizce klasiğe düşer;
+                                sessizlik, sahibin "markalı"yı seçip siyah bir
+                                kod indirmesi ve bunu bir hata sanması demek
+                                olurdu.
+                            */
+                            <p
+                                role="status"
+                                className="flex flex-col items-start gap-[var(--space-1)] text-meta text-fg-secondary"
+                            >
+                                {t(
+                                    brandPrimaryColor === null
+                                        ? 'workspace.publication.qrExport.themes.brandMissing'
+                                        : 'workspace.publication.qrExport.themes.brandTooPale',
+                                )}
+                                {onEditBrand ? (
+                                    <button
+                                        type="button"
+                                        onClick={onEditBrand}
+                                        className="min-h-[var(--density-hit-area-min)] text-meta text-fg-link underline underline-offset-2"
+                                    >
+                                        {t('workspace.publication.qrExport.themes.editBrand')}
+                                    </button>
+                                ) : null}
+                            </p>
+                        ) : null}
                     </span>
 
                     {/*

@@ -75,8 +75,8 @@ kanıtıyla kapanır.
 | 7 | Yıkıcı eylem taşma menüsüne + onay | `ActionMenu` + `ConfirmDialog` | ✅ FF-110 |
 | 8 | Basılabilir sayfa: N-up, ad, kesme çizgisi | PDF adaptörü + toplu uç | ✅ FF-111 |
 | 9 | Baskı önizlemesi ve MİLİMETRE | kâğıt/yerleşim önizlemenin kontrolleri olur; kod boyu mm olarak yazılır | ◐ FF-111 (mm yazıldı; önizleme kaldı) |
-| 10 | Temalar: marka + taranabilirlik kuralı | kontrast ≥ %40, logo varsa EC=H, ters kontrast yasak | ⬜ |
-| 11 | Sözleşme metni: dinamik kod güvencesi | "bastırdıktan sonra da hedefi değişir; basılı kartlar çalışmaya devam eder" | ⬜ |
+| 10 | Temalar: marka + taranabilirlik kuralı | kontrast ≥ %40, logo varsa EC=H, ters kontrast yasak | ✅ FF-112 |
+| 11 | Sözleşme metni: dinamik kod güvencesi | "bastırdıktan sonra da hedefi değişir; basılı kartlar çalışmaya devam eder" | ✅ FF-112 |
 | 12 | Story'ler ve görsel kapı | beş dosyaya story; yüzey katmanı bir daha kapının dışında kalmaz | ◐ FF-107 + FF-110 (baskı bölgesi, satır) |
 
 ---
@@ -346,3 +346,50 @@ kesikli çizgilerden keser ve on dört kartı masalara dağıtır. Her kartın �
 "Kebapçı Ali", altında "T7 · Bahçe" ve "Menü için okutun" yazar. Eskiden bu iş,
 on dört kez ayrı ayrı PDF indirip on dört boş A4 basmak ve sonra hangisinin
 hangi masa olduğunu tahmin etmekti.
+
+
+---
+
+## Tur 2 kaydı (FF-112) — Döngü 10 ve 11: tema bir zevk meselesi değil
+
+**"Markalı" tema, markayla ilgilenmiyordu.** `QrTheme::Branded` sabit bir
+lacivertti (1E3A8A) ve açık mavi bir zemini vardı; kiracının markasıyla hiçbir
+ilgisi yoktu — oysa marka rengi 2026-09-04'te veritabanına eklenmişti ve
+profil ekranında duruyordu. Adı yaptığı işi söylemeyen bir kontrolü kullanıcı
+bir kez dener ve bir daha güvenmez. Daha kötüsü: iki test bu yalanı sözleşme
+olarak dondurmuştu ("branded SVG'si 1E3A8A taşımalı").
+
+- `QrLayout::branded()` markanın gerçek rengini beyaz zemin üstünde kullanır.
+  Zemin beyazdır çünkü kart zaten beyaz kâğıda basılır; renkli bir zemin hem
+  mürekkep yakar hem kontrastı düşürür.
+- **Renk taranabilir değilse klasiğe düşülür ve bu SÖYLENİR.** Açık sarı bir
+  marka rengiyle basılan kod göze güzel, kameraya görünmezdir; masadaki kart
+  ölü kâğıttır ve bunu ilk fark eden kişi telefonunu kartın üstünde sallayan
+  misafirdir. Sessizce düşmek de bir yalan olurdu: sahip "markalı" seçmiştir ve
+  çıktının neden siyah olduğunu bilmelidir.
+- Kısıt tek bir yerde yaşıyor: `QrContrast`. İki kural pazarlıksız — **koyu
+  modül açık zemin üstünde** (ters kontrast birçok tarayıcıda hiç okunmaz;
+  "bazı telefonlarda çalışır" bir destek talebidir) ve **oran ≥ 4:1**. Sunulan
+  altı temanın altısı da bu kuralı geçiyor ve bunun veri sağlayıcılı bir testi
+  var: ürün okunmayan bir tema sunamaz.
+- Dört dışa aktarım ucu (png/svg/pdf/deste) temayı tek bir çözücüden alır.
+  Dört yerde ayrı çözmek, ekrandaki önizlemenin bir renk, yazıcıdan çıkan
+  kartın başka bir renk olması demekti.
+- Ekran, indirmeden ÖNCE konuşur: istemcide aynı kuralın küçük bir kopyası var
+  ve eşiklerin aynı olduğunun testi var. Sunucu karar vericidir; istemci yalnız
+  önceden haber verir.
+
+**Döngü 11 — ürünün en güçlü argümanı ekranda yazmıyordu.** Bu sektördeki en
+pahalı arıza, üçüncü taraf bir kısaltıcıya bağlanmış kodların bir gün
+ölmesidir: masadaki kırk kart aynı anda çöp olur ve restoran bunu misafirden
+öğrenir. Zabuno'nun kodları kalıcıdır ve hedefleri sonradan değiştirilebilir —
+ama sahip bunu bilmeden bastırıyordu, yani ödediği şeyin ne olduğunu
+bilmiyordu. Artık listenin başında yazıyor: *"Basılı kodlar çalışmaya devam
+eder… burada bir şey değişti diye yeniden bastırmazsınız."*
+
+`kullaniciYolculugu`: Sahip marka rengini açık sarı seçmiş. QR ekranında
+"markalı" temaya basar; ekran hemen "marka renginiz güvenle taranamayacak
+kadar açık, bu kod siyah basılır" der ve yanında "marka renginizi belirleyin"
+bağlantısı durur. Eskiden ne olurdu? Ya okunmayan sarı bir kod bastırırdı ve
+bunu masadaki misafir fark ederdi, ya da "markalı" seçip siyah bir kod indirir
+ve bunu bir hata sanırdı.

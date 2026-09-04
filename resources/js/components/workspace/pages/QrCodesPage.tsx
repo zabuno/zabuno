@@ -10,6 +10,8 @@ export type QrCodesPageProps = {
     workspaceId?: number;
     dashboardMenuTree?: DashboardMenuTree | null;
     onNavigateToSection?: (section: string) => void;
+    /** Markanın ana rengi — "markalı" tema bunu kullanır (FF-112). */
+    brandPrimaryColor?: string | null;
 };
 
 /**
@@ -24,6 +26,7 @@ export function QrCodesPage({
     workspaceId,
     dashboardMenuTree = null,
     onNavigateToSection,
+    brandPrimaryColor = null,
 }: QrCodesPageProps) {
     const menuId = dashboardMenuTree?.id ?? null;
     const locationId = dashboardMenuTree?.locationId ?? null;
@@ -60,6 +63,8 @@ export function QrCodesPage({
                             publicationLoading={loading}
                             publicationLoadFailed={loadError}
                             onUpgrade={() => onNavigateToSection?.('billing')}
+                            brandPrimaryColor={brandPrimaryColor}
+                            onEditBrand={() => onNavigateToSection?.('brand')}
                         />
                     ) : (
                         /*

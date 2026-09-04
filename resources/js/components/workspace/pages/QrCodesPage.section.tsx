@@ -10,6 +10,12 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             workspaceId={ctx.workspaceId}
             dashboardMenuTree={ctx.dashboardMenuTree}
             onNavigateToSection={ctx.onNavigateToSection}
+            /*
+                Markanın rengi QR ekranına ULAŞIR (FF-112): "markalı" tema
+                artık gerçekten bu rengi kullanıyor ve ekran, renk
+                taranamayacak kadar açıksa bunu indirme öncesinde söylüyor.
+            */
+            brandPrimaryColor={ctx.brand?.primary_color ?? null}
         />
     );
 }

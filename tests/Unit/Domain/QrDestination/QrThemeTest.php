@@ -29,7 +29,8 @@ use Tests\TestCase;
  *       minimal       1F2937 / F9FAFB
  *       bold          111827 / FDE68A
  *       rounded       064E3B / D1FAE5
- *       branded       1E3A8A / DBEAFE
+ *       branded       1E3A8A / FFFFFF  (FF-112: zemin beyaza alındı; ön plan
+ *                     markanın gerçek rengiyle geçilir — bkz. QrLayout::branded)
  *       highContrast  000000 / FFFF00
  *   - Every palette's real computed WCAG contrast ratio must be >= 7.0.
  *
@@ -43,7 +44,19 @@ final class QrThemeTest extends TestCase
         'minimal' => ['foregroundRgb' => '1F2937', 'backgroundRgb' => 'F9FAFB'],
         'bold' => ['foregroundRgb' => '111827', 'backgroundRgb' => 'FDE68A'],
         'rounded' => ['foregroundRgb' => '064E3B', 'backgroundRgb' => 'D1FAE5'],
-        'branded' => ['foregroundRgb' => '1E3A8A', 'backgroundRgb' => 'DBEAFE'],
+        /*
+            GÜNCELLENDİ (FF-112). "Markalı" temanın zemini açık maviydi ve ön
+            planı sabit bir laciverttti — yani adı "markalı" olan tema,
+            kiracının markasıyla hiç ilgilenmiyordu. Zemin artık beyaz: kart
+            zaten beyaz kâğıda basılır, renkli bir zemin hem mürekkep yakar
+            hem de marka rengiyle arasındaki kontrastı düşürür. Ön plan,
+            markanın gerçek rengiyle `QrLayout::branded()` içinde geçilir ve
+            renk taranabilir değilse klasiğe düşülür.
+
+            Buradaki 1E3A8A artık "marka rengi olmayan/geçilmemiş hâl"in
+            varsayılanıdır, ürünün gösterdiği tek renk değil.
+        */
+        'branded' => ['foregroundRgb' => '1E3A8A', 'backgroundRgb' => 'FFFFFF'],
         'highContrast' => ['foregroundRgb' => '000000', 'backgroundRgb' => 'FFFF00'],
     ];
 

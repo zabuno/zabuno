@@ -28,6 +28,10 @@ type QrDestinationRegionProps = {
     publicationLoadFailed?: boolean;
     /** Plan kısıtının çıkış yolu: faturalama ekranı. */
     onUpgrade?: () => void;
+    /** Markanın ana rengi — "markalı" tema bunu kullanır (FF-112). */
+    brandPrimaryColor?: string | null;
+    /** Marka rengini düzeltmenin yolu: marka ekranı. */
+    onEditBrand?: () => void;
 };
 
 /**
@@ -44,6 +48,8 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
         publicationLoading = false,
         publicationLoadFailed = false,
         onUpgrade,
+        brandPrimaryColor = null,
+        onEditBrand,
     } = props;
 
     const listUrl = `/api/workspaces/${workspaceId}/brand/locations/${locationId}/qr-codes`;
@@ -351,6 +357,21 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                     {t('workspace.publication.qrDestination.explanation')}
                 </p>
 
+                {/*
+                    ÜRÜNÜN EN GÜÇLÜ ARGÜMANI EKRANDA YAZMIYORDU (FF-112,
+                    `docs/104` Döngü 11).
+
+                    Bu sektördeki en pahalı arıza, üçüncü taraf bir kısaltıcıya
+                    bağlanmış kodların bir gün ölmesidir: masadaki kırk kart
+                    aynı anda çöp olur ve restoran bunu misafirden öğrenir.
+                    Zabuno'nun kodları kalıcıdır ve hedefleri sonradan
+                    değiştirilebilir — sahip bunu bilmeden bastırıyordu, yani
+                    ödediği şeyin ne olduğunu bilmiyordu.
+                */}
+                <p className="text-meta text-fg-muted">
+                    {t('workspace.publication.qrDestination.permanence')}
+                </p>
+
                 {errorMessage !== null ? (
                     <p role="alert" className="text-body text-fg-danger">
                         {errorMessage}
@@ -441,6 +462,8 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 bulkUnavailableReason={reasonKind}
                 onBulkCreated={handleBulkCreated}
                 onUpgrade={onUpgrade}
+                brandPrimaryColor={brandPrimaryColor}
+                onEditBrand={onEditBrand}
             />
         </>
     );

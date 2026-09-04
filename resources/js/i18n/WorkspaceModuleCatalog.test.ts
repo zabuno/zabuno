@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 710;
+const FROZEN_LEGACY_KEY_COUNT = 715;
 
-// FF-111: basılabilir kart destesi (sayfa başına 12 kart, 4 cm kod).
+// FF-112: tema taranabilirlik sözleşmesi ve dinamik kod güvencesi.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '4841c444a371455d534b820f14fdbb9ecc12fe2199f6f4d682db8879759e56bd';
+    'fc35986eccbd23203d3af2c9b90fe3ca4e2f45d63e87c9e60c98a0ff6eabff30';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

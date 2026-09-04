@@ -9,9 +9,9 @@ use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Application\QrDestination\Port\QrCodePdfExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Authorization\Permission;
-use App\Domain\QrDestination\QrLayout;
 use App\Domain\QrDestination\QrTheme;
 use App\Http\Controllers\Controller;
+use App\Support\QrDestination\QrLayoutResolver;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
@@ -26,6 +26,7 @@ final class ExportQrCodePdfController extends Controller
     public function __construct(
         private readonly AuthorizationPort $authorization,
         private readonly QrCodeRepositoryPort $qrCodes,
+        private readonly QrLayoutResolver $layouts,
         private readonly QrCodeImageExportPort $imageExport,
         private readonly QrCodePdfExportPort $pdfExport,
     ) {}
@@ -56,7 +57,13 @@ final class ExportQrCodePdfController extends Controller
 
         $paperSize = $validated['paperSize'] ?? 'A4';
         $orientation = $validated['orientation'] ?? 'portrait';
-        $layout = new QrLayout(QrTheme::from($validated['theme'] ?? QrTheme::Classic->value));
+        /*
+            "Markalı" tema markanın GERÇEK rengini kullanır (FF-112) ve renk
+            taranabilir değilse klasiğe düşer. Karar tek yerde verilir; dört
+            uçta ayrı ayrı çözmek, önizlemenin bir renk, yazıcıdan çıkan
+            kartın başka bir renk olması demekti.
+        */
+        $layout = $this->layouts->resolve($validated['theme'] ?? null, $workspace, $record->menuId);
 
         try {
             $png = $this->imageExport->renderPng(url("/q/{$record->token}"), $layout);

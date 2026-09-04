@@ -407,6 +407,34 @@ final class QrExportPngTest extends TestCase
         );
     }
 
+    public function test_a_brand_colour_too_pale_to_scan_falls_back_to_black_instead_of_printing_an_unreadable_code(): void
+    {
+        /*
+            QRTHEME-SCANNABLE-01 (FF-112). Açık sarı bir marka rengiyle
+            basılan kod göze güzel, kameraya görünmezdir; masadaki kart ölü
+            kâğıttır ve bunu ilk fark eden kişi telefonunu kartın üstünde
+            sallayan misafirdir. Ürün, kullanıcının seçtiği rengi körü körüne
+            uygulamaz.
+        */
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId, $menuId] = $this->workspaceWithCurrentPublication($owner, 'qr-png-pale-brand');
+        [$qrCodeId] = $this->createActiveQrCode($owner, $workspaceId, $locationId, $menuId);
+
+        DB::table('brands')->where('workspace_id', $workspaceId)->update(['primary_color' => '#FFE066']);
+
+        $classic = $this->actingAs($owner)->get($this->themeExportUrl($workspaceId, $qrCodeId, 'classic'));
+        $branded = $this->actingAs($owner)->get($this->themeExportUrl($workspaceId, $qrCodeId, 'branded'));
+
+        $classic->assertStatus(200);
+        $branded->assertStatus(200);
+
+        self::assertSame(
+            $classic->getContent(),
+            $branded->getContent(),
+            'QRTHEME-SCANNABLE-01: taranamayacak bir marka rengi klasiğe düşmeli — okunmayan bir kod basmak, kartı ölü kâğıda çevirir.',
+        );
+    }
+
     public static function nonClassicThemeKeys(): array
     {
         return [
@@ -429,6 +457,16 @@ final class QrExportPngTest extends TestCase
         $owner = $this->verifiedUser();
         [$workspaceId, $locationId, $menuId] = $this->workspaceWithCurrentPublication($owner, 'qr-png-theme-'.strtolower($themeKey));
         [$qrCodeId, $token] = $this->createActiveQrCode($owner, $workspaceId, $locationId, $menuId);
+
+        /*
+            GÜNCELLENDİ (FF-112): "markalı" tema artık MARKANIN GERÇEK rengini
+            kullanır. Eskiden sabit bir laciverttti — adı "markalı"ydı ama
+            kiracının markasıyla hiçbir ilgisi yoktu ve bu test o yalanı
+            sözleşme olarak donduruyordu. Marka rengi olmayan bir kiracıda
+            tema artık dürüstçe klasiğe düşer, dolayısıyla "farklı byte"
+            iddiası ancak gerçek bir marka rengi varken anlamlıdır.
+        */
+        DB::table('brands')->where('workspace_id', $workspaceId)->update(['primary_color' => '#1B4332']);
 
         $classic = $this->actingAs($owner)->get($this->themeExportUrl($workspaceId, $qrCodeId, 'classic'));
         $themed = $this->actingAs($owner)->get($this->themeExportUrl($workspaceId, $qrCodeId, $themeKey));
