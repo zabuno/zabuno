@@ -55,6 +55,38 @@ export const siteTranslations = {
     'site.title.invitation': 'Zabuno — Team invitation',
     'site.title.workspace': 'Zabuno — Workspace',
     'site.title.platform': 'Zabuno — Platform Admin',
+    /*
+        ZABUNO SERVICE PASS — hazırlanıyor sayfası (FF-117, yönerge §8).
+
+        Ziyaretçiye teknik durum adı (`content_draft`) YAZILMAZ: ona hiçbir şey
+        anlatmaz ve ürünü içeriden konuşur gösterir. Her durumun okunabilir bir
+        cümlesi var. Sahte ilerheme yüzdesi ve uydurma geri sayım yok —
+        tutulmayacak bir söz, hiç söz vermemekten kötüdür.
+    */
+    'site.pageState.title': 'Hazırlanıyor',
+    'site.pageState.headline': 'Bu sayfa henüz servise çıkmadı.',
+    'site.pageState.lede':
+        'İçerik, tasarım, arama görünürlüğü ve kalite kontrolü katman katman hazırlanıyor.',
+    'site.pageState.maintenanceHeadline': 'Bu sayfa kısa süreliğine bakımda.',
+    'site.pageState.maintenanceLede':
+        'Sayfa yayındaydı ve geri gelecek. Bu sırada diğer sayfalar çalışmaya devam ediyor.',
+    'site.pageState.pageLabel': 'Sayfa',
+    'site.pageState.stageLabel': 'Durum',
+    'site.pageState.updatedLabel': 'Son güncelleme',
+    'site.pageState.home': 'Ana sayfaya dön',
+    'site.pageState.explore': 'Çalışan sayfaları keşfet',
+    'site.pageState.contact': 'İletişime geç',
+    'site.pageState.planned': 'Sıraya alındı',
+    'site.pageState.scaffolded': 'İskeleti hazırlandı',
+    'site.pageState.content_draft': 'Türkçe içeriği hazırlanıyor',
+    'site.pageState.content_review': 'İçeriği kontrol ediliyor',
+    'site.pageState.design_review': 'Görsel düzeni hazırlanıyor',
+    'site.pageState.seo_review': 'Arama görünürlüğü kontrol ediliyor',
+    'site.pageState.qa': 'Son kalite kontrolünde',
+    'site.pageState.approved': 'Servise çıkmayı bekliyor',
+    'site.pageState.published': 'Yayında',
+    'site.pageState.maintenance': 'Kısa süreli bakımda',
+    'site.pageState.retired': 'Yayından kaldırıldı',
     'site.pricing.heading': 'Pricing',
     'site.pricing.lead': 'What a restaurant pays to publish its menu behind a QR code.',
     /*

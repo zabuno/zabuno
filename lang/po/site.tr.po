@@ -244,6 +244,94 @@ msgstr "Ana gezinti"
 msgid "site.nav.register"
 msgstr "Hesap oluştur"
 
+#: site:site.pageState.approved
+msgid "site.pageState.approved"
+msgstr "Servise çıkmayı bekliyor"
+
+#: site:site.pageState.contact
+msgid "site.pageState.contact"
+msgstr "İletişime geç"
+
+#: site:site.pageState.content_draft
+msgid "site.pageState.content_draft"
+msgstr "Türkçe içeriği hazırlanıyor"
+
+#: site:site.pageState.content_review
+msgid "site.pageState.content_review"
+msgstr "İçeriği kontrol ediliyor"
+
+#: site:site.pageState.design_review
+msgid "site.pageState.design_review"
+msgstr "Görsel düzeni hazırlanıyor"
+
+#: site:site.pageState.explore
+msgid "site.pageState.explore"
+msgstr "Çalışan sayfaları keşfet"
+
+#: site:site.pageState.headline
+msgid "site.pageState.headline"
+msgstr "Bu sayfa henüz servise çıkmadı."
+
+#: site:site.pageState.home
+msgid "site.pageState.home"
+msgstr "Ana sayfaya dön"
+
+#: site:site.pageState.lede
+msgid "site.pageState.lede"
+msgstr "İçerik, tasarım, arama görünürlüğü ve kalite kontrolü katman katman hazırlanıyor."
+
+#: site:site.pageState.maintenance
+msgid "site.pageState.maintenance"
+msgstr "Kısa süreli bakımda"
+
+#: site:site.pageState.maintenanceHeadline
+msgid "site.pageState.maintenanceHeadline"
+msgstr "Bu sayfa kısa süreliğine bakımda."
+
+#: site:site.pageState.maintenanceLede
+msgid "site.pageState.maintenanceLede"
+msgstr "Sayfa yayındaydı ve geri gelecek. Bu sırada diğer sayfalar çalışmaya devam ediyor."
+
+#: site:site.pageState.pageLabel
+msgid "site.pageState.pageLabel"
+msgstr "Sayfa"
+
+#: site:site.pageState.planned
+msgid "site.pageState.planned"
+msgstr "Sıraya alındı"
+
+#: site:site.pageState.published
+msgid "site.pageState.published"
+msgstr "Yayında"
+
+#: site:site.pageState.qa
+msgid "site.pageState.qa"
+msgstr "Son kalite kontrolünde"
+
+#: site:site.pageState.retired
+msgid "site.pageState.retired"
+msgstr "Yayından kaldırıldı"
+
+#: site:site.pageState.scaffolded
+msgid "site.pageState.scaffolded"
+msgstr "İskeleti hazırlandı"
+
+#: site:site.pageState.seo_review
+msgid "site.pageState.seo_review"
+msgstr "Arama görünürlüğü kontrol ediliyor"
+
+#: site:site.pageState.stageLabel
+msgid "site.pageState.stageLabel"
+msgstr "Durum"
+
+#: site:site.pageState.title
+msgid "site.pageState.title"
+msgstr "Hazırlanıyor"
+
+#: site:site.pageState.updatedLabel
+msgid "site.pageState.updatedLabel"
+msgstr "Son güncelleme"
+
 #: site:site.plan.analytics
 msgid "site.plan.analytics"
 msgstr "Analitik: misafirler neye bakıyor, ne arayıp bulamıyor"
