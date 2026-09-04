@@ -13,11 +13,11 @@ use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Application\QrDestination\Port\QrPrintSheetPort;
 use App\Domain\Authorization\Permission;
-use App\Domain\QrDestination\QrLayout;
 use App\Domain\QrDestination\QrPrintSheet;
 use App\Domain\QrDestination\QrTheme;
 use App\Http\Controllers\Controller;
 use App\Support\Localization\GuestText;
+use App\Support\QrDestination\QrLayoutResolver;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
@@ -46,6 +46,7 @@ final class ExportQrPrintSheetController extends Controller
         private readonly QrPrintSheetPort $printSheet,
         private readonly PublicMenuAddressPort $addresses,
         private readonly GuestText $guestText,
+        private readonly QrLayoutResolver $layouts,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $location): Response
@@ -69,7 +70,6 @@ final class ExportQrPrintSheetController extends Controller
             'chunk' => ['sometimes', 'integer', 'min:1'],
         ]);
 
-        $layout = new QrLayout(QrTheme::from($validated['theme'] ?? QrTheme::Classic->value));
         $chunk = (int) ($validated['chunk'] ?? 1);
 
         /*
@@ -104,6 +104,8 @@ final class ExportQrPrintSheetController extends Controller
         $address = $this->addresses->findByQrToken($slice[0]->token);
         $brandName = $address['brand_name'] ?? '';
         $caption = $this->guestText->get('guest.print.scanForMenu', $address['locale'] ?? null);
+
+        $layout = $this->layouts->resolve($validated['theme'] ?? null, $workspace, $slice[0]->menuId);
 
         try {
             $cards = array_map(

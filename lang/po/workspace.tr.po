@@ -2064,6 +2064,10 @@ msgstr "Tek şubeniz bu — kodu taşıyacak başka yer yok."
 msgid "workspace.publication.qrDestination.move.start"
 msgstr "Başka bir şubeye taşı"
 
+#: workspace:workspace.publication.qrDestination.permanence
+msgid "workspace.publication.qrDestination.permanence"
+msgstr "Basılı kodlar çalışmaya devam eder. Bir kodu sonradan başka bir menüye ya da başka bir şubeye yönlendirebilirsiniz; basılı kart geçerli kalır — burada bir şey değişti diye yeniden bastırmazsınız."
+
 #: workspace:workspace.publication.qrDestination.region
 msgid "workspace.publication.qrDestination.region"
 msgstr "Karekod hedefi"
@@ -2308,6 +2312,14 @@ msgstr "Masalarınız için baskı sayfası"
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr "Kalın tema"
 
+#: workspace:workspace.publication.qrExport.themes.brandMissing
+msgid "workspace.publication.qrExport.themes.brandMissing"
+msgstr "Henüz bir marka rengi belirlemediniz; bu kod siyah basılır."
+
+#: workspace:workspace.publication.qrExport.themes.brandTooPale
+msgid "workspace.publication.qrExport.themes.brandTooPale"
+msgstr "Marka renginiz güvenle taranamayacak kadar açık; bu kod onun yerine siyah basılır."
+
 #: workspace:workspace.publication.qrExport.themes.branded
 msgid "workspace.publication.qrExport.themes.branded"
 msgstr "Markalı tema"
@@ -2315,6 +2327,10 @@ msgstr "Markalı tema"
 #: workspace:workspace.publication.qrExport.themes.classic
 msgid "workspace.publication.qrExport.themes.classic"
 msgstr "Klasik tema"
+
+#: workspace:workspace.publication.qrExport.themes.editBrand
+msgid "workspace.publication.qrExport.themes.editBrand"
+msgstr "Marka renginizi belirleyin"
 
 #: workspace:workspace.publication.qrExport.themes.heading
 msgid "workspace.publication.qrExport.themes.heading"
@@ -2331,6 +2347,10 @@ msgstr "Sade tema"
 #: workspace:workspace.publication.qrExport.themes.rounded
 msgid "workspace.publication.qrExport.themes.rounded"
 msgstr "Yuvarlak tema"
+
+#: workspace:workspace.publication.qrExport.themes.scannability
+msgid "workspace.publication.qrExport.themes.scannability"
+msgstr "Buradaki her tema açık zemin üstüne koyu basar ve kodun çevresindeki sessiz bölgeyi korur; hepsi taranır. Renk, okunamayan bir kod pahasına gelmez."
 
 #: workspace:workspace.publication.qrExport.unavailable
 msgid "workspace.publication.qrExport.unavailable"

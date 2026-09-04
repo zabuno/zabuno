@@ -47,6 +47,13 @@ export const publication = {
         'Create a QR code that resolves to the current published menu.',
     'workspace.publication.qrDestination.fields.unavailable':
         'Publish your menu first — the QR code needs a published menu to point to.',
+    /*
+        DİNAMİK KOD GÜVENCESİ (`docs/104` Döngü 11). Bu sektördeki en pahalı
+        arıza, üçüncü taraf bir kısaltıcıya bağlı kodların bir gün ölmesidir;
+        bu ürünün en güçlü argümanı buydu ve ekranda YAZMIYORDU.
+    */
+    'workspace.publication.qrDestination.permanence':
+        'Printed codes keep working. You can point a code at a different menu or another location later, and the printed card stays valid — you never reprint because something changed here.',
     'workspace.publication.qrDestination.createButton': 'Create',
     /*
         Erişilebilir ad KODUN ADINI taşır (FF-110): 40 satırlık bir listede
@@ -176,6 +183,18 @@ export const publication = {
         "4 cm" sayısı, kâğıt boyu açılır listesinin yapamadığı işi yapar —
         sahip kartın masada nasıl duracağını gözünde canlandırır.
     */
+    /*
+        TEMA BİR ZEVK MESELESİ DEĞİL, TARANABİLİRLİK KISITIDIR (Döngü 10).
+        Okunmayan bir karekod masadaki ölü kâğıttır ve bunu ilk fark eden
+        kişi misafirdir.
+    */
+    'workspace.publication.qrExport.themes.scannability':
+        'Every theme here prints dark on light and keeps the quiet zone around the code, so all of them scan. Colour never comes at the cost of a code that cannot be read.',
+    'workspace.publication.qrExport.themes.brandTooPale':
+        'Your brand colour is too light to scan reliably, so this code prints in black instead.',
+    'workspace.publication.qrExport.themes.brandMissing':
+        'You have not set a brand colour yet, so this code prints in black.',
+    'workspace.publication.qrExport.themes.editBrand': 'Set your brand colour',
     'workspace.publication.qrExport.sheet.heading': 'Print sheet for your tables',
     'workspace.publication.qrExport.sheet.explanation':
         '{codes} codes on {pages} A4 page(s), 12 cards per page. Each code prints at 4 cm — readable from about 40 cm, the distance of someone sitting at the table. Cut along the dashed lines.',

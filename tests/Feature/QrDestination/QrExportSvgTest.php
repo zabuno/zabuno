@@ -534,7 +534,15 @@ final class QrExportSvgTest extends TestCase
             'minimal' => ['minimal', '1F2937', 'F9FAFB'],
             'bold' => ['bold', '111827', 'FDE68A'],
             'rounded' => ['rounded', '064E3B', 'D1FAE5'],
-            'branded' => ['branded', '1E3A8A', 'DBEAFE'],
+            /*
+                GÜNCELLENDİ (FF-112): "markalı" tema artık markanın GERÇEK
+                rengini beyaz zemin üstünde kullanır. Eski satır sabit bir
+                laciverti ve açık mavi bir zemini sözleşme olarak
+                donduruyordu — yani adı "markalı" olan ama kiracının
+                markasıyla ilgisi olmayan bir temayı. Test aşağıda kiracıya
+                gerçek bir marka rengi verir.
+            */
+            'branded' => ['branded', '1B4332', 'FFFFFF'],
             'highContrast' => ['highContrast', '000000', 'FFFF00'],
         ];
     }
@@ -558,6 +566,9 @@ final class QrExportSvgTest extends TestCase
         $owner = $this->verifiedUser();
         [$workspaceId, $locationId, $menuId] = $this->workspaceWithCurrentPublication($owner, 'qr-svg-theme-'.strtolower($themeKey));
         [$qrCodeId, $token] = $this->createActiveQrCode($owner, $workspaceId, $locationId, $menuId);
+
+        // FF-112: markalı tema markanın gerçek rengini kullanır.
+        DB::table('brands')->where('workspace_id', $workspaceId)->update(['primary_color' => '#1B4332']);
 
         $pngResponse = $this->actingAs($owner)->get($this->themedPngExportUrl($workspaceId, $qrCodeId, $themeKey));
         $pngResponse->assertStatus(200, 'QR-SVG-THEME-01: aynı temanın PNG yolu önce 200 vermeli (cross-decode ön koşulu).');

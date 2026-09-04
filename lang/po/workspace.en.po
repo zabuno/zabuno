@@ -2064,6 +2064,10 @@ msgstr "This is your only location — there is nowhere else to move the code."
 msgid "workspace.publication.qrDestination.move.start"
 msgstr "Move to another location"
 
+#: workspace:workspace.publication.qrDestination.permanence
+msgid "workspace.publication.qrDestination.permanence"
+msgstr "Printed codes keep working. You can point a code at a different menu or another location later, and the printed card stays valid — you never reprint because something changed here."
+
 #: workspace:workspace.publication.qrDestination.region
 msgid "workspace.publication.qrDestination.region"
 msgstr "QR destination"
@@ -2308,6 +2312,14 @@ msgstr "Print sheet for your tables"
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr "Bold theme"
 
+#: workspace:workspace.publication.qrExport.themes.brandMissing
+msgid "workspace.publication.qrExport.themes.brandMissing"
+msgstr "You have not set a brand colour yet, so this code prints in black."
+
+#: workspace:workspace.publication.qrExport.themes.brandTooPale
+msgid "workspace.publication.qrExport.themes.brandTooPale"
+msgstr "Your brand colour is too light to scan reliably, so this code prints in black instead."
+
 #: workspace:workspace.publication.qrExport.themes.branded
 msgid "workspace.publication.qrExport.themes.branded"
 msgstr "Branded theme"
@@ -2315,6 +2327,10 @@ msgstr "Branded theme"
 #: workspace:workspace.publication.qrExport.themes.classic
 msgid "workspace.publication.qrExport.themes.classic"
 msgstr "Classic theme"
+
+#: workspace:workspace.publication.qrExport.themes.editBrand
+msgid "workspace.publication.qrExport.themes.editBrand"
+msgstr "Set your brand colour"
 
 #: workspace:workspace.publication.qrExport.themes.heading
 msgid "workspace.publication.qrExport.themes.heading"
@@ -2331,6 +2347,10 @@ msgstr "Minimal theme"
 #: workspace:workspace.publication.qrExport.themes.rounded
 msgid "workspace.publication.qrExport.themes.rounded"
 msgstr "Rounded theme"
+
+#: workspace:workspace.publication.qrExport.themes.scannability
+msgid "workspace.publication.qrExport.themes.scannability"
+msgstr "Every theme here prints dark on light and keeps the quiet zone around the code, so all of them scan. Colour never comes at the cost of a code that cannot be read."
 
 #: workspace:workspace.publication.qrExport.unavailable
 msgid "workspace.publication.qrExport.unavailable"

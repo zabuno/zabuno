@@ -451,3 +451,100 @@ describe('Basılabilir deste (FF-111)', () => {
         );
     });
 });
+
+describe('Tema ve kalıcılık sözleşmesi (FF-112)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('ürünün en güçlü argümanını EKRANDA yazar: basılı kart ölmez', async () => {
+        /*
+            Bu sektördeki en pahalı arıza, üçüncü taraf bir kısaltıcıya bağlı
+            kodların bir gün ölmesidir: masadaki kırk kart aynı anda çöp olur.
+            Zabuno'nun kodları kalıcı ve yeniden yönlendirilebilirdi — ama
+            sahip bunu bilmeden bastırıyordu.
+        */
+        fetchSpy.mockResolvedValue(jsonResponse(200, [{ ...ITEM, tableName: 'T1' }]));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const region = await screen.findByRole('region', { name: /qr destination/i });
+        expect(within(region).getByText(/printed codes keep working/i)).toBeInTheDocument();
+        expect(within(region).getByText(/never reprint because something changed/i)).toBeTruthy();
+    });
+
+    it('her temanın taranabilir olduğunu söyler', async () => {
+        fetchSpy.mockResolvedValue(jsonResponse(200, [{ ...ITEM, tableName: 'T1' }]));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        expect(await screen.findByText(/every theme here prints dark on light/i)).toBeTruthy();
+    });
+
+    it('marka rengi taranamayacak kadar açıksa bunu İNDİRMEDEN ÖNCE söyler', async () => {
+        const user = userEvent.setup();
+        const onEditBrand = vi.fn();
+        fetchSpy.mockResolvedValue(jsonResponse(200, [{ ...ITEM, tableName: 'T1' }]));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+                brandPrimaryColor="#FFE066"
+                onEditBrand={onEditBrand}
+            />,
+        );
+
+        await screen.findByText('T1');
+        await user.click(screen.getByRole('radio', { name: /branded/i }));
+
+        expect(screen.getByText(/too light to scan reliably/i)).toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: /set your brand colour/i }));
+        expect(onEditBrand).toHaveBeenCalledTimes(1);
+    });
+
+    it('marka rengi kullanılabilirse uyarı ÇIKMAZ', async () => {
+        const user = userEvent.setup();
+        fetchSpy.mockResolvedValue(jsonResponse(200, [{ ...ITEM, tableName: 'T1' }]));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+                brandPrimaryColor="#1B4332"
+            />,
+        );
+
+        await screen.findByText('T1');
+        await user.click(screen.getByRole('radio', { name: /branded/i }));
+
+        expect(screen.queryByText(/too light to scan/i)).toBeNull();
+        expect(screen.queryByText(/prints in black/i)).toBeNull();
+    });
+});

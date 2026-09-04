@@ -32,7 +32,17 @@ enum QrTheme: string
             self::Minimal => 'F9FAFB',
             self::Bold => 'FDE68A',
             self::Rounded => 'D1FAE5',
-            self::Branded => 'DBEAFE',
+            /*
+                MARKALI TEMA BEYAZ ZEMİNDEDİR (FF-112).
+
+                Eskiden açık mavi bir zemini vardı ve ön plan sabit bir
+                laciverttti — yani "markalı" adı taşıyan tema, kiracının
+                markasıyla hiç ilgilenmiyordu. Artık ön plan markanın gerçek
+                rengi; zemin beyaz kalır çünkü kart zaten beyaz kâğıda basılır
+                ve renkli bir zemin hem mürekkep yakar hem de marka rengiyle
+                arasındaki kontrastı düşürür.
+            */
+            self::Branded => 'FFFFFF',
             self::HighContrast => 'FFFF00',
         };
     }
