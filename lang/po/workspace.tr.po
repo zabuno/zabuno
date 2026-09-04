@@ -1980,6 +1980,14 @@ msgstr "Oluştur"
 msgid "workspace.publication.qrDestination.createError"
 msgstr "Karekod oluşturulamadı. Tekrar deneyin."
 
+#: workspace:workspace.publication.qrDestination.disable.confirmBody
+msgid "workspace.publication.qrDestination.disable.confirmBody"
+msgstr "Basılı kartı okutan misafirler menünüzü artık göremez. Kartın adresi değişmez — bu kodu daha sonra hiçbir şey yeniden bastırmadan tekrar açabilirsiniz."
+
+#: workspace:workspace.publication.qrDestination.disable.confirmTitle
+msgid "workspace.publication.qrDestination.disable.confirmTitle"
+msgstr "{name} kapatılsın mı?"
+
 #: workspace:workspace.publication.qrDestination.disableButton
 msgid "workspace.publication.qrDestination.disableButton"
 msgstr "Devre dışı bırak"
@@ -2063,6 +2071,10 @@ msgstr "Karekod hedefi"
 #: workspace:workspace.publication.qrDestination.retry
 msgid "workspace.publication.qrDestination.retry"
 msgstr "Tekrar dene"
+
+#: workspace:workspace.publication.qrDestination.rowActions
+msgid "workspace.publication.qrDestination.rowActions"
+msgstr "{name} için diğer işlemler"
 
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"

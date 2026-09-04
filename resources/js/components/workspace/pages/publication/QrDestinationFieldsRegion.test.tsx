@@ -444,8 +444,19 @@ describe('QrDestinationRegion — real create/list wiring (QR_DESTINATION_REAL_R
         const region = screen.getByRole('region', { name: /qr destination/i });
         await waitFor(() => expect(within(region).getByRole('link')).toBeInTheDocument());
 
-        const disableButton = within(region).getByRole('button', { name: /disable/i });
-        await user.click(disableButton);
+        /*
+            ÜÇ ADIM (FF-110): taşma menüsü → "Disable" → ONAY.
+
+            Kapatma, satırın altında "Taşı"nın yanında duran ve yalnız renkle
+            ayrılan bir yazıydı. Bir masanın kodunu yanlışlıkla kapatmak, o
+            masadaki basılı kartın misafir için ölmesi demek; kullanıcının
+            bunu fark etme yolu bir misafirin şikâyet etmesiydi.
+        */
+        await user.click(within(region).getByRole('button', { name: /more actions for/i }));
+        await user.click(screen.getByRole('menuitem', { name: /disable/i }));
+        await user.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: /disable/i }),
+        );
 
         await waitFor(() => {
             const disableCall = fetchSpy.mock.calls.find(

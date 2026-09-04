@@ -48,6 +48,20 @@ export const publication = {
     'workspace.publication.qrDestination.fields.unavailable':
         'Publish your menu first — the QR code needs a published menu to point to.',
     'workspace.publication.qrDestination.createButton': 'Create',
+    /*
+        Erişilebilir ad KODUN ADINI taşır (FF-110): 40 satırlık bir listede
+        "diğer işlemler" başlıklı 40 düğme, ekran okuyucu kullanan biri için
+        tek bir düğmeye eşdeğerdir.
+    */
+    'workspace.publication.qrDestination.rowActions': 'More actions for {name}',
+    'workspace.publication.qrDestination.disable.confirmTitle': 'Disable {name}?',
+    /*
+        Onay metni SOMUT sonucu söyler. "Emin misiniz?" hiçbir şey öğretmez;
+        sahibin bilmesi gereken şey, masadaki basılı kartın misafir için
+        ölecek olmasıdır.
+    */
+    'workspace.publication.qrDestination.disable.confirmBody':
+        'Guests who scan the printed card will no longer see your menu. The card itself keeps its address — you can re-enable this code later without reprinting anything.',
     'workspace.publication.qrDestination.disableButton': 'Disable',
     // Yanlış yayından dönmek (`docs/81`).
     'workspace.publication.history.title': 'Published versions',

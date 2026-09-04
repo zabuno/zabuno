@@ -1980,6 +1980,14 @@ msgstr ""
 msgid "workspace.publication.qrDestination.createError"
 msgstr ""
 
+#: workspace:workspace.publication.qrDestination.disable.confirmBody
+msgid "workspace.publication.qrDestination.disable.confirmBody"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.disable.confirmTitle
+msgid "workspace.publication.qrDestination.disable.confirmTitle"
+msgstr ""
+
 #: workspace:workspace.publication.qrDestination.disableButton
 msgid "workspace.publication.qrDestination.disableButton"
 msgstr ""
@@ -2062,6 +2070,10 @@ msgstr ""
 
 #: workspace:workspace.publication.qrDestination.retry
 msgid "workspace.publication.qrDestination.retry"
+msgstr ""
+
+#: workspace:workspace.publication.qrDestination.rowActions
+msgid "workspace.publication.qrDestination.rowActions"
 msgstr ""
 
 #: workspace:workspace.publication.qrDestination.state.disabled

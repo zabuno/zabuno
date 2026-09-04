@@ -346,7 +346,16 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
 
         const qrDestinationRegion = await waitFor(() => {
             const region = screen.getByRole('region', { name: /qr destination/i });
-            expect(within(region).getByText(activeQrItem.token, { exact: false })).toBeTruthy();
+            /*
+                ADRES ARTIK KISALTILMIŞ GÖRÜNÜR (FF-110): 43 karakterlik token
+                satırda kodun adından çok yer kaplıyordu. Ölçülen sözleşme
+                değişmedi — gösterilen adres sunucunun döndürdüğü GERÇEK
+                adrestir — ama artık `href` üzerinden ölçülür.
+            */
+            expect(within(region).getByRole('link')).toHaveAttribute(
+                'href',
+                activeQrItem.resolverUrl,
+            );
             return region;
         });
         const qrExportRegion = screen.getByRole('region', { name: /qr print export/i });

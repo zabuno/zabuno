@@ -33,12 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 703;
+const FROZEN_LEGACY_KEY_COUNT = 706;
 
-// FF-108: dürüst durumlar — yayın bilgisi yolda/sorulamadı ayrımı, liste
-// hatasının çıkış yolu, toplu üretimde plan kısıtı (402) metinleri.
+// FF-110: satır taşma menüsünün erişilebilir adı ve kod kapatma onayı.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f64289eedd91e30acad59958cd3fbba0c27bc36e9785cab21bad1009fe28e236';
+    'e0ca08bfc1847ac4f68a11273c7891f002c5827dacfa3a46db56d0868fc71152';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

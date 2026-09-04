@@ -75,10 +75,21 @@ describe('QrDestinationRegion — move to another location (docs/98 FF-64)', () 
             />,
         );
 
-        await screen.findByText(CODE.resolverUrl);
+        await waitFor(() => {
+            // FF-110: satırda kısaltılmış adres yazar; sözleşme `href`'tedir.
+            expect(
+                within(screen.getByRole('region', { name: /qr destination/i })).getByRole('link'),
+            ).toHaveAttribute('href', CODE.resolverUrl);
+        });
         // Şube listesi "Taşı" istenene kadar yüklenmez.
         expect(calls.some((call) => call.url.endsWith('/brand/locations'))).toBe(false);
-        await userEvent.click(screen.getByRole('button', { name: 'Move to another location' }));
+        /*
+            İKİ ADIM (FF-110): "Taşı" artık satırın altında değil, taşma
+            menüsünde. Yıkıcı "kapat" ile sıradan "taşı" yan yana iki küçük
+            hedefti ve yalnız renkle ayrılıyordu.
+        */
+        await userEvent.click(screen.getByRole('button', { name: /more actions for/i }));
+        await userEvent.click(screen.getByRole('menuitem', { name: 'Move to another location' }));
 
         const select = await screen.findByLabelText('Move this code to');
         // Kodun kendi şubesi listede YOK — "olduğu yere taşı" diye bir şey yok.
@@ -97,7 +108,9 @@ describe('QrDestinationRegion — move to another location (docs/98 FF-64)', () 
         });
 
         // Token DEĞİŞMEDİ: basılı kâğıt aynı kâğıt.
-        expect(screen.getByText(CODE.resolverUrl)).toBeInTheDocument();
+        expect(
+            within(screen.getByRole('region', { name: /qr destination/i })).getByRole('link'),
+        ).toHaveAttribute('href', CODE.resolverUrl);
     });
 
     it('says plainly there is nowhere to move when there is a single location', async () => {
@@ -112,8 +125,19 @@ describe('QrDestinationRegion — move to another location (docs/98 FF-64)', () 
             />,
         );
 
-        await screen.findByText(CODE.resolverUrl);
-        await userEvent.click(screen.getByRole('button', { name: 'Move to another location' }));
+        await waitFor(() => {
+            // FF-110: satırda kısaltılmış adres yazar; sözleşme `href`'tedir.
+            expect(
+                within(screen.getByRole('region', { name: /qr destination/i })).getByRole('link'),
+            ).toHaveAttribute('href', CODE.resolverUrl);
+        });
+        /*
+            İKİ ADIM (FF-110): "Taşı" artık satırın altında değil, taşma
+            menüsünde. Yıkıcı "kapat" ile sıradan "taşı" yan yana iki küçük
+            hedefti ve yalnız renkle ayrılıyordu.
+        */
+        await userEvent.click(screen.getByRole('button', { name: /more actions for/i }));
+        await userEvent.click(screen.getByRole('menuitem', { name: 'Move to another location' }));
 
         expect(
             await screen.findByText(
