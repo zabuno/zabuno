@@ -259,7 +259,19 @@ export function TeamMemberList({
                     {announcement}
                 </p>
             )}
-            <ul className="flex flex-col gap-2">
+            {/*
+                SATIR KART DEĞİLDİR (FF-131, teslim paketinin düzeni).
+
+                Her üye kendi kenarlıklı, yuvarlatılmış kutusundaydı ve
+                aralarında boşluk vardı: dört kişilik bir takım dört ayrı
+                kart gibi okunuyor, göz her satırda yeniden "bu nedir?" diye
+                başlıyordu. Kutuların sınırı bilgi taşımıyordu; kişiler zaten
+                bir aradaydı.
+
+                Paketin düzeni bir LİSTEDİR: ince ayraçlar, baş harf dairesi,
+                tek ritim.
+            */}
+            <ul className="flex flex-col">
                 {members.map((member) => {
                     const stage = rowStages[member.id] ?? 'idle';
                     // Sahibin rolü buradan değişmez: sahiplik DEVREDİLİR ve
@@ -270,8 +282,28 @@ export function TeamMemberList({
                     return (
                         <li
                             key={member.id}
-                            className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-border p-3 text-body text-fg-secondary"
+                            className="flex min-h-[var(--density-row-height)] flex-wrap items-center gap-x-3 gap-y-1 border-t border-border px-[var(--density-padding-inline)] py-[var(--space-2)] text-body text-fg-secondary first:border-t-0"
                         >
+                            {/*
+                                BAŞ HARF DEKORATİFTİR: ad zaten satırda
+                                yazıyor ve ekran okuyucunun aynı bilgiyi iki
+                                kez okuması, listeyi iki kat uzatır.
+                            */}
+                            <span
+                                aria-hidden="true"
+                                data-avatar-initial="true"
+                                /*
+                                    40 piksel: AEP ölçeğinde 32 (space-6) ile
+                                    48 (space-7) arasında bir ara basamak yok
+                                    ve daire ikisinde de yanlış duruyor —
+                                    32 satırda kaybolur, 48 satırı şişirir.
+                                    Teslim paketinin kendi paneli de tam 40
+                                    kullanıyor, bu yüzden ölçü ondan alındı.
+                                */
+                                className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-surface-subtle text-body font-bold text-fg-secondary"
+                            >
+                                {member.name.slice(0, 1).toLocaleUpperCase('tr-TR')}
+                            </span>
                             <span className="font-medium text-fg">{member.name}</span>
                             <span className="text-fg-muted">{member.email}</span>
                             {roleEditable ? (
