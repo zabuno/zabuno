@@ -64,7 +64,7 @@ export function SidebarNav({
     return (
         <Container
             aria-label={asLandmark ? label : undefined}
-            className={clsx('flex flex-col gap-[var(--space-5)]', className)}
+            className={clsx('flex flex-col gap-[var(--space-6)]', className)}
         >
             {groups.map((group) => (
                 <div key={group.key} className="flex flex-col gap-[var(--space-1)]">
@@ -77,7 +77,7 @@ export function SidebarNav({
                     {group.label ? (
                         <span
                             id={`${groupIdPrefix}-${group.key}`}
-                            className="mb-[var(--space-1)] ps-[calc(var(--density-padding-inline)+2px)] text-meta font-semibold uppercase tracking-wide text-fg-subtle"
+                            className="mb-[var(--space-2)] ps-[var(--space-3)] text-caption font-semibold uppercase tracking-[0.08em] text-fg-subtle"
                         >
                             {group.label}
                         </span>
@@ -93,7 +93,7 @@ export function SidebarNav({
                     */}
                     <ul
                         aria-labelledby={group.label ? `${groupIdPrefix}-${group.key}` : undefined}
-                        className="flex flex-col gap-0.5"
+                        className="flex flex-col gap-[var(--space-1)]"
                     >
                         {group.items.map((item) => (
                             <li key={item.key}>

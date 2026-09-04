@@ -29,14 +29,15 @@ export function OpsCard({ title, toolbar, children, className, padded = true }: 
         <section
             aria-label={title}
             className={clsx(
-                'flex min-w-0 flex-col rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)]',
+                // 2026 semi-flat: daha yumuşak köşe, tek piksel kenarlık, gölge yok.
+                'flex min-w-0 flex-col rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)]',
                 className,
             )}
         >
             {title || toolbar ? (
-                <div className="flex flex-wrap items-center justify-between gap-[var(--space-2)] border-b border-[var(--color-border)] px-[var(--space-4)] py-[var(--space-3)]">
+                <div className="flex flex-wrap items-center justify-between gap-[var(--space-2)] border-b border-[var(--color-border)] px-[var(--space-5)] py-[var(--space-4)]">
                     {title ? (
-                        <h2 className="text-section font-semibold text-fg">{title}</h2>
+                        <h2 className="text-body font-semibold tracking-tight text-fg">{title}</h2>
                     ) : (
                         <span />
                     )}
@@ -45,7 +46,7 @@ export function OpsCard({ title, toolbar, children, className, padded = true }: 
                     ) : null}
                 </div>
             ) : null}
-            <div className={clsx('min-w-0', padded && 'px-[var(--space-4)] py-[var(--space-4)]')}>
+            <div className={clsx('min-w-0', padded && 'px-[var(--space-5)] py-[var(--space-5)]')}>
                 {children}
             </div>
         </section>

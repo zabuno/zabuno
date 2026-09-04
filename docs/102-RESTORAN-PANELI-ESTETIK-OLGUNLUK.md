@@ -85,6 +85,25 @@ Metronic ikon/renk seti, suite rail, Bootstrap).
 - **Faz 4:** marka ifadesi (sıcak vurgu, illüstrasyon), tema uyumu, gerçek
   kebapçı testi (`docs/101` Faz 4 ile aynı oturum).
 
+## 5b. FF-79 — görsel dil pası (2026-09-04, Storybook'ta görülerek)
+
+Sahip: "tema çöp, 1999 model; 2026'ya göre tasarla." Kök neden kayda geçti:
+FF-63…FF-78 boyunca **ekrana hiç bakılmadı**; token değiştirildi, sonuç
+görülmedi. Bu turda Storybook statik olarak derlendi, kabuk ve pano
+tarayıcıda açıldı ve şu iki şey görüldü:
+
+1. **Gerçek hata:** `--color-canvas` takma adı yalnız `@theme` bloğunda
+   tanımlıydı. Tailwind v4'te `@theme` takma adı kök değere DONAR; `.dark`
+   bloğunda tekrar edilmezse koyu temada zemin açık kalır. Ekranda kenar
+   çubuğu siyah, ana alan açık gri çıkıyordu — kart grameri görünmüyordu.
+   Düzeltildi (`.dark` ve forced-colors bloklarında yeniden tanımlandı).
+2. **Görsel dil:** kartlar `radius-lg` + `space-5` dolgu; kart başlığı
+   `text-body` (sayfa başlığıyla yarışmaz); sayı kartında etiket
+   `text-meta` büyük harf/harf aralıklı, değer büyük ve tabular; gezinti
+   öğeleri `radius-md` + 8pt ritim, grup başlıkları `text-caption`
+   0.08em; üst çubuk dikey dolgusu `space-3` (cam yüzey sözleşmesi
+   `docs/06` §11 korundu); tablo başlığı `space-5` hizalı, satırda hover.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük

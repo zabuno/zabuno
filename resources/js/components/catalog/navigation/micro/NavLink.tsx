@@ -42,8 +42,8 @@ export function NavLink({
     // hiçbir temada bozulmaz. Ray logical kenarlıktır, RTL'de kendiliğinden
     // sağa geçer.
     const sharedClassName = clsx(
-        'inline-flex w-full items-center gap-2 rounded-md text-body font-medium',
-        'px-[var(--density-padding-inline)] py-2',
+        'inline-flex w-full items-center gap-[var(--space-3)] rounded-[var(--radius-md)] text-body font-medium',
+        'px-[var(--space-3)] py-[var(--space-2)]',
         'min-h-[var(--density-hit-area-min)]',
         'border-s-2 border-transparent',
         'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',

@@ -30,9 +30,9 @@ export function PageHeader({
             {breadcrumbs ? <Breadcrumbs items={breadcrumbs} /> : null}
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-title font-semibold text-fg">{title}</h1>
+                    <h1 className="text-title font-semibold tracking-tight text-fg">{title}</h1>
                     {description ? (
-                        <p className="text-body text-fg-secondary">{description}</p>
+                        <p className="max-w-[60ch] text-body text-fg-secondary">{description}</p>
                     ) : null}
                 </div>
                 {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
