@@ -218,6 +218,39 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         vi.unstubAllGlobals();
     });
 
+    /*
+        RAYIN DİBİNDEKİ SABİT BLOK (FF-127).
+
+        Profil ve Ayarlar, kayıtta `group` taşımadıkları için gruplu
+        listede çizilmiyor ve YALNIZ hesap menüsünün içinden açılıyordu.
+        İkisi de günlük olmayan ama sık aranan hedeflerdir; bir açılır
+        menünün ardında durmaları, kullanıcıya "nerede?" sorusunu her
+        seferinde yeniden sordurur.
+
+        Blok kendi listesini TUTMAZ: aynı kayıttan okur. İkinci bir liste
+        tutulsaydı, bir bölümün izni değiştiğinde ray onu göstermeye devam
+        eder ve kullanıcı 403 görürdü.
+    */
+    it('rayın dibinde Profil ve Ayarlar sabit blokta durur ve kayıttan okunur', async () => {
+        await renderCurrentWorkspace();
+
+        const footer = screen.getByRole('navigation', { name: 'Account' });
+
+        for (const [label, path] of [
+            ['Profile', 'profile'],
+            ['Settings', 'settings'],
+        ] as const) {
+            expect(within(footer).getByRole('link', { name: label })).toHaveAttribute(
+                'href',
+                expect.stringContaining(`/${path}`),
+            );
+        }
+
+        // Aynı hedefler gruplu listede TEKRARLANMAZ: kayıtta grupları yok.
+        const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
+        expect(within(nav).queryByRole('link', { name: 'Settings' })).toBeNull();
+    });
+
     it('surfaces the current workspace name and user email, and preserves accessible Switch workspace and Log out controls', async () => {
         await renderCurrentWorkspace();
 

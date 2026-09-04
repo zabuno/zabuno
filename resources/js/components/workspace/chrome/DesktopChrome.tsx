@@ -1,5 +1,7 @@
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
+import { t } from '../../../i18n/workspace';
+import type { RailSection } from './railSection';
 import { SidebarNav, type SidebarNavGroup } from '../../catalog/layout/compound/SidebarNav';
 import { WorkspaceSwitcherTrigger, type WorkspaceSwitcherOption } from './WorkspaceSwitcherTrigger';
 
@@ -23,7 +25,18 @@ export type DesktopChromeProps = {
     currentWorkspaceId?: number;
     onSelectWorkspace?: (workspaceId: number) => void;
     accountMenu?: ReactNode;
+    /**
+     * Rayın dibindeki sabit blokta duran hedefler — Profil ve Ayarlar
+     * (FF-127).
+     *
+     * Kabuk bu listeyi KENDİ ÜRETMEZ: bölüm kaydından türetilip verilir.
+     * İkinci bir liste tutulsaydı bir bölümün izni değiştiğinde ray onu
+     * göstermeye devam eder ve kullanıcı 403 görürdü.
+     */
+    railSections?: readonly RailSection[];
 };
+
+export type { RailSection };
 
 /** Kalıcı birincil kenar çubuğu — `docs/50` §4: 248–272 px. */
 export function DesktopSidebar({
@@ -35,6 +48,7 @@ export function DesktopSidebar({
     currentWorkspaceId,
     onSelectWorkspace,
     accountMenu,
+    railSections,
 }: DesktopChromeProps): ReactNode {
     return (
         <aside
@@ -69,7 +83,8 @@ export function DesktopSidebar({
                 burada saklanmamalıdır, çünkü dar pencerelerde kenar çubuğunun
                 alt kısmı ilk kaybolan yerdir.
             */}
-            {accountMenu !== undefined && accountMenu !== null ? (
+            {(accountMenu !== undefined && accountMenu !== null) ||
+            (railSections !== undefined && railSections.length > 0) ? (
                 /*
                     YAPIŞKAN (sahibin isteği, 2026-09-04).
 
@@ -84,6 +99,47 @@ export function DesktopSidebar({
                     işarettir.
                 */
                 <div className="sticky bottom-0 mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-fluid-sm)]">
+                    {railSections !== undefined && railSections.length > 0 ? (
+                        /*
+                            PROFİL VE AYARLAR AÇIKTA (FF-127).
+
+                            İkisi de kayıtta grupsuzdur, yani gruplu listede
+                            çizilmezler; tek yolları hesap menüsünün İÇİYDİ.
+                            Günlük olmayan ama sık aranan hedefler bir açılır
+                            menünün ardında durunca, kullanıcı "nerede?"
+                            sorusunu her seferinde yeniden sorar.
+
+                            Kendi gezinti adı vardır: adsız ikinci bir gezinti
+                            bölgesi ekran okuyucuda iki kez "gezinti" diye
+                            okunur ve hangisinde olunduğu anlaşılmaz.
+                        */
+                        <nav
+                            aria-label={t('workspace.shell.nav.account')}
+                            className="mb-[var(--space-2)] flex flex-col gap-[var(--space-1)]"
+                        >
+                            {railSections.map((section) => (
+                                <a
+                                    key={section.key}
+                                    href={section.href}
+                                    onClick={section.onSelect}
+                                    aria-current={section.active ? 'page' : undefined}
+                                    className={clsx(
+                                        'inline-flex w-full items-center gap-[var(--space-3)] rounded-[var(--radius-md)]',
+                                        'min-h-[var(--control-height)] px-[var(--space-3)] py-[var(--space-2)]',
+                                        'text-body whitespace-nowrap',
+                                        'hover:bg-[var(--color-surface-hover)]',
+                                        'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                                        section.active
+                                            ? 'bg-[var(--color-surface-active)] font-medium text-fg'
+                                            : 'text-fg-secondary',
+                                    )}
+                                >
+                                    {section.icon}
+                                    {section.label}
+                                </a>
+                            ))}
+                        </nav>
+                    ) : null}
                     {accountMenu}
                 </div>
             ) : null}

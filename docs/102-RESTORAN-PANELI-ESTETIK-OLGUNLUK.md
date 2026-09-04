@@ -307,6 +307,32 @@ yazılır — ortalanmış bir başlık, kimsenin seçmediği üçüncü bir hiz
 zemin. Koyu tema: başlık `#16123a` üstünde beyaz %60 (6.5:1), gövde satırları
 zemin üstünde 7.30:1.
 
+## 5k. FF-127 — rayın dibindeki sabit blok (2026-09-04)
+
+**Sorun.** Profil ve Ayarlar kayıtta grupsuzdur, yani gruplu listede
+çizilmezler; tek yolları hesap menüsünün İÇİYDİ. İkisi de günlük olmayan ama
+sık aranan hedeflerdir ve bir açılır menünün ardında durunca kullanıcı
+"nerede?" sorusunu her seferinde yeniden sorar.
+
+**Çözüm.** Rayın dibindeki yapışkan bölge artık iki satır taşır. Blok kendi
+listesini TUTMAZ: aynı bölüm kaydından, izin süzgecinden geçmiş
+tanımlayıcılardan türetilir. İkinci bir liste tutulsaydı bir bölümün izni
+değiştiğinde ray onu göstermeye devam eder ve kullanıcı 403 görürdü.
+
+**Kendi gezinti adı var.** Adsız ikinci bir gezinti bölgesi, ekran okuyucuda
+iki kez "gezinti" diye okunur ve hangisinde olunduğu anlaşılmaz; blok
+`Account`/`Hesap` adını taşır.
+
+**Sıra kayıttaki `order`dan bağımsız ve sabittir:** iki maddelik bir blokta
+kimlik üstte, ayarlar altta durur — bu bir kas hafızasıdır.
+
+**Ekranda ölçüldü** (yeni `Macro/Layout/DesktopSidebar` hikâyesi): satır
+yüksekliği 44px (`--control-height`, `min-height` olarak), etkin satır
+`aria-current="page"` ve yüzey tonuyla işaretli, sönük satır 6.60:1.
+
+**Neden hikâye eklendi.** Bu bölüm ürüne girmeden görülemeyen tek kabuk
+parçasıydı; "değişikliği ekranda gör" kuralı tam burada uygulanamıyordu.
+
 ## 6. Kullanıcı yolculuğu
 
 Mehmet Usta Home'u açar: solda ikonlu kısa bir menü, ortada tek büyük

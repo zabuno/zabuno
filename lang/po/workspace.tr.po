@@ -2732,6 +2732,10 @@ msgstr "Geçerli şube"
 msgid "workspace.shell.globalSearch.unavailable"
 msgstr "Genel arama kullanılamıyor"
 
+#: workspace:workspace.shell.nav.account
+msgid "workspace.shell.nav.account"
+msgstr ""
+
 #: workspace:workspace.shell.nav.analytics
 msgid "workspace.shell.nav.analytics"
 msgstr "Analitik"
