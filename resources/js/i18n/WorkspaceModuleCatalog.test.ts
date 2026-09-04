@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 866;
+const FROZEN_LEGACY_KEY_COUNT = 962;
 
-// FF-134: boyut motoru ve iş kuyruğu bölümlerinin metinleri.
+// FF-135: dönüştürme, görüntüleyici, depolama kırılımı ve medya ayarları.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '139792afe2811fac5ac9718f44cf8bfc85a24910bdfa4ab7e4a7a312ee6926c5';
+    'c56d0d2a887448fea85969338090475843f9e5273092e252223e684c51f4266d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -1040,6 +1040,126 @@ msgstr "Who did what"
 msgid "workspace.media.audit.help"
 msgstr "Every upload, rename, deletion and restore is recorded here. Records are never edited or removed."
 
+#: workspace:workspace.media.convert.clearAll
+msgid "workspace.media.convert.clearAll"
+msgstr "Clear"
+
+#: workspace:workspace.media.convert.done
+msgid "workspace.media.convert.done"
+msgstr "{count} file(s) converted as a new version. The original is kept."
+
+#: workspace:workspace.media.convert.failed
+msgid "workspace.media.convert.failed"
+msgstr "Conversion targets could not be loaded."
+
+#: workspace:workspace.media.convert.lead
+msgid "workspace.media.convert.lead"
+msgstr "Turn old formats into modern ones. The original is kept; the converted file becomes a new version."
+
+#: workspace:workspace.media.convert.limitation.encoderMissing
+msgid "workspace.media.convert.limitation.encoderMissing"
+msgstr "Not possible here: this server cannot encode that format."
+
+#: workspace:workspace.media.convert.limitation.noVideoPipeline
+msgid "workspace.media.convert.limitation.noVideoPipeline"
+msgstr "Not possible here: there is no video conversion pipeline."
+
+#: workspace:workspace.media.convert.limitation.unknown
+msgid "workspace.media.convert.limitation.unknown"
+msgstr "Not possible on this installation."
+
+#: workspace:workspace.media.convert.loading
+msgid "workspace.media.convert.loading"
+msgstr "Loading conversion targets…"
+
+#: workspace:workspace.media.convert.measured
+msgid "workspace.media.convert.measured"
+msgstr "Measured on your own {count} file(s): {percent}% smaller."
+
+#: workspace:workspace.media.convert.region
+msgid "workspace.media.convert.region"
+msgstr "Convert formats"
+
+#: workspace:workspace.media.convert.remaining
+msgid "workspace.media.convert.remaining"
+msgstr "{count} file(s) left. Press again to continue."
+
+#: workspace:workspace.media.convert.row.direction
+msgid "workspace.media.convert.row.direction"
+msgstr "{from} → {to}"
+
+#: workspace:workspace.media.convert.runFailed
+msgid "workspace.media.convert.runFailed"
+msgstr "That did not work. Nothing was changed."
+
+#: workspace:workspace.media.convert.running
+msgid "workspace.media.convert.running"
+msgstr "Converting…"
+
+#: workspace:workspace.media.convert.selectAll
+msgid "workspace.media.convert.selectAll"
+msgstr "Select all"
+
+#: workspace:workspace.media.convert.someFailed
+msgid "workspace.media.convert.someFailed"
+msgstr "{count} file(s) could not be converted; their current version stayed valid."
+
+#: workspace:workspace.media.convert.sources.empty
+msgid "workspace.media.convert.sources.empty"
+msgstr "No file can be converted yet."
+
+#: workspace:workspace.media.convert.sources.heading
+msgid "workspace.media.convert.sources.heading"
+msgstr "Files to convert"
+
+#: workspace:workspace.media.convert.start
+msgid "workspace.media.convert.start"
+msgstr "Convert {count} file(s) to {format}"
+
+#: workspace:workspace.media.convert.start.empty
+msgid "workspace.media.convert.start.empty"
+msgstr "Choose a file"
+
+#: workspace:workspace.media.convert.summary.batch
+msgid "workspace.media.convert.summary.batch"
+msgstr "Files per run"
+
+#: workspace:workspace.media.convert.summary.now
+msgid "workspace.media.convert.summary.now"
+msgstr "Selected size now"
+
+#: workspace:workspace.media.convert.summary.selected
+msgid "workspace.media.convert.summary.selected"
+msgstr "Selected files"
+
+#: workspace:workspace.media.convert.tab
+msgid "workspace.media.convert.tab"
+msgstr "Convert"
+
+#: workspace:workspace.media.convert.target.avif.note
+msgid "workspace.media.convert.target.avif.note"
+msgstr "Images · smallest"
+
+#: workspace:workspace.media.convert.target.claim
+msgid "workspace.media.convert.target.claim"
+msgstr "about {percent}% smaller"
+
+#: workspace:workspace.media.convert.target.heading
+msgid "workspace.media.convert.target.heading"
+msgstr "Target format"
+
+#: workspace:workspace.media.convert.target.jpeg.note
+msgid "workspace.media.convert.target.jpeg.note"
+msgstr "A fallback that opens everywhere"
+
+#: workspace:workspace.media.convert.target.webm.note
+msgid "workspace.media.convert.target.webm.note"
+msgstr "Video · VP9 / AV1"
+
+#: workspace:workspace.media.convert.target.webp.note
+msgid "workspace.media.convert.target.webp.note"
+msgstr "Images · widest support"
+
 #: workspace:workspace.media.crop.frame
 msgid "workspace.media.crop.frame"
 msgstr "Crop frame — drag to move"
@@ -1812,6 +1932,110 @@ msgstr "no limit"
 msgid "workspace.media.security.explanation"
 msgstr "Every image is scanned and checked by a person before it can appear on your menu."
 
+#: workspace:workspace.media.settings.pattern.date
+msgid "workspace.media.settings.pattern.date"
+msgstr "Date format"
+
+#: workspace:workspace.media.settings.pattern.date.deviceLocale
+msgid "workspace.media.settings.pattern.date.deviceLocale"
+msgstr "The format of the device reading it"
+
+#: workspace:workspace.media.settings.pattern.date.why
+msgid "workspace.media.settings.pattern.date.why"
+msgstr "Dates follow the language and time zone of the device you read them on. One fixed format is a separate decision and has not been made yet."
+
+#: workspace:workspace.media.settings.pattern.directory
+msgid "workspace.media.settings.pattern.directory"
+msgstr "Folder structure"
+
+#: workspace:workspace.media.settings.pattern.directory.why
+msgid "workspace.media.settings.pattern.directory.why"
+msgstr "Every file lives under its own workspace folder. The storage address is never rewritten — a published menu would lose its images the day it changed."
+
+#: workspace:workspace.media.settings.pattern.directory.workspaceFolder
+msgid "workspace.media.settings.pattern.directory.workspaceFolder"
+msgstr "One folder per workspace"
+
+#: workspace:workspace.media.settings.pattern.fileName
+msgid "workspace.media.settings.pattern.fileName"
+msgstr "File name"
+
+#: workspace:workspace.media.settings.pattern.fileName.opaqueKey
+msgid "workspace.media.settings.pattern.fileName.opaqueKey"
+msgstr "A random key, kept apart from the name you see"
+
+#: workspace:workspace.media.settings.pattern.fileName.why
+msgid "workspace.media.settings.pattern.fileName.why"
+msgstr "The library shows the name you typed; the stored file keeps a random key, so renaming a photo never moves a byte."
+
+#: workspace:workspace.media.settings.patterns.heading
+msgid "workspace.media.settings.patterns.heading"
+msgstr "Folders, names and dates"
+
+#: workspace:workspace.media.settings.patterns.lead
+msgid "workspace.media.settings.patterns.lead"
+msgstr "These follow fixed rules today. Nothing here is a choice, so there is nothing to save."
+
+#: workspace:workspace.media.settings.region
+msgid "workspace.media.settings.region"
+msgstr "Media settings"
+
+#: workspace:workspace.media.settings.security.contentSignature
+msgid "workspace.media.settings.security.contentSignature"
+msgstr "Content signature check"
+
+#: workspace:workspace.media.settings.security.contentSignature.on
+msgid "workspace.media.settings.security.contentSignature.on"
+msgstr "The extension is never trusted. A file named “photo.jpg” that is really a script is rejected before anything is stored."
+
+#: workspace:workspace.media.settings.security.heading
+msgid "workspace.media.settings.security.heading"
+msgstr "Security and privacy"
+
+#: workspace:workspace.media.settings.security.locked
+msgid "workspace.media.settings.security.locked"
+msgstr "Cannot be switched off"
+
+#: workspace:workspace.media.settings.security.metadataStrip
+msgid "workspace.media.settings.security.metadataStrip"
+msgstr "Strip embedded data"
+
+#: workspace:workspace.media.settings.security.metadataStrip.partial
+msgid "workspace.media.settings.security.metadataStrip.partial"
+msgstr "Location, device and serial number are gone from the sizes your guests see, because those are re-encoded. The original file is kept exactly as you uploaded it."
+
+#: workspace:workspace.media.settings.security.signedLink
+msgid "workspace.media.settings.security.signedLink"
+msgstr "Signed link for private files"
+
+#: workspace:workspace.media.settings.security.signedLink.on
+msgid "workspace.media.settings.security.signedLink.on"
+msgstr "The original has no public address. Downloading it needs a signed link that stops working after ten minutes."
+
+#: workspace:workspace.media.settings.security.virusScan
+msgid "workspace.media.settings.security.virusScan"
+msgstr "Virus scan"
+
+#: workspace:workspace.media.settings.security.virusScan.on
+msgid "workspace.media.settings.security.virusScan.on"
+msgstr "Every file is scanned before it enters the library. Anything that does not come back clean is quarantined and nobody can download it."
+
+#: workspace:workspace.media.settings.security.virusScan.unavailable
+msgid "workspace.media.settings.security.virusScan.unavailable"
+msgstr "No scanner is connected in this environment, so files are not being scanned. You did not switch this off, and it is not something you can switch on from here."
+
+#: workspace:workspace.media.settings.security.watermark
+msgid "workspace.media.settings.security.watermark"
+msgstr "Watermark"
+
+#: workspace:workspace.media.settings.security.watermark.missing
+msgid "workspace.media.settings.security.watermark.missing"
+msgstr "Not built yet."
+
+#: workspace:workspace.media.settings.tab
+msgid "workspace.media.settings.tab"
+msgstr "Settings"
+
 #: workspace:workspace.media.shell.queue
 msgid "workspace.media.shell.queue"
 msgstr "Queue"
@@ -1831,6 +2055,78 @@ msgstr "File name or description"
 #: workspace:workspace.media.shell.sections
 msgid "workspace.media.shell.sections"
 msgstr "Media sections"
+
+#: workspace:workspace.media.storage.breakdown.empty
+msgid "workspace.media.storage.breakdown.empty"
+msgstr "Nothing is stored yet."
+
+#: workspace:workspace.media.storage.breakdown.heading
+msgid "workspace.media.storage.breakdown.heading"
+msgstr "What is filling it up?"
+
+#: workspace:workspace.media.storage.card.assets
+msgid "workspace.media.storage.card.assets"
+msgstr "Files"
+
+#: workspace:workspace.media.storage.card.free
+msgid "workspace.media.storage.card.free"
+msgstr "{percent}% used · {free} free"
+
+#: workspace:workspace.media.storage.card.near
+msgid "workspace.media.storage.card.near"
+msgstr "Close to the limit — only {free} left"
+
+#: workspace:workspace.media.storage.card.ratio
+msgid "workspace.media.storage.card.ratio"
+msgstr "{used} of {limit}"
+
+#: workspace:workspace.media.storage.card.storage
+msgid "workspace.media.storage.card.storage"
+msgstr "Storage"
+
+#: workspace:workspace.media.storage.category.brand
+msgid "workspace.media.storage.category.brand"
+msgstr "Logo and brand"
+
+#: workspace:workspace.media.storage.category.documents
+msgid "workspace.media.storage.category.documents"
+msgstr "Documents and scans"
+
+#: workspace:workspace.media.storage.category.other
+msgid "workspace.media.storage.category.other"
+msgstr "Other files"
+
+#: workspace:workspace.media.storage.category.products
+msgid "workspace.media.storage.category.products"
+msgstr "Product photos"
+
+#: workspace:workspace.media.storage.category.promotion
+msgid "workspace.media.storage.category.promotion"
+msgstr "Covers and promotion"
+
+#: workspace:workspace.media.storage.plan
+msgid "workspace.media.storage.plan"
+msgstr "Plan: {plan}"
+
+#: workspace:workspace.media.storage.region
+msgid "workspace.media.storage.region"
+msgstr "Storage and trash"
+
+#: workspace:workspace.media.storage.share
+msgid "workspace.media.storage.share"
+msgstr "{bytes} · {percent}% of what is stored"
+
+#: workspace:workspace.media.storage.tab
+msgid "workspace.media.storage.tab"
+msgstr "Storage"
+
+#: workspace:workspace.media.storage.trash
+msgid "workspace.media.storage.trash"
+msgstr "Trash"
+
+#: workspace:workspace.media.storage.trash.note
+msgid "workspace.media.storage.trash.note"
+msgstr "Deleting does not free space. The {bytes} in the trash still counts against your plan; it is released when the retention period ends."
 
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"
@@ -2027,6 +2323,94 @@ msgstr "Uploading media…"
 #: workspace:workspace.media.upload.uploading.progress
 msgid "workspace.media.upload.uploading.progress"
 msgstr "Uploading… {percent}%"
+
+#: workspace:workspace.media.viewer.blocked.scan
+msgid "workspace.media.viewer.blocked.scan"
+msgstr "This file has not cleared the security scan yet, so the panel does not open it. It opens here by itself once the scan comes back clean."
+
+#: workspace:workspace.media.viewer.blocked.type
+msgid "workspace.media.viewer.blocked.type"
+msgstr "The panel does not open {type} files. Download it and open it on your device."
+
+#: workspace:workspace.media.viewer.close
+msgid "workspace.media.viewer.close"
+msgstr "Close the file"
+
+#: workspace:workspace.media.viewer.download
+msgid "workspace.media.viewer.download"
+msgstr "Download the original"
+
+#: workspace:workspace.media.viewer.download.failed
+msgid "workspace.media.viewer.download.failed"
+msgstr "The download link could not be created. Nothing was changed."
+
+#: workspace:workspace.media.viewer.empty
+msgid "workspace.media.viewer.empty"
+msgstr "There is no file to open yet."
+
+#: workspace:workspace.media.viewer.fact.pages
+msgid "workspace.media.viewer.fact.pages"
+msgstr "Pages"
+
+#: workspace:workspace.media.viewer.fact.size
+msgid "workspace.media.viewer.fact.size"
+msgstr "Size"
+
+#: workspace:workspace.media.viewer.fact.type
+msgid "workspace.media.viewer.fact.type"
+msgstr "Type"
+
+#: workspace:workspace.media.viewer.failed
+msgid "workspace.media.viewer.failed"
+msgstr "This file could not be opened. Nothing was changed."
+
+#: workspace:workspace.media.viewer.files
+msgid "workspace.media.viewer.files"
+msgstr "Files"
+
+#: workspace:workspace.media.viewer.lead
+msgid "workspace.media.viewer.lead"
+msgstr "Open a file inside the panel, instead of downloading it first to find out what is in it."
+
+#: workspace:workspace.media.viewer.loading
+msgid "workspace.media.viewer.loading"
+msgstr "Opening the file…"
+
+#: workspace:workspace.media.viewer.none
+msgid "workspace.media.viewer.none"
+msgstr "Choose a file to open it here."
+
+#: workspace:workspace.media.viewer.pdf.embedNote
+msgid "workspace.media.viewer.pdf.embedNote"
+msgstr "Some browsers do not open a PDF inside a panel. If the frame stays empty, download the file and open it on your device."
+
+#: workspace:workspace.media.viewer.pdf.frame
+msgid "workspace.media.viewer.pdf.frame"
+msgstr "PDF reader — {name}"
+
+#: workspace:workspace.media.viewer.pdf.next
+msgid "workspace.media.viewer.pdf.next"
+msgstr "Next page"
+
+#: workspace:workspace.media.viewer.pdf.page
+msgid "workspace.media.viewer.pdf.page"
+msgstr "Page {page} / {total}"
+
+#: workspace:workspace.media.viewer.pdf.pagesUnknown
+msgid "workspace.media.viewer.pdf.pagesUnknown"
+msgstr "The page count could not be read from this file, so the panel draws no page controls. The reader below has its own toolbar."
+
+#: workspace:workspace.media.viewer.pdf.previous
+msgid "workspace.media.viewer.pdf.previous"
+msgstr "Previous page"
+
+#: workspace:workspace.media.viewer.region
+msgid "workspace.media.viewer.region"
+msgstr "File viewer"
+
+#: workspace:workspace.media.viewer.tab
+msgid "workspace.media.viewer.tab"
+msgstr "View"
 
 #: workspace:workspace.menu.empty.brand.body
 msgid "workspace.menu.empty.brand.body"

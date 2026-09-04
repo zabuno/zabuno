@@ -18,7 +18,7 @@ use App\Application\Media\Port\MediaAssetProcessorPort;
  */
 final class UnavailableMediaAssetProcessor implements MediaAssetProcessorPort
 {
-    public function process(string $absolutePath, string $slot = ''): MediaProcessingResult
+    public function process(string $absolutePath, string $slot = '', ?string $targetFormat = null): MediaProcessingResult
     {
         return new MediaProcessingResult(MediaProcessingOutcome::Indeterminate);
     }

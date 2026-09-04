@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Images, Queue, Resize, UploadSimple } from '@phosphor-icons/react';
+import {
+    Eye,
+    HardDrives,
+    Images,
+    Queue,
+    Resize,
+    SlidersHorizontal,
+    Swap,
+    UploadSimple,
+} from '@phosphor-icons/react';
 import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
@@ -7,8 +16,12 @@ import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
 import { MediaAuditRegion } from './media/MediaAuditRegion';
 import { MediaSizeEngineRegion } from './media/MediaSizeEngineRegion';
+import { MediaConvertRegion } from './media/MediaConvertRegion';
 import { MediaJobQueueRegion } from './media/MediaJobQueueRegion';
+import { MediaViewerRegion } from './media/MediaViewerRegion';
 import { MediaQuotaRegion, type MediaQuota } from './media/MediaQuotaRegion';
+import { MediaStorageBreakdown } from './media/MediaStorageBreakdown';
+import { MediaSettingsRegion } from './media/MediaSettingsRegion';
 import { MediaManagerShell, type MediaManagerSection } from './media/MediaManagerShell';
 import { MediaFolderRail, type MediaFolderId } from './media/MediaFolderRail';
 import { useMediaFolders } from './media/mediaFolders';
@@ -402,12 +415,81 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                 ),
             },
             {
+                /*
+                    DÖNÜŞTÜR (`docs/108` §6.3). Boyut motorunun YANINDA
+                    durur ve onunla karışmaz: boyut motoru "hangi ÖLÇÜLER
+                    üretilsin" der, dönüştür "hangi BİÇİME çevrilsin" der.
+                */
+                key: 'convert',
+                label: t('workspace.media.convert.tab'),
+                icon: <Swap aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaConvertRegion workspaceId={workspaceId} />
+                    </PanelCard>
+                ),
+            },
+            {
+                /*
+                    GÖRÜNTÜLE (`docs/108` §3 madde 8). Kütüphanenin YANINDA
+                    ayrı bir bölümdür: kütüphane "hangi dosyalar var?"
+                    sorusunu, bu bölüm "bu dosyanın İÇİNDE ne var?"
+                    sorusunu cevaplar. Kiracı adresine bağlıdır — dosyanın
+                    türünü ve baytlarını sunucu verir.
+                */
+                key: 'viewer',
+                label: t('workspace.media.viewer.tab'),
+                icon: <Eye aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaViewerRegion workspaceId={workspaceId} assets={assets} />
+                    </PanelCard>
+                ),
+            },
+            {
                 key: 'queue',
                 label: t('workspace.media.shell.queue'),
                 icon: <Queue aria-hidden="true" size={18} />,
                 content: (
                     <PanelCard>
                         <MediaJobQueueRegion workspaceId={workspaceId} />
+                    </PanelCard>
+                ),
+            },
+            {
+                /*
+                    YER (`docs/108` §6.4). Soldaki kota şeridi "ne kadar
+                    yerim kaldı?" sorusunu cevaplıyor; bu bölüm bir sonraki
+                    soruyu cevaplar: "yeri ne dolduruyor, hangi dosyayı
+                    sileyim?". ÇÖP SATIRI burada bir GÖSTERGEDİR (ne kadar
+                    yer geri kazanılabilir); çöpü boşaltma ve geri alma
+                    işlemleri Kütüphane bölümünün çöp sekmesinde kalır —
+                    aynı listeyi iki yere çizmek, hangisinin gerçek olduğu
+                    sorusunu doğururdu.
+                */
+                key: 'storage',
+                label: t('workspace.media.storage.tab'),
+                icon: <HardDrives aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaStorageBreakdown workspaceId={workspaceId} />
+                    </PanelCard>
+                ),
+            },
+            {
+                /*
+                    AYARLAR (`docs/108` §6.5-§6.6). SALT OKUNUR bir bölüm:
+                    bu depoda desen değiştirilemez, güvenlik önlemi
+                    kapatılamaz. Yine de çizilir, çünkü sahibin sorduğu şey
+                    "değiştirebilir miyim" değil "ne oluyor" — ve o soru
+                    bugüne kadar hiçbir ekranda cevaplanmıyordu.
+                */
+                key: 'settings',
+                label: t('workspace.media.settings.tab'),
+                icon: <SlidersHorizontal aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaSettingsRegion workspaceId={workspaceId} />
                     </PanelCard>
                 ),
             },

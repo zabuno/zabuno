@@ -324,7 +324,7 @@ final class FakeMediaAssetProcessorPort implements MediaAssetProcessorPort
 
     public function __construct(private readonly MediaProcessingOutcome $outcome) {}
 
-    public function process(string $absolutePath, string $slot = ''): MediaProcessingResult
+    public function process(string $absolutePath, string $slot = '', ?string $targetFormat = null): MediaProcessingResult
     {
         $this->receivedAbsolutePaths[] = $absolutePath;
 
