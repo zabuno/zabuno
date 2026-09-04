@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CanonicalUrl;
 use App\Http\Middleware\NegotiateDeviceClass;
+use App\Http\Middleware\NegotiateLocale;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -53,6 +54,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // URL motoru güvenlik başlıklarından ÖNCE çalışır: kanonik olmayan
         // bir adres zaten yönlendirilecekse, o yanıtı işlemenin anlamı yok.
         $middleware->prepend(CanonicalUrl::class);
+        /*
+         * Dil pazarlığı her şeyden ÖNCE: `<html lang>` ondan türüyor ve
+         * istemci çevirici locale'i o etiketten okuyor. Sonra çözülürse
+         * kullanıcı önce yanlış dilde bir sayfa görür (FF-93).
+         */
+        $middleware->prepend(NegotiateLocale::class);
         // Cihaz pazarlığı, HTML üretilmeden ÖNCE çözülmeli: hangi paketin
         // yükleneceği Blade'de karara bağlanıyor.
         $middleware->append(NegotiateDeviceClass::class);

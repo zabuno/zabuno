@@ -295,3 +295,39 @@ msgstr "Bize sorun"
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr "Ana içeriğe geç"
+
+#: site:site.title.emailVerified
+msgid "site.title.emailVerified"
+msgstr "Zabuno — E-posta doğrulandı"
+
+#: site:site.title.forgotPassword
+msgid "site.title.forgotPassword"
+msgstr "Zabuno — Parolamı unuttum"
+
+#: site:site.title.invitation
+msgid "site.title.invitation"
+msgstr "Zabuno — Ekip daveti"
+
+#: site:site.title.login
+msgid "site.title.login"
+msgstr "Zabuno — Giriş"
+
+#: site:site.title.platform
+msgid "site.title.platform"
+msgstr "Zabuno — Platform Yönetimi"
+
+#: site:site.title.register
+msgid "site.title.register"
+msgstr "Zabuno — Kayıt"
+
+#: site:site.title.resetPassword
+msgid "site.title.resetPassword"
+msgstr "Zabuno — Parola sıfırlama"
+
+#: site:site.title.verifyEmail
+msgid "site.title.verifyEmail"
+msgstr "Zabuno — E-posta doğrulama"
+
+#: site:site.title.workspace
+msgid "site.title.workspace"
+msgstr "Zabuno — Çalışma alanı"

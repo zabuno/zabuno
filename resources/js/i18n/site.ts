@@ -27,6 +27,20 @@ export const siteTranslations = {
     'site.footer.tagline': 'Your menu behind a QR code, kept up to date by your own team.',
     // --- Fiyat -----------------------------------------------------------
     'site.engineering.title': 'Zabuno — Engineering',
+    /*
+        Kabuk sekme başlıkları (FF-93). Blade'e sabit yazılıydılar: Türkçe
+        bir kullanıcı arayüzü Türkçe görürken sekmede "Log in" okuyordu ve
+        sahibi o dizeyi hiçbir PO dosyasında bulamıyordu.
+    */
+    'site.title.login': 'Zabuno — Log in',
+    'site.title.register': 'Zabuno — Register',
+    'site.title.forgotPassword': 'Zabuno — Forgot password',
+    'site.title.resetPassword': 'Zabuno — Reset password',
+    'site.title.verifyEmail': 'Zabuno — Verify your email',
+    'site.title.emailVerified': 'Zabuno — Email verified',
+    'site.title.invitation': 'Zabuno — Team invitation',
+    'site.title.workspace': 'Zabuno — Workspace',
+    'site.title.platform': 'Zabuno — Platform Admin',
     'site.pricing.heading': 'Pricing',
     'site.pricing.lead': 'What a restaurant pays to publish its menu behind a QR code.',
     /*

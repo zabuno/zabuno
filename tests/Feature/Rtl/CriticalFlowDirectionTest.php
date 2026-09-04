@@ -23,9 +23,14 @@ final class CriticalFlowDirectionTest extends TestCase
 
     public function test_the_login_page_flows_right_to_left_for_an_arabic_reader(): void
     {
-        $this->app->setLocale('ar');
-
-        $response = $this->get('/login');
+        /*
+            Dil ARTIK istekte bildirilir (FF-93): `NegotiateLocale` her
+            istekte tarayıcının `Accept-Language` başlığından seçer. Testin
+            ölçtüğü sözleşme değişmedi — belge dili/yönü şablonun kendi
+            kararı değil, locale'den türer — yalnız locale'in nereden geldiği
+            gerçek bir istemcinin yaptığı gibi ifade ediliyor.
+        */
+        $response = $this->withHeaders(['Accept-Language' => 'ar'])->get('/login');
 
         $response->assertStatus(200);
         $response->assertSee('<html lang="ar" dir="rtl">', false);
@@ -33,9 +38,14 @@ final class CriticalFlowDirectionTest extends TestCase
 
     public function test_the_login_page_flows_left_to_right_for_a_turkish_reader(): void
     {
-        $this->app->setLocale('tr');
-
-        $this->get('/login')
+        /*
+            Dil ARTIK istekte bildirilir (FF-93): `NegotiateLocale` her
+            istekte tarayıcının `Accept-Language` başlığından seçer. Testin
+            ölçtüğü sözleşme değişmedi — belge dili/yönü şablonun kendi
+            kararı değil, locale'den türer — yalnız locale'in nereden geldiği
+            gerçek bir istemcinin yaptığı gibi ifade ediliyor.
+        */
+        $this->withHeaders(['Accept-Language' => 'tr'])->get('/login')
             ->assertStatus(200)
             ->assertSee('<html lang="tr" dir="ltr">', false);
     }
@@ -85,9 +95,14 @@ final class CriticalFlowDirectionTest extends TestCase
 
     public function test_the_password_reset_flow_carries_the_same_direction_contract(): void
     {
-        $this->app->setLocale('ar');
-
-        $this->get('/forgot-password')
+        /*
+            Dil ARTIK istekte bildirilir (FF-93): `NegotiateLocale` her
+            istekte tarayıcının `Accept-Language` başlığından seçer. Testin
+            ölçtüğü sözleşme değişmedi — belge dili/yönü şablonun kendi
+            kararı değil, locale'den türer — yalnız locale'in nereden geldiği
+            gerçek bir istemcinin yaptığı gibi ifade ediliyor.
+        */
+        $this->withHeaders(['Accept-Language' => 'ar'])->get('/forgot-password')
             ->assertStatus(200)
             ->assertSee('dir="rtl"', false);
     }

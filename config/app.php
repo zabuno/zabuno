@@ -82,6 +82,20 @@ return [
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Desteklenen diller (FF-93)
+    |--------------------------------------------------------------------------
+    |
+    | İstek dili bu listeden seçilir (`NegotiateLocale`). Liste, istemci
+    | katalogundaki `resources/js/i18n/locales.ts` ile aynı altı dili taşır;
+    | ikisi ayrışırsa sunucu bir dili seçer ama istemcinin çevirisi olmaz.
+    | Sıralama önemlidir: baştaki, hiçbir şey eşleşmediğinde seçilendir.
+    |
+    */
+
+    'supported_locales' => ['en', 'tr', 'de', 'fr', 'ar', 'ru'],
+
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*

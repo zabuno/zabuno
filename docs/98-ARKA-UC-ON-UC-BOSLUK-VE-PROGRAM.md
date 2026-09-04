@@ -529,3 +529,42 @@ birlikte DONDU. Misafir sayfası onları iki yerde kullanır: sayfanın üstünd
 **Kanıt:** `tests/Feature/Publication/PublicationBrandColorsTest.php` —
 snapshot taşıma, renk değişince eski yayının değişmemesi, misafir sayfasının
 rengi çizmesi, renksiz markanın nötr kalması.
+
+## 11. FF-91…FF-93 — ürünün dili
+
+Üç paket aynı boşluğu kapatıyor: **ürün altı dil taşıyordu ama hiçbir yerde
+bir dil SEÇMİYORDU.**
+
+| Paket | Ne yaptı |
+| --- | --- |
+| FF-91 | Ana sayfanın 29 dizesi `site.home.*` altına taşındı; çevrilemez borç 48 → 19 |
+| FF-92 | 72 `site.*` anahtarının tamamı Türkçeye çevrildi; tanıtım sitesi baştan sona Türkçe |
+| FF-93 | İstek dili `Accept-Language`'dan seçilir; kimlik ve kabuk metinleri Türkçe; sekme başlıkları katalogdan; borç 19 → 10 |
+
+**Kök neden.** `app()->getLocale()` her istekte yapılandırmadaki `en` kalıyordu.
+`<html lang>` ondan türüyor, istemci çevirici de locale'i o etiketten okuyor.
+Yani Türkçe çeviriler yazılsa bile hiçbir Türk kullanıcı onları göremezdi:
+çeviri vardı, kapı yoktu. Kamu sayfaları bunu tek tek kendi içinde çözüyordu;
+kabuklar hiç çözmüyordu — aynı üründe iki farklı gerçek vardı.
+
+**Kararlar:**
+
+1. **Seçim sunucuda yapılır**, JavaScript'te değil: dil ilk boyanan pikselden
+   önce belli olmalıdır. Sonradan değişirse kullanıcı önce yanlış dilde bir
+   sayfa görür, sonra sayfanın altından dili değişir.
+2. **Başlık yoksa hiçbir şey seçilmez.** Sinyal yokken karar vermek, dili
+   bilerek ayarlamış olan tarafı (bir konsol komutu, ileride bir kullanıcı
+   tercihi) sessizce ezmek olurdu.
+3. **Bölgeli etiket taban dile iner** (`tr-TR` → `tr`): katalog taban
+   dillerle anahtarlanır ve desteklenen bir dili desteklenmiyormuş gibi
+   göstermek olurdu.
+4. **`SiteText` varsayılanı uygulamanın dilidir**, sabit `'en'` değil. İkinci
+   bir varsayılan tutmak, istekte yapılan seçimi görmezden gelmek olurdu.
+5. **Kullanıcı tercihi (hesapta saklanan dil) BU TURDA YAPILMADI.** Tarayıcı
+   dili çoğu kullanıcı için doğru cevaptır; hesapta saklanan tercih ayrı bir
+   pakettir ve `NegotiateLocale` onun için hazır: tercih daha erken
+   ayarlanırsa başlık onu ezmez.
+
+**Kanıt:** `tests/Feature/Localization/RequestLocaleNegotiationTest.php`
+(Türkçe tarayıcı, bölgeli etiket, desteklenmeyen dil, başlıksız istek, Arapça
+RTL, çalışma alanı kabuğu).

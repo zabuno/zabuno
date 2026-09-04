@@ -295,3 +295,39 @@ msgstr ""
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr ""
+
+#: site:site.title.emailVerified
+msgid "site.title.emailVerified"
+msgstr ""
+
+#: site:site.title.forgotPassword
+msgid "site.title.forgotPassword"
+msgstr ""
+
+#: site:site.title.invitation
+msgid "site.title.invitation"
+msgstr ""
+
+#: site:site.title.login
+msgid "site.title.login"
+msgstr ""
+
+#: site:site.title.platform
+msgid "site.title.platform"
+msgstr ""
+
+#: site:site.title.register
+msgid "site.title.register"
+msgstr ""
+
+#: site:site.title.resetPassword
+msgid "site.title.resetPassword"
+msgstr ""
+
+#: site:site.title.verifyEmail
+msgid "site.title.verifyEmail"
+msgstr ""
+
+#: site:site.title.workspace
+msgid "site.title.workspace"
+msgstr ""

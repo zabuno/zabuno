@@ -24,7 +24,15 @@ final class SiteText
 
     public function get(string $key, ?string $locale = null): string
     {
-        return $this->translations->translate(self::DOMAIN, $key, $locale ?? 'en');
+        /*
+            Locale verilmezse UYGULAMANIN dili kullanılır (FF-93). Önceden
+            burada sabit `'en'` vardı ve her çağıran locale'i elle geçirmek
+            zorundaydı; geçirmeyi unutan yüzey (kimlik kabukları) Türkçe bir
+            ziyaretçiye bile İngilizce metin veriyordu. Dil artık istekte
+            seçiliyor; ikinci bir varsayılan tutmak o seçimi görmezden
+            gelmek olurdu.
+        */
+        return $this->translations->translate(self::DOMAIN, $key, $locale ?? app()->getLocale());
     }
 
     /**
@@ -43,6 +51,16 @@ final class SiteText
             // sabit dize yazmak çevrilemez borcu büyütürdü (I18N-SSR-RATCHET-16).
             'engineeringTitle' => 'site.engineering.title',
             // Masterpage (`docs/100` §2): gezinti ve altbilgi metni katalogdan.
+            // Kabuk sekme başlıkları (FF-93).
+            'titleLogin' => 'site.title.login',
+            'titleRegister' => 'site.title.register',
+            'titleForgotPassword' => 'site.title.forgotPassword',
+            'titleResetPassword' => 'site.title.resetPassword',
+            'titleVerifyEmail' => 'site.title.verifyEmail',
+            'titleEmailVerified' => 'site.title.emailVerified',
+            'titleInvitation' => 'site.title.invitation',
+            'titleWorkspace' => 'site.title.workspace',
+            'titlePlatform' => 'site.title.platform',
             'skipToContent' => 'site.skipToContent',
             'navFeatures' => 'site.nav.features',
             'navHowItWorks' => 'site.nav.howItWorks',
