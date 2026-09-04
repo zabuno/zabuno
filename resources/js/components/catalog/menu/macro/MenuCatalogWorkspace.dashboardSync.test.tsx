@@ -1,7 +1,6 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { clickRowMenuItem } from '../../../../test/menuRow';
 
 /**
  * RED test freezing the dashboard catalog-mutation sync contract for
@@ -257,11 +256,15 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
         });
 
         /*
-            GÜNCELLENDİ (FF-102): görünürlük etiketsiz bir kutu değil, taşma
-            menüsünde bir cümle. Ölçülen sözleşme aynı: başarılı mutasyondan
-            sonra ağaç yukarı bildirilir.
+            GÜNCELLENDİ (kanonik teslim paketi, `DESIGN_SPEC` §3): görünürlük
+            taşma menüsünden satırdaki ANAHTARA döndü. Etiketsizlik sorunu
+            çözüldü — anahtar tam cümleyi taşıyor — ama durum artık menüyü
+            açmadan da görünüyor.
+
+            Ölçülen sözleşme değişmedi: başarılı mutasyondan sonra ağaç yukarı
+            bildirilir. Yalnız yol tek tık oldu.
         */
-        await clickRowMenuItem('Kahve', /Hide from the menu|Show on the menu/);
+        fireEvent.click(screen.getByRole('switch', { name: 'Show Kahve on the menu' }));
 
         await waitFor(() => {
             expect(onTreeChange).toHaveBeenCalledTimes(2);

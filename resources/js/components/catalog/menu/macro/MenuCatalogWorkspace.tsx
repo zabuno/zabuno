@@ -2,9 +2,18 @@ import { TextInput } from '../../forms/micro/TextInput';
 import { Textarea } from '../../forms/micro/Textarea';
 import { Select } from '../../forms/micro/Select';
 import clsx from 'clsx';
-import { Eye, EyeSlash, ImageSquare, Plus, Warning } from '@phosphor-icons/react';
-import { useEffect, useState, type FormEvent } from 'react';
+import {
+    DotsSixVertical,
+    Image as ImageIcon,
+    ImageSquare,
+    PencilSimple,
+    Plus,
+    Prohibit,
+    Warning,
+} from '@phosphor-icons/react';
+import { useEffect, useState, type DragEvent, type FormEvent } from 'react';
 import { RowActions } from '../compound/RowActions';
+import { DrawerPanel } from '../../overlays/compound/DrawerPanel';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { formatMoneyOr } from '../../../../money/format';
 import { focusFirstInvalidField, readValidationFailure } from '../../../../lib/validationErrors';
@@ -409,6 +418,74 @@ const sectionClass = clsx(
     'forced-colors:border-[CanvasText]',
 );
 
+/*
+    ÜRÜN SATIRININ SÜTUN RİTMİ — kanonik teslim paketi (`DESIGN_SPEC` §3):
+
+        48px görsel · ad + meta · 110px fiyat · 44px bitti · 48px görünürlük ·
+        eylemler
+
+    NEDEN IZGARA, ESNEK SARMA DEĞİL: sarmalı bir satırda her ürünün fiyatı
+    kendi adının uzunluğu kadar sağa kayar. Akşam servisinde on beş fiyata
+    bakan bir sahibin gözü, hiçbir ikisi aynı hizada olmayan bir sütunu
+    tarayamaz. Izgara, sayıyı her satırda AYNI x'e koyar; karşılaştırma
+    ancak böyle gözle yapılır.
+
+    320px'de ızgara KAPANIR ve satır tekrar sarar: dar ekranda altı sütunu
+    zorlamak, her sütunu okunamayacak kadar daraltmaktı. Hiçbir bilgi
+    kaybolmaz, yalnız iki satıra iner (`DESIGN_SPEC` §12).
+
+    Satır yüksekliği yoğunluk jetonundan gelir; dokunma hedefi hiçbir modda
+    44px'in altına inmez (`--density-hit-area-min`).
+*/
+const itemRowGridClass = clsx(
+    'flex flex-wrap items-center gap-x-[var(--space-3)] gap-y-[var(--space-1)]',
+    'min-h-[var(--density-row-height)]',
+    'sm:grid sm:grid-cols-[48px_minmax(0,1fr)_minmax(110px,auto)_44px_48px_auto] sm:gap-y-0',
+);
+
+/*
+    48px görsel karesi. Fotoğrafı olmayan üründe de durur ve boş kalır —
+    boşluğun kendisi bilgidir: sahip listeye baktığında hangi ürünün
+    fotoğrafı yok, saymadan görür.
+*/
+const itemThumbClass = clsx(
+    'flex h-[48px] w-[48px] shrink-0 items-center justify-center',
+    'rounded-[var(--radius-md)] border border-border bg-surface-subtle text-fg-secondary',
+    'hover:bg-surface-active hover:text-fg',
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+);
+
+/*
+    FİYAT — sağa yaslı, eşit genişlikte rakam, soluk dolgu.
+
+    `justify-end` + `tabular-nums`: "₺420,00" ile "₺38,00" ancak böyle aynı
+    yerde biter. `bg-surface-subtle`: "buraya tıklanır" bilgisini renkle
+    değil dolguyla verir — marka sarısı bir listede on beş kez tekrar
+    ederse vurgu olmaktan çıkar, gürültü olur.
+*/
+const itemPriceClass = clsx(
+    'flex min-h-[var(--density-hit-area-min)] min-w-[110px] shrink-0 items-center justify-end gap-[var(--space-2)]',
+    'rounded-[var(--radius-md)] bg-surface-subtle px-[var(--space-3)]',
+    'text-body font-bold tabular-nums text-fg',
+    'hover:bg-surface-active',
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+);
+
+/*
+    "BUGÜN BİTTİ" satırın en sık kullanılan düğmesidir ve artık ikon taşır:
+    metin ("Sold out" / "Back in stock") satırın genişliğini ürünün o anki
+    durumuna göre değiştiriyordu, yani sütunlar satırdan satıra kayıyordu.
+    Erişilebilir isim tam cümledir ve `aria-pressed` durumu taşır —
+    bilgi kaybolmaz, yalnız genişlik sabitlenir.
+*/
+const itemStockButtonClass = clsx(
+    'flex min-h-[var(--density-hit-area-min)] min-w-[var(--density-hit-area-min)] shrink-0 items-center justify-center',
+    'rounded-[var(--radius-md)] text-fg-secondary',
+    'hover:bg-surface-hover hover:text-fg',
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+    'disabled:cursor-not-allowed disabled:opacity-50',
+);
+
 export function MenuCatalogWorkspace({
     workspaceId,
     locationId,
@@ -577,6 +654,18 @@ export function MenuCatalogWorkspace({
 
     const [visibilityPending, setVisibilityPending] = useState<Record<number, boolean>>({});
     const [visibilityErrors, setVisibilityErrors] = useState<Record<number, string | null>>({});
+
+    /*
+        SÜRÜKLENEN KATEGORİ, `dataTransfer` yerine BURADA tutulur.
+
+        `dataTransfer` tarayıcının kendi taşıma kanalıdır ve `dragover`
+        sırasında okunamaz (güvenlik kısıtı); ayrıca yalnız dize taşır. Menü
+        sıralaması sayfa dışına sürüklenebilen bir veri değil, tek bir
+        bileşenin içinde başlayıp biten bir jest — o yüzden kaynağı bileşenin
+        kendi durumu olur. Yan fayda: davranış tarayıcı API'sine değil,
+        bileşene ait olduğu için testte de aynı yoldan geçer.
+    */
+    const [draggingCategoryId, setDraggingCategoryId] = useState<number | null>(null);
 
     // Tek bildirim mekanizması. Daha önce onTreeChange yalnız ilk yüklemede ve
     // görünürlük değişiminde elle çağrılıyordu; menü, kategori, ürün, kalem,
@@ -1908,6 +1997,70 @@ export function MenuCatalogWorkspace({
         );
     }
 
+    /**
+     * Kategoriyi SÜRÜKLEYEREK taşır — kanonik teslim paketi (`DESIGN_SPEC`
+     * §3: "Satır: sürükleme tutamacı + ad + sayı").
+     *
+     * `moveCategory` iki komşuyu TAKAS eder; sürükleme ise sırayı bozmadan
+     * ARAYA SOKAR. Fark ekranda görülür: altı kategorilik bir menüde
+     * "Tatlılar"ı en üste çekmek takasla beş ayrı hamle, araya sokmayla tek
+     * hamledir — ve aradaki dördünün göreli sırası korunur.
+     *
+     * Yukarı/aşağı düğmeleri KALDI: sürükleme dokunmatikte ve klavyeyle
+     * güvenilir değildir, o yüzden ikinci bir yol değil, TEK GÜVENİLİR
+     * yoldur; tutamaç onun fare kısayoludur.
+     */
+    async function reorderCategoryByDrag(sourceId: number, targetId: number) {
+        if (tree === null || sourceId === targetId) {
+            return;
+        }
+
+        const ids = tree.categories.map((category) => category.id);
+        const from = ids.indexOf(sourceId);
+        const to = ids.indexOf(targetId);
+
+        if (from < 0 || to < 0) {
+            return;
+        }
+
+        ids.splice(to, 0, ids.splice(from, 1)[0] as number);
+
+        await applyOrder(
+            categoryOrderUrl(workspaceId, tree.id),
+            { categoryIds: ids },
+            (current) => ({
+                ...current,
+                categories: ids
+                    .map((id) => current.categories.find((category) => category.id === id))
+                    .filter((category): category is CategoryRow => category !== undefined),
+            }),
+        );
+    }
+
+    /**
+     * Ürün ayrıntı çekmecesi AÇIK MI?
+     *
+     * Üç düzenleyici (sunum, alerjen, fiyat) daha önce satırın ALTINDA üç
+     * ayrı kutu olarak açılıyordu; aşağıdaki bütün ürünler kayıyor ve
+     * sahibin baktığı satır ekrandan çıkıyordu. Üçü de aynı sorunun
+     * parçasıdır — "bu ürünü misafire nasıl göstereceğim" — ve referansta
+     * tek bir panelde durur.
+     */
+    function inspectorOpenFor(itemId: number): boolean {
+        return (
+            presentationItemId === itemId ||
+            allergenEditItemId === itemId ||
+            priceEditItemId === itemId
+        );
+    }
+
+    /** Paneli kapatır: hangi bölüm açıksa hepsi birlikte kapanır. */
+    function closeInspector() {
+        setPresentationItemId(null);
+        setAllergenEditItemId(null);
+        setPriceEditItemId(null);
+    }
+
     async function applyOrder(
         url: string,
         body: Record<string, number[]>,
@@ -2480,14 +2633,68 @@ export function MenuCatalogWorkspace({
                         className="flex flex-col gap-4"
                     >
                         {tree.categories.map((category) => (
-                            <li key={category.id} className={sectionClass}>
+                            <li
+                                key={category.id}
+                                className={clsx(
+                                    sectionClass,
+                                    /*
+                                        SÜRÜKLEMENİN HEDEFİ SATIRIN TAMAMIDIR,
+                                        tutamacın kendisi değil: 24px'lik bir
+                                        noktaya isabet ettirmek fareyle bile
+                                        zordur ve ıskalanan her bırakma sessizce
+                                        hiçbir şey yapar.
+                                    */
+                                    draggingCategoryId !== null &&
+                                        draggingCategoryId !== category.id &&
+                                        'outline-2 outline-offset-2 outline-focus',
+                                )}
+                                onDragOver={(event: DragEvent<HTMLLIElement>) => {
+                                    // `preventDefault` olmadan tarayıcı bırakmayı
+                                    // hiç kabul etmez — HTML'in varsayılanı
+                                    // "burası bırakma alanı değil"dir.
+                                    if (draggingCategoryId !== null) {
+                                        event.preventDefault();
+                                    }
+                                }}
+                                onDrop={(event: DragEvent<HTMLLIElement>) => {
+                                    event.preventDefault();
+                                    const source = draggingCategoryId;
+                                    setDraggingCategoryId(null);
+
+                                    if (source !== null) {
+                                        void reorderCategoryByDrag(source, category.id);
+                                    }
+                                }}
+                            >
                                 <div className="flex flex-wrap items-center gap-2">
                                     {/*
-                                        SIRA → BAŞLIK → TOPLU STOK → EYLEMLER.
-                                        Ürün satırıyla AYNI dizilim: iki farklı
-                                        sıralama, gözü her kategoride yeniden
-                                        eğitmek olurdu (`docs/103` Döngü 5).
+                                        TUTAMAÇ → SIRA → BAŞLIK → SAYI → TOPLU
+                                        STOK → EYLEMLER. Ürün satırıyla AYNI
+                                        dizilim: iki farklı sıralama, gözü her
+                                        kategoride yeniden eğitmek olurdu
+                                        (`docs/103` Döngü 5).
                                     */}
+                                    <span
+                                        draggable
+                                        title={t('menu.category.reorder.handle', {
+                                            name: category.name,
+                                        })}
+                                        /*
+                                            EKRAN OKUYUCUYA SUNULMAZ ve bu bir
+                                            eksiklik değil: aynı işi yapan
+                                            "yukarı/aşağı" düğmeleri satırda
+                                            duruyor ve ADLARINI taşıyor. Bir
+                                            sürükleme jestini ekran okuyucuya
+                                            duyurmak, yapılamayacak bir şeyi
+                                            önermek olurdu.
+                                        */
+                                        aria-hidden="true"
+                                        className="flex h-[var(--density-hit-area-min)] w-[var(--space-5)] cursor-grab items-center justify-center text-fg-secondary active:cursor-grabbing"
+                                        onDragStart={() => setDraggingCategoryId(category.id)}
+                                        onDragEnd={() => setDraggingCategoryId(null)}
+                                    >
+                                        <DotsSixVertical size={18} weight="bold" />
+                                    </span>
                                     <OrderBadge
                                         position={category.position}
                                         label={t('menu.category.order.label', {
@@ -2519,6 +2726,18 @@ export function MenuCatalogWorkspace({
                                             }
                                         />
                                     </h3>
+                                    {/*
+                                        ÜRÜN SAYISI — referans rayının ikinci
+                                        yarısı ("ad + sayı"). Boş kalmış bir
+                                        kategoriyi açmadan görmenin tek yolu
+                                        budur; `tabular-nums`, sayılar alt alta
+                                        dizildiğinde hizayı korur.
+                                    */}
+                                    <span className="shrink-0 text-meta tabular-nums text-fg-secondary">
+                                        {t('menu.category.count', {
+                                            count: String(category.menuItems.length),
+                                        })}
+                                    </span>
                                     {/*
                                         KATEGORİ GENELİ STOK — `docs/82` kriter 3.
                                         Yalnız ürün varken çizilir; boş bir kategoride
@@ -2603,21 +2822,31 @@ export function MenuCatalogWorkspace({
                                         // görmek mümkün değildi.
                                         <li
                                             key={item.id}
-                                            className="flex flex-col gap-2 border-b border-border py-2 last:border-b-0"
+                                            className={clsx(
+                                                'flex flex-col gap-[var(--space-1)] border-b border-border py-[var(--space-2)] last:border-b-0',
+                                                /*
+                                                    GİZLİ SATIR SOLUK ÇİZİLİR.
+
+                                                    Gizli bir ürün SİLİNMİŞ
+                                                    değildir; yalnız misafirde
+                                                    yoktur. Opaklık bu farkı
+                                                    satırın yerini değiştirmeden
+                                                    anlatır — satır listedeki
+                                                    sırasını korur, sahip onu
+                                                    aramak zorunda kalmaz.
+
+                                                    Tek başına yeterli DEĞİL:
+                                                    aynı bilgiyi anahtarın
+                                                    `aria-checked` durumu da
+                                                    taşır (`DESIGN_SPEC` §12).
+                                                */
+                                                item.isVisible ? null : 'opacity-55',
+                                            )}
                                         >
-                                            <div
-                                                className={clsx(
-                                                    'flex flex-wrap items-center gap-x-3 gap-y-1',
-                                                    // Dar ekranda satır iki
-                                                    // parçaya bölünür; dikey
-                                                    // boşluk küçük kalmalı ki
-                                                    // iki parça TEK satır gibi
-                                                    // okunsun, iki ayrı satır
-                                                    // gibi değil.
-                                                )}
-                                            >
+                                            <div className={itemRowGridClass}>
                                                 {/*
-                                                    SIRA → AD → FİYAT → TÜKENDİ → EYLEMLER.
+                                                    GÖRSEL → AD+META → FİYAT →
+                                                    BİTTİ → GÖRÜNÜRLÜK → EYLEMLER.
 
                                                     Önceki dizilim eylemleri satırın
                                                     ORTASINA koyuyordu: göz addan fiyata
@@ -2627,13 +2856,28 @@ export function MenuCatalogWorkspace({
                                                     okunur ve iki ürünün fiyatı ancak böyle
                                                     karşılaştırılır (`docs/103` Döngü 5).
                                                 */}
-                                                <OrderBadge
-                                                    position={item.position}
-                                                    label={t('menu.item.order.label', {
+                                                <button
+                                                    type="button"
+                                                    aria-label={t('menu.item.open.button', {
                                                         name: item.productName ?? '',
                                                     })}
-                                                />
-                                                <span className="flex min-w-0 flex-1">
+                                                    className={itemThumbClass}
+                                                    onClick={() =>
+                                                        void handleEditPresentation(item)
+                                                    }
+                                                >
+                                                    {item.imageMediaAssetId === null ||
+                                                    item.imageMediaAssetId === undefined ? (
+                                                        <ImageIcon size={20} aria-hidden="true" />
+                                                    ) : (
+                                                        <ImageSquare
+                                                            size={20}
+                                                            weight="fill"
+                                                            aria-hidden="true"
+                                                        />
+                                                    )}
+                                                </button>
+                                                <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)] sm:flex-auto">
                                                     <InlineRename
                                                         value={
                                                             item.productName ?? `#${item.productId}`
@@ -2654,6 +2898,45 @@ export function MenuCatalogWorkspace({
                                                             )
                                                         }
                                                     />
+                                                    {/*
+                                                        META SATIRI — adın altında,
+                                                        satırın hizasını bozmadan.
+                                                        Sıra numarası buraya indi:
+                                                        referans satırında sayı yok
+                                                        ve altı sütunluk ızgarada
+                                                        yedinci bir kutu, fiyatı her
+                                                        satırda başka yere iterdi.
+                                                        Bilgi kaybolmadı, yalnız
+                                                        ikincil hizaya geçti.
+                                                    */}
+                                                    <span className="flex flex-wrap items-center gap-[var(--space-2)] text-meta text-fg-secondary">
+                                                        <OrderBadge
+                                                            position={item.position}
+                                                            label={t('menu.item.order.label', {
+                                                                name: item.productName ?? '',
+                                                            })}
+                                                        />
+                                                        {item.outOfStock === true ? (
+                                                            <span className="inline-flex items-center gap-[var(--space-1)] rounded-pill bg-surface-warning px-[var(--space-2)] font-bold text-fg-warning">
+                                                                <Prohibit
+                                                                    size={14}
+                                                                    weight="fill"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                {t('menu.item.stock.badge')}
+                                                            </span>
+                                                        ) : null}
+                                                        {item.imageMediaAssetId === null ||
+                                                        item.imageMediaAssetId === undefined ? (
+                                                            <span className="inline-flex items-center gap-[var(--space-1)]">
+                                                                <ImageIcon
+                                                                    size={14}
+                                                                    aria-hidden="true"
+                                                                />
+                                                                {t('menu.item.meta.noPhoto')}
+                                                            </span>
+                                                        ) : null}
+                                                    </span>
                                                 </span>
                                                 {/*
                                                     BİÇİMLENDİRME ürünün kanonik
@@ -2689,23 +2972,30 @@ export function MenuCatalogWorkspace({
                                                         name: item.productName ?? '',
                                                     })}
                                                     onClick={() => handleEditPrice(item)}
-                                                    className={clsx(
-                                                        // Dokunma hedefi 44 px: telefonda ölçüldü.
-                                                        'flex min-h-[var(--density-hit-area-min)] shrink-0 items-center',
-                                                        'rounded-[var(--radius-sm)] px-[var(--space-1)]',
-                                                        'text-body tabular-nums text-fg-secondary',
-                                                        'hover:bg-surface-hover hover:text-fg',
-                                                        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                                                    )}
+                                                    className={itemPriceClass}
                                                 >
-                                                    {formatMoneyOr(
-                                                        item.priceMinorAmount,
-                                                        item.currencyCode,
-                                                        `${minorAmountToDecimalString(
+                                                    <span>
+                                                        {formatMoneyOr(
                                                             item.priceMinorAmount,
                                                             item.currencyCode,
-                                                        )} ${item.currencyCode}`,
-                                                    )}
+                                                            `${minorAmountToDecimalString(
+                                                                item.priceMinorAmount,
+                                                                item.currencyCode,
+                                                            )} ${item.currencyCode}`,
+                                                        )}
+                                                    </span>
+                                                    {/*
+                                                        Kalem, fiyatın DÜZENLENEBİLİR
+                                                        olduğunu söyler. Dolgulu kutu tek
+                                                        başına "tıklanabilir" demiyordu;
+                                                        sahip fiyatı değiştirmek için
+                                                        taşma menüsünü açıyordu.
+                                                    */}
+                                                    <PencilSimple
+                                                        size={16}
+                                                        aria-hidden="true"
+                                                        className="text-fg-secondary"
+                                                    />
                                                 </button>
                                                 {/*
                                                     TÜKENDİ satırda kalır: bir
@@ -2717,7 +3007,7 @@ export function MenuCatalogWorkspace({
                                                 */}
                                                 <button
                                                     type="button"
-                                                    className={inlineActionClass}
+                                                    className={itemStockButtonClass}
                                                     disabled={stockPending[item.id] === true}
                                                     aria-pressed={item.outOfStock === true}
                                                     aria-label={t(
@@ -2728,11 +3018,74 @@ export function MenuCatalogWorkspace({
                                                     )}
                                                     onClick={() => void handleToggleStock(item)}
                                                 >
-                                                    {t(
-                                                        item.outOfStock === true
-                                                            ? 'menu.item.stock.back.short'
-                                                            : 'menu.item.stock.out.short',
+                                                    <Prohibit
+                                                        size={22}
+                                                        weight={
+                                                            item.outOfStock === true
+                                                                ? 'fill'
+                                                                : 'regular'
+                                                        }
+                                                        aria-hidden="true"
+                                                        className={
+                                                            item.outOfStock === true
+                                                                ? 'text-fg-warning'
+                                                                : undefined
+                                                        }
+                                                    />
+                                                </button>
+                                                {/*
+                                                    GÖRÜNÜRLÜK ANAHTARI — 48×28,
+                                                    referansın beşinci sütunu.
+
+                                                    Anahtar biçimi kasıtlı: "bugün
+                                                    bitti" anlık bir eylemdir (ikon
+                                                    düğmesi), görünürlük ise KALICI
+                                                    bir açık/kapalı hâldir. İki farklı
+                                                    şeyin iki farklı biçimi olur;
+                                                    ikisi de düğme olduğunda sahip
+                                                    hangisinin kalıcı olduğunu ancak
+                                                    deneyerek öğreniyordu.
+
+                                                    Dokunma hedefi anahtarın GÖRSEL
+                                                    boyutundan büyüktür: ray 28px,
+                                                    basılabilir alan 44px.
+                                                */}
+                                                <button
+                                                    type="button"
+                                                    role="switch"
+                                                    aria-checked={item.isVisible}
+                                                    aria-label={t(
+                                                        'menu.item.visibility.switch.label',
+                                                        { name: item.productName ?? '' },
                                                     )}
+                                                    disabled={visibilityPending[item.id] === true}
+                                                    onClick={() => handleToggleVisibility(item)}
+                                                    className={clsx(
+                                                        'flex min-h-[var(--density-hit-area-min)] w-[48px] shrink-0 items-center justify-center',
+                                                        'rounded-[var(--radius-md)]',
+                                                        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                                                        'disabled:cursor-not-allowed disabled:opacity-50',
+                                                    )}
+                                                >
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className={clsx(
+                                                            'relative block h-[28px] w-[48px] rounded-pill transition-colors',
+                                                            item.isVisible
+                                                                ? 'bg-action'
+                                                                : 'bg-surface-active',
+                                                        )}
+                                                    >
+                                                        <span
+                                                            className={clsx(
+                                                                'absolute top-[3px] block h-[22px] w-[22px] rounded-pill border border-border bg-surface',
+                                                                'transition-[inset-inline-start]',
+                                                                item.isVisible
+                                                                    ? 'start-[23px]'
+                                                                    : 'start-[3px]',
+                                                            )}
+                                                        />
+                                                    </span>
                                                 </button>
                                                 <RowActions
                                                     onDelete={() =>
@@ -2790,30 +3143,24 @@ export function MenuCatalogWorkspace({
                                                             onSelect: () =>
                                                                 handleEditAllergens(item),
                                                         },
-                                                        {
-                                                            key: 'visibility',
-                                                            /*
-                                                                İstek uçarken
-                                                                madde kapalı:
-                                                                iki kez basmak
-                                                                iki ters istek
-                                                                gönderirdi.
-                                                            */
-                                                            disabled:
-                                                                visibilityPending[item.id] === true,
-                                                            label: t(
-                                                                item.isVisible
-                                                                    ? 'menu.item.visibility.hide'
-                                                                    : 'menu.item.visibility.show',
-                                                            ),
-                                                            icon: item.isVisible ? (
-                                                                <EyeSlash size={18} />
-                                                            ) : (
-                                                                <Eye size={18} />
-                                                            ),
-                                                            onSelect: () =>
-                                                                handleToggleVisibility(item),
-                                                        },
+                                                        /*
+                                                            GÖRÜNÜRLÜK BURADAN
+                                                            ALINDI ve satırdaki
+                                                            anahtara döndü
+                                                            (`DESIGN_SPEC` §3).
+
+                                                            Menüde durduğu sürece
+                                                            DURUMU da saklıyordu:
+                                                            on beş satırın
+                                                            hangisinin misafirde
+                                                            göründüğünü görmek
+                                                            için on beş menü
+                                                            açmak gerekiyordu.
+                                                            Aynı denetimi iki
+                                                            yerde sunmak ise
+                                                            hangisinin doğru
+                                                            olduğunu sordururdu.
+                                                        */
                                                     ]}
                                                     upLabel={t('menu.move.up', {
                                                         name: item.productName ?? '',
@@ -2853,204 +3200,249 @@ export function MenuCatalogWorkspace({
                                                     message={visibilityErrors[item.id] as string}
                                                 />
                                             ) : null}
-                                            {presentationItemId === item.id ? (
-                                                <form
-                                                    className={sectionClass}
-                                                    onSubmit={handleSavePresentation}
-                                                    noValidate
-                                                >
-                                                    <label
-                                                        className={labelClass}
-                                                        htmlFor={`item-description-${item.id}`}
+                                            {/*
+                                                ÜRÜN AYRINTI ÇEKMECESİ — `DESIGN_SPEC`
+                                                §3: masaüstünde SAĞDAN, telefonda
+                                                alttan.
+
+                                                Üç düzenleyici (sunum, alerjen, fiyat)
+                                                önce satırın ALTINDA üç ayrı kutu
+                                                olarak açılıyordu. Sahibin gördüğü şey
+                                                şuydu: fiyatı düzeltmek için tıklıyor,
+                                                aşağıdaki on ürün birden kayıyor ve
+                                                bakmakta olduğu satır ekrandan
+                                                çıkıyordu — düzelttiği şeyi artık
+                                                göremiyor.
+
+                                                Çekmece listeyi YERİNDE bırakır. Sağ
+                                                kenar, `DrawerPanel`'in "gezinme
+                                                soldan" kuralının açıkça yazılmış
+                                                istisnasıdır (FF-115): denetçi
+                                                panelinde soldaki liste ekranda
+                                                kalmalıdır, çünkü sahip bir üründen
+                                                diğerine geçerek çalışır.
+                                            */}
+                                            <DrawerPanel
+                                                open={inspectorOpenFor(item.id)}
+                                                onClose={closeInspector}
+                                                position="right"
+                                                title={t('menu.inspector.title', {
+                                                    name: item.productName ?? '',
+                                                })}
+                                                className="w-full max-w-[460px]"
+                                            >
+                                                {presentationItemId === item.id ? (
+                                                    <form
+                                                        className="flex flex-col gap-[var(--space-3)]"
+                                                        onSubmit={handleSavePresentation}
+                                                        noValidate
                                                     >
-                                                        {t('menu.item.description.label')}
-                                                    </label>
-                                                    <Textarea
-                                                        id={`item-description-${item.id}`}
-                                                        name={`item-description-${item.id}`}
-                                                        rows={3}
-                                                        maxLength={500}
-                                                        value={descriptionInput}
-                                                        onChange={(event) => {
-                                                            setDescriptionInput(event.target.value);
-                                                            // Kullanıcı öneriyi elle değiştirdi —
-                                                            // ama taslak kimliği KALIR: "Kaydet"
-                                                            // hâlâ onay yoluna gider, düzenlenmiş
-                                                            // metni taşır (`docs/97` R4).
-                                                        }}
-                                                    />
-                                                    <p className="text-meta text-fg-secondary">
-                                                        {t('menu.item.description.help')}
-                                                    </p>
-                                                    <div className="flex flex-wrap items-center gap-2">
-                                                        {/* `docs/97` R9 — bkz. fotoğraf bölümündeki aynı kural. */}
-                                                        {aiBlockedReason('product.description') !==
-                                                        null ? (
-                                                            <p className="text-meta text-fg-secondary">
+                                                        <label
+                                                            className={labelClass}
+                                                            htmlFor={`item-description-${item.id}`}
+                                                        >
+                                                            {t('menu.item.description.label')}
+                                                        </label>
+                                                        <Textarea
+                                                            id={`item-description-${item.id}`}
+                                                            name={`item-description-${item.id}`}
+                                                            rows={3}
+                                                            maxLength={500}
+                                                            value={descriptionInput}
+                                                            onChange={(event) => {
+                                                                setDescriptionInput(
+                                                                    event.target.value,
+                                                                );
+                                                                // Kullanıcı öneriyi elle değiştirdi —
+                                                                // ama taslak kimliği KALIR: "Kaydet"
+                                                                // hâlâ onay yoluna gider, düzenlenmiş
+                                                                // metni taşır (`docs/97` R4).
+                                                            }}
+                                                        />
+                                                        <p className="text-meta text-fg-secondary">
+                                                            {t('menu.item.description.help')}
+                                                        </p>
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            {/* `docs/97` R9 — bkz. fotoğraf bölümündeki aynı kural. */}
+                                                            {aiBlockedReason(
+                                                                'product.description',
+                                                            ) !== null ? (
+                                                                <p className="text-meta text-fg-secondary">
+                                                                    {t(
+                                                                        `menu.ai.unavailable.${aiBlockedReason('product.description')}` as never,
+                                                                    )}
+                                                                </p>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    className={inlineActionClass}
+                                                                    disabled={aiSuggestionLoading}
+                                                                    onClick={
+                                                                        handleRequestAiDescription
+                                                                    }
+                                                                >
+                                                                    {aiSuggestionLoading
+                                                                        ? t(
+                                                                              'menu.item.ai.description.loading',
+                                                                          )
+                                                                        : t(
+                                                                              'menu.item.ai.description.request',
+                                                                          )}
+                                                                </button>
+                                                            )}
+                                                            {aiDraftArtifactId !== null ? (
+                                                                <span className="text-meta text-fg-secondary">
+                                                                    {aiSuggestionUsedFallback
+                                                                        ? t(
+                                                                              'menu.item.ai.description.suggested.fallback',
+                                                                          )
+                                                                        : t(
+                                                                              'menu.item.ai.description.suggested',
+                                                                          )}
+                                                                </span>
+                                                            ) : null}
+                                                        </div>
+                                                        {aiSuggestionUncertain ? (
+                                                            <p
+                                                                className="text-meta text-fg-warning"
+                                                                role="status"
+                                                            >
                                                                 {t(
-                                                                    `menu.ai.unavailable.${aiBlockedReason('product.description')}` as never,
+                                                                    'menu.item.ai.description.uncertain',
                                                                 )}
                                                             </p>
-                                                        ) : (
-                                                            <button
-                                                                type="button"
-                                                                className={inlineActionClass}
-                                                                disabled={aiSuggestionLoading}
-                                                                onClick={handleRequestAiDescription}
-                                                            >
-                                                                {aiSuggestionLoading
-                                                                    ? t(
-                                                                          'menu.item.ai.description.loading',
-                                                                      )
-                                                                    : t(
-                                                                          'menu.item.ai.description.request',
-                                                                      )}
-                                                            </button>
-                                                        )}
-                                                        {aiDraftArtifactId !== null ? (
-                                                            <span className="text-meta text-fg-secondary">
-                                                                {aiSuggestionUsedFallback
-                                                                    ? t(
-                                                                          'menu.item.ai.description.suggested.fallback',
-                                                                      )
-                                                                    : t(
-                                                                          'menu.item.ai.description.suggested',
-                                                                      )}
-                                                            </span>
                                                         ) : null}
-                                                    </div>
-                                                    {aiSuggestionUncertain ? (
-                                                        <p
-                                                            className="text-meta text-fg-warning"
-                                                            role="status"
+                                                        {aiSuggestionError ? (
+                                                            <FieldError
+                                                                message={aiSuggestionError}
+                                                            />
+                                                        ) : null}
+
+                                                        <label
+                                                            className={labelClass}
+                                                            htmlFor={`item-image-${item.id}`}
                                                         >
-                                                            {t(
-                                                                'menu.item.ai.description.uncertain',
-                                                            )}
-                                                        </p>
-                                                    ) : null}
-                                                    {aiSuggestionError ? (
-                                                        <FieldError message={aiSuggestionError} />
-                                                    ) : null}
-
-                                                    <label
-                                                        className={labelClass}
-                                                        htmlFor={`item-image-${item.id}`}
-                                                    >
-                                                        {t('menu.item.image.label')}
-                                                    </label>
-                                                    <Select
-                                                        id={`item-image-${item.id}`}
-                                                        name={`item-image-${item.id}`}
-                                                        value={imageChoice}
-                                                        onChange={(event) =>
-                                                            setImageChoice(event.target.value)
-                                                        }
-                                                    >
-                                                        <option value="">
-                                                            {t('menu.item.image.none')}
-                                                        </option>
-                                                        {readyMedia.map((media) => (
-                                                            <option
-                                                                key={media.id}
-                                                                value={String(media.id)}
-                                                            >
-                                                                {media.altText}
+                                                            {t('menu.item.image.label')}
+                                                        </label>
+                                                        <Select
+                                                            id={`item-image-${item.id}`}
+                                                            name={`item-image-${item.id}`}
+                                                            value={imageChoice}
+                                                            onChange={(event) =>
+                                                                setImageChoice(event.target.value)
+                                                            }
+                                                        >
+                                                            <option value="">
+                                                                {t('menu.item.image.none')}
                                                             </option>
-                                                        ))}
-                                                    </Select>
-                                                    {readyMedia.length === 0 ? (
-                                                        <p className="text-meta text-fg-secondary">
-                                                            {t('menu.item.image.empty')}
-                                                        </p>
-                                                    ) : null}
+                                                            {readyMedia.map((media) => (
+                                                                <option
+                                                                    key={media.id}
+                                                                    value={String(media.id)}
+                                                                >
+                                                                    {media.altText}
+                                                                </option>
+                                                            ))}
+                                                        </Select>
+                                                        {readyMedia.length === 0 ? (
+                                                            <p className="text-meta text-fg-secondary">
+                                                                {t('menu.item.image.empty')}
+                                                            </p>
+                                                        ) : null}
 
-                                                    {presentationError ? (
-                                                        <FieldError message={presentationError} />
-                                                    ) : null}
-                                                    <button
-                                                        type="submit"
-                                                        className={buttonClass}
-                                                        disabled={savingPresentation}
+                                                        {presentationError ? (
+                                                            <FieldError
+                                                                message={presentationError}
+                                                            />
+                                                        ) : null}
+                                                        <button
+                                                            type="submit"
+                                                            className={buttonClass}
+                                                            disabled={savingPresentation}
+                                                        >
+                                                            {t('menu.item.presentation.submit')}
+                                                        </button>
+                                                    </form>
+                                                ) : null}
+                                                {allergenEditItemId === item.id ? (
+                                                    <form
+                                                        className="flex flex-col gap-[var(--space-3)] border-t border-border pt-[var(--space-4)]"
+                                                        onSubmit={handleSaveAllergens}
+                                                        noValidate
                                                     >
-                                                        {t('menu.item.presentation.submit')}
-                                                    </button>
-                                                </form>
-                                            ) : null}
-                                            {allergenEditItemId === item.id ? (
-                                                <form
-                                                    className={sectionClass}
-                                                    onSubmit={handleSaveAllergens}
-                                                    noValidate
-                                                >
-                                                    <label
-                                                        className={labelClass}
-                                                        htmlFor={`item-allergens-edit-${item.id}`}
-                                                    >
-                                                        {t('menu.item.allergens.edit.label', {
-                                                            name: item.productName ?? '',
-                                                        })}
-                                                    </label>
-                                                    <TextInput
-                                                        id={`item-allergens-edit-${item.id}`}
-                                                        name={`item-allergens-edit-${item.id}`}
-                                                        type="text"
-                                                        value={allergensInput}
-                                                        onChange={(event) =>
-                                                            setAllergensInput(event.target.value)
-                                                        }
-                                                    />
-                                                    {allergensSubmitError ? (
-                                                        <FieldError
-                                                            message={allergensSubmitError}
+                                                        <label
+                                                            className={labelClass}
+                                                            htmlFor={`item-allergens-edit-${item.id}`}
+                                                        >
+                                                            {t('menu.item.allergens.edit.label', {
+                                                                name: item.productName ?? '',
+                                                            })}
+                                                        </label>
+                                                        <TextInput
+                                                            id={`item-allergens-edit-${item.id}`}
+                                                            name={`item-allergens-edit-${item.id}`}
+                                                            type="text"
+                                                            value={allergensInput}
+                                                            onChange={(event) =>
+                                                                setAllergensInput(
+                                                                    event.target.value,
+                                                                )
+                                                            }
                                                         />
-                                                    ) : null}
-                                                    <button
-                                                        type="submit"
-                                                        className={buttonClass}
-                                                        disabled={savingAllergens}
+                                                        {allergensSubmitError ? (
+                                                            <FieldError
+                                                                message={allergensSubmitError}
+                                                            />
+                                                        ) : null}
+                                                        <button
+                                                            type="submit"
+                                                            className={buttonClass}
+                                                            disabled={savingAllergens}
+                                                        >
+                                                            {t('menu.item.allergens.submit')}
+                                                        </button>
+                                                    </form>
+                                                ) : null}
+                                                {priceEditItemId === item.id ? (
+                                                    <form
+                                                        className="flex flex-col gap-[var(--space-3)] border-t border-border pt-[var(--space-4)]"
+                                                        onSubmit={handleSavePrice}
+                                                        noValidate
                                                     >
-                                                        {t('menu.item.allergens.submit')}
-                                                    </button>
-                                                </form>
-                                            ) : null}
-                                            {priceEditItemId === item.id ? (
-                                                <form
-                                                    className={sectionClass}
-                                                    onSubmit={handleSavePrice}
-                                                    noValidate
-                                                >
-                                                    <label
-                                                        className={labelClass}
-                                                        htmlFor={`item-price-edit-${item.id}`}
-                                                    >
-                                                        {t('menu.item.price.edit.label', {
-                                                            name: item.productName ?? '',
-                                                        })}
-                                                    </label>
-                                                    <TextInput
-                                                        id={`item-price-edit-${item.id}`}
-                                                        type="text"
-                                                        inputMode="decimal"
-                                                        value={priceEditValue}
-                                                        onChange={(event) =>
-                                                            setPriceEditValue(event.target.value)
-                                                        }
-                                                    />
-                                                    {priceEditSubmitError ? (
-                                                        <FieldError
-                                                            message={priceEditSubmitError}
+                                                        <label
+                                                            className={labelClass}
+                                                            htmlFor={`item-price-edit-${item.id}`}
+                                                        >
+                                                            {t('menu.item.price.edit.label', {
+                                                                name: item.productName ?? '',
+                                                            })}
+                                                        </label>
+                                                        <TextInput
+                                                            id={`item-price-edit-${item.id}`}
+                                                            type="text"
+                                                            inputMode="decimal"
+                                                            value={priceEditValue}
+                                                            onChange={(event) =>
+                                                                setPriceEditValue(
+                                                                    event.target.value,
+                                                                )
+                                                            }
                                                         />
-                                                    ) : null}
-                                                    <button
-                                                        type="submit"
-                                                        className={buttonClass}
-                                                        disabled={savingPriceEdit}
-                                                    >
-                                                        {t('menu.item.price.edit.submit')}
-                                                    </button>
-                                                </form>
-                                            ) : null}
+                                                        {priceEditSubmitError ? (
+                                                            <FieldError
+                                                                message={priceEditSubmitError}
+                                                            />
+                                                        ) : null}
+                                                        <button
+                                                            type="submit"
+                                                            className={buttonClass}
+                                                            disabled={savingPriceEdit}
+                                                        >
+                                                            {t('menu.item.price.edit.submit')}
+                                                        </button>
+                                                    </form>
+                                                ) : null}
+                                            </DrawerPanel>
                                         </li>
                                     ))}
                                 </ul>

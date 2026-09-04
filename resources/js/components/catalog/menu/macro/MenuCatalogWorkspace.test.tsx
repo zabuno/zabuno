@@ -1565,20 +1565,23 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
         render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
         /*
-            GÜNCELLENDİ (FF-102): görünürlük artık ETİKETSİZ BİR KUTU değil,
-            taşma menüsünde bir cümle. Kutu, yanındaki "tükendi" düğmesiyle
-            karışıyordu: ikisi de "misafir bunu görmüyor" demek ama biri
-            bugünlük, diğeri kalıcıdır. Ölçülen sözleşme aynı: sunucudan gelen
-            durum okunur, PUT yazılır ve ekran ancak 200'den sonra değişir.
+            GÜNCELLENDİ (kanonik teslim paketi, `DESIGN_SPEC` §3): görünürlük
+            satırdaki ANAHTARDIR — etiketsiz bir kutu değil (FF-102'nin
+            çözdüğü sorun), taşma menüsünde bir cümle de değil (durumu
+            saklıyordu). Ölçülen sözleşme aynı kaldı: sunucudan gelen durum
+            okunur, PUT yazılır ve ekran ancak 200'den sonra değişir.
         */
         await screen.findByText('Mercimek Çorbası');
 
         /*
-            Gizli ürünün maddesi "göster" der. Maddenin metnini bulmak, aynı
-            zamanda sunucudan gelen durumu okumaktır — ayrı bir iddia
-            gerekmez.
+            Gizli ürünün anahtarı KAPALI gelir. `aria-checked` sunucudan gelen
+            durumun ta kendisidir; ayrı bir iddia gerekmez.
         */
-        await clickRowMenuItem('Baklava', 'Show on the menu');
+        const visibilitySwitch = screen.getByRole('switch', {
+            name: 'Show Baklava on the menu',
+        });
+        expect(visibilitySwitch).toHaveAttribute('aria-checked', 'false');
+        fireEvent.click(visibilitySwitch);
 
         await waitFor(() => {
             const putCalls = fetchMock.mock.calls.filter(
@@ -1602,12 +1605,11 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
 
         resolvePut(jsonResponse(200, { id: HIDDEN_ITEM_ID, isVisible: true }));
 
-        // 200'den SONRA madde tersine döner: ekran sunucuyu izler, isteği değil.
+        // 200'den SONRA anahtar açılır: ekran sunucuyu izler, isteği değil.
         await waitFor(() => {
-            fireEvent.click(screen.getByRole('button', { name: 'More actions for Baklava' }));
             expect(
-                screen.getByRole('menuitem', { name: 'Hide from the menu' }),
-            ).toBeInTheDocument();
+                screen.getByRole('switch', { name: 'Show Baklava on the menu' }),
+            ).toHaveAttribute('aria-checked', 'true');
         });
 
         vi.unstubAllGlobals();
@@ -1663,20 +1665,21 @@ describe('MenuCatalogWorkspace — server-returned visibility toggle for an exis
 
         await screen.findByText('Baklava');
 
-        await clickRowMenuItem('Baklava', 'Show on the menu');
+        fireEvent.click(screen.getByRole('switch', { name: 'Show Baklava on the menu' }));
 
         const alert = await screen.findByRole('alert');
         expect(alert).toBeInTheDocument();
 
         /*
-            SUNUCU REDDETTİ, EKRAN DEĞİŞMEDİ: madde hâlâ "göster" diyor.
-            Ekranın isteği değil, sunucunun cevabını izlemesi bu testin asıl
-            iddiasıdır ve görünürlük etiketsiz bir kutudan menü maddesine
-            taşınırken (FF-102) korunmuştur.
+            SUNUCU REDDETTİ, EKRAN DEĞİŞMEDİ: anahtar hâlâ kapalı. Ekranın
+            isteği değil sunucunun cevabını izlemesi bu testin asıl
+            iddiasıdır ve görünürlük kutudan menü maddesine (FF-102), oradan
+            da satırdaki anahtara taşınırken korunmuştur.
         */
         await waitFor(() => {
-            fireEvent.click(screen.getByRole('button', { name: 'More actions for Baklava' }));
-            expect(screen.getByRole('menuitem', { name: 'Show on the menu' })).toBeInTheDocument();
+            expect(
+                screen.getByRole('switch', { name: 'Show Baklava on the menu' }),
+            ).toHaveAttribute('aria-checked', 'false');
         });
 
         vi.unstubAllGlobals();

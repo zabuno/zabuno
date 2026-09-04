@@ -5,7 +5,6 @@ import { AnalyticsMetricGrid } from './analytics/AnalyticsMetricGrid';
 import { AnalyticsBreakdown, type AnalyticsBreakdownRow } from './analytics/AnalyticsBreakdown';
 import { MenuEngineeringRegion } from './analytics/MenuEngineeringRegion';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
-import { PanelCard } from './shared/PanelCard';
 import { PageState } from './shared/PageState';
 import { useCurrentPublication } from './qr/useCurrentPublication';
 import type { DashboardMenuTree } from './DashboardPage';
@@ -200,6 +199,31 @@ export function AnalyticsPage({
         }
     })();
 
+    /*
+        ARALIK SEÇİCİSİ SAYFA BAŞLIĞININ YANINDA (FF-131, teslim paketi §5:
+        "Başlık + aralık segmenti").
+
+        Gövdenin ilk satırında duran bir "Range" alanı, hemen altındaki tek
+        bölgeye aitmiş gibi okunuyordu. Oysa aralık, sayfadaki HER sayının
+        kapsamıdır: sahip "7 gün" dediğinde sayaçlar da, kırılımlar da, menü
+        mühendisliği de o aralığa göre yeniden okunur. Kapsamı sayfa
+        başlığının yanında göstermek, bunu tek bakışta söyler.
+    */
+    const rangeControl = (
+        <div className="flex flex-wrap items-center gap-[var(--space-2)]">
+            <Label htmlFor={rangeId}>{t('workspace.analytics.range.label')}</Label>
+            <Select
+                id={rangeId}
+                value={range}
+                onChange={(event) => setRange(event.target.value as AnalyticsRange)}
+            >
+                <option value="today">{t('workspace.analytics.range.today')}</option>
+                <option value="7d">{t('workspace.analytics.range.7d')}</option>
+                <option value="30d">{t('workspace.analytics.range.30d')}</option>
+            </Select>
+        </div>
+    );
+
     return (
         <div id="section-analytics">
             <WorkspacePageFrame
@@ -207,134 +231,135 @@ export function AnalyticsPage({
                 title={t('workspace.analytics.heading')}
                 description={t('workspace.analytics.operational.description')}
                 badges={statusBadge ? [statusBadge] : []}
+                actions={rangeControl}
             >
-                <div className="flex flex-col gap-2">
-                    <div className="mb-2 block">
-                        <Label htmlFor={rangeId}>{t('workspace.analytics.range.label')}</Label>
-                    </div>
-                    <Select
-                        id={rangeId}
-                        value={range}
-                        onChange={(event) => setRange(event.target.value as AnalyticsRange)}
-                    >
-                        <option value="today">{t('workspace.analytics.range.today')}</option>
-                        <option value="7d">{t('workspace.analytics.range.7d')}</option>
-                        <option value="30d">{t('workspace.analytics.range.30d')}</option>
-                    </Select>
-                </div>
+                {/*
+                    KARTIN İÇİNE KART ÇİZİLMEZ (FF-131, teslim paketinin kart
+                    grameri).
 
-                <PanelCard>
-                    <div
-                        role="region"
-                        aria-label={t('workspace.analytics.report.region')}
-                        className="flex flex-col gap-2"
-                    >
-                        {/*
+                    Rapor bölgesinin tamamı tek bir `PanelCard`'ın içindeydi;
+                    içindeki kırılımlar, menü mühendisliği kartları ve boş
+                    durumlar da kendi kartlarını çiziyordu. Ortaya aynı zemin
+                    ve aynı kenarlıkla çizilmiş iç içe iki çerçeve çıkıyor,
+                    sahip iki çizgi görüyor ama hiçbiri ona yeni bir şey
+                    söylemiyordu — yalnız 320 piksellik bir telefonda içerik
+                    iki kat yatay dolgu kaybediyordu.
+
+                    Kart sınırı ANLAM taşıdığı yerde kullanılır (`docs/36`
+                    §5.2): bir liste, bir bölge, bir kayıt. Sayfanın tamamı
+                    bunların hiçbiri değil.
+                */}
+                <div
+                    role="region"
+                    aria-label={t('workspace.analytics.report.region')}
+                    className="flex flex-col gap-[var(--space-fluid-md)]"
+                >
+                    {/*
                         Plan kısıtlıyken yenileme düğmesi GÖSTERİLMEZ.
                         Basıldığında aynı 402 dönecekti; ekranda duran ama
                         hiçbir zaman işe yaramayacak bir düğme, kullanıcıya
                         olmayan bir yol gösterir.
                     */}
-                        {status === 'plan-restricted' ? null : (
-                            <div>
-                                <Button
-                                    size="xs"
-                                    color="light"
-                                    disabled={status === 'loading'}
-                                    onClick={fetchSummary}
-                                >
-                                    {status === 'error'
-                                        ? t('workspace.analytics.action.retry')
-                                        : t('workspace.analytics.action.refresh')}
-                                </Button>
-                            </div>
-                        )}
-
-                        {status === 'idle' && (
-                            <p role="status" className="text-body text-fg-muted">
-                                {t('workspace.analytics.report.unavailable')}
-                            </p>
-                        )}
-
-                        {status === 'loading' && (
-                            <p role="status" className="text-body text-fg-muted">
-                                {t('workspace.analytics.report.loading')}
-                            </p>
-                        )}
-
-                        {status === 'error' && (
-                            <p role="alert" className="text-body font-medium text-fg-danger">
-                                {t('workspace.analytics.report.error')}
-                            </p>
-                        )}
-
-                        {status === 'plan-restricted' && (
-                            <div
-                                role="status"
-                                className="flex flex-col items-start gap-[var(--space-2)]"
+                    {status === 'plan-restricted' ? null : (
+                        <div>
+                            <Button
+                                size="xs"
+                                color="light"
+                                disabled={status === 'loading'}
+                                onClick={fetchSummary}
                             >
-                                {/*
+                                {status === 'error'
+                                    ? t('workspace.analytics.action.retry')
+                                    : t('workspace.analytics.action.refresh')}
+                            </Button>
+                        </div>
+                    )}
+
+                    {status === 'idle' && (
+                        <p role="status" className="text-body text-fg-muted">
+                            {t('workspace.analytics.report.unavailable')}
+                        </p>
+                    )}
+
+                    {status === 'loading' && (
+                        <p role="status" className="text-body text-fg-muted">
+                            {t('workspace.analytics.report.loading')}
+                        </p>
+                    )}
+
+                    {status === 'error' && (
+                        <p role="alert" className="text-body font-medium text-fg-danger">
+                            {t('workspace.analytics.report.error')}
+                        </p>
+                    )}
+
+                    {status === 'plan-restricted' && (
+                        <div
+                            role="status"
+                            className="flex flex-col items-start gap-[var(--space-2)]"
+                        >
+                            {/*
                                 Boş durum dört soruyu cevaplar (`docs/44`):
                                 ne yok, neden yok, kullanıcı için anlamı ne,
                                 şimdi ne yapabilir. "Veriniz kaybolmuyor"
                                 cümlesi bilerek var — asıl korku o.
                             */}
-                                <p className="max-w-content text-body text-fg-secondary">
-                                    {t('workspace.analytics.report.planRestricted')}
-                                </p>
-                                {onNavigateToSection ? (
-                                    <Button
-                                        size="xs"
-                                        color="light"
-                                        onClick={() => onNavigateToSection('billing')}
-                                    >
-                                        {t('workspace.analytics.action.viewPlan')}
-                                    </Button>
-                                ) : null}
-                            </div>
-                        )}
+                            <p className="max-w-content text-body text-fg-secondary">
+                                {t('workspace.analytics.report.planRestricted')}
+                            </p>
+                            {onNavigateToSection ? (
+                                <Button
+                                    size="xs"
+                                    color="light"
+                                    onClick={() => onNavigateToSection('billing')}
+                                >
+                                    {t('workspace.analytics.action.viewPlan')}
+                                </Button>
+                            ) : null}
+                        </div>
+                    )}
 
-                        {status === 'success' &&
-                            summary &&
-                            (summary.qrResolveCount === 0 && summary.menuOpenCount === 0 ? (
-                                <AnalyticsEmptyState
-                                    reason={emptyReason}
-                                    onNavigateToSection={onNavigateToSection}
-                                    onWidenRange={() => setRange('30d')}
+                    {status === 'success' &&
+                        summary &&
+                        (summary.qrResolveCount === 0 && summary.menuOpenCount === 0 ? (
+                            <AnalyticsEmptyState
+                                reason={emptyReason}
+                                onNavigateToSection={onNavigateToSection}
+                                onWidenRange={() => setRange('30d')}
+                            />
+                        ) : (
+                            <div className="flex flex-col gap-[var(--space-fluid-md)]">
+                                <AnalyticsMetricGrid
+                                    qrResolveCount={summary.qrResolveCount}
+                                    menuOpenCount={summary.menuOpenCount}
+                                    uniqueVisitorCount={summary.uniqueVisitorCount}
+                                    openRate={summary.openRate}
                                 />
-                            ) : (
-                                <div className="flex flex-col gap-[var(--space-fluid-md)]">
-                                    <AnalyticsMetricGrid
-                                        qrResolveCount={summary.qrResolveCount}
-                                        menuOpenCount={summary.menuOpenCount}
-                                        uniqueVisitorCount={summary.uniqueVisitorCount}
-                                        openRate={summary.openRate}
-                                    />
 
-                                    {/*
+                                {/*
                                     Kırılımlar yalnız KARŞILAŞTIRACAK bir şey
                                     varken çizilir; tek satırlık bir kırılım,
                                     üstündeki toplamın tekrarıdır (docs/68).
                                 */}
-                                    <AnalyticsBreakdown
-                                        heading={t('workspace.analytics.breakdown.locations')}
-                                        rows={summary.locations}
-                                    />
-                                    <AnalyticsBreakdown
-                                        heading={t('workspace.analytics.breakdown.qrCodes')}
-                                        rows={summary.qrCodes}
-                                    />
-                                </div>
-                            ))}
+                                <AnalyticsBreakdown
+                                    heading={t('workspace.analytics.breakdown.locations')}
+                                    rows={summary.locations}
+                                />
+                                <AnalyticsBreakdown
+                                    heading={t('workspace.analytics.breakdown.qrCodes')}
+                                    rows={summary.qrCodes}
+                                />
+                            </div>
+                        ))}
 
-                        {/*
+                    {/*
                         MENÜ MÜHENDİSLİĞİ (`docs/84`).
 
                         Huninin ALTINDA duruyor: önce "kaç kişi geldi",
                         sonra "geldiklerinde neye baktılar". Ters sırada,
                         sahip ilgi sayılarını ziyaret sayısı sanırdı.
                     */}
-                        {/*
+                    {/*
                         Plan kısıtı ARIZA DEĞİLDİR (`docs/84`).
 
                         Rapor bölümü, planın raporlamayı içermediği durumda
@@ -348,13 +373,12 @@ export function AnalyticsPage({
                         sonra tazelemede AYAKTA KALIR; sökülüp yeniden kurulmak
                         listeyi gözün önünde sıfırlardı.
                     */}
-                        {workspaceId !== undefined &&
-                        status !== 'plan-restricted' &&
-                        summary !== null ? (
-                            <MenuEngineeringRegion workspaceId={workspaceId} range={range} />
-                        ) : null}
-                    </div>
-                </PanelCard>
+                    {workspaceId !== undefined &&
+                    status !== 'plan-restricted' &&
+                    summary !== null ? (
+                        <MenuEngineeringRegion workspaceId={workspaceId} range={range} />
+                    ) : null}
+                </div>
             </WorkspacePageFrame>
         </div>
     );

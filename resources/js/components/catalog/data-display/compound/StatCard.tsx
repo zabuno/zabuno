@@ -28,7 +28,7 @@ export function StatCard({ label, value, trend, icon, loading = false, className
             )}
         >
             <div className="flex flex-col gap-1">
-                <span className="text-meta font-semibold text-fg-muted">{label}</span>
+                <span className="text-meta font-bold text-fg-muted">{label}</span>
                 {loading ? (
                     /*
                         Yer tutucu, YERİNİ TUTACAĞI ŞEYİN ölçüsünü bilir.

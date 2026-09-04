@@ -61,8 +61,14 @@ export function PublicationStatusRegion({
                     <p role="alert" className="text-body text-fg-danger">
                         {t('workspace.publication.status.loadError')}
                     </p>
+                    {/*
+                        Düğme metni KATALOGDAN gelir. Önceden koda İngilizce
+                        gömülüydü ("Retry"): Türkçe kullanan bir restoran
+                        sahibi, hata anında — yani panik anında — ekranındaki
+                        tek düğmeyi okuyamıyordu.
+                    */}
                     <Button type="button" color="light" onClick={onRetry}>
-                        Retry
+                        {t('workspace.publication.status.retry')}
                     </Button>
                 </div>
             ) : current === null ? (
@@ -70,7 +76,10 @@ export function PublicationStatusRegion({
                     {t('workspace.publication.status.notPublished')}
                 </p>
             ) : (
-                <p role="status" className="text-body text-fg-secondary">
+                // Sürüm sayısı `tabular-nums`: aynı sayı hemen aşağıdaki
+                // sürüm listesinde de geçiyor ve iki yerde farklı genişlikte
+                // çizilmemeli.
+                <p role="status" className="text-body tabular-nums text-fg-secondary">
                     {t('workspace.publication.status.summary', {
                         version: String(current.version),
                         // Sunucunun ham durum değeri DOĞRUDAN basılmaz;
@@ -86,25 +95,44 @@ export function PublicationStatusRegion({
                 </p>
             )}
 
-            <label className="flex w-full items-center gap-2 text-body text-fg-secondary">
-                <input
-                    type="checkbox"
-                    checked={confirmed}
-                    disabled={!checklistReady}
-                    onChange={(event) => onConfirmedChange(event.target.checked)}
-                />
-                {t('workspace.publication.publishAction.checklistConfirmed')}
-            </label>
+            {/*
+                ONAY VE YAYIN KENDİ ŞERİDİNDE (FF-131, `DESIGN_SPEC` §9 "Onay
+                ve yayın").
 
-            <Button
-                type="button"
-                color="light"
-                disabled={!checklistReady || !confirmed || publishing}
-                onClick={onPublish}
-                className="self-start"
+                Ekranın tek gerçek eylemi budur ve misafirin gördüğü menüyü
+                değiştirir. Onay kutusu ile düğme sayfanın geri kalanıyla aynı
+                zemindeyken ikisi de "bir bilgi satırı" gibi okunuyordu; sahip
+                duraksaması gereken yerde duraksamıyordu.
+
+                Paket ikisini tonlu bir şeride alır: zemin değişir, göz durur.
+                Karar ile eylem aynı kutunun içindedir — biri yukarıda biri
+                aşağıda olsaydı, işaretlemeden yayınlamayı denemek sıradan bir
+                davranış olurdu.
+            */}
+            <div
+                data-publish-commit="true"
+                className="flex flex-col gap-[var(--space-3)] rounded-[var(--radius-lg)] border border-border bg-surface-subtle p-[var(--density-padding-inline)]"
             >
-                {t('workspace.publication.status.publishButton')}
-            </Button>
+                <label className="flex w-full items-center gap-2 text-body text-fg-secondary">
+                    <input
+                        type="checkbox"
+                        checked={confirmed}
+                        disabled={!checklistReady}
+                        onChange={(event) => onConfirmedChange(event.target.checked)}
+                    />
+                    {t('workspace.publication.publishAction.checklistConfirmed')}
+                </label>
+
+                <Button
+                    type="button"
+                    color="light"
+                    disabled={!checklistReady || !confirmed || publishing}
+                    onClick={onPublish}
+                    className="self-start"
+                >
+                    {t('workspace.publication.status.publishButton')}
+                </Button>
+            </div>
 
             {errorMessage ? (
                 <p role="alert" className="text-body text-fg-danger">

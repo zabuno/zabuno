@@ -60,6 +60,15 @@ const en = {
     'menu.item.stock.back.short': 'Back in stock',
     'menu.item.stock.out.button': 'Mark {name} sold out for today',
     'menu.item.stock.back.button': 'Mark {name} available again',
+    /*
+        SATIRIN KENDİ ROZETİ (kanonik teslim paketi, `DESIGN_SPEC` §3).
+
+        Durum önceden yalnız düğmenin metninden okunuyordu: "Back in stock"
+        yazan bir düğme, ürünün ŞU AN tükenmiş olduğu anlamına geliyordu.
+        Bu ters bir çıkarımdır ve listeye bakan kişi her satırda yeniden
+        kurmak zorundaydı. Rozet durumu doğrudan söyler.
+    */
+    'menu.item.stock.badge': 'Sold out today',
     // KATEGORİ GENELİ (`docs/82` kriter 3, ekranı `docs/98` FF-64): "balıklar
     // bitti" altı ayrı tıklama olmamalı.
     'menu.category.stock.out.short': 'All sold out',
@@ -95,6 +104,19 @@ const en = {
     // SUNUM: açıklama ve fotoğraf tek düzenleyicide. Sahibin yaptığı iş
     // tektir — "bu ürünü misafire nasıl göstereceğim" — ve iki ayrı düğme
     // aynı satır için iki kez form açtırırdı.
+    /*
+        SATIRIN İLK SÜTUNU 48px'lik bir görsel karesidir ve fotoğrafsız
+        üründe de durur. Kare aynı zamanda ayrıntıya giden kapıdır: fotoğraf
+        eklemek için önce taşma menüsünü açmak, sorulmayan bir soruya cevap
+        vermekti.
+    */
+    'menu.item.open.button': 'Open {name}',
+    /*
+        Boş kare yalnız GÖRSEL bir işarettir. Ekran okuyucu kullanan bir
+        yönetici için hiçbir şey ifade etmez; eksiklik metinle de söylenir
+        (`DESIGN_SPEC` §12 — durum asla yalnız renkle/şekille anlatılmaz).
+    */
+    'menu.item.meta.noPhoto': 'No photo',
     'menu.item.presentation.edit.short': 'Photo & text',
     'menu.item.presentation.edit.button': 'Edit photo and description for {name}',
     'menu.item.presentation.submit': 'Save presentation',
@@ -179,9 +201,46 @@ const en = {
     */
     'menu.item.visibility.hide': 'Hide from the menu',
     'menu.item.visibility.show': 'Show on the menu',
+    /*
+        GÖRÜNÜRLÜK SATIRA GERİ DÖNDÜ — kanonik teslim paketi, `DESIGN_SPEC`
+        §3 ("48×28px anahtar; açıkken brand").
+
+        FF-102 onu taşma menüsüne almıştı ve gerekçesi doğruydu: ETİKETSİZ
+        bir onay kutusu, yanındaki "tükendi" düğmesiyle karışıyordu. Ama
+        çözüm yanlış yerdeydi. Kutuyu menüye saklamak durumu da sakladı:
+        sahip on beş satırın hangisinin misafirde göründüğünü görmek için
+        on beş menü açmak zorundaydı.
+
+        Karışıklığın gerçek sebebi etiketsizlikti, satırda durması değil.
+        Anahtar artık tam cümleyi taşıyor ("Show {name} on the menu") ve
+        anahtar biçimi — kutu değil — kalıcı bir aç/kapa olduğunu söylüyor;
+        "bugün bitti" ise ikonlu, anlık bir eylemdir.
+    */
+    'menu.item.visibility.switch.label': 'Show {name} on the menu',
     'menu.item.visibility.error.submit': 'We could not update visibility. Please try again.',
     'menu.category.order.label': 'Order for {name}',
     'menu.item.order.label': 'Order for {name}',
+    /*
+        Kategori rayı satırı: "sürükleme tutamacı + ad + sayı"
+        (`DESIGN_SPEC` §3). Sayı, hangi kategorinin boş kaldığını listeyi
+        açmadan gösterir.
+    */
+    'menu.category.count': '{count} products',
+    /*
+        Tutamaç GERÇEKTİR. Görünüp de çalışmayan bir tutamaç, kullanıcıya
+        olmayan bir söz vermektir. Klavye/dokunmatik yolu kaldırılmadı:
+        aynı işi yapan yukarı/aşağı düğmeleri satırda durmaya devam eder,
+        çünkü sürükleme tek yol olsaydı klavyeyle çalışan bir yönetici
+        menüsünü hiç sıralayamazdı.
+    */
+    'menu.category.reorder.handle': 'Drag {name} to reorder',
+    /*
+        Ürün ayrıntısı — masaüstünde SAĞDAN açılan çekmece. Sağ kenar,
+        `DrawerPanel`'in soldan-açılma kuralının açıkça yazılmış
+        istisnasıdır (denetçi paneli): sahip bir üründen diğerine geçerek
+        çalışır ve soldaki liste ekranda kalmalıdır.
+    */
+    'menu.inspector.title': '{name} — details',
 
     // Menüyü İŞLETMEK (docs/73, P0-01): silme, ad düzeltme, sıralama.
     'menu.ops.error': 'That change could not be saved. Nothing was lost — try again.',
