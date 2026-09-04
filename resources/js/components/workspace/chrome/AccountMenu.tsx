@@ -18,6 +18,12 @@ export type AccountMenuProps = {
     /** Ayarlar ekranına geçiş — sahibin kararı: ayarlar sistem menüsünde (FF-84). */
     onOpenSettings?: () => void;
     email: string;
+    /**
+     * Profil fotoğrafının önizleme adresi (FF-90). Yoksa baş harf dairesi
+     * çizilir — yükleyen kişi fotoğrafını burada görmeli, yoksa yükleme
+     * hiçbir yere varmamış gibi durur.
+     */
+    avatarUrl?: string | null;
     onSwitchWorkspace: () => void;
     onLogout: () => void;
     loggingOut?: boolean;
@@ -39,6 +45,7 @@ export type AccountMenuProps = {
  */
 export function AccountMenu({
     email,
+    avatarUrl = null,
     onOpenProfile,
     onOpenSettings,
     onSwitchWorkspace,
@@ -55,13 +62,22 @@ export function AccountMenu({
             tone="quiet"
             triggerContent={
                 <span className="flex w-full items-center gap-[var(--space-2)]">
-                    {/* Baş harf dairesi: e-posta uzun, göz önce kime ait olduğunu arar. */}
-                    <span
-                        aria-hidden="true"
-                        className="flex h-[1.75rem] w-[1.75rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-meta font-semibold text-fg"
-                    >
-                        {email.slice(0, 1).toLocaleUpperCase()}
-                    </span>
+                    {/* Fotoğraf varsa o, yoksa baş harf: e-posta uzun, göz önce kime ait olduğunu arar. */}
+                    {avatarUrl === null ? (
+                        <span
+                            aria-hidden="true"
+                            className="flex h-[1.75rem] w-[1.75rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-meta font-semibold text-fg"
+                        >
+                            {email.slice(0, 1).toLocaleUpperCase()}
+                        </span>
+                    ) : (
+                        <img
+                            src={avatarUrl}
+                            alt=""
+                            aria-hidden="true"
+                            className="h-[1.75rem] w-[1.75rem] shrink-0 rounded-pill object-cover"
+                        />
+                    )}
                     <span className="max-w-[18ch] truncate text-meta text-fg-secondary">
                         {email}
                     </span>
@@ -69,12 +85,21 @@ export function AccountMenu({
             }
             header={
                 <span className="flex items-center gap-[var(--space-3)]">
-                    <span
-                        aria-hidden="true"
-                        className="flex h-[2rem] w-[2rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-body font-semibold text-fg"
-                    >
-                        {email.slice(0, 1).toLocaleUpperCase()}
-                    </span>
+                    {avatarUrl === null ? (
+                        <span
+                            aria-hidden="true"
+                            className="flex h-[2rem] w-[2rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-body font-semibold text-fg"
+                        >
+                            {email.slice(0, 1).toLocaleUpperCase()}
+                        </span>
+                    ) : (
+                        <img
+                            src={avatarUrl}
+                            alt=""
+                            aria-hidden="true"
+                            className="h-[2rem] w-[2rem] shrink-0 rounded-pill object-cover"
+                        />
+                    )}
                     <span className="flex min-w-0 flex-col">
                         <span className="truncate text-body font-medium text-fg">{email}</span>
                         <span className="text-caption uppercase tracking-[0.08em] text-fg-muted">
