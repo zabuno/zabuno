@@ -423,13 +423,16 @@
     </style>
 </head>
 <body>
+{{-- Marka şeridi sayfanın EN ÜSTÜNDE durur. `main` içinde dururken kurulum
+     çubuğunun altına düşüyor ve sayfanın ortasında başıboş bir çizgi gibi
+     görünüyordu. --}}
+<div class="qr-brand-bar" aria-hidden="true"></div>
 <div class="pwa-bar">
     <button type="button" id="pwa-install-button" hidden>{{ $text('installButton') }}</button>
     <span id="pwa-install-status" role="status" aria-live="polite"></span>
     <span id="pwa-offline-status" role="status" aria-live="polite"></span>
 </div>
 <main role="main" @isset($menuKey) data-menu-key="{{ $menuKey }}" @endisset>
-    <div class="qr-brand-bar" aria-hidden="true"></div>
     <header class="qr-menu-header">
         {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
              Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı
