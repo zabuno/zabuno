@@ -35,6 +35,21 @@ interface MenuMediaPort
     public function snapshotImage(int $workspaceId, string $entityType, int $entityId): ?array;
 
     /**
+     * Markanın logosunun BAYTLARI — basılacak karta gömmek için (FF-124).
+     *
+     * Adres değil BAYT döner ve bu şart: kart SVG'si matbaaya gider ve orada
+     * internet bağlantısı olmayabilir. `<image href="https://…">` yazan bir
+     * kart, matbaanın bilgisayarında logosuz basılırdı ve bunu ancak baskıdan
+     * sonra fark ederdik.
+     *
+     * En küçük yeterli sürüm seçilir: kartta logo 2 cm'dir, 2000 piksellik bir
+     * dosyayı base64'e çevirip her karta gömmek dosyayı gereksiz şişirir.
+     *
+     * @return array{bytes: string, mimeType: string}|null
+     */
+    public function brandLogoBytes(int $workspaceId, int $brandId, int $minimumWidth): ?array;
+
+    /**
      * Panelin "bu satırda hangi görsel bağlı" sorusu — TEK sorguda.
      *
      * Satır başına ayrı sorgu, kırk ürünlük bir menüde kırk gidiş dönüş
