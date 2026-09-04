@@ -102,7 +102,15 @@ export function PageState(props: PageStateProps) {
             role={assertive ? 'alert' : 'status'}
             aria-live={assertive ? undefined : 'polite'}
             className={clsx(
-                'flex flex-col items-start gap-3 rounded-lg border p-6',
+                /*
+                    2026 boş-durum dili: ferah dolgu, ORTALANMIŞ hizalama ve
+                    ölçülü metin genişliği. Sola yaslı ve dar dolgulu hâli
+                    sayfanın geri kalanından ayrışmıyor, "burada bir şey
+                    eksik" demek yerine yarım kalmış bir liste gibi
+                    görünüyordu (2026-09-04 ekran incelemesi).
+                */
+                'flex flex-col items-center gap-[var(--space-3)] rounded-[var(--radius-lg)] border',
+                'px-[var(--space-5)] py-[var(--space-7)] text-center',
                 assertive
                     ? 'border-border-danger bg-surface-danger'
                     : SOLID_SURFACE.has(kind)
@@ -119,14 +127,16 @@ export function PageState(props: PageStateProps) {
 
             <p
                 className={clsx(
-                    'text-body font-semibold',
+                    'text-section font-semibold tracking-tight',
                     assertive ? 'text-fg-danger' : 'text-fg',
                 )}
             >
                 {title}
             </p>
 
-            {description ? <p className="text-body text-fg-secondary">{description}</p> : null}
+            {description ? (
+                <p className="max-w-[48ch] text-body text-fg-secondary">{description}</p>
+            ) : null}
 
             {'action' in props && props.action ? <div>{props.action}</div> : null}
 

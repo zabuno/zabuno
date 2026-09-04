@@ -335,6 +335,11 @@ Düzeltildi. Ardından görsel dil pası: kart yarıçapı/dolgusu, kart başlı
 ölçeği, sayı kartı tipografisi, gezinti ritmi, üst çubuk dolgusu, tablo
 başlığı hizası ve satır hover'ı (`docs/102` §5b).
 
+### FF-80 ek paket — Faz 3 ritim ve durumlar (2026-09-04)
+
+`PageState` ortalandı ve ferahladı (boş/hata/kısıt yüzeyleri); sayfa başlığı
+ile gövde arası ve kabuk ana alanı dolgusu `space-fluid-lg`. `docs/102` §5c.
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket

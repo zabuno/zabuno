@@ -42,7 +42,21 @@ export function AccountMenu({
         <ActionMenu
             label={t('workspace.account.menu.label')}
             className={className}
-            triggerContent={<span className="max-w-[18ch] truncate text-meta">{email}</span>}
+            tone="quiet"
+            triggerContent={
+                <span className="flex w-full items-center gap-[var(--space-2)]">
+                    {/* Baş harf dairesi: e-posta uzun, göz önce kime ait olduğunu arar. */}
+                    <span
+                        aria-hidden="true"
+                        className="flex h-[1.75rem] w-[1.75rem] shrink-0 items-center justify-center rounded-pill bg-[var(--color-surface-active)] text-meta font-semibold text-fg"
+                    >
+                        {email.slice(0, 1).toLocaleUpperCase()}
+                    </span>
+                    <span className="max-w-[18ch] truncate text-meta text-fg-secondary">
+                        {email}
+                    </span>
+                </span>
+            }
             header={email}
             /*
                 Görünüm bölümü YALNIZ tema sağlayıcısı varsa çizilir. Yoksa
