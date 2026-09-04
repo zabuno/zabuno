@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { readyForRender } from './i18n/mount';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { LoginForm } from './components/auth/LoginForm';
 import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
@@ -64,32 +65,38 @@ function renderView(container: HTMLElement) {
     }
 }
 
-createRoot(container).render(
-    <StrictMode>
-        <ThemeRoot>
-            <div className="min-h-screen w-full min-w-[320px] bg-surface-subtle text-fg">
-                {/*
-                    Şerit hata sınırının DIŞINDA: uygulama çöktüğünde de
-                    görünmesi gerekir. Yanlış sürümün çalışıyor olması,
-                    çökmenin sebebi olabilir.
-                */}
-                <BuildTruthBanner />
-                <div
-                    aria-hidden="true"
-                    className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-surface-hover to-surface-subtle"
-                />
-                <div className="flex min-h-screen items-center justify-center px-4 py-8">
-                    <div className="w-full max-w-form rounded-lg border border-border bg-surface p-6 shadow-sm">
-                        {/*
-                            `renderView` bilinmeyen bir görünüm için HATA
-                            FIRLATIR. Sınır olmadan bu, giriş ekranını bomboş
-                            bir sayfaya çevirirdi — ve oturumu düşen bir
-                            kullanıcının gördüğü ilk ekran tam olarak burasıdır.
-                        */}
-                        <AppErrorBoundary scope="app">{renderView(container)}</AppErrorBoundary>
+/*
+    Çeviri tablosu İNDİRİLMEDEN çizilmez (FF-94): önce İngilizce, sonra
+    Türkçe bir ekran göstermek, dili hiç bilmemekten daha kötü görünür.
+*/
+void readyForRender().then(() => {
+    createRoot(container).render(
+        <StrictMode>
+            <ThemeRoot>
+                <div className="min-h-screen w-full min-w-[320px] bg-surface-subtle text-fg">
+                    {/*
+                        Şerit hata sınırının DIŞINDA: uygulama çöktüğünde de
+                        görünmesi gerekir. Yanlış sürümün çalışıyor olması,
+                        çökmenin sebebi olabilir.
+                    */}
+                    <BuildTruthBanner />
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-surface-hover to-surface-subtle"
+                    />
+                    <div className="flex min-h-screen items-center justify-center px-4 py-8">
+                        <div className="w-full max-w-form rounded-lg border border-border bg-surface p-6 shadow-sm">
+                            {/*
+                                `renderView` bilinmeyen bir görünüm için HATA
+                                FIRLATIR. Sınır olmadan bu, giriş ekranını bomboş
+                                bir sayfaya çevirirdi — ve oturumu düşen bir
+                                kullanıcının gördüğü ilk ekran tam olarak burasıdır.
+                            */}
+                            <AppErrorBoundary scope="app">{renderView(container)}</AppErrorBoundary>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </ThemeRoot>
-    </StrictMode>,
-);
+            </ThemeRoot>
+        </StrictMode>,
+    );
+});

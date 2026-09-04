@@ -10,2732 +10,2732 @@ msgstr ""
 
 #: workspace:workspace.account.menu.label
 msgid "workspace.account.menu.label"
-msgstr ""
+msgstr "Hesap"
 
 #: workspace:workspace.analytics.action.refresh
 msgid "workspace.analytics.action.refresh"
-msgstr ""
+msgstr "Yenile"
 
 #: workspace:workspace.analytics.action.retry
 msgid "workspace.analytics.action.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.analytics.action.viewPlan
 msgid "workspace.analytics.action.viewPlan"
-msgstr ""
+msgstr "Planınızı görün"
 
 #: workspace:workspace.analytics.breakdown.column.name
 msgid "workspace.analytics.breakdown.column.name"
-msgstr ""
+msgstr "Ad"
 
 #: workspace:workspace.analytics.breakdown.locations
 msgid "workspace.analytics.breakdown.locations"
-msgstr ""
+msgstr "Şubeye göre"
 
 #: workspace:workspace.analytics.breakdown.qrCodes
 msgid "workspace.analytics.breakdown.qrCodes"
-msgstr ""
+msgstr "Karekoda göre"
 
 #: workspace:workspace.analytics.empty.noMenu.action
 msgid "workspace.analytics.empty.noMenu.action"
-msgstr ""
+msgstr "Menüyü kur"
 
 #: workspace:workspace.analytics.empty.noMenu.description
 msgid "workspace.analytics.empty.noMenu.description"
-msgstr ""
+msgstr "Okutmalar, müşteriler bir menü açabildiğinde sayılmaya başlar. Önce bir menü kurun."
 
 #: workspace:workspace.analytics.empty.noMenu.title
 msgid "workspace.analytics.empty.noMenu.title"
-msgstr ""
+msgstr "Analitik ilk menünüzle başlar"
 
 #: workspace:workspace.analytics.empty.noScans.action
 msgid "workspace.analytics.empty.noScans.action"
-msgstr ""
+msgstr "Karekodları gör"
 
 #: workspace:workspace.analytics.empty.noScans.description
 msgid "workspace.analytics.empty.noScans.description"
-msgstr ""
+msgstr "Menünüz yayında. Karekodu yazdırın ya da kendi telefonunuzla okutup deneyin."
 
 #: workspace:workspace.analytics.empty.noScans.title
 msgid "workspace.analytics.empty.noScans.title"
-msgstr ""
+msgstr "İlk okutma bekleniyor"
 
 #: workspace:workspace.analytics.empty.notPublished.action
 msgid "workspace.analytics.empty.notPublished.action"
-msgstr ""
+msgstr "Önizle ve yayınla"
 
 #: workspace:workspace.analytics.empty.notPublished.description
 msgid "workspace.analytics.empty.notPublished.description"
-msgstr ""
+msgstr "Menü yayına girene kadar hiçbir şey toplanmaz, çünkü müşterinin açacağı bir şey yoktur."
 
 #: workspace:workspace.analytics.empty.notPublished.title
 msgid "workspace.analytics.empty.notPublished.title"
-msgstr ""
+msgstr "Menünüz henüz yayında değil"
 
 #: workspace:workspace.analytics.empty.range.action
 msgid "workspace.analytics.empty.range.action"
-msgstr ""
+msgstr "Son 30 günü göster"
 
 #: workspace:workspace.analytics.empty.range.description
 msgid "workspace.analytics.empty.range.description"
-msgstr ""
+msgstr "Bu aralığın dışında okutma olmuş olabilir ya da henüz hiç olmamıştır. Daha geniş bir dönem deneyin."
 
 #: workspace:workspace.analytics.empty.range.title
 msgid "workspace.analytics.empty.range.title"
-msgstr ""
+msgstr "Bu dönemde hareket yok"
 
 #: workspace:workspace.analytics.empty.useSidebar
 msgid "workspace.analytics.empty.useSidebar"
-msgstr ""
+msgstr "O ekranı kenar çubuğundan açın."
 
 #: workspace:workspace.analytics.heading
 msgid "workspace.analytics.heading"
-msgstr ""
+msgstr "Analitik"
 
 #: workspace:workspace.analytics.menuEngineering.error
 msgid "workspace.analytics.menuEngineering.error"
-msgstr ""
+msgstr "Menü sayıları yüklenemedi."
 
 #: workspace:workspace.analytics.menuEngineering.loading
 msgid "workspace.analytics.menuEngineering.loading"
-msgstr ""
+msgstr "Menü sayıları yükleniyor…"
 
 #: workspace:workspace.analytics.menuEngineering.mostViewed
 msgid "workspace.analytics.menuEngineering.mostViewed"
-msgstr ""
+msgstr "En çok bakılan"
 
 #: workspace:workspace.analytics.menuEngineering.neverViewed
 msgid "workspace.analytics.menuEngineering.neverViewed"
-msgstr ""
+msgstr "Hiç bakılmayan"
 
 #: workspace:workspace.analytics.menuEngineering.neverViewed.none
 msgid "workspace.analytics.menuEngineering.neverViewed.none"
-msgstr ""
+msgstr "Her yemeğe bakılmış."
 
 #: workspace:workspace.analytics.menuEngineering.region
 msgid "workspace.analytics.menuEngineering.region"
-msgstr ""
+msgstr "Menünüzde ne işe yarıyor"
 
 #: workspace:workspace.analytics.menuEngineering.searchCount
 msgid "workspace.analytics.menuEngineering.searchCount"
-msgstr ""
+msgstr "{count} ziyaretçi"
 
 #: workspace:workspace.analytics.menuEngineering.searches
 msgid "workspace.analytics.menuEngineering.searches"
-msgstr ""
+msgstr "Arandı ama bulunamadı"
 
 #: workspace:workspace.analytics.menuEngineering.searches.none
 msgid "workspace.analytics.menuEngineering.searches.none"
-msgstr ""
+msgstr "Menünüzde olmayan bir şeyi kimse aramadı."
 
 #: workspace:workspace.analytics.menuEngineering.thin
 msgid "workspace.analytics.menuEngineering.thin"
-msgstr ""
+msgstr "Yemeklerinizi sıralamak için henüz yeterli ziyaretçi yok: {threshold} ziyaretçiden {observed} tanesi geldi. Menüyü yayında tutun ve sonra tekrar bakın."
 
 #: workspace:workspace.analytics.menuEngineering.title
 msgid "workspace.analytics.menuEngineering.title"
-msgstr ""
+msgstr "Menünüzde ne işe yarıyor"
 
 #: workspace:workspace.analytics.menuEngineering.viewers
 msgid "workspace.analytics.menuEngineering.viewers"
-msgstr ""
+msgstr "{count} ziyaretçi"
 
 #: workspace:workspace.analytics.metric.menuOpen
 msgid "workspace.analytics.metric.menuOpen"
-msgstr ""
+msgstr "Doğrulanmış menü açılışı"
 
 #: workspace:workspace.analytics.metric.openRate
 msgid "workspace.analytics.metric.openRate"
-msgstr ""
+msgstr "Okutmadan menü açılışına"
 
 #: workspace:workspace.analytics.metric.qrResolve
 msgid "workspace.analytics.metric.qrResolve"
-msgstr ""
+msgstr "Karekod okutma"
 
 #: workspace:workspace.analytics.metric.uniqueVisitors
 msgid "workspace.analytics.metric.uniqueVisitors"
-msgstr ""
+msgstr "Yaklaşık tekil ziyaretçi"
 
 #: workspace:workspace.analytics.operational.description
 msgid "workspace.analytics.operational.description"
-msgstr ""
+msgstr "Seçili şube ve tarih aralığı için gerçek karekod okutma ve doğrulanmış menü açılış sayılarını inceleyin."
 
 #: workspace:workspace.analytics.range.30d
 msgid "workspace.analytics.range.30d"
-msgstr ""
+msgstr "Son 30 gün"
 
 #: workspace:workspace.analytics.range.7d
 msgid "workspace.analytics.range.7d"
-msgstr ""
+msgstr "Son 7 gün"
 
 #: workspace:workspace.analytics.range.label
 msgid "workspace.analytics.range.label"
-msgstr ""
+msgstr "Aralık"
 
 #: workspace:workspace.analytics.range.today
 msgid "workspace.analytics.range.today"
-msgstr ""
+msgstr "Bugün"
 
 #: workspace:workspace.analytics.report.error
 msgid "workspace.analytics.report.error"
-msgstr ""
+msgstr "Analitik yüklenemedi. Lütfen tekrar deneyin."
 
 #: workspace:workspace.analytics.report.loading
 msgid "workspace.analytics.report.loading"
-msgstr ""
+msgstr "Analitik yükleniyor…"
 
 #: workspace:workspace.analytics.report.planRestricted
 msgid "workspace.analytics.report.planRestricted"
-msgstr ""
+msgstr "Analitik raporlama mevcut planınıza dahil değil. Karekod okutmalarınız yine de kaydediliyor, yani hiçbir veri kaybolmuyor — plan kapsadığı anda raporlar görünür."
 
 #: workspace:workspace.analytics.report.region
 msgid "workspace.analytics.report.region"
-msgstr ""
+msgstr "Analitik raporu"
 
 #: workspace:workspace.analytics.report.unavailable
 msgid "workspace.analytics.report.unavailable"
-msgstr ""
+msgstr "Analitik raporlama henüz kullanılamıyor; hiçbir ölçüm üretilmedi."
 
 #: workspace:workspace.analytics.status.error
 msgid "workspace.analytics.status.error"
-msgstr ""
+msgstr "Yüklenemedi"
 
 #: workspace:workspace.analytics.status.loading
 msgid "workspace.analytics.status.loading"
-msgstr ""
+msgstr "Yükleniyor"
 
 #: workspace:workspace.analytics.status.notConnected
 msgid "workspace.analytics.status.notConnected"
-msgstr ""
+msgstr "Henüz istenmedi"
 
 #: workspace:workspace.analytics.status.planRestricted
 msgid "workspace.analytics.status.planRestricted"
-msgstr ""
+msgstr "Planınızda yok"
 
 #: workspace:workspace.billing.changePlan.button
 msgid "workspace.billing.changePlan.button"
-msgstr ""
+msgstr "Planı değiştir"
 
 #: workspace:workspace.billing.currentPlan.empty
 msgid "workspace.billing.currentPlan.empty"
-msgstr ""
+msgstr "Mevcut planınız henüz yüklenmedi."
 
 #: workspace:workspace.billing.currentPlan.error
 msgid "workspace.billing.currentPlan.error"
-msgstr ""
+msgstr "Mevcut planı yükleyemedik."
 
 #: workspace:workspace.billing.currentPlan.loading
 msgid "workspace.billing.currentPlan.loading"
-msgstr ""
+msgstr "Mevcut plan yükleniyor…"
 
 #: workspace:workspace.billing.currentPlan.none
 msgid "workspace.billing.currentPlan.none"
-msgstr ""
+msgstr "Etkin abonelik yok"
 
 #: workspace:workspace.billing.currentPlan.region
 msgid "workspace.billing.currentPlan.region"
-msgstr ""
+msgstr "Mevcut plan"
 
 #: workspace:workspace.billing.currentPlan.retry
 msgid "workspace.billing.currentPlan.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.currentPlan.version
 msgid "workspace.billing.currentPlan.version"
-msgstr ""
+msgstr "Sürüm {version}"
 
 #: workspace:workspace.billing.heading
 msgid "workspace.billing.heading"
-msgstr ""
+msgstr "Faturalandırma"
 
 #: workspace:workspace.billing.iyzicoSandbox.amount
 msgid "workspace.billing.iyzicoSandbox.amount"
-msgstr ""
+msgstr "Tutar {amount} {currency}"
 
 #: workspace:workspace.billing.iyzicoSandbox.button
 msgid "workspace.billing.iyzicoSandbox.button"
-msgstr ""
+msgstr "Test ödemesini başlat"
 
 #: workspace:workspace.billing.iyzicoSandbox.checkoutError
 msgid "workspace.billing.iyzicoSandbox.checkoutError"
-msgstr ""
+msgstr "Test ödemesi başlatılamadı."
 
 #: workspace:workspace.billing.iyzicoSandbox.continueLink
 msgid "workspace.billing.iyzicoSandbox.continueLink"
-msgstr ""
+msgstr "Iyzico test ortamına devam et"
 
 #: workspace:workspace.billing.iyzicoSandbox.conversation
 msgid "workspace.billing.iyzicoSandbox.conversation"
-msgstr ""
+msgstr "İşlem {id}"
 
 #: workspace:workspace.billing.iyzicoSandbox.disclaimer
 msgid "workspace.billing.iyzicoSandbox.disclaimer"
-msgstr ""
+msgstr "Bu bir test ödemesidir — gerçek para çekilmez."
 
 #: workspace:workspace.billing.iyzicoSandbox.heading
 msgid "workspace.billing.iyzicoSandbox.heading"
-msgstr ""
+msgstr "Iyzico test ortamı"
 
 #: workspace:workspace.billing.iyzicoSandbox.invalidRedirect
 msgid "workspace.billing.iyzicoSandbox.invalidRedirect"
-msgstr ""
+msgstr "Güvenli olmayan bir yönlendirme bağlantısı geldi; devam edilemez."
 
 #: workspace:workspace.billing.iyzicoSandbox.loading
 msgid "workspace.billing.iyzicoSandbox.loading"
-msgstr ""
+msgstr "Yükleniyor…"
 
 #: workspace:workspace.billing.iyzicoSandbox.noActive
 msgid "workspace.billing.iyzicoSandbox.noActive"
-msgstr ""
+msgstr "Etkin abonelik ya da plan yok."
 
 #: workspace:workspace.billing.iyzicoSandbox.pendingBadge
 msgid "workspace.billing.iyzicoSandbox.pendingBadge"
-msgstr ""
+msgstr "Iyzico test ortamı bekliyor"
 
 #: workspace:workspace.billing.iyzicoSandbox.processing
 msgid "workspace.billing.iyzicoSandbox.processing"
-msgstr ""
+msgstr "Test ödemesi başlatıldı — işleniyor…"
 
 #: workspace:workspace.billing.iyzicoSandbox.ready
 msgid "workspace.billing.iyzicoSandbox.ready"
-msgstr ""
+msgstr "Test ödemesi başlatmaya hazır."
 
 #: workspace:workspace.billing.iyzicoSandbox.region
 msgid "workspace.billing.iyzicoSandbox.region"
-msgstr ""
+msgstr "Iyzico test ortamı"
 
 #: workspace:workspace.billing.iyzicoSandbox.retry
 msgid "workspace.billing.iyzicoSandbox.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.iyzicoSandbox.sessionError
 msgid "workspace.billing.iyzicoSandbox.sessionError"
-msgstr ""
+msgstr "Test ödeme oturumu yüklenemedi."
 
 #: workspace:workspace.billing.iyzicoSandbox.start
 msgid "workspace.billing.iyzicoSandbox.start"
-msgstr ""
+msgstr "Test ödemesini başlat"
 
 #: workspace:workspace.billing.iyzicoSandbox.state.failed
 msgid "workspace.billing.iyzicoSandbox.state.failed"
-msgstr ""
+msgstr "Test ödemesi başarısız oldu."
 
 #: workspace:workspace.billing.iyzicoSandbox.state.initiated
 msgid "workspace.billing.iyzicoSandbox.state.initiated"
-msgstr ""
+msgstr "Başlatıldı"
 
 #: workspace:workspace.billing.iyzicoSandbox.state.processing
 msgid "workspace.billing.iyzicoSandbox.state.processing"
-msgstr ""
+msgstr "İşleniyor"
 
 #: workspace:workspace.billing.iyzicoSandbox.state.succeeded
 msgid "workspace.billing.iyzicoSandbox.state.succeeded"
-msgstr ""
+msgstr "Başarılı"
 
 #: workspace:workspace.billing.iyzicoSandbox.subscriptionError
 msgid "workspace.billing.iyzicoSandbox.subscriptionError"
-msgstr ""
+msgstr "Abonelik durumunuz yüklenemedi."
 
 #: workspace:workspace.billing.iyzicoSandbox.unavailable
 msgid "workspace.billing.iyzicoSandbox.unavailable"
-msgstr ""
+msgstr "Iyzico test ödemesi kullanılamıyor ve entegrasyonu bekliyor; test oturumu başlatılamaz."
 
 #: workspace:workspace.billing.ledger.balances
 msgid "workspace.billing.ledger.balances"
-msgstr ""
+msgstr "Bakiyeler"
 
 #: workspace:workspace.billing.ledger.column.amount
 msgid "workspace.billing.ledger.column.amount"
-msgstr ""
+msgstr "Tutar"
 
 #: workspace:workspace.billing.ledger.column.credit
 msgid "workspace.billing.ledger.column.credit"
-msgstr ""
+msgstr "Alacak"
 
 #: workspace:workspace.billing.ledger.column.debit
 msgid "workspace.billing.ledger.column.debit"
-msgstr ""
+msgstr "Borç"
 
 #: workspace:workspace.billing.ledger.column.occurredAt
 msgid "workspace.billing.ledger.column.occurredAt"
-msgstr ""
+msgstr "Tarih"
 
 #: workspace:workspace.billing.ledger.column.reference
 msgid "workspace.billing.ledger.column.reference"
-msgstr ""
+msgstr "Referans"
 
 #: workspace:workspace.billing.ledger.description
 msgid "workspace.billing.ledger.description"
-msgstr ""
+msgstr "Tahsil edilen her ödeme buraya çift kayıt olarak yazılır. Bir kayıt asla düzenlenmez ya da silinmez; düzeltme ters kayıtla yapılır."
 
 #: workspace:workspace.billing.ledger.empty
 msgid "workspace.billing.ledger.empty"
-msgstr ""
+msgstr "Henüz defter kaydı yok. İlk başarılı ödeme ilk kaydı yazar."
 
 #: workspace:workspace.billing.ledger.error
 msgid "workspace.billing.ledger.error"
-msgstr ""
+msgstr "Defter yüklenemedi."
 
 #: workspace:workspace.billing.ledger.loading
 msgid "workspace.billing.ledger.loading"
-msgstr ""
+msgstr "Defter yükleniyor…"
 
 #: workspace:workspace.billing.ledger.region
 msgid "workspace.billing.ledger.region"
-msgstr ""
+msgstr "Muhasebe defteri"
 
 #: workspace:workspace.billing.ledger.retry
 msgid "workspace.billing.ledger.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.manualPayment.empty
 msgid "workspace.billing.manualPayment.empty"
-msgstr ""
+msgstr "Henüz elden ödeme kaydedilmedi."
 
 #: workspace:workspace.billing.manualPayment.field.documentReference
 msgid "workspace.billing.manualPayment.field.documentReference"
-msgstr ""
+msgstr "Belge referansı"
 
 #: workspace:workspace.billing.manualPayment.field.endDate
 msgid "workspace.billing.manualPayment.field.endDate"
-msgstr ""
+msgstr "Bitiş tarihi"
 
 #: workspace:workspace.billing.manualPayment.field.paymentNote
 msgid "workspace.billing.manualPayment.field.paymentNote"
-msgstr ""
+msgstr "Ödeme notu"
 
 #: workspace:workspace.billing.manualPayment.field.plan
 msgid "workspace.billing.manualPayment.field.plan"
-msgstr ""
+msgstr "Plan ataması"
 
 #: workspace:workspace.billing.manualPayment.platformFinance
 msgid "workspace.billing.manualPayment.platformFinance"
-msgstr ""
+msgstr "Elden ödemeleri platform finans ekibi kaydeder; bu ekran salt okunurdur."
 
 #: workspace:workspace.billing.manualPayment.region
 msgid "workspace.billing.manualPayment.region"
-msgstr ""
+msgstr "Elden ödeme"
 
 #: workspace:workspace.billing.operational.description
 msgid "workspace.billing.operational.description"
-msgstr ""
+msgstr "Planınızı görün, değiştirin ve ödemeleri inceleyin. Havale ile yapılan ödemeleri sizin için finans ekibimiz kaydeder."
 
 #: workspace:workspace.billing.plan.empty
 msgid "workspace.billing.plan.empty"
-msgstr ""
+msgstr "Henüz plan yok."
 
 #: workspace:workspace.billing.plan.error
 msgid "workspace.billing.plan.error"
-msgstr ""
+msgstr "Planlar yüklenemedi."
 
 #: workspace:workspace.billing.plan.loading
 msgid "workspace.billing.plan.loading"
-msgstr ""
+msgstr "Planlar yükleniyor…"
 
 #: workspace:workspace.billing.plan.priceUnavailable
 msgid "workspace.billing.plan.priceUnavailable"
-msgstr ""
+msgstr "Fiyat yok"
 
 #: workspace:workspace.billing.plan.region
 msgid "workspace.billing.plan.region"
-msgstr ""
+msgstr "Plan"
 
 #: workspace:workspace.billing.plan.retry
 msgid "workspace.billing.plan.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.plan.unavailable
 msgid "workspace.billing.plan.unavailable"
-msgstr ""
+msgstr "Plan bilgisi henüz yok."
 
 #: workspace:workspace.billing.recordPayment.button
 msgid "workspace.billing.recordPayment.button"
-msgstr ""
+msgstr "Ödeme kaydet"
 
 #: workspace:workspace.billing.status.notConnected
 msgid "workspace.billing.status.notConnected"
-msgstr ""
+msgstr "Bağlı değil"
 
 #: workspace:workspace.brand.currency
 msgid "workspace.brand.currency"
-msgstr ""
+msgstr "Para birimi"
 
 #: workspace:workspace.brand.currency.help
 msgid "workspace.brand.currency.help"
-msgstr ""
+msgstr "Menünüzdeki her fiyat için kullanılır."
 
 #: workspace:workspace.brand.error.market.required
 msgid "workspace.brand.error.market.required"
-msgstr ""
+msgstr "İşinizi yaptığınız ülkeyi seçin."
 
 #: workspace:workspace.brand.error.name.required
 msgid "workspace.brand.error.name.required"
-msgstr ""
+msgstr "Markanız için bir ad girin."
 
 #: workspace:workspace.brand.error.network
 msgid "workspace.brand.error.network"
-msgstr ""
+msgstr "Sunucuya ulaşamadık. Hiçbir şey kaybolmadı — tekrar deneyin."
 
 #: workspace:workspace.brand.error.required
 msgid "workspace.brand.error.required"
-msgstr ""
+msgstr "Ad, saat dilimi ve para birimi zorunludur."
 
 #: workspace:workspace.brand.error.submit
 msgid "workspace.brand.error.submit"
-msgstr ""
+msgstr "Markanızı oluşturamadık. Lütfen tekrar deneyin."
 
 #: workspace:workspace.brand.heading
 msgid "workspace.brand.heading"
-msgstr ""
+msgstr "Markanızı oluşturun"
 
 #: workspace:workspace.brand.inspector.cities
 msgid "workspace.brand.inspector.cities"
-msgstr ""
+msgstr "Şehirler"
 
 #: workspace:workspace.brand.inspector.locations
 msgid "workspace.brand.inspector.locations"
-msgstr ""
+msgstr "Şubeler"
 
 #: workspace:workspace.brand.inspector.manageLocations
 msgid "workspace.brand.inspector.manageLocations"
-msgstr ""
+msgstr "Şubeleri yönet"
 
 #: workspace:workspace.brand.inspector.name
 msgid "workspace.brand.inspector.name"
-msgstr ""
+msgstr "Marka adı"
 
 #: workspace:workspace.brand.inspector.title
 msgid "workspace.brand.inspector.title"
-msgstr ""
+msgstr "Bu marka nerede görünüyor"
 
 #: workspace:workspace.brand.intro
 msgid "workspace.brand.intro"
-msgstr ""
+msgstr "Müşterileriniz bu adı görecek. Sonraki adımlarda şube ve menü ekleyebilir, bunların hepsini sonradan değiştirebilirsiniz."
 
 #: workspace:workspace.brand.loading
 msgid "workspace.brand.loading"
-msgstr ""
+msgstr "Markanız yükleniyor…"
 
 #: workspace:workspace.brand.locale
 msgid "workspace.brand.locale"
-msgstr ""
+msgstr "Dil"
 
 #: workspace:workspace.brand.locale.help
 msgid "workspace.brand.locale.help"
-msgstr ""
+msgstr "Menü içeriğinizin ana dili. Sonradan başka diller ekleyebilirsiniz."
 
 #: workspace:workspace.brand.logo.choose
 msgid "workspace.brand.logo.choose"
-msgstr ""
+msgstr "Bir logo seçin"
 
 #: workspace:workspace.brand.logo.empty
 msgid "workspace.brand.logo.empty"
-msgstr ""
+msgstr "Henüz işlenmiş logo yok. Önce Görseller sayfasından (yuva: Logo) bir tane yükleyin."
 
 #: workspace:workspace.brand.logo.error
 msgid "workspace.brand.logo.error"
-msgstr ""
+msgstr "Logo kaydedilemedi. Tekrar deneyin."
 
 #: workspace:workspace.brand.logo.heading
 msgid "workspace.brand.logo.heading"
-msgstr ""
+msgstr "Logo"
 
 #: workspace:workspace.brand.logo.help
 msgid "workspace.brand.logo.help"
-msgstr ""
+msgstr "Misafir menünüzün üstünde, marka adının yanında görünür. Dosyayı Görseller sayfasından (yuva: Logo) yükleyin, sonra buradan seçin."
 
 #: workspace:workspace.brand.logo.loading
 msgid "workspace.brand.logo.loading"
-msgstr ""
+msgstr "Logolarınız yükleniyor…"
 
 #: workspace:workspace.brand.logo.none
 msgid "workspace.brand.logo.none"
-msgstr ""
+msgstr "Logo yok"
 
 #: workspace:workspace.brand.logo.save
 msgid "workspace.brand.logo.save"
-msgstr ""
+msgstr "Bu logoyu kullan"
 
 #: workspace:workspace.brand.logo.saved
 msgid "workspace.brand.logo.saved"
-msgstr ""
+msgstr "Logo kaydedildi. Bir sonraki yayınla birlikte canlıya çıkar."
 
 #: workspace:workspace.brand.logo.saving
 msgid "workspace.brand.logo.saving"
-msgstr ""
+msgstr "Kaydediliyor…"
 
 #: workspace:workspace.brand.market
 msgid "workspace.brand.market"
-msgstr ""
+msgstr "Ana pazar"
 
 #: workspace:workspace.brand.market.help
 msgid "workspace.brand.market.help"
-msgstr ""
+msgstr "İşinizi yaptığınız yer. Saat diliminizi ve para biriminizi buna göre ayarlıyoruz."
 
 #: workspace:workspace.brand.market.label
 msgid "workspace.brand.market.label"
-msgstr ""
+msgstr "Ana pazar"
 
 #: workspace:workspace.brand.market.placeholder
 msgid "workspace.brand.market.placeholder"
-msgstr ""
+msgstr "Bir ülke seçin"
 
 #: workspace:workspace.brand.name
 msgid "workspace.brand.name"
-msgstr ""
+msgstr "Marka adı"
 
 #: workspace:workspace.brand.name.help
 msgid "workspace.brand.name.help"
-msgstr ""
+msgstr "Bunu sonradan değiştirebilirsiniz."
 
 #: workspace:workspace.brand.operational.description
 msgid "workspace.brand.operational.description"
-msgstr ""
+msgstr "Bu marka için müşterilerin ve ekibinizin gördüğü adı, dili, saat dilimini, para birimini ve iletişim bilgilerini düzenleyin."
 
 #: workspace:workspace.brand.regional
 msgid "workspace.brand.regional"
-msgstr ""
+msgstr "Bölge ayarları"
 
 #: workspace:workspace.brand.submit
 msgid "workspace.brand.submit"
-msgstr ""
+msgstr "Markayı oluştur"
 
 #: workspace:workspace.brand.submitting
 msgid "workspace.brand.submitting"
-msgstr ""
+msgstr "Marka oluşturuluyor…"
 
 #: workspace:workspace.brand.timezone
 msgid "workspace.brand.timezone"
-msgstr ""
+msgstr "Saat dilimi"
 
 #: workspace:workspace.brand.timezone.help
 msgid "workspace.brand.timezone.help"
-msgstr ""
+msgstr "Çalışma saatleri ve raporlar için kullanılır."
 
 #: workspace:workspace.brand.webAddress.help
 msgid "workspace.brand.webAddress.help"
-msgstr ""
+msgstr "Misafirlerinizin açtığı herkese açık bağlantıda görünür. Zabuno bunu marka adınızla uyumlu tutar."
 
 #: workspace:workspace.brand.webAddress.label
 msgid "workspace.brand.webAddress.label"
-msgstr ""
+msgstr "Menü web adresi"
 
 #: workspace:workspace.brandLocations.brand.contactEmail
 msgid "workspace.brandLocations.brand.contactEmail"
-msgstr ""
+msgstr "İletişim e-postası"
 
 #: workspace:workspace.brandLocations.brand.contactPhone
 msgid "workspace.brandLocations.brand.contactPhone"
-msgstr ""
+msgstr "İletişim telefonu"
 
 #: workspace:workspace.brandLocations.brand.currency
 msgid "workspace.brandLocations.brand.currency"
-msgstr ""
+msgstr "Para birimi"
 
 #: workspace:workspace.brandLocations.brand.description
 msgid "workspace.brandLocations.brand.description"
-msgstr ""
+msgstr "Açıklama"
 
 #: workspace:workspace.brandLocations.brand.locale
 msgid "workspace.brandLocations.brand.locale"
-msgstr ""
+msgstr "Menü dili"
 
 #: workspace:workspace.brandLocations.brand.section.contact
 msgid "workspace.brandLocations.brand.section.contact"
-msgstr ""
+msgstr "İletişim"
 
 #: workspace:workspace.brandLocations.brand.section.description
 msgid "workspace.brandLocations.brand.section.description"
-msgstr ""
+msgstr "Açıklama"
 
 #: workspace:workspace.brandLocations.brand.section.identity
 msgid "workspace.brandLocations.brand.section.identity"
-msgstr ""
+msgstr "Kimlik"
 
 #: workspace:workspace.brandLocations.brand.section.regional
 msgid "workspace.brandLocations.brand.section.regional"
-msgstr ""
+msgstr "Bölge ayarları"
 
 #: workspace:workspace.brandLocations.brand.slug
 msgid "workspace.brandLocations.brand.slug"
-msgstr ""
+msgstr "Kısa ad"
 
 #: workspace:workspace.brandLocations.brand.timezone
 msgid "workspace.brandLocations.brand.timezone"
-msgstr ""
+msgstr "Saat dilimi"
 
 #: workspace:workspace.brandLocations.edit.button
 msgid "workspace.brandLocations.edit.button"
-msgstr ""
+msgstr "Düzenle"
 
 #: workspace:workspace.brandLocations.edit.cancel
 msgid "workspace.brandLocations.edit.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: workspace:workspace.brandLocations.edit.error.submit
 msgid "workspace.brandLocations.edit.error.submit"
-msgstr ""
+msgstr "Marka değişikliklerinizi kaydedemedik. Lütfen tekrar deneyin."
 
 #: workspace:workspace.brandLocations.edit.save
 msgid "workspace.brandLocations.edit.save"
-msgstr ""
+msgstr "Kaydet"
 
 #: workspace:workspace.brandLocations.heading
 msgid "workspace.brandLocations.heading"
-msgstr ""
+msgstr "Marka ve Şubeler"
 
 #: workspace:workspace.brandLocations.locations.count
 msgid "workspace.brandLocations.locations.count"
-msgstr ""
+msgstr "{count} şube"
 
 #: workspace:workspace.brandLocations.locations.edit.countryCode
 msgid "workspace.brandLocations.locations.edit.countryCode"
-msgstr ""
+msgstr "Ülke kodu"
 
 #: workspace:workspace.brandLocations.locations.edit.error.submit
 msgid "workspace.brandLocations.locations.edit.error.submit"
-msgstr ""
+msgstr "Şube değişikliklerinizi kaydedemedik. Lütfen tekrar deneyin."
 
 #: workspace:workspace.brandLocations.locations.heading
 msgid "workspace.brandLocations.locations.heading"
-msgstr ""
+msgstr "Şubeler"
 
 #: workspace:workspace.brandLocations.locations.section.address
 msgid "workspace.brandLocations.locations.section.address"
-msgstr ""
+msgstr "Adres"
 
 #: workspace:workspace.brandLocations.locations.section.identity
 msgid "workspace.brandLocations.locations.section.identity"
-msgstr ""
+msgstr "Kimlik"
 
 #: workspace:workspace.brandLocations.locations.view.country
 msgid "workspace.brandLocations.locations.view.country"
-msgstr ""
+msgstr "Ülke"
 
 #: workspace:workspace.brandLocations.locations.view.postalCode
 msgid "workspace.brandLocations.locations.view.postalCode"
-msgstr ""
+msgstr "Posta kodu"
 
 #: workspace:workspace.catalog.error.heading
 msgid "workspace.catalog.error.heading"
-msgstr ""
+msgstr "Çalışma alanı kataloğunuzu yükleyemedik."
 
 #: workspace:workspace.catalog.error.retry
 msgid "workspace.catalog.error.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.catalog.location.label
 msgid "workspace.catalog.location.label"
-msgstr ""
+msgstr "Şube"
 
 #: workspace:workspace.choose.heading
 msgid "workspace.choose.heading"
-msgstr ""
+msgstr "Bir çalışma alanı seçin"
 
 #: workspace:workspace.create.error.name
 msgid "workspace.create.error.name"
-msgstr ""
+msgstr "Bir çalışma alanı adı girin."
 
 #: workspace:workspace.create.error.submit
 msgid "workspace.create.error.submit"
-msgstr ""
+msgstr "Çalışma alanınızı oluşturamadık. Lütfen tekrar deneyin."
 
 #: workspace:workspace.create.heading
 msgid "workspace.create.heading"
-msgstr ""
+msgstr "Çalışma alanınıza ad verin"
 
 #: workspace:workspace.create.location
 msgid "workspace.create.location"
-msgstr ""
+msgstr "Şube"
 
 #: workspace:workspace.create.menu
 msgid "workspace.create.menu"
-msgstr ""
+msgstr "Menü"
 
 #: workspace:workspace.create.menu.label
 msgid "workspace.create.menu.label"
-msgstr ""
+msgstr "Oluştur"
 
 #: workspace:workspace.create.name
 msgid "workspace.create.name"
-msgstr ""
+msgstr "Çalışma alanı adı"
 
 #: workspace:workspace.create.qrCode
 msgid "workspace.create.qrCode"
-msgstr ""
+msgstr "Karekod"
 
 #: workspace:workspace.create.submit
 msgid "workspace.create.submit"
-msgstr ""
+msgstr "Çalışma alanı oluştur"
 
 #: workspace:workspace.create.teamMember
 msgid "workspace.create.teamMember"
-msgstr ""
+msgstr "Ekip üyesi"
 
 #: workspace:workspace.current.logout
 msgid "workspace.current.logout"
-msgstr ""
+msgstr "Çıkış yap"
 
 #: workspace:workspace.current.logout.error
 msgid "workspace.current.logout.error"
-msgstr ""
+msgstr "Çıkış yapamadık. Lütfen tekrar deneyin."
 
 #: workspace:workspace.current.switch
 msgid "workspace.current.switch"
-msgstr ""
+msgstr "Çalışma alanı değiştir"
 
 #: workspace:workspace.dashboard.empty
 msgid "workspace.dashboard.empty"
-msgstr ""
+msgstr "Bu şube için henüz menü oluşturulmadı."
 
 #: workspace:workspace.dashboard.empty.openMenu
 msgid "workspace.dashboard.empty.openMenu"
-msgstr ""
+msgstr "Menüyü aç"
 
 #: workspace:workspace.dashboard.heading
 msgid "workspace.dashboard.heading"
-msgstr ""
+msgstr "Panel"
 
 #: workspace:workspace.dashboard.loading
 msgid "workspace.dashboard.loading"
-msgstr ""
+msgstr "Özet yükleniyor…"
 
 #: workspace:workspace.dashboard.operational.description
 msgid "workspace.dashboard.operational.description"
-msgstr ""
+msgstr "Kurulum ilerlemenizin ve mevcut menünüzün canlı özeti — neyin bağlı olduğunu görün, eksik kalana doğrudan gidin."
 
 #: workspace:workspace.dashboard.setup.brand
 msgid "workspace.dashboard.setup.brand"
-msgstr ""
+msgstr "Marka"
 
 #: workspace:workspace.dashboard.setup.heading
 msgid "workspace.dashboard.setup.heading"
-msgstr ""
+msgstr "Kurulum"
 
 #: workspace:workspace.dashboard.setup.location
 msgid "workspace.dashboard.setup.location"
-msgstr ""
+msgstr "Şube"
 
 #: workspace:workspace.dashboard.setup.menu
 msgid "workspace.dashboard.setup.menu"
-msgstr ""
+msgstr "Menü"
 
 #: workspace:workspace.dashboard.setup.menu.empty
 msgid "workspace.dashboard.setup.menu.empty"
-msgstr ""
+msgstr "Henüz menü yok"
 
 #: workspace:workspace.dashboard.setup.notConnected
 msgid "workspace.dashboard.setup.notConnected"
-msgstr ""
+msgstr "Henüz bağlanmadı."
 
 #: workspace:workspace.dashboard.setup.publication
 msgid "workspace.dashboard.setup.publication"
-msgstr ""
+msgstr "Yayın"
 
 #: workspace:workspace.dashboard.setup.qr
 msgid "workspace.dashboard.setup.qr"
-msgstr ""
+msgstr "Karekod"
 
 #: workspace:workspace.dashboard.setup.region
 msgid "workspace.dashboard.setup.region"
-msgstr ""
+msgstr "Kurulum durumu"
 
 #: workspace:workspace.error.heading
 msgid "workspace.error.heading"
-msgstr ""
+msgstr "Çalışma alanınızı yükleyemedik."
 
 #: workspace:workspace.error.retry
 msgid "workspace.error.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.form.error.conflict
 msgid "workspace.form.error.conflict"
-msgstr ""
+msgstr "Siz düzenlerken bunu başkası değiştirdi. Güncel değerleri görmek için sayfayı yenileyin, sonra değişikliğinizi tekrar uygulayın."
 
 #: workspace:workspace.form.error.network
 msgid "workspace.form.error.network"
-msgstr ""
+msgstr "Zabuno'ya ulaşamadık. Bağlantınızı kontrol edin — yazdığınız her şey burada duruyor."
 
 #: workspace:workspace.form.error.notFound
 msgid "workspace.form.error.notFound"
-msgstr ""
+msgstr "Bu kayıt artık yok. Başka bir sekmede silinmiş olabilir."
 
 #: workspace:workspace.form.error.permission
 msgid "workspace.form.error.permission"
-msgstr ""
+msgstr "Bunu değiştirme yetkiniz yok. Bu çalışma alanının sahibine ya da yöneticisine sorun."
 
 #: workspace:workspace.form.error.server
 msgid "workspace.form.error.server"
-msgstr ""
+msgstr "Şu anda kaydedemedik. Hiçbir şey kaybolmadı — birkaç saniye sonra tekrar deneyin."
 
 #: workspace:workspace.form.error.serverWithId
 msgid "workspace.form.error.serverWithId"
-msgstr ""
+msgstr "Şu anda kaydedemedik. Hiçbir şey kaybolmadı — birkaç saniye sonra tekrar deneyin. Referans: {id}"
 
 #: workspace:workspace.form.error.summary.title
 msgid "workspace.form.error.summary.title"
-msgstr ""
+msgstr "Lütfen aşağıdaki alanları düzeltin"
 
 #: workspace:workspace.loading
 msgid "workspace.loading"
-msgstr ""
+msgstr "Çalışma alanınız yükleniyor…"
 
 #: workspace:workspace.location.addressLine1
 msgid "workspace.location.addressLine1"
-msgstr ""
+msgstr "Adres satırı 1"
 
 #: workspace:workspace.location.addressLine1.error.required
 msgid "workspace.location.addressLine1.error.required"
-msgstr ""
+msgstr "Açık adresi girin."
 
 #: workspace:workspace.location.addressLine2
 msgid "workspace.location.addressLine2"
-msgstr ""
+msgstr "Adres satırı 2"
 
 #: workspace:workspace.location.city
 msgid "workspace.location.city"
-msgstr ""
+msgstr "Şehir"
 
 #: workspace:workspace.location.city.error.required
 msgid "workspace.location.city.error.required"
-msgstr ""
+msgstr "Şehri girin."
 
 #: workspace:workspace.location.countryCode
 msgid "workspace.location.countryCode"
-msgstr ""
+msgstr "Ülke"
 
 #: workspace:workspace.location.countryCode.error.required
 msgid "workspace.location.countryCode.error.required"
-msgstr ""
+msgstr "Ülkeyi seçin."
 
 #: workspace:workspace.location.displayName
 msgid "workspace.location.displayName"
-msgstr ""
+msgstr "Görünen ad"
 
 #: workspace:workspace.location.displayName.error.required
 msgid "workspace.location.displayName.error.required"
-msgstr ""
+msgstr "Bir görünen ad girin."
 
 #: workspace:workspace.location.error.required
 msgid "workspace.location.error.required"
-msgstr ""
+msgstr "Görünen ad, ülke, şehir ve adres satırı 1 zorunludur."
 
 #: workspace:workspace.location.error.submit
 msgid "workspace.location.error.submit"
-msgstr ""
+msgstr "Şubenizi oluşturamadık. Lütfen tekrar deneyin."
 
 #: workspace:workspace.location.heading
 msgid "workspace.location.heading"
-msgstr ""
+msgstr "Şubenizi oluşturun"
 
 #: workspace:workspace.location.optional
 msgid "workspace.location.optional"
-msgstr ""
+msgstr "{label} (isteğe bağlı)"
 
 #: workspace:workspace.location.postalCode
 msgid "workspace.location.postalCode"
-msgstr ""
+msgstr "Posta kodu"
 
 #: workspace:workspace.location.regional.chooseCountry
 msgid "workspace.location.regional.chooseCountry"
-msgstr ""
+msgstr "Bir ülke seçin"
 
 #: workspace:workspace.location.regional.chooseTimezone
 msgid "workspace.location.regional.chooseTimezone"
-msgstr ""
+msgstr "Bir saat dilimi seçin"
 
 #: workspace:workspace.location.submit
 msgid "workspace.location.submit"
-msgstr ""
+msgstr "Oluştur"
 
 #: workspace:workspace.location.timezone
 msgid "workspace.location.timezone"
-msgstr ""
+msgstr "Saat dilimi"
 
 #: workspace:workspace.location.timezone.help
 msgid "workspace.location.timezone.help"
-msgstr ""
+msgstr "Çalışma saatleri ve yayın zamanları bu şubenin saat dilimini kullanır."
 
 #: workspace:workspace.locations.add.button
 msgid "workspace.locations.add.button"
-msgstr ""
+msgstr "Şube ekle"
 
 #: workspace:workspace.locations.empty
 msgid "workspace.locations.empty"
-msgstr ""
+msgstr "Henüz şube yok"
 
 #: workspace:workspace.locations.empty.description
 msgid "workspace.locations.empty.description"
-msgstr ""
+msgstr "Şube; menünüzün sunulduğu adresi, çalışma saatlerini ve saat dilimini taşır."
 
 #: workspace:workspace.locations.heading
 msgid "workspace.locations.heading"
-msgstr ""
+msgstr "Şubeler"
 
 #: workspace:workspace.locations.inspector.brand
 msgid "workspace.locations.inspector.brand"
-msgstr ""
+msgstr "Marka"
 
 #: workspace:workspace.locations.inspector.city
 msgid "workspace.locations.inspector.city"
-msgstr ""
+msgstr "Şehir"
 
 #: workspace:workspace.locations.inspector.menu
 msgid "workspace.locations.inspector.menu"
-msgstr ""
+msgstr "Menü"
 
 #: workspace:workspace.locations.inspector.menu.summary
 msgid "workspace.locations.inspector.menu.summary"
-msgstr ""
+msgstr "{categories} kategori · {items} ürün"
 
 #: workspace:workspace.locations.inspector.openMenu
 msgid "workspace.locations.inspector.openMenu"
-msgstr ""
+msgstr "Menüyü aç"
 
 #: workspace:workspace.locations.inspector.title
 msgid "workspace.locations.inspector.title"
-msgstr ""
+msgstr "Bu şube"
 
 #: workspace:workspace.locations.operational.description
 msgid "workspace.locations.operational.description"
-msgstr ""
+msgstr "Menünüzü sunan fiziksel şubeleri ekleyin ve düzenleyin — şehre göre gruplanır, yenileri için adım adım kurulum vardır."
 
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
-msgstr ""
+msgstr "Görseller"
 
 #: workspace:workspace.media.library.asset.delete
 msgid "workspace.media.library.asset.delete"
-msgstr ""
+msgstr "Sil"
 
 #: workspace:workspace.media.library.asset.delete.complete
 msgid "workspace.media.library.asset.delete.complete"
-msgstr ""
+msgstr "Görsel silindi."
 
 #: workspace:workspace.media.library.asset.delete.failed
 msgid "workspace.media.library.asset.delete.failed"
-msgstr ""
+msgstr "Görsel silinemedi. Öğeniz duruyor."
 
 #: workspace:workspace.media.library.asset.delete.named
 msgid "workspace.media.library.asset.delete.named"
-msgstr ""
+msgstr "{name} görselini sil"
 
 #: workspace:workspace.media.library.asset.delete.trashed
 msgid "workspace.media.library.asset.delete.trashed"
-msgstr ""
+msgstr "Çöpe taşındı. Çöp sekmesinden geri alabilirsiniz."
 
 #: workspace:workspace.media.library.asset.details.named
 msgid "workspace.media.library.asset.details.named"
-msgstr ""
+msgstr "{name} ayrıntılarını aç"
 
 #: workspace:workspace.media.library.asset.status.accepted
 msgid "workspace.media.library.asset.status.accepted"
-msgstr ""
+msgstr "Kabul edildi — işlenmeyi bekliyor"
 
 #: workspace:workspace.media.library.asset.status.failed
 msgid "workspace.media.library.asset.status.failed"
-msgstr ""
+msgstr "İşleme başarısız"
 
 #: workspace:workspace.media.library.asset.status.processing
 msgid "workspace.media.library.asset.status.processing"
-msgstr ""
+msgstr "İşleniyor"
 
 #: workspace:workspace.media.library.asset.status.quarantined
 msgid "workspace.media.library.asset.status.quarantined"
-msgstr ""
+msgstr "Tarama bekliyor (karantinada)"
 
 #: workspace:workspace.media.library.asset.status.ready
 msgid "workspace.media.library.asset.status.ready"
-msgstr ""
+msgstr "Hazır"
 
 #: workspace:workspace.media.library.asset.status.rejected
 msgid "workspace.media.library.asset.status.rejected"
-msgstr ""
+msgstr "Reddedildi — güvenlik taramasından geçemedi"
 
 #: workspace:workspace.media.library.asset.status.scanning
 msgid "workspace.media.library.asset.status.scanning"
-msgstr ""
+msgstr "Taranıyor"
 
 #: workspace:workspace.media.library.asset.status.unknown
 msgid "workspace.media.library.asset.status.unknown"
-msgstr ""
+msgstr "Durum bilinmiyor"
 
 #: workspace:workspace.media.library.asset.untitled
 msgid "workspace.media.library.asset.untitled"
-msgstr ""
+msgstr "Adsız görsel"
 
 #: workspace:workspace.media.library.asset.usageCount
 msgid "workspace.media.library.asset.usageCount"
-msgstr ""
+msgstr "{count} yerde kullanılıyor"
 
 #: workspace:workspace.media.library.assets.heading
 msgid "workspace.media.library.assets.heading"
-msgstr ""
+msgstr "Görseller"
 
 #: workspace:workspace.media.library.detail.actionFailed
 msgid "workspace.media.library.detail.actionFailed"
-msgstr ""
+msgstr "Bu işlem olmadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.library.detail.altText
 msgid "workspace.media.library.detail.altText"
-msgstr ""
+msgstr "Ad (alt metin)"
 
 #: workspace:workspace.media.library.detail.download
 msgid "workspace.media.library.detail.download"
-msgstr ""
+msgstr "Aslını indir"
 
 #: workspace:workspace.media.library.detail.downloadReady
 msgid "workspace.media.library.detail.downloadReady"
-msgstr ""
+msgstr "İndirme bağlantısı açıldı. 10 dakika geçerli kalır."
 
 #: workspace:workspace.media.library.detail.duplicate
 msgid "workspace.media.library.detail.duplicate"
-msgstr ""
+msgstr "Bu çalışma alanındaki #{id} görseliyle aynı dosya."
 
 #: workspace:workspace.media.library.detail.file
 msgid "workspace.media.library.detail.file"
-msgstr ""
+msgstr "Dosya"
 
 #: workspace:workspace.media.library.detail.noPreview
 msgid "workspace.media.library.detail.noPreview"
-msgstr ""
+msgstr "Henüz önizleme yok"
 
 #: workspace:workspace.media.library.detail.rename
 msgid "workspace.media.library.detail.rename"
-msgstr ""
+msgstr "Adı kaydet"
 
 #: workspace:workspace.media.library.detail.renamed
 msgid "workspace.media.library.detail.renamed"
-msgstr ""
+msgstr "Ad kaydedildi."
 
 #: workspace:workspace.media.library.detail.reprocess
 msgid "workspace.media.library.detail.reprocess"
-msgstr ""
+msgstr "Boyutları yeniden üret"
 
 #: workspace:workspace.media.library.detail.reprocessed
 msgid "workspace.media.library.detail.reprocessed"
-msgstr ""
+msgstr "Boyutlar yeni bir sürüm olarak üretildi. Aslına dokunulmadı."
 
 #: workspace:workspace.media.library.detail.size
 msgid "workspace.media.library.detail.size"
-msgstr ""
+msgstr "Boyut"
 
 #: workspace:workspace.media.library.detail.slot
 msgid "workspace.media.library.detail.slot"
-msgstr ""
+msgstr "Yuva"
 
 #: workspace:workspace.media.library.detail.uploaded
 msgid "workspace.media.library.detail.uploaded"
-msgstr ""
+msgstr "Yüklendi"
 
 #: workspace:workspace.media.library.empty.hint
 msgid "workspace.media.library.empty.hint"
-msgstr ""
+msgstr "İlk fotoğrafınızı soldaki alana bırakın. Kontrolden geçer geçmez burada görünür."
 
 #: workspace:workspace.media.library.error
 msgid "workspace.media.library.error"
-msgstr ""
+msgstr "Görsel kütüphanesi yüklenemedi."
 
 #: workspace:workspace.media.library.filters.any
 msgid "workspace.media.library.filters.any"
-msgstr ""
+msgstr "Hepsi"
 
 #: workspace:workspace.media.library.filters.count
 msgid "workspace.media.library.filters.count"
-msgstr ""
+msgstr "{total} görselden {shown} tanesi gösteriliyor."
 
 #: workspace:workspace.media.library.filters.label
 msgid "workspace.media.library.filters.label"
-msgstr ""
+msgstr "Görselleri süz"
 
 #: workspace:workspace.media.library.filters.noMatch
 msgid "workspace.media.library.filters.noMatch"
-msgstr ""
+msgstr "Bu süzgeçlere uyan görsel yok."
 
 #: workspace:workspace.media.library.filters.search
 msgid "workspace.media.library.filters.search"
-msgstr ""
+msgstr "Ara"
 
 #: workspace:workspace.media.library.filters.searchPlaceholder
 msgid "workspace.media.library.filters.searchPlaceholder"
-msgstr ""
+msgstr "Alt metin ya da dosya adı"
 
 #: workspace:workspace.media.library.filters.slot
 msgid "workspace.media.library.filters.slot"
-msgstr ""
+msgstr "Yuva"
 
 #: workspace:workspace.media.library.filters.status
 msgid "workspace.media.library.filters.status"
-msgstr ""
+msgstr "Durum"
 
 #: workspace:workspace.media.library.filters.unusedOnly
 msgid "workspace.media.library.filters.unusedOnly"
-msgstr ""
+msgstr "Yalnız kullanılmayanlar"
 
 #: workspace:workspace.media.library.heading
 msgid "workspace.media.library.heading"
-msgstr ""
+msgstr "Fotoğraflarınız"
 
 #: workspace:workspace.media.library.how.summary
 msgid "workspace.media.library.how.summary"
-msgstr ""
+msgstr "Fotoğraflar nasıl işleniyor (yerler ve kontroller)"
 
 #: workspace:workspace.media.library.impact.blocked
 msgid "workspace.media.library.impact.blocked"
-msgstr ""
+msgstr "Yayındaki bir menüde göründüğü için silinemez. Önce onsuz bir menü yayınlayın."
 
 #: workspace:workspace.media.library.impact.cancel
 msgid "workspace.media.library.impact.cancel"
-msgstr ""
+msgstr "Kalsın"
 
 #: workspace:workspace.media.library.impact.confirm
 msgid "workspace.media.library.impact.confirm"
-msgstr ""
+msgstr "{count} yerden çıkar ve çöpe taşı"
 
 #: workspace:workspace.media.library.impact.failed
 msgid "workspace.media.library.impact.failed"
-msgstr ""
+msgstr "Kullanım kontrol edilemedi. Hiçbir şey silinmedi."
 
 #: workspace:workspace.media.library.impact.lead
 msgid "workspace.media.library.impact.lead"
-msgstr ""
+msgstr "Bu görsel {count} yerde kullanılıyor:"
 
 #: workspace:workspace.media.library.impact.loading
 msgid "workspace.media.library.impact.loading"
-msgstr ""
+msgstr "Bu görselin nerede kullanıldığı kontrol ediliyor…"
 
 #: workspace:workspace.media.library.impact.title
 msgid "workspace.media.library.impact.title"
-msgstr ""
+msgstr "{name} silinsin mi?"
 
 #: workspace:workspace.media.library.impact.trashNote
 msgid "workspace.media.library.impact.trashNote"
-msgstr ""
+msgstr "O öğelerde yer tutucu görünecek. Görsel çöpe gider ve geri alınabilir."
 
 #: workspace:workspace.media.library.loading
 msgid "workspace.media.library.loading"
-msgstr ""
+msgstr "Görsel kütüphanesi yükleniyor…"
 
 #: workspace:workspace.media.library.region
 msgid "workspace.media.library.region"
-msgstr ""
+msgstr "Görsel kütüphanesi"
 
 #: workspace:workspace.media.library.slots.category.corporateSite
 msgid "workspace.media.library.slots.category.corporateSite"
-msgstr ""
+msgstr "Kurumsal site"
 
 #: workspace:workspace.media.library.slots.category.email
 msgid "workspace.media.library.slots.category.email"
-msgstr ""
+msgstr "E-posta"
 
 #: workspace:workspace.media.library.slots.category.menu
 msgid "workspace.media.library.slots.category.menu"
-msgstr ""
+msgstr "Menü"
 
 #: workspace:workspace.media.library.slots.category.product
 msgid "workspace.media.library.slots.category.product"
-msgstr ""
+msgstr "Ürün"
 
 #: workspace:workspace.media.library.slots.category.qr
 msgid "workspace.media.library.slots.category.qr"
-msgstr ""
+msgstr "Karekod"
 
 #: workspace:workspace.media.library.slots.category.restaurant
 msgid "workspace.media.library.slots.category.restaurant"
-msgstr ""
+msgstr "Restoran"
 
 #: workspace:workspace.media.library.slots.heading
 msgid "workspace.media.library.slots.heading"
-msgstr ""
+msgstr "Yuva kategorileri"
 
 #: workspace:workspace.media.library.slots.status.noAssetsYet
 msgid "workspace.media.library.slots.status.noAssetsYet"
-msgstr ""
+msgstr "{category}: henüz görsel yok."
 
 #: workspace:workspace.media.library.tabs.label
 msgid "workspace.media.library.tabs.label"
-msgstr ""
+msgstr "Görsel kütüphanesi bölümleri"
 
 #: workspace:workspace.media.library.tabs.library
 msgid "workspace.media.library.tabs.library"
-msgstr ""
+msgstr "Kütüphane"
 
 #: workspace:workspace.media.library.tabs.trash
 msgid "workspace.media.library.tabs.trash"
-msgstr ""
+msgstr "Çöp"
 
 #: workspace:workspace.media.library.trash.empty
 msgid "workspace.media.library.trash.empty"
-msgstr ""
+msgstr "Çöp boş."
 
 #: workspace:workspace.media.library.trash.failed
 msgid "workspace.media.library.trash.failed"
-msgstr ""
+msgstr "Çöp yüklenemedi."
 
 #: workspace:workspace.media.library.trash.heading
 msgid "workspace.media.library.trash.heading"
-msgstr ""
+msgstr "Çöp"
 
 #: workspace:workspace.media.library.trash.lead
 msgid "workspace.media.library.trash.lead"
-msgstr ""
+msgstr "Silinen görseller burada {days} gün kalır, sonra tamamen kaldırılır."
 
 #: workspace:workspace.media.library.trash.loading
 msgid "workspace.media.library.trash.loading"
-msgstr ""
+msgstr "Çöp yükleniyor…"
 
 #: workspace:workspace.media.library.trash.restore
 msgid "workspace.media.library.trash.restore"
-msgstr ""
+msgstr "Geri al"
 
 #: workspace:workspace.media.library.trash.restore.named
 msgid "workspace.media.library.trash.restore.named"
-msgstr ""
+msgstr "{name} görselini geri al"
 
 #: workspace:workspace.media.library.trash.restoreFailed
 msgid "workspace.media.library.trash.restoreFailed"
-msgstr ""
+msgstr "Geri alınamadı. Hâlâ çöpte."
 
 #: workspace:workspace.media.library.trash.restored
 msgid "workspace.media.library.trash.restored"
-msgstr ""
+msgstr "Geri alındı. Kütüphanede tekrar duruyor."
 
 #: workspace:workspace.media.library.unavailable
 msgid "workspace.media.library.unavailable"
-msgstr ""
+msgstr "Henüz görsel yok."
 
 #: workspace:workspace.media.library.usages.draft
 msgid "workspace.media.library.usages.draft"
-msgstr ""
+msgstr "taslak"
 
 #: workspace:workspace.media.library.usages.failed
 msgid "workspace.media.library.usages.failed"
-msgstr ""
+msgstr "Bu görselin nerede kullanıldığı kontrol edilemedi."
 
 #: workspace:workspace.media.library.usages.heading
 msgid "workspace.media.library.usages.heading"
-msgstr ""
+msgstr "Kullanıldığı yerler"
 
 #: workspace:workspace.media.library.usages.live
 msgid "workspace.media.library.usages.live"
-msgstr ""
+msgstr "yayındaki menü"
 
 #: workspace:workspace.media.library.usages.loading
 msgid "workspace.media.library.usages.loading"
-msgstr ""
+msgstr "Bu görselin nerede kullanıldığı kontrol ediliyor…"
 
 #: workspace:workspace.media.library.usages.none
 msgid "workspace.media.library.usages.none"
-msgstr ""
+msgstr "Henüz hiçbir yerde kullanılmıyor."
 
 #: workspace:workspace.media.library.versions.current
 msgid "workspace.media.library.versions.current"
-msgstr ""
+msgstr "geçerli"
 
 #: workspace:workspace.media.library.versions.failed
 msgid "workspace.media.library.versions.failed"
-msgstr ""
+msgstr "Sürümler yüklenemedi."
 
 #: workspace:workspace.media.library.versions.heading
 msgid "workspace.media.library.versions.heading"
-msgstr ""
+msgstr "Sürümler"
 
 #: workspace:workspace.media.library.versions.loading
 msgid "workspace.media.library.versions.loading"
-msgstr ""
+msgstr "Sürümler yükleniyor…"
 
 #: workspace:workspace.media.library.versions.none
 msgid "workspace.media.library.versions.none"
-msgstr ""
+msgstr "Henüz işlenmiş sürüm yok."
 
 #: workspace:workspace.media.library.versions.restore
 msgid "workspace.media.library.versions.restore"
-msgstr ""
+msgstr "v{number} sürümüne dön"
 
 #: workspace:workspace.media.library.versions.restored
 msgid "workspace.media.library.versions.restored"
-msgstr ""
+msgstr "v{number} yeni bir sürüm olarak geri alındı."
 
 #: workspace:workspace.media.library.versions.row
 msgid "workspace.media.library.versions.row"
-msgstr ""
+msgstr "v{number} · {by} · {renditions} boyut"
 
 #: workspace:workspace.media.library.view.grid
 msgid "workspace.media.library.view.grid"
-msgstr ""
+msgstr "Izgara"
 
 #: workspace:workspace.media.library.view.label
 msgid "workspace.media.library.view.label"
-msgstr ""
+msgstr "Görünüm"
 
 #: workspace:workspace.media.library.view.list
 msgid "workspace.media.library.view.list"
-msgstr ""
+msgstr "Liste"
 
 #: workspace:workspace.media.lifecycle.derivatives
 msgid "workspace.media.lifecycle.derivatives"
-msgstr ""
+msgstr "Türevler"
 
 #: workspace:workspace.media.lifecycle.heading
 msgid "workspace.media.lifecycle.heading"
-msgstr ""
+msgstr "Yaşam döngüsü"
 
 #: workspace:workspace.media.lifecycle.quarantine
 msgid "workspace.media.lifecycle.quarantine"
-msgstr ""
+msgstr "Karantina"
 
 #: workspace:workspace.media.lifecycle.securityScan
 msgid "workspace.media.lifecycle.securityScan"
-msgstr ""
+msgstr "Güvenlik taraması"
 
 #: workspace:workspace.media.lifecycle.validation
 msgid "workspace.media.lifecycle.validation"
-msgstr ""
+msgstr "Doğrulama"
 
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
-msgstr ""
+msgstr "Fotoğraf yükleyin ve yayınlanan menünüzü besleyen görsel kütüphanesini yönetin — her dosya kullanılmadan önce taranır."
 
 #: workspace:workspace.media.quota.assets
 msgid "workspace.media.quota.assets"
-msgstr ""
+msgstr "Görseller"
 
 #: workspace:workspace.media.quota.heading
 msgid "workspace.media.quota.heading"
-msgstr ""
+msgstr "Depolama"
 
 #: workspace:workspace.media.quota.monthly
 msgid "workspace.media.quota.monthly"
-msgstr ""
+msgstr "Bu ayki yüklemeler"
 
 #: workspace:workspace.media.quota.note
 msgid "workspace.media.quota.note"
-msgstr ""
+msgstr "Silinen görseller {days} gün çöpte kalır ve o süre boyunca kotaya sayılır. Üretilen boyutlar ücretsizdir."
 
 #: workspace:workspace.media.quota.plan
 msgid "workspace.media.quota.plan"
-msgstr ""
+msgstr "Plan: {plan}"
 
 #: workspace:workspace.media.quota.ratio
 msgid "workspace.media.quota.ratio"
-msgstr ""
+msgstr "{limit} içinden {used}"
 
 #: workspace:workspace.media.quota.region
 msgid "workspace.media.quota.region"
-msgstr ""
+msgstr "Görsel kotası"
 
 #: workspace:workspace.media.quota.storage
 msgid "workspace.media.quota.storage"
-msgstr ""
+msgstr "Asıl dosyalar"
 
 #: workspace:workspace.media.quota.unlimited
 msgid "workspace.media.quota.unlimited"
-msgstr ""
+msgstr "sınırsız"
 
 #: workspace:workspace.media.security.explanation
 msgid "workspace.media.security.explanation"
-msgstr ""
+msgstr "Her görsel, menünüzde görünmeden önce taranır ve bir kişi tarafından kontrol edilir."
 
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"
-msgstr ""
+msgstr "Yükle"
 
 #: workspace:workspace.media.upload.complete
 msgid "workspace.media.upload.complete"
-msgstr ""
+msgstr "Görsel yükleme tamamlandı."
 
 #: workspace:workspace.media.upload.dropzone.active
 msgid "workspace.media.upload.dropzone.active"
-msgstr ""
+msgstr "Bu görseli eklemek için bırakın"
 
 #: workspace:workspace.media.upload.dropzone.choose
 msgid "workspace.media.upload.dropzone.choose"
-msgstr ""
+msgstr "Dosya seç"
 
 #: workspace:workspace.media.upload.dropzone.hint
 msgid "workspace.media.upload.dropzone.hint"
-msgstr ""
+msgstr "JPEG, PNG ya da WebP"
 
 #: workspace:workspace.media.upload.dropzone.label
 msgid "workspace.media.upload.dropzone.label"
-msgstr ""
+msgstr "Bir görseli buraya bırakın ya da dosya seçin"
 
 #: workspace:workspace.media.upload.error.altText.required
 msgid "workspace.media.upload.error.altText.required"
-msgstr ""
+msgstr "Bu görsel için alt metin girin."
 
 #: workspace:workspace.media.upload.error.assetSlot.required
 msgid "workspace.media.upload.error.assetSlot.required"
-msgstr ""
+msgstr "Bu görselin nerede kullanılacağını seçin."
 
 #: workspace:workspace.media.upload.error.file.required
 msgid "workspace.media.upload.error.file.required"
-msgstr ""
+msgstr "Yüklemek için bir dosya seçin."
 
 #: workspace:workspace.media.upload.error.tooLarge
 msgid "workspace.media.upload.error.tooLarge"
-msgstr ""
+msgstr "Bu dosya {size} MB; sınır {max} MB. Daha küçük bir kopya çıkarıp tekrar deneyin."
 
 #: workspace:workspace.media.upload.error.tooManyPixels
 msgid "workspace.media.upload.error.tooManyPixels"
-msgstr ""
+msgstr "Bu görsel {width} × {height} piksel — {max} megapikselden büyük. Daha küçük bir kopya çıkarıp tekrar deneyin."
 
 #: workspace:workspace.media.upload.error.tooSmall
 msgid "workspace.media.upload.error.tooSmall"
-msgstr ""
+msgstr "Bu görsel {width} × {height}. {slot} için en az {min} gerekir. Daha küçük bir görsel bulanık görünür, çünkü hiçbir zaman büyütülmez."
 
 #: workspace:workspace.media.upload.failed
 msgid "workspace.media.upload.failed"
-msgstr ""
+msgstr "Görsel yüklenemedi. Seçiminiz korundu."
 
 #: workspace:workspace.media.upload.field.altText
 msgid "workspace.media.upload.field.altText"
-msgstr ""
+msgstr "Alt metin"
 
 #: workspace:workspace.media.upload.field.altText.hint
 msgid "workspace.media.upload.field.altText.hint"
-msgstr ""
+msgstr "Görseli göremeyen biri için tarif edin; örneğin \"tahta tabakta ızgara kuzu pirzola\"."
 
 #: workspace:workspace.media.upload.field.assetSlot
 msgid "workspace.media.upload.field.assetSlot"
-msgstr ""
+msgstr "Bu görsel nerede kullanılacak?"
 
 #: workspace:workspace.media.upload.field.assetSlot.appIcon
 msgid "workspace.media.upload.field.assetSlot.appIcon"
-msgstr ""
+msgstr "Uygulama simgesi"
 
 #: workspace:workspace.media.upload.field.assetSlot.avatar
 msgid "workspace.media.upload.field.assetSlot.avatar"
-msgstr ""
+msgstr "Profil görseli"
 
 #: workspace:workspace.media.upload.field.assetSlot.cards
 msgid "workspace.media.upload.field.assetSlot.cards"
-msgstr ""
+msgstr "Kartlar"
 
 #: workspace:workspace.media.upload.field.assetSlot.categoryHero
 msgid "workspace.media.upload.field.assetSlot.categoryHero"
-msgstr ""
+msgstr "Kategori kapağı"
 
 #: workspace:workspace.media.upload.field.assetSlot.cover
 msgid "workspace.media.upload.field.assetSlot.cover"
-msgstr ""
+msgstr "Kapak"
 
 #: workspace:workspace.media.upload.field.assetSlot.emailHeader
 msgid "workspace.media.upload.field.assetSlot.emailHeader"
-msgstr ""
+msgstr "E-posta başlığı"
 
 #: workspace:workspace.media.upload.field.assetSlot.favicon
 msgid "workspace.media.upload.field.assetSlot.favicon"
-msgstr ""
+msgstr "Site simgesi"
 
 #: workspace:workspace.media.upload.field.assetSlot.features
 msgid "workspace.media.upload.field.assetSlot.features"
-msgstr ""
+msgstr "Özellikler"
 
 #: workspace:workspace.media.upload.field.assetSlot.gallery
 msgid "workspace.media.upload.field.assetSlot.gallery"
-msgstr ""
+msgstr "Galeri"
 
 #: workspace:workspace.media.upload.field.assetSlot.hero
 msgid "workspace.media.upload.field.assetSlot.hero"
-msgstr ""
+msgstr "Kapak görseli"
 
 #: workspace:workspace.media.upload.field.assetSlot.itemImage
 msgid "workspace.media.upload.field.assetSlot.itemImage"
-msgstr ""
+msgstr "Ürün görseli"
 
 #: workspace:workspace.media.upload.field.assetSlot.logo
 msgid "workspace.media.upload.field.assetSlot.logo"
-msgstr ""
+msgstr "Logo"
 
 #: workspace:workspace.media.upload.field.assetSlot.ogImage
 msgid "workspace.media.upload.field.assetSlot.ogImage"
-msgstr ""
+msgstr "Paylaşım görseli"
 
 #: workspace:workspace.media.upload.field.assetSlot.placeholder
 msgid "workspace.media.upload.field.assetSlot.placeholder"
-msgstr ""
+msgstr "Bir yer seçin"
 
 #: workspace:workspace.media.upload.field.assetSlot.pricing
 msgid "workspace.media.upload.field.assetSlot.pricing"
-msgstr ""
+msgstr "Fiyat"
 
 #: workspace:workspace.media.upload.field.assetSlot.printLogo
 msgid "workspace.media.upload.field.assetSlot.printLogo"
-msgstr ""
+msgstr "Baskı logosu"
 
 #: workspace:workspace.media.upload.field.assetSlot.profileAvatar
 msgid "workspace.media.upload.field.assetSlot.profileAvatar"
-msgstr ""
+msgstr "Profil fotoğrafı"
 
 #: workspace:workspace.media.upload.field.assetSlot.testimonial
 msgid "workspace.media.upload.field.assetSlot.testimonial"
-msgstr ""
+msgstr "Müşteri yorumu"
 
 #: workspace:workspace.media.upload.field.file
 msgid "workspace.media.upload.field.file"
-msgstr ""
+msgstr "Dosya"
 
 #: workspace:workspace.media.upload.heading
 msgid "workspace.media.upload.heading"
-msgstr ""
+msgstr "Fotoğraf ekle"
 
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
-msgstr ""
+msgstr "{name} için ad"
 
 #: workspace:workspace.media.upload.more.label
 msgid "workspace.media.upload.more.label"
-msgstr ""
+msgstr "Yüklenecek diğer fotoğraflar"
 
 #: workspace:workspace.media.upload.more.lead
 msgid "workspace.media.upload.more.lead"
-msgstr ""
+msgstr "{count} fotoğraf daha aynı yer için yüklenecek. Her birine ad verin:"
 
 #: workspace:workspace.media.upload.more.progress
 msgid "workspace.media.upload.more.progress"
-msgstr ""
+msgstr "{total} fotoğraftan {done} tanesi yükleniyor…"
 
 #: workspace:workspace.media.upload.region
 msgid "workspace.media.upload.region"
-msgstr ""
+msgstr "Görsel yükleme"
 
 #: workspace:workspace.media.upload.requirement.aspect
 msgid "workspace.media.upload.requirement.aspect"
-msgstr ""
+msgstr "En-boy oranı {aspect}"
 
 #: workspace:workspace.media.upload.requirement.formats
 msgid "workspace.media.upload.requirement.formats"
-msgstr ""
+msgstr "Biçimler: {formats}"
 
 #: workspace:workspace.media.upload.requirement.minimum
 msgid "workspace.media.upload.requirement.minimum"
-msgstr ""
+msgstr "En az {width} × {height} piksel"
 
 #: workspace:workspace.media.upload.retry
 msgid "workspace.media.upload.retry"
-msgstr ""
+msgstr "Tekrar deneyin"
 
 #: workspace:workspace.media.upload.selected.dimensions
 msgid "workspace.media.upload.selected.dimensions"
-msgstr ""
+msgstr "{width} × {height} piksel"
 
 #: workspace:workspace.media.upload.selected.replace
 msgid "workspace.media.upload.selected.replace"
-msgstr ""
+msgstr "Başka bir dosya seç"
 
 #: workspace:workspace.media.upload.uploading
 msgid "workspace.media.upload.uploading"
-msgstr ""
+msgstr "Görsel yükleniyor…"
 
 #: workspace:workspace.media.upload.uploading.progress
 msgid "workspace.media.upload.uploading.progress"
-msgstr ""
+msgstr "Yükleniyor… %{percent}"
 
 #: workspace:workspace.menu.empty.brand.body
 msgid "workspace.menu.empty.brand.body"
-msgstr ""
+msgstr "Menü bir şubeye, şube de bir markaya aittir. Önce markanızı kurun, sonra şube ekleyin."
 
 #: workspace:workspace.menu.empty.brand.cta
 msgid "workspace.menu.empty.brand.cta"
-msgstr ""
+msgstr "Markayı kur"
 
 #: workspace:workspace.menu.empty.location.body
 msgid "workspace.menu.empty.location.body"
-msgstr ""
+msgstr "Menü bir şubeye aittir ve bu çalışma alanında henüz şube yok. Önce bir şube ekleyin, menü kataloğu burada açılır."
 
 #: workspace:workspace.menu.empty.location.cta
 msgid "workspace.menu.empty.location.cta"
-msgstr ""
+msgstr "Şube ekle"
 
 #: workspace:workspace.menu.error
 msgid "workspace.menu.error"
-msgstr ""
+msgstr "Menünüz yüklenemedi. Tekrar denemek için sayfayı yenileyin."
 
 #: workspace:workspace.menu.error.noRetry
 msgid "workspace.menu.error.noRetry"
-msgstr ""
+msgstr "Tekrar denemek için sayfayı yenileyin."
 
 #: workspace:workspace.menu.error.why
 msgid "workspace.menu.error.why"
-msgstr ""
+msgstr "Menünüz güvende — bu yalnız şu anda yüklenmesiyle ilgili bir sorun."
 
 #: workspace:workspace.menu.heading
 msgid "workspace.menu.heading"
-msgstr ""
+msgstr "Menü"
 
 #: workspace:workspace.menu.inspector.categories
 msgid "workspace.menu.inspector.categories"
-msgstr ""
+msgstr "Kategoriler"
 
 #: workspace:workspace.menu.inspector.items
 msgid "workspace.menu.inspector.items"
-msgstr ""
+msgstr "Ürünler"
 
 #: workspace:workspace.menu.inspector.location
 msgid "workspace.menu.inspector.location"
-msgstr ""
+msgstr "Şube"
 
 #: workspace:workspace.menu.inspector.status
 msgid "workspace.menu.inspector.status"
-msgstr ""
+msgstr "Durum"
 
 #: workspace:workspace.menu.inspector.status.published
 msgid "workspace.menu.inspector.status.published"
-msgstr ""
+msgstr "Yayında · sürüm {version}"
 
 #: workspace:workspace.menu.inspector.title
 msgid "workspace.menu.inspector.title"
-msgstr ""
+msgstr "Bu menü"
 
 #: workspace:workspace.menu.loading
 msgid "workspace.menu.loading"
-msgstr ""
+msgstr "Menünüz yükleniyor…"
 
 #: workspace:workspace.menu.operational.description
 msgid "workspace.menu.operational.description"
-msgstr ""
+msgstr "Seçili şubenin yayındaki menü kataloğundaki kategorileri ve ürünleri kurun ve düzenleyin."
 
 #: workspace:workspace.menu.previewAndPublish
 msgid "workspace.menu.previewAndPublish"
-msgstr ""
+msgstr "Önizle ve yayınla"
 
 #: workspace:workspace.omnibox.empty
 msgid "workspace.omnibox.empty"
-msgstr ""
+msgstr "Bu çalışma alanında aramanıza uyan bir şey yok."
 
 #: workspace:workspace.omnibox.group.create
 msgid "workspace.omnibox.group.create"
-msgstr ""
+msgstr "Oluştur"
 
 #: workspace:workspace.omnibox.group.goTo
 msgid "workspace.omnibox.group.goTo"
-msgstr ""
+msgstr "Şuraya git"
 
 #: workspace:workspace.omnibox.group.records
 msgid "workspace.omnibox.group.records"
-msgstr ""
+msgstr "Bu çalışma alanında"
 
 #: workspace:workspace.omnibox.input.label
 msgid "workspace.omnibox.input.label"
-msgstr ""
+msgstr "Ara"
 
 #: workspace:workspace.omnibox.input.placeholder
 msgid "workspace.omnibox.input.placeholder"
-msgstr ""
+msgstr "Menü, şube ve ekranlarda aramak için yazın"
 
 #: workspace:workspace.omnibox.title
 msgid "workspace.omnibox.title"
-msgstr ""
+msgstr "Ara ve git"
 
 #: workspace:workspace.omnibox.trigger.label
 msgid "workspace.omnibox.trigger.label"
-msgstr ""
+msgstr "Ara, git ya da oluştur"
 
 #: workspace:workspace.profile.appearance.heading
 msgid "workspace.profile.appearance.heading"
-msgstr ""
+msgstr "Görünüm"
 
 #: workspace:workspace.profile.appearance.help
 msgid "workspace.profile.appearance.help"
-msgstr ""
+msgstr "Açık ya da koyu tema sizin tercihinizdir — misafirleriniz için hiçbir şey değişmez. “Sistem” cihazınızın ayarını izler."
 
 #: workspace:workspace.profile.avatar.alt_default
 msgid "workspace.profile.avatar.alt_default"
-msgstr ""
+msgstr "Profil fotoğrafı"
 
 #: workspace:workspace.profile.avatar.current_alt
 msgid "workspace.profile.avatar.current_alt"
-msgstr ""
+msgstr "Mevcut profil fotoğrafınız"
 
 #: workspace:workspace.profile.avatar.error
 msgid "workspace.profile.avatar.error"
-msgstr ""
+msgstr "Fotoğraf kaydedilemedi. Tekrar deneyin."
 
 #: workspace:workspace.profile.avatar.formats
 msgid "workspace.profile.avatar.formats"
-msgstr ""
+msgstr "JPEG, PNG ya da WebP."
 
 #: workspace:workspace.profile.avatar.heading
 msgid "workspace.profile.avatar.heading"
-msgstr ""
+msgstr "Profil fotoğrafı"
 
 #: workspace:workspace.profile.avatar.help
 msgid "workspace.profile.avatar.help"
-msgstr ""
+msgstr "Kendi fotoğrafınızı seçin. Görsel kütüphanenizde saklanır, diğer görseller gibi taranır ve adınızın yanında görünür."
 
 #: workspace:workspace.profile.avatar.processing
 msgid "workspace.profile.avatar.processing"
-msgstr ""
+msgstr "Fotoğrafınız hâlâ işleniyor. Her yerde görünmesi biraz zaman alabilir."
 
 #: workspace:workspace.profile.avatar.remove
 msgid "workspace.profile.avatar.remove"
-msgstr ""
+msgstr "Fotoğrafı kaldır"
 
 #: workspace:workspace.profile.avatar.save
 msgid "workspace.profile.avatar.save"
-msgstr ""
+msgstr "Bu fotoğrafı kullan"
 
 #: workspace:workspace.profile.avatar.saved
 msgid "workspace.profile.avatar.saved"
-msgstr ""
+msgstr "Profil fotoğrafı güncellendi."
 
 #: workspace:workspace.profile.avatar.saving
 msgid "workspace.profile.avatar.saving"
-msgstr ""
+msgstr "Kaydediliyor…"
 
 #: workspace:workspace.profile.colors.clear
 msgid "workspace.profile.colors.clear"
-msgstr ""
+msgstr "Temizle"
 
 #: workspace:workspace.profile.colors.error
 msgid "workspace.profile.colors.error"
-msgstr ""
+msgstr "Renkler kaydedilemedi. #C8102E gibi altı haneli bir kod yazıp tekrar deneyin."
 
 #: workspace:workspace.profile.colors.heading
 msgid "workspace.profile.colors.heading"
-msgstr ""
+msgstr "Marka renkleri"
 
 #: workspace:workspace.profile.colors.help
 msgid "workspace.profile.colors.help"
-msgstr ""
+msgstr "Bu iki renk, yayınlanan misafir menünüzde kullanılır. Buradan seçin ya da marka kılavuzunuzdaki kodu yazın."
 
 #: workspace:workspace.profile.colors.primary
 msgid "workspace.profile.colors.primary"
-msgstr ""
+msgstr "Birincil renk"
 
 #: workspace:workspace.profile.colors.save
 msgid "workspace.profile.colors.save"
-msgstr ""
+msgstr "Renkleri kaydet"
 
 #: workspace:workspace.profile.colors.saved
 msgid "workspace.profile.colors.saved"
-msgstr ""
+msgstr "Marka renkleri kaydedildi. Bir sonraki yayınla canlıya çıkar."
 
 #: workspace:workspace.profile.colors.saving
 msgid "workspace.profile.colors.saving"
-msgstr ""
+msgstr "Kaydediliyor…"
 
 #: workspace:workspace.profile.colors.secondary
 msgid "workspace.profile.colors.secondary"
-msgstr ""
+msgstr "İkincil renk"
 
 #: workspace:workspace.profile.description
 msgid "workspace.profile.description"
-msgstr ""
+msgstr "Adınız, fotoğrafınız ve görünüm tercihiniz. Buradaki değişiklikler, üyesi olduğunuz her çalışma alanında sizinle gelir."
 
 #: workspace:workspace.profile.details.heading
 msgid "workspace.profile.details.heading"
-msgstr ""
+msgstr "Bilgileriniz"
 
 #: workspace:workspace.profile.title
 msgid "workspace.profile.title"
-msgstr ""
+msgstr "Profil"
 
 #: workspace:workspace.publication.draftPreview.allergens
 msgid "workspace.publication.draftPreview.allergens"
-msgstr ""
+msgstr "Alerjenler"
 
 #: workspace:workspace.publication.draftPreview.empty
 msgid "workspace.publication.draftPreview.empty"
-msgstr ""
+msgstr "Henüz menü yüklenmedi."
 
 #: workspace:workspace.publication.draftPreview.hidden
 msgid "workspace.publication.draftPreview.hidden"
-msgstr ""
+msgstr "Gizli"
 
 #: workspace:workspace.publication.draftPreview.notice
 msgid "workspace.publication.draftPreview.notice"
-msgstr ""
+msgstr "Bu bir taslak önizlemesi — herkese açık ya da yayında değil."
 
 #: workspace:workspace.publication.draftPreview.region
 msgid "workspace.publication.draftPreview.region"
-msgstr ""
+msgstr "Taslak menü önizlemesi"
 
 #: workspace:workspace.publication.draftPreview.visible
 msgid "workspace.publication.draftPreview.visible"
-msgstr ""
+msgstr "Görünür"
 
 #: workspace:workspace.publication.heading
 msgid "workspace.publication.heading"
-msgstr ""
+msgstr "Yayın"
 
 #: workspace:workspace.publication.history.help
 msgid "workspace.publication.history.help"
-msgstr ""
+msgstr "Geri dönmek yeni bir sürüm yazar. Hiçbir şey silinmez ve basılı karekodlara dokunulmaz."
 
 #: workspace:workspace.publication.history.live
 msgid "workspace.publication.history.live"
-msgstr ""
+msgstr "Yayında"
 
 #: workspace:workspace.publication.history.restore
 msgid "workspace.publication.history.restore"
-msgstr ""
+msgstr "Bu sürüme dön"
 
 #: workspace:workspace.publication.history.restoreError
 msgid "workspace.publication.history.restoreError"
-msgstr ""
+msgstr "Bu sürüme dönülemedi."
 
 #: workspace:workspace.publication.history.restoreLabel
 msgid "workspace.publication.history.restoreLabel"
-msgstr ""
+msgstr "Sürüm {version} hâline dön"
 
 #: workspace:workspace.publication.history.title
 msgid "workspace.publication.history.title"
-msgstr ""
+msgstr "Yayınlanmış sürümler"
 
 #: workspace:workspace.publication.history.version
 msgid "workspace.publication.history.version"
-msgstr ""
+msgstr "Sürüm {version}"
 
 #: workspace:workspace.publication.operational.description
 msgid "workspace.publication.operational.description"
-msgstr ""
+msgstr "Taslak menünüzü gözden geçirin, hazır olduğunu onaylayın ve canlıya alın — ayrıca ona giden karekodu yönetin."
 
 #: workspace:workspace.publication.publishAction.checklistConfirmed
 msgid "workspace.publication.publishAction.checklistConfirmed"
-msgstr ""
+msgstr "Yayın kontrol listesini gözden geçirdim"
 
 #: workspace:workspace.publication.publishAction.failurePreservationNotice
 msgid "workspace.publication.publishAction.failurePreservationNotice"
-msgstr ""
+msgstr "Yayınlama başarısız olursa misafirler en son yayınladığınız menüyü görmeye devam eder — masada hiçbir şey bozulmaz."
 
 #: workspace:workspace.publication.publishAction.mode.immediate
 msgid "workspace.publication.publishAction.mode.immediate"
-msgstr ""
+msgstr "Hemen yayınla"
 
 #: workspace:workspace.publication.publishAction.mode.label
 msgid "workspace.publication.publishAction.mode.label"
-msgstr ""
+msgstr "Yayın biçimi"
 
 #: workspace:workspace.publication.publishAction.permissionNotice
 msgid "workspace.publication.publishAction.permissionNotice"
-msgstr ""
+msgstr "Bu menüyü yayınlamak için yetkiniz olmalı."
 
 #: workspace:workspace.publication.publishAction.region
 msgid "workspace.publication.publishAction.region"
-msgstr ""
+msgstr "Yayınlamak ne yapar"
 
 #: workspace:workspace.publication.publishAction.scheduleNotice
 msgid "workspace.publication.publishAction.scheduleNotice"
-msgstr ""
+msgstr "Seçilen bir saatte yayınlama henüz kullanılamıyor."
 
 #: workspace:workspace.publication.publishAction.snapshotNotice
 msgid "workspace.publication.publishAction.snapshotNotice"
-msgstr ""
+msgstr "Yayınlamak, burada gördüğünüzü misafirlerinizin göreceği menü yapar. Sonrasında düzenlediğiniz her şey, siz tekrar yayınlayana kadar size özel kalır."
 
 #: workspace:workspace.publication.publishedSnapshot.publishedAt
 msgid "workspace.publication.publishedSnapshot.publishedAt"
-msgstr ""
+msgstr "{publishedAt} tarihinde yayınlandı"
 
 #: workspace:workspace.publication.publishedSnapshot.region
 msgid "workspace.publication.publishedSnapshot.region"
-msgstr ""
+msgstr "Yayınlanan menü"
 
 #: workspace:workspace.publication.qrDestination.createButton
 msgid "workspace.publication.qrDestination.createButton"
-msgstr ""
+msgstr "Oluştur"
 
 #: workspace:workspace.publication.qrDestination.createError
 msgid "workspace.publication.qrDestination.createError"
-msgstr ""
+msgstr "Karekod oluşturulamadı. Tekrar deneyin."
 
 #: workspace:workspace.publication.qrDestination.disableButton
 msgid "workspace.publication.qrDestination.disableButton"
-msgstr ""
+msgstr "Devre dışı bırak"
 
 #: workspace:workspace.publication.qrDestination.disableError
 msgid "workspace.publication.qrDestination.disableError"
-msgstr ""
+msgstr "Karekod devre dışı bırakılamadı. Tekrar deneyin."
 
 #: workspace:workspace.publication.qrDestination.empty
 msgid "workspace.publication.qrDestination.empty"
-msgstr ""
+msgstr "Henüz karekod oluşturulmadı."
 
 #: workspace:workspace.publication.qrDestination.enableButton
 msgid "workspace.publication.qrDestination.enableButton"
-msgstr ""
+msgstr "Yeniden etkinleştir"
 
 #: workspace:workspace.publication.qrDestination.enableError
 msgid "workspace.publication.qrDestination.enableError"
-msgstr ""
+msgstr "Kod yeniden etkinleştirilemedi."
 
 #: workspace:workspace.publication.qrDestination.explanation
 msgid "workspace.publication.qrDestination.explanation"
-msgstr ""
+msgstr "Yayındaki menüye giden bir karekod oluşturun."
 
 #: workspace:workspace.publication.qrDestination.fields.unavailable
 msgid "workspace.publication.qrDestination.fields.unavailable"
-msgstr ""
+msgstr "Önce menünüzü yayınlayın — karekodun göstereceği yayınlanmış bir menü gerekir."
 
 #: workspace:workspace.publication.qrDestination.loadError
 msgid "workspace.publication.qrDestination.loadError"
-msgstr ""
+msgstr "Karekodlar yüklenemedi. Tekrar deneyin."
 
 #: workspace:workspace.publication.qrDestination.loading
 msgid "workspace.publication.qrDestination.loading"
-msgstr ""
+msgstr "Karekodlar yükleniyor…"
 
 #: workspace:workspace.publication.qrDestination.move.button
 msgid "workspace.publication.qrDestination.move.button"
-msgstr ""
+msgstr "Taşı"
 
 #: workspace:workspace.publication.qrDestination.move.cancel
 msgid "workspace.publication.qrDestination.move.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: workspace:workspace.publication.qrDestination.move.choose
 msgid "workspace.publication.qrDestination.move.choose"
-msgstr ""
+msgstr "Bir şube seçin…"
 
 #: workspace:workspace.publication.qrDestination.move.error
 msgid "workspace.publication.qrDestination.move.error"
-msgstr ""
+msgstr "Kod taşınamadı. Basılı kart eskisi gibi çalışmaya devam ediyor."
 
 #: workspace:workspace.publication.qrDestination.move.label
 msgid "workspace.publication.qrDestination.move.label"
-msgstr ""
+msgstr "Bu kodu taşı"
 
 #: workspace:workspace.publication.qrDestination.move.loading
 msgid "workspace.publication.qrDestination.move.loading"
-msgstr ""
+msgstr "Şubeler yükleniyor…"
 
 #: workspace:workspace.publication.qrDestination.move.noOther
 msgid "workspace.publication.qrDestination.move.noOther"
-msgstr ""
+msgstr "Tek şubeniz bu — kodu taşıyacak başka yer yok."
 
 #: workspace:workspace.publication.qrDestination.move.start
 msgid "workspace.publication.qrDestination.move.start"
-msgstr ""
+msgstr "Başka bir şubeye taşı"
 
 #: workspace:workspace.publication.qrDestination.region
 msgid "workspace.publication.qrDestination.region"
-msgstr ""
+msgstr "Karekod hedefi"
 
 #: workspace:workspace.publication.qrDestination.state.disabled
 msgid "workspace.publication.qrDestination.state.disabled"
-msgstr ""
+msgstr "Devre dışı"
 
 #: workspace:workspace.publication.qrExport.bulk
 msgid "workspace.publication.qrExport.bulk"
-msgstr ""
+msgstr "Toplu çıktı"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.advanced
 msgid "workspace.publication.qrExport.bulkWizard.advanced"
-msgstr ""
+msgstr "Gelişmiş ayarlar"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.areaSectionCount
 msgid "workspace.publication.qrExport.bulkWizard.areaSectionCount"
-msgstr ""
+msgstr "Bölüm sayısı"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.areaSectionCount.error
 msgid "workspace.publication.qrExport.bulkWizard.areaSectionCount.error"
-msgstr ""
+msgstr "1 ile 50 arasında tam sayı girin."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.createButton
 msgid "workspace.publication.qrExport.bulkWizard.createButton"
-msgstr ""
+msgstr "Masa karekodlarını oluştur"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.createError
 msgid "workspace.publication.qrExport.bulkWizard.createError"
-msgstr ""
+msgstr "Masa karekodları oluşturulamadı. Tekrar deneyin."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.crossFieldError
 msgid "workspace.publication.qrExport.bulkWizard.crossFieldError"
-msgstr ""
+msgstr "Numaralandırma aralığı ve başlangıcı masa sayısıyla uyuşmalı ve 0-9999 arasında kalmalı."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.heading
 msgid "workspace.publication.qrExport.bulkWizard.heading"
-msgstr ""
+msgstr "Toplu karekod sihirbazı"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.loading
 msgid "workspace.publication.qrExport.bulkWizard.loading"
-msgstr ""
+msgstr "Masa karekodları oluşturuluyor..."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.namingPrefix
 msgid "workspace.publication.qrExport.bulkWizard.namingPrefix"
-msgstr ""
+msgstr "Ad ön eki"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.namingPrefix.error
 msgid "workspace.publication.qrExport.bulkWizard.namingPrefix.error"
-msgstr ""
+msgstr "Ad ön eki en fazla 10 karakter olmalı."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.namingRange
 msgid "workspace.publication.qrExport.bulkWizard.namingRange"
-msgstr ""
+msgstr "Numaralandırma aralığı"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.namingRange.error
 msgid "workspace.publication.qrExport.bulkWizard.namingRange.error"
-msgstr ""
+msgstr "Aralığı rakam-tire-rakam olarak girin; başlangıç bitişten büyük olmasın."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.namingSequenceStart
 msgid "workspace.publication.qrExport.bulkWizard.namingSequenceStart"
-msgstr ""
+msgstr "Numaralandırma başlangıcı"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.namingSequenceStart.error
 msgid "workspace.publication.qrExport.bulkWizard.namingSequenceStart.error"
-msgstr ""
+msgstr "0 ile 9999 arasında tam sayı girin."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.notice
 msgid "workspace.publication.qrExport.bulkWizard.notice"
-msgstr ""
+msgstr "Aşağıdaki masa düzenini doldurun, sonra kodları oluşturun."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable
 msgid "workspace.publication.qrExport.bulkWizard.seatCountPerTable"
-msgstr ""
+msgstr "Masa başına sandalye"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.seatCountPerTable.error
 msgid "workspace.publication.qrExport.bulkWizard.seatCountPerTable.error"
-msgstr ""
+msgstr "1 ile 20 arasında tam sayı girin."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.success
 msgid "workspace.publication.qrExport.bulkWizard.success"
-msgstr ""
+msgstr "{areas} bölüm, {tables} masa, {qrCodes} karekod oluşturuldu."
 
 #: workspace:workspace.publication.qrExport.bulkWizard.summary
 msgid "workspace.publication.qrExport.bulkWizard.summary"
-msgstr ""
+msgstr "{areas} bölümde {tables} masa, {seats} sandalye planlandı"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.tableCount
 msgid "workspace.publication.qrExport.bulkWizard.tableCount"
-msgstr ""
+msgstr "Masa sayısı"
 
 #: workspace:workspace.publication.qrExport.bulkWizard.tableCount.error
 msgid "workspace.publication.qrExport.bulkWizard.tableCount.error"
-msgstr ""
+msgstr "1 ile 500 arasında tam sayı girin."
 
 #: workspace:workspace.publication.qrExport.config.bulk
 msgid "workspace.publication.qrExport.config.bulk"
-msgstr ""
+msgstr "Toplu aralık ya da adet"
 
 #: workspace:workspace.publication.qrExport.config.bulk.placeholder
 msgid "workspace.publication.qrExport.config.bulk.placeholder"
-msgstr ""
+msgstr "örn. 1-50 ya da 25"
 
 #: workspace:workspace.publication.qrExport.config.destinationType
 msgid "workspace.publication.qrExport.config.destinationType"
-msgstr ""
+msgstr "Hedef türü"
 
 #: workspace:workspace.publication.qrExport.config.destinationType.menuCategory
 msgid "workspace.publication.qrExport.config.destinationType.menuCategory"
-msgstr ""
+msgstr "Menü kategorisi"
 
 #: workspace:workspace.publication.qrExport.config.destinationType.published
 msgid "workspace.publication.qrExport.config.destinationType.published"
-msgstr ""
+msgstr "Yayındaki menü"
 
 #: workspace:workspace.publication.qrExport.config.heading
 msgid "workspace.publication.qrExport.config.heading"
-msgstr ""
+msgstr "Karekod çıktı ayarları"
 
 #: workspace:workspace.publication.qrExport.config.orientation
 msgid "workspace.publication.qrExport.config.orientation"
-msgstr ""
+msgstr "Yön"
 
 #: workspace:workspace.publication.qrExport.config.orientation.landscape
 msgid "workspace.publication.qrExport.config.orientation.landscape"
-msgstr ""
+msgstr "Yatay"
 
 #: workspace:workspace.publication.qrExport.config.orientation.portrait
 msgid "workspace.publication.qrExport.config.orientation.portrait"
-msgstr ""
+msgstr "Dikey"
 
 #: workspace:workspace.publication.qrExport.config.outputFormat
 msgid "workspace.publication.qrExport.config.outputFormat"
-msgstr ""
+msgstr "Çıktı biçimi"
 
 #: workspace:workspace.publication.qrExport.config.paperSize
 msgid "workspace.publication.qrExport.config.paperSize"
-msgstr ""
+msgstr "Kâğıt boyutu"
 
 #: workspace:workspace.publication.qrExport.downloadButton
 msgid "workspace.publication.qrExport.downloadButton"
-msgstr ""
+msgstr "İndir"
 
 #: workspace:workspace.publication.qrExport.downloadPngLink
 msgid "workspace.publication.qrExport.downloadPngLink"
-msgstr ""
+msgstr "PNG indir"
 
 #: workspace:workspace.publication.qrExport.exportButton
 msgid "workspace.publication.qrExport.exportButton"
-msgstr ""
+msgstr "Çıktı al"
 
 #: workspace:workspace.publication.qrExport.formats.heading
 msgid "workspace.publication.qrExport.formats.heading"
-msgstr ""
+msgstr "Çıktı biçimleri"
 
 #: workspace:workspace.publication.qrExport.formats.pdf
 msgid "workspace.publication.qrExport.formats.pdf"
-msgstr ""
+msgstr "PDF"
 
 #: workspace:workspace.publication.qrExport.formats.png
 msgid "workspace.publication.qrExport.formats.png"
-msgstr ""
+msgstr "PNG"
 
 #: workspace:workspace.publication.qrExport.formats.svg
 msgid "workspace.publication.qrExport.formats.svg"
-msgstr ""
+msgstr "SVG"
 
 #: workspace:workspace.publication.qrExport.noActive
 msgid "workspace.publication.qrExport.noActive"
-msgstr ""
+msgstr "Çıktısı alınacak etkin karekod yok."
 
 #: workspace:workspace.publication.qrExport.previewAlt
 msgid "workspace.publication.qrExport.previewAlt"
-msgstr ""
+msgstr "Karekod önizlemesi"
 
 #: workspace:workspace.publication.qrExport.printButton
 msgid "workspace.publication.qrExport.printButton"
-msgstr ""
+msgstr "Yazdır"
 
 #: workspace:workspace.publication.qrExport.region
 msgid "workspace.publication.qrExport.region"
-msgstr ""
+msgstr "Karekod baskı çıktısı"
 
 #: workspace:workspace.publication.qrExport.selector
 msgid "workspace.publication.qrExport.selector"
-msgstr ""
+msgstr "Karekod"
 
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
-msgstr ""
+msgstr "Kalın tema"
 
 #: workspace:workspace.publication.qrExport.themes.branded
 msgid "workspace.publication.qrExport.themes.branded"
-msgstr ""
+msgstr "Markalı tema"
 
 #: workspace:workspace.publication.qrExport.themes.classic
 msgid "workspace.publication.qrExport.themes.classic"
-msgstr ""
+msgstr "Klasik tema"
 
 #: workspace:workspace.publication.qrExport.themes.heading
 msgid "workspace.publication.qrExport.themes.heading"
-msgstr ""
+msgstr "Temalar"
 
 #: workspace:workspace.publication.qrExport.themes.highContrast
 msgid "workspace.publication.qrExport.themes.highContrast"
-msgstr ""
+msgstr "Yüksek kontrast tema"
 
 #: workspace:workspace.publication.qrExport.themes.minimal
 msgid "workspace.publication.qrExport.themes.minimal"
-msgstr ""
+msgstr "Sade tema"
 
 #: workspace:workspace.publication.qrExport.themes.rounded
 msgid "workspace.publication.qrExport.themes.rounded"
-msgstr ""
+msgstr "Yuvarlak tema"
 
 #: workspace:workspace.publication.qrExport.unavailable
 msgid "workspace.publication.qrExport.unavailable"
-msgstr ""
+msgstr "Karekod baskı çıktısı henüz kullanılamıyor."
 
 #: workspace:workspace.publication.readiness.categoryNames
 msgid "workspace.publication.readiness.categoryNames"
-msgstr ""
+msgstr "Kategori adları hazır"
 
 #: workspace:workspace.publication.readiness.hasCategory
 msgid "workspace.publication.readiness.hasCategory"
-msgstr ""
+msgstr "Kategori var"
 
 #: workspace:workspace.publication.readiness.hasVisibleItem
 msgid "workspace.publication.readiness.hasVisibleItem"
-msgstr ""
+msgstr "Görünür ürün var"
 
 #: workspace:workspace.publication.readiness.needsAttention
 msgid "workspace.publication.readiness.needsAttention"
-msgstr ""
+msgstr "Eksik var"
 
 #: workspace:workspace.publication.readiness.notLoaded
 msgid "workspace.publication.readiness.notLoaded"
-msgstr ""
+msgstr "Hazırlık durumu henüz yüklenmedi."
 
 #: workspace:workspace.publication.readiness.ready
 msgid "workspace.publication.readiness.ready"
-msgstr ""
+msgstr "Hazır"
 
 #: workspace:workspace.publication.readiness.region
 msgid "workspace.publication.readiness.region"
-msgstr ""
+msgstr "Yayın hazırlık listesi"
 
 #: workspace:workspace.publication.readiness.visiblePriceAndCurrency
 msgid "workspace.publication.readiness.visiblePriceAndCurrency"
-msgstr ""
+msgstr "Görünür fiyat ve para birimi hazır"
 
 #: workspace:workspace.publication.readiness.visibleProductNames
 msgid "workspace.publication.readiness.visibleProductNames"
-msgstr ""
+msgstr "Görünür ürün adları hazır"
 
 #: workspace:workspace.publication.status.draft
 msgid "workspace.publication.status.draft"
-msgstr ""
+msgstr "Taslak"
 
 #: workspace:workspace.publication.status.lifecycle.failed
 msgid "workspace.publication.status.lifecycle.failed"
-msgstr ""
+msgstr "Başarısız"
 
 #: workspace:workspace.publication.status.lifecycle.generating
 msgid "workspace.publication.status.lifecycle.generating"
-msgstr ""
+msgstr "Üretiliyor"
 
 #: workspace:workspace.publication.status.lifecycle.heading
 msgid "workspace.publication.status.lifecycle.heading"
-msgstr ""
+msgstr "Yaşam döngüsü"
 
 #: workspace:workspace.publication.status.lifecycle.pending
 msgid "workspace.publication.status.lifecycle.pending"
-msgstr ""
+msgstr "Bekliyor"
 
 #: workspace:workspace.publication.status.lifecycle.published
 msgid "workspace.publication.status.lifecycle.published"
-msgstr ""
+msgstr "Yayında"
 
 #: workspace:workspace.publication.status.lifecycle.superseded
 msgid "workspace.publication.status.lifecycle.superseded"
-msgstr ""
+msgstr "Yerine yenisi geçti"
 
 #: workspace:workspace.publication.status.loadError
 msgid "workspace.publication.status.loadError"
-msgstr ""
+msgstr "Mevcut yayın durumu yüklenemedi. Tekrar deneyin."
 
 #: workspace:workspace.publication.status.loading
 msgid "workspace.publication.status.loading"
-msgstr ""
+msgstr "Mevcut yayın durumu kontrol ediliyor…"
 
 #: workspace:workspace.publication.status.notPublished
 msgid "workspace.publication.status.notPublished"
-msgstr ""
+msgstr "Henüz yayınlanmadı."
 
 #: workspace:workspace.publication.status.publishButton
 msgid "workspace.publication.status.publishButton"
-msgstr ""
+msgstr "Yayınla"
 
 #: workspace:workspace.publication.status.publishError
 msgid "workspace.publication.status.publishError"
-msgstr ""
+msgstr "Yayınlama başarısız oldu. Son başarılı yayın hâlâ geçerli."
 
 #: workspace:workspace.publication.status.published
 msgid "workspace.publication.status.published"
-msgstr ""
+msgstr "Yayında"
 
 #: workspace:workspace.publication.status.region
 msgid "workspace.publication.status.region"
-msgstr ""
+msgstr "Yayın durumu"
 
 #: workspace:workspace.publication.status.summary
 msgid "workspace.publication.status.summary"
-msgstr ""
+msgstr "Sürüm {version} · {state}"
 
 #: workspace:workspace.publication.status.unavailable
 msgid "workspace.publication.status.unavailable"
-msgstr ""
+msgstr "Yayın durumu henüz yok."
 
 #: workspace:workspace.publication.unavailable
 msgid "workspace.publication.unavailable"
-msgstr ""
+msgstr "Yayın henüz kullanılamıyor."
 
 #: workspace:workspace.qrCodes.empty.goToMenu
 msgid "workspace.qrCodes.empty.goToMenu"
-msgstr ""
+msgstr "Menünüze gidin"
 
 #: workspace:workspace.qrCodes.empty.needsMenu
 msgid "workspace.qrCodes.empty.needsMenu"
-msgstr ""
+msgstr "Karekod yazdırmadan önce bir menünüz olmalı"
 
 #: workspace:workspace.qrCodes.empty.needsMenu.why
 msgid "workspace.qrCodes.empty.needsMenu.why"
-msgstr ""
+msgstr "Karekod yayınlanmış menünüzü açar, yani açacağı bir menü olmalı. Önce menünüzü kurun — birkaç dakika sürer."
 
 #: workspace:workspace.qrCodes.operational.description
 msgid "workspace.qrCodes.operational.description"
-msgstr ""
+msgstr "Misafirlerinizin menüyü açmak için okuttuğu karekodları oluşturun ve yazdırın."
 
 #: workspace:workspace.settings.account.name.error
 msgid "workspace.settings.account.name.error"
-msgstr ""
+msgstr "Adınız kaydedilemedi."
 
 #: workspace:workspace.settings.account.name.label
 msgid "workspace.settings.account.name.label"
-msgstr ""
+msgstr "Adınız"
 
 #: workspace:workspace.settings.account.name.saved
 msgid "workspace.settings.account.name.saved"
-msgstr ""
+msgstr "Adınız kaydedildi."
 
 #: workspace:workspace.settings.account.name.submit
 msgid "workspace.settings.account.name.submit"
-msgstr ""
+msgstr "Adı kaydet"
 
 #: workspace:workspace.settings.account.password.confirm
 msgid "workspace.settings.account.password.confirm"
-msgstr ""
+msgstr "Yeni parolayı tekrar girin"
 
 #: workspace:workspace.settings.account.password.current
 msgid "workspace.settings.account.password.current"
-msgstr ""
+msgstr "Mevcut parola"
 
 #: workspace:workspace.settings.account.password.error
 msgid "workspace.settings.account.password.error"
-msgstr ""
+msgstr "Parolanız değiştirilemedi. Mevcut parolanızı kontrol edip tekrar deneyin."
 
 #: workspace:workspace.settings.account.password.help
 msgid "workspace.settings.account.password.help"
-msgstr ""
+msgstr "Parolanızı değiştirmek sizi diğer tüm cihazlardan çıkarır. Bu cihazda açık kalırsınız."
 
 #: workspace:workspace.settings.account.password.next
 msgid "workspace.settings.account.password.next"
-msgstr ""
+msgstr "Yeni parola"
 
 #: workspace:workspace.settings.account.password.saved
 msgid "workspace.settings.account.password.saved"
-msgstr ""
+msgstr "Parolanız değiştirildi."
 
 #: workspace:workspace.settings.account.password.submit
 msgid "workspace.settings.account.password.submit"
-msgstr ""
+msgstr "Parolayı değiştir"
 
 #: workspace:workspace.settings.account.password.title
 msgid "workspace.settings.account.password.title"
-msgstr ""
+msgstr "Parola değiştir"
 
 #: workspace:workspace.settings.account.region
 msgid "workspace.settings.account.region"
-msgstr ""
+msgstr "Hesabınız"
 
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
-msgstr ""
+msgstr "Marka bilgileriniz ve planınız. Bunlar bir kez kurulur ve nadiren değişir."
 
 #: workspace:workspace.settings.tab.account
 msgid "workspace.settings.tab.account"
-msgstr ""
+msgstr "Hesap"
 
 #: workspace:workspace.settings.tab.billing
 msgid "workspace.settings.tab.billing"
-msgstr ""
+msgstr "Plan ve fatura"
 
 #: workspace:workspace.settings.tab.brand
 msgid "workspace.settings.tab.brand"
-msgstr ""
+msgstr "Marka"
 
 #: workspace:workspace.settings.tabs.label
 msgid "workspace.settings.tabs.label"
-msgstr ""
+msgstr "Ayar bölümleri"
 
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
-msgstr ""
+msgstr "Zabuno"
 
 #: workspace:workspace.shell.currentLocation.label
 msgid "workspace.shell.currentLocation.label"
-msgstr ""
+msgstr "Geçerli şube"
 
 #: workspace:workspace.shell.globalSearch.unavailable
 msgid "workspace.shell.globalSearch.unavailable"
-msgstr ""
+msgstr "Genel arama kullanılamıyor"
 
 #: workspace:workspace.shell.nav.analytics
 msgid "workspace.shell.nav.analytics"
-msgstr ""
+msgstr "Analitik"
 
 #: workspace:workspace.shell.nav.billing
 msgid "workspace.shell.nav.billing"
-msgstr ""
+msgstr "Fatura"
 
 #: workspace:workspace.shell.nav.brand
 msgid "workspace.shell.nav.brand"
-msgstr ""
+msgstr "Marka"
 
 #: workspace:workspace.shell.nav.brandLocations
 msgid "workspace.shell.nav.brandLocations"
-msgstr ""
+msgstr "Marka ve Şubeler"
 
 #: workspace:workspace.shell.nav.dashboard
 msgid "workspace.shell.nav.dashboard"
-msgstr ""
+msgstr "Panel"
 
 #: workspace:workspace.shell.nav.group
 msgid "workspace.shell.nav.group"
-msgstr ""
+msgstr "Hesap"
 
 #: workspace:workspace.shell.nav.group.management
 msgid "workspace.shell.nav.group.management"
-msgstr ""
+msgstr "Yönetim"
 
 #: workspace:workspace.shell.nav.group.primary
 msgid "workspace.shell.nav.group.primary"
-msgstr ""
+msgstr "İşlemler"
 
 #: workspace:workspace.shell.nav.group.utility
 msgid "workspace.shell.nav.group.utility"
-msgstr ""
+msgstr "Ayarlar"
 
 #: workspace:workspace.shell.nav.home
 msgid "workspace.shell.nav.home"
-msgstr ""
+msgstr "Ana sayfa"
 
 #: workspace:workspace.shell.nav.insights
 msgid "workspace.shell.nav.insights"
-msgstr ""
+msgstr "Raporlar"
 
 #: workspace:workspace.shell.nav.label
 msgid "workspace.shell.nav.label"
-msgstr ""
+msgstr "Restoran yönetimi"
 
 #: workspace:workspace.shell.nav.locations
 msgid "workspace.shell.nav.locations"
-msgstr ""
+msgstr "Şubeler"
 
 #: workspace:workspace.shell.nav.media
 msgid "workspace.shell.nav.media"
-msgstr ""
+msgstr "Görseller"
 
 #: workspace:workspace.shell.nav.menu
 msgid "workspace.shell.nav.menu"
-msgstr ""
+msgstr "Menü"
 
 #: workspace:workspace.shell.nav.menuCatalog
 msgid "workspace.shell.nav.menuCatalog"
-msgstr ""
+msgstr "Menü kataloğu"
 
 #: workspace:workspace.shell.nav.menus
 msgid "workspace.shell.nav.menus"
-msgstr ""
+msgstr "Menüler"
 
 #: workspace:workspace.shell.nav.more
 msgid "workspace.shell.nav.more"
-msgstr ""
+msgstr "Daha fazla"
 
 #: workspace:workspace.shell.nav.publication
 msgid "workspace.shell.nav.publication"
-msgstr ""
+msgstr "Yayın"
 
 #: workspace:workspace.shell.nav.qrCodes
 msgid "workspace.shell.nav.qrCodes"
-msgstr ""
+msgstr "Karekodlar"
 
 #: workspace:workspace.shell.nav.settings
 msgid "workspace.shell.nav.settings"
-msgstr ""
+msgstr "Ayarlar"
 
 #: workspace:workspace.shell.nav.team
 msgid "workspace.shell.nav.team"
-msgstr ""
+msgstr "Ekip"
 
 #: workspace:workspace.shell.notifications.unavailable
 msgid "workspace.shell.notifications.unavailable"
-msgstr ""
+msgstr "Bildirimler kullanılamıyor"
 
 #: workspace:workspace.team.heading
 msgid "workspace.team.heading"
-msgstr ""
+msgstr "Ekip"
 
 #: workspace:workspace.team.invitations.cancel.busy
 msgid "workspace.team.invitations.cancel.busy"
-msgstr ""
+msgstr "İptal ediliyor…"
 
 #: workspace:workspace.team.invitations.cancel.button
 msgid "workspace.team.invitations.cancel.button"
-msgstr ""
+msgstr "Daveti iptal et"
 
 #: workspace:workspace.team.invitations.cancel.confirm
 msgid "workspace.team.invitations.cancel.confirm"
-msgstr ""
+msgstr "İptali onayla"
 
 #: workspace:workspace.team.invitations.cancel.error
 msgid "workspace.team.invitations.cancel.error"
-msgstr ""
+msgstr "Bu davet iptal edilemedi. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.invitations.cancel.keep
 msgid "workspace.team.invitations.cancel.keep"
-msgstr ""
+msgstr "Davet kalsın"
 
 #: workspace:workspace.team.invitations.cancel.retry
 msgid "workspace.team.invitations.cancel.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.team.invitations.cancel.success
 msgid "workspace.team.invitations.cancel.success"
-msgstr ""
+msgstr "Davet iptal edildi."
 
 #: workspace:workspace.team.invitations.empty
 msgid "workspace.team.invitations.empty"
-msgstr ""
+msgstr "Bekleyen davet yok."
 
 #: workspace:workspace.team.invitations.error
 msgid "workspace.team.invitations.error"
-msgstr ""
+msgstr "Bekleyen davetler yüklenemedi. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.invitations.loading
 msgid "workspace.team.invitations.loading"
-msgstr ""
+msgstr "Bekleyen davetler yükleniyor…"
 
 #: workspace:workspace.team.invite.button
 msgid "workspace.team.invite.button"
-msgstr ""
+msgstr "Davet et"
 
 #: workspace:workspace.team.invite.email
 msgid "workspace.team.invite.email"
-msgstr ""
+msgstr "E-posta ile davet et"
 
 #: workspace:workspace.team.invite.error
 msgid "workspace.team.invite.error"
-msgstr ""
+msgstr "Davet oluşturulamadı. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.invite.role.editor
 msgid "workspace.team.invite.role.editor"
-msgstr ""
+msgstr "Editör"
 
 #: workspace:workspace.team.invite.role.editor.help
 msgid "workspace.team.invite.role.editor.help"
-msgstr ""
+msgstr "Menü içeriğini düzenler. Yayınlayamaz, şubeleri değiştiremez, faturayı göremez."
 
 #: workspace:workspace.team.invite.role.label
 msgid "workspace.team.invite.role.label"
-msgstr ""
+msgstr "Rol"
 
 #: workspace:workspace.team.invite.role.manager
 msgid "workspace.team.invite.role.manager"
-msgstr ""
+msgstr "Yönetici"
 
 #: workspace:workspace.team.invite.role.manager.help
 msgid "workspace.team.invite.role.manager.help"
-msgstr ""
+msgstr "Günlük işleri yürütür — menü, şube, karekod ve yayınlama. Faturayı yönetemez."
 
 #: workspace:workspace.team.invite.role.owner
 msgid "workspace.team.invite.role.owner"
-msgstr ""
+msgstr "Sahip"
 
 #: workspace:workspace.team.invite.section
 msgid "workspace.team.invite.section"
-msgstr ""
+msgstr "Davet"
 
 #: workspace:workspace.team.invite.submitting
 msgid "workspace.team.invite.submitting"
-msgstr ""
+msgstr "Davet gönderiliyor…"
 
 #: workspace:workspace.team.invite.success
 msgid "workspace.team.invite.success"
-msgstr ""
+msgstr "Davet oluşturuldu."
 
 #: workspace:workspace.team.invite.unavailable
 msgid "workspace.team.invite.unavailable"
-msgstr ""
+msgstr "Ekip arkadaşı davet etme henüz bağlı değil."
 
 #: workspace:workspace.team.members.empty
 msgid "workspace.team.members.empty"
-msgstr ""
+msgstr "Bu çalışma alanında henüz üye yok."
 
 #: workspace:workspace.team.members.error
 msgid "workspace.team.members.error"
-msgstr ""
+msgstr "Ekip üyeleri yüklenemedi. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.members.loading
 msgid "workspace.team.members.loading"
-msgstr ""
+msgstr "Ekip üyeleri yükleniyor…"
 
 #: workspace:workspace.team.members.region
 msgid "workspace.team.members.region"
-msgstr ""
+msgstr "Ekip üyeleri"
 
 #: workspace:workspace.team.members.remove.busy
 msgid "workspace.team.members.remove.busy"
-msgstr ""
+msgstr "Çıkarılıyor…"
 
 #: workspace:workspace.team.members.remove.button
 msgid "workspace.team.members.remove.button"
-msgstr ""
+msgstr "Çıkar"
 
 #: workspace:workspace.team.members.remove.cancel
 msgid "workspace.team.members.remove.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: workspace:workspace.team.members.remove.confirm
 msgid "workspace.team.members.remove.confirm"
-msgstr ""
+msgstr "Çıkarmayı onayla"
 
 #: workspace:workspace.team.members.remove.error
 msgid "workspace.team.members.remove.error"
-msgstr ""
+msgstr "Bu üye çıkarılamadı. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.members.remove.retry
 msgid "workspace.team.members.remove.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.team.members.remove.success
 msgid "workspace.team.members.remove.success"
-msgstr ""
+msgstr "Üye çıkarıldı."
 
 #: workspace:workspace.team.members.role.error
 msgid "workspace.team.members.role.error"
-msgstr ""
+msgstr "Rol değiştirilemedi."
 
 #: workspace:workspace.team.members.role.label
 msgid "workspace.team.members.role.label"
-msgstr ""
+msgstr "{name} için rol"
 
 #: workspace:workspace.team.members.transfer.body
 msgid "workspace.team.members.transfer.body"
-msgstr ""
+msgstr "Bu üye çalışma alanının sahibi olacak, siz editör olacaksınız. Bu işlem sonradan yeni sahip tarafından geri alınabilir."
 
 #: workspace:workspace.team.members.transfer.busy
 msgid "workspace.team.members.transfer.busy"
-msgstr ""
+msgstr "Devrediliyor…"
 
 #: workspace:workspace.team.members.transfer.button
 msgid "workspace.team.members.transfer.button"
-msgstr ""
+msgstr "Sahipliği devret"
 
 #: workspace:workspace.team.members.transfer.cancel
 msgid "workspace.team.members.transfer.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: workspace:workspace.team.members.transfer.confirm
 msgid "workspace.team.members.transfer.confirm"
-msgstr ""
+msgstr "Onayla"
 
 #: workspace:workspace.team.members.transfer.error
 msgid "workspace.team.members.transfer.error"
-msgstr ""
+msgstr "Sahiplik devredilemedi. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.members.transfer.retry
 msgid "workspace.team.members.transfer.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.team.members.transfer.success
 msgid "workspace.team.members.transfer.success"
-msgstr ""
+msgstr "Sahiplik devredildi."
 
 #: workspace:workspace.team.members.transfer.title
 msgid "workspace.team.members.transfer.title"
-msgstr ""
+msgstr "Çalışma alanı sahipliğini devret"
 
 #: workspace:workspace.team.operational.description.connected
 msgid "workspace.team.operational.description.connected"
-msgstr ""
+msgstr "Aşağıdaki çalışma alanı üyeleri ve bekleyen davetler sunucudaki gerçek listelerden geliyor."
 
 #: workspace:workspace.team.operational.description.error
 msgid "workspace.team.operational.description.error"
-msgstr ""
+msgstr "Bekleyen davetler yüklenemedi — sunucudaki davet listesine ulaşılamadı."
 
 #: workspace:workspace.team.operational.description.loading
 msgid "workspace.team.operational.description.loading"
-msgstr ""
+msgstr "Sunucudaki davet listesinden bekleyen davetler yükleniyor…"
 
 #: workspace:workspace.team.pendingInvitations.empty
 msgid "workspace.team.pendingInvitations.empty"
-msgstr ""
+msgstr "Bekleyen davetler henüz kullanılamıyor."
 
 #: workspace:workspace.team.pendingInvitations.region
 msgid "workspace.team.pendingInvitations.region"
-msgstr ""
+msgstr "Bekleyen davetler"
 
 #: workspace:workspace.team.status.connected
 msgid "workspace.team.status.connected"
-msgstr ""
+msgstr "Davetler bağlı"
 
 #: workspace:workspace.team.status.error
 msgid "workspace.team.status.error"
-msgstr ""
+msgstr "Yüklenemedi"
 
 #: workspace:workspace.team.status.loading
 msgid "workspace.team.status.loading"
-msgstr ""
+msgstr "Yükleniyor"

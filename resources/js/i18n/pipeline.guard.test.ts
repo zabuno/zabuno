@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { compileMo, parsePo } from '../../../scripts/i18n/po.mjs';
 import { LOCALES, FALLBACK_LOCALE } from './locales';
 import { DOMAINS, DOMAIN_CATALOGS } from './domains';
-import { overridesFor } from './generated-overrides';
+import { loadLocaleOverrides, overridesFor } from './generated-overrides';
 
 /**
  * CORE-08 boru hattı kapısı.
@@ -118,7 +118,15 @@ describe('CORE-08 çeviri boru hattı', () => {
     });
 
     // --- DS-I18N-GENERATED-NOT-EDITED-09 ----------------------------------
-    it('üretilmiş JSON, kaynak locale taşımaz ve taban dışı anahtar içermez', () => {
+    /*
+        Projeksiyonlar artık İSTEĞE BAĞLI indiriliyor (FF-94): ana pakete
+        altı dilin tamamını gömmek, kullanıcıya okumadığı dilleri
+        indirtiyordu. Kapının ölçtüğü sözleşme değişmedi — üretilmiş tablo
+        tabandan sapmamalı — yalnız tablo, ölçülmeden önce yüklenmeli.
+    */
+    it('üretilmiş JSON, kaynak locale taşımaz ve taban dışı anahtar içermez', async () => {
+        await loadLocaleOverrides('tr');
+
         for (const domain of DOMAINS) {
             const overrides = overridesFor(domain);
 
