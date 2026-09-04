@@ -14,6 +14,7 @@ import { AdminShell } from '../catalog/layout/macro/AdminShell';
 import { AccountMenu } from './chrome/AccountMenu';
 import { GlobalCreateMenu, type GlobalCreateTarget } from './chrome/GlobalCreateMenu';
 import { AppErrorBoundary } from '../system/AppErrorBoundary';
+import type { RailSection } from './chrome/railSection';
 import type { SidebarNavGroup } from '../catalog/layout/compound/SidebarNav';
 import { OmniboxTrigger } from '../catalog/navigation/compound/OmniboxTrigger';
 import { Omnibox, type OmniboxGroup } from './omnibox/Omnibox';
@@ -152,6 +153,13 @@ export type WorkspaceAppProps = {
 
 export type WorkspaceChromeContext = {
     navGroups: SidebarNavGroup[];
+    /**
+     * Rayın dibindeki sabit blokta duracak hedefler — Profil ve Ayarlar
+     * (FF-127). Bölüm KAYDINDAN türetilir; kabuk kendi listesini tutmaz,
+     * çünkü ikinci bir liste izin değiştiğinde eskir ve kullanıcıyı 403'e
+     * götürür.
+     */
+    railSections?: readonly RailSection[];
     activeNavKey?: string;
     navLabel?: string;
     /**
@@ -889,6 +897,7 @@ export function WorkspaceApp({
         activeSection === activeOnboardingDescriptor.key;
 
     const navGroups: SidebarNavGroup[] = [];
+    const railSections: RailSection[] = [];
 
     /*
         YETKİ-GÖRÜNÜRLÜK (`docs/98` FF-74). Sunucu `workspace-context` ile
@@ -954,6 +963,34 @@ export function WorkspaceApp({
                     items,
                 });
             }
+        }
+
+        /*
+            RAYIN DİBİ (FF-127) — aynı kayıttan, ikinci bir liste yok.
+
+            Sıra burada SABİT ve kayıttaki `order` alanından bağımsızdır:
+            iki maddelik bir blokta kimlik satırı üstte, ayarlar altta durur
+            ve bu sıra kas hafızasıdır. Kaydın sırası ise gruplu listeyi
+            ilgilendirir.
+
+            Bir bölüm izin yüzünden görünmüyorsa burada da yoktur —
+            `visibleDescriptors` üzerinden okunmasının tek sebebi bu.
+        */
+        for (const key of ['profile', 'settings'] as const) {
+            const descriptor = visibleDescriptors.find((candidate) => candidate.key === key);
+
+            if (descriptor === undefined) continue;
+
+            const item = toNavItem(descriptor);
+
+            railSections.push({
+                key: item.key,
+                label: item.label,
+                href: item.href,
+                icon: item.icon,
+                active: activeSection === descriptor.key,
+                onSelect: item.onSelect,
+            });
         }
     }
 
@@ -1172,6 +1209,7 @@ export function WorkspaceApp({
                     }
                 },
                 accountMenu,
+                railSections,
             })}
             navigationDrawer={renderNavigationDrawer?.({
                 navGroups,

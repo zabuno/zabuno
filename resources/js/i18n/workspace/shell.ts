@@ -32,6 +32,12 @@ export const shell = {
     'workspace.shell.nav.insights': 'Insights',
     'workspace.shell.nav.qrCodes': 'QR codes',
     'workspace.shell.nav.settings': 'Settings',
+    /*
+        Rayın dibindeki sabit blok bir GEZİNTİDİR ve kendi adı olmalıdır
+        (FF-127). Adsız ikinci bir gezinti bölgesi, ekran okuyucuda "gezinti"
+        diye iki kez okunur ve kullanıcı hangisinde olduğunu bilemez.
+    */
+    'workspace.shell.nav.account': 'Account',
     'workspace.settings.operational.description':
         'Your brand details and your plan. These are set up once and rarely change.',
     'workspace.settings.tabs.label': 'Settings sections',
