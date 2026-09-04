@@ -32,11 +32,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 657;
+const FROZEN_LEGACY_KEY_COUNT = 658;
 
-// FF-82 (yayın bölgesi sadeleşti) + FF-83 ('More' etiketi).
+// FF-85: QR sihirbazında 'Advanced options' başlığı.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'be8a30d9b0f27f672cf0d35c58ead0623c5ca41db309e5fd7e9760187047375d';
+    '719130e00edbc01200640b1d13f9be5ee5a208a132fae80daacb1e9768e13957';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

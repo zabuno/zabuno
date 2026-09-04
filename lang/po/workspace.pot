@@ -1920,6 +1920,10 @@ msgstr ""
 msgid "workspace.publication.qrExport.bulk"
 msgstr ""
 
+#: workspace:workspace.publication.qrExport.bulkWizard.advanced
+msgid "workspace.publication.qrExport.bulkWizard.advanced"
+msgstr ""
+
 #: workspace:workspace.publication.qrExport.bulkWizard.areaSectionCount
 msgid "workspace.publication.qrExport.bulkWizard.areaSectionCount"
 msgstr ""

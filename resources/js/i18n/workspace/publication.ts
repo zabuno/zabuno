@@ -111,6 +111,8 @@ export const publication = {
     'workspace.publication.qrExport.config.orientation.landscape': 'Landscape',
     'workspace.publication.qrExport.config.bulk': 'Bulk range or count',
     'workspace.publication.qrExport.config.bulk.placeholder': 'e.g. 1-50 or 25',
+    // `docs/101` Y5: tek soru görünür, varsayılanı olanlar 'ileri' altında.
+    'workspace.publication.qrExport.bulkWizard.advanced': 'Advanced options',
     'workspace.publication.qrExport.bulkWizard.heading': 'Bulk QR wizard',
     'workspace.publication.qrExport.bulkWizard.areaSectionCount': 'Area/section count',
     'workspace.publication.qrExport.bulkWizard.tableCount': 'Table count',

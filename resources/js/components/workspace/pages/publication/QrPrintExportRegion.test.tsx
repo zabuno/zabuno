@@ -26,13 +26,18 @@ const FIXED_PIXEL_CLASS_PATTERN =
     /(^|[\s"'`])(w|h|min-w|max-w|min-h|max-h)-\[\d+px\]|(^|[\s"'`])(w|h)-(px|0\.5|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64|72|80|96)(?=[\s"'`]|$)/;
 const BREAKPOINT_CLASS_PATTERN = /(^|[\s"'`])(sm|md|lg|xl|2xl):/;
 
+/*
+    FF-85 (`docs/101` Y5): sıra değişti. Kebapçıya sorulan TEK soru masa
+    sayısıdır ve ilk sırada durur; varsayılanı olan beş alan "ileri" başlığı
+    altında, DOM'da aynı sırayla kalır (klavye ve ekran okuyucu için).
+*/
 const WIZARD_FIELD_LABELS = [
-    /area\/section count/i,
     /table count/i,
+    /area\/section count/i,
+    /seat count per table/i,
     /naming prefix/i,
     /naming sequence start/i,
     /naming range/i,
-    /seat count per table/i,
 ];
 
 function setViewport(width: number, height: number) {

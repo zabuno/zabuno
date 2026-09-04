@@ -44,13 +44,22 @@ type BulkQrWizardFieldsProps = {
     onCreated?: (qrCodes: QrCodeItem[]) => void;
 };
 
+/*
+    TEK SORU: "kaç masa?" (`docs/101` Y5, Faz 3).
+
+    Öncesinde altı alanın altısı da boş geliyordu ve hepsi zorunluydu:
+    kebapçı karekod bastırmak için bölge sayısı, masa başına koltuk, ad öneki,
+    sıra başlangıcı ve aralık girmek zorundaydı. Beşinin de makul bir
+    varsayılanı var; varsayılanı olan bir alan kullanıcıya sorulmaz, "ileri"
+    başlığı altında DEĞİŞTİRİLEBİLİR durur (`docs/47` Kural 4).
+*/
 const INITIAL_VALUES: Values = {
-    areaSectionCount: '',
+    areaSectionCount: '1',
     tableCount: '',
     namingPrefix: '',
     namingSequenceStart: '',
     namingRange: '',
-    seatCountPerTable: '',
+    seatCountPerTable: '4',
 };
 
 const INITIAL_TOUCHED: Record<FieldKey, boolean> = {
@@ -323,22 +332,6 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             </legend>
 
             <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.bulkWizard.areaSectionCount')}
-                <TextInput
-                    type="number"
-                    min={1}
-                    max={50}
-                    required
-                    value={values.areaSectionCount}
-                    onChange={(event) => handleChange('areaSectionCount', event.target.value)}
-                    onBlur={() => handleBlur('areaSectionCount')}
-                    aria-invalid={touched.areaSectionCount && !fieldValidity.areaSectionCount}
-                    aria-describedby={describedBy('areaSectionCount')}
-                />
-            </label>
-            {renderError('areaSectionCount')}
-
-            <label className={LABEL_CLASSES}>
                 {t('workspace.publication.qrExport.bulkWizard.tableCount')}
                 <TextInput
                     type="number"
@@ -354,63 +347,103 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             </label>
             {renderError('tableCount')}
 
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.bulkWizard.namingPrefix')}
-                <TextInput
-                    type="text"
-                    maxLength={10}
-                    value={values.namingPrefix}
-                    onChange={(event) => handleChange('namingPrefix', event.target.value)}
-                    onBlur={() => handleBlur('namingPrefix')}
-                    aria-invalid={touched.namingPrefix && !fieldValidity.namingPrefix}
-                    aria-describedby={describedBy('namingPrefix')}
-                />
-            </label>
-            {renderError('namingPrefix')}
+            {/*
+                İLERİ AYARLAR — varsayılanı olan her şey burada.
+                `<details>` içeriği DOM'da kalır: klavye, ekran okuyucu ve
+                form doğrulaması etkilenmez; yalnız ilk bakışta görünmez.
+            */}
+            <details className="rounded-[var(--radius-md)] border border-border p-[var(--space-3)]">
+                <summary className="cursor-pointer text-body font-medium text-fg-secondary">
+                    {t('workspace.publication.qrExport.bulkWizard.advanced')}
+                </summary>
+                <div className="flex flex-col gap-[var(--space-3)] pt-[var(--space-3)]">
+                    <label className={LABEL_CLASSES}>
+                        {t('workspace.publication.qrExport.bulkWizard.areaSectionCount')}
+                        <TextInput
+                            type="number"
+                            min={1}
+                            max={50}
+                            required
+                            value={values.areaSectionCount}
+                            onChange={(event) =>
+                                handleChange('areaSectionCount', event.target.value)
+                            }
+                            onBlur={() => handleBlur('areaSectionCount')}
+                            aria-invalid={
+                                touched.areaSectionCount && !fieldValidity.areaSectionCount
+                            }
+                            aria-describedby={describedBy('areaSectionCount')}
+                        />
+                    </label>
+                    {renderError('areaSectionCount')}
 
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.bulkWizard.namingSequenceStart')}
-                <TextInput
-                    type="number"
-                    min={0}
-                    max={9999}
-                    value={values.namingSequenceStart}
-                    onChange={(event) => handleChange('namingSequenceStart', event.target.value)}
-                    onBlur={() => handleBlur('namingSequenceStart')}
-                    aria-invalid={touched.namingSequenceStart && !fieldValidity.namingSequenceStart}
-                    aria-describedby={describedBy('namingSequenceStart')}
-                />
-            </label>
-            {renderError('namingSequenceStart')}
+                    <label className={LABEL_CLASSES}>
+                        {t('workspace.publication.qrExport.bulkWizard.seatCountPerTable')}
+                        <TextInput
+                            type="number"
+                            min={1}
+                            max={20}
+                            required
+                            value={values.seatCountPerTable}
+                            onChange={(event) =>
+                                handleChange('seatCountPerTable', event.target.value)
+                            }
+                            onBlur={() => handleBlur('seatCountPerTable')}
+                            aria-invalid={
+                                touched.seatCountPerTable && !fieldValidity.seatCountPerTable
+                            }
+                            aria-describedby={describedBy('seatCountPerTable')}
+                        />
+                    </label>
+                    {renderError('seatCountPerTable')}
 
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.bulkWizard.namingRange')}
-                <TextInput
-                    type="text"
-                    value={values.namingRange}
-                    onChange={(event) => handleChange('namingRange', event.target.value)}
-                    onBlur={() => handleBlur('namingRange')}
-                    aria-invalid={touched.namingRange && !fieldValidity.namingRange}
-                    aria-describedby={describedBy('namingRange')}
-                />
-            </label>
-            {renderError('namingRange')}
+                    <label className={LABEL_CLASSES}>
+                        {t('workspace.publication.qrExport.bulkWizard.namingPrefix')}
+                        <TextInput
+                            type="text"
+                            maxLength={10}
+                            value={values.namingPrefix}
+                            onChange={(event) => handleChange('namingPrefix', event.target.value)}
+                            onBlur={() => handleBlur('namingPrefix')}
+                            aria-invalid={touched.namingPrefix && !fieldValidity.namingPrefix}
+                            aria-describedby={describedBy('namingPrefix')}
+                        />
+                    </label>
+                    {renderError('namingPrefix')}
 
-            <label className={LABEL_CLASSES}>
-                {t('workspace.publication.qrExport.bulkWizard.seatCountPerTable')}
-                <TextInput
-                    type="number"
-                    min={1}
-                    max={20}
-                    required
-                    value={values.seatCountPerTable}
-                    onChange={(event) => handleChange('seatCountPerTable', event.target.value)}
-                    onBlur={() => handleBlur('seatCountPerTable')}
-                    aria-invalid={touched.seatCountPerTable && !fieldValidity.seatCountPerTable}
-                    aria-describedby={describedBy('seatCountPerTable')}
-                />
-            </label>
-            {renderError('seatCountPerTable')}
+                    <label className={LABEL_CLASSES}>
+                        {t('workspace.publication.qrExport.bulkWizard.namingSequenceStart')}
+                        <TextInput
+                            type="number"
+                            min={0}
+                            max={9999}
+                            value={values.namingSequenceStart}
+                            onChange={(event) =>
+                                handleChange('namingSequenceStart', event.target.value)
+                            }
+                            onBlur={() => handleBlur('namingSequenceStart')}
+                            aria-invalid={
+                                touched.namingSequenceStart && !fieldValidity.namingSequenceStart
+                            }
+                            aria-describedby={describedBy('namingSequenceStart')}
+                        />
+                    </label>
+                    {renderError('namingSequenceStart')}
+
+                    <label className={LABEL_CLASSES}>
+                        {t('workspace.publication.qrExport.bulkWizard.namingRange')}
+                        <TextInput
+                            type="text"
+                            value={values.namingRange}
+                            onChange={(event) => handleChange('namingRange', event.target.value)}
+                            onBlur={() => handleBlur('namingRange')}
+                            aria-invalid={touched.namingRange && !fieldValidity.namingRange}
+                            aria-describedby={describedBy('namingRange')}
+                        />
+                    </label>
+                    {renderError('namingRange')}
+                </div>
+            </details>
 
             {!hasAttempted ? (
                 <p className="text-meta text-fg-muted">
