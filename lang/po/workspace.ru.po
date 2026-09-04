@@ -2276,6 +2276,14 @@ msgstr ""
 msgid "workspace.publication.qrExport.preview.failed"
 msgstr ""
 
+#: workspace:workspace.publication.qrExport.preview.paper
+msgid "workspace.publication.qrExport.preview.paper"
+msgstr ""
+
+#: workspace:workspace.publication.qrExport.preview.size
+msgid "workspace.publication.qrExport.preview.size"
+msgstr ""
+
 #: workspace:workspace.publication.qrExport.previewAlt
 msgid "workspace.publication.qrExport.previewAlt"
 msgstr ""

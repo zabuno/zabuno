@@ -2276,6 +2276,14 @@ msgstr "No active QR code to export yet."
 msgid "workspace.publication.qrExport.preview.failed"
 msgstr "The preview could not be produced. Your code still works; try another format or reload."
 
+#: workspace:workspace.publication.qrExport.preview.paper
+msgid "workspace.publication.qrExport.preview.paper"
+msgstr "{paper} — {width} × {height} mm"
+
+#: workspace:workspace.publication.qrExport.preview.size
+msgid "workspace.publication.qrExport.preview.size"
+msgstr "The code prints {mm} mm wide, so it can be scanned from about {distance} cm away. Put a sheet this size on a wall or a window, not on a table."
+
 #: workspace:workspace.publication.qrExport.previewAlt
 msgid "workspace.publication.qrExport.previewAlt"
 msgstr "QR code preview"

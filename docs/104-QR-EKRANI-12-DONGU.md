@@ -74,10 +74,10 @@ kanıtıyla kapanır.
 | 6 | Masanın adı listeye ulaşır | DTO join; satır başlığı ve seçici etiketi | ✅ FF-109 |
 | 7 | Yıkıcı eylem taşma menüsüne + onay | `ActionMenu` + `ConfirmDialog` | ✅ FF-110 |
 | 8 | Basılabilir sayfa: N-up, ad, kesme çizgisi | PDF adaptörü + toplu uç | ✅ FF-111 |
-| 9 | Baskı önizlemesi ve MİLİMETRE | kâğıt/yerleşim önizlemenin kontrolleri olur; kod boyu mm olarak yazılır | ◐ FF-111 (mm yazıldı; önizleme kaldı) |
+| 9 | Baskı önizlemesi ve MİLİMETRE | kâğıt/yerleşim önizlemenin kontrolleri olur; kod boyu mm olarak yazılır | ✅ FF-111 + FF-113 |
 | 10 | Temalar: marka + taranabilirlik kuralı | kontrast ≥ %40, logo varsa EC=H, ters kontrast yasak | ✅ FF-112 |
 | 11 | Sözleşme metni: dinamik kod güvencesi | "bastırdıktan sonra da hedefi değişir; basılı kartlar çalışmaya devam eder" | ✅ FF-112 |
-| 12 | Story'ler ve görsel kapı | beş dosyaya story; yüzey katmanı bir daha kapının dışında kalmaz | ◐ FF-107 + FF-110 (baskı bölgesi, satır) |
+| 12 | Story'ler ve görsel kapı | beş dosyaya story; yüzey katmanı bir daha kapının dışında kalmaz | ✅ FF-107 + FF-110 + FF-113 |
 
 ---
 
@@ -393,3 +393,38 @@ kadar açık, bu kod siyah basılır" der ve yanında "marka renginizi belirleyi
 bağlantısı durur. Eskiden ne olurdu? Ya okunmayan sarı bir kod bastırırdı ve
 bunu masadaki misafir fark ederdi, ya da "markalı" seçip siyah bir kod indirir
 ve bunu bir hata sanırdı.
+
+
+---
+
+## Tur 2 kaydı (FF-113) — Döngü 9 ve 12: yazıcıdan ne çıkacak
+
+**Kâğıt boyu ve yön, kontrol ettikleri sonucu hiçbir yerde göstermiyordu.**
+Sahip "A6 yatay" seçiyor ve ne olacağını ancak yazıcıdan kâğıt çıkınca
+öğreniyordu. Yazdırma deneyiminin temel kuralı, ayarların bir ÖNİZLEMEYE bağlı
+olmasıdır (Microsoft UX Guide) — PNG/SVG'nin gerçek bir görüntüsü vardı, PDF'in
+hiçbir şeyi yoktu.
+
+Önizleme bir resim değil bir **şemadır**: kâğıdın oranı ve kodun o kâğıt
+içindeki gerçek payı ölçekli çizilir. Raster bir önizleme burada yanıltıcı
+olurdu — ekranda 200 piksel görünen kare, kâğıtta 11 cm'dir ve asıl bilgi
+budur. Şemanın yanında iki cümle durur:
+
+- `A4 — 210 × 297 mm`
+- *"Kod 116 mm genişliğinde basılır, yaklaşık 12 cm mesafeden okutulabilir. Bu
+  boyuttaki bir sayfayı masaya değil, duvara ya da vitrine asın."*
+
+İkinci cümle bu ekrandaki en büyük kavram boşluğunu kapatır: tek kodun PDF'i
+bir MASA KARTI değil, bir afiştir. Sahip bunu bilmeden A4 basıp masaya koymaya
+çalışıyordu. Masa kartı için doğru çıktı, FF-111'in destesidir.
+
+Oran (kısa kenarın %55'i) iki yerde yaşıyor — PDF adaptöründe ve önizlemede —
+ve ayrışmasını engelleyen bir test var (`QrPrintPreviewShareTest`): ayrışırsa
+ekran 11 cm der, yazıcıdan 8 cm çıkar.
+
+**Döngü 12 kapandı.** Teşhis raporunun kök sebebi buydu: `DS-STORY-COVERAGE-01`
+yalnız `catalog/` altını koruyor, `surface` katmanı her görsel kapının
+dışındaydı — "ekrana hiç bakılmadı" körlüğü. Bu turda QR yüzeyinin beş
+dosyasına story eklendi: baskı bölgesi (FF-107), liste satırı (FF-110), baskı
+önizlemesi, dışa aktarım ayarları ve kod oluşturma alanı (FF-113). Artık bu
+ekranın her parçası izole olarak görülebiliyor.
