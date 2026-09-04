@@ -100,7 +100,33 @@ export function AdminShell({
     className,
 }: AdminShellProps) {
     return (
-        <div data-persona={persona} className={clsx('flex min-h-screen flex-col', className)}>
+        /*
+            KABUK GÖRÜNTÜ ALANINA KİLİTLİ — sahibin bildirimi (2026-09-04):
+            "yükseklik statik ve çok fazla, ekrana göre dinamik olmalı ve sol
+            alt dropdown sticky sabit kalmalı".
+
+            Önceki hâl `min-h-screen` idi: kök EN AZ ekran kadar uzundu ama
+            içerik uzayınca onunla birlikte uzuyordu. Kenar çubuğu esnek bir
+            kardeş olduğu için o da uzuyor, dibindeki hesap düğmesi SAYFANIN
+            dibine gidiyordu — yani uzun bir sayfada ekrandan çıkıyordu.
+
+            Şimdi kök TAM ekran yüksekliğinde (`h-dvh`; `dvh`, telefonda adres
+            çubuğu gizlenip görününce değişen gerçek yüksekliği izler) ve
+            kaydırma içeride: ana alan kendi içinde kayar, raylar yerinde
+            kalır. Bu, uygulama kabuklarının standart modelidir ve "her zaman
+            görünür gezinti" sözünü ancak bu verir.
+
+            YAZDIRMADA geri alınır: `overflow-hidden` bir yazıcı çıktısını tek
+            sayfaya kırpardı.
+        */
+        <div
+            data-persona={persona}
+            className={clsx(
+                'flex h-dvh min-h-screen flex-col overflow-hidden',
+                'print:h-auto print:min-h-0 print:overflow-visible',
+                className,
+            )}
+        >
             <SkipLink targetId={mainId} />
             <TopBar
                 brand={brand}
@@ -119,7 +145,13 @@ export function AdminShell({
                 center={topBarCenter}
                 end={topBarEnd}
             />
-            <div className="admin-shell-layout flex min-w-0 flex-1 flex-wrap">
+            {/*
+                `min-h-0`: bir flex çocuğunun varsayılan en küçük boyu
+                İÇERİĞİ kadardır. Bu satır olmadan uzun bir sayfa satırı
+                gerdirir ve kaydırma yine dışarı taşardı — kilitlenmiş kabuğun
+                en sık kaçırılan parçası budur.
+            */}
+            <div className="admin-shell-layout flex min-h-0 min-w-0 flex-1 flex-wrap">
                 {persistentSidebar}
                 {navigationDrawer}
                 <main
@@ -134,7 +166,12 @@ export function AdminShell({
                         kabuk, sayfadan sayfaya farklı genişlikte görünüyordu
                         (2026-09-04 ekran incelemesi).
                     */
-                    className="admin-shell-main min-w-0 flex-1 basis-[32rem] bg-[var(--color-canvas)] p-[var(--space-fluid-lg)] outline-none"
+                    className={clsx(
+                        'admin-shell-main min-w-0 flex-1 basis-[32rem] bg-[var(--color-canvas)]',
+                        'p-[var(--space-fluid-lg)] outline-none',
+                        // Kaydırma BURADA: kabuk sabit, içerik akar.
+                        'overflow-y-auto print:overflow-visible',
+                    )}
                 >
                     {children}
                 </main>
@@ -157,6 +194,8 @@ export function AdminShell({
                         aria-label={inspectorLabel}
                         className={clsx(
                             'admin-shell-inspector min-w-0 shrink-0 grow-0 basis-[21rem] flex-col gap-[var(--space-fluid-sm)] border-s',
+                            // Panel de kendi içinde kayar; kabuğu uzatmaz.
+                            'overflow-y-auto print:overflow-visible',
                             'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
                         )}
                     >
