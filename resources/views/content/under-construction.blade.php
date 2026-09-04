@@ -78,6 +78,13 @@
             line-height: 1.6;
         }
 
+        .pass-promise {
+            margin: 1.25rem 0 0;
+            padding-left: 0.85rem;
+            border-left: 2px solid var(--pass-accent);
+            line-height: 1.55;
+        }
+
         .pass-rows {
             margin: 1.75rem 0 0;
             border-top: 1px solid var(--pass-line);
@@ -103,6 +110,13 @@
         .pass-row dd {
             margin: 0;
             font-weight: 600;
+        }
+
+        .pass-row code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.9em;
+            /* Uzun bir yol dar ekranda satırı taşırmaz. */
+            overflow-wrap: anywhere;
         }
 
         .pass-actions {
@@ -149,10 +163,20 @@
         {{ $isMaintenance ? $st['pageState.maintenanceLede'] : $st['pageState.lede'] }}
     </p>
 
+    @if ($page->title !== '')
+        {{-- Site haritasındaki cümle bir BAŞLIK değil bir TARİF: "QR, dijital,
+             mobil ve temassız menü özelliklerini tek sayfada anlatır". Onu
+             "Sayfa:" satırına koymak, bir fişe paragraf yazmak olurdu. Burada
+             ne olacağını anlatan bir cümle olarak duruyor; kimliği ise
+             adresin kendisi. --}}
+        <p class="pass-promise">{{ $page->title }}</p>
+    @endif
+
     <dl class="pass-rows">
         <div class="pass-row">
             <dt>{{ $st['pageState.pageLabel'] }}</dt>
-            <dd>{{ $page->title !== '' ? $page->title : $page->canonical_path }}</dd>
+            {{-- Kimlik ADRESTİR: kısa, tek anlamlı ve fişe yazılabilir. --}}
+            <dd><code>{{ $page->canonical_path }}</code></dd>
         </div>
         <div class="pass-row">
             <dt>{{ $st['pageState.stageLabel'] }}</dt>

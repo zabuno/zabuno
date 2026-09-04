@@ -57,8 +57,9 @@ final class CorporatePageGateTest extends TestCase
         $html = (string) $response->getContent();
 
         self::assertStringContainsString('Bu sayfa henüz servise çıkmadı', $html);
-        // Sayfanın kendi adı yazar: ziyaretçi neyin hazırlandığını bilmeli.
+        // Ziyaretçi neyin hazırlandığını bilmeli: hem tarif hem ADRES.
         self::assertStringContainsString('QR Menü', $html);
+        self::assertStringContainsString('/tr/urun/qr-menu/', $html);
         // Teknik durum adı DEĞİL, ziyaretçinin okuyabileceği bir cümle.
         self::assertStringNotContainsString('content_draft', $html);
         self::assertStringContainsString('noindex', (string) $response->headers->get('X-Robots-Tag'));
