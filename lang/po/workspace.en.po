@@ -1798,7 +1798,7 @@ msgstr "I reviewed the publish checklist"
 
 #: workspace:workspace.publication.publishAction.failurePreservationNotice
 msgid "workspace.publication.publishAction.failurePreservationNotice"
-msgstr "If publishing fails, guests keep seeing the menu you published last."
+msgstr "If publishing fails, guests keep seeing the menu you published last — nothing breaks at the table."
 
 #: workspace:workspace.publication.publishAction.mode.immediate
 msgid "workspace.publication.publishAction.mode.immediate"
@@ -1814,7 +1814,7 @@ msgstr "You need permission to publish this menu."
 
 #: workspace:workspace.publication.publishAction.region
 msgid "workspace.publication.publishAction.region"
-msgstr "Publish action"
+msgstr "What publishing does"
 
 #: workspace:workspace.publication.publishAction.scheduleNotice
 msgid "workspace.publication.publishAction.scheduleNotice"
@@ -1822,7 +1822,7 @@ msgstr "Publishing at a chosen time is not available yet."
 
 #: workspace:workspace.publication.publishAction.snapshotNotice
 msgid "workspace.publication.publishAction.snapshotNotice"
-msgstr "Publishing saves a fixed copy. Later edits stay private until you publish again."
+msgstr "Publish makes what you see here the menu your guests see. Anything you edit afterwards stays private until you publish again."
 
 #: workspace:workspace.publication.publishedSnapshot.publishedAt
 msgid "workspace.publication.publishedSnapshot.publishedAt"

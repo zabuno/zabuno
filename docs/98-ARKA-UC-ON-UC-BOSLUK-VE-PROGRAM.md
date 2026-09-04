@@ -347,6 +347,16 @@ satır "Misafirler hâlâ son yayınlanan menüyü görüyor" der ve yayın ekra
 götürür. Kategori kutuları panel kart grameriyle aynı yüzeye taşındı
 (`docs/102` §5d).
 
+### FF-82 ek paket — yayın ekranı sesli dile geçti (2026-09-04)
+
+`PublishActionConfigRegion` dört teknik cümle ve KALICI DEVRE DIŞI bir
+"yayın kipi" seçimi taşıyordu. Devre dışı seçim `docs/44` yasağıydı;
+"zamanlanmış yayın henüz yok" cümlesi yapılmamış özelliği ekrana taşıyordu
+(`docs/64` §4); "izniniz gerekir" cümlesi koşulsuzdu (yetki FF-74'te zaten
+süzülüyor). Bölge iki gerçek cümleye indi ve adı "What publishing does"
+oldu. İki donmuş test daha güçlü sözleşmeyle güncellendi: böyle bir kontrol
+HİÇ olmayacak.
+
 ## 6. Esnetilen kurallar — açık kayıt
 
 Sahip "kararları boz, kuralları yeniden yaz" dedi. Bozulan tek şey **paket
