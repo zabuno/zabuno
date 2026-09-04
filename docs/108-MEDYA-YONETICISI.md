@@ -100,13 +100,20 @@ ekranın etkileneceğini yalnız ikincisi söyler.
 | Belgeler | 25 MB | pdf, csv, xlsx, docx | PDF panelde sayfa sayfa okunur; ilk sayfa kapak görseli olur |
 | Ses | 50 MB | — | — |
 
-DİKKAT — depo bugün SVG'yi REDDEDİYOR (`config/media-slots.php`: "SVG yok:
-sanitize eden katman olmadan kabul edilmez", `docs/49` Faz 2 madde 6).
-Kaynak SVG'yi listede gösteriyor. Bu bir ÇELİŞKİDİR ve sahibin kuralı
-gereği kaynak kazanır — ama SVG'yi kabul etmek, önce bir temizleyici
-katman yazmayı gerektirir. Temizleyici olmadan kabul edilmemeli;
-"kaynak öyle diyor" bir güvenlik açığını haklı çıkarmaz. Karar sahibe
-sorulacak bir üründür, sessizce açılacak bir kapı değil.
+**SVG — sahibin kararı (2026-09-05): AÇILDI.**
+
+Depo SVG'yi reddediyordu (`docs/49` Faz 2 madde 6: sanitize eden katman
+yok). Sahibe açıkça soruldu ve "şimdi aç" dendi.
+
+Karar, temizleyiciyle BİRLİKTE uygulandı ve bu bir yavaşlatma değil: SVG
+bir görsel değil bir BELGEDİR; içine `<script>`, `onload=`, `javascript:`
+bağlantısı, `<foreignObject>` ve harici `<use>` gömülebilir. Menü sayfaları
+herkese açık olduğu için temizleyicisiz kabul, misafirin telefonunda
+çalışacak kod yüklemeye izin vermek olurdu (stored XSS). Sahip gecikme
+istemedi; temizleyici aynı pakette yazıldığı için gecikme olmadı.
+
+Temizleme başarısız olursa dosya REDDEDİLİR (fail-closed) — depodaki tarama
+kuralıyla aynı yön.
 
 ### 6.3 Dönüştürme hedefleri
 
@@ -139,10 +146,13 @@ rengine döner. Kırılım: Ürünler, Kampanyalar, Video, Belgeler, **Çöp**
 | Filigran | Paylaşım boyutuna küçük logo basılır | hayır |
 
 İlk üçü depoda ZATEN var (tarama, MIME doğrulama, EXIF temizleme) ama
-kullanıcıya gösterilmiyor ve kapatılamıyor. Anahtar yapmak, kapatılabilir
-yapmak demektir: **"virüs taraması" anahtarı kapatılabilir OLMAMALI** —
-kapatılabilir bir güvenlik anahtarı, kapatıldığı gün bir güvenlik açığıdır.
-Ekranda durumu GÖSTERİLİR, kapatılamaz.
+kullanıcıya gösterilmiyor.
+
+**Sahibin kararı (2026-09-05): virüs taraması GÖSTERİLİR, KAPATILAMAZ.**
+Kapatılabilir bir güvenlik anahtarı, kapatıldığı gün bir güvenlik açığıdır.
+Ayarlar ekranında durumu okunur (açık / bu ortamda çalışmıyor) ama
+kullanıcı onu kapatamaz. Kaynağın diğer dört anahtarı kaynağın dediği gibi
+açılıp kapanabilir.
 
 ### 6.7 Olgunluk seviyeleri
 
