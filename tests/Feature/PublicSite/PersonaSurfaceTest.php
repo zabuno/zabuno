@@ -28,9 +28,9 @@ final class PersonaSurfaceTest extends TestCase
             $markup = (string) file_get_contents(base_path($view));
 
             self::assertStringContainsString(
-                'data-persona="platform"',
+                '<body data-persona="platform">',
                 $markup,
-                "PERSONA-SURFACE-01: [{$view}] persona bildirmeli; ilk boyama kiracı tonunda başlayıp sonra renk değiştiremez."
+                "PERSONA-SURFACE-01: [{$view}] persona `<body>` üzerinde bildirmeli; `<html>` RTL kapısında donmuştur ve ilk boyama kiracı tonunda başlayamaz."
             );
         }
     }

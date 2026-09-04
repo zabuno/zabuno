@@ -115,11 +115,18 @@ export function OpsShell<Key extends string>({
         aynı sekmede restoran paneline dönen kullanıcıya lacivert kalamaz.
     */
     useEffect(() => {
-        const root = document.documentElement;
+        // `<body>`: Blade zaten burada bildiriyor; çalışma zamanı yazımı
+        // Blade'siz bağlamlar (Storybook, testler) için aynı yeri kullanır ki
+        // iki kaynak çelişmesin. `<html>` KULLANILMAZ — RTL kapısı o etiketi
+        // birebir donduruyor (`RTL-LOGIN-DERIVED-02`).
+        const root = document.body;
+        const had = root.getAttribute('data-persona');
         root.setAttribute('data-persona', 'platform');
 
         return () => {
-            root.removeAttribute('data-persona');
+            if (had === null) {
+                root.removeAttribute('data-persona');
+            }
         };
     }, []);
 

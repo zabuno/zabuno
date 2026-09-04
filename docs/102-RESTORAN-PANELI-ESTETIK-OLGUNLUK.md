@@ -207,10 +207,12 @@ yazar ve ayrılırken siler: çekmece ve diyalog PORTALLA `document.body`
 altına çizilir, kabuk `div`ine yazılan öznitelik onlara miras kalmazdı.
 
 **Tüm sayfalarda.** Öznitelik üç yerde bulunur: platform ve mühendislik
-Blade şablonlarının `<html>` etiketinde (ilk boyama doğru olsun diye —
+Blade şablonlarının **`<body>`** etiketinde (ilk boyama doğru olsun diye —
 React yüklenene kadar sayfa kiracı tonunda başlayıp sonra renk
-değiştiremez), `AdminShell`'in kök `div`inde ve `OpsShell`'in kök öğeye
-yazdığı çalışma zamanı özniteliğinde (portala çıkan katmanlar için).
+değiştiremez; `<html>` kullanılmaz, çünkü RTL kapısı o etiketi birebir
+donduruyor), `AdminShell`'in kök `div`inde ve `OpsShell`'in `<body>`ye
+yazdığı çalışma zamanı özniteliğinde (portala çıkan katmanlar `body`
+altına çizilir).
 `PersonaSurfaceTest` (PHP) hem superadmin şablonlarının persona bildirmesini
 hem de kiracı/kamu/misafir şablonlarının bildirmemesini dondurur.
 
