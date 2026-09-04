@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Images, UploadSimple } from '@phosphor-icons/react';
 import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
@@ -6,6 +7,9 @@ import { MediaUploadRegion } from './media/MediaUploadRegion';
 import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
 import { MediaAuditRegion } from './media/MediaAuditRegion';
 import { MediaQuotaRegion, type MediaQuota } from './media/MediaQuotaRegion';
+import { MediaManagerShell, type MediaManagerSection } from './media/MediaManagerShell';
+import { MediaFolderRail, type MediaFolderId } from './media/MediaFolderRail';
+import { useMediaFolders } from './media/mediaFolders';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
 
@@ -30,6 +34,12 @@ export type MediaAsset = {
     sizeBytes?: number;
     createdAt?: string | null;
     lifecycle?: string;
+    /**
+     * Dosyanın klasörü (`docs/108` §3 madde 1). Klasör uçları henüz
+     * inmediği için bugün hiçbir varlıkta dolu değil; klasör hapları da
+     * ancak gerçek klasör listesi geldiğinde çizilir.
+     */
+    folderId?: number | string | null;
 };
 
 export type MediaUsage = {
@@ -82,6 +92,15 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
     const [deleteErrorIds, setDeleteErrorIds] = useState<Set<number>>(new Set());
     const [deleteNotice, setDeleteNotice] = useState<string | null>(null);
     const [trashRetentionDays, setTrashRetentionDays] = useState(30);
+    /*
+        Kabuğun durumu SAYFADA durur: arama ve klasör seçimi bölüm
+        değiştirince kaybolmaz. Sahip "adana" yazıp Yükle'ye geçtiğinde
+        geri döndüğünde aradığı şeyi yeniden yazmak zorunda kalmamalı.
+    */
+    const [section, setSection] = useState('library');
+    const [query, setQuery] = useState('');
+    const [folderId, setFolderId] = useState<MediaFolderId | null>(null);
+    const folders = useMediaFolders(workspaceId);
     const requestSeqRef = useRef(0);
     const endpoint = `/api/workspaces/${workspaceId ?? ''}/media`;
 
@@ -321,35 +340,90 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
         }
     }
 
+    /*
+        BÖLÜMLER: kaynak dokuz bölüm gösteriyor, depoda bugün İKİSİ gerçek
+        (`docs/108` §2). Var olmayan bir bölüme giden sekme, kullanıcıyı boş
+        bir odaya sokar ve "burası ne zaman açılacak?" diye kalıcı bir soru
+        işareti bırakır — o yüzden yalnız çalışan bölümler yazılıdır.
+    */
+    const sections: MediaManagerSection[] = [
+        {
+            key: 'library',
+            label: t('workspace.media.library.tabs.library'),
+            icon: <Images aria-hidden="true" size={18} />,
+            content: (
+                <PanelCard>
+                    <MediaLibraryRegion
+                        assets={assets}
+                        onDelete={(id) => void handleDelete(id)}
+                        loadState={loadState}
+                        onRetry={() => void loadAssets()}
+                        pendingDeleteIds={pendingDeleteIds}
+                        deleteErrorIds={deleteErrorIds}
+                        deleteNotice={deleteNotice}
+                        actions={workspaceId === undefined ? undefined : actions}
+                        trashRetentionDays={trashRetentionDays}
+                        query={query}
+                        folders={folders}
+                        activeFolderId={folderId}
+                        onFolderChange={setFolderId}
+                    />
+                </PanelCard>
+            ),
+        },
+        {
+            key: 'upload',
+            label: t('workspace.media.upload.button'),
+            icon: <UploadSimple aria-hidden="true" size={18} />,
+            content: (
+                <PanelCard>
+                    <MediaUploadRegion onSubmit={handleUpload} />
+                </PanelCard>
+            ),
+        },
+    ];
+
     return (
         <div id="section-media">
             <WorkspacePageFrame
                 measure="wide"
-                title={t('workspace.media.heading')}
                 description={t('workspace.media.operational.description')}
             >
-                {workspaceId !== undefined ? (
-                    <MediaQuotaRegion workspaceId={workspaceId} onLoaded={handleQuotaLoaded} />
-                ) : null}
-                {/* İki sütun: solda ekle, sağda kütüphane; 320 px'te tek sütuna sarar (auto-fit). */}
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,22rem),1fr))] gap-6">
-                    <PanelCard>
-                        <MediaUploadRegion onSubmit={handleUpload} />
-                    </PanelCard>
-                    <PanelCard>
-                        <MediaLibraryRegion
-                            assets={assets}
-                            onDelete={(id) => void handleDelete(id)}
-                            loadState={loadState}
-                            onRetry={() => void loadAssets()}
-                            pendingDeleteIds={pendingDeleteIds}
-                            deleteErrorIds={deleteErrorIds}
-                            deleteNotice={deleteNotice}
-                            actions={workspaceId === undefined ? undefined : actions}
-                            trashRetentionDays={trashRetentionDays}
-                        />
-                    </PanelCard>
-                </div>
+                {/*
+                    Medya kendi kabuğunu taşır: adı, araması ve bölüm
+                    gezintisi kabukta durur (`docs/108` §1). Sayfa başlığı bu
+                    yüzden çerçeveden ALINDI — aynı ad iki kez yazılsaydı
+                    ekran okuyucu iki ayrı başlık duyururdu.
+                */}
+                <MediaManagerShell
+                    title={t('workspace.media.heading')}
+                    sections={sections}
+                    activeKey={section}
+                    onSelect={setSection}
+                    query={query}
+                    onQueryChange={setQuery}
+                    uploadKey="upload"
+                    rail={
+                        <MediaFolderRail
+                            folders={folders}
+                            activeFolderId={folderId}
+                            onSelect={setFolderId}
+                        >
+                            {/*
+                                DEPOLAMA ŞERİDİ kaynağın sol sütununda durur.
+                                Kota kutusu kendi verisi gelmeden hiç
+                                çizilmez; şerit de o zaman boş kalır ve yer
+                                kaplamaz.
+                            */}
+                            {workspaceId === undefined ? null : (
+                                <MediaQuotaRegion
+                                    workspaceId={workspaceId}
+                                    onLoaded={handleQuotaLoaded}
+                                />
+                            )}
+                        </MediaFolderRail>
+                    }
+                />
 
                 {/*
                     Denetim izi EN ALTTA ve kapalı: günlük iş değildir, bir

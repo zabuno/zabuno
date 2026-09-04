@@ -84,7 +84,21 @@ export function QrCodesPage({
                                 <button
                                     type="button"
                                     onClick={() => onNavigateToSection?.('menu')}
-                                    className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
+                                    /*
+                                        AĞIRLIK ÖLÇEĞİ ÜÇ BASAMAKLIDIR: 400
+                                        gövde, 500 vurgulu satır, 700 başlık ve
+                                        birincil eylem. 600 (`font-semibold`)
+                                        AEP ölçeğinde YOKTUR.
+
+                                        600 yazıldığında tarayıcı, yüklü yazı
+                                        tipinin 500 ile 700 kesimleri arasından
+                                        birini seçer ya da sentetik bir
+                                        kalınlaştırma uydurur: aynı ekran iki
+                                        makinede iki farklı ağırlıkta çizilir ve
+                                        hiçbir ekran görüntüsü diğerini
+                                        doğrulamaz.
+                                    */
+                                    className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg"
                                 >
                                     {t('workspace.qrCodes.empty.goToMenu')}
                                 </button>

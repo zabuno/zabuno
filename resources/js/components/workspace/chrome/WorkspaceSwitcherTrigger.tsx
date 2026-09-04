@@ -52,21 +52,44 @@ export function WorkspaceSwitcherTrigger({
         geldi: göz uzun adı okumadan önce onu tanır, ve iki restoran arasında
         gidip gelen biri için renkten önce gelen ayırt edici işaret budur.
     */
+    /*
+        KARE MARKA RENGİNDE — AEP `DESIGN_SPEC` §1: "36px marka karesi
+        (`brand` zemin, `action-fg` harf)".
+
+        Önceki hâlde baş harf soluk gri bir karedeydi ve tam altındaki gezinti
+        maddelerinin aktif zemini de aynı griydi: ekranın en üst KİMLİK
+        işaretiyle "buradasın" işareti aynı renkti. İki restoranı olan bir
+        işletmeci gün içinde ikisi arasında gidip gelir; kabuğu tek bakışta
+        ayıran şey bu karedir, o yüzden markanın kendisini taşır.
+
+        Sarı zeminde tek meşru yazı rengi `--color-action-fg` (ölçülmüş
+        11.63:1). `text-fg` koyu temada beyaza döner ve sarının üstünde
+        okunmazdı.
+    */
     const label = (
-        <span className="flex min-w-0 items-center gap-[var(--space-2)]">
+        <span className="flex min-w-0 items-center gap-[var(--space-3)]">
             <span
                 aria-hidden="true"
-                className="flex h-[1.75rem] w-[1.75rem] shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-surface-active)] text-meta font-semibold text-fg"
+                data-slot="workspace-initial"
+                className="flex h-[2.25rem] w-[2.25rem] shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-action text-body font-bold text-action-fg"
             >
                 {workspaceName.slice(0, 1).toLocaleUpperCase()}
             </span>
-            <span className="truncate text-body font-semibold text-fg">{workspaceName}</span>
+            {/* Ağırlık ölçeği yalnız 400/500/700: 600, Roboto'da gerçek bir
+                kesim değildir ve tarayıcı onu işletim sistemine göre farklı
+                sentezler. */}
+            <span className="truncate text-body font-bold text-fg">{workspaceName}</span>
         </span>
     );
 
     return (
         <SidebarMenu
-            className="mb-[var(--space-5)]"
+            /*
+                Seçiciyle gezinti arası 8px. 24px'lik eski aralık, kutuyu
+                gezintinin başlığı değil AYRI BİR BÖLÜM gibi gösteriyordu;
+                oysa bu kutu listenin üstündeki bağlamdır ve ona yakın durur.
+            */
+            className="mb-[var(--space-2)]"
             /*
                 Erişilebilir ad HEM bağlamı HEM eylemi taşır: yalnız "çalışma
                 alanı değiştir" deseydik, ekran okuyucu kullanan biri hangi

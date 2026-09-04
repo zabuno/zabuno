@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
+import { APP_CSS_PATH, themeScope } from './cssSources';
+
 import {
     compositeOver,
     contrastRatio,
@@ -23,12 +25,10 @@ import {
  * bir gün biri elle değişirse, hangi değerin yanlış olduğunu değil hangi
  * ilişkinin bozulduğunu söyler.
  */
-const CSS_PATH = 'resources/css/app.css';
+const CSS_PATH = APP_CSS_PATH;
 
-function scopeOf(selector: string): Record<string, string> {
-    const css = readFileSync(CSS_PATH, 'utf8');
-
-    return { ...readCustomProperties(css, ':root'), ...readCustomProperties(css, selector) };
+function scopeOf(selector: ':root' | '.dark'): Record<string, string> {
+    return themeScope(selector, readCustomProperties);
 }
 
 function luminanceOf(token: string, scope: Record<string, string>, over: string): number {
@@ -43,28 +43,59 @@ function luminanceOf(token: string, scope: Record<string, string>, over: string)
     return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
 }
 
+/**
+ * Jeton artık ÇÖZÜLEREK ölçülür (FF-131).
+ *
+ * Değerler `resources/css/aep/` içinde yaşıyor ve `app.css` onların üstüne
+ * `var(--aep-*)` takma adları koyuyor. Bu testler literal metni donduruyordu
+ * ve geçiş sonrası `#f7f7fb` yerine `var(--aep-surface-canvas)` gördüler —
+ * ürün doğru çalışırken kırmızıya döndüler.
+ *
+ * Donması gereken şey zaten metin değil DEĞERDİ: zincir ne kadar uzarsa
+ * uzasın, `--canvas` sonunda aynı renge çıkmalı.
+ */
+function hexOf(token: string, scope: Record<string, string>): string {
+    const resolved = resolveColorWithAlpha(scope[token] ?? '', scope);
+
+    expect(resolved, `DS-AEP-INK-11: ${token} çözülemedi.`).not.toBeNull();
+
+    const channel = (value: number) =>
+        Math.round(linearToSrgbByte(value)).toString(16).padStart(2, '0');
+
+    return `#${channel(resolved!.rgb[0])}${channel(resolved!.rgb[1])}${channel(resolved!.rgb[2])}`;
+}
+
+function linearToSrgbByte(channel: number): number {
+    const srgb = channel <= 0.0031308 ? channel * 12.92 : 1.055 * channel ** (1 / 2.4) - 0.055;
+
+    return srgb * 255;
+}
+
 describe('AEP ink merdiveni', () => {
     it('açık temanın altı değeri dondurulmuştur', () => {
         const scope = scopeOf(':root');
 
-        expect(scope['--canvas']).toBe('#f7f7fb');
-        expect(scope['--surface']).toBe('#ffffff');
-        expect(scope['--surface-subtle']).toBe('#ededf4');
-        expect(scope['--border']).toBe('#e4e4ee');
-        expect(scope['--fg']).toBe('#080616');
+        expect(hexOf('--canvas', scope)).toBe('#f7f7fb');
+        expect(hexOf('--surface', scope)).toBe('#ffffff');
+        expect(hexOf('--surface-subtle', scope)).toBe('#ededf4');
+        expect(hexOf('--border', scope)).toBe('#e4e4ee');
+        expect(hexOf('--fg', scope)).toBe('#080616');
         // Marka sarısı ve üstündeki koyu ton ÖLÇÜLMÜŞ bir çifttir (11.63:1);
         // merdiven değişirken bunlar değişmez.
-        expect(scope['--color-brand-500']).toBe('#ffb900');
-        expect(scope['--color-action-primary-fg']).toBe('#1c1500');
+        expect(hexOf('--color-brand-500', scope)).toBe('#ffb900');
+        // AEP'in marka üstü mürekkebi `#080616` (ink-950); depo daha önce
+        // `#1c1500` kullanıyordu. Teslim paketi kanonik olduğu için değer
+        // pakete çevrildi — ikisi de sarı üstünde 11:1'in üstünde.
+        expect(hexOf('--color-action-primary-fg', scope)).toBe('#080616');
     });
 
     it('koyu temanın dört değeri dondurulmuştur', () => {
         const scope = scopeOf('.dark');
 
-        expect(scope['--canvas']).toBe('#080616');
-        expect(scope['--surface']).toBe('#0d0a24');
-        expect(scope['--surface-subtle']).toBe('#16123a');
-        expect(scope['--border']).toBe('#26224a');
+        expect(hexOf('--canvas', scope)).toBe('#080616');
+        expect(hexOf('--surface', scope)).toBe('#0d0a24');
+        expect(hexOf('--surface-subtle', scope)).toBe('#16123a');
+        expect(hexOf('--border', scope)).toBe('#26224a');
     });
 
     it('açık temada kart zeminden AÇIK, kart içi dolgu ikisinin arasında', () => {
@@ -184,7 +215,7 @@ describe('AEP ink merdiveni', () => {
             const scope = scopeOf(selector);
             const focus = scope['--focus'] ?? '';
 
-            expect(focus, `DS-AEP-INK-11: ${selector} odak jetonu tanımsız.`).toBe(
+            expect(hexOf('--focus', scope), `DS-AEP-INK-11: ${selector} odak halkası.`).toBe(
                 expected[selector],
             );
 

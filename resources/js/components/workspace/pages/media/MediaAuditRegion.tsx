@@ -78,17 +78,27 @@ export function MediaAuditRegion({ workspaceId }: MediaAuditRegionProps) {
 
     return (
         <details className="rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-4)]">
-            <summary className="cursor-pointer text-body font-semibold text-fg">
+            <summary className="cursor-pointer text-body font-bold text-fg">
                 {t('workspace.media.audit.heading')}
             </summary>
-            <p className="mt-[var(--space-2)] text-meta text-fg-muted">
+            <p className="mt-[var(--space-2)] text-body text-fg-muted">
                 {t('workspace.media.audit.help')}
             </p>
-            <ul className="mt-[var(--space-3)] flex flex-col gap-[var(--space-2)]">
+            {/*
+                Kayıtlar tek kartın (bu `<details>`) İÇİDİR: satırlar arasında
+                boşluk yoktur, ayrım 1 piksellik çizgidir. Boşluk + çizgi
+                birlikte, çizgiyi satırdan koparıp havada bırakırdı.
+            */}
+            <ul className="mt-[var(--space-3)] flex flex-col">
                 {rows.map((row) => (
                     <li
                         key={row.id}
-                        className="flex flex-wrap items-baseline gap-[var(--space-2)] border-b border-border pb-[var(--space-2)] text-body text-fg-secondary last:border-b-0"
+                        /*
+                            Ayraç ÜSTTEDİR — alttan ayraçta son satırın çizgisi
+                            kartın kendi kenarlığıyla çakışır ve o susturma her
+                            yeni kayıt türünde yeniden hatırlanmak zorunda kalır.
+                        */
+                        className="flex min-h-[var(--density-row-height)] flex-wrap items-baseline gap-[var(--space-2)] border-t border-border py-[var(--space-2)] text-body text-fg-secondary first:border-t-0"
                     >
                         <span className="font-medium text-fg">
                             {t(ACTION_LABEL[row.action] ?? 'workspace.media.audit.action.unknown', {
@@ -100,11 +110,17 @@ export function MediaAuditRegion({ workspaceId }: MediaAuditRegionProps) {
                             yazılır: eylemin olduğu gerçeği, kimin yaptığının
                             bilinmemesinden bağımsızdır.
                         */}
-                        <span className="text-meta text-fg-muted">
+                        <span className="text-body text-fg-muted">
                             {row.actor ?? t('workspace.media.audit.actor.unknown')}
                         </span>
+                        {/*
+                            Zaman damgası `text-meta`nın MEŞRU kullanımıdır ve
+                            `tabular-nums` ŞARTTIR: göz damgaları yukarıdan
+                            aşağıya tarar, orantılı rakamda "11:04" ile "18:41"
+                            farklı genişlikte çizilir ve sütun titrer.
+                        */}
                         {row.at !== null ? (
-                            <span className="text-meta text-fg-muted">{row.at}</span>
+                            <span className="text-meta text-fg-muted tabular-nums">{row.at}</span>
                         ) : null}
                     </li>
                 ))}

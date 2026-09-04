@@ -16,6 +16,14 @@ msgstr "Bu şube için henüz menü oluşturulmadı."
 msgid "dashboard.empty.openMenu"
 msgstr "Menüyü aç"
 
+#: dashboard:dashboard.greeting
+msgid "dashboard.greeting"
+msgstr ""
+
+#: dashboard:dashboard.greeting.named
+msgid "dashboard.greeting.named"
+msgstr ""
+
 #: dashboard:dashboard.heading
 msgid "dashboard.heading"
 msgstr "Ana sayfa"

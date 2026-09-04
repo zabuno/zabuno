@@ -156,9 +156,7 @@ export function WorkspaceLedger({ workspaceId }: WorkspaceLedgerProps) {
             aria-label={t('workspace.billing.ledger.region')}
             className="flex flex-col gap-3"
         >
-            <p className="text-body font-semibold text-fg">
-                {t('workspace.billing.ledger.region')}
-            </p>
+            <p className="text-body font-bold text-fg">{t('workspace.billing.ledger.region')}</p>
             <p className="text-body text-fg-muted">{t('workspace.billing.ledger.description')}</p>
 
             {status === 'error' ? (
@@ -190,7 +188,7 @@ export function WorkspaceLedger({ workspaceId }: WorkspaceLedgerProps) {
 
                     {balances.length > 0 && (
                         <section aria-label={t('workspace.billing.ledger.balances')}>
-                            <p className="text-body font-semibold text-fg">
+                            <p className="text-body font-bold text-fg">
                                 {t('workspace.billing.ledger.balances')}
                             </p>
                             <KeyValueList

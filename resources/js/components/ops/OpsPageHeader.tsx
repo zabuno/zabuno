@@ -60,7 +60,7 @@ export function OpsPageHeader({
                         </ol>
                     </nav>
                 ) : null}
-                <h1 id={headingId} className="text-title font-semibold text-fg">
+                <h1 id={headingId} className="text-title font-bold text-fg">
                     {title}
                 </h1>
                 {description ? <p className="text-body text-fg-secondary">{description}</p> : null}

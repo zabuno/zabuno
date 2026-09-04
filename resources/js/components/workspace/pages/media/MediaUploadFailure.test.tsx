@@ -17,15 +17,26 @@ import { ServerRejectedError } from '../../../../lib/validationErrors';
  * Bu yüzden yalnız `ServerRejectedError` görünür.
  */
 
+/**
+ * Ekran artık dört adımlı bir SİHİRBAZ (kanonik kaynak: "Yükle").
+ *
+ * Bu yardımcı o dört adımı sırayla yürür — dosya, küçültme, yer/çerçeve, alt
+ * metin — ve sonunda gönderir. Tek uzun formun yerine adımların geçmesi bu
+ * dosyanın iddiasını değiştirmez: sunucunun söylediği sebep hâlâ ekranda
+ * yazmalı.
+ */
 async function fillAndSubmit(): Promise<void> {
     const user = (await import('@testing-library/user-event')).default.setup();
     const region = screen.getByRole('region', { name: /media upload/i });
 
     await user.upload(
-        within(region).getByLabelText(/file/i) as HTMLInputElement,
+        within(region).getByLabelText(/choose a file/i) as HTMLInputElement,
         new File(['binary'], 'photo.png', { type: 'image/png' }),
     );
-    await user.type(within(region).getByLabelText(/alt text/i), 'Bir tabak');
+
+    // 2. adım (küçültme) → 3. adım (yer ve çerçeve).
+    await user.click(await screen.findByRole('button', { name: /^continue$/i }));
+
     const slotField = within(region).getByLabelText(/where will this image be used/i);
 
     // Slot listesi sunucudan geliyor; seçenek gelene kadar beklenir.
@@ -36,7 +47,11 @@ async function fillAndSubmit(): Promise<void> {
     });
 
     await user.selectOptions(slotField, 'itemImage');
-    await user.click(within(region).getByRole('button', { name: /upload/i }));
+    await user.click(screen.getByRole('button', { name: /^continue$/i }));
+
+    // 4. adım: alt metin ve gönderme.
+    await user.type(within(region).getByLabelText(/alt text/i), 'Bir tabak');
+    await user.click(within(region).getByRole('button', { name: /^upload$/i }));
 }
 
 /**

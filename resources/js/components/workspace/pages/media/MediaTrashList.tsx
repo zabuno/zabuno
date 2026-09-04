@@ -60,7 +60,7 @@ export function MediaTrashList({
 
     return (
         <div className="flex flex-col gap-3">
-            <p className="text-meta text-fg-muted">
+            <p className="text-body text-fg-muted">
                 {t('workspace.media.library.trash.lead', { days: String(retentionDays) })}
             </p>
             {failed ? (
@@ -77,29 +77,45 @@ export function MediaTrashList({
                 </p>
             ) : (
                 <ul
+                    /*
+                        LİSTEDE SATIRLAR ARASINDA BOŞLUK YOKTUR (FF-131 kart
+                        grameri). `gap` + `border` birlikte, ayracı satırdan
+                        koparıp havada bırakır; dış çerçeve bir kez çizilir,
+                        içerideki ayrım tek çizgidir.
+                    */
                     aria-label={t('workspace.media.library.trash.heading')}
-                    className="flex flex-col gap-2"
+                    className="flex flex-col"
                 >
                     {rows.map((row) => {
                         const name = displayName(row);
                         return (
                             <li
                                 key={row.id}
-                                className="flex items-center justify-between gap-3 border-b border-border pb-2"
+                                /*
+                                    Ayraç ÜSTTEDİR: alttan ayraçta son satırın
+                                    çizgisini ayrıca susturmak gerekir ve o
+                                    susturma unutulduğunda kartın kendi
+                                    kenarlığıyla çakışan ikinci bir çizgi
+                                    belirir. Yükseklik ve yatay dolgu yoğunluk
+                                    jetonundan gelir; sahip "Sıkı / Standart /
+                                    Ferah" seçtiğinde çöp de onunla değişir.
+                                */
+                                className="flex min-h-[var(--density-row-height)] items-center justify-between gap-[var(--space-3)] border-t border-border px-[var(--density-padding-inline)] py-[var(--space-2)] first:border-t-0"
                             >
                                 <div className="flex min-w-0 items-center gap-3">
                                     {row.previewUrl ? (
                                         <img
                                             src={row.previewUrl}
                                             alt=""
-                                            className="h-[3rem] w-[3rem] shrink-0 rounded-md object-cover"
+                                            className="h-[3rem] w-[3rem] shrink-0 rounded-[var(--radius-md)] object-cover"
                                         />
                                     ) : null}
                                     <div className="flex min-w-0 flex-col">
                                         <span className="truncate text-body font-medium text-fg">
                                             {name}
                                         </span>
-                                        <span className="text-meta text-fg-muted">
+                                        {/* Boyutlar alt alta okunur: sabit genişlikli rakam. */}
+                                        <span className="text-meta text-fg-muted tabular-nums">
                                             {[row.originalName, formatBytes(row.sizeBytes)]
                                                 .filter(Boolean)
                                                 .join(' · ')}
@@ -109,7 +125,6 @@ export function MediaTrashList({
                                 <Button
                                     color="light"
                                     type="button"
-                                    className="text-meta"
                                     disabled={busyId !== null}
                                     onClick={() => void handleRestore(row.id)}
                                     aria-label={t('workspace.media.library.trash.restore.named', {
@@ -124,7 +139,7 @@ export function MediaTrashList({
                 </ul>
             )}
             {notice ? (
-                <p role="status" className="text-meta text-fg-secondary">
+                <p role="status" className="text-body text-fg-secondary">
                     {notice}
                 </p>
             ) : null}

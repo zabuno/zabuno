@@ -226,6 +226,40 @@ export const media = {
     'workspace.media.audit.action.versionRestored': 'Restored an older version of photo #{id}',
     'workspace.media.audit.action.downloaded': 'Requested the original of photo #{id}',
     'workspace.media.audit.action.unknown': 'Acted on photo #{id}',
+    /*
+        FF-131 — MEDYA KENDİ KABUĞU OLAN BİR UYGULAMA (kanonik kaynak:
+        `docs/reference/media-manager/`, gerekçe `docs/108`). Kabuğun kendi
+        adı, kendi araması, kendi bölüm gezintisi ve solda klasör şeridi
+        var; kütüphanenin de kendi araç çubuğu.
+    */
+    'workspace.media.shell.sections': 'Media sections',
+    'workspace.media.shell.search': 'Search media',
+    'workspace.media.shell.search.placeholder': 'File name or description',
+    'workspace.media.shell.search.clear': 'Clear search',
+    'workspace.media.shell.queue': 'Queue',
+    'workspace.media.folders.heading': 'Folders',
+    'workspace.media.folders.all': 'All files',
+    'workspace.media.folders.page': 'Page {page} of {total}',
+    'workspace.media.folders.previous': 'Previous folders',
+    'workspace.media.folders.next': 'More folders',
+    'workspace.media.library.filters.toggle': 'Filter',
+    'workspace.media.library.sort': 'Sort: {label}',
+    'workspace.media.library.sort.newest': 'Newest',
+    'workspace.media.library.sort.name': 'Name',
+    'workspace.media.library.sort.largest': 'Largest',
+    'workspace.media.library.result.count': '{count} file(s)',
+    'workspace.media.library.select.all': 'Select all',
+    'workspace.media.library.select.clear': 'Clear selection',
+    'workspace.media.library.select.named': 'Select {name}',
+    'workspace.media.library.select.count': '{count} selected',
+    'workspace.media.library.select.delete': 'Delete selected',
+    // Toplu silmede sessizce atlamak en kötüsüdür: hangi dosyanın neden
+    // durduğu yazmazsa sahip onu silinmiş sanır.
+    'workspace.media.library.select.kept':
+        '{count} in use were kept. Open each one to see where it is used.',
+    // Karantinadaki ya da henüz işlenmemiş dosyanın herkese açık adresi
+    // yoktur; bu bir gecikme değil, bir güvenlik kararıdır.
+    'workspace.media.library.access.private': 'Not publicly available yet',
 } as const;
 
 declare module '../workspace' {

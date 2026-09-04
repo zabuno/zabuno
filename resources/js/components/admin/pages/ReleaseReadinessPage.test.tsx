@@ -40,7 +40,10 @@ function findCanonicalTitle(container: HTMLElement, pattern: RegExp) {
         }
         // Yalnız BAŞLIK satırı — FF-63'ün kayıt formundaki yardım metni de
         // "RPO … RTO" içeriyor ve bir <p>; başlık kalın olanıdır.
-        if (!element.classList.contains('font-semibold')) {
+        // FF-131: kalınlık 600'den 700'e çekildi — AEP ölçeğinde izinli
+        // ağırlıklar 400/500/700 ve Roboto'da 600 ayrı kesim olarak
+        // yüklenmediği için tarayıcı onu sentezliyordu.
+        if (!element.classList.contains('font-bold')) {
             return false;
         }
         return pattern.test(element.textContent ?? '');

@@ -1,10 +1,10 @@
 import { t } from '../../../i18n/dashboard';
-import { t as tWorkspace } from '../../../i18n/workspace';
 import { StatCard } from '../../catalog/data-display/compound/StatCard';
 import { ResponsiveDataTable } from '../../catalog/data-display/compound/ResponsiveDataTable';
 import { OpsCard } from '../../ops/OpsCard';
 import type { DataTableColumn } from '../../catalog/data-display/compound/ResponsiveDataTable';
 import { DashboardSetupJourney } from './dashboard/DashboardSetupJourney';
+import { DashboardGreeting } from './dashboard/DashboardGreeting';
 import type { BrandProfile } from '../BrandEditForm';
 import type { LocationProfile } from '../LocationEditForm';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
@@ -75,12 +75,22 @@ export function DashboardPage({
 }: DashboardPageProps) {
     return (
         <div id="section-dashboard">
-            {/* Tek `h1` sayfanın başında (`docs/102` §4); gövde kart gramerinde. */}
-            <WorkspacePageFrame
-                measure="standard"
-                title={t('dashboard.heading')}
-                description={tWorkspace('workspace.dashboard.operational.description')}
-            >
+            {/*
+                Başlık ARTIK ÇERÇEVEDEN GELMİYOR (FF-131, AEP `DESIGN_SPEC` §2).
+
+                `WorkspacePageFrame`'in `title`/`description` çifti her sayfaya
+                aynı açılışı verir: başlık, altında bir açıklama paragrafı.
+                Home'da bu yanlıştı — teslim paketinin çalışan ekranı bir
+                KARŞILAMAYLA açılıyor ve panelin ne yaptığını anlatmıyor. Her
+                sabah aynı ekranı açan bir restoran sahibine ürünün kendini
+                tanıtması, ikinci günden itibaren okunmayan bir paragraftır.
+
+                Tek `h1` kuralı korunuyor (`docs/102` §4): başlık bloğun
+                içinde, sayfada bir tane.
+            */}
+            <WorkspacePageFrame measure="standard">
+                <DashboardGreeting brand={brand} />
+
                 <DashboardSetupJourney
                     brand={brand}
                     location={location}
@@ -92,7 +102,14 @@ export function DashboardPage({
 
                 {dashboardMenuTree ? (
                     <>
-                        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,12rem),1fr))] gap-4">
+                        {/*
+                            Kart genişliği 12rem'den 14rem'e çıktı: rakam AEP
+                            metrik ölçeğine (2–3rem) yükseldi ve eski asgari
+                            genişlikte "Visible items" gibi iki kelimelik bir
+                            etiket ile üç haneli bir sayı aynı kutuda sıkışıp
+                            ikisi de sarıyordu.
+                        */}
+                        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-4">
                             <StatCard
                                 label={t('dashboard.stats.categories')}
                                 value={dashboardMenuTree.categories.length}

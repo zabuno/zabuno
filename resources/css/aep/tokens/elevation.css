@@ -1,0 +1,11 @@
+:root{
+--aep-elevation-raised:0 2px 8px rgb(0 0 0 / 10%);
+--aep-elevation-raised-hover:0 4px 12px rgb(0 0 0 / 10%);
+--aep-elevation-overlay:0 4px 16px rgb(0 0 0 / 12%);
+}
+/* Dark mode substitutes a tone step + 1px border for shadow. */
+[data-theme="dark"]{
+--aep-elevation-raised:none;
+--aep-elevation-raised-hover:none;
+--aep-elevation-overlay:none;
+}

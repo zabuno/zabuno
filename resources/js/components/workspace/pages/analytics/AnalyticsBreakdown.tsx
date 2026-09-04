@@ -1,4 +1,5 @@
 import { t } from '../../../../i18n/workspace';
+import { PanelCard } from '../shared/PanelCard';
 
 export type AnalyticsBreakdownRow = {
     id: number;
@@ -11,6 +12,19 @@ export type AnalyticsBreakdownProps = {
     heading: string;
     rows: AnalyticsBreakdownRow[];
 };
+
+/*
+    Satır hücresinin ORTAK ölçüsü (FF-131, teslim paketi "Kart grameri").
+
+    Yükseklik yoğunluk jetonundan gelir: sahip Ayarlar'dan "Sıkı / Standart /
+    Ferah" seçtiğinde bu tablo da onunla değişmeli. Elle yazılmış bir `py-1`
+    yoğunluk anahtarını sağır bırakırdı.
+
+    Yatay dolgu kart başlığınınkiyle AYNI (`--space-5`): başlık 20 pikselden,
+    satırlar 12 pikselden başlarsa sütun kenarı zikzak çizer ve göz her
+    satırda hizayı yeniden bulmak zorunda kalır.
+*/
+const CELL = 'h-[var(--density-row-height)] px-[var(--space-5)]';
 
 /**
  * Bir boyuta göre kırılım — `docs/68`.
@@ -29,27 +43,62 @@ export function AnalyticsBreakdown({ heading, rows }: AnalyticsBreakdownProps) {
     }
 
     return (
-        <section className="flex flex-col gap-2">
-            <h3 className="text-body font-semibold text-fg">{heading}</h3>
+        /*
+            TEK KART, İÇİNDE İNCE AYRAÇLI SATIRLAR (FF-131, teslim paketinin
+            kart grameri).
 
+            Tablo çıplak duruyordu: ne kart sınırı vardı, ne başlık satırının
+            gövdeden ayrıldığı bir ton. Sayfada üst üste iki kırılım olduğunda
+            (şube ve QR kodu) birinin nerede bitip diğerinin nerede başladığı
+            belli olmuyor, sahip "Beşiktaş" satırını yanlış başlığın altında
+            okuyabiliyordu.
+
+            `padded={false}`: dolguyu hücreler yönetir, yoksa kartın kendi
+            dolgusu tablonun ayraçlarını kenarlığa kadar götürmez ve çizgiler
+            havada asılı kalır.
+        */
+        <PanelCard title={heading} padded={false} className="overflow-hidden">
             <table className="w-full text-start">
                 <thead>
-                    <tr className="border-b border-border">
-                        <th scope="col" className="py-1 text-start text-meta text-fg-muted">
+                    {/*
+                        Başlık satırı SOLUK TONLA ayrışır (`DESIGN_SPEC` §2),
+                        kalın bir çizgiyle değil: Flat 2.0 derinliği tonla
+                        kurar. Cümle düzeni korunur — büyük harfe çevirme
+                        AEP'te yok, çünkü Türkçede "i/İ" dönüşümü tarayıcı
+                        diline göre bozulur ve okuma hızını düşürür.
+                    */}
+                    <tr className="bg-surface-subtle">
+                        <th
+                            scope="col"
+                            className={`${CELL} text-start text-meta font-bold text-fg-muted`}
+                        >
                             {t('workspace.analytics.breakdown.column.name')}
                         </th>
-                        <th scope="col" className="py-1 text-end text-meta text-fg-muted">
+                        <th
+                            scope="col"
+                            className={`${CELL} text-end text-meta font-bold text-fg-muted`}
+                        >
                             {t('workspace.analytics.metric.qrResolve')}
                         </th>
-                        <th scope="col" className="py-1 text-end text-meta text-fg-muted">
+                        <th
+                            scope="col"
+                            className={`${CELL} text-end text-meta font-bold text-fg-muted`}
+                        >
                             {t('workspace.analytics.metric.menuOpen')}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {rows.map((row) => (
-                        <tr key={row.id} className="border-b border-border">
-                            <td className="py-1.5 text-body text-fg">
+                        /*
+                            AYRAÇ ÜSTE konur. Alt ayraçlı bir listede son
+                            satırın ayracını ayrıca susturmak gerekir;
+                            unutulduğunda kartın kendi kenarlığıyla çakışan
+                            ikinci bir çizgi belirir. Üstten ayraç, eklenen
+                            her yeni satırı kendiliğinden doğru çizer.
+                        */
+                        <tr key={row.id} className="border-t border-border">
+                            <td className={`${CELL} text-body text-fg`}>
                                 {/*
                                     Uzun bir jeton satırı taşırmasın diye
                                     kırpılır — ama BAŞLIKTA tamamı durur:
@@ -60,17 +109,22 @@ export function AnalyticsBreakdown({ heading, rows }: AnalyticsBreakdownProps) {
                                     {row.label}
                                 </span>
                             </td>
-                            <td className="py-1.5 text-end text-body tabular-nums text-fg">
+                            {/*
+                                `tabular-nums`: oransal rakamlarda "1" diğer
+                                rakamlardan dardır; alt alta duran iki sayı
+                                farklı genişlikte görünür ve sütun kayar.
+                            */}
+                            <td className={`${CELL} text-end text-body tabular-nums text-fg`}>
                                 {row.qrResolveCount}
                             </td>
-                            <td className="py-1.5 text-end text-body tabular-nums text-fg">
+                            <td className={`${CELL} text-end text-body tabular-nums text-fg`}>
                                 {row.menuOpenCount}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-        </section>
+        </PanelCard>
     );
 }
 

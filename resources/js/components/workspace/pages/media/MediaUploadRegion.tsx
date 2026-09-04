@@ -1,15 +1,33 @@
 import { TextInput } from '../../../catalog/forms/micro/TextInput';
 import { Select } from '../../../catalog/forms/micro/Select';
 import { Button } from '../../../catalog/forms/micro/Button';
-import { useCallback, useEffect, useId, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { canCropInto, parseAspect } from './cropGeometry';
+import { DEFAULT_MAX_EDGE } from './clientDownscale';
+import { downscaleImageFile, type DownscaleOutcome } from './downscaleImageFile';
 import { ImageCropField } from './ImageCropField';
 import { MediaDropzone, type SelectedImage } from './MediaDropzone';
+import { MediaOptimizeStep } from './MediaOptimizeStep';
+import { MediaUploadSteps, type UploadStep, type UploadStepKey } from './MediaUploadSteps';
+import { SupportedTypesTable } from './SupportedTypesTable';
 import { FieldError } from '../../../catalog/menu/micro/FieldError';
 import { focusFirstInvalidField, ServerRejectedError } from '../../../../lib/validationErrors';
 import { t } from '../../../../i18n/workspace';
+import { wizardText } from './uploadWizardCopy';
 
 type UploadStatus = 'idle' | 'pending' | 'success' | 'error';
+
+/**
+ * Sihirbazın adım sırası — kanonik kaynağın "Yükle" ekranıyla aynı.
+ *
+ * Sıra keyfî değil, her adım bir öncekinin çıktısını kullanır: küçültme
+ * seçilmiş bir dosyaya, çerçeve küçültülmüş bir kareye, gönderme ise ikisine
+ * birden bağlıdır.
+ */
+const STEP_ORDER: readonly UploadStepKey[] = ['pick', 'optimize', 'frame', 'send'];
+
+/** Yükleyicinin kabul ettiği türler — desteklenen türler tablosunu da bu besler. */
+const ACCEPT = 'image/*';
 
 /**
  * Slot politikası — nerede kullanılacağı ve o yerin ne gerektirdiği.
@@ -124,6 +142,31 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
     );
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
+    /*
+        SİHİRBAZ DURUMU.
+
+        Öncesinde bu ekran TEK bir uzun formdu: bırakma alanı, kırpma aracı,
+        alt metin, yer seçimi ve yükle düğmesi alt alta. Telefonda bu, sahibin
+        kaydırarak aradığı beş ayrı karar demekti ve hangi sırayla yapılacağı
+        hiçbir yerde yazmıyordu. Kaynak aynı işi dört adıma bölüyor ve her
+        adımda TEK bir soru soruyor.
+    */
+    const [step, setStep] = useState<UploadStepKey>('pick');
+    /** Kullanıcının seçtiği uzun kenar hedefi (2. adım). */
+    const [maxEdge, setMaxEdge] = useState(DEFAULT_MAX_EDGE);
+    /** İstemcide küçültülmüş çıktı; `null` ise küçültülecek bir şey yoktu. */
+    const [optimized, setOptimized] = useState<DownscaleOutcome | null>(null);
+    const [optimizing, setOptimizing] = useState(false);
+    /**
+     * Odak isteği — hatalı alan BAŞKA bir adımda olabilir.
+     *
+     * Sihirbazın en sinsi arızası budur: "Upload" son adımda, eksik alan
+     * başka adımda. Odak, alan ekrana geldikten SONRA taşınmalı; bu yüzden
+     * istek bir sonraki çizime bırakılıyor.
+     */
+    const [focusToken, setFocusToken] = useState(0);
+    const focusFieldsRef = useRef<Record<string, string>>({});
+
     // Politikalar workspace'e bağlı değil; bir kez okunur.
     useEffect(() => {
         let cancelled = false;
@@ -158,6 +201,94 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
     }, []);
 
     const activePolicy = policies.find((candidate) => candidate.key === slot) ?? null;
+
+    /*
+        Slot kısıtları PRİMİTİF olarak okunur: etki bağımlılıklarında nesne
+        kimliği kullanılsaydı her çizimde yeni bir nesne doğar ve küçültme
+        sonsuz döngüye girerdi.
+    */
+    const minWidth = activePolicy?.minWidth ?? 0;
+    const minHeight = activePolicy?.minHeight ?? 0;
+    const policyAspect = activePolicy?.aspect ?? null;
+
+    /*
+        İSTEMCİDE KÜÇÜLTME (kanonik kaynak, "Yükle" 2. adımı).
+
+        Telefonla çekilen 8 MB'lık fotoğraf bugün olduğu gibi ağa gidiyor;
+        sunucu onu zaten küçülteceği hâlde. Burada dosya kullanıcının KENDİ
+        makinesinde küçülür — bu aynı zamanda bir güvenlik kararıdır
+        (`docs/108` §4): taranmamış dosya sunucuya gidip oradan geri servis
+        edilmez.
+
+        Taban KIRPILMIŞ karedir (varsa): oran zaten uygulanmıştır, ikinci kez
+        uygulamak aynı kısıtı iki kere saymak olurdu. Kırpma yoksa taban
+        seçilen dosyanın kendisidir.
+    */
+    useEffect(() => {
+        /*
+            Küçültme bir DIŞ SİSTEM işidir (tuval, çözücü) ve etkinin gövdesi
+            durum yazmaz: her `setState` bir geri çağrının içinde durur. Etki
+            gövdesinde eşzamanlı durum yazmak zincirleme çizim üretir ve CI
+            kapısı (`react-hooks/set-state-in-effect`) bunu hata sayar.
+        */
+        const base =
+            selected !== null && selected.width > 0
+                ? cropped
+                    ? {
+                          blob: cropped.blob,
+                          name: selected.file.name,
+                          width: cropped.width,
+                          height: cropped.height,
+                      }
+                    : {
+                          blob: selected.file,
+                          name: selected.file.name,
+                          width: selected.width,
+                          height: selected.height,
+                      }
+                : null;
+
+        let cancelled = false;
+
+        void (async () => {
+            if (base === null) {
+                if (!cancelled) setOptimized(null);
+
+                return;
+            }
+
+            if (!cancelled) setOptimizing(true);
+
+            const outcome = await downscaleImageFile(base, {
+                minimum: { width: minWidth, height: minHeight },
+                aspect: cropped ? null : policyAspect,
+                maxEdge,
+            });
+
+            if (cancelled) return;
+
+            setOptimized(outcome);
+            setOptimizing(false);
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [selected, cropped, minWidth, minHeight, policyAspect, maxEdge]);
+
+    /*
+        Odak, hatalı alanın ADIMI çizildikten sonra taşınır.
+
+        İstek bir sayaçla taşınıyor, durumla değil: etkinin içinde durum
+        sıfırlamak zincirleme çizim üretirdi. Sayaç her gönderimde artar, yani
+        aynı hata iki kez alındığında odak yine taşınır — durum kullanılsaydı
+        ikinci gönderim hiçbir şey yapmazdı.
+    */
+    useEffect(() => {
+        if (focusToken === 0) return;
+
+        focusFirstInvalidField(focusFieldsRef.current, [fileId, slotId, altId]);
+    }, [focusToken, fileId, slotId, altId]);
 
     /**
      * Seçilen görsel bu slot için yeterince büyük mü?
@@ -197,6 +328,13 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         limits !== null &&
         selected.width > 0 &&
         selected.width * selected.height > limits.maxMegapixels * 1_000_000;
+
+    /** Hangi alan hangi adımda yaşıyor — ekran sırasıyla. */
+    const FIELD_STEPS: readonly (readonly [string, UploadStepKey])[] = [
+        [fileId, 'pick'],
+        [slotId, 'frame'],
+        [altId, 'send'],
+    ];
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -241,22 +379,48 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         setFieldErrors(errors);
 
         if (Object.keys(errors).length > 0) {
-            focusFirstInvalidField(errors, [fileId, altId, slotId]);
+            /*
+                Hata BAŞKA bir adımda olabilir. Sihirbaz oraya döner; yoksa
+                kullanıcı düğmeye basar, hiçbir şey olmaz ve neyin eksik
+                olduğunu göremez — çünkü eksik alan ekranda DEĞİLDİR.
+
+                Sıra EKRAN sırasıdır: dosya 1., yer 3., alt metin 4. adımda.
+            */
+            const firstStep = FIELD_STEPS.map(([id, key]) => (errors[id] ? key : null)).find(
+                (key): key is UploadStepKey => key !== null,
+            );
+
+            if (firstStep) {
+                setStep(firstStep);
+            }
+
+            focusFieldsRef.current = errors;
+            setFocusToken((token) => token + 1);
 
             return;
         }
 
         const formData = new FormData();
         /*
-            Kırpılmış çıktı VARSA yüklenen odur. Dosya adı korunur: sunucu
-            uzantıdan biçim çıkarır ve kullanıcının kütüphanede tanıdığı ad
-            değişmemeli.
+            YÜKLENEN DOSYA — üç aday, tek sıra.
+
+            1. İstemcide küçültülmüş çıktı (varsa). Kırpılmış kareden
+               üretildiyse hem çerçeveyi hem küçültmeyi birlikte taşır.
+            2. Kırpılmış kare (küçültme yapılamadıysa).
+            3. Seçilen dosyanın kendisi.
+
+            Dosya adı korunur: sunucu uzantıdan biçim çıkarır ve kullanıcının
+            kütüphanede tanıdığı ad değişmemeli. Tek istisna, HEIC'in JPEG'e
+            çevrildiği durumdur — orada uzantı DEĞİŞMEK ZORUNDADIR, yoksa
+            sunucu içerikle uzantının çeliştiğini görür.
         */
         formData.set(
             'file',
-            cropped === null
-                ? selected!.file
-                : new File([cropped.blob], selected!.file.name, { type: cropped.blob.type }),
+            optimized !== null
+                ? optimized.file
+                : cropped === null
+                  ? selected!.file
+                  : new File([cropped.blob], selected!.file.name, { type: cropped.blob.type }),
         );
         formData.set('altText', altText);
         formData.set('slot', slot);
@@ -303,9 +467,15 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             // Girdiyi temizlemek artık damlatma alanının işi: gerçek
             // `<input type=file>` orada yaşıyor.
             setSelected(null);
+            setCropped(null);
+            setOptimized(null);
             setAltText('');
             setSlot('');
             setStatus('success');
+            // Sihirbaz başa döner: sonraki fotoğraf yine "hangi dosya?" ile
+            // başlar. Son adımda bırakmak, kullanıcıya bitmemiş bir iş
+            // gösterirdi.
+            setStep('pick');
         } catch (error) {
             // YALNIZ sunucunun reddi ekrana çıkar. Ağ kopmasında `error`
             // ham bir JavaScript hatasıdır ("Network failure") ve onu
@@ -314,6 +484,18 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             setStatus('error');
         }
     }
+
+    const stepIndex = STEP_ORDER.indexOf(step);
+    /*
+        Dosya seçilmeden sonraki adımlar ULAŞILAMAZ. Kısıt görünür tutuluyor:
+        devre dışı bir adım sırayı öğretir, gizlenen bir adım ise "kaç adım
+        kaldı" sorusunu geri getirir.
+    */
+    const steps: readonly UploadStep[] = STEP_ORDER.map((key) => ({
+        key,
+        label: wizardText(`workspace.media.upload.step.${key}`),
+        reachable: key === 'pick' || selected !== null,
+    }));
 
     return (
         <form
@@ -329,36 +511,172 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             // çalıştırmadığı için testler yeşildi.
             noValidate
         >
-            <h3 className="text-body font-semibold text-fg">
-                {t('workspace.media.upload.heading')}
-            </h3>
+            <h3 className="text-body font-bold text-fg">{t('workspace.media.upload.heading')}</h3>
 
-            <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-1">
-                    <span className="text-body text-fg-secondary">
-                        {t('workspace.media.upload.field.file')}
-                    </span>
-                    <MediaDropzone
-                        selected={selected}
-                        invalid={fieldErrors[fileId] !== undefined}
-                        describedBy={fieldErrors[fileId] ? `${fileId}-error` : undefined}
-                        onSelect={(image) => {
-                            setSelected(image);
-                            // Yeni dosya, yeni çerçeve: eski kırpma bir
-                            // öncekinin karesini taşırdı.
-                            setCropped(null);
-                            // Yeni dosya, yeni anahtar; yeniden deneme eskisini korur.
-                            setIdempotencyKey(newIdempotencyKey());
-                        }}
-                        onSelectMore={(images) =>
-                            setExtra(
-                                images.map((image) => ({
-                                    image,
-                                    altText: nameFromFile(image.file.name),
-                                })),
-                            )
-                        }
+            {/*
+                ADIM GÖSTERGESİ — bir süs değil.
+
+                Kullanıcı nerede olduğunu ve kaç adım kaldığını görür.
+                Ulaşılamayan adım gizlenmez, devre dışı gösterilir: gizlemek
+                "kaç adım kaldı" sorusunu geri getirirdi.
+            */}
+            <MediaUploadSteps steps={steps} activeKey={step} onGo={setStep} />
+
+            {step === 'pick' ? (
+                <div
+                    role="group"
+                    aria-label={wizardText('workspace.media.upload.step.pick')}
+                    className="flex flex-col gap-3"
+                >
+                    <div className="flex flex-col gap-1">
+                        <span className="text-body text-fg-secondary">
+                            {t('workspace.media.upload.field.file')}
+                        </span>
+                        <p className="text-body text-fg-muted">
+                            {wizardText('workspace.media.upload.pick.lead')}
+                        </p>
+                        <MediaDropzone
+                            selected={selected}
+                            invalid={fieldErrors[fileId] !== undefined}
+                            describedBy={fieldErrors[fileId] ? `${fileId}-error` : undefined}
+                            onSelect={(image) => {
+                                /*
+                                    YENİ dosya mı? `MediaDropzone` aynı dosya
+                                    için iki kez haber verir (önce dosya, sonra
+                                    ölçüler). İkisini ayırmadan sihirbaz,
+                                    kullanıcı 1. adıma geri döndüğünde ölçü
+                                    geldiği anda tekrar ileri sıçrardı.
+                                */
+                                const isNew =
+                                    image !== null &&
+                                    (selected === null || selected.file !== image.file);
+
+                                setSelected(image);
+                                // Yeni dosya, yeni çerçeve: eski kırpma bir
+                                // öncekinin karesini taşırdı.
+                                setCropped(null);
+                                // Yeni dosya, yeni anahtar; yeniden deneme eskisini korur.
+                                setIdempotencyKey(newIdempotencyKey());
+
+                                if (isNew) {
+                                    setStep('optimize');
+                                }
+                            }}
+                            onSelectMore={(images) =>
+                                setExtra(
+                                    images.map((image) => ({
+                                        image,
+                                        altText: nameFromFile(image.file.name),
+                                    })),
+                                )
+                            }
+                        />
+                        {fieldErrors[fileId] ? (
+                            <span id={`${fileId}-error`}>
+                                <FieldError message={fieldErrors[fileId]} />
+                            </span>
+                        ) : null}
+                    </div>
+
+                    {/*
+                        Desteklenen türler tablosu 1. adımdadır çünkü kararı
+                        DEĞİŞTİREN bilgi burada işe yarar: sahibi dosyayı
+                        seçmeden önce hangisinin kabul edileceğini bilmeli.
+                        Yükleme reddedildikten sonra okunan bir tablo,
+                        okunmamış bir tablodur.
+                    */}
+                    <SupportedTypesTable accept={ACCEPT} maxBytes={limits?.maxBytes ?? null} />
+                </div>
+            ) : null}
+
+            {step === 'optimize' && selected !== null ? (
+                <div role="group" aria-label={wizardText('workspace.media.upload.step.optimize')}>
+                    <MediaOptimizeStep
+                        source={{ width: selected.width, height: selected.height }}
+                        minimum={{ width: minWidth, height: minHeight }}
+                        aspect={policyAspect}
+                        maxEdge={maxEdge}
+                        onMaxEdge={setMaxEdge}
+                        beforeBytes={selected.file.size}
+                        afterBytes={optimized?.file.size ?? null}
+                        busy={optimizing}
                     />
+                </div>
+            ) : null}
+
+            {step === 'frame' ? (
+                <div
+                    role="group"
+                    aria-label={wizardText('workspace.media.upload.step.frame')}
+                    className="flex flex-col gap-3"
+                >
+                    <div className="flex flex-col gap-1">
+                        <label
+                            htmlFor={slotId}
+                            className="flex flex-col gap-1 text-body text-fg-secondary"
+                        >
+                            {t('workspace.media.upload.field.assetSlot')}
+                            <Select
+                                id={slotId}
+                                name={slotId}
+                                value={slot}
+                                aria-invalid={fieldErrors[slotId] === undefined ? undefined : true}
+                                onChange={(event) => setSlot(event.target.value)}
+                            >
+                                <option value="">
+                                    {t('workspace.media.upload.field.assetSlot.placeholder')}
+                                </option>
+                                {policies.map((policy) => (
+                                    <option key={policy.key} value={policy.key}>
+                                        {t(
+                                            `workspace.media.upload.field.assetSlot.${policy.key}` as Parameters<
+                                                typeof t
+                                            >[0],
+                                        )}
+                                    </option>
+                                ))}
+                            </Select>
+                        </label>
+
+                        {/*
+                            Slot seçilince GEREKSİNİMLERİ görünür.
+
+                            Öncesinde kullanıcı 17 opak ad arasından seçim
+                            yapıyor ve hangi ölçüde görsel yükleyeceğini
+                            hiçbir yerden öğrenemiyordu; bulanık görseli
+                            ancak yayınladıktan sonra fark ediyordu.
+                        */}
+                        {activePolicy ? (
+                            /*
+                                Gereksinimler bir DİPNOT değil, kullanıcının
+                                kararını değiştiren cümlelerdir: "yeter mi,
+                                yetmez mi?" Rakamları slot değiştikçe değişir,
+                                bu yüzden `tabular-nums`.
+                            */
+                            <ul className="flex flex-col gap-0.5 text-body text-fg-muted tabular-nums">
+                                <li>
+                                    {t('workspace.media.upload.requirement.minimum', {
+                                        width: String(activePolicy.minWidth),
+                                        height: String(activePolicy.minHeight),
+                                    })}
+                                </li>
+                                {activePolicy.aspect ? (
+                                    <li>
+                                        {t('workspace.media.upload.requirement.aspect', {
+                                            aspect: activePolicy.aspect,
+                                        })}
+                                    </li>
+                                ) : null}
+                                <li>
+                                    {t('workspace.media.upload.requirement.formats', {
+                                        formats: activePolicy.formats.join(', '),
+                                    })}
+                                </li>
+                            </ul>
+                        ) : null}
+
+                        {fieldErrors[slotId] ? <FieldError message={fieldErrors[slotId]} /> : null}
+                    </div>
 
                     {/*
                         KIRPMA, slot SEÇİLDİKTEN sonra görünür: hangi oranın
@@ -380,13 +698,47 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                             onCropped={handleCropped}
                         />
                     ) : null}
+                </div>
+            ) : null}
+
+            {step === 'send' ? (
+                <div
+                    role="group"
+                    aria-label={wizardText('workspace.media.upload.step.send')}
+                    className="flex flex-col gap-3"
+                >
+                    <div className="flex flex-col gap-1">
+                        <label
+                            htmlFor={altId}
+                            className="flex flex-col gap-1 text-body text-fg-secondary"
+                        >
+                            {t('workspace.media.upload.field.altText')}
+                            <TextInput
+                                id={altId}
+                                name={altId}
+                                type="text"
+                                required
+                                value={altText}
+                                aria-describedby={`${altId}-hint`}
+                                aria-invalid={fieldErrors[altId] === undefined ? undefined : true}
+                                onChange={(event) => setAltText(event.target.value)}
+                            />
+                        </label>
+                        {/* Alternatif metin bir yasal/erişilebilirlik
+                            yükümlülüğüdür; ne yazılacağını bilmeyen kullanıcı
+                            dosya adını yazar ve alan işlevini kaybeder. */}
+                        <p id={`${altId}-hint`} className="text-body text-fg-muted">
+                            {t('workspace.media.upload.field.altText.hint')}
+                        </p>
+                        {fieldErrors[altId] ? <FieldError message={fieldErrors[altId]} /> : null}
+                    </div>
 
                     {extra.length > 0 ? (
                         <ul
                             aria-label={t('workspace.media.upload.more.label')}
-                            className="flex flex-col gap-2 rounded-lg border border-border p-2"
+                            className="flex flex-col gap-2 rounded-[var(--radius-lg)] border border-border p-[var(--space-2)]"
                         >
-                            <li className="text-meta text-fg-muted">
+                            <li className="text-body text-fg-muted">
                                 {t('workspace.media.upload.more.lead', {
                                     count: String(extra.length),
                                 })}
@@ -396,7 +748,8 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                                     key={`${row.image.file.name}-${index}`}
                                     className="flex flex-col gap-1"
                                 >
-                                    <label className="flex flex-col gap-1 text-meta text-fg-secondary">
+                                    {/* Dosya adı bir ETİKETTİR, sayaç değil. */}
+                                    <label className="flex flex-col gap-1 text-body text-fg-secondary">
                                         {row.image.file.name}
                                         <TextInput
                                             type="text"
@@ -422,114 +775,51 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                             ))}
                         </ul>
                     ) : null}
-                    {fieldErrors[fileId] ? (
-                        <span id={`${fileId}-error`}>
-                            <FieldError message={fieldErrors[fileId]} />
-                        </span>
-                    ) : null}
-                </div>
 
-                <div className="flex flex-col gap-1">
-                    <label
-                        htmlFor={altId}
-                        className="flex flex-col gap-1 text-body text-fg-secondary"
+                    <Button
+                        color="light"
+                        type="submit"
+                        disabled={status === 'pending'}
+                        className="self-start"
                     >
-                        {t('workspace.media.upload.field.altText')}
-                        <TextInput
-                            id={altId}
-                            name={altId}
-                            type="text"
-                            required
-                            value={altText}
-                            aria-describedby={`${altId}-hint`}
-                            aria-invalid={fieldErrors[altId] === undefined ? undefined : true}
-                            onChange={(event) => setAltText(event.target.value)}
-                        />
-                    </label>
-                    {/* Alternatif metin bir yasal/erişilebilirlik
-                        yükümlülüğüdür; ne yazılacağını bilmeyen kullanıcı
-                        dosya adını yazar ve alan işlevini kaybeder. */}
-                    <p id={`${altId}-hint`} className="text-meta text-fg-muted">
-                        {t('workspace.media.upload.field.altText.hint')}
-                    </p>
-                    {fieldErrors[altId] ? <FieldError message={fieldErrors[altId]} /> : null}
+                        {t('workspace.media.upload.button')}
+                    </Button>
                 </div>
+            ) : null}
 
-                <div className="flex flex-col gap-1">
-                    <label
-                        htmlFor={slotId}
-                        className="flex flex-col gap-1 text-body text-fg-secondary"
+            {/*
+                GEZİNTİ. "Devam" dosya seçilmeden çalışmaz: sonraki üç adımın
+                hepsi seçilmiş bir dosyaya bağlıdır ve boş bir adım kullanıcıya
+                "bir şeyi kaçırdım" dedirtir.
+            */}
+            <div className="flex flex-wrap gap-[var(--space-2)]">
+                {step !== 'pick' ? (
+                    <button
+                        type="button"
+                        onClick={() => setStep(STEP_ORDER[Math.max(0, stepIndex - 1)])}
+                        className="min-h-[var(--control-height)] rounded-[var(--radius-md)] border border-border px-[var(--space-3)] py-[var(--space-2)] text-body font-medium text-fg-secondary hover:bg-surface-hover"
                     >
-                        {t('workspace.media.upload.field.assetSlot')}
-                        <Select
-                            id={slotId}
-                            name={slotId}
-                            value={slot}
-                            aria-invalid={fieldErrors[slotId] === undefined ? undefined : true}
-                            onChange={(event) => setSlot(event.target.value)}
-                        >
-                            <option value="">
-                                {t('workspace.media.upload.field.assetSlot.placeholder')}
-                            </option>
-                            {policies.map((policy) => (
-                                <option key={policy.key} value={policy.key}>
-                                    {t(
-                                        `workspace.media.upload.field.assetSlot.${policy.key}` as Parameters<
-                                            typeof t
-                                        >[0],
-                                    )}
-                                </option>
-                            ))}
-                        </Select>
-                    </label>
-
-                    {/*
-                        Slot seçilince GEREKSİNİMLERİ görünür.
-
-                        Öncesinde kullanıcı 17 opak ad arasından seçim yapıyor
-                        ve hangi ölçüde görsel yükleyeceğini hiçbir yerden
-                        öğrenemiyordu; bulanık görseli ancak yayınladıktan
-                        sonra fark ediyordu.
-                    */}
-                    {activePolicy ? (
-                        <ul className="flex flex-col gap-0.5 text-meta text-fg-muted">
-                            <li>
-                                {t('workspace.media.upload.requirement.minimum', {
-                                    width: String(activePolicy.minWidth),
-                                    height: String(activePolicy.minHeight),
-                                })}
-                            </li>
-                            {activePolicy.aspect ? (
-                                <li>
-                                    {t('workspace.media.upload.requirement.aspect', {
-                                        aspect: activePolicy.aspect,
-                                    })}
-                                </li>
-                            ) : null}
-                            <li>
-                                {t('workspace.media.upload.requirement.formats', {
-                                    formats: activePolicy.formats.join(', '),
-                                })}
-                            </li>
-                        </ul>
-                    ) : null}
-
-                    {fieldErrors[slotId] ? <FieldError message={fieldErrors[slotId]} /> : null}
-                </div>
+                        {wizardText('workspace.media.upload.back')}
+                    </button>
+                ) : null}
+                {step !== 'send' ? (
+                    <button
+                        type="button"
+                        disabled={selected === null}
+                        onClick={() =>
+                            setStep(STEP_ORDER[Math.min(STEP_ORDER.length - 1, stepIndex + 1)])
+                        }
+                        className="min-h-[var(--control-height)] rounded-[var(--radius-md)] border border-border-strong bg-surface-active px-[var(--space-3)] py-[var(--space-2)] text-body font-bold text-fg disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                        {wizardText('workspace.media.upload.next')}
+                    </button>
+                ) : null}
             </div>
-
-            <Button
-                color="light"
-                type="submit"
-                disabled={status === 'pending'}
-                className="self-start"
-            >
-                {t('workspace.media.upload.button')}
-            </Button>
 
             {status === 'pending' && (
                 <div className="flex flex-col gap-1">
-                    <p role="status" className="text-meta text-fg-muted">
+                    {/* Yüzde her karede değişir: sabit genişlikli rakam. */}
+                    <p role="status" className="text-meta text-fg-muted tabular-nums">
                         {batchProgress
                             ? t('workspace.media.upload.more.progress', {
                                   done: String(batchProgress.done + 1),
@@ -565,12 +855,18 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             )}
 
             {status === 'success' && (
-                <p role="status" className="text-meta text-fg-muted">
+                <p role="status" className="text-body text-fg-muted">
                     {t('workspace.media.upload.complete')}
                 </p>
             )}
 
-            <p className="text-meta text-fg-muted">{t('workspace.media.security.explanation')}</p>
+            {/*
+                Güvenlik açıklaması dipnot DEĞİLDİR: yüklediği fotoğrafın
+                neden hemen menüde görünmediğini soran kullanıcının cevabı
+                budur. "Taranıyor" durumu olduğu gibi kalır — bu ortamda
+                tarama kapalı olsa bile ekran "hazır" demez.
+            */}
+            <p className="text-body text-fg-muted">{t('workspace.media.security.explanation')}</p>
         </form>
     );
 }

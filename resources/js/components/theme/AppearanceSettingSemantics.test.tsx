@@ -93,8 +93,15 @@ describe('görünüm tercihi — ayar semantiği', () => {
 
         // Yüksek kontrast kipinde arka plan/metin çiftleri işletim sistemi
         // paletine düşer; renge dayanan her ayrım orada kaybolur (WCAG 1.4.1).
-        expect(checked.closest('label')?.querySelector('svg')).not.toBeNull();
-        expect(unchecked.closest('label')?.querySelector('svg')).toBeNull();
+        /*
+            İŞARET, İKON DEĞİL (FF-131). Önceden "etikette svg var mı" diye
+            bakılıyordu; teslim paketinin tasarımında HER seçenek kendi
+            ikonunu taşıyor (güneş / ay / ekran), dolayısıyla o ölçüm
+            seçileni seçilmeyenden ayıramaz oldu. Ölçülen sözleşme değişmedi:
+            seçim renkten başka bir kanalda da görünmeli.
+        */
+        expect(checked.closest('label')?.querySelector('[data-selected-marker]')).not.toBeNull();
+        expect(unchecked.closest('label')?.querySelector('[data-selected-marker]')).toBeNull();
     });
 
     it('seçenek etkinleştirilince tercih uygulanır ve kalıcı olur', async () => {

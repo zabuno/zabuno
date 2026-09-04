@@ -66,7 +66,7 @@ export function InvitationAcceptForm({
     if (status === 'guest') {
         return (
             <div className="flex flex-col gap-4">
-                <h1 className="text-section font-semibold text-fg">
+                <h1 className="text-section font-bold text-fg">
                     {t('auth.invitation_accept.heading')}
                 </h1>
                 <p>{t('auth.invitation_accept.guest_body')}</p>
@@ -80,7 +80,7 @@ export function InvitationAcceptForm({
     if (status !== 'available') {
         return (
             <div className="flex flex-col gap-4">
-                <h1 className="text-section font-semibold text-fg">
+                <h1 className="text-section font-bold text-fg">
                     {t('auth.invitation_accept.heading')}
                 </h1>
                 <p>{t('auth.invitation_accept.unavailable_body')}</p>
@@ -90,7 +90,7 @@ export function InvitationAcceptForm({
 
     return (
         <div className="flex flex-col gap-4">
-            <h1 className="text-section font-semibold text-fg">
+            <h1 className="text-section font-bold text-fg">
                 {t('auth.invitation_accept.heading')}
             </h1>
 

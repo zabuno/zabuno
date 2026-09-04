@@ -1,0 +1,10 @@
+/* Minimal element defaults. Components carry their own styling. */
+html{color-scheme:light}
+[data-theme="dark"]{color-scheme:dark}
+body{margin:0;background:var(--aep-surface-canvas);color:var(--aep-text-primary);font-family:var(--aep-font-sans);font-size:var(--aep-text-body);line-height:var(--aep-text-body-lh);font-weight:var(--aep-weight-regular);-webkit-font-smoothing:antialiased}
+*,*::before,*::after{box-sizing:border-box}
+a{color:var(--aep-accent-secondary-text);text-decoration:underline;text-underline-offset:2px}
+a:hover{color:var(--aep-text-primary);text-decoration-thickness:2px}
+:focus-visible{outline:var(--aep-focus-w,2px) solid var(--aep-focus-ring);outline-offset:var(--aep-focus-offset,2px)}
+.aep-numeric{font-variant-numeric:tabular-nums}
+.aep-visually-hidden{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

@@ -102,7 +102,7 @@ function ImpactDialog({
                             {t('workspace.media.library.impact.blocked')}
                         </p>
                     ) : (
-                        <p className="text-meta text-fg-muted">
+                        <p className="text-body text-fg-muted">
                             {t('workspace.media.library.impact.trashNote')}
                         </p>
                     )}

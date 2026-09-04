@@ -134,7 +134,7 @@ export function BrandColorsRegion({ workspaceId, brand, onSaved }: BrandColorsRe
             aria-labelledby="profile-colors-heading"
             className="flex flex-col gap-[var(--space-3)]"
         >
-            <h3 id="profile-colors-heading" className="text-body font-semibold text-fg">
+            <h3 id="profile-colors-heading" className="text-body font-bold text-fg">
                 {t('workspace.profile.colors.heading')}
             </h3>
             <p className="text-body text-fg-secondary">{t('workspace.profile.colors.help')}</p>
@@ -153,7 +153,7 @@ export function BrandColorsRegion({ workspaceId, brand, onSaved }: BrandColorsRe
                 <div className="flex flex-wrap items-center gap-[var(--space-2)]">
                     <button
                         type="submit"
-                        className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg disabled:border-border disabled:bg-[var(--color-surface-subtle)] disabled:text-fg-muted"
+                        className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg disabled:border-border disabled:bg-[var(--color-surface-subtle)] disabled:text-fg-muted"
                         disabled={saving || !dirty}
                     >
                         {saving

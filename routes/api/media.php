@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Media\CreateOriginalDownloadLinkController;
 use App\Http\Controllers\Media\DeleteMediaController;
+use App\Http\Controllers\Media\DeleteMediaFolderController;
 use App\Http\Controllers\Media\DetachMediaUsagesController;
 use App\Http\Controllers\Media\ListMediaAuditsController;
 use App\Http\Controllers\Media\ListMediaController;
+use App\Http\Controllers\Media\ListMediaFoldersController;
 use App\Http\Controllers\Media\ListMediaVersionsController;
 use App\Http\Controllers\Media\ListSlotPoliciesController;
+use App\Http\Controllers\Media\MoveMediaToFolderController;
+use App\Http\Controllers\Media\RenameMediaFolderController;
 use App\Http\Controllers\Media\ReprocessMediaController;
 use App\Http\Controllers\Media\RestoreMediaController;
 use App\Http\Controllers\Media\RestoreMediaVersionController;
 use App\Http\Controllers\Media\ShowMediaQuotaController;
 use App\Http\Controllers\Media\ShowMediaUsagesController;
 use App\Http\Controllers\Media\StoreMediaController;
+use App\Http\Controllers\Media\StoreMediaFolderController;
 use App\Http\Controllers\Media\UpdateMediaAltTextController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,4 +56,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Denetim izi (`docs/49` Faz 7 madde 4): kim ne zaman ne yaptı.
     Route::get('/workspaces/{workspace}/media/audits', ListMediaAuditsController::class);
     Route::post('/workspaces/{workspace}/media/{media}/download-link', CreateOriginalDownloadLinkController::class);
+
+    /*
+        KLASÖRLER (`docs/108` §3 madde 1). Elli fotoğraf tek düz listede
+        duruyordu; arama yalnız adını hatırladığın dosyayı bulur. Klasör
+        yolu `/media/folders` altında toplanır — `/media/{media}` yolları
+        hep bir alt segmentle devam ettiği için ikisi çakışmaz.
+
+        Silme ve taşıma hız sınırsızdır: ikisi de tek bir satır günceller,
+        dış bir maliyet doğurmaz.
+    */
+    Route::get('/workspaces/{workspace}/media/folders', ListMediaFoldersController::class);
+    Route::post('/workspaces/{workspace}/media/folders', StoreMediaFolderController::class);
+    Route::patch('/workspaces/{workspace}/media/folders/{folder}', RenameMediaFolderController::class);
+    Route::delete('/workspaces/{workspace}/media/folders/{folder}', DeleteMediaFolderController::class);
+    Route::put('/workspaces/{workspace}/media/{media}/folder', MoveMediaToFolderController::class);
 });

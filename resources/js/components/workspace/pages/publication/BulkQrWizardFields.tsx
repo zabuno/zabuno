@@ -8,9 +8,18 @@ import { Button } from '../../../catalog/forms/micro/Button';
 import { TextLink } from '../../../catalog/navigation/micro/TextLink';
 import type { QrCreateReasonKind } from './QrDestinationFieldsRegion';
 
-const LABEL_CLASSES = 'flex flex-col gap-1 text-meta font-medium text-fg-secondary';
+/*
+    ETİKET VE HATA GÖVDE ÖLÇEĞİNDEDİR.
 
-const ALERT_CLASSES = 'text-meta text-fg-danger';
+    `--text-meta` bu sistemde zaman damgası, sayaç ve birim eki içindir; etiket,
+    buton metni ve hata mesajı `--text-body` taşır (`app.css` §text-meta).
+    Bugün ikisi de 1rem'e bağlı, yani ekranda fark görünmüyor — ama meta ölçeği
+    ikincil bilgi için yarın küçüldüğünde "Enter a whole number between 1 and
+    500." uyarısı da onunla küçülür ve kullanıcı hatasını düzeltemez.
+*/
+const LABEL_CLASSES = 'flex flex-col gap-1 text-body font-medium text-fg-secondary';
+
+const ALERT_CLASSES = 'text-body text-fg-danger';
 
 type FieldKey =
     | 'areaSectionCount'
@@ -369,7 +378,7 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                 ayrılmıştır (`docs/102` §1); bölüm başlığı olarak kullanılması
                 tek kartın içinde dört ayrı başlık dili doğuruyordu.
             */}
-            <legend className="text-body font-semibold text-fg">
+            <legend className="text-body font-bold text-fg">
                 {t('workspace.publication.qrExport.bulkWizard.heading')}
             </legend>
 
@@ -547,9 +556,25 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
                             qrCodes: String(result.qrCodesCount),
                         })}
                     </p>
-                    <ul className="flex flex-col gap-1">
+                    {/*
+                        ÜRETİLEN KODLAR BİR LİSTEDİR (FF-131, kanonik teslim
+                        paketinin düzeni).
+
+                        Kırk masa yaratan sahip burada kırk bağlantı görür ve
+                        "Masa 13 nerede" diye TARAR. Aralarında boşluk bırakılmış
+                        ayraçsız kırk bağlantı bir liste değil bir yığındır: göz
+                        her satırda yeniden hizalanır ve sahip aradığı masayı
+                        bulmak için hepsini yukarıdan aşağı okumak zorunda kalır.
+
+                        Ritim yoğunluk jetonlarına bağlıdır; ayraç ÜSTTEDİR,
+                        böylece son satır için susturulacak bir istisna kalmaz.
+                    */}
+                    <ul className="flex flex-col">
                         {result.pairs.map((pair) => (
-                            <li key={pair.tableId}>
+                            <li
+                                key={pair.tableId}
+                                className="flex min-h-[var(--density-row-height)] flex-wrap items-center border-t border-border px-[var(--density-padding-inline)] py-[var(--space-1)] first:border-t-0"
+                            >
                                 <TextLink href={pair.resolverUrl} className="break-all text-body">
                                     {pair.tableName}
                                 </TextLink>

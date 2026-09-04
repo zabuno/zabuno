@@ -36,8 +36,17 @@ export function OpsCard({ title, toolbar, children, className, padded = true }: 
         >
             {title || toolbar ? (
                 <div className="flex flex-wrap items-center justify-between gap-[var(--space-2)] border-b border-[var(--color-border)] px-[var(--space-5)] py-[var(--space-4)]">
+                    {/*
+                        AĞIRLIK 700 (FF-131). AEP ölçeğinde izinli ağırlıklar
+                        400 / 500 / 700'dür; 600 (`font-bold`) ölçeğin
+                        DIŞINDADIR ve Roboto'da ayrı bir kesim olarak
+                        yüklenmediği için tarayıcı onu 500 ile 700 arasında
+                        SENTEZLİYORDU — yani kart başlıkları, teslim paketinin
+                        beklediğinden hem daha ince hem de her tarayıcıda
+                        biraz farklı çiziliyordu.
+                    */}
                     {title ? (
-                        <h2 className="text-body font-semibold tracking-tight text-fg">{title}</h2>
+                        <h2 className="text-body font-bold tracking-tight text-fg">{title}</h2>
                     ) : (
                         <span />
                     )}

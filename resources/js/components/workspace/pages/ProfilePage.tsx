@@ -72,7 +72,7 @@ export function ProfilePage({
                     aria-labelledby="profile-details-heading"
                     className="flex flex-col gap-[var(--space-3)]"
                 >
-                    <h3 id="profile-details-heading" className="text-body font-semibold text-fg">
+                    <h3 id="profile-details-heading" className="text-body font-bold text-fg">
                         {t('workspace.profile.details.heading')}
                     </h3>
                     <AccountSettingsRegion currentName={userName} />

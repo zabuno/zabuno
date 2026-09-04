@@ -1130,7 +1130,15 @@ describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_S
         expect(
             within(statusRegion).queryByText(/not published|never published|no publication/i),
         ).toBeNull();
-        expect(within(statusRegion).getByRole('button', { name: /retry/i })).toBeInTheDocument();
+        /*
+            Düğmenin ADI artık katalogdan gelir ("Try again"); önceden koda
+            İngilizce gömülü "Retry" yazıyordu ve Türkçe kullanan bir kullanıcı
+            hata anında o düğmeyi okuyamıyordu. Test edilen DAVRANIŞ aynı:
+            hata satırının yanında yeniden deneme kontrolü durur.
+        */
+        expect(
+            within(statusRegion).getByRole('button', { name: /try again/i }),
+        ).toBeInTheDocument();
     });
 
     it('shows the same retryable error on a thrown network failure, and clicking Retry can resolve to a real current publication summary', async () => {
@@ -1171,7 +1179,7 @@ describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_S
                 : jsonResponse(200, { data: [] }),
         );
 
-        await user.click(within(statusRegion).getByRole('button', { name: /retry/i }));
+        await user.click(within(statusRegion).getByRole('button', { name: /try again/i }));
 
         await waitFor(() => {
             // Yayının VERİTABANI KİMLİĞİ ekrana çıkmaz. Bu satır önceden kimliğin

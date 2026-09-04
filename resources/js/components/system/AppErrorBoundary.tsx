@@ -77,7 +77,7 @@ export class AppErrorBoundary extends Component<Props, State> {
         return (
             <div role="alert" className="mx-auto flex w-full max-w-content flex-col gap-4 p-6">
                 <div className="flex flex-col gap-2 rounded-lg border border-border-danger bg-surface-danger p-4">
-                    <h1 className="text-section font-semibold text-fg-danger">
+                    <h1 className="text-section font-bold text-fg-danger">
                         {this.props.scope === 'app'
                             ? 'Zabuno could not start this page.'
                             : 'This screen ran into an error.'}

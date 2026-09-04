@@ -14,7 +14,7 @@ type FormSectionProps = {
 export function FormSection({ title, children }: FormSectionProps) {
     return (
         <fieldset className="flex flex-col gap-3 border-0 p-0 m-0">
-            <legend className="mb-1 text-body font-semibold text-fg">{title}</legend>
+            <legend className="mb-1 text-body font-bold text-fg">{title}</legend>
             <div
                 className="grid gap-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))' }}

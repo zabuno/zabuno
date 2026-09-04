@@ -39,6 +39,19 @@ const GROUPS = [
  */
 const INSPECTOR_ALLOWLIST = [
     'resources/js/components/workspace/pages/media/MediaAssetDetailDrawer.tsx',
+    /*
+        ÜRÜN DENETÇİSİ (FF-131). Menü çalışma alanındaki sunum/alerjen/fiyat
+        düzenleyicileri sağdan açılan tek bir çekmecede toplandı.
+
+        Kural gezinti içindir ve gerekçesi yön değil KONUM: gezinti soldan
+        gelir çünkü kabuğun rayı orada durur. Denetçi ise seçili SATIRIN
+        detayıdır; solda açılsaydı gezintinin üstüne biner ve kullanıcı
+        "hangi menüdeydim" bağlamını kaybederdi.
+
+        İzin listesi bir muafiyet değil bir sözleşmedir: aşağıdaki test her
+        dosyanın o kararı hâlâ YAZDIĞINI doğrular.
+    */
+    'resources/js/components/catalog/menu/macro/MenuCatalogWorkspace.tsx',
 ];
 
 function drawerCallSites(): string[] {

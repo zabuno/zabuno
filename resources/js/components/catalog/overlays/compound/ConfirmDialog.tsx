@@ -26,7 +26,7 @@ function ConfirmDialogTitle({ id, children }: { id: string; children: ReactNode 
     }, [id, setHeaderId]);
 
     return (
-        <h2 id={id} className="text-subsection font-semibold text-fg">
+        <h2 id={id} className="text-subsection font-bold text-fg">
             {children}
         </h2>
     );

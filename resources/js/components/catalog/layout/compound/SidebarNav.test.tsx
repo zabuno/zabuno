@@ -103,3 +103,85 @@ describe('SidebarNav', () => {
         expect(new Set(ids).size).toBe(2);
     });
 });
+
+/**
+ * AEP kabuk grameri — teslim paketinin `DESIGN_SPEC.md` §1 "Kenar çubuğu".
+ *
+ * Referans kabukta grup başlığı ("Yönetim") gezinti maddelerinden BOYUTLA
+ * değil TONLA ayrılır: aynı 1rem gövde ölçüsünde kalır, ağırlığı 700'e çıkar
+ * ve rengi ikinci plana düşer. Bu bir süsleme tercihi değil, ölçüyle ilgili
+ * bir karar: paket 16px'i her yerde taban ilan etti, çünkü küçültülmüş bir
+ * başlık gözlüğünü çıkarmış bir restoran sahibi için okunmaz hâle geliyordu.
+ * Büyük harfe çevirmek de yasak — Türkçede "İ/ı" dönüşümü tarayıcı diline
+ * göre bozulur ve "Yönetim" kelimesi ekranda "YÖNETIM" diye çıkabilir.
+ */
+describe('SidebarNav — AEP kabuk grameri (FF-131)', () => {
+    it('grup başlığı gövde ölçüsünde kalır, 700 ağırlıkta ve ikinci planda çizilir', () => {
+        render(<SidebarNav groups={groups} />);
+
+        const heading = screen.getByText('Menu');
+
+        expect(heading.className).toContain('text-meta');
+        expect(heading.className).toContain('font-bold');
+        expect(heading.className).toContain('text-fg-secondary');
+        /*
+            Ağırlık ölçeği yalnız 400/500/700'dür (TOKEN_MAP "Tipografi").
+            600 (`font-semibold`) Roboto'da ayrı bir kesim değildir; tarayıcı
+            onu sentezler ve kenarlar temaya göre farklı kalınlaşır.
+        */
+        expect(heading.className).not.toContain('font-semibold');
+        expect(heading.className).not.toMatch(/(^|\s)uppercase(\s|$)/);
+    });
+
+    /**
+     * Rozet dili — referansta "Menüler" satırı yayınlanmamış değişiklik
+     * sayısını taşır.
+     *
+     * Sayı satırın SONUNA yaslanır, çünkü kenar çubuğunda göz önce etiket
+     * sütununu tarar; sayıyı etiketin hemen yanına koymak, ada bakan gözü her
+     * satırda farklı bir yerde durduruyordu. Zemin marka sarısı, yazı ölçülmüş
+     * mürekkep (`bg-action`/`text-action-fg`): marka bir bildirim rengi olarak
+     * kullanılabilir ama okunabilirlik ölçüme bağlıdır.
+     */
+    it('gezinti maddesi satırın sonuna yaslanan bir sayı rozeti taşıyabilir', () => {
+        render(
+            <SidebarNav
+                groups={[
+                    {
+                        key: 'primary',
+                        items: [
+                            {
+                                key: 'menus',
+                                label: 'Menus',
+                                href: '#menus',
+                                badge: '3',
+                                badgeLabel: '3 unpublished changes',
+                            },
+                        ],
+                    },
+                ]}
+            />,
+        );
+
+        /*
+            Rozet ekran okuyucuya SAYI olarak değil CÜMLE olarak ulaşır:
+            "Menüler 3" duyan biri neyin üçü olduğunu bilemez.
+        */
+        const link = screen.getByRole('link', { name: /unpublished changes/ });
+        const badge = link.querySelector('[data-slot="sidebar-nav-badge"]') as HTMLElement;
+
+        expect(badge).not.toBeNull();
+        expect(badge.className).toContain('ms-auto');
+        expect(badge.className).toContain('rounded-pill');
+        expect(badge.className).toContain('bg-action');
+        expect(badge.className).toContain('text-action-fg');
+    });
+
+    it('rozet verilmeyen satır boş bir kutu taşımaz', () => {
+        render(<SidebarNav groups={groups} />);
+
+        const link = screen.getByRole('link', { name: 'Dashboard' });
+
+        expect(link.querySelector('[data-slot="sidebar-nav-badge"]')).toBeNull();
+    });
+});

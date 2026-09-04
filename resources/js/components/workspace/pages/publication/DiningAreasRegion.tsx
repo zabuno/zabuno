@@ -104,16 +104,30 @@ export function DiningAreasRegion({ workspaceId, locationId, onRenamed }: Dining
             aria-label={t('workspace.publication.diningAreas.heading')}
             className="flex flex-col gap-[var(--space-2)]"
         >
-            <h4 className="text-body font-semibold text-fg">
+            <h4 className="text-body font-bold text-fg">
                 {t('workspace.publication.diningAreas.heading')}
             </h4>
             <p className="text-meta text-fg-muted">{t('workspace.publication.diningAreas.help')}</p>
 
+            {/*
+                SATIR KART DEĞİLDİR (FF-131, kanonik teslim paketinin düzeni).
+
+                Ayraç ÜSTE konur, alta değil. Alt ayraçlı bir listede son
+                satırın ayracını ayrıca susturmak gerekir; o susturma
+                unutulduğunda listenin altında, kartın kendi kenarlığıyla
+                çakışan ikinci bir çizgi belirir. Üstten ayraç listeye eklenen
+                her yeni satırı kendiliğinden doğru çizer.
+
+                Yükseklik ve yatay dolgu YOĞUNLUK jetonlarından gelir: sahip
+                Ayarlar'dan "Sıkı / Standart / Ferah" seçtiğinde bu liste de
+                onunla değişir. Elle yazılmış bir `py-1` o anahtarı sağır
+                bırakırdı — ekranın yarısı değişir, yarısı olduğu yerde kalır.
+            */}
             <ul className="flex flex-col">
                 {areas.map((area) => (
                     <li
                         key={area.id}
-                        className="flex flex-wrap items-center gap-[var(--space-2)] border-b border-border py-[var(--space-1)] last:border-b-0"
+                        className="flex min-h-[var(--density-row-height)] flex-wrap items-center gap-[var(--space-2)] border-t border-border px-[var(--density-padding-inline)] py-[var(--space-1)] first:border-t-0"
                     >
                         <InlineRename
                             value={area.label}

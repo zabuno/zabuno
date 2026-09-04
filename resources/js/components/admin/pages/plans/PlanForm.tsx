@@ -138,7 +138,7 @@ export function PlanForm({ onSubmit, submitting }: PlanFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="flex max-w-content flex-col gap-3" noValidate>
-            <h2 className="text-body font-semibold text-fg">{t('platform.plans.form.heading')}</h2>
+            <h2 className="text-body font-bold text-fg">{t('platform.plans.form.heading')}</h2>
 
             <div
                 className="grid gap-3"

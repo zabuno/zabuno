@@ -67,6 +67,15 @@ export function QrPrintPreview({ paperSize, orientation }: QrPrintPreviewProps) 
 
     return (
         <figure className="flex flex-wrap items-center gap-[var(--space-4)]">
+            {/*
+                ŞEMANIN ZEMİNİ JETON DEĞİL, KÂĞITTIR.
+
+                `bg-white` burada bir tema rengi değil bir BASKI gerçeğidir:
+                karekod ISO/IEC 18004 gereği koyu modül / açık zemin basılır ve
+                çevresinde 4 modüllük sessiz bölge kalır. Zemini `surface`
+                jetonuna bağlasaydık koyu temada şema koyu bir kâğıt gösterir,
+                yani sahibin eline hiç geçmeyecek bir çıktıyı çizerdi.
+            */}
             <span
                 aria-hidden="true"
                 className="flex items-center justify-center border border-dashed border-border bg-white"
@@ -85,7 +94,7 @@ export function QrPrintPreview({ paperSize, orientation }: QrPrintPreviewProps) 
             </span>
 
             <figcaption className="flex flex-col gap-[var(--space-1)] text-meta text-fg-secondary">
-                <span className="font-semibold text-fg">
+                <span className="font-bold text-fg">
                     {t('workspace.publication.qrExport.preview.paper', {
                         paper: paperSize,
                         width: String(widthMm),

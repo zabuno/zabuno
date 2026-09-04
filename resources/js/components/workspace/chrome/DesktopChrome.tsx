@@ -53,9 +53,22 @@ export function DesktopSidebar({
     return (
         <aside
             className={clsx(
-                // Genişlik SABİT (`docs/102`): sayfa bağlam paneli açsa da ray daralmaz.
-                'admin-shell-sidebar flex shrink-0 grow-0 basis-[17rem] flex-col border-e bg-[var(--color-surface)]',
-                'border-[var(--color-border)] px-[var(--space-fluid-md)] py-[var(--space-fluid-md)]',
+                /*
+                    Genişlik SABİT (`docs/102`): sayfa bağlam paneli açsa da ray
+                    daralmaz. Ölçü AEP `DESIGN_SPEC` §1'den: 264px (16.5rem) —
+                    `docs/50` §4'ün 248–272px aralığının içinde.
+                */
+                'admin-shell-sidebar flex shrink-0 grow-0 basis-[16.5rem] flex-col border-e bg-[var(--color-surface)]',
+                /*
+                    İÇ DOLGU EKRANLA BÜYÜMEZ.
+
+                    Akışkan dolgu (`--space-fluid-md`, 16→24px) geniş ekranda
+                    rayı içeriden şişiriyordu: aynı gezinti maddesi 1280px'te ve
+                    1920px'te farklı yerden başlıyor, ray sabit genişlikte
+                    olmasına rağmen içeriği kayıyordu. Ray bir ÇIPADIR; ekran
+                    büyüdükçe büyümesi gereken yer içerik alanıdır.
+                */
+                'border-[var(--color-border)] px-[var(--space-3)] py-[var(--space-3)]',
                 /*
                     RAY GÖRÜNTÜ ALANI KADAR (sahibin bildirimi, 2026-09-04).
 
@@ -98,7 +111,7 @@ export function DesktopSidebar({
                     kenarlık, kaydırılacak içerik olduğunu söyleyen ince bir
                     işarettir.
                 */
-                <div className="sticky bottom-0 mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-fluid-sm)]">
+                <div className="sticky bottom-0 mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-2)]">
                     {railSections !== undefined && railSections.length > 0 ? (
                         /*
                             PROFİL VE AYARLAR AÇIKTA (FF-127).
@@ -124,17 +137,50 @@ export function DesktopSidebar({
                                     onClick={section.onSelect}
                                     aria-current={section.active ? 'page' : undefined}
                                     className={clsx(
-                                        'inline-flex w-full items-center gap-[var(--space-3)] rounded-[var(--radius-md)]',
+                                        'inline-flex w-full items-center gap-[var(--space-3)] rounded-[var(--radius-lg)]',
                                         'min-h-[var(--control-height)] px-[var(--space-3)] py-[var(--space-2)]',
                                         'text-body whitespace-nowrap',
+                                        /*
+                                            AKTİF SATIR İŞARETİ, GEZİNTİYLE AYNI
+                                            DİL — AEP `DESIGN_SPEC` §1: "İkisi de
+                                            aktifken şerit + dolgu alır."
+
+                                            Önce yalnız zemin tonu vardı; hemen
+                                            üstteki `NavLink` maddeleri ise ton +
+                                            marka rayı taşıyordu. Aynı kenar
+                                            çubuğunda "buradasın" demenin iki ayrı
+                                            işareti oluyordu ve alttaki daha
+                                            zayıftı — Ayarlar'a geçen kullanıcı,
+                                            gezinti maddelerindeki kadar net bir
+                                            onay alamıyordu.
+
+                                            Pasif satır da rayın yerini AYIRIR
+                                            (saydam kenarlık): ayırmasaydı aktif
+                                            satır 2px kayar ve etiketler tek tek
+                                            yerinden oynardı. Kenarlık mantıksal
+                                            (`border-s`), RTL'de kendiliğinden
+                                            sağa geçer.
+                                        */
+                                        'border-s-2 border-transparent',
+                                        'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
                                         'hover:bg-[var(--color-surface-hover)]',
                                         'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                                         section.active
-                                            ? 'bg-[var(--color-surface-active)] font-medium text-fg'
+                                            ? 'border-s-brand bg-[var(--color-surface-active)] font-bold text-fg'
                                             : 'text-fg-secondary',
                                     )}
                                 >
-                                    {section.icon}
+                                    {/*
+                                        İkon `NavLink`'teki gibi sarılır: aynı
+                                        rayda iki farklı ikon hizası olmaz ve
+                                        ikon ekran okuyucuya okunmaz — etiket
+                                        zaten yanında duruyor.
+                                    */}
+                                    {section.icon ? (
+                                        <span aria-hidden="true" className="shrink-0">
+                                            {section.icon}
+                                        </span>
+                                    ) : null}
                                     {section.label}
                                 </a>
                             ))}

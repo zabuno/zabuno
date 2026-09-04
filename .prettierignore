@@ -20,3 +20,9 @@ package-lock.json
 
 # Fixed test-writer files — implementation writer does not reformat them.
 resources/js/__tests__
+
+# AEP teslim paketinin BİREBİR kopyası (FF-131). Biçimlendirilmez: kaynak
+# sahibin verdiği dosyadır ve yeniden kopyalandığında fark okunabilir
+# kalmalı. Prettier burada çalışsaydı her güncelleme, tek bir değer
+# değişmiş olsa bile yüzlerce satırlık bir fark üretirdi.
+resources/css/aep

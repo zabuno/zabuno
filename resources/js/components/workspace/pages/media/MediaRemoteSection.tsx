@@ -30,7 +30,7 @@ export function MediaRemoteSection<T>({
 }: MediaRemoteSectionProps<T>) {
     return (
         <section aria-labelledby={id} className="flex flex-col gap-2">
-            <h4 id={id} className="text-meta font-semibold text-fg-muted">
+            <h4 id={id} className="text-body font-bold text-fg">
                 {heading}
             </h4>
             {remote.state === 'loading' ? (
@@ -63,7 +63,25 @@ export function MediaUsageList({ usages }: { usages: MediaUsage[] }) {
                     className="flex items-center justify-between gap-2 text-body"
                 >
                     <span className="text-fg">{usage.label}</span>
-                    <span className="text-meta text-fg-muted">
+                    {/*
+                        YAYIN DURUMU HAP ROZETTİR (`DESIGN_SPEC.md` §7 "Dosya
+                        çekmecesi"). Sahibin silmeden önceki tek sorusu "bu şu
+                        an misafirin gördüğü menüde mi?" ve düz gri bir kelime
+                        bunu taşımıyordu.
+
+                        Rozet yalnız renkle konuşmaz (WCAG 1.4.1): kelime metin
+                        olarak orada durur, zemin dolgusu İKİNCİ kanaldır.
+                        Yarıçap tam yuvarlak değil `rounded-pill` — hap bir
+                        biçim kararıdır ve külliyat onu kendi jetonuyla
+                        yayınlar.
+                    */}
+                    <span
+                        className={`shrink-0 rounded-pill px-[var(--space-2)] py-[var(--space-1)] text-body font-medium ${
+                            usage.published
+                                ? 'bg-surface-success text-fg-success'
+                                : 'bg-surface-subtle text-fg-secondary'
+                        }`}
+                    >
                         {usage.published
                             ? t('workspace.media.library.usages.live')
                             : t('workspace.media.library.usages.draft')}

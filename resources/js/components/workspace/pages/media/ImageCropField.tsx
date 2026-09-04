@@ -119,13 +119,13 @@ export function ImageCropField({
     }, [objectUrl, rect, possible, onCropped, mimeType]);
 
     /*
-        Bu üç işleyici KASITLI olarak `useCallback` ile sarılmıyor.
+        Bu üç işleyici KASITLI olarak `useCallback` ile sarılmıyor (FF-129).
 
         İçlerinde `ref.current` yazılıyor ve React derleyicisi böyle bir
-        gövdede elle kurulmuş bir hafızayı koruyamıyor (CI kapısı:
-        `react-hooks/preserve-manual-memoization`). Sarmalayıcı zaten bir
-        kazanç da sağlamıyordu — bu işleyiciler bir etkinin bağımlılığı
-        değil, doğrudan JSX'e verilen olay işleyicileridir.
+        gövdede elle kurulmuş hafızayı koruyamıyor; CI kapısı bunu hata
+        olarak bildiriyor. Sarmalayıcı zaten bir kazanç sağlamıyordu — bunlar
+        bir etkinin bağımlılığı değil, doğrudan JSX'e verilen olay
+        işleyicileridir.
     */
     function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
         dragRef.current = { pointerX: event.clientX, pointerY: event.clientY };
@@ -140,9 +140,9 @@ export function ImageCropField({
 
         const box = frame.getBoundingClientRect();
 
-        // Kayma NORMALİZE edilir (-1…1): yakınlaştırma değişince kullanıcının
-        // seçtiği yer orantılı kalır. Piksel tutulsaydı her yakınlaştırmada
-        // çerçeve sıçrardı.
+        // Kayma NORMALİZE edilir (-1…1): yakınlaştırma değişince
+        // kullanıcının seçtiği yer orantılı kalır. Piksel tutulsaydı
+        // her yakınlaştırmada çerçeve sıçrardı.
         setOffset((previous) => ({
             x: clamp(previous.x - ((event.clientX - drag.pointerX) * 2) / Math.max(1, box.width)),
             y: clamp(previous.y - ((event.clientY - drag.pointerY) * 2) / Math.max(1, box.height)),
@@ -174,7 +174,7 @@ export function ImageCropField({
             aria-labelledby="media-crop-heading"
             className="flex flex-col gap-[var(--space-2)]"
         >
-            <h4 id="media-crop-heading" className="text-body font-semibold text-fg">
+            <h4 id="media-crop-heading" className="text-body font-bold text-fg">
                 {t('workspace.media.crop.heading')}
             </h4>
             <p className="text-body text-fg-secondary">{t('workspace.media.crop.help')}</p>
@@ -247,7 +247,12 @@ export function ImageCropField({
                     piksel kaybettiğini bilmeli, çünkü slotun en küçük
                     ölçüsüne yaklaşan bir çerçeve yayında bulanık görünür.
                 */}
-                <p aria-live="polite" className="text-meta text-fg-muted">
+                {/*
+                    `tabular-nums` ŞARTTIR: sayı yakınlaştırma çubuğu
+                    sürüklenirken HER karede değişir ve orantılı rakamda satır
+                    yatayda oynar — okunması gereken sayı okunamaz olur.
+                */}
+                <p aria-live="polite" className="text-meta text-fg-muted tabular-nums">
                     {t('workspace.media.crop.result', {
                         width: String(rect.width),
                         height: String(rect.height),

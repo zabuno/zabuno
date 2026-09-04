@@ -32,6 +32,10 @@ msgstr "Vazgeç"
 msgid "menu.category.add.disclose"
 msgstr "Kategori ekle"
 
+#: menu:menu.category.count
+msgid "menu.category.count"
+msgstr ""
+
 #: menu:menu.category.create.error.submit
 msgid "menu.category.create.error.submit"
 msgstr "Kategoriyi ekleyemedik. Lütfen tekrar deneyin."
@@ -75,6 +79,10 @@ msgstr "Kategori adı"
 #: menu:menu.category.order.label
 msgid "menu.category.order.label"
 msgstr "{name} sırası"
+
+#: menu:menu.category.reorder.handle
+msgid "menu.category.reorder.handle"
+msgstr ""
 
 #: menu:menu.category.select.label
 msgid "menu.category.select.label"
@@ -207,6 +215,10 @@ msgstr "Menünüzü yükleyemedik. Lütfen tekrar deneyin."
 #: menu:menu.initial.error.retry
 msgid "menu.initial.error.retry"
 msgstr "Tekrar dene"
+
+#: menu:menu.inspector.title
+msgid "menu.inspector.title"
+msgstr ""
 
 #: menu:menu.item.ai.description.error
 msgid "menu.item.ai.description.error"
@@ -388,6 +400,14 @@ msgstr "Fotoğraf"
 msgid "menu.item.image.none"
 msgstr "Fotoğraf yok"
 
+#: menu:menu.item.meta.noPhoto
+msgid "menu.item.meta.noPhoto"
+msgstr ""
+
+#: menu:menu.item.open.button
+msgid "menu.item.open.button"
+msgstr ""
+
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
 msgstr "{name} sırası"
@@ -444,6 +464,10 @@ msgstr "{name} ürününü tekrar mevcut yap"
 msgid "menu.item.stock.back.short"
 msgstr "Tekrar mevcut"
 
+#: menu:menu.item.stock.badge
+msgid "menu.item.stock.badge"
+msgstr ""
+
 #: menu:menu.item.stock.out.button
 msgid "menu.item.stock.out.button"
 msgstr "{name} ürününü bugünlük tükendi işaretle"
@@ -467,6 +491,10 @@ msgstr "Menüden gizle"
 #: menu:menu.item.visibility.show
 msgid "menu.item.visibility.show"
 msgstr "Menüde göster"
+
+#: menu:menu.item.visibility.switch.label
+msgid "menu.item.visibility.switch.label"
+msgstr ""
 
 #: menu:menu.loading
 msgid "menu.loading"

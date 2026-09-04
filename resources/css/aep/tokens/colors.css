@@ -1,0 +1,82 @@
+/* PRIMITIVE palette — binding values, never edited by a variant. */
+:root{
+--aep-yellow-500:#FFB900;
+--aep-blue-700:#003399;
+--aep-blue-300:#93A8F4;
+--aep-ink-950:#080616;
+--aep-ink-900:#0D0A24;
+--aep-ink-800:#16123A;
+--aep-ink-100:#EDEDF4;
+--aep-ink-50:#F7F7FB;
+--aep-white:#FFFFFF;
+--aep-border-light:#E4E4EE;
+--aep-border-dark:#26224A;
+--aep-success-600:#15803D;
+--aep-error-600:#DC2626;
+--aep-warning-600:#B45309;
+--aep-info-600:#1D4ED8;
+/* Dark-mode brightened derivatives (spec: "aydınlatılmış türev üretilecek"). */
+--aep-success-400:#22C55E;
+--aep-error-400:#F87171;
+--aep-warning-400:#FBBF24;
+--aep-info-400:#93A8F4;
+}
+/* SEMANTIC — light mode is the :root default. */
+:root{
+--aep-surface-canvas:var(--aep-ink-50);
+--aep-surface-raised:var(--aep-white);
+--aep-surface-sunken:var(--aep-ink-100);
+--aep-surface-overlay:var(--aep-white);
+--aep-surface-tint:rgb(8 6 22 / 4%);
+--aep-surface-tint-strong:rgb(8 6 22 / 8%);
+--aep-border:var(--aep-border-light);
+--aep-border-subtle:rgb(228 228 238 / 50%);
+--aep-text-primary:var(--aep-ink-950);
+--aep-text-secondary:rgb(8 6 22 / 66%);
+--aep-text-disabled:rgb(8 6 22 / 38%);
+--aep-text-inverse:var(--aep-white);
+--aep-accent-primary:var(--aep-yellow-500);
+--aep-on-accent-primary:var(--aep-ink-950);
+--aep-accent-secondary:var(--aep-blue-700);
+--aep-accent-secondary-text:var(--aep-blue-700);
+--aep-accent-secondary-fill:rgb(0 51 153 / 8%);
+--aep-accent-secondary-fill-soft:rgb(0 51 153 / 6%);
+--aep-focus-ring:var(--aep-blue-700);
+--aep-status-success:var(--aep-success-600);
+--aep-status-error:var(--aep-error-600);
+--aep-status-warning:var(--aep-warning-600);
+--aep-status-info:var(--aep-info-600);
+--aep-status-success-fill:rgb(21 128 61 / 10%);
+--aep-status-error-fill:rgb(220 38 38 / 10%);
+--aep-status-warning-fill:rgb(180 83 9 / 10%);
+--aep-status-info-fill:rgb(29 78 216 / 10%);
+--aep-ai-provenance:var(--aep-yellow-500);
+--aep-scrim:rgb(8 6 22 / 40%);
+}
+[data-theme="dark"]{
+--aep-surface-canvas:var(--aep-ink-950);
+--aep-surface-raised:var(--aep-ink-900);
+--aep-surface-sunken:var(--aep-ink-800);
+--aep-surface-overlay:var(--aep-ink-900);
+--aep-surface-tint:rgb(255 255 255 / 4%);
+--aep-surface-tint-strong:rgb(255 255 255 / 8%);
+--aep-border:var(--aep-border-dark);
+--aep-border-subtle:rgb(38 34 74 / 50%);
+--aep-text-primary:rgb(255 255 255 / 87%);
+--aep-text-secondary:rgb(255 255 255 / 60%);
+--aep-text-disabled:rgb(255 255 255 / 38%);
+--aep-text-inverse:var(--aep-ink-950);
+/* #003399 is FORBIDDEN as text or a thin icon on dark — text-level blue is blue/300. */
+--aep-accent-secondary-text:var(--aep-blue-300);
+--aep-accent-secondary-fill:rgb(147 168 244 / 10%);
+--aep-accent-secondary-fill-soft:rgb(147 168 244 / 6%);
+--aep-focus-ring:var(--aep-blue-300);
+--aep-status-success:var(--aep-success-400);
+--aep-status-error:var(--aep-error-400);
+--aep-status-warning:var(--aep-warning-400);
+--aep-status-info:var(--aep-info-400);
+--aep-status-success-fill:rgb(34 197 94 / 14%);
+--aep-status-error-fill:rgb(248 113 113 / 14%);
+--aep-status-warning-fill:rgb(251 191 36 / 14%);
+--aep-status-info-fill:rgb(147 168 244 / 14%);
+}

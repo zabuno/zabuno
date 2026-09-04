@@ -30,7 +30,13 @@ export function PageHeader({
             {breadcrumbs ? <Breadcrumbs items={breadcrumbs} /> : null}
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-title font-semibold tracking-tight text-fg">{title}</h1>
+                    {/*
+                        Sayfa başlığı 700 ve SIKI harf aralığı (FF-131):
+                        teslim paketi başlığı `letter-spacing:-.02em` ile
+                        çiziyor. 600 ağırlık AEP ölçeğinde yok ve Roboto'da
+                        ayrı kesim olarak yüklenmediği için sentezleniyordu.
+                    */}
+                    <h1 className="text-title font-bold tracking-[-0.02em] text-fg">{title}</h1>
                     {description ? (
                         <p className="max-w-[60ch] text-body text-fg-secondary">{description}</p>
                     ) : null}

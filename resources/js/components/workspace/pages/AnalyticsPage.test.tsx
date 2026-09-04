@@ -707,4 +707,91 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             expect(within(region).queryByRole('heading', { name: 'By location' })).toBeNull();
         });
     });
+
+    /**
+     * INSIGHTS'IN AEP DÜZENİ — kanonik teslim paketi
+     * (`Restoran Paneli v2.dc.html` Insights bölümü, `DESIGN_SPEC.md` §5).
+     *
+     * Sahibin yolculuğu: Insights'ı açar, üstte "Bugün / 7 gün / 30 gün"
+     * seçer ve altındaki her şeyin o aralığa göre değiştiğini görür. Aralık
+     * seçicisi sayfa başlığının YANINDA durur; çünkü o, bir bölgenin değil
+     * SAYFANIN tamamının kapsamıdır.
+     *
+     * Ve teslim paketinde kartın içinde kart yoktur: bölgeler doğrudan
+     * zeminin üstünde durur.
+     */
+    describe('AEP düzeni', () => {
+        function cardAncestorsOf(element: HTMLElement): HTMLElement[] {
+            const cards: HTMLElement[] = [];
+            let current = element.parentElement;
+
+            while (current) {
+                if (
+                    current.classList.contains('rounded-[var(--radius-lg)]') &&
+                    current.classList.contains('bg-[var(--color-surface)]')
+                ) {
+                    cards.push(current);
+                }
+                current = current.parentElement;
+            }
+
+            return cards;
+        }
+
+        it('aralık seçicisini sayfa başlığının yanına koyar', async () => {
+            render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+            const heading = screen.getByRole('heading', { level: 1, name: /analytics/i });
+            const rangeControl = screen.getByRole('combobox', { name: /range/i });
+
+            /*
+                Seçici, başlık satırının içinde olmalı. Gövdenin ilk satırında
+                duran bir "Range" alanı, altındaki tek bir bölgeye aitmiş gibi
+                okunuyordu — oysa aralık, sayfadaki HER sayının kapsamıdır.
+            */
+            const headerRow = heading.closest('.justify-between');
+
+            expect(headerRow).not.toBeNull();
+            expect(headerRow?.contains(rangeControl)).toBe(true);
+        });
+
+        it('kartın içine kart çizmez', async () => {
+            fetchSpy.mockImplementation(async (url: string) => {
+                if (String(url).includes('/analytics/summary')) {
+                    return jsonResponse(
+                        200,
+                        summaryBody('today', 15, 12, {
+                            locations: [
+                                { id: 1, label: 'Kadıköy', qrResolveCount: 12, menuOpenCount: 9 },
+                                { id: 2, label: 'Beşiktaş', qrResolveCount: 3, menuOpenCount: 3 },
+                            ],
+                        }),
+                    );
+                }
+
+                return jsonResponse(200, {});
+            });
+
+            render(
+                <AnalyticsPage
+                    workspaceId={WORKSPACE_ID}
+                    locationId={LOCATION_ID}
+                    onNavigateToSection={vi.fn()}
+                />,
+            );
+
+            const breakdownHeading = await screen.findByRole('heading', { name: 'By location' });
+            const breakdownCard = breakdownHeading.closest('section');
+
+            expect(breakdownCard).not.toBeNull();
+            /*
+                Kart sınırı ANLAM taşır: "burada bir kaynak, bir liste, bir
+                bölge var". İç içe iki kart aynı zemin ve aynı kenarlıkla
+                çizilir; sahip iki çizgi görür ama hiçbiri ona yeni bir şey
+                söylemez — yalnız içerik daralır ve sayfa dar ekranda iki kat
+                daha çok yatay dolgu harcar.
+            */
+            expect(cardAncestorsOf(breakdownCard as HTMLElement)).toHaveLength(0);
+        });
+    });
 });

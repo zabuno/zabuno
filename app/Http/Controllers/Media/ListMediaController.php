@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Dto\MediaAssetSummary;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
@@ -30,7 +31,7 @@ final class ListMediaController extends Controller
         // süresi dolunca kalıcı silinir.
         $assets = $request->boolean('trashed')
             ? $this->media->listTrashed($workspace)
-            : $this->media->listForWorkspace($workspace);
+            : $this->assetsInScope($request, $workspace);
 
         return response()->json([
             'data' => array_map(static fn ($asset) => [
@@ -53,7 +54,43 @@ final class ListMediaController extends Controller
                 'sizeBytes' => $asset->sizeBytes,
                 'createdAt' => $asset->createdAt,
                 'lifecycle' => $asset->lifecycle,
+                // Klasör (`docs/108` §3 madde 1); klasörsüzde null.
+                'folderId' => $asset->folderId,
             ], $assets),
         ]);
+    }
+
+    /**
+     * Klasör süzgeci (`docs/108` §3 madde 1).
+     *
+     * Süzgeç SORULMADIKÇA hiçbir şey gizlenmez: `folder` parametresi yoksa
+     * liste bugünkü davranışının aynısıdır — klasörlü ve klasörsüz tüm
+     * varlıklar, kaynağın "Tümü" görünümü. Sessizce klasöre göre süzmek,
+     * göç ertesinde sahibin elli fotoğrafının "kaybolması" demek olurdu.
+     *
+     * `?folder=none` ayrı bir sorudur: "hiç klasörlemediklerim hangileri?"
+     * Sahip dağınık kalanı ancak bu görünümle toplayabilir.
+     *
+     * @return list<MediaAssetSummary>
+     */
+    private function assetsInScope(Request $request, int $workspace): array
+    {
+        if (! $request->has('folder')) {
+            return $this->media->listForWorkspace($workspace);
+        }
+
+        $folder = trim((string) $request->query('folder'));
+
+        // Boş `?folder=` bir süzgeç değil, bir kazadır (temizlenmiş bir
+        // form alanı): "Tümü" davranışına düşer.
+        if ($folder === '') {
+            return $this->media->listForWorkspace($workspace);
+        }
+
+        if ($folder === 'none') {
+            return $this->media->listInFolder($workspace, null);
+        }
+
+        return $this->media->listInFolder($workspace, (int) $folder);
     }
 }

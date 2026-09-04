@@ -38,7 +38,17 @@ describe('kabuk rayları sabit genişliktedir', () => {
             'resources/js/components/workspace/chrome/DesktopChrome.tsx',
             'utf8',
         );
-        expect(desktop).toMatch(/admin-shell-sidebar[^"]*shrink-0 grow-0 basis-\[17rem\]/);
+        /*
+            ÖLÇÜLEN ŞEY SAYI DEĞİL, SABİTLİK (FF-131).
+
+            Test `17rem` değerini donduruyordu ve ray 16.5rem'e çekilince
+            ürün doğru çalışırken kırmızıya döndü. Sözleşme şu: ray
+            ESNEMEZ — `grow-0 shrink-0` ile ve `basis` üzerinden ölçülür.
+            Kaç rem olduğu bir tasarım kararıdır ve tasarım paketiyle
+            birlikte değişebilir; esneyip esnemediği ise bir davranıştır ve
+            değişemez.
+        */
+        expect(desktop).toMatch(/admin-shell-sidebar[^"]*shrink-0 grow-0 basis-\[[\d.]+rem\]/);
 
         const ops = readFileSync('resources/js/components/ops/OpsShell.tsx', 'utf8');
         expect(ops).toMatch(/admin-shell-sidebar[^"]*shrink-0 grow-0 basis-\[16rem\]/);

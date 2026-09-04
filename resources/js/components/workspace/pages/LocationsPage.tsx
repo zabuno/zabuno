@@ -144,10 +144,30 @@ export function LocationsPage({
                     />
                 )}
 
+                {/*
+                    ŞEHİR, KARTIN BAŞLIĞIDIR (FF-131).
+
+                    Önceden şehir ve ülke kodu kartın İÇİNDE iki ayrı
+                    paragraftı: kartın kendi başlık satırı boş duruyor,
+                    grubun adı ise gövdenin ilk satırı gibi okunuyordu.
+                    Teslim paketinin kart grameri başlığı ayraçla ayırır —
+                    "bu kart neyin kartı" sorusu gövdeye bakmadan
+                    cevaplanır.
+
+                    Ülke kodu başlığın YANINDA durur, altında değil:
+                    "İstanbul" ile "TR" iki ayrı bilgi değil, tek bir
+                    yer adıdır.
+                */}
                 {grouped.map(([groupKey, group]) => (
-                    <PanelCard key={groupKey}>
-                        <p className="mb-2 font-medium text-fg">{group.city}</p>
-                        <p className="mb-2 text-body text-fg-secondary">{group.countryCode}</p>
+                    <PanelCard key={groupKey} title={`${group.city} · ${group.countryCode}`}>
+                        {/*
+                            ŞUBE SATIRI KUTU KALIR ve bu bilinçli bir ayrım
+                            (FF-131): satırın içinde DÜZENLENEBİLİR bir form
+                            var. Kenarlık burada gürültü değil, formun nerede
+                            başlayıp bittiğini söyleyen tek işaret — takım
+                            listesindeki salt-okunur satırlarla aynı şey
+                            değil.
+                        */}
                         <ul className="flex flex-col gap-3">
                             {group.locations.map((location) => (
                                 <li

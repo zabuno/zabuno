@@ -77,6 +77,91 @@ function slotPoliciesResponse(url: string): Response | null {
     } as Response;
 }
 
+/**
+ * YÜKLEME ARTIK KENDİ BÖLÜMÜDÜR (FF-131, kanonik kaynak
+ * `docs/reference/media-manager/`, gerekçe `docs/108` §1).
+ *
+ * Medya bu depoda düz bir sayfaydı: solda yükleme kartı, sağda kütüphane.
+ * Kaynak ise kendi kabuğu olan bir UYGULAMA gösteriyor — bir menüyü
+ * yönetmekle bir dosya deposunu yönetmek farklı işlerdir ve tek sayfaya
+ * sıkıştırıldıklarında ikisi de yarım kalıyordu.
+ *
+ * Bu yüzden testler yükleme alanına artık GEZİNEREK gider; kullanıcı da
+ * öyle gidiyor.
+ */
+async function openUploadSection(user: {
+    click: (element: Element) => Promise<unknown>;
+}): Promise<void> {
+    const nav = screen.getByRole('navigation', { name: 'Media sections' });
+    await user.click(within(nav).getByRole('button', { name: 'Upload' }));
+}
+
+/**
+ * Yükleme bittikten sonra kütüphaneye DÖNMEK kullanıcının işidir.
+ *
+ * Sayfa bunu kendiliğinden yapmıyor ve bu bilinçli: yükleme bölümü işin
+ * bittiğini kendi içinde söylüyor ("Media upload complete."). Ekranı
+ * altından çekmek, o onayı okunmadan yok eder.
+ */
+async function openLibrarySection(user: {
+    click: (element: Element) => Promise<unknown>;
+}): Promise<void> {
+    const nav = screen.getByRole('navigation', { name: 'Media sections' });
+    await user.click(within(nav).getByRole('button', { name: 'Library' }));
+}
+
+type TestUser = ReturnType<typeof import('@testing-library/user-event').default.setup>;
+
+/**
+ * YÜKLEME ARTIK DÖRT ADIMLI BİR SİHİRBAZ (kanonik kaynak "Yükle"; bileşen
+ * ayrı bir pakete ait).
+ *
+ * Sayfa seviyesindeki testler tek uzun forma değil, kullanıcının yürüdüğü
+ * adımlara bakar: dosya → küçültme → yer ve çerçeve → alt metin. Adımların
+ * KENDİ davranışı (hangi alan hangi adımda korunur) sihirbazın kendi test
+ * dosyalarının işidir; burada sınanan şey, sayfanın sunucuyla konuşması ve
+ * sonucun kütüphaneye düşmesidir.
+ */
+async function walkUploadWizard(
+    user: TestUser,
+    altText = 'A test image',
+): Promise<{
+    uploadRegion: HTMLElement;
+    altField: HTMLElement;
+    submitButton: HTMLElement;
+}> {
+    const uploadRegion = screen.getByRole('region', { name: /media upload/i });
+
+    await user.upload(
+        within(uploadRegion).getByLabelText(/choose a file/i) as HTMLInputElement,
+        new File(['binary'], 'photo.png', { type: 'image/png' }),
+    );
+
+    // 2. adım (küçültme) → 3. adım (yer ve çerçeve).
+    await user.click(await screen.findByRole('button', { name: /^continue$/i }));
+
+    const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
+    // Slot listesi sunucudan geliyor; seçenek gelene kadar beklenir.
+    await waitFor(() => {
+        expect(
+            within(slotField).getByRole('option', { name: /list.card.detail item/i }),
+        ).toBeInTheDocument();
+    });
+    await user.selectOptions(slotField, 'itemImage');
+    await user.click(screen.getByRole('button', { name: /^continue$/i }));
+
+    const altField = within(uploadRegion).getByLabelText(/alt text/i);
+    if (altText !== '') {
+        await user.type(altField, altText);
+    }
+
+    return {
+        uploadRegion,
+        altField,
+        submitButton: within(uploadRegion).getByRole('button', { name: /^upload$/i }),
+    };
+}
+
 describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
     let fetchSpy: ReturnType<typeof vi.fn>;
 
@@ -109,8 +194,11 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         expect(screen.getByRole('heading', { name: 'Media' })).toBeInTheDocument();
     });
 
-    it('exposes an accessible Media upload region', () => {
+    it('exposes an accessible Media upload region', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        await openUploadSection(user);
 
         expect(screen.getByRole('region', { name: /media upload/i })).toBeInTheDocument();
     });
@@ -138,21 +226,23 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
     });
 
     it('enables file, alt text and asset slot fields; alt text is required', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+        await openUploadSection(user);
 
         const uploadRegion = screen.getByRole('region', { name: /media upload/i });
 
-        const fileField = within(uploadRegion).getByLabelText(/file/i);
+        // 1. adım: dosya seçimi açıktır.
+        const fileField = within(uploadRegion).getByLabelText(/choose a file/i);
         expect(fileField).not.toBeDisabled();
 
-        const altField = within(uploadRegion).getByLabelText(/alt text/i);
+        // Sihirbazı yürüdüğümüzde yer seçimi ve alt metin de açıktır; alt
+        // metin erişilebilirlik yükümlülüğü olduğu için ZORUNLUDUR.
+        const { altField } = await walkUploadWizard(user);
         expect(altField).not.toBeDisabled();
         expect(altField).toBeRequired();
-
-        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
-        expect(slotField).not.toBeDisabled();
     });
 
     it('submits a multipart upload and renders the returned quarantined asset with an honest scan-pending status and no public preview', async () => {
@@ -186,29 +276,17 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
 
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+        await openUploadSection(user);
 
-        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
-        const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
-        const altField = within(uploadRegion).getByLabelText(/alt text/i);
-        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
-        const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
-
-        const file = new File(['binary'], 'photo.png', { type: 'image/png' });
-        await user.upload(fileField, file);
-        await user.type(altField, 'A test image');
-        // Slot listesi SUNUCUDAN geliyor; seçenek gelene kadar beklenir.
-        await waitFor(() => {
-            expect(
-                within(slotField).getByRole('option', { name: /list.card.detail item/i }),
-            ).toBeInTheDocument();
-        });
-        await user.selectOptions(slotField, 'itemImage');
+        const { submitButton } = await walkUploadWizard(user);
         await user.click(submitButton);
 
         await waitFor(() => {
             const postCall = fetchSpy.mock.calls.find((call) => call[1]?.method === 'POST');
             expect(postCall).toBeDefined();
         });
+
+        await openLibrarySection(user);
 
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
         await waitFor(() => {
@@ -335,8 +413,10 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
     // gösterilmez. Kullanıcı onu nasıl etkinleştireceğini bilemez, çünkü
     // etkinleştirmenin bir yolu yoktur — ekranda kalıcı bir soru işareti
     // durur. O alanlar geldiklerinde çalışır hâlde gelirler.
-    it('shows no control that exists only to be permanently disabled', () => {
+    it('shows no control that exists only to be permanently disabled', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
+        await openUploadSection(user);
 
         const uploadRegion = screen.getByRole('region', { name: /media upload/i });
 
@@ -350,8 +430,10 @@ describe('MediaPage — S1-WP01A Media surface (MEDIA_FRONTEND_RED)', () => {
         expect(disabled).toHaveLength(0);
     });
 
-    it('keeps the metadata intake form fluid at a 320x480 start with no fixed-width or breakpoint classes', () => {
+    it('keeps the metadata intake form fluid at a 320x480 start with no fixed-width or breakpoint classes', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
         const { container } = render(<MediaPage workspaceId={WORKSPACE_ID} />);
+        await openUploadSection(user);
 
         const uploadRegion = screen.getByRole('region', { name: /media upload/i });
         expect(window.innerWidth).toBe(320);
@@ -594,25 +676,24 @@ describe('MediaPage — media library load state (MEDIA_LOAD_STATE_RED)', () => 
 
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
 
-        const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        await waitFor(() => expect(within(libraryRegion).getByRole('alert')).toBeInTheDocument());
+        await waitFor(() =>
+            expect(
+                within(screen.getByRole('region', { name: /media library/i })).getByRole('alert'),
+            ).toBeInTheDocument(),
+        );
 
-        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
-        const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
-        const altField = within(uploadRegion).getByLabelText(/alt text/i);
-        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
-        const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
+        await openUploadSection(user);
 
-        const file = new File(['binary'], 'photo.png', { type: 'image/png' });
-        await user.upload(fileField, file);
-        await user.type(altField, 'A test image');
-        await user.selectOptions(slotField, 'itemImage');
+        const { submitButton } = await walkUploadWizard(user);
         await user.click(submitButton);
 
         await waitFor(() => {
             const postCall = fetchSpy.mock.calls.find((call) => call[1]?.method === 'POST');
             expect(postCall).toBeDefined();
         });
+
+        await openLibrarySection(user);
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
 
         await waitFor(() => {
             // Satır artık kullanıcının yazdığı alt metinle tanınır. Önceden
@@ -649,23 +730,6 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
         vi.unstubAllGlobals();
     });
 
-    async function fillUploadForm(
-        uploadRegion: HTMLElement,
-        user: ReturnType<typeof import('@testing-library/user-event').default.setup>,
-    ) {
-        const fileField = within(uploadRegion).getByLabelText(/file/i) as HTMLInputElement;
-        const altField = within(uploadRegion).getByLabelText(/alt text/i);
-        const slotField = within(uploadRegion).getByLabelText(/where will this image be used/i);
-        const submitButton = within(uploadRegion).getByRole('button', { name: /upload/i });
-
-        const file = new File(['binary'], 'photo.png', { type: 'image/png' });
-        await user.upload(fileField, file);
-        await user.type(altField, 'A test image');
-        await user.selectOptions(slotField, 'itemImage');
-
-        return { fileField, altField, slotField, submitButton, file };
-    }
-
     it('a pending POST announces Uploading via role=status and disables Upload', async () => {
         const user = (await import('@testing-library/user-event')).default.setup();
 
@@ -689,9 +753,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+        await openUploadSection(user);
 
-        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
-        const { submitButton } = await fillUploadForm(uploadRegion, user);
+        const { uploadRegion, submitButton } = await walkUploadWizard(user);
         await user.click(submitButton);
 
         await waitFor(() => {
@@ -733,12 +797,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+        await openUploadSection(user);
 
-        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
-        const { fileField, altField, slotField, submitButton, file } = await fillUploadForm(
-            uploadRegion,
-            user,
-        );
+        const { uploadRegion, altField, submitButton } = await walkUploadWizard(user);
         await user.click(submitButton);
 
         await waitFor(() => {
@@ -747,13 +808,22 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
             expect(alerts[0].textContent).toBe('Media upload failed. Your selection was kept.');
         });
 
-        const libraryRegion = screen.getByRole('region', { name: /media library/i });
-        expect(within(libraryRegion).queryByText(/#\d+/)).toBeNull();
-
-        expect(fileField.files?.[0]).toBe(file);
+        /*
+            Kullanıcının YAZDIĞI kaybolmaz: sunucu reddettiğinde ekran son
+            adımda kalır ve alt metin yerinde durur. Dosya ve yer seçimi
+            sihirbazın önceki adımlarında yaşar; onların korunduğunu
+            sihirbazın kendi test dosyaları kanıtlar.
+        */
         expect((altField as HTMLInputElement).value).toBe('A test image');
-        expect((slotField as HTMLSelectElement).value).toBe('itemImage');
         expect(submitButton).not.toBeDisabled();
+
+        // Başarısız yükleme kütüphaneye SAHTE bir satır eklemez.
+        await openLibrarySection(user);
+        expect(
+            within(screen.getByRole('region', { name: /media library/i })).getByText(
+                'No media assets yet.',
+            ),
+        ).toBeInTheDocument();
     });
 
     it('a rejected POST shows the same alert and preserves the same fields without an unhandled rejection', async () => {
@@ -775,12 +845,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+        await openUploadSection(user);
 
-        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
-        const { fileField, altField, slotField, submitButton, file } = await fillUploadForm(
-            uploadRegion,
-            user,
-        );
+        const { uploadRegion, altField, submitButton } = await walkUploadWizard(user);
         await user.click(submitButton);
 
         await waitFor(() => {
@@ -789,9 +856,7 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
             expect(alerts[0].textContent).toBe('Media upload failed. Your selection was kept.');
         });
 
-        expect(fileField.files?.[0]).toBe(file);
         expect((altField as HTMLInputElement).value).toBe('A test image');
-        expect((slotField as HTMLSelectElement).value).toBe('itemImage');
         expect(submitButton).not.toBeDisabled();
     });
 
@@ -830,12 +895,9 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
 
         render(<MediaPage workspaceId={WORKSPACE_ID} />);
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+        await openUploadSection(user);
 
-        const uploadRegion = screen.getByRole('region', { name: /media upload/i });
-        const { fileField, altField, slotField, submitButton } = await fillUploadForm(
-            uploadRegion,
-            user,
-        );
+        const { uploadRegion, submitButton } = await walkUploadWizard(user);
         await user.click(submitButton);
 
         await waitFor(() => expect(within(uploadRegion).getByRole('alert')).toBeInTheDocument());
@@ -850,10 +912,19 @@ describe('MediaPage — media upload state (MEDIA_UPLOAD_STATE_RED)', () => {
         });
         expect(within(uploadRegion).queryByRole('alert')).toBeNull();
 
-        expect(fileField.files?.length ?? 0).toBe(0);
-        expect((altField as HTMLInputElement).value).toBe('');
-        expect((slotField as HTMLSelectElement).value).toBe('');
+        /*
+            Başarılı yüklemeden sonra sihirbaz BAŞA döner: ekranda yeniden
+            dosya seçimi durur ve önceki fotoğrafın alt metni yeni yüklemeye
+            sızmaz. Eskiden bu, üç alanın tek tek boşaldığı iddiasıydı;
+            adımlara bölününce aynı şeyin görünür kanıtı, birinci adımın geri
+            gelmesidir.
+        */
+        await waitFor(() =>
+            expect(within(uploadRegion).getByLabelText(/choose a file/i)).toBeInTheDocument(),
+        );
+        expect(within(uploadRegion).queryByLabelText(/alt text/i)).toBeNull();
 
+        await openLibrarySection(user);
         const libraryRegion = screen.getByRole('region', { name: /media library/i });
         await waitFor(() => {
             expect(within(libraryRegion).getByText('A test image')).toBeInTheDocument();
@@ -1078,5 +1149,98 @@ describe('MediaPage — media delete state (MEDIA_DELETE_STATE_RED)', () => {
         expect(completionNotice).toHaveAttribute('role', 'status');
         expect(within(libraryRegion).queryByRole('alert')).toBeNull();
         expect(within(libraryRegion).getByText('Other asset')).toBeInTheDocument();
+    });
+});
+
+/**
+ * MEDIA_FOLDERS_HONESTY — klasör ucu YOKSA klasör de yok.
+ *
+ * Klasör uçları bu depoya henüz inmedi (`docs/108` §2: "Kütüphane … klasör
+ * yok"). Kabuk yine de klasör soruyor, çünkü uç indiği gün ekranın
+ * değişmesi gerekmesin diye — ama uç 404 dönerse ekranda ne kırmızı bir
+ * satır ne de uydurma bir "Genel" klasörü belirir.
+ *
+ * Sebep sahibin yolculuğunda görünür: elli fotoğrafı olan bir restoran
+ * sahibi, tıkladığında hiçbir şey yapmayan bir klasör görürse ürünün geri
+ * kalanına da güvenmez. Var olmayan yetenek, kırık bir yetenekten daha az
+ * zarar verir.
+ */
+describe('MediaPage — klasörler (MEDIA_FOLDERS_HONESTY)', () => {
+    const ASSET_ROWS = [
+        { id: 11, altText: 'Adana kebap', slot: 'itemImage', status: 'ready', folderId: 3 },
+        { id: 12, altText: 'Lahmacun', slot: 'itemImage', status: 'ready', folderId: 4 },
+    ];
+
+    function stubFetch(foldersResponse: () => Response) {
+        const fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const policies = slotPoliciesResponse(url);
+            if (policies) return policies;
+
+            if (String(url) === `${MEDIA_ENDPOINT}/folders`) {
+                return foldersResponse();
+            }
+            if (String(url) === MEDIA_ENDPOINT && (!init || init.method === undefined)) {
+                return {
+                    ok: true,
+                    status: 200,
+                    json: async () => ({ assets: ASSET_ROWS }),
+                } as Response;
+            }
+            if (String(url) === `${MEDIA_ENDPOINT}/quota`) {
+                return { ok: false, status: 404, json: async () => ({}) } as Response;
+            }
+            if (String(url).startsWith(`${MEDIA_ENDPOINT}/audit`)) {
+                return { ok: false, status: 404, json: async () => ({}) } as Response;
+            }
+            throw new Error(`Unhandled fetch: ${String(url)} ${init?.method ?? 'GET'}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+        return fetchSpy;
+    }
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('uç 404 dönerse klasör listesi de hap şeridi de çizilmez, hata da gösterilmez', async () => {
+        stubFetch(() => ({ ok: false, status: 404, json: async () => ({}) }) as Response);
+
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => expect(screen.getByText('Adana kebap')).toBeInTheDocument());
+
+        expect(screen.queryByRole('list', { name: 'Folders' })).toBeNull();
+        expect(screen.queryByRole('button', { name: 'All files' })).toBeNull();
+        expect(screen.queryByRole('alert')).toBeNull();
+    });
+
+    it('uç klasör döndürünce şerit ve haplar gerçek adlarla çizilir', async () => {
+        stubFetch(
+            () =>
+                ({
+                    ok: true,
+                    status: 200,
+                    json: async () => ({
+                        folders: [
+                            { id: 3, name: 'Kampanyalar', assetCount: 1 },
+                            { id: 4, name: 'Menü', assetCount: 1 },
+                        ],
+                    }),
+                }) as Response,
+        );
+
+        const user = (await import('@testing-library/user-event')).default.setup();
+        render(<MediaPage workspaceId={WORKSPACE_ID} />);
+
+        const rail = await screen.findByRole('list', { name: 'Folders' });
+        expect(within(rail).getByRole('button', { name: /Kampanyalar/ })).toBeInTheDocument();
+
+        // Klasör seçimi listeyi daraltır: seçim şeritten yapılır, sonuç
+        // kütüphanede görünür.
+        await user.click(within(rail).getByRole('button', { name: /Kampanyalar/ }));
+
+        const libraryRegion = screen.getByRole('region', { name: /media library/i });
+        expect(within(libraryRegion).getByText('Adana kebap')).toBeInTheDocument();
+        expect(within(libraryRegion).queryByText('Lahmacun')).toBeNull();
     });
 });

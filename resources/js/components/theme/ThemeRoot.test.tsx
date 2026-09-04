@@ -258,7 +258,13 @@ describe('ThemeRoot — adaptive theme foundation (S1-WP01B)', () => {
             adını değil o işaretin VARLIĞINI ölçer — mekanizma değişebilir,
             sözleşme değişmez.
         */
-        expect(checked.closest('label')?.querySelector('svg')).not.toBeNull();
-        expect(unchecked.closest('label')?.querySelector('svg')).toBeNull();
+        /*
+            İŞARET, İKON DEĞİL (FF-131): teslim paketinin tasarımında her
+            seçenek kendi ikonunu taşır, dolayısıyla "svg var mı" ölçümü
+            seçileni ayırt edemez. Sözleşme aynı — seçim renkten başka bir
+            kanalda da görünmeli.
+        */
+        expect(checked.closest('label')?.querySelector('[data-selected-marker]')).not.toBeNull();
+        expect(unchecked.closest('label')?.querySelector('[data-selected-marker]')).toBeNull();
     });
 });

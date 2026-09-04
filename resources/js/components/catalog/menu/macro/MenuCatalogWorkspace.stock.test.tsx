@@ -1,6 +1,6 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -187,19 +187,27 @@ describe('bugün tükendi (docs/82)', () => {
             İki denetim AYRI kalır: gizli bir ürün menüde YOKTUR, tükenmiş bir
             ürün menüde VARDIR ama bugün verilemez.
 
-            GÜNCELLENDİ (FF-102): "tükendi" günlük iş olduğu için satırda
-            kalır; görünürlük seyrek olduğu için taşma menüsünde ADIYLA durur.
-            Etiketsiz bir kutu ile "tükendi" düğmesi yan yana dururken ikisi
-            de "misafir bunu görmüyor" gibi okunuyordu.
-        */
-        expect(
-            screen.getByRole('button', { name: 'Mark Levrek sold out for today' }),
-        ).toBeInTheDocument();
+            GÜNCELLENDİ (kanonik teslim paketi, `DESIGN_SPEC` §3): ikisi de
+            satırda durur ama BİÇİMLERİ farklıdır ve ayrımı artık biçim
+            taşır. "Tükendi" anlık bir eylemdir — basılıp bırakılan bir ikon
+            düğmesi (`aria-pressed`). Görünürlük kalıcı bir hâldir — açık
+            kalan bir anahtar (`role="switch"`, `aria-checked`).
 
-        fireEvent.click(screen.getByRole('button', { name: 'More actions for Levrek' }));
-        expect(
-            await screen.findByRole('menuitem', { name: /Hide from the menu|Show on the menu/ }),
-        ).toBeInTheDocument();
+            FF-102'nin çözdüğü sorun (etiketsiz bir kutu ile "tükendi"
+            düğmesinin karışması) burada da çözülmüş durumda: anahtar tam
+            cümleyi taşıyor. Kutuyu taşma menüsüne saklamak ise durumu da
+            saklıyordu.
+        */
+        const stockButton = screen.getByRole('button', {
+            name: 'Mark Levrek sold out for today',
+        });
+        expect(stockButton).toHaveAttribute('aria-pressed', 'false');
+
+        const visibilitySwitch = screen.getByRole('switch', {
+            name: 'Show Levrek on the menu',
+        });
+        expect(visibilitySwitch).toHaveAttribute('aria-checked', 'true');
+        expect(visibilitySwitch).not.toBe(stockButton);
 
         vi.unstubAllGlobals();
     });

@@ -22,6 +22,7 @@ use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaAuditPort;
+use App\Application\Media\Port\MediaFolderRepositoryPort;
 use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MenuMediaPort;
@@ -59,6 +60,7 @@ use App\Application\Tenancy\Port\WorkspaceContextSessionPort;
 use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
+use App\Application\Workspace\Port\WorkspaceAuditTrailPort;
 use App\Domain\Ai\Capability;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Platform\Credential\CredentialProvider;
@@ -88,6 +90,7 @@ use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
 use App\Infrastructure\Media\Persistence\EloquentMediaAudit;
+use App\Infrastructure\Media\Persistence\EloquentMediaFolderRepository;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
@@ -127,6 +130,7 @@ use App\Infrastructure\Tenancy\Persistence\EloquentWorkspaceRepository;
 use App\Infrastructure\Tenancy\Persistence\SessionWorkspaceContext;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
+use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
 use App\Support\Localization\SiteText;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -340,9 +344,13 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MailTransportSelectorPort::class, VaultMailTransportSelector::class);
 
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
+        // Medya klasörleri (`docs/108` §3 madde 1): kütüphanede gezinmeyi
+        // aramaya bağımlı olmaktan kurtaran raf düzeni.
+        $this->app->bind(MediaFolderRepositoryPort::class, EloquentMediaFolderRepository::class);
         // Medya denetim izi (`docs/49` Faz 7 madde 4): "bu fotoğrafı kim
         // sildi?" sorusunun cevabını tutan yer.
         $this->app->bind(MediaAuditPort::class, EloquentMediaAudit::class);
+        $this->app->bind(WorkspaceAuditTrailPort::class, EloquentWorkspaceAuditTrail::class);
         $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
         $this->app->bind(FeatureFlagPort::class, PennantFeatureFlags::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);

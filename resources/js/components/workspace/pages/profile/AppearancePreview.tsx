@@ -16,7 +16,7 @@ import { t } from '../../../../i18n/workspace';
 export function AppearancePreview() {
     return (
         <div className="flex flex-col gap-[var(--space-2)]">
-            <h4 className="text-body font-semibold text-fg">
+            <h4 className="text-body font-bold text-fg">
                 {t('workspace.profile.preview.heading')}
             </h4>
             <p className="text-body text-fg-secondary">{t('workspace.profile.preview.help')}</p>

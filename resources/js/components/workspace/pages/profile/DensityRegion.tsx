@@ -33,7 +33,7 @@ export function DensityRegion() {
 
     return (
         <div className="flex flex-col gap-[var(--space-2)]">
-            <h4 className="text-body font-semibold text-fg">
+            <h4 className="text-body font-bold text-fg">
                 {t('workspace.profile.density.heading')}
             </h4>
             <p className="text-body text-fg-secondary">{t('workspace.profile.density.help')}</p>
@@ -49,7 +49,7 @@ export function DensityRegion() {
                                 key={option}
                                 className={
                                     selected
-                                        ? 'flex min-h-[var(--density-hit-area-min)] cursor-pointer items-center gap-[var(--space-2)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg'
+                                        ? 'flex min-h-[var(--density-hit-area-min)] cursor-pointer items-center gap-[var(--space-2)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg'
                                         : 'flex min-h-[var(--density-hit-area-min)] cursor-pointer items-center gap-[var(--space-2)] rounded-md border border-border px-4 py-2 text-body font-medium text-fg-secondary hover:bg-surface-hover'
                                 }
                             >

@@ -34,8 +34,18 @@ function isQuota(value: unknown): value is MediaQuota {
 function Meter({ label, used, limit }: { label: string; used: string; limit: string }) {
     return (
         <div className="flex flex-col gap-1">
-            <span className="text-meta text-fg-muted">{label}</span>
-            <span className="text-body text-fg">
+            {/*
+                Etiket GÖVDE metnidir: sayacın adı bir zaman damgası değildir
+                ve `text-meta` rolü (`app.css`) yalnız zaman damgası/sayaç
+                içindir. Ayrım boyutla değil RENKLE yapılır.
+            */}
+            <span className="text-body text-fg-secondary">{label}</span>
+            {/*
+                Sayaç `tabular-nums`: üç sayaç yan yana durur ve her yükleme
+                bittiğinde değerler değişir. Orantılı rakamda "48" ile "49"
+                farklı genişlikte çizilir; şerit yükleme boyunca titrerdi.
+            */}
+            <span className="text-meta text-fg tabular-nums">
                 {t('workspace.media.quota.ratio', { used, limit })}
             </span>
         </div>
@@ -84,17 +94,17 @@ export function MediaQuotaRegion({ workspaceId, onLoaded }: MediaQuotaRegionProp
     return (
         <section
             aria-label={t('workspace.media.quota.region')}
-            className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-3"
+            className="flex flex-col gap-[var(--space-2)] rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-3)]"
         >
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="text-body font-semibold text-fg">
+            <div className="flex flex-wrap items-baseline justify-between gap-[var(--space-2)]">
+                <h3 className="text-body font-bold text-fg">
                     {t('workspace.media.quota.heading')}
                 </h3>
-                <span className="text-meta text-fg-muted">
+                <span className="text-body text-fg-muted">
                     {t('workspace.media.quota.plan', { plan: quota.planLabel })}
                 </span>
             </div>
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-[var(--space-3)]">
                 <Meter
                     label={t('workspace.media.quota.storage')}
                     used={formatBytes(quota.originalBytesUsed)}
@@ -115,7 +125,8 @@ export function MediaQuotaRegion({ workspaceId, onLoaded }: MediaQuotaRegionProp
                     }
                 />
             </div>
-            <p className="text-meta text-fg-muted">
+            {/* Bir CÜMLE, sayaç değil: sahibin kararını değiştiren bilgi. */}
+            <p className="text-body text-fg-muted">
                 {t('workspace.media.quota.note', { days: String(quota.trashRetentionDays) })}
             </p>
             {quota.blockedReason ? (

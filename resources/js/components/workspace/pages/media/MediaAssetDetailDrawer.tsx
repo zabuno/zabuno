@@ -107,7 +107,7 @@ function DetailDrawer({
                     <img
                         src={asset.previewUrl}
                         alt={asset.altText}
-                        className="w-full rounded-lg border border-border bg-surface-muted object-contain"
+                        className="aspect-[4/3] w-full rounded-[var(--radius-lg)] border border-border bg-surface-muted object-contain"
                     />
                 ) : (
                     <p role="status" className="text-body text-fg-muted">
@@ -130,7 +130,7 @@ function DetailDrawer({
                         );
                     }}
                 >
-                    <label className="flex min-w-0 flex-1 flex-col gap-1 text-meta text-fg-muted">
+                    <label className="flex min-w-0 flex-1 flex-col gap-1 text-body text-fg-secondary">
                         {t('workspace.media.library.detail.altText')}
                         <TextInput
                             type="text"
@@ -149,7 +149,7 @@ function DetailDrawer({
                     </Button>
                 </form>
 
-                <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-body">
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-body tabular-nums">
                     <dt className="text-fg-muted">{t('workspace.media.library.detail.file')}</dt>
                     <dd className="text-fg break-all">{asset.originalName ?? '—'}</dd>
                     <dt className="text-fg-muted">{t('workspace.media.library.detail.size')}</dt>
@@ -163,7 +163,7 @@ function DetailDrawer({
                 </dl>
 
                 {asset.duplicateOfId ? (
-                    <p role="status" className="text-meta text-fg-muted">
+                    <p role="status" className="text-body text-fg-muted">
                         {t('workspace.media.library.detail.duplicate', {
                             id: String(asset.duplicateOfId),
                         })}
@@ -207,14 +207,13 @@ function DetailDrawer({
                                         })}
                                     </span>
                                     {version.number === latestVersion ? (
-                                        <span className="text-meta text-fg-muted">
+                                        <span className="text-body text-fg-muted">
                                             {t('workspace.media.library.versions.current')}
                                         </span>
                                     ) : (
                                         <Button
                                             color="light"
                                             type="button"
-                                            className="text-meta"
                                             disabled={busy !== null}
                                             onClick={() =>
                                                 void run(
@@ -242,7 +241,7 @@ function DetailDrawer({
                 </MediaRemoteSection>
 
                 {notice ? (
-                    <p role="status" className="text-meta text-fg-secondary">
+                    <p role="status" className="text-body text-fg-secondary">
                         {notice}
                     </p>
                 ) : null}

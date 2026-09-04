@@ -100,6 +100,20 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             ->all();
     }
 
+    public function listInFolder(int $workspaceId, ?int $folderId): array
+    {
+        return MediaAsset::query()
+            ->where('workspace_id', $workspaceId)
+            ->when($folderId === null,
+                fn ($query) => $query->whereNull('media_folder_id'),
+                fn ($query) => $query->where('media_folder_id', $folderId),
+            )
+            ->orderBy('id')
+            ->get()
+            ->map(fn (MediaAsset $asset) => $this->toSummary($asset))
+            ->all();
+    }
+
     public function find(int $id): ?MediaAssetSummary
     {
         $asset = MediaAsset::query()->find($id);
@@ -689,6 +703,7 @@ final class EloquentMediaRepository implements MediaRepositoryPort
             sizeBytes: (int) $asset->size_bytes,
             createdAt: $asset->created_at?->toIso8601String(),
             lifecycle: (string) ($asset->lifecycle_status ?? 'draft'),
+            folderId: $asset->media_folder_id === null ? null : (int) $asset->media_folder_id,
         );
     }
 

@@ -84,41 +84,80 @@ export function MobileBottomNav({
 }: MobileBottomNavProps): ReactNode {
     const primary = items.slice(0, 4);
 
+    /*
+        HÜCRE GEOMETRİSİ TEK YERDE.
+
+        Beş sütun aynı yüksekliği, aynı yarıçapı ve aynı odak halkasını taşır;
+        "Daha fazla" da bir sütundur. Beşincisi farklı davransaydı, o hücrenin
+        başka türden bir şey olduğu izlenimi doğardı — oysa kullanıcı için
+        hepsi aynı: bir yere git.
+
+        Yükseklik `--control-height`'tan gelir, `--density-hit-area-min`'den
+        değil: ikincisi yalnız 44px'lik TABANI bilir. Ferah moda geçen
+        kullanıcı masaüstünde 52px satırlar görürken telefonda 44px'te
+        kalıyordu — ayarı yaptığı yerde değişiyor, en çok ihtiyaç duyduğu
+        yerde değişmiyordu. `--control-height` tabanı zaten içinde taşır.
+    */
+    const cellClassName = [
+        'flex min-h-[var(--control-height)] flex-col items-center justify-center gap-[var(--space-1)]',
+        'rounded-[var(--radius-lg)] px-[var(--space-1)] py-[var(--space-1)] text-meta',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+    ].join(' ');
+
+    /*
+        AKTİF İŞARET BİR HAP — AEP `DESIGN_SPEC` §1: "Aktif hedef: 48×28px hap
+        `brand` zemin".
+
+        Satırın tamamını tonlamak, beş hücreli dar bir çubukta iki komşu
+        hücrenin arasındaki sınırı siliyordu. Hap ikonu kucaklar: göz çubuğu
+        tararken önce ikon şeridine bakar, işaret de tam oraya iner.
+
+        Hap pasif hâlde de YER TUTAR (yalnız zemini yoktur): aksi hâlde aktif
+        hedef değiştikçe komşu etiketler birkaç piksel zıplardı.
+    */
+    const pillClassName = 'flex h-[1.75rem] w-[3rem] items-center justify-center rounded-pill';
+
     return (
         <nav
             aria-label={label}
-            className="sticky bottom-0 z-10 flex items-stretch justify-between gap-[var(--space-1)] border-t border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-2)] py-[var(--space-1)]"
+            className="sticky bottom-0 z-10 grid grid-cols-5 items-stretch gap-[var(--space-1)] border-t border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-2)] py-[var(--space-1)]"
         >
-            {primary.map((item) => (
-                <button
-                    key={item.key}
-                    type="button"
-                    onClick={item.onSelect}
-                    aria-current={item.key === activeKey ? 'page' : undefined}
-                    className={[
-                        'flex min-h-[var(--density-hit-area-min)] flex-1 flex-col items-center justify-center gap-[var(--space-1)]',
-                        'rounded-[var(--radius-md)] px-[var(--space-1)] py-[var(--space-1)] text-meta',
-                        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                        item.key === activeKey
-                            ? 'bg-surface-active font-semibold text-fg'
-                            : 'text-fg-secondary',
-                    ].join(' ')}
-                >
-                    {item.icon ? (
-                        <span aria-hidden="true" className="shrink-0">
+            {primary.map((item) => {
+                const current = item.key === activeKey;
+
+                return (
+                    <button
+                        key={item.key}
+                        type="button"
+                        onClick={item.onSelect}
+                        aria-current={current ? 'page' : undefined}
+                        className={[
+                            cellClassName,
+                            current ? 'font-bold text-fg' : 'text-fg-secondary',
+                        ].join(' ')}
+                    >
+                        <span
+                            aria-hidden="true"
+                            data-slot="bottom-nav-pill"
+                            className={[
+                                pillClassName,
+                                'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
+                                current ? 'bg-action text-action-fg' : '',
+                            ].join(' ')}
+                        >
                             {item.icon}
                         </span>
-                    ) : null}
-                    <span className="truncate">{item.label}</span>
-                </button>
-            ))}
+                        <span className="truncate">{item.label}</span>
+                    </button>
+                );
+            })}
             <button
                 type="button"
                 onClick={onOpenMore}
-                className="flex min-h-[var(--density-hit-area-min)] flex-1 flex-col items-center justify-center gap-[var(--space-1)] rounded-[var(--radius-md)] px-[var(--space-1)] py-[var(--space-1)] text-meta text-fg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                className={[cellClassName, 'text-fg-secondary'].join(' ')}
             >
-                <span aria-hidden="true" className="shrink-0">
-                    <List size={18} />
+                <span aria-hidden="true" data-slot="bottom-nav-pill" className={pillClassName}>
+                    <List size={22} />
                 </span>
                 <span className="truncate">{moreLabel}</span>
             </button>

@@ -132,14 +132,18 @@ export function TeamInvitationList({
             )}
 
             {status === 'success' && invitations.length > 0 && (
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col">
                     {invitations.map((invitation) => {
                         const stage = rowStages[invitation.id] ?? 'idle';
 
                         return (
                             <li
                                 key={invitation.id}
-                                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-border p-3 text-body text-fg-secondary"
+                                // Üye listesiyle AYNI gramer (FF-131): satır kart değil,
+                                // ayraçla bölünmüş liste öğesi. İki liste yan yana
+                                // durduğu için ritimleri de aynı olmak zorunda —
+                                // farklı olsalar biri "daha önemli" gibi okunurdu.
+                                className="flex min-h-[var(--density-row-height)] flex-wrap items-center gap-x-3 gap-y-1 border-t border-border px-[var(--density-padding-inline)] py-[var(--space-2)] text-body text-fg-secondary first:border-t-0"
                             >
                                 <span className="font-medium text-fg">{invitation.email}</span>
                                 <span className="text-fg-muted">{invitation.role}</span>

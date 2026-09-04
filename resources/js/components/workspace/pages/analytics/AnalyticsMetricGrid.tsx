@@ -23,7 +23,20 @@ export function AnalyticsMetricGrid({
     openRate,
 }: AnalyticsMetricGridProps) {
     return (
-        <div className="flex flex-col gap-3">
+        /*
+            KPI IZGARASI (FF-131, teslim paketi `DESIGN_SPEC` §5).
+
+            Dört sayı ALT ALTA diziliyordu. Oysa bu dördü ancak BİRLİKTE
+            anlam taşır: tarama 200 iken menü açılışı 40 ise sorun QR'da
+            değil menüdedir — ve bu, iki sayı yan yana durmadan görülmez.
+            Yığılmış hâlde sahibin gözü her sayı için satır başına dönüyor,
+            dördüncü sayı katlamanın altında kalıyordu.
+
+            `auto-fit` + `minmax`: 320 pikselde tek sütun, yer açıldıkça
+            iki, üç, dört. Kırılma noktası sınıfı YOK — ızgara kendi kendine
+            sarar, yani ölçüyü tarayıcı değil içerik belirler.
+        */
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-[var(--space-3)]">
             <StatCard label={t('workspace.analytics.metric.qrResolve')} value={qrResolveCount} />
             <StatCard label={t('workspace.analytics.metric.menuOpen')} value={menuOpenCount} />
             {/*

@@ -1,4 +1,5 @@
-import { Check } from '@phosphor-icons/react';
+import { CheckCircle, Desktop, Moon, Sun } from '@phosphor-icons/react';
+import clsx from 'clsx';
 
 import { t } from '../../../../i18n/workspace';
 import { AppearancePreview } from './AppearancePreview';
@@ -25,6 +26,26 @@ import {
  * anlat" diye savunulmuştu ama sonuç, aynı ayarın iki değeri varmış gibi
  * görünmesiydi. Bir ayarın tek bir evi olur.
  */
+/**
+ * Her seçeneğin RENK ÖRNEĞİ — zemin, kart ve marka rengi.
+ *
+ * Değerler AEP ilkelleridir ve bilerek doğrudan yazılır: örnek, o an aktif
+ * olan temayı değil KARŞI temayı göstermek zorundadır. Semantic jetonu
+ * kullansaydı üç örnek de aynı renge çıkar ve seçenekler birbirinden
+ * ayrılamazdı.
+ */
+const THEME_SWATCHES: Record<ThemePreference, readonly string[]> = {
+    system: ['var(--aep-ink-50)', 'var(--aep-ink-900)', 'var(--aep-yellow-500)'],
+    light: ['var(--aep-ink-50)', 'var(--aep-white)', 'var(--aep-yellow-500)'],
+    dark: ['var(--aep-ink-950)', 'var(--aep-ink-900)', 'var(--aep-yellow-500)'],
+};
+
+const THEME_ICONS: Record<ThemePreference, typeof Sun> = {
+    system: Desktop,
+    light: Sun,
+    dark: Moon,
+};
+
 export function AppearanceRegion() {
     const theme = useThemeControl();
 
@@ -37,25 +58,39 @@ export function AppearanceRegion() {
             aria-labelledby="profile-appearance-heading"
             className="flex flex-col gap-[var(--space-3)]"
         >
-            <h3 id="profile-appearance-heading" className="text-body font-semibold text-fg">
+            <h3 id="profile-appearance-heading" className="text-body font-bold text-fg">
                 {t('workspace.profile.appearance.heading')}
             </h3>
             <p className="text-body text-fg-secondary">{t('workspace.profile.appearance.help')}</p>
 
             <fieldset className="flex flex-col gap-[var(--space-2)]">
                 <legend className="sr-only">{themeText('theme.group_label')}</legend>
+                {/*
+                    SEÇENEK, SONUCUNU GÖSTERİR (FF-131, teslim paketinin
+                    kendi tasarımı).
+
+                    Önceki hâl üç metin düğmesiydi: "Sistem / Açık / Koyu".
+                    Kullanıcı hangisinin ne olduğunu ancak SEÇİP görerek
+                    öğreniyordu — yani seçim bir denemeydi. Paket her
+                    seçeneğe küçük bir renk örneği koyuyor: zemin, kart ve
+                    marka rengi yan yana. Renkler o temanın GERÇEK AEP
+                    ilkelleridir, çizilmiş bir taklit değil.
+                */}
                 <div className="flex flex-wrap gap-[var(--space-2)]">
                     {THEME_OPTION_ORDER.map((option) => {
                         const selected = option === theme.preference;
+                        const OptionIcon = THEME_ICONS[option];
 
                         return (
                             <label
                                 key={option}
-                                className={
+                                className={clsx(
+                                    'flex min-h-[var(--control-height)] cursor-pointer flex-col gap-[var(--space-2)]',
+                                    'rounded-[var(--radius-lg)] border p-[var(--space-3)]',
                                     selected
-                                        ? 'flex min-h-[var(--density-hit-area-min)] cursor-pointer items-center gap-[var(--space-2)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg'
-                                        : 'flex min-h-[var(--density-hit-area-min)] cursor-pointer items-center gap-[var(--space-2)] rounded-md border border-border px-4 py-2 text-body font-medium text-fg-secondary hover:bg-surface-hover'
-                                }
+                                        ? 'border-action bg-[var(--color-surface-active)]'
+                                        : 'border-border hover:bg-surface-hover',
+                                )}
                             >
                                 <input
                                     type="radio"
@@ -65,19 +100,46 @@ export function AppearanceRegion() {
                                     onChange={() => theme.choose(option as ThemePreference)}
                                     className="sr-only"
                                 />
-                                {/*
-                                    SEÇİM RENKTEN BAŞKA BİR KANALDA DA GÖRÜNÜR.
-                                    Windows Yüksek Kontrast kipinde arka
-                                    plan/metin çiftleri işletim sistemi
-                                    paletine düşer ve yalnız renge dayanan her
-                                    ayrım kaybolur (WCAG 1.4.1). İşaret, hesap
-                                    menüsündeki hâlinde de vardı; kontrol
-                                    taşınırken kaybolmamalı.
-                                */}
-                                {selected ? (
-                                    <Check size={16} weight="bold" aria-hidden="true" />
-                                ) : null}
-                                {themeOptionLabels[option]()}
+
+                                {/* Örnek DEKORATİFTİR: adı etiket söyler. */}
+                                <span aria-hidden="true" className="flex gap-[var(--space-1)]">
+                                    {THEME_SWATCHES[option].map((color, index) => (
+                                        <span
+                                            key={index}
+                                            className="h-[var(--space-5)] w-[var(--space-5)] rounded-[var(--radius-sm)] border border-border"
+                                            style={{ background: color }}
+                                        />
+                                    ))}
+                                </span>
+
+                                <span className="flex items-center gap-[var(--space-2)] text-body font-medium text-fg">
+                                    <OptionIcon size={18} weight="regular" aria-hidden="true" />
+                                    {themeOptionLabels[option]()}
+                                    {/*
+                                        SEÇİM RENKTEN BAŞKA BİR KANALDA DA
+                                        GÖRÜNÜR: yüksek kontrast kipinde arka
+                                        plan/metin çiftleri işletim sistemi
+                                        paletine düşer ve yalnız renge dayanan
+                                        her ayrım kaybolur (WCAG 1.4.1).
+                                    */}
+                                    {selected ? (
+                                        <CheckCircle
+                                            size={18}
+                                            weight="fill"
+                                            aria-hidden="true"
+                                            /*
+                                                İŞARETİN KENDİ TUTAMAĞI VAR.
+                                                Testler önceden "etikette svg
+                                                var mı" diye bakıyordu; her
+                                                seçeneğe ikon eklenince o
+                                                ölçüm anlamsızlaştı. Seçimin
+                                                işareti ikondan AYRI bir
+                                                şeydir ve ayrı adlandırılır.
+                                            */
+                                            data-selected-marker="true"
+                                        />
+                                    ) : null}
+                                </span>
                             </label>
                         );
                     })}
