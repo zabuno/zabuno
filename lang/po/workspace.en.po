@@ -2316,6 +2316,10 @@ msgstr "{codes} codes on {pages} A4 page(s), 12 cards per page. Each code prints
 msgid "workspace.publication.qrExport.sheet.heading"
 msgstr "Print sheet for your tables"
 
+#: workspace:workspace.publication.qrExport.single.heading
+msgid "workspace.publication.qrExport.single.heading"
+msgstr "Print or download one code on its own"
+
 #: workspace:workspace.publication.qrExport.themes.bold
 msgid "workspace.publication.qrExport.themes.bold"
 msgstr "Bold theme"

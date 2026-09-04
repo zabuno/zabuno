@@ -192,6 +192,11 @@ export const publication = {
         YAZICIDAN NE ÇIKACAK (`docs/104` Döngü 9). "A4 dikey" bir restoran
         sahibine hiçbir şey anlatmaz; milimetre ve okuma mesafesi anlatır.
     */
+    /*
+        TEK KOD İKİNCİL BİR İŞTİR (FF-114). Restoran sahibi buraya "QR ayarı
+        yapmaya" gelmez; kırk masası, bir mukavvası ve bir yazıcısı vardır.
+    */
+    'workspace.publication.qrExport.single.heading': 'Print or download one code on its own',
     'workspace.publication.qrExport.preview.paper': '{paper} — {width} × {height} mm',
     'workspace.publication.qrExport.preview.size':
         'The code prints {mm} mm wide, so it can be scanned from about {distance} cm away. Put a sheet this size on a wall or a window, not on a table.',

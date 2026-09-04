@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 717;
+const FROZEN_LEGACY_KEY_COUNT = 718;
 
-// FF-113: baskı önizlemesi — kâğıdın milimetresi ve okuma mesafesi.
+// FF-114: tek kod bölümünün ikincil başlığı (ekran bir kütük, üreteç değil).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'a97b8c34449fb146038ac8d3ac5d5ad638313cb00387886c42e2cc25c1373984';
+    'ce1028412473c93497efbcbf4e6f3e3cdec7e564b094ba36b634f5b54fb63c0e';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

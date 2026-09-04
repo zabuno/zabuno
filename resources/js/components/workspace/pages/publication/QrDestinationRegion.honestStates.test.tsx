@@ -548,3 +548,70 @@ describe('Tema ve kalıcılık sözleşmesi (FF-112)', () => {
         expect(screen.queryByText(/prints in black/i)).toBeNull();
     });
 });
+
+describe('Ekran bir KÜTÜK, üreteç değil (FF-114)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('çok kod varken deste ÖNCE gelir, tek kod bölümü kapalı başlar', async () => {
+        /*
+            Ekran bir ÜRETEÇ gibi kuruluydu: en üstte biçim, kâğıt, yön ve tek
+            bir kodun önizlemesi; sahibin asıl işi — masalara dağıtılacak
+            kartları basmak — en alttaydı. Restoran sahibi buraya "QR ayarı
+            yapmaya" gelmez.
+        */
+        fetchSpy.mockResolvedValue(
+            jsonResponse(200, [
+                { ...ITEM, id: 1, tableName: 'T1' },
+                { ...ITEM, id: 2, token: 'second-token-aaaaaaaaaaaaaaaaaaa', tableName: 'T2' },
+            ]),
+        );
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const sheetLink = await screen.findByRole('link', { name: /download print sheet/i });
+        const single = screen.getByText(/print or download one code on its own/i);
+
+        // Deste, tek kod bölümünün ÜSTÜNDE durur.
+        expect(
+            sheetLink.compareDocumentPosition(single) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+
+        // `<details>` kapalı başlar ama içeriği DOM'da kalır: klavye ve ekran
+        // okuyucu etkilenmez.
+        expect(single.closest('details')).not.toHaveAttribute('open');
+        expect(screen.getByLabelText(/output format/i)).toBeInTheDocument();
+    });
+
+    it('tek kod varken deste önerilmez ve tek kod bölümü açıkta durur', async () => {
+        fetchSpy.mockResolvedValue(jsonResponse(200, [{ ...ITEM, tableName: 'T1' }]));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        await screen.findByText('T1');
+        expect(screen.queryByText(/print or download one code on its own/i)).toBeNull();
+        expect(screen.getByLabelText(/output format/i)).toBeInTheDocument();
+    });
+});
