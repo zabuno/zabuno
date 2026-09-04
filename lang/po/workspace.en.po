@@ -1980,6 +1980,10 @@ msgstr "Back"
 msgid "workspace.publication.qrCard.explanation"
 msgstr "The card you cut out and slide into the stand on the table. It carries your own name and colour; the code itself always prints black on white so it stays scannable."
 
+#: workspace:workspace.publication.qrCard.export.capped
+msgid "workspace.publication.qrCard.export.capped"
+msgstr "One archive holds up to {cap} cards. Download the rest by picking another area."
+
 #: workspace:workspace.publication.qrCard.export.help
 msgid "workspace.publication.qrCard.export.help"
 msgstr "Both files print at the exact size shown. PDF goes straight to a printer; SVG opens in a design tool if your printer wants one."
@@ -1995,6 +1999,14 @@ msgstr "Download card (PDF)"
 #: workspace:workspace.publication.qrCard.export.svg
 msgid "workspace.publication.qrCard.export.svg"
 msgstr "Download card (SVG)"
+
+#: workspace:workspace.publication.qrCard.export.zipPdf
+msgid "workspace.publication.qrCard.export.zipPdf"
+msgstr "Download {count} cards (ZIP of PDFs)"
+
+#: workspace:workspace.publication.qrCard.export.zipSvg
+msgid "workspace.publication.qrCard.export.zipSvg"
+msgstr "ZIP of SVGs"
 
 #: workspace:workspace.publication.qrCard.heading
 msgid "workspace.publication.qrCard.heading"
@@ -2032,6 +2044,22 @@ msgstr "Preview of the printed card"
 msgid "workspace.publication.qrCard.preview.size"
 msgstr "Prints at {width} × {height} mm"
 
+#: workspace:workspace.publication.qrCard.scope.all
+msgid "workspace.publication.qrCard.scope.all"
+msgstr "All {count} codes"
+
+#: workspace:workspace.publication.qrCard.scope.area
+msgid "workspace.publication.qrCard.scope.area"
+msgstr "One area"
+
+#: workspace:workspace.publication.qrCard.scope.areaLabel
+msgid "workspace.publication.qrCard.scope.areaLabel"
+msgstr "Which area"
+
+#: workspace:workspace.publication.qrCard.scope.single
+msgid "workspace.publication.qrCard.scope.single"
+msgstr "This code"
+
 #: workspace:workspace.publication.qrCard.size.paper
 msgid "workspace.publication.qrCard.size.paper"
 msgstr "Paper size — for printing on a standard sheet"
@@ -2047,6 +2075,10 @@ msgstr "Design"
 #: workspace:workspace.publication.qrCard.step.export
 msgid "workspace.publication.qrCard.step.export"
 msgstr "Download"
+
+#: workspace:workspace.publication.qrCard.step.scope
+msgid "workspace.publication.qrCard.step.scope"
+msgstr "What to print"
 
 #: workspace:workspace.publication.qrCard.step.size
 msgid "workspace.publication.qrCard.step.size"

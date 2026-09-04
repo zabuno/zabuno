@@ -1980,6 +1980,10 @@ msgstr ""
 msgid "workspace.publication.qrCard.explanation"
 msgstr ""
 
+#: workspace:workspace.publication.qrCard.export.capped
+msgid "workspace.publication.qrCard.export.capped"
+msgstr ""
+
 #: workspace:workspace.publication.qrCard.export.help
 msgid "workspace.publication.qrCard.export.help"
 msgstr ""
@@ -1994,6 +1998,14 @@ msgstr ""
 
 #: workspace:workspace.publication.qrCard.export.svg
 msgid "workspace.publication.qrCard.export.svg"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.export.zipPdf
+msgid "workspace.publication.qrCard.export.zipPdf"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.export.zipSvg
+msgid "workspace.publication.qrCard.export.zipSvg"
 msgstr ""
 
 #: workspace:workspace.publication.qrCard.heading
@@ -2032,6 +2044,22 @@ msgstr ""
 msgid "workspace.publication.qrCard.preview.size"
 msgstr ""
 
+#: workspace:workspace.publication.qrCard.scope.all
+msgid "workspace.publication.qrCard.scope.all"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.scope.area
+msgid "workspace.publication.qrCard.scope.area"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.scope.areaLabel
+msgid "workspace.publication.qrCard.scope.areaLabel"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.scope.single
+msgid "workspace.publication.qrCard.scope.single"
+msgstr ""
+
 #: workspace:workspace.publication.qrCard.size.paper
 msgid "workspace.publication.qrCard.size.paper"
 msgstr ""
@@ -2046,6 +2074,10 @@ msgstr ""
 
 #: workspace:workspace.publication.qrCard.step.export
 msgid "workspace.publication.qrCard.step.export"
+msgstr ""
+
+#: workspace:workspace.publication.qrCard.step.scope
+msgid "workspace.publication.qrCard.step.scope"
 msgstr ""
 
 #: workspace:workspace.publication.qrCard.step.size

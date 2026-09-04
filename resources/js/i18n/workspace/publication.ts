@@ -213,6 +213,11 @@ export const publication = {
     'workspace.publication.qrCard.heading': 'Table card',
     'workspace.publication.qrCard.explanation':
         'The card you cut out and slide into the stand on the table. It carries your own name and colour; the code itself always prints black on white so it stays scannable.',
+    'workspace.publication.qrCard.step.scope': 'What to print',
+    'workspace.publication.qrCard.scope.single': 'This code',
+    'workspace.publication.qrCard.scope.area': 'One area',
+    'workspace.publication.qrCard.scope.areaLabel': 'Which area',
+    'workspace.publication.qrCard.scope.all': 'All {count} codes',
     'workspace.publication.qrCard.step.design': 'Design',
     'workspace.publication.qrCard.step.size': 'Size',
     'workspace.publication.qrCard.step.export': 'Download',
@@ -239,6 +244,14 @@ export const publication = {
     */
     'workspace.publication.qrCard.export.noPng':
         'There is no PNG here on purpose: a raster image blurs the module edges of a 4 cm code. For print, use PDF or SVG.',
+    /*
+        TOPLU BASKI BİR ARŞİVDİR (FF-122): matbaa her kartı ayrı dosya olarak
+        ister ve dosya adı hangi masa olduğunu söyler.
+    */
+    'workspace.publication.qrCard.export.zipPdf': 'Download {count} cards (ZIP of PDFs)',
+    'workspace.publication.qrCard.export.zipSvg': 'ZIP of SVGs',
+    'workspace.publication.qrCard.export.capped':
+        'One archive holds up to {cap} cards. Download the rest by picking another area.',
     'workspace.publication.qrCard.preview.alt': 'Preview of the printed card',
     'workspace.publication.qrCard.preview.size': 'Prints at {width} × {height} mm',
     'workspace.publication.qrCard.back': 'Back',

@@ -27,5 +27,13 @@ final class QrCodeRecord
          */
         public readonly ?string $tableName = null,
         public readonly ?string $areaLabel = null,
+        /**
+         * Alanın kimliği — toplu baskıyı SALONA GÖRE süzmek için (FF-122).
+         *
+         * Etiketle süzmek yeterli görünür ama değil: iki alan aynı adı
+         * taşıyabilir ("Bahçe" iki katta da olabilir) ve o gün süzgeç sessizce
+         * yanlış kartları basardı.
+         */
+        public readonly ?int $areaId = null,
     ) {}
 }

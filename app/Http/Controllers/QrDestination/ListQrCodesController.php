@@ -47,6 +47,8 @@ final class ListQrCodesController extends Controller
                 // bağlı olmayan kod için ad uydurulmaz.
                 'tableName' => $record->tableName,
                 'areaLabel' => $record->areaLabel,
+                // Süzgeç KİMLİKLE çalışır: iki alan aynı adı taşıyabilir.
+                'areaId' => $record->areaId,
             ],
             $this->qrCodes->listForLocation($workspace, $location),
         );

@@ -23,6 +23,15 @@ import type { QrCodeItem } from './qr-destination/QrCodeListItem';
  * biçim, tekil/toplu, alan) bir form değil bir kokpittir. Her adım tek bir
  * soru sorar ve önizleme her adımda cevabı gösterir.
  */
+/**
+ * Sunucu tek istekte en fazla bu kadar kart basar
+ * (`App\\Domain\\QrDestination\\QrPrintSheet::CARDS_PER_REQUEST`). Her kart ayrı
+ * bir render demek; 500 masalık bir istek kullanıcıya hiçbir şey vermeden
+ * zaman aşımına uğrardı. Sayı burada da biliniyor ki ekran sessizce kırpılmış
+ * bir arşiv vermek yerine sınırı SÖYLESİN.
+ */
+const CARDS_PER_REQUEST = 48;
+
 const CARD_THEMES = ['classic', 'minimal', 'banner', 'frame'] as const;
 
 type CardThemeKey = (typeof CARD_THEMES)[number];
@@ -65,10 +74,21 @@ export const CARD_SIZE_MM: Record<CardSizeKey, [number, number]> = {
 
 type QrCardWizardProps = {
     item: QrCodeItem;
+    /**
+     * Aynı şubedeki BÜTÜN etkin kodlar — toplu baskı ve alan süzgeci için
+     * (FF-122). Süzgecin seçenekleri buradan türetilir; ikinci bir istek
+     * atmaya gerek yok, liste zaten yüklü.
+     */
+    activeItems?: QrCodeItem[];
 };
 
-export function QrCardWizard({ item }: QrCardWizardProps) {
+/** Kimin basılacağı: tek kart, bir alanın kartları, ya da hepsi. */
+type Scope = 'single' | 'area' | 'all';
+
+export function QrCardWizard({ item, activeItems = [] }: QrCardWizardProps) {
     const [step, setStep] = useState(0);
+    const [scope, setScope] = useState<Scope>('single');
+    const [areaId, setAreaId] = useState<number | null>(null);
     const [theme, setTheme] = useState<CardThemeKey>('classic');
     const [headline, setHeadline] = useState('');
     const [size, setSize] = useState<CardSizeKey>('A6');
@@ -88,7 +108,38 @@ export function QrCardWizard({ item }: QrCardWizardProps) {
         return `/api/workspaces/${String(item.workspaceId)}/qr-codes/${String(item.id)}/card.${format}?${params.toString()}`;
     }
 
+    /*
+        ALANLAR LİSTEDEN TÜRETİLİR. Sahibin cümlesi "salon üst kat, salon
+        içerisi, salon bahçe" idi; bunlar ürünün bildiği gerçek alanlardır ve
+        kimliğiyle taşınır — iki alan aynı adı taşıyabilir.
+    */
+    const areas = Array.from(
+        new Map(
+            activeItems
+                .filter((candidate) => candidate.areaId != null && candidate.areaLabel)
+                .map((candidate) => [candidate.areaId, candidate.areaLabel ?? '']),
+        ),
+    );
+
+    const bulkCount =
+        scope === 'all'
+            ? activeItems.length
+            : activeItems.filter((candidate) => candidate.areaId === areaId).length;
+
+    function zipUrl(format: 'svg' | 'pdf'): string {
+        const params = new URLSearchParams();
+        params.set('cardTheme', theme);
+        params.set('size', size);
+        params.set('orientation', landscape ? 'landscape' : 'portrait');
+        params.set('format', format);
+        if (headline.trim() !== '') params.set('headline', headline.trim());
+        if (scope === 'area' && areaId !== null) params.set('areaId', String(areaId));
+
+        return `/api/workspaces/${String(item.workspaceId)}/brand/locations/${String(item.locationId)}/qr-cards.zip?${params.toString()}`;
+    }
+
     const steps = [
+        t('workspace.publication.qrCard.step.scope'),
         t('workspace.publication.qrCard.step.design'),
         t('workspace.publication.qrCard.step.size'),
         t('workspace.publication.qrCard.step.export'),
@@ -136,6 +187,60 @@ export function QrCardWizard({ item }: QrCardWizardProps) {
                 <div className="flex min-w-[16rem] flex-1 flex-col gap-[var(--space-4)]">
                     {step === 0 ? (
                         <>
+                            {/*
+                                İLK SORU "kim basılacak", "hangi dosya" değil.
+                                Restoran sahibi buraya bir biçim seçmeye
+                                gelmez; masalarına kart koymaya gelir.
+                            */}
+                            <SegmentedControl
+                                label={t('workspace.publication.qrCard.step.scope')}
+                                value={scope}
+                                options={[
+                                    {
+                                        value: 'single',
+                                        label: t('workspace.publication.qrCard.scope.single'),
+                                    },
+                                    ...(areas.length > 0
+                                        ? [
+                                              {
+                                                  value: 'area',
+                                                  label: t(
+                                                      'workspace.publication.qrCard.scope.area',
+                                                  ),
+                                              },
+                                          ]
+                                        : []),
+                                    ...(activeItems.length > 1
+                                        ? [
+                                              {
+                                                  value: 'all',
+                                                  label: t(
+                                                      'workspace.publication.qrCard.scope.all',
+                                                      { count: String(activeItems.length) },
+                                                  ),
+                                              },
+                                          ]
+                                        : []),
+                                ]}
+                                onChange={(value) => setScope(value as Scope)}
+                            />
+
+                            {scope === 'area' ? (
+                                <SegmentedControl
+                                    label={t('workspace.publication.qrCard.scope.areaLabel')}
+                                    value={areaId === null ? '' : String(areaId)}
+                                    options={areas.map(([id, label]) => ({
+                                        value: String(id),
+                                        label,
+                                    }))}
+                                    onChange={(value) => setAreaId(Number(value))}
+                                />
+                            ) : null}
+                        </>
+                    ) : null}
+
+                    {step === 1 ? (
+                        <>
                             <SegmentedControl
                                 label={t('workspace.publication.qrCard.step.design')}
                                 value={theme}
@@ -163,7 +268,7 @@ export function QrCardWizard({ item }: QrCardWizardProps) {
                         </>
                     ) : null}
 
-                    {step === 1 ? (
+                    {step === 2 ? (
                         <>
                             <fieldset className="flex flex-col gap-[var(--space-2)]">
                                 <legend className="text-meta font-medium text-fg-secondary">
@@ -217,19 +322,47 @@ export function QrCardWizard({ item }: QrCardWizardProps) {
                         </>
                     ) : null}
 
-                    {step === 2 ? (
+                    {step === 3 ? (
                         <div className="flex flex-col gap-[var(--space-3)]">
                             <p className="text-body text-fg-secondary">
                                 {t('workspace.publication.qrCard.export.help')}
                             </p>
-                            <span className="flex flex-wrap gap-[var(--space-2)]">
-                                <ActionLink href={cardUrl('pdf', true)}>
-                                    {t('workspace.publication.qrCard.export.pdf')}
-                                </ActionLink>
-                                <ActionLink variant="secondary" href={cardUrl('svg', true)}>
-                                    {t('workspace.publication.qrCard.export.svg')}
-                                </ActionLink>
-                            </span>
+                            {scope === 'single' ? (
+                                <span className="flex flex-wrap gap-[var(--space-2)]">
+                                    <ActionLink href={cardUrl('pdf', true)}>
+                                        {t('workspace.publication.qrCard.export.pdf')}
+                                    </ActionLink>
+                                    <ActionLink variant="secondary" href={cardUrl('svg', true)}>
+                                        {t('workspace.publication.qrCard.export.svg')}
+                                    </ActionLink>
+                                </span>
+                            ) : (
+                                /*
+                                    TOPLU BASKI BİR ARŞİVDİR. Matbaa her kartı
+                                    ayrı dosya olarak ister ve dosya adı hangi
+                                    masa olduğunu söyler — yoksa kırk dosyayı
+                                    açıp tek tek bakmak gerekir.
+                                */
+                                <span className="flex flex-col items-start gap-[var(--space-2)]">
+                                    <span className="flex flex-wrap gap-[var(--space-2)]">
+                                        <ActionLink href={zipUrl('pdf')}>
+                                            {t('workspace.publication.qrCard.export.zipPdf', {
+                                                count: String(bulkCount),
+                                            })}
+                                        </ActionLink>
+                                        <ActionLink variant="secondary" href={zipUrl('svg')}>
+                                            {t('workspace.publication.qrCard.export.zipSvg')}
+                                        </ActionLink>
+                                    </span>
+                                    {bulkCount > CARDS_PER_REQUEST ? (
+                                        <span role="status" className="text-meta text-fg-secondary">
+                                            {t('workspace.publication.qrCard.export.capped', {
+                                                cap: String(CARDS_PER_REQUEST),
+                                            })}
+                                        </span>
+                                    ) : null}
+                                </span>
+                            )}
                             {/*
                                 PNG YOK ve bu bir eksiklik değil bir karar.
                                 Söylenmezse kullanıcı onu arar ve bulamayınca

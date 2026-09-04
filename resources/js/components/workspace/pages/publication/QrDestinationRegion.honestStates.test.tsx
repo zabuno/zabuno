@@ -617,3 +617,106 @@ describe('Ekran bir KÜTÜK, üreteç değil (FF-114)', () => {
         expect(screen.getByLabelText(/output format/i)).toBeInTheDocument();
     });
 });
+
+describe('Masa kartı sihirbazı (FF-120, FF-122)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+        fetchSpy = vi.fn();
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    function codes() {
+        return [
+            { ...ITEM, id: 1, tableName: 'T1', areaLabel: 'Bahçe', areaId: 10 },
+            {
+                ...ITEM,
+                id: 2,
+                token: 'k2LmNoPqRsTuVwXyZ01234567890abc',
+                tableName: 'T2',
+                areaLabel: 'Üst kat',
+                areaId: 11,
+            },
+        ];
+    }
+
+    it('ilk soru "hangi dosya" değil "kim basılacak"', async () => {
+        /*
+            Restoran sahibi buraya bir dosya biçimi seçmeye gelmez; masalarına
+            kart koymaya gelir. Eski ekranda en üstte biçim/kâğıt/yön ve
+            karekodun piksel renkleri vardı — hiçbiri onun sorduğu soru değildi.
+        */
+        fetchSpy.mockResolvedValue(jsonResponse(200, codes()));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const wizard = await screen.findByRole('region', { name: /table card/i });
+
+        expect(within(wizard).getByRole('radio', { name: /this code/i })).toBeInTheDocument();
+        expect(within(wizard).getByRole('radio', { name: /one area/i })).toBeInTheDocument();
+        expect(within(wizard).getByRole('radio', { name: /all 2 codes/i })).toBeInTheDocument();
+    });
+
+    it('alan seçenekleri gerçek alanlardan gelir ve toplu çıktı bir ARŞİVDİR', async () => {
+        const user = userEvent.setup();
+        fetchSpy.mockResolvedValue(jsonResponse(200, codes()));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const wizard = await screen.findByRole('region', { name: /table card/i });
+
+        await user.click(within(wizard).getByRole('radio', { name: /one area/i }));
+        expect(within(wizard).getByRole('radio', { name: 'Bahçe' })).toBeInTheDocument();
+        await user.click(within(wizard).getByRole('radio', { name: 'Bahçe' }));
+
+        // Son adıma geç.
+        await user.click(within(wizard).getByRole('button', { name: /4\. download/i }));
+
+        const zip = within(wizard).getByRole('link', { name: /zip of pdfs/i });
+        expect(zip).toHaveAttribute(
+            'href',
+            expect.stringContaining('/brand/locations/923/qr-cards.zip'),
+        );
+        expect(zip.getAttribute('href')).toContain('areaId=10');
+    });
+
+    it('tek kod seçiliyken arşiv değil tek dosya sunulur', async () => {
+        const user = userEvent.setup();
+        fetchSpy.mockResolvedValue(jsonResponse(200, codes()));
+
+        render(
+            <QrDestinationRegion
+                workspaceId={71}
+                locationId={923}
+                menuId={42}
+                hasCurrentPublication
+            />,
+        );
+
+        const wizard = await screen.findByRole('region', { name: /table card/i });
+        await user.click(within(wizard).getByRole('button', { name: /4\. download/i }));
+
+        expect(
+            within(wizard).getByRole('link', { name: /download card \(pdf\)/i }),
+        ).toHaveAttribute('href', expect.stringContaining('/qr-codes/1/card.pdf'));
+        expect(within(wizard).queryByRole('link', { name: /zip/i })).toBeNull();
+    });
+});

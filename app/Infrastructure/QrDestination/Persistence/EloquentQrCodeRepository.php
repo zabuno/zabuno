@@ -210,6 +210,7 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
                 'qr_destinations.menu_id as menu_id',
                 'dining_tables.name as table_name',
                 'dining_areas.label as area_label',
+                'dining_areas.id as area_id',
             );
     }
 
@@ -225,6 +226,7 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
             (string) $row->state,
             $row->table_name === null ? null : (string) $row->table_name,
             $row->area_label === null ? null : (string) $row->area_label,
+            $row->area_id === null ? null : (int) $row->area_id,
         );
     }
 }

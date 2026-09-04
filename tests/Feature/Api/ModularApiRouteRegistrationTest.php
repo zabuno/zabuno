@@ -101,6 +101,10 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // FF-111: kesilip masalara dağıtılacak kart destesi. Kendi hız
         // sınırını taşır — her kart ayrı bir PNG üretir.
         'GET|api/workspaces/{workspace}/brand/locations/{location}/qr-codes/print.pdf||App\Http\Controllers\QrDestination\ExportQrPrintSheetController|api,auth:sanctum,throttle:10,1,verified',
+        // FF-122: matbaaya giden toplu kart arşivi — deste PDF'i evde
+        // kesilecek bir tabaka, bu ise her kartı ayrı dosya olarak veren bir
+        // ZIP. Her kart ayrı bir render demek, kendi hız sınırını taşır.
+        'GET|api/workspaces/{workspace}/brand/locations/{location}/qr-cards.zip||App\Http\Controllers\QrDestination\ExportQrCardsZipController|api,auth:sanctum,throttle:10,1,verified',
         'GET|api/workspaces/{workspace}/brand/locations/{location}/analytics/summary||App\Http\Controllers\Analytics\ShowAnalyticsSummaryController|api,auth:sanctum,verified',
         // Markanın TAMAMI (`docs/68`): iki şubesi olan bir işletme bütünü
         // göremiyordu ve toplamı bulmak için şubeleri tek tek gezmek
