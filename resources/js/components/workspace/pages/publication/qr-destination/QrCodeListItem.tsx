@@ -21,6 +21,11 @@ export type QrCodeItem = {
     tableName?: string | null;
     /** Masanın bulunduğu alan/bölüm: "Bahçe", "Üst kat" (FF-109). */
     areaLabel?: string | null;
+    /**
+     * Alanın kimliği — toplu baskıyı salona göre süzmek için (FF-122).
+     * Etiketle süzmek yetmez: iki alan aynı adı taşıyabilir.
+     */
+    areaId?: number | null;
     destinationType: string;
     state: string;
 };

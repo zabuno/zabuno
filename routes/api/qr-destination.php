@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\QrDestination\DisableQrCodeController;
 use App\Http\Controllers\QrDestination\EnableQrCodeController;
 use App\Http\Controllers\QrDestination\ExportQrCardController;
+use App\Http\Controllers\QrDestination\ExportQrCardsZipController;
 use App\Http\Controllers\QrDestination\ExportQrCodePdfController;
 use App\Http\Controllers\QrDestination\ExportQrCodePngController;
 use App\Http\Controllers\QrDestination\ExportQrCodeSvgController;
@@ -44,4 +45,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         dolayısıyla istek pahalıdır ve kendi hız sınırını taşır.
     */
     Route::get('/workspaces/{workspace}/brand/locations/{location}/qr-codes/print.pdf', ExportQrPrintSheetController::class)->middleware('throttle:10,1');
+    /*
+        TOPLU KART ARŞİVİ (FF-122) — deste PDF'inden ayrı bir iş: o, evde
+        kesilecek bir tabaka; bu, matbaaya giden ve her kartı ayrı dosya olarak
+        isteyen bir arşiv. Her kart ayrı bir render demek, bu yüzden kendi hız
+        sınırını taşır.
+    */
+    Route::get('/workspaces/{workspace}/brand/locations/{location}/qr-cards.zip', ExportQrCardsZipController::class)->middleware('throttle:10,1');
 });

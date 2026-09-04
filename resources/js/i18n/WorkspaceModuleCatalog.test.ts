@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 742;
+const FROZEN_LEGACY_KEY_COUNT = 750;
 
-// FF-120: masa kartı sihirbazı — tasarım, ölçü, yön ve indirme metinleri.
+// FF-122: toplu kart arşivi — kapsam, alan süzgeci ve ZIP metinleri.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '54c99fc935c6bbfeeb4abe4b2d6ad08e1a3cd490e77b67d07744665ee550f990';
+    '185b5e82d6bc27ea2a05b4834f386a8e53fff8b5ff9368cf1ba4a41c4d9a4760';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -410,7 +410,7 @@ export function QrPrintExportRegion({
                 ve karekodun piksel renkleri vardı — hiçbiri onun sorduğu soru
                 değildi.
             */}
-            {selected === null ? null : <QrCardWizard item={selected} />}
+            {selected === null ? null : <QrCardWizard item={selected} activeItems={activeItems} />}
 
             {/*
                 DESTE, TEK KARTTAN ÖNCE GELİR.
