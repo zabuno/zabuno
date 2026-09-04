@@ -63,7 +63,9 @@ export function WorkspacePageFrame({
     return (
         <div
             className={`flex flex-col ${MEASURE_CLASS[measure]}`}
-            style={{ gap: 'var(--space-fluid-md)' }}
+            // Başlık bloğu ile gövde arasında daha geniş bir nefes (`docs/102`
+            // §5b): sayfa başlığı gövdeye yapışıkken hiyerarşi düzleşiyordu.
+            style={{ gap: 'var(--space-fluid-lg)' }}
         >
             {title ? (
                 <PageHeader title={title} description={description} actions={actions} />

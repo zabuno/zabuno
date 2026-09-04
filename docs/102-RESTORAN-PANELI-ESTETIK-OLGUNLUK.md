@@ -1,7 +1,7 @@
 # 102 — Restoran paneli estetik olgunluğu (kabuk + sayfalar)
 
-**Durum:** Faz 1 ✅ (FF-77), Faz 2 ✅ (FF-78, 2026-09-04). Sayaç:
-**2/4 tamamlandı, 3/4 aktif.**
+**Durum:** Faz 1 ✅ (FF-77), Faz 2 ✅ (FF-78), Faz 3 kısmen ✅ (FF-79/FF-80,
+2026-09-04). Sayaç: **2/4 tamamlandı, 3/4 aktif.**
 **Sahibin tespiti (canlı ekran görüntüsü, Home):** "maturity level bir UX
 estetiği istedim, yapmadın." Doğru: FF-63…FF-76 yapı ve davranış getirdi;
 `docs/99` yalnız superadmin/mühendislik kabuğunu Metronic'ten esinle kurdu.
@@ -103,6 +103,17 @@ tarayıcıda açıldı ve şu iki şey görüldü:
    öğeleri `radius-md` + 8pt ritim, grup başlıkları `text-caption`
    0.08em; üst çubuk dikey dolgusu `space-3` (cam yüzey sözleşmesi
    `docs/06` §11 korundu); tablo başlığı `space-5` hizalı, satırda hover.
+
+## 5c. FF-80 — Faz 3 ritim ve durumlar (2026-09-04)
+
+- **Boş/hata/kısıt durumları:** `PageState` ortalanmış, `space-7` dikey
+  dolgu, başlık `text-section`, açıklama 48ch. Sola yaslı ve dar dolgulu
+  hâli "yarım kalmış liste" gibi duruyordu.
+- **Sayfa ritmi:** başlık bloğu ile gövde arası `space-fluid-lg`; kabuk ana
+  alanı dolgusu `space-fluid-lg` — içerik kenardan ve başlıktan nefes alır.
+
+`docs/102` yüzey tablosunda kabuk ve Home **L3**'e yaklaşır; kalan L3 işi
+form alan ritmi ve liste satır yoğunluğudur.
 
 ## 6. Kullanıcı yolculuğu
 
