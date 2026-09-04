@@ -1,4 +1,5 @@
 {
+    "site.brand": "Zabuno",
     "site.contact.email": "E-posta adresiniz",
     "site.contact.heading": "İletişim",
     "site.contact.honeypot": "Burayı boş bırakın",
@@ -47,12 +48,15 @@
     "site.home.howItWorks.update.title": "İstediğiniz zaman güncelleyin",
     "site.home.meta.description": "Zabuno ekibinize ortak bir çalışma alanı verir: restoranın menüsünü ve kataloğunu yönetin, karekoda bağlı sabit bir sayfa olarak yayınlayın, değiştikçe güncel tutun.",
     "site.home.meta.title": "Restoran menüsü ve çalışma alanı",
+    "site.legal.pending": "Bu sayfa nitelikli hukuki incelemeyi bekliyor ve henüz yayımlanmadı. Bağlayıcı hukuki hüküm içermez.",
+    "site.legal.pending.description": "Bu sayfa nitelikli hukuki incelemeyi bekliyor ve henüz yayımlanmadı.",
     "site.nav.contact": "İletişim",
     "site.nav.features": "Özellikler",
     "site.nav.help": "Yardım",
     "site.nav.howItWorks": "Nasıl çalışır",
     "site.nav.login": "Giriş yap",
     "site.nav.pricing": "Fiyat",
+    "site.nav.primary": "Ana gezinti",
     "site.nav.register": "Hesap oluştur",
     "site.plan.analytics": "Analitik: misafirler neye bakıyor, ne arayıp bulamıyor",
     "site.plan.qrBulk": "Bütün bir salonun masaları için toplu karekod",
@@ -78,6 +82,7 @@
     "site.title.platform": "Zabuno — Platform Yönetimi",
     "site.title.register": "Zabuno — Kayıt",
     "site.title.resetPassword": "Zabuno — Parola sıfırlama",
+    "site.title.suffix": "Zabuno",
     "site.title.verifyEmail": "Zabuno — E-posta doğrulama",
     "site.title.workspace": "Zabuno — Çalışma alanı"
 }

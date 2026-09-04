@@ -13,11 +13,11 @@
          herhangi bir stil bağlantısından önce gelir. --}}
     @include('partials.theme-bootstrap')
     @include('partials.analytics', ['analyticsContext' => ['zabuno_surface' => 'marketing']])
-    <title>@yield('title') — Zabuno</title>
+    <title>@yield('title') — {{ $st['titleSuffix'] }}</title>
     <meta name="description" content="@yield('description')">
     <link rel="canonical" href="{{ $canonicalUrl }}">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Zabuno">
+    <meta property="og:site_name" content="{{ $st['brand'] }}">
     <meta property="og:title" content="@yield('title')">
     <meta property="og:description" content="@yield('description')">
     <meta property="og:url" content="{{ $canonicalUrl }}">

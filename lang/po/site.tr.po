@@ -8,6 +8,10 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: site:site.brand
+msgid "site.brand"
+msgstr "Zabuno"
+
 #: site:site.contact.email
 msgid "site.contact.email"
 msgstr "E-posta adresiniz"
@@ -200,6 +204,14 @@ msgstr "Zabuno ekibinize ortak bir çalışma alanı verir: restoranın menüsü
 msgid "site.home.meta.title"
 msgstr "Restoran menüsü ve çalışma alanı"
 
+#: site:site.legal.pending
+msgid "site.legal.pending"
+msgstr "Bu sayfa nitelikli hukuki incelemeyi bekliyor ve henüz yayımlanmadı. Bağlayıcı hukuki hüküm içermez."
+
+#: site:site.legal.pending.description
+msgid "site.legal.pending.description"
+msgstr "Bu sayfa nitelikli hukuki incelemeyi bekliyor ve henüz yayımlanmadı."
+
 #: site:site.nav.contact
 msgid "site.nav.contact"
 msgstr "İletişim"
@@ -223,6 +235,10 @@ msgstr "Giriş yap"
 #: site:site.nav.pricing
 msgid "site.nav.pricing"
 msgstr "Fiyat"
+
+#: site:site.nav.primary
+msgid "site.nav.primary"
+msgstr "Ana gezinti"
 
 #: site:site.nav.register
 msgid "site.nav.register"
@@ -323,6 +339,10 @@ msgstr "Zabuno — Kayıt"
 #: site:site.title.resetPassword
 msgid "site.title.resetPassword"
 msgstr "Zabuno — Parola sıfırlama"
+
+#: site:site.title.suffix
+msgid "site.title.suffix"
+msgstr "Zabuno"
 
 #: site:site.title.verifyEmail
 msgid "site.title.verifyEmail"

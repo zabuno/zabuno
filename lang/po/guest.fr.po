@@ -8,6 +8,18 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.deadEnd.body
+msgid "guest.deadEnd.body"
+msgstr ""
+
+#: guest:guest.deadEnd.heading
+msgid "guest.deadEnd.heading"
+msgstr ""
+
+#: guest:guest.deadEnd.title
+msgid "guest.deadEnd.title"
+msgstr ""
+
 #: guest:guest.language.contentNotice
 msgid "guest.language.contentNotice"
 msgstr ""

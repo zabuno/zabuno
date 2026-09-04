@@ -1,14 +1,8 @@
 {
     "requirement": "I18N-SSR-RATCHET-16",
-    "total": 10,
-    "byFile": {
-        "public-not-found.blade.php": 3,
-        "public/layout.blade.php": 1,
-        "public/legal.blade.php": 1,
-        "public/partials/footer.blade.php": 3,
-        "public/partials/header.blade.php": 2
-    },
-    "why": "Sahibi çeviriyi PO dosyasindan yapar. Bir dize kaynak katalogda yoksa PO icinde satiri da yoktur; yani hicbir dile cevrilemez. React tarafi katalogdan besleniyor, sunucuda uretilen Blade gorunumleri beslenmiyordu. Bu sayi o boslugun buyuklugudur.",
+    "total": 0,
+    "byFile": {},
+    "why": "Sahibi ceviriyi PO dosyasindan yapar. Bir dize kaynak katalogda yoksa PO icinde satiri da yoktur; yani hicbir dile cevrilemez. Borc 2026-09-04'te (FF-98) SIFIRA indi ve kural artik bir cirCir degil MUTLAK YASAK: Blade icine yazilan her yeni gorunur dize testi kirar. Bu dosya sifirin kaydi olarak durur; bir gun tekrar borc yazilmasi gerekirse, o gun gerekcesiyle birlikte yazilir.",
     "howToBurnDown": "Gorunumdeki dizeyi bir katalog anahtarina tasi, gorunumu o anahtari cagiracak bicimde degistir, npm run i18n:extract ile POT icine girdigini dogrula, sonra buradaki total ve byFile degerlerini dusur. Kapi yalniz azalmaya izin verir.",
     "note": "Sayi yalniz kullaniciya GORUNEN metni kapsar: metin dugumleri, sekme basligi ve alt/placeholder/aria-label/title oznitelikleri. Blade direktifleri, yorumlar, script/style govdesi ve zaten ceviri cagrisi iceren ifadeler kapsam disidir."
 }

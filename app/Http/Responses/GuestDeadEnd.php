@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Responses;
 
+use App\Support\Localization\GuestText;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -31,7 +32,13 @@ final class GuestDeadEnd
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        return response()->view('public-not-found', [], 404)
+        /*
+            Metin ŞABLONDA değil KATALOGDA yaşar (FF-98): şablona yazılmış bir
+            cümleyi sahibi hiçbir PO dosyasında bulamaz ve çeviremez.
+        */
+        return response()->view('public-not-found', [
+            'text' => app(GuestText::class)->deadEnd(),
+        ], 404)
             ->header('X-Robots-Tag', 'noindex, nofollow');
     }
 }

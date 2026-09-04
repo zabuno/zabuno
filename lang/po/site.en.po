@@ -8,6 +8,10 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: site:site.brand
+msgid "site.brand"
+msgstr "Zabuno"
+
 #: site:site.contact.email
 msgid "site.contact.email"
 msgstr "Your email"
@@ -200,6 +204,14 @@ msgstr "Zabuno gives your team a shared workspace to manage a restaurant's menu 
 msgid "site.home.meta.title"
 msgstr "Restaurant menu & workspace"
 
+#: site:site.legal.pending
+msgid "site.legal.pending"
+msgstr "This page is pending qualified legal review and is not yet published. It does not contain binding legal terms."
+
+#: site:site.legal.pending.description
+msgid "site.legal.pending.description"
+msgstr "This page is pending qualified legal review and is not yet published."
+
 #: site:site.nav.contact
 msgid "site.nav.contact"
 msgstr "Contact"
@@ -223,6 +235,10 @@ msgstr "Log in"
 #: site:site.nav.pricing
 msgid "site.nav.pricing"
 msgstr "Pricing"
+
+#: site:site.nav.primary
+msgid "site.nav.primary"
+msgstr "Primary"
 
 #: site:site.nav.register
 msgid "site.nav.register"
@@ -323,6 +339,10 @@ msgstr "Zabuno — Register"
 #: site:site.title.resetPassword
 msgid "site.title.resetPassword"
 msgstr "Zabuno — Reset password"
+
+#: site:site.title.suffix
+msgid "site.title.suffix"
+msgstr "Zabuno"
 
 #: site:site.title.verifyEmail
 msgid "site.title.verifyEmail"

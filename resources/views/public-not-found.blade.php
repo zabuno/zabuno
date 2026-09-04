@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Menü bulunamadı</title>
+    <title>{{ $text['title'] }}</title>
     <meta name="robots" content="noindex, nofollow">
     @include('partials.theme-bootstrap')
     <style nonce="{{ $cspNonce ?? '' }}">
@@ -55,11 +55,8 @@
     {{-- Metin BİLEREK tek bir durumu anlatmaz: bilinmeyen, bozuk ve devre
          dışı kod aynı yanıtı alır (QR-PUBLIC-404-UNIFORM-01). Hangisi
          olduğunu söylemek, hangi kodların var olduğunu ölçülebilir yapardı. --}}
-    <h1>Bu menü şu anda görüntülenemiyor</h1>
-    <p>
-        Karekod bir menüye bağlı değil. Lütfen restoran personeline bildirin;
-        size güncel menüyü ulaştırabilirler.
-    </p>
+    <h1>{{ $text['heading'] }}</h1>
+    <p>{{ $text['body'] }}</p>
 </main>
 </body>
 </html>

@@ -4,8 +4,8 @@
      sayfası olan şey (Pricing, Help, Contact) her yerde gerçek yoldur.
      Metin katalogdan: Türkçe tarayıcı Türkçe okur. --}}
 <header class="border-b border-border bg-surface">
-    <nav aria-label="Primary" class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-2.5">
-        <a href="/" class="text-xl font-semibold text-fg">Zabuno</a>
+    <nav aria-label="{{ $st['navPrimary'] }}" class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-2.5">
+        <a href="/" class="text-xl font-semibold text-fg">{{ $st['brand'] }}</a>
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
             <a href="{{ $anchorPrefix }}#features" class="text-fg-secondary hover:underline">{{ $st['navFeatures'] }}</a>
             <a href="{{ $anchorPrefix }}#how-it-works" class="text-fg-secondary hover:underline">{{ $st['navHowItWorks'] }}</a>
