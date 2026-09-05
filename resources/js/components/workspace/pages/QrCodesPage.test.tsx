@@ -156,7 +156,12 @@ describe('QrCodesPage — panel v3.1 baskı siparişi', () => {
         */
         await userEvent.click(screen.getByRole('button', { name: /salon/i }));
 
-        const single = await screen.findByRole('link', { name: /download masa 3/i });
+        /*
+            Etiket artık kodun adını taşımıyor (sahibin 2026-09-05 kararı;
+            ad zaten özet cümlesinde). Ölçülen şey değişmedi ve asıl önemli
+            olan zaten oydu: DOĞRU KODUN ucu. Adres kimliği taşıyor.
+        */
+        const single = await screen.findByRole('link', { name: /^download$/i });
         expect(single.getAttribute('href') ?? '').toContain(
             '/api/workspaces/7/qr-codes/13/card.pdf',
         );
@@ -168,7 +173,7 @@ describe('QrCodesPage — panel v3.1 baskı siparişi', () => {
         await userEvent.click(await screen.findByRole('button', { name: /a single table/i }));
         await userEvent.click(screen.getByRole('button', { name: 'Masa 2 · Bahçe' }));
 
-        const download = await screen.findByRole('link', { name: /download masa 2/i });
+        const download = await screen.findByRole('link', { name: /^download$/i });
         expect(download.getAttribute('href') ?? '').toContain(
             '/api/workspaces/7/qr-codes/12/card.pdf',
         );

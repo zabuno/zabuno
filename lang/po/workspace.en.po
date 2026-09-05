@@ -5200,6 +5200,10 @@ msgstr "Download every card (PDF)"
 msgid "workspace.publication.qrScreen.downloadAllPart"
 msgstr "Cards {part} of {total} (PDF)"
 
+#: workspace:workspace.publication.qrScreen.downloadShort
+msgid "workspace.publication.qrScreen.downloadShort"
+msgstr "Download"
+
 #: workspace:workspace.publication.qrScreen.downloadZip
 msgid "workspace.publication.qrScreen.downloadZip"
 msgstr "Download {count} cards (ZIP)"

@@ -34,7 +34,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1532;
+const FROZEN_LEGACY_KEY_COUNT = 1533;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -160,8 +160,13 @@ const FROZEN_LEGACY_KEY_COUNT = 1532;
 // hata ve kısıt cümleleri var, çünkü çıkış yolları farklı — "sipariş yok"
 // ile "sipariş alma kapalı" tek anahtara indirilseydi, kapalı bir hizmet
 // sessiz bir akşam gibi görünürdü (`docs/115` Y1).
+// FF-187: 1532 → 1533, TEK anahtar (`qrScreen.downloadShort`). Karekod
+// eylem çubuğundaki indirme düğmesi artık kodun adını tekrar etmiyor —
+// ad zaten hemen üstündeki özet cümlesinde. Uzun etiketli anahtar
+// SİLİNMEDİ: adın gerçekten gerektiği bağlamsız bir yer (liste, e-posta)
+// çıkarsa hazır duruyor.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'aa4af0023b56f1826717de880cbbcf222cd09699c0e5ac6e1695f4255d46d2bf';
+    '303dac6481037d67962b6b62269c1bcf97e95814bfa8b85c8d0a9901e0d8bad8';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -5200,6 +5200,10 @@ msgstr "Bütün kartları indir (PDF)"
 msgid "workspace.publication.qrScreen.downloadAllPart"
 msgstr "Kartlar {part}/{total} (PDF)"
 
+#: workspace:workspace.publication.qrScreen.downloadShort
+msgid "workspace.publication.qrScreen.downloadShort"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.downloadZip
 msgid "workspace.publication.qrScreen.downloadZip"
 msgstr "{count} kartı indir (ZIP)"

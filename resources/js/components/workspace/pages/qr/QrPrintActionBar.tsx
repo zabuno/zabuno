@@ -7,7 +7,6 @@ import {
     CARDS_PER_REQUEST,
     cardUrl,
     cardsZipUrl,
-    codeName,
     planSummary,
     type QrPrintPlan,
 } from './qrPrintPlan';
@@ -86,7 +85,20 @@ export function QrPrintActionBar({
                 ) : null}
             </div>
 
-            <div className="flex flex-wrap gap-[var(--space-2)]">
+            {/*
+                YAZDIR VE İNDİR YAN YANA — sahibin 2026-09-05 kararı.
+
+                Önce kap sarabiliyordu (`flex-wrap`) ve dar ekranda iki düğme
+                alt alta düşüyordu. Alt alta dizilen iki düğme birbirinin
+                DEVAMI gibi okunuyor, oysa bir SEÇİM sunuyorlar: aynı kâğıdın
+                iki farklı çıkışı.
+
+                Sarma artık gerekli de değil, çünkü indirme etiketi kısaldı
+                (aşağıda): "Print" ve "Download" 320 pikselde yan yana sığar.
+                Uzun etiketle sarmayı kaldırmak taşmaya yol açardı — bu yüzden
+                iki değişiklik tek pakette.
+            */}
+            <div className="flex gap-[var(--space-2)]">
                 {single ? (
                     <ActionLink
                         variant="secondary"
@@ -104,10 +116,19 @@ export function QrPrintActionBar({
                 {count === 0 ? null : single ? (
                     <ActionLink href={cardUrl(single, plan, plan.format, true)}>
                         <DownloadSimple size={20} weight="regular" aria-hidden="true" />
+                        {/*
+                            ETİKET YALNIZ "İNDİR" — kodun adı DEĞİL.
+
+                            Ad zaten iki satır yukarıda, özet cümlesinin
+                            içinde ("Entrance code · PDF"). Düğmede tekrar
+                            etmek bilgi eklemiyor; yalnız düğmeyi uzatıyor ve
+                            uzayan düğme yanındakini alt satıra itiyor.
+
+                            Bağlam kaybolmuyor: düğme özetin hemen altında ve
+                            hangi kâğıdı indireceği o cümlede yazılı.
+                        */}
                         <span className="ps-[var(--space-1)]">
-                            {t('workspace.publication.qrScreen.download', {
-                                name: codeName(single),
-                            })}
+                            {t('workspace.publication.qrScreen.downloadShort')}
                         </span>
                     </ActionLink>
                 ) : (

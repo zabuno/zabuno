@@ -434,6 +434,13 @@ export const publication = {
     'workspace.publication.qrScreen.summarySub': '{scope} · {format}',
     'workspace.publication.qrScreen.summarySub.zip': '{scope} · {format} · one zip file',
     'workspace.publication.qrScreen.download': 'Download {name}',
+    /*
+        Kısa etiket: eylem çubuğundaki düğme kodun adını TEKRAR ETMEZ — ad
+        zaten hemen üstündeki özet cümlesinde ("Entrance code · PDF").
+        Uzun etiketli anahtar SİLİNMEDİ: adın gerçekten gerektiği bir yer
+        (bağlamsız bir liste, bir e-posta) çıkarsa hazır duruyor.
+    */
+    'workspace.publication.qrScreen.downloadShort': 'Download',
     'workspace.publication.qrScreen.downloadZip': 'Download {count} cards (ZIP)',
     'workspace.publication.qrScreen.capped':
         'One archive holds at most {cap} cards; the rest stay out. Print them in a second batch.',
