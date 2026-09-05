@@ -101,6 +101,69 @@ final class GuestText
     }
 
     /**
+     * SEPET VE SİPARİŞ SÖZLÜĞÜ (FF-178) — `docs/115` S3.
+     *
+     * `all()` içine KONMADI ve bu bir düzen tercihi değil: sepet yalnız
+     * sipariş verebilen bir masada çiziliyor. Cümleleri her misafir
+     * sayfasına basmak, sipariş almayan bir restoranın menüsünü açan
+     * misafire kullanılmayacak bir sözlük indirtmek olurdu — ve bu sayfa
+     * masada, çoğu zaman zayıf bir hücresel bağlantıda açılıyor.
+     *
+     * Sözlüğün ÇAĞRILMASI da kararın kendisi değildir: kararı denetleyici
+     * verir (hak + şalter + masa) ve sözlük ancak o karar olumluysa istenir.
+     *
+     * @return array<string, string>
+     */
+    public function ordering(string $locale): array
+    {
+        $keys = [
+            'cartOpen' => 'guest.cart.open',
+            'cartTitle' => 'guest.cart.title',
+            'cartClose' => 'guest.cart.close',
+            'cartAdd' => 'guest.cart.add',
+            'cartIncrease' => 'guest.cart.increase',
+            'cartDecrease' => 'guest.cart.decrease',
+            'cartRemove' => 'guest.cart.remove',
+            'cartTotal' => 'guest.cart.total',
+            'cartEmpty' => 'guest.cart.empty',
+            'cartSubmit' => 'guest.cart.submit',
+            'cartSubmitNote' => 'guest.cart.submitNote',
+            'cartSending' => 'guest.cart.sending',
+            'orderPlaced' => 'guest.order.placed',
+            // Dört ret sebebi + hak + üç kenar durumu. Her biri AYRI bir
+            // cümledir; tek bir "olmadı" misafiri aynı düğmeye tekrar
+            // bastırırdı (`docs/115` §7 S2).
+            'refusedOutOfStock' => 'guest.order.refused.outOfStock',
+            'refusedItemUnavailable' => 'guest.order.refused.itemUnavailable',
+            'refusedOrderingClosed' => 'guest.order.refused.orderingClosed',
+            'refusedTableUnknown' => 'guest.order.refused.tableUnknown',
+            'refusedEntitlementRequired' => 'guest.order.refused.entitlementRequired',
+            'refusedTooManyOpenOrders' => 'guest.order.refused.tooManyOpenOrders',
+            'refusedTooManyLines' => 'guest.order.refused.tooManyLines',
+            'refusedNotSaved' => 'guest.order.refused.notSaved',
+            'refusedUnknown' => 'guest.order.refused.unknown',
+            'refusedOffline' => 'guest.order.refused.offline',
+        ];
+
+        $out = [];
+
+        foreach ($keys as $name => $key) {
+            $out[$name] = $this->get($key, $locale);
+        }
+
+        /*
+            `{name}` ve `{count}` YERİNDE bırakılır: ürün adı ve sepetteki
+            adet istemcide biliniyor ve sunucu onları bilemez — sepet hiçbir
+            zaman sunucuya uğramıyor (`docs/115` §2). Aynı gerekçe arama
+            sonucu sayısında da yazılı.
+        */
+        $out['cartAdded'] = $this->get('guest.cart.added', $locale);
+        $out['cartCount'] = $this->get('guest.cart.count', $locale);
+
+        return $out;
+    }
+
+    /**
      * Çıkmaz sokak sayfasının metinleri (FF-98).
      *
      * Menü metinlerinden AYRI bir harita: o sayfada menü yoktur, dolayısıyla

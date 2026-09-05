@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Analytics\UseCase\RecordAnalyticsEvent;
+use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
+use App\Application\Ordering\Port\OrderingSwitchPort;
+use App\Application\Publication\Dto\PublicationRecord;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\Publication\UseCase\ResolveGuestMenuView;
+use App\Application\QrDestination\Dto\QrCodeRecord;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Analytics\AnalyticsEventType;
+use App\Domain\Entitlement\Entitlement;
 use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\QrDestination\QrToken;
 use App\Domain\Url\CanonicalUrl;
@@ -19,6 +24,7 @@ use App\Http\Responses\GuestOutOfService;
 use App\Support\Analytics\VisitorKey;
 use App\Support\Localization\GuestLocale;
 use App\Support\Localization\GuestText;
+use App\Support\Money\MoneyFormatContract;
 use App\Support\Seo\MenuStructuredData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -35,6 +41,8 @@ final class ShowPublicMenuController extends Controller
         private readonly OutOfStockPort $outOfStock,
         private readonly GuestText $guestText,
         private readonly ResolveGuestMenuView $guestMenuView,
+        private readonly EntitlementRepositoryPort $entitlements,
+        private readonly OrderingSwitchPort $orderingSwitch,
     ) {}
 
     public function __invoke(Request $request, string $token): SymfonyResponse
@@ -178,6 +186,16 @@ final class ShowPublicMenuController extends Controller
                 şerit HİÇ çizilmez — boş bir kap bile değil.
             */
             'closedNotice' => $view->closedNotice,
+            /*
+                SEPET — YA GERÇEKTEN ÇALIŞIR, YA HİÇ ÇİZİLMEZ (`docs/115` S3).
+
+                Karar BURADA verilir ve sayfaya basılır; istemci "acaba"
+                diye denemez. `null` gelen bir sepet ekranda tek bir düğme
+                bile bırakmaz: masadaki misafire basınca hiçbir şey olmayan
+                bir düğme göstermek, ona olmayan bir yetenek vaat etmektir
+                ve bunu restoran değil ürün öder.
+            */
+            'ordering' => $this->orderingFor($record, $publication, $guestLocale),
             // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
             // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
             // bakar, buraya değil.
@@ -205,6 +223,110 @@ final class ShowPublicMenuController extends Controller
         ], 200)
             ->header('X-Robots-Tag', 'noindex, follow')
             ->cookie(GuestLocale::COOKIE, $guestLocale, 60 * 24 * 365, '/', null, $request->isSecure(), false, false, 'Lax');
+    }
+
+    /**
+     * "BU MASA ŞU AN SİPARİŞ VEREBİLİR Mİ?" — dört şart, tek cevap.
+     *
+     * Şartların sırası `StoreGuestOrderController` ile AYNI ve bu bilerek:
+     * sayfa ile uç aynı soruya farklı cevap verirse, misafir çizilmiş bir
+     * düğmeye basar ve sunucudan ret yer. İki yerde iki karar olmasının
+     * sebebi kopya değil, YÖN: uç "bu isteği kabul eder miyim" diye sorar,
+     * sayfa "bu düğmeyi çizer miyim" diye. Uç kendi kararını yine kendisi
+     * verir; buradaki karar onun yerine geçmez, yalnız yapılamayacak işi
+     * ekrana çizmez.
+     *
+     * BEŞİNCİ ŞART PARA BİRİMİDİR ve o yalnız burada var: sepetin toplamı
+     * misafirin telefonunda oluşuyor ve iki para biriminden toplanan bir
+     * sayı anlamsızdır (`BuildOrderLines::currencyMismatch`). Menü tek bir
+     * para birimi kullanmıyorsa sepet çizilmez — yanlış bir toplam, masada
+     * ödenen bir yanlıştır.
+     *
+     * @return array{submitPath:string, money:array<string, mixed>, text:array<string, string>}|null
+     */
+    private function orderingFor(QrCodeRecord $record, PublicationRecord $publication, string $guestLocale): ?array
+    {
+        if ($record->diningTableId === null) {
+            // Masaya bağlı olmayan kod (afiş, kartvizit, giriş kodu):
+            // siparişin düşeceği masa yok.
+            return null;
+        }
+
+        if (! $this->grantsOrdering($publication->entitlementKeys, $record->workspaceId)) {
+            return null;
+        }
+
+        if (! $this->orderingSwitch->acceptsOrders($record->workspaceId, $record->locationId)) {
+            return null;
+        }
+
+        $currency = $this->singleCurrencyOf($publication->snapshot);
+
+        if ($currency === null) {
+            return null;
+        }
+
+        $money = MoneyFormatContract::for($currency);
+
+        if ($money === null) {
+            return null;
+        }
+
+        return [
+            // Adres SUNUCUDAN basılır. İstemcide kurulsaydı, belirtecin
+            // biçimi değiştiği gün sayfa sessizce yanlış uca yazardı.
+            'submitPath' => '/q/'.$record->token.'/orders',
+            'money' => $money->toArray(),
+            'text' => $this->guestText->ordering($guestLocale),
+        ];
+    }
+
+    /**
+     * Sipariş hakkı — ÖNCE YAYINA DONMUŞ hak, yoksa canlı plan.
+     *
+     * Sıra `StoreGuestOrderController::grantsOrdering()` ile aynıdır ve aynı
+     * olmak zorundadır: masadaki basılı karekod aynı kâğıttır ve sahip
+     * planını düşürdüğünde o kâğıdın gösterdiği yayın değişmez
+     * (`docs/114` §3 Dalga 6). Sayfa canlı planı, uç donmuş hakkı okusaydı
+     * misafir sepeti görür ama gönderemezdi.
+     *
+     * @param  list<string>|null  $frozen
+     */
+    private function grantsOrdering(?array $frozen, int $workspaceId): bool
+    {
+        if ($frozen !== null) {
+            return in_array(Entitlement::OrderingBasic->value, $frozen, true);
+        }
+
+        return $this->entitlements->forWorkspace($workspaceId)->grants(Entitlement::OrderingBasic);
+    }
+
+    /**
+     * Menünün TEK para birimi — birden çoksa ya da hiç yoksa `null`.
+     *
+     * @param  array<string, mixed>  $snapshot
+     */
+    private function singleCurrencyOf(array $snapshot): ?string
+    {
+        $currency = null;
+
+        foreach ($snapshot['categories'] ?? [] as $category) {
+            foreach ($category['menuItems'] ?? [] as $item) {
+                $code = trim((string) ($item['currencyCode'] ?? ''));
+
+                if ($code === '') {
+                    continue;
+                }
+
+                $currency ??= $code;
+
+                if ($currency !== $code) {
+                    return null;
+                }
+            }
+        }
+
+        return $currency;
     }
 
     private function notFound(): SymfonyResponse

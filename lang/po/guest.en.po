@@ -8,6 +8,62 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.cart.add
+msgid "guest.cart.add"
+msgstr "Add"
+
+#: guest:guest.cart.added
+msgid "guest.cart.added"
+msgstr "{name} was added to your cart."
+
+#: guest:guest.cart.close
+msgid "guest.cart.close"
+msgstr "Close the cart"
+
+#: guest:guest.cart.count
+msgid "guest.cart.count"
+msgstr "Items in the cart: {count}"
+
+#: guest:guest.cart.decrease
+msgid "guest.cart.decrease"
+msgstr "One fewer"
+
+#: guest:guest.cart.empty
+msgid "guest.cart.empty"
+msgstr "Your cart is empty. Pick something from the menu and it will be listed here."
+
+#: guest:guest.cart.increase
+msgid "guest.cart.increase"
+msgstr "One more"
+
+#: guest:guest.cart.open
+msgid "guest.cart.open"
+msgstr "Cart"
+
+#: guest:guest.cart.remove
+msgid "guest.cart.remove"
+msgstr "Remove from the cart"
+
+#: guest:guest.cart.sending
+msgid "guest.cart.sending"
+msgstr "Sending your order…"
+
+#: guest:guest.cart.submit
+msgid "guest.cart.submit"
+msgstr "Send the order to the waiter"
+
+#: guest:guest.cart.submitNote
+msgid "guest.cart.submitNote"
+msgstr "The waiter checks and confirms the order before the kitchen starts. Payment is taken at the table."
+
+#: guest:guest.cart.title
+msgid "guest.cart.title"
+msgstr "Your cart"
+
+#: guest:guest.cart.total
+msgid "guest.cart.total"
+msgstr "Total"
+
 #: guest:guest.closed.notice
 msgid "guest.closed.notice"
 msgstr "We are closed right now."
@@ -131,6 +187,50 @@ msgstr "Published menu — showing the current published version."
 #: guest:guest.menu.summary
 msgid "guest.menu.summary"
 msgstr "Categories: {categories} · Dishes: {items}"
+
+#: guest:guest.order.placed
+msgid "guest.order.placed"
+msgstr "Your order was received. The waiter will confirm it."
+
+#: guest:guest.order.refused.entitlementRequired
+msgid "guest.order.refused.entitlementRequired"
+msgstr "This restaurant does not take orders through the menu, so nothing was sent. You can show your list to the staff."
+
+#: guest:guest.order.refused.itemUnavailable
+msgid "guest.order.refused.itemUnavailable"
+msgstr "{name} is no longer on the menu, so nothing was sent. Remove it from the cart and send the rest."
+
+#: guest:guest.order.refused.notSaved
+msgid "guest.order.refused.notSaved"
+msgstr "The order could not be saved, so nothing reached the kitchen. Please try again."
+
+#: guest:guest.order.refused.offline
+msgid "guest.order.refused.offline"
+msgstr "Your order could not leave this phone. Your cart is still here — try again, or tell the staff."
+
+#: guest:guest.order.refused.orderingClosed
+msgid "guest.order.refused.orderingClosed"
+msgstr "The restaurant is not taking orders right now, so nothing was sent. Please tell the staff what you would like."
+
+#: guest:guest.order.refused.outOfStock
+msgid "guest.order.refused.outOfStock"
+msgstr "{name} ran out today, so nothing was sent. Remove it from the cart and send the rest."
+
+#: guest:guest.order.refused.tableUnknown
+msgid "guest.order.refused.tableUnknown"
+msgstr "This code is not linked to a table, so nothing was sent. Please scan the code on your own table."
+
+#: guest:guest.order.refused.tooManyLines
+msgid "guest.order.refused.tooManyLines"
+msgstr "There are too many different dishes in one order, so nothing was sent. Please send it in two orders."
+
+#: guest:guest.order.refused.tooManyOpenOrders
+msgid "guest.order.refused.tooManyOpenOrders"
+msgstr "This table already has several orders waiting, so this one was not sent. Please ask the staff first."
+
+#: guest:guest.order.refused.unknown
+msgid "guest.order.refused.unknown"
+msgstr "The order was not sent and nothing reached the kitchen. Please tell the staff what you would like."
 
 #: guest:guest.outOfService.body
 msgid "guest.outOfService.body"

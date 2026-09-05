@@ -138,6 +138,22 @@
         $itemCount,
     );
 
+    /* SEPET — SUNUCUNUN KARARI, ŞABLONUN DEĞİL (`docs/115` S3, FF-178).
+
+       `$ordering` `null` ise bu sayfada sepetin tek bir düğmesi bile
+       çizilmez. Karar denetleyicide veriliyor (hak + şalter + masa + tek
+       para birimi) ve buraya YALNIZ sonucu geliyor: şablon "acaba" diye
+       sormaz, çünkü sorabilseydi iki yerde iki farklı cevap doğardı.
+
+       Sözlüğü ANA SÖZLÜĞE katmak, betiğin tek bir `say()` ile konuşmasını
+       sağlıyor. Sepet çizilmediğinde bu cümleler hiç inmiyor — olmayan bir
+       ekranın sözlüğünü misafirin hattından geçirmenin bir karşılığı yok. */
+    $ordering = $ordering ?? null;
+
+    if ($ordering !== null) {
+        $gt = array_merge($gt, $ordering['text'] ?? []);
+    }
+
     $text = static fn (string $key): string => (string) ($gt[$key] ?? '');
 
     $headline = $identity?->brandName ?: trim((string) ($fallbackBrandName ?? ''));
@@ -797,6 +813,274 @@
             color: var(--qr-warn);
         }
 
+        @isset($ordering)
+        /* ---- SEPET (FF-178) ---------------------------------------------
+
+           BU KURALLAR DA YALNIZ SEPET ÇİZİLDİĞİNDE İNER. Sipariş almayan bir
+           restoranın menüsü, hiçbir zaman çizilmeyecek düğmelerin stilini
+           taşımaz: sayfanın maliyeti, sahip olmadığı yetenekle artmamalı
+           (`docs/113` §8).
+
+           YENİ BİR KIRILMA NOKTASI YOK ve olmayacak: sepetin bütün kararları
+           içsel düzenden çıkıyor (`docs/113` §7.1). Panelin genişliği bir
+           eşikten değil `min()`ten geliyor, satırları sarmalanan bir
+           satırdan.
+
+           SABİT ALT ÇUBUK DA YOK: sayfadaki tek yapışkan öğe kimlik
+           başlığıdır ve 320×480'de ikinci bir sabit çubuk dikey alanın
+           önemli bir kısmını yerdi (`docs/48` §6.5). */
+        .qr-cart-btn {
+            flex: 0 0 auto;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--qr-tap);
+            min-height: var(--qr-tap);
+            border-radius: 999px;
+            border: 1px solid var(--qr-border-strong);
+            background: var(--qr-surface);
+            color: inherit;
+        }
+
+        /* Rozet SAYIYI söyler, rengi değil: sayısı olmayan bir nokta,
+           sepette kaç ürün olduğunu hiçbir misafire anlatmaz. */
+        .qr-cart-badge {
+            position: absolute;
+            inset-block-start: -2px;
+            inset-inline-end: -2px;
+            min-inline-size: 18px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: var(--qr-accent);
+            color: var(--qr-accent-fg);
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 18px;
+        }
+
+        /* Canlı bölge GÖZE görünmez ama EKRAN OKUYUCUYA görünür: `display`
+           ya da `visibility` ile gizlenseydi duyuru da susardı. Yer
+           kaplamaması için mutlak konumlanır; başlık satırının aritmetiği
+           bu yüzden değişmez. */
+        .qr-cart-live {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        /* Ekleme düğmesi kartın SARMALANAN satırının sonunda durur ve sağa
+           itilir; yer kalmadığında kendi satırına iner. Ad bu yüzden hiçbir
+           genişlikte sıfıra inmez (`docs/113` §7.2.2). */
+        .qr-cart-add {
+            flex: 0 0 auto;
+            margin-inline-start: auto;
+            font: inherit;
+            min-height: var(--qr-tap);
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid var(--qr-border-strong);
+            background: var(--qr-surface-2);
+            color: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .qr-cart {
+            /* Genişlik EŞİKTEN DEĞİL `min()`TEN gelir: 320'de kenar payı
+               kalır, geniş ekranda okunur bir sütunda durur. */
+            inline-size: min(34rem, calc(100% - 24px));
+            max-block-size: min(88vh, 44rem);
+            padding: 0;
+            border: 1px solid var(--qr-border);
+            border-radius: var(--qr-radius);
+            background: var(--qr-surface);
+            color: var(--qr-fg);
+        }
+
+        /* `display` YALNIZ AÇIKKEN verilir. Koşulsuz bir `display:flex`,
+           tarayıcının kendi `display:none` kuralını ezer ve kapalı sepeti
+           sayfanın ortasında açık bırakırdı — bir kez yaşanmış bir hata
+           değil, bir kez yaşanması yeten bir hata. */
+        .qr-cart[open] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .qr-cart::backdrop {
+            background: rgb(0 0 0 / 0.5);
+        }
+
+        .qr-cart-head {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--qr-border);
+        }
+
+        .qr-cart-title {
+            flex: 1 1 auto;
+            margin: 0;
+            font-size: 1.125rem;
+        }
+
+        .qr-cart-close {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--qr-tap);
+            min-height: var(--qr-tap);
+            border-radius: 999px;
+            border: 1px solid var(--qr-border-strong);
+            background: var(--qr-surface);
+            color: inherit;
+            cursor: pointer;
+        }
+
+        /* Uzun bir sepet panelin İÇİNDE kaydırılır, sayfanın değil: modal
+           açıkken arkadaki listeyi kaydırmak misafiri kaybettirirdi. */
+        .qr-cart-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 4px 14px;
+        }
+
+        .qr-cart-empty {
+            margin: 0;
+            padding: 28px 4px;
+            color: var(--qr-fg-2);
+            text-align: center;
+            text-wrap: pretty;
+        }
+
+        .qr-cart-lines {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* Satır da SARMALANIR: ad ile tutar yer varsa yan yana, adet
+           denetimi her zaman kendi tam satırında. Üç dokunma hedefini bir
+           adın yanına sıkıştırmak, 320'de adı yok ederdi. */
+        .qr-cart-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--qr-border);
+        }
+
+        .qr-cart-name {
+            flex: 1 1 10ch;
+            font-weight: 600;
+        }
+
+        .qr-cart-line-total,
+        .qr-cart-qty {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qr-cart-line-total {
+            flex: 0 0 auto;
+            font-weight: 700;
+        }
+
+        .qr-cart-step {
+            flex: 1 0 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qr-cart-step button {
+            min-height: var(--qr-tap);
+            min-inline-size: var(--qr-tap);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            border: 1px solid var(--qr-border);
+            background: var(--qr-surface-2);
+            color: inherit;
+            cursor: pointer;
+        }
+
+        /* "Çıkar" adet denetiminden AYRILIR: yan yana duran üç aynı düğmeden
+           birine yanlışlıkla basmak, misafirin seçtiği satırı silmektir. */
+        .qr-cart-step [data-cart-remove] {
+            margin-inline-start: auto;
+        }
+
+        .qr-cart-qty {
+            min-inline-size: 3ch;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .qr-cart-foot {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            /* Telefonun kendi çubuğu düğmenin üstüne binmesin. */
+            padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+            border-top: 1px solid var(--qr-border);
+        }
+
+        .qr-cart-sum {
+            display: flex;
+            gap: 8px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .qr-cart-sum span:last-child {
+            margin-inline-start: auto;
+        }
+
+        .qr-cart-status:empty {
+            display: none;
+        }
+
+        .qr-cart-status {
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--qr-fg-2);
+            text-wrap: pretty;
+        }
+
+        .qr-cart-send {
+            font: inherit;
+            min-height: var(--qr-tap);
+            padding: 0 18px;
+            border-radius: 999px;
+            border: 1px solid var(--qr-accent);
+            background: var(--qr-accent);
+            color: var(--qr-accent-fg);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .qr-cart-send[disabled] {
+            opacity: 0.6;
+        }
+
+        .qr-cart-note {
+            margin: 0;
+            font-size: 0.8125rem;
+            color: var(--qr-muted);
+            text-wrap: pretty;
+        }
+        @endisset
+
         /* ---- BOŞ DURUMLAR ----------------------------------------------- */
         .qr-menu-empty-state,
         .qr-menu-category-empty {
@@ -925,14 +1209,42 @@
             @endif
         </span>
 
-        {{-- YER BURADA AÇIK KALIYOR. Kaynağın başlık satırında arama, tema,
-             favori ve sepet düğmeleri var; onların arka ucu ayrı paketlerde
-             geliyor. Satır esnek kurulduğu için o düğmeler geldiğinde kimlik
-             bloğu kendiliğinden daralır ve bu dosyada düzen değişmez —
-             320'deki 34+8 px'lik sabit payı korumak için yeni her düğme
-             `var(--qr-tap)` genişliğinde ve `flex:none` olarak eklenir.
-             Çalışmayan bir düğmeyi BUGÜNDEN çizmek ise ayrı bir şeydir ve
-             yapılmaz: masadaki misafir ona basar ve hiçbir şey olmaz. --}}
+        {{-- SEPET DÜĞMESİ — kaynağın başlık satırındaki çanta (FF-178).
+
+             Satır için ayrılan pay tam olarak buydu: `var(--qr-tap)`
+             genişliğinde, `flex:none`. 320'de kimlik metnine kalan 254 px,
+             bu düğmeyle birlikte 254 - 44 - 8 = 202 px'e iner ve hâlâ bir
+             restoran adını taşır.
+
+             SUNUCU ONU YALNIZ SİPARİŞ GERÇEKTEN VERİLEBİLİYORSA BASAR; JS
+             de `<dialog>` ve cihaz deposu çalışmıyorsa hiç AÇMAZ. İki kapı
+             da aynı sözü tutar: basınca hiçbir şey olmayan bir düğme, o
+             düğmenin hiç olmamasından kötüdür.
+
+             Simge SATIR İÇİ SVG'dir; ikon yazı tipi bir ağ isteğidir ve bu
+             sayfanın ölçülen sözü sıfır istektir (`docs/113` §8). --}}
+        @isset($ordering)
+            <button type="button" class="qr-cart-btn qr-press" data-cart-open hidden aria-label="{{ $text('cartOpen') }}">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z"></path>
+                    <path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+                </svg>
+                {{-- Rozet SAYIDIR ve sıfırken hiç çizilmez: "0" yazan bir
+                     rozet, boş bir sepeti dolu göstermenin sessiz yoludur. --}}
+                <span class="qr-cart-badge" data-cart-count hidden></span>
+            </button>
+            {{-- "Sepete eklendi" CÜMLESİNİN YERİ.
+
+                 Cümle sepetin İÇİNE yazılamaz: misafir ürünü menüden
+                 eklerken sepet kapalıdır ve kapalı bir panele yazılan bir
+                 onay, hiç yazılmamış bir onaydır.
+
+                 Gören misafir için geri bildirim ROZETİN KENDİSİDİR — sayı
+                 yapışkan başlıkta, gözünün önünde artar. Görmeyen misafir
+                 için sayının artması hiçbir şey söylemez; bu canlı bölge
+                 tam olarak onun için var (WCAG 4.1.3). --}}
+            <span class="qr-cart-live" role="status" aria-live="polite" data-cart-live></span>
+        @endisset
     </div>
 </header>
 
@@ -1158,7 +1470,7 @@
                                  çalışıyor ve veriyi satırın YANINDA bulmalı.
                                  Değerleri sayfanın başındaki PHP bloğu
                                  hazırladı; gerekçesi orada yazılı. --}}
-                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}" @if (($item['filterAllergens'] ?? '') !== '') data-item-allergens="{{ $item['filterAllergens'] }}" @endif @if (($item['filterPrice'] ?? null) !== null) data-item-price="{{ $item['filterPrice'] }}" @endif @isset($item['menuItemId']) id="item-{{ $item['menuItemId'] }}" data-menu-item-id="{{ $item['menuItemId'] }}" @endisset>
+                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}" @if (($item['filterAllergens'] ?? '') !== '') data-item-allergens="{{ $item['filterAllergens'] }}" @endif @if (($item['filterPrice'] ?? null) !== null) data-item-price="{{ $item['filterPrice'] }}" @endif @isset($ordering) data-item-price-minor="{{ (int) ($item['priceMinorAmount'] ?? 0) }}" @endisset @isset($item['menuItemId']) id="item-{{ $item['menuItemId'] }}" data-menu-item-id="{{ $item['menuItemId'] }}" @endisset>
                                 @if (! empty($item['image']['sources']))
                                     @php($image = $item['image'])
                                     {{-- `loading="lazy"`: kırk ürünlük bir menüde
@@ -1223,6 +1535,24 @@
                                             @endforeach
                                         </span>
                                     @endif
+                                    {{-- SEPETE EKLE — kaynağın karttaki "Ekle"si (FF-178).
+
+                                         TÜKENMİŞ ÜRÜNDE HİÇ ÇİZİLMEZ (M7).
+                                         Çizilseydi misafir onu sepete atar,
+                                         gönderir ve sunucudan `out_of_stock`
+                                         yerdi; yani ürün ona bilerek boşuna bir
+                                         tur attırırdı. "Bugün bitti" işareti
+                                         sipariş yolunda da geçerlidir.
+
+                                         Düğme SARMALANAN satırın sonunda durur
+                                         ve `margin-inline-start:auto` ile sağa
+                                         itilir: 320'de ad + fiyat ilk satırı
+                                         doldurunca kendi satırına iner ve ürün
+                                         ADI hiçbir genişlikte sıfıra inmez
+                                         (`docs/113` §7.2.2). --}}
+                                    @if (isset($ordering) && isset($item['menuItemId']) && ! $isSoldOut)
+                                        <button type="button" class="qr-cart-add qr-press" data-cart-add hidden>{{ $text('cartAdd') }}</button>
+                                    @endif
                                 </div>
                             </li>
                         @endforeach
@@ -1267,11 +1597,108 @@
         </div>
     </div>
 </main>
+{{-- ═══ SEPET (FF-178) — `docs/115` S3 ═══
+
+     KAYNAĞIN SABİT ALT ÇUBUĞU BURAYA GELMEDİ ve bu bilerek. Kaynakta
+     `.gm-cartbar` ekranın altına yapışıyor; bu sayfada YAPIŞKAN OLAN TEK ŞEY
+     kimlik başlığıdır (`docs/113` §7.2) ve 320×480'de ikinci bir sabit çubuk
+     dikey alanın önemli bir kısmını yerdi. `docs/48` §6.5 de bunu söylüyor:
+     hiçbir denetim içeriğin üstüne KALICI binmez. Sepet, misafirin kendi
+     açtığı bir katmandır; açık olduğu sürece içeriğin üstündedir ve
+     kapandığında hiçbir yer kaplamaz.
+
+     `<dialog>` SEÇİLDİ, ÇÜNKÜ BEDAVA GELEN ŞEYLER ÖNEMLİ: odak tuzağı,
+     `Esc` ile kapanma, arka planın erişilemez olması ve `::backdrop`.
+     Bunları elle yazmak bir kütüphane kadar bayt tutardı — bu paketin kararı
+     ise kütüphane eklememektir. Desteklemeyen tarayıcıda betik sepeti hiç
+     AÇMAZ ve düğme çizilmez.
+
+     Panel MENÜNÜN İÇİNDE değil, `main`in dışında durur: modal bir katmanın
+     kaydırılan listenin içinde yaşaması, `overflow` bağlamlarına bağımlı bir
+     davranış üretirdi. --}}
+@isset($ordering)
+    <dialog class="qr-cart" data-cart-panel aria-labelledby="cart-title">
+        <div class="qr-cart-head">
+            <h2 class="qr-cart-title" id="cart-title">{{ $text('cartTitle') }}</h2>
+            <button type="button" class="qr-cart-close qr-press" data-cart-close aria-label="{{ $text('cartClose') }}">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+                    <path d="M6 6l12 12M18 6L6 18"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="qr-cart-body">
+            {{-- BOŞ SEPET BİR CÜMLEDİR. Boş bir panel misafire ürünün bozuk
+                 olduğunu düşündürür; cümle ne olduğunu ve ne yapacağını
+                 söyler. --}}
+            <p class="qr-cart-empty" data-cart-empty>{{ $text('cartEmpty') }}</p>
+            <ul class="qr-cart-lines" data-cart-lines></ul>
+        </div>
+
+        {{-- ALT BÖLÜM SEPET DOLUYKEN ÇİZİLİR: boş bir sepette "Gönder"
+             düğmesi, basıldığında hiçbir şey yapmayan bir düğmedir. --}}
+        <div class="qr-cart-foot" data-cart-foot hidden>
+            <p class="qr-cart-sum"><span>{{ $text('cartTotal') }}</span><span data-cart-total></span></p>
+            {{-- Gönderme sonucunun TEK yeri. `role="status"` ile ekran
+                 okuyucu da öğrenir: sepeti gözle takip etmeyen misafir için
+                 sessiz bir başarı, sessiz bir hatadan ayırt edilemez. --}}
+            <p class="qr-cart-status" role="status" aria-live="polite" data-cart-status></p>
+            <button type="button" class="qr-cart-send qr-press" data-cart-submit>{{ $text('cartSubmit') }}</button>
+            {{-- İKİ ONAY OLDUĞUNU MİSAFİR GÖNDERMEDEN ÖNCE OKUR
+                 (`docs/115` §2): gönderdiği bir taleptir, garson onaylayınca
+                 iş olur. Ödemenin masada alındığı da burada yazar; bu üründe
+                 ödeme yoktur ve olmadığını saklamak misafiri telefonda
+                 bekletirdi. --}}
+            <p class="qr-cart-note">{{ $text('cartSubmitNote') }}</p>
+        </div>
+    </dialog>
+
+    {{-- SATIR İŞARETLEMESİ BETİKTE DEĞİL, ŞABLONDA YAŞAR.
+
+         Satırı JavaScript içinde dize birleştirerek kursaydık, düğmelerin
+         erişilebilirlik etiketleri de betiğe kaçardı — oysa onlar kullanıcı
+         metnidir ve katalogda yaşamak zorundadır (`docs/85`). --}}
+    <template id="cart-line-template">
+        <li class="qr-cart-line" data-cart-line>
+            <span class="qr-cart-name" data-line-name></span>
+            <span class="qr-cart-line-total" data-line-total></span>
+            <span class="qr-cart-step">
+                <button type="button" data-cart-dec aria-label="{{ $text('cartDecrease') }}">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 12h12"></path></svg>
+                </button>
+                <span class="qr-cart-qty" data-line-qty></span>
+                <button type="button" data-cart-inc aria-label="{{ $text('cartIncrease') }}">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M12 6v12M6 12h12"></path></svg>
+                </button>
+                <button type="button" data-cart-remove aria-label="{{ $text('cartRemove') }}">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+                </button>
+            </span>
+        </li>
+    </template>
+@endisset
 </x-zabuno>
 {{-- Betik gövdesindeki sabitler de KULLANICI METNİDİR (`docs/85`).
      Harita JSON olarak basılır; betik onu okur ve tek bir cümle bile
      şablonda kalmaz. --}}
 <script type="application/json" id="guest-text" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($gt, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+@isset($ordering)
+    {{-- SİPARİŞİN İKİ SABİTİ: NEREYE ve HANGİ BİÇİMDE (FF-178).
+
+         ADRES sunucudan iner; istemcide kurulsaydı karekod belirtecinin
+         biçimi değiştiği gün sayfa sessizce yanlış uca yazardı.
+
+         PARA BİÇİMİ de sunucudan iner ve bu ölçülmüş bir karardır: toplam
+         misafirin telefonunda toplanıyor ama biçimi orada DOĞMUYOR. Ondalık
+         basamak sayısı para biriminin kendi özelliğidir (yende sıfır,
+         dinarda üç) ve tarayıcının kendi biçimlendiricisi sunucununkinden
+         başka bir cevap verebilir — aradaki fark ancak masada hesap
+         istendiğinde anlaşılırdı (`MoneyFormatContract`). --}}
+    <script type="application/json" id="guest-order" nonce="{{ $cspNonce ?? '' }}">{!! json_encode([
+        'submitPath' => $ordering['submitPath'],
+        'money' => $ordering['money'],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+@endisset
 <script nonce="{{ $cspNonce ?? '' }}">
     (function () {
         var TEXT = {};
@@ -1642,6 +2069,386 @@
                 }
             });
         }
+
+        @isset($ordering)
+        /*
+            ═══ SEPET VE SİPARİŞ ONAYI — `docs/115` S3 (FF-178) ═══
+
+            BU BLOK YALNIZ SEPET ÇİZİLDİĞİNDE İNER. Sipariş alma kapalı bir
+            restoranın menüsünü açan misafire, hiçbir düğmesi olmayan bir
+            sepetin betiğini indirtmek boşuna bayt yemektir — ve bu sayfa
+            masada, çoğu zaman zayıf bir hücresel bağlantıda açılıyor
+            (`docs/113` §8).
+
+            SEPET CİHAZDA YAŞAR. Sunucuda misafir oturumu yok ve olmayacak:
+            sepeti orada tutmak, hiç sipariş vermeyecek her misafir için
+            satır yazmak olurdu. Sunucuya giden tek şey GÖNDERİLEN sipariştir
+            ve o da tek bir POST'tur.
+
+            ÜÇ KAPI VAR VE ÜÇÜ DE AYNI SÖZÜ TUTAR: sunucu sepeti yalnız
+            gerçekten sipariş verilebiliyorsa BASAR; `<dialog>` desteği yoksa
+            betik onu AÇMAZ; cihaz deposu çalışmıyorsa (gizli pencere,
+            kapatılmış site verisi) yine AÇMAZ. Hatırlamadığı bir listeyi
+            hatırlıyormuş gibi göstermek, misafirin siparişini sessizce
+            kaybetmektir.
+        */
+        (function () {
+            var orderNode = document.getElementById('guest-order');
+            var panel = document.querySelector('[data-cart-panel]');
+            var opener = document.querySelector('[data-cart-open]');
+            var lineTemplate = document.getElementById('cart-line-template');
+            var liveBox = document.querySelector('[data-cart-live]');
+
+            if (!orderNode || !panel || !opener || !lineTemplate || !liveBox) {
+                return;
+            }
+
+            // `<dialog>` yoksa odak tuzağını, `Esc`i ve arka planı elle
+            // yazmak gerekirdi — bu paketin kararı kütüphane eklememektir.
+            if (typeof panel.showModal !== 'function') {
+                return;
+            }
+
+            var store;
+
+            try {
+                store = window.localStorage;
+                store.setItem('zabuno.probe', '1');
+                store.removeItem('zabuno.probe');
+            } catch (error) {
+                return;
+            }
+
+            var ORDER;
+
+            try {
+                ORDER = JSON.parse(orderNode.textContent || '{}');
+            } catch (error) {
+                return;
+            }
+
+            if (!ORDER.submitPath) {
+                return;
+            }
+
+            var M = ORDER.money || {};
+            var main = document.querySelector('main');
+            // Sepet MENÜYE bağlıdır: aynı restoranın iki menüsü ayrı sepet
+            // tutar, yoksa kahvaltıda seçilen bir ürün akşam menüsünde
+            // ortaya çıkardı.
+            var KEY = 'zabuno.cart.' + ((main && main.dataset.menuKey) || 'menu');
+            // Ekran adedi burada durur; SINIR SUNUCUDADIR
+            // (`BuildOrderLines::MAX_QUANTITY_PER_LINE`). Ekranın durması
+            // misafire nazik davranmaktır, kapı değil.
+            var MAX_PER_LINE = 20;
+
+            var lineBox = panel.querySelector('[data-cart-lines]');
+            var emptyNote = panel.querySelector('[data-cart-empty]');
+            var foot = panel.querySelector('[data-cart-foot]');
+            var totalBox = panel.querySelector('[data-cart-total]');
+            var statusBox = panel.querySelector('[data-cart-status]');
+            var badge = opener.querySelector('[data-cart-count]');
+            var sendButton = panel.querySelector('[data-cart-submit]');
+
+            function read() {
+                try {
+                    var raw = JSON.parse(store.getItem(KEY) || '{}');
+
+                    return raw && typeof raw === 'object' ? raw : {};
+                } catch (error) {
+                    // Bozuk bir kayıt sepeti kilitlemez: boş sepet, açılmayan
+                    // bir sayfadan iyidir.
+                    return {};
+                }
+            }
+
+            function write(state) {
+                try {
+                    store.setItem(KEY, JSON.stringify(state));
+                } catch (error) {
+                    // Depo doluysa sepet bu oturumda yaşar; misafir yine
+                    // sipariş gönderebilir.
+                }
+            }
+
+            /*
+                PARA BİÇİMİ SUNUCUDAN GELİR, BURADA DOĞMAZ.
+
+                Bu işlev hiçbir işaret ya da ayırıcı UYDURMAZ: hepsini
+                `MoneyFormatContract`ın söktüğü kalıptan alır. Kuruşu sabit
+                bir sayıya bölmek yende ve dinarda yanlış fiyat üretirdi ve
+                fiyat, restoranın misafirine verdiği taahhüttür.
+            */
+            function money(minor) {
+                var digits = M.digits || 0;
+                var text = String(Math.round(minor));
+
+                while (text.length <= digits) {
+                    text = '0' + text;
+                }
+
+                var whole = digits ? text.slice(0, text.length - digits) : text;
+                var fraction = digits ? text.slice(text.length - digits) : '';
+
+                if (M.group) {
+                    whole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, M.group);
+                }
+
+                var body = whole + (digits ? M.decimal + fraction : '');
+
+                // Latin rakamı evrensel değildir: biçimlendirici başka bir
+                // rakam takımı ürettiyse sayı oraya kaydırılır.
+                if (M.zero && M.zero !== '0') {
+                    var shift = M.zero.charCodeAt(0) - 48;
+
+                    body = body.replace(/[0-9]/g, function (character) {
+                        return String.fromCharCode(character.charCodeAt(0) + shift);
+                    });
+                }
+
+                return (M.prefix || '') + body + (M.suffix || '');
+            }
+
+            function itemNode(id) {
+                return document.querySelector('[data-menu-item-id="' + String(id).replace(/[^0-9]/g, '') + '"]');
+            }
+
+            function render() {
+                var state = read();
+                var count = 0;
+                var total = 0;
+
+                lineBox.textContent = '';
+
+                Object.keys(state).forEach(function (id) {
+                    var node = itemNode(id);
+                    var quantity = Number(state[id]) || 0;
+
+                    /*
+                        MENÜDEN KALKMIŞ SATIR SEPETTE DE DURMAZ.
+
+                        Adı ve fiyatı cihazda saklasaydık sepet, dünkü fiyatı
+                        bugün gösterirdi — ve misafir o fiyatı masada isterdi.
+                        İkisi de her seferinde sayfanın kendisinden okunur.
+                    */
+                    if (!node || quantity < 1) {
+                        delete state[id];
+
+                        return;
+                    }
+
+                    var price = Number(node.getAttribute('data-item-price-minor')) || 0;
+                    var row = lineTemplate.content.cloneNode(true);
+
+                    row.querySelector('[data-cart-line]').setAttribute('data-cart-line', id);
+                    row.querySelector('[data-line-name]').textContent = node.getAttribute('data-item-name') || '';
+                    row.querySelector('[data-line-qty]').textContent = String(quantity);
+                    row.querySelector('[data-line-total]').textContent = money(price * quantity);
+                    lineBox.appendChild(row);
+
+                    count += quantity;
+                    total += price * quantity;
+                });
+
+                write(state);
+
+                totalBox.textContent = money(total);
+                badge.textContent = String(count);
+                badge.hidden = count === 0;
+                emptyNote.hidden = count > 0;
+                foot.hidden = count === 0;
+                // Düğmenin etiketi sayıyı da söyler: rozeti göremeyen misafir
+                // için renk ve konum hiçbir şey anlatmaz (WCAG 1.4.1).
+                opener.setAttribute(
+                    'aria-label',
+                    say('cartOpen') + ' — ' + say('cartCount').replace('{count}', String(count)),
+                );
+            }
+
+            function change(id, quantity) {
+                var state = read();
+
+                if (quantity < 1) {
+                    delete state[id];
+                } else {
+                    state[id] = Math.min(quantity, MAX_PER_LINE);
+                }
+
+                write(state);
+                render();
+            }
+
+            function quantityOf(id) {
+                return Number(read()[id]) || 0;
+            }
+
+            document.addEventListener('click', function (event) {
+                var addButton = event.target.closest ? event.target.closest('[data-cart-add]') : null;
+
+                if (!addButton) {
+                    return;
+                }
+
+                var item = addButton.closest('[data-item]');
+                var id = item && item.getAttribute('data-menu-item-id');
+
+                if (!id) {
+                    return;
+                }
+
+                change(id, quantityOf(id) + 1);
+                /*
+                    EKLEME SESSİZ OLMAZ.
+
+                    Cümle SEPETİN İÇİNE yazılmaz: ürün menüden eklenirken
+                    sepet kapalıdır ve kapalı bir panele yazılan onay, hiç
+                    yazılmamış onaydır. Gören misafirin geri bildirimi
+                    başlıktaki rozettir; bu satır görmeyen misafir içindir.
+                */
+                liveBox.textContent = say('cartAdded').replace('{name}', item.getAttribute('data-item-name') || '');
+            });
+
+            panel.addEventListener('click', function (event) {
+                var target = event.target.closest ? event.target : null;
+
+                if (!target) {
+                    return;
+                }
+
+                if (target.closest('[data-cart-close]')) {
+                    panel.close();
+
+                    return;
+                }
+
+                var line = target.closest('[data-cart-line]');
+
+                if (!line) {
+                    return;
+                }
+
+                var id = line.getAttribute('data-cart-line');
+
+                if (target.closest('[data-cart-remove]')) {
+                    change(id, 0);
+                } else if (target.closest('[data-cart-inc]')) {
+                    change(id, quantityOf(id) + 1);
+                } else if (target.closest('[data-cart-dec]')) {
+                    change(id, quantityOf(id) - 1);
+                }
+            });
+
+            opener.addEventListener('click', function () {
+                // Önceki gönderimin cümlesi yeni bir sepette durmaz.
+                statusBox.textContent = '';
+                render();
+                panel.showModal();
+            });
+
+            /*
+                DÖRT RET, DÖRT CÜMLE (`docs/115` §7 S2).
+
+                Masadaki misafir için bunlar apayrı durumlardır: bitmiş bir
+                ürünü sepetten çıkarır, kapanmış bir mutfakta personele
+                sorar, masaya bağlı olmayan bir kodda masasındaki kodu
+                okutur. Tek bir "sipariş gönderilemedi" cümlesi onu aynı
+                düğmeye tekrar bastırır ve hangisini düzeltebileceğini asla
+                öğretmez.
+            */
+            var REFUSALS = {
+                'out_of_stock': 'refusedOutOfStock',
+                'item_unavailable': 'refusedItemUnavailable',
+                'ordering_closed': 'refusedOrderingClosed',
+                'table_unknown': 'refusedTableUnknown',
+                'entitlement_required': 'refusedEntitlementRequired',
+                'too_many_open_orders': 'refusedTooManyOpenOrders',
+                'too_many_lines': 'refusedTooManyLines',
+                'order_not_saved': 'refusedNotSaved'
+            };
+
+            function refusal(data) {
+                var key = REFUSALS[data && data.reason];
+                var sentence = key ? say(key) : '';
+                // HANGİ ÜRÜN olduğu söylenir: sepette beş satır varken "bir
+                // şey bitmiş" demek, misafire sepeti tek tek denetletirdi.
+                var node = data && data.menuItemId ? itemNode(data.menuItemId) : null;
+
+                // Ada ihtiyaç duyan bir cümleyi adsız kurmayız: boşlukla
+                // başlayan bir cümle, cümle değildir.
+                if (!sentence || (sentence.indexOf('{name}') !== -1 && !node)) {
+                    return say('refusedUnknown');
+                }
+
+                return sentence.replace('{name}', node ? node.getAttribute('data-item-name') || '' : '');
+            }
+
+            sendButton.addEventListener('click', function () {
+                var state = read();
+                var items = Object.keys(state).map(function (id) {
+                    return { menuItemId: Number(id), quantity: Number(state[id]) };
+                });
+
+                if (!items.length) {
+                    return;
+                }
+
+                sendButton.disabled = true;
+                statusBox.textContent = say('cartSending');
+
+                fetch(ORDER.submitPath, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({ items: items })
+                })
+                    .then(function (response) {
+                        return response
+                            .json()
+                            .catch(function () {
+                                return {};
+                            })
+                            .then(function (data) {
+                                sendButton.disabled = false;
+
+                                /*
+                                    SEPET YALNIZ 201'DE TEMİZLENİR.
+
+                                    Ret sonrası temizlemek, misafirin tek tek
+                                    seçtiği listeyi tam da düzeltmesi gereken
+                                    anda silmek olurdu. 201 ise "mutfak
+                                    başladı" DEMEK DEĞİLDİR: gönderilen bir
+                                    taleptir, garson onaylayınca iş olur —
+                                    cümle bunu söyler ve uydurma bir süre
+                                    vermez.
+                                */
+                                if (response.status === 201) {
+                                    write({});
+                                    render();
+                                    statusBox.textContent = say('orderPlaced');
+
+                                    return;
+                                }
+
+                                statusBox.textContent = refusal(data);
+                            });
+                    })
+                    .catch(function () {
+                        sendButton.disabled = false;
+                        // Ağ koptuğunda belirsizlik misafire yıkılmaz: sepet
+                        // durur ve cümle personele sormayı önerir.
+                        statusBox.textContent = say('refusedOffline');
+                    });
+            });
+
+            // Denetimler ancak buraya kadar gelindiğinde çizilir: üç kapının
+            // üçü de açıksa sepet gerçekten çalışıyor demektir.
+            Array.prototype.slice.call(document.querySelectorAll('[data-cart-add]')).forEach(function (button) {
+                button.hidden = false;
+            });
+
+            opener.hidden = false;
+            render();
+        })();
+        @endisset
 
         /*
             MENÜ MÜHENDİSLİĞİ ÖLÇÜMÜ — `docs/84`.
