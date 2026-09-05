@@ -523,10 +523,20 @@ const itemThumbClass = clsx(
     değil dolguyla verir — marka sarısı bir listede on beş kez tekrar
     ederse vurgu olmaktan çıkar, gürültü olur.
 */
-const itemPriceClass = clsx(
+/*
+    FİYAT KUTUSUNUN ORTAK BİÇİMİ. Düzenlenebilir hâli de salt okunur hâli de
+    aynı ızgarayı taşır: iki farklı rol aynı listeye baktığında sütunlar
+    aynı yerde durur (`docs/109` §8.4).
+*/
+const itemPriceBaseClass = clsx(
     'flex min-h-[var(--density-hit-area-min)] min-w-[110px] shrink-0 items-center justify-end gap-[var(--space-2)]',
     'rounded-[var(--radius-md)] bg-surface-subtle px-[var(--space-3)]',
     'text-body font-bold tabular-nums text-fg',
+);
+
+/* Üzerine gelme ve odak YALNIZ düzenlenebilir hâlde: biçim, verilen sözdür. */
+const itemPriceClass = clsx(
+    itemPriceBaseClass,
     'hover:bg-surface-active',
     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
 );
@@ -3818,12 +3828,7 @@ export function MenuCatalogWorkspace({
                                                             biçim, verilen sözün
                                                             kendisidir.
                                                         */
-                                                        <span
-                                                            className={clsx(
-                                                                itemPriceClass,
-                                                                'hover:bg-surface-subtle',
-                                                            )}
-                                                        >
+                                                        <span className={itemPriceBaseClass}>
                                                             {formatMoneyOr(
                                                                 item.priceMinorAmount,
                                                                 item.currencyCode,
