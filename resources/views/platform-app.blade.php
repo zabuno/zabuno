@@ -9,6 +9,7 @@
     @include('partials.analytics', ['analyticsContext' => ['zabuno_surface' => 'platform']])
     @viteReactRefresh
     <!-- vite-entry: resources/js/platform.tsx -->
+    @include('partials.font-preload')
     @vite(['resources/css/app.css', 'resources/js/platform.tsx'])
 </head>
 {{-- PERSONA: superadmin yüzeyi lacivert zeminde çalışır (`docs/102` §5h).

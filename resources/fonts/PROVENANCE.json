@@ -1,0 +1,43 @@
+{
+    "neden": "Yazı tipi depoda barındırılır. Üretimdeki CSP `font-src 'self' data:` diyor; bir CDN'den gelen yazı tipi tarayıcı tarafından ENGELLENİR. Barındırılmadığı sürece her cihaz kendi yedeğine düşer (macOS SF Pro, Linux DejaVu Sans, Windows Segoe UI) ve aynı ekran her cihazda farklı ölçüde çizilir.",
+    "aile": "Roboto",
+    "kaynakPaket": "@fontsource-variable/roboto",
+    "kaynakSurum": "5.3.0",
+    "tarballSha256": "03510ae8a8159543ebef8d35280cf6821099ef3f61d31858458ac8bf1a8e983e",
+    "yukariAkis": "https://github.com/google/fonts (Roboto v51, metadata lastModified 2026-02-19)",
+    "lisans": "OFL-1.1",
+    "lisansDosyasi": "LICENSE-Roboto.txt",
+    "lisansNotu": "Roboto Apache-2.0 DEĞİL. Paketin kendi metadata.json'u ve LICENSE dosyası SIL Open Font License 1.1 diyor. OFL yeniden dağıtıma izin verir; şartı, yazı tipinin tek başına satılmaması ve lisans metninin dosyalarla birlikte taşınmasıdır — bu yüzden LICENSE-Roboto.txt burada duruyor.",
+    "telifBildirimi": "Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)",
+    "neyiAldik": "Yalnız `wght` ekseninin DİK (normal) kesimi ve yalnız üç alt küme.",
+    "dosyalar": [
+        {
+            "dosya": "roboto-latin-wght-normal.woff2",
+            "bayt": 43136,
+            "sha256": "1404ca348bd75ef836f4dd8b6f2cc719458642d1237c368296b2fc652dca47dc",
+            "neden": "Her sayfanın ilk boyaması. `preload` edilen tek dosya."
+        },
+        {
+            "dosya": "roboto-latin-ext-wght-normal.woff2",
+            "bayt": 29392,
+            "sha256": "cedb374b05a35034cf96db185db4eeb8f8ce49e1a56197673702ff11b5533d6e",
+            "neden": "Türkçe ş/ğ/İ ve Almanca/Fransızca aksanları burada. `tr`/`de`/`fr` bu dosya olmadan yedeğe düşer."
+        },
+        {
+            "dosya": "roboto-cyrillic-wght-normal.woff2",
+            "bayt": 23664,
+            "sha256": "481dd0c01e6bbb129fd147eb5d8571016193cba141c4627ca60ceabdb5a46ea8",
+            "neden": "`ru` locale'i (config/app.php supported_locales)."
+        }
+    ],
+    "toplamBayt": 96192,
+    "almadiklarimiz": {
+        "italik": "Depoda tek bir `italic` kullanımı yok (ölçüldü). Almak, hiç indirilmeyecek 100 KB demekti.",
+        "greek/greek-ext/vietnamese": "Desteklenen locale listesinde yok.",
+        "math/symbols": "Matematik ve sembol blokları; panelde kullanılmıyor ve ikisi tek başına 140 KB'ın üstünde.",
+        "cyrillic-ext": "Rusça `cyrillic` alt kümesindedir; `cyrillic-ext` Ukraynaca/Sırpça genişletmeleri içindir ve desteklenen dil listesinde yok.",
+        "wdth-ekseni": "Genişlik ekseni kullanılmıyor; `wght` kesimi dosya başına yaklaşık 23 KB daha küçük.",
+        "arapca": "Roboto'da Arap yazısı YOK. `ar` locale'i bu yüzden işletim sisteminin kendi Arap yüzüne düşer — kayıtlı bir boşluk, bu paketin kapsamı dışında."
+    },
+    "nasilGuncellenir": "npm pack @fontsource-variable/roboto@<sürüm> → package/files/ altından aynı üç dosyayı ve LICENSE'ı kopyala, bayt/sha değerlerini burada güncelle. `resources/js/design-system/font-hosting.test.ts` bütçeyi ve kaydı doğrular."
+}
