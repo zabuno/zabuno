@@ -22,6 +22,7 @@ use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuItemController;
+use App\Http\Controllers\Rating\StoreGuestRatingController;
 use App\Http\Controllers\Seo\ShowRobotsController;
 use App\Http\Controllers\Seo\ShowSitemapController;
 use App\Http\Controllers\Team\ShowTeamInvitationController;
@@ -107,6 +108,30 @@ Route::post('/q/events', StoreGuestMenuEventsController::class)
 Route::post('/q/{token}/orders', StoreGuestOrderController::class)
     ->middleware('throttle:20,1')
     ->name('guest.orders.store');
+
+/*
+    MİSAFİRİN OYU (`docs/116` §4).
+
+    Sipariş ucuyla AYNI yerde duruyor çünkü aynı sözü tutuyor: oturum yok,
+    masa gövdeden değil adresteki karekod belirtecinden okunuyor. Oy vermek
+    için o masadan kod okutmuş olmak GEREKİR ve bu, ürünün elindeki en
+    güçlü sinyaldir — masadan gelen oy dışarıdan gelen oydan ağırdır çünkü
+    o kişi gerçekten oradaydı.
+
+    Hız sınırı siparişten CÖMERT ama olay ucundan DAR. Sıra rastgele değil:
+    bir oy mutfağa iş düşürmez (siparişten ucuz), ama bir olay satırından
+    ağırdır — puanı etkiler ve menünün sıralamasını değiştirir. Sekiz
+    kişilik bir masanın herkesin birkaç tabağı puanlaması bu sınıra rahat
+    sığar; bir betiğin masayı doldurması sığmaz.
+
+    Sınırın kendisi tek kalkan DEĞİL: asıl koruma masa başına ANİ YIĞILMA
+    tespitidir (`config/rating-algorithm/v1.php` → `abuse`), çünkü o kural
+    isteğin hızını değil, bir masanın gerçekten kaç kişilik olabileceğini
+    ölçer. Ve yığılma REDDETMEZ, İŞARETLER: sinyal defterde kalır.
+*/
+Route::post('/q/{token}/ratings', StoreGuestRatingController::class)
+    ->middleware('throttle:30,1')
+    ->name('guest.ratings.store');
 
 // Görsel türevleri: değişmez, sağlama toplamı taşıyan, herkese açık adres
 // (`docs/76`). Misafirin menüdeki fotoğrafı görebilmesi için oturum

@@ -154,6 +154,31 @@
         $gt = array_merge($gt, $ordering['text'] ?? []);
     }
 
+    /* PUANLAMA — SUNUCUNUN KARARI (`docs/116` §3/§4, P4–P6).
+
+       `$rating` `null` ise bu sayfada tek bir yıldız, tek bir "henüz
+       yeterli değerlendirme yok" cümlesi ve tek bir puan çizilmez. Karar
+       denetleyicide veriliyor (masaya bağlı karekod) ve buraya YALNIZ
+       sonucu geliyor — sepetle aynı desen, aynı gerekçe.
+
+       Sözlük ana sözlüğe katılıyor ki betik tek bir `say()` ile konuşsun;
+       puanlama çizilmediğinde bu cümleler misafirin hattından hiç
+       geçmiyor. */
+    $rating = $rating ?? null;
+
+    if ($rating !== null) {
+        $gt = array_merge($gt, $rating['text'] ?? []);
+    }
+
+    /* Kalıptaki `{score}`/`{max}` SUNUCUDA doldurulur: sayı burada hazır ve
+       hiç değişmiyor, dolayısıyla onu istemciye taşıyıp orada birleştirmek
+       misafire gereksiz bir betik indirtmek olurdu (`ScoreLabel`). */
+    $fillScore = static fn (string $pattern, string $score, int $max): string => str_replace(
+        ['{score}', '{max}'],
+        [$score, (string) $max],
+        $pattern,
+    );
+
     $text = static fn (string $key): string => (string) ($gt[$key] ?? '');
 
     $headline = $identity?->brandName ?: trim((string) ($fallbackBrandName ?? ''));
@@ -1081,6 +1106,95 @@
         }
         @endisset
 
+        @isset($rating)
+        /* ---- PUANLAMA (`docs/116` §3/§4) --------------------------------
+
+           Puan, bilinmezlik cümlesi, sahibin yanıtı ve oy denetimi — dördü
+           de kartın SARMALANAN satırında birer TAM SATIR alır. Ad ile fiyat
+           yan yana durabilir çünkü ikisi de kısadır; bunlar cümledir ve
+           320 px'de bir cümlenin yanına bir şey koymak, ikisini birden
+           okunmaz yapar (`docs/113` §7.1). */
+        .qr-rate-score,
+        .qr-rate-none,
+        .qr-rate-reply,
+        .qr-rate {
+            flex: 1 0 100%;
+        }
+
+        .qr-rate-score,
+        .qr-rate-none {
+            font-size: 0.8125rem;
+        }
+
+        /* BİLİNMEZLİK SOLUK YAZILIR AMA GİZLENMEZ: bir cümledir ve
+           okunmalıdır. Renk tek başına anlam taşımıyor — cümlenin kendisi
+           "henüz yeterli değerlendirme yok" diyor (WCAG 1.4.1). */
+        .qr-rate-none {
+            color: var(--qr-muted);
+        }
+
+        .qr-rate-reply {
+            display: block;
+            margin-top: 4px;
+            padding: 8px 10px;
+            border-inline-start: 3px solid var(--qr-accent);
+            background: var(--qr-surface);
+            font-size: 0.8125rem;
+            text-wrap: pretty;
+        }
+
+        /* KİM KONUŞUYOR — kendi satırında ve vurgulu. Restoranın cümlesiyle
+           misafirlerin ölçümü aynı kartta duruyor; ayırt edilemezlerse
+           sahibin sözü bir değerlendirme sanılır. */
+        .qr-rate-reply-who {
+            display: block;
+            font-weight: 700;
+            color: var(--qr-muted);
+        }
+
+        .qr-rate {
+            display: flex;
+            gap: 2px;
+            margin-top: 4px;
+        }
+
+        /* Beş düğme × 44 px = 220 px; 320 px'lik ekrana kendi satırında
+           rahat sığar (`docs/48` §1). Ölçü ortak `--qr-tap` değişkeninden
+           gelir — sepetin adet düğmeleriyle aynı parmak. */
+        .qr-rate-btn {
+            min-height: var(--qr-tap);
+            min-inline-size: var(--qr-tap);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: var(--qr-muted);
+            cursor: pointer;
+        }
+
+        /* SEÇİLİ YILDIZ YALNIZ RENKLE AYRILMAZ.
+
+           Renk körü bir misafir için "gri yıldız" ile "vurgu rengi yıldız"
+           aynı yıldızdır; parlaklık farkı ise her görme türünde okunur.
+           Ekran okuyucu için ayrım zaten `aria-pressed`te (WCAG 1.4.1). */
+        .qr-rate-btn {
+            opacity: 0.45;
+        }
+
+        .qr-rate-btn[aria-pressed='true'] {
+            color: var(--qr-accent);
+            opacity: 1;
+        }
+
+        .qr-rate-ico {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+        @endisset
+
         /* ---- BOŞ DURUMLAR ----------------------------------------------- */
         .qr-menu-empty-state,
         .qr-menu-category-empty {
@@ -1245,8 +1359,34 @@
                  tam olarak onun için var (WCAG 4.1.3). --}}
             <span class="qr-cart-live" role="status" aria-live="polite" data-cart-live></span>
         @endisset
+        @isset($rating)
+            {{-- "PUANINIZ KAYDEDİLDİ" CÜMLESİNİN YERİ.
+
+                 Gören misafir için geri bildirim yıldızların DOLMASIDIR —
+                 bastığı yerde, gözünün önünde. Görmeyen misafir için dolan
+                 bir yıldız hiçbir şey söylemez; bu canlı bölge tam olarak
+                 onun için var (WCAG 4.1.3).
+
+                 TEK BİR BÖLGE, kırk ürün için. Satır başına bir canlı bölge
+                 koymak, ekran okuyucuya kırk ayrı duyuru kanalı açmak
+                 olurdu ve hangisinin konuştuğu belirsizleşirdi. --}}
+            <span class="qr-cart-live" role="status" aria-live="polite" data-rate-live></span>
+        @endisset
     </div>
 </header>
+
+@isset($rating)
+    {{-- YILDIZIN ŞEKLİ SAYFADA BİR KEZ TANIMLANIR.
+
+         Kırk ürünlük bir menüde her düğmeye ayrı bir `<path>` basmak, aynı
+         yolu iki yüz kez tekrarlamak olurdu. Simge burada bir kez durur,
+         düğmeler ona `<use>` ile bakar. KÜTÜPHANE YOK: bu sayfaya bir simge
+         paketi indirmek, masadaki zayıf hatta tek bir yıldız için bir
+         ağ isteği ödemek demekti (`GUEST-CART-320-08` ile aynı gerekçe). --}}
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+        <symbol id="qr-star" viewBox="0 0 24 24"><path d="M12 2.6l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.5l6.6-.9z"/></symbol>
+    </svg>
+@endisset
 
 <main role="main" class="qr-page" @isset($menuKey) data-menu-key="{{ $menuKey }}" @endisset>
     @isset($previewNotice)
@@ -1553,6 +1693,47 @@
                                     @if (isset($ordering) && isset($item['menuItemId']) && ! $isSoldOut)
                                         <button type="button" class="qr-cart-add qr-press" data-cart-add hidden>{{ $text('cartAdd') }}</button>
                                     @endif
+                                    @if (isset($rating) && isset($item['menuItemId']))
+                                        @php($ratingRow = $rating['items'][(int) $item['menuItemId']] ?? null)
+                                        {{-- PUAN YA DA BİLİNMEZLİK — İKİSİNDEN BİRİ HER ZAMAN YAZILIR.
+
+                                             Eşik altında SIFIR YILDIZ çizilmez (`docs/116` §3): sıfır bir
+                                             ÖLÇÜMDÜR ve bilinmeyenin yerine geçemez. Ama hiçbir şey
+                                             yazmamak da bir cevap değil — misafir "bu ürün puanlanmıyor
+                                             mu, yoksa kötü mü?" diye sorar ve boş bir yer o soruyu
+                                             cevaplamaz.
+
+                                             KARAR SUNUCUDA VERİLDİ. Buraya gelen `label` ya bir metindir
+                                             ya `null`; eşiğin sayısı, sinyal sayısı ve toplam ağırlık bu
+                                             sayfaya HİÇ inmiyor. Şablonun yanlış yapabileceği bir şey
+                                             kalmıyor. --}}
+                                        @if ($ratingRow !== null && $ratingRow['label'] !== null)
+                                            <span class="qr-rate-score" data-rating-score="{{ $ratingRow['label'] }}">{{ $fillScore($text('ratingScorePattern'), $ratingRow['label'], (int) $rating['scaleMax']) }}</span>
+                                        @else
+                                            <span class="qr-rate-none" data-rating-unknown>{{ $text('ratingNotEnough') }}</span>
+                                        @endif
+                                        @if ($ratingRow !== null && ($ratingRow['reply'] ?? null) !== null)
+                                            {{-- SAHİBİN YANITI (`docs/116` §4, P6) — KİM KONUŞUYOR YAZILI.
+
+                                                 Kaynağı yazılmasaydı misafir restoranın cümlesini bir
+                                                 değerlendirme sanırdı; aynı ilke dış kaynaklar için de
+                                                 yazılı (§5 D1). --}}
+                                            <span class="qr-rate-reply" data-rating-reply>
+                                                <span class="qr-rate-reply-who">{{ $text('ratingReplyLabel') }}</span>
+                                                <span class="qr-rate-reply-body">{{ $ratingRow['reply'] }}</span>
+                                            </span>
+                                        @endif
+                                        {{-- OY DENETİMİ. `hidden` ile iner ve betik onu açar: JavaScript
+                                             çalışmayan bir tarayıcıda basınca hiçbir şey olmayan beş
+                                             düğme göstermek, misafire olmayan bir yetenek vaat etmektir.
+                                             Puan ve yanıt ise `hidden` DEĞİL — onlar düz metindir ve
+                                             betiksiz de doğrudur. --}}
+                                        <span class="qr-rate" role="group" aria-label="{{ $text('ratingLabel') }}" data-rate-group hidden>
+                                            @for ($star = 1; $star <= (int) $rating['scaleMax']; $star++)
+                                                <button type="button" class="qr-rate-btn qr-press" data-rate="{{ $star }}" aria-pressed="false" aria-label="{{ $fillScore($text('ratingChoicePattern'), (string) $star, (int) $rating['scaleMax']) }}"><svg class="qr-rate-ico" aria-hidden="true" focusable="false"><use href="#qr-star"/></svg></button>
+                                            @endfor
+                                        </span>
+                                    @endif
                                 </div>
                             </li>
                         @endforeach
@@ -1697,6 +1878,20 @@
     <script type="application/json" id="guest-order" nonce="{{ $cspNonce ?? '' }}">{!! json_encode([
         'submitPath' => $ordering['submitPath'],
         'money' => $ordering['money'],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+@endisset
+@isset($rating)
+    {{-- OYUN GİDECEĞİ ADRES — sunucudan iner (`docs/116` §4).
+
+         İstemcide kurulsaydı karekod belirtecinin biçimi değiştiği gün
+         sayfa sessizce yanlış uca yazardı; sipariş ucunda aynı karar aynı
+         gerekçeyle alınmıştı.
+
+         BURADA PUAN YOK, EŞİK YOK, SİNYAL SAYISI YOK. Bu blok yalnız
+         adresi taşır: gösterilecek her sayı zaten sunucuda metne çevrilip
+         satırın kendisine basıldı. --}}
+    <script type="application/json" id="guest-rating" nonce="{{ $cspNonce ?? '' }}">{!! json_encode([
+        'submitPath' => $rating['submitPath'],
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 @endisset
 <script nonce="{{ $cspNonce ?? '' }}">
@@ -2447,6 +2642,113 @@
 
             opener.hidden = false;
             render();
+        })();
+        @endisset
+
+        @isset($rating)
+        /*
+            MİSAFİRİN OYU (`docs/116` §4).
+
+            ═══ DENETİM ÇİZİLİ GELMEZ, AÇILIR ═══
+
+            Yıldızlar `hidden` iniyor ve ancak buraya kadar gelindiğinde
+            açılıyor. JavaScript çalışmayan bir tarayıcıda basınca hiçbir şey
+            olmayan beş düğme göstermek, misafire olmayan bir yetenek vaat
+            etmektir — sepette de aynı kural yazılı.
+
+            Puanın KENDİSİ ve sahibin yanıtı `hidden` DEĞİL: onlar düz
+            metindir ve betik hiç çalışmasa da doğrudur.
+
+            ═══ SUNUCU HAYIR DERSE YILDIZ GERİ SÖNER ═══
+
+            Basılan yıldızı bırakıp cümleyi değiştirmek, misafire oyunun
+            durduğunu göstermek olurdu. Ekranın söylediği şey defterin
+            hâliyle aynı kalmalı.
+
+            ═══ BU BLOK MASASIZ BİR SAYFAYA HİÇ İNMEZ ═══
+
+            Puanlama koşulunun içinde duruyor: afişten menüye bakan misafir
+            oy veremediği için bu betiğin tek baytını bile indirmiyor.
+        */
+        (function () {
+            var config = {};
+
+            try {
+                var node = document.getElementById('guest-rating');
+                config = node ? JSON.parse(node.textContent || '{}') : {};
+            } catch (error) {
+                return;
+            }
+
+            if (!config.submitPath) {
+                return;
+            }
+
+            var live = document.querySelector('[data-rate-live]');
+
+            function paint(group, score) {
+                Array.prototype.slice.call(group.querySelectorAll('[data-rate]')).forEach(function (button) {
+                    button.setAttribute(
+                        'aria-pressed',
+                        Number(button.getAttribute('data-rate')) <= score ? 'true' : 'false'
+                    );
+                });
+            }
+
+            Array.prototype.slice.call(document.querySelectorAll('[data-rate-group]')).forEach(function (group) {
+                var row = group.closest('[data-menu-item-id]');
+
+                if (!row) {
+                    return;
+                }
+
+                group.hidden = false;
+
+                group.addEventListener('click', function (event) {
+                    var button = event.target.closest ? event.target.closest('[data-rate]') : null;
+
+                    if (!button) {
+                        return;
+                    }
+
+                    var score = Number(button.getAttribute('data-rate'));
+
+                    paint(group, score);
+
+                    fetch(config.submitPath, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                        body: JSON.stringify({
+                            menuItemId: Number(row.getAttribute('data-menu-item-id')),
+                            score: score,
+                        }),
+                    })
+                        .then(function (response) {
+                            if (!response.ok) {
+                                paint(group, 0);
+                            }
+
+                            if (live) {
+                                /*
+                                    "KAYDEDİLDİ" DENİR, "EKLENDİ" DENMEZ.
+
+                                    Oy ağırlıklandırmaya girmemiş olabilir
+                                    (ani yığılma) ve o karar algoritmanındır.
+                                    Kaydedildiği ise her durumda doğrudur —
+                                    sinyal deftere yazıldı ve orada duruyor.
+                                */
+                                live.textContent = response.ok ? say('ratingRecorded') : say('ratingFailed');
+                            }
+                        })
+                        .catch(function () {
+                            paint(group, 0);
+
+                            if (live) {
+                                live.textContent = say('ratingOffline');
+                            }
+                        });
+                });
+            });
         })();
         @endisset
 

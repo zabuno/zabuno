@@ -48,6 +48,9 @@ final class RatingAlgorithm
     /** @var array<int, self> Aynı süreçte aynı dosyayı ikinci kez okumamak için. */
     private static array $loaded = [];
 
+    /** Tipli kötüye kullanım kuralları — ilk sorulduğunda türetilir. */
+    private ?RatingAbuse $abuseRules = null;
+
     /**
      * @param  array<string, float>  $weights  kaynak değeri => ağırlık
      * @param  array<string, mixed>  $abuse
@@ -104,6 +107,20 @@ final class RatingAlgorithm
     public function weightForSource(RatingSource $source): float
     {
         return $this->weights[$source->value];
+    }
+
+    /**
+     * Kötüye kullanım kurallarının TİPLİ hâli — `docs/116` §4 (P4).
+     *
+     * Ham `$abuse` dizisi yerinde bırakıldı ve bu kasıtlı: dizi, dosyanın
+     * o bölümünün olduğu gibi okunabilmesini sağlıyor. Ama uç bir diziye
+     * `$abuse['burst_window_minutes'] ?? 15` diye sorsaydı, dosyadaki bir
+     * yazım hatası sessizce kodun varsayılanına düşerdi. Tipli okuma eksik
+     * alanı gürültüyle reddeder.
+     */
+    public function abuseRules(): RatingAbuse
+    {
+        return $this->abuseRules ??= RatingAbuse::fromArray($this->version, $this->abuse);
     }
 
     /**

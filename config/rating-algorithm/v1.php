@@ -186,6 +186,29 @@ return [
             'missing_table_scan',
             'owner_reported_fraud',
             'source_mapping_rejected',
+            /*
+                MİSAFİR FİKRİNİ DEĞİŞTİRDİ (P4).
+
+                P1 göçü bu soruyu bilerek açık bıraktı: değişmez bir defterde
+                "fikrimi değiştirdim"in tek karşılığı yeni bir satırdır ve o
+                satır, eskisi hâlâ sayılıyorken tek oy kuralını bozar. Cevap
+                şu: yeni satır sayılır, eskisi bu sebeple işaretlenir.
+
+                `duplicate_visitor` İLE BİRLEŞTİRİLMEDİ. Fikrini değiştiren
+                misafir bir kötüye kullanıcı değildir; ikisini tek sebepte
+                toplasaydık "kaç oyu kötüye kullanım diye eledik?" sorusunun
+                cevabı kalıcı olarak yanlış olurdu — ve o yanlış sayı, bir
+                gün ağırlıkları ayarlarken kullanılırdı.
+
+                BU SATIR v1'İ v2 YAPMAZ ve bunun ölçülebilir bir sebebi var:
+                sebep sözlüğü hiçbir ağırlığın, sönümün ya da eşiğin girdisi
+                değildir — v1 ile hesaplanmış hiçbir puan bu ekleme yüzünden
+                değişmez. Sırf sözlük büyüdü diye v2 yazsaydık, v1 ile
+                birebir aynı sayıları üreten bir sürüm doğardı ve "bu puan
+                neden değişti?" sorusunun cevabı "değişmedi" olurdu — yani
+                sürüm damgasının tek işini değersizleştirirdik.
+            */
+            'superseded',
         ],
     ],
 

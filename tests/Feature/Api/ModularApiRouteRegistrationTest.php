@@ -439,6 +439,21 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/workspaces/{workspace}/locations/{location}/orders/{order}/status||App\Http\Controllers\Ordering\ChangeOrderStatusController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/locations/{location}/ordering||App\Http\Controllers\Ordering\ShowOrderingSwitchController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/locations/{location}/ordering||App\Http\Controllers\Ordering\UpdateOrderingSwitchController|api,auth:sanctum,verified',
+        /*
+            PUAN YÜZEYİ (`docs/116` P5/P6).
+
+            ÜÇ YOL VAR VE ÜÇÜ DE PUANI SİLMEZ. Listede `DELETE .../ratings`
+            diye bir satır YOKTUR ve bu bir eksiklik değil: sahip puana
+            yanıt verebilir, kaldıramaz (`docs/116` §4). `/reply` altındaki
+            PUT ve DELETE sahibin KENDİ cümlesine dokunur, kimsenin ölçümüne
+            değil — donmuş imza listesi bu ayrımı da donduruyor.
+
+            Misafirin oy verme ucu burada YOKTUR, sipariş ucuyla aynı
+            gerekçeyle: o yol oturum açmaz ve `routes/web.php`'den gider.
+        */
+        'GET|api/workspaces/{workspace}/menus/{menu}/ratings||App\Http\Controllers\Rating\ListMenuRatingsController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/ratings/products/{product}/reply||App\Http\Controllers\Rating\UpdateRatingReplyController|api,auth:sanctum,verified',
+        'DELETE|api/workspaces/{workspace}/ratings/products/{product}/reply||App\Http\Controllers\Rating\DeleteRatingReplyController|api,auth:sanctum,verified',
     ];
 
     /**
@@ -473,6 +488,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
             kaydırmaz.
         */
         'routes/api/ordering.php',
+        /*
+            PUAN YÜZEYİ (`docs/116` P5/P6). Sipariş dosyasıyla aynı gerekçe
+            listenin sonunda tutuyor: hiçbir mevcut yolu gölgelemiyor ve
+            sona eklemek dondurulmuş imza listesini ortasından kaydırmıyor.
+        */
+        'routes/api/rating.php',
     ];
 
     #[Test]
