@@ -10,43 +10,43 @@ msgstr ""
 
 #: guest:guest.closed.notice
 msgid "guest.closed.notice"
-msgstr ""
+msgstr "Şu anda kapalıyız."
 
 #: guest:guest.closed.opensOn
 msgid "guest.closed.opensOn"
-msgstr ""
+msgstr "{day} günü {clock} açılıyoruz."
 
 #: guest:guest.closed.opensToday
 msgid "guest.closed.opensToday"
-msgstr ""
+msgstr "Bugün {clock} açılıyoruz."
 
 #: guest:guest.day.1
 msgid "guest.day.1"
-msgstr ""
+msgstr "Pazartesi"
 
 #: guest:guest.day.2
 msgid "guest.day.2"
-msgstr ""
+msgstr "Salı"
 
 #: guest:guest.day.3
 msgid "guest.day.3"
-msgstr ""
+msgstr "Çarşamba"
 
 #: guest:guest.day.4
 msgid "guest.day.4"
-msgstr ""
+msgstr "Perşembe"
 
 #: guest:guest.day.5
 msgid "guest.day.5"
-msgstr ""
+msgstr "Cuma"
 
 #: guest:guest.day.6
 msgid "guest.day.6"
-msgstr ""
+msgstr "Cumartesi"
 
 #: guest:guest.day.7
 msgid "guest.day.7"
-msgstr ""
+msgstr "Pazar"
 
 #: guest:guest.deadEnd.body
 msgid "guest.deadEnd.body"

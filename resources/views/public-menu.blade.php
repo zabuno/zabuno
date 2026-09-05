@@ -455,35 +455,22 @@
             @endisset
         </p>
     @endisset
-    @isset($closedText)
-        {{-- ŞUBE ŞU ANDA KAPALI (FF-141) — menü GİZLENMEZ, üstüne dürüst bir
-             şerit konur. Gece 23:00'te karekodu okutan misafir çoğu zaman
-             yarını planlıyordur; menüyü saklamak ona hizmet etmez, yalnız
-             elimizdeki bilgiyi ondan gizler.
+    {{-- ŞUBE ŞU ANDA KAPALI (FF-141) — menü GİZLENMEZ, üstüne dürüst bir
+         şerit konur. Gece 23:00'te karekodu okutan misafir çoğu zaman yarını
+         planlıyordur; menüyü saklamak ona hizmet etmez, yalnız elimizdeki
+         bilgiyi ondan gizler.
 
-             Bu şerit `public-menu-out-of-service` DEĞİLDİR ve olmamalıdır: o
-             sayfa "gösterilecek menü yok" der ve menüyü hiç çizmez. Burada
-             menü vardır.
+         Bu şerit `public-menu-out-of-service` DEĞİLDİR ve olmamalıdır: o sayfa
+         "gösterilecek menü yok" der ve menüyü hiç çizmez. Burada menü vardır.
 
-             DURUM RENGE YASLANMAZ. Cümlenin kendisi "kapalıyız" der ve
-             `role="status"` ile duyurulur; rengi göremeyen ya da ekranı
-             görmeyen misafir için renk hiçbir şey anlatmaz (WCAG 1.4.1).
+         ÖNİZLEME UYARISININ ALTINDA, İKİSİ BİRDEN (FF-143). "Bu bir önizleme"
+         ile "şu anda kapalıyız" farklı iki gerçektir ve aynı anda doğru
+         olabilirler; biri diğerinin yerine geçmez, geçseydi sahip önizlemede
+         misafirin gördüğünden başka bir sayfa görürdü.
 
-             `data-guest-state` MAKİNE içindir: testler ve ölçüm, hangi hâlin
-             çizildiğini cümlenin çevirisine bakmadan ayırt edebilmeli —
-             servis dışı sayfasında da aynı gerekçeyle var. --}}
-        <p role="status" class="qr-menu-closed-notice" data-guest-state="closed"
-           @isset($closedNextOpeningClock) data-next-opening="{{ $closedNextOpeningClock }}" @endisset
-           style="margin:0;padding:12px 16px;border-bottom:1px solid currentColor;font-weight:700">
-            {{ $closedText['notice'] }}
-            @isset($closedText['nextOpening'])
-                {{-- Saat YALNIZ şubenin kendi haftasından çıkıyorsa basılır;
-                     anahtar yoksa satır hiç çizilmez (bkz.
-                     `GuestText::closedNotice`). --}}
-                {{ $closedText['nextOpening'] }}
-            @endisset
-        </p>
-    @endisset
+         İşaretleme ORTAK PARÇADADIR çünkü aynı şerit ürün sayfasında da
+         çizilir; kopyalasaydık ikisi bir gün ayrışırdı. --}}
+    @include('partials.guest-closed-notice', ['closedNotice' => $closedNotice ?? null])
     <header class="qr-menu-header">
         {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
              Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı

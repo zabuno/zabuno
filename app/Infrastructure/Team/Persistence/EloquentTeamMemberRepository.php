@@ -101,7 +101,27 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
 
             $targetMembership = $memberships->firstWhere('id', $targetMembershipId);
 
-            if ($targetMembership === null || $targetMembership->role !== 'editor') {
+            /*
+                HEDEF, DEVRALABİLEN BİR ROLDE OLMALI.
+
+                Koşul bir zamanlar "tam olarak `editor`" diyordu ve bu bir
+                seçim değildi: yazıldığı gün enum yalnız `owner`, salt okunur
+                `member` ve `editor` taşıyordu — editör, devredilebilecek tek
+                adaydı. `Manager` sonradan doğdu ve koşula kimse geri dönmedi,
+                böylece sahip dükkânı devrederken günlük operasyonu yürüten
+                kişiyi seçemez oldu (`MembershipRole::ownershipTransferable()`
+                bu kümenin NEDEN'ini taşır).
+
+                Küme `removable()` DEĞİLDİR ve ondan türetilmez: mutfak ve
+                miras `member` çıkarılabilir ama devralamaz. Aynı bayrağı
+                paylaşsalardı, devir bu iki rolü de kapsardı.
+            */
+            $transferableRoles = array_map(
+                static fn (MembershipRole $role): string => $role->value,
+                MembershipRole::ownershipTransferable(),
+            );
+
+            if ($targetMembership === null || ! in_array($targetMembership->role, $transferableRoles, true)) {
                 return false;
             }
 
@@ -112,7 +132,15 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
             $promoted = DB::table('workspace_memberships')
                 ->where('id', $targetMembership->id)
                 ->where('workspace_id', $workspaceId)
-                ->where('role', 'editor')
+                /*
+                    Koşullu güncelleme AYNEN durur, yalnız sabit `editor`
+                    yerine az önce DOĞRULANAN rolü bekler: satır kilit
+                    altında okunduktan sonra da olsa değişmişse güncelleme
+                    sıfır satır etkiler ve işlem geri sarılır. Sabit değer
+                    bırakılsaydı, yönetici hedefte bu kapı her zaman
+                    tökezlerdi.
+                */
+                ->where('role', $targetMembership->role)
                 ->update(['role' => 'owner', 'updated_at' => now()]);
 
             if ($promoted !== 1) {

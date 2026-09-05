@@ -42,7 +42,26 @@ use Tests\TestCase;
  * için iki farklı cevap alıyordu. Fark kasıtlı değil kazaydı — burada 404
  * bir karar değil, deponun `false` dönmesinin YAN ETKİSİYDİ.
  *
+ * FF-144 SÖZLEŞME DÜZELTMESİ. Yukarıdaki "hedefin rolü tam olarak `editor`"
+ * cümlesi DONMUŞ bir karar gibi okunuyor ama bir karar değildi. Yazıldığı gün
+ * (2026-08-24) `MembershipRole` yalnız üç değer taşıyordu: `owner`, salt
+ * okunur `member` ve `editor`. Yani "editör" roller arasından SEÇİLMEDİ —
+ * devredilebilecek tek aday oydu. `Manager` dört gün sonra doğdu (FF-12) ve
+ * bu koşula kimse geri dönmedi.
+ *
+ * Bu, deponun daha önce bir kez düştüğü çukurun aynısıdır: `removable()` de
+ * bir süre davet listesini ödünç alıp `member` rolündekileri çıkarılamaz
+ * bırakmıştı. Orada olduğu gibi burada da eksik olan şey bir gerekçe değil,
+ * geriye dönüp bakan biriydi.
+ *
+ * Sözleşme artık AYRI bir kavrama bağlı: hedefin rolü
+ * `MembershipRole::ownershipTransferable()` kümesinde olmalı (Editör ·
+ * Yönetici). Bu küme `invitable()` veya `removable()` değildir ve onlardan
+ * türetilmez — "kimi işe alırım" ile "dükkânı kime bırakırım" ayrı sorulardır.
+ *
  * Requirement IDs: TEAM-OWNERSHIP-TRANSFER-01,
+ * TEAM-OWNERSHIP-TRANSFER-MANAGER-01,
+ * TEAM-OWNERSHIP-TRANSFER-NARROW-TARGET-01,
  * TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-01,
  * TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02,
  * TEAM-OWNERSHIP-TRANSFER-INVALID-TARGET-01,
@@ -157,6 +176,125 @@ final class TransferWorkspaceOwnershipJourneyTest extends TestCase
 
         $bystanderRow = $this->membershipRow($bystanderMembershipId);
         self::assertSame('member', $bystanderRow->role, 'TEAM-OWNERSHIP-TRANSFER-01: ilişkisiz üyelik satırı değişmeden kalmalı.');
+    }
+
+    // --- TEAM-OWNERSHIP-TRANSFER-MANAGER-01 ----------------------------------
+
+    /**
+     * SAHİPLİK YÖNETİCİYE DE DEVREDİLİR.
+     *
+     * Eski kısıt ürün tarafında ters bir sonuç bırakmıştı: sahip dükkânı
+     * bırakırken, menüyü · şubeyi · karekodu zaten HER GÜN yürüten
+     * Yönetici'yi seçemiyor, ama içerik düzenleyen ve yayınlamayan Editör'ü
+     * seçebiliyordu. Devrin doğal adayı işi fiilen çeviren kişidir; sahibin
+     * devir günü, o kişiyi listede gri görmesi için hiçbir sebep yok.
+     *
+     * Devrin geri kalanı AYNEN durur — bu paket kümeyi genişletir, korumayı
+     * değil: istekte bulunan hâlâ tam olarak mevcut sahip olmalı, işlem hâlâ
+     * tek bir atomik işlem, ve sonunda çalışma alanında hâlâ tam olarak bir
+     * sahip kalır.
+     */
+    public function test_owner_transfers_ownership_to_a_manager_atomically(): void
+    {
+        $owner = $this->verifiedUser('Ayşe Yılmaz', 'ayse-transfer-manager-01@example.test');
+        $workspaceId = $this->workspaceOwnedBy($owner, 'Zeytin Restoranları', 'zeytin-transfer-manager-01');
+        $ownerMembershipId = $this->ownerMembershipId($workspaceId, $owner->id);
+
+        $manager = $this->verifiedUser('Mehmet Demir', 'mehmet-transfer-manager-01@example.test');
+        $managerMembershipId = $this->addMember($workspaceId, $manager, 'manager');
+
+        $editor = $this->verifiedUser('Elif Kaya', 'elif-transfer-manager-01@example.test');
+        $editorMembershipId = $this->addMember($workspaceId, $editor, 'editor');
+
+        $response = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->postJson($this->transferUri($workspaceId, $managerMembershipId));
+
+        self::assertContains(
+            $response->getStatusCode(),
+            [200, 204],
+            'TEAM-OWNERSHIP-TRANSFER-MANAGER-01: sahiplik bir yöneticiye devredilebilmeli.'
+        );
+
+        self::assertSame(
+            'owner',
+            $this->membershipRow($managerMembershipId)->role,
+            'TEAM-OWNERSHIP-TRANSFER-MANAGER-01: seçilen manager owner olmalı.'
+        );
+
+        self::assertSame(
+            'editor',
+            $this->membershipRow($ownerMembershipId)->role,
+            'TEAM-OWNERSHIP-TRANSFER-MANAGER-01: eski sahip editor olmalı.'
+        );
+
+        $ownerCount = DB::table('workspace_memberships')
+            ->where('workspace_id', $workspaceId)
+            ->where('role', 'owner')
+            ->count();
+        self::assertSame(1, $ownerCount, 'TEAM-OWNERSHIP-TRANSFER-MANAGER-01: workspace\'te tam olarak bir owner kalmalı.');
+
+        self::assertSame(
+            'editor',
+            $this->membershipRow($editorMembershipId)->role,
+            'TEAM-OWNERSHIP-TRANSFER-MANAGER-01: ilişkisiz editor satırı değişmeden kalmalı.'
+        );
+    }
+
+    // --- TEAM-OWNERSHIP-TRANSFER-NARROW-TARGET-01 ----------------------------
+
+    /**
+     * DEVREDİLEBİLİR KÜME GENİŞLEDİ AMA HERKESİ KAPSAMAZ.
+     *
+     * MUTFAK DIŞARIDA, ve bu kasıtlıdır. Mutfak rolü ürünün tamamında iki
+     * şey görür: alerjen ve "bugün bitti" (`docs/109` §6.4). Bu satıra
+     * sahiplik vermek, yetkisi iki anahtara sığan bir ekrana faturayı ve
+     * bütün çalışma alanını teslim etmek olurdu. Üstelik devir GERİ
+     * DÖNÜLEMEZ: eski sahip aynı işlemde editöre iner ve devri geri alacak
+     * yetkisi kalmaz. Akşam servisinde balığın bittiğini işaretlemek için
+     * verilmiş bir rolün, yanlış tıklamayla dükkânın sahibi olması
+     * onarılamaz. Aşçı sahip OLACAKSA, önce yürütebileceği bir role
+     * yükseltilir — o yol zaten var (`UpdateTeamMemberRoleController`).
+     *
+     * SALT OKUNUR `member` DA DIŞARIDA: yeni kimsenin davet edilmediği,
+     * hiçbir şeyi değiştiremeyen miras rolü sahipliğe yükseltmek, kümenin
+     * `removable()`'dan değil kendi gerekçesinden türediğinin en net kanıtı
+     * — o rol çıkarılabilir, ama devralamaz.
+     */
+    public function test_kitchen_and_legacy_member_targets_cannot_receive_ownership(): void
+    {
+        $owner = $this->verifiedUser('Ayşe Yılmaz', 'ayse-transfer-narrow-01@example.test');
+        $workspaceId = $this->workspaceOwnedBy($owner, 'Zeytin Restoranları', 'zeytin-transfer-narrow-01');
+        $ownerMembershipId = $this->ownerMembershipId($workspaceId, $owner->id);
+
+        $cook = $this->verifiedUser('Mehmet Demir', 'mehmet-transfer-narrow-01@example.test');
+        $kitchenMembershipId = $this->addMember($workspaceId, $cook, 'kitchen');
+
+        $legacy = $this->verifiedUser('Elif Kaya', 'elif-transfer-narrow-01@example.test');
+        $legacyMembershipId = $this->addMember($workspaceId, $legacy, 'member');
+
+        $kitchenResponse = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->postJson($this->transferUri($workspaceId, $kitchenMembershipId));
+        $kitchenResponse->assertStatus(404, 'TEAM-OWNERSHIP-TRANSFER-NARROW-TARGET-01: mutfak rolüne sahiplik devredilemez.');
+
+        $legacyResponse = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->postJson($this->transferUri($workspaceId, $legacyMembershipId));
+        $legacyResponse->assertStatus(404, 'TEAM-OWNERSHIP-TRANSFER-NARROW-TARGET-01: salt okunur member rolüne sahiplik devredilemez.');
+
+        self::assertSame(
+            'owner',
+            $this->membershipRow($ownerMembershipId)->role,
+            'TEAM-OWNERSHIP-TRANSFER-NARROW-TARGET-01: reddedilen isteklerden sonra owner rolü değişmemeli.'
+        );
+        self::assertSame(
+            'kitchen',
+            $this->membershipRow($kitchenMembershipId)->role,
+            'TEAM-OWNERSHIP-TRANSFER-NARROW-TARGET-01: kitchen rolü değişmemeli.'
+        );
+        self::assertSame(
+            'member',
+            $this->membershipRow($legacyMembershipId)->role,
+            'TEAM-OWNERSHIP-TRANSFER-NARROW-TARGET-01: member rolü değişmemeli.'
+        );
     }
 
     // --- TEAM-OWNERSHIP-TRANSFER-INVALID-TARGET-01 ---------------------------

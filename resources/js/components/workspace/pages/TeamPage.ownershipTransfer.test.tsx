@@ -24,6 +24,8 @@ const INVITATIONS_ENDPOINT = `/api/workspaces/${WORKSPACE_ID}/team/invitations`;
 const OWNER_ID = 1;
 const EDITOR_ID = 2;
 const MEMBER_ID = 3;
+const MANAGER_ID = 4;
+const KITCHEN_ID = 5;
 
 function jsonResponse(status: number, body: unknown): Response {
     return {
@@ -52,6 +54,13 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
             { id: OWNER_ID, name: 'Ayşe Yılmaz', email: 'ayse@example.test', role: 'owner' },
             { id: EDITOR_ID, name: 'Mehmet Demir', email: 'mehmet@example.test', role: 'editor' },
             { id: MEMBER_ID, name: 'Elif Kaya', email: 'elif@example.test', role: 'member' },
+            { id: MANAGER_ID, name: 'Can Öztürk', email: 'can@example.test', role: 'manager' },
+            {
+                id: KITCHEN_ID,
+                name: 'Zeynep Arslan',
+                email: 'zeynep@example.test',
+                role: 'kitchen',
+            },
         ];
         document.cookie = 'XSRF-TOKEN=s1-wp02e-transfer-test-token';
 
@@ -108,7 +117,16 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
         return row as HTMLElement;
     }
 
-    it('exposes a Transfer ownership control only on an eligible Editor row', async () => {
+    /*
+        DÜĞME, SUNUCUNUN KABUL ETTİĞİ HER SATIRDA ÇİZİLİR — DAHA AZINDA DA
+        DEĞİL, DAHA FAZLASINDA DA (FF-144).
+
+        İki yön de ayrı birer hata: sunucunun reddettiği bir satıra düğme
+        çizmek, sahibi tıklayıp reddedilmeye gönderir; sunucunun kabul ettiği
+        bir satırda düğmeyi gizlemek ise yapılabilen bir işi yok gibi
+        gösterir. Yönetici satırı uzun süre ikinci hatanın örneğiydi.
+    */
+    it('exposes a Transfer ownership control on every server-eligible row (Editor, Manager) and on no other row', async () => {
         render(<TeamPage workspaceId={WORKSPACE_ID} />);
 
         await waitFor(() => {
@@ -120,6 +138,11 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
             within(editorRow).getByRole('button', { name: /transfer ownership/i }),
         ).toBeInTheDocument();
 
+        const managerRow = rowFor('Can Öztürk');
+        expect(
+            within(managerRow).getByRole('button', { name: /transfer ownership/i }),
+        ).toBeInTheDocument();
+
         const ownerRow = rowFor('Ayşe Yılmaz');
         expect(
             within(ownerRow).queryByRole('button', { name: /transfer ownership/i }),
@@ -128,6 +151,13 @@ describe('TeamPage — S1-WP02E ownership transfer (TEAM_OWNERSHIP_TRANSFER_FRON
         const memberRow = rowFor('Elif Kaya');
         expect(
             within(memberRow).queryByRole('button', { name: /transfer ownership/i }),
+        ).not.toBeInTheDocument();
+
+        // Mutfak sunucuda da reddedilir; satırda düğme olmaması bir görsel
+        // tercih değil, sunucu sınırının ekrandaki karşılığıdır.
+        const kitchenRow = rowFor('Zeynep Arslan');
+        expect(
+            within(kitchenRow).queryByRole('button', { name: /transfer ownership/i }),
         ).not.toBeInTheDocument();
     });
 

@@ -87,16 +87,25 @@ type TeamMemberListProps = {
 };
 
 /*
-    SAHİPLİK YALNIZ EDİTÖRE DEVREDİLİR.
+    SAHİPLİK EDİTÖRE VE YÖNETİCİYE DEVREDİLİR.
 
-    Bu kısıt uç noktanın kendi sözleşmesidir (`TeamMemberRepositoryPort::
-    transferOwnership`: hedefin rolü TAM OLARAK `editor` olmalı) ve çıkarma
-    kümesiyle bir ilgisi yoktur. İkisi bir zamanlar aynı bayrağı paylaşıyordu;
-    çıkarma yönetici ve mutfağı da kapsayınca ayrıldılar, çünkü aynı bayrağı
-    paylaşmaya devam etselerdi ekran bir aşçıya "sahipliği devret" diye
-    düğme çizer, tıklandığında sunucu reddederdi.
+    Bu küme uç noktanın kendi sözleşmesinin aynasıdır
+    (`MembershipRole::ownershipTransferable()`) ve çıkarma kümesiyle bir
+    ilgisi yoktur. İkisi bir zamanlar aynı bayrağı paylaşıyordu; çıkarma
+    yönetici ve mutfağı da kapsayınca ayrıldılar, çünkü aynı bayrağı
+    paylaşmaya devam etselerdi ekran bir aşçıya "sahipliği devret" diye düğme
+    çizer, tıklandığında sunucu reddederdi.
+
+    Liste bir süre yalnız `editor` idi ve bu ekranda ters yönde bir hata
+    üretiyordu: sunucu kabul etseydi bile yönetici satırında düğme YOKTU —
+    yani yapılabilen bir iş yok gibi görünüyordu. Sunucu kısıtı FF-144'te
+    düzelince buranın da düzelmesi gerekti; iki taraf ayrı kalırsa ekran ya
+    reddedilecek bir tıklama sunar ya da var olan bir yolu gizler.
+
+    MUTFAK BURADA DA YOK: sunucu da reddediyor. Sınır sunucudadır, düğmeyi
+    çizmemek onun ekrandaki karşılığıdır — koruma değil.
 */
-const TRANSFERABLE_ROLE = 'editor';
+const TRANSFERABLE_ROLES = ['editor', 'manager'];
 
 /**
  * Presentational: renders whatever member rows/status text it is given.
@@ -374,7 +383,7 @@ export function TeamMemberList({
                     const removable =
                         viewerIsOwner && removableRoles.includes(member.role.toLowerCase());
                     const transferable =
-                        viewerIsOwner && member.role.toLowerCase() === TRANSFERABLE_ROLE;
+                        viewerIsOwner && TRANSFERABLE_ROLES.includes(member.role.toLowerCase());
                     const rejected = stage === 'forbidden' || stage === 'missing';
 
                     return (

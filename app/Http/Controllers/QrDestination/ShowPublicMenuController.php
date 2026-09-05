@@ -134,15 +134,10 @@ final class ShowPublicMenuController extends Controller
         $canonicalPath = $menuAddress->path();
 
         /*
-            Dil YANITTAN ÖNCE çözülür: artık iki metin haritası ona bağlı —
-            menünün kendi metinleri ve, şube kapalıysa, üstündeki şerit.
+            Dil YANITTAN ÖNCE çözülür: menünün kendi metinleri buna bağlı ve
+            şube kapalıysa üstündeki şerit de aynı seçime yaslanır.
         */
         $guestLocale = GuestLocale::resolve($request, $address['locale']);
-
-        // ŞUBE KAPALI ŞERİDİ (FF-141). Menü GİZLENMEZ; kapalılık menünün
-        // ÜSTÜNDE bir cümledir ve kararı `ResolveGuestMenuView` verir —
-        // karekod yüzeyi ile kalıcı adres yüzeyi ayrışamaz.
-        $closedNotice = $view->closedNotice;
 
         return response()->view('public-menu', [
             'snapshot' => $publication->snapshot,
@@ -173,21 +168,16 @@ final class ShowPublicMenuController extends Controller
                 $this->countItems($publication->snapshot),
             ),
             /*
-                ŞERİT AÇIKKEN HİÇ ÇİZİLMEZ. `null` geçmek, şablona boş bir
-                kap vermekten farklıdır: boş kap sayfanın üstünde sebepsiz
-                bir boşluk ve ekran okuyucuda boş bir duyuru bölgesi
-                bırakırdı.
+                ŞUBE KAPALI ŞERİDİ (FF-141). Menü GİZLENMEZ; kapalılık menünün
+                ÜSTÜNDE bir cümledir ve kararı `ResolveGuestMenuView` verir —
+                karekod yüzeyi ile kalıcı adres yüzeyi ayrışamaz.
+
+                Şablona KARARIN KENDİSİ geçirilir, cümlesi değil (FF-143):
+                cümleyi burada kurmak, misafirin gördüğü dört yüzeyde dört
+                ayrı kopya demekti. Çizim ortak parçadadır ve `null` gelen
+                şerit HİÇ çizilmez — boş bir kap bile değil.
             */
-            'closedText' => $closedNotice === null ? null : $this->guestText->closedNotice(
-                $guestLocale,
-                $closedNotice->nextOpeningClock,
-                $closedNotice->nextOpeningIsoWeekday,
-                $closedNotice->nextOpeningIsToday,
-            ),
-            // Saatin MAKİNEYE okunan hâli: şeridin cümlesi çeviriye bağlıdır,
-            // durumu ve saati ise ölçüm ve testler çeviriden bağımsız
-            // okuyabilmeli.
-            'closedNextOpeningClock' => $closedNotice?->nextOpeningClock,
+            'closedNotice' => $view->closedNotice,
             // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
             // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
             // bakar, buraya değil.

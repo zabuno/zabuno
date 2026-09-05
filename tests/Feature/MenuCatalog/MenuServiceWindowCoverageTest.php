@@ -510,9 +510,14 @@ final class MenuServiceWindowCoverageTest extends TestCase
     }
 
     /**
-     * Tek menülü, yayınlanmış bir şube kurar ve menünün genel adresini döner.
+     * Tek menülü, yayınlanmış bir şube kurar; menünün VE tek ürününün genel
+     * adresini birlikte döner.
      *
-     * @return array{0:int,1:int,2:string} [workspaceId, locationId, path]
+     * Ürün adresi de buradan çıkar çünkü iki yüzey AYNI kurulumla
+     * karşılaştırılmak zorunda: farklı iki kurulum kullansaydık, birinde
+     * çizilip diğerinde çizilmeyen bir şerit "kurulum farkı" sanılabilirdi.
+     *
+     * @return array{0:int,1:int,2:string,3:string} [workspaceId, locationId, menuPath, itemPath]
      */
     private function publishedLocation(string $slugSeed, string $timezone = 'Europe/Istanbul'): array
     {
@@ -525,7 +530,9 @@ final class MenuServiceWindowCoverageTest extends TestCase
             ['menuItemId' => 101, 'productName' => 'Adana Kebap', 'priceMinorAmount' => 32000, 'currencyCode' => 'TRY'],
         ]);
 
-        return [$workspaceId, $locationId, $this->addressFor($key)->path()];
+        $address = $this->addressFor($key);
+
+        return [$workspaceId, $locationId, $address->path(), $address->itemPath(101, 'Adana Kebap')];
     }
 
     // --- GUEST-CLOSED-01 ---------------------------------------------------
@@ -672,5 +679,89 @@ final class MenuServiceWindowCoverageTest extends TestCase
             bir gün adı yazmak, tutulmayacak bir söz vermek olurdu.
         */
         $response->assertDontSee('data-next-opening', false);
+    }
+
+    /*
+    |---------------------------------------------------------------------------
+    | ÜRÜN SAYFASI DA MİSAFİRİN YÜZÜDÜR (FF-143)
+    |---------------------------------------------------------------------------
+    |
+    | FF-141 şeridi yalnız menü sayfasına koydu ve tam da bu yüzden ürün bir
+    | gün İKİ AĞIZDAN konuşabilirdi: aynı anda, aynı şube için menü sayfası
+    | "şu anda kapalıyız" derken tek ürünün sayfası hiçbir şey demezdi.
+    |
+    | Bu, kâğıt üstünde küçük bir eksikliktir; masadaki misafir için değildir.
+    | Ürün sayfası bir DERİN BAĞLANTIDIR: aramadan, paylaşılan bir bağlantıdan
+    | ya da menüdeki bir dokunuştan gelinir. Gece 23:30'da "Adana Kebap"
+    | sayfasına düşen kişi, sayfada kapalılığa dair tek kelime yoksa restoranın
+    | açık olduğunu varsayar — ve yola çıkar.
+    |
+    | Testler METNE değil makineye okunur duruma bakar (`data-guest-state`,
+    | `data-next-opening`): cümle katalogda yaşar ve derlenmiş çeviriler bu
+    | paketin dışında üretilir.
+    */
+
+    // --- GUEST-CLOSED-ITEM-01 ----------------------------------------------
+
+    public function test_the_closed_banner_is_drawn_on_the_single_dish_page_too(): void
+    {
+        [$workspaceId, $locationId, , $itemPath] = $this->publishedLocation('guest-closed-item');
+        $this->insertOpeningHours($workspaceId, $locationId, $this->uniformWeek(9 * 60, 23 * 60));
+
+        $this->nowAt('23:30');
+        $response = $this->get($itemPath);
+
+        /*
+            ÜRÜN GİZLENMEZ, tıpkı menü sayfasındaki gibi: kapalı olmak
+            "yemek yok" demek değildir. Sayfa ürünü çizer ve üstüne aynı
+            dürüst cümleyi koyar.
+        */
+        $response->assertStatus(200, 'GUEST-CLOSED-ITEM-01: kapalı şube ürün sayfasını da kapatmaz.');
+        $response->assertSee('Adana Kebap', false);
+        $response->assertSee('data-guest-state="closed"', false);
+
+        /*
+            AYNI KARAR, AYNI SAAT. Menü sayfası da bu şube için "09:00" der
+            (GUEST-CLOSED-01); ürün sayfası ikinci bir hesap yapsaydı, iki
+            yüzey bir gün iki farklı saat söylerdi.
+        */
+        $response->assertSee('data-next-opening="09:00"', false);
+    }
+
+    // --- GUEST-CLOSED-ITEM-OPEN-NOW-01 -------------------------------------
+
+    public function test_no_banner_is_drawn_on_the_dish_page_while_the_location_is_open(): void
+    {
+        [$workspaceId, $locationId, , $itemPath] = $this->publishedLocation('guest-open-item');
+        $this->insertOpeningHours($workspaceId, $locationId, $this->uniformWeek(9 * 60, 23 * 60));
+
+        $this->nowAt('12:00');
+        $response = $this->get($itemPath);
+
+        $response->assertStatus(200);
+        $response->assertSee('Adana Kebap', false);
+
+        // Açıkken şerit HİÇ çizilmez — boş bir kap bile değil.
+        $response->assertDontSee('data-guest-state="closed"', false);
+    }
+
+    // --- GUEST-CLOSED-ITEM-NO-HOURS-01 -------------------------------------
+
+    public function test_a_dish_page_of_a_location_without_hours_keeps_working_and_shows_no_banner(): void
+    {
+        [, , , $itemPath] = $this->publishedLocation('guest-item-no-hours');
+
+        $this->nowAt('03:00');
+        $response = $this->get($itemPath);
+
+        /*
+            YOKLUK SESSİZDİR ve HİÇBİR ŞEYİ BOZMAZ. Saati girilmemiş şube
+            bugün çalışan şubelerin çoğu; onlara varsayılan bir hafta uydurup
+            gece 03:00'te "kapalıyız" dedirtmek, sahibin hiç söylemediği bir
+            iddiayı ekranda doğruymuş gibi göstermek olurdu.
+        */
+        $response->assertStatus(200, 'GUEST-CLOSED-ITEM-NO-HOURS-01: saati girilmemiş şube bozulmamalı.');
+        $response->assertSee('Adana Kebap', false);
+        $response->assertDontSee('data-guest-state="closed"', false);
     }
 }

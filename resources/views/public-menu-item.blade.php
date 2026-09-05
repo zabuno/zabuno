@@ -132,6 +132,18 @@
 </head>
 <body>
 <main role="main" data-menu-key="{{ $menuKey }}">
+    {{-- ŞUBE ŞU ANDA KAPALI (FF-143) — menü sayfasındakiyle AYNI şerit, AYNI
+         karardan.
+
+         Bu sayfa bir DERİN BAĞLANTIDIR: aramadan, paylaşılan bir bağlantıdan
+         ya da menüdeki bir dokunuştan gelinir. Şeridi yalnız menü sayfasına
+         koymak, gece 23:30'da doğrudan "Adana Kebap" sayfasına düşen kişiye
+         restoranın açık olduğunu söylemek olurdu — hiçbir şey demeden.
+
+         Ürün GİZLENMEZ: kapalı olmak "yemek yok" demek değildir ve yarını
+         planlayan misafirin fiyatı görmeye hakkı vardır. --}}
+    @include('partials.guest-closed-notice', ['closedNotice' => $closedNotice ?? null])
+
     {{-- Geri dönüş EN ÜSTTE de var: misafir yanlış ürüne girdiyse sayfanın
          sonuna kadar kaydırmak zorunda kalmamalı. --}}
     <a class="qr-item-back" href="{{ $menuPath }}">{{ $brandName !== '' ? $brandName : $guestText['subtitle'] }}</a>

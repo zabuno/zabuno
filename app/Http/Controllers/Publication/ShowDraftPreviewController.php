@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Publication;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Publication\Exception\UnreadyDraftException;
 use App\Application\Publication\UseCase\AssembleDraftSnapshot;
+use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -25,6 +26,15 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
  * 3. KENDİNİ SÖYLER. Sayfanın başında "bu bir önizleme, misafirler henüz
  *    bunu görmüyor" yazar. Bağlantı bir grup sohbetine düşerse, onu açan
  *    kişi de bunun canlı menü olmadığını görür.
+ * 4. MİSAFİRİN SAATİNİ DE GÖSTERİR (FF-143). Şube o anda kapalıysa,
+ *    misafirin sayfasındaki şerit burada da çizilir. Çizilmeseydi önizleme
+ *    tam da var olma sebebine —"masadaki misafir bunu nasıl görecek?"— yanlış
+ *    cevap verirdi ve sahip, gece saatinde menüsüne bakan misafirin ne
+ *    gördüğünü ancak YAYINLADIKTAN sonra öğrenirdi.
+ *
+ *    İKİ UYARI BİRBİRİNİ EZMEZ. "Bu bir önizleme" ile "şu anda kapalıyız"
+ *    farklı iki gerçektir ve aynı anda doğrudurlar; ikisi de ayrı ayrı
+ *    çizilir.
  *
  * ÖLÇÜM AYRI YÜZEYDİR (`docs/46`, `docs/84`): yüzey `menu_preview` olarak
  * bildirilir ve menünün kalıcı anahtarı GÖNDERİLMEZ. Aksi hâlde sahibin
@@ -36,6 +46,16 @@ final class ShowDraftPreviewController extends Controller
     public function __construct(
         private readonly AssembleDraftSnapshot $assembler,
         private readonly OutOfStockPort $outOfStock,
+        /*
+            Kapalılık kararı BURADA VERİLMEZ, oradan SORULUR (FF-143).
+
+            Bu sayfa taslağı çizer, yayınlanmış sürümü değil; dolayısıyla
+            `forAddressedMenu` yolundan hiç geçmez ve elinde bir
+            `GuestMenuView` yoktur. Yine de aynı soruyu sorar ve aynı yerden
+            cevap alır — kendi hesabını yapsaydı, aynı şube için önizleme ile
+            misafirin sayfası bir gün iki farklı saat söylerdi.
+        */
+        private readonly ResolveGuestMenuView $guestMenuView,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $menu): SymfonyResponse
@@ -64,6 +84,13 @@ final class ShowDraftPreviewController extends Controller
             'outOfStockItemIds' => $this->outOfStock->forMenu($menu),
             'previewNotice' => 'Draft preview — your guests are not seeing this yet.',
             'previewBlockedReason' => $blockedReason,
+            /*
+                Saati girilmemiş şube, okunamayan hafta ve AÇIK şube — üçü de
+                `null` döner ve şerit hiç çizilmez. Hazır olmayan taslakta bile
+                sorulur: menü yayınlanamıyor olabilir ama şubenin kapısı yine
+                de açık ya da kapalıdır ve bu iki soru birbirine bağlı değildir.
+            */
+            'closedNotice' => $this->guestMenuView->closedNoticeForMenu($workspace, $menu),
             'analyticsContext' => [
                 'zabuno_surface' => 'menu_preview',
                 'zabuno_tenant_id' => (string) $workspace,

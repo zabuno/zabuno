@@ -69,7 +69,7 @@ final class ResolveGuestMenuView
                 $servingMenuId,
                 $publication,
                 null,
-                $this->closedNotice($workspaceId, $addressedMenuId),
+                $this->closedNoticeForMenu($workspaceId, $addressedMenuId),
             );
         }
 
@@ -116,6 +116,17 @@ final class ResolveGuestMenuView
     /**
      * ŞU ANDA KAPALI MIYIZ, VE AÇILIŞ NE ZAMAN?
      *
+     * AÇIK OLMASININ SEBEBİ, İKİNCİ BİR HESABIN OLMAMASI (FF-143). Misafirin
+     * gördüğü her yüzey bu şeridi çizmek zorunda ve hepsi elinde bir
+     * `GuestMenuView` tutmuyor: taslak önizlemesi yayınlanmış sürümü değil
+     * TASLAĞI çizer, dolayısıyla `forAddressedMenu` yolundan hiç geçmez.
+     * O yüzeye şeridi kendi başına hesaplattırsaydık, aynı şube için bir gün
+     * iki farklı cevap üretebilirlerdi — ve ikisinden hangisinin doğru olduğu
+     * ancak masadaki misafir yanlış saatte kapıya dayandığında anlaşılırdı.
+     *
+     * "Menü var mı" sorusu ile "kapı açık mı" sorusu zaten AYRI sorulardır;
+     * ikincisi birincinin cevabına ihtiyaç duymaz.
+     *
      * Üç sessizlik hâli vardır ve üçü de aynı cevabı verir — şerit ÇİZİLMEZ:
      *
      * 1. Şubenin saati hiç girilmemiş (bugün çalışan şubelerin çoğu). Uydurma
@@ -134,7 +145,7 @@ final class ResolveGuestMenuView
      * çalışır. Şubenin kendi saat dilimi böylece tek bir yerde okunur ve
      * sunucunun saati hiçbir zaman cevaba karışamaz.
      */
-    private function closedNotice(int $workspaceId, int $addressedMenuId): ?GuestClosedNotice
+    public function closedNoticeForMenu(int $workspaceId, int $addressedMenuId): ?GuestClosedNotice
     {
         $local = $this->openingHours->forMenu($workspaceId, $addressedMenuId);
 
