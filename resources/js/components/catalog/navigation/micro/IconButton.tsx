@@ -26,7 +26,24 @@ export function IconButton({ icon, label, onClick, disabled = false, className }
             onClick={onClick}
             disabled={disabled}
             className={clsx(
-                'inline-flex h-9 w-9 items-center justify-center rounded-md',
+                /*
+                    DOKUNMA ALANI BÜYÜR, İKON BÜYÜMEZ (`docs/117` M3).
+
+                    Ölçüldü (2026-09-05, 320×568): bu düğme 36×36 çiziliyordu
+                    ve dokunma hedefi asgarisinin (44) altındaydı — üst
+                    çubuktaki "menüyü aç" ve omnibox tetikleyicisi dahil.
+                    36 ile 44 arasındaki fark bir stil tercihi değil: parmak
+                    ucu 8-10 milimetredir, 44 CSS pikseli onun karşılığıdır ve
+                    altına inen her hedef yanlış dokunma olasılığı taşır.
+
+                    Büyüyen şey KUTUDUR, ikon değil: ikon çağıranın kararıdır
+                    ve bu satır ona hiç dokunmaz — kutu büyür, ikon ortada
+                    kalır, aradaki fark dolgu olur.
+
+                    Ölçü ham 44 değil `--density-hit-area-min`: aynı taban
+                    yoğunluk modlarında da değişmez ve tek yerden yönetilir.
+                */
+                'inline-flex size-[var(--density-hit-area-min)] items-center justify-center rounded-md',
                 'text-fg-secondary hover:bg-surface-hover hover:text-fg',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                 'disabled:pointer-events-none disabled:opacity-50',

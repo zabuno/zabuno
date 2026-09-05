@@ -266,11 +266,43 @@ a {
     --border: var(--aep-border);
     --color-brand-500: var(--aep-yellow-500);
 
-    /* Akışkan aralık ölçeği. Bileşen ham `clamp()` bilmez; bu ölçeği bilir
-       (design-corpus/olcu-birimleri.md 7. madde). */
-    --space-fluid-sm: clamp(0.75rem, 0.6rem + 0.6vw, 1rem);
-    --space-fluid-md: clamp(1rem, 0.75rem + 1vw, 1.5rem);
-    --space-fluid-lg: clamp(1.5rem, 1.1rem + 1.8vw, 2.5rem);
+    /* ---------------------------------------------------------------
+       ÖLÜ ALAN ÖLÇEĞİ — hedef ölçeğinden AYRI (docs/117 M4).
+
+       Bileşen ham `clamp()` bilmez; bu ölçeği bilir
+       (design-corpus/olcu-birimleri.md 7. madde).
+
+       Bu ölçek YALNIZ hedefler ARASINDAKİ boşluğu yönetir: sayfa kenarı,
+       kap dolgusu, bölüm aralığı. Dokunma hedefinin kendisi buradan
+       BESLENMEZ — o `--density-hit-area-min` / `--control-height`
+       zincirinde yaşar ve dar ekranda küçülmez. Bir kapı bu ayrımı
+       donduruyor (`touch-target.contract.test.tsx`, DS-TOUCH-TARGET-03).
+
+       ═══ NEDEN DEĞİŞTİ ═══
+
+       Sahibin ifadesi (2026-09-05): *"buton boyutları büyük olması
+       dokunabilirlik açısından güzel ama grid gap ve grid margin mobil
+       cihazlarda fazla çalıyor ekrandan."* Ölçüm onu doğruladı
+       (`docs/117` K2): karekod liste satırında 320 pikselin 138'i hiçbir
+       şey göstermiyordu.
+
+       Kök sebep `clamp()`in ALT SINIRIYDI. Eski tabanlar 12/16/24px idi ve
+       320 pikselde alt sınır zaten devredeydi: ölçek dar ekranda hiç
+       daralmıyordu, yalnız masaüstünde büyüyordu. Yani "akışkan" olan tek
+       yön yukarıydı — dar ekran taban değil, kırpılmış masaüstüydü.
+
+       Yeni tabanlar 8/12/16px, TAVANLAR DEĞİŞMEDİ: masaüstü görünümü
+       korunur, kazanılan yer yalnız dar ekranda geri gelir. `--space-fluid-lg`
+       kabuğun ana alan dolgusudur (`AdminShell`), yani 320 pikselde her
+       yandan 8 piksel — toplam 16 piksel — doğrudan içeriğe döner.
+
+       Yoğunluk fontu küçülterek DEĞİL, ölü alanı kısarak sağlanır
+       (`TOUCH-FIRST-INTERFACE` 3. madde). Bu satırların hiçbiri bir yazı
+       boyutuna dokunmaz.
+       --------------------------------------------------------------- */
+    --space-fluid-sm: clamp(0.5rem, 0.35rem + 0.75vw, 1rem);
+    --space-fluid-md: clamp(0.75rem, 0.5rem + 1.25vw, 1.5rem);
+    --space-fluid-lg: clamp(1rem, 0.6rem + 2vw, 2.5rem);
 
     /* Akışkan tipografi. Yoğunluk font-size'a ASLA dokunmaz; bu ölçek
        viewport'a göre değişir, yoğunluk moduna göre değil. */
@@ -333,7 +365,14 @@ a {
     /* Yoğunluk — varsayılan `standard`. Satır yüksekliği height + padding ile
        değişir, ASLA font-size ile değil: yoğunluk okunabilirliği düşürmez.
        `hit-area-min` üç modda da aynıdır — kompakt mod satırı görsel olarak
-       daraltır, dokunma hedefini küçültmez. */
+       daraltır, dokunma hedefini küçültmez.
+
+       HEDEF ÖLÇEĞİNİN KÖKÜ BURASIDIR ve dar ekranda da 44'tür (`docs/117`
+       M2/M3). Ölçüm gösterdi ki jeton doğruydu, TÜKETİM eksikti: girdi 42,
+       ikon düğmesi 36, kapatma düğmesi 32 pikselde çiziliyordu çünkü o
+       bileşenler bu köke hiç bağlanmamıştı, kendi ham dolgularını
+       topluyordu. 42 piksel 44'ün iki eksiği değildir; parmak ucu 8-10
+       milimetredir ve 44 CSS pikseli onun karşılığıdır. */
     --density-row-height: 44px;
     --density-padding-inline: var(--space-3);
     --density-hit-area-min: 44px;

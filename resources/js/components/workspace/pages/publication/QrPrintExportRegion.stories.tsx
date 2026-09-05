@@ -32,7 +32,7 @@ const meta: Meta<typeof QrPrintExportRegion> = {
     component: QrPrintExportRegion,
     decorators: [
         (Story) => (
-            <div className="max-w-[44rem] bg-canvas p-[var(--space-6)]">
+            <div className="max-w-[44rem] bg-canvas p-[var(--space-fluid-lg)]">
                 <Story />
             </div>
         ),

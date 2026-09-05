@@ -27,7 +27,7 @@ const meta: Meta<typeof SettingsPage> = {
     decorators: [
         (Story) => (
             <ThemeRoot>
-                <div className="min-h-dvh bg-canvas p-[var(--space-5)]">
+                <div className="min-h-dvh bg-canvas p-[var(--space-fluid-lg)]">
                     <Story />
                 </div>
             </ThemeRoot>

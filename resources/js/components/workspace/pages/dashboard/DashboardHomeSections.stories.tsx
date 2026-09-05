@@ -70,7 +70,7 @@ const meta: Meta = {
     title: 'Surface/Workspace/DashboardHomeSections',
     decorators: [
         (Story) => (
-            <div className="flex max-w-[64rem] flex-col gap-[var(--space-5)] bg-canvas p-[var(--space-6)]">
+            <div className="flex max-w-[64rem] flex-col gap-[var(--space-fluid-md)] bg-canvas p-[var(--space-fluid-lg)]">
                 <Story />
             </div>
         ),

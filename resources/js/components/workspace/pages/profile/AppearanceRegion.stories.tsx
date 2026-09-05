@@ -17,7 +17,7 @@ const meta: Meta<typeof AppearanceRegion> = {
     decorators: [
         (Story) => (
             <ThemeRoot>
-                <div className="max-w-[42rem] bg-canvas p-[var(--space-5)]">
+                <div className="max-w-[42rem] bg-canvas p-[var(--space-fluid-lg)]">
                     <Story />
                 </div>
             </ThemeRoot>

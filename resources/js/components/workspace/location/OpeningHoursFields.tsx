@@ -1,6 +1,6 @@
 import { t } from '../../../i18n/workspace';
 import { Checkbox } from '../../catalog/forms/micro/Checkbox';
-import { Label } from '../../catalog/forms/micro/Label';
+import { CHOICE_LABEL_TOUCH_CLASS, Label } from '../../catalog/forms/micro/Label';
 import { TextInput } from '../../catalog/forms/micro/TextInput';
 import {
     DAY_MINUTES,
@@ -72,7 +72,9 @@ export function OpeningHoursFields({
                         onChange(event.currentTarget.checked ? suggestedDraft() : null)
                     }
                 />
-                <Label htmlFor={toggleId}>{t('workspace.location.hours.enable')}</Label>
+                <Label htmlFor={toggleId} className={CHOICE_LABEL_TOUCH_CLASS}>
+                    {t('workspace.location.hours.enable')}
+                </Label>
             </div>
 
             {/*
@@ -148,7 +150,10 @@ export function OpeningHoursFields({
                                           patchDay(row.day, { closed: event.currentTarget.checked })
                                       }
                                   />
-                                  <Label htmlFor={`${idPrefix}-hours-${row.day}-closed`}>
+                                  <Label
+                                      htmlFor={`${idPrefix}-hours-${row.day}-closed`}
+                                      className={CHOICE_LABEL_TOUCH_CLASS}
+                                  >
                                       {t('workspace.location.hours.closed')}
                                   </Label>
                               </span>

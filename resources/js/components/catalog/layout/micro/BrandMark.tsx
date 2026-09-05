@@ -60,8 +60,23 @@ export function BrandMark({ name, mark, href, hideName = false, className }: Bra
     );
 
     if (href) {
+        /*
+            BAĞLANTI HÂLİ BİR DOKUNMA HEDEFİDİR (`docs/117` M3).
+
+            Ölçüldü (320×568): üst çubuktaki marka bağlantısı 82×24 idi —
+            asgari hedefin yarısından az. Bu bağlantı panelin "başa dön"
+            yoludur; telefonda vurulamayan bir başa dön yolu, olmayan bir
+            yoldur.
+
+            Yükseklik yalnız BURADA verilir: `href` yoksa öğe bir `<span>`
+            olarak çizilir, tıklanmaz ve bir hedef değildir — ona 44 piksel
+            vermek dar ekranda bedavaya ölü alan üretirdi.
+
+            Yazı ve işaret boyutu değişmez; büyüyen tek şey vurulabilir
+            kutudur.
+        */
         return (
-            <a href={href} className={sharedClassName}>
+            <a href={href} className={clsx('min-h-[var(--density-hit-area-min)]', sharedClassName)}>
                 {content}
             </a>
         );
