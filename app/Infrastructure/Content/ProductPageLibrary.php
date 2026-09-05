@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Content;
+
+use App\Application\Content\Port\ContentLibraryPort;
+use App\Domain\Content\PageContent;
+use App\Infrastructure\Content\Pages\AnalyticsPage;
+use App\Infrastructure\Content\Pages\MenuManagementPage;
+use App\Infrastructure\Content\Pages\QrMenuPage;
+use App\Infrastructure\Content\Pages\TablesAndQrPage;
+use App\Infrastructure\Content\Pages\ZabunoAiPage;
+
+/**
+ * İlk beş P0 ürün sayfasının içeriği — FF-191.
+ *
+ * İçerik BUGÜN kodda yaşıyor ve bu bilinçli bir başlangıç: kütük ve kapı
+ * çalışıyor, editoryal tablo henüz yok, ve içeriği bir tabloya koymak onu
+ * testin ve kod incelemesinin dışına çıkarırdı. Kanıt zinciri (`BlockEntry`
+ * `source` alanı) ancak testin okuyabildiği bir yerde anlam taşır.
+ *
+ * **Dil kararı (`docs/118` E4).** Burada yalnız İNGİLİZCE içerik var; Türkçe
+ * yuva bilerek BOŞ. Kurumsal sitenin ilk içerik dili sahibin açık kararını
+ * bekleyen tek noktadır ve o karar geldiğinde değişecek tek katman burasıdır:
+ * blok modeli, şablon, şema üreticisi, kırıntı ve kapı dilden bağımsızdır.
+ * Bu pakette hiçbir çeviri üretilmedi ve hiçbir çeviri işi kuyruklanmadı.
+ */
+final class ProductPageLibrary implements ContentLibraryPort
+{
+    /** @var array<string, PageContent>|null */
+    private ?array $cache = null;
+
+    public function find(string $pageKey, string $locale): ?PageContent
+    {
+        return $this->indexed()[$locale.'|'.$pageKey] ?? null;
+    }
+
+    /** @return list<PageContent> */
+    public function all(): array
+    {
+        return array_values($this->indexed());
+    }
+
+    /** @return array<string, PageContent> */
+    private function indexed(): array
+    {
+        if ($this->cache !== null) {
+            return $this->cache;
+        }
+
+        $index = [];
+
+        foreach ([
+            QrMenuPage::content(),
+            MenuManagementPage::content(),
+            TablesAndQrPage::content(),
+            AnalyticsPage::content(),
+            ZabunoAiPage::content(),
+        ] as $content) {
+            $index[$content->locale.'|'.$content->pageKey] = $content;
+        }
+
+        return $this->cache = $index;
+    }
+}

@@ -72,6 +72,20 @@ enum PagePublicationStatus: string
         return $this === self::Published;
     }
 
+    /**
+     * Mutlu yoldaki BİR SONRAKİ durum; yolun sonundaysa `null`.
+     *
+     * Açığa çıkarılmasının sebebi, sırayı ikinci bir yerde yeniden yazmamak:
+     * bir çağıran kendi adım listesini tutsaydı, aşama eklendiği gün ikisi
+     * ayrışır ve bir sayfa bir kapıyı atlardı.
+     */
+    public function next(): ?self
+    {
+        $next = self::FORWARD[$this->value] ?? null;
+
+        return $next === null ? null : self::from($next);
+    }
+
     /** Ziyaretçiye gösterilecek cümlenin anahtarı — teknik durum adı DEĞİL. */
     public function translationKey(): string
     {

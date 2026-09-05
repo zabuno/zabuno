@@ -20,11 +20,15 @@ final class CorporatePageGateTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function page(string $path, PagePublicationStatus $status, bool $wasPublished = false): ContentPage
-    {
+    private function page(
+        string $path,
+        PagePublicationStatus $status,
+        bool $wasPublished = false,
+        string $locale = 'tr',
+    ): ContentPage {
         return ContentPage::query()->create([
             'page_key' => 'urun.qr-menu',
-            'locale' => 'tr',
+            'locale' => $locale,
             'canonical_path' => $path,
             'content_type' => 'urun',
             'template_key' => 'urun',
@@ -77,9 +81,16 @@ final class CorporatePageGateTest extends TestCase
 
     public function test_a_published_page_is_served_and_indexable(): void
     {
-        $this->page('/tr/urun/qr-menu/', PagePublicationStatus::Published, true);
+        /*
+            FF-191: "yayınlandı" artık gerçekten bir İÇERİK sayfası çiziyor ve
+            içerik kütüğü dile göre aranıyor. Bu yüzden test İngilizce kaydı
+            kullanıyor: Türkçe yuva `docs/118` E4 gereği bilerek boş ve içeriği
+            olmayan bir sayfa — kütükte ne yazarsa yazsın — 404 kalır.
+            Ölçülen şey değişmedi: yayınlanmış sayfa 200 döner ve indekslenir.
+        */
+        $this->page('/en/product/qr-menu/', PagePublicationStatus::Published, true, 'en');
 
-        $response = $this->get('/tr/urun/qr-menu/');
+        $response = $this->get('/en/product/qr-menu/');
 
         $response->assertStatus(200);
         self::assertStringNotContainsString(
