@@ -59,8 +59,29 @@ final class NegotiateLocale
      */
     private static function supported(): array
     {
+        /*
+            SUNULAN DİL LİSTESİ — `app.supported_locales` DEĞİL.
+
+            Önce `app.supported_locales` okunuyordu: altı dillik bir liste.
+            Ama hangi dilin gerçekten SUNULABİLECEĞİNE karar veren yer
+            `i18n.shipped_locales` ve o listedeki her dilin katalogu TAM olmak
+            zorunda (`ShippedLocalesAreCompleteTest`).
+
+            İki liste ayrışınca sonucu sahibin ekranında görüldü (2026-09-05):
+            Türkçe tarayıcı Türkçe belge alıyor, katalog tam olmadığı için
+            ekranda KARIŞIK DİL beliriyordu — "Menus" ve "Preview & publish"
+            İngilizce, "Ürün ekle" ve "Hepsi tükendi" Türkçe. Yarım çeviri
+            çevirisizlikten kötüdür: kullanıcı ürünün bozuk olduğunu düşünür.
+
+            `app.supported_locales` SİLİNMEDİ ve bu kasıtlı: kurumsal site
+            (`/tr/…`) kendi dil uzayını o listeden türetiyor ve orada çeviri
+            gerçekten tam. İki liste iki ayrı soruya cevap veriyor — "bu dilde
+            bir pazarlama sayfamız var mı" ile "bu dilde bir ÜRÜN sunabiliyor
+            muyuz". Tek listeye indirmek, ikisinden birini yalan söylemeye
+            zorlardı.
+        */
         /** @var array<int, string> $configured */
-        $configured = config('app.supported_locales', []);
+        $configured = config('i18n.shipped_locales', []);
 
         $fallback = (string) config('app.locale', 'en');
 

@@ -29,6 +29,16 @@ final class DocumentLocaleTest extends TestCase
             kararı değil, locale'den türer — yalnız locale'in nereden geldiği
             gerçek bir istemcinin yaptığı gibi ifade ediliyor.
         */
+        /*
+            2026-09-05: pazarlık artık SUNULAN dil listesini okuyor
+            (`i18n.shipped_locales`). Bu testin ölçtüğü sözleşme değişmedi —
+            belge dili şablonun kararı değil, locale'den türer — ama kuralı
+            sınamak için sunulan bir dil gerekiyor. Liste sabit yazılmıyor,
+            testin kendi kurduğu bağlamda genişletiliyor: sahibin hangi dili
+            sunduğu bu sözleşmenin konusu değil.
+        */
+        config()->set('i18n.shipped_locales', ['en', 'tr', 'ar']);
+
         $checked = 0;
 
         foreach (['/', '/app', '/platform'] as $uri) {
@@ -84,6 +94,8 @@ final class DocumentLocaleTest extends TestCase
             kararı değil, locale'den türer — yalnız locale'in nereden geldiği
             gerçek bir istemcinin yaptığı gibi ifade ediliyor.
         */
+        config()->set('i18n.shipped_locales', ['en', 'ar']);
+
         $response = $this->withHeaders(['Accept-Language' => 'ar'])->get('/');
         $response->assertSuccessful();
 
