@@ -20,6 +20,11 @@ final class BrandProfile
         /** `#rrggbb` ya da null — marka rengi seçilmemişse ürün kendi tonuyla çalışır. */
         public readonly ?string $primaryColor = null,
         public readonly ?string $secondaryColor = null,
+        /**
+         * Skin'in BİÇİM ekseni (`a`..`f`) — renk değil, seçenek (FF-174).
+         * Null: restoran biçim seçmemiş, ürünün varsayılanı geçerlidir.
+         */
+        public readonly ?string $skinVariant = null,
     ) {}
 
     /**
@@ -40,6 +45,7 @@ final class BrandProfile
             'contact_phone' => $this->contactPhone,
             'primary_color' => $this->primaryColor,
             'secondary_color' => $this->secondaryColor,
+            'skin_variant' => $this->skinVariant,
         ];
     }
 }

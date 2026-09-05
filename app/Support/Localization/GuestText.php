@@ -49,6 +49,7 @@ final class GuestText
             'soldOut' => 'guest.menu.item.soldOut',
             'subtitle' => 'guest.menu.subtitle',
             'categoriesLabel' => 'guest.menu.categories.label',
+            'allergensLabel' => 'guest.menu.allergens.label',
             'menuEmpty' => 'guest.menu.empty',
             'categoryEmpty' => 'guest.menu.category.empty',
             'searchLabel' => 'guest.search.label',

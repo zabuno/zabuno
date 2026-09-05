@@ -25,113 +25,127 @@
     <script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! $structuredData !!}</script>
     <link rel="icon" href="/icons/zabuno-menu-512.svg" sizes="512x512" type="image/svg+xml">
     @include('partials.theme-bootstrap')
+    {{-- AYNI TOKEN KÖKÜ (`docs/113` §6.3). Bu blok eskiden `--qr-*`
+         değerlerini menü sayfasından KOPYALAYARAK taşıyordu; kopya ilk gün
+         aynı görünür, ancak biri düzeltilip diğeri unutulduğunda ayrışır. --}}
+    @include('partials.guest-surface-style')
     <style nonce="{{ $cspNonce ?? '' }}">
-        :root {
-            color-scheme: light dark;
-            --qr-bg: #ffffff;
-            --qr-fg: #1f2937;
-            --qr-muted: #6b7280;
-            --qr-border: rgba(107, 114, 128, 0.25);
-            --qr-chip-bg: rgba(107, 114, 128, 0.12);
+        .qr-page {
+            padding: var(--qr-gutter);
+            max-width: 44rem;
+            margin-inline: auto;
         }
 
-        :root.dark,
-        :root[data-theme="dark"] {
-            --qr-bg: #111827;
-            --qr-fg: #f9fafb;
-            --qr-muted: #9ca3af;
-            --qr-border: rgba(156, 163, 175, 0.3);
-            --qr-chip-bg: rgba(156, 163, 175, 0.16);
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            padding: clamp(0.75rem, 4vw, 1.5rem);
-            background: var(--qr-bg);
-            color: var(--qr-fg);
-            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-        }
-
+        /* Dokunma hedefi: 44 px'in altındaki bir bağlantı parmakla vurulamaz.
+           Geri dönüş bir ÇİP biçimindedir — kaynağın gezinme dili budur ve
+           metin bağlantısından daha kolay vurulur. */
         .qr-item-back,
         .qr-item-forward {
-            display: inline-block;
-            font-size: 0.9rem;
-            color: inherit;
-            /* Dokunma hedefi: 44 px'in altındaki bir bağlantı parmakla
-               vurulamaz. */
-            min-height: 44px;
-            line-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            min-height: var(--qr-tap);
+            padding: 0 14px;
+            border-radius: 999px;
+            border: 1px solid var(--qr-border);
+            background: var(--qr-surface);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            text-decoration: none;
         }
 
         .qr-item-category {
-            margin: 0;
-            font-size: 0.85rem;
+            margin: 12px 0 0;
+            font-size: 0.875rem;
             color: var(--qr-muted);
         }
 
         .qr-item-name {
-            font-size: clamp(1.4rem, 6vw, 2rem);
-            margin: 0.25rem 0 0.5rem;
+            font-size: clamp(1.5rem, 6vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            line-height: 1.15;
+            margin: 4px 0 12px;
         }
 
         .qr-item-image {
             width: 100%;
-            max-width: 32rem;
             height: auto;
-            border-radius: 0.75rem;
-            background: var(--qr-chip-bg);
+            border-radius: var(--qr-radius);
+            background: var(--qr-sunken);
+            object-fit: cover;
         }
 
         .qr-item-price {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0.75rem 0 0;
+            font-size: 1.375rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            margin: 12px 0 0;
         }
 
         .qr-item-description {
-            margin: 0.75rem 0 0;
-            max-width: 38rem;
+            margin: 12px 0 0;
             line-height: 1.6;
+            color: var(--qr-fg-2);
+            text-wrap: pretty;
         }
 
+        /* Tükendi METİNLE söylenir; solukluk ya da renk tek başına anlatmaz
+           (WCAG 1.4.1). Kendi satırında durur — bir rozet gibi fiyata rakip
+           olsaydı 320'de ikisi de kırpılırdı (`docs/113` §7.2.2). */
         .qr-item-sold-out {
-            display: inline-block;
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
-            padding: 0.15rem 0.6rem;
-            border-radius: 999px;
-            border: 1px solid var(--qr-border);
-            color: var(--qr-muted);
+            display: block;
+            margin-top: 8px;
+            font-weight: 700;
+            color: var(--qr-warn);
+        }
+
+        /* ALERJEN BÖLÜMÜ — kaynağın ürün sayfasındaki bölümü (`docs/113`
+           §1.1 no.10). Başlık, çıplak bir çip listesinin ne olduğunu ekran
+           okuyucuya da söyler.
+
+           BÖLÜM YALNIZ BİLDİRİLENİ SAYAR. "Alerjensizdir", "vegan
+           sertifikalıdır" gibi bir cümle burada HİÇBİR koşulda kurulmaz;
+           `ArtifactSchemaValidator` bu alan adlarını ada göre reddediyor ve
+           gerekçesi kodda yazılı: yanlış bir alerjensizlik iddiası bir
+           SAĞLIK OLAYIDIR. Bu, bir kapsam kararı değil bir güvenlik
+           kararıdır ve sonraki paketlerde de yerinde kalır. */
+        .qr-item-allergens-label {
+            margin: 24px 0 8px;
+            font-size: 1rem;
+            font-weight: 700;
         }
 
         .qr-item-allergens {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.35rem;
-            margin: 0.75rem 0 0;
+            gap: 6px;
+            margin: 0;
             padding: 0;
             list-style: none;
         }
 
         .qr-item-allergens li {
             font-size: 0.75rem;
-            padding: 0.1rem 0.5rem;
+            font-weight: 600;
+            padding: 2px 10px;
             border-radius: 999px;
-            background: var(--qr-chip-bg);
-            color: var(--qr-muted);
+            background: var(--qr-warn-tint);
+            color: var(--qr-warn);
         }
 
         .qr-item-footer {
-            margin-top: 2rem;
-            padding-top: 1rem;
+            margin-top: 32px;
+            padding-top: 16px;
             border-top: 1px solid var(--qr-border);
         }
     </style>
 </head>
 <body>
-<main role="main" data-menu-key="{{ $menuKey }}">
+{{-- ZABUNO ÇERÇEVESİ — menü sayfasıyla AYNI sınır (`docs/113` §6.2).
+     Ürün sayfası da misafirin gördüğü bir yüzeydir; zabuno başlığı geldiğinde
+     iki şablona ayrı ayrı değil, çerçeveye bir kez girer. --}}
+<x-zabuno surface="menu-item">
+<main role="main" class="qr-page" data-menu-key="{{ $menuKey }}">
     {{-- ŞUBE ŞU ANDA KAPALI (FF-143) — menü sayfasındakiyle AYNI şerit, AYNI
          karardan.
 
@@ -179,6 +193,9 @@
     @endif
 
     @if (! empty($item['allergens']))
+        {{-- Başlık BİLDİRİLENİ tanıtır, bir tamlık iddiası taşımaz: cümle
+             "alerjen bilgisi" der, "bunlar dışında alerjen yoktur" demez. --}}
+        <h2 class="qr-item-allergens-label">{{ $guestText['allergensLabel'] }}</h2>
         <ul class="qr-item-allergens">
             @foreach ($item['allergens'] as $allergen)
                 <li>{{ $allergen }}</li>
@@ -188,9 +205,17 @@
 
     <div class="qr-item-footer">
         {{-- Ürün sayfası bir ÇIKMAZ SOKAK OLMAZ: misafir tam menüye
-             dönebilmeli ve arama motoru menüye bir bağlantı görmeli. --}}
+             dönebilmeli ve arama motoru menüye bir bağlantı görmeli.
+
+             Kaynağın ürün sayfasında burada bir alt eylem çubuğu var (adet
+             denetimi + "Sepete ekle"). O çubuğun arka ucu ayrı bir pakette
+             geliyor; geldiğinde bu altbilgi onu kaldırır ve `docs/113`
+             §7.2.2'nin kararı geçerli olur: 320'de adet denetimi ile eylem
+             düğmesi AYNI satırı paylaşmaz, çünkü sabitler eylem metnine
+             153 px bırakıp onu kesiyor. --}}
         <a class="qr-item-forward" href="{{ $menuPath }}">{{ $guestText['categoriesLabel'] }}</a>
     </div>
 </main>
+</x-zabuno>
 </body>
 </html>

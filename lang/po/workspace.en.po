@@ -640,6 +640,66 @@ msgstr "Record payment"
 msgid "workspace.billing.status.notConnected"
 msgstr "Not connected"
 
+#: workspace:workspace.brand.appearance
+msgid "workspace.brand.appearance"
+msgstr "Menu appearance"
+
+#: workspace:workspace.brand.appearance.adjusted
+msgid "workspace.brand.appearance.adjusted"
+msgstr "We darkened your colour a little for the text on your menu, so guests can read it on both light and dark phones."
+
+#: workspace:workspace.brand.appearance.color
+msgid "workspace.brand.appearance.color"
+msgstr "Brand colour"
+
+#: workspace:workspace.brand.appearance.color.help
+msgid "workspace.brand.appearance.color.help"
+msgstr "We keep your colour and only lighten or darken it where a guest would struggle to read the text."
+
+#: workspace:workspace.brand.appearance.intro
+msgid "workspace.brand.appearance.intro"
+msgstr "Pick one colour and one shape. We build the rest of your menu palette from that colour and keep every text readable on it."
+
+#: workspace:workspace.brand.appearance.locked
+msgid "workspace.brand.appearance.locked"
+msgstr "Menu appearance comes with the Restaurant plan."
+
+#: workspace:workspace.brand.appearance.locked.help
+msgid "workspace.brand.appearance.locked.help"
+msgstr "Your menu still publishes and your codes still work — guests just see our neutral look instead of your colour."
+
+#: workspace:workspace.brand.appearance.shape
+msgid "workspace.brand.appearance.shape"
+msgstr "Menu shape"
+
+#: workspace:workspace.brand.appearance.shape.a
+msgid "workspace.brand.appearance.shape.a"
+msgstr "Plain frame"
+
+#: workspace:workspace.brand.appearance.shape.b
+msgid "workspace.brand.appearance.shape.b"
+msgstr "Soft corners"
+
+#: workspace:workspace.brand.appearance.shape.c
+msgid "workspace.brand.appearance.shape.c"
+msgstr "Thin lines"
+
+#: workspace:workspace.brand.appearance.shape.d
+msgid "workspace.brand.appearance.shape.d"
+msgstr "Strong cards"
+
+#: workspace:workspace.brand.appearance.shape.e
+msgid "workspace.brand.appearance.shape.e"
+msgstr "No frame"
+
+#: workspace:workspace.brand.appearance.shape.f
+msgid "workspace.brand.appearance.shape.f"
+msgstr "Rounded and raised"
+
+#: workspace:workspace.brand.appearance.shape.help
+msgid "workspace.brand.appearance.shape.help"
+msgstr "Corners, borders and shadows across your whole menu."
+
 #: workspace:workspace.brand.currency
 msgid "workspace.brand.currency"
 msgstr "Currency"

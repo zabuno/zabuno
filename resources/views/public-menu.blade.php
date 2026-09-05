@@ -132,44 +132,29 @@
             }
         </style>
     @endif
+    {{-- Ortak token kökü: `--qr-*` artık beş dosyada değil BİR dosyada
+         (`docs/113` §6.3). Aşağıdaki blok yalnız BU yüzeyin düzenidir. --}}
+    @include('partials.guest-surface-style')
     <style nonce="{{ $cspNonce ?? '' }}">
+        /* Yapışkan başlığın yüksekliği İKİ yerde lazım: başlığın kendisinde ve
+           ona çarpmadan durması gereken şeylerde (çıpa kaydırma payı, yan
+           rayın yapışma noktası). Sayıyı iki kere yazmak, bir gün birini
+           değiştirip diğerini unutmaktır. */
         :root {
-            color-scheme: light dark;
-            --qr-bg: #ffffff;
-            --qr-fg: #1f2937;
-            --qr-muted: #6b7280;
-            --qr-border: rgba(107, 114, 128, 0.25);
-            --qr-accent: #1f2937;
-            --qr-chip-bg: rgba(107, 114, 128, 0.12);
-        }
-
-        :root.dark,
-        :root[data-theme="dark"] {
-            --qr-bg: #111827;
-            --qr-fg: #f9fafb;
-            --qr-muted: #9ca3af;
-            --qr-border: rgba(156, 163, 175, 0.3);
-            --qr-accent: #f9fafb;
-            --qr-chip-bg: rgba(156, 163, 175, 0.16);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: clamp(0.75rem, 4vw, 1.5rem);
-            width: 100%;
-            max-width: 100%;
-            background: var(--qr-bg);
-            color: var(--qr-fg);
-            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            --qr-hdr-h: 56px;
         }
 
         /* Marka şeridi: renk seçilmemişse `--qr-brand` tanımsızdır ve şerit
            yüksekliği sıfır kalır — seçmeyen restoran, seçmiş gibi
-           gösterilmez. */
+           gösterilmez.
+
+           BU ŞERİTTE renk hâlâ yalnız DEKORASYONDUR ve bu paket onu metin ya
+           da metin arkası yapmıyor. Sebep artık "garanti edemiyoruz" değil:
+           kontrast rampası FF-174 ile geldi ve garantiyi ölçüyle veriyor
+           (`MenuIdentity::$skin`). Sebep sıradır — rampayı bu yüzeyde
+           tüketmek bir sonraki adımdır ve gerekçesi ortak stil kökünde
+           yazılı. Şeridin kendisi o gün de kalır; değişecek olan, rengin
+           şeridin DIŞINDA da rol alabilmesidir. */
         .qr-brand-bar {
             height: 0;
         }
@@ -177,268 +162,549 @@
         @supports (height: 4px) {
             .qr-brand-bar {
                 height: 4px;
-                margin: calc(-1 * clamp(0.75rem, 4vw, 1.5rem)) calc(-1 * clamp(0.75rem, 4vw, 1.5rem)) 1rem;
                 background: var(--qr-brand, transparent);
             }
         }
 
-        .qr-menu-header {
+        /* ---- YAPIŞKAN BAŞLIK — kaynağın kimlik satırı --------------------
+
+           320'DE SIKIŞMAZ ve bu tesadüf değil (`docs/113` §7.2.1). Kaynağın
+           filtre çubuğunda sabitler 293 px yiyip sonuç etiketine 3 px
+           bırakıyordu. Bu satırda sabit olan TEK şey 34 px'lik logodur:
+           34 + 8 boşluk = 42 px. 320'de kullanılabilir 296 px'ten geriye
+           kimlik metnine 254 px kalır.
+
+           Sayfadaki TEK yapışkan öğe budur (`docs/113` §7.2 son karar):
+           320×480'de üç ayrı yapışkan çubuk dikey alanın yarısını yerdi ve
+           `docs/48` §6.5'in "hiçbir denetim içeriğin üstüne kalıcı binmez"
+           ölçütünü zorlardı. */
+        .qr-hdr {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: var(--qr-surface);
+            border-bottom: 1px solid var(--qr-border);
+        }
+
+        .qr-hdr-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: var(--qr-hdr-h);
+            padding: 8px var(--qr-gutter);
+            max-width: 1680px;
+            margin-inline: auto;
+        }
+
+        .qr-hdr-id {
+            flex: 1 1 auto;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
-            margin-bottom: 1rem;
+            line-height: 1.15;
+        }
+
+        /* Uzun bir restoran adı satırı taşırmaz, ÜÇ NOKTAYA döner: taşan bir
+           başlık 320'de yatay kaydırma üretirdi. */
+        .qr-menu-title,
+        .qr-menu-location {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .qr-menu-title {
-            font-size: clamp(1.25rem, 5vw, 1.75rem);
-            margin: 0;
-        }
-
-        .qr-menu-subtitle {
-            margin: 0;
-            font-size: 0.9rem;
-            color: var(--qr-muted);
-        }
-
-        .qr-menu-language {
-            display: flex;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-        }
-
-        .qr-menu-language a {
-            color: inherit;
-        }
-
-        .qr-menu-language [aria-current='true'] {
-            font-weight: 600;
-        }
-
-        .qr-menu-content-notice {
-            margin: 0;
-            font-size: 0.8rem;
-            color: var(--qr-muted);
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
         .qr-menu-location {
-            margin: 0;
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        /* Uzun bir cadde adı 320 px'te satırı taşırmaz: kelime kırılır. */
-        .qr-menu-address,
-        .qr-menu-phone {
-            margin: 0;
-            font-size: 0.9rem;
-            color: var(--qr-muted);
-            overflow-wrap: anywhere;
-        }
-
-        .qr-menu-phone a {
-            color: inherit;
-        }
-
-        .qr-menu-summary {
-            margin: 0;
-            font-size: 0.85rem;
+            font-size: 0.8125rem;
             color: var(--qr-muted);
         }
 
+        .qr-menu-logo {
+            flex: 0 0 auto;
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: var(--qr-surface-2);
+        }
+
+        /* ---- SAYFA İSKELETİ --------------------------------------------- */
+        .qr-page {
+            padding: var(--qr-gutter);
+            max-width: 1680px;
+            margin-inline: auto;
+        }
+
+        .qr-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        /* ---- KATEGORİ RAYI — kaynağın `gm-hs` çipleri ------------------- */
         .qr-menu-nav {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 1rem 0;
-            padding: 0;
+            gap: 8px;
+            margin: 0 0 12px;
+            padding: 0 0 2px;
             list-style: none;
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            scroll-snap-type: x proximity;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .qr-menu-nav::-webkit-scrollbar {
+            display: none;
         }
 
         .qr-menu-nav a {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
+            flex: none;
+            scroll-snap-align: start;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: var(--qr-tap);
+            padding: 0 14px;
             border-radius: 999px;
             border: 1px solid var(--qr-border);
-            color: inherit;
+            background: var(--qr-surface);
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ---- YARDIMCI ÇUBUK: arama, dil, kurulum ------------------------
+
+           SARMALANIR ve sarmalanması bir tercih değil, kırık 1'in çözümüdür:
+           bir DURUM ya da SAYI cümlesi hiçbir zaman sabit genişlikli
+           denetimlerin yanında ezilmez, `flex: 1 0 100%` ile kendi satırını
+           alır. Yarın buraya bir denetim daha eklense de bu kural tutar. */
+        .qr-utility {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 12px;
         }
 
         .qr-menu-search {
+            flex: 1 1 100%;
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
-            margin: 1rem 0;
+            gap: 4px;
+            margin: 0;
         }
 
         .qr-menu-search label {
-            font-size: 0.85rem;
+            font-size: 0.8125rem;
             font-weight: 600;
+            color: var(--qr-fg-2);
         }
 
         #menu-search {
             font: inherit;
             width: 100%;
-            padding: 0.6rem 0.75rem;
-            border-radius: 0.5rem;
+            min-height: var(--qr-tap);
+            padding: 0 14px;
+            border-radius: 999px;
             border: 1px solid var(--qr-border);
-            background: var(--qr-bg);
+            background: var(--qr-surface-2);
             color: var(--qr-fg);
         }
 
-        #menu-search-status {
-            font-size: 0.8rem;
+        #menu-search-status,
+        .qr-menu-content-notice {
+            flex: 1 0 100%;
+            margin: 0;
+            font-size: 0.8125rem;
             color: var(--qr-muted);
+        }
+
+        #menu-search-status {
             min-height: 1.1em;
         }
 
-        .qr-menu-category {
-            margin-bottom: clamp(1rem, 4vw, 1.75rem);
-            scroll-margin-top: 1rem;
-        }
-
-        .qr-menu-category-name {
-            font-size: 1.1rem;
-            margin: 0 0 0.5rem;
-            padding-bottom: 0.25rem;
-            border-bottom: 2px solid var(--qr-brand-secondary, var(--qr-border));
-        }
-
-        .qr-menu-category-empty {
-            font-size: 0.85rem;
-            color: var(--qr-muted);
-        }
-
-        .qr-menu-item-list {
+        .qr-menu-language {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
             margin: 0;
-            padding: 0;
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0;
         }
 
-        .qr-menu-item {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 0.5rem 0.75rem;
-            padding: 0.6rem 0;
-            border-bottom: 1px solid var(--qr-border);
-        }
-
-        .qr-menu-item-name {
-            font-weight: 600;
-        }
-
-        /* Görsel satırın SOLUNDA sabit bir kutu: her satır aynı hizada
-           başlar, liste taranabilir kalır. */
-        .qr-menu-item-image {
-            width: 96px;
-            height: 96px;
-            object-fit: cover;
-            border-radius: 0.5rem;
-            background: var(--qr-chip-bg);
-            flex: 0 0 auto;
-        }
-
-        /* Solukluk YARDIMCIDIR, tek başına anlatmaz: durumu satırdaki
-           metnin kendisi söylüyor. */
-        .qr-menu-item-sold-out .qr-menu-item-name,
-        .qr-menu-item-sold-out .qr-menu-item-price {
-            opacity: 0.65;
-        }
-
-        .qr-menu-item-sold-out-note {
-            font-size: 0.75rem;
-            padding: 0.1rem 0.5rem;
+        /* Seçili dil YALNIZ kalınlıkla değil `aria-current` ile de söylenir;
+           renk ya da kalınlık tek başına anlatmaz (WCAG 1.4.1). */
+        .qr-menu-language a,
+        .qr-menu-language span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: var(--qr-tap);
+            min-inline-size: var(--qr-tap);
+            padding: 0 10px;
             border-radius: 999px;
-            border: 1px solid var(--qr-border);
-            color: var(--qr-muted);
-            white-space: nowrap;
+            font-size: 0.875rem;
+            text-decoration: none;
         }
 
-        .qr-menu-item-description {
-            width: 100%;
-            font-size: 0.85rem;
-            color: var(--qr-muted);
-        }
-
-        .qr-menu-logo {
-            width: 96px;
-            height: auto;
-            max-width: 40vw;
-            align-self: flex-start;
-            margin-bottom: 0.25rem;
-        }
-
-        .qr-menu-item-price {
-            white-space: nowrap;
-        }
-
-        .qr-menu-item-allergens {
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.35rem;
-        }
-
-        .qr-menu-item-allergen-chip {
-            font-size: 0.75rem;
-            padding: 0.1rem 0.5rem;
-            border-radius: 999px;
-            background: var(--qr-chip-bg);
-            color: var(--qr-muted);
-        }
-
-        .qr-menu-empty-state {
-            padding: 1rem 0;
-            color: var(--qr-muted);
-            font-size: 0.9rem;
+        .qr-menu-language [aria-current='true'] {
+            font-weight: 700;
+            background: var(--qr-accent-tint);
         }
 
         .pwa-bar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 0.5rem;
-            width: 100%;
-            margin-bottom: 1rem;
-            padding: 0.5rem 0;
+            gap: 8px;
+            margin: 0;
         }
 
         #pwa-install-button {
             font: inherit;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid currentColor;
-            background: transparent;
+            min-height: var(--qr-tap);
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid var(--qr-border-strong);
+            background: var(--qr-surface);
             color: inherit;
             cursor: pointer;
         }
 
-        #pwa-install-button[hidden] {
-            display: none;
-        }
-
+        /* Durum cümleleri de kendi satırlarını alır: "çevrimdışısın" bir
+           rozet değil, bir cümledir ve kırpılırsa hiçbir şey anlatmaz. */
         #pwa-install-status,
         #pwa-offline-status {
-            font-size: 0.85rem;
-            opacity: 0.8;
+            flex: 1 0 100%;
+            font-size: 0.8125rem;
+            color: var(--qr-muted);
+        }
+
+        /* ---- LİSTE BAŞI: sonuç sayısı ----------------------------------
+
+           KIRIK 1'İN ÇÖZÜMÜ (`docs/113` §7.2.1). Sayı, sabit denetimlerin
+           yanından çıkıp listenin başına kendi satırına alındı. Burada bir
+           esnek çubuk olması bilerek: yarın buraya bir sıralama denetimi
+           gelse bile özet 100% tabanıyla kendi satırında kalır. */
+        .qr-listhead {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px;
+            margin: 0 0 12px;
+        }
+
+        .qr-menu-summary {
+            flex: 1 0 100%;
+            margin: 0;
+            font-size: 0.875rem;
+            color: var(--qr-muted);
+        }
+
+        /* ---- KATEGORİ VE KARTLAR ---------------------------------------- */
+        .qr-menu-category {
+            margin: 0 0 24px;
+            /* Çıpaya atlayan misafirin başlığı yapışkan başlığın ALTINDA
+               kalmasın: kaydırma payı başlığın kendi yüksekliğinden çıkar. */
+            scroll-margin-top: calc(var(--qr-hdr-h) + var(--qr-stick));
+        }
+
+        .qr-menu-category-name {
+            font-size: 1.25rem;
+            margin: 0 0 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--qr-brand-secondary, var(--qr-border));
+        }
+
+        /* SÜTUN SAYISI EŞİKTEN DEĞİL, TABAN GENİŞLİKTEN ÇIKAR.
+           Kaynağın 600 / 1280 / 1600 eşiklerinin üçü de burada kayboluyor
+           (`docs/113` §7.1): `auto-fit` sütunu yer olduğunda açar ve kart dar
+           bir sütunun içine konsa da doğru davranır. `min(100%, …)` 320'de
+           taşmayı imkânsız kılar. */
+        .qr-menu-item-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+            gap: 10px;
+        }
+
+        /* Kart kendi KAPSAYICISIDIR: içindeki kararlar ekranı değil kartın
+           kendi genişliğini dinler (`docs/48` §3, 2. araç). */
+        .qr-menu-item {
+            container-type: inline-size;
+            display: flex;
+            align-items: stretch;
+            background: var(--qr-surface);
+            border: 1px solid var(--qr-border);
+            border-radius: var(--qr-radius);
+            overflow: hidden;
+            transition: transform var(--qr-d2) var(--qr-ease);
+        }
+
+        .qr-menu-item:active {
+            transform: scale(0.985);
+        }
+
+        .qr-menu-item-image {
+            flex: 0 0 96px;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: var(--qr-sunken);
+        }
+
+        /* Kaynağın 375 ve 430 eşikleri BUNLARDI ve ikisi de kartın kendi
+           kararıydı, ekranın değil. Kapsayıcı sorgusu ikisini de doğru
+           yapar: dar bir sütuna konan kart küçük görselde kalır. */
+        @container (min-width: 22rem) {
+            .qr-menu-item-image {
+                flex-basis: 108px;
+            }
+        }
+
+        @container (min-width: 26rem) {
+            .qr-menu-item-image {
+                flex-basis: 120px;
+            }
+        }
+
+        /* KIRIK 2'NİN ÇÖZÜMÜ (`docs/113` §7.2.2).
+
+           Kaynakta ürün sayfasının alt çubuğunda sabitler 143 px yiyip eylem
+           düğmesine 153 px bırakıyor ve metni kesiyordu. Aynı aritmetik
+           deponun BUGÜN çizdiği satırda da vardı: 320'de kullanılabilir
+           ~294 px'ten görsel 96 + fiyat ~58 + "Bugün tükendi" rozeti ~104 +
+           boşluklar 36 çıkınca ürün ADINA ~0 px kalıyordu.
+
+           Çözüm eşik değil yerleşim: ad ile fiyat sarmalanan bir satırı
+           paylaşır (ad 12ch tabanıyla, yer kalmayınca fiyat alta düşer),
+           açıklama / durum / alerjen ise CÜMLEDİR ve her biri kendi tam
+           satırını alır. Ad hiçbir genişlikte sıfıra inmez. */
+        .qr-menu-item-body {
+            flex: 1 1 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px 8px;
+            padding: 10px 12px;
+        }
+
+        .qr-menu-item-name {
+            flex: 1 1 12ch;
+            font-size: 1.0625rem;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+
+        /* Bağlantı olan ad, RENKLE DEĞİL altı çizgiyle ayrılır: renk tek
+           başına anlatmaz (WCAG 1.4.1) ve vurgu rengi burada mürekkeple
+           aynı tondadır. */
+        a.qr-menu-item-name {
+            text-decoration: underline;
+            text-decoration-color: var(--qr-border-strong);
+            text-underline-offset: 3px;
+        }
+
+        .qr-menu-item-price {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qr-menu-item-description {
+            flex: 1 0 100%;
+            font-size: 0.875rem;
+            color: var(--qr-fg-2);
+        }
+
+        /* Solukluk YARDIMCIDIR, tek başına anlatmaz: durumu satırdaki metnin
+           kendisi söylüyor (WCAG 1.4.1). */
+        .qr-menu-item-sold-out .qr-menu-item-name,
+        .qr-menu-item-sold-out .qr-menu-item-price,
+        .qr-menu-item-sold-out .qr-menu-item-image {
+            opacity: 0.65;
+        }
+
+        .qr-menu-item-sold-out-note {
+            flex: 1 0 100%;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--qr-warn);
+        }
+
+        .qr-menu-item-allergens {
+            flex: 1 0 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 2px;
+        }
+
+        /* Alerjen UYARI tonundadır, HATA tonunda değil: bir arıza değil,
+           dikkat edilecek bir bilgidir. Liste yalnız BİLDİRİLENİ gösterir ve
+           hiçbir yerde "alerjensizdir" demez — yanlış bir alerjensizlik
+           iddiası bir sağlık olayıdır (`docs/113` §4.2). */
+        .qr-menu-item-allergen-chip {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: var(--qr-warn-tint);
+            color: var(--qr-warn);
+        }
+
+        /* ---- BOŞ DURUMLAR ----------------------------------------------- */
+        .qr-menu-empty-state,
+        .qr-menu-category-empty {
+            margin: 0;
+            padding: 32px 20px;
+            background: var(--qr-surface);
+            border: 1px solid var(--qr-border);
+            border-radius: var(--qr-radius);
+            color: var(--qr-fg-2);
+            text-align: center;
+            text-wrap: pretty;
+        }
+
+        .qr-menu-category-empty {
+            padding: 20px;
+            font-size: 0.875rem;
+        }
+
+        /* ---- ALTBİLGİ — kimliğin geri kalanı ---------------------------- */
+        .qr-menu-foot {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--qr-border);
+            font-size: 0.875rem;
+            color: var(--qr-muted);
+        }
+
+        /* Uzun bir cadde adı 320 px'te satırı taşırmaz: kelime kırılır. */
+        .qr-menu-address,
+        .qr-menu-phone,
+        .qr-menu-subtitle {
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .qr-menu-phone a {
+            display: inline-flex;
+            align-items: center;
+            min-height: var(--qr-tap);
+        }
+
+        /* ---- TEK KIRILMA NOKTASI ---------------------------------------
+
+           `docs/113` §7.1: kaynağın altı eşiğinden yalnız BU kalır ve
+           deponun kendi ölçeğindeki `--aep-bp-md` ile aynı değerdedir
+           (`resources/css/aep/tokens/layout.css:6` → 1024px).
+
+           NEDEN BU EŞİK MEŞRU: yan rayın içeriğin YANINDA mı yoksa ÜSTÜNDE
+           mi durduğu gerçekten SAYFANIN kararıdır — bir kartın kendi
+           tercihi değil. `docs/48` §3'ün üçüncü aracı tam olarak bunun için
+           ayrılmıştır ve gerekçesi burada yazılıdır.
+
+           Diğer beşi (375, 430, 600, 1280, 1600) yukarıda içsel düzene ve
+           kapsayıcı sorgusuna çevrildi; bu dosyada başka `@media (…-width)`
+           kuralı YOKTUR ve `GuestMenuDesignLanguageTest` bunu dondurur. */
+        @media (min-width: 1024px) {
+            .qr-shell {
+                grid-template-columns: 288px minmax(0, 1fr);
+                gap: 24px;
+            }
+
+            .qr-rail {
+                position: sticky;
+                top: calc(var(--qr-hdr-h) + var(--qr-stick));
+            }
+
+            /* Ray dikeye döndüğünde yatay kaydırıcı olmaktan çıkar: fareyle
+               kaydırılamayan gizli çubuk masaüstünde bir tuzaktır. */
+            .qr-menu-nav {
+                flex-direction: column;
+                overflow-x: visible;
+            }
+
+            .qr-menu-nav a {
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
 <body>
+{{-- ZABUNO ÇERÇEVESİ (`docs/113` §6) — misafir yüzeyinin sahiplik sınırı.
+     Bugün hiçbir piksel üretmez; `header`/`footer` yuvaları boş olduğu için
+     çıktıda tek bir düğüm bile bırakmaz. Zabuno'nun kendi başlığı ve
+     altbilgisi geldiğinde dört misafir yüzeyine ayrı ayrı değil, buraya
+     girer. --}}
+<x-zabuno surface="menu">
 {{-- Marka şeridi sayfanın EN ÜSTÜNDE durur. `main` içinde dururken kurulum
      çubuğunun altına düşüyor ve sayfanın ortasında başıboş bir çizgi gibi
      görünüyordu. --}}
 <div class="qr-brand-bar" aria-hidden="true"></div>
-<div class="pwa-bar">
-    <button type="button" id="pwa-install-button" hidden>{{ $text('installButton') }}</button>
-    <span id="pwa-install-status" role="status" aria-live="polite"></span>
-    <span id="pwa-offline-status" role="status" aria-live="polite"></span>
-</div>
-<main role="main" @isset($menuKey) data-menu-key="{{ $menuKey }}" @endisset>
+
+{{-- YAPIŞKAN KİMLİK BAŞLIĞI — kaynağın üst şeridi (`docs/113` §1.1 no.1).
+     Misafir kaydırdıkça nerede olduğunu unutmasın diye yapışkan; sayfadaki
+     TEK yapışkan öğe olduğu için 320×480'de dikey alanı da yemez. --}}
+<header class="qr-hdr">
+    <div class="qr-hdr-row">
+        @php($logo = $identity !== null && isset($snapshot['identity']['logo']) && is_array($snapshot['identity']['logo'])
+            ? $snapshot['identity']['logo']
+            : null)
+
+        @if ($logo)
+            {{-- Ölçüler ATTRIBUTE olarak basılır: görsel inerken sayfa
+                 zıplamasın, misafir okuduğu satırı kaybetmesin. `sizes`
+                 çizilen ölçüyü söyler — 96 px yazıp 34 px çizmek, tarayıcıya
+                 gereğinden büyük bir dosya indirtirdi. --}}
+            <img class="qr-menu-logo"
+                 src="{{ $logo['sources'][count($logo['sources']) - 1]['url'] }}"
+                 srcset="{{ $srcset($logo['sources']) }}"
+                 sizes="34px"
+                 width="{{ $logo['width'] }}" height="{{ $logo['height'] }}"
+                 alt="{{ $logo['altText'] }}"
+                 decoding="async">
+        @endif
+
+        {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
+             Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı
+             ekran okuyucu için başlıksız bırakırdı. --}}
+        <span class="qr-hdr-id">
+            <h1 class="qr-menu-title">{{ $documentTitle }}</h1>
+
+            @if ($identity !== null && $identity->locationName !== '' && $identity->locationName !== $headline)
+                <span class="qr-menu-location">{{ $identity->locationName }}</span>
+            @endif
+        </span>
+
+        {{-- YER BURADA AÇIK KALIYOR. Kaynağın başlık satırında arama, tema,
+             favori ve sepet düğmeleri var; onların arka ucu ayrı paketlerde
+             geliyor. Satır esnek kurulduğu için o düğmeler geldiğinde kimlik
+             bloğu kendiliğinden daralır ve bu dosyada düzen değişmez —
+             320'deki 34+8 px'lik sabit payı korumak için yeni her düğme
+             `var(--qr-tap)` genişliğinde ve `flex:none` olarak eklenir.
+             Çalışmayan bir düğmeyi BUGÜNDEN çizmek ise ayrı bir şeydir ve
+             yapılmaz: masadaki misafir ona basar ve hiçbir şey olmaz. --}}
+    </div>
+</header>
+
+<main role="main" class="qr-page" @isset($menuKey) data-menu-key="{{ $menuKey }}" @endisset>
     @isset($previewNotice)
         {{-- ÖNİZLEME KENDİNİ SÖYLER ve sayfanın EN ÜSTÜNDE söyler. Bağlantı
              bir grup sohbetine düşerse onu açan kişi de, sahibin kendisi de
@@ -471,100 +737,89 @@
          İşaretleme ORTAK PARÇADADIR çünkü aynı şerit ürün sayfasında da
          çizilir; kopyalasaydık ikisi bir gün ayrışırdı. --}}
     @include('partials.guest-closed-notice', ['closedNotice' => $closedNotice ?? null])
-    <header class="qr-menu-header">
-        {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
-             Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı
-             ekran okuyucu için başlıksız bırakırdı. --}}
-        @php($logo = $identity !== null && isset($snapshot['identity']['logo']) && is_array($snapshot['identity']['logo'])
-            ? $snapshot['identity']['logo']
-            : null)
-
-        @if ($logo)
-            {{-- Ölçüler ATTRIBUTE olarak basılır: görsel inerken sayfa
-                 zıplamasın, misafir okuduğu satırı kaybetmesin. --}}
-            <img class="qr-menu-logo"
-                 src="{{ $logo['sources'][count($logo['sources']) - 1]['url'] }}"
-                 srcset="{{ $srcset($logo['sources']) }}"
-                 sizes="96px"
-                 width="{{ $logo['width'] }}" height="{{ $logo['height'] }}"
-                 alt="{{ $logo['altText'] }}"
-                 decoding="async">
-        @endif
-
-        <h1 class="qr-menu-title">{{ $documentTitle }}</h1>
-
-        @if ($identity !== null && $identity->locationName !== '' && $identity->locationName !== $headline)
-            <p class="qr-menu-location">{{ $identity->locationName }}</p>
-        @endif
-
-        @if ($identity?->addressLine)
-            <p class="qr-menu-address">{{ $identity->addressLine }}</p>
-        @endif
-
-        @if ($identity?->telHref())
-            {{-- Misafir masada numarayı elle yazmaz. Görünen metin insan
-                 için, bağlantı makine içindir. --}}
-            <p class="qr-menu-phone">
-                <a href="{{ $identity->telHref() }}">{{ $identity->phone }}</a>
-            </p>
-        @endif
-
-        {{-- Bu cümle ürün-İÇİ bir cümledir: "yayınlanmış sürüm" misafirin
-             sorduğu bir soru değil, bizim kavramımız. Sayfa kendi kimliğini
-             söyleyebiliyorsa gereksizdir; söyleyemiyorsa misafire hiç
-             değilse ne baktığını anlatır (`docs/79`). --}}
-        @isset($guestLocale)
-            {{-- Dil seçimi düz BAĞLANTIDIR: JavaScript çalışmasa da çalışır ve
-                 seçim sunucuda hatırlanır (çerez), böylece sayfa daha ilk
-                 boyamada doğru dilde gelir.
-
-                 Başlıktan BAĞIMSIZ: restoranın adı bilinsin bilinmesin,
-                 misafirin dili değiştirebilmesi gerekir. --}}
-            <nav class="qr-menu-language" aria-label="{{ $text('languageLabel') }}">
-                @foreach (\App\Support\Localization\GuestLocale::SUPPORTED as $option)
-                    @if ($option === $guestLocale)
-                        <span aria-current="true">{{ strtoupper($option) }}</span>
-                    @else
-                        <a href="?lang={{ $option }}" rel="nofollow">{{ strtoupper($option) }}</a>
-                    @endif
-                @endforeach
-            </nav>
-
-            @if ($guestLocale !== ($contentLocale ?? $guestLocale))
-                {{-- İÇERİK çevirisi ARAYÜZ çevirisi değildir: ürün adlarını
-                     restoran kendi dilinde yazar. Bunu söylememek,
-                     tutulmayacak bir söz vermek olurdu. --}}
-                <p class="qr-menu-content-notice">{{ $text('contentNotice') }}</p>
+    {{-- İKİ SÜTUNLU KABUK — kaynağın `gm-shell`'i (`docs/113` §1.1 no.5).
+         320'de tek sütun: ray içeriğin ÜSTÜNDE, yatay bir çip şeridi olarak.
+         1024'ten sonra ray içeriğin YANINDA ve yapışkan. Bu dosyadaki TEK
+         kırılma noktası budur ve gerekçesi stil bloğunda yazılı. --}}
+    <div class="qr-shell">
+        <aside class="qr-rail">
+            @if ($categoryCount > 0)
+                <nav class="qr-menu-nav" aria-label="{{ $text('categoriesLabel') }}">
+                    @foreach ($categories as $navIndex => $category)
+                        <a href="#category-{{ $navIndex }}">{{ $category['name'] }}</a>
+                    @endforeach
+                </nav>
             @endif
-        @endisset
 
-        @if ($headline === '')
-            <p class="qr-menu-subtitle">{{ $text('subtitle') }}</p>
-        @endif
-        <p class="qr-menu-summary">{{ $text('summary') }}</p>
-    </header>
+            {{-- YARDIMCI ÇUBUK. Kaynağın filtre çubuğunun yerini tutar ve
+                 onun 320'deki hatasını TEKRARLAMAZ (`docs/113` §7.2.1):
+                 buradaki her durum/sayı cümlesi `flex: 1 0 100%` ile kendi
+                 satırını alır, hiçbir zaman sabit denetimlerin yanında
+                 ezilmez. Filtre denetimleri arka uçlarıyla birlikte ayrı bir
+                 pakette bu çubuğa girecek; düzen onları olduğu gibi
+                 kaldırır. --}}
+            <div class="qr-utility">
+                <div class="qr-menu-search">
+                    <label for="menu-search">{{ $text('searchLabel') }}</label>
+                    <input type="search" id="menu-search" name="menu-search" autocomplete="off" placeholder="{{ $text('searchPlaceholder') }}">
+                </div>
+                <p id="menu-search-status" role="status" aria-live="polite"></p>
 
-    @if ($categoryCount > 0)
-        <nav class="qr-menu-nav" aria-label="{{ $text('categoriesLabel') }}">
-            @foreach ($categories as $navIndex => $category)
-                <a href="#category-{{ $navIndex }}">{{ $category['name'] }}</a>
-            @endforeach
-        </nav>
-    @endif
+                @isset($guestLocale)
+                    {{-- Dil seçimi düz BAĞLANTIDIR: JavaScript çalışmasa da
+                         çalışır ve seçim sunucuda hatırlanır (çerez), böylece
+                         sayfa daha ilk boyamada doğru dilde gelir.
 
-    <div class="qr-menu-search">
-        <label for="menu-search">{{ $text('searchLabel') }}</label>
-        <input type="search" id="menu-search" name="menu-search" autocomplete="off" placeholder="{{ $text('searchPlaceholder') }}">
-        <p id="menu-search-status" role="status" aria-live="polite"></p>
-    </div>
+                         Başlıktan BAĞIMSIZ: restoranın adı bilinsin bilinmesin,
+                         misafirin dili değiştirebilmesi gerekir. --}}
+                    <nav class="qr-menu-language" aria-label="{{ $text('languageLabel') }}">
+                        @foreach (\App\Support\Localization\GuestLocale::SUPPORTED as $option)
+                            @if ($option === $guestLocale)
+                                <span aria-current="true">{{ strtoupper($option) }}</span>
+                            @else
+                                <a href="?lang={{ $option }}" rel="nofollow">{{ strtoupper($option) }}</a>
+                            @endif
+                        @endforeach
+                    </nav>
+                @endisset
 
-    {{-- MENÜ İÇERİĞİ kendi dilini taşır: arayüz İngilizce olsa da ürün
-         adları restoranın dilindedir ve ekran okuyucu onları o dilde
-         telaffuz etmeli (`docs/85`). --}}
-    @if ($categoryCount === 0)
-        <p class="qr-menu-empty-state">{{ $text('menuEmpty') }}</p>
-    @else
-        @foreach ($categories as $categoryIndex => $category)
+                {{-- KURULUM VE ÇEVRİMDIŞI — kaynakta karşılığı olmayan, ama
+                     depoda çalışan bir yetenek (`docs/113` §4.1). Kaynağa
+                     birebir uyulsaydı bu çubuk sessizce kaybolurdu. --}}
+                <div class="pwa-bar">
+                    <button type="button" id="pwa-install-button" hidden>{{ $text('installButton') }}</button>
+                    <span id="pwa-install-status" role="status" aria-live="polite"></span>
+                    <span id="pwa-offline-status" role="status" aria-live="polite"></span>
+                </div>
+
+                @isset($guestLocale)
+                    @if ($guestLocale !== ($contentLocale ?? $guestLocale))
+                        {{-- İÇERİK çevirisi ARAYÜZ çevirisi değildir: ürün
+                             adlarını restoran kendi dilinde yazar. Bunu
+                             söylememek, tutulmayacak bir söz vermek olurdu. --}}
+                        <p class="qr-menu-content-notice">{{ $text('contentNotice') }}</p>
+                    @endif
+                @endisset
+            </div>
+        </aside>
+
+        <div class="qr-content">
+            {{-- SONUÇ SAYISI KENDİ SATIRINDA — kırık 1'in çözümü
+                 (`docs/113` §7.2.1). Kaynakta bu etiket filtre çubuğunda
+                 sabit denetimlerin yanındaydı ve 320'de ~3 px'e sıkışıp
+                 tamamen kayboluyordu; burada listenin başında tam genişlikte
+                 durur. --}}
+            <div class="qr-listhead">
+                <p class="qr-menu-summary">{{ $text('summary') }}</p>
+            </div>
+
+            {{-- MENÜ İÇERİĞİ kendi dilini taşır: arayüz İngilizce olsa da ürün
+                 adları restoranın dilindedir ve ekran okuyucu onları o dilde
+                 telaffuz etmeli (`docs/85`). --}}
+            @if ($categoryCount === 0)
+                <p class="qr-menu-empty-state">{{ $text('menuEmpty') }}</p>
+            @else
+                @foreach ($categories as $categoryIndex => $category)
             <section class="qr-menu-category" id="category-{{ $categoryIndex }}" data-category @isset($contentLocale) lang="{{ $contentLocale }}" @endisset>
                 <h2 class="qr-menu-category-name">{{ $category['name'] }}</h2>
 
@@ -593,45 +848,101 @@
                                          alt="{{ $image['altText'] }}"
                                          loading="lazy" decoding="async">
                                 @endif
-                                {{-- ÜRÜN ADI, ANLATACAK ŞEYİ VARSA bağlantıdır
-                                     (FF-116). Açıklaması, görseli ve alerjeni
-                                     olmayan bir ürünün sayfası bu satırın
-                                     kopyasıdır; hiçbir yere götürmeyen bir
-                                     bağlantı kurmak bir yalandır. --}}
-                                @if (isset($item['menuItemId']) && isset($itemPathFor) && \App\Http\Controllers\QrDestination\ShowPublicMenuItemController::hasSomethingToSay($item))
-                                    <a class="qr-menu-item-name" href="{{ $itemPathFor((int) $item['menuItemId'], (string) $item['productName']) }}">{{ $item['productName'] }}</a>
-                                @else
-                                    <span class="qr-menu-item-name">{{ $item['productName'] }}</span>
-                                @endif
-                                @php($priceLabel = \App\Support\Money\PriceLabel::for((int) $item['priceMinorAmount'], (string) $item['currencyCode']))
-                                @if ($priceLabel !== null)
-                                    <span class="qr-menu-item-price">{{ $priceLabel }}</span>
-                                @endif
-                                @if ($isSoldOut)
-                                    {{-- Tükendi METİNLE söylenir. Yalnız renk
-                                         ya da soluklukla anlatmak, renk
-                                         göremeyen misafir için hiçbir şey
-                                         anlatmaz (WCAG 1.4.1). --}}
-                                    <span class="qr-menu-item-sold-out-note">{{ $text('soldOut') }}</span>
-                                @endif
-                                @if (! empty($item['description']))
-                                    <span class="qr-menu-item-description">{{ $item['description'] }}</span>
-                                @endif
-                                @if (! empty($item['allergens']))
-                                    <span class="qr-menu-item-allergens">
-                                        @foreach ($item['allergens'] as $allergen)
-                                            <span class="qr-menu-item-allergen-chip">{{ $allergen }}</span>
-                                        @endforeach
-                                    </span>
-                                @endif
+                                {{-- KARTIN METİN SÜTUNU. Sarmalanan bir satır:
+                                     ad ile fiyat yer varsa yan yana durur, yer
+                                     kalmayınca fiyat alta düşer; açıklama,
+                                     durum ve alerjen ise birer CÜMLEDİR ve her
+                                     biri kendi tam satırını alır. Kaynağın 375
+                                     eşiği (`.gm-price{flex:1 0 100%}`) tam
+                                     olarak bunu yapıyordu — burada bir eşik
+                                     olmadan yapılıyor (`docs/113` §7.1).
+
+                                     Rozet ve eylem yeri de buradadır: kaynağın
+                                     kartında görselin üstünde rozet, fiyatın
+                                     yanında favori ve "Ekle" düğmeleri var.
+                                     Bunların arka ucu ayrı paketlerde geliyor;
+                                     geldiklerinde bu satır onları eşiksiz
+                                     kaldırır, çünkü sarmalanan bir satırdır.
+                                     Bugün çizmiyoruz: veri gelmeden çizilen bir
+                                     düğme, misafire çalışacağını söyleyip
+                                     hiçbir şey yapmaz. --}}
+                                <div class="qr-menu-item-body">
+                                    {{-- ÜRÜN ADI, ANLATACAK ŞEYİ VARSA bağlantıdır
+                                         (FF-116). Açıklaması, görseli ve alerjeni
+                                         olmayan bir ürünün sayfası bu satırın
+                                         kopyasıdır; hiçbir yere götürmeyen bir
+                                         bağlantı kurmak bir yalandır. --}}
+                                    @if (isset($item['menuItemId']) && isset($itemPathFor) && \App\Http\Controllers\QrDestination\ShowPublicMenuItemController::hasSomethingToSay($item))
+                                        <a class="qr-menu-item-name" href="{{ $itemPathFor((int) $item['menuItemId'], (string) $item['productName']) }}">{{ $item['productName'] }}</a>
+                                    @else
+                                        <span class="qr-menu-item-name">{{ $item['productName'] }}</span>
+                                    @endif
+                                    @php($priceLabel = \App\Support\Money\PriceLabel::for((int) $item['priceMinorAmount'], (string) $item['currencyCode']))
+                                    @if ($priceLabel !== null)
+                                        <span class="qr-menu-item-price">{{ $priceLabel }}</span>
+                                    @endif
+                                    @if ($isSoldOut)
+                                        {{-- Tükendi METİNLE söylenir. Yalnız renk
+                                             ya da soluklukla anlatmak, renk
+                                             göremeyen misafir için hiçbir şey
+                                             anlatmaz (WCAG 1.4.1). --}}
+                                        <span class="qr-menu-item-sold-out-note">{{ $text('soldOut') }}</span>
+                                    @endif
+                                    @if (! empty($item['description']))
+                                        <span class="qr-menu-item-description">{{ $item['description'] }}</span>
+                                    @endif
+                                    @if (! empty($item['allergens']))
+                                        <span class="qr-menu-item-allergens">
+                                            @foreach ($item['allergens'] as $allergen)
+                                                <span class="qr-menu-item-allergen-chip">{{ $allergen }}</span>
+                                            @endforeach
+                                        </span>
+                                    @endif
+                                </div>
                             </li>
                         @endforeach
                     </ul>
                 @endif
             </section>
-        @endforeach
-    @endif
+                @endforeach
+            @endif
+
+            {{-- ALTBİLGİ — kimliğin geri kalanı.
+
+                 Adres ve telefon başlıktan BURAYA alındı: 320 px'lik bir
+                 ekranda ilk görünen şey yemek olmalı, künye değil. İkisi de
+                 kaybolmadı, aşağıda ve tam genişlikte duruyor.
+
+                 Kaynağın altbilgisindeki "Fiyatlar KDV dahildir" cümlesi
+                 buraya taşınMADI: bu paketin ürün verisinde vergi alanı
+                 taşınmıyor, dolayısıyla cümle doğrulanamaz bir iddia olurdu.
+                 Vergi alanı kendi paketiyle geldiğinde bu satır da gelir. --}}
+            <div class="qr-menu-foot">
+                @if ($identity?->addressLine)
+                    <p class="qr-menu-address">{{ $identity->addressLine }}</p>
+                @endif
+
+                @if ($identity?->telHref())
+                    {{-- Misafir masada numarayı elle yazmaz. Görünen metin
+                         insan için, bağlantı makine içindir. --}}
+                    <p class="qr-menu-phone">
+                        <a href="{{ $identity->telHref() }}">{{ $identity->phone }}</a>
+                    </p>
+                @endif
+
+                @if ($headline === '')
+                    {{-- Bu cümle ürün-İÇİ bir cümledir: "yayınlanmış sürüm"
+                         misafirin sorduğu bir soru değil, bizim kavramımız.
+                         Sayfa kendi kimliğini söyleyebiliyorsa gereksizdir;
+                         söyleyemiyorsa misafire hiç değilse ne baktığını
+                         anlatır (`docs/79`). --}}
+                    <p class="qr-menu-subtitle">{{ $text('subtitle') }}</p>
+                @endif
+            </div>
+        </div>
+    </div>
 </main>
+</x-zabuno>
 {{-- Betik gövdesindeki sabitler de KULLANICI METNİDİR (`docs/85`).
      Harita JSON olarak basılır; betik onu okur ve tek bir cümle bile
      şablonda kalmaz. --}}

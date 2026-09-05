@@ -68,6 +68,10 @@ msgstr "أسماء الأطباق مكتوبة بلغة المطعم."
 msgid "guest.language.label"
 msgstr "اللغة"
 
+#: guest:guest.menu.allergens.label
+msgid "guest.menu.allergens.label"
+msgstr ""
+
 #: guest:guest.menu.categories.label
 msgid "guest.menu.categories.label"
 msgstr "الأقسام"

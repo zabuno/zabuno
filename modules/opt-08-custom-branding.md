@@ -24,9 +24,14 @@ bayrağıdır.
 **Bağımlılıklar**: Themes/Brand, CORE-04.
 **Public contracts/events**: `BrandingLevelChanged`.
 **Tenant isolation**: Aynı.
-**Permissions**: Themes/Brand izinleri yeterli.
+**Permissions**: Themes/Brand izinleri yeterli — bugün kodda `WorkspaceManage`
+(`UpdateBrandController.php`); ayrı bir `theme.manage` izni yoktur.
 **Entitlement**: Bu modülün **kendisi** bir entitlement seviyesidir (`docs/09`
-§4 "branding seviyesi").
+§4 "branding seviyesi"). Anahtarın kodda karşılığı vardır ve adı
+`branding.custom`'dır (`App\Domain\Entitlement\Entitlement::BrandingCustom`,
+FF-174); `restaurant` ve `team` kademelerinde açılır, `starter`'da kapalıdır.
+Kapatıldığında temel yolculuk çalışmaya devam eder: menü yayınlanır ve karekod
+basılır, misafir yalnız nötr görünümü görür.
 **ECA hooks**: Yok.
 **AI-off/on**: AI'dan bağımsız.
 **UX**: Ayarlarda tek tık "platform branding'ini kaldır" (plan yeterliyse).

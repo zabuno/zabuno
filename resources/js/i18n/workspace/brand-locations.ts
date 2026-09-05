@@ -152,6 +152,28 @@ export const brandLocations = {
     'workspace.location.hours.day.7': 'Sunday',
     'workspace.brandLocations.locations.view.country': 'Country',
     'workspace.brandLocations.locations.view.postalCode': 'Postal code',
+    // MARKA GÖRÜNÜMÜ (FF-174). Sahip bir TON ve bir BİÇİM seçer; tek tek
+    // renk değeri girmez. Metinler bu sözü birebir anlatır — "we adjust it"
+    // cümlesi bir özür değil, ürünün verdiği garantinin kendisidir.
+    'workspace.brand.appearance': 'Menu appearance',
+    'workspace.brand.appearance.intro':
+        'Pick one colour and one shape. We build the rest of your menu palette from that colour and keep every text readable on it.',
+    'workspace.brand.appearance.color': 'Brand colour',
+    'workspace.brand.appearance.color.help':
+        'We keep your colour and only lighten or darken it where a guest would struggle to read the text.',
+    'workspace.brand.appearance.shape': 'Menu shape',
+    'workspace.brand.appearance.shape.help': 'Corners, borders and shadows across your whole menu.',
+    'workspace.brand.appearance.shape.a': 'Plain frame',
+    'workspace.brand.appearance.shape.b': 'Soft corners',
+    'workspace.brand.appearance.shape.c': 'Thin lines',
+    'workspace.brand.appearance.shape.d': 'Strong cards',
+    'workspace.brand.appearance.shape.e': 'No frame',
+    'workspace.brand.appearance.shape.f': 'Rounded and raised',
+    'workspace.brand.appearance.adjusted':
+        'We darkened your colour a little for the text on your menu, so guests can read it on both light and dark phones.',
+    'workspace.brand.appearance.locked': 'Menu appearance comes with the Restaurant plan.',
+    'workspace.brand.appearance.locked.help':
+        'Your menu still publishes and your codes still work — guests just see our neutral look instead of your colour.',
 } as const;
 
 declare module '../workspace' {

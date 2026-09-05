@@ -1,5 +1,12 @@
 @php($zabunoMeasurementEnabled = \App\Support\Analytics\AnalyticsConfiguration::fromConfig()->isEnabled())
-@if ($zabunoMeasurementEnabled)
+@php($zabunoMeasurementConsent = \App\Support\Analytics\MeasurementConsent::fromRequest(request()))
+{{--
+    Kamu sayfalarının dönüşüm olayları da onaya bağlıdır: bu olaylar
+    `dataLayer`'a yazılır ve oradan üçüncü taraflara akar. Onay yoksa
+    yazılmazlar — yazılıp konteyner gelince akmaları, onayı sormadan
+    beklemeye almak olurdu.
+--}}
+@if ($zabunoMeasurementEnabled && $zabunoMeasurementConsent->allowsContainer())
 {{--
     KAMU SAYFALARININ DÖNÜŞÜM OLAYLARI — `docs/100` Faz 3 (L3).
 

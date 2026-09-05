@@ -14,6 +14,7 @@
     "guest.deadEnd.title": "Menü bulunamadı",
     "guest.language.contentNotice": "Ürün adları restoranın kendi dilindedir.",
     "guest.language.label": "Dil",
+    "guest.menu.allergens.label": "Alerjen bilgisi",
     "guest.menu.categories.label": "Kategoriler",
     "guest.menu.category.empty": "Bu kategoride henüz ürün yok.",
     "guest.menu.empty": "Bu menüde henüz kategori yok.",

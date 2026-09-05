@@ -640,6 +640,66 @@ msgstr "Ödeme kaydet"
 msgid "workspace.billing.status.notConnected"
 msgstr "Bağlı değil"
 
+#: workspace:workspace.brand.appearance
+msgid "workspace.brand.appearance"
+msgstr "Menü görünümü"
+
+#: workspace:workspace.brand.appearance.adjusted
+msgid "workspace.brand.appearance.adjusted"
+msgstr "Menünüzdeki yazılar için renginizi biraz koyulaştırdık; böylece misafir hem açık hem koyu ekranda okuyabiliyor."
+
+#: workspace:workspace.brand.appearance.color
+msgid "workspace.brand.appearance.color"
+msgstr "Marka rengi"
+
+#: workspace:workspace.brand.appearance.color.help
+msgid "workspace.brand.appearance.color.help"
+msgstr "Renginizi koruruz; yalnız misafirin yazıyı okumakta zorlanacağı yerlerde bir tık açar ya da koyulaştırırız."
+
+#: workspace:workspace.brand.appearance.intro
+msgid "workspace.brand.appearance.intro"
+msgstr "Bir renk ve bir biçim seçin. Menünüzün geri kalan renklerini o renkten kurar ve her yazının okunur kalmasını sağlarız."
+
+#: workspace:workspace.brand.appearance.locked
+msgid "workspace.brand.appearance.locked"
+msgstr "Menü görünümü Restaurant planıyla gelir."
+
+#: workspace:workspace.brand.appearance.locked.help
+msgid "workspace.brand.appearance.locked.help"
+msgstr "Menünüz yine yayınlanır ve kodlarınız yine çalışır — misafir yalnız sizin renginiz yerine bizim nötr görünümümüzü görür."
+
+#: workspace:workspace.brand.appearance.shape
+msgid "workspace.brand.appearance.shape"
+msgstr "Menü biçimi"
+
+#: workspace:workspace.brand.appearance.shape.a
+msgid "workspace.brand.appearance.shape.a"
+msgstr "Sade çerçeve"
+
+#: workspace:workspace.brand.appearance.shape.b
+msgid "workspace.brand.appearance.shape.b"
+msgstr "Yumuşak köşe"
+
+#: workspace:workspace.brand.appearance.shape.c
+msgid "workspace.brand.appearance.shape.c"
+msgstr "İnce çizgi"
+
+#: workspace:workspace.brand.appearance.shape.d
+msgid "workspace.brand.appearance.shape.d"
+msgstr "Belirgin kart"
+
+#: workspace:workspace.brand.appearance.shape.e
+msgid "workspace.brand.appearance.shape.e"
+msgstr "Çerçevesiz"
+
+#: workspace:workspace.brand.appearance.shape.f
+msgid "workspace.brand.appearance.shape.f"
+msgstr "Yuvarlak ve yükseltilmiş"
+
+#: workspace:workspace.brand.appearance.shape.help
+msgid "workspace.brand.appearance.shape.help"
+msgstr "Menünüzün tamamındaki köşeler, çerçeveler ve gölgeler."
+
 #: workspace:workspace.brand.currency
 msgid "workspace.brand.currency"
 msgstr "Para birimi"

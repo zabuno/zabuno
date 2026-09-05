@@ -180,12 +180,34 @@ final class PublicMenuPwaBaselineTest extends TestCase
 
     public function test_new_ui_markup_avoids_breakpoint_media_queries(): void
     {
+        /*
+            KURAL SIKILAŞTI, GEVŞEMEDİ — FF-175 (`docs/113` §7.1).
+
+            Bu iddia "hiç kırılma noktası olmasın" diyordu ve o gün doğruydu:
+            sayfada yan panel yoktu, dolayısıyla bir eşik ancak kartın kendi
+            kararını ekrana bağlamak için konabilirdi — yani her hâlükârda
+            yanlış olurdu.
+
+            Sayfa artık kaynağın iki sütunlu kabuğunu taşıyor: kategori rayı
+            dar ekranda içeriğin ÜSTÜNDE yatay bir şerit, geniş ekranda
+            içeriğin YANINDA yapışkan bir sütundur. Rayın varlığı sayfanın
+            İSKELETİNİ değiştirir ve bu gerçekten ekranın kararıdır — `docs/48`
+            §3'ün üçüncü aracı tam olarak bunun içindir.
+
+            Kuralın NİYETİ değişmedi (eşik son çare olsun), ifadesi artık
+            niyeti aşmıyor. Sayının kendisi de artık serbest değil: SAYIYI ve
+            DEĞERİ `GuestMenuDesignLanguageTest` donduruyor — tam bir tane ve
+            deponun kendi ölçeğindeki `--aep-bp-md` (1024px) ile aynı. Bu
+            iddia burada yalnız "sessizce ikincisi eklenmesin" diye durur.
+        */
         $html = $this->renderPublicMenu();
 
-        $this->assertDoesNotMatchRegularExpression(
-            '/@media[^{]*\(\s*(min|max)-width/i',
-            $html,
-            'new PWA/install UI must stay 320-fluid — no breakpoint media queries'
+        preg_match_all('/@media[^{]*\(\s*(?:min|max)-width\s*:\s*([0-9.]+)px/i', $html, $matches);
+
+        $this->assertCount(
+            1,
+            $matches[1],
+            'new PWA/install UI must stay 320-fluid — exactly one page-shell breakpoint is allowed'
         );
     }
 
@@ -378,12 +400,30 @@ final class PublicMenuPwaBaselineTest extends TestCase
 
     public function test_new_search_and_layout_markup_uses_intrinsic_fluid_sizing_with_no_fixed_min_width(): void
     {
-        $html = $this->renderPublicMenu();
+        /*
+            `min-width: 0` BİR SINIR DEĞİL, SINIRIN KALDIRILMASIDIR — FF-175.
+
+            Bu iddia eskiden `min-width:\d` yazan her şeyi reddediyordu ve
+            böylece `min-width:0`'ı da reddediyordu. Oysa esnek ve grid
+            öğelerinin varsayılan `auto` taban genişliği tam olarak 320'de
+            taşmaya yol açan şeydir: uzun bir ürün adı kutusunu kendi
+            içeriğinden küçültemez ve satırı taşırır. Sıfırlamak, kuralın
+            YASAKLADIĞI değil TAM OLARAK İSTEDİĞİ davranıştır.
+
+            Kural artık niyetini söylüyor: sıfır serbesttir, DEĞER TAŞIYAN bir
+            `min-width` yasaktır. 320'den geniş her sabit ölçüyü ayrıca
+            `GuestMenuDesignLanguageTest` tarıyor.
+
+            `@media` / `@container` başlıklarındaki eşik bir ÖLÇÜ değil bir
+            SORUdUR ("kapsayıcı bu kadar geniş mi?") ve taramanın dışındadır;
+            eşiğin kendisi ayrı bir iddianın konusudur.
+        */
+        $html = (string) preg_replace('/@(?:media|container)[^{]*\{/i', '{', $this->renderPublicMenu());
 
         $this->assertDoesNotMatchRegularExpression(
-            '/min-width\s*:\s*\d/i',
+            '/min-width\s*:\s*(?!0\s*[;}])\d/i',
             $html,
-            'layout must stay intrinsic/fluid — no fixed pixel/unit min-width constraint'
+            'layout must stay intrinsic/fluid — only min-width:0 (releasing the default floor) is allowed'
         );
     }
 }

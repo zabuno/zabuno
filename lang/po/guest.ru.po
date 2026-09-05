@@ -68,6 +68,10 @@ msgstr "Названия блюд — на языке ресторана."
 msgid "guest.language.label"
 msgstr "Язык"
 
+#: guest:guest.menu.allergens.label
+msgid "guest.menu.allergens.label"
+msgstr ""
+
 #: guest:guest.menu.categories.label
 msgid "guest.menu.categories.label"
 msgstr "Разделы"

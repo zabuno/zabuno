@@ -63,6 +63,7 @@ final class EloquentBrandRepository implements BrandRepositoryPort
             $brand->contact_phone,
             $brand->primary_color,
             $brand->secondary_color,
+            $brand->skin_variant,
         );
     }
 }
