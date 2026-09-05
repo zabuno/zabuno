@@ -20,11 +20,19 @@ interface TeamMemberRepositoryPort
     /**
      * Removes the membership identified by the given workspace and
      * membership id via one atomic conditional delete (workspace id +
-     * membership id + role = editor). Returns true when a row was
-     * deleted, false when no matching editor row was found for that exact
-     * workspace.
+     * membership id + role in MembershipRole::invitable()). Returns true
+     * when a row was deleted, false when no matching removable row was
+     * found for that exact workspace.
+     *
+     * Adı bilerek `removeEditor` DEĞİL: bu yol sahibin davet edebildiği
+     * her rolü (Editör · Yönetici · Mutfak) kaldırır. Eski ad yalnız
+     * gerçeğin bir bölümünü anlatıyordu ve koşulun geri kalan iki rolü
+     * atladığı yıllarca fark edilmedi.
+     *
+     * `owner` bu yoldan ASLA kaldırılmaz — sahiplik silinmez, devredilir
+     * (`transferOwnership`).
      */
-    public function removeEditor(int $workspaceId, int $membershipId): bool;
+    public function removeMember(int $workspaceId, int $membershipId): bool;
 
     /**
      * Transfers workspace ownership from the current owner to the given

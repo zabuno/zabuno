@@ -13,6 +13,8 @@ type MenuPageProps = {
     locationId: number | null;
     onTreeChange: (tree: DashboardMenuTree) => void;
     onNavigateToSection: (section: string) => void;
+    /** Bkz. `MenuCatalogWorkspaceProps.can` — tanımsızsa daraltma yapılmaz. */
+    can?: (permission: string) => boolean;
 };
 
 /**
@@ -36,7 +38,15 @@ export function MenuPage({
     locationId,
     onTreeChange,
     onNavigateToSection,
+    can,
 }: MenuPageProps) {
+    /*
+        YAYINLAMA da menüyü değiştirmektir — hatta en geri alınamaz biçimde:
+        misafirin masada gördüğü menüyü değiştirir. Mutfak rolü taslağı bile
+        değiştiremezken yayın düğmesini görmesi, ekranın en yanıltıcı sözü
+        olurdu.
+    */
+    const canManageMenu = can === undefined || can('menu.manage');
     return (
         <div id="section-menu">
             <WorkspacePageFrame
@@ -65,13 +75,15 @@ export function MenuPage({
                         Yayınlamanın menüye ait olduğu kararı (`docs/50` §5)
                         değişmedi.
                     */
-                    <button
-                        type="button"
-                        onClick={() => onNavigateToSection?.('publication')}
-                        className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg"
-                    >
-                        {t('workspace.menu.previewAndPublish')}
-                    </button>
+                    canManageMenu ? (
+                        <button
+                            type="button"
+                            onClick={() => onNavigateToSection?.('publication')}
+                            className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg"
+                        >
+                            {t('workspace.menu.previewAndPublish')}
+                        </button>
+                    ) : null
                 }
             >
                 <PanelCard>{renderCatalog()}</PanelCard>
@@ -87,6 +99,7 @@ export function MenuPage({
                     locationId={locationId}
                     onTreeChange={onTreeChange}
                     onNavigateToSection={onNavigateToSection}
+                    can={can}
                 />
             );
         }

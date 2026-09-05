@@ -13,7 +13,8 @@ export type CategoryRailProps = {
     categories: CategoryRailEntry[];
     activeCategoryId: number | null;
     onSelect: (categoryId: number) => void;
-    onAddCategory: () => void;
+    /** `null` → ekleme düğmesi hiç çizilmez (menüyü işletemeyen rol). */
+    onAddCategory: (() => void) | null;
     /** Rayın erişilebilir adı. */
     listLabel: string;
     /** Ekleme düğmesinin metni ("Kategori"). */
@@ -171,20 +172,22 @@ export function CategoryRail({
                 yapılan iş (var olanı seçmek), en seyrek yapılanın (yeni
                 açmak) arkasında kalırdı.
             */}
-            <button
-                type="button"
-                onClick={onAddCategory}
-                className={clsx(
-                    'flex min-h-[var(--density-row-height)] shrink-0 items-center gap-[var(--space-2)]',
-                    'rounded-[var(--radius-md)] border border-dashed border-border px-[var(--space-3)]',
-                    'text-start text-body font-medium text-fg-secondary',
-                    'hover:bg-surface-hover hover:text-fg',
-                    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                )}
-            >
-                <Plus size={16} aria-hidden="true" />
-                {addLabel}
-            </button>
+            {onAddCategory !== null ? (
+                <button
+                    type="button"
+                    onClick={onAddCategory}
+                    className={clsx(
+                        'flex min-h-[var(--density-row-height)] shrink-0 items-center gap-[var(--space-2)]',
+                        'rounded-[var(--radius-md)] border border-dashed border-border px-[var(--space-3)]',
+                        'text-start text-body font-medium text-fg-secondary',
+                        'hover:bg-surface-hover hover:text-fg',
+                        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                    )}
+                >
+                    <Plus size={16} aria-hidden="true" />
+                    {addLabel}
+                </button>
+            ) : null}
         </nav>
     );
 }

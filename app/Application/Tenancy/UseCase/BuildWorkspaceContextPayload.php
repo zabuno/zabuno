@@ -45,11 +45,21 @@ final class BuildWorkspaceContextPayload
      * Rol, izin kümesinden geri okunur: en geniş eşleşen rol. Ekran rol
      * adını yalnız GÖSTERİR; karar her zaman izin listesinden verilir.
      *
+     * Listede olmayan bir rol burada ADSIZ kalır: `Kitchen` bir süre eksikti
+     * ve aşçının izinleri doğru dönerken rol alanı `null` geliyordu — kabuk
+     * doğru yetkiyi çizip kullanıcıya kim olduğunu söyleyemiyordu. Bu yüzden
+     * enum'a eklenen her rol aynı anda buraya da eklenir.
+     *
+     * SIRA sonucu değiştirmez, yalnız okumayı kolaylaştırır: karşılaştırma
+     * tam küme eşitliğidir (`$expected === $given`), yani bir izin kümesi en
+     * fazla tek bir rolle eşleşir. Sıra yine de geniş→dar tutulur ki liste,
+     * "en geniş eşleşen rol" cümlesini okurken de doğrulasın.
+     *
      * @param  list<string>  $permissions
      */
     private function roleFor(array $permissions): ?string
     {
-        foreach ([MembershipRole::Owner, MembershipRole::Manager, MembershipRole::Editor, MembershipRole::Member] as $role) {
+        foreach ([MembershipRole::Owner, MembershipRole::Manager, MembershipRole::Editor, MembershipRole::Kitchen, MembershipRole::Member] as $role) {
             $expected = array_map(static fn (Permission $p): string => $p->value, RolePermissions::for($role));
             sort($expected);
             $given = $permissions;

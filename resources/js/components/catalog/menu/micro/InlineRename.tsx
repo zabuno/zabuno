@@ -15,6 +15,15 @@ export type InlineRenameProps = {
     /** Görünüm sınıfı: kategori başlığı ile ürün satırı aynı bileşeni kullanır. */
     textClassName?: string;
     inputClassName?: string;
+    /**
+     * Ad DEĞİŞTİRİLEMEZ: yalnız metin çizilir, tetikleyici düğme hiç doğmaz.
+     *
+     * Menü ekranını adı değiştiremeyen bir rolle (Mutfak) açtığında gerekir.
+     * Düğmeyi `disabled` çizmek yerine hiç çizmemek, bu deponun kuralıdır
+     * (`docs/98` FF-74): yapılamayan iş için bir hedef bırakmak, kullanıcıya
+     * olmayan bir yol göstermektir.
+     */
+    readOnly?: boolean;
 };
 
 /**
@@ -54,6 +63,7 @@ export function InlineRename({
     cancelLabel,
     textClassName,
     inputClassName,
+    readOnly = false,
 }: InlineRenameProps) {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(value);
@@ -136,6 +146,15 @@ export function InlineRename({
             event.stopPropagation();
             cancel();
         }
+    }
+
+    if (readOnly) {
+        /*
+            Metin, düzenlenebilir hâldeki metinle AYNI sınıfı taşır: satırın
+            hizası role göre kaymaz — iki farklı kullanıcı aynı listeye
+            baktığında aynı ızgarayı görür.
+        */
+        return <span className={cn('min-w-0 truncate', textClassName)}>{value}</span>;
     }
 
     if (!editing) {

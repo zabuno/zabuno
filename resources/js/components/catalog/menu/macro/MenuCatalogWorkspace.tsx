@@ -40,6 +40,17 @@ export type MenuCatalogWorkspaceProps = {
      * görmeye devam eder. Kaydettikten sonra hatırlatma burada doğar.
      */
     onNavigateToSection?: (section: string) => void;
+    /**
+     * Bu kullanıcı bu izne sahip mi? — `WorkspaceApp`'in `can`'i ile aynı
+     * sözleşme (`docs/98` FF-74).
+     *
+     * İSTEĞE BAĞLI ve tanımsızsa "evet" sayılır. Sebebi bir güvenlik boşluğu
+     * değil, bir görünüm kuralı: karar her zaman sunucudadır (403/404), bu
+     * işlev yalnız ekranın hangi kontrolü ÇİZECEĞİNİ söyler. Tanımsızken
+     * daraltsaydı, izin listesini hiç taşımayan yollar (Storybook, doğrudan
+     * gömme) sessizce boş bir menü ekranı gösterirdi.
+     */
+    can?: (permission: string) => boolean;
 };
 
 type Brand = {
@@ -540,7 +551,22 @@ export function MenuCatalogWorkspace({
     locationId,
     onTreeChange,
     onNavigateToSection,
+    can,
 }: MenuCatalogWorkspaceProps) {
+    /*
+        MENÜYÜ İŞLETME YETKİSİ — tek bir soru, tek bir yerde sorulur.
+
+        Bu ekranda iki tür iş var: menüyü DEĞİŞTİRMEK (fiyat, görünürlük,
+        ad, sıra, silme, ekleme, içe aktarma) ve GÜNÜ İŞLETMEK (tükendi,
+        alerjen). Mutfak rolü ikincisini yapar, birincisini yapamaz
+        (`docs/109` §6.4) — ve sunucu bunu zaten 403 ile durduruyor.
+
+        Ekranın işi o sınırı TEKRAR ETMEK değil, ona uymaktır: yapılamayan
+        şey çizilmez. Devre dışı bir düğme "bir gün olabilir" der; aşçının
+        rolü değişmedikçe o gün gelmeyecek.
+    */
+    const canManageMenu = can === undefined || can('menu.manage');
+
     const [initialLoading, setInitialLoading] = useState(true);
     const [initialError, setInitialError] = useState(false);
     const [retryToken, setRetryToken] = useState(0);
@@ -856,7 +882,14 @@ export function MenuCatalogWorkspace({
                 if (menuResponse.status === 404) {
                     setTree(null);
                 } else {
-                    const loaded = (await menuResponse.json()) as MenuTree;
+                    const loaded = asMenuTree(await menuResponse.json());
+
+                    if (loaded === null) {
+                        setInitialError(true);
+
+                        return;
+                    }
+
                     setTree(loaded);
 
                     // İlk kategori SEÇİLİ AÇILMAZ.
@@ -1192,7 +1225,12 @@ export function MenuCatalogWorkspace({
                 const partial = await fetch(menuUrl(workspaceId, locationId));
 
                 if (partial.ok) {
-                    setTree((await partial.json()) as MenuTree);
+                    // Okunamayan bir gövde ekrandaki ağacı EZMEZ (bkz. `asMenuTree`).
+                    const partialTree = asMenuTree(await partial.json());
+
+                    if (partialTree !== null) {
+                        setTree(partialTree);
+                    }
                 }
 
                 return;
@@ -1201,7 +1239,12 @@ export function MenuCatalogWorkspace({
             const refreshed = await fetch(menuUrl(workspaceId, locationId));
 
             if (refreshed.ok) {
-                setTree((await refreshed.json()) as MenuTree);
+                // Okunamayan bir gövde ekrandaki ağacı EZMEZ (bkz. `asMenuTree`).
+                const refreshedTree = asMenuTree(await refreshed.json());
+
+                if (refreshedTree !== null) {
+                    setTree(refreshedTree);
+                }
             }
 
             setPresentationItemId(null);
@@ -1504,7 +1547,12 @@ export function MenuCatalogWorkspace({
             const refreshed = await fetch(menuUrl(workspaceId, locationId));
 
             if (refreshed.ok) {
-                setTree((await refreshed.json()) as MenuTree);
+                // Okunamayan bir gövde ekrandaki ağacı EZMEZ (bkz. `asMenuTree`).
+                const refreshedTree = asMenuTree(await refreshed.json());
+
+                if (refreshedTree !== null) {
+                    setTree(refreshedTree);
+                }
             }
         } catch {
             setAiImportReviewError(t('menu.item.ai.import.error'));
@@ -1564,7 +1612,12 @@ export function MenuCatalogWorkspace({
             const refreshed = await fetch(menuUrl(workspaceId, locationId));
 
             if (refreshed.ok) {
-                setTree((await refreshed.json()) as MenuTree);
+                // Okunamayan bir gövde ekrandaki ağacı EZMEZ (bkz. `asMenuTree`).
+                const refreshedTree = asMenuTree(await refreshed.json());
+
+                if (refreshedTree !== null) {
+                    setTree(refreshedTree);
+                }
             }
         } catch {
             setImportError(t('menu.import.error'));
@@ -1748,6 +1801,31 @@ export function MenuCatalogWorkspace({
      * "Kahvaltı"ya basar, ekranda hâlâ akşam menüsünü görür ve eklediği
      * ürünün hangi menüye gittiğini bir daha asla bilemezdi.
      */
+    /**
+     * Gövde GERÇEKTEN bir menü ağacı mı?
+     *
+     * Bu kontrol bir tip süslemesi değil, yaşanmış bir çökmenin cevabı: menü
+     * uçlarından biri `categories` taşımayan bir 200 döndüğünde ekran
+     * `tree.categories.some(...)` satırında patlıyor ve sahibin gördüğü şey boş
+     * beyaz bir sayfa oluyordu — hatanın kendisi bile yazılmıyordu.
+     *
+     * `as MenuTree` derleyiciye bir SÖZ verir, sunucuya değil. Söz tutulmadığında
+     * ekranın yapması gereken şey uydurmak (`categories: []`) değil — o, boş bir
+     * menü göstermek olurdu ve sahip ürünlerinin silindiğini sanırdı — okunamayan
+     * cevabı REDDEDİP kendi yükleme hatasını göstermektir.
+     */
+    function asMenuTree(body: unknown): MenuTree | null {
+        if (typeof body !== 'object' || body === null) return null;
+
+        const candidate = body as { id?: unknown; categories?: unknown };
+
+        if (typeof candidate.id !== 'number' || !Array.isArray(candidate.categories)) {
+            return null;
+        }
+
+        return body as MenuTree;
+    }
+
     async function openMenu(menuId: number): Promise<void> {
         if (tree !== null && tree.id === menuId) return;
 
@@ -1763,7 +1841,14 @@ export function MenuCatalogWorkspace({
                 return;
             }
 
-            const loaded = (await response.json()) as MenuTree;
+            const loaded = asMenuTree(await response.json());
+
+            if (loaded === null) {
+                setOperationError(t('menu.initial.error.load'));
+
+                return;
+            }
+
             setTree(loaded);
             // Menü değişti: eski menünün kategori seçimi yeni menüde
             // hiçbir şeye karşılık gelmez.
@@ -2172,7 +2257,12 @@ export function MenuCatalogWorkspace({
             }
             const refreshed = await fetch(menuUrl(workspaceId, locationId));
             if (refreshed.ok) {
-                setTree((await refreshed.json()) as MenuTree);
+                // Okunamayan bir gövde ekrandaki ağacı EZMEZ (bkz. `asMenuTree`).
+                const refreshedTree = asMenuTree(await refreshed.json());
+
+                if (refreshedTree !== null) {
+                    setTree(refreshedTree);
+                }
             }
             // Kaydedince düzenleyici kapanır: açık kalması, işin bitmediği
             // izlenimi verirdi.
@@ -2654,13 +2744,20 @@ export function MenuCatalogWorkspace({
                         menus={menuPills()}
                         onSelectMenu={(menuId) => void openMenu(menuId)}
                         addMenuLabel={t('menu.pills.add')}
-                        onAddMenu={openMenuCreatePanel}
+                        /*
+                            MUTFAK ŞERİTTE YALNIZ HAPLARI GÖRÜR. Hangi menüye
+                            baktığını seçmek gerekir — akşam menüsündeki
+                            levreği işaretlemek için önce o menüye geçilir —
+                            ama menü açmak, adını değiştirmek, ürün eklemek ve
+                            içe aktarmak `menu.manage` işidir.
+                        */
+                        onAddMenu={canManageMenu ? openMenuCreatePanel : null}
                         editMenuLabel={t('menu.pills.edit')}
-                        onEditMenu={openMenuEditPanel}
+                        onEditMenu={canManageMenu ? openMenuEditPanel : null}
                         servingNowLabel={t('menu.pill.servingNow')}
-                        photoImport={photoImportState()}
+                        photoImport={canManageMenu ? photoImportState() : null}
                         csvLabel={t('menu.actions.csv')}
-                        onCsv={() => setCsvPanelOpen((open) => !open)}
+                        onCsv={canManageMenu ? () => setCsvPanelOpen((open) => !open) : null}
                         previewAndPublishLabel={t('menu.actions.previewAndPublish')}
                         /*
                             YAYINLAMA BU ŞERİTTE DEĞİL, BİR SATIR YUKARIDA.
@@ -2675,11 +2772,15 @@ export function MenuCatalogWorkspace({
                         */
                         onPreviewAndPublish={null}
                         addProductLabel={t('menu.entry.open')}
-                        onAddProduct={() => {
-                            if (visibleCategory !== null) {
-                                toggleEntryForm(visibleCategory.id);
-                            }
-                        }}
+                        onAddProduct={
+                            canManageMenu
+                                ? () => {
+                                      if (visibleCategory !== null) {
+                                          toggleEntryForm(visibleCategory.id);
+                                      }
+                                  }
+                                : null
+                        }
                     />
 
                     {switchingMenu ? (
@@ -3293,7 +3394,7 @@ export function MenuCatalogWorkspace({
                             }))}
                             activeCategoryId={visibleCategory?.id ?? null}
                             onSelect={setSelectedCategoryId}
-                            onAddCategory={() => setCategoryFormOpen(true)}
+                            onAddCategory={canManageMenu ? () => setCategoryFormOpen(true) : null}
                             listLabel={t('menu.categories.list.label')}
                             addLabel={t('menu.category.add.short')}
                             countLabel={(count) =>
@@ -3310,8 +3411,11 @@ export function MenuCatalogWorkspace({
                                 tutamacı zaten rayda gösteriyor
                                 (`panel.dc.html` satır 30258).
                             */
-                            onReorder={(source, target) =>
-                                void reorderCategoryByDrag(source, target)
+                            /* Sıralamak da menüyü değiştirmektir. */
+                            onReorder={
+                                canManageMenu
+                                    ? (source, target) => void reorderCategoryByDrag(source, target)
+                                    : undefined
                             }
                             reorderHandleLabel={(name) =>
                                 t('menu.category.reorder.handle', { name })
@@ -3352,6 +3456,7 @@ export function MenuCatalogWorkspace({
                                     */}
                                         <h3 className="min-w-0 text-section font-bold tracking-tight text-fg">
                                             <InlineRename
+                                                readOnly={!canManageMenu}
                                                 value={category.name}
                                                 label={t('menu.rename.label', {
                                                     name: category.name,
@@ -3434,30 +3539,36 @@ export function MenuCatalogWorkspace({
                                         sürükleme dokunmatikte ve klavyeyle
                                         güvenilir değildir.
                                     */}
-                                        <RowActions
-                                            onDelete={() =>
-                                                setPendingDelete({ kind: 'category', category })
-                                            }
-                                            onMoveUp={() =>
-                                                void moveCategory(
-                                                    tree.categories.indexOf(category),
-                                                    -1,
-                                                )
-                                            }
-                                            onMoveDown={() =>
-                                                void moveCategory(
-                                                    tree.categories.indexOf(category),
-                                                    1,
-                                                )
-                                            }
-                                            deleteLabel={t('menu.category.delete.label', {
-                                                name: category.name,
-                                            })}
-                                            deleteText={t('menu.row.delete')}
-                                            moreLabel={t('menu.row.more', { name: category.name })}
-                                            upLabel={t('menu.move.up', { name: category.name })}
-                                            downLabel={t('menu.move.down', { name: category.name })}
-                                        />
+                                        {canManageMenu ? (
+                                            <RowActions
+                                                onDelete={() =>
+                                                    setPendingDelete({ kind: 'category', category })
+                                                }
+                                                onMoveUp={() =>
+                                                    void moveCategory(
+                                                        tree.categories.indexOf(category),
+                                                        -1,
+                                                    )
+                                                }
+                                                onMoveDown={() =>
+                                                    void moveCategory(
+                                                        tree.categories.indexOf(category),
+                                                        1,
+                                                    )
+                                                }
+                                                deleteLabel={t('menu.category.delete.label', {
+                                                    name: category.name,
+                                                })}
+                                                deleteText={t('menu.row.delete')}
+                                                moreLabel={t('menu.row.more', {
+                                                    name: category.name,
+                                                })}
+                                                upLabel={t('menu.move.up', { name: category.name })}
+                                                downLabel={t('menu.move.down', {
+                                                    name: category.name,
+                                                })}
+                                            />
+                                        ) : null}
                                     </div>
                                     <ul
                                         aria-label={t('menu.category.items.label', {
@@ -3533,6 +3644,7 @@ export function MenuCatalogWorkspace({
                                                     </button>
                                                     <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)] sm:flex-auto">
                                                         <InlineRename
+                                                            readOnly={!canManageMenu}
                                                             value={
                                                                 item.productName ??
                                                                 `#${item.productId}`
@@ -3654,18 +3766,64 @@ export function MenuCatalogWorkspace({
                                                     hizalanmaz ve karşılaştırma
                                                     gözle yapılamaz.
                                                 */}
-                                                    <button
-                                                        type="button"
-                                                        aria-label={t(
-                                                            'menu.item.price.edit.button',
-                                                            {
-                                                                name: item.productName ?? '',
-                                                            },
-                                                        )}
-                                                        onClick={() => handleEditPrice(item)}
-                                                        className={itemPriceClass}
-                                                    >
-                                                        <span>
+                                                    {canManageMenu ? (
+                                                        <button
+                                                            type="button"
+                                                            aria-label={t(
+                                                                'menu.item.price.edit.button',
+                                                                {
+                                                                    name: item.productName ?? '',
+                                                                },
+                                                            )}
+                                                            onClick={() => handleEditPrice(item)}
+                                                            className={itemPriceClass}
+                                                        >
+                                                            <span>
+                                                                {formatMoneyOr(
+                                                                    item.priceMinorAmount,
+                                                                    item.currencyCode,
+                                                                    `${minorAmountToDecimalString(
+                                                                        item.priceMinorAmount,
+                                                                        item.currencyCode,
+                                                                    )} ${item.currencyCode}`,
+                                                                )}
+                                                            </span>
+                                                            {/*
+                                                            Kalem, fiyatın DÜZENLENEBİLİR
+                                                            olduğunu söyler. Dolgulu kutu tek
+                                                            başına "tıklanabilir" demiyordu;
+                                                            sahip fiyatı değiştirmek için
+                                                            taşma menüsünü açıyordu.
+                                                        */}
+                                                            <PencilSimple
+                                                                size={16}
+                                                                aria-hidden="true"
+                                                                className="text-fg-secondary"
+                                                            />
+                                                        </button>
+                                                    ) : (
+                                                        /*
+                                                            FİYAT KALIR, DÜĞME GİDER.
+
+                                                            Yetkisi olmayan için fiyat
+                                                            hâlâ okunur: aşçı doğru
+                                                            satıra baktığını üründen
+                                                            olduğu kadar fiyattan da
+                                                            doğrular ve "48 TL'lik
+                                                            levrek" mutfakta gerçek bir
+                                                            ayırt edicidir.
+
+                                                            Kalem YOK ve kutu artık
+                                                            tıklanabilir görünmüyor:
+                                                            biçim, verilen sözün
+                                                            kendisidir.
+                                                        */
+                                                        <span
+                                                            className={clsx(
+                                                                itemPriceClass,
+                                                                'hover:bg-surface-subtle',
+                                                            )}
+                                                        >
                                                             {formatMoneyOr(
                                                                 item.priceMinorAmount,
                                                                 item.currencyCode,
@@ -3675,19 +3833,7 @@ export function MenuCatalogWorkspace({
                                                                 )} ${item.currencyCode}`,
                                                             )}
                                                         </span>
-                                                        {/*
-                                                        Kalem, fiyatın DÜZENLENEBİLİR
-                                                        olduğunu söyler. Dolgulu kutu tek
-                                                        başına "tıklanabilir" demiyordu;
-                                                        sahip fiyatı değiştirmek için
-                                                        taşma menüsünü açıyordu.
-                                                    */}
-                                                        <PencilSimple
-                                                            size={16}
-                                                            aria-hidden="true"
-                                                            className="text-fg-secondary"
-                                                        />
-                                                    </button>
+                                                    )}
                                                     {/*
                                                     TÜKENDİ satırda kalır: bir
                                                     restoranın gün içinde
@@ -3741,71 +3887,86 @@ export function MenuCatalogWorkspace({
                                                     boyutundan büyüktür: ray 28px,
                                                     basılabilir alan 44px.
                                                 */}
-                                                    <button
-                                                        type="button"
-                                                        role="switch"
-                                                        aria-checked={item.isVisible}
-                                                        aria-label={t(
-                                                            'menu.item.visibility.switch.label',
-                                                            { name: item.productName ?? '' },
-                                                        )}
-                                                        disabled={
-                                                            visibilityPending[item.id] === true
-                                                        }
-                                                        onClick={() => handleToggleVisibility(item)}
-                                                        className={clsx(
-                                                            'flex min-h-[var(--density-hit-area-min)] w-[48px] shrink-0 items-center justify-center',
-                                                            'rounded-[var(--radius-md)]',
-                                                            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                                                            'disabled:cursor-not-allowed disabled:opacity-50',
-                                                        )}
-                                                    >
-                                                        <span
-                                                            aria-hidden="true"
+                                                    {canManageMenu ? (
+                                                        <button
+                                                            type="button"
+                                                            role="switch"
+                                                            aria-checked={item.isVisible}
+                                                            aria-label={t(
+                                                                'menu.item.visibility.switch.label',
+                                                                { name: item.productName ?? '' },
+                                                            )}
+                                                            disabled={
+                                                                visibilityPending[item.id] === true
+                                                            }
+                                                            onClick={() =>
+                                                                handleToggleVisibility(item)
+                                                            }
                                                             className={clsx(
-                                                                'relative block h-[28px] w-[48px] rounded-pill transition-colors',
-                                                                item.isVisible
-                                                                    ? 'bg-action'
-                                                                    : 'bg-surface-active',
+                                                                'flex min-h-[var(--density-hit-area-min)] w-[48px] shrink-0 items-center justify-center',
+                                                                'rounded-[var(--radius-md)]',
+                                                                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                                                                'disabled:cursor-not-allowed disabled:opacity-50',
                                                             )}
                                                         >
                                                             <span
+                                                                aria-hidden="true"
                                                                 className={clsx(
-                                                                    'absolute top-[3px] block h-[22px] w-[22px] rounded-pill border border-border bg-surface',
-                                                                    'transition-[inset-inline-start]',
+                                                                    'relative block h-[28px] w-[48px] rounded-pill transition-colors',
                                                                     item.isVisible
-                                                                        ? 'start-[23px]'
-                                                                        : 'start-[3px]',
+                                                                        ? 'bg-action'
+                                                                        : 'bg-surface-active',
                                                                 )}
-                                                            />
-                                                        </span>
-                                                    </button>
-                                                    <RowActions
-                                                        onDelete={() =>
-                                                            setPendingDelete({ kind: 'item', item })
-                                                        }
-                                                        onMoveUp={() =>
-                                                            void moveItem(
-                                                                category,
-                                                                category.menuItems.indexOf(item),
-                                                                -1,
-                                                            )
-                                                        }
-                                                        onMoveDown={() =>
-                                                            void moveItem(
-                                                                category,
-                                                                category.menuItems.indexOf(item),
-                                                                1,
-                                                            )
-                                                        }
-                                                        deleteLabel={t('menu.item.delete.label', {
-                                                            name: item.productName ?? '',
-                                                        })}
-                                                        deleteText={t('menu.row.delete')}
-                                                        moreLabel={t('menu.row.more', {
-                                                            name: item.productName ?? '',
-                                                        })}
-                                                        /*
+                                                            >
+                                                                <span
+                                                                    className={clsx(
+                                                                        'absolute top-[3px] block h-[22px] w-[22px] rounded-pill border border-border bg-surface',
+                                                                        'transition-[inset-inline-start]',
+                                                                        item.isVisible
+                                                                            ? 'start-[23px]'
+                                                                            : 'start-[3px]',
+                                                                    )}
+                                                                />
+                                                            </span>
+                                                        </button>
+                                                    ) : null}
+                                                    {canManageMenu ? (
+                                                        <RowActions
+                                                            onDelete={() =>
+                                                                setPendingDelete({
+                                                                    kind: 'item',
+                                                                    item,
+                                                                })
+                                                            }
+                                                            onMoveUp={() =>
+                                                                void moveItem(
+                                                                    category,
+                                                                    category.menuItems.indexOf(
+                                                                        item,
+                                                                    ),
+                                                                    -1,
+                                                                )
+                                                            }
+                                                            onMoveDown={() =>
+                                                                void moveItem(
+                                                                    category,
+                                                                    category.menuItems.indexOf(
+                                                                        item,
+                                                                    ),
+                                                                    1,
+                                                                )
+                                                            }
+                                                            deleteLabel={t(
+                                                                'menu.item.delete.label',
+                                                                {
+                                                                    name: item.productName ?? '',
+                                                                },
+                                                            )}
+                                                            deleteText={t('menu.row.delete')}
+                                                            moreLabel={t('menu.row.more', {
+                                                                name: item.productName ?? '',
+                                                            })}
+                                                            /*
                                                         SEYREK İŞLER menüde ve
                                                         ADIYLA durur (FF-102).
                                                         Satırda kalıcı düğme
@@ -3817,28 +3978,28 @@ export function MenuCatalogWorkspace({
                                                         iyisi, kelimeyi
                                                         okumaktır.
                                                     */
-                                                        extraItems={[
-                                                            {
-                                                                key: 'presentation',
-                                                                label: t(
-                                                                    'menu.item.presentation.edit.short',
-                                                                ),
-                                                                icon: <ImageSquare size={18} />,
-                                                                onSelect: () =>
-                                                                    void handleEditPresentation(
-                                                                        item,
+                                                            extraItems={[
+                                                                {
+                                                                    key: 'presentation',
+                                                                    label: t(
+                                                                        'menu.item.presentation.edit.short',
                                                                     ),
-                                                            },
-                                                            {
-                                                                key: 'allergens',
-                                                                label: t(
-                                                                    'menu.item.allergens.edit.short',
-                                                                ),
-                                                                icon: <Warning size={18} />,
-                                                                onSelect: () =>
-                                                                    handleEditAllergens(item),
-                                                            },
-                                                            /*
+                                                                    icon: <ImageSquare size={18} />,
+                                                                    onSelect: () =>
+                                                                        void handleEditPresentation(
+                                                                            item,
+                                                                        ),
+                                                                },
+                                                                {
+                                                                    key: 'allergens',
+                                                                    label: t(
+                                                                        'menu.item.allergens.edit.short',
+                                                                    ),
+                                                                    icon: <Warning size={18} />,
+                                                                    onSelect: () =>
+                                                                        handleEditAllergens(item),
+                                                                },
+                                                                /*
                                                             GÖRÜNÜRLÜK BURADAN
                                                             ALINDI ve satırdaki
                                                             anahtara döndü
@@ -3856,14 +4017,45 @@ export function MenuCatalogWorkspace({
                                                             hangisinin doğru
                                                             olduğunu sordururdu.
                                                         */
-                                                        ]}
-                                                        upLabel={t('menu.move.up', {
-                                                            name: item.productName ?? '',
-                                                        })}
-                                                        downLabel={t('menu.move.down', {
-                                                            name: item.productName ?? '',
-                                                        })}
-                                                    />
+                                                            ]}
+                                                            upLabel={t('menu.move.up', {
+                                                                name: item.productName ?? '',
+                                                            })}
+                                                            downLabel={t('menu.move.down', {
+                                                                name: item.productName ?? '',
+                                                            })}
+                                                        />
+                                                    ) : (
+                                                        /*
+                                                            MUTFAĞIN İKİNCİ İŞİ:
+                                                            ALERJEN.
+
+                                                            `RowActions` burada
+                                                            kullanılamaz — silme
+                                                            ve taşımayı zorunlu
+                                                            alan olarak ister,
+                                                            oysa ikisi de bu rolün
+                                                            yapamadığı işler.
+                                                            Bir taşma menüsü tek
+                                                            satır için de
+                                                            gereksizdir: aşçının
+                                                            iki işi var, ikisi de
+                                                            satırda durur.
+                                                        */
+                                                        <button
+                                                            type="button"
+                                                            className={itemStockButtonClass}
+                                                            aria-label={t(
+                                                                'menu.item.allergens.edit.button',
+                                                                { name: item.productName ?? '' },
+                                                            )}
+                                                            onClick={() =>
+                                                                handleEditAllergens(item)
+                                                            }
+                                                        >
+                                                            <Warning size={22} aria-hidden="true" />
+                                                        </button>
+                                                    )}
                                                 </div>
 
                                                 {/*

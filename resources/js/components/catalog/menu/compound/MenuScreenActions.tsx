@@ -36,18 +36,27 @@ export type MenuScreenActionsProps = {
     menus: MenuPill[];
     onSelectMenu: (menuId: number) => void;
     addMenuLabel: string;
-    onAddMenu: () => void;
+    /**
+     * `null` → düğme HİÇ ÇİZİLMEZ.
+     *
+     * `onPreviewAndPublish`'in zaten taşıdığı sözleşme, menüyü değiştiren
+     * öteki eylemlere de yayıldı: menüyü işletemeyen bir rol (Mutfak,
+     * `docs/109` §6.4) bu şeritte yalnız HAPLARI görür — hangi menüye
+     * baktığını seçmek okumaktır, değiştirmek değil.
+     */
+    onAddMenu: (() => void) | null;
     editMenuLabel: string;
-    onEditMenu: (menuId: number) => void;
+    onEditMenu: ((menuId: number) => void) | null;
     /** "şimdi açık" — hapın durumunu RENKTEN BAĞIMSIZ anlatan kelime. */
     servingNowLabel: string;
-    photoImport: PhotoImportState;
+    /** `null` → fotoğraftan aktarma yolu hiç sunulmaz. */
+    photoImport: PhotoImportState | null;
     csvLabel: string;
-    onCsv: () => void;
+    onCsv: (() => void) | null;
     previewAndPublishLabel: string;
     onPreviewAndPublish: (() => void) | null;
     addProductLabel: string;
-    onAddProduct: () => void;
+    onAddProduct: (() => void) | null;
     /** Şeridin altına açılan panel (CSV kutusu, fotoğraf okuma sihirbazı, menü formu). */
     children?: ReactNode;
 };
@@ -191,16 +200,18 @@ export function MenuScreenActions({
                         İkon tek başına ne yaptığını söylemez; erişilebilir
                         adı metindir.
                     */}
-                    <button
-                        type="button"
-                        aria-label={addMenuLabel}
-                        onClick={onAddMenu}
-                        className={clsx(pillClass, 'border-border hover:bg-surface-hover')}
-                    >
-                        <Plus size={18} aria-hidden="true" />
-                    </button>
+                    {onAddMenu !== null ? (
+                        <button
+                            type="button"
+                            aria-label={addMenuLabel}
+                            onClick={onAddMenu}
+                            className={clsx(pillClass, 'border-border hover:bg-surface-hover')}
+                        >
+                            <Plus size={18} aria-hidden="true" />
+                        </button>
+                    ) : null}
 
-                    {selected !== null ? (
+                    {selected !== null && onEditMenu !== null ? (
                         <button
                             type="button"
                             onClick={() => onEditMenu(selected.id)}
@@ -224,7 +235,7 @@ export function MenuScreenActions({
                         birincil düğmeye uzanır, altmış ürünü tek tek
                         eklemeye başlardı.
                     */}
-                    {photoImport.kind === 'available' ? (
+                    {photoImport?.kind === 'available' ? (
                         <button
                             type="button"
                             onClick={photoImport.onClick}
@@ -234,10 +245,12 @@ export function MenuScreenActions({
                             {photoImport.label}
                         </button>
                     ) : null}
-                    <button type="button" onClick={onCsv} className={secondaryClass}>
-                        <FileCsv size={18} aria-hidden="true" />
-                        {csvLabel}
-                    </button>
+                    {onCsv !== null ? (
+                        <button type="button" onClick={onCsv} className={secondaryClass}>
+                            <FileCsv size={18} aria-hidden="true" />
+                            {csvLabel}
+                        </button>
+                    ) : null}
                     {onPreviewAndPublish !== null ? (
                         <button
                             type="button"
@@ -248,10 +261,12 @@ export function MenuScreenActions({
                             {previewAndPublishLabel}
                         </button>
                     ) : null}
-                    <button type="button" onClick={onAddProduct} className={primaryClass}>
-                        <Plus size={18} aria-hidden="true" />
-                        {addProductLabel}
-                    </button>
+                    {onAddProduct !== null ? (
+                        <button type="button" onClick={onAddProduct} className={primaryClass}>
+                            <Plus size={18} aria-hidden="true" />
+                            {addProductLabel}
+                        </button>
+                    ) : null}
                 </div>
             </div>
 
@@ -259,7 +274,7 @@ export function MenuScreenActions({
                 AI YOKSA DÜĞMENİN YERİNE SEBEP. Boşluk bırakmak, sahibin
                 dün gördüğü düğmeyi bugün aramasına yol açardı.
             */}
-            {photoImport.kind === 'blocked' ? (
+            {photoImport?.kind === 'blocked' ? (
                 <p className="text-meta text-fg-secondary">{photoImport.reason}</p>
             ) : null}
 
