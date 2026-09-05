@@ -15,6 +15,7 @@ use App\Application\Billing\Port\IyzicoSandboxTransactionRepositoryPort;
 use App\Application\Billing\Port\PlanCatalogRepositoryPort;
 use App\Application\Billing\Port\PlanManagementRepositoryPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
+use App\Application\Content\Port\ContentLibraryPort;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Localization\Port\TranslationPort;
@@ -110,6 +111,7 @@ use App\Infrastructure\Billing\Persistence\EloquentPlanCatalogRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPlanManagementRepository;
 use App\Infrastructure\Billing\Persistence\EloquentSubscriptionRepository;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
+use App\Infrastructure\Content\ProductPageLibrary;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
@@ -208,6 +210,15 @@ final class AppServiceProvider extends ServiceProvider
             $app->make(UrlPolicy::class),
             $app->make(UrlNormalizer::class),
         ));
+
+        /*
+            Kurumsal sayfa içeriği bugün KODDA yaşıyor (FF-191). Port arkasında
+            durmasının sebebi `docs/105` §2.2(2): editoryal içerik bir gün
+            veritabanına taşınacak ve o gün değişecek tek şey bu satır olmalı.
+            Tekil, çünkü kütük istek başına birden çok kez okunuyor ve içerik
+            değişmez.
+        */
+        $this->app->singleton(ContentLibraryPort::class, ProductPageLibrary::class);
 
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
         $this->app->bind(WorkspaceRepositoryPort::class, EloquentWorkspaceRepository::class);
