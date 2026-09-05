@@ -10,32 +10,32 @@ msgstr ""
 
 #: theme:density.comfortable
 msgid "density.comfortable"
-msgstr ""
+msgstr "Ferah"
 
 #: theme:density.compact
 msgid "density.compact"
-msgstr ""
+msgstr "Sıkı"
 
 #: theme:density.group_label
 msgid "density.group_label"
-msgstr ""
+msgstr "Yoğunluk"
 
 #: theme:density.standard
 msgid "density.standard"
-msgstr ""
+msgstr "Standart"
 
 #: theme:theme.dark
 msgid "theme.dark"
-msgstr ""
+msgstr "Koyu"
 
 #: theme:theme.group_label
 msgid "theme.group_label"
-msgstr ""
+msgstr "Tema"
 
 #: theme:theme.light
 msgid "theme.light"
-msgstr ""
+msgstr "Açık"
 
 #: theme:theme.system
 msgid "theme.system"
-msgstr ""
+msgstr "Sistem"

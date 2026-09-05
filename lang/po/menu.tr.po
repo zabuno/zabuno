@@ -10,15 +10,15 @@ msgstr ""
 
 #: menu:menu.actions.csv
 msgid "menu.actions.csv"
-msgstr ""
+msgstr "CSV"
 
 #: menu:menu.actions.label
 msgid "menu.actions.label"
-msgstr ""
+msgstr "Menü işlemleri"
 
 #: menu:menu.actions.previewAndPublish
 msgid "menu.actions.previewAndPublish"
-msgstr ""
+msgstr "Önizle ve yayınla"
 
 #: menu:menu.ai.unavailable.budget_exhausted
 msgid "menu.ai.unavailable.budget_exhausted"
@@ -46,11 +46,11 @@ msgstr "Kategori ekle"
 
 #: menu:menu.category.add.short
 msgid "menu.category.add.short"
-msgstr ""
+msgstr "Kategori"
 
 #: menu:menu.category.count
 msgid "menu.category.count"
-msgstr ""
+msgstr "{count} ürün"
 
 #: menu:menu.category.create.error.submit
 msgid "menu.category.create.error.submit"
@@ -98,11 +98,11 @@ msgstr "{name} sırası"
 
 #: menu:menu.category.panel.label
 msgid "menu.category.panel.label"
-msgstr ""
+msgstr "Seçili kategori"
 
 #: menu:menu.category.reorder.handle
 msgid "menu.category.reorder.handle"
-msgstr ""
+msgstr "Sırayı değiştirmek için {name} ögesini sürükleyin"
 
 #: menu:menu.category.select.label
 msgid "menu.category.select.label"
@@ -134,19 +134,19 @@ msgstr "Menü oluştur"
 
 #: menu:menu.delete.confirm
 msgid "menu.delete.confirm"
-msgstr ""
+msgstr "Bu, menüyü ve içindeki her şeyi kaldırır."
 
 #: menu:menu.delete.confirm.yes
 msgid "menu.delete.confirm.yes"
-msgstr ""
+msgstr "Evet, sil"
 
 #: menu:menu.delete.error.submit
 msgid "menu.delete.error.submit"
-msgstr ""
+msgstr "Menüyü silemedik. Lütfen tekrar deneyin."
 
 #: menu:menu.delete.submit
 msgid "menu.delete.submit"
-msgstr ""
+msgstr "Menüyü sil"
 
 #: menu:menu.duplicates.heading
 msgid "menu.duplicates.heading"
@@ -254,7 +254,7 @@ msgstr "Tekrar dene"
 
 #: menu:menu.inspector.title
 msgid "menu.inspector.title"
-msgstr ""
+msgstr "{name} — ayrıntılar"
 
 #: menu:menu.item.ai.description.error
 msgid "menu.item.ai.description.error"
@@ -438,15 +438,15 @@ msgstr "Fotoğraf yok"
 
 #: menu:menu.item.meta.noDescription
 msgid "menu.item.meta.noDescription"
-msgstr ""
+msgstr "Açıklama yok"
 
 #: menu:menu.item.meta.noPhoto
 msgid "menu.item.meta.noPhoto"
-msgstr ""
+msgstr "Fotoğraf yok"
 
 #: menu:menu.item.open.button
 msgid "menu.item.open.button"
-msgstr ""
+msgstr "{name} ürününü aç"
 
 #: menu:menu.item.order.label
 msgid "menu.item.order.label"
@@ -506,7 +506,7 @@ msgstr "Tekrar mevcut"
 
 #: menu:menu.item.stock.badge
 msgid "menu.item.stock.badge"
-msgstr ""
+msgstr "Bugünlük tükendi"
 
 #: menu:menu.item.stock.out.button
 msgid "menu.item.stock.out.button"
@@ -534,7 +534,7 @@ msgstr "Menüde göster"
 
 #: menu:menu.item.visibility.switch.label
 msgid "menu.item.visibility.switch.label"
-msgstr ""
+msgstr "{name} ürününü menüde göster"
 
 #: menu:menu.loading
 msgid "menu.loading"
@@ -562,39 +562,39 @@ msgstr "Bu değişiklik kaydedilemedi. Hiçbir şey kaybolmadı — tekrar deney
 
 #: menu:menu.pill.allDay
 msgid "menu.pill.allDay"
-msgstr ""
+msgstr "tüm gün"
 
 #: menu:menu.pill.disabled
 msgid "menu.pill.disabled"
-msgstr ""
+msgstr "kapalı"
 
 #: menu:menu.pill.draft
 msgid "menu.pill.draft"
-msgstr ""
+msgstr "taslak"
 
 #: menu:menu.pill.moreWindows
 msgid "menu.pill.moreWindows"
-msgstr ""
+msgstr "{range} +{count}"
 
 #: menu:menu.pill.servingNow
 msgid "menu.pill.servingNow"
-msgstr ""
+msgstr "şimdi açık"
 
 #: menu:menu.pill.switching
 msgid "menu.pill.switching"
-msgstr ""
+msgstr "Bu menü açılıyor…"
 
 #: menu:menu.pills.add
 msgid "menu.pills.add"
-msgstr ""
+msgstr "Yeni menü"
 
 #: menu:menu.pills.edit
 msgid "menu.pills.edit"
-msgstr ""
+msgstr "Menüyü düzenle"
 
 #: menu:menu.pills.label
 msgid "menu.pills.label"
-msgstr ""
+msgstr "Bu şubedeki menüler"
 
 #: menu:menu.product.create.error.submit
 msgid "menu.product.create.error.submit"
@@ -654,19 +654,19 @@ msgstr "{name} için diğer işlemler"
 
 #: menu:menu.save.error.submit
 msgid "menu.save.error.submit"
-msgstr ""
+msgstr "Menüyü kaydedemedik. Lütfen tekrar deneyin."
 
 #: menu:menu.save.submit
 msgid "menu.save.submit"
-msgstr ""
+msgstr "Menüyü kaydet"
 
 #: menu:menu.state.draft
 msgid "menu.state.draft"
-msgstr ""
+msgstr "Taslak"
 
 #: menu:menu.state.published
 msgid "menu.state.published"
-msgstr ""
+msgstr "Yayında"
 
 #: menu:menu.status.saving
 msgid "menu.status.saving"
@@ -682,24 +682,24 @@ msgstr "Tüm menüyü aktar"
 
 #: menu:menu.window.disable
 msgid "menu.window.disable"
-msgstr ""
+msgstr "Bu menüyü kapat"
 
 #: menu:menu.window.endsAt.label
 msgid "menu.window.endsAt.label"
-msgstr ""
+msgstr "Bitiş"
 
 #: menu:menu.window.error.incomplete
 msgid "menu.window.error.incomplete"
-msgstr ""
+msgstr "Başlangıç ve bitiş saatinin ikisini de girin ya da ikisini de boş bırakın."
 
 #: menu:menu.window.error.submit
 msgid "menu.window.error.submit"
-msgstr ""
+msgstr "Servis saatlerini kaydedemedik. Lütfen tekrar deneyin."
 
 #: menu:menu.window.help
 msgid "menu.window.help"
-msgstr ""
+msgstr "Bitiş saatinde, o saati daha önce kapsayan menü geri döner — böylece günün her saatinde mutlaka bir menü olur. Bu menüyü sıranın dışında tutmak için ikisini de boş bırakın. Bir aralık gece yarısını geçebilir (22:00–02:00)."
 
 #: menu:menu.window.startsAt.label
 msgid "menu.window.startsAt.label"
-msgstr ""
+msgstr "Başlangıç"
