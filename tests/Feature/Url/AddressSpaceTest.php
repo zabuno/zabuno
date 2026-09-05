@@ -113,4 +113,41 @@ final class AddressSpaceTest extends TestCase
         $this->get('/pricing')->assertStatus(200);
         $this->get('/app')->assertRedirect();
     }
+
+    /**
+     * PANELİN HER ADRESİ YENİLENEBİLİR OLMALI — sahibin 2026-09-05 bildirimi
+     * (ekranda çıplak bir "404 Not Found").
+     *
+     * Panel gezintisi gerçek adres yazıyor (`pushState`) ve bölüm içindeki
+     * ekranların adresi İKİ segmentli olabiliyor: `sectionHref()` bir alt yol
+     * ekliyor ve `/app/{ws}/settings/brand` gibi adresler üretiyor. Sunucu
+     * rotası ise tek segment kabul ediyordu — yani o adres yalnız istemci
+     * gezintisiyle ÇALIŞIYOR, yenilendiğinde ya da bağlantı paylaşıldığında
+     * 404 veriyordu.
+     *
+     * Bu, fragment'ten gerçek adrese geçmenin bütün gerekçesini yok eder:
+     * `docs/38` §4 adresi "paylaşılabilir ve yer imine eklenebilir" olsun diye
+     * istiyor. Yenilenemeyen bir adres, fragment'ten yalnız görünüşte farklıdır
+     * — ve fragment en azından 404 vermezdi.
+     *
+     * Bölüm adı burada yine DOĞRULANMIYOR (rotanın kendi gerekçesi): sunucu
+     * aynı kabuğu döndürür, hangi bölümün geçerli olduğuna istemci karar verir.
+     * Ölçülen tek şey, adresin sunucuda BİR KARŞILIĞI olduğu.
+     */
+    public function test_a_screen_address_with_a_sub_path_still_resolves_on_a_full_reload(): void
+    {
+        foreach ([
+            '/app/zeytin/settings',
+            '/app/zeytin/settings/brand',
+            '/app/zeytin/menus/12',
+            '/app/zeytin/qr-codes/5/history',
+        ] as $address) {
+            /*
+                Oturum açılmamış bir istek YÖNLENDİRİLİR (401/302), 404 ALMAZ:
+                404, "böyle bir ekran yok" demektir ve bu yanlış bir cümledir.
+                Rotanın kendi yorumu da bunu şart koşuyor.
+            */
+            $this->get($address)->assertRedirect();
+        }
+    }
 }

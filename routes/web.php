@@ -272,7 +272,30 @@ Route::get('/app', WorkspaceAppController::class)
  */
 Route::get('/app/{workspace}/{section?}', WorkspaceAppController::class)
     ->where('workspace', '[a-z0-9]+(?:-[a-z0-9]+)*')
-    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    /*
+        BÖLÜM İÇİNDEKİ EKRANIN DA ADRESİ VAR — ve o adres yenilenebilmeli.
+
+        Önceki desen tek segment kabul ediyordu. Ama panel gezintisi
+        (`sectionHref`) bölüm-içi bir alt yol ekleyebiliyor ve
+        `/app/{ws}/settings/brand` gibi adresler üretiyor: o adres istemci
+        gezintisiyle ÇALIŞIYOR, yenilendiğinde ya da bağlantı paylaşıldığında
+        çıplak bir 404 veriyordu (sahibin 2026-09-05 ekran görüntüsü).
+
+        Bu, fragment'ten gerçek adrese geçmenin bütün gerekçesini yok ediyordu:
+        `docs/38` §4 adresi "paylaşılabilir ve yer imine eklenebilir" olsun
+        diye istiyor. Yenilenemeyen bir adres fragment'ten yalnız görünüşte
+        farklıdır — ve fragment en azından 404 vermezdi.
+
+        Desen HÂLÂ DAR: yalnız küçük harf, rakam, tire ve bölüm ayıracı olarak
+        eğik çizgi. Serbest bir `.*` olsaydı bu rota `/app/{ws}/...` altındaki
+        her şeyi yutardı ve yarın buraya eklenecek gerçek bir uç (indirme,
+        dışa aktarma) sessizce kabuğa düşerdi.
+
+        Bölüm adı yine DOĞRULANMIYOR: sunucu aynı kabuğu döndürür, hangi
+        bölümün geçerli olduğuna istemci karar verir. Sunucuda ikinci bir
+        bölüm listesi tutmak, iki listenin ayrışacağı bir gün yaratırdı.
+    */
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*')
     ->middleware(['auth:web', 'verified'])
     ->name('workspace.app.section');
 
