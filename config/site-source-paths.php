@@ -57,4 +57,21 @@ return [
     'urun.masa-ve-qr-yonetimi' => '/en/product/tables-and-qr-codes/',
     'urun.analitik' => '/en/product/analytics/',
     'urun.zabuno-ai' => '/en/product/zabuno-ai/',
+
+    /*
+        DALGA 2 (FF-192). Aynı kural, aynı yoldan: hiçbiri çeviri değil.
+        Beş sayfanın İngilizce içeriği bu pakette yazıldı ve adres, sayfanın
+        KENDİ İngilizce `breadcrumbTitle` alanından slug'a indirildi —
+        "Images and media", "Languages and currency", "Multiple branches",
+        "Solutions", "Pricing". Yeni bir metin üretilmedi.
+
+        `/en/pricing/` ile bugün yayında olan `/pricing` ÇAKIŞMAZ: kurumsal
+        kapı yalnız dil dizini altında çalışır (`routes/web.php`). O adresin
+        dil dizinine taşınması ve 301'i ayrı bir paketin işi (`docs/105` §4.1).
+    */
+    'urun.gorsel-ve-medya' => '/en/product/images-and-media/',
+    'urun.coklu-dil-ve-para-birimi' => '/en/product/languages-and-currency/',
+    'urun.coklu-sube' => '/en/product/multiple-branches/',
+    'cozumler' => '/en/solutions/',
+    'fiyatlandirma' => '/en/pricing/',
 ];

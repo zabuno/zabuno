@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature\Content;
 
 use App\Domain\Content\PagePublicationStatus;
+use App\Domain\Money\MoneyFormatter;
 use App\Models\ContentPage;
+use Database\Seeders\PlanCatalogueSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -204,6 +206,50 @@ final class CorporateProductPageTest extends TestCase
         $this->page('urun.qr-menu', '/tr/urun/qr-menu/', PagePublicationStatus::Published, null, 'tr', 'QR menü');
 
         $this->get('/tr/urun/qr-menu/')->assertStatus(404);
+    }
+
+    public function test_a_page_that_is_not_a_product_page_renders_from_the_same_template(): void
+    {
+        /*
+            FF-192: kütüphane ürün sayfasına ÖZEL değildir. Fiyatlandırma
+            `urun` türünde değil ve aynı tek şablondan çiziliyor — yönergenin
+            §7'sindeki "414 yol için 414 layout üretme" kuralı ancak böyle
+            tutulur.
+
+            Şema da türe göre karar veriyor: `SoftwareApplication` yalnız ürün
+            sayfalarında üretilir (`CorporatePageStructuredData`). Fiyat
+            sayfasında görünen bir fiyat var ama `Offer` işaretlemesi
+            YAZILMADI; üretilmeyen de bir karardır ve uydurulmuş bir teklif
+            işaretlemesinden iyidir.
+        */
+        ContentPage::query()->create([
+            'page_key' => 'fiyatlandirma',
+            'locale' => 'en',
+            'canonical_path' => '/en/pricing/',
+            'content_type' => 'fiyatlandirma',
+            'template_key' => 'fiyatlandirma',
+            'parent_key' => null,
+            'title' => 'Pricing',
+            'priority' => 'P0',
+            'publication_status' => PagePublicationStatus::Published->value,
+            'was_ever_published' => true,
+        ]);
+
+        $response = $this->get('/en/pricing/');
+
+        $response->assertStatus(200);
+        $html = (string) $response->getContent();
+
+        self::assertStringContainsString('>Plans and prices</h1>', $html);
+        // Rakam KATALOGDAN geliyor; sayfada elle yazılmış bir fiyat yok. Test
+        // de aynı kaynağı okur, yoksa fiyat burada ikinci kez yazılmış olurdu.
+        $restaurant = PlanCatalogueSeeder::catalogue()['restaurant'];
+        self::assertStringContainsString(
+            MoneyFormatter::format($restaurant['amount_minor'], 'TRY', 'en'),
+            $html,
+        );
+        self::assertStringContainsString('FAQPage', $html);
+        self::assertStringNotContainsString('SoftwareApplication', $html);
     }
 
     public function test_the_corporate_page_draws_no_icons(): void

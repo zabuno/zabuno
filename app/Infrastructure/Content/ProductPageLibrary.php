@@ -7,13 +7,22 @@ namespace App\Infrastructure\Content;
 use App\Application\Content\Port\ContentLibraryPort;
 use App\Domain\Content\PageContent;
 use App\Infrastructure\Content\Pages\AnalyticsPage;
+use App\Infrastructure\Content\Pages\ImagesAndMediaPage;
+use App\Infrastructure\Content\Pages\LanguagesAndCurrencyPage;
 use App\Infrastructure\Content\Pages\MenuManagementPage;
+use App\Infrastructure\Content\Pages\MultipleBranchesPage;
+use App\Infrastructure\Content\Pages\PricingPage;
 use App\Infrastructure\Content\Pages\QrMenuPage;
+use App\Infrastructure\Content\Pages\SolutionsPage;
 use App\Infrastructure\Content\Pages\TablesAndQrPage;
 use App\Infrastructure\Content\Pages\ZabunoAiPage;
 
 /**
- * İlk beş P0 ürün sayfasının içeriği — FF-191.
+ * Yazılmış kurumsal sayfaların içeriği — FF-191 (dalga 1), FF-192 (dalga 2).
+ *
+ * Dalga 2, kütüphanenin ürün sayfasına özel OLMADIĞINI ölçtü: çözümler girişi
+ * ve fiyatlandırma `urun` türünde değil ve aynı blok modelinden çiziliyorlar.
+ * Şablon dilden bağımsızdı; artık türden de bağımsız olduğu gösterildi.
  *
  * İçerik BUGÜN kodda yaşıyor ve bu bilinçli bir başlangıç: kütük ve kapı
  * çalışıyor, editoryal tablo henüz yok, ve içeriği bir tabloya koymak onu
@@ -57,6 +66,11 @@ final class ProductPageLibrary implements ContentLibraryPort
             TablesAndQrPage::content(),
             AnalyticsPage::content(),
             ZabunoAiPage::content(),
+            ImagesAndMediaPage::content(),
+            LanguagesAndCurrencyPage::content(),
+            MultipleBranchesPage::content(),
+            SolutionsPage::content(),
+            PricingPage::content(),
         ] as $content) {
             $index[$content->locale.'|'.$content->pageKey] = $content;
         }
