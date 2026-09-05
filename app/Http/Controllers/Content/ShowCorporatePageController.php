@@ -18,6 +18,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ContentPage;
 use App\Support\Localization\SiteText;
 use App\Support\Seo\CorporatePageStructuredData;
+use App\Support\Site\SiteShell;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -47,6 +48,7 @@ final class ShowCorporatePageController extends Controller
         private readonly CanonicalUrl $canonical,
         private readonly UrlNormalizer $normalizer,
         private readonly ResolveLocaleAlternates $alternates,
+        private readonly SiteShell $shell,
     ) {}
 
     public function __invoke(Request $request): SymfonyResponse
@@ -95,6 +97,20 @@ final class ShowCorporatePageController extends Controller
         $locale = SiteText::pick($page->locale);
         $stage = $page->status();
 
+        /*
+            KABUK — kurumsal sitenin geri kalanıyla AYNI (`docs/100` §2).
+
+            Bu sayfalar kendi belgesini kuruyordu ve hiç gezintisi yoktu:
+            yayına alınan ilk kurumsal sayfa, ziyaretçiyi üst çubuğu ve
+            altbilgisi olmayan bir adaya bırakırdı. Kabuk verisi artık
+            `SiteShell`'den geliyor; kanonik adres ve dil KAYDIN kendisinden,
+            istekten değil (`docs/118` E4).
+        */
+        // Ölçüm kimliği KÜTÜKTEN gelir (`page_key`), adresten türetilmez:
+        // bir sayfa `/tr/urun/qr-menu/`den başka bir yola taşınsa bile
+        // geçmiş raporlar ikiye bölünmemeli (`docs/100` Faz 3).
+        $shell = $this->shell->context($request, $page->page_key, $page->canonical_path, $page->locale);
+
         if ($decision->mode === 'content') {
             $content = $this->library->find($page->page_key, $page->locale);
 
@@ -113,7 +129,7 @@ final class ShowCorporatePageController extends Controller
             */
             if ($content !== null) {
                 return $this->withRobots(
-                    $this->renderContent($request, $page, $content, $environment, $locale),
+                    $this->renderContent($request, $page, $content, $environment, $shell),
                     $decision->robots,
                 );
             }
@@ -129,11 +145,10 @@ final class ShowCorporatePageController extends Controller
         }
 
         $response = $this->withRobots(
-            response()->view('content.under-construction', [
+            response()->view('content.under-construction', $shell + [
                 'page' => $page,
                 'stage' => $this->siteText->get($stage->translationKey(), $locale),
                 'isMaintenance' => $decision->mode === 'maintenance',
-                'st' => $this->siteText->all($locale),
             ], $decision->statusCode),
             $decision->robots,
         );
@@ -150,7 +165,7 @@ final class ShowCorporatePageController extends Controller
         ContentPage $page,
         PageContent $content,
         PageEnvironment $environment,
-        string $locale,
+        array $shell,
     ): SymfonyResponse {
         $trail = $this->breadcrumbs->handle($page, $environment);
 
@@ -180,7 +195,7 @@ final class ShowCorporatePageController extends Controller
             $request->getSchemeAndHttpHost(),
         );
 
-        return response()->view('content.page', [
+        return response()->view('content.page', $shell + [
             'page' => $page,
             'content' => $content,
             'trail' => $trail,
@@ -198,11 +213,6 @@ final class ShowCorporatePageController extends Controller
             'canonicalUrl' => $canonicalUrl,
             'localeAlternates' => $localeAlternates['alternates'],
             'xDefaultUrl' => $localeAlternates['xDefault'],
-            'pageKey' => $page->page_key,
-            'pageLocale' => $page->locale,
-            'anchorPrefix' => '/',
-            'coreModuleCount' => count((array) config('core-modules')),
-            'st' => $this->siteText->all($locale),
         ], 200);
     }
 

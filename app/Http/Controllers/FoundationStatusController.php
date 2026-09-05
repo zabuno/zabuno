@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Application\Billing\UseCase\ListPlanCatalog;
-use App\Domain\Url\CanonicalUrl;
 use App\Support\Localization\SiteText;
 use App\Support\Money\PriceLabel;
+use App\Support\Site\SiteShell;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Throwable;
@@ -50,26 +50,24 @@ final class FoundationStatusController extends Controller
     ];
 
     public function __construct(
-        private readonly CanonicalUrl $canonical,
         private readonly ListPlanCatalog $plans,
         private readonly SiteText $siteText,
+        private readonly SiteShell $shell,
     ) {}
 
     public function __invoke(Request $request): View
     {
         $path = trim($request->getPathInfo(), '/');
-        $shared = [
-            'coreModuleCount' => count(config('core-modules')),
-            'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), $request->getPathInfo()),
-            // Yasal sayfalarda gezinti çıpaları ana sayfaya işaret eder;
-            // burada o başlıklar yok.
-            'anchorPrefix' => $path === '' ? '' : '/',
-            /*
-                Ölçüm kimliği (`docs/100` Faz 3). Sabit bir sözlükten gelir,
-                adresten türetilmez: adres yarın değişirse geçmiş raporlar
-                ikiye bölünmemeli.
-            */
-            'pageKey' => self::PAGE_KEYS[$path] ?? 'unknown',
+
+        /*
+            KABUK VERİSİ TEK YERDEN (`SiteShell`).
+
+            Metin kataloğu, kanonik adres, çıpa öneki, ölçüm kimliği ve
+            gezinti aynı yerde üretilir. Ölçüm kimliği sabit bir sözlükten
+            gelir, adresten türetilmez: adres yarın değişirse geçmiş raporlar
+            ikiye bölünmemeli.
+        */
+        $shared = $this->shell->context($request, self::PAGE_KEYS[$path] ?? 'unknown') + [
             /*
                 FİYAT KAYDOLMADAN GÖRÜLÜR — `docs/88` (P1-01).
 
@@ -78,12 +76,6 @@ final class FoundationStatusController extends Controller
                 ürün kaydolmayı fiyatı görmeye bağlı kılıyordu.
             */
             'plans' => $this->publicPlans(
-                SiteText::pick($request->getPreferredLanguage(['en', 'tr'])),
-            ),
-            // Metin ŞABLONDA değil KATALOGDA yaşar (`docs/85` ile aynı
-            // gerekçe): Blade'e yazılan bir cümleyi sahip hiçbir PO
-            // dosyasından çeviremez.
-            'st' => $this->siteText->all(
                 SiteText::pick($request->getPreferredLanguage(['en', 'tr'])),
             ),
         ];

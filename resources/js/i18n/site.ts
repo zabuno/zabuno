@@ -55,6 +55,29 @@ export const siteTranslations = {
     'site.nav.contact': 'Contact',
     'site.nav.login': 'Log in',
     'site.nav.register': 'Create account',
+    /*
+        KABUK MENÜSÜ (FF-190).
+
+        Dar ekran tabandır (`docs/118` E1): 320 pikselde marka, beş gezinti
+        bağlantısı ve iki hesap düğmesi yan yana sığmaz. Çubukta yalnız iki
+        şey durur ve bu, açılır bölmeyi açan sözcüktür.
+    */
+    'site.nav.menu': 'Menu',
+    /*
+        MEGA MENÜ GRUBU — sahibin kendi site haritasındaki üst menü
+        (`docs/106` §3.1). Bu maddeler sayfa kütüğündeki canonical yollara
+        bağlanır; yayınlanmamış olanı gezintide HİÇ görünmez, dolayısıyla
+        bugün bu grubun tamamı gizlidir.
+    */
+    'site.nav.explore': 'Explore',
+    'site.nav.product': 'Product',
+    'site.nav.solutions': 'Solutions',
+    'site.nav.integrations': 'Integrations',
+    'site.nav.customers': 'Customers',
+    'site.nav.resources': 'Resources',
+    /* Hesap eylemlerinin grup adı — ekran okuyucu iki bağlantının niye bir
+       arada durduğunu buradan öğrenir. */
+    'site.nav.account': 'Account',
     'site.footer.product': 'Product',
     'site.footer.legal': 'Legal',
     'site.footer.terms': 'Terms',

@@ -1,9 +1,20 @@
 <!DOCTYPE html>
-{{-- `lang` SAYFANIN dilidir, uygulamanın değil (`docs/89`).
+{{-- KURUMSAL SİTENİN TEK KABUĞU (`docs/100` §2, `docs/118` E1).
 
-     Yardım makalesi okuyucunun dilinde geliyor; `lang` sabit kalsaydı ekran
-     okuyucu Türkçe metni İngilizce telaffuz ederdi. Sayfa bir dil bildirmezse
-     uygulamanınkine düşülür. --}}
+     Sahibin talebi (2026-09-05): *"hepsi aynı masterpage shell'e bağlı olsun.
+     masterpage shell (header footer) tüm frontpages'da aynı olsun,
+     güncellendiğinde her yer güncellensin."*
+
+     Önceden İKİ kabuk vardı: bu dosya (yaşayan `/`, `/pricing`, `/help`,
+     `/contact`, yasal sayfalar) ve `content/*` (kütükten çizilen kurumsal
+     sayfalar) kendi `<html>` belgesini kuruyordu. Üst çubuğa eklenen bir
+     bağlantı ikincisinde görünmüyordu; ziyaretçi aynı sitenin iki farklı
+     hâlini geziyordu. Artık tek kabuk var ve bir test ikinci bir tanımı
+     imkânsız kılıyor (`SHELL-SINGLE-SOURCE-01`).
+
+     `lang` SAYFANIN dilidir, uygulamanın değil (`docs/89`, `docs/118` E4):
+     yardım makalesi okuyucunun dilinde gelir, kurumsal sayfanın dili ise
+     ADRESİNDEN türer. Sayfa bir dil bildirmezse uygulamanınkine düşülür. --}}
 {{-- YÖN de SAYFANIN dilinden türer, uygulamanınkinden değil (`docs/120` §5
      madde 9). Bugüne kadar `dir` uygulamanın locale'ini okuyordu: dokuz dilin
      ikisi sağdan sola (`ar`, `fa`) ve Arapça bir kurumsal sayfa, arayüzü
@@ -36,7 +47,13 @@
     ]])
     @include('public.partials.measurement')
     <title>@yield('title') — {{ $st['titleSuffix'] }}</title>
-    <meta name="description" content="@yield('description')">
+    {{-- Açıklama YOKSA boş bir etiket basılmaz: boş bir `description`,
+         arama sonucunda sayfanın ne olduğunu söylemeyen bir satırdır ve
+         hiç etiket olmamasından kötüdür. --}}
+    @hasSection('description')
+        <meta name="description" content="@yield('description')">
+        <meta property="og:description" content="@yield('description')">
+    @endif
     <link rel="canonical" href="{{ $canonicalUrl }}">
     {{-- DİL KARŞILIKLARI (`docs/119` §10.4).
 
@@ -57,7 +74,6 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ $st['brand'] }}">
     <meta property="og:title" content="@yield('title')">
-    <meta property="og:description" content="@yield('description')">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     {{-- Mühendislik kaydı: kayıt sayısı ziyaretçiye DEĞİL, kayıt sözleşmesine
          hitap eder (`docs/100` MP-04). Eskiden gezintinin altında görünür bir
@@ -65,7 +81,7 @@
     <meta name="zabuno-build" content="{{ $coreModuleCount }}/16 modules registered">
     @vite(['resources/css/app.css'])
 </head>
-<body class="min-h-screen bg-surface text-fg">
+<body class="site-shell min-h-screen bg-surface text-fg">
 {{-- Bu sayfalar SUNUCUDA üretilir ve React paketini hiç yüklemez.
      Sebep ölçüldü: istemcide üretildiklerinde bir tarayıcı botu 1.736 baytlık
      boş bir kabuk görüyordu — yani ürünün kendi tanıtımı arama motorunda ve

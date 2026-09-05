@@ -60,7 +60,7 @@
             </div>
 
             <button type="submit"
-                    class="self-start rounded-md border border-action bg-action px-4 py-2 font-semibold text-action-fg">
+                    class="site-action self-start rounded-md border border-action bg-action px-4 py-2 font-semibold text-action-fg">
                 {{ $st['contactSubmit'] }}
             </button>
         </form>

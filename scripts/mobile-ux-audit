@@ -39,8 +39,18 @@
 
     ═══ KULLANIM ═══
 
+        # Storybook hikâyeleri (React yüzeyi)
         npm run build-storybook -- -o <dizin>
         node scripts/mobile-ux-audit <dizin> [--json rapor.json] [--fail]
+
+        # Sunucuda üretilen sayfalar (kurumsal site kabuğu)
+        php artisan site:export-static --out=<dizin>
+        node scripts/mobile-ux-audit <dizin> [--json rapor.json] [--fail]
+
+    İkinci kip, dizinde `index.json` OLMAMASINDAN anlaşılır. Kurumsal sitenin
+    kabuğu bir React hikâyesi değil, Blade'dir; onu ölçmek için elle bir
+    hikâye yazmak, ölçtüğünü sandığı şeyden sessizce ayrışan bir düzenek
+    kurmak olurdu (`docs/117` §4.2).
 
     `--fail` olmadan RAPORLAR ama kırılmaz: mevcut borç bir kapıya
     dönüştürülmeden önce görülmeli. Borç kapandıkça `--fail` ile CI'ya
@@ -48,9 +58,9 @@
 */
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 const CHROME_CANDIDATES = [
     process.env.CHROME_PATH,
@@ -369,12 +379,95 @@ async function debuggerUrl() {
     throw new Error('Chrome hata ayıklama portu açılmadı.');
 }
 
-const storybookDir = process.argv[2];
+/*
+    Yol MUTLAKA mutlaklaştırılır: `file://` şemasında göreli bir yolun ilk
+    parçası HOST olarak okunur (`file://storage/app/…`) ve sayfa sessizce
+    hiç açılmaz. Ölçüm o zaman bir öncekinden kalan sayfayı ölçer — yani
+    sessizce YANLIŞ bir rapor üretir, ki bu ölçüm yokluğundan kötüdür
+    (`docs/117` §0).
+*/
+const targetDir = process.argv[2] ? resolve(process.argv[2]) : process.argv[2];
 
-if (!storybookDir || !existsSync(join(storybookDir, 'index.json'))) {
+if (!targetDir || !existsSync(targetDir)) {
     console.error(
-        'kullanım: scripts/mobile-ux-audit <storybook-static-dizini> [--json rapor.json] [--fail]',
+        'kullanım: scripts/mobile-ux-audit <storybook-static-dizini|html-dizini> ' +
+            '[--json rapor.json] [--fail] [--baseline liste.json]',
     );
+    process.exit(2);
+}
+
+/*
+    İKİ KAYNAK, TEK ÖLÇÜM.
+
+    Araç Storybook için yazıldı ve hikâyeleri ölçüyor. Ama kurumsal sitenin
+    kabuğu bir React hikâyesi DEĞİL: sunucuda üretilen Blade. Onu ölçmenin
+    tek dürüst yolu, gerçekten üretilen HTML'i ölçmektir — elle kopyalanmış
+    bir düzenek, ölçtüğünü sandığı şeyden bir gün sessizce ayrışır
+    (`docs/117` §4.2).
+
+    Bu yüzden dizinde `index.json` varsa Storybook, yoksa düz HTML sayfaları
+    ölçülür. Ölçüm motoru, eşikler ve kusur aileleri AYNI.
+*/
+const storybookMode = existsSync(join(targetDir, 'index.json'));
+
+/** Dizindeki bütün HTML dosyaları, dizine göreli yollarıyla. */
+function htmlFiles(dir, prefix = '') {
+    const found = [];
+
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const relative = prefix === '' ? entry.name : `${prefix}/${entry.name}`;
+
+        if (entry.isDirectory()) {
+            found.push(...htmlFiles(join(dir, entry.name), relative));
+        } else if (entry.name.endsWith('.html')) {
+            found.push(relative);
+        }
+    }
+
+    return found.sort();
+}
+
+/*
+    KAPALI BİR BÖLME, OLMAYAN BİR BÖLME DEĞİLDİR.
+
+    Kabuğun gezintisi bir `<details>` içinde yaşıyor ve kapalıyken hiçbir
+    bağlantı ölçülemez — araç "hedef yok" der ve menünün 320 pikselde nasıl
+    davrandığını hiç sormaz. Kullanıcı o bölmeyi TEK dokunuşla açıyor;
+    ölçülmesi gereken şey onun ulaştığı hâl. Bu yüzden sayfa kipinde bütün
+    açılır bölmeler ölçümden önce açılır.
+*/
+const PREPARE = `(() => {
+  for (const details of document.querySelectorAll('details')) details.open = true;
+  return document.querySelectorAll('details').length;
+})()`;
+
+/** @type {{id: string, url: string, screen: boolean}[]} */
+const targets = storybookMode
+    ? Object.keys(JSON.parse(readFileSync(join(targetDir, 'index.json'), 'utf8')).entries).map(
+          (id) => ({
+              id,
+              url: `file://${join(targetDir, 'iframe.html')}?id=${id}&viewMode=story`,
+              /*
+                  YATAY İSRAF YALNIZ EKRAN HİKÂYELERİNDE SORULUR.
+
+                  `micro-` ve `compound-` hikâyeleri tek bir bileşeni ortada
+                  çizer; "kullanılabilir genişlik 20/320" demek bir avatarın
+                  kendi boyunu israf saymaktır. Soru ancak bir EKRANA
+                  sorulabilir. Kapsam dışı hikâyeler "ölçülmedi" sayılır —
+                  "sorun yok" DEĞİL.
+              */
+              screen: id.startsWith('surface-') || id.startsWith('macro-'),
+          }),
+      )
+    : htmlFiles(targetDir).map((relative) => ({
+          id: relative,
+          url: `file://${join(targetDir, relative)}`,
+          // Bir SAYFA her zaman bir ekrandır; genişliği sorulabilir.
+          screen: true,
+      }));
+
+if (targets.length === 0) {
+    console.error(`mobile-ux-audit: ${targetDir} içinde ölçülecek bir şey yok.`);
     process.exit(2);
 }
 
@@ -400,9 +493,6 @@ const baseline =
     baselinePath && existsSync(baselinePath)
         ? JSON.parse(readFileSync(baselinePath, 'utf8')).stories
         : null;
-
-const index = JSON.parse(readFileSync(join(storybookDir, 'index.json'), 'utf8'));
-const storyIds = Object.keys(index.entries);
 
 const profileDir = mkdtempSync(join(tmpdir(), 'mobile-audit-'));
 
@@ -437,15 +527,19 @@ try {
     });
     await cdp(ws, 'Page.enable');
 
-    for (const [position, storyId] of storyIds.entries()) {
-        const url = `file://${join(storybookDir, 'iframe.html')}?id=${storyId}&viewMode=story`;
+    for (const [position, target] of targets.entries()) {
+        const storyId = target.id;
 
-        await cdp(ws, 'Page.navigate', { url });
+        await cdp(ws, 'Page.navigate', { url: target.url });
         await new Promise((r) => setTimeout(r, 450));
 
         let measured;
 
         try {
+            if (!storybookMode) {
+                await cdp(ws, 'Runtime.evaluate', { expression: PREPARE, returnByValue: true });
+            }
+
             const { result } = await cdp(ws, 'Runtime.evaluate', {
                 expression: MEASURE,
                 returnByValue: true,
@@ -457,20 +551,8 @@ try {
 
         const findings = measured?.findings ?? [];
 
-        /*
-            YATAY İSRAF YALNIZ EKRAN HİKÂYELERİNDE SORULUR.
-
-            `micro-` ve `compound-` hikâyeleri tek bir bileşeni ortada çizer;
-            "kullanılabilir genişlik 20/320" demek bir avatarın kendi boyunu
-            israf saymaktır. Soru ancak bir EKRANA sorulabilir: bu ekran
-            görüntü alanının ne kadarını kullanıyor?
-
-            Kapsam dışı hikâyeler "ölçülmedi" sayılır — "sorun yok" DEĞİL.
-        */
-        const screenStory = storyId.startsWith('surface-') || storyId.startsWith('macro-');
-
         if (
-            screenStory &&
+            target.screen &&
             measured?.usableWidth != null &&
             measured.usableWidth > 0 &&
             measured.usableWidth / WIDTH < MIN_CONTENT_RATIO
@@ -492,7 +574,7 @@ try {
         });
 
         if ((position + 1) % 50 === 0) {
-            process.stderr.write(`  … ${position + 1}/${storyIds.length}\n`);
+            process.stderr.write(`  … ${position + 1}/${targets.length}\n`);
         }
     }
 

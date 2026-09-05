@@ -232,8 +232,20 @@ msgstr ""
 msgid "site.legal.pending.description"
 msgstr ""
 
+#: site:site.nav.account
+msgid "site.nav.account"
+msgstr ""
+
 #: site:site.nav.contact
 msgid "site.nav.contact"
+msgstr ""
+
+#: site:site.nav.customers
+msgid "site.nav.customers"
+msgstr ""
+
+#: site:site.nav.explore
+msgid "site.nav.explore"
 msgstr ""
 
 #: site:site.nav.features
@@ -248,8 +260,16 @@ msgstr ""
 msgid "site.nav.howItWorks"
 msgstr ""
 
+#: site:site.nav.integrations
+msgid "site.nav.integrations"
+msgstr ""
+
 #: site:site.nav.login
 msgid "site.nav.login"
+msgstr ""
+
+#: site:site.nav.menu
+msgid "site.nav.menu"
 msgstr ""
 
 #: site:site.nav.pricing
@@ -260,8 +280,20 @@ msgstr ""
 msgid "site.nav.primary"
 msgstr ""
 
+#: site:site.nav.product
+msgid "site.nav.product"
+msgstr ""
+
 #: site:site.nav.register
 msgid "site.nav.register"
+msgstr ""
+
+#: site:site.nav.resources
+msgid "site.nav.resources"
+msgstr ""
+
+#: site:site.nav.solutions
+msgid "site.nav.solutions"
 msgstr ""
 
 #: site:site.pageState.approved

@@ -15,9 +15,9 @@
             </h1>
             <p class="max-w-2xl text-fg-secondary">{{ $st['homeHeroLead'] }}</p>
             <nav aria-label="{{ $st['homeHeroActionsLabel'] }}" class="flex flex-wrap gap-3">
-                <a href="/app" class="inline-flex items-center rounded bg-action px-4 py-2 font-medium text-white hover:underline">{{ $st['homeOpenApp'] }}</a>
-                <a href="/login" class="inline-flex items-center rounded border border-border px-4 py-2 font-medium text-fg hover:underline">{{ $st['navLogin'] }}</a>
-                <a href="/register" class="inline-flex items-center rounded border border-border px-4 py-2 font-medium text-fg hover:underline">{{ $st['navRegister'] }}</a>
+                <a href="/app" class="site-action inline-flex items-center rounded bg-action px-4 py-2 font-medium text-white hover:underline">{{ $st['homeOpenApp'] }}</a>
+                <a href="/login" class="site-action inline-flex items-center rounded border border-border px-4 py-2 font-medium text-fg hover:underline">{{ $st['navLogin'] }}</a>
+                <a href="/register" class="site-action inline-flex items-center rounded border border-border px-4 py-2 font-medium text-fg hover:underline">{{ $st['navRegister'] }}</a>
             </nav>
         </section>
 

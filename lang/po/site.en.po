@@ -232,9 +232,21 @@ msgstr "This page is pending qualified legal review and is not yet published. It
 msgid "site.legal.pending.description"
 msgstr "This page is pending qualified legal review and is not yet published."
 
+#: site:site.nav.account
+msgid "site.nav.account"
+msgstr "Account"
+
 #: site:site.nav.contact
 msgid "site.nav.contact"
 msgstr "Contact"
+
+#: site:site.nav.customers
+msgid "site.nav.customers"
+msgstr "Customers"
+
+#: site:site.nav.explore
+msgid "site.nav.explore"
+msgstr "Explore"
 
 #: site:site.nav.features
 msgid "site.nav.features"
@@ -248,9 +260,17 @@ msgstr "Help"
 msgid "site.nav.howItWorks"
 msgstr "How it works"
 
+#: site:site.nav.integrations
+msgid "site.nav.integrations"
+msgstr "Integrations"
+
 #: site:site.nav.login
 msgid "site.nav.login"
 msgstr "Log in"
+
+#: site:site.nav.menu
+msgid "site.nav.menu"
+msgstr "Menu"
 
 #: site:site.nav.pricing
 msgid "site.nav.pricing"
@@ -260,9 +280,21 @@ msgstr "Pricing"
 msgid "site.nav.primary"
 msgstr "Primary"
 
+#: site:site.nav.product
+msgid "site.nav.product"
+msgstr "Product"
+
 #: site:site.nav.register
 msgid "site.nav.register"
 msgstr "Create account"
+
+#: site:site.nav.resources
+msgid "site.nav.resources"
+msgstr "Resources"
+
+#: site:site.nav.solutions
+msgid "site.nav.solutions"
+msgstr "Solutions"
 
 #: site:site.pageState.approved
 msgid "site.pageState.approved"
