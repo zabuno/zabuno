@@ -27,6 +27,14 @@ final class RolePermissions
      * değiştirir. İkisini aynı role vermek, en kolay yetkiyi en geniş
      * sonuçla eşleştirmek olurdu.
      *
+     * SİPARİŞ EKSENİ (`docs/115` §4) bu listeye dördüncü bir soru ekliyor:
+     * "servis anında kim ne yapar?". Editor ve Member'da HİÇBİR `order.*`
+     * izni yoktur ve bu bilinçli bir boşluktur: Editor içerik düzenler,
+     * servis anının işi değildir; Member ise yalnız eski kayıtlar için
+     * yaşayan salt okunur bir roldür ve tarifedeki matriste hiç geçmez.
+     * Sessizce "salt okunur olduğu için görsün" demek, masadaki misafirin ne
+     * yediğini kimsenin vermediği bir role açmak olurdu.
+     *
      * `MenuAllergensManage` ve `MenuStockManage`, `MenuManage`'in İÇİNDEN
      * çıkarılan iki dar eksendir. Bu yüzden `MenuManage` taşıyan üç rolün
      * (Owner/Manager/Editor) listesine de AÇIKÇA eklendiler: dünkü üründe
@@ -58,6 +66,11 @@ final class RolePermissions
                 Permission::SecurityEvidenceView,
                 Permission::MediaManage,
                 Permission::MediaDownloadOriginal,
+                Permission::OrderView,
+                Permission::OrderConfirm,
+                Permission::OrderKitchen,
+                // Hizmeti açıp kapatmak SAHİBİN kararıdır (`docs/115` §4).
+                Permission::OrderSettings,
             ],
             MembershipRole::Manager => [
                 Permission::WorkspaceView,
@@ -78,6 +91,16 @@ final class RolePermissions
                 Permission::BillingView,
                 Permission::MediaManage,
                 Permission::MediaDownloadOriginal,
+                /*
+                    Yönetici servisi YÜRÜTÜR: kuyruğu görür, onaylar, mutfak
+                    monitörünü açar. `order.settings` burada YOK ve bu bir
+                    unutkanlık değil — sipariş almayı kapatmak akşam
+                    servisinin ortasında mutfağa gelen işi kesmektir ve
+                    sahibinden habersiz yapılmamalıdır.
+                */
+                Permission::OrderView,
+                Permission::OrderConfirm,
+                Permission::OrderKitchen,
             ],
             MembershipRole::Editor => [
                 Permission::WorkspaceView,
@@ -112,6 +135,15 @@ final class RolePermissions
                 Permission::MenuView,
                 Permission::MenuAllergensManage,
                 Permission::MenuStockManage,
+                /*
+                    MUTFAK MONİTÖRÜ (`docs/115` §4, K1–K5). Aşçı onaylanmış
+                    işi görür ve ilerletir; ONAYLAMAZ. Onay bir servis
+                    kararıdır: masada kimin oturduğunu gören kişi verir.
+                    `order.confirm` buraya eklenseydi, dışarıdan karekodu
+                    okutan birinin talebi doğrudan ocağa iş açardı.
+                */
+                Permission::OrderView,
+                Permission::OrderKitchen,
             ],
             MembershipRole::Member => [
                 Permission::WorkspaceView,

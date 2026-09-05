@@ -421,6 +421,24 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // çağrısı yaptığı için daha sıkı hız sınırı taşır.
         'POST|api/admin/connections/{connection}/probe||App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:10,1,verified',
         'POST|api/admin/connections/{connection}/{state}||App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        /*
+            RESTORAN TARAFININ SİPARİŞ YOLLARI (FF-179, `docs/115` S4/S5/S6).
+
+            Altı imza, üç ekran: garson kuyruğu, mutfak monitörü, sipariş
+            ayarları ve geçmiş. Hepsi `auth:sanctum,verified` altında.
+
+            MİSAFİRİN GÖNDERME UCU BU LİSTEDE YOKTUR ve olmamalı: o yol
+            oturum açmaz, masasını karekoddan çözer ve `routes/web.php`
+            üzerinden gider. Aynı dosyaya konsaydı, bu gruba bir gün eklenen
+            `auth:sanctum` masadaki hiç kimsenin sipariş verememesiyle
+            sonuçlanırdı.
+        */
+        'GET|api/workspaces/{workspace}/locations/{location}/orders/pending||App\Http\Controllers\Ordering\ListPendingOrdersController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/locations/{location}/orders/kitchen||App\Http\Controllers\Ordering\ListKitchenOrdersController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/locations/{location}/orders/history||App\Http\Controllers\Ordering\ListOrderHistoryController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/locations/{location}/orders/{order}/status||App\Http\Controllers\Ordering\ChangeOrderStatusController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/locations/{location}/ordering||App\Http\Controllers\Ordering\ShowOrderingSwitchController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/locations/{location}/ordering||App\Http\Controllers\Ordering\UpdateOrderingSwitchController|api,auth:sanctum,verified',
     ];
 
     /**
@@ -447,6 +465,14 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'routes/api/team.php',
         'routes/api/workspace-audit.php',
         'routes/api/platform-admin.php',
+        /*
+            SİPARİŞ YÜZEYİ (FF-179, `docs/115` S4/S5/S6). Listenin SONUNDA ve
+            bilerek: kuyruk, mutfak monitörü ve şalter mevcut hiçbir yolu
+            gölgelemez, dolayısıyla daha erken yüklenmeleri için bir sebep
+            yok — ve sona eklemek dondurulmuş imza listesini ortasından
+            kaydırmaz.
+        */
+        'routes/api/ordering.php',
     ];
 
     #[Test]

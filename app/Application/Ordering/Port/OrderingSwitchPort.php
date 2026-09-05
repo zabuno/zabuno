@@ -24,4 +24,18 @@ interface OrderingSwitchPort
      * kimlik sorgusu, komşu kiracının şubesini okumanın en sessiz yoludur.
      */
     public function acceptsOrders(int $workspaceId, int $locationId): bool;
+
+    /**
+     * Şalteri çevirir; ŞUBE BU KİRACIYA AİTSE `true` döner (`docs/115` Y1).
+     *
+     * Dönüş değeri "yazdım mı" değil, "BÖYLE BİR ŞUBE VAR MI" sorusunun
+     * cevabıdır — çağıran katman `false` gördüğünde 404 der. Bu okuma yolunun
+     * aynısıdır: kapsam koşulu sorgunun içindedir ve çağırana bırakılmaz.
+     *
+     * Yazma tarafı okuma tarafıyla AYNI portta yaşıyor, çünkü ikisi de tek
+     * bir soruya bakıyor: "bu şube şu an sipariş alıyor mu?". Ayrı bir yazar
+     * portu, aynı sütunun iki farklı kapsam kuralına sahip olabileceği bir
+     * gün yaratırdı.
+     */
+    public function setAcceptsOrders(int $workspaceId, int $locationId, bool $acceptsOrders): bool;
 }

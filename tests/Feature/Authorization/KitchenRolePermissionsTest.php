@@ -70,6 +70,18 @@ final class KitchenRolePermissionsTest extends TestCase
             Permission::MenuView,
             Permission::MenuAllergensManage,
             Permission::MenuStockManage,
+            /*
+                SİPARİŞ EKSENİ (FF-179, `docs/115` §4). Rolün sözü değişmedi,
+                işi büyüdü: sahip artık mutfağa bir MONİTÖR asıyor ve o
+                monitörü okuyan kişi bu roldür.
+
+                `order.confirm` burada YOK ve listenin en anlamlı satırı o
+                yokluktur: onay bir servis kararıdır, masada kimin oturduğunu
+                gören kişi verir. Aşçı onaylayabilseydi, dışarıdan karekodu
+                okutan birinin talebi doğrudan ocağa iş açardı.
+            */
+            Permission::OrderView,
+            Permission::OrderKitchen,
         ], $granted);
     }
 
@@ -87,6 +99,10 @@ final class KitchenRolePermissionsTest extends TestCase
             'takım ve marka ayarları' => [Permission::WorkspaceManage],
             'medya yükleme' => [Permission::MediaManage],
             'aslını indirme' => [Permission::MediaDownloadOriginal],
+            // Onay bir SERVİS kararıdır (`docs/115` §4).
+            'sipariş onayı' => [Permission::OrderConfirm],
+            // Hizmeti açıp kapatmak sahibin kararıdır.
+            'sipariş ayarları' => [Permission::OrderSettings],
         ];
     }
 

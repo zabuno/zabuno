@@ -83,7 +83,24 @@ final class RolePermissionMappingTest extends TestCase
             her rol ikisini de taşımaya devam ediyor, ama artık sahip
             "alerjeni düzeltsin, fiyata dokunmasın" diyebiliyor.
         */
-        self::assertCount(17, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak on yedi permission tanımlar (on üç çekirdek + iki medya + menu.allergens.manage + menu.stock.manage) — ek permission eklenmemeli.');
+        self::assertSame('order.view', Permission::OrderView->value);
+        self::assertSame('order.confirm', Permission::OrderConfirm->value);
+        self::assertSame('order.kitchen', Permission::OrderKitchen->value);
+        self::assertSame('order.settings', Permission::OrderSettings->value);
+        /*
+            FF-179 (`docs/115` §4): sipariş ekseni. 17 → 21.
+
+            Bu dört izin bir yetki BÖLÜNMESİ değil, yeni bir YÜZEY: sipariş
+            akışı bu depoda dün yoktu. Plan tek cümleyle donduruyor — "Yeni
+            bir izin ekseni gerekiyor; yeni bir rol GEREKMİYOR" — ve sayı
+            burada büyürken rol sayısı sabit kalıyor.
+
+            Sayının test tarafından tutulması bilerek: bu ürünün en sessiz
+            kazası, bir gün birinin `order.confirm`'ü kolaylık olsun diye
+            Editor'a eklemesidir. O gün bu satır kırılır ve gerekçe yazmak
+            zorunda kalınır.
+        */
+        self::assertCount(21, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak yirmi bir permission tanımlar (on üç çekirdek + iki medya + menu.allergens.manage + menu.stock.manage + dört order.* ekseni) — ek permission eklenmemeli.');
         self::assertContains('workspace.view', $values);
         self::assertContains('workspace.manage', $values);
         self::assertContains('menu.view', $values);
@@ -124,7 +141,14 @@ final class RolePermissionMappingTest extends TestCase
         // eklenirken sahibin yapabildiği hiçbir şey elinden alınmaz.
         self::assertContains(Permission::MenuAllergensManage, $permissions);
         self::assertContains(Permission::MenuStockManage, $permissions);
-        self::assertCount(17, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak on yedi permission taşımalı (bounded scope dışında ek yetki yok).');
+        // FF-179 (`docs/115` §4): sipariş ekseninin DÖRDÜ de Sahip'te. Bu
+        // rolün tanımı zaten "her şeyi yapar"; `order.settings` ise yalnız
+        // burada var — hizmeti açıp kapatmak bir işletme kararıdır.
+        self::assertContains(Permission::OrderView, $permissions);
+        self::assertContains(Permission::OrderConfirm, $permissions);
+        self::assertContains(Permission::OrderKitchen, $permissions);
+        self::assertContains(Permission::OrderSettings, $permissions);
+        self::assertCount(21, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak yirmi bir permission taşımalı (bounded scope dışında ek yetki yok).');
     }
 
     // --- CORE03-ROLE-MAP-MEMBER-01 ----------------------------------------

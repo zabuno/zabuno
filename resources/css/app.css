@@ -91,6 +91,21 @@ a {
     --text-subsection: 1.0625rem;
     --text-subsection--line-height: 1.4;
 
+    /*
+       MUTFAK MONİTÖRÜ — duvara asılan ekran (`docs/115` S5, K5).
+
+       Ayrı bir rol, çünkü ayrı bir OKUMA MESAFESİ. `--text-title` masanın
+       başında oturan birinin sayfa başlığıdır; bu ise üç metre öteden, elleri
+       hamurlu, gözü ocakta olan birinin okuduğu satırdır. İkisini tek bir
+       role indirmek, ikisini de ortalamak olurdu: başlık gereksiz büyür,
+       fiş hâlâ okunmaz.
+
+       Akışkan ve tavanı yüksek: duvardaki monitör genellikle panelin
+       kullanıldığı ekrandan büyüktür ve rol viewport'a tepki verir.
+    */
+    --text-monitor: clamp(1.75rem, 1.2rem + 2.4vw, 3rem);
+    --text-monitor--line-height: 1.15;
+
     /* ---------------------------------------------------------------
        KÖŞE YARIÇAPI.
 

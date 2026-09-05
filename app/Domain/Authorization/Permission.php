@@ -48,4 +48,29 @@ enum Permission: string
     */
     case MediaManage = 'media.manage';
     case MediaDownloadOriginal = 'media.download_original';
+    /*
+        SİPARİŞİN DÖRT EKSENİ (`docs/115` §4).
+
+        Plan tek cümleyle donduruyor: "Yeni bir izin ekseni gerekiyor; yeni
+        bir rol GEREKMİYOR." Dördü de var olan rollerin üstüne biner ve her
+        biri servis anındaki AYRI bir insana karşılık gelir:
+
+        - `order.view`     — siparişi GÖRMEK. Görmek yapmak değildir: mutfak
+                             da görür, ama onaylayamaz.
+        - `order.confirm`  — misafirin TALEBİNİ bir İŞE çevirmek. Bu ürünün
+                             tek insani kapısı; masada kimin oturduğunu gören
+                             kişinin kararıdır.
+        - `order.kitchen`  — onaylanmış işi ilerletmek: hazırlanıyor, hazır.
+                             Ocağın kendi cümlesi.
+        - `order.settings` — hizmeti açıp kapatmak. Bir işletme kararıdır ve
+                             bilerek en dar eksendir; yalnız Sahip taşır.
+
+        Dördü tek bir `order.manage` olsaydı, aşçının onayladığı ya da
+        garsonun servisi kapattığı bir ürün çıkardı — ve bu iki cümle de
+        sahibin tarifinde YOK.
+    */
+    case OrderView = 'order.view';
+    case OrderConfirm = 'order.confirm';
+    case OrderKitchen = 'order.kitchen';
+    case OrderSettings = 'order.settings';
 }

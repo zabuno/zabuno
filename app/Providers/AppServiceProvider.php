@@ -42,6 +42,7 @@ use App\Application\MenuCatalog\Port\MenuSchedulePort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Ordering\Port\OrderableMenuPort;
 use App\Application\Ordering\Port\OrderingSwitchPort;
+use App\Application\Ordering\Port\OrderQueryPort;
 use App\Application\Ordering\Port\OrderRepositoryPort;
 use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\ConnectionProbePort;
@@ -135,6 +136,7 @@ use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuSchedule;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
 use App\Infrastructure\Ordering\Persistence\EloquentOrderableMenu;
 use App\Infrastructure\Ordering\Persistence\EloquentOrderingSwitch;
+use App\Infrastructure\Ordering\Persistence\EloquentOrderQuery;
 use App\Infrastructure\Ordering\Persistence\EloquentOrderRepository;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
 use App\Infrastructure\Platform\Capability\RuntimeHostCapabilityProbe;
@@ -517,6 +519,12 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(OrderRepositoryPort::class, EloquentOrderRepository::class);
         $this->app->bind(OrderableMenuPort::class, EloquentOrderableMenu::class);
         $this->app->bind(OrderingSwitchPort::class, EloquentOrderingSwitch::class);
+        /*
+            PANELİN OKUMA YOLU (FF-179) — yazma portundan ayrı bağlanır.
+            Garson kuyruğu, mutfak monitörü ve geçmiş bu porttan okur;
+            misafirin gönderme yolu ona hiç dokunmaz.
+        */
+        $this->app->bind(OrderQueryPort::class, EloquentOrderQuery::class);
         // ZAMANLANMIŞ YAYIN ("Planla"): planı yazan, iptal eden ve vakti
         // gelince tek seferlik sahiplenen depo.
         $this->app->bind(PublicationSchedulePort::class, EloquentPublicationSchedule::class);

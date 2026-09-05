@@ -27,4 +27,36 @@ final class EloquentOrderingSwitch implements OrderingSwitchPort
             ->where('workspace_id', $workspaceId)
             ->value('accepts_orders');
     }
+
+    public function setAcceptsOrders(int $workspaceId, int $locationId, bool $acceptsOrders): bool
+    {
+        /*
+            VARLIK KONTROLÜ AYRI SORULUR.
+
+            Yalnız `update()`'in etkilediği satır sayısına bakmak yeterli
+            görünüyordu ve yanlıştı: değer zaten istenen hâldeyse bazı
+            motorlar sıfır satır etkilendi der. O durumda sahip şalteri
+            zaten açıkken tekrar açtığında "böyle bir şube yok" cevabı
+            alırdı — var olan bir şube, tek bir gereksiz tıklama yüzünden
+            kaybolmuş görünürdü.
+        */
+        $exists = DB::table('locations')
+            ->where('id', $locationId)
+            ->where('workspace_id', $workspaceId)
+            ->exists();
+
+        if (! $exists) {
+            return false;
+        }
+
+        DB::table('locations')
+            ->where('id', $locationId)
+            ->where('workspace_id', $workspaceId)
+            ->update([
+                'accepts_orders' => $acceptsOrders,
+                'updated_at' => now(),
+            ]);
+
+        return true;
+    }
 }

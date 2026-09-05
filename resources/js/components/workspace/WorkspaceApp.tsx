@@ -34,6 +34,7 @@ import {
     type WorkspaceSectionDescriptor,
 } from './shell/WorkspaceSectionRegistry';
 import type { WorkspaceInspectorMap } from './inspectors/types';
+import type { KitchenSurfaceRenderer } from './pages/orders/kitchenSurface';
 
 export type CatalogPhase =
     'loading' | 'error' | 'brand-onboarding' | 'location-onboarding' | 'menu-catalog';
@@ -87,6 +88,19 @@ export type WorkspaceSectionRuntimeContext = {
     userName?: string;
     avatarMediaAssetId: number | null;
     avatarUrl: string | null;
+    /**
+     * MUTFAK MONİTÖRÜNÜ çizen işlev — yalnız MASAÜSTÜ paketinde dolu gelir
+     * (`docs/54`, `docs/115` S5).
+     *
+     * Bağlam panellerindeki (`inspectors`) desenin aynısı: bileşen değil,
+     * giriş noktasından geçirilen bir işlev. Kabuk monitörü kendisi `import`
+     * etseydi Vite onu ortak parçaya koyar ve telefon, duvara asılmak için
+     * yazılmış bir ekranın kodunu indirirdi.
+     *
+     * `undefined` telefonun NORMAL hâlidir; ekran o durumda nedenini
+     * söyleyen bir cümle gösterir, boş bir kutu değil.
+     */
+    renderKitchenMonitor?: KitchenSurfaceRenderer;
 };
 
 type WorkspaceUser = {
@@ -172,6 +186,13 @@ export type WorkspaceAppProps = {
      * bulamaz; panel orada YOKTUR ve temel görev bundan etkilenmez.
      */
     inspectors?: WorkspaceInspectorMap;
+    /**
+     * Bu cihaz paketinin MUTFAK MONİTÖRÜ — yalnız masaüstü girişi verir.
+     *
+     * Bayrak değil ÇİZİCİ geçilir, `inspectors` ile aynı sebeple: bir bayrak
+     * yalnız gizlerdi, kod paylaşılan bölüm kaydından yine indirilirdi.
+     */
+    renderKitchenMonitor?: KitchenSurfaceRenderer;
 };
 
 export type WorkspaceChromeContext = {
@@ -218,6 +239,7 @@ export function WorkspaceApp({
     renderNavigationDrawer,
     renderBottomBar,
     inspectors,
+    renderKitchenMonitor,
 }: WorkspaceAppProps) {
     const [phase, setPhase] = useState<Phase>('loading');
     const [user, setUser] = useState<WorkspaceUser | null>(null);
@@ -1065,6 +1087,7 @@ export function WorkspaceApp({
               userName: user?.name,
               avatarMediaAssetId: user?.avatarMediaAssetId ?? null,
               avatarUrl: user?.avatarUrl ?? null,
+              renderKitchenMonitor,
           }
         : null;
 
