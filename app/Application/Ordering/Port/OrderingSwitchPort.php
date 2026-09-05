@@ -26,6 +26,21 @@ interface OrderingSwitchPort
     public function acceptsOrders(int $workspaceId, int $locationId): bool;
 
     /**
+     * "BU ŞUBE BU KİRACININ MI?" — okuma da yazma da değil, KAPSAM sorusu.
+     *
+     * Ayrı bir soru olarak duruyor çünkü RET SEBEPLERİNİN SIRASI bir ürün
+     * kararıdır (`docs/115` Y3). Kiracıya ait olmayan bir şube için "senin
+     * planında sipariş alma yok" demek, o şubenin varlığını kabul etmek ve
+     * yanlış bir çıkış yolu göstermek olurdu: sahip planını yükseltir, sonra
+     * yine hiçbir şey olmaz.
+     *
+     * `acceptsOrders()` bu soruyu cevaplayamaz ve bu bilerek böyle: yok olan
+     * şube ile kapalı şube ondan aynı `false` ile döner, çünkü var olmayan
+     * bir şubeyi "sipariş alıyor" saymak her zaman daha kötüdür.
+     */
+    public function belongsToWorkspace(int $workspaceId, int $locationId): bool;
+
+    /**
      * Şalteri çevirir; ŞUBE BU KİRACIYA AİTSE `true` döner (`docs/115` Y1).
      *
      * Dönüş değeri "yazdım mı" değil, "BÖYLE BİR ŞUBE VAR MI" sorusunun

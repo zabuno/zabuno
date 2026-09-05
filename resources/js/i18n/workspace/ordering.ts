@@ -127,6 +127,46 @@ export const ordering = {
     'workspace.orders.status.cancelled': 'Cancelled by the guest',
     'workspace.orders.status.rejected': 'Rejected',
 
+    /*
+        --- Y3, PLAN KAPISI (`docs/115` Y3) ---------------------------------
+
+        Ölçülen kusur: şalter panelden açılabiliyordu ama plan sipariş almayı
+        içermiyorsa misafirin siparişi reddediliyordu. Sahip hizmeti açtığını
+        sanıyor, mutfağa hiçbir şey düşmüyordu.
+
+        HAK, ADIYLA ANILIR — ama iç anahtarıyla değil. Sunucu ekrana hangi
+        hakkın eksik olduğunu bildiriyor; ekran onu restoran sahibinin
+        dilinde adlandırıyor. `ordering.basic` dizesini ekrana basmak bu
+        deponun kendi kelime dağarcığı kuralının ihlali olurdu (`docs/53`:
+        iç anahtar adı restoran yüzeyinde yazmaz) ve zaten sahibin plan
+        sayfasında gördüğü şey de o dize değil.
+
+        Ad TEK YERDE. Dört ekran aynı hakkı anıyor; dördüne ayrı yazılsaydı
+        biri değiştiğinde sahip aynı kısıtı iki farklı adla okurdu.
+    */
+    'workspace.orders.plan.name': 'Taking orders from tables',
+    'workspace.orders.plan.action': 'View your plan',
+    // Kapalı bir şalter ile planda olmayan bir hizmet aynı görünür ama
+    // çıkış yolları farklıdır: biri bir tık, öbürü bir plan değişikliği.
+    'workspace.orders.settings.plan.missing':
+        '“{name}” is not part of your current plan. While it is missing you cannot switch ordering on, and a guest who scans a table code still reads the menu but cannot send an order.',
+    /*
+        HAK SONRADAN DÜŞTÜĞÜNDE söylenen cümle. Şalteri sessizce kapatmak
+        daha temiz görünürdü ve daha kötü olurdu: sahip ayarının arkasından
+        değiştiğini bilmez, planı geri geldiğinde neyi kaybettiğini de
+        bilmezdi. Ekran gerçeği söyler, ayarı sahibin elinde bırakır.
+    */
+    'workspace.orders.settings.plan.stuckOn':
+        'Ordering is switched on, but “{name}” is no longer part of your plan, so no order can reach the kitchen. Nobody switched it off for you: that stays your decision, and orders start arriving again as soon as the plan includes it.',
+    'workspace.orders.queue.empty.plan.title': 'Orders cannot reach you',
+    // Boş liste "bugün sipariş yok" demektir ve bu YANLIŞ bir cümledir:
+    // sipariş gelmiyor değil, gelemiyor.
+    'workspace.orders.queue.empty.plan.description':
+        'This is not a quiet evening: “{name}” is not part of your current plan, so every order a guest sends is turned down. Nothing is lost — the queue starts filling the moment the plan includes it.',
+    'workspace.orders.kitchen.plan.title': 'Nothing can reach the kitchen',
+    'workspace.orders.kitchen.plan.description':
+        '“{name}” is not part of your current plan. An empty monitor would look like a quiet evening; it is not — guests cannot send an order at all.',
+
     'workspace.orders.permission.title': 'Orders are not part of your role',
     'workspace.orders.permission.description':
         'Ask the workspace owner if you need to see the order queue.',

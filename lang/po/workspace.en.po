@@ -3912,6 +3912,14 @@ msgstr "This browser does not offer full screen. Use the browser’s own full-sc
 msgid "workspace.orders.kitchen.loading"
 msgstr "Loading the kitchen monitor…"
 
+#: workspace:workspace.orders.kitchen.plan.description
+msgid "workspace.orders.kitchen.plan.description"
+msgstr "“{name}” is not part of your current plan. An empty monitor would look like a quiet evening; it is not — guests cannot send an order at all."
+
+#: workspace:workspace.orders.kitchen.plan.title
+msgid "workspace.orders.kitchen.plan.title"
+msgstr "Nothing can reach the kitchen"
+
 #: workspace:workspace.orders.kitchen.ready
 msgid "workspace.orders.kitchen.ready"
 msgstr "Mark ready"
@@ -3944,6 +3952,14 @@ msgstr "Ask the workspace owner if you need to see the order queue."
 msgid "workspace.orders.permission.title"
 msgstr "Orders are not part of your role"
 
+#: workspace:workspace.orders.plan.action
+msgid "workspace.orders.plan.action"
+msgstr "View your plan"
+
+#: workspace:workspace.orders.plan.name
+msgid "workspace.orders.plan.name"
+msgstr "Taking orders from tables"
+
 #: workspace:workspace.orders.prerequisite.description
 msgid "workspace.orders.prerequisite.description"
 msgstr "Orders belong to a branch: a table, a queue and a kitchen are all part of one location."
@@ -3975,6 +3991,14 @@ msgstr "Ordering is switched off"
 #: workspace:workspace.orders.queue.empty.description
 msgid "workspace.orders.queue.empty.description"
 msgstr "New orders from the tables land here. The list refreshes on its own."
+
+#: workspace:workspace.orders.queue.empty.plan.description
+msgid "workspace.orders.queue.empty.plan.description"
+msgstr "This is not a quiet evening: “{name}” is not part of your current plan, so every order a guest sends is turned down. Nothing is lost — the queue starts filling the moment the plan includes it."
+
+#: workspace:workspace.orders.queue.empty.plan.title
+msgid "workspace.orders.queue.empty.plan.title"
+msgstr "Orders cannot reach you"
 
 #: workspace:workspace.orders.queue.empty.title
 msgid "workspace.orders.queue.empty.title"
@@ -4047,6 +4071,14 @@ msgstr "Ordering settings could not be loaded"
 #: workspace:workspace.orders.settings.loading
 msgid "workspace.orders.settings.loading"
 msgstr "Loading ordering settings…"
+
+#: workspace:workspace.orders.settings.plan.missing
+msgid "workspace.orders.settings.plan.missing"
+msgstr "“{name}” is not part of your current plan. While it is missing you cannot switch ordering on, and a guest who scans a table code still reads the menu but cannot send an order."
+
+#: workspace:workspace.orders.settings.plan.stuckOn
+msgid "workspace.orders.settings.plan.stuckOn"
+msgstr "Ordering is switched on, but “{name}” is no longer part of your plan, so no order can reach the kitchen. Nobody switched it off for you: that stays your decision, and orders start arriving again as soon as the plan includes it."
 
 #: workspace:workspace.orders.settings.region
 msgid "workspace.orders.settings.region"

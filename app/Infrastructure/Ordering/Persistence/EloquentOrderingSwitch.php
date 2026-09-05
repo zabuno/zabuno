@@ -28,6 +28,14 @@ final class EloquentOrderingSwitch implements OrderingSwitchPort
             ->value('accepts_orders');
     }
 
+    public function belongsToWorkspace(int $workspaceId, int $locationId): bool
+    {
+        return DB::table('locations')
+            ->where('id', $locationId)
+            ->where('workspace_id', $workspaceId)
+            ->exists();
+    }
+
     public function setAcceptsOrders(int $workspaceId, int $locationId, bool $acceptsOrders): bool
     {
         /*
@@ -40,12 +48,7 @@ final class EloquentOrderingSwitch implements OrderingSwitchPort
             alırdı — var olan bir şube, tek bir gereksiz tıklama yüzünden
             kaybolmuş görünürdü.
         */
-        $exists = DB::table('locations')
-            ->where('id', $locationId)
-            ->where('workspace_id', $workspaceId)
-            ->exists();
-
-        if (! $exists) {
+        if (! $this->belongsToWorkspace($workspaceId, $locationId)) {
             return false;
         }
 

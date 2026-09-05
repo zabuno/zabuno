@@ -3912,6 +3912,14 @@ msgstr ""
 msgid "workspace.orders.kitchen.loading"
 msgstr ""
 
+#: workspace:workspace.orders.kitchen.plan.description
+msgid "workspace.orders.kitchen.plan.description"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.plan.title
+msgid "workspace.orders.kitchen.plan.title"
+msgstr ""
+
 #: workspace:workspace.orders.kitchen.ready
 msgid "workspace.orders.kitchen.ready"
 msgstr ""
@@ -3944,6 +3952,14 @@ msgstr ""
 msgid "workspace.orders.permission.title"
 msgstr ""
 
+#: workspace:workspace.orders.plan.action
+msgid "workspace.orders.plan.action"
+msgstr ""
+
+#: workspace:workspace.orders.plan.name
+msgid "workspace.orders.plan.name"
+msgstr ""
+
 #: workspace:workspace.orders.prerequisite.description
 msgid "workspace.orders.prerequisite.description"
 msgstr ""
@@ -3974,6 +3990,14 @@ msgstr ""
 
 #: workspace:workspace.orders.queue.empty.description
 msgid "workspace.orders.queue.empty.description"
+msgstr ""
+
+#: workspace:workspace.orders.queue.empty.plan.description
+msgid "workspace.orders.queue.empty.plan.description"
+msgstr ""
+
+#: workspace:workspace.orders.queue.empty.plan.title
+msgid "workspace.orders.queue.empty.plan.title"
 msgstr ""
 
 #: workspace:workspace.orders.queue.empty.title
@@ -4046,6 +4070,14 @@ msgstr ""
 
 #: workspace:workspace.orders.settings.loading
 msgid "workspace.orders.settings.loading"
+msgstr ""
+
+#: workspace:workspace.orders.settings.plan.missing
+msgid "workspace.orders.settings.plan.missing"
+msgstr ""
+
+#: workspace:workspace.orders.settings.plan.stuckOn
+msgid "workspace.orders.settings.plan.stuckOn"
 msgstr ""
 
 #: workspace:workspace.orders.settings.region
