@@ -79,6 +79,7 @@
          hitap eder (`docs/100` MP-04). Eskiden gezintinin altında görünür bir
          paragraftı — bir kebapçı "16/16 modules registered" okuyordu. --}}
     <meta name="zabuno-build" content="{{ $coreModuleCount }}/16 modules registered">
+    @include('partials.font-preload')
     @vite(['resources/css/app.css'])
 </head>
 <body class="site-shell min-h-screen bg-surface text-fg">
