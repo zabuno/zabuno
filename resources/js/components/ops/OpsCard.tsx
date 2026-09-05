@@ -12,7 +12,7 @@ export type OpsCardProps = {
 };
 
 /**
- * Operasyon kartı — `docs/99` (Metronic "card" karşılığı, token'lı).
+ * Operasyon kartı — `docs/36` §5.2: kart yalnız SINIRI anlam taşıdığında.
  *
  * Metronic'in kart dili şudur: soluk uygulama zemini üstünde beyaz, hafif
  * kenarlıklı, yuvarlatılmış bir yüzey; başlık satırı ile gövde arasında

@@ -7,9 +7,17 @@ import { DEFAULT_MAX_EDGE } from './clientDownscale';
 import { downscaleImageFile, type DownscaleOutcome } from './downscaleImageFile';
 import { ImageCropField } from './ImageCropField';
 import { MediaDropzone, type SelectedImage } from './MediaDropzone';
+import { formatBytes } from './mediaFormat';
 import { MediaOptimizeStep } from './MediaOptimizeStep';
 import { MediaUploadSteps, type UploadStep, type UploadStepKey } from './MediaUploadSteps';
 import { SupportedTypesTable } from './SupportedTypesTable';
+import {
+    limitKindOfFile,
+    limitKindOfFormat,
+    maxBytesForKind,
+    type UploadLimitKind,
+    type UploadLimits,
+} from './uploadSizeLimits';
 import { FieldError } from '../../../catalog/menu/micro/FieldError';
 import { focusFirstInvalidField, ServerRejectedError } from '../../../../lib/validationErrors';
 import { buildAuthRequestInit } from '../../../../lib/csrfHeader';
@@ -51,7 +59,14 @@ type SlotPolicy = {
     altRequired: boolean;
 };
 
-type UploadLimits = { maxBytes: number; maxMegapixels: number };
+/*
+    SINIRLAR ARTIK TÜRE GÖRE (FF-158) — tip `uploadSizeLimits.ts` içindedir.
+
+    Tek düz bir sayı iki yönde birden yanlıştı: taranmış bir A3 menü için
+    dar, 2 MB'lık bir "logo" SVG'si için fazla cömert. Eşleme tablo ile
+    form arasında PAYLAŞILIR; ikisinin farklı cevap vermesi, sahibin
+    ekranda okuduğu söze güvenini bitirirdi.
+*/
 
 export type UploadOptions = {
     /** Yeniden denemede AYNI kalır — sunucu ikinci gönderimi ikinci görsel sanmaz (FF-68). */
@@ -460,7 +475,49 @@ export function MediaUploadRegion({ workspaceId, onSubmit }: MediaUploadRegionPr
         sınır zaten sunucudan (`limits`) geliyor, aynı sayı burada da geçerli.
         Sunucu yine son sözü söyler (`docs/47`: istemci yalnız hızlı yardım).
     */
-    const tooLarge = selected !== null && limits !== null && selected.file.size > limits.maxBytes;
+    /*
+        SINIR TÜRE GÖRE OKUNUR (FF-158). Seçilen dosyanın türü MIME/uzantıdan
+        tahmin edilir; ikisi de yanıltıcı olabilir ve bu yüzden buradaki
+        cevap YALNIZ ekranda ne yazılacağını belirler. Sunucu kararı
+        dosyanın kendi baytlarına bakarak verir.
+    */
+    const selectedKind: UploadLimitKind | null =
+        selected === null ? null : limitKindOfFile(selected.file);
+    const selectedMaxBytes =
+        limits === null || selectedKind === null ? null : maxBytesForKind(limits, selectedKind);
+
+    const tooLarge =
+        selected !== null && selectedMaxBytes !== null && selected.file.size > selectedMaxBytes;
+
+    /*
+        SEÇİLEN YERİN SINIRI, o yer seçilir seçilmez yazılır.
+
+        Gereksinimler listesi bugüne kadar en küçük ölçüyü, oranı ve kabul
+        edilen biçimleri söylüyordu ama boyutu SÖYLEMİYORDU: sahip "png
+        kabul ediliyor" okuyup 30 MB'lık taramasını yüklüyor, sınırı ancak
+        ret cümlesinde öğreniyordu.
+
+        Bir slot birden çok tür kabul edebilir (`logo`: svg + png + webp) ve
+        onların sınırları AYNI DEĞİLDİR — bu yüzden tek bir sayı değil, her
+        türün kendi sayısı yazılır.
+    */
+    const slotSizeLimits =
+        activePolicy === null || limits === null
+            ? ''
+            : Array.from(
+                  new Set(
+                      activePolicy.formats
+                          .map(limitKindOfFormat)
+                          .filter((kind): kind is UploadLimitKind => kind !== null),
+                  ),
+              )
+                  .map(
+                      (kind) =>
+                          `${t(`workspace.media.upload.limit.kind.${kind}` as Parameters<typeof t>[0])} ${formatBytes(
+                              maxBytesForKind(limits, kind),
+                          )}`,
+                  )
+                  .join(' · ');
     const tooManyPixels =
         selected !== null &&
         limits !== null &&
@@ -484,10 +541,16 @@ export function MediaUploadRegion({ workspaceId, onSubmit }: MediaUploadRegionPr
 
         if (!selected) {
             errors[fileId] = t('workspace.media.upload.error.file.required');
-        } else if (tooLarge && limits) {
+        } else if (tooLarge && selectedMaxBytes !== null && selectedKind !== null) {
+            // Ret üç şeyi birden söyler: dosyanın boyutu, HANGİ türün sınırı
+            // ve o sınırın kaç olduğu. "Dosya çok büyük" tek başına
+            // kullanıcıya ne yapacağını söylemez.
             errors[fileId] = t('workspace.media.upload.error.tooLarge', {
                 size: String(Math.round(selected.file.size / 1_048_576)),
-                max: String(Math.round(limits.maxBytes / 1_048_576)),
+                kind: t(
+                    `workspace.media.upload.limit.kind.${selectedKind}` as Parameters<typeof t>[0],
+                ),
+                max: String(Math.round(selectedMaxBytes / 1_048_576)),
             });
         } else if (tooManyPixels && limits) {
             errors[fileId] = t('workspace.media.upload.error.tooManyPixels', {
@@ -745,7 +808,7 @@ export function MediaUploadRegion({ workspaceId, onSubmit }: MediaUploadRegionPr
                         Yükleme reddedildikten sonra okunan bir tablo,
                         okunmamış bir tablodur.
                     */}
-                    <SupportedTypesTable accept={ACCEPT} maxBytes={limits?.maxBytes ?? null} />
+                    <SupportedTypesTable accept={ACCEPT} limits={limits} />
                 </div>
             ) : null}
 
@@ -832,6 +895,13 @@ export function MediaUploadRegion({ workspaceId, onSubmit }: MediaUploadRegionPr
                                         formats: activePolicy.formats.join(', '),
                                     })}
                                 </li>
+                                {slotSizeLimits !== '' ? (
+                                    <li>
+                                        {t('workspace.media.upload.requirement.maxSize', {
+                                            limits: slotSizeLimits,
+                                        })}
+                                    </li>
+                                ) : null}
                             </ul>
                         ) : null}
 

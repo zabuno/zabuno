@@ -14,7 +14,7 @@ export type OpsPageHeaderProps = {
 };
 
 /**
- * Operasyon sayfası başlığı — `docs/99` (Metronic-esinli, token'lı).
+ * Operasyon sayfası başlığı — `docs/50` §9.2 (page header sözleşmesi).
  *
  * Metronic'in "toolbar" satırının karşılığı: sol tarafta başlık + breadcrumb,
  * sağ tarafta sayfanın eylemleri. Metronic'ten alınan şey DÜZEN; renk, radius

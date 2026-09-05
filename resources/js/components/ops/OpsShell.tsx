@@ -30,7 +30,7 @@ export type OpsShellProps<Key extends string> = {
 
 /**
  * Operasyon kabuğu — platform ve mühendislik yüzeylerinin ORTAK gövdesi
- * (`docs/98` FF-66/67, `docs/99`).
+ * (`docs/98` FF-66/67; kabuk ailesi `docs/50`).
  *
  * İki kabuk aynı dili konuşmalı: aynı sol ray, aynı üst çubuk, aynı zemin
  * tonu, aynı adres→bölüm kuralı. Bunu iki dosyaya kopyalamak, bir hafta

@@ -93,7 +93,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 2 ✅ | **FF-64 Rota boşlukları** | menü-geneli stok, brand/logo ve QR destination doğrulaması; bilinçli-eski rotalar belgeli | Tur 1 listesi sıfır "doğrulanacak" |
 | 3 ✅ | **FF-65 Envanter tazeleme** | `docs/61` G4/G5, E9/E10, A2 güncellemesi; FF-49..62'nin izi | envanter gerçeği söylüyor |
 | 4 ✅ | **FF-66 Engineering kabuğu** | `/engineering/*` ayrı kabuk: readiness, güvenlik kanıtı, yedek tatbikatı, host-capability, AI denetim izi | `docs/69` madde 3 ✅ |
-| 5 ✅ | **FF-67 Superadmin estetiği (Metronic-esinli)** | plan belgesi (`docs/99`) + uygulama: yoğunluk, kart/tablo dili, rozet sistemi, sol rail, üst çubuk; Zabuno token'larıyla, Metronic kopyası değil | platform ve engineering kabukları aynı dili konuşur |
+| 5 ✅ | **FF-67 Superadmin estetiği (Metronic-esinli)** | uygulama: yoğunluk, kart/tablo dili, rozet sistemi, sol rail, üst çubuk; Zabuno token'larıyla (plan belgesi 2026-09-05'te kaldırıldı — sahip tasarımı kendisi veriyor) | platform ve engineering kabukları aynı dili konuşur |
 | 6 ✅ | **FF-68 DAM Faz 2** | upload session + idempotency, magic-bytes/decoder doğrulama, karantina zinciri, SVG reddi, `fixtures/malicious` CI kapısı | `docs/49` Faz 2 kabulü |
 | 7 ✅ | **FF-69 DAM Faz 3** | immutable original, non-destructive version, `320..1600w` rendition seti, checksum + yinelenen tespiti, reprocess | INV-01..07 yeşil, rollback |
 | 8 ✅ | **FF-70 DAM Faz 4+5** | kütüphane ızgara/liste/arama/koleksiyon; asset detayı (kullanım/sürüm/rendition); kullanım grafiği; silme etki önizlemesi; yayın snapshot'ı version'a bağlı | kullanılan asset doğrudan silinemez |
@@ -309,7 +309,7 @@ boş durum yol tarifi. Testler: `MediaUploadRegion.multi.test` (1),
 
 Sahip Home ekranını gönderdi: "maturity level bir UX estetiği istedim,
 yapmadın." Kök neden: 13 paket yapı/davranıştı, estetik yalnız superadmin
-kabuğuna (`docs/99`) uygulandı, sayfaya tarayıcıda hiç bakılmadı. `docs/102`
+kabuğuna (`docs/50`) uygulandı, sayfaya tarayıcıda hiç bakılmadı. `docs/102`
 yazıldı (aynı Metronic dili iki kabukta; yüzey başına L0–L4; kabul). Faz 1:
 main zemini `surface-subtle`, aside `surface`, sekiz bölüme Phosphor ikonu
 (kayıt `icon`), Home tek `h1` + "Şimdi" marka şeritli kart + Setup kartı +
@@ -440,7 +440,7 @@ bağlanır (FF-71).
 ## 8. Kanonik sahiplik
 
 Rota/tablo envanteri burada; DAM planı `docs/49`; shell `docs/50`; envanter
-`docs/61`; AI `docs/95-97`. Yeni planlar: `docs/99` (superadmin estetiği),
+`docs/61`; AI `docs/95-97`. Yeni planlar:
 `docs/100` (frontpages), `docs/101` (acemi-UX).
 
 ## 9. FF-88 — Profil ekranı (kişisel bilgi, fotoğraf, tema, marka rengi)

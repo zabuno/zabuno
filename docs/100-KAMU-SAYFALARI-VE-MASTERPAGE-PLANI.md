@@ -7,7 +7,7 @@
 (`docs/85`).
 **Kanonik komşular:** URL/SEO motoru `docs/38`, ek plan `docs/39`; sayfa
 kimliği `docs/89`; fiyat/iletişim `docs/88`; shell (uygulama içi) `docs/50`;
-üst-yönetici estetiği `docs/99`; program sayacı `docs/98`.
+üst-yönetici kabuğu `docs/50`; program sayacı `docs/98`.
 
 ---
 

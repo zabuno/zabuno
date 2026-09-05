@@ -94,7 +94,7 @@ describe('PlatformApp — standalone platform admin shell (PLATFORM_SHELL_FRONTE
         render(<PlatformApp />);
 
         // Sayfa başlığı bölümün kimliğini taşır; kabuk kimliği breadcrumb'da
-        // (`docs/50` §9.2, `docs/99`).
+        // (`docs/50` §9.2).
         expect(screen.getByRole('heading', { name: /^plans$/i })).toBeInTheDocument();
         expect(screen.getByText(/platform administration/i)).toBeInTheDocument();
         expect(screen.getByRole('link', { name: /engineering/i })).toHaveAttribute(
