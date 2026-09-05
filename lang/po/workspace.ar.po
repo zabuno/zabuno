@@ -640,6 +640,66 @@ msgstr ""
 msgid "workspace.billing.status.notConnected"
 msgstr ""
 
+#: workspace:workspace.brand.appearance
+msgid "workspace.brand.appearance"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.adjusted
+msgid "workspace.brand.appearance.adjusted"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.color
+msgid "workspace.brand.appearance.color"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.color.help
+msgid "workspace.brand.appearance.color.help"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.intro
+msgid "workspace.brand.appearance.intro"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.locked
+msgid "workspace.brand.appearance.locked"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.locked.help
+msgid "workspace.brand.appearance.locked.help"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape
+msgid "workspace.brand.appearance.shape"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape.a
+msgid "workspace.brand.appearance.shape.a"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape.b
+msgid "workspace.brand.appearance.shape.b"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape.c
+msgid "workspace.brand.appearance.shape.c"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape.d
+msgid "workspace.brand.appearance.shape.d"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape.e
+msgid "workspace.brand.appearance.shape.e"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape.f
+msgid "workspace.brand.appearance.shape.f"
+msgstr ""
+
+#: workspace:workspace.brand.appearance.shape.help
+msgid "workspace.brand.appearance.shape.help"
+msgstr ""
+
 #: workspace:workspace.brand.currency
 msgid "workspace.brand.currency"
 msgstr ""

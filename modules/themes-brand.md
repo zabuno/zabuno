@@ -25,6 +25,10 @@ yönetimini sağlamak.
 - **Asset slotları** (sahiplik burada; upload/derivative pipeline `docs/07`
   §6'da genişletilir): logo, cover, profile/avatar (external/social paylaşım
   için), favicon, app icon, Open Graph (OG) share image.
+  **Kodda bugün yalnız `users.avatar_media_asset_id` vardır**; logo yuvası
+  tanımlıdır ama işlemcisi yoktur ve diğer dört yuvanın sütunu da yoktur
+  (`docs/75` §Sınır, `docs/113` §5.4). Bu liste modülün KAPSAMIDIR, durumu
+  değil — durumu kod söyler.
 - **Renk rolleri**: primary, secondary, accent, neutral — her rol bir design
   token'a bağlanır; tema domenleri arası paylaşılan token seti (`ADR-L09`,
   `docs/03`).
@@ -33,6 +37,16 @@ yönetimini sağlamak.
   aşağıdaki ## Accessibility / i18n) + draft → preview → publish → rollback
   döngüsü (## States) her renk/asset değişikliği için zorunludur — doğrudan
   canlıya yazma yoktur.
+  **Kontrast kapısı FF-174 ile kuruldu ve kısıtı ÖLÇÜYE çevirdi**
+  (`docs/113` §5.2): kiracı tek tek renk değeri girmez, bir TON verir;
+  ürün `App\Domain\Branding\BrandSkin` ile yüzey/metin/kenar rampasını
+  türetir, her metin/zemin çiftini açık ve koyu temada ayrı ölçer ve eşiği
+  geçene kadar açıklığı ayarlar — ton ve doygunluk korunur. Hesaplanan rampa
+  ve ölçülen oranlar YAYIN anlık görüntüsüne donar (`MenuIdentity::toSnapshot`),
+  yani sonradan değişen bir marka rengi geçmiş bir yayını boyamaz. Kiracının
+  seçebildiği ikinci eksen BİÇİMDİR ve orada değer değil SEÇENEK seçilir
+  (`SkinVariant`, `resources/css/aep/tokens/variants.css` `data-variant`).
+  Draft → preview → rollback döngüsünün tema tarafı hâlâ yoktur.
 
 ## Bounded context
 Tema token yönetimi. Sayfa içeriği Content/Frontpages'in, sayfa iskeleti Page
@@ -55,10 +69,18 @@ Marka tokenları tenant-scoped; platform tema (storefront/superadmin) platform
 geneli.
 
 ## Permissions
-`theme.manage`.
+`WorkspaceManage` (düzenleme) ve `MenuPublish` (yayına alma).
+
+Bu satırda bir zamanlar `theme.manage` yazıyordu ve kodda karşılığı hiç
+olmadı. Ayrı bir izin icat etmek aynı işi iki kapıdan geçirmek olurdu:
+marka rengi bugün de `WorkspaceManage` ile düzenleniyor
+(`UpdateBrandController.php`) ve `Permission` enum'una eklenen her değer beş
+rolün beşinde de açıkça karara bağlanmayı gerektirir. Skin'in **yayına**
+girmesi ise `MenuPublish`'e bağlıdır, çünkü skin misafirin gördüğü şeyi
+değiştirir (`docs/113` §9).
 
 ## Entitlement / quota
-Custom Branding (OPT-08) plana bağlı.
+Custom Branding (OPT-08) plana bağlı; anahtar `branding.custom` (FF-174).
 
 ## ECA hooks
 Yok.
@@ -83,6 +105,8 @@ Yok.
 
 ## Accessibility / i18n
 Renk kontrastı WCAG 2.2 AA otomatik kontrolü (yayınlama öncesi kalite kapısı).
+Metin çiftleri 4.5:1 (WCAG 1.4.3), metin olmayan çizgi/kenar 3:1 (1.4.11) —
+eşikler rolün kendisinde sahiplenilir (`BrandRampRole::floor()`).
 
 ## Phase delivery
 Stage 1 MVP — temel marka görünümü; Stage 5'te Custom Branding (OPT-08) tam

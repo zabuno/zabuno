@@ -29,13 +29,39 @@ enum Entitlement: string
     /** Yayınlanmış menünün ziyaret/analitik raporu. */
     case AnalyticsReporting = 'analytics.reporting';
 
+    /**
+     * Restoranın kendi marka tonunu ve biçimini misafir menüsüne taşıması
+     * (`docs/113` §10.1, `modules/opt-08-custom-branding.md`).
+     *
+     * Kapsam kuralına uyar: skin SEÇMEMEK bir kusur değildir. Seçmeyen
+     * restoran bugünkü nötr görünümü alır ve menüsünü yayınlamaya, karekod
+     * basmaya devam eder — bu gerçekten EK bir yetkidir.
+     */
+    case BrandingCustom = 'branding.custom';
+
     public function label(): string
     {
         return match ($this) {
             self::QrBulkGeneration => 'Toplu QR üretimi',
             self::TeamInvitations => 'Ekip daveti',
             self::AnalyticsReporting => 'Analitik raporlama',
+            self::BrandingCustom => 'Marka görünümü',
         };
+    }
+
+    /**
+     * Doğrulama kurallarının okuduğu anahtar listesi.
+     *
+     * Serbest metin kabul eden bir doğrulama, enum'un "bilinmeyen asla
+     * yetki vermez" kuralıyla birleşince sinsi bir sessizlik üretir: plan
+     * kaydedilir, ekranda yetenek yazar, restoran onu hiç almaz
+     * (`docs/113` §10.2).
+     *
+     * @return list<string>
+     */
+    public static function keys(): array
+    {
+        return array_map(static fn (self $case): string => $case->value, self::cases());
     }
 
     /** Tanınmayan bir anahtar `null` döner; bilinmeyen asla yetki vermez. */

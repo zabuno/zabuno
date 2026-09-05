@@ -31,6 +31,18 @@ export const guestTranslations = {
     */
     'guest.menu.summary': 'Categories: {categories} · Dishes: {items}',
     'guest.menu.categories.label': 'Categories',
+    /*
+        ALERJEN BÖLÜMÜNÜN BAŞLIĞI (FF-175).
+
+        Ürün sayfasında alerjenler bugüne kadar başlıksız bir çip listesiydi;
+        ekran okuyucu onları bir bağlamı olmayan üç kelime olarak okuyordu.
+
+        CÜMLE BİR TAMLIK İDDİASI TAŞIMAZ ve taşımamalı: "alerjen bilgisi"
+        der, "bunlar dışında alerjen yoktur" DEMEZ. Yanlış bir alerjensizlik
+        iddiası bir sağlık olayıdır ve `ArtifactSchemaValidator` bu yüzden
+        `allergen_free` gibi alan adlarını ada göre reddediyor.
+    */
+    'guest.menu.allergens.label': 'Allergen information',
     'guest.menu.empty': 'This menu has no categories yet.',
     'guest.menu.category.empty': 'This category has no dishes yet.',
 

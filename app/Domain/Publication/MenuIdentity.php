@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Publication;
 
+use App\Domain\Branding\BrandSkin;
+use App\Domain\Branding\SkinVariant;
+
 /**
  * Bir yayının taşıdığı RESTORAN KİMLİĞİ (`docs/75`, P0-03).
  *
@@ -30,6 +33,16 @@ final class MenuIdentity
         */
         public readonly ?string $primaryColor = null,
         public readonly ?string $secondaryColor = null,
+        /*
+            MARKA SKIN'İ: türetilmiş rampa ve ÖLÇÜLMÜŞ kontrast oranları
+            (FF-174, `docs/113` §5.2).
+
+            Renk sütunu kiracının GİRDİSİDİR; bu alan ürünün ondan türettiği
+            ve okunabilirliğini kanıtladığı hâldir. İkisi ayrı durur çünkü
+            girdi değişebilir, kanıt donmalıdır: Ocak'ta AA geçen bir yayın,
+            Mart'ta eşik değişse bile kendi kanıtını taşımaya devam eder.
+        */
+        public readonly ?BrandSkin $skin = null,
     ) {}
 
     /** `#RRGGBB` → `#rrggbb`; tanınmayan her şey `null`. */
@@ -54,6 +67,7 @@ final class MenuIdentity
         ?string $phone,
         ?string $primaryColor = null,
         ?string $secondaryColor = null,
+        ?string $skinVariant = null,
     ): self {
         $street = array_values(array_filter([
             trim((string) $addressLine1),
@@ -67,14 +81,30 @@ final class MenuIdentity
         }
 
         $phone = trim((string) $phone);
+        $primary = self::normaliseColor($primaryColor);
 
         return new self(
             brandName: trim($brandName),
             locationName: trim($locationName),
             addressLine: $street === [] ? null : implode(', ', $street),
             phone: $phone === '' ? null : $phone,
-            primaryColor: self::normaliseColor($primaryColor),
+            primaryColor: $primary,
             secondaryColor: self::normaliseColor($secondaryColor),
+            /*
+                RAMPA YAYIN ANINDA TÜRETİLİR, İSTEKTE DEĞİL.
+
+                Kontrast ölçümü her misafir isteğinde tekrarlansaydı iki şey
+                birden bozulurdu: her sayfa açılışında hesap yapılırdı ve
+                daha kötüsü, kural değiştiği gün geçmiş yayınlar da sessizce
+                yeniden boyanırdı. Ölçüm burada bir kez yapılır ve kanıtıyla
+                birlikte donar (`docs/113` §5.2 madde 3).
+
+                Ton yoksa skin de yoktur: seçmeyen restoran, seçmiş gibi
+                gösterilmez.
+            */
+            skin: $primary === null
+                ? null
+                : BrandSkin::derive($primary, SkinVariant::tryFromKey($skinVariant) ?? SkinVariant::default()),
         );
     }
 
@@ -97,10 +127,10 @@ final class MenuIdentity
         return 'tel:'.(str_starts_with(trim($this->phone), '+') ? '+' : '').$digits;
     }
 
-    /** @return array{brandName:string,locationName:string,addressLine:string|null,phone:string|null,primaryColor:string|null,secondaryColor:string|null} */
+    /** @return array<string, mixed> */
     public function toSnapshot(): array
     {
-        return [
+        $snapshot = [
             'brandName' => $this->brandName,
             'locationName' => $this->locationName,
             'addressLine' => $this->addressLine,
@@ -108,6 +138,14 @@ final class MenuIdentity
             'primaryColor' => $this->primaryColor,
             'secondaryColor' => $this->secondaryColor,
         ];
+
+        // Anahtar yalnız skin VARSA yazılır: `'skin' => null` yazmak, eski
+        // yayınlarla yeni yayınları ayırt edilemez kılardı.
+        if ($this->skin !== null) {
+            $snapshot['skin'] = $this->skin->toSnapshot();
+        }
+
+        return $snapshot;
     }
 
     /** @param  array<string,mixed>  $identity */
@@ -128,6 +166,17 @@ final class MenuIdentity
             ),
             secondaryColor: self::normaliseColor(
                 is_string($identity['secondaryColor'] ?? null) ? $identity['secondaryColor'] : null
+            ),
+            /*
+                Skin OKUNUR, YENİDEN TÜRETİLMEZ (FF-174).
+
+                Yayınlanmış menü, sahibin onayladığı hâldir. Burada yeniden
+                hesaplasaydık, türetme kuralının bir sonraki düzeltmesi
+                geçmiş her yayının rengini de değiştirirdi — misafir bir gün,
+                sahibin hiç görmediği bir menüyü görürdü.
+            */
+            skin: BrandSkin::fromSnapshot(
+                is_array($identity['skin'] ?? null) ? $identity['skin'] : []
             ),
         );
     }

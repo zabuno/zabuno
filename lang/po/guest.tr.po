@@ -68,6 +68,10 @@ msgstr "Ürün adları restoranın kendi dilindedir."
 msgid "guest.language.label"
 msgstr "Dil"
 
+#: guest:guest.menu.allergens.label
+msgid "guest.menu.allergens.label"
+msgstr "Alerjen bilgisi"
+
 #: guest:guest.menu.categories.label
 msgid "guest.menu.categories.label"
 msgstr "Kategoriler"

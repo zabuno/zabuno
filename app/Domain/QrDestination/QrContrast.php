@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\QrDestination;
 
+use App\Domain\Branding\SrgbColor;
+
 /**
  * Karekodun TARANABİLİRLİK kısıtı — `docs/104` Döngü 10.
  *
@@ -56,33 +58,21 @@ final class QrContrast
         return self::ratio($foregroundRgb, $backgroundRgb) >= self::MIN_RATIO;
     }
 
-    /** WCAG 2.x bağıl parlaklık. */
+    /**
+     * WCAG 2.x bağıl parlaklık — hesabın kendisi `SrgbColor`'dadır.
+     *
+     * Formül bir zamanlar burada da yazılıydı ve FF-174 marka rampası aynı
+     * formülü ikinci kez yazmak üzereydi. Bu dosyanın kendi başlığı ne
+     * yapılacağını söylüyordu: *"karar noktası tek olmalı."* Karekodun
+     * TARANABİLİRLİK kuralı burada kalır; RENK MATEMATİĞİ tek yerde durur.
+     */
     private static function relativeLuminance(string $rgb): float
     {
-        $hex = ltrim($rgb, '#');
-
-        if (strlen($hex) !== 6 || preg_match('/^[0-9a-fA-F]{6}$/', $hex) !== 1) {
-            /*
-                Okunamayan bir renk SİYAH sayılır: bilinmeyen bir değeri
-                "muhtemelen açıktır" diye kabul etmek, taranamayan bir kod
-                basmanın yoludur. Şüphe hâlinde güvenli taraf koyuluktur.
-            */
-            return 0.0;
-        }
-
-        $channels = [
-            hexdec(substr($hex, 0, 2)) / 255,
-            hexdec(substr($hex, 2, 2)) / 255,
-            hexdec(substr($hex, 4, 2)) / 255,
-        ];
-
-        $linear = array_map(
-            static fn (float $channel): float => $channel <= 0.03928
-                ? $channel / 12.92
-                : (($channel + 0.055) / 1.055) ** 2.4,
-            $channels,
-        );
-
-        return 0.2126 * $linear[0] + 0.7152 * $linear[1] + 0.0722 * $linear[2];
+        /*
+            Okunamayan bir renk SİYAH sayılır: bilinmeyen bir değeri
+            "muhtemelen açıktır" diye kabul etmek, taranamayan bir kod
+            basmanın yoludur. Şüphe hâlinde güvenli taraf koyuluktur.
+        */
+        return SrgbColor::tryFromHex('#'.ltrim($rgb, '#'))?->relativeLuminance() ?? 0.0;
     }
 }

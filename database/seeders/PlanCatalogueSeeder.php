@@ -79,7 +79,12 @@ final class PlanCatalogueSeeder extends Seeder
 
             /*
                 Kırk masalık bir restoranın ilk gün ihtiyacı: kodları TEK TEK
-                değil toplu üretmek, ve menüsünde neyin işe yaradığını görmek.
+                değil toplu üretmek, menüsünde neyin işe yaradığını görmek ve
+                masadaki menünün kendi markası gibi görünmesi.
+
+                Marka görünümü burada açılır çünkü ayırt edici olan tam da
+                budur: ücretsiz kademe menüyü yayınlar ve karekod basar, ama
+                misafirin gördüğü sayfa nötrdür (`docs/113` §10.1).
             */
             'restaurant' => [
                 'name' => 'Restaurant',
@@ -87,6 +92,7 @@ final class PlanCatalogueSeeder extends Seeder
                 'entitlements' => [
                     Entitlement::QrBulkGeneration->value,
                     Entitlement::AnalyticsReporting->value,
+                    Entitlement::BrandingCustom->value,
                 ],
             ],
 
@@ -100,6 +106,7 @@ final class PlanCatalogueSeeder extends Seeder
                 'entitlements' => [
                     Entitlement::QrBulkGeneration->value,
                     Entitlement::AnalyticsReporting->value,
+                    Entitlement::BrandingCustom->value,
                     Entitlement::TeamInvitations->value,
                 ],
             ],

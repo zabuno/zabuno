@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Tenancy;
 
+use App\Domain\Branding\SkinVariant;
 use App\Domain\Tenancy\ValueObject\CurrencyCode;
 use App\Domain\Tenancy\ValueObject\LocaleCode;
 use App\Domain\Tenancy\ValueObject\TimezoneIdentifier;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 
 final class UpdateBrandRequest extends FormRequest
@@ -39,7 +41,33 @@ final class UpdateBrandRequest extends FormRequest
             */
             'primary_color' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'secondary_color' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            /*
+                BİÇİM EKSENİ: kiracı bir DEĞER değil, bir SEÇENEK seçer
+                (FF-174, `docs/113` §5.3). Liste token katmanından gelir
+                (`resources/css/aep/tokens/variants.css`) ve
+                `SkinVariantMatchesTokenLayerTest` iki tarafın ayrılmasını
+                engeller. Serbest bırakılsaydı kiracı, tarayıcıda hiçbir şey
+                yapmayan bir varyant seçerdi.
+            */
+            'skin_variant' => ['sometimes', 'nullable', 'string', Rule::enum(SkinVariant::class)],
         ];
+    }
+
+    /**
+     * İstek marka GÖRÜNÜMÜNE dokunuyor mu?
+     *
+     * Yalnız adını düzelten bir istek plan kapısına takılmamalıdır: kapı
+     * ek yeteneği korur, temel yolculuğu değil (`Entitlement` kapsam kuralı).
+     */
+    public function touchesBranding(): bool
+    {
+        foreach (['primary_color', 'secondary_color', 'skin_variant'] as $key) {
+            if ($this->has($key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function localeRule(): Closure|ValidationRule

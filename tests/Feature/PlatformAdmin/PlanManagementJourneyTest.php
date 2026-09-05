@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\PlatformAdmin;
 
+use App\Domain\Entitlement\Entitlement;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +37,8 @@ use Tests\TestCase;
  *   currency, sort_order, is_active. No timestamps/provider IDs/secrets/
  *   workspace_id.
  * - POST accepts only name, code, version (>0 int), entitlements (list of
- *   non-empty strings), amount_minor/currency paired (amount non-negative
+ *   keys the Entitlement enum actually knows — FF-174 tightened this from
+ *   "non-empty strings"; see docs/113 §10.2), amount_minor/currency paired (amount non-negative
  *   int; currency exactly uppercase 3 letters), sort_order (non-negative
  *   int). Creates a real plan as inactive only, returns exact item with
  *   201. Duplicate code+version and invalid payloads are 422 and do not
@@ -165,7 +167,7 @@ final class PlanManagementJourneyTest extends TestCase
             'name' => 'Growth',
             'code' => 'growth-'.bin2hex(random_bytes(4)),
             'version' => 1,
-            'entitlements' => ['feature.a', 'feature.b'],
+            'entitlements' => [Entitlement::QrBulkGeneration->value, Entitlement::BrandingCustom->value],
             'amount_minor' => 4990,
             'currency' => 'TRY',
             'sort_order' => 3,
@@ -273,7 +275,10 @@ final class PlanManagementJourneyTest extends TestCase
         self::assertSame('Growth', $body['name']);
         self::assertSame($payload['code'], $body['code']);
         self::assertSame(1, $body['version']);
-        self::assertSame(['feature.a', 'feature.b'], $body['entitlements']);
+        self::assertSame(
+            [Entitlement::QrBulkGeneration->value, Entitlement::BrandingCustom->value],
+            $body['entitlements']
+        );
         self::assertSame(4990, $body['amount_minor']);
         self::assertSame('TRY', $body['currency']);
         self::assertSame(5, $body['sort_order']);
@@ -350,7 +355,12 @@ final class PlanManagementJourneyTest extends TestCase
         $invalidPayloads = [
             'missing_name' => $this->validCreatePayload(['name' => '']),
             'zero_version' => $this->validCreatePayload(['version' => 0]),
-            'empty_entitlement' => $this->validCreatePayload(['entitlements' => ['feature.a', '']]),
+            'empty_entitlement' => $this->validCreatePayload(['entitlements' => [Entitlement::QrBulkGeneration->value, '']]),
+            /*
+                Tanınmayan anahtar da geçersizdir (`docs/113` §10.2): enum onu
+                zaten yok sayıyordu, ama superadmin yazım hatasını göremiyordu.
+            */
+            'unknown_entitlement' => $this->validCreatePayload(['entitlements' => ['brandng.custom']]),
             'empty_entitlements_list' => $this->validCreatePayload(['entitlements' => []]),
             'negative_amount' => $this->validCreatePayload(['amount_minor' => -1, 'currency' => 'TRY']),
             'lowercase_currency' => $this->validCreatePayload(['amount_minor' => 100, 'currency' => 'try']),

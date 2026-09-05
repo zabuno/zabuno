@@ -38,6 +38,7 @@ final class EloquentMenuIdentity implements MenuIdentityPort
                 'brands.contact_phone as contact_phone',
                 'brands.primary_color as primary_color',
                 'brands.secondary_color as secondary_color',
+                'brands.skin_variant as skin_variant',
                 'locations.display_name as display_name',
                 'locations.address_line1 as address_line1',
                 'locations.address_line2 as address_line2',
@@ -60,6 +61,7 @@ final class EloquentMenuIdentity implements MenuIdentityPort
             phone: $row->contact_phone === null ? null : (string) $row->contact_phone,
             primaryColor: $row->primary_color === null ? null : (string) $row->primary_color,
             secondaryColor: $row->secondary_color === null ? null : (string) $row->secondary_color,
+            skinVariant: $row->skin_variant === null ? null : (string) $row->skin_variant,
         );
     }
 }
