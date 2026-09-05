@@ -205,9 +205,7 @@ export function OrderQueueRegion({
                                     setReasons((current) => ({ ...current, [order.id]: value }))
                                 }
                                 onConfirm={() => void act(order.id, 'confirmed')}
-                                onStartRejection={() =>
-                                    setStage(order.id, { kind: 'rejecting' })
-                                }
+                                onStartRejection={() => setStage(order.id, { kind: 'rejecting' })}
                                 onCancelRejection={() => setStage(order.id, { kind: 'idle' })}
                                 onSubmitRejection={() => submitRejection(order.id)}
                             />
@@ -249,11 +247,7 @@ export function FeedStatusLine({
                     {t('workspace.orders.stale')}
                 </p>
             ) : null}
-            <button
-                type="button"
-                className="text-meta underline"
-                onClick={() => feed.refresh()}
-            >
+            <button type="button" className="text-meta underline" onClick={() => feed.refresh()}>
                 {t('workspace.orders.refresh')}
             </button>
         </div>
@@ -408,7 +402,9 @@ function QueueRow({
                         className="flex min-h-[44px] items-center gap-2 rounded-[var(--radius-md)] border border-border bg-surface-accent px-[var(--space-4)] text-body font-medium text-fg"
                     >
                         <Check size={20} weight="bold" aria-hidden="true" />
-                        {busy ? t('workspace.orders.confirm.pending') : t('workspace.orders.confirm')}
+                        {busy
+                            ? t('workspace.orders.confirm.pending')
+                            : t('workspace.orders.confirm')}
                     </button>
                     <button
                         type="button"

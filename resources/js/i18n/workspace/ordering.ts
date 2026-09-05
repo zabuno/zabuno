@@ -98,7 +98,8 @@ export const ordering = {
         'While it is off, guests read the menu but cannot send an order. Somebody has to watch the queue while it is on.',
     'workspace.orders.settings.switch.saving': 'Saving…',
     'workspace.orders.settings.switch.error': 'The switch could not be changed. Try again.',
-    'workspace.orders.settings.switch.readOnly': 'Only the workspace owner can switch ordering on or off.',
+    'workspace.orders.settings.switch.readOnly':
+        'Only the workspace owner can switch ordering on or off.',
     'workspace.orders.settings.loading': 'Loading ordering settings…',
     'workspace.orders.settings.error.title': 'Ordering settings could not be loaded',
     'workspace.orders.settings.error.description': 'Nothing was changed. Try again.',

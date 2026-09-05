@@ -71,7 +71,11 @@ describe('OrderQueueRegion', () => {
                     return Promise.resolve(feed([order()]));
                 }
 
-                return Promise.resolve({ ok: true, status: 204, json: async () => ({}) } as unknown as Response);
+                return Promise.resolve({
+                    ok: true,
+                    status: 204,
+                    json: async () => ({}),
+                } as unknown as Response);
             }),
         );
     });
