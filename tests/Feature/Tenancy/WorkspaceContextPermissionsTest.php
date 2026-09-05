@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Tenancy;
 
+use App\Domain\Authorization\Permission;
+use App\Domain\Authorization\RolePermissions;
+use App\Domain\Tenancy\MembershipRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -58,9 +61,14 @@ final class WorkspaceContextPermissionsTest extends TestCase
             ->assertOk()->json();
 
         self::assertSame('owner', $body['role']);
-        self::assertCount(15, $body['permissions']);
+        // 15 → 17: Mutfak rolüyle birlikte `menu.manage`'in içinden iki dar
+        // eksen çıkarıldı (`docs/109` §6.4). Sahibin listesi daralmadı,
+        // yalnız aynı yetkiyi daha ince anlatır oldu.
+        self::assertCount(17, $body['permissions']);
         self::assertContains('billing.manage', $body['permissions']);
         self::assertContains('media.manage', $body['permissions']);
+        self::assertContains('menu.allergens.manage', $body['permissions']);
+        self::assertContains('menu.stock.manage', $body['permissions']);
         self::assertTrue($body['features']['novice-home'], 'Bayrak varsayılan açık.');
 
         $again = $this->api($owner)->getJson('/api/workspace-context')->assertOk()->json();
@@ -83,6 +91,42 @@ final class WorkspaceContextPermissionsTest extends TestCase
         self::assertNotContains('workspace.manage', $body['permissions']);
         self::assertNotContains('billing.view', $body['permissions']);
         self::assertNotContains('menu.publish', $body['permissions']);
+    }
+
+    /**
+     * Mutfak rolü, izinleri doğruyken bile ADSIZ kalabiliyordu.
+     *
+     * Kullanıcı yolculuğu: aşçı Kemal kabuğu açar → yapabildikleri doğru
+     * (alerjen ve "bugün bitti" var, fiyat yok) ama kabuk ona kim olduğunu
+     * söyleyemez; rol rozeti boş kalır. İzin listesi kararı verir, rol adı
+     * ise kullanıcının kendini tanıdığı yerdir — biri doğruyken diğerinin
+     * boş olması, ekranı "yetkisiz" gibi gösterir.
+     */
+    #[Test]
+    public function the_kitchen_role_is_named_in_the_context_body(): void
+    {
+        $owner = User::factory()->create(['email_verified_at' => now()]);
+        $workspaceId = $this->workspace($owner);
+        $cook = User::factory()->create(['email_verified_at' => now()]);
+        $this->member($workspaceId, $cook, 'kitchen');
+
+        $this->api($cook)->putJson('/api/workspace-context', ['workspace_id' => $workspaceId])->assertOk();
+        $body = $this->api($cook)->getJson('/api/workspace-context')->assertOk()->json();
+
+        self::assertSame('kitchen', $body['role']);
+
+        // Beklenen liste burada TEKRAR YAZILMAZ: tek doğru kaynak
+        // `RolePermissions`. Elle kopyalanmış bir liste, rolün sınırı orada
+        // değişince sessizce yalan söylerdi.
+        $expected = array_map(
+            static fn (Permission $permission): string => $permission->value,
+            RolePermissions::for(MembershipRole::Kitchen),
+        );
+        sort($expected);
+        $given = $body['permissions'];
+        sort($given);
+
+        self::assertSame($expected, $given);
     }
 
     #[Test]

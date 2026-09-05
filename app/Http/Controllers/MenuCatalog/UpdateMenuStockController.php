@@ -30,7 +30,10 @@ final class UpdateMenuStockController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        if (! $this->authorization->can($userId, Permission::MenuManage, $workspace)) {
+        // Tekil yolla AYNI dar izin (`docs/109` §6.4): akşam servisinde biten
+        // şey tek ürün değildir ve aşçıyı altı ayrı isteğe zorlamak, o dakikayı
+        // telefonun başında geçirtmek olurdu.
+        if (! $this->authorization->can($userId, Permission::MenuStockManage, $workspace)) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 

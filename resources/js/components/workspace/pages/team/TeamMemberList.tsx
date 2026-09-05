@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ConfirmDialog } from '../../../catalog/overlays/compound/ConfirmDialog';
 
 export type TeamMember = {
@@ -96,6 +96,13 @@ export function TeamMemberList({
     roleLabelFor,
     roleErrorText,
 }: TeamMemberListProps) {
+    /*
+        BAŞLIK GÖRÜNÜR VE BÖLGENİN ADIDIR (`docs/109` §6.4, kaynağın
+        "Üyeler" kart başlığı). Önce bölgenin adı yalnız görünmez bir
+        `aria-label`'daydı: gözle bakan biri kartın neyin kartı olduğunu
+        ancak içindeki satırlardan çıkarabiliyordu.
+    */
+    const headingId = useId();
     const [rowStages, setRowStages] = useState<Record<number, RowStage>>({});
     const [roleBusyId, setRoleBusyId] = useState<number | null>(null);
     const [roleErrorId, setRoleErrorId] = useState<number | null>(null);
@@ -219,7 +226,10 @@ export function TeamMemberList({
 
     if (status === 'loading') {
         return (
-            <div role="region" aria-label={label} className="flex flex-col gap-3">
+            <div role="region" aria-labelledby={headingId} className="flex flex-col gap-3">
+                <h2 id={headingId} className="text-body font-bold text-fg">
+                    {label}
+                </h2>
                 <p role="status" className="text-body text-fg-muted">
                     {loadingText}
                 </p>
@@ -229,7 +239,10 @@ export function TeamMemberList({
 
     if (status === 'error') {
         return (
-            <div role="region" aria-label={label} className="flex flex-col gap-3">
+            <div role="region" aria-labelledby={headingId} className="flex flex-col gap-3">
+                <h2 id={headingId} className="text-body font-bold text-fg">
+                    {label}
+                </h2>
                 <p role="status" className="text-body font-medium text-fg-danger">
                     {errorText}
                 </p>
@@ -239,7 +252,10 @@ export function TeamMemberList({
 
     if (members.length === 0) {
         return (
-            <div role="region" aria-label={label} className="flex flex-col gap-3">
+            <div role="region" aria-labelledby={headingId} className="flex flex-col gap-3">
+                <h2 id={headingId} className="text-body font-bold text-fg">
+                    {label}
+                </h2>
                 {announcement && (
                     <p role="status" className="text-body font-medium text-fg-success">
                         {announcement}
@@ -253,7 +269,10 @@ export function TeamMemberList({
     }
 
     return (
-        <div role="region" aria-label={label} className="flex flex-col gap-3">
+        <div role="region" aria-labelledby={headingId} className="flex flex-col gap-3">
+            <h2 id={headingId} className="text-body font-bold text-fg">
+                {label}
+            </h2>
             {announcement && (
                 <p role="status" className="text-body font-medium text-fg-success">
                     {announcement}

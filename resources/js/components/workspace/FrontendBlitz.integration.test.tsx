@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -238,8 +238,29 @@ describe('MenuCatalogWorkspace — visible category/item ordering (FrontendBlitz
         const kahveOrderField = screen.getByLabelText(/order.*Kahve|Kahve.*order/i);
         expect(kahveOrderField).toHaveTextContent('1');
 
+        /*
+            İKİNCİ KATEGORİNİN SIRA ROZETİNE ULAŞMAK İÇİN ÖNCE ONA GEÇİLİR.
+
+            Menü ekranı 2026-09-05'te kanonik kaynağa göre yenilendi
+            (`docs/reference/panel-v3/panel.dc.html` satır 30255-30282):
+            kategoriler artık alt alta kartlar değil, solda sabit bir RAY;
+            sağda yalnız seçili kategorinin ürünleri durur. Dolayısıyla iki
+            kategorinin sıra rozeti aynı anda ekranda olamaz.
+
+            Bu testin KORUDUĞU DEĞER aynen duruyor ve bu satırlarda hâlâ
+            ölçülüyor: sunucudan gelen 0 tabanlı `position`, ekranda insanın
+            saydığı gibi 1 tabanlı gösterilir. Değişen tek şey, ikinci
+            kategorinin rozetine bakmadan önce o kategoriye geçmek —
+            sahibin gerçekte yaptığı da budur.
+        */
+        const rail = screen.getByRole('navigation', { name: 'Menu categories' });
+        fireEvent.click(within(rail).getByRole('button', { name: /Tatlı/ }));
+
         const tatliOrderField = screen.getByLabelText(/order.*Tatlı|Tatlı.*order/i);
         expect(tatliOrderField).toHaveTextContent('2');
+
+        // Ürün rozetleri "Kahve" kategorisinde; oraya geri dönülür.
+        fireEvent.click(within(rail).getByRole('button', { name: /Kahve/ }));
 
         const espressoOrderField = screen.getByLabelText(/order.*Espresso|Espresso.*order/i);
         expect(espressoOrderField).toHaveTextContent('1');

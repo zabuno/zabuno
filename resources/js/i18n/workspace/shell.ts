@@ -38,31 +38,38 @@ export const shell = {
         diye iki kez okunur ve kullanıcı hangisinde olduğunu bilemez.
     */
     'workspace.shell.nav.account': 'Account',
-    'workspace.settings.operational.description':
-        'Your brand details and your plan. These are set up once and rarely change.',
+    /*
+        Kanonik kaynağın kendi cümlesi (`panel.dc.html` > "Ayarlar"):
+        "Nadiren açılan işler: marka, çalışma alanı, plan, denetim."
+        Eski cümle yalnız markadan ve plandan söz ediyor, dört sekmeli bir
+        ekranı iki sekmeymiş gibi tanıtıyordu.
+    */
+    'workspace.settings.operational.description': 'Rarely opened: brand, workspace, plan, audit.',
     'workspace.settings.tabs.label': 'Settings sections',
     'workspace.settings.tab.brand': 'Brand',
-    // HESAP BAKIMI (`docs/83`, P1-07). Kullanıcı kendi hesabını kendi onarır;
-    // yanlış yazılmış bir ad için destek talebi açmak zorunda kalmak, ürünün
-    // "kendi kendine yeter" iddiasını her gün çürütür.
-    'workspace.settings.tab.account': 'Account',
-    'workspace.settings.account.region': 'Your account',
-    'workspace.settings.account.name.label': 'Your name',
-    'workspace.settings.account.name.submit': 'Save name',
-    'workspace.settings.account.name.saved': 'Your name was saved.',
-    'workspace.settings.account.name.error': 'Your name could not be saved.',
-    'workspace.settings.account.password.title': 'Change password',
-    // Diğer oturumların kapanacağı ÖNCEDEN söylenir: sürpriz bir çıkış,
-    // kullanıcıya ürünün bozulduğunu düşündürür.
-    'workspace.settings.account.password.help':
-        'Changing your password signs you out everywhere else. This device stays signed in.',
-    'workspace.settings.account.password.current': 'Current password',
-    'workspace.settings.account.password.next': 'New password',
-    'workspace.settings.account.password.confirm': 'Repeat new password',
-    'workspace.settings.account.password.submit': 'Change password',
-    'workspace.settings.account.password.saved': 'Your password was changed.',
-    'workspace.settings.account.password.error':
-        'Your password could not be changed. Check your current password and try again.',
+    /*
+        ÇALIŞMA ALANI (docs/109). Bu sekmenin adı "Hesap"tı ve içinde KİŞİSEL
+        ad/şifre formu duruyordu — aynı form Profil ekranında da vardı. Kaynak
+        sınırı net çiziyor: Ayarlar çalışma alanına, Profil kişiye aittir.
+        Kişisel anahtarlar `workspace.profile.account.*` altına taşındı.
+    */
+    'workspace.settings.tab.workspace': 'Workspace',
+    'workspace.settings.workspace.region': 'Workspace',
+    'workspace.settings.workspace.name': 'Name',
+    'workspace.settings.workspace.address': 'Panel address',
+    'workspace.settings.workspace.address.help':
+        'This cannot be changed — your team’s links depend on it.',
+    'workspace.settings.workspace.loading': 'Loading your workspace…',
+    'workspace.settings.workspace.error': 'Your workspace details could not be loaded.',
+    /*
+        LOGO SATIRI (docs/109) — Marka sekmesinin EN ÜSTÜ. Kaynağın cümlesi:
+        "Medya kütüphanesinden seçilir; misafir menüsünün başında görünür."
+        Bölümün eski yardım metni (`workspace.brand.logo.help`) yükleme
+        talimatı veriyordu; sıra artık tersine: önce bugün ne olduğu görünür.
+    */
+    'workspace.settings.logo.help':
+        'Chosen from your media library; shown at the top of your guest menu.',
+    'workspace.settings.logo.change': 'Change',
     'workspace.settings.tab.billing': 'Plan & billing',
     /*
         DENETİM (FF-132) — bir ekran değil, bir SORUYA cevap: "menü bir gece

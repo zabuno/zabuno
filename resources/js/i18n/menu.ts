@@ -11,6 +11,13 @@ const en = {
     'menu.create.submit': 'Create menu',
     'menu.create.error.submit': 'We could not create the menu. Please try again.',
     'menu.categories.list.label': 'Menu categories',
+    /*
+        Ekranın sağ yarısı: RAYDA seçili olan kategorinin paneli. Rayla
+        aynı adı taşıyamaz — biri "bütün kategoriler", öteki "şu an
+        baktığın kategori"dir ve ekran okuyucu kullanan biri ikisi arasında
+        gidip gelerek çalışır.
+    */
+    'menu.category.panel.label': 'Selected category',
     'menu.category.select.label': 'Category',
     'menu.category.name.label': 'Category name',
     'menu.category.create.submit': 'Add category',
@@ -18,6 +25,14 @@ const en = {
     'menu.category.create.error.submit': 'We could not add the category. Please try again.',
     'menu.category.items.label': 'Items in {name}',
     'menu.category.add.disclose': 'Add category',
+    /*
+        RAYIN SONUNDAKİ EKLEME DÜĞMESİ — kaynakta metni yalnız "Kategori"
+        (`panel.dc.html` satır 30260). Formun GÖNDER düğmesi hâlâ "Add
+        category" der; ikisi aynı metni taşısaydı, ekranda aynı anda iki
+        "Add category" düğmesi olur ve ekran okuyucu kullanan biri hangisinin
+        formu açtığını, hangisinin kaydettiğini ayırt edemezdi.
+    */
+    'menu.category.add.short': 'Category',
     'menu.category.add.cancel': 'Cancel',
     'menu.product.name.label': 'Product name',
     'menu.product.create.submit': 'Add product',
@@ -81,6 +96,59 @@ const en = {
     'menu.publishReminder.text': 'Saved. Guests still see the last published menu.',
     'menu.publishReminder.action': 'Publish now',
     'menu.publishReminder.dismiss': 'Later',
+    /*
+        EKRANIN EYLEM ŞERİDİ — kanonik kaynak `panel.dc.html` satır
+        30204-30209. Dört eylem başlığın yanında tek sırada durur;
+        öncesinde ilk ikisi kapalı bir `<details>` içindeydi ve sahip
+        oradaki yolu hiç görmeden altmış ürünü elle yazıyordu.
+    */
+    'menu.actions.label': 'Menu actions',
+    'menu.actions.csv': 'CSV',
+    // Ürünün başka yerde zaten kullandığı sözcüklerle AYNI
+    // (`workspace.menu.previewAndPublish`): aynı iş iki farklı adla
+    // anılırsa sahip iki ayrı iş olduğunu sanır.
+    'menu.actions.previewAndPublish': 'Preview & publish',
+    /*
+        MENÜ HAPLARI — kaynağın üç hapı (Ana menü · Kahvaltı 07–11 ·
+        Ramazan kapalı). 2026-09-05'e kadar burada tek bir kimlik çipi
+        vardı çünkü veri modeli şube başına TEK menü tutuyordu. Sahip o
+        gün açıkça soruldu ve "çoklu menü YAPILSIN, saat bazlı geçişli"
+        dedi (`docs/109` §7.1); kilit gevşetildi ve haplar doğdu.
+
+        İpuçlarının hiçbiri uydurma değil: ad `menus.name`, durum
+        `menus.state`, saat aralığı ise şubenin gerçek geçiş anlarından
+        hesaplanır.
+    */
+    'menu.state.draft': 'Draft',
+    'menu.state.published': 'Published',
+    'menu.pills.label': 'Menus at this location',
+    'menu.pills.add': 'New menu',
+    'menu.pills.edit': 'Edit menu',
+    'menu.pill.draft': 'draft',
+    'menu.pill.disabled': 'closed',
+    'menu.pill.allDay': 'all day',
+    // "07:00–11:00 +1" — menü günün birden çok parçasını tutuyor.
+    'menu.pill.moreWindows': '{range} +{count}',
+    'menu.pill.servingNow': 'open now',
+    'menu.pill.switching': 'Opening this menu…',
+    'menu.window.startsAt.label': 'Starts at',
+    'menu.window.endsAt.label': 'Ends at',
+    /*
+        Kural EKRANDA yazılıdır. Sahip "kahvaltı 07:00–11:00" der ve
+        11:00'de ne olacağını bilmek zorundadır; bilmezse akşam menüsünün
+        geri gelip gelmeyeceğini anlamak için misafiri bekler.
+    */
+    'menu.window.help':
+        'At the end time, whichever menu covered that hour before comes back — so every hour of the day always has a menu. Leave both empty to keep this menu out of the rotation. A window may cross midnight (22:00 to 02:00).',
+    'menu.window.error.incomplete': 'Enter both a start and an end time, or leave both empty.',
+    'menu.window.error.submit': 'We could not save the service hours. Please try again.',
+    'menu.window.disable': 'Close this menu',
+    'menu.save.submit': 'Save menu',
+    'menu.save.error.submit': 'We could not save the menu. Please try again.',
+    'menu.delete.submit': 'Delete menu',
+    'menu.delete.confirm': 'This removes the menu and everything in it.',
+    'menu.delete.confirm.yes': 'Yes, delete it',
+    'menu.delete.error.submit': 'We could not delete the menu. Please try again.',
     'menu.tools.summary': 'Bring in a whole menu',
     'menu.tools.help': 'From a photo of your printed menu, or from a CSV file.',
     'menu.empty.guide':
@@ -117,6 +185,16 @@ const en = {
         (`DESIGN_SPEC` §12 — durum asla yalnız renkle/şekille anlatılmaz).
     */
     'menu.item.meta.noPhoto': 'No photo',
+    /*
+        AÇIKLAMA EKSİĞİ SATIRDA DURUR — kaynağın ürün satırındaki `p.meta`
+        alanının karşılığı (`panel.dc.html` satır 30269).
+
+        Neden satırda, ayrıntı çekmecesinde değil: misafirin ürün adının
+        altında okuyacağı cümle eksikse, sahip bunu ancak ürünü teker teker
+        açarak öğrenebilirdi. Altmış ürünlü bir menüde bu altmış tıklama
+        demektir; satırdaki tek kelime aynı işi bir bakışta yapar.
+    */
+    'menu.item.meta.noDescription': 'No description',
     'menu.item.presentation.edit.short': 'Photo & text',
     'menu.item.presentation.edit.button': 'Edit photo and description for {name}',
     'menu.item.presentation.submit': 'Save presentation',

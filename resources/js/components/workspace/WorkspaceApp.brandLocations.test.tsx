@@ -226,23 +226,31 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
         const scope = within(destination as HTMLElement);
         await scope.findByText(locationA.display_name);
 
+        /*
+            ŞEHİR GRUPLAMASI KALKTI — `docs/109` §6.4, kaynak `panel.dc.html`
+            (`data-screen-label="Şubeler"`).
+
+            Şubeler şehir başlıklı kartlarda gruplanıyordu ("İstanbul · TR")
+            ve üç şubeli bir markada bu, her biri tek satırlık üç ayrı kart
+            başlığı üretiyordu. Kaynağın düzeni kart ızgarasıdır: her şube
+            kendi kartı. Şehir kaybolmadı — şubenin adresinde ve düzenleme
+            formunda duruyor.
+
+            Sınanan sözleşme aynı kaldı: sunucunun döndürdüğü HER şube ekranda
+            görünür, adresiyle birlikte, ve sayfa hiçbir yazma isteği atmaz.
+        */
         for (const location of [locationA, locationB]) {
-            expect(scope.getByText(location.display_name)).toBeInTheDocument();
-            expect(scope.getByText(location.address_line1)).toBeInTheDocument();
+            expect(scope.getByRole('heading', { name: location.display_name })).toBeInTheDocument();
         }
 
-        /*
-            ŞEHİR VE ÜLKE ARTIK KARTIN BAŞLIĞINDA, TEK PARÇA (FF-131).
-
-            Öncesi ikisini ayrı ayrı arıyordu ve bu, ekranda ikisinin ayrı
-            metin düğümü olmasını zorunlu kılıyordu — yani bir düzen kararını
-            donduruyordu. Ölçülmek istenen şey ise "şehir ve ülke görünüyor
-            mu": başlık `İstanbul · TR` biçiminde tek bir ad olduğu için
-            aranan şey de o ad.
-        */
-        const cityHeading = `${locationA.city} · ${locationA.country_code}`;
-        expect(scope.getAllByText(cityHeading).length).toBeGreaterThanOrEqual(1);
-        expect(destination?.querySelectorAll('[data-testid="brand-location-row"]')).toHaveLength(2);
+        const cards = scope.getAllByTestId('brand-location-row');
+        expect(cards).toHaveLength(2);
+        cards.forEach((card, index) => {
+            const location = [locationA, locationB][index];
+            expect(within(card).getByTestId('location-card-address')).toHaveTextContent(
+                location.address_line1,
+            );
+        });
 
         const writeCalls = fetchMock.mock.calls.filter(([, init]) => {
             const method = ((init as RequestInit | undefined)?.method ?? 'GET').toUpperCase();
@@ -276,8 +284,9 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
             }),
         );
 
+        await waitFor(() => expect(document.querySelector('#section-settings')).not.toBeNull());
+
         const destination = document.querySelector('#section-settings') as HTMLElement;
-        expect(destination).not.toBeNull();
 
         return within(destination);
     }

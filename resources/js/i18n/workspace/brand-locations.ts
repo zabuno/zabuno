@@ -49,8 +49,35 @@ export const brandLocations = {
     'workspace.locations.empty': 'No locations yet',
     'workspace.locations.empty.description':
         'A location holds the address, opening hours and time zone that your menu is served under.',
+    // Kaynağın kendi cümlesi (`panel.dc.html`, "Şubeler"): ekranın ne
+    // olduğunu değil, sahibin bilmesi gerekeni söyler — masalar ve karekodlar
+    // şubeye aittir, menü ortaktır.
     'workspace.locations.operational.description':
-        'Add and edit the physical locations that serve your menu — grouped by city, with an onboarding flow for new ones.',
+        'Every location has its own tables and QR codes; the menu is shared.',
+    'workspace.locations.region': 'Locations',
+    // ŞUBE KARTI (`docs/109` §6.4).
+    'workspace.locations.card.noAddress': 'No address yet',
+    'workspace.locations.card.tables': '{count} tables',
+    'workspace.locations.card.scansPerWeek': '{count} scans/week',
+    // Yalnız KANITLANABİLİR yön. Masası olmayan şube taranamaz, yani kurulumu
+    // bitmemiştir; masası olan bir şubenin açık olduğunu söyleyen hiçbir alan
+    // yoktur ve o iddia ekranda yazmaz.
+    'workspace.locations.card.status.setup': 'In setup',
+    // ÇALIŞMA SAATLERİ (`docs/109` §6.4). Kaynağın kartındaki üçüncü ölçü.
+    // Hafta TEK TİPSE aralık koşulsuz yazılır — her gün doğrudur. Hafta
+    // değişiyorsa tek bir aralık yalan olurdu; o zaman kart BUGÜNÜ söyler
+    // ve bunu açıkça belirtir. Saat girilmemişse hiçbiri çizilmez.
+    'workspace.locations.card.hours.today': 'Today {range}',
+    'workspace.locations.card.hours.closedToday': 'Closed today',
+    'workspace.locations.card.hours.closedAllWeek': 'Closed all week',
+    'workspace.locations.card.tables.label': 'Tables',
+    'workspace.locations.card.tables.action': 'Tables at {name}',
+    'workspace.locations.card.edit.label': 'Edit',
+    // Adı bilerek "Edit {name}" DEĞİL: açılan panelin kendi düğmesi zaten o
+    // adı taşıyor (`LocationEditForm`) ve iki düğme aynı adla görünseydi ekran
+    // okuyucuyla gezen biri hangisine bastığını bilemezdi. Görünen etiket
+    // yine "Edit" — erişilebilir ad onu içerir (WCAG 2.2 §2.5.3).
+    'workspace.locations.card.edit.action': 'Edit details for {name}',
     'workspace.brandLocations.brand.slug': 'Slug',
     // "Locale" bir kullanıcı sözcüğü değildir ve tek başına belirsizdir:
     // panel dili mi, menü dili mi, tarih biçimi mi? Bu alan menünün ANA
@@ -90,6 +117,31 @@ export const brandLocations = {
     'workspace.brandLocations.brand.section.contact': 'Contact',
     'workspace.brandLocations.locations.section.identity': 'Identity',
     'workspace.brandLocations.locations.section.address': 'Address',
+    // ÇALIŞMA SAATİ GİRİŞİ (`docs/109` §6.4).
+    //
+    // Hafta gün gün girilir çünkü gerçek bir restoranın haftası tek aralık
+    // değildir: pazartesi kapalıdır, cuma gece ikiye kadar açıktır. "Ertesi
+    // gün" diye bir kutu YOKTUR — kapanış açılıştan erkense tek makul okuma
+    // zaten ertesi gündür ve yardım metni bunu söyler.
+    'workspace.brandLocations.locations.section.hours': 'Opening hours',
+    'workspace.location.hours.enable': 'This location has opening hours',
+    'workspace.location.hours.help':
+        'Times use this location’s own time zone. A closing time earlier than the opening time means the next day — 18:00 to 02:00 closes at two in the morning.',
+    'workspace.location.hours.empty':
+        'No opening hours yet. The location card leaves that line out until you add them.',
+    'workspace.location.hours.closed': 'Closed',
+    'workspace.location.hours.opens': 'Opens',
+    'workspace.location.hours.closes': 'Closes',
+    // Kapanış ertesi güne taştığında satırın yanında durur: sahip
+    // "02:00 yazdım ama bu hangi gün" diye sormak zorunda kalmaz.
+    'workspace.location.hours.nextDay': 'next day',
+    'workspace.location.hours.day.1': 'Monday',
+    'workspace.location.hours.day.2': 'Tuesday',
+    'workspace.location.hours.day.3': 'Wednesday',
+    'workspace.location.hours.day.4': 'Thursday',
+    'workspace.location.hours.day.5': 'Friday',
+    'workspace.location.hours.day.6': 'Saturday',
+    'workspace.location.hours.day.7': 'Sunday',
     'workspace.brandLocations.locations.view.country': 'Country',
     'workspace.brandLocations.locations.view.postalCode': 'Postal code',
 } as const;

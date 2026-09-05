@@ -212,19 +212,26 @@ function buildFetchMock(handlers: FetchHandlers) {
 type MenuCatalogWorkspaceProps = { workspaceId: number; locationId: number };
 
 /**
- * Bir kategorinin ürün formunu açar.
+ * Bir kategoriyi RAYDAN seçer ve onun ürün formunu açar.
  *
- * Kategori artık bir alan değil, tıkladığın yer: form o kategorinin
- * ALTINDA açılır ve kategori sorulmaz.
+ * NE DEĞİŞTİ: ekranda artık aynı anda tek kategori duruyor (kanonik
+ * kaynak `panel.dc.html` satır 30255-30282), ve "Ürün ekle" düğmesi de
+ * kaynaktaki gibi üst şeritte tek başına (satır 30208). Bu ikisi
+ * birbirinin sonucu: hangi kategoriye eklendiği artık RAYDAKİ SEÇİMLE
+ * belli olduğu için, her kategorinin kendi ekleme düğmesini taşımasına
+ * gerek kalmadı.
+ *
+ * Testlerin sözleşmesi aynen duruyor — "ürün, adı geçen kategoriye
+ * eklenir" — yalnız kullanıcının izlediği yol kısaldı: kategoriye geç,
+ * ekle.
  */
 function openEntryForm(categoryName: string): HTMLElement {
-    const category = screen
-        .getByRole('heading', { name: categoryName })
-        .closest('li') as HTMLElement;
+    const rail = screen.getByRole('navigation', { name: 'Menu categories' });
+    fireEvent.click(within(rail).getByRole('button', { name: new RegExp(categoryName) }));
 
-    fireEvent.click(within(category).getByRole('button', { name: 'Add product' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add product' }));
 
-    return category;
+    return screen.getByRole('heading', { name: categoryName }).closest('li') as HTMLElement;
 }
 
 function assertMutationRequestInit(init: RequestInit | undefined): void {
@@ -358,7 +365,13 @@ describe('MenuCatalogWorkspace — full owner journey (RED, module-not-found)', 
 
         // Kategori ekleme KAPALI başlar ve kendi eylemidir: nadir yapılan
         // bir iş, sürekli yapılan "ürün ekle" ile aynı ağırlıkta duramaz.
-        fireEvent.click(screen.getByRole('button', { name: /add category/i }));
+        /*
+            KATEGORİ EKLEME DÜĞMESİ RAYIN SONUNDA ve metni kaynaktaki gibi
+            yalnız "Category" (`panel.dc.html` satır 30260). Formun gönder
+            düğmesi hâlâ "Add category" der — ikisi aynı metni taşısaydı
+            ekranda aynı anda iki "Add category" olurdu.
+        */
+        fireEvent.click(screen.getByRole('button', { name: 'Category' }));
         const categoryNameInput = await screen.findByLabelText(/category name/i);
         fireEvent.change(categoryNameInput, { target: { value: 'Başlangıçlar' } });
         fireEvent.click(screen.getByRole('button', { name: /^add category$/i }));
@@ -444,7 +457,18 @@ describe('MenuCatalogWorkspace — existing tree render (RED, module-not-found)'
 
         await screen.findByRole('heading', { name: 'Başlangıçlar' });
         expect(screen.getByRole('heading', { name: tree.name })).toBeInTheDocument();
-        const list = screen.getByRole('list', { name: /menu|categories/i });
+        /*
+            LİSTE ARTIK "SEÇİLİ KATEGORİ" PANELİ. Kategori SIRASI rayda
+            durduğu için (`panel.dc.html` satır 30256-30261), sağdaki
+            sıralı liste bütün kategorileri değil, seçili olanı taşır.
+            İkisi aynı adı taşıyamaz: ekran okuyucu kullanan biri "bütün
+            kategoriler" ile "şu an baktığım kategori" arasında gidip
+            gelerek çalışır.
+
+            Testin iddiası değişmedi: yapı SEMANTİK bir sıralı listedir ve
+            çizim tek bir yazma isteği bile göndermez.
+        */
+        const list = screen.getByRole('list', { name: /selected category/i });
         expect(list.tagName).toBe('OL');
         expect(within(list).getByText('Mercimek Çorbası')).toBeInTheDocument();
 
@@ -798,7 +822,8 @@ describe('MenuCatalogWorkspace — location switch resets stale state (RED)', ()
         });
         expect(screen.queryByLabelText('Price')).not.toBeInTheDocument();
 
-        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
+        // Ekleme düğmesi rayda ve metni "Category" (bkz. yukarıdaki gerekçe).
+        fireEvent.click(screen.getByRole('button', { name: 'Category' }));
         const categoryNameInput = await screen.findByLabelText('Category name');
         fireEvent.change(categoryNameInput, { target: { value: 'Tatlılar' } });
         fireEvent.click(screen.getByRole('button', { name: /^add category$/i }));
@@ -1004,19 +1029,23 @@ describe('MenuCatalogWorkspace — category selection routes writes and resets d
         render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
         await screen.findByRole('heading', { name: 'Başlangıçlar' });
-        expect(screen.getByRole('heading', { name: 'Tatlılar' })).toBeInTheDocument();
 
-        // Kategori artık bir AÇILIR MENÜ DEĞİL, tıkladığın yer.
-        //
-        // Öncesinde ürün formu sayfanın en altında tek başına duruyor ve
-        // kullanıcı zaten baktığı kategoriyi bir listeden seçiyordu.
-        // "Tatlılar"a ürün eklemek için "Tatlılar"ın altındaki düğmeye
-        // basılır; seçim diye bir adım kalmadı.
-        const dessertCategory = screen
-            .getByRole('heading', { name: 'Tatlılar' })
-            .closest('li') as HTMLElement;
+        /*
+            BU TESTİN KORUDUĞU DEĞER DEĞİŞMEDİ: ürün, kullanıcının SEÇTİĞİ
+            kategoriye gider ve başka hiçbir kategoriye yazma isteği
+            gitmez. Değişen, seçimin nerede yapıldığı.
 
-        fireEvent.click(within(dessertCategory).getByRole('button', { name: 'Add product' }));
+            Öncesinde iki kategori alt alta iki karttı ve her birinin kendi
+            "Add product" düğmesi vardı; hata olasılığı "yanlış karta
+            basmak"tı. Şimdi kategori RAYDAN seçiliyor, ekranda tek
+            kategori duruyor ve ekleme düğmesi tek — hata olasılığı
+            "yanlış kategori seçiliyken eklemek"e döndü. Test bu yeni
+            yoldan geçiyor ve aynı şeyi ölçüyor.
+        */
+        const rail = screen.getByRole('navigation', { name: 'Menu categories' });
+        expect(within(rail).getByRole('button', { name: /Tatlılar/ })).toBeInTheDocument();
+
+        openEntryForm('Tatlılar');
 
         const form = await screen.findByRole('form', { name: 'Add a product to Tatlılar' });
 
@@ -1455,7 +1484,8 @@ describe('MenuCatalogWorkspace — the entry form clears only on a successful re
         fireEvent.change(menuNameInput, { target: { value: 'Ana Menü' } });
         fireEvent.click(screen.getByRole('button', { name: /create menu/i }));
 
-        fireEvent.click(await screen.findByRole('button', { name: 'Add category' }));
+        // Ekleme düğmesi rayda ve metni "Category" (bkz. yukarıdaki gerekçe).
+        fireEvent.click(await screen.findByRole('button', { name: 'Category' }));
         const categoryNameInput = await screen.findByLabelText('Category name');
         fireEvent.change(categoryNameInput, { target: { value: 'Başlangıçlar' } });
         fireEvent.click(screen.getByRole('button', { name: /^add category$/i }));

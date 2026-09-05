@@ -50,6 +50,16 @@ type QrPrintExportRegionProps = {
     /** Markanın ana rengi — "markalı" tema bunu kullanır (FF-112). */
     brandPrimaryColor?: string | null;
     onEditBrand?: () => void;
+    /**
+     * Toplu masa sihirbazı burada mı çizilsin (panel v3, `docs/109` §6.7)?
+     *
+     * QR ekranı sihirbazı kendi sol sütununda gösteriyor — kaynağın düzeni
+     * onu ızgaranın hemen altına koyuyor. Aynı formu bir de bu bölgede
+     * çizmek iki kopya üretirdi: sahip birine yazar, diğerinde boş alanlar
+     * görür ve hangisinin gerçek olduğunu bilemez. Varsayılan `true`, çünkü
+     * bu bölge yayınlama ekranında hâlâ tek başına kullanılıyor.
+     */
+    showBulkWizard?: boolean;
 };
 
 /**
@@ -151,6 +161,7 @@ export function QrPrintExportRegion({
     onUpgrade,
     brandPrimaryColor = null,
     onEditBrand,
+    showBulkWizard = true,
 }: QrPrintExportRegionProps) {
     const activeItems = items.filter((item) => item.state === 'active');
     const unnamedItems = activeItems.filter((item) => !item.tableName);
@@ -476,15 +487,17 @@ export function QrPrintExportRegion({
                 singleCodeSection
             )}
 
-            <BulkQrWizardFields
-                workspaceId={workspaceId}
-                locationId={locationId}
-                menuId={menuId}
-                hasCurrentPublication={hasCurrentPublication}
-                unavailableReason={bulkUnavailableReason}
-                onCreated={onBulkCreated}
-                onUpgrade={onUpgrade}
-            />
+            {showBulkWizard ? (
+                <BulkQrWizardFields
+                    workspaceId={workspaceId}
+                    locationId={locationId}
+                    menuId={menuId}
+                    hasCurrentPublication={hasCurrentPublication}
+                    unavailableReason={bulkUnavailableReason}
+                    onCreated={onBulkCreated}
+                    onUpgrade={onUpgrade}
+                />
+            ) : null}
         </div>
     );
 }

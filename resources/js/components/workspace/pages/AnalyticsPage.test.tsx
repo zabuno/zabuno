@@ -61,6 +61,45 @@ function summaryBody(
     };
 }
 
+/**
+ * ZAMAN SERİSİ GÖVDESİ — `docs/109` §1, §6.5.
+ *
+ * Insights ekranının grafikleri artık ayrı bir uçtan besleniyor: aralık
+ * TOPLAMI bir haftanın şeklini gizliyordu ve "hangi gün çöktü", "öğle mi
+ * akşam mı", "geçen haftaya göre nasıl", "hangi şube çekiyor" soruları
+ * üründe hiç cevaplanamıyordu.
+ */
+function timeSeriesBody(extra: Record<string, unknown> = {}) {
+    return {
+        range: 'today',
+        state: 'ready',
+        threshold: 5,
+        observedVisitors: 9,
+        timezone: 'Europe/Istanbul',
+        buckets: [
+            { date: '2026-08-31', qrResolveCount: 12, menuOpenCount: 9 },
+            { date: '2026-09-01', qrResolveCount: 3, menuOpenCount: 3 },
+        ],
+        comparison: {
+            basis: 'previous_period',
+            currentQrResolveCount: 15,
+            previousQrResolveCount: 12,
+            deltaRatio: 0.25,
+            previousStart: '2026-08-22T09:00:00+00:00',
+            previousEnd: '2026-08-29T09:00:00+00:00',
+        },
+        hourly: [{ weekday: 2, hour: 13, qrResolveCount: 12 }],
+        suppressedHourCells: 0,
+        locationShare: [
+            { id: 1, label: 'Kadıköy', qrResolveCount: 12, sharePercent: 80 },
+            { id: 2, label: 'Beşiktaş', qrResolveCount: 3, sharePercent: 20 },
+        ],
+        locationShareScope: 'workspace',
+        generatedAt: '2026-09-05T09:00:00.000Z',
+        ...extra,
+    };
+}
+
 function setViewport(width: number, height: number) {
     Object.defineProperty(window, 'innerWidth', {
         writable: true,
@@ -126,12 +165,25 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         expect(urls).toContain(`${SUMMARY_ENDPOINT}?range=today`);
     });
 
+    /**
+     * ARALIK SEÇİCİSİ AÇILIR LİSTE DEĞİL, SEGMENT — `docs/109` §1.
+     *
+     * Kaynağın Insights başlığında üç seçenek de aynı anda görünür ve seçili
+     * olan ekranda durur. Açılır liste üçünü de GİZLİYORDU: sahip "30 gün"e
+     * bakmak için önce listeyi açmak, sonra seçmek zorundaydı — iki dokunuş
+     * ve arada kapanan bir katman. Bu ekranın en sık yapılan işi tam olarak
+     * aralıklar arasında gidip gelmek.
+     *
+     * Rol `radiogroup`tur, buton dizisi değil: görünüşü ne olursa olsun anlamı
+     * tek seçimdir ve ekran okuyucu kullanıcısı "3 seçenekten 2." bilgisini
+     * ancak bu rolle alır.
+     */
     it('offers Today, Last 7 days, and Last 30 days range options', () => {
         render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
-        const rangeControl = screen.getByRole('combobox', { name: /range/i });
+        const rangeControl = screen.getByRole('radiogroup', { name: /range/i });
         const optionLabels = within(rangeControl)
-            .getAllByRole('option')
+            .getAllByRole('radio')
             .map((option) => option.textContent);
 
         expect(optionLabels).toEqual(
@@ -271,7 +323,8 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             expect(fetchSpy).toHaveBeenCalledWith(`${SUMMARY_ENDPOINT}?range=today`),
         );
 
-        await user.selectOptions(screen.getByRole('combobox', { name: /range/i }), '7d');
+        // Segment düğmesine BASILIR; açılır listedeki gibi seçilmez.
+        await user.click(screen.getByRole('radio', { name: /last 7 days/i }));
 
         const region = await screen.findByRole('region', { name: /metric|report/i });
         await waitFor(() => expect(within(region).getByText('19')).toBeInTheDocument());
@@ -582,7 +635,7 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             const region = await screen.findByRole('region', { name: /metric|report/i });
 
             // 30 günlük aralığa geç: "bu aralıkta yok" ile "hiç yok" ayrımı budur.
-            await userEvent.selectOptions(screen.getByLabelText(/range/i), '30d');
+            await userEvent.click(screen.getByRole('radio', { name: /last 30 days/i }));
 
             const action = await within(region).findByRole('button', { name: 'View QR codes' });
             await userEvent.click(action);
@@ -613,7 +666,12 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             });
             await userEvent.click(widen);
 
-            expect(screen.getByLabelText(/range/i)).toHaveValue('30d');
+            // Segmentte seçili olan, `aria-checked` ile bildirilir: seçim
+            // yalnız RENKLE anlatılsaydı yüksek kontrast modunda kaybolurdu.
+            expect(screen.getByRole('radio', { name: /last 30 days/i })).toHaveAttribute(
+                'aria-checked',
+                'true',
+            );
         });
     });
 
@@ -649,18 +707,24 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             expect(within(region).getByText('70%')).toBeInTheDocument();
         });
 
-        it('birden fazla şube varsa kırılımı çizer', async () => {
-            fetchSpy.mockImplementation(async () =>
-                jsonResponse(
-                    200,
-                    summaryBody('today', 15, 12, {
-                        locations: [
-                            { id: 1, label: 'Kadıköy', qrResolveCount: 12, menuOpenCount: 9 },
-                            { id: 2, label: 'Beşiktaş', qrResolveCount: 3, menuOpenCount: 3 },
-                        ],
-                    }),
-                ),
-            );
+        /**
+         * ŞUBE KIRILIMI ARTIK BİR TABLO DEĞİL, BİR HALKA — `docs/109` §1.
+         *
+         * Kaynağın Insights ekranında şube kırılımı "By location" başlıklı bir
+         * tablo değil, bir PAY HALKASIDIR ve verisi zaman serisi ucundan
+         * gelir. Sebebi şu: sahibin sorduğu şey "Beşiktaş'ta kaç tarama var?"
+         * değil, "Beşiktaş markanın ne kadarı?"dır — ve bu, iki satırlık bir
+         * tablodan okunmaz. Halka her zaman markanın TAMAMINI gösterir, tek
+         * şubeye süzülmüş bir ekranda bile.
+         */
+        it('birden fazla şube varsa pay halkasını çizer', async () => {
+            fetchSpy.mockImplementation(async (url: string) => {
+                if (String(url).includes('/analytics/time-series')) {
+                    return jsonResponse(200, timeSeriesBody());
+                }
+
+                return jsonResponse(200, summaryBody('today', 15, 12));
+            });
 
             render(
                 <AnalyticsPage
@@ -673,25 +737,30 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             const region = await screen.findByRole('region', { name: /metric|report/i });
 
             expect(
-                await within(region).findByRole('heading', { name: 'By location' }),
+                await within(region).findByRole('heading', { name: 'Share by location' }),
             ).toBeInTheDocument();
             expect(within(region).getByText('Beşiktaş')).toBeInTheDocument();
         });
 
         /**
-         * Tek şubeli bir işletmede kırılım, üstündeki toplamın tekrarıdır.
+         * Tek şubeli bir işletmede pay %100'dür: halka, üstündeki toplamın
+         * kelimesi kelimesine tekrarıdır ve ekranda yalnız yer kaplar.
          */
-        it('tek şube varsa kırılımı çizmez', async () => {
-            fetchSpy.mockImplementation(async () =>
-                jsonResponse(
-                    200,
-                    summaryBody('today', 12, 9, {
-                        locations: [
-                            { id: 1, label: 'Kadıköy', qrResolveCount: 12, menuOpenCount: 9 },
-                        ],
-                    }),
-                ),
-            );
+        it('tek şube varsa pay halkasını çizmez', async () => {
+            fetchSpy.mockImplementation(async (url: string) => {
+                if (String(url).includes('/analytics/time-series')) {
+                    return jsonResponse(
+                        200,
+                        timeSeriesBody({
+                            locationShare: [
+                                { id: 1, label: 'Kadıköy', qrResolveCount: 12, sharePercent: 100 },
+                            ],
+                        }),
+                    );
+                }
+
+                return jsonResponse(200, summaryBody('today', 12, 9));
+            });
 
             render(
                 <AnalyticsPage
@@ -704,7 +773,7 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             const region = await screen.findByRole('region', { name: /metric|report/i });
             await within(region).findByText('12');
 
-            expect(within(region).queryByRole('heading', { name: 'By location' })).toBeNull();
+            expect(within(region).queryByRole('heading', { name: 'Share by location' })).toBeNull();
         });
     });
 
@@ -742,7 +811,7 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
             render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
             const heading = screen.getByRole('heading', { level: 1, name: /analytics/i });
-            const rangeControl = screen.getByRole('combobox', { name: /range/i });
+            const rangeControl = screen.getByRole('radiogroup', { name: /range/i });
 
             /*
                 Seçici, başlık satırının içinde olmalı. Gövdenin ilk satırında
@@ -757,16 +826,12 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
 
         it('kartın içine kart çizmez', async () => {
             fetchSpy.mockImplementation(async (url: string) => {
+                if (String(url).includes('/analytics/time-series')) {
+                    return jsonResponse(200, timeSeriesBody());
+                }
+
                 if (String(url).includes('/analytics/summary')) {
-                    return jsonResponse(
-                        200,
-                        summaryBody('today', 15, 12, {
-                            locations: [
-                                { id: 1, label: 'Kadıköy', qrResolveCount: 12, menuOpenCount: 9 },
-                                { id: 2, label: 'Beşiktaş', qrResolveCount: 3, menuOpenCount: 3 },
-                            ],
-                        }),
-                    );
+                    return jsonResponse(200, summaryBody('today', 15, 12));
                 }
 
                 return jsonResponse(200, {});
@@ -780,7 +845,11 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
                 />,
             );
 
-            const breakdownHeading = await screen.findByRole('heading', { name: 'By location' });
+            // Grafik kartı ARTIK bölgenin ilk kartıdır; kırılım tablosunun
+            // yerini o aldı (`docs/109` §1).
+            const breakdownHeading = await screen.findByRole('heading', {
+                name: 'Scans and menu opens',
+            });
             const breakdownCard = breakdownHeading.closest('section');
 
             expect(breakdownCard).not.toBeNull();

@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+    CheckSquare,
     Eye,
     HardDrives,
     Images,
     Queue,
     Resize,
+    Scales,
+    SelectionAll,
     SlidersHorizontal,
     Swap,
     UploadSimple,
@@ -22,6 +25,9 @@ import { MediaViewerRegion } from './media/MediaViewerRegion';
 import { MediaQuotaRegion, type MediaQuota } from './media/MediaQuotaRegion';
 import { MediaStorageBreakdown } from './media/MediaStorageBreakdown';
 import { MediaSettingsRegion } from './media/MediaSettingsRegion';
+import { MediaBulkWizardRegion } from './media/MediaBulkWizardRegion';
+import { MediaGovernanceRegion } from './media/MediaGovernanceRegion';
+import { MediaMaturityRegion } from './media/MediaMaturityRegion';
 import { MediaManagerShell, type MediaManagerSection } from './media/MediaManagerShell';
 import { MediaFolderRail, type MediaFolderId } from './media/MediaFolderRail';
 import { useMediaFolders } from './media/mediaFolders';
@@ -405,6 +411,32 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
     if (workspaceId !== undefined) {
         sections.push(
             {
+                /*
+                    TOPLU İŞLEM (`docs/109-PANEL-V3.md` §2). Kaynakta var,
+                    üründe HİÇ YOKTU. Kütüphanenin hemen ARDINDAN durur ve
+                    onunla karışmaz: kütüphane "hangi dosyalar var?"
+                    sorusunu, bu bölüm "hepsine birden ne yapayım?"
+                    sorusunu cevaplar.
+
+                    Klasör kapsamı sol şeritteki SEÇİLİ klasördür: sahip
+                    zaten oraya bakarak geldiyse, kapsamı ikinci kez
+                    seçtirmek aynı kararı iki kez sormak olurdu.
+                */
+                key: 'bulk',
+                label: t('workspace.media.bulk.tab'),
+                icon: <SelectionAll aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaBulkWizardRegion
+                            workspaceId={workspaceId}
+                            folders={folders}
+                            activeFolderId={folderId}
+                            assets={assets}
+                        />
+                    </PanelCard>
+                ),
+            },
+            {
                 key: 'sizes',
                 label: t('workspace.media.engine.tab'),
                 icon: <Resize aria-hidden="true" size={18} />,
@@ -490,6 +522,47 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
                 content: (
                     <PanelCard>
                         <MediaSettingsRegion workspaceId={workspaceId} />
+                    </PanelCard>
+                ),
+            },
+            {
+                /*
+                    YÖNETİŞİM (`docs/109-PANEL-V3.md` §2). Kaynakta var,
+                    üründe HİÇ YOKTU. Ayarların YANINDA ve ondan ayrı
+                    durur: ayarlar "sistem ne yapıyor" der, yönetişim "kim
+                    ne yapabilir, ne kadar saklanır, kim ne yaptı" der.
+
+                    En sonda, çünkü günlük iş değildir — bir şey ters
+                    gittiğinde ya da bir yetki sorulduğunda açılır (denetim
+                    izinin en altta durmasıyla aynı gerekçe).
+                */
+                key: 'governance',
+                label: t('workspace.media.governance.tab'),
+                icon: <Scales aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaGovernanceRegion workspaceId={workspaceId} />
+                    </PanelCard>
+                ),
+            },
+            {
+                /*
+                    OLGUNLUK (`docs/109-PANEL-V3.md` §2). Kaynakta var,
+                    üründe HİÇ YOKTU. EN SONDA durur ve orada durması
+                    bilinçli: günlük iş değildir, "bu modül nereye kadar
+                    geldi?" sorusu sorulduğunda açılır.
+
+                    Yönetişimin ARDINDAN gelir ve onunla karışmaz:
+                    yönetişim "kim ne yapabilir" der, olgunluk "hangi
+                    yeteneğin arkasında ne kadar KANIT var" der. Her seviye
+                    bu depodan hesaplanır — elle yazılmış tek bir puan yok.
+                */
+                key: 'maturity',
+                label: t('workspace.media.maturity.tab'),
+                icon: <CheckSquare aria-hidden="true" size={18} />,
+                content: (
+                    <PanelCard>
+                        <MediaMaturityRegion workspaceId={workspaceId} />
                     </PanelCard>
                 ),
             },

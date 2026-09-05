@@ -5,12 +5,19 @@ import userEvent from '@testing-library/user-event';
 import { TeamPage } from './TeamPage';
 
 /**
- * Davet rolleri — `docs/70`.
+ * Davet rolleri — `docs/70`, düzen `docs/109` §6.4.
  *
  * Davet önceden HER ZAMAN `editor` gönderiyordu ve o rol hiçbir şeyi
  * düzenleyemiyordu: sahibi, adı "editör" olan ama salt okunur bir kullanıcı
  * yaratıyordu. Sahibin, faturaya dokunamayan ama günlük operasyonu
  * yürütebilen birini davet etmesinin yolu da yoktu.
+ *
+ * KONTROL DEĞİŞTİ, SÖZLEŞME DEĞİŞMEDİ. Bu dosya rolü bir `<select>` üzerinden
+ * sürüyordu ve o eleman bir sözleşme SANILMIŞTI. Sınanan gerçek şeyler
+ * dördü: seçilen rol gönderilir, varsayılan en dar roldür, sahiplik davet
+ * seçeneği değildir, rolün ne yapabildiği yazılır. Dördü de kaynağın rol
+ * HAPLARIYLA (`panel.dc.html`, "Takım") aynen geçerli — açılır liste, iki
+ * seçeneği aynı anda göstermediği için seçimi zorlaştırıyordu.
  */
 const WORKSPACE_ID = 5;
 const MEMBERS_ENDPOINT = `/api/workspaces/${WORKSPACE_ID}/team/members`;
@@ -54,7 +61,9 @@ describe('TeamPage — davet rolleri', () => {
         await user.type(await screen.findByLabelText(/invite by email/i), 'yeni@example.com');
 
         if (role !== undefined) {
-            await user.selectOptions(screen.getByLabelText('Role'), role);
+            await user.click(
+                screen.getByRole('radio', { name: role === 'manager' ? 'Manager' : 'Editor' }),
+            );
         }
 
         await user.click(screen.getByRole('button', { name: 'Invite' }));
@@ -103,24 +112,112 @@ describe('TeamPage — davet rolleri', () => {
     it('sahiplik rolünü davet seçeneği olarak sunmaz', async () => {
         render(<TeamPage workspaceId={WORKSPACE_ID} />);
 
-        const select = await screen.findByLabelText('Role');
-        const options = Array.from(select.querySelectorAll('option')).map((option) => option.value);
+        const group = await screen.findByRole('radiogroup', { name: 'Role' });
+        const options = Array.from(group.querySelectorAll('[role="radio"]')).map(
+            (option) => option.textContent,
+        );
 
-        expect(options).toEqual(['editor', 'manager']);
+        expect(options).toEqual(['Editor', 'Manager', 'Kitchen']);
+    });
+
+    /**
+     * KAYNAĞIN DÖRDÜNCÜ HAPI. `panel.dc.html` davet kartında üç hap çiziyor:
+     * Editör · Yönetici · Mutfak. Mutfak bir önceki pakette bilerek
+     * çizilmedi — depoda ne rolü ne izni vardı. Bu pakette ikisi de doğdu,
+     * yani hap artık gerçek bir daveti temsil ediyor.
+     *
+     * Sıra en DAR olanı sona koymaz: haplar yetki genişliğine göre değil,
+     * kaynağın sırasına göre durur ve varsayılan yine `editor`'dür.
+     */
+    it('Mutfak rolünü hap olarak sunar ve seçildiğinde onu gönderir', async () => {
+        const user = userEvent.setup();
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await user.type(await screen.findByLabelText(/invite by email/i), 'hasan@example.com');
+        await user.click(screen.getByRole('radio', { name: 'Kitchen' }));
+        await user.click(screen.getByRole('button', { name: 'Invite' }));
+
+        await waitFor(() => {
+            const post = fetchSpy.mock.calls.find(
+                ([calledUrl, init]) =>
+                    String(calledUrl) === INVITATIONS_ENDPOINT &&
+                    ((init as RequestInit | undefined)?.method ?? 'GET').toUpperCase() === 'POST',
+            );
+
+            expect(post).toBeDefined();
+            expect(JSON.parse(String((post?.[1] as RequestInit).body)).role).toBe('kitchen');
+        });
+    });
+
+    /**
+     * Hapın altındaki cümle kaynağın kendi cümlesidir. "Mutfak" kelimesi tek
+     * başına, sahibe fiyatların da açılıp açılmadığını söylemez.
+     */
+    it('Mutfak seçildiğinde ne yapabildiğini yazar', async () => {
+        const user = userEvent.setup();
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await screen.findByRole('radiogroup', { name: 'Role' });
+        await user.click(screen.getByRole('radio', { name: 'Kitchen' }));
+
+        expect(
+            screen.getByText(
+                'Marks allergens and “sold out today”. Cannot change prices, publish or see anything else.',
+            ),
+        ).toBeInTheDocument();
+    });
+
+    /**
+     * Sahiplik ayrı bir akıştır ve davet listesinde aranması boşunadır; kart
+     * bunu hapların hemen altında söyler (kaynağın kendi cümlesi).
+     */
+    it('sahipliğin devredildiğini davet kartında yazar', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        expect(
+            await screen.findByText('Ownership is transferred, not given by invitation.'),
+        ).toBeInTheDocument();
     });
 
     /**
      * "Editor" kelimesi tek başına yayınlayıp yayınlayamayacağını söylemez ve
      * sahibi yanlış kişiye yanlış yetkiyi verebilir.
      */
-    it('rolün ne yapabildiğini alanın altında yazar', async () => {
+    it('rolün ne yapabildiğini hapların altında yazar', async () => {
         const user = userEvent.setup();
         render(<TeamPage workspaceId={WORKSPACE_ID} />);
 
-        const select = await screen.findByLabelText('Role');
-        expect(screen.getByText(/cannot publish/i)).toBeInTheDocument();
+        await screen.findByRole('radiogroup', { name: 'Role' });
+        /*
+            Sorgu TAM METİN: "Roller ne yapabilir?" kartı da yayınlama
+            kısıtını anlatıyor (`docs/109` §6.4) ve gevşek bir `/cannot
+            publish/i` ikisini birden yakalıyordu. Sınanan şey seçime GÖRE
+            DEĞİŞEN yardım metnidir, kartın sabit cümlesi değil.
+        */
+        expect(
+            screen.getByText(
+                'Edits menu content. Cannot publish, change locations or see billing.',
+            ),
+        ).toBeInTheDocument();
 
-        await user.selectOptions(select, 'manager');
+        await user.click(screen.getByRole('radio', { name: 'Manager' }));
         expect(screen.getByText(/cannot manage billing/i)).toBeInTheDocument();
+    });
+
+    /** Seçili hap yalnız RENKLE değil, ARIA durumuyla da ayrışır. */
+    it('seçili rol yardımcı teknolojiye de bildirilir', async () => {
+        const user = userEvent.setup();
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        const editor = await screen.findByRole('radio', { name: 'Editor' });
+        const manager = screen.getByRole('radio', { name: 'Manager' });
+
+        expect(editor).toHaveAttribute('aria-checked', 'true');
+        expect(manager).toHaveAttribute('aria-checked', 'false');
+
+        await user.click(manager);
+
+        expect(manager).toHaveAttribute('aria-checked', 'true');
+        expect(editor).toHaveAttribute('aria-checked', 'false');
     });
 });

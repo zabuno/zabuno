@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Analytics\ShowAnalyticsSummaryController;
+use App\Http\Controllers\Analytics\ShowAnalyticsTimeSeriesController;
 use App\Http\Controllers\Analytics\ShowMenuEngineeringController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         karşılamıyorum?
     */
     Route::get('/workspaces/{workspace}/analytics/menu-engineering', ShowMenuEngineeringController::class);
+
+    /*
+        ZAMAN SERİSİ — `docs/109` §1 (Insights), §6.5.
+
+        Aralık toplamı bir haftanın ŞEKLİNİ gizliyordu: hangi gün çöktü,
+        hangi saatte yoğunlaştı, geçen haftaya göre nasıl, hangi şube
+        çekiyor. Insights ekranının çubuk+çizgi grafiği, saat ısı haritası
+        ve şube halkası bu uçtan besleniyor.
+
+        İki adres: biri seçili şube, diğeri markanın tamamı — `summary` ile
+        aynı ikili, çünkü sahibin üst çubuktaki "tüm şubeler" bağlamı
+        analitikte de karşılık bulmalı (`docs/68`).
+    */
+    Route::get('/workspaces/{workspace}/brand/locations/{location}/analytics/time-series', ShowAnalyticsTimeSeriesController::class);
+    Route::get('/workspaces/{workspace}/analytics/time-series', ShowAnalyticsTimeSeriesController::class);
 });

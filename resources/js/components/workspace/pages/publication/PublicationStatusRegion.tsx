@@ -1,6 +1,27 @@
 import { Button } from '../../../catalog/forms/micro/Button';
 import { t } from '../../../../i18n/workspace';
 
+/**
+ * Yayınlanmış menünün DONMUŞ kopyası.
+ *
+ * Fiyat, para birimi ve menü satırı kimliği alanları İSTEĞE BAĞLIDIR ve bu
+ * bir gevşeklik değil, geçmişin dürüst temsilidir: `menuItemId` snapshot'a
+ * sonradan eklendi (`docs/82`) ve o alan eklenmeden önce yayınlanmış
+ * sürümler hâlâ veritabanında duruyor. Alanları zorunlu saymak, o eski
+ * sürümlerin ekranda çökmesi demekti.
+ */
+export type PublishedSnapshot = {
+    categories: {
+        name: string;
+        menuItems: {
+            menuItemId?: number;
+            productName: string;
+            priceMinorAmount?: number;
+            currencyCode?: string;
+        }[];
+    }[];
+};
+
 export type CurrentPublication = {
     id: number;
     workspaceId: number;
@@ -9,12 +30,7 @@ export type CurrentPublication = {
     version: number;
     state: string;
     publishedAt: string;
-    snapshot: {
-        categories: {
-            name: string;
-            menuItems: { productName: string }[];
-        }[];
-    };
+    snapshot: PublishedSnapshot;
 };
 
 type PublicationStatusRegionProps = {

@@ -3,12 +3,15 @@ import { useEffect, useState } from 'react';
 import { t } from '../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../lib/csrfHeader';
 import type { DashboardMenuTree } from './DashboardPage';
-import { DraftMenuPreviewRegion } from './publication/DraftMenuPreviewRegion';
+import { PhonePreviewRegion } from './publication/PhonePreviewRegion';
 import {
     PublicationStatusRegion,
     type CurrentPublication,
 } from './publication/PublicationStatusRegion';
+import { buildPublicationDiff, PublicationDiffRegion } from './publication/PublicationDiffRegion';
 import { PublicationHistoryRegion } from './publication/PublicationHistoryRegion';
+import { PublishScheduleRegion } from './publication/PublishScheduleRegion';
+import { PublishStepper } from './publication/PublishStepper';
 import { PublishActionConfigRegion } from './publication/PublishActionConfigRegion';
 import {
     isDraftReady,
@@ -21,9 +24,19 @@ import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/Work
 type PublicationPageProps = {
     workspaceId?: number;
     dashboardMenuTree?: DashboardMenuTree | null;
+    /**
+     * Hazırlık listesindeki "Düzelt" düğmesinin gideceği yer. Yoksa düğme
+     * çizilmez — gidecek yeri olmayan bir düğme, sahibin ürüne güvenini
+     * tek tıkta harcar.
+     */
+    onNavigateToSection?: (section: string) => void;
 };
 
-export function PublicationPage({ workspaceId, dashboardMenuTree = null }: PublicationPageProps) {
+export function PublicationPage({
+    workspaceId,
+    dashboardMenuTree = null,
+    onNavigateToSection,
+}: PublicationPageProps) {
     const menuId = dashboardMenuTree?.id ?? null;
     const locationId = dashboardMenuTree?.locationId ?? null;
 
@@ -34,6 +47,13 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
     const [publishing, setPublishing] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [retryToken, setRetryToken] = useState(0);
+    /*
+        Sahip taslağı telefonunda AÇTI MI? Adım çizgisindeki "Önizleme"
+        adımı bununla yanar — bir düğmenin ekranda durmasıyla değil.
+        Yapılmamış bir kontrolü yapılmış göstermek, çizginin tek işini
+        (doğruyu söylemek) elinden alırdı.
+    */
+    const [previewChecked, setPreviewChecked] = useState(false);
 
     useEffect(() => {
         if (workspaceId === undefined || menuId === null) {
@@ -83,6 +103,14 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
 
     const checklistReady = isDraftReady(dashboardMenuTree);
 
+    /*
+        FARK BİR KEZ HESAPLANIR ve iki yer onu paylaşır (adım çizgisi ve
+        değişiklik listesi). İki kez hesaplansaydı, aralarına giren tek bir
+        yeniden çizim "3 değişiklik" diyen bir adım çizgisiyle iki satırlık
+        bir liste üretebilir ve sahip hangisine inanacağını bilemezdi.
+    */
+    const pendingChanges = buildPublicationDiff(dashboardMenuTree, current?.snapshot ?? null);
+
     const badges: WorkspacePageStatusBadge[] = [
         checklistReady
             ? {
@@ -99,10 +127,21 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
             ? {
                   key: 'publication-status',
                   status: 'success',
-                  // Önceden yayının VERİTABANI KİMLİĞİ (`#12`) basılıyordu.
-                  // Kullanıcı için bir anlamı yok; menüsünün yayında olup
-                  // olmadığı ise tam olarak öğrenmek istediği şey.
-                  label: t('workspace.publication.status.published'),
+                  /*
+                      Rozet SÜRÜM NUMARASINI da taşır — kaynağın kendi
+                      cümlesi: "Yayında · v14".
+
+                      Önceden yalnız "Yayında" yazıyordu ve bu, yanlış
+                      fiyatı gören misafirle tartışan sahibin sorduğu
+                      soruyu cevaplamıyordu: "misafir HANGİ sürümü
+                      görüyor?". Sürüm, kullanıcı için okunabilir tek
+                      sayıdır; her yayında bir artar. (Yayının veritabanı
+                      kimliği hâlâ ekrana çıkmaz: onun kullanıcı için bir
+                      anlamı yok.)
+                  */
+                  label: t('workspace.publication.status.liveBadge', {
+                      version: String(current.version),
+                  }),
               }
             : {
                   key: 'publication-status',
@@ -156,8 +195,28 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
                 description={t('workspace.publication.operational.description')}
                 badges={badges}
             >
-                <DraftMenuPreviewRegion dashboardMenuTree={dashboardMenuTree} />
-                <PublishReadinessChecklistRegion dashboardMenuTree={dashboardMenuTree} />
+                {/*
+                    ADIM ÇİZGİSİ EN ÜSTTE — kaynağın kendi sırası: Taslak →
+                    Önizleme → Yayında. Sahip paneli günde beş kez açar ve
+                    her açışında tek bir soru sorar: "menüm güncel mi?".
+                    Cevap artık üç ayrı bölgeye dağılmış değil, ilk satırda.
+                */}
+                <PublishStepper
+                    pendingChangeCount={pendingChanges.length}
+                    previewOpen={previewChecked}
+                    liveVersion={current?.version ?? null}
+                    publishedAt={current?.publishedAt ?? null}
+                />
+                {/*
+                    NE YAYINLANACAK — "Yayınla" düğmesinden ÖNCE. Sahip
+                    bugüne kadar düğmeye, ne yayınlayacağını görmeden
+                    basıyordu.
+                */}
+                <PublicationDiffRegion dashboardMenuTree={dashboardMenuTree} current={current} />
+                <PublishReadinessChecklistRegion
+                    dashboardMenuTree={dashboardMenuTree}
+                    onFix={onNavigateToSection}
+                />
                 <PublicationStatusRegion
                     current={current}
                     loading={loading}
@@ -169,6 +228,19 @@ export function PublicationPage({ workspaceId, dashboardMenuTree = null }: Publi
                     onPublish={handlePublish}
                     publishing={publishing}
                     errorMessage={errorMessage}
+                />
+                {workspaceId !== undefined && menuId !== null ? (
+                    <PublishScheduleRegion
+                        workspaceId={workspaceId}
+                        menuId={menuId}
+                        draftReady={checklistReady}
+                    />
+                ) : null}
+                <PhonePreviewRegion
+                    dashboardMenuTree={dashboardMenuTree}
+                    workspaceId={workspaceId}
+                    menuId={menuId}
+                    onPreviewOpened={() => setPreviewChecked(true)}
                 />
                 {current !== null ? <PublishedSnapshotRegion current={current} /> : null}
                 {workspaceId !== undefined && menuId !== null ? (

@@ -7,6 +7,7 @@ namespace App\Application\Tenancy\Profile\UseCase;
 use App\Application\Tenancy\Profile\Dto\LocationProfile;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
 use App\Domain\Tenancy\ValueObject\StructuredAddress;
+use App\Domain\Tenancy\ValueObject\WeeklyOpeningHours;
 
 final class UpdateLocation
 {
@@ -39,6 +40,25 @@ final class UpdateLocation
             $attributes['timezone'] = $data['timezone'];
         }
 
-        return $this->locations->update($workspaceId, $locationId, $attributes);
+        /*
+            ÇALIŞMA SAATLERİ — üç ayrı hâl, üç ayrı davranış (`docs/109` §6.4).
+
+            1. Alan HİÇ YOKSA → dokunulmaz (`null`). Saat diliminde olduğu
+               gibi: alanı taşımayan eski bir istemci, hiç bilmediği bir
+               veriyi silmemelidir. Adresini düzelten bir kullanıcı,
+               şubesinin çalışma saatlerini kaybetmez.
+            2. Alan BOŞ ya da `null` ise → silinir. "Artık söylemiyorum" da
+               bir karardır ve kart o satırı bir daha çizmez.
+            3. Yedi gün geldiyse → hafta yazılır.
+        */
+        $openingHours = null;
+
+        if (array_key_exists('opening_hours', $data)) {
+            $openingHours = WeeklyOpeningHours::fromArray(
+                is_array($data['opening_hours']) ? $data['opening_hours'] : [],
+            );
+        }
+
+        return $this->locations->update($workspaceId, $locationId, $attributes, $openingHours);
     }
 }

@@ -6,12 +6,10 @@ namespace App\Http\Controllers\Publication;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Media\Port\MenuMediaPort;
-use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\Publication\Exception\PublicationPersistenceFailedException;
 use App\Application\Publication\Exception\UnreadyDraftException;
-use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
-use App\Application\Publication\UseCase\BuildPublicationSnapshot;
+use App\Application\Publication\UseCase\AssembleDraftSnapshot;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -21,10 +19,9 @@ final class StorePublicationController extends Controller
 {
     public function __construct(
         private readonly AuthorizationPort $authorization,
-        private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly PublicationRepositoryPort $publications,
-        private readonly MenuIdentityPort $identities,
         private readonly MenuMediaPort $menuMedia,
+        private readonly AssembleDraftSnapshot $assembler,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $menu): JsonResponse
@@ -39,49 +36,32 @@ final class StorePublicationController extends Controller
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 
-        $tree = $this->menuCatalog->getDraftTree($workspace, $menu);
-
-        if ($tree === null) {
-            return response()->json(['message' => 'Not Found.'], 404);
-        }
-
-        // Görseller de yayın ANINDA çözülür ve SÜRÜM kimliğiyle donar
-        // (`docs/77`): sonradan üretilen bir sürüm eski yayını değiştirmez.
-        $itemImages = [];
-        $visibleItemIds = [];
-
-        foreach ($tree->categories as $category) {
-            foreach ($category['items'] as $item) {
-                if (! $item['isVisible']) {
-                    continue;
-                }
-
-                $visibleItemIds[] = (int) $item['id'];
-                $image = $this->menuMedia->snapshotImage($workspace, 'menu_item', (int) $item['id']);
-
-                if ($image !== null) {
-                    $itemImages[(int) $item['id']] = $image;
-                }
-            }
-        }
-
-        $brandId = $this->identities->brandIdForMenu($workspace, $menu);
-        $logo = $brandId === null ? null : $this->menuMedia->snapshotImage($workspace, 'brand', $brandId);
-
         try {
-            // Kimlik yayın ANINDA okunur ve snapshot'a donar (`docs/75`).
-            $snapshot = BuildPublicationSnapshot::fromDraftTree(
-                $tree,
-                $this->identities->forMenu($workspace, $menu),
-                $itemImages,
-                $logo,
-            );
+            /*
+                Montaj TEK YERDE (`AssembleDraftSnapshot`): aynı işi artık
+                planlama ve önizleme de istiyor. Üç kopya olsaydı biri bir
+                gün görselleri unuturdu ve sahip, önizlemede gördüğü
+                fotoğrafın yayında olmadığını ancak misafir sorduğunda
+                anlardı.
+
+                Kimlik, görseller ve logo yayın ANINDA çözülür ve snapshot'a
+                donar (`docs/75`, `docs/76`, `docs/77`).
+            */
+            $assembled = $this->assembler->forMenu($workspace, $menu);
         } catch (UnreadyDraftException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
+        if ($assembled === null) {
+            return response()->json(['message' => 'Not Found.'], 404);
+        }
+
+        $snapshot = $assembled['snapshot'];
+        $visibleItemIds = $assembled['visibleItemIds'];
+        $brandId = $assembled['brandId'];
+
         try {
-            $record = $this->publications->publish($workspace, $menu, $tree->locationId, $snapshot, $userId);
+            $record = $this->publications->publish($workspace, $menu, $assembled['locationId'], $snapshot, $userId);
         } catch (PublicationPersistenceFailedException) {
             return response()->json(['message' => 'Publication failed.'], 500);
         }

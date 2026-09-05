@@ -11,13 +11,11 @@ use App\Application\MenuCatalog\Dto\MenuEntrySummary;
 use App\Application\MenuCatalog\Dto\MenuItemSummary;
 use App\Application\MenuCatalog\Dto\ProductSummary;
 use App\Application\MenuCatalog\Dto\TaxonomyTermSummary;
-use App\Application\MenuCatalog\Exception\DuplicateLocationMenuException;
 use App\Application\MenuCatalog\Exception\MenuCatalogIncompleteOrderException;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Money\Money;
 use App\Domain\Publication\MenuPublicAddress;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -31,33 +29,57 @@ final class EloquentMenuCatalogRepository implements MenuCatalogRepositoryPort
             throw MenuCatalogTenantMismatchException::forWorkspace($workspaceId);
         }
 
+        /*
+            ADRES ŞUBEYE AİT, MENÜYE DEĞİL (sahibin 2026-09-05 kararı,
+            `docs/109` §7.1).
+
+            Şubenin ilk menüsü kalıcı genel adresi (`public_key`) alır ve
+            karekod hep oraya bakar. Sonraki menüler ADRES ALMAZ; alsalardı
+            bir şubenin iki genel adresi olur, aynı içerik iki yerde
+            indekslenir ve sahip hangisini kartvizite basacağını bilemezdi.
+            Misafir tek adresi okutur, SAAT hangi menünün açılacağını söyler.
+        */
+        $locationHasAddress = DB::table('menus')
+            ->where('location_id', $locationId)
+            ->whereNotNull('public_key')
+            ->exists();
+
+        // Hap sırası kimliğe göre değil, sahibin sıralayabileceği bir
+        // değere göre kurulur.
+        $nextSortOrder = ((int) DB::table('menus')->where('location_id', $locationId)->max('sort_order')) + 1;
+
+        if (! DB::table('menus')->where('location_id', $locationId)->exists()) {
+            $nextSortOrder = 0;
+        }
+
         $row = [
             'workspace_id' => $workspaceId,
             'location_id' => $locationId,
             'name' => $name,
-            // Menü doğduğu anda kalıcı adresini alır. Sonradan atamak,
-            // adresi olmayan bir menünün var olabileceği bir pencere
-            // bırakırdı — ve o pencerede yayınlanırsa adres kayar.
-            'public_key' => MenuPublicAddress::generateKey(),
+            'public_key' => $locationHasAddress ? null : MenuPublicAddress::generateKey(),
+            /*
+                YENİ MENÜ ROTASYONA GİRMEZ.
+
+                Doğar doğmaz bir saat aralığı sahiplenseydi, sahip daha
+                adını yazarken masadaki misafirin gördüğü menü değişirdi.
+                Saatini sahip verir; o ana kadar menü hazırlanıyor demektir.
+            */
             'state' => 'draft',
+            'sort_order' => $nextSortOrder,
             'created_at' => now(),
             'updated_at' => now(),
         ];
 
-        try {
-            // İç içe işlem = SAVEPOINT. PostgreSQL'de başarısız bir INSERT
-            // içinde bulunduğu işlemin TAMAMINI zehirler (SQLSTATE 25P02):
-            // sonraki her sorgu, işlem kapanana kadar reddedilir. SQLite
-            // böyle davranmadığı için bu desen yıllarca çalışıyor göründü.
-            // Savepoint, başarısızlığı yalnız kendi kapsamına geri sarar.
-            $id = (int) DB::transaction(
-                static fn (): int => (int) DB::table('menus')->insertGetId($row)
-            );
-        } catch (QueryException $e) {
-            throw DuplicateLocationMenuException::forLocation($locationId);
-        }
+        // İç içe işlem = SAVEPOINT. PostgreSQL'de başarısız bir INSERT
+        // içinde bulunduğu işlemin TAMAMINI zehirler (SQLSTATE 25P02):
+        // sonraki her sorgu, işlem kapanana kadar reddedilir. SQLite
+        // böyle davranmadığı için bu desen yıllarca çalışıyor göründü.
+        // Savepoint, başarısızlığı yalnız kendi kapsamına geri sarar.
+        $id = (int) DB::transaction(
+            static fn (): int => (int) DB::table('menus')->insertGetId($row)
+        );
 
-        return new MenuDraftSummary($id, $workspaceId, $locationId, $name, 'draft');
+        return new MenuDraftSummary($id, $workspaceId, $locationId, $name, 'draft', $nextSortOrder);
     }
 
     public function getDraftTree(int $workspaceId, int $menuId): ?MenuDraftTree

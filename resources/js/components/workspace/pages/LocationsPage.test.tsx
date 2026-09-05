@@ -1,15 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { LocationsPage } from './LocationsPage';
 import type { LocationProfile } from '../LocationEditForm';
 
 /**
- * Feature-local unit coverage for LocationsPage that the shared
- * WorkspaceApp.brandLocations.test.tsx / WorkspaceApp.locationEdit.test.tsx
- * suites do not exercise directly: the honest 0-location empty state, the
- * current-location select control, and fluid-first (no fixed-pixel /
- * breakpoint) markup at a 320px viewport.
+ * ŞUBELER EKRANI — panel v3 kanonik kaynağı (`panel.dc.html`,
+ * `data-screen-label="Şubeler"`).
+ *
+ * DÜZEN DEĞİŞTİ, ÖLÇÜ AYNI KALDI. Ekran "şehir başlıklı kart + içinde şube
+ * satırları" düzenindeydi; kaynağın düzeni KART IZGARASIDIR. Bu dosyadan iki
+ * grup test kaldırıldı ve sebebi yazılıdır:
+ *
+ * 1. **Sayfa içi şube seçici** ("Location" açılır listesi). Sözleşme sanılan
+ *    şey aslında ÜST ÇUBUĞUN işiydi: `WorkspaceContextControls` aynı seçimi
+ *    zaten sunuyor ve iki şubeden azında kendini gizliyor. Sayfadaki kopya
+ *    aynı işi ikinci kez gösteriyordu. Seçme YETENEĞİ kaybolmadı, yer
+ *    değiştirdi: kartın "Masalar" düğmesi o şubeyi seçer ve karekod ekranına
+ *    götürür — kaynağın `goQr` bağlaması da tam olarak budur.
+ * 2. **"{N} locations" sayacı.** Izgara şubeleri zaten yan yana gösteriyor;
+ *    üstünde ayrıca "2 locations" yazmak, sayılabilir bir şeyi sayıp
+ *    söylemekti.
+ *
+ * Korunan şey ölçüdür: 320 pikselde sabit piksel / breakpoint sınıfı yok,
+ * dürüst boş durum yerinde, ve UYDURULMUŞ SAYI YOK.
  */
 
 const FIXED_PIXEL_CLASS_PATTERN =
@@ -55,7 +70,31 @@ function makeLocation(overrides: Partial<LocationProfile> = {}): LocationProfile
     };
 }
 
-describe('LocationsPage — honest 0-location empty state', () => {
+function renderPage(props: Partial<Parameters<typeof LocationsPage>[0]> = {}) {
+    return render(
+        <LocationsPage
+            workspaceId={61}
+            locations={[makeLocation()]}
+            onLocationSaved={vi.fn()}
+            onLocationCreated={vi.fn()}
+            onOpenTables={vi.fn()}
+            addingLocation={false}
+            onToggleAddLocation={() => {}}
+            {...props}
+        />,
+    );
+}
+
+function timeSeriesResponse(body: unknown) {
+    return {
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        json: async () => body,
+    } as Response;
+}
+
+describe('LocationsPage — dürüst 0 şube boş durumu', () => {
     let fetchSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
@@ -68,122 +107,180 @@ describe('LocationsPage — honest 0-location empty state', () => {
         vi.unstubAllGlobals();
     });
 
-    it('shows a real 0 count, no current-location select and no location rows when there are no locations', () => {
-        render(
-            <LocationsPage
-                workspaceId={61}
-                locations={[]}
-                selectedLocationId={null}
-                onSelectLocation={vi.fn()}
-                onLocationSaved={vi.fn()}
-                onLocationCreated={vi.fn()}
-                addingLocation={false}
-                onToggleAddLocation={() => {}}
-            />,
-        );
+    it('şube yokken kart çizmez ve ölçüm için sunucuya hiç gitmez', () => {
+        renderPage({ locations: [] });
 
-        expect(screen.getByText('0 locations')).toBeInTheDocument();
-        expect(screen.queryByLabelText('Location')).not.toBeInTheDocument();
-        expect(screen.queryAllByTestId('brand-location-row')).toHaveLength(0);
+        expect(screen.queryAllByRole('article')).toHaveLength(0);
+        // Ölçülecek bir şube yokken analitik ucuna gitmek, cevabı boş olduğu
+        // bilinen bir soruyu sormak olurdu.
         expect(fetchSpy).not.toHaveBeenCalled();
     });
 
-    it('still exposes the Add location control with zero locations', () => {
-        render(
-            <LocationsPage
-                workspaceId={61}
-                locations={[]}
-                selectedLocationId={null}
-                onSelectLocation={vi.fn()}
-                onLocationSaved={vi.fn()}
-                onLocationCreated={vi.fn()}
-                addingLocation={false}
-                onToggleAddLocation={() => {}}
-            />,
-        );
+    it('sıfır şubede de "Şube ekle" düğmesi durur', () => {
+        renderPage({ locations: [] });
 
         expect(screen.getByRole('button', { name: 'Add location' })).toBeInTheDocument();
     });
 });
 
-describe('LocationsPage — current-location select', () => {
+describe('LocationsPage — kart ızgarası', () => {
     afterEach(() => {
         cleanup();
         vi.unstubAllGlobals();
     });
 
-    it('lists every real location and reflects the selected id', () => {
-        const locationA = makeLocation();
-        const locationB = makeLocation({ id: 812, display_name: 'Beşiktaş Şube' });
-
-        render(
-            <LocationsPage
-                workspaceId={61}
-                locations={[locationA, locationB]}
-                selectedLocationId={locationB.id}
-                onSelectLocation={vi.fn()}
-                onLocationSaved={vi.fn()}
-                onLocationCreated={vi.fn()}
-                addingLocation={false}
-                onToggleAddLocation={() => {}}
-            />,
+    it('her şube için bir kart çizer', () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => timeSeriesResponse({ state: 'not_enough_data' })),
         );
 
-        const select = screen.getByLabelText('Location') as HTMLSelectElement;
-        expect(select.value).toBe(String(locationB.id));
-
-        const options = Array.from(select.options).map((option) => option.textContent);
-        expect(options).toContain(`${locationA.display_name} (#${locationA.id})`);
-        expect(options).toContain(`${locationB.display_name} (#${locationB.id})`);
-    });
-
-    it('calls onSelectLocation with the chosen real location id', () => {
-        const locationA = makeLocation();
-        const locationB = makeLocation({ id: 812, display_name: 'Beşiktaş Şube' });
-        const onSelectLocation = vi.fn();
-
-        render(
-            <LocationsPage
-                workspaceId={61}
-                locations={[locationA, locationB]}
-                selectedLocationId={locationA.id}
-                onSelectLocation={onSelectLocation}
-                onLocationSaved={vi.fn()}
-                onLocationCreated={vi.fn()}
-                addingLocation={false}
-                onToggleAddLocation={() => {}}
-            />,
-        );
-
-        fireEvent.change(screen.getByLabelText('Location'), {
-            target: { value: String(locationB.id) },
+        renderPage({
+            locations: [makeLocation(), makeLocation({ id: 812, display_name: 'Beşiktaş Şube' })],
         });
 
-        expect(onSelectLocation).toHaveBeenCalledWith(locationB.id);
+        expect(screen.getByText('Kadıköy Şube')).toBeInTheDocument();
+        expect(screen.getByText('Beşiktaş Şube')).toBeInTheDocument();
+        expect(screen.getAllByRole('article')).toHaveLength(2);
+    });
+
+    /**
+     * Kaynağın `goQr` bağlaması: kart "Masalar"a basınca o şubenin karekod
+     * ekranına gider. Sayfa içi açılır listeden kaybolan yetenek buraya
+     * taşındı ve burada bir CÜMLE oldu — "bu şubenin masaları".
+     */
+    it('"Masalar" düğmesi şubenin kimliğiyle çağırır', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => timeSeriesResponse({ state: 'not_enough_data' })),
+        );
+        const onOpenTables = vi.fn();
+        const user = userEvent.setup();
+
+        renderPage({ locations: [makeLocation()], onOpenTables });
+
+        await user.click(screen.getByRole('button', { name: 'Tables at Kadıköy Şube' }));
+
+        expect(onOpenTables).toHaveBeenCalledWith(811);
+    });
+
+    /**
+     * Kart düzenleme panelini AÇAR; panelin kendi "Edit" düğmesi alanları
+     * yazılabilir yapar (`LocationEditForm`'un mevcut sözleşmesi). Panel
+     * kapalıyken hiç çizilmez: üç şubeli bir markada üç uzun form yan yana
+     * durursa ızgara ızgara olmaktan çıkar.
+     */
+    it('"Düzenle" şubenin düzenleme panelini açar ve kapatır', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => timeSeriesResponse({ state: 'not_enough_data' })),
+        );
+        const user = userEvent.setup();
+
+        renderPage({ locations: [makeLocation()] });
+
+        const edit = screen.getByRole('button', { name: 'Edit details for Kadıköy Şube' });
+        expect(edit).toHaveAttribute('aria-expanded', 'false');
+        expect(screen.queryByRole('button', { name: 'Edit Kadıköy Şube' })).not.toBeInTheDocument();
+
+        await user.click(edit);
+        expect(edit).toHaveAttribute('aria-expanded', 'true');
+        expect(screen.getByRole('button', { name: 'Edit Kadıköy Şube' })).toBeInTheDocument();
+
+        await user.click(edit);
+        expect(edit).toHaveAttribute('aria-expanded', 'false');
+        expect(screen.queryByRole('button', { name: 'Edit Kadıköy Şube' })).not.toBeInTheDocument();
     });
 });
 
-describe('LocationsPage — fluid-first markup', () => {
+describe('LocationsPage — haftalık tarama ölçümü', () => {
     afterEach(() => {
         cleanup();
         vi.unstubAllGlobals();
     });
 
-    it('carries no fixed-pixel or breakpoint class at a 320x480 viewport', () => {
+    /**
+     * Sayı GERÇEK ÖLÇÜMDEN gelir: marka kapsamlı zaman serisi ucunun şube
+     * payı (`locationShare`). Uydurulmaz ve tahmin edilmez.
+     */
+    it('ölçüm hazırsa şube payından haftalık taramayı yazar', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async (url: string) => {
+                expect(String(url)).toContain('/api/workspaces/61/analytics/time-series?range=7d');
+
+                return timeSeriesResponse({
+                    state: 'ready',
+                    locationShare: [
+                        { id: 811, label: 'Kadıköy Şube', qrResolveCount: 340, sharePercent: 100 },
+                    ],
+                });
+            }),
+        );
+
+        renderPage({
+            locations: [makeLocation(), makeLocation({ id: 812, display_name: 'Beşiktaş Şube' })],
+        });
+
+        expect(await screen.findByText('340 scans/week')).toBeInTheDocument();
+        // Payda hiç görünmeyen şube o pencerede HİÇ taranmamıştır: gerçek 0.
+        expect(screen.getByText('0 scans/week')).toBeInTheDocument();
+    });
+
+    it('ölçüm eşiğin altındaysa hiçbir kart tarama sayısı yazmaz', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => timeSeriesResponse({ state: 'not_enough_data', locationShare: [] })),
+        );
+
+        renderPage({ locations: [makeLocation()] });
+
+        await waitFor(() => expect(screen.getByText('Kadıköy Şube')).toBeInTheDocument());
+
+        expect(screen.queryByText(/scans\/week/)).not.toBeInTheDocument();
+    });
+
+    /**
+     * Rapor plana bağlıdır (402) ve yetkisiz kullanıcıya 404 döner. İkisinde
+     * de doğru davranış AYNIDIR: sayı yoktur, o yüzden yazılmaz. Yerine "0"
+     * koymak, ölçülmemiş bir şeyi ölçülmüş göstermek olurdu.
+     */
+    it('ölçüm ucu kapalıysa sayı yerine hiçbir şey yazmaz', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(
+                async () =>
+                    ({
+                        ok: false,
+                        status: 402,
+                        headers: new Headers(),
+                        json: async () => ({}),
+                    }) as Response,
+            ),
+        );
+
+        renderPage({ locations: [makeLocation()] });
+
+        await waitFor(() => expect(screen.getByText('Kadıköy Şube')).toBeInTheDocument());
+
+        expect(screen.queryByText(/scans\/week/)).not.toBeInTheDocument();
+    });
+});
+
+describe('LocationsPage — akışkan işaretleme', () => {
+    afterEach(() => {
+        cleanup();
+        vi.unstubAllGlobals();
+    });
+
+    it('320x480 görünümünde sabit piksel ya da breakpoint sınıfı taşımaz', () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => timeSeriesResponse({ state: 'not_enough_data' })),
+        );
         setViewport(320, 480);
 
-        const { container } = render(
-            <LocationsPage
-                workspaceId={61}
-                locations={[makeLocation()]}
-                selectedLocationId={811}
-                onSelectLocation={vi.fn()}
-                onLocationSaved={vi.fn()}
-                onLocationCreated={vi.fn()}
-                addingLocation={false}
-                onToggleAddLocation={() => {}}
-            />,
-        );
+        const { container } = renderPage({ locations: [makeLocation()] });
 
         const root = container.querySelector('#section-locations') as HTMLElement;
         expect(root).not.toBeNull();

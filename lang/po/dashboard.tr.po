@@ -68,6 +68,26 @@ msgstr "Karekodlarınızı yazdırın"
 msgid "dashboard.now.region"
 msgstr "Şimdi ne yapmalı"
 
+#: dashboard:dashboard.quick.hide
+msgid "dashboard.quick.hide"
+msgstr ""
+
+#: dashboard:dashboard.quick.photo
+msgid "dashboard.quick.photo"
+msgstr ""
+
+#: dashboard:dashboard.quick.price
+msgid "dashboard.quick.price"
+msgstr ""
+
+#: dashboard:dashboard.quick.qr
+msgid "dashboard.quick.qr"
+msgstr ""
+
+#: dashboard:dashboard.quick.region
+msgid "dashboard.quick.region"
+msgstr ""
+
 #: dashboard:dashboard.setup.brand
 msgid "dashboard.setup.brand"
 msgstr "Marka"
@@ -156,9 +176,17 @@ msgstr "Henüz yapılmadı"
 msgid "dashboard.setup.toggle"
 msgstr "Adımları göster"
 
+#: dashboard:dashboard.stats.allVisible
+msgid "dashboard.stats.allVisible"
+msgstr ""
+
 #: dashboard:dashboard.stats.categories
 msgid "dashboard.stats.categories"
 msgstr "Kategori"
+
+#: dashboard:dashboard.stats.hidden
+msgid "dashboard.stats.hidden"
+msgstr ""
 
 #: dashboard:dashboard.stats.items
 msgid "dashboard.stats.items"
@@ -167,6 +195,50 @@ msgstr "Menü ürünü"
 #: dashboard:dashboard.stats.visible
 msgid "dashboard.stats.visible"
 msgstr "Görünen ürün"
+
+#: dashboard:dashboard.suggestions.dismiss
+msgid "dashboard.suggestions.dismiss"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.heading
+msgid "dashboard.suggestions.heading"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.heading.plural
+msgid "dashboard.suggestions.heading.plural"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.region
+msgid "dashboard.suggestions.region"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.rule
+msgid "dashboard.suggestions.rule"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.search.cta
+msgid "dashboard.suggestions.search.cta"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.search.title
+msgid "dashboard.suggestions.search.title"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.search.why
+msgid "dashboard.suggestions.search.why"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.unviewed.cta
+msgid "dashboard.suggestions.unviewed.cta"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.unviewed.title
+msgid "dashboard.suggestions.unviewed.title"
+msgstr ""
+
+#: dashboard:dashboard.suggestions.unviewed.why
+msgid "dashboard.suggestions.unviewed.why"
+msgstr ""
 
 #: dashboard:dashboard.table.caption
 msgid "dashboard.table.caption"
@@ -183,3 +255,31 @@ msgstr "Görünür"
 #: dashboard:dashboard.table.heading
 msgid "dashboard.table.heading"
 msgstr "Menüye bakış"
+
+#: dashboard:dashboard.topViewed.all
+msgid "dashboard.topViewed.all"
+msgstr ""
+
+#: dashboard:dashboard.topViewed.column.item
+msgid "dashboard.topViewed.column.item"
+msgstr ""
+
+#: dashboard:dashboard.topViewed.column.price
+msgid "dashboard.topViewed.column.price"
+msgstr ""
+
+#: dashboard:dashboard.topViewed.column.rank
+msgid "dashboard.topViewed.column.rank"
+msgstr ""
+
+#: dashboard:dashboard.topViewed.column.viewers
+msgid "dashboard.topViewed.column.viewers"
+msgstr ""
+
+#: dashboard:dashboard.topViewed.heading
+msgid "dashboard.topViewed.heading"
+msgstr ""
+
+#: dashboard:dashboard.topViewed.noPrice
+msgid "dashboard.topViewed.noPrice"
+msgstr ""

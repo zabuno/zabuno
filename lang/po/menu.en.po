@@ -8,6 +8,18 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: menu:menu.actions.csv
+msgid "menu.actions.csv"
+msgstr "CSV"
+
+#: menu:menu.actions.label
+msgid "menu.actions.label"
+msgstr "Menu actions"
+
+#: menu:menu.actions.previewAndPublish
+msgid "menu.actions.previewAndPublish"
+msgstr "Preview & publish"
+
 #: menu:menu.ai.unavailable.budget_exhausted
 msgid "menu.ai.unavailable.budget_exhausted"
 msgstr "This month’s AI budget is used up. Everything else keeps working."
@@ -31,6 +43,10 @@ msgstr "Cancel"
 #: menu:menu.category.add.disclose
 msgid "menu.category.add.disclose"
 msgstr "Add category"
+
+#: menu:menu.category.add.short
+msgid "menu.category.add.short"
+msgstr "Category"
 
 #: menu:menu.category.count
 msgid "menu.category.count"
@@ -80,6 +96,10 @@ msgstr "Category name"
 msgid "menu.category.order.label"
 msgstr "Order for {name}"
 
+#: menu:menu.category.panel.label
+msgid "menu.category.panel.label"
+msgstr "Selected category"
+
 #: menu:menu.category.reorder.handle
 msgid "menu.category.reorder.handle"
 msgstr "Drag {name} to reorder"
@@ -111,6 +131,22 @@ msgstr "We could not create the menu. Please try again."
 #: menu:menu.create.submit
 msgid "menu.create.submit"
 msgstr "Create menu"
+
+#: menu:menu.delete.confirm
+msgid "menu.delete.confirm"
+msgstr "This removes the menu and everything in it."
+
+#: menu:menu.delete.confirm.yes
+msgid "menu.delete.confirm.yes"
+msgstr "Yes, delete it"
+
+#: menu:menu.delete.error.submit
+msgid "menu.delete.error.submit"
+msgstr "We could not delete the menu. Please try again."
+
+#: menu:menu.delete.submit
+msgid "menu.delete.submit"
+msgstr "Delete menu"
 
 #: menu:menu.duplicates.heading
 msgid "menu.duplicates.heading"
@@ -400,6 +436,10 @@ msgstr "Photo"
 msgid "menu.item.image.none"
 msgstr "No photo"
 
+#: menu:menu.item.meta.noDescription
+msgid "menu.item.meta.noDescription"
+msgstr "No description"
+
 #: menu:menu.item.meta.noPhoto
 msgid "menu.item.meta.noPhoto"
 msgstr "No photo"
@@ -520,6 +560,42 @@ msgstr "Menu name"
 msgid "menu.ops.error"
 msgstr "That change could not be saved. Nothing was lost — try again."
 
+#: menu:menu.pill.allDay
+msgid "menu.pill.allDay"
+msgstr "all day"
+
+#: menu:menu.pill.disabled
+msgid "menu.pill.disabled"
+msgstr "closed"
+
+#: menu:menu.pill.draft
+msgid "menu.pill.draft"
+msgstr "draft"
+
+#: menu:menu.pill.moreWindows
+msgid "menu.pill.moreWindows"
+msgstr "{range} +{count}"
+
+#: menu:menu.pill.servingNow
+msgid "menu.pill.servingNow"
+msgstr "open now"
+
+#: menu:menu.pill.switching
+msgid "menu.pill.switching"
+msgstr "Opening this menu…"
+
+#: menu:menu.pills.add
+msgid "menu.pills.add"
+msgstr "New menu"
+
+#: menu:menu.pills.edit
+msgid "menu.pills.edit"
+msgstr "Edit menu"
+
+#: menu:menu.pills.label
+msgid "menu.pills.label"
+msgstr "Menus at this location"
+
 #: menu:menu.product.create.error.submit
 msgid "menu.product.create.error.submit"
 msgstr "We could not add the product. Please try again."
@@ -576,6 +652,22 @@ msgstr "Remove"
 msgid "menu.row.more"
 msgstr "More actions for {name}"
 
+#: menu:menu.save.error.submit
+msgid "menu.save.error.submit"
+msgstr "We could not save the menu. Please try again."
+
+#: menu:menu.save.submit
+msgid "menu.save.submit"
+msgstr "Save menu"
+
+#: menu:menu.state.draft
+msgid "menu.state.draft"
+msgstr "Draft"
+
+#: menu:menu.state.published
+msgid "menu.state.published"
+msgstr "Published"
+
 #: menu:menu.status.saving
 msgid "menu.status.saving"
 msgstr "Saving…"
@@ -587,3 +679,27 @@ msgstr "From a photo of your printed menu, or from a CSV file."
 #: menu:menu.tools.summary
 msgid "menu.tools.summary"
 msgstr "Bring in a whole menu"
+
+#: menu:menu.window.disable
+msgid "menu.window.disable"
+msgstr "Close this menu"
+
+#: menu:menu.window.endsAt.label
+msgid "menu.window.endsAt.label"
+msgstr "Ends at"
+
+#: menu:menu.window.error.incomplete
+msgid "menu.window.error.incomplete"
+msgstr "Enter both a start and an end time, or leave both empty."
+
+#: menu:menu.window.error.submit
+msgid "menu.window.error.submit"
+msgstr "We could not save the service hours. Please try again."
+
+#: menu:menu.window.help
+msgid "menu.window.help"
+msgstr "At the end time, whichever menu covered that hour before comes back — so every hour of the day always has a menu. Leave both empty to keep this menu out of the rotation. A window may cross midnight (22:00 to 02:00)."
+
+#: menu:menu.window.startsAt.label
+msgid "menu.window.startsAt.label"
+msgstr "Starts at"

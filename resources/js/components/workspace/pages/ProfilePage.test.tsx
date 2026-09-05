@@ -68,6 +68,21 @@ describe('profil ekranı', () => {
         expect(screen.getByRole('heading', { name: 'Brand colours' })).toBeTruthy();
     });
 
+    /*
+        KİŞİSEL OLAN HER ŞEY BURADA (docs/109, kaynağın "Profil" ekranı).
+        Ad, e-posta ve şifre Ayarlar'dan buraya taşındı; Ayarlar artık
+        çalışma alanına aittir. Bu ölçü olmadan taşıma "Ayarlar'dan silindi"
+        ile "Profil'e kondu" arasında ayrım yapamazdı — biri düzeltme, diğeri
+        yetenek kaybı olurdu.
+    */
+    it('ad, e-posta ve şifre değiştirme bu ekrandadır', () => {
+        renderPage();
+
+        expect(screen.getByLabelText('Your name')).toBeTruthy();
+        expect(screen.getByLabelText('Email')).toBeTruthy();
+        expect(screen.getByText('Change password')).toBeTruthy();
+    });
+
     // --- PROFILE-BRAND-PERMISSION-02 ---------------------------------------
     it('marka rengi bölümü, yönetme izni olmayana ÇİZİLMEZ', () => {
         renderPage({ canManageBrand: false });

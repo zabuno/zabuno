@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Button, HelperText, Label, TextInput } from 'flowbite-react';
-import { Select } from '../../catalog/forms/micro/Select';
+import { Button, Label, TextInput } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../lib/csrfHeader';
-import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
+import { TeamRoleGuide, type TeamRoleKey } from './team/TeamRoleGuide';
 import {
     TeamMemberList,
     type TeamMember,
@@ -34,7 +34,66 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * rows. Only an Editor invitation may be created from this UI; ownership
  * transfer is a separate flow.
  */
-type InvitableRole = 'editor' | 'manager';
+type InvitableRole = 'editor' | 'manager' | 'kitchen';
+
+/**
+ * Davet edilebilir roller — `App\Domain\Tenancy\MembershipRole::invitable()`.
+ *
+ * `owner` listede YOK: sahiplik davetle verilmez, devredilir. `member` de
+ * yok: yeni kimse salt okunur bir role davet edilmemeli.
+ *
+ * Kaynağın dördüncü rolü "Mutfak" bir süre burada da yoktu ve olmaması
+ * doğruydu: deponun izin matrisinde karşılığı olmayan bir hap, sahibe hiç
+ * kimseye veremeyeceği bir yetkiyi vaat ederdi. Artık `MembershipRole` onu
+ * tanıyor, `RolePermissions` dar listesini üretiyor ve menü uçları o dar
+ * izne bakıyor — yani hap gerçek bir daveti temsil ediyor.
+ *
+ * SIRA KAYNAĞIN SIRASIDIR (Editör · Yönetici · Mutfak) ve ilk sıradaki
+ * VARSAYILANDIR.
+ */
+const INVITABLE_ROLES: {
+    value: InvitableRole;
+    labelKey:
+        | 'workspace.team.invite.role.editor'
+        | 'workspace.team.invite.role.manager'
+        | 'workspace.team.invite.role.kitchen';
+    helpKey:
+        | 'workspace.team.invite.role.editor.help'
+        | 'workspace.team.invite.role.manager.help'
+        | 'workspace.team.invite.role.kitchen.help';
+}[] = [
+    {
+        value: 'editor',
+        labelKey: 'workspace.team.invite.role.editor',
+        helpKey: 'workspace.team.invite.role.editor.help',
+    },
+    {
+        value: 'manager',
+        labelKey: 'workspace.team.invite.role.manager',
+        helpKey: 'workspace.team.invite.role.manager.help',
+    },
+    {
+        value: 'kitchen',
+        labelKey: 'workspace.team.invite.role.kitchen',
+        helpKey: 'workspace.team.invite.role.kitchen.help',
+    },
+];
+
+/*
+    ROL HAPLARI (kaynak: `panel.dc.html`, "Takım" → davet kartı).
+
+    Rol bir açılır listedeydi ve seçenekler ancak liste açılınca görünüyordu:
+    iki rol arasında seçim yapan biri, ikisini aynı anda hiç görmüyordu. Hap
+    olarak ikisi de ekranda durur ve seçili olan ŞEKİLLE de ayrışır — yalnız
+    renkle değil (WCAG 2.2 §1.4.1): seçili hapın kenarlığı ve zemini birlikte
+    değişir, ağırlığı da 500'den 700'e çıkar.
+*/
+const ROLE_PILL_BASE = [
+    'inline-flex min-h-[var(--control-height)] items-center rounded-pill',
+    'px-[var(--space-4)] py-[var(--space-1)] text-body',
+    'transition-colors duration-[var(--duration-fast)] ease-[var(--easing-standard)]',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+].join(' ');
 
 export function TeamPage({ workspaceId }: TeamPageProps) {
     const emailId = useId();
@@ -428,184 +487,256 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
         }
     }
 
-    const teamStatusBadge: WorkspacePageStatusBadge | null =
-        invitationsStatus === 'loading'
-            ? { key: 'team-status', status: 'info', label: t('workspace.team.status.loading') }
-            : invitationsStatus === 'error'
-              ? { key: 'team-status', status: 'error', label: t('workspace.team.status.error') }
-              : // Başarı hâlinde rozet YOK. Buraya önceden "Invitations
-                // connected" basılıyordu: bu bir kullanıcı durumu değil,
-                // kablolamanın çalıştığına dair bir MÜHENDİS notudur. Üye
-                // listesinin ekranda olması bağlantının kurulduğunu zaten
-                // kanıtlar.
-                null;
-    const badges: WorkspacePageStatusBadge[] = teamStatusBadge ? [teamStatusBadge] : [];
+    /*
+        ROLLER KARTINA GİRECEK ROLLER.
 
-    const operationalDescription =
-        invitationsStatus === 'loading'
-            ? t('workspace.team.operational.description.loading')
-            : invitationsStatus === 'error'
-              ? t('workspace.team.operational.description.error')
-              : t('workspace.team.operational.description.connected');
+        Dört kanonik rol her zaman anlatılır: sahiplik devredilebilir, diğer
+        üçü davet edilebilir — yani sahibin hepsine bir yolu var. Eski salt
+        okunur `member` rolü ise YALNIZ fiilen taşıyan biri varsa eklenir:
+        satırda o kelimeyi gören sahip, kartta karşılığını bulmalı; kimse
+        taşımıyorken anlatmak ise olmayan bir seçenek sunmak olurdu.
+    */
+    const guideRoles: TeamRoleKey[] = ['owner', 'manager', 'editor', 'kitchen'];
+
+    if (members.some((member) => member.role.toLowerCase() === 'member')) {
+        guideRoles.push('member');
+    }
 
     return (
         <div id="section-team">
             <WorkspacePageFrame
                 measure="wide"
                 title={t('workspace.team.heading')}
-                description={operationalDescription}
-                badges={badges}
+                description={t('workspace.team.operational.description')}
             >
-                <PanelCard>
-                    <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
-                        <legend className="mb-1 text-body font-bold text-fg">
-                            {t('workspace.team.invite.section')}
-                        </legend>
+                {/*
+                    İKİ SÜTUN — kaynağın kendi düzeni (`panel.dc.html`,
+                    "Takım"): solda KİMLER VAR (üyeler, bekleyen davetler),
+                    sağda NE YAPABİLİRİM (davet et, roller).
 
-                        <div>
-                            <div className="mb-2 block">
-                                <Label htmlFor={emailId}>{t('workspace.team.invite.email')}</Label>
-                            </div>
-                            <TextInput
-                                id={emailId}
-                                name="invite-email"
-                                type="email"
-                                value={email}
-                                onChange={(event) => {
-                                    setEmail(event.target.value);
-                                    setSubmitError(false);
-                                    setSubmitSuccess(false);
-                                }}
+                    Ekran tek sütundu ve sırası davet → davetler → üyeler'di:
+                    sahip takımını görmek için iki formu geçmek zorundaydı.
+                    Sütunlar `flex-wrap` ile kurulur, breakpoint'le değil —
+                    320 pikselde kendiliğinden alt alta iner.
+                */}
+                <div className="flex flex-wrap items-start gap-[var(--space-fluid-md)]">
+                    <div className="flex min-w-[min(100%,20rem)] flex-[2] flex-col gap-[var(--space-fluid-md)]">
+                        <PanelCard>
+                            <TeamMemberList
+                                status={membersStatus}
+                                members={members}
+                                label={t('workspace.team.members.region')}
+                                loadingText={t('workspace.team.members.loading')}
+                                errorText={t('workspace.team.members.error')}
+                                emptyText={t('workspace.team.members.empty')}
+                                onRemoveMember={removeMember}
+                                onChangeRole={changeMemberRole}
+                                assignableRoles={INVITABLE_ROLES.map((option) => ({
+                                    value: option.value,
+                                    label: t(option.labelKey),
+                                }))}
+                                roleLabelFor={(name) =>
+                                    t('workspace.team.members.role.label', { name })
+                                }
+                                roleErrorText={t('workspace.team.members.role.error')}
+                                removeButtonText={t('workspace.team.members.remove.button')}
+                                removeConfirmText={t('workspace.team.members.remove.confirm')}
+                                removeCancelText={t('workspace.team.members.remove.cancel')}
+                                removeBusyText={t('workspace.team.members.remove.busy')}
+                                removeErrorText={t('workspace.team.members.remove.error')}
+                                removeSuccessText={t('workspace.team.members.remove.success')}
+                                removeRetryText={t('workspace.team.members.remove.retry')}
+                                onTransferOwnership={transferOwnership}
+                                transferButtonText={t('workspace.team.members.transfer.button')}
+                                transferDialogTitle={t('workspace.team.members.transfer.title')}
+                                transferDialogBody={t('workspace.team.members.transfer.body')}
+                                transferConfirmText={t('workspace.team.members.transfer.confirm')}
+                                transferCancelText={t('workspace.team.members.transfer.cancel')}
+                                transferBusyText={t('workspace.team.members.transfer.busy')}
+                                transferErrorText={t('workspace.team.members.transfer.error')}
+                                transferRetryText={t('workspace.team.members.transfer.retry')}
+                                transferSuccessText={t('workspace.team.members.transfer.success')}
                             />
-                        </div>
+                        </PanelCard>
+                        <PanelCard>
+                            <TeamInvitationList
+                                status={invitationsStatus}
+                                invitations={invitations}
+                                label={t('workspace.team.pendingInvitations.region')}
+                                loadingText={t('workspace.team.invitations.loading')}
+                                errorText={t('workspace.team.invitations.error')}
+                                emptyText={t('workspace.team.invitations.empty')}
+                                onCancelInvitation={cancelInvitation}
+                                cancelButtonText={t('workspace.team.invitations.cancel.button')}
+                                cancelConfirmText={t('workspace.team.invitations.cancel.confirm')}
+                                cancelKeepText={t('workspace.team.invitations.cancel.keep')}
+                                cancelBusyText={t('workspace.team.invitations.cancel.busy')}
+                                cancelErrorText={t('workspace.team.invitations.cancel.error')}
+                                cancelSuccessText={t('workspace.team.invitations.cancel.success')}
+                                cancelRetryText={t('workspace.team.invitations.cancel.retry')}
+                            />
+                        </PanelCard>
+                    </div>
 
-                        {/*
-                        ROL SEÇİMİ — `docs/70`.
+                    <div className="flex min-w-[min(100%,18rem)] flex-[1] flex-col gap-[var(--space-fluid-md)]">
+                        <PanelCard>
+                            <fieldset className="m-0 flex flex-col gap-4 border-0 p-0">
+                                <legend className="mb-1 text-body font-bold text-fg">
+                                    {t('workspace.team.invite.section')}
+                                </legend>
 
-                        Davet önceden her zaman `editor` gönderiyordu ve o rol
-                        hiçbir şeyi düzenleyemiyordu. Sahibin, faturaya
-                        dokunamayan ama günlük operasyonu yürütebilen birini
-                        davet etmesinin yolu yoktu.
+                                <div>
+                                    <div className="mb-2 block">
+                                        <Label htmlFor={emailId}>
+                                            {t('workspace.team.invite.email')}
+                                        </Label>
+                                    </div>
+                                    <TextInput
+                                        id={emailId}
+                                        name="invite-email"
+                                        type="email"
+                                        value={email}
+                                        onChange={(event) => {
+                                            setEmail(event.target.value);
+                                            setSubmitError(false);
+                                            setSubmitSuccess(false);
+                                        }}
+                                    />
+                                </div>
 
-                        `Owner` listede DEĞİL: sahiplik davetle verilmez,
-                        devredilir — ayrı bir akışı ve ayrı bir sonucu vardır.
-                    */}
-                        <div>
-                            <div className="mb-2 block">
-                                <Label htmlFor={roleId}>
-                                    {t('workspace.team.invite.role.label')}
-                                </Label>
-                            </div>
-                            <Select
-                                id={roleId}
-                                name="invite-role"
-                                value={role}
-                                onChange={(event) => {
-                                    setRole(event.target.value as InvitableRole);
-                                    setSubmitError(false);
-                                    setSubmitSuccess(false);
-                                }}
-                            >
-                                <option value="editor">
-                                    {t('workspace.team.invite.role.editor')}
-                                </option>
-                                <option value="manager">
-                                    {t('workspace.team.invite.role.manager')}
-                                </option>
-                            </Select>
-                            {/*
-                            Rolün NE YAPABİLDİĞİ alanın altında yazar. "Editor"
-                            kelimesi tek başına yayınlayıp yayınlayamayacağını
-                            söylemez ve sahibi yanlış kişiye yanlış yetkiyi
-                            verebilir.
-                        */}
-                            <HelperText color="gray" className="mt-1">
-                                {role === 'manager'
-                                    ? t('workspace.team.invite.role.manager.help')
-                                    : t('workspace.team.invite.role.editor.help')}
-                            </HelperText>
-                        </div>
+                                {/*
+                                    ROL SEÇİMİ — `docs/70`, kaynağın rol
+                                    hapları.
 
-                        <Button
-                            className="w-full"
-                            disabled={!emailIsValid || submitting}
-                            onClick={() => void handleInvite()}
-                        >
-                            {t('workspace.team.invite.button')}
-                        </Button>
+                                    Davet önceden her zaman `editor`
+                                    gönderiyordu ve o rol hiçbir şeyi
+                                    düzenleyemiyordu. Sahibin, faturaya
+                                    dokunamayan ama günlük operasyonu
+                                    yürütebilen birini davet etmesinin yolu
+                                    yoktu.
 
-                        {submitting && (
-                            <p role="status" className="text-body text-fg-muted">
-                                {t('workspace.team.invite.submitting')}
-                            </p>
-                        )}
+                                    `Owner` listede DEĞİL: sahiplik davetle
+                                    verilmez, devredilir.
+                                */}
+                                <div className="flex flex-col gap-[var(--space-2)]">
+                                    <span id={roleId} className="text-body font-medium text-fg">
+                                        {t('workspace.team.invite.role.label')}
+                                    </span>
+                                    <div
+                                        role="radiogroup"
+                                        aria-labelledby={roleId}
+                                        className="flex flex-wrap gap-[var(--space-2)]"
+                                    >
+                                        {INVITABLE_ROLES.map((option) => {
+                                            const selected = option.value === role;
 
-                        {!submitting && submitError && (
-                            <p role="status" className="text-body font-medium text-fg-danger">
-                                {t('workspace.team.invite.error')}
-                            </p>
-                        )}
+                                            return (
+                                                <button
+                                                    key={option.value}
+                                                    type="button"
+                                                    role="radio"
+                                                    aria-checked={selected}
+                                                    className={`${ROLE_PILL_BASE} ${
+                                                        selected
+                                                            ? 'border border-action bg-action font-bold text-action-fg'
+                                                            : 'border border-border bg-surface font-medium text-fg hover:bg-surface-hover'
+                                                    }`}
+                                                    onClick={() => {
+                                                        setRole(option.value);
+                                                        setSubmitError(false);
+                                                        setSubmitSuccess(false);
+                                                    }}
+                                                >
+                                                    {t(option.labelKey)}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {/*
+                                        Rolün NE YAPABİLDİĞİ hapların altında
+                                        yazar. "Editor" kelimesi tek başına
+                                        yayınlayıp yayınlayamayacağını söylemez
+                                        ve sahibi yanlış kişiye yanlış yetkiyi
+                                        verebilir.
+                                    */}
+                                    {/*
+                                        Flowbite'ın `HelperText`'i BİLEREK
+                                        kullanılmadı: kendi ham gri palet
+                                        basamağını ve taban altı bir yazı
+                                        boyutunu basıyor — ikisi de jeton
+                                        kökünü atlar, üstelik o boyut gövde
+                                        tabanının (1rem) altındadır.
+                                    */}
+                                    {/*
+                                        Yardım metni ROL KAYDINDAN okunur,
+                                        elle yazılmış bir koşuldan değil.
+                                        İkili bir `?:` üçüncü rol geldiğinde
+                                        sessizce yanlış cümleyi gösterirdi —
+                                        "Mutfak" seçili iken ekranda
+                                        "Editör"ün cümlesi yazardı ve sahip
+                                        yanlış yetkiyi verdiğini fark
+                                        etmezdi.
+                                    */}
+                                    <p className="text-body text-fg-secondary">
+                                        {t(
+                                            (
+                                                INVITABLE_ROLES.find(
+                                                    (option) => option.value === role,
+                                                ) ?? INVITABLE_ROLES[0]
+                                            ).helpKey,
+                                        )}
+                                    </p>
+                                </div>
 
-                        {!submitting && submitSuccess && (
-                            <p role="status" className="text-body font-medium text-fg-success">
-                                {t('workspace.team.invite.success')}
-                            </p>
-                        )}
-                    </fieldset>
-                </PanelCard>
-                <PanelCard>
-                    <TeamInvitationList
-                        status={invitationsStatus}
-                        invitations={invitations}
-                        label={t('workspace.team.pendingInvitations.region')}
-                        loadingText={t('workspace.team.invitations.loading')}
-                        errorText={t('workspace.team.invitations.error')}
-                        emptyText={t('workspace.team.invitations.empty')}
-                        onCancelInvitation={cancelInvitation}
-                        cancelButtonText={t('workspace.team.invitations.cancel.button')}
-                        cancelConfirmText={t('workspace.team.invitations.cancel.confirm')}
-                        cancelKeepText={t('workspace.team.invitations.cancel.keep')}
-                        cancelBusyText={t('workspace.team.invitations.cancel.busy')}
-                        cancelErrorText={t('workspace.team.invitations.cancel.error')}
-                        cancelSuccessText={t('workspace.team.invitations.cancel.success')}
-                        cancelRetryText={t('workspace.team.invitations.cancel.retry')}
-                    />
-                </PanelCard>
-                <PanelCard>
-                    <TeamMemberList
-                        status={membersStatus}
-                        members={members}
-                        label={t('workspace.team.members.region')}
-                        loadingText={t('workspace.team.members.loading')}
-                        errorText={t('workspace.team.members.error')}
-                        emptyText={t('workspace.team.members.empty')}
-                        onRemoveMember={removeMember}
-                        onChangeRole={changeMemberRole}
-                        assignableRoles={[
-                            { value: 'editor', label: t('workspace.team.invite.role.editor') },
-                            { value: 'manager', label: t('workspace.team.invite.role.manager') },
-                        ]}
-                        roleLabelFor={(name) => t('workspace.team.members.role.label', { name })}
-                        roleErrorText={t('workspace.team.members.role.error')}
-                        removeButtonText={t('workspace.team.members.remove.button')}
-                        removeConfirmText={t('workspace.team.members.remove.confirm')}
-                        removeCancelText={t('workspace.team.members.remove.cancel')}
-                        removeBusyText={t('workspace.team.members.remove.busy')}
-                        removeErrorText={t('workspace.team.members.remove.error')}
-                        removeSuccessText={t('workspace.team.members.remove.success')}
-                        removeRetryText={t('workspace.team.members.remove.retry')}
-                        onTransferOwnership={transferOwnership}
-                        transferButtonText={t('workspace.team.members.transfer.button')}
-                        transferDialogTitle={t('workspace.team.members.transfer.title')}
-                        transferDialogBody={t('workspace.team.members.transfer.body')}
-                        transferConfirmText={t('workspace.team.members.transfer.confirm')}
-                        transferCancelText={t('workspace.team.members.transfer.cancel')}
-                        transferBusyText={t('workspace.team.members.transfer.busy')}
-                        transferErrorText={t('workspace.team.members.transfer.error')}
-                        transferRetryText={t('workspace.team.members.transfer.retry')}
-                        transferSuccessText={t('workspace.team.members.transfer.success')}
-                    />
-                </PanelCard>
+                                <Button
+                                    className="w-full"
+                                    disabled={!emailIsValid || submitting}
+                                    onClick={() => void handleInvite()}
+                                >
+                                    {t('workspace.team.invite.button')}
+                                </Button>
+
+                                {/*
+                                    Kaynağın son satırı: sahiplik davetle
+                                    verilmez. Bu cümle burada durur çünkü
+                                    sahibin "Sahip" hapını aradığı an tam
+                                    olarak burasıdır.
+                                */}
+                                <p className="text-body text-fg-muted">
+                                    {t('workspace.team.invite.ownership.note')}
+                                </p>
+
+                                {submitting && (
+                                    <p role="status" className="text-body text-fg-muted">
+                                        {t('workspace.team.invite.submitting')}
+                                    </p>
+                                )}
+
+                                {!submitting && submitError && (
+                                    <p
+                                        role="status"
+                                        className="text-body font-medium text-fg-danger"
+                                    >
+                                        {t('workspace.team.invite.error')}
+                                    </p>
+                                )}
+
+                                {!submitting && submitSuccess && (
+                                    <p
+                                        role="status"
+                                        className="text-body font-medium text-fg-success"
+                                    >
+                                        {t('workspace.team.invite.success')}
+                                    </p>
+                                )}
+                            </fieldset>
+                        </PanelCard>
+
+                        <PanelCard>
+                            <TeamRoleGuide roles={guideRoles} />
+                        </PanelCard>
+                    </div>
+                </div>
             </WorkspacePageFrame>
         </div>
     );

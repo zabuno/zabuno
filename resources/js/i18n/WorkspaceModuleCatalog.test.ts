@@ -33,11 +33,11 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 964;
+const FROZEN_LEGACY_KEY_COUNT = 1321;
 
-// FF-136: PDF kabulü ve 'asıl her zaman saklanır' bilgi satırı.
+// FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'e00aa6ad86cfd5ad730b776b4948b2376b4ee4b667eb20ccc3ea98c483def501';
+    'b7b491cad5be29252ac6a4c42a4ba881f8d6f82e9d8a45b3b578123a90700d2c';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

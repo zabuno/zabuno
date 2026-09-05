@@ -36,6 +36,34 @@ msgstr "By location"
 msgid "workspace.analytics.breakdown.qrCodes"
 msgstr "By QR code"
 
+#: workspace:workspace.analytics.compare.basis.previousPeriod
+msgid "workspace.analytics.compare.basis.previousPeriod"
+msgstr "the period before"
+
+#: workspace:workspace.analytics.compare.basis.sameWeekdayLastWeek
+msgid "workspace.analytics.compare.basis.sameWeekdayLastWeek"
+msgstr "the same day last week"
+
+#: workspace:workspace.analytics.compare.down
+msgid "workspace.analytics.compare.down"
+msgstr "Down {percent}% on {basis}"
+
+#: workspace:workspace.analytics.compare.flat
+msgid "workspace.analytics.compare.flat"
+msgstr "Level with {basis}"
+
+#: workspace:workspace.analytics.compare.noBaseline
+msgid "workspace.analytics.compare.noBaseline"
+msgstr "Nothing to compare: {basis} had no scans"
+
+#: workspace:workspace.analytics.compare.up
+msgid "workspace.analytics.compare.up"
+msgstr "Up {percent}% on {basis}"
+
+#: workspace:workspace.analytics.description
+msgid "workspace.analytics.description"
+msgstr "What guests look at, and what they look for and cannot find."
+
 #: workspace:workspace.analytics.empty.noMenu.action
 msgid "workspace.analytics.empty.noMenu.action"
 msgstr "Build the menu"
@@ -92,6 +120,30 @@ msgstr "Open that screen from the sidebar."
 msgid "workspace.analytics.heading"
 msgstr "Analytics"
 
+#: workspace:workspace.analytics.highlight.action.addTerm
+msgid "workspace.analytics.highlight.action.addTerm"
+msgstr "Add “{term}” to the menu"
+
+#: workspace:workspace.analytics.highlight.action.editMenu
+msgid "workspace.analytics.highlight.action.editMenu"
+msgstr "Review the menu"
+
+#: workspace:workspace.analytics.highlight.busiest
+msgid "workspace.analytics.highlight.busiest"
+msgstr "{day} around {hour} was the busiest slot."
+
+#: workspace:workspace.analytics.highlight.missing
+msgid "workspace.analytics.highlight.missing"
+msgstr "“{term}” was searched {count} times and returned nothing — that may be a gap in your menu."
+
+#: workspace:workspace.analytics.highlight.neverViewed
+msgid "workspace.analytics.highlight.neverViewed"
+msgstr "{name} was not looked at once in this range."
+
+#: workspace:workspace.analytics.highlight.title
+msgid "workspace.analytics.highlight.title"
+msgstr "What happened in this range?"
+
 #: workspace:workspace.analytics.menuEngineering.error
 msgid "workspace.analytics.menuEngineering.error"
 msgstr "Menu figures could not be loaded."
@@ -124,6 +176,14 @@ msgstr "{count} visitors"
 msgid "workspace.analytics.menuEngineering.searches"
 msgstr "Searched for, not found"
 
+#: workspace:workspace.analytics.menuEngineering.searches.add
+msgid "workspace.analytics.menuEngineering.searches.add"
+msgstr "Add"
+
+#: workspace:workspace.analytics.menuEngineering.searches.addFor
+msgid "workspace.analytics.menuEngineering.searches.addFor"
+msgstr "Add “{term}” to the menu"
+
 #: workspace:workspace.analytics.menuEngineering.searches.none
 msgid "workspace.analytics.menuEngineering.searches.none"
 msgstr "No one searched for something your menu does not have."
@@ -151,6 +211,14 @@ msgstr "Scan to menu open"
 #: workspace:workspace.analytics.metric.qrResolve
 msgid "workspace.analytics.metric.qrResolve"
 msgstr "QR Resolve"
+
+#: workspace:workspace.analytics.metric.searches
+msgid "workspace.analytics.metric.searches"
+msgstr "Searches"
+
+#: workspace:workspace.analytics.metric.searches.support
+msgid "workspace.analytics.metric.searches.support"
+msgstr "{count} found nothing"
 
 #: workspace:workspace.analytics.metric.uniqueVisitors
 msgid "workspace.analytics.metric.uniqueVisitors"
@@ -211,6 +279,110 @@ msgstr "Not requested yet"
 #: workspace:workspace.analytics.status.planRestricted
 msgid "workspace.analytics.status.planRestricted"
 msgstr "Not in your plan"
+
+#: workspace:workspace.analytics.timeSeries.error
+msgid "workspace.analytics.timeSeries.error"
+msgstr "The charts could not be loaded."
+
+#: workspace:workspace.analytics.timeSeries.heat.column
+msgid "workspace.analytics.timeSeries.heat.column"
+msgstr "Weekday"
+
+#: workspace:workspace.analytics.timeSeries.heat.description
+msgid "workspace.analytics.timeSeries.heat.description"
+msgstr "Scans by weekday and hour ({timezone})"
+
+#: workspace:workspace.analytics.timeSeries.heat.title
+msgid "workspace.analytics.timeSeries.heat.title"
+msgstr "Busiest hours"
+
+#: workspace:workspace.analytics.timeSeries.heat.withheld
+msgid "workspace.analytics.timeSeries.heat.withheld"
+msgstr "withheld"
+
+#: workspace:workspace.analytics.timeSeries.heat.withheldNote
+msgid "workspace.analytics.timeSeries.heat.withheldNote"
+msgstr "{count} hour slots are not shown: a single visitor would be identifiable in them."
+
+#: workspace:workspace.analytics.timeSeries.loading
+msgid "workspace.analytics.timeSeries.loading"
+msgstr "Loading the charts…"
+
+#: workspace:workspace.analytics.timeSeries.menuOpens
+msgid "workspace.analytics.timeSeries.menuOpens"
+msgstr "Menu opens"
+
+#: workspace:workspace.analytics.timeSeries.region
+msgid "workspace.analytics.timeSeries.region"
+msgstr "Traffic over time"
+
+#: workspace:workspace.analytics.timeSeries.scans
+msgid "workspace.analytics.timeSeries.scans"
+msgstr "Scans"
+
+#: workspace:workspace.analytics.timeSeries.share.description
+msgid "workspace.analytics.timeSeries.share.description"
+msgstr "Scans per location"
+
+#: workspace:workspace.analytics.timeSeries.share.scope
+msgid "workspace.analytics.timeSeries.share.scope"
+msgstr "Across your whole brand, not only the selected location."
+
+#: workspace:workspace.analytics.timeSeries.share.title
+msgid "workspace.analytics.timeSeries.share.title"
+msgstr "Share by location"
+
+#: workspace:workspace.analytics.timeSeries.tables.title
+msgid "workspace.analytics.timeSeries.tables.title"
+msgstr "Busiest tables"
+
+#: workspace:workspace.analytics.timeSeries.tables.value
+msgid "workspace.analytics.timeSeries.tables.value"
+msgstr "scans"
+
+#: workspace:workspace.analytics.timeSeries.thin
+msgid "workspace.analytics.timeSeries.thin"
+msgstr "Not enough visitors yet to chart your traffic: {observed} of {threshold}. Keep the menu published and check back."
+
+#: workspace:workspace.analytics.timeSeries.trend.column
+msgid "workspace.analytics.timeSeries.trend.column"
+msgstr "Day"
+
+#: workspace:workspace.analytics.timeSeries.trend.description
+msgid "workspace.analytics.timeSeries.trend.description"
+msgstr "Scans and menu opens per day"
+
+#: workspace:workspace.analytics.timeSeries.trend.title
+msgid "workspace.analytics.timeSeries.trend.title"
+msgstr "Scans and menu opens"
+
+#: workspace:workspace.analytics.weekday.1
+msgid "workspace.analytics.weekday.1"
+msgstr "Mon"
+
+#: workspace:workspace.analytics.weekday.2
+msgid "workspace.analytics.weekday.2"
+msgstr "Tue"
+
+#: workspace:workspace.analytics.weekday.3
+msgid "workspace.analytics.weekday.3"
+msgstr "Wed"
+
+#: workspace:workspace.analytics.weekday.4
+msgid "workspace.analytics.weekday.4"
+msgstr "Thu"
+
+#: workspace:workspace.analytics.weekday.5
+msgid "workspace.analytics.weekday.5"
+msgstr "Fri"
+
+#: workspace:workspace.analytics.weekday.6
+msgid "workspace.analytics.weekday.6"
+msgstr "Sat"
+
+#: workspace:workspace.analytics.weekday.7
+msgid "workspace.analytics.weekday.7"
+msgstr "Sun"
 
 #: workspace:workspace.billing.changePlan.button
 msgid "workspace.billing.changePlan.button"
@@ -704,6 +876,10 @@ msgstr "Locations"
 msgid "workspace.brandLocations.locations.section.address"
 msgstr "Address"
 
+#: workspace:workspace.brandLocations.locations.section.hours
+msgid "workspace.brandLocations.locations.section.hours"
+msgstr "Opening hours"
+
 #: workspace:workspace.brandLocations.locations.section.identity
 msgid "workspace.brandLocations.locations.section.identity"
 msgstr "Identity"
@@ -924,6 +1100,62 @@ msgstr "We could not create your location. Please try again."
 msgid "workspace.location.heading"
 msgstr "Create your location"
 
+#: workspace:workspace.location.hours.closed
+msgid "workspace.location.hours.closed"
+msgstr "Closed"
+
+#: workspace:workspace.location.hours.closes
+msgid "workspace.location.hours.closes"
+msgstr "Closes"
+
+#: workspace:workspace.location.hours.day.1
+msgid "workspace.location.hours.day.1"
+msgstr "Monday"
+
+#: workspace:workspace.location.hours.day.2
+msgid "workspace.location.hours.day.2"
+msgstr "Tuesday"
+
+#: workspace:workspace.location.hours.day.3
+msgid "workspace.location.hours.day.3"
+msgstr "Wednesday"
+
+#: workspace:workspace.location.hours.day.4
+msgid "workspace.location.hours.day.4"
+msgstr "Thursday"
+
+#: workspace:workspace.location.hours.day.5
+msgid "workspace.location.hours.day.5"
+msgstr "Friday"
+
+#: workspace:workspace.location.hours.day.6
+msgid "workspace.location.hours.day.6"
+msgstr "Saturday"
+
+#: workspace:workspace.location.hours.day.7
+msgid "workspace.location.hours.day.7"
+msgstr "Sunday"
+
+#: workspace:workspace.location.hours.empty
+msgid "workspace.location.hours.empty"
+msgstr "No opening hours yet. The location card leaves that line out until you add them."
+
+#: workspace:workspace.location.hours.enable
+msgid "workspace.location.hours.enable"
+msgstr "This location has opening hours"
+
+#: workspace:workspace.location.hours.help
+msgid "workspace.location.hours.help"
+msgstr "Times use this location’s own time zone. A closing time earlier than the opening time means the next day — 18:00 to 02:00 closes at two in the morning."
+
+#: workspace:workspace.location.hours.nextDay
+msgid "workspace.location.hours.nextDay"
+msgstr "next day"
+
+#: workspace:workspace.location.hours.opens
+msgid "workspace.location.hours.opens"
+msgstr "Opens"
+
 #: workspace:workspace.location.optional
 msgid "workspace.location.optional"
 msgstr "{label} (optional)"
@@ -955,6 +1187,50 @@ msgstr "Opening hours and publication times use this location’s time zone."
 #: workspace:workspace.locations.add.button
 msgid "workspace.locations.add.button"
 msgstr "Add location"
+
+#: workspace:workspace.locations.card.edit.action
+msgid "workspace.locations.card.edit.action"
+msgstr "Edit details for {name}"
+
+#: workspace:workspace.locations.card.edit.label
+msgid "workspace.locations.card.edit.label"
+msgstr "Edit"
+
+#: workspace:workspace.locations.card.hours.closedAllWeek
+msgid "workspace.locations.card.hours.closedAllWeek"
+msgstr "Closed all week"
+
+#: workspace:workspace.locations.card.hours.closedToday
+msgid "workspace.locations.card.hours.closedToday"
+msgstr "Closed today"
+
+#: workspace:workspace.locations.card.hours.today
+msgid "workspace.locations.card.hours.today"
+msgstr "Today {range}"
+
+#: workspace:workspace.locations.card.noAddress
+msgid "workspace.locations.card.noAddress"
+msgstr "No address yet"
+
+#: workspace:workspace.locations.card.scansPerWeek
+msgid "workspace.locations.card.scansPerWeek"
+msgstr "{count} scans/week"
+
+#: workspace:workspace.locations.card.status.setup
+msgid "workspace.locations.card.status.setup"
+msgstr "In setup"
+
+#: workspace:workspace.locations.card.tables
+msgid "workspace.locations.card.tables"
+msgstr "{count} tables"
+
+#: workspace:workspace.locations.card.tables.action
+msgid "workspace.locations.card.tables.action"
+msgstr "Tables at {name}"
+
+#: workspace:workspace.locations.card.tables.label
+msgid "workspace.locations.card.tables.label"
+msgstr "Tables"
 
 #: workspace:workspace.locations.empty
 msgid "workspace.locations.empty"
@@ -994,7 +1270,11 @@ msgstr "This location"
 
 #: workspace:workspace.locations.operational.description
 msgid "workspace.locations.operational.description"
-msgstr "Add and edit the physical locations that serve your menu — grouped by city, with an onboarding flow for new ones."
+msgstr "Every location has its own tables and QR codes; the menu is shared."
+
+#: workspace:workspace.locations.region
+msgid "workspace.locations.region"
+msgstr "Locations"
 
 #: workspace:workspace.media.audit.action.downloaded
 msgid "workspace.media.audit.action.downloaded"
@@ -1039,6 +1319,462 @@ msgstr "Who did what"
 #: workspace:workspace.media.audit.help
 msgid "workspace.media.audit.help"
 msgstr "Every upload, rename, deletion and restore is recorded here. Records are never edited or removed."
+
+#: workspace:workspace.media.bulk.action.convert
+msgid "workspace.media.bulk.action.convert"
+msgstr "Convert format"
+
+#: workspace:workspace.media.bulk.action.convert.description
+msgid "workspace.media.bulk.action.convert.description"
+msgstr "Produces AVIF, WebP or JPEG. The converted file becomes a new version; the original is kept."
+
+#: workspace:workspace.media.bulk.action.irreversible
+msgid "workspace.media.bulk.action.irreversible"
+msgstr "Cannot be undone"
+
+#: workspace:workspace.media.bulk.action.locked
+msgid "workspace.media.bulk.action.locked"
+msgstr "Needs the “{permission}” permission — ask a workspace manager."
+
+#: workspace:workspace.media.bulk.action.move
+msgid "workspace.media.bulk.action.move"
+msgstr "Move to folder"
+
+#: workspace:workspace.media.bulk.action.move.description
+msgid "workspace.media.bulk.action.move.description"
+msgstr "Moves files to another folder. Addresses do not change and no new version is created."
+
+#: workspace:workspace.media.bulk.action.next
+msgid "workspace.media.bulk.action.next"
+msgstr "Set up “{action}”"
+
+#: workspace:workspace.media.bulk.action.none
+msgid "workspace.media.bulk.action.none"
+msgstr "Choose an action"
+
+#: workspace:workspace.media.bulk.action.optimize
+msgid "workspace.media.bulk.action.optimize"
+msgstr "Re-render derivatives"
+
+#: workspace:workspace.media.bulk.action.optimize.description
+msgid "workspace.media.bulk.action.optimize.description"
+msgstr "Rebuilds every size from the original using today’s rules. The original is untouched and each file gets a new version."
+
+#: workspace:workspace.media.bulk.action.purge
+msgid "workspace.media.bulk.action.purge"
+msgstr "Delete permanently"
+
+#: workspace:workspace.media.bulk.action.purge.description
+msgid "workspace.media.bulk.action.purge.description"
+msgstr "Files already in the trash are erased along with every version. Only a nightly backup could bring them back."
+
+#: workspace:workspace.media.bulk.action.reversible
+msgid "workspace.media.bulk.action.reversible"
+msgstr "Can be undone"
+
+#: workspace:workspace.media.bulk.action.trash
+msgid "workspace.media.bulk.action.trash"
+msgstr "Move to trash"
+
+#: workspace:workspace.media.bulk.action.trash.description
+msgid "workspace.media.bulk.action.trash.description"
+msgstr "Waits {days} days in the trash, then is deleted for good. Can be restored at any point in that window."
+
+#: workspace:workspace.media.bulk.action.unlocked
+msgid "workspace.media.bulk.action.unlocked"
+msgstr "You have the permission for this"
+
+#: workspace:workspace.media.bulk.audit.heading
+msgid "workspace.media.bulk.audit.heading"
+msgstr "Audit record"
+
+#: workspace:workspace.media.bulk.audit.key
+msgid "workspace.media.bulk.audit.key"
+msgstr "Operation key"
+
+#: workspace:workspace.media.bulk.audit.note
+msgid "workspace.media.bulk.audit.note"
+msgstr "This record cannot be deleted or edited, and the same operation key never runs twice."
+
+#: workspace:workspace.media.bulk.back
+msgid "workspace.media.bulk.back"
+msgstr "Back"
+
+#: workspace:workspace.media.bulk.config.folder
+msgid "workspace.media.bulk.config.folder"
+msgstr "Destination folder"
+
+#: workspace:workspace.media.bulk.config.folder.help
+msgid "workspace.media.bulk.config.folder.help"
+msgstr "A file already in the destination is skipped."
+
+#: workspace:workspace.media.bulk.config.folder.root
+msgid "workspace.media.bulk.config.folder.root"
+msgstr "No folder"
+
+#: workspace:workspace.media.bulk.config.format
+msgid "workspace.media.bulk.config.format"
+msgstr "Target format"
+
+#: workspace:workspace.media.bulk.config.format.help
+msgid "workspace.media.bulk.config.format.help"
+msgstr "A file that is already in this format is skipped instead of re-encoded."
+
+#: workspace:workspace.media.bulk.config.heading
+msgid "workspace.media.bulk.config.heading"
+msgstr "Settings for “{action}”"
+
+#: workspace:workspace.media.bulk.config.next
+msgid "workspace.media.bulk.config.next"
+msgstr "Show the impact"
+
+#: workspace:workspace.media.bulk.config.none
+msgid "workspace.media.bulk.config.none"
+msgstr "This action has no settings. Go on to see what it would do."
+
+#: workspace:workspace.media.bulk.confirm.body.large
+msgid "workspace.media.bulk.confirm.body.large"
+msgstr "{count} files will change. A job that touches more than a hundred files asks you to confirm in writing."
+
+#: workspace:workspace.media.bulk.confirm.body.purge
+msgid "workspace.media.bulk.confirm.body.purge"
+msgstr "{count} files and every version of them will be erased. They do not go to the trash; only a nightly backup could bring them back."
+
+#: workspace:workspace.media.bulk.confirm.heading.large
+msgid "workspace.media.bulk.confirm.heading.large"
+msgstr "Large scope"
+
+#: workspace:workspace.media.bulk.confirm.heading.purge
+msgid "workspace.media.bulk.confirm.heading.purge"
+msgstr "This cannot be undone"
+
+#: workspace:workspace.media.bulk.confirm.label
+msgid "workspace.media.bulk.confirm.label"
+msgstr "Type {word} to confirm"
+
+#: workspace:workspace.media.bulk.confirm.mismatch
+msgid "workspace.media.bulk.confirm.mismatch"
+msgstr "The word does not match yet, so the job stays closed."
+
+#: workspace:workspace.media.bulk.failed
+msgid "workspace.media.bulk.failed"
+msgstr "The impact could not be worked out. Nothing was changed."
+
+#: workspace:workspace.media.bulk.failure.convert
+msgid "workspace.media.bulk.failure.convert"
+msgstr "Conversion failed; the file is unchanged."
+
+#: workspace:workspace.media.bulk.failure.move
+msgid "workspace.media.bulk.failure.move"
+msgstr "The move did not go through; the file stayed put."
+
+#: workspace:workspace.media.bulk.failure.reprocess
+msgid "workspace.media.bulk.failure.reprocess"
+msgstr "Re-rendering failed; the file is unchanged."
+
+#: workspace:workspace.media.bulk.failure.unknown
+msgid "workspace.media.bulk.failure.unknown"
+msgstr "This file could not be processed and was left as it was."
+
+#: workspace:workspace.media.bulk.group.improve
+msgid "workspace.media.bulk.group.improve"
+msgstr "Improve the file"
+
+#: workspace:workspace.media.bulk.group.organize
+msgid "workspace.media.bulk.group.organize"
+msgstr "Organise and move"
+
+#: workspace:workspace.media.bulk.group.remove
+msgid "workspace.media.bulk.group.remove"
+msgstr "Remove"
+
+#: workspace:workspace.media.bulk.impact.heading
+msgid "workspace.media.bulk.impact.heading"
+msgstr "What will the result be?"
+
+#: workspace:workspace.media.bulk.impact.newVersion
+msgid "workspace.media.bulk.impact.newVersion"
+msgstr "A new version opens on"
+
+#: workspace:workspace.media.bulk.impact.newVersion.value
+msgid "workspace.media.bulk.impact.newVersion.value"
+msgstr "{count} files"
+
+#: workspace:workspace.media.bulk.impact.originals
+msgid "workspace.media.bulk.impact.originals"
+msgstr "Original files"
+
+#: workspace:workspace.media.bulk.impact.originals.kept
+msgid "workspace.media.bulk.impact.originals.kept"
+msgstr "Unchanged"
+
+#: workspace:workspace.media.bulk.impact.storage
+msgid "workspace.media.bulk.impact.storage"
+msgstr "Storage in use"
+
+#: workspace:workspace.media.bulk.impact.storage.freed
+msgid "workspace.media.bulk.impact.storage.freed"
+msgstr "{used} now, {freed} freed"
+
+#: workspace:workspace.media.bulk.impact.storage.unknown
+msgid "workspace.media.bulk.impact.storage.unknown"
+msgstr "{used} now. What the new versions will weigh is only known after they are produced, so no estimate is shown here."
+
+#: workspace:workspace.media.bulk.impact.undo
+msgid "workspace.media.bulk.impact.undo"
+msgstr "Undo window"
+
+#: workspace:workspace.media.bulk.impact.undo.days
+msgid "workspace.media.bulk.impact.undo.days"
+msgstr "{days} days"
+
+#: workspace:workspace.media.bulk.impact.undo.none
+msgid "workspace.media.bulk.impact.undo.none"
+msgstr "None"
+
+#: workspace:workspace.media.bulk.lead
+msgid "workspace.media.bulk.lead"
+msgstr "Apply one action to many files at once — see exactly what will happen before anything is touched."
+
+#: workspace:workspace.media.bulk.loading
+msgid "workspace.media.bulk.loading"
+msgstr "Working out what this would do…"
+
+#: workspace:workspace.media.bulk.preview.apply
+msgid "workspace.media.bulk.preview.apply"
+msgstr "Will be applied"
+
+#: workspace:workspace.media.bulk.preview.heading
+msgid "workspace.media.bulk.preview.heading"
+msgstr "Dry run result"
+
+#: workspace:workspace.media.bulk.preview.lead
+msgid "workspace.media.bulk.preview.lead"
+msgstr "No file was touched. The server checked every file one by one; the numbers below are real."
+
+#: workspace:workspace.media.bulk.preview.remaining
+msgid "workspace.media.bulk.preview.remaining"
+msgstr "Left for the next run"
+
+#: workspace:workspace.media.bulk.preview.remaining.note
+msgid "workspace.media.bulk.preview.remaining.note"
+msgstr "One run handles {limit} files. Press the button again afterwards and it carries on where it stopped."
+
+#: workspace:workspace.media.bulk.preview.skip
+msgid "workspace.media.bulk.preview.skip"
+msgstr "Will be skipped"
+
+#: workspace:workspace.media.bulk.region
+msgid "workspace.media.bulk.region"
+msgstr "Bulk actions"
+
+#: workspace:workspace.media.bulk.result.csv
+msgid "workspace.media.bulk.result.csv"
+msgstr "Download CSV"
+
+#: workspace:workspace.media.bulk.result.csv.header.id
+msgid "workspace.media.bulk.result.csv.header.id"
+msgstr "id"
+
+#: workspace:workspace.media.bulk.result.csv.header.name
+msgid "workspace.media.bulk.result.csv.header.name"
+msgstr "file"
+
+#: workspace:workspace.media.bulk.result.csv.header.reason
+msgid "workspace.media.bulk.result.csv.header.reason"
+msgstr "reason"
+
+#: workspace:workspace.media.bulk.result.csv.header.status
+msgid "workspace.media.bulk.result.csv.header.status"
+msgstr "status"
+
+#: workspace:workspace.media.bulk.result.filter.all
+msgid "workspace.media.bulk.result.filter.all"
+msgstr "All"
+
+#: workspace:workspace.media.bulk.result.filter.error
+msgid "workspace.media.bulk.result.filter.error"
+msgstr "Failed"
+
+#: workspace:workspace.media.bulk.result.filter.ok
+msgid "workspace.media.bulk.result.filter.ok"
+msgstr "Applied"
+
+#: workspace:workspace.media.bulk.result.filter.skip
+msgid "workspace.media.bulk.result.filter.skip"
+msgstr "Skipped"
+
+#: workspace:workspace.media.bulk.result.heading
+msgid "workspace.media.bulk.result.heading"
+msgstr "File-by-file result"
+
+#: workspace:workspace.media.bulk.result.replayed
+msgid "workspace.media.bulk.result.replayed"
+msgstr "This job had already run with the same key, so it was not run a second time."
+
+#: workspace:workspace.media.bulk.result.restart
+msgid "workspace.media.bulk.result.restart"
+msgstr "New bulk action"
+
+#: workspace:workspace.media.bulk.result.retry
+msgid "workspace.media.bulk.result.retry"
+msgstr "Retry the {count} failed files only"
+
+#: workspace:workspace.media.bulk.result.summary
+msgid "workspace.media.bulk.result.summary"
+msgstr "{applied} applied, {skipped} skipped, {failed} failed."
+
+#: workspace:workspace.media.bulk.run.failed
+msgid "workspace.media.bulk.run.failed"
+msgstr "The job could not be started. Nothing was changed."
+
+#: workspace:workspace.media.bulk.run.running
+msgid "workspace.media.bulk.run.running"
+msgstr "Running…"
+
+#: workspace:workspace.media.bulk.run.start
+msgid "workspace.media.bulk.run.start"
+msgstr "Start · {count} files"
+
+#: workspace:workspace.media.bulk.run.start.destructive
+msgid "workspace.media.bulk.run.start.destructive"
+msgstr "Delete · {count} files"
+
+#: workspace:workspace.media.bulk.run.start.empty
+msgid "workspace.media.bulk.run.start.empty"
+msgstr "No file to apply this to"
+
+#: workspace:workspace.media.bulk.scope.empty
+msgid "workspace.media.bulk.scope.empty"
+msgstr "There is no file in this scope yet."
+
+#: workspace:workspace.media.bulk.scope.files
+msgid "workspace.media.bulk.scope.files"
+msgstr "{count} files"
+
+#: workspace:workspace.media.bulk.scope.folder
+msgid "workspace.media.bulk.scope.folder"
+msgstr "This folder and everything under it"
+
+#: workspace:workspace.media.bulk.scope.folder.description
+msgid "workspace.media.bulk.scope.folder.description"
+msgstr "The folder selected on the left, plus its sub-folders."
+
+#: workspace:workspace.media.bulk.scope.folder.none
+msgid "workspace.media.bulk.scope.folder.none"
+msgstr "Files that are not in any folder."
+
+#: workspace:workspace.media.bulk.scope.heading
+msgid "workspace.media.bulk.scope.heading"
+msgstr "Which files?"
+
+#: workspace:workspace.media.bulk.scope.next
+msgid "workspace.media.bulk.scope.next"
+msgstr "Choose an action"
+
+#: workspace:workspace.media.bulk.scope.selected
+msgid "workspace.media.bulk.scope.selected"
+msgstr "The ones I pick"
+
+#: workspace:workspace.media.bulk.scope.selected.description
+msgid "workspace.media.bulk.scope.selected.description"
+msgstr "Tick the files below. Only what you tick goes into this job."
+
+#: workspace:workspace.media.bulk.scope.snapshot
+msgid "workspace.media.bulk.scope.snapshot"
+msgstr "The list is frozen the moment the job starts. If someone uploads a new file while you work, that file is not part of this job — otherwise the job might never finish."
+
+#: workspace:workspace.media.bulk.scope.summary
+msgid "workspace.media.bulk.scope.summary"
+msgstr "Scope summary"
+
+#: workspace:workspace.media.bulk.scope.summary.batch
+msgid "workspace.media.bulk.scope.summary.batch"
+msgstr "Handled per run"
+
+#: workspace:workspace.media.bulk.scope.summary.count
+msgid "workspace.media.bulk.scope.summary.count"
+msgstr "Files"
+
+#: workspace:workspace.media.bulk.scope.summary.size
+msgid "workspace.media.bulk.scope.summary.size"
+msgstr "Total size"
+
+#: workspace:workspace.media.bulk.scope.workspace
+msgid "workspace.media.bulk.scope.workspace"
+msgstr "Everything in the library"
+
+#: workspace:workspace.media.bulk.scope.workspace.description
+msgid "workspace.media.bulk.scope.workspace.description"
+msgstr "Every file in this workspace, not just the ones on this page."
+
+#: workspace:workspace.media.bulk.skip.alreadyDone
+msgid "workspace.media.bulk.skip.alreadyDone"
+msgstr "Already in that state — nothing to do."
+
+#: workspace:workspace.media.bulk.skip.files
+msgid "workspace.media.bulk.skip.files"
+msgstr "Files that will be skipped"
+
+#: workspace:workspace.media.bulk.skip.heading
+msgid "workspace.media.bulk.skip.heading"
+msgstr "Why are these skipped?"
+
+#: workspace:workspace.media.bulk.skip.hide
+msgid "workspace.media.bulk.skip.hide"
+msgstr "Hide the skipped files"
+
+#: workspace:workspace.media.bulk.skip.legalHold
+msgid "workspace.media.bulk.skip.legalHold"
+msgstr "Under a legal hold. Deleting and moving are locked until the hold is lifted."
+
+#: workspace:workspace.media.bulk.skip.notInTrash
+msgid "workspace.media.bulk.skip.notInTrash"
+msgstr "Not in the trash. Permanent deletion only works on files that are already in the trash."
+
+#: workspace:workspace.media.bulk.skip.publishedUsage
+msgid "workspace.media.bulk.skip.publishedUsage"
+msgstr "In use on a published menu. Deleting one would leave a blank space where a guest looks."
+
+#: workspace:workspace.media.bulk.skip.quarantine
+msgid "workspace.media.bulk.skip.quarantine"
+msgstr "Not through the security scan yet — nothing is applied to these files."
+
+#: workspace:workspace.media.bulk.skip.show
+msgid "workspace.media.bulk.skip.show"
+msgstr "List the skipped files"
+
+#: workspace:workspace.media.bulk.skip.unknown
+msgid "workspace.media.bulk.skip.unknown"
+msgstr "The server gave a reason this version does not recognise yet. Nothing was applied to these files."
+
+#: workspace:workspace.media.bulk.skip.unsupportedFormat
+msgid "workspace.media.bulk.skip.unsupportedFormat"
+msgstr "This action does not apply to this file type. PDF and SVG files are not re-rendered."
+
+#: workspace:workspace.media.bulk.step.action
+msgid "workspace.media.bulk.step.action"
+msgstr "Action"
+
+#: workspace:workspace.media.bulk.step.config
+msgid "workspace.media.bulk.step.config"
+msgstr "Settings"
+
+#: workspace:workspace.media.bulk.step.preview
+msgid "workspace.media.bulk.step.preview"
+msgstr "Impact"
+
+#: workspace:workspace.media.bulk.step.run
+msgid "workspace.media.bulk.step.run"
+msgstr "Result"
+
+#: workspace:workspace.media.bulk.step.scope
+msgid "workspace.media.bulk.step.scope"
+msgstr "Scope"
+
+#: workspace:workspace.media.bulk.tab
+msgid "workspace.media.bulk.tab"
+msgstr "Bulk actions"
 
 #: workspace:workspace.media.convert.clearAll
 msgid "workspace.media.convert.clearAll"
@@ -1343,6 +2079,158 @@ msgstr "Page {page} of {total}"
 #: workspace:workspace.media.folders.previous
 msgid "workspace.media.folders.previous"
 msgstr "Previous folders"
+
+#: workspace:workspace.media.governance.action.legal-hold
+msgid "workspace.media.governance.action.legal-hold"
+msgstr "Place or lift a legal hold"
+
+#: workspace:workspace.media.governance.action.legal-hold.description
+msgid "workspace.media.governance.action.legal-hold.description"
+msgstr "A file tied to a dispute cannot be deleted or moved. Bulk actions skip it and single deletion refuses it."
+
+#: workspace:workspace.media.governance.failed
+msgid "workspace.media.governance.failed"
+msgstr "The governance record could not be read."
+
+#: workspace:workspace.media.governance.lead
+msgid "workspace.media.governance.lead"
+msgstr "Who can do what, how long files are kept, and who did what."
+
+#: workspace:workspace.media.governance.legalHold.empty
+msgid "workspace.media.governance.legalHold.empty"
+msgstr "No file is under a legal hold right now."
+
+#: workspace:workspace.media.governance.legalHold.heading
+msgid "workspace.media.governance.legalHold.heading"
+msgstr "Files under a legal hold"
+
+#: workspace:workspace.media.governance.legalHold.since
+msgid "workspace.media.governance.legalHold.since"
+msgstr "Held since {date}"
+
+#: workspace:workspace.media.governance.loading
+msgid "workspace.media.governance.loading"
+msgstr "Loading the governance record…"
+
+#: workspace:workspace.media.governance.matrix.allowed
+msgid "workspace.media.governance.matrix.allowed"
+msgstr "Open to you"
+
+#: workspace:workspace.media.governance.matrix.heading
+msgid "workspace.media.governance.matrix.heading"
+msgstr "Bulk action permissions"
+
+#: workspace:workspace.media.governance.matrix.locked
+msgid "workspace.media.governance.matrix.locked"
+msgstr "Locked — needs “{permission}”"
+
+#: workspace:workspace.media.governance.region
+msgid "workspace.media.governance.region"
+msgstr "Media governance"
+
+#: workspace:workspace.media.governance.retention.audit
+msgid "workspace.media.governance.retention.audit"
+msgstr "Audit record"
+
+#: workspace:workspace.media.governance.retention.audit.description
+msgid "workspace.media.governance.retention.audit.description"
+msgstr "Cannot be deleted or edited. It is only ever read."
+
+#: workspace:workspace.media.governance.retention.audit.value
+msgid "workspace.media.governance.retention.audit.value"
+msgstr "Forever"
+
+#: workspace:workspace.media.governance.retention.heading
+msgid "workspace.media.governance.retention.heading"
+msgstr "Retention policy"
+
+#: workspace:workspace.media.governance.retention.legalHold
+msgid "workspace.media.governance.retention.legalHold"
+msgstr "Legal hold"
+
+#: workspace:workspace.media.governance.retention.legalHold.description
+msgid "workspace.media.governance.retention.legalHold.description"
+msgstr "Files tied to a dispute cannot be deleted — bulk actions skip them."
+
+#: workspace:workspace.media.governance.retention.legalHold.value
+msgid "workspace.media.governance.retention.legalHold.value"
+msgstr "{count} files"
+
+#: workspace:workspace.media.governance.retention.originals
+msgid "workspace.media.governance.retention.originals"
+msgstr "Originals and versions"
+
+#: workspace:workspace.media.governance.retention.originals.description
+msgid "workspace.media.governance.retention.originals.description"
+msgstr "The uploaded file is kept byte for byte and no version is ever pruned; re-rendering adds a version next to it."
+
+#: workspace:workspace.media.governance.retention.originals.value
+msgid "workspace.media.governance.retention.originals.value"
+msgstr "Kept"
+
+#: workspace:workspace.media.governance.retention.trash
+msgid "workspace.media.governance.retention.trash"
+msgstr "Trash"
+
+#: workspace:workspace.media.governance.retention.trash.description
+msgid "workspace.media.governance.retention.trash.description"
+msgstr "Then it is deleted for good. Restoring is one tap inside that window."
+
+#: workspace:workspace.media.governance.retention.trash.value
+msgid "workspace.media.governance.retention.trash.value"
+msgstr "{days} days"
+
+#: workspace:workspace.media.governance.role
+msgid "workspace.media.governance.role"
+msgstr "You are looking at this as {role}."
+
+#: workspace:workspace.media.governance.role.editor
+msgid "workspace.media.governance.role.editor"
+msgstr "an editor"
+
+#: workspace:workspace.media.governance.role.manager
+msgid "workspace.media.governance.role.manager"
+msgstr "a manager"
+
+#: workspace:workspace.media.governance.role.member
+msgid "workspace.media.governance.role.member"
+msgstr "a member"
+
+#: workspace:workspace.media.governance.role.owner
+msgid "workspace.media.governance.role.owner"
+msgstr "the owner"
+
+#: workspace:workspace.media.governance.role.unknown
+msgid "workspace.media.governance.role.unknown"
+msgstr "a member of this workspace"
+
+#: workspace:workspace.media.governance.tab
+msgid "workspace.media.governance.tab"
+msgstr "Governance"
+
+#: workspace:workspace.media.governance.trail.asset
+msgid "workspace.media.governance.trail.asset"
+msgstr "{action} · file #{id}"
+
+#: workspace:workspace.media.governance.trail.bulk
+msgid "workspace.media.governance.trail.bulk"
+msgstr "{action} · {applied} applied, {skipped} skipped, {failed} failed"
+
+#: workspace:workspace.media.governance.trail.empty
+msgid "workspace.media.governance.trail.empty"
+msgstr "Nothing has been recorded here yet."
+
+#: workspace:workspace.media.governance.trail.heading
+msgid "workspace.media.governance.trail.heading"
+msgstr "Audit trail"
+
+#: workspace:workspace.media.governance.trail.note
+msgid "workspace.media.governance.trail.note"
+msgstr "Read-only. Records cannot be deleted or edited; they are only exported."
+
+#: workspace:workspace.media.governance.trail.unknownActor
+msgid "workspace.media.governance.trail.unknownActor"
+msgstr "Unknown person"
 
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
@@ -1787,6 +2675,158 @@ msgstr "Security scan"
 #: workspace:workspace.media.lifecycle.validation
 msgid "workspace.media.lifecycle.validation"
 msgstr "Validation"
+
+#: workspace:workspace.media.maturity.capability.bulk
+msgid "workspace.media.maturity.capability.bulk"
+msgstr "Bulk actions"
+
+#: workspace:workspace.media.maturity.capability.convert
+msgid "workspace.media.maturity.capability.convert"
+msgstr "Format conversion"
+
+#: workspace:workspace.media.maturity.capability.derivatives
+msgid "workspace.media.maturity.capability.derivatives"
+msgstr "Sizes and derivatives"
+
+#: workspace:workspace.media.maturity.capability.governance
+msgid "workspace.media.maturity.capability.governance"
+msgstr "Governance"
+
+#: workspace:workspace.media.maturity.capability.intake
+msgid "workspace.media.maturity.capability.intake"
+msgstr "Uploading"
+
+#: workspace:workspace.media.maturity.capability.quota
+msgid "workspace.media.maturity.capability.quota"
+msgstr "Quota"
+
+#: workspace:workspace.media.maturity.capability.scan
+msgid "workspace.media.maturity.capability.scan"
+msgstr "Virus scan"
+
+#: workspace:workspace.media.maturity.capability.trash
+msgid "workspace.media.maturity.capability.trash"
+msgstr "Trash and restore"
+
+#: workspace:workspace.media.maturity.capability.viewer
+msgid "workspace.media.maturity.capability.viewer"
+msgstr "Viewer"
+
+#: workspace:workspace.media.maturity.evidence.absent
+msgid "workspace.media.maturity.evidence.absent"
+msgstr "not found"
+
+#: workspace:workspace.media.maturity.evidence.found
+msgid "workspace.media.maturity.evidence.found"
+msgstr "found"
+
+#: workspace:workspace.media.maturity.evidence.heading
+msgid "workspace.media.maturity.evidence.heading"
+msgstr "Evidence"
+
+#: workspace:workspace.media.maturity.evidence.item
+msgid "workspace.media.maturity.evidence.item"
+msgstr "{kind} · {state}"
+
+#: workspace:workspace.media.maturity.evidence.kind.endpoint
+msgid "workspace.media.maturity.evidence.kind.endpoint"
+msgstr "A part of the panel that runs"
+
+#: workspace:workspace.media.maturity.evidence.kind.requirement
+msgid "workspace.media.maturity.evidence.kind.requirement"
+msgstr "A written rule with a test"
+
+#: workspace:workspace.media.maturity.evidence.kind.test
+msgid "workspace.media.maturity.evidence.kind.test"
+msgstr "A test that checks it"
+
+#: workspace:workspace.media.maturity.evidence.none
+msgid "workspace.media.maturity.evidence.none"
+msgstr "No evidence for this step, so it does not count towards the level."
+
+#: workspace:workspace.media.maturity.evidence.unverifiable
+msgid "workspace.media.maturity.evidence.unverifiable"
+msgstr "could not be checked here"
+
+#: workspace:workspace.media.maturity.legend.heading
+msgid "workspace.media.maturity.legend.heading"
+msgstr "What the levels mean"
+
+#: workspace:workspace.media.maturity.level.0
+msgid "workspace.media.maturity.level.0"
+msgstr "Not there"
+
+#: workspace:workspace.media.maturity.level.0.description
+msgid "workspace.media.maturity.level.0.description"
+msgstr "Not built yet."
+
+#: workspace:workspace.media.maturity.level.1
+msgid "workspace.media.maturity.level.1"
+msgstr "Works"
+
+#: workspace:workspace.media.maturity.level.1.description
+msgid "workspace.media.maturity.level.1.description"
+msgstr "The happy path works."
+
+#: workspace:workspace.media.maturity.level.2
+msgid "workspace.media.maturity.level.2"
+msgstr "Safe"
+
+#: workspace:workspace.media.maturity.level.2.description
+msgid "workspace.media.maturity.level.2.description"
+msgstr "Failures and limits are covered by a test."
+
+#: workspace:workspace.media.maturity.level.3
+msgid "workspace.media.maturity.level.3"
+msgstr "Measured"
+
+#: workspace:workspace.media.maturity.level.3.description
+msgid "workspace.media.maturity.level.3.description"
+msgstr "It produces a number or an audit record."
+
+#: workspace:workspace.media.maturity.level.4
+msgid "workspace.media.maturity.level.4"
+msgstr "Mature"
+
+#: workspace:workspace.media.maturity.level.4.description
+msgid "workspace.media.maturity.level.4.description"
+msgstr "It recovers on its own and says what happened."
+
+#: workspace:workspace.media.maturity.level.badge
+msgid "workspace.media.maturity.level.badge"
+msgstr "Level {level} of {max}"
+
+#: workspace:workspace.media.maturity.level.short
+msgid "workspace.media.maturity.level.short"
+msgstr "L{level}"
+
+#: workspace:workspace.media.maturity.region
+msgid "workspace.media.maturity.region"
+msgstr "Media maturity"
+
+#: workspace:workspace.media.maturity.rung
+msgid "workspace.media.maturity.rung"
+msgstr "Level {level} · {name}"
+
+#: workspace:workspace.media.maturity.score.heading
+msgid "workspace.media.maturity.score.heading"
+msgstr "MVP maturity"
+
+#: workspace:workspace.media.maturity.score.note
+msgid "workspace.media.maturity.score.note"
+msgstr "The score is the sum of the levels below. It is not a percentage of readiness."
+
+#: workspace:workspace.media.maturity.score.value
+msgid "workspace.media.maturity.score.value"
+msgstr "{achieved} / {possible}"
+
+#: workspace:workspace.media.maturity.selfAssessed
+msgid "workspace.media.maturity.selfAssessed"
+msgstr "This is the product marking its own homework, not an outside audit. Every level below has to be earned by something that really exists here — a part that runs, a written rule, or a test that checks it — and a step with nothing behind it never counts."
+
+#: workspace:workspace.media.maturity.tab
+msgid "workspace.media.maturity.tab"
+msgstr "Maturity"
 
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
@@ -2520,6 +3560,62 @@ msgstr "Search and go"
 msgid "workspace.omnibox.trigger.label"
 msgstr "Search, go to, or create"
 
+#: workspace:workspace.profile.account.email.label
+msgid "workspace.profile.account.email.label"
+msgstr "Email"
+
+#: workspace:workspace.profile.account.name.error
+msgid "workspace.profile.account.name.error"
+msgstr "Your name could not be saved."
+
+#: workspace:workspace.profile.account.name.label
+msgid "workspace.profile.account.name.label"
+msgstr "Your name"
+
+#: workspace:workspace.profile.account.name.saved
+msgid "workspace.profile.account.name.saved"
+msgstr "Your name was saved."
+
+#: workspace:workspace.profile.account.name.submit
+msgid "workspace.profile.account.name.submit"
+msgstr "Save name"
+
+#: workspace:workspace.profile.account.password.confirm
+msgid "workspace.profile.account.password.confirm"
+msgstr "Repeat new password"
+
+#: workspace:workspace.profile.account.password.current
+msgid "workspace.profile.account.password.current"
+msgstr "Current password"
+
+#: workspace:workspace.profile.account.password.error
+msgid "workspace.profile.account.password.error"
+msgstr "Your password could not be changed. Check your current password and try again."
+
+#: workspace:workspace.profile.account.password.help
+msgid "workspace.profile.account.password.help"
+msgstr "Changing your password signs you out on your other devices. This one stays signed in."
+
+#: workspace:workspace.profile.account.password.next
+msgid "workspace.profile.account.password.next"
+msgstr "New password"
+
+#: workspace:workspace.profile.account.password.saved
+msgid "workspace.profile.account.password.saved"
+msgstr "Your password was changed."
+
+#: workspace:workspace.profile.account.password.submit
+msgid "workspace.profile.account.password.submit"
+msgstr "Save new password"
+
+#: workspace:workspace.profile.account.password.title
+msgid "workspace.profile.account.password.title"
+msgstr "Change password"
+
+#: workspace:workspace.profile.account.region
+msgid "workspace.profile.account.region"
+msgstr "Your account"
+
 #: workspace:workspace.profile.appearance.heading
 msgid "workspace.profile.appearance.heading"
 msgstr "Appearance"
@@ -2614,7 +3710,7 @@ msgstr "Row spacing"
 
 #: workspace:workspace.profile.density.help
 msgid "workspace.profile.density.help"
-msgstr "How much breathing room lists and tables get. Buttons stay the same size to tap in every mode."
+msgstr "Row height changes. Text size and touch targets stay the same."
 
 #: workspace:workspace.profile.description
 msgid "workspace.profile.description"
@@ -2647,6 +3743,62 @@ msgstr "Terrace 4"
 #: workspace:workspace.profile.title
 msgid "workspace.profile.title"
 msgstr "Profile"
+
+#: workspace:workspace.publication.diff.detail
+msgid "workspace.publication.diff.detail"
+msgstr "{kind} · {category}"
+
+#: workspace:workspace.publication.diff.kind.added
+msgid "workspace.publication.diff.kind.added"
+msgstr "Added"
+
+#: workspace:workspace.publication.diff.kind.hidden
+msgid "workspace.publication.diff.kind.hidden"
+msgstr "Hidden from guests"
+
+#: workspace:workspace.publication.diff.kind.price
+msgid "workspace.publication.diff.kind.price"
+msgstr "Price"
+
+#: workspace:workspace.publication.diff.kind.removed
+msgid "workspace.publication.diff.kind.removed"
+msgstr "Removed"
+
+#: workspace:workspace.publication.diff.kind.renamed
+msgid "workspace.publication.diff.kind.renamed"
+msgstr "Name"
+
+#: workspace:workspace.publication.diff.nameChange
+msgid "workspace.publication.diff.nameChange"
+msgstr "{from} → {to}"
+
+#: workspace:workspace.publication.diff.none
+msgid "workspace.publication.diff.none"
+msgstr "Nothing is waiting. Guests are seeing v{version}."
+
+#: workspace:workspace.publication.diff.noneFirst
+msgid "workspace.publication.diff.noneFirst"
+msgstr "Nothing has been published yet. Publishing sends this menu to your guests for the first time."
+
+#: workspace:workspace.publication.diff.priceChange
+msgid "workspace.publication.diff.priceChange"
+msgstr "{name} · {from} → {to}"
+
+#: workspace:workspace.publication.diff.region
+msgid "workspace.publication.diff.region"
+msgstr "Changes waiting to be published"
+
+#: workspace:workspace.publication.diff.title
+msgid "workspace.publication.diff.title"
+msgstr "{count} changes waiting to be published"
+
+#: workspace:workspace.publication.diff.versions
+msgid "workspace.publication.diff.versions"
+msgstr "v{live} → v{next}"
+
+#: workspace:workspace.publication.diff.versionsFirst
+msgid "workspace.publication.diff.versionsFirst"
+msgstr "First version — v{next}"
 
 #: workspace:workspace.publication.diningAreas.cancel
 msgid "workspace.publication.diningAreas.cancel"
@@ -2739,6 +3891,38 @@ msgstr "Version {version}"
 #: workspace:workspace.publication.operational.description
 msgid "workspace.publication.operational.description"
 msgstr "Review your draft menu, confirm it is ready, and publish it live — plus manage the QR code that links to it."
+
+#: workspace:workspace.publication.preview.button
+msgid "workspace.publication.preview.button"
+msgstr "Preview on a phone"
+
+#: workspace:workspace.publication.preview.close
+msgid "workspace.publication.preview.close"
+msgstr "Close preview"
+
+#: workspace:workspace.publication.preview.heading
+msgid "workspace.publication.preview.heading"
+msgstr "This is what a guest will see"
+
+#: workspace:workspace.publication.preview.linkButton
+msgid "workspace.publication.preview.linkButton"
+msgstr "Open the preview link"
+
+#: workspace:workspace.publication.preview.linkError
+msgid "workspace.publication.preview.linkError"
+msgstr "The preview link could not be created. Try again."
+
+#: workspace:workspace.publication.preview.linkHelp
+msgid "workspace.publication.preview.linkHelp"
+msgstr "The link works for 15 minutes and is closed to search engines. It is not your guests’ address — the printed QR code keeps pointing at the published menu."
+
+#: workspace:workspace.publication.preview.linkPending
+msgid "workspace.publication.preview.linkPending"
+msgstr "Creating the preview link…"
+
+#: workspace:workspace.publication.preview.region
+msgid "workspace.publication.preview.region"
+msgstr "Preview on a phone"
 
 #: workspace:workspace.publication.publishAction.checklistConfirmed
 msgid "workspace.publication.publishAction.checklistConfirmed"
@@ -3304,9 +4488,137 @@ msgstr "Every theme here prints dark on light and keeps the quiet zone around th
 msgid "workspace.publication.qrExport.unavailable"
 msgstr "QR print export is not available yet."
 
+#: workspace:workspace.publication.qrScreen.address
+msgid "workspace.publication.qrScreen.address"
+msgstr "Full address"
+
+#: workspace:workspace.publication.qrScreen.advanced
+msgid "workspace.publication.qrScreen.advanced"
+msgstr "Code management and advanced printing"
+
+#: workspace:workspace.publication.qrScreen.bulk
+msgid "workspace.publication.qrScreen.bulk"
+msgstr "Bulk codes for new tables"
+
+#: workspace:workspace.publication.qrScreen.bulkDefaults
+msgid "workspace.publication.qrScreen.bulkDefaults"
+msgstr "The rest is default: {areas} area(s), {seats} seats per table, names start at T1."
+
+#: workspace:workspace.publication.qrScreen.contrast
+msgid "workspace.publication.qrScreen.contrast"
+msgstr "Contrast measured: {ratio}:1 — dark modules on a light background."
+
+#: workspace:workspace.publication.qrScreen.copied
+msgid "workspace.publication.qrScreen.copied"
+msgstr "Copied"
+
+#: workspace:workspace.publication.qrScreen.copy
+msgid "workspace.publication.qrScreen.copy"
+msgstr "Copy address"
+
+#: workspace:workspace.publication.qrScreen.description
+msgid "workspace.publication.qrScreen.description"
+msgstr "A printed code never changes — update your menu as often as you like."
+
+#: workspace:workspace.publication.qrScreen.downloadAll
+msgid "workspace.publication.qrScreen.downloadAll"
+msgstr "Download every card (PDF)"
+
+#: workspace:workspace.publication.qrScreen.downloadAllPart
+msgid "workspace.publication.qrScreen.downloadAllPart"
+msgstr "Cards {part} of {total} (PDF)"
+
+#: workspace:workspace.publication.qrScreen.downloadPdf
+msgid "workspace.publication.qrScreen.downloadPdf"
+msgstr "Download PDF"
+
+#: workspace:workspace.publication.qrScreen.empty
+msgid "workspace.publication.qrScreen.empty"
+msgstr "No table code yet. Create the codes for your tables below."
+
+#: workspace:workspace.publication.qrScreen.loadError
+msgid "workspace.publication.qrScreen.loadError"
+msgstr "Could not load table codes. Try again."
+
+#: workspace:workspace.publication.qrScreen.loading
+msgid "workspace.publication.qrScreen.loading"
+msgstr "Loading table codes…"
+
+#: workspace:workspace.publication.qrScreen.neverScanned
+msgid "workspace.publication.qrScreen.neverScanned"
+msgstr "Never scanned"
+
+#: workspace:workspace.publication.qrScreen.noDarkTheme
+msgid "workspace.publication.qrScreen.noDarkTheme"
+msgstr "There is no dark card: scanners assume dark-on-light, and an inverted code is not read at all by many phones."
+
+#: workspace:workspace.publication.qrScreen.previewAlt
+msgid "workspace.publication.qrScreen.previewAlt"
+msgstr "Printable card preview for {name}"
+
+#: workspace:workspace.publication.qrScreen.print
+msgid "workspace.publication.qrScreen.print"
+msgstr "Print"
+
+#: workspace:workspace.publication.qrScreen.retry
+msgid "workspace.publication.qrScreen.retry"
+msgstr "Try again"
+
+#: workspace:workspace.publication.qrScreen.scans
+msgid "workspace.publication.qrScreen.scans"
+msgstr "{count} scans"
+
+#: workspace:workspace.publication.qrScreen.selected
+msgid "workspace.publication.qrScreen.selected"
+msgstr "Selected code"
+
+#: workspace:workspace.publication.qrScreen.size
+msgid "workspace.publication.qrScreen.size"
+msgstr "Size"
+
+#: workspace:workspace.publication.qrScreen.sizeOption
+msgid "workspace.publication.qrScreen.sizeOption"
+msgstr "{name} · {width} × {height} mm"
+
+#: workspace:workspace.publication.qrScreen.sizeStand
+msgid "workspace.publication.qrScreen.sizeStand"
+msgstr "Stand"
+
+#: workspace:workspace.publication.qrScreen.sizeTableCard
+msgid "workspace.publication.qrScreen.sizeTableCard"
+msgstr "Table card"
+
+#: workspace:workspace.publication.qrScreen.state.active
+msgid "workspace.publication.qrScreen.state.active"
+msgstr "Active"
+
+#: workspace:workspace.publication.qrScreen.state.disabled
+msgid "workspace.publication.qrScreen.state.disabled"
+msgstr "Disabled"
+
+#: workspace:workspace.publication.qrScreen.state.working
+msgid "workspace.publication.qrScreen.state.working"
+msgstr "Working"
+
+#: workspace:workspace.publication.qrScreen.tables
+msgid "workspace.publication.qrScreen.tables"
+msgstr "Table cards"
+
+#: workspace:workspace.publication.qrScreen.theme
+msgid "workspace.publication.qrScreen.theme"
+msgstr "Card design"
+
 #: workspace:workspace.publication.readiness.categoryNames
 msgid "workspace.publication.readiness.categoryNames"
 msgstr "Category names ready"
+
+#: workspace:workspace.publication.readiness.fix
+msgid "workspace.publication.readiness.fix"
+msgstr "Fix"
+
+#: workspace:workspace.publication.readiness.fixLabel
+msgid "workspace.publication.readiness.fixLabel"
+msgstr "Fix: {label}"
 
 #: workspace:workspace.publication.readiness.hasCategory
 msgid "workspace.publication.readiness.hasCategory"
@@ -3340,6 +4652,74 @@ msgstr "Visible price and currency ready"
 msgid "workspace.publication.readiness.visibleProductNames"
 msgstr "Visible product names ready"
 
+#: workspace:workspace.publication.relative.daysAgo
+msgid "workspace.publication.relative.daysAgo"
+msgstr "{count} days ago"
+
+#: workspace:workspace.publication.relative.hoursAgo
+msgid "workspace.publication.relative.hoursAgo"
+msgstr "{count} h ago"
+
+#: workspace:workspace.publication.relative.justNow
+msgid "workspace.publication.relative.justNow"
+msgstr "just now"
+
+#: workspace:workspace.publication.relative.minutesAgo
+msgid "workspace.publication.relative.minutesAgo"
+msgstr "{count} min ago"
+
+#: workspace:workspace.publication.schedule.button
+msgid "workspace.publication.schedule.button"
+msgstr "Schedule"
+
+#: workspace:workspace.publication.schedule.cancel
+msgid "workspace.publication.schedule.cancel"
+msgstr "Cancel this schedule"
+
+#: workspace:workspace.publication.schedule.cancelError
+msgid "workspace.publication.schedule.cancelError"
+msgstr "The schedule could not be cancelled. Try again."
+
+#: workspace:workspace.publication.schedule.close
+msgid "workspace.publication.schedule.close"
+msgstr "Close scheduling"
+
+#: workspace:workspace.publication.schedule.error
+msgid "workspace.publication.schedule.error"
+msgstr "The publish could not be scheduled. Nothing was scheduled."
+
+#: workspace:workspace.publication.schedule.help
+msgid "workspace.publication.schedule.help"
+msgstr "A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are Istanbul time."
+
+#: workspace:workspace.publication.schedule.option.nextMonday
+msgid "workspace.publication.schedule.option.nextMonday"
+msgstr "Monday 09:00"
+
+#: workspace:workspace.publication.schedule.option.tomorrowMorning
+msgid "workspace.publication.schedule.option.tomorrowMorning"
+msgstr "Tomorrow 09:00"
+
+#: workspace:workspace.publication.schedule.option.tonight
+msgid "workspace.publication.schedule.option.tonight"
+msgstr "Tonight 03:00"
+
+#: workspace:workspace.publication.schedule.optionAt
+msgid "workspace.publication.schedule.optionAt"
+msgstr "{label} — {moment}"
+
+#: workspace:workspace.publication.schedule.pending
+msgid "workspace.publication.schedule.pending"
+msgstr "Scheduled for {moment} (Istanbul)."
+
+#: workspace:workspace.publication.schedule.region
+msgid "workspace.publication.schedule.region"
+msgstr "Schedule the publish"
+
+#: workspace:workspace.publication.schedule.unready
+msgid "workspace.publication.schedule.unready"
+msgstr "Finish the readiness list first — a schedule freezes what you see now."
+
 #: workspace:workspace.publication.status.draft
 msgid "workspace.publication.status.draft"
 msgstr "Draft"
@@ -3367,6 +4747,10 @@ msgstr "Published"
 #: workspace:workspace.publication.status.lifecycle.superseded
 msgid "workspace.publication.status.lifecycle.superseded"
 msgstr "Superseded"
+
+#: workspace:workspace.publication.status.liveBadge
+msgid "workspace.publication.status.liveBadge"
+msgstr "Live · v{version}"
 
 #: workspace:workspace.publication.status.loadError
 msgid "workspace.publication.status.loadError"
@@ -3408,6 +4792,54 @@ msgstr "Version {version} · {state}"
 msgid "workspace.publication.status.unavailable"
 msgstr "Publication status is not available yet."
 
+#: workspace:workspace.publication.stepper.draft
+msgid "workspace.publication.stepper.draft"
+msgstr "Draft"
+
+#: workspace:workspace.publication.stepper.draft.changes
+msgid "workspace.publication.stepper.draft.changes"
+msgstr "{count} changes waiting"
+
+#: workspace:workspace.publication.stepper.draft.noChanges
+msgid "workspace.publication.stepper.draft.noChanges"
+msgstr "Nothing waiting"
+
+#: workspace:workspace.publication.stepper.live
+msgid "workspace.publication.stepper.live"
+msgstr "Live"
+
+#: workspace:workspace.publication.stepper.live.never
+msgid "workspace.publication.stepper.live.never"
+msgstr "Nothing published yet"
+
+#: workspace:workspace.publication.stepper.live.sub
+msgid "workspace.publication.stepper.live.sub"
+msgstr "v{version} · {when}"
+
+#: workspace:workspace.publication.stepper.preview
+msgid "workspace.publication.stepper.preview"
+msgstr "Preview"
+
+#: workspace:workspace.publication.stepper.preview.sub
+msgid "workspace.publication.stepper.preview.sub"
+msgstr "Check it on a phone"
+
+#: workspace:workspace.publication.stepper.region
+msgid "workspace.publication.stepper.region"
+msgstr "Where you are"
+
+#: workspace:workspace.publication.stepper.state.current
+msgid "workspace.publication.stepper.state.current"
+msgstr "You are here"
+
+#: workspace:workspace.publication.stepper.state.done
+msgid "workspace.publication.stepper.state.done"
+msgstr "Done"
+
+#: workspace:workspace.publication.stepper.state.upcoming
+msgid "workspace.publication.stepper.state.upcoming"
+msgstr "Not yet"
+
 #: workspace:workspace.publication.unavailable
 msgid "workspace.publication.unavailable"
 msgstr "Publication is not available yet."
@@ -3427,58 +4859,6 @@ msgstr "A QR code opens your published menu, so there has to be a menu for it to
 #: workspace:workspace.qrCodes.operational.description
 msgid "workspace.qrCodes.operational.description"
 msgstr "Create and print the QR codes your guests scan to open the menu."
-
-#: workspace:workspace.settings.account.name.error
-msgid "workspace.settings.account.name.error"
-msgstr "Your name could not be saved."
-
-#: workspace:workspace.settings.account.name.label
-msgid "workspace.settings.account.name.label"
-msgstr "Your name"
-
-#: workspace:workspace.settings.account.name.saved
-msgid "workspace.settings.account.name.saved"
-msgstr "Your name was saved."
-
-#: workspace:workspace.settings.account.name.submit
-msgid "workspace.settings.account.name.submit"
-msgstr "Save name"
-
-#: workspace:workspace.settings.account.password.confirm
-msgid "workspace.settings.account.password.confirm"
-msgstr "Repeat new password"
-
-#: workspace:workspace.settings.account.password.current
-msgid "workspace.settings.account.password.current"
-msgstr "Current password"
-
-#: workspace:workspace.settings.account.password.error
-msgid "workspace.settings.account.password.error"
-msgstr "Your password could not be changed. Check your current password and try again."
-
-#: workspace:workspace.settings.account.password.help
-msgid "workspace.settings.account.password.help"
-msgstr "Changing your password signs you out everywhere else. This device stays signed in."
-
-#: workspace:workspace.settings.account.password.next
-msgid "workspace.settings.account.password.next"
-msgstr "New password"
-
-#: workspace:workspace.settings.account.password.saved
-msgid "workspace.settings.account.password.saved"
-msgstr "Your password was changed."
-
-#: workspace:workspace.settings.account.password.submit
-msgid "workspace.settings.account.password.submit"
-msgstr "Change password"
-
-#: workspace:workspace.settings.account.password.title
-msgid "workspace.settings.account.password.title"
-msgstr "Change password"
-
-#: workspace:workspace.settings.account.region
-msgid "workspace.settings.account.region"
-msgstr "Your account"
 
 #: workspace:workspace.settings.audit.empty
 msgid "workspace.settings.audit.empty"
@@ -3516,13 +4896,17 @@ msgstr "Publishing"
 msgid "workspace.settings.audit.unknownActor"
 msgstr "Unknown"
 
+#: workspace:workspace.settings.logo.change
+msgid "workspace.settings.logo.change"
+msgstr "Change"
+
+#: workspace:workspace.settings.logo.help
+msgid "workspace.settings.logo.help"
+msgstr "Chosen from your media library; shown at the top of your guest menu."
+
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
-msgstr "Your brand details and your plan. These are set up once and rarely change."
-
-#: workspace:workspace.settings.tab.account
-msgid "workspace.settings.tab.account"
-msgstr "Account"
+msgstr "Rarely opened: brand, workspace, plan, audit."
 
 #: workspace:workspace.settings.tab.audit
 msgid "workspace.settings.tab.audit"
@@ -3536,9 +4920,37 @@ msgstr "Plan & billing"
 msgid "workspace.settings.tab.brand"
 msgstr "Brand"
 
+#: workspace:workspace.settings.tab.workspace
+msgid "workspace.settings.tab.workspace"
+msgstr "Workspace"
+
 #: workspace:workspace.settings.tabs.label
 msgid "workspace.settings.tabs.label"
 msgstr "Settings sections"
+
+#: workspace:workspace.settings.workspace.address
+msgid "workspace.settings.workspace.address"
+msgstr "Panel address"
+
+#: workspace:workspace.settings.workspace.address.help
+msgid "workspace.settings.workspace.address.help"
+msgstr "This cannot be changed — your team’s links depend on it."
+
+#: workspace:workspace.settings.workspace.error
+msgid "workspace.settings.workspace.error"
+msgstr "Your workspace details could not be loaded."
+
+#: workspace:workspace.settings.workspace.loading
+msgid "workspace.settings.workspace.loading"
+msgstr "Loading your workspace…"
+
+#: workspace:workspace.settings.workspace.name
+msgid "workspace.settings.workspace.name"
+msgstr "Name"
+
+#: workspace:workspace.settings.workspace.region
+msgid "workspace.settings.workspace.region"
+msgstr "Workspace"
 
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
@@ -3704,6 +5116,10 @@ msgstr "Invite by email"
 msgid "workspace.team.invite.error"
 msgstr "Unable to create the invitation. Please try again."
 
+#: workspace:workspace.team.invite.ownership.note
+msgid "workspace.team.invite.ownership.note"
+msgstr "Ownership is transferred, not given by invitation."
+
 #: workspace:workspace.team.invite.role.editor
 msgid "workspace.team.invite.role.editor"
 msgstr "Editor"
@@ -3711,6 +5127,14 @@ msgstr "Editor"
 #: workspace:workspace.team.invite.role.editor.help
 msgid "workspace.team.invite.role.editor.help"
 msgstr "Edits menu content. Cannot publish, change locations or see billing."
+
+#: workspace:workspace.team.invite.role.kitchen
+msgid "workspace.team.invite.role.kitchen"
+msgstr "Kitchen"
+
+#: workspace:workspace.team.invite.role.kitchen.help
+msgid "workspace.team.invite.role.kitchen.help"
+msgstr "Marks allergens and “sold out today”. Cannot change prices, publish or see anything else."
 
 #: workspace:workspace.team.invite.role.label
 msgid "workspace.team.invite.role.label"
@@ -3723,6 +5147,10 @@ msgstr "Manager"
 #: workspace:workspace.team.invite.role.manager.help
 msgid "workspace.team.invite.role.manager.help"
 msgstr "Runs daily operations — menus, locations, QR codes and publishing. Cannot manage billing."
+
+#: workspace:workspace.team.invite.role.member
+msgid "workspace.team.invite.role.member"
+msgstr "Member"
 
 #: workspace:workspace.team.invite.role.owner
 msgid "workspace.team.invite.role.owner"
@@ -3832,34 +5260,34 @@ msgstr "Ownership transferred."
 msgid "workspace.team.members.transfer.title"
 msgstr "Transfer workspace ownership"
 
-#: workspace:workspace.team.operational.description.connected
-msgid "workspace.team.operational.description.connected"
-msgstr "Current workspace members and pending invitations below come from the real server-authoritative lists."
-
-#: workspace:workspace.team.operational.description.error
-msgid "workspace.team.operational.description.error"
-msgstr "Pending invitations failed to load — the server-authoritative invitations list could not be reached."
-
-#: workspace:workspace.team.operational.description.loading
-msgid "workspace.team.operational.description.loading"
-msgstr "Loading pending invitations from the server-authoritative invitations list…"
-
-#: workspace:workspace.team.pendingInvitations.empty
-msgid "workspace.team.pendingInvitations.empty"
-msgstr "Pending invitations are not available yet."
+#: workspace:workspace.team.operational.description
+msgid "workspace.team.operational.description"
+msgstr "Everyone sees only what their job needs."
 
 #: workspace:workspace.team.pendingInvitations.region
 msgid "workspace.team.pendingInvitations.region"
 msgstr "Pending invitations"
 
-#: workspace:workspace.team.status.connected
-msgid "workspace.team.status.connected"
-msgstr "Invitations connected"
+#: workspace:workspace.team.roleGuide.editor
+msgid "workspace.team.roleGuide.editor"
+msgstr "Products, prices and photos. Cannot publish."
 
-#: workspace:workspace.team.status.error
-msgid "workspace.team.status.error"
-msgstr "Failed to load"
+#: workspace:workspace.team.roleGuide.heading
+msgid "workspace.team.roleGuide.heading"
+msgstr "What can each role do?"
 
-#: workspace:workspace.team.status.loading
-msgid "workspace.team.status.loading"
-msgstr "Loading"
+#: workspace:workspace.team.roleGuide.kitchen
+msgid "workspace.team.roleGuide.kitchen"
+msgstr "Allergens and “sold out today”. Sees nothing else."
+
+#: workspace:workspace.team.roleGuide.manager
+msgid "workspace.team.roleGuide.manager"
+msgstr "Menu, QR codes, publishing. Cannot touch billing."
+
+#: workspace:workspace.team.roleGuide.member
+msgid "workspace.team.roleGuide.member"
+msgstr "Read-only. Kept for older records; nobody is invited to it any more."
+
+#: workspace:workspace.team.roleGuide.owner
+msgid "workspace.team.roleGuide.owner"
+msgstr "Everything: billing, team, publishing."

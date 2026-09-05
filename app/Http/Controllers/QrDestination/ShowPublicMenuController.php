@@ -6,6 +6,7 @@ namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Analytics\UseCase\RecordAnalyticsEvent;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
+use App\Application\MenuCatalog\UseCase\ResolveServingMenu;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
@@ -34,6 +35,7 @@ final class ShowPublicMenuController extends Controller
         private readonly PublicMenuAddressPort $addresses,
         private readonly OutOfStockPort $outOfStock,
         private readonly GuestText $guestText,
+        private readonly ResolveServingMenu $servingMenu,
     ) {}
 
     public function __invoke(Request $request, string $token): SymfonyResponse
@@ -50,7 +52,22 @@ final class ShowPublicMenuController extends Controller
             return $this->notFound();
         }
 
-        $publication = $this->publications->current($record->workspaceId, $record->menuId);
+        /*
+            AYNI KOD, SAATE GÖRE DOĞRU MENÜ (sahibin 2026-09-05 kararı,
+            `docs/109` §7.1).
+
+            Karekodun hedefi değişmez ve bu satır onu değiştirmez: kod hâlâ
+            aynı menüye bağlıdır. Değişen şey, o bağın hangi ŞUBEYE
+            götürdüğü ve o şubenin o saatte hangi menüyü servis ettiğidir.
+            Misafir 08:00'de kahvaltıyı, 20:00'de akşam menüsünü görür;
+            masadaki kâğıt hiç değişmez.
+
+            Şubede saat tanımlanmamışsa sonuç kodun kendi menüsüdür — tek
+            menülü şubeler için bu satır hiçbir şeyi değiştirmez.
+        */
+        $servingMenuId = $this->servingMenu->forMenu($record->menuId);
+
+        $publication = $this->publications->current($record->workspaceId, $servingMenuId);
 
         if ($publication === null) {
             return $this->notFound();
@@ -66,7 +83,10 @@ final class ShowPublicMenuController extends Controller
             $record->workspaceId,
             $record->locationId,
             $record->id,
-            $record->menuId,
+            // Ölçüm, misafirin GERÇEKTEN gördüğü menüyü yazar: kodun bağlı
+            // olduğu menüyü yazsaydı "kahvaltı kaç kez açıldı" sorusu
+            // sonsuza kadar cevapsız kalırdı.
+            $servingMenuId,
             AnalyticsEventType::MenuOpen,
             // Ham IP ve tarayıcı bilgisi SAKLANMAZ; yalnız günlük dönen bir
             // tuzla türetilmiş özet yazılır (`docs/68`).
@@ -128,7 +148,7 @@ final class ShowPublicMenuController extends Controller
                 'zabuno_surface' => 'menu',
                 'zabuno_tenant_id' => (string) $record->workspaceId,
                 'zabuno_location_id' => (string) $record->locationId,
-                'zabuno_menu_id' => (string) $record->menuId,
+                'zabuno_menu_id' => (string) $servingMenuId,
             ],
             'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,

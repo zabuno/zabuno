@@ -1,7 +1,9 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
+import { Button } from 'flowbite-react';
 
 import { t } from '../../../../i18n/workspace';
 import { PanelCard } from '../shared/PanelCard';
+import { useMenuEngineering, type MenuEngineeringSource } from './useMenuEngineering';
 
 /*
     SATIRIN ORTAK RİTMİ (FF-131, teslim paketi "Kart grameri": tek kart,
@@ -50,6 +52,20 @@ export type MenuEngineeringReport = {
 type MenuEngineeringRegionProps = {
     workspaceId: number;
     range: string;
+    /**
+     * Rapor DIŞARIDAN verilebilir.
+     *
+     * Aynı rapor ekranın üstündeki "bu aralıkta ne oldu?" kartında da
+     * okunuyor; iki ayrı istek atmak aynı sayıyı iki kez indirmek ve iki
+     * listenin ayrışabilmesi demekti. Verilmediğinde bileşen kendi isteğini
+     * atmaya devam eder.
+     */
+    source?: MenuEngineeringSource;
+    /**
+     * "Ekle" düğmesinin gerçek hedefi. Yoksa düğme HİÇ çizilmez: basıldığında
+     * hiçbir şey yapmayan bir düğme, kullanıcıya olmayan bir yol göstermektir.
+     */
+    onAddTerm?: (term: string) => void;
 };
 
 /**
@@ -59,67 +75,20 @@ type MenuEngineeringRegionProps = {
  * için hiçbir şey söylemez: hangi ürünü büyütmeli, hangisini listeden
  * çıkarmalı, hangi talebi karşılamıyorum?
  */
-/**
- * Yanıt şekline KÖRÜ KÖRÜNE güvenilmez.
- *
- * Eski bir önbellek sürümü, araya giren bir vekil ya da 200 dönen bir hata
- * sayfası beklenmedik bir gövde verebilir. Bir alanın eksikliği, ANALİTİK
- * SAYFASININ TAMAMINI çökertmemeli — sahibin gördüğü şey boş bir ekran
- * olurdu ve sebebini hiçbir yerde okuyamazdı.
- */
-function normalize(body: Partial<MenuEngineeringReport>): MenuEngineeringReport {
-    const rows = (value: unknown): MenuEngineeringRow[] =>
-        Array.isArray(value) ? (value as MenuEngineeringRow[]) : [];
-
-    return {
-        state: body.state === 'ready' ? 'ready' : 'not_enough_data',
-        threshold: typeof body.threshold === 'number' ? body.threshold : 0,
-        observedViewers: typeof body.observedViewers === 'number' ? body.observedViewers : 0,
-        mostViewed: rows(body.mostViewed),
-        neverViewed: rows(body.neverViewed),
-        searchesWithNoResults: Array.isArray(body.searchesWithNoResults)
-            ? body.searchesWithNoResults
-            : [],
-    };
-}
-
-export function MenuEngineeringRegion({ workspaceId, range }: MenuEngineeringRegionProps) {
-    const [report, setReport] = useState<MenuEngineeringReport | null>(null);
-    const [failed, setFailed] = useState(false);
-
-    useEffect(() => {
-        let cancelled = false;
-
-        (async () => {
-            try {
-                const response = await fetch(
-                    `/api/workspaces/${workspaceId}/analytics/menu-engineering?range=${range}`,
-                    { credentials: 'include', headers: { Accept: 'application/json' } },
-                );
-
-                if (cancelled) return;
-
-                if (!response.ok) {
-                    setFailed(true);
-
-                    return;
-                }
-
-                const body = (await response.json()) as Partial<MenuEngineeringReport>;
-
-                if (cancelled) return;
-
-                setFailed(false);
-                setReport(normalize(body));
-            } catch {
-                if (!cancelled) setFailed(true);
-            }
-        })();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [workspaceId, range]);
+export function MenuEngineeringRegion({
+    workspaceId,
+    range,
+    source,
+    onAddTerm,
+}: MenuEngineeringRegionProps) {
+    /*
+        Rapor DIŞARIDAN geldiyse kendi isteğimizi atmayız: `workspaceId`
+        tanımsız verildiğinde kanca hiçbir şey çekmez. Aynı sayıyı iki kez
+        indirmek, iki listenin ayrışabilmesi demekti — ve ekranın üstündeki
+        özet kartı ile alttaki liste farklı sayılar söylerdi.
+    */
+    const fetched = useMenuEngineering(source === undefined ? workspaceId : undefined, range);
+    const { report, failed } = source ?? fetched;
 
     if (failed) {
         return (
@@ -241,6 +210,42 @@ export function MenuEngineeringRegion({ workspaceId, range }: MenuEngineeringReg
                                         count: String(row.searches),
                                     })}
                                 </span>
+                                {/*
+                                    "EKLE" GERÇEKTEN BİR ŞEY YAPAR.
+
+                                    Bu listenin tek işi bir BOŞLUĞU
+                                    göstermek: menüde olmayan ama istenen
+                                    şey. Boşluğu görüp onu kapatmak için
+                                    ekranı terk etmek, sahibin aklındaki
+                                    terimi de yolda bırakır. Düğme menü
+                                    ekranına götürür.
+
+                                    `onAddTerm` yoksa düğme HİÇ çizilmez:
+                                    basıldığında hiçbir şey yapmayan bir
+                                    düğme, kullanıcıya olmayan bir yol
+                                    göstermektir.
+                                */}
+                                {onAddTerm ? (
+                                    <Button
+                                        size="xs"
+                                        color="light"
+                                        onClick={() => {
+                                            onAddTerm(row.term);
+                                        }}
+                                    >
+                                        {t('workspace.analytics.menuEngineering.searches.add')}
+                                        {/*
+                                            Görünen etiket kısa, erişilebilir
+                                            adı TAM: bir ekran okuyucu
+                                            kullanıcısı düğme listesinde beş
+                                            tane "Add" görürse hangisinin
+                                            hangi terime ait olduğunu bilemez.
+                                        */}
+                                        <span className="sr-only">
+                                            {` ${t('workspace.analytics.menuEngineering.searches.addFor', { term: row.term })}`}
+                                        </span>
+                                    </Button>
+                                ) : null}
                             </li>
                         ))}
                     </ul>

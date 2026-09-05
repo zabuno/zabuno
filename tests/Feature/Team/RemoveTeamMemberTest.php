@@ -20,20 +20,24 @@ use Tests\TestCase;
  * (unmatched route), not from malformed fixtures or guessed production
  * response shapes.
  *
- * Frozen contract: access requires Permission::WorkspaceManage (owner-only,
- * enumeration-safe 404 for non-owner before any business-state validation
- * runs); the memberId path segment is a workspace_memberships.id, and only
- * a row whose role is exactly "editor" *and* whose workspace_id matches the
- * exact requested workspace can be removed; success is 204 with no body
- * and the row is deleted; the owner row and any "member" row can never be
- * removed through this endpoint (404, row survives) even when the
- * requester is the same owner acting on their own row; an editor row that
+ * Frozen contract: access requires Permission::WorkspaceManage
+ * (enumeration-safe 404 for anyone without it, before any business-state
+ * validation runs) *and* the requester must be the workspace owner (403
+ * for a Manager, who does hold WorkspaceManage); the memberId path segment
+ * is a workspace_memberships.id, and a row can be removed only when its
+ * role is one of MembershipRole::invitable() — editor, manager, kitchen —
+ * *and* its workspace_id matches the exact requested workspace; success is
+ * 204 with no body and the row is deleted; the owner row and any legacy
+ * "member" row can never be removed through this endpoint (404, row
+ * survives) even when the requester is the same owner acting on their own
+ * row — ownership is transferred, never deleted; a removable row that
  * belongs to a different workspace is rejected with 404 and the row
  * survives untouched; auth+verified is mandatory; the write is throttled
  * to 5 requests per minute like other Team mutations (throttle:5,1).
  *
  * Requirement IDs: TEAM-MEMBERS-REMOVE-01,
- * TEAM-MEMBERS-REMOVE-OWNER-ONLY-01,
+ * TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01,
+ * TEAM-MEMBERS-REMOVE-OWNER-ONLY-01, TEAM-MEMBERS-REMOVE-OWNER-ONLY-02,
  * TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01,
  * TEAM-MEMBERS-REMOVE-CROSS-WORKSPACE-01,
  * TEAM-MEMBERS-REMOVE-AUTH-01, TEAM-MEMBERS-REMOVE-THROTTLE-01.
@@ -126,6 +130,40 @@ final class RemoveTeamMemberTest extends TestCase
         self::assertNull($this->membershipRow($editorMembershipId), 'TEAM-MEMBERS-REMOVE-01: kaldırılan üyelik satırı silinmeli.');
     }
 
+    // --- TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01 ------------------------------
+
+    /**
+     * Sahibin DAVET EDEBİLDİĞİ her rol, aynı yoldan ÇIKARILABİLİR de olmalı.
+     *
+     * `MembershipRole::invitable()` üç rol sayar (Editör · Yönetici ·
+     * Mutfak), ama çıkarma yolu bir zamanlar yalnız `editor` satırlarını
+     * siliyordu: sahip "Çıkar" düğmesine basıyor, sunucu başarılı görünüyor,
+     * üyelik yerinde duruyordu. İşten ayrılan bir yönetici ertesi gün hâlâ
+     * şubeleri yönetebiliyordu — ekranda değil, SUNUCUDA.
+     */
+    public function test_owner_removes_manager_and_kitchen_memberships_too(): void
+    {
+        $owner = $this->verifiedUser('Ayşe Yılmaz', 'ayse-mem-remove-invitable-01@example.test');
+        $workspaceId = $this->workspaceOwnedBy($owner, 'Zeytin Restoranları', 'zeytin-mem-remove-invitable-01');
+
+        $manager = $this->verifiedUser('Mehmet Demir', 'mehmet-mem-remove-invitable-01@example.test');
+        $managerMembershipId = $this->addMember($workspaceId, $manager, 'manager');
+
+        $kitchen = $this->verifiedUser('Zehra Aslan', 'zehra-mem-remove-invitable-01@example.test');
+        $kitchenMembershipId = $this->addMember($workspaceId, $kitchen, 'kitchen');
+
+        $managerResponse = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->deleteJson($this->removeUri($workspaceId, $managerMembershipId));
+        $managerResponse->assertStatus(204, 'TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01: sahibi manager üyeliğini kaldırdığında 204 dönmeli.');
+
+        $kitchenResponse = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->deleteJson($this->removeUri($workspaceId, $kitchenMembershipId));
+        $kitchenResponse->assertStatus(204, 'TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01: sahibi kitchen üyeliğini kaldırdığında 204 dönmeli.');
+
+        self::assertNull($this->membershipRow($managerMembershipId), 'TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01: manager satırı gerçekten silinmeli.');
+        self::assertNull($this->membershipRow($kitchenMembershipId), 'TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01: kitchen satırı gerçekten silinmeli.');
+    }
+
     // --- TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01 ------------------------------
 
     public function test_owner_and_member_rows_cannot_be_removed_through_this_endpoint(): void
@@ -178,6 +216,48 @@ final class RemoveTeamMemberTest extends TestCase
         $strangerResponse->assertStatus(404, 'TEAM-MEMBERS-REMOVE-OWNER-ONLY-01: workspace\'e üye olmayan yabancı 404 almalı.');
 
         self::assertNotNull($this->membershipRow($editorMembershipId), 'TEAM-MEMBERS-REMOVE-OWNER-ONLY-01: reddedilen isteklerden sonra editor satırı hayatta kalmalı.');
+    }
+
+    // --- TEAM-MEMBERS-REMOVE-OWNER-ONLY-02 -----------------------------------
+
+    /**
+     * Ekipten kimin çıkacağı SAHİBİN kararıdır — yöneticinin değil.
+     *
+     * Bu sınır, çıkarma yolu yalnız `editor` satırlarını silerken de
+     * söylenmişti (`test_non_owner_gets_enumeration_safe_404...`), ama
+     * kapıda yalnız `Permission::WorkspaceManage` vardı ve o izin
+     * `Manager`'da DA var. Çıkarma tüm davet edilebilir rolleri kapsar
+     * hâle gelince kapı da açıkça sahibe bağlanmalı: aksi hâlde bir
+     * yönetici, kendisini işe alan sahibin haberi olmadan diğer
+     * yöneticileri (ve kendini) ekipten silebilirdi.
+     *
+     * 403, 404 DEĞİL — `UpdateTeamMemberRoleController` ile aynı dil:
+     * yönetici çalışma alanını zaten YÖNETİYOR, varlığını gizlemenin
+     * anlamı yok; çıkış yolu farklıdır (sahipten istemek). Bu izne hiç
+     * sahip olmayan roller için uç noktanın numaralandırmaya kapalı 404
+     * cevabı aynen korunur.
+     */
+    public function test_a_manager_cannot_remove_teammates(): void
+    {
+        $owner = $this->verifiedUser('Ayşe Yılmaz', 'ayse-mem-remove-owner-only-02@example.test');
+        $workspaceId = $this->workspaceOwnedBy($owner, 'Zeytin Restoranları', 'zeytin-mem-remove-owner-only-02');
+
+        $manager = $this->verifiedUser('Mehmet Demir', 'mehmet-mem-remove-owner-only-02@example.test');
+        $managerMembershipId = $this->addMember($workspaceId, $manager, 'manager');
+
+        $editor = $this->verifiedUser('Elif Kaya', 'elif-mem-remove-owner-only-02@example.test');
+        $editorMembershipId = $this->addMember($workspaceId, $editor, 'editor');
+
+        $otherResponse = $this->actingAs($manager)->withHeaders($this->jsonHeaders())
+            ->deleteJson($this->removeUri($workspaceId, $editorMembershipId));
+        $otherResponse->assertStatus(403, 'TEAM-MEMBERS-REMOVE-OWNER-ONLY-02: manager başka bir üyeyi ekipten çıkaramaz — 403 dönmeli.');
+
+        $selfResponse = $this->actingAs($manager)->withHeaders($this->jsonHeaders())
+            ->deleteJson($this->removeUri($workspaceId, $managerMembershipId));
+        $selfResponse->assertStatus(403, 'TEAM-MEMBERS-REMOVE-OWNER-ONLY-02: manager kendi üyeliğini de bu yoldan silemez — 403 dönmeli.');
+
+        self::assertNotNull($this->membershipRow($editorMembershipId), 'TEAM-MEMBERS-REMOVE-OWNER-ONLY-02: editor satırı hayatta kalmalı.');
+        self::assertNotNull($this->membershipRow($managerMembershipId), 'TEAM-MEMBERS-REMOVE-OWNER-ONLY-02: manager satırı hayatta kalmalı.');
     }
 
     // --- TEAM-MEMBERS-REMOVE-CROSS-WORKSPACE-01 ------------------------------

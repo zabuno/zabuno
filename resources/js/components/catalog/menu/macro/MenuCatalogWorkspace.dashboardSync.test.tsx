@@ -350,7 +350,17 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
 
         await screen.findByText('Kahve');
 
-        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
+        /*
+            KATEGORİ EKLEME DÜĞMESİ RAYA TAŞINDI ve metni kaynaktaki gibi
+            yalnız "Category" (`panel.dc.html` satır 30260). Formun gönder
+            düğmesi hâlâ "Add category" der; ikisi aynı metni taşısaydı
+            ekranda aynı anda iki "Add category" olur ve ekran okuyucu
+            kullanan biri hangisinin formu açtığını ayırt edemezdi.
+
+            Testin iddiası değişmedi: kategori yaratıldığında onTreeChange
+            yeni ağaçla çağrılır.
+        */
+        fireEvent.click(screen.getByRole('button', { name: 'Category' }));
         fireEvent.change(screen.getByLabelText('Category name'), {
             target: { value: 'Çorbalar' },
         });
@@ -397,7 +407,17 @@ describe('MenuCatalogWorkspace — dashboard sync callback (S1-WP01A foundation,
 
         await screen.findByText('Kahve');
 
-        fireEvent.click(screen.getByRole('button', { name: 'Add category' }));
+        /*
+            KATEGORİ EKLEME DÜĞMESİ RAYA TAŞINDI ve metni kaynaktaki gibi
+            yalnız "Category" (`panel.dc.html` satır 30260). Formun gönder
+            düğmesi hâlâ "Add category" der; ikisi aynı metni taşısaydı
+            ekranda aynı anda iki "Add category" olur ve ekran okuyucu
+            kullanan biri hangisinin formu açtığını ayırt edemezdi.
+
+            Testin iddiası değişmedi: kategori yaratıldığında onTreeChange
+            yeni ağaçla çağrılır.
+        */
+        fireEvent.click(screen.getByRole('button', { name: 'Category' }));
         fireEvent.change(screen.getByLabelText('Category name'), {
             target: { value: 'Çorbalar' },
         });

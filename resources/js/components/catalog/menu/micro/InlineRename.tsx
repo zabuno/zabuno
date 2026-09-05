@@ -15,6 +15,15 @@ export type InlineRenameProps = {
     /** Görünüm sınıfı: kategori başlığı ile ürün satırı aynı bileşeni kullanır. */
     textClassName?: string;
     inputClassName?: string;
+    /**
+     * Ad DEĞİŞTİRİLEMEZ: yalnız metin çizilir, tetikleyici düğme hiç doğmaz.
+     *
+     * Menü ekranını adı değiştiremeyen bir rolle (Mutfak) açtığında gerekir.
+     * Düğmeyi `disabled` çizmek yerine hiç çizmemek, bu deponun kuralıdır
+     * (`docs/98` FF-74): yapılamayan iş için bir hedef bırakmak, kullanıcıya
+     * olmayan bir yol göstermektir.
+     */
+    readOnly?: boolean;
 };
 
 /**
@@ -54,6 +63,7 @@ export function InlineRename({
     cancelLabel,
     textClassName,
     inputClassName,
+    readOnly = false,
 }: InlineRenameProps) {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(value);
@@ -138,6 +148,15 @@ export function InlineRename({
         }
     }
 
+    if (readOnly) {
+        /*
+            Metin, düzenlenebilir hâldeki metinle AYNI sınıfı taşır: satırın
+            hizası role göre kaymaz — iki farklı kullanıcı aynı listeye
+            baktığında aynı ızgarayı görür.
+        */
+        return <span className={cn('min-w-0 truncate', textClassName)}>{value}</span>;
+    }
+
     if (!editing) {
         return (
             <button
@@ -193,7 +212,7 @@ export function InlineRename({
                     type="button"
                     disabled={saving}
                     onClick={() => void save()}
-                    className="min-h-[var(--density-hit-area-min)] shrink-0 rounded-[var(--radius-md)] border border-action bg-action px-[var(--space-3)] text-meta font-semibold text-action-fg disabled:opacity-60"
+                    className="min-h-[var(--density-hit-area-min)] shrink-0 rounded-[var(--radius-md)] border border-action bg-action px-[var(--space-3)] text-meta font-bold text-action-fg disabled:opacity-60"
                 >
                     {saveLabel}
                 </button>

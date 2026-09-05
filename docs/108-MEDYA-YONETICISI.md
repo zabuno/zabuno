@@ -1,6 +1,16 @@
 # 108 — Medya yöneticisi: kanonik kaynak ve uygulama planı
 
-**Kaynak:** `docs/reference/media-manager/` (sahibin verdiği master data,
+> **ARTIK KANONİK DEĞİL (2026-09-05).** Sahip yeni bir sürüm gönderdi:
+> `docs/reference/panel-v3/` ve planı `docs/109-PANEL-V3.md`. Bu belge
+> tarihsel kayıttır — o turda alınan güvenlik kararları (SVG, PDF, tarama
+> anahtarı, "aslını sakla") geçerliliğini korur, ekran planı ise v3 ile
+> değişmiştir.
+>
+> Yeni sürümün gelme sebebi burada yazılı olan işin EKSİK uygulanmasıydı:
+> ekranlar benzetildi, kaynağın getirdiği yeni yetenekler doğmadı.
+
+
+**Kaynak (ARTIK YOK, v3 ile değişti):** `docs/reference/panel-v3/` (sahibin verdiği master data,
 2026-09-04). İkilemde o dosyalar kazanır.
 
 **Sayaç:** 0/9 tamamlandı, 0/9 aktif.

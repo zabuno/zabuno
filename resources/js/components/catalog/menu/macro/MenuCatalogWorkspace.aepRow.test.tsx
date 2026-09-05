@@ -1,6 +1,6 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 /**
@@ -236,12 +236,22 @@ describe('menü satırı — AEP sütun ritmi', () => {
 
 describe('kategori satırı — AEP ray grameri', () => {
     it('kategori adının yanında ürün sayısı durur', async () => {
-        // Referans rayında her kategori "ad + sayı" taşır: sahip hangi
-        // kategorinin boş kaldığını listeyi açmadan görür.
+        /*
+            Referans rayında her kategori "ad + sayı" taşır: sahip hangi
+            kategorinin boş kaldığını listeyi açmadan görür.
+
+            SORGU RAYA DARALTILDI. Sayı artık iki yerde birden duruyor:
+            rayda (bütün kategoriler için) ve seçili kategorinin başlığında.
+            İkisi de doğru ve ikisi de gerekli — biri "hangi kategori boş",
+            öteki "şu an baktığımda kaç ürün var" sorusunu cevaplıyor. Ama
+            `getByText` ikisini birden görünce "birden çok eşleşme" diye
+            düşer; bu testin sorduğu şey RAYDAKİ sayıdır.
+        */
         await renderWorkspace();
 
-        expect(screen.getByText('2 products')).toBeInTheDocument();
-        expect(screen.getByText('0 products')).toBeInTheDocument();
+        const rail = screen.getByRole('navigation', { name: 'Menu categories' });
+        expect(within(rail).getByText('2 products')).toBeInTheDocument();
+        expect(within(rail).getByText('0 products')).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -260,8 +270,23 @@ describe('kategori satırı — AEP ray grameri', () => {
         */
         const { calls } = await renderWorkspace();
 
-        const handle = screen.getByTitle('Drag Balıklar to reorder');
-        const target = screen.getByRole('heading', { name: 'Tatlılar' }).closest('li');
+        /*
+            TUTAMAÇ RAYA TAŞINDI ve bu zorunluydu, tercih değil:
+            sürüklemenin bir HEDEFE ihtiyacı var. Kategori kartındayken
+            hedef, ekranda duran öteki kategori kartıydı. Ekranda artık tek
+            kategori olduğu için orada bırakılacak bir yer yok — bütün
+            kategoriler yalnız rayda duruyor. Kaynak da tutamacı zaten
+            rayda gösteriyor (`panel.dc.html` satır 30258).
+
+            Testin iddiası değişmedi: tutamaç GERÇEK, sürükleme tek bir
+            `category-order` isteği gönderiyor ve klavye yolu (yukarı/aşağı
+            düğmeleri) yerinde duruyor.
+        */
+        const rail = screen.getByRole('navigation', { name: 'Menu categories' });
+        const handle = within(rail).getByTitle('Drag Balıklar to reorder');
+        const target = within(rail)
+            .getByRole('button', { name: /Tatlılar/ })
+            .closest('div');
 
         fireEvent.dragStart(handle);
         fireEvent.dragOver(target as HTMLElement);

@@ -107,8 +107,18 @@ final class RoleBoundariesTest extends TestCase
     {
         self::assertNotContains(MembershipRole::Owner, MembershipRole::invitable());
         self::assertNotContains(MembershipRole::Member, MembershipRole::invitable());
+        /*
+            Liste ÜÇE çıktı: kaynağın dördüncü rolü olan "Mutfak" doğdu
+            (`docs/109` §6.4). Sıra kaynağın davet kartındaki hap sırasıdır
+            (Editör · Yönetici · Mutfak) ve ilk sıradaki VARSAYILANDIR —
+            acele eden bir sahip en geniş yetkiyi kazara dağıtmamalı.
+
+            Bu satır bir sayı değil bir SINIR sınar: `Owner` ve `Member`
+            yukarıda ayrıca dışlanıyor; buradaki tam eşitlik, listeye bir gün
+            sessizce dördüncü bir rolün eklenmesini engeller.
+        */
         self::assertSame(
-            [MembershipRole::Editor, MembershipRole::Manager],
+            [MembershipRole::Editor, MembershipRole::Manager, MembershipRole::Kitchen],
             MembershipRole::invitable(),
         );
     }

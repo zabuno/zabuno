@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Analytics\Port;
 
 use App\Application\Analytics\Dto\AnalyticsSummary;
+use App\Application\Analytics\Dto\AnalyticsTimeSeries;
 use App\Domain\Analytics\AnalyticsEventType;
 use Illuminate\Support\Carbon;
 
@@ -48,4 +49,23 @@ interface AnalyticsRepositoryPort
         string $range,
         Carbon $now,
     ): AnalyticsSummary;
+
+    /**
+     * Zaman serisi: günlük kovalar, önceki dönem, saat ısı haritası, şube payı.
+     *
+     * `summarize` yalnız ARALIK TOPLAMI üretiyor ve o toplam bir haftanın
+     * şeklini gizliyor: hangi gün çöktü, hangi saatte yoğunlaştı, geçen
+     * haftaya göre nasıl (`docs/109` §1, Insights). Ayrı bir metot olmasının
+     * sebebi kapsam: özet uçları bugün panonun sayaçlarını besliyor ve
+     * onların yanıtına yeni alanlar eklemek, o yanıtı okuyan her istemciyi
+     * etkilerdi.
+     *
+     * @param  int|null  $locationId  `null` ise çalışma alanının tamamı.
+     */
+    public function timeSeries(
+        int $workspaceId,
+        ?int $locationId,
+        string $range,
+        Carbon $now,
+    ): AnalyticsTimeSeries;
 }

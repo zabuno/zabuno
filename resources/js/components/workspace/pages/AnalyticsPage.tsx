@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Button, Label, Select } from 'flowbite-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
+import { SegmentedControl } from '../../catalog/forms/compound/SegmentedControl';
 import { AnalyticsMetricGrid } from './analytics/AnalyticsMetricGrid';
-import { AnalyticsBreakdown, type AnalyticsBreakdownRow } from './analytics/AnalyticsBreakdown';
+import { AnalyticsTimeSeriesRegion } from './analytics/AnalyticsTimeSeriesRegion';
+import { InsightsHighlight } from './analytics/InsightsHighlight';
 import { MenuEngineeringRegion } from './analytics/MenuEngineeringRegion';
+import { useAnalyticsTimeSeries } from './analytics/useAnalyticsTimeSeries';
+import { useMenuEngineering } from './analytics/useMenuEngineering';
+import type { AnalyticsBreakdownRow } from './analytics/types';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 import { PageState } from './shared/PageState';
 import { useCurrentPublication } from './qr/useCurrentPublication';
@@ -66,12 +71,33 @@ export function AnalyticsPage({
     onNavigateToSection,
     menuTree = null,
 }: AnalyticsPageProps) {
-    const rangeId = useId();
     const [range, setRange] = useState<AnalyticsRange>('today');
     const [status, setStatus] = useState<Status>('idle');
     const [summary, setSummary] = useState<Summary | null>(null);
 
     const { current: publication } = useCurrentPublication(workspaceId, menuTree?.id ?? null);
+
+    /*
+        ZAMAN SERİSİ VE MENÜ RAPORU SAYFA DÜZEYİNDE OKUNUR (`docs/109` §1).
+
+        İkisi de iki yerde kullanılıyor: üstteki "bu aralıkta ne oldu?" kartı
+        ile alttaki grafik ve liste bölgeleri. Her bölgenin kendi isteğini
+        atması, aynı sayıyı iki kez indirmek ve iki yerin AYRIŞABİLMESİ
+        demekti — özet kartı "14 kez arandı" derken liste 9 gösterirdi.
+
+        Plan raporlamayı içermiyorsa hiç istenmez: aynı 402 iki kez daha
+        dönerdi ve ekranda hiçbir karşılığı olmazdı.
+    */
+    const planAllowsReporting = status !== 'plan-restricted';
+    const timeSeries = useAnalyticsTimeSeries(
+        planAllowsReporting ? workspaceId : undefined,
+        locationId,
+        range,
+    );
+    const menuEngineering = useMenuEngineering(
+        planAllowsReporting ? workspaceId : undefined,
+        range,
+    );
 
     const requestIdRef = useRef(0);
 
@@ -209,27 +235,73 @@ export function AnalyticsPage({
         mühendisliği de o aralığa göre yeniden okunur. Kapsamı sayfa
         başlığının yanında göstermek, bunu tek bakışta söyler.
     */
+    /*
+        ARALIK SEÇİCİSİ AÇILIR LİSTE DEĞİL, SEGMENT (`docs/109` §1, kaynağın
+        Insights başlığı).
+
+        Üç seçenekli bir açılır liste, üç seçeneği de GİZLER: sahip "30 gün"e
+        bakmak için önce listeyi açmak, sonra seçmek zorundaydı — iki dokunuş
+        ve arada kapanan bir katman. Kaynağın segmenti üçünü birden gösterir
+        ve seçili olanı ekranda tutar; sahip tek dokunuşla aralıklar arasında
+        gidip gelir. Bu ekranın en sık yapılan işi tam olarak budur.
+    */
     const rangeControl = (
-        <div className="flex flex-wrap items-center gap-[var(--space-2)]">
-            <Label htmlFor={rangeId}>{t('workspace.analytics.range.label')}</Label>
-            <Select
-                id={rangeId}
-                value={range}
-                onChange={(event) => setRange(event.target.value as AnalyticsRange)}
-            >
-                <option value="today">{t('workspace.analytics.range.today')}</option>
-                <option value="7d">{t('workspace.analytics.range.7d')}</option>
-                <option value="30d">{t('workspace.analytics.range.30d')}</option>
-            </Select>
-        </div>
+        <SegmentedControl<AnalyticsRange>
+            label={t('workspace.analytics.range.label')}
+            value={range}
+            onChange={setRange}
+            options={[
+                { value: 'today', label: t('workspace.analytics.range.today') },
+                { value: '7d', label: t('workspace.analytics.range.7d') },
+                { value: '30d', label: t('workspace.analytics.range.30d') },
+            ]}
+        />
     );
+
+    /*
+        Sayaç kartının altındaki karşılaştırma satırı, kaynağın "%12 · geçen
+        perşembe" yuvasıdır ve artık GERÇEKTEN ölçülüyor. Ölçülemediğinde
+        (seri henüz yüklenmedi, eşiğin altında ya da önceki pencere boş)
+        satır hiç yazılmaz — uydurulmuş bir yüzde, sahibin bir sonraki
+        kararına yanlış temel olurdu.
+    */
+    const comparison = timeSeries.series?.comparison ?? null;
+    const comparisonSupport =
+        comparison === null || comparison.deltaRatio === null
+            ? undefined
+            : t(
+                  comparison.deltaRatio > 0
+                      ? 'workspace.analytics.compare.up'
+                      : comparison.deltaRatio < 0
+                        ? 'workspace.analytics.compare.down'
+                        : 'workspace.analytics.compare.flat',
+                  {
+                      percent: String(Math.round(Math.abs(comparison.deltaRatio) * 100)),
+                      basis: t(
+                          comparison.basis === 'same_weekday_last_week'
+                              ? 'workspace.analytics.compare.basis.sameWeekdayLastWeek'
+                              : 'workspace.analytics.compare.basis.previousPeriod',
+                      ),
+                  },
+              );
+
+    const searches = menuEngineering.report?.searchesWithNoResults ?? null;
+    const notFoundCount =
+        searches === null ? undefined : searches.reduce((sum, row) => sum + row.searches, 0);
 
     return (
         <div id="section-analytics">
             <WorkspacePageFrame
                 measure="wide"
                 title={t('workspace.analytics.heading')}
-                description={t('workspace.analytics.operational.description')}
+                /*
+                    Ekranın cümlesi KAYNAĞINKİDİR (`docs/109` §1): "Misafirler
+                    neye bakıyor, neyi arayıp bulamıyor." Öncekisi ("gerçek
+                    QR çözümleme ve doğrulanmış menü açılışı sayılarını
+                    inceleyin") ölçümün ADINI söylüyordu, sahibin sorusunu
+                    değil — ve bu ekranın tamamı o soru için var.
+                */
+                description={t('workspace.analytics.description')}
                 badges={statusBadge ? [statusBadge] : []}
                 actions={rangeControl}
             >
@@ -321,6 +393,7 @@ export function AnalyticsPage({
 
                     {status === 'success' &&
                         summary &&
+                        workspaceId !== undefined &&
                         (summary.qrResolveCount === 0 && summary.menuOpenCount === 0 ? (
                             <AnalyticsEmptyState
                                 reason={emptyReason}
@@ -329,55 +402,112 @@ export function AnalyticsPage({
                             />
                         ) : (
                             <div className="flex flex-col gap-[var(--space-fluid-md)]">
+                                {/*
+                                    "BU ARALIKTA NE OLDU?" EN ÜSTTE
+                                    (`docs/109` §1, kaynağın Insights düzeni).
+
+                                    Sahip ekranı grafik okumak için açmıyor;
+                                    ne olduğunu öğrenmek için açıyor. Üç
+                                    cümlelik özet, grafiklerin sorduğu
+                                    "şimdi ne yapmalıyım" sorusuna bir adım
+                                    atar — ve üçü de gerçek ölçümden doğar,
+                                    uydurulmuş tek bir sayı yoktur.
+                                */}
+                                {timeSeries.series ? (
+                                    <InsightsHighlight
+                                        series={timeSeries.series}
+                                        report={menuEngineering.report}
+                                        {...(onNavigateToSection ? { onNavigateToSection } : {})}
+                                    />
+                                ) : null}
+
                                 <AnalyticsMetricGrid
                                     qrResolveCount={summary.qrResolveCount}
                                     menuOpenCount={summary.menuOpenCount}
                                     uniqueVisitorCount={summary.uniqueVisitorCount}
                                     openRate={summary.openRate}
+                                    {...(comparisonSupport === undefined
+                                        ? {}
+                                        : { comparisonSupport })}
+                                    {...(searches === null
+                                        ? {}
+                                        : {
+                                              searchCount: searches.length,
+                                              notFoundCount,
+                                          })}
                                 />
 
                                 {/*
-                                    Kırılımlar yalnız KARŞILAŞTIRACAK bir şey
-                                    varken çizilir; tek satırlık bir kırılım,
-                                    üstündeki toplamın tekrarıdır (docs/68).
+                                    İKİ SÜTUN, KIRILMA NOKTASI SINIFI YOK.
+
+                                    Solda "ne oldu" (grafikler, masalar),
+                                    sağda "menümde ne işe yarıyor" (ürünler,
+                                    aranıp bulunamayanlar). Kaynağın düzeni
+                                    bu; ızgara kendi kendine sarar, yani
+                                    ölçüyü tarayıcı değil içerik belirler ve
+                                    320 pikselde tek sütuna iner.
                                 */}
-                                <AnalyticsBreakdown
-                                    heading={t('workspace.analytics.breakdown.locations')}
-                                    rows={summary.locations}
-                                />
-                                <AnalyticsBreakdown
-                                    heading={t('workspace.analytics.breakdown.qrCodes')}
-                                    rows={summary.qrCodes}
-                                />
+                                <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,20rem),1fr))] items-start gap-[var(--space-fluid-md)]">
+                                    <AnalyticsTimeSeriesRegion
+                                        workspaceId={workspaceId}
+                                        {...(locationId === undefined ? {} : { locationId })}
+                                        range={range}
+                                        qrCodes={summary.qrCodes}
+                                    />
+
+                                    {/*
+                                        MENÜ MÜHENDİSLİĞİ (`docs/84`).
+
+                                        Huninin ALTINDA duruyor: önce "kaç
+                                        kişi geldi", sonra "geldiklerinde neye
+                                        baktılar". Ters sırada, sahip ilgi
+                                        sayılarını ziyaret sayısı sanardı.
+
+                                        Rapor sayfadan geliyor: ikinci bir
+                                        istek, aynı sayıyı iki kez indirmek ve
+                                        üstteki özet kartıyla ayrışabilmek
+                                        demekti.
+                                    */}
+                                    <MenuEngineeringRegion
+                                        workspaceId={workspaceId}
+                                        range={range}
+                                        source={menuEngineering}
+                                        {...(onNavigateToSection
+                                            ? {
+                                                  /*
+                                                      "Ekle" GERÇEKTEN bir
+                                                      yere götürür: kategori
+                                                      ve ürün oluşturma akışı
+                                                      menü ekranındadır.
+                                                      Hedefi olmayan bir düğme
+                                                      hiç çizilmez.
+                                                  */
+                                                  onAddTerm: () => {
+                                                      onNavigateToSection('menu');
+                                                  },
+                                              }
+                                            : {})}
+                                    />
+                                </div>
                             </div>
                         ))}
 
                     {/*
-                        MENÜ MÜHENDİSLİĞİ (`docs/84`).
+                        MENÜ MÜHENDİSLİĞİ ARTIK İKİ SÜTUNUN SAĞINDA.
 
-                        Huninin ALTINDA duruyor: önce "kaç kişi geldi",
-                        sonra "geldiklerinde neye baktılar". Ters sırada,
-                        sahip ilgi sayılarını ziyaret sayısı sanırdı.
+                        Eskiden raporun tamamının ALTINDA, tek sütun olarak
+                        duruyordu ve sahip "aranıp bulunamayanlar"a ulaşmak
+                        için ekranı sonuna kadar kaydırmak zorundaydı —
+                        oysa kaynağın Insights düzeninde o liste ilk ekranda,
+                        grafiklerin yanında durur (`docs/109` §1).
+
+                        Plan kısıtı ARIZA DEĞİLDİR (`docs/84`): planın
+                        raporlamayı içermediği durumda bölüm hiç çizilmez,
+                        aksi hâlde "yüklenemedi" derdi ve sahip ürünün
+                        bozulduğunu sanardı — oysa yapması gereken şey planını
+                        yükseltmek. Bu koşul yukarıdaki `status === 'success'`
+                        dalının içinde zaten sağlanıyor.
                     */}
-                    {/*
-                        Plan kısıtı ARIZA DEĞİLDİR (`docs/84`).
-
-                        Rapor bölümü, planın raporlamayı içermediği durumda
-                        hiç çizilmez: aksi hâlde "yüklenemedi" derdi ve sahip
-                        ürünün bozulduğunu sanardı — oysa yapması gereken şey
-                        planını yükseltmek.
-
-                        İLK yüklemede de çizilmez (`summary === null`): ekranda
-                        iki ayrı "yükleniyor" satırı, hangisinin neyi
-                        beklediğini belirsizleştirir. Ama bir kez yüklendikten
-                        sonra tazelemede AYAKTA KALIR; sökülüp yeniden kurulmak
-                        listeyi gözün önünde sıfırlardı.
-                    */}
-                    {workspaceId !== undefined &&
-                    status !== 'plan-restricted' &&
-                    summary !== null ? (
-                        <MenuEngineeringRegion workspaceId={workspaceId} range={range} />
-                    ) : null}
                 </div>
             </WorkspacePageFrame>
         </div>

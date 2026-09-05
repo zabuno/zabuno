@@ -10,6 +10,42 @@ export const profile = {
 
     'workspace.profile.details.heading': 'Your details',
 
+    /*
+        HESAP BAKIMI (`docs/83`, P1-07) — anahtarlar `workspace.settings.*`
+        altındaydı ve form iki ekranda birden çiziliyordu. Kanonik kaynak
+        (`panel.dc.html` > "Profil") ad, e-posta ve şifreyi Profil'e koyuyor;
+        anahtarlar da oraya taşındı. Bir ayarın tek bir evi olur.
+    */
+    'workspace.profile.account.region': 'Your account',
+    'workspace.profile.account.name.label': 'Your name',
+    'workspace.profile.account.name.submit': 'Save name',
+    'workspace.profile.account.name.saved': 'Your name was saved.',
+    'workspace.profile.account.name.error': 'Your name could not be saved.',
+    /*
+        E-POSTA GÖRÜNÜR AMA DÜZENLENMEZ: değişimi doğrulama akışı ister ve o
+        akış üründe yok. Düzenlenebilir bir alan, kaydeder gibi yapıp hiçbir
+        şey yapmazdı.
+    */
+    'workspace.profile.account.email.label': 'Email',
+    'workspace.profile.account.password.title': 'Change password',
+    /*
+        BU CÜMLE GERÇEKTİR, süs değil: `UpdatePasswordController` şifre
+        değişince kullanıcının diğer oturumlarını `sessions` tablosundan
+        siler (`ACCOUNT-PASSWORD-OTHER-SESSIONS-01`). Sürpriz bir çıkış,
+        kullanıcıya ürünün bozulduğunu düşündürür.
+    */
+    'workspace.profile.account.password.help':
+        'Changing your password signs you out on your other devices. This one stays signed in.',
+    'workspace.profile.account.password.current': 'Current password',
+    'workspace.profile.account.password.next': 'New password',
+    'workspace.profile.account.password.confirm': 'Repeat new password',
+    // Açılır bölümün başlığı "Change password"; düğme ayrı adlandırılır ki
+    // ekran okuyucuda iki farklı şey iki farklı adla duyulsun.
+    'workspace.profile.account.password.submit': 'Save new password',
+    'workspace.profile.account.password.saved': 'Your password was changed.',
+    'workspace.profile.account.password.error':
+        'Your password could not be changed. Check your current password and try again.',
+
     'workspace.profile.avatar.heading': 'Profile photo',
     'workspace.profile.avatar.help':
         'Choose a photo of yourself. It is stored in your media library, scanned like every other image, and shown next to your name.',
@@ -33,10 +69,15 @@ export const profile = {
         parmakla dokunulacak bir tablette, "sıkışık" gün boyu tabloya bakan
         bir masaüstünde işe yarar. Dokunma hedefi hiçbir modda küçülmez;
         değişen yalnız dolgudur.
+
+        Cümle kanonik kaynağınkidir (docs/109): "Satır yüksekliği değişir;
+        yazı boyutu ve dokunma hedefi değişmez." Eski cümle neyin
+        DEĞİŞMEDİĞİNİ sayıyor ama yazı boyutundan hiç söz etmiyordu —
+        tabletle servis yapan garsonun sorduğu ikinci soru tam olarak oydu.
     */
     'workspace.profile.density.heading': 'Row spacing',
     'workspace.profile.density.help':
-        'How much breathing room lists and tables get. Buttons stay the same size to tap in every mode.',
+        'Row height changes. Text size and touch targets stay the same.',
     'workspace.profile.preview.heading': 'Preview',
     'workspace.profile.preview.help': 'How your choices look right now.',
     'workspace.profile.preview.sampleLabel': 'Table',

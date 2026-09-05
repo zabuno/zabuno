@@ -13,6 +13,8 @@ type MenuPageProps = {
     locationId: number | null;
     onTreeChange: (tree: DashboardMenuTree) => void;
     onNavigateToSection: (section: string) => void;
+    /** Bkz. `MenuCatalogWorkspaceProps.can` — tanımsızsa daraltma yapılmaz. */
+    can?: (permission: string) => boolean;
 };
 
 /**
@@ -36,7 +38,15 @@ export function MenuPage({
     locationId,
     onTreeChange,
     onNavigateToSection,
+    can,
 }: MenuPageProps) {
+    /*
+        YAYINLAMA da menüyü değiştirmektir — hatta en geri alınamaz biçimde:
+        misafirin masada gördüğü menüyü değiştirir. Mutfak rolü taslağı bile
+        değiştiremezken yayın düğmesini görmesi, ekranın en yanıltıcı sözü
+        olurdu.
+    */
+    const canManageMenu = can === undefined || can('menu.manage');
     return (
         <div id="section-menu">
             <WorkspacePageFrame
@@ -45,21 +55,35 @@ export function MenuPage({
                 description={t('workspace.menu.operational.description')}
                 actions={
                     /*
-                        Yayınlama menüye AİTTİR, ayrı bir modül değil.
+                        "ÖNİZLE VE YAYINLA" BAŞLIK SATIRINDA KALIR.
 
-                        Ana menüde kalıcı bir "Publication" maddesi olarak
-                        durduğunda, hangi menüyü yayınladığı belirsizdi — bir
-                        çalışma alanında birden fazla menü olabilir. Buradan
-                        açıldığında hangi menü olduğu sorusu hiç doğmaz
-                        (`docs/50` §5).
+                        Kanonik kaynak (`panel.dc.html` satır 30199-30209)
+                        bu eylemi "Menüler" başlığının yanındaki sırada
+                        gösterir — sayfa çerçevesinin `actions` yuvası tam
+                        olarak orası: başlık solda, eylemler sağda. Yani
+                        kaynağın KONUMU burada zaten karşılanıyor.
+
+                        Öteki üç eylem (fotoğraftan aktar · CSV · ürün ekle)
+                        menünün kendi verisine ihtiyaç duyar — hangi menü,
+                        hangi kategori — ve o veri `MenuCatalogWorkspace`
+                        içinde yaşar; bu yüzden onlar oradaki şeritte, bir
+                        satır aşağıda çizilir. Yayınlamayı da oraya taşımak,
+                        onu menü sunucudan gelene kadar EKRANDA OLMAYAN bir
+                        düğmeye çevirirdi: sahip menü ekranını açar, bir
+                        saniye boyunca yayınlama yolunu göremez.
+
+                        Yayınlamanın menüye ait olduğu kararı (`docs/50` §5)
+                        değişmedi.
                     */
-                    <button
-                        type="button"
-                        onClick={() => onNavigateToSection?.('publication')}
-                        className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-semibold text-action-fg"
-                    >
-                        {t('workspace.menu.previewAndPublish')}
-                    </button>
+                    canManageMenu ? (
+                        <button
+                            type="button"
+                            onClick={() => onNavigateToSection?.('publication')}
+                            className="min-h-[var(--density-hit-area-min)] rounded-md border border-action bg-action px-4 py-2 text-body font-bold text-action-fg"
+                        >
+                            {t('workspace.menu.previewAndPublish')}
+                        </button>
+                    ) : null
                 }
             >
                 <PanelCard>{renderCatalog()}</PanelCard>
@@ -75,6 +99,7 @@ export function MenuPage({
                     locationId={locationId}
                     onTreeChange={onTreeChange}
                     onNavigateToSection={onNavigateToSection}
+                    can={can}
                 />
             );
         }

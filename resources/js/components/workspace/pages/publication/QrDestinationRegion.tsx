@@ -33,6 +33,12 @@ type QrDestinationRegionProps = {
     brandPrimaryColor?: string | null;
     /** Marka rengini düzeltmenin yolu: marka ekranı. */
     onEditBrand?: () => void;
+    /**
+     * Toplu masa sihirbazı bu bölgenin içinde mi çizilsin (panel v3,
+     * `docs/109` §6.7)? QR ekranı onu kendi sol sütununda gösteriyor;
+     * ikinci bir kopya, sahibin hangi forma yazdığını bilememesi demektir.
+     */
+    showBulkWizard?: boolean;
 };
 
 /**
@@ -51,6 +57,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
         onUpgrade,
         brandPrimaryColor = null,
         onEditBrand,
+        showBulkWizard = true,
     } = props;
 
     const listUrl = `/api/workspaces/${workspaceId}/brand/locations/${locationId}/qr-codes`;
@@ -477,6 +484,7 @@ export function QrDestinationRegion(props: QrDestinationRegionProps) {
                 onUpgrade={onUpgrade}
                 brandPrimaryColor={brandPrimaryColor}
                 onEditBrand={onEditBrand}
+                showBulkWizard={showBulkWizard}
             />
         </>
     );

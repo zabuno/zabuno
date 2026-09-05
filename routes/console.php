@@ -20,3 +20,15 @@ Artisan::command('inspire', function () {
 Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=1')
     ->everyMinute()
     ->withoutOverlapping();
+
+/*
+    ZAMANLANMIŞ YAYIN ("Planla", sahibin 2026-09-05 kararı).
+
+    Dakikada bir: sahip "bu gece 03:00" dediğinde menü 03:00'te değişir,
+    03:15'te değil. `withoutOverlapping` bir koşu uzarsa ikincisinin üstüne
+    binmesini önler; komutun kendisi de her kaydı atomik olarak sahiplenir,
+    yani üst üste binse bile aynı menü iki kez yayınlanmaz.
+*/
+Schedule::command('zabuno:publish-scheduled-menus')
+    ->everyMinute()
+    ->withoutOverlapping();

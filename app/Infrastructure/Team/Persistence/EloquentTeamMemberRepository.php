@@ -6,6 +6,7 @@ namespace App\Infrastructure\Team\Persistence;
 
 use App\Application\Team\Dto\TeamMemberSummary;
 use App\Application\Team\Port\TeamMemberRepositoryPort;
+use App\Domain\Tenancy\MembershipRole;
 use Illuminate\Support\Facades\DB;
 
 final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
@@ -35,12 +36,35 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
             ->all();
     }
 
-    public function removeEditor(int $workspaceId, int $membershipId): bool
+    public function removeMember(int $workspaceId, int $membershipId): bool
     {
         return DB::table('workspace_memberships')
             ->where('id', $membershipId)
             ->where('workspace_id', $workspaceId)
-            ->where('role', 'editor')
+            /*
+                KALDIRILABİLİR KÜME = DAVET EDİLEBİLİR ROLLER.
+
+                Burada bir zamanlar sabit bir `role = 'editor'` vardı. O
+                satır yazıldığında davet edilebilen tek rol Editör'dü;
+                sonra Yönetici ve Mutfak doğdu, ama silme koşulu onlarla
+                birlikte büyümedi. Sonuç sessiz bir yalandı: sahip "Çıkar"
+                diyordu, sorgu sıfır satır siliyordu ve kimse duymuyordu.
+
+                Bu yüzden koşul artık listeyi `MembershipRole::invitable()`
+                üzerinden TÜRETİYOR: davet edilebilen bir rol doğduğu anda
+                çıkarılabilir de olur — aynı hata bir daha bu yolla
+                doğamaz.
+
+                Listede OLMAYAN ikisi kasıtlıdır. `owner` silinmez,
+                DEVREDİLİR (`transferOwnership`); silinseydi çalışma alanı
+                sahipsiz kalır ve kimse onaramazdı. `member` ise yalnız
+                eski kayıtların taşıdığı salt okunur roldür ve bu uç
+                noktanın donmuş sözleşmesi onu koruma altına alır.
+            */
+            ->whereIn('role', array_map(
+                static fn (MembershipRole $role): string => $role->value,
+                MembershipRole::invitable(),
+            ))
             ->delete() > 0;
     }
 

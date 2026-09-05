@@ -12,6 +12,7 @@ use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\Media\ServeOriginalController;
 use App\Http\Controllers\Media\ServeRenditionController;
 use App\Http\Controllers\PlatformAdminAppController;
+use App\Http\Controllers\Publication\ShowDraftPreviewController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
 use App\Http\Controllers\PublicSite\StoreContactMessageController;
@@ -106,6 +107,20 @@ Route::get('/media/original/{workspace}/{asset}', ServeOriginalController::class
     ->where('asset', '[0-9]+')
     ->middleware('signed')
     ->name('media.original');
+
+/*
+    TASLAK ÖNİZLEMESİ — "Telefonda önizle" (sahibin 2026-09-05 kararı).
+
+    MİSAFİRİN ADRESİ DEĞİLDİR ve onunla karıştırılamaz: ayrı bir yol
+    parçası (`/menu-preview/`), on beş dakikalık imza ve `noindex`. Oturum
+    istemez çünkü sahip bu bağlantıyı kendi telefonunda açar; imza yetkidir
+    ve `media.original` ile tam olarak aynı deseni izler (`docs/49` Faz 6).
+*/
+Route::get('/menu-preview/{workspace}/{menu}', ShowDraftPreviewController::class)
+    ->where('workspace', '[0-9]+')
+    ->where('menu', '[0-9]+')
+    ->middleware('signed')
+    ->name('publication.draftPreview');
 
 // Basılı QR token'ının adresi. KALICI adres artık `/menu/{key}/{slug}`;
 // bu yol eski bağlantılar ve eski basılı kodlar için yaşamaya devam eder

@@ -14,6 +14,6 @@ final class RemoveTeamMember
 
     public function handle(int $workspaceId, int $membershipId): bool
     {
-        return $this->members->removeEditor($workspaceId, $membershipId);
+        return $this->members->removeMember($workspaceId, $membershipId);
     }
 }

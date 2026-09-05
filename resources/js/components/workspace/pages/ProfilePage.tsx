@@ -1,6 +1,6 @@
 import { t } from '../../../i18n/workspace';
 import type { BrandProfile } from '../BrandEditForm';
-import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
+import { AccountSettingsRegion } from './profile/AccountSettingsRegion';
 import { AppearanceRegion } from './profile/AppearanceRegion';
 import { BrandColorsRegion } from './profile/BrandColorsRegion';
 import { ProfileAvatarRegion } from './profile/ProfileAvatarRegion';
@@ -75,7 +75,13 @@ export function ProfilePage({
                     <h3 id="profile-details-heading" className="text-body font-bold text-fg">
                         {t('workspace.profile.details.heading')}
                     </h3>
-                    <AccountSettingsRegion currentName={userName} />
+                    {/*
+                        AD, E-POSTA VE ŞİFRE ARTIK YALNIZ BURADA (docs/109).
+                        Aynı form Ayarlar > Hesap sekmesinde de çiziliyordu;
+                        kullanıcı adını oradan değiştirdiğinde "bu yalnız bu
+                        restoranda mı değişti?" diye sormakta haklıydı.
+                    */}
+                    <AccountSettingsRegion currentName={userName} email={email} />
                 </section>
 
                 {/*

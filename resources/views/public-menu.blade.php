@@ -76,6 +76,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @isset($previewNotice)
+        {{-- TASLAK ÖNİZLEMESİ ARANIP BULUNAMAZ. Bu sayfa yayınlanmamış
+             fiyatlar taşır; indekslenmesi, restoranın henüz vermediği bir
+             kararı arama sonuçlarına düşürürdü. --}}
+        <meta name="robots" content="noindex,nofollow">
+    @endisset
     <title>{{ $documentTitle }}</title>
     @isset($canonicalUrl)
         {{-- Aynı menü izleme parametresiyle, farklı sorgu sırasıyla veya
@@ -433,6 +439,22 @@
     <span id="pwa-offline-status" role="status" aria-live="polite"></span>
 </div>
 <main role="main" @isset($menuKey) data-menu-key="{{ $menuKey }}" @endisset>
+    @isset($previewNotice)
+        {{-- ÖNİZLEME KENDİNİ SÖYLER ve sayfanın EN ÜSTÜNDE söyler. Bağlantı
+             bir grup sohbetine düşerse onu açan kişi de, sahibin kendisi de
+             bunun canlı menü olmadığını menüye bakmadan önce görür. Uyarı
+             yalnız renge yaslanmaz: cümlenin kendisi metindir ve `role`
+             ile duyurulur. --}}
+        <p role="status" class="qr-menu-preview-notice"
+           style="margin:0;padding:12px 16px;border-bottom:1px solid currentColor;font-weight:700">
+            {{ $previewNotice }}
+            @isset($previewBlockedReason)
+                @if ($previewBlockedReason !== null)
+                    — {{ $previewBlockedReason }}
+                @endif
+            @endisset
+        </p>
+    @endisset
     <header class="qr-menu-header">
         {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
              Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı
