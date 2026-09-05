@@ -742,6 +742,31 @@ a {
     container-type: inline-size;
 }
 
+/* SARAN ESNEK KAPTA SATIR, KABIN BOYUNU DEĞİL İÇERİĞİN BOYUNU ALIR.
+ *
+ * Ölçüldü (2026-09-05, `scripts/shell-scroll-gate`): 448 piksellik bir kabın
+ * içinde ana alan 4032 piksel yüksekliğindeydi. Yani ana alan HİÇ TAŞMIYORDU
+ * — kendisi büyüyordu. Taşmayan bir kutu kaydırılmaz: `overflow-y: auto`
+ * yazılıydı ve hiçbir şey yapmıyordu. Sahibin bildirdiği "hiç hareket yok"
+ * tam olarak buydu, ve kabuk çivilendikten sonra belge de kayamadığı için
+ * sayfanın altına inmenin HİÇBİR yolu kalmamıştı.
+ *
+ * Sebep `flex-wrap`: sarmayan bir kapta öğeler kabın çapraz boyuna gerilir,
+ * saran bir kapta ise önce SATIR ölçülür ve satırın boyu öğenin varsayımsal
+ * boyudur — yani içeriği. `align-content` bunu düzeltmez; o yalnız ARTAN
+ * yeri dağıtır, burada artan yer yok, eksik yer var.
+ *
+ * `max-height: 100%` öğenin varsayımsal çapraz boyunu kabın boyuna kırpar:
+ * satır 448 olur, ana alan 448 olur, içerik taşar ve KAYAR.
+ *
+ * Sarma davranışı korunuyor: bağlam paneli yer kalmadığında hâlâ ana
+ * içeriğin altına geçiyor. Kırpılmasıysa yeni değil — kabuk bu değişiklikten
+ * önce de `overflow: hidden` taşıyordu.
+ */
+.admin-shell-layout > * {
+    max-height: 100%;
+}
+
 @container (min-width: 64rem) {
     .admin-shell-sidebar {
         display: flex;
