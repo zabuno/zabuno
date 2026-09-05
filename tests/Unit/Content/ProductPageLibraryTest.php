@@ -53,10 +53,34 @@ final class ProductPageLibraryTest extends TestCase
         'fiyatlandirma',
     ];
 
+    /**
+     * DALGA 3 — FF-203.
+     *
+     * Ölçüm 2026-09-06: kütükte P0 olup kütüphanede karşılığı olmayan 79
+     * sayfa var. `docs/119` §21 sırasında yazılabilir olan ilk altısı
+     * bunlar: ürün genel bakışı (sekiz ürün sayfasının kırıntı atası ve
+     * hiçbirinden ulaşılamayan yuva), §21'in yazılmamış tek üst başlığı
+     * (tasarım ve marka) ve menü yönetiminin üründe GERÇEKTEN var olan dört
+     * alt sayfası. Varyantlar ve ekstralar da P0 ama ürün bunları yapmıyor;
+     * yapmadığı bir şeyin sayfası yazılmaz.
+     *
+     * Bu dalga ilk kez ÜÇ kademeli anahtar taşıyor (`urun.menu-yonetimi.
+     * kategoriler`): alt sayfa, ebeveyninin bir kopyası değil, ebeveynin
+     * bir adımda geçtiği şeyin kendi sorusudur.
+     */
+    private const THIRD_WAVE = [
+        'urun',
+        'urun.tasarim-ve-marka',
+        'urun.menu-yonetimi.kategoriler',
+        'urun.menu-yonetimi.urunler',
+        'urun.menu-yonetimi.urun-fiyatlari',
+        'urun.menu-yonetimi.stok-durumu',
+    ];
+
     /** @return list<string> */
     private static function everyPage(): array
     {
-        return array_merge(self::FIRST_FIVE, self::SECOND_WAVE);
+        return array_merge(self::FIRST_FIVE, self::SECOND_WAVE, self::THIRD_WAVE);
     }
 
     private ProductPageLibrary $library;
@@ -168,8 +192,8 @@ final class ProductPageLibraryTest extends TestCase
         }
 
         // Kanıtın kendisi de ölçülür: hiç kanıt taşımayan bir kütük, bu
-        // kapıyı sessizce boş geçerdi.
-        self::assertGreaterThan(90, $checked);
+        // kapıyı sessizce boş geçerdi. Dalga 3 ile ölçülen sayı 370'i aştı.
+        self::assertGreaterThan(300, $checked);
     }
 
     public function test_every_capability_step_requirement_and_limitation_carries_its_evidence(): void
@@ -254,6 +278,111 @@ final class ProductPageLibraryTest extends TestCase
             foreach ($faq->entries as $entry) {
                 self::assertNotNull($entry->term, $content->pageKey);
                 self::assertStringEndsWith('?', $entry->term, $content->pageKey);
+            }
+        }
+    }
+
+    public function test_every_written_page_has_its_parent_hub_written(): void
+    {
+        /*
+            DALGA 3 — bir alt sayfanın atası olmadan var olması, kırıntıda
+            tıklanamayan bir basamak ve hiçbir yerden ulaşılamayan bir sayfa
+            demektir. Dalga 1 tam olarak bunu yaşadı: sekiz ürün sayfası
+            yazılmışken `urun` yuvası boştu ve her kırıntının ilk basamağı
+            ölüydü. Kural artık ölçülüyor: anahtarında nokta olan her sayfanın
+            ebeveyni de kütüphanede yazılıdır.
+        */
+        foreach ($this->library->all() as $content) {
+            $dot = strrpos($content->pageKey, '.');
+
+            if ($dot === false) {
+                continue;
+            }
+
+            $parent = substr($content->pageKey, 0, $dot);
+
+            self::assertNotNull(
+                $this->library->find($parent, $content->locale),
+                "Öksüz alt sayfa: {$content->pageKey} yazılmış ama atası {$parent} yazılmamış.",
+            );
+        }
+    }
+
+    public function test_related_pages_point_only_at_pages_that_are_written(): void
+    {
+        /*
+            "İlgili sayfalar" çizim anında yayın süzgecinden geçer; ama
+            KÜTÜPHANEDE bile olmayan bir anahtar o süzgece hiç ulaşmaz ve
+            sessizce düşer. Sessiz düşen bir bağlantı, yazım hatasıyla
+            yazılmış bir anahtarı sonsuza dek gizler.
+        */
+        foreach ($this->library->all() as $content) {
+            $related = $content->block(BlockType::Related);
+
+            if ($related === null) {
+                continue;
+            }
+
+            foreach ($related->entries as $entry) {
+                self::assertNotNull($entry->pageKey, $content->pageKey);
+                self::assertNotNull(
+                    $this->library->find($entry->pageKey, $content->locale),
+                    "{$content->pageKey}: ilgili sayfa yazılmamış — {$entry->pageKey}",
+                );
+            }
+        }
+    }
+
+    public function test_the_product_overview_reaches_every_written_product_page(): void
+    {
+        /*
+            Ürün genel bakışı bir HUB'dır ve hub olmanın ölçüsü budur: yazılmış
+            her ürün sayfasına oradan bir bağlantı çıkar. Sekizinci sayfa
+            yazıldığında biri onu buraya eklemeyi unutursa, sayfa var ama
+            harita onu göstermiyor olur.
+        */
+        $overview = $this->library->find('urun', 'en');
+        self::assertNotNull($overview);
+
+        $related = $overview->block(BlockType::Related);
+        self::assertNotNull($related);
+
+        $linked = array_map(static fn ($entry): ?string => $entry->pageKey, $related->entries);
+
+        foreach ($this->library->all() as $content) {
+            if (preg_match('/^urun\.[^.]+$/', $content->pageKey) !== 1) {
+                continue;
+            }
+
+            self::assertContains($content->pageKey, $linked, "Genel bakış {$content->pageKey} sayfasına ulaşmıyor.");
+        }
+    }
+
+    public function test_no_two_pages_ask_the_same_question(): void
+    {
+        /*
+            Doorway'in ölçülebilir imzası: aynı soruya iki sayfada cevap
+            vermek. Bir alt sayfa, ebeveyninin SSS'sini yeniden sorduğu anda
+            ebeveynin kopyasıdır (`docs/119` §13.2 cannibalization, §13.4).
+            Ölçü kesindir: aynı soru metni sitede yalnız bir kez sorulur.
+        */
+        $seen = [];
+
+        foreach ($this->library->all() as $content) {
+            $faq = $content->block(BlockType::Faq);
+            self::assertNotNull($faq, $content->pageKey);
+
+            foreach ($faq->entries as $entry) {
+                $question = mb_strtolower(trim((string) $entry->term));
+                $elsewhere = $seen[$question] ?? '';
+
+                self::assertArrayNotHasKey(
+                    $question,
+                    $seen,
+                    "Aynı soru iki sayfada: \"{$entry->term}\" — {$elsewhere} ve {$content->pageKey}",
+                );
+
+                $seen[$question] = $content->pageKey;
             }
         }
     }
