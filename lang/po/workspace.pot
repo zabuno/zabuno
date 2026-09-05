@@ -3340,6 +3340,18 @@ msgstr ""
 msgid "workspace.media.upload.held.notYours"
 msgstr ""
 
+#: workspace:workspace.media.upload.limit.kind.document
+msgid "workspace.media.upload.limit.kind.document"
+msgstr ""
+
+#: workspace:workspace.media.upload.limit.kind.image
+msgid "workspace.media.upload.limit.kind.image"
+msgstr ""
+
+#: workspace:workspace.media.upload.limit.kind.vector
+msgid "workspace.media.upload.limit.kind.vector"
+msgstr ""
+
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
 msgstr ""
@@ -3366,6 +3378,10 @@ msgstr ""
 
 #: workspace:workspace.media.upload.requirement.formats
 msgid "workspace.media.upload.requirement.formats"
+msgstr ""
+
+#: workspace:workspace.media.upload.requirement.maxSize
+msgid "workspace.media.upload.requirement.maxSize"
 msgstr ""
 
 #: workspace:workspace.media.upload.requirement.minimum

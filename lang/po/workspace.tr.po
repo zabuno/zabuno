@@ -3226,7 +3226,7 @@ msgstr "Yüklemek için bir dosya seçin."
 
 #: workspace:workspace.media.upload.error.tooLarge
 msgid "workspace.media.upload.error.tooLarge"
-msgstr "Bu dosya {size} MB; sınır {max} MB. Daha küçük bir kopya çıkarıp tekrar deneyin."
+msgstr "Bu dosya {size} MB; {kind} için sınır {max} MB. Daha küçük bir kopya çıkarıp tekrar deneyin."
 
 #: workspace:workspace.media.upload.error.tooManyPixels
 msgid "workspace.media.upload.error.tooManyPixels"
@@ -3340,6 +3340,18 @@ msgstr "Dosyanız bize ulaştı, ama menünüzde henüz kullanılamıyor. Sebebi
 msgid "workspace.media.upload.held.notYours"
 msgstr "Yanlış bir şey yapmadınız; bunu buradan açmanız da mümkün değil."
 
+#: workspace:workspace.media.upload.limit.kind.document
+msgid "workspace.media.upload.limit.kind.document"
+msgstr "PDF dosyaları"
+
+#: workspace:workspace.media.upload.limit.kind.image
+msgid "workspace.media.upload.limit.kind.image"
+msgstr "görseller"
+
+#: workspace:workspace.media.upload.limit.kind.vector
+msgid "workspace.media.upload.limit.kind.vector"
+msgstr "SVG dosyaları"
+
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
 msgstr "{name} için ad"
@@ -3367,6 +3379,10 @@ msgstr "En-boy oranı {aspect}"
 #: workspace:workspace.media.upload.requirement.formats
 msgid "workspace.media.upload.requirement.formats"
 msgstr "Biçimler: {formats}"
+
+#: workspace:workspace.media.upload.requirement.maxSize
+msgid "workspace.media.upload.requirement.maxSize"
+msgstr "En büyük dosya boyutu: {limits}"
 
 #: workspace:workspace.media.upload.requirement.minimum
 msgid "workspace.media.upload.requirement.minimum"

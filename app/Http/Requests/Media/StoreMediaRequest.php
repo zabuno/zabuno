@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Media;
 
+use App\Domain\Media\MediaSizeKind;
 use App\Domain\Media\PdfInspector;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SvgSanitizer;
+use App\Domain\Media\UploadSizeLimits;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -21,6 +23,21 @@ final class StoreMediaRequest extends FormRequest
      */
     private const ALLOWED_IMAGE_TYPES = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_WEBP];
 
+    /**
+     * Ret cümlesinde türün SAHİBİN kelimesiyle adı.
+     *
+     * `image`/`vector`/`document` iç sözlüktür; sahip "görsel", "SVG" ve
+     * "PDF" bilir. Sınırın hangi tür için uygulandığını söylemeyen bir ret,
+     * doğru dosyayı yükleyen kullanıcıyı da şüpheye düşürür.
+     *
+     * @var array<string, string>
+     */
+    private const KIND_LABELS = [
+        'image' => 'görseller',
+        'vector' => 'SVG dosyaları',
+        'document' => 'PDF dosyaları',
+    ];
+
     public function authorize(): bool
     {
         return true;
@@ -34,13 +51,21 @@ final class StoreMediaRequest extends FormRequest
         // Sınırlar config'den (`media-slots.limits`) — 2026-09-04'e kadar
         // burada sabit `max:51199` (50 MB) yazıyordu, config ise 30 MB
         // diyordu ve `max_megapixels` HİÇ uygulanmıyordu (`docs/98` FF-68).
-        $maxBytes = (int) config('media-slots.limits.max_bytes', 30 * 1024 * 1024);
-        $maxKilobytes = (int) ceil($maxBytes / 1024);
+        //
+        // FF-158: sınır artık TÜRE göre. `max:` kuralı MUTLAK TAVANI tutar
+        // (`limits.max_bytes`) — türün kendi, daha dar sınırı aşağıdaki
+        // kapanışta uygulanır, çünkü dosyanın hangi tür olduğu ancak
+        // KENDİ BAYTLARI okunduktan sonra bilinir. Uzantıya ve istemcinin
+        // bildirdiği MIME'a burada da güvenilmez.
+        $limits = UploadSizeLimits::fromArray((array) config('media-slots.limits', []));
+        $maxKilobytes = (int) ceil($limits->ceilingBytes / 1024);
         $maxPixels = ((int) config('media-slots.limits.max_megapixels', 40)) * 1_000_000;
         $slot = (string) $this->input('slot', '');
 
         return [
-            'file' => ['required', 'file', 'max:'.$maxKilobytes, function (string $attribute, mixed $value, Closure $fail) use ($maxPixels, $maxBytes, $slot): void {
+            // `bail`: tavanı aşan bir dosya için hem `max:` hem tür kapısı
+            // konuşurdu ve kullanıcı aynı reddi iki farklı cümleyle okurdu.
+            'file' => ['bail', 'required', 'file', 'max:'.$maxKilobytes, function (string $attribute, mixed $value, Closure $fail) use ($maxPixels, $limits, $slot): void {
                 if (! $value instanceof UploadedFile) {
                     $fail('The file failed magic-byte validation.');
 
@@ -73,13 +98,43 @@ final class StoreMediaRequest extends FormRequest
                     zaten düşer.
                 */
                 if ($this->startsLikePdf($value)) {
-                    $this->validatePdf($value, $slot, $maxBytes, $fail);
+                    $this->validatePdf($value, $slot, $limits, $fail);
 
                     return;
                 }
 
                 if ($this->startsLikeMarkup($value)) {
-                    $this->validateSvg($value, $slot, $maxBytes, $fail);
+                    $this->validateSvg($value, $slot, $limits, $fail);
+
+                    return;
+                }
+
+                /*
+                    VİDEO — DÜRÜST RET, SAYISIZ RET (FF-158).
+
+                    Bu ürünün video hattı YOKTUR (`docs/109` §8.2) ve bu
+                    yüzden video için bir bayt sınırı da yoktur: olmayan bir
+                    yetenek için sayı yazmak, sahibe tutulmayacak bir söz
+                    vermektir.
+
+                    Ama "sınır yok" ile "cevap yok" aynı şey değildir. Bugüne
+                    kadar bir MP4 aşağıdaki genel cümleye düşüyordu ("magic-
+                    byte") — o cümle bir GÜVENLİK cevabıdır ve uzantısı
+                    değiştirilmiş bir yük için doğrudur. Menüsüne kısa bir
+                    tanıtım videosu koymak isteyen sahip için ise yanlıştır:
+                    dosyasının bozuk olduğunu sanır, bir daha dener, sonra
+                    destek yazar.
+
+                    Ayrım İÇERİKTEN yapılır (kap imzası), uzantıdan değil —
+                    yoksa `video.mp4` adı verilmiş bir PHP yükü de bu nazik
+                    cevabı alırdı. Sahte bir gövde tanınmaz ve aşağıdaki
+                    güvenlik cümlesine düşmeye devam eder.
+
+                    Hat açıldığı gün buraya bir sınır EKLENİR; bugün burada
+                    yalnız dürüst bir cümle var.
+                */
+                if ($this->startsLikeVideo($value)) {
+                    $fail('Bu ürün video kabul etmiyor: menüde video yayınlayan bir yol yok. Fotoğraf yükleyin, ya da belge alanına PDF.');
 
                     return;
                 }
@@ -89,6 +144,12 @@ final class StoreMediaRequest extends FormRequest
                 if ($info === false || ! in_array($info[2], self::ALLOWED_IMAGE_TYPES, true)) {
                     $fail('The file failed magic-byte validation.');
 
+                    return;
+                }
+
+                // Tür belli oldu: bundan sonrası GÖRSELİN sınırıdır, ortak
+                // bir düz sayının değil (FF-158).
+                if ($this->failsSizeForKind($value, MediaSizeKind::Image, $limits, $fail)) {
                     return;
                 }
 
@@ -156,7 +217,7 @@ final class StoreMediaRequest extends FormRequest
      *      içindeki her dosya, hiçbir şey saklanmadan reddedilir") ancak
      *      böyle korunur.
      */
-    private function validateSvg(UploadedFile $file, string $slot, int $maxBytes, Closure $fail): void
+    private function validateSvg(UploadedFile $file, string $slot, UploadSizeLimits $limits, Closure $fail): void
     {
         $catalogue = SlotCatalogue::fromArray((array) config('media-slots.slots', []));
 
@@ -166,11 +227,16 @@ final class StoreMediaRequest extends FormRequest
             return;
         }
 
+        // Vektörün sınırı DAR ve bu bir kolaylık değil: temizleyici aşağıda
+        // gövdenin tamamını ayrıştıracak. Sınır, ayrıştırılacak yüzeyin
+        // kendisini sınırlar (FF-158).
+        if ($this->failsSizeForKind($file, MediaSizeKind::Vector, $limits, $fail)) {
+            return;
+        }
+
         $path = (string) $file->getRealPath();
 
-        // `max:` kuralı zaten düştüyse gövdeyi belleğe hiç almayız: fazla
-        // büyük bir dosyayı okumak, reddedileceğini bile bile okumaktır.
-        if (! is_readable($path) || (int) (@filesize($path) ?: 0) > $maxBytes) {
+        if (! is_readable($path)) {
             $fail('The file failed magic-byte validation.');
 
             return;
@@ -219,7 +285,7 @@ final class StoreMediaRequest extends FormRequest
      *      saldırıyı arşivlemek ve sahibin dosyasını haber vermeden
      *      değiştirmek olurdu.
      */
-    private function validatePdf(UploadedFile $file, string $slot, int $maxBytes, Closure $fail): void
+    private function validatePdf(UploadedFile $file, string $slot, UploadSizeLimits $limits, Closure $fail): void
     {
         $catalogue = SlotCatalogue::fromArray((array) config('media-slots.slots', []));
 
@@ -237,11 +303,16 @@ final class StoreMediaRequest extends FormRequest
             return;
         }
 
+        // Belgenin sınırı görselinkinden GENİŞTİR (basılı menü meşru şekilde
+        // büyüktür) ama sonsuz değildir — ve gövdeyi belleğe almadan ÖNCE
+        // uygulanır: reddedileceğini bile bile okumak boşuna bellek harcar.
+        if ($this->failsSizeForKind($file, MediaSizeKind::Document, $limits, $fail)) {
+            return;
+        }
+
         $path = (string) $file->getRealPath();
 
-        // `max:` kuralı zaten düştüyse gövdeyi belleğe hiç almayız: fazla
-        // büyük bir dosyayı okumak, reddedileceğini bile bile okumaktır.
-        if (! is_readable($path) || (int) (@filesize($path) ?: 0) > $maxBytes) {
+        if (! is_readable($path)) {
             $fail('The file failed magic-byte validation.');
 
             return;
@@ -262,6 +333,83 @@ final class StoreMediaRequest extends FormRequest
             // ne yapacağını da söylemez (`docs/76`).
             $fail($result->failureReason ?? 'Bu PDF dosyası güvenle denetlenemedi ve kabul edilmedi.');
         }
+    }
+
+    /**
+     * TÜRÜN KENDİ BAYT SINIRI — ve reddin kullanıcıya ne söylediği (FF-158).
+     *
+     * NEDEN BURADA, `max:` KURALINDA DEĞİL. `max:` doğrulama başlarken
+     * çalışır ve o an dosyanın ne olduğu HENÜZ BİLİNMEZ: uzantı ve
+     * istemcinin bildirdiği MIME yükleyenin denetimindedir, bu kapı ikisine
+     * de güvenmez. Tür ancak dosyanın kendi baytları okunduktan sonra
+     * bellidir; dar sınır da ancak o noktada uygulanabilir. `max:` bu yüzden
+     * yalnız MUTLAK TAVANI tutar.
+     *
+     * MESAJ İKİ SAYIYI DA SÖYLER. "Dosya çok büyük" kullanıcıya ne
+     * yapacağını söylemez: kaç MB'a inmesi gerektiğini bilmeden dosyayı
+     * küçültemez, hangi sınırın uygulandığını bilmeden de PDF'i sığdığı
+     * hâlde reddedilmiş sanır. Cümle sınırın SEBEBİNİ anlatmaz — aktarım
+     * zinciri, tarayıcı ve gövde sınırları sahibin sorunu değildir; kodda
+     * yazar (`config/media-slots.php`), ekranda yazmaz.
+     *
+     * @return bool Reddedildiyse `true` — çağıran orada durur.
+     */
+    private function failsSizeForKind(
+        UploadedFile $file,
+        MediaSizeKind $kind,
+        UploadSizeLimits $limits,
+        Closure $fail,
+    ): bool {
+        $max = $limits->bytesFor($kind);
+        $size = (int) ($file->getSize() ?: 0);
+
+        if ($size <= $max) {
+            return false;
+        }
+
+        $fail(sprintf(
+            'Dosyanız %s; %s için sınır %s. Daha küçük bir kopya çıkarıp yeniden deneyin.',
+            $this->megabytes($size),
+            self::KIND_LABELS[$kind->value],
+            $this->megabytes($max),
+        ));
+
+        return true;
+    }
+
+    /** `23068672` → `22 MB`; 10 MB altında bir ondalık, çünkü "0 MB" bilgi vermez. */
+    private function megabytes(int $bytes): string
+    {
+        $mb = $bytes / 1048576;
+
+        return number_format($mb, $mb < 10 ? 1 : 0, ',', '.').' MB';
+    }
+
+    /**
+     * Dosya GERÇEKTEN bir video kabı mı? Uzantıya ve MIME'a bakılmaz.
+     *
+     * İki imza yetiyor, çünkü telefonların ve masaüstünün ürettiği her şey
+     * bu ikisinden biridir:
+     *
+     *   - ISO tabanlı kap (MP4 · MOV · M4V · 3GP): 5-8. baytlar `ftyp`.
+     *     İlk dört bayt kutu uzunluğudur ve sabit değildir, o yüzden
+     *     atlanır.
+     *   - Matroska/WebM: `1A 45 DF A3` (EBML başlığı).
+     *
+     * Tanımadığı bir gövde için `false` döner ve dosya güvenlik cümlesine
+     * düşer — nazik cevap YALNIZ gerçekten video olana verilir.
+     */
+    private function startsLikeVideo(UploadedFile $file): bool
+    {
+        $path = (string) $file->getRealPath();
+
+        if (! is_readable($path)) {
+            return false;
+        }
+
+        $head = (string) @file_get_contents($path, false, null, 0, 12);
+
+        return substr($head, 4, 4) === 'ftyp' || str_starts_with($head, "\x1A\x45\xDF\xA3");
     }
 
     /** Dosyanın ilk baytları `%PDF-` mi? Uzantıya ve MIME'a bakılmaz. */

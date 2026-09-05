@@ -377,7 +377,74 @@ return [
      * EDİLMEDEN reddedilir (`docs/49` Faz 2).
      */
     'limits' => [
-        'max_bytes' => 30 * 1024 * 1024,
+        /*
+         * MUTLAK TAVAN — hiçbir türün sınırı bunu aşamaz (`UploadSizeLimits`).
+         *
+         * 2026-09-05'e kadar bu sayı TEK sınırdı: 30 MB, her tür için aynı.
+         * Tek düz sayı iki yönde birden yanlıştı — bir logo için fazla
+         * cömert, taranmış bir menü için fazla dardı (bkz. aşağıdaki tür
+         * sınırları). Artık burada bir üst çerçeve durur; asıl karar
+         * `max_bytes_by_kind` içindedir.
+         *
+         * Değer, en büyük tür sınırıyla (PDF, 45 MB) aynıdır ve aktarım
+         * zincirinin en dar halkasının ALTINDADIR — o halka bugün PHP
+         * `upload_max_filesize` (50 MB, `docker/Dockerfile`). Zincir:
+         * Caddy → nginx → PHP → ClamAV. Kapı: `UploadSizeCeilingTest`
+         * (tavanı elle kopyalamaz, DevOps'un dosyalarından OKUR).
+         */
+        'max_bytes' => 45 * 1024 * 1024,
+
+        /*
+         * TÜR BAZLI SINIR — sahibin isteği, 2026-09-05 (FF-158).
+         *
+         * Sayılar gerçek dosya boyutlarından türetildi, tahminden değil:
+         *
+         *   `image` = 25 MB. Telefon HEIC (48 MP) 3-5 MB, telefon JPEG
+         *   (12 MP) 2-5 MB, DSLR JPEG Fine 16 MP 7-9 MB, 45 MP sınıfı
+         *   15-25 MB. Belirleyici olan bunlar da DEĞİL: sahip basılı
+         *   menüsünü TARIYOR ve A4 300 DPI bir PNG 5-15 MB, A3 600 DPI
+         *   bir PNG 40 MB'ı geçebiliyor. Bayt sınırı meşru bir taramayı
+         *   kesmemeli. Üst uçtaki tarama yine de serbest kalmaz: 45 MP
+         *   üstü zaten `max_megapixels` kuralına takılır.
+         *
+         *   İKİ KURAL, İKİ FARKLI TEHDİT — ve biri diğerinin yerine
+         *   geçmez. Bayt sınırı AKTARIM ve TARAMA maliyetine bakar
+         *   (hattı, diski ve ClamAV'ın akışını kim doldurur). Piksel
+         *   sınırı ise ÇÖZÜLDÜĞÜNDEKİ belleğe bakar: 100000×100000
+         *   iddia eden bir PNG birkaç yüz bayttır, bayt sınırından
+         *   rahatça geçer ve açılırsa sunucuyu düşürür.
+         *
+         *   `document` = 45 MB. VE BU SAYI İHTİYACIN ALTINDADIR — bunu
+         *   yazmak, olduğundan iyi göstermekten daha dürüsttür. Baskıya
+         *   hazır 40 sayfalık bir fiyat listesi (300 DPI, gömülü font,
+         *   küçültülmemiş görseller) 80-150 MB olur. Ürün onu bugün
+         *   KABUL EDEMEZ, çünkü aktarım zinciri izin vermiyor: PHP
+         *   `post_max_size` 52 MB, `upload_max_filesize` 50 MB, ClamAV
+         *   `StreamMaxLength` 60 MB. Yani teknik tavan bugün ~50 MB'tır
+         *   ve 45 MB ona payla sığan en büyük sayıdır. Yükseltmek bir
+         *   yapılandırma satırı değil, DevOps tarafında compose/PHP/
+         *   ClamAV değişikliği ister; ayrı bir politika kararıdır.
+         *
+         *   `vector` = 2 MB. Burada sınır bir kolaylık DEĞİL, saldırı
+         *   yüzeyi kısıtıdır: `SvgSanitizer` gövdenin TAMAMINI ayrıştırmak
+         *   zorundadır ve 2 MB'lık bir vektör logo patolojiktir. Meşru bir
+         *   logo bunun onda birine sığar.
+         *
+         * VİDEO İÇİN SAYI YOKTUR. `docs/109` §8.2: "Depo video kabul
+         * etmiyor; eksik olan ffmpeg değil, video hattı hiç yok." Buraya
+         * "video: n MB" yazmak olmayan bir yeteneği ilan etmek olurdu:
+         * sahip sayıyı okur, MP4'ünü yükler ve bir ret cümlesiyle
+         * karşılaşır. Hat açıldığı gün eklenecek şey bu dizide TEK BİR
+         * satır ve `MediaSizeKind` içinde TEK BİR durumdur — yer bugünden
+         * bellidir, sayı bugün yoktur. `UploadSizeCeilingTest` bu boşluğu
+         * korur: tanınmayan bir tür için sınır yazılamaz.
+         */
+        'max_bytes_by_kind' => [
+            'image' => 25 * 1024 * 1024,
+            'document' => 45 * 1024 * 1024,
+            'vector' => 2 * 1024 * 1024,
+        ],
+
         'max_megapixels' => 40,
         'max_frames' => 1,              // animasyon Faz 2'de açılır
         // Çöpte bekleme süresi (`docs/49` Faz 5, kota kararı `docs/98` §7):

@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1334;
+const FROZEN_LEGACY_KEY_COUNT = 1338;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -64,8 +64,16 @@ const FROZEN_LEGACY_KEY_COUNT = 1334;
 // Dördü de aynı üç şeyi söyler ve hiçbiri SÖZ VERMEZ: ne oldu, menünün şu
 // anki hâli ne, sahip ne yapabilir. "Yakında yayınlanacak" ya da tahmini
 // süre diyen bir anahtar YOK — zamanlayıcının ne zaman döneceğini bilmiyoruz.
+// FF-158: yükleme sınırı artık TÜRE göre. Dört yeni anahtar — üçü türün
+// sahibin kelimesiyle adı (görseller / SVG dosyaları / PDF dosyaları),
+// dördüncüsü seçilen yerin boyut sınırını dosya gönderilmeden ÖNCE yazan
+// satır. Ayrıca `upload.error.tooLarge` METNİ değişti: artık hangi türün
+// sınırına takıldığını da söylüyor, çünkü "sınır 25 MB" cümlesi 3 MB'lık
+// bir SVG'yi geri çeviren bir kapıda doğrudan yanlıştı. VİDEO için anahtar
+// YOK — kabul edilmeyen bir tür için sınır cümlesi yazmak, olmayan bir
+// yeteneği ilan etmek olurdu (`docs/109` §8.2).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '1866aa696d3569481b724c46b284499d7c5b5f72c82e45f36c441ce679b04a4b';
+    'bcc3b4b7b03cbc772d91cbb744b5a613f1175a668e1a57689ac6e546d9424de4';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

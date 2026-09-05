@@ -9,8 +9,26 @@ export const media = {
     // FF-68 (`docs/49` Faz 2): ilerleme görünür, yeniden deneme aynı anahtarla.
     'workspace.media.upload.uploading.progress': 'Uploading… {percent}%',
     'workspace.media.upload.retry': 'Try again',
+    /*
+        FF-158. Cümle 2026-09-05'e kadar "the limit is {max} MB" diyordu ve
+        sınır her tür için aynıydı. Artık değil: bir SVG'nin sınırı bir
+        fotoğrafınkiyle aynı olamaz. Hangi türün sınırına takıldığını
+        söylemeyen bir ret, doğru dosyayı yükleyen sahibi de şüpheye
+        düşürürdü ("PDF'im 30 MB, sınır 25 MB mı?").
+
+        Cümle sınırın SEBEBİNİ anlatmaz. Aktarım zinciri, virüs tarayıcısı
+        ve gövde sınırları sahibin sorunu değildir; gerekçe kodda yazar
+        (`config/media-slots.php`), ekranda değil.
+    */
     'workspace.media.upload.error.tooLarge':
-        'This file is {size} MB; the limit is {max} MB. Export a smaller copy and try again.',
+        'This file is {size} MB; the limit for {kind} is {max} MB. Export a smaller copy and try again.',
+    /*
+        Türün SAHİBİN kelimesiyle adı. `image`/`vector`/`document` iç
+        sözlüktür ve ekrana çıkmaz.
+    */
+    'workspace.media.upload.limit.kind.image': 'images',
+    'workspace.media.upload.limit.kind.vector': 'SVG files',
+    'workspace.media.upload.limit.kind.document': 'PDF files',
     'workspace.media.upload.error.tooManyPixels':
         'This image is {width} × {height} pixels — more than {max} megapixels. Export a smaller copy and try again.',
     'workspace.media.upload.failed': 'Media upload failed. Your selection was kept.',
@@ -68,6 +86,14 @@ export const media = {
     'workspace.media.upload.requirement.minimum': 'At least {width} × {height} pixels',
     'workspace.media.upload.requirement.aspect': 'Aspect ratio {aspect}',
     'workspace.media.upload.requirement.formats': 'Formats: {formats}',
+    /*
+        FF-158. Liste en küçük ölçüyü, oranı ve biçimleri söylüyordu ama
+        BOYUTU söylemiyordu: sahip "png kabul ediliyor" okuyup taramasını
+        yüklüyor, sınırı ancak ret cümlesinde öğreniyordu. Bir slot birden
+        çok tür kabul edebilir ve onların sınırları aynı değildir — bu
+        yüzden metin tek bir sayı değil, hazır bir liste alır.
+    */
+    'workspace.media.upload.requirement.maxSize': 'Largest file size: {limits}',
     /*
         KIRPMA (FF-129). Sunucudaki işleyici slotun oranına göre MERKEZDEN
         kırpıyor ve bunu kullanıcıya hiç sormuyordu. Yemek fotoğrafında bu
