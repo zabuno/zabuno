@@ -66,6 +66,13 @@ type MenuEngineeringRegionProps = {
      * hiçbir şey yapmayan bir düğme, kullanıcıya olmayan bir yol göstermektir.
      */
     onAddTerm?: (term: string) => void;
+    /**
+     * "Hiç bakılmayan" satırının eylemi — kaynağın satır düğmesi.
+     *
+     * Kaynak oraya "Gizle" koyuyor; bu ekran gizlemez, gizlenecek yere
+     * götürür ve etiketi de öyle yazar. Yoksa düğme HİÇ çizilmez.
+     */
+    onReviewProduct?: (productName: string) => void;
 };
 
 /**
@@ -80,6 +87,7 @@ export function MenuEngineeringRegion({
     range,
     source,
     onAddTerm,
+    onReviewProduct,
 }: MenuEngineeringRegionProps) {
     /*
         Rapor DIŞARIDAN geldiyse kendi isteğimizi atmayız: `workspaceId`
@@ -185,6 +193,30 @@ export function MenuEngineeringRegion({
                             <li key={row.menuItemId} className={ROW}>
                                 <span className="font-medium text-fg">{row.productName}</span>
                                 <span className="text-fg-muted">{row.categoryName}</span>
+                                {onReviewProduct ? (
+                                    <Button
+                                        size="xs"
+                                        color="light"
+                                        className="ms-auto"
+                                        onClick={() => {
+                                            onReviewProduct(row.productName);
+                                        }}
+                                    >
+                                        {t(
+                                            'workspace.analytics.menuEngineering.neverViewed.review',
+                                        )}
+                                        {/*
+                                            Görünen etiket kısa, erişilebilir
+                                            adı TAM: ekran okuyucu kullanan
+                                            biri düğme listesinde beş tane
+                                            aynı etiketi görürse hangisinin
+                                            hangi ürüne ait olduğunu bilemez.
+                                        */}
+                                        <span className="sr-only">
+                                            {` ${t('workspace.analytics.menuEngineering.neverViewed.reviewFor', { name: row.productName })}`}
+                                        </span>
+                                    </Button>
+                                ) : null}
                             </li>
                         ))}
                     </ul>

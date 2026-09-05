@@ -13,6 +13,19 @@ export const analytics = {
     'workspace.analytics.menuEngineering.mostViewed': 'Most looked at',
     'workspace.analytics.menuEngineering.neverViewed': 'Never looked at',
     'workspace.analytics.menuEngineering.neverViewed.none': 'Every dish was looked at.',
+    /*
+        KAYNAK BURAYA "Gizle" YAZIYOR — ama düğme gizlemiyor, gizlenecek
+        ekrana götürüyor, ve etiketi de bunu söylüyor.
+
+        Görünürlük menü ekranının işi: ürün orada gizlenir, orada geri
+        gelir, orada fiyatı değişir. Buraya "Gizle" yazıp sahibi menü
+        ekranına atmak, bastığı düğmenin adını yalan yapardı — ve bu
+        listenin tamamı sahibin ölçüme duyduğu güvene dayanıyor. Satırın
+        işi boşluğu göstermek; düğmenin işi o boşluğu kapatabileceği yere
+        sıfır mesafe bırakmak.
+    */
+    'workspace.analytics.menuEngineering.neverViewed.review': 'Edit on the menu',
+    'workspace.analytics.menuEngineering.neverViewed.reviewFor': 'Edit “{name}” on the menu',
     'workspace.analytics.menuEngineering.viewers': '{count} visitors',
     'workspace.analytics.menuEngineering.searches': 'Searched for, not found',
     'workspace.analytics.menuEngineering.searches.none':
@@ -27,8 +40,36 @@ export const analytics = {
     'workspace.analytics.report.error': 'Analytics failed to load. Please try again.',
     'workspace.analytics.report.unavailable':
         'Analytics reporting is not available yet; no metrics have been generated.',
-    'workspace.analytics.metric.qrResolve': 'QR Resolve',
-    'workspace.analytics.metric.menuOpen': 'Confirmed Menu Open',
+    /*
+        SAYACIN ADI SAHİBİN KELİMESİDİR, LEDGER'IN DEĞİL (kanonik kaynak
+        `docs/reference/panel-v3/panel-v3.1.dc.html`, Insights ekranı).
+
+        Kartlar "QR Resolve" ve "Confirmed Menu Open" yazıyordu. Bunlar
+        `docs/12`'nin ölçüm terimleri: biri yönlendirme ucuna gelen istek,
+        diğeri menünün gerçekten açıldığını bildiren olay. Ayrım DOĞRU ve
+        korunuyor — iki sayı hâlâ ayrı ölçülüyor ve yan yana duruyor. Ama
+        sahibi bunu ekranda okumuyor: kaynağın kendi kelimeleri "Tarama" ve
+        "Menü açılışı", ve ikisi arasındaki farkı sayaç adı değil, hemen
+        altındaki açılış oranı anlatıyor.
+    */
+    'workspace.analytics.metric.qrResolve': 'Scans',
+    'workspace.analytics.metric.menuOpen': 'Menu opens',
+    /*
+        AÇILIŞ ORANI KENDİ KARTINI HAK ETMİYOR (kaynak: DÖRT sayaç kartı).
+
+        Beşinci bir kart olarak duruyordu; oysa oran iki sayının BİLEŞİMİ —
+        kendi başına yeni bir ölçüm değil. Beş kartlık ızgara sahibin
+        gözünü, dördü gerçek ölçüm olan bir sırada beşinci bir "sayı" aramaya
+        zorluyordu. Kaynak onu menü açılışı kartının alt satırına koyuyor:
+        tam da açıkladığı sayının altına.
+    */
+    'workspace.analytics.metric.menuOpen.support': '{percent}% open rate',
+    /*
+        "Yaklaşık" kelimesi etikette; bu satır NEDEN yaklaşık olduğunu
+        söyler. Ölçülen şey kişi değil CİHAZDIR: proxy arkasındaki iki
+        misafir tek görünebilir, tarayıcısını değiştiren bir kişi iki.
+    */
+    'workspace.analytics.metric.uniqueVisitors.support': 'unique devices',
     'workspace.analytics.operational.description':
         'Review real QR resolve and confirmed menu open counts for the selected location and range.',
     'workspace.analytics.status.notConnected': 'Not requested yet',
@@ -63,7 +104,15 @@ export const analytics = {
     'workspace.analytics.timeSeries.trend.title': 'Scans and menu opens',
     'workspace.analytics.timeSeries.trend.description': 'Scans and menu opens per day',
     'workspace.analytics.timeSeries.trend.column': 'Day',
-    'workspace.analytics.timeSeries.heat.title': 'Busiest hours',
+    /*
+        BAŞLIK NE LİSTELENDİĞİNİ SÖYLER (kanonik kaynak: "Saatlere göre
+        yoğunluk").
+
+        "En yoğun saatler" bir SONUÇ vaat ediyordu; ızgara ise haftanın her
+        saatini çiziyor — yoğun olanı da, boş olanı da. Sahip başlığı okuyup
+        ızgarada bir "ilk beş" arıyor, bulamıyordu.
+    */
+    'workspace.analytics.timeSeries.heat.title': 'Traffic by hour',
     'workspace.analytics.timeSeries.heat.description': 'Scans by weekday and hour ({timezone})',
     'workspace.analytics.timeSeries.heat.column': 'Weekday',
     'workspace.analytics.timeSeries.heat.withheld': 'withheld',
@@ -76,7 +125,13 @@ export const analytics = {
     // zaman %100 çizilir ve hiçbir şey söylemez.
     'workspace.analytics.timeSeries.share.scope':
         'Across your whole brand, not only the selected location.',
-    'workspace.analytics.timeSeries.tables.title': 'Busiest tables',
+    /*
+        Kaynağın başlığı KAÇ SATIR olduğunu da söyler: "Masaya göre (ilk 5)".
+        Sınırı yazmayan bir başlık, listenin sonunu menünün sonu sanmaya yol
+        açar — altı masası olan bir sahip altıncısının hiç taranmadığını
+        düşünürdü.
+    */
+    'workspace.analytics.timeSeries.tables.title': 'By table (top 5)',
     'workspace.analytics.timeSeries.tables.value': 'scans',
     'workspace.analytics.timeSeries.scans': 'Scans',
     'workspace.analytics.timeSeries.menuOpens': 'Menu opens',

@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1378;
+const FROZEN_LEGACY_KEY_COUNT = 1444;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -96,8 +96,46 @@ const FROZEN_LEGACY_KEY_COUNT = 1378;
 // yayınlama bilerek ize yazılmıyor ve bunu SÖYLEMEYEN bir liste, olmayan bir
 // kaydı "olmadı" diye okutur. Tahmini süre, sayaç ya da "yakında" diyen bir
 // anahtar YOK; kayıt yoksa yazılan tek şey `empty`dir.
+// FF-165: Insights sayaçları kanonik kaynağa çekildi. NET +3 anahtar (1378 →
+// 1381): dört yeni (`metric.menuOpen.support`, `metric.uniqueVisitors.support`,
+// `menuEngineering.neverViewed.review`, `.reviewFor`) eksi bir kaldırılan
+// (`metric.openRate`). Açılış oranı beşinci bir sayaç kartıydı; oysa oran iki
+// sayının BİLEŞİMİ — kaynağın ızgarasında dört kart var ve oran, açıkladığı
+// sayının alt satırında duruyor. `metric.qrResolve` ile `metric.menuOpen`
+// METNİ de düzeldi: "QR Resolve"/"Confirmed Menu Open" `docs/12`'nin ölçüm
+// terimleriydi ve ayrım korunuyor, ama sahibi ekranda kaynağın kelimelerini
+// okuyor ("Tarama", "Menü açılışı"). "Hiç bakılmayan" satırının düğmesi
+// kaynakta "Gizle" yazar; bu ekran gizlemez, gizlenecek yere götürür ve
+// etiketi de bunu söyler — bastığı düğmenin adı yalan olan bir liste,
+// ölçüme duyulan güveni tek tıkta harcar.
+// Aynı pakette dört başlığın METNİ de kaynağa çekildi (anahtar sayısı
+// değişmedi): ısı haritası artık "En yoğun saatler" değil "Saatlere göre
+// yoğunluk" — ızgara haftanın her saatini çiziyor, bir "ilk beş" değil;
+// masa listesi başlığı sınırını söylüyor ("ilk 5"), çünkü sınırı yazmayan
+// bir başlık listenin sonunu menünün sonu sandırır; ve sürüm dipnotu
+// kaynağın kendi cümlesi oldu ("geri alma da bir yayındır"), sahibin geri
+// alma anındaki iki korkusunu —kayıt gider mi, kartlar ölür mü— tek cümlede
+// karşılamak için.
+// FF-164: QR ekranı panel v3.1 kanonik kaynağına göre yenilendi ve bir kod
+// listesinden BASKI SİPARİŞİNE döndü. +63 anahtar (1381 → 1444): kaynağın üç
+// adımı ve dört hazır çıktısı, kâğıt/oran/yön/biçim seçicileri, üç kapsam
+// (hepsi / bir bölge / tek masa) ve notları, beş tasarımın adı, önizlemenin
+// ölçü etiketi ve alt çubuğun tek cümlelik özeti.
+//
+// ÜÇ ŞEY BİLEREK ANAHTARSIZ KALDI, çünkü depoda karşılıkları yok ve olmayan
+// bir yeteneği ilan eden bir metin, kullanıcıya ürünü yanlış tanıtır:
+// kaynağın "Temaları yönet" düğmesi (Ayarlar'da kalıcı baskı teması diye bir
+// kayıt yok), PNG biçimi (kart bestecisi yalnız SVG/PDF üretir — bunun sebebi
+// `custom.noPng` ile YAZILIYOR) ve kesim payı / alt satır / logo-masa-adres
+// anahtarları (bestecide karşılıkları yok).
+//
+// `qrScreen.noDarkTheme` anahtarının METNİ de değişti — sayı değişmedi. Eski
+// cümle "koyu kart yoktur" diyordu ve o gün doğruydu; kaynağın koyu tasarımı
+// kodun kendisini ters çeviriyordu. Panel v3.1 o kusuru düzeltti (koyulaşan
+// şey kartın zemini, kod hâlâ koyu modül / açık zemin), tasarım doğdu ve
+// cümle yalan olacaktı. Yerine kısıtın kendisi yazıldı; iki yüzeyde de doğru.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '5b7869b17c26b10967f7937b86924ff81343ea5b1680022d7b4000093d801942';
+    '9d8af317cb0d6ebe3ff86c76f0d9beaa54582f4046ab526c40208a9f508ff2ff';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

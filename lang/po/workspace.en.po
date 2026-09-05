@@ -164,6 +164,14 @@ msgstr "Never looked at"
 msgid "workspace.analytics.menuEngineering.neverViewed.none"
 msgstr "Every dish was looked at."
 
+#: workspace:workspace.analytics.menuEngineering.neverViewed.review
+msgid "workspace.analytics.menuEngineering.neverViewed.review"
+msgstr "Edit on the menu"
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed.reviewFor
+msgid "workspace.analytics.menuEngineering.neverViewed.reviewFor"
+msgstr "Edit “{name}” on the menu"
+
 #: workspace:workspace.analytics.menuEngineering.region
 msgid "workspace.analytics.menuEngineering.region"
 msgstr "What works on your menu"
@@ -202,15 +210,15 @@ msgstr "{count} visitors"
 
 #: workspace:workspace.analytics.metric.menuOpen
 msgid "workspace.analytics.metric.menuOpen"
-msgstr "Confirmed Menu Open"
+msgstr "Menu opens"
 
-#: workspace:workspace.analytics.metric.openRate
-msgid "workspace.analytics.metric.openRate"
-msgstr "Scan to menu open"
+#: workspace:workspace.analytics.metric.menuOpen.support
+msgid "workspace.analytics.metric.menuOpen.support"
+msgstr "{percent}% open rate"
 
 #: workspace:workspace.analytics.metric.qrResolve
 msgid "workspace.analytics.metric.qrResolve"
-msgstr "QR Resolve"
+msgstr "Scans"
 
 #: workspace:workspace.analytics.metric.searches
 msgid "workspace.analytics.metric.searches"
@@ -223,6 +231,10 @@ msgstr "{count} found nothing"
 #: workspace:workspace.analytics.metric.uniqueVisitors
 msgid "workspace.analytics.metric.uniqueVisitors"
 msgstr "Approx. unique visitors"
+
+#: workspace:workspace.analytics.metric.uniqueVisitors.support
+msgid "workspace.analytics.metric.uniqueVisitors.support"
+msgstr "unique devices"
 
 #: workspace:workspace.analytics.operational.description
 msgid "workspace.analytics.operational.description"
@@ -294,7 +306,7 @@ msgstr "Scans by weekday and hour ({timezone})"
 
 #: workspace:workspace.analytics.timeSeries.heat.title
 msgid "workspace.analytics.timeSeries.heat.title"
-msgstr "Busiest hours"
+msgstr "Traffic by hour"
 
 #: workspace:workspace.analytics.timeSeries.heat.withheld
 msgid "workspace.analytics.timeSeries.heat.withheld"
@@ -334,7 +346,7 @@ msgstr "Share by location"
 
 #: workspace:workspace.analytics.timeSeries.tables.title
 msgid "workspace.analytics.timeSeries.tables.title"
-msgstr "Busiest tables"
+msgstr "By table (top 5)"
 
 #: workspace:workspace.analytics.timeSeries.tables.value
 msgid "workspace.analytics.timeSeries.tables.value"
@@ -4026,7 +4038,7 @@ msgstr "Publication"
 
 #: workspace:workspace.publication.history.help
 msgid "workspace.publication.history.help"
-msgstr "Going back writes a new version. Nothing is deleted, and the printed QR codes are untouched."
+msgstr "Going back is a publish too: it gets a new version number, and the QR stays the same."
 
 #: workspace:workspace.publication.history.live
 msgid "workspace.publication.history.live"
@@ -4652,6 +4664,10 @@ msgstr "Every theme here prints dark on light and keeps the quiet zone around th
 msgid "workspace.publication.qrExport.unavailable"
 msgstr "QR print export is not available yet."
 
+#: workspace:workspace.publication.qrScreen.addTables
+msgid "workspace.publication.qrScreen.addTables"
+msgstr "Add new tables"
+
 #: workspace:workspace.publication.qrScreen.address
 msgid "workspace.publication.qrScreen.address"
 msgstr "Full address"
@@ -4660,6 +4676,14 @@ msgstr "Full address"
 msgid "workspace.publication.qrScreen.advanced"
 msgstr "Code management and advanced printing"
 
+#: workspace:workspace.publication.qrScreen.areaNote
+msgid "workspace.publication.qrScreen.areaNote"
+msgstr "{area} · {count} cards will be printed."
+
+#: workspace:workspace.publication.qrScreen.brandNote
+msgid "workspace.publication.qrScreen.brandNote"
+msgstr "Your brand colours come from Settings"
+
 #: workspace:workspace.publication.qrScreen.bulk
 msgid "workspace.publication.qrScreen.bulk"
 msgstr "Bulk codes for new tables"
@@ -4667,6 +4691,30 @@ msgstr "Bulk codes for new tables"
 #: workspace:workspace.publication.qrScreen.bulkDefaults
 msgid "workspace.publication.qrScreen.bulkDefaults"
 msgstr "The rest is default: {areas} area(s), {seats} seats per table, names start at T1."
+
+#: workspace:workspace.publication.qrScreen.capped
+msgid "workspace.publication.qrScreen.capped"
+msgstr "One archive holds at most {cap} cards; the rest stay out. Print them in a second batch."
+
+#: workspace:workspace.publication.qrScreen.cardTheme.branded
+msgid "workspace.publication.qrScreen.cardTheme.branded"
+msgstr "Branded"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.dark
+msgid "workspace.publication.qrScreen.cardTheme.dark"
+msgstr "Dark"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.framed
+msgid "workspace.publication.qrScreen.cardTheme.framed"
+msgstr "Framed"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.plain
+msgid "workspace.publication.qrScreen.cardTheme.plain"
+msgstr "Plain"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.signage
+msgid "workspace.publication.qrScreen.cardTheme.signage"
+msgstr "Signage"
 
 #: workspace:workspace.publication.qrScreen.contrast
 msgid "workspace.publication.qrScreen.contrast"
@@ -4680,9 +4728,77 @@ msgstr "Copied"
 msgid "workspace.publication.qrScreen.copy"
 msgstr "Copy address"
 
+#: workspace:workspace.publication.qrScreen.custom
+msgid "workspace.publication.qrScreen.custom"
+msgstr "I need another size"
+
+#: workspace:workspace.publication.qrScreen.custom.format
+msgid "workspace.publication.qrScreen.custom.format"
+msgstr "File format"
+
+#: workspace:workspace.publication.qrScreen.custom.format.pdf
+msgid "workspace.publication.qrScreen.custom.format.pdf"
+msgstr "PDF"
+
+#: workspace:workspace.publication.qrScreen.custom.format.pdf.use
+msgid "workspace.publication.qrScreen.custom.format.pdf.use"
+msgstr "ready to print"
+
+#: workspace:workspace.publication.qrScreen.custom.format.svg
+msgid "workspace.publication.qrScreen.custom.format.svg"
+msgstr "SVG"
+
+#: workspace:workspace.publication.qrScreen.custom.format.svg.use
+msgid "workspace.publication.qrScreen.custom.format.svg.use"
+msgstr "scales without limit"
+
+#: workspace:workspace.publication.qrScreen.custom.landscape
+msgid "workspace.publication.qrScreen.custom.landscape"
+msgstr "Landscape"
+
+#: workspace:workspace.publication.qrScreen.custom.noPng
+msgid "workspace.publication.qrScreen.custom.noPng"
+msgstr "There is no PNG: a raster image blurs the module edges of a 4 cm code, and a second composer would one day draw a different card."
+
+#: workspace:workspace.publication.qrScreen.custom.orientation
+msgid "workspace.publication.qrScreen.custom.orientation"
+msgstr "Orientation"
+
+#: workspace:workspace.publication.qrScreen.custom.paper
+msgid "workspace.publication.qrScreen.custom.paper"
+msgstr "Paper size"
+
+#: workspace:workspace.publication.qrScreen.custom.portrait
+msgid "workspace.publication.qrScreen.custom.portrait"
+msgstr "Portrait"
+
+#: workspace:workspace.publication.qrScreen.custom.ratio
+msgid "workspace.publication.qrScreen.custom.ratio"
+msgstr "Or a free ratio"
+
+#: workspace:workspace.publication.qrScreen.custom.ratioNote
+msgid "workspace.publication.qrScreen.custom.ratioNote"
+msgstr "A free ratio has no paper size: the file comes out at that ratio and the print shop places it on their own paper."
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.classic
+msgid "workspace.publication.qrScreen.custom.ratioUse.classic"
+msgstr "classic"
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.screen
+msgid "workspace.publication.qrScreen.custom.ratioUse.screen"
+msgstr "screen"
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.tall
+msgid "workspace.publication.qrScreen.custom.ratioUse.tall"
+msgstr "tall card"
+
 #: workspace:workspace.publication.qrScreen.description
 msgid "workspace.publication.qrScreen.description"
-msgstr "A printed code never changes — update your menu as often as you like."
+msgstr "Print the card you will put on the table. The code is printed once; change the menu as often as you like afterwards."
+
+#: workspace:workspace.publication.qrScreen.download
+msgid "workspace.publication.qrScreen.download"
+msgstr "Download {name}"
 
 #: workspace:workspace.publication.qrScreen.downloadAll
 msgid "workspace.publication.qrScreen.downloadAll"
@@ -4696,9 +4812,21 @@ msgstr "Cards {part} of {total} (PDF)"
 msgid "workspace.publication.qrScreen.downloadPdf"
 msgstr "Download PDF"
 
+#: workspace:workspace.publication.qrScreen.downloadZip
+msgid "workspace.publication.qrScreen.downloadZip"
+msgstr "Download {count} cards (ZIP)"
+
 #: workspace:workspace.publication.qrScreen.empty
 msgid "workspace.publication.qrScreen.empty"
 msgstr "No table code yet. Create the codes for your tables below."
+
+#: workspace:workspace.publication.qrScreen.headline.help
+msgid "workspace.publication.qrScreen.headline.help"
+msgstr "Keep it short: it is read from a distance."
+
+#: workspace:workspace.publication.qrScreen.headline.label
+msgid "workspace.publication.qrScreen.headline.label"
+msgstr "Sentence on the card"
 
 #: workspace:workspace.publication.qrScreen.loadError
 msgid "workspace.publication.qrScreen.loadError"
@@ -4714,7 +4842,59 @@ msgstr "Never scanned"
 
 #: workspace:workspace.publication.qrScreen.noDarkTheme
 msgid "workspace.publication.qrScreen.noDarkTheme"
-msgstr "There is no dark card: scanners assume dark-on-light, and an inverted code is not read at all by many phones."
+msgstr "Whatever the card looks like, the code itself is always printed dark-on-light: scanners assume that, and an inverted code is not read at all by many phones."
+
+#: workspace:workspace.publication.qrScreen.optionSelected
+msgid "workspace.publication.qrScreen.optionSelected"
+msgstr "Selected"
+
+#: workspace:workspace.publication.qrScreen.preset.large
+msgid "workspace.publication.qrScreen.preset.large"
+msgstr "Large table card"
+
+#: workspace:workspace.publication.qrScreen.preset.large.where
+msgid "workspace.publication.qrScreen.preset.large.where"
+msgstr "Long table, both ends"
+
+#: workspace:workspace.publication.qrScreen.preset.table
+msgid "workspace.publication.qrScreen.preset.table"
+msgstr "Table card"
+
+#: workspace:workspace.publication.qrScreen.preset.table.tag
+msgid "workspace.publication.qrScreen.preset.table.tag"
+msgstr "Most used"
+
+#: workspace:workspace.publication.qrScreen.preset.table.where
+msgid "workspace.publication.qrScreen.preset.table.where"
+msgstr "Inside a plexiglass stand"
+
+#: workspace:workspace.publication.qrScreen.preset.wall
+msgid "workspace.publication.qrScreen.preset.wall"
+msgstr "Wall poster"
+
+#: workspace:workspace.publication.qrScreen.preset.wall.where
+msgid "workspace.publication.qrScreen.preset.wall.where"
+msgstr "Beside the till, at the door"
+
+#: workspace:workspace.publication.qrScreen.preset.window
+msgid "workspace.publication.qrScreen.preset.window"
+msgstr "Window or door"
+
+#: workspace:workspace.publication.qrScreen.preset.window.where
+msgid "workspace.publication.qrScreen.preset.window.where"
+msgstr "Readable from outside"
+
+#: workspace:workspace.publication.qrScreen.preview
+msgid "workspace.publication.qrScreen.preview"
+msgstr "This is how it comes out"
+
+#: workspace:workspace.publication.qrScreen.preview.paperDims
+msgid "workspace.publication.qrScreen.preview.paperDims"
+msgstr "{size} · {width} × {height} mm"
+
+#: workspace:workspace.publication.qrScreen.preview.ratioDims
+msgid "workspace.publication.qrScreen.preview.ratioDims"
+msgstr "{ratio} · {orientation}"
 
 #: workspace:workspace.publication.qrScreen.previewAlt
 msgid "workspace.publication.qrScreen.previewAlt"
@@ -4728,13 +4908,53 @@ msgstr "Print"
 msgid "workspace.publication.qrScreen.retry"
 msgstr "Try again"
 
+#: workspace:workspace.publication.qrScreen.scan.standing
+msgid "workspace.publication.qrScreen.scan.standing"
+msgstr "Code {mm} mm — easy to read from the table and standing up."
+
+#: workspace:workspace.publication.qrScreen.scan.table
+msgid "workspace.publication.qrScreen.scan.table"
+msgstr "Code {mm} mm — easy to read from table distance."
+
+#: workspace:workspace.publication.qrScreen.scan.tooSmall
+msgid "workspace.publication.qrScreen.scan.tooSmall"
+msgstr "Code {mm} mm — a code this small is not read by some phones. Pick a bigger size."
+
 #: workspace:workspace.publication.qrScreen.scans
 msgid "workspace.publication.qrScreen.scans"
 msgstr "{count} scans"
 
+#: workspace:workspace.publication.qrScreen.scope.all
+msgid "workspace.publication.qrScreen.scope.all"
+msgstr "All tables"
+
+#: workspace:workspace.publication.qrScreen.scope.area
+msgid "workspace.publication.qrScreen.scope.area"
+msgstr "One area"
+
+#: workspace:workspace.publication.qrScreen.scope.areaCount
+msgid "workspace.publication.qrScreen.scope.areaCount"
+msgstr "{count} areas"
+
+#: workspace:workspace.publication.qrScreen.scope.one
+msgid "workspace.publication.qrScreen.scope.one"
+msgstr "A single table"
+
+#: workspace:workspace.publication.qrScreen.scope.tableCount
+msgid "workspace.publication.qrScreen.scope.tableCount"
+msgstr "{count} tables"
+
 #: workspace:workspace.publication.qrScreen.selected
 msgid "workspace.publication.qrScreen.selected"
 msgstr "Selected code"
+
+#: workspace:workspace.publication.qrScreen.sheet
+msgid "workspace.publication.qrScreen.sheet"
+msgstr "Sheet to cut out (PDF)"
+
+#: workspace:workspace.publication.qrScreen.sheet.why
+msgid "workspace.publication.qrScreen.sheet.why"
+msgstr "Twelve cards to a page with cut lines — it has its own layout, not the size and design you picked above."
 
 #: workspace:workspace.publication.qrScreen.size
 msgid "workspace.publication.qrScreen.size"
@@ -4764,6 +4984,42 @@ msgstr "Disabled"
 msgid "workspace.publication.qrScreen.state.working"
 msgstr "Working"
 
+#: workspace:workspace.publication.qrScreen.step1
+msgid "workspace.publication.qrScreen.step1"
+msgstr "What are you printing?"
+
+#: workspace:workspace.publication.qrScreen.step2
+msgid "workspace.publication.qrScreen.step2"
+msgstr "Which tables?"
+
+#: workspace:workspace.publication.qrScreen.step3
+msgid "workspace.publication.qrScreen.step3"
+msgstr "How should it look?"
+
+#: workspace:workspace.publication.qrScreen.summary
+msgid "workspace.publication.qrScreen.summary"
+msgstr "{count} cards · {size} {orientation} · {theme}"
+
+#: workspace:workspace.publication.qrScreen.summarySub
+msgid "workspace.publication.qrScreen.summarySub"
+msgstr "{scope} · {format}"
+
+#: workspace:workspace.publication.qrScreen.summarySub.zip
+msgid "workspace.publication.qrScreen.summarySub.zip"
+msgstr "{scope} · {format} · one zip file"
+
+#: workspace:workspace.publication.qrScreen.tableNote.never
+msgid "workspace.publication.qrScreen.tableNote.never"
+msgstr "{table} · never scanned yet"
+
+#: workspace:workspace.publication.qrScreen.tableNote.scanned
+msgid "workspace.publication.qrScreen.tableNote.scanned"
+msgstr "{table} · scanned {count} times so far"
+
+#: workspace:workspace.publication.qrScreen.tableNumberPrinted
+msgid "workspace.publication.qrScreen.tableNumberPrinted"
+msgstr "The table name is printed on every card, so they cannot be mixed up."
+
 #: workspace:workspace.publication.qrScreen.tables
 msgid "workspace.publication.qrScreen.tables"
 msgstr "Table cards"
@@ -4771,6 +5027,14 @@ msgstr "Table cards"
 #: workspace:workspace.publication.qrScreen.theme
 msgid "workspace.publication.qrScreen.theme"
 msgstr "Card design"
+
+#: workspace:workspace.publication.qrScreen.wording
+msgid "workspace.publication.qrScreen.wording"
+msgstr "Change the sentence on the card"
+
+#: workspace:workspace.publication.qrScreen.wording.scope
+msgid "workspace.publication.qrScreen.wording.scope"
+msgstr "This change applies to this print only."
 
 #: workspace:workspace.publication.readiness.categoryNames
 msgid "workspace.publication.readiness.categoryNames"

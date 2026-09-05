@@ -485,6 +485,15 @@ export function AnalyticsPage({
                                                   onAddTerm: () => {
                                                       onNavigateToSection('menu');
                                                   },
+                                                  /*
+                                                      "Hiç bakılmayan" satırı
+                                                      da bir yere götürür:
+                                                      görünürlük, fiyat ve ad
+                                                      menü ekranının işi.
+                                                  */
+                                                  onReviewProduct: () => {
+                                                      onNavigateToSection('menu');
+                                                  },
                                               }
                                             : {})}
                                     />

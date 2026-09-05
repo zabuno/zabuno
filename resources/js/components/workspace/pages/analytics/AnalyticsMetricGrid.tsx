@@ -6,7 +6,13 @@ export type AnalyticsMetricGridProps = {
     menuOpenCount: number;
     /** Yaklaşık benzersiz ziyaretçi — `docs/68`. */
     uniqueVisitorCount: number;
-    /** Tarama yoksa oran YOKTUR; sıfır değil, `null`. */
+    /**
+     * Tarama yoksa oran YOKTUR; sıfır değil, `null`.
+     *
+     * Kendi kartı yoktur: menü açılışı kartının ALT SATIRIDIR (kaynağın dört
+     * sayaçlı ızgarası). Oran iki sayının bileşimi, üçüncü bir ölçüm değil —
+     * ve tam olarak açıkladığı sayının altında durur.
+     */
     openRate: number | null;
     /**
      * Tarama sayacının ALTINDAKİ tek satır — kaynağın "%12 · geçen perşembe"
@@ -63,28 +69,35 @@ export function AnalyticsMetricGrid({
                 value={qrResolveCount}
                 {...(comparisonSupport === undefined ? {} : { support: comparisonSupport })}
             />
-            <StatCard label={t('workspace.analytics.metric.menuOpen')} value={menuOpenCount} />
+            {/*
+                Oran YALNIZ hesaplanabildiğinde yazılır. Tarama yokken "%0"
+                göstermek "kimse açmadı" der; oysa doğrusu "kimse taramadı"dır
+                ve ikisi farklı sorunlardır — biri menünün, diğeri karekodun
+                derdi.
+            */}
+            <StatCard
+                label={t('workspace.analytics.metric.menuOpen')}
+                value={menuOpenCount}
+                {...(openRate === null
+                    ? {}
+                    : {
+                          support: t('workspace.analytics.metric.menuOpen.support', {
+                              percent: String(Math.round(openRate * 100)),
+                          }),
+                      })}
+            />
             {/*
                 "Yaklaşık" kelimesi etikettedir ve orada kalmalı: proxy
                 arkasındaki iki müşteri tek görünebilir, tarayıcısını
                 değiştiren bir kişi iki görünebilir. Kesinmiş gibi sunulan bir
-                tahmin, yanlış kararlara temel olur.
+                tahmin, yanlış kararlara temel olur. Alt satır bunun SEBEBİNİ
+                söyler: ölçülen şey kişi değil, cihaz.
             */}
             <StatCard
                 label={t('workspace.analytics.metric.uniqueVisitors')}
                 value={uniqueVisitorCount}
+                support={t('workspace.analytics.metric.uniqueVisitors.support')}
             />
-            {/*
-                Oran YALNIZ hesaplanabildiğinde çizilir. Tarama yokken "%0"
-                göstermek "kimse açmadı" der; oysa doğrusu "kimse taramadı"dır
-                ve ikisi farklı sorunlardır.
-            */}
-            {openRate !== null ? (
-                <StatCard
-                    label={t('workspace.analytics.metric.openRate')}
-                    value={`${String(Math.round(openRate * 100))}%`}
-                />
-            ) : null}
             {/*
                 Arama sayacı ANCAK ölçüldüğünde çizilir. Menü mühendisliği
                 raporu henüz gelmediyse ya da eşiğin altındaysa buraya "0"

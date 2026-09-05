@@ -78,4 +78,69 @@ describe('AnalyticsMetricGrid — AEP KPI ızgarası', () => {
         expect(value.style.fontSize).toBe('var(--aep-text-metric)');
         expect(value.className).toMatch(/tabular-nums/);
     });
+
+    /**
+     * DÖRT SAYAÇ, BEŞ DEĞİL — kanonik kaynak
+     * (`docs/reference/panel-v3/panel-v3.1.dc.html`, Insights: `kpis`).
+     *
+     * Açılış oranı beşinci bir kart olarak duruyordu. Oysa oran iki sayının
+     * BİLEŞİMİ: menü açılışı bölü tarama. Kendi kartında dururken sahibin
+     * gözü, dördü gerçek ölçüm olan bir sırada beşinci bir "sayı" arıyor ve
+     * "%70" rakamını bir adet sanabiliyordu. Kaynak onu tam olarak
+     * açıkladığı sayının altına koyuyor.
+     */
+    it('açılış oranını ayrı bir kart olarak değil, menü açılışının alt satırı olarak yazar', () => {
+        render(
+            <AnalyticsMetricGrid
+                qrResolveCount={12}
+                menuOpenCount={9}
+                uniqueVisitorCount={7}
+                openRate={0.75}
+            />,
+        );
+
+        expect(screen.getByText('75% open rate')).toBeInTheDocument();
+        // Çıplak oran rakamı bir sayaç DEĞERİ olarak artık çizilmiyor.
+        expect(screen.queryByText('75%')).toBeNull();
+    });
+
+    /**
+     * Ölçülemeyen oran YAZILMAZ.
+     *
+     * Tarama yokken "%0 açılış oranı" demek "kimse açmadı" der; oysa doğrusu
+     * "kimse taramadı"dır ve ikisi farklı sorunlardır — biri menünün, diğeri
+     * karekodun derdi.
+     */
+    it('oran ölçülemediğinde alt satırı hiç yazmaz', () => {
+        render(
+            <AnalyticsMetricGrid
+                qrResolveCount={0}
+                menuOpenCount={0}
+                uniqueVisitorCount={0}
+                openRate={null}
+            />,
+        );
+
+        expect(screen.queryByText(/open rate/i)).toBeNull();
+    });
+
+    /**
+     * "Yaklaşık" kelimesinin SEBEBİ yazılır.
+     *
+     * Ölçülen şey kişi değil CİHAZDIR: proxy arkasındaki iki misafir tek
+     * görünebilir, tarayıcısını değiştiren bir kişi iki. Etiketteki
+     * "yaklaşık" bunu ima eder; alt satır söyler.
+     */
+    it('yaklaşık ziyaretçinin altına neyin sayıldığını yazar', () => {
+        render(
+            <AnalyticsMetricGrid
+                qrResolveCount={12}
+                menuOpenCount={9}
+                uniqueVisitorCount={7}
+                openRate={0.75}
+            />,
+        );
+
+        expect(screen.getByText('unique devices')).toBeInTheDocument();
+    });
 });

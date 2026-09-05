@@ -127,6 +127,11 @@ final class ExportQrCardController extends Controller
                 $headline,
                 $identity?->primaryColor,
                 $logo,
+                // Kart HANGİ MASAYA ait olduğunu kendi üstünde söyler
+                // (panel v3.1 kanonik kaynağı). Basıldıktan sonra dosya adı
+                // yok olur; masaya dağıtan kişinin elinde ayırt edilemeyen
+                // kâğıtlar kalırdı.
+                $record->tableName,
             );
 
             if ($format === 'svg') {

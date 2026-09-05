@@ -1,28 +1,29 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { QrCodesPage } from './QrCodesPage';
 
 /**
- * QR KODLAR EKRANI — panel v3 kanonik kaynağı (`docs/109` §6.7).
+ * QR KODLAR EKRANI — panel v3.1 kanonik kaynağı
+ * (`docs/reference/panel-v3/panel-v3.1.dc.html`, QR bölümü).
  *
- * Sahibin cümlesi: *"benzetmek değil DEĞİŞTİRMEKTİR."* Önceki hâl bir kartın
- * içine gömülü, yukarıdan aşağı akan tek sütunlu bir bölge yığınıydı: kod
- * listesi, alanlar, kart sihirbazı, deste, tek kod, toplu sihirbaz. Kaynağın
- * ekranı ise İKİ SÜTUNDUR ve soru sırası tersine çevrilmiştir — solda masa
- * kartları ızgarası (hangi masa?), sağda o masanın kartı (nasıl basılacak?).
+ * Sahibin kuralı (2026-09-05): *"eğer ben tasarım veriyorsam zaten asla eski
+ * dökümanlara bağımlı kalmadan yapmalısın."*
  *
- * Fark bir zevk farkı değil: kırk masalı bir restoranda "Masa 17'nin kartı
- * çalışıyor mu" sorusu eski düzende hiç yanıtlanamıyordu. Izgara o soruyu tek
- * bakışta yanıtlar, sağ panel de ikinci soruyu — "yeniden bastırayım" —
- * tıklama uzağına getirir.
+ * Önceki hâl bir KOD LİSTESİYDİ: kırk kareli bir ızgara, sahip birini seçer ve
+ * seçtiği kodun paneli sağda belirirdi. Yani ilk soru "hangi kod"du ve baskı
+ * ayarları o kodun içine gömülüydü — kırk masaya kart basmak isteyen sahip
+ * önce bir masa seçmek zorundaydı.
  *
- * AEP ağırlık ölçeği ÜÇ basamaklıdır: 400 gövde, 500 vurgulu satır, 700
- * başlık ve birincil eylem. 600 (`font-semibold`) ölçekte YOKTUR: 600
- * yazıldığında tarayıcı yüklü yazı tipinin 500 ve 700 kesimleri arasından
- * birini seçer ya da sentetik bir kalınlaştırma uydurur; aynı ekran iki
- * makinede iki farklı ağırlıkta çizilir.
+ * Kaynağın ekranı ise bir BASKI SİPARİŞİDİR ve üç soruyu bu sırayla sorar:
+ * 1) ne basacaksın, 2) hangi masalar, 3) nasıl görünsün. Varsayılan kapsam
+ * "tüm masalar"dır, çünkü sahibin buraya gelme sebebi çoğunlukla budur.
+ *
+ * AEP ağırlık ölçeği ÜÇ basamaklıdır: 400 gövde, 500 vurgulu satır, 700 başlık
+ * ve birincil eylem. 600 (`font-semibold`) ölçekte YOKTUR: tarayıcı onu 500 ile
+ * 700 arasından seçer ya da sentetik bir kalınlaştırma uydurur ve aynı ekran
+ * iki makinede iki farklı ağırlıkta çizilir.
  */
 
 function jsonResponse(status: number, body: unknown): Response {
@@ -43,35 +44,27 @@ const MENU_TREE = {
     categories: [],
 };
 
+function code(id: number, tableName: string, areaId: number, areaLabel: string, scanCount: number) {
+    return {
+        id,
+        workspaceId: 7,
+        locationId: 923,
+        menuId: 42,
+        token: String(id).repeat(30).slice(0, 30),
+        resolverUrl: `https://zabuno.test/q/${String(id)}`,
+        destinationType: 'published_menu',
+        state: 'active',
+        tableName,
+        areaLabel,
+        areaId,
+        scanCount,
+    };
+}
+
 const CODES = [
-    {
-        id: 11,
-        workspaceId: 7,
-        locationId: 923,
-        menuId: 42,
-        token: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        resolverUrl: 'https://zabuno.test/q/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        destinationType: 'published_menu',
-        state: 'active',
-        tableName: 'Masa 1',
-        areaLabel: 'Bahçe',
-        areaId: 3,
-        scanCount: 31,
-    },
-    {
-        id: 12,
-        workspaceId: 7,
-        locationId: 923,
-        menuId: 42,
-        token: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-        resolverUrl: 'https://zabuno.test/q/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
-        destinationType: 'published_menu',
-        state: 'active',
-        tableName: 'Masa 2',
-        areaLabel: 'Bahçe',
-        areaId: 3,
-        scanCount: 0,
-    },
+    code(11, 'Masa 1', 3, 'Bahçe', 31),
+    code(12, 'Masa 2', 3, 'Bahçe', 0),
+    code(13, 'Masa 3', 4, 'Salon', 12),
 ];
 
 function routeFetch(url: string): Response {
@@ -81,14 +74,11 @@ function routeFetch(url: string): Response {
     if (url.includes('/qr-codes')) {
         return jsonResponse(200, CODES);
     }
-    if (url.includes('/dining-areas')) {
-        return jsonResponse(200, []);
-    }
 
     return jsonResponse(200, []);
 }
 
-describe('QrCodesPage — panel v3 düzeni', () => {
+describe('QrCodesPage — panel v3.1 baskı siparişi', () => {
     let fetchSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
@@ -100,42 +90,169 @@ describe('QrCodesPage — panel v3 düzeni', () => {
         vi.unstubAllGlobals();
     });
 
-    it('kaynağın vaadini başlığın altında yazar: basılı kod hiç değişmez', async () => {
+    it('kaynağın üç sorusunu kaynağın sırasıyla sorar', async () => {
         render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
 
-        await waitFor(() => {
-            expect(screen.getByText(/a printed code never changes/i)).toBeInTheDocument();
-        });
+        const steps = await screen.findAllByRole('region', { name: /^\d\. / });
+
+        expect(steps.map((step) => step.getAttribute('aria-label'))).toEqual([
+            '1. What are you printing?',
+            '2. Which tables?',
+            '3. How should it look?',
+        ]);
     });
 
-    it('sayfanın birincil eylemi "hepsini PDF indir"dir ve gerçek deste ucuna bağlıdır', async () => {
+    it('ilk soru fiziksel nesnedir; kâğıt boyutu bunun sonucudur', async () => {
         render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
 
-        const downloadAll = await screen.findByRole('link', { name: /download every card/i });
+        const tableCard = await screen.findByRole('button', { name: /table card.*plexiglass/i });
 
+        // Hazır çıktı BAŞTAN seçilidir: sahip hiçbir şeye dokunmadan masa
+        // kartı basabilmeli.
+        expect(tableCard).toHaveAttribute('aria-pressed', 'true');
+
+        // Kâğıt boyu bir SONUÇTUR: sekiz kâğıt ve üç oran kapalı bölümde
+        // duruyor, ilk bakışta değil.
+        expect(screen.getByText('I need another size')).toBeInTheDocument();
+    });
+
+    it('varsayılan kapsam "tüm masalar"dır ve özet cümlesi bunu kelimeyle söyler', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        /*
+            SEÇİLİ DURUM RENKLE ANLATILMAZ (WCAG 2.2 §1.4.1). Kaynağın alt
+            çubuğu tam olarak bunun için var: üç adımın on kontrolünü tek
+            cümleye indirir ve seçili olanı KELİMEYLE yazar.
+        */
+        expect(await screen.findByText('3 cards · A6 portrait · plain')).toBeInTheDocument();
+        expect(screen.getByText('All tables · PDF · one zip file')).toBeInTheDocument();
+    });
+
+    it('birincil eylem gerçek toplu kart arşivi ucudur, uydurulmuş bir uç değil', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        const zip = await screen.findByRole('link', { name: /download 3 cards \(zip\)/i });
+        const href = zip.getAttribute('href') ?? '';
+
+        expect(href).toContain('/api/workspaces/7/brand/locations/923/qr-cards.zip');
+        expect(href).toContain('cardTheme=classic');
+        expect(href).toContain('size=A6');
+        expect(href).toContain('orientation=portrait');
+        expect(href).toContain('format=pdf');
+    });
+
+    it('bölge seçimi arşivi KİMLİKLE süzer — iki bölge aynı adı taşıyabilir', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        await userEvent.click(await screen.findByRole('button', { name: /one area/i }));
+
+        const zip = await screen.findByRole('link', { name: /download 2 cards \(zip\)/i });
+        expect(zip.getAttribute('href') ?? '').toContain('areaId=3');
+
+        /*
+            TEK KARTLIK BİR BÖLGE ARŞİV DEĞİLDİR. Bir dosyalık bir ZIP indirmek
+            kullanıcıya açması gereken fazladan bir kabuk vermektir; sunucunun
+            arşiv ucu da tek kart için ayrıca çalıştırılmaz.
+        */
+        await userEvent.click(screen.getByRole('button', { name: /salon/i }));
+
+        const single = await screen.findByRole('link', { name: /download masa 3/i });
+        expect(single.getAttribute('href') ?? '').toContain(
+            '/api/workspaces/7/qr-codes/13/card.pdf',
+        );
+    });
+
+    it('tek masa seçilince tek kartın ucu kullanılır ve yazdırma belirir', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        await userEvent.click(await screen.findByRole('button', { name: /a single table/i }));
+        await userEvent.click(screen.getByRole('button', { name: 'Masa 2 · Bahçe' }));
+
+        const download = await screen.findByRole('link', { name: /download masa 2/i });
+        expect(download.getAttribute('href') ?? '').toContain(
+            '/api/workspaces/7/qr-codes/12/card.pdf',
+        );
+
+        /*
+            "Yazdır" YALNIZ TEK KARTTA çizilir: tarayıcıya yazdırılabilecek
+            şey bir PDF'tir ve çok kartlı bir seçimin çıktısı ZIP arşividir.
+        */
+        expect(screen.getByRole('link', { name: /print/i })).toBeInTheDocument();
+    });
+
+    it('hiç taranmamış masa bunu KELİMEYLE söyler, renkle değil', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        await userEvent.click(await screen.findByRole('button', { name: /a single table/i }));
+        await userEvent.click(screen.getByRole('button', { name: 'Masa 2 · Bahçe' }));
+
+        expect(await screen.findByText('Masa 2 · Bahçe · never scanned yet')).toBeInTheDocument();
+    });
+
+    it('önizleme ÖLÇÜLMÜŞ bir milimetre yazar, temenni değil', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        const preview = await screen.findByRole('complementary', {
+            name: /this is how it comes out/i,
+        });
+
+        // A6 dikey: kart 105 × 148 mm, kod 88 mm — sunucunun bestecisiyle
+        // aynı hesap (`lib/qrCardGeometry`, iki taraflı test).
+        expect(within(preview).getByText('A6 · 105 × 148 mm')).toBeInTheDocument();
         expect(
-            downloadAll.getAttribute('href'),
-            'Uydurulmuş bir uç değil, depoda var olan deste PDF ucu kullanılmalı.',
-        ).toBe('/api/workspaces/7/brand/locations/923/qr-codes/print.pdf');
+            within(preview).getByText(/code 88 mm — easy to read from the table/i),
+        ).toBeInTheDocument();
     });
 
-    it('masa ızgarası ile sağ panel AYNI seçimi paylaşır', async () => {
+    it('önizleme sunucunun GERÇEK kartını çizer, elle çizilmiş bir maketi değil', async () => {
         render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
 
-        const selectedRegion = await screen.findByRole('region', { name: /selected code/i });
-        expect(selectedRegion.textContent ?? '').toMatch(/Masa 1/);
-
-        await userEvent.click(await screen.findByRole('button', { name: /masa 2/i }));
-
-        await waitFor(() => {
-            expect(selectedRegion.textContent ?? '').toMatch(/Masa 2/);
+        const preview = await screen.findByRole('complementary', {
+            name: /this is how it comes out/i,
         });
+        const image = within(preview).getByRole('img');
+
+        expect(image.getAttribute('src') ?? '').toContain('/api/workspaces/7/qr-codes/11/card.svg');
     });
 
-    it('yeni masalar için toplu kod bölümü ekranın kendisindedir', async () => {
+    it('tasarım değişince önizleme ve indirme birlikte değişir — tek plan vardır', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        await userEvent.click(await screen.findByRole('button', { name: /^dark/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText('3 cards · A6 portrait · dark')).toBeInTheDocument();
+        });
+
+        const preview = await screen.findByRole('complementary', {
+            name: /this is how it comes out/i,
+        });
+
+        expect(within(preview).getByRole('img').getAttribute('src') ?? '').toContain(
+            'cardTheme=dark',
+        );
+        expect(
+            screen.getByRole('link', { name: /download 3 cards \(zip\)/i }).getAttribute('href') ??
+                '',
+        ).toContain('cardTheme=dark');
+    });
+
+    it('yeni masalar için toplu kod, ikinci adımın kendi içindedir', async () => {
         render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
 
         expect(await screen.findByRole('group', { name: /bulk qr wizard/i })).toBeInTheDocument();
+    });
+
+    it('kesilecek tabaka kendi adıyla sunulur: seçilen ölçüyü taşımaz', async () => {
+        render(<QrCodesPage workspaceId={7} dashboardMenuTree={MENU_TREE} />);
+
+        const sheet = await screen.findByRole('region', { name: /sheet to cut out/i });
+
+        expect(
+            within(sheet)
+                .getByRole('link', { name: /download every card/i })
+                .getAttribute('href'),
+        ).toBe('/api/workspaces/7/brand/locations/923/qr-codes/print.pdf');
     });
 
     it('menü yokken çıkış eylemi ölçeğin 700 basamağını taşır', () => {
