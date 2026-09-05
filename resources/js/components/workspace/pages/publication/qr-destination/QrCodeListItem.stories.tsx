@@ -26,7 +26,7 @@ const meta: Meta<typeof QrCodeListItem> = {
     component: QrCodeListItem,
     decorators: [
         (Story) => (
-            <ul className="max-w-[40rem] bg-canvas p-[var(--space-6)]">
+            <ul className="max-w-[40rem] bg-canvas p-[var(--space-fluid-lg)]">
                 <Story />
             </ul>
         ),

@@ -81,7 +81,7 @@ export function DashboardQuickActions({
                     key={action.key}
                     type="button"
                     onClick={() => onNavigateToSection(action.section)}
-                    className="flex min-h-[var(--control-height)] flex-col items-start gap-[var(--space-3)] rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-4)] text-start text-fg transition-colors duration-[var(--duration-fast)] ease-[var(--easing-inout)] hover:bg-surface-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                    className="flex min-h-[var(--control-height)] flex-col items-start gap-[var(--space-3)] rounded-[var(--radius-lg)] border border-border bg-surface p-[var(--space-fluid-sm)] text-start text-fg transition-colors duration-[var(--duration-fast)] ease-[var(--easing-inout)] hover:bg-surface-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                     <span className="grid size-[2.5rem] place-items-center rounded-[var(--radius-md)] bg-surface-subtle text-fg-secondary">
                         {action.icon}

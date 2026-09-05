@@ -380,7 +380,7 @@ export function DashboardSetupJourney({
                         Sarı üstünde mürekkep metin, panelin en yüksek
                         kontrastlı yüzeyidir.
                     */
-                    className="flex flex-col items-start gap-[var(--space-3)] rounded-[var(--radius-lg)] bg-action p-[var(--space-6)] text-action-fg"
+                    className="flex flex-col items-start gap-[var(--space-3)] rounded-[var(--radius-lg)] bg-action p-[var(--space-fluid-md)] text-action-fg"
                 >
                     <h2 className="text-meta font-bold">{t('dashboard.now.heading')}</h2>
                     {nextStep ? (
@@ -446,7 +446,7 @@ export function DashboardSetupJourney({
                 open={!allDone}
                 className="group rounded-[var(--radius-lg)] border border-border bg-surface"
             >
-                <summary className="flex cursor-pointer flex-wrap items-center gap-[var(--space-3)] p-[var(--space-5)]">
+                <summary className="flex cursor-pointer flex-wrap items-center gap-[var(--space-3)] p-[var(--space-fluid-md)]">
                     <h2 className="text-section font-bold text-fg">
                         {allDone ? t('dashboard.setup.complete') : t('dashboard.setup.heading')}
                     </h2>
@@ -507,7 +507,7 @@ export function DashboardSetupJourney({
                 </summary>
 
                 {allDone ? (
-                    <p className="px-[var(--space-5)] pb-[var(--space-2)] text-body text-fg-secondary">
+                    <p className="px-[var(--space-fluid-md)] pb-[var(--space-2)] text-body text-fg-secondary">
                         {t('dashboard.setup.complete.summary')}
                     </p>
                 ) : null}
@@ -518,7 +518,7 @@ export function DashboardSetupJourney({
                         // sıradır ve ikinci satıra düşen adım, sıranın parçası
                         // gibi görünmez. Dar ekranda kendiliğinden alt alta iner.
                         'grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))]',
-                        'gap-[var(--space-2)] p-[var(--space-5)] pt-0',
+                        'gap-[var(--space-2)] p-[var(--space-fluid-md)] pt-0',
                     )}
                 >
                     {rows.map((row) => {

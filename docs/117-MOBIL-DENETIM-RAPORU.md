@@ -133,6 +133,94 @@ düzeltir, bir ekranı düzeltmek bir ekranı.
 | M8 | Isı ızgarasına kendi kaydırma kabı | bileşen | K4 |
 | M9 | Sayfa başlığı: dar ekranda dikey ritim | ekran | İlk ekranı içerikten önce doldurmasın |
 
+Durum: **M1, M2, M3, M4 bitti.** Kalan: M5–M9.
+
+### M2 + M3 + M4 — yapıldı (2026-09-05)
+
+Üçü tek pakette, çünkü üçü de aynı kökü değiştiriyor: **hedef ölçeği ile ölü
+alan ölçeğinin ayrılması.**
+
+#### Ne değişti
+
+| # | Değişiklik | Yer |
+| --- | --- | --- |
+| M2 | Metin girdisi ve sekme yüksekliği `--control-height`e bağlandı (42 → 44) | `storybook-demo/micro/Input`, `catalog/navigation/compound/Tabs` |
+| M3 | İkon düğmesi 36→44, kapatma düğmesi 32→44, marka bağlantısı 24→44 | `IconButton`, `CloseButton`, `BrandMark` |
+| M3 | Onay kutusunun hedefi ETİKETİ oldu (24 → 44) | `CHOICE_LABEL_TOUCH_CLASS` → `CheckboxField`, `OpeningHoursFields` |
+| M3 | Karekod satırındaki "taşı / vazgeç" 24 → 44 | `QrCodeListItem` |
+| M3 | İki hikâye elle kurulmuş ham düğmesini kataloğun düğmesiyle değiştirdi | `EmptyState.stories`, `PageHeader.stories` |
+| M4 | Ölü alan ölçeği dar ekranı TABAN aldı: `--space-fluid-*` tabanları 12/16/24 → 8/12/16; **tavanlar değişmedi** | `app.css` |
+| M4 | Sayfa çerçevesi ve kart dolgusu sabit adımdan akışkan ölçeğe geçti | pano ve yayın yüzeyleri, ekran hikâyelerinin çerçeveleri |
+
+**42, 44'ün iki eksiği değildi — bir KARAR bile değildi.** Ölçüm gösterdi ki
+jeton (`--density-hit-area-min: 44px`) baştan doğruydu; eksik olan
+TÜKETİMDİ. Girdi 42 pikselde çiziliyordu çünkü kimse 42 dememişti: `py-2` +
+satır yüksekliği + kenarlık öyle toplanıyordu. Yükseklik bir yan üründü.
+
+**M4'ün kök sebebi `clamp()`in ALT SINIRIYDI.** Akışkan ölçek dar ekranda hiç
+daralmıyordu — 320 pikselde alt sınır zaten devredeydi ve o alt sınır masaüstü
+ölçüsüydü (12/16/24px). Yani "akışkan" olan tek yön yukarıydı: dar ekran taban
+değil, kırpılmış masaüstüydü. Tabanlar 8/12/16'ya indi, tavanlar aynı kaldı —
+masaüstü görünümü korunur, kazanılan yer yalnız dar ekranda geri döner.
+
+#### Ölçüm — önce / sonra
+
+Aynı araç, aynı 317 hikâye, 320×568:
+
+| | Önce | Sonra |
+| --- | --- | --- |
+| Etkilenen hikâye | 66 | **24** |
+| `small-target` | 91 bulgu / 48 hikâye | **7 bulgu / 7 hikâye** |
+| `wasted-width` | 12 bulgu / 12 hikâye | **10 bulgu / 10 hikâye** |
+| `tight-gap` | 9 bulgu / 5 hikâye | **6 bulgu / 3 hikâye** |
+| `overflow-x` | 4 bulgu / 4 hikâye | 4 bulgu / 4 hikâye |
+
+Dondurulmuş borç listesinden **43 hikâye silindi**; yeni ihlal **0**.
+
+`tight-gap` kendiliğinden düştü ve sebebi öğretici: sekmeler arasındaki 4
+piksel, sekmeler 42 pikselken bir kusurdu. Hedef 44'e çıkınca aynı 4 piksel
+kusur olmaktan çıktı — çünkü ayrım kuralı yalnız KÜÇÜK hedefler için geçerli.
+Bir jetonu düzeltmek, ona bağlı ikinci bir kusur ailesini de kapattı.
+
+#### Kapanmayan borç ve NEDEN
+
+**Bunlar sessizce bırakılmadı; her biri bir karardır.**
+
+- **Onay kutusunun kendisi 16×16 (4 hikâye).** Kutuyu 44 piksele büyütmek
+  ikonu büyütmek olurdu ve 320 piksellik bir satırın önemli bir kısmını
+  yerdi — M4'ün tam tersi. Kullanıcının dokunduğu şey zaten kutu değil,
+  `htmlFor` ile bağlı etikettir ve o hedef artık 44 (`CheckboxField` ölçümü
+  düzeldi). Kalan bulgu, etiketi OLMAYAN bir `micro` hikâyesinin kendisidir;
+  üründe böyle bir kullanım yok. Araç bunu bir istisna olarak tanımıyor ve
+  aracı bulgu susturmak için değiştirmek bu deponun en tehlikeli alışkanlığı
+  olurdu (§0).
+- **Metin içi bağlantı (2 hikâye).** Bir cümlenin içindeki bağlantıyı 44
+  piksel yüksekliğine çıkarmak satır akışını bozar; WCAG 2.5.8 de "cümle
+  içindeki hedef"i açıkça muaf tutar. Araçta o muafiyet yok.
+- **Menü kataloğunda 12 piksellik "yeniden adlandır" (1 hikâye).** Düğmenin
+  YÜKSEKLİĞİ zaten 44; kusur GENİŞLİKTE ve sebebi jeton değil, satırın 320
+  pikseldeki yerleşimi. Bu **M7**'nin işi ve orada kalıyor.
+- **Profil formunda bitişik hedefler (3 hikâye).** **M5.**
+- **Isı ızgarasının yatay taşması (4 hikâye).** **M8.**
+- **`wasted-width` kalan 10 hikâye.** İkiye ayrılıyor:
+  - Dolgu birikmesi GERÇEKTEN azaldı: kurulum yolculuğu 178 → **224**/320,
+    pano bölümleri 214 → sınırın üstüne çıktı ve listeden düştü, karekod
+    satırının sol boşluğu 32 → **16**.
+  - Ama kalan hikâyelerde ölçülen sayı artık dolguyu değil **içeriğin
+    kendi genişliğini** anlatıyor. `qrexportconfigform` için "kullanılabilir
+    186px" aslında `<legend>` etiketinin genişliğidir: o ekranda metin taşıyan
+    tek yaprak odur, alanların metni `<label>` içinde bir metin düğümüdür ve
+    araç yaprak öğe ölçer. `pageheader--default` için 74 piksel, "Orders"
+    kelimesinin kendisidir. Dolguyu sıfırlamak bu sayıları değiştirmez.
+    Bunlar aracın bir SINIRIDIR ve §0'ın kaydettiği türden bir sahte kalıptır;
+    aracı düzeltmek ayrı bir iştir ve bu pakette YAPILMADI — o yüzden sonuç
+    "sorun yok" değil, **"bu metrik burada dolguyu ölçmüyor"**.
+
+#### Masaüstü bozulmadı
+
+`shell-scroll-gate` 320×568 ve 1440×900'de yeşil; 1970 jsdom testi yeşil.
+Akışkan ölçeğin TAVANLARI değişmediği için masaüstü boşlukları aynı kaldı.
+
 ### M4'ün kararı, ayrıca
 
 **Dokunma hedefi büyür, boşluk daralır.** Bugün ikisi aynı ölçekten besleniyor

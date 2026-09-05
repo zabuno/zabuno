@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { PageHeader } from './PageHeader';
+import { Button } from '../../forms/micro/Button';
 
 const meta: Meta<typeof PageHeader> = {
     title: 'Macro/Layout/PageHeader',
@@ -28,14 +29,12 @@ export const WithBreadcrumbsAndActions: Story = {
             { key: 'order-42', label: 'Order #42' },
         ],
         description: 'Placed 2 minutes ago.',
-        actions: (
-            <button
-                type="button"
-                className="rounded-md bg-blue-600 px-3 py-2 text-body font-medium text-white"
-            >
-                Mark ready
-            </button>
-        ),
+        /*
+            Aynı gerekçe `EmptyState.stories` ile: hikâye ürünün düğmesini
+            kullanır. Elle kurulmuş düğme 107×40 ölçülüyordu (`docs/117` M3)
+            ve ham palet basıyordu.
+        */
+        actions: <Button>Mark ready</Button>,
     },
 };
 

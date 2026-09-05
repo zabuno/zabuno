@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Label } from '../micro/Label';
+import { CHOICE_LABEL_TOUCH_CLASS, Label } from '../micro/Label';
 import { Checkbox, type CheckboxProps } from '../micro/Checkbox';
 import { HelperText } from 'flowbite-react';
 
@@ -37,7 +37,9 @@ export function CheckboxField({
                     aria-describedby={describedBy}
                     {...checkboxProps}
                 />
-                <Label htmlFor={fieldId}>{label}</Label>
+                <Label htmlFor={fieldId} className={CHOICE_LABEL_TOUCH_CLASS}>
+                    {label}
+                </Label>
             </div>
             {helpText ? (
                 <HelperText id={helpId} color="gray">

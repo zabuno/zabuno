@@ -33,7 +33,7 @@ const meta: Meta<typeof ImageCropField> = {
     },
     decorators: [
         (Story) => (
-            <div className="max-w-[40rem] bg-canvas p-[var(--space-4)]">
+            <div className="max-w-[40rem] bg-canvas p-[var(--space-fluid-lg)]">
                 <Story />
             </div>
         ),

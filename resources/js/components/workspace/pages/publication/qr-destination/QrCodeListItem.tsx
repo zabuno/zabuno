@@ -247,7 +247,7 @@ export function QrCodeListItem({
                 ) : (
                     <div className="flex flex-wrap items-center gap-2">
                         <label
-                            className="text-body text-fg-secondary"
+                            className="inline-flex min-h-[var(--density-hit-area-min)] items-center text-body text-fg-secondary"
                             htmlFor={`qr-move-${item.id}`}
                         >
                             {t('workspace.publication.qrDestination.move.label')}
@@ -267,6 +267,18 @@ export function QrCodeListItem({
                                 </option>
                             ))}
                         </select>
+                        {/*
+                            TAŞI / VAZGEÇ BİRER DÜĞMEDİR, BİRER CÜMLE DEĞİL
+                            (`docs/117` M3).
+
+                            Ölçüldü (320×568): ikisi de 24 piksel
+                            yüksekliğindeydi — altı çizili bir yazıdan ibaret.
+                            Bir kodu yanlış şubeye taşımak basılı kartın
+                            misafir için ölmesi demek; o kararın hedefi
+                            parmakla vurulabilir olmalı.
+
+                            Yazı boyutu değişmez; büyüyen tek şey kutudur.
+                        */}
                         <button
                             type="button"
                             disabled={target === ''}
@@ -274,7 +286,7 @@ export function QrCodeListItem({
                                 onRetarget(item.id, Number(target));
                                 setTarget('');
                             }}
-                            className="text-body text-fg-link underline underline-offset-2 disabled:no-underline disabled:opacity-60"
+                            className="inline-flex min-h-[var(--density-hit-area-min)] items-center rounded-[var(--radius-md)] px-[var(--space-2)] text-body text-fg-link underline underline-offset-2 disabled:no-underline disabled:opacity-60"
                         >
                             {t('workspace.publication.qrDestination.move.button')}
                         </button>
@@ -282,7 +294,7 @@ export function QrCodeListItem({
                             <button
                                 type="button"
                                 onClick={onCancelMove}
-                                className="text-body text-fg-secondary underline underline-offset-2"
+                                className="inline-flex min-h-[var(--density-hit-area-min)] items-center rounded-[var(--radius-md)] px-[var(--space-2)] text-body text-fg-secondary underline underline-offset-2"
                             >
                                 {t('workspace.publication.qrDestination.move.cancel')}
                             </button>

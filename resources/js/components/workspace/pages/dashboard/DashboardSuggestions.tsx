@@ -125,7 +125,7 @@ export function DashboardSuggestions({ insights, onNavigateToSection }: Dashboar
             aria-label={t('dashboard.suggestions.region')}
             className="flex flex-col rounded-[var(--radius-lg)] border border-border bg-surface"
         >
-            <div className="flex flex-wrap items-center gap-[var(--space-3)] border-b border-border px-[var(--space-5)] py-[var(--space-4)]">
+            <div className="flex flex-wrap items-center gap-[var(--space-3)] border-b border-border px-[var(--space-fluid-md)] py-[var(--space-4)]">
                 <h2 className="text-body font-bold tracking-tight text-fg">
                     {suggestions.length === 1
                         ? t('dashboard.suggestions.heading', { count: '1' })
@@ -146,7 +146,7 @@ export function DashboardSuggestions({ insights, onNavigateToSection }: Dashboar
                 {suggestions.map((row) => (
                     <li
                         key={row.key}
-                        className="flex flex-wrap items-center gap-[var(--space-3)] border-t border-border px-[var(--space-5)] py-[var(--space-3)] first:border-t-0"
+                        className="flex flex-wrap items-center gap-[var(--space-3)] border-t border-border px-[var(--space-fluid-md)] py-[var(--space-3)] first:border-t-0"
                     >
                         {/*
                             Simge, önerinin NEREDEN geldiğini söyler: büyüteç

@@ -27,7 +27,7 @@ const meta: Meta<typeof DashboardGreeting> = {
     component: DashboardGreeting,
     decorators: [
         (Story) => (
-            <div className="max-w-[52rem] bg-canvas p-[var(--space-6)]">
+            <div className="max-w-[52rem] bg-canvas p-[var(--space-fluid-lg)]">
                 <Story />
             </div>
         ),

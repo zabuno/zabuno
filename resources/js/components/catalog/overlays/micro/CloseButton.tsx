@@ -28,14 +28,23 @@ export function CloseButton({
             disabled={disabled}
             aria-label={label}
             className={clsx(
-                'inline-flex h-8 w-8 items-center justify-center rounded-md',
+                /*
+                    32 → 44 (`docs/117` M3). Ölçüldü: telefon gezinti
+                    çekmecesinin kapatma düğmesi 32×32 idi — asgari hedefin
+                    yarısından biraz fazlası. Kapatamadığı için içinde
+                    kalınan bir çekmece, açılmamış bir çekmeceden kötüdür.
+
+                    Çarpı işareti (`size-4`) DEĞİŞMEDİ: büyüyen tek şey
+                    dokunulabilir kutudur.
+                */
+                'inline-flex size-[var(--density-hit-area-min)] items-center justify-center rounded-md',
                 'text-fg-muted hover:bg-surface-hover hover:text-fg',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
                 'disabled:pointer-events-none disabled:opacity-50',
                 className,
             )}
         >
-            <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+            <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="size-4">
                 <path
                     fillRule="evenodd"
                     d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z"

@@ -12,7 +12,7 @@ const meta = {
     args: { paperSize: 'A4', orientation: 'Portrait' },
     decorators: [
         (Story) => (
-            <div className="max-w-[40rem] bg-canvas p-[var(--space-6)]">
+            <div className="max-w-[40rem] bg-canvas p-[var(--space-fluid-lg)]">
                 <Story />
             </div>
         ),

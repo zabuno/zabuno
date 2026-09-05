@@ -71,7 +71,7 @@ export function DashboardTopViewed({
             aria-label={t('dashboard.topViewed.heading')}
             className="flex flex-col rounded-[var(--radius-lg)] border border-border bg-surface"
         >
-            <div className="flex flex-wrap items-center justify-between gap-[var(--space-2)] border-b border-border px-[var(--space-5)] py-[var(--space-4)]">
+            <div className="flex flex-wrap items-center justify-between gap-[var(--space-2)] border-b border-border px-[var(--space-fluid-md)] py-[var(--space-4)]">
                 {/*
                     Başlık ARALIĞI söyler. "En çok bakılanlar" tek başına
                     okuyanın "bugün" sandığı bir liste üretir; ölçülen aralığı
@@ -99,7 +99,7 @@ export function DashboardTopViewed({
             */}
             <div
                 aria-hidden="true"
-                className={`${GRID} bg-surface-subtle px-[var(--space-5)] py-[var(--space-2)] text-meta font-bold text-fg-muted`}
+                className={`${GRID} bg-surface-subtle px-[var(--space-fluid-md)] py-[var(--space-2)] text-meta font-bold text-fg-muted`}
             >
                 <span>{t('dashboard.topViewed.column.rank')}</span>
                 <span>{t('dashboard.topViewed.column.item')}</span>
@@ -110,7 +110,7 @@ export function DashboardTopViewed({
                 {rows.map((row, index) => (
                     <li
                         key={row.menuItemId}
-                        className={`${GRID} border-t border-border px-[var(--space-5)] py-[var(--space-2)]`}
+                        className={`${GRID} border-t border-border px-[var(--space-fluid-md)] py-[var(--space-2)]`}
                     >
                         <span className="text-meta tabular-nums text-fg-muted">{index + 1}</span>
 
