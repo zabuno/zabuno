@@ -83,3 +83,73 @@ ya doğar ya da neden doğmadığı yazılır.**
 
 Bölümler: Home · Menüler · QR · Insights · Yayınlama · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar.
+
+## 6. Kaynağın somut verisi ve verilmiş kararlar
+
+Aşağıdakiler `panel.dc.html` içindeki gerçek veri tanımlarından alınmıştır.
+Ajanlar bunları yeniden türetmemeli.
+
+### 6.1 Home — AI önerileri (kaynağın üç örneği)
+
+| Başlık | Gerekçe satırı | Eylem |
+| --- | --- | --- |
+| "Vejetaryen" 14 kez arandı, menüde yok | Bulunamayan aramalar · son 7 gün | Kategori öner |
+| Beyti Sarma en çok bakılan 5'te ama fotoğrafı yok | Fotoğraflı ürünlere 2,3× daha çok bakılıyor | Fotoğraf ekle |
+| Tavuk Şiş 30 gündür hiç açılmadı | Menü mühendisliği · hiç bakılmayan | Gizlemeyi öner |
+
+Üçü de GERÇEK ölçümden doğuyor: arama kayıtları, ürün görüntülenme ve
+fotoğraf varlığı. Yani bunlar "AI" değil, ÖLÇÜMDEN çıkan öneriler —
+sağlayıcı bağlı olmasa da üretilebilirler. Kaynağın kuralı: *"Öneri yapar,
+sen onaylarsın. Onaysız hiçbir şey değişmez."*
+
+### 6.2 Home — hızlı eylemler ve kurulum
+
+Hızlı eylemler: Fiyat değiştir → Menüler · Ürünü gizle/bitti → Menüler ·
+QR indir → QR · Fotoğraf ekle → Medya.
+
+Kurulum beş adım: İşletme bilgileri · İlk şube ve masalar · Menü yüklendi
+(N ürün) · Menüyü yayınla · İlk QR'ı test et. Biten adımın üstü çizili.
+
+### 6.3 Menüler — çoklu menü
+
+`menus: [['Ana menü','yayında'],['Kahvaltı','07–11'],['Ramazan','kapalı']]`
+Yani bir şubede birden çok menü var ve her birinin bir DURUMU (yayında /
+saat aralığı / kapalı) var.
+
+Kategoriler: Kebaplar 12 · Pideler 8 · Dürümler 6 · Çorbalar 4 · Tatlılar 9
+· İçecekler 7.
+
+### 6.4 Takım — rollerin cümlesi (birebir)
+
+- **Editör** — Ürün, fiyat, fotoğraf. Yayınlayamaz.
+- **Yönetici** — Menü, QR, yayın. Faturaya dokunamaz.
+- **Mutfak** — Alerjen ve "bugün bitti". Başka bir şey görmez.
+- **Sahip** — her şey: fatura, takım, yayın. Sahiplik davetle verilmez,
+  DEVREDİLİR.
+
+### 6.5 Insights — GRAFİK KÜTÜPHANESİ KARARI
+
+Kaynak ECharts'ı CDN'den yüklüyor (`heatRef`, `pieRef` referansları).
+**Depoya ECharts EKLENMEZ** ve sebebi ölçülebilir: paket ~300 KB gzip'tir,
+depo bütçesi ise giriş başına 200 KB (`DS-BUNDLE-BUDGET-07`). Tek bir ekran
+için bütçeyi ikiye katlamak, telefonla bakan bir restoran sahibinin her
+sayfa açılışını yavaşlatırdı.
+
+Aynı düzen **elle yazılmış SVG** ile çizilir: çubuk+çizgi, saat ısı
+haritası, şube halkası. Renkler jetondan okunur. Bu bir sapma değil, aynı
+TASARIMIN başka bir teslim biçimidir — zip tasarımın kaynağıdır, bağımlılık
+listesinin değil.
+
+### 6.6 Yayınlama
+
+Adım çizgisi: Taslak (N değişiklik) → Önizleme (telefonda kontrol) →
+Yayında (v14 · 2 gün önce). Hazırlık kontrolü beş madde; eksik olanın
+yanında "Düzelt" düğmesi. Sürümlerde "Geri al" ve kaynağın kuralı:
+*"Geri alma da bir yayındır: yeni sürüm numarası alır, QR aynı kalır."*
+
+### 6.7 QR
+
+12 masa kartı + tarama sayısı; sağ panelde tema (Klasik/Markalı/Koyu),
+boyut (5×5 · 8×8 · A6 masa kartı), PDF indir / Yazdır ve **ölçülmüş
+kontrast** ("18,7:1 · tarayıcı testi geçti"). Yeni masalar için toplu kod
+üretimi ve ileri ayarlar (bölge, koltuk, ad öneki).
