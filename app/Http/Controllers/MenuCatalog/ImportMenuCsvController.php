@@ -6,8 +6,11 @@ namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Csv\MenuCsvImport;
+use App\Application\MenuCatalog\Dto\MenuAuditEntry;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\MenuCatalog\MenuAuditAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +26,7 @@ final class ImportMenuCsvController extends Controller
     public function __construct(
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly AuthorizationPort $authorization,
+        private readonly MenuAuditPort $audit,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $menu): JsonResponse
@@ -67,6 +71,30 @@ final class ImportMenuCsvController extends Controller
         }
 
         $result = $this->menuCatalog->importDraftRows($workspace, $menu, $parsed->rows);
+
+        /*
+            DENETİM İZİ (FF-154) — TEK ÖZET SATIRI.
+
+            Aktarım, menünün her fiyatını tek bir dosyayla değiştirebilen
+            yoldur; izsiz bırakılsaydı "fiyatı kim değiştirdi" sorusu
+            buradan sessizce kaçardı. Öte yandan satır başına kayıt, 60
+            kalemlik bir menüde izi tek başına doldurur ve tek tek yapılmış
+            fiyat değişikliklerini görünmez kılardı. Kayıt bu yüzden "ne
+            kadar" der, "hangi satırlar" demez; ayrıntı, aktarılan dosyanın
+            kendisindedir.
+
+            Reddedilen satırlar sayılmaz: yazılmamış bir şey bir değişiklik
+            değildir.
+        */
+        $this->audit->record(MenuAuditEntry::forMenu(
+            $workspace,
+            $menu,
+            $tree->name,
+            MenuAuditAction::MenuImported,
+            null,
+            $result['categories'].' kategori · '.$result['items'].' ürün',
+            $userId,
+        ));
 
         return response()->json([
             'importedCategories' => $result['categories'],

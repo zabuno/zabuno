@@ -6,9 +6,12 @@ namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Dto\MenuAuditEntry;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\MenuCatalog\MenuAuditAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +27,7 @@ final class DeleteCategoryController extends Controller
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AuthorizationPort $authorization,
+        private readonly MenuAuditPort $audit,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $category): JsonResponse
@@ -56,6 +60,27 @@ final class DeleteCategoryController extends Controller
         } catch (MenuCatalogTenantMismatchException) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
+
+        /*
+            DENETİM İZİ (FF-154). Tek tıkla yapılan EN YIKICI menü işlemi:
+            kategori giderken içindeki her satır da gider (`cascade`). Ad
+            kaydın içine kopyalanır — "Yaz Menüsü silindi" diyebilmenin
+            başka yolu kalmıyor.
+
+            İçerideki satırlar için AYRI kayıt yazılmaz: sahip "kategoriyi
+            kim sildi" diye sorar, silinen otuz satırı tek tek değil. Otuz
+            satır yazmak, izi tek bir işlemin altında boğardı.
+        */
+        $this->audit->record(MenuAuditEntry::forCategory(
+            $workspace,
+            $categoryContext->menuId,
+            $category,
+            $categoryContext->name,
+            MenuAuditAction::CategoryRemoved,
+            $categoryContext->name,
+            null,
+            $userId,
+        ));
 
         return response()->json(['id' => $category, 'deleted' => true]);
     }

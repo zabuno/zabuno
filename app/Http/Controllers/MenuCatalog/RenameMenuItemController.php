@@ -6,9 +6,12 @@ namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Dto\MenuAuditEntry;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\MenuCatalog\MenuAuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuCatalog\RenameMenuItemRequest;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +28,7 @@ final class RenameMenuItemController extends Controller
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AuthorizationPort $authorization,
+        private readonly MenuAuditPort $audit,
     ) {}
 
     public function __invoke(RenameMenuItemRequest $request, int $workspace, int $menuItem): JsonResponse
@@ -52,16 +56,43 @@ final class RenameMenuItemController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        $productName = (string) $request->validated('productName');
+
         try {
             $summary = $this->menuCatalog->renameMenuItemProduct(
                 $workspace,
                 $menuItem,
-                (string) $request->validated('productName'),
+                $productName,
                 $request->validated('description'),
                 $request->has('description'),
             );
         } catch (MenuCatalogTenantMismatchException) {
             return response()->json(['message' => 'Not Found.'], 404);
+        }
+
+        /*
+            DENETİM İZİ (FF-154). Ad, misafirin menüde OKUDUĞU metindir;
+            "Adana Kebap" bir gün "Adana Kebap (acı)" olduğunda bunu kimin
+            yazdığı sorulabilir bir sorudur.
+
+            Kaydın ETİKETİ YENİ ad: iz bir gün listelendiğinde satır bugünkü
+            menüyle eşleşmeli. Eski ad kaybolmaz, "öncesi" sütununda durur.
+
+            Açıklama değişikliği ize YAZILMAZ ve aynı çağrıdan geçse bile
+            burada bir olay saymayız: açıklama pazarlama metnidir, sahibin
+            "kim değiştirdi" diye sorduğu şey değil.
+        */
+        if ($menuItemContext->productName !== $productName) {
+            $this->audit->record(MenuAuditEntry::forItem(
+                $workspace,
+                $menuItemContext->menuId,
+                $menuItem,
+                $productName,
+                MenuAuditAction::ItemRenamed,
+                $menuItemContext->productName,
+                $productName,
+                $userId,
+            ));
         }
 
         return response()->json([

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence\MenuCatalog\Api;
 
 use App\Application\MenuCatalog\Api\Dto\CategoryApiContext;
+use App\Application\MenuCatalog\Api\Dto\MenuApiContext;
 use App\Application\MenuCatalog\Api\Dto\MenuItemApiContext;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +41,20 @@ final class EloquentMenuCatalogApiContext implements MenuCatalogApiContextPort
         return $menu === null ? null : (int) $menu->id;
     }
 
+    public function menuContext(int $menuId): ?MenuApiContext
+    {
+        $row = DB::table('menus')
+            ->where('id', $menuId)
+            ->select('workspace_id', 'location_id', 'name')
+            ->first();
+
+        if ($row === null) {
+            return null;
+        }
+
+        return new MenuApiContext((int) $row->workspace_id, (int) $row->location_id, (string) $row->name);
+    }
+
     public function categoryContext(int $categoryId): ?CategoryApiContext
     {
         $row = DB::table('menu_categories')
@@ -47,14 +62,27 @@ final class EloquentMenuCatalogApiContext implements MenuCatalogApiContextPort
             ->join('locations', 'locations.id', '=', 'menus.location_id')
             ->join('brands', 'brands.id', '=', 'locations.brand_id')
             ->where('menu_categories.id', $categoryId)
-            ->select('menus.workspace_id as workspace_id', 'brands.currency as currency')
+            // Ad ve menü kimliği denetim izi için okunur (FF-154): kategori
+            // silindikten SONRA ikisi de sorulamaz. Sorgu zaten yapılıyordu;
+            // iki sütun daha eklemek fazladan bir gidiş-dönüş açmaz.
+            ->select(
+                'menus.workspace_id as workspace_id',
+                'brands.currency as currency',
+                'menus.id as menu_id',
+                'menu_categories.name as name',
+            )
             ->first();
 
         if ($row === null) {
             return null;
         }
 
-        return new CategoryApiContext((int) $row->workspace_id, (string) $row->currency);
+        return new CategoryApiContext(
+            (int) $row->workspace_id,
+            (string) $row->currency,
+            (int) $row->menu_id,
+            (string) $row->name,
+        );
     }
 
     public function productWorkspaceId(int $productId): ?int
@@ -71,15 +99,41 @@ final class EloquentMenuCatalogApiContext implements MenuCatalogApiContextPort
             ->join('menus', 'menus.id', '=', 'menu_categories.menu_id')
             ->join('locations', 'locations.id', '=', 'menus.location_id')
             ->join('brands', 'brands.id', '=', 'locations.brand_id')
+            // Ad ÜRÜNDE durur, satırda değil (`RenameMenuItemController`).
+            ->join('products', 'products.id', '=', 'menu_items.product_id')
             ->where('menu_items.id', $menuItemId)
-            ->select('menus.workspace_id as workspace_id', 'menu_items.product_id as product_id', 'brands.currency as brand_currency')
+            /*
+                Satırın O ANKİ hâli de okunur (FF-154). Denetim izinde
+                "öncesi" olmadan bir fiyat kaydı işe yaramaz ve öncesi
+                yalnız YAZMADAN ÖNCE okunabilir. Sorgu zaten yapılıyordu;
+                sütun eklemek fazladan bir gidiş-dönüş açmaz.
+            */
+            ->select(
+                'menus.workspace_id as workspace_id',
+                'menu_items.product_id as product_id',
+                'brands.currency as brand_currency',
+                'menus.id as menu_id',
+                'products.name as product_name',
+                'menu_items.price_minor_amount as price_minor_amount',
+                'menu_items.currency_code as currency_code',
+                'menu_items.is_visible as is_visible',
+            )
             ->first();
 
         if ($row === null) {
             return null;
         }
 
-        return new MenuItemApiContext((int) $row->workspace_id, (int) $row->product_id, (string) $row->brand_currency);
+        return new MenuItemApiContext(
+            (int) $row->workspace_id,
+            (int) $row->product_id,
+            (string) $row->brand_currency,
+            (int) $row->menu_id,
+            (string) $row->product_name,
+            (int) $row->price_minor_amount,
+            (string) $row->currency_code,
+            (bool) $row->is_visible,
+        );
     }
 
     public function allergensForProduct(int $productId): array

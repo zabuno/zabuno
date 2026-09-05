@@ -6,9 +6,12 @@ namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Dto\MenuAuditEntry;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\MenuCatalog\MenuAuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuCatalog\RenameCategoryRequest;
 use Illuminate\Http\JsonResponse;
@@ -20,6 +23,7 @@ final class RenameCategoryController extends Controller
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AuthorizationPort $authorization,
+        private readonly MenuAuditPort $audit,
     ) {}
 
     public function __invoke(RenameCategoryRequest $request, int $workspace, int $category): JsonResponse
@@ -55,6 +59,20 @@ final class RenameCategoryController extends Controller
             );
         } catch (MenuCatalogTenantMismatchException) {
             return response()->json(['message' => 'Not Found.'], 404);
+        }
+
+        // DENETİM İZİ (FF-154): başlık da misafirin okuduğu metindir.
+        if ($categoryContext->name !== $summary->name) {
+            $this->audit->record(MenuAuditEntry::forCategory(
+                $workspace,
+                $summary->menuId,
+                $summary->id,
+                $summary->name,
+                MenuAuditAction::CategoryRenamed,
+                $categoryContext->name,
+                $summary->name,
+                $userId,
+            ));
         }
 
         return response()->json([

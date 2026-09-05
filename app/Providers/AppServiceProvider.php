@@ -36,6 +36,7 @@ use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MediaStorageBreakdownPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\MenuCatalog\Port\MenuSchedulePort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
@@ -124,6 +125,7 @@ use App\Infrastructure\Media\Quota\DatabaseMediaStorageBreakdown;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\ConfigMalwareScannerAvailability;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
+use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuAudit;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuSchedule;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
@@ -196,6 +198,13 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(BrandRepositoryPort::class, EloquentBrandRepository::class);
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
+        /*
+            Menü denetim izi (FF-154): "dün kebabın fiyatını kim değiştirdi?"
+            Medya izinin (`MediaAuditPort`) menüye taşınmış hâli; yazıcı
+            asla istisna fırlatmaz, çünkü kayıt asıl işlemin şartı değil
+            yardımcısıdır.
+        */
+        $this->app->bind(MenuAuditPort::class, EloquentMenuAudit::class);
         // Çoklu menü ve saat bazlı geçiş (sahibin 2026-09-05 kararı,
         // `docs/109` §7.1): şubenin gününü bölen tek yazma kapısı.
         $this->app->bind(MenuSchedulePort::class, EloquentMenuSchedule::class);
