@@ -18,11 +18,11 @@ msgstr "Menüyü aç"
 
 #: dashboard:dashboard.greeting
 msgid "dashboard.greeting"
-msgstr ""
+msgstr "İyi çalışmalar."
 
 #: dashboard:dashboard.greeting.named
 msgid "dashboard.greeting.named"
-msgstr ""
+msgstr "İyi çalışmalar, {name}."
 
 #: dashboard:dashboard.heading
 msgid "dashboard.heading"
@@ -70,23 +70,23 @@ msgstr "Şimdi ne yapmalı"
 
 #: dashboard:dashboard.quick.hide
 msgid "dashboard.quick.hide"
-msgstr ""
+msgstr "Gizle / tükendi"
 
 #: dashboard:dashboard.quick.photo
 msgid "dashboard.quick.photo"
-msgstr ""
+msgstr "Fotoğraf ekle"
 
 #: dashboard:dashboard.quick.price
 msgid "dashboard.quick.price"
-msgstr ""
+msgstr "Fiyat değiştir"
 
 #: dashboard:dashboard.quick.qr
 msgid "dashboard.quick.qr"
-msgstr ""
+msgstr "Karekod indir"
 
 #: dashboard:dashboard.quick.region
 msgid "dashboard.quick.region"
-msgstr ""
+msgstr "Hızlı işlemler"
 
 #: dashboard:dashboard.setup.brand
 msgid "dashboard.setup.brand"
@@ -178,7 +178,7 @@ msgstr "Adımları göster"
 
 #: dashboard:dashboard.stats.allVisible
 msgid "dashboard.stats.allVisible"
-msgstr ""
+msgstr "Hepsi görünür"
 
 #: dashboard:dashboard.stats.categories
 msgid "dashboard.stats.categories"
@@ -186,7 +186,7 @@ msgstr "Kategori"
 
 #: dashboard:dashboard.stats.hidden
 msgid "dashboard.stats.hidden"
-msgstr ""
+msgstr "{count} gizli"
 
 #: dashboard:dashboard.stats.items
 msgid "dashboard.stats.items"
@@ -198,47 +198,47 @@ msgstr "Görünen ürün"
 
 #: dashboard:dashboard.suggestions.dismiss
 msgid "dashboard.suggestions.dismiss"
-msgstr ""
+msgstr "Bu öneriyi kaldır"
 
 #: dashboard:dashboard.suggestions.heading
 msgid "dashboard.suggestions.heading"
-msgstr ""
+msgstr "Analitiğinizden {count} öneri"
 
 #: dashboard:dashboard.suggestions.heading.plural
 msgid "dashboard.suggestions.heading.plural"
-msgstr ""
+msgstr "Analitiğinizden {count} öneri"
 
 #: dashboard:dashboard.suggestions.region
 msgid "dashboard.suggestions.region"
-msgstr ""
+msgstr "Öneriler"
 
 #: dashboard:dashboard.suggestions.rule
 msgid "dashboard.suggestions.rule"
-msgstr ""
+msgstr "O önerir, siz onaylarsınız. Onayınız olmadan hiçbir şey değişmez."
 
 #: dashboard:dashboard.suggestions.search.cta
 msgid "dashboard.suggestions.search.cta"
-msgstr ""
+msgstr "Menüyü aç"
 
 #: dashboard:dashboard.suggestions.search.title
 msgid "dashboard.suggestions.search.title"
-msgstr ""
+msgstr "“{term}” {count} kez arandı ama menüde yok"
 
 #: dashboard:dashboard.suggestions.search.why
 msgid "dashboard.suggestions.search.why"
-msgstr ""
+msgstr "Sonuçsuz aramalar · son 30 gün"
 
 #: dashboard:dashboard.suggestions.unviewed.cta
 msgid "dashboard.suggestions.unviewed.cta"
-msgstr ""
+msgstr "Ürünü gözden geçir"
 
 #: dashboard:dashboard.suggestions.unviewed.title
 msgid "dashboard.suggestions.unviewed.title"
-msgstr ""
+msgstr "{name} son 30 günde bir kez bile açılmadı"
 
 #: dashboard:dashboard.suggestions.unviewed.why
 msgid "dashboard.suggestions.unviewed.why"
-msgstr ""
+msgstr "Menü mühendisliği · hiç görüntülenmedi"
 
 #: dashboard:dashboard.table.caption
 msgid "dashboard.table.caption"
@@ -258,28 +258,28 @@ msgstr "Menüye bakış"
 
 #: dashboard:dashboard.topViewed.all
 msgid "dashboard.topViewed.all"
-msgstr ""
+msgstr "Tümünü gör"
 
 #: dashboard:dashboard.topViewed.column.item
 msgid "dashboard.topViewed.column.item"
-msgstr ""
+msgstr "Ürün"
 
 #: dashboard:dashboard.topViewed.column.price
 msgid "dashboard.topViewed.column.price"
-msgstr ""
+msgstr "Fiyat"
 
 #: dashboard:dashboard.topViewed.column.rank
 msgid "dashboard.topViewed.column.rank"
-msgstr ""
+msgstr "#"
 
 #: dashboard:dashboard.topViewed.column.viewers
 msgid "dashboard.topViewed.column.viewers"
-msgstr ""
+msgstr "kişi"
 
 #: dashboard:dashboard.topViewed.heading
 msgid "dashboard.topViewed.heading"
-msgstr ""
+msgstr "Son 30 günde en çok bakılanlar"
 
 #: dashboard:dashboard.topViewed.noPrice
 msgid "dashboard.topViewed.noPrice"
-msgstr ""
+msgstr "—"

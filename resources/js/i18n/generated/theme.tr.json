@@ -1,1 +1,10 @@
-{}
+{
+    "density.comfortable": "Ferah",
+    "density.compact": "Sıkı",
+    "density.group_label": "Yoğunluk",
+    "density.standard": "Standart",
+    "theme.dark": "Koyu",
+    "theme.group_label": "Tema",
+    "theme.light": "Açık",
+    "theme.system": "Sistem"
+}

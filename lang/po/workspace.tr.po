@@ -38,31 +38,31 @@ msgstr "Karekoda göre"
 
 #: workspace:workspace.analytics.compare.basis.previousPeriod
 msgid "workspace.analytics.compare.basis.previousPeriod"
-msgstr ""
+msgstr "önceki dönem"
 
 #: workspace:workspace.analytics.compare.basis.sameWeekdayLastWeek
 msgid "workspace.analytics.compare.basis.sameWeekdayLastWeek"
-msgstr ""
+msgstr "geçen haftanın aynı günü"
 
 #: workspace:workspace.analytics.compare.down
 msgid "workspace.analytics.compare.down"
-msgstr ""
+msgstr "{basis} ile karşılaştırıldığında %{percent} azaldı"
 
 #: workspace:workspace.analytics.compare.flat
 msgid "workspace.analytics.compare.flat"
-msgstr ""
+msgstr "{basis} ile aynı düzeyde"
 
 #: workspace:workspace.analytics.compare.noBaseline
 msgid "workspace.analytics.compare.noBaseline"
-msgstr ""
+msgstr "Karşılaştırılacak bir şey yok: {basis} için hiç okutma yok"
 
 #: workspace:workspace.analytics.compare.up
 msgid "workspace.analytics.compare.up"
-msgstr ""
+msgstr "{basis} ile karşılaştırıldığında %{percent} arttı"
 
 #: workspace:workspace.analytics.description
 msgid "workspace.analytics.description"
-msgstr ""
+msgstr "Misafirlerin neye baktığı, neyi arayıp bulamadığı."
 
 #: workspace:workspace.analytics.empty.noMenu.action
 msgid "workspace.analytics.empty.noMenu.action"
@@ -122,27 +122,27 @@ msgstr "Analitik"
 
 #: workspace:workspace.analytics.highlight.action.addTerm
 msgid "workspace.analytics.highlight.action.addTerm"
-msgstr ""
+msgstr "Menüye “{term}” ekle"
 
 #: workspace:workspace.analytics.highlight.action.editMenu
 msgid "workspace.analytics.highlight.action.editMenu"
-msgstr ""
+msgstr "Menüyü gözden geçir"
 
 #: workspace:workspace.analytics.highlight.busiest
 msgid "workspace.analytics.highlight.busiest"
-msgstr ""
+msgstr "En yoğun zaman {day} saat {hour} civarıydı."
 
 #: workspace:workspace.analytics.highlight.missing
 msgid "workspace.analytics.highlight.missing"
-msgstr ""
+msgstr "“{term}” {count} kez arandı ve hiçbir sonuç dönmedi — menünüzde bir eksik olabilir."
 
 #: workspace:workspace.analytics.highlight.neverViewed
 msgid "workspace.analytics.highlight.neverViewed"
-msgstr ""
+msgstr "Bu aralıkta {name} ürününe bir kez bile bakılmadı."
 
 #: workspace:workspace.analytics.highlight.title
 msgid "workspace.analytics.highlight.title"
-msgstr ""
+msgstr "Bu aralıkta ne oldu?"
 
 #: workspace:workspace.analytics.menuEngineering.error
 msgid "workspace.analytics.menuEngineering.error"
@@ -178,11 +178,11 @@ msgstr "Arandı ama bulunamadı"
 
 #: workspace:workspace.analytics.menuEngineering.searches.add
 msgid "workspace.analytics.menuEngineering.searches.add"
-msgstr ""
+msgstr "Ekle"
 
 #: workspace:workspace.analytics.menuEngineering.searches.addFor
 msgid "workspace.analytics.menuEngineering.searches.addFor"
-msgstr ""
+msgstr "Menüye “{term}” ekle"
 
 #: workspace:workspace.analytics.menuEngineering.searches.none
 msgid "workspace.analytics.menuEngineering.searches.none"
@@ -214,11 +214,11 @@ msgstr "Karekod okutma"
 
 #: workspace:workspace.analytics.metric.searches
 msgid "workspace.analytics.metric.searches"
-msgstr ""
+msgstr "Aramalar"
 
 #: workspace:workspace.analytics.metric.searches.support
 msgid "workspace.analytics.metric.searches.support"
-msgstr ""
+msgstr "{count} tanesi sonuç bulamadı"
 
 #: workspace:workspace.analytics.metric.uniqueVisitors
 msgid "workspace.analytics.metric.uniqueVisitors"
@@ -282,107 +282,107 @@ msgstr "Planınızda yok"
 
 #: workspace:workspace.analytics.timeSeries.error
 msgid "workspace.analytics.timeSeries.error"
-msgstr ""
+msgstr "Grafikler yüklenemedi."
 
 #: workspace:workspace.analytics.timeSeries.heat.column
 msgid "workspace.analytics.timeSeries.heat.column"
-msgstr ""
+msgstr "Gün"
 
 #: workspace:workspace.analytics.timeSeries.heat.description
 msgid "workspace.analytics.timeSeries.heat.description"
-msgstr ""
+msgstr "Güne ve saate göre okutmalar ({timezone})"
 
 #: workspace:workspace.analytics.timeSeries.heat.title
 msgid "workspace.analytics.timeSeries.heat.title"
-msgstr ""
+msgstr "En yoğun saatler"
 
 #: workspace:workspace.analytics.timeSeries.heat.withheld
 msgid "workspace.analytics.timeSeries.heat.withheld"
-msgstr ""
+msgstr "gizli"
 
 #: workspace:workspace.analytics.timeSeries.heat.withheldNote
 msgid "workspace.analytics.timeSeries.heat.withheldNote"
-msgstr ""
+msgstr "{count} saat dilimi gösterilmiyor: bu dilimlerde tek bir ziyaretçi tanınabilir olurdu."
 
 #: workspace:workspace.analytics.timeSeries.loading
 msgid "workspace.analytics.timeSeries.loading"
-msgstr ""
+msgstr "Grafikler yükleniyor…"
 
 #: workspace:workspace.analytics.timeSeries.menuOpens
 msgid "workspace.analytics.timeSeries.menuOpens"
-msgstr ""
+msgstr "Menü açılışları"
 
 #: workspace:workspace.analytics.timeSeries.region
 msgid "workspace.analytics.timeSeries.region"
-msgstr ""
+msgstr "Zaman içindeki hareket"
 
 #: workspace:workspace.analytics.timeSeries.scans
 msgid "workspace.analytics.timeSeries.scans"
-msgstr ""
+msgstr "Okutmalar"
 
 #: workspace:workspace.analytics.timeSeries.share.description
 msgid "workspace.analytics.timeSeries.share.description"
-msgstr ""
+msgstr "Şube başına okutma"
 
 #: workspace:workspace.analytics.timeSeries.share.scope
 msgid "workspace.analytics.timeSeries.share.scope"
-msgstr ""
+msgstr "Yalnızca seçili şube değil, markanızın tamamı."
 
 #: workspace:workspace.analytics.timeSeries.share.title
 msgid "workspace.analytics.timeSeries.share.title"
-msgstr ""
+msgstr "Şubeye göre pay"
 
 #: workspace:workspace.analytics.timeSeries.tables.title
 msgid "workspace.analytics.timeSeries.tables.title"
-msgstr ""
+msgstr "En yoğun masalar"
 
 #: workspace:workspace.analytics.timeSeries.tables.value
 msgid "workspace.analytics.timeSeries.tables.value"
-msgstr ""
+msgstr "okutma"
 
 #: workspace:workspace.analytics.timeSeries.thin
 msgid "workspace.analytics.timeSeries.thin"
-msgstr ""
+msgstr "Hareketinizi grafiğe dökmek için henüz yeterli ziyaretçi yok: {threshold} ziyaretçiden {observed} tanesi geldi. Menüyü yayında tutun ve sonra tekrar bakın."
 
 #: workspace:workspace.analytics.timeSeries.trend.column
 msgid "workspace.analytics.timeSeries.trend.column"
-msgstr ""
+msgstr "Gün"
 
 #: workspace:workspace.analytics.timeSeries.trend.description
 msgid "workspace.analytics.timeSeries.trend.description"
-msgstr ""
+msgstr "Güne göre okutma ve menü açılışı"
 
 #: workspace:workspace.analytics.timeSeries.trend.title
 msgid "workspace.analytics.timeSeries.trend.title"
-msgstr ""
+msgstr "Okutmalar ve menü açılışları"
 
 #: workspace:workspace.analytics.weekday.1
 msgid "workspace.analytics.weekday.1"
-msgstr ""
+msgstr "Pzt"
 
 #: workspace:workspace.analytics.weekday.2
 msgid "workspace.analytics.weekday.2"
-msgstr ""
+msgstr "Sal"
 
 #: workspace:workspace.analytics.weekday.3
 msgid "workspace.analytics.weekday.3"
-msgstr ""
+msgstr "Çar"
 
 #: workspace:workspace.analytics.weekday.4
 msgid "workspace.analytics.weekday.4"
-msgstr ""
+msgstr "Per"
 
 #: workspace:workspace.analytics.weekday.5
 msgid "workspace.analytics.weekday.5"
-msgstr ""
+msgstr "Cum"
 
 #: workspace:workspace.analytics.weekday.6
 msgid "workspace.analytics.weekday.6"
-msgstr ""
+msgstr "Cmt"
 
 #: workspace:workspace.analytics.weekday.7
 msgid "workspace.analytics.weekday.7"
-msgstr ""
+msgstr "Paz"
 
 #: workspace:workspace.billing.changePlan.button
 msgid "workspace.billing.changePlan.button"
@@ -878,7 +878,7 @@ msgstr "Adres"
 
 #: workspace:workspace.brandLocations.locations.section.hours
 msgid "workspace.brandLocations.locations.section.hours"
-msgstr ""
+msgstr "Çalışma saatleri"
 
 #: workspace:workspace.brandLocations.locations.section.identity
 msgid "workspace.brandLocations.locations.section.identity"
@@ -1102,59 +1102,59 @@ msgstr "Şubenizi oluşturun"
 
 #: workspace:workspace.location.hours.closed
 msgid "workspace.location.hours.closed"
-msgstr ""
+msgstr "Kapalı"
 
 #: workspace:workspace.location.hours.closes
 msgid "workspace.location.hours.closes"
-msgstr ""
+msgstr "Kapanış"
 
 #: workspace:workspace.location.hours.day.1
 msgid "workspace.location.hours.day.1"
-msgstr ""
+msgstr "Pazartesi"
 
 #: workspace:workspace.location.hours.day.2
 msgid "workspace.location.hours.day.2"
-msgstr ""
+msgstr "Salı"
 
 #: workspace:workspace.location.hours.day.3
 msgid "workspace.location.hours.day.3"
-msgstr ""
+msgstr "Çarşamba"
 
 #: workspace:workspace.location.hours.day.4
 msgid "workspace.location.hours.day.4"
-msgstr ""
+msgstr "Perşembe"
 
 #: workspace:workspace.location.hours.day.5
 msgid "workspace.location.hours.day.5"
-msgstr ""
+msgstr "Cuma"
 
 #: workspace:workspace.location.hours.day.6
 msgid "workspace.location.hours.day.6"
-msgstr ""
+msgstr "Cumartesi"
 
 #: workspace:workspace.location.hours.day.7
 msgid "workspace.location.hours.day.7"
-msgstr ""
+msgstr "Pazar"
 
 #: workspace:workspace.location.hours.empty
 msgid "workspace.location.hours.empty"
-msgstr ""
+msgstr "Henüz çalışma saati yok. Siz ekleyene kadar şube kartı o satırı göstermez."
 
 #: workspace:workspace.location.hours.enable
 msgid "workspace.location.hours.enable"
-msgstr ""
+msgstr "Bu şubenin çalışma saatleri var"
 
 #: workspace:workspace.location.hours.help
 msgid "workspace.location.hours.help"
-msgstr ""
+msgstr "Saatler bu şubenin kendi saat dilimini kullanır. Açılıştan erken bir kapanış saati ertesi günü anlatır — 18:00 ile 02:00, gece ikide kapanır demektir."
 
 #: workspace:workspace.location.hours.nextDay
 msgid "workspace.location.hours.nextDay"
-msgstr ""
+msgstr "ertesi gün"
 
 #: workspace:workspace.location.hours.opens
 msgid "workspace.location.hours.opens"
-msgstr ""
+msgstr "Açılış"
 
 #: workspace:workspace.location.optional
 msgid "workspace.location.optional"
@@ -1190,47 +1190,47 @@ msgstr "Şube ekle"
 
 #: workspace:workspace.locations.card.edit.action
 msgid "workspace.locations.card.edit.action"
-msgstr ""
+msgstr "{name} bilgilerini düzenle"
 
 #: workspace:workspace.locations.card.edit.label
 msgid "workspace.locations.card.edit.label"
-msgstr ""
+msgstr "Düzenle"
 
 #: workspace:workspace.locations.card.hours.closedAllWeek
 msgid "workspace.locations.card.hours.closedAllWeek"
-msgstr ""
+msgstr "Tüm hafta kapalı"
 
 #: workspace:workspace.locations.card.hours.closedToday
 msgid "workspace.locations.card.hours.closedToday"
-msgstr ""
+msgstr "Bugün kapalı"
 
 #: workspace:workspace.locations.card.hours.today
 msgid "workspace.locations.card.hours.today"
-msgstr ""
+msgstr "Bugün {range}"
 
 #: workspace:workspace.locations.card.noAddress
 msgid "workspace.locations.card.noAddress"
-msgstr ""
+msgstr "Henüz adres yok"
 
 #: workspace:workspace.locations.card.scansPerWeek
 msgid "workspace.locations.card.scansPerWeek"
-msgstr ""
+msgstr "haftada {count} okutma"
 
 #: workspace:workspace.locations.card.status.setup
 msgid "workspace.locations.card.status.setup"
-msgstr ""
+msgstr "Kurulumda"
 
 #: workspace:workspace.locations.card.tables
 msgid "workspace.locations.card.tables"
-msgstr ""
+msgstr "{count} masa"
 
 #: workspace:workspace.locations.card.tables.action
 msgid "workspace.locations.card.tables.action"
-msgstr ""
+msgstr "{name} masaları"
 
 #: workspace:workspace.locations.card.tables.label
 msgid "workspace.locations.card.tables.label"
-msgstr ""
+msgstr "Masalar"
 
 #: workspace:workspace.locations.empty
 msgid "workspace.locations.empty"
@@ -1274,7 +1274,7 @@ msgstr "Menünüzü sunan fiziksel şubeleri ekleyin ve düzenleyin — şehre g
 
 #: workspace:workspace.locations.region
 msgid "workspace.locations.region"
-msgstr ""
+msgstr "Şubeler"
 
 #: workspace:workspace.media.audit.action.downloaded
 msgid "workspace.media.audit.action.downloaded"
@@ -1322,915 +1322,915 @@ msgstr "Her yükleme, ad değişikliği, silme ve geri alma buraya yazılır. Ka
 
 #: workspace:workspace.media.bulk.action.convert
 msgid "workspace.media.bulk.action.convert"
-msgstr ""
+msgstr "Biçim dönüştür"
 
 #: workspace:workspace.media.bulk.action.convert.description
 msgid "workspace.media.bulk.action.convert.description"
-msgstr ""
+msgstr "AVIF, WebP ya da JPEG üretir. Dönüşen dosya yeni bir sürüm olur; asıl dosya saklanır."
 
 #: workspace:workspace.media.bulk.action.irreversible
 msgid "workspace.media.bulk.action.irreversible"
-msgstr ""
+msgstr "Geri alınamaz"
 
 #: workspace:workspace.media.bulk.action.locked
 msgid "workspace.media.bulk.action.locked"
-msgstr ""
+msgstr "“{permission}” yetkisi gerekir — bir çalışma alanı yöneticisine sorun."
 
 #: workspace:workspace.media.bulk.action.move
 msgid "workspace.media.bulk.action.move"
-msgstr ""
+msgstr "Klasöre taşı"
 
 #: workspace:workspace.media.bulk.action.move.description
 msgid "workspace.media.bulk.action.move.description"
-msgstr ""
+msgstr "Dosyaları başka bir klasöre taşır. Adresler değişmez ve yeni sürüm oluşmaz."
 
 #: workspace:workspace.media.bulk.action.next
 msgid "workspace.media.bulk.action.next"
-msgstr ""
+msgstr "“{action}” işlemini ayarla"
 
 #: workspace:workspace.media.bulk.action.none
 msgid "workspace.media.bulk.action.none"
-msgstr ""
+msgstr "Bir işlem seçin"
 
 #: workspace:workspace.media.bulk.action.optimize
 msgid "workspace.media.bulk.action.optimize"
-msgstr ""
+msgstr "Türevleri yeniden üret"
 
 #: workspace:workspace.media.bulk.action.optimize.description
 msgid "workspace.media.bulk.action.optimize.description"
-msgstr ""
+msgstr "Bugünkü kurallarla her boyutu asıl dosyadan yeniden üretir. Asıl dosyaya dokunulmaz ve her dosya yeni bir sürüm kazanır."
 
 #: workspace:workspace.media.bulk.action.purge
 msgid "workspace.media.bulk.action.purge"
-msgstr ""
+msgstr "Kalıcı olarak sil"
 
 #: workspace:workspace.media.bulk.action.purge.description
 msgid "workspace.media.bulk.action.purge.description"
-msgstr ""
+msgstr "Çöpteki dosyalar tüm sürümleriyle birlikte silinir. Onları yalnızca gecelik yedek geri getirebilir."
 
 #: workspace:workspace.media.bulk.action.reversible
 msgid "workspace.media.bulk.action.reversible"
-msgstr ""
+msgstr "Geri alınabilir"
 
 #: workspace:workspace.media.bulk.action.trash
 msgid "workspace.media.bulk.action.trash"
-msgstr ""
+msgstr "Çöpe taşı"
 
 #: workspace:workspace.media.bulk.action.trash.description
 msgid "workspace.media.bulk.action.trash.description"
-msgstr ""
+msgstr "Çöpte {days} gün bekler, sonra kalıcı olarak silinir. Bu süre içinde her an geri alınabilir."
 
 #: workspace:workspace.media.bulk.action.unlocked
 msgid "workspace.media.bulk.action.unlocked"
-msgstr ""
+msgstr "Bunun için yetkiniz var"
 
 #: workspace:workspace.media.bulk.audit.heading
 msgid "workspace.media.bulk.audit.heading"
-msgstr ""
+msgstr "Denetim kaydı"
 
 #: workspace:workspace.media.bulk.audit.key
 msgid "workspace.media.bulk.audit.key"
-msgstr ""
+msgstr "İşlem anahtarı"
 
 #: workspace:workspace.media.bulk.audit.note
 msgid "workspace.media.bulk.audit.note"
-msgstr ""
+msgstr "Bu kayıt silinemez ve değiştirilemez; aynı işlem anahtarı iki kez çalışmaz."
 
 #: workspace:workspace.media.bulk.back
 msgid "workspace.media.bulk.back"
-msgstr ""
+msgstr "Geri"
 
 #: workspace:workspace.media.bulk.config.folder
 msgid "workspace.media.bulk.config.folder"
-msgstr ""
+msgstr "Hedef klasör"
 
 #: workspace:workspace.media.bulk.config.folder.help
 msgid "workspace.media.bulk.config.folder.help"
-msgstr ""
+msgstr "Hedefte zaten bulunan dosya atlanır."
 
 #: workspace:workspace.media.bulk.config.folder.root
 msgid "workspace.media.bulk.config.folder.root"
-msgstr ""
+msgstr "Klasör yok"
 
 #: workspace:workspace.media.bulk.config.format
 msgid "workspace.media.bulk.config.format"
-msgstr ""
+msgstr "Hedef biçim"
 
 #: workspace:workspace.media.bulk.config.format.help
 msgid "workspace.media.bulk.config.format.help"
-msgstr ""
+msgstr "Zaten bu biçimde olan dosya yeniden kodlanmaz, atlanır."
 
 #: workspace:workspace.media.bulk.config.heading
 msgid "workspace.media.bulk.config.heading"
-msgstr ""
+msgstr "“{action}” ayarları"
 
 #: workspace:workspace.media.bulk.config.next
 msgid "workspace.media.bulk.config.next"
-msgstr ""
+msgstr "Etkiyi göster"
 
 #: workspace:workspace.media.bulk.config.none
 msgid "workspace.media.bulk.config.none"
-msgstr ""
+msgstr "Bu işlemin ayarı yok. Ne yapacağını görmek için devam edin."
 
 #: workspace:workspace.media.bulk.confirm.body.large
 msgid "workspace.media.bulk.confirm.body.large"
-msgstr ""
+msgstr "{count} dosya değişecek. Yüzden fazla dosyaya dokunan bir iş için yazılı onay istenir."
 
 #: workspace:workspace.media.bulk.confirm.body.purge
 msgid "workspace.media.bulk.confirm.body.purge"
-msgstr ""
+msgstr "{count} dosya ve bunların bütün sürümleri silinecek. Çöpe gitmezler; onları yalnızca gecelik yedek geri getirebilir."
 
 #: workspace:workspace.media.bulk.confirm.heading.large
 msgid "workspace.media.bulk.confirm.heading.large"
-msgstr ""
+msgstr "Geniş kapsam"
 
 #: workspace:workspace.media.bulk.confirm.heading.purge
 msgid "workspace.media.bulk.confirm.heading.purge"
-msgstr ""
+msgstr "Bu geri alınamaz"
 
 #: workspace:workspace.media.bulk.confirm.label
 msgid "workspace.media.bulk.confirm.label"
-msgstr ""
+msgstr "Onaylamak için {word} yazın"
 
 #: workspace:workspace.media.bulk.confirm.mismatch
 msgid "workspace.media.bulk.confirm.mismatch"
-msgstr ""
+msgstr "Kelime henüz eşleşmedi, bu yüzden iş kapalı duruyor."
 
 #: workspace:workspace.media.bulk.failed
 msgid "workspace.media.bulk.failed"
-msgstr ""
+msgstr "Etki hesaplanamadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.bulk.failure.convert
 msgid "workspace.media.bulk.failure.convert"
-msgstr ""
+msgstr "Dönüştürme başarısız oldu; dosya değişmedi."
 
 #: workspace:workspace.media.bulk.failure.move
 msgid "workspace.media.bulk.failure.move"
-msgstr ""
+msgstr "Taşıma gerçekleşmedi; dosya yerinde kaldı."
 
 #: workspace:workspace.media.bulk.failure.reprocess
 msgid "workspace.media.bulk.failure.reprocess"
-msgstr ""
+msgstr "Yeniden üretim başarısız oldu; dosya değişmedi."
 
 #: workspace:workspace.media.bulk.failure.unknown
 msgid "workspace.media.bulk.failure.unknown"
-msgstr ""
+msgstr "Bu dosya işlenemedi ve olduğu gibi bırakıldı."
 
 #: workspace:workspace.media.bulk.group.improve
 msgid "workspace.media.bulk.group.improve"
-msgstr ""
+msgstr "Dosyayı iyileştir"
 
 #: workspace:workspace.media.bulk.group.organize
 msgid "workspace.media.bulk.group.organize"
-msgstr ""
+msgstr "Düzenle ve taşı"
 
 #: workspace:workspace.media.bulk.group.remove
 msgid "workspace.media.bulk.group.remove"
-msgstr ""
+msgstr "Kaldır"
 
 #: workspace:workspace.media.bulk.impact.heading
 msgid "workspace.media.bulk.impact.heading"
-msgstr ""
+msgstr "Sonuç ne olacak?"
 
 #: workspace:workspace.media.bulk.impact.newVersion
 msgid "workspace.media.bulk.impact.newVersion"
-msgstr ""
+msgstr "Yeni sürüm açılacak"
 
 #: workspace:workspace.media.bulk.impact.newVersion.value
 msgid "workspace.media.bulk.impact.newVersion.value"
-msgstr ""
+msgstr "{count} dosya"
 
 #: workspace:workspace.media.bulk.impact.originals
 msgid "workspace.media.bulk.impact.originals"
-msgstr ""
+msgstr "Asıl dosyalar"
 
 #: workspace:workspace.media.bulk.impact.originals.kept
 msgid "workspace.media.bulk.impact.originals.kept"
-msgstr ""
+msgstr "Değişmedi"
 
 #: workspace:workspace.media.bulk.impact.storage
 msgid "workspace.media.bulk.impact.storage"
-msgstr ""
+msgstr "Kullanılan alan"
 
 #: workspace:workspace.media.bulk.impact.storage.freed
 msgid "workspace.media.bulk.impact.storage.freed"
-msgstr ""
+msgstr "şimdi {used}, {freed} boşalacak"
 
 #: workspace:workspace.media.bulk.impact.storage.unknown
 msgid "workspace.media.bulk.impact.storage.unknown"
-msgstr ""
+msgstr "Şimdi {used}. Yeni sürümlerin ne kadar yer tutacağı ancak üretildikten sonra bilinir, bu yüzden burada tahmin gösterilmiyor."
 
 #: workspace:workspace.media.bulk.impact.undo
 msgid "workspace.media.bulk.impact.undo"
-msgstr ""
+msgstr "Geri alma süresi"
 
 #: workspace:workspace.media.bulk.impact.undo.days
 msgid "workspace.media.bulk.impact.undo.days"
-msgstr ""
+msgstr "{days} gün"
 
 #: workspace:workspace.media.bulk.impact.undo.none
 msgid "workspace.media.bulk.impact.undo.none"
-msgstr ""
+msgstr "Yok"
 
 #: workspace:workspace.media.bulk.lead
 msgid "workspace.media.bulk.lead"
-msgstr ""
+msgstr "Tek bir işlemi birçok dosyaya birden uygulayın — hiçbir şeye dokunulmadan önce ne olacağını tam olarak görün."
 
 #: workspace:workspace.media.bulk.loading
 msgid "workspace.media.bulk.loading"
-msgstr ""
+msgstr "Bunun ne yapacağı hesaplanıyor…"
 
 #: workspace:workspace.media.bulk.preview.apply
 msgid "workspace.media.bulk.preview.apply"
-msgstr ""
+msgstr "Uygulanacak"
 
 #: workspace:workspace.media.bulk.preview.heading
 msgid "workspace.media.bulk.preview.heading"
-msgstr ""
+msgstr "Prova sonucu"
 
 #: workspace:workspace.media.bulk.preview.lead
 msgid "workspace.media.bulk.preview.lead"
-msgstr ""
+msgstr "Hiçbir dosyaya dokunulmadı. Sunucu her dosyayı tek tek kontrol etti; aşağıdaki sayılar gerçek."
 
 #: workspace:workspace.media.bulk.preview.remaining
 msgid "workspace.media.bulk.preview.remaining"
-msgstr ""
+msgstr "Sonraki çalıştırmaya kalan"
 
 #: workspace:workspace.media.bulk.preview.remaining.note
 msgid "workspace.media.bulk.preview.remaining.note"
-msgstr ""
+msgstr "Bir çalıştırma {limit} dosya işler. Sonrasında düğmeye yeniden basın, kaldığı yerden devam eder."
 
 #: workspace:workspace.media.bulk.preview.skip
 msgid "workspace.media.bulk.preview.skip"
-msgstr ""
+msgstr "Atlanacak"
 
 #: workspace:workspace.media.bulk.region
 msgid "workspace.media.bulk.region"
-msgstr ""
+msgstr "Toplu işlemler"
 
 #: workspace:workspace.media.bulk.result.csv
 msgid "workspace.media.bulk.result.csv"
-msgstr ""
+msgstr "CSV indir"
 
 #: workspace:workspace.media.bulk.result.csv.header.id
 msgid "workspace.media.bulk.result.csv.header.id"
-msgstr ""
+msgstr "kimlik"
 
 #: workspace:workspace.media.bulk.result.csv.header.name
 msgid "workspace.media.bulk.result.csv.header.name"
-msgstr ""
+msgstr "dosya"
 
 #: workspace:workspace.media.bulk.result.csv.header.reason
 msgid "workspace.media.bulk.result.csv.header.reason"
-msgstr ""
+msgstr "gerekçe"
 
 #: workspace:workspace.media.bulk.result.csv.header.status
 msgid "workspace.media.bulk.result.csv.header.status"
-msgstr ""
+msgstr "durum"
 
 #: workspace:workspace.media.bulk.result.filter.all
 msgid "workspace.media.bulk.result.filter.all"
-msgstr ""
+msgstr "Hepsi"
 
 #: workspace:workspace.media.bulk.result.filter.error
 msgid "workspace.media.bulk.result.filter.error"
-msgstr ""
+msgstr "Başarısız"
 
 #: workspace:workspace.media.bulk.result.filter.ok
 msgid "workspace.media.bulk.result.filter.ok"
-msgstr ""
+msgstr "Uygulandı"
 
 #: workspace:workspace.media.bulk.result.filter.skip
 msgid "workspace.media.bulk.result.filter.skip"
-msgstr ""
+msgstr "Atlandı"
 
 #: workspace:workspace.media.bulk.result.heading
 msgid "workspace.media.bulk.result.heading"
-msgstr ""
+msgstr "Dosya dosya sonuç"
 
 #: workspace:workspace.media.bulk.result.replayed
 msgid "workspace.media.bulk.result.replayed"
-msgstr ""
+msgstr "Bu iş aynı anahtarla daha önce çalışmıştı, bu yüzden ikinci kez çalıştırılmadı."
 
 #: workspace:workspace.media.bulk.result.restart
 msgid "workspace.media.bulk.result.restart"
-msgstr ""
+msgstr "Yeni toplu işlem"
 
 #: workspace:workspace.media.bulk.result.retry
 msgid "workspace.media.bulk.result.retry"
-msgstr ""
+msgstr "Yalnızca başarısız {count} dosyayı tekrar dene"
 
 #: workspace:workspace.media.bulk.result.summary
 msgid "workspace.media.bulk.result.summary"
-msgstr ""
+msgstr "{applied} uygulandı, {skipped} atlandı, {failed} başarısız."
 
 #: workspace:workspace.media.bulk.run.failed
 msgid "workspace.media.bulk.run.failed"
-msgstr ""
+msgstr "İş başlatılamadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.bulk.run.running
 msgid "workspace.media.bulk.run.running"
-msgstr ""
+msgstr "Çalışıyor…"
 
 #: workspace:workspace.media.bulk.run.start
 msgid "workspace.media.bulk.run.start"
-msgstr ""
+msgstr "Başlat · {count} dosya"
 
 #: workspace:workspace.media.bulk.run.start.destructive
 msgid "workspace.media.bulk.run.start.destructive"
-msgstr ""
+msgstr "Sil · {count} dosya"
 
 #: workspace:workspace.media.bulk.run.start.empty
 msgid "workspace.media.bulk.run.start.empty"
-msgstr ""
+msgstr "Uygulanacak dosya yok"
 
 #: workspace:workspace.media.bulk.scope.empty
 msgid "workspace.media.bulk.scope.empty"
-msgstr ""
+msgstr "Bu kapsamda henüz dosya yok."
 
 #: workspace:workspace.media.bulk.scope.files
 msgid "workspace.media.bulk.scope.files"
-msgstr ""
+msgstr "{count} dosya"
 
 #: workspace:workspace.media.bulk.scope.folder
 msgid "workspace.media.bulk.scope.folder"
-msgstr ""
+msgstr "Bu klasör ve altındaki her şey"
 
 #: workspace:workspace.media.bulk.scope.folder.description
 msgid "workspace.media.bulk.scope.folder.description"
-msgstr ""
+msgstr "Soldan seçilen klasör ve onun alt klasörleri."
 
 #: workspace:workspace.media.bulk.scope.folder.none
 msgid "workspace.media.bulk.scope.folder.none"
-msgstr ""
+msgstr "Hiçbir klasörde olmayan dosyalar."
 
 #: workspace:workspace.media.bulk.scope.heading
 msgid "workspace.media.bulk.scope.heading"
-msgstr ""
+msgstr "Hangi dosyalar?"
 
 #: workspace:workspace.media.bulk.scope.next
 msgid "workspace.media.bulk.scope.next"
-msgstr ""
+msgstr "Bir işlem seçin"
 
 #: workspace:workspace.media.bulk.scope.selected
 msgid "workspace.media.bulk.scope.selected"
-msgstr ""
+msgstr "Seçtiklerim"
 
 #: workspace:workspace.media.bulk.scope.selected.description
 msgid "workspace.media.bulk.scope.selected.description"
-msgstr ""
+msgstr "Aşağıdaki dosyaları işaretleyin. Bu işe yalnızca işaretledikleriniz girer."
 
 #: workspace:workspace.media.bulk.scope.snapshot
 msgid "workspace.media.bulk.scope.snapshot"
-msgstr ""
+msgstr "Liste, iş başladığı anda dondurulur. Siz çalışırken biri yeni dosya yüklerse o dosya bu işe girmez — yoksa iş hiç bitmeyebilir."
 
 #: workspace:workspace.media.bulk.scope.summary
 msgid "workspace.media.bulk.scope.summary"
-msgstr ""
+msgstr "Kapsam özeti"
 
 #: workspace:workspace.media.bulk.scope.summary.batch
 msgid "workspace.media.bulk.scope.summary.batch"
-msgstr ""
+msgstr "Çalıştırma başına işlenen"
 
 #: workspace:workspace.media.bulk.scope.summary.count
 msgid "workspace.media.bulk.scope.summary.count"
-msgstr ""
+msgstr "Dosya"
 
 #: workspace:workspace.media.bulk.scope.summary.size
 msgid "workspace.media.bulk.scope.summary.size"
-msgstr ""
+msgstr "Toplam boyut"
 
 #: workspace:workspace.media.bulk.scope.workspace
 msgid "workspace.media.bulk.scope.workspace"
-msgstr ""
+msgstr "Kütüphanedeki her şey"
 
 #: workspace:workspace.media.bulk.scope.workspace.description
 msgid "workspace.media.bulk.scope.workspace.description"
-msgstr ""
+msgstr "Yalnızca bu sayfadakiler değil, bu çalışma alanındaki her dosya."
 
 #: workspace:workspace.media.bulk.skip.alreadyDone
 msgid "workspace.media.bulk.skip.alreadyDone"
-msgstr ""
+msgstr "Zaten bu durumda — yapılacak bir şey yok."
 
 #: workspace:workspace.media.bulk.skip.files
 msgid "workspace.media.bulk.skip.files"
-msgstr ""
+msgstr "Atlanacak dosyalar"
 
 #: workspace:workspace.media.bulk.skip.heading
 msgid "workspace.media.bulk.skip.heading"
-msgstr ""
+msgstr "Bunlar neden atlanıyor?"
 
 #: workspace:workspace.media.bulk.skip.hide
 msgid "workspace.media.bulk.skip.hide"
-msgstr ""
+msgstr "Atlanan dosyaları gizle"
 
 #: workspace:workspace.media.bulk.skip.legalHold
 msgid "workspace.media.bulk.skip.legalHold"
-msgstr ""
+msgstr "Yasal saklama altında. Saklama kalkana kadar silme ve taşıma kilitli."
 
 #: workspace:workspace.media.bulk.skip.notInTrash
 msgid "workspace.media.bulk.skip.notInTrash"
-msgstr ""
+msgstr "Çöpte değil. Kalıcı silme yalnızca çöpteki dosyalarda çalışır."
 
 #: workspace:workspace.media.bulk.skip.publishedUsage
 msgid "workspace.media.bulk.skip.publishedUsage"
-msgstr ""
+msgstr "Yayındaki bir menüde kullanılıyor. Silmek, misafirin baktığı yerde boşluk bırakır."
 
 #: workspace:workspace.media.bulk.skip.quarantine
 msgid "workspace.media.bulk.skip.quarantine"
-msgstr ""
+msgstr "Güvenlik taramasından henüz geçmedi — bu dosyalara hiçbir şey uygulanmaz."
 
 #: workspace:workspace.media.bulk.skip.show
 msgid "workspace.media.bulk.skip.show"
-msgstr ""
+msgstr "Atlanan dosyaları listele"
 
 #: workspace:workspace.media.bulk.skip.unknown
 msgid "workspace.media.bulk.skip.unknown"
-msgstr ""
+msgstr "Sunucu, bu sürümün henüz tanımadığı bir gerekçe bildirdi. Bu dosyalara hiçbir şey uygulanmadı."
 
 #: workspace:workspace.media.bulk.skip.unsupportedFormat
 msgid "workspace.media.bulk.skip.unsupportedFormat"
-msgstr ""
+msgstr "Bu işlem bu dosya türü için geçerli değil. PDF ve SVG dosyaları yeniden üretilmez."
 
 #: workspace:workspace.media.bulk.step.action
 msgid "workspace.media.bulk.step.action"
-msgstr ""
+msgstr "İşlem"
 
 #: workspace:workspace.media.bulk.step.config
 msgid "workspace.media.bulk.step.config"
-msgstr ""
+msgstr "Ayarlar"
 
 #: workspace:workspace.media.bulk.step.preview
 msgid "workspace.media.bulk.step.preview"
-msgstr ""
+msgstr "Etki"
 
 #: workspace:workspace.media.bulk.step.run
 msgid "workspace.media.bulk.step.run"
-msgstr ""
+msgstr "Sonuç"
 
 #: workspace:workspace.media.bulk.step.scope
 msgid "workspace.media.bulk.step.scope"
-msgstr ""
+msgstr "Kapsam"
 
 #: workspace:workspace.media.bulk.tab
 msgid "workspace.media.bulk.tab"
-msgstr ""
+msgstr "Toplu işlemler"
 
 #: workspace:workspace.media.convert.clearAll
 msgid "workspace.media.convert.clearAll"
-msgstr ""
+msgstr "Temizle"
 
 #: workspace:workspace.media.convert.done
 msgid "workspace.media.convert.done"
-msgstr ""
+msgstr "{count} dosya yeni bir sürüm olarak dönüştürüldü. Aslı duruyor."
 
 #: workspace:workspace.media.convert.failed
 msgid "workspace.media.convert.failed"
-msgstr ""
+msgstr "Dönüştürme hedefleri yüklenemedi."
 
 #: workspace:workspace.media.convert.lead
 msgid "workspace.media.convert.lead"
-msgstr ""
+msgstr "Eski biçimleri modern biçimlere çevirin. Asıl dosya saklanır; dönüşen dosya yeni bir sürüm olur."
 
 #: workspace:workspace.media.convert.limitation.encoderMissing
 msgid "workspace.media.convert.limitation.encoderMissing"
-msgstr ""
+msgstr "Burada mümkün değil: bu sunucu o biçimi kodlayamıyor."
 
 #: workspace:workspace.media.convert.limitation.noVideoPipeline
 msgid "workspace.media.convert.limitation.noVideoPipeline"
-msgstr ""
+msgstr "Burada mümkün değil: video dönüştürme hattı yok."
 
 #: workspace:workspace.media.convert.limitation.unknown
 msgid "workspace.media.convert.limitation.unknown"
-msgstr ""
+msgstr "Bu kurulumda mümkün değil."
 
 #: workspace:workspace.media.convert.loading
 msgid "workspace.media.convert.loading"
-msgstr ""
+msgstr "Dönüştürme hedefleri yükleniyor…"
 
 #: workspace:workspace.media.convert.measured
 msgid "workspace.media.convert.measured"
-msgstr ""
+msgstr "Kendi {count} dosyanız üzerinde ölçüldü: %{percent} daha küçük."
 
 #: workspace:workspace.media.convert.region
 msgid "workspace.media.convert.region"
-msgstr ""
+msgstr "Biçim dönüştürme"
 
 #: workspace:workspace.media.convert.remaining
 msgid "workspace.media.convert.remaining"
-msgstr ""
+msgstr "{count} dosya kaldı. Devam etmek için tekrar basın."
 
 #: workspace:workspace.media.convert.row.direction
 msgid "workspace.media.convert.row.direction"
-msgstr ""
+msgstr "{from} → {to}"
 
 #: workspace:workspace.media.convert.runFailed
 msgid "workspace.media.convert.runFailed"
-msgstr ""
+msgstr "Bu işlem olmadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.convert.running
 msgid "workspace.media.convert.running"
-msgstr ""
+msgstr "Dönüştürülüyor…"
 
 #: workspace:workspace.media.convert.selectAll
 msgid "workspace.media.convert.selectAll"
-msgstr ""
+msgstr "Tümünü seç"
 
 #: workspace:workspace.media.convert.someFailed
 msgid "workspace.media.convert.someFailed"
-msgstr ""
+msgstr "{count} dosya dönüştürülemedi; şimdiki sürümleri geçerli kaldı."
 
 #: workspace:workspace.media.convert.sources.empty
 msgid "workspace.media.convert.sources.empty"
-msgstr ""
+msgstr "Henüz dönüştürülebilecek dosya yok."
 
 #: workspace:workspace.media.convert.sources.heading
 msgid "workspace.media.convert.sources.heading"
-msgstr ""
+msgstr "Dönüştürülecek dosyalar"
 
 #: workspace:workspace.media.convert.start
 msgid "workspace.media.convert.start"
-msgstr ""
+msgstr "{count} dosyayı {format} biçimine dönüştür"
 
 #: workspace:workspace.media.convert.start.empty
 msgid "workspace.media.convert.start.empty"
-msgstr ""
+msgstr "Bir dosya seçin"
 
 #: workspace:workspace.media.convert.summary.batch
 msgid "workspace.media.convert.summary.batch"
-msgstr ""
+msgstr "Çalıştırma başına dosya"
 
 #: workspace:workspace.media.convert.summary.now
 msgid "workspace.media.convert.summary.now"
-msgstr ""
+msgstr "Seçilenlerin şimdiki boyutu"
 
 #: workspace:workspace.media.convert.summary.selected
 msgid "workspace.media.convert.summary.selected"
-msgstr ""
+msgstr "Seçilen dosyalar"
 
 #: workspace:workspace.media.convert.tab
 msgid "workspace.media.convert.tab"
-msgstr ""
+msgstr "Dönüştür"
 
 #: workspace:workspace.media.convert.target.avif.note
 msgid "workspace.media.convert.target.avif.note"
-msgstr ""
+msgstr "Görseller · en küçük"
 
 #: workspace:workspace.media.convert.target.claim
 msgid "workspace.media.convert.target.claim"
-msgstr ""
+msgstr "yaklaşık %{percent} daha küçük"
 
 #: workspace:workspace.media.convert.target.heading
 msgid "workspace.media.convert.target.heading"
-msgstr ""
+msgstr "Hedef biçim"
 
 #: workspace:workspace.media.convert.target.jpeg.note
 msgid "workspace.media.convert.target.jpeg.note"
-msgstr ""
+msgstr "Her yerde açılan yedek biçim"
 
 #: workspace:workspace.media.convert.target.webm.note
 msgid "workspace.media.convert.target.webm.note"
-msgstr ""
+msgstr "Video · VP9 / AV1"
 
 #: workspace:workspace.media.convert.target.webp.note
 msgid "workspace.media.convert.target.webp.note"
-msgstr ""
+msgstr "Görseller · en geniş destek"
 
 #: workspace:workspace.media.crop.frame
 msgid "workspace.media.crop.frame"
-msgstr ""
+msgstr "Kırpma çerçevesi — taşımak için sürükleyin"
 
 #: workspace:workspace.media.crop.heading
 msgid "workspace.media.crop.heading"
-msgstr ""
+msgstr "İstediğiniz bölümü seçin"
 
 #: workspace:workspace.media.crop.help
 msgid "workspace.media.crop.help"
-msgstr ""
+msgstr "Bu yuva sabit bir şekil kullanıyor, bu yüzden fotoğrafın bir kısmı kesiliyor. Çerçeveyi sürükleyerek taşıyın, yakınlaştırmak için kaydırıcıyı kullanın."
 
 #: workspace:workspace.media.crop.reset
 msgid "workspace.media.crop.reset"
-msgstr ""
+msgstr "Çerçeveyi ortala"
 
 #: workspace:workspace.media.crop.result
 msgid "workspace.media.crop.result"
-msgstr ""
+msgstr "{width} × {height} piksel olarak yüklenecek."
 
 #: workspace:workspace.media.crop.zoom
 msgid "workspace.media.crop.zoom"
-msgstr ""
+msgstr "Yakınlaştır"
 
 #: workspace:workspace.media.engine.failed
 msgid "workspace.media.engine.failed"
-msgstr ""
+msgstr "Boyut kuralları yüklenemedi."
 
 #: workspace:workspace.media.engine.fit.contain
 msgid "workspace.media.engine.fit.contain"
-msgstr ""
+msgstr "Sığdırıldı"
 
 #: workspace:workspace.media.engine.fit.crop
 msgid "workspace.media.engine.fit.crop"
-msgstr ""
+msgstr "Kırpıldı"
 
 #: workspace:workspace.media.engine.lead
 msgid "workspace.media.engine.lead"
-msgstr ""
+msgstr "Yüklediğiniz her görselden hangi boyutlar üretiliyor? Kural bir kez yazılır."
 
 #: workspace:workspace.media.engine.loading
 msgid "workspace.media.engine.loading"
-msgstr ""
+msgstr "Boyut kuralları yükleniyor…"
 
 #: workspace:workspace.media.engine.measured.delta
 msgid "workspace.media.engine.measured.delta"
-msgstr ""
+msgstr "%{percent} daha küçük"
 
 #: workspace:workspace.media.engine.measured.heading
 msgid "workspace.media.engine.measured.heading"
-msgstr ""
+msgstr "Ölçülen kazanç"
 
 #: workspace:workspace.media.engine.measured.lead
 msgid "workspace.media.engine.measured.lead"
-msgstr ""
+msgstr "Kendi {count} dosyanız üzerinde ölçüldü: aslın karşısında gerçekten sunulan en büyük boyut."
 
 #: workspace:workspace.media.engine.measured.originals
 msgid "workspace.media.engine.measured.originals"
-msgstr ""
+msgstr "Asıl dosyalar"
 
 #: workspace:workspace.media.engine.measured.served
 msgid "workspace.media.engine.measured.served"
-msgstr ""
+msgstr "Sunulan en büyük boyut"
 
 #: workspace:workspace.media.engine.regen.affected
 msgid "workspace.media.engine.regen.affected"
-msgstr ""
+msgstr "Etkilenecek dosyalar"
 
 #: workspace:workspace.media.engine.regen.batch
 msgid "workspace.media.engine.regen.batch"
-msgstr ""
+msgstr "Çalıştırma başına dosya"
 
 #: workspace:workspace.media.engine.regen.done
 msgid "workspace.media.engine.regen.done"
-msgstr ""
+msgstr "{count} dosya yeni bir sürüm olarak yeniden üretildi. Asıl dosyalara dokunulmadı."
 
 #: workspace:workspace.media.engine.regen.failed
 msgid "workspace.media.engine.regen.failed"
-msgstr ""
+msgstr "Bu işlem olmadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.engine.regen.heading
 msgid "workspace.media.engine.regen.heading"
-msgstr ""
+msgstr "Kuralı değiştirdim — eski dosyalar ne olacak?"
 
 #: workspace:workspace.media.engine.regen.lead
 msgid "workspace.media.engine.regen.lead"
-msgstr ""
+msgstr "Yeni kural yalnızca yeni yüklemeler için geçerlidir. Eski dosyaları tazelemek için bir iş başlatılır; asıl dosyalar saklanır ve her dosya yeni bir sürüm kazanır."
 
 #: workspace:workspace.media.engine.regen.nothing
 msgid "workspace.media.engine.regen.nothing"
-msgstr ""
+msgstr "Henüz işlenmiş dosya yok, tazelenecek bir şey de yok."
 
 #: workspace:workspace.media.engine.regen.remaining
 msgid "workspace.media.engine.regen.remaining"
-msgstr ""
+msgstr "{count} dosya kaldı. Devam etmek için tekrar basın."
 
 #: workspace:workspace.media.engine.regen.renditions
 msgid "workspace.media.engine.regen.renditions"
-msgstr ""
+msgstr "Bugün var olan boyutlar"
 
 #: workspace:workspace.media.engine.regen.running
 msgid "workspace.media.engine.regen.running"
-msgstr ""
+msgstr "Yeniden üretiliyor…"
 
 #: workspace:workspace.media.engine.regen.someFailed
 msgid "workspace.media.engine.regen.someFailed"
-msgstr ""
+msgstr "{count} dosya yeniden üretilemedi. Nedenini görmek için kuyruğu açın."
 
 #: workspace:workspace.media.engine.regen.start
 msgid "workspace.media.engine.regen.start"
-msgstr ""
+msgstr "Yeniden üretimi başlat"
 
 #: workspace:workspace.media.engine.region
 msgid "workspace.media.engine.region"
-msgstr ""
+msgstr "Boyut motoru"
 
 #: workspace:workspace.media.engine.rule.frame
 msgid "workspace.media.engine.rule.frame"
-msgstr ""
+msgstr "{width} × {height} px"
 
 #: workspace:workspace.media.engine.rule.large.usage
 msgid "workspace.media.engine.rule.large.usage"
-msgstr ""
+msgstr "Tam ekran görsel"
 
 #: workspace:workspace.media.engine.rule.medium.usage
 msgid "workspace.media.engine.rule.medium.usage"
-msgstr ""
+msgstr "Ürün ayrıntısı"
 
 #: workspace:workspace.media.engine.rule.notProduced
 msgid "workspace.media.engine.rule.notProduced"
-msgstr ""
+msgstr "Henüz üretilmedi"
 
 #: workspace:workspace.media.engine.rule.print.usage
 msgid "workspace.media.engine.rule.print.usage"
-msgstr ""
+msgstr "Karekod kartı, afiş"
 
 #: workspace:workspace.media.engine.rule.producedBy
 msgid "workspace.media.engine.rule.producedBy"
-msgstr ""
+msgstr "{count} yerde üretiliyor"
 
 #: workspace:workspace.media.engine.rule.small.usage
 msgid "workspace.media.engine.rule.small.usage"
-msgstr ""
+msgstr "Menü kartı, telefon"
 
 #: workspace:workspace.media.engine.rule.social.usage
 msgid "workspace.media.engine.rule.social.usage"
-msgstr ""
+msgstr "Paylaşım önizlemesi"
 
 #: workspace:workspace.media.engine.rule.thumb.usage
 msgid "workspace.media.engine.rule.thumb.usage"
-msgstr ""
+msgstr "Liste satırı"
 
 #: workspace:workspace.media.engine.rule.usage.unknown
 msgid "workspace.media.engine.rule.usage.unknown"
-msgstr ""
+msgstr "Henüz bir yer atanmadı"
 
 #: workspace:workspace.media.engine.rule.width
 msgid "workspace.media.engine.rule.width"
-msgstr ""
+msgstr "{width} px"
 
 #: workspace:workspace.media.engine.tab
 msgid "workspace.media.engine.tab"
-msgstr ""
+msgstr "Boyutlar"
 
 #: workspace:workspace.media.folders.all
 msgid "workspace.media.folders.all"
-msgstr ""
+msgstr "Tüm dosyalar"
 
 #: workspace:workspace.media.folders.heading
 msgid "workspace.media.folders.heading"
-msgstr ""
+msgstr "Klasörler"
 
 #: workspace:workspace.media.folders.next
 msgid "workspace.media.folders.next"
-msgstr ""
+msgstr "Daha fazla klasör"
 
 #: workspace:workspace.media.folders.page
 msgid "workspace.media.folders.page"
-msgstr ""
+msgstr "Sayfa {page} / {total}"
 
 #: workspace:workspace.media.folders.previous
 msgid "workspace.media.folders.previous"
-msgstr ""
+msgstr "Önceki klasörler"
 
 #: workspace:workspace.media.governance.action.legal-hold
 msgid "workspace.media.governance.action.legal-hold"
-msgstr ""
+msgstr "Yasal saklama koy ya da kaldır"
 
 #: workspace:workspace.media.governance.action.legal-hold.description
 msgid "workspace.media.governance.action.legal-hold.description"
-msgstr ""
+msgstr "Bir anlaşmazlığa bağlı dosya silinemez ve taşınamaz. Toplu işlemler onu atlar, tek tek silme ise reddedilir."
 
 #: workspace:workspace.media.governance.failed
 msgid "workspace.media.governance.failed"
-msgstr ""
+msgstr "Yönetişim kaydı okunamadı."
 
 #: workspace:workspace.media.governance.lead
 msgid "workspace.media.governance.lead"
-msgstr ""
+msgstr "Kim ne yapabilir, dosyalar ne kadar saklanır ve kim ne yaptı."
 
 #: workspace:workspace.media.governance.legalHold.empty
 msgid "workspace.media.governance.legalHold.empty"
-msgstr ""
+msgstr "Şu anda yasal saklama altında dosya yok."
 
 #: workspace:workspace.media.governance.legalHold.heading
 msgid "workspace.media.governance.legalHold.heading"
-msgstr ""
+msgstr "Yasal saklama altındaki dosyalar"
 
 #: workspace:workspace.media.governance.legalHold.since
 msgid "workspace.media.governance.legalHold.since"
-msgstr ""
+msgstr "{date} tarihinden beri saklamada"
 
 #: workspace:workspace.media.governance.loading
 msgid "workspace.media.governance.loading"
-msgstr ""
+msgstr "Yönetişim kaydı yükleniyor…"
 
 #: workspace:workspace.media.governance.matrix.allowed
 msgid "workspace.media.governance.matrix.allowed"
-msgstr ""
+msgstr "Size açık"
 
 #: workspace:workspace.media.governance.matrix.heading
 msgid "workspace.media.governance.matrix.heading"
-msgstr ""
+msgstr "Toplu işlem yetkileri"
 
 #: workspace:workspace.media.governance.matrix.locked
 msgid "workspace.media.governance.matrix.locked"
-msgstr ""
+msgstr "Kilitli — “{permission}” gerekir"
 
 #: workspace:workspace.media.governance.region
 msgid "workspace.media.governance.region"
-msgstr ""
+msgstr "Medya yönetişimi"
 
 #: workspace:workspace.media.governance.retention.audit
 msgid "workspace.media.governance.retention.audit"
-msgstr ""
+msgstr "Denetim kaydı"
 
 #: workspace:workspace.media.governance.retention.audit.description
 msgid "workspace.media.governance.retention.audit.description"
-msgstr ""
+msgstr "Silinemez ve değiştirilemez. Yalnızca okunur."
 
 #: workspace:workspace.media.governance.retention.audit.value
 msgid "workspace.media.governance.retention.audit.value"
-msgstr ""
+msgstr "Süresiz"
 
 #: workspace:workspace.media.governance.retention.heading
 msgid "workspace.media.governance.retention.heading"
-msgstr ""
+msgstr "Saklama politikası"
 
 #: workspace:workspace.media.governance.retention.legalHold
 msgid "workspace.media.governance.retention.legalHold"
-msgstr ""
+msgstr "Yasal saklama"
 
 #: workspace:workspace.media.governance.retention.legalHold.description
 msgid "workspace.media.governance.retention.legalHold.description"
-msgstr ""
+msgstr "Bir anlaşmazlığa bağlı dosyalar silinemez — toplu işlemler onları atlar."
 
 #: workspace:workspace.media.governance.retention.legalHold.value
 msgid "workspace.media.governance.retention.legalHold.value"
-msgstr ""
+msgstr "{count} dosya"
 
 #: workspace:workspace.media.governance.retention.originals
 msgid "workspace.media.governance.retention.originals"
-msgstr ""
+msgstr "Asıl dosyalar ve sürümler"
 
 #: workspace:workspace.media.governance.retention.originals.description
 msgid "workspace.media.governance.retention.originals.description"
-msgstr ""
+msgstr "Yüklenen dosya bayt bayt saklanır ve hiçbir sürüm silinmez; yeniden üretim onun yanına bir sürüm ekler."
 
 #: workspace:workspace.media.governance.retention.originals.value
 msgid "workspace.media.governance.retention.originals.value"
-msgstr ""
+msgstr "Saklanıyor"
 
 #: workspace:workspace.media.governance.retention.trash
 msgid "workspace.media.governance.retention.trash"
-msgstr ""
+msgstr "Çöp"
 
 #: workspace:workspace.media.governance.retention.trash.description
 msgid "workspace.media.governance.retention.trash.description"
-msgstr ""
+msgstr "Sonra kalıcı olarak silinir. Bu süre içinde geri almak tek dokunuş."
 
 #: workspace:workspace.media.governance.retention.trash.value
 msgid "workspace.media.governance.retention.trash.value"
-msgstr ""
+msgstr "{days} gün"
 
 #: workspace:workspace.media.governance.role
 msgid "workspace.media.governance.role"
-msgstr ""
+msgstr "Buraya {role} olarak bakıyorsunuz."
 
 #: workspace:workspace.media.governance.role.editor
 msgid "workspace.media.governance.role.editor"
-msgstr ""
+msgstr "editör"
 
 #: workspace:workspace.media.governance.role.manager
 msgid "workspace.media.governance.role.manager"
-msgstr ""
+msgstr "yönetici"
 
 #: workspace:workspace.media.governance.role.member
 msgid "workspace.media.governance.role.member"
-msgstr ""
+msgstr "üye"
 
 #: workspace:workspace.media.governance.role.owner
 msgid "workspace.media.governance.role.owner"
-msgstr ""
+msgstr "sahip"
 
 #: workspace:workspace.media.governance.role.unknown
 msgid "workspace.media.governance.role.unknown"
-msgstr ""
+msgstr "bu çalışma alanının bir üyesi"
 
 #: workspace:workspace.media.governance.tab
 msgid "workspace.media.governance.tab"
-msgstr ""
+msgstr "Yönetişim"
 
 #: workspace:workspace.media.governance.trail.asset
 msgid "workspace.media.governance.trail.asset"
-msgstr ""
+msgstr "{action} · dosya #{id}"
 
 #: workspace:workspace.media.governance.trail.bulk
 msgid "workspace.media.governance.trail.bulk"
-msgstr ""
+msgstr "{action} · {applied} uygulandı, {skipped} atlandı, {failed} başarısız"
 
 #: workspace:workspace.media.governance.trail.empty
 msgid "workspace.media.governance.trail.empty"
-msgstr ""
+msgstr "Burada henüz bir kayıt yok."
 
 #: workspace:workspace.media.governance.trail.heading
 msgid "workspace.media.governance.trail.heading"
-msgstr ""
+msgstr "Denetim izi"
 
 #: workspace:workspace.media.governance.trail.note
 msgid "workspace.media.governance.trail.note"
-msgstr ""
+msgstr "Salt okunur. Kayıtlar silinemez ve değiştirilemez; yalnızca dışa aktarılır."
 
 #: workspace:workspace.media.governance.trail.unknownActor
 msgid "workspace.media.governance.trail.unknownActor"
-msgstr ""
+msgstr "Bilinmeyen kişi"
 
 #: workspace:workspace.media.heading
 msgid "workspace.media.heading"
@@ -2238,7 +2238,7 @@ msgstr "Görseller"
 
 #: workspace:workspace.media.library.access.private
 msgid "workspace.media.library.access.private"
-msgstr ""
+msgstr "Henüz herkese açık değil"
 
 #: workspace:workspace.media.library.asset.delete
 msgid "workspace.media.library.asset.delete"
@@ -2406,7 +2406,7 @@ msgstr "Durum"
 
 #: workspace:workspace.media.library.filters.toggle
 msgid "workspace.media.library.filters.toggle"
-msgstr ""
+msgstr "Süz"
 
 #: workspace:workspace.media.library.filters.unusedOnly
 msgid "workspace.media.library.filters.unusedOnly"
@@ -2462,31 +2462,31 @@ msgstr "Görsel kütüphanesi"
 
 #: workspace:workspace.media.library.result.count
 msgid "workspace.media.library.result.count"
-msgstr ""
+msgstr "{count} dosya"
 
 #: workspace:workspace.media.library.select.all
 msgid "workspace.media.library.select.all"
-msgstr ""
+msgstr "Tümünü seç"
 
 #: workspace:workspace.media.library.select.clear
 msgid "workspace.media.library.select.clear"
-msgstr ""
+msgstr "Seçimi temizle"
 
 #: workspace:workspace.media.library.select.count
 msgid "workspace.media.library.select.count"
-msgstr ""
+msgstr "{count} seçildi"
 
 #: workspace:workspace.media.library.select.delete
 msgid "workspace.media.library.select.delete"
-msgstr ""
+msgstr "Seçilenleri sil"
 
 #: workspace:workspace.media.library.select.kept
 msgid "workspace.media.library.select.kept"
-msgstr ""
+msgstr "Kullanımda olan {count} dosya korundu. Nerede kullanıldığını görmek için her birini açın."
 
 #: workspace:workspace.media.library.select.named
 msgid "workspace.media.library.select.named"
-msgstr ""
+msgstr "{name} dosyasını seç"
 
 #: workspace:workspace.media.library.slots.category.corporateSite
 msgid "workspace.media.library.slots.category.corporateSite"
@@ -2522,19 +2522,19 @@ msgstr "{category}: henüz görsel yok."
 
 #: workspace:workspace.media.library.sort
 msgid "workspace.media.library.sort"
-msgstr ""
+msgstr "Sırala: {label}"
 
 #: workspace:workspace.media.library.sort.largest
 msgid "workspace.media.library.sort.largest"
-msgstr ""
+msgstr "En büyük"
 
 #: workspace:workspace.media.library.sort.name
 msgid "workspace.media.library.sort.name"
-msgstr ""
+msgstr "Ad"
 
 #: workspace:workspace.media.library.sort.newest
 msgid "workspace.media.library.sort.newest"
-msgstr ""
+msgstr "En yeni"
 
 #: workspace:workspace.media.library.tabs.label
 msgid "workspace.media.library.tabs.label"
@@ -2678,155 +2678,155 @@ msgstr "Doğrulama"
 
 #: workspace:workspace.media.maturity.capability.bulk
 msgid "workspace.media.maturity.capability.bulk"
-msgstr ""
+msgstr "Toplu işlemler"
 
 #: workspace:workspace.media.maturity.capability.convert
 msgid "workspace.media.maturity.capability.convert"
-msgstr ""
+msgstr "Biçim dönüştürme"
 
 #: workspace:workspace.media.maturity.capability.derivatives
 msgid "workspace.media.maturity.capability.derivatives"
-msgstr ""
+msgstr "Boyutlar ve türevler"
 
 #: workspace:workspace.media.maturity.capability.governance
 msgid "workspace.media.maturity.capability.governance"
-msgstr ""
+msgstr "Yönetişim"
 
 #: workspace:workspace.media.maturity.capability.intake
 msgid "workspace.media.maturity.capability.intake"
-msgstr ""
+msgstr "Yükleme"
 
 #: workspace:workspace.media.maturity.capability.quota
 msgid "workspace.media.maturity.capability.quota"
-msgstr ""
+msgstr "Kota"
 
 #: workspace:workspace.media.maturity.capability.scan
 msgid "workspace.media.maturity.capability.scan"
-msgstr ""
+msgstr "Virüs taraması"
 
 #: workspace:workspace.media.maturity.capability.trash
 msgid "workspace.media.maturity.capability.trash"
-msgstr ""
+msgstr "Çöp ve geri alma"
 
 #: workspace:workspace.media.maturity.capability.viewer
 msgid "workspace.media.maturity.capability.viewer"
-msgstr ""
+msgstr "Görüntüleyici"
 
 #: workspace:workspace.media.maturity.evidence.absent
 msgid "workspace.media.maturity.evidence.absent"
-msgstr ""
+msgstr "bulunamadı"
 
 #: workspace:workspace.media.maturity.evidence.found
 msgid "workspace.media.maturity.evidence.found"
-msgstr ""
+msgstr "bulundu"
 
 #: workspace:workspace.media.maturity.evidence.heading
 msgid "workspace.media.maturity.evidence.heading"
-msgstr ""
+msgstr "Kanıt"
 
 #: workspace:workspace.media.maturity.evidence.item
 msgid "workspace.media.maturity.evidence.item"
-msgstr ""
+msgstr "{kind} · {state}"
 
 #: workspace:workspace.media.maturity.evidence.kind.endpoint
 msgid "workspace.media.maturity.evidence.kind.endpoint"
-msgstr ""
+msgstr "Panelin çalışan bir parçası"
 
 #: workspace:workspace.media.maturity.evidence.kind.requirement
 msgid "workspace.media.maturity.evidence.kind.requirement"
-msgstr ""
+msgstr "Testi olan yazılı bir kural"
 
 #: workspace:workspace.media.maturity.evidence.kind.test
 msgid "workspace.media.maturity.evidence.kind.test"
-msgstr ""
+msgstr "Bunu kontrol eden bir test"
 
 #: workspace:workspace.media.maturity.evidence.none
 msgid "workspace.media.maturity.evidence.none"
-msgstr ""
+msgstr "Bu adım için kanıt yok, bu yüzden seviyeye sayılmıyor."
 
 #: workspace:workspace.media.maturity.evidence.unverifiable
 msgid "workspace.media.maturity.evidence.unverifiable"
-msgstr ""
+msgstr "burada kontrol edilemedi"
 
 #: workspace:workspace.media.maturity.legend.heading
 msgid "workspace.media.maturity.legend.heading"
-msgstr ""
+msgstr "Seviyeler ne anlama geliyor"
 
 #: workspace:workspace.media.maturity.level.0
 msgid "workspace.media.maturity.level.0"
-msgstr ""
+msgstr "Yok"
 
 #: workspace:workspace.media.maturity.level.0.description
 msgid "workspace.media.maturity.level.0.description"
-msgstr ""
+msgstr "Henüz yapılmadı."
 
 #: workspace:workspace.media.maturity.level.1
 msgid "workspace.media.maturity.level.1"
-msgstr ""
+msgstr "Çalışıyor"
 
 #: workspace:workspace.media.maturity.level.1.description
 msgid "workspace.media.maturity.level.1.description"
-msgstr ""
+msgstr "Normal akış çalışıyor."
 
 #: workspace:workspace.media.maturity.level.2
 msgid "workspace.media.maturity.level.2"
-msgstr ""
+msgstr "Güvenli"
 
 #: workspace:workspace.media.maturity.level.2.description
 msgid "workspace.media.maturity.level.2.description"
-msgstr ""
+msgstr "Hatalar ve sınırlar bir testle güvence altında."
 
 #: workspace:workspace.media.maturity.level.3
 msgid "workspace.media.maturity.level.3"
-msgstr ""
+msgstr "Ölçülüyor"
 
 #: workspace:workspace.media.maturity.level.3.description
 msgid "workspace.media.maturity.level.3.description"
-msgstr ""
+msgstr "Bir sayı ya da denetim kaydı üretiyor."
 
 #: workspace:workspace.media.maturity.level.4
 msgid "workspace.media.maturity.level.4"
-msgstr ""
+msgstr "Olgun"
 
 #: workspace:workspace.media.maturity.level.4.description
 msgid "workspace.media.maturity.level.4.description"
-msgstr ""
+msgstr "Kendi kendine toparlanıyor ve ne olduğunu söylüyor."
 
 #: workspace:workspace.media.maturity.level.badge
 msgid "workspace.media.maturity.level.badge"
-msgstr ""
+msgstr "Seviye {level} / {max}"
 
 #: workspace:workspace.media.maturity.level.short
 msgid "workspace.media.maturity.level.short"
-msgstr ""
+msgstr "S{level}"
 
 #: workspace:workspace.media.maturity.region
 msgid "workspace.media.maturity.region"
-msgstr ""
+msgstr "Medya olgunluğu"
 
 #: workspace:workspace.media.maturity.rung
 msgid "workspace.media.maturity.rung"
-msgstr ""
+msgstr "Seviye {level} · {name}"
 
 #: workspace:workspace.media.maturity.score.heading
 msgid "workspace.media.maturity.score.heading"
-msgstr ""
+msgstr "MVP olgunluğu"
 
 #: workspace:workspace.media.maturity.score.note
 msgid "workspace.media.maturity.score.note"
-msgstr ""
+msgstr "Puan, aşağıdaki seviyelerin toplamıdır. Hazır olma yüzdesi değildir."
 
 #: workspace:workspace.media.maturity.score.value
 msgid "workspace.media.maturity.score.value"
-msgstr ""
+msgstr "{achieved} / {possible}"
 
 #: workspace:workspace.media.maturity.selfAssessed
 msgid "workspace.media.maturity.selfAssessed"
-msgstr ""
+msgstr "Bu, dışarıdan bir denetim değil, ürünün kendi kendini değerlendirmesidir. Aşağıdaki her seviye, burada gerçekten var olan bir şeyle hak edilmek zorundadır — çalışan bir parça, yazılı bir kural ya da bunu kontrol eden bir test; arkasında hiçbir şey olmayan bir adım asla sayılmaz."
 
 #: workspace:workspace.media.maturity.tab
 msgid "workspace.media.maturity.tab"
-msgstr ""
+msgstr "Olgunluk"
 
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
@@ -2834,103 +2834,103 @@ msgstr "Fotoğraf yükleyin ve yayınlanan menünüzü besleyen görsel kütüph
 
 #: workspace:workspace.media.queue.attempts
 msgid "workspace.media.queue.attempts"
-msgstr ""
+msgstr "{count}. deneme"
 
 #: workspace:workspace.media.queue.count.failed
 msgid "workspace.media.queue.count.failed"
-msgstr ""
+msgstr "Başarısız"
 
 #: workspace:workspace.media.queue.count.held
 msgid "workspace.media.queue.count.held"
-msgstr ""
+msgstr "Beklemede"
 
 #: workspace:workspace.media.queue.count.running
 msgid "workspace.media.queue.count.running"
-msgstr ""
+msgstr "Çalışıyor"
 
 #: workspace:workspace.media.queue.count.succeeded
 msgid "workspace.media.queue.count.succeeded"
-msgstr ""
+msgstr "Tamamlandı"
 
 #: workspace:workspace.media.queue.empty
 msgid "workspace.media.queue.empty"
-msgstr ""
+msgstr "Henüz iş yok."
 
 #: workspace:workspace.media.queue.failed
 msgid "workspace.media.queue.failed"
-msgstr ""
+msgstr "Kuyruk yüklenemedi."
 
 #: workspace:workspace.media.queue.kind.rendition
 msgid "workspace.media.queue.kind.rendition"
-msgstr ""
+msgstr "Boyutlar üretiliyor"
 
 #: workspace:workspace.media.queue.kind.scan
 msgid "workspace.media.queue.kind.scan"
-msgstr ""
+msgstr "Güvenlik taraması"
 
 #: workspace:workspace.media.queue.kind.unknown
 msgid "workspace.media.queue.kind.unknown"
-msgstr ""
+msgstr "İşleniyor"
 
 #: workspace:workspace.media.queue.lead
 msgid "workspace.media.queue.lead"
-msgstr ""
+msgstr "Yüklemeler ve yeniden üretim birer iş oluşturur. Bir işin hâlâ çalışıp çalışmadığını buradan görürsünüz."
 
 #: workspace:workspace.media.queue.loading
 msgid "workspace.media.queue.loading"
-msgstr ""
+msgstr "Kuyruk yükleniyor…"
 
 #: workspace:workspace.media.queue.progress.unknown
 msgid "workspace.media.queue.progress.unknown"
-msgstr ""
+msgstr "Hâlâ çalışıyor — ilerleme değeri kaydedilmemiş."
 
 #: workspace:workspace.media.queue.refresh
 msgid "workspace.media.queue.refresh"
-msgstr ""
+msgstr "Kuyruğu yenile"
 
 #: workspace:workspace.media.queue.region
 msgid "workspace.media.queue.region"
-msgstr ""
+msgstr "İşlem kuyruğu"
 
 #: workspace:workspace.media.queue.retried
 msgid "workspace.media.queue.retried"
-msgstr ""
+msgstr "Yeniden başlatıldı. Bu satır sonucu gösterecek."
 
 #: workspace:workspace.media.queue.retry
 msgid "workspace.media.queue.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.media.queue.retry.named
 msgid "workspace.media.queue.retry.named"
-msgstr ""
+msgstr "{name} için tekrar dene"
 
 #: workspace:workspace.media.queue.retryFailed
 msgid "workspace.media.queue.retryFailed"
-msgstr ""
+msgstr "Yeniden başlatılamadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.queue.state.failed
 msgid "workspace.media.queue.state.failed"
-msgstr ""
+msgstr "Başarısız"
 
 #: workspace:workspace.media.queue.state.held
 msgid "workspace.media.queue.state.held"
-msgstr ""
+msgstr "Beklemede"
 
 #: workspace:workspace.media.queue.state.pending
 msgid "workspace.media.queue.state.pending"
-msgstr ""
+msgstr "Sırada"
 
 #: workspace:workspace.media.queue.state.running
 msgid "workspace.media.queue.state.running"
-msgstr ""
+msgstr "Çalışıyor"
 
 #: workspace:workspace.media.queue.state.succeeded
 msgid "workspace.media.queue.state.succeeded"
-msgstr ""
+msgstr "Tamamlandı"
 
 #: workspace:workspace.media.queue.state.unknown
 msgid "workspace.media.queue.state.unknown"
-msgstr ""
+msgstr "Bilinmiyor"
 
 #: workspace:workspace.media.quota.assets
 msgid "workspace.media.quota.assets"
@@ -2974,207 +2974,207 @@ msgstr "Her görsel, menünüzde görünmeden önce taranır ve bir kişi taraf�
 
 #: workspace:workspace.media.settings.originals.body
 msgid "workspace.media.settings.originals.body"
-msgstr ""
+msgstr "Yüklediğiniz dosya her zaman bayt bayt saklanır. Dönüştürme ya da yeniden üretim, onun yanına yeni bir sürüm yazar; aslın yerine hiçbir şey geçmez ve hiçbir şey silinmez."
 
 #: workspace:workspace.media.settings.originals.heading
 msgid "workspace.media.settings.originals.heading"
-msgstr ""
+msgstr "Asıl dosyalarınız"
 
 #: workspace:workspace.media.settings.pattern.date
 msgid "workspace.media.settings.pattern.date"
-msgstr ""
+msgstr "Tarih biçimi"
 
 #: workspace:workspace.media.settings.pattern.date.deviceLocale
 msgid "workspace.media.settings.pattern.date.deviceLocale"
-msgstr ""
+msgstr "Okunduğu cihazın biçimi"
 
 #: workspace:workspace.media.settings.pattern.date.why
 msgid "workspace.media.settings.pattern.date.why"
-msgstr ""
+msgstr "Tarihler, onları okuduğunuz cihazın dilini ve saat dilimini izler. Tek bir sabit biçim ayrı bir karardır ve henüz verilmedi."
 
 #: workspace:workspace.media.settings.pattern.directory
 msgid "workspace.media.settings.pattern.directory"
-msgstr ""
+msgstr "Klasör yapısı"
 
 #: workspace:workspace.media.settings.pattern.directory.why
 msgid "workspace.media.settings.pattern.directory.why"
-msgstr ""
+msgstr "Her dosya kendi çalışma alanı klasörünün altında durur. Depolama adresi asla yeniden yazılmaz — yazılsaydı yayındaki bir menü o gün görsellerini kaybederdi."
 
 #: workspace:workspace.media.settings.pattern.directory.workspaceFolder
 msgid "workspace.media.settings.pattern.directory.workspaceFolder"
-msgstr ""
+msgstr "Çalışma alanı başına bir klasör"
 
 #: workspace:workspace.media.settings.pattern.fileName
 msgid "workspace.media.settings.pattern.fileName"
-msgstr ""
+msgstr "Dosya adı"
 
 #: workspace:workspace.media.settings.pattern.fileName.opaqueKey
 msgid "workspace.media.settings.pattern.fileName.opaqueKey"
-msgstr ""
+msgstr "Gördüğünüz addan ayrı tutulan rastgele bir anahtar"
 
 #: workspace:workspace.media.settings.pattern.fileName.why
 msgid "workspace.media.settings.pattern.fileName.why"
-msgstr ""
+msgstr "Kütüphane sizin yazdığınız adı gösterir; saklanan dosya rastgele bir anahtar taşır, böylece bir fotoğrafın adını değiştirmek tek bir baytı bile yerinden oynatmaz."
 
 #: workspace:workspace.media.settings.patterns.heading
 msgid "workspace.media.settings.patterns.heading"
-msgstr ""
+msgstr "Klasörler, adlar ve tarihler"
 
 #: workspace:workspace.media.settings.patterns.lead
 msgid "workspace.media.settings.patterns.lead"
-msgstr ""
+msgstr "Bunlar bugün sabit kurallarla işliyor. Burada seçilecek bir şey yok, kaydedilecek bir şey de yok."
 
 #: workspace:workspace.media.settings.region
 msgid "workspace.media.settings.region"
-msgstr ""
+msgstr "Medya ayarları"
 
 #: workspace:workspace.media.settings.security.contentSignature
 msgid "workspace.media.settings.security.contentSignature"
-msgstr ""
+msgstr "İçerik imzası kontrolü"
 
 #: workspace:workspace.media.settings.security.contentSignature.on
 msgid "workspace.media.settings.security.contentSignature.on"
-msgstr ""
+msgstr "Dosya uzantısına asla güvenilmez. Adı “photo.jpg” olan ama aslında betik olan bir dosya, hiçbir şey saklanmadan önce reddedilir."
 
 #: workspace:workspace.media.settings.security.heading
 msgid "workspace.media.settings.security.heading"
-msgstr ""
+msgstr "Güvenlik ve gizlilik"
 
 #: workspace:workspace.media.settings.security.locked
 msgid "workspace.media.settings.security.locked"
-msgstr ""
+msgstr "Kapatılamaz"
 
 #: workspace:workspace.media.settings.security.metadataStrip
 msgid "workspace.media.settings.security.metadataStrip"
-msgstr ""
+msgstr "Gömülü verileri temizle"
 
 #: workspace:workspace.media.settings.security.metadataStrip.partial
 msgid "workspace.media.settings.security.metadataStrip.partial"
-msgstr ""
+msgstr "Konum, cihaz ve seri numarası, misafirlerinizin gördüğü boyutlarda bulunmaz, çünkü o boyutlar yeniden kodlanır. Asıl dosya ise yüklediğiniz haliyle saklanır."
 
 #: workspace:workspace.media.settings.security.signedLink
 msgid "workspace.media.settings.security.signedLink"
-msgstr ""
+msgstr "Özel dosyalar için imzalı bağlantı"
 
 #: workspace:workspace.media.settings.security.signedLink.on
 msgid "workspace.media.settings.security.signedLink.on"
-msgstr ""
+msgstr "Aslın herkese açık bir adresi yoktur. İndirmek için, on dakika sonra çalışmayı bırakan imzalı bir bağlantı gerekir."
 
 #: workspace:workspace.media.settings.security.virusScan
 msgid "workspace.media.settings.security.virusScan"
-msgstr ""
+msgstr "Virüs taraması"
 
 #: workspace:workspace.media.settings.security.virusScan.on
 msgid "workspace.media.settings.security.virusScan.on"
-msgstr ""
+msgstr "Her dosya kütüphaneye girmeden önce taranır. Temiz çıkmayan her şey karantinaya alınır ve kimse indiremez."
 
 #: workspace:workspace.media.settings.security.virusScan.unavailable
 msgid "workspace.media.settings.security.virusScan.unavailable"
-msgstr ""
+msgstr "Bu ortamda bağlı bir tarayıcı yok, bu yüzden dosyalar taranmıyor. Bunu siz kapatmadınız; buradan açabileceğiniz bir şey de değil."
 
 #: workspace:workspace.media.settings.security.watermark
 msgid "workspace.media.settings.security.watermark"
-msgstr ""
+msgstr "Filigran"
 
 #: workspace:workspace.media.settings.security.watermark.missing
 msgid "workspace.media.settings.security.watermark.missing"
-msgstr ""
+msgstr "Henüz yapılmadı."
 
 #: workspace:workspace.media.settings.tab
 msgid "workspace.media.settings.tab"
-msgstr ""
+msgstr "Ayarlar"
 
 #: workspace:workspace.media.shell.queue
 msgid "workspace.media.shell.queue"
-msgstr ""
+msgstr "Kuyruk"
 
 #: workspace:workspace.media.shell.search
 msgid "workspace.media.shell.search"
-msgstr ""
+msgstr "Medyada ara"
 
 #: workspace:workspace.media.shell.search.clear
 msgid "workspace.media.shell.search.clear"
-msgstr ""
+msgstr "Aramayı temizle"
 
 #: workspace:workspace.media.shell.search.placeholder
 msgid "workspace.media.shell.search.placeholder"
-msgstr ""
+msgstr "Dosya adı ya da açıklama"
 
 #: workspace:workspace.media.shell.sections
 msgid "workspace.media.shell.sections"
-msgstr ""
+msgstr "Medya bölümleri"
 
 #: workspace:workspace.media.storage.breakdown.empty
 msgid "workspace.media.storage.breakdown.empty"
-msgstr ""
+msgstr "Henüz saklanan bir şey yok."
 
 #: workspace:workspace.media.storage.breakdown.heading
 msgid "workspace.media.storage.breakdown.heading"
-msgstr ""
+msgstr "Alanı ne dolduruyor?"
 
 #: workspace:workspace.media.storage.card.assets
 msgid "workspace.media.storage.card.assets"
-msgstr ""
+msgstr "Dosyalar"
 
 #: workspace:workspace.media.storage.card.free
 msgid "workspace.media.storage.card.free"
-msgstr ""
+msgstr "%{percent} kullanıldı · {free} boş"
 
 #: workspace:workspace.media.storage.card.near
 msgid "workspace.media.storage.card.near"
-msgstr ""
+msgstr "Sınıra yaklaşıldı — yalnızca {free} kaldı"
 
 #: workspace:workspace.media.storage.card.ratio
 msgid "workspace.media.storage.card.ratio"
-msgstr ""
+msgstr "{limit} içinden {used}"
 
 #: workspace:workspace.media.storage.card.storage
 msgid "workspace.media.storage.card.storage"
-msgstr ""
+msgstr "Depolama"
 
 #: workspace:workspace.media.storage.category.brand
 msgid "workspace.media.storage.category.brand"
-msgstr ""
+msgstr "Logo ve marka"
 
 #: workspace:workspace.media.storage.category.documents
 msgid "workspace.media.storage.category.documents"
-msgstr ""
+msgstr "Belgeler ve taramalar"
 
 #: workspace:workspace.media.storage.category.other
 msgid "workspace.media.storage.category.other"
-msgstr ""
+msgstr "Diğer dosyalar"
 
 #: workspace:workspace.media.storage.category.products
 msgid "workspace.media.storage.category.products"
-msgstr ""
+msgstr "Ürün fotoğrafları"
 
 #: workspace:workspace.media.storage.category.promotion
 msgid "workspace.media.storage.category.promotion"
-msgstr ""
+msgstr "Kapaklar ve tanıtım"
 
 #: workspace:workspace.media.storage.plan
 msgid "workspace.media.storage.plan"
-msgstr ""
+msgstr "Plan: {plan}"
 
 #: workspace:workspace.media.storage.region
 msgid "workspace.media.storage.region"
-msgstr ""
+msgstr "Depolama ve çöp"
 
 #: workspace:workspace.media.storage.share
 msgid "workspace.media.storage.share"
-msgstr ""
+msgstr "{bytes} · saklananın %{percent} kadarı"
 
 #: workspace:workspace.media.storage.tab
 msgid "workspace.media.storage.tab"
-msgstr ""
+msgstr "Depolama"
 
 #: workspace:workspace.media.storage.trash
 msgid "workspace.media.storage.trash"
-msgstr ""
+msgstr "Çöp"
 
 #: workspace:workspace.media.storage.trash.note
 msgid "workspace.media.storage.trash.note"
-msgstr ""
+msgstr "Silmek yer açmaz. Çöpteki {bytes} hâlâ planınızdan düşer; saklama süresi bitince serbest kalır."
 
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"
@@ -3374,91 +3374,91 @@ msgstr "Yükleniyor… %{percent}"
 
 #: workspace:workspace.media.viewer.blocked.scan
 msgid "workspace.media.viewer.blocked.scan"
-msgstr ""
+msgstr "Bu dosya güvenlik taramasından henüz geçmedi, bu yüzden panel onu açmıyor. Tarama temiz dönünce burada kendiliğinden açılır."
 
 #: workspace:workspace.media.viewer.blocked.type
 msgid "workspace.media.viewer.blocked.type"
-msgstr ""
+msgstr "Panel {type} dosyalarını açmıyor. İndirin ve cihazınızda açın."
 
 #: workspace:workspace.media.viewer.close
 msgid "workspace.media.viewer.close"
-msgstr ""
+msgstr "Dosyayı kapat"
 
 #: workspace:workspace.media.viewer.download
 msgid "workspace.media.viewer.download"
-msgstr ""
+msgstr "Aslını indir"
 
 #: workspace:workspace.media.viewer.download.failed
 msgid "workspace.media.viewer.download.failed"
-msgstr ""
+msgstr "İndirme bağlantısı oluşturulamadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.viewer.empty
 msgid "workspace.media.viewer.empty"
-msgstr ""
+msgstr "Henüz açılacak dosya yok."
 
 #: workspace:workspace.media.viewer.fact.pages
 msgid "workspace.media.viewer.fact.pages"
-msgstr ""
+msgstr "Sayfa"
 
 #: workspace:workspace.media.viewer.fact.size
 msgid "workspace.media.viewer.fact.size"
-msgstr ""
+msgstr "Boyut"
 
 #: workspace:workspace.media.viewer.fact.type
 msgid "workspace.media.viewer.fact.type"
-msgstr ""
+msgstr "Tür"
 
 #: workspace:workspace.media.viewer.failed
 msgid "workspace.media.viewer.failed"
-msgstr ""
+msgstr "Bu dosya açılamadı. Hiçbir şey değişmedi."
 
 #: workspace:workspace.media.viewer.files
 msgid "workspace.media.viewer.files"
-msgstr ""
+msgstr "Dosyalar"
 
 #: workspace:workspace.media.viewer.lead
 msgid "workspace.media.viewer.lead"
-msgstr ""
+msgstr "İçinde ne olduğunu anlamak için önce indirmek yerine, dosyayı panelin içinde açın."
 
 #: workspace:workspace.media.viewer.loading
 msgid "workspace.media.viewer.loading"
-msgstr ""
+msgstr "Dosya açılıyor…"
 
 #: workspace:workspace.media.viewer.none
 msgid "workspace.media.viewer.none"
-msgstr ""
+msgstr "Burada açmak için bir dosya seçin."
 
 #: workspace:workspace.media.viewer.pdf.embedNote
 msgid "workspace.media.viewer.pdf.embedNote"
-msgstr ""
+msgstr "Bazı tarayıcılar PDF'i panelin içinde açmaz. Çerçeve boş kalırsa dosyayı indirip cihazınızda açın."
 
 #: workspace:workspace.media.viewer.pdf.frame
 msgid "workspace.media.viewer.pdf.frame"
-msgstr ""
+msgstr "PDF okuyucu — {name}"
 
 #: workspace:workspace.media.viewer.pdf.next
 msgid "workspace.media.viewer.pdf.next"
-msgstr ""
+msgstr "Sonraki sayfa"
 
 #: workspace:workspace.media.viewer.pdf.page
 msgid "workspace.media.viewer.pdf.page"
-msgstr ""
+msgstr "Sayfa {page} / {total}"
 
 #: workspace:workspace.media.viewer.pdf.pagesUnknown
 msgid "workspace.media.viewer.pdf.pagesUnknown"
-msgstr ""
+msgstr "Bu dosyadan sayfa sayısı okunamadı, bu yüzden panel sayfa düğmelerini çizmiyor. Aşağıdaki okuyucunun kendi araç çubuğu var."
 
 #: workspace:workspace.media.viewer.pdf.previous
 msgid "workspace.media.viewer.pdf.previous"
-msgstr ""
+msgstr "Önceki sayfa"
 
 #: workspace:workspace.media.viewer.region
 msgid "workspace.media.viewer.region"
-msgstr ""
+msgstr "Dosya görüntüleyici"
 
 #: workspace:workspace.media.viewer.tab
 msgid "workspace.media.viewer.tab"
-msgstr ""
+msgstr "Görüntüle"
 
 #: workspace:workspace.menu.empty.brand.body
 msgid "workspace.menu.empty.brand.body"
@@ -3562,59 +3562,59 @@ msgstr "Ara, git ya da oluştur"
 
 #: workspace:workspace.profile.account.email.label
 msgid "workspace.profile.account.email.label"
-msgstr ""
+msgstr "E-posta"
 
 #: workspace:workspace.profile.account.name.error
 msgid "workspace.profile.account.name.error"
-msgstr ""
+msgstr "Adınız kaydedilemedi."
 
 #: workspace:workspace.profile.account.name.label
 msgid "workspace.profile.account.name.label"
-msgstr ""
+msgstr "Adınız"
 
 #: workspace:workspace.profile.account.name.saved
 msgid "workspace.profile.account.name.saved"
-msgstr ""
+msgstr "Adınız kaydedildi."
 
 #: workspace:workspace.profile.account.name.submit
 msgid "workspace.profile.account.name.submit"
-msgstr ""
+msgstr "Adı kaydet"
 
 #: workspace:workspace.profile.account.password.confirm
 msgid "workspace.profile.account.password.confirm"
-msgstr ""
+msgstr "Yeni parolayı tekrar girin"
 
 #: workspace:workspace.profile.account.password.current
 msgid "workspace.profile.account.password.current"
-msgstr ""
+msgstr "Mevcut parola"
 
 #: workspace:workspace.profile.account.password.error
 msgid "workspace.profile.account.password.error"
-msgstr ""
+msgstr "Parolanız değiştirilemedi. Mevcut parolanızı kontrol edip tekrar deneyin."
 
 #: workspace:workspace.profile.account.password.help
 msgid "workspace.profile.account.password.help"
-msgstr ""
+msgstr "Parolanızı değiştirmek diğer cihazlarınızdaki oturumu kapatır. Bu cihaz açık kalır."
 
 #: workspace:workspace.profile.account.password.next
 msgid "workspace.profile.account.password.next"
-msgstr ""
+msgstr "Yeni parola"
 
 #: workspace:workspace.profile.account.password.saved
 msgid "workspace.profile.account.password.saved"
-msgstr ""
+msgstr "Parolanız değiştirildi."
 
 #: workspace:workspace.profile.account.password.submit
 msgid "workspace.profile.account.password.submit"
-msgstr ""
+msgstr "Yeni parolayı kaydet"
 
 #: workspace:workspace.profile.account.password.title
 msgid "workspace.profile.account.password.title"
-msgstr ""
+msgstr "Parolayı değiştir"
 
 #: workspace:workspace.profile.account.region
 msgid "workspace.profile.account.region"
-msgstr ""
+msgstr "Hesabınız"
 
 #: workspace:workspace.profile.appearance.heading
 msgid "workspace.profile.appearance.heading"
@@ -3706,11 +3706,11 @@ msgstr "İkincil renk"
 
 #: workspace:workspace.profile.density.heading
 msgid "workspace.profile.density.heading"
-msgstr ""
+msgstr "Satır aralığı"
 
 #: workspace:workspace.profile.density.help
 msgid "workspace.profile.density.help"
-msgstr ""
+msgstr "Satır yüksekliği değişir. Yazı boyu ve dokunma alanları aynı kalır."
 
 #: workspace:workspace.profile.description
 msgid "workspace.profile.description"
@@ -3722,23 +3722,23 @@ msgstr "Bilgileriniz"
 
 #: workspace:workspace.profile.preview.heading
 msgid "workspace.profile.preview.heading"
-msgstr ""
+msgstr "Önizleme"
 
 #: workspace:workspace.profile.preview.help
 msgid "workspace.profile.preview.help"
-msgstr ""
+msgstr "Seçimleriniz şu an nasıl görünüyor."
 
 #: workspace:workspace.profile.preview.sampleAction
 msgid "workspace.profile.preview.sampleAction"
-msgstr ""
+msgstr "Aç"
 
 #: workspace:workspace.profile.preview.sampleLabel
 msgid "workspace.profile.preview.sampleLabel"
-msgstr ""
+msgstr "Masa"
 
 #: workspace:workspace.profile.preview.sampleValue
 msgid "workspace.profile.preview.sampleValue"
-msgstr ""
+msgstr "Teras 4"
 
 #: workspace:workspace.profile.title
 msgid "workspace.profile.title"
@@ -3746,59 +3746,59 @@ msgstr "Profil"
 
 #: workspace:workspace.publication.diff.detail
 msgid "workspace.publication.diff.detail"
-msgstr ""
+msgstr "{kind} · {category}"
 
 #: workspace:workspace.publication.diff.kind.added
 msgid "workspace.publication.diff.kind.added"
-msgstr ""
+msgstr "Eklendi"
 
 #: workspace:workspace.publication.diff.kind.hidden
 msgid "workspace.publication.diff.kind.hidden"
-msgstr ""
+msgstr "Misafirlerden gizlendi"
 
 #: workspace:workspace.publication.diff.kind.price
 msgid "workspace.publication.diff.kind.price"
-msgstr ""
+msgstr "Fiyat"
 
 #: workspace:workspace.publication.diff.kind.removed
 msgid "workspace.publication.diff.kind.removed"
-msgstr ""
+msgstr "Kaldırıldı"
 
 #: workspace:workspace.publication.diff.kind.renamed
 msgid "workspace.publication.diff.kind.renamed"
-msgstr ""
+msgstr "Ad"
 
 #: workspace:workspace.publication.diff.nameChange
 msgid "workspace.publication.diff.nameChange"
-msgstr ""
+msgstr "{from} → {to}"
 
 #: workspace:workspace.publication.diff.none
 msgid "workspace.publication.diff.none"
-msgstr ""
+msgstr "Bekleyen bir şey yok. Misafirler v{version} sürümünü görüyor."
 
 #: workspace:workspace.publication.diff.noneFirst
 msgid "workspace.publication.diff.noneFirst"
-msgstr ""
+msgstr "Henüz hiçbir şey yayınlanmadı. Yayınlamak bu menüyü misafirlerinize ilk kez gönderir."
 
 #: workspace:workspace.publication.diff.priceChange
 msgid "workspace.publication.diff.priceChange"
-msgstr ""
+msgstr "{name} · {from} → {to}"
 
 #: workspace:workspace.publication.diff.region
 msgid "workspace.publication.diff.region"
-msgstr ""
+msgstr "Yayınlanmayı bekleyen değişiklikler"
 
 #: workspace:workspace.publication.diff.title
 msgid "workspace.publication.diff.title"
-msgstr ""
+msgstr "{count} değişiklik yayınlanmayı bekliyor"
 
 #: workspace:workspace.publication.diff.versions
 msgid "workspace.publication.diff.versions"
-msgstr ""
+msgstr "v{live} → v{next}"
 
 #: workspace:workspace.publication.diff.versionsFirst
 msgid "workspace.publication.diff.versionsFirst"
-msgstr ""
+msgstr "İlk sürüm — v{next}"
 
 #: workspace:workspace.publication.diningAreas.cancel
 msgid "workspace.publication.diningAreas.cancel"
@@ -3894,35 +3894,35 @@ msgstr "Taslak menünüzü gözden geçirin, hazır olduğunu onaylayın ve canl
 
 #: workspace:workspace.publication.preview.button
 msgid "workspace.publication.preview.button"
-msgstr ""
+msgstr "Telefonda önizle"
 
 #: workspace:workspace.publication.preview.close
 msgid "workspace.publication.preview.close"
-msgstr ""
+msgstr "Önizlemeyi kapat"
 
 #: workspace:workspace.publication.preview.heading
 msgid "workspace.publication.preview.heading"
-msgstr ""
+msgstr "Bir misafirin göreceği şey bu"
 
 #: workspace:workspace.publication.preview.linkButton
 msgid "workspace.publication.preview.linkButton"
-msgstr ""
+msgstr "Önizleme bağlantısını aç"
 
 #: workspace:workspace.publication.preview.linkError
 msgid "workspace.publication.preview.linkError"
-msgstr ""
+msgstr "Önizleme bağlantısı oluşturulamadı. Tekrar deneyin."
 
 #: workspace:workspace.publication.preview.linkHelp
 msgid "workspace.publication.preview.linkHelp"
-msgstr ""
+msgstr "Bağlantı 15 dakika çalışır ve arama motorlarına kapalıdır. Misafirlerinizin adresi değildir — basılı karekod yayındaki menüyü göstermeye devam eder."
 
 #: workspace:workspace.publication.preview.linkPending
 msgid "workspace.publication.preview.linkPending"
-msgstr ""
+msgstr "Önizleme bağlantısı oluşturuluyor…"
 
 #: workspace:workspace.publication.preview.region
 msgid "workspace.publication.preview.region"
-msgstr ""
+msgstr "Telefonda önizleme"
 
 #: workspace:workspace.publication.publishAction.checklistConfirmed
 msgid "workspace.publication.publishAction.checklistConfirmed"
@@ -4490,123 +4490,123 @@ msgstr "Karekod baskı çıktısı henüz kullanılamıyor."
 
 #: workspace:workspace.publication.qrScreen.address
 msgid "workspace.publication.qrScreen.address"
-msgstr ""
+msgstr "Tam adres"
 
 #: workspace:workspace.publication.qrScreen.advanced
 msgid "workspace.publication.qrScreen.advanced"
-msgstr ""
+msgstr "Kod yönetimi ve gelişmiş baskı"
 
 #: workspace:workspace.publication.qrScreen.bulk
 msgid "workspace.publication.qrScreen.bulk"
-msgstr ""
+msgstr "Yeni masalar için toplu kod"
 
 #: workspace:workspace.publication.qrScreen.bulkDefaults
 msgid "workspace.publication.qrScreen.bulkDefaults"
-msgstr ""
+msgstr "Gerisi varsayılan: {areas} bölüm, masa başına {seats} kişilik, adlar T1 ile başlar."
 
 #: workspace:workspace.publication.qrScreen.contrast
 msgid "workspace.publication.qrScreen.contrast"
-msgstr ""
+msgstr "Ölçülen kontrast: {ratio}:1 — açık zemin üstüne koyu modüller."
 
 #: workspace:workspace.publication.qrScreen.copied
 msgid "workspace.publication.qrScreen.copied"
-msgstr ""
+msgstr "Kopyalandı"
 
 #: workspace:workspace.publication.qrScreen.copy
 msgid "workspace.publication.qrScreen.copy"
-msgstr ""
+msgstr "Adresi kopyala"
 
 #: workspace:workspace.publication.qrScreen.description
 msgid "workspace.publication.qrScreen.description"
-msgstr ""
+msgstr "Basılı bir kod hiç değişmez — menünüzü istediğiniz sıklıkta güncelleyin."
 
 #: workspace:workspace.publication.qrScreen.downloadAll
 msgid "workspace.publication.qrScreen.downloadAll"
-msgstr ""
+msgstr "Bütün kartları indir (PDF)"
 
 #: workspace:workspace.publication.qrScreen.downloadAllPart
 msgid "workspace.publication.qrScreen.downloadAllPart"
-msgstr ""
+msgstr "Kartlar {part}/{total} (PDF)"
 
 #: workspace:workspace.publication.qrScreen.downloadPdf
 msgid "workspace.publication.qrScreen.downloadPdf"
-msgstr ""
+msgstr "PDF indir"
 
 #: workspace:workspace.publication.qrScreen.empty
 msgid "workspace.publication.qrScreen.empty"
-msgstr ""
+msgstr "Henüz masa kodu yok. Masalarınızın kodlarını aşağıdan oluşturun."
 
 #: workspace:workspace.publication.qrScreen.loadError
 msgid "workspace.publication.qrScreen.loadError"
-msgstr ""
+msgstr "Masa kodları yüklenemedi. Tekrar deneyin."
 
 #: workspace:workspace.publication.qrScreen.loading
 msgid "workspace.publication.qrScreen.loading"
-msgstr ""
+msgstr "Masa kodları yükleniyor…"
 
 #: workspace:workspace.publication.qrScreen.neverScanned
 msgid "workspace.publication.qrScreen.neverScanned"
-msgstr ""
+msgstr "Hiç okutulmadı"
 
 #: workspace:workspace.publication.qrScreen.noDarkTheme
 msgid "workspace.publication.qrScreen.noDarkTheme"
-msgstr ""
+msgstr "Koyu kart yok: okuyucular açık zemin üstüne koyu bekler ve ters çevrilmiş bir kodu birçok telefon hiç okumaz."
 
 #: workspace:workspace.publication.qrScreen.previewAlt
 msgid "workspace.publication.qrScreen.previewAlt"
-msgstr ""
+msgstr "{name} için basılacak kart önizlemesi"
 
 #: workspace:workspace.publication.qrScreen.print
 msgid "workspace.publication.qrScreen.print"
-msgstr ""
+msgstr "Yazdır"
 
 #: workspace:workspace.publication.qrScreen.retry
 msgid "workspace.publication.qrScreen.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.publication.qrScreen.scans
 msgid "workspace.publication.qrScreen.scans"
-msgstr ""
+msgstr "{count} okutma"
 
 #: workspace:workspace.publication.qrScreen.selected
 msgid "workspace.publication.qrScreen.selected"
-msgstr ""
+msgstr "Seçili kod"
 
 #: workspace:workspace.publication.qrScreen.size
 msgid "workspace.publication.qrScreen.size"
-msgstr ""
+msgstr "Ölçü"
 
 #: workspace:workspace.publication.qrScreen.sizeOption
 msgid "workspace.publication.qrScreen.sizeOption"
-msgstr ""
+msgstr "{name} · {width} × {height} mm"
 
 #: workspace:workspace.publication.qrScreen.sizeStand
 msgid "workspace.publication.qrScreen.sizeStand"
-msgstr ""
+msgstr "Stant"
 
 #: workspace:workspace.publication.qrScreen.sizeTableCard
 msgid "workspace.publication.qrScreen.sizeTableCard"
-msgstr ""
+msgstr "Masa kartı"
 
 #: workspace:workspace.publication.qrScreen.state.active
 msgid "workspace.publication.qrScreen.state.active"
-msgstr ""
+msgstr "Etkin"
 
 #: workspace:workspace.publication.qrScreen.state.disabled
 msgid "workspace.publication.qrScreen.state.disabled"
-msgstr ""
+msgstr "Devre dışı"
 
 #: workspace:workspace.publication.qrScreen.state.working
 msgid "workspace.publication.qrScreen.state.working"
-msgstr ""
+msgstr "Çalışıyor"
 
 #: workspace:workspace.publication.qrScreen.tables
 msgid "workspace.publication.qrScreen.tables"
-msgstr ""
+msgstr "Masa kartları"
 
 #: workspace:workspace.publication.qrScreen.theme
 msgid "workspace.publication.qrScreen.theme"
-msgstr ""
+msgstr "Kart tasarımı"
 
 #: workspace:workspace.publication.readiness.categoryNames
 msgid "workspace.publication.readiness.categoryNames"
@@ -4614,11 +4614,11 @@ msgstr "Kategori adları hazır"
 
 #: workspace:workspace.publication.readiness.fix
 msgid "workspace.publication.readiness.fix"
-msgstr ""
+msgstr "Düzelt"
 
 #: workspace:workspace.publication.readiness.fixLabel
 msgid "workspace.publication.readiness.fixLabel"
-msgstr ""
+msgstr "Düzelt: {label}"
 
 #: workspace:workspace.publication.readiness.hasCategory
 msgid "workspace.publication.readiness.hasCategory"
@@ -4654,71 +4654,71 @@ msgstr "Görünür ürün adları hazır"
 
 #: workspace:workspace.publication.relative.daysAgo
 msgid "workspace.publication.relative.daysAgo"
-msgstr ""
+msgstr "{count} gün önce"
 
 #: workspace:workspace.publication.relative.hoursAgo
 msgid "workspace.publication.relative.hoursAgo"
-msgstr ""
+msgstr "{count} sa önce"
 
 #: workspace:workspace.publication.relative.justNow
 msgid "workspace.publication.relative.justNow"
-msgstr ""
+msgstr "az önce"
 
 #: workspace:workspace.publication.relative.minutesAgo
 msgid "workspace.publication.relative.minutesAgo"
-msgstr ""
+msgstr "{count} dk önce"
 
 #: workspace:workspace.publication.schedule.button
 msgid "workspace.publication.schedule.button"
-msgstr ""
+msgstr "Zamanla"
 
 #: workspace:workspace.publication.schedule.cancel
 msgid "workspace.publication.schedule.cancel"
-msgstr ""
+msgstr "Bu zamanlamayı iptal et"
 
 #: workspace:workspace.publication.schedule.cancelError
 msgid "workspace.publication.schedule.cancelError"
-msgstr ""
+msgstr "Zamanlama iptal edilemedi. Tekrar deneyin."
 
 #: workspace:workspace.publication.schedule.close
 msgid "workspace.publication.schedule.close"
-msgstr ""
+msgstr "Zamanlamayı kapat"
 
 #: workspace:workspace.publication.schedule.error
 msgid "workspace.publication.schedule.error"
-msgstr ""
+msgstr "Yayın zamanlanamadı. Hiçbir şey zamanlanmadı."
 
 #: workspace:workspace.publication.schedule.help
 msgid "workspace.publication.schedule.help"
-msgstr ""
+msgstr "Zamanlanmış bir yayın da yayındır: sonraki sürüm numarasını alır ve basılı karekod aynı kalır. Saatler İstanbul saatidir."
 
 #: workspace:workspace.publication.schedule.option.nextMonday
 msgid "workspace.publication.schedule.option.nextMonday"
-msgstr ""
+msgstr "Pazartesi 09:00"
 
 #: workspace:workspace.publication.schedule.option.tomorrowMorning
 msgid "workspace.publication.schedule.option.tomorrowMorning"
-msgstr ""
+msgstr "Yarın 09:00"
 
 #: workspace:workspace.publication.schedule.option.tonight
 msgid "workspace.publication.schedule.option.tonight"
-msgstr ""
+msgstr "Bu gece 03:00"
 
 #: workspace:workspace.publication.schedule.optionAt
 msgid "workspace.publication.schedule.optionAt"
-msgstr ""
+msgstr "{label} — {moment}"
 
 #: workspace:workspace.publication.schedule.pending
 msgid "workspace.publication.schedule.pending"
-msgstr ""
+msgstr "{moment} için zamanlandı (İstanbul)."
 
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
-msgstr ""
+msgstr "Yayını zamanla"
 
 #: workspace:workspace.publication.schedule.unready
 msgid "workspace.publication.schedule.unready"
-msgstr ""
+msgstr "Önce hazırlık listesini tamamlayın — zamanlama, şu an gördüğünüzü dondurur."
 
 #: workspace:workspace.publication.status.draft
 msgid "workspace.publication.status.draft"
@@ -4750,7 +4750,7 @@ msgstr "Yerine yenisi geçti"
 
 #: workspace:workspace.publication.status.liveBadge
 msgid "workspace.publication.status.liveBadge"
-msgstr ""
+msgstr "Yayında · v{version}"
 
 #: workspace:workspace.publication.status.loadError
 msgid "workspace.publication.status.loadError"
@@ -4782,7 +4782,7 @@ msgstr "Yayın durumu"
 
 #: workspace:workspace.publication.status.retry
 msgid "workspace.publication.status.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.publication.status.summary
 msgid "workspace.publication.status.summary"
@@ -4794,51 +4794,51 @@ msgstr "Yayın durumu henüz yok."
 
 #: workspace:workspace.publication.stepper.draft
 msgid "workspace.publication.stepper.draft"
-msgstr ""
+msgstr "Taslak"
 
 #: workspace:workspace.publication.stepper.draft.changes
 msgid "workspace.publication.stepper.draft.changes"
-msgstr ""
+msgstr "{count} değişiklik bekliyor"
 
 #: workspace:workspace.publication.stepper.draft.noChanges
 msgid "workspace.publication.stepper.draft.noChanges"
-msgstr ""
+msgstr "Bekleyen yok"
 
 #: workspace:workspace.publication.stepper.live
 msgid "workspace.publication.stepper.live"
-msgstr ""
+msgstr "Yayında"
 
 #: workspace:workspace.publication.stepper.live.never
 msgid "workspace.publication.stepper.live.never"
-msgstr ""
+msgstr "Henüz hiçbir şey yayınlanmadı"
 
 #: workspace:workspace.publication.stepper.live.sub
 msgid "workspace.publication.stepper.live.sub"
-msgstr ""
+msgstr "v{version} · {when}"
 
 #: workspace:workspace.publication.stepper.preview
 msgid "workspace.publication.stepper.preview"
-msgstr ""
+msgstr "Önizleme"
 
 #: workspace:workspace.publication.stepper.preview.sub
 msgid "workspace.publication.stepper.preview.sub"
-msgstr ""
+msgstr "Telefonda kontrol edin"
 
 #: workspace:workspace.publication.stepper.region
 msgid "workspace.publication.stepper.region"
-msgstr ""
+msgstr "Neredesiniz"
 
 #: workspace:workspace.publication.stepper.state.current
 msgid "workspace.publication.stepper.state.current"
-msgstr ""
+msgstr "Buradasınız"
 
 #: workspace:workspace.publication.stepper.state.done
 msgid "workspace.publication.stepper.state.done"
-msgstr ""
+msgstr "Tamamlandı"
 
 #: workspace:workspace.publication.stepper.state.upcoming
 msgid "workspace.publication.stepper.state.upcoming"
-msgstr ""
+msgstr "Henüz değil"
 
 #: workspace:workspace.publication.unavailable
 msgid "workspace.publication.unavailable"
@@ -4862,47 +4862,47 @@ msgstr "Misafirlerinizin menüyü açmak için okuttuğu karekodları oluşturun
 
 #: workspace:workspace.settings.audit.empty
 msgid "workspace.settings.audit.empty"
-msgstr ""
+msgstr "Henüz kaydedilmiş bir şey yok."
 
 #: workspace:workspace.settings.audit.error
 msgid "workspace.settings.audit.error"
-msgstr ""
+msgstr "Kayıt listesi yüklenemedi."
 
 #: workspace:workspace.settings.audit.help
 msgid "workspace.settings.audit.help"
-msgstr ""
+msgstr "Kaydedilen her değişiklik, en yenisi üstte. Bu liste her şeyin burada olduğunun garantisi değildir — yalnızca sistemin zaten yazdığı şeyler görünür."
 
 #: workspace:workspace.settings.audit.loading
 msgid "workspace.settings.audit.loading"
-msgstr ""
+msgstr "Kayıt listesi yükleniyor…"
 
 #: workspace:workspace.settings.audit.region
 msgid "workspace.settings.audit.region"
-msgstr ""
+msgstr "Burada neler oldu"
 
 #: workspace:workspace.settings.audit.retry
 msgid "workspace.settings.audit.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.settings.audit.source.media
 msgid "workspace.settings.audit.source.media"
-msgstr ""
+msgstr "Fotoğraf"
 
 #: workspace:workspace.settings.audit.source.publication
 msgid "workspace.settings.audit.source.publication"
-msgstr ""
+msgstr "Yayınlama"
 
 #: workspace:workspace.settings.audit.unknownActor
 msgid "workspace.settings.audit.unknownActor"
-msgstr ""
+msgstr "Bilinmiyor"
 
 #: workspace:workspace.settings.logo.change
 msgid "workspace.settings.logo.change"
-msgstr ""
+msgstr "Değiştir"
 
 #: workspace:workspace.settings.logo.help
 msgid "workspace.settings.logo.help"
-msgstr ""
+msgstr "Görsel kütüphanenizden seçilir; misafir menünüzün en üstünde görünür."
 
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
@@ -4910,7 +4910,7 @@ msgstr "Marka bilgileriniz ve planınız. Bunlar bir kez kurulur ve nadiren değ
 
 #: workspace:workspace.settings.tab.audit
 msgid "workspace.settings.tab.audit"
-msgstr ""
+msgstr "Denetim"
 
 #: workspace:workspace.settings.tab.billing
 msgid "workspace.settings.tab.billing"
@@ -4922,7 +4922,7 @@ msgstr "Marka"
 
 #: workspace:workspace.settings.tab.workspace
 msgid "workspace.settings.tab.workspace"
-msgstr ""
+msgstr "Çalışma alanı"
 
 #: workspace:workspace.settings.tabs.label
 msgid "workspace.settings.tabs.label"
@@ -4930,27 +4930,27 @@ msgstr "Ayar bölümleri"
 
 #: workspace:workspace.settings.workspace.address
 msgid "workspace.settings.workspace.address"
-msgstr ""
+msgstr "Panel adresi"
 
 #: workspace:workspace.settings.workspace.address.help
 msgid "workspace.settings.workspace.address.help"
-msgstr ""
+msgstr "Bu değiştirilemez — ekibinizin bağlantıları buna bağlıdır."
 
 #: workspace:workspace.settings.workspace.error
 msgid "workspace.settings.workspace.error"
-msgstr ""
+msgstr "Çalışma alanı bilgileriniz yüklenemedi."
 
 #: workspace:workspace.settings.workspace.loading
 msgid "workspace.settings.workspace.loading"
-msgstr ""
+msgstr "Çalışma alanınız yükleniyor…"
 
 #: workspace:workspace.settings.workspace.name
 msgid "workspace.settings.workspace.name"
-msgstr ""
+msgstr "Ad"
 
 #: workspace:workspace.settings.workspace.region
 msgid "workspace.settings.workspace.region"
-msgstr ""
+msgstr "Çalışma alanı"
 
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
@@ -4966,7 +4966,7 @@ msgstr "Genel arama kullanılamıyor"
 
 #: workspace:workspace.shell.nav.account
 msgid "workspace.shell.nav.account"
-msgstr ""
+msgstr "Hesap"
 
 #: workspace:workspace.shell.nav.analytics
 msgid "workspace.shell.nav.analytics"
@@ -5118,7 +5118,7 @@ msgstr "Davet oluşturulamadı. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.invite.ownership.note
 msgid "workspace.team.invite.ownership.note"
-msgstr ""
+msgstr "Sahiplik davetle verilmez, devredilir."
 
 #: workspace:workspace.team.invite.role.editor
 msgid "workspace.team.invite.role.editor"
@@ -5130,11 +5130,11 @@ msgstr "Menü içeriğini düzenler. Yayınlayamaz, şubeleri değiştiremez, fa
 
 #: workspace:workspace.team.invite.role.kitchen
 msgid "workspace.team.invite.role.kitchen"
-msgstr ""
+msgstr "Mutfak"
 
 #: workspace:workspace.team.invite.role.kitchen.help
 msgid "workspace.team.invite.role.kitchen.help"
-msgstr ""
+msgstr "Alerjenleri ve “bugün tükendi” bilgisini işaretler. Fiyat değiştiremez, yayınlayamaz, başka bir şey göremez."
 
 #: workspace:workspace.team.invite.role.label
 msgid "workspace.team.invite.role.label"
@@ -5150,7 +5150,7 @@ msgstr "Günlük işleri yürütür — menü, şube, karekod ve yayınlama. Fat
 
 #: workspace:workspace.team.invite.role.member
 msgid "workspace.team.invite.role.member"
-msgstr ""
+msgstr "Üye"
 
 #: workspace:workspace.team.invite.role.owner
 msgid "workspace.team.invite.role.owner"
@@ -5210,11 +5210,11 @@ msgstr "Bu üye çıkarılamadı. Lütfen tekrar deneyin."
 
 #: workspace:workspace.team.members.remove.forbidden
 msgid "workspace.team.members.remove.forbidden"
-msgstr ""
+msgstr "Ekipten kişi çıkarmayı yalnızca çalışma alanının sahibi yapabilir. Sahibinden yapmasını isteyin."
 
 #: workspace:workspace.team.members.remove.missing
 msgid "workspace.team.members.remove.missing"
-msgstr ""
+msgstr "Bu kişi artık ekip listesinde değil."
 
 #: workspace:workspace.team.members.remove.retry
 msgid "workspace.team.members.remove.retry"
@@ -5270,7 +5270,7 @@ msgstr "Çalışma alanı sahipliğini devret"
 
 #: workspace:workspace.team.operational.description
 msgid "workspace.team.operational.description"
-msgstr ""
+msgstr "Herkes yalnızca işinin gerektirdiğini görür."
 
 #: workspace:workspace.team.pendingInvitations.region
 msgid "workspace.team.pendingInvitations.region"
@@ -5278,24 +5278,24 @@ msgstr "Bekleyen davetler"
 
 #: workspace:workspace.team.roleGuide.editor
 msgid "workspace.team.roleGuide.editor"
-msgstr ""
+msgstr "Ürünler, fiyatlar ve fotoğraflar. Yayınlayamaz."
 
 #: workspace:workspace.team.roleGuide.heading
 msgid "workspace.team.roleGuide.heading"
-msgstr ""
+msgstr "Hangi rol ne yapabilir?"
 
 #: workspace:workspace.team.roleGuide.kitchen
 msgid "workspace.team.roleGuide.kitchen"
-msgstr ""
+msgstr "Alerjenler ve “bugün tükendi”. Başka bir şey görmez."
 
 #: workspace:workspace.team.roleGuide.manager
 msgid "workspace.team.roleGuide.manager"
-msgstr ""
+msgstr "Menü, karekodlar, yayınlama. Faturaya dokunamaz."
 
 #: workspace:workspace.team.roleGuide.member
 msgid "workspace.team.roleGuide.member"
-msgstr ""
+msgstr "Yalnızca görüntüler. Eski kayıtlar için duruyor; artık kimse bu role davet edilmiyor."
 
 #: workspace:workspace.team.roleGuide.owner
 msgid "workspace.team.roleGuide.owner"
-msgstr ""
+msgstr "Her şey: fatura, ekip, yayınlama."
