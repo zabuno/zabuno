@@ -100,8 +100,18 @@ export const analytics = {
     // sağlayıcı bağlı olmasa da üretilebilirler (`docs/109` §6.1).
     'workspace.analytics.highlight.title': 'What happened in this range?',
     'workspace.analytics.highlight.busiest': '{day} around {hour} was the busiest slot.',
+    /*
+        SAYI KİŞİDİR, VURUŞ DEĞİL.
+
+        Cümle "{count} times" diyordu; oysa uç `COUNT(DISTINCT visitor_key)`
+        döndürüyor — aynı sayı, iki satır aşağıdaki listede zaten "{count}
+        ziyaretçi" diye okunuyordu. Aynı ölçümün iki farklı cümlesi, hangisi
+        doğruysa diğerini yalan yapar; ve arama kutusuna beş kez dokunan tek
+        bir misafiri "beş talep" saymak, sahibi olmayan bir talebe göre menü
+        değiştirtir.
+    */
     'workspace.analytics.highlight.missing':
-        '“{term}” was searched {count} times and returned nothing — that may be a gap in your menu.',
+        '“{term}” was searched by {count} visitors and returned nothing — that may be a gap in your menu.',
     'workspace.analytics.highlight.neverViewed': '{name} was not looked at once in this range.',
     'workspace.analytics.highlight.action.addTerm': 'Add “{term}” to the menu',
     'workspace.analytics.highlight.action.editMenu': 'Review the menu',

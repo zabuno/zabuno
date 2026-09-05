@@ -21,6 +21,18 @@ export type MenuInsightsRow = {
     viewers: number;
 };
 
+/**
+ * `searches`, adına rağmen VURUŞ DEĞİL KİŞİ sayar.
+ *
+ * Uç `COUNT(DISTINCT visitor_key)` döndürüyor: arama kutusuna beş kez
+ * dokunan tek bir misafir burada "1"dir. Herkese açık bir uçtan gelen ham
+ * vuruşu saymak, hem ucuz bir betikle şişirilebilir hem de sahibe olmayan
+ * bir talebi vaat ederdi.
+ *
+ * Bu yüzden ekrandaki cümle "kez arandı" DEĞİL "kişi aradı" der. Alan adı
+ * uçtan geliyor ve kablo sözleşmesi olduğu için değiştirilmedi; anlamı
+ * burada yazılıdır ki bir sonraki okuyan adına kanmasın.
+ */
 export type MenuInsightsSearch = { term: string; searches: number };
 
 export type MenuInsights = {

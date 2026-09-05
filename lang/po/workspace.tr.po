@@ -134,7 +134,7 @@ msgstr "En yoğun zaman {day} saat {hour} civarıydı."
 
 #: workspace:workspace.analytics.highlight.missing
 msgid "workspace.analytics.highlight.missing"
-msgstr "“{term}” {count} kez arandı ve hiçbir sonuç dönmedi — menünüzde bir eksik olabilir."
+msgstr "“{term}” aramasını {count} kişi yaptı ve hiçbir sonuç dönmedi — menünüzde bir eksik olabilir."
 
 #: workspace:workspace.analytics.highlight.neverViewed
 msgid "workspace.analytics.highlight.neverViewed"

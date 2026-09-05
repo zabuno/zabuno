@@ -134,7 +134,7 @@ msgstr "{day} around {hour} was the busiest slot."
 
 #: workspace:workspace.analytics.highlight.missing
 msgid "workspace.analytics.highlight.missing"
-msgstr "“{term}” was searched {count} times and returned nothing — that may be a gap in your menu."
+msgstr "“{term}” was searched by {count} visitors and returned nothing — that may be a gap in your menu."
 
 #: workspace:workspace.analytics.highlight.neverViewed
 msgid "workspace.analytics.highlight.neverViewed"

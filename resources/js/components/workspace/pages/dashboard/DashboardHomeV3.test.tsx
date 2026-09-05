@@ -143,7 +143,9 @@ describe('Home v3 — ölçümden çıkan öneriler (HOME_V3_SUGGESTIONS_RED)', 
         ).toBeInTheDocument();
 
         expect(
-            within(region).getByText('“Vejetaryen” was searched 14 times but is not on the menu'),
+            within(region).getByText(
+                '14 visitors searched for “Vejetaryen” but it is not on the menu',
+            ),
         ).toBeInTheDocument();
         expect(
             within(region).getByText('Searches with no results · last 30 days'),
@@ -153,6 +155,52 @@ describe('Home v3 — ölçümden çıkan öneriler (HOME_V3_SUGGESTIONS_RED)', 
             within(region).getByText('Tavuk Şiş has not been opened once in the last 30 days'),
         ).toBeInTheDocument();
         expect(within(region).getByText('Menu engineering · never viewed')).toBeInTheDocument();
+    });
+
+    /*
+        FF-155 — SAYI KİŞİDİR, VURUŞ DEĞİL.
+
+        Satır "14 kez arandı" diyordu; oysa uç ham vuruşu değil FARKLI
+        ZİYARETÇİYİ sayıyor (`COUNT(DISTINCT visitor_key)`). Arama kutusuna
+        beş kez dokunan tek bir misafir orada "1"dir. "14 kez arandı" cümlesi
+        sahibe on dört talep vaat eder ve o sayı yüzünden menüsüne ürün
+        ekletir — ölçülen şey ise on dört KİŞİdir.
+
+        Analitik ekranındaki liste aynı sayıyı zaten "{count} ziyaretçi" diye
+        okuyordu: aynı ölçümün iki cümlesi vardı ve biri yalandı.
+    */
+    it('arama önerisi kişi sayar, vuruş değil — ve tek kişi çoğul konuşmaz', () => {
+        const { rerender } = render(
+            <DashboardSuggestions
+                insights={insights({
+                    searchesWithNoResults: [{ term: 'Vejetaryen', searches: 14 }],
+                })}
+                onNavigateToSection={vi.fn()}
+            />,
+        );
+
+        const region = screen.getByRole('region', { name: /suggestions/i });
+
+        expect(within(region).queryByText(/was searched 14 times/i)).toBeNull();
+        expect(
+            within(region).getByText(
+                '14 visitors searched for “Vejetaryen” but it is not on the menu',
+            ),
+        ).toBeInTheDocument();
+
+        // Tek kişi ayrı cümledir: "1 visitors" diye bir şey yok.
+        rerender(
+            <DashboardSuggestions
+                insights={insights({
+                    searchesWithNoResults: [{ term: 'Vejetaryen', searches: 1 }],
+                })}
+                onNavigateToSection={vi.fn()}
+            />,
+        );
+
+        expect(
+            screen.getByText('1 visitor searched for “Vejetaryen” but it is not on the menu'),
+        ).toBeInTheDocument();
     });
 
     /*
@@ -474,7 +522,9 @@ describe('Home v3 — ölçümün Home ekranına bağlanması (HOME_V3_WIRING_RE
         );
 
         expect(
-            await screen.findByText('“Vejetaryen” was searched 14 times but is not on the menu'),
+            await screen.findByText(
+                '14 visitors searched for “Vejetaryen” but it is not on the menu',
+            ),
         ).toBeInTheDocument();
 
         rerender(
@@ -531,7 +581,9 @@ describe('Home v3 — ölçümün Home ekranına bağlanması (HOME_V3_WIRING_RE
         );
 
         expect(
-            await screen.findByText('“Vejetaryen” was searched 14 times but is not on the menu'),
+            await screen.findByText(
+                '14 visitors searched for “Vejetaryen” but it is not on the menu',
+            ),
         ).toBeInTheDocument();
         expect(screen.getByText('Most viewed in the last 30 days')).toBeInTheDocument();
 

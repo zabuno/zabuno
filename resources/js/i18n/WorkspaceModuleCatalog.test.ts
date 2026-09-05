@@ -52,8 +52,13 @@ const FROZEN_LEGACY_KEY_COUNT = 1328;
 // onun yerine ortamın gerçeğini söyleyen TEK anahtar eklendi; ikinci cümle
 // (bunun sahip hatası olmadığı) FF-150'nin anahtarını yeniden kullanır,
 // çünkü sahip aynı gerçeği iki farklı sesle okumamalı.
+// FF-155: "aranan ama bulunamayan" cümlesi ölçümün söylediğini söylüyor.
+// Uç ham vuruşu değil FARKLI ZİYARETÇİYİ sayıyor; aynı ekranın listesi
+// zaten "{count} ziyaretçi" diyordu, üstteki özet ise "{count} kez arandı".
+// Aynı ölçümün iki cümlesinden biri yalandı. Anahtar sayısı DEĞİŞMEDİ —
+// yalnız tek bir anahtarın metni düzeltildi.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '65c491ee18dfff304044ad5e5aa112b38898533b6b14aaa6b2ed4dff0e074440';
+    'e46f44dbb2cba15bac7fe4cc6afc23d2899c0460d77be4eaadba62a04eb232c0';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

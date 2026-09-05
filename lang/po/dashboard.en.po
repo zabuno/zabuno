@@ -222,7 +222,11 @@ msgstr "Open the menu"
 
 #: dashboard:dashboard.suggestions.search.title
 msgid "dashboard.suggestions.search.title"
-msgstr "“{term}” was searched {count} times but is not on the menu"
+msgstr "1 visitor searched for “{term}” but it is not on the menu"
+
+#: dashboard:dashboard.suggestions.search.title.plural
+msgid "dashboard.suggestions.search.title.plural"
+msgstr "{count} visitors searched for “{term}” but it is not on the menu"
 
 #: dashboard:dashboard.suggestions.search.why
 msgid "dashboard.suggestions.search.why"

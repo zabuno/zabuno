@@ -222,7 +222,11 @@ msgstr "Menüyü aç"
 
 #: dashboard:dashboard.suggestions.search.title
 msgid "dashboard.suggestions.search.title"
-msgstr "“{term}” {count} kez arandı ama menüde yok"
+msgstr "“{term}” aramasını bir kişi yaptı ama menüde yok"
+
+#: dashboard:dashboard.suggestions.search.title.plural
+msgid "dashboard.suggestions.search.title.plural"
+msgstr "“{term}” aramasını {count} kişi yaptı ama menüde yok"
 
 #: dashboard:dashboard.suggestions.search.why
 msgid "dashboard.suggestions.search.why"

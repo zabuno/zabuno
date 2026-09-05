@@ -30,7 +30,7 @@
     "workspace.analytics.highlight.action.addTerm": "Menüye “{term}” ekle",
     "workspace.analytics.highlight.action.editMenu": "Menüyü gözden geçir",
     "workspace.analytics.highlight.busiest": "En yoğun zaman {day} saat {hour} civarıydı.",
-    "workspace.analytics.highlight.missing": "“{term}” {count} kez arandı ve hiçbir sonuç dönmedi — menünüzde bir eksik olabilir.",
+    "workspace.analytics.highlight.missing": "“{term}” aramasını {count} kişi yaptı ve hiçbir sonuç dönmedi — menünüzde bir eksik olabilir.",
     "workspace.analytics.highlight.neverViewed": "Bu aralıkta {name} ürününe bir kez bile bakılmadı.",
     "workspace.analytics.highlight.title": "Bu aralıkta ne oldu?",
     "workspace.analytics.menuEngineering.error": "Menü sayıları yüklenemedi.",

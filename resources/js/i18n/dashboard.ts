@@ -86,8 +86,27 @@ const en = {
     // Kaynağın değişmez cümlesi (`docs/109` §3).
     'dashboard.suggestions.rule':
         'It suggests, you approve. Nothing changes without your approval.',
+    /*
+        SAYI KİŞİDİR, VURUŞ DEĞİL.
+
+        Cümle "{count} kez arandı" diyordu; oysa uç ham vuruşu değil FARKLI
+        ZİYARETÇİYİ sayıyor (`COUNT(DISTINCT visitor_key)`) — arama kutusuna
+        beş kez dokunan tek bir misafir orada "1"dir. "14 kez arandı" cümlesi
+        sahibe on dört talep vaat eder ve o sayı yüzünden menüsüne ürün
+        ekletir; oysa ölçülen şey on dört KİŞİdir, ve bu daha güçlü ama
+        BAŞKA bir cümledir.
+
+        Analitik ekranındaki liste aynı sayıyı zaten "{count} ziyaretçi" diye
+        okuyordu: aynı ölçümün iki cümlesi vardı ve biri yalandı.
+
+        Tekil/çoğul ayrı anahtar — "1 visitors" diye bir şey yok. Türkçede
+        ikisi de aynı cümledir ve bu, `dashboard.suggestions.heading` ile
+        aynı düzendir.
+    */
     'dashboard.suggestions.search.title':
-        '“{term}” was searched {count} times but is not on the menu',
+        '1 visitor searched for “{term}” but it is not on the menu',
+    'dashboard.suggestions.search.title.plural':
+        '{count} visitors searched for “{term}” but it is not on the menu',
     'dashboard.suggestions.search.why': 'Searches with no results · last 30 days',
     'dashboard.suggestions.search.cta': 'Open the menu',
     'dashboard.suggestions.unviewed.title': '{name} has not been opened once in the last 30 days',
