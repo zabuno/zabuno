@@ -31,12 +31,66 @@ describe('masaüstü kenar çubuğu', () => {
 
         const aside = container.querySelector('aside') as HTMLElement;
 
-        expect(aside.className).toContain('overflow-y-auto');
+        /*
+            KAYDIRMA RAYIN KENDİSİNDE DEĞİL, GEZİNTİ LİSTESİNDE.
+
+            Önce `aside` kayıyordu ve bu, dibindeki hesap menüsünü GÖRÜNMEZ
+            yapıyordu (sahibin 2026-09-05 bildirimi: "profil açılır menüsü
+            görünmüyordu, ekranı çok küçültünce görünüyordu").
+
+            Sebebi CSS'in temel bir kuralı: `overflow-y: auto` taşıyan bir
+            kutu, içindeki mutlak konumlu her katmanı KIRPAR. Hesap menüsü
+            düğmenin ÜSTÜNE açılıyor (`bottom-full`); gezinti uzun olduğunda
+            menünün üst kenarı rayın görünen alanının dışına düşüyor ve
+            kırpılıyordu. Ekranı küçültmek gezintiyi kısaltıyor, menüye yer
+            açıyor — "zoom out edince görünüyor" belirtisinin tamamı bu.
+
+            Kaydırmayı listeye indirmek sorunu kaynağında bitirir: hesap
+            bloğu artık hiçbir kaydırma kutusunun içinde değil, dolayısıyla
+            kırpacak bir kap da yok.
+        */
+        expect(aside.className).not.toContain('overflow-y-auto');
+        expect(aside.className).toContain('min-h-0');
+
+        const scroller = container.querySelector('[data-slot="sidebar-scroll"]') as HTMLElement;
+
+        expect(scroller).not.toBeNull();
+        expect(scroller.className).toContain('overflow-y-auto');
         /*
             `min-h-0` olmadan flex çocuğunun en küçük boyu içeriği kadardır:
             uzun bir gezinti rayı gerdirir ve kaydırma dışarı taşardı.
         */
-        expect(aside.className).toContain('min-h-0');
+        expect(scroller.className).toContain('min-h-0');
+    });
+
+    /**
+     * HESAP MENÜSÜNÜ KIRPACAK BİR KAP KALMAMALI.
+     *
+     * Yukarıdaki test kaydırmanın yerini ölçüyor; bu test SONUCU ölçüyor:
+     * hesap bloğu ile `aside` arasındaki hiçbir katman kırpmıyor. İkisi ayrı
+     * testler, çünkü yarın biri kaydırmayı listede bırakıp araya `overflow`
+     * taşıyan yeni bir sarmalayıcı koyabilir — o gün ilk test hâlâ geçer,
+     * bu kırılır.
+     */
+    it('hesap menüsü ile ray arasında kırpan hiçbir katman yok', () => {
+        const { container } = render(
+            <DesktopSidebar
+                navGroups={navGroups}
+                navLabel="Restaurant admin"
+                accountMenu={<button type="button">admin@zabuno.com</button>}
+            />,
+        );
+
+        const aside = container.querySelector('aside') as HTMLElement;
+        const account = container.querySelector('[data-slot="sidebar-account"]') as HTMLElement;
+
+        expect(account).not.toBeNull();
+
+        for (let node = account; node !== aside && node.parentElement !== null; node = node.parentElement) {
+            expect(node.className).not.toContain('overflow-hidden');
+            expect(node.className).not.toContain('overflow-y-auto');
+            expect(node.className).not.toContain('overflow-auto');
+        }
     });
 
     // --- SHELL-ACCOUNT-STICKY-02 ------------------------------------------
@@ -52,11 +106,30 @@ describe('masaüstü kenar çubuğu', () => {
         const holder = screen.getByRole('button', { name: 'admin@zabuno.com' })
             .parentElement as HTMLElement;
 
-        expect(holder.className).toContain('sticky');
-        expect(holder.className).toContain('bottom-0');
         /*
-            Zemin ŞART: yapışkan bir öğe saydam olsaydı, altından geçen
-            gezinti maddeleri düğmenin içinden okunurdu.
+            2026-09-05: SÖZ AYNI, MEKANİZMA DEĞİŞTİ.
+
+            Önce `sticky bottom-0` ile çivileniyordu. O çözüm düğmeyi görünür
+            tutuyordu ama açılan MENÜYÜ kurtaramıyordu: yapışkanlık kırpmayı
+            kaldırmaz, ray hâlâ bir kaydırma kutusuydu ve menüyü kesiyordu.
+
+            Artık hesap bloğu kaydırma kutusunun DIŞINDA, rayın son çocuğu:
+            gezinti listesi kendi içinde akar, hesap bloğu her zaman dipte
+            durur ve hiçbir şey onu kesmez. Bu, yapışkanlıktan daha güçlü bir
+            garanti — kaymaya çalışıp tutunan bir öğe değil, hiç kaymayan bir
+            öğe.
+
+            Ölçülen söz: hesap bloğu rayın SON çocuğu ve kendi zemini var.
+        */
+        expect(holder.className).toContain('mt-auto');
+        expect(holder.getAttribute('data-slot')).toBe('sidebar-account');
+
+        const aside = holder.closest('aside') as HTMLElement;
+        expect(aside.lastElementChild).toBe(holder);
+
+        /*
+            Zemin ŞART: saydam olsaydı, altından geçen gezinti maddeleri
+            düğmenin içinden okunurdu.
         */
         expect(holder.className).toContain('bg-[var(--color-surface)]');
     });
@@ -66,7 +139,7 @@ describe('masaüstü kenar çubuğu', () => {
             <DesktopSidebar navGroups={navGroups} navLabel="Restaurant admin" />,
         );
 
-        expect(container.querySelector('.sticky')).toBeNull();
+        expect(container.querySelector('[data-slot="sidebar-account"]')).toBeNull();
     });
 });
 

@@ -77,7 +77,16 @@ export function DesktopSidebar({
                     ray kayar, ama dibindeki hesap düğmesi HER ZAMAN ekranda
                     kalır — çünkü ray sayfa kadar değil, ekran kadar uzun.
                 */
-                'min-h-0 overflow-y-auto',
+                /*
+                    RAYIN KENDİSİ KAYMAZ — kaydıran kap içeride.
+
+                    Ray kaydırma kutusu olduğunda, dibindeki hesap menüsü
+                    onun içinde kalıyor ve YUKARI açılan katman kırpılıyordu
+                    (sahibin 2026-09-05 bildirimi).  taşıyan her
+                    kutu, içindeki mutlak konumlu katmanı keser; çözüm
+                    katmanı büyütmek değil, kesen kabı doğru yere koymaktır.
+                */
+                'min-h-0',
             )}
         >
             <WorkspaceSwitcherTrigger
@@ -86,7 +95,17 @@ export function DesktopSidebar({
                 currentWorkspaceId={currentWorkspaceId}
                 onSelectWorkspace={onSelectWorkspace}
             />
-            <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
+            {/*
+                KAYAN KISIM YALNIZ GEZİNTİ.
+
+                Uzun bir gezinti listesi burada akar; hesap bloğu bu kabın
+                DIŞINDA kaldığı için ne kayar ne de kırpılır. Eski çözüm
+                () düğmeyi görünür tutuyordu ama açılan
+                menüyü kurtaramıyordu: yapışkanlık kırpmayı kaldırmaz.
+            */}
+            <div data-slot="sidebar-scroll" className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+                <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
+            </div>
 
             {/*
                 Hesap tetikleyicisi kenar çubuğunun DİBİNDE — `docs/50` §7.
@@ -111,7 +130,7 @@ export function DesktopSidebar({
                     kenarlık, kaydırılacak içerik olduğunu söyleyen ince bir
                     işarettir.
                 */
-                <div className="sticky bottom-0 mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-2)]">
+                <div data-slot="sidebar-account" className="mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-2)]">
                     {railSections !== undefined && railSections.length > 0 ? (
                         /*
                             PROFİL VE AYARLAR AÇIKTA (FF-127).

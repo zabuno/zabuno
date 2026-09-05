@@ -659,12 +659,42 @@ a {
  *
  * Yazdırmada geri alınır: sabit yükseklik bir çıktıyı tek sayfaya kırpardı. */
 .admin-shell-frame {
-    height: 100vh;
-    height: 100dvh;
+    /*
+        KABUK GÖRÜNTÜ ALANINA ÇİVİLENİR — yüksekliği HESAPLANMAZ.
+
+        Önce `height: 100dvh` denendi ve yanlış katmandı. Bu kabuk `overflow:
+        hidden` ile KIRPAN bir kaptır; kırpan bir kabın boyu bir birime
+        bağlıysa, o birimin yanlış çözüldüğü her durumda ekranın tamamı
+        bozulur — ve bozulma sessizdir:
+
+        - Boy görüntü alanından BÜYÜK olursa (telefonda `100vh`, adres çubuğu
+          dahil yükseklik) alt gezinti çubuğu katlamanın altında kalır ve
+          sayfa kayar.
+        - Boy görüntü alanından KÜÇÜK ya da sıfır olursa kabuk çöker: içerik
+          kırpılır, ana alanın kaydırma çubuğu ekran dışında kalır ve sayfanın
+          altına İNİLEMEZ. Sahibin masaüstünde bildirdiği "kaydırma kayboldu"
+          tam olarak budur.
+
+        `position: fixed; inset: 0` bu soruyu ortadan kaldırır: kutu, tarayıcı
+        hangi birimi nasıl çözerse çözsün, görünen alanın kendisidir. Belge
+        kaydırması da imkânsızlaşır — kaydırma yalnız ana alanda olur ve alt
+        çubuk her zaman görünen alanın dibindedir.
+
+        Ölçülen olay (2026-09-05): bu deponun kendi tarayıcı bölmesinde
+        `100dvh` sıfır çözüldü ve kabuk tamamen çöktü. Bir birimin her yerde
+        doğru çözüleceğine güvenmek, bu kabuk için taşınamaz bir bahis.
+    */
+    position: fixed;
+    inset: 0;
 }
 
 @media print {
+    /*
+        YAZDIRMADA ÇİVİ SÖKÜLÜR: sabitlenmiş bir kutu çıktıyı tek sayfaya
+        kırpardı ve kalan sayfalar boş çıkardı.
+    */
     .admin-shell-frame {
+        position: static;
         height: auto;
     }
 }
