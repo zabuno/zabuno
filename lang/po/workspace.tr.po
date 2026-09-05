@@ -2980,6 +2980,10 @@ msgstr "sınırsız"
 msgid "workspace.media.security.explanation"
 msgstr "Her görsel, menünüzde görünmeden önce taranır ve bir kişi tarafından kontrol edilir."
 
+#: workspace:workspace.media.security.explanation.unavailable
+msgid "workspace.media.security.explanation.unavailable"
+msgstr "Bu ortamda bağlı bir virüs tarayıcı yok; yüklediğiniz görseller kontrol edilmiyor ve menünüzde görünmek yerine karantinada bekliyor."
+
 #: workspace:workspace.media.settings.originals.body
 msgid "workspace.media.settings.originals.body"
 msgstr "Yüklediğiniz dosya her zaman bayt bayt saklanır. Dönüştürme ya da yeniden üretim, onun yanına yeni bir sürüm yazar; aslın yerine hiçbir şey geçmez ve hiçbir şey silinmez."

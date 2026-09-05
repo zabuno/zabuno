@@ -23,28 +23,40 @@ import { MediaUploadRegion } from './MediaUploadRegion';
  * bunu bir değişiklikle ilişkilendiremez.
  */
 function mount() {
+    /*
+        İki uç taklit edilir. Güvenlik açıklaması artık koşulsuz bir cümle
+        değil (FF-151): ekran onu ancak taramanın gerçekten çalıştığını
+        öğrendikten sonra yazar. Ölçek disiplini iddiası değişmedi — cümlenin
+        ekrana gelmesi için durumun bilinmesi gerekiyor.
+    */
     vi.stubGlobal(
         'fetch',
-        vi.fn(async () => ({
+        vi.fn(async (url: string) => ({
             ok: true,
             status: 200,
-            json: async () => ({
-                slots: [
-                    {
-                        key: 'itemImage',
-                        minWidth: 1200,
-                        minHeight: 400,
-                        aspect: null,
-                        formats: ['jpeg'],
-                        altRequired: true,
-                    },
-                ],
-                limits: { maxBytes: 31457280, maxMegapixels: 40 },
-            }),
+            json: async () =>
+                String(url).endsWith('/media/settings')
+                    ? {
+                          patterns: [],
+                          security: [{ key: 'virusScan', state: 'on', switchable: false }],
+                      }
+                    : {
+                          slots: [
+                              {
+                                  key: 'itemImage',
+                                  minWidth: 1200,
+                                  minHeight: 400,
+                                  aspect: null,
+                                  formats: ['jpeg'],
+                                  altRequired: true,
+                              },
+                          ],
+                          limits: { maxBytes: 31457280, maxMegapixels: 40 },
+                      },
         })),
     );
 
-    render(<MediaUploadRegion onSubmit={vi.fn(async () => {})} />);
+    render(<MediaUploadRegion workspaceId={7} onSubmit={vi.fn(async () => {})} />);
 }
 
 /**

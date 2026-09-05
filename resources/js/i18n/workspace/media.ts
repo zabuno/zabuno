@@ -37,6 +37,21 @@ export const media = {
         'You did not do anything wrong, and this is not something you can switch on from here.',
     'workspace.media.security.explanation':
         'Every image is scanned and checked by a person before it can appear on your menu.',
+    /*
+        FF-151. Yukarıdaki cümle bir VAATTİR ve sahip onu daha hiçbir şey
+        yüklemeden okur — ilk fotoğrafını seçerken kararını ona göre verir.
+        Tarayıcının bağlı olmadığı bir ortamda o cümle okunduğu ilk saniyede
+        yanlıştır ve yüklenen her dosya sessizce karantinada bekler.
+
+        Cümle ORTAMIN gerçeğini söyler, bir kusuru değil; ardından
+        `upload.held.notYours` gelir ve bunun sahip hatası olmadığını,
+        panelden açılacak bir anahtar bulunmadığını yazar. Ayarlar
+        ekranındaki `settings.security.virusScan.unavailable` satırıyla aynı
+        sesle konuşur: sahip aynı gerçeği iki yerde iki farklı şekilde
+        okumamalı. Süre, yüzde ya da "yakında düzelecek" YOK.
+    */
+    'workspace.media.security.explanation.unavailable':
+        'No virus scanner is connected in this environment, so images you upload are not checked and wait in quarantine instead of appearing on your menu.',
     'workspace.media.upload.field.file': 'File',
     // Sürükle-bırak alanı. Öncesinde ham bir `<input type=file>` vardı ve
     // tarayıcı onu İŞLETİM SİSTEMİNİN dilinde çiziyordu: uygulama İngilizce

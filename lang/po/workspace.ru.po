@@ -2980,6 +2980,10 @@ msgstr ""
 msgid "workspace.media.security.explanation"
 msgstr ""
 
+#: workspace:workspace.media.security.explanation.unavailable
+msgid "workspace.media.security.explanation.unavailable"
+msgstr ""
+
 #: workspace:workspace.media.settings.originals.body
 msgid "workspace.media.settings.originals.body"
 msgstr ""

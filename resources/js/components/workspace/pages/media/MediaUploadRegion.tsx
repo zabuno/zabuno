@@ -12,6 +12,7 @@ import { MediaUploadSteps, type UploadStep, type UploadStepKey } from './MediaUp
 import { SupportedTypesTable } from './SupportedTypesTable';
 import { FieldError } from '../../../catalog/menu/micro/FieldError';
 import { focusFirstInvalidField, ServerRejectedError } from '../../../../lib/validationErrors';
+import { buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { t } from '../../../../i18n/workspace';
 import { wizardText } from './uploadWizardCopy';
 
@@ -78,11 +79,56 @@ export type UploadOutcome = {
 };
 
 type MediaUploadRegionProps = {
+    /**
+     * Kiracı adresi — YALNIZ tarayıcı durumunu sormak için (FF-151).
+     *
+     * İsteğe bağlıdır çünkü adres bilinmeyen bir bağlamda ekran yine
+     * çalışmalı; o durumda durum "bilinmiyor" kalır ve aşağıdaki vaat
+     * cümlesi hiç yazılmaz. Yükleme yolu bu adresten geçmez, `onSubmit`
+     * çağıranın işidir.
+     */
+    workspaceId?: number;
     onSubmit: (
         formData: FormData,
         options: UploadOptions,
     ) => Promise<UploadOutcome | void> | UploadOutcome | void;
 };
+
+/**
+ * Virüs taramasının bu ORTAMDAKİ durumu (FF-151).
+ *
+ * `null` "kapalı" demek DEĞİLDİR, "henüz bilmiyorum" demektir; ikisini aynı
+ * değere indirgemek, istek yoldayken yanlış bir cümle yazdırırdı.
+ */
+type ScannerState = 'on' | 'unavailable' | null;
+
+/**
+ * Ayarlar ucunun cevabından tarayıcı satırını okur.
+ *
+ * Uç bir sözlük gönderir (`on` · `partial` · `unavailable` · `missing`) ve
+ * bu ekran onun yalnız iki değerine cümle bağlar. Tanımadığı bir değerde
+ * `null` döner — yani susar. Bir gün üçüncü bir durum eklenirse ekran onu
+ * ikisinden birine benzetip yanlış konuşmaz.
+ */
+function readScannerState(body: unknown): ScannerState {
+    if (typeof body !== 'object' || body === null) return null;
+
+    const security = (body as { security?: unknown }).security;
+
+    if (!Array.isArray(security)) return null;
+
+    const row = security.find(
+        (candidate): candidate is { key: string; state: string } =>
+            typeof candidate === 'object' &&
+            candidate !== null &&
+            (candidate as { key?: unknown }).key === 'virusScan' &&
+            typeof (candidate as { state?: unknown }).state === 'string',
+    );
+
+    if (row === undefined) return null;
+
+    return row.state === 'on' || row.state === 'unavailable' ? row.state : null;
+}
 
 /**
  * Dosya, İŞLENEMEDİĞİ için değil, TARANAMADIĞI için mi bekliyor?
@@ -123,13 +169,20 @@ function newIdempotencyKey(): string {
  * kullanıcı onu nasıl etkinleştireceğini bilemez, çünkü etkinleştirmenin
  * bir yolu yoktur. O alanlar geri geldiklerinde çalışır hâlde gelirler.
  */
-export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
+export function MediaUploadRegion({ workspaceId, onSubmit }: MediaUploadRegionProps) {
     const fileId = useId();
     const altId = useId();
     const slotId = useId();
 
     const [policies, setPolicies] = useState<SlotPolicy[]>([]);
     const [limits, setLimits] = useState<UploadLimits | null>(null);
+    /**
+     * Tarayıcı bu ortamda çalışıyor mu? (FF-151)
+     *
+     * Başlangıç değeri `null` — yani "bilmiyorum". Ekran cevabı almadan
+     * hiçbir iddiada bulunmaz.
+     */
+    const [scanner, setScanner] = useState<ScannerState>(null);
     const [progress, setProgress] = useState(0);
     /*
         Anahtar SEÇİMLE doğar, denemeyle değil: aynı dosyanın ikinci
@@ -242,6 +295,48 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             cancelled = true;
         };
     }, []);
+
+    /*
+        TARAYICI DURUMU, AYARLAR EKRANIYLA AYNI UÇTAN (FF-151).
+
+        `MediaSettingsRegion` bu cevabı zaten okuyor. İkinci bir gerçek
+        kaynağı kurmak (config'i ekrana ayrı bir uçtan sızdırmak, ya da
+        durumu ilk yüklemenin cevabından tahmin etmek) iki listenin bir gün
+        ayrışması demektir; o gün sahip aynı soruya iki farklı cevap alır ve
+        hangisinin doğru olduğunu bilemez.
+
+        Adres bilinmiyorsa istek hiç yapılmaz ve durum "bilinmiyor" kalır.
+    */
+    useEffect(() => {
+        if (workspaceId === undefined) return;
+
+        let cancelled = false;
+
+        void (async () => {
+            try {
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/media/settings`,
+                    buildAuthRequestInit(),
+                );
+
+                if (!response.ok || cancelled) return;
+
+                const body = (await response.json()) as unknown;
+
+                if (!cancelled) {
+                    setScanner(readScannerState(body));
+                }
+            } catch {
+                // Sessiz: ayar okunamadı diye YÜKLEME çalışmaz olmaz. Ama
+                // durum bilinmediği için vaat cümlesi de yazılmaz — sessiz
+                // kalmak, tahmin etmekten iyidir.
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [workspaceId]);
 
     const activePolicy = policies.find((candidate) => candidate.key === slot) ?? null;
 
@@ -965,11 +1060,36 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                 taranır" cümlesi ile "tarama bu ortamda çalışmıyor" cümlesi
                 aynı ekranda durursa biri mutlaka yalandır ve sahip hangisine
                 inanacağını bilemez. Vaat, çürütüldüğü anda susar.
+
+                VE VAAT, ÇÜRÜTÜLMEDEN ÖNCE DE DÜRÜST (FF-151). Sahip bu
+                cümleyi henüz hiçbir şey yüklemeden okuyor; tarayıcının bağlı
+                olmadığı bir ortamda cümle daha okunduğu anda yanlıştır.
+                Üç hâl var ve üçü de ayrı:
+
+                  - `on`          : bugünkü vaat aynen durur.
+                  - `unavailable` : ortamın gerçeği yazılır ve hemen
+                                    ardından bunun sahip hatası olmadığı —
+                                    aynı cümle beklemede kalan dosyada da
+                                    kullanılıyor, sahip aynı gerçeği iki
+                                    farklı sesle okumamalı.
+                  - bilinmiyor    : HİÇBİR ŞEY yazılmaz. Yanlış cümleyi bir
+                                    an gösterip düzeltmek, hiç göstermemekten
+                                    kötüdür; sahip ilk okuduğuna inanır ve
+                                    düzeltmeyi görmez.
             */}
-            {held ? null : (
+            {held || scanner === null ? null : scanner === 'on' ? (
                 <p className="text-body text-fg-muted">
                     {t('workspace.media.security.explanation')}
                 </p>
+            ) : (
+                <div className="flex flex-col gap-1">
+                    <p className="text-body text-fg-warning">
+                        {t('workspace.media.security.explanation.unavailable')}
+                    </p>
+                    <p className="text-body text-fg-muted">
+                        {t('workspace.media.upload.held.notYours')}
+                    </p>
+                </div>
             )}
         </form>
     );

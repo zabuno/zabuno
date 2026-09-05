@@ -38,9 +38,14 @@ use Tests\TestCase;
  * deneyin" diyordu. Tarayıcı bu ortamda hiç yokken işleme ASLA bitmez —
  * yani ürün olmayacak bir şeyi vaat ediyordu.
  *
+ * VE AYNI CÜMLE MARKA LOGOSUNDA DA VARDI (FF-151). Menü kalemi düzeltildi,
+ * logo unutuldu; oysa logo misafirin gördüğü İLK şeydir ve sahibi onu
+ * kurulumun ilk yarım saatinde bağlamaya çalışır. Aynı yalanı iki ekrandan
+ * birinde bırakmak, onu hiç düzeltmemekle aynı kapıya çıkar.
+ *
  * Requirement IDs: MEDIA-SCANNER-HONEST-01, MEDIA-DELETE-IMPACT-01,
  * MEDIA-DELETE-UNUSED-OK-01, MEDIA-SCANNER-HONEST-AT-UPLOAD-01,
- * MEDIA-BIND-HELD-HONEST-01.
+ * MEDIA-BIND-HELD-HONEST-01, MEDIA-BIND-BRAND-LOGO-HELD-HONEST-01.
  */
 final class MediaHonestyAndDeletionTest extends TestCase
 {
@@ -201,6 +206,106 @@ final class MediaHonestyAndDeletionTest extends TestCase
         );
     }
 
+    // --- MEDIA-BIND-BRAND-LOGO-HELD-HONEST-01 -----------------------------
+
+    public function test_binding_a_held_image_as_the_brand_logo_does_not_promise_that_processing_will_finish(): void
+    {
+        Storage::fake('local');
+        $this->app->instance(MalwareScannerPort::class, new class implements MalwareScannerPort
+        {
+            public function scan(string $diskPath): MediaScanResult
+            {
+                return new MediaScanResult(MediaScanVerdict::Indeterminate);
+            }
+        });
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('brand-logo-held-honest');
+        $this->brandIn($workspaceId, 'brand-logo-held-honest');
+
+        $mediaId = (int) $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])->post(
+            "/api/workspaces/{$workspaceId}/media",
+            ['file' => UploadedFile::fake()->image('logo.png', 512, 512), 'altText' => 'Zeytin logosu', 'slot' => 'logo']
+        )->json('id');
+
+        $response = $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->putJson("/api/workspaces/{$workspaceId}/brand/logo", ['mediaAssetId' => $mediaId]);
+
+        // Güvenlik sınırı DEĞİŞMEZ: taranmamış görsel logo da olamaz.
+        $response->assertStatus(422);
+        self::assertSame(
+            0,
+            DB::table('media_usages')->where('media_asset_id', $mediaId)->count(),
+            'MEDIA-BIND-BRAND-LOGO-HELD-HONEST-01: taranmamış görsel yine de bağlanmamalı.'
+        );
+
+        $message = (string) $response->json('message');
+
+        /*
+            Logo, menü kalemiyle AYNI cümleyi söylemeli. Sahip aynı gerçeği
+            iki ekranda iki farklı şekilde okursa hangisinin doğru olduğunu
+            bilemez — ve "işlenmesi bitince" olanı, hiç bitmeyecek bir anı
+            işaret ediyordu.
+        */
+        self::assertStringNotContainsString('İşlenmesi bitince', $message);
+        self::assertSame(
+            (string) DB::table('media_processing_jobs')
+                ->where('media_asset_id', $mediaId)->where('kind', 'scan')
+                ->orderByDesc('id')->value('failure_reason'),
+            $message,
+            'MEDIA-BIND-BRAND-LOGO-HELD-HONEST-01: ret, kayda geçen gerçek sebebi söylemeli.'
+        );
+    }
+
+    public function test_the_brand_logo_refusal_never_borrows_a_reason_from_another_workspace(): void
+    {
+        Storage::fake('local');
+        $this->app->instance(MalwareScannerPort::class, new class implements MalwareScannerPort
+        {
+            public function scan(string $diskPath): MediaScanResult
+            {
+                return new MediaScanResult(MediaScanVerdict::Indeterminate);
+            }
+        });
+
+        [$owner, $mineId] = $this->ownerAndWorkspace('logo-tenant-mine');
+        $this->brandIn($mineId, 'logo-tenant-mine');
+
+        [$stranger, $theirsId] = $this->ownerAndWorkspace('logo-tenant-theirs');
+
+        // Yabancının varlığı: kimliği geçerli, ama BAŞKA kiracıya ait.
+        $theirMediaId = (int) $this->actingAs($stranger)->withHeaders(['Accept' => 'application/json'])->post(
+            "/api/workspaces/{$theirsId}/media",
+            ['file' => UploadedFile::fake()->image('logo.png', 512, 512), 'altText' => 'Başkasının logosu', 'slot' => 'logo']
+        )->json('id');
+
+        $response = $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->putJson("/api/workspaces/{$mineId}/brand/logo", ['mediaAssetId' => $theirMediaId]);
+
+        $response->assertStatus(422);
+
+        /*
+            KİRACI SINIRI. Varlık kimlikle bulunur ve kimlik kiracı sormaz;
+            yabancının dosyasına yazılmış sebebi buraya basmak, o dosyanın
+            VAR OLDUĞUNU ele verirdi. Burada eski, genel cümle doğru olandır.
+        */
+        self::assertSame(
+            'Bu görsel henüz kullanıma hazır değil. İşlenmesi bitince yeniden deneyin.',
+            (string) $response->json('message'),
+            'MEDIA-BIND-BRAND-LOGO-HELD-HONEST-01: başka kiracının sebebi sızdırılamaz.'
+        );
+    }
+
+    /** Markanın kendisi — logo testinin gerektirdiği tek satır. */
+    private function brandIn(int $workspaceId, string $slug): int
+    {
+        return (int) DB::table('brands')->insertGetId([
+            'workspace_id' => $workspaceId, 'name' => 'Zeytin Restoranları',
+            'slug' => "brand-{$slug}", 'locale' => 'tr',
+            'timezone' => 'Europe/Istanbul', 'currency' => 'TRY',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+    }
+
     /**
      * Menüye bağlama testinin gerektirdiği en küçük gerçek zincir:
      * marka → şube → menü → kategori → ürün → menü satırı.
@@ -210,12 +315,7 @@ final class MediaHonestyAndDeletionTest extends TestCase
      */
     private function menuItemIn(int $workspaceId, string $slug): int
     {
-        $brandId = (int) DB::table('brands')->insertGetId([
-            'workspace_id' => $workspaceId, 'name' => 'Zeytin Restoranları',
-            'slug' => "brand-{$slug}", 'locale' => 'tr',
-            'timezone' => 'Europe/Istanbul', 'currency' => 'TRY',
-            'created_at' => now(), 'updated_at' => now(),
-        ]);
+        $brandId = $this->brandIn($workspaceId, $slug);
 
         $locationId = (int) DB::table('locations')->insertGetId([
             'workspace_id' => $workspaceId, 'brand_id' => $brandId,
@@ -226,7 +326,20 @@ final class MediaHonestyAndDeletionTest extends TestCase
         ]);
 
         $menuId = (int) DB::table('menus')->insertGetId([
-            'public_key' => "pk-{$slug}", 'workspace_id' => $workspaceId,
+            /*
+                ANAHTAR SLUG'DAN TÜRETİLMEZ, ÖZÜTLENİR.
+
+                `public_key` sütunu ON İKİ karakterdir ve bu ürünün gerçek
+                bir kısıtıdır: misafirin adres çubuğuna girdiği anahtar
+                kısa olmak zorunda. Yardımcı önce `"pk-{$slug}"` yazıyordu
+                ve kısa slug'larla çalışıyordu — ilk uzun slug'da PostgreSQL
+                testi kırdı. SQLite bunu SESSİZCE geçiriyor, yani hata
+                yerelde değil yalnız CI'da görünüyordu.
+
+                Özüt, slug ne olursa olsun sığar ve testler arasında
+                benzersiz kalır (sütun `unique`).
+            */
+            'public_key' => 'pk'.substr(md5($slug), 0, 10), 'workspace_id' => $workspaceId,
             'location_id' => $locationId, 'name' => 'Ana Menü', 'state' => 'draft',
             'created_at' => now(), 'updated_at' => now(),
         ]);

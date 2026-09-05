@@ -742,6 +742,7 @@
     "workspace.media.quota.storage": "Asıl dosyalar",
     "workspace.media.quota.unlimited": "sınırsız",
     "workspace.media.security.explanation": "Her görsel, menünüzde görünmeden önce taranır ve bir kişi tarafından kontrol edilir.",
+    "workspace.media.security.explanation.unavailable": "Bu ortamda bağlı bir virüs tarayıcı yok; yüklediğiniz görseller kontrol edilmiyor ve menünüzde görünmek yerine karantinada bekliyor.",
     "workspace.media.settings.originals.body": "Yüklediğiniz dosya her zaman bayt bayt saklanır. Dönüştürme ya da yeniden üretim, onun yanına yeni bir sürüm yazar; aslın yerine hiçbir şey geçmez ve hiçbir şey silinmez.",
     "workspace.media.settings.originals.heading": "Asıl dosyalarınız",
     "workspace.media.settings.pattern.date": "Tarih biçimi",

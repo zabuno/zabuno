@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1327;
+const FROZEN_LEGACY_KEY_COUNT = 1328;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -47,8 +47,13 @@ const FROZEN_LEGACY_KEY_COUNT = 1327;
 // kullanılamadığını söyler, diğeri bunun sahibin hatası olmadığını. Süre,
 // yüzde ya da "yakında düzelecek" diyen üçüncü bir anahtar YOK — bilinen
 // tek şey durumun kendisidir.
+// FF-151: aynı dürüstlük bir adım GERİYE taşındı — "her görsel taranır"
+// vaadi, sahip henüz hiçbir şey yüklemeden okunuyor. Tarayıcı bağlı değilken
+// onun yerine ortamın gerçeğini söyleyen TEK anahtar eklendi; ikinci cümle
+// (bunun sahip hatası olmadığı) FF-150'nin anahtarını yeniden kullanır,
+// çünkü sahip aynı gerçeği iki farklı sesle okumamalı.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'b3a14ddb0ba23cb23ca62cb62c388ec7065efad4e9320f8d114a091e631a53b3';
+    '65c491ee18dfff304044ad5e5aa112b38898533b6b14aaa6b2ed4dff0e074440';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

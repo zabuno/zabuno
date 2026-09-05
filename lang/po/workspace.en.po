@@ -2980,6 +2980,10 @@ msgstr "no limit"
 msgid "workspace.media.security.explanation"
 msgstr "Every image is scanned and checked by a person before it can appear on your menu."
 
+#: workspace:workspace.media.security.explanation.unavailable
+msgid "workspace.media.security.explanation.unavailable"
+msgstr "No virus scanner is connected in this environment, so images you upload are not checked and wait in quarantine instead of appearing on your menu."
+
 #: workspace:workspace.media.settings.originals.body
 msgid "workspace.media.settings.originals.body"
 msgstr "The file you uploaded is always kept, byte for byte. Converting or re-rendering writes a new version next to it; nothing replaces the original and nothing is deleted."

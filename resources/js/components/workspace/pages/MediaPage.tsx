@@ -413,7 +413,13 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             icon: <UploadSimple aria-hidden="true" size={18} />,
             content: (
                 <PanelCard>
-                    <MediaUploadRegion onSubmit={handleUpload} />
+                    {/*
+                        Adres, tarayıcı durumunu sormak için geçer (FF-151):
+                        yükleme ekranı "her görsel taranır" vaadini ancak
+                        gerçekten taranıyorsa yazar. Adres yoksa hiçbir iddia
+                        yazılmaz — bölüm yine çalışır.
+                    */}
+                    <MediaUploadRegion workspaceId={workspaceId} onSubmit={handleUpload} />
                 </PanelCard>
             ),
         },
