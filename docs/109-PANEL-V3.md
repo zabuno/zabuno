@@ -23,6 +23,18 @@ işlem, yönetişim, AI önerileri, menü hapları, CSV, fotoğraftan aktar) hi�
 doğmadı. Bu turda ölçü şudur: **kaynakta olan ve üründe olmayan her bölüm,
 ya doğar ya da neden doğmadığı yazılır.**
 
+> **§1 VE §2 TABLOLARI, İŞE BAŞLARKEN ALINAN ÖLÇÜMDÜR — GÜNCEL DURUM §5'TEDİR.**
+>
+> Aşağıdaki iki tablodaki "YOK / kısmi" satırları bu paket BAŞLAMADAN önce
+> çıkarıldı ve iş bitince güncellenmedi. Sonuç: tablolar, aynı belgenin §5
+> sayacıyla ve kodla çelişiyor — örneğin "çoklu menü YOK" diyor, oysa
+> `menu_service_switches` göçü ve menü hapları depoda.
+>
+> Bu, `docs/109`'un kendi §8.6'sında uyardığı tuzağın belgenin İÇİNDE
+> gerçekleşmiş hâlidir: gerekçe eskidi, cümle kaldı. Bir tablo satırı
+> okunurken sorulacak soru şudur — **kod ne diyor?** (Çelişki denetimi
+> FF-161, 2026-09-05.)
+
 ## 1. Panel — on ekran
 
 | Ekran | Kaynakta ne var | Depoda durum |
@@ -63,7 +75,10 @@ ya doğar ya da neden doğmadığı yazılır.**
 - **"İş başladığı anda liste dondurulur."** Toplu işlem çalışırken yüklenen
   yeni dosya o işe girmez.
 - **"Herkes sadece işine yeteni görür."**
-- **"Silinen dosya 30 gün burada bekler, sonra kalıcı silinir."**
+- **"Silinen dosya 30 gün burada bekler, sonra kalıcı silinir."** —
+  _kaynağın cümlesi böyle; ÜRÜNDE süre plana bağlıdır (7 / 30 / 90 gün,
+  `docs/98` §7 ve `config/media-quota.php`). Kaynak tek bir sayı varsayıyor,
+  depo plana göre farklılaştırmayı seçti; ekran süreyi dinamik yazar._
 
 ## 4. Yenileme kuralı — benzetme değil değiştirme
 

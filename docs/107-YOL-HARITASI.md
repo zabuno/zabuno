@@ -1,5 +1,11 @@
 # 107 — Yol haritası: fazlar, bağımlılıklar ve "bitti" tanımları
 
+> **BU BELGE ÜRÜN YOL HARİTASIDIR.** Yönetişim aşamalarının ayrı ve daha eski
+> bir sayacı var (`docs/17`, sekiz aşama); ikisi farklı soruları cevaplar ve
+> birbirinin yerine geçmez. Sahibe ilerleme raporlanırken payda **burasıdır**;
+> `docs/17` bir aşamanın çıkış kapısının kanıtlanıp kanıtlanmadığını sayar.
+> Paket bazlı durum için `docs/26`. (Çelişki denetimi FF-161, 2026-09-05.)
+
 Sahibin talebi (2026-09-04): *"yapılmayanların planını yap. faz'lara böl.
 faz 1, olmazsa olmaz'lar nelerdir? faz 2, GTM için gereklilikler. faz 3,
 kurumsallaşmak için gereklilikler. faz 4-5-…-10, …20, 30, 50."*

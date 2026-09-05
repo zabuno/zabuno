@@ -447,8 +447,18 @@ return [
 
         'max_megapixels' => 40,
         'max_frames' => 1,              // animasyon Faz 2'de açılır
-        // Çöpte bekleme süresi (`docs/49` Faz 5, kota kararı `docs/98` §7):
-        // silmek boş alan açmalı ama yanlış silmenin de bir geri yolu olmalı.
-        'trash_retention_days' => 30,
+
+        /*
+            ÇÖPTE BEKLEME SÜRESİ BURADA DEĞİL — `config/media-quota.php`'de,
+            ve PLANA BAĞLI (7 / 30 / 90 gün, `docs/98` §7).
+
+            Burada bir zamanlar `trash_retention_days => 30` duruyordu ve
+            hiçbir kod onu okumuyordu: `ConfigMediaQuota` süreyi plandan alır.
+            Yani düz bir 30, hiçbir şeyi yönetmeden yanlış cevap veriyordu —
+            okuyan biri ürünün 30 günde sildiğini sanırdı.
+
+            Ölü bir yapılandırma satırı, olmayan bir satırdan tehlikelidir:
+            varlığı bir karar taşıdığını ima eder. (Çelişki denetimi FF-161.)
+        */
     ],
 ];

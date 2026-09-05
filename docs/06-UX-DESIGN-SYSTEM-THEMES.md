@@ -148,6 +148,21 @@ ayrı bir bileşen seti **değildir**; reusable component'ler mümkün olduğunc
 kendi container'ına göre morfolojik olarak değişir (container query
 yaklaşımı).
 
+> **DARALTMA (2026-09-05, çelişki denetimi FF-161).** Yukarıdaki cümle
+> BİLEŞENLERİN İÇİNDEKİ morfolojiye ilişkindir — TESLİM PAKETİNE değil.
+>
+> Sahibin 2026-08-28 talimatı (`docs/54`) cihaz bazlı PAKET ayrımını açtı:
+> _"telefonla açtığımda, desktop için özel olan kod yüklenmesin."_ Ürün bunu
+> uyguluyor — `vite.config.ts` iki ayrı giriş noktası derliyor ve seçimi
+> sunucu yapıyor (`App\Support\Device\DeviceClass`); ayrımı bir kapı
+> koruyor (`scripts/adaptive-bundle-gate`).
+>
+> İkisi çelişmez ama karıştırılmamalıdır: bir bileşen hâlâ kendi kapsayıcısına
+> göre değişir, buna karşılık TELEFONA masaüstü kabuğunun kodu hiç inmez. Bu
+> not olmadan, bu bölümü — ki kendini bu ilkenin kanonik sahibi ilan ediyor —
+> okuyan biri iki giriş noktasını "yanlış mimari" sanıp birleştirmeye
+> kalkardı.
+
 **"Responsive" bu külliyatta bir plan/acceptance etiketi olarak
 kullanılmaz** — kabul kriteri her zaman somut adaptive profil + 320px
 reflow kanıtıdır (§8 WCAG matrisindeki "Reflow/320px" satırı, `docs/35` §9

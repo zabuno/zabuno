@@ -120,10 +120,28 @@ sayfasında "Physical QR scan evidence" altındaki formu doldur (cihaz + bir
 cümle) → "Record this". Ya da sunucudan:
 `php artisan platform:evidence:attest qr-physical-scan --status=passed --summary="…" --payload=device=iPhone`.
 
-**RPO/RTO kararı (MASTER, geri döndürülebilir):** `docs/42`'deki günlük
-`db-backups` hacmiyle tutarlı olarak **RPO 24 saat, RTO 4 saat**. Aynı formdan
-ya da `--payload=rpo_hours=24 --payload=rto_hours=4` ile kaydedilir.
-Kayıt üretimde bir insan tarafından düşülür — bu belge onu düşmüş saymaz.
+**RPO/RTO kararı (MASTER, geri döndürülebilir):** **RPO 24 saat, RTO 4 saat**
+— bu bir **HEDEFTİR, bugünkü durumun ölçüsü DEĞİLDİR.** Aynı formdan ya da
+`--payload=rpo_hours=24 --payload=rto_hours=4` ile kaydedilir. Kayıt üretimde
+bir insan tarafından düşülür — bu belge onu düşmüş saymaz.
+
+> **DÜZELTME (2026-09-05, çelişki denetimi FF-161).** Bu madde daha önce
+> hedefi *"`docs/42`'deki günlük `db-backups` hacmiyle tutarlı olarak"*
+> gerekçelendiriyordu. O gerekçe **yanlıştı**: `docs/42` aynı hacim için
+> "Henüz yapılmadı — **içine yazan bir iş yok**" diyor ve haklı; `docker/`
+> altında hiçbir yedekleme işi bulunmuyor.
+>
+> Ayrılmış bir hacim, içine bir şey konduğu anlamına gelmez. Bugünkü gerçek
+> RPO 24 saat değil **sonsuzdur** — geri dönülecek bir yedek yok.
+>
+> Bu düzeltme önemli, çünkü madde bir insanın üretim hazırlık formuna sayı
+> girmesini istiyor: eski hâliyle **var olmayan bir güvenceyi kanıt olarak
+> kaydettirirdi.** `docs/16` DR-01 zaten "doğrulanmadı" diyordu; bu madde o
+> çekinceyi düşürmüştü.
+>
+> Hedefin gerçeğe dönmesi için gereken iki şey ayrı ve ikisi de eksik:
+> yedeği ALAN bir iş, ve o yedekten GERİ DÖNÜLDÜĞÜNÜN bir kez kanıtlanması.
+> `docs/107` Faz 1.5'in cümlesiyle: *"denenmemiş bir yedek, yedek değildir."*
 
 **ASVS:** `security/OWASP-ASVS-BASELINE.md` bir öz-değerlendirmedir, üçüncü
 taraf denetim DEĞİLDİR; kayıt "recorded" durumuyla ve bu cümleyle yapılır,
