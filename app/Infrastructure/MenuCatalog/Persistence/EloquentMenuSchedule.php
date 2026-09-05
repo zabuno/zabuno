@@ -68,32 +68,80 @@ final class EloquentMenuSchedule implements MenuSchedulePort
             }
         }
 
-        $entries = [];
+        /*
+            SIRA GÜNÜN AKIŞIDIR — VE TEK YERDE, BURADA TÜRETİLİR.
+
+            `menus.sort_order` OLUŞTURMA sırasıdır: akşam menüsünü önce kuran
+            sahip hapları "Akşam · Kahvaltı" diye okuyordu, oysa günü
+            kahvaltıyla başlıyor. Ekran o an sahibin gününü değil, satırın
+            yazılma anını gösteriyordu.
+
+            Bunu bir sürükle-bırak denetimiyle çözmek, sahibe her saat
+            değişikliğinden sonra ikinci bir iş yükler ve iki gerçek (saat ve
+            sıra) bir gün birbirinden ayrılırdı: "Kahvaltı 07–11" yazan hap,
+            akşam menüsünün solunda durmayı sürdürebilirdi. Sıra bu yüzden
+            VERİLMEZ, servis başlangıç dakikasından TÜRETİLİR.
+
+            Sıralama yalnız burada yapılır. Ekran da sıralasaydı iki gerçek
+            doğardı ve bu liste yarın bir başka tüketiciye gittiğinde sıra
+            orada başka türlü çıkardı.
+
+            Anahtar üç basamaklıdır:
+
+            1. Saati olan menüler önce. Rotasyonun DIŞINDA tutulmuş menü
+               ("Ramazan kapalı") günün bir yerine düşemez — günde bir yeri
+               yoktur. Onları saatlilerin ARDINA koymak, üstelik kendi
+               aralarında bugünkü `sort_order` ile bırakmak, mevcut davranışı
+               hiç bozmamanın da tek yoludur.
+            2. EN ERKEN pencerenin başlangıç dakikası. Bir menünün birden çok
+               yayı olabilir (ana menü kahvaltıyla ikiye bölünür); gün bir kez
+               okunur, menü de günde bir kez görünür. `$menuWindows[0]` zaten
+               en erken yaydır: `windows()` geçişleri dakikaya göre artan
+               verir.
+
+               Gece yarısını aşan pencere (22:00–02:00) BAŞLANGICINA göre
+               yerleşir, bitişine göre değil; yoksa gece menüsü kahvaltıdan da
+               önce gelir ve sahip gününün geceyle başladığını okurdu.
+            3. Beraberlik `sort_order`/`id` sırasını korur — sorgu zaten öyle
+               geliyor.
+        */
+        $rows = [];
 
         foreach ($menus as $menu) {
             $menuWindows = $windows[(int) $menu->id] ?? [];
             $first = $menuWindows[0] ?? null;
 
-            $entries[] = new MenuScheduleEntry(
-                id: (int) $menu->id,
-                name: (string) $menu->name,
-                state: (string) $menu->state,
-                sortOrder: (int) $menu->sort_order,
-                startsAt: $first === null ? null : ServiceDayTimeline::clockFromMinute($first['startMinute']),
-                endsAt: $first === null ? null : ServiceDayTimeline::clockFromMinute($first['endMinute']),
-                windows: array_map(
-                    static fn (array $window): array => [
-                        'startsAt' => ServiceDayTimeline::clockFromMinute($window['startMinute']),
-                        'endsAt' => ServiceDayTimeline::clockFromMinute($window['endMinute']),
-                    ],
-                    $menuWindows,
+            $rows[] = [
+                'orderKey' => [
+                    $first === null ? 1 : 0,
+                    $first['startMinute'] ?? 0,
+                    count($rows),
+                ],
+                'entry' => new MenuScheduleEntry(
+                    id: (int) $menu->id,
+                    name: (string) $menu->name,
+                    state: (string) $menu->state,
+                    sortOrder: (int) $menu->sort_order,
+                    startsAt: $first === null ? null : ServiceDayTimeline::clockFromMinute($first['startMinute']),
+                    endsAt: $first === null ? null : ServiceDayTimeline::clockFromMinute($first['endMinute']),
+                    windows: array_map(
+                        static fn (array $window): array => [
+                            'startsAt' => ServiceDayTimeline::clockFromMinute($window['startMinute']),
+                            'endsAt' => ServiceDayTimeline::clockFromMinute($window['endMinute']),
+                        ],
+                        $menuWindows,
+                    ),
+                    isServingNow: $servingNow === (int) $menu->id,
+                    isAddressAnchor: $menu->public_key !== null,
                 ),
-                isServingNow: $servingNow === (int) $menu->id,
-                isAddressAnchor: $menu->public_key !== null,
-            );
+            ];
         }
 
-        return $entries;
+        // Anahtar girişle aynı satırda taşınır: ikisi bir daha eşleştirilmez,
+        // yani sıralamadan sonra ayrışmaları mümkün değildir.
+        usort($rows, static fn (array $a, array $b): int => $a['orderKey'] <=> $b['orderKey']);
+
+        return array_map(static fn (array $row): MenuScheduleEntry => $row['entry'], $rows);
     }
 
     /** @return list<array{menuId:int,startMinute:int}> */

@@ -98,3 +98,38 @@ export const WithVaryingHours: Story = {
 export const WithoutHours: Story = {
     args: { location: { ...location, opening_hours: [] } },
 };
+
+/**
+ * ŞU AN AÇIK (FF-148). Cevabı sunucu verir, şubenin kendi saat diliminde;
+ * kart yalnız çizer. Rozet KELİME taşır — renk tek başına bir işaret
+ * değildir.
+ */
+export const OpenNow: Story = {
+    args: { location: { ...location, opening_hours: uniformWeek, open_now: true } },
+};
+
+/**
+ * ŞU AN KAPALI. Rozet tehlike rengi TAŞIMAZ: kapalı olmak bir hata değil,
+ * gecenin normalidir; kırmızı bir rozet sahibe düzeltilecek bir şey varmış
+ * gibi görünürdü.
+ */
+export const ClosedNow: Story = {
+    args: { location: { ...location, opening_hours: uniformWeek, open_now: false } },
+};
+
+/**
+ * İKİ ROZET BİRDEN: sahip saatlerini girmiş ama masalarını henüz
+ * tanımlamamış. İkisi de doğrudur ve ikisi de çizilir; kurulum ÖNDE, çünkü
+ * masası olmayan şubede misafir zaten karekod okutamaz.
+ */
+export const InSetupAndOpen: Story = {
+    args: {
+        location: {
+            ...location,
+            table_count: 0,
+            opening_hours: uniformWeek,
+            open_now: true,
+        },
+        weeklyScans: null,
+    },
+};

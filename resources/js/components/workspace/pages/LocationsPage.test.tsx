@@ -145,6 +145,53 @@ describe('LocationsPage — kart ızgarası', () => {
     });
 
     /**
+     * AYNI IZGARADA İKİ FARKLI DURUM (FF-148).
+     *
+     * Sahibin yolculuğu: markanın bir şubesi İstanbul'da, biri Auckland'da.
+     * Gecenin 05:00'inde panele bakıyor; Kadıköy kapalı ama Auckland'da
+     * öğleden sonra. Cevabı sunucu ŞUBENİN saat diliminde verdiği için ızgara
+     * ikisini AYNI ANDA farklı gösterebiliyor. Sayfa hiçbir hesap yapmaz —
+     * yalnız listeden geleni karta taşır; taşımasaydı rozet hiç görünmezdi ve
+     * sunucudaki cevap ekranda karşılıksız kalırdı.
+     */
+    it('şubelerin açık/kapalı durumunu listeden karta taşır', () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => timeSeriesResponse({ state: 'not_enough_data' })),
+        );
+
+        renderPage({
+            locations: [
+                makeLocation({ open_now: false }),
+                makeLocation({
+                    id: 812,
+                    display_name: 'Auckland Şube',
+                    timezone: 'Pacific/Auckland',
+                    open_now: true,
+                }),
+            ],
+        });
+
+        const states = screen.getAllByTestId('location-card-open-state');
+
+        expect(states).toHaveLength(2);
+        expect(states[0]).toHaveTextContent('Closed now');
+        expect(states[1]).toHaveTextContent('Open now');
+    });
+
+    /** Cevabı olmayan şube ızgarada da sessizdir: rozet hiç çizilmez. */
+    it('cevap yoksa hiçbir kartta durum rozeti çizilmez', () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () => timeSeriesResponse({ state: 'not_enough_data' })),
+        );
+
+        renderPage({ locations: [makeLocation(), makeLocation({ id: 812, open_now: null })] });
+
+        expect(screen.queryAllByTestId('location-card-open-state')).toHaveLength(0);
+    });
+
+    /**
      * Kaynağın `goQr` bağlaması: kart "Masalar"a basınca o şubenin karekod
      * ekranına gider. Sayfa içi açılır listeden kaybolan yetenek buraya
      * taşındı ve burada bir CÜMLE oldu — "bu şubenin masaları".

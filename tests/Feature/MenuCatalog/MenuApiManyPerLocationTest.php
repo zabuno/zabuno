@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\MenuCatalog;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\MenuCatalog\Support\MultiMenuScaffold;
@@ -33,6 +34,12 @@ use Tests\TestCase;
  *   ve silme akışı vardır.
  * - `MENU-API-MENU-LAST-ONE-KEPT-01` — şubenin SON menüsü silinemez;
  *   silinebilseydi misafir boş bir sayfa görürdü.
+ * - `MENU-API-MENU-ORDER-01` — hapların sırası GÜNÜN AKIŞIDIR, oluşturma
+ *   sırası değil; saati olmayan menüler sonda, kendi aralarında `sort_order`
+ *   ile durur.
+ * - `MENU-API-MENU-ORDER-MIDNIGHT-01` — gece yarısını aşan pencere
+ *   BAŞLANGICINA göre yerleşir, bitişine göre değil.
+ * - `MENU-API-MENU-ORDER-SINGLE-01` — tek menülü şube bugünkü gibi çalışır.
  */
 final class MenuApiManyPerLocationTest extends TestCase
 {
@@ -100,6 +107,142 @@ final class MenuApiManyPerLocationTest extends TestCase
         self::assertSame('11:00', $rows[1]['endsAt']);
         self::assertTrue($rows[0]['isAddressAnchor'], 'MENU-LIST-01: şubenin adresi ilk menüde durur.');
         self::assertFalse($rows[1]['isAddressAnchor']);
+    }
+
+    // --- MENU-API-MENU-ORDER-01 --------------------------------------------
+
+    /**
+     * SIRA TÜRETİLİR, ELLE VERİLMEZ.
+     *
+     * Akşam menüsünü önce kuran bir sahip, hapları "Akşam · Kahvaltı" diye
+     * okuyordu; oysa gün kahvaltıyla başlar. Ekran o an sahibin GÜNÜNÜ değil,
+     * veritabanına yazılma anını gösteriyordu.
+     *
+     * Bunu bir sürükle-bırak denetimiyle çözmek, saat her değiştiğinde sahibe
+     * ikinci bir iş yükler ve iki gerçek (saat ve sıra) bir gün birbirinden
+     * ayrılırdı: "Kahvaltı 07–11" yazan hap, akşam menüsünün solunda durmayı
+     * sürdürebilirdi. Bu yüzden sıra servis BAŞLANGIÇ dakikasından gelir.
+     */
+    public function test_the_menu_pills_follow_the_day_not_the_creation_order(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'zeytin-api-order');
+
+        // Sahip günü TERS kurar: önce akşamı düşünür, kahvaltıyı sonra.
+        $dinner = $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Akşam');
+        $breakfast = $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Kahvaltı');
+        $lunch = $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Öğle');
+
+        // Saati hiç verilmemiş iki menü: "Ramazan" gelecek yıl geri gelecek,
+        // "Bayram" henüz kurulmakta. İkisi de rotasyonun dışında.
+        $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Ramazan');
+        $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Bayram');
+
+        $this->setServiceWindowViaApi($owner, $workspaceId, $dinner, '18:00', '23:00');
+        $this->setServiceWindowViaApi($owner, $workspaceId, $breakfast, '07:00', '11:00');
+        $this->setServiceWindowViaApi($owner, $workspaceId, $lunch, '11:00', '18:00');
+
+        $rows = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}/menus")
+            ->assertOk()
+            ->json('data');
+
+        self::assertSame(
+            ['Kahvaltı', 'Öğle', 'Akşam', 'Ramazan', 'Bayram'],
+            array_column($rows, 'name'),
+            'ORDER-01: haplar günün akışına göre gelmeli; saatsiz olanlar sonda, kendi aralarında oluşturma sırasıyla.'
+        );
+
+        // Sıra `sort_order` DEĞİL: akşam menüsü hâlâ 0'dır ama üçüncü sıradadır.
+        self::assertSame(0, $rows[2]['sortOrder']);
+        self::assertSame('07:00', $rows[0]['startsAt']);
+        self::assertSame('11:00', $rows[1]['startsAt']);
+        self::assertSame('18:00', $rows[2]['startsAt']);
+        self::assertNull($rows[3]['startsAt'], 'ORDER-01: saatsiz menü saat ipucu uydurmamalı.');
+    }
+
+    // --- MENU-API-MENU-ORDER-MIDNIGHT-01 -----------------------------------
+
+    /**
+     * Gece menüsü günün BAŞINA düşmez.
+     *
+     * "22:00–02:00" bitişine göre sıralansaydı gece menüsü kahvaltıdan da
+     * önce gelirdi — sahip listeye baktığında gününün geceyle başladığını
+     * okurdu. Gün 22:00'de biter; hap da orada durur.
+     */
+    public function test_a_window_crossing_midnight_sits_by_its_start_not_its_end(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'zeytin-api-order-night');
+
+        $night = $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Gece');
+        $main = $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Ana menü');
+
+        $this->setServiceWindowViaApi($owner, $workspaceId, $night, '22:00', '02:00');
+        $this->setServiceWindowViaApi($owner, $workspaceId, $main, '02:00', '22:00');
+
+        $rows = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}/menus")
+            ->assertOk()
+            ->json('data');
+
+        self::assertSame(
+            ['Ana menü', 'Gece'],
+            array_column($rows, 'name'),
+            'ORDER-MIDNIGHT-01: 22:00–02:00 penceresi başlangıcına göre yerleşmeli.'
+        );
+        self::assertSame('22:00', $rows[1]['startsAt']);
+        self::assertSame('02:00', $rows[1]['endsAt']);
+    }
+
+    // --- MENU-API-MENU-ORDER-SINGLE-01 -------------------------------------
+
+    /**
+     * Tek menülü şube — sahiplerin çoğu buradadır ve onlar için HİÇBİR ŞEY
+     * değişmez: sıralamanın devreye girebilmesi için ikinci bir menü gerekir.
+     */
+    public function test_a_location_with_one_menu_is_untouched_by_the_new_order(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'zeytin-api-order-single');
+
+        $menuId = $this->createMenuViaApi($owner, $workspaceId, $locationId, 'Ana menü');
+
+        $rows = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}/menus")
+            ->assertOk()
+            ->json('data');
+
+        self::assertCount(1, $rows);
+        self::assertSame($menuId, $rows[0]['id']);
+        self::assertNull($rows[0]['startsAt'], 'ORDER-SINGLE-01: yeni menü kendiliğinden rotasyona girmez.');
+
+        $this->setServiceWindowViaApi($owner, $workspaceId, $menuId, '00:00', '00:00');
+
+        $rows = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}/menus")
+            ->assertOk()
+            ->json('data');
+
+        self::assertCount(1, $rows);
+        self::assertSame('00:00', $rows[0]['startsAt']);
+        self::assertSame('00:00', $rows[0]['endsAt'], 'ORDER-SINGLE-01: tek menü günün tamamını tutar.');
+    }
+
+    private function createMenuViaApi(User $owner, int $workspaceId, int $locationId, string $name): int
+    {
+        return (int) $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->postJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}/menu", ['name' => $name])
+            ->assertStatus(201)
+            ->json('id');
+    }
+
+    private function setServiceWindowViaApi(User $owner, int $workspaceId, int $menuId, string $startsAt, string $endsAt): void
+    {
+        $this->actingAs($owner)->withHeaders($this->jsonHeaders())->putJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/service-window",
+            ['startsAt' => $startsAt, 'endsAt' => $endsAt],
+        )->assertOk();
     }
 
     // --- MENU-API-MENU-TREE-01 ---------------------------------------------

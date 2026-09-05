@@ -38,6 +38,19 @@ export type LocationProfile = {
      * girilmemiş" — ve kart o satırı hiç çizmez.
      */
     opening_hours?: OpeningHoursEntry[];
+    /**
+     * ŞU AN açık mı — SUNUCUNUN cevabı (`docs/109` §8.6, FF-148).
+     *
+     * `opening_hours` tarifedir, bu alan DURUMDUR. İstemci onu tarifeden
+     * kendi hesaplayamaz: tarayıcının saati kullanıcının kendi ayarıdır ve
+     * yanlış kurulmuş bir dizüstü, açık bir şubeye "kapalı" dedirtirdi.
+     * Şubenin saat dilimi ise zaten sunucuda biliniyor.
+     *
+     * `null` ile alanın hiç olmaması AYNI anlama gelir — "söylenmemiş" — ve
+     * kart o zaman hiçbir durum rozeti çizmez. `false` ise gerçek bir
+     * cevaptır: kapalıyız.
+     */
+    open_now?: boolean | null;
 };
 
 type LocationEditFormProps = {

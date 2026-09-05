@@ -46,6 +46,26 @@ final class LocationProfile
          * (`LocationRepositoryPort::update`).
          */
         public readonly ?WeeklyOpeningHours $openingHours = null,
+        /**
+         * ŞU AN AÇIK MIYIZ — `docs/109` §8.2/§8.6 (FF-148).
+         *
+         * `openingHours` bir TARİFEDİR ("09:00–23:00"); bu alan bir DURUMDUR
+         * ("şu an açık"). Sahibin şubeler ekranında sorduğu soru ikincisidir
+         * ve tarifeden istemcide çıkarılamaz: tarayıcının saati kullanıcının
+         * kendi ayarıdır, şubenin saat dilimi ise zaten sunucuda biliniyor
+         * (`locations.timezone`, `docs/62`). Cevap bu yüzden okuma yolunda,
+         * misafir yüzeyiyle AYNI değer nesnesinden hesaplanır
+         * (`WeeklyOpeningHours::isClosedAt`) — ikinci bir hesap bir gün aynı
+         * şube için iki farklı cevap verirdi.
+         *
+         * ÜÇ DEĞERLİDİR ve `null` ile `false` aynı şey DEĞİLDİR: `null`
+         * "söylenmemiş"tir (saat girilmemiş, hafta okunamıyor ya da saat
+         * dilimi yok) ve ekranda hiçbir rozet çizilmez. Saatini girmemiş bir
+         * şubeye "kapalı" demek, sahibin hiç kurmadığı bir cümleyi onun
+         * ağzından söylemek olurdu — aynı sessizlik kuralı misafir tarafında
+         * da geçerli (`GuestOpeningHoursPort`).
+         */
+        public readonly ?bool $openNow = null,
     ) {}
 
     /**
@@ -66,6 +86,11 @@ final class LocationProfile
             'postal_code' => $this->postalCode,
             'table_count' => $this->tableCount,
             'opening_hours' => $this->openingHours?->toArray() ?? [],
+            // Alan HER ZAMAN bulunur, değeri `null` olsa bile: anahtarı hiç
+            // göndermemek, istemciyi "yok" ile "bilinmiyor" arasında ayrım
+            // yapamaz hâle getirir ve `undefined` okuyan bir kart sessizce
+            // yanlış dalı seçerdi.
+            'open_now' => $this->openNow,
         ];
     }
 }

@@ -1216,6 +1216,14 @@ msgstr "Henüz adres yok"
 msgid "workspace.locations.card.scansPerWeek"
 msgstr "haftada {count} okutma"
 
+#: workspace:workspace.locations.card.status.closed
+msgid "workspace.locations.card.status.closed"
+msgstr "Şu an kapalı"
+
+#: workspace:workspace.locations.card.status.open
+msgid "workspace.locations.card.status.open"
+msgstr "Şu an açık"
+
 #: workspace:workspace.locations.card.status.setup
 msgid "workspace.locations.card.status.setup"
 msgstr "Kurulumda"

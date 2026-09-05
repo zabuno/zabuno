@@ -10,7 +10,9 @@ use App\Domain\Tenancy\ValueObject\OpeningHoursDay;
 use App\Domain\Tenancy\ValueObject\WeeklyOpeningHours;
 use App\Models\Location;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 final class EloquentLocationRepository implements LocationRepositoryPort
 {
@@ -80,6 +82,71 @@ final class EloquentLocationRepository implements LocationRepositoryPort
         );
     }
 
+    /**
+     * ŞU AN AÇIK MIYIZ — ŞUBENİN kendi saatinde (FF-148, `docs/109` §8.6).
+     *
+     * NEDEN BURADA HESAPLANIYOR. Soru üç parçadan oluşuyor ve üçü de bu
+     * katmanda buluşuyor: haftanın kendisi (tablodan), şubenin saat dilimi
+     * (satırdan) ve duvar saati (çerçeveden). Uygulama katmanı çerçeveden
+     * bağımsız kalmak zorunda, alan katmanı ise "şu an" diye bir şey bilmez;
+     * "şimdi" bir olgudur ve tıpkı veritabanı satırı gibi DIŞARIDAN girer.
+     * Aynı bölünme misafir tarafında da var (`EloquentGuestOpeningHours`).
+     *
+     * NEDEN İKİNCİ BİR KURAL YAZILMIYOR. Kapalılığın tanımı zaten
+     * `WeeklyOpeningHours::isClosedAt` içinde ve gece yarısı aşımını iki
+     * yönden okuyor: cuma 18:00–02:00 çalışan bir mekân, cumartesi 01:00'de
+     * AÇIKTIR. Burada yeni bir karşılaştırma yazsaydık misafirin ekranı ile
+     * sahibin ekranı bir gün ayrışırdı — ve hangisinin doğru olduğu ancak
+     * misafir kapalı kapıya dayandığında anlaşılırdı.
+     *
+     * ÜÇ SESSİZLİK HÂLİ `null` DÖNER ve rozet hiç çizilmez: saat girilmemiş
+     * (hafta yok ya da boş), saat dilimi yok/okunamıyor. "Kapalı" demek,
+     * sahibin hiç kurmadığı bir cümleyi onun ağzından söylemek olurdu.
+     */
+    private function openNowFor(?WeeklyOpeningHours $hours, string $timezone, Carbon $now): ?bool
+    {
+        if ($hours === null || $hours->isEmpty()) {
+            return null;
+        }
+
+        $timezone = trim($timezone);
+
+        // Saat dilimi olmayan bir şube için "şu anda" diye bir an yoktur.
+        // Sunucununkine düşmek, Auckland'daki şubeyi İstanbul'un saatiyle
+        // kapalı göstermek olurdu — bu paketin tam olarak önlediği hata.
+        if ($timezone === '') {
+            return null;
+        }
+
+        try {
+            $localNow = $now->copy()->setTimezone($timezone);
+        } catch (InvalidArgumentException) {
+            // Bozuk bir saat dilimi kaydı sahibin şube LİSTESİNİ düşüremez:
+            // yazma yolu `timezone:all` ile zaten süzüyor, ama elle
+            // düzeltilmiş tek bir satır yüzünden ekranın tamamını 500'e
+            // çevirmek, bir rozetin bedeli olamaz.
+            return null;
+        }
+
+        return ! $hours->isClosedAt(
+            $localNow->dayOfWeekIso,
+            $localNow->hour * 60 + $localNow->minute,
+        );
+    }
+
+    /**
+     * Listenin TAMAMI için TEK bir "şu an".
+     *
+     * Şube başına ayrı `now()` okusaydık, beş kartlık bir ızgara gece
+     * yarısında ya da tam açılış dakikasında iki farklı ana bakabilirdi:
+     * aynı ekranda bir şube 08:59'a, diğeri 09:00'a düşerdi. Hata da tam o
+     * an, kimsenin bakmadığı saatte ortaya çıkardı.
+     */
+    private function nowInUtc(): Carbon
+    {
+        return Carbon::now('UTC');
+    }
+
     public function findByWorkspaceAndId(int $workspaceId, int $locationId): ?LocationProfile
     {
         $location = $this->baseQuery($workspaceId)
@@ -92,7 +159,12 @@ final class EloquentLocationRepository implements LocationRepositoryPort
 
         $hours = $this->openingHoursFor($workspaceId, [(int) $location->getKey()]);
 
-        return $this->toProfile($location, null, $hours[(int) $location->getKey()] ?? null);
+        return $this->toProfile(
+            $location,
+            null,
+            $hours[(int) $location->getKey()] ?? null,
+            $this->nowInUtc(),
+        );
     }
 
     /**
@@ -110,11 +182,14 @@ final class EloquentLocationRepository implements LocationRepositoryPort
             $locations->map(static fn (Location $location): int => (int) $location->getKey())->all(),
         );
 
+        $now = $this->nowInUtc();
+
         return $locations
             ->map(fn (Location $location): LocationProfile => $this->toProfile(
                 $location,
                 null,
                 $hours[(int) $location->getKey()] ?? null,
+                $now,
             ))
             ->all();
     }
@@ -216,10 +291,18 @@ final class EloquentLocationRepository implements LocationRepositoryPort
         ));
     }
 
+    /**
+     * `$now` YOKSA durum sorusu hiç sorulmaz.
+     *
+     * Tek çağıran `create()`: yeni açılan şubenin daha saati de yoktur,
+     * dolayısıyla cevap zaten `null` olurdu. Buraya bir varsayılan "şimdi"
+     * koymak, cevabı bilinen bir soruyu sormak için saat okumak olurdu.
+     */
     private function toProfile(
         Location $location,
         ?int $tableCount = null,
         ?WeeklyOpeningHours $openingHours = null,
+        ?Carbon $now = null,
     ): LocationProfile {
         return new LocationProfile(
             (int) $location->getKey(),
@@ -234,6 +317,9 @@ final class EloquentLocationRepository implements LocationRepositoryPort
             $location->postal_code,
             $tableCount ?? (int) ($location->getAttribute('table_count') ?? 0),
             $openingHours,
+            $now === null
+                ? null
+                : $this->openNowFor($openingHours, (string) $location->timezone, $now),
         );
     }
 }

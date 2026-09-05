@@ -2073,6 +2073,12 @@ export function MenuCatalogWorkspace({
      * Liste sunucudan henüz gelmediyse AÇIK OLAN MENÜNÜN kendisi tek hap
      * olarak çizilir: ekranda bir menü varken hap sırasının boş durması,
      * sahibe "menün yok" der.
+     *
+     * SIRALAMA BURADA YAPILMAZ. Sunucu menüleri günün akışına göre gönderir
+     * (en erken servis penceresi önce, saati olmayanlar sonda) ve ekran o
+     * sırayı aynen çizer. Bir de burada sıralasaydık iki gerçek olurdu ve
+     * bir gün ayrışırlardı — aynı liste yarın başka bir tüketiciye
+     * gittiğinde sıra orada başka türlü çıkardı.
      */
     function menuPills(): MenuPill[] {
         const rows: MenuRow[] = [...menus];
@@ -2085,6 +2091,10 @@ export function MenuCatalogWorkspace({
             "Gece" menüsünü kurar, ürünlerini ekler, ama hangi menüde
             olduğunu ekranda göremezdi. Seçili hap aynı zamanda ekranın
             başlığıdır; kaybolması başlığı da götürürdü.
+
+            SONA eklenmesi sunucunun kuralıyla aynıdır: yeni menü henüz
+            rotasyona girmemiştir (`draft`, saatsiz) ve saati olmayan menü
+            günün bir yerine değil, saatlilerin ardına düşer.
         */
         if (tree !== null && !rows.some((row) => row.id === tree.id)) {
             rows.push({

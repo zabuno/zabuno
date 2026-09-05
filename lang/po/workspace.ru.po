@@ -1216,6 +1216,14 @@ msgstr ""
 msgid "workspace.locations.card.scansPerWeek"
 msgstr ""
 
+#: workspace:workspace.locations.card.status.closed
+msgid "workspace.locations.card.status.closed"
+msgstr ""
+
+#: workspace:workspace.locations.card.status.open
+msgid "workspace.locations.card.status.open"
+msgstr ""
+
 #: workspace:workspace.locations.card.status.setup
 msgid "workspace.locations.card.status.setup"
 msgstr ""

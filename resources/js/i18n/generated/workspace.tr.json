@@ -301,6 +301,8 @@
     "workspace.locations.card.hours.today": "Bugün {range}",
     "workspace.locations.card.noAddress": "Henüz adres yok",
     "workspace.locations.card.scansPerWeek": "haftada {count} okutma",
+    "workspace.locations.card.status.closed": "Şu an kapalı",
+    "workspace.locations.card.status.open": "Şu an açık",
     "workspace.locations.card.status.setup": "Kurulumda",
     "workspace.locations.card.tables": "{count} masa",
     "workspace.locations.card.tables.action": "{name} masaları",
