@@ -79,16 +79,16 @@ ya doğar ya da neden doğmadığı yazılır.**
 
 ## 5. Sayaç
 
-10/11 tamamlandı, 3 iş aktif.
+11/11 tamamlandı, 1 iş aktif.
 
 **Tamamlanan:** Home · Menüler (haplar hariç) · QR · Insights (+ zaman
 serisi) · Yayınlama (+ planla, telefonda önizle) · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar ·
 Ayarlar + Profil.
 
-**Aktif:** çoklu menü (saat bazlı) · şube çalışma saatleri.
+**Aktif:** misafir tarafı — servis dışı saat.
 
-**Sırada:** Mutfak rolü · merkezî i18n tazelemesi.
+**Sırada:** —
 
 Bölümler: Home · Menüler · QR · Insights · Yayınlama · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar.
@@ -222,7 +222,7 @@ olan her şey Profil'e, çalışma alanına ait olan Ayarlar'da.
 | Video oynatıcı | Depo video kabul etmiyor; eksik olan ffmpeg değil, video hattı hiç yok |
 | CDN kartı / dağıtım ağı | Depoda CDN yok ve ölçülmüyor |
 | Dönüştürme ve CDN kotası | Ne sayaç ne sınır var |
-| Mutfak rolü | Depoda karşılığı yok; ayrı paket (sırada) |
+| ~~Mutfak rolü~~ | YAPILDI (FF-138): rol, izinleri, sunucu sınırı ve menü ekranındaki daraltma |
 | Şube "Açık" rozeti | İddiayı destekleyen alan yok; yalnız masası olmayan şubeye "Kurulumda" deniyor (bu bir olgu) |
 | Menü satırında "kim ve ne zaman" | Menü satırı başına aktör/zaman kaydı yok |
 | Çalışma alanı: diller, özel alan adı, tehlikeli bölge | Çeviri deposu ve DNS akışı yok; tehlikeli bölge geri döndürülemez ve sahibin kararını ister |
@@ -233,3 +233,42 @@ Tekrar eden bir karar: veri yoksa **boş bırakılıyor**, sıfır yazılmıyor.
 QR tarama sayısı (analitik ücretli), şube tarama/hafta (plan ya da yetki
 yoksa), iş kuyruğu ilerlemesi (kayıtlı yüzde yok). Sıfır "hiç olmadı" der
 ve bu, bilinmeyen için yanlış bir cevaptır.
+
+### 8.4 Mutfak rolü — ekranda daraltma, sunucuda sınır (FF-138)
+
+Rol `docs/109` §6.4'ün kendi cümlesiyle doğdu: *"Alerjen ve 'bugün bitti'.
+Başka bir şey görmez."* Üç katmanda karşılığı var ve üçü de aynı şeyi
+söylemek zorunda:
+
+1. **Sunucu**: `RolePermissions::for(Kitchen)` = `workspace.view`,
+   `menu.view`, `menu.allergens.manage`, `menu.stock.manage`. Yapamadığı her
+   şey uçlarda 403/404 ile durur — sınır burasıdır.
+2. **Kabuk**: kenar çubuğu izne göre süzülür; aşçı yalnız Menüler'i görür.
+3. **Menü ekranı**: fiyat düğmesi, görünürlük anahtarı, yeniden adlandırma,
+   satır taşma menüsü, kategori ekleme/sıralama, menü açma/düzenleme, CSV,
+   fotoğraftan aktarma, ürün ekleme ve yayınlama ÇİZİLMEZ.
+
+Kalanlar aşçının işidir: "bugünlük tükendi" ve alerjen — ikisi de satırda.
+Menü hapları da kalır; hangi menüye baktığını seçmek okumaktır, değiştirmek
+değil.
+
+**Neden devre dışı değil, hiç yok.** Devre dışı bir düğme bir söz verir:
+"bir gün, bir şekilde". Aşçının rolü değişmedikçe o gün gelmeyecek. Kural
+`docs/98` FF-74'te konmuştu ve burada tekrar edildi.
+
+**Fiyat bunun istisnasıdır ve kasıtlı.** Fiyat hem bir eylem hem bir
+BİLGİDİR. Düğme gider, metin kalır: aşçı doğru satıra baktığını üründen
+olduğu kadar fiyattan da doğrular. Yetkiyi kaldırmak, bilgiyi karartmak
+değildir.
+
+### 8.5 Okunamayan sunucu gövdesi ekranı çökertmiyordu — artık hiç çökertmiyor
+
+`as MenuTree` derleyiciye bir söz verir, sunucuya değil. `categories`
+taşımayan bir 200 geldiğinde menü ekranı çiziminin ortasında patlıyor ve
+sahibin gördüğü şey boş beyaz bir sayfa oluyordu — hatanın kendisi bile
+yazılmıyordu. CI bunu işlenmemiş hata olarak yakaladı.
+
+Gövde artık sınırda doğrulanır. Geçersizse ekran **uydurmaz**: `categories:
+[]` yazmak boş bir menü göstermek olurdu ve sahip ürünlerinin silindiğini
+sanırdı. Bunun yerine cevabı reddeder, kendi yükleme hatasını gösterir ve
+tazeleme yollarında ekranda duran ağacı ezmez.
