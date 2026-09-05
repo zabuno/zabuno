@@ -75,4 +75,35 @@ enum MembershipRole: string
     {
         return [self::Editor, self::Manager, self::Kitchen];
     }
+
+    /**
+     * Sahibin EKİPTEN ÇIKARABİLECEĞİ roller.
+     *
+     * `invitable()` DEĞİLDİR ve ondan türetilmiş bir kısaltma da değildir —
+     * ikisi ayrı iki soruya cevap verir: "kimi yeni alabilirim" ile "kimi
+     * çıkarabilirim". Kaldırma koşulu bir süre davet listesini ödünç aldı ve
+     * bu, kimsenin kastetmediği bir hapishane kurdu: `member` davet
+     * edilemediği için ÇIKARILAMAZ da olmuştu. Veritabanında o rolü taşıyan
+     * gerçek insanlar var; sahip "Çıkar" diyemiyordu, dese sunucu 404
+     * döndürüyordu ve işten ayrılan biri çalışma alanını görmeye devam
+     * ediyordu — kalıcı olarak.
+     *
+     * Bu yüzden `member` BURADA var ama `invitable()`'da yok ve olmamalı: o
+     * role yeni kimse davet edilmemeli. Bir role kimseyi almamak, o rolü
+     * taşıyanı içeride tutmak anlamına gelmez.
+     *
+     * `Owner` ise burada da yok, ve bu listenin tek gerçek sınırıdır:
+     * sahiplik silinmez, DEVREDİLİR (`transferOwnership`). Silinseydi çalışma
+     * alanı sahipsiz kalır ve kimse onaramazdı.
+     *
+     * Sıra: önce davet edilebilenler kaynağın kendi sırasıyla (Editör ·
+     * Yönetici · Mutfak), sonra miras rol — okuyan kişi listenin nereden
+     * geldiğini tek bakışta görsün.
+     *
+     * @return list<self>
+     */
+    public static function removable(): array
+    {
+        return [...self::invitable(), self::Member];
+    }
 }

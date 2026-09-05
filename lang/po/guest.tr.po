@@ -8,6 +8,46 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.closed.notice
+msgid "guest.closed.notice"
+msgstr ""
+
+#: guest:guest.closed.opensOn
+msgid "guest.closed.opensOn"
+msgstr ""
+
+#: guest:guest.closed.opensToday
+msgid "guest.closed.opensToday"
+msgstr ""
+
+#: guest:guest.day.1
+msgid "guest.day.1"
+msgstr ""
+
+#: guest:guest.day.2
+msgid "guest.day.2"
+msgstr ""
+
+#: guest:guest.day.3
+msgid "guest.day.3"
+msgstr ""
+
+#: guest:guest.day.4
+msgid "guest.day.4"
+msgstr ""
+
+#: guest:guest.day.5
+msgid "guest.day.5"
+msgstr ""
+
+#: guest:guest.day.6
+msgid "guest.day.6"
+msgstr ""
+
+#: guest:guest.day.7
+msgid "guest.day.7"
+msgstr ""
+
 #: guest:guest.deadEnd.body
 msgid "guest.deadEnd.body"
 msgstr "Karekod bir menüye bağlı değil. Lütfen restoran personeline bildirin; size güncel menüyü ulaştırabilirler."

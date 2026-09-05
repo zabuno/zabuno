@@ -20,14 +20,19 @@ interface TeamMemberRepositoryPort
     /**
      * Removes the membership identified by the given workspace and
      * membership id via one atomic conditional delete (workspace id +
-     * membership id + role in MembershipRole::invitable()). Returns true
+     * membership id + role in MembershipRole::removable()). Returns true
      * when a row was deleted, false when no matching removable row was
      * found for that exact workspace.
      *
      * Adı bilerek `removeEditor` DEĞİL: bu yol sahibin davet edebildiği
-     * her rolü (Editör · Yönetici · Mutfak) kaldırır. Eski ad yalnız
-     * gerçeğin bir bölümünü anlatıyordu ve koşulun geri kalan iki rolü
-     * atladığı yıllarca fark edilmedi.
+     * her rolü (Editör · Yönetici · Mutfak) VE eski kayıtların taşıdığı
+     * salt okunur `member` rolünü kaldırır. Eski ad yalnız gerçeğin bir
+     * bölümünü anlatıyordu ve koşulun geri kalan rolleri atladığı yıllarca
+     * fark edilmedi.
+     *
+     * Kaldırılabilir küme, DAVET EDİLEBİLİR kümeden ayrı bir kavramdır:
+     * `member`'a yeni kimse davet edilmez ama o rolü taşıyan gerçek kişiler
+     * ekipten çıkarılabilmelidir.
      *
      * `owner` bu yoldan ASLA kaldırılmaz — sahiplik silinmez, devredilir
      * (`transferOwnership`).

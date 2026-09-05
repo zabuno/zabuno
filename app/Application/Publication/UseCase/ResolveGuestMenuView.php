@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Publication\UseCase;
 
 use App\Application\MenuCatalog\UseCase\ResolveServingMenu;
+use App\Application\Publication\Dto\GuestClosedNotice;
 use App\Application\Publication\Dto\GuestMenuView;
+use App\Application\Publication\Port\GuestOpeningHoursPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 
 /**
@@ -32,12 +34,25 @@ use App\Application\Publication\Port\PublicationRepositoryPort;
  * yeni bir bilgi vermez. Hiç yayını olmayan bir adres bugün olduğu gibi
  * bilinmeyen bir anahtardan AYIRT EDİLEMEZ kalır — `null` döner ve çağıran
  * tek tip çıkmaz sokağa düşer.
+ *
+ * KAPALI ŞUBE ÜÇÜNCÜ BİR HÂL DEĞİLDİR (FF-141)
+ *
+ * "Servis dışı" ile "kapalı" bilerek ayrı durur ve ayrı davranır: birincisi
+ * gösterilecek menünün olmamasıdır ve sayfa menüyü hiç çizmez; ikincisi menü
+ * dururken kapının kapalı olmasıdır ve menü ÇİZİLİR. İkisini tek duruma
+ * indirmek en kolay kısayoldu ve masadaki misafire en pahalıya patlayanı:
+ * gece 23:00'te yarını planlayan kişi menüyü hiç göremezdi.
+ *
+ * Kararın burada verilmesinin sebebi, iki denetleyicinin (karekod ve kalıcı
+ * adres) bir gün ayrışmaması: aynı soruyu iki yerde cevaplarsak birinin
+ * cevabı eskir.
  */
 final class ResolveGuestMenuView
 {
     public function __construct(
         private readonly ResolveServingMenu $servingMenu,
         private readonly PublicationRepositoryPort $publications,
+        private readonly GuestOpeningHoursPort $openingHours,
     ) {}
 
     /**
@@ -50,7 +65,12 @@ final class ResolveGuestMenuView
         $publication = $this->publications->current($workspaceId, $servingMenuId);
 
         if ($publication !== null) {
-            return new GuestMenuView($servingMenuId, $publication);
+            return new GuestMenuView(
+                $servingMenuId,
+                $publication,
+                null,
+                $this->closedNotice($workspaceId, $addressedMenuId),
+            );
         }
 
         /*
@@ -91,5 +111,54 @@ final class ResolveGuestMenuView
         }
 
         return null;
+    }
+
+    /**
+     * ŞU ANDA KAPALI MIYIZ, VE AÇILIŞ NE ZAMAN?
+     *
+     * Üç sessizlik hâli vardır ve üçü de aynı cevabı verir — şerit ÇİZİLMEZ:
+     *
+     * 1. Şubenin saati hiç girilmemiş (bugün çalışan şubelerin çoğu). Uydurma
+     *    bir varsayılan hafta, sahibin hiç söylemediği bir iddiayı ekranda
+     *    doğruymuş gibi gösterirdi.
+     * 2. Hafta okunamıyor (yarım kayıt). Misafirin ekranı bir veri hatasının
+     *    yeri değildir; o hata sahibin panelinde görünür.
+     * 3. Şube o anda AÇIK. Açıkken şerit için boş bir kap bırakmak, sayfanın
+     *    üstünde sebepsiz bir boşluk ve ekran okuyucuda boş bir duyuru bölgesi
+     *    demekti.
+     *
+     * GÜN VE DAKİKA BURADA HESAPLANMAZ, PORTTAN GELİR. Bu katman çerçeveden
+     * bağımsız kalmak zorunda (`PublicationApplicationBoundaryTest`) ve
+     * "şubede şu an saat kaç" sorusunun cevabı bir kütüphane çağrısıdır. Duvar
+     * saati de veritabanı satırı gibi DIŞARIDAN girer; içeride yalnız kural
+     * çalışır. Şubenin kendi saat dilimi böylece tek bir yerde okunur ve
+     * sunucunun saati hiçbir zaman cevaba karışamaz.
+     */
+    private function closedNotice(int $workspaceId, int $addressedMenuId): ?GuestClosedNotice
+    {
+        $local = $this->openingHours->forMenu($workspaceId, $addressedMenuId);
+
+        if ($local === null) {
+            return null;
+        }
+
+        if (! $local['hours']->isClosedAt($local['isoWeekday'], $local['minuteOfDay'])) {
+            return null;
+        }
+
+        $next = $local['hours']->nextOpeningAfter($local['isoWeekday'], $local['minuteOfDay']);
+
+        if ($next === null) {
+            // Yedi günü de kapalı şube: kapalı olduğumuz DOĞRU, açılış saati
+            // ise veriden çıkmıyor. Cümlenin yarısını söyleyip diğer yarısını
+            // uydurmayız.
+            return new GuestClosedNotice;
+        }
+
+        return new GuestClosedNotice(
+            $next['day']->opensClock(),
+            $next['day']->day,
+            $next['dayOffset'] === 0,
+        );
     }
 }

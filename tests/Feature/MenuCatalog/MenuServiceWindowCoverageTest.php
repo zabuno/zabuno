@@ -444,4 +444,233 @@ final class MenuServiceWindowCoverageTest extends TestCase
             'GUEST-ITEM-SERVING-01: servis edilen menünün ürünü açılmalı.'
         );
     }
+
+    /*
+    |---------------------------------------------------------------------------
+    | ŞUBE KAPALIYKEN (FF-141)
+    |---------------------------------------------------------------------------
+    |
+    | Yukarıdaki FF-139 testleri "o saatte servis edilecek menünün yayını YOK"
+    | hâlini dondurur. Buradakiler BAŞKA bir soruyu dondurur: menü var, yayını
+    | var, çiziliyor — ama şube o anda KAPALI.
+    |
+    | İKİSİ TEK DURUMA İNDİRİLMEZ. Servis dışı sayfası menüyü hiç çizmez,
+    | çünkü gösterilecek bir menü yoktur. Kapalı şubede ise menü vardır ve
+    | GİZLENMEZ: gece 23:00'te karekodu okutan misafir çoğu zaman yarını
+    | planlıyordur ve menüyü saklamak ona hizmet etmez. Doğru davranış menünün
+    | üstüne dürüst bir şerit koymaktır.
+    |
+    | Testler METNE değil, makineye okunur duruma bakar (`data-guest-state`,
+    | `data-next-opening`): şeridin cümlesi katalogda yaşıyor ve derlenmiş
+    | çeviri dosyaları bu paketin dışında üretiliyor. Durumun çizilip
+    | çizilmediği, cümlenin hangi dilde olduğundan bağımsız doğrulanabilmeli.
+    */
+
+    /**
+     * Şubenin haftasını DOĞRUDAN yazar.
+     *
+     * Panel ucundan geçmemenin sebebi öncülün kendisi: burada test edilen şey
+     * yazma yolu değil, misafirin o veriyle ne gördüğüdür. Yazma yolu
+     * `LocationOpeningHoursTest` içinde ayrıca dondurulmuş durumda.
+     *
+     * @param  list<array{day:int,closed:bool,opens?:int|null,closes?:int|null}>  $days
+     */
+    private function insertOpeningHours(int $workspaceId, int $locationId, array $days): void
+    {
+        foreach ($days as $day) {
+            DB::table('location_opening_hours')->insert([
+                'workspace_id' => $workspaceId,
+                'location_id' => $locationId,
+                'day_of_week' => $day['day'],
+                'is_closed' => $day['closed'],
+                'opens_minute' => $day['opens'] ?? null,
+                'closes_minute' => $day['closes'] ?? null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Yedi günü aynı aralığa açan hafta.
+     *
+     * @return list<array{day:int,closed:bool,opens:int,closes:int}>
+     */
+    private function uniformWeek(int $opensMinute, int $closesMinute): array
+    {
+        return array_map(
+            static fn (int $day): array => [
+                'day' => $day,
+                'closed' => false,
+                'opens' => $opensMinute,
+                'closes' => $closesMinute,
+            ],
+            range(1, 7),
+        );
+    }
+
+    /**
+     * Tek menülü, yayınlanmış bir şube kurar ve menünün genel adresini döner.
+     *
+     * @return array{0:int,1:int,2:string} [workspaceId, locationId, path]
+     */
+    private function publishedLocation(string $slugSeed, string $timezone = 'Europe/Istanbul'): array
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, $slugSeed, $timezone);
+        $key = $this->newPublicKey();
+        $menuId = $this->insertMenu($workspaceId, $locationId, 'Ana menü', $key, 0);
+
+        $this->publishMenu($workspaceId, $locationId, $menuId, (int) $owner->id, 'Ana yemekler', [
+            ['menuItemId' => 101, 'productName' => 'Adana Kebap', 'priceMinorAmount' => 32000, 'currencyCode' => 'TRY'],
+        ]);
+
+        return [$workspaceId, $locationId, $this->addressFor($key)->path()];
+    }
+
+    // --- GUEST-CLOSED-01 ---------------------------------------------------
+
+    public function test_a_guest_who_arrives_while_the_location_is_closed_still_gets_the_menu_with_an_honest_banner(): void
+    {
+        [$workspaceId, $locationId, $path] = $this->publishedLocation('guest-closed');
+        $this->insertOpeningHours($workspaceId, $locationId, $this->uniformWeek(9 * 60, 23 * 60));
+
+        $this->nowAt('23:30');
+        $response = $this->get($path);
+
+        /*
+            MENÜ GİZLENMEZ. Gece yarısına yarım saat kala karekodu okutan
+            misafir çoğu zaman yarını planlıyor; ona kapıyı kapatmak, elinde
+            olan bilgiyi saklamak olurdu. Ürün ne biliyorsa onu gösterir ve
+            bilmediğini değil, BİLDİĞİNİ söyler: "şu anda kapalıyız".
+        */
+        $response->assertStatus(200, 'GUEST-CLOSED-01: kapalı şube 404 değildir.');
+        $response->assertSee('Adana Kebap', false);
+        $response->assertSee('data-guest-state="closed"', false);
+
+        /*
+            SONRAKİ AÇILIŞ GERÇEK VERİDEN gelir: hafta 09:00'da açılıyor ve
+            bugünün açılışı geçtiği için sıradaki açılış yarınınkidir — saat
+            yine 09:00. Uydurulmuş bir saat ya da "0" yazmaktansa hiç
+            yazmamak gerekirdi; burada gerçek bir saat VAR.
+        */
+        $response->assertSee('data-next-opening="09:00"', false);
+    }
+
+    // --- GUEST-CLOSED-OPEN-NOW-01 ------------------------------------------
+
+    public function test_no_banner_is_drawn_at_all_while_the_location_is_open(): void
+    {
+        [$workspaceId, $locationId, $path] = $this->publishedLocation('guest-open-now');
+        $this->insertOpeningHours($workspaceId, $locationId, $this->uniformWeek(9 * 60, 23 * 60));
+
+        $this->nowAt('12:00');
+        $response = $this->get($path);
+
+        $response->assertStatus(200);
+        $response->assertSee('Adana Kebap', false);
+
+        /*
+            AÇIKKEN ŞERİT HİÇ ÇİZİLMEZ — boş bir kutu bile değil. Boş bir
+            kap bırakmak sayfanın üstünde sebepsiz bir boşluk açar ve ekran
+            okuyucuya duyurulacak boş bir `status` bölgesi bırakırdı.
+        */
+        $response->assertDontSee('data-guest-state="closed"', false);
+    }
+
+    // --- GUEST-CLOSED-NO-HOURS-01 ------------------------------------------
+
+    public function test_a_location_that_never_entered_its_hours_keeps_working_and_shows_no_banner(): void
+    {
+        [, , $path] = $this->publishedLocation('guest-no-hours');
+
+        $this->nowAt('03:00');
+        $response = $this->get($path);
+
+        /*
+            YOKLUK SESSİZDİR. Bugün çalışan şubelerin çoğunun saati hiç
+            girilmemiş durumda; onlara varsayılan bir hafta uydurup gece
+            03:00'te "kapalıyız" dedirtmek, sahibin hiç söylemediği bir
+            iddiayı ekranda doğruymuş gibi göstermek olurdu.
+        */
+        $response->assertStatus(200, 'GUEST-CLOSED-NO-HOURS-01: saati girilmemiş şube bozulmamalı.');
+        $response->assertSee('Adana Kebap', false);
+        $response->assertDontSee('data-guest-state="closed"', false);
+    }
+
+    // --- GUEST-CLOSED-TIMEZONE-01 ------------------------------------------
+
+    public function test_the_banner_is_decided_in_the_locations_own_timezone(): void
+    {
+        [$workspaceId, $locationId, $path] = $this->publishedLocation('guest-closed-tz', 'Europe/Berlin');
+        $this->insertOpeningHours($workspaceId, $locationId, $this->uniformWeek(9 * 60, 23 * 60));
+
+        // Berlin'de 22:30 — HÂLÂ AÇIK. Aynı an İstanbul'da 23:30'dur; sunucunun
+        // ya da sabit bir saat diliminin saatine bakılsaydı Berlin'deki misafir
+        // yarım saat erken "kapalıyız" görürdü.
+        Carbon::setTestNow(Carbon::parse('2026-09-05 22:30', 'Europe/Berlin'));
+        $open = $this->get($path);
+        $open->assertStatus(200);
+        $open->assertDontSee('data-guest-state="closed"', false);
+
+        // Berlin'de 08:30 — HENÜZ AÇILMADI. İstanbul'da 09:30, yani sabit saat
+        // dilimiyle bu misafire yanlışlıkla "açığız" denirdi.
+        Carbon::setTestNow(Carbon::parse('2026-09-05 08:30', 'Europe/Berlin'));
+        $closed = $this->get($path);
+        $closed->assertStatus(200);
+        $closed->assertSee('data-guest-state="closed"', false);
+        // Açılış BUGÜNDÜR ve yarım saat sonradır.
+        $closed->assertSee('data-next-opening="09:00"', false);
+    }
+
+    // --- GUEST-CLOSED-MIDNIGHT-01 ------------------------------------------
+
+    public function test_a_kitchen_that_stays_open_past_midnight_is_not_called_closed(): void
+    {
+        [$workspaceId, $locationId, $path] = $this->publishedLocation('guest-closed-midnight');
+        // 18:00–02:00 → 1080 → 1560. Kapanış 1440'ı AŞAR ve bu bir istisna
+        // değil, ölçünün doğal devamıdır (`location_opening_hours` göçü).
+        $this->insertOpeningHours($workspaceId, $locationId, $this->uniformWeek(18 * 60, 26 * 60));
+
+        /*
+            Gece 01:00: mekân DOLU ve mutfak çalışıyor. Yalnız BUGÜNÜN
+            satırına bakan bir kontrol ("01:00, 18:00'den önce") tam da en
+            yoğun saatte misafire "kapalıyız" derdi — hem de karşısında
+            duran garsona rağmen. Doğru cevap DÜNÜN aralığındadır.
+        */
+        Carbon::setTestNow(Carbon::parse('2026-09-05 01:00', 'Europe/Istanbul'));
+        $night = $this->get($path);
+        $night->assertStatus(200);
+        $night->assertDontSee('data-guest-state="closed"', false);
+
+        // Öğlen 10:00: gerçekten kapalı ve açılış BUGÜN 18:00'dedir.
+        $this->nowAt('10:00');
+        $morning = $this->get($path);
+        $morning->assertSee('data-guest-state="closed"', false);
+        $morning->assertSee('data-next-opening="18:00"', false);
+    }
+
+    // --- GUEST-CLOSED-NO-CLOCK-01 ------------------------------------------
+
+    public function test_a_week_with_no_open_day_says_closed_without_inventing_a_clock(): void
+    {
+        [$workspaceId, $locationId, $path] = $this->publishedLocation('guest-closed-forever');
+        $this->insertOpeningHours($workspaceId, $locationId, array_map(
+            static fn (int $day): array => ['day' => $day, 'closed' => true],
+            range(1, 7),
+        ));
+
+        $this->nowAt('12:00');
+        $response = $this->get($path);
+
+        $response->assertStatus(200);
+        $response->assertSee('data-guest-state="closed"', false);
+
+        /*
+            AÇILIŞ SAATİ YOKSA CÜMLE HİÇ KURULMAZ. Yedi günü de kapalı olan
+            bir şubenin bir sonraki açılışı veriden ÇIKMAZ; "0" ya da tahmini
+            bir gün adı yazmak, tutulmayacak bir söz vermek olurdu.
+        */
+        $response->assertDontSee('data-next-opening', false);
+    }
 }

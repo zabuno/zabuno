@@ -89,6 +89,22 @@ final class OpeningHoursDay
     }
 
     /**
+     * Açılış saati, İNSANIN okuduğu biçimde; kapalı günde `null`.
+     *
+     * Biçimlendirme burada durur çünkü invaryant burada durur: açılış her
+     * zaman günün İÇİNDEDİR (0–1439), yani sarmalama gerektirmez. Aynı işi
+     * çağıran katmanda yapsaydık, her yeni ekran "1440'ı geçebilir mi"
+     * sorusunu yeniden sormak zorunda kalırdı — ve bir gün biri yanlış
+     * cevaplardı.
+     */
+    public function opensClock(): ?string
+    {
+        return $this->opensMinute === null
+            ? null
+            : sprintf('%02d:%02d', intdiv($this->opensMinute, 60), $this->opensMinute % 60);
+    }
+
+    /**
      * @return array{day: int, closed: bool, opens_minute: int|null, closes_minute: int|null}
      */
     public function toArray(): array

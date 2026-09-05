@@ -46,12 +46,14 @@ type TeamMemberListProps = {
     removeSuccessText: string;
     removeRetryText: string;
     /**
-     * Sunucunun ÇIKARABİLDİĞİ roller — `MembershipRole::invitable()`.
+     * Sunucunun ÇIKARABİLDİĞİ roller — `MembershipRole::removable()`.
      *
-     * Küme burada sabit yazılmaz, çağıranın davet listesinden TÜRETİLİR:
-     * bileşen kendi listesini tutsaydı, davet edilebilen yeni bir rol
-     * doğduğunda ekran onu çıkarılamaz göstermeye devam ederdi — sunucu
-     * çıkarabildiği hâlde.
+     * Küme burada sabit yazılmaz, çağırandan gelir: bileşen kendi listesini
+     * tutsaydı, sunucunun kaldırabildiği yeni bir rol doğduğunda ekran onu
+     * çıkarılamaz göstermeye devam ederdi.
+     *
+     * "Davet edilebilir" ile karıştırmayın — ikisi bir zamanlar aynı listeydi
+     * ve eski `member` rolündeki kişiler bu yüzden ekipte mahsur kaldı.
      */
     removableRoles: string[];
     /**
@@ -102,8 +104,8 @@ const TRANSFERABLE_ROLE = 'editor';
  * GET/DELETE /api/workspaces/{workspaceId}/team/members calls and passes
  * the resulting status/members/labels plus a remove callback through. Rows
  * expose a Remove control only for the roles the server can actually remove
- * (`removableRoles`) and only to the workspace owner; Owner and the legacy
- * read-only role never do.
+ * (`removableRoles`) and only to the workspace owner; the Owner row never
+ * does — ownership is transferred, not deleted.
  */
 export function TeamMemberList({
     status,

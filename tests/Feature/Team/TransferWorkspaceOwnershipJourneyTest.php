@@ -20,9 +20,11 @@ use Tests\TestCase;
  * framework's router (unmatched route), not from malformed fixtures or
  * guessed production response shapes.
  *
- * Frozen contract: access requires Permission::WorkspaceManage (owner-only,
- * enumeration-safe 404 for non-owner/non-member before any business-state
- * validation runs, mirroring RemoveTeamMemberController); the memberId path
+ * Frozen contract: access is a two-stage gate mirroring
+ * RemoveTeamMemberController — no Permission::WorkspaceManage at all means
+ * an enumeration-safe 404 before any business-state validation runs, while
+ * holding that permission without being the workspace owner (a Manager)
+ * means 403; the memberId path
  * segment is a workspace_memberships.id and must belong to the exact
  * requested workspace with role exactly "editor" — cross-workspace target,
  * a "member"-role target, the owner's own row as target, and a missing
@@ -33,8 +35,16 @@ use Tests\TestCase;
  * write is throttled to 5 requests per minute like other Team mutations
  * (throttle:5,1).
  *
+ * FF-142 SÖZLEŞME DÜZELTMESİ. Bu sözleşme "non-owner → 404" diyordu ve
+ * kardeş uç `RemoveTeamMemberController` da bir zamanlar öyle davranıyordu.
+ * Kardeş uç açık bir sahiplik kapısı kazanıp Yönetici'ye 403 demeye
+ * başlayınca burası geride kaldı: aynı kişi, aynı ekranda, iki komşu düğme
+ * için iki farklı cevap alıyordu. Fark kasıtlı değil kazaydı — burada 404
+ * bir karar değil, deponun `false` dönmesinin YAN ETKİSİYDİ.
+ *
  * Requirement IDs: TEAM-OWNERSHIP-TRANSFER-01,
  * TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-01,
+ * TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02,
  * TEAM-OWNERSHIP-TRANSFER-INVALID-TARGET-01,
  * TEAM-OWNERSHIP-TRANSFER-CROSS-WORKSPACE-01,
  * TEAM-OWNERSHIP-TRANSFER-AUTH-01, TEAM-OWNERSHIP-TRANSFER-THROTTLE-01.
@@ -224,6 +234,51 @@ final class TransferWorkspaceOwnershipJourneyTest extends TestCase
 
         $editorRow = $this->membershipRow($editorMembershipId);
         self::assertSame('editor', $editorRow->role, 'TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-01: reddedilen isteklerden sonra editor rolü değişmemeli.');
+    }
+
+    // --- TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02 -------------------------------
+
+    /**
+     * YÖNETİCİ SAHİPLİĞİ DEVREDEMEZ — ve bunu 403 ile öğrenir, 404 ile değil.
+     *
+     * `Permission::WorkspaceManage` Yönetici'de DE var ve olmalı: şubeyi ve
+     * karekodu o yürütüyor. Ama sahipliği kime vereceğine karar vermek
+     * günlük operasyon değildir; kardeş uç `RemoveTeamMemberController` aynı
+     * sınırı aynı cümleyle söylüyor (TEAM-MEMBERS-REMOVE-OWNER-ONLY-02).
+     *
+     * Neden 404 DEĞİL: buraya kadar gelen kişi çalışma alanını zaten
+     * YÖNETİYOR — varlığını gizlemenin anlamı yok ve çıkış yolu farklıdır
+     * (sahipten istemek). Numaralandırmaya kapalı 404, izne HİÇ sahip
+     * olmayanlar için (TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-01) aynen durur.
+     *
+     * Bir de somut zarar: bu ayrım olmadan yönetici, kendisini işe alan
+     * sahibin haberi olmadan sahipliği başkasına — ya da sırayla kendine —
+     * kaydırmayı deneyebileceğini sanır ve sunucunun "yok" cevabını üyeliğin
+     * silinmiş olmasıyla karıştırır.
+     */
+    public function test_a_manager_cannot_transfer_ownership(): void
+    {
+        $owner = $this->verifiedUser('Ayşe Yılmaz', 'ayse-transfer-owner-only-02@example.test');
+        $workspaceId = $this->workspaceOwnedBy($owner, 'Zeytin Restoranları', 'zeytin-transfer-owner-only-02');
+        $ownerMembershipId = $this->ownerMembershipId($workspaceId, $owner->id);
+
+        $manager = $this->verifiedUser('Mehmet Demir', 'mehmet-transfer-owner-only-02@example.test');
+        $managerMembershipId = $this->addMember($workspaceId, $manager, 'manager');
+
+        $editor = $this->verifiedUser('Elif Kaya', 'elif-transfer-owner-only-02@example.test');
+        $editorMembershipId = $this->addMember($workspaceId, $editor, 'editor');
+
+        $otherResponse = $this->actingAs($manager)->withHeaders($this->jsonHeaders())
+            ->postJson($this->transferUri($workspaceId, $editorMembershipId));
+        $otherResponse->assertStatus(403, 'TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02: manager sahipliği bir editöre devredemez — 403 dönmeli.');
+
+        $selfResponse = $this->actingAs($manager)->withHeaders($this->jsonHeaders())
+            ->postJson($this->transferUri($workspaceId, $managerMembershipId));
+        $selfResponse->assertStatus(403, 'TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02: manager sahipliği kendine de alamaz — 403 dönmeli.');
+
+        self::assertSame('owner', $this->membershipRow($ownerMembershipId)->role, 'TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02: reddedilen isteklerden sonra owner rolü değişmemeli.');
+        self::assertSame('manager', $this->membershipRow($managerMembershipId)->role, 'TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02: manager rolü değişmemeli.');
+        self::assertSame('editor', $this->membershipRow($editorMembershipId)->role, 'TEAM-OWNERSHIP-TRANSFER-OWNER-ONLY-02: editor rolü değişmemeli.');
     }
 
     // --- TEAM-OWNERSHIP-TRANSFER-CROSS-WORKSPACE-01 --------------------------

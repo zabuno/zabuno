@@ -97,6 +97,23 @@ const INVITABLE_ROLES: {
 ];
 
 /*
+    EKİPTEN ÇIKARILABİLEN ROLLER — sunucunun `MembershipRole::removable()`
+    kümesinin ekrandaki karşılığı.
+
+    Bu liste bir zamanlar `INVITABLE_ROLES`'ün kendisiydi ve yanlış soruyu
+    cevaplıyordu. Davet listesi "kimi yeni alabilirim"i anlatır; buradaki
+    soru "kimi çıkarabilirim". İkisi eşitlenince eski `member` rolündeki
+    kişiler ekipte MAHSUR kaldı: satırda düğme yoktu, sunucu da silmiyordu.
+    Bu yüzden davet listesinden TÜRETİLİYOR ama ona EŞİT DEĞİL — `member`
+    açıkça eklenir, çünkü o role kimse yeni davet edilmemeli ama o rolü
+    taşıyan gerçek kişiler ekipten çıkarılabilmeli.
+
+    `owner` burada da yok ve tek gerçek sınır odur: sahiplik silinmez,
+    DEVREDİLİR.
+*/
+const REMOVABLE_ROLES: string[] = [...INVITABLE_ROLES.map((option) => option.value), 'member'];
+
+/*
     ROL HAPLARI (kaynak: `panel.dc.html`, "Takım" → davet kartı).
 
     Rol bir açılır listedeydi ve seçenekler ancak liste açılınca görünüyordu:
@@ -598,15 +615,7 @@ export function TeamPage({ workspaceId, viewerRole }: TeamPageProps) {
                                 removeMissingText={t('workspace.team.members.remove.missing')}
                                 removeSuccessText={t('workspace.team.members.remove.success')}
                                 removeRetryText={t('workspace.team.members.remove.retry')}
-                                /*
-                                    ÇIKARILABİLİR KÜME, DAVET EDİLEBİLİR
-                                    KÜMEDİR — sunucunun kendi türetmesiyle
-                                    aynı (`MembershipRole::invitable()`).
-                                    İkinci bir liste yazılsaydı, davet
-                                    edilebilen yeni bir rol doğduğunda biri
-                                    güncellenir öbürü unutulurdu.
-                                */
-                                removableRoles={INVITABLE_ROLES.map((option) => option.value)}
+                                removableRoles={REMOVABLE_ROLES}
                                 viewerIsOwner={viewerIsOwner}
                                 onTransferOwnership={transferOwnership}
                                 transferButtonText={t('workspace.team.members.transfer.button')}

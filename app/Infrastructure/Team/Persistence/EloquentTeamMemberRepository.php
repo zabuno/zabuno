@@ -42,7 +42,7 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
             ->where('id', $membershipId)
             ->where('workspace_id', $workspaceId)
             /*
-                KALDIRILABİLİR KÜME = DAVET EDİLEBİLİR ROLLER.
+                KALDIRILABİLİR KÜME KENDİ ADIYLA DURUR.
 
                 Burada bir zamanlar sabit bir `role = 'editor'` vardı. O
                 satır yazıldığında davet edilebilen tek rol Editör'dü;
@@ -50,20 +50,22 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
                 birlikte büyümedi. Sonuç sessiz bir yalandı: sahip "Çıkar"
                 diyordu, sorgu sıfır satır siliyordu ve kimse duymuyordu.
 
-                Bu yüzden koşul artık listeyi `MembershipRole::invitable()`
-                üzerinden TÜRETİYOR: davet edilebilen bir rol doğduğu anda
-                çıkarılabilir de olur — aynı hata bir daha bu yolla
-                doğamaz.
+                İlk onarım koşulu `MembershipRole::invitable()`'a bağladı ve
+                o üç rolü kurtardı — ama yanlış soruyu ödünç aldı. Davet
+                listesi "kimi yeni alabilirim"i anlatır; buradaki soru "kimi
+                çıkarabilirim". İkisi eşitlenince eski `member` rolündeki
+                kişiler kimsenin kastetmediği bir şekilde ekipte MAHSUR
+                kaldı: davet edilemedikleri için çıkarılamaz da olmuşlardı.
 
-                Listede OLMAYAN ikisi kasıtlıdır. `owner` silinmez,
-                DEVREDİLİR (`transferOwnership`); silinseydi çalışma alanı
-                sahipsiz kalır ve kimse onaramazdı. `member` ise yalnız
-                eski kayıtların taşıdığı salt okunur roldür ve bu uç
-                noktanın donmuş sözleşmesi onu koruma altına alır.
+                Bu yüzden koşul artık kendi kümesini okuyor:
+                `MembershipRole::removable()`. Sınır orada tek cümleyle
+                yazılı — `owner` silinmez, DEVREDİLİR
+                (`transferOwnership`); silinseydi çalışma alanı sahipsiz
+                kalır ve kimse onaramazdı.
             */
             ->whereIn('role', array_map(
                 static fn (MembershipRole $role): string => $role->value,
-                MembershipRole::invitable(),
+                MembershipRole::removable(),
             ))
             ->delete() > 0;
     }

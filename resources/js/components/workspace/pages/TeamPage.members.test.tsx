@@ -528,15 +528,16 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
  * FF-138d — ÇIKARMA ARTIK YALNIZ EDİTÖRE AİT DEĞİL.
  *
  * Ekran "Çıkar" düğmesini yalnız `editor` satırlarına çiziyordu. Sunucu ise
- * çıkarılabilir kümeyi `MembershipRole::invitable()` üzerinden türetiyor:
+ * çıkarılabilir kümeyi `MembershipRole::removable()` üzerinden okuyor:
  * Editör, Yönetici ve Mutfak. Aradaki fark sahibin ekranında bir ÇIKIŞSIZLIK
  * olarak görünüyordu — işten ayrılan bir yöneticiyi ya da aşçıyı ekipten
  * çıkarmanın hiçbir yolu yoktu, çünkü satırda düğme yoktu.
  *
- * Kümenin dışında kalan ikisi kasıtlıdır ve bu paket onları KORUR: `owner`
- * silinmez, DEVREDİLİR (silinseydi çalışma alanı sahipsiz kalırdı); `member`
- * ise yalnız eski kayıtların taşıdığı salt okunur roldür ve uç noktanın
- * donmuş sözleşmesi onu koruma altına alır.
+ * Kümenin dışında kalan TEK rol `owner`'dır ve bu paket onu KORUR: sahiplik
+ * silinmez, DEVREDİLİR — silinseydi çalışma alanı sahipsiz kalır ve kimse
+ * onaramazdı. (Eski `member` rolü de bir süre dışarıdaydı; FF-142 onu
+ * çıkarılabilir kümeye aldı, çünkü dışarıda kalması bir karar değil, kümenin
+ * davet listesinden türetilmesinin yan etkisiydi.)
  */
 describe('TeamPage — FF-138d çıkarılabilir roller ve dürüst ret', () => {
     const OWNER_ID = 1;
@@ -653,14 +654,24 @@ describe('TeamPage — FF-138d çıkarılabilir roller ve dürüst ret', () => {
         ).not.toBeInTheDocument();
     });
 
-    /** Eski kayıtların salt okunur rolü; uç nokta onu silmez, ekran da vaat etmez. */
-    it('eski salt okunur üyelik çıkarılabilir gösterilmez', async () => {
+    /**
+     * FF-142 — ESKİ SALT OKUNUR ÜYELİK DE ÇIKARILABİLİR.
+     *
+     * Bu satır bir zamanlar bunun TERSİNİ söylüyordu ve doğruyu anlatıyordu:
+     * sunucu `member` satırını silmiyordu, ekran da vaat etmiyordu. Ama
+     * sunucunun o davranışı bir karar değil, kaldırma kümesinin "davet
+     * edilebilir roller"den türetilmesinin yan etkisiydi. Sonuç, sahibin
+     * ekranında çıkışsızlıktı: eski bir kayıttan gelen kişiyi ekipten
+     * çıkarmanın hiçbir yolu yoktu. Sunucu artık çıkarıyor; ekran da
+     * çizmeli — yapılabilen iş gizlenmez.
+     */
+    it('eski salt okunur üyelik de çıkarılabilir gösterilir', async () => {
         render(<TeamPage workspaceId={WORKSPACE_ID} />);
         await waitForRows();
 
         expect(
-            within(rowFor('Elif Kaya')).queryByRole('button', { name: /remove/i }),
-        ).not.toBeInTheDocument();
+            within(rowFor('Elif Kaya')).getByRole('button', { name: /remove/i }),
+        ).toBeInTheDocument();
     });
 
     it('Yönetici çıkarıldığında o üyeliğin adresine DELETE gider ve satır listeden düşer', async () => {

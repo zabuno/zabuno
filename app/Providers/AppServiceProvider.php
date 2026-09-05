@@ -46,6 +46,7 @@ use App\Application\Platform\Port\PlatformAuthorizationPort;
 use App\Application\Platform\Port\PlatformConnectionAdminPort;
 use App\Application\Platform\Port\PlatformCredentialAdminPort;
 use App\Application\Platform\Port\PlatformWorkspaceQueryPort;
+use App\Application\Publication\Port\GuestOpeningHoursPort;
 use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicationSchedulePort;
@@ -131,6 +132,7 @@ use App\Infrastructure\Platform\Credential\HttpConnectionProbe;
 use App\Infrastructure\Platform\Credential\StickyAccountRouter;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformAuthorization;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformWorkspaceQuery;
+use App\Infrastructure\Publication\Persistence\EloquentGuestOpeningHours;
 use App\Infrastructure\Publication\Persistence\EloquentMenuIdentity;
 use App\Infrastructure\Publication\Persistence\EloquentPublicationRepository;
 use App\Infrastructure\Publication\Persistence\EloquentPublicationSchedule;
@@ -481,6 +483,10 @@ final class AppServiceProvider extends ServiceProvider
         // gelince tek seferlik sahiplenen depo.
         $this->app->bind(PublicationSchedulePort::class, EloquentPublicationSchedule::class);
         $this->app->bind(PublicMenuAddressPort::class, EloquentPublicMenuAddress::class);
+        // "Şu anda açık mısınız" — misafir yüzeyinin KENDİ dar okuması
+        // (FF-141). Sahibin şube deposundan ayrı durmasının gerekçesi
+        // `GuestOpeningHoursPort` içinde yazılı.
+        $this->app->bind(GuestOpeningHoursPort::class, EloquentGuestOpeningHours::class);
         $this->app->bind(MenuIdentityPort::class, EloquentMenuIdentity::class);
         $this->app->bind(QrCodeRepositoryPort::class, EloquentQrCodeRepository::class);
         $this->app->bind(BulkQrCreationPort::class, EloquentBulkQrCreationRepository::class);

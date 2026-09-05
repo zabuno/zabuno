@@ -20,6 +20,13 @@ namespace App\Application\Publication\Dto;
  * Sahibin geçişleri arasında gösterilebilir bir sonraki menü yoksa saat
  * yazılmaz: olmayan bir servisi vaat etmek, hiç saat söylememekten kötüdür.
  * Saat şubenin kendi saat diliminde `HH:MM` biçimindedir.
+ *
+ * ÜÇÜNCÜ BİR HÂL DEĞİL, BİRİNCİNİN ÜSTÜNDE BİR ŞERİT (FF-141).
+ * `closedNotice` yalnız SERVİS EDİLİYOR hâlinde dolabilir: şube kapalıyken
+ * menü GİZLENMEZ, çizilir ve üstüne dürüst bir cümle konur. Kapalılığı ayrı
+ * bir hâl yapsaydık, gece 23:00'te yarını planlayan misafir menüyü hiç
+ * göremezdi — servis dışı sayfasının doğru olduğu yerde yanlış olan da tam
+ * olarak budur.
  */
 final class GuestMenuView
 {
@@ -27,5 +34,6 @@ final class GuestMenuView
         public readonly int $servingMenuId,
         public readonly ?PublicationRecord $publication = null,
         public readonly ?string $nextServiceClock = null,
+        public readonly ?GuestClosedNotice $closedNotice = null,
     ) {}
 }
