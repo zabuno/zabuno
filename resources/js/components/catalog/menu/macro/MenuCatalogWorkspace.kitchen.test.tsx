@@ -1,6 +1,7 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 /**
  * MUTFAK MENÜ EKRANINDA — "başka bir şey görmez" satırın İÇİNDE de geçerli.
@@ -149,6 +150,32 @@ describe('mutfak rolü menü ekranında (docs/109 §6.4)', () => {
             "TRY 480.00", Türkçe'de "₺480,00"; ikisi de aynı üründür.
         */
         expect(screen.getByText('TRY 480.00')).toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    it('mutfak alerjen düzenleyicisini GERÇEKTEN açar; çekmecede fiyat/sunum alanı yoktur', async () => {
+        /*
+            DÜĞMENİN VAR OLMASI YETMEZ. Rolün tanımı "alerjen ve bugün
+            bitti"yse, alerjen yolunun ucuna kadar çalışması gerekir —
+            aksi hâlde daraltma, yeteneği de birlikte götürmüş olurdu.
+
+            Aynı kontrolde çekmecenin İÇİ de sınanır: fiyat ve sunum
+            düzenleyicileri yalnız kendi girişlerinden açılıyor ve o
+            girişler mutfağa çizilmiyor. Bu iddia olmadan, girişleri
+            kaldırmak çekmeceyi güvenli sanmak olurdu.
+        */
+        const user = userEvent.setup();
+        await renderAs(KITCHEN);
+
+        await user.click(screen.getByRole('button', { name: 'Edit allergens for Levrek' }));
+
+        expect(await screen.findByRole('textbox', { name: /allergens/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Save allergens' })).toBeInTheDocument();
+
+        // Çekmece açık: fiyat ve açıklama alanları YİNE yok.
+        expect(screen.queryByLabelText(/price/i)).toBeNull();
+        expect(screen.queryByLabelText(/description/i)).toBeNull();
 
         vi.unstubAllGlobals();
     });
