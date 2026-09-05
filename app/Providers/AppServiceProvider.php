@@ -73,6 +73,8 @@ use App\Application\Rating\Port\RatingSignalRepositoryPort;
 use App\Application\Reference\Port\MarketReferencePort;
 use App\Application\Security\Port\BackupRestoreDrillRunnerPort;
 use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
+use App\Application\Security\Port\MediaBackupRestoreDrillRunnerPort;
+use App\Application\Security\Port\MediaBackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
 use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
@@ -170,9 +172,10 @@ use App\Infrastructure\Rating\Persistence\EloquentRatingReplyRepository;
 use App\Infrastructure\Rating\Persistence\EloquentRatingScoreQuery;
 use App\Infrastructure\Rating\Persistence\EloquentRatingSignalRepository;
 use App\Infrastructure\Reference\IcuMarketReference;
-use App\Infrastructure\Security\Execution\SqliteBackupRestoreDrillRunner;
+use App\Infrastructure\Security\Execution\BackupRestoreDrillRunnerFactory;
 use App\Infrastructure\Security\Execution\SymfonyTenantIsolationSuiteRunner;
 use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
+use App\Infrastructure\Security\Persistence\MediaBackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
 use App\Infrastructure\Team\Mail\MailTeamInvitationNotifier;
@@ -617,22 +620,10 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(SecurityEvidenceSnapshotPort::class, GitSecurityEvidenceSnapshot::class);
         $this->app->bind(TenantIsolationEvidenceRepositoryPort::class, TenantIsolationEvidenceRepository::class);
         $this->app->bind(BackupRestoreEvidenceRepositoryPort::class, BackupRestoreEvidenceRepository::class);
-        $this->app->bind(BackupRestoreDrillRunnerPort::class, function (): SqliteBackupRestoreDrillRunner {
-            if (config('database.default') !== 'sqlite') {
-                throw new \RuntimeException('The backup/restore drill runner only supports the sqlite default database driver.');
-            }
-
-            $database = (string) config('database.connections.sqlite.database');
-
-            if ($database === '' || $database === ':memory:' || ! is_file($database) || ! is_readable($database)) {
-                throw new \RuntimeException('The backup/restore drill runner requires a real, readable sqlite database file.');
-            }
-
-            return new SqliteBackupRestoreDrillRunner(
-                $database,
-                storage_path('app/private/security-evidence/backup-restore'),
-            );
-        });
+        $this->app->bind(MediaBackupRestoreEvidenceRepositoryPort::class, MediaBackupRestoreEvidenceRepository::class);
+        // Koşucu bağlantıya göre seçilir (sqlite|pgsql); medya kökü `local` diskidir (`docs/124`).
+        $this->app->bind(BackupRestoreDrillRunnerPort::class, static fn (): BackupRestoreDrillRunnerPort => BackupRestoreDrillRunnerFactory::databaseRunnerFromConfig());
+        $this->app->bind(MediaBackupRestoreDrillRunnerPort::class, static fn (): MediaBackupRestoreDrillRunnerPort => BackupRestoreDrillRunnerFactory::mediaRunnerFromConfig());
     }
 
     /**
