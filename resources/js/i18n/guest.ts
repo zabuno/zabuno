@@ -101,6 +101,96 @@ export const guestTranslations = {
         'No dish fits your filters. The menu has other dishes; try removing one filter.',
     'guest.filters.matched': '{count} dishes shown.',
 
+    /*
+        SEPET VE SİPARİŞ (FF-178) — `docs/115` S3.
+
+        BU CÜMLELER YALNIZ SEPET ÇİZİLDİĞİNDE İNER. Sipariş alma kapalıysa,
+        plan hakkı yoksa ya da karekod bir masaya bağlı değilse sunucu sepeti
+        hiç çizmez ve bu sözlüğü de göndermez — olmayan bir ekranın sözlüğünü
+        taşımak, misafirin hattından boşuna bayt yemektir.
+    */
+    'guest.cart.open': 'Cart',
+    'guest.cart.title': 'Your cart',
+    'guest.cart.close': 'Close the cart',
+    'guest.cart.add': 'Add',
+    // Ekleme SESSİZ OLMAZ: listenin dibindeki bir satıra ürün eklendiğinde
+    // ekranda hiçbir şey değişmiyorsa misafir düğmeye tekrar basar.
+    'guest.cart.added': '{name} was added to your cart.',
+    'guest.cart.increase': 'One more',
+    'guest.cart.decrease': 'One fewer',
+    'guest.cart.remove': 'Remove from the cart',
+    'guest.cart.count': 'Items in the cart: {count}',
+    'guest.cart.total': 'Total',
+    /*
+        BOŞ SEPET BİR CÜMLEDİR, BOŞ BİR KUTU DEĞİL. Misafir sepeti açtığında
+        neden boş olduğunu ve ne yapacağını okur; boş bir panel ona ürünün
+        bozuk olduğunu düşündürür.
+    */
+    'guest.cart.empty': 'Your cart is empty. Pick something from the menu and it will be listed here.',
+    'guest.cart.submit': 'Send the order to the waiter',
+    /*
+        İKİ ONAY VARDIR VE MİSAFİR BUNU ÖNCEDEN OKUR (`docs/115` §2).
+
+        Gönderdiği şey bir TALEPTİR; garson onayladığında bir İŞ olur. Bunu
+        göndermeden önce söylemek, onaylanmayan bir siparişte misafirin
+        aldatılmış hissetmesini engeller. Ödemenin masada alınması da burada
+        yazar: bu üründe ödeme yoktur ve olmadığını saklamak, misafirin
+        telefonda ödeme beklemesine yol açardı.
+    */
+    'guest.cart.submitNote': 'The waiter checks and confirms the order before the kitchen starts. Payment is taken at the table.',
+    'guest.cart.sending': 'Sending your order…',
+    /*
+        UYDURMA SÜRE YOK (M4). Kaç dakikada geleceğini bilmiyoruz; yanlış bir
+        süre, misafiri tam da beklerken sinirlendirir (`docs/115` §8).
+    */
+    'guest.order.placed': 'Your order was received. The waiter will confirm it.',
+
+    /*
+        DÖRT RET, DÖRT CÜMLE (`docs/115` §7 S2).
+
+        Her cümle iki şeyi birden söyler: SİPARİŞ GİTMEDİ (mutfakta hiçbir
+        şey yok) ve ŞİMDİ NE YAPILIR. Tek bir "sipariş gönderilemedi",
+        misafiri aynı düğmeye tekrar bastırır ve hangisini düzeltebileceğini
+        asla öğretmez.
+    */
+    'guest.order.refused.outOfStock':
+        '{name} ran out today, so nothing was sent. Remove it from the cart and send the rest.',
+    'guest.order.refused.itemUnavailable':
+        '{name} is no longer on the menu, so nothing was sent. Remove it from the cart and send the rest.',
+    'guest.order.refused.orderingClosed':
+        'The restaurant is not taking orders right now, so nothing was sent. Please tell the staff what you would like.',
+    /*
+        MASASIZ KOD — afiş, kartvizit ya da giriş kodu. Misafir kabahatli
+        değildir ve cümle onu suçlamaz; yalnız masadaki kodun okutulmasını
+        ister, çünkü siparişin düşeceği masa oradan gelir (M3).
+    */
+    'guest.order.refused.tableUnknown':
+        'This code is not linked to a table, so nothing was sent. Please scan the code on your own table.',
+    /*
+        HAK YOKSA DÜRÜST CÜMLE, BOŞ EKRAN DEĞİL (Y3). Misafir restoranın
+        planını düzeltemez; yapabileceği şey listeyi personele göstermektir
+        ve cümle tam olarak onu söyler.
+    */
+    'guest.order.refused.entitlementRequired':
+        'This restaurant does not take orders through the menu, so nothing was sent. You can show your list to the staff.',
+    'guest.order.refused.tooManyOpenOrders':
+        'This table already has several orders waiting, so this one was not sent. Please ask the staff first.',
+    'guest.order.refused.tooManyLines':
+        'There are too many different dishes in one order, so nothing was sent. Please send it in two orders.',
+    'guest.order.refused.notSaved':
+        'The order could not be saved, so nothing reached the kitchen. Please try again.',
+    /*
+        SON ÇARE CÜMLESİ DE BİR ŞEY SÖYLER. Bu ekranın üretemediği bir ret
+        geldiğinde bile misafir iki şeyi öğrenir: mutfağa hiçbir şey gitmedi
+        ve masadaki personel işi çözebilir.
+    */
+    'guest.order.refused.unknown':
+        'The order was not sent and nothing reached the kitchen. Please tell the staff what you would like.',
+    // Ağ koptuğunda "gitti mi gitmedi mi" belirsizliği MİSAFİRE YIKILMAZ:
+    // sepet durur, cümle personele sormayı önerir.
+    'guest.order.refused.offline':
+        'Your order could not leave this phone. Your cart is still here — try again, or tell the staff.',
+
     'guest.pwa.install': 'Install the app',
     'guest.pwa.installAccepted': 'Installation accepted.',
     'guest.pwa.installDismissed': 'Installation dismissed.',

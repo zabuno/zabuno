@@ -441,10 +441,29 @@ final class GuestMenuDesignLanguageTest extends TestCase
         $html = $this->render();
 
         $notYetWired = [
-            // Sepet/sipariş — arka ucu ayrı pakette.
-            'ph-handbag' => 'sepet düğmesi',
-            'data-cart' => 'sepet durumu',
-            'qr-cartbar' => 'sepet çubuğu',
+            /*
+                SEPET ARTIK YAPILDI — AMA BU SAYFADA YOK (FF-178).
+
+                Bu render'da `ordering` verilmiyor, yani sunucu "bu masa
+                sipariş veremez" demiş demektir: sipariş alma kapalı, plan
+                hakkı yok ya da karekod bir masaya bağlı değil. O hâlde
+                sepetin işaretlemesi, stili ve betiği sayfada HİÇ bulunmaz —
+                ve bu iddia tam olarak onu ölçer. Sepetin ÇİZİLDİĞİ hâlin
+                sahibi `GuestCartTest`tir.
+
+                Yani satır bir "yapılmadı" listesi olmaktan çıkıp bir
+                "yapılamayan iş çizilmez" iddiasına dönüştü; kaldırılsaydı,
+                sipariş almayan bir restoranın misafiri çalışmayan bir sepet
+                düğmesi görebilirdi ve bunu kimse fark etmezdi.
+
+                `ph-handbag` ise AYRI bir gerekçeyle yasak kalır: `ph-*`
+                sınıfları Phosphor yazı tipini ister, o da bir AĞ İSTEĞİDİR
+                ve bu sayfanın ölçülen sözü sıfır istektir (`docs/113` §8).
+                Sepetin çanta simgesi bu yüzden satır içi SVG'dir.
+            */
+            'ph-handbag' => 'ikon yazı tipi',
+            'data-cart' => 'sepet denetimi (sipariş alınamayan sayfada)',
+            'qr-cart' => 'sepet stili (sipariş alınamayan sayfada)',
             // Puanlama — arka ucu ayrı pakette.
             'ph-star' => 'yıldız/puan',
             'data-rating' => 'puan verisi',

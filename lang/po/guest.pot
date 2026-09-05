@@ -8,6 +8,62 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.cart.add
+msgid "guest.cart.add"
+msgstr ""
+
+#: guest:guest.cart.added
+msgid "guest.cart.added"
+msgstr ""
+
+#: guest:guest.cart.close
+msgid "guest.cart.close"
+msgstr ""
+
+#: guest:guest.cart.count
+msgid "guest.cart.count"
+msgstr ""
+
+#: guest:guest.cart.decrease
+msgid "guest.cart.decrease"
+msgstr ""
+
+#: guest:guest.cart.empty
+msgid "guest.cart.empty"
+msgstr ""
+
+#: guest:guest.cart.increase
+msgid "guest.cart.increase"
+msgstr ""
+
+#: guest:guest.cart.open
+msgid "guest.cart.open"
+msgstr ""
+
+#: guest:guest.cart.remove
+msgid "guest.cart.remove"
+msgstr ""
+
+#: guest:guest.cart.sending
+msgid "guest.cart.sending"
+msgstr ""
+
+#: guest:guest.cart.submit
+msgid "guest.cart.submit"
+msgstr ""
+
+#: guest:guest.cart.submitNote
+msgid "guest.cart.submitNote"
+msgstr ""
+
+#: guest:guest.cart.title
+msgid "guest.cart.title"
+msgstr ""
+
+#: guest:guest.cart.total
+msgid "guest.cart.total"
+msgstr ""
+
 #: guest:guest.closed.notice
 msgid "guest.closed.notice"
 msgstr ""
@@ -130,6 +186,50 @@ msgstr ""
 
 #: guest:guest.menu.summary
 msgid "guest.menu.summary"
+msgstr ""
+
+#: guest:guest.order.placed
+msgid "guest.order.placed"
+msgstr ""
+
+#: guest:guest.order.refused.entitlementRequired
+msgid "guest.order.refused.entitlementRequired"
+msgstr ""
+
+#: guest:guest.order.refused.itemUnavailable
+msgid "guest.order.refused.itemUnavailable"
+msgstr ""
+
+#: guest:guest.order.refused.notSaved
+msgid "guest.order.refused.notSaved"
+msgstr ""
+
+#: guest:guest.order.refused.offline
+msgid "guest.order.refused.offline"
+msgstr ""
+
+#: guest:guest.order.refused.orderingClosed
+msgid "guest.order.refused.orderingClosed"
+msgstr ""
+
+#: guest:guest.order.refused.outOfStock
+msgid "guest.order.refused.outOfStock"
+msgstr ""
+
+#: guest:guest.order.refused.tableUnknown
+msgid "guest.order.refused.tableUnknown"
+msgstr ""
+
+#: guest:guest.order.refused.tooManyLines
+msgid "guest.order.refused.tooManyLines"
+msgstr ""
+
+#: guest:guest.order.refused.tooManyOpenOrders
+msgid "guest.order.refused.tooManyOpenOrders"
+msgstr ""
+
+#: guest:guest.order.refused.unknown
+msgid "guest.order.refused.unknown"
 msgstr ""
 
 #: guest:guest.outOfService.body
