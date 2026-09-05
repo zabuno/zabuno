@@ -12,6 +12,7 @@ use App\Http\Controllers\EngineeringAppController;
 use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\Media\ServeOriginalController;
 use App\Http\Controllers\Media\ServeRenditionController;
+use App\Http\Controllers\Ordering\StoreGuestOrderController;
 use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\Publication\ShowDraftPreviewController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
@@ -88,6 +89,24 @@ Route::get('/q/{token}', RedirectQrTokenController::class)
 Route::post('/q/events', StoreGuestMenuEventsController::class)
     ->middleware('throttle:60,1')
     ->name('guest.events');
+
+/*
+    MİSAFİRİN SİPARİŞİ (`docs/115` S2).
+
+    OTURUM YOK, CSRF YOK: misafir menüyü de oturumsuz görüyor ve masadan
+    sipariş vermek için hesap açması istenmiyor — sahibin kararı buydu.
+    Masa gövdeden değil, adresteki karekod token'ından okunur.
+
+    Hız sınırı menü olayından DAHA DAR: bir olay satırı yazmakla mutfağa
+    iş düşürmek aynı şey değil. Sınır yine de bir masadaki misafirlerin
+    arka arkaya sipariş vermesini engellemeyecek kadar cömert; asıl
+    yığılma kalkanı masa başına AÇIK SİPARİŞ tavanıdır
+    (`StoreGuestOrderController::MAX_OPEN_ORDERS_PER_TABLE`), çünkü o
+    tavan mutfağın gerçek kapasitesini ölçer, isteğin hızını değil.
+*/
+Route::post('/q/{token}/orders', StoreGuestOrderController::class)
+    ->middleware('throttle:20,1')
+    ->name('guest.orders.store');
 
 // Görsel türevleri: değişmez, sağlama toplamı taşıyan, herkese açık adres
 // (`docs/76`). Misafirin menüdeki fotoğrafı görebilmesi için oturum

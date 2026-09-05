@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Publication\Persistence;
 
+use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Publication\Dto\PublicationRecord;
 use App\Application\Publication\Exception\PublicationPersistenceFailedException;
 use App\Application\Publication\Port\PublicationRepositoryPort;
@@ -17,10 +18,28 @@ use Throwable;
 
 final class EloquentPublicationRepository implements PublicationRepositoryPort
 {
+    /**
+     * Plan HAKLARI, yayın anında dondurulmak üzere burada okunur
+     * (`docs/114` §3 Dalga 6).
+     *
+     * Dondurmanın yeri BURASI'dır, çağıran denetleyiciler değil, ve bu
+     * bilinçli: bugün üç ayrı yol yayın yapıyor (elle yayınlama, eski
+     * sürüme dönüş, zamanlanmış yayın). Her birine "planı da yaz" demek,
+     * dördüncü yol eklendiği gün sessizce unutulacak bir hatırlatmaydı —
+     * ve unutulduğunda hiçbir test kırılmaz, yalnız bir restoranın
+     * planını düşürmesi masadaki menüyü anında değiştirirdi.
+     *
+     * Eski sürüme DÖNÜŞ de bugünün planını dondurur ve bu doğrudur: geri
+     * yükleme bir yayındır, ve bugün yapılır.
+     */
+    public function __construct(private readonly EntitlementRepositoryPort $entitlements) {}
+
     public function publish(int $workspaceId, int $menuId, int $locationId, array $snapshot, int $publishedByUserId): PublicationRecord
     {
         try {
-            return DB::transaction(function () use ($workspaceId, $menuId, $locationId, $snapshot, $publishedByUserId): PublicationRecord {
+            $frozenEntitlements = $this->entitlements->forWorkspace($workspaceId)->keys();
+
+            return DB::transaction(function () use ($workspaceId, $menuId, $locationId, $snapshot, $publishedByUserId, $frozenEntitlements): PublicationRecord {
                 DB::table('menus')->where('id', $menuId)->lockForUpdate()->first();
 
                 $nextVersion = ((int) DB::table('menu_publications')->where('menu_id', $menuId)->max('version')) + 1;
@@ -39,6 +58,12 @@ final class EloquentPublicationRepository implements PublicationRepositoryPort
                     'version' => $nextVersion,
                     'state' => PublicationStatus::Published->value,
                     'snapshot' => json_encode($snapshot, JSON_THROW_ON_ERROR),
+                    // `snapshot`'ın İÇİNE yazılmaz: snapshot misafire çizilen
+                    // MENÜ İÇERİĞİDİR ve yapılandırılmış veriye kadar oradan
+                    // türer. Plan menü içeriği değil, yayının yapıldığı
+                    // koşuldur; aynı kaba koymak bir plan değişikliğini bir
+                    // gün "menü değişti" gibi gösterirdi.
+                    'entitlements' => json_encode($frozenEntitlements, JSON_THROW_ON_ERROR),
                     'published_by' => $publishedByUserId,
                     'published_at' => $publishedAt,
                     'created_at' => $publishedAt,
@@ -78,6 +103,7 @@ final class EloquentPublicationRepository implements PublicationRepositoryPort
                     PublicationStatus::Published->value,
                     $publishedAt->toISOString(),
                     $snapshot,
+                    $frozenEntitlements,
                 );
             });
         } catch (QueryException|JsonException $e) {
@@ -136,7 +162,33 @@ final class EloquentPublicationRepository implements PublicationRepositoryPort
             (string) $row->state,
             Carbon::parse($row->published_at)->toISOString(),
             $snapshot,
+            $this->frozenEntitlements($row),
         );
+    }
+
+    /**
+     * Donmuş plan hakları; alan eklenmeden önceki yayınlar için `null`.
+     *
+     * Boş bir liste ile `null` AYNI ŞEY DEĞİLDİR ve karıştırılamaz: boş
+     * liste "o gün hiçbir hak yoktu" der, `null` ise "o gün ne olduğu
+     * bilinmiyor" der. İkincisini boş liste saymak, eski yayınları
+     * geriye dönük olarak haksız ilan etmek olurdu.
+     *
+     * @return list<string>|null
+     */
+    private function frozenEntitlements(object $row): ?array
+    {
+        if (! property_exists($row, 'entitlements') || $row->entitlements === null) {
+            return null;
+        }
+
+        $decoded = json_decode((string) $row->entitlements, true);
+
+        if (! is_array($decoded)) {
+            return null;
+        }
+
+        return array_values(array_filter($decoded, 'is_string'));
     }
 
     public function current(int $workspaceId, int $menuId): ?PublicationRecord
@@ -168,6 +220,20 @@ final class EloquentPublicationRepository implements PublicationRepositoryPort
             (string) $row->state,
             Carbon::parse($row->published_at)->toISOString(),
             $snapshot,
+            /*
+                DONMUŞ HAK BURADA DA TAŞINIR.
+
+                Bu metot kendi `PublicationRecord`'unu kuruyor ve alan
+                eklendiğinde atlanmıştı: sonuç, misafirin gördüğü yayının
+                planını HER ZAMAN `null` sanmak, yani her sipariş isteğinde
+                sessizce CANLI plana düşmekti. Sahip planını düşürdüğü an
+                masadaki basılı karekod çalışmayı bırakırdı — dondurmanın
+                var oluş sebebinin tam tersi.
+
+                Kusur görünmezdi çünkü canlı plan çoğu zaman aynı cevabı
+                verir; yalnız plan DEĞİŞTİĞİNDE ayrışır.
+            */
+            $this->frozenEntitlements($row),
         );
     }
 }

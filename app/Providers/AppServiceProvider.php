@@ -40,6 +40,9 @@ use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\MenuCatalog\Port\MenuSchedulePort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
+use App\Application\Ordering\Port\OrderableMenuPort;
+use App\Application\Ordering\Port\OrderingSwitchPort;
+use App\Application\Ordering\Port\OrderRepositoryPort;
 use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\ConnectionProbePort;
 use App\Application\Platform\Port\CredentialResolverPort;
@@ -130,6 +133,9 @@ use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuAudit;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuSchedule;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
+use App\Infrastructure\Ordering\Persistence\EloquentOrderableMenu;
+use App\Infrastructure\Ordering\Persistence\EloquentOrderingSwitch;
+use App\Infrastructure\Ordering\Persistence\EloquentOrderRepository;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
 use App\Infrastructure\Platform\Capability\RuntimeHostCapabilityProbe;
 use App\Infrastructure\Platform\Credential\EloquentPlatformCredentialStore;
@@ -499,6 +505,18 @@ final class AppServiceProvider extends ServiceProvider
             );
         });
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
+        /*
+            SİPARİŞ HATTI (`docs/115`).
+
+            Üç ayrı port, çünkü üç ayrı soru: siparişi YAZAN depo, menünün
+            SİPARİŞ EDİLEBİLİR satırlarını okuyan görünüm, ve şubenin
+            "şu an sipariş alıyor muyum" şalteri. Tek bir depoya toplamak,
+            canlı okunan şalteri yayına donan verilerle aynı yerde
+            tutmak olurdu.
+        */
+        $this->app->bind(OrderRepositoryPort::class, EloquentOrderRepository::class);
+        $this->app->bind(OrderableMenuPort::class, EloquentOrderableMenu::class);
+        $this->app->bind(OrderingSwitchPort::class, EloquentOrderingSwitch::class);
         // ZAMANLANMIŞ YAYIN ("Planla"): planı yazan, iptal eden ve vakti
         // gelince tek seferlik sahiplenen depo.
         $this->app->bind(PublicationSchedulePort::class, EloquentPublicationSchedule::class);
