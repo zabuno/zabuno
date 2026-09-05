@@ -22,10 +22,9 @@ namespace App\Domain\Media;
  * `default('image')` ile eklendi ve bugün ona yazan tek bir satır kod
  * YOK. Onunla kırmak, hepsi aynı şeyi söyleyen beş satır çizerdi.
  *
- * KAYNAĞIN "VİDEO" SATIRI BURADA YOKTUR. Bu depo video kabul etmez: her
- * slotun `formats` listesi görsel biçimlerdir ve alım kapısı
- * (`StoreMediaRequest`) JPEG/PNG/GIF/WebP ve temizlenmiş SVG dışını
- * reddeder. Kalıcı olarak sıfır kalacak bir satır, sahibi olmayan bir
+ * KAYNAĞIN "VİDEO" SATIRI BURADA YOKTUR. Bu depo video kabul etmez: alım
+ * kapısı (`StoreMediaRequest`) JPEG/PNG/GIF/WebP, vektör slotlarında
+ * temizlenmiş SVG ve belge slotunda denetlenmiş PDF dışını reddeder. Kalıcı olarak sıfır kalacak bir satır, sahibi olmayan bir
  * yeteneğe güvendirir.
  *
  * ÇÖP BURADA YOKTUR ve olmaması bilinçlidir: çöp bir AMAÇ değil bir HAYAT
@@ -64,9 +63,14 @@ enum StorageCategory: string
                 `menuImportSource` diğer Menu slotlarından farklıdır: misafire
                 hiç gösterilmez (`alt_required: false`), elle tutulan bir
                 kâğıt menünün fotoğrafı ya da taranmış sayfasıdır. Kaynağın
-                "Belgeler" satırının bu depodaki tek gerçek karşılığı budur.
+                "Belgeler" satırının ilk karşılığı buydu.
+
+                `document` ise 2026-09-05'te açılan gerçek BELGE slotudur
+                (PDF); ikisi de aynı kırılım satırında sayılır, çünkü
+                sahibin sorusu "hangi dosyaları silebilirim?" ve ikisi de
+                menüde görünmeyen çalışma dosyalarıdır.
             */
-            'menuImportSource' => self::Documents,
+            'menuImportSource', 'document' => self::Documents,
             default => self::Other,
         };
     }

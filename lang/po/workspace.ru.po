@@ -1932,6 +1932,14 @@ msgstr ""
 msgid "workspace.media.security.explanation"
 msgstr ""
 
+#: workspace:workspace.media.settings.originals.body
+msgid "workspace.media.settings.originals.body"
+msgstr ""
+
+#: workspace:workspace.media.settings.originals.heading
+msgid "workspace.media.settings.originals.heading"
+msgstr ""
+
 #: workspace:workspace.media.settings.pattern.date
 msgid "workspace.media.settings.pattern.date"
 msgstr ""

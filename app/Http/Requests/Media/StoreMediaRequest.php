@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Media;
 
+use App\Domain\Media\PdfInspector;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SvgSanitizer;
 use Closure;
@@ -61,6 +62,22 @@ final class StoreMediaRequest extends FormRequest
                     Yani `fixtures/malicious/php-as-jpg.jpg` ve
                     `html-as-png.png` eskisi gibi 422 döner, sebebi değişir.
                 */
+                /*
+                    PDF KAPISI — sahibin kararı, 2026-09-05.
+
+                    SVG'deki ayrımın aynısı: karar UZANTIYA ya da istemcinin
+                    bildirdiği MIME'a göre verilemez, ikisi de yükleyenin
+                    denetimindedir. Ölçüt dosyanın KENDİ ilk baytıdır
+                    (`%PDF-`) — ve orada PDF olmadığı anlaşılan bir gövde
+                    (PHP, HTML, düz metin) aşağıdaki yollardan birinde
+                    zaten düşer.
+                */
+                if ($this->startsLikePdf($value)) {
+                    $this->validatePdf($value, $slot, $maxBytes, $fail);
+
+                    return;
+                }
+
                 if ($this->startsLikeMarkup($value)) {
                     $this->validateSvg($value, $slot, $maxBytes, $fail);
 
@@ -71,6 +88,27 @@ final class StoreMediaRequest extends FormRequest
 
                 if ($info === false || ! in_array($info[2], self::ALLOWED_IMAGE_TYPES, true)) {
                     $fail('The file failed magic-byte validation.');
+
+                    return;
+                }
+
+                /*
+                    GÖRSEL, GÖRSEL KABUL ETMEYEN BİR SLOTA GİDEMEZ.
+
+                    Belge slotu açılınca bu boşluk göründü: kapı bugüne
+                    kadar raster dosyalarda slotun `formats` listesine hiç
+                    bakmıyordu, dolayısıyla bir yemek fotoğrafı `document`
+                    slotuna girer ve orada türevsiz, okunamaz bir satır
+                    olarak otururdu.
+
+                    Kontrol DAR tutuldu — "bu slot hiçbir görsel biçimi
+                    kabul etmiyor mu?" Tam biçim eşlemesi (JPEG'i yalnız
+                    JPEG kabul eden slota sokmak) ayrı bir karardır: var
+                    olan slotların bugünkü davranışını değiştirir ve
+                    sessizce yapılamaz.
+                */
+                if ($this->slotRefusesEveryImage($slot)) {
+                    $fail('Bu alana görsel yüklenemez; burası belge alanıdır. PDF yükleyin.');
 
                     return;
                 }
@@ -153,6 +191,111 @@ final class StoreMediaRequest extends FormRequest
             // ne yapacağını da söylemez (`docs/76`).
             $fail($result->failureReason ?? 'Bu SVG dosyası güvenle temizlenemedi ve kabul edilmedi.');
         }
+    }
+
+    /**
+     * PDF KAPISI — sahibin kararının güvenlik yarısı.
+     *
+     * SVG kapısının dört basamağı burada da geçerlidir, bir eklemeyle:
+     *
+     *   1. SLOT. PDF her yere gitmez; izin `config/media-slots.php`
+     *      `formats` dizisinde yazar (bugün yalnız `document`). Bir yemek
+     *      fotoğrafı slotunda belge kabul etmek slot politikasının kendi
+     *      sözüyle çelişirdi (INV-04).
+     *
+     *   2. MIME + İLK BAYT, İKİSİ BİRDEN. `%PDF-` başlığı bu yola girmenin
+     *      koşuluydu; burada bir de içerikten türetilen MIME sorulur.
+     *      İkisi de dosyanın KENDİ baytlarından okunur — uzantı ve
+     *      istemcinin bildirdiği tür hiç sorulmaz.
+     *
+     *   3. DENETÇİ. `PdfInspector` saf bir alan sınıfıdır; gövdeyi okur ve
+     *      "çalıştırılabilir ya da dışarı çıkan bir şey var mı" sorusunu
+     *      cevaplar.
+     *
+     *   4. FAIL-CLOSED. Saldırı bulunan ya da hiç okunamayan gövde
+     *      REDDEDİLİR. PDF'te "temizleyip kabul etmek" zaten bir seçenek
+     *      değildir (bkz. `PdfInspector` — nesneler bayt konumlarıyla
+     *      adreslenir), ama olsaydı da yapılmazdı: sessizce temizlemek
+     *      saldırıyı arşivlemek ve sahibin dosyasını haber vermeden
+     *      değiştirmek olurdu.
+     */
+    private function validatePdf(UploadedFile $file, string $slot, int $maxBytes, Closure $fail): void
+    {
+        $catalogue = SlotCatalogue::fromArray((array) config('media-slots.slots', []));
+
+        if (! $catalogue->has($slot) || ! $catalogue->get($slot)->acceptsFormat('pdf')) {
+            $fail('Bu alana PDF yüklenemez. Belgeler yalnız belge alanına yüklenir; görsel alanları fotoğraf bekler.');
+
+            return;
+        }
+
+        // İçerikten türetilen MIME (`finfo`). İstemcinin gönderdiği başlık
+        // değil: onu yükleyen yazar.
+        if ($file->getMimeType() !== 'application/pdf') {
+            $fail('The file failed magic-byte validation.');
+
+            return;
+        }
+
+        $path = (string) $file->getRealPath();
+
+        // `max:` kuralı zaten düştüyse gövdeyi belleğe hiç almayız: fazla
+        // büyük bir dosyayı okumak, reddedileceğini bile bile okumaktır.
+        if (! is_readable($path) || (int) (@filesize($path) ?: 0) > $maxBytes) {
+            $fail('The file failed magic-byte validation.');
+
+            return;
+        }
+
+        $body = @file_get_contents($path);
+
+        if ($body === false) {
+            $fail('The file failed magic-byte validation.');
+
+            return;
+        }
+
+        $result = (new PdfInspector)->inspect($body);
+
+        if (! $result->isSafe()) {
+            // Sebep SAHİBİN cümlesidir: "geçersiz dosya" ona ne olduğunu da
+            // ne yapacağını da söylemez (`docs/76`).
+            $fail($result->failureReason ?? 'Bu PDF dosyası güvenle denetlenemedi ve kabul edilmedi.');
+        }
+    }
+
+    /** Dosyanın ilk baytları `%PDF-` mi? Uzantıya ve MIME'a bakılmaz. */
+    private function startsLikePdf(UploadedFile $file): bool
+    {
+        $path = (string) $file->getRealPath();
+
+        if (! is_readable($path)) {
+            return false;
+        }
+
+        return str_starts_with((string) @file_get_contents($path, false, null, 0, 5), '%PDF-');
+    }
+
+    /** Bu slot hiçbir raster/vektör görsel biçimi kabul etmiyor mu? */
+    private function slotRefusesEveryImage(string $slot): bool
+    {
+        $catalogue = SlotCatalogue::fromArray((array) config('media-slots.slots', []));
+
+        if (! $catalogue->has($slot)) {
+            // Tanımsız slot bu kapının konusu değil: `slot` kuralı ve
+            // aşağı akıştaki politika onu kendi cümlesiyle karşılar.
+            return false;
+        }
+
+        $policy = $catalogue->get($slot);
+
+        foreach (['jpeg', 'png', 'gif', 'webp', 'avif', 'heic', 'svg'] as $format) {
+            if ($policy->acceptsFormat($format)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /** Dosyanın ilk anlamlı baytı `<` mi? Uzantıya ve MIME'a bakılmaz. */
