@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import clsx from 'clsx';
+import { trackEvent } from '../../../../lib/analytics';
 import { Spinner } from '../../../catalog/feedback/micro/Spinner';
 
 /**
@@ -66,8 +67,39 @@ const ASSERTIVE: ReadonlySet<PageStateKind> = new Set<PageStateKind>(['error']);
  */
 const SOLID_SURFACE: ReadonlySet<PageStateKind> = new Set<PageStateKind>(['success']);
 
+/**
+ * Durum türü → `action_blocked` gerekçesi (`docs/112` §4.3).
+ *
+ * `action_blocked` sözleşmede özellikle değerlidir: bu depo "yapılamayan iş
+ * çizilmez" kuralını uygular, dolayısıyla kullanıcının bir kısıtla
+ * karşılaştığı HER yer bir tasarım eksiğinin izidir. Boş bir liste ürünün
+ * normal bir hâli, kapalı bir kapı ise bir sorudur: "kaç sahip yapamadığı
+ * bir şeye bakıyor?".
+ *
+ * `error` ve `degraded` burada YOKTUR: onlar bir kısıt değil arızadır ve
+ * ölçümleri sunucu tarafında zaten yaşar; ikisini aynı olayda toplamak
+ * "izin eksikliği" ile "sunucu düştü"yü tek çubuğa yığardı.
+ */
+const BLOCKED_REASON: Partial<Record<PageStateKind, 'permission' | 'plan' | 'state'>> = {
+    permission: 'permission',
+    planRestricted: 'plan',
+    prerequisite: 'state',
+};
+
 type PageStateBase = {
     kind: PageStateKind;
+    /**
+     * Bu durumun görüldüğü ekran — ZORUNLU, çünkü ölçüm buradan çıkar.
+     *
+     * İsteğe bağlı olsaydı yeni bir ekran ölçüm dışında kalırdı ve bunu
+     * hiçbir test söylemezdi: eksik ölçüm, yanlış ölçüm kadar sessizdir
+     * (`docs/112` §7). Zorunlu olduğu için derleyici her yeni çağrı yerine
+     * adını sorar.
+     *
+     * Kısa ve `snake_case`/tire içermeyen bir ad verin (`menu`, `analytics`);
+     * GTM'de kırılım burada yazan dizeyle yapılır.
+     */
+    screen: string;
     /** NE yok / ne oldu. */
     title: string;
     /** NEDEN öyle ve kullanıcı için anlamı ne. */
@@ -95,8 +127,33 @@ type PageStateLoading = PageStateBase & {
 export type PageStateProps = PageStateWithAction | PageStateWithoutAction | PageStateLoading;
 
 export function PageState(props: PageStateProps) {
-    const { kind, title, description, className } = props;
+    const { kind, screen, title, description, className } = props;
     const assertive = ASSERTIVE.has(kind);
+
+    /*
+        SÜRTÜNME ÖLÇÜMÜ BURADA, tek yerde (`docs/112` §4.3).
+
+        Onbir ekranın her birine tek tek olay basmak, on birinci ekranda
+        unutulmaya mahkûmdu. Boş durum ve kapalı kapı zaten TEK bileşenden
+        çiziliyor; ölçüm de oradan çıkar. Böylece yarın eklenen bir ekran,
+        hiç kimse hatırlamasa bile ölçülür.
+
+        Metin GÖNDERİLMEZ, yalnız ekranın adı: başlık ve açıklama ürün
+        metnidir, çevrilir ve değişir; ölçüm ise sabit bir kırılım ister.
+    */
+    useEffect(() => {
+        if (kind === 'empty') {
+            trackEvent('empty_state_seen', { screen });
+
+            return;
+        }
+
+        const reason = BLOCKED_REASON[kind];
+
+        if (reason !== undefined) {
+            trackEvent('action_blocked', { action: screen, reason });
+        }
+    }, [kind, screen]);
     return (
         <div
             role={assertive ? 'alert' : 'status'}

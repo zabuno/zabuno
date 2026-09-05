@@ -129,7 +129,7 @@ export function MenuPage({
 
         // Gerçek bekleme: veri yolda. Tek meşru "yükleniyor" hâli budur.
         if (catalogPhase === 'loading') {
-            return <PageState kind="loading" title={t('workspace.menu.loading')} />;
+            return <PageState kind="loading" screen="menu" title={t('workspace.menu.loading')} />;
         }
 
         /*
@@ -157,6 +157,7 @@ export function MenuPage({
         return (
             <PageState
                 kind="prerequisite"
+                screen="menu"
                 title={
                     catalogPhase === 'brand-onboarding'
                         ? t('workspace.menu.empty.brand.body')

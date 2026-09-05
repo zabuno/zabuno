@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { t } from '../../../../i18n/workspace';
 import { currentLocaleTag } from '../../../../money/format';
 import { buildAuthRequestInit } from '../../../../lib/csrfHeader';
+import { trackEvent } from '../../../../lib/analytics';
 import { PageState } from '../shared/PageState';
 
 type MenuAuditRow = {
@@ -245,11 +246,15 @@ export function MenuAuditRegion({ workspaceId }: { workspaceId: number }) {
                 {status === 'error' && (
                     <PageState
                         kind="error"
+                        screen="menu_audit"
                         title={t('workspace.menu.audit.error')}
                         action={
                             <button
                                 type="button"
                                 onClick={() => {
+                                    // Hangi hata tekrar denettiriyor
+                                    // (`docs/112` §4.3).
+                                    trackEvent('retry_clicked', { surface: 'menu_audit' });
                                     setStatus('loading');
                                     setAttempt((previous) => previous + 1);
                                 }}

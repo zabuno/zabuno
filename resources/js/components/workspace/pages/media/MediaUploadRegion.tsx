@@ -21,6 +21,7 @@ import {
 import { FieldError } from '../../../catalog/menu/micro/FieldError';
 import { focusFirstInvalidField, ServerRejectedError } from '../../../../lib/validationErrors';
 import { buildAuthRequestInit } from '../../../../lib/csrfHeader';
+import { trackEvent } from '../../../../lib/analytics';
 import { t } from '../../../../i18n/workspace';
 import { wizardText } from './uploadWizardCopy';
 
@@ -575,6 +576,36 @@ export function MediaUploadRegion({ workspaceId, onSubmit }: MediaUploadRegionPr
 
         if (slot === '') {
             errors[slotId] = t('workspace.media.upload.error.assetSlot.required');
+        }
+
+        /*
+            YÜKLEME REDDİ ÖLÇÜLÜR (`docs/112` §4.3): "boyut/tür sınırı kaç
+            kişiyi kesiyor?".
+
+            Sahip 30 MB'lık bir tarama yükleyip reddedildiğinde bugüne kadar
+            hiçbir yerde iz kalmıyordu; yani sınırın doğru yerde olup
+            olmadığı bir tahmin meselesiydi. Reddin GEREKÇESİ basılır, dosya
+            ADI ya da boyutu değil: ad kişisel/ticari veri taşıyabilir, ham
+            bayt ise GA4'te raporlanamaz.
+
+            Yalnız dosyayla ilgili ret sayılır; eksik alt metin ya da
+            seçilmemiş yer bir yükleme reddi değil, form doğrulamasıdır
+            (`form_validation_failed` onları ayrı sayar).
+        */
+        if (selected !== null && selectedKind !== null && errors[fileId] !== undefined) {
+            const reason = tooLarge
+                ? 'too_large'
+                : tooManyPixels
+                  ? 'too_many_pixels'
+                  : tooSmall
+                    ? 'too_small'
+                    : undefined;
+
+            // Gerekçe çözülemiyorsa olay basılmaz: "unknown" bir kova, gerçek
+            // bir kova gibi toplanır ve raporu kirletir (`docs/112` §3.4).
+            if (reason !== undefined) {
+                trackEvent('upload_rejected', { reason, kind: selectedKind });
+            }
         }
 
         setFieldErrors(errors);

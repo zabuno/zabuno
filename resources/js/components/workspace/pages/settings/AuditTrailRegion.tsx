@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { t } from '../../../../i18n/workspace';
+import { trackEvent } from '../../../../lib/analytics';
 import { PageState } from '../shared/PageState';
 
 /**
@@ -94,11 +95,15 @@ export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
             {status === 'error' && (
                 <PageState
                     kind="error"
+                    screen="settings_audit"
                     title={t('workspace.settings.audit.error')}
                     action={
                         <button
                             type="button"
                             onClick={() => {
+                                // Hangi hata tekrar denettiriyor (`docs/112`
+                                // §4.3).
+                                trackEvent('retry_clicked', { surface: 'settings_audit' });
                                 setStatus('loading');
                                 setAttempt((previous) => previous + 1);
                             }}

@@ -32,6 +32,36 @@ const en = {
     'engineering.aiAudit.col.action': 'Event',
     'engineering.aiAudit.col.actor': 'By',
     'engineering.aiAudit.actor.server': 'server command',
+
+    // MODÜL ENVANTERİ (`docs/111`). Metinler bilerek "hangi dosya söylüyor"
+    // diye yazıldı: bu yüzeyin değeri listenin kendisi değil, listenin
+    // NEREDEN geldiğinin okunabilir olmasıdır.
+    'engineering.modules.nav.label': 'Modules',
+    'engineering.modules.heading': 'Modules',
+    'engineering.modules.description':
+        'What this installation actually carries, read from the two files that are verified today: the core kernel registry and the observed dependency graph. Read-only — a module cannot be turned on or off anywhere in this product yet, so no switch is drawn here.',
+    'engineering.modules.loading': 'Loading the module inventory…',
+    'engineering.modules.error': 'The module inventory could not be loaded.',
+    'engineering.modules.core.title': 'Core kernel registry',
+    'engineering.modules.core.source': 'Source: config/core-modules.php',
+    'engineering.modules.core.empty': 'The core kernel registry is empty.',
+    'engineering.modules.core.scope':
+        'Only the core kernel is listed. Module specs outside it carry no code, version or AI posture anywhere in the source, and a row invented for them would be a claim rather than a reading.',
+    'engineering.modules.col.code': 'Code',
+    'engineering.modules.col.name': 'Module',
+    'engineering.modules.col.version': 'Version',
+    'engineering.modules.col.class': 'Class',
+    'engineering.modules.col.aiPosture': 'AI posture',
+    'engineering.modules.col.baseline': 'Deterministic baseline',
+    'engineering.modules.col.dependsOn': 'Depends on',
+    'engineering.modules.graph.title': 'Observed dependencies between contexts',
+    'engineering.modules.graph.source': 'Source: config/module-dependency-dag.json',
+    'engineering.modules.graph.about':
+        'These are context names from the source tree, not registry codes, and each edge names the file whose import proves it. Only edges the repository could verify are listed.',
+    'engineering.modules.graph.empty': 'No cross-context import has been observed.',
+    'engineering.modules.graph.col.from': 'Context',
+    'engineering.modules.graph.col.to': 'Depends on',
+    'engineering.modules.graph.col.evidence': 'Proved by',
     'platform.shell.brand': 'Zabuno Platform',
     'platform.shell.navLabel': 'Platform admin',
     'platform.shell.heading': 'Platform administration',

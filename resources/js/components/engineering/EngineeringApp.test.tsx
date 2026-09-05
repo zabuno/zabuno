@@ -65,6 +65,22 @@ describe('EngineeringApp', () => {
                         ],
                     });
                 }
+                if (String(url).endsWith('/api/admin/modules')) {
+                    return jsonResponse(200, {
+                        modules: [
+                            {
+                                code: 'CORE-13',
+                                name: 'File/Media',
+                                moduleClass: 'core',
+                                version: '1.0.0',
+                                dependencies: ['CORE-02', 'CORE-04'],
+                                deterministicBaseline: 'required',
+                                aiPosture: 'automated_guarded',
+                            },
+                        ],
+                        contextGraph: { nodes: ['Media'], edges: [] },
+                    });
+                }
                 if (String(url).endsWith('/api/admin/workspaces')) return jsonResponse(200, []);
                 return jsonResponse(404, { message: 'Not Found.' });
             }),
@@ -119,5 +135,42 @@ describe('EngineeringApp', () => {
         // Aktörsüz kayıt: sunucu komutu — bir isim uydurulmaz.
         expect(within(events).getByText('server command')).toBeInTheDocument();
         expect(within(events).getByText('health:unhealthy')).toBeInTheDocument();
+    });
+
+    /**
+     * `docs/111` §8.6 — bölüm ADRESTEN gelir.
+     *
+     * Fragment (`#modules`) sunucuya hiç ulaşmaz: ne ölçüme, ne paylaşılan
+     * bir bağlantıya, ne de tarayıcı geçmişine güvenilir biçimde girer
+     * (`docs/38` §4, kiracı ölçüm kuralı). Modül envanteri bu kuralın
+     * dışında tutulmaz.
+     */
+    it('draws the module inventory when /engineering/modules is opened directly', async () => {
+        history.replaceState(null, '', '/engineering/modules');
+        const { EngineeringApp } = await importApp();
+
+        render(<EngineeringApp />);
+
+        expect(await screen.findByRole('heading', { name: /^modules$/i })).toBeInTheDocument();
+
+        const registry = await screen.findByRole('region', { name: 'Core kernel registry' });
+        expect(within(registry).getByText('File/Media')).toBeInTheDocument();
+        expect(within(registry).getByText('automated_guarded')).toBeInTheDocument();
+
+        expect(screen.getByRole('link', { name: 'Modules' })).toHaveAttribute(
+            'aria-current',
+            'page',
+        );
+    });
+
+    it('falls back to the default section when the address names an unknown one', async () => {
+        history.replaceState(null, '', '/engineering/modul-envanteri');
+        const { EngineeringApp } = await importApp();
+
+        render(<EngineeringApp />);
+
+        expect(
+            await screen.findByRole('heading', { name: /^release readiness$/i }),
+        ).toBeInTheDocument();
     });
 });

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { readyForRender } from './i18n/mount';
+import { markAnalyticsSurfaceAnonymous, trackPageView } from './lib/analytics';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { LoginForm } from './components/auth/LoginForm';
 import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
@@ -69,6 +70,20 @@ function renderView(container: HTMLElement) {
     Çeviri tablosu İNDİRİLMEDEN çizilmez (FF-94): önce İngilizce, sonra
     Türkçe bir ekran göstermek, dili hiç bilmemekten daha kötü görünür.
 */
+/*
+    ÖLÇÜM BURADA KİRACISIZ AKAR.
+
+    Kayıt/giriş/sıfırlama ekranlarında henüz bir çalışma alanı yoktur.
+    Bu işaret konmadan önce burada basılan her olay kuyruğa girip sayfa
+    değiştiğinde sessizce düşüyordu — yani sürtünme ölçümünün en değerli
+    noktası, insanların ürüne girmeden vazgeçtiği yer, hiç ölçülmüyordu.
+
+    Uydurma bir kiracı kimliği ("anonymous", "0") basılmıyor: raporlarda
+    var olmayan bir kiracı yaratırdı.
+*/
+markAnalyticsSurfaceAnonymous();
+trackPageView(window.location.pathname, document.title);
+
 void readyForRender().then(() => {
     createRoot(container).render(
         <StrictMode>

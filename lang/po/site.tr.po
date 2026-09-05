@@ -204,6 +204,26 @@ msgstr "Zabuno ekibinize ortak bir çalışma alanı verir: restoranın menüsü
 msgid "site.home.meta.title"
 msgstr "Restoran menüsü ve çalışma alanı"
 
+#: site:site.legal.dataRequest.addressLabel
+msgid "site.legal.dataRequest.addressLabel"
+msgstr "Talebin iletileceği adres"
+
+#: site:site.legal.dataRequest.addressMissing
+msgid "site.legal.dataRequest.addressMissing"
+msgstr "Bu bilgi henüz girilmedi. İletişim formundan gönderilen bir talep yine de bize ulaşır ve kayda geçer."
+
+#: site:site.legal.dataRequest.body
+msgid "site.legal.dataRequest.body"
+msgstr "Menünüzü çalışma alanınızdan dilediğiniz zaman CSV dosyası olarak kendiniz indirebilirsiniz; bunun için bize sormanıza gerek yok. Hesabınızda tutulan diğer her şey için iletişim formundan bize yazın ve neyi talep ettiğinizi belirtin."
+
+#: site:site.legal.dataRequest.cta
+msgid "site.legal.dataRequest.cta"
+msgstr "İletişim formunu açın"
+
+#: site:site.legal.dataRequest.heading
+msgid "site.legal.dataRequest.heading"
+msgstr "Hesabınızdaki veriler"
+
 #: site:site.legal.pending
 msgid "site.legal.pending"
 msgstr "Bu sayfa nitelikli hukuki incelemeyi bekliyor ve henüz yayımlanmadı. Bağlayıcı hukuki hüküm içermez."

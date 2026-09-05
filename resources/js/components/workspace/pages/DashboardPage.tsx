@@ -223,6 +223,7 @@ export function DashboardPage({
                     <div className="flex flex-col gap-3">
                         <PageState
                             kind="empty"
+                            screen="dashboard"
                             title={t('dashboard.empty')}
                             {...(onNavigateToSection
                                 ? {

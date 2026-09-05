@@ -3,7 +3,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEve
 import { Button, Label, TextInput } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { readValidationFailure } from '../../lib/validationErrors';
-import { setAnalyticsContext, trackPageView } from '../../lib/analytics';
+import { setAnalyticsContext, trackEvent, trackPageView } from '../../lib/analytics';
+import { setSignupAgeMinutes } from '../../lib/analyticsEvents';
 import { shouldInterceptNavigation } from '../../lib/navigation';
 import { t } from '../../i18n/workspace';
 import { BrandOnboardingForm } from './BrandOnboardingForm';
@@ -94,6 +95,14 @@ type WorkspaceUser = {
     email: string;
     avatarMediaAssetId?: number | null;
     avatarUrl?: string | null;
+    /**
+     * Hesabın YAŞI, dakika (`docs/112` §4.1). Kayıt damgası değil: iki damganın
+     * farkı tarayıcı saatinin doğru olmasını gerektirir ve o saat kullanıcının
+     * kendi ayarıdır. Eski bir sunucu bunu hiç göndermeyebilir; o durumda
+     * `first_publish_completed` olayı `minutes_since_signup` alanını TAŞIMAZ —
+     * uydurma bir sayı, eksik bir alandan çok daha pahalıdır.
+     */
+    signedUpMinutesAgo?: number;
 };
 type Workspace = {
     id: number;
@@ -361,6 +370,18 @@ export function WorkspaceApp({
             const nextUser = (await userResponse.json()) as WorkspaceUser;
             const nextWorkspaces = (await workspacesResponse.json()) as Workspace[];
 
+            /*
+                TIME TO FIRST QR'ın başlangıç noktası burada kurulur.
+
+                Ölçüm çapası oturumun BAŞINDA alınır, yayın anında değil:
+                yayın anında `/api/user`'a ikinci bir çağrı yapmak, sahibin
+                "Yayınla"ya bastığı anı bir ağ gidiş-dönüşü kadar geciktirirdi
+                — ve ölçüm hiçbir zaman ürünün önüne geçmez.
+            */
+            if (nextUser.signedUpMinutesAgo !== undefined) {
+                setSignupAgeMinutes(nextUser.signedUpMinutesAgo);
+            }
+
             if (contextResponse.ok) {
                 const context = (await contextResponse.json()) as Workspace;
                 const snapshot = await fetchCatalogSnapshot(context.id);
@@ -619,6 +640,7 @@ export function WorkspaceApp({
             const failure = await readValidationFailure(
                 response,
                 t('workspace.create.error.submit'),
+                'workspace_create',
             );
 
             setCreateError(
@@ -852,6 +874,10 @@ export function WorkspaceApp({
                 </p>
                 <Button
                     onClick={() => {
+                        // TEKRAR DENEME ÖLÇÜLÜR (`docs/112` §4.3): hangi hata
+                        // tekrar denettiriyor? Panelin hiç açılamaması bu
+                        // listenin en pahalı satırıdır.
+                        trackEvent('retry_clicked', { surface: 'workspace_load' });
                         setPhase('loading');
                         void load();
                     }}

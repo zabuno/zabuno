@@ -66,6 +66,13 @@ final class SiteText
             'navPrimary' => 'site.nav.primary',
             'legalPending' => 'site.legal.pending',
             'legalPendingDescription' => 'site.legal.pending.description',
+            // Hesap verisi talebinin yolu (FF-169): metin ŞABLONDA değil
+            // KATALOGDA — bir hukuk metni en çok çevrilmesi gereken metindir.
+            'dataRequestHeading' => 'site.legal.dataRequest.heading',
+            'dataRequestBody' => 'site.legal.dataRequest.body',
+            'dataRequestCta' => 'site.legal.dataRequest.cta',
+            'dataRequestAddressLabel' => 'site.legal.dataRequest.addressLabel',
+            'dataRequestAddressMissing' => 'site.legal.dataRequest.addressMissing',
             'skipToContent' => 'site.skipToContent',
             'navFeatures' => 'site.nav.features',
             'navHowItWorks' => 'site.nav.howItWorks',

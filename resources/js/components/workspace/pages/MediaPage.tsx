@@ -218,6 +218,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             const failure = await readValidationFailure(
                 response,
                 t('workspace.media.upload.failed'),
+                'media_upload',
             );
 
             throw new ServerRejectedError(

@@ -1,10 +1,18 @@
 # 111 — Superadmin "Modüller" sayfası planı
 
-> **BU BELGE BİR PLANDIR. Bugün kodda karşılığı YOKTUR.**
+> **BU BELGE BİR PLANDIR. §7'nin 1. ve 2. adımı UYGULANDI (FF-168);
+> 3, 4 ve 5 hâlâ yalnız karardır.**
 >
-> `/engineering/modules` diye bir adres yok, modül tablosu yok, modül
-> açma/kapama yok. Aşağıdaki her satır ya bugünkü bir ölçümdür ya da bir
-> karardır; hiçbiri "yapıldı" demez.
+> Bugün kodda karşılığı olan: `GET /api/admin/modules` (yalnız 16 CORE,
+> `EnsurePlatformSuperAdmin` arkasında) ve `/engineering/modules` ekranı.
+> Kodda karşılığı OLMAYAN, ve bilerek olmayan: durum rozeti ve kod-karşılığı
+> türetmesi (§4.1, adım 3), `modules/` eşlemesi (§4.2, adım 4), modül
+> açma/kapama (§5, adım 5). Sayfa salt okunurdur ve hiçbir anahtar
+> çizmez.
+>
+> Bu kutu, üstündeki cümle yanlışa döndüğü için değiştirildi — `docs/109`
+> §8.7'nin kusur ailesi tam olarak budur: *cümle bir zamanlar doğruydu,
+> altındaki gerçek değişti, kimse geri dönüp cümleyi kontrol etmedi.*
 
 **Değişmez taban:** `ff-150-medya-durustlugu` @ `origin` ile güncel,
 2026-09-05.
@@ -352,23 +360,31 @@ gerekçesini taşır; gerekçe düştüğünde satır da düşer (§8.6).
 Sıra, her adımın **kendi başına doğrulanabilir** olmasına göre kuruldu.
 Hiçbir adım bir sonrakini beklemeden değer üretir.
 
-**1. Okuma ucu — yalnız CORE 16.**
+**1. Okuma ucu — yalnız CORE 16. — UYGULANDI (FF-168).**
 `GET /api/admin/modules`, `EnsurePlatformSuperAdmin` arkasında. Kaynak
 yalnız `config/core-modules.php` + `config/module-dependency-dag.json`.
 Neden önce: bu ikisi bugün **doğrulanmış** tek kaynak (§3.1, §3.2). 16
 satırlık dürüst bir cevap, 62 satırlık belirsiz bir cevaptan iyidir.
 
-**2. Ekran — `/engineering/modules`.**
+**2. Ekran — `/engineering/modules`. — UYGULANDI (FF-168).**
 `EngineeringSection` birliğine `'modules'`, `OpsShell` bölüm listesine
 bir giriş. Bölüm adresten gelir. Neden ikinci: uç olmadan ekranın
 gösterecek verisi olmaz, ve uydurma veriyle çizilen bir ekran sonra
 gerçek veriye uydurulmaz — baştan yeniden yazılır.
 
-**3. Kod-karşılığı türetmesi.**
+**3. Kod-karşılığı türetmesi. — YAPILMADI.**
 Bağlam dizini, rota, migration ve test gözlemleri (§3.3) uca eklenir;
 durum rozeti (§4.1) bunlardan türetilir. Neden üçüncü: bu, sayfanın asıl
 cevabıdır ama en çok yanılma payı taşıyan parçadır. Kanıt gözlemi rozetle
 **aynı anda** çizilir, sonradan eklenmez.
+
+FF-168'de yapılmadı ve sebebi 4. adımdır, zaman değil: adım 1'in kapsamı
+16 CORE koduyken, bir CORE kodunun hangi `app/` bağlamına karşılık geldiği
+depoda **hiçbir yerde yazılı değil** (§4.2'nin iki isim uzayı). O eşleme
+olmadan türetilecek rozetin 16'da 16'sı "belirsiz" çıkardı; eşlemeyi ekran
+koduna gömmek ise §4.2'nin açıkça REDDETTİĞİ A seçeneğidir. Yani 3, 4'ün
+arkasındadır ve sıra §7'de yazıldığından farklıdır. Bugünkü ekran bu
+yüzden hiç rozet çizmez — belirsiz bir rozet de bir iddiadır.
 
 **4. `modules/` eşlemesi — ayrı yazar, ayrı paket.**
 62 dosyaya `contexts:` alanı ve onu doğrulayan test (§4.2 B). Neden en

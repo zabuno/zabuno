@@ -204,6 +204,26 @@ msgstr ""
 msgid "site.home.meta.title"
 msgstr ""
 
+#: site:site.legal.dataRequest.addressLabel
+msgid "site.legal.dataRequest.addressLabel"
+msgstr ""
+
+#: site:site.legal.dataRequest.addressMissing
+msgid "site.legal.dataRequest.addressMissing"
+msgstr ""
+
+#: site:site.legal.dataRequest.body
+msgid "site.legal.dataRequest.body"
+msgstr ""
+
+#: site:site.legal.dataRequest.cta
+msgid "site.legal.dataRequest.cta"
+msgstr ""
+
+#: site:site.legal.dataRequest.heading
+msgid "site.legal.dataRequest.heading"
+msgstr ""
+
 #: site:site.legal.pending
 msgid "site.legal.pending"
 msgstr ""

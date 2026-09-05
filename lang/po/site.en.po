@@ -204,6 +204,26 @@ msgstr "Zabuno gives your team a shared workspace to manage a restaurant's menu 
 msgid "site.home.meta.title"
 msgstr "Restaurant menu & workspace"
 
+#: site:site.legal.dataRequest.addressLabel
+msgid "site.legal.dataRequest.addressLabel"
+msgstr "Where the request is sent"
+
+#: site:site.legal.dataRequest.addressMissing
+msgid "site.legal.dataRequest.addressMissing"
+msgstr "This information has not been entered yet. A request sent through the contact form still reaches us and is recorded."
+
+#: site:site.legal.dataRequest.body
+msgid "site.legal.dataRequest.body"
+msgstr "You can download your menu yourself, as a CSV file, from your workspace at any time — you do not need to ask us for it. For anything else held in your account, write to us using the contact form and say what you are asking for."
+
+#: site:site.legal.dataRequest.cta
+msgid "site.legal.dataRequest.cta"
+msgstr "Open the contact form"
+
+#: site:site.legal.dataRequest.heading
+msgid "site.legal.dataRequest.heading"
+msgstr "The data in your account"
+
 #: site:site.legal.pending
 msgid "site.legal.pending"
 msgstr "This page is pending qualified legal review and is not yet published. It does not contain binding legal terms."

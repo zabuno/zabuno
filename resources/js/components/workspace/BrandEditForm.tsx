@@ -252,6 +252,7 @@ export function BrandEditForm({ workspaceId, brand, onSaved }: BrandEditFormProp
                 const validation = await readValidationFailure(
                     response,
                     t('workspace.brandLocations.edit.error.submit'),
+                    'brand_edit',
                 );
 
                 setFieldErrors(validation.fields);
