@@ -169,6 +169,38 @@ final class SecurityHeadersTest extends TestCase
         );
     }
 
+    // --- ASVS-V3-FONT-SRC-07 ----------------------------------------------
+
+    public function test_fonts_may_only_come_from_our_own_origin(): void
+    {
+        /*
+            BU YÖNERGE DONDURULMUŞTUR — gevşetmek bir çözüm değil, bir kaçıştır.
+
+            Depo yazı tipini kendi içinde barındırıyor
+            (`resources/fonts/`, `resources/css/fonts.css`). Bir gün biri
+            "yazı tipi gelmiyor" diye Google Fonts'u CSP'ye eklemek isterse,
+            bu test onu durdurur ve doğru yolu gösterir: dosyayı depoya koy.
+
+            Üçüncü taraf bir yazı tipi isteği iki şey yapar. Birincisi,
+            ziyaretçinin IP adresini ve hangi sayfayı açtığını başka bir
+            şirkete verir — ona sormadan. İkincisi, sayfanın çizilmesini bizim
+            denetlemediğimiz bir sunucunun ayakta olmasına bağlar.
+        */
+        $policy = (string) $this->get('/')->headers->get('Content-Security-Policy');
+
+        $fontSrc = array_values(array_filter(
+            array_map('trim', explode(';', $policy)),
+            static fn (string $directive): bool => str_starts_with($directive, 'font-src'),
+        ));
+
+        self::assertSame(
+            ["font-src 'self' data:"],
+            $fontSrc,
+            'ASVS-V3-FONT-SRC-07: yazı tipi yalnız kendi kaynağımızdan gelebilir. '.
+            'Bir host eklemek yerine dosyayı depoya koyun.'
+        );
+    }
+
     // --- ASVS-V3-API-06 ---------------------------------------------------
 
     public function test_api_responses_are_protected_too(): void

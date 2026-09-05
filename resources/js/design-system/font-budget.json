@@ -1,0 +1,8 @@
+{
+    "maxHostedKb": 100,
+    "maxFirstPaintKb": 48,
+    "firstPaintFile": "resources/fonts/roboto-latin-wght-normal.woff2",
+    "preloadPartial": "resources/views/partials/font-preload.blade.php",
+    "licenseFile": "resources/fonts/LICENSE-Roboto.txt",
+    "provenanceFile": "resources/fonts/PROVENANCE.json"
+}

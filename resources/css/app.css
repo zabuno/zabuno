@@ -21,6 +21,15 @@
 @import './aep/styles.css';
 
 /*
+    YAZI TİPİNİN KENDİSİ (FF-195).
+
+    AEP katmanından ÖNCE gelir: `@font-face` bildirimi, onu kullanan hiçbir
+    kuraldan sonra gelmek zorunda değil ama önce gelmesi okuru yanıltmaz —
+    "bu yazı tipi nereden geliyor" sorusunun cevabı ilk satırlarda durur.
+*/
+@import './fonts.css';
+
+/*
     KURUMSAL SİTENİN KABUĞU (`docs/100` §2).
 
     Ayrı dosya, çünkü kabuk artık deponun TEK kurumsal header/footer'ı ve her
@@ -60,9 +69,26 @@ a {
 @source '../../storage/framework/views/*.php';
 
 @theme {
+    /*
+       YIĞINDA YALNIZ GERÇEKTEN GELEBİLECEK ADLAR DURUR (FF-195).
+
+       `'Instrument Sans'` buradan ÇIKARILDI. Depoda o yazı tipinin tek bir
+       baytı yoktu ve hiçbir yaygın işletim sisteminde kurulu değil; yani
+       tarayıcı için hiçbir anlamı olmayan, yalnız okuru "bu yazı tipi
+       kullanılıyor" diye yanıltan bir satırdı. Yüklenmeyen bir yazı tipi
+       adı, yığında yalnız gürültüdür.
+
+       Kalan üç emoji ailesi bilinçli olarak duruyor: renkli emoji yazı
+       tipleri onlarca megabayttır, yalnız emoji glifi taşır ve latin metnin
+       ölçüsüne hiç karışmaz. Onları barındırmak, çözdüğü sorunun yüz katı
+       bayt maliyeti olurdu.
+
+       `Roboto` artık `resources/css/fonts.css` üzerinden GERÇEKTEN geliyor;
+       arkasındaki generic'ler yalnız o dosya indirilemezse devreye girer.
+    */
     --font-sans:
-        'Roboto', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Roboto', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
     --color-border: var(--border);
 
     /* Semantic utility yüzeyi. Tailwind v4'te utility YALNIZ @theme'den üretilir;
