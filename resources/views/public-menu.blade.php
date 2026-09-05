@@ -48,6 +48,84 @@
         $itemCount += count($category['menuItems'] ?? []);
     }
 
+    /* FİLTRE EKSENLERİ (FF-177) — SABİT LİSTEDEN DEĞİL, YAYINDAN DOĞAR.
+
+       Sabit bir alerjen listesi çizmek, bu menüde hiç geçmeyen bir alerjeni
+       misafire seçtirirdi; seçim hiçbir şeyi elemez ve misafir filtrenin
+       bozuk olduğunu sanardı. Anahtar küçük harftir (istemci onunla eşleşir),
+       gösterilen etiket ise restoranın kendi yazdığı hâlidir. */
+    $declaredAllergens = [];
+
+    foreach ($categories as $category) {
+        foreach ($category['menuItems'] ?? [] as $item) {
+            foreach ($item['allergens'] ?? [] as $allergen) {
+                $label = trim((string) $allergen);
+
+                if ($label !== '') {
+                    $declaredAllergens[mb_strtolower($label, 'UTF-8')] = $label;
+                }
+            }
+        }
+    }
+
+    ksort($declaredAllergens);
+
+    /* Süzülebilir eksenler SATIRIN İÇİNE yazılır ve şablon onları yalnız
+       okur.
+
+       HESAP BURADA, DÖNGÜDE DEĞİL — ve bu bir üslup tercihi değil, ölçülmüş
+       bir zorunluluk. Blade'in blok biçimli PHP yönergesi ile tek satırlık
+       biçimi aynı düzenli ifadeyle eşleşiyor: ürün döngüsüne ikinci bir
+       blok koyulduğu anda derleyici, sayfanın başındaki tek satırlık
+       kullanımla oradaki blok sonunu eşleştirdi ve aradaki bütün sayfayı
+       ham PHP sandı. Sonuç beyaz ekrandı; bir kez yaşandı, yeri burası. */
+    foreach ($categories as $categoryKey => $category) {
+        foreach ($category['menuItems'] ?? [] as $itemKey => $item) {
+            /* Alerjen ekseni. Ayırıcı BAŞTA VE SONDA da bulunur: `|süt|`
+               araması `|süt ürünleri|` ile yanlışlıkla eşleşmesin diye. */
+            $keys = [];
+
+            foreach ($item['allergens'] ?? [] as $allergen) {
+                $label = trim((string) $allergen);
+
+                if ($label !== '') {
+                    $keys[] = mb_strtolower($label, 'UTF-8');
+                }
+            }
+
+            $categories[$categoryKey]['menuItems'][$itemKey]['filterAllergens'] =
+                $keys === [] ? '' : '|'.implode('|', array_unique($keys)).'|';
+
+            /* Fiyat ekseni MİSAFİRİN GÖRDÜĞÜ BİRİMDEDİR, kuruşta değil:
+               filtre kutusuna "185" yazan misafir 18500 yazmak zorunda
+               kalmamalı. Ondalık basamak para biriminin KENDİSİNDEN gelir —
+               sabit 100'e bölmek yende ve dinarda yanlış fiyat üretirdi
+               (`MoneyFormatter`).
+
+               Para birimi ÇÖZÜLEMİYORSA eksen HİÇ BASILMAZ. O satırın fiyatı
+               zaten gösterilmiyor; onu bir aralığın dışında saymak,
+               bilmediğimiz bir şeyi biliyormuş gibi davranmak olurdu. */
+            $currency = trim((string) ($item['currencyCode'] ?? ''));
+            $priceAxis = null;
+
+            if ($currency !== '') {
+                try {
+                    $digits = \App\Domain\Money\MoneyFormatter::fractionDigitsFor($currency);
+                    $priceAxis = number_format(
+                        ((int) ($item['priceMinorAmount'] ?? 0)) / (10 ** $digits),
+                        $digits,
+                        '.',
+                        '',
+                    );
+                } catch (\Throwable) {
+                    $priceAxis = null;
+                }
+            }
+
+            $categories[$categoryKey]['menuItems'][$itemKey]['filterPrice'] = $priceAxis;
+        }
+    }
+
     /* Metin ŞABLONDA değil KATALOGDA yaşar (`docs/85`): Blade'e yazılan bir
        cümleyi sahip hiçbir PO dosyasından çeviremez.
    
@@ -310,9 +388,20 @@
             color: var(--qr-fg-2);
         }
 
+        /* Arama alanı ile mikrofon AYNI SATIRI paylaşır ve mikrofon dokunma
+           hedefi kadar yer tutar. 320'de kalan her piksel arama alanına
+           gider: `flex: 1 1 auto` ile ortak stil kökündeki taban genişlik
+           sıfırlaması birlikte, uzun bir yer tutucunun satırı taşırmasını
+           imkânsız kılar. */
+        .qr-menu-search-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         #menu-search {
             font: inherit;
-            width: 100%;
+            flex: 1 1 auto;
             min-height: var(--qr-tap);
             padding: 0 14px;
             border-radius: 999px;
@@ -321,7 +410,31 @@
             color: var(--qr-fg);
         }
 
+        /* MİKROFON DÜĞMESİ — işaretlemesi `<template>` içinde iner, DOM'a
+           yalnız tarayıcı konuşma tanımayı destekliyorsa girer. Bu yüzden
+           kural burada durur ama çoğu zaman hiçbir şeye uygulanmaz. */
+        .qr-voice {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--qr-tap);
+            min-height: var(--qr-tap);
+            border-radius: 999px;
+            border: 1px solid var(--qr-border-strong);
+            background: var(--qr-surface);
+        }
+
+        /* Dinleme durumu RENKLE ANLATILMAZ: `aria-pressed` onu ekran
+           okuyucuya söyler, yanındaki canlı bölge de cümleyle yazar
+           (WCAG 1.4.1). Aşağıdaki ton yalnız yardımcıdır. */
+        .qr-voice[aria-pressed='true'] {
+            background: var(--qr-accent-tint);
+            border-color: currentColor;
+        }
+
         #menu-search-status,
+        #menu-voice-status,
         .qr-menu-content-notice {
             flex: 1 0 100%;
             margin: 0;
@@ -331,6 +444,125 @@
 
         #menu-search-status {
             min-height: 1.1em;
+        }
+
+        /* ---- FİLTRELER — kaynağın alt sayfası yerine bir AÇILIR BÖLÜM ---
+
+           Kaynak 320'de tam ekran bir alt sayfa (bottom sheet) çiziyor;
+           o düzen JavaScript'siz hiç açılmaz ve `docs/48` §6.5'in "hiçbir
+           denetim içeriğin üstüne kalıcı binmez" ölçütünü de zorlar.
+           `<details>` aynı işi tarayıcının kendi yeteneğiyle yapar: açılıp
+           kapanması hiçbir bayt JavaScript istemez.
+
+           Panelin KENDİSİ yine de sunucuda gizli iner ve onu betik açar —
+           süzme JavaScript ister ve basıldığında hiçbir şey elemeyen bir
+           denetim, çalışmayan bir mikrofon düğmesiyle aynı yalanı söyler. */
+        .qr-filters {
+            flex: 1 0 100%;
+            border: 1px solid var(--qr-border);
+            border-radius: var(--qr-radius-s);
+            background: var(--qr-surface);
+        }
+
+        /* Tarayıcının KENDİ üçgen imi bilerek yerinde bırakılır: `display`
+           değiştirilseydi im kaybolur ve "Filtreler" satırı açılır bir
+           denetim değil, bir başlık gibi okunurdu. Açık/kapalı durumu da
+           yalnız renge değil, o ime ve `<details>`in kendi semantiğine
+           yaslanır. */
+        .qr-filters-summary {
+            min-height: var(--qr-tap);
+            padding: 11px 14px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .qr-filters-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 4px 14px 14px;
+        }
+
+        .qr-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .qr-filter-title {
+            margin: 0;
+            font-size: 0.9375rem;
+        }
+
+        /* Alerjen ekseninin sınırı bir DİPNOT değil, panelin bir parçasıdır:
+           küçültülmez, gizlenmez ve açılır bir ipucunun arkasına konmaz. */
+        .qr-filter-hint {
+            margin: 0;
+            font-size: 0.8125rem;
+            color: var(--qr-fg-2);
+            text-wrap: pretty;
+        }
+
+        .qr-filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .qr-filter-chip {
+            min-height: var(--qr-tap);
+            padding: 0 14px;
+            border-radius: 999px;
+            border: 1px solid var(--qr-border);
+            background: var(--qr-surface-2);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* HARİÇ TUTULAN çipin ÜSTÜ ÇİZİLİR. Seçili olduğunu yalnız bir ton
+           farkıyla söylemek, rengi göremeyen misafir için hiçbir şey
+           anlatmaz; üstü çizili metin eleme yönünü de gösterir. */
+        .qr-filter-chip[aria-pressed='true'] {
+            border-color: currentColor;
+            background: var(--qr-accent-tint);
+            text-decoration: line-through;
+        }
+
+        .qr-filter-prices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Taban genişlik KARAKTERLE verilir, pikselle değil: alan yazının
+           kendi ölçüsüne göre daralır ve 320'de iki kutu yan yana sığar. */
+        .qr-filter-price {
+            flex: 1 1 8ch;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.8125rem;
+            color: var(--qr-fg-2);
+        }
+
+        .qr-filter-price input {
+            font: inherit;
+            min-height: var(--qr-tap);
+            padding: 0 12px;
+            border-radius: var(--qr-radius-s);
+            border: 1px solid var(--qr-border);
+            background: var(--qr-surface-2);
+            color: var(--qr-fg);
+        }
+
+        .qr-filter-clear {
+            align-self: flex-start;
+            min-height: var(--qr-tap);
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid var(--qr-border-strong);
+            background: var(--qr-surface);
         }
 
         .qr-menu-language {
@@ -761,9 +993,96 @@
             <div class="qr-utility">
                 <div class="qr-menu-search">
                     <label for="menu-search">{{ $text('searchLabel') }}</label>
-                    <input type="search" id="menu-search" name="menu-search" autocomplete="off" placeholder="{{ $text('searchPlaceholder') }}">
+                    {{-- ARAMA SUNUCUYA GİTMEZ ve bu ölçülmüş bir karardır
+                         (FF-177): yayının TAMAMI zaten bu sayfada basılı —
+                         80 ürünlük bir menü 15 KB gzip iniyor ve her ürünün
+                         adı, fiyatı ve alerjeni DOM'da duruyor. Bir arama
+                         ucu açmak, misafire elinde olanı her tuş vuruşunda
+                         yeniden indirtirdi. Menü sayfalanmaya başladığı gün
+                         bu karar yeniden verilir; testi o gün kırılır. --}}
+                    <div class="qr-menu-search-row" data-search-row>
+                        <input type="search" id="menu-search" name="menu-search" autocomplete="off" placeholder="{{ $text('searchPlaceholder') }}">
+                        {{-- Mikrofon düğmesi BURAYA girer ama sunucu onu
+                             çizmez; aşağıdaki `<template>` ve betik bakınız. --}}
+                    </div>
                 </div>
                 <p id="menu-search-status" role="status" aria-live="polite"></p>
+                <p id="menu-voice-status" role="status" aria-live="polite"></p>
+
+                {{-- SESLİ ARAMA DÜĞMESİ ÇİZİLMEZ, İNER (FF-177).
+
+                     Konuşma tanıma bir TARAYICI yeteneğidir ve sunucu isteğe
+                     bakarak onu bilemez; kullanıcı aracısından tahmin etmek
+                     ise bu depoda zaten bir kez yanlış çıkmış bir yöntemdir.
+                     Bu yüzden işaretleme inert bir `<template>` içinde iner
+                     ve DOM'a yalnız yetenek GERÇEKTEN varsa girer.
+
+                     Desteklemeyen tarayıcıda hiçbir şey görünmez ve hiçbir
+                     şey söylenmez: masadaki misafire olmayan bir yetenek
+                     vaat etmemenin tek yolu, onu hiç göstermemektir.
+
+                     Simge SATIR İÇİ SVG'dir. Kaynağın ikon yazı tipi
+                     (Phosphor) bir AĞ İSTEĞİ demektir ve bu sayfanın ölçülen
+                     sözü sıfır istektir (`docs/113` §8). --}}
+                <template id="menu-voice-template">
+                    <button type="button" id="menu-voice" class="qr-voice qr-press" aria-pressed="false" aria-label="{{ $text('voiceLabel') }}">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"></path>
+                            <path d="M5 11a7 7 0 0 0 14 0"></path>
+                            <path d="M12 18v3"></path>
+                        </svg>
+                    </button>
+                </template>
+
+                {{-- FİLTRELER (FF-177) — `docs/114` §3 Dalga 2.
+
+                     KATEGORİ EKSENİ ZATEN VAR: yukarıdaki ray düz çıpalarla
+                     çalışır ve JavaScript istemez; onu bir filtreye çevirmek
+                     çalışan bir gezinmeyi betiğe borçlandırırdı. Buraya
+                     eklenen iki eksen ALERJEN ve FİYATTIR.
+
+                     PANEL GİZLİ İNER ve onu betik açar; gerekçesi stil
+                     bloğunda yazılı. --}}
+                <details class="qr-filters" data-filters hidden>
+                    <summary class="qr-filters-summary">{{ $text('filtersLabel') }}</summary>
+                    <div class="qr-filters-body">
+                        @if ($declaredAllergens !== [])
+                            <div class="qr-filter-group">
+                                <h2 class="qr-filter-title">{{ $text('allergenExcludeLabel') }}</h2>
+                                {{-- BU CÜMLE KISALTILAMAZ ve gizlenemez.
+                                     Filtre yalnız HARİÇ TUTAR: ürün "bu
+                                     üründe fıstık yoktur" diyemez, "restoran
+                                     fıstık bildirmedi" der. Cümle olmasaydı
+                                     boşalan liste, misafirin kalanları
+                                     güvenli sanmasına yol açardı — ve yanlış
+                                     bir alerjensizlik iddiası bir SAĞLIK
+                                     OLAYIDIR (`docs/114` §0). --}}
+                                <p class="qr-filter-hint">{{ $text('allergenExcludeHint') }}</p>
+                                <div class="qr-filter-chips">
+                                    @foreach ($declaredAllergens as $allergenKey => $allergenLabel)
+                                        <button type="button" class="qr-filter-chip" data-allergen-filter="{{ $allergenKey }}" aria-pressed="false">{{ $allergenLabel }}</button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="qr-filter-group">
+                            <h2 class="qr-filter-title">{{ $text('priceRangeLabel') }}</h2>
+                            <div class="qr-filter-prices">
+                                <label class="qr-filter-price" for="filter-price-min">
+                                    <span>{{ $text('priceMinLabel') }}</span>
+                                    <input type="number" inputmode="decimal" min="0" step="any" id="filter-price-min" data-price-min>
+                                </label>
+                                <label class="qr-filter-price" for="filter-price-max">
+                                    <span>{{ $text('priceMaxLabel') }}</span>
+                                    <input type="number" inputmode="decimal" min="0" step="any" id="filter-price-max" data-price-max>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="button" class="qr-filter-clear" data-filter-clear>{{ $text('filtersClear') }}</button>
+                    </div>
+                </details>
 
                 @isset($guestLocale)
                     {{-- Dil seçimi düz BAĞLANTIDIR: JavaScript çalışmasa da
@@ -832,8 +1151,14 @@
                             {{-- ÇIPA: `#item-101` tarayıcının kendi işidir ve
                                  JavaScript gerektirmez. Sahibin örneğindeki
                                  `#item=101` biçimi de aşağıdaki küçük betikle
-                                 buraya bağlanır (FF-116). --}}
-                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}" @isset($item['menuItemId']) id="item-{{ $item['menuItemId'] }}" data-menu-item-id="{{ $item['menuItemId'] }}" @endisset>
+                                 buraya bağlanır (FF-116).
+
+                                 SÜZÜLEBİLİR EKSENLER satırın kendi
+                                 özniteliğindedir (FF-177): filtre istemcide
+                                 çalışıyor ve veriyi satırın YANINDA bulmalı.
+                                 Değerleri sayfanın başındaki PHP bloğu
+                                 hazırladı; gerekçesi orada yazılı. --}}
+                            <li class="qr-menu-item{{ $isSoldOut ? ' qr-menu-item-sold-out' : '' }}" data-item data-item-name="{{ $item['productName'] }}" @if (($item['filterAllergens'] ?? '') !== '') data-item-allergens="{{ $item['filterAllergens'] }}" @endif @if (($item['filterPrice'] ?? null) !== null) data-item-price="{{ $item['filterPrice'] }}" @endif @isset($item['menuItemId']) id="item-{{ $item['menuItemId'] }}" data-menu-item-id="{{ $item['menuItemId'] }}" @endisset>
                                 @if (! empty($item['image']['sources']))
                                     @php($image = $item['image'])
                                     {{-- `loading="lazy"`: kırk ürünlük bir menüde
@@ -1027,39 +1352,294 @@
 
         var searchInput = document.getElementById('menu-search');
         var searchStatus = document.getElementById('menu-search-status');
+        var voiceStatus = document.getElementById('menu-voice-status');
         var categories = Array.prototype.slice.call(document.querySelectorAll('[data-category]'));
+        var filters = document.querySelector('[data-filters]');
+        var allergenButtons = Array.prototype.slice.call(document.querySelectorAll('[data-allergen-filter]'));
+        var priceMinInput = document.querySelector('[data-price-min]');
+        var priceMaxInput = document.querySelector('[data-price-max]');
 
-        if (searchInput && searchStatus) {
-            searchInput.addEventListener('input', function () {
-                var query = searchInput.value.trim().toLocaleLowerCase('tr');
-                var visibleCount = 0;
+        /*
+            FİLTRE PANELİNİ BETİK AÇAR.
 
-                categories.forEach(function (categorySection) {
-                    var items = Array.prototype.slice.call(categorySection.querySelectorAll('[data-item]'));
-                    var categoryHasMatch = query === '';
+            Süzme JavaScript ister. Betik çalışmayan bir tarayıcıda paneli
+            açık bırakmak, basıldığında hiçbir şey elemeyen denetimler
+            çizmek olurdu — çalışmayan bir mikrofon düğmesiyle aynı yalan.
+        */
+        if (filters) {
+            filters.hidden = false;
+        }
 
-                    items.forEach(function (item) {
-                        var name = (item.getAttribute('data-item-name') || '').toLocaleLowerCase('tr');
-                        var matches = query === '' || name.indexOf(query) !== -1;
-                        item.hidden = !matches;
-                        if (matches) {
-                            visibleCount += 1;
-                            categoryHasMatch = true;
-                        }
-                    });
+        function amount(input) {
+            // Türk klavyesinde ondalık ayırıcı virgüldür; misafir "18,50"
+            // yazdığında filtre çalışmalı.
+            var value = input ? parseFloat(String(input.value).replace(',', '.')) : NaN;
 
-                    categorySection.hidden = !categoryHasMatch;
-                });
+            return isNaN(value) ? null : value;
+        }
 
-                if (query === '') {
-                    searchStatus.textContent = '';
-                } else if (visibleCount === 0) {
-                    searchStatus.textContent = say('searchNoMatch');
-                } else {
-                    searchStatus.textContent = say('searchMatched').replace('{count}', String(visibleCount));
+        function excludedAllergens() {
+            var excluded = [];
+
+            allergenButtons.forEach(function (button) {
+                if (button.getAttribute('aria-pressed') === 'true') {
+                    excluded.push(button.getAttribute('data-allergen-filter') || '');
+                }
+            });
+
+            return excluded;
+        }
+
+        function allergenAllows(item, excluded) {
+            if (excluded.length === 0) {
+                return true;
+            }
+
+            /*
+                ELEME YÖNÜ TEK YÖNDÜR: seçilen alerjeni BİLDİREN satır düşer.
+                Bildirilmemiş bir satır "içermiyor" sayılmaz, yalnız
+                elenmemiş olur — panelin kendi cümlesi bunu misafire açıkça
+                söylüyor (`docs/114` §0).
+            */
+            var declared = item.getAttribute('data-item-allergens') || '';
+
+            for (var index = 0; index < excluded.length; index += 1) {
+                if (declared.indexOf('|' + excluded[index] + '|') !== -1) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function priceAllows(item, min, max) {
+            if (min === null && max === null) {
+                return true;
+            }
+
+            var raw = item.getAttribute('data-item-price');
+
+            // Fiyatı okunamayan satır ELENMEZ: fiyatı zaten gösterilmiyor
+            // ve onu bir aralığın dışında saymak, bilmediğimiz bir şeyi
+            // biliyormuş gibi davranmak olurdu.
+            if (raw === null) {
+                return true;
+            }
+
+            var price = parseFloat(raw);
+
+            return !(min !== null && price < min) && !(max !== null && price > max);
+        }
+
+        function statusFor(query, filtered, visibleCount) {
+            if (visibleCount === 0) {
+                /*
+                    SIFIR SONUÇ İKİ AYRI CÜMLEDİR.
+
+                    Aramadaki boşluk "menüde bu yok" demektir ve sahibin
+                    defterine yazılır. Filtredeki boşluk ise yalnız
+                    misafirin kendi koyduğu sınırı anlatır; menü doludur.
+                    Tek cümleye indirmek, misafire menünün boş olduğunu
+                    söylerdi.
+                */
+                if (filtered) {
+                    return say('filterNoMatch');
                 }
 
-                reportNoResults(query, visibleCount);
+                return query === '' ? '' : say('searchNoMatch');
+            }
+
+            if (query !== '') {
+                return say('searchMatched').replace('{count}', String(visibleCount));
+            }
+
+            return filtered ? say('filterMatched').replace('{count}', String(visibleCount)) : '';
+        }
+
+        function apply() {
+            var query = searchInput ? searchInput.value.trim().toLocaleLowerCase('tr') : '';
+            var excluded = excludedAllergens();
+            var min = amount(priceMinInput);
+            var max = amount(priceMaxInput);
+            var filtered = excluded.length > 0 || min !== null || max !== null;
+            var visibleCount = 0;
+            /*
+                ARAMA EKSENİ AYRI SAYILIR ve bu sayı yalnız ölçüme gider.
+
+                Filtreler yüzünden boşalan bir liste "aradı, bulamadı"
+                DEĞİLDİR: misafir alerjen filtresiyle karidesi kendisi
+                eledi ve karides menüde duruyor. İki sayıyı birleştirmek,
+                sahibin "menümde olmayan ne isteniyor" defterine olmayan
+                bir talep yazardı (`docs/84`).
+            */
+            var searchOnlyCount = 0;
+
+            categories.forEach(function (categorySection) {
+                var items = Array.prototype.slice.call(categorySection.querySelectorAll('[data-item]'));
+                // Ürünü olmayan kategori, süzülmediği sürece görünür kalır:
+                // "bu kategoride henüz ürün yok" cümlesi de bir bilgidir.
+                var categoryHasMatch = items.length === 0 && query === '' && !filtered;
+
+                items.forEach(function (item) {
+                    var name = (item.getAttribute('data-item-name') || '').toLocaleLowerCase('tr');
+                    var nameMatches = query === '' || name.indexOf(query) !== -1;
+
+                    if (nameMatches) {
+                        searchOnlyCount += 1;
+                    }
+
+                    var matches = nameMatches
+                        && allergenAllows(item, excluded)
+                        && priceAllows(item, min, max);
+
+                    item.hidden = !matches;
+
+                    if (matches) {
+                        visibleCount += 1;
+                        categoryHasMatch = true;
+                    }
+                });
+
+                categorySection.hidden = !categoryHasMatch;
+            });
+
+            if (searchStatus) {
+                searchStatus.textContent = statusFor(query, filtered, visibleCount);
+            }
+
+            reportNoResults(query, searchOnlyCount);
+        }
+
+        if (searchInput && searchStatus) {
+            searchInput.addEventListener('input', apply);
+        }
+
+        allergenButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                button.setAttribute(
+                    'aria-pressed',
+                    button.getAttribute('aria-pressed') === 'true' ? 'false' : 'true',
+                );
+                apply();
+            });
+        });
+
+        [priceMinInput, priceMaxInput].forEach(function (input) {
+            if (input) {
+                input.addEventListener('input', apply);
+            }
+        });
+
+        var filterClear = document.querySelector('[data-filter-clear]');
+
+        if (filterClear) {
+            filterClear.addEventListener('click', function () {
+                allergenButtons.forEach(function (button) {
+                    button.setAttribute('aria-pressed', 'false');
+                });
+
+                if (priceMinInput) {
+                    priceMinInput.value = '';
+                }
+
+                if (priceMaxInput) {
+                    priceMaxInput.value = '';
+                }
+
+                apply();
+            });
+        }
+
+        /*
+            SESLİ ARAMA — TARAYICIDA BAŞLAR, TARAYICIDA BİTER (`docs/114` §3).
+
+            SES SUNUCUYA GİTMEZ. Tarayıcının kendi tanıyıcısı metni üretir ve
+            ürün o metni arar; hiçbir kayıt bizim sunucumuza ulaşmaz. Ses
+            kişisel veridir ve onu taşımak, çözdüğünden çok sorun getirirdi.
+
+            DÜĞME YALNIZ YETENEK VARSA ÇİZİLİR: işaretleme inert bir
+            `<template>` içinde indi ve DOM'a ancak burada girer.
+        */
+        var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        var voiceTemplate = document.getElementById('menu-voice-template');
+        var searchRow = document.querySelector('[data-search-row]');
+
+        if (Recognition && voiceTemplate && searchRow && searchInput && voiceStatus) {
+            searchRow.appendChild(voiceTemplate.content.cloneNode(true));
+
+            var voiceButton = document.getElementById('menu-voice');
+            var recognition = null;
+
+            voiceButton.addEventListener('click', function () {
+                // İkinci basış dinlemeyi bitirir: başlattığı şeyi
+                // durduramayan bir düğme, misafiri beklemeye mahkûm eder.
+                if (recognition) {
+                    recognition.stop();
+                    // "Dinliyorum" cümlesi ekranda kalmaz: misafir
+                    // durdurdu, ürün hâlâ dinliyormuş gibi görünmemeli.
+                    voiceStatus.textContent = '';
+
+                    return;
+                }
+
+                recognition = new Recognition();
+
+                // Tanıma dili ARAYÜZÜN dilidir: misafir menüyü hangi dilde
+                // okuyorsa büyük ihtimalle o dilde konuşur.
+                if (document.documentElement.lang) {
+                    recognition.lang = document.documentElement.lang;
+                }
+
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onresult = function (event) {
+                    searchInput.value = event.results[0][0].transcript;
+                    voiceStatus.textContent = '';
+                    apply();
+                };
+
+                recognition.onerror = function (event) {
+                    /*
+                        SESSİZ BAŞARISIZLIK YOK. Misafir düğmeye basıp
+                        hiçbir şey olmadığını görürse ürünü bozuk sanır.
+                        Reddedilen izin kendi cümlesini alır ve ikisi de
+                        yazarak aramanın hâlâ açık olduğunu söyler.
+                    */
+                    voiceStatus.textContent =
+                        event.error === 'not-allowed' || event.error === 'service-not-allowed'
+                            ? say('voiceDenied')
+                            : say('voiceError');
+                };
+
+                recognition.onend = function () {
+                    recognition = null;
+                    voiceButton.setAttribute('aria-pressed', 'false');
+                };
+
+                voiceButton.setAttribute('aria-pressed', 'true');
+                voiceStatus.textContent = say('voiceListening');
+
+                /*
+                    MİKROFON İZNİ TAM BURADA İSTENİR — sayfa açılışında
+                    değil. Karekodu okutan misafir menüye bakmak istiyor;
+                    sormadığı bir soruya izin istemek çoğu zaman "hayır"
+                    ile döner ve o "hayır", gerçekten kullanmak istediği
+                    anda da karşısına çıkar.
+
+                    BAŞLATMA REDDEDİLİRSE DÜĞME KİLİTLENMEZ. Güvensiz bir
+                    bağlamda bu satır doğrudan hata fırlatır ve `onend` hiç
+                    çalışmaz; yakalamasaydık `recognition` dolu kalır ve
+                    ikinci basış "durdur" sanılırdı — düğme bir daha hiç
+                    başlamazdı.
+                */
+                try {
+                    recognition.start();
+                } catch (error) {
+                    recognition = null;
+                    voiceButton.setAttribute('aria-pressed', 'false');
+                    voiceStatus.textContent = say('voiceError');
+                }
             });
         }
 

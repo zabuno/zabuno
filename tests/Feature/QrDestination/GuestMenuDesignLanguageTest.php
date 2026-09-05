@@ -450,11 +450,24 @@ final class GuestMenuDesignLanguageTest extends TestCase
             'data-rating' => 'puan verisi',
             // Favori — istemci kalıcılığı ayrı pakette.
             'data-favourite' => 'favori',
-            // Sesli arama — güvenlik başlığı ve arka ucu BİRLİKTE, ayrı bir
-            // pakette açılacak. Bu paket `SecurityHeaders`'a dokunmaz.
-            'ph-microphone' => 'sesli arama',
-            'webkitSpeechRecognition' => 'sesli arama',
-            // Diyet filtresi — arka ucu ayrı pakette.
+            /*
+                SESLİ ARAMA BU LİSTEDEN ÇIKTI (FF-177).
+
+                Yetenek arka ucuyla birlikte geldi: güvenlik başlığı misafir
+                menüsü için `microphone=(self)`e açıldı, düğme yalnız
+                tarayıcı konuşma tanımayı destekliyorsa çiziliyor ve
+                `GuestMenuFindTest` bu kuralların sahibi oldu. Satırı burada
+                bırakmak, teslim edilmiş bir yeteneği yasaklamak olurdu.
+
+                İKON YAZI TİPİ YASAĞI KALIYOR ve sebebi ayrıdır: `ph-*`
+                sınıfları Phosphor yazı tipini ister, o da bir AĞ İSTEĞİDİR
+                ve bu sayfanın ölçülen sözü sıfır istektir (`docs/113` §8).
+                Mikrofon simgesi bu yüzden satır içi SVG'dir.
+            */
+            'ph-microphone' => 'ikon yazı tipi',
+            // Diyet filtresi — arka ucu ayrı pakette. FF-177'nin getirdiği
+            // alerjen ekseni bu değildir: o HARİÇ TUTAR, diyet ise bir
+            // İDDİADIR ("vegan") ve verisi yok.
             'data-diet' => 'diyet filtresi',
         ];
 

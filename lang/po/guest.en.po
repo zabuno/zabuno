@@ -60,6 +60,42 @@ msgstr "This menu cannot be shown right now"
 msgid "guest.deadEnd.title"
 msgstr "Menu not found"
 
+#: guest:guest.filters.allergenExclude
+msgid "guest.filters.allergenExclude"
+msgstr "Exclude allergens"
+
+#: guest:guest.filters.allergenHint
+msgid "guest.filters.allergenHint"
+msgstr "Dishes the restaurant declared with that allergen are removed. A dish with no declaration is not a dish known to be free of it — please ask the staff."
+
+#: guest:guest.filters.clear
+msgid "guest.filters.clear"
+msgstr "Clear filters"
+
+#: guest:guest.filters.label
+msgid "guest.filters.label"
+msgstr "Filters"
+
+#: guest:guest.filters.matched
+msgid "guest.filters.matched"
+msgstr "{count} dishes shown."
+
+#: guest:guest.filters.noMatch
+msgid "guest.filters.noMatch"
+msgstr "No dish fits your filters. The menu has other dishes; try removing one filter."
+
+#: guest:guest.filters.priceMax
+msgid "guest.filters.priceMax"
+msgstr "At most"
+
+#: guest:guest.filters.priceMin
+msgid "guest.filters.priceMin"
+msgstr "At least"
+
+#: guest:guest.filters.priceRange
+msgid "guest.filters.priceRange"
+msgstr "Price range"
+
 #: guest:guest.language.contentNotice
 msgid "guest.language.contentNotice"
 msgstr "Dish names are in the restaurant’s own language."
@@ -151,3 +187,19 @@ msgstr "No dish matched."
 #: guest:guest.search.placeholder
 msgid "guest.search.placeholder"
 msgstr "Type a dish name"
+
+#: guest:guest.voice.denied
+msgid "guest.voice.denied"
+msgstr "Microphone permission was not given, so voice search cannot run. You can still type."
+
+#: guest:guest.voice.error
+msgid "guest.voice.error"
+msgstr "Voice search could not run this time. You can still type."
+
+#: guest:guest.voice.label
+msgid "guest.voice.label"
+msgstr "Search by voice"
+
+#: guest:guest.voice.listening
+msgid "guest.voice.listening"
+msgstr "Listening… say a dish name."

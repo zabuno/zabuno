@@ -51,6 +51,56 @@ export const guestTranslations = {
     'guest.search.noMatch': 'No dish matched.',
     'guest.search.matched': '{count} dishes matched.',
 
+    /*
+        SESLİ ARAMA (FF-177) — TARAYICIDA BAŞLAR, TARAYICIDA BİTER.
+
+        Kayıt sunucuya GİTMEZ: ses kişisel veridir ve onu taşımak,
+        çözdüğünden çok sorun getirirdi. Tarayıcının kendi tanıyıcısı metni
+        üretir, ürün metni arar.
+
+        Düğme yalnız tarayıcı konuşma tanımayı destekliyorsa çizilir; bu
+        yüzden aşağıdaki cümlelerin hiçbiri "tarayıcın desteklemiyor" demez.
+        Desteklemeyen tarayıcıda söylenecek bir şey yoktur, çünkü misafire
+        hiçbir söz verilmemiştir.
+    */
+    'guest.voice.label': 'Search by voice',
+    'guest.voice.listening': 'Listening… say a dish name.',
+    /*
+        REDDEDİLEN İZİN SESSİZ GEÇMEZ. Misafir düğmeye basar, hiçbir şey
+        olmaz ve nedenini bilmezse ürün bozuk görünür. Cümle suçlamaz ve
+        yazarak aramanın hâlâ açık olduğunu söyler.
+    */
+    'guest.voice.denied':
+        'Microphone permission was not given, so voice search cannot run. You can still type.',
+    'guest.voice.error': 'Voice search could not run this time. You can still type.',
+
+    // FİLTRELER (FF-177) — kategori rayı zaten var; bu eksenler alerjen ve
+    // fiyattır.
+    'guest.filters.label': 'Filters',
+    'guest.filters.clear': 'Clear filters',
+    'guest.filters.allergenExclude': 'Exclude allergens',
+    /*
+        BU CÜMLE BİR GÜVENLİK KARARIDIR VE KISALTILAMAZ (`docs/114` §0).
+
+        Filtre yalnız HARİÇ TUTAR. Ürün "bu üründe fıstık yoktur" diyemez;
+        söyleyebileceği tek şey "restoran fıstık bildirmedi"dir. Cümle
+        olmasaydı boşalan liste, misafirin kalan ürünleri güvenli sanmasına
+        yol açardı — ve yanlış bir alerjensizlik iddiası bir sağlık olayıdır.
+    */
+    'guest.filters.allergenHint':
+        'Dishes the restaurant declared with that allergen are removed. A dish with no declaration is not a dish known to be free of it — please ask the staff.',
+    'guest.filters.priceRange': 'Price range',
+    'guest.filters.priceMin': 'At least',
+    'guest.filters.priceMax': 'At most',
+    /*
+        SIFIR SONUÇ "BÖYLE BİR ŞEY YOK" DEMEK DEĞİLDİR. Aramadaki boşluk
+        menüde olmayan bir şeyi anlatır; filtredeki boşluk yalnız misafirin
+        kendi koyduğu sınırı anlatır ve menü doludur.
+    */
+    'guest.filters.noMatch':
+        'No dish fits your filters. The menu has other dishes; try removing one filter.',
+    'guest.filters.matched': '{count} dishes shown.',
+
     'guest.pwa.install': 'Install the app',
     'guest.pwa.installAccepted': 'Installation accepted.',
     'guest.pwa.installDismissed': 'Installation dismissed.',
