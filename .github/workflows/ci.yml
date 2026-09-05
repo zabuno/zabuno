@@ -113,6 +113,14 @@ jobs:
       - name: Adaptive bundle gate self-test
         run: ./scripts/adaptive-bundle-gate.test.sh
 
+      # Kabuk duzeni jsdom'da OLCULEMEZ: jsdom duzen hesaplamaz, her kutu
+      # sifir yuksekliktedir ve hicbir sey kaydirilmaz. Kabuk uc kez ust uste
+      # sahibin ekraninda kirildi ve her seferinde butun testler yesildi.
+      # Bu adim gercek Chrome'da olcer: kabuk gorunen alan boyunda mi, belge
+      # kayiyor mu, ana alan kaydirilabiliyor mu, alt cubuk dipte mi.
+      - name: Shell scroll gate (real browser)
+        run: node scripts/shell-scroll-gate "file://$PWD/$(ls public/build/assets/app-*.css | head -1)"
+
       # Ayni suit, urun motorunda. SQLite ile PostgreSQL sessizce farkli
       # davraniyor ve fark her seferinde SQLite lehine hata gizliyordu:
       # basarisiz bir INSERT PostgreSQL'de tum islemi iptal eder, SQLite'ta

@@ -1,0 +1,275 @@
+#!/usr/bin/env node
+/*
+    KABUK KAYDIRMA KAPISI — gerçek bir tarayıcıda ölçer.
+
+    ═══ NEDEN JSDOM YETMİYOR ═══
+
+    Bu deponun bütün arayüz testleri jsdom'da koşuyor ve jsdom DÜZEN
+    HESAPLAMAZ: her kutunun yüksekliği sıfırdır, hiçbir şey taşmaz, hiçbir
+    şey kaydırılmaz. Yani "sayfa kaydırılabiliyor mu" sorusu orada
+    sorulamaz — ve sorulamadığı için, bu deponun kabuk düzeni üç kez
+    üst üste sahibin ekranında kırıldı:
+
+    1. Kabuk `100vh` ile ekrandan taşıyordu; alt gezinti çubuğu katlamanın
+       altında kalıyordu.
+    2. Kabuk `100dvh` ile kimi tarayıcılarda çöküyordu; kaydırma tamamen
+       kayboluyordu.
+    3. Belge kaymayı bırakınca içerideki kaydırma da çalışmıyordu.
+
+    Üçünde de bütün testler yeşildi. Kapının var oluş sebebi bu: ölçmediğimiz
+    şey, geçtiğini sandığımız şeydi.
+
+    ═══ NE ÖLÇÜYOR ═══
+
+    Gerçek Chrome'da, telefon boyutunda ve masaüstü boyutunda:
+
+    - Kabuk görünen alanın TAM boyunda mı (ne taşıyor ne çöküyor)?
+    - BELGE kaydırılamıyor mu (kaydırılırsa üst çubuk yukarı kaçar)?
+    - ANA ALAN kaydırılabiliyor mu (kaydırılamazsa sayfanın altına inilemez)?
+    - Alt gezinti çubuğu görünen alanın dibinde mi?
+    - Kenar çubuğundaki hesap menüsü kırpılmıyor mu?
+
+    ═══ NEYİ ÖLÇMÜYOR ═══
+
+    Bu kapı Chrome'da koşar. iOS Safari'nin kendi davranışını doğrulamaz ve
+    doğruladığını da iddia etmez — Safari'ye özgü bir kural eklenirse burası
+    onu yakalamaz. Yakaladığı şey, düzenin KENDİ sözleşmesinin bozulması;
+    üç kırılmanın üçü de o sözleşmenin bozulmasıydı.
+*/
+
+import { spawn } from 'node:child_process';
+import { existsSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+/*
+    TARAYICI BULUNAMAZSA KAPI GEÇMEZ, KIRILIR.
+
+    "Chrome yok, atlıyorum" demek bu deponun en sık tekrar eden kusuru
+    olurdu (`docs/109` §8.7): çalışan ama söylediği şeyi ölçmeyen bir kapı.
+    Ölçüm yapılmadıysa sonuç "geçti" değil, "bilinmiyor"dur — ve bilinmeyen
+    bir sonuç yeşil renkte gösterilemez.
+*/
+const CHROME_CANDIDATES = [
+    process.env.CHROME_PATH,
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+].filter(Boolean);
+
+const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
+
+if (CHROME === undefined) {
+    console.error('shell-scroll-gate: Chrome bulunamadı — ölçüm YAPILMADI, kapı geçemez.');
+    console.error(`denenen yollar: ${CHROME_CANDIDATES.join(', ')}`);
+    console.error('CHROME_PATH ortam değişkeniyle yol verilebilir.');
+    process.exit(2);
+}
+
+const PORT = 9333;
+
+/**
+ * Kabuğun GERÇEK sınıf dizeleri — `AdminShell`, `DesktopChrome` ve
+ * `MobileChrome` içinden birebir alınmıştır.
+ *
+ * Neden bileşenler render edilmiyor da işaretleme elle kuruluyor: bu kapı
+ * React'i değil CSS'i ölçüyor. Bileşenleri gerçek tarayıcıda render etmek
+ * bir derleme adımı ve bir sunucu gerektirirdi; ölçtüğü şey ise aynı kalırdı.
+ * Sınıf dizeleri değişirse burası ESKİR — bu yüzden `verify-like-ci` bu
+ * kapıyı bileşen testleriyle BİRLİKTE koşturur: sınıflar orada, davranış
+ * burada donuyor.
+ */
+const FRAME = 'admin-shell-frame flex flex-col overflow-hidden';
+const LAYOUT = 'admin-shell-layout flex min-h-0 min-w-0 flex-1 flex-wrap';
+const MAIN = 'admin-shell-main min-w-0 flex-1 basis-[32rem] overflow-y-auto p-4';
+const RAIL =
+    'admin-shell-sidebar flex shrink-0 grow-0 basis-[16.5rem] flex-col border-e px-3 py-3 min-h-0';
+const SCROLLER = 'flex min-h-0 flex-1 flex-col overflow-y-auto';
+const ACCOUNT = 'mt-auto border-t pt-2';
+const BOTTOM_NAV = 'z-10 grid grid-cols-5 items-stretch gap-1 border-t px-2 py-1';
+
+function harness(cssHref) {
+    return `<!doctype html><html><head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="${cssHref}">
+</head><body class="app-shell-body">
+<div id="app">
+  <div class="${FRAME}" data-probe="frame">
+    <header data-probe="topbar" style="height:56px;flex:none">üst çubuk</header>
+    <div class="${LAYOUT}">
+      <aside class="${RAIL}" data-probe="rail" style="display:flex">
+        <div class="${SCROLLER}" data-probe="rail-scroll">${'<div style="height:40px">gezinti</div>'.repeat(24)}</div>
+        <div class="${ACCOUNT}" data-probe="account">
+          <div style="position:relative">
+            <button type="button" style="width:100%;height:44px">Hesap</button>
+            <div data-probe="popup" class="absolute inset-x-0 bottom-full" style="height:260px"></div>
+          </div>
+        </div>
+      </aside>
+      <main class="${MAIN}" data-probe="main"><div style="height:4000px">uzun içerik</div></main>
+    </div>
+    <nav class="${BOTTOM_NAV}" data-probe="bottomnav" style="flex:none;height:64px"></nav>
+  </div>
+</div>
+</body></html>`;
+}
+
+const MEASURE = `(() => {
+  const q = (n) => document.querySelector('[data-probe="' + n + '"]');
+  const frame = q('frame'), main = q('main'), nav = q('bottomnav');
+  const rail = q('rail'), popup = q('popup'), account = q('account');
+  const doc = document.documentElement;
+  const f = frame.getBoundingClientRect();
+  const n = nav.getBoundingClientRect();
+  const r = rail.getBoundingClientRect();
+  const p = popup.getBoundingClientRect();
+  return {
+    innerHeight,
+    frameHeight: Math.round(f.height),
+    frameTop: Math.round(f.top),
+    documentScrollable: doc.scrollHeight > innerHeight + 1,
+    mainScrollable: main.scrollHeight > main.clientHeight + 1,
+    bottomNavBottom: Math.round(n.bottom),
+    railVisible: r.height > 0,
+    // Menü rayın görünen kutusunun ÜSTÜNE taşıyorsa kırpılır.
+    popupClipped: r.height > 0 && p.top < r.top - 0.5,
+    accountBottomInsideFrame: Math.round(account.getBoundingClientRect().bottom) <= Math.round(f.bottom) + 1,
+  };
+})()`;
+
+async function cdp(ws, method, params = {}) {
+    const id = (cdp.nextId = (cdp.nextId ?? 0) + 1);
+    ws.send(JSON.stringify({ id, method, params }));
+    return new Promise((resolve, reject) => {
+        const onMessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.id !== id) return;
+            ws.removeEventListener('message', onMessage);
+            message.error ? reject(new Error(message.error.message)) : resolve(message.result);
+        };
+        ws.addEventListener('message', onMessage);
+        setTimeout(() => reject(new Error(`CDP timeout: ${method}`)), 20000);
+    });
+}
+
+async function connect() {
+    for (let attempt = 0; attempt < 60; attempt++) {
+        try {
+            const list = await fetch(`http://127.0.0.1:${PORT}/json/list`).then((r) => r.json());
+            const page = list.find((t) => t.type === 'page');
+            if (page) return page.webSocketDebuggerUrl;
+        } catch {
+            /* Chrome henüz dinlemiyor. */
+        }
+        await new Promise((r) => setTimeout(r, 250));
+    }
+    throw new Error('Chrome hata ayıklama portu açılmadı.');
+}
+
+async function measure(url, width, height) {
+    const wsUrl = await connect();
+    const ws = new WebSocket(wsUrl);
+    await new Promise((resolve, reject) => {
+        ws.addEventListener('open', resolve, { once: true });
+        ws.addEventListener('error', reject, { once: true });
+    });
+    try {
+        await cdp(ws, 'Emulation.setDeviceMetricsOverride', {
+            width,
+            height,
+            deviceScaleFactor: 1,
+            mobile: width < 768,
+        });
+        await cdp(ws, 'Page.enable');
+        await cdp(ws, 'Page.navigate', { url });
+        await new Promise((r) => setTimeout(r, 600));
+        const { result } = await cdp(ws, 'Runtime.evaluate', {
+            expression: MEASURE,
+            returnByValue: true,
+        });
+        return result.value;
+    } finally {
+        ws.close();
+    }
+}
+
+const failures = [];
+
+function expect(scenario, name, actual, wanted) {
+    if (actual === wanted) {
+        console.log(`  ok   ${scenario} · ${name}`);
+        return;
+    }
+    failures.push(`${scenario} · ${name}: beklenen ${wanted}, gelen ${actual}`);
+    console.log(`  FAIL ${scenario} · ${name} (beklenen ${wanted}, gelen ${actual})`);
+}
+
+function check(scenario, m) {
+    /*
+        KABUK GÖRÜNEN ALANIN TAM BOYUNDA.
+
+        Taşarsa alt çubuk katlamanın altında kalır; çökerse kaydırma
+        kaybolur. İkisi de sahibin ekranında yaşandı.
+    */
+    expect(scenario, 'kabuk görünen alan boyunda', m.frameHeight, m.innerHeight);
+    expect(scenario, 'kabuk ekranın tepesinde', m.frameTop, 0);
+
+    /*
+        BELGE KAYMAZ. Kayarsa üst çubuk yukarı kaçar ve alt çubuk ekranın
+        dışına iner — Safari'de birebir bu oldu.
+    */
+    expect(scenario, 'belge kaydırılamaz', m.documentScrollable, false);
+
+    /*
+        ANA ALAN KAYAR. Belge kaymıyorsa ve burası da kaymıyorsa sayfanın
+        altına HİÇ inilemez — kaydırmayı öldürmek, taşmasına izin vermekten
+        kötüdür.
+    */
+    expect(scenario, 'ana alan kaydırılabilir', m.mainScrollable, true);
+
+    expect(scenario, 'alt çubuk ekranın dibinde', m.bottomNavBottom, m.innerHeight);
+    expect(scenario, 'hesap bloğu kabuğun içinde', m.accountBottomInsideFrame, true);
+    expect(scenario, 'hesap menüsü kırpılmıyor', m.popupClipped, false);
+}
+
+const cssHref = process.argv[2];
+
+if (!cssHref) {
+    console.error('kullanım: scripts/shell-scroll-gate <derlenmiş app.css yolu veya URL>');
+    process.exit(2);
+}
+
+const dir = mkdtempSync(join(tmpdir(), 'shell-scroll-'));
+const page = join(dir, 'index.html');
+writeFileSync(page, harness(cssHref));
+
+const chrome = spawn(
+    CHROME,
+    [
+        '--headless=new',
+        `--remote-debugging-port=${PORT}`,
+        `--user-data-dir=${join(dir, 'profile')}`,
+        '--no-first-run',
+        '--disable-gpu',
+        'about:blank',
+    ],
+    { stdio: 'ignore' },
+);
+
+try {
+    console.log('shell-scroll-gate');
+    check('telefon 320×568', await measure(`file://${page}`, 320, 568));
+    check('masaüstü 1440×900', await measure(`file://${page}`, 1440, 900));
+} finally {
+    chrome.kill();
+    rmSync(dir, { recursive: true, force: true });
+}
+
+if (failures.length > 0) {
+    console.log(`${failures.length} ölçüm başarısız`);
+    process.exit(1);
+}
+
+console.log('tüm ölçümler geçti');
