@@ -54,14 +54,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </style>
 </helmet>
 <div data-theme="{{ theme }}" data-density="{{ density }}" data-screen-label="Medya yönetimi" style="min-height:100vh;background:var(--canvas);display:flex;justify-content:center">
-<div style="width:100%;max-width:{{ frameMax }};min-height:100vh;background:var(--canvas);display:flex;flex-direction:column;position:relative;overflow-x:hidden">
+<div style="width:100%;max-width:{{ frameMax }};min-height:{{ frameMinH }};background:var(--canvas);display:flex;flex-direction:column;position:relative;overflow-x:hidden">
 
-  <header style="position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:column">
+  <header style="position:{{ headerPos }};top:0;z-index:12;background:var(--surface);border-bottom:1px solid var(--border);border-radius:{{ headerRadius }};display:flex;flex-direction:column">
     <div style="display:flex;align-items:center;gap:6px;padding:8px {{ pad }};min-height:56px">
-      <span style="width:32px;height:32px;border-radius:8px;background:var(--brand);color:var(--action-fg);display:grid;place-items:center;flex:none"><i class="ph-fill ph-images" style="font-size:18px"></i></span>
-      <span style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">{{ pageTitle }}</span>
-      <button class="z-ghost" onClick="{{ toggleTheme }}" title="Tema" style="border:0;background:none;color:var(--fg2);min-width:44px;min-height:44px;border-radius:8px;display:grid;place-items:center;flex:none"><i class="ph {{ themeIcon }}" style="font-size:20px"></i></button>
-      <button class="z-ghost" onClick="{{ goJobs }}" title="Kuyruk" style="border:0;background:none;color:var(--fg2);min-width:44px;min-height:44px;border-radius:8px;display:grid;place-items:center;position:relative;flex:none"><i class="ph ph-queue" style="font-size:20px"></i><span style="position:absolute;top:6px;right:6px;min-width:20px;height:20px;padding:0 5px;border-radius:9999px;background:var(--brand);color:var(--action-fg);font-weight:700;display:grid;place-items:center;font-size:1rem;transform:scale(.7);transform-origin:top right">2</span></button>
+      <span style="width:32px;height:32px;border-radius:8px;background:var(--brand);color:var(--action-fg);display:{{ chromeDisplay }};place-items:center;flex:none;align-items:center;justify-content:center"><i class="ph-fill ph-images" style="font-size:18px"></i></span>
+      <span style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;display:{{ chromeDisplay }}">{{ pageTitle }}</span>
+      <span style="flex:1;display:{{ moduleHeaderDisplay }};flex-direction:column;gap:2px;min-width:0">
+        <span style="font-weight:700;font-size:clamp(1.25rem,1rem + 1vw,1.75rem);letter-spacing:-.01em">Medya ve dosyalar</span>
+        <span style="color:var(--fg2)">{{ moduleSubtitle }} · dosya deposu bu panelin bir modülü</span>
+      </span>
+      <button class="z-ghost" onClick="{{ toggleTheme }}" title="Tema" style="border:0;background:none;color:var(--fg2);min-width:44px;min-height:44px;border-radius:8px;display:{{ chromeDisplay }};place-items:center;flex:none;align-items:center;justify-content:center"><i class="ph {{ themeIcon }}" style="font-size:20px"></i></button>
+      <button class="z-ghost" onClick="{{ goJobs }}" title="Kuyruk" style="border:0;background:none;color:var(--fg2);min-width:44px;min-height:44px;border-radius:8px;display:grid;place-items:center;position:relative;flex:none"><i class="ph ph-queue" style="font-size:20px"></i><span style="position:absolute;top:6px;right:6px;min-width:20px;height:20px;padding:0 5px;border-radius:9999px;background:var(--brand);color:var(--action-fg);font-weight:700;display:{{ queueBadgeDisplay }};place-items:center;font-size:1rem;transform:scale(.7);transform-origin:top right">{{ queueCount }}</span></button>
       <button class="z-btn" onClick="{{ goUpload }}" style="min-height:44px;min-width:44px;padding:{{ uploadBtnPad }};border:0;background:var(--brand);color:var(--action-fg);border-radius:8px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;flex:none"><i class="ph ph-upload-simple" style="font-size:20px"></i><span style="display:{{ uploadLabelDisplay }}">Yükle</span></button>
     </div>
     <div style="padding:0 {{ pad }} 8px">
@@ -79,7 +83,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   </header>
 
   <div style="flex:1;display:flex;min-height:0">
-    <aside class="z-scroll" style="display:{{ railDisplay }};width:236px;flex:0 0 236px;border-right:1px solid var(--border);background:var(--surface);flex-direction:column;gap:2px;padding:12px 8px;position:sticky;top:{{ railTop }};max-height:calc(100vh - {{ railTop }});overflow-y:auto">
+    <aside class="z-scroll" style="display:{{ railDisplay }};width:236px;flex:0 0 236px;border-right:1px solid var(--border);background:var(--surface);flex-direction:column;gap:2px;padding:12px 8px;position:sticky;top:{{ railTop }};max-height:{{ railMaxH }};overflow-y:auto">
       <span style="font-weight:700;color:var(--fg2);padding:4px 8px 6px">Klasörler</span>
       <sc-for list="{{ folders }}" as="f" hint-placeholder-count="8">
         <button class="z-nav" onClick="{{ f.go }}" style="min-height:var(--row);padding:6px 8px 6px {{ f.indent }};border:0;background:{{ f.bg }};border-radius:8px;color:var(--fg);font-weight:{{ f.weight }};display:flex;align-items:center;gap:8px;text-align:left;position:relative">
@@ -171,6 +175,270 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
       </sc-if>
 
+      <!-- ====== TOPLU İŞLEM: 5 adım ====== -->
+      <sc-if value="{{ isBulk }}" hint-placeholder-val="{{ false }}">
+      <div class="z-rise" data-screen-label="Toplu işlem" style="display:flex;flex-direction:column;gap:14px">
+        <div class="z-hsb" style="display:flex;gap:6px;overflow-x:auto;margin:0 -{{ pad }};padding:0 {{ pad }}">
+          <sc-for list="{{ bulkSteps }}" as="bs" hint-placeholder-count="5">
+            <button onClick="{{ bs.go }}" disabled="{{ bs.locked }}" style="min-height:44px;padding:6px 10px;border:1px solid {{ bs.border }};background:{{ bs.bg }};color:{{ bs.color }};border-radius:8px;font-weight:{{ bs.weight }};display:flex;align-items:center;gap:6px;flex:none">
+              <span style="min-width:22px;min-height:22px;border-radius:9999px;background:{{ bs.numBg }};color:{{ bs.numFg }};display:grid;place-items:center;font-weight:700;flex:none"><i class="ph{{ bs.iconStyle }} {{ bs.icon }}" style="font-size:13px"></i></span>{{ bs.label }}
+            </button>
+          </sc-for>
+        </div>
+
+        <!-- 1. KAPSAM -->
+        <sc-if value="{{ bulkScopeStep }}" hint-placeholder-val="{{ true }}">
+        <section aria-label="Kapsam" style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px">
+            <span style="font-weight:700">Hangi dosyalar?</span>
+            <sc-for list="{{ scopeChoices }}" as="sc3" hint-placeholder-count="3">
+              <button onClick="{{ sc3.go }}" style="border:2px solid {{ sc3.border }};background:var(--surface);border-radius:8px;padding:12px;display:flex;align-items:flex-start;gap:10px;text-align:left;color:var(--fg);min-height:44px">
+                <span style="min-width:24px;min-height:24px;border-radius:9999px;border:2px solid {{ sc3.dotBorder }};background:{{ sc3.dotBg }};display:grid;place-items:center;flex:none;margin-top:2px"><i class="ph-fill ph-circle" style="font-size:9px;color:var(--action-fg);display:{{ sc3.dotDisplay }}"></i></span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:2px">
+                  <span style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-weight:700">{{ sc3.label }}</span><span style="color:var(--fg2)">{{ sc3.count }}</span></span>
+                  <span style="color:var(--fg2)">{{ sc3.desc }}</span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+          <div style="background:var(--info-s);border:1px solid var(--info);border-radius:8px;padding:12px;display:flex;gap:10px;align-items:flex-start">
+            <i class="ph ph-camera" style="font-size:20px;color:var(--info);flex:none;margin-top:2px"></i>
+            <span style="flex:1;color:var(--fg2)">{{ scopeSnapshotNote }}</span>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:8px">
+            <span style="font-weight:700">Kapsam özeti</span>
+            <sc-for list="{{ scopeFacts }}" as="sf2" hint-placeholder-count="4">
+              <div style="display:flex;align-items:baseline;gap:10px"><span style="color:var(--fg2);flex:0 0 42%">{{ sf2.label }}</span><span style="flex:1;font-weight:500;color:{{ sf2.color }}">{{ sf2.value }}</span></div>
+            </sc-for>
+          </div>
+          <button class="z-btn" onClick="{{ bulkNext }}" style="min-height:52px;border:0;background:var(--brand);color:var(--action-fg);border-radius:8px;font-weight:700">Eylem seç</button>
+        </section>
+        </sc-if>
+
+        <!-- 2. EYLEM -->
+        <sc-if value="{{ bulkActionStep }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Eylem" style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ bulkActionGroups }}" as="bg" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <span style="font-weight:700">{{ bg.label }}</span>
+              <sc-for list="{{ bg.items }}" as="bi" hint-placeholder-count="4">
+                <button class="z-card" onClick="{{ bi.go }}" disabled="{{ bi.blocked }}" style="background:var(--surface);border:2px solid {{ bi.border }};border-radius:8px;padding:12px;display:flex;align-items:flex-start;gap:10px;text-align:left;color:var(--fg);opacity:{{ bi.opacity }}">
+                  <span style="min-width:34px;min-height:34px;border-radius:8px;background:{{ bi.iconBg }};display:grid;place-items:center;flex:none"><i class="ph {{ bi.icon }}" style="font-size:17px;color:{{ bi.iconColor }}"></i></span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:3px">
+                    <span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                      <span style="font-weight:700">{{ bi.label }}</span>
+                      <span style="font-weight:700;background:{{ bi.tagBg }};color:{{ bi.tagFg }};padding:1px 8px;border-radius:9999px;transform:scale(.9)">{{ bi.tag }}</span>
+                    </span>
+                    <span style="color:var(--fg2)">{{ bi.desc }}</span>
+                    <span style="color:{{ bi.permColor }};display:flex;align-items:center;gap:5px"><i class="ph {{ bi.permIcon }}" style="font-size:15px;flex:none"></i>{{ bi.perm }}</span>
+                  </span>
+                  <i class="ph-fill ph-check-circle" style="font-size:20px;color:var(--brand);flex:none;display:{{ bi.checkDisplay }}"></i>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:8px">
+            <button class="z-ghost" onClick="{{ bulkPrev }}" style="min-height:52px;padding:8px 14px;border:1px solid var(--border);background:none;color:var(--fg);border-radius:8px;font-weight:500;flex:none">Geri</button>
+            <button class="z-btn" onClick="{{ bulkNext }}" disabled="{{ noAction }}" style="flex:1;min-height:52px;border:0;background:var(--brand);color:var(--action-fg);border-radius:8px;font-weight:700">{{ actionNextLabel }}</button>
+          </div>
+        </section>
+        </sc-if>
+
+        <!-- 3. AYAR -->
+        <sc-if value="{{ bulkConfigStep }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Ayar" style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:14px">
+            <span style="font-weight:700">{{ configTitle }}</span>
+            <sc-for list="{{ configFields }}" as="cf2" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <span style="font-weight:500">{{ cf2.label }}</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <sc-for list="{{ cf2.options }}" as="co2" hint-placeholder-count="3">
+                    <button class="z-chip" onClick="{{ co2.go }}" style="min-height:44px;padding:6px 12px;border:1px solid {{ co2.border }};background:{{ co2.bg }};color:var(--fg);border-radius:8px;font-weight:{{ co2.weight }}">{{ co2.label }}</button>
+                  </sc-for>
+                </div>
+                <span style="color:var(--fg2)">{{ cf2.help }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-weight:700;padding-bottom:6px">Çalıştırma</span>
+            <sc-for list="{{ runOptions }}" as="ro2" hint-placeholder-count="3">
+              <label class="z-row" style="display:flex;align-items:flex-start;gap:10px;padding:10px 8px;margin:0 -8px;border-radius:8px">
+                <button onClick="{{ ro2.toggle }}" role="switch" aria-checked="{{ ro2.on }}" style="min-width:48px;min-height:44px;border-radius:9999px;border:0;background:{{ ro2.switchBg }};position:relative;padding:0;flex:none"><span style="position:absolute;top:50%;margin-top:-11px;left:{{ ro2.knob }};width:22px;height:22px;border-radius:9999px;background:var(--aep-white);transition:left var(--aep-duration-2,150ms) var(--ease)"></span></button>
+                <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500">{{ ro2.label }}</span><span style="color:var(--fg2)">{{ ro2.desc }}</span></span>
+              </label>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="z-ghost" onClick="{{ bulkPrev }}" style="min-height:52px;padding:8px 14px;border:1px solid var(--border);background:none;color:var(--fg);border-radius:8px;font-weight:500;flex:none">Geri</button>
+            <button class="z-btn" onClick="{{ bulkNext }}" style="flex:1;min-height:52px;border:0;background:var(--brand);color:var(--action-fg);border-radius:8px;font-weight:700">Etkiyi göster</button>
+          </div>
+        </section>
+        </sc-if>
+
+        <!-- 4. ETKİ ÖNİZLEMESİ -->
+        <sc-if value="{{ bulkPreviewStep }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Etki önizlemesi" style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <i class="ph ph-flask" style="font-size:20px;color:var(--info);flex:none"></i>
+              <span style="font-weight:700;flex:1">Kuru çalışma sonucu</span>
+            </div>
+            <span style="color:var(--fg2)">Hiçbir dosyaya dokunulmadı. Sunucu her dosyayı tek tek kontrol etti; aşağıdaki sayılar gerçek.</span>
+            <div style="display:grid;grid-template-columns:{{ kpiCols }};gap:8px">
+              <sc-for list="{{ previewCounts }}" as="pc" hint-placeholder-count="3">
+                <div style="border:1px solid {{ pc.border }};background:{{ pc.bg }};border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:2px">
+                  <span style="color:var(--fg2)">{{ pc.label }}</span>
+                  <span style="font-size:1.5rem;font-weight:700;line-height:1.2;color:{{ pc.color }}">{{ pc.value }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-weight:700">Neden atlanıyor?</span>
+            <sc-for list="{{ skipReasons }}" as="sr2" hint-placeholder-count="5">
+              <div style="display:flex;align-items:flex-start;gap:10px;padding-top:10px;border-top:1px solid var(--border)">
+                <span style="min-width:30px;min-height:26px;border-radius:9999px;background:{{ sr2.bg }};color:{{ sr2.fg }};display:grid;place-items:center;font-weight:700;flex:none">{{ sr2.count }}</span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500">{{ sr2.label }}</span><span style="color:var(--fg2)">{{ sr2.desc }}</span></span>
+              </div>
+            </sc-for>
+            <button class="z-ghost" onClick="{{ showSkipped }}" style="min-height:44px;border:1px solid var(--border);background:none;color:var(--fg);border-radius:8px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px"><i class="ph ph-list-magnifying-glass" style="font-size:18px"></i>Atlanan dosyaları listele</button>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:8px">
+            <span style="font-weight:700">Sonuç ne olacak?</span>
+            <sc-for list="{{ previewImpact }}" as="pi" hint-placeholder-count="5">
+              <div style="display:flex;align-items:baseline;gap:10px;padding-top:8px;border-top:1px solid var(--border)"><span style="color:var(--fg2);flex:0 0 46%">{{ pi.label }}</span><span style="flex:1;font-weight:500;color:{{ pi.color }};text-align:right">{{ pi.value }}</span></div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ needsConfirm }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--danger-s);border:1px solid var(--danger);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px">
+            <span style="display:flex;align-items:center;gap:8px;font-weight:700"><i class="ph-fill ph-warning" style="font-size:20px;color:var(--danger);flex:none"></i>{{ confirmTitle }}</span>
+            <span style="color:var(--fg2)">{{ confirmBody }}</span>
+            <label style="display:flex;flex-direction:column;gap:6px">
+              <span style="color:var(--fg2)">Onaylamak için <strong style="color:var(--fg);font-family:ui-monospace,Menlo,monospace">{{ confirmWord }}</strong> yaz</span>
+              <input value="{{ confirmInput }}" onChange="{{ onConfirmInput }}" placeholder="{{ confirmWord }}" style="min-height:48px;border:1px solid var(--border-c);border-radius:8px;padding:8px 12px;background:var(--surface);color:var(--fg);font-family:ui-monospace,Menlo,monospace">
+            </label>
+          </div>
+          </sc-if>
+          <div style="display:flex;gap:8px">
+            <button class="z-ghost" onClick="{{ bulkPrev }}" style="min-height:52px;padding:8px 14px;border:1px solid var(--border);background:none;color:var(--fg);border-radius:8px;font-weight:500;flex:none">Geri</button>
+            <button class="z-btn" onClick="{{ bulkRun }}" disabled="{{ runDisabled }}" style="flex:1;min-height:52px;border:0;background:{{ runBtnBg }};color:{{ runBtnFg }};border-radius:8px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px"><i class="ph {{ runBtnIcon }}" style="font-size:20px"></i>{{ runBtnLabel }}</button>
+          </div>
+        </section>
+        </sc-if>
+
+        <!-- 5. ÇALIŞTIR VE SONUÇ -->
+        <sc-if value="{{ bulkRunStep }}" hint-placeholder-val="{{ false }}">
+        <section aria-label="Sonuç" style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="min-width:34px;min-height:34px;border-radius:8px;background:{{ run.iconBg }};display:grid;place-items:center;flex:none"><i class="ph{{ run.iconStyle }} {{ run.icon }} {{ run.spin }}" style="font-size:18px;color:{{ run.color }}"></i></span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-weight:700">{{ run.title }}</span><span style="color:var(--fg2)">{{ run.detail }}</span></span>
+              <span style="font-weight:700;color:{{ run.color }};flex:none">{{ run.pctLabel }}</span>
+            </div>
+            <div style="height:8px;background:var(--subtle);border-radius:9999px;overflow:hidden"><div style="width:{{ run.pct }};height:100%;background:{{ run.color }};border-radius:9999px;transition:width var(--aep-duration-3,200ms) var(--ease)"></div></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <sc-for list="{{ run.counters }}" as="rc" hint-placeholder-count="3">
+                <div style="border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:1px">
+                  <span style="color:var(--fg2)">{{ rc.label }}</span>
+                  <span style="font-weight:700;color:{{ rc.color }}">{{ rc.value }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="z-ghost" onClick="{{ run.togglePause }}" style="flex:1;min-width:120px;min-height:44px;border:1px solid var(--border);background:none;color:var(--fg);border-radius:8px;font-weight:500;display:{{ run.pauseDisplay }};align-items:center;justify-content:center;gap:6px"><i class="ph {{ run.pauseIcon }}" style="font-size:18px"></i>{{ run.pauseLabel }}</button>
+              <button class="z-ghost" onClick="{{ run.cancel }}" style="flex:1;min-width:120px;min-height:44px;border:1px solid var(--border);background:none;color:var(--danger);border-radius:8px;font-weight:500;display:{{ run.pauseDisplay }}">İptal et</button>
+            </div>
+            <span style="color:var(--fg2);display:{{ run.undoDisplay }}">{{ run.undoNote }}</span>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span style="font-weight:700;flex:1">Dosya dosya sonuç</span>
+              <div class="z-hsb" style="display:flex;gap:4px;overflow-x:auto">
+                <sc-for list="{{ resultFilters }}" as="rf" hint-placeholder-count="4">
+                  <button onClick="{{ rf.go }}" style="min-height:44px;padding:4px 10px;border:1px solid {{ rf.border }};background:{{ rf.bg }};color:var(--fg);border-radius:8px;font-weight:{{ rf.weight }};flex:none">{{ rf.label }} {{ rf.count }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <sc-for list="{{ runResults }}" as="rr" hint-placeholder-count="6">
+              <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-top:1px solid var(--border)">
+                <span style="min-width:26px;min-height:26px;border-radius:9999px;background:{{ rr.bg }};display:grid;place-items:center;flex:none;margin-top:2px"><i class="ph{{ rr.iconStyle }} {{ rr.icon }}" style="font-size:14px;color:{{ rr.color }}"></i></span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:1px">
+                  <span style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ rr.name }}</span>
+                  <span style="color:{{ rr.noteColor }}">{{ rr.note }}</span>
+                </span>
+                <button class="z-ghost" onClick="{{ rr.act }}" style="min-height:44px;padding:4px 10px;border:1px solid var(--border);background:none;color:var(--fg);border-radius:8px;font-weight:500;flex:none;display:{{ rr.actDisplay }}">{{ rr.actLabel }}</button>
+              </div>
+            </sc-for>
+            <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;background:var(--subtle)">
+              <button class="z-btn" onClick="{{ retryFailed }}" style="flex:1;min-width:150px;min-height:44px;border:0;background:var(--brand);color:var(--action-fg);border-radius:8px;font-weight:700;display:{{ retryDisplay }};align-items:center;justify-content:center;gap:6px"><i class="ph ph-arrow-counter-clockwise" style="font-size:18px"></i>{{ retryLabel }}</button>
+              <button class="z-ghost" onClick="{{ exportResults }}" style="flex:1;min-width:150px;min-height:44px;border:1px solid var(--border);background:var(--surface);color:var(--fg);border-radius:8px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px"><i class="ph ph-download-simple" style="font-size:18px"></i>CSV indir</button>
+            </div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:8px">
+            <span style="font-weight:700">Denetim kaydı</span>
+            <sc-for list="{{ auditFacts }}" as="af2" hint-placeholder-count="5">
+              <div style="display:flex;align-items:baseline;gap:10px"><span style="color:var(--fg2);flex:0 0 42%">{{ af2.label }}</span><span style="flex:1;font-weight:500;overflow-wrap:anywhere;font-family:{{ af2.font }}">{{ af2.value }}</span></div>
+            </sc-for>
+            <span style="color:var(--fg2)">Bu kayıt silinemez ve değiştirilemez. Aynı işlem anahtarıyla iş iki kez çalıştırılamaz.</span>
+          </div>
+
+          <button class="z-ghost" onClick="{{ bulkRestart }}" style="min-height:52px;border:1px solid var(--border);background:none;color:var(--fg);border-radius:8px;font-weight:500">Yeni toplu işlem</button>
+        </section>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <!-- ====== YÖNETİŞİM ====== -->
+      <sc-if value="{{ isGovernance }}" hint-placeholder-val="{{ false }}">
+      <div class="z-rise" data-screen-label="Yönetişim" style="display:flex;flex-direction:column;gap:14px">
+        <p style="margin:0;color:var(--fg2)">Kim ne yapabilir, dosyalar ne kadar saklanır, kim ne yaptı.</p>
+        <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:2px">
+            <span style="font-weight:700">Toplu işlem yetkileri</span>
+            <span style="color:var(--fg2)">Şu an <strong style="color:var(--fg)">{{ roleLabel }}</strong> olarak görüyorsun.</span>
+          </div>
+          <sc-for list="{{ permRows }}" as="pr" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--border);min-height:var(--row)">
+              <span style="flex:1;font-weight:500">{{ pr.label }}</span>
+              <div style="display:flex;gap:6px;flex:none">
+                <sc-for list="{{ pr.roles }}" as="prr" hint-placeholder-count="3">
+                  <span title="{{ prr.title }}" style="min-width:34px;min-height:26px;border-radius:9999px;background:{{ prr.bg }};color:{{ prr.fg }};display:grid;place-items:center;font-weight:700;transform:scale(.92)">{{ prr.short }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </section>
+        <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <span style="font-weight:700">Saklama politikası</span>
+          <sc-for list="{{ retentionRows }}" as="rt" hint-placeholder-count="4">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding-top:10px;border-top:1px solid var(--border)">
+              <i class="ph {{ rt.icon }}" style="font-size:20px;color:{{ rt.color }};flex:none;margin-top:2px"></i>
+              <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500">{{ rt.label }}</span><span style="color:var(--fg2)">{{ rt.desc }}</span></span>
+              <span style="font-weight:700;flex:none">{{ rt.value }}</span>
+            </div>
+          </sc-for>
+        </section>
+        <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-weight:700">Denetim izi</div>
+          <sc-for list="{{ auditTrail }}" as="at" hint-placeholder-count="5">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-top:1px solid var(--border)">
+              <span style="min-width:30px;min-height:30px;border-radius:9999px;background:var(--active);color:var(--fg);display:grid;place-items:center;font-weight:700;flex:none;transform:scale(.92)">{{ at.who }}</span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:1px">
+                <span style="font-weight:500">{{ at.what }}</span>
+                <span style="color:var(--fg2)">{{ at.when }} · {{ at.scope }}</span>
+              </span>
+              <span style="font-weight:700;background:{{ at.tagBg }};color:{{ at.tagFg }};padding:1px 8px;border-radius:9999px;flex:none;transform:scale(.9);display:{{ at.tagDisplay }}">{{ at.tag }}</span>
+            </div>
+          </sc-for>
+          <div style="padding:12px 14px;border-top:1px solid var(--border);background:var(--subtle);color:var(--fg2)">Salt okunur. Kayıt silinemez, değiştirilemez; yalnız dışa aktarılır.</div>
+        </section>
+      </div>
+      </sc-if>
+
       <!-- ====== YÜKLE: 4 adım ====== -->
       <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ false }}">
       <div class="z-rise" data-screen-label="Yükle" style="display:flex;flex-direction:column;gap:14px">
@@ -237,6 +505,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
               <input type="range" min="55" max="100" value="{{ quality }}" onChange="{{ onQuality }}" style="accent-color:var(--brand);min-height:44px">
             </label>
             <span style="color:var(--fg2)">{{ qualityNote }}</span>
+            <span style="color:var(--fg2);padding-top:8px;border-top:1px solid var(--border)">{{ clientFloorNote }}</span>
+            <span style="display:flex;align-items:flex-start;gap:8px;color:var(--fg2)"><i class="ph ph-shield-check" style="font-size:20px;flex:none;margin-top:2px"></i>{{ clientPrivacyNote }}</span>
           </div>
           <sc-for list="{{ clientFiles }}" as="cf" hint-placeholder-count="3">
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;align-items:center;gap:10px">
@@ -648,30 +918,45 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <!-- ====== AYARLAR ====== -->
       <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
       <div class="z-rise" data-screen-label="Ayarlar" style="display:flex;flex-direction:column;gap:14px">
-        <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:14px">
-          <span style="font-weight:700">Klasör, ad ve tarih</span>
-          <sc-for list="{{ patternFields }}" as="pf2" hint-placeholder-count="3">
-            <label style="display:flex;flex-direction:column;gap:8px">
+        <sc-if value="{{ scannerDown }}" hint-placeholder-val="{{ true }}">
+        <section role="alert" style="background:var(--danger-s);border:1px solid var(--danger);border-radius:8px;padding:14px;display:flex;gap:10px;align-items:flex-start">
+          <i class="ph-fill ph-plugs" style="font-size:20px;color:var(--danger);flex:none"></i>
+          <span style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <span style="font-weight:700">Tarayıcı bu ortamda çalışmıyor</span>
+            <span style="color:var(--fg2)">Tarama temiz dönmeden dosya kabul edilmiyor: türev üretilmez, kütüphanede önizleme çıkmaz, fotoğraf menüde kullanılamaz. Bu bir ürün hatası değil — sunucuda ClamAV kurulu değil.</span>
+            <span style="color:var(--fg2)">Kapalı değil, <strong style="color:var(--fg)">çalışmıyor</strong>. Biri kullanıcı kararı, diğeri ortam gerçeği.</span>
+          </span>
+        </section>
+        </sc-if>
+        <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span style="font-weight:700">Klasör, ad ve tarih</span>
+            <span style="color:var(--fg2)">Bu desenler depolama anahtarıdır; anahtar asla değişmez. Değişse yayınlanmış her menü görseli kaybolurdu.</span>
+          </div>
+          <sc-for list="{{ patternRows }}" as="pf2" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:2px;padding-top:10px;border-top:1px solid var(--border)">
               <span style="font-weight:500">{{ pf2.label }}</span>
-              <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <sc-for list="{{ pf2.options }}" as="po" hint-placeholder-count="3">
-                  <button class="z-chip" onClick="{{ po.go }}" style="min-height:44px;padding:6px 12px;border:1px solid {{ po.border }};background:{{ po.bg }};color:var(--fg);border-radius:8px;font-weight:{{ po.weight }}">{{ po.label }}</button>
-                </sc-for>
-              </div>
-              <span style="color:var(--fg2);overflow-wrap:anywhere">{{ pf2.example }}</span>
-            </label>
+              <span style="color:var(--fg2);overflow-wrap:anywhere">{{ pf2.value }}</span>
+              <span style="color:var(--fg2)">{{ pf2.why }}</span>
+            </div>
           </sc-for>
         </section>
-        <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:4px">
+        <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:0">
           <span style="font-weight:700;padding-bottom:6px">Güvenlik ve gizlilik</span>
-          <sc-for list="{{ securityToggles }}" as="sg" hint-placeholder-count="5">
-            <label class="z-row" style="display:flex;align-items:flex-start;gap:10px;padding:10px 8px;margin:0 -8px;border-radius:8px">
-              <button onClick="{{ sg.toggle }}" role="switch" aria-checked="{{ sg.on }}" style="min-width:48px;height:28px;border-radius:9999px;border:0;background:{{ sg.switchBg }};position:relative;padding:0;flex:none;margin-top:2px"><span style="position:absolute;top:3px;left:{{ sg.knob }};width:22px;height:22px;border-radius:9999px;background:var(--aep-white);transition:left var(--aep-duration-2,150ms) var(--ease)"></span></button>
+          <sc-for list="{{ securityMeasures }}" as="sg" hint-placeholder-count="5">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-top:1px solid var(--border)">
+              <button role="switch" aria-checked="{{ sg.checked }}" aria-label="{{ sg.label }}" disabled="{{ true }}" style="min-width:48px;min-height:44px;border:1px solid var(--border);border-radius:9999px;background:{{ sg.switchBg }};position:relative;padding:0;flex:none;display:{{ sg.switchDisplay }};cursor:not-allowed">
+                <span style="position:absolute;top:50%;left:{{ sg.knob }};margin-top:-11px;width:22px;height:22px;border-radius:9999px;background:var(--aep-white)"></span>
+              </button>
               <span style="flex:1;display:flex;flex-direction:column;gap:2px">
-                <span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font-weight:500">{{ sg.label }}</span><span style="font-weight:700;background:var(--ok-s);color:var(--ok);padding:1px 8px;border-radius:9999px;display:{{ sg.badgeDisplay }};transform:scale(.9)">Önerilir</span></span>
+                <span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                  <span style="font-weight:500">{{ sg.label }}</span>
+                  <span style="font-weight:700;background:{{ sg.stateBg }};color:{{ sg.stateFg }};padding:1px 8px;border-radius:9999px;transform:scale(.9)">{{ sg.stateLabel }}</span>
+                </span>
                 <span style="color:var(--fg2)">{{ sg.desc }}</span>
+                <span style="color:var(--fg2);display:{{ sg.lockedDisplay }}">Kapatılamaz. Kapatılabilir bir güvenlik anahtarı, kapatıldığı gün bir güvenlik açığıdır.</span>
               </span>
-            </label>
+            </div>
           </sc-for>
         </section>
         <section style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px">
@@ -795,7 +1080,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;viewport&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;iphone4&quot;,&quot;mobile&quot;,&quot;tablet&quot;,&quot;desktop&quot;],&quot;default&quot;:&quot;iphone4&quot;,&quot;tsType&quot;:&quot;'iphone4'|'mobile'|'tablet'|'desktop'&quot;,&quot;section&quot;:&quot;Görünüm&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;,&quot;section&quot;:&quot;Görünüm&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;compact&quot;,&quot;standard&quot;,&quot;comfortable&quot;],&quot;default&quot;:&quot;standard&quot;,&quot;tsType&quot;:&quot;'compact'|'standard'|'comfortable'&quot;,&quot;section&quot;:&quot;Görünüm&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:900},&quot;embedded&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Modül&quot;},&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;viewer&quot;,&quot;editor&quot;,&quot;manager&quot;,&quot;admin&quot;],&quot;default&quot;:&quot;manager&quot;,&quot;tsType&quot;:&quot;'viewer'|'editor'|'manager'|'admin'&quot;,&quot;section&quot;:&quot;Modül&quot;},&quot;viewport&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;iphone4&quot;,&quot;mobile&quot;,&quot;tablet&quot;,&quot;desktop&quot;],&quot;default&quot;:&quot;iphone4&quot;,&quot;tsType&quot;:&quot;'iphone4'|'mobile'|'tablet'|'desktop'&quot;,&quot;section&quot;:&quot;Görünüm&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;,&quot;section&quot;:&quot;Görünüm&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;compact&quot;,&quot;standard&quot;,&quot;comfortable&quot;],&quot;default&quot;:&quot;standard&quot;,&quot;tsType&quot;:&quot;'compact'|'standard'|'comfortable'&quot;,&quot;section&quot;:&quot;Görünüm&quot;}}">
 class Component extends DCLogic {
   state = {
     tab: 'library', theme: null, density: null, width: 360, view: 'grid', folder: 0,
@@ -809,6 +1094,8 @@ class Component extends DCLogic {
   say(msg, kind, undoable) { clearTimeout(this._t); this.setState({ toast: msg, toastKind: kind || 'ok', undoable: !!undoable }); this._t = setTimeout(() => this.setState({ toast: null }), 3600); }
   tgl(a, v) { return a.includes(v) ? a.filter(x => x !== v) : [...a, v]; }
   fld(k) { return this.state.f[k] || []; }
+  /** Çalışan iş sayısı — kuyruk listesinden türer, elle yazılmaz. */
+  queueCount() { return 2; }
 
   files() {
     return [
@@ -829,17 +1116,269 @@ class Component extends DCLogic {
 
   base() {
     const s = this.state, p = this.props;
+    // GÖMÜLÜ MOD: panelin içinde bir modül olarak çalışır. Kendi uygulama
+    // kabuğunu (logo, tema düğmesi, alt gezinti, çerçeve) çizmez — onları
+    // panel sağlar. Alt gezintisi ise KALIR: o modülün kendi bölümleridir.
+    const embedded = p.embedded === true || p.embedded === 'true';
     const FRAMES = { iphone4: 320, mobile: 390, tablet: 768 };
-    const forced = FRAMES[p.viewport];
+    const forced = embedded ? undefined : FRAMES[p.viewport];
     const w = forced || s.width;
     const bp = w < 380 ? 'xs' : w < 600 ? 'sm' : w < 1024 ? 'md' : 'lg';
     return {
-      s, p, w, bp, forced,
+      s, p, w, bp, forced, embedded,
       xs: bp === 'xs', mobile: bp === 'xs' || bp === 'sm', desktop: bp === 'lg',
       theme: s.theme || p.theme || 'light',
       density: s.density || p.density || 'standard',
-      pad: bp === 'xs' ? '12px' : bp === 'sm' ? '14px' : bp === 'md' ? '18px' : '24px',
+      pad: embedded ? '0px' : (bp === 'xs' ? '12px' : bp === 'sm' ? '14px' : bp === 'md' ? '18px' : '24px'),
       frameMax: forced ? forced + 'px' : '100%',
+    };
+  }
+
+  /** Rol modeli: yıkıcı toplu işlemler yalnız yetkili rolde açılır. */
+  roleRank() { return { viewer: 0, editor: 1, manager: 2, admin: 3 }[this.props.role || 'manager'] ?? 2; }
+
+  bulkVals(b) {
+    const s = this.state;
+    const chip = a => ({ border: a ? 'var(--fg)' : 'var(--border)', bg: a ? 'var(--active)' : 'transparent', weight: a ? 700 : 500 });
+    const order = ['scope', 'action', 'config', 'preview', 'run'];
+    const step = s.bulkStep || 'scope';
+    const idx = order.indexOf(step);
+    const scope = s.bulkScope || 'selected';
+    const act = s.bulkAction || null;
+    const rank = this.roleRank();
+    const selectedCount = s.selected.length || 24;
+    const filterCount = 1842;
+    const scopeN = scope === 'selected' ? selectedCount : scope === 'filter' ? filterCount : 96;
+    const ACT = {
+      optimize: { label: 'Yeniden optimize et', undoable: true, minRank: 1 },
+      convert: { label: 'Biçim dönüştür', undoable: true, minRank: 1 },
+      regen: { label: 'Türevleri yeniden üret', undoable: true, minRank: 1 },
+      move: { label: 'Klasöre taşı', undoable: true, minRank: 1 },
+      tag: { label: 'Kategori ver', undoable: true, minRank: 1 },
+      alt: { label: 'Alt metin öner', undoable: true, minRank: 1 },
+      access: { label: 'Erişimi değiştir', undoable: true, minRank: 2 },
+      archive: { label: 'Arşive taşı', undoable: true, minRank: 2 },
+      trash: { label: 'Çöpe at', undoable: true, minRank: 2 },
+      purge: { label: 'Kalıcı sil', undoable: false, minRank: 3 },
+    };
+    const destructive = act === 'purge' || act === 'trash';
+    const needsConfirm = destructive || scopeN > 100;
+    const confirmWord = act === 'purge' ? 'KALICI SIL' : 'ONAYLA';
+    const confirmInput = s.confirmInput || '';
+    const confirmed = !needsConfirm || confirmInput.trim() === confirmWord;
+    // Kuru çalışma: sunucu her dosyayı tek tek kontrol eder, sayılar gerçektir.
+    // Atlanan sayıları kapsamla ölçeklenir: 24 dosyalık bir seçimde 23’ünün
+    // atlandığını söylemek, sayıların uydurma olduğunu ilan etmek olurdu.
+    const share = (ratio, min) => Math.max(scopeN >= min * 4 ? min : 0, Math.round(scopeN * ratio));
+    const skips = [
+      { key: 'quarantine', count: share(0.002, 1), label: 'Karantinada', desc: 'Tarama temiz dönmedi; bu dosyalara hiçbir işlem uygulanmaz.', bg: 'var(--danger-s)', fg: 'var(--danger)' },
+      { key: 'hold', count: share(0.001, 1), label: 'Yasal saklama altında', desc: 'Bir uyuşmazlık kaydına bağlı; silme ve taşıma kilitli.', bg: 'var(--warn-s)', fg: 'var(--warn)' },
+      { key: 'inuse', count: destructive ? share(0.06, 2) : 0, label: 'Yayında kullanılıyor', desc: 'Silinirse misafirin gördüğü menüde görsel boş kalır.', bg: 'var(--warn-s)', fg: 'var(--warn)' },
+      { key: 'format', count: share(0.04, 1), label: 'Bu işlem için uygun değil', desc: 'PDF ve SVG dosyaları yeniden boyutlandırılamaz.', bg: 'var(--subtle)', fg: 'var(--fg2)' },
+      { key: 'perm', count: rank >= 2 ? 0 : share(0.03, 1), label: 'Yetkin yetmiyor', desc: 'Bu dosyalar başka bir şubeye ait; yöneticiden yetki istemen gerekir.', bg: 'var(--subtle)', fg: 'var(--fg2)' },
+    ].filter(x => x.count > 0);
+    const skipTotal = skips.reduce((a, x) => a + x.count, 0);
+    const applyN = Math.max(0, scopeN - skipTotal);
+    const runState = s.runState || 'idle';
+    const done = runState === 'done';
+    const okN = done ? applyN - 2 : Math.round(applyN * 0.42);
+    const errN = done ? 2 : 0;
+    const resFilter = s.resFilter || 'all';
+    const results = [
+      { name: 'adana-kebap.jpg', status: 'ok', note: '412 KB → 168 KB · AVIF üretildi' },
+      { name: 'iskender.webp', status: 'ok', note: '196 KB → 84 KB · AVIF üretildi' },
+      { name: 'kunefe-tepsi.avif', status: 'skip', note: 'Zaten AVIF — atlandı' },
+      { name: 'fatura-eylul.pdf', status: 'skip', note: 'Karantinada — işlem uygulanmadı' },
+      { name: 'ramazan-afis.png', status: 'err', note: 'Kaynak dosya bozuk: PNG başlığı okunamadı' },
+      { name: 'salon-tur.mov', status: 'err', note: 'Dönüştürme zaman aşımına uğradı (120 sn)' },
+    ].filter(r => resFilter === 'all' || r.status === resFilter);
+    return {
+      isBulk: s.tab === 'bulk',
+      bulkSteps: [['scope', 'Kapsam', 'ph-selection-all'], ['action', 'Eylem', 'ph-lightning'], ['config', 'Ayar', 'ph-sliders'], ['preview', 'Etki', 'ph-flask'], ['run', 'Sonuç', 'ph-check-square']].map(([k, l, ic], i) => {
+        const a = k === step, past = i < idx;
+        return { label: l, icon: past ? 'ph-check' : ic, iconStyle: past ? '-bold' : '',
+          locked: i > idx, go: () => { if (i <= idx) this.setState({ bulkStep: k }); },
+          border: a ? 'var(--fg)' : 'var(--border)', bg: a ? 'var(--active)' : 'transparent',
+          color: i > idx ? 'var(--fg2)' : 'var(--fg)', weight: a ? 700 : 500,
+          numBg: a ? 'var(--brand)' : past ? 'var(--ok-s)' : 'var(--subtle)',
+          numFg: a ? 'var(--action-fg)' : past ? 'var(--ok)' : 'var(--fg2)' };
+      }),
+      bulkScopeStep: step === 'scope', bulkActionStep: step === 'action', bulkConfigStep: step === 'config',
+      bulkPreviewStep: step === 'preview', bulkRunStep: step === 'run',
+      bulkNext: () => this.setState({ bulkStep: order[Math.min(idx + 1, 4)] }),
+      bulkPrev: () => this.setState({ bulkStep: order[Math.max(idx - 1, 0)] }),
+      bulkRestart: () => this.setState({ bulkStep: 'scope', bulkAction: null, runState: 'idle', confirmInput: '', resFilter: 'all' }),
+
+      scopeChoices: [
+        { k: 'selected', label: 'Seçtiklerim', count: selectedCount + ' dosya', desc: 'Kütüphanede tek tek işaretlediklerin.' },
+        { k: 'filter', label: 'Süzgeçteki her şey', count: filterCount + ' dosya', desc: 'Görünen sayfa değil, süzgece uyan tüm dosyalar — sayfa sayfa dolaşman gerekmez.' },
+        { k: 'folder', label: 'Bu klasör ve altı', count: '96 dosya', desc: 'Ürünler ve altındaki bütün klasörler.' },
+      ].map(x => ({ ...x, go: () => this.setState({ bulkScope: x.k }),
+        border: x.k === scope ? 'var(--brand)' : 'var(--border)',
+        dotBorder: x.k === scope ? 'var(--brand)' : 'var(--border-c)',
+        dotBg: x.k === scope ? 'var(--brand)' : 'transparent',
+        dotDisplay: x.k === scope ? 'block' : 'none' })),
+      scopeSnapshotNote: 'İş başladığı anda liste dondurulur. Sen çalışırken biri yeni dosya yüklerse o dosya bu işe girmez — yoksa iş hiç bitmeyebilirdi.',
+      scopeFacts: [
+        { label: 'Kapsam', value: scopeN.toLocaleString('tr-TR') + ' dosya', color: 'var(--fg)' },
+        { label: 'Toplam boyut', value: scope === 'filter' ? '11,4 GB' : scope === 'folder' ? '4,8 GB' : '186 MB', color: 'var(--fg)' },
+        { label: 'Kiracı', value: 'Paşa Döner · yalnız bu çalışma alanı', color: 'var(--fg)' },
+        { label: 'Sıra önceliği', value: rank >= 2 ? 'Normal · arka planda' : 'Düşük', color: 'var(--fg2)' },
+      ],
+
+      bulkActionGroups: [
+        { label: 'Dosyayı iyileştir', keys: ['optimize', 'convert', 'regen', 'alt'] },
+        { label: 'Düzenle ve taşı', keys: ['move', 'tag', 'access', 'archive'] },
+        { label: 'Kaldır', keys: ['trash', 'purge'] },
+      ].map(g => ({ label: g.label, items: g.keys.map(k => {
+        const meta = ACT[k];
+        const blocked = rank < meta.minRank;
+        const info = {
+          optimize: { desc: 'Kalite kaybı olmadan yeniden sıkıştırır; asıl korunur.', icon: 'ph-lightning' },
+          convert: { desc: 'AVIF, WebP, WebM ya da JPEG üretir; dönüşen dosya yeni sürüm olur.', icon: 'ph-swap' },
+          regen: { desc: 'Boyut motorunun bugünkü kuralıyla türevleri yeniden yazar.', icon: 'ph-arrows-clockwise' },
+          alt: { desc: 'Alt metni olmayan görseller için öneri üretir; sen onaylamadan kaydedilmez.', icon: 'ph-text-aa' },
+          move: { desc: 'Dosyaları başka klasöre taşır; adresler değişmez.', icon: 'ph-folder-open' },
+          tag: { desc: 'Seçili dosyalara kategori ekler ya da kaldırır.', icon: 'ph-tag' },
+          access: { desc: 'Herkese açık ↔ özel. Özel dosyalar CDN’e itilmez.', icon: 'ph-lock-simple' },
+          archive: { desc: 'Kütüphaneden çıkarır, siler değil. Arşiv kotadan sayılır ama listeleri kalabalıklaştırmaz.', icon: 'ph-archive' },
+          trash: { desc: '30 gün çöpte bekler, sonra kalıcı silinir. Geri alınabilir.', icon: 'ph-trash' },
+          purge: { desc: 'Dosya ve bütün sürümleri anında yok olur. Yedekten dönmek gerekir.', icon: 'ph-fire' },
+        }[k];
+        return { label: meta.label, desc: info.desc, icon: info.icon, blocked,
+          go: () => { if (!blocked) this.setState({ bulkAction: k }); },
+          border: act === k ? 'var(--brand)' : 'var(--border)', opacity: blocked ? .5 : 1,
+          checkDisplay: act === k ? 'block' : 'none',
+          iconBg: k === 'purge' ? 'var(--danger-s)' : k === 'trash' ? 'var(--warn-s)' : 'var(--subtle)',
+          iconColor: k === 'purge' ? 'var(--danger)' : k === 'trash' ? 'var(--warn)' : 'var(--fg2)',
+          tag: meta.undoable ? 'Geri alınabilir' : 'Geri alınamaz',
+          tagBg: meta.undoable ? 'var(--ok-s)' : 'var(--danger-s)',
+          tagFg: meta.undoable ? 'var(--ok)' : 'var(--danger)',
+          perm: blocked ? 'Bu eylem için ' + ['izleyici', 'editör', 'yönetici', 'sahip'][meta.minRank] + ' yetkisi gerekir' : 'Yetkin var',
+          permIcon: blocked ? 'ph-lock-simple' : 'ph-check',
+          permColor: blocked ? 'var(--danger)' : 'var(--fg2)' };
+      }) })),
+      noAction: !act, actionNextLabel: act ? ACT[act].label + ' · ayarla' : 'Bir eylem seç',
+
+      configTitle: act ? ACT[act].label : 'Ayar',
+      configFields: (() => {
+        const f = k => ({ label: k.label, help: k.help, options: k.opts.map(([v, l]) => ({ label: l, ...chip((s.bulkCfg || {})[k.key] === v || (!(s.bulkCfg || {})[k.key] && v === k.opts[0][0])), go: () => this.setState({ bulkCfg: { ...(s.bulkCfg || {}), [k.key]: v } }) })) });
+        if (act === 'convert') return [
+          f({ key: 'fmt', label: 'Hedef biçim', help: 'Video seçilirse yalnız WebM üretilir.', opts: [['avif', 'AVIF'], ['webp', 'WebP'], ['webm', 'WebM'], ['jpeg', 'JPEG']] }),
+          f({ key: 'q', label: 'Kalite', help: 'Yemek fotoğraflarında 80 doğru aralık.', opts: [['70', '70'], ['80', '80'], ['90', '90']] }),
+          f({ key: 'keep', label: 'Aslı', help: 'Asıl korunur kuralı gereği varsayılan “sakla”.', opts: [['keep', 'Sakla'], ['drop', 'Çöpe at']] }),
+        ];
+        if (act === 'move') return [f({ key: 'dest', label: 'Hedef klasör', help: 'Alt klasör yapısı korunur.', opts: [['urunler', 'Ürünler'], ['kampanya', 'Kampanyalar'], ['arsiv', 'Arşiv']] })];
+        if (act === 'access') return [f({ key: 'vis', label: 'Yeni erişim', help: 'Özele alınan dosyanın CDN önbelleği boşaltılır.', opts: [['private', 'Özel'], ['public', 'Herkese açık']] })];
+        if (act === 'tag') return [f({ key: 'mode', label: 'Kategori', help: 'Var olan kategorilere dokunmaz.', opts: [['add', 'Ekle'], ['remove', 'Kaldır'], ['replace', 'Değiştir']] })];
+        return [f({ key: 'edge', label: 'Uzun kenar', help: 'Kırpma piksel eklemez: taban slot kuralından gelir.', opts: [['2560', '2560 px'], ['1920', '1920 px'], ['1440', '1440 px']] })];
+      })(),
+      runOptions: [
+        { k: 'offpeak', label: 'Yoğun saat dışında çalıştır', desc: 'Gece 03:00’te başlar. Büyük işler öğle servisini yavaşlatmaz.' },
+        { k: 'notify', label: 'Bitince haber ver', desc: 'İş bittiğinde e-posta ve panel bildirimi gelir.' },
+        { k: 'stopOnError', label: 'İlk hatada dur', desc: 'Kapalıyken iş devam eder, hatalı dosyalar raporda listelenir.' },
+      ].map(x => { const on = (s.runOpts || { notify: true })[x.k]; return { ...x, on: !!on,
+        switchBg: on ? 'var(--brand)' : 'var(--border-c)', knob: on ? '24px' : '3px',
+        toggle: () => this.setState({ runOpts: { ...(s.runOpts || { notify: true }), [x.k]: !on } }) }; }),
+
+      previewCounts: [
+        { label: 'Uygulanacak', value: applyN.toLocaleString('tr-TR'), color: 'var(--ok)', bg: 'var(--ok-s)', border: 'var(--ok)' },
+        { label: 'Atlanacak', value: String(skipTotal), color: 'var(--warn)', bg: 'var(--warn-s)', border: 'var(--warn)' },
+        { label: 'Süre', value: applyN > 500 ? '~26 dk' : '~3 dk', color: 'var(--fg)', bg: 'transparent', border: 'var(--border)' },
+      ],
+      skipReasons: skips, showSkipped: () => this.say(skipTotal + ' atlanan dosya listelenir; her satırda sebebi yazar.', 'ok'),
+      previewImpact: [
+        { label: 'Yeni sürüm açılacak', value: applyN.toLocaleString('tr-TR') + ' dosyada', color: 'var(--fg)' },
+        { label: 'Asıl dosyalar', value: 'Değişmiyor', color: 'var(--ok)' },
+        { label: 'Depolama', value: act === 'purge' ? '11,4 GB → 9,6 GB' : '11,4 GB → 12,1 GB (yeni sürümler)', color: act === 'purge' ? 'var(--ok)' : 'var(--warn)' },
+        { label: 'Dönüştürme kotası', value: '8.940 + ' + applyN + ' / 10.000', color: applyN + 8940 > 10000 ? 'var(--danger)' : 'var(--warn)' },
+        { label: 'Geri alma penceresi', value: act === 'purge' ? 'Yok' : '30 gün', color: act === 'purge' ? 'var(--danger)' : 'var(--ok)' },
+        { label: 'CDN önbelleği', value: 'Etkilenen dosyalar için boşaltılır', color: 'var(--fg2)' },
+      ],
+      needsConfirm,
+      confirmTitle: act === 'purge' ? 'Bu işlem geri alınamaz' : 'Büyük kapsam',
+      confirmBody: act === 'purge'
+        ? applyN + ' dosya ve bütün sürümleri kalıcı silinecek. Çöpe gitmez; yalnız gece yedeğinden dönülebilir.'
+        : applyN.toLocaleString('tr-TR') + ' dosya değişecek. Yüzden fazla dosyaya dokunan işler yazılı onay ister.',
+      confirmWord, confirmInput, onConfirmInput: e => this.setState({ confirmInput: e.target.value }),
+      runDisabled: !confirmed || applyN === 0,
+      runBtnBg: destructive ? 'var(--danger)' : 'var(--brand)',
+      runBtnFg: destructive ? 'var(--aep-white)' : 'var(--action-fg)',
+      runBtnIcon: destructive ? 'ph-fire' : 'ph-play',
+      runBtnLabel: applyN === 0 ? 'Uygulanacak dosya yok' : (destructive ? 'Sil' : 'Başlat') + ' · ' + applyN.toLocaleString('tr-TR') + ' dosya',
+      bulkRun: () => { this.setState({ bulkStep: 'run', runState: 'running' }); clearTimeout(this._runT); this._runT = setTimeout(() => this.setState({ runState: 'done' }), 2200); },
+
+      run: {
+        title: done ? 'İş bitti' : 'Çalışıyor',
+        detail: done ? okN + ' dosya işlendi, ' + skipTotal + ' atlandı, ' + errN + ' hata' : applyN + ' dosyanın ' + okN + '’si bitti',
+        pct: (done ? 100 : Math.round(okN / Math.max(applyN, 1) * 100)) + '%',
+        pctLabel: (done ? 100 : Math.round(okN / Math.max(applyN, 1) * 100)) + '%',
+        icon: done ? 'ph-check-circle' : 'ph-circle-notch', iconStyle: done ? '-fill' : '', spin: done ? '' : 'z-spin',
+        color: done ? 'var(--ok)' : 'var(--info)', iconBg: done ? 'var(--ok-s)' : 'var(--info-s)',
+        counters: [
+          { label: 'Başarılı', value: String(okN), color: 'var(--ok)' },
+          { label: 'Atlandı', value: String(skipTotal), color: 'var(--warn)' },
+          { label: 'Hata', value: String(errN), color: errN ? 'var(--danger)' : 'var(--fg2)' },
+        ],
+        pauseDisplay: done ? 'none' : 'flex',
+        pauseLabel: s.runPaused ? 'Sürdür' : 'Duraklat', pauseIcon: s.runPaused ? 'ph-play' : 'ph-pause',
+        togglePause: () => this.setState({ runPaused: !s.runPaused }),
+        cancel: () => { clearTimeout(this._runT); this.setState({ runState: 'done' }); this.say('İş iptal edildi. Biten dosyalar geri alınmadı; raporda listeli.', 'warn'); },
+        undoDisplay: done && !destructive ? 'block' : 'none',
+        undoNote: 'Bu işin tamamı 30 gün içinde tek adımda geri alınabilir: yeni sürümler kaldırılır, eski sürüm geçerli olur.',
+      },
+      resultFilters: [['all', 'Hepsi', applyN + skipTotal], ['ok', 'Başarılı', okN], ['skip', 'Atlanan', skipTotal], ['err', 'Hata', errN]].map(([k, l, c]) => ({ label: l, count: c, ...chip(k === resFilter), go: () => this.setState({ resFilter: k }) })),
+      runResults: results.map(r => ({ ...r,
+        icon: r.status === 'ok' ? 'ph-check' : r.status === 'skip' ? 'ph-minus' : 'ph-x',
+        iconStyle: '-bold',
+        color: r.status === 'ok' ? 'var(--ok)' : r.status === 'skip' ? 'var(--fg2)' : 'var(--danger)',
+        bg: r.status === 'ok' ? 'var(--ok-s)' : r.status === 'skip' ? 'var(--subtle)' : 'var(--danger-s)',
+        noteColor: r.status === 'err' ? 'var(--danger)' : 'var(--fg2)',
+        actDisplay: r.status === 'err' ? 'flex' : 'none', actLabel: 'Yeniden dene',
+        act: () => this.say(r.name + ' yeniden kuyruğa alındı.', 'ok') })),
+      retryDisplay: errN ? 'flex' : 'none', retryLabel: 'Yalnız ' + errN + ' hatalıyı yeniden dene',
+      retryFailed: () => this.say(errN + ' dosya yeniden kuyruğa alındı. Başarılı olanlara dokunulmaz.', 'ok'),
+      exportResults: () => this.say('Sonuç raporu CSV olarak indirilir: dosya, durum, sebep, süre.', 'ok'),
+      auditFacts: [
+        { label: 'İşlem anahtarı', value: 'bulk_01JQ8F3K2P9X', font: 'ui-monospace,Menlo,monospace' },
+        { label: 'Kim', value: 'Mehmet Usta · sahip', font: 'inherit' },
+        { label: 'Ne', value: (act ? ACT[act].label : 'Toplu işlem') + ' · ' + applyN + ' dosya', font: 'inherit' },
+        { label: 'Kapsam', value: scope === 'filter' ? 'Süzgeç (dondurulmuş liste)' : scope === 'folder' ? 'Ürünler ve altı' : 'Elle seçim', font: 'inherit' },
+        { label: 'Zaman', value: '5 Eylül 2026, 01:12 · Europe/Istanbul', font: 'inherit' },
+      ],
+    };
+  }
+
+  govVals(b) {
+    const rank = this.roleRank();
+    const roleLabel = ['izleyici', 'editör', 'yönetici', 'sahip'][rank];
+    const ROLES = [['E', 'Editör', 1], ['Y', 'Yönetici', 2], ['S', 'Sahip', 3]];
+    return {
+      isGovernance: this.state.tab === 'governance', roleLabel,
+      permRows: [
+        { label: 'Optimize / dönüştür / yeniden üret', min: 1 },
+        { label: 'Taşı ve kategori ver', min: 1 },
+        { label: 'Erişimi değiştir', min: 2 },
+        { label: 'Arşive taşı', min: 2 },
+        { label: 'Çöpe at', min: 2 },
+        { label: 'Kalıcı sil', min: 3 },
+        { label: 'Yasal saklamayı kaldır', min: 3 },
+      ].map(r => ({ label: r.label, roles: ROLES.map(([short, title, lv]) => ({ short, title,
+        bg: lv >= r.min ? 'var(--ok-s)' : 'var(--subtle)', fg: lv >= r.min ? 'var(--ok)' : 'var(--fg2)' })) })),
+      retentionRows: [
+        { label: 'Çöp', value: '30 gün', desc: 'Sonra kalıcı silinir. Geri alma bu pencere içinde tek dokunuş.', icon: 'ph-trash', color: 'var(--warn)' },
+        { label: 'Arşiv', value: '1 yıl', desc: 'Listelerde görünmez, kotadan sayılır. Süre sonunda çöpe düşer.', icon: 'ph-archive', color: 'var(--fg2)' },
+        { label: 'Sürüm geçmişi', value: '10 sürüm', desc: 'Her dosyada son on sürüm tutulur; asıl her zaman kalır.', icon: 'ph-clock-counter-clockwise', color: 'var(--fg2)' },
+        { label: 'Yasal saklama', value: '2 dosya', desc: 'Uyuşmazlık kaydına bağlı dosyalar silinemez — toplu işlem bunları atlar.', icon: 'ph-gavel', color: 'var(--danger)' },
+        { label: 'Denetim kaydı', value: 'Süresiz', desc: 'Silinemez, değiştirilemez. Yalnız dışa aktarılır.', icon: 'ph-scroll', color: 'var(--fg2)' },
+      ],
+      auditTrail: [
+        { who: 'MU', what: 'Toplu dönüştürme · 1.831 dosya AVIF', when: 'bugün 01:12', scope: 'Süzgeç (dondurulmuş)', tag: 'Toplu', tagBg: 'var(--info-s)', tagFg: 'var(--info)' },
+        { who: 'AK', what: 'Erişim değişti · 12 belge özele alındı', when: 'dün 17:40', scope: 'Belgeler', tag: 'Toplu', tagBg: 'var(--info-s)', tagFg: 'var(--info)' },
+        { who: 'TD', what: 'kampanya-mayis.png çöpe atıldı', when: 'dün 11:02', scope: 'Tek dosya', tag: '', tagDisplay: 'none' },
+        { who: 'SY', what: 'Yasal saklama eklendi · 2 dosya', when: '2 gün önce', scope: 'Belgeler', tag: 'Kilit', tagBg: 'var(--danger-s)', tagFg: 'var(--danger)' },
+        { who: 'MU', what: 'Alt metin önerisi kabul edildi · 34 görsel', when: '3 gün önce', scope: 'Ürünler', tag: 'AI', tagBg: 'var(--brand-s)', tagFg: 'var(--fg)' },
+      ].map(x => ({ ...x, tagDisplay: x.tagDisplay || 'block', tagBg: x.tagBg || 'transparent', tagFg: x.tagFg || 'var(--fg2)' })),
     };
   }
 
@@ -869,17 +1408,23 @@ class Component extends DCLogic {
       restartUpload: () => this.setState({ step: 'pick' }),
 
       supported: [
-        { label: 'Görseller', icon: 'ph-image', max: '25 MB', note: 'HEIC ve HEIF telefonda JPEG’e çevrilir; AVIF ve WebP olduğu gibi alınır.',
+        { label: 'Görseller', icon: 'ph-image', max: '25 MB', note: 'HEIC ve HEIF telefonda JPEG’e çevrilir; AVIF ve WebP olduğu gibi alınır. SVG temizleyiciden geçer, geçmezse reddedilir.',
           exts: ['.jpg', '.png', '.heic', '.heif', '.webp', '.avif', '.tiff', '.svg'] },
         { label: 'Video', icon: 'ph-film-strip', max: '200 MB', note: 'MOV ve MP4 sunucuda WebM’e çevrilebilir; ilk kare kapak olur.',
           exts: ['.mp4', '.webm', '.mov', '.m4v'] },
         { label: 'Belgeler', icon: 'ph-file-pdf', max: '25 MB', note: 'PDF panelde sayfa sayfa okunur; ilk sayfa kapak görseli olur.',
           exts: ['.pdf', '.csv', '.xlsx', '.docx'] },
-        { label: 'Ses', icon: 'ph-speaker-high', max: '50 MB', note: 'Sesli menü anlatımı için. Panelde çalınır.', exts: ['.mp3', '.m4a', '.wav'] },
+        // Ses ailesi henüz açılmadı: uzantı listesi UYDURULMAZ, "yok" yazılır.
+        { label: 'Ses', icon: 'ph-speaker-high', max: '—', note: 'Henüz açılmadı. Sesli menü anlatımı için planlı, bugün hiçbir ses türü kabul edilmiyor.', exts: [] },
       ].map(g => ({ ...g, exts: g.exts.map(e => ({ label: e, bg: 'var(--ok-s)', border: 'var(--ok)', color: 'var(--ok)' })) })),
 
+      // Yüzde ÖLÇÜLMÜŞTÜR: iki gerçek dosya boyutu arasındaki fark. Çıktı
+      // henüz üretilmediyse hiç sayı yazılmaz — bir kez yanlış çıkan tahmin,
+      // kullanıcının bütün sayılara olan güvenini bitirir (docs/108 §4).
       clientSaved: '%86 küçüldü',
-      clientSavedNote: '11,4 MB yerine 1,6 MB gönderilecek. Mobil veriden tasarruf.',
+      clientSavedNote: '11,4 MB → 1,6 MB. Ölçüldü, tahmin değil.',
+      clientFloorNote: 'Uzun kenar 1280 px’in altına inmiyor: bu görsel “large · tam ekran” boyutunda kullanılıyor ve kırpma piksel eklemez.',
+      clientPrivacyNote: 'Dosya senin telefonunda küçülür. Taranmamış hâli sunucuya gidip oradan geri servis edilmez.',
       clientSteps: [
         { k: 'resize', label: 'Boyutu küçült', desc: 'Uzun kenar ' + maxEdge + ' px’e indirilir.', value: '−%71' },
         { k: 'heic', label: 'HEIC → JPEG', desc: 'iPhone fotoğrafı her tarayıcıda açılan biçime çevrilir.', value: 'Açık' },
@@ -1143,25 +1688,41 @@ class Component extends DCLogic {
         restore: () => { this.setState({ trashRestored: [...restored, t.name] }); this.say(t.name + ' geri alındı.', 'ok'); } })),
       trashEmpty: trashAll.length === 0,
 
-      patternFields: [
-        { label: 'Dizin yapısı', example: 'Örnek: ' + dirEx[dirP], options: [['ym', '2026 / 09'], ['flat', 'Tek klasör'], ['tree', 'Klasör ağacı']].map(([k, l]) => ({ label: l, ...chip(k === dirP), go: () => this.setState({ dirPattern: k }) })) },
-        { label: 'Dosya adı', example: '“Adana Kebap.JPG” → ' + nameEx[nameP], options: [['slughash', 'slug + karma'], ['slug', 'yalnız slug'], ['orig', 'özgün ad']].map(([k, l]) => ({ label: l, ...chip(k === nameP), go: () => this.setState({ namePattern: k }) })) },
-        { label: 'Tarih biçimi', example: 'Panelde: ' + dateEx[dateP] + ' · Europe/Istanbul', options: [['dmy', '4 Eylül 2026'], ['iso', '2026-09-04'], ['rel', 'göreli']].map(([k, l]) => ({ label: l, ...chip(k === dateP), go: () => this.setState({ datePattern: k }) })) },
+      // Desenler SALT OKUNUR: dizin ve dosya adı deseni depolama anahtarıdır,
+      // anahtar değişse yayınlanmış her görsel kaybolurdu (docs/108 §6.5).
+      // Üç metin: adı, bugünkü değeri ve NEDEN seçilemediği.
+      patternRows: [
+        { label: 'Dizin yapısı', value: 'Çalışma alanı klasörü · /medya/{alan}/2026/09/', why: 'Yol, dosyanın depolama anahtarının parçası. Sonradan değişirse eski adresler kırılır; bu yüzden sabittir.' },
+        { label: 'Dosya adı', value: 'Şeffaf olmayan anahtar · a3f19c7d.jpg', why: 'Ad tahmin edilemez olmalı: özel bir belgenin adresi ad üzerinden denenerek bulunamaz.' },
+        { label: 'Tarih biçimi', value: 'Cihazın diline göre · Europe/Istanbul', why: 'Biçimi tarayıcı verir; panel ayrı bir tarih ayarı tutmaz, iki yerde iki farklı tarih görünmesin.' },
       ],
-      securityToggles: [
-        { k: 'av', label: 'Virüs taraması', desc: 'Temiz çıkmayan dosya karantinaya alınır, kimse indiremez.', rec: true },
-        { k: 'sniff', label: 'İçerik imzası kontrolü', desc: 'Uzantıya güvenilmez. “resim.jpg” aslında betikse reddedilir.', rec: true },
-        { k: 'exif', label: 'Gömülü veriyi temizle', desc: 'Konum, cihaz ve seri numarası silinir.', rec: true },
-        { k: 'signed', label: 'Özel dosyalarda imzalı bağlantı', desc: 'Belgeler süresi dolan adresle açılır.', rec: false },
-        { k: 'watermark', label: 'Filigran', desc: 'Paylaşım boyutuna küçük logo basılır.', rec: false },
-      ].map(t => ({ ...t, on: sec[t.k], switchBg: sec[t.k] ? 'var(--brand)' : 'var(--border-c)', knob: sec[t.k] ? '25px' : '3px',
-        badgeDisplay: t.rec ? 'inline-block' : 'none',
-        toggle: () => { this.setState({ sec: { ...sec, [t.k]: !sec[t.k] } }); if (sec[t.k] && t.rec) this.say(t.label + ' kapatıldı. Bu ayar önerilir.', 'warn', true); } })),
+      // Güvenlik: ANAHTAR ÇİZİLİR, ÇEVRİLEMEZ (sahip kararı 2026-09-05).
+      // `missing` durumunda anahtar hiç çizilmez — açılacak bir şey yok.
+      scannerDown: true,
+      securityMeasures: [
+        { label: 'Virüs taraması', state: 'unavailable', desc: 'Temiz çıkmayan dosya karantinaya alınır, kimse indiremez. Bu ortamda tarayıcı bağlı değil, o yüzden hiçbir dosya kabul edilmiyor.' },
+        { label: 'İçerik imzası kontrolü', state: 'on', desc: 'Uzantıya güvenilmez. “resim.jpg” aslında betikse reddedilir.' },
+        { label: 'Gömülü veriyi temizle', state: 'partial', desc: 'Türevler temiz üretilir; asıl dosya olduğu gibi saklanır. Yarım, çünkü aslın kendisi henüz temizlenmiyor.' },
+        { label: 'SVG temizleme', state: 'on', desc: 'SVG bir görsel değil belgedir: içine betik, onload ve harici bağlantı gömülebilir. Temizleme başarısız olursa dosya reddedilir.' },
+        { label: 'Özel dosyalarda imzalı bağlantı', state: 'on', desc: 'Belgeler süresi dolan adresle açılır. Bağlantı paylaşılsa da süresi biter.' },
+        { label: 'Filigran', state: 'missing', desc: 'Henüz yok. Paylaşım boyutuna logo basan bir kod bulunmuyor, o yüzden anahtar çizilmiyor.' },
+      ].map(m => {
+        const checked = m.state === 'on' || m.state === 'partial';
+        const has = m.state !== 'missing';
+        return { ...m, checked, switchDisplay: has ? 'block' : 'none',
+          switchBg: m.state === 'on' ? 'var(--brand)' : m.state === 'partial' ? 'var(--warn)' : 'var(--active)',
+          knob: checked ? '24px' : '3px',
+          lockedDisplay: has ? 'block' : 'none',
+          stateLabel: { on: 'Açık', partial: 'Yarım', unavailable: 'Çalışmıyor', missing: 'Henüz yok' }[m.state],
+          stateBg: { on: 'var(--ok-s)', partial: 'var(--warn-s)', unavailable: 'var(--danger-s)', missing: 'var(--subtle)' }[m.state],
+          stateFg: { on: 'var(--ok)', partial: 'var(--warn)', unavailable: 'var(--danger)', missing: 'var(--fg2)' }[m.state] };
+      }),
       mimeGroups: [
-        { label: 'Görseller', icon: 'ph-image', max: '25 MB', types: [['image/jpeg', 1], ['image/png', 1], ['image/webp', 1], ['image/avif', 1], ['image/heic', 1], ['image/heif', 1], ['image/tiff', 0], ['image/svg+xml', 0]] },
+        // image/svg+xml AÇILDI (sahip kararı 2026-09-05) — temizleyiciyle birlikte.
+        { label: 'Görseller', icon: 'ph-image', max: '25 MB', types: [['image/jpeg', 1], ['image/png', 1], ['image/webp', 1], ['image/avif', 1], ['image/heic', 1], ['image/heif', 1], ['image/tiff', 0], ['image/svg+xml', 1]] },
         { label: 'Video', icon: 'ph-film-strip', max: '200 MB', types: [['video/mp4', 1], ['video/webm', 1], ['video/quicktime', 1], ['video/x-m4v', 0]] },
         { label: 'Belgeler', icon: 'ph-file-pdf', max: '25 MB', types: [['application/pdf', 1], ['text/csv', 1], ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 0], ['application/msword', 0]] },
-        { label: 'Ses', icon: 'ph-speaker-high', max: '50 MB', types: [['audio/mpeg', 1], ['audio/mp4', 0], ['audio/wav', 0]] },
+        { label: 'Ses', icon: 'ph-speaker-high', max: '—', types: [['audio/mpeg', 0], ['audio/mp4', 0], ['audio/wav', 0]] },
       ].map(g => ({ ...g, types: g.types.map(([t, def]) => {
         const allowed = def ? !mimeOff.includes(t) : mimeOff.includes(t);
         const short = t.length > 26 ? t.split('.').pop().slice(0, 22) : t;
@@ -1180,7 +1741,8 @@ class Component extends DCLogic {
         ];
         const rows = [
           { label: 'Yükleme (istemci küçültme)', icon: 'ph-upload-simple', lv: 3, state: 'HEIC/HEIF dönüşümü, EXIF temizliği ve önizleme tarayıcıda. Kopan yükleme sürüyor.', next: 'Ölçüm var; kalan iş çok yavaş bağlantıda parça boyutunu uyarlamak.' },
-          { label: 'Virüs taraması', icon: 'ph-shield-check', lv: 3, state: 'Her dosya taranır, karantina ayrı depoda, rapor saklanır.', next: 'İmza sürümü gecikirse uyarı üretmiyor.' },
+          { label: 'Virüs taraması', icon: 'ph-shield-check', lv: 1, state: 'Hat yazıldı ama bu ortamda tarayıcı bağlı değil: hiçbir dosya kabul edilmiyor, türev üretilmiyor, önizleme çıkmıyor.', next: 'Ürün hatası değil — sunucuya ClamAV kurulmadan bütün medya hattı ölü kalır. En yüksek öncelik.' },
+          { label: 'SVG temizleme', icon: 'ph-bezier-curve', lv: 2, state: 'SVG açıldı; betik, onload ve harici bağlantı temizleniyor, temizleme başarısızsa dosya reddediliyor.', next: 'Reddedilen SVG’nin hangi kuralda takıldığını kullanıcıya söylemiyor.' },
           { label: 'Boyut motoru', icon: 'ph-resize', lv: 3, state: '6 türev, odak noktası korunur, yeniden üretim işi var.', next: 'Kural değişiminde etkilenen ürünleri önden göstermek.' },
           { label: 'AVIF / WebP / WebM', icon: 'ph-swap', lv: 2, state: 'Görselde AVIF+WebP+JPEG yedek üretiliyor. Video WebM VP9.', next: 'AV1 kodek ve kazanç ölçümü henüz panelde görünmüyor.' },
           { label: 'Odak noktası', icon: 'ph-crosshair-simple', lv: 2, state: 'Yüklemede tek dokunuşla seçilir, üç kırpma canlı önizlenir.', next: 'Yüz algılamayla ilk tahmini otomatik koymak.' },
@@ -1191,7 +1753,8 @@ class Component extends DCLogic {
           { label: 'Kota', icon: 'ph-gauge', lv: 2, state: 'Depolama, dosya, dönüştürme, CDN ayrı ayrı; sınıra yaklaşınca uyarı.', next: 'Kota bir kapı değil gösterge; aşımda ne olacağı yazılmalı.' },
           { label: 'Yedek', icon: 'ph-shield', lv: 1, state: 'Gecelik yedek çalışıyor ama son çalıştırma başarısız.', next: 'Başarısız yedek için otomatik yeniden deneme ve uyarı gerekiyor.' },
           { label: 'CDN', icon: 'ph-globe-hemisphere-west', lv: 2, state: 'Opsiyonel, açık/kapalı; isabet oranı ve yanıt süresi ölçülüyor.', next: 'Kapatıldığında maliyet/hız farkını önden göstermek.' },
-          { label: 'Denetim izi', icon: 'ph-scroll', lv: 1, state: 'İşler kaydediliyor; kim ne yaptı ayrı bir ekranda değil.', next: 'Salt-okunur denetim ekranı ve AI ile yapılanların işareti.' },
+          { label: 'Denetim izi', icon: 'ph-scroll', lv: 2, state: 'media_audits tablosu ve denetim ucu var; panelde salt-okunur liste çiziliyor.', next: 'AI ile yapılan değişikliklerin ayrı işareti yok.' },
+          { label: 'Ayarlar', icon: 'ph-gear', lv: 2, state: 'Desenler salt okunur ve NEDEN değiştirilemedikleri yazılı; güvenlik anahtarları görünür ama kapatılamaz.', next: 'Filigran için kod yok; anahtar çizilmiyor, “henüz yok” yazıyor.' },
         ];
         const sum = rows.reduce((a, r) => a + r.lv, 0), max = rows.length * 4;
         return {
@@ -1262,12 +1825,14 @@ class Component extends DCLogic {
 
     const secDefs = [
       { key: 'library', label: 'Kütüphane', icon: 'ph-squares-four' },
+      { key: 'bulk', label: 'Toplu işlem', icon: 'ph-selection-all' },
       { key: 'upload', label: 'Yükle', icon: 'ph-upload-simple' },
       { key: 'convert', label: 'Dönüştür', icon: 'ph-swap' },
       { key: 'viewer', label: 'Görüntüle', icon: 'ph-play-circle' },
       { key: 'engine', label: 'Boyut motoru', icon: 'ph-resize' },
       { key: 'jobs', label: 'Kuyruk', icon: 'ph-queue' },
       { key: 'quota', label: 'Kota ve çöp', icon: 'ph-gauge' },
+      { key: 'governance', label: 'Yönetişim', icon: 'ph-shield-check' },
       { key: 'settings', label: 'Ayarlar', icon: 'ph-gear' },
       { key: 'maturity', label: 'Olgunluk', icon: 'ph-chart-line-up' },
     ];
@@ -1277,19 +1842,34 @@ class Component extends DCLogic {
 
     return {
       theme: b.theme, density: b.density, frameMax: b.frameMax, pad: b.pad,
+      embedded: b.embedded,
+      // Gömülüyken kendi uygulama kabuğunu çizmez; panel zaten çiziyor.
+      chromeDisplay: b.embedded ? 'none' : 'flex',
+      frameMinH: b.embedded ? '0' : '100vh',
+      moduleHeaderDisplay: b.embedded ? 'flex' : 'none',
+      headerPos: b.embedded ? 'static' : 'sticky',
+      headerRadius: b.embedded ? '8px 8px 0 0' : '0',
+      railMaxH: b.embedded ? 'none' : 'calc(100vh - 158px)',
       themeIcon: b.theme === 'dark' ? 'ph-sun' : 'ph-moon',
       toggleTheme: () => this.setState({ theme: b.theme === 'dark' ? 'light' : 'dark' }),
       pageTitle: b.xs ? cur.label : 'Medya · ' + cur.label,
+      moduleSubtitle: cur.label,
       uploadBtnPad: b.xs ? '0' : '8px 14px', uploadLabelDisplay: b.xs ? 'none' : 'inline',
       searchPlaceholder: b.xs ? 'Dosya ara' : 'Dosya adı, alt metin, kategori ara',
       query: s.query, onQuery: e => this.setState({ query: e.target.value }),
       clearQuery: () => this.setState({ query: '' }), clearDisplay: s.query ? 'grid' : 'none',
+      // Rozet yalnız GERÇEK sayı varken çizilir: uydurulmuş bir sıfır
+      // "kuyruk boş" der ve iş takıldığında da aynı sıfırı gösterir.
+      queueCount: String(this.queueCount()), queueBadgeDisplay: this.queueCount() > 0 ? 'grid' : 'none',
       goJobs: this.go('jobs'), goUpload: this.go('upload'),
 
-      topNavDisplay: b.mobile ? 'none' : 'flex',
+      // Gömülüyken modül SABİT ALT ÇUBUK KULLANMAZ: panelin kendi alt gezintisi
+      // var, ikincisi ekranın altını ikiye böler. Bölümler yatay kaydırılan
+      // hap şeridine döner — aynı bilgi, çakışmayan yer.
+      topNavDisplay: b.embedded || !b.mobile ? 'flex' : 'none',
       sections: secDefs.map(x => ({ ...x, go: this.go(x.key), bg: x.key === s.tab ? 'var(--active)' : 'transparent', weight: x.key === s.tab ? 700 : 500 })),
-      bottomNavDisplay: b.mobile ? 'grid' : 'none',
-      bottomNav: [...secDefs.slice(0, 4).map((x, i) => { const a = x.key === s.tab; return { ...x, label: ['Dosyalar', 'Yükle', 'Çevir', 'Oynat'][i], go: this.go(x.key), color: a ? 'var(--fg)' : 'var(--fg2)', weight: a ? 700 : 500, bg: a ? 'var(--brand)' : 'transparent', iconStyle: a ? '-fill' : '' }; }),
+      bottomNavDisplay: b.mobile && !b.embedded ? 'grid' : 'none',
+      bottomNav: [...secDefs.slice(0, 4).map((x, i) => { const a = x.key === s.tab; return { ...x, label: ['Dosyalar', 'Toplu', 'Yükle', 'Çevir'][i], go: this.go(x.key), color: a ? 'var(--fg)' : 'var(--fg2)', weight: a ? 700 : 500, bg: a ? 'var(--brand)' : 'transparent', iconStyle: a ? '-fill' : '' }; }),
         { label: 'Menü', icon: 'ph-dots-three-outline', iconStyle: '', color: 'var(--fg2)', weight: 500, bg: 'transparent', go: () => this.setState({ moreOpen: true }) }],
       moreOpen: s.moreOpen, closeMore: () => this.setState({ moreOpen: false }),
       moreNav: secDefs.slice(4).map(x => ({ ...x, go: this.go(x.key), bg: x.key === s.tab ? 'var(--active)' : 'transparent', weight: x.key === s.tab ? 700 : 500 })),
@@ -1306,7 +1886,8 @@ class Component extends DCLogic {
       }),
       quota: { used: '11,4 / 25 GB', pct: '46%', note: '1.842 dosya · %46 dolu' },
 
-      mainPadBottom: b.mobile ? (s.selected.length ? '190px' : '84px') : (s.selected.length ? '110px' : b.pad),
+      mainPadBottom: b.embedded ? (s.selected.length ? '110px' : '4px')
+        : b.mobile ? (s.selected.length ? '190px' : '84px') : (s.selected.length ? '110px' : b.pad),
       wideOnly: b.xs ? 'none' : 'flex',
       isLibrary: s.tab === 'library',
 
@@ -1336,14 +1917,21 @@ class Component extends DCLogic {
       hasSelection: s.selected.length > 0, selCount: String(s.selected.length),
       clearSelection: () => this.setState({ selected: [] }),
       bulkBottom: b.mobile ? '68px' : '16px', bulkMax: b.desktop ? '760px' : b.frameMax,
+      // Toplu eylem SİHİRBAZA götürür, doğrudan uygulamaz: yüz dosyaya
+      // dokunan bir işlem, etkisini görmeden tek dokunuşla başlamamalı.
       bulkActions: [
-        { label: 'Optimize', icon: 'ph-lightning' }, { label: 'AVIF/WebP', icon: 'ph-swap' },
-        { label: 'Taşı', icon: 'ph-folder-open' }, { label: 'Kategori', icon: 'ph-tag' },
-        { label: 'Özele al', icon: 'ph-lock-simple' }, { label: 'Çöpe at', icon: 'ph-trash', danger: true },
+        { label: 'Optimize', icon: 'ph-lightning', act: 'optimize' },
+        { label: 'AVIF/WebP', icon: 'ph-swap', act: 'convert' },
+        { label: 'Taşı', icon: 'ph-folder-open', act: 'move' },
+        { label: 'Kategori', icon: 'ph-tag', act: 'tag' },
+        { label: 'Özele al', icon: 'ph-lock-simple', act: 'access' },
+        { label: 'Çöpe at', icon: 'ph-trash', act: 'trash', danger: true },
       ].map(x => ({ ...x, color: x.danger ? 'var(--brand)' : 'var(--ink-fg)',
-        go: () => { const n = s.selected.length; this.setState({ selected: [] }); this.say(x.danger ? n + ' dosya çöpe atıldı. 30 gün geri alınabilir.' : n + ' dosya için “' + x.label + '” kuyruğa alındı.', 'ok', true); } })),
+        go: () => this.setState({ tab: 'bulk', bulkStep: 'config', bulkScope: 'selected', bulkAction: x.act, runState: 'idle', confirmInput: '' }) })),
+      openBulkWizard: () => this.setState({ tab: 'bulk', bulkStep: 'action', bulkScope: 'selected' }),
 
       ...this.uploadVals(b), ...this.convertVals(b), ...this.viewerVals(b), ...this.restVals(b),
+      ...this.bulkVals(b), ...this.govVals(b),
       toastVisible: !!s.toast, toast: s.toast, undoDisplay: s.undoable ? 'inline' : 'none',
       toastIcon: s.toastKind === 'warn' ? 'ph-warning-circle' : 'ph-check-circle',
       toastColor: s.toastKind === 'warn' ? 'var(--warn)' : 'var(--brand)',
