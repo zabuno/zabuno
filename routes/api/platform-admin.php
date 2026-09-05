@@ -42,6 +42,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/admin/workspaces/{workspace}', ShowManagedWorkspaceController::class)
             ->whereNumber('workspace');
         Route::get('/admin/workspaces/{workspace}/subscription', ShowManagedSubscriptionController::class);
+        Route::post('/admin/workspaces/{workspace}/manual-payments', StoreManualPaymentController::class)->middleware('throttle:5,1');
 
         /*
             Kullanıcı görünürlüğü (`docs/122` Y2): kim, hangi çalışma
@@ -55,7 +56,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             doluyordu ve okuyan yeri yoktu; okunmayan denetim izi yoktur.
         */
         Route::get('/admin/audit-log', ListPlatformAuditLogController::class);
-        Route::post('/admin/workspaces/{workspace}/manual-payments', StoreManualPaymentController::class)->middleware('throttle:5,1');
 
         // Sağlayıcı kimlik-bilgisi kasası — `docs/94`. Yazma uçları
         // superadmin arkasında ve throttle'lı; yine de sır cevaba çıkmaz.
