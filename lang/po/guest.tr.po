@@ -60,6 +60,42 @@ msgstr "Bu menü şu anda görüntülenemiyor"
 msgid "guest.deadEnd.title"
 msgstr "Menü bulunamadı"
 
+#: guest:guest.filters.allergenExclude
+msgid "guest.filters.allergenExclude"
+msgstr ""
+
+#: guest:guest.filters.allergenHint
+msgid "guest.filters.allergenHint"
+msgstr ""
+
+#: guest:guest.filters.clear
+msgid "guest.filters.clear"
+msgstr ""
+
+#: guest:guest.filters.label
+msgid "guest.filters.label"
+msgstr ""
+
+#: guest:guest.filters.matched
+msgid "guest.filters.matched"
+msgstr ""
+
+#: guest:guest.filters.noMatch
+msgid "guest.filters.noMatch"
+msgstr ""
+
+#: guest:guest.filters.priceMax
+msgid "guest.filters.priceMax"
+msgstr ""
+
+#: guest:guest.filters.priceMin
+msgid "guest.filters.priceMin"
+msgstr ""
+
+#: guest:guest.filters.priceRange
+msgid "guest.filters.priceRange"
+msgstr ""
+
 #: guest:guest.language.contentNotice
 msgid "guest.language.contentNotice"
 msgstr "Ürün adları restoranın kendi dilindedir."
@@ -151,3 +187,19 @@ msgstr "Eşleşen ürün bulunamadı."
 #: guest:guest.search.placeholder
 msgid "guest.search.placeholder"
 msgstr "Ürün adı yazın"
+
+#: guest:guest.voice.denied
+msgid "guest.voice.denied"
+msgstr ""
+
+#: guest:guest.voice.error
+msgid "guest.voice.error"
+msgstr ""
+
+#: guest:guest.voice.label
+msgid "guest.voice.label"
+msgstr ""
+
+#: guest:guest.voice.listening
+msgid "guest.voice.listening"
+msgstr ""

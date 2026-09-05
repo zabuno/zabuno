@@ -645,6 +645,30 @@ a {
     }
 }
 
+/* Yönetim kabuğunun yüksekliği — alt gezinti çubuğu ekranın DIŞINA itilmesin.
+ *
+ * İki bildirim, bilerek ardışık: `100vh` yalnız bir YEDEKTİR (dvh birimini
+ * tanımayan tarayıcı ikinci satırı atar), `100dvh` ise gerçek karardır.
+ * Telefonda `100vh` adres çubuğu dahil yüksekliktir ve görünen alandan
+ * büyüktür; kabuk o kadar uzun olursa belge kayar ve kaydırılan alanın
+ * DIŞINDA duran alt çubuk katlamanın altında kalır.
+ *
+ * `min-height` bilerek YOK: kabuk zaten ekran kadar uzun ve içi kendi
+ * kaydırma alanına sahip. Bir min-height eklemek, sorunun ta kendisini geri
+ * getirirdi.
+ *
+ * Yazdırmada geri alınır: sabit yükseklik bir çıktıyı tek sayfaya kırpardı. */
+.admin-shell-frame {
+    height: 100vh;
+    height: 100dvh;
+}
+
+@media print {
+    .admin-shell-frame {
+        height: auto;
+    }
+}
+
 /* Container-query adaptive shell (docs/06 §12) — capacity-evidenced, not a
    device/browser breakpoint: the persistent sidebar only reveals once the
    shell's own inline size has room for the sidebar plus useful main content. */

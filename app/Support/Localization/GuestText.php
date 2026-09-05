@@ -55,6 +55,22 @@ final class GuestText
             'searchLabel' => 'guest.search.label',
             'searchPlaceholder' => 'guest.search.placeholder',
             'searchNoMatch' => 'guest.search.noMatch',
+            // SESLİ ARAMA (FF-177). "Desteklenmiyor" anahtarı BİLEREK YOK:
+            // düğme desteklenmeyen tarayıcıda hiç çizilmez, dolayısıyla
+            // misafire söylenecek bir şey de yoktur.
+            'voiceLabel' => 'guest.voice.label',
+            'voiceListening' => 'guest.voice.listening',
+            'voiceDenied' => 'guest.voice.denied',
+            'voiceError' => 'guest.voice.error',
+            // FİLTRELER (FF-177) — alerjen ve fiyat eksenleri.
+            'filtersLabel' => 'guest.filters.label',
+            'filtersClear' => 'guest.filters.clear',
+            'allergenExcludeLabel' => 'guest.filters.allergenExclude',
+            'allergenExcludeHint' => 'guest.filters.allergenHint',
+            'priceRangeLabel' => 'guest.filters.priceRange',
+            'priceMinLabel' => 'guest.filters.priceMin',
+            'priceMaxLabel' => 'guest.filters.priceMax',
+            'filterNoMatch' => 'guest.filters.noMatch',
             'installButton' => 'guest.pwa.install',
             'installAccepted' => 'guest.pwa.installAccepted',
             'installDismissed' => 'guest.pwa.installDismissed',
@@ -76,8 +92,10 @@ final class GuestText
         ]);
 
         // `{count}` YERİNDE bırakılır: sayı istemcide, arama sonucuna göre
-        // değişiyor ve sunucu onu bilemez.
+        // değişiyor ve sunucu onu bilemez. Aynı gerekçe filtre sayısı için
+        // de geçerli — süzme misafirin telefonunda oluyor.
         $out['searchMatched'] = $this->get('guest.search.matched', $locale);
+        $out['filterMatched'] = $this->get('guest.filters.matched', $locale);
 
         return $out;
     }

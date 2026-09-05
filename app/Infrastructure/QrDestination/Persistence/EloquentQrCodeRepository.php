@@ -211,6 +211,10 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
                 'dining_tables.name as table_name',
                 'dining_areas.label as area_label',
                 'dining_areas.id as area_id',
+                // Masa KİMLİĞİ `qr_codes` üzerinden okunur, birleştirilen
+                // masa satırından değil: kod bir masaya bağlıysa bu değer
+                // zaten oradadır ve birleştirmenin başarısına bağlı değildir.
+                'qr_codes.dining_table_id as dining_table_id',
             );
     }
 
@@ -227,6 +231,7 @@ final class EloquentQrCodeRepository implements QrCodeRepositoryPort
             $row->table_name === null ? null : (string) $row->table_name,
             $row->area_label === null ? null : (string) $row->area_label,
             $row->area_id === null ? null : (int) $row->area_id,
+            $row->dining_table_id === null ? null : (int) $row->dining_table_id,
         );
     }
 }

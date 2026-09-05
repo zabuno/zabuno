@@ -8,6 +8,7 @@ use App\Domain\Url\UrlPolicy;
 use App\Support\Analytics\AnalyticsConfiguration;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,7 +66,7 @@ final class SecurityHeaders
             // Eski tarayıcılar için `frame-ancestors`'ın karşılığı.
             'X-Frame-Options' => 'DENY',
             // İstemediğimiz güçlü API'leri baştan kapatırız.
-            'Permissions-Policy' => 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()',
+            'Permissions-Policy' => $this->permissionsPolicy($request),
             'Cross-Origin-Opener-Policy' => 'same-origin',
         ];
 
@@ -88,6 +89,57 @@ final class SecurityHeaders
         }
 
         return $headers;
+    }
+
+    /**
+     * MİKROFON YALNIZ MİSAFİR MENÜSÜNDE VE YALNIZ KENDİ KAYNAĞIMIZDA AÇILIR.
+     *
+     * Sesli arama (FF-177) tarayıcının konuşma tanımasını kullanır ve o
+     * yetenek bu başlık kapalıyken hiç başlamaz. Kapı bu yüzden açılıyor —
+     * ama toptan değil: `(self)` yalnız bizim kaynağımızı yetkilendirir, bir
+     * `<iframe>` içine konan üçüncü taraf içerik mikrofona ulaşamaz.
+     *
+     * DİĞER YÜZEYLERDE KAPALI KALIR. Panelde, kimlik ekranlarında ve
+     * kurumsal sayfalarda mikrofon isteyen bir şey yok; açık bırakmanın
+     * kazancı sıfır, bir gün oraya sızacak bir betiğin kazancı ise değil.
+     *
+     * Karar YOL DİZESİNDEN DEĞİL, ROTA ADINDAN verilir: menünün kanonik
+     * adresi `/restoran/pasa-doner/menu/ab12cd34ef` biçimindedir ve ilk
+     * segment kiracıya göre değişir; bir önek listesi ilk yeni iş türünde
+     * sessizce yanlış cevap verirdi. Rota bu noktada çözülmüş durumdadır,
+     * çünkü başlıklar `$next($request)` DÖNDÜKTEN sonra yazılıyor.
+     */
+    private function permissionsPolicy(Request $request): string
+    {
+        $microphone = $this->isGuestMenuSurface($request) ? 'microphone=(self)' : 'microphone=()';
+
+        return 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), '
+            .$microphone.', payment=(), usb=()';
+    }
+
+    /**
+     * Sesli aramanın yaşadığı yüzey — misafir menüsünün KENDİSİ.
+     *
+     * Ürün sayfası ve çıkmaz sokak listede YOK: orada arama kutusu yok,
+     * dolayısıyla mikrofon da yok. Taslak önizlemesi VAR, çünkü sahip
+     * misafirin gördüğü sayfanın aynısına bakar; orada mikrofonun
+     * çalışmaması, önizlemeyi yalancı yapardı.
+     */
+    private function isGuestMenuSurface(Request $request): bool
+    {
+        $route = $request->route();
+
+        if (! $route instanceof Route) {
+            return false;
+        }
+
+        return in_array((string) $route->getName(), [
+            'qr.publicMenu',
+            'publicMenu.legacy',
+            'publicMenu.canonical',
+            'publicMenu.canonicalNoSlug',
+            'publication.draftPreview',
+        ], true);
     }
 
     private function contentSecurityPolicy(string $nonce): string

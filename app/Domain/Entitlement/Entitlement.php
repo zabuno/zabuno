@@ -39,6 +39,21 @@ enum Entitlement: string
      */
     case BrandingCustom = 'branding.custom';
 
+    /**
+     * Masadaki misafirin sepetten sipariş GÖNDEREBİLMESİ
+     * (`docs/115` §5, `docs/114` §3 Dalga 5).
+     *
+     * Kapsam kuralına uyar ve bu, bu hakta özellikle kritiktir: hak yoksa
+     * misafir menüyü GÖRMEYE DEVAM EDER — fiyatı okur, alerjeni öğrenir —
+     * yalnız sipariş gönderemez ve **sebebini okur**. Menüyü kapatan bir
+     * kademe, temel yolculuğu kapatmış olurdu.
+     *
+     * Hak, misafirin gördüğü yayına DONDURULUR: sahip planını düşürdüğünde
+     * masadaki basılı karekod aynı kâğıttır ve o kâğıdın gösterdiği yayın
+     * değişmemelidir (`menu_publications.entitlements`).
+     */
+    case OrderingBasic = 'ordering.basic';
+
     public function label(): string
     {
         return match ($this) {
@@ -46,6 +61,7 @@ enum Entitlement: string
             self::TeamInvitations => 'Ekip daveti',
             self::AnalyticsReporting => 'Analitik raporlama',
             self::BrandingCustom => 'Marka görünümü',
+            self::OrderingBasic => 'Masadan sipariş',
         };
     }
 

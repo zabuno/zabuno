@@ -35,5 +35,18 @@ final class QrCodeRecord
          * yanlış kartları basardı.
          */
         public readonly ?int $areaId = null,
+        /**
+         * Kodun bağlı olduğu masanın KİMLİĞİ — sipariş yolunun tek girdisi
+         * (FF-176, `docs/115` §0).
+         *
+         * Ad ekranda yeter, ama sipariş bir satır yazar ve satır bir kimliğe
+         * ihtiyaç duyar. Masayı misafire sormak yerine buradan okumak, bu
+         * akışın en kırılgan yerini ortadan kaldırır: yanlış masa yazma
+         * ihtimali diye bir şey kalmaz.
+         *
+         * Masaya bağlı olmayan kod (giriş kodu) için `null`; sipariş yolu o
+         * durumu dürüstçe reddeder, uydurma bir masaya yazmaz.
+         */
+        public readonly ?int $diningTableId = null,
     ) {}
 }
