@@ -8,6 +8,10 @@
     aynı girdiyle çalıştıramazdı.
 
     Kararlar burada değil `docs/105`'te. İkisi çeliştiğinde `docs/105` kazanır.
+
+    2026-09-05: sıra bir kademe daha uzadı. Sahibin kararı, bugünün kararlarını
+    MASTER yapıyor. Çelişkide: `docs/118` > `docs/105` > bu dosya. İkiz girdi
+    (`docs/119`, uygulama yönergesi) de aynı gün depoya alındı.
 -->
 
 # Zabuno.com Tam Site Haritası

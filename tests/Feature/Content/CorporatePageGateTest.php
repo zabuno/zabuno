@@ -136,4 +136,40 @@ final class CorporatePageGateTest extends TestCase
         $this->get('/pricing')->assertStatus(200);
         $this->get('/')->assertStatus(200);
     }
+
+    /**
+     * KURUMSAL SAYFANIN DİLİ ADRESTEN GELİR — TARAYICIDAN DEĞİL.
+     *
+     * `docs/106`/`docs/105`: kurumsal sitenin kaynak dili Türkçedir ve her
+     * locale kendi dizininde yaşar. Ürün arayüzü ise 2026-09-05'ten beri
+     * yalnız İngilizce sunuluyor (`i18n.shipped_locales`) ve `NegotiateLocale`
+     * o listeyi okuyor.
+     *
+     * İki kural aynı anda doğru ama AYNI YERDEN gelmiyor: ürün arayüzü
+     * tarayıcıyla pazarlık eder, kurumsal sayfa etmez. Bu ayrım bugün
+     * kazayla doğru: şablon `lang`'i `$page->locale`'den türetiyor. Kazayla
+     * doğru olan bir şey, bir gün kazayla yanlış olur.
+     *
+     * Test o ayrımı kilitliyor: İngilizce isteyen bir tarayıcı `/tr/` altında
+     * TÜRKÇE bir belge alır. Aksi hâlde Türkçe yazılmış bir sayfa
+     * `lang="en"` ilan ederdi — ekran okuyucu yanlış telaffuz eder, arama
+     * motoru yanlış dilde indeksler ve `hreflang` zinciri kendi içinde
+     * çelişirdi.
+     *
+     * Requirement IDs: CORP-LOCALE-FROM-PATH-01.
+     */
+    public function test_a_corporate_page_declares_its_own_locale_not_the_browsers(): void
+    {
+        $this->page('/tr/urun/qr-menu/', PagePublicationStatus::Planned);
+
+        $html = (string) $this->withHeaders(['Accept-Language' => 'en-US,en;q=0.9'])
+            ->get('/tr/urun/qr-menu/')
+            ->getContent();
+
+        self::assertStringContainsString(
+            'lang="tr"',
+            $html,
+            'CORP-LOCALE-FROM-PATH-01: kurumsal sayfanın dili adresindedir; tarayıcı onu değiştiremez.'
+        );
+    }
 }

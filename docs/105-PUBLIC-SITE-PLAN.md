@@ -12,6 +12,14 @@ yönergesi), sahibin 2026-09-04 tarihli üç talebiyle birlikte:
 
 ---
 
+
+> **2026-09-05 — BU BELGE KISMEN EZİLDİ.** Sahibin kararı: bugünün kararları
+> master sayılır ve girdi belgeleri onlara uydurulur, tersi değil. Ezilen
+> maddeler `docs/118`de madde madde yazılı: dar ekran taban (E1), giriş kipi
+> ayrımı (E2), büyük hedef + sıkı boşluk (E3), ürün arayüzünün dili (E4), efekt
+> kütüphaneleri (E5), ikon yasağının kapsamı (E6), stok görsel kaynağı (E7).
+> Çelişkide sıra: `docs/118` > bu belge > `docs/119`/`docs/106` (girdiler).
+
 ## 1. Mevcut durum (ölçülmüş, varsayılmamış)
 
 Bu bölüm depo taranarak çıkarıldı; yönergedeki varsayımların hangilerinin bu
