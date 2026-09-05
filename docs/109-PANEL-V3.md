@@ -27,7 +27,7 @@ ya doğar ya da neden doğmadığı yazılır.**
 
 | Ekran | Kaynakta ne var | Depoda durum |
 | --- | --- | --- |
-| Home | Karşılama, "Şimdi" kartı, **AI önerileri (3, onaylı)**, **4 hızlı eylem**, sparkline'lı sayaçlar, Kurulum 3/5, **Bugün en çok bakılanlar** | kısmi — AI önerileri, hızlı eylemler, sparkline, en çok bakılanlar YOK |
+| Home | Karşılama, "Şimdi" kartı, **AI önerileri (3, onaylı)**, **4 hızlı eylem**, sparkline'lı sayaçlar, Kurulum 3/5, **Bugün en çok bakılanlar** | ✅ öneriler, hızlı eylemler, en çok bakılanlar doğdu; **sparkline zaman serisi ucu gelince** |
 | Menüler | **Menü hapları** (Ana menü yayında · Kahvaltı 07–11 · Ramazan kapalı), kategori rayı + sayaç, ürün satırı, **Fotoğraftan aktar**, **CSV**, **Önizle** | kısmi — haplar, çoklu menü, CSV, fotoğraftan aktar YOK |
 | QR kodlar | Masa kartları ızgarası + tarama sayısı, sağ panel (tema/boyut/PDF/yazdır), **ölçülmüş kontrast**, toplu kod üretimi | kısmi |
 | Insights | KPI kartları, **çubuk+çizgi grafik**, **saat ısı haritası**, **şube halkası**, masa sıralaması, **aranıp bulunamayanlar + Ekle** | kısmi — grafikler ve "Ekle" eylemi YOK |
@@ -43,14 +43,14 @@ ya doğar ya da neden doğmadığı yazılır.**
 | Bölüm | Depoda durum |
 | --- | --- |
 | Kütüphane | var |
-| **Toplu işlem** | **YOK** — Kapsam → Eylem → Ayar → Etki → Sonuç sihirbazı |
+| **Toplu işlem** | ✅ doğdu (FF-137) — beş adım, gerçek kuru çalışma, KALICI SİL yazımı |
 | Yükle | var |
 | Dönüştür | var |
 | Görüntüle | var (video oynatıcı YOK) |
 | Boyut motoru | var |
 | Kuyruk | var |
 | Kota ve çöp | var (CDN kartı ve dağıtım ağı anahtarı YOK) |
-| **Yönetişim** | **YOK** — yetki matrisi, saklama politikası, yasal saklama, denetim izi |
+| **Yönetişim** | ✅ doğdu (FF-137) — gerçek rol matrisi, yasal saklama gerçek kilit |
 | Ayarlar | var |
 | Olgunluk | **YOK** |
 
@@ -79,7 +79,10 @@ ya doğar ya da neden doğmadığı yazılır.**
 
 ## 5. Sayaç
 
-0/11 tamamlandı, 0/11 aktif.
+3/11 tamamlandı, 3/11 aktif.
+
+Tamamlanan: Home · Medya/Toplu işlem · Medya/Yönetişim.
+Aktif: Menüler · Insights (+ zaman serisi) · Yayınlama.
 
 Bölümler: Home · Menüler · QR · Insights · Yayınlama · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar.
