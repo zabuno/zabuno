@@ -42,6 +42,16 @@ import { existsSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import {
+    ACCOUNT,
+    BOTTOM_NAV,
+    FRAME,
+    LAYOUT,
+    MAIN,
+    RAIL,
+    SCROLLER,
+} from './shell-scroll-gate.classes.mjs';
+
 /*
     TARAYICI BULUNAMAZSA KAPI GEÇMEZ, KIRILIR.
 
@@ -70,26 +80,16 @@ if (CHROME === undefined) {
 
 const PORT = 9333;
 
-/**
- * Kabuğun GERÇEK sınıf dizeleri — `AdminShell`, `DesktopChrome` ve
- * `MobileChrome` içinden birebir alınmıştır.
- *
- * Neden bileşenler render edilmiyor da işaretleme elle kuruluyor: bu kapı
- * React'i değil CSS'i ölçüyor. Bileşenleri gerçek tarayıcıda render etmek
- * bir derleme adımı ve bir sunucu gerektirirdi; ölçtüğü şey ise aynı kalırdı.
- * Sınıf dizeleri değişirse burası ESKİR — bu yüzden `verify-like-ci` bu
- * kapıyı bileşen testleriyle BİRLİKTE koşturur: sınıflar orada, davranış
- * burada donuyor.
- */
-const FRAME = 'admin-shell-frame flex flex-col overflow-hidden';
-const LAYOUT = 'admin-shell-layout flex min-h-0 min-w-0 flex-1 flex-wrap';
-const MAIN = 'admin-shell-main min-w-0 flex-1 basis-[32rem] overflow-y-auto p-4';
-const RAIL =
-    'admin-shell-sidebar flex shrink-0 grow-0 basis-[16.5rem] flex-col border-e px-3 py-3 min-h-0';
-const SCROLLER = 'flex min-h-0 flex-1 flex-col overflow-y-auto';
-const ACCOUNT = 'mt-auto border-t pt-2';
-const BOTTOM_NAV = 'z-10 grid grid-cols-5 items-stretch gap-1 border-t px-2 py-1';
+/*
+    Sınıflar AYRI bir modülde yaşıyor ve `AdminShell.contract.test.tsx`
+    gerçek bileşenleri render edip her birinin hâlâ orada olduğunu ölçüyor.
+    Gerekçesi o dosyanın başında yazılı: düzeneğin sessizce eskimesi, bu
+    kapının tek gerçek zayıf noktasıydı.
 
+    Dolgu (`p-4`, `px-3`) burada değil, aşağıda satır içi veriliyor: onlar
+    ölçülen davranışın parçası değil, yalnız düzeneğin gerçekçi görünmesi
+    için.
+*/
 function harness(cssHref) {
     return `<!doctype html><html><head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -99,18 +99,18 @@ function harness(cssHref) {
   <div class="${FRAME}" data-probe="frame">
     <header data-probe="topbar" style="height:56px;flex:none">üst çubuk</header>
     <div class="${LAYOUT}">
-      <aside class="${RAIL}" data-probe="rail" style="display:flex">
+      <aside class="${RAIL} px-3 py-3" data-probe="rail" style="display:flex">
         <div class="${SCROLLER}" data-probe="rail-scroll">${'<div style="height:40px">gezinti</div>'.repeat(24)}</div>
-        <div class="${ACCOUNT}" data-probe="account">
+        <div class="${ACCOUNT} pt-2" data-probe="account">
           <div style="position:relative">
             <button type="button" style="width:100%;height:44px">Hesap</button>
             <div data-probe="popup" class="absolute inset-x-0 bottom-full" style="height:260px"></div>
           </div>
         </div>
       </aside>
-      <main class="${MAIN}" data-probe="main"><div style="height:4000px">uzun içerik</div></main>
+      <main class="${MAIN} p-4" data-probe="main"><div style="height:4000px">uzun içerik</div></main>
     </div>
-    <nav class="${BOTTOM_NAV}" data-probe="bottomnav" style="flex:none;height:64px"></nav>
+    <nav class="${BOTTOM_NAV} gap-1 px-2 py-1" data-probe="bottomnav" style="flex:none;height:64px"></nav>
   </div>
 </div>
 </body></html>`;
