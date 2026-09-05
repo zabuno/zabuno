@@ -138,14 +138,21 @@ için kimlik istemek orantısız.
 | Sipariş iletimi | Yeni hat: sipariş modeli, mutfağa bildirim, durum | `ordering.basic` (yeni) |
 | Ödeme | Ayrı ve daha büyük: sağlayıcı, iade, uzlaşma | `ordering.payment` (yeni) |
 
-**Sepet ile sipariş AYRI iki şeydir ve ayrı gelir.** Sepet cihazda yaşayan
-bir listedir ve tek başına değerlidir: masadaki misafir seçtiklerini
-toplar, garsona okur. Sipariş ise bir taahhüttür — mutfağa iş açar, iptal
-kuralı ister, durum ister.
+> **BU BÖLÜM GEÇERSİZ — 2026-09-05, sahibin tarifiyle.** Burada "sepet
+> sipariş vermez, sepet ekranı 'sipariş ver' demez" yazıyordu ve o karar
+> bana aitti, sahibe değil. Sahip akışı tarif etti: sepetten sipariş onayı
+> verilir, kuyruğa düşer, garson panelden onaylar, onaylanınca mutfak
+> monitörüne düşer. Tam akış, kullanıcı hikâyeleri ve görev sırası
+> **`docs/115`**'te.
+>
+> Ayakta kalan tek ayrım şu: **sepet sunucuya gitmez.** Cihazda yaşar;
+> sunucuya yalnız GÖNDERİLEN sipariş yazılır. Hiç sipariş vermeyecek her
+> misafir için satır yazmak gereksizdi.
 
-Sepeti sipariş sanmak, ürünün veremeyeceği bir söz vermektir. **Sepet
-ekranı "sipariş ver" demez** — ne dediğine dalga 5b'de karar verilir ve o
-karar sahibindir.
+Sepet ile sipariş ayrı **katmanlardır** ama tek akıştır. Sepet cihazda
+yaşayan bir listedir; sipariş bir taahhüttür — mutfağa iş açar, iptal
+kuralı ister, durum ister. İkisinin arasındaki kapı **garsonun gözüdür**:
+misafirin gönderdiği bir taleptir, garsonun onayladığı bir iştir.
 
 ### Dalga 6 — Fotoğraf ve plan kademesi
 
