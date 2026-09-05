@@ -224,6 +224,113 @@ describe('LocationCard — kaynağın kart grameri', () => {
         expect(screen.queryByText(/^Open$/)).not.toBeInTheDocument();
     });
 
+    // --- ŞU AN AÇIK MI: SUNUCUNUN CEVABI, KARTIN TAHMİNİ DEĞİL (FF-148) ---
+
+    /*
+        Kart artık İKİNCİ bir rozet çizebilir ve bu rozetin kaynağı `open_now`
+        alanıdır — sunucuda, ŞUBENİN kendi saat diliminde, misafir yüzeyiyle
+        AYNI değer nesnesinden hesaplanır. Kart burada hiçbir şey hesaplamaz:
+        tarayıcının saati kullanıcının kendi ayarıdır ve yanlış kurulmuş bir
+        dizüstü, açık bir şubeye "kapalı" dedirtirdi.
+
+        Bu rozet, saat ÖZETİNİN (üçüncü ölçü) yerine geçmez: özet tarifedir
+        ("Today 09:00–23:00"), rozet ise DURUMDUR. Sahip ikisini de sorar.
+    */
+
+    it('sunucu "açık" diyorsa rozeti KELİMEYLE yazar', () => {
+        renderCard({ location: { ...BASE, open_now: true } });
+
+        const badge = screen.getByTestId('location-card-open-state');
+
+        // Renk tek başına bir işaret değildir (WCAG 2.2 §1.4.1): rozet
+        // metnini taşımalı, yoksa kırmızı-yeşil ayırt edemeyen bir sahip beş
+        // kart arasında hiçbir fark görmezdi.
+        expect(badge).toHaveTextContent('Open now');
+    });
+
+    it('sunucu "kapalı" diyorsa bunu da kelimeyle yazar', () => {
+        renderCard({ location: { ...BASE, open_now: false } });
+
+        expect(screen.getByTestId('location-card-open-state')).toHaveTextContent('Closed now');
+    });
+
+    /**
+     * `null` "söylenmemiş"tir. Saati girilmemiş şubede rozet HİÇ çizilmez —
+     * ne "kapalı", ne "bilinmiyor". Boş bir rozet, sahibin hiç kurmadığı bir
+     * cümleyi ekranda yer kaplatarak söylemek olurdu.
+     */
+    it('sunucu cevap veremiyorsa rozet HİÇ çizilmez', () => {
+        renderCard({ location: { ...BASE, open_now: null } });
+
+        expect(screen.queryByTestId('location-card-open-state')).not.toBeInTheDocument();
+        expect(screen.queryByText(/Closed now/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Open now/)).not.toBeInTheDocument();
+    });
+
+    it('alan hiç yoksa da rozet çizilmez — eski kayıt bozulmaz', () => {
+        renderCard();
+
+        expect(screen.queryByTestId('location-card-open-state')).not.toBeInTheDocument();
+    });
+
+    /**
+     * KURULUM ROZETİ İLE ÇAKIŞMA: ikisi de kalır, kurulum ÖNDE.
+     *
+     * "Kurulumda" ile "şu an açık" AYRI sorulardır ve ikisi de aynı anda
+     * doğru olabilir: sahip saatlerini girmiş ama masalarını henüz
+     * tanımlamamıştır. Birini diğerine feda etmek bilgi kaybıdır — kurulum
+     * rozeti gizlenseydi sahip şubesinin neden taranamadığını göremezdi,
+     * açık/kapalı gizlenseydi bu paket hiç yazılmamış olurdu.
+     *
+     * Sıra ÖNCELİKTİR: kurulum önce gelir, çünkü masası olmayan bir şubede
+     * misafir zaten karekod okutamaz — kapının açık olması o şubede henüz
+     * hiçbir şeyi değiştirmez.
+     */
+    /**
+     * ROZETLER EKRAN OKUYUCUYA ULAŞIR.
+     *
+     * Bu kartın süsleme başlığı (`--color-border` nokta ızgarası + iğne)
+     * `aria-hidden` idi ve rozetler O KUTUNUN İÇİNDE duruyordu: gözle görülen
+     * "Kurulumda" yazısı ekran okuyucuya HİÇ ulaşmıyordu. Kusur gözden kaçtı
+     * çünkü testler metni buluyordu — `getByText` erişilebilirlik ağacına
+     * değil, DOM'a bakar.
+     *
+     * "Renk tek başına anlatmaz" kuralının (WCAG 2.2 §1.4.1) bir kardeşi var:
+     * GÖRME de tek başına anlatmaz. Bir rozeti gizlemek, onu renge indirmekle
+     * aynı kapıya çıkar — bilgi bir duyuya kilitlenir.
+     */
+    it('durum rozetleri erişilebilirlik ağacında görünür', () => {
+        renderCard({ location: { ...BASE, table_count: 0, open_now: false } });
+
+        for (const label of ['In setup', 'Closed now']) {
+            expect(screen.getByText(label).closest('[aria-hidden="true"]')).toBeNull();
+        }
+    });
+
+    /** Süsleme ise gizli KALIR: harita dokusu ve iğne bir bilgi taşımıyor. */
+    it('harita dokusunu ve iğneyi ekran okuyucuya okutmaz', () => {
+        const { container } = renderCard();
+
+        const pin = container.querySelector('svg');
+
+        expect(pin).not.toBeNull();
+        expect(pin?.closest('[aria-hidden="true"]')).not.toBeNull();
+    });
+
+    it('kurulum rozetiyle birlikte yaşar ve kurulum önce gelir', () => {
+        renderCard({ location: { ...BASE, table_count: 0, open_now: true } });
+
+        expect(screen.getByText('In setup')).toBeInTheDocument();
+
+        const badge = screen.getByTestId('location-card-open-state');
+        expect(badge).toHaveTextContent('Open now');
+
+        const setupBadge = screen.getByText('In setup');
+        expect(
+            setupBadge.compareDocumentPosition(badge) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+    });
+
     // --- İKİ EYLEM --------------------------------------------------------
 
     it('masalar ve düzenle düğmeleri şubenin adıyla ayrışır', async () => {
@@ -257,7 +364,12 @@ describe('LocationCard — kaynağın kart grameri', () => {
      * kırılır (`docs/36` §5).
      */
     it('jeton kökünü atlayan sınıf taşımaz', () => {
-        const { container } = renderCard({ location: { ...BASE, table_count: 0 } });
+        // İKİ rozet birden çizdirilir: yeni durum rozeti de aynı jeton
+        // kökünden okumak zorunda, yoksa koyu temada okunamaz bir renk
+        // basardı.
+        const { container } = renderCard({
+            location: { ...BASE, table_count: 0, open_now: false },
+        });
 
         const markup = container.innerHTML;
 

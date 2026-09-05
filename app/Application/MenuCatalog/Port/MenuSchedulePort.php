@@ -21,6 +21,12 @@ interface MenuSchedulePort
     /**
      * Şubenin menüleri, hap sırasında.
      *
+     * SIRA BU KAPININ SÖZLEŞMESİDİR ve GÜNÜN AKIŞIDIR: menüler en erken
+     * servis penceresine göre gelir, saati olmayanlar (rotasyon dışı) en
+     * sonda ve kendi aralarında `menus.sort_order` ile durur. Tüketici
+     * yeniden sıralamaz — sıralasaydı iki gerçek doğar, aynı liste bir başka
+     * ekranda başka türlü çıkardı.
+     *
      * @return list<MenuScheduleEntry>
      */
     public function forLocation(int $workspaceId, int $locationId): array;

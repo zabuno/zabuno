@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { MapPin, Wrench } from '@phosphor-icons/react';
+import { Door, DoorOpen, MapPin, Wrench } from '@phosphor-icons/react';
 
 import { t } from '../../../../i18n/workspace';
 import type { LocationProfile } from '../../LocationEditForm';
@@ -32,6 +32,18 @@ export type LocationCardProps = {
     children?: ReactNode;
 };
 
+/**
+ * Rozetlerin ORTAK gövdesi.
+ *
+ * İki rozet aynı köşede yan yana durabiliyor ve farklı bir yükseklikte ya da
+ * farklı bir yazı ölçeğinde çizilselerdi köşe eğri görünürdü. Renk BİLEREK
+ * dışarıda: her rozet kendi jeton ailesini getirir, ama biçimi tektir.
+ */
+const BADGE_CLASS = [
+    'inline-flex items-center gap-[var(--space-1)] rounded-pill border',
+    'px-[var(--space-3)] py-[var(--space-1)] text-body font-medium',
+].join(' ');
+
 const ACTION_CLASS = [
     'flex min-h-[var(--control-height)] flex-1 items-center justify-center',
     'rounded-[var(--radius-md)] border border-border bg-surface',
@@ -61,12 +73,20 @@ function addressOf(location: LocationCardLocation): string | null {
  * ızgaranın işi tam olarak bu: beş şube yan yana dururken eksik olan kart
  * göze kendiliğinden çarpar.
  *
- * DURUM ROZETİ TEK YÖNLÜDÜR. Kaynak köşeye "Açık" ya da "Kurulumda"
- * yazıyor. Depoda şubenin AÇIK olduğunu söyleyen hiçbir alan yok — masası
- * olan bir şube tadilatta da olabilir ve ekranda "Açık" yazması sahibin
- * bilmediği bir iddia olurdu. Masası OLMAYAN şube ise taranamaz: kurulumu
- * bitmemiştir ve bu, `dining_tables` satırlarından okunan bir olgudur. Kart
- * yalnız kanıtlayabildiği yönü söyler.
+ * DURUM ROZETİ ARTIK İKİ YÖNLÜ — AMA HÂLÂ İKİ AYRI SORU (FF-148).
+ *
+ * Kaynak köşeye "Açık" ya da "Kurulumda" yazıyor ve bu kart uzun süre yalnız
+ * ikincisini çizdi: "açık" iddiasını destekleyen bir alan yok sayılmıştı
+ * (`docs/109` §8.2). Gerekçe DÜŞTÜ (§8.6): `location_opening_hours` doluydu,
+ * `WeeklyOpeningHours` kapalılığı zaten hesaplıyordu ve misafirin ekranı o
+ * cevabı okuyordu — yalnız sahibin paneli hiç sormamıştı. Kart artık soruyor
+ * ve cevabı SUNUCUDAN alıyor (`open_now`).
+ *
+ * İki rozet birbirinin yerine geçmez. "Kurulumda" masası OLMAYAN şubenin
+ * olgusudur (`dining_tables`) ve o şube taranamaz; "şu an açık" ise kapının
+ * hâlidir. İkisi aynı anda doğru olabilir ve kart ikisini de çizer, kurulum
+ * önde. Değişmeyen kural: kart yalnız kanıtlayabildiğini söyler — saati
+ * girilmemiş şubede durum rozeti HİÇ çizilmez.
  *
  * ÇALIŞMA SAATLERİ ARTIK GERÇEK. Kaynağın üçüncü ölçüsü çalışma saatidir ve
  * bu paket ona alanını, ucunu ve giriş yüzeyini verdi (`docs/109` §6.4).
@@ -85,6 +105,16 @@ export function LocationCard({
     const address = addressOf(location);
     const tableCount = location.table_count ?? 0;
     const inSetup = tableCount === 0;
+    /*
+        Alanın HİÇ olmaması ile `null` aynı cevaptır: "söylenmemiş". İkisini
+        ayırmak, ekranda hiçbir farkı olmayan iki dal yaratırdı.
+
+        KAPALI ROZETİ TEHLİKE RENGİ TAŞIMAZ. Kapalı olmak bir hata değil,
+        gecenin normalidir; kırmızı bir rozet sahibe her sabah düzeltilecek
+        bir şey varmış gibi görünürdü. Bu yüzden açık = başarı jetonu, kapalı
+        = nötr yüzey; ayrımı taşıyan asıl şey zaten KELİMEDİR.
+    */
+    const openNow = location.open_now ?? null;
     /*
         Özet ŞUBENİN saat dilimine göre hesaplanır (`locations.timezone`,
         `docs/62`) — tarayıcınınkine göre değil. Berlin'den bakan bir sahip,
@@ -110,38 +140,106 @@ export function LocationCard({
                 yolu. Nokta ızgarası jetondan (`--color-border`) ve atomik
                 boşluk gridinden okunur; sabit bir renk ya da piksel yazılsaydı
                 koyu temada görünmez olurdu.
+
+                `aria-hidden` KUTUNUN TAMAMINDAN ALINDI (FF-148). Süsleme
+                gizli kalmalı ama ROZETLER bu kutunun içinde duruyor: gözle
+                görülen "Kurulumda" yazısı ekran okuyucuya hiç ulaşmıyordu ve
+                kusur gözden kaçtı, çünkü `aria-hidden` bir kabın TÜM
+                torunlarını gizler. "Renk tek başına anlatmaz" kuralının
+                kardeşi budur — görme de tek başına anlatmaz. Gizlilik artık
+                yalnız GERÇEKTEN süsleme olanın üstünde: iğnenin.
             */}
             <div
-                aria-hidden="true"
                 className="relative h-[6rem] bg-surface-subtle"
                 style={{
                     backgroundImage: 'radial-gradient(var(--color-border) 1px, transparent 1px)',
                     backgroundSize: 'var(--space-4) var(--space-4)',
                 }}
             >
-                <span className="absolute bottom-[var(--space-3)] start-[var(--space-4)] flex h-[2.5rem] w-[2.5rem] items-center justify-center rounded-[var(--radius-md)] bg-action text-action-fg">
+                <span
+                    aria-hidden="true"
+                    className="absolute bottom-[var(--space-3)] start-[var(--space-4)] flex h-[2.5rem] w-[2.5rem] items-center justify-center rounded-[var(--radius-md)] bg-action text-action-fg"
+                >
                     <MapPin size={22} weight="fill" />
                 </span>
 
-                {inSetup ? (
-                    /*
-                        Rozet METİN taşır ve yanında bir ikon durur. Kaynak
-                        durumu yalnız renkle anlatıyor; renk tek başına bir
-                        işaret değildir (WCAG 2.2 §1.4.1) ve kırmızı-yeşil
-                        ayırt edemeyen bir sahip beş kart arasında hiçbir fark
-                        görmezdi.
+                {/*
+                    KÖŞEDE İKİ ROZET BİRDEN DURABİLİR ve sıraları bir
+                    ÖNCELİK kararıdır.
 
-                        Katalogdaki `Badge` BİLEREK kullanılmadı: bugün
-                        Flowbite'ın kendi sarı palet basamağını ve ölçek dışı
-                        bir yazı ağırlığını basıyor, yani jeton kökünü
-                        atlıyor. O bileşeni düzeltmek bu paketin işi değil;
-                        ama bu kart onun borcunu devralmak zorunda da değil.
-                    */
-                    <span className="absolute end-[var(--space-3)] top-[var(--space-3)] inline-flex items-center gap-[var(--space-1)] rounded-pill border border-warning bg-surface-warning px-[var(--space-3)] py-[var(--space-1)] text-body font-medium text-fg-warning">
-                        <Wrench size={16} weight="regular" />
-                        {t('workspace.locations.card.status.setup')}
-                    </span>
-                ) : null}
+                    "Kurulumda" ile "şu an açık" AYRI sorulardır ve ikisi de
+                    aynı anda doğru olabilir: sahip çalışma saatlerini girmiş
+                    ama masalarını henüz tanımlamamıştır. Birini diğerine
+                    feda etmek bilgi kaybı olurdu — kurulum rozeti gizlenseydi
+                    sahip şubesinin neden taranamadığını göremezdi.
+
+                    Kurulum ÖNCE gelir çünkü masası olmayan bir şubede misafir
+                    zaten karekod okutamaz; kapının o an açık olması orada
+                    henüz hiçbir şeyi değiştirmez. Sıra da bir cümledir:
+                    ekran okuyucu köşeyi soldan sağa okur ve önce yapılması
+                    gerekeni duyar.
+
+                    Sarmalayıcı, iki rozet 320 pikselde yan yana sığmadığında
+                    alt alta insin diye sarılabilir; hizası SONA (`end`)
+                    dayanır, böylece RTL'de de kartın dış kenarında kalır.
+                */}
+                <div className="absolute end-[var(--space-3)] top-[var(--space-3)] flex flex-wrap items-center justify-end gap-[var(--space-2)]">
+                    {inSetup ? (
+                        /*
+                            Rozet METİN taşır ve yanında bir ikon durur. Kaynak
+                            durumu yalnız renkle anlatıyor; renk tek başına bir
+                            işaret değildir (WCAG 2.2 §1.4.1) ve kırmızı-yeşil
+                            ayırt edemeyen bir sahip beş kart arasında hiçbir fark
+                            görmezdi.
+
+                            Katalogdaki `Badge` BİLEREK kullanılmadı: bugün
+                            Flowbite'ın kendi sarı palet basamağını ve ölçek dışı
+                            bir yazı ağırlığını basıyor, yani jeton kökünü
+                            atlıyor. O bileşeni düzeltmek bu paketin işi değil;
+                            ama bu kart onun borcunu devralmak zorunda da değil.
+                        */
+                        <span
+                            className={`${BADGE_CLASS} border-warning bg-surface-warning text-fg-warning`}
+                        >
+                            <Wrench aria-hidden="true" size={16} weight="regular" />
+                            {t('workspace.locations.card.status.setup')}
+                        </span>
+                    ) : null}
+
+                    {/*
+                        ŞU AN AÇIK MI (FF-148). `docs/109` §8.2'de bu rozet
+                        "iddiayı destekleyen alan yok" diye çizilmemişti;
+                        gerekçe düştü (§8.6). Cevabı SUNUCU verir ve kart onu
+                        yalnız çizer — tarayıcının saati kullanıcının kendi
+                        ayarıdır, şubenin saat dilimi ise sunucuda zaten
+                        biliniyor. Aynı marka, biri İstanbul'da biri
+                        Auckland'da iki şubeyi aynı anda farklı gösterebilir.
+
+                        `null`/eksik alan "söylenmemiş"tir ve rozet HİÇ
+                        çizilmez: ne "kapalı", ne "bilinmiyor". Bu kartın
+                        kuralı üç ölçüde de aynı — yalnız kanıtlanabilen
+                        söylenir.
+                    */}
+                    {openNow === null ? null : (
+                        <span
+                            data-testid="location-card-open-state"
+                            className={
+                                openNow
+                                    ? `${BADGE_CLASS} border-success bg-surface-success text-fg-success`
+                                    : `${BADGE_CLASS} border-border bg-surface-subtle text-fg-secondary`
+                            }
+                        >
+                            {openNow ? (
+                                <DoorOpen aria-hidden="true" size={16} weight="regular" />
+                            ) : (
+                                <Door aria-hidden="true" size={16} weight="regular" />
+                            )}
+                            {openNow
+                                ? t('workspace.locations.card.status.open')
+                                : t('workspace.locations.card.status.closed')}
+                        </span>
+                    )}
+                </div>
             </div>
 
             <div className="flex flex-col gap-[var(--space-3)] p-[var(--space-4)]">

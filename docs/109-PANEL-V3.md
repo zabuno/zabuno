@@ -81,14 +81,18 @@ ya doğar ya da neden doğmadığı yazılır.**
 
 11/11 tamamlandı, 1 iş aktif.
 
+Panel v3 kapsamı bitti. Bundan sonrası kaynağın çizdiği ekranları uygulamak
+değil, **o ekranların söylediği şeyi gerçekten yapabilmektir** — aşağıdaki
+§8.2 tablosu bunun listesidir ve satırlar veri geldikçe düşer.
+
 **Tamamlanan:** Home · Menüler (haplar hariç) · QR · Insights (+ zaman
 serisi) · Yayınlama (+ planla, telefonda önizle) · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar ·
 Ayarlar + Profil.
 
-**Aktif:** misafir tarafı — servis dışı saat.
+**Aktif:** şube kartında açık/kapalı rozeti.
 
-**Sırada:** —
+**Sırada:** menü haplarının sırası.
 
 Bölümler: Home · Menüler · QR · Insights · Yayınlama · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar.
@@ -223,7 +227,7 @@ olan her şey Profil'e, çalışma alanına ait olan Ayarlar'da.
 | CDN kartı / dağıtım ağı | Depoda CDN yok ve ölçülmüyor |
 | Dönüştürme ve CDN kotası | Ne sayaç ne sınır var |
 | ~~Mutfak rolü~~ | YAPILDI (FF-138): rol, izinleri, sunucu sınırı ve menü ekranındaki daraltma |
-| Şube "Açık" rozeti | İddiayı destekleyen alan yok; yalnız masası olmayan şubeye "Kurulumda" deniyor (bu bir olgu) |
+| ~~Şube "Açık" rozeti~~ | GEREKÇE DÜŞTÜ (FF-141): çalışma saati verisi var, misafir yüzeyi onu okuyor; rozet artık uydurma değil — FF-148 |
 | Menü satırında "kim ve ne zaman" | Menü satırı başına aktör/zaman kaydı yok |
 | Çalışma alanı: diller, özel alan adı, tehlikeli bölge | Çeviri deposu ve DNS akışı yok; tehlikeli bölge geri döndürülemez ve sahibin kararını ister |
 
@@ -272,3 +276,26 @@ Gövde artık sınırda doğrulanır. Geçersizse ekran **uydurmaz**: `categorie
 []` yazmak boş bir menü göstermek olurdu ve sahip ürünlerinin silindiğini
 sanırdı. Bunun yerine cevabı reddeder, kendi yükleme hatasını gösterir ve
 tazeleme yollarında ekranda duran ağacı ezmez.
+
+### 8.6 "Veri yok" bir kader değil, o günün durumudur
+
+§8.2 tablosu bu belgenin en çok yanlış okunan yeri oldu, o yüzden kuralı
+açıkça yazıyorum: oradaki her satır **o gün için** doğrudur ve satırın
+kendisi bir gerekçe taşır. Gerekçe düştüğünde satır da düşer.
+
+İki kez oldu ve ikisi de aynı biçimde:
+
+- **Mutfak rolü** "depoda karşılığı yok" diye çizilmemişti. Rol yazıldı,
+  satır düştü (FF-138).
+- **Şube "Açık" rozeti** "iddiayı destekleyen alan yok" diye çizilmemişti.
+  Oysa alan vardı: `location_opening_hours` doluydu, sahip panelden
+  giriyordu ve şube kartı bile okuyordu — yalnız kimse "şu an açık mı"
+  sorusunu sormamıştı. Misafir tarafı o soruyu sorunca (FF-141) gerekçe
+  kendiliğinden düştü (FF-148).
+
+Aradaki fark önemli: birincisinde yetenek YOKTU, ikincisinde yetenek VARDI
+ve kimse fark etmemişti. İkincisi daha tehlikelidir, çünkü "veri yok"
+cümlesi bir kez yazıldıktan sonra kimse geri dönüp bakmaz.
+
+Bu yüzden tablodaki bir satırı okuyan herkes şunu sormalı: *gerekçe bugün
+hâlâ doğru mu?* — "çizilmedi" bir karar değil, o günkü verinin sonucudur.

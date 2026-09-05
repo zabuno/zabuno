@@ -63,6 +63,14 @@ export const brandLocations = {
     // bitmemiştir; masası olan bir şubenin açık olduğunu söyleyen hiçbir alan
     // yoktur ve o iddia ekranda yazmaz.
     'workspace.locations.card.status.setup': 'In setup',
+    // ŞU AN AÇIK MI (FF-148). Gerekçe DÜŞTÜ: kapının açık olduğunu söyleyen
+    // alan artık VAR (`location_opening_hours`) ve cevabı sunucu, şubenin
+    // kendi saat diliminde veriyor. Rozet KELİME taşır — renk tek başına bir
+    // işaret değildir (WCAG 2.2 §1.4.1). "now" bilerek yazılıdır: bu bir
+    // tarife değil, o ANIN durumudur; tarife kartın saat satırında zaten var.
+    // Saati girilmemiş şubede hiçbiri çizilmez.
+    'workspace.locations.card.status.open': 'Open now',
+    'workspace.locations.card.status.closed': 'Closed now',
     // ÇALIŞMA SAATLERİ (`docs/109` §6.4). Kaynağın kartındaki üçüncü ölçü.
     // Hafta TEK TİPSE aralık koşulsuz yazılır — her gün doğrudur. Hafta
     // değişiyorsa tek bir aralık yalan olurdu; o zaman kart BUGÜNÜ söyler

@@ -6,6 +6,7 @@ namespace Tests\Feature\Tenancy;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -180,6 +181,41 @@ final class LocationOpeningHoursTest extends TestCase
             'timezone' => 'Europe/Istanbul',
             ...$extra,
         ];
+    }
+
+    /**
+     * Aynı markaya İKİNCİ bir şube açar.
+     *
+     * "Aynı anda birinde açık, birinde kapalı" iddiası ancak iki şube aynı
+     * listede yan yana dururken sınanabilir; tek şubeyle sınanan bir saat
+     * dilimi kuralı, listenin tamamı için tek bir "şu an"ın okunduğunu
+     * kanıtlamaz.
+     */
+    private function createLocation(User $owner, int $workspaceId, string $displayName): int
+    {
+        $response = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->postJson(
+                "/api/workspaces/{$workspaceId}/brand/locations",
+                $this->validLocationPayload($displayName),
+            );
+        $response->assertStatus(201);
+
+        return (int) $response->json('id');
+    }
+
+    /**
+     * Bir şubenin saat dilimini ve haftasını TEK istekle yazar.
+     *
+     * @param  list<array<string, mixed>>  $week
+     */
+    private function saveHours(User $owner, int $workspaceId, int $locationId, string $timezone, array $week): void
+    {
+        $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->putJson(
+                "/api/workspaces/{$workspaceId}/brand/locations/{$locationId}",
+                $this->updatePayload(['timezone' => $timezone, 'opening_hours' => $week]),
+            )
+            ->assertStatus(200);
     }
 
     // --- LOCATION-HOURS-01 -------------------------------------------------
@@ -487,5 +523,217 @@ final class LocationOpeningHoursTest extends TestCase
                 $this->updatePayload(['opening_hours' => $this->week()]),
             )
             ->assertStatus(404);
+    }
+
+    // --- LOCATION-OPEN-NOW-01..04 -----------------------------------------
+
+    /*
+        ŞU AN AÇIK MIYIZ — ŞUBE KARTININ CEVAPLAYAMADIĞI SORU (FF-148).
+
+        NEDEN KIRMIZI: `opening_hours` uçta duruyor ve kart onu ÖZETLİYOR
+        ("Today 09:00–23:00"), ama özet bir tarifedir, bir DURUM değildir.
+        Sahibin sorduğu soru "saatiniz kaçtan kaça" değil, "Kadıköy şu an
+        açık mı" — ve bugün bu sorunun uçta hiçbir karşılığı yok.
+
+        NEDEN CEVAP SUNUCUDAN GELİR
+        ---------------------------
+        Tarayıcının saati kullanıcının kendi ayarıdır: yanlış kurulmuş bir
+        dizüstü, açık bir şubeye "kapalı" dedirtirdi. Şubenin saat dilimi
+        ise zaten sunucuda (`locations.timezone`, `docs/62`) ve kapalılık
+        kuralı da orada (`WeeklyOpeningHours::isClosedAt`). Cevabı istemcide
+        yeniden hesaplamak İKİNCİ BİR HESAP kurmak olurdu; iki hesap bir gün
+        aynı şube için iki farklı cevap verir ve hangisinin doğru olduğu
+        ancak misafir kapalı kapıya dayandığında anlaşılır. Misafir yüzeyi
+        (`ResolveGuestMenuView::closedNoticeForMenu`) bu değer nesnesini
+        zaten kullanıyor; sahibin paneli de AYNI kaynağı kullanır.
+
+        NEDEN ÜÇ DEĞERLİ (`true` / `false` / `null`)
+        --------------------------------------------
+        `null` "söylenmemiş"tir ve `false` ile aynı şey DEĞİLDİR. Saatini hiç
+        girmemiş bir şubeye "kapalı" demek, sahibin hiç kurmadığı bir cümleyi
+        onun ağzından söylemek olurdu — aynı sessizlik kuralı misafir
+        tarafında da geçerli (`GuestOpeningHoursPort`).
+    */
+
+    /**
+     * AÇIK saatte `open_now` doğrudur.
+     *
+     * Sahibin yolculuğu: pazartesi öğlen 12:00, Kadıköy 09:00–23:00 çalışıyor.
+     * Şubeler ekranına baktığında kartın "şu an açık" demesi gerekir.
+     */
+    public function test_a_location_inside_its_hours_answers_open_now(): void
+    {
+        // 09:00 UTC = İstanbul'da pazartesi 12:00 — haftanın ortasında,
+        // 09:00–23:00 aralığının tam içinde.
+        Carbon::setTestNow(Carbon::parse('2026-09-07T09:00:00Z'));
+
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->seedWorkspaceWithLocation($owner, 'zeytin-open-now-01');
+
+        $this->saveHours($owner, $workspaceId, $locationId, 'Europe/Istanbul', $this->week());
+
+        $list = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations");
+        $list->assertStatus(200);
+
+        self::assertArrayHasKey(
+            'open_now',
+            (array) $list->json('0'),
+            'LOCATION-OPEN-NOW-01: liste ucu "şu an açık mı"yı taşımalı; kart bunu tarayıcı saatinden çıkaramaz.'
+        );
+        self::assertTrue(
+            $list->json('0.open_now'),
+            'LOCATION-OPEN-NOW-01: pazartesi 12:00, 09:00–23:00 aralığının içindedir.'
+        );
+
+        $show = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}");
+        $show->assertStatus(200);
+        self::assertTrue(
+            $show->json('open_now'),
+            'LOCATION-OPEN-NOW-01: tekil uç ile liste ucu aynı cevabı vermeli; iki uç ayrışırsa iki ekran ayrışır.'
+        );
+    }
+
+    /**
+     * KAPALI saatte `open_now` yanlıştır — ve "null" değildir.
+     *
+     * Sahibin yolculuğu: sabah 05:00'te panele bakıyor. Şube 09:00'da
+     * açılıyor; kart "kapalı" demeli, çünkü bu KANITLANABİLİR bir olgudur.
+     */
+    public function test_a_location_outside_its_hours_answers_closed_now(): void
+    {
+        // 02:00 UTC = İstanbul'da pazartesi 05:00 — açılıştan dört saat önce.
+        Carbon::setTestNow(Carbon::parse('2026-09-07T02:00:00Z'));
+
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->seedWorkspaceWithLocation($owner, 'zeytin-open-now-02');
+
+        $this->saveHours($owner, $workspaceId, $locationId, 'Europe/Istanbul', $this->week());
+
+        $list = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations");
+        $list->assertStatus(200);
+
+        self::assertFalse(
+            $list->json('0.open_now'),
+            'LOCATION-OPEN-NOW-02: 05:00, 09:00–23:00 aralığının dışındadır — kapalıyız.'
+        );
+        self::assertNotNull(
+            $list->json('0.open_now'),
+            'LOCATION-OPEN-NOW-02: "kapalı" bir cevaptır; sessizlikle karıştırılamaz.'
+        );
+    }
+
+    /**
+     * SAATİ GİRİLMEMİŞ şubede alan boştur — "kapalı" da yazılmaz.
+     *
+     * Sahibin yolculuğu: dün açtığı Bostancı şubesinin saatini henüz
+     * girmedi. Kart hiçbir durum rozeti çizmemeli. "Kapalı" demek, sahibin
+     * söylemediği bir cümleyi ekranda doğruymuş gibi göstermek; "bilinmiyor"
+     * demek ise boş bir rozetle yer kaplamak olurdu.
+     */
+    public function test_a_location_without_hours_never_claims_a_state(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-09-07T09:00:00Z'));
+
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->seedWorkspaceWithLocation($owner, 'zeytin-open-now-03');
+
+        $list = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations");
+        $list->assertStatus(200);
+
+        self::assertArrayHasKey(
+            'open_now',
+            (array) $list->json('0'),
+            'LOCATION-OPEN-NOW-03: alan HER ZAMAN bulunur; eksik alan istemciyi `undefined` okumaya bırakırdı.'
+        );
+        self::assertNull(
+            $list->json('0.open_now'),
+            'LOCATION-OPEN-NOW-03: saat girilmemişse cevap YOKTUR — `false` değil, `null`.'
+        );
+
+        $show = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}");
+        $show->assertStatus(200);
+        self::assertNull($show->json('open_now'));
+    }
+
+    /**
+     * AYNI ANDA iki şube, iki farklı cevap.
+     *
+     * Sahibin yolculuğu: markanın bir şubesi İstanbul'da, biri Auckland'da.
+     * Sahip İstanbul'dan bakıyor; saat gecenin 05:00'i. Kadıköy kapalı ama
+     * Auckland'da öğleden sonra 14:00 — orası açık. Sunucunun ya da
+     * tarayıcının saati kullanılsaydı iki kart AYNI durumu gösterirdi ve
+     * sahip, açık olan şubesini kapalı sanırdı.
+     *
+     * Tarih bilerek 2026-09-07: Yeni Zelanda yaz saati 27 Eylül'de başlar,
+     * yani o gün Auckland UTC+12'dir ve testin doğruluğu bir DST geçişine
+     * yaslanmaz.
+     */
+    public function test_two_locations_in_different_timezones_answer_differently_at_the_same_instant(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-09-07T02:00:00Z'));
+
+        $owner = $this->verifiedUser();
+        [$workspaceId, $istanbulId] = $this->seedWorkspaceWithLocation($owner, 'zeytin-open-now-04');
+        $aucklandId = $this->createLocation($owner, $workspaceId, 'Zeytin Auckland');
+
+        // İkisi de 09:00–23:00 çalışıyor: fark saatlerde değil, DÜNYADA.
+        $this->saveHours($owner, $workspaceId, $istanbulId, 'Europe/Istanbul', $this->week());
+        $this->saveHours($owner, $workspaceId, $aucklandId, 'Pacific/Auckland', $this->week());
+
+        $list = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations");
+        $list->assertStatus(200);
+
+        $byId = [];
+
+        foreach ((array) $list->json() as $row) {
+            $byId[(int) $row['id']] = $row;
+        }
+
+        self::assertFalse(
+            $byId[$istanbulId]['open_now'],
+            'LOCATION-OPEN-NOW-04: İstanbul 05:00 — kapalı.'
+        );
+        self::assertTrue(
+            $byId[$aucklandId]['open_now'],
+            'LOCATION-OPEN-NOW-04: Auckland 14:00 — açık. Aynı an, iki şube, iki cevap.'
+        );
+    }
+
+    /**
+     * GECE YARISINI AŞAN servis "kapalı" sayılmaz.
+     *
+     * Sahibin yolculuğu: cuma gecesi 18:00–02:00 çalışan bir mekân. Saat
+     * 01:00'de sahip panele bakıyor; salon dolu. Yalnız BUGÜNÜN satırına
+     * bakan bir hesap "kapalı" derdi — çünkü cumartesi 09:00'da açılıyor.
+     * Doğru cevap DÜNÜN aralığındadır ve `WeeklyOpeningHours` bunu zaten
+     * biliyor; bu test o bilginin uca kadar taşındığını sabitler.
+     */
+    public function test_a_service_that_crosses_midnight_still_counts_as_open(): void
+    {
+        // 22:00 UTC cuma = İstanbul'da CUMARTESİ 01:00.
+        Carbon::setTestNow(Carbon::parse('2026-09-11T22:00:00Z'));
+
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->seedWorkspaceWithLocation($owner, 'zeytin-open-now-05');
+
+        $this->saveHours($owner, $workspaceId, $locationId, 'Europe/Istanbul', $this->week([
+            // Cuma 18:00–02:00 → 1080 → 1560 (gece yarısı aşımı).
+            5 => ['day' => 5, 'closed' => false, 'opens_minute' => 1080, 'closes_minute' => 1560],
+        ]));
+
+        $show = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->getJson("/api/workspaces/{$workspaceId}/brand/locations/{$locationId}");
+        $show->assertStatus(200);
+
+        self::assertTrue(
+            $show->json('open_now'),
+            'LOCATION-OPEN-NOW-05: cumartesi 01:00, cumanın 18:00–02:00 servisinin İÇİNDEDİR.'
+        );
     }
 }

@@ -64,20 +64,18 @@ function tree(id: number, name: string, categoryName: string, productName: strin
     };
 }
 
+/*
+    SUNUCUNUN GÖNDERDİĞİ SIRA GÜNÜN AKIŞIDIR — oluşturma sırası değil.
+
+    Burada iki gerçek KASITLI OLARAK ayrışıyor: `sortOrder` ana menüde 0,
+    kahvaltıda 1 (ana menü önce kurulmuş), ama liste kahvaltıyla başlıyor
+    çünkü gün 07:00'de başlıyor. Yatıştırılmış bir kopya olsaydı — ikisi de
+    aynı yöne baksaydı — ekranın kendi başına sıralayıp sıralamadığını bu
+    dosya hiçbir zaman yakalayamazdı.
+*/
 function menuRows() {
     return {
         data: [
-            {
-                id: MAIN_MENU_ID,
-                name: 'Ana menü',
-                state: 'active',
-                sortOrder: 0,
-                startsAt: '11:00',
-                endsAt: '07:00',
-                windows: [{ startsAt: '11:00', endsAt: '07:00' }],
-                isServingNow: false,
-                isAddressAnchor: true,
-            },
             {
                 id: BREAKFAST_MENU_ID,
                 name: 'Kahvaltı',
@@ -88,6 +86,17 @@ function menuRows() {
                 windows: [{ startsAt: '07:00', endsAt: '11:00' }],
                 isServingNow: true,
                 isAddressAnchor: false,
+            },
+            {
+                id: MAIN_MENU_ID,
+                name: 'Ana menü',
+                state: 'active',
+                sortOrder: 0,
+                startsAt: '11:00',
+                endsAt: '07:00',
+                windows: [{ startsAt: '11:00', endsAt: '07:00' }],
+                isServingNow: false,
+                isAddressAnchor: true,
             },
         ],
     };
@@ -190,6 +199,32 @@ describe('Menüler ekranı — çoklu menü ve saat bazlı geçiş', () => {
         */
         expect(breakfast.textContent).toContain('open now');
         expect(main.textContent).not.toContain('open now');
+    });
+
+    it('hapları SUNUCUNUN sırasıyla çizer; kendi sıralamasını yapmaz', async () => {
+        stubFetch([]);
+        await renderWorkspace();
+
+        await within(pills()).findByRole('button', { name: /Kahvaltı/ });
+
+        /*
+            SIRALAMA TEK YERDE: SUNUCUDA.
+
+            Ekran da sıralasaydı iki gerçek doğardı ve bir gün ayrışırlardı —
+            aynı liste yarın bir başka tüketiciye (misafir yüzeyi, karekod
+            sayfası) gittiğinde sıra orada başka türlü çıkardı. Bu yüzden
+            ekranın işi sunucunun sırasını AYNEN çizmektir.
+
+            `sortOrder` burada tam ters yönde duruyor; ekran ona göre bir
+            sıralama yapsaydı bu bekleyiş kırılırdı.
+        */
+        const order = within(pills())
+            .getAllByRole('button')
+            // "+" ve "Menüyü düzenle" hap değildir: seçilebilir olan `aria-pressed` taşır.
+            .filter((button) => button.getAttribute('aria-pressed') !== null)
+            .map((pill) => pill.firstElementChild?.textContent ?? '');
+
+        expect(order).toEqual(['Kahvaltı', 'Ana menü']);
     });
 
     it('hapa basmak O MENÜNÜN kategorilerini ve ürünlerini GERÇEKTEN getirir', async () => {
