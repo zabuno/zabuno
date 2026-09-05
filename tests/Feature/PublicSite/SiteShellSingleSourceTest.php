@@ -131,11 +131,18 @@ final class SiteShellSingleSourceTest extends TestCase
 
     public function test_a_published_registry_page_wears_the_same_shell_as_a_live_page(): void
     {
-        $this->registryPage('/tr/urun/menu-yonetimi/', PagePublicationStatus::Published);
+        /*
+            "Yayında" tek başına 200 vermez: kütükteki durum ileri sürülmüş ama
+            içerik kütüphanesinde karşılığı olmayan sayfa 404 kalır (son
+            emniyet kemeri, `ShowCorporatePageController`). Bu yüzden burada
+            GERÇEKTEN içeriği olan sayfa kullanılır: `urun.qr-menu` / `en`.
+        */
+        $this->registryPage('/en/product/', PagePublicationStatus::Planned, 'urun', 'en');
+        $this->registryPage('/en/product/qr-menu/', PagePublicationStatus::Published, 'urun.qr-menu', 'en');
 
         self::assertSame(
-            $this->chrome($this->body('/pricing', 200, ['Accept-Language' => 'tr'])),
-            $this->chrome($this->body('/tr/urun/menu-yonetimi/')),
+            $this->chrome($this->body('/pricing', 200, ['Accept-Language' => 'en'])),
+            $this->chrome($this->body('/en/product/qr-menu/')),
             'SHELL-SINGLE-SOURCE-03: yayınlanmış kurumsal sayfa başka bir kabuk giyiyor.'
         );
     }
@@ -165,11 +172,11 @@ final class SiteShellSingleSourceTest extends TestCase
 
     // --- Yardımcılar -----------------------------------------------------------
 
-    private function registryPage(string $path, PagePublicationStatus $status): ContentPage
+    private function registryPage(string $path, PagePublicationStatus $status, ?string $pageKey = null, string $locale = 'tr'): ContentPage
     {
         return ContentPage::query()->create([
-            'page_key' => trim(str_replace('/', '.', $path), '.'),
-            'locale' => 'tr',
+            'page_key' => $pageKey ?? trim(str_replace('/', '.', $path), '.'),
+            'locale' => $locale,
             'canonical_path' => $path,
             'content_type' => 'urun',
             'template_key' => 'urun',
@@ -236,6 +243,9 @@ final class SiteShellSingleSourceTest extends TestCase
         foreach ($this->bladeFiles() as $relative => $contents) {
             $isCorporate = (str_starts_with($relative, 'public/') || str_starts_with($relative, 'content/'))
                 && ! str_contains($relative, '/partials/')
+                // İçerik blokları SAYFA değil PARÇADIR: `content/page.blade.php`
+                // tarafından @include edilir; kabuğu o sayfa giyer, parça değil.
+                && ! str_starts_with($relative, 'content/blocks/')
                 && $relative !== 'public/layout.blade.php';
 
             if ($isCorporate) {

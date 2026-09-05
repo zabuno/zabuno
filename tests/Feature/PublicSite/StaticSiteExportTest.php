@@ -137,12 +137,16 @@ final class StaticSiteExportTest extends TestCase
     public function test_only_pages_that_really_render_are_exported(): void
     {
         $this->registryPage('/tr/urun/', PagePublicationStatus::Planned);
-        $this->registryPage('/tr/cozumler/', PagePublicationStatus::Published);
+        // "Yayında" tek başına yetmez; içerik kütüphanesinde karşılığı olan
+        // sayfa gerçekten çizilir (`urun.qr-menu` / `en`). İçeriksiz bir
+        // "yayında" kaydı 404 gövdesidir ve önizlemeye girmemelidir.
+        $this->registryPage('/en/product/', PagePublicationStatus::Planned, 'urun', 'en');
+        $this->registryPage('/en/product/qr-menu/', PagePublicationStatus::Published, 'urun.qr-menu', 'en');
 
         $this->export();
 
         self::assertFileExists(
-            $this->out.'/tr/cozumler/index.html',
+            $this->out.'/en/product/qr-menu/index.html',
             'STATIC-EXPORT-04: yayınlanmış kurumsal sayfa önizlemede yok.'
         );
         self::assertFileDoesNotExist(
@@ -166,11 +170,11 @@ final class StaticSiteExportTest extends TestCase
 
     // --- Yardımcılar -----------------------------------------------------------
 
-    private function registryPage(string $path, PagePublicationStatus $status): ContentPage
+    private function registryPage(string $path, PagePublicationStatus $status, ?string $pageKey = null, string $locale = 'tr'): ContentPage
     {
         return ContentPage::query()->create([
-            'page_key' => trim(str_replace('/', '.', $path), '.'),
-            'locale' => 'tr',
+            'page_key' => $pageKey ?? trim(str_replace('/', '.', $path), '.'),
+            'locale' => $locale,
             'canonical_path' => $path,
             'content_type' => 'urun',
             'template_key' => 'urun',
