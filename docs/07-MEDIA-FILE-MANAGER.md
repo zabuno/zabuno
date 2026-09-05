@@ -11,7 +11,7 @@
 | Görsel işleme | Intervention Image | kanıtlanmış |
 | Depolama soyutlama | Flysystem — local **default**, S3 **opsiyonel** | kanıtlanmış (Flysystem), local-default kararı proje kararı |
 | Optimizasyon | Spatie Image Optimizer | koşullu (host'ta binary'lerin var olması şart, bkz. `docs/15` kapasite matrisi) |
-| Quarantine/malware-scan adaptörü | Local scanner binary (örn. ClamAV) **veya** harici tarama servisi — hangisi seçileceği kapasite/maliyet/gizlilik değerlendirmesine bağlı | koşullu — deneysel (henüz seçilmedi, `docs/16` MED-03) |
+| Quarantine/malware-scan adaptörü | ClamAV — daemon ayrı `clamav` konteynerinde, uygulamada yalnız `clamdscan` istemcisi (`docs/42`, DEPLOY-MALWARE-SCAN-12, 2026-09-05). Shared-host'ta binary yoksa asset karantinada kalır (fail-closed) | seçildi ve kuruldu (`docs/16` MED-03 Docker topolojisi için kapandı; shared-host için açık) |
 
 Bu altısı "kurulu" değildir — hiçbiri Composer'a eklenmemiş veya sunucuya
 kurulmamıştır (quarantine/malware-scan adaptörü bir Composer paketi olmayabilir,

@@ -80,8 +80,13 @@ RUN composer install \
 # --- 4) Çalışma zamanı -----------------------------------------------------
 FROM php-base AS runtime
 
+# `clamdscan` — virüs tarayıcının İNCE İSTEMCİSİ (DEPLOY-MALWARE-SCAN-12).
+# Daemon ve imza veritabanı bu imaja GİRMEZ; onlar compose'daki `clamav`
+# servisinde yaşar. Buraya yalnız soketten konuşan istemci girer, birkaç
+# megabayttır. `clamav-daemon` ya da `clamav-freshclam` eklenmez.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends nginx supervisor curl \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        nginx supervisor curl clamdscan \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -122,7 +127,13 @@ COPY --from=assets /build/resources/js/i18n/generated ./resources/js/i18n/genera
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/zabuno.conf
 COPY docker/entrypoint.sh /usr/local/bin/zabuno-entrypoint
-RUN chmod +x /usr/local/bin/zabuno-entrypoint \
+# Tarama sarmalayıcısı: compose'un `MEDIA_SCANNER_CLAMAV_BINARY_PATH`
+# varsayılanı tam bu yoldur; iki uç aynı yolu söylemek zorunda. Çalıştırma
+# biti açıkça verilir — adaptör `is_executable` ile bakar ve kapalıysa
+# hiçbir dosyayı ilerletmez.
+COPY docker/zabuno-scan /usr/local/bin/zabuno-scan
+COPY docker/clamd.client.conf /etc/clamav/zabuno-clamd.conf
+RUN chmod +x /usr/local/bin/zabuno-entrypoint /usr/local/bin/zabuno-scan \
     && chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 8080

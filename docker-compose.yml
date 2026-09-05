@@ -33,6 +33,13 @@ services:
         depends_on:
             db:
                 condition: service_healthy
+            # `service_started`, `service_healthy` DEĞİL: daemon imzaları
+            # yüklerken bir iki dakika sağlıksız görünür ve uygulama onu
+            # beklemek zorunda değil — tarayıcı yokken yükleme zaten
+            # fail-closed tutulur (`docs/76`). Sitenin açılması, virüs
+            # tarayıcının hazır olmasına bağlanmamalı.
+            clamav:
+                condition: service_started
         environment:
             APP_ENV: production
             APP_DEBUG: 'false'
@@ -70,6 +77,24 @@ services:
             CACHE_STORE: database
             QUEUE_CONNECTION: database
 
+            # VİRÜS TARAYICI konteynere GEÇMELİ — DEPLOY-MALWARE-SCAN-12.
+            #
+            # 2026-09-05'e kadar bu satırlar yoktu ve sürücü `unavailable`
+            # kalıyordu: yüklenen hiçbir fotoğraf işlenmiyor, hiçbir PDF
+            # açılmıyordu. Ürün dürüsttü — dosyayı tutup sebebini yazıyordu
+            # — ama sahip menüsüne fotoğraf koyamıyordu. Tarama isteğin
+            # içinde senkron koşar; tarayıcı bu konteynerden çağrılabilir
+            # olmak zorunda. İkili, imajdaki ince istemcinin sarmalayıcısı
+            # (`docker/zabuno-scan`); daemon ayrı `clamav` servisindedir.
+            #
+            # Varsayılan AÇIK: kapatmak sunucunun `.env`'inde bilinçli bir
+            # karar olsun, unutulmuş bir satır değil. Zaman aşımı adaptörün
+            # 10 saniyelik varsayılanından yüksek: 50 MB'lık bir dosya önce
+            # sokete akıtılır, sonra taranır.
+            MEDIA_SCANNER_DRIVER: ${MEDIA_SCANNER_DRIVER:-clamav}
+            MEDIA_SCANNER_CLAMAV_BINARY_PATH: ${MEDIA_SCANNER_CLAMAV_BINARY_PATH:-/usr/local/bin/zabuno-scan}
+            MEDIA_SCANNER_CLAMAV_TIMEOUT_SECONDS: ${MEDIA_SCANNER_CLAMAV_TIMEOUT_SECONDS:-30}
+
             # POSTA KANALI konteynere GEÇMELİ — `docs/93` (P0-06).
             #
             # `.env` üretimde konteynerin İÇİNDE yaşamaz; değerler yalnız
@@ -98,6 +123,32 @@ services:
             - app-storage:/var/www/html/storage/app
         networks: [internal, web]
 
+    clamav:
+        # VİRÜS TARAYICI DAEMON'U — DEPLOY-MALWARE-SCAN-12.
+        #
+        # Ayrı bir servis, çünkü imza veritabanı bellekte yaşar (yaklaşık
+        # 1,2 GB) ve günde bir kez yenilenir. Uygulama imajına gömülseydi
+        # her deploy daemon'u yeniden başlatır ve imzaları yeniden yüklerdi;
+        # ayrıca uygulama konteyneri "sıfır süreç durumu" ilkesini
+        # kaybederdi. Uygulama yalnız ince istemciyi taşır ve dosyayı
+        # buraya soketten akıtır (`docker/zabuno-scan`).
+        #
+        # Sürüm SABİT (`stable` değil): imza formatı ya da sürüm atlaması
+        # uygulamanın haberi olmadan gelmesin. Resmî imaj freshclam'i de
+        # çalıştırır; ayrı bir cron gerekmez.
+        image: clamav/clamav:1.4
+        restart: unless-stopped
+        volumes:
+            # Varsayılan `StreamMaxLength`/`MaxFileSize` 25 MB'dir; uygulama
+            # 50 MB kabul eder. Deploy bu dosyayı `docker/` altına gönderir.
+            - ./docker/clamd.conf:/etc/clamav/clamd.conf:ro
+            # İmzalar kalıcı: her yeniden başlatmada 250 MB indirmek,
+            # freshclam hız sınırına takılmanın en hızlı yoludur.
+            - clamav-db:/var/lib/clamav
+        # Hiçbir port yayımlanmaz. `internal` uygulamayla konuşmak için,
+        # `web` imza güncellemesi için: `internal: true` ağın interneti yok.
+        networks: [internal, web]
+
     proxy:
         image: caddy:2-alpine
         restart: unless-stopped
@@ -119,6 +170,7 @@ volumes:
     db-data:
     db-backups:
     app-storage:
+    clamav-db:
     caddy-data:
     caddy-config:
 

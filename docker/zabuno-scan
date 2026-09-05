@@ -1,0 +1,20 @@
+#!/bin/sh
+# Zabuno virüs tarama sarmalayıcısı — `MEDIA_SCANNER_CLAMAV_BINARY_PATH`
+# buraya işaret eder.
+#
+# Adaptör (`ClamavMalwareScanner`) tek bir ikiliyi `--no-summary <dosya>`
+# ile çağırır ve çıkış koduna bakar: 0 temiz, 1 bulaşık, gerisi belirsiz.
+# `clamdscan` aynı kodları verir; bu sarmalayıcı yalnız iki şey ekler:
+#
+#   --stream       Dosyanın baytları daemon'a soketten akıtılır. Daemon
+#                  başka bir konteynerdedir ve bu konteynerin diskini
+#                  göremez; yol gönderilseydi her dosya "açılamadı" alırdı.
+#   --config-file  Daemon'un adresi (`clamav:3310`). Yerel soket denenmez.
+#
+# Argümanlar ve çıkış kodu DOKUNULMADAN geçer; `exec` araya ikinci bir
+# süreç koymaz, adaptörün zaman aşımı doğrudan `clamdscan`'i keser.
+#
+# Düz `clamscan` bilinçli olarak SEÇİLMEDİ: her çağrıda imza veritabanını
+# sıfırdan yükler, on saniyeyi ve bir gigabaytı aşar, adaptörün zaman
+# aşımına takılır ve her dosya yine "belirsiz" kalırdı.
+exec clamdscan --stream --config-file=/etc/clamav/zabuno-clamd.conf "$@"

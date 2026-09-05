@@ -167,7 +167,11 @@ jobs:
           # dosya orada olmalı. Yalnız taban gönderilseydi, override
           # deploy anında yok olur ve site 502'ye düşerdi.
           scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker-compose*.yml "$DEPLOY_TARGET:$DEPLOY_DIR/"
-          scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker/Caddyfile "$DEPLOY_TARGET:$DEPLOY_DIR/docker/"
+          # Compose'un `./docker/...` ile bağladığı HER dosya burada
+          # olmalı; eksik kalan dosyanın yerinde Docker boş bir DİZİN
+          # yaratır. `clamd.conf` tarayıcı daemon'unun yapılandırmasıdır
+          # (DEPLOY-MALWARE-SCAN-12).
+          scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker/Caddyfile docker/clamd.conf "$DEPLOY_TARGET:$DEPLOY_DIR/docker/"
 
       # İmaj, dosya olarak DEĞİL akış olarak gider: runner'da sıkıştırılır,
       # sunucuda açılıp doğrudan `docker load`'a verilir. Diske hiç yazılmaz,

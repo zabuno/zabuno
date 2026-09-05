@@ -12,7 +12,8 @@ Owner kararı (2026-08-27): Faz 2'den önce deploy edilecek. Birincil hedef
 | Web sunucusu | `docker/nginx.conf` | php-fpm önünde; varlıklara uzun önbellek, gizli dosyalara ret |
 | Süreç yöneticisi | `docker/supervisord.conf` | nginx + php-fpm tek konteynerde, ikisi de yeniden başlar |
 | Açılış | `docker/entrypoint.sh` | DB bekler → migrasyon → önbellek ısıtma → servis |
-| Yığın | `docker-compose.yml` | `db` + `app` + `proxy`, üç ağ kuralı |
+| Yığın | `docker-compose.yml` | `db` + `app` + `clamav` + `proxy`, üç ağ kuralı |
+| Virüs tarayıcı | `docker/clamd.conf`, `docker/clamd.client.conf`, `docker/zabuno-scan` | Daemon ayrı `clamav` servisinde (imzalar bellekte, ~1,2 GB); uygulama imajında yalnız ince istemci; dosya soketten akıtılır. Düz `clamscan` her çağrıda veritabanını yükleyip zaman aşımına takılacağı için seçilmedi. Kapı: `MalwareScanTransportTest` |
 | Topoloji katmanları | `docker-compose.local.yml`, `docker-compose.edge-proxy.yml` | Aynı yığın, farklı ortam: geliştirici makinesi ve hazır vekil arkası |
 | HTTPS | `docker/Caddyfile` | Sertifikayı Caddy alır ve yeniler |
 | Yayın akışı | `.github/workflows/deploy.yml` | CI geçince tetiklenir; imajı derler, SSH ile aktarır, yayına alır, sağlık kontrolü yapar |
