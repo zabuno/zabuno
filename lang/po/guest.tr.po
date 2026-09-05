@@ -52,6 +52,22 @@ msgstr "Yayınlanan menü — güncel yayınlanmış sürüm gösteriliyor."
 msgid "guest.menu.summary"
 msgstr "Kategori: {categories} · Ürün: {items}"
 
+#: guest:guest.outOfService.body
+msgid "guest.outOfService.body"
+msgstr "Bu menü şu anda servis edilmiyor. Restoran personeline sorabilirsiniz; size şu an nelerin olduğunu söyleyebilirler."
+
+#: guest:guest.outOfService.heading
+msgid "guest.outOfService.heading"
+msgstr "Bu saatte servis edilen menü yok"
+
+#: guest:guest.outOfService.nextService
+msgid "guest.outOfService.nextService"
+msgstr "Sonraki servis {clock} itibarıyla başlıyor."
+
+#: guest:guest.outOfService.title
+msgid "guest.outOfService.title"
+msgstr "Menü şu anda servis dışı"
+
 #: guest:guest.print.scanForMenu
 msgid "guest.print.scanForMenu"
 msgstr "Menü için okutun"

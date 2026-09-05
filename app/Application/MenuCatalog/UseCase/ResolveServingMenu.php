@@ -43,6 +43,55 @@ final class ResolveServingMenu
         return $this->forLocation($locationId) ?? $addressedMenuId;
     }
 
+    /**
+     * ŞUBENİN SAATİYLE, şu andan sonraki geçişler — sırayla, çemberi bir tur.
+     *
+     * Yalnız "şu an hangi menü" yetmiyor: servis edilmesi gereken menünün
+     * gösterilebilir bir yayını yoksa misafire söylenecek dürüst cümlenin
+     * ikinci yarısı "ne zaman yeniden" olur. O saat UYDURULAMAZ; ancak
+     * sahibin kendi yazdığı geçişlerden okunabilir. Bu yüzden burası ham
+     * listeyi verir ve hangi menünün gösterilebilir olduğuna KARAR VERMEZ —
+     * yayın durumu bu katmanın bilgisi değildir.
+     *
+     * Saat, şubenin kendi saat dilimindedir (`locations.timezone`): Berlin'deki
+     * şubeye İstanbul'un saatini söylemek, misafiri bir saat erken ya da geç
+     * masaya oturturdu.
+     *
+     * @return list<array{menuId:int,clock:string}>
+     */
+    public function upcomingSwitchesForMenu(int $addressedMenuId): array
+    {
+        $locationId = $this->schedule->locationIdForMenu($addressedMenuId);
+
+        if ($locationId === null) {
+            return [];
+        }
+
+        $switches = $this->schedule->switchesForLocation($locationId);
+
+        if ($switches === []) {
+            return [];
+        }
+
+        try {
+            $timeline = ServiceDayTimeline::fromSwitches($switches);
+        } catch (InvalidArgumentException) {
+            // Bozuk veri misafire yanlış bir saat söyletmez: hiç saat
+            // söylememek, olmayan bir servisi vaat etmekten iyidir.
+            return [];
+        }
+
+        $localNow = Carbon::now($this->schedule->timezoneForLocation($locationId));
+
+        return array_map(
+            static fn (array $entry): array => [
+                'menuId' => $entry['menuId'],
+                'clock' => ServiceDayTimeline::clockFromMinute($entry['startMinute']),
+            ],
+            $timeline->switchesFrom($localNow->hour * 60 + $localNow->minute),
+        );
+    }
+
     /** Şubede şu an servis edilen menü; hiç menü yoksa `null`. */
     public function forLocation(int $locationId): ?int
     {

@@ -7,7 +7,9 @@ namespace Tests\Feature\MenuCatalog;
 use App\Application\MenuCatalog\Exception\LastMenuForLocationException;
 use App\Application\MenuCatalog\Port\MenuSchedulePort;
 use App\Application\MenuCatalog\UseCase\ResolveServingMenu;
+use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Domain\MenuCatalog\ServiceDayTimeline;
+use App\Domain\Publication\MenuPublicAddress;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -270,6 +272,176 @@ final class MenuServiceWindowCoverageTest extends TestCase
             $mainId,
             $this->resolver()->forMenu($mainId),
             'LOCATION-TIMEZONE-01: geçiş ŞUBENİN saatinde olmalı.'
+        );
+    }
+
+    /*
+    |---------------------------------------------------------------------------
+    | MİSAFİR TARAFI (FF-139)
+    |---------------------------------------------------------------------------
+    |
+    | Yukarıdaki testler kuralın İÇ tarafını dondurur: hangi dakikada hangi
+    | menü. Aşağıdakiler misafirin GÖZÜNÜ dondurur: karekodu okutan kişi o
+    | saatte ekranda ne buluyor.
+    |
+    | İkisi ayrı sorulardır ve ayrı ayrı kırılabilir. Çözümleyici doğru menüyü
+    | seçse bile, o menünün YAYINI yoksa misafir yine bir şey göremez — ve
+    | gördüğü şeyin dürüst olup olmadığı yalnız HTTP ucunda ölçülebilir.
+    */
+
+    /** Şubenin kalıcı genel adresini (`public_key`) çözer. */
+    private function addressFor(string $key): MenuPublicAddress
+    {
+        $address = app(PublicMenuAddressPort::class)->findByPublicKey($key);
+
+        self::assertNotNull($address, 'Test öncülü: adresin çözülebilmesi gerekiyor.');
+
+        return MenuPublicAddress::fromKeyAndSlug($address['key'], $address['slug'], $address['locale']);
+    }
+
+    // --- GUEST-SERVING-MENU-01 ---------------------------------------------
+
+    public function test_the_public_address_shows_the_menu_that_is_being_served_right_now(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'guest-serving');
+        $key = $this->newPublicKey();
+        $mainId = $this->insertMenu($workspaceId, $locationId, 'Ana menü', $key, 0);
+        $breakfastId = $this->insertMenu($workspaceId, $locationId, 'Kahvaltı', null, 1);
+
+        $this->publishMenu($workspaceId, $locationId, $mainId, (int) $owner->id, 'Ana yemekler', [
+            ['menuItemId' => 101, 'productName' => 'Adana Kebap', 'priceMinorAmount' => 32000, 'currencyCode' => 'TRY'],
+        ]);
+        $this->publishMenu($workspaceId, $locationId, $breakfastId, (int) $owner->id, 'Kahvaltılıklar', [
+            ['menuItemId' => 202, 'productName' => 'Menemen', 'priceMinorAmount' => 18000, 'currencyCode' => 'TRY'],
+        ]);
+
+        $this->schedule()->setServiceWindow($workspaceId, $mainId, 0, 0);
+        $this->schedule()->setServiceWindow($workspaceId, $breakfastId, 7 * 60, 11 * 60);
+
+        $path = $this->addressFor($key)->path();
+
+        $this->nowAt('08:00');
+        $morning = $this->get($path);
+        $morning->assertStatus(200);
+        $morning->assertSee('Menemen', false);
+        $morning->assertDontSee('Adana Kebap', false);
+
+        $this->nowAt('13:00');
+        $noon = $this->get($path);
+        $noon->assertStatus(200);
+        $noon->assertSee('Adana Kebap', false);
+        // Aynı adres, aynı basılı kâğıt: değişen tek şey saat.
+        $noon->assertDontSee('Menemen', false);
+    }
+
+    // --- GUEST-OUT-OF-SERVICE-01 -------------------------------------------
+
+    public function test_a_guest_who_arrives_while_the_served_menu_has_no_published_content_is_told_the_truth(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'guest-out-of-service');
+        $key = $this->newPublicKey();
+        $mainId = $this->insertMenu($workspaceId, $locationId, 'Ana menü', $key, 0);
+        // Gece menüsü TANIMLI ve SAATLİ ama HİÇ YAYINLANMAMIŞ. Sahip onu
+        // rotasyona koydu, içeriğini doldurmayı yarına bıraktı.
+        $nightId = $this->insertMenu($workspaceId, $locationId, 'Gece menüsü', null, 1);
+
+        $this->publishMenu($workspaceId, $locationId, $mainId, (int) $owner->id, 'Ana yemekler', [
+            ['menuItemId' => 101, 'productName' => 'Adana Kebap', 'priceMinorAmount' => 32000, 'currencyCode' => 'TRY'],
+        ]);
+
+        $this->schedule()->setServiceWindow($workspaceId, $mainId, 0, 0);
+        $this->schedule()->setServiceWindow($workspaceId, $nightId, 22 * 60, 2 * 60);
+
+        $path = $this->addressFor($key)->path();
+
+        $this->nowAt('23:00');
+        $response = $this->get($path);
+
+        /*
+            DÜRÜST DURUM. Misafir masada oturuyor ve restoran yerinde
+            duruyor; ona "menü bulunamadı" demek YALANDIR — menü var, o saatte
+            servis edilmiyor. Boş bir menü göstermek ise daha kötüsüdür:
+            restoranın menüsünü sildiğini sandırır.
+        */
+        $response->assertStatus(
+            200,
+            'GUEST-OUT-OF-SERVICE-01: geçerli bir adres, servis dışı saatte çıkmaz sokağa düşmemeli.'
+        );
+        $response->assertSee('data-guest-state="out-of-service"', false);
+
+        /*
+            SONRAKİ SERVİS SAATİ GERÇEK VERİDEN gelir: gece menüsü 02:00'de
+            biter ve yayınlanmış ana menü geri gelir. Uydurulmuş bir saat
+            yazmaktansa hiç yazmamak gerekir; burada gerçek bir saat VAR.
+        */
+        $response->assertSee('02:00', false);
+        $response->assertDontSee('Adana Kebap', false);
+    }
+
+    // --- GUEST-OUT-OF-SERVICE-UNIFORM-404-01 -------------------------------
+
+    public function test_a_location_with_nothing_published_at_all_stays_an_indistinguishable_dead_end(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'guest-nothing-published');
+        $key = $this->newPublicKey();
+        $mainId = $this->insertMenu($workspaceId, $locationId, 'Ana menü', $key, 0);
+
+        $this->schedule()->setServiceWindow($workspaceId, $mainId, 0, 0);
+
+        $path = $this->addressFor($key)->path();
+
+        $this->nowAt('12:00');
+
+        /*
+            QR-PUBLIC-404-UNIFORM-01 KORUNUR. Dürüst "servis dışı" sayfası
+            yalnız ZATEN 200 dönen bir adres için açılır: çıpa menüsü
+            yayınlanmışsa o adres başka bir saatte nasılsa sayfa gösteriyor,
+            dolayısıyla bu sayfa saldırgana yeni bir bilgi vermez.
+
+            Hiç yayını olmayan bir adres ise bugün olduğu gibi bilinmeyen bir
+            anahtardan AYIRT EDİLEMEZ kalır; ayırt edilebilseydi, hangi
+            anahtarların var olduğu ölçülebilir olurdu.
+        */
+        $this->get($path)->assertStatus(404);
+        $this->get('/restoran/menu/'.$this->newPublicKey())->assertStatus(404);
+    }
+
+    // --- GUEST-ITEM-SERVING-01 ---------------------------------------------
+
+    public function test_a_dish_of_the_currently_served_menu_opens_instead_of_a_dead_end(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId] = $this->workspaceWithLocation($owner, 'guest-item-serving');
+        $key = $this->newPublicKey();
+        $mainId = $this->insertMenu($workspaceId, $locationId, 'Ana menü', $key, 0);
+        $breakfastId = $this->insertMenu($workspaceId, $locationId, 'Kahvaltı', null, 1);
+
+        $this->publishMenu($workspaceId, $locationId, $mainId, (int) $owner->id, 'Ana yemekler', [
+            ['menuItemId' => 101, 'productName' => 'Adana Kebap', 'priceMinorAmount' => 32000, 'currencyCode' => 'TRY'],
+        ]);
+        $this->publishMenu($workspaceId, $locationId, $breakfastId, (int) $owner->id, 'Kahvaltılıklar', [
+            ['menuItemId' => 202, 'productName' => 'Menemen', 'priceMinorAmount' => 18000, 'currencyCode' => 'TRY'],
+        ]);
+
+        $this->schedule()->setServiceWindow($workspaceId, $mainId, 0, 0);
+        $this->schedule()->setServiceWindow($workspaceId, $breakfastId, 7 * 60, 11 * 60);
+
+        $itemPath = $this->addressFor($key)->itemPath(202, 'Menemen');
+
+        $this->nowAt('08:00');
+
+        /*
+            Ürün sayfası menü sayfasının BAĞLANTI HEDEFİDİR. Menü sayfası
+            saate göre kahvaltıyı gösterip ürün sayfası çıpa menüsüne baksaydı,
+            misafirin kendi ekranındaki her bağlantı çıkmaz sokağa giderdi —
+            ve bu yalnız kahvaltı saatinde olurdu, yani sahibi hiç görmezdi.
+        */
+        $this->get($itemPath)->assertStatus(
+            200,
+            'GUEST-ITEM-SERVING-01: servis edilen menünün ürünü açılmalı.'
         );
     }
 }

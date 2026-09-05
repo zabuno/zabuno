@@ -5208,6 +5208,14 @@ msgstr "Confirm remove"
 msgid "workspace.team.members.remove.error"
 msgstr "Unable to remove this member. Please try again."
 
+#: workspace:workspace.team.members.remove.forbidden
+msgid "workspace.team.members.remove.forbidden"
+msgstr "Only the workspace owner can remove people from the team. Ask the owner to do it."
+
+#: workspace:workspace.team.members.remove.missing
+msgid "workspace.team.members.remove.missing"
+msgstr "This person is no longer in the team list."
+
 #: workspace:workspace.team.members.remove.retry
 msgid "workspace.team.members.remove.retry"
 msgstr "Retry"

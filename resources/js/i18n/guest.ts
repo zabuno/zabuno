@@ -70,6 +70,29 @@ export const guestTranslations = {
     'guest.deadEnd.body':
         'The QR code is not linked to a menu. Please tell the restaurant staff; they can get you the current menu.',
     /*
+        SERVİS DIŞI SAAT (FF-139) — ÇIKMAZ SOKAKTAN AYRI CÜMLELER.
+
+        Sahip bir gece menüsü tanımlayıp saatini verebilir ama içeriğini
+        yayınlamamış olabilir. O saatte misafire "menü bulunamadı" demek
+        yalandır: menü duruyor, o saatte servis edilmiyor. Boş bir menü
+        göstermek daha da kötüdür — restoranın menüsünü sildiğini sandırır.
+
+        Metin bir SÖZ VERMEZ: restoranın açık olup olmadığını bilmiyoruz ve
+        bilmediğimizi yazmayız. Yalnız ekranda olanı ve personele
+        sorulabileceğini söyler.
+    */
+    'guest.outOfService.title': 'Menu is out of service',
+    'guest.outOfService.heading': 'No menu is being served at this hour',
+    'guest.outOfService.body':
+        'This menu is not being served right now. Please ask the restaurant staff; they can tell you what is available.',
+    /*
+        SAAT GERÇEK VERİDİR. Sahibin kendi yazdığı geçişlerden okunur ve
+        gösterilebilir bir sonraki menü yoksa bu cümle HİÇ kurulmaz. Tahmini
+        bir saat yazmak, tutulmayacak bir söz vermek olurdu.
+    */
+    'guest.outOfService.nextService': 'Next service starts at {clock}.',
+
+    /*
         BASILI KARTIN ÜSTÜNDEKİ CÜMLE (`docs/104` Döngü 8).
 
         Bu metin ekranda değil, masadaki kartta yaşar ve onu okuyan kişi

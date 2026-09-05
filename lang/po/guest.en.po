@@ -52,6 +52,22 @@ msgstr "Published menu — showing the current published version."
 msgid "guest.menu.summary"
 msgstr "Categories: {categories} · Dishes: {items}"
 
+#: guest:guest.outOfService.body
+msgid "guest.outOfService.body"
+msgstr "This menu is not being served right now. Please ask the restaurant staff; they can tell you what is available."
+
+#: guest:guest.outOfService.heading
+msgid "guest.outOfService.heading"
+msgstr "No menu is being served at this hour"
+
+#: guest:guest.outOfService.nextService
+msgid "guest.outOfService.nextService"
+msgstr "Next service starts at {clock}."
+
+#: guest:guest.outOfService.title
+msgid "guest.outOfService.title"
+msgstr "Menu is out of service"
+
 #: guest:guest.print.scanForMenu
 msgid "guest.print.scanForMenu"
 msgstr "Scan for the menu"

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\MenuCatalog\Port\OutOfStockPort;
-use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
+use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
@@ -37,7 +37,7 @@ final class ShowPublicMenuItemController extends Controller
 {
     public function __construct(
         private readonly PublicMenuAddressPort $addresses,
-        private readonly PublicationRepositoryPort $publications,
+        private readonly ResolveGuestMenuView $guestMenuView,
         private readonly CanonicalUrl $canonical,
         private readonly OutOfStockPort $outOfStock,
         private readonly GuestText $guestText,
@@ -57,7 +57,23 @@ final class ShowPublicMenuItemController extends Controller
             return GuestDeadEnd::respond($request);
         }
 
-        $publication = $this->publications->current($address['workspace_id'], $address['menu_id']);
+        /*
+            ÜRÜN, MENÜ SAYFASININ GÖSTERDİĞİ MENÜDEN OKUNUR (FF-139).
+
+            Bu sayfa menü sayfasının BAĞLANTI HEDEFİDİR: misafirin bastığı
+            bağlantıyı menü sayfası kurar ve o sayfa saate göre servis edilen
+            menüyü çizer. Burada adresin çıpa menüsüne bakılsaydı, kahvaltı
+            saatinde menemene basan misafir çıkmaz sokağa düşerdi — ve bu
+            yalnız kahvaltı saatinde olduğu için sahip hiç görmezdi.
+
+            SERVİS DIŞI saatte ürün sayfası yine tek tip çıkmaz sokağa düşer,
+            dürüst "servis dışı" sayfasına değil: bu yüzey masadan değil
+            aramadan gelinen bir DERİN BAĞLANTIDIR ve olmayan bir ürün için
+            200 dönmek, ürün kimliklerini taranabilir yapardı. Masadaki
+            misafirin dürüst cevabı menü sayfasındadır.
+        */
+        $view = $this->guestMenuView->forAddressedMenu($address['workspace_id'], $address['menu_id']);
+        $publication = $view?->publication;
 
         if ($publication === null) {
             return GuestDeadEnd::respond($request);
@@ -110,7 +126,10 @@ final class ShowPublicMenuItemController extends Controller
             'analyticsContext' => [
                 'zabuno_surface' => 'menu_item',
                 'zabuno_tenant_id' => (string) $address['workspace_id'],
-                'zabuno_menu_id' => (string) $address['menu_id'],
+                // Ölçüm, ürünün GERÇEKTEN okunduğu menüyü yazar: adresin çıpa
+                // menüsünü yazsaydı "kahvaltı ürünleri kaç kez açıldı" sorusu
+                // sonsuza kadar cevapsız kalırdı.
+                'zabuno_menu_id' => (string) $publication->menuId,
             ],
             'structuredData' => json_encode(
                 MenuItemStructuredData::forItem($item, $canonicalUrl, $categoryName, [

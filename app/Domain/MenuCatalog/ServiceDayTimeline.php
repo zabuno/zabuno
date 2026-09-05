@@ -100,6 +100,50 @@ final class ServiceDayTimeline
     }
 
     /**
+     * O dakikadan SONRA gelecek geçişler, sırayla — çemberi bir tur döner.
+     *
+     * "Şu an servis edilen menü gösterilemiyor; peki ne zaman yeniden bir şey
+     * servis edilecek?" sorusunun ham cevabı budur. Misafire dürüst bir saat
+     * söyleyebilmek için gereken tek veri bu listedir; çağıran, listeyi
+     * baştan yürüyüp GÖSTERİLEBİLİR olan ilk menüde durur.
+     *
+     * Gün bir çember olduğu için liste gün sonunda kesilmez, başa döner:
+     * 23:00'te sorulduğunda 02:00'de başlayan geçiş hâlâ "sonraki"dir.
+     * Kesseydik, gece yarısına yakın saatlerde misafire hiçbir zaman bir
+     * saat söyleyemezdik — yani tam da en çok gerektiği anda susardık.
+     *
+     * Şu ana AİT geçiş (aynı dakikada başlayan) listenin SONUNA düşer, başına
+     * değil: o geçiş şu an zaten yürürlüktedir ve bir sonraki oluşumu ancak
+     * yarın aynı saattedir. Başa koysaydık misafire "sonraki servis şu an"
+     * derdik — baktığı boş ekranı açıklamayan bir cümle.
+     *
+     * @return list<array{menuId:int,startMinute:int}>
+     */
+    public function switchesFrom(int $minuteOfDay): array
+    {
+        $count = count($this->switches);
+
+        if ($count === 0) {
+            return [];
+        }
+
+        $after = [];
+        $wrapped = [];
+
+        foreach ($this->switches as $entry) {
+            if ($entry['startMinute'] > $minuteOfDay) {
+                $after[] = $entry;
+
+                continue;
+            }
+
+            $wrapped[] = $entry;
+        }
+
+        return array_values([...$after, ...$wrapped]);
+    }
+
+    /**
      * Her geçişin kapladığı yay.
      *
      * Tek geçiş varsa `startMinute === endMinute` olur ve bu "TÜM GÜN"

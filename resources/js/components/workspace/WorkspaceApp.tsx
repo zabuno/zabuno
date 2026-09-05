@@ -59,6 +59,20 @@ export type WorkspaceSectionRuntimeContext = {
     onNavigateToSection: (section: string) => void;
     /** Bu kullanıcı bu izne sahip mi? Liste yoksa (eski gövde) evet sayılır. */
     can: (permission: string) => boolean;
+    /**
+     * Kullanıcının BU çalışma alanındaki rolü (`GET /workspace-context`).
+     *
+     * `can` her soruyu cevaplayamaz: `workspace.manage` iznini hem Sahip hem
+     * Yönetici taşır, ama ekipten üye çıkarmak yalnız Sahibin işidir ve uç
+     * nokta Yöneticiye 403 döner. O sınırın izin listesinde bir karşılığı
+     * yok; rol alanı ise sunucuda zaten izin kümesinden geri okunarak
+     * üretiliyor, yani karar yine izinlerden geliyor.
+     *
+     * KARAR İÇİN KULLANIMI DAR TUTULUR: bir iş bir izinle ifade edilebiliyorsa
+     * `can` kullanılır. Bu alan yalnız izinle söylenemeyen sahiplik sınırı
+     * içindir. Alan yoksa (eski gövde) süzme yapılmaz — `can` ile aynı kural.
+     */
+    role?: string | null;
     /** Kiracı bayrakları (Pennant); tanımsız bayrak açık sayılır. */
     features: Record<string, boolean>;
     /** Bölüm içi konum — `settings/billing` adresinde `billing`. */
@@ -1018,6 +1032,7 @@ export function WorkspaceApp({
               onMenuTreeChange: handleCatalogTreeChange,
               onNavigateToSection: goToSection,
               can,
+              role: currentWorkspace.role,
               features: currentWorkspace?.features ?? {},
               subPath,
               email: user?.email ?? '',

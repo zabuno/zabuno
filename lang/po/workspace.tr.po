@@ -5208,6 +5208,14 @@ msgstr "Çıkarmayı onayla"
 msgid "workspace.team.members.remove.error"
 msgstr "Bu üye çıkarılamadı. Lütfen tekrar deneyin."
 
+#: workspace:workspace.team.members.remove.forbidden
+msgid "workspace.team.members.remove.forbidden"
+msgstr ""
+
+#: workspace:workspace.team.members.remove.missing
+msgid "workspace.team.members.remove.missing"
+msgstr ""
+
 #: workspace:workspace.team.members.remove.retry
 msgid "workspace.team.members.remove.retry"
 msgstr "Tekrar dene"

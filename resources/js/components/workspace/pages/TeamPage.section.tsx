@@ -22,7 +22,13 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             düşündürür.
         */
         <Suspense fallback={null}>
-            <TeamPage workspaceId={ctx.workspaceId} />
+            {/*
+                Rol GEÇİRİLİR: bu ekran `workspace.manage` taşıyan herkese
+                açıktır (Yönetici dahil), ama ekipten çıkarmak ve sahipliği
+                devretmek yalnız Sahibin işidir. Sayfa, yapılamayan işi
+                çizmemek için bunu bilmek zorunda (`docs/98` FF-74).
+            */}
+            <TeamPage workspaceId={ctx.workspaceId} viewerRole={ctx.role} />
         </Suspense>
     );
 }

@@ -52,6 +52,22 @@ msgstr ""
 msgid "guest.menu.summary"
 msgstr ""
 
+#: guest:guest.outOfService.body
+msgid "guest.outOfService.body"
+msgstr ""
+
+#: guest:guest.outOfService.heading
+msgid "guest.outOfService.heading"
+msgstr ""
+
+#: guest:guest.outOfService.nextService
+msgid "guest.outOfService.nextService"
+msgstr ""
+
+#: guest:guest.outOfService.title
+msgid "guest.outOfService.title"
+msgstr ""
+
 #: guest:guest.print.scanForMenu
 msgid "guest.print.scanForMenu"
 msgstr ""

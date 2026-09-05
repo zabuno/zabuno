@@ -6,9 +6,8 @@ namespace App\Http\Controllers\QrDestination;
 
 use App\Application\Analytics\UseCase\RecordAnalyticsEvent;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
-use App\Application\MenuCatalog\UseCase\ResolveServingMenu;
-use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
+use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\Publication\MenuPublicAddress;
@@ -16,6 +15,7 @@ use App\Domain\QrDestination\QrToken;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
+use App\Http\Responses\GuestOutOfService;
 use App\Support\Analytics\VisitorKey;
 use App\Support\Localization\GuestLocale;
 use App\Support\Localization\GuestText;
@@ -29,13 +29,12 @@ final class ShowPublicMenuController extends Controller
 {
     public function __construct(
         private readonly QrCodeRepositoryPort $qrCodes,
-        private readonly PublicationRepositoryPort $publications,
         private readonly RecordAnalyticsEvent $recordAnalyticsEvent,
         private readonly CanonicalUrl $canonical,
         private readonly PublicMenuAddressPort $addresses,
         private readonly OutOfStockPort $outOfStock,
         private readonly GuestText $guestText,
-        private readonly ResolveServingMenu $servingMenu,
+        private readonly ResolveGuestMenuView $guestMenuView,
     ) {}
 
     public function __invoke(Request $request, string $token): SymfonyResponse
@@ -64,12 +63,16 @@ final class ShowPublicMenuController extends Controller
 
             Şubede saat tanımlanmamışsa sonuç kodun kendi menüsüdür — tek
             menülü şubeler için bu satır hiçbir şeyi değiştirmez.
+
+            SERVİS DIŞI SAAT AYRI BİR HÂLDİR (FF-139). Sahip bir gece menüsü
+            tanımlayıp saatini verip içeriğini yayınlamamış olabilir; o saatte
+            masadaki misafire "menü bulunamadı" demek, duran bir restoranı
+            kapanmış göstermek olurdu. `null` yalnız gerçekten gösterilecek
+            hiçbir şey kalmadığında gelir ve tek tip çıkmaz sokağa düşer.
         */
-        $servingMenuId = $this->servingMenu->forMenu($record->menuId);
+        $view = $this->guestMenuView->forAddressedMenu($record->workspaceId, $record->menuId);
 
-        $publication = $this->publications->current($record->workspaceId, $servingMenuId);
-
-        if ($publication === null) {
+        if ($view === null) {
             return $this->notFound();
         }
 
@@ -79,6 +82,24 @@ final class ShowPublicMenuController extends Controller
             return $this->notFound();
         }
 
+        $publication = $view->publication;
+
+        if ($publication === null) {
+            /*
+                MENÜ AÇILIŞI YAZILMAZ. Ölçüm "kaç kez menü açıldı" sorusunu
+                cevaplar ve burada açılan bir menü yok; yazsaydık sahibin en
+                temel sayacı, hiç kimsenin yemek görmediği gecelerle şişerdi.
+                Taramanın kendisi zaten `/q/` ucunda `QrResolve` olarak
+                kayıtlıdır, yani ziyaret kaybolmuyor.
+            */
+            return GuestOutOfService::respond(
+                $request,
+                $address['brand_name'],
+                $address['locale'],
+                $view->nextServiceClock,
+            );
+        }
+
         $this->recordAnalyticsEvent->handle(
             $record->workspaceId,
             $record->locationId,
@@ -86,7 +107,7 @@ final class ShowPublicMenuController extends Controller
             // Ölçüm, misafirin GERÇEKTEN gördüğü menüyü yazar: kodun bağlı
             // olduğu menüyü yazsaydı "kahvaltı kaç kez açıldı" sorusu
             // sonsuza kadar cevapsız kalırdı.
-            $servingMenuId,
+            $view->servingMenuId,
             AnalyticsEventType::MenuOpen,
             // Ham IP ve tarayıcı bilgisi SAKLANMAZ; yalnız günlük dönen bir
             // tuzla türetilmiş özet yazılır (`docs/68`).
@@ -148,7 +169,7 @@ final class ShowPublicMenuController extends Controller
                 'zabuno_surface' => 'menu',
                 'zabuno_tenant_id' => (string) $record->workspaceId,
                 'zabuno_location_id' => (string) $record->locationId,
-                'zabuno_menu_id' => (string) $servingMenuId,
+                'zabuno_menu_id' => (string) $view->servingMenuId,
             ],
             'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,

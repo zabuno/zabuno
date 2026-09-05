@@ -112,4 +112,44 @@ trait MultiMenuScaffold
             'created_at' => now(), 'updated_at' => now(),
         ]);
     }
+
+    /**
+     * Menüyü YAYINLAR: anlık görüntü + "şu anki yayın" işaretçisi.
+     *
+     * Misafir yüzeyi taslağı DEĞİL yayını okur (`docs/81`). Çoklu menüde bu
+     * ayrım kritik: sahip bir gece menüsü tanımlayıp saatini verebilir ama
+     * onu yayınlamamış olabilir. O saatte misafirin ne gördüğü ancak yayın
+     * durumu ayrı ayrı kurulabildiğinde test edilebilir; bu yüzden yayın
+     * satırları burada, menü satırlarından BAĞIMSIZ yazılır.
+     *
+     * @param  list<array{menuItemId:int,productName:string,priceMinorAmount:int,currencyCode:string}>  $items
+     */
+    protected function publishMenu(
+        int $workspaceId,
+        int $locationId,
+        int $menuId,
+        int $publishedByUserId,
+        string $categoryName,
+        array $items,
+    ): void {
+        $publicationId = (int) DB::table('menu_publications')->insertGetId([
+            'workspace_id' => $workspaceId,
+            'menu_id' => $menuId,
+            'location_id' => $locationId,
+            'version' => 1,
+            'state' => 'published',
+            'snapshot' => json_encode(['categories' => [['name' => $categoryName, 'menuItems' => $items]]]),
+            'published_by' => $publishedByUserId,
+            'published_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('menu_publication_current_pointers')->insert([
+            'menu_id' => $menuId,
+            'current_publication_id' => $publicationId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
 }

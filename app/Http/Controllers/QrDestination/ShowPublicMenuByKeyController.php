@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\MenuCatalog\Port\OutOfStockPort;
-use App\Application\MenuCatalog\UseCase\ResolveServingMenu;
-use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
+use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
+use App\Http\Responses\GuestOutOfService;
 use App\Support\Localization\GuestLocale;
 use App\Support\Localization\GuestText;
 use App\Support\Seo\MenuStructuredData;
@@ -36,11 +36,10 @@ final class ShowPublicMenuByKeyController extends Controller
 {
     public function __construct(
         private readonly PublicMenuAddressPort $addresses,
-        private readonly PublicationRepositoryPort $publications,
         private readonly CanonicalUrl $canonical,
         private readonly OutOfStockPort $outOfStock,
         private readonly GuestText $guestText,
-        private readonly ResolveServingMenu $servingMenu,
+        private readonly ResolveGuestMenuView $guestMenuView,
     ) {}
 
     public function __invoke(Request $request): SymfonyResponse
@@ -73,12 +72,15 @@ final class ShowPublicMenuByKeyController extends Controller
             ve o adres, şubenin O ANDA servis ettiği menüyü açar. Menü
             başına ayrı bir adres vermek, aynı içeriği iki adreste
             indeksletirdi ve sahip hangisini basacağını bilemezdi.
+
+            SERVİS DIŞI SAAT AYRI BİR HÂLDİR (FF-139). O saatin menüsü
+            yayınlanmamışsa burada 404 dönmek, duran bir restorana "menü
+            bulunamadı" dedirtirdi. `null` yalnız gerçekten gösterilecek
+            hiçbir şey olmadığında gelir ve tek tip çıkmaz sokağa düşer.
         */
-        $servingMenuId = $this->servingMenu->forMenu($address['menu_id']);
+        $view = $this->guestMenuView->forAddressedMenu($address['workspace_id'], $address['menu_id']);
 
-        $publication = $this->publications->current($address['workspace_id'], $servingMenuId);
-
-        if ($publication === null) {
+        if ($view === null) {
             return GuestDeadEnd::respond($request);
         }
 
@@ -108,6 +110,23 @@ final class ShowPublicMenuByKeyController extends Controller
             }
 
             return redirect($canonicalPath, 301);
+        }
+
+        /*
+            SERVİS DIŞI. Kanonik adrese GELDİKTEN SONRA bakılır: yanlış slug
+            ile paylaşılmış bir bağlantı, servis dışı saatte de doğru adrese
+            taşınmalı — yoksa misafir bağlantıyı kaydedip yarın açtığında
+            hâlâ eski adreste olurdu.
+        */
+        $publication = $view->publication;
+
+        if ($publication === null) {
+            return GuestOutOfService::respond(
+                $request,
+                $address['brand_name'],
+                $address['locale'],
+                $view->nextServiceClock,
+            );
         }
 
         // Buraya analitik YAZILMAZ ve bu bilinçlidir. Ürünün ölçtüğü şey
@@ -157,7 +176,7 @@ final class ShowPublicMenuByKeyController extends Controller
             'analyticsContext' => [
                 'zabuno_surface' => 'menu',
                 'zabuno_tenant_id' => (string) $address['workspace_id'],
-                'zabuno_menu_id' => (string) $servingMenuId,
+                'zabuno_menu_id' => (string) $view->servingMenuId,
             ],
             'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,

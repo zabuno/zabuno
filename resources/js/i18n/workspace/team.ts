@@ -42,6 +42,22 @@ export const team = {
     'workspace.team.members.remove.cancel': 'Cancel',
     'workspace.team.members.remove.busy': 'Removing…',
     'workspace.team.members.remove.error': 'Unable to remove this member. Please try again.',
+    /*
+        SUNUCUNUN İKİ AYRI "HAYIR"I, İKİ AYRI CÜMLE (FF-138d).
+
+        Her ret için tek bir "tekrar deneyin" cümlesi vardı. Ama bu iki
+        cevabın ortak yanı yok: biri "bu iş senin değil" der ve tekrar
+        denemek hiçbir şeyi değiştirmez, diğeri "o üyelik zaten orada değil"
+        der ve denenecek bir şey kalmamıştır. İkisine de "tekrar deneyin"
+        demek, sahibi sonu olmayan bir döngüye çağırmaktı.
+
+        Cümleler sunucunun SÖYLEDİĞİNE dayanır ama onun kelimeleriyle
+        yazılmaz: "Forbidden." bir geliştirici cümlesidir ve sahibe çıkış
+        yolunu göstermez.
+    */
+    'workspace.team.members.remove.forbidden':
+        'Only the workspace owner can remove people from the team. Ask the owner to do it.',
+    'workspace.team.members.remove.missing': 'This person is no longer in the team list.',
     'workspace.team.members.remove.retry': 'Retry',
     'workspace.team.members.remove.success': 'Member removed.',
     'workspace.team.members.transfer.button': 'Transfer ownership',

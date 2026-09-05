@@ -10,13 +10,21 @@ export type TeamMember = {
 
 export type TeamMemberListStatus = 'loading' | 'error' | 'success';
 
-export type TeamMemberRemoveOutcome = 'success' | 'error' | 'retry';
+/**
+ * `forbidden` ve `missing`, `error`'dan AYRI durur (FF-138d).
+ *
+ * Üçü de "olmadı" demez: `error` geçici bir aksaklıktır ve tekrar denemek
+ * anlamlıdır; diğer ikisi sunucunun kesin cevabıdır ve tekrar denemek aynı
+ * cevabı getirir. Tek bir `error` altında toplansalardı ekran, sahibi sonu
+ * olmayan bir "tekrar dene" döngüsüne çağırırdı.
+ */
+export type TeamMemberRemoveOutcome = 'success' | 'error' | 'retry' | 'forbidden' | 'missing';
 
 export type TeamMemberTransferOutcome = 'success' | 'error' | 'retry';
 
 export type TeamMemberRoleOutcome = 'success' | 'error';
 
-type RowStage = 'idle' | 'confirming' | 'busy' | 'error';
+type RowStage = 'idle' | 'confirming' | 'busy' | 'error' | 'forbidden' | 'missing';
 
 type TransferStage = 'idle' | 'busy' | 'error';
 
@@ -33,8 +41,27 @@ type TeamMemberListProps = {
     removeCancelText: string;
     removeBusyText: string;
     removeErrorText: string;
+    removeForbiddenText: string;
+    removeMissingText: string;
     removeSuccessText: string;
     removeRetryText: string;
+    /**
+     * Sunucunun ÇIKARABİLDİĞİ roller — `MembershipRole::invitable()`.
+     *
+     * Küme burada sabit yazılmaz, çağıranın davet listesinden TÜRETİLİR:
+     * bileşen kendi listesini tutsaydı, davet edilebilen yeni bir rol
+     * doğduğunda ekran onu çıkarılamaz göstermeye devam ederdi — sunucu
+     * çıkarabildiği hâlde.
+     */
+    removableRoles: string[];
+    /**
+     * Oturumdaki kişi çalışma alanının SAHİBİ mi?
+     *
+     * `workspace.manage` iznini Yönetici de taşır ve bu ekran ona da açıktır;
+     * ama ekipten çıkarmak ve sahipliği devretmek yalnız sahibin işidir ve uç
+     * nokta yöneticiye 403 döner. Yapılamayan iş çizilmez (`docs/98` FF-74).
+     */
+    viewerIsOwner: boolean;
     onTransferOwnership: (memberId: number) => Promise<TeamMemberTransferOutcome>;
     transferButtonText: string;
     transferDialogTitle: string;
@@ -57,14 +84,26 @@ type TeamMemberListProps = {
     roleErrorText: string;
 };
 
-const REMOVABLE_ROLE = 'editor';
+/*
+    SAHİPLİK YALNIZ EDİTÖRE DEVREDİLİR.
+
+    Bu kısıt uç noktanın kendi sözleşmesidir (`TeamMemberRepositoryPort::
+    transferOwnership`: hedefin rolü TAM OLARAK `editor` olmalı) ve çıkarma
+    kümesiyle bir ilgisi yoktur. İkisi bir zamanlar aynı bayrağı paylaşıyordu;
+    çıkarma yönetici ve mutfağı da kapsayınca ayrıldılar, çünkü aynı bayrağı
+    paylaşmaya devam etselerdi ekran bir aşçıya "sahipliği devret" diye
+    düğme çizer, tıklandığında sunucu reddederdi.
+*/
+const TRANSFERABLE_ROLE = 'editor';
 
 /**
  * Presentational: renders whatever member rows/status text it is given.
  * No fetch, route, or workspace-id knowledge — TeamPage owns the real
  * GET/DELETE /api/workspaces/{workspaceId}/team/members calls and passes
- * the resulting status/members/labels plus a remove callback through. Only
- * an Editor row exposes a Remove control; Owner and any other role never do.
+ * the resulting status/members/labels plus a remove callback through. Rows
+ * expose a Remove control only for the roles the server can actually remove
+ * (`removableRoles`) and only to the workspace owner; Owner and the legacy
+ * read-only role never do.
  */
 export function TeamMemberList({
     status,
@@ -79,8 +118,12 @@ export function TeamMemberList({
     removeCancelText,
     removeBusyText,
     removeErrorText,
+    removeForbiddenText,
+    removeMissingText,
     removeSuccessText,
     removeRetryText,
+    removableRoles,
+    viewerIsOwner,
     onTransferOwnership,
     transferButtonText,
     transferDialogTitle,
@@ -167,6 +210,23 @@ export function TeamMemberList({
 
                 return next;
             });
+
+            return;
+        }
+
+        /*
+            SUNUCUNUN KESİN CEVABI TEKRAR DENENMEZ. Onay düğmesini "Tekrar
+            dene" olarak bırakmak, sahibi aynı cevabı tekrar tekrar almaya
+            çağırırdı; satırda kalan tek yol vazgeçmektir.
+        */
+        if (outcome === 'forbidden' || outcome === 'missing') {
+            setCommittedRows((current) => {
+                const next = { ...current };
+                delete next[memberId];
+
+                return next;
+            });
+            setRowStages((current) => ({ ...current, [memberId]: outcome }));
 
             return;
         }
@@ -296,7 +356,24 @@ export function TeamMemberList({
                     // Sahibin rolü buradan değişmez: sahiplik DEVREDİLİR ve
                     // sahipsiz kalan bir çalışma alanını kimse onaramaz.
                     const roleEditable = member.role.toLowerCase() !== 'owner';
-                    const removable = member.role.toLowerCase() === REMOVABLE_ROLE;
+                    /*
+                        ÇIKARILABİLİR KÜME = SUNUCUNUN ÇIKARABİLDİĞİ ROLLER.
+
+                        Burada bir zamanlar tek bir `=== 'editor'` vardı ve o
+                        satır yazıldığında davet edilebilen tek rol Editör'dü.
+                        Sonra Yönetici ve Mutfak doğdu; sunucu ikisini de
+                        çıkarabilir hâle geldi ama ekran düğmeyi çizmedi.
+                        Sahibin, işten ayrılan bir yöneticiyi ekipten
+                        çıkarmasının hiçbir yolu yoktu.
+
+                        Küme artık davet listesinden gelir — yani bu körlük
+                        aynı yoldan bir daha doğamaz.
+                    */
+                    const removable =
+                        viewerIsOwner && removableRoles.includes(member.role.toLowerCase());
+                    const transferable =
+                        viewerIsOwner && member.role.toLowerCase() === TRANSFERABLE_ROLE;
+                    const rejected = stage === 'forbidden' || stage === 'missing';
 
                     return (
                         <li
@@ -383,7 +460,7 @@ export function TeamMemberList({
                                 </button>
                             )}
 
-                            {removable && stage === 'idle' && (
+                            {transferable && stage === 'idle' && (
                                 <button
                                     type="button"
                                     className="text-body font-medium text-fg-link"
@@ -393,7 +470,7 @@ export function TeamMemberList({
                                 </button>
                             )}
 
-                            {removable && stage !== 'idle' && (
+                            {removable && !rejected && stage !== 'idle' && (
                                 <div className="flex flex-wrap items-center gap-2">
                                     <button
                                         type="button"
@@ -429,6 +506,35 @@ export function TeamMemberList({
                                 >
                                     {removeErrorText}
                                 </span>
+                            )}
+
+                            {/*
+                                REDDİN KENDİSİ YAZILIR, "bir şeyler ters
+                                gitti" değil. Sahip iki farklı gerçekten
+                                birini okur — ya bu iş onun değildir ve
+                                sahibinden istemesi gerekir, ya da o üyelik
+                                zaten listede yoktur. Yanında duran tek düğme
+                                vazgeçmektir: tekrar denemek aynı cevabı
+                                getirir.
+                            */}
+                            {removable && rejected && (
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span
+                                        role="status"
+                                        className="text-body font-medium text-fg-danger"
+                                    >
+                                        {stage === 'forbidden'
+                                            ? removeForbiddenText
+                                            : removeMissingText}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="text-body font-medium text-fg-secondary"
+                                        onClick={() => cancelRemove(member.id)}
+                                    >
+                                        {removeCancelText}
+                                    </button>
+                                </div>
                             )}
                         </li>
                     );
