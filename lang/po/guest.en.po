@@ -116,6 +116,14 @@ msgstr "This menu cannot be shown right now"
 msgid "guest.deadEnd.title"
 msgstr "Menu not found"
 
+#: guest:guest.favourite.add
+msgid "guest.favourite.add"
+msgstr "Save to favourites"
+
+#: guest:guest.favourite.remove
+msgid "guest.favourite.remove"
+msgstr "Remove from favourites"
+
 #: guest:guest.filters.allergenExclude
 msgid "guest.filters.allergenExclude"
 msgstr "Exclude allergens"

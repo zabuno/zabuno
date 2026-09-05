@@ -838,6 +838,51 @@
             color: var(--qr-warn);
         }
 
+        /* ---- FAVORİ (`docs/114` Dalga 3, `docs/122` Y5) ------------------
+
+           Düğme kartın SARMALANAN satırının sonunda durur ve sağa itilir;
+           "Ekle" ile aynı desen ve aynı gerekçe: 320'de ad + fiyat ilk satırı
+           doldurunca kendi satırına iner ve ürün ADI hiçbir genişlikte sıfıra
+           inmez (`docs/113` §7.2.2).
+
+           EŞİK YOK: hiçbir medya sorgusu, hiçbir kırılma noktası. Karar
+           satırın kendi düzeninden çıkıyor. */
+        .qr-fav {
+            flex: 0 0 auto;
+            margin-inline-start: auto;
+            min-height: var(--qr-tap);
+            min-inline-size: var(--qr-tap);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: var(--qr-muted);
+            cursor: pointer;
+        }
+
+        /* İŞARETLİ FAVORİ YALNIZ RENKLE AYRILMAZ.
+
+           Renk körü bir misafir için "gri kalp" ile "vurgu rengi kalp" aynı
+           kalptir; parlaklık farkı ise her görme türünde okunur. Ekran
+           okuyucu için ayrım zaten `aria-pressed`te ve etiket de değişiyor
+           (WCAG 1.4.1) — yıldızda aynı karar aynı gerekçeyle alınmıştı. */
+        .qr-fav {
+            opacity: 0.45;
+        }
+
+        .qr-fav[aria-pressed='true'] {
+            color: var(--qr-accent);
+            opacity: 1;
+        }
+
+        .qr-fav-ico {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
         @isset($ordering)
         /* ---- SEPET (FF-178) ---------------------------------------------
 
@@ -1388,6 +1433,18 @@
     </svg>
 @endisset
 
+{{-- KALP — FAVORİ İŞARETİ (`docs/114` Dalga 3, `docs/122` Y5).
+
+     Yıldızın sembolünden AYRI ve `@isset($rating)` DIŞINDA duruyor: favori
+     hiçbir sunucu kararına bağlı değil, kararı yalnız misafirin cihazı verir
+     ve puanlama kapalı bir restoranda da çizilir.
+
+     Satır içi tek bir sembol; kütüphane yok. Bir kalp için simge paketi
+     indirmek, masadaki zayıf hatta bir ağ isteği ödemek olurdu. --}}
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <symbol id="qr-heart" viewBox="0 0 24 24"><path d="M12 20.3l-1.4-1.3C5.6 14.5 2.5 11.7 2.5 8.2 2.5 5.5 4.6 3.4 7.3 3.4c1.5 0 3 .7 3.9 1.9l.8 1 .8-1c.9-1.2 2.4-1.9 3.9-1.9 2.7 0 4.8 2.1 4.8 4.8 0 3.5-3.1 6.3-8.1 10.8z"/></symbol>
+</svg>
+
 <main role="main" class="qr-page" @isset($menuKey) data-menu-key="{{ $menuKey }}" @endisset>
     @isset($previewNotice)
         {{-- ÖNİZLEME KENDİNİ SÖYLER ve sayfanın EN ÜSTÜNDE söyler. Bağlantı
@@ -1658,6 +1715,26 @@
                                     @if ($priceLabel !== null)
                                         <span class="qr-menu-item-price">{{ $priceLabel }}</span>
                                     @endif
+                                    @isset($item['menuItemId'])
+                                        {{-- FAVORİ — CİHAZDA (`docs/114` Dalga 3, `docs/122` Y5).
+
+                                             `hidden` İLE İNER VE BETİK ONU AÇAR, sepetteki kararla
+                                             aynı: cihaz deposu çalışmıyorsa (gizli pencere, kapatılmış
+                                             site verisi) düğme HİÇ çizilmez. Hatırlamadığı bir listeyi
+                                             hatırlıyormuş gibi göstermek, misafire tutulmayacak bir söz
+                                             vermektir — ve o sözü restoran değil ürün öder.
+
+                                             SUNUCUYA HİÇBİR ŞEY GİTMEZ. Ne bir uç, ne bir form, ne
+                                             ziyaretçi anahtarına bir satır: favori bu telefonda yaşar
+                                             ve telefon değişince kaybolur. Bedel `docs/114`'te tartılıp
+                                             kabul edildi — favori bir kolaylıktır, bir varlık değil;
+                                             kalıcılık için kimlik istemek orantısız olurdu.
+
+                                             İLK SATIRDA, FİYATIN YANINDA durur ve sağa itilir. Kaynağın
+                                             kartında da yeri orası; sarmalanan satır sayesinde eşiksiz
+                                             çalışır ve ürün adı hiçbir genişlikte sıfıra inmez. --}}
+                                        <button type="button" class="qr-fav qr-press" data-favourite aria-pressed="false" aria-label="{{ $text('favouriteAdd') }}" hidden><svg class="qr-fav-ico" aria-hidden="true" focusable="false"><use href="#qr-heart"/></svg></button>
+                                    @endisset
                                     @if ($isSoldOut)
                                         {{-- Tükendi METİNLE söylenir. Yalnız renk
                                              ya da soluklukla anlatmak, renk
@@ -2751,6 +2828,106 @@
             });
         })();
         @endisset
+
+        /* ═══ FAVORİLER — CİHAZDA (`docs/114` Dalga 3, `docs/122` Y5) ═══
+
+           Karar ve üç seçeneğin tartısı `docs/114`'te; burada yalnız iki
+           sonucu duruyor ve ikisi de kodda görünür olmak zorunda.
+
+           1. BU BLOK SUNUCUYA HİÇBİR ŞEY GÖNDERMEZ — ziyaretçi anahtarına
+              da yazmaz. Sayfanın başka yerlerinde (sepet, puanlama) uçlar
+              var; onların gerekçesi ayrı ve bu bloğun sınırı işaretlerle
+              çizili, testin tahminiyle değil.
+
+           2. DEPO ÇALIŞMIYORSA DÜĞME HİÇ AÇILMAZ. Gizli pencerede
+              `window.localStorage` VARDIR ama yazma atar; bu yüzden
+              varlığına değil YAZILABİLİRLİĞİNE bakılır. Sepette aynı karar
+              aynı gerekçeyle alınmıştı: hatırlamadığı bir listeyi
+              hatırlıyormuş gibi göstermek, tutulmayacak bir söz vermektir. */
+        (function () {
+            var main = document.querySelector('main');
+            var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-favourite]'));
+
+            if (!main || buttons.length === 0) {
+                return;
+            }
+
+            var store;
+
+            try {
+                store = window.localStorage;
+                store.setItem('zabuno.probe', '1');
+                store.removeItem('zabuno.probe');
+            } catch (error) {
+                // Düğmeler `hidden` iner ve öyle kalır. Sessiz bir çıkış:
+                // misafire çalışmayan bir yeteneğin özrünü okutmanın bir
+                // karşılığı yok.
+                return;
+            }
+
+            /* Favori MENÜYE bağlıdır. Bağlı olmasaydı kahvaltıda işaretlenen
+               bir ürün akşam menüsünde — ya da başka bir restoranın
+               menüsünde — ortaya çıkardı. Sepet anahtarı da aynı biçimde
+               kuruluyor ve aynı sebeple. */
+            var KEY = 'zabuno.favourites.' + ((main.dataset && main.dataset.menuKey) || 'menu');
+            var marked = {};
+
+            try {
+                var stored = JSON.parse(store.getItem(KEY) || '[]');
+
+                if (Object.prototype.toString.call(stored) === '[object Array]') {
+                    for (var i = 0; i < stored.length; i++) {
+                        marked[String(stored[i])] = true;
+                    }
+                }
+            } catch (error) {
+                // Bozuk bir kayıt menüyü kilitlemez: boş bir favori listesi,
+                // açılmayan bir sayfadan iyidir.
+                marked = {};
+            }
+
+            function save() {
+                try {
+                    store.setItem(KEY, JSON.stringify(Object.keys(marked)));
+                } catch (error) {
+                    // Depo doluysa işaret bu oturumda yaşar; menü çalışmaya
+                    // devam eder.
+                }
+            }
+
+            /* ETİKET DE DEĞİŞİR, YALNIZ RENK DEĞİL. Ekran okuyucudaki misafir
+               "Favori" diye tek bir etiket duysaydı, basmanın ne yapacağını
+               hiç öğrenemezdi (WCAG 1.4.1 ve 4.1.2). */
+            function paint(button, on) {
+                button.setAttribute('aria-pressed', on ? 'true' : 'false');
+                button.setAttribute('aria-label', on ? say('favouriteRemove') : say('favouriteAdd'));
+            }
+
+            buttons.forEach(function (button) {
+                var row = button.closest ? button.closest('[data-menu-item-id]') : null;
+
+                if (!row) {
+                    return;
+                }
+
+                var id = String(row.getAttribute('data-menu-item-id'));
+
+                paint(button, marked[id] === true);
+                button.hidden = false;
+
+                button.addEventListener('click', function () {
+                    if (marked[id] === true) {
+                        delete marked[id];
+                    } else {
+                        marked[id] = true;
+                    }
+
+                    paint(button, marked[id] === true);
+                    save();
+                });
+            });
+        })();
+        /* ═══ FAVORİLER SONU ═══ */
 
         /*
             MENÜ MÜHENDİSLİĞİ ÖLÇÜMÜ — `docs/84`.

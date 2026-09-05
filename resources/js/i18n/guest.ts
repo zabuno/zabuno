@@ -199,6 +199,22 @@ export const guestTranslations = {
     'guest.pwa.installed': 'The app was installed.',
     'guest.pwa.offline': 'You are offline; showing the last menu you viewed.',
 
+    /*
+        FAVORİLER — CİHAZDA (`docs/114` Dalga 3, `docs/122` Y5).
+
+        Misafir anonimdir ve öyle kalır: favori bu telefonda yaşar, sunucuya
+        gitmez ve ziyaretçi anahtarına yazılmaz. Hesap istemek karekod
+        menünün bütün vaadini bozardı; anahtara yazmak ise anahtar günlük
+        döndüğü için favoriyi de günlük kaybederdi — kalıcı yapmak, takibi
+        kalıcı yapmak demekti.
+
+        İKİ CÜMLE, İKİ AYRI DURUM. Düğme basılıyken ne yapacağını söyler,
+        basılı değilken de: tek bir "Favori" etiketi, ekran okuyucudaki
+        misafire basmanın ne yapacağını hiç söylemezdi.
+    */
+    'guest.favourite.add': 'Save to favourites',
+    'guest.favourite.remove': 'Remove from favourites',
+
     // DİL SEÇİMİ (`docs/85`, P1-06).
     'guest.language.label': 'Language',
     /*

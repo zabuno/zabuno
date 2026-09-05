@@ -467,8 +467,19 @@ final class GuestMenuDesignLanguageTest extends TestCase
             // Puanlama — arka ucu ayrı pakette.
             'ph-star' => 'yıldız/puan',
             'data-rating' => 'puan verisi',
-            // Favori — istemci kalıcılığı ayrı pakette.
-            'data-favourite' => 'favori',
+            /*
+                FAVORİ BU LİSTEDEN ÇIKTI (`docs/122` Y5).
+
+                Yetenek kalıcılığıyla birlikte geldi ve kalıcılığı SUNUCUDA
+                DEĞİL: `docs/114` Dalga 3 favorinin cihazda yaşamasına karar
+                vermişti. Yani beklenen "arka uç" hiç gelmeyecekti — bekleyen
+                şey istemci deposuydu ve o bağlandı.
+
+                Düğme yine de veri bağlanmadan çizilmiyor, yalnız verinin
+                yeri değişti: `hidden` iner ve betik onu ancak cihaz deposu
+                gerçekten yazıp okuyabildiğinde açar. Kuralların sahibi artık
+                `GuestFavouritesTest`.
+            */
             /*
                 SESLİ ARAMA BU LİSTEDEN ÇIKTI (FF-177).
 

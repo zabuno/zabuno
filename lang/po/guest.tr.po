@@ -116,6 +116,14 @@ msgstr "Bu menü şu anda görüntülenemiyor"
 msgid "guest.deadEnd.title"
 msgstr "Menü bulunamadı"
 
+#: guest:guest.favourite.add
+msgid "guest.favourite.add"
+msgstr ""
+
+#: guest:guest.favourite.remove
+msgid "guest.favourite.remove"
+msgstr ""
+
 #: guest:guest.filters.allergenExclude
 msgid "guest.filters.allergenExclude"
 msgstr ""

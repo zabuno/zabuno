@@ -116,6 +116,14 @@ msgstr "Ce menu ne peut pas être affiché pour le moment"
 msgid "guest.deadEnd.title"
 msgstr "Menu introuvable"
 
+#: guest:guest.favourite.add
+msgid "guest.favourite.add"
+msgstr ""
+
+#: guest:guest.favourite.remove
+msgid "guest.favourite.remove"
+msgstr ""
+
 #: guest:guest.filters.allergenExclude
 msgid "guest.filters.allergenExclude"
 msgstr ""

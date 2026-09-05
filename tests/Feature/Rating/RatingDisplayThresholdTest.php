@@ -49,8 +49,25 @@ final class RatingDisplayThresholdTest extends TestCase
     /** Puanlı sayfanın TELDEKİ tavanı — bayt (bkz. ölçüm tablosu). */
     private const MAX_RATING_PAGE_GZIP_BYTES = 25000;
 
-    /** Puanlı sayfanın satır içi betik tavanı — bayt. */
-    private const MAX_RATING_SCRIPT_BYTES = 26000;
+    /**
+     * Puanlı sayfanın satır içi betik tavanı — bayt.
+     *
+     * 2026-09-06'DA 26 000 → 30 000 (`docs/122` Y5).
+     *
+     * SEBEP PUANLAMA DEĞİL: favori işaretlemesi TABAN misafir yüzeyine girdi
+     * ve puanlı sayfa da o tabanın üstünde duruyor. Puanlamanın kendi betiği
+     * tek bayt büyümedi; ölçülen fark 24 013 → 28 222 bayt ve tamamı favori
+     * bloğu (gerekçe yorumları dâhil).
+     *
+     * TELDEKİ TAVAN (`MAX_RATING_PAGE_GZIP_BYTES`) DEĞİŞMEDİ ve hâlâ
+     * tutuyor: kırk satırlık bu sahnede favori düğmeleri birbirinin
+     * neredeyse aynısı olduğu için sıkıştırmadan sonra bedeli küçük kalıyor.
+     * Değişen tavan yalnız sıkıştırılmamış betik ölçüsüdür.
+     *
+     * Kütüphane yine eklenmedi: kalp de yıldız gibi sayfada bir kez
+     * `<symbol>` olarak duruyor ve düğmeler ona `<use>` ile bakıyor.
+     */
+    private const MAX_RATING_SCRIPT_BYTES = 30000;
 
     private function guestHtml(): string
     {
