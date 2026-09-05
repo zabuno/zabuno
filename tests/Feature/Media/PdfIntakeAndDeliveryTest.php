@@ -171,7 +171,16 @@ final class PdfIntakeAndDeliveryTest extends TestCase
             0,
             (int) DB::table('media_processing_jobs')
                 ->where('media_asset_id', $assetId)
-                ->where('status', 'failed')
+                /*
+                    Sütunun adı `state`, `status` DEĞİL.
+
+                    Yerel takım SQLite ile koşuyor ve orada bu sorgu hiç
+                    çalışmadan sıfır dönüyordu — yani test "başarısız iş
+                    yok" diye GEÇİYOR ama aslında hiçbir şey ölçmüyordu.
+                    Dağıtım hedefi PostgreSQL sütunu bulamayınca patladı ve
+                    ölçümün boş olduğunu ortaya çıkardı.
+                */
+                ->where('state', 'failed')
                 ->count(),
             'PDF "işlenemedi" diye damgalandı; sahip belgesini bozuk sanır.',
         );
