@@ -41,8 +41,14 @@ describe('TeamMemberList — satır grameri', () => {
                 removeCancelText="Vazgeç"
                 removeBusyText="Çıkarılıyor"
                 removeErrorText="Olmadı"
+                removeForbiddenText="Bunu yalnız sahip yapabilir"
+                removeMissingText="Bu kişi artık listede değil"
                 removeSuccessText="Çıkarıldı"
                 removeRetryText="Yeniden dene"
+                // Sunucunun çıkarabildiği roller; bu dosya satır GRAMERİNİ
+                // sınar, kümenin kendisini değil.
+                removableRoles={['editor', 'manager', 'kitchen']}
+                viewerIsOwner
                 onTransferOwnership={noop}
                 transferButtonText="Sahipliği devret"
                 transferDialogTitle="Devret"

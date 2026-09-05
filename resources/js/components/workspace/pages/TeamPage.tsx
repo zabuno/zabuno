@@ -22,6 +22,23 @@ import {
 
 type TeamPageProps = {
     workspaceId?: number;
+    /**
+     * Oturumdaki kişinin BU çalışma alanındaki rolü — `GET /workspace-context`
+     * gövdesinin `role` alanı, kabuktan geçirilir.
+     *
+     * Neden izin listesi değil: `workspace.manage` iznini Yönetici de taşır
+     * ve bu ekran ona da açıktır. Ama ekipten çıkarmak sahibin kararıdır ve
+     * uç nokta yöneticiye 403 döner; yani "yapabilir mi?" sorusunun cevabı
+     * izin listesinde YOK. Sunucu rolü zaten izin kümesinden geri okuyarak
+     * üretiyor, karar yine oradan geliyor.
+     *
+     * TANIMSIZ = SÜZME YOK (`docs/98` FF-74 sözleşmesinin kendi kuralı, bkz.
+     * `WorkspaceApp` içindeki `can`). Eski gövdeler ve bileşen testleri rol
+     * bilgisi taşımaz; sessizce her şeyi gizlemek, yetkisiz göstermekten
+     * kötü olurdu. `null` ise SÜZÜLÜR: sunucu "bu izin kümesi hiçbir role
+     * uymuyor" demiştir ve tanınmayan bir role sahiplik yetkisi verilemez.
+     */
+    viewerRole?: string | null;
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,7 +112,7 @@ const ROLE_PILL_BASE = [
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
 ].join(' ');
 
-export function TeamPage({ workspaceId }: TeamPageProps) {
+export function TeamPage({ workspaceId, viewerRole }: TeamPageProps) {
     const emailId = useId();
     const roleId = useId();
     /*
@@ -321,6 +338,30 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                     );
 
                     if (!response.ok) {
+                        /*
+                            SUNUCUNUN NE DEDİĞİ TAŞINIR, NASIL SÖYLEDİĞİ
+                            DEĞİL.
+
+                            Her ret tek bir "olmadı"ya iniyordu ve ekran
+                            hepsine "tekrar deneyin" diyordu. Oysa 403 ile
+                            404 iki ayrı gerçektir: biri "bu iş sahibin"
+                            (çıkış yolu: sahibinden istemek), diğeri "o
+                            üyelik zaten orada değil" (çıkış yolu: yok).
+                            Ayrımı BURADA yapmak zorunludur, çünkü yanıt
+                            gövdesi bu satırdan sonra kayboluyor.
+
+                            Gövdenin kendisi okunmaz ve ekrana taşınmaz:
+                            "Forbidden." geliştiriciye yazılmış bir cümledir
+                            ve sahibin ekranında ham JSON kadar yabancıdır.
+                        */
+                        if (response.status === 403) {
+                            return 'forbidden';
+                        }
+
+                        if (response.status === 404) {
+                            return 'missing';
+                        }
+
                         return 'error';
                     }
 
@@ -496,6 +537,15 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
         satırda o kelimeyi gören sahip, kartta karşılığını bulmalı; kimse
         taşımıyorken anlatmak ise olmayan bir seçenek sunmak olurdu.
     */
+    /*
+        Rol BİLİNMİYORSA süzülmez, YOKSA süzülür. İkisi farklı şeydir:
+        `undefined` "kabuk bu bilgiyi hiç geçirmedi" demektir, `null` ise
+        sunucunun kendi cevabıdır — "bu izin kümesi hiçbir role uymuyor".
+        İkincisinde sahiplik yetkisi vermek, tanımadığımız birine sahip
+        muamelesi yapmak olurdu.
+    */
+    const viewerIsOwner = viewerRole === undefined || viewerRole?.toLowerCase() === 'owner';
+
     const guideRoles: TeamRoleKey[] = ['owner', 'manager', 'editor', 'kitchen'];
 
     if (members.some((member) => member.role.toLowerCase() === 'member')) {
@@ -544,8 +594,20 @@ export function TeamPage({ workspaceId }: TeamPageProps) {
                                 removeCancelText={t('workspace.team.members.remove.cancel')}
                                 removeBusyText={t('workspace.team.members.remove.busy')}
                                 removeErrorText={t('workspace.team.members.remove.error')}
+                                removeForbiddenText={t('workspace.team.members.remove.forbidden')}
+                                removeMissingText={t('workspace.team.members.remove.missing')}
                                 removeSuccessText={t('workspace.team.members.remove.success')}
                                 removeRetryText={t('workspace.team.members.remove.retry')}
+                                /*
+                                    ÇIKARILABİLİR KÜME, DAVET EDİLEBİLİR
+                                    KÜMEDİR — sunucunun kendi türetmesiyle
+                                    aynı (`MembershipRole::invitable()`).
+                                    İkinci bir liste yazılsaydı, davet
+                                    edilebilen yeni bir rol doğduğunda biri
+                                    güncellenir öbürü unutulurdu.
+                                */
+                                removableRoles={INVITABLE_ROLES.map((option) => option.value)}
+                                viewerIsOwner={viewerIsOwner}
                                 onTransferOwnership={transferOwnership}
                                 transferButtonText={t('workspace.team.members.transfer.button')}
                                 transferDialogTitle={t('workspace.team.members.transfer.title')}

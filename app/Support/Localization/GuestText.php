@@ -98,4 +98,35 @@ final class GuestText
             'body' => $this->get('guest.deadEnd.body', $locale),
         ];
     }
+
+    /**
+     * SERVİS DIŞI SAAT (FF-139) — çıkmaz sokaktan AYRI bir sayfa.
+     *
+     * İkisini aynı metinle geçiştirmek ürünü yalancı yapardı: çıkmaz sokak
+     * "burada menü yok" der, bu sayfa ise "menü var, bu saatte servis
+     * edilmiyor" der. Masadaki misafir için aradaki fark, kalkıp gitmekle
+     * personele sormak arasındaki farktır.
+     *
+     * SAAT VARSA YAZILIR, YOKSA HİÇ YAZILMAZ. `nextService` anahtarı gerçek
+     * bir geçiş bulunamadığında haritada HİÇ BULUNMAZ; boş bir dize
+     * döndürseydik şablon "Sonraki servis: " diye yarım bir cümle çizerdi.
+     *
+     * @return array<string, string>
+     */
+    public function outOfService(?string $locale = null, ?string $nextServiceClock = null): array
+    {
+        $text = [
+            'title' => $this->get('guest.outOfService.title', $locale),
+            'heading' => $this->get('guest.outOfService.heading', $locale),
+            'body' => $this->get('guest.outOfService.body', $locale),
+        ];
+
+        if ($nextServiceClock !== null && trim($nextServiceClock) !== '') {
+            $text['nextService'] = $this->get('guest.outOfService.nextService', $locale, [
+                'clock' => $nextServiceClock,
+            ]);
+        }
+
+        return $text;
+    }
 }

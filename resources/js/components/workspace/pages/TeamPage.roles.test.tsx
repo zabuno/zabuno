@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { TeamPage } from './TeamPage';
@@ -202,6 +202,57 @@ describe('TeamPage — davet rolleri', () => {
 
         await user.click(screen.getByRole('radio', { name: 'Manager' }));
         expect(screen.getByText(/cannot manage billing/i)).toBeInTheDocument();
+    });
+
+    /**
+     * MUTFAK ROLÜ EKRANIN HER İKİ YERİNDE DE GERÇEKTİR (FF-138d).
+     *
+     * Rol sunucuda doğdu ve davet hapı olarak çizildi; ama sahibin onu
+     * GÖRECEĞİ iki yer daha var: aşçının kendi satırı ve "Roller ne
+     * yapabilir?" kartı. Satırda rolün adı yanlış yazsaydı — ya da kartta hiç
+     * geçmeseydi — sahip, davet ettiği kişinin ne yapabildiğini ekranda
+     * doğrulayamazdı.
+     */
+    it('Mutfak üyesi kendi rolüyle listelenir ve rol rehberinde anlatılır', async () => {
+        fetchSpy.mockImplementation(async (url: string, init?: RequestInit) => {
+            const href = String(url);
+            const method = (init?.method ?? 'GET').toUpperCase();
+
+            if (href === MEMBERS_ENDPOINT && method === 'GET') {
+                return {
+                    ok: true,
+                    status: 200,
+                    headers: new Headers(),
+                    json: async () => [
+                        { id: 1, name: 'Ayşe Yılmaz', email: 'ayse@example.test', role: 'owner' },
+                        { id: 4, name: 'Hasan Usta', email: 'hasan@example.test', role: 'kitchen' },
+                    ],
+                } as Response;
+            }
+
+            return {
+                ok: true,
+                status: 200,
+                headers: new Headers(),
+                json: async () => [],
+            } as Response;
+        });
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        const membersRegion = screen.getByRole('region', { name: /team members/i });
+
+        await waitFor(() => {
+            expect(within(membersRegion).getByText('Hasan Usta')).toBeInTheDocument();
+        });
+
+        // Satırın rol kutusu SUNUCUNUN değerini gösterir, varsayılanı değil.
+        expect(within(membersRegion).getByLabelText('Role for Hasan Usta')).toHaveValue('kitchen');
+
+        // Rehber, rolün sözleşmesini kaynağın kendi cümlesiyle yazar.
+        expect(
+            screen.getByText('Allergens and “sold out today”. Sees nothing else.'),
+        ).toBeInTheDocument();
     });
 
     /** Seçili hap yalnız RENKLE değil, ARIA durumuyla da ayrışır. */

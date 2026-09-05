@@ -523,3 +523,250 @@ describe('TeamPage — S1-WP01A member remove (TEAM_ACTIONS_FRONTEND_RED)', () =
         expect(within(membersRegion()).getByRole('status')).toHaveTextContent(/removed|remove/i);
     });
 });
+
+/**
+ * FF-138d — ÇIKARMA ARTIK YALNIZ EDİTÖRE AİT DEĞİL.
+ *
+ * Ekran "Çıkar" düğmesini yalnız `editor` satırlarına çiziyordu. Sunucu ise
+ * çıkarılabilir kümeyi `MembershipRole::invitable()` üzerinden türetiyor:
+ * Editör, Yönetici ve Mutfak. Aradaki fark sahibin ekranında bir ÇIKIŞSIZLIK
+ * olarak görünüyordu — işten ayrılan bir yöneticiyi ya da aşçıyı ekipten
+ * çıkarmanın hiçbir yolu yoktu, çünkü satırda düğme yoktu.
+ *
+ * Kümenin dışında kalan ikisi kasıtlıdır ve bu paket onları KORUR: `owner`
+ * silinmez, DEVREDİLİR (silinseydi çalışma alanı sahipsiz kalırdı); `member`
+ * ise yalnız eski kayıtların taşıdığı salt okunur roldür ve uç noktanın
+ * donmuş sözleşmesi onu koruma altına alır.
+ */
+describe('TeamPage — FF-138d çıkarılabilir roller ve dürüst ret', () => {
+    const OWNER_ID = 1;
+    const EDITOR_ID = 2;
+    const MANAGER_ID = 3;
+    const KITCHEN_ID = 4;
+    const LEGACY_ID = 5;
+
+    let fetchSpy: ReturnType<typeof vi.fn>;
+    let currentMembers: Array<{ id: number; name: string; email: string; role: string }>;
+    let deleteStatus: number;
+
+    beforeEach(() => {
+        currentMembers = [
+            { id: OWNER_ID, name: 'Ayşe Yılmaz', email: 'ayse@example.test', role: 'owner' },
+            { id: EDITOR_ID, name: 'Mehmet Demir', email: 'mehmet@example.test', role: 'editor' },
+            { id: MANAGER_ID, name: 'Zeynep Ak', email: 'zeynep@example.test', role: 'manager' },
+            { id: KITCHEN_ID, name: 'Hasan Usta', email: 'hasan@example.test', role: 'kitchen' },
+            { id: LEGACY_ID, name: 'Elif Kaya', email: 'elif@example.test', role: 'member' },
+        ];
+        deleteStatus = 204;
+        document.cookie = 'XSRF-TOKEN=ff-138d-remove-test-token';
+
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const href = String(url);
+            const method = (init?.method ?? 'GET').toUpperCase();
+
+            if (href === '/sanctum/csrf-cookie') {
+                return jsonResponse(204, null);
+            }
+            if (href === MEMBERS_ENDPOINT && method === 'GET') {
+                return jsonResponse(200, currentMembers);
+            }
+            if (href === INVITATIONS_ENDPOINT && method === 'GET') {
+                return jsonResponse(200, []);
+            }
+            if (href.startsWith(`${MEMBERS_ENDPOINT}/`) && method === 'DELETE') {
+                const membershipId = Number(href.slice(`${MEMBERS_ENDPOINT}/`.length));
+
+                if (deleteStatus === 204) {
+                    currentMembers = currentMembers.filter((member) => member.id !== membershipId);
+
+                    return jsonResponse(204, null);
+                }
+
+                /*
+                    Sunucunun KENDİ gövdesi. Ekranda olduğu gibi görünmemeli:
+                    "Forbidden." bir geliştirici cümlesidir ve sahibe ne
+                    yapacağını söylemez.
+                */
+                return jsonResponse(deleteStatus, {
+                    message: deleteStatus === 403 ? 'Forbidden.' : 'Not Found.',
+                });
+            }
+
+            throw new Error(`Unhandled fetch: ${method} ${href}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    function membersRegion() {
+        return screen.getByRole('region', { name: /team members/i });
+    }
+
+    function rowFor(name: string): HTMLElement {
+        const nameNode = within(membersRegion()).getByText(name);
+        const row = nameNode.closest('li');
+        if (!row) {
+            throw new Error(`expected a <li> row ancestor for ${name}`);
+        }
+
+        return row as HTMLElement;
+    }
+
+    async function waitForRows() {
+        await waitFor(() => {
+            expect(within(membersRegion()).getByText('Zeynep Ak')).toBeInTheDocument();
+        });
+    }
+
+    it('Yönetici satırında da çıkarma düğmesi çizilir', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+        await waitForRows();
+
+        expect(
+            within(rowFor('Zeynep Ak')).getByRole('button', { name: /remove/i }),
+        ).toBeInTheDocument();
+    });
+
+    it('Mutfak satırında da çıkarma düğmesi çizilir', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+        await waitForRows();
+
+        expect(
+            within(rowFor('Hasan Usta')).getByRole('button', { name: /remove/i }),
+        ).toBeInTheDocument();
+    });
+
+    /**
+     * Sahiplik DEVREDİLİR, silinmez: sahibi silinen bir çalışma alanını kimse
+     * onaramaz. Kaldırılabilir küme büyürken bu satırın korunması, kümenin
+     * "davet edilebilir roller"den türediğinin de kanıtıdır.
+     */
+    it('Sahip satırı çıkarılabilir gösterilmez', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+        await waitForRows();
+
+        expect(
+            within(rowFor('Ayşe Yılmaz')).queryByRole('button', { name: /remove/i }),
+        ).not.toBeInTheDocument();
+    });
+
+    /** Eski kayıtların salt okunur rolü; uç nokta onu silmez, ekran da vaat etmez. */
+    it('eski salt okunur üyelik çıkarılabilir gösterilmez', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+        await waitForRows();
+
+        expect(
+            within(rowFor('Elif Kaya')).queryByRole('button', { name: /remove/i }),
+        ).not.toBeInTheDocument();
+    });
+
+    it('Yönetici çıkarıldığında o üyeliğin adresine DELETE gider ve satır listeden düşer', async () => {
+        const user = userEvent.setup();
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+        await waitForRows();
+
+        const row = rowFor('Zeynep Ak');
+        await user.click(within(row).getByRole('button', { name: /remove/i }));
+        await user.click(within(row).getByRole('button', { name: /^confirm/i }));
+
+        await waitFor(() => {
+            expect(within(membersRegion()).queryByText('Zeynep Ak')).not.toBeInTheDocument();
+        });
+
+        expect(
+            fetchSpy.mock.calls.some(
+                ([url, init]) =>
+                    String(url) === `${MEMBERS_ENDPOINT}/${MANAGER_ID}` &&
+                    (init as RequestInit | undefined)?.method === 'DELETE',
+            ),
+        ).toBe(true);
+        expect(within(membersRegion()).getByText('Hasan Usta')).toBeInTheDocument();
+    });
+
+    /**
+     * SUNUCU HAYIR DERSE KULLANICI GÖRÜR.
+     *
+     * 403 "bu işi yapan sen değilsin" der ve çıkış yolu bellidir: sahibinden
+     * istemek. Genel "tekrar deneyin" cümlesi burada YANLIŞTIR — kaç kez
+     * denerse denesin aynı cevabı alır ve nedenini hiç öğrenemez.
+     */
+    it('sunucu 403 derse satır kalır ve neden çıkarılamadığı yazar', async () => {
+        const user = userEvent.setup();
+        deleteStatus = 403;
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+        await waitForRows();
+
+        const row = rowFor('Zeynep Ak');
+        await user.click(within(row).getByRole('button', { name: /remove/i }));
+        await user.click(within(row).getByRole('button', { name: /^confirm/i }));
+
+        await waitFor(() => {
+            expect(within(row).getByRole('status')).toHaveTextContent(
+                /only the workspace owner can remove/i,
+            );
+        });
+
+        expect(within(membersRegion()).getByText('Zeynep Ak')).toBeInTheDocument();
+        // HAM GÖVDE SIZMAZ: ne sunucunun cümlesi ne de JSON'un kendisi.
+        expect(membersRegion().textContent ?? '').not.toMatch(/Forbidden\.|"message"|\{/);
+        // Boşuna tekrar sunulmaz: aynı istek aynı cevabı alır.
+        expect(within(row).queryByRole('button', { name: /^retry$/i })).not.toBeInTheDocument();
+    });
+
+    /**
+     * 404 farklı bir gerçeği anlatır: o üyelik artık orada değil. "Tekrar
+     * deneyin" demek, olmayan bir satırı silmeye çağırmak olurdu.
+     */
+    it('sunucu 404 derse üyeliğin artık listede olmadığı yazar', async () => {
+        const user = userEvent.setup();
+        deleteStatus = 404;
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+        await waitForRows();
+
+        const row = rowFor('Hasan Usta');
+        await user.click(within(row).getByRole('button', { name: /remove/i }));
+        await user.click(within(row).getByRole('button', { name: /^confirm/i }));
+
+        await waitFor(() => {
+            expect(within(row).getByRole('status')).toHaveTextContent(
+                /no longer in the team list/i,
+            );
+        });
+
+        expect(membersRegion().textContent ?? '').not.toMatch(/Not Found\.|"message"|\{/);
+    });
+
+    /**
+     * YAPILAMAYAN İŞ ÇİZİLMEZ (`docs/98` FF-74).
+     *
+     * `workspace.manage` iznini Yönetici de taşır ve Takım ekranı ona da
+     * açıktır — ama ekipten çıkarma sahibin kararıdır ve uç nokta yöneticiye
+     * 403 döner. Düğmeyi çizip tıklandığında reddetmek, yöneticiye olmayan
+     * bir yetkiyi vaat etmektir.
+     */
+    it('sahibi olmayan bir kullanıcıya çıkarma düğmesi hiç çizilmez', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} viewerRole="manager" />);
+        await waitForRows();
+
+        expect(within(membersRegion()).queryAllByRole('button', { name: /remove/i })).toHaveLength(
+            0,
+        );
+        expect(
+            within(membersRegion()).queryAllByRole('button', { name: /transfer ownership/i }),
+        ).toHaveLength(0);
+    });
+
+    it('sahibe çıkarma düğmesi çizilir', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} viewerRole="owner" />);
+        await waitForRows();
+
+        expect(
+            within(rowFor('Zeynep Ak')).getByRole('button', { name: /remove/i }),
+        ).toBeInTheDocument();
+    });
+});
