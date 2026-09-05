@@ -51,8 +51,16 @@
     "Security": [
         "tests/Feature/Security/TenantIsolationEvidenceApiTest.php",
         "tests/Feature/Security/BackupRestoreEvidenceApiTest.php",
+        "tests/Feature/Security/BackupRestoreEvidenceCommandTest.php",
+        "tests/Feature/Security/BackupRestoreDrillIsScheduledTest.php",
+        "tests/Feature/Security/BackupRestoreDrillRunnerFactoryTest.php",
+        "tests/Feature/Security/PostgresBackupRestoreDrillTest.php",
         "tests/Unit/Domain/Security/TenantIsolationEvidenceRecordTest.php",
-        "tests/Unit/Domain/Security/BackupRestoreEvidenceRecordTest.php"
+        "tests/Unit/Domain/Security/BackupRestoreEvidenceRecordTest.php",
+        "tests/Unit/Domain/Security/MediaBackupRestoreEvidenceRecordTest.php",
+        "tests/Unit/Infrastructure/Security/Execution/SqliteBackupRestoreDrillRunnerTest.php",
+        "tests/Unit/Infrastructure/Security/Execution/PostgresBackupRestoreDrillRunnerTest.php",
+        "tests/Unit/Infrastructure/Security/Execution/TarMediaBackupRestoreDrillRunnerTest.php"
     ],
     "Taxonomy": ["tests/Feature/MenuCatalog/MenuCatalogTenantEscapeTest.php"],
     "Team": [

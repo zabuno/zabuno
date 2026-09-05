@@ -24,13 +24,29 @@ final class RecordBackupRestoreEvidence
         $tables = BackupRestoreTableManifest::tables();
 
         $result = $this->runner->run($tables);
+        $driver = $this->runner->driver();
         $snapshot = $this->snapshot->collect(BackupRestoreTableManifest::sourcePaths());
 
-        $passed = $result['passed'] && ($result['restored_integrity_ok'] ?? false) === true;
-        $exitCode = $passed ? 0 : ($result['exit_code'] !== 0 ? $result['exit_code'] : 1);
+        /*
+            Koşucunun "geçti" demesi yetmez: geri yüklenen kopyanın bütünlük
+            sinyali de açıkça doğru olmalı (eksik sinyal = yanlış sinyal).
+            Ölçülmemiş bir koşu ise ne geçmiş ne kalmıştır — BİLİNMİYOR.
+            "Ölçülmedi ama geçti" diyen bir sonuç kendiyle çelişir ve
+            çelişki hiçbir zaman "geçti" lehine çözülmez.
+        */
+        $measured = ($result['measured'] ?? true) === true;
+        $integrityOk = ($result['restored_integrity_ok'] ?? false) === true;
+
+        $status = match (true) {
+            ! $measured => 'unknown',
+            $result['passed'] && $integrityOk => 'passed',
+            default => 'failed',
+        };
+
+        $exitCode = $status === 'passed' ? 0 : ($result['exit_code'] !== 0 ? $result['exit_code'] : 1);
 
         $record = BackupRestoreEvidenceRecord::fromRun(
-            status: $passed ? 'passed' : 'failed',
+            status: $status,
             durationMs: $result['duration_ms'],
             exitCode: $exitCode,
             gitSha: $snapshot['git_sha'],
@@ -43,6 +59,10 @@ final class RecordBackupRestoreEvidence
             restoredRowCount: $result['restored_row_count'],
             outputSha256: hash('sha256', $result['output']),
             ranAt: Carbon::now()->toIso8601String(),
+            driver: $driver,
+            backupBytes: (int) ($result['backup_bytes'] ?? 0),
+            backupMs: (int) ($result['backup_ms'] ?? 0),
+            restoreMs: (int) ($result['restore_ms'] ?? 0),
         );
 
         return $this->repository->append($record);

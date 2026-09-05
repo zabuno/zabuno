@@ -134,6 +134,24 @@ jobs:
           npm run build-storybook -- --quiet -o storybook-static
           node scripts/mobile-ux-audit storybook-static --baseline scripts/mobile-ux-audit.baseline.json
 
+      # Yedek tatbikati (docs/124) gercek pg_dump/pg_restore ile OLCULUR.
+      # Runner imajinin kendi istemcisi sunucudan (postgres:17) eski
+      # olabilir ve pg_dump daha yeni bir sunucuyu REDDEDER ("server version
+      # mismatch"). Kosucu bunu "unknown" olarak kaydeder, "gecti" demez;
+      # ama CI'da bilinmiyor yeterli degil: istemci sunucuyla ayni majore
+      # cekilir ve PostgresBackupRestoreDrillTest CI=true iken eksik araci
+      # skip degil FAIL sayar. PGDG deposu runner'da zaten olabilir; ikinci
+      # kez eklemek yalniz bir uyari verir.
+      - name: PostgreSQL 17 client (pg_dump/pg_restore for the backup drill)
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/zabuno-pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends postgresql-client-17
+          pg_dump --version
+          pg_restore --version
+
       # Ayni suit, urun motorunda. SQLite ile PostgreSQL sessizce farkli
       # davraniyor ve fark her seferinde SQLite lehine hata gizliyordu:
       # basarisiz bir INSERT PostgreSQL'de tum islemi iptal eder, SQLite'ta
