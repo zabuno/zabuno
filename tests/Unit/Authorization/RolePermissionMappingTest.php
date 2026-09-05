@@ -100,7 +100,19 @@ final class RolePermissionMappingTest extends TestCase
             Editor'a eklemesidir. O gün bu satır kırılır ve gerekçe yazmak
             zorunda kalınır.
         */
-        self::assertCount(21, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak yirmi bir permission tanımlar (on üç çekirdek + iki medya + menu.allergens.manage + menu.stock.manage + dört order.* ekseni) — ek permission eklenmemeli.');
+        /*
+            21 → 23 (`docs/116` §4, P5/P6): puan ekseni İKİ izin ekliyor —
+            `rating.view` (ölçümü görmek) ve `rating.reply` (misafirin
+            ölçümüne restoran adına cevap vermek).
+
+            EKSENDE ÜÇÜNCÜ BİR İZİN YOK ve bu sayının kendisi kadar
+            anlamlı: `rating.delete` diye bir satır olsaydı, "sahip puanı
+            silemez" kuralı bir gün birinin onu bir role eklemesiyle
+            sessizce ölürdü. Silmeyi kimseye vermemenin ilk şartı, onu bir
+            yetenek olarak adlandırmamaktır.
+        */
+        self::assertCount(23, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak yirmi üç permission tanımlar (on üç çekirdek + iki medya + menu.allergens.manage + menu.stock.manage + dört order.* + iki rating.* ekseni) — ek permission eklenmemeli.');
+        self::assertNotContains('rating.delete', $values, 'PERMISSION-ENUM-01: puanı silme yeteneği ADLANDIRILMAZ; adı olmayan bir yetenek bir role verilemez (`docs/116` §4).');
         self::assertContains('workspace.view', $values);
         self::assertContains('workspace.manage', $values);
         self::assertContains('menu.view', $values);
@@ -148,7 +160,11 @@ final class RolePermissionMappingTest extends TestCase
         self::assertContains(Permission::OrderConfirm, $permissions);
         self::assertContains(Permission::OrderKitchen, $permissions);
         self::assertContains(Permission::OrderSettings, $permissions);
-        self::assertCount(21, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak yirmi bir permission taşımalı (bounded scope dışında ek yetki yok).');
+        // `docs/116` §4: Sahip puanı GÖRÜR ve YANITLAR; silemez — ve
+        // silecek bir izin hiç yoktur.
+        self::assertContains(Permission::RatingView, $permissions);
+        self::assertContains(Permission::RatingReply, $permissions);
+        self::assertCount(23, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak yirmi üç permission taşımalı (bounded scope dışında ek yetki yok).');
     }
 
     // --- CORE03-ROLE-MAP-MEMBER-01 ----------------------------------------
@@ -172,7 +188,15 @@ final class RolePermissionMappingTest extends TestCase
         // Sahip kararı (FF-71): asıl indirme her role serbest; Member yine yükleyemez.
         self::assertContains(Permission::MediaDownloadOriginal, $permissions);
         self::assertNotContains(Permission::MediaManage, $permissions);
-        self::assertCount(5, $permissions, 'ROLE-MAP-MEMBER-01: Member workspace.view, menu.view, qr.view, analytics.view ve media.download_original taşımalı; manage/publish/create/disable/design.manage/billing/security.evidence/media.manage taşımamalı.');
+        /*
+            Member salt okunurdur ve `rating.view` tam olarak bunun
+            kapsamına girer: ölçümü OKUMAK. `rating.reply` girmez — o,
+            misafirin gördüğü menüde restoran adına konuşmaktır ve salt
+            okunur bir rolün işi değildir.
+        */
+        self::assertContains(Permission::RatingView, $permissions);
+        self::assertNotContains(Permission::RatingReply, $permissions, 'ROLE-MAP-MEMBER-01: salt okunur bir rol restoran adına konuşamaz.');
+        self::assertCount(6, $permissions, 'ROLE-MAP-MEMBER-01: Member workspace.view, menu.view, qr.view, analytics.view, media.download_original ve rating.view taşımalı; manage/publish/create/disable/design.manage/billing/security.evidence/media.manage/rating.reply taşımamalı.');
     }
 
     // --- CORE03-ROLE-MAP-EDITOR-01 -----------------------------------------

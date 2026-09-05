@@ -35,6 +35,15 @@ final class RolePermissions
      * Sessizce "salt okunur olduğu için görsün" demek, masadaki misafirin ne
      * yediğini kimsenin vermediği bir role açmak olurdu.
      *
+     * PUAN EKSENİ (`docs/116` §4) beşinci bir soru ekliyor: "misafirin
+     * ölçümü karşısında kim ne yapabilir?". `rating.view` ölçüm okuma
+     * yüzeyidir ve `analytics.view` ile aynı kitleye açıktır; `rating.reply`
+     * ise markanın sesidir ve yalnız menüyü yayınlayabilen rollerdedir
+     * (Owner, Manager). Mutfak rolünde İKİSİ DE yoktur — kaynağın "başka
+     * bir şey görmez" cümlesi burada da geçerli. Ve eksende üçüncü bir izin
+     * (`rating.delete`) YOKTUR: silmeyi kimseye vermemenin ilk şartı, onu
+     * bir yetenek olarak adlandırmamaktır.
+     *
      * `MenuAllergensManage` ve `MenuStockManage`, `MenuManage`'in İÇİNDEN
      * çıkarılan iki dar eksendir. Bu yüzden `MenuManage` taşıyan üç rolün
      * (Owner/Manager/Editor) listesine de AÇIKÇA eklendiler: dünkü üründe
@@ -71,6 +80,10 @@ final class RolePermissions
                 Permission::OrderKitchen,
                 // Hizmeti açıp kapatmak SAHİBİN kararıdır (`docs/115` §4).
                 Permission::OrderSettings,
+                Permission::RatingView,
+                // Yanıt verir, KALDIRMAZ (`docs/116` §4). Listede
+                // `rating.delete` diye bir satır yok ve olmayacak.
+                Permission::RatingReply,
             ],
             MembershipRole::Manager => [
                 Permission::WorkspaceView,
@@ -101,6 +114,14 @@ final class RolePermissions
                 Permission::OrderView,
                 Permission::OrderConfirm,
                 Permission::OrderKitchen,
+                /*
+                    Yönetici menüyü YAYINLAYABİLİYOR (`menu.publish`), yani
+                    misafirin gördüğü sayfayı zaten değiştirebiliyor. Puana
+                    yanıt yazmayı ondan esirgemek, aynı yüzeyde daha küçük
+                    bir yetkiyi daha büyüğünün sahibinden almak olurdu.
+                */
+                Permission::RatingView,
+                Permission::RatingReply,
             ],
             MembershipRole::Editor => [
                 Permission::WorkspaceView,
@@ -114,6 +135,13 @@ final class RolePermissions
                 // Görsel yüklemek içerik düzenlemektir; yayınlamak değildir.
                 Permission::MediaManage,
                 Permission::MediaDownloadOriginal,
+                /*
+                    Editör puanları GÖRÜR, yanıt YAZMAZ. Görmek işin
+                    kendisidir: hangi tabağın açıklamasını düzeltmesi
+                    gerektiğini başka nereden bilecek? Yanıt ise markanın
+                    sesidir ve editör menüyü de yayınlayamıyor.
+                */
+                Permission::RatingView,
             ],
             /*
                 MUTFAK — kaynağın cümlesi: "Alerjen ve 'bugün bitti'. Başka
@@ -152,6 +180,8 @@ final class RolePermissions
                 Permission::AnalyticsView,
                 // Salt okunur; yine de aslı indirebilir (sahip kararı).
                 Permission::MediaDownloadOriginal,
+                // Ölçüm okuma yüzeyi; `analytics.view` ile aynı kitle.
+                Permission::RatingView,
             ],
         };
     }

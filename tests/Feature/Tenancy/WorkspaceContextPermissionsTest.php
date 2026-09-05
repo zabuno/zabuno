@@ -68,7 +68,9 @@ final class WorkspaceContextPermissionsTest extends TestCase
         // gördüğü listedir; panel yetkisiz eylemi hiç çizmediği için, eksik
         // gönderilen bir izin sahibin ekranından bir düğmenin sessizce
         // kaybolması demektir.
-        self::assertCount(21, $body['permissions']);
+        // 21 → 23: puan ekseni (`docs/116` §4). Sahip puanları görür ve
+        // yanıtlar; SİLMEZ — ve listede silecek bir izin hiç yoktur.
+        self::assertCount(23, $body['permissions']);
         self::assertContains('billing.manage', $body['permissions']);
         self::assertContains('media.manage', $body['permissions']);
         self::assertContains('menu.allergens.manage', $body['permissions']);
@@ -77,6 +79,9 @@ final class WorkspaceContextPermissionsTest extends TestCase
         self::assertContains('order.confirm', $body['permissions']);
         self::assertContains('order.kitchen', $body['permissions']);
         self::assertContains('order.settings', $body['permissions']);
+        self::assertContains('rating.view', $body['permissions']);
+        self::assertContains('rating.reply', $body['permissions']);
+        self::assertNotContains('rating.delete', $body['permissions'], 'Sahip puanı silemez; panelin gördüğü listede böyle bir yetki yok.');
         self::assertTrue($body['features']['novice-home'], 'Bayrak varsayılan açık.');
 
         $again = $this->api($owner)->getJson('/api/workspace-context')->assertOk()->json();

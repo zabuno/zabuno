@@ -293,6 +293,49 @@ export const guestTranslations = {
         çözülür. Kısa olmak zorunda: kartta 8 punto ve tek satır.
     */
     'guest.print.scanForMenu': 'Scan for the menu',
+
+    /*
+        PUANLAMA (`docs/116` §3/§4) — misafirin oyu ve gördüğü puan.
+
+        ═══ "HENÜZ YETERLİ DEĞERLENDİRME YOK" BİR CÜMLEDİR, BOŞLUK DEĞİL ═══
+
+        Eşiğin altında ekran sıfır yıldız GÖSTERMEZ; sıfır bir ölçümdür ve
+        bilinmeyenin yerine geçemez. Ama hiçbir şey yazmamak da bir cevap
+        değildir: misafir "bu ürün puanlanmıyor mu, yoksa kötü mü?" diye
+        sorar. Cümle o soruyu kapatır.
+
+        ═══ SAYIYA BAĞLI ÇOĞUL YOK ═══
+
+        Katalogda çoğul motoru yok (bkz. `guest.menu.summary` gerekçesi);
+        bu yüzden "3 ratings" gibi sayıya bağlı hiçbir cümle burada yok.
+    */
+    'guest.rating.label': 'Rate this dish',
+    /*
+        Her yıldızın kendi erişilebilir adı. Ekran okuyucu kullanan misafir
+        için "yıldız, yıldız, yıldız, yıldız, yıldız" beş özdeş düğmedir;
+        kaçıncısına bastığını ancak bu cümle söyler.
+    */
+    'guest.rating.choice': '{score} out of {max}',
+    'guest.rating.score': 'Rating: {score} out of {max}',
+    'guest.rating.notEnough': 'Not enough ratings yet',
+    /*
+        MİSAFİRE VERİLEN SÖZ TAM OLARAK TUTULABİLİR OLMALI.
+
+        "Puanınız eklendi" demiyoruz: oy ağırlıklandırmaya girmemiş olabilir
+        (ani yığılma) ve o karar algoritmanındır. "Kaydedildi" ise her
+        durumda doğrudur — sinyal deftere yazıldı ve orada duruyor.
+    */
+    'guest.rating.recorded': 'Thank you. Your rating was recorded.',
+    'guest.rating.failed': 'Your rating could not be sent. Please try again.',
+    'guest.rating.offline': 'You appear to be offline. Your rating was not sent.',
+    /*
+        KİM KONUŞUYOR, YAZILI (`docs/116` §5 D1 ile aynı ilke).
+
+        Restoranın cümlesi ile misafirlerin ölçümü aynı satırın altında
+        duruyor; kaynağı yazılmazsa misafir sahibin sözünü bir
+        değerlendirme sanır.
+    */
+    'guest.rating.replyLabel': 'From the restaurant',
 } as const;
 
 export type GuestTranslationKey = keyof typeof guestTranslations;

@@ -13,10 +13,12 @@ use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Application\QrDestination\Dto\QrCodeRecord;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
+use App\Application\Rating\Port\RatingScoreQueryPort;
 use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\Entitlement\Entitlement;
 use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\QrDestination\QrToken;
+use App\Domain\Rating\RatingAlgorithm;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\GuestDeadEnd;
@@ -25,6 +27,7 @@ use App\Support\Analytics\VisitorKey;
 use App\Support\Localization\GuestLocale;
 use App\Support\Localization\GuestText;
 use App\Support\Money\MoneyFormatContract;
+use App\Support\Rating\ScoreLabel;
 use App\Support\Seo\MenuStructuredData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -43,6 +46,7 @@ final class ShowPublicMenuController extends Controller
         private readonly ResolveGuestMenuView $guestMenuView,
         private readonly EntitlementRepositoryPort $entitlements,
         private readonly OrderingSwitchPort $orderingSwitch,
+        private readonly RatingScoreQueryPort $ratingScores,
     ) {}
 
     public function __invoke(Request $request, string $token): SymfonyResponse
@@ -196,6 +200,15 @@ final class ShowPublicMenuController extends Controller
                 ve bunu restoran değil ürün öder.
             */
             'ordering' => $this->orderingFor($record, $publication, $guestLocale),
+            /*
+                PUANLAMA — SEPETLE AYNI KURAL (`docs/116` §3/§4).
+
+                Karar BURADA verilir ve sayfaya basılır. `null` gelen bir
+                puanlama ekranda tek bir yıldız bile bırakmaz: oy
+                verilemeyen bir yerde oy denetimi çizmek, misafire olmayan
+                bir yetenek vaat etmektir.
+            */
+            'rating' => $this->ratingFor($record, $view->servingMenuId, $guestLocale),
             // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
             // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
             // bakar, buraya değil.
@@ -278,6 +291,83 @@ final class ShowPublicMenuController extends Controller
             'submitPath' => '/q/'.$record->token.'/orders',
             'money' => $money->toArray(),
             'text' => $this->guestText->ordering($guestLocale),
+        ];
+    }
+
+    /**
+     * "BU MASA ŞU AN PUAN VEREBİLİR Mİ, VE HANGİ PUANLARI GÖRÜR?"
+     *
+     * ═══ TEK ŞART: MASADAN OKUTULMUŞ BİR KAREKOD ═══
+     *
+     * `docs/116` §4'ün şartı `StoreGuestRatingController` ile birebir aynı
+     * ve aynı olmak zorunda: sayfa ile uç aynı soruya farklı cevap verirse
+     * misafir çizilmiş bir yıldıza basar ve sunucudan ret yer. Sipariş
+     * hakkı ya da şube şalteri BURADA SORULMAZ — mutfağı kapatmış bir
+     * restoranın misafiri hâlâ yediği tabağı puanlayabilir; puan bir sipariş
+     * değildir.
+     *
+     * ═══ PUAN GÖSTERİMİ DE AYNI KAPIYA BAĞLI ═══
+     *
+     * Afişten bakan misafire puanı gösterip oyu göstermemek teknik olarak
+     * mümkün ama iki ayrı kod yolu demekti; iki yol bir gün ayrışır ve o
+     * gün hangisinin doğru olduğu bilinemez. Bugün ödenen bedel yazılıdır:
+     * masaya bağlı olmayan bir kodda puanlar görünmüyor. Bu, `docs/109`
+     * §8.6 anlamında bugünün ölçümüdür; gösterim ile oyu ayırmak gerekirse
+     * o gün bu satır yeniden bakılır.
+     *
+     * ═══ EŞİK ALTINDAKİ SAYI ŞABLONA HİÇ ULAŞMAZ ═══
+     *
+     * `RatingSummary` kararı yapıcısında uyguluyor: karar olumsuzsa `score`
+     * `null`. Buradan çıkan haritada da yalnız BİTMİŞ METİN var — sayı
+     * değil, eşik değil, sinyal sayısı değil. Şablonun yanlış yapabileceği
+     * bir şey kalmıyor.
+     *
+     * @return array{submitPath:string, scaleMax:int, text:array<string, string>, items:array<int, array{label:?string, reply:?string}>}|null
+     */
+    private function ratingFor(QrCodeRecord $record, int $menuId, string $guestLocale): ?array
+    {
+        if (! RatingAlgorithm::current()->abuseRules()->requiresTableScan()) {
+            /*
+                Kural dosyada kapatılabilir olduğu için burada da SORULUR.
+                Kapatıldığında masasız kodda da oy verilebilir; iki yerde
+                iki farklı varsayım tutmak, o günü sessiz bir çelişkiye
+                çevirirdi.
+            */
+            return $this->ratingSurface($record, $menuId, $guestLocale);
+        }
+
+        if ($record->diningTableId === null) {
+            return null;
+        }
+
+        return $this->ratingSurface($record, $menuId, $guestLocale);
+    }
+
+    /**
+     * @return array{submitPath:string, scaleMax:int, text:array<string, string>, items:array<int, array{label:?string, reply:?string}>}
+     */
+    private function ratingSurface(QrCodeRecord $record, int $menuId, string $guestLocale): array
+    {
+        $algorithm = RatingAlgorithm::current();
+
+        $items = [];
+
+        foreach ($this->ratingScores->forGuestMenu($record->workspaceId, $menuId, $algorithm->version) as $menuItemId => $summary) {
+            $items[$menuItemId] = [
+                // Sayı SUNUCUDA metne çevrilir: değer hazır ve hiç
+                // değişmiyor, dolayısıyla misafirin telefonuna bunun için
+                // tek bayt betik inmesi gerekmiyor (`ScoreLabel`).
+                'label' => $summary->score === null ? null : ScoreLabel::for($summary->score, $guestLocale),
+                'reply' => $summary->replyBody,
+            ];
+        }
+
+        return [
+            // Adres SUNUCUDAN basılır; istemci belirteci yeniden kurmaz.
+            'submitPath' => '/q/'.$record->token.'/ratings',
+            'scaleMax' => $algorithm->scaleMax,
+            'text' => $this->guestText->rating($guestLocale),
+            'items' => $items,
         ];
     }
 

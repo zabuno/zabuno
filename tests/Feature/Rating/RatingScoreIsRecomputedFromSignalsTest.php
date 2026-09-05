@@ -33,6 +33,9 @@ final class RatingScoreIsRecomputedFromSignalsTest extends TestCase
 
     private const SUBJECT_ID = 7;
 
+    /** Her sinyale ayrı bir ziyaretçi veren sayaç (bkz. `writeSignal`). */
+    private static int $visitorSequence = 0;
+
     /**
      * EŞİĞİ GEÇEN BİR ÜRÜN, PUANINI VE SÜRÜM DAMGASINI ALIR.
      *
@@ -197,7 +200,18 @@ final class RatingScoreIsRecomputedFromSignalsTest extends TestCase
             'source' => $source->value,
             'score_value' => $score,
             'score_scale_max' => 5,
-            'visitor_key' => str_repeat((string) random_int(0, 9), 64),
+            /*
+                HER SİNYAL AYRI BİR ZİYARETÇİDEN.
+
+                Önceden anahtar on olasılıktan rastgele seçiliyordu ve
+                sekiz sinyalli sahnelerde aynı anahtar iki kez çıkabiliyordu
+                — yani "sekiz oy" aslında bir kişinin sekiz oyu olabilirdi.
+                P4 bu durumu artık veritabanı düzeyinde imkânsız kılıyor
+                (`rating_signals_one_counted_vote_unique`): bir ziyaretçinin
+                bir üründe en fazla bir SAYILAN oyu olur. Sayaç, sahnenin
+                anlattığı şeyi ("sekiz farklı misafir") doğru kuruyor.
+            */
+            'visitor_key' => str_pad((string) ++self::$visitorSequence, 64, '0', STR_PAD_LEFT),
             'observed_at' => $observedAt,
             'recorded_at' => Carbon::now(),
             'created_at' => Carbon::now(),

@@ -164,6 +164,51 @@ final class GuestText
     }
 
     /**
+     * PUANLAMA SÖZLÜĞÜ (`docs/116` §3/§4) — P4/P5/P6.
+     *
+     * `all()` içine KONMADI, `ordering()` ile aynı gerekçe: puanlama yalnız
+     * masaya bağlı bir karekodun sayfasında çiziliyor. Cümleleri her misafir
+     * sayfasına basmak, afişten menüye bakan misafire kullanılmayacak bir
+     * sözlük indirtmek olurdu — ve bu sayfa masada, çoğu zaman zayıf bir
+     * hücresel bağlantıda açılıyor.
+     *
+     * @return array<string, string>
+     */
+    public function rating(string $locale): array
+    {
+        $keys = [
+            'ratingLabel' => 'guest.rating.label',
+            'ratingNotEnough' => 'guest.rating.notEnough',
+            'ratingRecorded' => 'guest.rating.recorded',
+            'ratingFailed' => 'guest.rating.failed',
+            'ratingOffline' => 'guest.rating.offline',
+            'ratingReplyLabel' => 'guest.rating.replyLabel',
+        ];
+
+        $out = [];
+
+        foreach ($keys as $name => $key) {
+            $out[$name] = $this->get($key, $locale);
+        }
+
+        /*
+            `{score}` ve `{max}` YERİNDE bırakılmaz, ŞABLONDA doldurulur.
+
+            Sepetteki `{count}`'tan farkı şu: sepetin adedi istemcide oluşur
+            ve sunucu onu bilemez; puan ise sunucuda hazırdır. Sayıyı
+            istemciye taşıyıp orada yerleştirmek, misafirin telefonuna
+            gereksiz bir betik indirtmek olurdu (`ScoreLabel`).
+
+            Bu yüzden burada yalnız KALIP dönüyor; şablon her satır için
+            kendi sayısıyla dolduruyor.
+        */
+        $out['ratingScorePattern'] = $this->get('guest.rating.score', $locale);
+        $out['ratingChoicePattern'] = $this->get('guest.rating.choice', $locale);
+
+        return $out;
+    }
+
+    /**
      * Çıkmaz sokak sayfasının metinleri (FF-98).
      *
      * Menü metinlerinden AYRI bir harita: o sayfada menü yoktur, dolayısıyla

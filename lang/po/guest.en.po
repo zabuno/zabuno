@@ -272,6 +272,38 @@ msgstr "The app was installed."
 msgid "guest.pwa.offline"
 msgstr "You are offline; showing the last menu you viewed."
 
+#: guest:guest.rating.choice
+msgid "guest.rating.choice"
+msgstr "{score} out of {max}"
+
+#: guest:guest.rating.failed
+msgid "guest.rating.failed"
+msgstr "Your rating could not be sent. Please try again."
+
+#: guest:guest.rating.label
+msgid "guest.rating.label"
+msgstr "Rate this dish"
+
+#: guest:guest.rating.notEnough
+msgid "guest.rating.notEnough"
+msgstr "Not enough ratings yet"
+
+#: guest:guest.rating.offline
+msgid "guest.rating.offline"
+msgstr "You appear to be offline. Your rating was not sent."
+
+#: guest:guest.rating.recorded
+msgid "guest.rating.recorded"
+msgstr "Thank you. Your rating was recorded."
+
+#: guest:guest.rating.replyLabel
+msgid "guest.rating.replyLabel"
+msgstr "From the restaurant"
+
+#: guest:guest.rating.score
+msgid "guest.rating.score"
+msgstr "Rating: {score} out of {max}"
+
 #: guest:guest.search.label
 msgid "guest.search.label"
 msgstr "Search the menu"

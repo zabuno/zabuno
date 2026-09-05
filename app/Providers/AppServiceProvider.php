@@ -65,6 +65,10 @@ use App\Application\QrDestination\Port\QrCodePdfExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Application\QrDestination\Port\QrPrintSheetPort;
 use App\Application\QrDestination\Port\QrScanCountPort;
+use App\Application\Rating\Port\RatableMenuPort;
+use App\Application\Rating\Port\RatingReplyRepositoryPort;
+use App\Application\Rating\Port\RatingScoreQueryPort;
+use App\Application\Rating\Port\RatingSignalRepositoryPort;
 use App\Application\Reference\Port\MarketReferencePort;
 use App\Application\Security\Port\BackupRestoreDrillRunnerPort;
 use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
@@ -158,6 +162,10 @@ use App\Infrastructure\QrDestination\Rendering\EndroidQrCodeImageExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCardPdfAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCodePdfExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrPrintSheetAdapter;
+use App\Infrastructure\Rating\Persistence\EloquentRatableMenu;
+use App\Infrastructure\Rating\Persistence\EloquentRatingReplyRepository;
+use App\Infrastructure\Rating\Persistence\EloquentRatingScoreQuery;
+use App\Infrastructure\Rating\Persistence\EloquentRatingSignalRepository;
 use App\Infrastructure\Reference\IcuMarketReference;
 use App\Infrastructure\Security\Execution\SqliteBackupRestoreDrillRunner;
 use App\Infrastructure\Security\Execution\SymfonyTenantIsolationSuiteRunner;
@@ -525,6 +533,19 @@ final class AppServiceProvider extends ServiceProvider
             misafirin gönderme yolu ona hiç dokunmaz.
         */
         $this->app->bind(OrderQueryPort::class, EloquentOrderQuery::class);
+        /*
+            PUANLAMA (`docs/116` P4–P6) — DÖRT AYRI PORT, DÖRT AYRI SORU.
+
+            Yazma (değişmez defter), okuma (türetilmiş puan), menü satırının
+            arkasındaki tabak, ve sahibin kendi cümlesi. Tek depoya
+            toplasaydık `delete` çağrısı hepsinin elinin altında dururdu —
+            oysa sinyal deposunda öyle bir çağrı YOKTUR ve yanıt deposunda
+            VARDIR. Ayrım tam olarak orada yaşıyor.
+        */
+        $this->app->bind(RatingSignalRepositoryPort::class, EloquentRatingSignalRepository::class);
+        $this->app->bind(RatingScoreQueryPort::class, EloquentRatingScoreQuery::class);
+        $this->app->bind(RatableMenuPort::class, EloquentRatableMenu::class);
+        $this->app->bind(RatingReplyRepositoryPort::class, EloquentRatingReplyRepository::class);
         // ZAMANLANMIŞ YAYIN ("Planla"): planı yazan, iptal eden ve vakti
         // gelince tek seferlik sahiplenen depo.
         $this->app->bind(PublicationSchedulePort::class, EloquentPublicationSchedule::class);

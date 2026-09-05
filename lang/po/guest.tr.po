@@ -272,6 +272,38 @@ msgstr "Uygulama yüklendi."
 msgid "guest.pwa.offline"
 msgstr "Çevrimdışısınız, son görüntülenen menü gösteriliyor."
 
+#: guest:guest.rating.choice
+msgid "guest.rating.choice"
+msgstr ""
+
+#: guest:guest.rating.failed
+msgid "guest.rating.failed"
+msgstr ""
+
+#: guest:guest.rating.label
+msgid "guest.rating.label"
+msgstr ""
+
+#: guest:guest.rating.notEnough
+msgid "guest.rating.notEnough"
+msgstr ""
+
+#: guest:guest.rating.offline
+msgid "guest.rating.offline"
+msgstr ""
+
+#: guest:guest.rating.recorded
+msgid "guest.rating.recorded"
+msgstr ""
+
+#: guest:guest.rating.replyLabel
+msgid "guest.rating.replyLabel"
+msgstr ""
+
+#: guest:guest.rating.score
+msgid "guest.rating.score"
+msgstr ""
+
 #: guest:guest.search.label
 msgid "guest.search.label"
 msgstr "Menüde ara"

@@ -73,4 +73,27 @@ enum Permission: string
     case OrderConfirm = 'order.confirm';
     case OrderKitchen = 'order.kitchen';
     case OrderSettings = 'order.settings';
+
+    /*
+        PUAN EKSENİ (`docs/116` §4) — beşinci soru: "misafirin ölçümü
+        karşısında kim ne yapabilir?"
+
+        - `rating.view`  — puanları GÖRMEK. Bir ölçüm okuma yüzeyidir ve
+                           izleyici kitlesi `analytics.view` ile aynıdır:
+                           hangi tabağın ne aldığını görmek içerik
+                           düzenleyen herkesin işine yarar.
+        - `rating.reply` — puana YANIT VERMEK. Yanıt misafirin gördüğü
+                           menüde durur, yani MARKANIN SESİDİR; menüyü
+                           yayınlayamayan bir rol restoran adına cümle de
+                           kuramaz.
+
+        BU EKSENDE ÜÇÜNCÜ BİR İZİN — `rating.delete` — YOKTUR ve olmayacak.
+        `docs/116` §4: *"Sahip puanı silemez. Yanıt verebilir, kaldıramaz —
+        silebiliyorsa ortalama bir pazarlama sayısıdır."* İzin listesinde
+        böyle bir satırın bulunmaması, o kuralın yetki katmanındaki
+        karşılığıdır: silmeyi kimseye VERMEMEK için önce silmeyi bir
+        yetenek olarak ADLANDIRMAMAK gerekir.
+    */
+    case RatingView = 'rating.view';
+    case RatingReply = 'rating.reply';
 }
