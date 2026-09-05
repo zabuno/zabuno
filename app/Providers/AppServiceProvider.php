@@ -115,6 +115,7 @@ use App\Infrastructure\Content\ProductPageLibrary;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
+use App\Infrastructure\Localization\PseudoLocalizingTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
 use App\Infrastructure\Media\Maturity\RepositoryMediaEvidence;
 use App\Infrastructure\Media\Persistence\EloquentMediaAudit;
@@ -183,6 +184,7 @@ use App\Infrastructure\Tenancy\Persistence\SessionWorkspaceContext;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
+use App\Support\Localization\PseudoLocalizer;
 use App\Support\Localization\SiteText;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -243,7 +245,23 @@ final class AppServiceProvider extends ServiceProvider
             static fn (): IcuMarketReference => new IcuMarketReference
         );
 
-        $this->app->singleton(TranslationPort::class, static fn (): MoFileTranslator => new MoFileTranslator(base_path('lang/mo')));
+        /*
+            Çevirici, ölçüm kipi AÇIKSA sarmalanır (`docs/121` §4).
+
+            Sarmalama bağlama sırasında yapılır, çeviri çağrısında değil: her
+            çağrıda bir `if` olsaydı, ölçüm kipi ürünün sıcak yoluna kalıcı
+            bir dal eklerdi. Kip kapalıyken zincir bire bir eskisi gibidir.
+
+            `PseudoLocalizer::isEnabled()` üretimde ayara hiç bakmaz; kip
+            oraya taşınamaz.
+        */
+        $this->app->singleton(TranslationPort::class, static function (): TranslationPort {
+            $translator = new MoFileTranslator(base_path('lang/mo'));
+
+            return PseudoLocalizer::isEnabled()
+                ? new PseudoLocalizingTranslator($translator)
+                : $translator;
+        });
         $this->app->bind(MenuCatalogApiContextPort::class, EloquentMenuCatalogApiContext::class);
         /*
             AI sağlayıcısı: bugün SAHTE olan, deterministik dayanak.

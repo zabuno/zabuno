@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Support\Localization\LanguageNegotiator;
+use App\Support\Localization\LanguageType;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * İsteğin dilini SEÇER — `docs/26` CORE-08'in eksik kalan halkası (FF-93).
+ * İsteğin ARAYÜZ dilini SEÇER — `docs/26` CORE-08'in eksik halkası (FF-93).
  *
  * Ürün altı dil taşıyor ve katalogların hepsi yerinde; ama hiçbir yerde bir
  * SEÇİM yapılmıyordu. `app()->getLocale()` her istekte yapılandırmadaki `en`
@@ -17,83 +19,51 @@ use Symfony\Component\HttpFoundation\Response;
  * `<html lang>`'den okuduğu için, yazılmış Türkçe çevirileri hiçbir Türk
  * kullanıcı GÖREMİYORDU — çeviri vardı, kapı yoktu.
  *
- * Kamu sayfaları bunu tek tek kendi içinde çözüyordu; kabuklar hiç
- * çözmüyordu. Aynı üründe iki farklı gerçek vardı ve hangisinin geçerli
- * olduğu sayfaya göre değişiyordu.
- *
  * Seçim SUNUCUDA yapılır, JavaScript'te değil: dil, ilk boyanan pikselden
  * önce belli olmalıdır. Sonradan değiştirilirse kullanıcı önce yanlış dilde
  * bir sayfa görür, sonra sayfanın altından dili değişir.
  *
- * Bölgeli etiket (`tr-TR`) taban dile (`tr`) iner: katalog taban dillerle
- * anahtarlanır ve `tr-TR` yüzünden birini İngilizceye düşürmek, desteklenen
- * bir dili desteklenmiyormuş gibi göstermek olurdu.
+ * ═══ 2026-09-05: KARAR ARTIK BİR ZİNCİRDEN GELİYOR ═══
+ *
+ * Burada tek bir sinyal okunuyordu (`Accept-Language`) ve kural koda
+ * gömülüydü. `docs/120` §4 bunu bir AĞIRLIKLI ÇÖZÜCÜ ZİNCİRİNE çevirdi:
+ * açık seçim → oturum parametresi → tarayıcı → bölge → kaynak dil. Sıra
+ * yapılandırmadadır; bir sıralama denemesi artık bir dağıtım değil, bir
+ * ayardır.
+ *
+ * Bu ara katman YALNIZ ARAYÜZ dilini kurar. İçerik dili adresten gelir ve
+ * pazarlığa girmez (`CORP-LOCALE-FROM-PATH-01`): `/tr/urun/qr-menu/` Türkçe
+ * YAZILMIŞ bir sayfadır ve bir tarayıcı ayarı onu İngilizceye çeviremez.
+ *
+ * Sunulan dil süzgeci zincirin içinde yaşıyor (`i18n.negotiation.shipped_only`)
+ * ve davranış değişmedi: sunulmayan bir dil hâlâ arayüze giremez, çünkü yarım
+ * çeviri çevirisizlikten kötüdür.
  */
 final class NegotiateLocale
 {
+    public function __construct(private readonly LanguageNegotiator $negotiator) {}
+
     public function handle(Request $request, Closure $next): Response
     {
-        /*
-            Başlık YOKSA hiçbir şey seçilmez ve yapılandırılmış dil olduğu
-            gibi kalır. Sinyal yokken karar vermek, dili başka bir yerde
-            (bir konsol komutu, bir testin kurduğu bağlam, ileride bir
-            kullanıcı tercihi) bilerek ayarlamış olan tarafı sessizce
-            ezmek olurdu.
-        */
-        if ($request->headers->has('Accept-Language')) {
-            $preferred = $request->getPreferredLanguage(self::supported());
+        $language = $this->negotiator->negotiate(LanguageType::Interface, $request);
 
-            if (is_string($preferred) && $preferred !== '') {
-                app()->setLocale(self::baseLanguage($preferred));
-            }
+        /*
+            Zincir bir cevap üretemediyse hiçbir şey değiştirilmez.
+
+            Bugünkü yapılandırmada kaynak dil çözücüsü zincirin sonunda
+            durduğu için bu dal pratikte çalışmaz; ama zincir boşaltılabilir
+            bir ayardır ve boş bir zincirin uygulamayı dilsiz bırakması kabul
+            edilemez.
+
+            Kaynak dil çözücüsünün O ANDA ÇALIŞAN dili döndürmesi de bu
+            yüzden: sinyalsiz bir istekte dili başka bir yerde (bir konsol
+            komutu, bir testin kurduğu bağlam) bilerek ayarlamış olan taraf
+            sessizce ezilmez.
+        */
+        if ($language !== null) {
+            app()->setLocale($language);
         }
 
         return $next($request);
-    }
-
-    /**
-     * Desteklenen diller. İlk sıradaki, başlık hiç gelmediğinde ya da
-     * hiçbiri eşleşmediğinde seçilen dildir — o yüzden kaynak dil başta.
-     *
-     * @return array<int, string>
-     */
-    private static function supported(): array
-    {
-        /*
-            SUNULAN DİL LİSTESİ — `app.supported_locales` DEĞİL.
-
-            Önce `app.supported_locales` okunuyordu: altı dillik bir liste.
-            Ama hangi dilin gerçekten SUNULABİLECEĞİNE karar veren yer
-            `i18n.shipped_locales` ve o listedeki her dilin katalogu TAM olmak
-            zorunda (`ShippedLocalesAreCompleteTest`).
-
-            İki liste ayrışınca sonucu sahibin ekranında görüldü (2026-09-05):
-            Türkçe tarayıcı Türkçe belge alıyor, katalog tam olmadığı için
-            ekranda KARIŞIK DİL beliriyordu — "Menus" ve "Preview & publish"
-            İngilizce, "Ürün ekle" ve "Hepsi tükendi" Türkçe. Yarım çeviri
-            çevirisizlikten kötüdür: kullanıcı ürünün bozuk olduğunu düşünür.
-
-            `app.supported_locales` SİLİNMEDİ ve bu kasıtlı: kurumsal site
-            (`/tr/…`) kendi dil uzayını o listeden türetiyor ve orada çeviri
-            gerçekten tam. İki liste iki ayrı soruya cevap veriyor — "bu dilde
-            bir pazarlama sayfamız var mı" ile "bu dilde bir ÜRÜN sunabiliyor
-            muyuz". Tek listeye indirmek, ikisinden birini yalan söylemeye
-            zorlardı.
-        */
-        /** @var array<int, string> $configured */
-        $configured = config('i18n.shipped_locales', []);
-
-        $fallback = (string) config('app.locale', 'en');
-
-        if ($configured === []) {
-            return [$fallback];
-        }
-
-        return array_values(array_unique([$fallback, ...$configured]));
-    }
-
-    private static function baseLanguage(string $tag): string
-    {
-        return strtolower(explode('-', str_replace('_', '-', $tag))[0]);
     }
 }

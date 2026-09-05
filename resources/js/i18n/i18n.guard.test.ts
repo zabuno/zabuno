@@ -23,12 +23,33 @@ const base = {
 
 describe('i18n kapısı', () => {
     // --- DS-I18N-SIX-CATALOGS-01 ------------------------------------------
-    it('altı katalog tanımlıdır ve yalnız biri complete sayılır', () => {
+    /**
+     * ═══ 2026-09-05: TAVAN KALKTI, TABAN KALDI ═══
+     *
+     * Bu kural "tam olarak şu altı dil" diyordu ve ölçüldüğünde (`docs/120`
+     * §7) şu çıktı: PO/MO/JSON boru hattı dokuz dili SORUNSUZ taşıyor —
+     * `i18n:extract` 80 dosya, `i18n:build` 136 projeksiyon üretti,
+     * `i18n:check` geçti, PHP tarafı geçti. Dokuzuncu dile geçişi engelleyen
+     * TEK ŞEY bu satırdaki sabit listeydi.
+     *
+     * Yani kapı, ölçtüğünü sandığı şeyi ölçmüyordu: "altyapı kaç dil
+     * taşıyabiliyor" sorusunu, "bugün kaç dil tanımlı" cevabıyla
+     * karıştırıyordu. Bir dil eklemek bir dağıtım kararıdır; bir TESTİ
+     * düzeltmek olmamalı.
+     *
+     * Kural artık TABAN ölçüyor: CORE-08'in şart koştuğu altı katalog
+     * TANIMLI OLMAK ZORUNDA. Bir dilin silinmesi hâlâ kapıyı kırar — asıl
+     * korunması gereken buydu. Eklenmesi kırmaz.
+     */
+    it('CORE-08 tabanındaki altı katalog tanımlıdır ve yalnız biri complete sayılır', () => {
         const codes = Object.keys(LOCALES);
 
-        expect(codes.sort(), 'DS-I18N-SIX-CATALOGS-01: CORE-08 altı katalog şart koşar.').toEqual(
-            ['ar', 'de', 'en', 'fr', 'ru', 'tr'].sort(),
-        );
+        for (const required of ['ar', 'de', 'en', 'fr', 'ru', 'tr']) {
+            expect(
+                codes,
+                `DS-I18N-SIX-CATALOGS-01: CORE-08 altı katalog şart koşar; \`${required}\` silinmiş.`,
+            ).toContain(required);
+        }
 
         const complete = codes.filter(
             (code) => LOCALES[code as keyof typeof LOCALES].status === 'complete',

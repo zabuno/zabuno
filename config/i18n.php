@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Support\Localization\Negotiation\BrowserResolver;
+use App\Support\Localization\Negotiation\ExplicitChoiceResolver;
+use App\Support\Localization\Negotiation\PathPrefixResolver;
+use App\Support\Localization\Negotiation\QueryParameterResolver;
+use App\Support\Localization\Negotiation\RegionResolver;
+use App\Support\Localization\Negotiation\SourceLanguageResolver;
+
 return [
 
     /*
@@ -116,5 +123,153 @@ return [
     */
 
     'supported_locales' => ['en', 'tr', 'ar', 'ru', 'fa', 'ku', 'de', 'fr', 'it'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ağırlıklı dil tespit zinciri
+    |--------------------------------------------------------------------------
+    |
+    | `docs/120` §4. Sahibin yönlendirmesi: "Drupal'da bahsettiğim ağırlık
+    | vardı ve dil değiştirici buna göre otonom çalışıyordu."
+    |
+    | AĞIRLIK BURADA YAŞAR, KODDA DEĞİL. Sıra değişince `LanguageNegotiator`
+    | değişmez — bir sıralama denemesi bir dağıtım değil, bir ayardır. Bu,
+    | Drupal'ın kararının asıl değeri.
+    |
+    | Küçük ağırlık ÖNCE konuşur. Sayılar `docs/120` §4.2 tablosundan birebir
+    | alınmıştır ve aralarında boşluk bırakılmıştır: yeni bir yöntem, mevcut
+    | hiçbirini yeniden numaralandırmadan araya girebilsin diye.
+    |
+    */
+
+    'negotiation' => [
+
+        'methods' => [
+
+            /*
+             * −20 · AÇIK SEÇİM. En ağır olan bu: Almanya'da yaşayan bir Türk
+             * tarayıcısı Almanca olsa da Türkçe okumak isteyebilir ve bir kez
+             * seçtiyse bir daha sorgulanmamalı.
+             */
+            'explicit' => [
+                'weight' => -20,
+                'resolver' => ExplicitChoiceResolver::class,
+                'options' => ['cookie' => 'zbn_language'],
+            ],
+
+            /*
+             * −10 · ADRES ÖNEKİ. İçerik ve URL dilinin kaynağı. Arayüz
+             * zincirinde KASTEN yok: kurumsal bir Türkçe sayfayı okumak,
+             * ürün panelinin dilini değiştirmemeli.
+             */
+            'path' => [
+                'weight' => -10,
+                'resolver' => PathPrefixResolver::class,
+            ],
+
+            /*
+             * 0 · OTURUM PARAMETRESİ. Önizleme ve paylaşım için. Açık
+             * seçimden hafif, çünkü paylaşılan bir bağlantı kullanıcının
+             * kendi kalıcı tercihini ezmemeli.
+             */
+            'session' => [
+                'weight' => 0,
+                'resolver' => QueryParameterResolver::class,
+                'options' => ['parameter' => 'language'],
+            ],
+
+            /*
+             * 10 · TARAYICI VE CİHAZ.
+             */
+            'browser' => [
+                'weight' => 10,
+                'resolver' => BrowserResolver::class,
+            ],
+
+            /*
+             * 20 · BÖLGE. Dili SEÇMEZ, belirsizliği ÇÖZER — bu yüzden
+             * tarayıcıdan sonra gelir. Tablo kısadır ve kısa kalmalı: yalnız
+             * gerçekten tek bir baskın dile işaret eden saat dilimleri.
+             * Belirsiz bir bölgeye dil atamak, belirsizliği çözmek değil
+             * gizlemektir.
+             *
+             * Saat dilimi sunucuda bilinmez; tarayıcı `Intl…timeZone` ile
+             * çereze yazar. IP'den tahmin KASTEN yapılmıyor: VPN, kurumsal
+             * ağ ve mobil operatör o tahmini düzenli olarak yanlışlar.
+             */
+            'region' => [
+                'weight' => 20,
+                'resolver' => RegionResolver::class,
+                'options' => [
+                    'cookie' => 'zbn_timezone',
+                    'hints' => [
+                        'Europe/Istanbul' => 'tr',
+                        'Asia/Tehran' => 'fa',
+                        'Europe/Moscow' => 'ru',
+                        'Europe/Berlin' => 'de',
+                        'Europe/Vienna' => 'de',
+                        'Europe/Paris' => 'fr',
+                        'Europe/Rome' => 'it',
+                    ],
+                ],
+            ],
+
+            /*
+             * 30 · KAYNAK DİL. Zincirin son halkası; her zaman bir cevap
+             * üretir, çünkü zincirin sonunda dilsiz kalmak bir seçenek değil.
+             */
+            'source' => [
+                'weight' => 30,
+                'resolver' => SourceLanguageResolver::class,
+            ],
+
+        ],
+
+        /*
+         * Dil TÜRÜ başına ayrı zincir — `docs/120` §4.1.
+         *
+         * Bir kullanıcının arayüzü İngilizce, okuduğu sayfa Türkçe olabilir
+         * ve bu bir hata değildir. Ayrım bugüne kadar KAZAYLA doğruydu;
+         * burada yazılı hâle geliyor.
+         */
+        'chains' => [
+            'interface' => ['explicit', 'session', 'browser', 'region', 'source'],
+            'content' => ['path', 'source'],
+            'url' => ['path', 'source'],
+        ],
+
+        /*
+         * SUNULAN DİLLERLE SÜZÜLEN TÜRLER.
+         *
+         * Yalnız arayüz. İçerik zinciri süzülseydi `/tr/` altındaki Türkçe
+         * bir sayfa `lang="en"` ilan ederdi: ekran okuyucu yanlış telaffuz
+         * eder, arama motoru yanlış dilde indeksler.
+         */
+        'shipped_only' => ['interface'],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sahte-yerelleştirme (ölçüm dili)
+    |--------------------------------------------------------------------------
+    |
+    | `docs/121` §4. Katalogdaki her metin gerçek bir dile çevrilmeden
+    | mekanik olarak dönüşür: "Save changes" → "⟦Şåvê çhàñgêš ····⟧".
+    |
+    | BU BİR ÇEVİRİ DEĞİLDİR. Hiçbir dile ait değil, hiçbir çevirmen
+    | çalışmadı, çeviri kilidi açılmadı, `shipped_locales` genişlemedi.
+    | Yalnız bir ölçüm kipidir ve üç şeyi aynı anda görünür kılar: katalogdan
+    | geçmeyen gömülü metin, uzayan metnin kırdığı düzen, ve ortasından
+    | kesilen cümle.
+    |
+    | Varsayılan KAPALI ve `PseudoLocalizer::isEnabled()` üretimde bu ayara
+    | hiç bakmaz — bir ortam değişkeninin yanlışlıkla üretime taşınması
+    | gerçek bir olaydır ve müşteri ekranında `⟦Şåvê⟧` görmek, ürünün
+    | bozulduğu anlamına gelir.
+    |
+    */
+
+    'pseudo_localization' => (bool) env('I18N_PSEUDO_LOCALIZATION', false),
 
 ];

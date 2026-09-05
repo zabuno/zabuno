@@ -4,6 +4,7 @@ import {
     withDirection,
     withDensity,
     withFlowbiteTokenTheme,
+    withPseudoLocale,
     themeAndDirectionGlobalTypes,
 } from '../resources/js/storybook/decorators';
 import '../resources/css/app.css';
@@ -12,7 +13,13 @@ type PreviewGlobalTypes = NonNullable<Preview['globalTypes']>;
 
 const preview: Preview = {
     globalTypes: themeAndDirectionGlobalTypes as PreviewGlobalTypes,
-    decorators: [withFlowbiteTokenTheme, withDensity, withDirection, withTheme],
+    /*
+        Storybook listedeki İLK decorator'ü EN İÇE koyar. `withPseudoLocale`
+        bu yüzden başta: ölçüm dili yalnız story'nin kendi metnine uygulanır,
+        yön/yoğunluk/tema sarmalayıcılarının kurduğu bağlamı bozmaz. Bayrak
+        kapalıyken hiçbir şey yapmaz.
+    */
+    decorators: [withPseudoLocale, withFlowbiteTokenTheme, withDensity, withDirection, withTheme],
     parameters: {
         viewport: {
             options: {

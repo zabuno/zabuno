@@ -21,7 +21,15 @@ use Tests\TestCase;
  */
 final class TranslationPipelineTest extends TestCase
 {
-    private const LOCALES = ['en', 'tr', 'de', 'fr', 'ar', 'ru'];
+    /**
+     * CORE-08'in şart koştuğu TABAN — tavan değil.
+     *
+     * Liste "tam olarak bu altı dil" anlamına geliyordu ve ölçüldüğünde
+     * (`docs/120` §7) altyapının dokuz dili sorunsuz taşıdığı görüldü. Bir
+     * dilin eksilmesi hâlâ kapıyı kırar; eklenmesi kırmaz, çünkü ölçüm
+     * derlenmiş dizinlerden okunur.
+     */
+    private const REQUIRED_LOCALES = ['en', 'tr', 'de', 'fr', 'ar', 'ru'];
 
     private function translator(): TranslationPort
     {
@@ -44,20 +52,56 @@ final class TranslationPipelineTest extends TestCase
 
     // --- I18N-SIX-CATALOGS-10 ---------------------------------------------
 
-    public function test_every_domain_is_compiled_for_all_six_catalogs(): void
+    /**
+     * HER TANIMLI DİL, HER ALAN İÇİN DERLENMİŞ OLMALI.
+     *
+     * Ölçüm artık `lang/mo/` altındaki dizinlerden okunuyor, elle yazılmış
+     * bir listeden değil. Fark somut: onuncu bir dil eklendiğinde eski
+     * hâliyle bu test SESSİZCE geçerdi — yeni dilin yarım derlenmiş olması
+     * hiç fark edilmezdi, çünkü test onu hiç aramıyordu. Ölçmediği bir şey
+     * için yeşil veren bir kapı, kapı değildir.
+     */
+    public function test_every_domain_is_compiled_for_every_declared_catalogue(): void
     {
         $domains = $this->domains();
+        $locales = $this->compiledLocales();
 
         self::assertNotEmpty($domains, 'I18N-SIX-CATALOGS-10: hiç derlenmiş katalog yok — `node scripts/i18n build` çalıştırılmamış.');
 
+        foreach (self::REQUIRED_LOCALES as $required) {
+            self::assertContains(
+                $required,
+                $locales,
+                "I18N-SIX-CATALOGS-10: CORE-08 tabanındaki `{$required}` kataloğu derlenmemiş."
+            );
+        }
+
         foreach ($domains as $domain) {
-            foreach (self::LOCALES as $locale) {
+            foreach ($locales as $locale) {
                 self::assertFileExists(
                     base_path("lang/mo/{$locale}/{$domain}.mo"),
-                    "I18N-SIX-CATALOGS-10: {$domain}/{$locale} projeksiyonu eksik. Altı katalog iskeleti Stage 1'den itibaren tamdır; içerik doluluğu kademelidir, dosya varlığı değil."
+                    "I18N-SIX-CATALOGS-10: {$domain}/{$locale} projeksiyonu eksik. Katalog iskeleti Stage 1'den itibaren tamdır; içerik doluluğu kademelidir, dosya varlığı değil."
                 );
             }
         }
+    }
+
+    /**
+     * Derlenmiş katalog dilleri — diskten okunur, tahmin edilmez.
+     *
+     * @return list<string>
+     */
+    private function compiledLocales(): array
+    {
+        $locales = [];
+
+        foreach (glob(base_path('lang/mo/*'), GLOB_ONLYDIR) ?: [] as $path) {
+            $locales[] = basename($path);
+        }
+
+        sort($locales);
+
+        return $locales;
     }
 
     public function test_the_source_catalog_is_complete_for_every_domain(): void

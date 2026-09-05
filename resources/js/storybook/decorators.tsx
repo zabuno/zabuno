@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import type { ReactNode } from 'react';
 import { ThemeProvider } from 'flowbite-react/theme/provider';
 import type { Decorator } from '@storybook/react-vite';
 
 import { FLOWBITE_TOKEN_APPLY, flowbiteTokenTheme } from '../design-system/flowbite-theme';
+import { pseudoLocalize, pseudoLocalizationEnabled } from '../i18n/pseudo';
 
 export type ThemeMode = 'light' | 'dark' | 'high-contrast';
 export type Direction = 'ltr' | 'rtl';
@@ -134,3 +136,76 @@ export const themeAndDirectionGlobalTypes = {
         },
     },
 };
+
+/**
+ * SAHTE-YERELLEŞTİRME DECORATOR'Ü — `docs/121` §4.
+ *
+ * Story'ler metinlerini prop olarak alır; katalog çeviricisinden geçmezler.
+ * Yani sunucu tarafındaki ölçüm kipi Storybook'ta hiçbir şeyi dönüştürmez ve
+ * "Almanca dar ekranda neyi kırar" sorusu ölçülemez kalırdı.
+ *
+ * Bu decorator boşluğu kapatır: render edilmiş ağaçtaki METİN DÜĞÜMLERİNİ
+ * dönüştürür. Ölçtüğü şey tam olarak `mobile-ux-audit`'in ölçtüğü şeydir —
+ * uzayan metnin gerçek bir düzen motorunda ne kırdığı.
+ *
+ * VARSAYILAN KAPALI ve derleme zamanı bayrağıyla açılır:
+ *
+ *     VITE_I18N_PSEUDO=1 npm run build-storybook -- -o /tmp/sb-pseudo
+ *
+ * Çalışma anında açılabilen bir anahtar olsaydı bir gün üretimde açık
+ * kalırdı; ürün derlemesinde bu bayrak hiç yoktur.
+ */
+export const withPseudoLocale: Decorator = (Story) => {
+    if (!pseudoLocalizationEnabled()) {
+        return <Story />;
+    }
+
+    return (
+        <PseudoLocaleRoot>
+            <Story />
+        </PseudoLocaleRoot>
+    );
+};
+
+function PseudoLocaleRoot({ children }: { children: ReactNode }) {
+    const host = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const root = host.current;
+
+        if (root === null) {
+            return;
+        }
+
+        /*
+            Metin düğümleri tek tek dönüştürülür, `innerHTML` ile değil:
+            işaretlemeyi yeniden yazmak, ölçülen düzenin kendisini
+            değiştirirdi ve ölçüm kendi kurduğu bir dünyayı ölçerdi.
+
+            `<script>`/`<style>` atlanır — orada "metin" kod demektir.
+        */
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+                const parent = node.parentElement?.tagName;
+
+                if (parent === 'SCRIPT' || parent === 'STYLE') {
+                    return NodeFilter.FILTER_REJECT;
+                }
+
+                return node.nodeValue?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            },
+        });
+
+        const nodes: Text[] = [];
+
+        for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+            nodes.push(node as Text);
+        }
+
+        for (const node of nodes) {
+            node.nodeValue = pseudoLocalize(node.nodeValue ?? '');
+        }
+    });
+
+    return <div ref={host}>{children}</div>;
+}
