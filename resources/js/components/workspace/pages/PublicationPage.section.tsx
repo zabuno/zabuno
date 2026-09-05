@@ -26,6 +26,12 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             <PublicationPage
                 workspaceId={ctx.workspaceId}
                 dashboardMenuTree={ctx.dashboardMenuTree}
+                /*
+                    "Düzelt" düğmesinin gideceği yer. Hazırlık listesindeki
+                    eksik bir madde ile onu düzeltebileceği menü ekranı
+                    arasındaki mesafe sıfır olmalı.
+                */
+                onNavigateToSection={ctx.onNavigateToSection}
             />
         </Suspense>
     );
@@ -36,7 +42,20 @@ const publicationSection: WorkspaceSectionDescriptor = {
     path: 'publication',
     order: 10,
     labelKey: 'workspace.shell.nav.publication',
-    permission: 'menu.view',
+    /*
+        YAYINLAMA EKRANI YAYINLAYABİLENLERİNDİR.
+
+        İzin `menu.view` idi; yani menüyü görebilen herkes — editör de,
+        Mutfak da — yayın ekranına gidebiliyor, adım çizgisini ve "Yayınla"
+        düğmesini görüyor ve bastığında sunucudan 403 alıyordu. Ekranın
+        tamamı tek bir eyleme hizmet ediyor ve o eylem `menu.publish`.
+
+        Bu ekran kenar çubuğunda ZATEN listelenmiyor (grubu yok, menünün
+        yanından açılır); değişen şey, izni olmayanın oraya HİÇ
+        götürülmemesidir — omnibox'ta, hızlı eylemlerde ve elle girilen
+        adreste.
+    */
+    permission: 'menu.publish',
     aiQuickAction: true,
     render,
 };

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\QrDestination;
 
 use App\Application\MenuCatalog\Port\OutOfStockPort;
+use App\Application\MenuCatalog\UseCase\ResolveServingMenu;
 use App\Application\Publication\Port\PublicationRepositoryPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Domain\Publication\MenuPublicAddress;
@@ -39,6 +40,7 @@ final class ShowPublicMenuByKeyController extends Controller
         private readonly CanonicalUrl $canonical,
         private readonly OutOfStockPort $outOfStock,
         private readonly GuestText $guestText,
+        private readonly ResolveServingMenu $servingMenu,
     ) {}
 
     public function __invoke(Request $request): SymfonyResponse
@@ -62,7 +64,19 @@ final class ShowPublicMenuByKeyController extends Controller
             return GuestDeadEnd::respond($request);
         }
 
-        $publication = $this->publications->current($address['workspace_id'], $address['menu_id']);
+        /*
+            ADRES ŞUBEYE GÖTÜRÜR, SAAT MENÜYÜ SEÇER (sahibin 2026-09-05
+            kararı, `docs/109` §7.1).
+
+            `key` hâlâ kimliktir ve hâlâ değişmez: kartvizite basılan adres
+            aynı kalır. Ama artık bir şubenin birden çok menüsü olabiliyor
+            ve o adres, şubenin O ANDA servis ettiği menüyü açar. Menü
+            başına ayrı bir adres vermek, aynı içeriği iki adreste
+            indeksletirdi ve sahip hangisini basacağını bilemezdi.
+        */
+        $servingMenuId = $this->servingMenu->forMenu($address['menu_id']);
+
+        $publication = $this->publications->current($address['workspace_id'], $servingMenuId);
 
         if ($publication === null) {
             return GuestDeadEnd::respond($request);
@@ -143,7 +157,7 @@ final class ShowPublicMenuByKeyController extends Controller
             'analyticsContext' => [
                 'zabuno_surface' => 'menu',
                 'zabuno_tenant_id' => (string) $address['workspace_id'],
-                'zabuno_menu_id' => (string) $address['menu_id'],
+                'zabuno_menu_id' => (string) $servingMenuId,
             ],
             'canonicalUrl' => $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $canonicalPath),
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,

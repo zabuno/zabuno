@@ -12,5 +12,7 @@ final class MenuDraftSummary
         public readonly int $locationId,
         public readonly string $name,
         public readonly string $state,
+        /** Menü hapının ekrandaki sırası (`docs/109` §7.1). */
+        public readonly int $sortOrder = 0,
     ) {}
 }

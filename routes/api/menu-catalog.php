@@ -15,14 +15,19 @@ use App\Http\Controllers\Ai\StoreMenuAiImportController;
 use App\Http\Controllers\Ai\StoreProductDescriptionDraftController;
 use App\Http\Controllers\MenuCatalog\BindMenuItemImageController;
 use App\Http\Controllers\MenuCatalog\DeleteCategoryController;
+use App\Http\Controllers\MenuCatalog\DeleteMenuController;
 use App\Http\Controllers\MenuCatalog\DeleteMenuItemController;
+use App\Http\Controllers\MenuCatalog\DeleteMenuServiceWindowController;
 use App\Http\Controllers\MenuCatalog\ExportMenuCsvController;
 use App\Http\Controllers\MenuCatalog\ImportMenuCsvController;
+use App\Http\Controllers\MenuCatalog\ListLocationMenusController;
 use App\Http\Controllers\MenuCatalog\RenameCategoryController;
+use App\Http\Controllers\MenuCatalog\RenameMenuController;
 use App\Http\Controllers\MenuCatalog\RenameMenuItemController;
 use App\Http\Controllers\MenuCatalog\ReorderCategoriesController;
 use App\Http\Controllers\MenuCatalog\ReorderMenuItemsController;
 use App\Http\Controllers\MenuCatalog\ShowMenuController;
+use App\Http\Controllers\MenuCatalog\ShowMenuTreeController;
 use App\Http\Controllers\MenuCatalog\StoreCategoryController;
 use App\Http\Controllers\MenuCatalog\StoreMenuController;
 use App\Http\Controllers\MenuCatalog\StoreMenuEntryController;
@@ -32,12 +37,41 @@ use App\Http\Controllers\MenuCatalog\UpdateMenuItemAllergensController;
 use App\Http\Controllers\MenuCatalog\UpdateMenuItemPriceController;
 use App\Http\Controllers\MenuCatalog\UpdateMenuItemStockController;
 use App\Http\Controllers\MenuCatalog\UpdateMenuItemVisibilityController;
+use App\Http\Controllers\MenuCatalog\UpdateMenuServiceWindowController;
 use App\Http\Controllers\MenuCatalog\UpdateMenuStockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/workspaces/{workspace}/brand/locations/{location}/menu', StoreMenuController::class);
     Route::get('/workspaces/{workspace}/brand/locations/{location}/menu', ShowMenuController::class);
+
+    /*
+        ÇOKLU MENÜ VE SAAT BAZLI GEÇİŞ — sahibin 2026-09-05 kararı
+        (`docs/109` §7.1). Menü hapları bu dört yoldan beslenir: şubenin
+        menülerini listelemek, bir hapa basınca O MENÜYÜ açmak, adını
+        düzeltmek ve silmek.
+
+        `{menu}` SAYIYA SINIRLI: aynı önekte `menu/duplicate-candidates`
+        adında bir yol var ve sınır olmasaydı "duplicate-candidates" bir
+        menü kimliği sanılırdı.
+    */
+    Route::get('/workspaces/{workspace}/brand/locations/{location}/menus', ListLocationMenusController::class);
+    Route::get('/workspaces/{workspace}/menu/{menu}', ShowMenuTreeController::class)
+        ->where('menu', '[0-9]+');
+    Route::put('/workspaces/{workspace}/menu/{menu}', RenameMenuController::class)
+        ->where('menu', '[0-9]+');
+    Route::delete('/workspaces/{workspace}/menu/{menu}', DeleteMenuController::class)
+        ->where('menu', '[0-9]+');
+
+    /*
+        Menünün saat aralığı. Kapatmak ayrı bir yoldur ve bilerek öyle:
+        "aralığı kaldır" ile "boş aralık gönder" aynı şey değildir ve
+        ikincisi bir gün yanlışlıkla gönderilirdi.
+    */
+    Route::put('/workspaces/{workspace}/menu/{menu}/service-window', UpdateMenuServiceWindowController::class)
+        ->where('menu', '[0-9]+');
+    Route::delete('/workspaces/{workspace}/menu/{menu}/service-window', DeleteMenuServiceWindowController::class)
+        ->where('menu', '[0-9]+');
     Route::post('/workspaces/{workspace}/menu/{menu}/categories', StoreCategoryController::class);
     Route::post('/workspaces/{workspace}/menu-categories/{category}/products', StoreProductController::class);
     Route::post('/workspaces/{workspace}/menu-categories/{category}/menu-items', StoreMenuItemController::class);

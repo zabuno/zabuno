@@ -192,6 +192,16 @@ async function openSettingsFromAccountMenu(user: ReturnType<typeof userEvent.set
             name: 'Settings',
         }),
     );
+
+    /*
+        EKRAN İSTENDİĞİNDE İNER (FF-137): Ayarlar bölümü artık `lazy` ile
+        yükleniyor, yani bağlantıya tıklamak ile bölümün çizilmesi arasında
+        bir tık var. Sınanan sözleşme değişmedi — beklenen yer beklenen
+        bölümdür; yalnız bekleme eklendi.
+    */
+    await waitFor(() => {
+        expect(document.querySelector('#section-settings')).not.toBeNull();
+    });
 }
 
 describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP05a, RED)', () => {
@@ -250,10 +260,22 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
             within(analyticsRegion).getByRole('heading', { name: /Analytics/i }),
         ).toBeInTheDocument();
 
+        /*
+            ARALIK KONTROLÜ ARTIK BÖLÜMLÜ (FF-137).
+
+            Bu satır `getByRole('combobox')` ile bir AÇILIR LİSTE arıyordu ve
+            `??` ile yazılmış "ya da grup" yedeği hiç çalışmıyordu: `getByRole`
+            bulamayınca `null` DÖNMEZ, fırlatır — yani yedek asla denenmiyordu
+            ve test aslında açılır listeyi donduruyordu.
+
+            Kanonik kaynak (`docs/reference/panel-v3`) aralığı bölümlü bir
+            kontrol olarak çiziyor; üç seçenek arasında geçiş bir liste açmayı
+            gerektirmiyor. Ölçülen sözleşme aynı: ekranda ARALIK SEÇİLEBİLİR
+            bir kontrol var ve erişilebilir adı "range" içeriyor.
+        */
         expect(
-            within(analyticsRegion).getByRole('combobox', { name: /range/i }) ??
-                within(analyticsRegion).getByRole('group', { name: /range/i }),
-        ).toBeTruthy();
+            within(analyticsRegion).getByRole('radiogroup', { name: /range/i }),
+        ).toBeInTheDocument();
 
         const metricRegion = within(analyticsRegion).getByRole('region', {
             name: /metric|report/i,
@@ -301,7 +323,15 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
 
         const teamRegion = main.querySelector('#section-team') as HTMLElement;
 
-        expect(within(teamRegion).getByRole('heading', { name: /Team/i })).toBeInTheDocument();
+        /*
+            Sayfa başlığı TAM ADIYLA aranır. Takım ekranı iki sütuna
+            geçti (`docs/109` §6.4) ve üyeler kartının başlığı artık
+            GÖRÜNÜR — gevşek bir `/Team/i` ikisini birden yakalıyordu.
+            Sınanan sözleşme sayfanın kendi başlığıdır.
+        */
+        expect(
+            within(teamRegion).getByRole('heading', { level: 1, name: 'Team' }),
+        ).toBeInTheDocument();
 
         expect(within(teamRegion).getByLabelText(/invite.*email/i)).toBeInTheDocument();
 
@@ -437,9 +467,18 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
             .querySelector('#section-analytics') as HTMLElement;
         // Sıfır sayaç yerine sebebe göre ayrılmış boş durum (docs/66).
         await within(analyticsRegion).findByText('Analytics starts with your first menu');
-        expect(
-            within(analyticsRegion).getByText(/qr resolve and confirmed menu open/i),
-        ).toBeInTheDocument();
+        /*
+            SAYFA AÇIKLAMASI DEĞİŞTİ (FF-137).
+
+            Eski cümle ürünün İÇ SÖZLÜĞÜYLE yazılmıştı: "QR resolve ve
+            confirmed menu open sayaçlarını incele". Restoran sahibi bu iki
+            terimi bilmiyor; kanonik kaynak aynı ekranı "Misafirler neye
+            bakıyor, neyi arayıp bulamıyor" diye anlatıyor.
+
+            Ölçülen sözleşme değişmedi: ekranın paylaşılan çerçevesi bir
+            AÇIKLAMA taşır. Değişen, o açıklamanın kimin diliyle yazıldığı.
+        */
+        expect(within(analyticsRegion).getByText(/what guests look at/i)).toBeInTheDocument();
         // Başarı hâlinde durum rozeti ÇİZİLMEZ. Önceden buraya seçili zaman
         // aralığı ("Today") basılıyordu; oysa o bilgi hemen altındaki `Range`
         // seçicisinde duruyor ve kullanıcının kendi seçtiği şeydir. Bildiği

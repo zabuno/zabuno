@@ -563,6 +563,318 @@ export const media = {
     'workspace.media.settings.originals.heading': 'Your original files',
     'workspace.media.settings.originals.body':
         'The file you uploaded is always kept, byte for byte. Converting or re-rendering writes a new version next to it; nothing replaces the original and nothing is deleted.',
+
+    /*
+        TOPLU İŞLEM — kanonik kaynak `docs/reference/panel-v3/
+        MedyaModulu.dc.html`, "Toplu işlem" (plan `docs/109-PANEL-V3.md` §2).
+
+        Beş adım: Kapsam → Eylem → Ayar → Etki → Sonuç. Metinlerin tamamı
+        ÜÇ dürüstlük kuralına uyar:
+
+          1. Kuru çalışmanın sayıları GERÇEKTİR ve metin bunu söyler:
+             "hiçbir dosyaya dokunulmadı, sunucu her dosyayı tek tek
+             kontrol etti".
+          2. Atlanan dosya SEBEBİYLE söylenir. "20 dosya atlandı" tek
+             başına, hangi dosyayı arayacağını bilmeyen bir sahip bırakır.
+          3. Yıkıcı işlemde metin geri dönüşü OLMADIĞINI söyler ve
+             kullanıcıdan kelimeyi YAZMASINI ister — onay kutusu değil.
+    */
+    'workspace.media.bulk.tab': 'Bulk actions',
+    'workspace.media.bulk.region': 'Bulk actions',
+    'workspace.media.bulk.lead':
+        'Apply one action to many files at once — see exactly what will happen before anything is touched.',
+    'workspace.media.bulk.step.scope': 'Scope',
+    'workspace.media.bulk.step.action': 'Action',
+    'workspace.media.bulk.step.config': 'Settings',
+    'workspace.media.bulk.step.preview': 'Impact',
+    'workspace.media.bulk.step.run': 'Result',
+    'workspace.media.bulk.back': 'Back',
+    'workspace.media.bulk.loading': 'Working out what this would do…',
+    'workspace.media.bulk.failed': 'The impact could not be worked out. Nothing was changed.',
+
+    'workspace.media.bulk.scope.heading': 'Which files?',
+    'workspace.media.bulk.scope.selected': 'The ones I pick',
+    'workspace.media.bulk.scope.selected.description':
+        'Tick the files below. Only what you tick goes into this job.',
+    'workspace.media.bulk.scope.workspace': 'Everything in the library',
+    'workspace.media.bulk.scope.workspace.description':
+        'Every file in this workspace, not just the ones on this page.',
+    'workspace.media.bulk.scope.folder': 'This folder and everything under it',
+    'workspace.media.bulk.scope.folder.description':
+        'The folder selected on the left, plus its sub-folders.',
+    'workspace.media.bulk.scope.folder.none': 'Files that are not in any folder.',
+    'workspace.media.bulk.scope.files': '{count} files',
+    // Kaynağın DEĞİŞMEZ cümlesi — birebir korunur (`docs/109` §3).
+    'workspace.media.bulk.scope.snapshot':
+        'The list is frozen the moment the job starts. If someone uploads a new file while you work, that file is not part of this job — otherwise the job might never finish.',
+    'workspace.media.bulk.scope.summary': 'Scope summary',
+    'workspace.media.bulk.scope.summary.count': 'Files',
+    'workspace.media.bulk.scope.summary.size': 'Total size',
+    'workspace.media.bulk.scope.summary.batch': 'Handled per run',
+    'workspace.media.bulk.scope.empty': 'There is no file in this scope yet.',
+    'workspace.media.bulk.scope.next': 'Choose an action',
+
+    'workspace.media.bulk.group.improve': 'Improve the file',
+    'workspace.media.bulk.group.organize': 'Organise and move',
+    'workspace.media.bulk.group.remove': 'Remove',
+    'workspace.media.bulk.action.optimize': 'Re-render derivatives',
+    'workspace.media.bulk.action.optimize.description':
+        'Rebuilds every size from the original using today’s rules. The original is untouched and each file gets a new version.',
+    'workspace.media.bulk.action.convert': 'Convert format',
+    'workspace.media.bulk.action.convert.description':
+        'Produces AVIF, WebP or JPEG. The converted file becomes a new version; the original is kept.',
+    'workspace.media.bulk.action.move': 'Move to folder',
+    'workspace.media.bulk.action.move.description':
+        'Moves files to another folder. Addresses do not change and no new version is created.',
+    'workspace.media.bulk.action.trash': 'Move to trash',
+    'workspace.media.bulk.action.trash.description':
+        'Waits {days} days in the trash, then is deleted for good. Can be restored at any point in that window.',
+    'workspace.media.bulk.action.purge': 'Delete permanently',
+    'workspace.media.bulk.action.purge.description':
+        'Files already in the trash are erased along with every version. Only a nightly backup could bring them back.',
+    'workspace.media.bulk.action.reversible': 'Can be undone',
+    'workspace.media.bulk.action.irreversible': 'Cannot be undone',
+    /*
+        Kilitli kart GİZLENMEZ. Gizleseydik editör "ürün bunu yapamıyor"
+        sanır ve yöneticisinden hiç istemezdi.
+    */
+    'workspace.media.bulk.action.locked':
+        'Needs the “{permission}” permission — ask a workspace manager.',
+    'workspace.media.bulk.action.unlocked': 'You have the permission for this',
+    'workspace.media.bulk.action.next': 'Set up “{action}”',
+    'workspace.media.bulk.action.none': 'Choose an action',
+
+    'workspace.media.bulk.config.heading': 'Settings for “{action}”',
+    'workspace.media.bulk.config.format': 'Target format',
+    'workspace.media.bulk.config.format.help':
+        'A file that is already in this format is skipped instead of re-encoded.',
+    'workspace.media.bulk.config.folder': 'Destination folder',
+    'workspace.media.bulk.config.folder.root': 'No folder',
+    'workspace.media.bulk.config.folder.help': 'A file already in the destination is skipped.',
+    // Ayarı olmayan eylemler için: boş bir kart çizmek, sahibi
+    // "bir şeyi mi atladım?" diye geriye baktırırdı.
+    'workspace.media.bulk.config.none':
+        'This action has no settings. Go on to see what it would do.',
+    'workspace.media.bulk.config.next': 'Show the impact',
+
+    'workspace.media.bulk.preview.heading': 'Dry run result',
+    'workspace.media.bulk.preview.lead':
+        'No file was touched. The server checked every file one by one; the numbers below are real.',
+    'workspace.media.bulk.preview.apply': 'Will be applied',
+    'workspace.media.bulk.preview.skip': 'Will be skipped',
+    'workspace.media.bulk.preview.remaining': 'Left for the next run',
+    'workspace.media.bulk.preview.remaining.note':
+        'One run handles {limit} files. Press the button again afterwards and it carries on where it stopped.',
+
+    'workspace.media.bulk.skip.heading': 'Why are these skipped?',
+    'workspace.media.bulk.skip.quarantine':
+        'Not through the security scan yet — nothing is applied to these files.',
+    'workspace.media.bulk.skip.legalHold':
+        'Under a legal hold. Deleting and moving are locked until the hold is lifted.',
+    'workspace.media.bulk.skip.publishedUsage':
+        'In use on a published menu. Deleting one would leave a blank space where a guest looks.',
+    'workspace.media.bulk.skip.unsupportedFormat':
+        'This action does not apply to this file type. PDF and SVG files are not re-rendered.',
+    'workspace.media.bulk.skip.alreadyDone': 'Already in that state — nothing to do.',
+    'workspace.media.bulk.skip.notInTrash':
+        'Not in the trash. Permanent deletion only works on files that are already in the trash.',
+    // Sunucu bir gün yeni bir sebep eklerse ekran boş bir satır değil,
+    // dürüst bir cümle gösterir.
+    'workspace.media.bulk.skip.unknown':
+        'The server gave a reason this version does not recognise yet. Nothing was applied to these files.',
+    'workspace.media.bulk.skip.files': 'Files that will be skipped',
+    'workspace.media.bulk.skip.show': 'List the skipped files',
+    'workspace.media.bulk.skip.hide': 'Hide the skipped files',
+
+    'workspace.media.bulk.impact.heading': 'What will the result be?',
+    'workspace.media.bulk.impact.newVersion': 'A new version opens on',
+    'workspace.media.bulk.impact.newVersion.value': '{count} files',
+    'workspace.media.bulk.impact.originals': 'Original files',
+    'workspace.media.bulk.impact.originals.kept': 'Unchanged',
+    'workspace.media.bulk.impact.undo': 'Undo window',
+    'workspace.media.bulk.impact.undo.days': '{days} days',
+    'workspace.media.bulk.impact.undo.none': 'None',
+    'workspace.media.bulk.impact.storage': 'Storage in use',
+    'workspace.media.bulk.impact.storage.freed': '{used} now, {freed} freed',
+    /*
+        Kaynak burada "Sonra (tahmini)" yazıyor. O satır BİLEREK yok:
+        yeniden üretimin ne kadar yer tutacağı ancak kodlamadan SONRA
+        bilinir ve bir tahmin yazmak, bu ekranın tek sözünü ("sayılar
+        gerçek") bozardı. Aynı karar `MediaConvertRegion` içinde de verildi.
+    */
+    'workspace.media.bulk.impact.storage.unknown':
+        '{used} now. What the new versions will weigh is only known after they are produced, so no estimate is shown here.',
+
+    'workspace.media.bulk.confirm.heading.purge': 'This cannot be undone',
+    'workspace.media.bulk.confirm.heading.large': 'Large scope',
+    'workspace.media.bulk.confirm.body.purge':
+        '{count} files and every version of them will be erased. They do not go to the trash; only a nightly backup could bring them back.',
+    'workspace.media.bulk.confirm.body.large':
+        '{count} files will change. A job that touches more than a hundred files asks you to confirm in writing.',
+    'workspace.media.bulk.confirm.label': 'Type {word} to confirm',
+    'workspace.media.bulk.confirm.mismatch':
+        'The word does not match yet, so the job stays closed.',
+
+    'workspace.media.bulk.run.start': 'Start · {count} files',
+    'workspace.media.bulk.run.start.destructive': 'Delete · {count} files',
+    'workspace.media.bulk.run.start.empty': 'No file to apply this to',
+    'workspace.media.bulk.run.running': 'Running…',
+    'workspace.media.bulk.run.failed': 'The job could not be started. Nothing was changed.',
+
+    'workspace.media.bulk.result.heading': 'File-by-file result',
+    'workspace.media.bulk.result.summary': '{applied} applied, {skipped} skipped, {failed} failed.',
+    // Aynı işlem anahtarı iki kez çalışmaz: kaynağın kendi kuralı.
+    'workspace.media.bulk.result.replayed':
+        'This job had already run with the same key, so it was not run a second time.',
+    'workspace.media.bulk.result.filter.all': 'All',
+    'workspace.media.bulk.result.filter.ok': 'Applied',
+    'workspace.media.bulk.result.filter.skip': 'Skipped',
+    'workspace.media.bulk.result.filter.error': 'Failed',
+    'workspace.media.bulk.result.retry': 'Retry the {count} failed files only',
+    'workspace.media.bulk.result.csv': 'Download CSV',
+    'workspace.media.bulk.result.csv.header.id': 'id',
+    'workspace.media.bulk.result.csv.header.name': 'file',
+    'workspace.media.bulk.result.csv.header.status': 'status',
+    'workspace.media.bulk.result.csv.header.reason': 'reason',
+    'workspace.media.bulk.result.restart': 'New bulk action',
+    'workspace.media.bulk.failure.reprocess': 'Re-rendering failed; the file is unchanged.',
+    'workspace.media.bulk.failure.convert': 'Conversion failed; the file is unchanged.',
+    'workspace.media.bulk.failure.move': 'The move did not go through; the file stayed put.',
+    'workspace.media.bulk.failure.unknown':
+        'This file could not be processed and was left as it was.',
+    'workspace.media.bulk.audit.heading': 'Audit record',
+    'workspace.media.bulk.audit.key': 'Operation key',
+    'workspace.media.bulk.audit.note':
+        'This record cannot be deleted or edited, and the same operation key never runs twice.',
+
+    /*
+        YÖNETİŞİM — kanonik kaynak `docs/reference/panel-v3/
+        MedyaModulu.dc.html`, "Yönetişim". Kaynağın cümlesi: "Kim ne
+        yapabilir, dosyalar ne kadar saklanır, kim ne yaptı."
+
+        Rol adları UYDURULMAZ: matris kaynağın dört kademesini değil, bu
+        deponun gerçek izinlerini gösterir. Kilitli satır gizlenmez —
+        gizleseydik editör yapamadığını da öğrenemezdi.
+    */
+    'workspace.media.governance.tab': 'Governance',
+    'workspace.media.governance.region': 'Media governance',
+    'workspace.media.governance.lead':
+        'Who can do what, how long files are kept, and who did what.',
+    'workspace.media.governance.loading': 'Loading the governance record…',
+    'workspace.media.governance.failed': 'The governance record could not be read.',
+    'workspace.media.governance.role': 'You are looking at this as {role}.',
+    'workspace.media.governance.role.owner': 'the owner',
+    'workspace.media.governance.role.manager': 'a manager',
+    'workspace.media.governance.role.editor': 'an editor',
+    'workspace.media.governance.role.member': 'a member',
+    'workspace.media.governance.role.unknown': 'a member of this workspace',
+
+    'workspace.media.governance.matrix.heading': 'Bulk action permissions',
+    'workspace.media.governance.matrix.allowed': 'Open to you',
+    'workspace.media.governance.matrix.locked': 'Locked — needs “{permission}”',
+    'workspace.media.governance.action.legal-hold': 'Place or lift a legal hold',
+    'workspace.media.governance.action.legal-hold.description':
+        'A file tied to a dispute cannot be deleted or moved. Bulk actions skip it and single deletion refuses it.',
+
+    'workspace.media.governance.retention.heading': 'Retention policy',
+    'workspace.media.governance.retention.trash': 'Trash',
+    'workspace.media.governance.retention.trash.value': '{days} days',
+    'workspace.media.governance.retention.trash.description':
+        'Then it is deleted for good. Restoring is one tap inside that window.',
+    'workspace.media.governance.retention.originals': 'Originals and versions',
+    'workspace.media.governance.retention.originals.value': 'Kept',
+    'workspace.media.governance.retention.originals.description':
+        'The uploaded file is kept byte for byte and no version is ever pruned; re-rendering adds a version next to it.',
+    'workspace.media.governance.retention.legalHold': 'Legal hold',
+    'workspace.media.governance.retention.legalHold.value': '{count} files',
+    'workspace.media.governance.retention.legalHold.description':
+        'Files tied to a dispute cannot be deleted — bulk actions skip them.',
+    'workspace.media.governance.retention.audit': 'Audit record',
+    'workspace.media.governance.retention.audit.value': 'Forever',
+    'workspace.media.governance.retention.audit.description':
+        'Cannot be deleted or edited. It is only ever read.',
+
+    'workspace.media.governance.legalHold.heading': 'Files under a legal hold',
+    'workspace.media.governance.legalHold.empty': 'No file is under a legal hold right now.',
+    'workspace.media.governance.legalHold.since': 'Held since {date}',
+
+    'workspace.media.governance.trail.heading': 'Audit trail',
+    'workspace.media.governance.trail.empty': 'Nothing has been recorded here yet.',
+    'workspace.media.governance.trail.note':
+        'Read-only. Records cannot be deleted or edited; they are only exported.',
+    'workspace.media.governance.trail.bulk':
+        '{action} · {applied} applied, {skipped} skipped, {failed} failed',
+    'workspace.media.governance.trail.asset': '{action} · file #{id}',
+    'workspace.media.governance.trail.unknownActor': 'Unknown person',
+
+    /*
+        OLGUNLUK (`docs/109-PANEL-V3.md` §2, kaynak ekranı "Olgunluk";
+        seviye sözlüğü `docs/108` §6.7).
+
+        BU BÖLÜMÜN METNİ KENDİNİ ÖVEMEZ. Seviye rozetleri elle yazılmış
+        sayılar değil, kanıttan hesaplanmış sonuçlardır; katalogdaki
+        cümleler de bunu saklamaz, açıkça söyler.
+    */
+    'workspace.media.maturity.tab': 'Maturity',
+    'workspace.media.maturity.region': 'Media maturity',
+    'workspace.media.maturity.score.heading': 'MVP maturity',
+    'workspace.media.maturity.score.value': '{achieved} / {possible}',
+    'workspace.media.maturity.score.note':
+        'The score is the sum of the levels below. It is not a percentage of readiness.',
+    /*
+        Bu cümle EKRANIN KENDİSİ HAKKINDADIR ve mühendislik sözcüğü
+        taşımaz (`workspace-vocabulary.guard`): sahibin öğrenmesi gereken
+        şey "hangi teknik parça" değil, "bu sayı nereden geliyor".
+    */
+    'workspace.media.maturity.selfAssessed':
+        'This is the product marking its own homework, not an outside audit. Every level below has to be earned by something that really exists here — a part that runs, a written rule, or a test that checks it — and a step with nothing behind it never counts.',
+    'workspace.media.maturity.legend.heading': 'What the levels mean',
+
+    'workspace.media.maturity.level.0': 'Not there',
+    'workspace.media.maturity.level.0.description': 'Not built yet.',
+    'workspace.media.maturity.level.1': 'Works',
+    'workspace.media.maturity.level.1.description': 'The happy path works.',
+    'workspace.media.maturity.level.2': 'Safe',
+    'workspace.media.maturity.level.2.description': 'Failures and limits are covered by a test.',
+    'workspace.media.maturity.level.3': 'Measured',
+    'workspace.media.maturity.level.3.description': 'It produces a number or an audit record.',
+    'workspace.media.maturity.level.4': 'Mature',
+    'workspace.media.maturity.level.4.description':
+        'It recovers on its own and says what happened.',
+
+    /*
+        Rozet GÖRÜLEN bir kısaltma değil, OKUNAN bir cümledir. "L2" tek
+        başına ekran okuyucuda hiçbir şey ifade etmez.
+    */
+    'workspace.media.maturity.level.badge': 'Level {level} of {max}',
+    'workspace.media.maturity.level.short': 'L{level}',
+    'workspace.media.maturity.rung': 'Level {level} · {name}',
+
+    'workspace.media.maturity.evidence.heading': 'Evidence',
+    'workspace.media.maturity.evidence.none':
+        'No evidence for this step, so it does not count towards the level.',
+    'workspace.media.maturity.evidence.found': 'found',
+    'workspace.media.maturity.evidence.absent': 'not found',
+    'workspace.media.maturity.evidence.unverifiable': 'could not be checked here',
+    'workspace.media.maturity.evidence.kind.endpoint': 'A part of the panel that runs',
+    'workspace.media.maturity.evidence.kind.requirement': 'A written rule with a test',
+    'workspace.media.maturity.evidence.kind.test': 'A test that checks it',
+    'workspace.media.maturity.evidence.item': '{kind} · {state}',
+
+    /*
+        Yetenek adları SUNUCUNUN anahtarı değildir. Uç `intake` gönderir;
+        restoran sahibi "Uploading" okur. İç adlandırmayı ekrana sızdırmak,
+        sahibi kendi ürününde yabancı yapar.
+    */
+    'workspace.media.maturity.capability.intake': 'Uploading',
+    'workspace.media.maturity.capability.scan': 'Virus scan',
+    'workspace.media.maturity.capability.derivatives': 'Sizes and derivatives',
+    'workspace.media.maturity.capability.convert': 'Format conversion',
+    'workspace.media.maturity.capability.viewer': 'Viewer',
+    'workspace.media.maturity.capability.trash': 'Trash and restore',
+    'workspace.media.maturity.capability.bulk': 'Bulk actions',
+    'workspace.media.maturity.capability.quota': 'Quota',
+    'workspace.media.maturity.capability.governance': 'Governance',
 } as const;
 
 declare module '../workspace' {

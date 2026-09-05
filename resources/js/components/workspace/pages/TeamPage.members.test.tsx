@@ -134,7 +134,14 @@ describe('TeamPage — S1-WP01A real member list (TEAM_MEMBERS_FRONTEND_RED)', (
 
         expect(within(membersRegion).getByText('Mehmet Demir')).toBeInTheDocument();
         expect(within(membersRegion).getByText('mehmet@example.test')).toBeInTheDocument();
-        expect(within(membersRegion).getByText(/member/i)).toBeInTheDocument();
+        /*
+            Sorgu GEVŞEKTEN KESİNE çevrildi: `/member/i` bölgenin artık
+            GÖRÜNÜR olan "Team members" başlığıyla da eşleşiyor (`docs/109`
+            §6.4 — kaynağın "Üyeler" kart başlığı). Sınanan sözleşme başlık
+            değil, SATIRIN sunucudan gelen rol değerini yazmasıydı; sorgu
+            şimdi tam olarak onu arıyor.
+        */
+        expect(within(membersRegion).getByText('member')).toBeInTheDocument();
 
         expect(within(membersRegion).queryAllByRole('listitem')).toHaveLength(2);
     });

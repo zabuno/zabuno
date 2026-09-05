@@ -19,10 +19,10 @@ const meta: Meta<typeof SettingsPage> = {
     parameters: { layout: 'fullscreen' },
     args: {
         workspaceId: 1,
-        userName: 'Mehmet Usta',
         brand: null,
         onSaved: () => undefined,
         onSelectTab: () => undefined,
+        onNavigateToMedia: () => undefined,
     },
     decorators: [
         (Story) => (
@@ -41,5 +41,8 @@ type Story = StoryObj<typeof SettingsPage>;
 
 export const BrandTab: Story = { args: { activeTab: 'brand' } };
 
-/** Hesap sekmesi: kişisel bilgiler burada, görünüm tercihi Profil'de. */
-export const AccountTab: Story = { args: { activeTab: 'account' } };
+/**
+ * Çalışma alanı sekmesi (docs/109): çalışma alanının adı ve panel adresi.
+ * Kişisel bilgiler burada DEĞİL — hepsi Profil ekranında.
+ */
+export const WorkspaceTab: Story = { args: { activeTab: 'workspace' } };

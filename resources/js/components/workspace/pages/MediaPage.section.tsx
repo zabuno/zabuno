@@ -33,6 +33,17 @@ const mediaSection: WorkspaceSectionDescriptor = {
     order: 5,
     labelKey: 'workspace.shell.nav.media',
     icon: <Image size={18} weight="regular" />,
+    /*
+        KÜTÜPHANE BİR ÇALIŞMA EKRANIDIR: yükle, dönüştür, taşı, sil, toplu
+        işlem. Hepsi `media.manage` ister.
+
+        İzin alanı boştu ve Mutfak rolü (`docs/109` §6.4) bunu görünür kıldı:
+        fotoğraf yükleyemeyen bir aşçının kütüphaneyi hedef olarak görmesi,
+        yapamayacağı bir işe davet olurdu. Eski salt okunur `member` rolü de
+        bu izne sahip değil ve o da aynı sebeple bu hedefi görmez —
+        listelemek hâlâ mümkün, YÖNETMEK değil.
+    */
+    permission: 'media.manage',
     group: 'management',
     render,
 };

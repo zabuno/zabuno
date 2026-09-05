@@ -263,6 +263,18 @@ describe('menüyü işletmek (docs/73)', () => {
     it('kategori sırası da tek istekte gönderilir', async () => {
         const { calls, user } = await renderWorkspace();
 
+        /*
+            ÖNCE RAYDAN SEÇ. Ekranda artık aynı anda tek kategori duruyor
+            (kanonik kaynak `panel.dc.html` satır 30255-30282), dolayısıyla
+            "İçecekler"in kendi eylemlerine ulaşmak için önce o kategoriye
+            geçilir — sahibin gerçekte yaptığı da budur.
+
+            Testin iddiası değişmedi: yukarı taşımak TEK bir
+            `category-order` isteği gönderir ve gövdesi yeni sırayı taşır.
+        */
+        const rail = screen.getByRole('navigation', { name: 'Menu categories' });
+        await user.click(within(rail).getByRole('button', { name: /İçecekler/ }));
+
         await user.click(screen.getByRole('button', { name: 'Move İçecekler up' }));
 
         await waitFor(() => {

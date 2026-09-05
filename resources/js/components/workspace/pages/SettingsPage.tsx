@@ -3,8 +3,8 @@ import { lazy, Suspense } from 'react';
 import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
 import { BrandLogoRegion } from './brand/BrandLogoRegion';
-import { AccountSettingsRegion } from './settings/AccountSettingsRegion';
 import { AuditTrailRegion } from './settings/AuditTrailRegion';
+import { WorkspaceIdentityRegion } from './settings/WorkspaceIdentityRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
 
@@ -15,13 +15,22 @@ import { PanelCard } from './shared/PanelCard';
 */
 const BillingPage = lazy(async () => ({ default: (await import('./BillingPage')).BillingPage }));
 
-export type SettingsTab = 'brand' | 'account' | 'billing' | 'audit';
+export type SettingsTab = 'brand' | 'workspace' | 'billing' | 'audit';
 
 const TABS: ReadonlyArray<{ key: SettingsTab; labelKey: Parameters<typeof t>[0] }> = [
     { key: 'brand', labelKey: 'workspace.settings.tab.brand' },
-    // Hesap, MARKA ile FATURA arasında: ikisi de "kurulur ve unutulur", hesap
-    // ise arada bir onarılır (`docs/83`).
-    { key: 'account', labelKey: 'workspace.settings.tab.account' },
+    /*
+        ÇALIŞMA ALANI (docs/109, kaynağın dizisi:
+        `['Marka','Çalışma alanı','Plan ve fatura','Denetim']`).
+
+        Bu sekmenin adı "Hesap"tı ve içinde KİŞİSEL ad/şifre formu duruyordu.
+        Aynı form Profil ekranında da vardı: bir ayarın iki evi. Kaynak sınırı
+        net çiziyor — Ayarlar ÇALIŞMA ALANINA aittir, kişiye ait olan her şey
+        Profil'dedir. Ad değişmeden içerik düzeltilseydi, kullanıcı "Hesap"
+        yazan yere bakıp kendi adını arar ve bulamazdı; ad ile içerik birlikte
+        değişmek zorundaydı.
+    */
+    { key: 'workspace', labelKey: 'workspace.settings.tab.workspace' },
     { key: 'billing', labelKey: 'workspace.settings.tab.billing' },
     /*
         DENETİM (FF-132) — dördüncü sekme. En SONDA duruyor ve bu bilinçli:
@@ -37,8 +46,8 @@ export type SettingsPageProps = {
     onSaved: (brand: BrandProfile) => void;
     activeTab: SettingsTab;
     onSelectTab: (tab: SettingsTab) => void;
-    /** Oturumdaki kullanıcının adı; hesap sekmesi onu ön-doldurur. */
-    userName?: string;
+    /** Marka sekmesindeki "Değiştir" düğmesi için: dosyanın evi Medya'dır. */
+    onNavigateToMedia: () => void;
 };
 
 /**
@@ -53,6 +62,11 @@ export type SettingsPageProps = {
  * Bölüm içi gezinti YATAY SEKME olarak duruyor, üçüncü bir kalıcı sol ray
  * olarak değil — Carbon üç navigasyon katmanını desteklemez ve daha derin
  * seviye için sayfa içi sekme önerir (`docs/50` §4).
+ *
+ * SINIR (docs/109, kanonik kaynak): bu ekran ÇALIŞMA ALANINA aittir. Kişiye
+ * ait hiçbir şey —ad, e-posta, şifre, tema, satır aralığı— burada çizilmez;
+ * hepsinin evi Profil ekranıdır. Aynı formu iki ekranda göstermek,
+ * kullanıcıya aynı ayarın iki değeri varmış gibi görünüyordu.
  */
 export function SettingsPage({
     workspaceId,
@@ -60,7 +74,7 @@ export function SettingsPage({
     onSaved,
     activeTab,
     onSelectTab,
-    userName,
+    onNavigateToMedia,
 }: SettingsPageProps) {
     return (
         <div id="section-settings">
@@ -125,44 +139,35 @@ export function SettingsPage({
                     <PanelCard>
                         {activeTab === 'brand' &&
                             (brand ? (
-                                <>
+                                <div className="flex flex-col gap-[var(--space-6)]">
+                                    {/*
+                                        LOGO SATIRI EN ÜSTTE (docs/109,
+                                        kaynağın `tabBrand` düzeni): sahip
+                                        önce bugün ne olduğunu görür, sonra
+                                        marka alanlarını düzenler.
+                                    */}
+                                    <BrandLogoRegion
+                                        workspaceId={workspaceId}
+                                        initialMediaAssetId={brand.logoMediaAssetId ?? null}
+                                        fallbackInitial={(brand.name || '?')
+                                            .slice(0, 1)
+                                            .toLocaleUpperCase()}
+                                        onNavigateToMedia={onNavigateToMedia}
+                                    />
                                     <BrandEditForm
                                         workspaceId={workspaceId}
                                         brand={brand}
                                         onSaved={onSaved}
                                     />
-                                    <BrandLogoRegion
-                                        workspaceId={workspaceId}
-                                        initialMediaAssetId={brand.logoMediaAssetId ?? null}
-                                    />
-                                </>
+                                </div>
                             ) : (
                                 <p role="status" className="text-body text-fg-muted">
                                     {t('workspace.brand.loading')}
                                 </p>
                             ))}
 
-                        {activeTab === 'account' && (
-                            <div className="flex flex-col gap-[var(--space-6)]">
-                                <AccountSettingsRegion currentName={userName} />
-                                {/*
-                                    GÖRÜNÜM BURADAN GİTTİ (FF-130, sahibin
-                                    kararı 2026-09-04: "zip dosyaları bu işin
-                                    tanrısıdır").
-
-                                    FF-119'da buraya taşınmıştı ve gerekçesi
-                                    doğruydu: tema kişiye aittir. Ama teslim
-                                    paketi aynı gerekçeyi bir adım öteye
-                                    götürüyor — KİŞİYE ait olan her şey Profil
-                                    ekranındadır; Ayarlar çalışma alanına
-                                    aittir. Tema Ayarlar'da kaldıkça, kişisel
-                                    bir tercih çalışma alanı değişince
-                                    değişecekmiş gibi görünüyordu.
-
-                                    Tek ev kuralı korunuyor: ayar iki yerde
-                                    değil, Profil > Görünüm'de.
-                                */}
-                            </div>
+                        {activeTab === 'workspace' && (
+                            <WorkspaceIdentityRegion workspaceId={workspaceId} />
                         )}
 
                         {activeTab === 'audit' && <AuditTrailRegion workspaceId={workspaceId} />}

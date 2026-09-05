@@ -136,6 +136,14 @@ return [
         'admin', 'api', 'app', 'assets', 'build', 'dish', 'email', 'forgot-password',
         'contact', 'health', 'help', 'invitations', 'kvkk', 'login', 'logout', 'media',
         'en', 'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
+        /*
+            TASLAK ÖNİZLEMESİ (`/menu-preview/{workspace}/{menu}`, sahibin
+            2026-09-05 "Telefonda önizle" kararı). Bir işletme bu slug'ı
+            alabilseydi, kendi sayfası ile sahibin imzalı önizleme adresi
+            aynı kökü paylaşırdı — ve o kök, misafire asla gösterilmemesi
+            gereken yayınlanmamış fiyatları taşıyor.
+        */
+        'menu-preview',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
         // Dil dizinleri de rezerve: kurumsal site `/tr/` ve `/en/` altında
         // yaşıyor ve bir kiracı slug'ı o kökü gölgeleyemez (FF-121).

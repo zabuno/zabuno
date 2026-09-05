@@ -1,6 +1,6 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { desktopChrome } from '../../test/workspaceChrome';
 
 /**
@@ -146,8 +146,9 @@ async function renderOnLocationsPage(fetchMock: ReturnType<typeof buildFetchMock
     const navLink = await screen.findByRole('link', { name: 'Locations' });
     fireEvent.click(navLink);
 
+    await waitFor(() => expect(document.querySelector('#section-locations')).not.toBeNull());
+
     const destination = document.querySelector('#section-locations') as HTMLElement;
-    expect(destination).not.toBeNull();
 
     return within(destination);
 }
@@ -156,8 +157,43 @@ function locationRows(scope: ReturnType<typeof within>): HTMLElement[] {
     return scope.getAllByTestId('brand-location-row');
 }
 
+/**
+ * Kartın yazdığı ADRES — `docs/109` §6.4.
+ *
+ * Kart adresi TEK SATIRDA gösterir: sokak ile ikinci satır (kat, daire) bir
+ * yer tarifinin iki yarısıdır ve ayrı ayrı okununca hiçbiri adres olmaz. Bu
+ * yüzden beklenen metin de birleşik yazılır.
+ */
+function cardAddress(location: { address_line1: string; address_line2?: string | null }): string {
+    return [location.address_line1, location.address_line2 ?? '']
+        .map((part) => part.trim())
+        .filter((part) => part !== '')
+        .join(' ');
+}
+
 function editButtonName(location: { display_name: string }): string {
     return `Edit ${location.display_name}`;
+}
+
+/**
+ * Kartın düzenleme panelini AÇAN tık — `docs/109` §6.4.
+ *
+ * Şubeler ekranı kart ızgarasına geçti (kaynak: `panel.dc.html`,
+ * `data-screen-label="Şubeler"`) ve düzenleme formu artık kartın içinde,
+ * KAPALI duruyor. Üç şubeli bir markada üç uzun form yan yana durursa ızgara
+ * ızgara olmaktan çıkar.
+ *
+ * Bu dosyadaki sözleşmelerin hiçbiri değişmedi — kapsanmış Edit denetimi,
+ * yalnız o satırın alanları, CSRF + tek PUT, satıra bağlı uyarılar. Yalnız
+ * yola bir adım eklendi: önce panel açılır.
+ */
+function openEditPanel(
+    rowScope: ReturnType<typeof within>,
+    location: { display_name: string },
+): void {
+    fireEvent.click(
+        rowScope.getByRole('button', { name: `Edit details for ${location.display_name}` }),
+    );
 }
 
 describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation)', () => {
@@ -174,8 +210,11 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const locations = [makeLocationA(), makeLocationB()];
         rows.forEach((row: HTMLElement, index: number) => {
+            const rowScope = within(row);
+            openEditPanel(rowScope, locations[index]);
+
             expect(
-                within(row).getByRole('button', { name: editButtonName(locations[index]) }),
+                rowScope.getByRole('button', { name: editButtonName(locations[index]) }),
             ).toBeInTheDocument();
         });
 
@@ -189,6 +228,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
+        openEditPanel(firstRowScope, locationA);
         fireEvent.click(firstRowScope.getByRole('button', { name: editButtonName(locationA) }));
 
         expect(
@@ -202,8 +242,16 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const secondRowScope = within(rows[1]);
         expect(secondRowScope.queryByLabelText('Display name')).not.toBeInTheDocument();
+        /*
+            İkinci kartın denetimi artık PANELİ AÇAN düğmedir: aynı anda tek
+            kart açıktır, çünkü üç şubeli bir markada üç uzun form yan yana
+            durursa ızgara ızgara olmaktan çıkar. Sınanan sözleşme aynı —
+            komşu satırın alanları açılmaz ve kendi denetimi yerinde durur.
+        */
         expect(
-            secondRowScope.getByRole('button', { name: editButtonName(makeLocationB()) }),
+            secondRowScope.getByRole('button', {
+                name: `Edit details for ${makeLocationB().display_name}`,
+            }),
         ).toBeInTheDocument();
 
         vi.unstubAllGlobals();
@@ -215,6 +263,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
+        openEditPanel(firstRowScope, makeLocationA());
         fireEvent.click(
             firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
         );
@@ -226,7 +275,15 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         expect(
             firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
         ).toBeInTheDocument();
-        expect(firstRowScope.getByText(makeLocationA().display_name)).toBeInTheDocument();
+        /*
+            Ad KARTIN BAŞLIĞINDAN okunur. Düzenleme paneli kapanınca kartın
+            kendi başlığı yerinde kalır; düz metin araması, panel açıkken
+            aynı adı iki yerde (kart başlığı + özet başlığı) bulup belirsiz
+            hâle geliyordu.
+        */
+        expect(
+            firstRowScope.getByRole('heading', { name: makeLocationA().display_name }),
+        ).toBeInTheDocument();
 
         const writeCalls = fetchMock.mock.calls.filter(([, init]) => {
             const method = ((init as RequestInit | undefined)?.method ?? 'GET').toUpperCase();
@@ -262,6 +319,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const scope = await renderOnLocationsPage(fetchMock);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
+        openEditPanel(firstRowScope, makeLocationA());
         fireEvent.click(
             firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
         );
@@ -325,6 +383,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
+        openEditPanel(firstRowScope, makeLocationA());
         fireEvent.click(
             firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
         );
@@ -394,13 +453,21 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
 
         const updatedRows = locationRows(scope);
         const updatedFirstRowScope = within(updatedRows[0]);
-        expect(await updatedFirstRowScope.findByText('Kadıköy Şube Güncel')).toBeInTheDocument();
+        // Ad kartın başlığından okunur: panel açıkken aynı ad özet
+        // başlığında da yazıyor ve düz metin araması belirsiz kalıyordu.
+        expect(
+            await updatedFirstRowScope.findByRole('heading', { name: 'Kadıköy Şube Güncel' }),
+        ).toBeInTheDocument();
         expect(updatedFirstRowScope.getByText('Moda Cd. 14')).toBeInTheDocument();
 
         const secondRowScope = within(updatedRows[1]);
         const locationB = makeLocationB();
-        expect(secondRowScope.getByText(locationB.display_name)).toBeInTheDocument();
-        expect(secondRowScope.getByText(locationB.address_line1)).toBeInTheDocument();
+        expect(
+            secondRowScope.getByRole('heading', { name: locationB.display_name }),
+        ).toBeInTheDocument();
+        expect(secondRowScope.getByTestId('location-card-address')).toHaveTextContent(
+            cardAddress(locationB),
+        );
 
         const userRefetches = fetchMock.mock.calls.filter(([url]) => String(url) === '/api/user');
         const contextRefetches = fetchMock.mock.calls.filter(
@@ -432,6 +499,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const scope = await renderOnLocationsPage(withPut);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
+        openEditPanel(firstRowScope, makeLocationA());
         fireEvent.click(
             firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
         );
@@ -451,8 +519,12 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
             [restoredRows[1], makeLocationB()],
         ] as const) {
             const rowScope = within(row);
-            expect(rowScope.getByText(location.display_name)).toBeInTheDocument();
-            expect(rowScope.getByText(location.address_line1)).toBeInTheDocument();
+            expect(
+                rowScope.getByRole('heading', { name: location.display_name }),
+            ).toBeInTheDocument();
+            expect(rowScope.getByTestId('location-card-address')).toHaveTextContent(
+                cardAddress(location),
+            );
         }
 
         vi.unstubAllGlobals();
@@ -475,6 +547,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const scope = await renderOnLocationsPage(withPut);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
+        openEditPanel(firstRowScope, makeLocationA());
         fireEvent.click(
             firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
         );
@@ -488,8 +561,14 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Cancel' }));
 
         const restoredRows = locationRows(scope);
-        expect(within(restoredRows[0]).getByText(makeLocationA().display_name)).toBeInTheDocument();
-        expect(within(restoredRows[1]).getByText(makeLocationB().display_name)).toBeInTheDocument();
+        // Ad kartın başlığından okunur: panel açıkken aynı ad özet başlığında
+        // da yazıyor ve düz metin araması belirsiz kalıyordu.
+        expect(
+            within(restoredRows[0]).getByRole('heading', { name: makeLocationA().display_name }),
+        ).toBeInTheDocument();
+        expect(
+            within(restoredRows[1]).getByRole('heading', { name: makeLocationB().display_name }),
+        ).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -511,6 +590,7 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         const scope = await renderOnLocationsPage(withPut);
         const rows = locationRows(scope);
         const firstRowScope = within(rows[0]);
+        openEditPanel(firstRowScope, makeLocationA());
         fireEvent.click(
             firstRowScope.getByRole('button', { name: editButtonName(makeLocationA()) }),
         );
@@ -524,8 +604,14 @@ describe('WorkspaceApp — Locations page per-location Edit (S1-WP01A foundation
         fireEvent.click(firstRowScope.getByRole('button', { name: 'Cancel' }));
 
         const restoredRows = locationRows(scope);
-        expect(within(restoredRows[0]).getByText(makeLocationA().display_name)).toBeInTheDocument();
-        expect(within(restoredRows[1]).getByText(makeLocationB().display_name)).toBeInTheDocument();
+        // Ad kartın başlığından okunur: panel açıkken aynı ad özet başlığında
+        // da yazıyor ve düz metin araması belirsiz kalıyordu.
+        expect(
+            within(restoredRows[0]).getByRole('heading', { name: makeLocationA().display_name }),
+        ).toBeInTheDocument();
+        expect(
+            within(restoredRows[1]).getByRole('heading', { name: makeLocationB().display_name }),
+        ).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });

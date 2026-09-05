@@ -50,10 +50,99 @@ function stubFetch(media: unknown[], putStatus = 200) {
     return calls;
 }
 
-const READY_LOGO = { id: 71, altText: 'Zeytin logosu', slot: 'logo', status: 'ready' };
+const READY_LOGO = {
+    id: 71,
+    altText: 'Zeytin logosu',
+    slot: 'logo',
+    status: 'ready',
+    previewUrl: 'https://cdn.example/71.webp',
+};
 
 describe('BrandLogoRegion (docs/98 FF-64)', () => {
     afterEach(() => vi.unstubAllGlobals());
+
+    /*
+        LOGO SATIRI — kanonik kaynak (`panel.dc.html` > "Ayarlar" > `tabBrand`)
+        Marka sekmesinin EN ÜSTÜNE bir logo satırı koyuyor: 72 piksellik bir
+        kare, yanında "Logo", altında "Medya kütüphanesinden seçilir; misafir
+        menüsünün başında görünür." ve bir "Değiştir" düğmesi.
+
+        NEDEN BU TEST: depoda bu bölüm bir açılır listeden ibaretti ve marka
+        sekmesinin DİBİNDE duruyordu. Sahip logosunu görmeden seçiyordu —
+        "Zeytin logosu" yazan bir satır, yanlış dosyayı bağladığını ancak
+        misafir menüsü yayınlandıktan sonra ele veriyordu. Kaynak önce
+        BUGÜN NE OLDUĞUNU gösteriyor, sonra değiştirme yolunu veriyor.
+    */
+    it('logo satırı en üstte durur: bağlı logo görsel olarak görünür', async () => {
+        stubFetch([READY_LOGO]);
+
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={71}
+                fallbackInitial="P"
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
+
+        const preview = (await screen.findByAltText('Zeytin logosu')) as HTMLImageElement;
+        expect(preview.src).toBe('https://cdn.example/71.webp');
+    });
+
+    it('logo yokken baş harf gösterilir, boş bir kare değil', async () => {
+        stubFetch([]);
+
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={null}
+                fallbackInitial="P"
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
+
+        // Baş harf DEKORATİFTİR ama boşluktan iyidir: bölümün ne hakkında
+        // olduğunu, hiç logo yüklenmemişken bile gösterir.
+        expect(await screen.findByTestId('brand-logo-fallback')).toHaveTextContent('P');
+    });
+
+    it('"Değiştir" kullanıcıyı Medya ekranına götürür', async () => {
+        stubFetch([READY_LOGO]);
+        const onNavigateToMedia = vi.fn();
+
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={71}
+                fallbackInitial="P"
+                onNavigateToMedia={onNavigateToMedia}
+            />,
+        );
+
+        await userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+
+        // Yükleme burada YENİDEN YAPILMAZ; dosyanın evi Medya ekranıdır.
+        expect(onNavigateToMedia).toHaveBeenCalledTimes(1);
+    });
+
+    it('kaynağın cümlesini yazar: dosya nereden gelir, nerede görünür', async () => {
+        stubFetch([READY_LOGO]);
+
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={71}
+                fallbackInitial="P"
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
+
+        expect(
+            await screen.findByText(
+                'Chosen from your media library; shown at the top of your guest menu.',
+            ),
+        ).toBeInTheDocument();
+    });
 
     it('lists only ready logo-slot media and binds the chosen one', async () => {
         const calls = stubFetch([
@@ -62,7 +151,14 @@ describe('BrandLogoRegion (docs/98 FF-64)', () => {
             { id: 73, altText: 'İşleniyor', slot: 'logo', status: 'processing' },
         ]);
 
-        render(<BrandLogoRegion workspaceId={WORKSPACE_ID} initialMediaAssetId={null} />);
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={null}
+                fallbackInitial="P"
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
 
         const select = await screen.findByLabelText('Choose a logo');
         // Yalnız hazır + logo slotu: ürün fotoğrafı ve işlenmekte olan yok.
@@ -89,7 +185,14 @@ describe('BrandLogoRegion (docs/98 FF-64)', () => {
     it('opens with the current logo selected and can remove it', async () => {
         const calls = stubFetch([READY_LOGO]);
 
-        render(<BrandLogoRegion workspaceId={WORKSPACE_ID} initialMediaAssetId={71} />);
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={71}
+                fallbackInitial="P"
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
 
         const select = (await screen.findByLabelText('Choose a logo')) as HTMLSelectElement;
         expect(select.value).toBe('71');
@@ -106,7 +209,14 @@ describe('BrandLogoRegion (docs/98 FF-64)', () => {
     it('sends the owner to the Media page when no logo has been processed yet', async () => {
         stubFetch([]);
 
-        render(<BrandLogoRegion workspaceId={WORKSPACE_ID} initialMediaAssetId={null} />);
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={null}
+                fallbackInitial="P"
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
 
         expect(
             await screen.findByText(
@@ -118,7 +228,14 @@ describe('BrandLogoRegion (docs/98 FF-64)', () => {
     it("shows the server's reason when binding is refused", async () => {
         stubFetch([READY_LOGO], 422);
 
-        render(<BrandLogoRegion workspaceId={WORKSPACE_ID} initialMediaAssetId={null} />);
+        render(
+            <BrandLogoRegion
+                workspaceId={WORKSPACE_ID}
+                initialMediaAssetId={null}
+                fallbackInitial="P"
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
 
         await userEvent.selectOptions(await screen.findByLabelText('Choose a logo'), '71');
         await userEvent.click(screen.getByRole('button', { name: 'Use this logo' }));

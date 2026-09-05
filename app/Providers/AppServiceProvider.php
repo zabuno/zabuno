@@ -22,9 +22,12 @@ use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaAuditPort;
+use App\Application\Media\Port\MediaBulkPort;
 use App\Application\Media\Port\MediaConversionPort;
+use App\Application\Media\Port\MediaEvidencePort;
 use App\Application\Media\Port\MediaFolderRepositoryPort;
 use App\Application\Media\Port\MediaFormatSupportPort;
+use App\Application\Media\Port\MediaLegalHoldPort;
 use App\Application\Media\Port\MediaProcessingJobPort;
 use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRegenerationPort;
@@ -33,6 +36,7 @@ use App\Application\Media\Port\MediaStorageBreakdownPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
+use App\Application\MenuCatalog\Port\MenuSchedulePort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\ConnectionProbePort;
@@ -44,6 +48,7 @@ use App\Application\Platform\Port\PlatformCredentialAdminPort;
 use App\Application\Platform\Port\PlatformWorkspaceQueryPort;
 use App\Application\Publication\Port\MenuIdentityPort;
 use App\Application\Publication\Port\PublicationRepositoryPort;
+use App\Application\Publication\Port\PublicationSchedulePort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\QrDestination\Port\BulkQrCreationPort;
 use App\Application\QrDestination\Port\DiningAreaRepositoryPort;
@@ -52,6 +57,7 @@ use App\Application\QrDestination\Port\QrCodeImageExportPort;
 use App\Application\QrDestination\Port\QrCodePdfExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Application\QrDestination\Port\QrPrintSheetPort;
+use App\Application\QrDestination\Port\QrScanCountPort;
 use App\Application\Reference\Port\MarketReferencePort;
 use App\Application\Security\Port\BackupRestoreDrillRunnerPort;
 use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
@@ -96,9 +102,12 @@ use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
+use App\Infrastructure\Media\Maturity\RepositoryMediaEvidence;
 use App\Infrastructure\Media\Persistence\EloquentMediaAudit;
+use App\Infrastructure\Media\Persistence\EloquentMediaBulk;
 use App\Infrastructure\Media\Persistence\EloquentMediaConversion;
 use App\Infrastructure\Media\Persistence\EloquentMediaFolderRepository;
+use App\Infrastructure\Media\Persistence\EloquentMediaLegalHold;
 use App\Infrastructure\Media\Persistence\EloquentMediaProcessingJobs;
 use App\Infrastructure\Media\Persistence\EloquentMediaRegeneration;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
@@ -113,6 +122,7 @@ use App\Infrastructure\Media\Quota\DatabaseMediaStorageBreakdown;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
+use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuSchedule;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
 use App\Infrastructure\Platform\Capability\RuntimeHostCapabilityProbe;
@@ -123,10 +133,12 @@ use App\Infrastructure\Platform\Persistence\EloquentPlatformAuthorization;
 use App\Infrastructure\Platform\Persistence\EloquentPlatformWorkspaceQuery;
 use App\Infrastructure\Publication\Persistence\EloquentMenuIdentity;
 use App\Infrastructure\Publication\Persistence\EloquentPublicationRepository;
+use App\Infrastructure\Publication\Persistence\EloquentPublicationSchedule;
 use App\Infrastructure\Publication\Persistence\EloquentPublicMenuAddress;
 use App\Infrastructure\QrDestination\Persistence\EloquentBulkQrCreationRepository;
 use App\Infrastructure\QrDestination\Persistence\EloquentDiningAreaRepository;
 use App\Infrastructure\QrDestination\Persistence\EloquentQrCodeRepository;
+use App\Infrastructure\QrDestination\Persistence\EloquentQrScanCountRepository;
 use App\Infrastructure\QrDestination\Rendering\EndroidQrCodeImageExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCardPdfAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCodePdfExportAdapter;
@@ -180,6 +192,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(BrandRepositoryPort::class, EloquentBrandRepository::class);
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
+        // Çoklu menü ve saat bazlı geçiş (sahibin 2026-09-05 kararı,
+        // `docs/109` §7.1): şubenin gününü bölen tek yazma kapısı.
+        $this->app->bind(MenuSchedulePort::class, EloquentMenuSchedule::class);
         $this->app->bind(LedgerPort::class, DatabaseLedger::class);
         $this->app->singleton(
             MarketReferencePort::class,
@@ -364,6 +379,38 @@ final class AppServiceProvider extends ServiceProvider
         // Medya denetim izi (`docs/49` Faz 7 madde 4): "bu fotoğrafı kim
         // sildi?" sorusunun cevabını tutan yer.
         $this->app->bind(MediaAuditPort::class, EloquentMediaAudit::class);
+        /*
+            TOPLU İŞLEM (`docs/109-PANEL-V3.md` §2). Kütüphanede bin sekiz
+            yüz fotoğrafı olan sahip, onları tek tek seçip tek tek
+            dönüştürmek zorundaydı; yüz dosyada vazgeçerdi. Bu port
+            kapsamı DONDURUR, kuru çalışmayı GERÇEK sayılarla besler ve
+            aynı işlem anahtarının iki kez çalışmasını engeller.
+        */
+        $this->app->bind(MediaBulkPort::class, EloquentMediaBulk::class);
+        /*
+            YASAL SAKLAMA (kaynağın "Yönetişim" bölümü). Toplu işlemden
+            AYRI bir port: kilidi soran ilk çağıran toplu işlem değil, tek
+            dosya silmedir — ve kilit yalnız toplu işlemde geçerli olsaydı
+            bir görünümden ibaret kalırdı.
+        */
+        $this->app->bind(MediaLegalHoldPort::class, EloquentMediaLegalHold::class);
+        /*
+            OLGUNLUK KANITI (`docs/109-PANEL-V3.md` §2, kaynak ekranı
+            "Olgunluk"). Olgunluk seviyesi elle yazılmış bir sayı DEĞİLDİR;
+            her basamak bu depoda sorgulanabilir bir kanıta bağlanır ve o
+            kanıt burada çözülür: uçlar yönlendirici koleksiyonundan, adı
+            geçen gereksinim ve testler `tests/Feature/Media`'dan okunur.
+
+            Test klasörü DAĞITIMDA bulunmayabilir; o zaman cevap "hayır"
+            değil "denetlenemedi" olur ve ekran öyle yazar.
+        */
+        $this->app->bind(
+            MediaEvidencePort::class,
+            fn ($app) => new RepositoryMediaEvidence(
+                $app['router'],
+                base_path('tests/Feature/Media'),
+            ),
+        );
         // KUYRUK (`docs/108` §3 madde 5): "takıldı mı, yoksa hâlâ çalışıyor
         // mu?" — işler tabloya yazılıyordu, hiçbir ekranda görünmüyordu.
         // SALT OKUNUR bir port: burada iş başlatılmaz.
@@ -430,6 +477,9 @@ final class AppServiceProvider extends ServiceProvider
             );
         });
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
+        // ZAMANLANMIŞ YAYIN ("Planla"): planı yazan, iptal eden ve vakti
+        // gelince tek seferlik sahiplenen depo.
+        $this->app->bind(PublicationSchedulePort::class, EloquentPublicationSchedule::class);
         $this->app->bind(PublicMenuAddressPort::class, EloquentPublicMenuAddress::class);
         $this->app->bind(MenuIdentityPort::class, EloquentMenuIdentity::class);
         $this->app->bind(QrCodeRepositoryPort::class, EloquentQrCodeRepository::class);
@@ -443,6 +493,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(QrCardExportPort::class, MpdfQrCardPdfAdapter::class);
         // Salonun bölümleri: "Area 1" bir yer tutucudur, salon adı değil.
         $this->app->bind(DiningAreaRepositoryPort::class, EloquentDiningAreaRepository::class);
+        // Masa kartının tarama sayısı (panel v3, `docs/109` §6.7) — raporun
+        // dönem hesabından ayrı, kartın kendi ömrü.
+        $this->app->bind(QrScanCountPort::class, EloquentQrScanCountRepository::class);
         $this->app->bind(AnalyticsRepositoryPort::class, EloquentAnalyticsRepository::class);
         $this->app->bind(TeamMemberRepositoryPort::class, EloquentTeamMemberRepository::class);
         $this->app->bind(TeamInvitationRepositoryPort::class, EloquentTeamInvitationRepository::class);

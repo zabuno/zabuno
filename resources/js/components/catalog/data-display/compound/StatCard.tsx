@@ -10,6 +10,18 @@ export type StatCardProps = {
     icon?: ReactNode;
     loading?: boolean;
     className?: string;
+    /**
+     * Rakamın ALTINDAKİ tek satır — AEP teslim paketinin sayaç kartındaki
+     * "delta" yuvası (`docs/109` §1, kaynak `stats[].delta`).
+     *
+     * Kaynak buraya bir karşılaştırma yazıyor ("%12 · geçen perşembe").
+     * Bu yuva o cümleyi ZORUNLU KILMAZ ve bir yön/trend de ima etmez:
+     * çağıran oraya yalnız GERÇEKTEN ölçtüğü bir olguyu yazar. Depoda geçmiş
+     * dönem karşılaştırması ölçülmüyor; yazılan şey sayının bileşimi oluyor
+     * ("3 gizli"). Bir sayının tek başına söylemediğini söylemek bu satırın
+     * işidir — uydurulmuş bir yüzde göstermek değil.
+     */
+    support?: ReactNode;
 };
 
 /**
@@ -17,7 +29,15 @@ export type StatCardProps = {
  * Micro/Data Display/Skeleton for its loading placeholder. Does not
  * reimplement either micro's markup.
  */
-export function StatCard({ label, value, trend, icon, loading = false, className }: StatCardProps) {
+export function StatCard({
+    label,
+    value,
+    trend,
+    icon,
+    loading = false,
+    className,
+    support,
+}: StatCardProps) {
     return (
         <div
             className={clsx(
@@ -41,6 +61,14 @@ export function StatCard({ label, value, trend, icon, loading = false, className
                 ) : (
                     <StatValue value={value} trend={trend} />
                 )}
+                {/*
+                    Destek satırı YÜKLENİRKEN de çizilmez: rakamı beklerken
+                    onun hakkında bir cümle göstermek, henüz bilinmeyen bir
+                    şeyi açıklamaya çalışmaktır.
+                */}
+                {support !== undefined && !loading ? (
+                    <span className="text-meta text-fg-muted">{support}</span>
+                ) : null}
             </div>
             {icon ? (
                 <span aria-hidden="true" className="text-fg-muted">

@@ -36,6 +36,34 @@ msgstr "Şubeye göre"
 msgid "workspace.analytics.breakdown.qrCodes"
 msgstr "Karekoda göre"
 
+#: workspace:workspace.analytics.compare.basis.previousPeriod
+msgid "workspace.analytics.compare.basis.previousPeriod"
+msgstr ""
+
+#: workspace:workspace.analytics.compare.basis.sameWeekdayLastWeek
+msgid "workspace.analytics.compare.basis.sameWeekdayLastWeek"
+msgstr ""
+
+#: workspace:workspace.analytics.compare.down
+msgid "workspace.analytics.compare.down"
+msgstr ""
+
+#: workspace:workspace.analytics.compare.flat
+msgid "workspace.analytics.compare.flat"
+msgstr ""
+
+#: workspace:workspace.analytics.compare.noBaseline
+msgid "workspace.analytics.compare.noBaseline"
+msgstr ""
+
+#: workspace:workspace.analytics.compare.up
+msgid "workspace.analytics.compare.up"
+msgstr ""
+
+#: workspace:workspace.analytics.description
+msgid "workspace.analytics.description"
+msgstr ""
+
 #: workspace:workspace.analytics.empty.noMenu.action
 msgid "workspace.analytics.empty.noMenu.action"
 msgstr "Menüyü kur"
@@ -92,6 +120,30 @@ msgstr "O ekranı kenar çubuğundan açın."
 msgid "workspace.analytics.heading"
 msgstr "Analitik"
 
+#: workspace:workspace.analytics.highlight.action.addTerm
+msgid "workspace.analytics.highlight.action.addTerm"
+msgstr ""
+
+#: workspace:workspace.analytics.highlight.action.editMenu
+msgid "workspace.analytics.highlight.action.editMenu"
+msgstr ""
+
+#: workspace:workspace.analytics.highlight.busiest
+msgid "workspace.analytics.highlight.busiest"
+msgstr ""
+
+#: workspace:workspace.analytics.highlight.missing
+msgid "workspace.analytics.highlight.missing"
+msgstr ""
+
+#: workspace:workspace.analytics.highlight.neverViewed
+msgid "workspace.analytics.highlight.neverViewed"
+msgstr ""
+
+#: workspace:workspace.analytics.highlight.title
+msgid "workspace.analytics.highlight.title"
+msgstr ""
+
 #: workspace:workspace.analytics.menuEngineering.error
 msgid "workspace.analytics.menuEngineering.error"
 msgstr "Menü sayıları yüklenemedi."
@@ -124,6 +176,14 @@ msgstr "{count} ziyaretçi"
 msgid "workspace.analytics.menuEngineering.searches"
 msgstr "Arandı ama bulunamadı"
 
+#: workspace:workspace.analytics.menuEngineering.searches.add
+msgid "workspace.analytics.menuEngineering.searches.add"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.searches.addFor
+msgid "workspace.analytics.menuEngineering.searches.addFor"
+msgstr ""
+
 #: workspace:workspace.analytics.menuEngineering.searches.none
 msgid "workspace.analytics.menuEngineering.searches.none"
 msgstr "Menünüzde olmayan bir şeyi kimse aramadı."
@@ -151,6 +211,14 @@ msgstr "Okutmadan menü açılışına"
 #: workspace:workspace.analytics.metric.qrResolve
 msgid "workspace.analytics.metric.qrResolve"
 msgstr "Karekod okutma"
+
+#: workspace:workspace.analytics.metric.searches
+msgid "workspace.analytics.metric.searches"
+msgstr ""
+
+#: workspace:workspace.analytics.metric.searches.support
+msgid "workspace.analytics.metric.searches.support"
+msgstr ""
 
 #: workspace:workspace.analytics.metric.uniqueVisitors
 msgid "workspace.analytics.metric.uniqueVisitors"
@@ -211,6 +279,110 @@ msgstr "Henüz istenmedi"
 #: workspace:workspace.analytics.status.planRestricted
 msgid "workspace.analytics.status.planRestricted"
 msgstr "Planınızda yok"
+
+#: workspace:workspace.analytics.timeSeries.error
+msgid "workspace.analytics.timeSeries.error"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.heat.column
+msgid "workspace.analytics.timeSeries.heat.column"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.heat.description
+msgid "workspace.analytics.timeSeries.heat.description"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.heat.title
+msgid "workspace.analytics.timeSeries.heat.title"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.heat.withheld
+msgid "workspace.analytics.timeSeries.heat.withheld"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.heat.withheldNote
+msgid "workspace.analytics.timeSeries.heat.withheldNote"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.loading
+msgid "workspace.analytics.timeSeries.loading"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.menuOpens
+msgid "workspace.analytics.timeSeries.menuOpens"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.region
+msgid "workspace.analytics.timeSeries.region"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.scans
+msgid "workspace.analytics.timeSeries.scans"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.share.description
+msgid "workspace.analytics.timeSeries.share.description"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.share.scope
+msgid "workspace.analytics.timeSeries.share.scope"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.share.title
+msgid "workspace.analytics.timeSeries.share.title"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.tables.title
+msgid "workspace.analytics.timeSeries.tables.title"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.tables.value
+msgid "workspace.analytics.timeSeries.tables.value"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.thin
+msgid "workspace.analytics.timeSeries.thin"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.trend.column
+msgid "workspace.analytics.timeSeries.trend.column"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.trend.description
+msgid "workspace.analytics.timeSeries.trend.description"
+msgstr ""
+
+#: workspace:workspace.analytics.timeSeries.trend.title
+msgid "workspace.analytics.timeSeries.trend.title"
+msgstr ""
+
+#: workspace:workspace.analytics.weekday.1
+msgid "workspace.analytics.weekday.1"
+msgstr ""
+
+#: workspace:workspace.analytics.weekday.2
+msgid "workspace.analytics.weekday.2"
+msgstr ""
+
+#: workspace:workspace.analytics.weekday.3
+msgid "workspace.analytics.weekday.3"
+msgstr ""
+
+#: workspace:workspace.analytics.weekday.4
+msgid "workspace.analytics.weekday.4"
+msgstr ""
+
+#: workspace:workspace.analytics.weekday.5
+msgid "workspace.analytics.weekday.5"
+msgstr ""
+
+#: workspace:workspace.analytics.weekday.6
+msgid "workspace.analytics.weekday.6"
+msgstr ""
+
+#: workspace:workspace.analytics.weekday.7
+msgid "workspace.analytics.weekday.7"
+msgstr ""
 
 #: workspace:workspace.billing.changePlan.button
 msgid "workspace.billing.changePlan.button"
@@ -704,6 +876,10 @@ msgstr "Şubeler"
 msgid "workspace.brandLocations.locations.section.address"
 msgstr "Adres"
 
+#: workspace:workspace.brandLocations.locations.section.hours
+msgid "workspace.brandLocations.locations.section.hours"
+msgstr ""
+
 #: workspace:workspace.brandLocations.locations.section.identity
 msgid "workspace.brandLocations.locations.section.identity"
 msgstr "Kimlik"
@@ -924,6 +1100,62 @@ msgstr "Şubenizi oluşturamadık. Lütfen tekrar deneyin."
 msgid "workspace.location.heading"
 msgstr "Şubenizi oluşturun"
 
+#: workspace:workspace.location.hours.closed
+msgid "workspace.location.hours.closed"
+msgstr ""
+
+#: workspace:workspace.location.hours.closes
+msgid "workspace.location.hours.closes"
+msgstr ""
+
+#: workspace:workspace.location.hours.day.1
+msgid "workspace.location.hours.day.1"
+msgstr ""
+
+#: workspace:workspace.location.hours.day.2
+msgid "workspace.location.hours.day.2"
+msgstr ""
+
+#: workspace:workspace.location.hours.day.3
+msgid "workspace.location.hours.day.3"
+msgstr ""
+
+#: workspace:workspace.location.hours.day.4
+msgid "workspace.location.hours.day.4"
+msgstr ""
+
+#: workspace:workspace.location.hours.day.5
+msgid "workspace.location.hours.day.5"
+msgstr ""
+
+#: workspace:workspace.location.hours.day.6
+msgid "workspace.location.hours.day.6"
+msgstr ""
+
+#: workspace:workspace.location.hours.day.7
+msgid "workspace.location.hours.day.7"
+msgstr ""
+
+#: workspace:workspace.location.hours.empty
+msgid "workspace.location.hours.empty"
+msgstr ""
+
+#: workspace:workspace.location.hours.enable
+msgid "workspace.location.hours.enable"
+msgstr ""
+
+#: workspace:workspace.location.hours.help
+msgid "workspace.location.hours.help"
+msgstr ""
+
+#: workspace:workspace.location.hours.nextDay
+msgid "workspace.location.hours.nextDay"
+msgstr ""
+
+#: workspace:workspace.location.hours.opens
+msgid "workspace.location.hours.opens"
+msgstr ""
+
 #: workspace:workspace.location.optional
 msgid "workspace.location.optional"
 msgstr "{label} (isteğe bağlı)"
@@ -955,6 +1187,50 @@ msgstr "Çalışma saatleri ve yayın zamanları bu şubenin saat dilimini kulla
 #: workspace:workspace.locations.add.button
 msgid "workspace.locations.add.button"
 msgstr "Şube ekle"
+
+#: workspace:workspace.locations.card.edit.action
+msgid "workspace.locations.card.edit.action"
+msgstr ""
+
+#: workspace:workspace.locations.card.edit.label
+msgid "workspace.locations.card.edit.label"
+msgstr ""
+
+#: workspace:workspace.locations.card.hours.closedAllWeek
+msgid "workspace.locations.card.hours.closedAllWeek"
+msgstr ""
+
+#: workspace:workspace.locations.card.hours.closedToday
+msgid "workspace.locations.card.hours.closedToday"
+msgstr ""
+
+#: workspace:workspace.locations.card.hours.today
+msgid "workspace.locations.card.hours.today"
+msgstr ""
+
+#: workspace:workspace.locations.card.noAddress
+msgid "workspace.locations.card.noAddress"
+msgstr ""
+
+#: workspace:workspace.locations.card.scansPerWeek
+msgid "workspace.locations.card.scansPerWeek"
+msgstr ""
+
+#: workspace:workspace.locations.card.status.setup
+msgid "workspace.locations.card.status.setup"
+msgstr ""
+
+#: workspace:workspace.locations.card.tables
+msgid "workspace.locations.card.tables"
+msgstr ""
+
+#: workspace:workspace.locations.card.tables.action
+msgid "workspace.locations.card.tables.action"
+msgstr ""
+
+#: workspace:workspace.locations.card.tables.label
+msgid "workspace.locations.card.tables.label"
+msgstr ""
 
 #: workspace:workspace.locations.empty
 msgid "workspace.locations.empty"
@@ -995,6 +1271,10 @@ msgstr "Bu şube"
 #: workspace:workspace.locations.operational.description
 msgid "workspace.locations.operational.description"
 msgstr "Menünüzü sunan fiziksel şubeleri ekleyin ve düzenleyin — şehre göre gruplanır, yenileri için adım adım kurulum vardır."
+
+#: workspace:workspace.locations.region
+msgid "workspace.locations.region"
+msgstr ""
 
 #: workspace:workspace.media.audit.action.downloaded
 msgid "workspace.media.audit.action.downloaded"
@@ -1039,6 +1319,462 @@ msgstr "Kim ne yaptı"
 #: workspace:workspace.media.audit.help
 msgid "workspace.media.audit.help"
 msgstr "Her yükleme, ad değişikliği, silme ve geri alma buraya yazılır. Kayıtlar hiçbir zaman düzenlenmez ya da silinmez."
+
+#: workspace:workspace.media.bulk.action.convert
+msgid "workspace.media.bulk.action.convert"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.convert.description
+msgid "workspace.media.bulk.action.convert.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.irreversible
+msgid "workspace.media.bulk.action.irreversible"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.locked
+msgid "workspace.media.bulk.action.locked"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.move
+msgid "workspace.media.bulk.action.move"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.move.description
+msgid "workspace.media.bulk.action.move.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.next
+msgid "workspace.media.bulk.action.next"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.none
+msgid "workspace.media.bulk.action.none"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.optimize
+msgid "workspace.media.bulk.action.optimize"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.optimize.description
+msgid "workspace.media.bulk.action.optimize.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.purge
+msgid "workspace.media.bulk.action.purge"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.purge.description
+msgid "workspace.media.bulk.action.purge.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.reversible
+msgid "workspace.media.bulk.action.reversible"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.trash
+msgid "workspace.media.bulk.action.trash"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.trash.description
+msgid "workspace.media.bulk.action.trash.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.action.unlocked
+msgid "workspace.media.bulk.action.unlocked"
+msgstr ""
+
+#: workspace:workspace.media.bulk.audit.heading
+msgid "workspace.media.bulk.audit.heading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.audit.key
+msgid "workspace.media.bulk.audit.key"
+msgstr ""
+
+#: workspace:workspace.media.bulk.audit.note
+msgid "workspace.media.bulk.audit.note"
+msgstr ""
+
+#: workspace:workspace.media.bulk.back
+msgid "workspace.media.bulk.back"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.folder
+msgid "workspace.media.bulk.config.folder"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.folder.help
+msgid "workspace.media.bulk.config.folder.help"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.folder.root
+msgid "workspace.media.bulk.config.folder.root"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.format
+msgid "workspace.media.bulk.config.format"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.format.help
+msgid "workspace.media.bulk.config.format.help"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.heading
+msgid "workspace.media.bulk.config.heading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.next
+msgid "workspace.media.bulk.config.next"
+msgstr ""
+
+#: workspace:workspace.media.bulk.config.none
+msgid "workspace.media.bulk.config.none"
+msgstr ""
+
+#: workspace:workspace.media.bulk.confirm.body.large
+msgid "workspace.media.bulk.confirm.body.large"
+msgstr ""
+
+#: workspace:workspace.media.bulk.confirm.body.purge
+msgid "workspace.media.bulk.confirm.body.purge"
+msgstr ""
+
+#: workspace:workspace.media.bulk.confirm.heading.large
+msgid "workspace.media.bulk.confirm.heading.large"
+msgstr ""
+
+#: workspace:workspace.media.bulk.confirm.heading.purge
+msgid "workspace.media.bulk.confirm.heading.purge"
+msgstr ""
+
+#: workspace:workspace.media.bulk.confirm.label
+msgid "workspace.media.bulk.confirm.label"
+msgstr ""
+
+#: workspace:workspace.media.bulk.confirm.mismatch
+msgid "workspace.media.bulk.confirm.mismatch"
+msgstr ""
+
+#: workspace:workspace.media.bulk.failed
+msgid "workspace.media.bulk.failed"
+msgstr ""
+
+#: workspace:workspace.media.bulk.failure.convert
+msgid "workspace.media.bulk.failure.convert"
+msgstr ""
+
+#: workspace:workspace.media.bulk.failure.move
+msgid "workspace.media.bulk.failure.move"
+msgstr ""
+
+#: workspace:workspace.media.bulk.failure.reprocess
+msgid "workspace.media.bulk.failure.reprocess"
+msgstr ""
+
+#: workspace:workspace.media.bulk.failure.unknown
+msgid "workspace.media.bulk.failure.unknown"
+msgstr ""
+
+#: workspace:workspace.media.bulk.group.improve
+msgid "workspace.media.bulk.group.improve"
+msgstr ""
+
+#: workspace:workspace.media.bulk.group.organize
+msgid "workspace.media.bulk.group.organize"
+msgstr ""
+
+#: workspace:workspace.media.bulk.group.remove
+msgid "workspace.media.bulk.group.remove"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.heading
+msgid "workspace.media.bulk.impact.heading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.newVersion
+msgid "workspace.media.bulk.impact.newVersion"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.newVersion.value
+msgid "workspace.media.bulk.impact.newVersion.value"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.originals
+msgid "workspace.media.bulk.impact.originals"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.originals.kept
+msgid "workspace.media.bulk.impact.originals.kept"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.storage
+msgid "workspace.media.bulk.impact.storage"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.storage.freed
+msgid "workspace.media.bulk.impact.storage.freed"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.storage.unknown
+msgid "workspace.media.bulk.impact.storage.unknown"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.undo
+msgid "workspace.media.bulk.impact.undo"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.undo.days
+msgid "workspace.media.bulk.impact.undo.days"
+msgstr ""
+
+#: workspace:workspace.media.bulk.impact.undo.none
+msgid "workspace.media.bulk.impact.undo.none"
+msgstr ""
+
+#: workspace:workspace.media.bulk.lead
+msgid "workspace.media.bulk.lead"
+msgstr ""
+
+#: workspace:workspace.media.bulk.loading
+msgid "workspace.media.bulk.loading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.preview.apply
+msgid "workspace.media.bulk.preview.apply"
+msgstr ""
+
+#: workspace:workspace.media.bulk.preview.heading
+msgid "workspace.media.bulk.preview.heading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.preview.lead
+msgid "workspace.media.bulk.preview.lead"
+msgstr ""
+
+#: workspace:workspace.media.bulk.preview.remaining
+msgid "workspace.media.bulk.preview.remaining"
+msgstr ""
+
+#: workspace:workspace.media.bulk.preview.remaining.note
+msgid "workspace.media.bulk.preview.remaining.note"
+msgstr ""
+
+#: workspace:workspace.media.bulk.preview.skip
+msgid "workspace.media.bulk.preview.skip"
+msgstr ""
+
+#: workspace:workspace.media.bulk.region
+msgid "workspace.media.bulk.region"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.csv
+msgid "workspace.media.bulk.result.csv"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.csv.header.id
+msgid "workspace.media.bulk.result.csv.header.id"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.csv.header.name
+msgid "workspace.media.bulk.result.csv.header.name"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.csv.header.reason
+msgid "workspace.media.bulk.result.csv.header.reason"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.csv.header.status
+msgid "workspace.media.bulk.result.csv.header.status"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.filter.all
+msgid "workspace.media.bulk.result.filter.all"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.filter.error
+msgid "workspace.media.bulk.result.filter.error"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.filter.ok
+msgid "workspace.media.bulk.result.filter.ok"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.filter.skip
+msgid "workspace.media.bulk.result.filter.skip"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.heading
+msgid "workspace.media.bulk.result.heading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.replayed
+msgid "workspace.media.bulk.result.replayed"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.restart
+msgid "workspace.media.bulk.result.restart"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.retry
+msgid "workspace.media.bulk.result.retry"
+msgstr ""
+
+#: workspace:workspace.media.bulk.result.summary
+msgid "workspace.media.bulk.result.summary"
+msgstr ""
+
+#: workspace:workspace.media.bulk.run.failed
+msgid "workspace.media.bulk.run.failed"
+msgstr ""
+
+#: workspace:workspace.media.bulk.run.running
+msgid "workspace.media.bulk.run.running"
+msgstr ""
+
+#: workspace:workspace.media.bulk.run.start
+msgid "workspace.media.bulk.run.start"
+msgstr ""
+
+#: workspace:workspace.media.bulk.run.start.destructive
+msgid "workspace.media.bulk.run.start.destructive"
+msgstr ""
+
+#: workspace:workspace.media.bulk.run.start.empty
+msgid "workspace.media.bulk.run.start.empty"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.empty
+msgid "workspace.media.bulk.scope.empty"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.files
+msgid "workspace.media.bulk.scope.files"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.folder
+msgid "workspace.media.bulk.scope.folder"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.folder.description
+msgid "workspace.media.bulk.scope.folder.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.folder.none
+msgid "workspace.media.bulk.scope.folder.none"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.heading
+msgid "workspace.media.bulk.scope.heading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.next
+msgid "workspace.media.bulk.scope.next"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.selected
+msgid "workspace.media.bulk.scope.selected"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.selected.description
+msgid "workspace.media.bulk.scope.selected.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.snapshot
+msgid "workspace.media.bulk.scope.snapshot"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.summary
+msgid "workspace.media.bulk.scope.summary"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.summary.batch
+msgid "workspace.media.bulk.scope.summary.batch"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.summary.count
+msgid "workspace.media.bulk.scope.summary.count"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.summary.size
+msgid "workspace.media.bulk.scope.summary.size"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.workspace
+msgid "workspace.media.bulk.scope.workspace"
+msgstr ""
+
+#: workspace:workspace.media.bulk.scope.workspace.description
+msgid "workspace.media.bulk.scope.workspace.description"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.alreadyDone
+msgid "workspace.media.bulk.skip.alreadyDone"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.files
+msgid "workspace.media.bulk.skip.files"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.heading
+msgid "workspace.media.bulk.skip.heading"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.hide
+msgid "workspace.media.bulk.skip.hide"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.legalHold
+msgid "workspace.media.bulk.skip.legalHold"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.notInTrash
+msgid "workspace.media.bulk.skip.notInTrash"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.publishedUsage
+msgid "workspace.media.bulk.skip.publishedUsage"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.quarantine
+msgid "workspace.media.bulk.skip.quarantine"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.show
+msgid "workspace.media.bulk.skip.show"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.unknown
+msgid "workspace.media.bulk.skip.unknown"
+msgstr ""
+
+#: workspace:workspace.media.bulk.skip.unsupportedFormat
+msgid "workspace.media.bulk.skip.unsupportedFormat"
+msgstr ""
+
+#: workspace:workspace.media.bulk.step.action
+msgid "workspace.media.bulk.step.action"
+msgstr ""
+
+#: workspace:workspace.media.bulk.step.config
+msgid "workspace.media.bulk.step.config"
+msgstr ""
+
+#: workspace:workspace.media.bulk.step.preview
+msgid "workspace.media.bulk.step.preview"
+msgstr ""
+
+#: workspace:workspace.media.bulk.step.run
+msgid "workspace.media.bulk.step.run"
+msgstr ""
+
+#: workspace:workspace.media.bulk.step.scope
+msgid "workspace.media.bulk.step.scope"
+msgstr ""
+
+#: workspace:workspace.media.bulk.tab
+msgid "workspace.media.bulk.tab"
+msgstr ""
 
 #: workspace:workspace.media.convert.clearAll
 msgid "workspace.media.convert.clearAll"
@@ -1342,6 +2078,158 @@ msgstr ""
 
 #: workspace:workspace.media.folders.previous
 msgid "workspace.media.folders.previous"
+msgstr ""
+
+#: workspace:workspace.media.governance.action.legal-hold
+msgid "workspace.media.governance.action.legal-hold"
+msgstr ""
+
+#: workspace:workspace.media.governance.action.legal-hold.description
+msgid "workspace.media.governance.action.legal-hold.description"
+msgstr ""
+
+#: workspace:workspace.media.governance.failed
+msgid "workspace.media.governance.failed"
+msgstr ""
+
+#: workspace:workspace.media.governance.lead
+msgid "workspace.media.governance.lead"
+msgstr ""
+
+#: workspace:workspace.media.governance.legalHold.empty
+msgid "workspace.media.governance.legalHold.empty"
+msgstr ""
+
+#: workspace:workspace.media.governance.legalHold.heading
+msgid "workspace.media.governance.legalHold.heading"
+msgstr ""
+
+#: workspace:workspace.media.governance.legalHold.since
+msgid "workspace.media.governance.legalHold.since"
+msgstr ""
+
+#: workspace:workspace.media.governance.loading
+msgid "workspace.media.governance.loading"
+msgstr ""
+
+#: workspace:workspace.media.governance.matrix.allowed
+msgid "workspace.media.governance.matrix.allowed"
+msgstr ""
+
+#: workspace:workspace.media.governance.matrix.heading
+msgid "workspace.media.governance.matrix.heading"
+msgstr ""
+
+#: workspace:workspace.media.governance.matrix.locked
+msgid "workspace.media.governance.matrix.locked"
+msgstr ""
+
+#: workspace:workspace.media.governance.region
+msgid "workspace.media.governance.region"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.audit
+msgid "workspace.media.governance.retention.audit"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.audit.description
+msgid "workspace.media.governance.retention.audit.description"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.audit.value
+msgid "workspace.media.governance.retention.audit.value"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.heading
+msgid "workspace.media.governance.retention.heading"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.legalHold
+msgid "workspace.media.governance.retention.legalHold"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.legalHold.description
+msgid "workspace.media.governance.retention.legalHold.description"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.legalHold.value
+msgid "workspace.media.governance.retention.legalHold.value"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.originals
+msgid "workspace.media.governance.retention.originals"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.originals.description
+msgid "workspace.media.governance.retention.originals.description"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.originals.value
+msgid "workspace.media.governance.retention.originals.value"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.trash
+msgid "workspace.media.governance.retention.trash"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.trash.description
+msgid "workspace.media.governance.retention.trash.description"
+msgstr ""
+
+#: workspace:workspace.media.governance.retention.trash.value
+msgid "workspace.media.governance.retention.trash.value"
+msgstr ""
+
+#: workspace:workspace.media.governance.role
+msgid "workspace.media.governance.role"
+msgstr ""
+
+#: workspace:workspace.media.governance.role.editor
+msgid "workspace.media.governance.role.editor"
+msgstr ""
+
+#: workspace:workspace.media.governance.role.manager
+msgid "workspace.media.governance.role.manager"
+msgstr ""
+
+#: workspace:workspace.media.governance.role.member
+msgid "workspace.media.governance.role.member"
+msgstr ""
+
+#: workspace:workspace.media.governance.role.owner
+msgid "workspace.media.governance.role.owner"
+msgstr ""
+
+#: workspace:workspace.media.governance.role.unknown
+msgid "workspace.media.governance.role.unknown"
+msgstr ""
+
+#: workspace:workspace.media.governance.tab
+msgid "workspace.media.governance.tab"
+msgstr ""
+
+#: workspace:workspace.media.governance.trail.asset
+msgid "workspace.media.governance.trail.asset"
+msgstr ""
+
+#: workspace:workspace.media.governance.trail.bulk
+msgid "workspace.media.governance.trail.bulk"
+msgstr ""
+
+#: workspace:workspace.media.governance.trail.empty
+msgid "workspace.media.governance.trail.empty"
+msgstr ""
+
+#: workspace:workspace.media.governance.trail.heading
+msgid "workspace.media.governance.trail.heading"
+msgstr ""
+
+#: workspace:workspace.media.governance.trail.note
+msgid "workspace.media.governance.trail.note"
+msgstr ""
+
+#: workspace:workspace.media.governance.trail.unknownActor
+msgid "workspace.media.governance.trail.unknownActor"
 msgstr ""
 
 #: workspace:workspace.media.heading
@@ -1787,6 +2675,158 @@ msgstr "Güvenlik taraması"
 #: workspace:workspace.media.lifecycle.validation
 msgid "workspace.media.lifecycle.validation"
 msgstr "Doğrulama"
+
+#: workspace:workspace.media.maturity.capability.bulk
+msgid "workspace.media.maturity.capability.bulk"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.convert
+msgid "workspace.media.maturity.capability.convert"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.derivatives
+msgid "workspace.media.maturity.capability.derivatives"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.governance
+msgid "workspace.media.maturity.capability.governance"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.intake
+msgid "workspace.media.maturity.capability.intake"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.quota
+msgid "workspace.media.maturity.capability.quota"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.scan
+msgid "workspace.media.maturity.capability.scan"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.trash
+msgid "workspace.media.maturity.capability.trash"
+msgstr ""
+
+#: workspace:workspace.media.maturity.capability.viewer
+msgid "workspace.media.maturity.capability.viewer"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.absent
+msgid "workspace.media.maturity.evidence.absent"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.found
+msgid "workspace.media.maturity.evidence.found"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.heading
+msgid "workspace.media.maturity.evidence.heading"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.item
+msgid "workspace.media.maturity.evidence.item"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.kind.endpoint
+msgid "workspace.media.maturity.evidence.kind.endpoint"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.kind.requirement
+msgid "workspace.media.maturity.evidence.kind.requirement"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.kind.test
+msgid "workspace.media.maturity.evidence.kind.test"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.none
+msgid "workspace.media.maturity.evidence.none"
+msgstr ""
+
+#: workspace:workspace.media.maturity.evidence.unverifiable
+msgid "workspace.media.maturity.evidence.unverifiable"
+msgstr ""
+
+#: workspace:workspace.media.maturity.legend.heading
+msgid "workspace.media.maturity.legend.heading"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.0
+msgid "workspace.media.maturity.level.0"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.0.description
+msgid "workspace.media.maturity.level.0.description"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.1
+msgid "workspace.media.maturity.level.1"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.1.description
+msgid "workspace.media.maturity.level.1.description"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.2
+msgid "workspace.media.maturity.level.2"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.2.description
+msgid "workspace.media.maturity.level.2.description"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.3
+msgid "workspace.media.maturity.level.3"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.3.description
+msgid "workspace.media.maturity.level.3.description"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.4
+msgid "workspace.media.maturity.level.4"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.4.description
+msgid "workspace.media.maturity.level.4.description"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.badge
+msgid "workspace.media.maturity.level.badge"
+msgstr ""
+
+#: workspace:workspace.media.maturity.level.short
+msgid "workspace.media.maturity.level.short"
+msgstr ""
+
+#: workspace:workspace.media.maturity.region
+msgid "workspace.media.maturity.region"
+msgstr ""
+
+#: workspace:workspace.media.maturity.rung
+msgid "workspace.media.maturity.rung"
+msgstr ""
+
+#: workspace:workspace.media.maturity.score.heading
+msgid "workspace.media.maturity.score.heading"
+msgstr ""
+
+#: workspace:workspace.media.maturity.score.note
+msgid "workspace.media.maturity.score.note"
+msgstr ""
+
+#: workspace:workspace.media.maturity.score.value
+msgid "workspace.media.maturity.score.value"
+msgstr ""
+
+#: workspace:workspace.media.maturity.selfAssessed
+msgid "workspace.media.maturity.selfAssessed"
+msgstr ""
+
+#: workspace:workspace.media.maturity.tab
+msgid "workspace.media.maturity.tab"
+msgstr ""
 
 #: workspace:workspace.media.operational.description
 msgid "workspace.media.operational.description"
@@ -2520,6 +3560,62 @@ msgstr "Ara ve git"
 msgid "workspace.omnibox.trigger.label"
 msgstr "Ara, git ya da oluştur"
 
+#: workspace:workspace.profile.account.email.label
+msgid "workspace.profile.account.email.label"
+msgstr ""
+
+#: workspace:workspace.profile.account.name.error
+msgid "workspace.profile.account.name.error"
+msgstr ""
+
+#: workspace:workspace.profile.account.name.label
+msgid "workspace.profile.account.name.label"
+msgstr ""
+
+#: workspace:workspace.profile.account.name.saved
+msgid "workspace.profile.account.name.saved"
+msgstr ""
+
+#: workspace:workspace.profile.account.name.submit
+msgid "workspace.profile.account.name.submit"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.confirm
+msgid "workspace.profile.account.password.confirm"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.current
+msgid "workspace.profile.account.password.current"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.error
+msgid "workspace.profile.account.password.error"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.help
+msgid "workspace.profile.account.password.help"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.next
+msgid "workspace.profile.account.password.next"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.saved
+msgid "workspace.profile.account.password.saved"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.submit
+msgid "workspace.profile.account.password.submit"
+msgstr ""
+
+#: workspace:workspace.profile.account.password.title
+msgid "workspace.profile.account.password.title"
+msgstr ""
+
+#: workspace:workspace.profile.account.region
+msgid "workspace.profile.account.region"
+msgstr ""
+
 #: workspace:workspace.profile.appearance.heading
 msgid "workspace.profile.appearance.heading"
 msgstr "Görünüm"
@@ -2648,6 +3744,62 @@ msgstr ""
 msgid "workspace.profile.title"
 msgstr "Profil"
 
+#: workspace:workspace.publication.diff.detail
+msgid "workspace.publication.diff.detail"
+msgstr ""
+
+#: workspace:workspace.publication.diff.kind.added
+msgid "workspace.publication.diff.kind.added"
+msgstr ""
+
+#: workspace:workspace.publication.diff.kind.hidden
+msgid "workspace.publication.diff.kind.hidden"
+msgstr ""
+
+#: workspace:workspace.publication.diff.kind.price
+msgid "workspace.publication.diff.kind.price"
+msgstr ""
+
+#: workspace:workspace.publication.diff.kind.removed
+msgid "workspace.publication.diff.kind.removed"
+msgstr ""
+
+#: workspace:workspace.publication.diff.kind.renamed
+msgid "workspace.publication.diff.kind.renamed"
+msgstr ""
+
+#: workspace:workspace.publication.diff.nameChange
+msgid "workspace.publication.diff.nameChange"
+msgstr ""
+
+#: workspace:workspace.publication.diff.none
+msgid "workspace.publication.diff.none"
+msgstr ""
+
+#: workspace:workspace.publication.diff.noneFirst
+msgid "workspace.publication.diff.noneFirst"
+msgstr ""
+
+#: workspace:workspace.publication.diff.priceChange
+msgid "workspace.publication.diff.priceChange"
+msgstr ""
+
+#: workspace:workspace.publication.diff.region
+msgid "workspace.publication.diff.region"
+msgstr ""
+
+#: workspace:workspace.publication.diff.title
+msgid "workspace.publication.diff.title"
+msgstr ""
+
+#: workspace:workspace.publication.diff.versions
+msgid "workspace.publication.diff.versions"
+msgstr ""
+
+#: workspace:workspace.publication.diff.versionsFirst
+msgid "workspace.publication.diff.versionsFirst"
+msgstr ""
+
 #: workspace:workspace.publication.diningAreas.cancel
 msgid "workspace.publication.diningAreas.cancel"
 msgstr "Vazgeç"
@@ -2739,6 +3891,38 @@ msgstr "Sürüm {version}"
 #: workspace:workspace.publication.operational.description
 msgid "workspace.publication.operational.description"
 msgstr "Taslak menünüzü gözden geçirin, hazır olduğunu onaylayın ve canlıya alın — ayrıca ona giden karekodu yönetin."
+
+#: workspace:workspace.publication.preview.button
+msgid "workspace.publication.preview.button"
+msgstr ""
+
+#: workspace:workspace.publication.preview.close
+msgid "workspace.publication.preview.close"
+msgstr ""
+
+#: workspace:workspace.publication.preview.heading
+msgid "workspace.publication.preview.heading"
+msgstr ""
+
+#: workspace:workspace.publication.preview.linkButton
+msgid "workspace.publication.preview.linkButton"
+msgstr ""
+
+#: workspace:workspace.publication.preview.linkError
+msgid "workspace.publication.preview.linkError"
+msgstr ""
+
+#: workspace:workspace.publication.preview.linkHelp
+msgid "workspace.publication.preview.linkHelp"
+msgstr ""
+
+#: workspace:workspace.publication.preview.linkPending
+msgid "workspace.publication.preview.linkPending"
+msgstr ""
+
+#: workspace:workspace.publication.preview.region
+msgid "workspace.publication.preview.region"
+msgstr ""
 
 #: workspace:workspace.publication.publishAction.checklistConfirmed
 msgid "workspace.publication.publishAction.checklistConfirmed"
@@ -3304,9 +4488,137 @@ msgstr "Buradaki her tema açık zemin üstüne koyu basar ve kodun çevresindek
 msgid "workspace.publication.qrExport.unavailable"
 msgstr "Karekod baskı çıktısı henüz kullanılamıyor."
 
+#: workspace:workspace.publication.qrScreen.address
+msgid "workspace.publication.qrScreen.address"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.advanced
+msgid "workspace.publication.qrScreen.advanced"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.bulk
+msgid "workspace.publication.qrScreen.bulk"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.bulkDefaults
+msgid "workspace.publication.qrScreen.bulkDefaults"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.contrast
+msgid "workspace.publication.qrScreen.contrast"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.copied
+msgid "workspace.publication.qrScreen.copied"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.copy
+msgid "workspace.publication.qrScreen.copy"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.description
+msgid "workspace.publication.qrScreen.description"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.downloadAll
+msgid "workspace.publication.qrScreen.downloadAll"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.downloadAllPart
+msgid "workspace.publication.qrScreen.downloadAllPart"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.downloadPdf
+msgid "workspace.publication.qrScreen.downloadPdf"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.empty
+msgid "workspace.publication.qrScreen.empty"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.loadError
+msgid "workspace.publication.qrScreen.loadError"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.loading
+msgid "workspace.publication.qrScreen.loading"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.neverScanned
+msgid "workspace.publication.qrScreen.neverScanned"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.noDarkTheme
+msgid "workspace.publication.qrScreen.noDarkTheme"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.previewAlt
+msgid "workspace.publication.qrScreen.previewAlt"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.print
+msgid "workspace.publication.qrScreen.print"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.retry
+msgid "workspace.publication.qrScreen.retry"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.scans
+msgid "workspace.publication.qrScreen.scans"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.selected
+msgid "workspace.publication.qrScreen.selected"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.size
+msgid "workspace.publication.qrScreen.size"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.sizeOption
+msgid "workspace.publication.qrScreen.sizeOption"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.sizeStand
+msgid "workspace.publication.qrScreen.sizeStand"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.sizeTableCard
+msgid "workspace.publication.qrScreen.sizeTableCard"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.state.active
+msgid "workspace.publication.qrScreen.state.active"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.state.disabled
+msgid "workspace.publication.qrScreen.state.disabled"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.state.working
+msgid "workspace.publication.qrScreen.state.working"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.tables
+msgid "workspace.publication.qrScreen.tables"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.theme
+msgid "workspace.publication.qrScreen.theme"
+msgstr ""
+
 #: workspace:workspace.publication.readiness.categoryNames
 msgid "workspace.publication.readiness.categoryNames"
 msgstr "Kategori adları hazır"
+
+#: workspace:workspace.publication.readiness.fix
+msgid "workspace.publication.readiness.fix"
+msgstr ""
+
+#: workspace:workspace.publication.readiness.fixLabel
+msgid "workspace.publication.readiness.fixLabel"
+msgstr ""
 
 #: workspace:workspace.publication.readiness.hasCategory
 msgid "workspace.publication.readiness.hasCategory"
@@ -3340,6 +4652,74 @@ msgstr "Görünür fiyat ve para birimi hazır"
 msgid "workspace.publication.readiness.visibleProductNames"
 msgstr "Görünür ürün adları hazır"
 
+#: workspace:workspace.publication.relative.daysAgo
+msgid "workspace.publication.relative.daysAgo"
+msgstr ""
+
+#: workspace:workspace.publication.relative.hoursAgo
+msgid "workspace.publication.relative.hoursAgo"
+msgstr ""
+
+#: workspace:workspace.publication.relative.justNow
+msgid "workspace.publication.relative.justNow"
+msgstr ""
+
+#: workspace:workspace.publication.relative.minutesAgo
+msgid "workspace.publication.relative.minutesAgo"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.button
+msgid "workspace.publication.schedule.button"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.cancel
+msgid "workspace.publication.schedule.cancel"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.cancelError
+msgid "workspace.publication.schedule.cancelError"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.close
+msgid "workspace.publication.schedule.close"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.error
+msgid "workspace.publication.schedule.error"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.help
+msgid "workspace.publication.schedule.help"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.option.nextMonday
+msgid "workspace.publication.schedule.option.nextMonday"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.option.tomorrowMorning
+msgid "workspace.publication.schedule.option.tomorrowMorning"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.option.tonight
+msgid "workspace.publication.schedule.option.tonight"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.optionAt
+msgid "workspace.publication.schedule.optionAt"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.pending
+msgid "workspace.publication.schedule.pending"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.region
+msgid "workspace.publication.schedule.region"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.unready
+msgid "workspace.publication.schedule.unready"
+msgstr ""
+
 #: workspace:workspace.publication.status.draft
 msgid "workspace.publication.status.draft"
 msgstr "Taslak"
@@ -3367,6 +4747,10 @@ msgstr "Yayında"
 #: workspace:workspace.publication.status.lifecycle.superseded
 msgid "workspace.publication.status.lifecycle.superseded"
 msgstr "Yerine yenisi geçti"
+
+#: workspace:workspace.publication.status.liveBadge
+msgid "workspace.publication.status.liveBadge"
+msgstr ""
 
 #: workspace:workspace.publication.status.loadError
 msgid "workspace.publication.status.loadError"
@@ -3408,6 +4792,54 @@ msgstr "Sürüm {version} · {state}"
 msgid "workspace.publication.status.unavailable"
 msgstr "Yayın durumu henüz yok."
 
+#: workspace:workspace.publication.stepper.draft
+msgid "workspace.publication.stepper.draft"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.draft.changes
+msgid "workspace.publication.stepper.draft.changes"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.draft.noChanges
+msgid "workspace.publication.stepper.draft.noChanges"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.live
+msgid "workspace.publication.stepper.live"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.live.never
+msgid "workspace.publication.stepper.live.never"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.live.sub
+msgid "workspace.publication.stepper.live.sub"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.preview
+msgid "workspace.publication.stepper.preview"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.preview.sub
+msgid "workspace.publication.stepper.preview.sub"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.region
+msgid "workspace.publication.stepper.region"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.state.current
+msgid "workspace.publication.stepper.state.current"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.state.done
+msgid "workspace.publication.stepper.state.done"
+msgstr ""
+
+#: workspace:workspace.publication.stepper.state.upcoming
+msgid "workspace.publication.stepper.state.upcoming"
+msgstr ""
+
 #: workspace:workspace.publication.unavailable
 msgid "workspace.publication.unavailable"
 msgstr "Yayın henüz kullanılamıyor."
@@ -3427,58 +4859,6 @@ msgstr "Karekod yayınlanmış menünüzü açar, yani açacağı bir menü olma
 #: workspace:workspace.qrCodes.operational.description
 msgid "workspace.qrCodes.operational.description"
 msgstr "Misafirlerinizin menüyü açmak için okuttuğu karekodları oluşturun ve yazdırın."
-
-#: workspace:workspace.settings.account.name.error
-msgid "workspace.settings.account.name.error"
-msgstr "Adınız kaydedilemedi."
-
-#: workspace:workspace.settings.account.name.label
-msgid "workspace.settings.account.name.label"
-msgstr "Adınız"
-
-#: workspace:workspace.settings.account.name.saved
-msgid "workspace.settings.account.name.saved"
-msgstr "Adınız kaydedildi."
-
-#: workspace:workspace.settings.account.name.submit
-msgid "workspace.settings.account.name.submit"
-msgstr "Adı kaydet"
-
-#: workspace:workspace.settings.account.password.confirm
-msgid "workspace.settings.account.password.confirm"
-msgstr "Yeni parolayı tekrar girin"
-
-#: workspace:workspace.settings.account.password.current
-msgid "workspace.settings.account.password.current"
-msgstr "Mevcut parola"
-
-#: workspace:workspace.settings.account.password.error
-msgid "workspace.settings.account.password.error"
-msgstr "Parolanız değiştirilemedi. Mevcut parolanızı kontrol edip tekrar deneyin."
-
-#: workspace:workspace.settings.account.password.help
-msgid "workspace.settings.account.password.help"
-msgstr "Parolanızı değiştirmek sizi diğer tüm cihazlardan çıkarır. Bu cihazda açık kalırsınız."
-
-#: workspace:workspace.settings.account.password.next
-msgid "workspace.settings.account.password.next"
-msgstr "Yeni parola"
-
-#: workspace:workspace.settings.account.password.saved
-msgid "workspace.settings.account.password.saved"
-msgstr "Parolanız değiştirildi."
-
-#: workspace:workspace.settings.account.password.submit
-msgid "workspace.settings.account.password.submit"
-msgstr "Parolayı değiştir"
-
-#: workspace:workspace.settings.account.password.title
-msgid "workspace.settings.account.password.title"
-msgstr "Parola değiştir"
-
-#: workspace:workspace.settings.account.region
-msgid "workspace.settings.account.region"
-msgstr "Hesabınız"
 
 #: workspace:workspace.settings.audit.empty
 msgid "workspace.settings.audit.empty"
@@ -3516,13 +4896,17 @@ msgstr ""
 msgid "workspace.settings.audit.unknownActor"
 msgstr ""
 
+#: workspace:workspace.settings.logo.change
+msgid "workspace.settings.logo.change"
+msgstr ""
+
+#: workspace:workspace.settings.logo.help
+msgid "workspace.settings.logo.help"
+msgstr ""
+
 #: workspace:workspace.settings.operational.description
 msgid "workspace.settings.operational.description"
 msgstr "Marka bilgileriniz ve planınız. Bunlar bir kez kurulur ve nadiren değişir."
-
-#: workspace:workspace.settings.tab.account
-msgid "workspace.settings.tab.account"
-msgstr "Hesap"
 
 #: workspace:workspace.settings.tab.audit
 msgid "workspace.settings.tab.audit"
@@ -3536,9 +4920,37 @@ msgstr "Plan ve fatura"
 msgid "workspace.settings.tab.brand"
 msgstr "Marka"
 
+#: workspace:workspace.settings.tab.workspace
+msgid "workspace.settings.tab.workspace"
+msgstr ""
+
 #: workspace:workspace.settings.tabs.label
 msgid "workspace.settings.tabs.label"
 msgstr "Ayar bölümleri"
+
+#: workspace:workspace.settings.workspace.address
+msgid "workspace.settings.workspace.address"
+msgstr ""
+
+#: workspace:workspace.settings.workspace.address.help
+msgid "workspace.settings.workspace.address.help"
+msgstr ""
+
+#: workspace:workspace.settings.workspace.error
+msgid "workspace.settings.workspace.error"
+msgstr ""
+
+#: workspace:workspace.settings.workspace.loading
+msgid "workspace.settings.workspace.loading"
+msgstr ""
+
+#: workspace:workspace.settings.workspace.name
+msgid "workspace.settings.workspace.name"
+msgstr ""
+
+#: workspace:workspace.settings.workspace.region
+msgid "workspace.settings.workspace.region"
+msgstr ""
 
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
@@ -3704,6 +5116,10 @@ msgstr "E-posta ile davet et"
 msgid "workspace.team.invite.error"
 msgstr "Davet oluşturulamadı. Lütfen tekrar deneyin."
 
+#: workspace:workspace.team.invite.ownership.note
+msgid "workspace.team.invite.ownership.note"
+msgstr ""
+
 #: workspace:workspace.team.invite.role.editor
 msgid "workspace.team.invite.role.editor"
 msgstr "Editör"
@@ -3711,6 +5127,14 @@ msgstr "Editör"
 #: workspace:workspace.team.invite.role.editor.help
 msgid "workspace.team.invite.role.editor.help"
 msgstr "Menü içeriğini düzenler. Yayınlayamaz, şubeleri değiştiremez, faturayı göremez."
+
+#: workspace:workspace.team.invite.role.kitchen
+msgid "workspace.team.invite.role.kitchen"
+msgstr ""
+
+#: workspace:workspace.team.invite.role.kitchen.help
+msgid "workspace.team.invite.role.kitchen.help"
+msgstr ""
 
 #: workspace:workspace.team.invite.role.label
 msgid "workspace.team.invite.role.label"
@@ -3723,6 +5147,10 @@ msgstr "Yönetici"
 #: workspace:workspace.team.invite.role.manager.help
 msgid "workspace.team.invite.role.manager.help"
 msgstr "Günlük işleri yürütür — menü, şube, karekod ve yayınlama. Faturayı yönetemez."
+
+#: workspace:workspace.team.invite.role.member
+msgid "workspace.team.invite.role.member"
+msgstr ""
 
 #: workspace:workspace.team.invite.role.owner
 msgid "workspace.team.invite.role.owner"
@@ -3832,34 +5260,34 @@ msgstr "Sahiplik devredildi."
 msgid "workspace.team.members.transfer.title"
 msgstr "Çalışma alanı sahipliğini devret"
 
-#: workspace:workspace.team.operational.description.connected
-msgid "workspace.team.operational.description.connected"
-msgstr "Aşağıdaki çalışma alanı üyeleri ve bekleyen davetler sunucudaki gerçek listelerden geliyor."
-
-#: workspace:workspace.team.operational.description.error
-msgid "workspace.team.operational.description.error"
-msgstr "Bekleyen davetler yüklenemedi — sunucudaki davet listesine ulaşılamadı."
-
-#: workspace:workspace.team.operational.description.loading
-msgid "workspace.team.operational.description.loading"
-msgstr "Sunucudaki davet listesinden bekleyen davetler yükleniyor…"
-
-#: workspace:workspace.team.pendingInvitations.empty
-msgid "workspace.team.pendingInvitations.empty"
-msgstr "Bekleyen davetler henüz kullanılamıyor."
+#: workspace:workspace.team.operational.description
+msgid "workspace.team.operational.description"
+msgstr ""
 
 #: workspace:workspace.team.pendingInvitations.region
 msgid "workspace.team.pendingInvitations.region"
 msgstr "Bekleyen davetler"
 
-#: workspace:workspace.team.status.connected
-msgid "workspace.team.status.connected"
-msgstr "Davetler bağlı"
+#: workspace:workspace.team.roleGuide.editor
+msgid "workspace.team.roleGuide.editor"
+msgstr ""
 
-#: workspace:workspace.team.status.error
-msgid "workspace.team.status.error"
-msgstr "Yüklenemedi"
+#: workspace:workspace.team.roleGuide.heading
+msgid "workspace.team.roleGuide.heading"
+msgstr ""
 
-#: workspace:workspace.team.status.loading
-msgid "workspace.team.status.loading"
-msgstr "Yükleniyor"
+#: workspace:workspace.team.roleGuide.kitchen
+msgid "workspace.team.roleGuide.kitchen"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.manager
+msgid "workspace.team.roleGuide.manager"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.member
+msgid "workspace.team.roleGuide.member"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.owner
+msgid "workspace.team.roleGuide.owner"
+msgstr ""

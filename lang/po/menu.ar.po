@@ -8,6 +8,18 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: menu:menu.actions.csv
+msgid "menu.actions.csv"
+msgstr ""
+
+#: menu:menu.actions.label
+msgid "menu.actions.label"
+msgstr ""
+
+#: menu:menu.actions.previewAndPublish
+msgid "menu.actions.previewAndPublish"
+msgstr ""
+
 #: menu:menu.ai.unavailable.budget_exhausted
 msgid "menu.ai.unavailable.budget_exhausted"
 msgstr ""
@@ -30,6 +42,10 @@ msgstr ""
 
 #: menu:menu.category.add.disclose
 msgid "menu.category.add.disclose"
+msgstr ""
+
+#: menu:menu.category.add.short
+msgid "menu.category.add.short"
 msgstr ""
 
 #: menu:menu.category.count
@@ -80,6 +96,10 @@ msgstr ""
 msgid "menu.category.order.label"
 msgstr ""
 
+#: menu:menu.category.panel.label
+msgid "menu.category.panel.label"
+msgstr ""
+
 #: menu:menu.category.reorder.handle
 msgid "menu.category.reorder.handle"
 msgstr ""
@@ -110,6 +130,22 @@ msgstr ""
 
 #: menu:menu.create.submit
 msgid "menu.create.submit"
+msgstr ""
+
+#: menu:menu.delete.confirm
+msgid "menu.delete.confirm"
+msgstr ""
+
+#: menu:menu.delete.confirm.yes
+msgid "menu.delete.confirm.yes"
+msgstr ""
+
+#: menu:menu.delete.error.submit
+msgid "menu.delete.error.submit"
+msgstr ""
+
+#: menu:menu.delete.submit
+msgid "menu.delete.submit"
 msgstr ""
 
 #: menu:menu.duplicates.heading
@@ -400,6 +436,10 @@ msgstr ""
 msgid "menu.item.image.none"
 msgstr ""
 
+#: menu:menu.item.meta.noDescription
+msgid "menu.item.meta.noDescription"
+msgstr ""
+
 #: menu:menu.item.meta.noPhoto
 msgid "menu.item.meta.noPhoto"
 msgstr ""
@@ -520,6 +560,42 @@ msgstr ""
 msgid "menu.ops.error"
 msgstr ""
 
+#: menu:menu.pill.allDay
+msgid "menu.pill.allDay"
+msgstr ""
+
+#: menu:menu.pill.disabled
+msgid "menu.pill.disabled"
+msgstr ""
+
+#: menu:menu.pill.draft
+msgid "menu.pill.draft"
+msgstr ""
+
+#: menu:menu.pill.moreWindows
+msgid "menu.pill.moreWindows"
+msgstr ""
+
+#: menu:menu.pill.servingNow
+msgid "menu.pill.servingNow"
+msgstr ""
+
+#: menu:menu.pill.switching
+msgid "menu.pill.switching"
+msgstr ""
+
+#: menu:menu.pills.add
+msgid "menu.pills.add"
+msgstr ""
+
+#: menu:menu.pills.edit
+msgid "menu.pills.edit"
+msgstr ""
+
+#: menu:menu.pills.label
+msgid "menu.pills.label"
+msgstr ""
+
 #: menu:menu.product.create.error.submit
 msgid "menu.product.create.error.submit"
 msgstr ""
@@ -576,6 +652,22 @@ msgstr ""
 msgid "menu.row.more"
 msgstr ""
 
+#: menu:menu.save.error.submit
+msgid "menu.save.error.submit"
+msgstr ""
+
+#: menu:menu.save.submit
+msgid "menu.save.submit"
+msgstr ""
+
+#: menu:menu.state.draft
+msgid "menu.state.draft"
+msgstr ""
+
+#: menu:menu.state.published
+msgid "menu.state.published"
+msgstr ""
+
 #: menu:menu.status.saving
 msgid "menu.status.saving"
 msgstr ""
@@ -586,4 +678,28 @@ msgstr ""
 
 #: menu:menu.tools.summary
 msgid "menu.tools.summary"
+msgstr ""
+
+#: menu:menu.window.disable
+msgid "menu.window.disable"
+msgstr ""
+
+#: menu:menu.window.endsAt.label
+msgid "menu.window.endsAt.label"
+msgstr ""
+
+#: menu:menu.window.error.incomplete
+msgid "menu.window.error.incomplete"
+msgstr ""
+
+#: menu:menu.window.error.submit
+msgid "menu.window.error.submit"
+msgstr ""
+
+#: menu:menu.window.help
+msgid "menu.window.help"
+msgstr ""
+
+#: menu:menu.window.startsAt.label
+msgid "menu.window.startsAt.label"
 msgstr ""

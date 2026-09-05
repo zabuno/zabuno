@@ -10,6 +10,13 @@ import { FormSection } from './forms/FormSection';
 import { FormActions } from './forms/FormActions';
 import { ReadOnlySummary, type ReadOnlySummaryItem } from './forms/ReadOnlySummary';
 import { RegionalFields } from './location/RegionalFields';
+import { OpeningHoursFields } from './location/OpeningHoursFields';
+import {
+    draftFromEntries,
+    entriesFromDraft,
+    type OpeningHoursDraft,
+    type OpeningHoursEntry,
+} from './location/openingHours';
 
 export type LocationProfile = {
     id: number;
@@ -22,6 +29,15 @@ export type LocationProfile = {
     address_line1: string;
     address_line2: string | null;
     postal_code: string | null;
+    /**
+     * Şubenin haftalık çalışma saatleri (`docs/109` §6.4).
+     *
+     * OPSİYONEL tutulur çünkü bu kaydı üreten yollar tek değil: liste ve
+     * profil uçları alanı taşır, elle kurulan hikâye/test kayıtları
+     * taşımayabilir. Yokluğu ile boş dizi AYNI anlama gelir — "saat
+     * girilmemiş" — ve kart o satırı hiç çizmez.
+     */
+    opening_hours?: OpeningHoursEntry[];
 };
 
 type LocationEditFormProps = {
@@ -39,6 +55,7 @@ const FIELD_ORDER = [
     'address_line1',
     'address_line2',
     'postal_code',
+    'opening_hours',
 ] as const;
 
 export function LocationEditForm({ workspaceId, location, onSaved }: LocationEditFormProps) {
@@ -50,6 +67,14 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
     const [addressLine1, setAddressLine1] = useState(location.address_line1);
     const [addressLine2, setAddressLine2] = useState(location.address_line2 ?? '');
     const [postalCode, setPostalCode] = useState(location.postal_code ?? '');
+    /**
+     * Çalışma saatleri taslağı. `null` "bu şubenin saati girilmemiş"
+     * demektir ve yedi boş satır DEĞİLDİR: saati olmayan şube normaldir,
+     * form onu bir eksiklik gibi göstermez.
+     */
+    const [hoursDraft, setHoursDraft] = useState<OpeningHoursDraft[] | null>(() =>
+        draftFromEntries(location.opening_hours),
+    );
     const [error, setError] = useState('');
     /**
      * Sunucunun 422 gövdesindeki alan hataları. Daha önce okunmadan
@@ -67,6 +92,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
         setAddressLine1(location.address_line1);
         setAddressLine2(location.address_line2 ?? '');
         setPostalCode(location.postal_code ?? '');
+        setHoursDraft(draftFromEntries(location.opening_hours));
         setError('');
         setEditing(true);
     }
@@ -82,6 +108,27 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
         setError('');
         setFieldErrors({});
         setSaving(true);
+
+        /*
+            ÇALIŞMA SAATİ alanı yalnız SÖYLENECEK BİR ŞEY VARSA gönderilir.
+
+            Sunucunun sözleşmesi net: alan yoksa dokunma, boş dizi varsa sil
+            (`UpdateLocation`). Saati hiç olmayan ve sahibinin de hiç
+            dokunmadığı bir şubede her kaydette boş dizi yollamak, hiçbir şey
+            söylemek istemediğimiz hâlde her seferinde "sil" demek olurdu.
+            Zararı bugün görünmez çünkü silinecek bir şey yok — ama yarın
+            saatleri başka bir yüzeyden girilen bir şube, adresini düzelten
+            bu formla sessizce saatlerini kaybederdi.
+        */
+        const hadSavedHours = (location.opening_hours?.length ?? 0) > 0;
+        const openingHours =
+            hoursDraft !== null
+                ? entriesFromDraft(hoursDraft)
+                : hadSavedHours
+                  ? // Sahip kayıtlı saatleri KAPATTI: bu bir silme isteğidir,
+                    // "artık söylemiyorum" da bir karardır.
+                    []
+                  : undefined;
 
         try {
             await bootstrapCsrfCookie();
@@ -99,6 +146,13 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                         address_line1: addressLine1,
                         address_line2: addressLine2,
                         postal_code: postalCode,
+                        /*
+                            `undefined` alanı gövdeden TAMAMEN düşürür
+                            (`JSON.stringify` onu yazmaz) — sunucu da
+                            "dokunma" der. Boş dizi ise açık bir silme
+                            isteğidir; ikisi bilerek ayrı.
+                        */
+                        opening_hours: openingHours,
                     }),
                 }),
             );
@@ -258,6 +312,15 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                     })}
                     value={postalCode}
                     onChange={setPostalCode}
+                />
+            </FormSection>
+
+            <FormSection title={t('workspace.brandLocations.locations.section.hours')}>
+                <OpeningHoursFields
+                    idPrefix={`location-edit-${String(location.id)}`}
+                    draft={hoursDraft}
+                    onChange={setHoursDraft}
+                    errorText={fieldErrors.opening_hours}
                 />
             </FormSection>
 

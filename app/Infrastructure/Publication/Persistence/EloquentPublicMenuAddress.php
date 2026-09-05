@@ -44,6 +44,16 @@ final class EloquentPublicMenuAddress implements PublicMenuAddressPort
             // veya deneme bir menüyü aramaya açmak, alan adının kalitesini
             // düşürür ve restorana da bir faydası olmaz.
             ->where('menus.is_indexable', true)
+            /*
+                YALNIZ ADRES ÇIPALARI (sahibin 2026-09-05 çoklu menü kararı,
+                `docs/109` §7.1). Bir şubenin kahvaltı ve akşam menüsü aynı
+                adresten açılır; ikisini de sitemap'e koymak, arama motoruna
+                aynı sayfayı iki kez bildirmek olurdu. Çıpa olmayan menülerin
+                `public_key`'i zaten yoktur; bu satır o gerçeği sorguya
+                yazar ve boş anahtarlı bir satırın sitemap'e sızmasını
+                imkânsız kılar.
+            */
+            ->whereNotNull('menus.public_key')
             ->join('menu_publication_current_pointers as ptr', 'ptr.menu_id', '=', 'menus.id')
             ->join('menu_publications as pub', 'pub.id', '=', 'ptr.current_publication_id')
             ->where('pub.state', 'published')

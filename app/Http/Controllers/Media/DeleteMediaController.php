@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Media\Port\MediaAuditPort;
+use App\Application\Media\Port\MediaLegalHoldPort;
 use App\Application\Media\Port\MediaRepositoryPort;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
@@ -18,6 +19,7 @@ final class DeleteMediaController extends Controller
         private readonly MediaRepositoryPort $media,
         private readonly AuthorizationPort $authorization,
         private readonly MediaAuditPort $audit,
+        private readonly MediaLegalHoldPort $legalHold,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $media): JsonResponse
@@ -36,6 +38,20 @@ final class DeleteMediaController extends Controller
 
         if ($asset === null || $asset->workspaceId !== $workspace) {
             return response()->json(['message' => 'Not Found.'], 404);
+        }
+
+        /*
+            YASAL SAKLAMA tek dosya silmede de geçerlidir (kaynağın
+            "Yönetişim" bölümü). Yalnız toplu işlemde atlamak, kilidi bir
+            GÖRÜNÜM hâline getirirdi: sahip tek dosya silmeye geçer ve
+            kilit hiç olmamış gibi davranırdı. 409, çünkü istek geçerli —
+            izin veren DURUM yok.
+        */
+        if ($this->legalHold->isHeld($workspace, $media)) {
+            return response()->json([
+                'message' => 'Bu dosya yasal saklama altında ve silinemez. '
+                    .'Önce Yönetişim bölümünden saklamayı kaldırın.',
+            ], 409);
         }
 
         if ($this->media->isUsedByPublication($workspace, $media)) {

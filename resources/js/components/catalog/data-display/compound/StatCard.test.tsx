@@ -28,6 +28,40 @@ describe('StatCard', () => {
         tıkladığı hedefi kaybediyor. Yer tutucu, yerini tutacağı şeyin
         ölçüsünü BİLMELİ.
     */
+    /*
+        DESTEK SATIRI (`docs/109` §1, kaynak `stats[].delta`).
+
+        Bir sayaç kartı çıplak bir rakamdır: "46" sahibe menüsünün büyük mü
+        küçük mü olduğunu söylemez. Kaynak bu yüzden rakamın altına tek bir
+        satır koyuyor. Yuva ZORUNLU DEĞİL — verilmediğinde hiçbir yer
+        kaplamaz, çünkü boş bir açıklama satırı kartı uzatır ve yan yana
+        duran kartların rakamlarını farklı hizalara düşürür.
+    */
+    it('destek satırı verilmediğinde kart yalnız etiket ve rakamdan ibarettir', () => {
+        render(<StatCard label="Menu items" value={46} />);
+
+        expect(screen.getByText('Menu items').parentElement?.childElementCount).toBe(2);
+    });
+
+    it('destek satırı verildiğinde rakamın altında sakin bir ölçü satırı olarak çizilir', () => {
+        render(<StatCard label="Menu items" value={46} support="3 hidden" />);
+
+        const support = screen.getByText('3 hidden');
+
+        expect(support).toBeInTheDocument();
+        expect(support.className).toContain('text-meta');
+    });
+
+    /*
+        Rakam henüz gelmemişken onun hakkında bir cümle göstermek, bilinmeyen
+        bir şeyi açıklamaya çalışmaktır.
+    */
+    it('yüklenirken destek satırı çizilmez', () => {
+        render(<StatCard label="Menu items" value={46} support="3 hidden" loading />);
+
+        expect(screen.queryByText('3 hidden')).not.toBeInTheDocument();
+    });
+
     it('yükleme yer tutucusu rakamın gerçek yüksekliğini kaplar', () => {
         const { container } = render(<StatCard label="Orders today" value="1,204" loading />);
         const skeleton = container.querySelector('[role="presentation"]') as HTMLElement | null;

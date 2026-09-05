@@ -322,6 +322,170 @@ export const publication = {
     'workspace.publication.readiness.categoryNames': 'Category names ready',
     'workspace.publication.publishedSnapshot.region': 'Published menu',
     'workspace.publication.publishedSnapshot.publishedAt': 'Published at {publishedAt}',
+
+    /*
+        QR EKRANI — panel v3 kanonik kaynağı (`docs/109` §6.7).
+
+        Kaynağın ekranı iki sütundur: solda masa kartları ızgarası, sağda
+        seçili kodun paneli. Buradaki anahtarlar o ekranın kendi dilidir;
+        `qrExport.*` ve `qrCard.*` anahtarları gelişmiş baskı yüzeyinde
+        kalır ve dokunulmaz.
+    */
+    'workspace.publication.qrScreen.description':
+        'A printed code never changes — update your menu as often as you like.',
+    'workspace.publication.qrScreen.downloadAll': 'Download every card (PDF)',
+    'workspace.publication.qrScreen.downloadAllPart': 'Cards {part} of {total} (PDF)',
+    'workspace.publication.qrScreen.tables': 'Table cards',
+    'workspace.publication.qrScreen.scans': '{count} scans',
+    'workspace.publication.qrScreen.neverScanned': 'Never scanned',
+    'workspace.publication.qrScreen.selected': 'Selected code',
+    'workspace.publication.qrScreen.state.working': 'Working',
+    'workspace.publication.qrScreen.state.active': 'Active',
+    'workspace.publication.qrScreen.state.disabled': 'Disabled',
+    'workspace.publication.qrScreen.address': 'Full address',
+    'workspace.publication.qrScreen.copy': 'Copy address',
+    'workspace.publication.qrScreen.copied': 'Copied',
+    'workspace.publication.qrScreen.theme': 'Card design',
+    'workspace.publication.qrScreen.size': 'Size',
+    'workspace.publication.qrScreen.sizeOption': '{name} · {width} × {height} mm',
+    'workspace.publication.qrScreen.sizeTableCard': 'Table card',
+    'workspace.publication.qrScreen.sizeStand': 'Stand',
+    'workspace.publication.qrScreen.downloadPdf': 'Download PDF',
+    'workspace.publication.qrScreen.print': 'Print',
+    'workspace.publication.qrScreen.previewAlt': 'Printable card preview for {name}',
+    /*
+        ÖLÇÜLMÜŞ kontrast. Sayı hesaptan gelir (`lib/qrContrast`), elle
+        yazılmış bir sabitten değil: kart her zaman siyah kod / beyaz kâğıt
+        basar ve oran WCAG bağıl parlaklıkla tam 21,0:1 çıkar. Kaynağın
+        "tarayıcı testi geçti" cümlesi YAZILMAZ — ürün hiçbir telefonda tarama
+        testi çalıştırmıyor ve çalıştırmadığı bir testin geçtiğini yazmak,
+        sahibin kırk kart bastırmasını sağlayan cümledir.
+    */
+    'workspace.publication.qrScreen.contrast':
+        'Contrast measured: {ratio}:1 — dark modules on a light background.',
+    'workspace.publication.qrScreen.noDarkTheme':
+        'There is no dark card: scanners assume dark-on-light, and an inverted code is not read at all by many phones.',
+    'workspace.publication.qrScreen.empty':
+        'No table code yet. Create the codes for your tables below.',
+    'workspace.publication.qrScreen.loading': 'Loading table codes…',
+    'workspace.publication.qrScreen.loadError': 'Could not load table codes. Try again.',
+    'workspace.publication.qrScreen.retry': 'Try again',
+    'workspace.publication.qrScreen.bulk': 'Bulk codes for new tables',
+    /*
+        VARSAYILANLARIN CÜMLESİ (kaynağın kendi düzeni). Eski metin sahibe ne
+        YAPACAĞINI söylüyordu; söylenmesi gereken şey ne OLACAĞIydı. Ad öneki
+        ve başlangıç numarası sunucunun gerçek varsayılanıdır
+        (`StoreBulkQrCodesController`), uydurulmuş bir örnek değil.
+    */
+    'workspace.publication.qrScreen.bulkDefaults':
+        'The rest is default: {areas} area(s), {seats} seats per table, names start at T1.',
+    'workspace.publication.qrScreen.advanced': 'Code management and advanced printing',
+
+    /*
+        ADIM ÇİZGİSİ — kanonik kaynak `docs/reference/panel-v3/panel.dc.html`,
+        "Yayınlama" ekranı: Taslak → Önizleme → Yayında.
+
+        Üç adım, sahibin kafasındaki sırayı ekrana koyar. Önceki hâlde ekran
+        bölge bölge doğru bilgiyi taşıyordu ama NEREDE OLDUĞUNU söylemiyordu:
+        sahip "yayınladım mı, yayınlamadım mı?" sorusunu üç ayrı bölgeyi
+        okuyarak cevaplıyordu.
+    */
+    'workspace.publication.stepper.region': 'Where you are',
+    'workspace.publication.stepper.draft': 'Draft',
+    'workspace.publication.stepper.draft.changes': '{count} changes waiting',
+    'workspace.publication.stepper.draft.noChanges': 'Nothing waiting',
+    'workspace.publication.stepper.preview': 'Preview',
+    'workspace.publication.stepper.preview.sub': 'Check it on a phone',
+    'workspace.publication.stepper.live': 'Live',
+    'workspace.publication.stepper.live.sub': 'v{version} · {when}',
+    'workspace.publication.stepper.live.never': 'Nothing published yet',
+    // Durum RENKLE DEĞİL, metinle de söylenir (WCAG 1.4.1): ekran okuyucu
+    // kullanan biri için dolgulu daire ile boş daire aynı şeydir.
+    'workspace.publication.stepper.state.current': 'You are here',
+    'workspace.publication.stepper.state.done': 'Done',
+    'workspace.publication.stepper.state.upcoming': 'Not yet',
+
+    /*
+        Göreli zaman. Kaynak "v14 · 2 gün önce" diyor ve bu doğru bir
+        seçimdir: sahip için "2 gün önce" ile "2026-09-03T09:00:00Z" aynı
+        şey değildir — birincisi bir his verir, ikincisi bir kayıt.
+    */
+    'workspace.publication.relative.justNow': 'just now',
+    'workspace.publication.relative.minutesAgo': '{count} min ago',
+    'workspace.publication.relative.hoursAgo': '{count} h ago',
+    'workspace.publication.relative.daysAgo': '{count} days ago',
+
+    /*
+        YAYINLANACAK DEĞİŞİKLİKLER. Sahibin "şu an basarsam misafir ne
+        görecek?" sorusunun cevabı. Fark İKİ GERÇEK VERİDEN üretilir:
+        sunucudaki yayınlanmış snapshot ile paneldeki taslak ağaç.
+
+        "Kim değiştirdi ve ne zaman" kaynakta var ama bu depoda menü satırı
+        başına aktör/zaman kaydı YOK; o satır bilerek yazılmaz.
+    */
+    'workspace.publication.diff.region': 'Changes waiting to be published',
+    'workspace.publication.diff.title': '{count} changes waiting to be published',
+    'workspace.publication.diff.none': 'Nothing is waiting. Guests are seeing v{version}.',
+    'workspace.publication.diff.noneFirst':
+        'Nothing has been published yet. Publishing sends this menu to your guests for the first time.',
+    'workspace.publication.diff.versions': 'v{live} → v{next}',
+    'workspace.publication.diff.versionsFirst': 'First version — v{next}',
+    'workspace.publication.diff.kind.added': 'Added',
+    'workspace.publication.diff.kind.price': 'Price',
+    'workspace.publication.diff.kind.renamed': 'Name',
+    'workspace.publication.diff.kind.hidden': 'Hidden from guests',
+    'workspace.publication.diff.kind.removed': 'Removed',
+    'workspace.publication.diff.priceChange': '{name} · {from} → {to}',
+    'workspace.publication.diff.nameChange': '{from} → {to}',
+    'workspace.publication.diff.detail': '{kind} · {category}',
+
+    /*
+        DÜZELT (kaynağın "Düzelt" düğmesi). Eksik bir madde ile onu
+        düzeltebileceğin ekran arasındaki mesafe SIFIR olmalı: aksi hâlde
+        sahip "görünür ürünlerin fiyatı dolu değil" cümlesini okur ve
+        menüde aramaya başlar.
+    */
+    'workspace.publication.readiness.fix': 'Fix',
+    'workspace.publication.readiness.fixLabel': 'Fix: {label}',
+
+    /*
+        TELEFONDA ÖNİZLE — kısa ömürlü, imzalı adres (sahibin 2026-09-05
+        kararı). Yayın adresiyle KARIŞTIRILAMAZ ve bunu ekran söyler.
+    */
+    'workspace.publication.preview.region': 'Preview on a phone',
+    'workspace.publication.preview.button': 'Preview on a phone',
+    'workspace.publication.preview.close': 'Close preview',
+    'workspace.publication.preview.heading': 'This is what a guest will see',
+    'workspace.publication.preview.linkButton': 'Open the preview link',
+    'workspace.publication.preview.linkHelp':
+        'The link works for 15 minutes and is closed to search engines. It is not your guests’ address — the printed QR code keeps pointing at the published menu.',
+    'workspace.publication.preview.linkError': 'The preview link could not be created. Try again.',
+    'workspace.publication.preview.linkPending': 'Creating the preview link…',
+
+    /*
+        PLANLA — zamanlanmış yayın. Saatler SUNUCUDAN gelir ve
+        `Europe/Istanbul` içindir; ekran yalnız okunabilir hâle çevirir.
+    */
+    'workspace.publication.schedule.region': 'Schedule the publish',
+    'workspace.publication.schedule.button': 'Schedule',
+    'workspace.publication.schedule.close': 'Close scheduling',
+    'workspace.publication.schedule.help':
+        'A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are Istanbul time.',
+    'workspace.publication.schedule.option.tonight': 'Tonight 03:00',
+    'workspace.publication.schedule.option.tomorrowMorning': 'Tomorrow 09:00',
+    'workspace.publication.schedule.option.nextMonday': 'Monday 09:00',
+    'workspace.publication.schedule.optionAt': '{label} — {moment}',
+    'workspace.publication.schedule.pending': 'Scheduled for {moment} (Istanbul).',
+    'workspace.publication.schedule.cancel': 'Cancel this schedule',
+    'workspace.publication.schedule.cancelError': 'The schedule could not be cancelled. Try again.',
+    'workspace.publication.schedule.error':
+        'The publish could not be scheduled. Nothing was scheduled.',
+    'workspace.publication.schedule.unready':
+        'Finish the readiness list first — a schedule freezes what you see now.',
+
+    // Üst rozet: "Yayında · v14". Kaynağın kendi cümlesi; sürüm numarası
+    // kullanıcı için okunabilir tek sayıdır ve her yayında artar.
+    'workspace.publication.status.liveBadge': 'Live · v{version}',
 } as const;
 
 declare module '../workspace' {

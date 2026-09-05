@@ -6,6 +6,12 @@ import type { DashboardMenuTree } from '../DashboardPage';
 
 type PublishReadinessChecklistRegionProps = {
     dashboardMenuTree: DashboardMenuTree | null;
+    /**
+     * Eksik bir maddeyi düzeltebileceği ekrana götürür (kaynağın "Düzelt"
+     * düğmesi). Yoksa düğme ÇİZİLMEZ: gidecek bir yeri olmayan bir düğme,
+     * sahibin ürüne olan güvenini bir tıkla harcar.
+     */
+    onFix?: (section: string) => void;
 };
 
 type ReadinessCheck = {
@@ -68,6 +74,7 @@ export function isDraftReady(dashboardMenuTree: DashboardMenuTree | null): boole
 
 export function PublishReadinessChecklistRegion({
     dashboardMenuTree,
+    onFix,
 }: PublishReadinessChecklistRegionProps) {
     return (
         <div
@@ -153,6 +160,34 @@ export function PublishReadinessChecklistRegion({
                                     ? t('workspace.publication.readiness.ready')
                                     : t('workspace.publication.readiness.needsAttention')}
                             </span>
+
+                            {/*
+                                DÜZELT — kanonik kaynağın kendi düğmesi.
+
+                                Eksik madde ile onu düzeltebileceği ekran
+                                arasındaki mesafe SIFIR olmalı. Önceki hâlde
+                                sahip "görünür ürünlerin fiyatı dolu değil"
+                                cümlesini okuyor, hangi ürün olduğunu
+                                bilmeden menüye gidiyor ve aramaya
+                                başlıyordu — beş dakikalık bir iş, on
+                                dakikalık bir arama hâline geliyordu.
+
+                                Düğme YALNIZ eksik maddede vardır: biten
+                                maddenin yanında duran bir "Düzelt", listeyi
+                                yeniden beş eşit satıra çevirirdi.
+                            */}
+                            {!check.ready && onFix !== undefined ? (
+                                <button
+                                    type="button"
+                                    onClick={() => onFix('menu')}
+                                    aria-label={t('workspace.publication.readiness.fixLabel', {
+                                        label: check.label,
+                                    })}
+                                    className="ms-auto min-h-[var(--control-height)] shrink-0 rounded-[var(--radius-md)] border border-border px-[var(--space-3)] py-[var(--space-1)] text-body font-medium text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                                >
+                                    {t('workspace.publication.readiness.fix')}
+                                </button>
+                            ) : null}
                         </li>
                     ))}
                 </ul>

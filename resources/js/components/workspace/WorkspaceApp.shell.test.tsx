@@ -213,7 +213,9 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
-        expect(within(main).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
+        // FF-137: bölüm `lazy` ile iniyor — tıklamadan sonra bir tık beklenir.
+
+        expect(await within(main).findByTestId('menu-catalog-workspace')).toBeInTheDocument();
 
         vi.unstubAllGlobals();
     });
@@ -512,7 +514,8 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
         });
 
         const main = screen.getByRole('main');
-        expect(within(main).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
+        // FF-137: bölüm `lazy` ile iniyor — tıklamadan sonra bir tık beklenir.
+        expect(await within(main).findByTestId('menu-catalog-workspace')).toBeInTheDocument();
         expect(main.querySelector('#section-menu')).not.toBeNull();
 
         vi.unstubAllGlobals();

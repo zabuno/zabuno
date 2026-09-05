@@ -211,10 +211,31 @@ final class EloquentTeamInvitationRepository implements TeamInvitationRepository
                 return false;
             }
 
+            /*
+                ÜYELİK, DAVETİN ROLÜYLE AÇILIR — sabit `editor` ile değil.
+
+                Burası `'editor'` yazıyordu ve davetin kendi rolünü hiç
+                okumuyordu. Davet edilebilir tek rol `editor` iken bu
+                görünmez bir hataydı; ikinci rol (`manager`) geldiğinde
+                sessiz bir DÜŞÜRMEYE dönüştü: sahip "Yönetici" davet ediyor,
+                kabul eden kişi editör oluyor ve neden karekod yönetemediğini
+                kimse anlamıyordu.
+
+                Mutfak rolüyle aynı satır ters yöne çalışırdı ve o yön çok
+                daha tehlikelidir: alerjen/stok için davet edilen bir aşçı,
+                daveti kabul ettiği anda bütün menünün fiyatlarını
+                değiştirebilen bir editöre YÜKSELİRDİ. Sunucudaki bütün
+                kapılar doğru olsa bile, yanlış rolle açılan bir üyelik
+                hepsini geçersiz kılar.
+
+                Değer davet satırından gelir ve o satır zaten
+                `MembershipRole::invitable()` ile doğrulanmıştır (istek
+                doğrulaması), yani buraya keyfi bir dize düşemez.
+            */
             DB::table('workspace_memberships')->insertOrIgnore([
                 'workspace_id' => $invitation->workspace_id,
                 'user_id' => $userId,
-                'role' => 'editor',
+                'role' => (string) $invitation->role,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

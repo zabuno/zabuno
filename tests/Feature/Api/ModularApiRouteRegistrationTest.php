@@ -44,6 +44,32 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/workspaces/{workspace}/brand/locations/{location}||App\Http\Controllers\Tenancy\UpdateLocationController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/brand/locations/{location}/menu||App\Http\Controllers\MenuCatalog\StoreMenuController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/brand/locations/{location}/menu||App\Http\Controllers\MenuCatalog\ShowMenuController|api,auth:sanctum,verified',
+        /*
+            ÇOKLU MENÜ VE SAAT BAZLI GEÇİŞ — sahibin 2026-09-05 kararı,
+            `docs/109-PANEL-V3.md` §7.1: "çoklu menü YAPILSIN, saat bazlı
+            geçişli".
+
+            Bu altı imza dondurulmuş listeye SONRADAN eklendi ve gerekçesi
+            budur. Kaynak `panel.dc.html` "Menüler" ekranında üç menü hapı
+            gösteriyor (Ana menü yayında · Kahvaltı 07–11 · Ramazan kapalı);
+            haplar bu yollar olmadan çizilemezdi:
+
+            - `.../locations/{location}/menus` hapların listesi,
+            - `GET .../menu/{menu}` hapa basınca O MENÜNÜN içeriği,
+            - `PUT` / `DELETE .../menu/{menu}` menü düzenleme ve silme,
+            - `.../menu/{menu}/service-window` menünün saat aralığı
+              (`PUT` verir, `DELETE` menüyü kapatır — "Ramazan kapalı").
+
+            `{menu}` sayıya sınırlıdır; aynı önekteki
+            `menu/duplicate-candidates` yolunun bir menü kimliği sanılmaması
+            için.
+        */
+        'GET|api/workspaces/{workspace}/brand/locations/{location}/menus||App\Http\Controllers\MenuCatalog\ListLocationMenusController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/menu/{menu}||App\Http\Controllers\MenuCatalog\ShowMenuTreeController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/menu/{menu}||App\Http\Controllers\MenuCatalog\RenameMenuController|api,auth:sanctum,verified',
+        'DELETE|api/workspaces/{workspace}/menu/{menu}||App\Http\Controllers\MenuCatalog\DeleteMenuController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/menu/{menu}/service-window||App\Http\Controllers\MenuCatalog\UpdateMenuServiceWindowController|api,auth:sanctum,verified',
+        'DELETE|api/workspaces/{workspace}/menu/{menu}/service-window||App\Http\Controllers\MenuCatalog\DeleteMenuServiceWindowController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/categories||App\Http\Controllers\MenuCatalog\StoreCategoryController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu-categories/{category}/products||App\Http\Controllers\MenuCatalog\StoreProductController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu-categories/{category}/menu-items||App\Http\Controllers\MenuCatalog\StoreMenuItemController|api,auth:sanctum,verified',
@@ -83,6 +109,29 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/workspaces/{workspace}/menu/{menu}/category-order||App\Http\Controllers\MenuCatalog\ReorderCategoriesController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/publications||App\Http\Controllers\Publication\StorePublicationController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/menu/{menu}/publications/current||App\Http\Controllers\Publication\ShowCurrentPublicationController|api,auth:sanctum,verified',
+        /*
+            PLANLA — ZAMANLANMIŞ YAYIN (sahibin 2026-09-05 kararı; kanonik
+            kaynak `panel.dc.html` Yayınlama ekranındaki "Planla" düğmesi).
+
+            Bu üç imza donmuş listeye SIRASIYLA eklendi ve sıra anlamlıdır:
+            `publications/schedule`, `publications` liste rotasından ÖNCE
+            gelir. Ters sırada "schedule" kelimesi bir yayın kimliği sanılır
+            ve sahip planını kurmak isterken bir yayın arar hâle gelirdi.
+
+            Yetki: okuma `menu.view`, yazma ve iptal `menu.publish` —
+            yayınlayamayan bir rol yayını ileri bir zamana da kuramaz.
+        */
+        'GET|api/workspaces/{workspace}/menu/{menu}/publications/schedule||App\Http\Controllers\Publication\ShowPublicationScheduleController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/menu/{menu}/publications/schedule||App\Http\Controllers\Publication\StorePublicationScheduleController|api,auth:sanctum,verified',
+        'DELETE|api/workspaces/{workspace}/menu/{menu}/publications/schedule/{schedule}||App\Http\Controllers\Publication\CancelPublicationScheduleController|api,auth:sanctum,verified',
+        /*
+            TELEFONDA ÖNİZLE (aynı karar). Burada YALNIZ imzalı adres
+            üretilir; önizleme sayfasının kendisi `routes/web.php`
+            içindedir ve oturum istemez — sahip onu telefonunda açar ve
+            orada panele girmiş olması beklenemez. İmza yetkidir ve on beş
+            dakika sonra ölür.
+        */
+        'POST|api/workspaces/{workspace}/menu/{menu}/draft-preview-link||App\Http\Controllers\Publication\CreateDraftPreviewLinkController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/menu/{menu}/publications||App\Http\Controllers\Publication\ListPublicationsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/publications/{publication}/restore||App\Http\Controllers\Publication\RestorePublicationController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/brand/locations/{location}/qr-codes||App\Http\Controllers\QrDestination\StoreQrCodeController|api,auth:sanctum,verified',
@@ -117,6 +166,20 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // MENÜ MÜHENDİSLİĞİ (`docs/84`, P1-08): "menün 214 kez açıldı" menüyü
         // değiştirmek için hiçbir şey söylemiyordu.
         'GET|api/workspaces/{workspace}/analytics/menu-engineering||App\Http\Controllers\Analytics\ShowMenuEngineeringController|api,auth:sanctum,verified',
+        /*
+            ZAMAN SERİSİ (`docs/109` §1 Insights, §6.5).
+
+            İki yol donduruluyor çünkü Insights ekranının çubuk+çizgi
+            grafiği, saat ısı haritası ve şube halkası buradan besleniyor:
+            aralık TOPLAMI bir haftanın şeklini gizliyordu ve "hangi gün
+            çöktü", "öğle mi akşam mı", "geçen haftaya göre nasıl" soruları
+            üründe hiç cevaplanamıyordu.
+
+            İkili adres `summary` ile aynı gerekçeyi taşır (`docs/68`): üst
+            çubuktaki "tüm şubeler" bağlamının analitikte de karşılığı olmalı.
+        */
+        'GET|api/workspaces/{workspace}/brand/locations/{location}/analytics/time-series||App\Http\Controllers\Analytics\ShowAnalyticsTimeSeriesController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/analytics/time-series||App\Http\Controllers\Analytics\ShowAnalyticsTimeSeriesController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/tenant-isolation||App\Http\Controllers\Security\ShowTenantIsolationEvidenceController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/security/evidence/backup-restore||App\Http\Controllers\Security\ShowBackupRestoreEvidenceController|api,auth:sanctum,verified',
         // FF-63 (`docs/98`): host yeteneği okuma ucu + insan tanıklıkları.
@@ -235,6 +298,23 @@ final class ModularApiRouteRegistrationTest extends TestCase
         */
         'GET|api/workspaces/{workspace}/media/storage-breakdown||App\Http\Controllers\Media\ShowMediaStorageBreakdownController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/media/settings||App\Http\Controllers\Media\ShowMediaSettingsController|api,auth:sanctum,verified',
+        /*
+            OLGUNLUK (`docs/109-PANEL-V3.md` §2, kaynak ekranı "Olgunluk").
+
+            GEREKÇE — bu yol neden donduruluyor: medya yöneticisinin
+            "Olgunluk" bölümü adresini doğrudan kuruyor, tıpkı yanındaki
+            `media/settings` gibi. Adres sessizce kayarsa bölüm boş açılır
+            ve sahip bunu bir "henüz yapılmadı" sanır.
+
+            SALT OKUNUR ve hız sınırsız: yönlendirici koleksiyonunu ve test
+            paketini okur, hiçbir dosyaya dokunmaz, hiçbir satır yazmaz.
+            Kiracı verisi de okumaz — ürünün kendi durumunu bildirir — ama
+            adres bir kiracıya ait olduğu için yetki yine sorulur.
+
+            `folders`/`settings` gibi sabit segmentle başlar; `/media/{media}`
+            yolları her zaman bir alt segmentle devam ettiği için çakışma yok.
+        */
+        'GET|api/workspaces/{workspace}/media/maturity||App\Http\Controllers\Media\ShowMediaMaturityController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/media/reprocess||App\Http\Controllers\Media\ReprocessMediaBatchController|api,auth:sanctum,throttle:2,1,verified',
         'GET|api/workspaces/{workspace}/media/jobs||App\Http\Controllers\Media\ListMediaProcessingJobsController|api,auth:sanctum,verified',
         /*
@@ -258,6 +338,39 @@ final class ModularApiRouteRegistrationTest extends TestCase
         */
         'GET|api/workspaces/{workspace}/media/conversion-targets||App\Http\Controllers\Media\ListConversionTargetsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/media/convert||App\Http\Controllers\Media\ConvertMediaController|api,auth:sanctum,throttle:2,1,verified',
+        /*
+            TOPLU İŞLEM ve YÖNETİŞİM (`docs/109-PANEL-V3.md` §2, kanonik
+            kaynak `docs/reference/panel-v3/MedyaModulu.dc.html`).
+
+            Dört yeni uç, dört ayrı gerekçe:
+
+              - `media/bulk/plan` KURU ÇALIŞMADIR ve hiçbir dosyaya
+                dokunmaz. `POST` olması bir çelişki değil GÖVDE
+                gerekliliğidir: dondurulmuş kapsam bin kimlikten oluşabilir
+                ve bin kimliği adres satırına yazmak hem sınırı aşar hem de
+                kimlikleri sunucu günlüklerine döker. Sınırı gevşektir
+                (`throttle:20,1`) çünkü yalnız okur — ama sıfır değildir,
+                yoksa ekran her tuş vuruşunda planı yeniden isteyebilirdi.
+              - `media/bulk/run` YENİ BİR İŞLEME HATTI AÇMAZ: var olan
+                `ReprocessMediaAsset`, klasör taşıma, çöp ve kalıcı silme
+                yollarını sırayla çağırır. Sınırı dönüştürmeyle AYNIDIR
+                (`throttle:2,1`): tek çağrı yüzlerce dosyaya dokunur.
+              - `media/governance` SALT OKUNURDUR ve hız sınırsızdır:
+                yetki matrisini, saklama sayılarını ve denetim izini okur,
+                tek bir dosya bile işlemez.
+              - `{media}/legal-hold` tek bir dosyanın kilididir. `PUT`,
+                çünkü aynı çağrı kilidi koyar da kaldırır da (`reason:
+                null`); iki ayrı uç, aynı durumu iki yerden değiştirmek
+                olurdu.
+
+            `bulk` ve `governance` sabit segmentle başlar; `/media/{media}`
+            yolları her zaman bir alt segmentle devam ettiği için çakışma
+            yok.
+        */
+        'POST|api/workspaces/{workspace}/media/bulk/plan||App\Http\Controllers\Media\PlanMediaBulkOperationController|api,auth:sanctum,throttle:20,1,verified',
+        'POST|api/workspaces/{workspace}/media/bulk/run||App\Http\Controllers\Media\RunMediaBulkOperationController|api,auth:sanctum,throttle:2,1,verified',
+        'GET|api/workspaces/{workspace}/media/governance||App\Http\Controllers\Media\ShowMediaGovernanceController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/media/{media}/legal-hold||App\Http\Controllers\Media\UpdateMediaLegalHoldController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/team/members||App\Http\Controllers\Team\ListTeamMembersController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/team/members/{member}||App\Http\Controllers\Team\RemoveTeamMemberController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/workspaces/{workspace}/team/members/{member}/transfer-ownership||App\Http\Controllers\Team\TransferWorkspaceOwnershipController|api,auth:sanctum,throttle:5,1,verified',

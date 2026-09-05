@@ -399,6 +399,31 @@ export function BulkQrWizardFields(props: BulkQrWizardFieldsProps) {
             {renderError('tableCount')}
 
             {/*
+                "GERİSİ VARSAYILAN" — panel v3 kanonik kaynağı (`docs/109`
+                §6.7), tek sorunun HEMEN yanında.
+
+                Kaynak burada ne yapılacağını değil, ne OLACAĞINI yazıyor.
+                Fark somut: kırk masası olan bir kebapçı "Kodları oluştur"a
+                basmadan önce, kırk masanın tek bölgeye gireceğini ve adların
+                T1'den başlayacağını öğrenir. Salonu iki katlı olan bir
+                işletme için bu bilgi, geri alınması gereken kırk kaydın
+                farkıdır — eskiden bunu ancak masalar yaratıldıktan sonra
+                görüyordu.
+
+                Sayılar formun CANLI değerlerinden gelir; "ileri ayarlar"da
+                koltuğu değiştiren sahip cümlenin de değiştiğini görür. Sabit
+                bir metin bir gün formla ayrışır ve o gün yanlış olur. Ad
+                öneki ile başlangıç numarası sunucunun gerçek varsayılanıdır
+                (`StoreBulkQrCodesController`), uydurulmuş bir örnek değil.
+            */}
+            <p className="text-meta tabular-nums text-fg-muted">
+                {t('workspace.publication.qrScreen.bulkDefaults', {
+                    areas: values.areaSectionCount || '1',
+                    seats: values.seatCountPerTable || '4',
+                })}
+            </p>
+
+            {/*
                 İLERİ AYARLAR — varsayılanı olan her şey burada.
                 `<details>` içeriği DOM'da kalır: klavye, ekran okuyucu ve
                 form doğrulaması etkilenmez; yalnız ilk bakışta görünmez.

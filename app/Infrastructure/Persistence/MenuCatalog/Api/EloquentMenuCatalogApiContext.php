@@ -18,11 +18,23 @@ final class EloquentMenuCatalogApiContext implements MenuCatalogApiContextPort
         return $location === null ? null : (int) $location->workspace_id;
     }
 
+    /**
+     * Şubenin ÇIPA menüsü.
+     *
+     * Şube başına tek menü varken sıralama gereksizdi: hangi satır gelirse
+     * gelsin doğru cevaptı. Sahibin 2026-09-05 çoklu menü kararından sonra
+     * (`docs/109` §7.1) sırasız bir `first()` şubenin menülerinden RASTGELE
+     * birini seçerdi ve seçim sürücüye kalırdı — aynı istek iki farklı
+     * cevap verebilirdi. Cevap artık kararlıdır: genel adresi taşıyan menü,
+     * o da yoksa şubenin en eski menüsü.
+     */
     public function menuIdForLocation(int $workspaceId, int $locationId): ?int
     {
         $menu = DB::table('menus')
             ->where('location_id', $locationId)
             ->where('workspace_id', $workspaceId)
+            ->orderByRaw('CASE WHEN public_key IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('id')
             ->first();
 
         return $menu === null ? null : (int) $menu->id;

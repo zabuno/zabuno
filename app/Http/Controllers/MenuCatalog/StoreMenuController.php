@@ -6,7 +6,6 @@ namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
-use App\Application\MenuCatalog\Exception\DuplicateLocationMenuException;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
@@ -40,8 +39,6 @@ final class StoreMenuController extends Controller
 
         try {
             $menu = $this->menuCatalog->createDraftMenu($workspace, $location, (string) $request->validated('name'));
-        } catch (DuplicateLocationMenuException $e) {
-            return response()->json(['message' => $e->getMessage()], 409);
         } catch (MenuCatalogTenantMismatchException) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
@@ -52,6 +49,7 @@ final class StoreMenuController extends Controller
             'locationId' => $menu->locationId,
             'name' => $menu->name,
             'state' => $menu->state,
+            'sortOrder' => $menu->sortOrder,
         ], 201);
     }
 }

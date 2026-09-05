@@ -193,7 +193,7 @@ export function InlineRename({
                     type="button"
                     disabled={saving}
                     onClick={() => void save()}
-                    className="min-h-[var(--density-hit-area-min)] shrink-0 rounded-[var(--radius-md)] border border-action bg-action px-[var(--space-3)] text-meta font-semibold text-action-fg disabled:opacity-60"
+                    className="min-h-[var(--density-hit-area-min)] shrink-0 rounded-[var(--radius-md)] border border-action bg-action px-[var(--space-3)] text-meta font-bold text-action-fg disabled:opacity-60"
                 >
                     {saveLabel}
                 </button>

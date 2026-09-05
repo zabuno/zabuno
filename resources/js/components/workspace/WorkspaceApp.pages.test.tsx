@@ -248,6 +248,16 @@ async function openSettingsFromAccountMenu(user: ReturnType<typeof userEvent.set
             name: 'Settings',
         }),
     );
+
+    /*
+        EKRAN İSTENDİĞİNDE İNER (FF-137): Ayarlar bölümü artık `lazy` ile
+        yükleniyor, yani bağlantıya tıklamak ile bölümün çizilmesi arasında
+        bir tık var. Sınanan sözleşme değişmedi — beklenen yer beklenen
+        bölümdür; yalnız bekleme eklendi.
+    */
+    await waitFor(() => {
+        expect(document.querySelector('#section-settings')).not.toBeNull();
+    });
 }
 
 describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_BATCH_RED)', () => {
@@ -361,25 +371,50 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         expect(within(brandRoot).getByText('Europe/Istanbul')).toBeInTheDocument();
     });
 
-    it('Locations page renders all literal server-returned locations and supports selecting the current location without invented ids', async () => {
+    /**
+     * ŞUBELER EKRANI KART IZGARASI OLDU — `docs/109` §6.4, kaynak
+     * `panel.dc.html` (`data-screen-label="Şubeler"`).
+     *
+     * Sınanan sözleşme değişmedi: sunucunun döndürdüğü HER şube ekranda
+     * görünür ve hiçbir kimlik uydurulmaz. Değişen şey iki tanesi:
+     *
+     * 1. Şubeler artık kart, satır değil — bu yüzden sayım kartlarla yapılır.
+     * 2. Sayfa içi "Location" açılır listesi kalktı. Aynı seçim üst çubukta
+     *    (`WorkspaceContextControls`) zaten duruyordu; sayfadaki kopya aynı
+     *    işi ikinci kez gösteriyordu. Seçme YETENEĞİ kartın "Masalar"
+     *    düğmesine taşındı — o düğme şubeyi seçer ve karekod ekranına
+     *    götürür (kaynağın `goQr` bağlaması).
+     */
+    it('Locations page renders every literal server-returned location as its own card, with no invented ids', async () => {
         const user = userEvent.setup();
         await renderCurrentWorkspace();
 
         await user.click(screen.getByRole('link', { name: 'Locations' }));
 
         const locationsRoot = document.querySelector('#section-locations') as HTMLElement;
-        expect(within(locationsRoot).getByText('Kadıköy')).toBeInTheDocument();
-        expect(within(locationsRoot).getByText('Bahariye Cd. 1')).toBeInTheDocument();
-        expect(within(locationsRoot).getByText('Beşiktaş')).toBeInTheDocument();
-        expect(within(locationsRoot).getByText('Barbaros Blv. 5')).toBeInTheDocument();
+        const cards = within(locationsRoot).getAllByTestId('brand-location-row');
+        expect(cards).toHaveLength(2);
 
-        const locationSelect = within(locationsRoot).getByLabelText(
-            'Location',
-        ) as HTMLSelectElement;
-        expect(Array.from(locationSelect.options).map((option) => option.value)).toEqual(
-            expect.arrayContaining([String(LOCATION_ID), String(SECOND_LOCATION_ID)]),
+        expect(within(cards[0]).getByRole('heading', { name: 'Kadıköy' })).toBeInTheDocument();
+        expect(within(cards[0]).getByTestId('location-card-address')).toHaveTextContent(
+            'Bahariye Cd. 1',
         );
-        expect(locationSelect.value).toBe(String(LOCATION_ID));
+        expect(within(cards[1]).getByRole('heading', { name: 'Beşiktaş' })).toBeInTheDocument();
+        expect(within(cards[1]).getByTestId('location-card-address')).toHaveTextContent(
+            'Barbaros Blv. 5',
+        );
+
+        // Her kartın masa yolu KENDİ şubesini adlandırır: beş kartlık bir
+        // ızgarada beş kez "Masalar" yazan düğme, hangi şubeye gidildiğini
+        // söylemezdi.
+        expect(
+            within(cards[0]).getByRole('button', { name: 'Tables at Kadıköy' }),
+        ).toBeInTheDocument();
+        expect(
+            within(cards[1]).getByRole('button', { name: 'Tables at Beşiktaş' }),
+        ).toBeInTheDocument();
+
+        expect(within(locationsRoot).queryByLabelText('Location')).not.toBeInTheDocument();
     });
 
     it('Dashboard and Menu pages represent the current real menu catalog behavior', async () => {
@@ -394,7 +429,8 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
         await user.click(within(nav).getByRole('link', { name: 'Menus' }));
 
         const menuRoot = document.querySelector('#section-menu') as HTMLElement;
-        expect(within(menuRoot).getByTestId('menu-catalog-workspace')).toBeInTheDocument();
+        // FF-137: bölüm `lazy` ile iniyor — tıklamadan sonra bir tık beklenir.
+        expect(await within(menuRoot).findByTestId('menu-catalog-workspace')).toBeInTheDocument();
         expect(within(menuRoot).getByTestId('menu-catalog-workspace')).toHaveAttribute(
             'data-location-id',
             String(LOCATION_ID),
@@ -638,18 +674,22 @@ describe('WorkspaceApp — six real admin page modules (S1-WP01A, LIVE_SIX_PAGE_
             address_line1: 'Halaskargazi Cd. 9',
         });
 
-        expect(scope.getByText('Kadıköy')).toBeInTheDocument();
-        expect(scope.getByText('Beşiktaş')).toBeInTheDocument();
-        expect(scope.getByText('Şişli')).toBeInTheDocument();
+        /*
+            SUNUCUNUN DÖNDÜRDÜĞÜ ŞUBE IZGARAYA EKLENİR — `docs/109` §6.4.
 
-        const locationSelect = scope.getByLabelText('Location') as HTMLSelectElement;
-        expect(Array.from(locationSelect.options).map((option) => option.value)).toEqual(
-            expect.arrayContaining([
-                String(LOCATION_ID),
-                String(SECOND_LOCATION_ID),
-                String(THIRD_LOCATION_ID),
-            ]),
-        );
+            Ekran kart ızgarasına geçti; eskiden burada sayfanın kendi
+            "Location" açılır listesi sınanıyordu. O liste üst çubuktaki
+            bağlam seçicisinin (`WorkspaceContextControls`) kopyasıydı ve
+            kaldırıldı. Sınanan sözleşme aynı kaldı: yeni şube uydurulmadan,
+            sunucunun döndürdüğü hâliyle listeye katılır ve eskiler kaybolmaz.
+        */
+        const cards = scope.getAllByTestId('brand-location-row');
+        expect(cards).toHaveLength(3);
+        expect(cards.map((card) => within(card).getByRole('heading').textContent)).toEqual([
+            'Kadıköy',
+            'Beşiktaş',
+            'Şişli',
+        ]);
     });
 
     // Bu test eskiden BUNUN TERSİNİ donduruyordu: altı sayfanın HER BİRİ

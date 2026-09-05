@@ -68,6 +68,26 @@ msgstr "Print your QR codes"
 msgid "dashboard.now.region"
 msgstr "What to do now"
 
+#: dashboard:dashboard.quick.hide
+msgid "dashboard.quick.hide"
+msgstr "Hide / sold out"
+
+#: dashboard:dashboard.quick.photo
+msgid "dashboard.quick.photo"
+msgstr "Add a photo"
+
+#: dashboard:dashboard.quick.price
+msgid "dashboard.quick.price"
+msgstr "Change a price"
+
+#: dashboard:dashboard.quick.qr
+msgid "dashboard.quick.qr"
+msgstr "Download a QR code"
+
+#: dashboard:dashboard.quick.region
+msgid "dashboard.quick.region"
+msgstr "Quick actions"
+
 #: dashboard:dashboard.setup.brand
 msgid "dashboard.setup.brand"
 msgstr "Brand"
@@ -156,9 +176,17 @@ msgstr "Not done yet"
 msgid "dashboard.setup.toggle"
 msgstr "Show the steps"
 
+#: dashboard:dashboard.stats.allVisible
+msgid "dashboard.stats.allVisible"
+msgstr "All visible"
+
 #: dashboard:dashboard.stats.categories
 msgid "dashboard.stats.categories"
 msgstr "Categories"
+
+#: dashboard:dashboard.stats.hidden
+msgid "dashboard.stats.hidden"
+msgstr "{count} hidden"
 
 #: dashboard:dashboard.stats.items
 msgid "dashboard.stats.items"
@@ -167,6 +195,50 @@ msgstr "Menu items"
 #: dashboard:dashboard.stats.visible
 msgid "dashboard.stats.visible"
 msgstr "Visible items"
+
+#: dashboard:dashboard.suggestions.dismiss
+msgid "dashboard.suggestions.dismiss"
+msgstr "Dismiss this suggestion"
+
+#: dashboard:dashboard.suggestions.heading
+msgid "dashboard.suggestions.heading"
+msgstr "{count} suggestion from your measurements"
+
+#: dashboard:dashboard.suggestions.heading.plural
+msgid "dashboard.suggestions.heading.plural"
+msgstr "{count} suggestions from your measurements"
+
+#: dashboard:dashboard.suggestions.region
+msgid "dashboard.suggestions.region"
+msgstr "Suggestions"
+
+#: dashboard:dashboard.suggestions.rule
+msgid "dashboard.suggestions.rule"
+msgstr "It suggests, you approve. Nothing changes without your approval."
+
+#: dashboard:dashboard.suggestions.search.cta
+msgid "dashboard.suggestions.search.cta"
+msgstr "Open the menu"
+
+#: dashboard:dashboard.suggestions.search.title
+msgid "dashboard.suggestions.search.title"
+msgstr "“{term}” was searched {count} times but is not on the menu"
+
+#: dashboard:dashboard.suggestions.search.why
+msgid "dashboard.suggestions.search.why"
+msgstr "Searches with no results · last 30 days"
+
+#: dashboard:dashboard.suggestions.unviewed.cta
+msgid "dashboard.suggestions.unviewed.cta"
+msgstr "Review the item"
+
+#: dashboard:dashboard.suggestions.unviewed.title
+msgid "dashboard.suggestions.unviewed.title"
+msgstr "{name} has not been opened once in the last 30 days"
+
+#: dashboard:dashboard.suggestions.unviewed.why
+msgid "dashboard.suggestions.unviewed.why"
+msgstr "Menu engineering · never viewed"
 
 #: dashboard:dashboard.table.caption
 msgid "dashboard.table.caption"
@@ -183,3 +255,31 @@ msgstr "Visible"
 #: dashboard:dashboard.table.heading
 msgid "dashboard.table.heading"
 msgstr "Menu at a glance"
+
+#: dashboard:dashboard.topViewed.all
+msgid "dashboard.topViewed.all"
+msgstr "See all"
+
+#: dashboard:dashboard.topViewed.column.item
+msgid "dashboard.topViewed.column.item"
+msgstr "Item"
+
+#: dashboard:dashboard.topViewed.column.price
+msgid "dashboard.topViewed.column.price"
+msgstr "Price"
+
+#: dashboard:dashboard.topViewed.column.rank
+msgid "dashboard.topViewed.column.rank"
+msgstr "#"
+
+#: dashboard:dashboard.topViewed.column.viewers
+msgid "dashboard.topViewed.column.viewers"
+msgstr "viewers"
+
+#: dashboard:dashboard.topViewed.heading
+msgid "dashboard.topViewed.heading"
+msgstr "Most viewed in the last 30 days"
+
+#: dashboard:dashboard.topViewed.noPrice
+msgid "dashboard.topViewed.noPrice"
+msgstr "—"

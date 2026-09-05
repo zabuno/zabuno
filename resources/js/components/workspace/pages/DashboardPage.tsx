@@ -5,6 +5,10 @@ import { OpsCard } from '../../ops/OpsCard';
 import type { DataTableColumn } from '../../catalog/data-display/compound/ResponsiveDataTable';
 import { DashboardSetupJourney } from './dashboard/DashboardSetupJourney';
 import { DashboardGreeting } from './dashboard/DashboardGreeting';
+import { DashboardSuggestions } from './dashboard/DashboardSuggestions';
+import { DashboardQuickActions } from './dashboard/DashboardQuickActions';
+import { DashboardTopViewed } from './dashboard/DashboardTopViewed';
+import { useMenuInsights } from './dashboard/useMenuInsights';
 import type { BrandProfile } from '../BrandEditForm';
 import type { LocationProfile } from '../LocationEditForm';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
@@ -73,6 +77,29 @@ export function DashboardPage({
     onNavigateToSection,
     noviceHome = true,
 }: DashboardPageProps) {
+    /*
+        Ölçüm BİR KEZ okunur ve iki bölüm onu paylaşır (`docs/109` §6.1):
+        öneriler de "en çok bakılanlar" da aynı olgunun iki yüzüdür. İki ayrı
+        istek atsaydık, aralarına giren tek bir görüntülenme öneriyi tabloyla
+        çelişir hâle getirir ve sahip hangisine inanacağını bilemezdi.
+    */
+    const insights = useMenuInsights(workspaceId);
+
+    const menuItemCount = dashboardMenuTree
+        ? dashboardMenuTree.categories.reduce(
+              (total, category) => total + category.menuItems.length,
+              0,
+          )
+        : 0;
+    const visibleItemCount = dashboardMenuTree
+        ? dashboardMenuTree.categories.reduce(
+              (total, category) =>
+                  total + category.menuItems.filter((item) => item.isVisible).length,
+              0,
+          )
+        : 0;
+    const hiddenItemCount = menuItemCount - visibleItemCount;
+
     return (
         <div id="section-dashboard">
             {/*
@@ -100,6 +127,24 @@ export function DashboardPage({
                     noviceHome={noviceHome}
                 />
 
+                {/*
+                    ÖLÇÜMDEN ÇIKAN ÖNERİLER — kaynağın Home'unda "Şimdi"
+                    kartının hemen altında (`docs/109` §6.1). Ölçüm
+                    okunamadıysa bölüm kendini çizmez; karar bileşenin
+                    içindedir, çünkü "veri var mı" sorusunu ancak veriyi
+                    okuyan cevaplayabilir.
+                */}
+                <DashboardSuggestions
+                    insights={insights}
+                    onNavigateToSection={onNavigateToSection}
+                />
+
+                {/*
+                    Kurulum kartı "ilk gün"ün listesidir ve bir kez biter;
+                    bu dört karo "her gün"ün listesidir ve hiç bitmez.
+                */}
+                <DashboardQuickActions onNavigateToSection={onNavigateToSection} />
+
                 {dashboardMenuTree ? (
                     <>
                         {/*
@@ -114,26 +159,46 @@ export function DashboardPage({
                                 label={t('dashboard.stats.categories')}
                                 value={dashboardMenuTree.categories.length}
                             />
+                            {/*
+                                DESTEK SATIRI, kaynağın "delta" yuvası
+                                (`docs/109` §1). Kaynak oraya bir geçmiş dönem
+                                karşılaştırması yazıyor ("%12 · geçen
+                                perşembe"); depoda o karşılaştırma ÖLÇÜLMÜYOR
+                                (`analytics_events` üzerinde günlük seri ya da
+                                önceki dönem sorgusu yok) ve uydurulmuyor.
+                                Yerine aynı sayının gerçek bileşimi duruyor:
+                                kaç ürün gizli. Sıfırken cümle olumsuzlanmaz —
+                                "0 gizli" okuyana bir eksiklik ima eder.
+                            */}
                             <StatCard
                                 label={t('dashboard.stats.items')}
-                                value={dashboardMenuTree.categories.reduce(
-                                    (total, category) => total + category.menuItems.length,
-                                    0,
-                                )}
+                                value={menuItemCount}
+                                support={
+                                    hiddenItemCount > 0
+                                        ? t('dashboard.stats.hidden', {
+                                              count: String(hiddenItemCount),
+                                          })
+                                        : t('dashboard.stats.allVisible')
+                                }
                             />
                             <StatCard
                                 label={t('dashboard.stats.visible')}
-                                value={`${dashboardMenuTree.categories.reduce(
-                                    (total, category) =>
-                                        total +
-                                        category.menuItems.filter((item) => item.isVisible).length,
-                                    0,
-                                )} / ${dashboardMenuTree.categories.reduce(
-                                    (total, category) => total + category.menuItems.length,
-                                    0,
-                                )}`}
+                                value={`${visibleItemCount} / ${menuItemCount}`}
                             />
                         </div>
+
+                        {/*
+                            Home'un tek "dışarıdan gelen haber"i: misafirin
+                            gözü menüde nereye gidiyor. Üstteki sayaçlar
+                            sahibin zaten bildiğini söyler, bu tablo
+                            bilmediğini.
+                        */}
+                        <DashboardTopViewed
+                            insights={insights}
+                            dashboardMenuTree={dashboardMenuTree}
+                            onNavigateToSection={onNavigateToSection}
+                        />
+
                         <OpsCard title={t('dashboard.table.heading')} padded={false}>
                             <ResponsiveDataTable<DashboardMenuItemTableRow>
                                 caption={t('dashboard.table.caption')}

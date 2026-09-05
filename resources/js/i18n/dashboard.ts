@@ -68,6 +68,62 @@ const en = {
     'dashboard.setup.published': 'Published #{id}',
     'dashboard.setup.qr.activeCount': '{count} active QR',
     'dashboard.setup.qr.activeCount.plural': '{count} active QRs',
+    /*
+        ÖLÇÜMDEN ÇIKAN ÖNERİLER (`docs/109` §6.1).
+
+        Kaynak bu bölüme "AI önerileri" diyor. Burada öyle DENMİYOR ve sebebi
+        bir üslup tercihi değil: depoda bağlı bir AI sağlayıcısı yok
+        (`lib/aiAssistState.ts` sabit `disconnected`). Bir modelin yazmadığı
+        cümleyi "AI önerisi" diye sunmak, olmayan bir yeteneği satmaktır.
+
+        Cümlelerin kendisi ölçümü ADRES GÖSTERİR ("son 30 gün", "hiç
+        bakılmayan"): sahibin menüsünü değiştirmesini isteyen bir satır,
+        neye dayandığını söylemek zorundadır.
+    */
+    'dashboard.suggestions.region': 'Suggestions',
+    'dashboard.suggestions.heading': '{count} suggestion from your measurements',
+    'dashboard.suggestions.heading.plural': '{count} suggestions from your measurements',
+    // Kaynağın değişmez cümlesi (`docs/109` §3).
+    'dashboard.suggestions.rule':
+        'It suggests, you approve. Nothing changes without your approval.',
+    'dashboard.suggestions.search.title':
+        '“{term}” was searched {count} times but is not on the menu',
+    'dashboard.suggestions.search.why': 'Searches with no results · last 30 days',
+    'dashboard.suggestions.search.cta': 'Open the menu',
+    'dashboard.suggestions.unviewed.title': '{name} has not been opened once in the last 30 days',
+    'dashboard.suggestions.unviewed.why': 'Menu engineering · never viewed',
+    'dashboard.suggestions.unviewed.cta': 'Review the item',
+    'dashboard.suggestions.dismiss': 'Dismiss this suggestion',
+    /*
+        HIZLI EYLEMLER (`docs/109` §6.2). Etiketler FİİLLE başlar: bir karo
+        neyin sayfası olduğunu değil, sahibin orada ne yapacağını söyler.
+    */
+    'dashboard.quick.region': 'Quick actions',
+    'dashboard.quick.price': 'Change a price',
+    'dashboard.quick.hide': 'Hide / sold out',
+    'dashboard.quick.qr': 'Download a QR code',
+    'dashboard.quick.photo': 'Add a photo',
+    /*
+        EN ÇOK BAKILANLAR. Başlık ARALIĞI taşır: ölçülen aralığı gizleyen bir
+        tablo, okuyanın "bugün" sandığı bir liste üretir ve yanlış bir bugüne
+        karar verdirir.
+    */
+    'dashboard.topViewed.heading': 'Most viewed in the last 30 days',
+    'dashboard.topViewed.all': 'See all',
+    'dashboard.topViewed.column.rank': '#',
+    'dashboard.topViewed.column.item': 'Item',
+    'dashboard.topViewed.column.viewers': 'viewers',
+    'dashboard.topViewed.column.price': 'Price',
+    'dashboard.topViewed.noPrice': '—',
+    /*
+        Sayacın ALTINDAKİ satır. Kaynak burada bir "delta" tutuyor ("%12 ·
+        geçen perşembe"); depoda geçmiş dönem karşılaştırması ÖLÇÜLMÜYOR ve
+        uydurulmuyor. Yerine aynı sayının gerçek bileşimi yazılıyor: kaç ürün
+        gizli. Bu, ölçülen bir olgudur ve tıpkı delta gibi sayının tek başına
+        söylemediğini söyler.
+    */
+    'dashboard.stats.hidden': '{count} hidden',
+    'dashboard.stats.allVisible': 'All visible',
 } as const;
 
 type TranslationKey = keyof typeof en;

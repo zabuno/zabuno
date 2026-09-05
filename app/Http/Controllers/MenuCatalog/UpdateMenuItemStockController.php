@@ -39,7 +39,15 @@ final class UpdateMenuItemStockController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        if (! $this->authorization->can($userId, Permission::MenuManage, $workspace)) {
+        /*
+            DAR İZİN — `menu.manage` DEĞİL (`docs/109` §6.4, Mutfak rolü).
+
+            "Bugün bitti" menüyü değiştirmez; donmuş menünün üstüne konan bir
+            tebeşir notudur ve ertesi gün zaten silinir. Bu işi geniş menü
+            yönetimine bağlamak, akşam servisinde balığın bittiğini bilen
+            tek kişiye fiyat yetkisi de vermek demekti.
+        */
+        if (! $this->authorization->can($userId, Permission::MenuStockManage, $workspace)) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 

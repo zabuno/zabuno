@@ -67,7 +67,14 @@ describe('BrandPage — honest loading state before the brand has arrived', () =
     });
 
     it('shows a real loading status and renders no brand edit form or fake brand data when brand is null', () => {
-        render(<BrandPage workspaceId={61} brand={null} onSaved={vi.fn()} />);
+        render(
+            <BrandPage
+                workspaceId={61}
+                brand={null}
+                onSaved={vi.fn()}
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
 
         const loadingStatus = screen
             .getAllByRole('status')
@@ -79,7 +86,14 @@ describe('BrandPage — honest loading state before the brand has arrived', () =
     });
 
     it('delegates to the real BrandEditForm once a brand is loaded, replacing the loading status', () => {
-        render(<BrandPage workspaceId={61} brand={makeBrand()} onSaved={vi.fn()} />);
+        render(
+            <BrandPage
+                workspaceId={61}
+                brand={makeBrand()}
+                onSaved={vi.fn()}
+                onNavigateToMedia={vi.fn()}
+            />,
+        );
 
         // Niyet aynı: marka geldiğinde yükleniyor durumu KALMAZ.
         //
@@ -103,7 +117,12 @@ describe('BrandPage — fluid-first markup', () => {
         setViewport(320, 480);
 
         const { container } = render(
-            <BrandPage workspaceId={61} brand={makeBrand()} onSaved={vi.fn()} />,
+            <BrandPage
+                workspaceId={61}
+                brand={makeBrand()}
+                onSaved={vi.fn()}
+                onNavigateToMedia={vi.fn()}
+            />,
         );
 
         const root = container.querySelector('#section-brand') as HTMLElement;

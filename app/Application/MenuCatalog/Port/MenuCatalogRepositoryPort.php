@@ -11,14 +11,18 @@ use App\Application\MenuCatalog\Dto\MenuEntrySummary;
 use App\Application\MenuCatalog\Dto\MenuItemSummary;
 use App\Application\MenuCatalog\Dto\ProductSummary;
 use App\Application\MenuCatalog\Dto\TaxonomyTermSummary;
-use App\Application\MenuCatalog\Exception\DuplicateLocationMenuException;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
 use InvalidArgumentException;
 
 interface MenuCatalogRepositoryPort
 {
     /**
-     * @throws DuplicateLocationMenuException
+     * Şubeye YENİ bir menü ekler.
+     *
+     * 2026-09-05'e kadar burada bir "şube başına tek menü" kilidi vardı ve
+     * ikinci çağrı `DuplicateLocationMenuException` ile reddedilirdi. Sahip
+     * o gün açıkça soruldu ve çoklu menüyü seçti (`docs/109` §7.1); kilit
+     * bir kusur değil, o günün ürün kapsamıydı ve kapsam genişledi.
      */
     public function createDraftMenu(int $workspaceId, int $locationId, string $name): MenuDraftSummary;
 

@@ -8,6 +8,10 @@ type BrandLogoRegionProps = {
     workspaceId: number;
     /** Sunucunun söylediği mevcut bağ; `null` = logo yok. */
     initialMediaAssetId: number | null;
+    /** Logo yokken gösterilen baş harf — markanın adından gelir. */
+    fallbackInitial: string;
+    /** "Değiştir" kullanıcıyı dosyanın evine, Medya ekranına götürür. */
+    onNavigateToMedia: () => void;
 };
 
 type ReadyMediaRow = {
@@ -15,21 +19,36 @@ type ReadyMediaRow = {
     altText: string;
     slot: string;
     status: string;
+    previewUrl?: string | null;
 };
 
 /**
- * Marka logosu — `docs/98` FF-64.
+ * Marka logosu — `docs/98` FF-64 + kanonik kaynak (`panel.dc.html` >
+ * "Ayarlar" > "Marka").
  *
  * Arka uç (`PUT .../brand/logo`, `docs/77`) 2026-08-29'dan beri vardı ve
  * misafir menüsünün başlığında logoyu gösteriyordu; ama onu BAĞLAYAN bir
  * ekran hiç olmadı. Sahip logoyu Media sayfasına yükleyebiliyor, markasına
  * takamıyordu.
  *
- * Yükleme burada YENİDEN YAPILMAZ: Media sayfasındaki `logo` slotuna
- * yüklenmiş, işlenmesi bitmiş görseller listelenir ve biri seçilir —
- * ürün fotoğrafı seçiciyle aynı desen (`MenuCatalogWorkspace`).
+ * LOGO SATIRI EN ÜSTTE (docs/109). Kaynak Marka sekmesinin başına bir satır
+ * koyuyor: kare bir önizleme (logo ya da baş harf), "Logo", kaynağın cümlesi
+ * ve bir "Değiştir" düğmesi. Depoda bu bölüm sekmenin DİBİNDE duran bir
+ * açılır listeydi ve sahip logosunu görmeden seçiyordu — yanlış dosyayı
+ * bağladığını ancak misafir menüsü yayınlandıktan sonra fark ediyordu.
+ * Sıra artık kaynağınki: önce BUGÜN NE OLDUĞU, sonra değiştirme yolu.
+ *
+ * Yükleme burada YENİDEN YAPILMAZ: "Değiştir" Medya ekranına götürür.
+ * Seçici satırın altında kalır çünkü ürünün gerçek bağlama yolu odur —
+ * Medya ekranında "bunu logo yap" diye bir eylem yok. Kaynağın düzenini
+ * seçiciyi silerek uygulamak, yeteneği yok ederdi (docs/109 §4 madde 3).
  */
-export function BrandLogoRegion({ workspaceId, initialMediaAssetId }: BrandLogoRegionProps) {
+export function BrandLogoRegion({
+    workspaceId,
+    initialMediaAssetId,
+    fallbackInitial,
+    onNavigateToMedia,
+}: BrandLogoRegionProps) {
     const [media, setMedia] = useState<ReadyMediaRow[] | null>(null);
     const [choice, setChoice] = useState(
         initialMediaAssetId === null ? '' : String(initialMediaAssetId),
@@ -104,16 +123,52 @@ export function BrandLogoRegion({ workspaceId, initialMediaAssetId }: BrandLogoR
     );
 
     const dirty = (choice === '' ? null : Number(choice)) !== saved;
+    const bound = saved === null ? null : (media?.find((row) => row.id === saved) ?? null);
+    const boundPreviewUrl = bound?.previewUrl ?? null;
 
     return (
         <section
             aria-labelledby="brand-logo-heading"
-            className="mt-6 flex flex-col gap-3 border-t border-border pt-6"
+            className="flex flex-col gap-[var(--space-3)]"
         >
-            <h3 id="brand-logo-heading" className="text-body font-bold text-fg">
-                {t('workspace.brand.logo.heading')}
-            </h3>
-            <p className="text-body text-fg-secondary">{t('workspace.brand.logo.help')}</p>
+            {/*
+                KAYNAĞIN LOGO SATIRI: kare önizleme + ad + cümle + "Değiştir".
+                320 pikselde alt alta düşer (`flex-wrap`), çünkü 72 piksellik
+                kare ile üç satır metin dar bir telefonda yan yana sığmaz.
+            */}
+            <div className="flex flex-wrap items-center gap-[var(--space-4)]">
+                {boundPreviewUrl === null ? (
+                    <span
+                        aria-hidden="true"
+                        data-testid="brand-logo-fallback"
+                        className="grid h-[4.5rem] w-[4.5rem] shrink-0 place-items-center rounded-[var(--radius-lg)] bg-action text-section font-bold text-action-fg"
+                    >
+                        {fallbackInitial}
+                    </span>
+                ) : (
+                    <img
+                        src={boundPreviewUrl}
+                        alt={bound?.altText || t('workspace.brand.logo.heading')}
+                        className="h-[4.5rem] w-[4.5rem] shrink-0 rounded-[var(--radius-lg)] border border-border object-cover"
+                    />
+                )}
+
+                <div className="flex flex-col gap-[var(--space-2)]">
+                    <h3 id="brand-logo-heading" className="text-body font-bold text-fg">
+                        {t('workspace.brand.logo.heading')}
+                    </h3>
+                    <p className="text-body text-fg-secondary">
+                        {t('workspace.settings.logo.help')}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={onNavigateToMedia}
+                        className="min-h-[var(--control-height)] self-start rounded-md border border-border px-[var(--space-3)] py-[var(--space-2)] text-body font-medium text-fg hover:bg-surface-hover"
+                    >
+                        {t('workspace.settings.logo.change')}
+                    </button>
+                </div>
+            </div>
 
             {media === null ? (
                 <p role="status" className="text-body text-fg-muted">

@@ -28,7 +28,19 @@ final class UpdateMenuItemAllergensController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        if (! $this->authorization->can($userId, Permission::MenuManage, $workspace)) {
+        /*
+            DAR İZİN — `menu.manage` DEĞİL (`docs/109` §6.4, Mutfak rolü).
+
+            Alerjen bilgisini düzeltmek menüyü yeniden yazmak değildir: fiyat
+            değişmez, ürün eklenmez, hiçbir şey silinmez. Burada geniş izni
+            aramak, mutfaktaki insana alerjeni açmanın tek yolunu "bütün
+            menünün fiyatlarını da aç" yapardı.
+
+            Bu bir GEVŞETME değildir: `menu.allergens.manage` bugün
+            Owner/Manager/Editor'ün de listesinde ve `Member` onu taşımıyor,
+            yani dünkü davranış aynen duruyor.
+        */
+        if (! $this->authorization->can($userId, Permission::MenuAllergensManage, $workspace)) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 

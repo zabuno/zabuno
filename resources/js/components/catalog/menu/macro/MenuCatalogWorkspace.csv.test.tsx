@@ -66,7 +66,24 @@ async function renderWorkspace(importResponse: { status: number; body: unknown }
     render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
     await screen.findByRole('heading', { name: 'Kebaplar' });
 
-    return { calls, user: userEvent.setup() };
+    const user = userEvent.setup();
+
+    /*
+        CSV KUTUSU ARTIK ÜST ŞERİTTEKİ DÜĞMENİN AÇTIĞI BİR PANEL.
+
+        Kanonik kaynak (`panel.dc.html` satır 30206) "CSV"yi başlığın
+        yanında, her zaman görünür bir eylem olarak gösterir; kutunun kendisi
+        ancak basılınca açılır. Öncesinde tersiydi: eylem kapalı bir
+        `<details>` içindeydi, yani sahip CSV'den menü aktarabileceğini
+        ancak o kutuyu açarsa öğrenebiliyordu.
+
+        Bu testin İDDİASI değişmedi — indirme bağlantısı, aktarım raporu ve
+        hata yolu aynen sınanıyor. Değişen tek şey, onlara ulaşmak için
+        önce paneli açmak gerekmesi.
+    */
+    await user.click(screen.getByRole('button', { name: 'CSV' }));
+
+    return { calls, user };
 }
 
 function csvFile(): File {

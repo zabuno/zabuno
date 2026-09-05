@@ -72,8 +72,18 @@ final class RolePermissionMappingTest extends TestCase
 
         self::assertSame('media.manage', Permission::MediaManage->value);
         self::assertSame('media.download_original', Permission::MediaDownloadOriginal->value);
-        // FF-71 (docs/49 Faz 7 madde 3): iki medya izni eklendi. 13 → 15.
-        self::assertCount(15, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak on beş permission tanımlar (on üç çekirdek + media.manage + media.download_original) — ek permission eklenmemeli.');
+        self::assertSame('menu.allergens.manage', Permission::MenuAllergensManage->value);
+        self::assertSame('menu.stock.manage', Permission::MenuStockManage->value);
+        /*
+            FF-71 (docs/49 Faz 7 madde 3): iki medya izni eklendi. 13 → 15.
+
+            Mutfak rolü (`docs/109` §6.4): `menu.manage`'in içinden iki DAR
+            eksen çıkarıldı — alerjen ve "bugün bitti". 15 → 17. Yeni bir
+            yetki doğmadı, var olan bir yetki bölündü: `menu.manage` taşıyan
+            her rol ikisini de taşımaya devam ediyor, ama artık sahip
+            "alerjeni düzeltsin, fiyata dokunmasın" diyebiliyor.
+        */
+        self::assertCount(17, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak on yedi permission tanımlar (on üç çekirdek + iki medya + menu.allergens.manage + menu.stock.manage) — ek permission eklenmemeli.');
         self::assertContains('workspace.view', $values);
         self::assertContains('workspace.manage', $values);
         self::assertContains('menu.view', $values);
@@ -110,7 +120,11 @@ final class RolePermissionMappingTest extends TestCase
         self::assertContains(Permission::SecurityEvidenceView, $permissions, 'ROLE-MAP-OWNER-01: Owner security.evidence.view yetkisine sahip olmalı (owner-only SecurityEvidenceView, already-shipped MASTER contract).');
         self::assertContains(Permission::MediaManage, $permissions);
         self::assertContains(Permission::MediaDownloadOriginal, $permissions);
-        self::assertCount(15, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak on beş permission taşımalı (bounded scope dışında ek yetki yok).');
+        // Mutfak rolüyle gelen iki dar menü izni Owner'da da vardır: bir rol
+        // eklenirken sahibin yapabildiği hiçbir şey elinden alınmaz.
+        self::assertContains(Permission::MenuAllergensManage, $permissions);
+        self::assertContains(Permission::MenuStockManage, $permissions);
+        self::assertCount(17, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak on yedi permission taşımalı (bounded scope dışında ek yetki yok).');
     }
 
     // --- CORE03-ROLE-MAP-MEMBER-01 ----------------------------------------

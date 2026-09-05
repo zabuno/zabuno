@@ -195,7 +195,10 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
             expect(calledUrls).toContain(`/api/workspaces/${WORKSPACE_ID}/brand`);
         });
 
-        expect(document.getElementById('section-dashboard')).toBeInTheDocument();
+        // FF-137: bölüm `lazy` ile iniyor — çizilmesi için bir tık beklenir.
+        await waitFor(() => {
+            expect(document.getElementById('section-dashboard')).toBeInTheDocument();
+        });
         expect(screen.queryByTestId('brand-onboarding-form')).not.toBeInTheDocument();
 
         vi.unstubAllGlobals();
@@ -367,7 +370,21 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         vi.unstubAllGlobals();
     });
 
-    it('renders an accessible Location combobox on the Locations page for multiple locations, defaults to the first location, and switches MenuCatalogWorkspace locationId on Menu when the user selects the second option', async () => {
+    /**
+     * ŞUBE SEÇİCİ ÜST ÇUBUĞA AİT — `docs/109` §6.4, kaynak `panel.dc.html`
+     * (`data-screen-label="Şubeler"`).
+     *
+     * Aynı seçim iki yerde duruyordu: sayfanın içinde bir açılır liste ve üst
+     * çubukta `WorkspaceContextControls`. Kaynağın Şubeler ekranı kart
+     * ızgarasıdır ve içinde seçici yoktur; sayfadaki kopya aynı işi ikinci kez
+     * gösteriyordu.
+     *
+     * Sınanan sözleşme DEĞİŞMEDİ: birden çok şubesi olan bir markada seçim
+     * erişilebilir bir kontrolle yapılır, ilk şube varsayılandır ve seçimi
+     * değiştirmek menü ekranını o şubeye çevirir. Yalnız kontrolün yeri
+     * ekranın içinden üst çubuğa taşındı.
+     */
+    it('exposes one accessible current-location control in the top bar, defaults to the first location, and switches MenuCatalogWorkspace locationId on Menu when the user picks the second', async () => {
         const user = userEvent.setup();
         const firstLocation = makeLocation({ id: 5101, display_name: 'Kadıköy Şubesi' });
         const secondLocation = makeLocation({ id: 5102, display_name: 'Beşiktaş Şubesi' });
@@ -395,15 +412,19 @@ describe('WorkspaceApp — current workspace brand/location catalog routing (S1-
         }
         const locationsPageScope = within(locationsPage);
 
-        const locationCombobox = locationsPageScope.getByRole('combobox', { name: /location/i });
+        // Ekranın kendisi artık bir kart ızgarasıdır ve seçiciyi TAŞIMAZ.
+        expect(locationsPageScope.queryByRole('combobox', { name: /location/i })).toBeNull();
+        expect(locationsPageScope.getAllByTestId('brand-location-row')).toHaveLength(2);
 
-        const firstOption = locationsPageScope.getByRole('option', {
-            name: new RegExp(`^${firstLocation.display_name}`),
+        const locationCombobox = screen.getByRole('combobox', { name: 'Current location' });
+
+        const firstOption = within(locationCombobox).getByRole('option', {
+            name: firstLocation.display_name,
         });
         expect(firstOption).toHaveValue(String(firstLocation.id));
 
-        const secondOption = locationsPageScope.getByRole('option', {
-            name: new RegExp(`^${secondLocation.display_name}`),
+        const secondOption = within(locationCombobox).getByRole('option', {
+            name: secondLocation.display_name,
         });
         expect(secondOption).toHaveValue(String(secondLocation.id));
 

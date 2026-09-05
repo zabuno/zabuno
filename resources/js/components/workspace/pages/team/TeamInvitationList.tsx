@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 export type TeamInvitation = {
     id: number;
@@ -52,6 +52,7 @@ export function TeamInvitationList({
     cancelSuccessText,
     cancelRetryText,
 }: TeamInvitationListProps) {
+    const headingId = useId();
     const [rowStages, setRowStages] = useState<Record<number, RowStage>>({});
     const [committedRows, setCommittedRows] = useState<Record<number, boolean>>({});
     const [announcement, setAnnouncement] = useState<string | null>(null);
@@ -104,8 +105,20 @@ export function TeamInvitationList({
     }
 
     return (
-        <div role="region" aria-label={label} className="flex flex-col gap-3">
-            <p className="text-body font-semibold text-fg">{label}</p>
+        <div role="region" aria-labelledby={headingId} className="flex flex-col gap-3">
+            {/*
+                BAŞLIK GÖRÜNÜR VE BÖLGENİN ADIDIR (`docs/109` §6.4, kaynağın
+                "Bekleyen davetler" kart başlığı).
+
+                Önce iki ayrı ad vardı: görünmez bir `aria-label` ve onunla
+                aynı metni yazan bir paragraf. Aynı şeyi iki kez söylemekten
+                başka, paragraf `font-semibold` taşıyordu — AEP ölçeğinde
+                izinli ağırlıklar 400/500/700'dür ve 600, Roboto'da ayrı bir
+                kesim olmadığı için tarayıcı tarafından SENTEZLENİYORDU.
+            */}
+            <h2 id={headingId} className="text-body font-bold text-fg">
+                {label}
+            </h2>
 
             {status === 'loading' && (
                 <p role="status" className="text-body text-fg-muted">

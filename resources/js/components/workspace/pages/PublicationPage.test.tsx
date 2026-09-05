@@ -373,10 +373,25 @@ describe('PublicationPage — real synchronous publication (PUBLICATION_REAL_RED
 
             Yeni sözleşme daha güçlü: böyle bir kontrol HİÇ YOK ve yapılmamış
             özelliği duyuran cümle de yok.
+
+            2026-09-05 — ÜÇÜNCÜ SATIR KALDIRILDI, GEREKÇESİYLE.
+
+            `queryByText(/scheduled/i)` satırı "zamanlanmış yayın YOKTUR"u
+            dondurmuş bir sözleşme sanılabilir; değildi. Onu doğuran gerçek
+            kural `docs/44`'tür: YAPILMAMIŞ bir özelliği ekranda gösterme.
+            O tarihte zamanlanmış yayın yapılmamıştı, bu yüzden "scheduled"
+            kelimesinin ekranda hiç geçmemesi doğru bir sonuçtu.
+
+            Sahibin 2026-09-05 kararıyla zamanlanmış yayın YAPILDI: tablo,
+            rota, atomik sahiplenme, iptal yolu ve dakikada bir çalışan komut
+            (`tests/Feature/Publication/ScheduledPublicationTest.php`).
+            Artık ekrandaki "Planla" bölgesi çalışan bir özelliği anlatıyor;
+            `docs/44` onu YASAKLAMAZ, tam tersine gerektirir. İlk iki satır
+            YERİNDE DURUYOR: devre dışı "yayın kipi" seçimi ve "henüz yok"
+            cümlesi hâlâ yasak — bugün de yoklar.
         */
         expect(screen.queryByLabelText(/publish mode/i)).toBeNull();
         expect(screen.queryByText(/publishing at a chosen time is not available yet/i)).toBeNull();
-        expect(screen.queryByText(/scheduled/i)).toBeNull();
 
         const expectedExportUrl = `/api/workspaces/${activeQrItem.workspaceId}/qr-codes/${activeQrItem.id}/export.png`;
 
@@ -1190,5 +1205,234 @@ describe('PublicationPage — current-publication load state (PUBLICATION_LOAD_S
             expect(within(statusRegion).getByText(/v5|version 5/i)).toBeInTheDocument();
         });
         expect(within(statusRegion).queryByRole('alert')).toBeNull();
+    });
+});
+
+/**
+ * PANEL V3 — "Yayınlama" ekranının kanonik kaynağa göre TAMAMLANMASI
+ * (`docs/reference/panel-v3/panel.dc.html`, `data-screen-label="Yayınlama"`;
+ * plan `docs/109` §6.6; sahibin 2026-09-05 kararı).
+ *
+ * Bu blok, ekranın kaynağa göre EKSİK olan parçalarını sayfa düzeyinde
+ * bağlar: adım çizgisi, yayınlanacak değişiklik listesi, hazırlık
+ * listesindeki "Düzelt", "Planla" ve "Telefonda önizle", ve üstteki
+ * "Yayında · v14" rozeti.
+ */
+describe('PublicationPage — panel v3 Yayınlama ekranı (PANEL_V3_PUBLICATION_RED)', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+
+    function publishedResponse() {
+        return {
+            id: 800,
+            workspaceId: 71,
+            menuId: 42,
+            locationId: 923,
+            version: 14,
+            state: 'published',
+            publishedAt: '2026-09-03T09:00:00Z',
+            snapshot: {
+                categories: [
+                    {
+                        name: 'Starters',
+                        menuItems: [
+                            {
+                                menuItemId: 101,
+                                productName: 'Kahve',
+                                priceMinorAmount: 4000,
+                                currencyCode: 'TRY',
+                            },
+                        ],
+                    },
+                ],
+            },
+        };
+    }
+
+    beforeEach(() => {
+        fetchSpy = vi.fn(async (url: string) => {
+            if (/publications\/current/.test(url)) {
+                return jsonResponse(200, publishedResponse());
+            }
+
+            if (/publications\/schedule$/.test(url)) {
+                return jsonResponse(200, {
+                    timeZone: 'Europe/Istanbul',
+                    pending: null,
+                    options: [{ key: 'tonight', scheduledFor: '2026-09-06T00:00:00.000000Z' }],
+                });
+            }
+
+            return jsonResponse(404, { message: 'Not found' });
+        });
+
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.restoreAllMocks();
+    });
+
+    it('adım çizgisini çizer ve sahibin hangi adımda olduğunu söyler', async () => {
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const stepper = await screen.findByRole('region', { name: /where you are/i });
+
+        expect(within(stepper).getAllByRole('listitem')).toHaveLength(3);
+        expect(within(stepper).getByText(/v14/)).toBeInTheDocument();
+    });
+
+    it('yayınlanacak değişikliği GERÇEK farktan üretir ve Yayınla düğmesinden ÖNCE gösterir', async () => {
+        /*
+            Fikstürdeki taslak Kahve'yi 42,50 ₺ tutuyor, yayındaki sürüm ise
+            40,00 ₺. Bu gerçek bir fiyat farkıdır ve listede tam olarak öyle
+            görünmelidir — sahip "şu an basarsam misafir ne görecek?"
+            sorusunun cevabını burada okur.
+        */
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const diff = await screen.findByRole('region', {
+            name: /changes waiting to be published/i,
+        });
+
+        expect(within(diff).getByText(/v14\s*→\s*v15/)).toBeInTheDocument();
+
+        const row = within(diff)
+            .getAllByRole('listitem')
+            .find((item) => /Kahve/.test(item.textContent ?? '')) as HTMLElement;
+
+        expect(row.textContent ?? '').toMatch(/40/);
+        expect(row.textContent ?? '').toMatch(/42/);
+        expect(row.textContent ?? '').toMatch(/Price/i);
+    });
+
+    it('üst rozet misafirin gördüğü SÜRÜMÜ yazar', async () => {
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        expect(await screen.findByText(/Live · v14/i)).toBeInTheDocument();
+    });
+
+    it('eksik hazırlık maddesinin yanındaki Düzelt, menü ekranına götürür', async () => {
+        const brokenTree = makeMenuTree();
+        brokenTree.categories[0].menuItems[0].productName = '';
+
+        const onNavigateToSection = vi.fn();
+
+        render(
+            <PublicationPage
+                workspaceId={71}
+                dashboardMenuTree={brokenTree}
+                onNavigateToSection={onNavigateToSection}
+            />,
+        );
+
+        const checklist = screen.getByRole('region', { name: /publish readiness checklist/i });
+        const fix = within(checklist).getAllByRole('button', { name: /^fix:/i })[0];
+
+        await userEvent.click(fix);
+
+        expect(onNavigateToSection).toHaveBeenCalledWith('menu');
+    });
+
+    it('tamamlanmış bir maddenin yanında Düzelt ÇİZMEZ', async () => {
+        render(
+            <PublicationPage
+                workspaceId={71}
+                dashboardMenuTree={makeMenuTree()}
+                onNavigateToSection={vi.fn()}
+            />,
+        );
+
+        const checklist = screen.getByRole('region', { name: /publish readiness checklist/i });
+
+        expect(within(checklist).queryAllByRole('button', { name: /^fix:/i })).toHaveLength(0);
+    });
+
+    it('Planla bölgesini çizer ve kuralı yazar: yeni sürüm alır, QR aynı kalır', async () => {
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const schedule = await screen.findByRole('region', { name: /schedule the publish/i });
+
+        expect(schedule.textContent ?? '').toMatch(/next version number/i);
+        expect(schedule.textContent ?? '').toMatch(/QR code stays the same/i);
+    });
+
+    it('Telefonda önizle bölgesini çizer ve adresin misafirin adresi OLMADIĞINI yazar', async () => {
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const preview = await screen.findByRole('region', { name: /preview on a phone/i });
+
+        expect(
+            within(preview).getByRole('button', { name: /open the preview link/i }),
+        ).toBeInTheDocument();
+        expect(preview.textContent ?? '').toMatch(/printed QR code/i);
+    });
+
+    it('taslak telefonda AÇILDIĞINDA adım çizgisi Önizleme adımına geçer', async () => {
+        /*
+            Adım çizgisi sahibin GERÇEKTEN yaptığı işi gösterir. Önizleme
+            düğmesinin ekranda durması bir kontrol değildir; telefonda açmak
+            kontroldür ve çizgi ancak o zaman ilerler.
+        */
+        const openSpy = vi.fn();
+        vi.stubGlobal('open', openSpy);
+
+        fetchSpy.mockImplementation(async (url: string) => {
+            if (/sanctum\/csrf-cookie/.test(url)) {
+                return jsonResponse(204, null);
+            }
+
+            if (/draft-preview-link/.test(url)) {
+                return jsonResponse(201, {
+                    url: 'https://example.test/menu-preview/71/42?expires=1&signature=abc',
+                    expiresAt: '2026-09-05T10:15:00+00:00',
+                });
+            }
+
+            if (/publications\/current/.test(url)) {
+                return jsonResponse(200, publishedResponse());
+            }
+
+            return jsonResponse(404, { message: 'Not found' });
+        });
+
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const previewRegion = await screen.findByRole('region', { name: /preview on a phone/i });
+
+        expect(
+            within(screen.getByRole('region', { name: /where you are/i })).getAllByRole(
+                'listitem',
+            )[0],
+        ).toHaveAttribute('aria-current', 'step');
+
+        await userEvent.click(
+            within(previewRegion).getByRole('button', { name: /open the preview link/i }),
+        );
+
+        await waitFor(() => {
+            const steps = within(
+                screen.getByRole('region', { name: /where you are/i }),
+            ).getAllByRole('listitem');
+
+            expect(steps[1]).toHaveAttribute('aria-current', 'step');
+        });
+    });
+
+    it('yalnız BİR onay kutusu ve BİR Yayınla düğmesi kalır', async () => {
+        /*
+            Yeni bölgeler eylem taşır ("Planla", "Telefonda önizle") ama
+            hiçbiri MENÜYÜ ŞU AN DEĞİŞTİRMEZ. Ekranın o tek eylemi hâlâ
+            tektir; iki "Yayınla" düğmesi, sahibin hangisine bastığını
+            bilmediği bir ekran demekti.
+        */
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        expect(
+            screen.getAllByRole('checkbox', { name: /reviewed the publish checklist/i }),
+        ).toHaveLength(1);
+        expect(screen.getAllByRole('button', { name: /^publish$/i })).toHaveLength(1);
     });
 });

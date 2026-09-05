@@ -1,6 +1,6 @@
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { desktopChrome } from '../../test/workspaceChrome';
 
@@ -318,8 +318,20 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
 
         await user.click(screen.getByRole('link', { name: 'Locations' }));
 
-        const locationSelect = screen.getByLabelText('Location') as HTMLSelectElement;
-        fireEvent.change(locationSelect, { target: { value: String(SECOND_LOCATION_ID) } });
+        /*
+            ŞUBE, KARTIN "MASALAR" DÜĞMESİYLE SEÇİLİR — `docs/109` §6.4,
+            kaynağın `goQr` bağlaması (`panel.dc.html`, "Şubeler").
+
+            Sayfa içindeki "Location" açılır listesi kaldırıldı: aynı seçim üst
+            çubukta (`WorkspaceContextControls`) zaten duruyordu. Yetenek
+            kaybolmadı, CÜMLEYE dönüştü — "bu şubenin masaları" demek, o şubeye
+            geçmek demektir.
+
+            Sınanan sözleşme aynı: seçim değişince menü ağacı yeni şubeden
+            okunur ve pano eski şubenin verisini göstermeye devam etmez.
+        */
+        // FF-137: Şubeler bölümü `lazy` iner; kart çizilene kadar beklenir.
+        fireEvent.click(await screen.findByRole('button', { name: 'Tables at Beşiktaş' }));
 
         await vi.waitFor(() => {
             expect(
@@ -394,8 +406,9 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
 
         expect(await screen.findByRole('heading', { name: 'Home' })).toBeInTheDocument();
 
+        await waitFor(() => expect(document.querySelector('#section-dashboard')).not.toBeNull());
+
         const dashboardDestination = document.querySelector('#section-dashboard') as HTMLElement;
-        expect(dashboardDestination).not.toBeNull();
 
         await screen.findByText('No menu has been created for this location yet.');
 
@@ -409,7 +422,10 @@ describe('WorkspaceApp — current workspace dashboard summary (S1-WP01A foundat
         const openMenu = within(dashboardDestination).getByRole('button', { name: 'Open Menu' });
         await userEvent.click(openMenu);
 
-        expect(screen.getByRole('main').querySelector('#section-menu')).not.toBeNull();
+        // FF-137: Menü bölümü `lazy` iner; hedef bölüm beklenir.
+        await waitFor(() => {
+            expect(screen.getByRole('main').querySelector('#section-menu')).not.toBeNull();
+        });
 
         expect(screen.queryByText('Loading your dashboard summary…')).not.toBeInTheDocument();
         expect(dashboardDestination.querySelector('table')).toBeNull();
