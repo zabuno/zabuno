@@ -21,6 +21,7 @@ use App\Http\Controllers\MenuCatalog\DeleteMenuServiceWindowController;
 use App\Http\Controllers\MenuCatalog\ExportMenuCsvController;
 use App\Http\Controllers\MenuCatalog\ImportMenuCsvController;
 use App\Http\Controllers\MenuCatalog\ListLocationMenusController;
+use App\Http\Controllers\MenuCatalog\ListMenuAuditsController;
 use App\Http\Controllers\MenuCatalog\RenameCategoryController;
 use App\Http\Controllers\MenuCatalog\RenameMenuController;
 use App\Http\Controllers\MenuCatalog\RenameMenuItemController;
@@ -171,4 +172,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::put('/workspaces/{workspace}/menu-categories/{category}/item-order', ReorderMenuItemsController::class);
     Route::put('/workspaces/{workspace}/menu/{menu}/category-order', ReorderCategoriesController::class);
+
+    /*
+        MENÜ DENETİM İZİ (FF-163) — "dün kebabın fiyatını kim değiştirdi?"
+
+        Medya izi kendi modülünde (`routes/api/media.php`) duruyor; bu da
+        kendi modülünde duruyor. Ayarlar'ın birleşik izi
+        (`routes/api/workspace-audit.php`) ayrı bir dosyada çünkü kaynağı
+        tek bir modül DEĞİL; bu uç ise yalnız menüyü okur.
+
+        `{menu}` sayıya sınırlı olduğu için `menu/audits` bir menü kimliği
+        sanılmaz (aynı gerekçe `menu/duplicate-candidates` için de yazılı).
+        Hız sınırı YOK: hiçbir dış sağlayıcıya gitmez ve sahip bir soru
+        peşindeyken sayfalar arasında ileri geri gezinir.
+    */
+    Route::get('/workspaces/{workspace}/menu/audits', ListMenuAuditsController::class);
 });

@@ -1,6 +1,7 @@
 import { t } from '../../../i18n/workspace';
 import { Button } from '../../catalog/forms/micro/Button';
 import { MenuCatalogWorkspace } from '../../catalog/menu/macro/MenuCatalogWorkspace';
+import { MenuAuditRegion } from './menu/MenuAuditRegion';
 import type { DashboardMenuTree } from './DashboardPage';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
@@ -87,6 +88,28 @@ export function MenuPage({
                 }
             >
                 <PanelCard>{renderCatalog()}</PanelCard>
+
+                {/*
+                    "DÜN KEBABIN FİYATINI KİM DEĞİŞTİRDİ?" (FF-163)
+
+                    İZ MENÜNÜN ALTINDA, KENDİ KARTINDA. Sahip bu soruyu
+                    Ayarlar'da değil, menüye BAKARKEN sorar: kebabın yanında
+                    420 yazdığını görür ve "bu 380 değil miydi?" der. Depo
+                    aynı soruyu medya için zaten böyle cevaplamıştı — medya
+                    izi Medya ekranının altında duruyor (`MediaPage`), ayrı
+                    bir bölümde değil.
+
+                    Katalog kartının İÇİNE konmadı: iz menünün bir parçası
+                    değil, menü hakkında bir kayıttır ve katalog kartı zaten
+                    düzenlenebilir her şeyi taşıyor. Ayrı kart, "buradan
+                    aşağısı düzenlenmez" sınırını da çizer.
+
+                    YALNIZ MENÜYÜ DEĞİŞTİREBİLENE ÇİZİLİR. Uç `menu.manage`
+                    istiyor (fiyat geçmişi ticari bir bilgidir); izni
+                    olmayana bölümü göstermek, açtığında hata görmesi
+                    demekti — kapalı bir başlık bile olmayan bir sözdür.
+                */}
+                {canManageMenu ? <MenuAuditRegion workspaceId={workspaceId} /> : null}
             </WorkspacePageFrame>
         </div>
     );

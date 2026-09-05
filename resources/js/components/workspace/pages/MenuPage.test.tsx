@@ -28,6 +28,21 @@ vi.mock('../../catalog/menu/macro/MenuCatalogWorkspace', () => ({
     ),
 }));
 
+/*
+    Değişiklik geçmişi burada TAKLİT EDİLİR (FF-163).
+
+    Bölüm kendi verisini çeker ve kendi "yükleniyor" durumunu gösterir;
+    gerçeği burada çizmek, bu dosyanın asıl sorusunu ("menü ekranı katalog
+    geldiğinde bekleme göstermiyor mu?") başka bir bölümün beklemesiyle
+    karıştırırdı. Kendi sözleşmesi `menu/MenuAuditRegion.test.tsx` içinde
+    dondurulmuştur — `MenuCatalogWorkspace` ile aynı gerekçe.
+*/
+vi.mock('./menu/MenuAuditRegion', () => ({
+    MenuAuditRegion: (props: { workspaceId: number }) => (
+        <div data-testid="menu-audit-region" data-workspace-id={props.workspaceId} />
+    ),
+}));
+
 vi.mock('../ai/AiAssistPanel', () => ({
     AiAssistPanel: ({ context }: { context: string }) => (
         <div data-testid="ai-assist-panel" data-context={context} />
@@ -123,5 +138,53 @@ describe('MenuPage', () => {
         renderPage('menu-catalog', LOCATION_ID);
 
         expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    /**
+     * DEĞİŞİKLİK GEÇMİŞİ MENÜ EKRANINDA DURUR (FF-163).
+     *
+     * "Dün kebabın fiyatını kim değiştirdi?" sorusu Ayarlar'da değil, menüye
+     * BAKARKEN sorulur: sahip kebabın yanında 420 yazdığını görür ve "bu 380
+     * değil miydi?" der. Depo aynı soruyu medya için zaten böyle
+     * cevaplamıştı — medya izi Medya ekranının altındadır.
+     */
+    it('menü ekranının altında değişiklik geçmişini çizer', () => {
+        render(
+            <MenuPage
+                workspaceId={WORKSPACE_ID}
+                catalogPhase="menu-catalog"
+                locationId={LOCATION_ID}
+                onTreeChange={vi.fn()}
+                onNavigateToSection={vi.fn()}
+                can={() => true}
+            />,
+        );
+
+        expect(screen.getByTestId('menu-audit-region')).toHaveAttribute(
+            'data-workspace-id',
+            String(WORKSPACE_ID),
+        );
+    });
+
+    /**
+     * FİYAT GEÇMİŞİ TİCARİ BİR BİLGİDİR.
+     *
+     * Uç `menu.manage` istiyor; Mutfak rolünde o izin yok. Bölümü yine de
+     * çizmek, açıldığında hata gösteren bir başlık demekti — kapalı bir
+     * başlık bile olmayan bir sözdür.
+     */
+    it('menüyü değiştiremeyen role değişiklik geçmişini hiç göstermez', () => {
+        render(
+            <MenuPage
+                workspaceId={WORKSPACE_ID}
+                catalogPhase="menu-catalog"
+                locationId={LOCATION_ID}
+                onTreeChange={vi.fn()}
+                onNavigateToSection={vi.fn()}
+                can={(permission) => permission !== 'menu.manage'}
+            />,
+        );
+
+        expect(screen.queryByTestId('menu-audit-region')).not.toBeInTheDocument();
     });
 });

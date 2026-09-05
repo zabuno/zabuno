@@ -3496,6 +3496,134 @@ msgstr ""
 msgid "workspace.media.viewer.tab"
 msgstr ""
 
+#: workspace:workspace.menu.audit.action.categoryAdded
+msgid "workspace.menu.audit.action.categoryAdded"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.categoryRemoved
+msgid "workspace.menu.audit.action.categoryRemoved"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.categoryRenamed
+msgid "workspace.menu.audit.action.categoryRenamed"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemAdded
+msgid "workspace.menu.audit.action.itemAdded"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemAllergensChanged
+msgid "workspace.menu.audit.action.itemAllergensChanged"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemPriceChanged
+msgid "workspace.menu.audit.action.itemPriceChanged"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemRemoved
+msgid "workspace.menu.audit.action.itemRemoved"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemRenamed
+msgid "workspace.menu.audit.action.itemRenamed"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemVisibilityChanged
+msgid "workspace.menu.audit.action.itemVisibilityChanged"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuAiImported
+msgid "workspace.menu.audit.action.menuAiImported"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuCreated
+msgid "workspace.menu.audit.action.menuCreated"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuDeleted
+msgid "workspace.menu.audit.action.menuDeleted"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuImported
+msgid "workspace.menu.audit.action.menuImported"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuRenamed
+msgid "workspace.menu.audit.action.menuRenamed"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.unknown
+msgid "workspace.menu.audit.action.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.actor.unknown
+msgid "workspace.menu.audit.actor.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.at.unknown
+msgid "workspace.menu.audit.at.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.change
+msgid "workspace.menu.audit.change"
+msgstr ""
+
+#: workspace:workspace.menu.audit.empty
+msgid "workspace.menu.audit.empty"
+msgstr ""
+
+#: workspace:workspace.menu.audit.error
+msgid "workspace.menu.audit.error"
+msgstr ""
+
+#: workspace:workspace.menu.audit.heading
+msgid "workspace.menu.audit.heading"
+msgstr ""
+
+#: workspace:workspace.menu.audit.help
+msgid "workspace.menu.audit.help"
+msgstr ""
+
+#: workspace:workspace.menu.audit.loading
+msgid "workspace.menu.audit.loading"
+msgstr ""
+
+#: workspace:workspace.menu.audit.next
+msgid "workspace.menu.audit.next"
+msgstr ""
+
+#: workspace:workspace.menu.audit.notRecorded
+msgid "workspace.menu.audit.notRecorded"
+msgstr ""
+
+#: workspace:workspace.menu.audit.page
+msgid "workspace.menu.audit.page"
+msgstr ""
+
+#: workspace:workspace.menu.audit.previous
+msgid "workspace.menu.audit.previous"
+msgstr ""
+
+#: workspace:workspace.menu.audit.region
+msgid "workspace.menu.audit.region"
+msgstr ""
+
+#: workspace:workspace.menu.audit.retry
+msgid "workspace.menu.audit.retry"
+msgstr ""
+
+#: workspace:workspace.menu.audit.subject.unknown
+msgid "workspace.menu.audit.subject.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.visibility.hidden
+msgid "workspace.menu.audit.visibility.hidden"
+msgstr ""
+
+#: workspace:workspace.menu.audit.visibility.visible
+msgid "workspace.menu.audit.visibility.visible"
+msgstr ""
+
 #: workspace:workspace.menu.empty.brand.body
 msgid "workspace.menu.empty.brand.body"
 msgstr ""

@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1346;
+const FROZEN_LEGACY_KEY_COUNT = 1378;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -86,8 +86,18 @@ const FROZEN_LEGACY_KEY_COUNT = 1346;
 // (`docs/62`): aynı markanın Berlin şubesinde "Saatler İstanbul saatidir"
 // cümlesi, doğru hesaplanmış bir anı yanlış şehirle okutuyordu. Şehir adı
 // yerine ŞUBE denir, çünkü ekrandaki saati belirleyen şubenin kendisidir.
+// FF-163: menü denetim izi artık okunabilir bir ekranı var. Otuz iki anahtar
+// — on dört eylem cümlesi (menü/kategori/ürün yaşam döngüsü, fiyat,
+// görünürlük, alerjen), CSV aktarımından AYRI duran "fotoğraftan okundu,
+// onaylandı", tanınmayan bir kod için tek bir dürüst cümle, öncesi/sonrası
+// biçimi, görünürlüğün iki kelimesi, bölümün durum cümleleri ve sayfalama.
+// İki anahtar listenin geri kalanından daha önemli: `empty` ("henüz bir
+// değişiklik kaydedilmedi") ve `notRecorded` — sıralama, "bugün tükendi" ve
+// yayınlama bilerek ize yazılmıyor ve bunu SÖYLEMEYEN bir liste, olmayan bir
+// kaydı "olmadı" diye okutur. Tahmini süre, sayaç ya da "yakında" diyen bir
+// anahtar YOK; kayıt yoksa yazılan tek şey `empty`dir.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'af1d617f743a0d0077926691a78987fa68ff30d77811fd320c237cdcc019b073';
+    '5b7869b17c26b10967f7937b86924ff81343ea5b1680022d7b4000093d801942';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -3496,6 +3496,134 @@ msgstr "File viewer"
 msgid "workspace.media.viewer.tab"
 msgstr "View"
 
+#: workspace:workspace.menu.audit.action.categoryAdded
+msgid "workspace.menu.audit.action.categoryAdded"
+msgstr "Category added"
+
+#: workspace:workspace.menu.audit.action.categoryRemoved
+msgid "workspace.menu.audit.action.categoryRemoved"
+msgstr "Category removed"
+
+#: workspace:workspace.menu.audit.action.categoryRenamed
+msgid "workspace.menu.audit.action.categoryRenamed"
+msgstr "Category renamed"
+
+#: workspace:workspace.menu.audit.action.itemAdded
+msgid "workspace.menu.audit.action.itemAdded"
+msgstr "Item added"
+
+#: workspace:workspace.menu.audit.action.itemAllergensChanged
+msgid "workspace.menu.audit.action.itemAllergensChanged"
+msgstr "Allergens changed"
+
+#: workspace:workspace.menu.audit.action.itemPriceChanged
+msgid "workspace.menu.audit.action.itemPriceChanged"
+msgstr "Price changed"
+
+#: workspace:workspace.menu.audit.action.itemRemoved
+msgid "workspace.menu.audit.action.itemRemoved"
+msgstr "Item removed"
+
+#: workspace:workspace.menu.audit.action.itemRenamed
+msgid "workspace.menu.audit.action.itemRenamed"
+msgstr "Item renamed"
+
+#: workspace:workspace.menu.audit.action.itemVisibilityChanged
+msgid "workspace.menu.audit.action.itemVisibilityChanged"
+msgstr "Visibility changed"
+
+#: workspace:workspace.menu.audit.action.menuAiImported
+msgid "workspace.menu.audit.action.menuAiImported"
+msgstr "Applied from a photo reading"
+
+#: workspace:workspace.menu.audit.action.menuCreated
+msgid "workspace.menu.audit.action.menuCreated"
+msgstr "Menu created"
+
+#: workspace:workspace.menu.audit.action.menuDeleted
+msgid "workspace.menu.audit.action.menuDeleted"
+msgstr "Menu deleted"
+
+#: workspace:workspace.menu.audit.action.menuImported
+msgid "workspace.menu.audit.action.menuImported"
+msgstr "Imported from a CSV file"
+
+#: workspace:workspace.menu.audit.action.menuRenamed
+msgid "workspace.menu.audit.action.menuRenamed"
+msgstr "Menu renamed"
+
+#: workspace:workspace.menu.audit.action.unknown
+msgid "workspace.menu.audit.action.unknown"
+msgstr "Change of an unknown kind"
+
+#: workspace:workspace.menu.audit.actor.unknown
+msgid "workspace.menu.audit.actor.unknown"
+msgstr "Unknown person"
+
+#: workspace:workspace.menu.audit.at.unknown
+msgid "workspace.menu.audit.at.unknown"
+msgstr "Time not recorded"
+
+#: workspace:workspace.menu.audit.change
+msgid "workspace.menu.audit.change"
+msgstr "{before} → {after}"
+
+#: workspace:workspace.menu.audit.empty
+msgid "workspace.menu.audit.empty"
+msgstr "No change has been recorded yet."
+
+#: workspace:workspace.menu.audit.error
+msgid "workspace.menu.audit.error"
+msgstr "The change history could not be loaded."
+
+#: workspace:workspace.menu.audit.heading
+msgid "workspace.menu.audit.heading"
+msgstr "Change history"
+
+#: workspace:workspace.menu.audit.help
+msgid "workspace.menu.audit.help"
+msgstr "Who changed a price, a name, visibility or allergens on this menu, and what the value was before."
+
+#: workspace:workspace.menu.audit.loading
+msgid "workspace.menu.audit.loading"
+msgstr "Loading the change history…"
+
+#: workspace:workspace.menu.audit.next
+msgid "workspace.menu.audit.next"
+msgstr "Next"
+
+#: workspace:workspace.menu.audit.notRecorded
+msgid "workspace.menu.audit.notRecorded"
+msgstr "Not recorded here: reordering, sold-out marks, and publishing. Publishing keeps its own history on the publish screen."
+
+#: workspace:workspace.menu.audit.page
+msgid "workspace.menu.audit.page"
+msgstr "Page {page} / {total}"
+
+#: workspace:workspace.menu.audit.previous
+msgid "workspace.menu.audit.previous"
+msgstr "Previous"
+
+#: workspace:workspace.menu.audit.region
+msgid "workspace.menu.audit.region"
+msgstr "Menu change history"
+
+#: workspace:workspace.menu.audit.retry
+msgid "workspace.menu.audit.retry"
+msgstr "Try again"
+
+#: workspace:workspace.menu.audit.subject.unknown
+msgid "workspace.menu.audit.subject.unknown"
+msgstr "Name not recorded"
+
+#: workspace:workspace.menu.audit.visibility.hidden
+msgid "workspace.menu.audit.visibility.hidden"
+msgstr "Hidden"
+
+#: workspace:workspace.menu.audit.visibility.visible
+msgid "workspace.menu.audit.visibility.visible"
+msgstr "Visible"
+
 #: workspace:workspace.menu.empty.brand.body
 msgid "workspace.menu.empty.brand.body"
 msgstr "A menu belongs to a location, and a location belongs to a brand. Set up your brand first, then add a location."
