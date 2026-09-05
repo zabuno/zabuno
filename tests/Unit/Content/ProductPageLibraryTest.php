@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Content;
 
 use App\Domain\Content\Block\BlockType;
+use App\Domain\Money\MoneyFormatter;
+use App\Infrastructure\Content\Pages\PricingPage;
 use App\Infrastructure\Content\ProductPageLibrary;
+use Database\Seeders\PlanCatalogueSeeder;
 use Tests\TestCase;
 
 /**
@@ -33,6 +36,29 @@ final class ProductPageLibraryTest extends TestCase
         'urun.zabuno-ai',
     ];
 
+    /**
+     * DALGA 2 — FF-192.
+     *
+     * İlk beş sayfa ürünün ÇEKİRDEĞİNİ anlatıyordu. Bu beşi, ziyaretçinin
+     * satın alma kararını verdiği yerlerdir: geriye kalan üç P0 ürün başlığı,
+     * çözümler girişi ve fiyatlandırma. İkisi `urun` türünde değil — şablon
+     * dilden olduğu gibi TÜRDEN de bağımsız kalmak zorundaydı ve bu paket onu
+     * ölçüyor.
+     */
+    private const SECOND_WAVE = [
+        'urun.gorsel-ve-medya',
+        'urun.coklu-dil-ve-para-birimi',
+        'urun.coklu-sube',
+        'cozumler',
+        'fiyatlandirma',
+    ];
+
+    /** @return list<string> */
+    private static function everyPage(): array
+    {
+        return array_merge(self::FIRST_FIVE, self::SECOND_WAVE);
+    }
+
     private ProductPageLibrary $library;
 
     protected function setUp(): void
@@ -41,9 +67,9 @@ final class ProductPageLibraryTest extends TestCase
         $this->library = new ProductPageLibrary;
     }
 
-    public function test_the_first_five_p0_product_pages_have_english_content(): void
+    public function test_every_written_corporate_page_has_english_content(): void
     {
-        foreach (self::FIRST_FIVE as $pageKey) {
+        foreach (self::everyPage() as $pageKey) {
             self::assertNotNull(
                 $this->library->find($pageKey, 'en'),
                 "İngilizce içerik eksik: {$pageKey}",
@@ -63,8 +89,61 @@ final class ProductPageLibraryTest extends TestCase
             Bu aynı zamanda çeviri kilidinin kendisiyle de tutarlıdır: burada
             hiçbir çeviri üretilmedi, hiçbir çeviri işi kuyruklanmadı.
         */
-        foreach (self::FIRST_FIVE as $pageKey) {
+        foreach (self::everyPage() as $pageKey) {
             self::assertNull($this->library->find($pageKey, 'tr'));
+        }
+    }
+
+    public function test_the_library_holds_nothing_beyond_the_pages_this_repository_declares(): void
+    {
+        /*
+            Listeyi tek yönlü ölçmek yetmez. Yalnız "beklenen sayfa var mı"
+            diye sorsaydık, kütüphaneye eklenmiş ama hiçbir yerde ilan
+            edilmemiş bir sayfa — adresi olmayan, kırıntısı olmayan, kimsenin
+            gözden geçirmediği bir sayfa — sessizce yayına girebilirdi.
+        */
+        $written = array_map(
+            static fn ($content): string => $content->pageKey,
+            $this->library->all(),
+        );
+
+        sort($written);
+        $expected = self::everyPage();
+        sort($expected);
+
+        self::assertSame($expected, $written);
+    }
+
+    public function test_every_written_page_has_a_source_language_address(): void
+    {
+        /*
+            İçeriği yazılmış ama adresi olmayan bir sayfa, DALGA 1'de
+            gerçekten oldu: beş sayfa depoda duruyordu ve kütükte kaynak dil
+            satırı olmadığı için hiçbir yerden açılamıyordu
+            (`config/site-source-paths.php` gerekçesi).
+
+            Adres MAKİNEYLE TÜRETİLMEZ — yarım çevrilmiş bir adres üretirdi —
+            ama yazılmış olması ölçülebilir ve ölçülmelidir.
+        */
+        /** @var array<string, string> $sourcePaths */
+        $sourcePaths = (array) config('site-source-paths');
+        $sourceLocale = (string) config('i18n.source_locale');
+
+        foreach ($this->library->all() as $content) {
+            self::assertArrayHasKey(
+                $content->pageKey,
+                $sourcePaths,
+                "İçeriği yazılmış ama kaynak dil adresi yok: {$content->pageKey}",
+            );
+
+            $path = $sourcePaths[$content->pageKey];
+
+            self::assertStringStartsWith("/{$sourceLocale}/", $path, $content->pageKey);
+            self::assertStringEndsWith('/', $path, $content->pageKey);
+            // Adres, sayfanın KENDİ İngilizce başlığından inen bir slug'dır:
+            // ASCII, küçük harf, tire. Türkçe bir segment burada yarım
+            // çevrilmiş bir adres demek olurdu.
+            self::assertMatchesRegularExpression('#^/[a-z]{2}(?:/[a-z0-9-]+)+/$#', $path, $content->pageKey);
         }
     }
 
@@ -90,7 +169,7 @@ final class ProductPageLibraryTest extends TestCase
 
         // Kanıtın kendisi de ölçülür: hiç kanıt taşımayan bir kütük, bu
         // kapıyı sessizce boş geçerdi.
-        self::assertGreaterThan(40, $checked);
+        self::assertGreaterThan(90, $checked);
     }
 
     public function test_every_capability_step_requirement_and_limitation_carries_its_evidence(): void
@@ -196,6 +275,143 @@ final class ProductPageLibraryTest extends TestCase
                 self::assertStringNotContainsString($phrase, $haystack, $content->pageKey);
             }
         }
+    }
+
+    public function test_the_pricing_page_writes_down_exactly_the_plans_in_the_catalogue(): void
+    {
+        /*
+            Fiyat sayfası, bir sayfanın yalan söylemesinin EN PAHALI olduğu
+            yerdir: ziyaretçi burada okuduğu rakama göre karar verir ve o
+            rakam kasadakinden farklıysa geri kalan her doğru cümle de değerini
+            kaybeder.
+
+            Bu yüzden sayfa rakamı YAZMAZ, KATALOĞU OKUR. Katalogda bir plan
+            eklenir, çıkarılır ya da fiyatı değişirse sayfa aynı gün değişir;
+            değişmezse bu test kırılır.
+        */
+        $catalogue = PlanCatalogueSeeder::catalogue();
+
+        $content = $this->library->find('fiyatlandirma', 'en');
+        self::assertNotNull($content);
+
+        $plans = $content->block(BlockType::Capabilities);
+        self::assertNotNull($plans);
+
+        $named = array_values(array_filter(array_map(
+            static fn ($entry): ?string => $entry->term,
+            $plans->entries,
+        )));
+
+        // Ne eksik ne fazla: katalogda olmayan bir plan da sayfada duramaz.
+        self::assertSame(
+            array_values(array_map(static fn (array $plan): string => $plan['name'], $catalogue)),
+            $named,
+        );
+
+        $text = $this->flatten('fiyatlandirma');
+
+        foreach ($catalogue as $plan) {
+            self::assertStringContainsString(
+                MoneyFormatter::format($plan['amount_minor'], 'TRY', 'en'),
+                $text,
+                "Katalogdaki fiyat sayfada yazmıyor: {$plan['name']}",
+            );
+        }
+    }
+
+    public function test_the_pricing_page_invents_no_figure_of_its_own(): void
+    {
+        /*
+            "Kataloğu oku" bir uygulama tercihidir; kimse birinin YANINA elle
+            bir rakam yazmasını engellemez — "yaklaşık 300 restoran", "ilk ay
+            %50 indirim", "24 saatte kurulum". Bu yüzden ölçüm rakamın
+            KENDİSİNE bakar: sayfadaki her rakam dizisi, kataloğun ürettiği
+            metinlerden biri olmak zorundadır.
+
+            Sayı yazmak yasak değil; KAYNAKSIZ sayı yazmak yasak.
+        */
+        $allowed = [];
+
+        foreach (PlanCatalogueSeeder::catalogue() as $plan) {
+            $formatted = MoneyFormatter::format($plan['amount_minor'], 'TRY', 'en');
+
+            foreach (self::figuresIn($formatted) as $figure) {
+                $allowed[$figure] = true;
+            }
+        }
+
+        foreach (self::figuresIn($this->flatten('fiyatlandirma')) as $figure) {
+            self::assertArrayHasKey(
+                $figure,
+                $allowed,
+                "Fiyat sayfasında kataloğa dayanmayan bir rakam var: {$figure}",
+            );
+        }
+    }
+
+    public function test_a_plan_right_is_either_announced_in_english_or_deliberately_withheld(): void
+    {
+        /*
+            Katalogda beliren bir hak, fiyat sayfasında iki şeyden biri olmak
+            zorundadır: ANLATILAN bir satır ya da SEBEBİYLE SUSULAN bir satır.
+            Üçüncü ihtimal — kimsenin fark etmediği bir hak — tam olarak
+            "çalışan bir yetenek satılamıyor" durumunu üretir (`docs/122` Y1).
+        */
+        foreach (PlanCatalogueSeeder::catalogue() as $code => $plan) {
+            foreach ($plan['entitlements'] as $key) {
+                self::assertTrue(
+                    isset(PricingPage::ANNOUNCED[$key]) || isset(PricingPage::WITHHELD[$key]),
+                    "`{$code}` planındaki `{$key}` hakkı ne anlatılıyor ne de sebebiyle susuluyor.",
+                );
+
+                self::assertFalse(
+                    isset(PricingPage::ANNOUNCED[$key]) && isset(PricingPage::WITHHELD[$key]),
+                    "`{$key}` hem anlatılıyor hem susuluyor.",
+                );
+            }
+        }
+    }
+
+    public function test_the_withheld_rights_are_nowhere_on_the_pricing_page(): void
+    {
+        /*
+            `menu.rich-media` bilerek duyurulmuyor: hakkın misafir yüzeyi yok,
+            yani parası alınırsa masadaki misafirin gördüğü hiçbir şey
+            değişmez. Duyurulmayan bir hakkın adı sayfaya "yanlışlıkla" da
+            girmemelidir — girerse satılmış sayılır.
+        */
+        /*
+            Karar ADIYLA duruyor. Hak henüz katalogda olmadığı için kapsama
+            testi ona bugün değmiyor; kararı yalnız o teste bırakmak, hak
+            kademeye bağlandığı gün birinin sessizce ANNOUNCED'a yazmasına
+            açık kapı bırakırdı. Susmanın sebebi WITHHELD'in kendisinde yazılı
+            ve silinirse bu satır kırılır.
+        */
+        self::assertArrayHasKey('menu.rich-media', PricingPage::WITHHELD);
+
+        $text = mb_strtolower($this->flatten('fiyatlandirma'));
+
+        foreach (PricingPage::WITHHELD as $key => $reason) {
+            self::assertNotSame('', trim($reason), "Sebepsiz susmak bir karar değildir: {$key}");
+            self::assertStringNotContainsString(mb_strtolower($key), $text);
+        }
+
+        self::assertStringNotContainsString('rich media', $text);
+    }
+
+    /**
+     * Metindeki rakam dizileri — ayırıcılar ve para birimi işaretleri dahil.
+     *
+     * @return list<string>
+     */
+    private static function figuresIn(string $text): array
+    {
+        preg_match_all('/\d[\d.,\x{00A0}\s]*\d|\d/u', $text, $matches);
+
+        return array_map(
+            static fn (string $figure): string => trim($figure),
+            $matches[0],
+        );
     }
 
     private function flatten(string $pageKey): string
