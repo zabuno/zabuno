@@ -9,6 +9,19 @@ oturum yönetimi (çoklu cihaz/liste/revoke), brute-force tam koruma matrisi,
 `locked`/`deactivated` hesap durumları vb. — hâlâ **PLANNING ONLY, şu an
 çalıştırılamaz**.**
 
+
+> **DURUM BURADA YAZMAZ — KOD SÖYLER (2026-09-05 düzeltmesi).**
+>
+> Yukarıdaki "PLANNING ONLY" ifadesi bu modül için de eskidi. 2026-09-05
+> envanteri bu modülü UYGULANMIŞ saydı; kanıt kodda ve testlerde.
+> Yukarıdaki paragrafın ANLATTIĞI eksikler (şifre sıfırlama kapsamı, oturum
+> listesi/iptali, hesap durumları, workspace durum geçişleri, sağlayıcı
+> kaydı) hâlâ geçerli olabilir — ama bunların doğrusu da koddan okunur.
+>
+> Durum alanı bütün modül dosyalarından kaldırıldı: bir modül teslim
+> edildiğinde kimse tanım dosyasına geri dönmüyordu ve altmış iki dosyanın
+> altmış ikisi de kendini "çalıştırılamaz" ilan ediyordu. Türetilmiş
+> envanter için `docs/111`.
 ## Amaç
 Kullanıcının var oluşunu ve oturumunu yönetmek: kayıt, doğrulama, giriş/çıkış,
 şifre sıfırlama.
