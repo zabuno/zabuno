@@ -4704,6 +4704,10 @@ msgstr "Zamanlama iptal edilemedi. Tekrar deneyin."
 msgid "workspace.publication.schedule.close"
 msgstr "Zamanlamayı kapat"
 
+#: workspace:workspace.publication.schedule.dismiss
+msgid "workspace.publication.schedule.dismiss"
+msgstr "Bu uyarıyı kapat"
+
 #: workspace:workspace.publication.schedule.error
 msgid "workspace.publication.schedule.error"
 msgstr "Yayın zamanlanamadı. Hiçbir şey zamanlanmadı."
@@ -4735,6 +4739,26 @@ msgstr "{moment} için zamanlandı (İstanbul)."
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
 msgstr "Yayını zamanla"
+
+#: workspace:workspace.publication.schedule.status.failed
+msgid "workspace.publication.schedule.status.failed"
+msgstr "{moment} yayını denendi ve kaydedilemedi. Menü değişmedi — misafirler hâlâ önceki sürümü görüyor. Şimdi yayınlayın ya da yeniden zamanlayın."
+
+#: workspace:workspace.publication.schedule.status.interrupted
+msgid "workspace.publication.schedule.status.interrupted"
+msgstr "{moment} yayını başladı ve tamamlanmadı. Menü değişmedi — misafirler hâlâ önceki sürümü görüyor. Şimdi yayınlayın ya da yeniden zamanlayın."
+
+#: workspace:workspace.publication.schedule.status.overdue
+msgid "workspace.publication.schedule.status.overdue"
+msgstr "{moment} geçti ve yayın çıkmadı. Menü değişmedi — misafirler hâlâ önceki sürümü görüyor. Şimdi yayınlayın ya da yeniden zamanlayın."
+
+#: workspace:workspace.publication.schedule.status.publishing
+msgid "workspace.publication.schedule.status.publishing"
+msgstr "{moment} yayını şu anda yayına alınıyor."
+
+#: workspace:workspace.publication.schedule.status.unknown
+msgid "workspace.publication.schedule.status.unknown"
+msgstr "Bu ekran {moment} planının durumunu okuyamıyor, bu yüzden menünün değişip değişmediğini size söyleyemez. Sayfayı yenileyin."
 
 #: workspace:workspace.publication.schedule.unready
 msgid "workspace.publication.schedule.unready"

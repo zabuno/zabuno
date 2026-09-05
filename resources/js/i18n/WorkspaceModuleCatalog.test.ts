@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1328;
+const FROZEN_LEGACY_KEY_COUNT = 1334;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -57,8 +57,15 @@ const FROZEN_LEGACY_KEY_COUNT = 1328;
 // zaten "{count} ziyaretçi" diyordu, üstteki özet ise "{count} kez arandı".
 // Aynı ölçümün iki cümlesinden biri yalandı. Anahtar sayısı DEĞİŞMEDİ —
 // yalnız tek bir anahtarın metni düzeltildi.
+// FF-157: zamanlanmış yayın ÇIKMADIĞINDA ekran artık susmuyor. Altı anahtar:
+// dört durum cümlesi (yayına alınıyor / vakti geçti ve çıkmadı / başladı
+// bitmedi / denendi kaydedilemedi), okunamayan bir durum için "menünün
+// değişip değişmediğini söyleyemem" cümlesi, ve uyarıyı kapatan düğme.
+// Dördü de aynı üç şeyi söyler ve hiçbiri SÖZ VERMEZ: ne oldu, menünün şu
+// anki hâli ne, sahip ne yapabilir. "Yakında yayınlanacak" ya da tahmini
+// süre diyen bir anahtar YOK — zamanlayıcının ne zaman döneceğini bilmiyoruz.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'e46f44dbb2cba15bac7fe4cc6afc23d2899c0460d77be4eaadba62a04eb232c0';
+    '1866aa696d3569481b724c46b284499d7c5b5f72c82e45f36c441ce679b04a4b';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

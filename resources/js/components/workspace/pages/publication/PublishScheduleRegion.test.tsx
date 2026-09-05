@@ -20,7 +20,7 @@ import { PublishScheduleRegion } from './PublishScheduleRegion';
  */
 const OPTIONS_RESPONSE = {
     timeZone: 'Europe/Istanbul',
-    pending: null,
+    plan: null,
     options: [
         { key: 'tonight', scheduledFor: '2026-09-06T00:00:00.000000Z' },
         { key: 'tomorrowMorning', scheduledFor: '2026-09-06T06:00:00.000000Z' },
@@ -76,8 +76,16 @@ describe('PublishScheduleRegion — plan gerçekten kurulur', () => {
 
         await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
 
+        /*
+            Plan kurulduktan sonra ekran hâli SUNUCUDAN yeniden okunur;
+            POST cevabından "kuruldu" diye uydurulmaz.
+        */
+        let stored = false;
+
         fetchSpy.mockImplementation(async (_url: string, init?: RequestInit) => {
             if (init?.method === 'POST') {
+                stored = true;
+
                 return jsonResponse(201, {
                     id: 9,
                     scheduledFor: '2026-09-06T00:00:00.000000Z',
@@ -86,7 +94,18 @@ describe('PublishScheduleRegion — plan gerçekten kurulur', () => {
                 });
             }
 
-            return jsonResponse(200, OPTIONS_RESPONSE);
+            return jsonResponse(200, {
+                ...OPTIONS_RESPONSE,
+                plan: stored
+                    ? {
+                          id: 9,
+                          scheduledFor: '2026-09-06T00:00:00.000000Z',
+                          state: 'pending',
+                          status: 'scheduled',
+                          needsAttention: false,
+                      }
+                    : null,
+            });
         });
 
         const option = (await within(region()).findAllByRole('button', { name: /03:00/ }))[0];
@@ -109,10 +128,12 @@ describe('PublishScheduleRegion — plan gerçekten kurulur', () => {
         fetchSpy.mockImplementation(async () =>
             jsonResponse(200, {
                 ...OPTIONS_RESPONSE,
-                pending: {
+                plan: {
                     id: 9,
                     scheduledFor: '2026-09-06T00:00:00.000000Z',
                     state: 'pending',
+                    status: 'scheduled',
+                    needsAttention: false,
                 },
             }),
         );
@@ -122,6 +143,64 @@ describe('PublishScheduleRegion — plan gerçekten kurulur', () => {
         expect(await within(region()).findByText(/scheduled for/i)).toBeInTheDocument();
         expect(
             within(region()).getByRole('button', { name: /cancel this schedule/i }),
+        ).toBeInTheDocument();
+    });
+
+    it('vakti geçmiş ama çıkmamış yayını SAKLAMAZ; menünün değişmediğini söyler', async () => {
+        /*
+            EN PAHALI YALAN BURADAYDI: zamanlayıcı ölmüşse kayıt `pending`
+            kalır ve saat geçer. Ekran o an hâlâ "yarın 09:00 için
+            zamanlandı" yazsaydı, sahip menüsünün değiştiğini sanırdı;
+            misafir eski fiyatı okurken sahip bunu ancak kasada fark
+            ederdi. Cümle SÖZ VERMEZ — "birazdan çıkacak" ya da tahmini bir
+            süre yok, çünkü zamanlayıcının ne zaman döneceğini bilmiyoruz.
+        */
+        fetchSpy.mockImplementation(async () =>
+            jsonResponse(200, {
+                ...OPTIONS_RESPONSE,
+                plan: {
+                    id: 9,
+                    scheduledFor: '2026-09-06T00:00:00.000000Z',
+                    state: 'pending',
+                    status: 'overdue',
+                    needsAttention: true,
+                },
+            }),
+        );
+
+        render(<PublishScheduleRegion workspaceId={71} menuId={42} draftReady />);
+
+        const alert = await within(region()).findByRole('alert');
+
+        expect(alert.textContent ?? '').toMatch(/did not happen/i);
+        expect(alert.textContent ?? '').toMatch(/menu did not change/i);
+        expect(alert.textContent ?? '').not.toMatch(/soon|shortly|in a few|will be published/i);
+
+        // Sağlıklı bir planın sakin cümlesi ORTADA YOK.
+        expect(region().textContent ?? '').not.toMatch(/scheduled for/i);
+    });
+
+    it('başarısız yayını sahip görür ve KAPATABİLİR', async () => {
+        fetchSpy.mockImplementation(async () =>
+            jsonResponse(200, {
+                ...OPTIONS_RESPONSE,
+                plan: {
+                    id: 9,
+                    scheduledFor: '2026-09-06T00:00:00.000000Z',
+                    state: 'failed',
+                    status: 'failed',
+                    needsAttention: true,
+                },
+            }),
+        );
+
+        render(<PublishScheduleRegion workspaceId={71} menuId={42} draftReady />);
+
+        const alert = await within(region()).findByRole('alert');
+
+        expect(alert.textContent ?? '').toMatch(/could not be saved/i);
+        expect(
+            within(region()).getByRole('button', { name: /dismiss this notice/i }),
         ).toBeInTheDocument();
     });
 

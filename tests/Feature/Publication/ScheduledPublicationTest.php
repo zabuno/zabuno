@@ -140,7 +140,7 @@ final class ScheduledPublicationTest extends TestCase
         );
 
         $response->assertStatus(200);
-        $response->assertJsonPath('pending', null);
+        $response->assertJsonPath('plan', null);
         $response->assertJsonPath('timeZone', 'Europe/Istanbul');
 
         $options = $response->json('options');
@@ -284,6 +284,157 @@ final class ScheduledPublicationTest extends TestCase
             'published',
             (string) DB::table('menu_publication_schedules')->where('menu_id', $menuId)->value('state')
         );
+    }
+
+    /**
+     * VAKTİ GEÇTİ AMA YAYIN ÇIKMADI — planın sessizce ölmesi.
+     *
+     * Zamanlayıcı ölürse (kap yeniden başlatılırken, ya da `schedule:work`
+     * süreci olmayan bir barındırmada) kayıt `pending` kalır ve saat geçer.
+     * O ana kadar ekran "yarın 09:00 için zamanlandı" yazıyordu; o an
+     * geçtikten sonra AYNI CÜMLEYİ yazmaya devam etmesi düpedüz yalandır.
+     * Sahip menüsünün değiştiğini sanır, misafir eski fiyatı okur ve sahip
+     * bunu ancak kasada fark eder.
+     */
+    public function test_a_plan_whose_moment_passed_without_publishing_is_reported_as_overdue(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-overdue');
+
+        $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->assertStatus(201);
+
+        // Komut KOŞMUYOR: zamanlayıcının olmadığı gerçek dünya.
+        Carbon::setTestNow(Carbon::now()->addHours(4));
+
+        $response = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        );
+
+        Carbon::setTestNow();
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('plan.status', 'overdue');
+
+        // Yayın gerçekten çıkmadı: misafir hâlâ önceki sürümü görüyor.
+        $this->assertDatabaseCount('menu_publications', 0);
+    }
+
+    /**
+     * Vakti YENİ geçmiş bir plan telaş sebebi değildir.
+     *
+     * Zamanlayıcı dakikada bir çalışır. 09:00 planını 09:00:30'da "çıkmadı"
+     * diye işaretlemek, her plan için bir yalancı alarm demekti — ve yalancı
+     * alarm, gerçek alarmı görünmez yapar.
+     */
+    public function test_a_plan_within_the_scheduler_grace_window_is_still_reported_as_scheduled(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-grace');
+
+        $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->assertStatus(201);
+
+        Carbon::setTestNow(Carbon::now()->addHours(3)->addMinute());
+
+        $response = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        );
+
+        Carbon::setTestNow();
+
+        $response->assertJsonPath('plan.status', 'scheduled');
+    }
+
+    /**
+     * YAYIN BAŞLADI AMA BİTMEDİ — kayıt `publishing` hâlinde asılı kalır.
+     *
+     * Komut kaydı `claim()` ile sahiplenir; süreç o an ölürse (dağıtım,
+     * OOM, kap yeniden başlatma) kayıt ne `published` ne `failed` olur.
+     * Eski davranışta bu kayıt sahibin ekranından TAMAMEN kayboluyordu:
+     * plan yok, yayın yok, açıklama yok.
+     */
+    public function test_a_plan_stuck_mid_publish_is_reported_as_interrupted(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-stuck');
+
+        $scheduleId = (int) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->json('id');
+
+        DB::table('menu_publication_schedules')->where('id', $scheduleId)->update([
+            'state' => 'publishing',
+            'updated_at' => Carbon::now()->subHour(),
+        ]);
+
+        $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        )->assertJsonPath('plan.status', 'interrupted');
+    }
+
+    /**
+     * BAŞARISIZ YAYIN SAHİBİN EKRANINDA KALIR.
+     *
+     * `markFailed` kaydı `failed` yapar ve komut bir daha denemez — bu
+     * doğrudur. Ama eski okuma yalnız `pending` kayıtları görüyordu: sahip
+     * sabah paneli açtığında hiçbir plan göremez, menüsünün neden
+     * değişmediğini de öğrenemezdi.
+     */
+    public function test_a_failed_plan_stays_visible_until_the_owner_sees_it(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-failed');
+
+        $scheduleId = (int) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->json('id');
+
+        DB::table('menu_publication_schedules')->where('id', $scheduleId)->update(['state' => 'failed']);
+
+        $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        )->assertJsonPath('plan.status', 'failed');
+    }
+
+    /**
+     * Sahip uyarıyı KAPATABİLİR ama "o gece ne oldu" cevabı SİLİNMEZ.
+     *
+     * Kapatılamayan bir uyarı, birkaç gün sonra okunmayan bir süse döner —
+     * ve okunmayan uyarı, olmayan uyarıdır. Kaydın `failed` hâli yerinde
+     * durur; yalnız görünürlükten düşer.
+     */
+    public function test_a_failed_plan_can_be_dismissed_without_erasing_what_happened(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-ack');
+
+        $scheduleId = (int) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->json('id');
+
+        DB::table('menu_publication_schedules')->where('id', $scheduleId)->update(['state' => 'failed']);
+
+        $this->actingAs($owner)->deleteJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule/{$scheduleId}"
+        )->assertStatus(200);
+
+        $row = DB::table('menu_publication_schedules')->where('id', $scheduleId)->first();
+
+        self::assertNotNull($row);
+        self::assertSame('failed', (string) $row->state, 'Başarısızlık kaydı iptale çevrilmez.');
+        self::assertNotNull($row->acknowledged_at);
+
+        $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        )->assertJsonPath('plan', null);
     }
 
     public function test_another_workspace_cannot_see_or_cancel_a_schedule(): void

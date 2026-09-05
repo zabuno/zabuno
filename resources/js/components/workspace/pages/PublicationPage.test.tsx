@@ -1257,7 +1257,7 @@ describe('PublicationPage — panel v3 Yayınlama ekranı (PANEL_V3_PUBLICATION_
             if (/publications\/schedule$/.test(url)) {
                 return jsonResponse(200, {
                     timeZone: 'Europe/Istanbul',
-                    pending: null,
+                    plan: null,
                     options: [{ key: 'tonight', scheduledFor: '2026-09-06T00:00:00.000000Z' }],
                 });
             }

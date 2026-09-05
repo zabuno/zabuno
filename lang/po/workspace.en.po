@@ -4704,6 +4704,10 @@ msgstr "The schedule could not be cancelled. Try again."
 msgid "workspace.publication.schedule.close"
 msgstr "Close scheduling"
 
+#: workspace:workspace.publication.schedule.dismiss
+msgid "workspace.publication.schedule.dismiss"
+msgstr "Dismiss this notice"
+
 #: workspace:workspace.publication.schedule.error
 msgid "workspace.publication.schedule.error"
 msgstr "The publish could not be scheduled. Nothing was scheduled."
@@ -4735,6 +4739,26 @@ msgstr "Scheduled for {moment} (Istanbul)."
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
 msgstr "Schedule the publish"
+
+#: workspace:workspace.publication.schedule.status.failed
+msgid "workspace.publication.schedule.status.failed"
+msgstr "The {moment} publish was attempted and could not be saved. The menu did not change — guests still see the previous version. Publish now, or schedule it again."
+
+#: workspace:workspace.publication.schedule.status.interrupted
+msgid "workspace.publication.schedule.status.interrupted"
+msgstr "The {moment} publish started and did not finish. The menu did not change — guests still see the previous version. Publish now, or schedule it again."
+
+#: workspace:workspace.publication.schedule.status.overdue
+msgid "workspace.publication.schedule.status.overdue"
+msgstr "{moment} has passed and the publish did not happen. The menu did not change — guests still see the previous version. Publish now, or schedule it again."
+
+#: workspace:workspace.publication.schedule.status.publishing
+msgid "workspace.publication.schedule.status.publishing"
+msgstr "Publishing the {moment} schedule now."
+
+#: workspace:workspace.publication.schedule.status.unknown
+msgid "workspace.publication.schedule.status.unknown"
+msgstr "This screen cannot read the state of the {moment} schedule, so it cannot tell you whether the menu changed. Reload the page."
 
 #: workspace:workspace.publication.schedule.unready
 msgid "workspace.publication.schedule.unready"

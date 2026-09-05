@@ -4704,6 +4704,10 @@ msgstr ""
 msgid "workspace.publication.schedule.close"
 msgstr ""
 
+#: workspace:workspace.publication.schedule.dismiss
+msgid "workspace.publication.schedule.dismiss"
+msgstr ""
+
 #: workspace:workspace.publication.schedule.error
 msgid "workspace.publication.schedule.error"
 msgstr ""
@@ -4734,6 +4738,26 @@ msgstr ""
 
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.failed
+msgid "workspace.publication.schedule.status.failed"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.interrupted
+msgid "workspace.publication.schedule.status.interrupted"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.overdue
+msgid "workspace.publication.schedule.status.overdue"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.publishing
+msgid "workspace.publication.schedule.status.publishing"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.unknown
+msgid "workspace.publication.schedule.status.unknown"
 msgstr ""
 
 #: workspace:workspace.publication.schedule.unready

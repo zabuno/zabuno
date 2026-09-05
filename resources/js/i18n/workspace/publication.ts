@@ -476,6 +476,25 @@ export const publication = {
     'workspace.publication.schedule.option.nextMonday': 'Monday 09:00',
     'workspace.publication.schedule.optionAt': '{label} — {moment}',
     'workspace.publication.schedule.pending': 'Scheduled for {moment} (Istanbul).',
+
+    /*
+        ÇIKMAYAN YAYIN SESSİZ KALAMAZ. Üç cümle de aynı üç şeyi söyler ve
+        hiçbiri söz vermez: ne oldu, menünün şu anki hâli ne, sahip ne
+        yapabilir. "Birazdan yayınlanacak" ya da tahmini bir süre yazmıyoruz
+        — zamanlayıcının ne zaman döneceğini bilmiyoruz, bilinmeyen de
+        yazılmaz.
+    */
+    'workspace.publication.schedule.status.publishing': 'Publishing the {moment} schedule now.',
+    'workspace.publication.schedule.status.overdue':
+        '{moment} has passed and the publish did not happen. The menu did not change — guests still see the previous version. Publish now, or schedule it again.',
+    'workspace.publication.schedule.status.interrupted':
+        'The {moment} publish started and did not finish. The menu did not change — guests still see the previous version. Publish now, or schedule it again.',
+    'workspace.publication.schedule.status.failed':
+        'The {moment} publish was attempted and could not be saved. The menu did not change — guests still see the previous version. Publish now, or schedule it again.',
+    'workspace.publication.schedule.status.unknown':
+        'This screen cannot read the state of the {moment} schedule, so it cannot tell you whether the menu changed. Reload the page.',
+    'workspace.publication.schedule.dismiss': 'Dismiss this notice',
+
     'workspace.publication.schedule.cancel': 'Cancel this schedule',
     'workspace.publication.schedule.cancelError': 'The schedule could not be cancelled. Try again.',
     'workspace.publication.schedule.error':
