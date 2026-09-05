@@ -23,12 +23,42 @@ use Illuminate\Http\JsonResponse;
  * Yalnız `menu` yüzeyinin slotları döner: "Pricing", "Features" ve
  * "Testimonial" Zabuno'nun kendi tanıtım sitesine aittir, restoranın
  * menüsüne değil (`docs/50` "3 Neden" kapısı).
+ *
+ * BELGE SLOTU BU LİSTEDE YOKTUR ve olmaması bilinçlidir. Bu uç, GÖRSEL
+ * yükleme sihirbazının kaynağıdır: sihirbaz dosyayı `accept="image/*"` ile
+ * seçtirir, ölçüsünü okur, kırpar ve istemcide küçültür. Bunların hiçbiri
+ * bir PDF'te yapılamaz. `document` slotunu bu listeye koymak, kullanıcıya
+ * bir yer SEÇTİRİP sonra dosyayı seçtirmemek olurdu — açılır kutudaki her
+ * seçenek bir sözdür (`docs/76`). Belge yükleme yolu (sürükle-bırak
+ * alanının belge kabul etmesi) ayrı bir pakettir; kapı sunucuda AÇIKTIR ve
+ * `PdfIntakeAndDeliveryTest` onu koruyor.
  */
 final class ListSlotPoliciesController extends Controller
 {
+    /**
+     * Sihirbazın gerçekten seçtirebildiği biçimler (`MediaDropzone`,
+     * `accept="image/*"`).
+     *
+     * @var list<string>
+     */
+    private const WIZARD_FORMATS = ['jpeg', 'png', 'gif', 'webp', 'avif', 'heic', 'svg'];
+
     public function __invoke(): JsonResponse
     {
         $catalogue = SlotCatalogue::fromArray((array) config('media-slots.slots', []));
+
+        $offerable = array_filter(
+            $catalogue->forSurface(MediaSurface::Menu),
+            static function (SlotPolicy $policy): bool {
+                foreach (self::WIZARD_FORMATS as $format) {
+                    if ($policy->acceptsFormat($format)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+        );
 
         $slots = array_map(
             static fn (SlotPolicy $policy): array => [
@@ -39,7 +69,7 @@ final class ListSlotPoliciesController extends Controller
                 'formats' => $policy->formats,
                 'altRequired' => $policy->altRequired,
             ],
-            $catalogue->forSurface(MediaSurface::Menu),
+            $offerable,
         );
 
         return response()->json([

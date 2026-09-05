@@ -547,6 +547,22 @@ export const media = {
     'workspace.media.viewer.fact.type': 'Type',
     'workspace.media.viewer.fact.size': 'Size',
     'workspace.media.viewer.fact.pages': 'Pages',
+
+    /*
+        ASIL HER ZAMAN SAKLANIR — sahibin kararı (2026-09-05, açıkça soruldu).
+
+        Kaynak burada bir "Aslını sakla" ANAHTARI gösteriyor. Yapılmadı ve
+        sebebi bir tercih değil bir DEĞİŞMEZ: bu depoda dönüştürme ve
+        yeniden üretim yeni SÜRÜM açar, hiçbir satır silinmez. Anahtarı
+        kapatılabilir yapmak o değişmezi kırardı ve yanlış bir dönüştürmeden
+        sonra aslı geri getirmenin hiçbir yolu kalmazdı.
+
+        Bu yüzden ekranda bir anahtar değil, bir CÜMLE var: kullanıcı neyin
+        garanti olduğunu okur ve kapatacak bir şey aramaz.
+    */
+    'workspace.media.settings.originals.heading': 'Your original files',
+    'workspace.media.settings.originals.body':
+        'The file you uploaded is always kept, byte for byte. Converting or re-rendering writes a new version next to it; nothing replaces the original and nothing is deleted.',
 } as const;
 
 declare module '../workspace' {

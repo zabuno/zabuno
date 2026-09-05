@@ -110,6 +110,47 @@ return [
             'renditions' => [960],
             'alt_required' => false,
         ],
+        /*
+            BELGE SLOTU — sahibin kararı, 2026-09-05: PDF açıldı.
+
+            NEDEN YENİ BİR SLOT, VAR OLANINA `pdf` EKLEMEK DEĞİL. En yakın
+            aday `menuImportSource`'tu ve açıklaması "taranmış PDF sayfası"
+            bile diyor. Ama o slot bir BESLEME kaynağıdır: yüklenen görsel
+            AI menü içe aktarmaya girer (`docs/92`/`docs/97` Yolculuk A) ve
+            oradaki adım bir RASTER bekler. Oraya PDF koymak, içe aktarmanın
+            okuyamayacağı bir kaynak yaratır ve sahip "yükledim, menüm
+            çıkmadı" ile kalırdı. İki farklı iş, iki farklı slot.
+
+            NEDEN ÖLÇÜ YOK. `min_width`/`min_height`/`aspect` bir PİKSEL
+            ızgarasının kurallarıdır; bir belgede piksel yoktur. Sıfır
+            yazmak burada "sınır yok" demektir, "sınırı unuttuk" değil —
+            ve slot politikası zaten `formats` ile asıl kapıyı tutuyor.
+
+            NEDEN `renditions` BOŞ. PDF'in TÜREVİ YOKTUR: bu sunucuda
+            imagick yok ve GD bir PDF'i hiç okumaz. Buraya bir genişlik
+            yazmak, üretilmeyecek bir türevi vaat etmek olurdu; ürün
+            bunun yerine aslı `inline` servis eder (`MediaPreviewPolicy`)
+            ve kütüphanede küçük resim UYDURMAZ.
+
+            GÜVENLİK YARISI AYNI PAKETTE: `App\Domain\Media\PdfInspector`
+            (açılınca çalışan betik, `/Launch`, `/SubmitForm`, gömülü dosya
+            ve içi görülemeyen sıkıştırılmış bölüm taşıyan gövde
+            REDDEDİLİR — `logo` slotundaki SVG kararıyla aynı yön).
+
+            KAYNAĞIN "Belgeler" AİLESİ (`docs/108` §6.2) csv/xlsx/docx da
+            sayar; onlar BURADA YOKTUR. Panelde açılamayan (ve bu depoda
+            denetlenemeyen) bir türü kabul etmek, sahibin ancak indirdikten
+            sonra göreceği bir dosya biriktirmek olurdu.
+        */
+        'document' => [
+            'surface' => MediaSurface::Menu,
+            'min_width' => 0, 'min_height' => 0,
+            'aspect' => null,
+            'formats' => ['pdf'],
+            'transparency' => 'preserve',   // düzleştirilecek bir piksel yok
+            'renditions' => [],
+            'alt_required' => false,        // belge misafire gösterilmez
+        ],
         'gallery' => [
             'surface' => MediaSurface::Menu,
             'min_width' => 1000, 'min_height' => 1000,

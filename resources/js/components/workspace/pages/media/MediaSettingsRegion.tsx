@@ -220,6 +220,25 @@ export function MediaSettingsRegion({ workspaceId }: MediaSettingsRegionProps) {
                 </ul>
             </div>
 
+            {/*
+                ASIL HER ZAMAN SAKLANIR — bir anahtar DEĞİL, bir cümle
+                (sahibin kararı, 2026-09-05).
+
+                Kaynak burada "Aslını sakla" anahtarı gösteriyor. Anahtar
+                yapmak, kapatılabilir yapmak demektir; oysa bu depoda "asıl
+                korunur" koşulsuz bir kuraldır ve yanlış bir dönüştürmeden
+                sonra aslı geri getirmenin başka yolu yoktur. Kullanıcı
+                neyin garanti olduğunu okur, kapatacak bir şey aramaz.
+            */}
+            <div className="flex flex-col gap-[var(--space-1)]">
+                <h3 className="text-body font-bold text-fg">
+                    {t('workspace.media.settings.originals.heading')}
+                </h3>
+                <p className="text-body text-fg-muted">
+                    {t('workspace.media.settings.originals.body')}
+                </p>
+            </div>
+
             <div className="flex flex-col gap-[var(--space-3)]">
                 <h3 className="text-body font-bold text-fg">
                     {t('workspace.media.settings.security.heading')}

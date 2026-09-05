@@ -115,6 +115,53 @@ istemedi; temizleyici aynı pakette yazıldığı için gecikme olmadı.
 Temizleme başarısız olursa dosya REDDEDİLİR (fail-closed) — depodaki tarama
 kuralıyla aynı yön.
 
+**PDF — sahibin kararı (2026-09-05): AÇILDI, denetçiyle birlikte.**
+
+Depoda PDF OKUYUCU zaten yazılmış ve testlenmişti (`MediaViewerRegion`,
+`ShowMediaViewerController`, `ServeMediaPreviewController`,
+`MediaPreviewPolicy`) — ama alım kapısı PDF'i kabul etmediği için ölü koddu:
+restoran sahibi alerjen tablosunu panele hiç koyamıyordu. Sahibe açıkça
+soruldu; "PDF açılsın — temizleyiciyle birlikte, aynı pakette" dendi. SVG'de
+uygulanan yöntemin aynısı uygulandı.
+
+| Karar | Ne yapıldı | Neden |
+| --- | --- | --- |
+| Slot | Yeni `document` slotu (`formats: [pdf]`, türev yok) | En yakın aday `menuImportSource` bir BESLEME kaynağıdır: yüklenen dosya AI menü içe aktarmaya girer ve orası raster bekler. PDF'i oraya koymak, içe aktarmanın okuyamayacağı bir kaynak yaratırdı |
+| Kapı | MIME **ve** ilk bayt (`%PDF-`), ikisi birden | Uzantı da istemcinin bildirdiği tür de yükleyenin denetimindedir |
+| Karar biçimi | Saldırı bulunan gövde **reddedilir** | `MaliciousIntakeGateTest`in sözü: fixture hiç saklanmadan 422. Sessizce temizleyip kabul etmek saldırıyı arşivlemek olurdu |
+| Ad | `PdfInspector` (temizleyici değil, **denetçi**) | PDF nesneleri çapraz referans tablosunda BAYT KONUMLARIYLA adreslenir; bir nesneyi çıkarmak dosyayı bozar. Bu sınıf hiçbir baytı değiştirmez |
+| Türev | **Yok** | imagick yok, GD PDF okumaz. Uydurma kapak çizmek yerine "önizleme yok" denir; okuma yolu "Görüntüle"dir ve orada ASIL `inline` servis edilir |
+| Boru hattı | Türevsiz PDF `ready` olur, `failed` OLMAZ | "Türev yok" ile "işlenemedi" aynı şey değildir; ikincisi sahibe belgesinin bozuk olduğunu söylerdi |
+
+Reddedilen yapılar: açılışta/olayla çalışan betik (`/JavaScript`, `/JS`),
+eylem (`/AA`, `/OpenAction` — hedef dizisi ve belge içi `/GoTo` HARİÇ),
+`/Launch`, `/SubmitForm`, `/ImportData`, `/GoToR`, gömülü dosya
+(`/EmbeddedFile`, `/Filespec`), gömülü medya (`/RichMedia`, `/Movie`,
+`/Sound`). Ayrıca şifreli (`/Encrypt`), yarım inmiş ve PDF olmayan gövde de
+reddedilir — okunamayan dosya "temiz" değildir.
+
+**`/ObjStm` (sıkıştırılmış nesne akışı) — dürüstlük kararı.** PDF 1.5'ten
+beri nesne sözlükleri, yani eylemlerin yaşadığı yer, sıkıştırılabilir; ham
+baytlarda `/JavaScript` aramak orada hiçbir şey bulmaz. Denetçi bu akışları
+AÇAR ve içini aynı kurallarla tarar; açamadığı bir nesne akışı varsa dosyayı
+REDDEDER. Göremediğimiz bir şeyi "temiz" diye geçirmiyoruz. Akış gövdeleri
+(çizim akışları) taramanın dışındadır: "/Launch nedir?" cümlesini ÇİZEN bir
+eğitim notu saldırı değildir.
+
+**Kalan sınır (dürüstlük notu).** Sunucu kapısı açıktır ve testlidir; panelin
+YÜKLEME SİHİRBAZI hâlâ görsele göre kuruludur (`accept="image/*"`, ölçü
+okuma, kırpma, istemcide küçültme). Bu yüzden `document` slotu bilerek
+`/api/media/slot-policies` listesinde GÖSTERİLMEZ: dolduramayacağımız bir
+yeri açılır kutuda teklif etmek bir söz ihlalidir. Belgeyi panelden yükleme
+yolu ayrı bir pakettir.
+
+**"Aslını sakla" anahtarı — sahibin kararı (2026-09-05): YAPILMADI.**
+Asıl KOŞULSUZ korunur; bunun bir ayarı yoktur. Kapatılabilir bir "aslı
+sakla" anahtarı, kapatıldığı gün geri dönülemez bir veri kaybıdır ve "dosya
+değişmedi" iddiasının tek kanıtı olan parmak izini de anlamsızlaştırırdı —
+virüs taraması anahtarıyla aynı gerekçe (§6.6). Ayarlar ekranında anahtar
+değil, bir BİLGİ SATIRI vardır.
+
 ### 6.3 Dönüştürme hedefleri
 
 AVIF (~%74 küçük, en küçük) · WebP (~%58, en geniş destek) ·

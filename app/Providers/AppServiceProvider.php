@@ -67,6 +67,7 @@ use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
 use App\Application\Workspace\Port\WorkspaceAuditTrailPort;
 use App\Domain\Ai\Capability;
+use App\Domain\Media\PdfInspector;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SvgSanitizer;
 use App\Domain\Platform\Credential\CredentialProvider;
@@ -103,6 +104,7 @@ use App\Infrastructure\Media\Persistence\EloquentMediaRegeneration;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
+use App\Infrastructure\Media\Processing\PdfMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\RuntimeMediaFormatSupport;
 use App\Infrastructure\Media\Processing\SvgMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
@@ -415,7 +417,17 @@ final class AppServiceProvider extends ServiceProvider
                 ? new GdMediaAssetProcessor($slots)
                 : new UnavailableMediaAssetProcessor;
 
-            return new SvgMediaAssetProcessor($inner, new SvgSanitizer, $slots);
+            /*
+                PDF de GD'nin önünde ele alınır (sahip kararı 2026-09-05,
+                `docs/108` §6.2) ve zincirin EN BAŞINDA durur. Bir belgenin
+                türevi yoktur; GD'ye bırakılsaydı "görsel olarak okunamadı"
+                der ve taraması temiz çıkmış bir belgeyi `failed`
+                damgalardı — sahip de belgesini bozuk sanırdı.
+            */
+            return new PdfMediaAssetProcessor(
+                new SvgMediaAssetProcessor($inner, new SvgSanitizer, $slots),
+                new PdfInspector,
+            );
         });
         $this->app->bind(PublicationRepositoryPort::class, EloquentPublicationRepository::class);
         $this->app->bind(PublicMenuAddressPort::class, EloquentPublicMenuAddress::class);

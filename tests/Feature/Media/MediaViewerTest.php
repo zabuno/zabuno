@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Media;
 
+use App\Application\Media\Dto\MediaScanResult;
+use App\Application\Media\Dto\MediaScanVerdict;
+use App\Application\Media\Port\MalwareScannerPort;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -75,10 +79,18 @@ final class MediaViewerTest extends TestCase
     /**
      * Varlığı ALIM KAPISINDAN GEÇMEDEN yazar.
      *
-     * Bilinçli: alım kapısı bugün yalnız JPEG/PNG/GIF/WebP ve (vektör
-     * slotlarında) SVG kabul ediyor — bir PDF ürünün içine hiç giremiyor
-     * (`StoreMediaRequest`). Okuyucunun PDF dalını ancak satırı doğrudan
-     * yazarak sınayabiliriz; bu testin kendisi de o engelin kaydıdır.
+     * PDF için bu artık GEREKMİYOR: sahip 2026-09-05'te "PDF açılsın"
+     * dedi ve kapı `PdfInspector` ile aynı pakette açıldı; okuyucunun PDF
+     * dalı bu dosyada artık GERÇEK bir yükleme üzerinden koşuyor (bkz.
+     * `uploadPdf`). Bu kısayol yalnız ürünün İÇİNE GİREMEYECEK durumlar
+     * için kaldı ve her biri bilinçlidir:
+     *
+     *   - karantinadaki/çöpteki bir satır (alım onları üretmez),
+     *   - panelin açamadığı bir tür (CSV — kabul de edilmez),
+     *   - denetçinin REDDETTİĞİ bir PDF gövdesi. Böyle bir dosya ürüne
+     *     hiç giremez; ama okuyucunun "bilmiyorum" dalı yine de
+     *     korunmalıdır, çünkü bugün kabul edilen bir dosya yarın
+     *     okunamaz hâle gelebilir (bozulma, göç, yeni bir üretici).
      */
     private function asset(string $mime, string $name, string $status, string $body, ?int $workspaceId = null): int
     {
@@ -113,6 +125,38 @@ final class MediaViewerTest extends TestCase
             ."3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] >> endobj\n"
             ."4 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] >> endobj\n"
             ."trailer << /Root 1 0 R >>\n%%EOF\n";
+    }
+
+    /**
+     * PDF'i GERÇEKTEN yükler — alım kapısından, taramadan ve boru
+     * hattından geçirerek.
+     *
+     * Okuyucunun sözü ancak böyle sınanır: satırı elle yazmak, "sahip bu
+     * belgeyi panele koyabiliyor mu?" sorusunu hiç sormaz.
+     */
+    private function uploadPdf(string $body, string $name = 'alerjen-tablosu.pdf'): int
+    {
+        // Bu ortamda virüs tarayıcısı yok; olmadığında dosya İLERLEMEZ ve
+        // bu testin konusu tarayıcı değil, okuyucu.
+        $this->app->instance(MalwareScannerPort::class, new class implements MalwareScannerPort
+        {
+            public function scan(string $diskPath): MediaScanResult
+            {
+                return new MediaScanResult(MediaScanVerdict::Clean);
+            }
+        });
+
+        $path = (string) tempnam(sys_get_temp_dir(), 'pdf');
+        file_put_contents($path, $body);
+
+        return (int) $this->api()->post(
+            "/api/workspaces/{$this->workspaceId}/media",
+            [
+                'file' => new UploadedFile($path, $name, 'application/pdf', null, true),
+                'altText' => 'Alerjen tablosu',
+                'slot' => 'document',
+            ],
+        )->assertStatus(201)->json('id');
     }
 
     #[Test]
@@ -200,7 +244,8 @@ final class MediaViewerTest extends TestCase
     #[Test]
     public function test_a_pdf_page_count_is_reported_only_when_the_bytes_really_say_it(): void
     {
-        $readable = $this->asset('application/pdf', 'alerjen-tablosu.pdf', 'ready', $this->twoPagePdf());
+        // GERÇEK yükleme: sahip belgeyi panele koydu, okuyucu onu açıyor.
+        $readable = $this->uploadPdf($this->twoPagePdf());
 
         $this->api()->getJson("/api/workspaces/{$this->workspaceId}/media/{$readable}/viewer")
             ->assertOk()
@@ -213,6 +258,13 @@ final class MediaViewerTest extends TestCase
             içinde okunmaz kılar. Kütüphane kurmadan burada tahmin yürütmek
             yanlış bir sayı üretmenin en kısa yoludur; ürün "bilmiyorum"
             der ve ekran sayfa gezintisini hiç çizmez.
+
+            SATIR ELLE YAZILIR ve bu bilinçlidir: bu gövdedeki akış
+            çözülemiyor, dolayısıyla alım kapısı onu bugün REDDEDER
+            (`PdfInspector`, `opaque-object-stream` — içini göremediğimiz
+            şeye "temiz" demeyiz). Okuyucunun "bilmiyorum" dalı yine de
+            korunur; bugün kabul edilmiş bir belge yarın okunamaz hâle
+            gelebilir.
         */
         $opaque = $this->asset('application/pdf', 'sikistirilmis.pdf', 'ready', "%PDF-1.5\n1 0 obj << /Type /ObjStm /N 4 /First 20 >> stream\nzzzz\nendstream endobj\n%%EOF\n");
 
