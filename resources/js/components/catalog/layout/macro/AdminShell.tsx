@@ -122,7 +122,25 @@ export function AdminShell({
         <div
             data-persona={persona}
             className={clsx(
-                'flex h-dvh min-h-screen flex-col overflow-hidden',
+                /*
+                    YÜKSEKLİK `admin-shell-frame`'DE, TAILWIND SINIFINDA DEĞİL.
+
+                    Önce `h-dvh min-h-screen` yazıyordu ve ikisi çelişiyordu:
+                    `min-h-screen` = `100vh`, telefonda adres çubuğu DAHİL
+                    yüksekliktir ve görünen alandan büyüktür. min-height,
+                    height'ı yener — kabuk ekrandan taşar, belge kayar, en
+                    alttaki gezinti çubuğu katlamanın altında kalır (sahibin
+                    2026-09-05 ekran kaydı).
+
+                    `100vh` yine de bir yedek olarak gerekli: `dvh` desteği
+                    olmayan bir tarayıcıda tek başına `100dvh` yazmak kuralı
+                    hiç uygulanmamış hâle getirir ve kabuk çöker. İki değeri
+                    aynı kuralın içinde ARDIŞIK yazmak bunu çözer; bunu
+                    Tailwind sınıflarıyla yapmak mümkün değil, çünkü hangisinin
+                    kazanacağını sınıf sırası değil stil sayfasındaki sıra
+                    belirler. Bu yüzden yükseklik `app.css`'te yaşıyor.
+                */
+                'admin-shell-frame flex flex-col overflow-hidden',
                 'print:h-auto print:min-h-0 print:overflow-visible',
                 className,
             )}

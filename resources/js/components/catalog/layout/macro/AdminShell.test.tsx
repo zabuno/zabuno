@@ -75,12 +75,19 @@ describe('AdminShell', () => {
         kenar çubuğunun dibindeki hesap düğmesi sayfanın dibine gidiyor, yani
         uzun bir sayfada ekrandan çıkıyordu. Bu test o kararı dondurur:
         kök tam ekran yüksekliğinde, kaydırma ANA ALANDA.
+
+        2026-09-05: karar aynı, MEKANİZMA değişti. Yükseklik artık `h-dvh`
+        sınıfında değil, `admin-shell-frame` kuralında — çünkü `dvh` desteği
+        olmayan tarayıcı için gereken `100vh` yedeğinin AYNI kuralda ve dvh'den
+        ÖNCE gelmesi gerekiyor, bunu iki Tailwind sınıfıyla söylemek mümkün
+        değil (kazananı sınıf sırası değil stil sayfasındaki sıra belirler).
+        Ölçülen şey değişmedi: kök ekran yüksekliğinde, kaydırma ana alanda.
     */
     it('kabuk ekran yüksekliğine kilitlenir ve kaydırma ana alandadır', () => {
         const { container } = renderShell();
 
         const root = container.firstElementChild as HTMLElement;
-        expect(root.className).toContain('h-dvh');
+        expect(root.className).toContain('admin-shell-frame');
         expect(root.className).toContain('overflow-hidden');
         // Yazdırmada kilit AÇILIR: aksi hâlde çıktı tek sayfaya kırpılırdı.
         expect(root.className).toContain('print:overflow-visible');
@@ -201,6 +208,36 @@ describe('AdminShell', () => {
         const footers = screen.getAllByRole('contentinfo');
         expect(footers).toHaveLength(1);
         expect(footers[0]).toHaveTextContent('Zabuno');
+    });
+
+    /*
+        ALT ÇUBUK EKRANIN DIŞINA İTİLMEZ — sahibin 2026-09-05 ekran kaydı.
+
+        Kabuk `h-dvh` ile "görünen ekran kadar uzun ol" diyordu, ama yanında
+        duran `min-h-screen` (yani `100vh`) bunu geçersiz kılıyordu: telefonda
+        `100vh`, tarayıcının adres çubuğu dahil YÜKSEKLİKTİR ve görünen alandan
+        BÜYÜKTÜR. min-height, height'ı yener; kabuk ekrandan taşar, belgenin
+        kendisi kayar ve en alttaki gezinti çubuğu katlamanın altında kalır.
+
+        Ekranda görülen buydu: alt menü "sticky" yazılıydı ama misafir gibi
+        aşağı kayıyordu. Kusur çubukta değil, onu tutan kaptaydı — çubuk zaten
+        kaydırılan alanın DIŞINDA, sabit yükseklikli bir sütunun son
+        çocuğudur; kap ekranı taşmadığı sürece başka hiçbir kural gerekmez.
+
+        Bu test o kabı ölçer: viewport yüksekliğini `vh` ile sabitleyen bir
+        sınıf geri gelirse burası kırılır.
+    */
+    it('never pins the shell to a static viewport height that outgrows the phone screen', () => {
+        const { container } = renderShell();
+        const frame = container.firstElementChild;
+
+        expect(frame).not.toBeNull();
+
+        const classes = frame!.className.split(/\s+/);
+
+        expect(classes).not.toContain('min-h-screen');
+        expect(classes).not.toContain('h-screen');
+        expect(classes).toContain('admin-shell-frame');
     });
 
     it('places the opt-in footer after the sidebar/main layout region', () => {
