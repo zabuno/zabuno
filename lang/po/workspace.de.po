@@ -3328,6 +3328,14 @@ msgstr ""
 msgid "workspace.media.upload.heading"
 msgstr ""
 
+#: workspace:workspace.media.upload.held
+msgid "workspace.media.upload.held"
+msgstr ""
+
+#: workspace:workspace.media.upload.held.notYours
+msgid "workspace.media.upload.held.notYours"
+msgstr ""
+
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
 msgstr ""

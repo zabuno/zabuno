@@ -3328,6 +3328,14 @@ msgstr "File"
 msgid "workspace.media.upload.heading"
 msgstr "Add photos"
 
+#: workspace:workspace.media.upload.held
+msgid "workspace.media.upload.held"
+msgstr "Your file reached us, but it cannot be used in your menu yet. Here is the reason:"
+
+#: workspace:workspace.media.upload.held.notYours
+msgid "workspace.media.upload.held.notYours"
+msgstr "You did not do anything wrong, and this is not something you can switch on from here."
+
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
 msgstr "Name for {name}"

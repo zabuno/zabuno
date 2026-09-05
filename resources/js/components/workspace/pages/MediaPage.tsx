@@ -238,6 +238,17 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             current.some((row) => row.id === asset.id) ? current : [...current, asset],
         );
         setLoadState('idle');
+
+        /*
+            Yükleme ekranı sonucu GÖRMELİ (FF-150).
+
+            Sunucu 201 dönmesi dosyanın kullanılabilir olduğu anlamına
+            gelmez: güvenlik kapısını geçemediyse karantinada bekler ve
+            sebebi burada, cevabın içindedir. Bu değeri yutup ekrana yalnız
+            "tamamlandı" dedirtmek, sahibi sessizce bekleyen bir dosyayla
+            baş başa bırakırdı.
+        */
+        return { status: asset.status, statusReason: asset.statusReason };
     }
 
     /*

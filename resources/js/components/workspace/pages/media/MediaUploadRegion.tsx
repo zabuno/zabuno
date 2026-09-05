@@ -58,9 +58,43 @@ export type UploadOptions = {
     onProgress: (fraction: number) => void;
 };
 
-type MediaUploadRegionProps = {
-    onSubmit: (formData: FormData, options: UploadOptions) => Promise<void> | void;
+/**
+ * Yüklemenin ARDINDAN dosyanın gerçekte nerede olduğu (FF-150).
+ *
+ * Sunucu 201 ile "aldım" der, ama "aldım" ile "kullanabilirsin" aynı şey
+ * değildir: dosya güvenlik kapısını geçemediyse karantinada bekler. Bu
+ * ekran o farkı BİLMEDEN "tamamlandı" yazıyordu ve sahip fotoğrafının
+ * menüde çıkmamasını kendi hatası sanıyordu.
+ *
+ * Alanlar isteğe bağlıdır: `onSubmit` bugün bazı çağıranlarda (ve
+ * testlerde) hiçbir şey döndürmüyor ve döndürmemesi bir hata değil —
+ * o durumda ekran eskisi gibi davranır.
+ */
+export type UploadOutcome = {
+    /** `MediaAssetStatus` — `ready` dışındaki her değer "henüz kullanılamaz" demektir. */
+    status?: string;
+    /** Sunucunun KAYDETTİĞİ sebep; sorunsuz dosyada boştur. */
+    statusReason?: string | null;
 };
+
+type MediaUploadRegionProps = {
+    onSubmit: (
+        formData: FormData,
+        options: UploadOptions,
+    ) => Promise<UploadOutcome | void> | UploadOutcome | void;
+};
+
+/**
+ * Dosya, İŞLENEMEDİĞİ için değil, TARANAMADIĞI için mi bekliyor?
+ *
+ * Ayrım önemli: tarama kapısında bekleyen bir dosyada kusur ORTAMDADIR
+ * (sunucuda tarayıcı yok) ve sahibin yapabileceği bir şey yoktur. İşleme
+ * aşamasında takılan bir dosyada ise sebep dosyanın kendisi olabilir —
+ * oraya "yanlış bir şey yapmadınız" yazmak, yanlış bir teselli olurdu.
+ */
+function heldAtScanGate(status: string | undefined): boolean {
+    return status === 'scanning' || status === 'quarantined';
+}
 
 /** "IMG_8734.jpg" → "IMG 8734": boş alt metin bırakmaktansa dosya adı; sonra düzeltilir. */
 function nameFromFile(fileName: string): string {
@@ -131,6 +165,15 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
      * söylüyor olsa bile.
      */
     const [failureMessage, setFailureMessage] = useState('');
+    /**
+     * Yükleme BAŞARILI oldu ama dosya kullanılamıyor (FF-150).
+     *
+     * Hata değildir — `failureMessage` ile aynı kutuya konamaz: sunucu
+     * dosyayı reddetmedi, aldı ve tuttu. Kırmızı bir "başarısız" uyarısı
+     * göstermek sahibi dosyayı yeniden yüklemeye iterdi ve ikinci deneme de
+     * aynı yerde beklerdi.
+     */
+    const [held, setHeld] = useState<{ reason: string; atScanGate: boolean } | null>(null);
     /**
      * Çoklu yüklemenin kalan dosyaları (FF-76). Her birinin alt metni dosya
      * adından türer ("IMG_8734.jpg" → "IMG 8734") ve satırda düzeltilebilir;
@@ -428,10 +471,29 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         setStatus('pending');
         setProgress(0);
         setFailureMessage('');
+        setHeld(null);
         setFieldErrors({});
 
+        /*
+            BEKLEYENLERİN SONUNCUSU gösterilir, ilki değil.
+
+            Toplu yüklemede dosyaların hepsi aynı kapıdan geçer; biri
+            beklemede kaldıysa büyük olasılıkla hepsi kaldı. Sebebi her
+            dosya için ayrı ayrı listelemek aynı cümleyi kırk kez yazmak
+            olurdu — ve sahip kırk satır okumaz.
+        */
+        let lastHeld: { reason: string; atScanGate: boolean } | null = null;
+
+        function noteOutcome(outcome: UploadOutcome | void): void {
+            const reason = outcome?.statusReason;
+
+            if (typeof reason === 'string' && reason.trim() !== '') {
+                lastHeld = { reason, atScanGate: heldAtScanGate(outcome?.status) };
+            }
+        }
+
         try {
-            await onSubmit(formData, { idempotencyKey, onProgress: setProgress });
+            noteOutcome(await onSubmit(formData, { idempotencyKey, onProgress: setProgress }));
 
             // Kalan dosyalar SIRAYLA: aynı slot, kendi alt metni, kendi anahtarı.
             // Biri düşerse kalanlar durur ve düşen dosya ilk sıraya alınır.
@@ -445,10 +507,12 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     more.set('altText', row.altText.trim() || nameFromFile(row.image.file.name));
                     more.set('slot', slot);
                     try {
-                        await onSubmit(more, {
-                            idempotencyKey: newIdempotencyKey(),
-                            onProgress: setProgress,
-                        });
+                        noteOutcome(
+                            await onSubmit(more, {
+                                idempotencyKey: newIdempotencyKey(),
+                                onProgress: setProgress,
+                            }),
+                        );
                     } catch (error) {
                         setExtra(extra.slice(index));
                         setBatchProgress(null);
@@ -471,6 +535,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             setOptimized(null);
             setAltText('');
             setSlot('');
+            setHeld(lastHeld);
             setStatus('success');
             // Sihirbaz başa döner: sonraki fotoğraf yine "hangi dosya?" ile
             // başlar. Son adımda bırakmak, kullanıcıya bitmemiş bir iş
@@ -854,19 +919,58 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                 </div>
             )}
 
-            {status === 'success' && (
-                <p role="status" className="text-body text-fg-muted">
-                    {t('workspace.media.upload.complete')}
-                </p>
-            )}
+            {/*
+                BAŞARILI GÖNDERİM, İKİ AYRI GERÇEK (FF-150).
+
+                Dosya ilerlediyse tek cümle yeter. Kapıda kaldıysa sahibin
+                üç şeyi bilmesi gerekir: dosya ULAŞTI, henüz KULLANILAMIYOR
+                ve SEBEBİ şu. Üçü tek bir canlı bölgede durur; ekran
+                okuyucuda üç ayrı duyuru, aynı olayı üç kez anlatırdı.
+
+                Sebep sunucunun KAYDETTİĞİ cümledir, burada üretilmez —
+                "birazdan biter" ya da "%80" gibi bir şey yazmak, bilmediğimiz
+                bir şeyi bilir gibi davranmak olurdu.
+            */}
+            {status === 'success' &&
+                (held ? (
+                    <div role="status" className="flex flex-col gap-1">
+                        <p className="text-body text-fg-muted">
+                            {t('workspace.media.upload.held')}
+                        </p>
+                        <p className="text-body text-fg-warning">{held.reason}</p>
+                        {held.atScanGate ? (
+                            <p className="text-body text-fg-muted">
+                                {t('workspace.media.upload.held.notYours')}
+                            </p>
+                        ) : null}
+                    </div>
+                ) : (
+                    /*
+                        İlerleyen dosyanın cevabı TEK cümledir ve tek bir
+                        paragraf olarak kalır: söylenecek başka bir şey yokken
+                        etrafına kutu çizmek, ekran okuyucuya da fazladan bir
+                        katman okutur.
+                    */
+                    <p role="status" className="text-body text-fg-muted">
+                        {t('workspace.media.upload.complete')}
+                    </p>
+                ))}
 
             {/*
                 Güvenlik açıklaması dipnot DEĞİLDİR: yüklediği fotoğrafın
                 neden hemen menüde görünmediğini soran kullanıcının cevabı
-                budur. "Taranıyor" durumu olduğu gibi kalır — bu ortamda
-                tarama kapalı olsa bile ekran "hazır" demez.
+                budur.
+
+                Ama BEKLEYEN bir dosyanın yanında çizilmez: "Her görsel
+                taranır" cümlesi ile "tarama bu ortamda çalışmıyor" cümlesi
+                aynı ekranda durursa biri mutlaka yalandır ve sahip hangisine
+                inanacağını bilemez. Vaat, çürütüldüğü anda susar.
             */}
-            <p className="text-body text-fg-muted">{t('workspace.media.security.explanation')}</p>
+            {held ? null : (
+                <p className="text-body text-fg-muted">
+                    {t('workspace.media.security.explanation')}
+                </p>
+            )}
         </form>
     );
 }

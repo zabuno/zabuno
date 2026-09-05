@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1325;
+const FROZEN_LEGACY_KEY_COUNT = 1327;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -42,8 +42,13 @@ const FROZEN_LEGACY_KEY_COUNT = 1325;
 // FF-148: şube kartı "şu an açık / şu an kapalı" diyebiliyor. İki anahtar,
 // çünkü rozet renkle değil KELİMEYLE anlatır; üçüncü bir "bilinmiyor"
 // anahtarı YOK — cevabı olmayan şubede rozet hiç çizilmez.
+// FF-150: yükleme ekranı, karantinada BEKLEYEN dosyayı artık sessizce
+// "tamamlandı" diye göstermiyor. İki anahtar: biri dosyanın ulaştığını ama
+// kullanılamadığını söyler, diğeri bunun sahibin hatası olmadığını. Süre,
+// yüzde ya da "yakında düzelecek" diyen üçüncü bir anahtar YOK — bilinen
+// tek şey durumun kendisidir.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '91beff43670f49c70f942e0cd96735651feada561434f4229113f07a15c00231';
+    'b3a14ddb0ba23cb23ca62cb62c388ec7065efad4e9320f8d114a091e631a53b3';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Domain\Authorization\Permission;
@@ -24,6 +25,7 @@ final class BindMenuItemImageController extends Controller
         private readonly MenuMediaPort $menuMedia,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AuthorizationPort $authorization,
+        private readonly MediaRepositoryPort $media,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $menuItem): JsonResponse
@@ -54,7 +56,7 @@ final class BindMenuItemImageController extends Controller
             // 422: istek biçimsel olarak doğru, görsel HENÜZ kullanılabilir
             // değil. Sahip beklemeli — ve bunu okuyabilmeli.
             return response()->json([
-                'message' => 'Bu görsel henüz kullanıma hazır değil. İşlenmesi bitince yeniden deneyin.',
+                'message' => $this->refusalMessage($workspace, $mediaAssetId),
             ], 422);
         }
 
@@ -62,5 +64,46 @@ final class BindMenuItemImageController extends Controller
             'menuItemId' => $menuItem,
             'mediaAssetId' => $mediaAssetId,
         ]);
+    }
+
+    /**
+     * Ret cümlesi: VAAT DEĞİL, kayda geçmiş sebep (FF-150).
+     *
+     * Eskiden tek bir cümle vardı: "İşlenmesi bitince yeniden deneyin."
+     * Sunucuda virüs tarayıcı kurulu değilken bu cümle OLMAYACAK bir şeyi
+     * vaat ediyordu — dosya `scanning` durumunda süresiz bekliyor, işleme
+     * hiç başlamıyor. Sahip menü ekranında saatlerce yeniden deniyor ve
+     * her seferinde aynı cümleyi okuyor.
+     *
+     * Sebep burada ÜRETİLMEZ; boru hattının kendi kaydından okunur
+     * (`media_processing_jobs.failure_reason`, `held`/`failed`). Böylece
+     * ekranın söylediği ile sistemin yaptığı tek kaynaktan gelir ve bir
+     * gün ayrışamaz.
+     *
+     * Kayıtlı sebep yoksa eski cümle kalır: o durumda dosya gerçekten
+     * ilerliyordur (`accepted`/`processing`) ve beklemek doğru tavsiyedir.
+     *
+     * KİRACI SINIRI: sebep, yalnız İSTENEN çalışma alanının varlığı için
+     * okunur. `find()` kimlikle çalışır ve kiracı sormaz; başka bir
+     * kiracının varlığına ait bir cümleyi buraya yazmak, o kiracının
+     * dosyasının var olduğunu ele verirdi.
+     */
+    private function refusalMessage(int $workspaceId, ?int $mediaAssetId): string
+    {
+        $fallback = 'Bu görsel henüz kullanıma hazır değil. İşlenmesi bitince yeniden deneyin.';
+
+        if ($mediaAssetId === null) {
+            return $fallback;
+        }
+
+        $asset = $this->media->find($mediaAssetId);
+
+        if ($asset === null || $asset->workspaceId !== $workspaceId) {
+            return $fallback;
+        }
+
+        $reason = trim((string) ($asset->statusReason ?? ''));
+
+        return $reason === '' ? $fallback : $reason;
     }
 }

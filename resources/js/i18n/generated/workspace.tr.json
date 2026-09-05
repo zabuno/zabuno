@@ -829,6 +829,8 @@
     "workspace.media.upload.field.assetSlot.testimonial": "Müşteri yorumu",
     "workspace.media.upload.field.file": "Dosya",
     "workspace.media.upload.heading": "Fotoğraf ekle",
+    "workspace.media.upload.held": "Dosyanız bize ulaştı, ama menünüzde henüz kullanılamıyor. Sebebi şu:",
+    "workspace.media.upload.held.notYours": "Yanlış bir şey yapmadınız; bunu buradan açmanız da mümkün değil.",
     "workspace.media.upload.more.altFor": "{name} için ad",
     "workspace.media.upload.more.label": "Yüklenecek diğer fotoğraflar",
     "workspace.media.upload.more.lead": "{count} fotoğraf daha aynı yer için yüklenecek. Her birine ad verin:",

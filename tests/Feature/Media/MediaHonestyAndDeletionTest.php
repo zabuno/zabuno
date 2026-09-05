@@ -27,8 +27,20 @@ use Tests\TestCase;
  * kırılmaz. Yayın, sahibin onayladığı donmuş hâldir; panelden yapılan bir
  * temizlik onu misafirin gözü önünde bozamaz.
  *
+ * KRİTER 3'ÜN İKİNCİ YARISI (FF-150). "Kayda geçiyor" ile "sahip okuyor"
+ * aynı şey değildir. Sebep bugün YALNIZ kütüphane listesinde görünüyordu;
+ * sahip dosyayı YÜKLEDİĞİ ekranda "Media upload complete." okuyup ayrılıyor
+ * ve bir daha bakmıyor. Sessizce bekleyen dosya, ürünün verebileceği en
+ * kötü cevaptır: sahip yanlış bir şey yaptığını sanır, tekrar dener, sonra
+ * ürünün bozuk olduğunu düşünür.
+ *
+ * Aynı sessizlik menüye bağlarken de vardı: ret "İşlenmesi bitince yeniden
+ * deneyin" diyordu. Tarayıcı bu ortamda hiç yokken işleme ASLA bitmez —
+ * yani ürün olmayacak bir şeyi vaat ediyordu.
+ *
  * Requirement IDs: MEDIA-SCANNER-HONEST-01, MEDIA-DELETE-IMPACT-01,
- * MEDIA-DELETE-UNUSED-OK-01.
+ * MEDIA-DELETE-UNUSED-OK-01, MEDIA-SCANNER-HONEST-AT-UPLOAD-01,
+ * MEDIA-BIND-HELD-HONEST-01.
  */
 final class MediaHonestyAndDeletionTest extends TestCase
 {
@@ -99,6 +111,142 @@ final class MediaHonestyAndDeletionTest extends TestCase
             $row['statusReason'] ?? '',
             'MEDIA-SCANNER-HONEST-01: sahip ekranda neden beklediğini okuyabilmeli.'
         );
+    }
+
+    // --- MEDIA-SCANNER-HONEST-AT-UPLOAD-01 --------------------------------
+
+    public function test_the_upload_answer_itself_carries_the_reason_the_file_is_waiting(): void
+    {
+        Storage::fake('local');
+        $this->app->instance(MalwareScannerPort::class, new class implements MalwareScannerPort
+        {
+            public function scan(string $diskPath): MediaScanResult
+            {
+                return new MediaScanResult(MediaScanVerdict::Indeterminate);
+            }
+        });
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('scanner-at-upload');
+
+        $response = $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])->post(
+            "/api/workspaces/{$workspaceId}/media",
+            ['file' => UploadedFile::fake()->image('kebap.jpg', 400, 400), 'altText' => 'Adana kebap', 'slot' => 'itemImage']
+        );
+
+        $response->assertStatus(201);
+
+        /*
+            Sebep YÜKLEMENİN KENDİ CEVABINDA olmalı. Kütüphane listesine
+            koymak yetmiyor: sahip yükleme ekranından ayrılmadan önce
+            dosyasının beklediğini öğrenmeli, sonraki sekmede değil.
+        */
+        self::assertNotEmpty(
+            (string) $response->json('statusReason'),
+            'MEDIA-SCANNER-HONEST-AT-UPLOAD-01: sahip, yüklediği YERDE neden beklediğini okumalı.'
+        );
+
+        // Ve cevap taranmış gibi davranmıyor: durum hâlâ ilerlememiş.
+        self::assertSame(MediaAssetStatus::Scanning->value, $response->json('status'));
+    }
+
+    // --- MEDIA-BIND-HELD-HONEST-01 ----------------------------------------
+
+    public function test_binding_a_held_image_to_a_menu_item_does_not_promise_that_processing_will_finish(): void
+    {
+        Storage::fake('local');
+        $this->app->instance(MalwareScannerPort::class, new class implements MalwareScannerPort
+        {
+            public function scan(string $diskPath): MediaScanResult
+            {
+                return new MediaScanResult(MediaScanVerdict::Indeterminate);
+            }
+        });
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('bind-held-honest');
+        $menuItemId = $this->menuItemIn($workspaceId, 'bind-held-honest');
+
+        $mediaId = (int) $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])->post(
+            "/api/workspaces/{$workspaceId}/media",
+            ['file' => UploadedFile::fake()->image('kebap.jpg', 400, 400), 'altText' => 'Adana kebap', 'slot' => 'itemImage']
+        )->json('id');
+
+        $response = $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->putJson(
+                "/api/workspaces/{$workspaceId}/menu-items/{$menuItemId}/image",
+                ['mediaAssetId' => $mediaId],
+            );
+
+        // Güvenlik sınırı DEĞİŞMEZ: taranmamış görsel menüye bağlanmaz.
+        $response->assertStatus(422);
+        self::assertSame(
+            0,
+            DB::table('media_usages')->where('media_asset_id', $mediaId)->count(),
+            'MEDIA-BIND-HELD-HONEST-01: taranmamış görsel yine de bağlanmamalı.'
+        );
+
+        $message = (string) $response->json('message');
+
+        /*
+            Ret, olmayacak bir şeyi VAAT ETMEZ. Bu ortamda tarayıcı hiç
+            yok; "işlenmesi bitince" diye beklenecek bir an yok. Sahip
+            saatlerce yenilemesin diye sebep, kaydedilmiş gerçek sebeptir.
+        */
+        self::assertStringNotContainsString('İşlenmesi bitince', $message);
+        self::assertSame(
+            (string) DB::table('media_processing_jobs')
+                ->where('media_asset_id', $mediaId)->where('kind', 'scan')
+                ->orderByDesc('id')->value('failure_reason'),
+            $message,
+            'MEDIA-BIND-HELD-HONEST-01: ret, kayda geçen gerçek sebebi söylemeli.'
+        );
+    }
+
+    /**
+     * Menüye bağlama testinin gerektirdiği en küçük gerçek zincir:
+     * marka → şube → menü → kategori → ürün → menü satırı.
+     *
+     * Satırlar elle yazılıyor çünkü bu test menü KURMAYI değil, kurulmuş
+     * bir menüye taranmamış bir görseli bağlamayı ölçüyor.
+     */
+    private function menuItemIn(int $workspaceId, string $slug): int
+    {
+        $brandId = (int) DB::table('brands')->insertGetId([
+            'workspace_id' => $workspaceId, 'name' => 'Zeytin Restoranları',
+            'slug' => "brand-{$slug}", 'locale' => 'tr',
+            'timezone' => 'Europe/Istanbul', 'currency' => 'TRY',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $locationId = (int) DB::table('locations')->insertGetId([
+            'workspace_id' => $workspaceId, 'brand_id' => $brandId,
+            'display_name' => 'Kadıköy', 'country_code' => 'TR',
+            'timezone' => 'Europe/Istanbul', 'city' => 'İstanbul',
+            'address_line1' => 'Bahariye Cd. No:1',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $menuId = (int) DB::table('menus')->insertGetId([
+            'public_key' => "pk-{$slug}", 'workspace_id' => $workspaceId,
+            'location_id' => $locationId, 'name' => 'Ana Menü', 'state' => 'draft',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $categoryId = (int) DB::table('menu_categories')->insertGetId([
+            'menu_id' => $menuId, 'name' => 'Kebaplar', 'position' => 0,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $productId = (int) DB::table('products')->insertGetId([
+            'workspace_id' => $workspaceId, 'name' => 'Adana Kebap',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        return (int) DB::table('menu_items')->insertGetId([
+            'category_id' => $categoryId, 'product_id' => $productId,
+            'price_minor_amount' => 38000, 'currency_code' => 'TRY',
+            'position' => 0, 'is_visible' => true,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
     }
 
     public function test_a_clean_scan_leaves_no_misleading_reason(): void

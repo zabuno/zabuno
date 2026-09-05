@@ -3328,6 +3328,14 @@ msgstr "Dosya"
 msgid "workspace.media.upload.heading"
 msgstr "Fotoğraf ekle"
 
+#: workspace:workspace.media.upload.held
+msgid "workspace.media.upload.held"
+msgstr "Dosyanız bize ulaştı, ama menünüzde henüz kullanılamıyor. Sebebi şu:"
+
+#: workspace:workspace.media.upload.held.notYours
+msgid "workspace.media.upload.held.notYours"
+msgstr "Yanlış bir şey yapmadınız; bunu buradan açmanız da mümkün değil."
+
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
 msgstr "{name} için ad"

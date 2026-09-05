@@ -15,6 +15,26 @@ export const media = {
         'This image is {width} × {height} pixels — more than {max} megapixels. Export a smaller copy and try again.',
     'workspace.media.upload.failed': 'Media upload failed. Your selection was kept.',
     'workspace.media.upload.complete': 'Media upload complete.',
+    /*
+        FF-150. "Tamamlandı" tek başına yanıltıcıydı: dosya gerçekten
+        ulaşıyor, ama güvenlik kapısını geçemeyince karantinada bekliyor ve
+        menüde kullanılamıyor. Sahip ekrandan ayrılıp bir hafta sonra
+        fotoğrafın menüde olmadığını görüyor, yanlış bir şey yaptığını
+        sanıyordu.
+
+        Cümle YALNIZ durumu söyler. "Yakında düzelecek", tahmini süre ya da
+        yüzde YAZILMAZ: bilinen tek şey dosyanın beklediğidir. Sebebin
+        kendisi sunucunun kaydettiği cümledir ve hemen altında durur.
+    */
+    'workspace.media.upload.held':
+        'Your file reached us, but it cannot be used in your menu yet. Here is the reason:',
+    /*
+        Kusur dosyada ya da sahipte DEĞİL, ortamda. Ayarlar ekranındaki
+        "virüs taraması çalışmıyor" satırıyla aynı sesle konuşur; sahip aynı
+        gerçeği iki yerde iki farklı şekilde okumamalı.
+    */
+    'workspace.media.upload.held.notYours':
+        'You did not do anything wrong, and this is not something you can switch on from here.',
     'workspace.media.security.explanation':
         'Every image is scanned and checked by a person before it can appear on your menu.',
     'workspace.media.upload.field.file': 'File',
