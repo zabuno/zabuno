@@ -54,6 +54,34 @@ interface TeamInvitationRepositoryPort
     public function cancelPending(int $workspaceId, int $invitationId): bool;
 
     /**
+     * Yeniden gönderme için bekleyen daveti TAZELER (`docs/110` P0-06).
+     *
+     * Aynı satır id'si korunur (davet yeniden kurulmaz, tekrarlanır) ama
+     * token ve süre yenilenir; böylece eskiden gönderilmiş e-postadaki
+     * bağlantı ölür. Depo bu kuralı iptal-sonrası yeniden davet yolunda
+     * zaten koymuştu; yeniden gönderme onunla AYNI kuralı taşır — iki
+     * geçerli bağlantı bırakmak, iptal edilmiş bir e-postanın aylarca
+     * çalışması demekti.
+     *
+     * Teslimat sütunları da sıfırlanır: yeni bir gönderim denemesinin
+     * sonucu, bir öncekinin damgasıyla karışmamalı.
+     *
+     * Eşleşme `workspace_id` + `id` + `pending` üçlüsüyle yapılır ve
+     * eşleşme yoksa `null` döner — kiracı sınırı ekrandaki bir kural değil,
+     * sorgunun kendisidir.
+     */
+    public function refreshPendingForResend(int $workspaceId, int $invitationId): ?IssuedTeamInvitation;
+
+    /**
+     * Bir gönderim denemesinin sonucunu satıra yazar.
+     *
+     * `$failure` `null` ise taşıyıcı mesajı hatasız devraldı; aksi hâlde
+     * kırpılmış sebep saklanır. Sebep API'ye ASLA çıkmaz, yalnız türetilmiş
+     * hâl (`InvitationDeliveryState`) çıkar.
+     */
+    public function recordDeliveryOutcome(int $invitationId, ?string $failure): void;
+
+    /**
      * Accepts the pending invitation identified by the given token hash on
      * behalf of the given user, provided the normalized email matches and
      * the invitation has not expired. On success, atomically inserts (or

@@ -7,11 +7,20 @@ import { DEFAULT_MAX_EDGE } from './clientDownscale';
 import { downscaleImageFile, type DownscaleOutcome } from './downscaleImageFile';
 import { ImageCropField } from './ImageCropField';
 import { MediaDropzone, type SelectedImage } from './MediaDropzone';
+import { formatBytes } from './mediaFormat';
 import { MediaOptimizeStep } from './MediaOptimizeStep';
 import { MediaUploadSteps, type UploadStep, type UploadStepKey } from './MediaUploadSteps';
 import { SupportedTypesTable } from './SupportedTypesTable';
+import {
+    limitKindOfFile,
+    limitKindOfFormat,
+    maxBytesForKind,
+    type UploadLimitKind,
+    type UploadLimits,
+} from './uploadSizeLimits';
 import { FieldError } from '../../../catalog/menu/micro/FieldError';
 import { focusFirstInvalidField, ServerRejectedError } from '../../../../lib/validationErrors';
+import { buildAuthRequestInit } from '../../../../lib/csrfHeader';
 import { t } from '../../../../i18n/workspace';
 import { wizardText } from './uploadWizardCopy';
 
@@ -50,7 +59,14 @@ type SlotPolicy = {
     altRequired: boolean;
 };
 
-type UploadLimits = { maxBytes: number; maxMegapixels: number };
+/*
+    SINIRLAR ARTIK TÜRE GÖRE (FF-158) — tip `uploadSizeLimits.ts` içindedir.
+
+    Tek düz bir sayı iki yönde birden yanlıştı: taranmış bir A3 menü için
+    dar, 2 MB'lık bir "logo" SVG'si için fazla cömert. Eşleme tablo ile
+    form arasında PAYLAŞILIR; ikisinin farklı cevap vermesi, sahibin
+    ekranda okuduğu söze güvenini bitirirdi.
+*/
 
 export type UploadOptions = {
     /** Yeniden denemede AYNI kalır — sunucu ikinci gönderimi ikinci görsel sanmaz (FF-68). */
@@ -58,9 +74,88 @@ export type UploadOptions = {
     onProgress: (fraction: number) => void;
 };
 
-type MediaUploadRegionProps = {
-    onSubmit: (formData: FormData, options: UploadOptions) => Promise<void> | void;
+/**
+ * Yüklemenin ARDINDAN dosyanın gerçekte nerede olduğu (FF-150).
+ *
+ * Sunucu 201 ile "aldım" der, ama "aldım" ile "kullanabilirsin" aynı şey
+ * değildir: dosya güvenlik kapısını geçemediyse karantinada bekler. Bu
+ * ekran o farkı BİLMEDEN "tamamlandı" yazıyordu ve sahip fotoğrafının
+ * menüde çıkmamasını kendi hatası sanıyordu.
+ *
+ * Alanlar isteğe bağlıdır: `onSubmit` bugün bazı çağıranlarda (ve
+ * testlerde) hiçbir şey döndürmüyor ve döndürmemesi bir hata değil —
+ * o durumda ekran eskisi gibi davranır.
+ */
+export type UploadOutcome = {
+    /** `MediaAssetStatus` — `ready` dışındaki her değer "henüz kullanılamaz" demektir. */
+    status?: string;
+    /** Sunucunun KAYDETTİĞİ sebep; sorunsuz dosyada boştur. */
+    statusReason?: string | null;
 };
+
+type MediaUploadRegionProps = {
+    /**
+     * Kiracı adresi — YALNIZ tarayıcı durumunu sormak için (FF-151).
+     *
+     * İsteğe bağlıdır çünkü adres bilinmeyen bir bağlamda ekran yine
+     * çalışmalı; o durumda durum "bilinmiyor" kalır ve aşağıdaki vaat
+     * cümlesi hiç yazılmaz. Yükleme yolu bu adresten geçmez, `onSubmit`
+     * çağıranın işidir.
+     */
+    workspaceId?: number;
+    onSubmit: (
+        formData: FormData,
+        options: UploadOptions,
+    ) => Promise<UploadOutcome | void> | UploadOutcome | void;
+};
+
+/**
+ * Virüs taramasının bu ORTAMDAKİ durumu (FF-151).
+ *
+ * `null` "kapalı" demek DEĞİLDİR, "henüz bilmiyorum" demektir; ikisini aynı
+ * değere indirgemek, istek yoldayken yanlış bir cümle yazdırırdı.
+ */
+type ScannerState = 'on' | 'unavailable' | null;
+
+/**
+ * Ayarlar ucunun cevabından tarayıcı satırını okur.
+ *
+ * Uç bir sözlük gönderir (`on` · `partial` · `unavailable` · `missing`) ve
+ * bu ekran onun yalnız iki değerine cümle bağlar. Tanımadığı bir değerde
+ * `null` döner — yani susar. Bir gün üçüncü bir durum eklenirse ekran onu
+ * ikisinden birine benzetip yanlış konuşmaz.
+ */
+function readScannerState(body: unknown): ScannerState {
+    if (typeof body !== 'object' || body === null) return null;
+
+    const security = (body as { security?: unknown }).security;
+
+    if (!Array.isArray(security)) return null;
+
+    const row = security.find(
+        (candidate): candidate is { key: string; state: string } =>
+            typeof candidate === 'object' &&
+            candidate !== null &&
+            (candidate as { key?: unknown }).key === 'virusScan' &&
+            typeof (candidate as { state?: unknown }).state === 'string',
+    );
+
+    if (row === undefined) return null;
+
+    return row.state === 'on' || row.state === 'unavailable' ? row.state : null;
+}
+
+/**
+ * Dosya, İŞLENEMEDİĞİ için değil, TARANAMADIĞI için mi bekliyor?
+ *
+ * Ayrım önemli: tarama kapısında bekleyen bir dosyada kusur ORTAMDADIR
+ * (sunucuda tarayıcı yok) ve sahibin yapabileceği bir şey yoktur. İşleme
+ * aşamasında takılan bir dosyada ise sebep dosyanın kendisi olabilir —
+ * oraya "yanlış bir şey yapmadınız" yazmak, yanlış bir teselli olurdu.
+ */
+function heldAtScanGate(status: string | undefined): boolean {
+    return status === 'scanning' || status === 'quarantined';
+}
 
 /** "IMG_8734.jpg" → "IMG 8734": boş alt metin bırakmaktansa dosya adı; sonra düzeltilir. */
 function nameFromFile(fileName: string): string {
@@ -89,13 +184,20 @@ function newIdempotencyKey(): string {
  * kullanıcı onu nasıl etkinleştireceğini bilemez, çünkü etkinleştirmenin
  * bir yolu yoktur. O alanlar geri geldiklerinde çalışır hâlde gelirler.
  */
-export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
+export function MediaUploadRegion({ workspaceId, onSubmit }: MediaUploadRegionProps) {
     const fileId = useId();
     const altId = useId();
     const slotId = useId();
 
     const [policies, setPolicies] = useState<SlotPolicy[]>([]);
     const [limits, setLimits] = useState<UploadLimits | null>(null);
+    /**
+     * Tarayıcı bu ortamda çalışıyor mu? (FF-151)
+     *
+     * Başlangıç değeri `null` — yani "bilmiyorum". Ekran cevabı almadan
+     * hiçbir iddiada bulunmaz.
+     */
+    const [scanner, setScanner] = useState<ScannerState>(null);
     const [progress, setProgress] = useState(0);
     /*
         Anahtar SEÇİMLE doğar, denemeyle değil: aynı dosyanın ikinci
@@ -131,6 +233,15 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
      * söylüyor olsa bile.
      */
     const [failureMessage, setFailureMessage] = useState('');
+    /**
+     * Yükleme BAŞARILI oldu ama dosya kullanılamıyor (FF-150).
+     *
+     * Hata değildir — `failureMessage` ile aynı kutuya konamaz: sunucu
+     * dosyayı reddetmedi, aldı ve tuttu. Kırmızı bir "başarısız" uyarısı
+     * göstermek sahibi dosyayı yeniden yüklemeye iterdi ve ikinci deneme de
+     * aynı yerde beklerdi.
+     */
+    const [held, setHeld] = useState<{ reason: string; atScanGate: boolean } | null>(null);
     /**
      * Çoklu yüklemenin kalan dosyaları (FF-76). Her birinin alt metni dosya
      * adından türer ("IMG_8734.jpg" → "IMG 8734") ve satırda düzeltilebilir;
@@ -199,6 +310,48 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             cancelled = true;
         };
     }, []);
+
+    /*
+        TARAYICI DURUMU, AYARLAR EKRANIYLA AYNI UÇTAN (FF-151).
+
+        `MediaSettingsRegion` bu cevabı zaten okuyor. İkinci bir gerçek
+        kaynağı kurmak (config'i ekrana ayrı bir uçtan sızdırmak, ya da
+        durumu ilk yüklemenin cevabından tahmin etmek) iki listenin bir gün
+        ayrışması demektir; o gün sahip aynı soruya iki farklı cevap alır ve
+        hangisinin doğru olduğunu bilemez.
+
+        Adres bilinmiyorsa istek hiç yapılmaz ve durum "bilinmiyor" kalır.
+    */
+    useEffect(() => {
+        if (workspaceId === undefined) return;
+
+        let cancelled = false;
+
+        void (async () => {
+            try {
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/media/settings`,
+                    buildAuthRequestInit(),
+                );
+
+                if (!response.ok || cancelled) return;
+
+                const body = (await response.json()) as unknown;
+
+                if (!cancelled) {
+                    setScanner(readScannerState(body));
+                }
+            } catch {
+                // Sessiz: ayar okunamadı diye YÜKLEME çalışmaz olmaz. Ama
+                // durum bilinmediği için vaat cümlesi de yazılmaz — sessiz
+                // kalmak, tahmin etmekten iyidir.
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [workspaceId]);
 
     const activePolicy = policies.find((candidate) => candidate.key === slot) ?? null;
 
@@ -322,7 +475,49 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         sınır zaten sunucudan (`limits`) geliyor, aynı sayı burada da geçerli.
         Sunucu yine son sözü söyler (`docs/47`: istemci yalnız hızlı yardım).
     */
-    const tooLarge = selected !== null && limits !== null && selected.file.size > limits.maxBytes;
+    /*
+        SINIR TÜRE GÖRE OKUNUR (FF-158). Seçilen dosyanın türü MIME/uzantıdan
+        tahmin edilir; ikisi de yanıltıcı olabilir ve bu yüzden buradaki
+        cevap YALNIZ ekranda ne yazılacağını belirler. Sunucu kararı
+        dosyanın kendi baytlarına bakarak verir.
+    */
+    const selectedKind: UploadLimitKind | null =
+        selected === null ? null : limitKindOfFile(selected.file);
+    const selectedMaxBytes =
+        limits === null || selectedKind === null ? null : maxBytesForKind(limits, selectedKind);
+
+    const tooLarge =
+        selected !== null && selectedMaxBytes !== null && selected.file.size > selectedMaxBytes;
+
+    /*
+        SEÇİLEN YERİN SINIRI, o yer seçilir seçilmez yazılır.
+
+        Gereksinimler listesi bugüne kadar en küçük ölçüyü, oranı ve kabul
+        edilen biçimleri söylüyordu ama boyutu SÖYLEMİYORDU: sahip "png
+        kabul ediliyor" okuyup 30 MB'lık taramasını yüklüyor, sınırı ancak
+        ret cümlesinde öğreniyordu.
+
+        Bir slot birden çok tür kabul edebilir (`logo`: svg + png + webp) ve
+        onların sınırları AYNI DEĞİLDİR — bu yüzden tek bir sayı değil, her
+        türün kendi sayısı yazılır.
+    */
+    const slotSizeLimits =
+        activePolicy === null || limits === null
+            ? ''
+            : Array.from(
+                  new Set(
+                      activePolicy.formats
+                          .map(limitKindOfFormat)
+                          .filter((kind): kind is UploadLimitKind => kind !== null),
+                  ),
+              )
+                  .map(
+                      (kind) =>
+                          `${t(`workspace.media.upload.limit.kind.${kind}` as Parameters<typeof t>[0])} ${formatBytes(
+                              maxBytesForKind(limits, kind),
+                          )}`,
+                  )
+                  .join(' · ');
     const tooManyPixels =
         selected !== null &&
         limits !== null &&
@@ -346,10 +541,16 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
 
         if (!selected) {
             errors[fileId] = t('workspace.media.upload.error.file.required');
-        } else if (tooLarge && limits) {
+        } else if (tooLarge && selectedMaxBytes !== null && selectedKind !== null) {
+            // Ret üç şeyi birden söyler: dosyanın boyutu, HANGİ türün sınırı
+            // ve o sınırın kaç olduğu. "Dosya çok büyük" tek başına
+            // kullanıcıya ne yapacağını söylemez.
             errors[fileId] = t('workspace.media.upload.error.tooLarge', {
                 size: String(Math.round(selected.file.size / 1_048_576)),
-                max: String(Math.round(limits.maxBytes / 1_048_576)),
+                kind: t(
+                    `workspace.media.upload.limit.kind.${selectedKind}` as Parameters<typeof t>[0],
+                ),
+                max: String(Math.round(selectedMaxBytes / 1_048_576)),
             });
         } else if (tooManyPixels && limits) {
             errors[fileId] = t('workspace.media.upload.error.tooManyPixels', {
@@ -428,10 +629,29 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
         setStatus('pending');
         setProgress(0);
         setFailureMessage('');
+        setHeld(null);
         setFieldErrors({});
 
+        /*
+            BEKLEYENLERİN SONUNCUSU gösterilir, ilki değil.
+
+            Toplu yüklemede dosyaların hepsi aynı kapıdan geçer; biri
+            beklemede kaldıysa büyük olasılıkla hepsi kaldı. Sebebi her
+            dosya için ayrı ayrı listelemek aynı cümleyi kırk kez yazmak
+            olurdu — ve sahip kırk satır okumaz.
+        */
+        let lastHeld: { reason: string; atScanGate: boolean } | null = null;
+
+        function noteOutcome(outcome: UploadOutcome | void): void {
+            const reason = outcome?.statusReason;
+
+            if (typeof reason === 'string' && reason.trim() !== '') {
+                lastHeld = { reason, atScanGate: heldAtScanGate(outcome?.status) };
+            }
+        }
+
         try {
-            await onSubmit(formData, { idempotencyKey, onProgress: setProgress });
+            noteOutcome(await onSubmit(formData, { idempotencyKey, onProgress: setProgress }));
 
             // Kalan dosyalar SIRAYLA: aynı slot, kendi alt metni, kendi anahtarı.
             // Biri düşerse kalanlar durur ve düşen dosya ilk sıraya alınır.
@@ -445,10 +665,12 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                     more.set('altText', row.altText.trim() || nameFromFile(row.image.file.name));
                     more.set('slot', slot);
                     try {
-                        await onSubmit(more, {
-                            idempotencyKey: newIdempotencyKey(),
-                            onProgress: setProgress,
-                        });
+                        noteOutcome(
+                            await onSubmit(more, {
+                                idempotencyKey: newIdempotencyKey(),
+                                onProgress: setProgress,
+                            }),
+                        );
                     } catch (error) {
                         setExtra(extra.slice(index));
                         setBatchProgress(null);
@@ -471,6 +693,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
             setOptimized(null);
             setAltText('');
             setSlot('');
+            setHeld(lastHeld);
             setStatus('success');
             // Sihirbaz başa döner: sonraki fotoğraf yine "hangi dosya?" ile
             // başlar. Son adımda bırakmak, kullanıcıya bitmemiş bir iş
@@ -585,7 +808,7 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                         Yükleme reddedildikten sonra okunan bir tablo,
                         okunmamış bir tablodur.
                     */}
-                    <SupportedTypesTable accept={ACCEPT} maxBytes={limits?.maxBytes ?? null} />
+                    <SupportedTypesTable accept={ACCEPT} limits={limits} />
                 </div>
             ) : null}
 
@@ -672,6 +895,13 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                                         formats: activePolicy.formats.join(', '),
                                     })}
                                 </li>
+                                {slotSizeLimits !== '' ? (
+                                    <li>
+                                        {t('workspace.media.upload.requirement.maxSize', {
+                                            limits: slotSizeLimits,
+                                        })}
+                                    </li>
+                                ) : null}
                             </ul>
                         ) : null}
 
@@ -854,19 +1084,83 @@ export function MediaUploadRegion({ onSubmit }: MediaUploadRegionProps) {
                 </div>
             )}
 
-            {status === 'success' && (
-                <p role="status" className="text-body text-fg-muted">
-                    {t('workspace.media.upload.complete')}
-                </p>
-            )}
+            {/*
+                BAŞARILI GÖNDERİM, İKİ AYRI GERÇEK (FF-150).
+
+                Dosya ilerlediyse tek cümle yeter. Kapıda kaldıysa sahibin
+                üç şeyi bilmesi gerekir: dosya ULAŞTI, henüz KULLANILAMIYOR
+                ve SEBEBİ şu. Üçü tek bir canlı bölgede durur; ekran
+                okuyucuda üç ayrı duyuru, aynı olayı üç kez anlatırdı.
+
+                Sebep sunucunun KAYDETTİĞİ cümledir, burada üretilmez —
+                "birazdan biter" ya da "%80" gibi bir şey yazmak, bilmediğimiz
+                bir şeyi bilir gibi davranmak olurdu.
+            */}
+            {status === 'success' &&
+                (held ? (
+                    <div role="status" className="flex flex-col gap-1">
+                        <p className="text-body text-fg-muted">
+                            {t('workspace.media.upload.held')}
+                        </p>
+                        <p className="text-body text-fg-warning">{held.reason}</p>
+                        {held.atScanGate ? (
+                            <p className="text-body text-fg-muted">
+                                {t('workspace.media.upload.held.notYours')}
+                            </p>
+                        ) : null}
+                    </div>
+                ) : (
+                    /*
+                        İlerleyen dosyanın cevabı TEK cümledir ve tek bir
+                        paragraf olarak kalır: söylenecek başka bir şey yokken
+                        etrafına kutu çizmek, ekran okuyucuya da fazladan bir
+                        katman okutur.
+                    */
+                    <p role="status" className="text-body text-fg-muted">
+                        {t('workspace.media.upload.complete')}
+                    </p>
+                ))}
 
             {/*
                 Güvenlik açıklaması dipnot DEĞİLDİR: yüklediği fotoğrafın
                 neden hemen menüde görünmediğini soran kullanıcının cevabı
-                budur. "Taranıyor" durumu olduğu gibi kalır — bu ortamda
-                tarama kapalı olsa bile ekran "hazır" demez.
+                budur.
+
+                Ama BEKLEYEN bir dosyanın yanında çizilmez: "Her görsel
+                taranır" cümlesi ile "tarama bu ortamda çalışmıyor" cümlesi
+                aynı ekranda durursa biri mutlaka yalandır ve sahip hangisine
+                inanacağını bilemez. Vaat, çürütüldüğü anda susar.
+
+                VE VAAT, ÇÜRÜTÜLMEDEN ÖNCE DE DÜRÜST (FF-151). Sahip bu
+                cümleyi henüz hiçbir şey yüklemeden okuyor; tarayıcının bağlı
+                olmadığı bir ortamda cümle daha okunduğu anda yanlıştır.
+                Üç hâl var ve üçü de ayrı:
+
+                  - `on`          : bugünkü vaat aynen durur.
+                  - `unavailable` : ortamın gerçeği yazılır ve hemen
+                                    ardından bunun sahip hatası olmadığı —
+                                    aynı cümle beklemede kalan dosyada da
+                                    kullanılıyor, sahip aynı gerçeği iki
+                                    farklı sesle okumamalı.
+                  - bilinmiyor    : HİÇBİR ŞEY yazılmaz. Yanlış cümleyi bir
+                                    an gösterip düzeltmek, hiç göstermemekten
+                                    kötüdür; sahip ilk okuduğuna inanır ve
+                                    düzeltmeyi görmez.
             */}
-            <p className="text-body text-fg-muted">{t('workspace.media.security.explanation')}</p>
+            {held || scanner === null ? null : scanner === 'on' ? (
+                <p className="text-body text-fg-muted">
+                    {t('workspace.media.security.explanation')}
+                </p>
+            ) : (
+                <div className="flex flex-col gap-1">
+                    <p className="text-body text-fg-warning">
+                        {t('workspace.media.security.explanation.unavailable')}
+                    </p>
+                    <p className="text-body text-fg-muted">
+                        {t('workspace.media.upload.held.notYours')}
+                    </p>
+                </div>
+            )}
         </form>
     );
 }

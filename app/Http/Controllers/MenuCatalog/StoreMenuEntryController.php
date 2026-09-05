@@ -6,9 +6,12 @@ namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Dto\MenuAuditEntry;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\MenuCatalog\MenuAuditAction;
 use App\Domain\Money\Money;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuCatalog\StoreMenuEntryRequest;
@@ -34,6 +37,7 @@ final class StoreMenuEntryController extends Controller
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AuthorizationPort $authorization,
+        private readonly MenuAuditPort $audit,
     ) {}
 
     public function __invoke(StoreMenuEntryRequest $request, int $workspace, int $category): JsonResponse
@@ -86,6 +90,22 @@ final class StoreMenuEntryController extends Controller
         } catch (MenuCatalogTenantMismatchException) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
+
+        /*
+            DENETİM İZİ (FF-154). "Menüye bu ürünü kim ekledi?" — özellikle
+            dört rollü bir ekipte sorulur. Sonrası, satırın DOĞDUĞU fiyattır:
+            ilk fiyat kaydedilmezse ilk zam da öncesiz kalırdı.
+        */
+        $this->audit->record(MenuAuditEntry::forItem(
+            $workspace,
+            $categoryContext->menuId,
+            $entry->menuItemId,
+            $entry->productName,
+            MenuAuditAction::ItemAdded,
+            null,
+            MenuAuditEntry::price($entry->priceMinorAmount, $entry->currencyCode),
+            $userId,
+        ));
 
         return response()->json([
             'id' => $entry->menuItemId,

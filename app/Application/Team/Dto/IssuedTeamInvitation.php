@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Team\Dto;
 
+use App\Domain\Team\InvitationDeliveryState;
 use DateTimeInterface;
 
 final class IssuedTeamInvitation
@@ -18,8 +19,15 @@ final class IssuedTeamInvitation
         public readonly string $workspaceName,
     ) {}
 
-    public function summary(): TeamInvitationSummary
+    /**
+     * Teslimat hâli DIŞARIDAN verilir.
+     *
+     * Davet kaydı, e-posta denenmeden önce doğar; o anda teslimatın hâli
+     * henüz yoktur. Buraya bir varsayılan koymak, gönderim hiç denenmemişken
+     * satıra bir cevap yazmak olurdu.
+     */
+    public function summary(InvitationDeliveryState $delivery): TeamInvitationSummary
     {
-        return new TeamInvitationSummary($this->id, $this->email, $this->role, $this->status);
+        return new TeamInvitationSummary($this->id, $this->email, $this->role, $this->status, $delivery);
     }
 }

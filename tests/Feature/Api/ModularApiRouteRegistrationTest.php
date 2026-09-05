@@ -107,6 +107,10 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/ai/availability||App\Http\Controllers\Ai\ShowAiAvailabilityController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu-categories/{category}/item-order||App\Http\Controllers\MenuCatalog\ReorderMenuItemsController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/menu/{menu}/category-order||App\Http\Controllers\MenuCatalog\ReorderCategoriesController|api,auth:sanctum,verified',
+        // MENÜ DENETİM İZİ (FF-163): FF-154/FF-156 izi yazıyordu ama okuyan
+        // bir yüzey yoktu. Yetki `menu.manage` — fiyat geçmişi ticari bir
+        // bilgidir ve Mutfak rolünün işi değil.
+        'GET|api/workspaces/{workspace}/menu/audits||App\Http\Controllers\MenuCatalog\ListMenuAuditsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/menu/{menu}/publications||App\Http\Controllers\Publication\StorePublicationController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/menu/{menu}/publications/current||App\Http\Controllers\Publication\ShowCurrentPublicationController|api,auth:sanctum,verified',
         /*
@@ -380,6 +384,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/team/invitations||App\Http\Controllers\Team\ListTeamInvitationsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/team/invitations||App\Http\Controllers\Team\StoreTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         'DELETE|api/workspaces/{workspace}/team/invitations/{invitation}||App\Http\Controllers\Team\CancelTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
+        // FF-160 (`docs/110` P0-06): e-postası çıkmayan bir davet için sahibin
+        // elinde bir hamle olmalı. Sınır kardeşleriyle AYNI (`throttle:5,1`).
+        'POST|api/workspaces/{workspace}/team/invitations/{invitation}/resend||App\Http\Controllers\Team\ResendTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/invitations/accept/{token}||App\Http\Controllers\Team\AcceptTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         /*
             DENETİM İZİ (FF-132) — medya izinden AYRI bir uç ve bu bilinçli:

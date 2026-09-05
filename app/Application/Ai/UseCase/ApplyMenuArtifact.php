@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Ai\UseCase;
 
+use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Dto\MenuAuditEntry;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
+use App\Domain\MenuCatalog\MenuAuditAction;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -16,15 +20,34 @@ use Illuminate\Support\Facades\DB;
  * İKİ KEZ UYGULANMAZ. Ekran tazelenebilir, düğmeye ikinci kez basılabilir,
  * istek tekrar gönderilebilir — menü iki katına çıkmamalı. `applied_at` bu
  * sorunun cevabıdır ve kilit veritabanındadır, ekranda değil.
+ *
+ * DENETİM İZİ BURADA, KONTROLCÜDE DEĞİL — FF-156. FF-154 kaydı
+ * kontrolcülere koydu ve bu doğruydu: her kontrolcünün kendi olayı var.
+ * Burada tersi geçerli — tekil onay ve TOPLU onay AYNI yazmayı yapan İKİ
+ * kontrolcüdür ve kaydı ikisine ayrı ayrı koymak, birini güncelleyip
+ * ötekini unutmanın kapısını açık bırakırdı. Yazmanın geçtiği tek yer
+ * burasıdır; kaydın da tek yeri burası. (Aynı gerekçe medya tarafında da
+ * uygulandı: `RunMediaBulkOperation` kendi izini kendi yazar.)
  */
 final class ApplyMenuArtifact
 {
-    public function __construct(private readonly MenuCatalogRepositoryPort $menuCatalog) {}
+    public function __construct(
+        private readonly MenuCatalogRepositoryPort $menuCatalog,
+        private readonly MenuCatalogApiContextPort $context,
+        private readonly MenuAuditPort $audit,
+    ) {}
 
     /**
+     * `$actorUserId` VARSAYILANSIZDIR ve bu bilinçli: bir varsayılan, yeni
+     * bir çağıranın faili sessizce boş bırakmasına izin verirdi ve "kim
+     * onayladı" sorusu tam da bu paketin cevapladığı sorudur. Yine de
+     * `null` yazılabilir — insanın olmadığı bir yol bir gün doğarsa, iz
+     * "faili bilmiyorum" demeli, faili uydurmamalı.
+     *
+     * @param  int|null  $actorUserId  onaya basan İNSAN; makine değil
      * @return array{importedItems: int, importedCategories: int, rejectedRows: list<array{row: string, reason: string}>, alreadyApplied: bool}
      */
-    public function handle(int $workspaceId, int $menuId, int $artifactId): array
+    public function handle(int $workspaceId, int $menuId, int $artifactId, ?int $actorUserId): array
     {
         $artifact = DB::table('ai_artifacts')
             ->where('id', $artifactId)
@@ -41,9 +64,38 @@ final class ApplyMenuArtifact
 
         [$rows, $rejected] = $this->readRows($artifact);
 
+        // Menünün adı yazmadan ÖNCE okunur: aktarım adı değiştirmez ama iz
+        // olayın ANINDAKİ adı taşır ve bu okuma sırası FF-154'ün deseni.
+        $menuName = $this->context->menuContext($menuId)?->name;
+
         $result = $rows === []
             ? ['categories' => 0, 'items' => 0]
             : $this->menuCatalog->importDraftRows($workspaceId, $menuId, $rows);
+
+        /*
+            DENETİM İZİ (FF-156) — ONAYLANAN TASLAK BAŞINA TEK ÖZET SATIRI.
+
+            Fotoğraftan okunan bir taslağın onayı, menünün her fiyatını tek
+            hamlede değiştirebilen bir yoldur; izsiz bırakıldığında "fiyatı
+            kim değiştirdi" sorusu buradan sessizce kaçıyordu. Satır başına
+            kayıt ise 60 kalemlik bir menüde izi tek başına doldurur — CSV
+            yolundaki ölçünün aynısı: bir KAYNAK BELGE, bir satır.
+
+            HİÇBİR ŞEY YAZILMADIYSA KAYIT DA YOK. "0 kategori · 0 ürün",
+            menüde hiçbir şey değişmediği hâlde bir değişiklik olmuş gibi
+            okunurdu; reddedilen satırlar zaten yanıtta raporlanıyor.
+        */
+        if ($result['categories'] > 0 || $result['items'] > 0) {
+            $this->audit->record(MenuAuditEntry::forMenu(
+                $workspaceId,
+                $menuId,
+                $menuName,
+                MenuAuditAction::MenuAiImported,
+                null,
+                $result['categories'].' kategori · '.$result['items'].' ürün',
+                $actorUserId,
+            ));
+        }
 
         DB::table('ai_artifacts')->where('id', $artifactId)->update([
             'reviewed_at' => now(),

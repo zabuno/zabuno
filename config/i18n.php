@@ -27,7 +27,23 @@ return [
     |
     */
 
-    'shipped_locales' => ['en'],
+    'shipped_locales' => ['en', 'tr'],
+
+    /*
+     * TÜRKÇE 2026-09-05'te LİSTEYE GİRDİ ve bunun tek şartı vardı: katalog
+     * TAM olacak. Girdiği gün 1997 metnin sıfırı boştu.
+     *
+     * Buraya girmeden önce durum şuydu: Türkçe kataloğun yarısı çevrilmişti
+     * (`workspace` alanında 1324 metnin 587'si boştu) ve o hâlde listeye
+     * eklenseydi, ekranda "Kategori adı" ile "Build and edit the
+     * categories…" yan yana dururdu. Yarım çeviri çevirisizlikten kötü
+     * görünür — çünkü çevirisizlik en azından tutarlıdır.
+     *
+     * Kayda değer olan şu: çeviriler tamamlandığı gün bu satır
+     * güncellenmedi. Yani 658 metin çevrildi ve hiçbiri kullanıcıya
+     * ulaşmadı; ürün Türk restoran sahibine İngilizce konuşmaya devam etti.
+     * İşi bitiren adım, işi görünür kılan adım değildir.
+     */
 
     /*
     |--------------------------------------------------------------------------

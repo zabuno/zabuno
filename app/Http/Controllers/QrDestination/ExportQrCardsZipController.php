@@ -156,6 +156,9 @@ final class ExportQrCardsZipController extends Controller
                     $headline,
                     $identity?->primaryColor,
                     $logo,
+                    // Masa adı DOSYA ADINDA zaten var ama dosya adı baskıdan
+                    // sonra yok olur; kartın kendisi de söylemeli.
+                    $record->tableName,
                 );
 
                 $bytes = $format === 'svg'

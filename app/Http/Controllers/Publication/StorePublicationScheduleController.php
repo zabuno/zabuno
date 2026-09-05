@@ -95,7 +95,14 @@ final class StorePublicationScheduleController extends Controller
             'id' => $record->id,
             'scheduledFor' => $record->scheduledFor,
             'state' => $record->state,
-            'timeZone' => BuildScheduleOptions::TIME_ZONE,
+            /*
+                Kurulan AN mutlaktır (UTC saklanır); dönen dilim yalnız
+                ekranın o anı hangi duvar saatiyle yazacağını söyler ve
+                ŞUBENİNDİR (`docs/62`). Sabit bir dilim dönseydi, Berlin
+                şubesinin sahibi az önce kurduğu planı bir saat kaymış
+                okurdu.
+            */
+            'timeZone' => $this->schedules->timezoneForMenu($workspace, $menu),
         ], 201);
     }
 }

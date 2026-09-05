@@ -76,6 +76,87 @@ describe('menü mühendisliği (docs/84)', () => {
         vi.unstubAllGlobals();
     });
 
+    /**
+     * "HİÇ BAKILMAYAN" SATIRI BİR YERE GÖTÜRÜR — kanonik kaynak
+     * (`docs/reference/panel-v3/panel-v3.1.dc.html`, Insights: `neverViewed`
+     * satırındaki düğme).
+     *
+     * Satır bugüne kadar yalnız bir gözlemdi: "Hamsi'ye kimse bakmadı." Sahip
+     * bunu okuyup ne yapacağını biliyordu ama nereye gideceğini bilmiyordu —
+     * ürünü gizlemek, adını değiştirmek ya da fiyatını düşürmek menü
+     * ekranının işi ve o ekran buradan üç tıklama uzaktaydı.
+     *
+     * Kaynak düğmeye "Gizle" yazıyor; bu ekran gizlemez, gizlenecek yere
+     * götürür ve etiketi de bunu söyler. Bastığı düğmenin adı yalan olan bir
+     * liste, ölçüme duyulan güveni tek tıkta harcar.
+     */
+    it('hiç bakılmayan ürünü menü ekranına götürür ve düğme adı ne yaptığını söyler', async () => {
+        const user = (await import('@testing-library/user-event')).default.setup();
+        const onReviewProduct = vi.fn();
+
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(async () =>
+                jsonResponse({
+                    state: 'ready',
+                    threshold: 5,
+                    observedViewers: 9,
+                    mostViewed: [
+                        {
+                            menuItemId: 1,
+                            productName: 'Levrek',
+                            categoryName: 'Balıklar',
+                            viewers: 8,
+                        },
+                    ],
+                    neverViewed: [
+                        {
+                            menuItemId: 3,
+                            productName: 'Hamsi',
+                            categoryName: 'Balıklar',
+                            viewers: 0,
+                        },
+                    ],
+                    searchesWithNoResults: [],
+                }),
+            ),
+        );
+
+        render(
+            <MenuEngineeringRegion workspaceId={7} range="30d" onReviewProduct={onReviewProduct} />,
+        );
+
+        const button = await screen.findByRole('button', { name: /Edit “Hamsi” on the menu/ });
+
+        await user.click(button);
+
+        expect(onReviewProduct).toHaveBeenCalledWith('Hamsi');
+
+        vi.unstubAllGlobals();
+    });
+
+    /**
+     * Gidecek yeri olmayan düğme HİÇ ÇİZİLMEZ. Basıldığında hiçbir şey
+     * yapmayan bir düğme, kullanıcıya olmayan bir yol göstermektir.
+     */
+    it('hedef verilmediğinde hiç bakılmayan satırına düğme koymaz', async () => {
+        mount({
+            state: 'ready',
+            threshold: 5,
+            observedViewers: 9,
+            mostViewed: [],
+            neverViewed: [
+                { menuItemId: 3, productName: 'Hamsi', categoryName: 'Balıklar', viewers: 0 },
+            ],
+            searchesWithNoResults: [],
+        });
+
+        expect(await screen.findByText('Hamsi')).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /on the menu/ })).toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+
     it('yükleme başarısızsa sessiz kalınmaz', async () => {
         vi.stubGlobal(
             'fetch',

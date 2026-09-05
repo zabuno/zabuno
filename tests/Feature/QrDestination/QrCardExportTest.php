@@ -128,13 +128,58 @@ final class QrCardExportTest extends TestCase
         $this->actingAs($owner)->get($this->cardUrl($workspaceId, $qrCodeId, 'png'))->assertStatus(404);
     }
 
+    public function test_the_dark_and_signage_designs_exist_and_still_print_a_dark_code(): void
+    {
+        /*
+            Panel v3.1 kanonik kaynağı beş tasarım sunuyor: Sade, Çerçeve,
+            Markalı, Koyu, Tabela. Koyu bir kez REDDEDİLMİŞTİ ve red doğruydu —
+            eski kaynak kodun kendisini ters çeviriyordu (beyaz modül / siyah
+            zemin) ve ters basılan bir kod birçok telefonda hiç okunmaz. Yeni
+            kaynak o kusuru kendi düzeltti: koyulaşan şey kartın ZEMİNİ.
+
+            Bu test tam olarak o sınırı bekler: zemin koyu, kod siyah.
+        */
+        [$owner, $workspaceId, $qrCodeId] = $this->publishedQrCode('#1B4332');
+
+        $dark = (string) $this->actingAs($owner)
+            ->get($this->cardUrl($workspaceId, $qrCodeId, 'svg').'?cardTheme=dark')
+            ->getContent();
+
+        self::assertStringContainsString('fill="#0D0A24"', $dark);
+        self::assertStringContainsString('<path fill="#000000"', $dark);
+
+        $signage = (string) $this->actingAs($owner)
+            ->get($this->cardUrl($workspaceId, $qrCodeId, 'svg').'?cardTheme=signage')
+            ->getContent();
+
+        self::assertStringContainsString('fill="#1B4332"', $signage);
+        self::assertStringContainsString('<path fill="#000000"', $signage);
+    }
+
+    public function test_the_card_prints_the_table_it_belongs_to(): void
+    {
+        /*
+            Masa adı yalnız toplu arşivin DOSYA ADINDA yazıyordu ve dosya adı
+            baskıdan sonra yok olur: kırk kartı masaya dağıtan kişi hangi
+            kodun hangi masaya gittiğini bilemez, yani masa bazlı tarama
+            ölçümü daha ilk gün anlamsızlaşır.
+        */
+        [$owner, $workspaceId, $qrCodeId] = $this->publishedQrCode(tableName: 'Masa 12');
+
+        $svg = (string) $this->actingAs($owner)
+            ->get($this->cardUrl($workspaceId, $qrCodeId, 'svg'))
+            ->getContent();
+
+        self::assertStringContainsString('Masa 12', $svg);
+    }
+
     private function cardUrl(int $workspaceId, int $qrCodeId, string $format): string
     {
         return "/api/workspaces/{$workspaceId}/qr-codes/{$qrCodeId}/card.{$format}";
     }
 
     /** @return array{0: User, 1: int, 2: int} */
-    private function publishedQrCode(?string $brandColor = null): array
+    private function publishedQrCode(?string $brandColor = null, ?string $tableName = null): array
     {
         $owner = User::factory()->create(['email_verified_at' => now()]);
 
@@ -169,9 +214,25 @@ final class QrCardExportTest extends TestCase
 
         $token = str_repeat('a', 43);
 
+        $diningTableId = null;
+
+        if ($tableName !== null) {
+            $areaId = (int) DB::table('dining_areas')->insertGetId([
+                'workspace_id' => $workspaceId, 'location_id' => $locationId, 'label' => 'Bahçe',
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+
+            $diningTableId = (int) DB::table('dining_tables')->insertGetId([
+                'workspace_id' => $workspaceId, 'location_id' => $locationId, 'area_id' => $areaId,
+                'name' => $tableName, 'seat_count' => 4,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+
         $qrCodeId = (int) DB::table('qr_codes')->insertGetId([
             'workspace_id' => $workspaceId, 'location_id' => $locationId, 'token' => $token,
-            'state' => 'active', 'created_at' => now(), 'updated_at' => now(),
+            'state' => 'active', 'dining_table_id' => $diningTableId,
+            'created_at' => now(), 'updated_at' => now(),
         ]);
 
         $destinationId = (int) DB::table('qr_destinations')->insertGetId([

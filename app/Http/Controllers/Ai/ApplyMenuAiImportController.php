@@ -53,7 +53,9 @@ final class ApplyMenuAiImportController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
-        $result = $this->apply->handle($workspace, $menuId, (int) $row->id);
+        // Denetim izinin faili BU kullanıcıdır (FF-156): menüye yazma
+        // kararını makine değil, onaya basan kişi verir.
+        $result = $this->apply->handle($workspace, $menuId, (int) $row->id, $userId);
 
         return response()->json($result);
     }

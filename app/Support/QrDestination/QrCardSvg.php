@@ -43,6 +43,12 @@ final class QrCardSvg
     private const float MARGIN_RATIO = 0.08;
 
     /**
+     * Koyu tasarımın kart zemini — panel v3.1 kanonik kaynağının kendi değeri
+     * (`panel-v3.1.dc.html`, `koyu` teması). Uydurulmuş bir gri değil.
+     */
+    private const string DARK_GROUND = '#0D0A24';
+
+    /**
      * @param  string  $qrSvg  Endroid'in ürettiği, doğrulanmış QR SVG'si.
      */
     public static function compose(
@@ -63,24 +69,35 @@ final class QrCardSvg
          * @var array{bytes: string, mimeType: string}|null
          */
         ?array $logo = null,
+        /**
+         * KARTIN HANGİ MASAYA AİT OLDUĞU — panel v3.1 kanonik kaynağı
+         * ("Her kartta masa numarası basılır — karışmaz").
+         *
+         * Bu bir süs değil: toplu arşivde masa adı yalnız DOSYA ADINDA
+         * yazıyordu. Kırk kart basıldıktan sonra dosya adı yok olur; masaya
+         * dağıtan kişinin elinde birbirinden ayırt edilemeyen kırk kâğıt
+         * kalır ve hangi kodun hangi masaya gittiğini artık kimse bilemez —
+         * yani masa bazlı ölçüm (`scanCount`) daha ilk gün anlamsızlaşır.
+         *
+         * Masaya bağlı olmayan kod (giriş kodu) için `null`; uydurulmuş bir
+         * ad, hiç ad olmamasından kötüdür.
+         */
+        ?string $tableName = null,
     ): string {
         [$width, $height] = $orientation->apply($size);
 
         $accent = self::accentColor($brandColor);
         $margin = min($width, $height) * self::MARGIN_RATIO;
+        $dark = $theme->hasDarkGround();
 
         $body = self::background($theme, $width, $height, $accent);
 
-        $top = $margin;
-        $bottom = $height - $margin;
-
-        if ($theme === CardTheme::Banner) {
-            // Şerit kartın en üstünü kaplar; içerik onun altından başlar.
-            $top = max($top, $height * 0.16 + $margin * 0.5);
-        }
-
         $brandSize = self::brandFontSize($width, $height);
+        $printsBrandName = $theme->showsBrandName() && trim($brandName) !== '';
         $logoSide = $logo === null ? 0.0 : $brandSize * 1.6;
+
+        $top = self::contentTop($theme, $width, $height, $printsBrandName, $logo !== null);
+        $bottom = $height - $margin;
         $textLeft = $margin;
 
         if ($logo !== null) {
@@ -91,44 +108,57 @@ final class QrCardSvg
             */
             $logoY = $theme === CardTheme::Banner
                 ? $height * 0.16 * 0.5 - $logoSide / 2
-                : $top;
+                : self::headerTop($theme, $width, $height);
 
             $body .= self::image($logo, $margin, $logoY, $logoSide);
             $textLeft = $margin + $logoSide + $margin * 0.4;
         }
 
-        if ($theme->showsBrandName() && trim($brandName) !== '') {
+        if ($printsBrandName) {
             if ($theme === CardTheme::Banner) {
                 // Şeridin İÇİNDE, dikeyde ortalanmış: şeridin altında duran
                 // beyaz bir yazı okunmazdı.
                 $body .= self::text($brandName, $textLeft, $height * 0.16 * 0.5 + $brandSize * 0.36, $brandSize, 'bold', '#FFFFFF');
             } else {
-                $body .= self::text($brandName, $textLeft, $top + $brandSize * 0.8, $brandSize, 'bold', $accent);
+                $body .= self::text(
+                    $brandName,
+                    $textLeft,
+                    self::headerTop($theme, $width, $height) + $brandSize * 0.8,
+                    $brandSize,
+                    'bold',
+                    // Koyu zeminde marka rengi okunmaz: vurgu zaten ZEMİNİN
+                    // kendisidir, yazı ise onun üstünde okunabilir olmak
+                    // zorundadır.
+                    $dark ? '#FFFFFF' : $accent,
+                );
             }
         }
 
-        if ($theme !== CardTheme::Banner && ($logo !== null || $theme->showsBrandName())) {
-            // Satır yüksekliği, logo ile ad hangisi uzunsa ona göre.
-            $top += max($logoSide, $theme->showsBrandName() && trim($brandName) !== '' ? $brandSize * 1.6 : 0.0);
-        }
-
         $captionSize = self::captionFontSize($width, $height);
-        $captionSpace = trim($headline) === '' ? 0.0 : $captionSize * 2.2;
+        $lines = self::captionLines($headline, $tableName);
 
         // Karekod KALAN alanın tamamını alır ama kısa kenarı asla aşmaz:
         // taşan bir kod, kesildiğinde kenarından kırpılır.
-        $qrSide = max(0.0, min($bottom - $captionSpace - $top, $width - 2 * $margin));
+        $qrSide = self::qrSide($width, $height, $top, $bottom, $captionSize, count($lines));
 
-        $body .= self::qr($qrSvg, ($width - $qrSide) / 2, $top, $qrSide);
+        $body .= self::qr($qrSvg, ($width - $qrSide) / 2, $top, $qrSide, $dark);
 
-        if (trim($headline) !== '') {
+        /*
+            ALT BLOK YUKARI DOĞRU DİZİLİR. Satır sayısı değiştiğinde (masa adı
+            olan ve olmayan kart) kartın ALT kenarı sabit kalır; yukarıdan
+            dizmek, tek satırlık bir kartta cümleyi havada bırakırdı.
+        */
+        $lineHeight = $captionSize * 1.5;
+        $count = count($lines);
+
+        foreach ($lines as $index => $line) {
             $body .= self::text(
-                $headline,
+                $line[0],
                 $margin,
-                $bottom - $captionSize * 0.4,
+                $bottom - $captionSize * 0.4 - ($count - 1 - $index) * $lineHeight,
                 $captionSize,
-                'normal',
-                '#333333',
+                $line[1],
+                $dark ? '#FFFFFF' : '#333333',
             );
         }
 
@@ -141,11 +171,59 @@ final class QrCardSvg
     }
 
     /**
+     * KAREKODUN BASILACAĞI GERÇEK ÖLÇÜ, milimetre.
+     *
+     * Ekran bu sayıyı YAZAR ("Kod 88 mm — masa mesafesinden rahat okunur")
+     * çünkü kaynağın önizleme paneli taranabilirliği bir temenniyle değil bir
+     * ÖLÇÜYLE anlatıyor. Sayı bestecinin kendi geometrisinden gelir: elle
+     * yazılmış bir tahmin, yerleşim bir gün değiştiğinde sessizce yalan olur
+     * ve o yalan ancak kırk kart basıldıktan sonra fark edilir.
+     *
+     * İSTEMCİDE BİR AYNASI VAR (`resources/js/lib/qrCardGeometry.ts`) ve iki
+     * taraf da AYNI tabloyu sınayan testlerle çakılıdır: biri kayarsa diğerinin
+     * testi kırılır. Aynanın olması, önizlemenin her ayar değişiminde sunucuya
+     * ikinci bir istek atmasından ucuzdur.
+     *
+     * VARSAYIM İHTİYATLI YÖNDEDİR: marka adının basıldığı varsayılır. Adı boş
+     * olan bir markada gerçek kod bir satır kadar DAHA BÜYÜK çıkar — yani not
+     * asla "okunur" derken okunmayan bir kod üretmez. Logo varlığı geometriyi
+     * hiç değiştirmez: logo kutusu ile marka satırı aynı yüksekliktedir.
+     */
+    public static function codeSideMm(
+        CardTheme $theme,
+        CardSize $size,
+        CardOrientation $orientation,
+        bool $printsTableName,
+    ): float {
+        [$width, $height] = $orientation->apply($size);
+
+        $margin = min($width, $height) * self::MARGIN_RATIO;
+        $top = self::contentTop($theme, $width, $height, $theme->showsBrandName(), false);
+
+        // Başlık HER ZAMAN basılır: sahip kendi cümlesini yazmazsa sunucu
+        // misafir alanındaki hazır cümleyi koyar (`ExportQrCardController`).
+        $lineCount = $printsTableName ? 2 : 1;
+
+        return self::qrSide(
+            $width,
+            $height,
+            $top,
+            $height - $margin,
+            self::captionFontSize($width, $height),
+            $lineCount,
+        );
+    }
+
+    /**
      * Marka rengi karta uygulanabilir mi?
      *
      * Aynı kısıt karekodda da geçerli (`QrContrast`): beyaz üstünde okunmayan
      * bir renk, kartın başlığında da okunmaz. Uygun değilse siyaha düşülür —
      * uydurulmuş bir renk, okunmayan bir başlıktan iyi değildir.
+     *
+     * Tabela tasarımında aynı kontrol İKİ İŞ görür: zemin markanın rengidir ve
+     * üstündeki yazı beyazdır. Beyaza karşı yeterli olan bir renk, beyaz yazıyı
+     * da taşır — çift aynıdır, yalnız yerleri değişmiştir.
      */
     private static function accentColor(?string $brandColor): string
     {
@@ -160,7 +238,15 @@ final class QrCardSvg
 
     private static function background(CardTheme $theme, float $width, float $height, string $accent): string
     {
-        $svg = '<rect x="0" y="0" width="'.self::number($width).'" height="'.self::number($height).'" fill="#FFFFFF"/>';
+        $ground = match ($theme) {
+            CardTheme::Dark => self::DARK_GROUND,
+            // Tabela'nın zemini markanın kendi rengidir; renk okunamayacak
+            // kadar açıksa `accentColor` zaten koyuya düşmüştür.
+            CardTheme::Signage => $accent,
+            default => '#FFFFFF',
+        };
+
+        $svg = '<rect x="0" y="0" width="'.self::number($width).'" height="'.self::number($height).'" fill="'.$ground.'"/>';
 
         return $svg.match ($theme->accentRole()) {
             // Marka renginde geniş bir başlık şeridi: uzaktan görünür.
@@ -179,17 +265,95 @@ final class QrCardSvg
     }
 
     /**
+     * Başlık bloğunun (logo + marka adı) üst kenarı.
+     *
+     * Şeritli tasarımda içerik şeridin ALTINDAN başlar; diğerlerinde kartın
+     * kenar boşluğundan.
+     */
+    private static function headerTop(CardTheme $theme, float $width, float $height): float
+    {
+        $margin = min($width, $height) * self::MARGIN_RATIO;
+
+        return $theme === CardTheme::Banner
+            ? max($margin, $height * 0.16 + $margin * 0.5)
+            : $margin;
+    }
+
+    /** Karekodun başlayabileceği ilk nokta: başlık bloğu bittikten sonrası. */
+    private static function contentTop(
+        CardTheme $theme,
+        float $width,
+        float $height,
+        bool $printsBrandName,
+        bool $hasLogo,
+    ): float {
+        $top = self::headerTop($theme, $width, $height);
+
+        if ($theme === CardTheme::Banner) {
+            // Ad şeridin İÇİNDE yazılır; kartın gövdesinden yer almaz.
+            return $top;
+        }
+
+        if (! $hasLogo && ! $printsBrandName) {
+            return $top;
+        }
+
+        // Satır yüksekliği, logo ile ad hangisi uzunsa ona göre — ikisi de
+        // punto ölçüsünün 1,6 katıdır, yani hangisi varsa aynı yeri kaplar.
+        return $top + self::brandFontSize($width, $height) * 1.6;
+    }
+
+    /**
+     * Alt bloğun satırları: çağrı cümlesi ve masa adı.
+     *
+     * @return list<array{0: string, 1: string}> metin ve yazı ağırlığı
+     */
+    private static function captionLines(string $headline, ?string $tableName): array
+    {
+        $lines = [];
+
+        if (trim($headline) !== '') {
+            $lines[] = [$headline, 'normal'];
+        }
+
+        if ($tableName !== null && trim($tableName) !== '') {
+            // Masa adı KALIN: kartı masaya dağıtan kişi ona bakarak dağıtır.
+            $lines[] = [$tableName, 'bold'];
+        }
+
+        return $lines;
+    }
+
+    /** Karekodun kenarı: dikeyde kalan yer ile kartın kısa kenarından küçük olanı. */
+    private static function qrSide(
+        float $width,
+        float $height,
+        float $top,
+        float $bottom,
+        float $captionSize,
+        int $lineCount,
+    ): float {
+        $margin = min($width, $height) * self::MARGIN_RATIO;
+
+        $captionSpace = $lineCount === 0
+            ? 0.0
+            : $captionSize * 2.2 + ($lineCount - 1) * $captionSize * 1.5;
+
+        return max(0.0, min($bottom - $captionSpace - $top, $width - 2 * $margin));
+    }
+
+    /**
      * Endroid'in SVG'sinden yolu alır ve karta yerleştirir.
      *
      * Yeniden çizilmez: modül yerleşimi, sessiz bölge ve hata düzeltme
      * seviyesi orada zaten gerçek bir geri-okuma sınavından geçti.
      */
-    private static function qr(string $qrSvg, float $x, float $y, float $side): string
+    private static function qr(string $qrSvg, float $x, float $y, float $side, bool $needsPlate): string
     {
         $viewBox = self::qrViewBoxSize($qrSvg);
         $path = self::qrPath($qrSvg);
 
-        if ($viewBox <= 0.0 || $path === null) {
+        if ($viewBox <= 0.0 || $path === null || $side <= 0.0) {
             // Kod okunamadıysa boş bir kare basmaktansa hiçbir şey basmamak
             // daha dürüst: boş kare, basıldıktan sonra fark edilir.
             return '';
@@ -197,10 +361,23 @@ final class QrCardSvg
 
         $scale = $side / $viewBox;
 
-        return '<g transform="translate('.self::number($x).' '.self::number($y).') scale('
+        /*
+            KOYU ZEMİNDE BEYAZ PLAKA ŞART.
+
+            Karekodun sessiz bölgesi (ISO/IEC 18004: 4 modül) Endroid'in kendi
+            marjıdır ve yolun İÇİNDE gelir — yani boşluktur, beyaz değildir.
+            Beyaz kartta bunun bir önemi yok, kartın kendisi zaten beyaz. Koyu
+            bir kartta ise sessiz bölge koyu kalır ve tarayıcı kodun nerede
+            bittiğini bulamaz: kart basılır, masaya konur ve okunmaz.
+        */
+        $plate = $needsPlate
+            ? '<rect x="'.self::number($x).'" y="'.self::number($y).'" width="'.self::number($side)
+                .'" height="'.self::number($side).'" fill="#FFFFFF"/>'
+            : '';
+
+        return $plate
+            .'<g transform="translate('.self::number($x).' '.self::number($y).') scale('
             .self::number($scale, 6).')">'
-            // Sessiz bölge Endroid'in kendi marjıdır ve yolun içinde gelir;
-            // beyaz zemin kartın kendisidir.
             .'<path fill="#000000" d="'.$path.'"/>'
             .'</g>';
     }

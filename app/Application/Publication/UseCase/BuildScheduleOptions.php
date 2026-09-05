@@ -6,20 +6,29 @@ namespace App\Application\Publication\UseCase;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Throwable;
 
 /**
  * "Planla" düğmesinin arkasındaki saat seçenekleri.
  *
- * Seçenekler SUNUCUDA üretilir ve `Europe/Istanbul`a göre hesaplanır.
- * Tarayıcıda hesaplansaydı, Berlin'den panele giren bir ortak "bu gece
- * 03:00" dediğinde Türkiye'de saat 04:00 olurdu; restoranın menüsü sahibin
- * beklemediği bir anda değişirdi. Tarayıcı yalnız sunucunun ürettiği ANI
- * geri gönderir ve o anı okunabilir saate çevirir — hesap yapmaz.
+ * Seçenekler SUNUCUDA üretilir. Tarayıcıda hesaplansaydı, Berlin'den panele
+ * giren bir ortak "bu gece 03:00" dediğinde saat sunucunun değil o
+ * bilgisayarın saati olurdu. Tarayıcı yalnız sunucunun ürettiği ANI geri
+ * gönderir ve o anı okunabilir saate çevirir — hesap yapmaz.
+ *
+ * SAAT DİLİMİ ŞUBENİNDİR, sabit değildir (`docs/62`). Bir zamanlar burada
+ * sabit bir `Europe/Istanbul` duruyordu; aynı markanın Berlin şubesi "bu
+ * gece 03:00" dediğinde menü Berlin'de 01:00'de, servis hâlâ sürerken
+ * değişirdi. Hatanın en kötü yanı görünmezliğiydi: tek şubeli bir işletmede
+ * sabit dilim doğru görünmeye devam eder.
+ *
+ * SAKLAMA UTC KALIR. Bu sınıf mutlak ANLAR üretir; şubenin duvar saati
+ * yalnız o anların HESAPLANDIĞI yerdir. Yerel saat saklansaydı, yaz saati
+ * biten gecede aynı duvar saati iki kez yaşanır ve yayının hangi geçişte
+ * çıkacağını kimse söyleyemezdi.
  */
 final class BuildScheduleOptions
 {
-    public const TIME_ZONE = 'Europe/Istanbul';
-
     /**
      * Planın en fazla ne kadar ileriye kurulabileceği.
      *
@@ -30,11 +39,28 @@ final class BuildScheduleOptions
     public const MAX_HORIZON_DAYS = 30;
 
     /**
+     * Şubenin duvar saatine göre seçenekler.
+     *
+     * Saat dilimi TANINMIYORSA hiç seçenek üretilmez. Yedek bir dilime
+     * düşmek, sahibin okuduğu saatle menünün gerçekten değişeceği anı
+     * ayırırdı — ve bu tam olarak düzeltilen hatadır. Boş liste ise
+     * dürüsttür: hemen yayınlamak her zaman açıktır.
+     *
      * @return list<array{key:string,scheduledFor:string}>
      */
-    public static function forNow(CarbonInterface $now): array
+    public static function forNow(CarbonInterface $now, ?string $timeZone): array
     {
-        $local = Carbon::instance($now->toDateTime())->setTimezone(self::TIME_ZONE);
+        if ($timeZone === null) {
+            return [];
+        }
+
+        try {
+            $local = Carbon::instance($now->toDateTime())->setTimezone($timeZone);
+        } catch (Throwable) {
+            // Şube satırında tanınmayan bir kimlik varsa (elle düzeltilmiş
+            // bir satır, emekliye ayrılmış bir dilim) saat uydurulmaz.
+            return [];
+        }
 
         return [
             // Servis kapandıktan sonra: masada kimse yokken menü değişir.

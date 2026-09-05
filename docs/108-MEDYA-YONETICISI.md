@@ -103,12 +103,25 @@ ekranın etkileneceğini yalnız ikincisi söyler.
 
 ### 6.2 Desteklenen türler
 
-| Aile | Azami | Uzantılar | Not |
+> **BU TABLO KAYNAĞIN VAADİDİR, ÜRÜNÜN DAVRANIŞI DEĞİL.** Sayılar ve türler
+> `config/media-slots.php`'de yaşar; ikisi ayrışırsa **kod esastır** ve bir
+> kapı (`UploadSizeCeilingTest`) sınırların aktarım tavanını aşmasını
+> engeller. Aşağıdaki satırların dördü de bugün farklıdır — çelişki denetimi
+> FF-161, 2026-09-05.
+
+| Aile | Kaynağın vaadi | ÜRÜNDE bugün | Fark neden |
 | --- | --- | --- | --- |
-| Görseller | 25 MB | jpg, png, heic, heif, webp, avif, tiff, svg | HEIC/HEIF telefonda JPEG'e çevrilir; AVIF ve WebP olduğu gibi alınır |
-| Video | 200 MB | mp4, webm, mov, m4v | MOV/MP4 sunucuda WebM'e çevrilebilir; ilk kare kapak olur |
-| Belgeler | 25 MB | pdf, csv, xlsx, docx | PDF panelde sayfa sayfa okunur; ilk sayfa kapak görseli olur |
-| Ses | 50 MB | — | — |
+| Görseller | 25 MB (svg dahil) | **25 MB**, svg AYRI | Boyut aynı; SVG ayrıldı çünkü temizleyici gövdenin tamamını ayrıştırmak zorunda — orada sınır bir kolaylık değil saldırı yüzeyi kısıtıdır |
+| SVG | — (görsellerle aynı sayılıyordu) | **2 MB** | 2 MB'lık bir vektör logo zaten patolojiktir |
+| Belgeler (pdf) | 25 MB | **45 MB** | Sahip basılı menüsünü tarıyor; 300 DPI çok sayfalı bir PDF 25 MB'a sığmaz. 45, aktarım zincirinin izin verdiği en büyük değer — ihtiyacın hâlâ altında |
+| Video | 200 MB | **kabul edilmiyor** | Video hattı yok: kabul yok, türev yok, oynatıcı yok. Sayı yazmak olmayan bir yeteneği vaat etmek olurdu |
+| Ses | 50 MB | **hiç yok** | Hiçbir slot ses türü listelemiyor |
+| Belgeler (csv/xlsx/docx) | listede | **yalnız pdf** | CSV menü İÇE AKTARMA yolundan gelir, medya kütüphanesinden değil |
+
+Uzantı listeleri de kaynağın vaadidir: bugün kabul edilenler **jpeg, png,
+webp, avif, heic, svg, pdf**. HEIC dosya olarak KABUL EDİLİR ama bugün
+İŞLENEMEZ — sunucudaki görüntü kitaplığı onu çözemiyor ve ürün bunu
+dürüstçe söylüyor. Bu bir eksik ve `docs/110` P0-08'de açık duruyor.
 
 **SVG — sahibin kararı (2026-09-05): AÇILDI.**
 

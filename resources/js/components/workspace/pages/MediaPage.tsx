@@ -238,6 +238,17 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             current.some((row) => row.id === asset.id) ? current : [...current, asset],
         );
         setLoadState('idle');
+
+        /*
+            Yükleme ekranı sonucu GÖRMELİ (FF-150).
+
+            Sunucu 201 dönmesi dosyanın kullanılabilir olduğu anlamına
+            gelmez: güvenlik kapısını geçemediyse karantinada bekler ve
+            sebebi burada, cevabın içindedir. Bu değeri yutup ekrana yalnız
+            "tamamlandı" dedirtmek, sahibi sessizce bekleyen bir dosyayla
+            baş başa bırakırdı.
+        */
+        return { status: asset.status, statusReason: asset.statusReason };
     }
 
     /*
@@ -402,7 +413,13 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             icon: <UploadSimple aria-hidden="true" size={18} />,
             content: (
                 <PanelCard>
-                    <MediaUploadRegion onSubmit={handleUpload} />
+                    {/*
+                        Adres, tarayıcı durumunu sormak için geçer (FF-151):
+                        yükleme ekranı "her görsel taranır" vaadini ancak
+                        gerçekten taranıyorsa yazar. Adres yoksa hiçbir iddia
+                        yazılmaz — bölüm yine çalışır.
+                    */}
+                    <MediaUploadRegion workspaceId={workspaceId} onSubmit={handleUpload} />
                 </PanelCard>
             ),
         },

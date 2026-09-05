@@ -13,10 +13,23 @@ namespace App\Domain\QrDestination;
  * zemin, oran ≥ 4:1. Tema ise kartın kendisidir ve her restoranın marka
  * kimliği ayrı olduğu için markadan beslenir.
  *
- * Dört tasarım var ve dördü de MARKA RENGİNİ kullanır. Renk, karekodun
- * kendisine değil kartın çerçevesine/başlığına uygulanır: kod her zaman siyah
- * beyaz basılır, çünkü taranabilirlik pazarlık konusu değildir ve masadaki
- * okunmayan bir kart, hiç kart olmamasından kötüdür.
+ * Tasarımların hepsi MARKA RENGİNİ kullanır. Renk, karekodun kendisine değil
+ * kartın çerçevesine/şeridine/zeminine uygulanır: kod her zaman siyah beyaz
+ * basılır, çünkü taranabilirlik pazarlık konusu değildir ve masadaki okunmayan
+ * bir kart, hiç kart olmamasından kötüdür.
+ *
+ * KOYU VE TABELA — panel v3.1 kanonik kaynağı (`docs/reference/panel-v3/
+ * panel-v3.1.dc.html`, QR bölümü), sahibin 2026-09-05 kuralı: tasarımı sahip
+ * veriyorsa eski belgelere bağımlı kalınmaz.
+ *
+ * Bu iki tasarım bir kez REDDEDİLMİŞTİ ve reddin gerekçesi doğruydu: eski
+ * kaynağın "Koyu"su karekodu BEYAZ MODÜL / SİYAH ZEMİN çiziyordu; tarayıcılar
+ * koyu-üstüne-açık varsayar (ISO/IEC 18004) ve ters basılan bir kod birçok
+ * telefonda hiç okunmaz. Yeni kaynak o kusuru kendi düzeltiyor — `koyu` ve
+ * `tabela` temalarının kod çifti hâlâ `codeBg: #FFFFFF, codeFg: #080616`,
+ * yani KOYU MODÜL / AÇIK ZEMİN. Koyulaşan şey kartın zemini, kodun kendisi
+ * değil. Reddin sebebi ortadan kalktığı için tasarımlar doğdu; kod her iki
+ * temada da beyaz bir plakanın üstünde basılır (`QrCardSvg`).
  */
 enum CardTheme: string
 {
@@ -31,6 +44,12 @@ enum CardTheme: string
 
     /** Marka renginde ince çerçeve. Kesildiğinde kenarı belli olur. */
     case Frame = 'frame';
+
+    /** Koyu kart, beyaz yazı. Kod beyaz plakanın üstünde kalır. */
+    case Dark = 'dark';
+
+    /** Zemin markanın kendi rengi. Uzaktan bakıldığında bir tabela gibi okunur. */
+    case Signage = 'signage';
 
     /**
      * Kartta restoran adı yazılır mı?
@@ -52,6 +71,23 @@ enum CardTheme: string
             self::Minimal => 'none',
             self::Banner => 'banner',
             self::Frame => 'frame',
+            // Koyu ve Tabela'da vurgu ZEMİNİN kendisidir; kartın üstüne
+            // ikinci bir şerit ya da çerçeve çizmek aynı rengi iki kez
+            // söylemek olurdu.
+            self::Dark, self::Signage => 'ground',
         };
+    }
+
+    /**
+     * Kartın zemini koyu mu?
+     *
+     * Bu bir renk zevki değil bir BASKI kısıtıdır: koyu zeminde karekodun
+     * altına beyaz bir plaka konmazsa kodun sessiz bölgesi (ISO/IEC 18004: 4
+     * modül) koyu kalır ve kod birçok telefonda hiç okunmaz. Yazının rengi de
+     * buradan türer — koyu zeminde `#333333` bir başlık okunmaz.
+     */
+    public function hasDarkGround(): bool
+    {
+        return $this === self::Dark || $this === self::Signage;
     }
 }

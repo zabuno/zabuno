@@ -53,6 +53,17 @@ const PENDING: Record<string, string> = {
     'workspace.media.upload.supported.images': 'Images',
     'workspace.media.upload.supported.images.note':
         'HEIC and HEIF are converted to JPEG on your phone; AVIF and WebP are taken as they are.',
+    /*
+        FF-158. `.svg` 2026-09-05'e kadar "Images" satırının uzantı
+        listesindeydi ve o satırın azami boyutunu paylaşıyordu. Sunucu ikisine
+        ayrı sınır uyguluyor: bir SVG kabul edilmeden önce gövdesinin tamamı
+        ayrıştırılır, yani oradaki sınır bir kolaylık değil güvenlik
+        kısıtıdır. Tek satırda kalsaydı tabloda yazan sayı SVG için yanlış
+        olurdu.
+    */
+    'workspace.media.upload.supported.vector': 'Vector (SVG)',
+    'workspace.media.upload.supported.vector.note':
+        'A logo stays sharp at any size, including in print. Every line is checked before it is accepted, so the size limit is much smaller than for photos.',
     'workspace.media.upload.supported.video': 'Video',
     'workspace.media.upload.supported.video.note':
         'MOV and MP4 can be converted to WebM after upload; the first frame becomes the cover.',

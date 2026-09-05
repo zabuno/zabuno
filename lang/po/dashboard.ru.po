@@ -224,6 +224,10 @@ msgstr ""
 msgid "dashboard.suggestions.search.title"
 msgstr ""
 
+#: dashboard:dashboard.suggestions.search.title.plural
+msgid "dashboard.suggestions.search.title.plural"
+msgstr ""
+
 #: dashboard:dashboard.suggestions.search.why
 msgid "dashboard.suggestions.search.why"
 msgstr ""

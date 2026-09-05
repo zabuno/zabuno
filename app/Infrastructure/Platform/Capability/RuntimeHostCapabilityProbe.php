@@ -58,7 +58,38 @@ final class RuntimeHostCapabilityProbe implements HostCapabilityProbePort
             'url_rewrite' => $this->urlRewriteAvailable(),
 
             'zip' => extension_loaded('zip'),
+
+            /*
+                TARAYICI, KURULDUĞU HÂLDE SESSİZCE ÖLEBİLİR.
+
+                `ClamavMalwareScanner` taramaya başlamadan önce üç şeye bakar
+                ve biri tutmazsa taramayı hiç denemez: yol boş mu, dosya var
+                mı, çalıştırılabilir mi. Sonuç "belirsiz" olur — dosya
+                bekler, hata basılmaz, ekranda tarayıcının hiç kurulmamış
+                hâlinden ayırt edilemez.
+
+                Bu iki alan tam olarak o üç kontrolün ölçümüdür. Sürücünün
+                ADI da yazılır çünkü "ikili çalışmıyor" ile "sürücü hiç
+                açılmamış" aynı sonucu doğuran FARKLI iki sebeptir ve
+                düzeltmeleri farklı yerdedir.
+            */
+            'malware_scanner_driver' => (string) config('media.scanner.driver'),
+            'malware_scanner_binary_usable' => $this->malwareScannerBinaryUsable(),
         ];
+    }
+
+    /**
+     * Yapılandırılmış tarayıcı ikilisi GERÇEKTEN çağrılabilir mi?
+     *
+     * Kontroller `ClamavMalwareScanner`'ın kendi kontrollerinin AYNISIDIR ve
+     * bilerek öyledir: prob başka bir soru sorsaydı, "kanıt yeşil ama tarama
+     * çalışmıyor" gibi ikisi de doğru görünen bir çelişki üretirdi.
+     */
+    private function malwareScannerBinaryUsable(): bool
+    {
+        $path = (string) config('media.scanner.clamav.binary_path');
+
+        return $path !== '' && is_file($path) && is_executable($path);
     }
 
     private function opcacheEnabled(): bool

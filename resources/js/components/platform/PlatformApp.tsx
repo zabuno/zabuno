@@ -15,7 +15,7 @@ type PlatformSection = 'plans' | 'subscriptions' | 'credentials';
  * Release readiness ve denetim izi buradan ÇIKTI: `/engineering`
  * (`docs/98` FF-66). Aynı kişi olabilir, aynı iş değil.
  *
- * Gövde `OpsShell`'dir (`docs/99`): mühendislik kabuğuyla aynı ray, aynı üst
+ * Gövde `OpsShell`'dir (`docs/50`): mühendislik kabuğuyla aynı ray, aynı üst
  * çubuk, aynı zemin. Bölüm adresten gelir, fragment'ten değil (`docs/38` §4);
  * bilinmeyen bölüm varsayılana düşer.
  */

@@ -56,6 +56,7 @@ final class StoreMediaController extends Controller
                     'id' => $existing->id,
                     'workspaceId' => $existing->workspaceId,
                     'status' => $existing->status,
+                    'statusReason' => $existing->statusReason,
                     'altText' => $existing->altText,
                     'slot' => $existing->slot,
                     'replayed' => true,
@@ -107,10 +108,25 @@ final class StoreMediaController extends Controller
         */
         $this->audit->record($workspace, $asset->id, 'uploaded', $userId);
 
+        /*
+            SEBEP, YÜKLEMENİN KENDİ CEVABINDA (FF-150).
+
+            `status` tek başına sahibe bir şey söylemez: "scanning" hem
+            "sıradaki tarama birazdan koşacak" hem de "bu sunucuda tarayıcı
+            yok, dosya süresiz bekliyor" demek olabilir. İkisi arasındaki
+            fark, sahibin bekleyip beklemeyeceğine karar verdiği tek
+            bilgidir.
+
+            Kütüphane listesinde zaten vardı; ama sahip yüklemeyi yaptığı
+            ekranda "tamamlandı" okuyup ayrılıyor ve o listeye bir daha
+            bakmıyordu. Cevabın kendisi söylemezse ürün, sessizce bekleyen
+            bir dosyayı başarı gibi göstermiş olur.
+        */
         return response()->json([
             'id' => $asset->id,
             'workspaceId' => $asset->workspaceId,
             'status' => $asset->status,
+            'statusReason' => $asset->statusReason,
             'altText' => $asset->altText,
             'slot' => $asset->slot,
         ], 201);

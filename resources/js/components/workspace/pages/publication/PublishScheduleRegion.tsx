@@ -10,17 +10,43 @@ type ScheduleOption = {
     scheduledFor: string;
 };
 
-type PendingSchedule = {
+/**
+ * Planın sahibe söylenecek hâli. `status` SUNUCUNUN KARARIDIR — burada
+ * "vakti geçti mi" hesabı yapılmaz. Tarayıcının saati yanlış olan bir
+ * bilgisayarda hesap burada yapılsaydı, sahip çıkmış bir yayını "çıkmadı"
+ * sanardı.
+ */
+type SchedulePlan = {
     id: number;
     scheduledFor: string;
     state: string;
+    status: string;
+    needsAttention: boolean;
 };
 
+/**
+ * `timeZone` ŞUBENİN saat dilimidir (`docs/62`) ve `null` olabilir: şube
+ * okunamıyorsa sunucu bir dilim UYDURMAZ, seçenek de göndermez.
+ */
 type SchedulePayload = {
-    timeZone: string;
-    pending: PendingSchedule | null;
+    timeZone: string | null;
+    plan: SchedulePlan | null;
     options: ScheduleOption[];
 };
+
+/*
+    Sunucunun `status` değerinden ekrandaki cümleye giden TEK harita.
+    Bilinmeyen bir `status` buraya düşerse aşağıda uyarı tarafına alınır:
+    tanımadığımız bir hâli "her şey yolunda" diye çizmek, düzeltmeye
+    çalıştığımız kusurun ta kendisi olurdu.
+*/
+const STATUS_MESSAGE_KEYS = {
+    scheduled: 'workspace.publication.schedule.pending',
+    publishing: 'workspace.publication.schedule.status.publishing',
+    overdue: 'workspace.publication.schedule.status.overdue',
+    interrupted: 'workspace.publication.schedule.status.interrupted',
+    failed: 'workspace.publication.schedule.status.failed',
+} as const;
 
 const OPTION_LABEL_KEYS = {
     tonight: 'workspace.publication.schedule.option.tonight',
@@ -29,29 +55,50 @@ const OPTION_LABEL_KEYS = {
 } as const;
 
 /**
- * Sunucudan gelen ANI, İstanbul saatiyle okunabilir hâle çevirir.
+ * Sunucudan gelen ANI, ŞUBENİN saatiyle okunabilir hâle çevirir.
  *
- * Burada HESAP YAPILMAZ, yalnız biçimlendirilir. Saatin kendisini tarayıcı
- * hesaplasaydı, Berlin'den panele giren bir ortak "bu gece 03:00" dediğinde
- * menü Türkiye'de 04:00'te değişirdi ve sahip menüsünün ne zaman
- * değiştiğini bilemezdi.
+ * Burada HESAP YAPILMAZ, yalnız biçimlendirilir — ve biçimlendirme dilimi de
+ * sunucudan gelir. Sabit `Europe/Istanbul` ile yazılırken, sunucunun Berlin
+ * şubesi için kurduğu 03:00'lik plan ekranda "04:00" görünüyordu: sahip iki
+ * sayının hangisine güveneceğini bilemezdi. EKRANDA YAZAN SAAT İLE MENÜNÜN
+ * DEĞİŞECEĞİ AN AYNI OLMAK ZORUNDADIR.
+ *
+ * Şubenin dilimi bilinmiyorsa `undefined` geçilir ve tarayıcı okuyanın KENDİ
+ * saatini kullanır. Bu bir yedek dilim değil, bir itiraftır: sahibe hangi
+ * saatte olduğunu söyleyemediğimizde, en azından uydurma bir şehrin saatini
+ * söylemeyiz. O durumda zaten seçenek de çizilmez.
  */
-function istanbulMoment(iso: string): string {
+function momentIn(iso: string, timeZone: string | null): string {
     const value = new Date(iso);
 
     if (Number.isNaN(value.getTime())) {
         return iso;
     }
 
-    return new Intl.DateTimeFormat(currentLocaleTag(), {
-        timeZone: 'Europe/Istanbul',
+    const options: Intl.DateTimeFormatOptions = {
         weekday: 'short',
         day: '2-digit',
         month: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
         hourCycle: 'h23',
-    }).format(value);
+    };
+
+    try {
+        return new Intl.DateTimeFormat(currentLocaleTag(), {
+            ...options,
+            timeZone: timeZone ?? undefined,
+        }).format(value);
+    } catch {
+        /*
+            Sunucu bu dilimi doğruluyor, ama tarayıcının tanıdığı liste
+            sunucununkiyle bire bir aynı değildir. Tanımadığı bir kimlikte
+            `Intl` fırlatır ve bu bölüm hiç çizilmezdi — sahip kurulu
+            planını göremezdi. Saati kaybetmektense okuyanın kendi saatiyle
+            yazarız.
+        */
+        return new Intl.DateTimeFormat(currentLocaleTag(), options).format(value);
+    }
 }
 
 function optionLabel(key: string): string {
@@ -137,11 +184,16 @@ export function PublishScheduleRegion({
                     return;
                 }
 
-                const created = (await response.json()) as PendingSchedule;
+                await response.json();
 
-                setPayload((previous) =>
-                    previous === null ? previous : { ...previous, pending: created },
-                );
+                /*
+                    Yeni planın hâlini SUNUCUYA yeniden sorarız; POST
+                    cevabından uydurmayız. Kurulan plan `scheduled` olmalıdır
+                    ama bunu söyleyecek olan sunucudur — ekranın kendi
+                    kendine "kuruldu" demesi, tam da tutulmayan sözlerin
+                    doğduğu yerdir.
+                */
+                setReloadToken((token) => token + 1);
             } catch {
                 setErrorMessage(t('workspace.publication.schedule.error'));
             } finally {
@@ -171,7 +223,7 @@ export function PublishScheduleRegion({
                 }
 
                 setPayload((previous) =>
-                    previous === null ? previous : { ...previous, pending: null },
+                    previous === null ? previous : { ...previous, plan: null },
                 );
                 setReloadToken((token) => token + 1);
             } catch {
@@ -183,7 +235,16 @@ export function PublishScheduleRegion({
         [scheduleUrl],
     );
 
-    const pending = payload?.pending ?? null;
+    const plan = payload?.plan ?? null;
+    const messageKey =
+        plan === null
+            ? null
+            : (STATUS_MESSAGE_KEYS[plan.status as keyof typeof STATUS_MESSAGE_KEYS] ?? null);
+    /*
+        Tanımadığımız bir `status` da uyarıdır. Sunucu bir gün yeni bir hâl
+        eklerse ekran onu sessizce "her şey yolunda" tarafına düşürmemeli.
+    */
+    const needsAttention = plan !== null && (plan.needsAttention || messageKey === null);
 
     return (
         <section
@@ -207,26 +268,50 @@ export function PublishScheduleRegion({
                 {t('workspace.publication.schedule.help')}
             </p>
 
-            {pending !== null ? (
-                <div className="flex flex-wrap items-center gap-[var(--space-3)]">
-                    <p role="status" className="text-body tabular-nums text-fg">
-                        {t('workspace.publication.schedule.pending', {
-                            moment: istanbulMoment(pending.scheduledFor),
+            {plan !== null ? (
+                <div
+                    data-schedule-status={plan.status}
+                    className="flex flex-wrap items-center gap-[var(--space-3)]"
+                >
+                    {/*
+                        ÇIKMAYAN YAYIN SESSİZ KALMAZ. Vakti geçmiş, yarıda
+                        kalmış ya da başarısız bir plan `role="alert"` ile
+                        duyurulur: ekran okuyucu kullanan sahip bunu
+                        aramadan duyar. Sağlıklı bir plan ise yalnız bir
+                        durum satırıdır — her plana alarm çalmak, gerçek
+                        alarmı görünmez yapardı.
+                    */}
+                    <p
+                        role={needsAttention ? 'alert' : 'status'}
+                        className={`max-w-[60ch] text-body tabular-nums ${
+                            needsAttention ? 'text-fg-danger' : 'text-fg'
+                        }`}
+                    >
+                        {t(messageKey ?? 'workspace.publication.schedule.status.unknown', {
+                            moment: momentIn(plan.scheduledFor, payload?.timeZone ?? null),
                         })}
                     </p>
                     {/*
                         İPTAL, PLANIN KENDİSİ KADAR ÖNEMLİDİR: zam kararından
                         vazgeçen sahip gece 03:00'e kadar beklemek zorunda
-                        kalmamalı.
+                        kalmamalı. Çıkmamış bir yayında aynı düğme uyarıyı
+                        kapatır — sahip için ikisi de "bunu ekranımdan
+                        kaldır"dır ve hangisi olduğunu sunucu bilir.
                     */}
-                    <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void cancel(pending.id)}
-                        className="min-h-[var(--control-height)] rounded-[var(--radius-md)] border border-border px-[var(--space-3)] py-[var(--space-1)] text-body font-medium text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-                    >
-                        {t('workspace.publication.schedule.cancel')}
-                    </button>
+                    {plan.status === 'publishing' ? null : (
+                        <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => void cancel(plan.id)}
+                            className="min-h-[var(--control-height)] rounded-[var(--radius-md)] border border-border px-[var(--space-3)] py-[var(--space-1)] text-body font-medium text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                        >
+                            {t(
+                                needsAttention
+                                    ? 'workspace.publication.schedule.dismiss'
+                                    : 'workspace.publication.schedule.cancel',
+                            )}
+                        </button>
+                    )}
                 </div>
             ) : !draftReady ? (
                 <p role="status" className="text-body text-fg-secondary">
@@ -251,7 +336,10 @@ export function PublishScheduleRegion({
                             >
                                 {t('workspace.publication.schedule.optionAt', {
                                     label: optionLabel(option.key),
-                                    moment: istanbulMoment(option.scheduledFor),
+                                    moment: momentIn(
+                                        option.scheduledFor,
+                                        payload?.timeZone ?? null,
+                                    ),
                                 })}
                             </button>
                         </li>

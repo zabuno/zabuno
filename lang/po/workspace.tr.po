@@ -134,7 +134,7 @@ msgstr "En yoğun zaman {day} saat {hour} civarıydı."
 
 #: workspace:workspace.analytics.highlight.missing
 msgid "workspace.analytics.highlight.missing"
-msgstr "“{term}” {count} kez arandı ve hiçbir sonuç dönmedi — menünüzde bir eksik olabilir."
+msgstr "“{term}” aramasını {count} kişi yaptı ve hiçbir sonuç dönmedi — menünüzde bir eksik olabilir."
 
 #: workspace:workspace.analytics.highlight.neverViewed
 msgid "workspace.analytics.highlight.neverViewed"
@@ -163,6 +163,14 @@ msgstr "Hiç bakılmayan"
 #: workspace:workspace.analytics.menuEngineering.neverViewed.none
 msgid "workspace.analytics.menuEngineering.neverViewed.none"
 msgstr "Her yemeğe bakılmış."
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed.review
+msgid "workspace.analytics.menuEngineering.neverViewed.review"
+msgstr "Menüde düzenle"
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed.reviewFor
+msgid "workspace.analytics.menuEngineering.neverViewed.reviewFor"
+msgstr "“{name}” ürününü menüde düzenle"
 
 #: workspace:workspace.analytics.menuEngineering.region
 msgid "workspace.analytics.menuEngineering.region"
@@ -202,15 +210,15 @@ msgstr "{count} ziyaretçi"
 
 #: workspace:workspace.analytics.metric.menuOpen
 msgid "workspace.analytics.metric.menuOpen"
-msgstr "Doğrulanmış menü açılışı"
+msgstr "Menü açılışı"
 
-#: workspace:workspace.analytics.metric.openRate
-msgid "workspace.analytics.metric.openRate"
-msgstr "Okutmadan menü açılışına"
+#: workspace:workspace.analytics.metric.menuOpen.support
+msgid "workspace.analytics.metric.menuOpen.support"
+msgstr "%{percent} açılış oranı"
 
 #: workspace:workspace.analytics.metric.qrResolve
 msgid "workspace.analytics.metric.qrResolve"
-msgstr "Karekod okutma"
+msgstr "Tarama"
 
 #: workspace:workspace.analytics.metric.searches
 msgid "workspace.analytics.metric.searches"
@@ -222,7 +230,11 @@ msgstr "{count} tanesi sonuç bulamadı"
 
 #: workspace:workspace.analytics.metric.uniqueVisitors
 msgid "workspace.analytics.metric.uniqueVisitors"
-msgstr "Yaklaşık tekil ziyaretçi"
+msgstr "Yaklaşık ziyaretçi"
+
+#: workspace:workspace.analytics.metric.uniqueVisitors.support
+msgid "workspace.analytics.metric.uniqueVisitors.support"
+msgstr "benzersiz cihaz"
 
 #: workspace:workspace.analytics.operational.description
 msgid "workspace.analytics.operational.description"
@@ -294,7 +306,7 @@ msgstr "Güne ve saate göre okutmalar ({timezone})"
 
 #: workspace:workspace.analytics.timeSeries.heat.title
 msgid "workspace.analytics.timeSeries.heat.title"
-msgstr "En yoğun saatler"
+msgstr "Saatlere göre yoğunluk"
 
 #: workspace:workspace.analytics.timeSeries.heat.withheld
 msgid "workspace.analytics.timeSeries.heat.withheld"
@@ -310,7 +322,7 @@ msgstr "Grafikler yükleniyor…"
 
 #: workspace:workspace.analytics.timeSeries.menuOpens
 msgid "workspace.analytics.timeSeries.menuOpens"
-msgstr "Menü açılışları"
+msgstr "Menü açılışı"
 
 #: workspace:workspace.analytics.timeSeries.region
 msgid "workspace.analytics.timeSeries.region"
@@ -318,7 +330,7 @@ msgstr "Zaman içindeki hareket"
 
 #: workspace:workspace.analytics.timeSeries.scans
 msgid "workspace.analytics.timeSeries.scans"
-msgstr "Okutmalar"
+msgstr "Tarama"
 
 #: workspace:workspace.analytics.timeSeries.share.description
 msgid "workspace.analytics.timeSeries.share.description"
@@ -330,15 +342,15 @@ msgstr "Yalnızca seçili şube değil, markanızın tamamı."
 
 #: workspace:workspace.analytics.timeSeries.share.title
 msgid "workspace.analytics.timeSeries.share.title"
-msgstr "Şubeye göre pay"
+msgstr "Şube payı"
 
 #: workspace:workspace.analytics.timeSeries.tables.title
 msgid "workspace.analytics.timeSeries.tables.title"
-msgstr "En yoğun masalar"
+msgstr "Masaya göre (ilk 5)"
 
 #: workspace:workspace.analytics.timeSeries.tables.value
 msgid "workspace.analytics.timeSeries.tables.value"
-msgstr "okutma"
+msgstr "tarama"
 
 #: workspace:workspace.analytics.timeSeries.thin
 msgid "workspace.analytics.timeSeries.thin"
@@ -350,11 +362,11 @@ msgstr "Gün"
 
 #: workspace:workspace.analytics.timeSeries.trend.description
 msgid "workspace.analytics.timeSeries.trend.description"
-msgstr "Güne göre okutma ve menü açılışı"
+msgstr "Güne göre tarama ve menü açılışı"
 
 #: workspace:workspace.analytics.timeSeries.trend.title
 msgid "workspace.analytics.timeSeries.trend.title"
-msgstr "Okutmalar ve menü açılışları"
+msgstr "Tarama ve menü açılışı"
 
 #: workspace:workspace.analytics.weekday.1
 msgid "workspace.analytics.weekday.1"
@@ -2980,6 +2992,10 @@ msgstr "sınırsız"
 msgid "workspace.media.security.explanation"
 msgstr "Her görsel, menünüzde görünmeden önce taranır ve bir kişi tarafından kontrol edilir."
 
+#: workspace:workspace.media.security.explanation.unavailable
+msgid "workspace.media.security.explanation.unavailable"
+msgstr "Bu ortamda bağlı bir virüs tarayıcı yok; yüklediğiniz görseller kontrol edilmiyor ve menünüzde görünmek yerine karantinada bekliyor."
+
 #: workspace:workspace.media.settings.originals.body
 msgid "workspace.media.settings.originals.body"
 msgstr "Yüklediğiniz dosya her zaman bayt bayt saklanır. Dönüştürme ya da yeniden üretim, onun yanına yeni bir sürüm yazar; aslın yerine hiçbir şey geçmez ve hiçbir şey silinmez."
@@ -3222,7 +3238,7 @@ msgstr "Yüklemek için bir dosya seçin."
 
 #: workspace:workspace.media.upload.error.tooLarge
 msgid "workspace.media.upload.error.tooLarge"
-msgstr "Bu dosya {size} MB; sınır {max} MB. Daha küçük bir kopya çıkarıp tekrar deneyin."
+msgstr "Bu dosya {size} MB; {kind} için sınır {max} MB. Daha küçük bir kopya çıkarıp tekrar deneyin."
 
 #: workspace:workspace.media.upload.error.tooManyPixels
 msgid "workspace.media.upload.error.tooManyPixels"
@@ -3328,6 +3344,26 @@ msgstr "Dosya"
 msgid "workspace.media.upload.heading"
 msgstr "Fotoğraf ekle"
 
+#: workspace:workspace.media.upload.held
+msgid "workspace.media.upload.held"
+msgstr "Dosyanız bize ulaştı, ama menünüzde henüz kullanılamıyor. Sebebi şu:"
+
+#: workspace:workspace.media.upload.held.notYours
+msgid "workspace.media.upload.held.notYours"
+msgstr "Yanlış bir şey yapmadınız; bunu buradan açmanız da mümkün değil."
+
+#: workspace:workspace.media.upload.limit.kind.document
+msgid "workspace.media.upload.limit.kind.document"
+msgstr "PDF dosyaları"
+
+#: workspace:workspace.media.upload.limit.kind.image
+msgid "workspace.media.upload.limit.kind.image"
+msgstr "görseller"
+
+#: workspace:workspace.media.upload.limit.kind.vector
+msgid "workspace.media.upload.limit.kind.vector"
+msgstr "SVG dosyaları"
+
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
 msgstr "{name} için ad"
@@ -3355,6 +3391,10 @@ msgstr "En-boy oranı {aspect}"
 #: workspace:workspace.media.upload.requirement.formats
 msgid "workspace.media.upload.requirement.formats"
 msgstr "Biçimler: {formats}"
+
+#: workspace:workspace.media.upload.requirement.maxSize
+msgid "workspace.media.upload.requirement.maxSize"
+msgstr "En büyük dosya boyutu: {limits}"
 
 #: workspace:workspace.media.upload.requirement.minimum
 msgid "workspace.media.upload.requirement.minimum"
@@ -3467,6 +3507,134 @@ msgstr "Dosya görüntüleyici"
 #: workspace:workspace.media.viewer.tab
 msgid "workspace.media.viewer.tab"
 msgstr "Görüntüle"
+
+#: workspace:workspace.menu.audit.action.categoryAdded
+msgid "workspace.menu.audit.action.categoryAdded"
+msgstr "Kategori eklendi"
+
+#: workspace:workspace.menu.audit.action.categoryRemoved
+msgid "workspace.menu.audit.action.categoryRemoved"
+msgstr "Kategori kaldırıldı"
+
+#: workspace:workspace.menu.audit.action.categoryRenamed
+msgid "workspace.menu.audit.action.categoryRenamed"
+msgstr "Kategorinin adı değişti"
+
+#: workspace:workspace.menu.audit.action.itemAdded
+msgid "workspace.menu.audit.action.itemAdded"
+msgstr "Ürün eklendi"
+
+#: workspace:workspace.menu.audit.action.itemAllergensChanged
+msgid "workspace.menu.audit.action.itemAllergensChanged"
+msgstr "Alerjenler değişti"
+
+#: workspace:workspace.menu.audit.action.itemPriceChanged
+msgid "workspace.menu.audit.action.itemPriceChanged"
+msgstr "Fiyat değişti"
+
+#: workspace:workspace.menu.audit.action.itemRemoved
+msgid "workspace.menu.audit.action.itemRemoved"
+msgstr "Ürün silindi"
+
+#: workspace:workspace.menu.audit.action.itemRenamed
+msgid "workspace.menu.audit.action.itemRenamed"
+msgstr "Ürünün adı değişti"
+
+#: workspace:workspace.menu.audit.action.itemVisibilityChanged
+msgid "workspace.menu.audit.action.itemVisibilityChanged"
+msgstr "Görünürlük değişti"
+
+#: workspace:workspace.menu.audit.action.menuAiImported
+msgid "workspace.menu.audit.action.menuAiImported"
+msgstr "Fotoğraftan okundu, onaylandı"
+
+#: workspace:workspace.menu.audit.action.menuCreated
+msgid "workspace.menu.audit.action.menuCreated"
+msgstr "Menü oluşturuldu"
+
+#: workspace:workspace.menu.audit.action.menuDeleted
+msgid "workspace.menu.audit.action.menuDeleted"
+msgstr "Menü silindi"
+
+#: workspace:workspace.menu.audit.action.menuImported
+msgid "workspace.menu.audit.action.menuImported"
+msgstr "CSV dosyasından aktarıldı"
+
+#: workspace:workspace.menu.audit.action.menuRenamed
+msgid "workspace.menu.audit.action.menuRenamed"
+msgstr "Menünün adı değişti"
+
+#: workspace:workspace.menu.audit.action.unknown
+msgid "workspace.menu.audit.action.unknown"
+msgstr "Tanınmayan bir değişiklik"
+
+#: workspace:workspace.menu.audit.actor.unknown
+msgid "workspace.menu.audit.actor.unknown"
+msgstr "Kim olduğu bilinmiyor"
+
+#: workspace:workspace.menu.audit.at.unknown
+msgid "workspace.menu.audit.at.unknown"
+msgstr "Zamanı kaydedilmemiş"
+
+#: workspace:workspace.menu.audit.change
+msgid "workspace.menu.audit.change"
+msgstr "{before} → {after}"
+
+#: workspace:workspace.menu.audit.empty
+msgid "workspace.menu.audit.empty"
+msgstr "Henüz bir değişiklik kaydedilmedi."
+
+#: workspace:workspace.menu.audit.error
+msgid "workspace.menu.audit.error"
+msgstr "Değişiklik geçmişi yüklenemedi."
+
+#: workspace:workspace.menu.audit.heading
+msgid "workspace.menu.audit.heading"
+msgstr "Değişiklik geçmişi"
+
+#: workspace:workspace.menu.audit.help
+msgid "workspace.menu.audit.help"
+msgstr "Bu menüde fiyatı, adı, görünürlüğü ya da alerjenleri kim değiştirdi ve değer öncesinde neydi."
+
+#: workspace:workspace.menu.audit.loading
+msgid "workspace.menu.audit.loading"
+msgstr "Değişiklik geçmişi yükleniyor…"
+
+#: workspace:workspace.menu.audit.next
+msgid "workspace.menu.audit.next"
+msgstr "Sonraki"
+
+#: workspace:workspace.menu.audit.notRecorded
+msgid "workspace.menu.audit.notRecorded"
+msgstr "Burada kaydedilmeyenler: sıralama, bugün tükendi işaretleri ve yayınlama. Yayınlamanın kendi geçmişi yayın ekranındadır."
+
+#: workspace:workspace.menu.audit.page
+msgid "workspace.menu.audit.page"
+msgstr "Sayfa {page} / {total}"
+
+#: workspace:workspace.menu.audit.previous
+msgid "workspace.menu.audit.previous"
+msgstr "Önceki"
+
+#: workspace:workspace.menu.audit.region
+msgid "workspace.menu.audit.region"
+msgstr "Menü değişiklik geçmişi"
+
+#: workspace:workspace.menu.audit.retry
+msgid "workspace.menu.audit.retry"
+msgstr "Tekrar dene"
+
+#: workspace:workspace.menu.audit.subject.unknown
+msgid "workspace.menu.audit.subject.unknown"
+msgstr "Adı kaydedilmemiş"
+
+#: workspace:workspace.menu.audit.visibility.hidden
+msgid "workspace.menu.audit.visibility.hidden"
+msgstr "Gizli"
+
+#: workspace:workspace.menu.audit.visibility.visible
+msgid "workspace.menu.audit.visibility.visible"
+msgstr "Görünür"
 
 #: workspace:workspace.menu.empty.brand.body
 msgid "workspace.menu.empty.brand.body"
@@ -3870,7 +4038,7 @@ msgstr "Yayın"
 
 #: workspace:workspace.publication.history.help
 msgid "workspace.publication.history.help"
-msgstr "Geri dönmek yeni bir sürüm yazar. Hiçbir şey silinmez ve basılı karekodlara dokunulmaz."
+msgstr "Geri alma da bir yayındır: yeni sürüm numarası alır, QR aynı kalır."
 
 #: workspace:workspace.publication.history.live
 msgid "workspace.publication.history.live"
@@ -4496,6 +4664,10 @@ msgstr "Buradaki her tema açık zemin üstüne koyu basar ve kodun çevresindek
 msgid "workspace.publication.qrExport.unavailable"
 msgstr "Karekod baskı çıktısı henüz kullanılamıyor."
 
+#: workspace:workspace.publication.qrScreen.addTables
+msgid "workspace.publication.qrScreen.addTables"
+msgstr "Yeni masa ekle"
+
 #: workspace:workspace.publication.qrScreen.address
 msgid "workspace.publication.qrScreen.address"
 msgstr "Tam adres"
@@ -4504,6 +4676,14 @@ msgstr "Tam adres"
 msgid "workspace.publication.qrScreen.advanced"
 msgstr "Kod yönetimi ve gelişmiş baskı"
 
+#: workspace:workspace.publication.qrScreen.areaNote
+msgid "workspace.publication.qrScreen.areaNote"
+msgstr "{area} · {count} kart basılacak."
+
+#: workspace:workspace.publication.qrScreen.brandNote
+msgid "workspace.publication.qrScreen.brandNote"
+msgstr "Marka renklerin Ayarlar’dan gelir"
+
 #: workspace:workspace.publication.qrScreen.bulk
 msgid "workspace.publication.qrScreen.bulk"
 msgstr "Yeni masalar için toplu kod"
@@ -4511,6 +4691,30 @@ msgstr "Yeni masalar için toplu kod"
 #: workspace:workspace.publication.qrScreen.bulkDefaults
 msgid "workspace.publication.qrScreen.bulkDefaults"
 msgstr "Gerisi varsayılan: {areas} bölüm, masa başına {seats} kişilik, adlar T1 ile başlar."
+
+#: workspace:workspace.publication.qrScreen.capped
+msgid "workspace.publication.qrScreen.capped"
+msgstr "Bir arşivde en fazla {cap} kart olur; kalanlar dışarıda kalır. Onları ikinci bir partide bas."
+
+#: workspace:workspace.publication.qrScreen.cardTheme.branded
+msgid "workspace.publication.qrScreen.cardTheme.branded"
+msgstr "Markalı"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.dark
+msgid "workspace.publication.qrScreen.cardTheme.dark"
+msgstr "Koyu"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.framed
+msgid "workspace.publication.qrScreen.cardTheme.framed"
+msgstr "Çerçeve"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.plain
+msgid "workspace.publication.qrScreen.cardTheme.plain"
+msgstr "Sade"
+
+#: workspace:workspace.publication.qrScreen.cardTheme.signage
+msgid "workspace.publication.qrScreen.cardTheme.signage"
+msgstr "Tabela"
 
 #: workspace:workspace.publication.qrScreen.contrast
 msgid "workspace.publication.qrScreen.contrast"
@@ -4524,9 +4728,77 @@ msgstr "Kopyalandı"
 msgid "workspace.publication.qrScreen.copy"
 msgstr "Adresi kopyala"
 
+#: workspace:workspace.publication.qrScreen.custom
+msgid "workspace.publication.qrScreen.custom"
+msgstr "Başka bir ölçü gerekiyor"
+
+#: workspace:workspace.publication.qrScreen.custom.format
+msgid "workspace.publication.qrScreen.custom.format"
+msgstr "Dosya biçimi"
+
+#: workspace:workspace.publication.qrScreen.custom.format.pdf
+msgid "workspace.publication.qrScreen.custom.format.pdf"
+msgstr "PDF"
+
+#: workspace:workspace.publication.qrScreen.custom.format.pdf.use
+msgid "workspace.publication.qrScreen.custom.format.pdf.use"
+msgstr "baskıya hazır"
+
+#: workspace:workspace.publication.qrScreen.custom.format.svg
+msgid "workspace.publication.qrScreen.custom.format.svg"
+msgstr "SVG"
+
+#: workspace:workspace.publication.qrScreen.custom.format.svg.use
+msgid "workspace.publication.qrScreen.custom.format.svg.use"
+msgstr "sınırsız büyütme"
+
+#: workspace:workspace.publication.qrScreen.custom.landscape
+msgid "workspace.publication.qrScreen.custom.landscape"
+msgstr "Yatay"
+
+#: workspace:workspace.publication.qrScreen.custom.noPng
+msgid "workspace.publication.qrScreen.custom.noPng"
+msgstr "PNG yok: raster bir görsel 4 cm’lik bir karekodda modül kenarlarını bulanıklaştırır ve ikinci bir besteci bir gün başka bir kart çizerdi."
+
+#: workspace:workspace.publication.qrScreen.custom.orientation
+msgid "workspace.publication.qrScreen.custom.orientation"
+msgstr "Yön"
+
+#: workspace:workspace.publication.qrScreen.custom.paper
+msgid "workspace.publication.qrScreen.custom.paper"
+msgstr "Kağıt boyutu"
+
+#: workspace:workspace.publication.qrScreen.custom.portrait
+msgid "workspace.publication.qrScreen.custom.portrait"
+msgstr "Dikey"
+
+#: workspace:workspace.publication.qrScreen.custom.ratio
+msgid "workspace.publication.qrScreen.custom.ratio"
+msgstr "Ya da serbest oran"
+
+#: workspace:workspace.publication.qrScreen.custom.ratioNote
+msgid "workspace.publication.qrScreen.custom.ratioNote"
+msgstr "Serbest oranda kağıt boyutu olmaz; dosya bu orana göre çıkar, matbaa kendi kağıdına yerleştirir."
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.classic
+msgid "workspace.publication.qrScreen.custom.ratioUse.classic"
+msgstr "klasik"
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.screen
+msgid "workspace.publication.qrScreen.custom.ratioUse.screen"
+msgstr "ekran"
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.tall
+msgid "workspace.publication.qrScreen.custom.ratioUse.tall"
+msgstr "uzun kart"
+
 #: workspace:workspace.publication.qrScreen.description
 msgid "workspace.publication.qrScreen.description"
-msgstr "Basılı bir kod hiç değişmez — menünüzü istediğiniz sıklıkta güncelleyin."
+msgstr "Masaya koyacağın kartı bas. Kod bir kez basılır, menüyü sonra istediğin kadar değiştirirsin."
+
+#: workspace:workspace.publication.qrScreen.download
+msgid "workspace.publication.qrScreen.download"
+msgstr "{name} indir"
 
 #: workspace:workspace.publication.qrScreen.downloadAll
 msgid "workspace.publication.qrScreen.downloadAll"
@@ -4540,9 +4812,21 @@ msgstr "Kartlar {part}/{total} (PDF)"
 msgid "workspace.publication.qrScreen.downloadPdf"
 msgstr "PDF indir"
 
+#: workspace:workspace.publication.qrScreen.downloadZip
+msgid "workspace.publication.qrScreen.downloadZip"
+msgstr "{count} kartı indir (ZIP)"
+
 #: workspace:workspace.publication.qrScreen.empty
 msgid "workspace.publication.qrScreen.empty"
 msgstr "Henüz masa kodu yok. Masalarınızın kodlarını aşağıdan oluşturun."
+
+#: workspace:workspace.publication.qrScreen.headline.help
+msgid "workspace.publication.qrScreen.headline.help"
+msgstr "Kısa tut: uzak mesafeden okunacak."
+
+#: workspace:workspace.publication.qrScreen.headline.label
+msgid "workspace.publication.qrScreen.headline.label"
+msgstr "Kartın üstündeki yazı"
 
 #: workspace:workspace.publication.qrScreen.loadError
 msgid "workspace.publication.qrScreen.loadError"
@@ -4558,7 +4842,59 @@ msgstr "Hiç okutulmadı"
 
 #: workspace:workspace.publication.qrScreen.noDarkTheme
 msgid "workspace.publication.qrScreen.noDarkTheme"
-msgstr "Koyu kart yok: okuyucular açık zemin üstüne koyu bekler ve ters çevrilmiş bir kodu birçok telefon hiç okumaz."
+msgstr "Kart nasıl görünürse görünsün, kodun kendisi her zaman açık zemin üstüne koyu basılır: tarayıcılar bunu varsayar ve ters basılan bir kod birçok telefonda hiç okunmaz."
+
+#: workspace:workspace.publication.qrScreen.optionSelected
+msgid "workspace.publication.qrScreen.optionSelected"
+msgstr "Seçili"
+
+#: workspace:workspace.publication.qrScreen.preset.large
+msgid "workspace.publication.qrScreen.preset.large"
+msgstr "Büyük masa kartı"
+
+#: workspace:workspace.publication.qrScreen.preset.large.where
+msgid "workspace.publication.qrScreen.preset.large.where"
+msgstr "Uzun masa, iki taraf"
+
+#: workspace:workspace.publication.qrScreen.preset.table
+msgid "workspace.publication.qrScreen.preset.table"
+msgstr "Masa kartı"
+
+#: workspace:workspace.publication.qrScreen.preset.table.tag
+msgid "workspace.publication.qrScreen.preset.table.tag"
+msgstr "En çok kullanılan"
+
+#: workspace:workspace.publication.qrScreen.preset.table.where
+msgid "workspace.publication.qrScreen.preset.table.where"
+msgstr "Pleksiglas içine"
+
+#: workspace:workspace.publication.qrScreen.preset.wall
+msgid "workspace.publication.qrScreen.preset.wall"
+msgstr "Duvar afişi"
+
+#: workspace:workspace.publication.qrScreen.preset.wall.where
+msgid "workspace.publication.qrScreen.preset.wall.where"
+msgstr "Kasa yanı, giriş"
+
+#: workspace:workspace.publication.qrScreen.preset.window
+msgid "workspace.publication.qrScreen.preset.window"
+msgstr "Vitrin / kapı"
+
+#: workspace:workspace.publication.qrScreen.preset.window.where
+msgid "workspace.publication.qrScreen.preset.window.where"
+msgstr "Dışarıdan okunur"
+
+#: workspace:workspace.publication.qrScreen.preview
+msgid "workspace.publication.qrScreen.preview"
+msgstr "Böyle çıkacak"
+
+#: workspace:workspace.publication.qrScreen.preview.paperDims
+msgid "workspace.publication.qrScreen.preview.paperDims"
+msgstr "{size} · {width} × {height} mm"
+
+#: workspace:workspace.publication.qrScreen.preview.ratioDims
+msgid "workspace.publication.qrScreen.preview.ratioDims"
+msgstr "{ratio} · {orientation}"
 
 #: workspace:workspace.publication.qrScreen.previewAlt
 msgid "workspace.publication.qrScreen.previewAlt"
@@ -4572,13 +4908,53 @@ msgstr "Yazdır"
 msgid "workspace.publication.qrScreen.retry"
 msgstr "Tekrar dene"
 
+#: workspace:workspace.publication.qrScreen.scan.standing
+msgid "workspace.publication.qrScreen.scan.standing"
+msgstr "Kod {mm} mm — masadan da, ayaktayken de rahat okunur."
+
+#: workspace:workspace.publication.qrScreen.scan.table
+msgid "workspace.publication.qrScreen.scan.table"
+msgstr "Kod {mm} mm — masa mesafesinden rahat okunur."
+
+#: workspace:workspace.publication.qrScreen.scan.tooSmall
+msgid "workspace.publication.qrScreen.scan.tooSmall"
+msgstr "Kod {mm} mm — bu kadar küçük kod bazı telefonlarda okunmaz. Daha büyük bir ölçü seç."
+
 #: workspace:workspace.publication.qrScreen.scans
 msgid "workspace.publication.qrScreen.scans"
 msgstr "{count} okutma"
 
+#: workspace:workspace.publication.qrScreen.scope.all
+msgid "workspace.publication.qrScreen.scope.all"
+msgstr "Tüm masalar"
+
+#: workspace:workspace.publication.qrScreen.scope.area
+msgid "workspace.publication.qrScreen.scope.area"
+msgstr "Bir bölge"
+
+#: workspace:workspace.publication.qrScreen.scope.areaCount
+msgid "workspace.publication.qrScreen.scope.areaCount"
+msgstr "{count} bölge"
+
+#: workspace:workspace.publication.qrScreen.scope.one
+msgid "workspace.publication.qrScreen.scope.one"
+msgstr "Tek masa"
+
+#: workspace:workspace.publication.qrScreen.scope.tableCount
+msgid "workspace.publication.qrScreen.scope.tableCount"
+msgstr "{count} masa"
+
 #: workspace:workspace.publication.qrScreen.selected
 msgid "workspace.publication.qrScreen.selected"
 msgstr "Seçili kod"
+
+#: workspace:workspace.publication.qrScreen.sheet
+msgid "workspace.publication.qrScreen.sheet"
+msgstr "Kesilecek tabaka (PDF)"
+
+#: workspace:workspace.publication.qrScreen.sheet.why
+msgid "workspace.publication.qrScreen.sheet.why"
+msgstr "Sayfa başına on iki kart ve kesme çizgileri — kendi yerleşimi vardır, yukarıda seçtiğin ölçü ve tasarım değil."
 
 #: workspace:workspace.publication.qrScreen.size
 msgid "workspace.publication.qrScreen.size"
@@ -4608,6 +4984,42 @@ msgstr "Devre dışı"
 msgid "workspace.publication.qrScreen.state.working"
 msgstr "Çalışıyor"
 
+#: workspace:workspace.publication.qrScreen.step1
+msgid "workspace.publication.qrScreen.step1"
+msgstr "Ne basacaksın?"
+
+#: workspace:workspace.publication.qrScreen.step2
+msgid "workspace.publication.qrScreen.step2"
+msgstr "Hangi masalar?"
+
+#: workspace:workspace.publication.qrScreen.step3
+msgid "workspace.publication.qrScreen.step3"
+msgstr "Nasıl görünsün?"
+
+#: workspace:workspace.publication.qrScreen.summary
+msgid "workspace.publication.qrScreen.summary"
+msgstr "{count} kart · {size} {orientation} · {theme}"
+
+#: workspace:workspace.publication.qrScreen.summarySub
+msgid "workspace.publication.qrScreen.summarySub"
+msgstr "{scope} · {format}"
+
+#: workspace:workspace.publication.qrScreen.summarySub.zip
+msgid "workspace.publication.qrScreen.summarySub.zip"
+msgstr "{scope} · {format} · tek zip dosyası"
+
+#: workspace:workspace.publication.qrScreen.tableNote.never
+msgid "workspace.publication.qrScreen.tableNote.never"
+msgstr "{table} · henüz hiç taranmadı"
+
+#: workspace:workspace.publication.qrScreen.tableNote.scanned
+msgid "workspace.publication.qrScreen.tableNote.scanned"
+msgstr "{table} · bugüne kadar {count} tarama"
+
+#: workspace:workspace.publication.qrScreen.tableNumberPrinted
+msgid "workspace.publication.qrScreen.tableNumberPrinted"
+msgstr "Masa adı her kartta basılır — karışmaz."
+
 #: workspace:workspace.publication.qrScreen.tables
 msgid "workspace.publication.qrScreen.tables"
 msgstr "Masa kartları"
@@ -4615,6 +5027,14 @@ msgstr "Masa kartları"
 #: workspace:workspace.publication.qrScreen.theme
 msgid "workspace.publication.qrScreen.theme"
 msgstr "Kart tasarımı"
+
+#: workspace:workspace.publication.qrScreen.wording
+msgid "workspace.publication.qrScreen.wording"
+msgstr "Kart üstündeki yazıyı değiştir"
+
+#: workspace:workspace.publication.qrScreen.wording.scope
+msgid "workspace.publication.qrScreen.wording.scope"
+msgstr "Bu değişiklik yalnız bu baskıya uygulanır."
 
 #: workspace:workspace.publication.readiness.categoryNames
 msgid "workspace.publication.readiness.categoryNames"
@@ -4692,13 +5112,17 @@ msgstr "Zamanlama iptal edilemedi. Tekrar deneyin."
 msgid "workspace.publication.schedule.close"
 msgstr "Zamanlamayı kapat"
 
+#: workspace:workspace.publication.schedule.dismiss
+msgid "workspace.publication.schedule.dismiss"
+msgstr "Bu uyarıyı kapat"
+
 #: workspace:workspace.publication.schedule.error
 msgid "workspace.publication.schedule.error"
 msgstr "Yayın zamanlanamadı. Hiçbir şey zamanlanmadı."
 
 #: workspace:workspace.publication.schedule.help
 msgid "workspace.publication.schedule.help"
-msgstr "Zamanlanmış bir yayın da yayındır: sonraki sürüm numarasını alır ve basılı karekod aynı kalır. Saatler İstanbul saatidir."
+msgstr "Zamanlanmış bir yayın da yayındır: sonraki sürüm numarasını alır ve basılı karekod aynı kalır. Saatler şubenin kendi saat dilimindedir."
 
 #: workspace:workspace.publication.schedule.option.nextMonday
 msgid "workspace.publication.schedule.option.nextMonday"
@@ -4718,11 +5142,31 @@ msgstr "{label} — {moment}"
 
 #: workspace:workspace.publication.schedule.pending
 msgid "workspace.publication.schedule.pending"
-msgstr "{moment} için zamanlandı (İstanbul)."
+msgstr "{moment} için zamanlandı; şubenin saatiyle."
 
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
 msgstr "Yayını zamanla"
+
+#: workspace:workspace.publication.schedule.status.failed
+msgid "workspace.publication.schedule.status.failed"
+msgstr "{moment} yayını denendi ve kaydedilemedi. Menü değişmedi — misafirler hâlâ önceki sürümü görüyor. Şimdi yayınlayın ya da yeniden zamanlayın."
+
+#: workspace:workspace.publication.schedule.status.interrupted
+msgid "workspace.publication.schedule.status.interrupted"
+msgstr "{moment} yayını başladı ve tamamlanmadı. Menü değişmedi — misafirler hâlâ önceki sürümü görüyor. Şimdi yayınlayın ya da yeniden zamanlayın."
+
+#: workspace:workspace.publication.schedule.status.overdue
+msgid "workspace.publication.schedule.status.overdue"
+msgstr "{moment} geçti ve yayın çıkmadı. Menü değişmedi — misafirler hâlâ önceki sürümü görüyor. Şimdi yayınlayın ya da yeniden zamanlayın."
+
+#: workspace:workspace.publication.schedule.status.publishing
+msgid "workspace.publication.schedule.status.publishing"
+msgstr "{moment} yayını şu anda yayına alınıyor."
+
+#: workspace:workspace.publication.schedule.status.unknown
+msgid "workspace.publication.schedule.status.unknown"
+msgstr "Bu ekran {moment} planının durumunu okuyamıyor, bu yüzden menünün değişip değişmediğini size söyleyemez. Sayfayı yenileyin."
 
 #: workspace:workspace.publication.schedule.unready
 msgid "workspace.publication.schedule.unready"
@@ -5100,6 +5544,14 @@ msgstr "Tekrar dene"
 msgid "workspace.team.invitations.cancel.success"
 msgstr "Davet iptal edildi."
 
+#: workspace:workspace.team.invitations.delivery.failed
+msgid "workspace.team.invitations.delivery.failed"
+msgstr "E-posta çıkmadı. Davet hâlâ geçerli — tekrar gönderin."
+
+#: workspace:workspace.team.invitations.delivery.unknown
+msgid "workspace.team.invitations.delivery.unknown"
+msgstr "Bu e-postanın hiç gönderilip gönderilmediğini söyleyemiyoruz."
+
 #: workspace:workspace.team.invitations.empty
 msgid "workspace.team.invitations.empty"
 msgstr "Bekleyen davet yok."
@@ -5111,6 +5563,30 @@ msgstr "Bekleyen davetler yüklenemedi. Lütfen tekrar deneyin."
 #: workspace:workspace.team.invitations.loading
 msgid "workspace.team.invitations.loading"
 msgstr "Bekleyen davetler yükleniyor…"
+
+#: workspace:workspace.team.invitations.resend.busy
+msgid "workspace.team.invitations.resend.busy"
+msgstr "Gönderiliyor…"
+
+#: workspace:workspace.team.invitations.resend.button
+msgid "workspace.team.invitations.resend.button"
+msgstr "Tekrar gönder"
+
+#: workspace:workspace.team.invitations.resend.error
+msgid "workspace.team.invitations.resend.error"
+msgstr "Tekrar gönderilemedi. Lütfen tekrar deneyin."
+
+#: workspace:workspace.team.invitations.resend.linkNote
+msgid "workspace.team.invitations.resend.linkNote"
+msgstr "Tekrar göndermek bağlantıyı değiştirir: yalnız en yeni e-posta çalışır."
+
+#: workspace:workspace.team.invitations.resend.sent
+msgid "workspace.team.invitations.resend.sent"
+msgstr "E-posta sağlayıcısı kabul etti. Gelen kutusunu buradan göremiyoruz."
+
+#: workspace:workspace.team.invitations.resend.undelivered
+msgid "workspace.team.invitations.resend.undelivered"
+msgstr "Davet yenilendi ama e-posta çıkmadı."
 
 #: workspace:workspace.team.invite.button
 msgid "workspace.team.invite.button"

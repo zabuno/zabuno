@@ -1,15 +1,37 @@
 import { useEffect, useId, useRef, useState } from 'react';
 
+/**
+ * Davetin E-POSTASININ bilinen hâli (`docs/110` P0-06).
+ *
+ * `status` daveti anlatır ("bekliyor"), bu alan ise POSTAYI. İkisi ayrı
+ * sorulardır: bekleyen bir davetin e-postası hiç çıkmamış olabilir ve o
+ * satır ekranda başarılı bir davetle birebir aynı görünüyordu.
+ *
+ * `sent` bir söz DEĞİLDİR: taşıyıcı mesajı hatasız devraldı demektir,
+ * "gelen kutusuna düştü" demek değil.
+ */
+export type TeamInvitationDelivery = 'sent' | 'failed' | 'unknown';
+
 export type TeamInvitation = {
     id: number;
     email: string;
     role: string;
     status: string;
+    delivery: TeamInvitationDelivery;
 };
 
 export type TeamInvitationListStatus = 'loading' | 'error' | 'success';
 
 export type TeamInvitationCancelOutcome = 'success' | 'error' | 'retry';
+
+/**
+ * Yeniden gönderme SONUCU — üç hâl, iki değil.
+ *
+ * `undelivered` hâli olmasaydı, davet tazelenip e-posta çıkmadığında ekran
+ * ya "gönderildi" (yalan) ya da "gönderilemedi" (eksik: bağlantı gerçekten
+ * yenilendi) derdi.
+ */
+export type TeamInvitationResendOutcome = 'sent' | 'undelivered' | 'error';
 
 type RowStage = 'idle' | 'confirming' | 'busy' | 'error';
 
@@ -28,6 +50,15 @@ type TeamInvitationListProps = {
     cancelErrorText: string;
     cancelSuccessText: string;
     cancelRetryText: string;
+    onResendInvitation: (invitationId: number) => Promise<TeamInvitationResendOutcome>;
+    resendButtonText: string;
+    resendBusyText: string;
+    resendSentText: string;
+    resendUndeliveredText: string;
+    resendErrorText: string;
+    resendLinkNoteText: string;
+    deliveryFailedText: string;
+    deliveryUnknownText: string;
 };
 
 /**
@@ -51,12 +82,29 @@ export function TeamInvitationList({
     cancelErrorText,
     cancelSuccessText,
     cancelRetryText,
+    onResendInvitation,
+    resendButtonText,
+    resendBusyText,
+    resendSentText,
+    resendUndeliveredText,
+    resendErrorText,
+    resendLinkNoteText,
+    deliveryFailedText,
+    deliveryUnknownText,
 }: TeamInvitationListProps) {
     const headingId = useId();
     const [rowStages, setRowStages] = useState<Record<number, RowStage>>({});
     const [committedRows, setCommittedRows] = useState<Record<number, boolean>>({});
     const [announcement, setAnnouncement] = useState<string | null>(null);
     const skipNextInvitationsClearRef = useRef(false);
+    /*
+        Yeniden gönderme hâli SATIR BAŞINA tutulur.
+
+        Tek bir "meşgul" bayrağı, iki daveti olan bir sahibin ikinci satırını
+        da kilitlerdi ve hangisinin gönderildiği belirsiz kalırdı.
+    */
+    const [resendBusyRows, setResendBusyRows] = useState<Record<number, boolean>>({});
+    const [resendNotices, setResendNotices] = useState<Record<number, string>>({});
 
     useEffect(() => {
         if (skipNextInvitationsClearRef.current) {
@@ -104,6 +152,43 @@ export function TeamInvitationList({
         setRowStages((current) => ({ ...current, [invitationId]: 'error' }));
     }
 
+    async function resendInvitation(invitationId: number) {
+        setResendBusyRows((current) => ({ ...current, [invitationId]: true }));
+        setResendNotices((current) => {
+            const next = { ...current };
+            delete next[invitationId];
+
+            return next;
+        });
+
+        const outcome = await onResendInvitation(invitationId);
+
+        setResendBusyRows((current) => {
+            const next = { ...current };
+            delete next[invitationId];
+
+            return next;
+        });
+
+        /*
+            EKRANA SUNUCUNUN SÖYLEDİĞİ YAZILIR.
+
+            Üç ayrı cevap, üç ayrı cümle: taşıyıcı devraldı / davet
+            tazelendi ama e-posta çıkmadı / istek hiç tamamlanamadı. Üçünü
+            tek bir "gönderildi" altında toplamak, sahibi gelmeyen bir
+            e-postayı beklemeye çağırmak olurdu.
+        */
+        setResendNotices((current) => ({
+            ...current,
+            [invitationId]:
+                outcome === 'sent'
+                    ? resendSentText
+                    : outcome === 'undelivered'
+                      ? resendUndeliveredText
+                      : resendErrorText,
+        }));
+    }
+
     return (
         <div role="region" aria-labelledby={headingId} className="flex flex-col gap-3">
             {/*
@@ -148,6 +233,23 @@ export function TeamInvitationList({
                 <ul className="flex flex-col">
                     {invitations.map((invitation) => {
                         const stage = rowStages[invitation.id] ?? 'idle';
+                        const resendBusy = resendBusyRows[invitation.id] === true;
+                        const resendNotice = resendNotices[invitation.id];
+                        /*
+                            "GÖNDERİLDİ" İÇİN SATIR YAZILMAZ.
+
+                            Yolunda giden bir davet, listede yalnız kendisi
+                            olarak durur. Her satıra bir de "gönderildi"
+                            rozeti koymak, gerçekten dikkat isteyen iki hâli
+                            (çıkmadı / bilinmiyor) gürültünün içinde
+                            kaybederdi.
+                        */
+                        const deliveryNotice =
+                            invitation.delivery === 'failed'
+                                ? deliveryFailedText
+                                : invitation.delivery === 'unknown'
+                                  ? deliveryUnknownText
+                                  : null;
 
                         return (
                             <li
@@ -162,6 +264,12 @@ export function TeamInvitationList({
                                 <span className="text-fg-muted">{invitation.role}</span>
                                 <span className="text-fg-muted">{invitation.status}</span>
 
+                                {deliveryNotice !== null && (
+                                    <span className="text-body font-medium text-fg-danger">
+                                        {deliveryNotice}
+                                    </span>
+                                )}
+
                                 {stage === 'idle' && (
                                     <button
                                         type="button"
@@ -169,6 +277,29 @@ export function TeamInvitationList({
                                         onClick={() => startCancel(invitation.id)}
                                     >
                                         {cancelButtonText}
+                                    </button>
+                                )}
+
+                                {/*
+                                    YENİDEN GÖNDERME HER BEKLEYEN SATIRDA
+                                    DURUR (`docs/110` P0-06).
+
+                                    Yalnız "çıkmadı" diyen satırlarda
+                                    gösterseydik, spam'e düşmüş ya da yanlış
+                                    okunmuş bir e-posta için sahibin elinde
+                                    yine tek bir hamle kalırdı: daveti iptal
+                                    edip yeniden kurmak. Yani ekibini
+                                    kurabilmek için önce onu bozması
+                                    gerekirdi.
+                                */}
+                                {stage === 'idle' && (
+                                    <button
+                                        type="button"
+                                        className="text-body font-medium text-fg-secondary"
+                                        disabled={resendBusy}
+                                        onClick={() => void resendInvitation(invitation.id)}
+                                    >
+                                        {resendButtonText}
                                     </button>
                                 )}
 
@@ -209,10 +340,34 @@ export function TeamInvitationList({
                                         {cancelErrorText}
                                     </span>
                                 )}
+
+                                {resendBusy && (
+                                    <span role="status" className="text-body text-fg-muted">
+                                        {resendBusyText}
+                                    </span>
+                                )}
+
+                                {!resendBusy && resendNotice !== undefined && (
+                                    <span role="status" className="text-body text-fg-secondary">
+                                        {resendNotice}
+                                    </span>
+                                )}
                             </li>
                         );
                     })}
                 </ul>
+            )}
+
+            {/*
+                BAĞLANTI KURALI SATIR BAŞINA DEĞİL, LİSTE ALTINA YAZILIR.
+
+                Kural her davet için aynıdır; her satırda tekrarlamak aynı
+                cümleyi beş kez okutmak olurdu. Ama hiç yazılmasaydı, iki
+                e-posta göndermiş bir sahip "hangisi çalışıyor?" sorusunun
+                cevabını ancak alıcı şikâyet edince öğrenirdi.
+            */}
+            {status === 'success' && invitations.length > 0 && (
+                <p className="text-body text-fg-muted">{resendLinkNoteText}</p>
             )}
         </div>
     );

@@ -164,6 +164,14 @@ msgstr ""
 msgid "workspace.analytics.menuEngineering.neverViewed.none"
 msgstr ""
 
+#: workspace:workspace.analytics.menuEngineering.neverViewed.review
+msgid "workspace.analytics.menuEngineering.neverViewed.review"
+msgstr ""
+
+#: workspace:workspace.analytics.menuEngineering.neverViewed.reviewFor
+msgid "workspace.analytics.menuEngineering.neverViewed.reviewFor"
+msgstr ""
+
 #: workspace:workspace.analytics.menuEngineering.region
 msgid "workspace.analytics.menuEngineering.region"
 msgstr ""
@@ -204,8 +212,8 @@ msgstr ""
 msgid "workspace.analytics.metric.menuOpen"
 msgstr ""
 
-#: workspace:workspace.analytics.metric.openRate
-msgid "workspace.analytics.metric.openRate"
+#: workspace:workspace.analytics.metric.menuOpen.support
+msgid "workspace.analytics.metric.menuOpen.support"
 msgstr ""
 
 #: workspace:workspace.analytics.metric.qrResolve
@@ -222,6 +230,10 @@ msgstr ""
 
 #: workspace:workspace.analytics.metric.uniqueVisitors
 msgid "workspace.analytics.metric.uniqueVisitors"
+msgstr ""
+
+#: workspace:workspace.analytics.metric.uniqueVisitors.support
+msgid "workspace.analytics.metric.uniqueVisitors.support"
 msgstr ""
 
 #: workspace:workspace.analytics.operational.description
@@ -2980,6 +2992,10 @@ msgstr ""
 msgid "workspace.media.security.explanation"
 msgstr ""
 
+#: workspace:workspace.media.security.explanation.unavailable
+msgid "workspace.media.security.explanation.unavailable"
+msgstr ""
+
 #: workspace:workspace.media.settings.originals.body
 msgid "workspace.media.settings.originals.body"
 msgstr ""
@@ -3328,6 +3344,26 @@ msgstr ""
 msgid "workspace.media.upload.heading"
 msgstr ""
 
+#: workspace:workspace.media.upload.held
+msgid "workspace.media.upload.held"
+msgstr ""
+
+#: workspace:workspace.media.upload.held.notYours
+msgid "workspace.media.upload.held.notYours"
+msgstr ""
+
+#: workspace:workspace.media.upload.limit.kind.document
+msgid "workspace.media.upload.limit.kind.document"
+msgstr ""
+
+#: workspace:workspace.media.upload.limit.kind.image
+msgid "workspace.media.upload.limit.kind.image"
+msgstr ""
+
+#: workspace:workspace.media.upload.limit.kind.vector
+msgid "workspace.media.upload.limit.kind.vector"
+msgstr ""
+
 #: workspace:workspace.media.upload.more.altFor
 msgid "workspace.media.upload.more.altFor"
 msgstr ""
@@ -3354,6 +3390,10 @@ msgstr ""
 
 #: workspace:workspace.media.upload.requirement.formats
 msgid "workspace.media.upload.requirement.formats"
+msgstr ""
+
+#: workspace:workspace.media.upload.requirement.maxSize
+msgid "workspace.media.upload.requirement.maxSize"
 msgstr ""
 
 #: workspace:workspace.media.upload.requirement.minimum
@@ -3466,6 +3506,134 @@ msgstr ""
 
 #: workspace:workspace.media.viewer.tab
 msgid "workspace.media.viewer.tab"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.categoryAdded
+msgid "workspace.menu.audit.action.categoryAdded"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.categoryRemoved
+msgid "workspace.menu.audit.action.categoryRemoved"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.categoryRenamed
+msgid "workspace.menu.audit.action.categoryRenamed"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemAdded
+msgid "workspace.menu.audit.action.itemAdded"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemAllergensChanged
+msgid "workspace.menu.audit.action.itemAllergensChanged"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemPriceChanged
+msgid "workspace.menu.audit.action.itemPriceChanged"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemRemoved
+msgid "workspace.menu.audit.action.itemRemoved"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemRenamed
+msgid "workspace.menu.audit.action.itemRenamed"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.itemVisibilityChanged
+msgid "workspace.menu.audit.action.itemVisibilityChanged"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuAiImported
+msgid "workspace.menu.audit.action.menuAiImported"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuCreated
+msgid "workspace.menu.audit.action.menuCreated"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuDeleted
+msgid "workspace.menu.audit.action.menuDeleted"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuImported
+msgid "workspace.menu.audit.action.menuImported"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.menuRenamed
+msgid "workspace.menu.audit.action.menuRenamed"
+msgstr ""
+
+#: workspace:workspace.menu.audit.action.unknown
+msgid "workspace.menu.audit.action.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.actor.unknown
+msgid "workspace.menu.audit.actor.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.at.unknown
+msgid "workspace.menu.audit.at.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.change
+msgid "workspace.menu.audit.change"
+msgstr ""
+
+#: workspace:workspace.menu.audit.empty
+msgid "workspace.menu.audit.empty"
+msgstr ""
+
+#: workspace:workspace.menu.audit.error
+msgid "workspace.menu.audit.error"
+msgstr ""
+
+#: workspace:workspace.menu.audit.heading
+msgid "workspace.menu.audit.heading"
+msgstr ""
+
+#: workspace:workspace.menu.audit.help
+msgid "workspace.menu.audit.help"
+msgstr ""
+
+#: workspace:workspace.menu.audit.loading
+msgid "workspace.menu.audit.loading"
+msgstr ""
+
+#: workspace:workspace.menu.audit.next
+msgid "workspace.menu.audit.next"
+msgstr ""
+
+#: workspace:workspace.menu.audit.notRecorded
+msgid "workspace.menu.audit.notRecorded"
+msgstr ""
+
+#: workspace:workspace.menu.audit.page
+msgid "workspace.menu.audit.page"
+msgstr ""
+
+#: workspace:workspace.menu.audit.previous
+msgid "workspace.menu.audit.previous"
+msgstr ""
+
+#: workspace:workspace.menu.audit.region
+msgid "workspace.menu.audit.region"
+msgstr ""
+
+#: workspace:workspace.menu.audit.retry
+msgid "workspace.menu.audit.retry"
+msgstr ""
+
+#: workspace:workspace.menu.audit.subject.unknown
+msgid "workspace.menu.audit.subject.unknown"
+msgstr ""
+
+#: workspace:workspace.menu.audit.visibility.hidden
+msgid "workspace.menu.audit.visibility.hidden"
+msgstr ""
+
+#: workspace:workspace.menu.audit.visibility.visible
+msgid "workspace.menu.audit.visibility.visible"
 msgstr ""
 
 #: workspace:workspace.menu.empty.brand.body
@@ -4496,6 +4664,10 @@ msgstr ""
 msgid "workspace.publication.qrExport.unavailable"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.addTables
+msgid "workspace.publication.qrScreen.addTables"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.address
 msgid "workspace.publication.qrScreen.address"
 msgstr ""
@@ -4504,12 +4676,44 @@ msgstr ""
 msgid "workspace.publication.qrScreen.advanced"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.areaNote
+msgid "workspace.publication.qrScreen.areaNote"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.brandNote
+msgid "workspace.publication.qrScreen.brandNote"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.bulk
 msgid "workspace.publication.qrScreen.bulk"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.bulkDefaults
 msgid "workspace.publication.qrScreen.bulkDefaults"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.capped
+msgid "workspace.publication.qrScreen.capped"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.cardTheme.branded
+msgid "workspace.publication.qrScreen.cardTheme.branded"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.cardTheme.dark
+msgid "workspace.publication.qrScreen.cardTheme.dark"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.cardTheme.framed
+msgid "workspace.publication.qrScreen.cardTheme.framed"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.cardTheme.plain
+msgid "workspace.publication.qrScreen.cardTheme.plain"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.cardTheme.signage
+msgid "workspace.publication.qrScreen.cardTheme.signage"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.contrast
@@ -4524,8 +4728,76 @@ msgstr ""
 msgid "workspace.publication.qrScreen.copy"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.custom
+msgid "workspace.publication.qrScreen.custom"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.format
+msgid "workspace.publication.qrScreen.custom.format"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.format.pdf
+msgid "workspace.publication.qrScreen.custom.format.pdf"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.format.pdf.use
+msgid "workspace.publication.qrScreen.custom.format.pdf.use"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.format.svg
+msgid "workspace.publication.qrScreen.custom.format.svg"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.format.svg.use
+msgid "workspace.publication.qrScreen.custom.format.svg.use"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.landscape
+msgid "workspace.publication.qrScreen.custom.landscape"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.noPng
+msgid "workspace.publication.qrScreen.custom.noPng"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.orientation
+msgid "workspace.publication.qrScreen.custom.orientation"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.paper
+msgid "workspace.publication.qrScreen.custom.paper"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.portrait
+msgid "workspace.publication.qrScreen.custom.portrait"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.ratio
+msgid "workspace.publication.qrScreen.custom.ratio"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.ratioNote
+msgid "workspace.publication.qrScreen.custom.ratioNote"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.classic
+msgid "workspace.publication.qrScreen.custom.ratioUse.classic"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.screen
+msgid "workspace.publication.qrScreen.custom.ratioUse.screen"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.custom.ratioUse.tall
+msgid "workspace.publication.qrScreen.custom.ratioUse.tall"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.description
 msgid "workspace.publication.qrScreen.description"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.download
+msgid "workspace.publication.qrScreen.download"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.downloadAll
@@ -4540,8 +4812,20 @@ msgstr ""
 msgid "workspace.publication.qrScreen.downloadPdf"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.downloadZip
+msgid "workspace.publication.qrScreen.downloadZip"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.empty
 msgid "workspace.publication.qrScreen.empty"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.headline.help
+msgid "workspace.publication.qrScreen.headline.help"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.headline.label
+msgid "workspace.publication.qrScreen.headline.label"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.loadError
@@ -4560,6 +4844,58 @@ msgstr ""
 msgid "workspace.publication.qrScreen.noDarkTheme"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.optionSelected
+msgid "workspace.publication.qrScreen.optionSelected"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.large
+msgid "workspace.publication.qrScreen.preset.large"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.large.where
+msgid "workspace.publication.qrScreen.preset.large.where"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.table
+msgid "workspace.publication.qrScreen.preset.table"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.table.tag
+msgid "workspace.publication.qrScreen.preset.table.tag"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.table.where
+msgid "workspace.publication.qrScreen.preset.table.where"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.wall
+msgid "workspace.publication.qrScreen.preset.wall"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.wall.where
+msgid "workspace.publication.qrScreen.preset.wall.where"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.window
+msgid "workspace.publication.qrScreen.preset.window"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preset.window.where
+msgid "workspace.publication.qrScreen.preset.window.where"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preview
+msgid "workspace.publication.qrScreen.preview"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preview.paperDims
+msgid "workspace.publication.qrScreen.preview.paperDims"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.preview.ratioDims
+msgid "workspace.publication.qrScreen.preview.ratioDims"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.previewAlt
 msgid "workspace.publication.qrScreen.previewAlt"
 msgstr ""
@@ -4572,12 +4908,52 @@ msgstr ""
 msgid "workspace.publication.qrScreen.retry"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.scan.standing
+msgid "workspace.publication.qrScreen.scan.standing"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.scan.table
+msgid "workspace.publication.qrScreen.scan.table"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.scan.tooSmall
+msgid "workspace.publication.qrScreen.scan.tooSmall"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.scans
 msgid "workspace.publication.qrScreen.scans"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.scope.all
+msgid "workspace.publication.qrScreen.scope.all"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.scope.area
+msgid "workspace.publication.qrScreen.scope.area"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.scope.areaCount
+msgid "workspace.publication.qrScreen.scope.areaCount"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.scope.one
+msgid "workspace.publication.qrScreen.scope.one"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.scope.tableCount
+msgid "workspace.publication.qrScreen.scope.tableCount"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.selected
 msgid "workspace.publication.qrScreen.selected"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.sheet
+msgid "workspace.publication.qrScreen.sheet"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.sheet.why
+msgid "workspace.publication.qrScreen.sheet.why"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.size
@@ -4608,12 +4984,56 @@ msgstr ""
 msgid "workspace.publication.qrScreen.state.working"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.step1
+msgid "workspace.publication.qrScreen.step1"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.step2
+msgid "workspace.publication.qrScreen.step2"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.step3
+msgid "workspace.publication.qrScreen.step3"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.summary
+msgid "workspace.publication.qrScreen.summary"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.summarySub
+msgid "workspace.publication.qrScreen.summarySub"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.summarySub.zip
+msgid "workspace.publication.qrScreen.summarySub.zip"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.tableNote.never
+msgid "workspace.publication.qrScreen.tableNote.never"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.tableNote.scanned
+msgid "workspace.publication.qrScreen.tableNote.scanned"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.tableNumberPrinted
+msgid "workspace.publication.qrScreen.tableNumberPrinted"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.tables
 msgid "workspace.publication.qrScreen.tables"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.theme
 msgid "workspace.publication.qrScreen.theme"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.wording
+msgid "workspace.publication.qrScreen.wording"
+msgstr ""
+
+#: workspace:workspace.publication.qrScreen.wording.scope
+msgid "workspace.publication.qrScreen.wording.scope"
 msgstr ""
 
 #: workspace:workspace.publication.readiness.categoryNames
@@ -4692,6 +5112,10 @@ msgstr ""
 msgid "workspace.publication.schedule.close"
 msgstr ""
 
+#: workspace:workspace.publication.schedule.dismiss
+msgid "workspace.publication.schedule.dismiss"
+msgstr ""
+
 #: workspace:workspace.publication.schedule.error
 msgid "workspace.publication.schedule.error"
 msgstr ""
@@ -4722,6 +5146,26 @@ msgstr ""
 
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.failed
+msgid "workspace.publication.schedule.status.failed"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.interrupted
+msgid "workspace.publication.schedule.status.interrupted"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.overdue
+msgid "workspace.publication.schedule.status.overdue"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.publishing
+msgid "workspace.publication.schedule.status.publishing"
+msgstr ""
+
+#: workspace:workspace.publication.schedule.status.unknown
+msgid "workspace.publication.schedule.status.unknown"
 msgstr ""
 
 #: workspace:workspace.publication.schedule.unready
@@ -5100,6 +5544,14 @@ msgstr ""
 msgid "workspace.team.invitations.cancel.success"
 msgstr ""
 
+#: workspace:workspace.team.invitations.delivery.failed
+msgid "workspace.team.invitations.delivery.failed"
+msgstr ""
+
+#: workspace:workspace.team.invitations.delivery.unknown
+msgid "workspace.team.invitations.delivery.unknown"
+msgstr ""
+
 #: workspace:workspace.team.invitations.empty
 msgid "workspace.team.invitations.empty"
 msgstr ""
@@ -5110,6 +5562,30 @@ msgstr ""
 
 #: workspace:workspace.team.invitations.loading
 msgid "workspace.team.invitations.loading"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.busy
+msgid "workspace.team.invitations.resend.busy"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.button
+msgid "workspace.team.invitations.resend.button"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.error
+msgid "workspace.team.invitations.resend.error"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.linkNote
+msgid "workspace.team.invitations.resend.linkNote"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.sent
+msgid "workspace.team.invitations.resend.sent"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.undelivered
+msgid "workspace.team.invitations.resend.undelivered"
 msgstr ""
 
 #: workspace:workspace.team.invite.button

@@ -22,5 +22,13 @@ final class ScheduledPublicationRecord
         public readonly array $visibleItemIds,
         public readonly ?int $brandId,
         public readonly int $scheduledByUserId,
+        /**
+         * Kayda en son ne zaman dokunulduğu (ISO-8601, UTC).
+         *
+         * `publishing` hâlinin NE KADARDIR asılı olduğunu yalnız bu söyler:
+         * bir saniyelik `publishing` normal bir yayındır, bir saatliği ise
+         * ortasında ölmüş bir süreçtir ve sahip bunu bilmelidir.
+         */
+        public readonly string $touchedAt,
     ) {}
 }

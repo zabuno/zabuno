@@ -31,9 +31,9 @@ return new class extends Migration
             $table->unsignedBigInteger('menu_id');
             $table->unsignedBigInteger('location_id');
 
-            // UTC'de saklanır, ekranda `Europe/Istanbul` gösterilir. Yerel
-            // saati saklamak, yaz saati değişiminde bir saatlik sessiz bir
-            // kayma demekti.
+            // UTC'de saklanır; ekranda ŞUBENİN saat diliminde gösterilir
+            // (`locations.timezone`, `docs/62`). Yerel saati saklamak, yaz
+            // saati değişiminde bir saatlik sessiz bir kayma demekti.
             $table->timestamp('scheduled_for');
 
             // `pending` → `publishing` → `published` | `failed`, ya da

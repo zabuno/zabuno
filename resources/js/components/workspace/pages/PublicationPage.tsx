@@ -19,6 +19,7 @@ import {
 } from './publication/PublishReadinessChecklistRegion';
 import { PublishedSnapshotRegion } from './publication/PublishedSnapshotRegion';
 import { QrDestinationRegion } from './publication/QrDestinationRegion';
+import { PanelCard } from './shared/PanelCard';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 
 type PublicationPageProps = {
@@ -189,17 +190,44 @@ export function PublicationPage({
     return (
         <div id="section-publication">
             <WorkspacePageFrame
-                measure="standard"
-                cardChildren
+                /*
+                    EKRAN İKİ SÜTUNLU, YANİ GENİŞ (kanonik kaynak
+                    `docs/reference/panel-v3/panel-v3.1.dc.html`, Yayınlama:
+                    `publishCols = '1fr 360px'`).
+
+                    `standard` ölçüsünde iki sütun sığmıyordu; sürümler
+                    listesi akışın altına düşüyor ve sahip "hangi sürüme
+                    döneyim?" sorusunun cevabına ulaşmak için ekranı sonuna
+                    kadar kaydırmak zorunda kalıyordu — oysa geri alma tam
+                    olarak panik anında aranan şeydir.
+                */
+                measure="wide"
+                /*
+                    `cardChildren` KALDIRILDI: KARTIN İÇİNE KART ÇİZİLMEZ
+                    (`docs/36` §5.2; aynı düzeltme Insights'ta yapılmıştı).
+
+                    Çerçeve her doğrudan çocuğu bir `PanelCard`'a sarıyordu.
+                    Ama adım çizgisi, değişiklik listesi, planlama, telefon
+                    önizlemesi ve sürümler kendi kartlarını ZATEN çiziyor —
+                    yani ekranda aynı zemin ve aynı kenarlıkla çizilmiş iç
+                    içe iki çerçeve vardı. Sahip iki çizgi görüyor, hiçbiri
+                    ona yeni bir şey söylemiyor, 320 piksellik bir telefonda
+                    içerik iki kat yatay dolgu kaybediyordu.
+
+                    Kart artık YALNIZ kendi kartı olmayan bölgeye açıkça
+                    veriliyor.
+                */
                 title={t('workspace.shell.nav.publication')}
                 description={t('workspace.publication.operational.description')}
                 badges={badges}
             >
                 {/*
-                    ADIM ÇİZGİSİ EN ÜSTTE — kaynağın kendi sırası: Taslak →
-                    Önizleme → Yayında. Sahip paneli günde beş kez açar ve
-                    her açışında tek bir soru sorar: "menüm güncel mi?".
-                    Cevap artık üç ayrı bölgeye dağılmış değil, ilk satırda.
+                    ADIM ÇİZGİSİ EN ÜSTTE ve TAM GENİŞLİKTE — kaynağın kendi
+                    sırası: Taslak → Önizleme → Yayında. Sahip paneli günde
+                    beş kez açar ve her açışında tek bir soru sorar: "menüm
+                    güncel mi?". Cevap üç ayrı bölgeye dağılmış değil, ilk
+                    satırda; ve bir sütunun içine sıkışmadığı için üç adım
+                    yan yana okunur.
                 */}
                 <PublishStepper
                     pendingChangeCount={pendingChanges.length}
@@ -207,59 +235,101 @@ export function PublicationPage({
                     liveVersion={current?.version ?? null}
                     publishedAt={current?.publishedAt ?? null}
                 />
+
                 {/*
-                    NE YAYINLANACAK — "Yayınla" düğmesinden ÖNCE. Sahip
-                    bugüne kadar düğmeye, ne yayınlayacağını görmeden
-                    basıyordu.
+                    SOLDA AKIŞ, SAĞDA SÜRÜMLER (kaynağın `1fr 360px`
+                    düzeni).
+
+                    Kırılma noktası sınıfı YOK ve sabit piksel yok: sarma
+                    ölçüyü `flex-wrap` + `rem` tabanlı taban genişlikleri
+                    belirler, yani düzen kapsayıcının kendi genişliğine göre
+                    kurulur, ekranın değil. 320 pikselde iki sütun tek
+                    sütuna iner ve sıra bozulmaz: önce ne yayınlanacağı,
+                    sonra sürümler.
                 */}
-                <PublicationDiffRegion dashboardMenuTree={dashboardMenuTree} current={current} />
-                <PublishReadinessChecklistRegion
-                    dashboardMenuTree={dashboardMenuTree}
-                    onFix={onNavigateToSection}
-                />
-                <PublicationStatusRegion
-                    current={current}
-                    loading={loading}
-                    loadError={loadError}
-                    onRetry={handleRetry}
-                    checklistReady={checklistReady}
-                    confirmed={confirmed}
-                    onConfirmedChange={setConfirmed}
-                    onPublish={handlePublish}
-                    publishing={publishing}
-                    errorMessage={errorMessage}
-                />
-                {workspaceId !== undefined && menuId !== null ? (
-                    <PublishScheduleRegion
-                        workspaceId={workspaceId}
-                        menuId={menuId}
-                        draftReady={checklistReady}
-                    />
-                ) : null}
-                <PhonePreviewRegion
-                    dashboardMenuTree={dashboardMenuTree}
-                    workspaceId={workspaceId}
-                    menuId={menuId}
-                    onPreviewOpened={() => setPreviewChecked(true)}
-                />
-                {current !== null ? <PublishedSnapshotRegion current={current} /> : null}
-                {workspaceId !== undefined && menuId !== null ? (
-                    <PublicationHistoryRegion
-                        workspaceId={workspaceId}
-                        menuId={menuId}
-                        refreshToken={retryToken + (current?.version ?? 0)}
-                        onRestored={handleRetry}
-                    />
-                ) : null}
-                <PublishActionConfigRegion />
-                {workspaceId !== undefined && locationId !== null && menuId !== null ? (
-                    <QrDestinationRegion
-                        workspaceId={workspaceId}
-                        locationId={locationId}
-                        menuId={menuId}
-                        hasCurrentPublication={current !== null}
-                    />
-                ) : null}
+                <div className="flex flex-wrap items-start gap-[var(--space-fluid-md)]">
+                    <div className="flex min-w-0 flex-[3_1_28rem] flex-col gap-[var(--space-fluid-md)]">
+                        {/*
+                            NE YAYINLANACAK — "Yayınla" düğmesinden ÖNCE.
+                            Sahip bugüne kadar düğmeye, ne yayınlayacağını
+                            görmeden basıyordu.
+                        */}
+                        <PublicationDiffRegion
+                            dashboardMenuTree={dashboardMenuTree}
+                            current={current}
+                        />
+                        <PanelCard>
+                            <PublishReadinessChecklistRegion
+                                dashboardMenuTree={dashboardMenuTree}
+                                onFix={onNavigateToSection}
+                            />
+                        </PanelCard>
+                        <PanelCard>
+                            <PublicationStatusRegion
+                                current={current}
+                                loading={loading}
+                                loadError={loadError}
+                                onRetry={handleRetry}
+                                checklistReady={checklistReady}
+                                confirmed={confirmed}
+                                onConfirmedChange={setConfirmed}
+                                onPublish={handlePublish}
+                                publishing={publishing}
+                                errorMessage={errorMessage}
+                            />
+                        </PanelCard>
+                        {workspaceId !== undefined && menuId !== null ? (
+                            <PublishScheduleRegion
+                                workspaceId={workspaceId}
+                                menuId={menuId}
+                                draftReady={checklistReady}
+                            />
+                        ) : null}
+                        <PhonePreviewRegion
+                            dashboardMenuTree={dashboardMenuTree}
+                            workspaceId={workspaceId}
+                            menuId={menuId}
+                            onPreviewOpened={() => setPreviewChecked(true)}
+                        />
+                        {current !== null ? (
+                            <PanelCard>
+                                <PublishedSnapshotRegion current={current} />
+                            </PanelCard>
+                        ) : null}
+                        <PanelCard>
+                            <PublishActionConfigRegion />
+                        </PanelCard>
+                        {workspaceId !== undefined && locationId !== null && menuId !== null ? (
+                            <PanelCard>
+                                <QrDestinationRegion
+                                    workspaceId={workspaceId}
+                                    locationId={locationId}
+                                    menuId={menuId}
+                                    hasCurrentPublication={current !== null}
+                                />
+                            </PanelCard>
+                        ) : null}
+                    </div>
+
+                    {/*
+                        SÜRÜMLER KENDİ ŞERİDİNDE.
+
+                        `empty:hidden`: hiç yayın yapılmamışken liste kendini
+                        çizmez ve şerit de yok olur — boş bir sütun, geniş
+                        ekranda akışın yanında açıklanamayan bir boşluk
+                        bırakırdı.
+                    */}
+                    <div className="flex min-w-0 flex-[1_1_18rem] flex-col gap-[var(--space-fluid-md)] empty:hidden">
+                        {workspaceId !== undefined && menuId !== null ? (
+                            <PublicationHistoryRegion
+                                workspaceId={workspaceId}
+                                menuId={menuId}
+                                refreshToken={retryToken + (current?.version ?? 0)}
+                                onRestored={handleRetry}
+                            />
+                        ) : null}
+                    </div>
+                </div>
             </WorkspacePageFrame>
         </div>
     );

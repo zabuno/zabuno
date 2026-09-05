@@ -6,6 +6,7 @@ use App\Domain\Publication\BusinessType;
 use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\SendEmailVerificationNotificationController;
 use App\Http\Controllers\Content\ShowCorporatePageController;
 use App\Http\Controllers\EngineeringAppController;
 use App\Http\Controllers\FoundationStatusController;
@@ -310,6 +311,20 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
     return redirect('/app');
 })->middleware(['auth:web', 'signed', 'throttle:verification'])->name('verification.verify');
+
+/*
+    Fortify'ın POST /email/verification-notification ucunu gölgeler.
+
+    Fortify'ın kendi ucu her hâlükârda 202 döner; ekran da `response.ok`
+    değerine bakıp "doğrulama e-postası gönderildi" yazar. Taşıyıcı düştüğünde
+    o cümle yalandı: kullanıcı hiç çıkmamış bir e-postayı bekliyordu
+    (`docs/110` P0-06). Sınır ve kimlik AYNI kalır — `auth:web` ve
+    `throttle:verification`; değişen tek şey, çıkmayan bir e-postaya artık
+    "gönderildi" denmemesi.
+*/
+Route::post('/email/verification-notification', SendEmailVerificationNotificationController::class)
+    ->middleware(['auth:web', 'throttle:verification'])
+    ->name('verification.send');
 
 /**
  * Shadows Fortify's own guest-guarded POST /register route (registered

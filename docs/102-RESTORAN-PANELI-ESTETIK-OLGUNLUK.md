@@ -4,20 +4,22 @@
 2026-09-04). Sayaç: **2/4 tamamlandı, 3/4 aktif.**
 **Sahibin tespiti (canlı ekran görüntüsü, Home):** "maturity level bir UX
 estetiği istedim, yapmadın." Doğru: FF-63…FF-76 yapı ve davranış getirdi;
-`docs/99` yalnız superadmin/mühendislik kabuğunu Metronic'ten esinle kurdu.
+Superadmin/mühendislik kabuğunun estetiği ayrı kuruldu (`docs/50` kabuk
+ailesi, `docs/36` §5 külliyat kararları).
 Restoran panelinde sayfa 2000 px'e yayılmış çıplak bir yüzeydi: kart yok,
 ikon yok, tonal derinlik yok, tablo başlığı gövdeyle aynı ton, "Setup" ve
 "Home" başlıkları yan yana iki ayrı dünya gibi.
 **Kanonik komşular:** görsel formül `docs/06` §10 (Precision Flat 2.0 + Tonal
 SaaS Shell + Contextual Cards), dış külliyat `docs/36`, superadmin estetiği
-`docs/99`, shell planı `docs/50`, acemi kuralları `docs/101`, 320px `docs/48`.
+Shell planı `docs/50`, külliyat kararları `docs/36`, acemi kuralları
+`docs/101`, 320px `docs/48`.
 
 ---
 
 ## 1. İlke — aynı dil, iki kabuk
 
 Restoran paneli superadmin kabuğuyla **aynı görsel dili** konuşur
-(`docs/99` §2 tablosu); farkı yoğunluk ve ton sıcaklığıdır: operasyon
+(`docs/50` §4 ve `docs/36` §5); farkı yoğunluk ve ton sıcaklığıdır: operasyon
 paneli sıkı ve karşılaştırmalı, restoran paneli ferah ve tek-odaklı
 (`docs/101` A1 tek "şimdi").
 
@@ -30,7 +32,7 @@ paneli sıkı ve karşılaştırmalı, restoran paneli ferah ve tek-odaklı
 | Vurgu şeridi | "Şimdi" kartında marka rengi sol şerit (`border-s-brand`) | `--color-brand` |
 | Gölge | **Yok** — derinlik tonla (Flat 2.0) | — |
 
-Alınmayanlar `docs/99` §3 ile aynıdır (koyu aside, gölge, piksel sabiti,
+Alınmayanlar `docs/36` §5.4/§5.8 ile aynıdır (koyu aside, gölge, piksel sabiti,
 Metronic ikon/renk seti, suite rail, Bootstrap).
 
 ---

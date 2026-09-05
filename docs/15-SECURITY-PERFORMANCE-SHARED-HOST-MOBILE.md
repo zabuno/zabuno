@@ -121,7 +121,14 @@ müşterinin sunucusunda görünür.
 `HOST-QUEUE-04` özellikle önemlidir: paylaşımlı barındırmada sürekli çalışan
 bir worker yoktur. Kuyruğa atılan bir iş, onu işleyecek zamanlanmış bir komut
 olmadan veritabanında **sonsuza kadar bekler** — hata vermez, sadece hiç
-olmaz. Bugün kuyruğa hiçbir iş atılmıyor; kapı o günü bekliyor.
+olmaz.
+
+> **GÜNCELLEME (2026-09-05, FF-161):** burada bir zamanlar "bugün kuyruğa
+> hiçbir iş atılmıyor; kapı o günü bekliyor" yazıyordu. O gün geldi:
+> fotoğraftan menü aktarımı kuyruğa iş bırakıyor
+> (`app/Jobs/ExtractMenuBatchPageJob`) ve tüketen süreç de kuruldu —
+> `routes/console.php` dakikada bir `queue:work --stop-when-empty`,
+> zamanlayıcı `docker/supervisord.conf` altında. `HOST-QUEUE-04` karşılandı.
 
 **Bu kararın bedeli açıkça yazılır:** paylaşımlı barındırma tabanı, gerçek
 zamanlı işleme, ağır görsel işleme ve yüksek eşzamanlılık gerektiren

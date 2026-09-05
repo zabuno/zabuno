@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Tests\Support\GrantsPlanEntitlements;
 use Tests\TestCase;
 
 /**
@@ -21,10 +22,13 @@ use Tests\TestCase;
  * Requirement IDs: ITEM-VIEW-RECORDED-01, ITEM-VIEW-DEDUPED-01,
  * ITEM-VIEW-ONLY-PUBLISHED-01, SEARCH-NO-RESULTS-01,
  * MENU-ENGINEERING-REPORT-01, MENU-ENGINEERING-TENANT-01,
- * MENU-ENGINEERING-THRESHOLD-01.
+ * MENU-ENGINEERING-THRESHOLD-01, MENU-ENGINEERING-THRESHOLD-VISITORS-02,
+ * MENU-ENGINEERING-SEARCH-VISITORS-02, MENU-ENGINEERING-SEARCH-WINDOW-02,
+ * MENU-ENGINEERING-PLAN-402-02.
  */
 final class MenuEngineeringTest extends TestCase
 {
+    use GrantsPlanEntitlements;
     use RefreshDatabase;
 
     /** @return array{owner:User,workspaceId:int,menuId:int,publicKey:string,items:array<string,int>} */
@@ -89,6 +93,10 @@ final class MenuEngineeringTest extends TestCase
         $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
             ->postJson("/api/workspaces/{$workspaceId}/menu/{$menuId}/publications")
             ->assertStatus(201);
+
+        // CORE-04: bu rapor analitik RAPORLAMADIR ve plana bağlıdır. Testler
+        // yazıldığında uçta kapı yoktu; artık planı açıkça kurmak gerekiyor.
+        $this->grantEntitlements($workspaceId);
 
         return compact('owner', 'workspaceId', 'menuId', 'publicKey', 'items');
     }
@@ -269,5 +277,187 @@ final class MenuEngineeringTest extends TestCase
         $this->actingAs($mine['owner'])->withHeaders(['Accept' => 'application/json'])
             ->getJson("/api/workspaces/{$theirs['workspaceId']}/analytics/menu-engineering?range=30d")
             ->assertNotFound();
+    }
+
+    // --- MENU-ENGINEERING-THRESHOLD-VISITORS-02 ---------------------------
+
+    /**
+     * EŞİK KİŞİ SAYAR, SATIR TOPLAMI DEĞİL.
+     *
+     * MÜŞTERİ SORUNU. Kadıköy'deki balıkçının menüsünü akşam üç misafir
+     * açıyor; üçü de listenin başındaki iki ürünü görüyor, aşağı inmiyor.
+     * Eşik "ürün başına ziyaretçi sayılarının toplamı" ile hesaplanınca
+     * 3 × 2 = 6 çıkıyor, beşi geçiyor ve rapor AÇILIYOR. Sahip ertesi
+     * sabah panosunda "Hamsi son 30 günde bir kez bile açılmadı" cümlesini
+     * okuyup hamsiyi menüden çıkarıyor — oysa hamsiye kimsenin bakmadığı
+     * ölçülmedi, YALNIZ ÜÇ KİŞİ ölçüldü.
+     *
+     * "Henüz ölçmedim" ile "ölçtüm, sıfır çıktı" farklı cümlelerdir ve
+     * yalnız ikincisi bir öneriyi hak eder.
+     */
+    public function test_three_visitors_who_read_two_dishes_do_not_unlock_never_viewed_advice(): void
+    {
+        $s = $this->publishedMenu('me-esik-kisi');
+
+        foreach (['a', 'b', 'c'] as $visitor) {
+            $this->report($s['publicKey'], [
+                ['type' => 'item_view', 'menuItemId' => $s['items']['Levrek']],
+                ['type' => 'item_view', 'menuItemId' => $s['items']['Çipura']],
+            ], 'misafir-'.$visitor)->assertOk();
+        }
+
+        // Satır toplamı 6 (iki üründe üçer kişi) — beş eşiğini AŞAR.
+        self::assertSame(
+            6,
+            DB::table('analytics_events')->where('event_type', 'item_view')->count(),
+        );
+
+        $response = $this->actingAs($s['owner'])->withHeaders(['Accept' => 'application/json'])
+            ->getJson("/api/workspaces/{$s['workspaceId']}/analytics/menu-engineering?range=30d");
+
+        $response->assertOk();
+
+        self::assertSame(
+            'not_enough_data',
+            $response->json('state'),
+            'MENU-ENGINEERING-THRESHOLD-VISITORS-02: üç kişilik ölçüm raporu açmamalı.'
+        );
+
+        // Ekranın boş-durum cümlesi ZİYARETÇİ dilinde yazılı
+        // ("{observed}/{threshold} ziyaretçi"); sayı da kişi olmalı.
+        self::assertSame(3, (int) $response->json('observedViewers'));
+
+        // Ve en önemlisi: hiçbir "hiç görüntülenmedi" önerisi doğmamalı.
+        self::assertSame([], $response->json('neverViewed'));
+    }
+
+    // --- MENU-ENGINEERING-SEARCH-VISITORS-02 ------------------------------
+
+    /**
+     * ARAMA SAYISI KİŞİDİR, VURUŞ DEĞİL.
+     *
+     * Panodaki cümle "kaç kişi aradı" der ve uç da kişi sayar. Aynı
+     * misafirin arama kutusuna ikinci kez dokunması yeni bir talep değildir;
+     * öyle sayılsaydı herkese açık bir uçtan gelen sayı, ucuz bir betikle
+     * şişirilebilir ve sahibi olmayan bir talebe göre menü değiştirtirdi.
+     */
+    public function test_the_same_guest_searching_twice_is_still_one_person(): void
+    {
+        $s = $this->publishedMenu('me-arama-kisi');
+
+        $this->seedFiveViewers($s);
+
+        $this->report($s['publicKey'], [['type' => 'search_no_results', 'term' => 'Vejetaryen']])->assertOk();
+        $this->report($s['publicKey'], [['type' => 'search_no_results', 'term' => 'Vejetaryen']])->assertOk();
+        $this->report($s['publicKey'], [['type' => 'search_no_results', 'term' => 'Vejetaryen']], 'misafir-z')->assertOk();
+
+        // Üç satır YAZILDI: ham kayıt kırpılmıyor, yorum raporda yapılıyor.
+        self::assertSame(
+            3,
+            DB::table('analytics_events')->where('event_type', 'search_no_results')->count(),
+        );
+
+        $searches = $this->actingAs($s['owner'])->withHeaders(['Accept' => 'application/json'])
+            ->getJson("/api/workspaces/{$s['workspaceId']}/analytics/menu-engineering?range=30d")
+            ->json('searchesWithNoResults');
+
+        self::assertSame(
+            [['term' => 'vejetaryen', 'searches' => 2]],
+            $searches,
+            'MENU-ENGINEERING-SEARCH-VISITORS-02: üç vuruş, iki kişi.'
+        );
+    }
+
+    // --- MENU-ENGINEERING-SEARCH-WINDOW-02 --------------------------------
+
+    /**
+     * "SON 30 GÜN" METİNDE DEĞİL SORGUDA.
+     *
+     * Öneri satırının gerekçesi "Sonuçsuz aramalar · son 30 gün" diyor.
+     * Pencere uygulanmazsa sahip, iki yıl önce bir kez aranmış bir terim
+     * için bugün menüsüne ürün ekler.
+     */
+    public function test_a_search_from_before_the_window_is_not_reported(): void
+    {
+        $s = $this->publishedMenu('me-arama-pencere');
+
+        $this->seedFiveViewers($s);
+
+        $this->recordSearch($s, 'dun', 'ziyaretci-yakin', now()->subDay());
+        $this->recordSearch($s, 'gecen sene', 'ziyaretci-uzak', now()->subDays(400));
+
+        $searches = $this->actingAs($s['owner'])->withHeaders(['Accept' => 'application/json'])
+            ->getJson("/api/workspaces/{$s['workspaceId']}/analytics/menu-engineering?range=30d")
+            ->json('searchesWithNoResults');
+
+        self::assertSame(
+            ['dun'],
+            array_column($searches, 'term'),
+            'MENU-ENGINEERING-SEARCH-WINDOW-02: pencere dışındaki terim rapora giremez.'
+        );
+    }
+
+    // --- MENU-ENGINEERING-PLAN-402-02 -------------------------------------
+
+    /**
+     * BU RAPOR PLANA BAĞLIDIR (CORE-04, owner kararı 2026-08-26).
+     *
+     * Kapı buraya unutulmuştu: özet ve zaman serisi uçları 402 dönerken bu
+     * uç, planı raporlama içermeyen bir sahibe ürün başına ziyaretçi
+     * sayılarını, hiç bakılmayan ürün listesini ve sonuçsuz arama
+     * terimlerini panosunda göstermeye devam ediyordu.
+     *
+     * 402, 403 değil: kullanıcı yetkisiz DEĞİL, planı bu yeteneği
+     * içermiyor — biri erişim talebi, diğeri plan yükseltmesidir.
+     */
+    public function test_a_plan_without_reporting_gets_402_not_a_free_report(): void
+    {
+        $s = $this->publishedMenu('me-plan');
+
+        $this->seedFiveViewers($s);
+
+        DB::table('subscriptions')->where('workspace_id', $s['workspaceId'])->delete();
+
+        $this->actingAs($s['owner'])->withHeaders(['Accept' => 'application/json'])
+            ->getJson("/api/workspaces/{$s['workspaceId']}/analytics/menu-engineering?range=30d")
+            ->assertStatus(402)
+            ->assertJsonPath('entitlement', 'analytics.reporting');
+    }
+
+    /**
+     * Raporu açacak kadar GERÇEK ziyaretçi: beş ayrı misafir.
+     *
+     * @param  array{publicKey:string, items:array<string,int>}  $s
+     */
+    private function seedFiveViewers(array $s): void
+    {
+        foreach (['a', 'b', 'c', 'd', 'e'] as $visitor) {
+            $this->report($s['publicKey'], [
+                ['type' => 'item_view', 'menuItemId' => $s['items']['Levrek']],
+            ], 'misafir-'.$visitor)->assertOk();
+        }
+    }
+
+    /**
+     * Ham arama satırı: pencere sınavı GEÇMİŞE yazmayı gerektirir ve misafir
+     * ucundan geçmişe olay bildirilemez.
+     *
+     * @param  array{workspaceId:int, menuId:int}  $s
+     */
+    private function recordSearch(array $s, string $term, string $visitorKey, \DateTimeInterface $occurredAt): void
+    {
+        DB::table('analytics_events')->insert([
+            'workspace_id' => $s['workspaceId'],
+            'location_id' => (int) DB::table('menus')->where('id', $s['menuId'])->value('location_id'),
+            'qr_code_id' => null,
+            'menu_id' => $s['menuId'],
+            'menu_item_id' => null,
+            'search_term' => $term,
+            'event_type' => 'search_no_results',
+            'visitor_key' => $visitorKey,
+            'occurred_at' => $occurredAt,
+            'created_at' => $occurredAt,
+            'updated_at' => $occurredAt,
+        ]);
     }
 }

@@ -78,8 +78,16 @@ export const publication = {
     'workspace.publication.qrDestination.disableButton': 'Disable',
     // Yanlış yayından dönmek (`docs/81`).
     'workspace.publication.history.title': 'Published versions',
+    /*
+        Kaynağın kendi cümlesi: "Geri alma da bir yayındır: yeni sürüm
+        numarası alır, QR aynı kalır."
+
+        Sahibin geri alma anındaki iki korkusu bu tek cümlede karşılanır —
+        "eski hâli kaybeder miyim?" (hayır, geri alma da bir yayın, yani
+        kayıt) ve "masadaki kartlar ölür mü?" (hayır, adres değişmiyor).
+    */
     'workspace.publication.history.help':
-        'Going back writes a new version. Nothing is deleted, and the printed QR codes are untouched.',
+        'Going back is a publish too: it gets a new version number, and the QR stays the same.',
     'workspace.publication.history.version': 'Version {version}',
     'workspace.publication.history.live': 'Live',
     'workspace.publication.history.restore': 'Go back to this version',
@@ -324,15 +332,114 @@ export const publication = {
     'workspace.publication.publishedSnapshot.publishedAt': 'Published at {publishedAt}',
 
     /*
-        QR EKRANI — panel v3 kanonik kaynağı (`docs/109` §6.7).
+        QR EKRANI — panel v3.1 kanonik kaynağı
+        (`docs/reference/panel-v3/panel-v3.1.dc.html`, QR bölümü).
 
-        Kaynağın ekranı iki sütundur: solda masa kartları ızgarası, sağda
-        seçili kodun paneli. Buradaki anahtarlar o ekranın kendi dilidir;
-        `qrExport.*` ve `qrCard.*` anahtarları gelişmiş baskı yüzeyinde
-        kalır ve dokunulmaz.
+        Kaynak bu ekranı bir kod listesinden bir BASKI SİPARİŞİNE çevirdi ve
+        üç soru sıraladı: ne basacaksın → hangi masalar → nasıl görünsün.
+        Buradaki anahtarlar o üç adımın kendi dilidir; `qrExport.*` ve
+        `qrCard.*` anahtarları gelişmiş baskı yüzeyinde kalır ve dokunulmaz.
     */
     'workspace.publication.qrScreen.description':
-        'A printed code never changes — update your menu as often as you like.',
+        'Print the card you will put on the table. The code is printed once; change the menu as often as you like afterwards.',
+
+    // 1 · NE BASACAKSIN — fiziksel nesne seçilir, kâğıt boyutu bunun sonucudur.
+    'workspace.publication.qrScreen.step1': 'What are you printing?',
+    'workspace.publication.qrScreen.preset.table': 'Table card',
+    'workspace.publication.qrScreen.preset.table.where': 'Inside a plexiglass stand',
+    'workspace.publication.qrScreen.preset.table.tag': 'Most used',
+    'workspace.publication.qrScreen.preset.large': 'Large table card',
+    'workspace.publication.qrScreen.preset.large.where': 'Long table, both ends',
+    'workspace.publication.qrScreen.preset.wall': 'Wall poster',
+    'workspace.publication.qrScreen.preset.wall.where': 'Beside the till, at the door',
+    'workspace.publication.qrScreen.preset.window': 'Window or door',
+    'workspace.publication.qrScreen.preset.window.where': 'Readable from outside',
+    'workspace.publication.qrScreen.custom': 'I need another size',
+    'workspace.publication.qrScreen.custom.paper': 'Paper size',
+    'workspace.publication.qrScreen.custom.ratio': 'Or a free ratio',
+    'workspace.publication.qrScreen.custom.ratioNote':
+        'A free ratio has no paper size: the file comes out at that ratio and the print shop places it on their own paper.',
+    'workspace.publication.qrScreen.custom.ratioUse.tall': 'tall card',
+    'workspace.publication.qrScreen.custom.ratioUse.classic': 'classic',
+    'workspace.publication.qrScreen.custom.ratioUse.screen': 'screen',
+    'workspace.publication.qrScreen.custom.orientation': 'Orientation',
+    'workspace.publication.qrScreen.custom.portrait': 'Portrait',
+    'workspace.publication.qrScreen.custom.landscape': 'Landscape',
+    'workspace.publication.qrScreen.custom.format': 'File format',
+    'workspace.publication.qrScreen.custom.format.pdf': 'PDF',
+    'workspace.publication.qrScreen.custom.format.pdf.use': 'ready to print',
+    'workspace.publication.qrScreen.custom.format.svg': 'SVG',
+    'workspace.publication.qrScreen.custom.format.svg.use': 'scales without limit',
+    /*
+        ÇİZİLMEYEN SEÇENEĞİN SEBEBİ YAZILIR. Kaynak üçüncü bir biçim (PNG)
+        gösteriyor; sunucunun kart bestecisi onu üretmiyor ve üretmemesi bir
+        karar. Sessizce eksiltmek, kullanıcıya ürünü eksik gösterirdi.
+    */
+    'workspace.publication.qrScreen.custom.noPng':
+        'There is no PNG: a raster image blurs the module edges of a 4 cm code, and a second composer would one day draw a different card.',
+
+    // 2 · HANGİ MASALAR — kapsam, sunucunun arşiv süzgecine birebir oturur.
+    'workspace.publication.qrScreen.step2': 'Which tables?',
+    'workspace.publication.qrScreen.scope.all': 'All tables',
+    'workspace.publication.qrScreen.scope.area': 'One area',
+    'workspace.publication.qrScreen.scope.one': 'A single table',
+    'workspace.publication.qrScreen.scope.tableCount': '{count} tables',
+    'workspace.publication.qrScreen.scope.areaCount': '{count} areas',
+    'workspace.publication.qrScreen.areaNote': '{area} · {count} cards will be printed.',
+    /*
+        TARAMA SAYISI ÖLÇÜMDÜR ve ölçüm ücretlidir. Alan `null` gelebilir
+        (plan bu yeteneği içermiyor) ve o hâlde bu cümlelerin HİÇBİRİ
+        yazılmaz — yalnız masanın adı. `null`'ı "0 tarama" diye çizmek,
+        kodun hiç okutulmadığını söylemek olurdu.
+    */
+    'workspace.publication.qrScreen.tableNote.scanned': '{table} · scanned {count} times so far',
+    'workspace.publication.qrScreen.tableNote.never': '{table} · never scanned yet',
+    'workspace.publication.qrScreen.addTables': 'Add new tables',
+
+    // 3 · NASIL GÖRÜNSÜN — kaynağın beş tasarımı.
+    'workspace.publication.qrScreen.step3': 'How should it look?',
+    'workspace.publication.qrScreen.brandNote': 'Your brand colours come from Settings',
+    'workspace.publication.qrScreen.cardTheme.plain': 'Plain',
+    'workspace.publication.qrScreen.cardTheme.framed': 'Framed',
+    'workspace.publication.qrScreen.cardTheme.branded': 'Branded',
+    'workspace.publication.qrScreen.cardTheme.dark': 'Dark',
+    'workspace.publication.qrScreen.cardTheme.signage': 'Signage',
+    'workspace.publication.qrScreen.wording': 'Change the sentence on the card',
+    'workspace.publication.qrScreen.headline.label': 'Sentence on the card',
+    'workspace.publication.qrScreen.headline.help': 'Keep it short: it is read from a distance.',
+    'workspace.publication.qrScreen.wording.scope': 'This change applies to this print only.',
+    'workspace.publication.qrScreen.tableNumberPrinted':
+        'The table name is printed on every card, so they cannot be mixed up.',
+    'workspace.publication.qrScreen.optionSelected': 'Selected',
+
+    // ÖNİZLEME — maket değil, sunucunun gerçekten bastığı kart.
+    'workspace.publication.qrScreen.preview': 'This is how it comes out',
+    'workspace.publication.qrScreen.preview.paperDims': '{size} · {width} × {height} mm',
+    'workspace.publication.qrScreen.preview.ratioDims': '{ratio} · {orientation}',
+    /*
+        ÖLÇÜLMÜŞ taranabilirlik. Sayı sunucunun kart bestecisiyle aynı
+        hesaptan gelir (`lib/qrCardGeometry`, iki taraflı test). "Tarayıcı
+        testi geçti" YAZILMAZ: ürün hiçbir telefonda tarama testi
+        çalıştırmıyor ve çalıştırmadığı bir testin geçtiğini yazmak, sahibin
+        kırk kart bastırmasını sağlayan cümledir.
+    */
+    'workspace.publication.qrScreen.scan.standing':
+        'Code {mm} mm — easy to read from the table and standing up.',
+    'workspace.publication.qrScreen.scan.table': 'Code {mm} mm — easy to read from table distance.',
+    'workspace.publication.qrScreen.scan.tooSmall':
+        'Code {mm} mm — a code this small is not read by some phones. Pick a bigger size.',
+
+    // ALT ÇUBUK — üç adımın on kontrolü, tek cümle.
+    'workspace.publication.qrScreen.summary': '{count} cards · {size} {orientation} · {theme}',
+    'workspace.publication.qrScreen.summarySub': '{scope} · {format}',
+    'workspace.publication.qrScreen.summarySub.zip': '{scope} · {format} · one zip file',
+    'workspace.publication.qrScreen.download': 'Download {name}',
+    'workspace.publication.qrScreen.downloadZip': 'Download {count} cards (ZIP)',
+    'workspace.publication.qrScreen.capped':
+        'One archive holds at most {cap} cards; the rest stay out. Print them in a second batch.',
+    'workspace.publication.qrScreen.sheet': 'Sheet to cut out (PDF)',
+    'workspace.publication.qrScreen.sheet.why':
+        'Twelve cards to a page with cut lines — it has its own layout, not the size and design you picked above.',
     'workspace.publication.qrScreen.downloadAll': 'Download every card (PDF)',
     'workspace.publication.qrScreen.downloadAllPart': 'Cards {part} of {total} (PDF)',
     'workspace.publication.qrScreen.tables': 'Table cards',
@@ -363,8 +470,19 @@ export const publication = {
     */
     'workspace.publication.qrScreen.contrast':
         'Contrast measured: {ratio}:1 — dark modules on a light background.',
+    /*
+        BU CÜMLE BİR KEZ DEĞİŞTİ ve sebebi kayda değer.
+
+        Eski metni "koyu kart YOKTUR" diyordu ve o gün doğruydu: eski kaynağın
+        koyu tasarımı KODUN KENDİSİNİ ters çeviriyordu (beyaz modül / siyah
+        zemin) ve ters basılan bir kod birçok telefonda hiç okunmaz. Panel v3.1
+        o kusuru kendi düzeltti — koyu ve tabela tasarımlarında koyulaşan şey
+        kartın ZEMİNİ, kod hâlâ koyu modül / açık zemin. Tasarımlar doğunca
+        cümle yalan olurdu; kısıtın kendisini anlatacak şekilde yazıldı ve iki
+        yüzeyde de doğru kaldı.
+    */
     'workspace.publication.qrScreen.noDarkTheme':
-        'There is no dark card: scanners assume dark-on-light, and an inverted code is not read at all by many phones.',
+        'Whatever the card looks like, the code itself is always printed dark-on-light: scanners assume that, and an inverted code is not read at all by many phones.',
     'workspace.publication.qrScreen.empty':
         'No table code yet. Create the codes for your tables below.',
     'workspace.publication.qrScreen.loading': 'Loading table codes…',
@@ -463,19 +581,43 @@ export const publication = {
     'workspace.publication.preview.linkPending': 'Creating the preview link…',
 
     /*
-        PLANLA — zamanlanmış yayın. Saatler SUNUCUDAN gelir ve
-        `Europe/Istanbul` içindir; ekran yalnız okunabilir hâle çevirir.
+        PLANLA — zamanlanmış yayın. Saatler SUNUCUDAN gelir ve ŞUBENİN saat
+        dilimindedir (`docs/62`); ekran yalnız okunabilir hâle çevirir.
+
+        CÜMLELER ARTIK "İSTANBUL" DEMİYOR. Diyorlardı ve bu, aynı markanın
+        Berlin şubesinde doğrudan yanlıştı: sahip Berlin saatiyle hesaplanmış
+        bir anı "İstanbul saati" diye okurdu. Şehir adı yerine ŞUBE denir,
+        çünkü ekrandaki saati belirleyen şey şubenin kendisidir.
     */
     'workspace.publication.schedule.region': 'Schedule the publish',
     'workspace.publication.schedule.button': 'Schedule',
     'workspace.publication.schedule.close': 'Close scheduling',
     'workspace.publication.schedule.help':
-        'A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are Istanbul time.',
+        "A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are in this location's own time zone.",
     'workspace.publication.schedule.option.tonight': 'Tonight 03:00',
     'workspace.publication.schedule.option.tomorrowMorning': 'Tomorrow 09:00',
     'workspace.publication.schedule.option.nextMonday': 'Monday 09:00',
     'workspace.publication.schedule.optionAt': '{label} — {moment}',
-    'workspace.publication.schedule.pending': 'Scheduled for {moment} (Istanbul).',
+    'workspace.publication.schedule.pending': "Scheduled for {moment}, this location's time.",
+
+    /*
+        ÇIKMAYAN YAYIN SESSİZ KALAMAZ. Üç cümle de aynı üç şeyi söyler ve
+        hiçbiri söz vermez: ne oldu, menünün şu anki hâli ne, sahip ne
+        yapabilir. "Birazdan yayınlanacak" ya da tahmini bir süre yazmıyoruz
+        — zamanlayıcının ne zaman döneceğini bilmiyoruz, bilinmeyen de
+        yazılmaz.
+    */
+    'workspace.publication.schedule.status.publishing': 'Publishing the {moment} schedule now.',
+    'workspace.publication.schedule.status.overdue':
+        '{moment} has passed and the publish did not happen. The menu did not change — guests still see the previous version. Publish now, or schedule it again.',
+    'workspace.publication.schedule.status.interrupted':
+        'The {moment} publish started and did not finish. The menu did not change — guests still see the previous version. Publish now, or schedule it again.',
+    'workspace.publication.schedule.status.failed':
+        'The {moment} publish was attempted and could not be saved. The menu did not change — guests still see the previous version. Publish now, or schedule it again.',
+    'workspace.publication.schedule.status.unknown':
+        'This screen cannot read the state of the {moment} schedule, so it cannot tell you whether the menu changed. Reload the page.',
+    'workspace.publication.schedule.dismiss': 'Dismiss this notice',
+
     'workspace.publication.schedule.cancel': 'Cancel this schedule',
     'workspace.publication.schedule.cancelError': 'The schedule could not be cancelled. Try again.',
     'workspace.publication.schedule.error':

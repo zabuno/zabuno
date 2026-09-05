@@ -9,6 +9,7 @@ use App\Application\Team\Dto\TeamInvitationDetails;
 use App\Application\Team\Dto\TeamInvitationSummary;
 use App\Application\Team\Exception\TeamInvitationConflictException;
 use App\Application\Team\Port\TeamInvitationRepositoryPort;
+use App\Domain\Team\InvitationDeliveryState;
 use App\Domain\Team\InvitationStatus;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
@@ -26,13 +27,16 @@ final class EloquentTeamInvitationRepository implements TeamInvitationRepository
             ->where('workspace_id', $workspaceId)
             ->where('status', InvitationStatus::Pending->value)
             ->orderBy('id')
-            ->select(['id', 'email', 'role', 'status'])
+            // Teslimat sütunları OKUNUR ama dışarı ÇIKMAZ: `TeamInvitationSummary`
+            // yalnız türetilmiş hâli taşır (`docs/110` P0-06).
+            ->select(['id', 'email', 'role', 'status', 'delivered_at', 'delivery_failure'])
             ->get()
             ->map(fn (object $row): TeamInvitationSummary => new TeamInvitationSummary(
                 (int) $row->id,
                 (string) $row->email,
                 (string) $row->role,
                 (string) $row->status,
+                InvitationDeliveryState::fromRow($row->delivered_at, $row->delivery_failure),
             ))
             ->all();
     }
@@ -78,6 +82,11 @@ final class EloquentTeamInvitationRepository implements TeamInvitationRepository
                             'expires_at' => $expiresAt,
                             'accepted_at' => null,
                             'accepted_by' => null,
+                            // Yeni davetin teslim geçmişi YOKTUR. Önceki
+                            // denemenin damgası burada kalsaydı, taze bir
+                            // davet daha ilk anında "gönderildi" görünürdü.
+                            'delivered_at' => null,
+                            'delivery_failure' => null,
                             'updated_at' => now(),
                         ]);
 
@@ -168,6 +177,80 @@ final class EloquentTeamInvitationRepository implements TeamInvitationRepository
 
         return str_contains($message, 'team_invitations_workspace_id_email_unique')
             || str_contains($message, 'UNIQUE constraint failed: team_invitations.workspace_id, team_invitations.email');
+    }
+
+    public function refreshPendingForResend(int $workspaceId, int $invitationId): ?IssuedTeamInvitation
+    {
+        $rawToken = $this->generateRawToken();
+        $tokenHash = hash('sha256', $rawToken);
+        $expiresAt = now()->addDays(7);
+
+        return DB::transaction(function () use ($workspaceId, $invitationId, $rawToken, $tokenHash, $expiresAt): ?IssuedTeamInvitation {
+            /*
+                KİMLİK İKİLİDE, TEK BAŞINA id'DE DEĞİL.
+
+                `workspace_id` şartı düşseydi, kendi çalışma alanının sahibi
+                komşunun davet id'sini adres çubuğuna yazarak onun ekibine
+                e-posta gönderebilirdi. Yetki kapısı doğru olsa bile, kiracı
+                sınırı sorgunun İÇİNDE durmalı.
+            */
+            /*
+                KİLİT YALNIZ DAVET SATIRINDA.
+
+                Workspace adını aynı sorguya `join` ile katıp `FOR UPDATE`
+                demek, PostgreSQL'de çalışma alanı satırını da kilitlerdi:
+                aynı restoranın başka bir yazma işi, yalnız bir davet
+                tazelendiği için beklerdi. Ad ayrı bir okumayla gelir.
+            */
+            $row = DB::table('team_invitations')
+                ->where('id', $invitationId)
+                ->where('workspace_id', $workspaceId)
+                ->where('status', InvitationStatus::Pending->value)
+                ->select(['email', 'role'])
+                ->lockForUpdate()
+                ->first();
+
+            if ($row === null) {
+                return null;
+            }
+
+            $workspaceName = DB::table('workspaces')->where('id', $workspaceId)->value('name');
+
+            DB::table('team_invitations')
+                ->where('id', $invitationId)
+                ->update([
+                    'token_hash' => $tokenHash,
+                    'expires_at' => $expiresAt,
+                    // Yeni denemenin sonucu, bir öncekinin damgasıyla
+                    // karışmamalı: gönderim henüz yapılmadı.
+                    'delivered_at' => null,
+                    'delivery_failure' => null,
+                    'updated_at' => now(),
+                ]);
+
+            return new IssuedTeamInvitation(
+                $invitationId,
+                (string) $row->email,
+                (string) $row->role,
+                InvitationStatus::Pending->value,
+                $rawToken,
+                $expiresAt,
+                (string) $workspaceName,
+            );
+        });
+    }
+
+    public function recordDeliveryOutcome(int $invitationId, ?string $failure): void
+    {
+        DB::table('team_invitations')
+            ->where('id', $invitationId)
+            ->update([
+                // İki sütun BİRLİKTE yazılır: yalnız birini güncellemek,
+                // "hem gönderildi hem düştü" diyen bir satır bırakırdı.
+                'delivered_at' => $failure === null ? now() : null,
+                'delivery_failure' => $failure,
+                'updated_at' => now(),
+            ]);
     }
 
     public function cancelPending(int $workspaceId, int $invitationId): bool

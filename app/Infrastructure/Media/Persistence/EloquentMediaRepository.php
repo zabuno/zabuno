@@ -285,6 +285,18 @@ final class EloquentMediaRepository implements MediaRepositoryPort
         );
     }
 
+    public function releaseScanningToQuarantine(int $workspaceId, int $assetId): bool
+    {
+        // KOŞULLU: yalnız HÂLÂ `scanning` olan bir satır geri bırakılır.
+        // `ready` ya da `rejected` bir varlığı yeniden taramaya sokmak,
+        // verilmiş bir güvenlik kararını geri almak olurdu.
+        return MediaAsset::query()
+            ->where('id', $assetId)
+            ->where('workspace_id', $workspaceId)
+            ->where('status', MediaAssetStatus::Scanning->value)
+            ->update(['status' => MediaAssetStatus::Quarantined->value]) === 1;
+    }
+
     public function markRejectedIfScanning(int $workspaceId, int $assetId): void
     {
         MediaAsset::query()
@@ -759,12 +771,30 @@ final class EloquentMediaRepository implements MediaRepositoryPort
      */
     private function latestBlockingReason(int $assetId): ?string
     {
-        $reason = DB::table('media_processing_jobs')
-            ->where('media_asset_id', $assetId)
-            ->whereIn('state', ['held', 'failed'])
-            ->orderByDesc('id')
-            ->value('failure_reason');
+        /*
+            EN SON İŞE bakılır, en son ENGELE değil (FF-153).
 
-        return ($reason === null || (string) $reason === '') ? null : (string) $reason;
+            Eskiden sorgu doğrudan `held`/`failed` satırları arıyordu ve
+            aradaki başarıları ATLIYORDU. Kesintide mahsur kalmış bir
+            dosya `media:rescan-held` ile kurtarıldığında bu, düzelmiş bir
+            dosyanın yanında hâlâ "taranmadan yayına alınmaz" yazması
+            demekti: iş kaydı doğru, sahibin okuduğu cümle yanlış.
+
+            İş kayıtları SİLİNMEZ — bir şeyin bir kez beklediği gerçeği
+            tarihçedir. Değişen yalnız hangisinin GEÇERLİ olduğu: en son
+            deneme başarılıysa ortada engel yoktur.
+        */
+        $latest = DB::table('media_processing_jobs')
+            ->where('media_asset_id', $assetId)
+            ->orderByDesc('id')
+            ->first(['state', 'failure_reason']);
+
+        if ($latest === null || ! in_array((string) $latest->state, ['held', 'failed'], true)) {
+            return null;
+        }
+
+        $reason = (string) ($latest->failure_reason ?? '');
+
+        return $reason === '' ? null : $reason;
     }
 }

@@ -70,6 +70,23 @@ interface MediaRepositoryPort
      */
     public function claimQuarantinedForScanning(int $workspaceId, int $assetId): ?ScannableMediaAsset;
 
+    /**
+     * Taranmadan mahsur kalmış bir varlığı yeniden tarama sırasına geri
+     * bırakır (`scanning` → `quarantined`). Döner: gerçekten bırakıldı mı.
+     *
+     * NEDEN GERİYE. `claimQuarantinedForScanning` yalnız `quarantined` bir
+     * varlığı sahiplenir; sunucuda tarayıcı yokken yüklenen dosya ise
+     * `scanning`de kalır ve o kapıdan bir daha ASLA geçemez. Yeni bir
+     * "scanning'i yeniden sahiplen" yolu açmak, tarama hattını ikiye
+     * bölerdi — biri güvenlik kararlarını veren, diğeri onu taklit eden.
+     * Varlığı bir adım geri almak, tek hattı korur.
+     *
+     * Süreç bu iki adımın arasında ölürse varlık `quarantined` kalır; bu
+     * kayıp değil, aynı komutun bir sonraki koşusunun toplayacağı DAHA
+     * DOĞRU bir durumdur — dosya gerçekten taranmayı beklemektedir.
+     */
+    public function releaseScanningToQuarantine(int $workspaceId, int $assetId): bool;
+
     public function markRejectedIfScanning(int $workspaceId, int $assetId): void;
 
     public function markAcceptedIfScanning(int $workspaceId, int $assetId): void;

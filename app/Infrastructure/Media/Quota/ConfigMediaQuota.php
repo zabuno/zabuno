@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Media\Quota;
 
+use App\Application\Billing\Port\PlanCatalogRepositoryPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Media\Dto\MediaQuotaStatus;
 use App\Application\Media\Port\MediaQuotaPort;
@@ -17,14 +18,30 @@ use Throwable;
  *
  * Çöp dahildir (silme boş alan açmaz, purge açar); rendition'lar dahil
  * değildir (`docs/98` §7).
+ *
+ * RAKAMLAR YAPILANDIRMADAN, AD KATALOGDAN gelir. Ad da yapılandırmada
+ * dursaydı — ve bir süre durdu — sahibin faturada okuduğu "Restaurant" ile
+ * medya ekranında okuduğu ad ayrışırdı; ilk ad değişikliğinde yine
+ * ayrışırdı. Bu yüzden burada ikinci bir isim listesi tutulmaz.
  */
 final class ConfigMediaQuota implements MediaQuotaPort
 {
-    public function __construct(private readonly SubscriptionRepositoryPort $subscriptions) {}
+    public function __construct(
+        private readonly SubscriptionRepositoryPort $subscriptions,
+        private readonly PlanCatalogRepositoryPort $catalogue,
+    ) {}
 
     public function statusFor(int $workspaceId): MediaQuotaStatus
     {
-        [$code, $plan] = $this->planFor($workspaceId);
+        [$code, $plan, $subscribedName] = $this->planFor($workspaceId);
+
+        /*
+            Katalog SORGUSU BURADA, `planFor` içinde değil: `planFor`'a
+            gömülseydi, çalışma alanlarını tek tek gezen çöp temizleme
+            komutu (`trashRetentionDaysFor`) hiç kullanmadığı bir ad için
+            her satırda bir sorgu daha atardı.
+        */
+        $label = $subscribedName ?? $this->catalogueName($code);
 
         $counted = DB::table('media_assets')
             ->where('workspace_id', $workspaceId)
@@ -39,7 +56,7 @@ final class ConfigMediaQuota implements MediaQuotaPort
 
         $status = new MediaQuotaStatus(
             planCode: $code,
-            planLabel: (string) ($plan['label'] ?? $code),
+            planLabel: $label,
             originalBytesUsed: $bytesUsed,
             originalBytesLimit: (int) $plan['original_bytes'],
             assetsUsed: $assetsUsed,
@@ -88,24 +105,67 @@ final class ConfigMediaQuota implements MediaQuotaPort
         return null;
     }
 
-    /** @return array{0:string,1:array<string,mixed>} */
+    /**
+     * Üçüncü değer ABONELİĞİN kendi satırındaki addır; aboneliği olmayan
+     * çalışma alanı için `null`'dır ve adı çağıran katalogdan tamamlar.
+     *
+     * @return array{0:string,1:array<string,mixed>,2:?string}
+     */
     private function planFor(int $workspaceId): array
     {
         $plans = (array) config('media-quota.plans', []);
         $default = (string) config('media-quota.default', 'starter');
         $code = $default;
+        $label = null;
 
         try {
-            $planCode = $this->subscriptions->currentSubscription($workspaceId)->planCode;
+            $subscription = $this->subscriptions->currentSubscription($workspaceId);
 
-            if ($planCode !== null && isset($plans[$planCode])) {
-                $code = $planCode;
+            if ($subscription->planCode !== null && isset($plans[$subscription->planCode])) {
+                $code = $subscription->planCode;
+
+                /*
+                    Ad ABONELİĞİN KENDİ SATIRINDAN okunur (`plans.name`
+                    birleştirmesi): sahip parasını tam bu ada ödedi. Katalog
+                    listesinden okunsaydı, yayından kaldırılmış bir plana
+                    abone olan sahip kendi planının adını göremezdi.
+                */
+                $label = $subscription->planName;
             }
         } catch (Throwable) {
             // Abonelik okunamıyorsa en dar plan varsayılır: kota kapısı
             // asla "bilinmiyor, o hâlde sınırsız" demez.
         }
 
-        return [$code, (array) ($plans[$code] ?? $plans[$default])];
+        return [$code, (array) ($plans[$code] ?? $plans[$default]), $label];
+    }
+
+    /**
+     * Aboneliği olmayan çalışma alanının kademesinin adı.
+     *
+     * Ücretsiz kullanıcı da bir gün fiyat sayfasına bakar; orada "Starter"
+     * yazıp panelinde başka bir ad yazsaydı hangi kademede olduğunu
+     * bilemezdi. Bu yüzden ad burada da UYDURULMAZ, katalogdan okunur.
+     */
+    private function catalogueName(string $code): string
+    {
+        try {
+            foreach ($this->catalogue->listActivePlans() as $plan) {
+                if ($plan->code === $code) {
+                    return $plan->name;
+                }
+            }
+        } catch (Throwable) {
+            // Katalog okunamıyorsa da bir ad uydurulmaz.
+        }
+
+        /*
+            Katalogda karşılığı yoksa KOD yazılır ve bu çirkinlik kasıtlıdır:
+            sahibe insanca ama YANLIŞ bir ad göstermektense, adı olmayan bir
+            planın adsızlığı görünür kalsın. Katalog her dağıtımda tohumlanır
+            (`PlanCatalogueSeeder`), dolayısıyla bu satır ancak bozuk bir
+            kurulumda okunur — ve orada susmak, hatayı gizlemek olurdu.
+        */
+        return $code;
     }
 }

@@ -93,7 +93,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 2 ✅ | **FF-64 Rota boşlukları** | menü-geneli stok, brand/logo ve QR destination doğrulaması; bilinçli-eski rotalar belgeli | Tur 1 listesi sıfır "doğrulanacak" |
 | 3 ✅ | **FF-65 Envanter tazeleme** | `docs/61` G4/G5, E9/E10, A2 güncellemesi; FF-49..62'nin izi | envanter gerçeği söylüyor |
 | 4 ✅ | **FF-66 Engineering kabuğu** | `/engineering/*` ayrı kabuk: readiness, güvenlik kanıtı, yedek tatbikatı, host-capability, AI denetim izi | `docs/69` madde 3 ✅ |
-| 5 ✅ | **FF-67 Superadmin estetiği (Metronic-esinli)** | plan belgesi (`docs/99`) + uygulama: yoğunluk, kart/tablo dili, rozet sistemi, sol rail, üst çubuk; Zabuno token'larıyla, Metronic kopyası değil | platform ve engineering kabukları aynı dili konuşur |
+| 5 ✅ | **FF-67 Superadmin estetiği (Metronic-esinli)** | uygulama: yoğunluk, kart/tablo dili, rozet sistemi, sol rail, üst çubuk; Zabuno token'larıyla (plan belgesi 2026-09-05'te kaldırıldı — sahip tasarımı kendisi veriyor) | platform ve engineering kabukları aynı dili konuşur |
 | 6 ✅ | **FF-68 DAM Faz 2** | upload session + idempotency, magic-bytes/decoder doğrulama, karantina zinciri, SVG reddi, `fixtures/malicious` CI kapısı | `docs/49` Faz 2 kabulü |
 | 7 ✅ | **FF-69 DAM Faz 3** | immutable original, non-destructive version, `320..1600w` rendition seti, checksum + yinelenen tespiti, reprocess | INV-01..07 yeşil, rollback |
 | 8 ✅ | **FF-70 DAM Faz 4+5** | kütüphane ızgara/liste/arama/koleksiyon; asset detayı (kullanım/sürüm/rendition); kullanım grafiği; silme etki önizlemesi; yayın snapshot'ı version'a bağlı | kullanılan asset doğrudan silinemez |
@@ -120,10 +120,28 @@ sayfasında "Physical QR scan evidence" altındaki formu doldur (cihaz + bir
 cümle) → "Record this". Ya da sunucudan:
 `php artisan platform:evidence:attest qr-physical-scan --status=passed --summary="…" --payload=device=iPhone`.
 
-**RPO/RTO kararı (MASTER, geri döndürülebilir):** `docs/42`'deki günlük
-`db-backups` hacmiyle tutarlı olarak **RPO 24 saat, RTO 4 saat**. Aynı formdan
-ya da `--payload=rpo_hours=24 --payload=rto_hours=4` ile kaydedilir.
-Kayıt üretimde bir insan tarafından düşülür — bu belge onu düşmüş saymaz.
+**RPO/RTO kararı (MASTER, geri döndürülebilir):** **RPO 24 saat, RTO 4 saat**
+— bu bir **HEDEFTİR, bugünkü durumun ölçüsü DEĞİLDİR.** Aynı formdan ya da
+`--payload=rpo_hours=24 --payload=rto_hours=4` ile kaydedilir. Kayıt üretimde
+bir insan tarafından düşülür — bu belge onu düşmüş saymaz.
+
+> **DÜZELTME (2026-09-05, çelişki denetimi FF-161).** Bu madde daha önce
+> hedefi *"`docs/42`'deki günlük `db-backups` hacmiyle tutarlı olarak"*
+> gerekçelendiriyordu. O gerekçe **yanlıştı**: `docs/42` aynı hacim için
+> "Henüz yapılmadı — **içine yazan bir iş yok**" diyor ve haklı; `docker/`
+> altında hiçbir yedekleme işi bulunmuyor.
+>
+> Ayrılmış bir hacim, içine bir şey konduğu anlamına gelmez. Bugünkü gerçek
+> RPO 24 saat değil **sonsuzdur** — geri dönülecek bir yedek yok.
+>
+> Bu düzeltme önemli, çünkü madde bir insanın üretim hazırlık formuna sayı
+> girmesini istiyor: eski hâliyle **var olmayan bir güvenceyi kanıt olarak
+> kaydettirirdi.** `docs/16` DR-01 zaten "doğrulanmadı" diyordu; bu madde o
+> çekinceyi düşürmüştü.
+>
+> Hedefin gerçeğe dönmesi için gereken iki şey ayrı ve ikisi de eksik:
+> yedeği ALAN bir iş, ve o yedekten GERİ DÖNÜLDÜĞÜNÜN bir kez kanıtlanması.
+> `docs/107` Faz 1.5'in cümlesiyle: *"denenmemiş bir yedek, yedek değildir."*
 
 **ASVS:** `security/OWASP-ASVS-BASELINE.md` bir öz-değerlendirmedir, üçüncü
 taraf denetim DEĞİLDİR; kayıt "recorded" durumuyla ve bu cümleyle yapılır,
@@ -309,7 +327,7 @@ boş durum yol tarifi. Testler: `MediaUploadRegion.multi.test` (1),
 
 Sahip Home ekranını gönderdi: "maturity level bir UX estetiği istedim,
 yapmadın." Kök neden: 13 paket yapı/davranıştı, estetik yalnız superadmin
-kabuğuna (`docs/99`) uygulandı, sayfaya tarayıcıda hiç bakılmadı. `docs/102`
+kabuğuna (`docs/50`) uygulandı, sayfaya tarayıcıda hiç bakılmadı. `docs/102`
 yazıldı (aynı Metronic dili iki kabukta; yüzey başına L0–L4; kabul). Faz 1:
 main zemini `surface-subtle`, aside `surface`, sekiz bölüme Phosphor ikonu
 (kayıt `icon`), Home tek `h1` + "Şimdi" marka şeritli kart + Setup kartı +
@@ -440,7 +458,7 @@ bağlanır (FF-71).
 ## 8. Kanonik sahiplik
 
 Rota/tablo envanteri burada; DAM planı `docs/49`; shell `docs/50`; envanter
-`docs/61`; AI `docs/95-97`. Yeni planlar: `docs/99` (superadmin estetiği),
+`docs/61`; AI `docs/95-97`. Yeni planlar:
 `docs/100` (frontpages), `docs/101` (acemi-UX).
 
 ## 9. FF-88 — Profil ekranı (kişisel bilgi, fotoğraf, tema, marka rengi)

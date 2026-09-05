@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1325;
+const FROZEN_LEGACY_KEY_COUNT = 1444;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -42,8 +42,100 @@ const FROZEN_LEGACY_KEY_COUNT = 1325;
 // FF-148: şube kartı "şu an açık / şu an kapalı" diyebiliyor. İki anahtar,
 // çünkü rozet renkle değil KELİMEYLE anlatır; üçüncü bir "bilinmiyor"
 // anahtarı YOK — cevabı olmayan şubede rozet hiç çizilmez.
+// FF-150: yükleme ekranı, karantinada BEKLEYEN dosyayı artık sessizce
+// "tamamlandı" diye göstermiyor. İki anahtar: biri dosyanın ulaştığını ama
+// kullanılamadığını söyler, diğeri bunun sahibin hatası olmadığını. Süre,
+// yüzde ya da "yakında düzelecek" diyen üçüncü bir anahtar YOK — bilinen
+// tek şey durumun kendisidir.
+// FF-151: aynı dürüstlük bir adım GERİYE taşındı — "her görsel taranır"
+// vaadi, sahip henüz hiçbir şey yüklemeden okunuyor. Tarayıcı bağlı değilken
+// onun yerine ortamın gerçeğini söyleyen TEK anahtar eklendi; ikinci cümle
+// (bunun sahip hatası olmadığı) FF-150'nin anahtarını yeniden kullanır,
+// çünkü sahip aynı gerçeği iki farklı sesle okumamalı.
+// FF-155: "aranan ama bulunamayan" cümlesi ölçümün söylediğini söylüyor.
+// Uç ham vuruşu değil FARKLI ZİYARETÇİYİ sayıyor; aynı ekranın listesi
+// zaten "{count} ziyaretçi" diyordu, üstteki özet ise "{count} kez arandı".
+// Aynı ölçümün iki cümlesinden biri yalandı. Anahtar sayısı DEĞİŞMEDİ —
+// yalnız tek bir anahtarın metni düzeltildi.
+// FF-157: zamanlanmış yayın ÇIKMADIĞINDA ekran artık susmuyor. Altı anahtar:
+// dört durum cümlesi (yayına alınıyor / vakti geçti ve çıkmadı / başladı
+// bitmedi / denendi kaydedilemedi), okunamayan bir durum için "menünün
+// değişip değişmediğini söyleyemem" cümlesi, ve uyarıyı kapatan düğme.
+// Dördü de aynı üç şeyi söyler ve hiçbiri SÖZ VERMEZ: ne oldu, menünün şu
+// anki hâli ne, sahip ne yapabilir. "Yakında yayınlanacak" ya da tahmini
+// süre diyen bir anahtar YOK — zamanlayıcının ne zaman döneceğini bilmiyoruz.
+// FF-158: yükleme sınırı artık TÜRE göre. Dört yeni anahtar — üçü türün
+// sahibin kelimesiyle adı (görseller / SVG dosyaları / PDF dosyaları),
+// dördüncüsü seçilen yerin boyut sınırını dosya gönderilmeden ÖNCE yazan
+// satır. Ayrıca `upload.error.tooLarge` METNİ değişti: artık hangi türün
+// sınırına takıldığını da söylüyor, çünkü "sınır 25 MB" cümlesi 3 MB'lık
+// bir SVG'yi geri çeviren bir kapıda doğrudan yanlıştı. VİDEO için anahtar
+// YOK — kabul edilmeyen bir tür için sınır cümlesi yazmak, olmayan bir
+// yeteneği ilan etmek olurdu (`docs/109` §8.2).
+// FF-160: bekleyen davetin E-POSTASI çıktı mı? Sekiz anahtar — ikisi satırın
+// teslimat hâli (çıkmadı / hiç gönderilip gönderilmediğini bilmiyoruz),
+// altısı yeniden gönderme yolu (düğme, gönderiliyor, sağlayıcı kabul etti,
+// yenilendi ama çıkmadı, gönderilemedi, ve bağlantının değiştiği notu).
+// "Teslim edildi" ya da "gelen kutusuna düştü" diyen bir anahtar YOK:
+// sağlayıcının mesajı devraldığını görürüz, gelen kutusunu göremeyiz.
+// "Gönderildi" rozeti de YOK — yolunda giden satıra rozet basmak, dikkat
+// isteyen iki hâli gürültünün içinde kaybederdi.
+// FF-161: zamanlanmış yayının cümleleri artık "İstanbul" demiyor. Anahtar
+// sayısı DEĞİŞMEDİ — yalnız iki anahtarın METNİ düzeldi (yardım satırı ve
+// kurulu planın durum cümlesi). Saat dilimi markanın değil ŞUBENİN alanıdır
+// (`docs/62`): aynı markanın Berlin şubesinde "Saatler İstanbul saatidir"
+// cümlesi, doğru hesaplanmış bir anı yanlış şehirle okutuyordu. Şehir adı
+// yerine ŞUBE denir, çünkü ekrandaki saati belirleyen şubenin kendisidir.
+// FF-163: menü denetim izi artık okunabilir bir ekranı var. Otuz iki anahtar
+// — on dört eylem cümlesi (menü/kategori/ürün yaşam döngüsü, fiyat,
+// görünürlük, alerjen), CSV aktarımından AYRI duran "fotoğraftan okundu,
+// onaylandı", tanınmayan bir kod için tek bir dürüst cümle, öncesi/sonrası
+// biçimi, görünürlüğün iki kelimesi, bölümün durum cümleleri ve sayfalama.
+// İki anahtar listenin geri kalanından daha önemli: `empty` ("henüz bir
+// değişiklik kaydedilmedi") ve `notRecorded` — sıralama, "bugün tükendi" ve
+// yayınlama bilerek ize yazılmıyor ve bunu SÖYLEMEYEN bir liste, olmayan bir
+// kaydı "olmadı" diye okutur. Tahmini süre, sayaç ya da "yakında" diyen bir
+// anahtar YOK; kayıt yoksa yazılan tek şey `empty`dir.
+// FF-165: Insights sayaçları kanonik kaynağa çekildi. NET +3 anahtar (1378 →
+// 1381): dört yeni (`metric.menuOpen.support`, `metric.uniqueVisitors.support`,
+// `menuEngineering.neverViewed.review`, `.reviewFor`) eksi bir kaldırılan
+// (`metric.openRate`). Açılış oranı beşinci bir sayaç kartıydı; oysa oran iki
+// sayının BİLEŞİMİ — kaynağın ızgarasında dört kart var ve oran, açıkladığı
+// sayının alt satırında duruyor. `metric.qrResolve` ile `metric.menuOpen`
+// METNİ de düzeldi: "QR Resolve"/"Confirmed Menu Open" `docs/12`'nin ölçüm
+// terimleriydi ve ayrım korunuyor, ama sahibi ekranda kaynağın kelimelerini
+// okuyor ("Tarama", "Menü açılışı"). "Hiç bakılmayan" satırının düğmesi
+// kaynakta "Gizle" yazar; bu ekran gizlemez, gizlenecek yere götürür ve
+// etiketi de bunu söyler — bastığı düğmenin adı yalan olan bir liste,
+// ölçüme duyulan güveni tek tıkta harcar.
+// Aynı pakette dört başlığın METNİ de kaynağa çekildi (anahtar sayısı
+// değişmedi): ısı haritası artık "En yoğun saatler" değil "Saatlere göre
+// yoğunluk" — ızgara haftanın her saatini çiziyor, bir "ilk beş" değil;
+// masa listesi başlığı sınırını söylüyor ("ilk 5"), çünkü sınırı yazmayan
+// bir başlık listenin sonunu menünün sonu sandırır; ve sürüm dipnotu
+// kaynağın kendi cümlesi oldu ("geri alma da bir yayındır"), sahibin geri
+// alma anındaki iki korkusunu —kayıt gider mi, kartlar ölür mü— tek cümlede
+// karşılamak için.
+// FF-164: QR ekranı panel v3.1 kanonik kaynağına göre yenilendi ve bir kod
+// listesinden BASKI SİPARİŞİNE döndü. +63 anahtar (1381 → 1444): kaynağın üç
+// adımı ve dört hazır çıktısı, kâğıt/oran/yön/biçim seçicileri, üç kapsam
+// (hepsi / bir bölge / tek masa) ve notları, beş tasarımın adı, önizlemenin
+// ölçü etiketi ve alt çubuğun tek cümlelik özeti.
+//
+// ÜÇ ŞEY BİLEREK ANAHTARSIZ KALDI, çünkü depoda karşılıkları yok ve olmayan
+// bir yeteneği ilan eden bir metin, kullanıcıya ürünü yanlış tanıtır:
+// kaynağın "Temaları yönet" düğmesi (Ayarlar'da kalıcı baskı teması diye bir
+// kayıt yok), PNG biçimi (kart bestecisi yalnız SVG/PDF üretir — bunun sebebi
+// `custom.noPng` ile YAZILIYOR) ve kesim payı / alt satır / logo-masa-adres
+// anahtarları (bestecide karşılıkları yok).
+//
+// `qrScreen.noDarkTheme` anahtarının METNİ de değişti — sayı değişmedi. Eski
+// cümle "koyu kart yoktur" diyordu ve o gün doğruydu; kaynağın koyu tasarımı
+// kodun kendisini ters çeviriyordu. Panel v3.1 o kusuru düzeltti (koyulaşan
+// şey kartın zemini, kod hâlâ koyu modül / açık zemin), tasarım doğdu ve
+// cümle yalan olacaktı. Yerine kısıtın kendisi yazıldı; iki yüzeyde de doğru.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '91beff43670f49c70f942e0cd96735651feada561434f4229113f07a15c00231';
+    '9d8af317cb0d6ebe3ff86c76f0d9beaa54582f4046ab526c40208a9f508ff2ff';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

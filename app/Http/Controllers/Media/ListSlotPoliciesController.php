@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Media;
 use App\Domain\Media\MediaSurface;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SlotPolicy;
+use App\Domain\Media\UploadSizeLimits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
@@ -72,10 +73,29 @@ final class ListSlotPoliciesController extends Controller
             $offerable,
         );
 
+        $limits = UploadSizeLimits::fromArray((array) config('media-slots.limits', []));
+
         return response()->json([
             'slots' => array_values($slots),
             'limits' => [
-                'maxBytes' => (int) config('media-slots.limits.max_bytes'),
+                /*
+                    `maxBytes` MUTLAK TAVANDIR ve kalıyor: ekranın tanımadığı
+                    bir tür geldiğinde tutunacağı bir sayı olmalı. Asıl
+                    cevap `maxBytesByKind`tir — sahip tek düz bir sayı değil,
+                    KENDİ dosyasının sınırını okumalı (FF-158).
+
+                    Değerler yapılandırmadan olduğu gibi değil, `UploadSizeLimits`
+                    üzerinden geçer: kapının UYGULADIĞI sayı ile ekranın
+                    YAZDIĞI sayı aynı yerden gelir. İkisi ayrı okunsaydı,
+                    tavan bir gün daraldığında ekran eski sayıyı yazmaya
+                    devam eder ve reddi açıklayamazdı.
+
+                    VİDEO BU SÖZLÜKTE YOKTUR ve bu bilinçlidir: kabul
+                    edilmeyen bir tür için sayı göndermek, ekranda "şu
+                    boyuta kadar yükleyebilirsiniz" diye görünürdü.
+                */
+                'maxBytes' => $limits->ceilingBytes,
+                'maxBytesByKind' => $limits->all(),
                 'maxMegapixels' => (int) config('media-slots.limits.max_megapixels'),
             ],
         ]);

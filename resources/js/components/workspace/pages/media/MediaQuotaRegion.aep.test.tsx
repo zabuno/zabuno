@@ -24,7 +24,7 @@ import { MediaQuotaRegion } from './MediaQuotaRegion';
  */
 const QUOTA = {
     planCode: 'starter',
-    planLabel: 'Free',
+    planLabel: 'Starter',
     originalBytesUsed: 15 * 1048576,
     originalBytesLimit: 200 * 1048576,
     assetsUsed: 3,
@@ -56,7 +56,7 @@ describe('MediaQuotaRegion — şerit tek karttır, sayılar hizalanır', () => 
     it('şerit paketin kart yarıçapını ve yüzeyini taşır', async () => {
         mount();
 
-        const strip = (await screen.findByText('Plan: Free')).closest('section');
+        const strip = (await screen.findByText('Plan: Starter')).closest('section');
 
         expect(strip).toHaveClass('rounded-[var(--radius-lg)]');
         expect(strip).toHaveClass('border');
@@ -95,7 +95,7 @@ describe('MediaQuotaRegion — şerit tek karttır, sayılar hizalanır', () => 
         */
         mount();
 
-        const strip = (await screen.findByText('Plan: Free')).closest('section');
+        const strip = (await screen.findByText('Plan: Starter')).closest('section');
         const classLists: string[] = [strip?.className ?? ''];
         strip?.querySelectorAll<HTMLElement>('*').forEach((element) => {
             if (typeof element.className === 'string') classLists.push(element.className);

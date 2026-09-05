@@ -98,7 +98,7 @@ describe('InsightsHighlight', () => {
     it('aranıp bulunamayan ilk terimi ve kaç kez arandığını söyler', () => {
         render(<InsightsHighlight series={SERIES} report={REPORT} />);
 
-        expect(screen.getByText(/“vejetaryen” was searched 14 times/i)).toBeInTheDocument();
+        expect(screen.getByText(/“vejetaryen” was searched by 14 visitors/i)).toBeInTheDocument();
     });
 
     it('iki eylemi de gerçek bir ekrana bağlar', async () => {

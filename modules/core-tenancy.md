@@ -12,6 +12,19 @@ state geçiş uç noktaları (suspend/archive/delete), davet akışı, multi-bra
 genişlemesi, external/social/delivery provider registry UI'ı vb. — hâlâ
 **PLANNING ONLY, şu an çalıştırılamaz**.**
 
+
+> **DURUM BURADA YAZMAZ — KOD SÖYLER (2026-09-05 düzeltmesi).**
+>
+> Yukarıdaki "PLANNING ONLY" ifadesi bu modül için de eskidi. 2026-09-05
+> envanteri bu modülü UYGULANMIŞ saydı; kanıt kodda ve testlerde.
+> Yukarıdaki paragrafın ANLATTIĞI eksikler (şifre sıfırlama kapsamı, oturum
+> listesi/iptali, hesap durumları, workspace durum geçişleri, sağlayıcı
+> kaydı) hâlâ geçerli olabilir — ama bunların doğrusu da koddan okunur.
+>
+> Durum alanı bütün modül dosyalarından kaldırıldı: bir modül teslim
+> edildiğinde kimse tanım dosyasına geri dönmüyordu ve altmış iki dosyanın
+> altmış ikisi de kendini "çalıştırılamaz" ilan ediyordu. Türetilmiş
+> envanter için `docs/111`.
 ## Amaç
 Workspace/Brand/Location hiyerarşisini çözmek ve her isteğin doğru tenant
 bağlamında çalışmasını garanti etmek.

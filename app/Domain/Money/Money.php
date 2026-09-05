@@ -102,6 +102,32 @@ final class Money
         return $this->money->getCurrency()->getDefaultFractionDigits();
     }
 
+    /**
+     * The human-readable decimal form of this amount, without its currency
+     * code: "380.00" for 38000 TRY, "380" for 380 JPY.
+     *
+     * Added for the menu audit trail (FF-154), where a stored price has to
+     * be readable by the restaurant owner months later — "38000 TRY" is
+     * technically correct and practically unreadable. The digit count comes
+     * from the currency itself rather than a hardcoded two, so a zero-decimal
+     * currency is not shown with an invented fraction. String arithmetic
+     * only: converting through a float would be the one way to corrupt a
+     * price that this class exists to protect.
+     */
+    public function toDecimalString(): string
+    {
+        $digits = $this->fractionDigits();
+        $minor = (string) $this->minorAmount();
+
+        if ($digits === 0) {
+            return $minor;
+        }
+
+        $minor = str_pad($minor, $digits + 1, '0', STR_PAD_LEFT);
+
+        return substr($minor, 0, -$digits).'.'.substr($minor, -$digits);
+    }
+
     public function equals(self $other): bool
     {
         return $this->minorAmount() === $other->minorAmount()

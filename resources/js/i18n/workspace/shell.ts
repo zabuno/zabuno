@@ -179,8 +179,12 @@ export const shell = {
     'workspace.shell.globalSearch.unavailable': 'Global search unavailable',
     'workspace.shell.notifications.unavailable': 'Notifications unavailable',
     // MVP analitik metrikleri (docs/68).
+    /*
+        `metric.openRate` KALDIRILDI: açılış oranı artık kendi kartı değil,
+        menü açılışı kartının alt satırıdır (kaynağın dört sayaçlı ızgarası).
+        Etiket metni de o satırla birlikte `analytics.ts`'e taşındı.
+    */
     'workspace.analytics.metric.uniqueVisitors': 'Approx. unique visitors',
-    'workspace.analytics.metric.openRate': 'Scan to menu open',
     'workspace.analytics.breakdown.locations': 'By location',
     'workspace.analytics.breakdown.qrCodes': 'By QR code',
     'workspace.analytics.breakdown.column.name': 'Name',

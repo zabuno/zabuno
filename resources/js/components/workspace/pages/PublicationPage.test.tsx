@@ -1257,7 +1257,7 @@ describe('PublicationPage — panel v3 Yayınlama ekranı (PANEL_V3_PUBLICATION_
             if (/publications\/schedule$/.test(url)) {
                 return jsonResponse(200, {
                     timeZone: 'Europe/Istanbul',
-                    pending: null,
+                    plan: null,
                     options: [{ key: 'tonight', scheduledFor: '2026-09-06T00:00:00.000000Z' }],
                 });
             }
@@ -1434,5 +1434,102 @@ describe('PublicationPage — panel v3 Yayınlama ekranı (PANEL_V3_PUBLICATION_
             screen.getAllByRole('checkbox', { name: /reviewed the publish checklist/i }),
         ).toHaveLength(1);
         expect(screen.getAllByRole('button', { name: /^publish$/i })).toHaveLength(1);
+    });
+
+    /**
+     * KARTIN İÇİNE KART ÇİZİLMEZ — `docs/36` §5.2.
+     *
+     * Sayfa çerçevesi her doğrudan çocuğu bir `PanelCard`'a sarıyordu. Ama
+     * adım çizgisi, değişiklik listesi, planlama, telefon önizlemesi ve
+     * sürümler kendi kartlarını ZATEN çiziyor. Ortaya aynı zemin ve aynı
+     * kenarlıkla çizilmiş iç içe iki çerçeve çıkıyordu: sahip iki çizgi
+     * görüyor, hiçbiri ona yeni bir şey söylemiyor, 320 piksellik bir
+     * telefonda içerik iki kat yatay dolgu kaybediyordu.
+     */
+    it('kendi kartını çizen bölgeyi ikinci bir kartın içine koymaz', async () => {
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        for (const name of [/where you are/i, /preview on a phone/i]) {
+            const region = screen.getByRole('region', { name });
+
+            expect(region.className).toMatch(/border/);
+
+            // Doğrudan atası kart olamaz: kartın kartı çizilmez.
+            const parent = region.parentElement;
+
+            expect(parent?.className ?? '').not.toMatch(/border/);
+        }
+    });
+
+    /**
+     * SÜRÜMLER KENDİ ŞERİDİNDE — kanonik kaynak
+     * (`docs/reference/panel-v3/panel-v3.1.dc.html`, Yayınlama:
+     * `publishCols = '1fr 360px'`).
+     *
+     * Liste akışın en altındaydı: sahip "hangi sürüme döneyim?" sorusunun
+     * cevabına ulaşmak için telefon önizlemesini, snapshot'ı ve QR bölgesini
+     * geçip ekranı sonuna kadar kaydırmak zorundaydı. Geri alma tam olarak
+     * panik anında aranan şeydir; panik anında kaydırılmaz.
+     */
+    it('sürümleri akışın yanındaki kendi şeridinde tutar, en altta değil', async () => {
+        fetchSpy.mockImplementation(async (url: string) => {
+            if (/publications\/current/.test(url)) {
+                return jsonResponse(200, publishedResponse());
+            }
+
+            if (/\/publications$/.test(url)) {
+                return jsonResponse(200, {
+                    data: [
+                        {
+                            id: 800,
+                            version: 14,
+                            state: 'published',
+                            publishedAt: '2026-09-03 09:00',
+                            isLive: true,
+                        },
+                    ],
+                });
+            }
+
+            return jsonResponse(404, { message: 'Not found' });
+        });
+
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        const history = await screen.findByRole('heading', { name: /versions/i });
+        // Bölge kendi `section`'ını çiziyor; şerit onun bir üstündeki sütun.
+        const rail = history.closest('[data-publication-history="true"]')?.parentElement
+            ?.parentElement;
+
+        expect(rail).not.toBeNull();
+        // Şerit, akış sütunuyla AYNI satırı paylaşan bir esnek kardeştir.
+        expect(rail?.className ?? '').toMatch(/flex-\[1_1_/);
+
+        const flow = rail?.previousElementSibling;
+
+        expect(flow?.className ?? '').toMatch(/flex-\[3_1_/);
+        // Değişiklik listesi akış sütununda kalır; şeride taşmaz.
+        expect(flow?.querySelector('[data-publication-diff="true"]')).not.toBeNull();
+    });
+
+    /**
+     * Hiç yayın yokken şerit YOK OLUR.
+     *
+     * Boş bir sütun, geniş ekranda akışın yanında açıklanamayan bir boşluk
+     * bırakırdı: sahip orada bir şeyin yüklenmediğini sanardı.
+     */
+    it('sürüm listesi boşken şerit yer kaplamaz', async () => {
+        render(<PublicationPage workspaceId={71} dashboardMenuTree={makeMenuTree()} />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        expect(screen.queryByRole('heading', { name: /versions/i })).toBeNull();
+
+        const rail = document.querySelector('.empty\\:hidden');
+
+        expect(rail).not.toBeNull();
+        expect(rail?.childElementCount).toBe(0);
     });
 });

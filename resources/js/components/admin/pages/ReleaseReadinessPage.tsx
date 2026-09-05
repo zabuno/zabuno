@@ -23,7 +23,7 @@ export function ReleaseReadinessPage() {
 
     return (
         // Başlık ve açıklama artık kabuğun sayfa başlığında (`OpsPageHeader`,
-        // `docs/99`); burada tekrarlamak iki h1 üretirdi.
+        // `docs/50` §9.2); burada tekrarlamak iki h1 üretirdi.
         <div id="section-release-readiness" className="flex flex-col gap-[var(--space-4)]">
             <WorkspaceDiscovery selectedWorkspace={workspace} onSelect={setWorkspace} />
 

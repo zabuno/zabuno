@@ -9,14 +9,67 @@ export const media = {
     // FF-68 (`docs/49` Faz 2): ilerleme görünür, yeniden deneme aynı anahtarla.
     'workspace.media.upload.uploading.progress': 'Uploading… {percent}%',
     'workspace.media.upload.retry': 'Try again',
+    /*
+        FF-158. Cümle 2026-09-05'e kadar "the limit is {max} MB" diyordu ve
+        sınır her tür için aynıydı. Artık değil: bir SVG'nin sınırı bir
+        fotoğrafınkiyle aynı olamaz. Hangi türün sınırına takıldığını
+        söylemeyen bir ret, doğru dosyayı yükleyen sahibi de şüpheye
+        düşürürdü ("PDF'im 30 MB, sınır 25 MB mı?").
+
+        Cümle sınırın SEBEBİNİ anlatmaz. Aktarım zinciri, virüs tarayıcısı
+        ve gövde sınırları sahibin sorunu değildir; gerekçe kodda yazar
+        (`config/media-slots.php`), ekranda değil.
+    */
     'workspace.media.upload.error.tooLarge':
-        'This file is {size} MB; the limit is {max} MB. Export a smaller copy and try again.',
+        'This file is {size} MB; the limit for {kind} is {max} MB. Export a smaller copy and try again.',
+    /*
+        Türün SAHİBİN kelimesiyle adı. `image`/`vector`/`document` iç
+        sözlüktür ve ekrana çıkmaz.
+    */
+    'workspace.media.upload.limit.kind.image': 'images',
+    'workspace.media.upload.limit.kind.vector': 'SVG files',
+    'workspace.media.upload.limit.kind.document': 'PDF files',
     'workspace.media.upload.error.tooManyPixels':
         'This image is {width} × {height} pixels — more than {max} megapixels. Export a smaller copy and try again.',
     'workspace.media.upload.failed': 'Media upload failed. Your selection was kept.',
     'workspace.media.upload.complete': 'Media upload complete.',
+    /*
+        FF-150. "Tamamlandı" tek başına yanıltıcıydı: dosya gerçekten
+        ulaşıyor, ama güvenlik kapısını geçemeyince karantinada bekliyor ve
+        menüde kullanılamıyor. Sahip ekrandan ayrılıp bir hafta sonra
+        fotoğrafın menüde olmadığını görüyor, yanlış bir şey yaptığını
+        sanıyordu.
+
+        Cümle YALNIZ durumu söyler. "Yakında düzelecek", tahmini süre ya da
+        yüzde YAZILMAZ: bilinen tek şey dosyanın beklediğidir. Sebebin
+        kendisi sunucunun kaydettiği cümledir ve hemen altında durur.
+    */
+    'workspace.media.upload.held':
+        'Your file reached us, but it cannot be used in your menu yet. Here is the reason:',
+    /*
+        Kusur dosyada ya da sahipte DEĞİL, ortamda. Ayarlar ekranındaki
+        "virüs taraması çalışmıyor" satırıyla aynı sesle konuşur; sahip aynı
+        gerçeği iki yerde iki farklı şekilde okumamalı.
+    */
+    'workspace.media.upload.held.notYours':
+        'You did not do anything wrong, and this is not something you can switch on from here.',
     'workspace.media.security.explanation':
         'Every image is scanned and checked by a person before it can appear on your menu.',
+    /*
+        FF-151. Yukarıdaki cümle bir VAATTİR ve sahip onu daha hiçbir şey
+        yüklemeden okur — ilk fotoğrafını seçerken kararını ona göre verir.
+        Tarayıcının bağlı olmadığı bir ortamda o cümle okunduğu ilk saniyede
+        yanlıştır ve yüklenen her dosya sessizce karantinada bekler.
+
+        Cümle ORTAMIN gerçeğini söyler, bir kusuru değil; ardından
+        `upload.held.notYours` gelir ve bunun sahip hatası olmadığını,
+        panelden açılacak bir anahtar bulunmadığını yazar. Ayarlar
+        ekranındaki `settings.security.virusScan.unavailable` satırıyla aynı
+        sesle konuşur: sahip aynı gerçeği iki yerde iki farklı şekilde
+        okumamalı. Süre, yüzde ya da "yakında düzelecek" YOK.
+    */
+    'workspace.media.security.explanation.unavailable':
+        'No virus scanner is connected in this environment, so images you upload are not checked and wait in quarantine instead of appearing on your menu.',
     'workspace.media.upload.field.file': 'File',
     // Sürükle-bırak alanı. Öncesinde ham bir `<input type=file>` vardı ve
     // tarayıcı onu İŞLETİM SİSTEMİNİN dilinde çiziyordu: uygulama İngilizce
@@ -33,6 +86,14 @@ export const media = {
     'workspace.media.upload.requirement.minimum': 'At least {width} × {height} pixels',
     'workspace.media.upload.requirement.aspect': 'Aspect ratio {aspect}',
     'workspace.media.upload.requirement.formats': 'Formats: {formats}',
+    /*
+        FF-158. Liste en küçük ölçüyü, oranı ve biçimleri söylüyordu ama
+        BOYUTU söylemiyordu: sahip "png kabul ediliyor" okuyup taramasını
+        yüklüyor, sınırı ancak ret cümlesinde öğreniyordu. Bir slot birden
+        çok tür kabul edebilir ve onların sınırları aynı değildir — bu
+        yüzden metin tek bir sayı değil, hazır bir liste alır.
+    */
+    'workspace.media.upload.requirement.maxSize': 'Largest file size: {limits}',
     /*
         KIRPMA (FF-129). Sunucudaki işleyici slotun oranına göre MERKEZDEN
         kırpıyor ve bunu kullanıcıya hiç sormuyordu. Yemek fotoğrafında bu

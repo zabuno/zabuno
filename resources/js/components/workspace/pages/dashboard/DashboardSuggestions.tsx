@@ -63,10 +63,19 @@ function buildSuggestions(insights: MenuInsights | null): Suggestion[] {
     const fromSearches: Suggestion[] = insights.searchesWithNoResults.map((search) => ({
         key: `search:${search.term}`,
         kind: 'search',
-        title: t('dashboard.suggestions.search.title', {
-            term: search.term,
-            count: String(search.searches),
-        }),
+        /*
+            `searches` alanı, adına rağmen KİŞİ sayar (uç
+            `COUNT(DISTINCT visitor_key)` döndürüyor). Cümle bu yüzden "kez
+            arandı" değil "kişi aradı" der; tekil ayrı anahtardır, çünkü
+            "1 visitors" diye bir cümle yok.
+        */
+        title:
+            search.searches === 1
+                ? t('dashboard.suggestions.search.title', { term: search.term })
+                : t('dashboard.suggestions.search.title.plural', {
+                      term: search.term,
+                      count: String(search.searches),
+                  }),
         why: t('dashboard.suggestions.search.why'),
         cta: t('dashboard.suggestions.search.cta'),
         section: 'menu',

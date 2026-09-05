@@ -17,15 +17,31 @@ import { MediaUploadRegion } from './MediaUploadRegion';
  * hangi dosya, ne kadar küçülsün, hangi kare, gönderelim mi. Adım göstergesi
  * bir süs değil: kullanıcı nerede olduğunu ve kaç adım kaldığını görür.
  */
-function stubPolicies(slot: { minWidth: number; minHeight: number; aspect: string | null }): void {
+function stubPolicies(slot: {
+    minWidth: number;
+    minHeight: number;
+    aspect: string | null;
+    formats?: string[];
+}): void {
+    const { formats = ['jpeg'], ...geometry } = slot;
+
     vi.stubGlobal(
         'fetch',
         vi.fn(async () => ({
             ok: true,
             status: 200,
             json: async () => ({
-                slots: [{ key: 'itemImage', formats: ['jpeg'], altRequired: true, ...slot }],
-                limits: { maxBytes: 31457280, maxMegapixels: 40 },
+                slots: [{ key: 'itemImage', formats, altRequired: true, ...geometry }],
+                /*
+                    FF-158: sunucu tek düz bir sayı değil, TÜRE göre sınır
+                    bildirir. `maxBytes` mutlak tavandır ve yalnız türü
+                    tanınmayan bir dosya için kullanılır.
+                */
+                limits: {
+                    maxBytes: 47185920,
+                    maxBytesByKind: { image: 26214400, vector: 2097152, document: 47185920 },
+                    maxMegapixels: 40,
+                },
             }),
         })),
     );
@@ -185,18 +201,85 @@ describe('yükleme sihirbazı — 1. adım', () => {
         expect(within(table).getByText('.heic')).toBeInTheDocument();
     });
 
-    it('azami boyut SUNUCUNUN sınırıdır, broşürden kopyalanmış bir sayı değil', async () => {
+    it('azami boyut SUNUCUNUN sınırıdır ve TÜRE göredir', async () => {
         /*
-            Kaynakta "25 MB" yazıyor; bu depoda sunucu 30 MB kabul ediyor.
-            Sabit yazılsaydı iki sayı bir gün ayrışırdı ve kullanıcı hangisine
-            güveneceğini bilemezdi — üstelik yanlış olan, ekranda duran olurdu.
+            İki ayrı arıza tek testte duruyor.
+
+            Birincisi eskiydi: kaynak broşüründe "25 MB" yazıyor, sunucu
+            başka bir sayı uyguluyor. Sabit yazılsaydı yanlış olan, ekranda
+            duran olurdu.
+
+            İkincisi FF-158: sunucu artık türe göre sınır uyguluyor. Tek bir
+            sayının bütün satırlara dağıtılması, satırların en az birini
+            yalan yapardı — ve o satır tam olarak SVG'ninkiydi: temizleyici
+            gövdenin tamamını ayrıştırdığı için oradaki sınır bir kolaylık
+            değil güvenlik kısıtıdır ve fotoğrafınkinden çok daha dardır.
         */
         stubPolicies({ minWidth: 1, minHeight: 1, aspect: null });
         render(<MediaUploadRegion onSubmit={vi.fn(async () => {})} />);
 
         const table = await screen.findByRole('table', { name: /supported types/i });
 
-        expect(within(table).getByText('30 MB')).toBeInTheDocument();
+        const sizeOf = (rowName: string): string | null =>
+            within(table)
+                .getByRole('rowheader', { name: rowName })
+                .parentElement!.querySelectorAll('td')[0]!.textContent;
+
+        expect(sizeOf('Images')).toBe('25 MB');
+        expect(sizeOf('Vector (SVG)')).toBe('2.0 MB');
+    });
+
+    it('ret, HANGİ türün sınırına takıldığını söyler', async () => {
+        /*
+            FF-158. "Dosya çok büyük" kullanıcıya ne yapacağını söylemez.
+            Buradaki SVG 3 MB — fotoğraf sınırının (25 MB) çok altında, ama
+            vektörünkinin (2 MB) üstünde. Yalnız "sınır 25 MB" diyen bir ret,
+            sahibi dosyasının neden geri geldiğini hiç anlamadan bırakırdı.
+        */
+        stubPolicies({ minWidth: 1, minHeight: 1, aspect: null, formats: ['svg', 'png'] });
+        const user = userEvent.setup();
+        render(<MediaUploadRegion onSubmit={vi.fn(async () => {})} />);
+
+        const region = screen.getByRole('region', { name: /media upload/i });
+        await user.upload(
+            within(region).getByLabelText(/choose a file/i) as HTMLInputElement,
+            new File([new Uint8Array(3 * 1024 * 1024)], 'logo.svg', { type: 'image/svg+xml' }),
+        );
+
+        await screen.findByRole('button', { name: /^continue$/i });
+        await user.click(screen.getByRole('button', { name: /^continue$/i }));
+        await user.click(screen.getByRole('button', { name: /^continue$/i }));
+        await user.click(screen.getByRole('button', { name: /^upload$/i }));
+
+        expect(
+            await screen.findByText(/this file is 3 MB; the limit for SVG files is 2 MB/i),
+        ).toBeInTheDocument();
+    });
+
+    it('seçilen yerin boyut sınırı, gönderilmeden ÖNCE yazılır', async () => {
+        /*
+            Gereksinimler listesi en küçük ölçüyü, oranı ve biçimleri
+            söylüyordu; boyutu SÖYLEMİYORDU. Bir slot birden çok tür kabul
+            edebilir (`logo`: svg + png) ve onların sınırları aynı değildir —
+            bu yüzden tek bir sayı değil, her türün kendi sayısı yazılır.
+        */
+        stubPolicies({ minWidth: 1, minHeight: 1, aspect: null, formats: ['svg', 'png'] });
+        const user = userEvent.setup();
+        render(<MediaUploadRegion onSubmit={vi.fn(async () => {})} />);
+
+        const region = screen.getByRole('region', { name: /media upload/i });
+        await user.upload(
+            within(region).getByLabelText(/choose a file/i) as HTMLInputElement,
+            new File(['a'], 'logo.png', { type: 'image/png' }),
+        );
+
+        await screen.findByRole('button', { name: /^continue$/i });
+        await user.click(screen.getByRole('button', { name: /^continue$/i }));
+        await user.selectOptions(await screen.findByLabelText(/where will/i), 'itemImage');
+
+        expect(
+            await screen.findByText(/largest file size: SVG files 2\.0 MB · images 25 MB/i),
+        ).toBeInTheDocument();
     });
 
     it('YALNIZ gerçekten kabul edilen türler listelenir', async () => {

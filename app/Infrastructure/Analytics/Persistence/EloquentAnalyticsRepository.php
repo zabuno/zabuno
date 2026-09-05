@@ -82,12 +82,71 @@ final class EloquentAnalyticsRepository implements AnalyticsRepositoryPort
             ->where('event_type', AnalyticsEventType::ItemView->value)
             ->whereNotNull('menu_item_id')
             ->where('occurred_at', '>=', self::cutoffFor($range, $now))
+            /*
+                Anahtarsız satır SAYILMAZ — `summarize` ile aynı disiplin.
+                `COUNT(DISTINCT ...)` zaten boşları atlar; koşulun açıkça
+                yazılması, yalnız anahtarsız olayı olan bir ürünün sessizce
+                "sıfır ziyaretçi" grubuna düşüp "hiç bakılmadı" diye
+                sunulmasını okuyanın gözünden kaçırmaz.
+            */
+            ->whereNotNull('visitor_key')
             ->groupBy('menu_item_id')
             // Ham vuruş değil FARKLI ziyaretçi: hem daha anlamlı hem de
             // herkese açık uçtan gelen ucuz şişirmeye dayanıklı (`docs/84`).
             ->selectRaw('menu_item_id, COUNT(DISTINCT visitor_key) as viewers')
             ->pluck('viewers', 'menu_item_id')
             ->map(static fn ($count): int => (int) $count)
+            ->all();
+    }
+
+    public function itemViewVisitorCount(int $workspaceId, string $range, Carbon $now): int
+    {
+        /*
+            Ürün başına sayıların toplamı DEĞİL, kişi sayısı.
+
+            Menüyü baştan sona kaydıran tek bir misafir, ürün başına
+            sayıların toplamını beşe çıkarır. O toplamla açılan bir rapor,
+            tek bir ziyaretin ardından sahibe "kırk ürününüz hiç açılmadı"
+            der ve sahip menüsünü ölçülmemiş bir sıfıra göre değiştirir.
+        */
+        return (int) DB::table('analytics_events')
+            ->where('workspace_id', $workspaceId)
+            ->where('event_type', AnalyticsEventType::ItemView->value)
+            ->whereNotNull('visitor_key')
+            ->where('occurred_at', '>=', self::cutoffFor($range, $now))
+            ->distinct()
+            ->count('visitor_key');
+    }
+
+    /**
+     * @return list<array{term:string,searches:int}>
+     */
+    public function searchesWithNoResults(int $workspaceId, string $range, Carbon $now): array
+    {
+        return DB::table('analytics_events')
+            ->where('workspace_id', $workspaceId)
+            ->where('event_type', AnalyticsEventType::SearchNoResults->value)
+            ->whereNotNull('search_term')
+            ->whereNotNull('visitor_key')
+            ->where('occurred_at', '>=', self::cutoffFor($range, $now))
+            ->groupBy('search_term')
+            /*
+                TAKMA AD ZORUNLU. `COUNT(DISTINCT ...)` takma adsız
+                yazıldığında PostgreSQL sütunu kendi adıyla ("count") döner,
+                SQLite ise ifadenin tamamını sütun adı yapar; ikisinde de
+                aynı satırı okuyan tek bir PHP satırı yoktur.
+            */
+            ->selectRaw('search_term, COUNT(DISTINCT visitor_key) as searches')
+            ->orderByDesc('searches')
+            ->limit(10)
+            ->get()
+            ->map(static fn (object $row): array => [
+                'term' => (string) $row->search_term,
+                // Wire adı `searches` ama taşıdığı şey KİŞİ sayısıdır; bkz.
+                // portun sözleşmesi. Ekranda "kez arandı" diye okunamaz.
+                'searches' => (int) $row->searches,
+            ])
+            ->values()
             ->all();
     }
 

@@ -82,6 +82,43 @@ export const team = {
     'workspace.team.invitations.cancel.retry': 'Retry',
     'workspace.team.invitations.cancel.success': 'Invitation cancelled.',
     /*
+        "BEKLİYOR"UN İKİ AYRI SEBEBİ VARDI (`docs/110` P0-06).
+
+        Bir davet satırı "pending" diyordu; ama bu ya "e-posta ulaştı, kişi
+        henüz tıklamadı" ya da "e-posta hiç çıkmadı" demekti. Sahip ikisini
+        de aynı görüyor, ikisinde de beklemekten başka bir şey
+        yapamıyordu — oysa çözümleri tamamen farklıdır.
+
+        Cümleler SÖZ VERMEZ: "yakında gelir", tahmini süre ya da "e-posta
+        yolda" yok. Taşıyıcının ne zaman döneceğini bilmiyoruz.
+    */
+    'workspace.team.invitations.delivery.failed':
+        'The email did not go out. The invitation is still valid — send it again.',
+    // "Denenmedi" ile "denendi ve düştü" ayrı şeylerdir. Bu satır, teslimat
+    // geçmişi hiç tutulmamış eski davetler içindir; onlara "gönderildi"
+    // demek, yapmadığımız bir işi yaptığımızı söylemek olurdu.
+    'workspace.team.invitations.delivery.unknown':
+        'We cannot tell whether this email was ever sent.',
+    'workspace.team.invitations.resend.button': 'Send again',
+    'workspace.team.invitations.resend.busy': 'Sending…',
+    /*
+        "TESLİM EDİLDİ" DEMİYORUZ, ÇÜNKÜ BİLMİYORUZ.
+
+        Bildiğimiz tek şey taşıyıcının mesajı hatasız devraldığı. Gelen
+        kutusuna düştüğünü, spam'e gidip gitmediğini buradan göremeyiz ve
+        göremediğimiz bir şeyi söylemeyiz.
+    */
+    'workspace.team.invitations.resend.sent':
+        'The email provider accepted it. We cannot see the inbox from here.',
+    'workspace.team.invitations.resend.undelivered':
+        'The invitation was refreshed, but the email did not go out.',
+    'workspace.team.invitations.resend.error': 'Could not send it again. Please try again.',
+    // Yeniden gönderme yeni bir bağlantı üretir ve eskisini öldürür. Bunu
+    // yazmasak, sahip "iki e-posta gitti, hangisi çalışıyor?" sorusunun
+    // cevabını ancak alıcı şikâyet edince öğrenirdi.
+    'workspace.team.invitations.resend.linkNote':
+        'Sending again replaces the link: only the newest email works.',
+    /*
         SAYFA AÇIKLAMASININ ÜÇ HÂLİ VE ROZETLERİ KALDIRILDI.
 
         Sayfa başlığının altındaki cümle yükleme durumuna göre değişiyordu ve

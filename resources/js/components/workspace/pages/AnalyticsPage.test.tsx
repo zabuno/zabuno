@@ -283,20 +283,25 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
         expect(within(region).getByText('Open that screen from the sidebar.')).toBeInTheDocument();
     });
 
-    it('renders real nonzero QR Resolve and Confirmed Menu Open counts in accessible metric cards', async () => {
+    /*
+        SAYACIN ADI SAHİBİN KELİMESİ (kanonik kaynak, Insights ekranı).
+
+        Kartlar "QR Resolve" ve "Confirmed Menu Open" yazıyordu; bunlar
+        `docs/12`'nin ölçüm terimleri. Ayrım korunuyor — iki sayı hâlâ ayrı
+        ölçülüyor — ama sahibi ekranda kaynağın kelimelerini okuyor.
+    */
+    it('renders real nonzero scan and menu-open counts in accessible metric cards', async () => {
         render(<AnalyticsPage workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
 
         const region = await screen.findByRole('region', { name: /metric|report/i });
 
         await waitFor(() => expect(within(region).getByText('3')).toBeInTheDocument());
         expect(within(region).getByText('2')).toBeInTheDocument();
-        expect(within(region).getByText(/qr resolve/i)).toBeInTheDocument();
-        /*
-            TAM eşleşme: "Scan to menu open" oranı da eklendi (docs/68) ve
-            gevşek bir arama ikisini birden yakalıyor. Testin ölçmek istediği
-            şey sayaç kartının etiketi.
-        */
-        expect(within(region).getByText('Confirmed Menu Open')).toBeInTheDocument();
+        expect(within(region).getByText('Scans')).toBeInTheDocument();
+        expect(within(region).getByText('Menu opens')).toBeInTheDocument();
+        // Ölçümün ledger terimleri artık kullanıcıya çıkmıyor.
+        expect(within(region).queryByText(/qr resolve/i)).toBeNull();
+        expect(within(region).queryByText(/confirmed menu open/i)).toBeNull();
     });
 
     it('refetches on range change and, when the superseded initial request resolves late, keeps the newer range result instead of being overwritten by it', async () => {
@@ -704,7 +709,17 @@ describe('AnalyticsPage — S1-WP05b1 real ledger summary surface (ANALYTICS_FRO
                 expect(within(region).getByText('6')).toBeInTheDocument();
             });
             expect(within(region).getByText(/approx\. unique visitors/i)).toBeInTheDocument();
-            expect(within(region).getByText('70%')).toBeInTheDocument();
+            /*
+                AÇILIŞ ORANI ARTIK KENDİ KARTI DEĞİL, MENÜ AÇILIŞI KARTININ
+                ALT SATIRI (kaynağın DÖRT sayaçlı ızgarası).
+
+                Oran iki sayının bileşimi; üçüncü bir ölçüm değil. Beşinci
+                bir kart olarak dururken sahibin gözü, dördü gerçek ölçüm
+                olan bir sırada beşinci bir "sayı" arıyordu. Sayı aynı sayı,
+                yeri değişti: tam olarak açıkladığı sayının altında.
+            */
+            expect(within(region).getByText('70% open rate')).toBeInTheDocument();
+            expect(within(region).queryByText('70%')).toBeNull();
         });
 
         /**

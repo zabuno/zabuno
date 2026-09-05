@@ -26,7 +26,7 @@ import { MediaStorageBreakdown } from './MediaStorageBreakdown';
  */
 const BODY = {
     totals: {
-        planLabel: 'Free',
+        planLabel: 'Starter',
         bytesUsed: 15 * 1048576,
         bytesLimit: 200 * 1048576,
         assetsUsed: 3,
@@ -129,7 +129,7 @@ describe('MediaStorageBreakdown — sahip "hangi dosyayı sileyim?" sorusunu bur
     it('hiç dosya yoksa kartlar durur, kırılım "henüz bir şey yok" der', async () => {
         mount({
             totals: {
-                planLabel: 'Free',
+                planLabel: 'Starter',
                 bytesUsed: 0,
                 bytesLimit: 200 * 1048576,
                 assetsUsed: 0,

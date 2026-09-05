@@ -32,8 +32,9 @@ final class QrCardSvgTest extends TestCase
         string $brandName = 'Paşa Döner',
         string $headline = 'Menü için okutun',
         ?string $brandColor = '#1B4332',
+        ?string $tableName = null,
     ): string {
-        return QrCardSvg::compose(self::QR_SVG, $theme, $size, $orientation, $brandName, $headline, $brandColor);
+        return QrCardSvg::compose(self::QR_SVG, $theme, $size, $orientation, $brandName, $headline, $brandColor, null, $tableName);
     }
 
     public function test_the_card_is_measured_in_real_millimetres(): void
@@ -210,5 +211,137 @@ final class QrCardSvgTest extends TestCase
         $svg = $this->compose(brandName: '<script>x</script>');
 
         self::assertStringNotContainsString('<script>', $svg);
+    }
+
+    public function test_the_card_says_which_table_it_belongs_to(): void
+    {
+        /*
+            Panel v3.1 kanonik kaynağı: "Her kartta masa numarası basılır —
+            karışmaz."
+
+            Masa adı yalnız TOPLU ARŞİVİN DOSYA ADINDA yazıyordu. Kırk kart
+            basıldıktan sonra dosya adı yok olur: masaya dağıtan kişinin
+            elinde birbirinden ayırt edilemeyen kırk kâğıt kalır ve hangi
+            kodun hangi masaya gittiğini artık kimse bilemez — yani masa
+            bazlı tarama ölçümü daha ilk gün anlamsızlaşır.
+        */
+        self::assertStringContainsString('Masa 12', $this->compose(tableName: 'Masa 12'));
+    }
+
+    public function test_a_code_with_no_table_prints_no_invented_name(): void
+    {
+        // Giriş kodunun masası yoktur; uydurulmuş bir ad, hiç ad
+        // olmamasından kötüdür.
+        $svg = $this->compose(brandName: '', tableName: null);
+
+        self::assertSame(1, substr_count($svg, '<text'));
+    }
+
+    public function test_the_table_line_shrinks_the_code_instead_of_overlapping_it(): void
+    {
+        /*
+            İki satırlık alt blok, tek satırlık bloktan daha çok yer kaplar.
+            Yer AÇILMAZSA satır kodun üstüne biner ve bunu ancak yazıcıdan
+            çıkan kart gösterir. Yatay kart seçildi çünkü orada dikey alan
+            kısıttır: dikey kartta kod zaten kısa kenara takılıdır ve fark
+            görünmez.
+        */
+        $withTable = QrCardSvg::codeSideMm(CardTheme::Classic, CardSize::A6, CardOrientation::Landscape, true);
+        $withoutTable = QrCardSvg::codeSideMm(CardTheme::Classic, CardSize::A6, CardOrientation::Landscape, false);
+
+        self::assertLessThan($withoutTable, $withTable);
+    }
+
+    /**
+     * KOD ÖLÇÜSÜNÜN ÇAKILI TABLOSU.
+     *
+     * Aynı tablo istemcide de sınanıyor
+     * (`resources/js/lib/qrCardGeometry.test.ts`). Ekran "Kod 88 mm" yazarken
+     * sunucunun bastığı kodun gerçekten 88 mm olduğunu bu iki test birlikte
+     * garanti eder: biri kayarsa diğeri kırılır. Tek taraflı bir sayı, sahibin
+     * kırk kart bastırmasını sağlayan cümledir.
+     *
+     * @return list<array{0: CardTheme, 1: CardSize, 2: CardOrientation, 3: bool, 4: float}>
+     */
+    public static function codeSizes(): array
+    {
+        return [
+            [CardTheme::Classic, CardSize::A6, CardOrientation::Portrait, false, 88.2],
+            [CardTheme::Classic, CardSize::A6, CardOrientation::Portrait, true, 88.2],
+            [CardTheme::Classic, CardSize::A6, CardOrientation::Landscape, false, 65.186],
+            [CardTheme::Classic, CardSize::A6, CardOrientation::Landscape, true, 58.091],
+            [CardTheme::Minimal, CardSize::A6, CardOrientation::Portrait, false, 88.2],
+            [CardTheme::Banner, CardSize::A6, CardOrientation::Portrait, false, 88.2],
+            [CardTheme::Dark, CardSize::Ratio1x2, CardOrientation::Portrait, false, 63.0],
+            [CardTheme::Signage, CardSize::Ratio16x9, CardOrientation::Portrait, true, 46.708],
+            [CardTheme::Classic, CardSize::A3, CardOrientation::Portrait, false, 249.48],
+        ];
+    }
+
+    #[DataProvider('codeSizes')]
+    public function test_the_printed_code_size_is_measured_not_guessed(
+        CardTheme $theme,
+        CardSize $size,
+        CardOrientation $orientation,
+        bool $printsTableName,
+        float $expectedMm,
+    ): void {
+        self::assertEqualsWithDelta(
+            $expectedMm,
+            QrCardSvg::codeSideMm($theme, $size, $orientation, $printsTableName),
+            0.01,
+        );
+    }
+
+    public function test_a_dark_card_still_prints_a_dark_code_on_a_light_plate(): void
+    {
+        /*
+            Kaynağın koyu tasarımı BİR KEZ reddedilmişti ve red doğruydu: eski
+            kaynak kodu beyaz modül / siyah zemin çiziyordu ve ters basılan bir
+            kod birçok telefonda hiç okunmaz (ISO/IEC 18004 koyu-üstüne-açık
+            varsayar). Panel v3.1 o kusuru kendi düzeltti — koyulaşan şey
+            KARTIN ZEMİNİ, kodun kendisi değil.
+
+            Sessiz bölge Endroid'in kendi marjıdır ve BOŞLUKTUR, beyaz değil:
+            koyu bir kartta plaka konmazsa o bölge koyu kalır ve tarayıcı kodun
+            nerede bittiğini bulamaz.
+        */
+        $svg = $this->compose(theme: CardTheme::Dark);
+
+        self::assertStringContainsString('fill="#0D0A24"', $svg);
+        self::assertStringContainsString('<path fill="#000000"', $svg);
+        self::assertStringContainsString('fill="#FFFFFF"/><g transform=', $svg);
+    }
+
+    public function test_the_signage_card_takes_the_brand_colour_as_its_ground(): void
+    {
+        $svg = $this->compose(theme: CardTheme::Signage, brandColor: '#1B4332');
+
+        self::assertStringContainsString('height="148" fill="#1B4332"', $svg);
+        // Kod yine siyah beyaz: marka rengi taranabilirliğin önüne geçmez.
+        self::assertStringContainsString('<path fill="#000000"', $svg);
+    }
+
+    public function test_a_signage_ground_too_pale_for_white_text_falls_back_to_ink(): void
+    {
+        /*
+            Tabela'nın zemini markanın rengi, yazısı beyazdır. Beyaza karşı
+            okunmayan bir renk, üstündeki beyaz yazıyı da taşımaz — çift
+            aynıdır, yalnız yerleri değişmiştir. Uydurulmuş bir sarı zemin
+            üstünde beyaz bir başlık, uzaktan hiç okunmaz.
+        */
+        $svg = $this->compose(theme: CardTheme::Signage, brandColor: '#FFE066');
+
+        self::assertStringNotContainsString('#FFE066', $svg);
+        self::assertStringContainsString('height="148" fill="#111111"', $svg);
+    }
+
+    public function test_text_on_a_dark_card_is_light_enough_to_read(): void
+    {
+        // `#333333` bir başlık koyu zeminde okunmaz; yazının rengi zeminden
+        // TÜRETİLİR, temaya elle yazılmaz.
+        $svg = $this->compose(theme: CardTheme::Dark);
+
+        self::assertStringNotContainsString('fill="#333333"', $svg);
     }
 }

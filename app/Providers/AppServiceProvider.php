@@ -19,6 +19,7 @@ use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
+use App\Application\Media\Port\MalwareScannerAvailabilityPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaAuditPort;
@@ -35,6 +36,7 @@ use App\Application\Media\Port\MediaRepositoryPort;
 use App\Application\Media\Port\MediaStorageBreakdownPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Application\MenuCatalog\Port\MenuSchedulePort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
@@ -65,6 +67,7 @@ use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
 use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
+use App\Application\Team\Port\TeamInvitationNotifierPort;
 use App\Application\Team\Port\TeamInvitationRepositoryPort;
 use App\Application\Team\Port\TeamMemberRepositoryPort;
 use App\Application\Tenancy\Port\FeatureFlagPort;
@@ -121,7 +124,9 @@ use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Quota\ConfigMediaQuota;
 use App\Infrastructure\Media\Quota\DatabaseMediaStorageBreakdown;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
+use App\Infrastructure\Media\Scanning\ConfigMalwareScannerAvailability;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
+use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuAudit;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuSchedule;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentOutOfStock;
@@ -151,6 +156,7 @@ use App\Infrastructure\Security\Execution\SymfonyTenantIsolationSuiteRunner;
 use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
+use App\Infrastructure\Team\Mail\MailTeamInvitationNotifier;
 use App\Infrastructure\Team\Persistence\EloquentTeamInvitationRepository;
 use App\Infrastructure\Team\Persistence\EloquentTeamMemberRepository;
 use App\Infrastructure\Tenancy\Features\PennantFeatureFlags;
@@ -194,6 +200,13 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(BrandRepositoryPort::class, EloquentBrandRepository::class);
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
+        /*
+            Menü denetim izi (FF-154): "dün kebabın fiyatını kim değiştirdi?"
+            Medya izinin (`MediaAuditPort`) menüye taşınmış hâli; yazıcı
+            asla istisna fırlatmaz, çünkü kayıt asıl işlemin şartı değil
+            yardımcısıdır.
+        */
+        $this->app->bind(MenuAuditPort::class, EloquentMenuAudit::class);
         // Çoklu menü ve saat bazlı geçiş (sahibin 2026-09-05 kararı,
         // `docs/109` §7.1): şubenin gününü bölen tek yazma kapısı.
         $this->app->bind(MenuSchedulePort::class, EloquentMenuSchedule::class);
@@ -445,6 +458,13 @@ final class AppServiceProvider extends ServiceProvider
 
             return new UnavailableMalwareScanner;
         });
+        /*
+            "Bu ortamda tarama YAPILABİLİYOR mu?" — hükümden AYRI bir soru
+            (FF-153). Ayarlar ekranı ile kurtarma komutu aynı cevabı tek
+            kaynaktan okur; koşulun iki yere kopyalanması, bir gün birinin
+            güncellenip diğerinin unutulması demek olurdu.
+        */
+        $this->app->bind(MalwareScannerAvailabilityPort::class, ConfigMalwareScannerAvailability::class);
         $this->app->bind(MediaAssetProcessorPort::class, function (): MediaAssetProcessorPort {
             // Varsayılan GERÇEK işleyicidir. Eskiden burada, yüklenen her
             // fotoğrafı sonsuza kadar bekleten bir yer tutucu bağlıydı; bu
@@ -505,6 +525,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(AnalyticsRepositoryPort::class, EloquentAnalyticsRepository::class);
         $this->app->bind(TeamMemberRepositoryPort::class, EloquentTeamMemberRepository::class);
         $this->app->bind(TeamInvitationRepositoryPort::class, EloquentTeamInvitationRepository::class);
+        // Davet e-postası kasadan seçilen taşıyıcıyla çıkar ve çıkmadıysa
+        // sebebi kayda geçer (`docs/110` P0-06).
+        $this->app->bind(TeamInvitationNotifierPort::class, MailTeamInvitationNotifier::class);
         $this->app->bind(PlanCatalogRepositoryPort::class, EloquentPlanCatalogRepository::class);
         $this->app->bind(PlanManagementRepositoryPort::class, EloquentPlanManagementRepository::class);
         $this->app->bind(HostCapabilityProbePort::class, RuntimeHostCapabilityProbe::class);

@@ -29,7 +29,9 @@ use Tests\TestCase;
  *   2. İPTAL EDİLEBİLİR.
  *   3. İKİ KEZ ÇALIŞMAZ (idempotent): komut iki kez koşarsa ikinci sürüm
  *      doğmaz.
- *   4. Zaman dilimi `Europe/Istanbul` ve hangi ana kurulduğu açıkça döner.
+ *   4. Zaman dilimi ŞUBENİNDİR (`locations.timezone`, `docs/62`) ve hangi
+ *      ana kurulduğu açıkça döner. Sabit bir dilim, aynı markanın Berlin
+ *      şubesi açılır açılmaz sessizce yanlış olurdu.
  */
 final class ScheduledPublicationTest extends TestCase
 {
@@ -41,10 +43,17 @@ final class ScheduledPublicationTest extends TestCase
     }
 
     /**
+     * ŞUBENİN SAAT DİLİMİ PARAMETREDİR, sabit değil (`docs/62`). Aynı
+     * markanın İstanbul ve Berlin şubesi olabilir; testin bunu kuramaması,
+     * ürünün de kuramamasına göz yummak olurdu.
+     *
      * @return array{0: int, 1: int, 2: int} [workspaceId, locationId, menuId]
      */
-    private function workspaceWithReadyMenu(User $owner, string $slugSeed): array
-    {
+    private function workspaceWithReadyMenu(
+        User $owner,
+        string $slugSeed,
+        string $locationTimezone = 'Europe/Istanbul',
+    ): array {
         $workspaceId = (int) DB::table('workspaces')->insertGetId([
             'name' => 'Zeytin Restoranları',
             'slug' => $slugSeed,
@@ -78,7 +87,7 @@ final class ScheduledPublicationTest extends TestCase
             'brand_id' => $brandId,
             'display_name' => 'Kadıköy Şubesi',
             'country_code' => 'TR',
-            'timezone' => 'Europe/Istanbul',
+            'timezone' => $locationTimezone,
             'city' => 'İstanbul',
             'address_line1' => 'Bahariye Cd. No:1',
             'created_at' => now(),
@@ -124,7 +133,7 @@ final class ScheduledPublicationTest extends TestCase
         return [$workspaceId, $locationId, $menuId];
     }
 
-    public function test_schedule_options_are_offered_in_the_istanbul_time_zone(): void
+    public function test_schedule_options_are_offered_in_the_branch_time_zone(): void
     {
         /*
             Saat seçenekleri SUNUCUDA üretilir. Tarayıcıda üretilseydi,
@@ -140,7 +149,7 @@ final class ScheduledPublicationTest extends TestCase
         );
 
         $response->assertStatus(200);
-        $response->assertJsonPath('pending', null);
+        $response->assertJsonPath('plan', null);
         $response->assertJsonPath('timeZone', 'Europe/Istanbul');
 
         $options = $response->json('options');
@@ -157,7 +166,127 @@ final class ScheduledPublicationTest extends TestCase
         }
     }
 
-    public function test_scheduling_freezes_the_snapshot_and_reports_the_istanbul_moment(): void
+    // --- SCHEDULE-TZ-BELONGS-TO-BRANCH-01 ---------------------------------
+
+    /**
+     * BERLİN ŞUBESİ "BU GECE 03:00" DEDİĞİNDE MENÜ BERLİN'DE 03:00'TE
+     * DEĞİŞİR (`docs/62`).
+     *
+     * MÜŞTERİ SORUNU. Saat dilimi markanın değil ŞUBENİN alanıdır: aynı
+     * markanın İstanbul, Dubai ve Berlin şubesi olabilir. Seçenekler sabit
+     * `Europe/Istanbul` ile üretildiği sürece Berlin şubesinin "gece 03:00"
+     * düğmesi kışın Berlin'de 01:00'i kurar — servis kapanmadan, hâlâ
+     * masada oturan misafirin menüsü elinde değişir. Hatanın en kötü yanı
+     * görünmezliğidir: tek şubeli bir işletmede sabit dilim doğru görünmeye
+     * devam eder ve yanlışlığı ancak ikinci şube açılınca ortaya çıkar.
+     */
+    public function test_a_berlin_branch_schedules_in_berlin_time_not_istanbul_time(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu(
+            $owner,
+            'zeytin-sched-berlin',
+            'Europe/Berlin',
+        );
+
+        $response = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        );
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('timeZone', 'Europe/Berlin');
+
+        $options = collect($response->json('options'))->keyBy('key');
+
+        self::assertSame(
+            '03:00',
+            Carbon::parse($options['tonight']['scheduledFor'])->setTimezone('Europe/Berlin')->format('H:i'),
+            'SCHEDULE-TZ-BELONGS-TO-BRANCH-01: "bu gece 03:00" Berlin şubesinde Berlin saatiyle 03:00 olmalı.'
+        );
+        self::assertSame(
+            '09:00',
+            Carbon::parse($options['tomorrowMorning']['scheduledFor'])->setTimezone('Europe/Berlin')->format('H:i'),
+            'Kapılar açılmadan önceki saat de şubenin kendi sabahıdır.'
+        );
+        self::assertTrue(
+            Carbon::parse($options['nextMonday']['scheduledFor'])->setTimezone('Europe/Berlin')->isMonday(),
+            '"Gelecek Pazartesi" şubenin takviminde Pazartesi olmalı.'
+        );
+    }
+
+    /**
+     * ŞUBENİN SAATİ OKUNAMIYORSA SAAT SEÇTİRİLMEZ.
+     *
+     * Sessizce İstanbul'a (ya da sunucunun saatine) düşmek, düzeltilen
+     * hatayı yeni bir yerde tekrar etmek olurdu: sahip ekranda "03:00"
+     * okur, menü başka bir 03:00'te değişirdi. Boş liste dürüsttür ve
+     * "hemen yayınla" yolunu kapatmaz.
+     *
+     * İki ayrı bozulma da aynı cevabı verir: saat dilimi hiç yazılmamış bir
+     * şube, ve tanınmayan bir kimlik taşıyan şube (elle düzeltilmiş bir
+     * satır, emekliye ayrılmış bir dilim).
+     */
+    public function test_a_branch_without_a_readable_time_zone_is_offered_no_hours(): void
+    {
+        $owner = $this->verifiedUser();
+
+        foreach (['' => 'zeytin-sched-tz-bos', 'Mars/Olympus' => 'zeytin-sched-tz-bozuk'] as $timezone => $slug) {
+            [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, $slug, (string) $timezone);
+
+            $response = $this->actingAs($owner)->getJson(
+                "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+            );
+
+            $response->assertStatus(200);
+            self::assertSame(
+                [],
+                $response->json('options'),
+                "Saat dilimi [{$timezone}] okunamıyorken seçenek çizmek, tutulamayacak bir söz vermektir."
+            );
+            self::assertNull(
+                $response->json('timeZone'),
+                "Ekrana [{$timezone}] gönderilirse tarayıcı hiçbir anı biçimlendiremez; sahip planını göremez."
+            );
+        }
+    }
+
+    /**
+     * SAKLAMA UTC KALIR. Şubenin saati YALNIZ seçeneklerin üretildiği ve
+     * gösterildiği yerde konuşur; kaydedilen an mutlak bir andır.
+     *
+     * Yerel saat saklansaydı, yaz saati uygulaması biten bir gecede aynı
+     * duvar saati iki kez yaşanır ve yayın hangi geçişte çıkacağını kimse
+     * söyleyemezdi.
+     */
+    public function test_the_stored_moment_stays_utc_even_for_a_branch_abroad(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu(
+            $owner,
+            'zeytin-sched-berlin-utc',
+            'Europe/Berlin',
+        );
+
+        $chosen = Carbon::parse(
+            (string) $this->actingAs($owner)
+                ->getJson("/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule")
+                ->json('options.0.scheduledFor')
+        );
+
+        $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => $chosen->toIso8601String()]
+        )->assertStatus(201);
+
+        $stored = (string) DB::table('menu_publication_schedules')->value('scheduled_for');
+
+        self::assertTrue(
+            Carbon::parse($stored, 'UTC')->equalTo($chosen),
+            'Ekranda seçilen AN ile saklanan an aynı olmalı; dilim çevirisi yalnız gösterimdedir.'
+        );
+    }
+
+    public function test_scheduling_freezes_the_snapshot_and_reports_the_branch_moment(): void
     {
         $owner = $this->verifiedUser();
         [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-store');
@@ -284,6 +413,157 @@ final class ScheduledPublicationTest extends TestCase
             'published',
             (string) DB::table('menu_publication_schedules')->where('menu_id', $menuId)->value('state')
         );
+    }
+
+    /**
+     * VAKTİ GEÇTİ AMA YAYIN ÇIKMADI — planın sessizce ölmesi.
+     *
+     * Zamanlayıcı ölürse (kap yeniden başlatılırken, ya da `schedule:work`
+     * süreci olmayan bir barındırmada) kayıt `pending` kalır ve saat geçer.
+     * O ana kadar ekran "yarın 09:00 için zamanlandı" yazıyordu; o an
+     * geçtikten sonra AYNI CÜMLEYİ yazmaya devam etmesi düpedüz yalandır.
+     * Sahip menüsünün değiştiğini sanır, misafir eski fiyatı okur ve sahip
+     * bunu ancak kasada fark eder.
+     */
+    public function test_a_plan_whose_moment_passed_without_publishing_is_reported_as_overdue(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-overdue');
+
+        $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->assertStatus(201);
+
+        // Komut KOŞMUYOR: zamanlayıcının olmadığı gerçek dünya.
+        Carbon::setTestNow(Carbon::now()->addHours(4));
+
+        $response = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        );
+
+        Carbon::setTestNow();
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('plan.status', 'overdue');
+
+        // Yayın gerçekten çıkmadı: misafir hâlâ önceki sürümü görüyor.
+        $this->assertDatabaseCount('menu_publications', 0);
+    }
+
+    /**
+     * Vakti YENİ geçmiş bir plan telaş sebebi değildir.
+     *
+     * Zamanlayıcı dakikada bir çalışır. 09:00 planını 09:00:30'da "çıkmadı"
+     * diye işaretlemek, her plan için bir yalancı alarm demekti — ve yalancı
+     * alarm, gerçek alarmı görünmez yapar.
+     */
+    public function test_a_plan_within_the_scheduler_grace_window_is_still_reported_as_scheduled(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-grace');
+
+        $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->assertStatus(201);
+
+        Carbon::setTestNow(Carbon::now()->addHours(3)->addMinute());
+
+        $response = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        );
+
+        Carbon::setTestNow();
+
+        $response->assertJsonPath('plan.status', 'scheduled');
+    }
+
+    /**
+     * YAYIN BAŞLADI AMA BİTMEDİ — kayıt `publishing` hâlinde asılı kalır.
+     *
+     * Komut kaydı `claim()` ile sahiplenir; süreç o an ölürse (dağıtım,
+     * OOM, kap yeniden başlatma) kayıt ne `published` ne `failed` olur.
+     * Eski davranışta bu kayıt sahibin ekranından TAMAMEN kayboluyordu:
+     * plan yok, yayın yok, açıklama yok.
+     */
+    public function test_a_plan_stuck_mid_publish_is_reported_as_interrupted(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-stuck');
+
+        $scheduleId = (int) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->json('id');
+
+        DB::table('menu_publication_schedules')->where('id', $scheduleId)->update([
+            'state' => 'publishing',
+            'updated_at' => Carbon::now()->subHour(),
+        ]);
+
+        $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        )->assertJsonPath('plan.status', 'interrupted');
+    }
+
+    /**
+     * BAŞARISIZ YAYIN SAHİBİN EKRANINDA KALIR.
+     *
+     * `markFailed` kaydı `failed` yapar ve komut bir daha denemez — bu
+     * doğrudur. Ama eski okuma yalnız `pending` kayıtları görüyordu: sahip
+     * sabah paneli açtığında hiçbir plan göremez, menüsünün neden
+     * değişmediğini de öğrenemezdi.
+     */
+    public function test_a_failed_plan_stays_visible_until_the_owner_sees_it(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-failed');
+
+        $scheduleId = (int) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->json('id');
+
+        DB::table('menu_publication_schedules')->where('id', $scheduleId)->update(['state' => 'failed']);
+
+        $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        )->assertJsonPath('plan.status', 'failed');
+    }
+
+    /**
+     * Sahip uyarıyı KAPATABİLİR ama "o gece ne oldu" cevabı SİLİNMEZ.
+     *
+     * Kapatılamayan bir uyarı, birkaç gün sonra okunmayan bir süse döner —
+     * ve okunmayan uyarı, olmayan uyarıdır. Kaydın `failed` hâli yerinde
+     * durur; yalnız görünürlükten düşer.
+     */
+    public function test_a_failed_plan_can_be_dismissed_without_erasing_what_happened(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-ack');
+
+        $scheduleId = (int) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => Carbon::now()->addHours(3)->toIso8601String()]
+        )->json('id');
+
+        DB::table('menu_publication_schedules')->where('id', $scheduleId)->update(['state' => 'failed']);
+
+        $this->actingAs($owner)->deleteJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule/{$scheduleId}"
+        )->assertStatus(200);
+
+        $row = DB::table('menu_publication_schedules')->where('id', $scheduleId)->first();
+
+        self::assertNotNull($row);
+        self::assertSame('failed', (string) $row->state, 'Başarısızlık kaydı iptale çevrilmez.');
+        self::assertNotNull($row->acknowledged_at);
+
+        $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        )->assertJsonPath('plan', null);
     }
 
     public function test_another_workspace_cannot_see_or_cancel_a_schedule(): void

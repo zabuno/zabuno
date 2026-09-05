@@ -193,6 +193,13 @@ kopyalanıp `--no-dev` ile var olmayan bir sağlayıcıyı yüklemeye çalışt�
   kanıtlanmadı. Exit Gate bu kanıtı bekliyor (`docs/18`).
 - **Yedekleme otomasyonu.** `db-backups` hacmi ayrıldı, içine yazan bir iş
   yok.
-- **Kuyruk işçisi.** `QUEUE_CONNECTION=database` ayarlı ama kuyruk tüketen
-  bir süreç yığında yok; kuyruğa iş bırakan bir özellik eklendiği gün
-  gerekir.
+> **DÜZELTME (2026-09-05, çelişki denetimi FF-161):** aşağıdaki "kuyruk
+> işçisi yok" maddesi **artık doğru değil ve kaldırıldı.** Kuyruğa iş bırakan
+> özellik geldi (fotoğraftan menü aktarımı, `app/Jobs/ExtractMenuBatchPageJob`)
+> ve maddenin öngördüğü gün gelince çözüm de yazıldı: `routes/console.php`
+> dakikada bir `queue:work --stop-when-empty` çalıştırıyor, `docker/
+> supervisord.conf` zamanlayıcıyı ayakta tutuyor. `docs/15`'in "bugün kuyruğa
+> hiçbir iş atılmıyor" cümlesi de aynı sebeple eskidi.
+>
+> Madde silinmedi, üstü çizildi: bir eksiğin ne zaman ve neyle kapandığı da
+> bir kayıttır.

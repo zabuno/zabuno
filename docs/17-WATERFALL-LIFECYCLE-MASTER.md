@@ -233,6 +233,26 @@ değiştirmez — Exit Gate kanıtla GO almadan sayaç artmaz. Şu an:
 alt paket S1-WP01A implementation-in-progress; S1-WP02..07 not-started)
 ```
 
+> **BU SAYAÇ YÖNETİŞİM AŞAMALARINI SAYAR — ÜRÜN İLERLEMESİNİ DEĞİL.**
+> (2026-09-05, çelişki denetimi FF-161.)
+>
+> İki ayrı sayaç var ve **karıştırılmamalıdır**:
+>
+> - **Bu belge (`docs/17`)**: sekiz yönetişim aşaması. Bir aşama ancak kendi
+>   çıkış kapısı kanıtlanınca "tamamlandı" olur; o yüzden ürün çalışıyorken
+>   bile sayaç 0/8 kalabilir.
+> - **`docs/107`**: sahibin 2026-09-04 talebiyle yazılan ÜRÜN yol haritası,
+>   on faz. İlerleme sorusunun sahibe verilecek cevabı oradadır.
+>
+> **Yukarıdaki "S1-WP02..07 not-started" ifadesi eskimiştir.**
+> `docs/26` aynı paketleri "in-progress" sayıyor ve neyin teslim edildiğini
+> tek tek listeliyor; kod `docs/26`'yı doğruluyor — kimlik, kiracılık,
+> roller, menü, medya, yayınlama, QR ve Iyzico sandbox çalışıyor. Paket
+> durumu için `docs/26` esastır.
+>
+> Global kural tek sabit payda ister; o payda **ürün için `docs/107`**,
+> **yönetişim için burasıdır.**
+
 ## 5a. OPS-00 — yatay operasyon/tooling iş akışı (sabit 38 WP dışı)
 
 OPS-00, sabit Milestone/Work Package registry'sinin (`docs/26` §3, S1–S8,

@@ -6,7 +6,10 @@ namespace App\Http\Controllers\Analytics;
 
 use App\Application\Analytics\Port\AnalyticsRepositoryPort;
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Entitlement\Exception\EntitlementDeniedException;
+use App\Application\Entitlement\UseCase\RequireEntitlement;
 use App\Domain\Authorization\Permission;
+use App\Domain\Entitlement\Entitlement;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,6 +37,7 @@ final class ShowMenuEngineeringController extends Controller
     public function __construct(
         private readonly AnalyticsRepositoryPort $analytics,
         private readonly AuthorizationPort $authorization,
+        private readonly RequireEntitlement $requireEntitlement,
     ) {}
 
     public function __invoke(Request $request, int $workspace): JsonResponse
@@ -44,13 +48,38 @@ final class ShowMenuEngineeringController extends Controller
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        /*
+            CORE-04: analitik raporlama PLANA BAĞLIDIR (owner kararı,
+            2026-08-26) ve bu rapor da analitik raporlamadır — özet ve zaman
+            serisi uçlarıyla aynı ölçümden, aynı tablodan konuşur.
+
+            Kapı buraya UNUTULMUŞTU: planı raporlama içermeyen bir sahip,
+            özet ekranında 402 alırken panonun "Ölçümlerinizden N öneri"
+            bölümünde ürün başına ziyaretçi sayılarını, hiç bakılmayan ürün
+            listesini ve sonuçsuz arama terimlerini görmeye devam ediyordu.
+
+            402 kullanılır, 403 değil: kullanıcı yetkisiz DEĞİL, planı bu
+            yeteneği içermiyor. Çıkış yolu farklıdır — biri erişim talebi,
+            diğeri plan yükseltmesidir.
+        */
+        try {
+            $this->requireEntitlement->handle($workspace, Entitlement::AnalyticsReporting);
+        } catch (EntitlementDeniedException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'entitlement' => $e->entitlement->value,
+            ], 402);
+        }
+
         $range = (string) $request->query('range', '30d');
 
         if (! in_array($range, ['today', '7d', '30d'], true)) {
             return response()->json(['message' => 'Unknown range.'], 422);
         }
 
-        $viewers = $this->analytics->itemViewersByMenuItem($workspace, $range, Carbon::now());
+        $now = Carbon::now();
+
+        $viewers = $this->analytics->itemViewersByMenuItem($workspace, $range, $now);
 
         // Yayındaki ürünlerin TAMAMI okunur: "hiç bakılmayan" sorusunun
         // cevabı, olayların değil ÜRÜN LİSTESİNİN içindedir.
@@ -67,7 +96,22 @@ final class ShowMenuEngineeringController extends Controller
             ])
             ->get();
 
-        $totalViewers = array_sum($viewers);
+        /*
+            EŞİK KİŞİ SAYAR, SATIR TOPLAMI DEĞİL.
+
+            Burada `array_sum($viewers)` vardı: ürün başına farklı ziyaretçi
+            sayılarının toplamı. Menüyü baştan sona kaydıran TEK bir misafir
+            beş satır bırakır ve o toplam beşi gösterirdi — rapor açılır,
+            sahip de "kırk ürününüz son 30 günde bir kez bile açılmadı"
+            önerisini okurdu. Oysa ortada ölçülmüş bir sıfır değil, hemen
+            hiç ölçülmemiş bir menü vardı.
+
+            "Henüz ölçmedim" ile "ölçtüm, sıfır çıktı" farklı cümlelerdir ve
+            yalnız ikincisi bir öneriyi hak eder. Ekranın `not_enough_data`
+            metni de zaten ZİYARETÇİ diliyle yazılı ("{observed}/{threshold}
+            ziyaretçi"); sayı artık o cümlenin söylediği şeydir.
+        */
+        $totalViewers = $this->analytics->itemViewVisitorCount($workspace, $range, $now);
 
         if ($totalViewers < self::MINIMUM_VIEWERS) {
             /*
@@ -111,37 +155,16 @@ final class ShowMenuEngineeringController extends Controller
             'observedViewers' => $totalViewers,
             'mostViewed' => $mostViewed,
             'neverViewed' => $neverViewed,
-            'searchesWithNoResults' => $this->searchesWithNoResults($workspace, $range),
+            /*
+                Sahibin göremediği tek talep: menüde OLMAYAN şeyin talebi.
+
+                Sorgu ARTIK PORTTA. Buradaki kopya, aralığı kendi `match`
+                bloğuyla hesaplıyordu: biri güncellenip diğeri unutulduğunda
+                ürün raporu ile arama listesi farklı pencerelerden konuşur ve
+                bu ekranda "son 30 gün" başlığının altında 7 günlük bir liste
+                gibi görünürdü.
+            */
+            'searchesWithNoResults' => $this->analytics->searchesWithNoResults($workspace, $range, $now),
         ]);
-    }
-
-    /**
-     * Sahibin göremediği tek talep: menüde OLMAYAN şeyin talebi.
-     *
-     * @return list<array{term:string,searches:int}>
-     */
-    private function searchesWithNoResults(int $workspaceId, string $range): array
-    {
-        $cutoff = match ($range) {
-            'today' => Carbon::now()->startOfDay(),
-            '7d' => Carbon::now()->subDays(7),
-            default => Carbon::now()->subDays(30),
-        };
-
-        return DB::table('analytics_events')
-            ->where('workspace_id', $workspaceId)
-            ->where('event_type', 'search_no_results')
-            ->whereNotNull('search_term')
-            ->where('occurred_at', '>=', $cutoff)
-            ->groupBy('search_term')
-            ->selectRaw('search_term, COUNT(DISTINCT visitor_key) as searches')
-            ->orderByDesc('searches')
-            ->limit(10)
-            ->get()
-            ->map(static fn (object $row): array => [
-                'term' => (string) $row->search_term,
-                'searches' => (int) $row->searches,
-            ])
-            ->all();
     }
 }

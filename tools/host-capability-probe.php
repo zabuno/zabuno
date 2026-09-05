@@ -164,7 +164,48 @@ $capabilities = [
     'mbstring' => extension_loaded('mbstring'),
     'url_rewrite' => probe_url_rewrite(),
     'zip' => extension_loaded('zip'),
+
+    /*
+        TARAYICI: ORTAM DEĞİŞKENİNDEN OKUNUR, `config()`'DEN DEĞİL.
+
+        Bu betiğin bütün amacı uygulamayı hiç ayağa kaldırmadan sunucuya
+        soru sorabilmek; bir Laravel yardımcısı çağırmak onu çalıştığı yere
+        bağımlı kılardı. Değerler `config/media.php`'nin okuduğu AYNI
+        değişkenlerdir ve varsayılanları da aynıdır — iki taraf ayrılırsa
+        `StandaloneHostCapabilityProbeTest` bunu kırar.
+    */
+    'malware_scanner_driver' => probe_env('MEDIA_SCANNER_DRIVER', 'unavailable'),
+    'malware_scanner_binary_usable' => probe_scanner_binary_usable(),
 ];
+
+/**
+ * Ortam değişkenini okur; `.env` dosyası YÜKLENMEZ.
+ *
+ * Betik sunucuda çoğu zaman uygulama süreciyle aynı ortamda koşar
+ * (docker exec, systemd, cron), yani değişken zaten ortamdadır. `.env`
+ * dosyasını ayrıştırmaya kalkmak, konteynerde o dosyanın hiç olmadığı
+ * gerçeğini görmezden gelirdi.
+ */
+function probe_env(string $name, string $fallback): string
+{
+    $value = getenv($name);
+
+    return ($value === false || $value === '') ? $fallback : $value;
+}
+
+/**
+ * Yapılandırılmış tarayıcı ikilisi gerçekten çağrılabilir mi?
+ *
+ * Kontroller `ClamavMalwareScanner`'ın kendi kontrollerinin aynısıdır:
+ * prob başka bir soru sorsaydı "kanıt yeşil ama tarama çalışmıyor" gibi
+ * ikisi de doğru görünen bir çelişki üretirdi.
+ */
+function probe_scanner_binary_usable(): bool
+{
+    $path = probe_env('MEDIA_SCANNER_CLAMAV_BINARY_PATH', '');
+
+    return $path !== '' && is_file($path) && is_executable($path);
+}
 
 // --- rapor ----------------------------------------------------------------
 

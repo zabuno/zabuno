@@ -8,8 +8,10 @@ use App\Application\Publication\Dto\ScheduledPublicationRecord;
 use App\Application\Publication\Port\PublicationSchedulePort;
 use App\Domain\Publication\ScheduledPublicationState;
 use Carbon\CarbonInterface;
+use DateTimeZone;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final class EloquentPublicationSchedule implements PublicationSchedulePort
 {
@@ -72,20 +74,70 @@ final class EloquentPublicationSchedule implements PublicationSchedulePort
                 array_values($visibleItemIds),
                 $brandId,
                 $scheduledByUserId,
+                now()->utc()->toISOString(),
             );
         });
     }
 
-    public function pendingForMenu(int $workspaceId, int $menuId): ?ScheduledPublicationRecord
+    public function unresolvedForMenu(int $workspaceId, int $menuId): ?ScheduledPublicationRecord
     {
         $row = DB::table('menu_publication_schedules')
             ->where('workspace_id', $workspaceId)
             ->where('menu_id', $menuId)
-            ->where('state', ScheduledPublicationState::Pending->value)
+            /*
+                ÜÇ HÂL BİRDEN: bekleyen plan, yayının ortasında asılı kalmış
+                kayıt ve başarısız yayın. `published` ile `cancelled` yoktur
+                çünkü ikisi de sahibin bildiği bir sonuçtur; diğer üçü ise
+                sorulmadıkça sessizdir.
+            */
+            ->whereIn('state', [
+                ScheduledPublicationState::Pending->value,
+                ScheduledPublicationState::Publishing->value,
+                ScheduledPublicationState::Failed->value,
+            ])
+            ->whereNull('acknowledged_at')
             ->orderByDesc('id')
             ->first();
 
         return $row === null ? null : $this->hydrate($row);
+    }
+
+    public function timezoneForMenu(int $workspaceId, int $menuId): ?string
+    {
+        /*
+            Kiracı koşulu İKİ tabloda birden durur. Yalnız `menus.workspace_id`
+            yazsaydık, bir gün başka bir çalışma alanına taşınmış bir şube
+            satırı sessizce okunabilirdi.
+        */
+        $timezone = DB::table('menus')
+            ->join('locations', 'locations.id', '=', 'menus.location_id')
+            ->where('menus.id', $menuId)
+            ->where('menus.workspace_id', $workspaceId)
+            ->where('locations.workspace_id', $workspaceId)
+            ->value('locations.timezone');
+
+        $timezone = trim((string) ($timezone ?? ''));
+
+        // Saat dilimi olmayan bir şube için "bu gece 03:00" diye bir an
+        // yoktur. Sunucununkine ya da sabit bir dilime düşmek, sahibe
+        // tutulamayacak bir söz verirdi.
+        if ($timezone === '') {
+            return null;
+        }
+
+        try {
+            new DateTimeZone($timezone);
+        } catch (Throwable) {
+            /*
+                TANINMAYAN BİR KİMLİK DE "OKUNAMADI"DIR. Elle düzeltilmiş bir
+                satır ya da emekliye ayrılmış bir dilim buraya düşer. Ham
+                değeri ekrana göndermek daha kötü olurdu: tarayıcı onu
+                biçimlendiremez ve sahip planını hiç göremezdi.
+            */
+            return null;
+        }
+
+        return $timezone;
     }
 
     public function cancel(int $workspaceId, int $menuId, int $scheduleId): bool
@@ -97,6 +149,29 @@ final class EloquentPublicationSchedule implements PublicationSchedulePort
             ->where('state', ScheduledPublicationState::Pending->value)
             ->update([
                 'state' => ScheduledPublicationState::Cancelled->value,
+                'updated_at' => now(),
+            ]) === 1;
+    }
+
+    public function acknowledge(int $workspaceId, int $menuId, int $scheduleId): bool
+    {
+        return DB::table('menu_publication_schedules')
+            ->where('id', $scheduleId)
+            ->where('workspace_id', $workspaceId)
+            ->where('menu_id', $menuId)
+            /*
+                Yalnız ÇIKMAMIŞ bir yayının uyarısı kapatılabilir. `pending`
+                buraya girmez: vakti gelmemiş bir planı "gördüm" diye
+                kapatmak, onu iptal ettiğini sanan sahibin menüsünün gece
+                yine de değişmesi demekti — iptal için `cancel()` vardır.
+            */
+            ->whereIn('state', [
+                ScheduledPublicationState::Publishing->value,
+                ScheduledPublicationState::Failed->value,
+            ])
+            ->whereNull('acknowledged_at')
+            ->update([
+                'acknowledged_at' => now(),
                 'updated_at' => now(),
             ]) === 1;
     }
@@ -171,6 +246,13 @@ final class EloquentPublicationSchedule implements PublicationSchedulePort
             array_values($visibleItemIds),
             $row->brand_id === null ? null : (int) $row->brand_id,
             (int) $row->scheduled_by,
+            /*
+                `updated_at` boş olamaz — her yazma yolu onu kurar. Yine de
+                `created_at`e düşüyoruz: `Carbon::parse(null)` "şimdi" döner
+                ve o hâlde yayının ortasında ASILI KALMIŞ bir kayıt sonsuza
+                dek "az önce dokunuldu" görünür, yani sessiz kalırdı.
+            */
+            Carbon::parse($row->updated_at ?? $row->created_at)->utc()->toISOString(),
         );
     }
 }

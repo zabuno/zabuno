@@ -6,9 +6,12 @@ namespace App\Http\Controllers\MenuCatalog;
 
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
+use App\Application\MenuCatalog\Dto\MenuAuditEntry;
 use App\Application\MenuCatalog\Exception\MenuCatalogTenantMismatchException;
+use App\Application\MenuCatalog\Port\MenuAuditPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
 use App\Domain\Authorization\Permission;
+use App\Domain\MenuCatalog\MenuAuditAction;
 use App\Domain\Money\Money;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuCatalog\StoreMenuItemRequest;
@@ -22,6 +25,7 @@ final class StoreMenuItemController extends Controller
         private readonly MenuCatalogRepositoryPort $menuCatalog,
         private readonly MenuCatalogApiContextPort $context,
         private readonly AuthorizationPort $authorization,
+        private readonly MenuAuditPort $audit,
     ) {}
 
     public function __invoke(StoreMenuItemRequest $request, int $workspace, int $category): JsonResponse
@@ -64,6 +68,26 @@ final class StoreMenuItemController extends Controller
         } catch (MenuCatalogTenantMismatchException) {
             return response()->json(['message' => 'Not Found.'], 404);
         }
+
+        /*
+            DENETİM İZİ (FF-154). Bu uç nokta VAR OLAN bir ürünü ikinci bir
+            kategoriye ekler; sahip için yine "menüye bir satır eklendi"
+            olayıdır ve tek adımlı yoldan (`menu-entries`) ayrı bir dil
+            konuşmamalı. Ad, yeni satırın bağlamından okunur — ürün adı
+            `products` tablosunda durur ve bu cevap onu taşımıyor.
+        */
+        $createdContext = $this->context->menuItemContext($menuItem->id);
+
+        $this->audit->record(MenuAuditEntry::forItem(
+            $workspace,
+            $categoryContext->menuId,
+            $menuItem->id,
+            $createdContext?->productName,
+            MenuAuditAction::ItemAdded,
+            null,
+            MenuAuditEntry::price($menuItem->priceMinorAmount, $menuItem->currencyCode),
+            $userId,
+        ));
 
         return response()->json([
             'id' => $menuItem->id,

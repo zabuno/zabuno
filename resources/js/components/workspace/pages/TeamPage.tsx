@@ -18,6 +18,8 @@ import {
     type TeamInvitation,
     type TeamInvitationListStatus,
     type TeamInvitationCancelOutcome,
+    type TeamInvitationDelivery,
+    type TeamInvitationResendOutcome,
 } from './team/TeamInvitationList';
 
 type TeamPageProps = {
@@ -502,6 +504,55 @@ export function TeamPage({ workspaceId, viewerRole }: TeamPageProps) {
         [workspaceId, refetchInvitationsAuthoritative],
     );
 
+    /**
+     * Bekleyen bir daveti yeniden gönderir — `docs/110` (P0-06).
+     *
+     * Öncesinde e-posta çıkmadığında sahibin tek hamlesi daveti İPTAL edip
+     * yeniden kurmaktı: ekibini kurabilmek için önce onu bozması
+     * gerekiyordu.
+     *
+     * Cevap SUNUCUDAN gelir ve tahmin edilmez. Uç, isteğin başarılı olması
+     * ile e-postanın gerçekten çıkması arasındaki farkı `delivery` alanıyla
+     * söyler; burada `response.ok` değerini "gönderildi" diye okumak, hiç
+     * çıkmamış bir e-posta için başarı yazmak olurdu.
+     */
+    const resendInvitation = useCallback(
+        async (invitationId: number): Promise<TeamInvitationResendOutcome> => {
+            if (workspaceId === undefined) {
+                return 'error';
+            }
+
+            try {
+                await bootstrapCsrfCookie();
+
+                const requestInit = buildAuthRequestInit({ method: 'POST' });
+                const response = await fetch(
+                    `/api/workspaces/${workspaceId}/team/invitations/${invitationId}/resend`,
+                    {
+                        ...requestInit,
+                        credentials: 'same-origin',
+                    },
+                );
+
+                if (!response.ok) {
+                    return 'error';
+                }
+
+                const body = (await response.json()) as { delivery?: TeamInvitationDelivery };
+
+                // Liste tazelenir: satırın kendi teslimat durumu da
+                // değişmiştir ve ekranla sunucunun ayrışması, sahibi
+                // olmayan bir gerçeğe inandırırdı.
+                await refetchInvitationsAuthoritative();
+
+                return body.delivery === 'sent' ? 'sent' : 'undelivered';
+            } catch {
+                return 'error';
+            }
+        },
+        [workspaceId, refetchInvitationsAuthoritative],
+    );
+
     const emailIsValid = EMAIL_PATTERN.test(email);
 
     async function handleInvite() {
@@ -645,6 +696,19 @@ export function TeamPage({ workspaceId, viewerRole }: TeamPageProps) {
                                 cancelErrorText={t('workspace.team.invitations.cancel.error')}
                                 cancelSuccessText={t('workspace.team.invitations.cancel.success')}
                                 cancelRetryText={t('workspace.team.invitations.cancel.retry')}
+                                onResendInvitation={resendInvitation}
+                                resendButtonText={t('workspace.team.invitations.resend.button')}
+                                resendBusyText={t('workspace.team.invitations.resend.busy')}
+                                resendSentText={t('workspace.team.invitations.resend.sent')}
+                                resendUndeliveredText={t(
+                                    'workspace.team.invitations.resend.undelivered',
+                                )}
+                                resendErrorText={t('workspace.team.invitations.resend.error')}
+                                resendLinkNoteText={t('workspace.team.invitations.resend.linkNote')}
+                                deliveryFailedText={t('workspace.team.invitations.delivery.failed')}
+                                deliveryUnknownText={t(
+                                    'workspace.team.invitations.delivery.unknown',
+                                )}
                             />
                         </PanelCard>
                     </div>

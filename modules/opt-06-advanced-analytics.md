@@ -1,6 +1,20 @@
 # OPT-06 — Advanced Analytics
 
-**PLANNING ONLY. Şu an çalıştırılamaz.**
+> **DURUM BURADA YAZMAZ — KOD SÖYLER.**
+>
+> Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu
+> ve **altmış iki modül dosyasının altmış ikisinde de aynı cümle vardı** —
+> menü kataloğu, yayınlama, karekod ve medya dahil. Oysa 2026-09-05
+> envanterinde on sekiz modül uygulanmış, on dokuzu kısmen uygulanmış
+> çıktı. Yani cümle en az on sekiz dosyada açıkça yanlıştı.
+>
+> Sebebi bir ihmal değil, YAPININ KENDİSİYDİ: bir modül teslim edildiğinde
+> kimse tanım dosyasına geri dönmüyor. Aynı cümleyi altmış iki dosyada
+> güncel tutmak, aynı hatayı daha büyük ölçekte tekrarlamak olurdu.
+>
+> Bu yüzden durum alanı **kaldırıldı**. Bu dosya modülün NE OLDUĞUNU
+> anlatır; ÇALIŞIP ÇALIŞMADIĞINI kod söyler ve türetilmiş envanter gösterir
+> (`docs/111`). Bir soru "bu modül var mı?" ise cevabı burada aramayın.
 
 **Amaç**: Cihaz/browser/OS/ülke/şehir/referrer/saat yoğunluğu kırılımlarını ve
 export'u sağlamak.
