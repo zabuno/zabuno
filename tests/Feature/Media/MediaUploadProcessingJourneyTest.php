@@ -319,7 +319,7 @@ final class SpySuccessfulProcessor implements MediaAssetProcessorPort
     /** @var list<string> */
     public array $receivedAbsolutePaths = [];
 
-    public function process(string $absolutePath, string $slot = ''): MediaProcessingResult
+    public function process(string $absolutePath, string $slot = '', ?string $targetFormat = null): MediaProcessingResult
     {
         $this->receivedAbsolutePaths[] = $absolutePath;
 

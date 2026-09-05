@@ -27,8 +27,18 @@ final class ReprocessMediaAsset
         private readonly MediaRepositoryPort $media,
     ) {}
 
-    /** @return 'reprocessed'|'not-ready'|'failed' */
-    public function __invoke(int $workspaceId, int $assetId): string
+    /**
+     * `$targetFormat` DÖNÜŞTÜRME içindir (`docs/108` §6.3): "eski biçimleri
+     * modern biçime çevir". Ayrı bir metot ya da ayrı bir hat DEĞİL, aynı
+     * hattın bir parametresi olması bilinçlidir — dönüştürme de bir yeniden
+     * üretimdir ve aynı güvenceleri hak eder: asıl korunur, YENİ SÜRÜM
+     * açılır, hiçbir satır silinmez, başarısızlık varlığı `failed` yapmaz.
+     * İkinci bir hat yazmak, bu dört cümlenin iki ayrı yerde
+     * cevaplanması ve bir gün ayrışması demek olurdu.
+     *
+     * @return 'reprocessed'|'not-ready'|'failed'
+     */
+    public function __invoke(int $workspaceId, int $assetId, ?string $targetFormat = null): string
     {
         $claimed = $this->media->claimReadyForReprocessing($workspaceId, $assetId);
 
@@ -37,7 +47,7 @@ final class ReprocessMediaAsset
         }
 
         $jobId = $this->media->openProcessingJob($claimed->workspaceId, $claimed->id);
-        $result = $this->processor->process($claimed->diskPath, $claimed->slot);
+        $result = $this->processor->process($claimed->diskPath, $claimed->slot, $targetFormat);
 
         if ($result->outcome !== MediaProcessingOutcome::Succeeded || $result->renditions === []) {
             $this->media->closeProcessingJobAsFailed(

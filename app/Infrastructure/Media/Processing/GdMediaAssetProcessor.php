@@ -28,8 +28,16 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
 {
     public function __construct(private readonly SlotCatalogue $slots) {}
 
-    public function process(string $absolutePath, string $slot = ''): MediaProcessingResult
+    public function process(string $absolutePath, string $slot = '', ?string $targetFormat = null): MediaProcessingResult
     {
+        if ($targetFormat !== null) {
+            $refusal = $this->refuseTargetFormat($targetFormat, $slot);
+
+            if ($refusal !== null) {
+                return MediaProcessingResult::failed($refusal);
+            }
+        }
+
         if (! is_readable($absolutePath)) {
             return MediaProcessingResult::failed('Yüklenen dosya okunamadı. Lütfen yeniden yükleyin.');
         }
@@ -65,7 +73,7 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
             $renditions = [];
 
             foreach ($this->targetWidths($policy, $sourceWidth) as $width) {
-                $rendition = $this->renderAt($source, $policy, $sourceWidth, $sourceHeight, $width);
+                $rendition = $this->renderAt($source, $policy, $sourceWidth, $sourceHeight, $width, $targetFormat);
 
                 if ($rendition === null) {
                     return MediaProcessingResult::failed(
@@ -113,6 +121,7 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
         int $sourceWidth,
         int $sourceHeight,
         int $targetWidth,
+        ?string $targetFormat = null,
     ): ?GeneratedRendition {
         [$cropX, $cropY, $cropWidth, $cropHeight] = $this->cropBox($policy, $sourceWidth, $sourceHeight);
 
@@ -147,7 +156,7 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
                 return null;
             }
 
-            [$format, $mimeType, $encoded] = $this->encode($canvas, $preserveAlpha);
+            [$format, $mimeType, $encoded] = $this->encode($canvas, $preserveAlpha, $targetFormat);
 
             if ($encoded === null) {
                 return null;
@@ -231,8 +240,26 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
         return $bytes === null || $bytes === '' ? null : 'data:image/jpeg;base64,'.base64_encode($bytes);
     }
 
-    private function encode(GdImage $canvas, bool $preserveAlpha): array
+    private function encode(GdImage $canvas, bool $preserveAlpha, ?string $targetFormat = null): array
     {
+        /*
+            HEDEF BİÇİM SEÇİLDİYSE O BİÇİM ÜRETİLİR — yedeğe düşülmez.
+            "İstediğini yapamadım, onun yerine şunu yaptım" bir dönüştürme
+            ekranında sessiz bir yalandır: sahip AVIF'e bastığında listede
+            AVIF görmeli, ya da hiçbir şey görmemeli. Buraya gelindiğinde
+            biçimin üretilebilirliği `refuseTargetFormat` ile zaten
+            sorulmuştur; yine de kodlayıcı boş çıktı verirse `null` döner ve
+            iş başarısız SAYILIR.
+        */
+        if ($targetFormat !== null) {
+            return match ($targetFormat) {
+                'avif' => ['avif', 'image/avif', $this->capture(static fn (): bool => imageavif($canvas, null, 62))],
+                'webp' => ['webp', 'image/webp', $this->capture(static fn (): bool => imagewebp($canvas, null, 82))],
+                'jpeg' => ['jpeg', 'image/jpeg', $this->capture(static fn (): bool => imagejpeg($canvas, null, 82))],
+                default => [$targetFormat, 'application/octet-stream', null],
+            };
+        }
+
         if ($preserveAlpha) {
             return ['png', 'image/png', $this->capture(static fn (): bool => imagepng($canvas, null, 6))];
         }
@@ -257,6 +284,36 @@ final class GdMediaAssetProcessor implements MediaAssetProcessorPort
         $bytes = (string) ob_get_clean();
 
         return ($ok && $bytes !== '') ? $bytes : null;
+    }
+
+    /**
+     * DÖNÜŞTÜRME REDDİ — dosyaya dokunmadan ÖNCE, okunabilir bir cümleyle.
+     *
+     * İki sebep var ve ikisi de sessizce yedeğe düşmektense söylenmelidir:
+     *
+     *   1. Bu sunucu o biçimi kodlayamıyor. Uç zaten desteklenmeyen hedefi
+     *      reddediyor; burası son kapı — başka bir çağıran doğrudan gelirse
+     *      ürün yanlış biçim üretip "oldu" dememeli.
+     *   2. Saydam bir görsel JPEG'e çevriliyor. JPEG saydamlık taşımaz;
+     *      logo beyaz bir kutunun içine düşer. Asıl korunduğu için geri
+     *      dönüş vardır ama sahip bunu ancak menüde görürdü — ve o kadar
+     *      geç bir fark ediş, ürünün hatasıdır.
+     */
+    private function refuseTargetFormat(string $targetFormat, string $slot): ?string
+    {
+        if (! (new RuntimeMediaFormatSupport)->supports($targetFormat)) {
+            return 'Bu sunucu '.strtoupper($targetFormat).' üretemiyor; dosyaya dokunulmadı.';
+        }
+
+        $preservesAlpha = $this->slots->has($slot)
+            && $this->slots->get($slot)->transparency === 'preserve';
+
+        if ($preservesAlpha && $targetFormat === 'jpeg') {
+            return 'Saydam bir görsel JPEG\'e çevrilemez: saydamlık beyaz zemine dönerdi. '
+                .'AVIF ya da WebP saydamlığı korur.';
+        }
+
+        return null;
     }
 
     private function undecodableReason(string $bytes): string

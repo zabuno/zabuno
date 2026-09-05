@@ -22,11 +22,14 @@ use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaAuditPort;
+use App\Application\Media\Port\MediaConversionPort;
 use App\Application\Media\Port\MediaFolderRepositoryPort;
+use App\Application\Media\Port\MediaFormatSupportPort;
 use App\Application\Media\Port\MediaProcessingJobPort;
 use App\Application\Media\Port\MediaQuotaPort;
 use App\Application\Media\Port\MediaRegenerationPort;
 use App\Application\Media\Port\MediaRepositoryPort;
+use App\Application\Media\Port\MediaStorageBreakdownPort;
 use App\Application\Media\Port\MenuMediaPort;
 use App\Application\MenuCatalog\Api\Port\MenuCatalogApiContextPort;
 use App\Application\MenuCatalog\Port\MenuCatalogRepositoryPort;
@@ -93,15 +96,18 @@ use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
 use App\Infrastructure\Media\Persistence\EloquentMediaAudit;
+use App\Infrastructure\Media\Persistence\EloquentMediaConversion;
 use App\Infrastructure\Media\Persistence\EloquentMediaFolderRepository;
 use App\Infrastructure\Media\Persistence\EloquentMediaProcessingJobs;
 use App\Infrastructure\Media\Persistence\EloquentMediaRegeneration;
 use App\Infrastructure\Media\Persistence\EloquentMediaRepository;
 use App\Infrastructure\Media\Persistence\EloquentMenuMedia;
 use App\Infrastructure\Media\Processing\GdMediaAssetProcessor;
+use App\Infrastructure\Media\Processing\RuntimeMediaFormatSupport;
 use App\Infrastructure\Media\Processing\SvgMediaAssetProcessor;
 use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Quota\ConfigMediaQuota;
+use App\Infrastructure\Media\Quota\DatabaseMediaStorageBreakdown;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
@@ -363,8 +369,18 @@ final class AppServiceProvider extends ServiceProvider
         // BOYUT MOTORU (`docs/108` §6.1): "yeniden üretimi başlatırsam kaç
         // dosya etkilenir" sorusunun GERÇEK cevabını sayan yer.
         $this->app->bind(MediaRegenerationPort::class, EloquentMediaRegeneration::class);
+        // DÖNÜŞTÜR (`docs/108` §6.3). Yetenek VARSAYILMAZ, sunucuya
+        // sorulur: aynı PHP sürümü bir makinede AVIF üretir, diğerinde
+        // üretmez ve ürün bunu ekranda dürüstçe yazar.
+        $this->app->bind(MediaConversionPort::class, EloquentMediaConversion::class);
+        $this->app->bind(MediaFormatSupportPort::class, RuntimeMediaFormatSupport::class);
         $this->app->bind(WorkspaceAuditTrailPort::class, EloquentWorkspaceAuditTrail::class);
         $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
+        /*
+            "Yeri ne dolduruyor?" (`docs/108` §6.4). Kotadan AYRI bağlanır:
+            kota her yüklemede okunur, kırılım yalnız sahip ekrana bakınca.
+        */
+        $this->app->bind(MediaStorageBreakdownPort::class, DatabaseMediaStorageBreakdown::class);
         $this->app->bind(FeatureFlagPort::class, PennantFeatureFlags::class);
         $this->app->bind(MenuMediaPort::class, EloquentMenuMedia::class);
         $this->app->bind(OutOfStockPort::class, EloquentOutOfStock::class);

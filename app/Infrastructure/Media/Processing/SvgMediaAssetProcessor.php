@@ -51,17 +51,24 @@ final class SvgMediaAssetProcessor implements MediaAssetProcessorPort
         private readonly SlotCatalogue $slots,
     ) {}
 
-    public function process(string $absolutePath, string $slot = ''): MediaProcessingResult
+    /**
+     * `$targetFormat` (dönüştürme, `docs/108` §6.3) buradan DEĞİŞMEDEN
+     * geçer ve SVG'de HİÇ uygulanmaz. Vektörü AVIF'e çevirmek bir kazanç
+     * değil kayıptır — SVG her ölçekte keskindir. Bu yüzden dönüştürme
+     * bölümü SVG'yi kaynak listesine hiç almaz; buraya bir SVG başka bir
+     * yoldan gelirse de vektör vektör kalır.
+     */
+    public function process(string $absolutePath, string $slot = '', ?string $targetFormat = null): MediaProcessingResult
     {
         if (! is_readable($absolutePath)) {
-            return $this->inner->process($absolutePath, $slot);
+            return $this->inner->process($absolutePath, $slot, $targetFormat);
         }
 
         $bytes = @file_get_contents($absolutePath);
 
         if ($bytes === false || ! $this->looksLikeSvg($bytes)) {
             // Raster dosya: karar GD'nindir, bu katman görünmez kalır.
-            return $this->inner->process($absolutePath, $slot);
+            return $this->inner->process($absolutePath, $slot, $targetFormat);
         }
 
         $result = $this->sanitizer->sanitize($bytes);

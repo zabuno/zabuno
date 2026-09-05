@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Media\ConvertMediaController;
 use App\Http\Controllers\Media\CreateOriginalDownloadLinkController;
 use App\Http\Controllers\Media\DeleteMediaController;
 use App\Http\Controllers\Media\DeleteMediaFolderController;
 use App\Http\Controllers\Media\DetachMediaUsagesController;
+use App\Http\Controllers\Media\ListConversionTargetsController;
 use App\Http\Controllers\Media\ListDerivativeRulesController;
 use App\Http\Controllers\Media\ListMediaAuditsController;
 use App\Http\Controllers\Media\ListMediaController;
@@ -19,8 +21,12 @@ use App\Http\Controllers\Media\ReprocessMediaBatchController;
 use App\Http\Controllers\Media\ReprocessMediaController;
 use App\Http\Controllers\Media\RestoreMediaController;
 use App\Http\Controllers\Media\RestoreMediaVersionController;
+use App\Http\Controllers\Media\ServeMediaPreviewController;
 use App\Http\Controllers\Media\ShowMediaQuotaController;
+use App\Http\Controllers\Media\ShowMediaSettingsController;
+use App\Http\Controllers\Media\ShowMediaStorageBreakdownController;
 use App\Http\Controllers\Media\ShowMediaUsagesController;
+use App\Http\Controllers\Media\ShowMediaViewerController;
 use App\Http\Controllers\Media\StoreMediaController;
 use App\Http\Controllers\Media\StoreMediaFolderController;
 use App\Http\Controllers\Media\UpdateMediaAltTextController;
@@ -76,6 +82,26 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/workspaces/{workspace}/media/{media}/folder', MoveMediaToFolderController::class);
 
     /*
+        GÖRÜNTÜLE (`docs/108` §3 madde 8, kaynak ekranı "Görüntüle").
+
+        İki uç, iki ayrı iş: `viewer` ekrana HANGİ okuyucunun çizileceğini
+        söyler (tür, açılabilir mi, açılmıyorsa neden, PDF ise okunabildiği
+        kadarıyla sayfa sayısı); `preview` dosyanın kendisini panelin
+        İÇİNDE açılacak biçimde verir — var olan asıl indirme ucu ise onu
+        `attachment` olarak verir ve öyle vermek zorundadır.
+
+        İkisi de SALT OKUNUR ve hız sınırsızdır: tek bir satır okur, dış
+        bir maliyet doğurmaz. `preview` bir çerçeve/`<img>` isteğidir ve
+        PDF'te her sayfa değişiminde tekrarlanır — ona sınır koymak, on
+        iki sayfalık bir belgeyi okumayı ortasında kesmek olurdu.
+
+        Yollar `/media/{media}` altında bir alt segmentle devam ediyor;
+        `folders`/`jobs` gibi sabit segmentli yollarla çakışmaz.
+    */
+    Route::get('/workspaces/{workspace}/media/{media}/viewer', ShowMediaViewerController::class);
+    Route::get('/workspaces/{workspace}/media/{media}/preview', ServeMediaPreviewController::class);
+
+    /*
         BOYUT MOTORU ve KUYRUK (`docs/108` §3 madde 4-5, §6.1).
 
         Kural OKUMAK bir dosyayı bile değiştirmez, o yüzden hız sınırsızdır.
@@ -90,7 +116,49 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         yollarıyla çakışmıyor.
     */
     Route::get('/workspaces/{workspace}/media/derivative-rules', ListDerivativeRulesController::class);
+
+    /*
+        YER ve AYARLAR (`docs/108` §6.4-§6.6). İkisi de SALT OKUNURDUR ve
+        hız sınırsızdır: biri sayar, diğeri config okur, hiçbiri dosya
+        işlemez.
+
+        `media/storage-breakdown` kotadan AYRI bir uçtur. Kota durumu HER
+        YÜKLEMEDE okunur (`MediaQuotaPort::admits`); kırılımı oraya
+        eklemek her yüklemeye bir gruplama sorgusu daha bindirirdi.
+
+        `media/settings` bir KAYDETME ucu değildir ve olmayacaktır: bu
+        depoda desen değiştirilemez, güvenlik önlemi kapatılamaz. Uç yalnız
+        durumu bildirir; ekran da kaydetme kutusu çizmez.
+
+        İkisi de `folders` gibi sabit segmentle başlar ve `/media/{media}`
+        yollarıyla çakışmaz.
+    */
+    Route::get('/workspaces/{workspace}/media/storage-breakdown', ShowMediaStorageBreakdownController::class);
+    Route::get('/workspaces/{workspace}/media/settings', ShowMediaSettingsController::class);
     Route::post('/workspaces/{workspace}/media/reprocess', ReprocessMediaBatchController::class)
         ->middleware('throttle:2,1');
     Route::get('/workspaces/{workspace}/media/jobs', ListMediaProcessingJobsController::class);
+
+    /*
+        DÖNÜŞTÜR (`docs/108` §6.3, kaynak ekranı "Dönüştür").
+
+        Okumak SALT OKUNURDUR: hedef listesi, her hedefin BU KURULUMDA
+        desteklenip desteklenmediği, seçilebilir dosyalar ve daha önce
+        gerçekten tartılmış kazanç. Tek bir dosyayı bile değiştirmediği için
+        hız sınırı yok.
+
+        Dönüştürme ise toplu yeniden üretimle AYNI sınırı taşır
+        (`throttle:2,1`): tek çağrı onlarca dosyayı kodlar ve AVIF
+        kodlaması JPEG'den belirgin biçimde yavaştır. Kendi işleme hattı
+        YOKTUR — var olan `ReprocessMediaAsset` bir hedef biçimle çağrılır,
+        böylece "asıl korunur, yeni sürüm açılır" güvencesi tek bir yerde
+        durur.
+
+        İkisi de `folders`/`jobs` gibi sabit segmentle başlıyor;
+        `/media/{media}` yolları her zaman bir alt segmentle devam ettiği
+        için çakışma yok.
+    */
+    Route::get('/workspaces/{workspace}/media/conversion-targets', ListConversionTargetsController::class);
+    Route::post('/workspaces/{workspace}/media/convert', ConvertMediaController::class)
+        ->middleware('throttle:2,1');
 });

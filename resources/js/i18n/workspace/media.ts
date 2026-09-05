@@ -360,6 +360,193 @@ export const media = {
     'workspace.media.queue.retried': 'Started again. This row updates with the result.',
     'workspace.media.queue.retryFailed': 'Could not start it again. Nothing was changed.',
     'workspace.media.queue.refresh': 'Refresh the queue',
+
+    /*
+        DÖNÜŞTÜR (kaynak ekranı "Dönüştür", hedef listesi `docs/108` §6.3).
+        Kaynağın kendi cümlesi: "Eski biçimleri modern biçime çevir. Aslı
+        korunur, dönüşen dosya yeni sürüm olur."
+    */
+    'workspace.media.convert.tab': 'Convert',
+    'workspace.media.convert.region': 'Convert formats',
+    'workspace.media.convert.lead':
+        'Turn old formats into modern ones. The original is kept; the converted file becomes a new version.',
+    'workspace.media.convert.loading': 'Loading conversion targets…',
+    'workspace.media.convert.failed': 'Conversion targets could not be loaded.',
+    'workspace.media.convert.target.heading': 'Target format',
+    // Her hedefin İŞİ: hangisini seçeceğine biçim adı değil, bu cümle
+    // karar verdirir.
+    'workspace.media.convert.target.avif.note': 'Images · smallest',
+    'workspace.media.convert.target.webp.note': 'Images · widest support',
+    'workspace.media.convert.target.webm.note': 'Video · VP9 / AV1',
+    'workspace.media.convert.target.jpeg.note': 'A fallback that opens everywhere',
+    /*
+        "about" bilerek duruyor. Kaynaktaki yüzde biçimin GENEL iddiasıdır,
+        bu kiracının ölçümü değil; kesin bir sayı gibi yazmak, sonradan
+        tutmayacak bir rakama güvendirirdi.
+    */
+    'workspace.media.convert.target.claim': 'about {percent}% smaller',
+    /*
+        DÜRÜSTLÜK CÜMLELERİ. Kaynağın listesi TAM, ürünün yeteneği değil.
+        Kartı gizlemek kaynağı sessizce kısaltmak, "yapılabilir" göstermek
+        ise sahibi olmayan bir yeteneğe güvendirmek olurdu.
+    */
+    'workspace.media.convert.limitation.noVideoPipeline':
+        'Not possible here: there is no video conversion pipeline.',
+    'workspace.media.convert.limitation.encoderMissing':
+        'Not possible here: this server cannot encode that format.',
+    'workspace.media.convert.limitation.unknown': 'Not possible on this installation.',
+    // Ölçülen kazanç, iddia edilenden AYRI bir cümledir ve yalnız gerçekten
+    // tartılmış bayt varken yazılır.
+    'workspace.media.convert.measured': 'Measured on your own {count} file(s): {percent}% smaller.',
+    'workspace.media.convert.sources.heading': 'Files to convert',
+    'workspace.media.convert.sources.empty': 'No file can be converted yet.',
+    'workspace.media.convert.selectAll': 'Select all',
+    'workspace.media.convert.clearAll': 'Clear',
+    // Satırın ikinci cümlesi dönüşümün YÖNÜdür: "jpeg → AVIF".
+    'workspace.media.convert.row.direction': '{from} → {to}',
+    'workspace.media.convert.summary.selected': 'Selected files',
+    'workspace.media.convert.summary.now': 'Selected size now',
+    'workspace.media.convert.summary.batch': 'Files per run',
+    'workspace.media.convert.start': 'Convert {count} file(s) to {format}',
+    'workspace.media.convert.start.empty': 'Choose a file',
+    'workspace.media.convert.running': 'Converting…',
+    'workspace.media.convert.done':
+        '{count} file(s) converted as a new version. The original is kept.',
+    'workspace.media.convert.someFailed':
+        '{count} file(s) could not be converted; their current version stayed valid.',
+    'workspace.media.convert.remaining': '{count} file(s) left. Press again to continue.',
+    'workspace.media.convert.runFailed': 'That did not work. Nothing was changed.',
+
+    /*
+        YER ve ÇÖP — `docs/108` §6.4 (kaynak ekranı "Kota ve çöp").
+
+        Kota şeridi tek bir toplam söylüyordu ve sahip onu okuduğunda ne
+        yapacağını bilmiyordu. Kategori adları SLOT ADI DEĞİLDİR: sahip
+        `itemImage` değil "ürün fotoğrafları" okur. Eşlemenin gerekçesi
+        sunucuda, `App\Domain\Media\StorageCategory` içindedir.
+    */
+    'workspace.media.storage.tab': 'Storage',
+    'workspace.media.storage.region': 'Storage and trash',
+    'workspace.media.storage.plan': 'Plan: {plan}',
+    'workspace.media.storage.card.storage': 'Storage',
+    'workspace.media.storage.card.assets': 'Files',
+    'workspace.media.storage.card.ratio': '{used} of {limit}',
+    'workspace.media.storage.card.free': '{percent}% used · {free} free',
+    // Sınıra yaklaşınca not uyarı rengine döner: yükleme sessizce kesilmez.
+    'workspace.media.storage.card.near': 'Close to the limit — only {free} left',
+    'workspace.media.storage.breakdown.heading': 'What is filling it up?',
+    'workspace.media.storage.breakdown.empty': 'Nothing is stored yet.',
+    'workspace.media.storage.category.products': 'Product photos',
+    'workspace.media.storage.category.promotion': 'Covers and promotion',
+    'workspace.media.storage.category.brand': 'Logo and brand',
+    'workspace.media.storage.category.documents': 'Documents and scans',
+    'workspace.media.storage.category.other': 'Other files',
+    'workspace.media.storage.share': '{bytes} · {percent}% of what is stored',
+    'workspace.media.storage.trash': 'Trash',
+    /*
+        Çöp uyarı renginde ve AYRI, çünkü sahibin bugün geri kazanabileceği
+        tek dilim odur. Silmek yer AÇMAZ — bu cümle bir şikâyeti önler:
+        "sildim, hâlâ dolu diyor".
+    */
+    'workspace.media.storage.trash.note':
+        'Deleting does not free space. The {bytes} in the trash still counts against your plan; it is released when the retention period ends.',
+
+    /*
+        MEDYA AYARLARI — `docs/108` §6.5-§6.6 (kaynak ekranı "Ayarlar").
+
+        SALT OKUNUR ve bu bir eksiklik değil, ekranın sözüdür: bir ayar
+        ekranındaki her kontrol, çevrildiğinde bir şeyin değişeceğini
+        söyler. Bu depoda desen değiştirilemez, güvenlik önlemi
+        kapatılamaz — o yüzden burada kaydetme kutusu yoktur.
+    */
+    'workspace.media.settings.tab': 'Settings',
+    'workspace.media.settings.region': 'Media settings',
+    'workspace.media.settings.patterns.heading': 'Folders, names and dates',
+    'workspace.media.settings.patterns.lead':
+        'These follow fixed rules today. Nothing here is a choice, so there is nothing to save.',
+    'workspace.media.settings.pattern.directory': 'Folder structure',
+    'workspace.media.settings.pattern.directory.workspaceFolder': 'One folder per workspace',
+    'workspace.media.settings.pattern.directory.why':
+        'Every file lives under its own workspace folder. The storage address is never rewritten — a published menu would lose its images the day it changed.',
+    'workspace.media.settings.pattern.fileName': 'File name',
+    'workspace.media.settings.pattern.fileName.opaqueKey':
+        'A random key, kept apart from the name you see',
+    'workspace.media.settings.pattern.fileName.why':
+        'The library shows the name you typed; the stored file keeps a random key, so renaming a photo never moves a byte.',
+    'workspace.media.settings.pattern.date': 'Date format',
+    'workspace.media.settings.pattern.date.deviceLocale': 'The format of the device reading it',
+    'workspace.media.settings.pattern.date.why':
+        'Dates follow the language and time zone of the device you read them on. One fixed format is a separate decision and has not been made yet.',
+    'workspace.media.settings.security.heading': 'Security and privacy',
+    /*
+        Sahibin kararı (2026-09-05): kapatılabilir bir güvenlik anahtarı,
+        kapatıldığı gün bir güvenlik açığıdır. Anahtar GÖRÜNÜR — durumu
+        okunsun diye — ama çevrilemez.
+    */
+    'workspace.media.settings.security.locked': 'Cannot be switched off',
+    'workspace.media.settings.security.virusScan': 'Virus scan',
+    'workspace.media.settings.security.virusScan.on':
+        'Every file is scanned before it enters the library. Anything that does not come back clean is quarantined and nobody can download it.',
+    // "Kapalı" bir KULLANICI kararıdır; bu bir ORTAM gerçeğidir.
+    'workspace.media.settings.security.virusScan.unavailable':
+        'No scanner is connected in this environment, so files are not being scanned. You did not switch this off, and it is not something you can switch on from here.',
+    'workspace.media.settings.security.contentSignature': 'Content signature check',
+    'workspace.media.settings.security.contentSignature.on':
+        'The extension is never trusted. A file named “photo.jpg” that is really a script is rejected before anything is stored.',
+    'workspace.media.settings.security.metadataStrip': 'Strip embedded data',
+    // YARIM ve öyle söyleniyor: türev temiz, asıl dosya olduğu gibi durur.
+    'workspace.media.settings.security.metadataStrip.partial':
+        'Location, device and serial number are gone from the sizes your guests see, because those are re-encoded. The original file is kept exactly as you uploaded it.',
+    'workspace.media.settings.security.signedLink': 'Signed link for private files',
+    'workspace.media.settings.security.signedLink.on':
+        'The original has no public address. Downloading it needs a signed link that stops working after ten minutes.',
+    'workspace.media.settings.security.watermark': 'Watermark',
+    // Bağlı olmayan anahtar ÇİZİLMEZ; olmayan şey "henüz yok" diye yazılır.
+    'workspace.media.settings.security.watermark.missing': 'Not built yet.',
+
+    /*
+        GÖRÜNTÜLE (kaynak ekranı "Görüntüle", sıra `docs/108` §3 madde 8).
+
+        Sahip bir belgenin içinde ne yazdığını öğrenmek için onu indirmek
+        zorundaydı: dosya telefonun indirilenler klasörüne düşüyor, başka
+        bir uygulamada açılıyor, panele dönüldüğünde hangi dosyaya
+        bakıldığı unutuluyordu.
+
+        Metinlerin tamamı İKİ dürüstlük kuralına uyar: sayfa sayısı
+        bilinmiyorsa söylenmez, ve açılamayan dosya SEBEBİYLE birlikte
+        söylenip bir sonraki adım verilir.
+    */
+    'workspace.media.viewer.tab': 'View',
+    'workspace.media.viewer.region': 'File viewer',
+    'workspace.media.viewer.lead':
+        'Open a file inside the panel, instead of downloading it first to find out what is in it.',
+    'workspace.media.viewer.empty': 'There is no file to open yet.',
+    'workspace.media.viewer.files': 'Files',
+    'workspace.media.viewer.none': 'Choose a file to open it here.',
+    'workspace.media.viewer.loading': 'Opening the file…',
+    'workspace.media.viewer.failed': 'This file could not be opened. Nothing was changed.',
+    'workspace.media.viewer.close': 'Close the file',
+    // Tarama bitmeden açmamak bir eksiklik değil, taramanın kendisidir.
+    'workspace.media.viewer.blocked.scan':
+        'This file has not cleared the security scan yet, so the panel does not open it. It opens here by itself once the scan comes back clean.',
+    'workspace.media.viewer.blocked.type':
+        'The panel does not open {type} files. Download it and open it on your device.',
+    'workspace.media.viewer.download': 'Download the original',
+    'workspace.media.viewer.download.failed':
+        'The download link could not be created. Nothing was changed.',
+    'workspace.media.viewer.pdf.frame': 'PDF reader — {name}',
+    'workspace.media.viewer.pdf.page': 'Page {page} / {total}',
+    'workspace.media.viewer.pdf.previous': 'Previous page',
+    'workspace.media.viewer.pdf.next': 'Next page',
+    // Sayfa sayısı okunamayan PDF: gezinti çizilmez, sebebi yazılır.
+    'workspace.media.viewer.pdf.pagesUnknown':
+        'The page count could not be read from this file, so the panel draws no page controls. The reader below has its own toolbar.',
+    // Gömülü PDF bir SÖZ değildir; tarayıcı açmazsa ne yapılacağı yazılı.
+    'workspace.media.viewer.pdf.embedNote':
+        'Some browsers do not open a PDF inside a panel. If the frame stays empty, download the file and open it on your device.',
+    'workspace.media.viewer.fact.type': 'Type',
+    'workspace.media.viewer.fact.size': 'Size',
+    'workspace.media.viewer.fact.pages': 'Pages',
 } as const;
 
 declare module '../workspace' {
