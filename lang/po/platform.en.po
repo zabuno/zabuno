@@ -192,6 +192,110 @@ msgstr "Engineering"
 msgid "engineering.shell.toPlatform"
 msgstr "Platform admin"
 
+#: platform:platform.auditLog.col.action
+msgid "platform.auditLog.col.action"
+msgstr "Event"
+
+#: platform:platform.auditLog.col.actor
+msgid "platform.auditLog.col.actor"
+msgstr "By"
+
+#: platform:platform.auditLog.col.source
+msgid "platform.auditLog.col.source"
+msgstr "Source"
+
+#: platform:platform.auditLog.col.subject
+msgid "platform.auditLog.col.subject"
+msgstr "Subject"
+
+#: platform:platform.auditLog.col.when
+msgid "platform.auditLog.col.when"
+msgstr "When"
+
+#: platform:platform.auditLog.col.workspace
+msgid "platform.auditLog.col.workspace"
+msgstr "Workspace"
+
+#: platform:platform.auditLog.empty
+msgid "platform.auditLog.empty"
+msgstr "Nothing has been recorded yet."
+
+#: platform:platform.auditLog.error
+msgid "platform.auditLog.error"
+msgstr "We could not load the audit log."
+
+#: platform:platform.auditLog.filter.apply
+msgid "platform.auditLog.filter.apply"
+msgstr "Apply"
+
+#: platform:platform.auditLog.filter.source
+msgid "platform.auditLog.filter.source"
+msgstr "Source"
+
+#: platform:platform.auditLog.filter.source.all
+msgid "platform.auditLog.filter.source.all"
+msgstr "All sources"
+
+#: platform:platform.auditLog.filter.workspace
+msgid "platform.auditLog.filter.workspace"
+msgstr "Workspace ID"
+
+#: platform:platform.auditLog.intro
+msgid "platform.auditLog.intro"
+msgstr "Who did what, and when — read from the trails this product already writes: media, menu, publication and the credential vault. Read-only: a recorded event cannot be edited or erased from here."
+
+#: platform:platform.auditLog.loading
+msgid "platform.auditLog.loading"
+msgstr "Loading the audit log…"
+
+#: platform:platform.auditLog.nav.label
+msgid "platform.auditLog.nav.label"
+msgstr "Audit log"
+
+#: platform:platform.auditLog.next
+msgid "platform.auditLog.next"
+msgstr "Next page"
+
+#: platform:platform.auditLog.page
+msgid "platform.auditLog.page"
+msgstr "Page {page}"
+
+#: platform:platform.auditLog.prev
+msgid "platform.auditLog.prev"
+msgstr "Previous page"
+
+#: platform:platform.auditLog.region.label
+msgid "platform.auditLog.region.label"
+msgstr "Audit log"
+
+#: platform:platform.auditLog.retry
+msgid "platform.auditLog.retry"
+msgstr "Retry"
+
+#: platform:platform.auditLog.scope
+msgid "platform.auditLog.scope"
+msgstr "A credential-vault row belongs to no workspace, so its workspace cell stays empty. A menu event’s old and new values are deliberately not shown here; they live in that workspace’s own menu history."
+
+#: platform:platform.auditLog.source.credential
+msgid "platform.auditLog.source.credential"
+msgstr "Credential vault"
+
+#: platform:platform.auditLog.source.media
+msgid "platform.auditLog.source.media"
+msgstr "Media"
+
+#: platform:platform.auditLog.source.menu
+msgid "platform.auditLog.source.menu"
+msgstr "Menu"
+
+#: platform:platform.auditLog.source.publication
+msgid "platform.auditLog.source.publication"
+msgstr "Publication"
+
+#: platform:platform.auditLog.title
+msgid "platform.auditLog.title"
+msgstr "Events"
+
 #: platform:platform.connections.add
 msgid "platform.connections.add"
 msgstr "+ Add a connection"
@@ -792,6 +896,10 @@ msgstr "Commercial"
 msgid "platform.shell.group.integrations"
 msgstr "Integrations"
 
+#: platform:platform.shell.group.oversight
+msgid "platform.shell.group.oversight"
+msgstr "Oversight"
+
 #: platform:platform.shell.heading
 msgid "platform.shell.heading"
 msgstr "Platform administration"
@@ -923,3 +1031,283 @@ msgstr "Select a workspace"
 #: platform:platform.subscriptions.workspace.retry
 msgid "platform.subscriptions.workspace.retry"
 msgstr "Retry"
+
+#: platform:platform.tenants.col.action
+msgid "platform.tenants.col.action"
+msgstr "Event"
+
+#: platform:platform.tenants.col.actor
+msgid "platform.tenants.col.actor"
+msgstr "By"
+
+#: platform:platform.tenants.col.branch
+msgid "platform.tenants.col.branch"
+msgstr "Branch"
+
+#: platform:platform.tenants.col.city
+msgid "platform.tenants.col.city"
+msgstr "City"
+
+#: platform:platform.tenants.col.country
+msgid "platform.tenants.col.country"
+msgstr "Country"
+
+#: platform:platform.tenants.col.email
+msgid "platform.tenants.col.email"
+msgstr "Email"
+
+#: platform:platform.tenants.col.name
+msgid "platform.tenants.col.name"
+msgstr "Name"
+
+#: platform:platform.tenants.col.role
+msgid "platform.tenants.col.role"
+msgstr "Role"
+
+#: platform:platform.tenants.col.since
+msgid "platform.tenants.col.since"
+msgstr "Member since"
+
+#: platform:platform.tenants.col.source
+msgid "platform.tenants.col.source"
+msgstr "Source"
+
+#: platform:platform.tenants.col.state
+msgid "platform.tenants.col.state"
+msgstr "State"
+
+#: platform:platform.tenants.col.subject
+msgid "platform.tenants.col.subject"
+msgstr "Subject"
+
+#: platform:platform.tenants.col.timezone
+msgid "platform.tenants.col.timezone"
+msgstr "Time zone"
+
+#: platform:platform.tenants.col.when
+msgid "platform.tenants.col.when"
+msgstr "When"
+
+#: platform:platform.tenants.error
+msgid "platform.tenants.error"
+msgstr "We could not load this workspace."
+
+#: platform:platform.tenants.events.empty
+msgid "platform.tenants.events.empty"
+msgstr "Nothing has been recorded for this workspace yet."
+
+#: platform:platform.tenants.events.title
+msgid "platform.tenants.events.title"
+msgstr "Last events"
+
+#: platform:platform.tenants.identity.brand
+msgid "platform.tenants.identity.brand"
+msgstr "Brand"
+
+#: platform:platform.tenants.identity.created
+msgid "platform.tenants.identity.created"
+msgstr "Created"
+
+#: platform:platform.tenants.identity.currency
+msgid "platform.tenants.identity.currency"
+msgstr "Currency"
+
+#: platform:platform.tenants.identity.locale
+msgid "platform.tenants.identity.locale"
+msgstr "Content language"
+
+#: platform:platform.tenants.identity.noBrand
+msgid "platform.tenants.identity.noBrand"
+msgstr "This workspace has no brand yet."
+
+#: platform:platform.tenants.identity.slug
+msgid "platform.tenants.identity.slug"
+msgstr "Slug"
+
+#: platform:platform.tenants.identity.state
+msgid "platform.tenants.identity.state"
+msgstr "State"
+
+#: platform:platform.tenants.identity.title
+msgid "platform.tenants.identity.title"
+msgstr "Identity"
+
+#: platform:platform.tenants.idle
+msgid "platform.tenants.idle"
+msgstr "Pick a workspace to see its detail."
+
+#: platform:platform.tenants.intro
+msgid "platform.tenants.intro"
+msgstr "Pick a workspace to see its branches, menus, usage, subscription and last events. This screen only reads: nothing here changes a customer’s data, and there is no way to sign in as a customer."
+
+#: platform:platform.tenants.loading
+msgid "platform.tenants.loading"
+msgstr "Loading the workspace…"
+
+#: platform:platform.tenants.locations.empty
+msgid "platform.tenants.locations.empty"
+msgstr "No branch yet."
+
+#: platform:platform.tenants.locations.title
+msgid "platform.tenants.locations.title"
+msgstr "Branches"
+
+#: platform:platform.tenants.members.empty
+msgid "platform.tenants.members.empty"
+msgstr "Nobody belongs to this workspace."
+
+#: platform:platform.tenants.members.title
+msgid "platform.tenants.members.title"
+msgstr "Team"
+
+#: platform:platform.tenants.menus.empty
+msgid "platform.tenants.menus.empty"
+msgstr "No menu yet."
+
+#: platform:platform.tenants.menus.title
+msgid "platform.tenants.menus.title"
+msgstr "Menus"
+
+#: platform:platform.tenants.nav.label
+msgid "platform.tenants.nav.label"
+msgstr "Workspaces"
+
+#: platform:platform.tenants.region.label
+msgid "platform.tenants.region.label"
+msgstr "Workspace detail"
+
+#: platform:platform.tenants.retry
+msgid "platform.tenants.retry"
+msgstr "Retry"
+
+#: platform:platform.tenants.subscription.endsAt
+msgid "platform.tenants.subscription.endsAt"
+msgstr "Runs until"
+
+#: platform:platform.tenants.subscription.none
+msgid "platform.tenants.subscription.none"
+msgstr "No subscription has ever been recorded for this workspace."
+
+#: platform:platform.tenants.subscription.plan
+msgid "platform.tenants.subscription.plan"
+msgstr "Plan"
+
+#: platform:platform.tenants.subscription.title
+msgid "platform.tenants.subscription.title"
+msgstr "Subscription"
+
+#: platform:platform.tenants.subscription.version
+msgid "platform.tenants.subscription.version"
+msgstr "Plan version"
+
+#: platform:platform.tenants.truncated
+msgid "platform.tenants.truncated"
+msgstr "Only the first rows are drawn; the count above is the real one."
+
+#: platform:platform.tenants.usage.locations
+msgid "platform.tenants.usage.locations"
+msgstr "Branches"
+
+#: platform:platform.tenants.usage.mediaAssets
+msgid "platform.tenants.usage.mediaAssets"
+msgstr "Media files"
+
+#: platform:platform.tenants.usage.members
+msgid "platform.tenants.usage.members"
+msgstr "Team members"
+
+#: platform:platform.tenants.usage.menus
+msgid "platform.tenants.usage.menus"
+msgstr "Menus"
+
+#: platform:platform.tenants.usage.products
+msgid "platform.tenants.usage.products"
+msgstr "Products"
+
+#: platform:platform.tenants.usage.title
+msgid "platform.tenants.usage.title"
+msgstr "Usage"
+
+#: platform:platform.users.col.email
+msgid "platform.users.col.email"
+msgstr "Email"
+
+#: platform:platform.users.col.memberships
+msgid "platform.users.col.memberships"
+msgstr "Workspaces"
+
+#: platform:platform.users.col.name
+msgid "platform.users.col.name"
+msgstr "Person"
+
+#: platform:platform.users.col.platformRole
+msgid "platform.users.col.platformRole"
+msgstr "Platform role"
+
+#: platform:platform.users.col.sessions
+msgid "platform.users.col.sessions"
+msgstr "Open sessions"
+
+#: platform:platform.users.col.verified
+msgid "platform.users.col.verified"
+msgstr "Address verified"
+
+#: platform:platform.users.empty
+msgid "platform.users.empty"
+msgstr "No user matches this search."
+
+#: platform:platform.users.error
+msgid "platform.users.error"
+msgstr "We could not load users."
+
+#: platform:platform.users.intro
+msgid "platform.users.intro"
+msgstr "Who a person is, which workspaces they belong to and with which role, and whether their address is verified. This screen only reads — there is no password reset, no lock and no role change here."
+
+#: platform:platform.users.loading
+msgid "platform.users.loading"
+msgstr "Loading users…"
+
+#: platform:platform.users.lock.note
+msgid "platform.users.lock.note"
+msgstr "This product has no user lock today, so no lock column is drawn: a “not locked” badge would report a check that does not exist."
+
+#: platform:platform.users.memberships.none
+msgid "platform.users.memberships.none"
+msgstr "Belongs to no workspace"
+
+#: platform:platform.users.nav.label
+msgid "platform.users.nav.label"
+msgstr "Users"
+
+#: platform:platform.users.region.label
+msgid "platform.users.region.label"
+msgstr "Users"
+
+#: platform:platform.users.retry
+msgid "platform.users.retry"
+msgstr "Retry"
+
+#: platform:platform.users.search.label
+msgid "platform.users.search.label"
+msgstr "Search by name or email address"
+
+#: platform:platform.users.search.submit
+msgid "platform.users.search.submit"
+msgstr "Search"
+
+#: platform:platform.users.sessions.note
+msgid "platform.users.sessions.note"
+msgstr "Open sessions are only counted where this installation keeps sessions in the database. An empty cell means “not measured here”, not “nobody is signed in”."
+
+#: platform:platform.users.title
+msgid "platform.users.title"
+msgstr "Users"
+
+#: platform:platform.users.truncated
+msgid "platform.users.truncated"
+msgstr "Only the first rows are drawn. Narrow the search to see the rest."
+
+#: platform:platform.users.verified.no
+msgid "platform.users.verified.no"
+msgstr "Not verified"

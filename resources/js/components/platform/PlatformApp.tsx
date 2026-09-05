@@ -1,13 +1,17 @@
-import { CreditCard, Key, Receipt } from '@phosphor-icons/react';
+import { Buildings, ClipboardText, CreditCard, Key, Receipt, Users } from '@phosphor-icons/react';
 
 import { OpsShell } from '../ops/OpsShell';
 import { OpsPageHeader } from '../ops/OpsPageHeader';
 import { PlanManagementPage } from '../admin/pages/PlanManagementPage';
 import { SubscriptionManagementPage } from '../admin/pages/SubscriptionManagementPage';
 import { ProviderCredentialsPage } from '../admin/pages/ProviderCredentialsPage';
+import { TenantDetailPage } from '../admin/pages/TenantDetailPage';
+import { PlatformUsersPage } from '../admin/pages/PlatformUsersPage';
+import { AuditLogPage } from '../admin/pages/AuditLogPage';
 import { t } from '../../i18n/platform';
 
-type PlatformSection = 'plans' | 'subscriptions' | 'credentials';
+type PlatformSection =
+    'plans' | 'subscriptions' | 'credentials' | 'workspaces' | 'users' | 'audit-log';
 
 /**
  * Platform yönetimi kabuğu — plan, abonelik, sağlayıcı anahtarları.
@@ -27,10 +31,35 @@ export function PlatformApp() {
             basePath="/platform"
             defaultSection="plans"
             groupLabels={{
+                /*
+                    GÖZETİM grubu (`docs/122` Y2), ticaretten AYRI durur:
+                    plan/abonelik/anahtar bir satış işidir, kiracıya bakmak
+                    bir destek işidir. Aynı rayda karışmaları, ikisini de
+                    yanlış yerde aratırdı.
+                */
+                oversight: t('platform.shell.group.oversight'),
                 commercial: t('platform.shell.group.commercial'),
                 integrations: t('platform.shell.group.integrations'),
             }}
             sections={[
+                {
+                    key: 'workspaces',
+                    label: t('platform.tenants.nav.label'),
+                    icon: <Buildings aria-hidden="true" size={18} />,
+                    group: 'oversight',
+                },
+                {
+                    key: 'users',
+                    label: t('platform.users.nav.label'),
+                    icon: <Users aria-hidden="true" size={18} />,
+                    group: 'oversight',
+                },
+                {
+                    key: 'audit-log',
+                    label: t('platform.auditLog.nav.label'),
+                    icon: <ClipboardText aria-hidden="true" size={18} />,
+                    group: 'oversight',
+                },
                 {
                     key: 'plans',
                     label: t('platform.plans.region.label'),
@@ -62,6 +91,42 @@ export function PlatformApp() {
             }
             render={(section) => {
                 const crumb = { label: t('platform.shell.heading') };
+
+                if (section === 'workspaces') {
+                    return (
+                        <>
+                            <OpsPageHeader
+                                title={t('platform.tenants.region.label')}
+                                crumbs={[crumb, { label: t('platform.tenants.nav.label') }]}
+                            />
+                            <TenantDetailPage />
+                        </>
+                    );
+                }
+
+                if (section === 'users') {
+                    return (
+                        <>
+                            <OpsPageHeader
+                                title={t('platform.users.region.label')}
+                                crumbs={[crumb, { label: t('platform.users.nav.label') }]}
+                            />
+                            <PlatformUsersPage />
+                        </>
+                    );
+                }
+
+                if (section === 'audit-log') {
+                    return (
+                        <>
+                            <OpsPageHeader
+                                title={t('platform.auditLog.region.label')}
+                                crumbs={[crumb, { label: t('platform.auditLog.nav.label') }]}
+                            />
+                            <AuditLogPage />
+                        </>
+                    );
+                }
 
                 if (section === 'subscriptions') {
                     return (

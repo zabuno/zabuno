@@ -6,13 +6,16 @@ use App\Http\Controllers\PlatformAdmin\ActivateManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\DisableProviderCredentialController;
 use App\Http\Controllers\PlatformAdmin\ListCoreModulesController;
 use App\Http\Controllers\PlatformAdmin\ListManagedPlansController;
+use App\Http\Controllers\PlatformAdmin\ListManagedUsersController;
 use App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController;
+use App\Http\Controllers\PlatformAdmin\ListPlatformAuditLogController;
 use App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController;
 use App\Http\Controllers\PlatformAdmin\ListProviderCredentialsController;
 use App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController;
 use App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController;
 use App\Http\Controllers\PlatformAdmin\ShowAiAuditController;
 use App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController;
+use App\Http\Controllers\PlatformAdmin\ShowManagedWorkspaceController;
 use App\Http\Controllers\PlatformAdmin\StoreManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\StoreManualPaymentController;
 use App\Http\Controllers\PlatformAdmin\StoreProviderConnectionController;
@@ -29,7 +32,29 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/admin/plans/{plan}/activate', ActivateManagedPlanController::class);
 
         Route::get('/admin/workspaces', ListManagedWorkspacesController::class);
+        /*
+            Kiracı ayrıntısı (`docs/122` Y2). Liste vardı, satıra tıklayınca
+            hiçbir şey yoktu. SALT OKUNUR: bu ucun POST/PUT/DELETE eşi
+            bilerek yoktur ve kiracı olarak oturum açma (impersonation) Y7'ye
+            bırakılmıştır — `docs/122` §5 onu en tehlikeli süperadmin
+            yeteneği sayar ve zor olmasını şart koşar.
+        */
+        Route::get('/admin/workspaces/{workspace}', ShowManagedWorkspaceController::class)
+            ->whereNumber('workspace');
         Route::get('/admin/workspaces/{workspace}/subscription', ShowManagedSubscriptionController::class);
+
+        /*
+            Kullanıcı görünürlüğü (`docs/122` Y2): kim, hangi çalışma
+            alanında, hangi rolle, adresi doğrulanmış mı. Parola sıfırlama
+            ya da kilitleme ucu YOK — istenen görünürlüktü, müdahale değil.
+        */
+        Route::get('/admin/users', ListManagedUsersController::class);
+
+        /*
+            Denetim günlüğü ekranının ucu (`docs/122` Y2). Dört tablo aylardır
+            doluyordu ve okuyan yeri yoktu; okunmayan denetim izi yoktur.
+        */
+        Route::get('/admin/audit-log', ListPlatformAuditLogController::class);
         Route::post('/admin/workspaces/{workspace}/manual-payments', StoreManualPaymentController::class)->middleware('throttle:5,1');
 
         // Sağlayıcı kimlik-bilgisi kasası — `docs/94`. Yazma uçları
