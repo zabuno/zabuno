@@ -8,6 +8,46 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.closed.notice
+msgid "guest.closed.notice"
+msgstr "Şu anda kapalıyız."
+
+#: guest:guest.closed.opensOn
+msgid "guest.closed.opensOn"
+msgstr "{day} günü {clock} açılıyoruz."
+
+#: guest:guest.closed.opensToday
+msgid "guest.closed.opensToday"
+msgstr "Bugün {clock} açılıyoruz."
+
+#: guest:guest.day.1
+msgid "guest.day.1"
+msgstr "Pazartesi"
+
+#: guest:guest.day.2
+msgid "guest.day.2"
+msgstr "Salı"
+
+#: guest:guest.day.3
+msgid "guest.day.3"
+msgstr "Çarşamba"
+
+#: guest:guest.day.4
+msgid "guest.day.4"
+msgstr "Perşembe"
+
+#: guest:guest.day.5
+msgid "guest.day.5"
+msgstr "Cuma"
+
+#: guest:guest.day.6
+msgid "guest.day.6"
+msgstr "Cumartesi"
+
+#: guest:guest.day.7
+msgid "guest.day.7"
+msgstr "Pazar"
+
 #: guest:guest.deadEnd.body
 msgid "guest.deadEnd.body"
 msgstr "Karekod bir menüye bağlı değil. Lütfen restoran personeline bildirin; size güncel menüyü ulaştırabilirler."

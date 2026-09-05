@@ -75,4 +75,71 @@ enum MembershipRole: string
     {
         return [self::Editor, self::Manager, self::Kitchen];
     }
+
+    /**
+     * Sahibin EKİPTEN ÇIKARABİLECEĞİ roller.
+     *
+     * `invitable()` DEĞİLDİR ve ondan türetilmiş bir kısaltma da değildir —
+     * ikisi ayrı iki soruya cevap verir: "kimi yeni alabilirim" ile "kimi
+     * çıkarabilirim". Kaldırma koşulu bir süre davet listesini ödünç aldı ve
+     * bu, kimsenin kastetmediği bir hapishane kurdu: `member` davet
+     * edilemediği için ÇIKARILAMAZ da olmuştu. Veritabanında o rolü taşıyan
+     * gerçek insanlar var; sahip "Çıkar" diyemiyordu, dese sunucu 404
+     * döndürüyordu ve işten ayrılan biri çalışma alanını görmeye devam
+     * ediyordu — kalıcı olarak.
+     *
+     * Bu yüzden `member` BURADA var ama `invitable()`'da yok ve olmamalı: o
+     * role yeni kimse davet edilmemeli. Bir role kimseyi almamak, o rolü
+     * taşıyanı içeride tutmak anlamına gelmez.
+     *
+     * `Owner` ise burada da yok, ve bu listenin tek gerçek sınırıdır:
+     * sahiplik silinmez, DEVREDİLİR (`transferOwnership`). Silinseydi çalışma
+     * alanı sahipsiz kalır ve kimse onaramazdı.
+     *
+     * Sıra: önce davet edilebilenler kaynağın kendi sırasıyla (Editör ·
+     * Yönetici · Mutfak), sonra miras rol — okuyan kişi listenin nereden
+     * geldiğini tek bakışta görsün.
+     *
+     * @return list<self>
+     */
+    public static function removable(): array
+    {
+        return [...self::invitable(), self::Member];
+    }
+
+    /**
+     * Sahibin SAHİPLİĞİ DEVREDEBİLECEĞİ roller.
+     *
+     * Üçüncü ayrı soru, üçüncü ayrı liste: "kimi işe alırım" (`invitable()`),
+     * "kimi çıkarırım" (`removable()`) ve "dükkânı kime bırakırım". İlk
+     * ikisinden türetilmedi çünkü türetilseydi yanlış cevap verirdi — mutfak
+     * ikisinde de var ama devralamaz, `member` çıkarılabilir ama devralamaz.
+     *
+     * NEDEN İKİ ROL. Devrin doğal adayı, işi ertesi gün fiilen çevirecek
+     * kişidir: Yönetici menüyü, şubeyi ve karekodu zaten HER GÜN yürütür.
+     * Editör de listededir çünkü çalışma alanının içeriğini o taşır.
+     *
+     * Bu liste bir süre yalnız `Editor`'dan ibaretti ve bu bir SEÇİM
+     * DEĞİLDİ: kısıt yazıldığında (2026-08-24) enum yalnız `owner`, salt
+     * okunur `member` ve `editor` taşıyordu — editör, devredilebilecek tek
+     * adaydı. `Manager` dört gün sonra doğdu ve koşula kimse geri dönmedi;
+     * sonuç, sahibin dükkânı devrederken günlük operasyonu yürüten kişiyi
+     * seçemeyip yalnız içerik düzenleyeni seçebilmesiydi.
+     *
+     * MUTFAK BİLEREK DIŞARIDA. O rol ürünün tamamında iki şey görür: alerjen
+     * ve "bugün bitti". Devir GERİ DÖNÜLEMEZ — eski sahip aynı işlemde
+     * editöre iner ve geri alamaz — bu yüzden yanlış tıklama onarılamaz.
+     * Aşçı sahip olacaksa önce yürütebileceği bir role yükseltilir; o yol
+     * zaten var.
+     *
+     * `Owner` yok: kendine devir bir işlem değil, boş bir cümledir.
+     * `Member` de yok: yeni kimsenin davet edilmediği, hiçbir şeyi
+     * değiştiremeyen miras rol sahipliği devralamaz.
+     *
+     * @return list<self>
+     */
+    public static function ownershipTransferable(): array
+    {
+        return [self::Editor, self::Manager];
+    }
 }

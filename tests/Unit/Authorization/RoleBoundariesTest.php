@@ -122,4 +122,42 @@ final class RoleBoundariesTest extends TestCase
             MembershipRole::invitable(),
         );
     }
+
+    /**
+     * ÇIKARILABİLİR KÜME, DAVET EDİLEBİLİR KÜMEDEN GENİŞTİR (FF-142).
+     *
+     * İkisi bir zamanlar aynı listeydi ve bu, kimsenin kastetmediği bir
+     * hapishane kurdu: `member` davet edilemediği için çıkarılamaz da
+     * olmuştu. Oysa bir role kimseyi yeni ALMAMAK ile o rolü taşıyanı içeride
+     * TUTMAK aynı şey değildir — veritabanında o rolü taşıyan gerçek
+     * insanlar var ve sahip onları ekipten çıkarabilmeli.
+     *
+     * Sınırın tek gerçek dışarıda kalanı `owner`'dır: sahiplik silinmez,
+     * DEVREDİLİR. Silinseydi çalışma alanı sahipsiz kalır ve kimse
+     * onaramazdı — bu yüzden aşağıdaki iki satır ayrı ayrı sınanıyor.
+     */
+    public function test_removable_set_adds_the_legacy_role_but_never_the_owner(): void
+    {
+        self::assertNotContains(MembershipRole::Owner, MembershipRole::removable());
+        self::assertContains(MembershipRole::Member, MembershipRole::removable());
+
+        foreach (MembershipRole::invitable() as $role) {
+            self::assertContains(
+                $role,
+                MembershipRole::removable(),
+                'Davet edilebilen her rol çıkarılabilir de olmalı.',
+            );
+        }
+
+        // Tam eşitlik: kümeye bir gün sessizce `owner` eklenmesini engeller.
+        self::assertSame(
+            [
+                MembershipRole::Editor,
+                MembershipRole::Manager,
+                MembershipRole::Kitchen,
+                MembershipRole::Member,
+            ],
+            MembershipRole::removable(),
+        );
+    }
 }

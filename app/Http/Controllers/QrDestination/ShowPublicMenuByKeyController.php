@@ -129,6 +129,17 @@ final class ShowPublicMenuByKeyController extends Controller
             );
         }
 
+        /*
+            ARAYÜZ dili ile İÇERİK dili AYRIDIR (`docs/85`): ürün adlarını
+            restoran kendi dilinde yazar ve biz onları çevirmiyoruz.
+
+            Seçim YANITTAN ÖNCE çözülür çünkü artık iki metin haritası ona
+            bağlı: menünün kendi metinleri ve —şube kapalıysa— üstündeki
+            şerit. İkisini ayrı yerlerde çözseydik bir gün ayrı dillere
+            düşerlerdi.
+        */
+        $guestLocale = GuestLocale::resolve($request, $address['locale']);
+
         // Buraya analitik YAZILMAZ ve bu bilinçlidir. Ürünün ölçtüğü şey
         // "QR çözümlemesi" ve "menü açılışı"dır; arama motorundan gelen bir
         // ziyaretçi bir karekod taramamıştır. Onu tarama gibi kaydetmek,
@@ -163,12 +174,22 @@ final class ShowPublicMenuByKeyController extends Controller
                 İngilizce olacağını ima etmek, tutulmayacak bir söz vermek
                 olurdu.
             */
-            'guestLocale' => $guestLocale = GuestLocale::resolve($request, $address['locale']),
+            'guestLocale' => $guestLocale,
             'guestText' => $this->guestText->all(
                 $guestLocale,
                 $this->countCategories($publication->snapshot),
                 $this->countItems($publication->snapshot),
             ),
+            /*
+                ŞUBE KAPALI ŞERİDİ (FF-141). Menü GİZLENMEZ; kapalılık menünün
+                ÜSTÜNDE bir cümledir. Karar `ResolveGuestMenuView` içinde
+                verilir, böylece karekod yüzeyi ile kalıcı adres yüzeyi
+                ayrışamaz.
+
+                Şablona KARARIN KENDİSİ geçirilir, cümlesi değil (FF-143);
+                cümleyi kuran ve çizen tek yer ortak parçadır.
+            */
+            'closedNotice' => $view->closedNotice,
             // Kimlik alanı EKLENMEDEN önce yayınlanmış menüler için canlı
             // ad yedektir (`docs/75`). Donmuş bir değer varsa şablon ona
             // bakar, buraya değil.

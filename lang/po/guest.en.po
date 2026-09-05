@@ -8,6 +8,46 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: guest:guest.closed.notice
+msgid "guest.closed.notice"
+msgstr "We are closed right now."
+
+#: guest:guest.closed.opensOn
+msgid "guest.closed.opensOn"
+msgstr "We open on {day} at {clock}."
+
+#: guest:guest.closed.opensToday
+msgid "guest.closed.opensToday"
+msgstr "We open today at {clock}."
+
+#: guest:guest.day.1
+msgid "guest.day.1"
+msgstr "Monday"
+
+#: guest:guest.day.2
+msgid "guest.day.2"
+msgstr "Tuesday"
+
+#: guest:guest.day.3
+msgid "guest.day.3"
+msgstr "Wednesday"
+
+#: guest:guest.day.4
+msgid "guest.day.4"
+msgstr "Thursday"
+
+#: guest:guest.day.5
+msgid "guest.day.5"
+msgstr "Friday"
+
+#: guest:guest.day.6
+msgid "guest.day.6"
+msgstr "Saturday"
+
+#: guest:guest.day.7
+msgid "guest.day.7"
+msgstr "Sunday"
+
 #: guest:guest.deadEnd.body
 msgid "guest.deadEnd.body"
 msgstr "The QR code is not linked to a menu. Please tell the restaurant staff; they can get you the current menu."

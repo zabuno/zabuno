@@ -455,6 +455,22 @@
             @endisset
         </p>
     @endisset
+    {{-- ŞUBE ŞU ANDA KAPALI (FF-141) — menü GİZLENMEZ, üstüne dürüst bir
+         şerit konur. Gece 23:00'te karekodu okutan misafir çoğu zaman yarını
+         planlıyordur; menüyü saklamak ona hizmet etmez, yalnız elimizdeki
+         bilgiyi ondan gizler.
+
+         Bu şerit `public-menu-out-of-service` DEĞİLDİR ve olmamalıdır: o sayfa
+         "gösterilecek menü yok" der ve menüyü hiç çizmez. Burada menü vardır.
+
+         ÖNİZLEME UYARISININ ALTINDA, İKİSİ BİRDEN (FF-143). "Bu bir önizleme"
+         ile "şu anda kapalıyız" farklı iki gerçektir ve aynı anda doğru
+         olabilirler; biri diğerinin yerine geçmez, geçseydi sahip önizlemede
+         misafirin gördüğünden başka bir sayfa görürdü.
+
+         İşaretleme ORTAK PARÇADADIR çünkü aynı şerit ürün sayfasında da
+         çizilir; kopyalasaydık ikisi bir gün ayrışırdı. --}}
+    @include('partials.guest-closed-notice', ['closedNotice' => $closedNotice ?? null])
     <header class="qr-menu-header">
         {{-- Misafirin gördüğü ilk kelime "Menü" değil, gittiği yerin adıdır.
              Ad bilinmiyorsa başlık yine de basılır: boş bir <h1> sayfayı

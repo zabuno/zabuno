@@ -121,6 +121,29 @@ final class DraftPreviewLinkTest extends TestCase
         return [$workspaceId, $locationId, $menuId];
     }
 
+    /**
+     * Şubenin haftasını DOĞRUDAN yazar — yedi gün, aynı aralık.
+     *
+     * Panel ucundan geçilmemesinin sebebi öncülün kendisi: burada denenen şey
+     * yazma yolu değil, önizlemenin o veriyle NE gösterdiğidir. Yazma yolu
+     * `LocationOpeningHoursTest` içinde ayrıca dondurulmuş durumda.
+     */
+    private function insertUniformWeek(int $workspaceId, int $locationId, int $opensMinute, int $closesMinute): void
+    {
+        foreach (range(1, 7) as $day) {
+            DB::table('location_opening_hours')->insert([
+                'workspace_id' => $workspaceId,
+                'location_id' => $locationId,
+                'day_of_week' => $day,
+                'is_closed' => false,
+                'opens_minute' => $opensMinute,
+                'closes_minute' => $closesMinute,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
     public function test_owner_gets_a_short_lived_signed_preview_address(): void
     {
         $owner = $this->verifiedUser();
@@ -161,6 +184,77 @@ final class DraftPreviewLinkTest extends TestCase
         // Sayfanın KENDİSİ ne olduğunu söyler; adresi paylaşan kişi de,
         // gösterilen kişi de bunun canlı menü olmadığını görür.
         $page->assertSee('preview', false);
+
+        // Bu şubenin saati HİÇ girilmemiş: kapalı şeridi çizilmez ve
+        // önizleme bundan hiç etkilenmez (FF-143).
+        $page->assertDontSee('data-guest-state="closed"', false);
+    }
+
+    /*
+    |---------------------------------------------------------------------------
+    | ÖNİZLEME DE MİSAFİRİN SAYFASIDIR (FF-143)
+    |---------------------------------------------------------------------------
+    |
+    | Önizlemenin tek işi, sahibin "masadaki misafir bunu nasıl görecek?"
+    | sorusunu YAYINLAMADAN cevaplamaktır. Kapalı şeridi misafirin sayfasında
+    | çizilip önizlemede çizilmeseydi, önizleme tam da o soruya yanlış cevap
+    | verirdi — ve sahip, gece saatinde menüsüne bakan misafirin ne gördüğünü
+    | ancak yayınladıktan sonra öğrenirdi.
+    |
+    | İKİ UYARI BİRBİRİNİ EZMEZ. "Bu bir önizleme" ile "şu anda kapalıyız"
+    | farklı iki gerçektir ve ikisi de aynı anda doğrudur; biri diğerinin
+    | yerine geçemez.
+    */
+
+    public function test_the_preview_says_both_that_it_is_a_draft_and_that_the_location_is_closed(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId, $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-prev-closed');
+        $this->insertUniformWeek($workspaceId, $locationId, 9 * 60, 23 * 60);
+
+        /*
+            AN, ADRESİ ÜRETMEDEN ÖNCE sabitlenir: imza on beş dakikalıktır ve
+            önce üretip sonra saati ileri almak, sınanmak istenen sayfayı hiç
+            açtırmadan 403'e düşürürdü.
+        */
+        Carbon::setTestNow(Carbon::parse('2026-09-05 23:30', 'Europe/Istanbul'));
+
+        $url = (string) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/draft-preview-link"
+        )->json('url');
+
+        $page = $this->get($url);
+        Carbon::setTestNow();
+
+        $page->assertStatus(200);
+        // Taslak GİZLENMEZ: sahip fiyatlarını görmeye devam eder.
+        $page->assertSee('Adana Kebap');
+        // Önizleme uyarısı YERİNDE DURUR.
+        $page->assertSee('preview', false);
+        // Ve kapalı şeridi de çizilir — aynı anda, ikisi de doğru.
+        $page->assertSee('data-guest-state="closed"', false);
+        $page->assertSee('data-next-opening="09:00"', false);
+    }
+
+    public function test_the_preview_draws_no_closed_banner_while_the_location_is_open(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, $locationId, $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-prev-open');
+        $this->insertUniformWeek($workspaceId, $locationId, 9 * 60, 23 * 60);
+
+        Carbon::setTestNow(Carbon::parse('2026-09-05 12:00', 'Europe/Istanbul'));
+
+        $url = (string) $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/draft-preview-link"
+        )->json('url');
+
+        $page = $this->get($url);
+        Carbon::setTestNow();
+
+        $page->assertStatus(200);
+        $page->assertSee('preview', false);
+        // Açıkken şerit HİÇ çizilmez; önizleme uyarısı tek başına kalır.
+        $page->assertDontSee('data-guest-state="closed"', false);
     }
 
     public function test_an_expired_signature_no_longer_opens_the_preview(): void

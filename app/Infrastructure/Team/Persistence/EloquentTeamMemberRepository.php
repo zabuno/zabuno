@@ -42,7 +42,7 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
             ->where('id', $membershipId)
             ->where('workspace_id', $workspaceId)
             /*
-                KALDIRILABİLİR KÜME = DAVET EDİLEBİLİR ROLLER.
+                KALDIRILABİLİR KÜME KENDİ ADIYLA DURUR.
 
                 Burada bir zamanlar sabit bir `role = 'editor'` vardı. O
                 satır yazıldığında davet edilebilen tek rol Editör'dü;
@@ -50,20 +50,22 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
                 birlikte büyümedi. Sonuç sessiz bir yalandı: sahip "Çıkar"
                 diyordu, sorgu sıfır satır siliyordu ve kimse duymuyordu.
 
-                Bu yüzden koşul artık listeyi `MembershipRole::invitable()`
-                üzerinden TÜRETİYOR: davet edilebilen bir rol doğduğu anda
-                çıkarılabilir de olur — aynı hata bir daha bu yolla
-                doğamaz.
+                İlk onarım koşulu `MembershipRole::invitable()`'a bağladı ve
+                o üç rolü kurtardı — ama yanlış soruyu ödünç aldı. Davet
+                listesi "kimi yeni alabilirim"i anlatır; buradaki soru "kimi
+                çıkarabilirim". İkisi eşitlenince eski `member` rolündeki
+                kişiler kimsenin kastetmediği bir şekilde ekipte MAHSUR
+                kaldı: davet edilemedikleri için çıkarılamaz da olmuşlardı.
 
-                Listede OLMAYAN ikisi kasıtlıdır. `owner` silinmez,
-                DEVREDİLİR (`transferOwnership`); silinseydi çalışma alanı
-                sahipsiz kalır ve kimse onaramazdı. `member` ise yalnız
-                eski kayıtların taşıdığı salt okunur roldür ve bu uç
-                noktanın donmuş sözleşmesi onu koruma altına alır.
+                Bu yüzden koşul artık kendi kümesini okuyor:
+                `MembershipRole::removable()`. Sınır orada tek cümleyle
+                yazılı — `owner` silinmez, DEVREDİLİR
+                (`transferOwnership`); silinseydi çalışma alanı sahipsiz
+                kalır ve kimse onaramazdı.
             */
             ->whereIn('role', array_map(
                 static fn (MembershipRole $role): string => $role->value,
-                MembershipRole::invitable(),
+                MembershipRole::removable(),
             ))
             ->delete() > 0;
     }
@@ -99,7 +101,27 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
 
             $targetMembership = $memberships->firstWhere('id', $targetMembershipId);
 
-            if ($targetMembership === null || $targetMembership->role !== 'editor') {
+            /*
+                HEDEF, DEVRALABİLEN BİR ROLDE OLMALI.
+
+                Koşul bir zamanlar "tam olarak `editor`" diyordu ve bu bir
+                seçim değildi: yazıldığı gün enum yalnız `owner`, salt okunur
+                `member` ve `editor` taşıyordu — editör, devredilebilecek tek
+                adaydı. `Manager` sonradan doğdu ve koşula kimse geri dönmedi,
+                böylece sahip dükkânı devrederken günlük operasyonu yürüten
+                kişiyi seçemez oldu (`MembershipRole::ownershipTransferable()`
+                bu kümenin NEDEN'ini taşır).
+
+                Küme `removable()` DEĞİLDİR ve ondan türetilmez: mutfak ve
+                miras `member` çıkarılabilir ama devralamaz. Aynı bayrağı
+                paylaşsalardı, devir bu iki rolü de kapsardı.
+            */
+            $transferableRoles = array_map(
+                static fn (MembershipRole $role): string => $role->value,
+                MembershipRole::ownershipTransferable(),
+            );
+
+            if ($targetMembership === null || ! in_array($targetMembership->role, $transferableRoles, true)) {
                 return false;
             }
 
@@ -110,7 +132,15 @@ final class EloquentTeamMemberRepository implements TeamMemberRepositoryPort
             $promoted = DB::table('workspace_memberships')
                 ->where('id', $targetMembership->id)
                 ->where('workspace_id', $workspaceId)
-                ->where('role', 'editor')
+                /*
+                    Koşullu güncelleme AYNEN durur, yalnız sabit `editor`
+                    yerine az önce DOĞRULANAN rolü bekler: satır kilit
+                    altında okunduktan sonra da olsa değişmişse güncelleme
+                    sıfır satır etkiler ve işlem geri sarılır. Sabit değer
+                    bırakılsaydı, yönetici hedefte bu kapı her zaman
+                    tökezlerdi.
+                */
+                ->where('role', $targetMembership->role)
                 ->update(['role' => 'owner', 'updated_at' => now()]);
 
             if ($promoted !== 1) {

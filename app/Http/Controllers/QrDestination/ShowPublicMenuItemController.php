@@ -121,6 +121,21 @@ final class ShowPublicMenuItemController extends Controller
                 : $address['brand_name'],
             'guestLocale' => $guestLocale,
             'guestText' => $this->guestText->all($guestLocale),
+            /*
+                ŞUBE KAPALI ŞERİDİ, BURADA DA (FF-143).
+
+                Karar ZATEN elimizde: `$view` yukarıda bir kez çözüldü ve
+                kapalılık onun içinde geliyor. İkinci bir hesap yapmak şöyle
+                dursun, ikinci bir sorgu bile atılmıyor — iki hesap bir gün
+                iki cevap verir ve hangisinin doğru olduğu ancak misafir
+                kapalı bir kapıya dayandığında anlaşılır.
+
+                Bu sayfanın şeride menü sayfasından DAHA ÇOK ihtiyacı var:
+                buraya masadan değil, aramadan ve paylaşılan bağlantılardan
+                gelinir. Gece 23:30'da tek bir yemeğin sayfasına düşen kişiye
+                hiçbir şey dememek, ona "açığız" demektir.
+            */
+            'closedNotice' => $view?->closedNotice,
             'contentLocale' => $address['locale'] !== '' ? $address['locale'] : null,
             'canonicalUrl' => $canonicalUrl,
             'analyticsContext' => [

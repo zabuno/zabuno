@@ -129,4 +129,60 @@ final class GuestText
 
         return $text;
     }
+
+    /**
+     * ŞUBE KAPALI ŞERİDİ (FF-141) — menünün ÜSTÜNDE, onun YERİNE değil.
+     *
+     * Servis dışı metinlerinden ayrı bir haritadır ve öyle kalmalıdır: orada
+     * gösterilecek menü yoktur, burada menü vardır ve çizilir. Aynı sözlüğe
+     * koymak, bir gün birinin cümlesini diğerinin ekranında görmek demekti.
+     *
+     * DURUM CÜMLEYLE SÖYLENİR. `notice` her zaman doludur ve "kapalıyız"
+     * der; şeridin rengi ya da konumu tek başına hiçbir şey anlatmaz
+     * (WCAG 1.4.1).
+     *
+     * AÇILIŞ SATIRI VARSA YAZILIR, YOKSA HİÇ YAZILMAZ. `nextOpening` anahtarı
+     * saat bilinmediğinde haritada HİÇ BULUNMAZ; boş bir dize döndürseydik
+     * şablon yarım bir cümle çizerdi — aynı kural `outOfService` içinde de
+     * yazılı.
+     *
+     * @param  int|null  $nextOpeningIsoWeekday  1 = Pazartesi … 7 = Pazar.
+     * @param  bool  $nextOpeningIsToday  Gün numarasından TÜRETİLEMEZ: bir hafta
+     *                                    sonraki aynı gün de aynı numarayı taşır.
+     * @return array<string, string>
+     */
+    public function closedNotice(
+        ?string $locale = null,
+        ?string $nextOpeningClock = null,
+        ?int $nextOpeningIsoWeekday = null,
+        bool $nextOpeningIsToday = false,
+    ): array {
+        $text = ['notice' => $this->get('guest.closed.notice', $locale)];
+
+        if ($nextOpeningClock === null || trim($nextOpeningClock) === '') {
+            return $text;
+        }
+
+        if ($nextOpeningIsToday) {
+            $text['nextOpening'] = $this->get('guest.closed.opensToday', $locale, [
+                'clock' => $nextOpeningClock,
+            ]);
+
+            return $text;
+        }
+
+        // Gün adı olmadan "Pazartesi 09:00" cümlesi kurulamaz; günü
+        // bilmiyorsak saati de yazmayız. Yarım bir cümle, hiç cümle
+        // olmamasından kötüdür.
+        if ($nextOpeningIsoWeekday === null || $nextOpeningIsoWeekday < 1 || $nextOpeningIsoWeekday > 7) {
+            return $text;
+        }
+
+        $text['nextOpening'] = $this->get('guest.closed.opensOn', $locale, [
+            'day' => $this->get('guest.day.'.$nextOpeningIsoWeekday, $locale),
+            'clock' => $nextOpeningClock,
+        ]);
+
+        return $text;
+    }
 }

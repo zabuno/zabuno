@@ -25,18 +25,28 @@ use Tests\TestCase;
  * validation runs) *and* the requester must be the workspace owner (403
  * for a Manager, who does hold WorkspaceManage); the memberId path segment
  * is a workspace_memberships.id, and a row can be removed only when its
- * role is one of MembershipRole::invitable() — editor, manager, kitchen —
- * *and* its workspace_id matches the exact requested workspace; success is
- * 204 with no body and the row is deleted; the owner row and any legacy
- * "member" row can never be removed through this endpoint (404, row
- * survives) even when the requester is the same owner acting on their own
- * row — ownership is transferred, never deleted; a removable row that
- * belongs to a different workspace is rejected with 404 and the row
- * survives untouched; auth+verified is mandatory; the write is throttled
- * to 5 requests per minute like other Team mutations (throttle:5,1).
+ * role is one of MembershipRole::removable() — editor, manager, kitchen and
+ * the legacy "member" — *and* its workspace_id matches the exact requested
+ * workspace; success is 204 with no body and the row is deleted; the owner
+ * row can never be removed through this endpoint (404, row survives) even
+ * when the requester is the same owner acting on their own row — ownership
+ * is transferred, never deleted; a removable row that belongs to a
+ * different workspace is rejected with 404 and the row survives untouched;
+ * auth+verified is mandatory; the write is throttled to 5 requests per
+ * minute like other Team mutations (throttle:5,1).
+ *
+ * FF-142 SÖZLEŞME DÜZELTMESİ. Bu sözleşme bir zamanlar `member` satırını da
+ * "asla kaldırılamaz" diye sayıyordu. O satır bir ürün kararı değildi:
+ * `member` yalnız ESKİ kayıtların taşıdığı salt okunur roldür, davet
+ * edilemez — ve kaldırma kümesi "davet edilebilir roller"den türetildiği
+ * için o rol kümenin dışında kalmıştı. Sonuç, veritabanında gerçekten o
+ * rolü taşıyan insanların ekipten KALICI olarak çıkarılamaması oldu: sahip
+ * "Çıkar" diyemiyordu, diyebilseydi bile sunucu 404 döndürüyordu. Sınırın
+ * gerçek olanı `owner`'dır ve aynen duruyor.
  *
  * Requirement IDs: TEAM-MEMBERS-REMOVE-01,
  * TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01,
+ * TEAM-MEMBERS-REMOVE-LEGACY-MEMBER-01,
  * TEAM-MEMBERS-REMOVE-OWNER-ONLY-01, TEAM-MEMBERS-REMOVE-OWNER-ONLY-02,
  * TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01,
  * TEAM-MEMBERS-REMOVE-CROSS-WORKSPACE-01,
@@ -164,28 +174,61 @@ final class RemoveTeamMemberTest extends TestCase
         self::assertNull($this->membershipRow($kitchenMembershipId), 'TEAM-MEMBERS-REMOVE-INVITABLE-ROLES-01: kitchen satırı gerçekten silinmeli.');
     }
 
+    // --- TEAM-MEMBERS-REMOVE-LEGACY-MEMBER-01 --------------------------------
+
+    /**
+     * ESKİ `member` ROLÜNDEKİ KİŞİ DE EKİPTEN ÇIKARILABİLİR.
+     *
+     * `member` davet edilemez — ve kaldırma koşulu bir süre "davet
+     * edilebilir roller" listesinden TÜRETİLDİĞİ için o rol kazara kümenin
+     * dışında kaldı. Kural kâğıt üzerinde masumdu, sonucu değildi:
+     * veritabanında bu rolü taşıyan gerçek insanlar var ve sahibin onları
+     * ekipten çıkarmasının HİÇBİR yolu yoktu. İşten ayrılan biri, sahibi ne
+     * yaparsa yapsın, çalışma alanını görmeye devam ediyordu.
+     *
+     * "Davet edilebilir" ile "çıkarılabilir" AYRI iki kümedir: bir role
+     * kimseyi yeni davet etmemek, o rolü taşıyanı içeride hapsetmek anlamına
+     * gelmez.
+     */
+    public function test_owner_removes_a_legacy_member_row_too(): void
+    {
+        $owner = $this->verifiedUser('Ayşe Yılmaz', 'ayse-mem-remove-legacy-01@example.test');
+        $workspaceId = $this->workspaceOwnedBy($owner, 'Zeytin Restoranları', 'zeytin-mem-remove-legacy-01');
+
+        $legacy = $this->verifiedUser('Elif Kaya', 'elif-mem-remove-legacy-01@example.test');
+        $legacyMembershipId = $this->addMember($workspaceId, $legacy, 'member');
+
+        $response = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->deleteJson($this->removeUri($workspaceId, $legacyMembershipId));
+
+        $response->assertStatus(204, 'TEAM-MEMBERS-REMOVE-LEGACY-MEMBER-01: sahibi eski member üyeliğini kaldırdığında 204 dönmeli.');
+        self::assertSame('', $response->getContent(), 'TEAM-MEMBERS-REMOVE-LEGACY-MEMBER-01: 204 yanıt gövdesi boş olmalı.');
+
+        self::assertNull($this->membershipRow($legacyMembershipId), 'TEAM-MEMBERS-REMOVE-LEGACY-MEMBER-01: member satırı gerçekten silinmeli.');
+    }
+
     // --- TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01 ------------------------------
 
-    public function test_owner_and_member_rows_cannot_be_removed_through_this_endpoint(): void
+    /**
+     * SAHİP SATIRI BU YOLDAN ASLA SİLİNMEZ — sahibin kendisi istese bile.
+     *
+     * Kaldırılabilir küme büyüdükçe (FF-138d yönetici ve mutfağı, FF-142
+     * eski `member`'ı ekledi) bu satırın anlamı artıyor: sınırın tek gerçek
+     * dışarıda kalanı `owner`'dır. Silinseydi çalışma alanı SAHİPSİZ kalır
+     * ve kimse onaramazdı; sahiplik silinmez, DEVREDİLİR.
+     */
+    public function test_owner_row_can_never_be_removed_through_this_endpoint(): void
     {
         $owner = $this->verifiedUser('Ayşe Yılmaz', 'ayse-mem-remove-role-01@example.test');
         $workspaceId = $this->workspaceOwnedBy($owner, 'Zeytin Restoranları', 'zeytin-mem-remove-role-01');
 
         $ownerMembershipId = $this->ownerMembershipId($workspaceId, $owner->id);
 
-        $member = $this->verifiedUser('Mehmet Demir', 'mehmet-mem-remove-role-01@example.test');
-        $memberMembershipId = $this->addMember($workspaceId, $member, 'member');
-
         $ownerSelfResponse = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
             ->deleteJson($this->removeUri($workspaceId, $ownerMembershipId));
         $ownerSelfResponse->assertStatus(404, 'TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01: owner satırı bu uç noktayla asla kaldırılamaz — 404 dönmeli.');
 
-        $memberResponse = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->deleteJson($this->removeUri($workspaceId, $memberMembershipId));
-        $memberResponse->assertStatus(404, 'TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01: role="member" satırı bu uç noktayla kaldırılamaz — 404 dönmeli.');
-
         self::assertNotNull($this->membershipRow($ownerMembershipId), 'TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01: owner satırı hayatta kalmalı.');
-        self::assertNotNull($this->membershipRow($memberMembershipId), 'TEAM-MEMBERS-REMOVE-NON-EDITOR-ROLE-01: member satırı hayatta kalmalı.');
     }
 
     // --- TEAM-MEMBERS-REMOVE-OWNER-ONLY-01 -----------------------------------

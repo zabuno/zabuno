@@ -93,6 +93,45 @@ export const guestTranslations = {
     'guest.outOfService.nextService': 'Next service starts at {clock}.',
 
     /*
+        ŞUBE KAPALIYKEN (FF-141) — SERVİS DIŞI DEĞİL, MENÜNÜN ÜSTÜNDEKİ ŞERİT.
+
+        Servis dışı sayfası "gösterilecek menü yok" der ve menüyü hiç çizmez.
+        Bu şerit ise menü çizilirken durur: gece 23:00'te karekodu okutan
+        misafir çoğu zaman yarını planlıyordur ve menüyü ondan saklamak ona
+        hizmet etmez.
+
+        DURUM YALNIZ RENKLE ANLATILMAZ. Şerit kırmızı da olsa, cümlenin
+        kendisi "kapalıyız" demek zorunda: rengi göremeyen misafir için renk
+        hiçbir şey anlatmaz (WCAG 1.4.1) — aynı gerekçe "tükendi" etiketinde
+        de yazılı.
+    */
+    'guest.closed.notice': 'We are closed right now.',
+    /*
+        AÇILIŞ SAATİ GERÇEK VERİDİR: şubenin kendi haftasından okunur ve
+        şubenin kendi saat dilimindedir. Hafta girilmemişse ya da yedi günü
+        de kapalıysa bu cümle HİÇ kurulmaz — tahmini bir saat ya da gün adı
+        yazmak, tutulmayacak bir söz vermek olurdu.
+
+        "Bugün" ile gün adı AYRI cümlelerdir: masadaki misafir için "bugün
+        09:00" ile "Pazartesi 09:00" apayrı iki bilgidir ve tek bir kalıba
+        sıkıştırılırsa biri mutlaka tuhaf okunur.
+    */
+    'guest.closed.opensToday': 'We open today at {clock}.',
+    'guest.closed.opensOn': 'We open on {day} at {clock}.',
+    /*
+        GÜN ADLARI KATALOGDA YAŞAR. Sunucuda `date()` ile üretilselerdi
+        sunucunun diline bağlı olurlardı; misafirin dili ise onun kendi
+        seçimidir (`docs/85`). ISO-8601 sırası: 1 = Pazartesi … 7 = Pazar.
+    */
+    'guest.day.1': 'Monday',
+    'guest.day.2': 'Tuesday',
+    'guest.day.3': 'Wednesday',
+    'guest.day.4': 'Thursday',
+    'guest.day.5': 'Friday',
+    'guest.day.6': 'Saturday',
+    'guest.day.7': 'Sunday',
+
+    /*
         BASILI KARTIN ÜSTÜNDEKİ CÜMLE (`docs/104` Döngü 8).
 
         Bu metin ekranda değil, masadaki kartta yaşar ve onu okuyan kişi
