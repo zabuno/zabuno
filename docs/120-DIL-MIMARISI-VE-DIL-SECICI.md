@@ -58,42 +58,80 @@ uluslararasılaştırma **çalışmak zorundadır**: bir metin kodda gömülüys
 hiçbir zaman çevrilemez ve kilidin açılması bir işe yaramaz. Bu yüzden yeni
 metin İngilizce de olsa **katalogdan** gelir.
 
-## 4. Dil seçimi — hangi sinyaller GERÇEKTEN var
+## 4. Dil pazarlığı — ağırlıklı tespit zinciri
 
-Sahip dört sinyal saydı: cihaz dili, tarayıcı dili, **klavye dili**, bölge.
-Üçü ölçülebilir, biri ölçülemez ve bunu söylemek zorundayım.
+**Sahibin yönlendirmesi (2026-09-05):** *"Drupal'da bahsettiğim ağırlık vardı
+ve dil değiştirici buna göre otonom çalışıyordu."*
 
-| Sinyal | Var mı | Nasıl |
+Doğru mekanizma bu ve deseni aynen alıyoruz. Drupal dil seçimini bir `if/else`
+yığını olarak değil, **ağırlıklı bir tespit yöntemi kütüğü** olarak kurar:
+yöntemler sıralıdır, **ilk çözebilen kazanır**, çözemeyen sessizce bir
+sonrakine bırakır. Sıra yapılandırmadır, koda gömülü değildir.
+
+İkinci ve daha önemli parçası: Drupal bunu **tek bir zincir** olarak değil,
+**dil türü** başına ayrı zincir olarak yapar (arayüz metni, içerik, URL).
+
+### 4.1 Neden dil TÜRÜ ayrımı bu depoda zorunlu
+
+Bugün ölçülen şey tam olarak buydu (`docs/118` E4): kurumsal sayfa dilini
+**adresten**, ürün arayüzü **tarayıcıyla pazarlıktan** alıyor. İkisi bugüne
+kadar kazayla doğruydu, çünkü ayrım bir yerde YAZILI DEĞİLDİ.
+
+Drupal'ın dil türü kavramı o ayrımın adıdır:
+
+| Dil türü | Neyi belirler | Zincir |
 | --- | --- | --- |
-| Tarayıcı / cihaz dili | **Var** | `Accept-Language` (sunucu) ve `navigator.languages` (istemci). İkisi de işletim sistemi dilinden türer |
-| Bölge (saat dilimi) | **Var** | `Intl.DateTimeFormat().resolvedOptions().timeZone` — ülke için iyi bir vekil |
-| Bölge (IP) | Koşullu | Sağlayıcı gerekir; bugün yok. Eklenirse sunucuda ve onaya tabi |
-| Kullanıcının kayıtlı tercihi | **Var** | Oturum açmış kullanıcıda hesap ayarı; anonimde çerez |
-| **Klavye dili** | **YOK** | Tarayıcıda klavye düzenini okuyan bir API **yoktur**. Sahibin isteği makul ama web platformu bunu vermiyor |
+| **Arayüz** | Düğme, etiket, hata mesajı — ürünün kendi metni | Kullanıcı tercihi → `Accept-Language` → kaynak dil. **Yalnız `shipped_locales` içinden seçer** |
+| **İçerik** | Kurumsal sayfanın, blog yazısının, menünün metni | Adres segmenti → içeriğin kendi dili. Pazarlık YOK |
+| **URL** | Adresin hangi dil dizininde olduğu | Yol öneki (`/tr/`, `/en/`) |
 
-**Klavye dili neden yok:** düzen bilgisi işletim sisteminde yaşar ve tarayıcı
-onu sayfaya açmaz — açsaydı bu bir parmak izi sinyali olurdu. Yazılan
-karakterlerden tahmin etmek mümkün ama bu bir **tahmin**dir ve bu deponun
-kuralı ölçülmeyen şeyi ölçülmüş gibi göstermemektir. Sinyal listesine
-yazılmadı; yazılsaydı hiçbir zaman çalışmayan bir kural olurdu.
+Bir kullanıcının arayüzü İngilizce, okuduğu sayfa Türkçe olabilir ve bu bir
+hata değildir: `/tr/urun/qr-menu/` Türkçe yazılmış bir sayfadır ve tarayıcı
+ayarı onu İngilizceye çeviremez.
 
-### Öncelik sırası
+### 4.2 Tespit yöntemleri ve ağırlıkları
 
-```
-1. Kullanıcının AÇIK seçimi      (çerez / hesap ayarı)   — her şeyi yener
-2. Adresteki locale segmenti     (/tr/, /en/)            — kurumsal sitede
-3. Accept-Language               (tarayıcı/cihaz)
-4. Saat dilimi                   (bölge vekili)          — yalnız 3 belirsizse
-5. Kaynak dil                    (en)
-```
+Her yöntem bir **çözücüdür**: ya bir dil döndürür ya `null`. `null` dönen
+yöntem zinciri kesmez, sırayı bir sonrakine bırakır.
 
-**Açık seçim neden her şeyi yener:** Almanya'da yaşayan bir Türk, tarayıcısı
-Almanca olsa da Türkçe okumak isteyebilir. Bir kez seçtiyse, sistem onu bir
-daha sorgulamaz — sorgulasaydı her ziyarette kararını geri alırdı.
+| Ağırlık | Yöntem | Kaynak | Hangi türde |
+| ---: | --- | --- | --- |
+| −20 | Açık seçim | Çerez / hesap ayarı | Arayüz |
+| −10 | Adres öneki | `/tr/`, `/en/` | İçerik, URL |
+| 0 | Oturum parametresi | `?language=tr` | Arayüz (önizleme/paylaşım) |
+| 10 | Tarayıcı ve cihaz | `Accept-Language`, `navigator.languages` | Arayüz |
+| 20 | Bölge (saat dilimi) | `Intl…timeZone` | Arayüz — **yalnız belirsizlik çözücü** |
+| 30 | Kaynak dil | `en` | Hepsi |
 
-**Bölge sinyali dili SEÇMEZ, yalnız BELİRSİZLİĞİ ÇÖZER.** İstanbul'daki bir
-tarayıcı `en` diyorsa, dil İngilizcedir; saat dilimine bakıp Türkçeye
-çevirmek, kullanıcının açık ayarını görmezden gelmektir.
+**Ağırlık yapılandırmadır, koda gömülü değildir.** Sıra değişince kod
+değişmez; bu, Drupal'ın kararının asıl değeri. Bir sıralama denemesi bir
+dağıtım değil, bir ayardır.
+
+**Açık seçim neden en ağır:** Almanya'da yaşayan bir Türk, tarayıcısı Almanca
+olsa da Türkçe okumak isteyebilir. Bir kez seçtiyse sistem onu bir daha
+sorgulamaz — sorgulasaydı her ziyarette kararını geri alırdı.
+
+**Bölge dili SEÇMEZ, BELİRSİZLİĞİ ÇÖZER.** İstanbul'daki bir tarayıcı `en`
+diyorsa dil İngilizcedir; saat dilimine bakıp Türkçeye çevirmek, kullanıcının
+açık ayarını görmezden gelmektir. Bu yüzden bölge yöntemi yalnız kendinden
+ağır hiçbir yöntem çözemediğinde konuşur.
+
+**Arayüz zinciri `shipped_locales` ile SÜZÜLÜR.** Bir yöntem sunulmayan bir
+dil döndürürse o cevap düşer ve sıra devam eder. Aksi hâlde bugün kapatılan
+kusur geri gelirdi: yarım çevrilmiş bir dil sunulur.
+
+### 4.3 Ölçülemeyen sinyal: klavye dili
+
+Sahip dört sinyal saydı; üçü yukarıda, dördüncüsü **web'de yok**.
+
+Tarayıcıda klavye düzenini okuyan bir API yoktur: düzen işletim sisteminde
+yaşar ve tarayıcı onu sayfaya açmaz — açsaydı bu bir parmak izi sinyali
+olurdu. Yazılan karakterlerden tahmin etmek mümkün ama bu bir **tahmin**dir.
+
+Ağırlıklı zincir bu yüzden ayrıca değerli: bir gün bir platform bu bilgiyi
+verirse, `KeyboardLayoutDetector` diye bir çözücü yazılır ve zincire bir
+ağırlıkla eklenir. Kod değişmez. **Bugün eklenmedi, çünkü hiçbir zaman
+çözemeyen bir yöntem, zincire yalancı bir halka takmaktır.**
 
 ## 5. Dil değiştirici — davranış sözleşmesi
 
