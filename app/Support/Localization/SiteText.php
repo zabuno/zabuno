@@ -81,6 +81,10 @@ final class SiteText
             'navContact' => 'site.nav.contact',
             'navLogin' => 'site.nav.login',
             'navRegister' => 'site.nav.register',
+            // Kabuk menüsünü açan sözcük (FF-190). Grup ve madde adları
+            // `SiteNavigation` üzerinden çözülür; bu tek dize kabuğun
+            // kendisine ait olduğu için burada.
+            'navMenu' => 'site.nav.menu',
             // Hazırlanıyor sayfası (FF-117): metin ŞABLONDA değil KATALOGDA.
             'pageState.title' => 'site.pageState.title',
             'pageState.headline' => 'site.pageState.headline',

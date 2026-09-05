@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\PublicSite;
 
-use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
-use App\Support\Localization\SiteText;
+use App\Support\Site\SiteShell;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -17,23 +16,14 @@ use Illuminate\View\View;
  */
 final class ShowContactFormController extends Controller
 {
-    public function __construct(
-        private readonly CanonicalUrl $canonical,
-        private readonly SiteText $siteText,
-    ) {}
+    public function __construct(private readonly SiteShell $shell) {}
 
     public function __invoke(Request $request): View
     {
-        return view('public.contact', [
-            // Ölçüm kimliği (`docs/100` Faz 3).
-            'pageKey' => 'contact',
-            'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), '/contact'),
-            'anchorPrefix' => '/',
-            'coreModuleCount' => count(config('core-modules')),
+        // Kabuk verisi TEK yerden (`SiteShell`); sayfa yalnız kendi
+        // gövdesinin ihtiyacını ekler.
+        return view('public.contact', $this->shell->context($request, 'contact', '/contact') + [
             'plans' => [],
-            'st' => $this->siteText->all(
-                SiteText::pick($request->getPreferredLanguage(['en', 'tr'])),
-            ),
         ]);
     }
 }

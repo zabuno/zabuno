@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\PublicSite;
 
-use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
 use App\Support\Localization\HelpLibrary;
-use App\Support\Localization\SiteText;
+use App\Support\Site\SiteShell;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -19,26 +18,23 @@ use Illuminate\View\View;
  */
 final class ShowHelpController extends Controller
 {
-    public function __construct(
-        private readonly CanonicalUrl $canonical,
-        private readonly SiteText $siteText,
-    ) {}
+    public function __construct(private readonly SiteShell $shell) {}
 
     public function __invoke(Request $request): View
     {
         $locale = HelpLibrary::localeFor($request->getPreferredLanguage(HelpLibrary::SUPPORTED));
 
-        return view('public.help', [
-            // Ölçüm kimliği (`docs/100` Faz 3).
-            'pageKey' => 'help',
-            'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), '/help'),
-            'anchorPrefix' => '/',
-            'coreModuleCount' => count(config('core-modules')),
+        /*
+            Kabuk verisi TEK yerden gelir (`SiteShell`): metin kataloğu,
+            kanonik adres, çıpa öneki, ölçüm kimliği ve gezinti. Her
+            denetleyici bu diziyi elle kurarken biri bir alanı unutuyordu.
+
+            Masterpage metni de MAKALENİN dilinde (`docs/100` MP-03): yardım
+            makalesi Türkçe geldiyse üst çubuk da Türkçe okunmalı.
+        */
+        return view('public.help', $this->shell->context($request, 'help', '/help', $locale) + [
             'helpView' => HelpLibrary::viewFor($locale),
             'helpLocale' => $locale,
-            'pageLocale' => $locale,
-            // Masterpage metni de makalenin dilinde (`docs/100` MP-03).
-            'st' => $this->siteText->all(SiteText::pick($locale)),
         ]);
     }
 }

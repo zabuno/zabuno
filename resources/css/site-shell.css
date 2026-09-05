@@ -1,0 +1,417 @@
+/*
+    KURUMSAL SİTENİN KABUĞU — üst çubuk, menü, altbilgi ve servis fişi.
+
+    ═══ NEDEN AYRI BİR DOSYA ═══
+
+    Kabuk artık deponun TEK kurumsal header/footer'ı (`docs/100` §2) ve her
+    kurumsal adres onu giyiyor: yaşayan `/`, `/pricing`, `/help`, `/contact`,
+    yasal sayfalar ve kütükten çizilen `/tr/…` sayfaları. Görünümü tek bir
+    yerde durmazsa, "güncellendiğinde her yer güncellensin" sözü yalnız HTML
+    için tutulur, görünüm için tutulmazdı.
+
+    ═══ DAR EKRAN TABAN (`docs/118` E1, E3) ═══
+
+    Bütün ölçüler 320 piksele göre yazıldı ve geniş ekranda AYNI kalıyor:
+    ikinci bir düzen yok, medya sorgusuyla gizlenen ikinci bir kopya yok.
+    Bileşim sahibin tarif ettiği gibi — BÜYÜK HEDEF, SIKI BOŞLUK: dokunma
+    hedefi `--control-height` (44px) tabanının altına inmez, boşluk ise
+    ölçeğin alt adımlarından beslenir.
+
+    ═══ İKON YOK (`docs/118` E6) ═══
+
+    Menünün açık/kapalı durumu iki çizgiyle anlatılıyor: kapalıyken artı,
+    açıkken eksi. Çizgi geometridir; kurumsal sitede ikon kütüphanesi yok.
+
+    ═══ HAM DEĞER YOK (`docs/119` §18) ═══
+
+    Renk, boşluk, yarıçap ve süre jetonlardan gelir. Bu dosyada sabit bir
+    renk ya da uydurma bir boşluk yoktur.
+*/
+
+/* Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
+   dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
+   ekranın yarısını yiyordu). */
+.site-shell-inner {
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+    padding-inline: var(--space-3);
+}
+
+/* --- Üst çubuk ---------------------------------------------------------- */
+
+.site-header {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.site-header-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: var(--space-1);
+    /*
+        Açılan bölmenin ÖLÇÜ KÖKÜ burasıdır.
+
+        Ölçüldü (2026-09-05, 320 px): bölme akışta kalınca çubuk büyüyor,
+        marka adı bölmenin yanında dikey olarak ortalanıyor ve gezinti dar
+        bir sütuna sıkışıyordu — ekranın yarısı boş kalıyordu. Bölme artık
+        çubuğun ALTINA, çubukla aynı hizada ve tam genişlikte açılıyor;
+        çubuğun kendi yüksekliği hiç değişmiyor, yani menüyü açmak sayfayı
+        aşağı itmiyor.
+    */
+    position: relative;
+}
+
+.site-brand {
+    display: inline-flex;
+    align-items: center;
+    /* Marka bağlantısı 82×24 ölçülmüştü (`docs/117` K1): yarıdan az bir
+       hedef. Yükseklik artık kontrol geometrisinden geliyor. */
+    min-height: var(--control-height);
+    font-size: var(--text-subsection);
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: 0.01em;
+}
+
+/* --- Menü (betiksiz açılır bölme) --------------------------------------- */
+
+.site-menu {
+    /* Konumlandırma kökü çubuğun kendisi; bkz. `.site-header-bar`. */
+    position: static;
+}
+
+.site-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-height);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    font-weight: 500;
+    cursor: pointer;
+    /* Tarayıcının kendi üçgen işareti kaldırılıyor: yerine geometrik bir
+       artı/eksi geliyor ve iki tarayıcıda aynı görünüyor. */
+    list-style: none;
+}
+
+.site-menu-toggle::-webkit-details-marker {
+    display: none;
+}
+
+/* Artı/eksi: iki çizgi. Kapalıyken dikey çizgi de var (artı), açıkken
+   yalnız yatay çizgi kalır (eksi). */
+.site-menu-toggle::after {
+    content: '';
+    display: block;
+    width: 0.75rem;
+    height: 0.75rem;
+    background:
+        linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat,
+        linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat;
+}
+
+.site-menu[open] > .site-menu-toggle::after {
+    background: linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat;
+}
+
+.site-menu-toggle:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}
+
+.site-menu-panel {
+    /* Bölme çubuğun ALTINA, tam genişlikte açılır. Dar ekranda bir açılır
+       menüyü sağa yaslamak, parmağın ekranın kenarına sıkışması demektir. */
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    /* Menü ekrandan uzunsa KENDİ kabında kayar; sayfayı kaydırmaz. */
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.site-menu-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.site-menu-link {
+    display: flex;
+    align-items: center;
+    /* Parmak imleç değildir: her satır tam genişlikte ve 44 piksel yüksek.
+       Satırlar bitişik ama hedefler büyük olduğu için yanlış dokunma riski
+       yok (`docs/117` K3 yalnız KÜÇÜK hedeflerde kusurdur). */
+    min-height: var(--control-height);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    color: var(--fg-secondary);
+}
+
+.site-menu-link:hover {
+    background: var(--surface-hover);
+}
+
+.site-menu-link:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: -2px;
+}
+
+/* Birincil eylem (hesap aç) rengiyle değil, ağırlığıyla öne çıkar. */
+.site-menu-link[data-emphasis='true'] {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+/* --- Alt çubuk ---------------------------------------------------------- */
+
+.site-footer {
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-fluid-lg);
+}
+
+.site-footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-fluid-md);
+    padding-block: var(--space-fluid-md);
+    color: var(--fg-secondary);
+}
+
+.site-footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    /* Marka satırı dar ekranda tam genişlik alır; iki sütuna sıkışan bir
+       slogan kelime ortasından kırılırdı. */
+    flex: 1 1 16rem;
+}
+
+.site-footer-brand-name {
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.site-footer-group {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+    min-width: 9rem;
+}
+
+.site-footer-heading {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-height);
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.site-footer-link {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-height);
+    color: var(--fg-secondary);
+}
+
+.site-footer-link:hover {
+    text-decoration: underline;
+}
+
+.site-footer-link:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: -2px;
+}
+
+/* --- Sayfa gövdesi ------------------------------------------------------ */
+
+.site-main {
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+    /* Kabuğun içi ile aynı dolgu: iki farklı değer olsaydı üst çubuktaki
+       marka ile sayfa başlığı aynı hizada durmazdı. */
+    padding-inline: var(--space-3);
+    padding-block: var(--space-fluid-lg);
+}
+
+.site-page-title {
+    margin: 0;
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
+    font-weight: 700;
+}
+
+/*
+    BAĞIMSIZ EYLEM — sayfanın gövdesindeki düğme ve düğme görünümlü bağlantı.
+
+    Ölçüldü (2026-09-05, `scripts/mobile-ux-audit`): "Create account" 147×42,
+    "Send message" 145×42, "Open the contact form" 168×18. 42 piksel, 44'ün
+    iki eksiği değil — 44, ortalama bir parmak ucunun (8-10 mm) karşılığıdır
+    ve altına inen her hedef yanlış dokunma taşır (`docs/117` K1).
+
+    Sınıf AÇIKÇA yazılır, bir yardımcı sınıfın adından tahmin edilmez: cümle
+    İÇİNDEKİ bir bağlantı bu kurala girmez ve girmemeli. WCAG 2.2'nin kendi
+    2.5.8 ölçütü de metin akışındaki hedefleri bu ölçüden muaf tutar; onları
+    44 piksele büyütmek satır aralığını kırar ve paragrafı okunmaz yapar.
+*/
+.site-action {
+    min-height: var(--control-height);
+    display: inline-flex;
+    align-items: center;
+}
+
+/* --- Servis fişi (hazırlanıyor / bakım) --------------------------------- */
+
+.site-pass-main {
+    display: flex;
+    justify-content: center;
+}
+
+.site-pass {
+    width: 100%;
+    max-width: 32rem;
+    padding: var(--space-fluid-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    /* Fiş hissi: üstte çift çizgi. Görsel değil, geometri. */
+    border-top: 3px double var(--fg);
+}
+
+.site-pass-brand {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-secondary);
+}
+
+.site-pass-headline {
+    margin: var(--space-3) 0 0;
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
+}
+
+.site-pass-lede {
+    margin: var(--space-3) 0 0;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+}
+
+.site-pass-promise {
+    margin: var(--space-4) 0 0;
+    padding-inline-start: var(--space-3);
+    border-inline-start: 2px solid var(--border);
+    line-height: 1.55;
+}
+
+.site-pass-rows {
+    margin: var(--space-5) 0 0;
+    border-top: 1px solid var(--border);
+}
+
+.site-pass-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    justify-content: space-between;
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.site-pass-row dt {
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-secondary);
+}
+
+.site-pass-row dd {
+    margin: 0;
+    font-weight: 600;
+}
+
+.site-pass-row code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    /* Uzun bir yol dar ekranda satırı taşırmaz. */
+    overflow-wrap: anywhere;
+}
+
+.site-pass-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+}
+
+.site-pass-actions a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--control-height);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--fg-secondary);
+}
+
+.site-pass-actions a[data-emphasis='true'] {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+.site-pass-actions a:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}
+
+/* --- Hareket ------------------------------------------------------------ */
+
+/*
+    HAREKET YALNIZ İSTENDİĞİNDE (`docs/118` E5 madde 5, `docs/119` §20).
+
+    Kural `no-preference` üzerinden yazıldı, `reduce` üzerinden değil: ikinci
+    biçimde animasyon önce tanımlanır sonra iptal edilir ve iptali yazmayı
+    unutan bir satır sessizce hareket eder. Burada hareket, açıkça istenmiş
+    olmadan hiç doğmaz.
+
+    Bu kabukta GSAP ya da başka bir animasyon kütüphanesi YOK ve bu bir
+    eksiklik değil bir ölçüm sonucudur: kabuğun tek hareketi bir bölmenin
+    açılmasıdır, onu CSS zaten yapıyor, ve kabuk betik çalışmadığında da tam
+    çalışmak ZORUNDA. Bir başlığın açılması için 70 KB indirmek, kurumsal
+    sayfaların bugünkü en güçlü özelliğini (sıfır React, sıfır kütüphane)
+    kaybetmek olurdu. GSAP kararı sayfa bazında, gerçekten hareket eden bir
+    bölüm yazıldığı gün verilir.
+*/
+@media (prefers-reduced-motion: no-preference) {
+    .site-menu[open] > .site-menu-panel {
+        animation: site-menu-reveal var(--duration-base) var(--easing-inout);
+    }
+}
+
+@keyframes site-menu-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(calc(var(--space-2) * -1));
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}

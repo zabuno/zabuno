@@ -184,6 +184,7 @@ use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
 use App\Support\Localization\SiteText;
+use App\Support\Site\SiteNavigation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Client\Factory as HttpFactory;
@@ -668,6 +669,28 @@ final class AppServiceProvider extends ServiceProvider
 
             if (! array_key_exists('plans', $data)) {
                 $view->with('plans', []);
+            }
+        });
+
+        /*
+            KABUĞUN GEZİNTİSİ HER ZAMAN VAR — aynı gerekçe, aynı desen.
+
+            Üst ve alt çubuk tek bir kaynaktan besleniyor (`SiteNavigation`)
+            ve o kaynağı her çağırana elle geçirmek, geçirmeyi unutan bir
+            görünümü çökertirdi. Elle verilen değer yine KAZANIR: sayfanın
+            kendi çıpa öneki ve dili varsa `SiteShell` onu zaten geçirmiştir.
+
+            Besteci YALNIZ iki parçaya bağlı: gezinti bir veritabanı sorgusu
+            yapar ve onu her kimlik/panel görünümünde çalıştırmak, hiç
+            kullanılmayacak bir sorgu ödemek olurdu.
+        */
+        View::composer(['public.partials.header', 'public.partials.footer'], function ($view): void {
+            $data = $view->getData();
+
+            if (! array_key_exists('nav', $data)) {
+                $view->with('nav', app(SiteNavigation::class)->forShell(
+                    (string) ($data['anchorPrefix'] ?? '/'),
+                ));
             }
         });
 

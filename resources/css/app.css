@@ -21,6 +21,15 @@
 @import './aep/styles.css';
 
 /*
+    KURUMSAL SİTENİN KABUĞU (`docs/100` §2).
+
+    Ayrı dosya, çünkü kabuk artık deponun TEK kurumsal header/footer'ı ve her
+    kurumsal adres onu giyiyor. Görünümü panel CSS'inin arasına dağılsaydı,
+    "tek yerde değiştir, her yerde değişsin" sözü yalnız HTML için tutulurdu.
+*/
+@import './site-shell.css';
+
+/*
     AEP `base.css` her `<a>` etiketini MAVİ ve ALTI ÇİZİLİ yapar — bu, bir
     içerik sayfası için doğru, bir panel için değil. Teslim paketinin kendi
     panel HTML'i de aynı düzeltmeyi kendi `<style>` bloğunda yapıyor:

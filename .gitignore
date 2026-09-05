@@ -44,6 +44,11 @@ Homestead.yaml
 /.flowbite-react/
 /storybook-static/
 
+# Kurumsal sitenin statik ÖNİZLEMESİ (`php artisan site:export-static`).
+# Dağıtılan bir kopya değil, o anki hâlin fotoğrafı: depoya girseydi bir gün
+# asıl siteden ayrışır ve hangisinin doğru olduğu bilinmezdi.
+/storage/app/site-preview/
+
 # Yerel runtime veritabanı — public depoya asla dahil edilmez
 /database/database.sqlite
 

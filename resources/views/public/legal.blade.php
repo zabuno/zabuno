@@ -26,7 +26,7 @@
                 <p class="mt-3 text-fg-secondary">{{ $st['dataRequestBody'] }}</p>
 
                 <p class="mt-4">
-                    <a href="/contact" class="font-medium text-fg underline">
+                    <a href="/contact" class="site-action font-medium text-fg underline">
                         {{ $st['dataRequestCta'] }}
                     </a>
                 </p>
