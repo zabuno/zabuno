@@ -90,9 +90,9 @@ serisi) · Yayınlama (+ planla, telefonda önizle) · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar ·
 Ayarlar + Profil.
 
-**Aktif:** şube kartında açık/kapalı rozeti.
+**Aktif:** menü denetim izinin ekranı.
 
-**Sırada:** menü haplarının sırası.
+**Sırada:** —
 
 Bölümler: Home · Menüler · QR · Insights · Yayınlama · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar.
@@ -228,7 +228,7 @@ olan her şey Profil'e, çalışma alanına ait olan Ayarlar'da.
 | Dönüştürme ve CDN kotası | Ne sayaç ne sınır var |
 | ~~Mutfak rolü~~ | YAPILDI (FF-138): rol, izinleri, sunucu sınırı ve menü ekranındaki daraltma |
 | ~~Şube "Açık" rozeti~~ | GEREKÇE DÜŞTÜ (FF-141): çalışma saati verisi var, misafir yüzeyi onu okuyor; rozet artık uydurma değil — FF-148 |
-| Menü satırında "kim ve ne zaman" | Menü satırı başına aktör/zaman kaydı yok |
+| ~~Menü satırında "kim ve ne zaman"~~ | KAYIT KURULDU (FF-154): on üç olay, kim + ne zaman + öncesi/sonrası. Ekran ayrı paket — veri olmadan çizilmezdi, artık veri var |
 | Çalışma alanı: diller, özel alan adı, tehlikeli bölge | Çeviri deposu ve DNS akışı yok; tehlikeli bölge geri döndürülemez ve sahibin kararını ister |
 
 ### 8.3 Sayı gösterilmeyen yerlerde "0" yazılmıyor
@@ -299,3 +299,36 @@ cümlesi bir kez yazıldıktan sonra kimse geri dönüp bakmaz.
 
 Bu yüzden tablodaki bir satırı okuyan herkes şunu sormalı: *gerekçe bugün
 hâlâ doğru mu?* — "çizilmedi" bir karar değil, o günkü verinin sonucudur.
+
+### 8.7 "Çalışıyor ama söylediğini ölçmüyor" — tekrar eden kusur ailesi
+
+§8.6 "veri yok" gerekçesinin eskiyebileceğini anlatıyor. Bu bölüm daha
+sinsi olanını: **veri VAR, ekran onu gösteriyor, ama gösterdiği şey
+söylediği şey değil.** Hiçbiri çökmüyor, hiçbiri test kırmıyor, hepsi
+ekranda makul görünüyor.
+
+Bu turda beş örneği çıktı ve beşi de aynı biçimde bulundu — iddiayı
+kaynağına kadar izleyerek:
+
+| İddia | Gerçekte ölçülen |
+| --- | --- |
+| "{count} kez arandı" | `COUNT(DISTINCT visitor_key)` — yani KAÇ KİŞİ. Beş kez arayan tek misafir orada 1 |
+| "Bu ürün son 30 günde bir kez bile açılmadı" | Menü henüz ÖLÇÜLMEMİŞTİ; eşik kişi değil, ürün başına sayıların toplamını sayıyordu |
+| Panodaki ölçüm blokları | Ücretli kapıdan hiç geçmiyordu; abonesiz alan analitik ekranında 402 alırken panosunda aynı veriyi görüyordu |
+| "İşlenmesi bitince yeniden deneyin" | Tarayıcı yokken işleme ASLA bitmiyor |
+| "Her görsel taranır ve bir kişi kontrol eder" | O ortamda hiçbir şey taranmıyor |
+
+**Ortak nokta:** cümle bir zamanlar doğruydu ya da doğru olması
+tasarlanmıştı; altındaki ölçüm sonradan değişti veya hiç kurulmadı. Kimse
+geri dönüp cümleyi ölçümle karşılaştırmadı.
+
+**İki tanesinin kanıtı ürünün kendi içindeydi** ve bu, aramanın en ucuz
+biçimini gösteriyor: aynı sayı analitik ekranında zaten "{count} ziyaretçi"
+diye okunuyordu; menü mühendisliği ekranının boş-durum metni zaten
+"{observed}/{eşik} ziyaretçi" diyordu. Aynı ölçümün iki cümlesi varsa,
+biri yanlıştır.
+
+**Kural:** bir sayının yanına cümle yazmadan önce o sayının SQL'ine bak.
+`COUNT(DISTINCT x)` "kaç kez" değildir. `array_sum(per_item_counts)` kişi
+sayısı değildir. Ve bir ekran, kardeşinin sorduğu izni sormuyorsa bunun
+bir sebebi olmalıdır — çoğu zaman yoktur.
