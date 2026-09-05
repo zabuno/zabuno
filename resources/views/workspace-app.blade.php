@@ -21,7 +21,7 @@
     @endphp
     @vite(['resources/css/app.css', $zabunoDevice->entryFor('workspace')])
 </head>
-<body>
+<body class="app-shell-body">
     <div id="app"></div>
 </body>
 </html>

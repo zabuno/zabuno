@@ -27,8 +27,17 @@ final class PersonaSurfaceTest extends TestCase
         foreach (['resources/views/platform-app.blade.php', 'resources/views/engineering-app.blade.php'] as $view) {
             $markup = (string) file_get_contents(base_path($view));
 
-            self::assertStringContainsString(
-                '<body data-persona="platform">',
+            /*
+                ÖZNİTELİĞİN YERİ ÖLÇÜLÜYOR, ETİKETİN TAM DİZESİ DEĞİL.
+
+                Önce `'<body data-persona="platform">'` birebir aranıyordu ve
+                bu, gövdeye ikinci bir öznitelik eklenen ilk günde kırıldı —
+                oysa ölçmek istediği şey (persona sunucudan, `<body>`
+                üzerinde) hiç değişmemişti. Testin kendi kırılganlığı, ölçtüğü
+                kuralı yanlış bir yerden tutmasıydı.
+            */
+            self::assertMatchesRegularExpression(
+                '/<body[^>]*\sdata-persona="platform"/',
                 $markup,
                 "PERSONA-SURFACE-01: [{$view}] persona `<body>` üzerinde bildirmeli; `<html>` RTL kapısında donmuştur ve ilk boyama kiracı tonunda başlayamaz."
             );
