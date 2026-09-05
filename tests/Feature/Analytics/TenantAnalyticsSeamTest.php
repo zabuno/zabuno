@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Analytics;
 
 use App\Support\Analytics\AnalyticsConfiguration;
+use App\Support\Analytics\MeasurementConsent;
 use Tests\TestCase;
 
 /**
@@ -26,13 +27,29 @@ use Tests\TestCase;
  */
 final class TenantAnalyticsSeamTest extends TestCase
 {
+    /**
+     * ONAY ARTIK ŞART (FF-173).
+     *
+     * Bu testler bir zamanlar "GTM kimliği varsa konteyner yüklenir"
+     * davranışını donduruyordu ve o davranış DEĞİŞTİ: konteyner artık açık
+     * bir kabul olmadan sayfaya hiç girmez. Testler kabulü çerezle veriyor —
+     * yani ölçülen sözleşme aynı (nonce, sıra, dönüşüm olayları), yalnız
+     * ölçümün ön koşulu eklendi.
+     */
+    private function withMeasurementConsent(): self
+    {
+        return $this->withCookie(
+            MeasurementConsent::COOKIE,
+            'granted',
+        );
+    }
     // --- Kapalıyken hiçbir bedel ödenmez ----------------------------------
 
     public function test_no_measurement_script_and_no_relaxed_policy_when_no_container_is_configured(): void
     {
         config(['analytics.gtm_container_id' => '']);
 
-        $response = $this->get('/');
+        $response = $this->withMeasurementConsent()->get('/');
 
         $response->assertOk();
         $response->assertDontSee('googletagmanager.com', false);
@@ -57,7 +74,7 @@ final class TenantAnalyticsSeamTest extends TestCase
             'analytics.destinations.hotjar' => false,
         ]);
 
-        $policy = (string) $this->get('/')->headers->get('Content-Security-Policy');
+        $policy = (string) $this->withMeasurementConsent()->get('/')->headers->get('Content-Security-Policy');
 
         self::assertStringContainsString('www.googletagmanager.com', $policy);
         self::assertStringContainsString('www.google-analytics.com', $policy);
@@ -75,7 +92,7 @@ final class TenantAnalyticsSeamTest extends TestCase
             'analytics.destinations.yandex_metrica' => true,
         ]);
 
-        $policy = (string) $this->get('/')->headers->get('Content-Security-Policy');
+        $policy = (string) $this->withMeasurementConsent()->get('/')->headers->get('Content-Security-Policy');
 
         // Webvisor kayıt için bir iframe açar; `frame-src` yönergesi bugün
         // CSP'de hiç yok ve `default-src 'self'`e düşerdi.
@@ -88,7 +105,7 @@ final class TenantAnalyticsSeamTest extends TestCase
     {
         config(['analytics.gtm_container_id' => 'GTM-TEST123']);
 
-        $response = $this->get('/');
+        $response = $this->withMeasurementConsent()->get('/');
         $html = $response->getContent();
         $policy = (string) $response->headers->get('Content-Security-Policy');
 
@@ -137,7 +154,7 @@ final class TenantAnalyticsSeamTest extends TestCase
     {
         config(['analytics.gtm_container_id' => 'GTM-TEST123']);
 
-        $html = (string) $this->get('/')->getContent();
+        $html = (string) $this->withMeasurementConsent()->get('/')->getContent();
 
         $contextAt = strpos($html, 'zabuno_tenant_id');
         $containerAt = strpos($html, 'googletagmanager.com/gtm.js');

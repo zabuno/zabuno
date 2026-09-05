@@ -1,7 +1,21 @@
 @php
     $zabunoAnalytics = \App\Support\Analytics\AnalyticsConfiguration::fromConfig();
+    $zabunoConsent = \App\Support\Analytics\MeasurementConsent::fromRequest(request());
 @endphp
-@if ($zabunoAnalytics->isEnabled())
+{{--
+    ONAY KAPISI — konteyner, AÇIK bir kabul olmadan sayfaya HİÇ girmez.
+
+    Consent Mode'un kendi tasarımı konteyneri yükleyip etiketleri sinyale
+    göre kısar. Bu meşrudur ama tek başına yetmez: script yüklendiği anda
+    üçüncü tarafa bir istek gitmiş ve IP görülmüş olur. "Onay alınmadan
+    ölçüm çalışmaz" cümlesini gerçekten tutmanın yolu, karar verilene kadar
+    konteyneri hiç yüklememektir.
+
+    Ret de bir karardır ve konteyneri AÇMAZ: "karar verildi" ile "kabul
+    edildi" ayrı iki şeydir, ve bu ayrımı kaybetmek reddeden kullanıcıyı
+    ölçmek olurdu.
+--}}
+@if ($zabunoAnalytics->isEnabled() && $zabunoConsent->allowsContainer())
 {{--
     Ölçüm dikişi. Sıra ÖNEMLİDİR ve tesadüf değildir:
 
@@ -20,6 +34,18 @@
 --}}
 <script nonce="{{ $cspNonce ?? '' }}">
 window.dataLayer = window.dataLayer || [];
+/*
+    CONSENT MODE VARSAYILANI, KONTEYNERDEN ÖNCE.
+
+    Konteyner yalnız kabulle yükleniyor; öyleyse bu satır neden var? Çünkü
+    sahip yarın GTM arayüzünden yeni bir etiket ekleyecek ve o etiket bu
+    dosyayı hiç görmeyecek. Sinyal olmadan, eklenen her yeni etiket bu
+    kapının DIŞINDA kalırdı — kapının bütün değeri o gün kaybolurdu.
+
+    `security_storage` her zaman açık: o eksen kötüye kullanım tespiti
+    içindir, ölçüm değil.
+*/
+window.dataLayer.push(['consent', 'default', @json($zabunoConsent->consentModeDefaults())]);
 window.dataLayer.push(@json($zabunoAnalytics->dataLayerPayload(
     $analyticsContext ?? [],
     \App\Support\Localization\DocumentLocale::tag(),

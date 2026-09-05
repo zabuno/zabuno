@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\PublicSite;
 
+use App\Support\Analytics\MeasurementConsent;
 use Tests\TestCase;
 
 /**
@@ -18,6 +19,22 @@ use Tests\TestCase;
  */
 final class PublicMeasurementTest extends TestCase
 {
+    /**
+     * ONAY ARTIK ŞART (FF-173).
+     *
+     * Bu testler bir zamanlar "GTM kimliği varsa ölçüm akar" davranışını
+     * donduruyordu ve o davranış DEĞİŞTİ: dönüşüm olayları da açık bir kabul
+     * olmadan yazılmıyor. Ölçülen sözleşme aynı (hangi sayfa, hangi olay);
+     * yalnız ölçümün ön koşulu eklendi.
+     */
+    private function withMeasurementConsent(): self
+    {
+        return $this->withCookie(
+            MeasurementConsent::COOKIE,
+            'granted',
+        );
+    }
+
     private function withAnalytics(): void
     {
         // Ölçüm, kap kimliği VARSA açıktır: ayrı bir "enabled" bayrağı yok
@@ -41,7 +58,7 @@ final class PublicMeasurementTest extends TestCase
         ];
 
         foreach ($expected as $path => $pageKey) {
-            $response = $this->get($path);
+            $response = $this->withMeasurementConsent()->get($path);
 
             $response->assertStatus(200);
             $response->assertSee('"zabuno_page":"'.$pageKey.'"', false);
@@ -54,7 +71,7 @@ final class PublicMeasurementTest extends TestCase
     {
         $this->withAnalytics();
 
-        $this->get('/pricing')
+        $this->withMeasurementConsent()->get('/pricing')
             ->assertStatus(200)
             // Olay SAYFA AÇILIŞINDA: fiyatı okumak bir tıklama gerektirmez.
             ->assertSee("send('pricing_viewed')", false);
@@ -64,11 +81,11 @@ final class PublicMeasurementTest extends TestCase
     {
         $this->withAnalytics();
 
-        $home = $this->get('/');
+        $home = $this->withMeasurementConsent()->get('/');
         $home->assertStatus(200);
         $home->assertSee("send('register_started')", false);
 
-        $contact = $this->get('/contact');
+        $contact = $this->withMeasurementConsent()->get('/contact');
         $contact->assertStatus(200);
         $contact->assertSee("send('contact_sent')", false);
         // Form gönderimi dinlenir; "sayfayı gördü" ile "yazdı" aynı şey değildir.
@@ -108,7 +125,7 @@ final class PublicMeasurementTest extends TestCase
             Ölçüm kapalıyken TEK BİR SATIR bile gönderilmez. Kapalı bir aracın
             yine de olay biriktirmesi, kapatma kararını anlamsız kılardı.
         */
-        $this->get('/')
+        $this->withMeasurementConsent()->get('/')
             ->assertStatus(200)
             ->assertDontSee("send('register_started')", false);
     }
