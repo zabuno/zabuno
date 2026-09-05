@@ -79,10 +79,16 @@ ya doğar ya da neden doğmadığı yazılır.**
 
 ## 5. Sayaç
 
-3/11 tamamlandı, 3/11 aktif.
+10/11 tamamlandı, 3 iş aktif.
 
-Tamamlanan: Home · Medya/Toplu işlem · Medya/Yönetişim.
-Aktif: Menüler · Insights (+ zaman serisi) · Yayınlama.
+**Tamamlanan:** Home · Menüler (haplar hariç) · QR · Insights (+ zaman
+serisi) · Yayınlama (+ planla, telefonda önizle) · Şubeler · Takım ·
+Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar ·
+Ayarlar + Profil.
+
+**Aktif:** çoklu menü (saat bazlı) · şube çalışma saatleri.
+
+**Sırada:** Mutfak rolü · merkezî i18n tazelemesi.
 
 Bölümler: Home · Menüler · QR · Insights · Yayınlama · Şubeler · Takım ·
 Medya/Toplu işlem · Medya/Yönetişim · Medya/Olgunluk · Medya/kalan farklar.
@@ -193,3 +199,37 @@ kararıdır ve şu sonuçları doğurur:
 - **Telefonda önizle:** taslağı gösteren kısa ömürlü, imzalı adres. Misafirin
   gördüğü adres DEĞİŞMEZ; önizleme süresi dolunca çalışmaz, `noindex` ve
   ekranda "bu bir önizleme, misafirler henüz bunu görmüyor" yazar.
+
+## 8. Uygulama sırasında verilen kararlar
+
+### 8.1 Ayarlar sekmeleri yeniden adlandı VE içerik taşındı
+
+Depoda ikinci sekmenin adı "Hesap"tı ve içinde kişisel ad/şifre formu
+duruyordu — **aynı form Profil ekranında da vardı**. Bir ayarın iki evi.
+Deponun kendi kuralı bunu zaten yasaklıyordu ama uygulanmamıştı.
+
+Yalnız sekmeyi yeniden adlandırmak yetmezdi: kullanıcı "Çalışma alanı"
+yazan yerde kendi adını bulurdu. Ad ile içerik BİRLİKTE değişti — kişisel
+olan her şey Profil'e, çalışma alanına ait olan Ayarlar'da.
+
+### 8.2 Çizilmeyenler ve sebepleri
+
+| Kaynakta | Çizilmedi çünkü |
+| --- | --- |
+| QR "Koyu" teması | ISO/IEC 18004 koyu-üstüne-açık şart koşar; ürün böyle bir kod üretemez |
+| QR "5×5 / 8×8 cm" | Karekod kenarı bu üründe ayar değil, 10:1 okuma mesafesinden gelen 45 mm sabit |
+| QR "tarayıcı testi geçti" | Ürün hiçbir telefonda tarama testi çalıştırmıyor |
+| Video oynatıcı | Depo video kabul etmiyor; eksik olan ffmpeg değil, video hattı hiç yok |
+| CDN kartı / dağıtım ağı | Depoda CDN yok ve ölçülmüyor |
+| Dönüştürme ve CDN kotası | Ne sayaç ne sınır var |
+| Mutfak rolü | Depoda karşılığı yok; ayrı paket (sırada) |
+| Şube "Açık" rozeti | İddiayı destekleyen alan yok; yalnız masası olmayan şubeye "Kurulumda" deniyor (bu bir olgu) |
+| Menü satırında "kim ve ne zaman" | Menü satırı başına aktör/zaman kaydı yok |
+| Çalışma alanı: diller, özel alan adı, tehlikeli bölge | Çeviri deposu ve DNS akışı yok; tehlikeli bölge geri döndürülemez ve sahibin kararını ister |
+
+### 8.3 Sayı gösterilmeyen yerlerde "0" yazılmıyor
+
+Tekrar eden bir karar: veri yoksa **boş bırakılıyor**, sıfır yazılmıyor.
+QR tarama sayısı (analitik ücretli), şube tarama/hafta (plan ya da yetki
+yoksa), iş kuyruğu ilerlemesi (kayıtlı yüzde yok). Sıfır "hiç olmadı" der
+ve bu, bilinmeyen için yanlış bir cevaptır.
