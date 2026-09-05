@@ -3796,6 +3796,350 @@ msgstr ""
 msgid "workspace.omnibox.trigger.label"
 msgstr ""
 
+#: workspace:workspace.orders.actionFailed
+msgid "workspace.orders.actionFailed"
+msgstr ""
+
+#: workspace:workspace.orders.allergens
+msgid "workspace.orders.allergens"
+msgstr ""
+
+#: workspace:workspace.orders.confirm
+msgid "workspace.orders.confirm"
+msgstr ""
+
+#: workspace:workspace.orders.confirm.pending
+msgid "workspace.orders.confirm.pending"
+msgstr ""
+
+#: workspace:workspace.orders.conflict
+msgid "workspace.orders.conflict"
+msgstr ""
+
+#: workspace:workspace.orders.heading
+msgid "workspace.orders.heading"
+msgstr ""
+
+#: workspace:workspace.orders.history.description
+msgid "workspace.orders.history.description"
+msgstr ""
+
+#: workspace:workspace.orders.history.empty.description
+msgid "workspace.orders.history.empty.description"
+msgstr ""
+
+#: workspace:workspace.orders.history.empty.title
+msgid "workspace.orders.history.empty.title"
+msgstr ""
+
+#: workspace:workspace.orders.history.error.description
+msgid "workspace.orders.history.error.description"
+msgstr ""
+
+#: workspace:workspace.orders.history.error.title
+msgid "workspace.orders.history.error.title"
+msgstr ""
+
+#: workspace:workspace.orders.history.heading
+msgid "workspace.orders.history.heading"
+msgstr ""
+
+#: workspace:workspace.orders.history.loading
+msgid "workspace.orders.history.loading"
+msgstr ""
+
+#: workspace:workspace.orders.history.next
+msgid "workspace.orders.history.next"
+msgstr ""
+
+#: workspace:workspace.orders.history.page
+msgid "workspace.orders.history.page"
+msgstr ""
+
+#: workspace:workspace.orders.history.previous
+msgid "workspace.orders.history.previous"
+msgstr ""
+
+#: workspace:workspace.orders.history.region
+msgid "workspace.orders.history.region"
+msgstr ""
+
+#: workspace:workspace.orders.history.rejected
+msgid "workspace.orders.history.rejected"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.deliver
+msgid "workspace.orders.kitchen.deliver"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.desktopOnly.description
+msgid "workspace.orders.kitchen.desktopOnly.description"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.desktopOnly.title
+msgid "workspace.orders.kitchen.desktopOnly.title"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.empty.description
+msgid "workspace.orders.kitchen.empty.description"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.empty.title
+msgid "workspace.orders.kitchen.empty.title"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.error.description
+msgid "workspace.orders.kitchen.error.description"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.error.title
+msgid "workspace.orders.kitchen.error.title"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.fullscreen
+msgid "workspace.orders.kitchen.fullscreen"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.fullscreen.exit
+msgid "workspace.orders.kitchen.fullscreen.exit"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.fullscreen.unavailable
+msgid "workspace.orders.kitchen.fullscreen.unavailable"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.loading
+msgid "workspace.orders.kitchen.loading"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.ready
+msgid "workspace.orders.kitchen.ready"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.region
+msgid "workspace.orders.kitchen.region"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.start
+msgid "workspace.orders.kitchen.start"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.status.confirmed
+msgid "workspace.orders.kitchen.status.confirmed"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.status.preparing
+msgid "workspace.orders.kitchen.status.preparing"
+msgstr ""
+
+#: workspace:workspace.orders.kitchen.status.ready
+msgid "workspace.orders.kitchen.status.ready"
+msgstr ""
+
+#: workspace:workspace.orders.permission.description
+msgid "workspace.orders.permission.description"
+msgstr ""
+
+#: workspace:workspace.orders.permission.title
+msgid "workspace.orders.permission.title"
+msgstr ""
+
+#: workspace:workspace.orders.prerequisite.description
+msgid "workspace.orders.prerequisite.description"
+msgstr ""
+
+#: workspace:workspace.orders.prerequisite.title
+msgid "workspace.orders.prerequisite.title"
+msgstr ""
+
+#: workspace:workspace.orders.price.unavailable
+msgid "workspace.orders.price.unavailable"
+msgstr ""
+
+#: workspace:workspace.orders.quantity
+msgid "workspace.orders.quantity"
+msgstr ""
+
+#: workspace:workspace.orders.queue.count
+msgid "workspace.orders.queue.count"
+msgstr ""
+
+#: workspace:workspace.orders.queue.empty.closed.description
+msgid "workspace.orders.queue.empty.closed.description"
+msgstr ""
+
+#: workspace:workspace.orders.queue.empty.closed.title
+msgid "workspace.orders.queue.empty.closed.title"
+msgstr ""
+
+#: workspace:workspace.orders.queue.empty.description
+msgid "workspace.orders.queue.empty.description"
+msgstr ""
+
+#: workspace:workspace.orders.queue.empty.title
+msgid "workspace.orders.queue.empty.title"
+msgstr ""
+
+#: workspace:workspace.orders.queue.error.description
+msgid "workspace.orders.queue.error.description"
+msgstr ""
+
+#: workspace:workspace.orders.queue.error.title
+msgid "workspace.orders.queue.error.title"
+msgstr ""
+
+#: workspace:workspace.orders.queue.loading
+msgid "workspace.orders.queue.loading"
+msgstr ""
+
+#: workspace:workspace.orders.queue.region
+msgid "workspace.orders.queue.region"
+msgstr ""
+
+#: workspace:workspace.orders.queue.waiting
+msgid "workspace.orders.queue.waiting"
+msgstr ""
+
+#: workspace:workspace.orders.queue.waiting.justNow
+msgid "workspace.orders.queue.waiting.justNow"
+msgstr ""
+
+#: workspace:workspace.orders.refresh
+msgid "workspace.orders.refresh"
+msgstr ""
+
+#: workspace:workspace.orders.reject
+msgid "workspace.orders.reject"
+msgstr ""
+
+#: workspace:workspace.orders.reject.cancel
+msgid "workspace.orders.reject.cancel"
+msgstr ""
+
+#: workspace:workspace.orders.reject.heading
+msgid "workspace.orders.reject.heading"
+msgstr ""
+
+#: workspace:workspace.orders.reject.help
+msgid "workspace.orders.reject.help"
+msgstr ""
+
+#: workspace:workspace.orders.reject.label
+msgid "workspace.orders.reject.label"
+msgstr ""
+
+#: workspace:workspace.orders.reject.required
+msgid "workspace.orders.reject.required"
+msgstr ""
+
+#: workspace:workspace.orders.reject.submit
+msgid "workspace.orders.reject.submit"
+msgstr ""
+
+#: workspace:workspace.orders.settings.error.description
+msgid "workspace.orders.settings.error.description"
+msgstr ""
+
+#: workspace:workspace.orders.settings.error.title
+msgid "workspace.orders.settings.error.title"
+msgstr ""
+
+#: workspace:workspace.orders.settings.loading
+msgid "workspace.orders.settings.loading"
+msgstr ""
+
+#: workspace:workspace.orders.settings.region
+msgid "workspace.orders.settings.region"
+msgstr ""
+
+#: workspace:workspace.orders.settings.switch.error
+msgid "workspace.orders.settings.switch.error"
+msgstr ""
+
+#: workspace:workspace.orders.settings.switch.help
+msgid "workspace.orders.settings.switch.help"
+msgstr ""
+
+#: workspace:workspace.orders.settings.switch.label
+msgid "workspace.orders.settings.switch.label"
+msgstr ""
+
+#: workspace:workspace.orders.settings.switch.off
+msgid "workspace.orders.settings.switch.off"
+msgstr ""
+
+#: workspace:workspace.orders.settings.switch.on
+msgid "workspace.orders.settings.switch.on"
+msgstr ""
+
+#: workspace:workspace.orders.settings.switch.readOnly
+msgid "workspace.orders.settings.switch.readOnly"
+msgstr ""
+
+#: workspace:workspace.orders.settings.switch.saving
+msgid "workspace.orders.settings.switch.saving"
+msgstr ""
+
+#: workspace:workspace.orders.stale
+msgid "workspace.orders.stale"
+msgstr ""
+
+#: workspace:workspace.orders.status.cancelled
+msgid "workspace.orders.status.cancelled"
+msgstr ""
+
+#: workspace:workspace.orders.status.confirmed
+msgid "workspace.orders.status.confirmed"
+msgstr ""
+
+#: workspace:workspace.orders.status.delivered
+msgid "workspace.orders.status.delivered"
+msgstr ""
+
+#: workspace:workspace.orders.status.pending
+msgid "workspace.orders.status.pending"
+msgstr ""
+
+#: workspace:workspace.orders.status.preparing
+msgid "workspace.orders.status.preparing"
+msgstr ""
+
+#: workspace:workspace.orders.status.ready
+msgid "workspace.orders.status.ready"
+msgstr ""
+
+#: workspace:workspace.orders.status.rejected
+msgid "workspace.orders.status.rejected"
+msgstr ""
+
+#: workspace:workspace.orders.tab.kitchen
+msgid "workspace.orders.tab.kitchen"
+msgstr ""
+
+#: workspace:workspace.orders.tab.queue
+msgid "workspace.orders.tab.queue"
+msgstr ""
+
+#: workspace:workspace.orders.tab.settings
+msgid "workspace.orders.tab.settings"
+msgstr ""
+
+#: workspace:workspace.orders.table
+msgid "workspace.orders.table"
+msgstr ""
+
+#: workspace:workspace.orders.total
+msgid "workspace.orders.total"
+msgstr ""
+
+#: workspace:workspace.orders.updated
+msgid "workspace.orders.updated"
+msgstr ""
+
+#: workspace:workspace.orders.updated.never
+msgid "workspace.orders.updated.never"
+msgstr ""
+
 #: workspace:workspace.profile.account.email.label
 msgid "workspace.profile.account.email.label"
 msgstr ""
@@ -5494,6 +5838,10 @@ msgstr ""
 
 #: workspace:workspace.shell.nav.more
 msgid "workspace.shell.nav.more"
+msgstr ""
+
+#: workspace:workspace.shell.nav.orders
+msgid "workspace.shell.nav.orders"
 msgstr ""
 
 #: workspace:workspace.shell.nav.publication

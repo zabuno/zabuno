@@ -64,11 +64,19 @@ final class WorkspaceContextPermissionsTest extends TestCase
         // 15 → 17: Mutfak rolüyle birlikte `menu.manage`'in içinden iki dar
         // eksen çıkarıldı (`docs/109` §6.4). Sahibin listesi daralmadı,
         // yalnız aynı yetkiyi daha ince anlatır oldu.
-        self::assertCount(17, $body['permissions']);
+        // 17 → 21: sipariş ekseni (FF-179, `docs/115` §4). Bu sayı ekranın
+        // gördüğü listedir; panel yetkisiz eylemi hiç çizmediği için, eksik
+        // gönderilen bir izin sahibin ekranından bir düğmenin sessizce
+        // kaybolması demektir.
+        self::assertCount(21, $body['permissions']);
         self::assertContains('billing.manage', $body['permissions']);
         self::assertContains('media.manage', $body['permissions']);
         self::assertContains('menu.allergens.manage', $body['permissions']);
         self::assertContains('menu.stock.manage', $body['permissions']);
+        self::assertContains('order.view', $body['permissions']);
+        self::assertContains('order.confirm', $body['permissions']);
+        self::assertContains('order.kitchen', $body['permissions']);
+        self::assertContains('order.settings', $body['permissions']);
         self::assertTrue($body['features']['novice-home'], 'Bayrak varsayılan açık.');
 
         $again = $this->api($owner)->getJson('/api/workspace-context')->assertOk()->json();

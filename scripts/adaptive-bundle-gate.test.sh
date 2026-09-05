@@ -34,6 +34,7 @@ scaffold() {
   mkdir -p "$TMP/resources/js/components/workspace/chrome" \
            "$TMP/resources/js/components/workspace/inspectors" \
            "$TMP/resources/js/components/workspace/shell" \
+           "$TMP/resources/js/components/workspace/kitchen" \
            "$TMP/resources/js/components/workspace/pages/menu"
 
   local js="$TMP/resources/js"
@@ -51,11 +52,19 @@ scaffold() {
     > "$js/components/workspace/inspectors/types.ts"
   printf "export const DesktopChrome = () => null;\n" \
     > "$js/components/workspace/chrome/DesktopChrome.tsx"
+  # MUTFAK MONİTÖRÜ — kapının DESKTOP_ONLY listesindeki her bildirimin bu
+  # sentetik sahnede bir karşılığı OLMAK ZORUNDA. Kapı "eşleşmeyen bildirim"
+  # durumunu bilerek LEAK sayıyor (bayat bildirim sessizce geçmesin diye);
+  # sahne eksik kalırsa temiz senaryo da LEAK der ve öz-test kendi kapısını
+  # suçlar. Yeni bir cihaza özgü klasör eklendiğinde buraya da bir dosya
+  # eklenir — bu bir bakım yükü değil, kapının sözleşmesinin kendisi.
+  printf "export const KitchenBoard = () => null;\n" \
+    > "$js/components/workspace/kitchen/KitchenBoard.tsx"
   printf "export const MobileChrome = () => null;\n" \
     > "$js/components/workspace/chrome/MobileChrome.tsx"
   printf "import type { WorkspaceInspectorMap } from './inspectors/types';\nimport reg from './shell/registry';\nexport const WorkspaceApp = (p: { i?: WorkspaceInspectorMap }) => [p, reg];\n" \
     > "$js/components/workspace/WorkspaceApp.tsx"
-  printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, desktopInspectors];\n" \
+  printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, desktopInspectors];\n" \
     > "$js/workspace.desktop.tsx"
   printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { MobileChrome } from './components/workspace/chrome/MobileChrome';\nexport default [WorkspaceApp, MobileChrome];\n" \
     > "$js/workspace.mobile.tsx"

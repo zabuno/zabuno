@@ -3796,6 +3796,350 @@ msgstr "Search and go"
 msgid "workspace.omnibox.trigger.label"
 msgstr "Search, go to, or create"
 
+#: workspace:workspace.orders.actionFailed
+msgid "workspace.orders.actionFailed"
+msgstr "That did not go through. Try again."
+
+#: workspace:workspace.orders.allergens
+msgid "workspace.orders.allergens"
+msgstr "Allergens: {list}"
+
+#: workspace:workspace.orders.confirm
+msgid "workspace.orders.confirm"
+msgstr "Approve"
+
+#: workspace:workspace.orders.confirm.pending
+msgid "workspace.orders.confirm.pending"
+msgstr "Approving…"
+
+#: workspace:workspace.orders.conflict
+msgid "workspace.orders.conflict"
+msgstr "Someone was faster: this order is now “{status}”."
+
+#: workspace:workspace.orders.heading
+msgid "workspace.orders.heading"
+msgstr "Orders"
+
+#: workspace:workspace.orders.history.description
+msgid "workspace.orders.history.description"
+msgstr "Every order stays here. Nothing is deleted."
+
+#: workspace:workspace.orders.history.empty.description
+msgid "workspace.orders.history.empty.description"
+msgstr "Once tables start ordering, every order stays on this list."
+
+#: workspace:workspace.orders.history.empty.title
+msgid "workspace.orders.history.empty.title"
+msgstr "No orders yet"
+
+#: workspace:workspace.orders.history.error.description
+msgid "workspace.orders.history.error.description"
+msgstr "Nothing was lost. Try again."
+
+#: workspace:workspace.orders.history.error.title
+msgid "workspace.orders.history.error.title"
+msgstr "The history could not be loaded"
+
+#: workspace:workspace.orders.history.heading
+msgid "workspace.orders.history.heading"
+msgstr "Order history"
+
+#: workspace:workspace.orders.history.loading
+msgid "workspace.orders.history.loading"
+msgstr "Loading the history…"
+
+#: workspace:workspace.orders.history.next
+msgid "workspace.orders.history.next"
+msgstr "Next"
+
+#: workspace:workspace.orders.history.page
+msgid "workspace.orders.history.page"
+msgstr "Page {page} of {pageCount}"
+
+#: workspace:workspace.orders.history.previous
+msgid "workspace.orders.history.previous"
+msgstr "Previous"
+
+#: workspace:workspace.orders.history.region
+msgid "workspace.orders.history.region"
+msgstr "Order history"
+
+#: workspace:workspace.orders.history.rejected
+msgid "workspace.orders.history.rejected"
+msgstr "Rejected: {reason}"
+
+#: workspace:workspace.orders.kitchen.deliver
+msgid "workspace.orders.kitchen.deliver"
+msgstr "Handed to the table"
+
+#: workspace:workspace.orders.kitchen.desktopOnly.description
+msgid "workspace.orders.kitchen.desktopOnly.description"
+msgstr "It is built for the screen on the kitchen wall. Open this page on a tablet or a computer."
+
+#: workspace:workspace.orders.kitchen.desktopOnly.title
+msgid "workspace.orders.kitchen.desktopOnly.title"
+msgstr "The kitchen monitor needs a bigger screen"
+
+#: workspace:workspace.orders.kitchen.empty.description
+msgid "workspace.orders.kitchen.empty.description"
+msgstr "Orders appear here once service approves them. Waiting orders are not shown."
+
+#: workspace:workspace.orders.kitchen.empty.title
+msgid "workspace.orders.kitchen.empty.title"
+msgstr "Nothing to cook"
+
+#: workspace:workspace.orders.kitchen.error.description
+msgid "workspace.orders.kitchen.error.description"
+msgstr "Approved orders are safe. Try again."
+
+#: workspace:workspace.orders.kitchen.error.title
+msgid "workspace.orders.kitchen.error.title"
+msgstr "The kitchen monitor could not be loaded"
+
+#: workspace:workspace.orders.kitchen.fullscreen
+msgid "workspace.orders.kitchen.fullscreen"
+msgstr "Full screen"
+
+#: workspace:workspace.orders.kitchen.fullscreen.exit
+msgid "workspace.orders.kitchen.fullscreen.exit"
+msgstr "Leave full screen"
+
+#: workspace:workspace.orders.kitchen.fullscreen.unavailable
+msgid "workspace.orders.kitchen.fullscreen.unavailable"
+msgstr "This browser does not offer full screen. Use the browser’s own full-screen key."
+
+#: workspace:workspace.orders.kitchen.loading
+msgid "workspace.orders.kitchen.loading"
+msgstr "Loading the kitchen monitor…"
+
+#: workspace:workspace.orders.kitchen.ready
+msgid "workspace.orders.kitchen.ready"
+msgstr "Mark ready"
+
+#: workspace:workspace.orders.kitchen.region
+msgid "workspace.orders.kitchen.region"
+msgstr "Kitchen monitor"
+
+#: workspace:workspace.orders.kitchen.start
+msgid "workspace.orders.kitchen.start"
+msgstr "Start cooking"
+
+#: workspace:workspace.orders.kitchen.status.confirmed
+msgid "workspace.orders.kitchen.status.confirmed"
+msgstr "Approved"
+
+#: workspace:workspace.orders.kitchen.status.preparing
+msgid "workspace.orders.kitchen.status.preparing"
+msgstr "Cooking"
+
+#: workspace:workspace.orders.kitchen.status.ready
+msgid "workspace.orders.kitchen.status.ready"
+msgstr "Ready"
+
+#: workspace:workspace.orders.permission.description
+msgid "workspace.orders.permission.description"
+msgstr "Ask the workspace owner if you need to see the order queue."
+
+#: workspace:workspace.orders.permission.title
+msgid "workspace.orders.permission.title"
+msgstr "Orders are not part of your role"
+
+#: workspace:workspace.orders.prerequisite.description
+msgid "workspace.orders.prerequisite.description"
+msgstr "Orders belong to a branch: a table, a queue and a kitchen are all part of one location."
+
+#: workspace:workspace.orders.prerequisite.title
+msgid "workspace.orders.prerequisite.title"
+msgstr "Pick a location first"
+
+#: workspace:workspace.orders.price.unavailable
+msgid "workspace.orders.price.unavailable"
+msgstr "Price unavailable"
+
+#: workspace:workspace.orders.quantity
+msgid "workspace.orders.quantity"
+msgstr "{count} ×"
+
+#: workspace:workspace.orders.queue.count
+msgid "workspace.orders.queue.count"
+msgstr "{count} waiting"
+
+#: workspace:workspace.orders.queue.empty.closed.description
+msgid "workspace.orders.queue.empty.closed.description"
+msgstr "Guests can read the menu but cannot send an order. Turn ordering on under Settings."
+
+#: workspace:workspace.orders.queue.empty.closed.title
+msgid "workspace.orders.queue.empty.closed.title"
+msgstr "Ordering is switched off"
+
+#: workspace:workspace.orders.queue.empty.description
+msgid "workspace.orders.queue.empty.description"
+msgstr "New orders from the tables land here. The list refreshes on its own."
+
+#: workspace:workspace.orders.queue.empty.title
+msgid "workspace.orders.queue.empty.title"
+msgstr "No orders waiting"
+
+#: workspace:workspace.orders.queue.error.description
+msgid "workspace.orders.queue.error.description"
+msgstr "Nothing was lost: orders stay in the queue. Try again."
+
+#: workspace:workspace.orders.queue.error.title
+msgid "workspace.orders.queue.error.title"
+msgstr "The queue could not be loaded"
+
+#: workspace:workspace.orders.queue.loading
+msgid "workspace.orders.queue.loading"
+msgstr "Loading the queue…"
+
+#: workspace:workspace.orders.queue.region
+msgid "workspace.orders.queue.region"
+msgstr "Orders waiting for approval"
+
+#: workspace:workspace.orders.queue.waiting
+msgid "workspace.orders.queue.waiting"
+msgstr "Waiting {minutes} min"
+
+#: workspace:workspace.orders.queue.waiting.justNow
+msgid "workspace.orders.queue.waiting.justNow"
+msgstr "Just arrived"
+
+#: workspace:workspace.orders.refresh
+msgid "workspace.orders.refresh"
+msgstr "Refresh now"
+
+#: workspace:workspace.orders.reject
+msgid "workspace.orders.reject"
+msgstr "Reject"
+
+#: workspace:workspace.orders.reject.cancel
+msgid "workspace.orders.reject.cancel"
+msgstr "Back"
+
+#: workspace:workspace.orders.reject.heading
+msgid "workspace.orders.reject.heading"
+msgstr "Why are you rejecting this order?"
+
+#: workspace:workspace.orders.reject.help
+msgid "workspace.orders.reject.help"
+msgstr "The guest reads this on their own screen."
+
+#: workspace:workspace.orders.reject.label
+msgid "workspace.orders.reject.label"
+msgstr "Reason"
+
+#: workspace:workspace.orders.reject.required
+msgid "workspace.orders.reject.required"
+msgstr "Write a reason. An order is never rejected in silence."
+
+#: workspace:workspace.orders.reject.submit
+msgid "workspace.orders.reject.submit"
+msgstr "Reject order"
+
+#: workspace:workspace.orders.settings.error.description
+msgid "workspace.orders.settings.error.description"
+msgstr "Nothing was changed. Try again."
+
+#: workspace:workspace.orders.settings.error.title
+msgid "workspace.orders.settings.error.title"
+msgstr "Ordering settings could not be loaded"
+
+#: workspace:workspace.orders.settings.loading
+msgid "workspace.orders.settings.loading"
+msgstr "Loading ordering settings…"
+
+#: workspace:workspace.orders.settings.region
+msgid "workspace.orders.settings.region"
+msgstr "Ordering settings"
+
+#: workspace:workspace.orders.settings.switch.error
+msgid "workspace.orders.settings.switch.error"
+msgstr "The switch could not be changed. Try again."
+
+#: workspace:workspace.orders.settings.switch.help
+msgid "workspace.orders.settings.switch.help"
+msgstr "While it is off, guests read the menu but cannot send an order. Somebody has to watch the queue while it is on."
+
+#: workspace:workspace.orders.settings.switch.label
+msgid "workspace.orders.settings.switch.label"
+msgstr "Accept orders from tables"
+
+#: workspace:workspace.orders.settings.switch.off
+msgid "workspace.orders.settings.switch.off"
+msgstr "Ordering is off"
+
+#: workspace:workspace.orders.settings.switch.on
+msgid "workspace.orders.settings.switch.on"
+msgstr "Ordering is on"
+
+#: workspace:workspace.orders.settings.switch.readOnly
+msgid "workspace.orders.settings.switch.readOnly"
+msgstr "Only the workspace owner can switch ordering on or off."
+
+#: workspace:workspace.orders.settings.switch.saving
+msgid "workspace.orders.settings.switch.saving"
+msgstr "Saving…"
+
+#: workspace:workspace.orders.stale
+msgid "workspace.orders.stale"
+msgstr "The last refresh failed. What you see may be out of date."
+
+#: workspace:workspace.orders.status.cancelled
+msgid "workspace.orders.status.cancelled"
+msgstr "Cancelled by the guest"
+
+#: workspace:workspace.orders.status.confirmed
+msgid "workspace.orders.status.confirmed"
+msgstr "Approved"
+
+#: workspace:workspace.orders.status.delivered
+msgid "workspace.orders.status.delivered"
+msgstr "Delivered"
+
+#: workspace:workspace.orders.status.pending
+msgid "workspace.orders.status.pending"
+msgstr "Waiting"
+
+#: workspace:workspace.orders.status.preparing
+msgid "workspace.orders.status.preparing"
+msgstr "Cooking"
+
+#: workspace:workspace.orders.status.ready
+msgid "workspace.orders.status.ready"
+msgstr "Ready"
+
+#: workspace:workspace.orders.status.rejected
+msgid "workspace.orders.status.rejected"
+msgstr "Rejected"
+
+#: workspace:workspace.orders.tab.kitchen
+msgid "workspace.orders.tab.kitchen"
+msgstr "Kitchen monitor"
+
+#: workspace:workspace.orders.tab.queue
+msgid "workspace.orders.tab.queue"
+msgstr "Queue"
+
+#: workspace:workspace.orders.tab.settings
+msgid "workspace.orders.tab.settings"
+msgstr "Settings"
+
+#: workspace:workspace.orders.table
+msgid "workspace.orders.table"
+msgstr "Table {name}"
+
+#: workspace:workspace.orders.total
+msgid "workspace.orders.total"
+msgstr "Total"
+
+#: workspace:workspace.orders.updated
+msgid "workspace.orders.updated"
+msgstr "Updated {time}"
+
+#: workspace:workspace.orders.updated.never
+msgid "workspace.orders.updated.never"
+msgstr "Not updated yet"
+
 #: workspace:workspace.profile.account.email.label
 msgid "workspace.profile.account.email.label"
 msgstr "Email"
@@ -5495,6 +5839,10 @@ msgstr "Menus"
 #: workspace:workspace.shell.nav.more
 msgid "workspace.shell.nav.more"
 msgstr "More"
+
+#: workspace:workspace.shell.nav.orders
+msgid "workspace.shell.nav.orders"
+msgstr "Orders"
 
 #: workspace:workspace.shell.nav.publication
 msgid "workspace.shell.nav.publication"

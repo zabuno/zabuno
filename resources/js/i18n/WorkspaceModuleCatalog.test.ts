@@ -27,13 +27,14 @@ const FROZEN_MODULE_FILENAMES = [
     'dashboard.ts',
     'media.ts',
     'menu.ts',
+    'ordering.ts',
     'profile.ts',
     'publication.ts',
     'shell.ts',
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1445;
+const FROZEN_LEGACY_KEY_COUNT = 1532;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -149,8 +150,18 @@ const FROZEN_LEGACY_KEY_COUNT = 1445;
 // "rengini okunması için biraz koyulaştırdık", diğeri "bu görünüm Restaurant
 // planıyla gelir, menün yine yayınlanır". İkincisi bu depodaki bir kuralın
 // karşılığıdır: yapılamayan iş sessizce yok sayılmaz, adıyla söylenir.
+// FF-179: 1445 → 1532, seksen yedi anahtar ve ONBİRİNCİ modül dosyası
+// (`ordering.ts`). Sipariş akışının panel yüzeyi: garson kuyruğu, mutfak
+// monitörü, sipariş şalteri ve geçmiş (`docs/115` S4/S5/S6).
+//
+// Sayının bu kadar büyümesi, bu ekranların ÜÇ AYRI İNSANA konuşmasından:
+// garsona (onayla/reddet ve ret sebebi), aşçıya (tam ekran, ilerlet,
+// alerjen) ve sahibe (şalter, geçmiş). Üçünün de kendi boş-durum,
+// hata ve kısıt cümleleri var, çünkü çıkış yolları farklı — "sipariş yok"
+// ile "sipariş alma kapalı" tek anahtara indirilseydi, kapalı bir hizmet
+// sessiz bir akşam gibi görünürdü (`docs/115` Y1).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '78e0af4be1594dd28f4cd75581604943e896c1be3d7370e52299aeae7b45a7db';
+    'aa4af0023b56f1826717de880cbbcf222cd09699c0e5ac6e1695f4255d46d2bf';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -159,7 +170,11 @@ function normalizedHash(entries: Record<string, string>): string {
 }
 
 describe('workspace i18n modular catalog contract', () => {
-    it('discovers exactly the nine frozen module catalog filenames under resources/js/i18n/workspace/', () => {
+    // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten
+    // aşağıda duruyor ve iki yerde tutulan bir sayı, ikincisi güncellenmediği
+    // gün testin adını yalancı yapar (bir süre "dokuz" yazarken on dosya
+    // sayıyordu).
+    it('discovers exactly the frozen module catalog filenames under resources/js/i18n/workspace/', () => {
         const actualFilenames = readdirSync(CATALOG_DIR)
             .filter((name) => name.endsWith('.ts'))
             .sort();

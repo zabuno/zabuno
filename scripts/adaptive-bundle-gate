@@ -53,6 +53,16 @@ DESKTOP_ONLY = [
     'components/workspace/chrome/DesktopChrome.tsx',
     'components/workspace/inspectors/*.tsx',
     'components/workspace/pages/**/*Inspector.tsx',
+    # MUTFAK MONİTÖRÜ (FF-179, docs/115 S5).
+    #
+    # Duvara asılan bir ekran için yazıldı: uzaktan okunur tipografi, 56
+    # piksellik hedefler, tam ekran kipi. Telefonun bu koddan indirebileceği
+    # hiçbir şey yok — 320 pikselde çizilemez ve orada zaten çizilmiyor.
+    #
+    # KLASÖR ÖRÜNTÜSÜ, dosya listesi DEĞİL: monitör yarın ikinci bir parçaya
+    # bölünürse (fiş bileşeni, tam ekran düğmesi) o parça listeye yazılmayı
+    # beklemeden kapının kapsamına girer.
+    'components/workspace/kitchen/*.tsx',
 ]
 MOBILE_ONLY = [
     'components/workspace/chrome/MobileChrome.tsx',
