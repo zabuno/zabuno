@@ -463,19 +463,24 @@ export const publication = {
     'workspace.publication.preview.linkPending': 'Creating the preview link…',
 
     /*
-        PLANLA — zamanlanmış yayın. Saatler SUNUCUDAN gelir ve
-        `Europe/Istanbul` içindir; ekran yalnız okunabilir hâle çevirir.
+        PLANLA — zamanlanmış yayın. Saatler SUNUCUDAN gelir ve ŞUBENİN saat
+        dilimindedir (`docs/62`); ekran yalnız okunabilir hâle çevirir.
+
+        CÜMLELER ARTIK "İSTANBUL" DEMİYOR. Diyorlardı ve bu, aynı markanın
+        Berlin şubesinde doğrudan yanlıştı: sahip Berlin saatiyle hesaplanmış
+        bir anı "İstanbul saati" diye okurdu. Şehir adı yerine ŞUBE denir,
+        çünkü ekrandaki saati belirleyen şey şubenin kendisidir.
     */
     'workspace.publication.schedule.region': 'Schedule the publish',
     'workspace.publication.schedule.button': 'Schedule',
     'workspace.publication.schedule.close': 'Close scheduling',
     'workspace.publication.schedule.help':
-        'A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are Istanbul time.',
+        "A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are in this location's own time zone.",
     'workspace.publication.schedule.option.tonight': 'Tonight 03:00',
     'workspace.publication.schedule.option.tomorrowMorning': 'Tomorrow 09:00',
     'workspace.publication.schedule.option.nextMonday': 'Monday 09:00',
     'workspace.publication.schedule.optionAt': '{label} — {moment}',
-    'workspace.publication.schedule.pending': 'Scheduled for {moment} (Istanbul).',
+    'workspace.publication.schedule.pending': "Scheduled for {moment}, this location's time.",
 
     /*
         ÇIKMAYAN YAYIN SESSİZ KALAMAZ. Üç cümle de aynı üç şeyi söyler ve

@@ -24,8 +24,12 @@ type SchedulePlan = {
     needsAttention: boolean;
 };
 
+/**
+ * `timeZone` ŞUBENİN saat dilimidir (`docs/62`) ve `null` olabilir: şube
+ * okunamıyorsa sunucu bir dilim UYDURMAZ, seçenek de göndermez.
+ */
 type SchedulePayload = {
-    timeZone: string;
+    timeZone: string | null;
     plan: SchedulePlan | null;
     options: ScheduleOption[];
 };
@@ -51,29 +55,50 @@ const OPTION_LABEL_KEYS = {
 } as const;
 
 /**
- * Sunucudan gelen ANI, İstanbul saatiyle okunabilir hâle çevirir.
+ * Sunucudan gelen ANI, ŞUBENİN saatiyle okunabilir hâle çevirir.
  *
- * Burada HESAP YAPILMAZ, yalnız biçimlendirilir. Saatin kendisini tarayıcı
- * hesaplasaydı, Berlin'den panele giren bir ortak "bu gece 03:00" dediğinde
- * menü Türkiye'de 04:00'te değişirdi ve sahip menüsünün ne zaman
- * değiştiğini bilemezdi.
+ * Burada HESAP YAPILMAZ, yalnız biçimlendirilir — ve biçimlendirme dilimi de
+ * sunucudan gelir. Sabit `Europe/Istanbul` ile yazılırken, sunucunun Berlin
+ * şubesi için kurduğu 03:00'lik plan ekranda "04:00" görünüyordu: sahip iki
+ * sayının hangisine güveneceğini bilemezdi. EKRANDA YAZAN SAAT İLE MENÜNÜN
+ * DEĞİŞECEĞİ AN AYNI OLMAK ZORUNDADIR.
+ *
+ * Şubenin dilimi bilinmiyorsa `undefined` geçilir ve tarayıcı okuyanın KENDİ
+ * saatini kullanır. Bu bir yedek dilim değil, bir itiraftır: sahibe hangi
+ * saatte olduğunu söyleyemediğimizde, en azından uydurma bir şehrin saatini
+ * söylemeyiz. O durumda zaten seçenek de çizilmez.
  */
-function istanbulMoment(iso: string): string {
+function momentIn(iso: string, timeZone: string | null): string {
     const value = new Date(iso);
 
     if (Number.isNaN(value.getTime())) {
         return iso;
     }
 
-    return new Intl.DateTimeFormat(currentLocaleTag(), {
-        timeZone: 'Europe/Istanbul',
+    const options: Intl.DateTimeFormatOptions = {
         weekday: 'short',
         day: '2-digit',
         month: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
         hourCycle: 'h23',
-    }).format(value);
+    };
+
+    try {
+        return new Intl.DateTimeFormat(currentLocaleTag(), {
+            ...options,
+            timeZone: timeZone ?? undefined,
+        }).format(value);
+    } catch {
+        /*
+            Sunucu bu dilimi doğruluyor, ama tarayıcının tanıdığı liste
+            sunucununkiyle bire bir aynı değildir. Tanımadığı bir kimlikte
+            `Intl` fırlatır ve bu bölüm hiç çizilmezdi — sahip kurulu
+            planını göremezdi. Saati kaybetmektense okuyanın kendi saatiyle
+            yazarız.
+        */
+        return new Intl.DateTimeFormat(currentLocaleTag(), options).format(value);
+    }
 }
 
 function optionLabel(key: string): string {
@@ -263,7 +288,7 @@ export function PublishScheduleRegion({
                         }`}
                     >
                         {t(messageKey ?? 'workspace.publication.schedule.status.unknown', {
-                            moment: istanbulMoment(plan.scheduledFor),
+                            moment: momentIn(plan.scheduledFor, payload?.timeZone ?? null),
                         })}
                     </p>
                     {/*
@@ -311,7 +336,10 @@ export function PublishScheduleRegion({
                             >
                                 {t('workspace.publication.schedule.optionAt', {
                                     label: optionLabel(option.key),
-                                    moment: istanbulMoment(option.scheduledFor),
+                                    moment: momentIn(
+                                        option.scheduledFor,
+                                        payload?.timeZone ?? null,
+                                    ),
                                 })}
                             </button>
                         </li>

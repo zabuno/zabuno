@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Media;
 
 use App\Models\User;
+use Database\Seeders\PlanCatalogueSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -259,6 +260,13 @@ final class MediaStorageBreakdownTest extends TestCase
      */
     public function test_totals_carry_the_real_limits_and_nothing_that_is_not_measured(): void
     {
+        /*
+            Plan ADI kotanın değil KATALOĞUN sözüdür (FF-161): sahibin
+            faturada okuduğu adla panelinde okuduğu ad aynı olmak zorunda.
+            Bu yüzden katalog burada açıkça tohumlanır.
+        */
+        $this->seed(PlanCatalogueSeeder::class);
+
         $owner = $this->verifiedUser();
         $workspaceId = $this->ownerWorkspace($owner, 'yer-kirilim-toplam');
 
@@ -274,7 +282,7 @@ final class MediaStorageBreakdownTest extends TestCase
         self::assertSame(200 * 1024 * 1024, (int) $response->json('totals.bytesLimit'));
         self::assertSame(2, (int) $response->json('totals.assetsUsed'));
         self::assertSame(100, (int) $response->json('totals.assetsLimit'));
-        self::assertSame('Free', (string) $response->json('totals.planLabel'));
+        self::assertSame('Starter', (string) $response->json('totals.planLabel'));
 
         $body = (array) $response->json();
 

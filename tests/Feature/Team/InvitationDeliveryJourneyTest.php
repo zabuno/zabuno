@@ -169,10 +169,19 @@ final class InvitationDeliveryJourneyTest extends TestCase
         $body = $response->json();
 
         self::assertIsArray($body);
+        /*
+            201 YANITI TESLİMATIN HÂLİNİ DE TAŞIR (FF-160, `docs/110` P0-06).
+
+            Önce yalnız dört alan vardı ve bu, sahibin daveti oluşturduğu
+            anda öğrenebileceği tek şeyin "kayıt oluştu" olması demekti.
+            Taşıyıcı düştüğünde ekran yine aynı satırı yazıyor, e-posta ise
+            hiç çıkmıyordu. `delivery` bir ham sütun değil — iki sütundan
+            türetilen tek kelimelik hâl.
+        */
         self::assertSame(
-            ['id', 'email', 'role', 'status'],
+            ['id', 'email', 'role', 'status', 'delivery'],
             array_keys($body),
-            'TEAM-INVITATIONS-DELIVERY-MAIL-01: mail gönderimi 201 yanıt şeklini değiştirmemeli.'
+            'TEAM-INVITATIONS-DELIVERY-MAIL-01: 201 yanıtı bu alanları taşımalı.'
         );
 
         $normalizedEmail = 'mehmet-inv-deliv-mail-01@example.test';

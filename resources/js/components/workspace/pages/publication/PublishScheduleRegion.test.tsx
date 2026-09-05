@@ -12,11 +12,13 @@ import { PublishScheduleRegion } from './PublishScheduleRegion';
  * gece 03:00'te yeni fiyatların yayına gireceğini SANMASINA yol açar;
  * sabah misafir hâlâ eski fiyatı okurken sahip bunu ancak kasada fark
  * eder. Bu yüzden düğme yalnız gerçek bir plan kurabildiğinde çizilir ve
- * kurduğu planı EKRANDA, İSTANBUL SAATİYLE gösterir.
+ * kurduğu planı EKRANDA, ŞUBENİN SAATİYLE gösterir (`docs/62`).
  *
- * SAATLER SUNUCUDAN gelir; bu bileşen hesap yapmaz, yalnız okunabilir hâle
- * çevirir. Tarayıcıda hesaplansaydı Berlin'den panele giren bir ortak "bu
- * gece 03:00" dediğinde menü Türkiye'de 04:00'te değişirdi.
+ * SAATLER VE SAAT DİLİMİ SUNUCUDAN gelir; bu bileşen hesap yapmaz, yalnız
+ * okunabilir hâle çevirir. Dilimi kendi sabitlemişti ve sonuç şuydu: sunucu
+ * Berlin şubesi için 03:00'i kuruyor, ekran aynı anı "04:00" yazıyordu.
+ * Sahibin okuduğu saat ile menünün değişeceği an ayrıldığı sürece, ikisi de
+ * doğru olsa bile ürün yalan söylemiş olur.
  */
 const OPTIONS_RESPONSE = {
     timeZone: 'Europe/Istanbul',
@@ -69,6 +71,60 @@ describe('PublishScheduleRegion — plan gerçekten kurulur', () => {
         const options = await within(region()).findAllByRole('button', { name: /03:00|09:00/ });
 
         expect(options.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('Berlin şubesinde saatleri BERLİN saatiyle yazar, İstanbul saatiyle değil', async () => {
+        /*
+            EKRANDA YAZAN SAAT ile MENÜNÜN GERÇEKTEN DEĞİŞECEĞİ AN aynı
+            olmak zorundadır (`docs/62`: saat dilimi şubenindir). Ekran
+            sabit `Europe/Istanbul` ile biçimlendirdiği sürece, Berlin
+            şubesinin sahibi sunucunun kurduğu 03:00'lik planı "04:00"
+            olarak okurdu — sayılar tutmadığı için de hangisine
+            güveneceğini bilemezdi.
+
+            `01:00Z` yaz saatinde Berlin'de 03:00, İstanbul'da 04:00'tür;
+            ikisini ayıran tam da bu bir saattir.
+        */
+        fetchSpy.mockImplementation(async (url: string) =>
+            /publications\/schedule$/.test(url)
+                ? jsonResponse(200, {
+                      timeZone: 'Europe/Berlin',
+                      plan: null,
+                      options: [{ key: 'tonight', scheduledFor: '2026-09-06T01:00:00.000000Z' }],
+                  })
+                : jsonResponse(404, { message: 'Not found' }),
+        );
+
+        render(<PublishScheduleRegion workspaceId={71} menuId={42} draftReady />);
+
+        const chip = await within(region()).findByRole('button', { name: /03:00/ });
+        const label = chip.textContent ?? '';
+
+        // Çipin iki yarısı da 03:00 der: sabit etiket ("Tonight 03:00") ve
+        // sunucunun ANINDAN çevrilen saat. İkisi ayrıştığı an sahip hangisine
+        // güveneceğini bilemez.
+        expect(label.match(/03:00/g) ?? []).toHaveLength(2);
+        expect(label).not.toMatch(/04:00/);
+    });
+
+    it('şubenin saat dilimi okunamıyorsa saat SEÇTİRMEZ', async () => {
+        /*
+            Saat dilimi bilinmeden "bu gece 03:00" demek, hangi gece hangi
+            03:00 olduğunu bilmeden söz vermektir. Sessizce İstanbul'a
+            düşmek, düzeltmeye çalıştığımız hatanın ta kendisidir; bu yüzden
+            seçenek hiç çizilmez. Hemen yayınlamak her zaman açıktır.
+        */
+        fetchSpy.mockImplementation(async (url: string) =>
+            /publications\/schedule$/.test(url)
+                ? jsonResponse(200, { timeZone: null, plan: null, options: [] })
+                : jsonResponse(404, { message: 'Not found' }),
+        );
+
+        render(<PublishScheduleRegion workspaceId={71} menuId={42} draftReady />);
+
+        await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+        expect(within(region()).queryAllByRole('button', { name: /\d\d:\d\d/ })).toHaveLength(0);
     });
 
     it('bir saat seçildiğinde planı SUNUCUYA yazar', async () => {
@@ -213,7 +269,13 @@ describe('PublishScheduleRegion — plan gerçekten kurulur', () => {
 
         expect(text).toMatch(/next version number/i);
         expect(text).toMatch(/QR code stays the same/i);
-        expect(text).toMatch(/Istanbul/i);
+        /*
+            Cümle bir ŞEHİR adı vermez, ŞUBEYİ işaret eder (`docs/62`).
+            "Istanbul" yazdığı sürece Berlin şubesinin sahibi doğru
+            hesaplanmış bir saati yanlış şehirle okurdu.
+        */
+        expect(text).toMatch(/location's own time zone/i);
+        expect(text).not.toMatch(/Istanbul/i);
     });
 
     it('taslak hazır değilken saat SEÇTİRMEZ ve sebebini yazar', async () => {

@@ -154,10 +154,20 @@ final class ListTeamInvitationsTest extends TestCase
         self::assertSame('elif-inv-list-01@example.test', $body[1]['email'] ?? null, 'TEAM-INVITATIONS-LIST-01: sonra eklenen ikinci sırada.');
 
         foreach ($body as $item) {
+            /*
+                `delivery` SÜTUN DEĞİL, TÜRETİLMİŞ HÂLDİR (FF-160, `docs/110` P0-06).
+
+                Bu iddianın aslı "yalnız dört alan" değil, "ham sütun
+                sızmasın"dı: `invited_by`, zaman damgaları, `workspace_id`.
+                `delivery` bunların hiçbiri değil — iki sütundan türetilen tek
+                kelimelik bir hâl ("sent"/"failed"/"unknown"). Alan eklendi
+                çünkü onsuz sahip, e-postası hiç çıkmamış bir daveti
+                ekranında ulaşmış bir davetten ayırt edemiyordu.
+            */
             self::assertSame(
-                ['id', 'email', 'role', 'status'],
+                ['id', 'email', 'role', 'status', 'delivery'],
                 array_keys($item),
-                'TEAM-INVITATIONS-SHAPE-01: her kayıt yalnız id/email/role/status alanlarını taşımalı.'
+                'TEAM-INVITATIONS-SHAPE-01: kayıt yalnız bu alanları taşımalı — ham teslimat sütunları değil.'
             );
             self::assertSame('editor', $item['role']);
             self::assertSame('pending', $item['status']);
@@ -308,8 +318,12 @@ final class ListTeamInvitationsTest extends TestCase
 
         foreach ($body as $item) {
             self::assertIsArray($item);
-            self::assertSame(['id', 'email', 'role', 'status'], array_keys($item));
+            self::assertSame(['id', 'email', 'role', 'status', 'delivery'], array_keys($item));
             self::assertArrayNotHasKey('invited_by', $item);
+            // Teslimat sütunlarının HAM hâli asla çıkmaz: kaydedilen sebep
+            // sağlayıcı adresini ve yanıt gövdesini taşıyabilir (FF-160).
+            self::assertArrayNotHasKey('delivered_at', $item);
+            self::assertArrayNotHasKey('delivery_failure', $item);
             self::assertArrayNotHasKey('workspace_id', $item);
             self::assertArrayNotHasKey('created_at', $item);
             self::assertArrayNotHasKey('updated_at', $item);

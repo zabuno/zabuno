@@ -20,7 +20,7 @@ describe('MediaQuotaRegion (FAZ7-QUOTA-UI-01)', () => {
                 json: async () => ({
                     quota: {
                         planCode: 'starter',
-                        planLabel: 'Free',
+                        planLabel: 'Starter',
                         originalBytesUsed: 15 * 1048576,
                         originalBytesLimit: 200 * 1048576,
                         assetsUsed: 3,
@@ -36,7 +36,7 @@ describe('MediaQuotaRegion (FAZ7-QUOTA-UI-01)', () => {
 
         render(<MediaQuotaRegion workspaceId={4} />);
 
-        expect(await screen.findByText('Plan: Free')).toBeInTheDocument();
+        expect(await screen.findByText('Plan: Starter')).toBeInTheDocument();
         expect(screen.getByText('15 MB of 200 MB')).toBeInTheDocument();
         expect(screen.getByText('3 of 100')).toBeInTheDocument();
         expect(screen.getByText('4 of 100')).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe('MediaQuotaRegion (FAZ7-QUOTA-UI-01)', () => {
                 json: async () => ({
                     quota: {
                         planCode: 'team',
-                        planLabel: 'Pro',
+                        planLabel: 'Team',
                         originalBytesUsed: 1,
                         originalBytesLimit: 2,
                         assetsUsed: 10000,

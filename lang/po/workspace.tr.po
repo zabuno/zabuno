@@ -4730,7 +4730,7 @@ msgstr "Yayın zamanlanamadı. Hiçbir şey zamanlanmadı."
 
 #: workspace:workspace.publication.schedule.help
 msgid "workspace.publication.schedule.help"
-msgstr "Zamanlanmış bir yayın da yayındır: sonraki sürüm numarasını alır ve basılı karekod aynı kalır. Saatler İstanbul saatidir."
+msgstr "Zamanlanmış bir yayın da yayındır: sonraki sürüm numarasını alır ve basılı karekod aynı kalır. Saatler şubenin kendi saat dilimindedir."
 
 #: workspace:workspace.publication.schedule.option.nextMonday
 msgid "workspace.publication.schedule.option.nextMonday"
@@ -4750,7 +4750,7 @@ msgstr "{label} — {moment}"
 
 #: workspace:workspace.publication.schedule.pending
 msgid "workspace.publication.schedule.pending"
-msgstr "{moment} için zamanlandı (İstanbul)."
+msgstr "{moment} için zamanlandı; şubenin saatiyle."
 
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
@@ -5152,6 +5152,14 @@ msgstr "Tekrar dene"
 msgid "workspace.team.invitations.cancel.success"
 msgstr "Davet iptal edildi."
 
+#: workspace:workspace.team.invitations.delivery.failed
+msgid "workspace.team.invitations.delivery.failed"
+msgstr "E-posta çıkmadı. Davet hâlâ geçerli — tekrar gönderin."
+
+#: workspace:workspace.team.invitations.delivery.unknown
+msgid "workspace.team.invitations.delivery.unknown"
+msgstr "Bu e-postanın hiç gönderilip gönderilmediğini söyleyemiyoruz."
+
 #: workspace:workspace.team.invitations.empty
 msgid "workspace.team.invitations.empty"
 msgstr "Bekleyen davet yok."
@@ -5163,6 +5171,30 @@ msgstr "Bekleyen davetler yüklenemedi. Lütfen tekrar deneyin."
 #: workspace:workspace.team.invitations.loading
 msgid "workspace.team.invitations.loading"
 msgstr "Bekleyen davetler yükleniyor…"
+
+#: workspace:workspace.team.invitations.resend.busy
+msgid "workspace.team.invitations.resend.busy"
+msgstr "Gönderiliyor…"
+
+#: workspace:workspace.team.invitations.resend.button
+msgid "workspace.team.invitations.resend.button"
+msgstr "Tekrar gönder"
+
+#: workspace:workspace.team.invitations.resend.error
+msgid "workspace.team.invitations.resend.error"
+msgstr "Tekrar gönderilemedi. Lütfen tekrar deneyin."
+
+#: workspace:workspace.team.invitations.resend.linkNote
+msgid "workspace.team.invitations.resend.linkNote"
+msgstr "Tekrar göndermek bağlantıyı değiştirir: yalnız en yeni e-posta çalışır."
+
+#: workspace:workspace.team.invitations.resend.sent
+msgid "workspace.team.invitations.resend.sent"
+msgstr "E-posta sağlayıcısı kabul etti. Gelen kutusunu buradan göremiyoruz."
+
+#: workspace:workspace.team.invitations.resend.undelivered
+msgid "workspace.team.invitations.resend.undelivered"
+msgstr "Davet yenilendi ama e-posta çıkmadı."
 
 #: workspace:workspace.team.invite.button
 msgid "workspace.team.invite.button"

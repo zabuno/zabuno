@@ -152,10 +152,19 @@ final class StoreTeamInvitationTest extends TestCase
         $body = $response->json();
 
         self::assertIsArray($body);
+        /*
+            `delivery` EKLENDİ (FF-160, `docs/110` P0-06).
+
+            İddianın aslı "ham sütun sızmasın"dı — `invited_by`, zaman
+            damgaları, `token_hash`. `delivery` bunların hiçbiri değil: iki
+            sütundan türetilen tek kelimelik hâl. Alan eklendi çünkü onsuz,
+            e-postası hiç çıkmamış bir davet ekranda başarılı bir davetle
+            aynı görünüyordu.
+        */
         self::assertSame(
-            ['id', 'email', 'role', 'status'],
+            ['id', 'email', 'role', 'status', 'delivery'],
             array_keys($body),
-            'TEAM-INVITATIONS-STORE-01: yanıt yalnız id/email/role/status alanlarını taşımalı.'
+            'TEAM-INVITATIONS-STORE-01: yanıt yalnız bu alanları taşımalı — ham sütun değil.'
         );
         self::assertSame('mehmet-inv-store-01@example.test', $body['email'] ?? null, 'TEAM-INVITATIONS-STORE-01: email küçük harfe normalize edilmeli.');
         self::assertSame('editor', $body['role'] ?? null);

@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1338;
+const FROZEN_LEGACY_KEY_COUNT = 1346;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -72,8 +72,22 @@ const FROZEN_LEGACY_KEY_COUNT = 1338;
 // bir SVG'yi geri çeviren bir kapıda doğrudan yanlıştı. VİDEO için anahtar
 // YOK — kabul edilmeyen bir tür için sınır cümlesi yazmak, olmayan bir
 // yeteneği ilan etmek olurdu (`docs/109` §8.2).
+// FF-160: bekleyen davetin E-POSTASI çıktı mı? Sekiz anahtar — ikisi satırın
+// teslimat hâli (çıkmadı / hiç gönderilip gönderilmediğini bilmiyoruz),
+// altısı yeniden gönderme yolu (düğme, gönderiliyor, sağlayıcı kabul etti,
+// yenilendi ama çıkmadı, gönderilemedi, ve bağlantının değiştiği notu).
+// "Teslim edildi" ya da "gelen kutusuna düştü" diyen bir anahtar YOK:
+// sağlayıcının mesajı devraldığını görürüz, gelen kutusunu göremeyiz.
+// "Gönderildi" rozeti de YOK — yolunda giden satıra rozet basmak, dikkat
+// isteyen iki hâli gürültünün içinde kaybederdi.
+// FF-161: zamanlanmış yayının cümleleri artık "İstanbul" demiyor. Anahtar
+// sayısı DEĞİŞMEDİ — yalnız iki anahtarın METNİ düzeldi (yardım satırı ve
+// kurulu planın durum cümlesi). Saat dilimi markanın değil ŞUBENİN alanıdır
+// (`docs/62`): aynı markanın Berlin şubesinde "Saatler İstanbul saatidir"
+// cümlesi, doğru hesaplanmış bir anı yanlış şehirle okutuyordu. Şehir adı
+// yerine ŞUBE denir, çünkü ekrandaki saati belirleyen şubenin kendisidir.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'bcc3b4b7b03cbc772d91cbb744b5a613f1175a668e1a57689ac6e546d9424de4';
+    'af1d617f743a0d0077926691a78987fa68ff30d77811fd320c237cdcc019b073';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

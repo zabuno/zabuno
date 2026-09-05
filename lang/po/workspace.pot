@@ -5152,6 +5152,14 @@ msgstr ""
 msgid "workspace.team.invitations.cancel.success"
 msgstr ""
 
+#: workspace:workspace.team.invitations.delivery.failed
+msgid "workspace.team.invitations.delivery.failed"
+msgstr ""
+
+#: workspace:workspace.team.invitations.delivery.unknown
+msgid "workspace.team.invitations.delivery.unknown"
+msgstr ""
+
 #: workspace:workspace.team.invitations.empty
 msgid "workspace.team.invitations.empty"
 msgstr ""
@@ -5162,6 +5170,30 @@ msgstr ""
 
 #: workspace:workspace.team.invitations.loading
 msgid "workspace.team.invitations.loading"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.busy
+msgid "workspace.team.invitations.resend.busy"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.button
+msgid "workspace.team.invitations.resend.button"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.error
+msgid "workspace.team.invitations.resend.error"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.linkNote
+msgid "workspace.team.invitations.resend.linkNote"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.sent
+msgid "workspace.team.invitations.resend.sent"
+msgstr ""
+
+#: workspace:workspace.team.invitations.resend.undelivered
+msgid "workspace.team.invitations.resend.undelivered"
 msgstr ""
 
 #: workspace:workspace.team.invite.button

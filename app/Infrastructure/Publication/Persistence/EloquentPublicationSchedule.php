@@ -8,8 +8,10 @@ use App\Application\Publication\Dto\ScheduledPublicationRecord;
 use App\Application\Publication\Port\PublicationSchedulePort;
 use App\Domain\Publication\ScheduledPublicationState;
 use Carbon\CarbonInterface;
+use DateTimeZone;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final class EloquentPublicationSchedule implements PublicationSchedulePort
 {
@@ -98,6 +100,44 @@ final class EloquentPublicationSchedule implements PublicationSchedulePort
             ->first();
 
         return $row === null ? null : $this->hydrate($row);
+    }
+
+    public function timezoneForMenu(int $workspaceId, int $menuId): ?string
+    {
+        /*
+            Kiracı koşulu İKİ tabloda birden durur. Yalnız `menus.workspace_id`
+            yazsaydık, bir gün başka bir çalışma alanına taşınmış bir şube
+            satırı sessizce okunabilirdi.
+        */
+        $timezone = DB::table('menus')
+            ->join('locations', 'locations.id', '=', 'menus.location_id')
+            ->where('menus.id', $menuId)
+            ->where('menus.workspace_id', $workspaceId)
+            ->where('locations.workspace_id', $workspaceId)
+            ->value('locations.timezone');
+
+        $timezone = trim((string) ($timezone ?? ''));
+
+        // Saat dilimi olmayan bir şube için "bu gece 03:00" diye bir an
+        // yoktur. Sunucununkine ya da sabit bir dilime düşmek, sahibe
+        // tutulamayacak bir söz verirdi.
+        if ($timezone === '') {
+            return null;
+        }
+
+        try {
+            new DateTimeZone($timezone);
+        } catch (Throwable) {
+            /*
+                TANINMAYAN BİR KİMLİK DE "OKUNAMADI"DIR. Elle düzeltilmiş bir
+                satır ya da emekliye ayrılmış bir dilim buraya düşer. Ham
+                değeri ekrana göndermek daha kötü olurdu: tarayıcı onu
+                biçimlendiremez ve sahip planını hiç göremezdi.
+            */
+            return null;
+        }
+
+        return $timezone;
     }
 
     public function cancel(int $workspaceId, int $menuId, int $scheduleId): bool

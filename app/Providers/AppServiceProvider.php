@@ -67,6 +67,7 @@ use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
 use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
+use App\Application\Team\Port\TeamInvitationNotifierPort;
 use App\Application\Team\Port\TeamInvitationRepositoryPort;
 use App\Application\Team\Port\TeamMemberRepositoryPort;
 use App\Application\Tenancy\Port\FeatureFlagPort;
@@ -155,6 +156,7 @@ use App\Infrastructure\Security\Execution\SymfonyTenantIsolationSuiteRunner;
 use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
+use App\Infrastructure\Team\Mail\MailTeamInvitationNotifier;
 use App\Infrastructure\Team\Persistence\EloquentTeamInvitationRepository;
 use App\Infrastructure\Team\Persistence\EloquentTeamMemberRepository;
 use App\Infrastructure\Tenancy\Features\PennantFeatureFlags;
@@ -523,6 +525,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(AnalyticsRepositoryPort::class, EloquentAnalyticsRepository::class);
         $this->app->bind(TeamMemberRepositoryPort::class, EloquentTeamMemberRepository::class);
         $this->app->bind(TeamInvitationRepositoryPort::class, EloquentTeamInvitationRepository::class);
+        // Davet e-postası kasadan seçilen taşıyıcıyla çıkar ve çıkmadıysa
+        // sebebi kayda geçer (`docs/110` P0-06).
+        $this->app->bind(TeamInvitationNotifierPort::class, MailTeamInvitationNotifier::class);
         $this->app->bind(PlanCatalogRepositoryPort::class, EloquentPlanCatalogRepository::class);
         $this->app->bind(PlanManagementRepositoryPort::class, EloquentPlanManagementRepository::class);
         $this->app->bind(HostCapabilityProbePort::class, RuntimeHostCapabilityProbe::class);

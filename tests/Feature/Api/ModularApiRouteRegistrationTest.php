@@ -380,6 +380,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/team/invitations||App\Http\Controllers\Team\ListTeamInvitationsController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/team/invitations||App\Http\Controllers\Team\StoreTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         'DELETE|api/workspaces/{workspace}/team/invitations/{invitation}||App\Http\Controllers\Team\CancelTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
+        // FF-160 (`docs/110` P0-06): e-postası çıkmayan bir davet için sahibin
+        // elinde bir hamle olmalı. Sınır kardeşleriyle AYNI (`throttle:5,1`).
+        'POST|api/workspaces/{workspace}/team/invitations/{invitation}/resend||App\Http\Controllers\Team\ResendTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         'POST|api/invitations/accept/{token}||App\Http\Controllers\Team\AcceptTeamInvitationController|api,auth:sanctum,throttle:5,1,verified',
         /*
             DENETİM İZİ (FF-132) — medya izinden AYRI bir uç ve bu bilinçli:

@@ -788,3 +788,289 @@ describe('TeamPage — S1-WP01A pending invitation cancel (TEAM_ACTIONS_FRONTEND
         expect(within(inviteForm).getByText(/invited|success|sent/i)).toBeInTheDocument();
     });
 });
+
+/**
+ * FF-160 RED — davet e-postası çıkmadığında sahip ne görür, ne yapabilir?
+ *
+ * Bugün TeamPage bekleyen davet satırında yalnız e-posta/rol/durum ve iptal
+ * düğmesi çiziyor. Taşıyıcı düştüğünde satır "pending" diyor ve başarılı bir
+ * davetle BİREBİR aynı görünüyor; yeniden gönderme yolu ise hiç yok. Sahibin
+ * tek hamlesi daveti iptal edip yeniden kurmak — yani ekibini kurabilmek için
+ * önce onu bozmak (`docs/110` P0-06).
+ *
+ * Aşağıdaki iddiaların hepsi mevcut üretime karşı düşer: ne `delivery`
+ * okunuyor, ne "Send again" düğmesi var, ne de `/resend` ucuna bir çağrı.
+ */
+describe('TeamPage — FF-160 davet teslimatı görünür ve yeniden gönderilebilir', () => {
+    let fetchSpy: ReturnType<typeof vi.fn>;
+    let pendingInvitations: unknown[];
+    let resendDelivery: 'sent' | 'failed';
+
+    const INVITATION_ID = 71;
+    const RESEND_ENDPOINT = `${INVITATIONS_ENDPOINT}/${INVITATION_ID}/resend`;
+
+    beforeEach(() => {
+        resendDelivery = 'sent';
+        pendingInvitations = [
+            {
+                id: INVITATION_ID,
+                email: 'aday@example.test',
+                role: 'editor',
+                status: 'pending',
+                delivery: 'failed',
+            },
+        ];
+        document.cookie = 'XSRF-TOKEN=ff160-resend-test-token';
+
+        fetchSpy = vi.fn(async (url: string, init?: RequestInit) => {
+            const href = String(url);
+            const method = (init?.method ?? 'GET').toUpperCase();
+
+            if (href === CSRF_COOKIE_URL) return jsonResponse(204, null);
+            if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
+            if (href === INVITATIONS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, pendingInvitations);
+            if (href === RESEND_ENDPOINT && method === 'POST') {
+                pendingInvitations = [
+                    {
+                        id: INVITATION_ID,
+                        email: 'aday@example.test',
+                        role: 'editor',
+                        status: 'pending',
+                        delivery: resendDelivery,
+                    },
+                ];
+
+                return jsonResponse(200, {
+                    id: INVITATION_ID,
+                    email: 'aday@example.test',
+                    role: 'editor',
+                    status: 'pending',
+                    delivery: resendDelivery,
+                });
+            }
+
+            throw new Error(`Unhandled fetch: ${method} ${href}`);
+        });
+        vi.stubGlobal('fetch', fetchSpy);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    function pendingRegion() {
+        return screen.getByRole('region', { name: /pending invitation/i });
+    }
+
+    function rowFor(email: string): HTMLElement {
+        const emailNode = within(pendingRegion()).getByText(email);
+        const row = emailNode.closest('li');
+        if (!row) {
+            throw new Error(`expected a <li> row ancestor for ${email}`);
+        }
+        return row as HTMLElement;
+    }
+
+    it('says on the row that the email did not go out, instead of showing a silent pending row', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        expect(
+            within(rowFor('aday@example.test')).getByText(/did not go out/i),
+        ).toBeInTheDocument();
+    });
+
+    it('separates "never attempted" from "attempted and failed" instead of collapsing both into one sentence', async () => {
+        pendingInvitations = [
+            {
+                id: INVITATION_ID,
+                email: 'aday@example.test',
+                role: 'editor',
+                status: 'pending',
+                delivery: 'unknown',
+            },
+        ];
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        const row = rowFor('aday@example.test');
+        expect(within(row).getByText(/cannot tell whether/i)).toBeInTheDocument();
+        expect(within(row).queryByText(/did not go out/i)).not.toBeInTheDocument();
+    });
+
+    it('adds no delivery notice to a row whose email the provider accepted', async () => {
+        pendingInvitations = [
+            {
+                id: INVITATION_ID,
+                email: 'aday@example.test',
+                role: 'editor',
+                status: 'pending',
+                delivery: 'sent',
+            },
+        ];
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        const row = rowFor('aday@example.test');
+        expect(within(row).queryByText(/did not go out/i)).not.toBeInTheDocument();
+        expect(within(row).queryByText(/cannot tell whether/i)).not.toBeInTheDocument();
+    });
+
+    it('bootstraps CSRF then POSTs the resend endpoint with same-origin credentials and the XSRF header', async () => {
+        const user = userEvent.setup();
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        await user.click(
+            within(rowFor('aday@example.test')).getByRole('button', { name: /send again/i }),
+        );
+
+        await waitFor(() => {
+            expect(fetchSpy.mock.calls.some(([url]) => String(url) === RESEND_ENDPOINT)).toBe(true);
+        });
+
+        const csrfIndex = fetchSpy.mock.calls.findIndex(([url]) => String(url) === CSRF_COOKIE_URL);
+        const resendIndex = fetchSpy.mock.calls.findIndex(
+            ([url]) => String(url) === RESEND_ENDPOINT,
+        );
+        expect(csrfIndex).toBeGreaterThanOrEqual(0);
+        expect(csrfIndex).toBeLessThan(resendIndex);
+
+        const init = fetchSpy.mock.calls[resendIndex][1] as RequestInit;
+        expect(init).toMatchObject({ method: 'POST', credentials: 'same-origin' });
+        expect(new Headers(init.headers).get('X-XSRF-TOKEN')).toBe('ff160-resend-test-token');
+    });
+
+    it('never claims the inbox: a successful resend reports only that the provider accepted it', async () => {
+        const user = userEvent.setup();
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        await user.click(
+            within(rowFor('aday@example.test')).getByRole('button', { name: /send again/i }),
+        );
+
+        await waitFor(() => {
+            expect(
+                within(rowFor('aday@example.test')).getByText(/provider accepted/i),
+            ).toBeInTheDocument();
+        });
+
+        // "Teslim edildi", "gelen kutusuna düştü" ya da tahmini bir süre
+        // DEMEZ: buradan gelen kutusunu göremeyiz.
+        const row = rowFor('aday@example.test');
+        expect(
+            within(row).queryByText(/delivered|inbox in|minute|second/i),
+        ).not.toBeInTheDocument();
+    });
+
+    it('a resend whose email still did not go out is reported as refreshed-but-not-sent, never as success', async () => {
+        const user = userEvent.setup();
+        resendDelivery = 'failed';
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        await user.click(
+            within(rowFor('aday@example.test')).getByRole('button', { name: /send again/i }),
+        );
+
+        await waitFor(() => {
+            expect(
+                within(rowFor('aday@example.test')).getByText(
+                    /refreshed, but the email did not go out/i,
+                ),
+            ).toBeInTheDocument();
+        });
+
+        expect(
+            within(rowFor('aday@example.test')).queryByText(/provider accepted/i),
+        ).not.toBeInTheDocument();
+        // Davet ayakta kalır: bağlantı gerçekten yenilendi.
+        expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+    });
+
+    it('reports a rejected resend as an error and leaves the invitation row in place', async () => {
+        const user = userEvent.setup();
+
+        fetchSpy.mockImplementation(async (url: string, init?: RequestInit) => {
+            const href = String(url);
+            const method = (init?.method ?? 'GET').toUpperCase();
+            if (href === CSRF_COOKIE_URL) return jsonResponse(204, null);
+            if (href === MEMBERS_ENDPOINT && method === 'GET') return jsonResponse(200, []);
+            if (href === INVITATIONS_ENDPOINT && method === 'GET')
+                return jsonResponse(200, pendingInvitations);
+            if (href === RESEND_ENDPOINT && method === 'POST')
+                return jsonResponse(429, { message: 'Too Many Requests' });
+            throw new Error(`Unhandled fetch: ${method} ${href}`);
+        });
+
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        await user.click(
+            within(rowFor('aday@example.test')).getByRole('button', { name: /send again/i }),
+        );
+
+        await waitFor(() => {
+            expect(
+                within(rowFor('aday@example.test')).getByText(/could not send it again/i),
+            ).toBeInTheDocument();
+        });
+
+        expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+    });
+
+    it('tells the owner that sending again replaces the link', async () => {
+        render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        expect(within(pendingRegion()).getByText(/replaces the link/i)).toBeInTheDocument();
+    });
+
+    it('uses no breakpoint-prefixed classes on the resend controls at a 320 fluid viewport', async () => {
+        const user = userEvent.setup();
+        const { container } = render(<TeamPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(pendingRegion()).getByText('aday@example.test')).toBeInTheDocument();
+        });
+
+        await user.click(
+            within(rowFor('aday@example.test')).getByRole('button', { name: /send again/i }),
+        );
+
+        for (const classAttribute of allClassAttributes(container)) {
+            expect(classAttribute).not.toMatch(BREAKPOINT_TOKEN);
+        }
+    });
+});

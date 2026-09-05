@@ -8,18 +8,18 @@ use App\Application\Entitlement\Exception\EntitlementDeniedException;
 use App\Application\Entitlement\UseCase\RequireEntitlement;
 use App\Application\Team\Exception\TeamInvitationConflictException;
 use App\Application\Team\UseCase\CreateTeamInvitation;
+use App\Application\Team\UseCase\DeliverTeamInvitation;
 use App\Domain\Entitlement\Entitlement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Team\StoreTeamInvitationRequest;
-use App\Mail\TeamInvitationMail;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Mail;
 
 final class StoreTeamInvitationController extends Controller
 {
     public function __construct(
         private readonly CreateTeamInvitation $createTeamInvitation,
         private readonly RequireEntitlement $requireEntitlement,
+        private readonly DeliverTeamInvitation $deliverTeamInvitation,
     ) {}
 
     public function __invoke(StoreTeamInvitationRequest $request, int $workspace): JsonResponse
@@ -50,13 +50,20 @@ final class StoreTeamInvitationController extends Controller
             return response()->json(['message' => $exception->getMessage()], 422);
         }
 
-        Mail::to($invitation->email)->send(new TeamInvitationMail(
-            $invitation->workspaceName,
-            $invitation->role,
-            url("/invitations/{$invitation->rawToken}"),
-            $invitation->expiresAt,
-        ));
+        /*
+            GÖNDERİM KAYITTAN SONRA GELİR VE SESSİZ KALAMAZ (`docs/110` P0-06).
 
-        return response()->json($invitation->summary()->toArray(), 201);
+            Burada çıplak bir `Mail::to(...)->send(...)` vardı. Taşıyıcı
+            patlarsa istek 500 veriyor, davet ise OLUŞMUŞ oluyordu: sahip
+            hata görüyor, tekrar deniyor ve "bu e-posta için zaten bekleyen
+            bir davet var" cevabını alıyordu. Yani ekranda hiçbir iz
+            bırakmadan, hem daveti hem sahibi kilitliyordu.
+
+            Şimdi davet oluşmuşsa oluşmuş kalır (201), teslimatın olup
+            olmadığı ise satıra yazılır ve yanıtla birlikte ekrana çıkar.
+        */
+        $delivery = $this->deliverTeamInvitation->handle($invitation);
+
+        return response()->json($invitation->summary($delivery)->toArray(), 201);
     }
 }

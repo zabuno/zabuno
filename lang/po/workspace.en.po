@@ -4730,7 +4730,7 @@ msgstr "The publish could not be scheduled. Nothing was scheduled."
 
 #: workspace:workspace.publication.schedule.help
 msgid "workspace.publication.schedule.help"
-msgstr "A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are Istanbul time."
+msgstr "A scheduled publish is a publish: it takes the next version number and the printed QR code stays the same. Times are in this location's own time zone."
 
 #: workspace:workspace.publication.schedule.option.nextMonday
 msgid "workspace.publication.schedule.option.nextMonday"
@@ -4750,7 +4750,7 @@ msgstr "{label} — {moment}"
 
 #: workspace:workspace.publication.schedule.pending
 msgid "workspace.publication.schedule.pending"
-msgstr "Scheduled for {moment} (Istanbul)."
+msgstr "Scheduled for {moment}, this location's time."
 
 #: workspace:workspace.publication.schedule.region
 msgid "workspace.publication.schedule.region"
@@ -5152,6 +5152,14 @@ msgstr "Retry"
 msgid "workspace.team.invitations.cancel.success"
 msgstr "Invitation cancelled."
 
+#: workspace:workspace.team.invitations.delivery.failed
+msgid "workspace.team.invitations.delivery.failed"
+msgstr "The email did not go out. The invitation is still valid — send it again."
+
+#: workspace:workspace.team.invitations.delivery.unknown
+msgid "workspace.team.invitations.delivery.unknown"
+msgstr "We cannot tell whether this email was ever sent."
+
 #: workspace:workspace.team.invitations.empty
 msgid "workspace.team.invitations.empty"
 msgstr "No pending invitations."
@@ -5163,6 +5171,30 @@ msgstr "Pending invitations failed to load. Please try again."
 #: workspace:workspace.team.invitations.loading
 msgid "workspace.team.invitations.loading"
 msgstr "Loading pending invitations…"
+
+#: workspace:workspace.team.invitations.resend.busy
+msgid "workspace.team.invitations.resend.busy"
+msgstr "Sending…"
+
+#: workspace:workspace.team.invitations.resend.button
+msgid "workspace.team.invitations.resend.button"
+msgstr "Send again"
+
+#: workspace:workspace.team.invitations.resend.error
+msgid "workspace.team.invitations.resend.error"
+msgstr "Could not send it again. Please try again."
+
+#: workspace:workspace.team.invitations.resend.linkNote
+msgid "workspace.team.invitations.resend.linkNote"
+msgstr "Sending again replaces the link: only the newest email works."
+
+#: workspace:workspace.team.invitations.resend.sent
+msgid "workspace.team.invitations.resend.sent"
+msgstr "The email provider accepted it. We cannot see the inbox from here."
+
+#: workspace:workspace.team.invitations.resend.undelivered
+msgid "workspace.team.invitations.resend.undelivered"
+msgstr "The invitation was refreshed, but the email did not go out."
 
 #: workspace:workspace.team.invite.button
 msgid "workspace.team.invite.button"

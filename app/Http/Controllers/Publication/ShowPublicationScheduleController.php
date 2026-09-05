@@ -20,8 +20,9 @@ use Illuminate\Support\Carbon;
  * "Planla" panelinin okunan yüzü: kurulu bir plan var mı, ve hangi saatler
  * önerilebilir.
  *
- * Saatler SUNUCUDA hesaplanır (`BuildScheduleOptions`). Ekran yalnız dönen
- * ANI okunabilir saate çevirir; hesap yapmaz.
+ * Saatler SUNUCUDA ve ŞUBENİN saat diliminde hesaplanır
+ * (`BuildScheduleOptions`, `docs/62`). Ekran yalnız dönen ANI, dönen
+ * dilimle okunabilir saate çevirir; hesap yapmaz.
  *
  * PLANIN SONUCU DA SUNUCUDA KARARA BAĞLANIR (`ScheduledPublicationOutcome`).
  * Ekran "vakti geçti mi" hesabını kendi yapsaydı, tarayıcının saati yanlış
@@ -45,10 +46,22 @@ final class ShowPublicationScheduleController extends Controller
 
         $plan = $this->schedules->unresolvedForMenu($workspace, $menu);
 
+        /*
+            Dilim ŞUBEDEN gelir ve ekrana da AYNI dilim gönderilir. Sunucu
+            başka bir dilimde hesaplayıp ekran başka bir dilimde yazsaydı,
+            sahibin okuduğu saat ile menünün gerçekten değişeceği an
+            ayrışırdı — iki sayının tutmadığı yerde sahip hangisine
+            güveneceğini bilemez.
+
+            Okunamıyorsa `null` gider ve seçenek listesi boş kalır: bilinmeyen
+            bir saat için "bu gece 03:00" demek tutulamayacak bir sözdür.
+        */
+        $timeZone = $this->schedules->timezoneForMenu($workspace, $menu);
+
         return response()->json([
-            'timeZone' => BuildScheduleOptions::TIME_ZONE,
+            'timeZone' => $timeZone,
             'plan' => $plan === null ? null : $this->describe($plan),
-            'options' => BuildScheduleOptions::forNow(now()),
+            'options' => BuildScheduleOptions::forNow(now(), $timeZone),
         ], 200);
     }
 

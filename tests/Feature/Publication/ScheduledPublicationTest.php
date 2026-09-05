@@ -29,7 +29,9 @@ use Tests\TestCase;
  *   2. İPTAL EDİLEBİLİR.
  *   3. İKİ KEZ ÇALIŞMAZ (idempotent): komut iki kez koşarsa ikinci sürüm
  *      doğmaz.
- *   4. Zaman dilimi `Europe/Istanbul` ve hangi ana kurulduğu açıkça döner.
+ *   4. Zaman dilimi ŞUBENİNDİR (`locations.timezone`, `docs/62`) ve hangi
+ *      ana kurulduğu açıkça döner. Sabit bir dilim, aynı markanın Berlin
+ *      şubesi açılır açılmaz sessizce yanlış olurdu.
  */
 final class ScheduledPublicationTest extends TestCase
 {
@@ -41,10 +43,17 @@ final class ScheduledPublicationTest extends TestCase
     }
 
     /**
+     * ŞUBENİN SAAT DİLİMİ PARAMETREDİR, sabit değil (`docs/62`). Aynı
+     * markanın İstanbul ve Berlin şubesi olabilir; testin bunu kuramaması,
+     * ürünün de kuramamasına göz yummak olurdu.
+     *
      * @return array{0: int, 1: int, 2: int} [workspaceId, locationId, menuId]
      */
-    private function workspaceWithReadyMenu(User $owner, string $slugSeed): array
-    {
+    private function workspaceWithReadyMenu(
+        User $owner,
+        string $slugSeed,
+        string $locationTimezone = 'Europe/Istanbul',
+    ): array {
         $workspaceId = (int) DB::table('workspaces')->insertGetId([
             'name' => 'Zeytin Restoranları',
             'slug' => $slugSeed,
@@ -78,7 +87,7 @@ final class ScheduledPublicationTest extends TestCase
             'brand_id' => $brandId,
             'display_name' => 'Kadıköy Şubesi',
             'country_code' => 'TR',
-            'timezone' => 'Europe/Istanbul',
+            'timezone' => $locationTimezone,
             'city' => 'İstanbul',
             'address_line1' => 'Bahariye Cd. No:1',
             'created_at' => now(),
@@ -124,7 +133,7 @@ final class ScheduledPublicationTest extends TestCase
         return [$workspaceId, $locationId, $menuId];
     }
 
-    public function test_schedule_options_are_offered_in_the_istanbul_time_zone(): void
+    public function test_schedule_options_are_offered_in_the_branch_time_zone(): void
     {
         /*
             Saat seçenekleri SUNUCUDA üretilir. Tarayıcıda üretilseydi,
@@ -157,7 +166,127 @@ final class ScheduledPublicationTest extends TestCase
         }
     }
 
-    public function test_scheduling_freezes_the_snapshot_and_reports_the_istanbul_moment(): void
+    // --- SCHEDULE-TZ-BELONGS-TO-BRANCH-01 ---------------------------------
+
+    /**
+     * BERLİN ŞUBESİ "BU GECE 03:00" DEDİĞİNDE MENÜ BERLİN'DE 03:00'TE
+     * DEĞİŞİR (`docs/62`).
+     *
+     * MÜŞTERİ SORUNU. Saat dilimi markanın değil ŞUBENİN alanıdır: aynı
+     * markanın İstanbul, Dubai ve Berlin şubesi olabilir. Seçenekler sabit
+     * `Europe/Istanbul` ile üretildiği sürece Berlin şubesinin "gece 03:00"
+     * düğmesi kışın Berlin'de 01:00'i kurar — servis kapanmadan, hâlâ
+     * masada oturan misafirin menüsü elinde değişir. Hatanın en kötü yanı
+     * görünmezliğidir: tek şubeli bir işletmede sabit dilim doğru görünmeye
+     * devam eder ve yanlışlığı ancak ikinci şube açılınca ortaya çıkar.
+     */
+    public function test_a_berlin_branch_schedules_in_berlin_time_not_istanbul_time(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu(
+            $owner,
+            'zeytin-sched-berlin',
+            'Europe/Berlin',
+        );
+
+        $response = $this->actingAs($owner)->getJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+        );
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('timeZone', 'Europe/Berlin');
+
+        $options = collect($response->json('options'))->keyBy('key');
+
+        self::assertSame(
+            '03:00',
+            Carbon::parse($options['tonight']['scheduledFor'])->setTimezone('Europe/Berlin')->format('H:i'),
+            'SCHEDULE-TZ-BELONGS-TO-BRANCH-01: "bu gece 03:00" Berlin şubesinde Berlin saatiyle 03:00 olmalı.'
+        );
+        self::assertSame(
+            '09:00',
+            Carbon::parse($options['tomorrowMorning']['scheduledFor'])->setTimezone('Europe/Berlin')->format('H:i'),
+            'Kapılar açılmadan önceki saat de şubenin kendi sabahıdır.'
+        );
+        self::assertTrue(
+            Carbon::parse($options['nextMonday']['scheduledFor'])->setTimezone('Europe/Berlin')->isMonday(),
+            '"Gelecek Pazartesi" şubenin takviminde Pazartesi olmalı.'
+        );
+    }
+
+    /**
+     * ŞUBENİN SAATİ OKUNAMIYORSA SAAT SEÇTİRİLMEZ.
+     *
+     * Sessizce İstanbul'a (ya da sunucunun saatine) düşmek, düzeltilen
+     * hatayı yeni bir yerde tekrar etmek olurdu: sahip ekranda "03:00"
+     * okur, menü başka bir 03:00'te değişirdi. Boş liste dürüsttür ve
+     * "hemen yayınla" yolunu kapatmaz.
+     *
+     * İki ayrı bozulma da aynı cevabı verir: saat dilimi hiç yazılmamış bir
+     * şube, ve tanınmayan bir kimlik taşıyan şube (elle düzeltilmiş bir
+     * satır, emekliye ayrılmış bir dilim).
+     */
+    public function test_a_branch_without_a_readable_time_zone_is_offered_no_hours(): void
+    {
+        $owner = $this->verifiedUser();
+
+        foreach (['' => 'zeytin-sched-tz-bos', 'Mars/Olympus' => 'zeytin-sched-tz-bozuk'] as $timezone => $slug) {
+            [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, $slug, (string) $timezone);
+
+            $response = $this->actingAs($owner)->getJson(
+                "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule"
+            );
+
+            $response->assertStatus(200);
+            self::assertSame(
+                [],
+                $response->json('options'),
+                "Saat dilimi [{$timezone}] okunamıyorken seçenek çizmek, tutulamayacak bir söz vermektir."
+            );
+            self::assertNull(
+                $response->json('timeZone'),
+                "Ekrana [{$timezone}] gönderilirse tarayıcı hiçbir anı biçimlendiremez; sahip planını göremez."
+            );
+        }
+    }
+
+    /**
+     * SAKLAMA UTC KALIR. Şubenin saati YALNIZ seçeneklerin üretildiği ve
+     * gösterildiği yerde konuşur; kaydedilen an mutlak bir andır.
+     *
+     * Yerel saat saklansaydı, yaz saati uygulaması biten bir gecede aynı
+     * duvar saati iki kez yaşanır ve yayın hangi geçişte çıkacağını kimse
+     * söyleyemezdi.
+     */
+    public function test_the_stored_moment_stays_utc_even_for_a_branch_abroad(): void
+    {
+        $owner = $this->verifiedUser();
+        [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu(
+            $owner,
+            'zeytin-sched-berlin-utc',
+            'Europe/Berlin',
+        );
+
+        $chosen = Carbon::parse(
+            (string) $this->actingAs($owner)
+                ->getJson("/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule")
+                ->json('options.0.scheduledFor')
+        );
+
+        $this->actingAs($owner)->postJson(
+            "/api/workspaces/{$workspaceId}/menu/{$menuId}/publications/schedule",
+            ['scheduledFor' => $chosen->toIso8601String()]
+        )->assertStatus(201);
+
+        $stored = (string) DB::table('menu_publication_schedules')->value('scheduled_for');
+
+        self::assertTrue(
+            Carbon::parse($stored, 'UTC')->equalTo($chosen),
+            'Ekranda seçilen AN ile saklanan an aynı olmalı; dilim çevirisi yalnız gösterimdedir.'
+        );
+    }
+
+    public function test_scheduling_freezes_the_snapshot_and_reports_the_branch_moment(): void
     {
         $owner = $this->verifiedUser();
         [$workspaceId, , $menuId] = $this->workspaceWithReadyMenu($owner, 'zeytin-sched-store');
