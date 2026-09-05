@@ -8,7 +8,25 @@ export default tseslint.config(
     // `worktrees/` bu deponun ikinci bir çalışan kopyasıdır (localhost
     // çalışma zamanı); lint edilmesi hem süreyi ikiye katlar hem de ayrık bir
     // checkout hakkında düzeltilemeyen uyarılar üretir.
-    { ignores: ['vendor/**', 'node_modules/**', 'public/build/**', 'storage/**', 'worktrees/**'] },
+    /*
+        Üretilmiş çıktı taranmaz.
+
+        `storybook-static/` yerelde bir Storybook derlemesinden kalır ve
+        `.gitignore`'dadır — ama eslint `.gitignore` okumaz. Sonuç: yerelde
+        `npm run lint` on dokuz binden fazla hata basıyor, CI'da (temiz
+        checkout) hiç basmıyordu. Kapının yerelde işe yaramaz hâle gelmesi,
+        kapının olmamasından kötüdür: kimse okumadığı bir çıktıya güvenmez.
+    */
+    {
+        ignores: [
+            'vendor/**',
+            'node_modules/**',
+            'public/build/**',
+            'storage/**',
+            'worktrees/**',
+            'storybook-static/**',
+        ],
+    },
     js.configs.recommended,
     ...tseslint.configs.recommended,
     {

@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+#
+# CI'IN KOŞTUĞUNU, CI'IN SIRASIYLA, İTMEDEN ÖNCE KOŞTURUR.
+#
+# Bu betik bir kolaylık değil, ölçülmüş bir kusurun cevabıdır. 2026-09-05
+# oturumunda CI dört kez kırıldı ve dördü de yerelde "her şey yeşil"
+# dendikten SONRA kırıldı. Sebebi tek: yerelde koşturulan kapı kümesi
+# CI'ınkinden DARDI.
+#
+# Yerelde hiç koşturulmayan dört kapı vardı — hiçbiri test değil, hepsi
+# CI'ın gerçek adımı:
+#
+#   composer validate · s1-wp01a foundation preflight ·
+#   adaptive-bundle-gate · adaptive-bundle-gate.test.sh
+#
+# Bir de sinsi bir fark: yerelde `npx vitest run resources/js` koşuluyordu,
+# CI ise `npm test` (yani `vitest run`, TÜM depo). İkisi farklı dosya kümesi
+# görür. Dahası vitest'in "işlenmemiş hata" durumu özet satırında GEÇTİ
+# görünür ama çıkış kodu 1'dir — insan özete bakar, CI çıkış koduna. Bu fark
+# bu oturumda bir kez tam olarak böyle kaçtı.
+#
+# ÇALIŞTIRMA: ./scripts/verify-like-ci
+# Hızlı tur (test ayaklarını atlar): ./scripts/verify-like-ci --static
+#
+# Kaynak: `.github/workflows/ci.yml`. Orası değişirse BURASI DA DEĞİŞİR —
+# ikisi ayrışırsa bu betik yanlış bir güven verir ki bu, hiç olmamasından
+# kötüdür.
+
+set -uo pipefail
+
+cd "$(dirname "$0")/.." || exit 1
+
+STATIC_ONLY=0
+[ "${1:-}" = "--static" ] && STATIC_ONLY=1
+
+FAILED=()
+SKIPPED=()
+
+step() {
+    local name="$1"
+    shift
+
+    printf '\n\033[1m▶ %s\033[0m\n' "$name"
+
+    if "$@"; then
+        printf '\033[32m  ✓ %s\033[0m\n' "$name"
+    else
+        printf '\033[31m  ✗ %s\033[0m\n' "$name"
+        FAILED+=("$name")
+    fi
+}
+
+# ── CI sırası: ucuz kapılar önce ────────────────────────────────────────
+#
+# Sıra CI'ınkiyle aynı ve bu kasıtlı: pint 3 saniyede kırılıyorsa, 50
+# saniyelik test paketini koşturup sonra öğrenmenin bir anlamı yok.
+
+step "composer validate" composer validate --no-check-publish
+step "Pint (PHP biçim)" vendor/bin/pint --test
+step "ESLint + tsc" npm run lint
+step "Prettier" npm run format
+step "S1-WP01A foundation preflight" php tests/preflight/s1-wp01a-foundation-preflight.php
+step "i18n projeksiyonları PO ile eşleşiyor" npm run i18n:check
+step "Frontend derlemesi" npm run build
+step "Cihaz paketleri ayrı kalıyor" ./scripts/adaptive-bundle-gate
+step "Bundle kapısının kendi testi" ./scripts/adaptive-bundle-gate.test.sh
+
+if [ "$STATIC_ONLY" -eq 0 ]; then
+    # ── PostgreSQL ayağı ────────────────────────────────────────────────
+    #
+    # CI bu paketi İKİ motorda koşturur ve fark her seferinde SQLite
+    # LEHİNE hata gizler: başarısız bir INSERT PostgreSQL'de tüm işlemi
+    # iptal eder, SQLite'ta etmez; SQLSTATE kodları ayrıdır; `varchar(n)`
+    # sınırını SQLite hiç uygulamaz; takma adsız `count(*)` PG'de
+    # okunamayan bir sütun adı üretir.
+    #
+    # Bu oturumda DÖRT hata tam olarak buradan kaçtı. O yüzden ayak
+    # koşamadığında SESSİZ KALINMAZ: atlandığı açıkça yazılır, çünkü
+    # "koşmadı"yı "geçti" sanmak bu listedeki en pahalı hatadır.
+    if command -v pg_isready >/dev/null 2>&1 && pg_isready -q 2>/dev/null; then
+        step "PHPUnit (PostgreSQL — dağıtım motoru)" env \
+            DB_CONNECTION=pgsql DB_HOST=127.0.0.1 DB_PORT=5432 \
+            DB_DATABASE=zabuno_ci DB_USERNAME=zabuno DB_PASSWORD=zabuno \
+            ./vendor/bin/phpunit
+    else
+        SKIPPED+=("PostgreSQL ayağı — bu makinede PG yok")
+    fi
+
+    step "PHPUnit (SQLite)" php artisan test
+    step "Vitest (CI'ın kendi komutu)" npm test
+fi
+
+# ── Özet ────────────────────────────────────────────────────────────────
+
+printf '\n────────────────────────────────────────\n'
+
+for skip in "${SKIPPED[@]:-}"; do
+    [ -n "$skip" ] && printf '\033[33m⚠ ATLANDI: %s\033[0m\n' "$skip"
+done
+
+if [ ${#FAILED[@]} -eq 0 ]; then
+    if [ ${#SKIPPED[@]} -gt 0 ]; then
+        printf '\033[32mKoşan kapıların hepsi geçti.\033[0m '
+        printf '\033[33mAtlanan ayak CI''da ilk kez doğrulanacak.\033[0m\n'
+    else
+        printf '\033[32mCI''ın koştuğu her kapı yerelde geçti.\033[0m\n'
+    fi
+
+    exit 0
+fi
+
+printf '\033[31mKIRILAN KAPILAR:\033[0m\n'
+for name in "${FAILED[@]}"; do
+    printf '\033[31m  · %s\033[0m\n' "$name"
+done
+
+exit 1
