@@ -48,8 +48,13 @@ export class AppErrorBoundary extends Component<Props, State> {
         // gönderilmez: mesajlar sıklıkla veri taşır ("Cannot read 'email' of
         // undefined") ve dataLayer'a giren veri üçüncü taraflara akar,
         // geri alınamaz.
+        //
+        // Alan adı `error_class`, `error_name` DEĞİL: kişisel veri süzgeci
+        // `name` alt dizesini arar ve `error_name` ona takılıyordu — yani bu
+        // olay geliştirmede hata fırlatıyor, ÜRETİMDE İSE SESSİZCE
+        // DÜŞÜYORDU. Boru hattının tek gerçek olayı hiç akmamıştı (FF-167).
         trackEvent('frontend_error_boundary', {
-            error_name: error.name,
+            error_class: error.name,
             boundary_scope: this.props.scope ?? 'route',
         });
 

@@ -239,6 +239,7 @@ export function QrCodesPage({
                     */
                     <PageState
                         kind="prerequisite"
+                        screen="qr_codes_needs_menu"
                         title={t('workspace.qrCodes.empty.needsMenu')}
                         description={t('workspace.qrCodes.empty.needsMenu.why')}
                         action={

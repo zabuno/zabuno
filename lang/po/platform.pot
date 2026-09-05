@@ -80,6 +80,98 @@ msgstr ""
 msgid "engineering.aiAudit.nav.label"
 msgstr ""
 
+#: platform:engineering.modules.col.aiPosture
+msgid "engineering.modules.col.aiPosture"
+msgstr ""
+
+#: platform:engineering.modules.col.baseline
+msgid "engineering.modules.col.baseline"
+msgstr ""
+
+#: platform:engineering.modules.col.class
+msgid "engineering.modules.col.class"
+msgstr ""
+
+#: platform:engineering.modules.col.code
+msgid "engineering.modules.col.code"
+msgstr ""
+
+#: platform:engineering.modules.col.dependsOn
+msgid "engineering.modules.col.dependsOn"
+msgstr ""
+
+#: platform:engineering.modules.col.name
+msgid "engineering.modules.col.name"
+msgstr ""
+
+#: platform:engineering.modules.col.version
+msgid "engineering.modules.col.version"
+msgstr ""
+
+#: platform:engineering.modules.core.empty
+msgid "engineering.modules.core.empty"
+msgstr ""
+
+#: platform:engineering.modules.core.scope
+msgid "engineering.modules.core.scope"
+msgstr ""
+
+#: platform:engineering.modules.core.source
+msgid "engineering.modules.core.source"
+msgstr ""
+
+#: platform:engineering.modules.core.title
+msgid "engineering.modules.core.title"
+msgstr ""
+
+#: platform:engineering.modules.description
+msgid "engineering.modules.description"
+msgstr ""
+
+#: platform:engineering.modules.error
+msgid "engineering.modules.error"
+msgstr ""
+
+#: platform:engineering.modules.graph.about
+msgid "engineering.modules.graph.about"
+msgstr ""
+
+#: platform:engineering.modules.graph.col.evidence
+msgid "engineering.modules.graph.col.evidence"
+msgstr ""
+
+#: platform:engineering.modules.graph.col.from
+msgid "engineering.modules.graph.col.from"
+msgstr ""
+
+#: platform:engineering.modules.graph.col.to
+msgid "engineering.modules.graph.col.to"
+msgstr ""
+
+#: platform:engineering.modules.graph.empty
+msgid "engineering.modules.graph.empty"
+msgstr ""
+
+#: platform:engineering.modules.graph.source
+msgid "engineering.modules.graph.source"
+msgstr ""
+
+#: platform:engineering.modules.graph.title
+msgid "engineering.modules.graph.title"
+msgstr ""
+
+#: platform:engineering.modules.heading
+msgid "engineering.modules.heading"
+msgstr ""
+
+#: platform:engineering.modules.loading
+msgid "engineering.modules.loading"
+msgstr ""
+
+#: platform:engineering.modules.nav.label
+msgid "engineering.modules.nav.label"
+msgstr ""
+
 #: platform:engineering.shell.brand
 msgid "engineering.shell.brand"
 msgstr ""

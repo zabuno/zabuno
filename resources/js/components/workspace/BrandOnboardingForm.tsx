@@ -226,7 +226,11 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
             return;
         }
 
-        const validation = await readValidationFailure(response, t('workspace.brand.error.submit'));
+        const validation = await readValidationFailure(
+            response,
+            t('workspace.brand.error.submit'),
+            'brand_onboarding',
+        );
 
         setFieldErrors(validation.fields);
         setError(validation.message ?? t('workspace.brand.error.submit'));

@@ -4716,18 +4716,6 @@ msgstr "Sade"
 msgid "workspace.publication.qrScreen.cardTheme.signage"
 msgstr "Tabela"
 
-#: workspace:workspace.publication.qrScreen.contrast
-msgid "workspace.publication.qrScreen.contrast"
-msgstr "Ölçülen kontrast: {ratio}:1 — açık zemin üstüne koyu modüller."
-
-#: workspace:workspace.publication.qrScreen.copied
-msgid "workspace.publication.qrScreen.copied"
-msgstr "Kopyalandı"
-
-#: workspace:workspace.publication.qrScreen.copy
-msgid "workspace.publication.qrScreen.copy"
-msgstr "Adresi kopyala"
-
 #: workspace:workspace.publication.qrScreen.custom
 msgid "workspace.publication.qrScreen.custom"
 msgstr "Başka bir ölçü gerekiyor"
@@ -4808,10 +4796,6 @@ msgstr "Bütün kartları indir (PDF)"
 msgid "workspace.publication.qrScreen.downloadAllPart"
 msgstr "Kartlar {part}/{total} (PDF)"
 
-#: workspace:workspace.publication.qrScreen.downloadPdf
-msgid "workspace.publication.qrScreen.downloadPdf"
-msgstr "PDF indir"
-
 #: workspace:workspace.publication.qrScreen.downloadZip
 msgid "workspace.publication.qrScreen.downloadZip"
 msgstr "{count} kartı indir (ZIP)"
@@ -4839,10 +4823,6 @@ msgstr "Masa kodları yükleniyor…"
 #: workspace:workspace.publication.qrScreen.neverScanned
 msgid "workspace.publication.qrScreen.neverScanned"
 msgstr "Hiç okutulmadı"
-
-#: workspace:workspace.publication.qrScreen.noDarkTheme
-msgid "workspace.publication.qrScreen.noDarkTheme"
-msgstr "Kart nasıl görünürse görünsün, kodun kendisi her zaman açık zemin üstüne koyu basılır: tarayıcılar bunu varsayar ve ters basılan bir kod birçok telefonda hiç okunmaz."
 
 #: workspace:workspace.publication.qrScreen.optionSelected
 msgid "workspace.publication.qrScreen.optionSelected"
@@ -4944,10 +4924,6 @@ msgstr "Tek masa"
 msgid "workspace.publication.qrScreen.scope.tableCount"
 msgstr "{count} masa"
 
-#: workspace:workspace.publication.qrScreen.selected
-msgid "workspace.publication.qrScreen.selected"
-msgstr "Seçili kod"
-
 #: workspace:workspace.publication.qrScreen.sheet
 msgid "workspace.publication.qrScreen.sheet"
 msgstr "Kesilecek tabaka (PDF)"
@@ -4955,34 +4931,6 @@ msgstr "Kesilecek tabaka (PDF)"
 #: workspace:workspace.publication.qrScreen.sheet.why
 msgid "workspace.publication.qrScreen.sheet.why"
 msgstr "Sayfa başına on iki kart ve kesme çizgileri — kendi yerleşimi vardır, yukarıda seçtiğin ölçü ve tasarım değil."
-
-#: workspace:workspace.publication.qrScreen.size
-msgid "workspace.publication.qrScreen.size"
-msgstr "Ölçü"
-
-#: workspace:workspace.publication.qrScreen.sizeOption
-msgid "workspace.publication.qrScreen.sizeOption"
-msgstr "{name} · {width} × {height} mm"
-
-#: workspace:workspace.publication.qrScreen.sizeStand
-msgid "workspace.publication.qrScreen.sizeStand"
-msgstr "Stant"
-
-#: workspace:workspace.publication.qrScreen.sizeTableCard
-msgid "workspace.publication.qrScreen.sizeTableCard"
-msgstr "Masa kartı"
-
-#: workspace:workspace.publication.qrScreen.state.active
-msgid "workspace.publication.qrScreen.state.active"
-msgstr "Etkin"
-
-#: workspace:workspace.publication.qrScreen.state.disabled
-msgid "workspace.publication.qrScreen.state.disabled"
-msgstr "Devre dışı"
-
-#: workspace:workspace.publication.qrScreen.state.working
-msgid "workspace.publication.qrScreen.state.working"
-msgstr "Çalışıyor"
 
 #: workspace:workspace.publication.qrScreen.step1
 msgid "workspace.publication.qrScreen.step1"
@@ -5023,10 +4971,6 @@ msgstr "Masa adı her kartta basılır — karışmaz."
 #: workspace:workspace.publication.qrScreen.tables
 msgid "workspace.publication.qrScreen.tables"
 msgstr "Masa kartları"
-
-#: workspace:workspace.publication.qrScreen.theme
-msgid "workspace.publication.qrScreen.theme"
-msgstr "Kart tasarımı"
 
 #: workspace:workspace.publication.qrScreen.wording
 msgid "workspace.publication.qrScreen.wording"

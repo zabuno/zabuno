@@ -445,44 +445,30 @@ export const publication = {
     'workspace.publication.qrScreen.tables': 'Table cards',
     'workspace.publication.qrScreen.scans': '{count} scans',
     'workspace.publication.qrScreen.neverScanned': 'Never scanned',
-    'workspace.publication.qrScreen.selected': 'Selected code',
-    'workspace.publication.qrScreen.state.working': 'Working',
-    'workspace.publication.qrScreen.state.active': 'Active',
-    'workspace.publication.qrScreen.state.disabled': 'Disabled',
     'workspace.publication.qrScreen.address': 'Full address',
-    'workspace.publication.qrScreen.copy': 'Copy address',
-    'workspace.publication.qrScreen.copied': 'Copied',
-    'workspace.publication.qrScreen.theme': 'Card design',
-    'workspace.publication.qrScreen.size': 'Size',
-    'workspace.publication.qrScreen.sizeOption': '{name} · {width} × {height} mm',
-    'workspace.publication.qrScreen.sizeTableCard': 'Table card',
-    'workspace.publication.qrScreen.sizeStand': 'Stand',
-    'workspace.publication.qrScreen.downloadPdf': 'Download PDF',
     'workspace.publication.qrScreen.print': 'Print',
     'workspace.publication.qrScreen.previewAlt': 'Printable card preview for {name}',
     /*
-        ÖLÇÜLMÜŞ kontrast. Sayı hesaptan gelir (`lib/qrContrast`), elle
-        yazılmış bir sabitten değil: kart her zaman siyah kod / beyaz kâğıt
-        basar ve oran WCAG bağıl parlaklıkla tam 21,0:1 çıkar. Kaynağın
-        "tarayıcı testi geçti" cümlesi YAZILMAZ — ürün hiçbir telefonda tarama
-        testi çalıştırmıyor ve çalıştırmadığı bir testin geçtiğini yazmak,
-        sahibin kırk kart bastırmasını sağlayan cümledir.
-    */
-    'workspace.publication.qrScreen.contrast':
-        'Contrast measured: {ratio}:1 — dark modules on a light background.',
-    /*
-        BU CÜMLE BİR KEZ DEĞİŞTİ ve sebebi kayda değer.
+        FF-170: ON DÖRT ANAHTAR BURADAN DÜŞTÜ ve sebebi kayda değer.
 
-        Eski metni "koyu kart YOKTUR" diyordu ve o gün doğruydu: eski kaynağın
-        koyu tasarımı KODUN KENDİSİNİ ters çeviriyordu (beyaz modül / siyah
-        zemin) ve ters basılan bir kod birçok telefonda hiç okunmaz. Panel v3.1
-        o kusuru kendi düzeltti — koyu ve tabela tasarımlarında koyulaşan şey
-        kartın ZEMİNİ, kod hâlâ koyu modül / açık zemin. Tasarımlar doğunca
-        cümle yalan olurdu; kısıtın kendisini anlatacak şekilde yazıldı ve iki
-        yüzeyde de doğru kaldı.
+        `QrSelectedCodePanel` — "seçili kodun paneli" — panel v3.1 QR ekranı
+        yeniden yazıldığında çağıransız kaldı; kendi testiyle birlikte silindi
+        ve yalnız onun okuduğu anahtarlar da onunla gitti: seçili kod başlığı,
+        üç durum rozeti (çalışıyor / etkin / kapalı), adres kopyalama çifti,
+        tasarım ve ölçü kontrolleri (`sizeOption`, `sizeTableCard`,
+        `sizeStand`), `downloadPdf`, ölçülmüş kontrast satırı ve kodun her
+        zaman koyu-üstüne-açık basıldığını anlatan `noDarkTheme` cümlesi.
+        Yeni ekranın kendi sözlüğü var (`cardTheme.*`, `preset.*`, `custom.*`),
+        yani bunlar eş anlamlı değil, DEVRİLMİŞ anahtarlardı.
+
+        Okuyucusu olmayan bir dize çevrilmeye devam eder: altı dilde altı
+        çevirmen, hiçbir ekranda görünmeyen bir cümleyi tartışırdı.
+
+        `noDarkTheme`'in anlattığı KISIT silinmedi, yalnız bu katalogdan
+        düştü: `App\Domain\QrDestination\CardTheme` aynı gerekçeyi aynı
+        cümleyle taşıyor, `docs/109` §238 kararı tabloda tutuyor ve
+        `QrCardSvgTest` onu teste bağlıyor.
     */
-    'workspace.publication.qrScreen.noDarkTheme':
-        'Whatever the card looks like, the code itself is always printed dark-on-light: scanners assume that, and an inverted code is not read at all by many phones.',
     'workspace.publication.qrScreen.empty':
         'No table code yet. Create the codes for your tables below.',
     'workspace.publication.qrScreen.loading': 'Loading table codes…',

@@ -95,10 +95,42 @@ final class FoundationStatusController extends Controller
         if (isset(self::LEGAL_TITLE_KEYS[$path])) {
             return view('public.legal', $shared + [
                 'title' => app(SiteText::class)->get(self::LEGAL_TITLE_KEYS[$path]),
+                /*
+                    HESAP VERİSİ TALEBİ YALNIZ VERİ SAYFASINDA (FF-169,
+                    `docs/110` P0-09).
+
+                    Aynı bölümü üç yasal sayfaya birden basmak, sahibe talebin
+                    üç ayrı yolu varmış izlenimi verirdi; tek bir yol var.
+                    Kullanım koşulları bir veri koruma sayfası değildir.
+
+                    ADRES YAPILANDIRMADAN gelir ve varsayılanı YOKTUR: burada
+                    bir adres uydurmak, sahibin cevap gelmeyen bir kutuya
+                    yazmasına yol açardı (`config/legal.php`).
+                */
+                'showDataRequest' => $path === 'kvkk',
+                'dataRequestAddress' => $this->configuredDataRequestAddress(),
             ]);
         }
 
         return view('public.home', $shared);
+    }
+
+    /**
+     * Talebin iletileceği adres — GİRİLMEMİŞSE `null`.
+     *
+     * Boş dize de `null` sayılır: yapılandırmada unutulmuş bir `=` işareti,
+     * sayfada boş bir "Talebin iletileceği adres:" satırı bırakırdı ve o
+     * satır sahibe adres varmış gibi görünürdü.
+     */
+    private function configuredDataRequestAddress(): ?string
+    {
+        $address = config('legal.data_request.address');
+
+        if (! is_string($address) || trim($address) === '') {
+            return null;
+        }
+
+        return trim($address);
     }
 
     /**

@@ -104,7 +104,7 @@ describe('AppErrorBoundary (docs/52)', () => {
         );
 
         expect(trackEvent).toHaveBeenCalledWith('frontend_error_boundary', {
-            error_name: 'TypeError',
+            error_class: 'TypeError',
             boundary_scope: 'route',
         });
     });

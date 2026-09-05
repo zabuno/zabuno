@@ -137,6 +137,7 @@ export function LocationsPage({
                 {locations.length === 0 && !addingLocation && (
                     <PageState
                         kind="empty"
+                        screen="locations"
                         title={t('workspace.locations.empty')}
                         description={t('workspace.locations.empty.description')}
                         action={

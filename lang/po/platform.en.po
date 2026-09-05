@@ -80,6 +80,98 @@ msgstr "Loading the audit trail…"
 msgid "engineering.aiAudit.nav.label"
 msgstr "AI audit trail"
 
+#: platform:engineering.modules.col.aiPosture
+msgid "engineering.modules.col.aiPosture"
+msgstr "AI posture"
+
+#: platform:engineering.modules.col.baseline
+msgid "engineering.modules.col.baseline"
+msgstr "Deterministic baseline"
+
+#: platform:engineering.modules.col.class
+msgid "engineering.modules.col.class"
+msgstr "Class"
+
+#: platform:engineering.modules.col.code
+msgid "engineering.modules.col.code"
+msgstr "Code"
+
+#: platform:engineering.modules.col.dependsOn
+msgid "engineering.modules.col.dependsOn"
+msgstr "Depends on"
+
+#: platform:engineering.modules.col.name
+msgid "engineering.modules.col.name"
+msgstr "Module"
+
+#: platform:engineering.modules.col.version
+msgid "engineering.modules.col.version"
+msgstr "Version"
+
+#: platform:engineering.modules.core.empty
+msgid "engineering.modules.core.empty"
+msgstr "The core kernel registry is empty."
+
+#: platform:engineering.modules.core.scope
+msgid "engineering.modules.core.scope"
+msgstr "Only the core kernel is listed. Module specs outside it carry no code, version or AI posture anywhere in the source, and a row invented for them would be a claim rather than a reading."
+
+#: platform:engineering.modules.core.source
+msgid "engineering.modules.core.source"
+msgstr "Source: config/core-modules.php"
+
+#: platform:engineering.modules.core.title
+msgid "engineering.modules.core.title"
+msgstr "Core kernel registry"
+
+#: platform:engineering.modules.description
+msgid "engineering.modules.description"
+msgstr "What this installation actually carries, read from the two files that are verified today: the core kernel registry and the observed dependency graph. Read-only — a module cannot be turned on or off anywhere in this product yet, so no switch is drawn here."
+
+#: platform:engineering.modules.error
+msgid "engineering.modules.error"
+msgstr "The module inventory could not be loaded."
+
+#: platform:engineering.modules.graph.about
+msgid "engineering.modules.graph.about"
+msgstr "These are context names from the source tree, not registry codes, and each edge names the file whose import proves it. Only edges the repository could verify are listed."
+
+#: platform:engineering.modules.graph.col.evidence
+msgid "engineering.modules.graph.col.evidence"
+msgstr "Proved by"
+
+#: platform:engineering.modules.graph.col.from
+msgid "engineering.modules.graph.col.from"
+msgstr "Context"
+
+#: platform:engineering.modules.graph.col.to
+msgid "engineering.modules.graph.col.to"
+msgstr "Depends on"
+
+#: platform:engineering.modules.graph.empty
+msgid "engineering.modules.graph.empty"
+msgstr "No cross-context import has been observed."
+
+#: platform:engineering.modules.graph.source
+msgid "engineering.modules.graph.source"
+msgstr "Source: config/module-dependency-dag.json"
+
+#: platform:engineering.modules.graph.title
+msgid "engineering.modules.graph.title"
+msgstr "Observed dependencies between contexts"
+
+#: platform:engineering.modules.heading
+msgid "engineering.modules.heading"
+msgstr "Modules"
+
+#: platform:engineering.modules.loading
+msgid "engineering.modules.loading"
+msgstr "Loading the module inventory…"
+
+#: platform:engineering.modules.nav.label
+msgid "engineering.modules.nav.label"
+msgstr "Modules"
+
 #: platform:engineering.shell.brand
 msgid "engineering.shell.brand"
 msgstr "Zabuno Engineering"

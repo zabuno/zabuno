@@ -33,7 +33,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1444;
+const FROZEN_LEGACY_KEY_COUNT = 1430;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -134,8 +134,18 @@ const FROZEN_LEGACY_KEY_COUNT = 1444;
 // kodun kendisini ters çeviriyordu. Panel v3.1 o kusuru düzeltti (koyulaşan
 // şey kartın zemini, kod hâlâ koyu modül / açık zemin), tasarım doğdu ve
 // cümle yalan olacaktı. Yerine kısıtın kendisi yazıldı; iki yüzeyde de doğru.
+//
+// FF-170: SAYI İLK KEZ AŞAĞI İNDİ — 1444'ten 1430'a, on dört anahtar.
+// `QrSelectedCodePanel` panel v3.1 QR ekranı yeniden yazıldığında çağıransız
+// kaldı ve silindi; yalnız onun okuduğu anahtarlar (seçili kod başlığı, üç
+// durum rozeti, adres kopyalama çifti, tasarım/ölçü kontrolleri,
+// `downloadPdf`, kontrast satırı ve `noDarkTheme`) onunla birlikte düştü.
+// Yeni ekranın kendi sözlüğü var (`cardTheme.*`, `preset.*`, `custom.*`), yani
+// bunlar eş anlamlı değil devrilmiş anahtarlardı. Bu sayacın büyümek zorunda
+// olmadığı burada görünür oluyor: okuyucusu kalmayan bir dizeyi altı dilde
+// çevirtmeye devam etmek, kimsenin görmediği bir cümleyi bakımda tutmaktır.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '9d8af317cb0d6ebe3ff86c76f0d9beaa54582f4046ab526c40208a9f508ff2ff';
+    '686c4b4c5b5e4357d2f7a24f3c2f632ec4a5f349fbde491be79b91b913e1d5f6';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

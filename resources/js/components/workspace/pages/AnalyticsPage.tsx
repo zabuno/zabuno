@@ -542,6 +542,7 @@ function AnalyticsEmptyState({
         return (
             <PageState
                 kind="prerequisite"
+                screen="analytics_no_menu"
                 title={t('workspace.analytics.empty.noMenu.title')}
                 description={t('workspace.analytics.empty.noMenu.description')}
                 {...(onNavigateToSection
@@ -561,6 +562,7 @@ function AnalyticsEmptyState({
         return (
             <PageState
                 kind="prerequisite"
+                screen="analytics_not_published"
                 title={t('workspace.analytics.empty.notPublished.title')}
                 description={t('workspace.analytics.empty.notPublished.description')}
                 {...(onNavigateToSection
@@ -580,6 +582,7 @@ function AnalyticsEmptyState({
         return (
             <PageState
                 kind="empty"
+                screen="analytics_no_scans"
                 title={t('workspace.analytics.empty.noScans.title')}
                 description={t('workspace.analytics.empty.noScans.description')}
                 {...(onNavigateToSection
@@ -603,6 +606,7 @@ function AnalyticsEmptyState({
     return (
         <PageState
             kind="empty"
+            screen="analytics_empty_range"
             title={t('workspace.analytics.empty.range.title')}
             description={t('workspace.analytics.empty.range.description')}
             action={

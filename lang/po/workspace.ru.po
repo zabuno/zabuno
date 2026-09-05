@@ -4716,18 +4716,6 @@ msgstr ""
 msgid "workspace.publication.qrScreen.cardTheme.signage"
 msgstr ""
 
-#: workspace:workspace.publication.qrScreen.contrast
-msgid "workspace.publication.qrScreen.contrast"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.copied
-msgid "workspace.publication.qrScreen.copied"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.copy
-msgid "workspace.publication.qrScreen.copy"
-msgstr ""
-
 #: workspace:workspace.publication.qrScreen.custom
 msgid "workspace.publication.qrScreen.custom"
 msgstr ""
@@ -4808,10 +4796,6 @@ msgstr ""
 msgid "workspace.publication.qrScreen.downloadAllPart"
 msgstr ""
 
-#: workspace:workspace.publication.qrScreen.downloadPdf
-msgid "workspace.publication.qrScreen.downloadPdf"
-msgstr ""
-
 #: workspace:workspace.publication.qrScreen.downloadZip
 msgid "workspace.publication.qrScreen.downloadZip"
 msgstr ""
@@ -4838,10 +4822,6 @@ msgstr ""
 
 #: workspace:workspace.publication.qrScreen.neverScanned
 msgid "workspace.publication.qrScreen.neverScanned"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.noDarkTheme
-msgid "workspace.publication.qrScreen.noDarkTheme"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.optionSelected
@@ -4944,44 +4924,12 @@ msgstr ""
 msgid "workspace.publication.qrScreen.scope.tableCount"
 msgstr ""
 
-#: workspace:workspace.publication.qrScreen.selected
-msgid "workspace.publication.qrScreen.selected"
-msgstr ""
-
 #: workspace:workspace.publication.qrScreen.sheet
 msgid "workspace.publication.qrScreen.sheet"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.sheet.why
 msgid "workspace.publication.qrScreen.sheet.why"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.size
-msgid "workspace.publication.qrScreen.size"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.sizeOption
-msgid "workspace.publication.qrScreen.sizeOption"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.sizeStand
-msgid "workspace.publication.qrScreen.sizeStand"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.sizeTableCard
-msgid "workspace.publication.qrScreen.sizeTableCard"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.state.active
-msgid "workspace.publication.qrScreen.state.active"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.state.disabled
-msgid "workspace.publication.qrScreen.state.disabled"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.state.working
-msgid "workspace.publication.qrScreen.state.working"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.step1
@@ -5022,10 +4970,6 @@ msgstr ""
 
 #: workspace:workspace.publication.qrScreen.tables
 msgid "workspace.publication.qrScreen.tables"
-msgstr ""
-
-#: workspace:workspace.publication.qrScreen.theme
-msgid "workspace.publication.qrScreen.theme"
 msgstr ""
 
 #: workspace:workspace.publication.qrScreen.wording

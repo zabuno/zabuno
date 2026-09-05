@@ -21,6 +21,46 @@ import { PublishedSnapshotRegion } from './publication/PublishedSnapshotRegion';
 import { QrDestinationRegion } from './publication/QrDestinationRegion';
 import { PanelCard } from './shared/PanelCard';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
+import { trackEvent } from '../../../lib/analytics';
+import { minutesSinceSignup } from '../../../lib/analyticsEvents';
+
+/**
+ * TIME TO FIRST QR (`docs/112` §4.1) — taksonominin en değerli satırı.
+ *
+ * Kullanıcı yolculuğu: Mehmet Usta kaydolur ve menüsünü yayınlar. Bu iki an
+ * arasındaki süre bugüne kadar HİÇBİR YERDE ölçülmüyordu; `docs/110` §7'deki
+ * "kurulum 5 dakika mı 15 dakika mı" tartışması bu sayı olmadan kapanamaz.
+ *
+ * "İlk" olduğunu SUNUCU söyler: yayının sürüm numarası 1 ise bu menünün ilk
+ * yayınıdır. İstemcinin elindeki "önce yayın var mıydı?" bilgisi bunu güvenilir
+ * biçimde söyleyemez — sahip paneli iki sekmede açmış olabilir, ya da yayın
+ * başka bir ekip üyesi tarafından yapılmış olabilir. Sürüm numarası ise yayının
+ * kendi kaydından gelir ve tek bir doğruyu taşır.
+ *
+ * `minutes_since_signup` bilinmiyorsa alan HİÇ gönderilmez (`docs/112` §3.4):
+ * "0 dakikada yayınladı" ile "ne zaman yayınladığını bilmiyoruz" aynı
+ * ortalamada toplanamaz.
+ */
+function trackFirstPublish(published: CurrentPublication): void {
+    if (published.version !== 1) {
+        return;
+    }
+
+    /*
+        Ürün sayısı YAYINLANAN kopyadan sayılır, ekrandaki taslaktan değil.
+        Sahip "Yayınla"ya bastığı anda taslağını değiştirmiş olabilir; ölçüm
+        misafirin gerçekten göreceği menüyü anlatmalıdır.
+    */
+    const itemCount = published.snapshot.categories.reduce(
+        (total, category) => total + category.menuItems.length,
+        0,
+    );
+
+    trackEvent('first_publish_completed', {
+        minutes_since_signup: minutesSinceSignup(),
+        item_count: itemCount,
+    });
+}
 
 type PublicationPageProps = {
     workspaceId?: number;
@@ -97,6 +137,8 @@ export function PublicationPage({
     }, [workspaceId, menuId, retryToken]);
 
     function handleRetry() {
+        // Hangi hata tekrar denettiriyor (`docs/112` §4.3).
+        trackEvent('retry_clicked', { surface: 'publication' });
         setLoading(true);
         setLoadError(false);
         setRetryToken((token) => token + 1);
@@ -174,7 +216,11 @@ export function PublicationPage({
             );
 
             if (response.ok) {
-                setCurrent((await response.json()) as CurrentPublication);
+                const published = (await response.json()) as CurrentPublication;
+
+                trackFirstPublish(published);
+
+                setCurrent(published);
                 setLoadError(false);
                 setConfirmed(false);
             } else {

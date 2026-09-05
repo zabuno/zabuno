@@ -25,6 +25,28 @@ export const siteTranslations = {
         'This page is pending qualified legal review and is not yet published. It does not contain binding legal terms.',
     'site.legal.pending.description':
         'This page is pending qualified legal review and is not yet published.',
+    /*
+        HESAP VERİSİ TALEBİ (FF-169, `docs/110` P0-09).
+
+        Bu beş dize bir HUKUKİ METİN DEĞİLDİR ve öyle okunmamalıdır: hiçbiri
+        bir hak saymaz, bir kanun maddesine atıf yapmaz ve bir süre taahhüt
+        etmez. Söyledikleri yalnız ürünün BUGÜN yapabildiği şeydir — menü
+        zaten indirilebilir (`MenuCsvRoundTripTest`), gerisi için çalışan bir
+        iletişim yolu vardır. Sayfanın hukuki hükmü hâlâ nitelikli incelemeyi
+        bekliyor ve üstteki `site.legal.pending` bunu söylemeye devam ediyor.
+    */
+    'site.legal.dataRequest.heading': 'The data in your account',
+    'site.legal.dataRequest.body':
+        'You can download your menu yourself, as a CSV file, from your workspace at any time — you do not need to ask us for it. For anything else held in your account, write to us using the contact form and say what you are asking for.',
+    'site.legal.dataRequest.cta': 'Open the contact form',
+    'site.legal.dataRequest.addressLabel': 'Where the request is sent',
+    /*
+        GİRİLMEMİŞ BİLGİ SÖYLENİR. İkinci cümle şart: adres yokken sahip
+        "demek ki hiçbir yere yazamam" diye okumamalı — form çalışıyor ve
+        mesaj saklanıyor (`StoreContactMessageController`).
+    */
+    'site.legal.dataRequest.addressMissing':
+        'This information has not been entered yet. A request sent through the contact form still reaches us and is recorded.',
     'site.skipToContent': 'Skip to main content',
     'site.nav.features': 'Features',
     'site.nav.howItWorks': 'How it works',

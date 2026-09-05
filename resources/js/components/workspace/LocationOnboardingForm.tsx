@@ -154,6 +154,7 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                 const validation = await readValidationFailure(
                     response,
                     t('workspace.location.error.submit'),
+                    'location_onboarding',
                 );
 
                 setFieldErrors(validation.fields);

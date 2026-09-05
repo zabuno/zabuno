@@ -1,3 +1,5 @@
+import { trackEvent } from './analytics';
+
 /**
  * Sunucunun doğrulama yanıtını okur.
  *
@@ -25,8 +27,50 @@ export type ValidationFailure = {
 /**
  * @param fallbackMessage Gövde okunamazsa gösterilecek metin. Çağıran verir,
  *                        çünkü hangi işlemin başarısız olduğunu o bilir.
+ * @param form Formun ölçüm adı (`register`, `brand_create`, …). Verilirse her
+ *             hatalı alan için bir `form_validation_failed` olayı basılır.
+ *             İsteğe bağlıdır çünkü bu yardımcıyı panelin dışındaki akışlar da
+ *             kullanır; adı olmayan bir olay ise GTM'de kırılımsız kalırdı.
  */
 export async function readValidationFailure(
+    response: Response,
+    fallbackMessage: string,
+    form?: string,
+): Promise<ValidationFailure> {
+    const failure = await parseValidationFailure(response, fallbackMessage);
+
+    if (form !== undefined) {
+        trackFormValidationFailed(form, failure.fields);
+    }
+
+    return failure;
+}
+
+/**
+ * Hangi alan kaç kişiyi durduruyor (`docs/112` §4.3).
+ *
+ * ÖLÇÜM BURADA, on bir formun içinde değil: 422 yanıtının gövdesini okuyan
+ * TEK yer burasıdır, dolayısıyla ölçüm de burada tutarlı kalır. Her forma tek
+ * tek olay basılsaydı on birincisi unutulur ve o formun kaç kişiyi çıkardığı
+ * hiç bilinmezdi.
+ *
+ * Alan ADI basılır, alan DEĞERİ değil. Kullanıcının yazdığı e-posta, telefon
+ * ya da isim `dataLayer`'a giremez (`docs/112` §3.1); "hangi alanda takıldı"
+ * sorusunu cevaplamak için alanın adı zaten yeter.
+ *
+ * `reason` alanı BİLEREK gönderilmez. Sunucu makine okunur bir gerekçe değil,
+ * yerelleştirilmiş bir insan cümlesi döndürür ("The email has already been
+ * taken" / "E-posta adresi zaten alınmış"). O cümleyi anahtar kelimeyle
+ * kovalamak, dil değiştiğinde sessizce yanlış kovaya düşerdi — ve yanlış bir
+ * kova, eksik bir alandan daha pahalıdır (`docs/112` §3.4).
+ */
+function trackFormValidationFailed(form: string, fields: Record<string, string>): void {
+    for (const field of Object.keys(fields)) {
+        trackEvent('form_validation_failed', { form, field });
+    }
+}
+
+async function parseValidationFailure(
     response: Response,
     fallbackMessage: string,
 ): Promise<ValidationFailure> {

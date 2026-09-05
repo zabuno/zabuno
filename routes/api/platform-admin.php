@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\PlatformAdmin\ActivateManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\DisableProviderCredentialController;
+use App\Http\Controllers\PlatformAdmin\ListCoreModulesController;
 use App\Http\Controllers\PlatformAdmin\ListManagedPlansController;
 use App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController;
 use App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController;
@@ -36,6 +37,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // AI denetim izi (`docs/98` FF-66): kim hangi anahtarı ne zaman
         // yazdı, hangi tenant hangi hesaba yapıştı. Sır taşımaz.
         Route::get('/admin/ai/audit', ShowAiAuditController::class);
+
+        /*
+            Modül envanteri (`docs/111` adım 1) — mühendislik kanıtı, ticaret
+            değil; ekranı da `/platform` altında değil `/engineering` altında.
+            Yalnız OKUMA: modül açma/kapama bu depoda modellenmiş değil, o
+            yüzden bir yazma ucu da yok (`docs/111` §5.1).
+        */
+        Route::get('/admin/modules', ListCoreModulesController::class);
 
         // İnsan tanıklığı kaydı (`docs/98` FF-63) — yalnız superadmin.
         Route::post('/admin/release-attestations', StoreReleaseAttestationController::class)->middleware('throttle:20,1');

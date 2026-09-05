@@ -193,6 +193,7 @@ export function LocationEditForm({ workspaceId, location, onSaved }: LocationEdi
                 const validation = await readValidationFailure(
                     response,
                     t('workspace.brandLocations.locations.edit.error.submit'),
+                    'location_edit',
                 );
 
                 setFieldErrors(validation.fields);

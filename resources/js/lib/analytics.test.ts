@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { resetAnalyticsContext, setAnalyticsContext, trackEvent, trackPageView } from './analytics';
+import {
+    markAnalyticsSurfaceAnonymous,
+    resetAnalyticsContext,
+    setAnalyticsContext,
+    trackEvent,
+    trackPageView,
+} from './analytics';
 
 /**
  * ANALYTICS-TENANT-SEAM (istemci tarafı).
@@ -53,7 +59,7 @@ describe('the dataLayer seam', () => {
     it('attaches the tenant to every later event without the caller repeating it', () => {
         setAnalyticsContext({ tenantId: '42', tenantSlug: 'acme' });
 
-        trackEvent('menu_item_created', { category_id: 7 });
+        trackEvent('menu_item_added', { item_count: 7 });
         trackPageView('/app/acme/menu', 'menu');
 
         expect(layer()).toHaveLength(2);
@@ -69,10 +75,20 @@ describe('the dataLayer seam', () => {
         // dataLayer'ın içeriği GTM üzerinden üçüncü taraflara akar; oraya
         // giren veri geri alınamaz. Bu yüzden hata geliştirme sırasında
         // ÇIKAR — üretimde sessizce düşürmek yerine burada durdurulur.
-        expect(() => trackEvent('team_invited', { email: 'ada@example.com' })).toThrow(
+        // Kişisel veri kontrolü taksonomi kontrolünden ÖNCE koşar: bir yükün
+        // ilk suçu taksonomi değil, mahremiyet ihlalidir ve mesaj bunu
+        // söylemelidir. Tip düzeyinde yazılamayan çağrı burada zorlanır.
+        const trackUnchecked = trackEvent as unknown as (
+            name: string,
+            payload: Record<string, unknown>,
+        ) => void;
+
+        expect(() => trackUnchecked('team_invited', { email: 'ada@example.com' })).toThrow(
             /personal data/i,
         );
-        expect(() => trackEvent('team_invited', { full_name: 'Ada' })).toThrow(/personal data/i);
+        expect(() => trackUnchecked('team_invited', { full_name: 'Ada' })).toThrow(
+            /personal data/i,
+        );
 
         expect(layer()).toHaveLength(0);
     });
@@ -81,7 +97,7 @@ describe('the dataLayer seam', () => {
         // Tenant hiç gelmeyebilir (kullanıcının workspace'i yoksa). Ölçüm
         // hiçbir koşulda belleği büyütmemeli.
         for (let index = 0; index < 200; index += 1) {
-            trackEvent('noop', { index });
+            trackEvent('empty_state_seen', { screen: `screen-${index}` });
         }
 
         setAnalyticsContext({ tenantId: '42', tenantSlug: 'acme' });
@@ -98,5 +114,51 @@ describe('the dataLayer seam', () => {
         // aynı satırı gösterebilmeli.
         expect(layer()[0].page_path).toBe('/app/acme/publication');
         expect(String(layer()[0].page_path)).not.toContain('#');
+    });
+});
+
+describe('anonim yüzey — kiracı yokken olay DÜŞMEZ', () => {
+    /*
+        Kusur "bağlam gelmedi" değil, VARSAYIMDI: olay basmanın kiracı
+        gerektirdiği varsayılmıştı. Kayıt ekranında kiracı hiç gelmez, ve
+        eskiden orada basılan her olay kuyrukta bekleyip sayfa değişince
+        sessizce düşerdi — sürtünme ölçümünün en değerli noktası, insanların
+        ürüne girmeden vazgeçtiği yer, hiç ölçülmüyordu.
+    */
+    function anonLayer(): Array<Record<string, unknown>> {
+        return (window as unknown as { dataLayer: Array<Record<string, unknown>> }).dataLayer;
+    }
+
+    beforeEach(() => {
+        resetAnalyticsContext();
+        (window as unknown as { dataLayer?: unknown[] }).dataLayer = [];
+    });
+
+    afterEach(() => {
+        resetAnalyticsContext();
+        delete (window as unknown as { dataLayer?: unknown[] }).dataLayer;
+    });
+
+    it('anonim işaretinden sonra olay dataLayer’a ULAŞIR', () => {
+        markAnalyticsSurfaceAnonymous();
+        trackEvent('empty_state_seen', { screen: 'register' });
+
+        expect(anonLayer()).toHaveLength(1);
+    });
+
+    it('uydurma kiracı kimliği BASMAZ', () => {
+        markAnalyticsSurfaceAnonymous();
+        trackEvent('empty_state_seen', { screen: 'register' });
+
+        // Var olmayan bir kiracı yaratmaktansa alanı hiç göndermemek.
+        expect(anonLayer()[0].zabuno_tenant_id).toBeUndefined();
+        expect(anonLayer()[0].zabuno_tenant_slug).toBeUndefined();
+    });
+
+    it('işaret KONMADAN olay hâlâ kuyrukta bekler', () => {
+        trackEvent('empty_state_seen', { screen: 'register' });
+
+        // "Bağlam henüz gelmedi" ile "gelmeyecek" farklı iki durumdur.
+        expect(anonLayer()).toHaveLength(0);
     });
 });

@@ -80,6 +80,98 @@ msgstr "Denetim kaydı yükleniyor…"
 msgid "engineering.aiAudit.nav.label"
 msgstr "Yapay zekâ denetim kaydı"
 
+#: platform:engineering.modules.col.aiPosture
+msgid "engineering.modules.col.aiPosture"
+msgstr "Yapay zekâ duruşu"
+
+#: platform:engineering.modules.col.baseline
+msgid "engineering.modules.col.baseline"
+msgstr "Determinist taban"
+
+#: platform:engineering.modules.col.class
+msgid "engineering.modules.col.class"
+msgstr "Sınıf"
+
+#: platform:engineering.modules.col.code
+msgid "engineering.modules.col.code"
+msgstr "Kod"
+
+#: platform:engineering.modules.col.dependsOn
+msgid "engineering.modules.col.dependsOn"
+msgstr "Bağımlı olduğu"
+
+#: platform:engineering.modules.col.name
+msgid "engineering.modules.col.name"
+msgstr "Modül"
+
+#: platform:engineering.modules.col.version
+msgid "engineering.modules.col.version"
+msgstr "Sürüm"
+
+#: platform:engineering.modules.core.empty
+msgid "engineering.modules.core.empty"
+msgstr "Çekirdek modül kaydı boş."
+
+#: platform:engineering.modules.core.scope
+msgid "engineering.modules.core.scope"
+msgstr "Yalnız çekirdek listeleniyor. Onun dışındaki modül tanımlarının kodu, sürümü ve yapay zekâ duruşu kaynakta hiçbir yerde yazmıyor; onlar için uydurulmuş bir satır okuma değil iddia olurdu."
+
+#: platform:engineering.modules.core.source
+msgid "engineering.modules.core.source"
+msgstr "Kaynak: config/core-modules.php"
+
+#: platform:engineering.modules.core.title
+msgid "engineering.modules.core.title"
+msgstr "Çekirdek modül kaydı"
+
+#: platform:engineering.modules.description
+msgid "engineering.modules.description"
+msgstr "Bu kurulumun gerçekten taşıdığı şey, bugün doğrulanmış iki dosyadan okundu: çekirdek modül kaydı ve gözlenmiş bağımlılık grafiği. Salt okunur — bu üründe bir modül henüz hiçbir yerden açılıp kapatılamıyor, o yüzden burada bir anahtar da çizilmiyor."
+
+#: platform:engineering.modules.error
+msgid "engineering.modules.error"
+msgstr "Modül envanteri yüklenemedi."
+
+#: platform:engineering.modules.graph.about
+msgid "engineering.modules.graph.about"
+msgstr "Bunlar kayıt kodları değil, kaynak ağacındaki bağlam adlarıdır; her bağ, onu kanıtlayan içe aktarmanın bulunduğu dosyayı da gösterir. Yalnız deponun doğrulayabildiği bağlar listelenir."
+
+#: platform:engineering.modules.graph.col.evidence
+msgid "engineering.modules.graph.col.evidence"
+msgstr "Kanıtlayan dosya"
+
+#: platform:engineering.modules.graph.col.from
+msgid "engineering.modules.graph.col.from"
+msgstr "Bağlam"
+
+#: platform:engineering.modules.graph.col.to
+msgid "engineering.modules.graph.col.to"
+msgstr "Bağımlı olduğu"
+
+#: platform:engineering.modules.graph.empty
+msgid "engineering.modules.graph.empty"
+msgstr "Bağlamlar arasında içe aktarma gözlenmedi."
+
+#: platform:engineering.modules.graph.source
+msgid "engineering.modules.graph.source"
+msgstr "Kaynak: config/module-dependency-dag.json"
+
+#: platform:engineering.modules.graph.title
+msgid "engineering.modules.graph.title"
+msgstr "Bağlamlar arasında gözlenmiş bağımlılıklar"
+
+#: platform:engineering.modules.heading
+msgid "engineering.modules.heading"
+msgstr "Modüller"
+
+#: platform:engineering.modules.loading
+msgid "engineering.modules.loading"
+msgstr "Modül envanteri yükleniyor…"
+
+#: platform:engineering.modules.nav.label
+msgid "engineering.modules.nav.label"
+msgstr "Modüller"
+
 #: platform:engineering.shell.brand
 msgid "engineering.shell.brand"
 msgstr "Zabuno Mühendislik"
