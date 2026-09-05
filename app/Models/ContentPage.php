@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Domain\Content\PagePublicationStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -38,5 +39,22 @@ final class ContentPage extends Model
     public function status(): PagePublicationStatus
     {
         return PagePublicationStatus::from($this->publication_status);
+    }
+
+    /**
+     * Bu sayfanın BAŞKA DİLLERDEKİ kayıtları.
+     *
+     * Karşılık ANAHTAR üzerinden bulunur, adresten değil (`docs/120` §5
+     * madde 7). `/tr/urun/qr-menu/` ile `/en/product/qr-menu/` arasında
+     * mekanik bir bağ yoktur ve OLMAMALIDIR: slug çevrilebilir bir alandır
+     * (`docs/119` §10.4) ve çevrilmesi SEO'nun gereğidir. Adresten türeten
+     * bir eşleme, slug çevrildiği gün sessizce kopardı.
+     *
+     * @return HasMany<self, $this>
+     */
+    public function alternates(): HasMany
+    {
+        return $this->hasMany(self::class, 'page_key', 'page_key')
+            ->where('locale', '!=', $this->locale);
     }
 }

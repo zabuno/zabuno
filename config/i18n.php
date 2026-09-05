@@ -75,4 +75,46 @@ return [
 
     'source_locale' => 'en',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Altyapının TANIDIĞI diller — dokuz
+    |--------------------------------------------------------------------------
+    |
+    | Sahibin kararı (2026-09-05, `docs/120` §1-2): *"Ana dili İngilizce,
+    | Türkçe opsiyonel, ayrıca (daha sonra) tercümesi yapılacak diller
+    | (bugünden itibaren altyapı çok dili desteklemeli)."*
+    |
+    | BU LİSTE `shipped_locales` DEĞİLDİR ve onun yerine geçmez. İkisi ayrı
+    | soruları yanıtlar:
+    |
+    |   supported_locales — "bu dili TARİF edebiliyor muyuz?"
+    |                       Kütük satır taşıyabilir mi, adres uzayı var mı,
+    |                       yön doğru mu, hreflang ilan edilebilir mi.
+    |
+    |   shipped_locales   — "bu dilde EKSİKSİZ bir ürün verebiliyor muyuz?"
+    |                       Kullanıcıya sunulan tek liste budur ve bugün
+    |                       yalnız `en` var.
+    |
+    | Ayrım kâğıt üstünde değil: bir dil buraya girdiği gün ürünün o dilde
+    | tek kelimesi çevrilmez. `shipped_locales`e girmesi kataloğunun TAM
+    | olmasını ve sahibin `ÇEVİRİLERE BAŞLA` demesini gerektirir.
+    |
+    | Dokuz dilin BUGÜN SATIRI ÜRETİLMEZ. Kütükte dokuz dilin 386 sayfası
+    | üç binden fazla, hiçbiri yazılmayacak satır demekti; yapı dokuzu
+    | taşır, ürün bugün ikisini kullanır (`ContentPageIdentityTest`).
+    |
+    | Sıra rastgele değil: kaynak dil önce, sonra kataloğu tam olan tek dil,
+    | sonra sahibin saydığı sıra. `ku` Kurmancî'dir (Latin yazı, LTR);
+    | Soranî (`ckb`, Arap yazısı, RTL) AYRI bir dildir ve gerekirse ayrı
+    | eklenir — ikisini tek koda sıkıştırmak, birini yanlış yazı sistemiyle
+    | göstermek olurdu (`docs/120` §8).
+    |
+    | Endonim, bayrak/bölge işareti ve dil değiştirici sözleşmesi bu paketin
+    | DIŞINDA (`docs/120` §5-6): burada yalnız kütüğün ve adres uzayının
+    | tanıdığı kod listesi var.
+    |
+    */
+
+    'supported_locales' => ['en', 'tr', 'ar', 'ru', 'fa', 'ku', 'de', 'fr', 'it'],
+
 ];

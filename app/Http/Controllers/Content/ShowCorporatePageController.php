@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Content;
 
 use App\Application\Content\Port\ContentLibraryPort;
 use App\Application\Content\UseCase\BuildBreadcrumbTrail;
+use App\Application\Content\UseCase\ResolveLocaleAlternates;
 use App\Domain\Content\Block\BlockType;
 use App\Domain\Content\PageContent;
 use App\Domain\Content\PageEnvironment;
@@ -45,6 +46,7 @@ final class ShowCorporatePageController extends Controller
         private readonly BuildBreadcrumbTrail $breadcrumbs,
         private readonly CanonicalUrl $canonical,
         private readonly UrlNormalizer $normalizer,
+        private readonly ResolveLocaleAlternates $alternates,
     ) {}
 
     public function __invoke(Request $request): SymfonyResponse
@@ -167,6 +169,17 @@ final class ShowCorporatePageController extends Controller
         */
         $canonicalUrl = $this->canonical->for($request->getSchemeAndHttpHost(), $page->canonical_path);
 
+        /*
+            Dil karşılıkları YALNIZ yayınlanmış sayfada ilan edilir; bu yüzden
+            burada, "hazırlanıyor" dalında değil. Bir 404 gövdesinin hreflang
+            taşıması, var olmayan bir sayfanın karşılığı olduğunu söylemekti.
+        */
+        $localeAlternates = $this->alternates->handle(
+            $page,
+            $environment,
+            $request->getSchemeAndHttpHost(),
+        );
+
         return response()->view('content.page', [
             'page' => $page,
             'content' => $content,
@@ -183,6 +196,8 @@ final class ShowCorporatePageController extends Controller
                 JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR,
             ),
             'canonicalUrl' => $canonicalUrl,
+            'localeAlternates' => $localeAlternates['alternates'],
+            'xDefaultUrl' => $localeAlternates['xDefault'],
             'pageKey' => $page->page_key,
             'pageLocale' => $page->locale,
             'anchorPrefix' => '/',

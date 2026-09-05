@@ -145,8 +145,18 @@ return [
         */
         'menu-preview',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
-        // Dil dizinleri de rezerve: kurumsal site `/tr/` ve `/en/` altında
-        // yaşıyor ve bir kiracı slug'ı o kökü gölgeleyemez (FF-121).
+        /*
+            DİL DİZİNLERİ — DOKUZUNUN HEPSİ rezerve.
+
+            Kurumsal site `/{locale}/` altında yaşıyor ve bir kiracı slug'ı o
+            kökü gölgeleyemez (FF-121). Liste bugüne kadar yalnız `tr` ve `en`
+            taşıyordu; altyapı dokuz dili tanıdığına göre (`docs/120` §1) geri
+            kalan yedisi de bugünden rezerve edilmek zorunda. Sonra etmek
+            işlemezdi: bir işletme `de` slug'ını alıp kartına bastırdıktan
+            sonra o slug'ı geri almak, basılmış her adresi kırmak olurdu.
+            Rezerve etmenin bugün maliyeti yok, yarın imkânsız.
+        */
+        'ar', 'de', 'fa', 'fr', 'it', 'ku', 'ru',
         'sitemap.xml', 'storage', 'terms', 'tr', 'up', 'urun', 'user', 'verify-email', 'www',
     ],
 
