@@ -192,6 +192,110 @@ msgstr ""
 msgid "engineering.shell.toPlatform"
 msgstr ""
 
+#: platform:platform.auditLog.col.action
+msgid "platform.auditLog.col.action"
+msgstr ""
+
+#: platform:platform.auditLog.col.actor
+msgid "platform.auditLog.col.actor"
+msgstr ""
+
+#: platform:platform.auditLog.col.source
+msgid "platform.auditLog.col.source"
+msgstr ""
+
+#: platform:platform.auditLog.col.subject
+msgid "platform.auditLog.col.subject"
+msgstr ""
+
+#: platform:platform.auditLog.col.when
+msgid "platform.auditLog.col.when"
+msgstr ""
+
+#: platform:platform.auditLog.col.workspace
+msgid "platform.auditLog.col.workspace"
+msgstr ""
+
+#: platform:platform.auditLog.empty
+msgid "platform.auditLog.empty"
+msgstr ""
+
+#: platform:platform.auditLog.error
+msgid "platform.auditLog.error"
+msgstr ""
+
+#: platform:platform.auditLog.filter.apply
+msgid "platform.auditLog.filter.apply"
+msgstr ""
+
+#: platform:platform.auditLog.filter.source
+msgid "platform.auditLog.filter.source"
+msgstr ""
+
+#: platform:platform.auditLog.filter.source.all
+msgid "platform.auditLog.filter.source.all"
+msgstr ""
+
+#: platform:platform.auditLog.filter.workspace
+msgid "platform.auditLog.filter.workspace"
+msgstr ""
+
+#: platform:platform.auditLog.intro
+msgid "platform.auditLog.intro"
+msgstr ""
+
+#: platform:platform.auditLog.loading
+msgid "platform.auditLog.loading"
+msgstr ""
+
+#: platform:platform.auditLog.nav.label
+msgid "platform.auditLog.nav.label"
+msgstr ""
+
+#: platform:platform.auditLog.next
+msgid "platform.auditLog.next"
+msgstr ""
+
+#: platform:platform.auditLog.page
+msgid "platform.auditLog.page"
+msgstr ""
+
+#: platform:platform.auditLog.prev
+msgid "platform.auditLog.prev"
+msgstr ""
+
+#: platform:platform.auditLog.region.label
+msgid "platform.auditLog.region.label"
+msgstr ""
+
+#: platform:platform.auditLog.retry
+msgid "platform.auditLog.retry"
+msgstr ""
+
+#: platform:platform.auditLog.scope
+msgid "platform.auditLog.scope"
+msgstr ""
+
+#: platform:platform.auditLog.source.credential
+msgid "platform.auditLog.source.credential"
+msgstr ""
+
+#: platform:platform.auditLog.source.media
+msgid "platform.auditLog.source.media"
+msgstr ""
+
+#: platform:platform.auditLog.source.menu
+msgid "platform.auditLog.source.menu"
+msgstr ""
+
+#: platform:platform.auditLog.source.publication
+msgid "platform.auditLog.source.publication"
+msgstr ""
+
+#: platform:platform.auditLog.title
+msgid "platform.auditLog.title"
+msgstr ""
+
 #: platform:platform.connections.add
 msgid "platform.connections.add"
 msgstr ""
@@ -792,6 +896,10 @@ msgstr ""
 msgid "platform.shell.group.integrations"
 msgstr ""
 
+#: platform:platform.shell.group.oversight
+msgid "platform.shell.group.oversight"
+msgstr ""
+
 #: platform:platform.shell.heading
 msgid "platform.shell.heading"
 msgstr ""
@@ -922,4 +1030,284 @@ msgstr ""
 
 #: platform:platform.subscriptions.workspace.retry
 msgid "platform.subscriptions.workspace.retry"
+msgstr ""
+
+#: platform:platform.tenants.col.action
+msgid "platform.tenants.col.action"
+msgstr ""
+
+#: platform:platform.tenants.col.actor
+msgid "platform.tenants.col.actor"
+msgstr ""
+
+#: platform:platform.tenants.col.branch
+msgid "platform.tenants.col.branch"
+msgstr ""
+
+#: platform:platform.tenants.col.city
+msgid "platform.tenants.col.city"
+msgstr ""
+
+#: platform:platform.tenants.col.country
+msgid "platform.tenants.col.country"
+msgstr ""
+
+#: platform:platform.tenants.col.email
+msgid "platform.tenants.col.email"
+msgstr ""
+
+#: platform:platform.tenants.col.name
+msgid "platform.tenants.col.name"
+msgstr ""
+
+#: platform:platform.tenants.col.role
+msgid "platform.tenants.col.role"
+msgstr ""
+
+#: platform:platform.tenants.col.since
+msgid "platform.tenants.col.since"
+msgstr ""
+
+#: platform:platform.tenants.col.source
+msgid "platform.tenants.col.source"
+msgstr ""
+
+#: platform:platform.tenants.col.state
+msgid "platform.tenants.col.state"
+msgstr ""
+
+#: platform:platform.tenants.col.subject
+msgid "platform.tenants.col.subject"
+msgstr ""
+
+#: platform:platform.tenants.col.timezone
+msgid "platform.tenants.col.timezone"
+msgstr ""
+
+#: platform:platform.tenants.col.when
+msgid "platform.tenants.col.when"
+msgstr ""
+
+#: platform:platform.tenants.error
+msgid "platform.tenants.error"
+msgstr ""
+
+#: platform:platform.tenants.events.empty
+msgid "platform.tenants.events.empty"
+msgstr ""
+
+#: platform:platform.tenants.events.title
+msgid "platform.tenants.events.title"
+msgstr ""
+
+#: platform:platform.tenants.identity.brand
+msgid "platform.tenants.identity.brand"
+msgstr ""
+
+#: platform:platform.tenants.identity.created
+msgid "platform.tenants.identity.created"
+msgstr ""
+
+#: platform:platform.tenants.identity.currency
+msgid "platform.tenants.identity.currency"
+msgstr ""
+
+#: platform:platform.tenants.identity.locale
+msgid "platform.tenants.identity.locale"
+msgstr ""
+
+#: platform:platform.tenants.identity.noBrand
+msgid "platform.tenants.identity.noBrand"
+msgstr ""
+
+#: platform:platform.tenants.identity.slug
+msgid "platform.tenants.identity.slug"
+msgstr ""
+
+#: platform:platform.tenants.identity.state
+msgid "platform.tenants.identity.state"
+msgstr ""
+
+#: platform:platform.tenants.identity.title
+msgid "platform.tenants.identity.title"
+msgstr ""
+
+#: platform:platform.tenants.idle
+msgid "platform.tenants.idle"
+msgstr ""
+
+#: platform:platform.tenants.intro
+msgid "platform.tenants.intro"
+msgstr ""
+
+#: platform:platform.tenants.loading
+msgid "platform.tenants.loading"
+msgstr ""
+
+#: platform:platform.tenants.locations.empty
+msgid "platform.tenants.locations.empty"
+msgstr ""
+
+#: platform:platform.tenants.locations.title
+msgid "platform.tenants.locations.title"
+msgstr ""
+
+#: platform:platform.tenants.members.empty
+msgid "platform.tenants.members.empty"
+msgstr ""
+
+#: platform:platform.tenants.members.title
+msgid "platform.tenants.members.title"
+msgstr ""
+
+#: platform:platform.tenants.menus.empty
+msgid "platform.tenants.menus.empty"
+msgstr ""
+
+#: platform:platform.tenants.menus.title
+msgid "platform.tenants.menus.title"
+msgstr ""
+
+#: platform:platform.tenants.nav.label
+msgid "platform.tenants.nav.label"
+msgstr ""
+
+#: platform:platform.tenants.region.label
+msgid "platform.tenants.region.label"
+msgstr ""
+
+#: platform:platform.tenants.retry
+msgid "platform.tenants.retry"
+msgstr ""
+
+#: platform:platform.tenants.subscription.endsAt
+msgid "platform.tenants.subscription.endsAt"
+msgstr ""
+
+#: platform:platform.tenants.subscription.none
+msgid "platform.tenants.subscription.none"
+msgstr ""
+
+#: platform:platform.tenants.subscription.plan
+msgid "platform.tenants.subscription.plan"
+msgstr ""
+
+#: platform:platform.tenants.subscription.title
+msgid "platform.tenants.subscription.title"
+msgstr ""
+
+#: platform:platform.tenants.subscription.version
+msgid "platform.tenants.subscription.version"
+msgstr ""
+
+#: platform:platform.tenants.truncated
+msgid "platform.tenants.truncated"
+msgstr ""
+
+#: platform:platform.tenants.usage.locations
+msgid "platform.tenants.usage.locations"
+msgstr ""
+
+#: platform:platform.tenants.usage.mediaAssets
+msgid "platform.tenants.usage.mediaAssets"
+msgstr ""
+
+#: platform:platform.tenants.usage.members
+msgid "platform.tenants.usage.members"
+msgstr ""
+
+#: platform:platform.tenants.usage.menus
+msgid "platform.tenants.usage.menus"
+msgstr ""
+
+#: platform:platform.tenants.usage.products
+msgid "platform.tenants.usage.products"
+msgstr ""
+
+#: platform:platform.tenants.usage.title
+msgid "platform.tenants.usage.title"
+msgstr ""
+
+#: platform:platform.users.col.email
+msgid "platform.users.col.email"
+msgstr ""
+
+#: platform:platform.users.col.memberships
+msgid "platform.users.col.memberships"
+msgstr ""
+
+#: platform:platform.users.col.name
+msgid "platform.users.col.name"
+msgstr ""
+
+#: platform:platform.users.col.platformRole
+msgid "platform.users.col.platformRole"
+msgstr ""
+
+#: platform:platform.users.col.sessions
+msgid "platform.users.col.sessions"
+msgstr ""
+
+#: platform:platform.users.col.verified
+msgid "platform.users.col.verified"
+msgstr ""
+
+#: platform:platform.users.empty
+msgid "platform.users.empty"
+msgstr ""
+
+#: platform:platform.users.error
+msgid "platform.users.error"
+msgstr ""
+
+#: platform:platform.users.intro
+msgid "platform.users.intro"
+msgstr ""
+
+#: platform:platform.users.loading
+msgid "platform.users.loading"
+msgstr ""
+
+#: platform:platform.users.lock.note
+msgid "platform.users.lock.note"
+msgstr ""
+
+#: platform:platform.users.memberships.none
+msgid "platform.users.memberships.none"
+msgstr ""
+
+#: platform:platform.users.nav.label
+msgid "platform.users.nav.label"
+msgstr ""
+
+#: platform:platform.users.region.label
+msgid "platform.users.region.label"
+msgstr ""
+
+#: platform:platform.users.retry
+msgid "platform.users.retry"
+msgstr ""
+
+#: platform:platform.users.search.label
+msgid "platform.users.search.label"
+msgstr ""
+
+#: platform:platform.users.search.submit
+msgid "platform.users.search.submit"
+msgstr ""
+
+#: platform:platform.users.sessions.note
+msgid "platform.users.sessions.note"
+msgstr ""
+
+#: platform:platform.users.title
+msgid "platform.users.title"
+msgstr ""
+
+#: platform:platform.users.truncated
+msgid "platform.users.truncated"
+msgstr ""
+
+#: platform:platform.users.verified.no
+msgid "platform.users.verified.no"
 msgstr ""
