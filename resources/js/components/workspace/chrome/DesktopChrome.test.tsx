@@ -86,7 +86,11 @@ describe('masaüstü kenar çubuğu', () => {
 
         expect(account).not.toBeNull();
 
-        for (let node = account; node !== aside && node.parentElement !== null; node = node.parentElement) {
+        for (
+            let node = account;
+            node !== aside && node.parentElement !== null;
+            node = node.parentElement
+        ) {
             expect(node.className).not.toContain('overflow-hidden');
             expect(node.className).not.toContain('overflow-y-auto');
             expect(node.className).not.toContain('overflow-auto');

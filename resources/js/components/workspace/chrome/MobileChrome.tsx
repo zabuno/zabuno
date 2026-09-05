@@ -120,7 +120,26 @@ export function MobileBottomNav({
     return (
         <nav
             aria-label={label}
-            className="sticky bottom-0 z-10 grid grid-cols-5 items-stretch gap-[var(--space-1)] border-t border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-2)] py-[var(--space-1)]"
+            className={[
+                /*
+                    `sticky bottom-0` ARTIK GEREKSİZ AMA ZARARSIZ DEĞİL —
+                    kaldırıldı. Çubuk zaten kaydırılan alanın DIŞINDA, görüntü
+                    alanına çivilenmiş kabuğun son çocuğu. Yapışkanlık, bir
+                    gün biri kabuğu bozduğunda sorunu GİZLERDİ: çubuk yine
+                    tutunur, ama neyin bozulduğu görünmezdi.
+                */
+                'z-10 grid grid-cols-5 items-stretch gap-[var(--space-1)]',
+                'border-t border-[var(--color-border)] bg-[var(--color-surface)]',
+                'px-[var(--space-2)] py-[var(--space-1)]',
+                /*
+                    ALT ÇENTİK (iPhone ana ekran çizgisi, Android gezinti
+                    çubuğu). Dolgu olmadan en alttaki hedefin bir kısmı
+                    sistem çubuğunun altında kalır: düğme GÖRÜNÜR ama
+                    dokunuş sisteme gider. Bir hedefin görünüp çalışmaması,
+                    hiç çizilmemesinden kötüdür.
+                */
+                'pb-[calc(var(--space-1)+env(safe-area-inset-bottom))]',
+            ].join(' ')}
         >
             {primary.map((item) => {
                 const current = item.key === activeKey;

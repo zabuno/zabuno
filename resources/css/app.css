@@ -658,6 +658,27 @@ a {
  * getirirdi.
  *
  * Yazdırmada geri alınır: sabit yükseklik bir çıktıyı tek sayfaya kırpardı. */
+/*
+    KABUK SAYFASINDA BELGE HİÇ KAYMAZ.
+
+    `position: fixed` kabuğu çiviliyor ama iOS Safari'nin adres çubuğu
+    açılıp kapanırken BELGEYİ kaydırmasını tek başına bitirmiyordu: sahibin
+    2026-09-05 bildirimi "Chrome yukarı kaymıyor ama Safari komple yukarı
+    kayıyor, altta boşluk kalıyor". Safari'nin kaydıracak bir şeyi kalmazsa
+    o davranış da kalmaz.
+
+    `overscroll-behavior: none` lastik bandı kesiyor: kaydırılamayan bir
+    sayfada parmağı sürüklemek, altından ikinci bir zemin göstermemeli.
+
+    Sınıf SUNUCUDA basılıyor (`*-app.blade.php`), betikle değil: betik
+    yüklenene kadar geçen sürede sayfa bir kez kayarsa, kullanıcı düzelmeyi
+    sıçrama olarak görürdü.
+*/
+.app-shell-body {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
 .admin-shell-frame {
     /*
         KABUK GÖRÜNTÜ ALANINA ÇİVİLENİR — yüksekliği HESAPLANMAZ.

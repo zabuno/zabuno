@@ -103,7 +103,10 @@ export function DesktopSidebar({
                 () düğmeyi görünür tutuyordu ama açılan
                 menüyü kurtaramıyordu: yapışkanlık kırpmayı kaldırmaz.
             */}
-            <div data-slot="sidebar-scroll" className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+            <div
+                data-slot="sidebar-scroll"
+                className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+            >
                 <SidebarNav groups={navGroups} activeKey={activeNavKey} label={navLabel} />
             </div>
 
@@ -130,7 +133,10 @@ export function DesktopSidebar({
                     kenarlık, kaydırılacak içerik olduğunu söyleyen ince bir
                     işarettir.
                 */
-                <div data-slot="sidebar-account" className="mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-2)]">
+                <div
+                    data-slot="sidebar-account"
+                    className="mt-auto border-t border-[var(--color-border)] bg-[var(--color-surface)] pt-[var(--space-2)]"
+                >
                     {railSections !== undefined && railSections.length > 0 ? (
                         /*
                             PROFİL VE AYARLAR AÇIKTA (FF-127).

@@ -15,7 +15,7 @@
      Öznitelik `<body>` üzerindedir: `<html>` etiketi RTL kapısında birebir
      donmuş (`RTL-LOGIN-DERIVED-02`) ve portalla açılan katmanlar zaten
      `body` altına çizilir. İlk boyamada doğru olsun diye SUNUCUDAN gelir. --}}
-<body data-persona="platform">
+<body data-persona="platform" class="app-shell-body">
     <div id="platform-admin-app"></div>
 </body>
 </html>
