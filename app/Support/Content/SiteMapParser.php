@@ -141,8 +141,17 @@ final class SiteMapParser
     {
         $segments = array_values(array_filter(explode('/', trim($path, '/')), static fn (string $s): bool => $s !== ''));
 
-        // Dil dizini anahtarın parçası değildir: aynı sayfanın Türkçesi ve
-        // İngilizcesi TEK bir kayıttır, iki değil.
+        /*
+            Dil dizini anahtarın parçası DEĞİLDİR ve bu, çok dilliliğin
+            koşuludur: `/tr/urun/qr-menu/` ile `/en/product/qr-menu/` AYNI
+            anahtarı taşır — `urun.qr-menu` — ve dil değiştirici karşılığı
+            o anahtardan bulur (`docs/120` §5 madde 7).
+
+            (Bu satır kurulduğunda gerekçesi "iki dil TEK kayıttır" diye
+            yazılmıştı; ölçüldü ve yanlıştı — tek kayıt, aynı sayfanın iki
+            dilinin birlikte var olmasını imkânsız kılıyordu. Anahtarın
+            dilsiz olması doğruydu, ondan çıkarılan sonuç değil.)
+        */
         if ($segments !== [] && in_array($segments[0], ['tr', 'en'], true)) {
             array_shift($segments);
         }

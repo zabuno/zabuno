@@ -4,7 +4,13 @@
      Yardım makalesi okuyucunun dilinde geliyor; `lang` sabit kalsaydı ekran
      okuyucu Türkçe metni İngilizce telaffuz ederdi. Sayfa bir dil bildirmezse
      uygulamanınkine düşülür. --}}
-<html lang="{{ $pageLocale ?? \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
+{{-- YÖN de SAYFANIN dilinden türer, uygulamanınkinden değil (`docs/120` §5
+     madde 9). Bugüne kadar `dir` uygulamanın locale'ini okuyordu: dokuz dilin
+     ikisi sağdan sola (`ar`, `fa`) ve Arapça bir kurumsal sayfa, arayüzü
+     İngilizce olan bir tarayıcıda soldan sağa çizilirdi — yani metin doğru,
+     düzen ters. `lang` bir satır yukarıda zaten sayfadan türüyordu; ikisinin
+     ayrı kaynaktan gelmesi tek başına bir kusurdu. --}}
+<html lang="{{ $pageLocale ?? \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction($pageLocale ?? null) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,6 +38,22 @@
     <title>@yield('title') — {{ $st['titleSuffix'] }}</title>
     <meta name="description" content="@yield('description')">
     <link rel="canonical" href="{{ $canonicalUrl }}">
+    {{-- DİL KARŞILIKLARI (`docs/119` §10.4).
+
+         Liste `ResolveLocaleAlternates`ten gelir ve YALNIZ o dilde gerçekten
+         açılan sayfaları taşır. Yarım çevrilmiş bir sayfayı burada ilan etmek,
+         arama motoruna çalışmayan bir adres göstermek olurdu; tek dil kaldığında
+         liste boş döner ve hiçbir şey yazılmaz. Karşılığı olmayan sayfalarda
+         (fiyat, yardım, iletişim) değişken hiç tanımlı değildir ve bu blok
+         sessizce atlanır. --}}
+    @foreach ($localeAlternates ?? [] as $alternateLocale => $alternateUrl)
+        <link rel="alternate" hreflang="{{ $alternateLocale }}" href="{{ $alternateUrl }}">
+    @endforeach
+    @isset($xDefaultUrl)
+        {{-- Dili kümedeki hiçbiriyle eşleşmeyen ziyaretçinin düşeceği yer:
+             ürünün asıl yazıldığı dil (`config/i18n.php` `source_locale`). --}}
+        <link rel="alternate" hreflang="x-default" href="{{ $xDefaultUrl }}">
+    @endisset
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ $st['brand'] }}">
     <meta property="og:title" content="@yield('title')">

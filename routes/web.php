@@ -252,8 +252,19 @@ Route::get('/menu/{any}/{rest?}', static fn (Request $request) => GuestDeadEnd::
     `/help` gibi adreslere dokunmaz. O adreslerin dil dizinine taşınması ayrı
     bir paketin işi (`docs/105` §4.1) ve 301'leriyle birlikte planlanacak.
 */
+/*
+    Dil dizini listesi YAPILANDIRMADAN gelir (`config/i18n.php`
+    `supported_locales`). Elle yazılmış `tr|en` deseni, altyapının dokuz dili
+    tanıması kararının (`docs/120` §1) sessizce dışında kalırdı: kütükte
+    Almanca bir satır olsa bile `/de/...` adresi rotaya hiç uğramaz, 404
+    yerine "böyle bir rota yok" olurdu. Liste büyüdüğünde burada değişecek bir
+    şey yok — ve bu, dokuz dilin bir dağıtım değil bir ayar olmasının şartı.
+
+    Desen YİNE DE kapalı bir kümedir: `.*` olsaydı `/pricing` ve `/app` gibi
+    dil dizini olmayan adresleri de yutardı (`AddressSpaceTest`).
+*/
 Route::get('/{locale}/{path?}', ShowCorporatePageController::class)
-    ->where('locale', 'tr|en')
+    ->where('locale', implode('|', array_map('preg_quote', (array) config('i18n.supported_locales'))))
     ->where('path', '.*')
     ->name('corporate.page');
 

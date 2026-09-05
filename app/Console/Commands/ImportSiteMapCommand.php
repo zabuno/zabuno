@@ -41,48 +41,104 @@ final class ImportSiteMapCommand extends Command
             return self::FAILURE;
         }
 
+        /** @var array<string, string> $sourcePaths */
+        $sourcePaths = (array) config('site-source-paths');
+        $sourceLocale = (string) config('i18n.source_locale');
+
         $created = 0;
         $refreshed = 0;
 
         foreach ($rows as $row) {
-            $existing = ContentPage::query()->where('page_key', $row['page_key'])->first();
+            $pageKey = $row['page_key'];
 
-            $attributes = [
-                'locale' => self::localeOf($row['canonical_path']),
-                'canonical_path' => $row['canonical_path'],
-                'content_type' => self::contentTypeOf($row['canonical_path']),
-                'template_key' => self::contentTypeOf($row['canonical_path']),
+            $shared = [
                 'parent_key' => $row['parent_path'] === null
                     ? null
                     : SiteMapParser::pageKeyFor($row['parent_path']),
-                'title' => $row['title'],
                 'priority' => $row['priority'],
                 'is_template' => $row['is_template'],
                 'is_external' => $row['is_external'],
             ];
 
-            if ($this->option('dry-run')) {
-                $existing === null ? $created++ : $refreshed++;
+            /*
+                BELGENİN KENDİ DİLİ. Girdi Türkçe yollarla yazılmış ve
+                düzenlenmiyor (`docs/118`); dolayısıyla belgeden çıkan satır
+                Türkçe bir satırdır ve öyle kalır. Bugünkü 386 kaydın
+                anahtarı, adresi ve geçmişi bu yüzden hiç kıpırdamıyor.
+            */
+            $paths = [
+                self::localeOf($row['canonical_path']) => [
+                    'path' => $row['canonical_path'],
+                    'title' => $row['title'],
+                ],
+            ];
 
-                continue;
+            /*
+                KAYNAK DİL SATIRI. Belge onu veremez — kaynak dil artık
+                İngilizce ama girdi Türkçe (`docs/118` E4) — bu yüzden adres
+                deponun kendi kayıt dosyasından gelir. Adresi yazılmamış bir
+                sayfanın kaynak satırı ÜRETİLMEZ: makineyle türetilmiş bir
+                `/en/urun/...` yarım çevrilmiş bir adres olurdu ve bir adres
+                yayımlandıktan sonra geri alınamaz (`config/site-source-paths.php`).
+            */
+            if (isset($sourcePaths[$pageKey]) && ! isset($paths[$sourceLocale])) {
+                $paths[$sourceLocale] = [
+                    'path' => $sourcePaths[$pageKey],
+                    /*
+                        Başlık BELGEDEN gelir ve Türkçedir. Çevirmek bu
+                        paketin açıkça yasakladığı şey; uydurmak daha da
+                        kötü olurdu. Yer tutucu, sayfanın İngilizce içeriği
+                        yazıldığı gün `PageMetadata` tarafından zaten
+                        eziliyor: ziyaretçinin gördüğü başlık kütükten değil
+                        içerik katmanından gelir (`ShowCorporatePageController`).
+                    */
+                    'title' => $row['title'],
+                ];
             }
 
-            if ($existing === null) {
-                ContentPage::query()->create($attributes + [
-                    'page_key' => $row['page_key'],
-                    // Her sayfa PLANLANDI olarak doğar. "Yayında" bir başlangıç
-                    // değeri olsaydı, 414 boş sayfa aynı anda yayına çıkardı.
-                    'publication_status' => PagePublicationStatus::Planned->value,
-                    'was_ever_published' => false,
-                ]);
-                $created++;
+            foreach ($paths as $locale => $localized) {
+                $attributes = $shared + [
+                    'locale' => $locale,
+                    'canonical_path' => $localized['path'],
+                    'content_type' => self::contentTypeOf($row['canonical_path']),
+                    'template_key' => self::contentTypeOf($row['canonical_path']),
+                    'title' => $localized['title'],
+                ];
 
-                continue;
+                /*
+                    Kayıt ARTIK `page_key + locale` ile bulunur. Yalnız
+                    anahtarla aramak, aynı sayfanın iki dilini birbirinin
+                    üstüne yazardı — kütüğün çok dilli olmasının anlamı da
+                    tam olarak bu ikisinin ayrı satırlar olması.
+                */
+                $existing = ContentPage::query()
+                    ->where('page_key', $pageKey)
+                    ->where('locale', $locale)
+                    ->first();
+
+                if ($this->option('dry-run')) {
+                    $existing === null ? $created++ : $refreshed++;
+
+                    continue;
+                }
+
+                if ($existing === null) {
+                    ContentPage::query()->create($attributes + [
+                        'page_key' => $pageKey,
+                        // Her sayfa PLANLANDI olarak doğar. "Yayında" bir başlangıç
+                        // değeri olsaydı, 414 boş sayfa aynı anda yayına çıkardı.
+                        'publication_status' => PagePublicationStatus::Planned->value,
+                        'was_ever_published' => false,
+                    ]);
+                    $created++;
+
+                    continue;
+                }
+
+                // Yayın durumu, yayın tarihi ve geçmiş KORUNUR.
+                $existing->fill($attributes)->save();
+                $refreshed++;
             }
-
-            // Yayın durumu, yayın tarihi ve geçmiş KORUNUR.
-            $existing->fill($attributes)->save();
-            $refreshed++;
         }
 
         $this->info("site:import-map — {$created} yeni, {$refreshed} tazelendi.");
