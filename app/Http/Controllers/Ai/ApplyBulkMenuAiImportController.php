@@ -80,7 +80,9 @@ final class ApplyBulkMenuAiImportController extends Controller
                 continue;
             }
 
-            $result = $this->apply->handle($workspace, $menuId, (int) $row->id);
+            // Denetim izi taslak BAŞINA yazılır (FF-156) ve faili tek bir
+            // "hepsini onayla" değil, bu listeyi gözden geçiren kişidir.
+            $result = $this->apply->handle($workspace, $menuId, (int) $row->id, $userId);
 
             $importedItems += (int) ($result['importedItems'] ?? 0);
             $importedCategories += (int) ($result['importedCategories'] ?? 0);

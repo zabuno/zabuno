@@ -19,6 +19,16 @@ use Illuminate\Support\Facades\DB;
  * parametreden DEĞİL — bir istemci hatası yanlış ürünün üstüne yazamaz.
  *
  * İKİ KEZ UYGULANMAZ — aynı disiplin: `ApplyMenuArtifact`.
+ *
+ * DENETİM İZİNE YAZMAZ, VE BU BİR KARARDIR — FF-156. Bu yol menüde yalnız
+ * AÇIKLAMAYI değiştirir (ad korunur, fiyat ve alerjen hiç görülmez);
+ * FF-154 ise açıklamayı bilerek ize almadı: pazarlama metnidir, sahibin
+ * "kim değiştirdi" diye sorduğu şey değil. Elle düzenleme yolu
+ * (`RenameMenuItemController`) de kaydetmiyor — ve asıl sebep bu: yalnız AI
+ * yolunu kaydetseydik iz TERS yönde yanıltırdı, sahip makinenin dokunduğu
+ * metinleri görür ama aynı cümleyi elle değiştiren editörü göremezdi.
+ * Gerekçe `MenuAuditAction` docblock'undaki "yazılmayanlar" listesinde de
+ * duruyor; oradaki liste izin sözleşmesidir.
  */
 final class ApplyProductDescriptionDraft
 {
