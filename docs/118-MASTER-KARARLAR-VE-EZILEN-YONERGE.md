@@ -99,15 +99,15 @@ Bu ayrım bugüne kadar **kazayla** doğruydu: şablon `lang`'i `$page->locale`'
 türetiyordu. Kazayla doğru olan bir şey bir gün kazayla yanlış olur; artık
 `CORP-LOCALE-FROM-PATH-01` testi kilitliyor.
 
-**Açık varsayım — sahibin kararını bekleyen tek nokta.** Kurumsal sitenin İLK
-içerik dili: yönerge Türkçe diyor, bugünün master kararı ürün için İngilizce
-diyor. İkisi farklı yüzey olduğu için çelişmiyor, ama **ilk yazılacak içeriğin
-dili bir ürün/marka kararıdır** ve sahibindir.
+**Bu varsayım KAPANDI (2026-09-05, aynı gün).** Sahibin kararı: *"Ana dili
+İngilizce, Türkçe opsiyonel"* — ve altyapı bugünden dokuz dili desteklemeli.
+Ayrıntı, GILT karşılıkları, dil seçimi sinyal zinciri ve dil değiştirici
+sözleşmesi `docs/120`de. Yönergenin "ana ve kaynak dil Türkçedir" maddesi
+böylece tamamen ezildi: **kaynak dil İngilizcedir.**
 
-Varsayılan olarak alınan yol, hangi karar verilirse verilsin **hiçbir emeği
-çöpe atmıyor**: sayfa kütüğü, kabuk, şablonlar ve blok yapısı dilden
-bağımsızdır; içerik ayrı bir katmanda yaşar. Karar geldiği gün yalnız içerik
-yazılır, mimari değişmez.
+Kütük, kabuk, şablonlar ve blok yapısı dilden bağımsız kaldı; içerik ayrı bir
+katmanda yaşıyor. Bu yüzden karar aynı gün geldiğinde tek satır iş çöpe
+gitmedi.
 
 ### E5 — Efekt kütüphaneleri: yönerge **yasaklıyordu**, sahip **istiyor**
 
