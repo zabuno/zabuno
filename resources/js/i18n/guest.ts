@@ -126,7 +126,8 @@ export const guestTranslations = {
         neden boş olduğunu ve ne yapacağını okur; boş bir panel ona ürünün
         bozuk olduğunu düşündürür.
     */
-    'guest.cart.empty': 'Your cart is empty. Pick something from the menu and it will be listed here.',
+    'guest.cart.empty':
+        'Your cart is empty. Pick something from the menu and it will be listed here.',
     'guest.cart.submit': 'Send the order to the waiter',
     /*
         İKİ ONAY VARDIR VE MİSAFİR BUNU ÖNCEDEN OKUR (`docs/115` §2).
@@ -137,7 +138,8 @@ export const guestTranslations = {
         yazar: bu üründe ödeme yoktur ve olmadığını saklamak, misafirin
         telefonda ödeme beklemesine yol açardı.
     */
-    'guest.cart.submitNote': 'The waiter checks and confirms the order before the kitchen starts. Payment is taken at the table.',
+    'guest.cart.submitNote':
+        'The waiter checks and confirms the order before the kitchen starts. Payment is taken at the table.',
     'guest.cart.sending': 'Sending your order…',
     /*
         UYDURMA SÜRE YOK (M4). Kaç dakikada geleceğini bilmiyoruz; yanlış bir
