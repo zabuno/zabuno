@@ -121,6 +121,19 @@ jobs:
       - name: Shell scroll gate (real browser)
         run: node scripts/shell-scroll-gate "file://$PWD/$(ls public/build/assets/app-*.css | head -1)"
 
+      # 320 pikselde ne olduğu bu depoda hic olculmuyordu: jsdom duzen
+      # hesaplamaz, yani "mobilde calisiyor mu" sorusu hic sorulamiyordu
+      # (docs/117). Bu adim gercek Chrome'da her hikayeyi 320x568'de olcuyor.
+      #
+      # Mevcut borc DONDURULMUS (scripts/mobile-ux-audit.baseline.json): kapi
+      # yalniz listede OLMAYAN bir ihlalde kirilir. Listedeki bir hikaye
+      # duzelirse de kirilir ve liste guncellenmeye zorlanir -- aksi halde
+      # liste eskir ve coktan duzelmis ekranlari korumaya devam eder.
+      - name: Mobile UX audit (320px, real browser)
+        run: |
+          npm run build-storybook -- --quiet -o storybook-static
+          node scripts/mobile-ux-audit storybook-static --baseline scripts/mobile-ux-audit.baseline.json
+
       # Ayni suit, urun motorunda. SQLite ile PostgreSQL sessizce farkli
       # davraniyor ve fark her seferinde SQLite lehine hata gizliyordu:
       # basarisiz bir INSERT PostgreSQL'de tum islemi iptal eder, SQLite'ta

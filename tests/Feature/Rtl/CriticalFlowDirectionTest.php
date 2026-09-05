@@ -19,6 +19,24 @@ use Tests\TestCase;
  */
 final class CriticalFlowDirectionTest extends TestCase
 {
+    /*
+        2026-09-05: dil pazarlığı artık SUNULAN dil listesini okuyor
+        (`i18n.shipped_locales`) ve sahibin kararıyla o liste bugün yalnız
+        İngilizce. Bu dosyanın ölçtüğü şey ise dilin kendisi değil, YÖNÜN
+        gerçekten belgeye ulaşması — sağdan sola bir dil sunulduğu gün
+        arayüzün de sağdan sola akması.
+
+        Liste burada genişletiliyor ki kural sınanabilsin. Sabit yazılmıyor:
+        sahibin hangi dili sunduğu bu sözleşmenin konusu değil, sunduğunda ne
+        olacağı konusu.
+    */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config()->set('i18n.shipped_locales', ['en', 'tr', 'ar']);
+    }
+
     // --- RTL-LOGIN-DOCUMENT-01 --------------------------------------------
 
     public function test_the_login_page_flows_right_to_left_for_an_arabic_reader(): void

@@ -1,0 +1,625 @@
+#!/usr/bin/env node
+/*
+    MOBİL DENETİM — her bileşen, en dar ekranda, gerçek bir düzen motorunda.
+
+    ═══ NEDEN VAR ═══
+
+    Global kural (`TOUCH-FIRST-INTERFACE`) dar ekranı TABAN sayar ve
+    doğrulamanın gerçek bir düzen motorunda yapılmasını şart koşar. Bu
+    deponun bütün arayüz testleri jsdom'da koşuyor ve jsdom düzen
+    HESAPLAMAZ: her kutu sıfır yüksekliktedir, hiçbir şey taşmaz, hiçbir
+    dokunma hedefi ölçülemez. Yani "320 pikselde çalışıyor mu" sorusu bu
+    depoda hiç sorulamıyordu — ve sorulmadığı için cevabı yıllarca "bilmiyoruz"
+    kaldı, ama raporlarda "geçti" diye göründü.
+
+    ═══ NE ÖLÇÜYOR ═══
+
+    Storybook'un statik çıktısındaki HER hikâye, 320×568'de:
+
+    1. YATAY TAŞMA — sayfa yana kaymamalı. Dar ekranda yatay kaydırma,
+       kullanıcının bir daha bulamayacağı içerik demektir.
+    2. KENARDAN KIRPILMA — hiçbir etkileşimli öğe görünen alanın dışına
+       taşmamalı. Görünmeyen bir düğme, olmayan bir düğmedir.
+    3. DOKUNMA HEDEFİ — en az 44×44. Parmak imleç değildir.
+    4. HEDEFLER ARASI AYRIM — komşu iki hedef arasında en az 8 piksel.
+       Bitişik iki hedef, yanlış dokunmayı bir hata değil bir olasılık yapar.
+    5. METİN KIRPILMASI — taşan metin ya sığdırılır ya üç noktayla kesilir;
+       sessizce kesilen metin okunamaz ve okunamadığı ANLAŞILMAZ.
+    6. İÇERİK YOĞUNLUĞU — en içteki içerik sütunu, görüntü alanının anlamlı
+       bir oranını kullanmalı. İç içe kapların dolgusu birikirse içerik dar
+       bir şeride sıkışır: ekranın yarısı kenar boşluğu olur.
+
+    ═══ NEYİ ÖLÇMÜYOR ═══
+
+    Estetik, hiyerarşi, kelime seçimi ve akış. Bunlar insan kararıdır ve bu
+    araç onları ölçtüğünü iddia etmiyor. Ölçtüğü şey, o kararların
+    tartışılabilmesi için gereken zemin: ekranda gerçekten ne oluyor.
+
+    Ayrıca Chrome'da koşuyor; iOS Safari'nin kendi davranışını doğrulamıyor.
+
+    ═══ KULLANIM ═══
+
+        npm run build-storybook -- -o <dizin>
+        node scripts/mobile-ux-audit <dizin> [--json rapor.json] [--fail]
+
+    `--fail` olmadan RAPORLAR ama kırılmaz: mevcut borç bir kapıya
+    dönüştürülmeden önce görülmeli. Borç kapandıkça `--fail` ile CI'ya
+    bağlanır.
+*/
+
+import { spawn } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+const CHROME_CANDIDATES = [
+    process.env.CHROME_PATH,
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+].filter(Boolean);
+
+const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
+
+if (CHROME === undefined) {
+    console.error('mobile-ux-audit: Chrome bulunamadı — ölçüm YAPILMADI, sonuç "bilinmiyor".');
+    process.exit(2);
+}
+
+const PORT = 9355;
+
+/** En dar desteklenen genişlik. Taban budur; geniş ekran zenginleştirmedir. */
+const WIDTH = 320;
+const HEIGHT = 568;
+
+/** Dokunma hedefinin asgarisi (CSS pikseli). */
+const MIN_TARGET = 44;
+
+/** Komşu iki hedef arasındaki asgari ayrım. */
+const MIN_GAP = 8;
+
+/**
+ * İçerik sütununun görüntü alanına asgari oranı.
+ *
+ * 0.72 bir hedef değil, bugünkü borcu görünür kılan bir sınır: altına düşen
+ * her ekranda, genişliğin dörtte birinden fazlası iç içe kapların dolgusuna
+ * gidiyor demektir.
+ */
+const MIN_CONTENT_RATIO = 0.72;
+
+const MEASURE = `(() => {
+  const W = ${WIDTH}, MIN_TARGET = ${MIN_TARGET}, MIN_GAP = ${MIN_GAP};
+  const root = document.getElementById('storybook-root') || document.body;
+
+  /*
+      STORYBOOK'UN KENDİ DOLGUSU ÖLÇÜME KARIŞMAZ.
+
+      Storybook gövdeye kendi kenar boşluğunu koyuyor. Onu ürünün dolgusu
+      saymak, olmayan bir borcu raporlamak olurdu — ve bu araç tam da o hatayı
+      yakalamak için var.
+  */
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
+  const main = document.querySelector('.sb-show-main');
+  if (main) { main.style.margin = '0'; main.style.padding = '0'; }
+  root.style.margin = '0';
+  root.style.padding = '0';
+
+  /*
+      YATAY KAYAN BİR KAP TAŞMA DEĞİLDİR.
+
+      Kategori rayı gibi bilerek yana kayan şeritlerde öğelerin görünen alanın
+      dışına uzanması TASARIMIN kendisidir. Onları kırpılmış saymak, çalışan
+      bir deseni kusur diye bildirmek olurdu.
+  */
+  const inHorizontalScroller = (el) => {
+    for (let node = el.parentElement; node && node !== document.body; node = node.parentElement) {
+      const s = getComputedStyle(node);
+      if ((s.overflowX === 'auto' || s.overflowX === 'scroll') && node.scrollWidth > node.clientWidth + 1) {
+        return true;
+      }
+    }
+    return false;
+  };
+  const label = (el) => {
+    const text = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\\s+/g, ' ');
+    return (el.tagName.toLowerCase() + (text ? ' "' + text.slice(0, 40) + '"' : ''));
+  };
+
+  const findings = [];
+
+  // 1. Yatay taşma — BELGENİN kendisi kaymamalı.
+  const docWidth = document.documentElement.scrollWidth;
+  if (docWidth > W + 1) {
+    /*
+        Taşmaya sebep olan öğe kendi kaydırma kabında mı, yoksa gerçekten
+        sayfayı mı geniyor? Kabı olan bir şerit taşma değildir; kabı olmayan
+        bir tablo, kullanıcının bir daha bulamayacağı içeriktir.
+    */
+    let widest = null;
+    for (const el of root.querySelectorAll('*')) {
+      const r = el.getBoundingClientRect();
+      if (r.right > W + 1 && !inHorizontalScroller(el)) {
+        if (widest === null || r.right > widest.right) widest = { right: r.right, el };
+      }
+    }
+    if (widest !== null) {
+      findings.push({ kind: 'overflow-x', detail: docWidth + 'px > ' + W + 'px — ' + label(widest.el) });
+    }
+  }
+
+  // 2/3/4. Etkileşimli öğeler.
+  /*
+      ODAKLANABİLİR OLMAK, DOKUNMA HEDEFİ OLMAK DEĞİLDİR.
+
+      Genel bir [tabindex] seçicisi sekme panellerini de topluyordu; bir panel
+      klavye için odaklanabilir ama kimse ona basmaz. Onları hedef saymak,
+      "şu panel şu düğmeye 1 piksel yakın" gibi anlamsız bulgular üretti.
+  */
+  const interactive = [...root.querySelectorAll(
+    'a[href], button, input, select, textarea, [role="button"], [role="link"], [role="switch"], [role="tab"], [role="checkbox"], [role="radio"], [role="menuitem"]'
+  )].filter((el) => {
+    const r = el.getBoundingClientRect();
+    const s = getComputedStyle(el);
+    return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
+  });
+
+  const boxes = [];
+
+  for (const el of interactive) {
+    const r = el.getBoundingClientRect();
+
+    if ((r.right > W + 1 || r.left < -1) && !inHorizontalScroller(el)) {
+      findings.push({ kind: 'clipped', detail: label(el) + ' → ' + Math.round(r.left) + '..' + Math.round(r.right) });
+    }
+
+    /*
+        DOKUNULAN ŞEY, HEDEFTİR — girdinin kendisi değil.
+
+        İki sahte kalıp ilk ölçümde 42 bulgu üretti:
+
+        1. GÖRSEL OLARAK GİZLİ girdi (dosya seçici, atlama bağlantısı) 1×1
+           pikseldir ve kimse ona dokunmaz; dokunulan şey onu saran bölge ya
+           da odaklanınca beliren bağlantıdır.
+        2. ONAY KUTUSU 16 pikseldir ama ETİKETİYLE birlikte tıklanır. Kutuyu
+           tek başına ölçmek, kullanıcının gerçekte dokunduğu alanı yok
+           saymaktır.
+
+        Bu yüzden ölçülen kutu, varsa öğeyi saran etikettir.
+    */
+    if (r.width <= 1 || r.height <= 1) {
+      boxes.push({ el, r });
+      continue;
+    }
+
+    /*
+        Etiket ya SARAR ya da for özniteliğiyle BAĞLANIR; ikisinde de tıklanabilir.
+        Yalnız sarmalayanı aramak, for kullanan her onay kutusunu 16 piksel
+        diye bildirirdi — ilk ölçümdeki en kalabalık sahte kalıp buydu.
+
+        Bağlı etiket AYRI bir kutudur; gerçek hedef ikisinin BİRLEŞİMİDİR:
+        kullanıcı ikisine de dokunabiliyor.
+    */
+    let target = r;
+    const wrapping = el.closest('label');
+    const linked = el.id ? document.querySelector('label[for="' + CSS.escape(el.id) + '"]') : null;
+    const owner = wrapping ?? linked;
+
+    if (owner) {
+      const o = owner.getBoundingClientRect();
+      target = {
+        width: Math.max(r.right, o.right) - Math.min(r.left, o.left),
+        height: Math.max(r.bottom, o.bottom) - Math.min(r.top, o.top),
+      };
+    }
+
+    if (target.width < MIN_TARGET || target.height < MIN_TARGET) {
+      findings.push({
+        kind: 'small-target',
+        detail: label(el) + ' → ' + Math.round(target.width) + '×' + Math.round(target.height)
+          + (owner ? ' (etiketiyle)' : ''),
+      });
+    }
+
+    boxes.push({ el, r });
+  }
+
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i].r, b = boxes[j].r;
+      // İç içe geçmiş öğeler (bir düğmenin içindeki ikon bağlantısı gibi)
+      // komşu sayılmaz; yalnız AYRIK kutular ölçülür.
+      const nested = boxes[i].el.contains(boxes[j].el) || boxes[j].el.contains(boxes[i].el);
+      if (nested) continue;
+      const overlapX = a.left < b.right && b.left < a.right;
+      const overlapY = a.top < b.bottom && b.top < a.bottom;
+      if (overlapX && overlapY) continue;
+      const gapX = overlapY ? Math.max(b.left - a.right, a.left - b.right) : Infinity;
+      const gapY = overlapX ? Math.max(b.top - a.bottom, a.top - b.bottom) : Infinity;
+      const gap = Math.min(gapX, gapY);
+      /*
+          AYRIM YALNIZ KÜÇÜK HEDEFLER İÇİN KUSURDUR.
+
+          Tam genişlikte iki liste satırı arasında dört piksel boşluk yanlış
+          dokunmaya yol açmaz: parmak zaten kocaman bir alana iniyor. Kusur,
+          küçük bir hedefin komşusuna yapışmasıdır — orada bir milimetre
+          kayma yanlış eylemi tetikler.
+      */
+      const eitherSmall =
+        Math.min(a.width, a.height) < MIN_TARGET || Math.min(b.width, b.height) < MIN_TARGET;
+      if (gap >= 0 && gap < MIN_GAP && eitherSmall) {
+        findings.push({ kind: 'tight-gap', detail: label(boxes[i].el) + ' ↔ ' + label(boxes[j].el) + ' → ' + Math.round(gap) + 'px' });
+      }
+    }
+  }
+
+  // 5. Sessizce kırpılan metin.
+  for (const el of root.querySelectorAll('*')) {
+    if (el.children.length > 0) continue;
+    const text = (el.textContent || '').trim();
+    if (text === '') continue;
+    const s = getComputedStyle(el);
+    /*
+        SATIR İÇİ ÖĞEDE scrollWidth/clientWidth ANLAMSIZDIR — ikisi de
+        satır kutusunu değil, olmayan bir blok kutusunu tarif eder. Ölçmeye
+        kalkmak, her span'i kırpılmış diye bildirir; ilk çalıştırmada
+        tam olarak bu oldu (138 sahte bulgu).
+    */
+    if (s.display === 'inline') continue;
+    /*
+        EKRAN OKUYUCUYA ÖZEL METİN KIRPILMIŞ DEĞİLDİR.
+
+        Görsel olarak gizlenen metin 1×1 piksellik bir kutuya sıkıştırılır ve
+        taşması TASARIMIN kendisidir. İlk ölçümdeki 138 "sessiz kırpılma"
+        bulgusunun neredeyse tamamı buydu — araç, erişilebilirlik için
+        yazılmış metni kusur diye bildiriyordu.
+    */
+    const box = el.getBoundingClientRect();
+    if (box.width <= 1 || box.height <= 1) continue;
+    if (s.clipPath !== 'none' || s.clip !== 'auto') continue;
+    if (s.overflow === 'visible' && s.overflowX === 'visible') continue;
+    const clipped = el.scrollWidth > el.clientWidth + 1;
+    if (clipped && s.textOverflow !== 'ellipsis') {
+      findings.push({ kind: 'silent-truncation', detail: label(el) + ' → ' + el.scrollWidth + '>' + el.clientWidth });
+    }
+  }
+
+  /*
+      6. YATAY İSRAF — iç içe kapların dolgusu ne kadar yer yiyor?
+
+      İlk sürüm "en derin metin taşıyan kutunun genişliği"ni ölçüyordu ve
+      YANLIŞTI: ısı ızgarasının tek bir hücresi 34 piksel, ama bu bir dolgu
+      israfı değil, hücrenin kendi boyu. Ölçüm 217 sahte bulgu üretti.
+
+      Doğru soru şu: içerik EN SOLDA nereden başlıyor ve EN SAĞDA nerede
+      bitiyor? Aradaki fark kullanılabilen genişliktir; kalanı iç içe
+      dolguların toplamıdır. Sahibin şikâyeti birebir bu: "grid gap ve grid
+      margin mobil cihazlarda fazla çalıyor ekrandan."
+  */
+  let minLeft = Infinity;
+  let maxRight = -Infinity;
+
+  for (const el of root.querySelectorAll('*')) {
+    if (el.children.length > 0) continue;
+    if ((el.textContent || '').trim() === '') continue;
+    if (inHorizontalScroller(el)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    if (r.left < minLeft) minLeft = r.left;
+    if (r.right > maxRight) maxRight = r.right;
+  }
+
+  /*
+      YATAY İSRAF YALNIZ EKRAN ÖLÇEĞİNDE ANLAMLIDIR.
+
+      Bir avatar hikâyesi ortada 20 piksellik bir daire çizer; "kullanılabilir
+      genişlik 20/320" demek, bileşenin kendi boyunu israf saymaktır. Ölçüm
+      yalnız kökü gerçekten ekranı kaplayan hikâyelerde yapılır — yani bir
+      EKRAN gibi davranan hikâyelerde. Diğerleri için sonuç "ölçülmedi"dir ve
+      öyle raporlanır; "sorun yok" DEĞİL.
+  */
+  let widestBlock = 0;
+  for (const child of root.children) {
+    const r = child.getBoundingClientRect();
+    if (r.width > widestBlock) widestBlock = r.width;
+  }
+
+  const screenScale = widestBlock >= W * 0.9;
+  const usable = screenScale && maxRight > minLeft ? maxRight - minLeft : null;
+
+  return {
+    findings,
+    usableWidth: usable === null ? null : Math.round(usable),
+    leftInset: minLeft === Infinity ? null : Math.round(minLeft),
+    rightInset: maxRight === -Infinity ? null : Math.round(W - maxRight),
+    interactiveCount: interactive.length,
+  };
+})()`;
+
+let nextId = 0;
+
+function cdp(ws, method, params = {}) {
+    const id = ++nextId;
+    ws.send(JSON.stringify({ id, method, params }));
+    return new Promise((resolve, reject) => {
+        const onMessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.id !== id) return;
+            ws.removeEventListener('message', onMessage);
+            message.error ? reject(new Error(message.error.message)) : resolve(message.result);
+        };
+        ws.addEventListener('message', onMessage);
+        setTimeout(() => reject(new Error(`CDP timeout: ${method}`)), 30000);
+    });
+}
+
+async function debuggerUrl() {
+    for (let attempt = 0; attempt < 120; attempt++) {
+        try {
+            const list = await fetch(`http://127.0.0.1:${PORT}/json/list`).then((r) => r.json());
+            const page = list.find((t) => t.type === 'page');
+            if (page) return page.webSocketDebuggerUrl;
+        } catch {
+            /* Chrome henüz dinlemiyor. */
+        }
+        await new Promise((r) => setTimeout(r, 250));
+    }
+    throw new Error('Chrome hata ayıklama portu açılmadı.');
+}
+
+const storybookDir = process.argv[2];
+
+if (!storybookDir || !existsSync(join(storybookDir, 'index.json'))) {
+    console.error(
+        'kullanım: scripts/mobile-ux-audit <storybook-static-dizini> [--json rapor.json] [--fail]',
+    );
+    process.exit(2);
+}
+
+const jsonFlag = process.argv.indexOf('--json');
+const jsonOut = jsonFlag > -1 ? process.argv[jsonFlag + 1] : null;
+const failOnFindings = process.argv.includes('--fail');
+
+/*
+    DONDURULMUŞ BORÇ — `--baseline`.
+
+    Bugünkü borç bir kerede kapanamaz (67 hikâye, dört kusur ailesi;
+    `docs/117`). Ama borcun BÜYÜMESİ bugünden durabilir: kapı yalnız listede
+    OLMAYAN bir ihlalde kırılır.
+
+    İki yönlü ölçülüyor ve ikincisi daha önemli: listedeki bir hikâye
+    düzelirse kapı da kırılır ve liste güncellenmeye ZORLANIR. Aksi hâlde
+    liste yıllarca eskir, içinde çoktan düzelmiş ekranlar taşır ve bir gün
+    yeniden bozulduklarında hiçbir şey söylemez.
+*/
+const baselineFlag = process.argv.indexOf('--baseline');
+const baselinePath = baselineFlag > -1 ? process.argv[baselineFlag + 1] : null;
+const baseline =
+    baselinePath && existsSync(baselinePath)
+        ? JSON.parse(readFileSync(baselinePath, 'utf8')).stories
+        : null;
+
+const index = JSON.parse(readFileSync(join(storybookDir, 'index.json'), 'utf8'));
+const storyIds = Object.keys(index.entries);
+
+const profileDir = mkdtempSync(join(tmpdir(), 'mobile-audit-'));
+
+const chrome = spawn(
+    CHROME,
+    [
+        '--headless=new',
+        `--remote-debugging-port=${PORT}`,
+        `--user-data-dir=${join(profileDir, 'profile')}`,
+        '--no-first-run',
+        '--disable-gpu',
+        '--allow-file-access-from-files',
+        'about:blank',
+    ],
+    { stdio: 'ignore' },
+);
+
+const report = [];
+
+try {
+    const ws = new WebSocket(await debuggerUrl());
+    await new Promise((resolve, reject) => {
+        ws.addEventListener('open', resolve, { once: true });
+        ws.addEventListener('error', reject, { once: true });
+    });
+
+    await cdp(ws, 'Emulation.setDeviceMetricsOverride', {
+        width: WIDTH,
+        height: HEIGHT,
+        deviceScaleFactor: 1,
+        mobile: true,
+    });
+    await cdp(ws, 'Page.enable');
+
+    for (const [position, storyId] of storyIds.entries()) {
+        const url = `file://${join(storybookDir, 'iframe.html')}?id=${storyId}&viewMode=story`;
+
+        await cdp(ws, 'Page.navigate', { url });
+        await new Promise((r) => setTimeout(r, 450));
+
+        let measured;
+
+        try {
+            const { result } = await cdp(ws, 'Runtime.evaluate', {
+                expression: MEASURE,
+                returnByValue: true,
+            });
+            measured = result.value;
+        } catch (error) {
+            measured = { findings: [{ kind: 'measure-failed', detail: String(error) }] };
+        }
+
+        const findings = measured?.findings ?? [];
+
+        /*
+            YATAY İSRAF YALNIZ EKRAN HİKÂYELERİNDE SORULUR.
+
+            `micro-` ve `compound-` hikâyeleri tek bir bileşeni ortada çizer;
+            "kullanılabilir genişlik 20/320" demek bir avatarın kendi boyunu
+            israf saymaktır. Soru ancak bir EKRANA sorulabilir: bu ekran
+            görüntü alanının ne kadarını kullanıyor?
+
+            Kapsam dışı hikâyeler "ölçülmedi" sayılır — "sorun yok" DEĞİL.
+        */
+        const screenStory = storyId.startsWith('surface-') || storyId.startsWith('macro-');
+
+        if (
+            screenStory &&
+            measured?.usableWidth != null &&
+            measured.usableWidth > 0 &&
+            measured.usableWidth / WIDTH < MIN_CONTENT_RATIO
+        ) {
+            findings.push({
+                kind: 'wasted-width',
+                detail:
+                    `kullanılabilir ${measured.usableWidth}px / ${WIDTH}px ` +
+                    `(sol ${measured.leftInset}px, sağ ${measured.rightInset}px)`,
+            });
+        }
+
+        report.push({
+            storyId,
+            findings,
+            usableWidth: measured?.usableWidth ?? null,
+            leftInset: measured?.leftInset ?? null,
+            rightInset: measured?.rightInset ?? null,
+        });
+
+        if ((position + 1) % 50 === 0) {
+            process.stderr.write(`  … ${position + 1}/${storyIds.length}\n`);
+        }
+    }
+
+    ws.close();
+} finally {
+    chrome.kill();
+
+    /*
+        Chrome kapanırken profil dizinine hâlâ yazıyor olabilir; hemen silmek
+        `ENOTEMPTY` ile patlıyordu ve BÜTÜN ÖLÇÜM raporlanmadan kayboluyordu.
+        Temizlik bir ayrıntı, ölçüm sonucu değil: başarısız olursa sessizce
+        geçilir.
+    */
+    await new Promise((r) => setTimeout(r, 500));
+
+    try {
+        rmSync(profileDir, { recursive: true, force: true });
+    } catch {
+        /* Geçici dizin işletim sistemine bırakılır. */
+    }
+}
+
+const byKind = new Map();
+
+for (const entry of report) {
+    for (const finding of entry.findings) {
+        if (!byKind.has(finding.kind)) byKind.set(finding.kind, []);
+        byKind.get(finding.kind).push({ story: entry.storyId, detail: finding.detail });
+    }
+}
+
+const affected = report.filter((entry) => entry.findings.length > 0).length;
+
+console.log(`mobile-ux-audit · ${WIDTH}×${HEIGHT} · ${report.length} hikâye`);
+console.log(`etkilenen hikâye: ${affected}/${report.length}`);
+console.log('');
+
+for (const [kind, items] of [...byKind.entries()].sort((a, b) => b[1].length - a[1].length)) {
+    const stories = new Set(items.map((i) => i.story));
+    console.log(`${kind}: ${items.length} bulgu, ${stories.size} hikâye`);
+    for (const item of items.slice(0, 5)) {
+        console.log(`    ${item.story} — ${item.detail}`);
+    }
+    if (items.length > 5) console.log(`    … ve ${items.length - 5} tane daha`);
+    console.log('');
+}
+
+if (jsonOut) {
+    writeFileSync(jsonOut, JSON.stringify({ width: WIDTH, height: HEIGHT, report }, null, 2));
+    console.log(`ayrıntılı rapor: ${jsonOut}`);
+}
+
+if (baseline !== null) {
+    const current = new Map(
+        report
+            .filter((entry) => entry.findings.length > 0)
+            .map((entry) => [
+                entry.storyId,
+                [...new Set(entry.findings.map((f) => f.kind))].sort(),
+            ]),
+    );
+
+    const regressions = [];
+    const improvements = [];
+
+    for (const [storyId, kinds] of current) {
+        const known = baseline[storyId];
+
+        if (known === undefined) {
+            regressions.push(`${storyId} — YENİ: ${kinds.join(', ')}`);
+            continue;
+        }
+
+        for (const kind of kinds) {
+            if (!known.includes(kind)) regressions.push(`${storyId} — yeni tür: ${kind}`);
+        }
+    }
+
+    for (const storyId of Object.keys(baseline)) {
+        if (!current.has(storyId)) {
+            improvements.push(`${storyId} — DÜZELDİ, listeden çıkarılmalı`);
+            continue;
+        }
+
+        for (const kind of baseline[storyId]) {
+            if (!current.get(storyId).includes(kind)) {
+                improvements.push(`${storyId} — ${kind} düzeldi, listeden çıkarılmalı`);
+            }
+        }
+    }
+
+    console.log(`dondurulmuş borç: ${Object.keys(baseline).length} hikâye`);
+    console.log(`yeni ihlal: ${regressions.length} · düzelen: ${improvements.length}`);
+
+    for (const line of [...regressions, ...improvements]) console.log(`    ${line}`);
+
+    /*
+        YALNIZ YENİ İHLAL KAPIYI KIRAR — düzelme KIRMAZ.
+
+        İlk tasarım düzelmede de kırıyordu, ki liste eskimesin. Ölçüldü ve
+        çalışmadı: aynı depo macOS'ta ve CI'nin Linux'unda FARKLI sonuç
+        veriyor, çünkü yazı tipi ölçüleri farklı ve etiket kutularının boyu
+        birkaç piksel oynuyor. Sonuç, kimsenin bozmadığı bir şey yüzünden
+        kırılan bir kapıydı.
+
+        Kırılgan bir kapı, olmayan bir kapıdan kötüdür: insanlar onu
+        umursamamayı öğrenir. Koruyucu yarısı (yeni ihlal) katı kalıyor;
+        tazelik yarısı raporlanıyor ve listeyi güncellemek bir karar olarak
+        insana bırakılıyor.
+
+        Ortam farkının kendisi de bir bilgi: eşiğin İKİ YANINDA duran bir
+        hedef, gerçek cihazlarda da iki yana düşer. Raporda görünmesi, o
+        hedefin sınırda olduğunu söyler.
+    */
+    if (improvements.length > 0) {
+        console.log('');
+        console.log('Düzelen satırlar `scripts/mobile-ux-audit.baseline.json` içinden SİLİNMELİ.');
+        console.log('(Kapı bunun için kırılmaz: ölçüm ortamdan ortama birkaç piksel oynuyor.)');
+    }
+
+    if (regressions.length > 0) {
+        console.log('');
+        console.log('Yeni ihlal DÜZELTİLİR — listeye eklenmez.');
+        process.exit(1);
+    }
+}
+
+if (failOnFindings && affected > 0) {
+    process.exit(1);
+}

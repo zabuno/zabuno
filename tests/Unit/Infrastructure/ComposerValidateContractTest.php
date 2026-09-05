@@ -136,7 +136,19 @@ class ComposerValidateContractTest extends TestCase
         $buildCount = 0;
 
         foreach ($runCommands as $index => $runCommand) {
-            if (preg_match('/\bnpm\s+run\s+build\b/', $runCommand)) {
+            /*
+                DESEN TAM ADI EŞLEŞTİRİR — "build" ile BAŞLAYAN her betiği değil.
+
+                `\bnpm\s+run\s+build\b` deseni `npm run build-storybook`
+                komutunu da yakalıyordu, çünkü kelime sınırı "build" ile tire
+                arasında da geçerli. Sonuç: mobil denetim adımı eklendiğinde bu
+                test "iki derleme adımı var" diye kırıldı — oysa ikinci komut
+                bambaşka bir betikti.
+
+                Testin ölçtüğü kural değişmedi: ÖN YÜZ derlemesi tam bir kez
+                koşar. Değişen şey, kuralın doğru ifade edilmesi.
+            */
+            if (preg_match('/\bnpm\s+run\s+build(?![\w-])/', $runCommand)) {
                 $buildCount++;
 
                 if ($buildIndex === null) {
