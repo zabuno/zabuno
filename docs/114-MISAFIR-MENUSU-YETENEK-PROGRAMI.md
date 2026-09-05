@@ -121,6 +121,18 @@ için kimlik istemek orantısız.
 | Ürün puanı | Yeni tablo, kötüye kullanım koruması, moderasyon | `feedback.collect` (yeni) |
 | Puan gösterimi | Eşik altında GÖSTERİLMEZ | — |
 
+> **BU BÖLÜM `docs/116` İLE GENİŞLETİLDİ (2026-09-05).** Sahip puanlamanın
+> KPI ve OKR'larının bir **algoritma dosyasına** bağlanmasını, algoritmanın
+> zamanla mevcut veriyle geliştirilmesini ve ileride Zomato · Swarm · Google
+> Maps · sosyal uygulamanın buraya bağlanmasını istedi.
+>
+> Bu, puanlamayı bir alandan **hesaplanan bir çıktıya** çeviriyor ve şimdi
+> alınmazsa sonradan alınamayacak dört önlem doğuruyor (kaynak alanı, ham
+> sinyal/türetilmiş puan ayrımı, algoritma sürüm damgası, dış kimlik eşleme
+> tablosu). Tamamı `docs/116`'da.
+>
+> Aşağıdaki üç kural GEÇERLİ ve oraya devredildi.
+
 **Üç kural baştan konur, sonradan eklenemez:**
 
 1. **Eşik altında puan gösterilmez.** Üç kişinin verdiği 5 yıldız bir bilgi
