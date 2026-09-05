@@ -26,7 +26,7 @@ use Tests\TestCase;
  *
  * Requirement IDs: GUEST-I18N-NO-HARDCODED-01, GUEST-I18N-SWITCH-01,
  * GUEST-I18N-REMEMBERED-01, GUEST-I18N-LANG-DIR-01,
- * GUEST-I18N-CONTENT-HONEST-01.
+ * GUEST-I18N-CONTENT-HONEST-01, GUEST-I18N-EVERY-OFFERED-LOCALE-01.
  */
 final class GuestLanguageTest extends TestCase
 {
@@ -170,6 +170,80 @@ final class GuestLanguageTest extends TestCase
             ->get("/menu/{$key}");
 
         self::assertStringContainsString('Search the menu', $remembered->getContent());
+    }
+
+    // --- GUEST-I18N-EVERY-OFFERED-LOCALE-01 -------------------------------
+
+    /**
+     * SUNULAN HER DİL GERÇEKTEN ÇEVRİLMİŞTİR.
+     *
+     * Test, listeyi ELLE YAZMAZ — `GuestLocale::SUPPORTED` üzerinde yürür.
+     * Sebebi bu testin kendi yazılış hikâyesidir: `config/app.php` altı dil
+     * sayıyor (`supported_locales`) ve bu, misafire altı dil sunulduğu
+     * sanısını verdi. Oysa misafir yüzeyinin listesi ayrıdır ve bugün iki
+     * dildir. İki listeyi karıştırmak, olmayan bir kusuru kovalamaya yol
+     * açtı.
+     *
+     * Kural bu yüzden şöyle kuruldu: listeye bir dil EKLENDİĞİ gün bu test
+     * onu kendiliğinden kapsar ve kataloğu boşsa kırılır. Yani bir dil,
+     * çevrilmeden sunulamaz.
+     *
+     * KARŞILAŞTIRMA DİLİ İNGİLİZCE OLANDIR: her dil için aynı ekranın
+     * arama etiketi okunur ve İngilizcesinden FARKLI olması beklenir. Tek
+     * tek çeviri metni yazmak, testi bir kopya kataloğa çevirirdi — o zaman
+     * cümle değişince test de değişir ve hiçbir şey korumazdı.
+     */
+    public function test_every_offered_language_is_actually_translated(): void
+    {
+        $key = $this->publishedMenu('lang-all-offered');
+
+        $english = $this->guest($key, '?lang=en')->getContent();
+
+        foreach (GuestLocale::SUPPORTED as $locale) {
+            if ($locale === 'en') {
+                continue;
+            }
+
+            $response = $this->guest($key, "?lang={$locale}");
+            $response->assertOk();
+
+            $content = $response->getContent();
+
+            self::assertMatchesRegularExpression(
+                '#<html lang="'.preg_quote($locale, '#').'" dir="(ltr|rtl)"#',
+                $content,
+                "GUEST-I18N-EVERY-OFFERED-LOCALE-01: {$locale} sayfası kendi dilini ilan etmeli.",
+            );
+
+            /*
+                Arapça SAĞDAN SOLA ilan edilmeli. Metni çevirip yönü
+                bırakmak, cümleleri doğru ama okunamaz hâlde gösterirdi —
+                sayfanın yarısı ters akardı.
+            */
+            self::assertStringContainsString(
+                $locale === 'ar' ? 'dir="rtl"' : 'dir="ltr"',
+                $content,
+                "GUEST-I18N-EVERY-OFFERED-LOCALE-01: {$locale} yön ilanı yanlış.",
+            );
+
+            self::assertNotSame(
+                $this->searchLabel($english),
+                $this->searchLabel($content),
+                "GUEST-I18N-EVERY-OFFERED-LOCALE-01: {$locale} kataloğu boş — ekran İngilizceye düşüyor.",
+            );
+        }
+    }
+
+    /**
+     * Sayfadaki arama alanının etiketi — dilin gerçekten değiştiğinin en
+     * kısa kanıtı. Her dilde var, her dilde farklı ve bir cümle kadar uzun
+     * olmadığı için testi kırılgan yapmıyor.
+     */
+    private function searchLabel(string $html): string
+    {
+        preg_match('#placeholder="([^"]*)"#', $html, $matches);
+
+        return $matches[1] ?? '';
     }
 
     public function test_an_unsupported_language_falls_back_instead_of_breaking(): void
