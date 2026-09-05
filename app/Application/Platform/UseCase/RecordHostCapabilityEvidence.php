@@ -71,6 +71,31 @@ final class RecordHostCapabilityEvidence
                 .'Tarama yapılamadığı için yüklenen dosya asla public olmaz (fail-closed).';
         }
 
+        /*
+            TARAYICININ İKİ AYRI ARIZASI, İKİ AYRI SATIR.
+
+            Sonuç ikisinde de aynı: dosya beklemede kalır ve asla public
+            olmaz. Ama SEBEP farklı ve düzeltme farklı yerde:
+
+            - `not-configured` bir ortam kararıdır; sürücü hiç açılmamış,
+              aranacak bir ikili de yok.
+            - `binary-unusable` bir KURULUM KAZASIDIR; birileri sürücüyü
+              açmış ama ikili yerinde değil ya da çalıştırma biti yok. Bu
+              en sinsi hâldir: kurulum yapılmış sanılır, sonuç ise hiç
+              kurulmamış hâlle birebir aynıdır.
+
+            İkisini tek cümleye indirmek, operatörü yanlış yerde düzeltme
+            aratırdı.
+        */
+        if (($capabilities['malware_scanner_driver'] ?? 'unavailable') === 'unavailable') {
+            $degradations[] = 'malware-scan:not-configured — tarayıcı sürücüsü açılmamış. '
+                .'Yüklenen dosya taranamadığı için beklemede kalır ve menüde kullanılamaz (fail-closed).';
+        } elseif (($capabilities['malware_scanner_binary_usable'] ?? false) === false) {
+            $degradations[] = 'malware-scan:binary-unusable — sürücü açık ama yapılandırılan ikili '
+                .'yok ya da çalıştırılabilir değil. Tarama hiç DENENMEZ; sonuç, tarayıcının hiç '
+                .'kurulmamış hâlinden ayırt edilemez. Yol ve `chmod +x` kontrol edilmeli.';
+        }
+
         if ($capabilities['ffmpeg'] === false) {
             $degradations[] = 'video-derivatives:none — ffmpeg yok; video türevi üretilmez. '
                 .'Stage 1 kapsamında video zaten yoktur, bu beklenen durumdur.';

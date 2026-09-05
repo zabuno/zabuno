@@ -41,6 +41,8 @@ final class HostCapabilityProbeTest extends TestCase
             'upload_max_filesize' => '32M',
             'post_max_size' => '32M',
             'execution_timeout' => '60',
+            'malware_scanner_driver' => 'clamav',
+            'malware_scanner_binary_usable' => true,
         ], $overrides);
     }
 
@@ -54,6 +56,7 @@ final class HostCapabilityProbeTest extends TestCase
             'php_version', 'imagick', 'gd', 'sqlite', 'redis', 'ffmpeg',
             'exec_enabled', 'symlink_supported', 'php_memory_limit',
             'upload_max_filesize', 'post_max_size', 'execution_timeout',
+            'malware_scanner_driver', 'malware_scanner_binary_usable',
         ] as $key) {
             self::assertArrayHasKey($key, $capabilities, "MED-01-PROBE-01: `{$key}` ölçülmüyor.");
         }
@@ -87,6 +90,71 @@ final class HostCapabilityProbeTest extends TestCase
     }
 
     // --- MED-01-NO-HARD-FAIL-03 -------------------------------------------
+
+    // --- MED-01-SCANNER-EVIDENCE-04 ---------------------------------------
+
+    /**
+     * TARAYICI SESSİZCE ÖLÜR; KANIT BUNU GÖRMELİ.
+     *
+     * `ClamavMalwareScanner` taramaya başlamadan önce üç şeye bakar: yol boş
+     * mu, dosya var mı, çalıştırılabilir mi. Üçünden biri tutmazsa taramayı
+     * hiç denemez ve "belirsiz" döner — dosya bekler, hata basılmaz, log
+     * yazılmaz. Ekranda görünen sonuç, tarayıcının HİÇ KURULMAMIŞ hâlinden
+     * ayırt edilemez.
+     *
+     * Bu kanıt komutunun bütün varlık sebebi tam olarak bu tür sessiz
+     * arızalardır: *"bizim sunucuda çalışıyordu"* bir kanıt değildir. Sürücü
+     * `clamav`a çevrildiği hâlde ikili yerinde değilse, operatör bunu
+     * dosyaların takıldığını fark ederek DEĞİL, bu raporu okuyarak
+     * öğrenmelidir.
+     *
+     * `exec` kapalıyken de ayrı bir satır yazılır ve ikisi karıştırılmaz:
+     * biri "çağıramıyoruz", diğeri "çağıracak bir şey yok". Aynı sonucu
+     * doğuran iki farklı sebebi tek cümleye indirmek, yanlış yerde düzeltme
+     * aratırdı.
+     */
+    public function test_a_configured_scanner_with_an_unusable_binary_is_named_in_the_evidence(): void
+    {
+        $degradations = RecordHostCapabilityEvidence::degradationsFor($this->capabilities([
+            'malware_scanner_driver' => 'clamav',
+            'malware_scanner_binary_usable' => false,
+        ]));
+
+        self::assertNotEmpty(
+            array_filter($degradations, static fn (string $line): bool => str_contains($line, 'malware-scan:binary-unusable')),
+            'MED-01-SCANNER-EVIDENCE-04: sürücü clamav iken çalışmayan ikili raporda adıyla geçmeli.'
+        );
+    }
+
+    public function test_a_scanner_that_was_never_switched_on_is_named_as_such(): void
+    {
+        $degradations = RecordHostCapabilityEvidence::degradationsFor($this->capabilities([
+            'malware_scanner_driver' => 'unavailable',
+            'malware_scanner_binary_usable' => false,
+        ]));
+
+        self::assertNotEmpty(
+            array_filter($degradations, static fn (string $line): bool => str_contains($line, 'malware-scan:not-configured')),
+            'MED-01-SCANNER-EVIDENCE-04: sürücü hiç açılmamışsa bu ayrı bir satır olmalı.'
+        );
+
+        // Açılmamış bir sürücü için "ikili çalışmıyor" demek YANLIŞ YERE
+        // baktırırdı: ortada aranacak bir ikili yok.
+        self::assertEmpty(
+            array_filter($degradations, static fn (string $line): bool => str_contains($line, 'malware-scan:binary-unusable')),
+            'MED-01-SCANNER-EVIDENCE-04: iki farklı sebep tek satıra indirilmemeli.'
+        );
+    }
+
+    public function test_a_working_scanner_produces_no_scanner_degradation(): void
+    {
+        $degradations = RecordHostCapabilityEvidence::degradationsFor($this->capabilities());
+
+        self::assertEmpty(
+            array_filter($degradations, static fn (string $line): bool => str_contains($line, 'malware-scan:')),
+            'MED-01-SCANNER-EVIDENCE-04: çalışan tarayıcı için düşüş satırı yazılmamalı.'
+        );
+    }
 
     public function test_a_host_missing_everything_still_records_evidence_and_succeeds(): void
     {
