@@ -9,8 +9,10 @@ use App\Application\Media\Dto\MediaScanVerdict;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Domain\Media\MediaAssetStatus;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -43,9 +45,19 @@ use Tests\TestCase;
  * kurulumun ilk yarım saatinde bağlamaya çalışır. Aynı yalanı iki ekrandan
  * birinde bırakmak, onu hiç düzeltmemekle aynı kapıya çıkar.
  *
+ * VE ZİNCİRİN SON HALKASI: İYİLEŞME YOLU (FF-153). Üç paket boyunca ürün
+ * gerçeği söylemeyi öğrendi, ama gerçeği DEĞİŞTİRMENİN yolu yoktu. Sahip
+ * sunucuya ClamAV kurduğunda, kesinti boyunca yüklenmiş her dosya sonsuza
+ * dek `scanning`de kalıyordu: `media:reprocess` yalnız ZATEN `ready` olan
+ * varlıklara bakıyor, hiçbir zamanlanmış görev de onları yeniden denemiyordu.
+ * Dürüstçe "bekliyor" demek, sonsuza dek beklettikten sonra bir teselli
+ * değildir.
+ *
  * Requirement IDs: MEDIA-SCANNER-HONEST-01, MEDIA-DELETE-IMPACT-01,
  * MEDIA-DELETE-UNUSED-OK-01, MEDIA-SCANNER-HONEST-AT-UPLOAD-01,
- * MEDIA-BIND-HELD-HONEST-01, MEDIA-BIND-BRAND-LOGO-HELD-HONEST-01.
+ * MEDIA-BIND-HELD-HONEST-01, MEDIA-BIND-BRAND-LOGO-HELD-HONEST-01,
+ * MEDIA-RESCAN-RECOVERS-01, MEDIA-RESCAN-NEVER-SKIPS-SCAN-01,
+ * MEDIA-RESCAN-TENANT-BOUND-01, MEDIA-RESCAN-IDEMPOTENT-01.
  */
 final class MediaHonestyAndDeletionTest extends TestCase
 {
@@ -464,5 +476,324 @@ final class MediaHonestyAndDeletionTest extends TestCase
             DB::table('media_assets')->where('id', $mediaId)->value('deleted_at'),
             'MEDIA-DELETE-UNUSED-OK-01: kullanılmayan görsel silinebilmeli.'
         );
+    }
+
+    // --- FF-153: İYİLEŞME YOLU --------------------------------------------
+
+    /**
+     * Tarayıcının bu ortamda ne cevap vereceğini belirler.
+     *
+     * Anonim ikiz, dosyayı gerçekten okumaz: bu testlerin ölçtüğü şey
+     * ClamAV'ın doğru çalışıp çalışmadığı değil, ÜRÜNÜN verilen bir hükme
+     * ne yaptığıdır.
+     */
+    private function bindScanner(MediaScanVerdict $verdict): void
+    {
+        $this->app->instance(MalwareScannerPort::class, new class($verdict) implements MalwareScannerPort
+        {
+            public function __construct(private readonly MediaScanVerdict $verdict) {}
+
+            public function scan(string $diskPath): MediaScanResult
+            {
+                return new MediaScanResult($this->verdict);
+            }
+        });
+    }
+
+    /**
+     * "Sahip sunucuya ClamAV kurdu" anının kendisi.
+     *
+     * İKİ ŞEY BİRDEN değişir ve ikisi de gereklidir. Ortam (`config`)
+     * artık bir tarayıcı olduğunu söyler — kurtarma komutunun ön koşulu
+     * budur. Bağlanan ikiz ise o tarayıcının ne CEVAP verdiğini söyler.
+     * Yalnız birini değiştirmek gerçek dünyada olmayan bir durumu taklit
+     * ederdi: kurulu ama hiç konuşmayan, ya da konuşan ama kurulu olmayan
+     * bir tarayıcı.
+     *
+     * İkili, `tempnam` ile açılmış çalıştırılabilir boş bir dosyadır;
+     * ortam denetiminin sorduğu tek şey "var mı, çalıştırılabilir mi".
+     */
+    private function installScanner(MediaScanVerdict $verdict): string
+    {
+        $binary = tempnam(sys_get_temp_dir(), 'clamscan');
+        self::assertIsString($binary);
+        chmod($binary, 0o755);
+
+        config()->set('media.scanner.driver', 'clamav');
+        config()->set('media.scanner.clamav.binary_path', $binary);
+        config()->set('media.scanner.clamav.timeout_seconds', 10.0);
+
+        $this->bindScanner($verdict);
+
+        return $binary;
+    }
+
+    /** Tarayıcı YOKKEN yüklenmiş, `scanning`de mahsur kalmış bir dosya. */
+    private function strandedUpload(User $owner, int $workspaceId, string $name = 'kebap.jpg'): int
+    {
+        $this->bindScanner(MediaScanVerdict::Indeterminate);
+
+        $mediaId = (int) $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])->post(
+            "/api/workspaces/{$workspaceId}/media",
+            ['file' => UploadedFile::fake()->image($name, 400, 400), 'altText' => 'Adana kebap', 'slot' => 'itemImage']
+        )->json('id');
+
+        self::assertSame(
+            MediaAssetStatus::Scanning->value,
+            DB::table('media_assets')->where('id', $mediaId)->value('status'),
+            'Ön koşul: tarayıcı yokken dosya taranmamış olarak bekler.'
+        );
+
+        return $mediaId;
+    }
+
+    // --- MEDIA-RESCAN-RECOVERS-01 -----------------------------------------
+
+    /**
+     * Kesinti boyunca mahsur kalan dosya, tarayıcı gelince GERÇEKTEN
+     * kullanılabilir olur.
+     *
+     * Ölçü "durum sütunu değişti" değildir; sahibin yapmak istediği işin
+     * yapılabilmesidir: fotoğrafı menü kalemine bağlayabilmek. Durumu
+     * `ready`ye çekip bağlamanın hâlâ reddedilmesi, bir dürüstlük paketinin
+     * üretebileceği en ince yalan olurdu.
+     */
+    public function test_a_file_stranded_by_a_missing_scanner_becomes_usable_once_the_scanner_arrives(): void
+    {
+        Storage::fake('local');
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('rescan-recovers');
+        $menuItemId = $this->menuItemIn($workspaceId, 'rescan-recovers');
+        $mediaId = $this->strandedUpload($owner, $workspaceId);
+
+        // Ön koşul: bugün bağlanamıyor.
+        $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->putJson("/api/workspaces/{$workspaceId}/menu-items/{$menuItemId}/image", ['mediaAssetId' => $mediaId])
+            ->assertStatus(422);
+
+        $binary = $this->installScanner(MediaScanVerdict::Clean);
+
+        $exit = Artisan::call('media:rescan-held', ['--workspace' => $workspaceId]);
+
+        self::assertSame(Command::SUCCESS, $exit, 'MEDIA-RESCAN-RECOVERS-01: kurtarma koştu ve iş kalmadı.');
+
+        self::assertSame(
+            MediaAssetStatus::Ready->value,
+            DB::table('media_assets')->where('id', $mediaId)->value('status'),
+            'MEDIA-RESCAN-RECOVERS-01: temiz çıkan dosya normal işleme akışına devam etmeli.'
+        );
+
+        // VE bağlanabiliyor — ürünün sahibe borçlu olduğu şey buydu.
+        $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->putJson("/api/workspaces/{$workspaceId}/menu-items/{$menuItemId}/image", ['mediaAssetId' => $mediaId])
+            ->assertStatus(200);
+
+        /*
+            Ve eski sebep ORTADA KALMAZ. `held` iş kaydı tarihçe olarak
+            durur (bir şeyin beklediği gerçeği silinmez), ama sahibin
+            kütüphanede okuduğu cümle ARTIK GEÇERLİ OLANDIR. `ready` bir
+            dosyanın yanında "taranmadan yayına alınmaz" yazması, düzeltilen
+            sorunu düzeltilmemiş göstermek olurdu.
+        */
+        $listed = $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->getJson("/api/workspaces/{$workspaceId}/media")->json();
+
+        $row = collect($listed['data'] ?? $listed)->firstWhere('id', $mediaId);
+        self::assertNull(
+            $row['statusReason'] ?? null,
+            'MEDIA-RESCAN-RECOVERS-01: iyileşen dosya, artık geçerli olmayan bir sebebi taşımamalı.'
+        );
+
+        @unlink($binary);
+    }
+
+    // --- MEDIA-RESCAN-NEVER-SKIPS-SCAN-01 ---------------------------------
+
+    /**
+     * Tarayıcı HÂLÂ yokken komut hiçbir şeyi ilerletmez ve bunu söyler.
+     *
+     * Sessizce "başarılı" raporlamak buradaki en kötü sonuçtur: sahip
+     * kurtarmanın işlediğini sanır, dosyalarını yayına aldığını sanır ve
+     * gerçeği ancak misafir boş bir menüye baktığında öğrenir.
+     */
+    public function test_the_command_progresses_nothing_and_says_why_while_the_scanner_is_still_missing(): void
+    {
+        Storage::fake('local');
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('rescan-no-scanner');
+        $mediaId = $this->strandedUpload($owner, $workspaceId);
+
+        $jobsBefore = (int) DB::table('media_processing_jobs')->where('media_asset_id', $mediaId)->count();
+
+        // Ortam DEĞİŞMEDİ: sürücü hâlâ `unavailable`.
+        $exit = Artisan::call('media:rescan-held', ['--workspace' => $workspaceId]);
+        $output = Artisan::output();
+
+        self::assertSame(
+            Command::FAILURE,
+            $exit,
+            'MEDIA-RESCAN-NEVER-SKIPS-SCAN-01: yapılamayan bir iş başarı olarak raporlanamaz.'
+        );
+
+        self::assertNotSame('', trim($output), 'MEDIA-RESCAN-NEVER-SKIPS-SCAN-01: ret sessiz olamaz.');
+
+        self::assertSame(
+            MediaAssetStatus::Scanning->value,
+            DB::table('media_assets')->where('id', $mediaId)->value('status'),
+            'MEDIA-RESCAN-NEVER-SKIPS-SCAN-01: bu komut "bekleyeni geçir" komutu değildir.'
+        );
+
+        /*
+            Ve tek bir deneme kaydı bile yazılmaz. Tarayıcının olmadığı
+            ORTAM düzeyinde bellidir; her dosya için ayrı ayrı denemek,
+            iş kaydını hiçbir şey öğretmeyen satırlarla doldururdu.
+        */
+        self::assertSame(
+            $jobsBefore,
+            (int) DB::table('media_processing_jobs')->where('media_asset_id', $mediaId)->count(),
+            'MEDIA-RESCAN-NEVER-SKIPS-SCAN-01: denenmeyen bir tarama iz bırakmamalı.'
+        );
+    }
+
+    /** Tarama KİRLİ çıkarsa dosya kullanılabilir OLMAZ — komut güvenlik kuralını delmez. */
+    public function test_a_file_that_turns_out_infected_never_becomes_usable(): void
+    {
+        Storage::fake('local');
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('rescan-infected');
+        $menuItemId = $this->menuItemIn($workspaceId, 'rescan-infected');
+        $mediaId = $this->strandedUpload($owner, $workspaceId);
+
+        $binary = $this->installScanner(MediaScanVerdict::Infected);
+
+        Artisan::call('media:rescan-held', ['--workspace' => $workspaceId]);
+
+        self::assertSame(
+            MediaAssetStatus::Rejected->value,
+            DB::table('media_assets')->where('id', $mediaId)->value('status'),
+            'MEDIA-RESCAN-NEVER-SKIPS-SCAN-01: zararlı dosya reddedilir, ilerletilmez.'
+        );
+
+        $this->actingAs($owner)->withHeaders(['Accept' => 'application/json'])
+            ->putJson("/api/workspaces/{$workspaceId}/menu-items/{$menuItemId}/image", ['mediaAssetId' => $mediaId])
+            ->assertStatus(422);
+
+        self::assertSame(
+            0,
+            DB::table('media_usages')->where('media_asset_id', $mediaId)->count(),
+            'MEDIA-RESCAN-NEVER-SKIPS-SCAN-01: kurtarma komutu güvenlik sınırını delemez.'
+        );
+
+        @unlink($binary);
+    }
+
+    // --- MEDIA-RESCAN-TENANT-BOUND-01 -------------------------------------
+
+    /**
+     * `--workspace=` bir SÜZGEÇ değil, bir SINIRDIR.
+     *
+     * Kiracı izolasyonu yapısaldır: bir çalışma alanının kurtarma komutu
+     * başka bir çalışma alanının dosyasına dokunamaz. Bir operatör tek bir
+     * restoranın sorununu çözerken bütün müşterilerin dosyalarını
+     * kımıldatmamalı.
+     */
+    public function test_the_command_never_touches_another_workspaces_file(): void
+    {
+        Storage::fake('local');
+
+        [$owner, $mineId] = $this->ownerAndWorkspace('rescan-mine');
+        [$stranger, $theirsId] = $this->ownerAndWorkspace('rescan-theirs');
+
+        $mine = $this->strandedUpload($owner, $mineId);
+        $theirs = $this->strandedUpload($stranger, $theirsId);
+
+        $binary = $this->installScanner(MediaScanVerdict::Clean);
+
+        Artisan::call('media:rescan-held', ['--workspace' => $mineId]);
+
+        self::assertSame(
+            MediaAssetStatus::Ready->value,
+            DB::table('media_assets')->where('id', $mine)->value('status'),
+            'MEDIA-RESCAN-TENANT-BOUND-01: istenen çalışma alanı kurtarılmalı.'
+        );
+
+        self::assertSame(
+            MediaAssetStatus::Scanning->value,
+            DB::table('media_assets')->where('id', $theirs)->value('status'),
+            'MEDIA-RESCAN-TENANT-BOUND-01: başka çalışma alanının dosyasına dokunulamaz.'
+        );
+
+        @unlink($binary);
+    }
+
+    // --- MEDIA-RESCAN-IDEMPOTENT-01 ---------------------------------------
+
+    /**
+     * Aynı komutu iki kez koşturmak ikinci bir kopya üretmez.
+     *
+     * Operatör bir kurtarma komutunu neredeyse her zaman iki kez koşar:
+     * bir kez "acaba oldu mu", bir kez de "emin olayım" diye. İkincisinin
+     * her dosyayı ikinci bir sürümle çoğaltması, kotayı sessizce
+     * tüketmek ve sürüm geçmişini anlamsızlaştırmak olurdu.
+     */
+    public function test_running_the_command_twice_creates_no_second_copy(): void
+    {
+        Storage::fake('local');
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('rescan-idempotent');
+        $mediaId = $this->strandedUpload($owner, $workspaceId);
+
+        $binary = $this->installScanner(MediaScanVerdict::Clean);
+
+        Artisan::call('media:rescan-held', ['--workspace' => $workspaceId]);
+        Artisan::call('media:rescan-held', ['--workspace' => $workspaceId]);
+
+        self::assertSame(
+            1,
+            (int) DB::table('media_assets')->where('workspace_id', $workspaceId)->count(),
+            'MEDIA-RESCAN-IDEMPOTENT-01: ikinci koşu ikinci bir varlık yaratmamalı.'
+        );
+
+        self::assertSame(
+            1,
+            (int) DB::table('media_versions')->where('media_asset_id', $mediaId)->count(),
+            'MEDIA-RESCAN-IDEMPOTENT-01: ikinci koşu ikinci bir sürüm yaratmamalı.'
+        );
+
+        self::assertSame(
+            MediaAssetStatus::Ready->value,
+            DB::table('media_assets')->where('id', $mediaId)->value('status')
+        );
+
+        @unlink($binary);
+    }
+
+    /** Kuru çalıştırma: ne olacağını yazar, hiçbir şeye dokunmaz. */
+    public function test_a_dry_run_reports_the_work_without_doing_it(): void
+    {
+        Storage::fake('local');
+
+        [$owner, $workspaceId] = $this->ownerAndWorkspace('rescan-dry-run');
+        $mediaId = $this->strandedUpload($owner, $workspaceId);
+
+        $binary = $this->installScanner(MediaScanVerdict::Clean);
+
+        $jobsBefore = (int) DB::table('media_processing_jobs')->where('media_asset_id', $mediaId)->count();
+
+        Artisan::call('media:rescan-held', ['--workspace' => $workspaceId, '--dry-run' => true]);
+
+        self::assertSame(
+            MediaAssetStatus::Scanning->value,
+            DB::table('media_assets')->where('id', $mediaId)->value('status'),
+            'Kuru çalıştırma hiçbir durumu değiştirmemeli.'
+        );
+
+        self::assertSame(
+            $jobsBefore,
+            (int) DB::table('media_processing_jobs')->where('media_asset_id', $mediaId)->count(),
+            'Kuru çalıştırma iş kaydı yazmamalı.'
+        );
+
+        @unlink($binary);
     }
 }

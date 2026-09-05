@@ -19,6 +19,7 @@ use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
+use App\Application\Media\Port\MalwareScannerAvailabilityPort;
 use App\Application\Media\Port\MalwareScannerPort;
 use App\Application\Media\Port\MediaAssetProcessorPort;
 use App\Application\Media\Port\MediaAuditPort;
@@ -121,6 +122,7 @@ use App\Infrastructure\Media\Processing\UnavailableMediaAssetProcessor;
 use App\Infrastructure\Media\Quota\ConfigMediaQuota;
 use App\Infrastructure\Media\Quota\DatabaseMediaStorageBreakdown;
 use App\Infrastructure\Media\Scanning\ClamavMalwareScanner;
+use App\Infrastructure\Media\Scanning\ConfigMalwareScannerAvailability;
 use App\Infrastructure\Media\Scanning\UnavailableMalwareScanner;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuCatalogRepository;
 use App\Infrastructure\MenuCatalog\Persistence\EloquentMenuSchedule;
@@ -445,6 +447,13 @@ final class AppServiceProvider extends ServiceProvider
 
             return new UnavailableMalwareScanner;
         });
+        /*
+            "Bu ortamda tarama YAPILABİLİYOR mu?" — hükümden AYRI bir soru
+            (FF-153). Ayarlar ekranı ile kurtarma komutu aynı cevabı tek
+            kaynaktan okur; koşulun iki yere kopyalanması, bir gün birinin
+            güncellenip diğerinin unutulması demek olurdu.
+        */
+        $this->app->bind(MalwareScannerAvailabilityPort::class, ConfigMalwareScannerAvailability::class);
         $this->app->bind(MediaAssetProcessorPort::class, function (): MediaAssetProcessorPort {
             // Varsayılan GERÇEK işleyicidir. Eskiden burada, yüklenen her
             // fotoğrafı sonsuza kadar bekleten bir yer tutucu bağlıydı; bu

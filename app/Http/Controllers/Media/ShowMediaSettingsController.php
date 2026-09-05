@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Media;
 
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Media\Port\MalwareScannerAvailabilityPort;
 use App\Domain\Authorization\Permission;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +34,10 @@ use Illuminate\Http\Request;
  */
 final class ShowMediaSettingsController extends Controller
 {
-    public function __construct(private readonly AuthorizationPort $authorization) {}
+    public function __construct(
+        private readonly AuthorizationPort $authorization,
+        private readonly MalwareScannerAvailabilityPort $scannerAvailability,
+    ) {}
 
     public function __invoke(Request $request, int $workspace): JsonResponse
     {
@@ -131,27 +135,18 @@ final class ShowMediaSettingsController extends Controller
      * tarama fiilen yapılmaz. Ekranda "açık" yazmak, sahibe olmayan bir
      * korumayı vaat etmek olurdu.
      *
-     * Bu koşul `AppServiceProvider`'daki bağlamanın ve
-     * `ClamavMalwareScanner::scan()`'in ön koşulunun AYNISIDIR. Port'a
-     * `isAvailable()` eklemek daha temiz olurdu; bugün eklenmiyor çünkü
-     * `MalwareScannerPort`'u on ayrı test dosyasındaki anonim ikizler de
-     * uyguluyor ve arayüzü büyütmek onların hepsini kırardı.
+     * KOŞUL BURADA DEĞİLDİR (FF-153). Eskiden bu metodun içinde duruyordu;
+     * kurtarma komutu (`media:rescan-held`) aynı soruyu sormak zorunda
+     * kalınca kopyalanacaktı ve iki kopya bir gün ayrışacaktı — o gün ürün
+     * ayarlar ekranında "açık", komut satırında "yok" derdi. Cevap artık
+     * tek bir yerde yaşıyor.
+     *
+     * `MalwareScannerPort`'a `isAvailable()` eklemek de mümkündü ama
+     * yapılmadı: o arayüzü on ayrı test dosyasındaki anonim ikizler de
+     * uyguluyor ve büyütmek hepsini kırardı. Ayrı port, ayrı soru.
      */
     private function scannerState(): string
     {
-        if (config('media.scanner.driver') !== 'clamav') {
-            return 'unavailable';
-        }
-
-        $binary = (string) config('media.scanner.clamav.binary_path', '');
-        $timeout = (float) config('media.scanner.clamav.timeout_seconds', 0);
-
-        $usable = $binary !== ''
-            && is_file($binary)
-            && is_executable($binary)
-            && is_finite($timeout)
-            && $timeout > 0.0;
-
-        return $usable ? 'on' : 'unavailable';
+        return $this->scannerAvailability->isUsable() ? 'on' : 'unavailable';
     }
 }
