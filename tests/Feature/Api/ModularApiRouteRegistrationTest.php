@@ -399,8 +399,22 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/admin/plans||App\Http\Controllers\PlatformAdmin\StoreManagedPlanController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/plans/{plan}/activate||App\Http\Controllers\PlatformAdmin\ActivateManagedPlanController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'GET|api/admin/workspaces||App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
+        /*
+            SÜPERADMİNİN İLK GÜNÜ (`docs/122` Y2) — üçü de SALT OKUNUR.
+            Bu listede bir gün `POST|api/admin/workspaces/{workspace}/...`
+            biçiminde bir "kiracı olarak oturum aç" ucu belirirse, o bir
+            kapsam kararıdır ve `docs/122` Y7'ye aittir: impersonation
+            kasıtlı olarak en sona bırakılmıştır ve denetim kaydı ile zorluk
+            şartına bağlıdır (§5).
+        */
+        'GET|api/admin/workspaces/{workspace}||App\Http\Controllers\PlatformAdmin\ShowManagedWorkspaceController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'GET|api/admin/workspaces/{workspace}/subscription||App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/workspaces/{workspace}/manual-payments||App\Http\Controllers\PlatformAdmin\StoreManualPaymentController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:5,1,verified',
+        // Kullanıcı görünürlüğü ve denetim günlüğü (`docs/122` Y2). Parola
+        // sıfırlama, kilitleme ya da kaydı düzeltme ucu YOK; bu listede
+        // öyle bir satır belirirse bu da bir kapsam kararıdır.
+        'GET|api/admin/users||App\Http\Controllers\PlatformAdmin\ListManagedUsersController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
+        'GET|api/admin/audit-log||App\Http\Controllers\PlatformAdmin\ListPlatformAuditLogController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'GET|api/admin/ai/audit||App\Http\Controllers\PlatformAdmin\ShowAiAuditController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         // MODÜL ENVANTERİ (`docs/111` adım 1) — salt okunur, superadmin
         // arkasında, throttle'sız. Yazma ucu YOK ve bu listede bir gün
