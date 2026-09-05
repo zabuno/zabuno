@@ -156,3 +156,40 @@ yanında "Düzelt" düğmesi. Sürümlerde "Geri al" ve kaynağın kuralı:
 boyut (5×5 · 8×8 · A6 masa kartı), PDF indir / Yazdır ve **ölçülmüş
 kontrast** ("18,7:1 · tarayıcı testi geçti"). Yeni masalar için toplu kod
 üretimi ve ileri ayarlar (bölge, koltuk, ad öneki).
+
+## 7. Sahibin kararları — 2026-09-05 (açıkça soruldu)
+
+### 7.1 Çoklu menü: YAPILACAK, saat bazlı geçişli
+
+Kaynak üç menü hapı gösteriyor (Ana menü yayında · Kahvaltı 07–11 · Ramazan
+kapalı). **Kaynakta bile bu haplar tıklanınca hiçbir şey yapmıyor** — yalnız
+bir bildirim gösteriyor, kategori ve ürün listesi değişmiyor. Yani kaynak
+görsel bir imkân veriyor, bir veri modeli değil.
+
+Depoda ise şube başına TEK menü kilidi var: `menus.location_id` UNIQUE, bir
+uygulama katmanı istisnası ve iki adlandırılmış test
+(`MENU-PERSIST-ONE-PER-LOCATION-01`, `-NO-PARTIAL-WRITE-01`).
+
+**Sahip "yap" dedi ve saat bazlı geçişi seçti.** Bu bir ürün kapsamı
+kararıdır ve şu sonuçları doğurur:
+
+- Şube başına birden çok menü; her menünün adı, durumu ve **saat aralığı**
+  olur.
+- **QR AYNI KALIR.** Misafir aynı kodu okutur; saate göre doğru menü açılır.
+  Bu, "basılı kod hiç değişmez" kuralının doğal devamıdır.
+- Yayınlama ve QR çözümü menü başına çalışmak zorunda: bugün ikisi de
+  şubeden tek menüye gidiyor.
+- Kilit gevşetilirken var olan davranış bozulmamalı: tek menülü bir şube
+  bugünkü gibi çalışmaya devam eder.
+- Aralıklar ÇAKIŞAMAZ ve boşluk bırakılamaz: gün 24 saattir ve hiçbir saatte
+  "hangi menü" sorusu cevapsız kalamaz. Cevapsız kalırsa misafir boş bir
+  sayfa görür.
+
+### 7.2 Yayınlama: Planla ve Telefonda önizle — İKİSİ DE YAPILACAK
+
+- **Planla:** zamanlanmış yayın. Zamanlanmış yayın da bir YAYINDIR — yeni
+  sürüm numarası alır, QR aynı kalır. İptal edilebilir, iki kez çalışmaz,
+  zaman dilimi `Europe/Istanbul` ve hangi saatte çıkacağı ekranda yazılı.
+- **Telefonda önizle:** taslağı gösteren kısa ömürlü, imzalı adres. Misafirin
+  gördüğü adres DEĞİŞMEZ; önizleme süresi dolunca çalışmaz, `noindex` ve
+  ekranda "bu bir önizleme, misafirler henüz bunu görmüyor" yazar.
