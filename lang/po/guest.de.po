@@ -116,6 +116,14 @@ msgstr "Diese Speisekarte lässt sich gerade nicht anzeigen"
 msgid "guest.deadEnd.title"
 msgstr "Speisekarte nicht gefunden"
 
+#: guest:guest.favourite.add
+msgid "guest.favourite.add"
+msgstr ""
+
+#: guest:guest.favourite.remove
+msgid "guest.favourite.remove"
+msgstr ""
+
 #: guest:guest.filters.allergenExclude
 msgid "guest.filters.allergenExclude"
 msgstr ""

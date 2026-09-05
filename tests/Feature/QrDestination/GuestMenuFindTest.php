@@ -54,7 +54,32 @@ final class GuestMenuFindTest extends TestCase
      * paketlik pay bırakır ve bir kütüphane eklendiği gün kırılır — ki bu
      * paketin kararı tam olarak "kütüphane eklenmez"dir.
      */
-    private const MAX_INLINE_SCRIPT_BYTES = 22000;
+    private const MAX_INLINE_SCRIPT_BYTES = 26000;
+
+    /*
+        TAVAN 2026-09-06'DA 22 000 → 26 000 YÜKSELTİLDİ (`docs/122` Y5).
+
+        SEBEP: misafir menüsüne favori işaretlemesi girdi ve favori HER
+        menüde çizilir — sepet gibi bir sunucu kararına bağlı değildir,
+        kararı yalnız misafirin cihazı verir. Bu yüzden bedeli taban
+        yüzeyde ödeniyor ve tavan orada yükseliyor.
+
+        ÖLÇÜM (aynı sahne, aynı yöntem):
+
+        | | favorisiz | favorili |
+        | Satır içi betik, ham | 19 855 B | 24 064 B |
+        | Sayfanın tamamı, ham | 60 394 B | 67 358 B |
+        | Sayfanın tamamı, gzip | 16 682 B | 18 511 B |
+        | Dış istek sayısı | 0 | 0 |
+
+        TELDE ÖDENEN FARK ~1,8 KB ve AĞ İSTEĞİ SAYISI DEĞİŞMEZ. Ham baytın
+        önemli bir kısmı Türkçe gerekçe yorumlarıdır; sıkıştırmadan sonra
+        bedeli küçüktür. Kütüphane eklenmedi ve kalp satır içi tek bir SVG
+        sembolüdür — bir simge paketi bu tavanı tek başına aşardı.
+
+        Tavan bir HEDEF değil bir SINIRDIR: bugünkü ölçümün üstünde bir
+        paketlik pay bırakır ve bir kütüphane eklendiği gün kırılır.
+    */
 
     /** @return array<string, mixed> */
     private function snapshot(): array

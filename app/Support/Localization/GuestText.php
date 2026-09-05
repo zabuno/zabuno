@@ -71,6 +71,18 @@ final class GuestText
             'priceMinLabel' => 'guest.filters.priceMin',
             'priceMaxLabel' => 'guest.filters.priceMax',
             'filterNoMatch' => 'guest.filters.noMatch',
+            /*
+                FAVORİLER (`docs/122` Y5) — `all()` İÇİNDE ve bu bilinçli.
+
+                Sepet ve puanlama sözlükleri buraya konmadı, çünkü ikisi de
+                sunucunun bir kararına bağlı: sipariş almayan bir masada o
+                cümleler hiç inmez. Favori öyle değil — hiçbir sunucu kararına
+                bağlı değildir, her menüde çizilir ve kararı yalnız misafirin
+                cihazı verir. Ayrı bir sözlüğe koymak, hiçbir zaman
+                kapanmayacak bir şalter icat etmek olurdu.
+            */
+            'favouriteAdd' => 'guest.favourite.add',
+            'favouriteRemove' => 'guest.favourite.remove',
             'installButton' => 'guest.pwa.install',
             'installAccepted' => 'guest.pwa.installAccepted',
             'installDismissed' => 'guest.pwa.installDismissed',

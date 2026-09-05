@@ -5696,6 +5696,142 @@ msgstr "A QR code opens your published menu, so there has to be a menu for it to
 msgid "workspace.qrCodes.operational.description"
 msgstr "Create and print the QR codes your guests scan to open the menu."
 
+#: workspace:workspace.ratings.computedAt
+msgid "workspace.ratings.computedAt"
+msgstr "Worked out {time}"
+
+#: workspace:workspace.ratings.computedAt.never
+msgid "workspace.ratings.computedAt.never"
+msgstr "Not worked out yet"
+
+#: workspace:workspace.ratings.description
+msgid "workspace.ratings.description"
+msgstr "What guests said about each dish — and what you said back."
+
+#: workspace:workspace.ratings.empty.action
+msgid "workspace.ratings.empty.action"
+msgstr "Open the menu"
+
+#: workspace:workspace.ratings.empty.description
+msgid "workspace.ratings.empty.description"
+msgstr "A rating belongs to a dish. Add dishes to this menu and guests at the table can start rating them."
+
+#: workspace:workspace.ratings.empty.title
+msgid "workspace.ratings.empty.title"
+msgstr "No dishes to show yet"
+
+#: workspace:workspace.ratings.error.description
+msgid "workspace.ratings.error.description"
+msgstr "Nothing was lost: every vote a guest left is still counted. Try again."
+
+#: workspace:workspace.ratings.error.title
+msgid "workspace.ratings.error.title"
+msgstr "Ratings could not be loaded"
+
+#: workspace:workspace.ratings.heading
+msgid "workspace.ratings.heading"
+msgstr "Ratings"
+
+#: workspace:workspace.ratings.loading
+msgid "workspace.ratings.loading"
+msgstr "Loading ratings…"
+
+#: workspace:workspace.ratings.method
+msgid "workspace.ratings.method"
+msgstr "Scoring method {version}"
+
+#: workspace:workspace.ratings.method.help
+msgid "workspace.ratings.method.help"
+msgstr "Scores are worked out from guest votes by a method that can change over time. The version above says which one produced the numbers on this screen — so a score that moved because of new votes can be told apart from one that moved because the method did."
+
+#: workspace:workspace.ratings.noRemoval
+msgid "workspace.ratings.noRemoval"
+msgstr "You can reply to a rating. You cannot take one down: an average the restaurant could delete would be an advertisement, not a measurement."
+
+#: workspace:workspace.ratings.notEnough
+msgid "workspace.ratings.notEnough"
+msgstr "Not enough ratings yet"
+
+#: workspace:workspace.ratings.notEnough.help
+msgid "workspace.ratings.notEnough.help"
+msgstr "A score appears once enough guests have rated this dish. Until then there is no number to show — and zero would say something the guests never said."
+
+#: workspace:workspace.ratings.permission.title
+msgid "workspace.ratings.permission.title"
+msgstr "Ratings are not part of your role"
+
+#: workspace:workspace.ratings.permission.whyNoAction
+msgid "workspace.ratings.permission.whyNoAction"
+msgstr "Ask the workspace owner if you need to see what guests rated."
+
+#: workspace:workspace.ratings.prerequisite.description
+msgid "workspace.ratings.prerequisite.description"
+msgstr "A rating belongs to a dish, and a dish lives in a menu. Choose a branch and a menu to see its ratings."
+
+#: workspace:workspace.ratings.prerequisite.title
+msgid "workspace.ratings.prerequisite.title"
+msgstr "Pick a menu first"
+
+#: workspace:workspace.ratings.reply.empty
+msgid "workspace.ratings.reply.empty"
+msgstr "Write something. An empty reply shows the guest an empty box."
+
+#: workspace:workspace.ratings.reply.failed
+msgid "workspace.ratings.reply.failed"
+msgstr "That did not go through. Your words are still here; try again."
+
+#: workspace:workspace.ratings.reply.help
+msgid "workspace.ratings.reply.help"
+msgstr "Guests read this under the dish, on their own screen."
+
+#: workspace:workspace.ratings.reply.label
+msgid "workspace.ratings.reply.label"
+msgstr "Your reply"
+
+#: workspace:workspace.ratings.reply.none
+msgid "workspace.ratings.reply.none"
+msgstr "You have not replied about this dish."
+
+#: workspace:workspace.ratings.reply.publish
+msgid "workspace.ratings.reply.publish"
+msgstr "Publish reply"
+
+#: workspace:workspace.ratings.reply.published
+msgid "workspace.ratings.reply.published"
+msgstr "published {time}"
+
+#: workspace:workspace.ratings.reply.saving
+msgid "workspace.ratings.reply.saving"
+msgstr "Saving…"
+
+#: workspace:workspace.ratings.reply.tooLong
+msgid "workspace.ratings.reply.tooLong"
+msgstr "That is longer than {max} characters. Shorten it yourself — we will not cut your sentence for you."
+
+#: workspace:workspace.ratings.reply.update
+msgid "workspace.ratings.reply.update"
+msgstr "Update reply"
+
+#: workspace:workspace.ratings.reply.who
+msgid "workspace.ratings.reply.who"
+msgstr "Reply from the restaurant"
+
+#: workspace:workspace.ratings.reply.withdraw
+msgid "workspace.ratings.reply.withdraw"
+msgstr "Withdraw reply"
+
+#: workspace:workspace.ratings.retry
+msgid "workspace.ratings.retry"
+msgstr "Try again"
+
+#: workspace:workspace.ratings.score
+msgid "workspace.ratings.score"
+msgstr "{score} out of {max}"
+
+#: workspace:workspace.ratings.votes
+msgid "workspace.ratings.votes"
+msgstr "Votes so far: {count}"
+
 #: workspace:workspace.settings.audit.empty
 msgid "workspace.settings.audit.empty"
 msgstr "Nothing recorded yet."
@@ -5887,6 +6023,10 @@ msgstr "Publication"
 #: workspace:workspace.shell.nav.qrCodes
 msgid "workspace.shell.nav.qrCodes"
 msgstr "QR codes"
+
+#: workspace:workspace.shell.nav.ratings
+msgid "workspace.shell.nav.ratings"
+msgstr "Ratings"
 
 #: workspace:workspace.shell.nav.settings
 msgid "workspace.shell.nav.settings"

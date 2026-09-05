@@ -5696,6 +5696,142 @@ msgstr "Karekod yayınlanmış menünüzü açar, yani açacağı bir menü olma
 msgid "workspace.qrCodes.operational.description"
 msgstr "Misafirlerinizin menüyü açmak için okuttuğu karekodları oluşturun ve yazdırın."
 
+#: workspace:workspace.ratings.computedAt
+msgid "workspace.ratings.computedAt"
+msgstr ""
+
+#: workspace:workspace.ratings.computedAt.never
+msgid "workspace.ratings.computedAt.never"
+msgstr ""
+
+#: workspace:workspace.ratings.description
+msgid "workspace.ratings.description"
+msgstr ""
+
+#: workspace:workspace.ratings.empty.action
+msgid "workspace.ratings.empty.action"
+msgstr ""
+
+#: workspace:workspace.ratings.empty.description
+msgid "workspace.ratings.empty.description"
+msgstr ""
+
+#: workspace:workspace.ratings.empty.title
+msgid "workspace.ratings.empty.title"
+msgstr ""
+
+#: workspace:workspace.ratings.error.description
+msgid "workspace.ratings.error.description"
+msgstr ""
+
+#: workspace:workspace.ratings.error.title
+msgid "workspace.ratings.error.title"
+msgstr ""
+
+#: workspace:workspace.ratings.heading
+msgid "workspace.ratings.heading"
+msgstr ""
+
+#: workspace:workspace.ratings.loading
+msgid "workspace.ratings.loading"
+msgstr ""
+
+#: workspace:workspace.ratings.method
+msgid "workspace.ratings.method"
+msgstr ""
+
+#: workspace:workspace.ratings.method.help
+msgid "workspace.ratings.method.help"
+msgstr ""
+
+#: workspace:workspace.ratings.noRemoval
+msgid "workspace.ratings.noRemoval"
+msgstr ""
+
+#: workspace:workspace.ratings.notEnough
+msgid "workspace.ratings.notEnough"
+msgstr ""
+
+#: workspace:workspace.ratings.notEnough.help
+msgid "workspace.ratings.notEnough.help"
+msgstr ""
+
+#: workspace:workspace.ratings.permission.title
+msgid "workspace.ratings.permission.title"
+msgstr ""
+
+#: workspace:workspace.ratings.permission.whyNoAction
+msgid "workspace.ratings.permission.whyNoAction"
+msgstr ""
+
+#: workspace:workspace.ratings.prerequisite.description
+msgid "workspace.ratings.prerequisite.description"
+msgstr ""
+
+#: workspace:workspace.ratings.prerequisite.title
+msgid "workspace.ratings.prerequisite.title"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.empty
+msgid "workspace.ratings.reply.empty"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.failed
+msgid "workspace.ratings.reply.failed"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.help
+msgid "workspace.ratings.reply.help"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.label
+msgid "workspace.ratings.reply.label"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.none
+msgid "workspace.ratings.reply.none"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.publish
+msgid "workspace.ratings.reply.publish"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.published
+msgid "workspace.ratings.reply.published"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.saving
+msgid "workspace.ratings.reply.saving"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.tooLong
+msgid "workspace.ratings.reply.tooLong"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.update
+msgid "workspace.ratings.reply.update"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.who
+msgid "workspace.ratings.reply.who"
+msgstr ""
+
+#: workspace:workspace.ratings.reply.withdraw
+msgid "workspace.ratings.reply.withdraw"
+msgstr ""
+
+#: workspace:workspace.ratings.retry
+msgid "workspace.ratings.retry"
+msgstr ""
+
+#: workspace:workspace.ratings.score
+msgid "workspace.ratings.score"
+msgstr ""
+
+#: workspace:workspace.ratings.votes
+msgid "workspace.ratings.votes"
+msgstr ""
+
 #: workspace:workspace.settings.audit.empty
 msgid "workspace.settings.audit.empty"
 msgstr "Henüz kaydedilmiş bir şey yok."
@@ -5887,6 +6023,10 @@ msgstr "Yayın"
 #: workspace:workspace.shell.nav.qrCodes
 msgid "workspace.shell.nav.qrCodes"
 msgstr "Karekodlar"
+
+#: workspace:workspace.shell.nav.ratings
+msgid "workspace.shell.nav.ratings"
+msgstr ""
 
 #: workspace:workspace.shell.nav.settings
 msgid "workspace.shell.nav.settings"

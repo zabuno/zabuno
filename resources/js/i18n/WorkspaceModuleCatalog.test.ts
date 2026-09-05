@@ -30,11 +30,12 @@ const FROZEN_MODULE_FILENAMES = [
     'ordering.ts',
     'profile.ts',
     'publication.ts',
+    'ratings.ts',
     'shell.ts',
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1541;
+const FROZEN_LEGACY_KEY_COUNT = 1576;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -168,8 +169,11 @@ const FROZEN_LEGACY_KEY_COUNT = 1541;
 // FF-184 yeniden tabanlama: 1533 → 1541, sipariş planı kapısının sekiz
 // anahtarı. Sayı ve SHA main ile birleştikten SONRA yeniden hesaplandı;
 // çakışma iki dalın aynı donmuş sayıyı ayrı ayrı büyütmesindendi.
+// FF-19x (docs/122 Y4): 1541 → 1576, ON İKİNCİ modül dosyası (`ratings.ts`).
+// Panelde puanlama ekranı: misafirin verdiği oy artık sahibin gözünün
+// önünde — eşikli özet, ürün başına dağılım, sahibin yanıtı ve boş durum.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'a050fc14d1383a3d5e6c951100e60dbb1b212f2e0cb729740682ca240453e686';
+    'f998a7ad178e7beafd6f1a7b0330829c0768274f0678be3fe2551559ec9fba8d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

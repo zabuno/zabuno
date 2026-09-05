@@ -116,6 +116,14 @@ msgstr "Сейчас это меню показать нельзя"
 msgid "guest.deadEnd.title"
 msgstr "Меню не найдено"
 
+#: guest:guest.favourite.add
+msgid "guest.favourite.add"
+msgstr ""
+
+#: guest:guest.favourite.remove
+msgid "guest.favourite.remove"
+msgstr ""
+
 #: guest:guest.filters.allergenExclude
 msgid "guest.filters.allergenExclude"
 msgstr ""

@@ -78,7 +78,24 @@ final class GuestCartTest extends TestCase
      * bir kütüphane eklendiği gün kırılır — ki bu paketin kararı tam olarak
      * "kütüphane eklenmez"dir.
      */
-    private const MAX_CART_SCRIPT_BYTES = 38000;
+    private const MAX_CART_SCRIPT_BYTES = 42000;
+
+    /*
+        TAVAN 2026-09-06'DA 38 000 → 42 000 YÜKSELTİLDİ (`docs/122` Y5).
+
+        SEBEP SEPET DEĞİL: favori işaretlemesi TABAN yüzeye girdi ve sepetli
+        sayfa da o tabanın üstünde duruyor. Sepetin kendi betiği TEK BAYT
+        büyümedi; artan şey her menüde çizilen favori bloğudur ve gerekçesi
+        `GuestMenuFindTest::MAX_INLINE_SCRIPT_BYTES` yanında ölçüsüyle
+        yazılıdır.
+
+        ÖLÇÜM (aynı sahne, aynı yöntem):
+
+        | | favorisiz | favorili |
+        | Satır içi betik, ham | 35 435 B | 39 644 B |
+        | Sayfanın tamamı, gzip | 22 922 B | 24 539 B |
+        | Dış istek sayısı | 0 | 0 |
+    */
 
     /** @return array<string, mixed> */
     private function snapshot(): array
