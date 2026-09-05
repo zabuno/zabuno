@@ -54,6 +54,21 @@ enum Entitlement: string
      */
     case OrderingBasic = 'ordering.basic';
 
+    /**
+     * Misafir menüsünde zengin görsel: tek küçük fotoğrafın ötesi
+     * (`docs/114` §3 Dalga 6, `docs/122` Y6).
+     *
+     * Kapsam kuralına uyar: hakkı olmayan restoran menüsünü yayınlamaya,
+     * karekod basmaya ve bugünkü fotoğrafını göstermeye devam eder.
+     *
+     * HAK BUGÜN TANIMLI, YÜZEYİ HENÜZ DEĞİL. Kademesi burada karara
+     * bağlandı ki Dalga 6 misafir yüzeyini yazarken bir fiyat kararı
+     * vermek zorunda kalmasın — ama fiyat sayfasında DUYURULMAZ
+     * (`PlanCatalogueSellsEveryCapabilityTest`): olmayan bir yüzeyi
+     * satmak, ödemeden önce söylenmiş bir yalandır.
+     */
+    case MenuRichMedia = 'menu.rich-media';
+
     public function label(): string
     {
         return match ($this) {
@@ -62,6 +77,7 @@ enum Entitlement: string
             self::AnalyticsReporting => 'Analitik raporlama',
             self::BrandingCustom => 'Marka görünümü',
             self::OrderingBasic => 'Masadan sipariş',
+            self::MenuRichMedia => 'Zengin görsel',
         };
     }
 

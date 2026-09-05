@@ -175,6 +175,17 @@ final class SiteText
      * `qr.bulk-generation` geliştirici dilidir ve müşteri sayfasında
      * görünmemeli; tanınmayan bir anahtar da GÖSTERİLMEZ (null döner),
      * çünkü ham anahtar basmak sessizce sızdırmak olurdu.
+     *
+     * Bu doğru davranışın bir bedeli var: eşlemesi unutulan bir yetenek
+     * fiyat sayfasından SESSİZCE düşer. `branding.custom` tam olarak öyle
+     * kayboldu — iki ücretli kademede satılıyordu, sayfada hiç yazmıyordu.
+     * `PlanCatalogueSellsEveryCapabilityTest` artık satılan ve ÇALIŞAN her
+     * yeteneğin burada bir karşılığı olduğunu donduruyor.
+     *
+     * `menu.rich-media` bilerek YOK: hak tanımlı ve kademesi kararlı, ama
+     * misafir yüzeyi Dalga 6'da yazılacak (`docs/122` Y6). Olmayan bir
+     * yüzeyi fiyat sayfasında duyurmak, ödemeden önce söylenmiş bir yalan
+     * olurdu. Satır Dalga 6 ile eklenir.
      */
     public function entitlementLabel(string $key, ?string $locale = null): ?string
     {
@@ -182,6 +193,8 @@ final class SiteText
             'qr.bulk-generation' => 'site.plan.qrBulk',
             'analytics.reporting' => 'site.plan.analytics',
             'team.invitations' => 'site.plan.team',
+            'branding.custom' => 'site.plan.branding',
+            'ordering.basic' => 'site.plan.ordering',
         ];
 
         return isset($map[$key]) ? $this->get($map[$key], $locale) : null;

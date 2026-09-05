@@ -388,6 +388,14 @@ msgstr "Son güncelleme"
 msgid "site.plan.analytics"
 msgstr "Analitik: misafirler neye bakıyor, ne arayıp bulamıyor"
 
+#: site:site.plan.branding
+msgid "site.plan.branding"
+msgstr ""
+
+#: site:site.plan.ordering
+msgid "site.plan.ordering"
+msgstr ""
+
 #: site:site.plan.qrBulk
 msgid "site.plan.qrBulk"
 msgstr "Bütün bir salonun masaları için toplu karekod"

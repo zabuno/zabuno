@@ -388,6 +388,14 @@ msgstr "Son güncelleme"
 msgid "site.plan.analytics"
 msgstr "Analytics: what guests look at, and what they search for and cannot find"
 
+#: site:site.plan.branding
+msgid "site.plan.branding"
+msgstr "Your own colours and type on the guest menu"
+
+#: site:site.plan.ordering
+msgid "site.plan.ordering"
+msgstr "Guests order from the table; your staff confirms and the kitchen sees it"
+
 #: site:site.plan.qrBulk
 msgid "site.plan.qrBulk"
 msgstr "Bulk QR codes for a whole room of tables"
