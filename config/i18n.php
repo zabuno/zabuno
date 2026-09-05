@@ -27,7 +27,7 @@ return [
     |
     */
 
-    'shipped_locales' => ['en', 'tr'],
+    'shipped_locales' => ['en'],
 
     /*
      * TÜRKÇE 2026-09-05'te LİSTEYE GİRDİ ve bunun tek şartı vardı: katalog
@@ -43,6 +43,24 @@ return [
      * güncellenmedi. Yani 658 metin çevrildi ve hiçbiri kullanıcıya
      * ulaşmadı; ürün Türk restoran sahibine İngilizce konuşmaya devam etti.
      * İşi bitiren adım, işi görünür kılan adım değildir.
+     *
+     * ═══ VE SONRA GERİ ALINDI — SAHİBİN KARARI, 2026-09-05 ═══
+     *
+     * "Ben söylemedikçe tercüme çeviri yapma. İngilizce kalsın."
+     *
+     * Bu listenin şartı (katalog TAM olacak) bir kapıyla zorlanıyor. Türkçe
+     * listede kaldığı sürece o kapı, EKLENEN HER YENİ METİN için çeviri
+     * yapılmasını zorunlu kılar — yani tam olarak yapılmaması istenen iş.
+     * Yeni bir metnin çevirisiz kalması kapıyı kırardı; kapıyı gevşetmek ise
+     * yarım çeviriyi serbest bırakırdı ve yarım çeviri çevirisizlikten kötü
+     * görünür.
+     *
+     * Karar bu yüzden tek yönlü uygulandı: Türkçe listeden çıktı, yeni
+     * metinler İngilizce kalıyor, kapı geçiyor.
+     *
+     * ÇEVİRİLER SİLİNMEDİ. `lang/po/*.tr.po` içindeki 1997 metin olduğu gibi
+     * duruyor ve TAMDIR; sahip istediği gün bu listeye 'tr' eklemek yeterli.
+     * Silmek, bir daha yapılması gereken bir işi geri getirirdi.
      */
 
     /*
