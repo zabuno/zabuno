@@ -36,7 +36,21 @@ export type OrderQueueRegionProps = {
      * ise Ayarlar sekmesini gerektirir (`docs/59`).
      */
     acceptsOrders: boolean | null;
+    /**
+     * Plan sipariş almayı içeriyor mu? (`docs/115` Y3)
+     *
+     * Şalterden AYRI bir soru ve boş listenin en yanıltıcı sebebi: hak
+     * yoksa misafirin gönderdiği her sipariş sunucuda reddedilir, yani
+     * kuyruk boş değil — kuyruğa hiçbir şey GELEMEZ. "Bugün sipariş yok"
+     * cümlesi burada yanlıştır ve garsonu bütün akşam bekletir.
+     *
+     * `null` = henüz bilinmiyor. Bilinmeyeni "eksik" saymak, olmayan bir
+     * kısıtı ekrana yazmak olurdu.
+     */
+    planIncludesOrdering: boolean | null;
     onNavigateToSettings: () => void;
+    /** Plan kapısının çıkış yolu; yoksa düğme çizilmez. */
+    onNavigateToPlan?: () => void;
 };
 
 type RowStage =
@@ -50,7 +64,9 @@ export function OrderQueueRegion({
     workspaceId,
     locationId,
     acceptsOrders,
+    planIncludesOrdering,
     onNavigateToSettings,
+    onNavigateToPlan,
 }: OrderQueueRegionProps) {
     const feed = useOrderFeed(
         `/api/workspaces/${String(workspaceId)}/locations/${String(locationId)}/orders/pending`,
@@ -159,8 +175,50 @@ export function OrderQueueRegion({
         >
             <FeedStatusLine feed={feed} timeZone={timeZone} />
 
+            {planIncludesOrdering === false ? (
+                /*
+                    PLAN KAPISI, ŞALTERDEN ÖNCE VE LİSTEDEN BAĞIMSIZ.
+
+                    Boş liste hâlinde bu cümle "bugün sipariş yok"un yerini
+                    alır; DOLU liste hâlinde de kalır, çünkü ekrandaki
+                    siparişler hak düşmeden önce gelmiş olabilir ve o listeye
+                    bir daha hiçbir şey EKLENMEYECEK. Yalnız boşken söylemek,
+                    en tehlikeli hâli — akşamın ortasında donmuş bir kuyruğu —
+                    sessiz bırakırdı.
+
+                    Sıra da bilinçli: şalter kapalıysa bile "Ayarlar'a git ve
+                    aç" demek, sahibi hiçbir zaman işe yaramayacak bir tıkla
+                    baş başa bırakırdı.
+                */
+                <PageState
+                    kind="planRestricted"
+                    screen="orders_queue"
+                    title={t('workspace.orders.queue.empty.plan.title')}
+                    description={t('workspace.orders.queue.empty.plan.description', {
+                        name: t('workspace.orders.plan.name'),
+                    })}
+                    {...(onNavigateToPlan
+                        ? {
+                              action: (
+                                  <button
+                                      type="button"
+                                      className="underline"
+                                      onClick={onNavigateToPlan}
+                                  >
+                                      {t('workspace.orders.plan.action')}
+                                  </button>
+                              ),
+                          }
+                        : {
+                              whyNoAction: t('workspace.orders.queue.empty.plan.description', {
+                                  name: t('workspace.orders.plan.name'),
+                              }),
+                          })}
+                />
+            ) : null}
+
             {feed.orders.length === 0 ? (
-                acceptsOrders === false ? (
+                planIncludesOrdering === false ? null : acceptsOrders === false ? (
                     <PageState
                         kind="prerequisite"
                         screen="orders_queue"

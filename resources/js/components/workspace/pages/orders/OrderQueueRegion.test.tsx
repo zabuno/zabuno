@@ -49,13 +49,18 @@ function feed(rows: unknown[]) {
     } as unknown as Response;
 }
 
-function renderQueue(acceptsOrders: boolean | null = true) {
+function renderQueue(
+    acceptsOrders: boolean | null = true,
+    planIncludesOrdering: boolean | null = true,
+) {
     return render(
         <OrderQueueRegion
             workspaceId={WORKSPACE_ID}
             locationId={LOCATION_ID}
             acceptsOrders={acceptsOrders}
+            planIncludesOrdering={planIncludesOrdering}
             onNavigateToSettings={() => undefined}
+            onNavigateToPlan={() => undefined}
         />,
     );
 }
@@ -218,5 +223,42 @@ describe('OrderQueueRegion', () => {
         renderQueue(true);
 
         expect(await screen.findByText(/No orders waiting/)).toBeTruthy();
+    });
+
+    /**
+     * Y3 — BOŞ LİSTE, "BUGÜN SİPARİŞ YOK" DEMEKTİR VE BU YANLIŞTIR.
+     *
+     * Plan sipariş almayı içermiyorsa misafirin gönderdiği her sipariş
+     * sunucuda reddediliyor: kuyruk boş değil, kuyruğa hiçbir şey
+     * GELEMİYOR. Sessiz bir akşam cümlesi burada beklemeyi öğütlerdi ve
+     * sahip akşam boyu bekleyip hiçbir şey öğrenmezdi.
+     */
+    it('does not call an impossible queue a quiet evening', async () => {
+        vi.mocked(fetch).mockImplementation(() => Promise.resolve(feed([])));
+
+        renderQueue(true, false);
+
+        expect(await screen.findByText(/Orders cannot reach you/)).toBeTruthy();
+        expect(screen.getByText(/not a quiet evening/)).toBeTruthy();
+        expect(screen.queryByText(/No orders waiting/)).toBeNull();
+        // Çıkış yolu Ayarlar sekmesi DEĞİL: şalteri çevirmek burada hiçbir
+        // şeyi değiştirmez, çözüm plandadır (`docs/44`).
+        expect(screen.getByRole('button', { name: /View your plan/ })).toBeTruthy();
+    });
+
+    /**
+     * Y3 — PLAN EKSİKKEN ŞALTERİN HÂLİ İKİNCİL BİR AYRINTIDIR.
+     *
+     * Şalter kapalı ve plan da eksikse, sahibi "Ayarlar'a git ve aç" diye
+     * yönlendirmek onu hiçbir zaman işe yaramayacak bir tıkla baş başa
+     * bırakırdı: açamaz, açsa da sipariş gelmez.
+     */
+    it('names the plan, not the switch, when both are in the way', async () => {
+        vi.mocked(fetch).mockImplementation(() => Promise.resolve(feed([])));
+
+        renderQueue(false, false);
+
+        expect(await screen.findByText(/Orders cannot reach you/)).toBeTruthy();
+        expect(screen.queryByText(/Ordering is switched off/)).toBeNull();
     });
 });

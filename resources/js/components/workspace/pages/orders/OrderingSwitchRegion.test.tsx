@@ -16,11 +16,17 @@ import { OrderingSwitchRegion } from './OrderingSwitchRegion';
 const WORKSPACE_ID = 7;
 const LOCATION_ID = 3;
 
-function switchState(acceptsOrders: boolean, canManage: boolean) {
+function switchState(acceptsOrders: boolean, canManage: boolean, planIncludesOrdering = true) {
     return {
         ok: true,
         status: 200,
-        json: async () => ({ locationId: LOCATION_ID, acceptsOrders, canManage }),
+        json: async () => ({
+            locationId: LOCATION_ID,
+            acceptsOrders,
+            canManage,
+            planIncludesOrdering,
+            entitlement: 'ordering.basic',
+        }),
     } as unknown as Response;
 }
 
@@ -92,6 +98,65 @@ describe('OrderingSwitchRegion', () => {
         // işi o 403'ü kullanıcıya yaşatmamak ve KİMİN yapabileceğini söylemek.
         expect(await screen.findByText(/Only the workspace owner/)).toBeTruthy();
         expect((await screen.findByRole('switch')).hasAttribute('disabled')).toBe(true);
+    });
+
+    /**
+     * Y3 — PLANIN VERMEDİĞİ SÖZ, EKRANDA DA VERİLEMEZ.
+     *
+     * Ölçülen kusur: şalter açılıyordu, misafirin siparişi reddediliyordu.
+     * Sahip hizmeti açtığını sanıyor, mutfağa hiçbir şey düşmüyordu. Burada
+     * donan SONUÇ: şalter çevrilemez ve sebebi hakkın adıyla yazılır.
+     */
+    it('does not let the owner promise a service the plan cannot deliver', async () => {
+        const user = userEvent.setup();
+        const onNavigateToPlan = vi.fn();
+
+        vi.mocked(fetch).mockImplementation(() => Promise.resolve(switchState(false, true, false)));
+
+        render(
+            <OrderingSwitchRegion
+                workspaceId={WORKSPACE_ID}
+                locationId={LOCATION_ID}
+                onNavigateToPlan={onNavigateToPlan}
+            />,
+        );
+
+        expect(await screen.findByText(/Taking orders from tables/)).toBeTruthy();
+        expect((await screen.findByRole('switch')).hasAttribute('disabled')).toBe(true);
+        // Bozulmuş bir şey yok: bu bir kısıt, hata değil (`docs/59`).
+        expect(screen.queryByRole('alert')).toBeNull();
+
+        // Çıkış yolu gerçek: "tekrar deneyin" değil, plan.
+        await user.click(screen.getByRole('button', { name: /View your plan/ }));
+        expect(onNavigateToPlan).toHaveBeenCalled();
+    });
+
+    /**
+     * Y3 — HAK DÜŞTÜĞÜNDE EKRAN "AÇIK AMA ÇALIŞMIYOR" DER.
+     *
+     * Abonelik bitince şalter açık kalmış olabilir. Sessizce kapatmak daha
+     * temiz görünürdü ve daha kötü olurdu: sahip ayarının arkasından
+     * değiştiğini bilmez, planı geri geldiğinde neyi kaybettiğini de
+     * bilmezdi.
+     */
+    it('says the switch is on while nothing can arrive, and does not close it behind the owner', async () => {
+        vi.mocked(fetch).mockImplementation(() => Promise.resolve(switchState(true, true, false)));
+
+        render(<OrderingSwitchRegion workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+
+        expect(await screen.findByText('Ordering is on')).toBeTruthy();
+        expect(await screen.findByText(/no longer part of your plan/)).toBeTruthy();
+
+        // Ekran kendi kendine hiçbir şey KAPATMADI.
+        const wrote = vi
+            .mocked(fetch)
+            .mock.calls.some(([, init]) => (init as RequestInit | undefined)?.method === 'PUT');
+
+        expect(wrote).toBe(false);
+
+        // Ama sahip kapatabilir: planı düşmüş bir restoranı kendi hizmetini
+        // kapatamadığı bir ekranda bırakmak, kilitlemek olurdu.
+        expect((await screen.findByRole('switch')).hasAttribute('disabled')).toBe(false);
     });
 
     it('leaves the switch where it was when the save does not go through', async () => {

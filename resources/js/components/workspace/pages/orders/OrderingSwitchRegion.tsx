@@ -15,12 +15,32 @@ import { PageState } from '../shared/PageState';
  *
  * YÖNETİCİYE DÜĞME ÇİZİLMEZ (`docs/59`: yapılamayan iş çizilmez). Sunucu
  * zaten 403 döner; ekranın işi o 403'ü kullanıcıya yaşatmamaktır.
+ *
+ * ═══ Y3: PLAN, ŞALTERDEN ÖNCE GELİR ═══
+ *
+ * Ölçülen kusur: şalter açılabiliyordu ama plan sipariş almayı içermiyorsa
+ * misafirin siparişi reddediliyordu. Sahip hizmeti açtığını sanıyor, mutfağa
+ * hiçbir şey düşmüyordu. Aynı kural burada da geçerli: yapılamayan iş
+ * çizilmez — ama SEBEBİ yazılır, çünkü sebepsiz kapalı bir kapı sahibi
+ * ekranda arayışa iter.
+ *
+ * HAK SONRADAN DÜŞERSE ŞALTER SESSİZCE KAPATILMAZ. Ekran "açık ama
+ * çalışmıyor" gerçeğini söyler ve ayarı sahibin elinde bırakır; sunucunun
+ * kendi başına kapatması, sahibin planı geri geldiğinde neyi kaybettiğini
+ * bilmemesi demek olurdu.
  */
 export type OrderingSwitchRegionProps = {
     workspaceId: number;
     locationId: number;
     /** Şalter değiştiğinde kuyruk ekranı boş listeyi doğru anlatabilsin diye. */
     onChange?: (acceptsOrders: boolean) => void;
+    /**
+     * Plan kapısının GERÇEK çıkış yolu.
+     *
+     * Yoksa düğme çizilmez: basıldığında hiçbir yere gitmeyen bir düğme,
+     * sahibi ikinci kez çıkışsız bırakırdı.
+     */
+    onNavigateToPlan?: () => void;
 };
 
 type Status = 'loading' | 'ready' | 'error';
@@ -29,10 +49,20 @@ export function OrderingSwitchRegion({
     workspaceId,
     locationId,
     onChange,
+    onNavigateToPlan,
 }: OrderingSwitchRegionProps) {
     const [status, setStatus] = useState<Status>('loading');
     const [acceptsOrders, setAcceptsOrders] = useState(false);
     const [canManage, setCanManage] = useState(false);
+    /*
+        VARSAYILAN `true` VE BU BİLİNÇLİ.
+
+        Alan gelmezse ekran OLMAYAN bir kısıt uydurmaz. Uydursaydı, sunucunun
+        bir gün alanı düşürmesi bütün restoranlara "planınızda yok" yazdırır
+        ve kimse şalteri açamazdı — sessiz bir arıza yerine gürültülü ve
+        yanlış bir arıza. Gerçek kapı zaten sunucuda.
+    */
+    const [planIncludesOrdering, setPlanIncludesOrdering] = useState(true);
     const [saving, setSaving] = useState(false);
     const [saveFailed, setSaveFailed] = useState(false);
     const fieldId = useId();
@@ -59,6 +89,7 @@ export function OrderingSwitchRegion({
                 const body = (await response.json()) as {
                     acceptsOrders?: boolean;
                     canManage?: boolean;
+                    planIncludesOrdering?: boolean;
                 };
 
                 if (cancelled) {
@@ -67,6 +98,7 @@ export function OrderingSwitchRegion({
 
                 setAcceptsOrders(body.acceptsOrders === true);
                 setCanManage(body.canManage === true);
+                setPlanIncludesOrdering(body.planIncludesOrdering !== false);
                 setStatus('ready');
                 onChange?.(body.acceptsOrders === true);
             } catch {
@@ -160,10 +192,17 @@ export function OrderingSwitchRegion({
                     type="checkbox"
                     role="switch"
                     checked={acceptsOrders}
-                    // Yetkisi olmayan için düğme DEVRE DIŞI değil, KAPALI bir
-                    // kapı olarak açıklanır: devre dışı bir kutu neden
-                    // basılamadığını söylemez.
-                    disabled={!canManage || saving}
+                    /*
+                        Yetkisi olmayan için düğme DEVRE DIŞI değil, KAPALI bir
+                        kapı olarak açıklanır: devre dışı bir kutu neden
+                        basılamadığını söylemez. Sebep her zaman altında yazar.
+
+                        PLAN EKSİKKEN KİLİT TEK YÖNLÜ: açılamaz ama kapanabilir.
+                        Şalter hak düştükten sonra açık kalmış olabilir ve
+                        sahibi kendi hizmetini kapatamadığı bir ekranda
+                        bırakmak, planı düşmüş bir restoranı kilitlemek olurdu.
+                    */
+                    disabled={!canManage || saving || (!planIncludesOrdering && !acceptsOrders)}
                     onChange={(event) => void toggle(event.target.checked)}
                     className="h-6 w-11"
                 />
@@ -178,6 +217,40 @@ export function OrderingSwitchRegion({
             <p className="text-meta text-fg-secondary">
                 {t('workspace.orders.settings.switch.help')}
             </p>
+
+            {!planIncludesOrdering ? (
+                /*
+                    `status`, `alert` DEĞİL: ortada bozulmuş bir şey yok
+                    (`docs/59`). Plan kısıtını hata gibi sunmak, sahibi
+                    hiçbir zaman işe yaramayacak bir "tekrar dene"ye iter —
+                    bu depoda Analytics'in 402 yanıtında bir kez yaşandı.
+
+                    İKİ AYRI CÜMLE, çünkü iki ayrı gerçek: kapalı şalterde
+                    "açamazsın", açık şalterde "açık görünüyor ama hiçbir
+                    sipariş gelemiyor". İkisini tek cümleye toplamak,
+                    ikincisinde sahibin ekranda okuduğu "Ordering is on"
+                    satırını yalana çevirirdi.
+                */
+                <div role="status" className="flex flex-col items-start gap-[var(--space-2)]">
+                    <p className="text-body text-fg-secondary">
+                        {t(
+                            acceptsOrders
+                                ? 'workspace.orders.settings.plan.stuckOn'
+                                : 'workspace.orders.settings.plan.missing',
+                            { name: t('workspace.orders.plan.name') },
+                        )}
+                    </p>
+                    {onNavigateToPlan ? (
+                        <button
+                            type="button"
+                            onClick={onNavigateToPlan}
+                            className="min-h-[44px] text-body underline"
+                        >
+                            {t('workspace.orders.plan.action')}
+                        </button>
+                    ) : null}
+                </div>
+            ) : null}
 
             {!canManage ? (
                 <p className="text-meta text-fg-muted">

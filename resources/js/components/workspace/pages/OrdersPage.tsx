@@ -68,6 +68,18 @@ export function OrdersPage({
     const [acceptsOrders, setAcceptsOrders] = useState<boolean | null>(null);
 
     /*
+        PLAN, ŞALTERLE AYNI OKUMADAN GELİR — `docs/115` Y3.
+
+        Üç sekme de aynı gerçeği söylemek zorunda: her biri kendi okumasını
+        yapsaydı sahip aynı akşam bir sekmede "planında yok", ötekinde "bugün
+        sipariş yok" okurdu ve hangisinin doğru olduğunu bilemezdi.
+
+        `null` = henüz bilinmiyor; olmayan bir kısıtı ekrana yazmamak için
+        bilinmeyen "eksik" sayılmaz.
+    */
+    const [planIncludesOrdering, setPlanIncludesOrdering] = useState<boolean | null>(null);
+
+    /*
         ŞALTERİN HÂLİ KUYRUK İÇİN DE OKUNUR, ve okumak `order.view` yeter.
 
         Garsonun `order.settings` izni yoktur, yani Ayarlar sekmesi ona hiç
@@ -98,10 +110,14 @@ export function OrdersPage({
                     return;
                 }
 
-                const body = (await response.json()) as { acceptsOrders?: boolean };
+                const body = (await response.json()) as {
+                    acceptsOrders?: boolean;
+                    planIncludesOrdering?: boolean;
+                };
 
                 if (!cancelled) {
                     setAcceptsOrders(body.acceptsOrders === true);
+                    setPlanIncludesOrdering(body.planIncludesOrdering !== false);
                 }
             } catch {
                 // Bilinmiyor olarak KALIR (`null`). Bilinmeyen bir şalteri
@@ -189,13 +205,39 @@ export function OrdersPage({
                     workspaceId={workspaceId}
                     locationId={locationId}
                     acceptsOrders={acceptsOrders}
+                    planIncludesOrdering={planIncludesOrdering}
                     onNavigateToSettings={() => onNavigate('orders/settings')}
+                    onNavigateToPlan={() => onNavigate('billing')}
                 />
             ) : null}
 
             {tab === 'kitchen' ? (
                 canKitchen ? (
-                    renderKitchenMonitor !== undefined ? (
+                    planIncludesOrdering === false ? (
+                        /*
+                            BOŞ MONİTÖR, AŞÇI İÇİN "BU AKŞAM SAKİN" DEMEKTİR
+                            ve bu cümle burada yanlıştır (`docs/115` Y3):
+                            sipariş gelmiyor değil, GELEMİYOR. Monitörü
+                            çizip üstüne bir uyarı koymak da yetmezdi —
+                            tam ekran düğmesi ve "hiç iş yok" tahtası,
+                            beklemeye devam etmeyi söyleyen bir ekrandır.
+
+                            Çıkış yolu MUTFAKTA DEĞİL: planı sahip
+                            değiştirir. Aşçıya basacağı bir düğme vermek,
+                            yapamayacağı bir işi çizmek olurdu (`docs/59`).
+                        */
+                        <PageState
+                            kind="planRestricted"
+                            screen="orders_kitchen"
+                            title={t('workspace.orders.kitchen.plan.title')}
+                            description={t('workspace.orders.kitchen.plan.description', {
+                                name: t('workspace.orders.plan.name'),
+                            })}
+                            whyNoAction={t('workspace.orders.kitchen.plan.description', {
+                                name: t('workspace.orders.plan.name'),
+                            })}
+                        />
+                    ) : renderKitchenMonitor !== undefined ? (
                         renderKitchenMonitor({
                             workspaceId,
                             locationId,
@@ -235,6 +277,7 @@ export function OrdersPage({
                             workspaceId={workspaceId}
                             locationId={locationId}
                             onChange={setAcceptsOrders}
+                            onNavigateToPlan={() => onNavigate('billing')}
                         />
                         <OrderHistoryRegion workspaceId={workspaceId} locationId={locationId} />
                     </div>
