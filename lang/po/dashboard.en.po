@@ -16,6 +16,58 @@ msgstr "No menu has been created for this location yet."
 msgid "dashboard.empty.openMenu"
 msgstr "Open Menu"
 
+#: dashboard:dashboard.firstRun.brand
+msgid "dashboard.firstRun.brand"
+msgstr "Start with the name your guests will see. Everything on this form can change later."
+
+#: dashboard:dashboard.firstRun.dismiss
+msgid "dashboard.firstRun.dismiss"
+msgstr "Hide this tip"
+
+#: dashboard:dashboard.firstRun.help.menu
+msgid "dashboard.firstRun.help.menu"
+msgstr "How to import a menu"
+
+#: dashboard:dashboard.firstRun.help.newTab
+msgid "dashboard.firstRun.help.newTab"
+msgstr "opens in a new tab"
+
+#: dashboard:dashboard.firstRun.help.qr
+msgid "dashboard.firstRun.help.qr"
+msgstr "How to print QR codes"
+
+#: dashboard:dashboard.firstRun.location
+msgid "dashboard.firstRun.location"
+msgstr "This is the place guests will scan from. A name, the city and the street are enough; more places can come later."
+
+#: dashboard:dashboard.firstRun.menu
+msgid "dashboard.firstRun.menu"
+msgstr "Add your first product, or import the whole menu from a CSV file. Guests see nothing until you publish."
+
+#: dashboard:dashboard.firstRun.next.location
+msgid "dashboard.firstRun.next.location"
+msgstr "Your restaurant has a name. Next, add the place guests will scan from."
+
+#: dashboard:dashboard.firstRun.next.menu
+msgid "dashboard.firstRun.next.menu"
+msgstr "Your location is saved. Next, put the first product on the menu."
+
+#: dashboard:dashboard.firstRun.next.region
+msgid "dashboard.firstRun.next.region"
+msgstr "Next step"
+
+#: dashboard:dashboard.firstRun.publication
+msgid "dashboard.firstRun.publication"
+msgstr "Guests still see nothing. Tick the box and press Publish. Published the wrong list? You can go back to an earlier version."
+
+#: dashboard:dashboard.firstRun.qr
+msgid "dashboard.firstRun.qr"
+msgstr "Say how many tables you have, then download the PDF. Print it once: the code keeps working when the menu changes."
+
+#: dashboard:dashboard.firstRun.region
+msgid "dashboard.firstRun.region"
+msgstr "First-time tip"
+
 #: dashboard:dashboard.greeting
 msgid "dashboard.greeting"
 msgstr "Have a good shift."
@@ -34,7 +86,7 @@ msgstr "Loading your dashboard summary…"
 
 #: dashboard:dashboard.now.allDone
 msgid "dashboard.now.allDone"
-msgstr "Everything is set up. Your guests can scan the menu."
+msgstr "Your menu is live. Print the codes for your tables."
 
 #: dashboard:dashboard.now.brand
 msgid "dashboard.now.brand"
@@ -54,7 +106,7 @@ msgstr "Add your first product"
 
 #: dashboard:dashboard.now.openQr
 msgid "dashboard.now.openQr"
-msgstr "Open QR codes"
+msgstr "Download QR codes"
 
 #: dashboard:dashboard.now.publication
 msgid "dashboard.now.publication"
@@ -104,9 +156,41 @@ msgstr "Setup complete"
 msgid "dashboard.setup.complete.summary"
 msgstr "Your restaurant is ready for guests."
 
+#: dashboard:dashboard.setup.firstPublished.days
+msgid "dashboard.setup.firstPublished.days"
+msgstr "First published {count} days after opening this workspace."
+
+#: dashboard:dashboard.setup.firstPublished.hour
+msgid "dashboard.setup.firstPublished.hour"
+msgstr "First published 1 hour after opening this workspace."
+
+#: dashboard:dashboard.setup.firstPublished.hours
+msgid "dashboard.setup.firstPublished.hours"
+msgstr "First published {count} hours after opening this workspace."
+
+#: dashboard:dashboard.setup.firstPublished.minute
+msgid "dashboard.setup.firstPublished.minute"
+msgstr "First published 1 minute after opening this workspace."
+
+#: dashboard:dashboard.setup.firstPublished.minutes
+msgid "dashboard.setup.firstPublished.minutes"
+msgstr "First published {count} minutes after opening this workspace."
+
+#: dashboard:dashboard.setup.firstPublished.underMinute
+msgid "dashboard.setup.firstPublished.underMinute"
+msgstr "First published within a minute of opening this workspace."
+
 #: dashboard:dashboard.setup.heading
 msgid "dashboard.setup.heading"
 msgstr "Setup"
+
+#: dashboard:dashboard.setup.help.afterSetup
+msgid "dashboard.setup.help.afterSetup"
+msgstr "What next: how to change a price"
+
+#: dashboard:dashboard.setup.help.stuck
+msgid "dashboard.setup.help.stuck"
+msgstr "Stuck? Read “Your first 15 minutes”"
 
 #: dashboard:dashboard.setup.location
 msgid "dashboard.setup.location"

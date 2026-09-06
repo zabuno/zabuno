@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { FirstRunHint } from './pages/shared/FirstRunHint';
 import { Button } from 'flowbite-react';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
@@ -184,6 +185,13 @@ export function LocationOnboardingForm({ workspaceId, onCreated }: LocationOnboa
                 <h1 className="text-section font-bold text-fg">
                     {t('workspace.location.heading')}
                 </h1>
+
+                {/*
+                    İLK KEZ İPUCU (FF-202). Ölçüm: bu form dört zorunlu alan
+                    istiyor ve başlığın altında ne yapılacağını söyleyen tek
+                    cümle yoktu. Form yalnız şube YOKKEN çizilir.
+                */}
+                <FirstRunHint step="location" workspaceId={workspaceId} done={false} />
 
                 {error && (
                     <p role="alert" className="text-body font-medium text-fg-danger">

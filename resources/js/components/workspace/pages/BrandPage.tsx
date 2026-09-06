@@ -2,6 +2,7 @@ import { t } from '../../../i18n/workspace';
 import { BrandEditForm, type BrandProfile } from '../BrandEditForm';
 import { BrandLogoRegion } from './brand/BrandLogoRegion';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { FirstRunHint } from './shared/FirstRunHint';
 
 type BrandPageProps = {
     workspaceId: number;
@@ -9,9 +10,23 @@ type BrandPageProps = {
     onSaved: (brand: BrandProfile) => void;
     /** Logo satırındaki "Değiştir" için: dosyanın evi Medya ekranıdır. */
     onNavigateToMedia: () => void;
+    /**
+     * SIRADAKİ ADIM (FF-202). Ölçüm: marka kaydedilince kabuk bu ekranı
+     * açıyor ve kullanıcı az önce doldurduğu alanların düzenleme formunda
+     * kalıyordu; sonraki adımı bulmak için Home'a dönmek gerekiyordu.
+     * `done` şube varsa true; kutu o zaman çizilmez. Yoksa (eski çağıran)
+     * kutu yoktur.
+     */
+    nextStep?: { done: boolean; onContinue: () => void };
 };
 
-export function BrandPage({ workspaceId, brand, onSaved, onNavigateToMedia }: BrandPageProps) {
+export function BrandPage({
+    workspaceId,
+    brand,
+    onSaved,
+    onNavigateToMedia,
+    nextStep,
+}: BrandPageProps) {
     return (
         <div id="section-brand">
             <WorkspacePageFrame
@@ -19,6 +34,15 @@ export function BrandPage({ workspaceId, brand, onSaved, onNavigateToMedia }: Br
                 title={t('workspace.shell.nav.brand')}
                 description={t('workspace.brand.operational.description')}
             >
+                {brand && nextStep ? (
+                    <FirstRunHint
+                        step="location"
+                        workspaceId={workspaceId}
+                        done={nextStep.done}
+                        onContinue={nextStep.onContinue}
+                    />
+                ) : null}
+
                 {brand ? (
                     /*
                         Logo satırı ÜSTTE (docs/109): Ayarlar > Marka ile aynı

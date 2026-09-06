@@ -96,6 +96,42 @@ Basılı kod ölmez: menü değişse de aynı kod çalışır (`docs/81`).
 | Y4 Yayınla | ✅ | ✅ tek düğme | ✅ sesli dil (FF-82) | ✅ `docs/81` | Faz 2 ✅ |
 | Y5 QR bas | ✅ | ✅ tek soru (FF-85) | 🔶 | ✅ kod ölmez | Faz 3 ✅ |
 
+### 4a. Y1 "ilk 15 dakika" — ölçüm (2026-09-06, FF-202)
+
+Yöntem: yolculuk Mehmet Usta persona'sıyla vitest (jsdom, test istemcisi) ve
+kod okumasıyla adım adım geçildi; 320×568 düzen ölçümü `scripts/mobile-ux-audit`
+(gerçek Chrome) ile yapıldı. **Gerçek bir acemiyle süre ölçülmedi** (Faz 4);
+aşağıdaki dokunuş sayıları kodun izin verdiği en kısa yoldur, bir insanın
+gerçekte harcadığı süre değil.
+
+**Önce → sonra, sayılarla:**
+
+| Ölçü | Önce | Sonra |
+| --- | --- | --- |
+| Home'daki ilk dokunuş ("Name your restaurant") | `settings/brand` → markasız hesapta **"Loading your brand…", 0 alan** — çıkmaz sokak | `brand` → marka oluşturma formu |
+| Home → ilk yayın, en kısa yol (marka, şube, ürün, yayın) | **12 dokunuş** (ve 1. dokunuşta tıkanıyor); her adım sonunda Home'a dönüş gerekiyordu | **10 dokunuş**; marka→şube ve şube→menü geçişi ekrandaki "sıradaki adım" düğmesiyle |
+| Adım ekranında "burada ne yapılacak" cümlesi | marka ✅ (form girişi) · şube ❌ · menü ✅ (boş menü yol tarifi) · yayın ❌ (7 kart, cümle yok) · karekod ✅ (açıklama) | beşinde de ✅ (ilk-kez ipucu; kapatılabilir, cihazda hatırlanır) |
+| Adım bitince sonraki tek eylem ekranda mı | marka ❌ (düzenleme formunda kalıyor) · şube ❌ (listede kalıyor) · menü ✅ (başlıkta "Önizle ve yayınla") · yayın ◐ (karekod bölgesi kartlar arasında) · karekod ✅ (İndir) | marka ✅ · şube ✅ · menü ✅ · yayın ◐ (değişmedi) · karekod ✅ |
+| Panelden yardım makalesine bağlantı | **0** | kurulum kartında 1 (`/help`; bitince `/help#help-price`) + menü ve karekod ipuçlarında bölüm bağlantısı (`#help-import`, `#help-qr`). Marka, şube ve yayın için makalede bölüm YOK — bağlantı uydurulmadı |
+| Bitti tanımı | "Her şey hazır" + "Open QR codes" | "Menün yayında. Masalara kodu bas." + "Download QR codes" → karekod ekranında İndir (iki dokunuş) |
+| İlk yayına kadar geçen süre | sunucuda **ölçülmüyor**; yalnız tarayıcıda `first_publish_completed` olayı | sunucuda `workspaces.created_at` → ilk `menu_publications.published_at` farkı, `GET /api/workspaces/{w}/setup-progress`; panoda yalnız gerçekleştiyse ("First published 27 minutes after opening this workspace.") |
+| Yeni ölçüm olayları | — | `setup_hint_dismissed{step}`, `setup_help_opened{step}` (`docs/112` §4.3) |
+
+**320×568 (mobil denetim):** yeni hikâyeler (`FirstRunHint` dört hâl) sıfır
+bulgu; dondurulmuş borç listesinde yeni ihlal yok.
+
+**Hâlâ ölçülmeyen / bilinmeyen:**
+
+- Gerçek acemiyle yardım almadan tamamlama oranı ve süre — **bilinmiyor**
+  (Faz 4). `setup-progress` sayısı ilk pilot restoranda dolacak.
+- Şube formu hâlâ **dört zorunlu alan** istiyor (ad, ülke, şehir, sokak);
+  Y1 planı "ad, şehir" diyor. Bu paket alan sayısına dokunmadı.
+- Yayın ekranı 7 kart; ilk-kez cümle var, kart sayısı azalmadı.
+- Yayından karekoda "sıradaki adım" kutusu yok (yayın ekranı karekod
+  sayısını bilmiyor); geçiş Home üzerinden.
+- İpucular `novice-home` bayrağına bağlı değil (kabuğun çizdiği iki forma
+  bayrak ulaşmıyor); kapatma sunucuda değil cihazda.
+
 ---
 
 ## 5. Uygulama planı — fazlar

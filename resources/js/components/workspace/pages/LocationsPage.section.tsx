@@ -54,6 +54,17 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
                 onToggleAddLocation={(adding) =>
                     ctx.onNavigateToSection(adding ? 'locations/new' : 'locations')
                 }
+                nextStep={
+                    ctx.catalogPhase === 'menu-catalog'
+                        ? {
+                              done:
+                                  ctx.dashboardMenuTree?.categories.some(
+                                      (category) => category.menuItems.length > 0,
+                                  ) ?? false,
+                              onContinue: () => ctx.onNavigateToSection('menu'),
+                          }
+                        : undefined
+                }
             />
         </Suspense>
     );

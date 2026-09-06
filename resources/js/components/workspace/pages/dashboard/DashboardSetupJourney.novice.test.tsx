@@ -43,7 +43,13 @@ describe('Home "şimdi" düğmesi (ACEMI-A1-NOW-01)', () => {
         expect(buttons[0]).toHaveTextContent('Name your restaurant');
 
         await user.click(buttons[0]);
-        expect(go).toHaveBeenCalledWith('settings/brand');
+        /*
+            ÖLÇÜLDÜ (2026-09-06, FF-202): hedef `settings/brand` idi ve marka
+            yokken o sekme "Loading your brand…" yazan, sıfır alan içeren bir
+            ekrandı — ilk dokunuş bir çıkmaz sokaktı. Oluşturma formu `brand`
+            bölümünde çizilir.
+        */
+        expect(go).toHaveBeenCalledWith('brand');
     });
 
     it('marka ve şube varken, menü boşken "ilk ürününü ekle" der', () => {
@@ -60,17 +66,26 @@ describe('Home "şimdi" düğmesi (ACEMI-A1-NOW-01)', () => {
         expect(within(now).getByRole('button')).toHaveTextContent('Add your first product');
     });
 
-    it('her şey bitince düğme yerine "her şey hazır" ve karekod ekranına bağlantı', async () => {
+    it('her şey bitince "menün yayında, masalara kodu bas" der, karekod indirmeye götürür ve ilk yayın süresini yazar', async () => {
         vi.stubGlobal(
             'fetch',
             vi.fn(async (url: string) => {
-                if (String(url).includes('/publications/current')) {
-                    return { ok: true, status: 200, json: async () => ({ id: 55 }) } as Response;
-                }
+                expect(String(url)).toBe('/api/workspaces/7/setup-progress');
                 return {
                     ok: true,
                     status: 200,
-                    json: async () => [{ state: 'active' }],
+                    json: async () => ({
+                        steps: {
+                            brand: { done: true },
+                            location: { done: true },
+                            menu: { done: true, itemCount: 1 },
+                            publication: { done: true, id: 55, version: 1 },
+                            qr: { done: true, activeCount: 1 },
+                        },
+                        doneCount: 5,
+                        total: 5,
+                        firstPublishedAfterMinutes: 27,
+                    }),
                 } as Response;
             }),
         );
@@ -106,7 +121,58 @@ describe('Home "şimdi" düğmesi (ACEMI-A1-NOW-01)', () => {
         );
 
         const now = screen.getByRole('region', { name: 'What to do now' });
-        expect(await within(now).findByText(/Everything is set up/)).toBeInTheDocument();
-        expect(within(now).getByRole('button')).toHaveTextContent('Open QR codes');
+        // Bitti tanımı GÖRÜNÜR: ne oldu + tek somut sonraki iş (`docs/101` Faz 3).
+        expect(await within(now).findByText(/Your menu is live/)).toBeInTheDocument();
+        expect(within(now).getByRole('button')).toHaveTextContent('Download QR codes');
+
+        // Süre YALNIZ gerçekleştiyse ve sunucunun sayısıyla (`docs/110` §7).
+        expect(
+            screen.getByText('First published 27 minutes after opening this workspace.'),
+        ).toBeInTheDocument();
+
+        // Kurulum bitince yardım bağlantısı sıradaki günlük işe gider.
+        expect(screen.getByRole('link')).toHaveAttribute('href', '/help#help-price');
+    });
+
+    it('yayın yokken süre cümlesi çizilmez ve takılma çıkışı makalenin kendisidir', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(
+                async () =>
+                    ({
+                        ok: true,
+                        status: 200,
+                        json: async () => ({
+                            steps: {
+                                brand: { done: true },
+                                location: { done: true },
+                                menu: { done: true, itemCount: 1 },
+                                publication: { done: false },
+                                qr: { done: false, activeCount: 0 },
+                            },
+                            doneCount: 3,
+                            total: 5,
+                        }),
+                    }) as Response,
+            ),
+        );
+
+        render(
+            <DashboardSetupJourney
+                brand={BRAND}
+                location={LOCATION}
+                dashboardMenuTree={TREE}
+                workspaceId={7}
+                onNavigateToSection={() => {}}
+            />,
+        );
+
+        expect(await screen.findAllByText('Not connected yet.')).toHaveLength(2);
+        expect(screen.queryByText(/First published/)).toBeNull();
+
+        // Ölçüm: ÖNCE bu kartta sıfır bağlantı vardı. Şimdi bir tane, gerçek makaleye.
+        const link = screen.getByRole('link', { name: /Your first 15 minutes/ });
+        expect(link).toHaveAttribute('href', '/help');
+        expect(link).toHaveAttribute('target', '_blank');
     });
 });

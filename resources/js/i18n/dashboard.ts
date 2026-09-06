@@ -29,8 +29,14 @@ const en = {
     'dashboard.now.menu': 'Add your first product',
     'dashboard.now.publication': 'Publish your menu',
     'dashboard.now.qr': 'Print your QR codes',
-    'dashboard.now.allDone': 'Everything is set up. Your guests can scan the menu.',
-    'dashboard.now.openQr': 'Open QR codes',
+    /*
+        BİTTİ TANIMI GÖRÜNÜR (FF-202, `docs/101` Faz 3 "iki tık"): beş adım
+        bitince yolculuk ne olduğunu ("menün yayında") ve tek somut sonraki
+        işi ("masalara kodu bas") söyler; düğme karekod ekranına götürür,
+        orada indirme birincil eylemdir — iki dokunuş.
+    */
+    'dashboard.now.allDone': 'Your menu is live. Print the codes for your tables.',
+    'dashboard.now.openQr': 'Download QR codes',
     // FF-77 (`docs/102`): kartlar ve tablo başlığı katalogdan.
     'dashboard.stats.categories': 'Categories',
     'dashboard.stats.items': 'Menu items',
@@ -68,6 +74,28 @@ const en = {
     'dashboard.setup.published': 'Published #{id}',
     'dashboard.setup.qr.activeCount': '{count} active QR',
     'dashboard.setup.qr.activeCount.plural': '{count} active QRs',
+    /*
+        İLK YAYINA KADAR GEÇEN SÜRE (FF-202). Yalnız bir yayın VARSA çizilir;
+        sayı sunucudan gelir (`docs/110` §7 U-04). "Opening this workspace"
+        der, "signing up" demez: ölçülen damga çalışma alanının açılışıdır,
+        hesabın değil — ikisi farklı anlardır ve cümle ölçüleni söyler.
+        Tekil/çoğul ayrı anahtar; "1 minutes" diye bir cümle yok.
+    */
+    'dashboard.setup.firstPublished.underMinute':
+        'First published within a minute of opening this workspace.',
+    'dashboard.setup.firstPublished.minute':
+        'First published 1 minute after opening this workspace.',
+    'dashboard.setup.firstPublished.minutes':
+        'First published {count} minutes after opening this workspace.',
+    'dashboard.setup.firstPublished.hour': 'First published 1 hour after opening this workspace.',
+    'dashboard.setup.firstPublished.hours':
+        'First published {count} hours after opening this workspace.',
+    'dashboard.setup.firstPublished.days':
+        'First published {count} days after opening this workspace.',
+    // TAKILMA ÇIKIŞI (FF-202): kurulum kartından yardım makalesine. İki hâl:
+    // bitmemişken makalenin kendisi, bitmişken sıradaki günlük iş.
+    'dashboard.setup.help.stuck': 'Stuck? Read “Your first 15 minutes”',
+    'dashboard.setup.help.afterSetup': 'What next: how to change a price',
     /*
         ÖLÇÜMDEN ÇIKAN ÖNERİLER (`docs/109` §6.1).
 
@@ -143,6 +171,41 @@ const en = {
     */
     'dashboard.stats.hidden': '{count} hidden',
     'dashboard.stats.allVisible': 'All visible',
+    /*
+        İLK KEZ İPUCU (FF-202, `docs/107` 1.7).
+
+        Ölçüm (2026-09-06): Home'daki büyük düğme kullanıcıyı adımın ekranına
+        bırakıyor ve o ekranda "burada ne yapılacak" diyen tek cümle yoktu;
+        yardım makalesine panelden giden bağlantı sayısı SIFIRDI.
+
+        Cümleler bu katalogda, çünkü kurulum yolculuğunun kelime dağarcığı
+        TEK yerde yaşar: kutunun "devam" düğmesi Home'daki `dashboard.now.*`
+        fiilini aynen kullanır — kullanıcı aynı kelimeyi iki ekranda görür ve
+        aynı iş olduğunu anlar. Her cümle ne yapılacağını söyler, terim
+        öğretmez (`docs/101` A2/A8) ve ölçülmemiş bir süre VAAT ETMEZ.
+    */
+    'dashboard.firstRun.region': 'First-time tip',
+    'dashboard.firstRun.next.region': 'Next step',
+    'dashboard.firstRun.dismiss': 'Hide this tip',
+    'dashboard.firstRun.brand':
+        'Start with the name your guests will see. Everything on this form can change later.',
+    'dashboard.firstRun.location':
+        'This is the place guests will scan from. A name, the city and the street are enough; more places can come later.',
+    'dashboard.firstRun.menu':
+        'Add your first product, or import the whole menu from a CSV file. Guests see nothing until you publish.',
+    'dashboard.firstRun.publication':
+        'Guests still see nothing. Tick the box and press Publish. Published the wrong list? You can go back to an earlier version.',
+    'dashboard.firstRun.qr':
+        'Say how many tables you have, then download the PDF. Print it once: the code keeps working when the menu changes.',
+    // "Devam" kipi: bir önceki adımın ekranında, kayıt bittikten sonra.
+    'dashboard.firstRun.next.location':
+        'Your restaurant has a name. Next, add the place guests will scan from.',
+    'dashboard.firstRun.next.menu':
+        'Your location is saved. Next, put the first product on the menu.',
+    // Yalnız makalede karşılığı olan adımların bağlantı etiketi vardır.
+    'dashboard.firstRun.help.menu': 'How to import a menu',
+    'dashboard.firstRun.help.qr': 'How to print QR codes',
+    'dashboard.firstRun.help.newTab': 'opens in a new tab',
 } as const;
 
 type TranslationKey = keyof typeof en;

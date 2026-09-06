@@ -16,6 +16,58 @@ msgstr "Bu şube için henüz menü oluşturulmadı."
 msgid "dashboard.empty.openMenu"
 msgstr "Menüyü aç"
 
+#: dashboard:dashboard.firstRun.brand
+msgid "dashboard.firstRun.brand"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.dismiss
+msgid "dashboard.firstRun.dismiss"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.help.menu
+msgid "dashboard.firstRun.help.menu"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.help.newTab
+msgid "dashboard.firstRun.help.newTab"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.help.qr
+msgid "dashboard.firstRun.help.qr"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.location
+msgid "dashboard.firstRun.location"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.menu
+msgid "dashboard.firstRun.menu"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.next.location
+msgid "dashboard.firstRun.next.location"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.next.menu
+msgid "dashboard.firstRun.next.menu"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.next.region
+msgid "dashboard.firstRun.next.region"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.publication
+msgid "dashboard.firstRun.publication"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.qr
+msgid "dashboard.firstRun.qr"
+msgstr ""
+
+#: dashboard:dashboard.firstRun.region
+msgid "dashboard.firstRun.region"
+msgstr ""
+
 #: dashboard:dashboard.greeting
 msgid "dashboard.greeting"
 msgstr "İyi çalışmalar."
@@ -104,9 +156,41 @@ msgstr "Kurulum tamam"
 msgid "dashboard.setup.complete.summary"
 msgstr "Restoranınız misafirlere hazır."
 
+#: dashboard:dashboard.setup.firstPublished.days
+msgid "dashboard.setup.firstPublished.days"
+msgstr ""
+
+#: dashboard:dashboard.setup.firstPublished.hour
+msgid "dashboard.setup.firstPublished.hour"
+msgstr ""
+
+#: dashboard:dashboard.setup.firstPublished.hours
+msgid "dashboard.setup.firstPublished.hours"
+msgstr ""
+
+#: dashboard:dashboard.setup.firstPublished.minute
+msgid "dashboard.setup.firstPublished.minute"
+msgstr ""
+
+#: dashboard:dashboard.setup.firstPublished.minutes
+msgid "dashboard.setup.firstPublished.minutes"
+msgstr ""
+
+#: dashboard:dashboard.setup.firstPublished.underMinute
+msgid "dashboard.setup.firstPublished.underMinute"
+msgstr ""
+
 #: dashboard:dashboard.setup.heading
 msgid "dashboard.setup.heading"
 msgstr "Kurulum"
+
+#: dashboard:dashboard.setup.help.afterSetup
+msgid "dashboard.setup.help.afterSetup"
+msgstr ""
+
+#: dashboard:dashboard.setup.help.stuck
+msgid "dashboard.setup.help.stuck"
+msgstr ""
 
 #: dashboard:dashboard.setup.location
 msgid "dashboard.setup.location"

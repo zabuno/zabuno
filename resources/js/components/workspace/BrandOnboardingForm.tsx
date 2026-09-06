@@ -7,6 +7,7 @@ import { t } from '../../i18n/workspace';
 import { Button } from '../catalog/forms/micro/Button';
 import { SelectField } from '../catalog/forms/compound/SelectField';
 import { TextField } from '../catalog/forms/compound/TextField';
+import { FirstRunHint } from './pages/shared/FirstRunHint';
 
 export type BrandProfile = {
     id: number;
@@ -256,6 +257,13 @@ export function BrandOnboardingForm({ workspaceId, onCreated }: BrandOnboardingF
                         değiştirebilir miyim" sorularını yanıtsız bırakıyordu. */}
                     <p className="text-body text-fg-secondary">{t('workspace.brand.intro')}</p>
                 </div>
+
+                {/*
+                    İLK KEZ İPUCU (FF-202). Bu form yalnız marka YOKKEN çizilir;
+                    adım tanım gereği bitmemiştir. Kutu ikinci bir düğme
+                    çizmez — birincil eylem formun kendisidir.
+                */}
+                <FirstRunHint step="brand" workspaceId={workspaceId} done={false} />
 
                 {error && (
                     <p role="alert" className="text-body font-medium text-fg-danger">

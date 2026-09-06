@@ -43,7 +43,7 @@ imkânsız ya da hukuka aykırıdır.
 | 1.4 | **Fatura.** | ❌ Tahsilatın karşılığında belge kesilmeli; e-arşiv/e-fatura yolu yok. |
 | 1.5 | **Yedekleme ve geri yükleme TATBİKATI.** | ◐ Kanıt uçları var (`/security/evidence/backup-restore`); gerçek bir geri yükleme denemesi ve kaydı yok. Denenmemiş bir yedek, yedek değildir. |
 | 1.6 | **Destek kanalı ve yanıt taahhüdü.** | ◐ İletişim formu var; taahhüt ve takip yok. |
-| 1.7 | **İlk 15 dakika.** | ◐ Yardım makalesi var; ürün içi rehberli kurulum yok. |
+| 1.7 | **İlk 15 dakika.** | ◐ Ürün içi rehberlik var (FF-202): beş adımın hedef ekranında ilk-kez ipucu, marka→şube ve şube→menü "sıradaki adım" kutuları, panelden yardım makalesine bağlantı, ilk yayına kadar geçen süre sunucuda ölçülüyor ve panoda görünüyor. Ölçüm `docs/101` §4a: Home'dan ilk yayına 12 dokunuş → 10, ilk dokunuştaki çıkmaz sokak kapandı. Gerçek acemiyle **ölçülmedi**; `docs/110` §7 süre hedefi hâlâ bilinmiyor. |
 
 **Bitti ne demek:** Gerçek bir restoran kartını girer, para hesaba geçer, fatura
 düşer, sözleşmeyi okuyabilir, iptal edebilir; ve biz o restoranın verisini

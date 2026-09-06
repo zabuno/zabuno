@@ -5,6 +5,7 @@ import { LocationEditForm, type LocationProfile } from '../LocationEditForm';
 import { LocationOnboardingForm } from '../LocationOnboardingForm';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PageState } from './shared/PageState';
+import { FirstRunHint } from './shared/FirstRunHint';
 import { LocationCard, type LocationCardLocation } from './locations/LocationCard';
 import { useAnalyticsTimeSeries } from './analytics/useAnalyticsTimeSeries';
 
@@ -24,6 +25,12 @@ type LocationsPageProps = {
     onLocationCreated: (location: LocationProfile) => void;
     /** Kartın "Masalar" düğmesi: o şubeyi seçer ve karekod ekranına götürür. */
     onOpenTables: (locationId: number) => void;
+    /**
+     * SIRADAKİ ADIM (FF-202). Ölçüm: ilk şube kaydedilince kullanıcı bu
+     * listede kalıyordu ve menüye giden bir işaret yoktu. `done` menüde en
+     * az bir ürün varsa true; `undefined` = bilinmiyor, kutu çizilmez.
+     */
+    nextStep?: { done: boolean; onContinue: () => void };
 };
 
 /**
@@ -54,6 +61,7 @@ export function LocationsPage({
     onLocationSaved,
     onLocationCreated,
     onOpenTables,
+    nextStep,
 }: LocationsPageProps) {
     /*
         Düzenleme AÇILIP KAPANIR ve aynı anda yalnız bir kart açıktır. Eskiden
@@ -118,6 +126,15 @@ export function LocationsPage({
                     )
                 }
             >
+                {locations.length > 0 && !addingLocation && nextStep ? (
+                    <FirstRunHint
+                        step="menu"
+                        workspaceId={workspaceId}
+                        done={nextStep.done}
+                        onContinue={nextStep.onContinue}
+                    />
+                ) : null}
+
                 {addingLocation && (
                     <LocationOnboardingForm
                         workspaceId={workspaceId}

@@ -32,6 +32,18 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
                 onTreeChange={ctx.onMenuTreeChange}
                 onNavigateToSection={ctx.onNavigateToSection}
                 can={ctx.can}
+                /*
+                    Menü adımı ÜRÜN sayar. Katalog aşaması menüye ulaşmadıysa
+                    (şube yok / yükleniyor / hata) cevap "bilinmiyor"dur ve
+                    ipucu çizilmez.
+                */
+                firstProductDone={
+                    ctx.catalogPhase === 'menu-catalog'
+                        ? (ctx.dashboardMenuTree?.categories.some(
+                              (category) => category.menuItems.length > 0,
+                          ) ?? false)
+                        : undefined
+                }
             />
         </Suspense>
     );

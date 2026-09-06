@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, CaretDown, CheckCircle, Circle } from '@phosphor-icons/react';
+import { ArrowRight, ArrowSquareOut, CaretDown, CheckCircle, Circle } from '@phosphor-icons/react';
 import { cn } from '../../../../lib/utils';
 import { t } from '../../../../i18n/dashboard';
+import { trackEvent } from '../../../../lib/analytics';
 import type { BrandProfile } from '../../BrandEditForm';
 import type { LocationProfile } from '../../LocationEditForm';
 import type { DashboardMenuTree } from '../DashboardPage';
@@ -30,6 +31,45 @@ function qrLabel(count: number): string {
     return count === 1
         ? t('dashboard.setup.qr.activeCount', { count: String(count) })
         : t('dashboard.setup.qr.activeCount.plural', { count: String(count) });
+}
+
+/**
+ * Sunucunun kurulum ilerlemesi (`GET /api/workspaces/{w}/setup-progress`).
+ * Yalnız ekranın okuduğu alanlar; şekil `SetupProgressTest` ile donmuş.
+ */
+type SetupProgressResponse = {
+    steps: {
+        publication: { done: boolean; id?: number };
+        qr: { done: boolean; activeCount: number };
+    };
+    /** Yalnız bir yayın VARSA gelir; yoksa anahtar hiç yoktur. */
+    firstPublishedAfterMinutes?: number;
+};
+
+/**
+ * "İlk yayın, çalışma alanı açıldıktan kaç dakika sonra?" — TEK cümle.
+ *
+ * Sayı sunucuda hesaplanır (iki damganın farkı; tarayıcı saati karışmaz) ve
+ * burada yalnız okunur birime çevrilir. Tekil/çoğul ayrı anahtar: "1 minutes"
+ * diye bir cümle yok. Gün için tekil gerekmez — 24-47 saat "saat" olarak
+ * okunur.
+ */
+function firstPublishedSentence(minutes: number): string {
+    if (minutes < 1) return t('dashboard.setup.firstPublished.underMinute');
+    if (minutes === 1) return t('dashboard.setup.firstPublished.minute');
+    if (minutes < 60) {
+        return t('dashboard.setup.firstPublished.minutes', { count: String(minutes) });
+    }
+    if (minutes < 120) return t('dashboard.setup.firstPublished.hour');
+    if (minutes < 48 * 60) {
+        return t('dashboard.setup.firstPublished.hours', {
+            count: String(Math.floor(minutes / 60)),
+        });
+    }
+
+    return t('dashboard.setup.firstPublished.days', {
+        count: String(Math.floor(minutes / (24 * 60))),
+    });
 }
 
 function menuSummary(dashboardMenuTree: DashboardMenuTree | null): string {
@@ -202,6 +242,14 @@ export function DashboardSetupJourney({
 
     const [publicationValue, setPublicationValue] = useState<string>(notConnected);
     const [qrValue, setQrValue] = useState<string>(notConnected);
+    /*
+        İLK YAYINA KADAR GEÇEN SÜRE (FF-202, `docs/110` §7, `docs/107` 1.7).
+        `null` = "bilinmiyor ya da henüz yayın yok"; o zaman cümle HİÇ
+        çizilmez. Sıfır bir ölçümdür, bilinmeyenin yerine geçemez.
+    */
+    const [firstPublishedAfterMinutes, setFirstPublishedAfterMinutes] = useState<number | null>(
+        null,
+    );
 
     const menuId = dashboardMenuTree?.id;
     const locationId = dashboardMenuTree?.locationId;
@@ -214,61 +262,57 @@ export function DashboardSetupJourney({
                 if (cancelled) return;
                 setPublicationValue(notConnected);
                 setQrValue(notConnected);
+                setFirstPublishedAfterMinutes(null);
                 return;
             }
 
             setPublicationValue(checking);
             setQrValue(checking);
 
-            try {
-                const response = await fetch(
-                    `/api/workspaces/${workspaceId}/menu/${menuId}/publications/current`,
-                    { credentials: 'include', headers: { Accept: 'application/json' } },
-                );
+            /*
+                TEK İSTEK (FF-202). Önceden yayın ve karekod durumu iki ayrı
+                uçtan okunuyordu ve "ilk yayına kaç dakikada ulaşıldı" hiçbir
+                uçtan gelmiyordu. Kurulum ilerlemesi artık sunucunun tek bir
+                cevabıdır; süre de oradan gelir, tarayıcıda hesaplanmaz.
 
-                if (response.status === 404) {
-                    if (cancelled) return;
-                    setPublicationValue(notConnected);
-                    setQrValue(notConnected);
-                    return;
-                }
+                Gövde beklenen şekilde değilse (`steps` yok) okuma fırlatır ve
+                aynı `catch`e düşer: ekran "durum okunamadı" der, uydurmaz.
+            */
+            try {
+                const response = await fetch(`/api/workspaces/${workspaceId}/setup-progress`, {
+                    credentials: 'include',
+                    headers: { Accept: 'application/json' },
+                });
 
                 if (!response.ok) {
                     if (cancelled) return;
                     setPublicationValue(unavailable);
                     setQrValue(unavailable);
+                    setFirstPublishedAfterMinutes(null);
                     return;
                 }
 
-                const body = (await response.json()) as { id: number };
+                const body = (await response.json()) as SetupProgressResponse;
+                const publication = body.steps.publication;
+                const qr = body.steps.qr;
                 if (cancelled) return;
-                setPublicationValue(t('dashboard.setup.published', { id: String(body.id) }));
+
+                setPublicationValue(
+                    publication.done && publication.id !== undefined
+                        ? t('dashboard.setup.published', { id: String(publication.id) })
+                        : notConnected,
+                );
+                setQrValue(qr.done && qr.activeCount > 0 ? qrLabel(qr.activeCount) : notConnected);
+                setFirstPublishedAfterMinutes(
+                    typeof body.firstPublishedAfterMinutes === 'number'
+                        ? body.firstPublishedAfterMinutes
+                        : null,
+                );
             } catch {
                 if (cancelled) return;
                 setPublicationValue(unavailable);
                 setQrValue(unavailable);
-                return;
-            }
-
-            try {
-                const response = await fetch(
-                    `/api/workspaces/${workspaceId}/brand/locations/${locationId}/qr-codes`,
-                    { credentials: 'include', headers: { Accept: 'application/json' } },
-                );
-
-                if (!response.ok) {
-                    if (cancelled) return;
-                    setQrValue(unavailable);
-                    return;
-                }
-
-                const body = (await response.json()) as { state: string }[];
-                const activeCount = body.filter((qr) => qr.state === 'active').length;
-                if (cancelled) return;
-                setQrValue(activeCount > 0 ? qrLabel(activeCount) : notConnected);
-            } catch {
-                if (cancelled) return;
-                setQrValue(unavailable);
+                setFirstPublishedAfterMinutes(null);
             }
         })();
 
@@ -291,7 +335,15 @@ export function DashboardSetupJourney({
             label: t('dashboard.setup.brand'),
             value: brand?.name ?? '',
             done: brand !== null,
-            section: 'settings/brand',
+            /*
+                ÖLÇÜLDÜ (2026-09-06, FF-202): marka YOKKEN `settings/brand`
+                hedefi, Ayarlar'ın marka sekmesinde "Loading your brand…"
+                yazan ve sıfır alan içeren bir ekrana çıkıyordu — yolculuğun
+                İLK dokunuşu bir çıkmaz sokaktı. Marka oluşturma formu yalnız
+                `brand` bölümünde çizilir; düzenleme ise Ayarlar'da. Hedef,
+                adımın hâline göre seçilir.
+            */
+            section: brand === null ? 'brand' : 'settings/brand',
         },
         {
             key: 'location',
@@ -469,6 +521,19 @@ export function DashboardSetupJourney({
                             : ''}
                     </span>
 
+                    {/*
+                        İLK YAYINA KADAR GEÇEN SÜRE — yalnız GERÇEKLEŞTİYSE.
+                        Sunucu hesaplar (`workspaces.created_at` → ilk
+                        `menu_publications.published_at`); ekran yalnız okur.
+                        `docs/110` §7'nin "5 dakika mı 15 dakika mı" sorusu
+                        artık her restoranda ölçülen bir sayıdır.
+                    */}
+                    {firstPublishedAfterMinutes !== null ? (
+                        <span className="text-meta text-fg-muted">
+                            {firstPublishedSentence(firstPublishedAfterMinutes)}
+                        </span>
+                    ) : null}
+
                     <span
                         aria-hidden="true"
                         className="h-[0.375rem] min-w-[6rem] flex-1 overflow-hidden rounded-pill bg-[var(--color-surface-active)]"
@@ -535,6 +600,30 @@ export function DashboardSetupJourney({
                         );
                     })}
                 </ol>
+
+                {/*
+                    TAKILMA ÇIKIŞI (FF-202). Ölçüm: panelden yardım makalesine
+                    giden bağlantı sayısı SIFIRDI. Makale (`/help`) tam olarak
+                    bu yolculuğu anlatıyor; kurulum bitince de sıradaki günlük
+                    işi ("fiyat değiştir" bölümü). Yeni sekmede açılır: yardım
+                    kamu sayfasıdır ve paneli terk ettirmez. Olay hangi adımda
+                    yardıma gidildiğini ölçer (`docs/112` §4.3).
+                */}
+                <a
+                    href={allDone ? '/help#help-price' : '/help'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() =>
+                        trackEvent('setup_help_opened', { step: nextStep?.key ?? 'done' })
+                    }
+                    className="mx-[var(--space-fluid-md)] mb-[var(--space-2)] inline-flex min-h-[var(--density-hit-area-min)] items-center gap-[var(--space-1)] self-start text-body font-medium text-fg-link underline underline-offset-2 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                >
+                    {allDone
+                        ? t('dashboard.setup.help.afterSetup')
+                        : t('dashboard.setup.help.stuck')}
+                    <ArrowSquareOut aria-hidden="true" size={16} weight="bold" />
+                    <span className="sr-only">({t('dashboard.firstRun.help.newTab')})</span>
+                </a>
             </details>
         </section>
     );

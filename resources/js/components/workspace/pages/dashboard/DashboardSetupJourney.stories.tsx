@@ -124,12 +124,23 @@ export const Complete: Story = {
             kapı açmak, hikâyeyi ürünün göstermediği bir hâle sokardı.
         */
         (Story) => {
-            window.fetch = (async (input: RequestInfo | URL) =>
-                String(input).includes('/publications/current')
-                    ? new Response(JSON.stringify({ id: 2 }), { status: 200 })
-                    : new Response(JSON.stringify([{ state: 'active' }]), {
-                          status: 200,
-                      })) as typeof window.fetch;
+            window.fetch = (async () =>
+                new Response(
+                    JSON.stringify({
+                        steps: {
+                            brand: { done: true },
+                            location: { done: true },
+                            menu: { done: true, itemCount: 2 },
+                            publication: { done: true, id: 2, version: 2 },
+                            qr: { done: true, activeCount: 12 },
+                        },
+                        doneCount: 5,
+                        total: 5,
+                        // Sunucunun sayısı: açılıştan ilk yayına 27 dakika.
+                        firstPublishedAfterMinutes: 27,
+                    }),
+                    { status: 200 },
+                )) as typeof window.fetch;
 
             return <Story />;
         },

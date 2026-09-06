@@ -84,6 +84,7 @@ use App\Application\Tenancy\Port\WorkspaceContextSessionPort;
 use App\Application\Tenancy\Port\WorkspaceRepositoryPort;
 use App\Application\Tenancy\Profile\Port\BrandRepositoryPort;
 use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
+use App\Application\Workspace\Port\SetupProgressPort;
 use App\Application\Workspace\Port\WorkspaceAuditTrailPort;
 use App\Domain\Ai\Capability;
 use App\Domain\Media\PdfInspector;
@@ -183,6 +184,7 @@ use App\Infrastructure\Tenancy\Persistence\EloquentWorkspaceRepository;
 use App\Infrastructure\Tenancy\Persistence\SessionWorkspaceContext;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
+use App\Infrastructure\Workspace\EloquentSetupProgress;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
 use App\Support\Localization\PseudoLocalizer;
 use App\Support\Localization\SiteText;
@@ -485,6 +487,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MediaConversionPort::class, EloquentMediaConversion::class);
         $this->app->bind(MediaFormatSupportPort::class, RuntimeMediaFormatSupport::class);
         $this->app->bind(WorkspaceAuditTrailPort::class, EloquentWorkspaceAuditTrail::class);
+        // KURULUM İLERLEMESİ (`docs/107` 1.7): beş adım + ilk yayına kadar geçen
+        // dakika, var olan damgalardan; yeni tablo yok.
+        $this->app->bind(SetupProgressPort::class, EloquentSetupProgress::class);
         $this->app->bind(MediaQuotaPort::class, ConfigMediaQuota::class);
         /*
             "Yeri ne dolduruyor?" (`docs/108` §6.4). Kotadan AYRI bağlanır:
