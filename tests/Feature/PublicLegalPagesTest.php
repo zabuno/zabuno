@@ -8,16 +8,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
- * PUBLIC_LEGAL_RED
+ * PUBLIC_LEGAL — yasal sayfalar sunucuda üretilir ve kabuğu giyer.
  *
- * Freezes the smallest server-side contract for the synthesized Stage 1
- * legal-readiness pages: unauthenticated GET /terms, /privacy, /kvkk must
- * each resolve (not 404) and return the same React-mounting app shell as
- * GET '/' (sunucuda üretilen aynı kabuk, modül sayısını taşıyan
- * attribute), so the client-side AppShell can take over per-pathname
- * rendering. This test does not assert on rendered legal copy — that is
- * PublicLegalRoutes.test.tsx's job — only that the route exists and serves
- * the app mount.
+ * Bu test bir zamanlar "hazırlanıyor" yer tutucusunu donduruyordu. FF-198
+ * ile yer tutucu gitti: `/terms`, `/privacy`, `/kvkk` artık gerçek belgedir
+ * (`LegalDocumentPagesTest` içeriği ölçer). Burada yalnız en küçük sözleşme
+ * kaldı: rota var, oturum istemez, sunucuda üretilir, kabuk meta'sını taşır.
  */
 final class PublicLegalPagesTest extends TestCase
 {
@@ -49,14 +45,13 @@ final class PublicLegalPagesTest extends TestCase
     }
 
     #[DataProvider('legalPathProvider')]
-    public function test_unauthenticated_get_returns_the_existing_app_mount(string $path): void
+    public function test_unauthenticated_get_serves_the_server_rendered_document(string $path): void
     {
         $response = $this->get($path);
 
         $response->assertOk();
-        // Sayfa artık sunucuda üretilir: montaj noktası yerine METNİN
-        // kendisi doğrulanır (bkz. FoundationStatusDeliveryArchitectureTest).
-        $response->assertSee('pending qualified legal review', false);
+        // Sayfa sunucuda üretilir ve GERÇEK belgeyi taşır (FF-198).
+        $response->assertSee('data-legal-document="', false);
         $response->assertSee('modules registered', false);
     }
 }

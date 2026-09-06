@@ -12,6 +12,21 @@ const en = {
     'auth.register.error.email': 'Enter a valid email address.',
     'auth.register.error.password': 'Enter a password.',
     'auth.register.error.submit': 'We could not create your account. Please try again.',
+    /*
+        SÖZLEŞME ONAYI (FF-198). Etiket kutunun ERİŞİLEBİLİR ADIDIR ve
+        bağlantı içermez: bağlantılar ayrı, 44 piksellik hedeflerdir. Hata
+        metni etiketle aynı kelimeleri tekrar etmez ki ekran okuyucu ikisini
+        karıştırmasın.
+    */
+    'auth.register.terms': 'I have read and accept the Terms of Service and the Privacy Policy.',
+    'auth.register.terms.read_terms': 'Read the Terms of Service',
+    'auth.register.terms.read_privacy': 'Read the Privacy Policy',
+    'auth.register.error.terms':
+        'Tick this box to create an account. Both documents are linked below.',
+    'auth.register.legal_links': 'Legal documents',
+    'auth.register.marketing':
+        'I agree to receive electronic commercial messages from Zabuno by e-mail. This is optional.',
+    'auth.register.marketing.read': 'Read the commercial message consent text',
 
     'auth.login.heading': 'Log in',
     'auth.login.email': 'Email',

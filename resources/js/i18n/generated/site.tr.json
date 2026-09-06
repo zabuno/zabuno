@@ -53,8 +53,6 @@
     "site.legal.dataRequest.body": "Menünüzü çalışma alanınızdan dilediğiniz zaman CSV dosyası olarak kendiniz indirebilirsiniz; bunun için bize sormanıza gerek yok. Hesabınızda tutulan diğer her şey için iletişim formundan bize yazın ve neyi talep ettiğinizi belirtin.",
     "site.legal.dataRequest.cta": "İletişim formunu açın",
     "site.legal.dataRequest.heading": "Hesabınızdaki veriler",
-    "site.legal.pending": "Bu sayfa nitelikli hukuki incelemeyi bekliyor ve henüz yayımlanmadı. Bağlayıcı hukuki hüküm içermez.",
-    "site.legal.pending.description": "Bu sayfa nitelikli hukuki incelemeyi bekliyor ve henüz yayımlanmadı.",
     "site.nav.contact": "İletişim",
     "site.nav.features": "Özellikler",
     "site.nav.help": "Yardım",

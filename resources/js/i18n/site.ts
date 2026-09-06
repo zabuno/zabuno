@@ -21,10 +21,35 @@ export const siteTranslations = {
     /* Belge başlığının son eki: "Fiyat — Zabuno". */
     'site.title.suffix': 'Zabuno',
     'site.nav.primary': 'Primary',
-    'site.legal.pending':
-        'This page is pending qualified legal review and is not yet published. It does not contain binding legal terms.',
-    'site.legal.pending.description':
-        'This page is pending qualified legal review and is not yet published.',
+    /*
+        YASAL BELGE ŞABLONUNUN ETİKETLERİ (FF-198, `docs/124`).
+
+        Belge METNİ burada değil: `app/Infrastructure/Legal/Documents` içinde,
+        İngilizce kaynak olarak yaşar ve yardım makaleleri gibi bir bütün
+        halinde okunur. Burada yalnız şablonun kendi sözcükleri var: sürüm,
+        yürürlük, içindekiler, inceleme notu ve çerez tercihi.
+    */
+    'site.legal.review.pending':
+        'This text is pending legal review. It describes what the product does today and may be reworded after that review.',
+    'site.legal.version': 'Version',
+    'site.legal.effective': 'Effective from',
+    'site.legal.contents': 'Contents',
+    'site.legal.cookies.preference.heading': 'Your measurement choice',
+    'site.legal.cookies.preference.current': 'Current choice:',
+    'site.legal.cookies.preference.granted': 'measurement allowed',
+    'site.legal.cookies.preference.denied': 'measurement declined',
+    'site.legal.cookies.preference.undecided': 'not decided yet, so measurement stays off',
+    /*
+        ÇEREZ SEÇİM ŞERİDİ (FF-198). Kısa: dar ekranda iki satır ve üç düğme.
+        Hiçbir üçüncü taraf aracı karar verilmeden yüklenmez ve şerit bunu
+        söyler; "kabul etmezsen site çalışmaz" demez, çünkü çalışır.
+    */
+    'site.consent.label': 'Cookie choice',
+    'site.consent.body':
+        'We load measurement tools only if you allow them. Nothing is loaded until you decide.',
+    'site.consent.accept': 'Allow measurement',
+    'site.consent.decline': 'Decline',
+    'site.consent.link': 'Cookie Policy',
     /*
         HESAP VERİSİ TALEBİ (FF-169, `docs/110` P0-09).
 
@@ -83,6 +108,11 @@ export const siteTranslations = {
     'site.footer.terms': 'Terms',
     'site.footer.privacy': 'Privacy',
     'site.footer.kvkk': 'KVKK',
+    // Uzaktan satışın belgeleri (FF-198).
+    'site.footer.distanceSales': 'Distance Sales Agreement',
+    'site.footer.preInformation': 'Preliminary Information Form',
+    'site.footer.refundPolicy': 'Cancellation and Refund Policy',
+    'site.footer.cookies': 'Cookie Policy',
     'site.footer.tagline': 'Your menu behind a QR code, kept up to date by your own team.',
     // --- Fiyat -----------------------------------------------------------
     'site.engineering.title': 'Zabuno — Engineering',

@@ -56,7 +56,8 @@ final class SiteShellSingleSourceTest extends TestCase
     /** @return list<array{0:string}> */
     public static function livePaths(): array
     {
-        return [['/'], ['/pricing'], ['/help'], ['/contact'], ['/terms'], ['/privacy'], ['/kvkk']];
+        return [['/'], ['/pricing'], ['/help'], ['/contact'], ['/terms'], ['/privacy'], ['/kvkk'],
+            ['/distance-sales'], ['/pre-information'], ['/refund-policy'], ['/cookies'], ['/marketing-consent']];
     }
 
     // --- SHELL-SINGLE-SOURCE-01 ------------------------------------------------

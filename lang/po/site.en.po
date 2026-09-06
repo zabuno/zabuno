@@ -12,6 +12,26 @@ msgstr ""
 msgid "site.brand"
 msgstr "Zabuno"
 
+#: site:site.consent.accept
+msgid "site.consent.accept"
+msgstr "Allow measurement"
+
+#: site:site.consent.body
+msgid "site.consent.body"
+msgstr "We load measurement tools only if you allow them. Nothing is loaded until you decide."
+
+#: site:site.consent.decline
+msgid "site.consent.decline"
+msgstr "Decline"
+
+#: site:site.consent.label
+msgid "site.consent.label"
+msgstr "Cookie choice"
+
+#: site:site.consent.link
+msgid "site.consent.link"
+msgstr "Cookie Policy"
+
 #: site:site.contact.email
 msgid "site.contact.email"
 msgstr "Your email"
@@ -48,6 +68,14 @@ msgstr "Send message"
 msgid "site.engineering.title"
 msgstr "Zabuno — Engineering"
 
+#: site:site.footer.cookies
+msgid "site.footer.cookies"
+msgstr "Cookie Policy"
+
+#: site:site.footer.distanceSales
+msgid "site.footer.distanceSales"
+msgstr "Distance Sales Agreement"
+
 #: site:site.footer.kvkk
 msgid "site.footer.kvkk"
 msgstr "KVKK"
@@ -56,6 +84,10 @@ msgstr "KVKK"
 msgid "site.footer.legal"
 msgstr "Legal"
 
+#: site:site.footer.preInformation
+msgid "site.footer.preInformation"
+msgstr "Preliminary Information Form"
+
 #: site:site.footer.privacy
 msgid "site.footer.privacy"
 msgstr "Privacy"
@@ -63,6 +95,10 @@ msgstr "Privacy"
 #: site:site.footer.product
 msgid "site.footer.product"
 msgstr "Product"
+
+#: site:site.footer.refundPolicy
+msgid "site.footer.refundPolicy"
+msgstr "Cancellation and Refund Policy"
 
 #: site:site.footer.tagline
 msgid "site.footer.tagline"
@@ -204,6 +240,30 @@ msgstr "Zabuno gives your team a shared workspace to manage a restaurant's menu 
 msgid "site.home.meta.title"
 msgstr "Restaurant menu & workspace"
 
+#: site:site.legal.contents
+msgid "site.legal.contents"
+msgstr "Contents"
+
+#: site:site.legal.cookies.preference.current
+msgid "site.legal.cookies.preference.current"
+msgstr "Current choice:"
+
+#: site:site.legal.cookies.preference.denied
+msgid "site.legal.cookies.preference.denied"
+msgstr "measurement declined"
+
+#: site:site.legal.cookies.preference.granted
+msgid "site.legal.cookies.preference.granted"
+msgstr "measurement allowed"
+
+#: site:site.legal.cookies.preference.heading
+msgid "site.legal.cookies.preference.heading"
+msgstr "Your measurement choice"
+
+#: site:site.legal.cookies.preference.undecided
+msgid "site.legal.cookies.preference.undecided"
+msgstr "not decided yet, so measurement stays off"
+
 #: site:site.legal.dataRequest.addressLabel
 msgid "site.legal.dataRequest.addressLabel"
 msgstr "Where the request is sent"
@@ -224,13 +284,17 @@ msgstr "Open the contact form"
 msgid "site.legal.dataRequest.heading"
 msgstr "The data in your account"
 
-#: site:site.legal.pending
-msgid "site.legal.pending"
-msgstr "This page is pending qualified legal review and is not yet published. It does not contain binding legal terms."
+#: site:site.legal.effective
+msgid "site.legal.effective"
+msgstr "Effective from"
 
-#: site:site.legal.pending.description
-msgid "site.legal.pending.description"
-msgstr "This page is pending qualified legal review and is not yet published."
+#: site:site.legal.review.pending
+msgid "site.legal.review.pending"
+msgstr "This text is pending legal review. It describes what the product does today and may be reworded after that review."
+
+#: site:site.legal.version
+msgid "site.legal.version"
+msgstr "Version"
 
 #: site:site.nav.account
 msgid "site.nav.account"

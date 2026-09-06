@@ -31,7 +31,8 @@ final class PublicPageIdentityTest extends TestCase
     /** @return list<array{0:string}> */
     public static function publicPaths(): array
     {
-        return [['/'], ['/pricing'], ['/contact'], ['/terms'], ['/privacy'], ['/kvkk']];
+        return [['/'], ['/pricing'], ['/contact'], ['/terms'], ['/privacy'], ['/kvkk'],
+            ['/distance-sales'], ['/pre-information'], ['/refund-policy'], ['/cookies'], ['/marketing-consent']];
     }
 
     // --- PUBLIC-PAGE-TITLE-01 ---------------------------------------------

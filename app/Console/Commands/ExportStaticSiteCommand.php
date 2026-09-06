@@ -8,6 +8,7 @@ use App\Domain\Content\PagePublicationStatus;
 use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
+use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
 use App\Models\ContentPage;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
@@ -63,6 +64,8 @@ final class ExportStaticSiteCommand extends Command
         FoundationStatusController::class,
         ShowHelpController::class,
         ShowContactFormController::class,
+        // Yasal belgeler (FF-198): sekiz adres, tek denetleyici.
+        ShowLegalDocumentController::class,
     ];
 
     public function handle(HttpKernel $kernel): int

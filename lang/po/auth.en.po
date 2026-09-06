@@ -128,9 +128,25 @@ msgstr "Enter a password."
 msgid "auth.register.error.submit"
 msgstr "We could not create your account. Please try again."
 
+#: auth:auth.register.error.terms
+msgid "auth.register.error.terms"
+msgstr "Tick this box to create an account. Both documents are linked below."
+
 #: auth:auth.register.heading
 msgid "auth.register.heading"
 msgstr "Create your account"
+
+#: auth:auth.register.legal_links
+msgid "auth.register.legal_links"
+msgstr "Legal documents"
+
+#: auth:auth.register.marketing
+msgid "auth.register.marketing"
+msgstr "I agree to receive electronic commercial messages from Zabuno by e-mail. This is optional."
+
+#: auth:auth.register.marketing.read
+msgid "auth.register.marketing.read"
+msgstr "Read the commercial message consent text"
 
 #: auth:auth.register.name
 msgid "auth.register.name"
@@ -147,6 +163,18 @@ msgstr "Confirm password"
 #: auth:auth.register.submit
 msgid "auth.register.submit"
 msgstr "Register"
+
+#: auth:auth.register.terms
+msgid "auth.register.terms"
+msgstr "I have read and accept the Terms of Service and the Privacy Policy."
+
+#: auth:auth.register.terms.read_privacy
+msgid "auth.register.terms.read_privacy"
+msgstr "Read the Privacy Policy"
+
+#: auth:auth.register.terms.read_terms
+msgid "auth.register.terms.read_terms"
+msgstr "Read the Terms of Service"
 
 #: auth:auth.reset_password.error.password
 msgid "auth.reset_password.error.password"

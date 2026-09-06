@@ -41,7 +41,9 @@ final class ShowSitemapController extends Controller
         $entries = [];
 
         // Pazarlama sayfaları: sunucuda üretilirler ve indekslenebilirler.
-        foreach (['/', '/terms', '/privacy', '/kvkk'] as $path) {
+        // Yasal belgelerin hepsi indekslenebilir (FF-198): bir sözleşme
+        // arama motorunda bulunabilmeli.
+        foreach (['/', '/terms', '/privacy', '/kvkk', '/distance-sales', '/pre-information', '/refund-policy', '/cookies', '/marketing-consent'] as $path) {
             $entries[] = ['loc' => $this->canonical->for($base, $path), 'lastmod' => null];
         }
 

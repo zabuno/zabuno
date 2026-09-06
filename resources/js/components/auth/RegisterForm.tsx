@@ -2,13 +2,26 @@ import { useState, type FormEvent } from 'react';
 import { Label } from '../catalog/forms/micro/Label';
 import { TextInput } from '../catalog/forms/micro/TextInput';
 import { Button } from '../catalog/forms/micro/Button';
+import { CheckboxField } from '../catalog/forms/compound/CheckboxField';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/auth';
 
-type FieldErrors = Partial<Record<'name' | 'email' | 'password' | 'submit', string>>;
+type FieldErrors = Partial<
+    Record<'name' | 'email' | 'password' | 'terms_accepted' | 'submit', string>
+>;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/*
+    BELGE BAĞLANTISI BİR DOKUNMA HEDEFİDİR (FF-198, `docs/118` E3).
+
+    Bağlantı cümlenin İÇİNE gömülmez: satır içi bir bağlantı 18 piksel
+    yüksekliğindedir ve parmakla vurulamaz (`docs/117` K1). Her belge kendi
+    satırında, 44 piksel yüksekliğinde bir hedef olarak durur.
+*/
+const DOCUMENT_LINK_CLASS =
+    'inline-flex min-h-[var(--density-hit-area-min)] items-center text-body text-fg underline';
 
 type RegisterFormProps = {
     navigate?: (path: string) => void;
@@ -21,6 +34,14 @@ export function RegisterForm({
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    /*
+        İKİ KUTU, İKİ ANLAM (FF-198). Hizmet Koşulları + Gizlilik Politikası
+        ZORUNLU: işaretlenmeden form sunucuya hiç gitmez. Ticari ileti izni
+        İSTEĞE BAĞLI ve varsayılanı BOŞ — önceden işaretli bir kutu onay
+        değildir. Sunucu aynı kuralı ayrıca uygular (`CreateNewUser`).
+    */
+    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [marketingConsent, setMarketingConsent] = useState(false);
     const [errors, setErrors] = useState<FieldErrors>({});
 
     function validate(): FieldErrors {
@@ -36,6 +57,10 @@ export function RegisterForm({
 
         if (password === '') {
             next.password = t('auth.register.error.password');
+        }
+
+        if (!termsAccepted) {
+            next.terms_accepted = t('auth.register.error.terms');
         }
 
         return next;
@@ -70,6 +95,8 @@ export function RegisterForm({
                         email,
                         password,
                         password_confirmation: passwordConfirmation,
+                        terms_accepted: termsAccepted,
+                        marketing_consent: marketingConsent,
                     }),
                 }),
             );
@@ -103,6 +130,7 @@ export function RegisterForm({
             'email',
             'password',
             'password_confirmation',
+            'terms_accepted',
         ]);
     }
 
@@ -204,6 +232,39 @@ export function RegisterForm({
                     value={passwordConfirmation}
                     onChange={(event) => setPasswordConfirmation(event.target.value)}
                 />
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <CheckboxField
+                    id="register-terms"
+                    name="terms_accepted"
+                    required
+                    checked={termsAccepted}
+                    onChange={(event) => setTermsAccepted(event.target.checked)}
+                    label={t('auth.register.terms')}
+                    errorText={errors.terms_accepted}
+                />
+                <nav aria-label={t('auth.register.legal_links')} className="flex flex-wrap gap-x-4">
+                    <a href="/terms" className={DOCUMENT_LINK_CLASS}>
+                        {t('auth.register.terms.read_terms')}
+                    </a>
+                    <a href="/privacy" className={DOCUMENT_LINK_CLASS}>
+                        {t('auth.register.terms.read_privacy')}
+                    </a>
+                </nav>
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <CheckboxField
+                    id="register-marketing"
+                    name="marketing_consent"
+                    checked={marketingConsent}
+                    onChange={(event) => setMarketingConsent(event.target.checked)}
+                    label={t('auth.register.marketing')}
+                />
+                <a href="/marketing-consent" className={DOCUMENT_LINK_CLASS}>
+                    {t('auth.register.marketing.read')}
+                </a>
             </div>
 
             <Button type="submit" className="w-full">
