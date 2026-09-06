@@ -78,7 +78,15 @@ if (CHROME === undefined) {
     process.exit(2);
 }
 
-const PORT = 9355;
+/*
+    SABİT PORT YOK — Chrome portu kendisi seçer, araç onu diskten okur.
+
+    Sabit bir port (9355), aynı makinede eşzamanlı çalışan İKİNCİ bir
+    denetimin (başka bir çalışma ağacı, başka bir işçi) Chrome'una
+    bağlanmayı mümkün kılardı: iki araç aynı sayfayı yönlendirir, biri
+    diğerinin hikâyesini ölçer. Bu bir olasılıktı, yaşanmış bir kusur
+    değil; portu Chrome'a bırakmak o olasılığı sıfırlar.
+*/
 
 /** En dar desteklenen genişlik. Taban budur; geniş ekran zenginleştirmedir. */
 const WIDTH = 320;
@@ -138,6 +146,31 @@ const MEASURE = `(() => {
     return (el.tagName.toLowerCase() + (text ? ' "' + text.slice(0, 40) + '"' : ''));
   };
 
+  /*
+      KAPALI <details> İÇİNDEKİ KUTULAR HAYALETTİR.
+
+      Chrome kapalı bir <details>'in içeriğini artık \`display:none\` ile
+      değil \`content-visibility:hidden\` ile gizliyor: kutular akışta yer
+      kaplamaz, ekranda çizilmez, ama getBoundingClientRect() bir
+      dikdörtgen döndürür — bölümün durduğu yerde, altındaki GERÇEK
+      içeriğin üstüne düşen bir dikdörtgen. Profil ekranının kapalı parola
+      bölümündeki girdiler, tam altındaki görünüm seçeneklerinin gizli
+      radyo düğmelerine "0 piksel" mesafede ölçüldü ve \`docs/117\` K3
+      ("iki parola girdisi 0 px") bu hayalete yazıldı. 2026-09-06'da
+      anlaşıldı (\`docs/117\` §0.1).
+
+      Kimse kapalı bir bölümün içine dokunamaz; yalnız <summary> hedeftir.
+  */
+  const inClosedDetails = (el) => {
+    for (let node = el.parentElement; node && node !== document.body; node = node.parentElement) {
+      if (node.tagName === 'DETAILS' && !node.open) {
+        const summary = node.querySelector(':scope > summary');
+        return !(summary && summary.contains(el));
+      }
+    }
+    return false;
+  };
+
   const findings = [];
 
   // 1. Yatay taşma — BELGENİN kendisi kaymamalı.
@@ -173,7 +206,10 @@ const MEASURE = `(() => {
   )].filter((el) => {
     const r = el.getBoundingClientRect();
     const s = getComputedStyle(el);
-    return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none';
+    return (
+      r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'
+      && !inClosedDetails(el)
+    );
   });
 
   const boxes = [];
@@ -270,6 +306,7 @@ const MEASURE = `(() => {
     if (el.children.length > 0) continue;
     const text = (el.textContent || '').trim();
     if (text === '') continue;
+    if (inClosedDetails(el)) continue;
     const s = getComputedStyle(el);
     /*
         SATIR İÇİ ÖĞEDE scrollWidth/clientWidth ANLAMSIZDIR — ikisi de
@@ -315,6 +352,7 @@ const MEASURE = `(() => {
     if (el.children.length > 0) continue;
     if ((el.textContent || '').trim() === '') continue;
     if (inHorizontalScroller(el)) continue;
+    if (inClosedDetails(el)) continue;
     const r = el.getBoundingClientRect();
     if (r.width <= 0 || r.height <= 0) continue;
     if (r.left < minLeft) minLeft = r.left;
@@ -365,20 +403,106 @@ function cdp(ws, method, params = {}) {
     });
 }
 
-async function debuggerUrl() {
+async function debuggerUrl(profile) {
+    /* `--remote-debugging-port=0`: Chrome seçtiği portu profil dizinine yazar. */
+    const marker = join(profile, 'DevToolsActivePort');
+
     for (let attempt = 0; attempt < 120; attempt++) {
         try {
-            const list = await fetch(`http://127.0.0.1:${PORT}/json/list`).then((r) => r.json());
+            const [port] = readFileSync(marker, 'utf8').split('\n');
+            const list = await fetch(`http://127.0.0.1:${port.trim()}/json/list`).then((r) =>
+                r.json(),
+            );
             const page = list.find((t) => t.type === 'page');
             if (page) return page.webSocketDebuggerUrl;
         } catch {
-            /* Chrome henüz dinlemiyor. */
+            /* Chrome henüz dinlemiyor ya da portu henüz yazmadı. */
         }
         await new Promise((r) => setTimeout(r, 250));
     }
     throw new Error('Chrome hata ayıklama portu açılmadı.');
 }
 
+/*
+    HİKÂYE ÇİZİLMEDEN ÖLÇÜLMEZ.
+
+    İlk sürüm gezinmeden sonra sabit 450 ms bekliyordu. Storybook her
+    bileşen ailesini ayrı bir parça olarak tembel yükler ve o parçanın İLK
+    hikâyesi 450 ms'de henüz çizilmemiş olabiliyordu: kök boş, gövde
+    `sb-show-preparing-story`. Boş bir kökte hiçbir hedef yok, hiçbir taşma
+    yok — yani "sorun yok". 2026-09-06'da ölçüldü: ısı ızgarasının dört
+    hikâyesinden ilki 450 ms'de boştu ve "temiz" çıkıyordu, diğer üçü
+    taşıyordu (`docs/117` §0.1).
+
+    Şimdi araç, hikâyenin GERÇEKTEN çizildiğini bekler: gövdeden hazırlık
+    sınıfı kalkmış, yazı tipleri yüklenmiş, iki çerçeve geçmiş. Süre dolarsa
+    — ya da sayfa hiç yüklenmemişse — sonuç "temiz" DEĞİL, `not-rendered`:
+    ölçülmemiş bir hikâye yeşil gösterilmez.
+*/
+const RENDER_DEADLINE_MS = 20000;
+
+function readyExpression(storyId, budgetMs) {
+    return `new Promise((resolve) => {
+        const started = performance.now();
+        const check = () => {
+            if (new URL(location.href).searchParams.get('id') !== ${JSON.stringify(storyId)}) {
+                return resolve('wrong-document');
+            }
+            const body = document.body.classList;
+            if (body.contains('sb-show-errordisplay')) return resolve('error');
+            if (body.contains('sb-show-main') && !body.contains('sb-show-preparing-story')) {
+                document.fonts.ready.then(() =>
+                    requestAnimationFrame(() => requestAnimationFrame(() => resolve('ready'))),
+                );
+                return;
+            }
+            if (performance.now() - started > ${Math.max(0, Math.round(budgetMs))}) {
+                return resolve('timeout');
+            }
+            setTimeout(check, 50);
+        };
+        check();
+    })`;
+}
+
+async function waitForStory(ws, storyId) {
+    const started = Date.now();
+
+    while (Date.now() - started < RENDER_DEADLINE_MS) {
+        try {
+            const { result } = await cdp(ws, 'Runtime.evaluate', {
+                expression: readyExpression(storyId, RENDER_DEADLINE_MS - (Date.now() - started)),
+                awaitPromise: true,
+                returnByValue: true,
+            });
+
+            if (result.value === 'ready' || result.value === 'error') return result.value;
+        } catch {
+            /* Belge tam o anda değişti (gezinme sürüyor); yeniden sorulur. */
+        }
+
+        await new Promise((r) => setTimeout(r, 50));
+    }
+
+    return 'timeout';
+}
+
+/*
+    DİZİN MUTLAK YOLA ÇEVRİLİR — ve bu, aracın ikinci yanılgısının kaydıdır.
+
+    `node scripts/mobile-ux-audit storybook-static` göreli bir dizin verir.
+    Göreli dizin `file://` adresine olduğu gibi yazılınca adres
+    `file://storybook-static/iframe.html` olur: `storybook-static` artık
+    bir dizin değil, bir SUNUCU ADIDIR ve Chrome o sunucuyu bulamaz. Ekranda
+    Chrome'un kendi hata sayfası durur — 24 piksel kenar boşluğu, biraz
+    metin, hiç hedef, hiç taşma.
+
+    2026-09-06'da ölçülen buydu: 317 hikâyenin 317'si "kullanılabilir 272 /
+    sol 24 / sağ 24" bildirdi ve sıfır bulgu çıktı; ısı ızgarasının bilinen
+    taşması dahil. Sıfır bulgu bir ölçüm sonucu değildi, ölçümün YOKLUĞUYDU
+    (`docs/117` §0.1). Aynı hata sayfası artık `not-rendered` diye
+    raporlanır (aşağıda) — yeşil görünmez.
+*/
 /*
     Yol MUTLAKA mutlaklaştırılır: `file://` şemasında göreli bir yolun ilk
     parçası HOST olarak okunur (`file://storage/app/…`) ve sayfa sessizce
@@ -500,7 +624,7 @@ const chrome = spawn(
     CHROME,
     [
         '--headless=new',
-        `--remote-debugging-port=${PORT}`,
+        '--remote-debugging-port=0',
         `--user-data-dir=${join(profileDir, 'profile')}`,
         '--no-first-run',
         '--disable-gpu',
@@ -513,7 +637,7 @@ const chrome = spawn(
 const report = [];
 
 try {
-    const ws = new WebSocket(await debuggerUrl());
+    const ws = new WebSocket(await debuggerUrl(join(profileDir, 'profile')));
     await new Promise((resolve, reject) => {
         ws.addEventListener('open', resolve, { once: true });
         ws.addEventListener('error', reject, { once: true });
@@ -531,44 +655,95 @@ try {
         const storyId = target.id;
 
         await cdp(ws, 'Page.navigate', { url: target.url });
-        await new Promise((r) => setTimeout(r, 450));
 
         let measured;
 
+        /*
+            YAZI TİPİ YÜKLENMEDEN ÖLÇÜM YAPILMAZ.
+
+            Depo artık Roboto'yu kendi içinde barındırıyor, ama bir
+            `@font-face` ANINDA hazır olmaz: tarayıcı önce HTML'i, sonra
+            CSS'i okur, dosyayı ister ve `font-display: swap` altında bu
+            arada YEDEK yazı tipiyle çizer. Sabit bir bekleme o pencereyi
+            çoğu zaman kapatır — "çoğu zaman" ise ölçüm için yetersizdir.
+
+            `document.fonts.ready` o belirsizliği kaldırır: ölçüm, sayfanın
+            kullanacağı bütün yazı tipleri yerine oturduktan SONRA başlar.
+            Hikâye kipinde de sayfa kipinde de geçerlidir; bu yüzden kip
+            ayrımının ÖNÜNDE durur.
+        */
+        let fontsError = null;
+
         try {
-            /*
-                YAZI TİPİ YÜKLENMEDEN ÖLÇÜM YAPILMAZ.
-
-                Depo artık Roboto'yu kendi içinde barındırıyor, ama bir
-                `@font-face` ANINDA hazır olmaz: tarayıcı önce HTML'i, sonra
-                CSS'i okur, dosyayı ister ve `font-display: swap` altında bu
-                arada YEDEK yazı tipiyle çizer. Sabit bir bekleme (450 ms) o
-                pencereyi çoğu zaman kapatır — "çoğu zaman" ise ölçüm için
-                yetersizdir: kapıyı yılda birkaç kez, kimsenin bir şey
-                bozmadığı bir gün kıran şey tam olarak budur.
-
-                `document.fonts.ready` o belirsizliği kaldırır: ölçüm, sayfanın
-                kullanacağı bütün yazı tipleri yerine oturduktan SONRA başlar.
-                Yani bu satır olmadan barındırma işi yarım kalırdı — dosya
-                depoda olur, ölçüm yine yedeği ölçerdi.
-            */
             await cdp(ws, 'Runtime.evaluate', {
                 expression: 'document.fonts.ready.then(() => document.fonts.status)',
                 awaitPromise: true,
                 returnByValue: true,
             });
-
-            if (!storybookMode) {
-                await cdp(ws, 'Runtime.evaluate', { expression: PREPARE, returnByValue: true });
-            }
-
-            const { result } = await cdp(ws, 'Runtime.evaluate', {
-                expression: MEASURE,
-                returnByValue: true,
-            });
-            measured = result.value;
         } catch (error) {
-            measured = { findings: [{ kind: 'measure-failed', detail: String(error) }] };
+            fontsError = String(error);
+        }
+
+        if (fontsError !== null) {
+            /*
+                Yazı tipi beklenemediyse ölçüm YAPILMADI. Yedek yazı tipiyle
+                alınmış bir sayı, ölçüm gibi görünen bir tahmindir.
+            */
+            measured = { findings: [{ kind: 'measure-failed', detail: fontsError }] };
+        } else if (storybookMode) {
+            const state = await waitForStory(ws, storyId);
+
+            if (state === 'timeout') {
+                measured = {
+                    findings: [
+                        {
+                            kind: 'not-rendered',
+                            detail: `${RENDER_DEADLINE_MS} ms içinde çizilmedi — ölçüm YAPILMADI, sonuç "bilinmiyor"`,
+                        },
+                    ],
+                };
+            } else if (state === 'error') {
+                measured = {
+                    findings: [{ kind: 'render-error', detail: 'Storybook hata ekranı gösterdi' }],
+                };
+            } else {
+                /*
+                    Kısa bir yerleşme payı: hikâye içindeki tembel (Suspense)
+                    parçalar çerçeveden bir tık sonra gelebilir. Bu bir bekleme
+                    değil, bir pay; hazır olma sinyalinin yerine geçmez.
+                */
+                await new Promise((r) => setTimeout(r, 150));
+
+                try {
+                    const { result } = await cdp(ws, 'Runtime.evaluate', {
+                        expression: MEASURE,
+                        returnByValue: true,
+                    });
+                    measured = result.value;
+                } catch (error) {
+                    measured = { findings: [{ kind: 'measure-failed', detail: String(error) }] };
+                }
+            }
+        } else {
+            /*
+                SAYFA KİPİ (statik dışa aktarım, #279): Storybook'un hazırlık
+                sınıfı yok, dolayısıyla hazır sinyali de yok. Kısa sabit
+                bekleme + açılır bölmelerin açılması (PREPARE) burada kalır;
+                `not-rendered` ayrımı yalnız hikâyeler için ölçülebilir.
+            */
+            await new Promise((r) => setTimeout(r, 450));
+
+            try {
+                await cdp(ws, 'Runtime.evaluate', { expression: PREPARE, returnByValue: true });
+
+                const { result } = await cdp(ws, 'Runtime.evaluate', {
+                    expression: MEASURE,
+                    returnByValue: true,
+                });
+                measured = result.value;
+            } catch (error) {
+                measured = { findings: [{ kind: 'measure-failed', detail: String(error) }] };
+            }
         }
 
         const findings = measured?.findings ?? [];

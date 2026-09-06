@@ -472,9 +472,16 @@ const inlineActionClass = clsx(
     'disabled:cursor-not-allowed disabled:opacity-50',
 );
 
-// Kategori/bölüm kutusu — panel kart grameriyle aynı (`docs/102` §1).
+/*
+    Kategori/bölüm kutusu — panel kart grameriyle aynı (`docs/102` §1).
+
+    DOLGU ÖLÜ ALAN ÖLÇEĞİNDEN (`docs/117` M7). Sabit adım (`--space-5`,
+    24px) 320 pikselde satırın 48 pikselini yiyordu — ürün adına kalan
+    yer o kadar azalıyordu. Ölçek dar ekranda 12'ye iner, tavanı 24'tür:
+    masaüstünde kart aynı görünür.
+*/
 const sectionClass = clsx(
-    'flex flex-col gap-[var(--space-4)] rounded-[var(--radius-lg)] border border-border bg-[var(--color-surface)] p-[var(--space-5)]',
+    'flex flex-col gap-[var(--space-4)] rounded-[var(--radius-lg)] border border-border bg-[var(--color-surface)] p-[var(--space-fluid-md)]',
     'forced-colors:border-[CanvasText]',
 );
 
@@ -501,6 +508,33 @@ const itemRowGridClass = clsx(
     'flex flex-wrap items-center gap-x-[var(--space-3)] gap-y-[var(--space-1)]',
     'min-h-[var(--density-row-height)]',
     'sm:grid sm:grid-cols-[48px_minmax(0,1fr)_minmax(110px,auto)_44px_48px_auto] sm:gap-y-0',
+);
+
+/*
+    DAR EKRANDA SATIR İKİ ÖBEKTİR — `docs/117` M7.
+
+    Ölçüldü (320×568): ürün adının "yeniden adlandır" düğmesi 12 piksel
+    genişliğindeydi. Sebep bir jeton değil, `flex-1`: sarmalı satırda adın
+    esneme TABANI sıfırdı; satır önce görseli, fiyatı ve stok düğmesini
+    yerleştiriyor, ada artakalan 12 pikseli veriyordu. Menüdeki bir ürünün
+    adını telefondan değiştirmek imkânsızdı — erişilemeyen bir yetenek
+    (K1'in en sert örneği).
+
+    Çözüm yerleşimdir: görsel + ad bir öbek, fiyat / stok / görünürlük /
+    eylemler ikinci öbek. Dar ekranda öbekler alt alta durur ve ad ilk
+    satırın tamamını alır. `sm` ve üstünde öbekler `contents` olur — ızgara
+    hücreleri doğrudan görür ve masaüstü sütun ritmi hiç değişmez. Bu bir
+    "medya sorgusuyla gizle" değildir: hiçbir şey gizlenmez, yalnız
+    gruplanır.
+*/
+const itemRowLeadClass = clsx(
+    'flex min-w-0 basis-full items-center gap-[var(--space-3)]',
+    'sm:contents',
+);
+
+const itemRowTrailClass = clsx(
+    'flex min-w-0 basis-full flex-wrap items-center gap-x-[var(--space-3)] gap-y-[var(--space-1)]',
+    'sm:contents',
 );
 
 /*
@@ -3638,56 +3672,59 @@ export function MenuCatalogWorkspace({
                                                     okunur ve iki ürünün fiyatı ancak böyle
                                                     karşılaştırılır (`docs/103` Döngü 5).
                                                 */}
-                                                    <button
-                                                        type="button"
-                                                        aria-label={t('menu.item.open.button', {
-                                                            name: item.productName ?? '',
-                                                        })}
-                                                        className={itemThumbClass}
-                                                        onClick={() =>
-                                                            void handleEditPresentation(item)
-                                                        }
-                                                    >
-                                                        {item.imageMediaAssetId === null ||
-                                                        item.imageMediaAssetId === undefined ? (
-                                                            <ImageIcon
-                                                                size={20}
-                                                                aria-hidden="true"
-                                                            />
-                                                        ) : (
-                                                            <ImageSquare
-                                                                size={20}
-                                                                weight="fill"
-                                                                aria-hidden="true"
-                                                            />
-                                                        )}
-                                                    </button>
-                                                    <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)] sm:flex-auto">
-                                                        <InlineRename
-                                                            readOnly={!canManageMenu}
-                                                            value={
-                                                                item.productName ??
-                                                                `#${item.productId}`
-                                                            }
-                                                            label={t('menu.rename.label', {
+                                                    <div className={itemRowLeadClass}>
+                                                        <button
+                                                            type="button"
+                                                            aria-label={t('menu.item.open.button', {
                                                                 name: item.productName ?? '',
                                                             })}
-                                                            emptyMessage={t(
-                                                                'menu.rename.error.empty',
-                                                            )}
-                                                            saveLabel={t('menu.rename.save')}
-                                                            cancelLabel={t('menu.rename.cancel')}
-                                                            textClassName="text-body font-medium text-fg"
-                                                            onSubmit={(next) =>
-                                                                handleRename(
-                                                                    'item',
-                                                                    item.id,
-                                                                    item.productName ?? '',
-                                                                    next,
-                                                                )
+                                                            className={itemThumbClass}
+                                                            onClick={() =>
+                                                                void handleEditPresentation(item)
                                                             }
-                                                        />
-                                                        {/*
+                                                        >
+                                                            {item.imageMediaAssetId === null ||
+                                                            item.imageMediaAssetId === undefined ? (
+                                                                <ImageIcon
+                                                                    size={20}
+                                                                    aria-hidden="true"
+                                                                />
+                                                            ) : (
+                                                                <ImageSquare
+                                                                    size={20}
+                                                                    weight="fill"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            )}
+                                                        </button>
+                                                        <span className="flex min-w-0 flex-1 flex-col gap-[var(--space-1)]">
+                                                            <InlineRename
+                                                                readOnly={!canManageMenu}
+                                                                value={
+                                                                    item.productName ??
+                                                                    `#${item.productId}`
+                                                                }
+                                                                label={t('menu.rename.label', {
+                                                                    name: item.productName ?? '',
+                                                                })}
+                                                                emptyMessage={t(
+                                                                    'menu.rename.error.empty',
+                                                                )}
+                                                                saveLabel={t('menu.rename.save')}
+                                                                cancelLabel={t(
+                                                                    'menu.rename.cancel',
+                                                                )}
+                                                                textClassName="text-body font-medium text-fg"
+                                                                onSubmit={(next) =>
+                                                                    handleRename(
+                                                                        'item',
+                                                                        item.id,
+                                                                        item.productName ?? '',
+                                                                        next,
+                                                                    )
+                                                                }
+                                                            />
+                                                            {/*
                                                         META SATIRI — adın altında,
                                                         satırın hizasını bozmadan.
                                                         Sıra numarası buraya indi:
@@ -3698,34 +3735,42 @@ export function MenuCatalogWorkspace({
                                                         Bilgi kaybolmadı, yalnız
                                                         ikincil hizaya geçti.
                                                     */}
-                                                        <span className="flex flex-wrap items-center gap-[var(--space-2)] text-meta text-fg-secondary">
-                                                            <OrderBadge
-                                                                position={item.position}
-                                                                label={t('menu.item.order.label', {
-                                                                    name: item.productName ?? '',
-                                                                })}
-                                                            />
-                                                            {item.outOfStock === true ? (
-                                                                <span className="inline-flex items-center gap-[var(--space-1)] rounded-pill bg-surface-warning px-[var(--space-2)] font-bold text-fg-warning">
-                                                                    <Prohibit
-                                                                        size={14}
-                                                                        weight="fill"
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                    {t('menu.item.stock.badge')}
-                                                                </span>
-                                                            ) : null}
-                                                            {item.imageMediaAssetId === null ||
-                                                            item.imageMediaAssetId === undefined ? (
-                                                                <span className="inline-flex items-center gap-[var(--space-1)]">
-                                                                    <ImageIcon
-                                                                        size={14}
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                    {t('menu.item.meta.noPhoto')}
-                                                                </span>
-                                                            ) : null}
-                                                            {/*
+                                                            <span className="flex flex-wrap items-center gap-[var(--space-2)] text-meta text-fg-secondary">
+                                                                <OrderBadge
+                                                                    position={item.position}
+                                                                    label={t(
+                                                                        'menu.item.order.label',
+                                                                        {
+                                                                            name:
+                                                                                item.productName ??
+                                                                                '',
+                                                                        },
+                                                                    )}
+                                                                />
+                                                                {item.outOfStock === true ? (
+                                                                    <span className="inline-flex items-center gap-[var(--space-1)] rounded-pill bg-surface-warning px-[var(--space-2)] font-bold text-fg-warning">
+                                                                        <Prohibit
+                                                                            size={14}
+                                                                            weight="fill"
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                        {t('menu.item.stock.badge')}
+                                                                    </span>
+                                                                ) : null}
+                                                                {item.imageMediaAssetId === null ||
+                                                                item.imageMediaAssetId ===
+                                                                    undefined ? (
+                                                                    <span className="inline-flex items-center gap-[var(--space-1)]">
+                                                                        <ImageIcon
+                                                                            size={14}
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                        {t(
+                                                                            'menu.item.meta.noPhoto',
+                                                                        )}
+                                                                    </span>
+                                                                ) : null}
+                                                                {/*
                                                             AÇIKLAMA EKSİĞİ —
                                                             kaynağın `p.meta`
                                                             alanı (satır 30269).
@@ -3743,22 +3788,24 @@ export function MenuCatalogWorkspace({
                                                             tek kelime aynı işi
                                                             bir bakışta yapar.
                                                         */}
-                                                            {item.description === null ||
-                                                            item.description === undefined ||
-                                                            item.description.trim() === '' ? (
-                                                                <span className="inline-flex items-center gap-[var(--space-1)]">
-                                                                    <Warning
-                                                                        size={14}
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                    {t(
-                                                                        'menu.item.meta.noDescription',
-                                                                    )}
-                                                                </span>
-                                                            ) : null}
+                                                                {item.description === null ||
+                                                                item.description === undefined ||
+                                                                item.description.trim() === '' ? (
+                                                                    <span className="inline-flex items-center gap-[var(--space-1)]">
+                                                                        <Warning
+                                                                            size={14}
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                        {t(
+                                                                            'menu.item.meta.noDescription',
+                                                                        )}
+                                                                    </span>
+                                                                ) : null}
+                                                            </span>
                                                         </span>
-                                                    </span>
-                                                    {/*
+                                                    </div>
+                                                    <div className={itemRowTrailClass}>
+                                                        {/*
                                                     BİÇİMLENDİRME ürünün kanonik
                                                     biçimlendiricisinden gelir
                                                     (`money/format`, CORE-12).
@@ -3786,43 +3833,46 @@ export function MenuCatalogWorkspace({
                                                     hizalanmaz ve karşılaştırma
                                                     gözle yapılamaz.
                                                 */}
-                                                    {canManageMenu ? (
-                                                        <button
-                                                            type="button"
-                                                            aria-label={t(
-                                                                'menu.item.price.edit.button',
-                                                                {
-                                                                    name: item.productName ?? '',
-                                                                },
-                                                            )}
-                                                            onClick={() => handleEditPrice(item)}
-                                                            className={itemPriceClass}
-                                                        >
-                                                            <span>
-                                                                {formatMoneyOr(
-                                                                    item.priceMinorAmount,
-                                                                    item.currencyCode,
-                                                                    `${minorAmountToDecimalString(
+                                                        {canManageMenu ? (
+                                                            <button
+                                                                type="button"
+                                                                aria-label={t(
+                                                                    'menu.item.price.edit.button',
+                                                                    {
+                                                                        name:
+                                                                            item.productName ?? '',
+                                                                    },
+                                                                )}
+                                                                onClick={() =>
+                                                                    handleEditPrice(item)
+                                                                }
+                                                                className={itemPriceClass}
+                                                            >
+                                                                <span>
+                                                                    {formatMoneyOr(
                                                                         item.priceMinorAmount,
                                                                         item.currencyCode,
-                                                                    )} ${item.currencyCode}`,
-                                                                )}
-                                                            </span>
-                                                            {/*
+                                                                        `${minorAmountToDecimalString(
+                                                                            item.priceMinorAmount,
+                                                                            item.currencyCode,
+                                                                        )} ${item.currencyCode}`,
+                                                                    )}
+                                                                </span>
+                                                                {/*
                                                             Kalem, fiyatın DÜZENLENEBİLİR
                                                             olduğunu söyler. Dolgulu kutu tek
                                                             başına "tıklanabilir" demiyordu;
                                                             sahip fiyatı değiştirmek için
                                                             taşma menüsünü açıyordu.
                                                         */}
-                                                            <PencilSimple
-                                                                size={16}
-                                                                aria-hidden="true"
-                                                                className="text-fg-secondary"
-                                                            />
-                                                        </button>
-                                                    ) : (
-                                                        /*
+                                                                <PencilSimple
+                                                                    size={16}
+                                                                    aria-hidden="true"
+                                                                    className="text-fg-secondary"
+                                                                />
+                                                            </button>
+                                                        ) : (
+                                                            /*
                                                             FİYAT KALIR, DÜĞME GİDER.
 
                                                             Yetkisi olmayan için fiyat
@@ -3838,18 +3888,18 @@ export function MenuCatalogWorkspace({
                                                             biçim, verilen sözün
                                                             kendisidir.
                                                         */
-                                                        <span className={itemPriceBaseClass}>
-                                                            {formatMoneyOr(
-                                                                item.priceMinorAmount,
-                                                                item.currencyCode,
-                                                                `${minorAmountToDecimalString(
+                                                            <span className={itemPriceBaseClass}>
+                                                                {formatMoneyOr(
                                                                     item.priceMinorAmount,
                                                                     item.currencyCode,
-                                                                )} ${item.currencyCode}`,
-                                                            )}
-                                                        </span>
-                                                    )}
-                                                    {/*
+                                                                    `${minorAmountToDecimalString(
+                                                                        item.priceMinorAmount,
+                                                                        item.currencyCode,
+                                                                    )} ${item.currencyCode}`,
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                        {/*
                                                     TÜKENDİ satırda kalır: bir
                                                     restoranın gün içinde
                                                     defalarca yaptığı tek iş
@@ -3857,35 +3907,39 @@ export function MenuCatalogWorkspace({
                                                     ve taşma menüsünde adıyla
                                                     duruyor (`docs/103` Döngü 2).
                                                 */}
-                                                    <button
-                                                        type="button"
-                                                        className={itemStockButtonClass}
-                                                        disabled={stockPending[item.id] === true}
-                                                        aria-pressed={item.outOfStock === true}
-                                                        aria-label={t(
-                                                            item.outOfStock === true
-                                                                ? 'menu.item.stock.back.button'
-                                                                : 'menu.item.stock.out.button',
-                                                            { name: item.productName ?? '' },
-                                                        )}
-                                                        onClick={() => void handleToggleStock(item)}
-                                                    >
-                                                        <Prohibit
-                                                            size={22}
-                                                            weight={
-                                                                item.outOfStock === true
-                                                                    ? 'fill'
-                                                                    : 'regular'
+                                                        <button
+                                                            type="button"
+                                                            className={itemStockButtonClass}
+                                                            disabled={
+                                                                stockPending[item.id] === true
                                                             }
-                                                            aria-hidden="true"
-                                                            className={
+                                                            aria-pressed={item.outOfStock === true}
+                                                            aria-label={t(
                                                                 item.outOfStock === true
-                                                                    ? 'text-fg-warning'
-                                                                    : undefined
+                                                                    ? 'menu.item.stock.back.button'
+                                                                    : 'menu.item.stock.out.button',
+                                                                { name: item.productName ?? '' },
+                                                            )}
+                                                            onClick={() =>
+                                                                void handleToggleStock(item)
                                                             }
-                                                        />
-                                                    </button>
-                                                    {/*
+                                                        >
+                                                            <Prohibit
+                                                                size={22}
+                                                                weight={
+                                                                    item.outOfStock === true
+                                                                        ? 'fill'
+                                                                        : 'regular'
+                                                                }
+                                                                aria-hidden="true"
+                                                                className={
+                                                                    item.outOfStock === true
+                                                                        ? 'text-fg-warning'
+                                                                        : undefined
+                                                                }
+                                                            />
+                                                        </button>
+                                                        {/*
                                                     GÖRÜNÜRLÜK ANAHTARI — 48×28,
                                                     referansın beşinci sütunu.
 
@@ -3902,86 +3956,91 @@ export function MenuCatalogWorkspace({
                                                     boyutundan büyüktür: ray 28px,
                                                     basılabilir alan 44px.
                                                 */}
-                                                    {canManageMenu ? (
-                                                        <button
-                                                            type="button"
-                                                            role="switch"
-                                                            aria-checked={item.isVisible}
-                                                            aria-label={t(
-                                                                'menu.item.visibility.switch.label',
-                                                                { name: item.productName ?? '' },
-                                                            )}
-                                                            disabled={
-                                                                visibilityPending[item.id] === true
-                                                            }
-                                                            onClick={() =>
-                                                                handleToggleVisibility(item)
-                                                            }
-                                                            className={clsx(
-                                                                'flex min-h-[var(--density-hit-area-min)] w-[48px] shrink-0 items-center justify-center',
-                                                                'rounded-[var(--radius-md)]',
-                                                                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                                                                'disabled:cursor-not-allowed disabled:opacity-50',
-                                                            )}
-                                                        >
-                                                            <span
-                                                                aria-hidden="true"
+                                                        {canManageMenu ? (
+                                                            <button
+                                                                type="button"
+                                                                role="switch"
+                                                                aria-checked={item.isVisible}
+                                                                aria-label={t(
+                                                                    'menu.item.visibility.switch.label',
+                                                                    {
+                                                                        name:
+                                                                            item.productName ?? '',
+                                                                    },
+                                                                )}
+                                                                disabled={
+                                                                    visibilityPending[item.id] ===
+                                                                    true
+                                                                }
+                                                                onClick={() =>
+                                                                    handleToggleVisibility(item)
+                                                                }
                                                                 className={clsx(
-                                                                    'relative block h-[28px] w-[48px] rounded-pill transition-colors',
-                                                                    item.isVisible
-                                                                        ? 'bg-action'
-                                                                        : 'bg-surface-active',
+                                                                    'flex min-h-[var(--density-hit-area-min)] w-[48px] shrink-0 items-center justify-center',
+                                                                    'rounded-[var(--radius-md)]',
+                                                                    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
+                                                                    'disabled:cursor-not-allowed disabled:opacity-50',
                                                                 )}
                                                             >
                                                                 <span
+                                                                    aria-hidden="true"
                                                                     className={clsx(
-                                                                        'absolute top-[3px] block h-[22px] w-[22px] rounded-pill border border-border bg-surface',
-                                                                        'transition-[inset-inline-start]',
+                                                                        'relative block h-[28px] w-[48px] rounded-pill transition-colors',
                                                                         item.isVisible
-                                                                            ? 'start-[23px]'
-                                                                            : 'start-[3px]',
+                                                                            ? 'bg-action'
+                                                                            : 'bg-surface-active',
                                                                     )}
-                                                                />
-                                                            </span>
-                                                        </button>
-                                                    ) : null}
-                                                    {canManageMenu ? (
-                                                        <RowActions
-                                                            onDelete={() =>
-                                                                setPendingDelete({
-                                                                    kind: 'item',
-                                                                    item,
-                                                                })
-                                                            }
-                                                            onMoveUp={() =>
-                                                                void moveItem(
-                                                                    category,
-                                                                    category.menuItems.indexOf(
+                                                                >
+                                                                    <span
+                                                                        className={clsx(
+                                                                            'absolute top-[3px] block h-[22px] w-[22px] rounded-pill border border-border bg-surface',
+                                                                            'transition-[inset-inline-start]',
+                                                                            item.isVisible
+                                                                                ? 'start-[23px]'
+                                                                                : 'start-[3px]',
+                                                                        )}
+                                                                    />
+                                                                </span>
+                                                            </button>
+                                                        ) : null}
+                                                        {canManageMenu ? (
+                                                            <RowActions
+                                                                onDelete={() =>
+                                                                    setPendingDelete({
+                                                                        kind: 'item',
                                                                         item,
-                                                                    ),
-                                                                    -1,
-                                                                )
-                                                            }
-                                                            onMoveDown={() =>
-                                                                void moveItem(
-                                                                    category,
-                                                                    category.menuItems.indexOf(
-                                                                        item,
-                                                                    ),
-                                                                    1,
-                                                                )
-                                                            }
-                                                            deleteLabel={t(
-                                                                'menu.item.delete.label',
-                                                                {
+                                                                    })
+                                                                }
+                                                                onMoveUp={() =>
+                                                                    void moveItem(
+                                                                        category,
+                                                                        category.menuItems.indexOf(
+                                                                            item,
+                                                                        ),
+                                                                        -1,
+                                                                    )
+                                                                }
+                                                                onMoveDown={() =>
+                                                                    void moveItem(
+                                                                        category,
+                                                                        category.menuItems.indexOf(
+                                                                            item,
+                                                                        ),
+                                                                        1,
+                                                                    )
+                                                                }
+                                                                deleteLabel={t(
+                                                                    'menu.item.delete.label',
+                                                                    {
+                                                                        name:
+                                                                            item.productName ?? '',
+                                                                    },
+                                                                )}
+                                                                deleteText={t('menu.row.delete')}
+                                                                moreLabel={t('menu.row.more', {
                                                                     name: item.productName ?? '',
-                                                                },
-                                                            )}
-                                                            deleteText={t('menu.row.delete')}
-                                                            moreLabel={t('menu.row.more', {
-                                                                name: item.productName ?? '',
-                                                            })}
-                                                            /*
+                                                                })}
+                                                                /*
                                                         SEYREK İŞLER menüde ve
                                                         ADIYLA durur (FF-102).
                                                         Satırda kalıcı düğme
@@ -3993,28 +4052,34 @@ export function MenuCatalogWorkspace({
                                                         iyisi, kelimeyi
                                                         okumaktır.
                                                     */
-                                                            extraItems={[
-                                                                {
-                                                                    key: 'presentation',
-                                                                    label: t(
-                                                                        'menu.item.presentation.edit.short',
-                                                                    ),
-                                                                    icon: <ImageSquare size={18} />,
-                                                                    onSelect: () =>
-                                                                        void handleEditPresentation(
-                                                                            item,
+                                                                extraItems={[
+                                                                    {
+                                                                        key: 'presentation',
+                                                                        label: t(
+                                                                            'menu.item.presentation.edit.short',
                                                                         ),
-                                                                },
-                                                                {
-                                                                    key: 'allergens',
-                                                                    label: t(
-                                                                        'menu.item.allergens.edit.short',
-                                                                    ),
-                                                                    icon: <Warning size={18} />,
-                                                                    onSelect: () =>
-                                                                        handleEditAllergens(item),
-                                                                },
-                                                                /*
+                                                                        icon: (
+                                                                            <ImageSquare
+                                                                                size={18}
+                                                                            />
+                                                                        ),
+                                                                        onSelect: () =>
+                                                                            void handleEditPresentation(
+                                                                                item,
+                                                                            ),
+                                                                    },
+                                                                    {
+                                                                        key: 'allergens',
+                                                                        label: t(
+                                                                            'menu.item.allergens.edit.short',
+                                                                        ),
+                                                                        icon: <Warning size={18} />,
+                                                                        onSelect: () =>
+                                                                            handleEditAllergens(
+                                                                                item,
+                                                                            ),
+                                                                    },
+                                                                    /*
                                                             GÖRÜNÜRLÜK BURADAN
                                                             ALINDI ve satırdaki
                                                             anahtara döndü
@@ -4032,16 +4097,16 @@ export function MenuCatalogWorkspace({
                                                             hangisinin doğru
                                                             olduğunu sordururdu.
                                                         */
-                                                            ]}
-                                                            upLabel={t('menu.move.up', {
-                                                                name: item.productName ?? '',
-                                                            })}
-                                                            downLabel={t('menu.move.down', {
-                                                                name: item.productName ?? '',
-                                                            })}
-                                                        />
-                                                    ) : (
-                                                        /*
+                                                                ]}
+                                                                upLabel={t('menu.move.up', {
+                                                                    name: item.productName ?? '',
+                                                                })}
+                                                                downLabel={t('menu.move.down', {
+                                                                    name: item.productName ?? '',
+                                                                })}
+                                                            />
+                                                        ) : (
+                                                            /*
                                                             MUTFAĞIN İKİNCİ İŞİ:
                                                             ALERJEN.
 
@@ -4057,20 +4122,27 @@ export function MenuCatalogWorkspace({
                                                             iki işi var, ikisi de
                                                             satırda durur.
                                                         */
-                                                        <button
-                                                            type="button"
-                                                            className={itemStockButtonClass}
-                                                            aria-label={t(
-                                                                'menu.item.allergens.edit.button',
-                                                                { name: item.productName ?? '' },
-                                                            )}
-                                                            onClick={() =>
-                                                                handleEditAllergens(item)
-                                                            }
-                                                        >
-                                                            <Warning size={22} aria-hidden="true" />
-                                                        </button>
-                                                    )}
+                                                            <button
+                                                                type="button"
+                                                                className={itemStockButtonClass}
+                                                                aria-label={t(
+                                                                    'menu.item.allergens.edit.button',
+                                                                    {
+                                                                        name:
+                                                                            item.productName ?? '',
+                                                                    },
+                                                                )}
+                                                                onClick={() =>
+                                                                    handleEditAllergens(item)
+                                                                }
+                                                            >
+                                                                <Warning
+                                                                    size={22}
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
 
                                                 {/*
