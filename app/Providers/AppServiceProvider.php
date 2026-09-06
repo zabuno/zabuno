@@ -18,6 +18,8 @@ use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Content\Port\ContentLibraryPort;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
+use App\Application\Legal\Port\ConsentLedgerPort;
+use App\Application\Legal\Port\LegalLibraryPort;
 use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerAvailabilityPort;
@@ -117,6 +119,8 @@ use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
 use App\Infrastructure\Content\ProductPageLibrary;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
+use App\Infrastructure\Legal\DatabaseConsentLedger;
+use App\Infrastructure\Legal\LegalLibrary;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Localization\PseudoLocalizingTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
@@ -227,6 +231,9 @@ final class AppServiceProvider extends ServiceProvider
             değişmez.
         */
         $this->app->singleton(ContentLibraryPort::class, ProductPageLibrary::class);
+        // Yasal belgeler ve onay defteri (FF-198, `docs/124`).
+        $this->app->singleton(LegalLibraryPort::class, LegalLibrary::class);
+        $this->app->bind(ConsentLedgerPort::class, DatabaseConsentLedger::class);
 
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
         $this->app->bind(WorkspaceRepositoryPort::class, EloquentWorkspaceRepository::class);

@@ -9,6 +9,7 @@ return [
     'throttle' => 'Too many attempts. Please try again in :seconds seconds.',
 
     'registration_generic_failure' => 'We were unable to complete this registration. Please check your details and try again.',
+    'terms_required' => 'Please accept the Terms of Service and the Privacy Policy to create an account.',
     'verify_email_subject' => 'Verify your email address',
     'verify_email_greeting' => 'Hello :name,',
     'verify_email_body' => 'Please click the button below to verify your email address.',

@@ -17,7 +17,9 @@ use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\Publication\ShowDraftPreviewController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
+use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
 use App\Http\Controllers\PublicSite\StoreContactMessageController;
+use App\Http\Controllers\PublicSite\StoreMeasurementConsentController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuController;
@@ -62,9 +64,26 @@ Route::post('/contact', StoreContactMessageController::class)
     ->middleware('throttle:5,1')
     ->name('public.contact.store');
 
-Route::get('/terms', [FoundationStatusController::class, '__invoke'])->name('legal.terms');
-Route::get('/privacy', [FoundationStatusController::class, '__invoke'])->name('legal.privacy');
-Route::get('/kvkk', [FoundationStatusController::class, '__invoke'])->name('legal.kvkk');
+/*
+    YASAL BELGELER (FF-198, `docs/107` Faz 1.2, `docs/124`).
+
+    Sekiz belge, tek denetleyici: anahtar adresin kendisidir. `/kvkk` adı
+    KALIR — altbilgi, kütük ve sitemap ona bağlı; belge İngilizce yazıldı
+    (`docs/118` E4) ama adres Türkiye'deki kanunun adını taşımaya devam
+    eder. Oturum istemez, indekslenir: bir sözleşme kaydolmadan okunabilmeli.
+*/
+foreach (['terms', 'privacy', 'kvkk', 'distance-sales', 'pre-information', 'refund-policy', 'cookies', 'marketing-consent'] as $legalDocument) {
+    Route::get('/'.$legalDocument, ShowLegalDocumentController::class)->name('legal.'.$legalDocument);
+}
+
+/*
+    ÇEREZ TERCİHİ (FF-198). JavaScript'siz bir form: kabul ya da ret çerezi
+    yazar ve geldiği sayfaya döner. Hız sınırlı — ucun tek işi bir çerez
+    yazmak, ama sınırsız bir POST yine de bir yüzeydir.
+*/
+Route::post('/consent/measurement', StoreMeasurementConsentController::class)
+    ->middleware('throttle:30,1')
+    ->name('consent.measurement');
 
 /**
  * Public, unauthenticated QR resolver: /q/{token} redirects to the stable

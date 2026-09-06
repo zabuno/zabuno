@@ -102,5 +102,9 @@
 @yield('content')
 
 @include('public.partials.footer')
+
+{{-- Çerez seçim şeridi (FF-198): kabuğun parçası, her kurumsal sayfada
+     aynı; yalnız ölçüm yapılandırılmış ve karar verilmemişken çizilir. --}}
+@include('public.partials.consent-banner')
 </body>
 </html>

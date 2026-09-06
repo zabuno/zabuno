@@ -12,6 +12,26 @@ msgstr ""
 msgid "site.brand"
 msgstr ""
 
+#: site:site.consent.accept
+msgid "site.consent.accept"
+msgstr ""
+
+#: site:site.consent.body
+msgid "site.consent.body"
+msgstr ""
+
+#: site:site.consent.decline
+msgid "site.consent.decline"
+msgstr ""
+
+#: site:site.consent.label
+msgid "site.consent.label"
+msgstr ""
+
+#: site:site.consent.link
+msgid "site.consent.link"
+msgstr ""
+
 #: site:site.contact.email
 msgid "site.contact.email"
 msgstr ""
@@ -48,6 +68,14 @@ msgstr ""
 msgid "site.engineering.title"
 msgstr ""
 
+#: site:site.footer.cookies
+msgid "site.footer.cookies"
+msgstr ""
+
+#: site:site.footer.distanceSales
+msgid "site.footer.distanceSales"
+msgstr ""
+
 #: site:site.footer.kvkk
 msgid "site.footer.kvkk"
 msgstr ""
@@ -56,12 +84,20 @@ msgstr ""
 msgid "site.footer.legal"
 msgstr ""
 
+#: site:site.footer.preInformation
+msgid "site.footer.preInformation"
+msgstr ""
+
 #: site:site.footer.privacy
 msgid "site.footer.privacy"
 msgstr ""
 
 #: site:site.footer.product
 msgid "site.footer.product"
+msgstr ""
+
+#: site:site.footer.refundPolicy
+msgid "site.footer.refundPolicy"
 msgstr ""
 
 #: site:site.footer.tagline
@@ -204,6 +240,30 @@ msgstr ""
 msgid "site.home.meta.title"
 msgstr ""
 
+#: site:site.legal.contents
+msgid "site.legal.contents"
+msgstr ""
+
+#: site:site.legal.cookies.preference.current
+msgid "site.legal.cookies.preference.current"
+msgstr ""
+
+#: site:site.legal.cookies.preference.denied
+msgid "site.legal.cookies.preference.denied"
+msgstr ""
+
+#: site:site.legal.cookies.preference.granted
+msgid "site.legal.cookies.preference.granted"
+msgstr ""
+
+#: site:site.legal.cookies.preference.heading
+msgid "site.legal.cookies.preference.heading"
+msgstr ""
+
+#: site:site.legal.cookies.preference.undecided
+msgid "site.legal.cookies.preference.undecided"
+msgstr ""
+
 #: site:site.legal.dataRequest.addressLabel
 msgid "site.legal.dataRequest.addressLabel"
 msgstr ""
@@ -224,12 +284,16 @@ msgstr ""
 msgid "site.legal.dataRequest.heading"
 msgstr ""
 
-#: site:site.legal.pending
-msgid "site.legal.pending"
+#: site:site.legal.effective
+msgid "site.legal.effective"
 msgstr ""
 
-#: site:site.legal.pending.description
-msgid "site.legal.pending.description"
+#: site:site.legal.review.pending
+msgid "site.legal.review.pending"
+msgstr ""
+
+#: site:site.legal.version
+msgid "site.legal.version"
 msgstr ""
 
 #: site:site.nav.account

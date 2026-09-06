@@ -64,8 +64,23 @@ final class SiteText
             'brand' => 'site.brand',
             'titleSuffix' => 'site.title.suffix',
             'navPrimary' => 'site.nav.primary',
-            'legalPending' => 'site.legal.pending',
-            'legalPendingDescription' => 'site.legal.pending.description',
+            // Yasal belge şablonunun etiketleri (FF-198): belge metni
+            // kütüphanede, etiketler katalogda.
+            'legalReviewPending' => 'site.legal.review.pending',
+            'legalVersion' => 'site.legal.version',
+            'legalEffective' => 'site.legal.effective',
+            'legalContents' => 'site.legal.contents',
+            'cookiesPreferenceHeading' => 'site.legal.cookies.preference.heading',
+            'cookiesPreferenceCurrent' => 'site.legal.cookies.preference.current',
+            'cookiesPreferenceGranted' => 'site.legal.cookies.preference.granted',
+            'cookiesPreferenceDenied' => 'site.legal.cookies.preference.denied',
+            'cookiesPreferenceUndecided' => 'site.legal.cookies.preference.undecided',
+            // Çerez seçim şeridi (FF-198).
+            'consentLabel' => 'site.consent.label',
+            'consentBody' => 'site.consent.body',
+            'consentAccept' => 'site.consent.accept',
+            'consentDecline' => 'site.consent.decline',
+            'consentLink' => 'site.consent.link',
             // Hesap verisi talebinin yolu (FF-169): metin ŞABLONDA değil
             // KATALOGDA — bir hukuk metni en çok çevrilmesi gereken metindir.
             'dataRequestHeading' => 'site.legal.dataRequest.heading',
@@ -102,6 +117,10 @@ final class SiteText
             'footerTerms' => 'site.footer.terms',
             'footerPrivacy' => 'site.footer.privacy',
             'footerKvkk' => 'site.footer.kvkk',
+            'footerDistanceSales' => 'site.footer.distanceSales',
+            'footerPreInformation' => 'site.footer.preInformation',
+            'footerRefundPolicy' => 'site.footer.refundPolicy',
+            'footerCookies' => 'site.footer.cookies',
             'footerTagline' => 'site.footer.tagline',
             'pricingHeading' => 'site.pricing.heading',
             'pricingLead' => 'site.pricing.lead',

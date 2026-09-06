@@ -121,6 +121,17 @@ final class SiteNavigation
                     ['labelKey' => 'site.footer.terms', 'path' => '/terms'],
                     ['labelKey' => 'site.footer.privacy', 'path' => '/privacy'],
                     ['labelKey' => 'site.footer.kvkk', 'path' => '/kvkk'],
+                    /*
+                        UZAKTAN SATIŞIN BELGELERİ (FF-198, `docs/107` Faz 1.2).
+                        Hepsi yaşayan rotadır (`ShowLegalDocumentController`)
+                        ve her zaman bağlanabilir. Ticari ileti izni metni
+                        (`/marketing-consent`) bilerek altbilgide DEĞİL: onu
+                        okuyacak kişi kayıt ekranındadır ve oradan bağlanır.
+                    */
+                    ['labelKey' => 'site.footer.distanceSales', 'path' => '/distance-sales'],
+                    ['labelKey' => 'site.footer.preInformation', 'path' => '/pre-information'],
+                    ['labelKey' => 'site.footer.refundPolicy', 'path' => '/refund-policy'],
+                    ['labelKey' => 'site.footer.cookies', 'path' => '/cookies'],
                 ],
             ],
         ],

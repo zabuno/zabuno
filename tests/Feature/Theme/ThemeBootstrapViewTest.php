@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Theme;
 
+use App\Infrastructure\Legal\Documents\TermsOfService;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -41,7 +42,21 @@ final class ThemeBootstrapViewTest extends TestCase
             // Herkese açık kabuk artık sunucuda üretilir; React montaj
             // görünümü (`app`) kaldırıldı (bkz. HOME-NO-REACT-05).
             'public home' => ['public.home', ['coreModuleCount' => 7, 'canonicalUrl' => 'https://zabuno.test/', 'anchorPrefix' => '']],
-            'public legal' => ['public.legal', ['coreModuleCount' => 7, 'canonicalUrl' => 'https://zabuno.test/terms', 'anchorPrefix' => '/', 'title' => 'Terms']],
+            // Yasal görünüm artık gerçek bir belge çizer (FF-198): şablonun
+            // istediği veri, denetleyicinin verdiğinin aynısı.
+            'public legal' => ['public.legal', [
+                'coreModuleCount' => 7,
+                'canonicalUrl' => 'https://zabuno.test/terms',
+                'anchorPrefix' => '/',
+                'document' => TermsOfService::document(),
+                'reviewPending' => true,
+                'showDataRequest' => false,
+                'dataRequestAddress' => null,
+                'showConsentPreference' => false,
+                'consentState' => 'undecided',
+                'consentStateLabel' => '',
+                'returnTo' => '/terms',
+            ]],
             'workspace app shell' => ['workspace-app', []],
             'auth: login' => ['auth.login', []],
             'auth: register' => ['auth.register', []],

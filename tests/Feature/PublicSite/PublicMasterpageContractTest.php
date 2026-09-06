@@ -20,7 +20,8 @@ final class PublicMasterpageContractTest extends TestCase
     /** @return list<array{0:string}> */
     public static function publicPaths(): array
     {
-        return [['/'], ['/pricing'], ['/help'], ['/contact'], ['/terms'], ['/privacy'], ['/kvkk']];
+        return [['/'], ['/pricing'], ['/help'], ['/contact'], ['/terms'], ['/privacy'], ['/kvkk'],
+            ['/distance-sales'], ['/pre-information'], ['/refund-policy'], ['/cookies'], ['/marketing-consent']];
     }
 
     private function html(string $path, array $headers = []): string
