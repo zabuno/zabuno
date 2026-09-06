@@ -181,6 +181,8 @@ describe('RegisterForm — navigates to pending on success, alerts on failure (r
     fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Ada Lovelace' } });
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'ada@example.com' } });
     fireEvent.change(screen.getByLabelText(/^password$/i), { target: { value: 'correct-horse-battery-staple-1' } });
+    // Kayıt artık onaysız gitmez (FF-198): sözleşme kutusu işaretlenir.
+    fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
     fireEvent.click(screen.getByRole('button', { name: /register|sign up|create account/i }));
 
     await waitFor(() => {
