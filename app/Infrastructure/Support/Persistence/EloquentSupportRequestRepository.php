@@ -39,7 +39,17 @@ final class EloquentSupportRequestRepository implements SupportRequestRepository
             $reference = $this->references->generate();
 
             try {
-                $id = (int) DB::table('support_requests')->insertGetId([
+                /*
+                    HER DENEME KENDİ KAYIT NOKTASINDA (savepoint). PostgreSQL,
+                    başarısız bir INSERT'ten sonra dış işlemi iptal eder
+                    (SQLSTATE 25P02) ve aynı işlemde atılan ikinci deneme
+                    çarpışma değil "işlem iptal edildi" hatasıyla düşer —
+                    CI'da ölçüldü. İç `transaction()` Laravel'de bir SAVEPOINT
+                    açar; reddedilen deneme o noktaya geri sarılır, dış
+                    işlem (ve RefreshDatabase'in testi saran işlemi) yaşar.
+                    SQLite bu farkı göstermiyordu; PostgreSQL üretim hedefi.
+                */
+                $id = (int) DB::transaction(fn (): int => (int) DB::table('support_requests')->insertGetId([
                     'reference' => $reference,
                     'workspace_id' => $request->workspaceId,
                     'user_id' => $request->userId,
@@ -53,7 +63,7 @@ final class EloquentSupportRequestRepository implements SupportRequestRepository
                     'received_at' => $receivedAt,
                     'created_at' => $receivedAt,
                     'updated_at' => $receivedAt,
-                ]);
+                ]));
             } catch (QueryException $exception) {
                 /*
                     ÇARPIŞMA SESSİZCE ÇÖZÜLÜR. Tekil indeks aynı referansı
