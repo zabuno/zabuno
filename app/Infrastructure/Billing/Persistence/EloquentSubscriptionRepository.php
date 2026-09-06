@@ -90,6 +90,70 @@ final class EloquentSubscriptionRepository implements SubscriptionRepositoryPort
         });
     }
 
+    public function extendFromPayment(int $workspaceId, int $planId, int $periodDays): array
+    {
+        return DB::transaction(function () use ($workspaceId, $planId, $periodDays): array {
+            $this->lockForWorkspace($workspaceId);
+
+            $existing = DB::table('subscriptions')->where('workspace_id', $workspaceId)->first();
+            $before = $existing === null ? null : Carbon::parse($existing->ends_at);
+
+            /*
+                Kalan gün KAYBOLMAZ: bitiş ileride ise onun üstüne, geçmişte
+                kaldıysa bugünden. Erken ödeyen bir sahip, erken ödediği için
+                gün kaybetmemeli.
+            */
+            $base = $before !== null && $before->greaterThan(now()) ? $before->copy() : now();
+            $after = $base->addDays($periodDays);
+
+            if ($existing === null) {
+                DB::table('subscriptions')->insert([
+                    'workspace_id' => $workspaceId,
+                    'plan_id' => $planId,
+                    'state' => 'active',
+                    'ends_at' => $after,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                DB::table('subscriptions')->where('workspace_id', $workspaceId)->update([
+                    'plan_id' => $planId,
+                    'state' => 'active',
+                    'ends_at' => $after,
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return [
+                'before' => $before?->toIso8601String(),
+                'after' => $after->toIso8601String(),
+            ];
+        });
+    }
+
+    public function shortenAfterRefund(int $workspaceId, int $periodDays): array
+    {
+        return DB::transaction(function () use ($workspaceId, $periodDays): array {
+            $this->lockForWorkspace($workspaceId);
+
+            $existing = DB::table('subscriptions')->where('workspace_id', $workspaceId)->first();
+
+            if ($existing === null) {
+                return ['before' => null, 'after' => null];
+            }
+
+            $before = Carbon::parse($existing->ends_at);
+            $after = $before->copy()->subDays($periodDays);
+
+            DB::table('subscriptions')->where('workspace_id', $workspaceId)->update([
+                'ends_at' => $after,
+                'updated_at' => now(),
+            ]);
+
+            return ['before' => $before->toIso8601String(), 'after' => $after->toIso8601String()];
+        });
+    }
+
     private function lockForWorkspace(int $workspaceId): void
     {
         DB::table('workspaces')->where('id', $workspaceId)->lockForUpdate()->exists();

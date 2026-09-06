@@ -37,9 +37,9 @@ imkânsız ya da hukuka aykırıdır.
 
 | # | Madde | Bugün |
 | --- | --- | --- |
-| 1.1 | **Gerçek ödeme alma.** | ❌ Depoda yalnız `IyzipaySandboxGateway` var. Sandbox para tahsil etmez. Üretim sağlayıcısı, 3D Secure akışı, başarısız ödeme ve iade yolu yazılmalı. |
+| 1.1 | **Gerçek ödeme alma.** | ◐ **Kod hazır, canlı tahsilat sahibin anahtarına bağlı** (`docs/123`, FF-197). `IyzipayGateway` (üretim adresi sabit, anahtar KASADAN), üç kapılı kip anahtarı (`IYZICO_MODE` + süperadmin `PUT /admin/settings/billing-mode` + kasa), kendi kendine ödeme (`POST /workspaces/{w}/checkout`, tutar sunucudan, fatura profili zorunlu), `/api/webhooks/iyzico`, başarısız ödemede sebep + tekrar yolu, süperadmin iadesi (defterde ters kayıt, dönem düşülür). Hepsi SAHTE geçitle test edildi; gerçek kartla gerçek para henüz hareket etmedi. 3D Secure Iyzico'nun barındırdığı Checkout Form sayfasındadır; kodda ayrı akış yok. Bitti sayılması için: kasaya üretim anahtarı, üretim env'inde `live`, anahtar açık, Iyzico panelinde webhook adresi — ve ilk gerçek tahsilat + iadenin ölçülmesi. |
 | 1.2 | **Yasal metinler.** | ❌ `/terms`, `/privacy`, `/kvkk` bugün "hazırlanıyor" yazan yer tutucular (`public/legal.blade.php` 13 satır). Uzaktan satış için mesafeli satış sözleşmesi, ön bilgilendirme formu, iptal ve iade, KVKK aydınlatma, çerez politikası **ve tercih ekranı**, elektronik ileti izni gerekir. |
-| 1.3 | **Abonelik yaşam döngüsü.** | ◐ Plan kataloğu ve abonelik okuma var; iptal, plan yükseltme/düşürme, başarısız ödemede askıya alma ve geri dönüş yolu yok. |
+| 1.3 | **Abonelik yaşam döngüsü.** | ◐ Plan kataloğu, abonelik okuma ve **ödemeyle oluşturma/uzatma** var (`docs/123` K5: bir dönem = `billing.subscription.period_days`, bitişin üstüne, ödenen plan geçerli olur; iade dönemi düşer). İptal, plan düşürmede fark iadesi, başarısız ödemede askıya alma ve geri dönüş yolu yok. |
 | 1.4 | **Fatura.** | ❌ Tahsilatın karşılığında belge kesilmeli; e-arşiv/e-fatura yolu yok. |
 | 1.5 | **Yedekleme ve geri yükleme TATBİKATI.** | ◐ Kanıt uçları var (`/security/evidence/backup-restore`); gerçek bir geri yükleme denemesi ve kaydı yok. Denenmemiş bir yedek, yedek değildir. |
 | 1.6 | **Destek kanalı ve yanıt taahhüdü.** | ◐ İletişim formu var; taahhüt ve takip yok. |
@@ -51,8 +51,10 @@ kaybedersek geri getirebildiğimizi bir tatbikatla göstermiş oluruz.
 
 **kullaniciYolculugu:** Kadıköy'deki bir kebapçı fiyatlandırma sayfasından
 "Pro"yu seçer, kartını girer, 3D Secure ekranından geçer, e-postasına faturası
-düşer, menüsünü yayınlar ve masalarına kart basar. Bugün bu yolculuk **ödeme
-adımında** durur.
+düşer, menüsünü yayınlar ve masalarına kart basar. Bugün bu yolculuk kod
+düzeyinde ödeme adımını geçer ve sandbox'ta prova edilir (`docs/123`);
+gerçek kartla tahsilat kasadaki üretim anahtarına bağlıdır ve yolculuk
+**fatura adımında** durur (1.4).
 
 ---
 

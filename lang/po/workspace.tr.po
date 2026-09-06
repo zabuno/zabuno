@@ -400,6 +400,126 @@ msgstr "Paz"
 msgid "workspace.billing.changePlan.button"
 msgstr "Planı değiştir"
 
+#: workspace:workspace.billing.checkout.description
+msgid "workspace.billing.checkout.description"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.invalidRedirect
+msgid "workspace.billing.checkout.invalidRedirect"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.latest.continue
+msgid "workspace.billing.checkout.latest.continue"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.latest.failed
+msgid "workspace.billing.checkout.latest.failed"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.latest.failedHint
+msgid "workspace.billing.checkout.latest.failedHint"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.latest.failedNoReason
+msgid "workspace.billing.checkout.latest.failedNoReason"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.latest.initiated
+msgid "workspace.billing.checkout.latest.initiated"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.latest.refunded
+msgid "workspace.billing.checkout.latest.refunded"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.latest.succeeded
+msgid "workspace.billing.checkout.latest.succeeded"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.mode.live
+msgid "workspace.billing.checkout.mode.live"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.mode.sandbox
+msgid "workspace.billing.checkout.mode.sandbox"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.plan.empty
+msgid "workspace.billing.checkout.plan.empty"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.plan.error
+msgid "workspace.billing.checkout.plan.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.plan.legend
+msgid "workspace.billing.checkout.plan.legend"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.plan.loading
+msgid "workspace.billing.checkout.plan.loading"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.plan.price
+msgid "workspace.billing.checkout.plan.price"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.planNotPurchasable
+msgid "workspace.billing.checkout.planNotPurchasable"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.proceed
+msgid "workspace.billing.checkout.proceed"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.proceeding
+msgid "workspace.billing.checkout.proceeding"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.profile.add
+msgid "workspace.billing.checkout.profile.add"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.profile.edit
+msgid "workspace.billing.checkout.profile.edit"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.profile.error
+msgid "workspace.billing.checkout.profile.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.profile.heading
+msgid "workspace.billing.checkout.profile.heading"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.profile.loading
+msgid "workspace.billing.checkout.profile.loading"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.profile.missing
+msgid "workspace.billing.checkout.profile.missing"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.profile.summary.taxNumber
+msgid "workspace.billing.checkout.profile.summary.taxNumber"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.region
+msgid "workspace.billing.checkout.region"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.retry
+msgid "workspace.billing.checkout.retry"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.status.error
+msgid "workspace.billing.checkout.status.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.status.loading
+msgid "workspace.billing.checkout.status.loading"
+msgstr ""
+
 #: workspace:workspace.billing.currentPlan.empty
 msgid "workspace.billing.currentPlan.empty"
 msgstr "Mevcut planınız henüz yüklenmedi."
@@ -631,6 +751,54 @@ msgstr "Tekrar dene"
 #: workspace:workspace.billing.plan.unavailable
 msgid "workspace.billing.plan.unavailable"
 msgstr "Plan bilgisi henüz yok."
+
+#: workspace:workspace.billing.profile.cancel
+msgid "workspace.billing.profile.cancel"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.address
+msgid "workspace.billing.profile.field.address"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.city
+msgid "workspace.billing.profile.field.city"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.country
+msgid "workspace.billing.profile.field.country"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.countryHelp
+msgid "workspace.billing.profile.field.countryHelp"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.email
+msgid "workspace.billing.profile.field.email"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.legalName
+msgid "workspace.billing.profile.field.legalName"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.phone
+msgid "workspace.billing.profile.field.phone"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.taxNumber
+msgid "workspace.billing.profile.field.taxNumber"
+msgstr ""
+
+#: workspace:workspace.billing.profile.field.taxOffice
+msgid "workspace.billing.profile.field.taxOffice"
+msgstr ""
+
+#: workspace:workspace.billing.profile.save
+msgid "workspace.billing.profile.save"
+msgstr ""
+
+#: workspace:workspace.billing.profile.saveError
+msgid "workspace.billing.profile.saveError"
+msgstr ""
 
 #: workspace:workspace.billing.recordPayment.button
 msgid "workspace.billing.recordPayment.button"

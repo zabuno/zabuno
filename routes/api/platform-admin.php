@@ -10,14 +10,17 @@ use App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController;
 use App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController;
 use App\Http\Controllers\PlatformAdmin\ListProviderCredentialsController;
 use App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController;
+use App\Http\Controllers\PlatformAdmin\RefundPaymentTransactionController;
 use App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController;
 use App\Http\Controllers\PlatformAdmin\ShowAiAuditController;
+use App\Http\Controllers\PlatformAdmin\ShowBillingModeController;
 use App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController;
 use App\Http\Controllers\PlatformAdmin\StoreManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\StoreManualPaymentController;
 use App\Http\Controllers\PlatformAdmin\StoreProviderConnectionController;
 use App\Http\Controllers\PlatformAdmin\StoreProviderCredentialController;
 use App\Http\Controllers\PlatformAdmin\StoreReleaseAttestationController;
+use App\Http\Controllers\PlatformAdmin\UpdateBillingModeController;
 use App\Http\Controllers\PlatformAdmin\UpdateProviderConnectionController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +34,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/admin/workspaces', ListManagedWorkspacesController::class);
         Route::get('/admin/workspaces/{workspace}/subscription', ShowManagedSubscriptionController::class);
         Route::post('/admin/workspaces/{workspace}/manual-payments', StoreManualPaymentController::class)->middleware('throttle:5,1');
+        // İADE (docs/107 Faz 1.1, docs/123): süperadmin, sebep zorunlu,
+        // defterde ters kayıt, denetim satırı. Manuel ödemeyle aynı hız sınırı.
+        Route::post('/admin/workspaces/{workspace}/transactions/{transaction}/refund', RefundPaymentTransactionController::class)->middleware('throttle:5,1');
+        // KİP ANAHTARI (docs/123): canlı tahsilat yalnız kasa dolu VE
+        // süperadmin açıkça açtıysa; her değişim denetime yazılır.
+        Route::get('/admin/settings/billing-mode', ShowBillingModeController::class);
+        Route::put('/admin/settings/billing-mode', UpdateBillingModeController::class)->middleware('throttle:20,1');
 
         // Sağlayıcı kimlik-bilgisi kasası — `docs/94`. Yazma uçları
         // superadmin arkasında ve throttle'lı; yine de sır cevaba çıkmaz.
