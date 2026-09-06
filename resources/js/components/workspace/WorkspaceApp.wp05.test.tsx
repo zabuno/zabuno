@@ -369,8 +369,11 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
 
         const billingRegion = main.querySelector('#section-billing') as HTMLElement;
 
+        // Bölge başlığı TAM eşleşir: ödeme paneli (FF-197) aynı bölgeye
+        // "Billing details" başlığını da getirdi; gevşek /Billing/ ikisini
+        // birden bulup sorguyu belirsizleştiriyordu.
         expect(
-            within(billingRegion).getByRole('heading', { name: /Billing/i }),
+            within(billingRegion).getByRole('heading', { name: /^Billing$/i }),
         ).toBeInTheDocument();
 
         const planRegion = within(billingRegion).getByRole('region', { name: /^plan$/i });
