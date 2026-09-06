@@ -6208,6 +6208,98 @@ msgstr ""
 msgid "workspace.shell.notifications.unavailable"
 msgstr ""
 
+#: workspace:workspace.support.description
+msgid "workspace.support.description"
+msgstr ""
+
+#: workspace:workspace.support.form.error
+msgid "workspace.support.form.error"
+msgstr ""
+
+#: workspace:workspace.support.form.heading
+msgid "workspace.support.form.heading"
+msgstr ""
+
+#: workspace:workspace.support.form.message
+msgid "workspace.support.form.message"
+msgstr ""
+
+#: workspace:workspace.support.form.message.help
+msgid "workspace.support.form.message.help"
+msgstr ""
+
+#: workspace:workspace.support.form.sent
+msgid "workspace.support.form.sent"
+msgstr ""
+
+#: workspace:workspace.support.form.sentNoCopy
+msgid "workspace.support.form.sentNoCopy"
+msgstr ""
+
+#: workspace:workspace.support.form.subject
+msgid "workspace.support.form.subject"
+msgstr ""
+
+#: workspace:workspace.support.form.subject.help
+msgid "workspace.support.form.subject.help"
+msgstr ""
+
+#: workspace:workspace.support.form.submit
+msgid "workspace.support.form.submit"
+msgstr ""
+
+#: workspace:workspace.support.form.submitting
+msgid "workspace.support.form.submitting"
+msgstr ""
+
+#: workspace:workspace.support.help.lead
+msgid "workspace.support.help.lead"
+msgstr ""
+
+#: workspace:workspace.support.help.link
+msgid "workspace.support.help.link"
+msgstr ""
+
+#: workspace:workspace.support.list.answered
+msgid "workspace.support.list.answered"
+msgstr ""
+
+#: workspace:workspace.support.list.empty
+msgid "workspace.support.list.empty"
+msgstr ""
+
+#: workspace:workspace.support.list.error
+msgid "workspace.support.list.error"
+msgstr ""
+
+#: workspace:workspace.support.list.heading
+msgid "workspace.support.list.heading"
+msgstr ""
+
+#: workspace:workspace.support.list.loading
+msgid "workspace.support.list.loading"
+msgstr ""
+
+#: workspace:workspace.support.list.received
+msgid "workspace.support.list.received"
+msgstr ""
+
+#: workspace:workspace.support.status.answered
+msgid "workspace.support.status.answered"
+msgstr ""
+
+#: workspace:workspace.support.status.closed
+msgid "workspace.support.status.closed"
+msgstr ""
+
+#: workspace:workspace.support.status.received
+msgid "workspace.support.status.received"
+msgstr ""
+
+#: workspace:workspace.support.title
+msgid "workspace.support.title"
+msgstr ""
+
 #: workspace:workspace.team.heading
 msgid "workspace.team.heading"
 msgstr ""

@@ -6208,6 +6208,98 @@ msgstr "Team"
 msgid "workspace.shell.notifications.unavailable"
 msgstr "Notifications unavailable"
 
+#: workspace:workspace.support.description
+msgid "workspace.support.description"
+msgstr "Ask for help from inside your workspace. Every request gets a reference number and stays listed here with its status."
+
+#: workspace:workspace.support.form.error
+msgid "workspace.support.form.error"
+msgstr "Your request could not be sent. Try again."
+
+#: workspace:workspace.support.form.heading
+msgid "workspace.support.form.heading"
+msgstr "New request"
+
+#: workspace:workspace.support.form.message
+msgid "workspace.support.form.message"
+msgstr "What is happening?"
+
+#: workspace:workspace.support.form.message.help
+msgid "workspace.support.form.message.help"
+msgstr "Tell us what you expected and what you saw instead. We reply to {email}."
+
+#: workspace:workspace.support.form.sent
+msgid "workspace.support.form.sent"
+msgstr "Your request {reference} was received. We sent a confirmation to {email}."
+
+#: workspace:workspace.support.form.sentNoCopy
+msgid "workspace.support.form.sentNoCopy"
+msgstr "Your request {reference} was received. The confirmation email could not be sent, but the request is recorded and listed below."
+
+#: workspace:workspace.support.form.subject
+msgid "workspace.support.form.subject"
+msgstr "Subject"
+
+#: workspace:workspace.support.form.subject.help
+msgid "workspace.support.form.subject.help"
+msgstr "One line: what is not working, or what you need."
+
+#: workspace:workspace.support.form.submit
+msgid "workspace.support.form.submit"
+msgstr "Send request"
+
+#: workspace:workspace.support.form.submitting
+msgid "workspace.support.form.submitting"
+msgstr "Sending…"
+
+#: workspace:workspace.support.help.lead
+msgid "workspace.support.help.lead"
+msgstr "Many questions are already answered in the help articles."
+
+#: workspace:workspace.support.help.link
+msgid "workspace.support.help.link"
+msgstr "Open help articles"
+
+#: workspace:workspace.support.list.answered
+msgid "workspace.support.list.answered"
+msgstr "Answered {date}"
+
+#: workspace:workspace.support.list.empty
+msgid "workspace.support.list.empty"
+msgstr "No requests yet. When you send one, it appears here with its reference and status."
+
+#: workspace:workspace.support.list.error
+msgid "workspace.support.list.error"
+msgstr "Your requests could not be loaded."
+
+#: workspace:workspace.support.list.heading
+msgid "workspace.support.list.heading"
+msgstr "Your requests"
+
+#: workspace:workspace.support.list.loading
+msgid "workspace.support.list.loading"
+msgstr "Loading your requests…"
+
+#: workspace:workspace.support.list.received
+msgid "workspace.support.list.received"
+msgstr "Received {date}"
+
+#: workspace:workspace.support.status.answered
+msgid "workspace.support.status.answered"
+msgstr "Answered"
+
+#: workspace:workspace.support.status.closed
+msgid "workspace.support.status.closed"
+msgstr "Closed"
+
+#: workspace:workspace.support.status.received
+msgid "workspace.support.status.received"
+msgstr "Received"
+
+#: workspace:workspace.support.title
+msgid "workspace.support.title"
+msgstr "Support"
+
 #: workspace:workspace.team.heading
 msgid "workspace.team.heading"
 msgstr "Team"

@@ -488,6 +488,37 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/menus/{menu}/ratings||App\Http\Controllers\Rating\ListMenuRatingsController|api,auth:sanctum,verified',
         'PUT|api/workspaces/{workspace}/ratings/products/{product}/reply||App\Http\Controllers\Rating\UpdateRatingReplyController|api,auth:sanctum,verified',
         'DELETE|api/workspaces/{workspace}/ratings/products/{product}/reply||App\Http\Controllers\Rating\DeleteRatingReplyController|api,auth:sanctum,verified',
+        /*
+            DESTEK KANALI (FF-201, `docs/125`, `docs/107` Faz 1.6).
+
+            Dört imza donduruluyor, çünkü panelin Destek ekranı ilk ikisini
+            doğrudan kuruyor ve süperadmin ekranı (henüz yok, `PlatformApp`
+            başka pakette) son ikisini kuracak.
+
+              - `GET .../support-requests` sahibin bu çalışma alanından
+                açtığı talepler + yapılandırılmışsa taahhüt cümlesi. Yetki
+                `workspace.manage`: destek bir yönetim kanalıdır.
+              - `POST .../support-requests` yeni talep; ad ve e-posta
+                HESAPTAN gelir. `throttle:5,1` — ekip davetiyle aynı sınır;
+                sınırsız bir talep ucu kuyruğu doldurmanın en ucuz yolu.
+              - `GET api/admin/support-requests` her kanaldan kuyruk,
+                `?status=` süzgeciyle. Süperadmin arkasında, hız sınırsız:
+                salt okunur.
+              - `PUT api/admin/support-requests/{supportRequest}/status`
+                durum geçişi; ilk `answered` geçişi `first_response_at`
+                damgasını bir kez atar. `throttle:20,1` — diğer süperadmin
+                yazma uçlarıyla aynı.
+
+            REFERANSLA KAMUYA AÇIK DURUM SORGUSU BU LİSTEDE YOKTUR ve olmayacak:
+            referans kişisel veri anahtarı olurdu. Durum yalnız panelde ve
+            e-postadadır. Listenin SONUNDA, `rating.php` gibi: hiçbir mevcut
+            yolu gölgelemez ve sona eklemek dondurulmuş listeyi ortasından
+            kaydırmaz.
+        */
+        'GET|api/workspaces/{workspace}/support-requests||App\Http\Controllers\Support\ListWorkspaceSupportRequestsController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/support-requests||App\Http\Controllers\Support\StoreWorkspaceSupportRequestController|api,auth:sanctum,throttle:5,1,verified',
+        'GET|api/admin/support-requests||App\Http\Controllers\PlatformAdmin\ListSupportRequestsController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
+        'PUT|api/admin/support-requests/{supportRequest}/status||App\Http\Controllers\PlatformAdmin\UpdateSupportRequestStatusController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
     ];
 
     /**
@@ -528,6 +559,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
             sona eklemek dondurulmuş imza listesini ortasından kaydırmıyor.
         */
         'routes/api/rating.php',
+        /*
+            DESTEK KANALI (FF-201, `docs/125`). Aynı gerekçeyle sonda:
+            panel ve süperadmin uçları tek alan dosyasında; hiçbir mevcut
+            yolu gölgelemiyor.
+        */
+        'routes/api/support.php',
     ];
 
     #[Test]

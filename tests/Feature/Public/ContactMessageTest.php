@@ -22,6 +22,10 @@ use Tests\TestCase;
  * bağlamak, sağlayıcı gelene kadar formu ölü tutardı — yani sorunun kendisi
  * devam ederdi.
  *
+ * FF-201 (`docs/125`): satır artık `support_requests` tablosuna düşer ve
+ * bir referans alır; `contact_messages` durur ama yazılmaz. Buradaki
+ * gereksinimler değişmedi, yalnız ölçüldükleri tablo değişti.
+ *
  * Requirement IDs: CONTACT-PERSISTED-01, CONTACT-CONFIRMED-01,
  * CONTACT-VALIDATED-01, CONTACT-NO-AUTH-01, CONTACT-HONEYPOT-01.
  */
@@ -65,7 +69,7 @@ final class ContactMessageTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('contact.sent');
 
-        $row = DB::table('contact_messages')->first();
+        $row = DB::table('support_requests')->first();
 
         self::assertNotNull($row, 'CONTACT-PERSISTED-01: mesaj kaybolmamalı.');
         self::assertSame('Hüseyin', (string) $row->name);
@@ -85,7 +89,7 @@ final class ContactMessageTest extends TestCase
         $this->post('/contact', $this->message(['email' => 'bu-bir-adres-degil']))
             ->assertSessionHasErrors('email');
 
-        self::assertSame(0, DB::table('contact_messages')->count());
+        self::assertSame(0, DB::table('support_requests')->count());
     }
 
     public function test_an_empty_message_is_refused(): void
@@ -93,7 +97,7 @@ final class ContactMessageTest extends TestCase
         $this->post('/contact', $this->message(['message' => '   ']))
             ->assertSessionHasErrors('message');
 
-        self::assertSame(0, DB::table('contact_messages')->count());
+        self::assertSame(0, DB::table('support_requests')->count());
     }
 
     // --- CONTACT-HONEYPOT-01 ----------------------------------------------
@@ -113,7 +117,7 @@ final class ContactMessageTest extends TestCase
 
         self::assertSame(
             0,
-            DB::table('contact_messages')->count(),
+            DB::table('support_requests')->count(),
             'CONTACT-HONEYPOT-01: bal küpü dolu bir gönderim saklanmamalı.'
         );
     }
