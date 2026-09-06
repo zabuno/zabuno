@@ -32,10 +32,12 @@ const FROZEN_MODULE_FILENAMES = [
     'publication.ts',
     'ratings.ts',
     'shell.ts',
+    // FF-201: ON ÜÇÜNCÜ modül dosyası — destek ekranı (`docs/125`).
+    'support.ts',
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1576;
+const FROZEN_LEGACY_KEY_COUNT = 1599;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -172,8 +174,20 @@ const FROZEN_LEGACY_KEY_COUNT = 1576;
 // FF-19x (docs/122 Y4): 1541 → 1576, ON İKİNCİ modül dosyası (`ratings.ts`).
 // Panelde puanlama ekranı: misafirin verdiği oy artık sahibin gözünün
 // önünde — eşikli özet, ürün başına dağılım, sahibin yanıtı ve boş durum.
+// main ile birleştikten SONRA yeniden hesaplandı (ratings.ts + support.ts).
+// FF-201: 1576 → 1599, yirmi üç anahtar ve ON ÜÇÜNCÜ modül dosyası
+// (`support.ts`). Destek ekranı (`docs/125`): başlık ve açıklama, yardım
+// bağlantısı (2), yeni talep formu (etiketler, yardım cümleleri, düğme ve
+// ÜÇ sonuç cümlesi — alındı e-postası çıktı / çıkmadı / istek düştü),
+// liste (başlık, üç durum cümlesi, iki tarih satırı) ve üç durum kelimesi.
+//
+// YANIT TAAHHÜDÜ İÇİN ANAHTAR YOK ve olmayacak: cümle sunucudan gelir
+// (`site.support.commitment`), çünkü iletişim sayfası, alındı e-postası ve
+// panel tek kaynağı okumak zorunda. Buraya ikinci bir cümle yazmak, iki
+// cümlenin ayrıştığı günü hazırlamak olurdu. "7/24", "en kısa sürede" gibi
+// bir yedek cümle de yok — vaat sahibin kararıdır, katalogun değil.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f998a7ad178e7beafd6f1a7b0330829c0768274f0678be3fe2551559ec9fba8d';
+    '9a92fc71968a8094e3fea18587729399f59202650a120ea513f0f2451b4014b5';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

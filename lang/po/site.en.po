@@ -40,6 +40,10 @@ msgstr "Your name"
 msgid "site.contact.sent"
 msgstr "Thank you — we received your message and will reply to the address you gave."
 
+#: site:site.contact.sentReference
+msgid "site.contact.sentReference"
+msgstr "Your reference is {reference}. Quote it if you write to us again."
+
 #: site:site.contact.submit
 msgid "site.contact.submit"
 msgstr "Send message"
@@ -451,6 +455,38 @@ msgstr "Ask us"
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr "Skip to main content"
+
+#: site:site.support.ack.greeting
+msgid "site.support.ack.greeting"
+msgstr "Hello {name},"
+
+#: site:site.support.ack.keep
+msgid "site.support.ack.keep"
+msgstr "Keep this reference and quote it if you write to us again."
+
+#: site:site.support.ack.panel
+msgid "site.support.ack.panel"
+msgstr "You can follow the status of this request in your Zabuno panel, under Support."
+
+#: site:site.support.ack.received
+msgid "site.support.ack.received"
+msgstr "We received your request and gave it the reference {reference}."
+
+#: site:site.support.ack.reply
+msgid "site.support.ack.reply"
+msgstr "You can reply to this email to add more detail."
+
+#: site:site.support.ack.subject
+msgid "site.support.ack.subject"
+msgstr "Zabuno — we received your request {reference}"
+
+#: site:site.support.ack.subjectLine
+msgid "site.support.ack.subjectLine"
+msgstr "Subject: {subject}"
+
+#: site:site.support.commitment
+msgid "site.support.commitment"
+msgstr "We reply within {hours} hours."
 
 #: site:site.title.emailVerified
 msgid "site.title.emailVerified"

@@ -42,7 +42,7 @@ imkânsız ya da hukuka aykırıdır.
 | 1.3 | **Abonelik yaşam döngüsü.** | ◐ Plan kataloğu ve abonelik okuma var; iptal, plan yükseltme/düşürme, başarısız ödemede askıya alma ve geri dönüş yolu yok. |
 | 1.4 | **Fatura.** | ❌ Tahsilatın karşılığında belge kesilmeli; e-arşiv/e-fatura yolu yok. |
 | 1.5 | **Yedekleme ve geri yükleme TATBİKATI.** | ◐ Kanıt uçları var (`/security/evidence/backup-restore`); gerçek bir geri yükleme denemesi ve kaydı yok. Denenmemiş bir yedek, yedek değildir. |
-| 1.6 | **Destek kanalı ve yanıt taahhüdü.** | ◐ İletişim formu var; taahhüt ve takip yok. |
+| 1.6 | **Destek kanalı ve yanıt taahhüdü.** | ◐ Kanal var (`docs/125`): kamu formu ve panel `support_requests`'e yazar, her talep referans alır (`ZB-XXXXX`), gönderene referanslı alındı e-postası çıkar ve sonucu kayda geçer, durum panelde görünür; süperadmin uçları var. **Eksik:** taahhüdün SAYISI sahibin kararı — verilene kadar hiçbir yüzey süre yazmaz; süperadmin cevap ekranı yok (`docs/122` Y7); destek adresi (`SUPPORT_EMAIL`) boş. |
 | 1.7 | **İlk 15 dakika.** | ◐ Yardım makalesi var; ürün içi rehberli kurulum yok. |
 
 **Bitti ne demek:** Gerçek bir restoran kartını girer, para hesaba geçer, fatura

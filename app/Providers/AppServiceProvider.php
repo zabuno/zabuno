@@ -76,6 +76,9 @@ use App\Application\Security\Port\BackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
 use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
+use App\Application\Support\Port\SupportNotifierPort;
+use App\Application\Support\Port\SupportReferenceGeneratorPort;
+use App\Application\Support\Port\SupportRequestRepositoryPort;
 use App\Application\Team\Port\TeamInvitationNotifierPort;
 use App\Application\Team\Port\TeamInvitationRepositoryPort;
 use App\Application\Team\Port\TeamMemberRepositoryPort;
@@ -175,6 +178,9 @@ use App\Infrastructure\Security\Execution\SymfonyTenantIsolationSuiteRunner;
 use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
+use App\Infrastructure\Support\Mail\MailSupportNotifier;
+use App\Infrastructure\Support\Persistence\EloquentSupportRequestRepository;
+use App\Infrastructure\Support\Reference\RandomSupportReferenceGenerator;
 use App\Infrastructure\Team\Mail\MailTeamInvitationNotifier;
 use App\Infrastructure\Team\Persistence\EloquentTeamInvitationRepository;
 use App\Infrastructure\Team\Persistence\EloquentTeamMemberRepository;
@@ -605,6 +611,10 @@ final class AppServiceProvider extends ServiceProvider
         // Davet e-postası kasadan seçilen taşıyıcıyla çıkar ve çıkmadıysa
         // sebebi kayda geçer (`docs/110` P0-06).
         $this->app->bind(TeamInvitationNotifierPort::class, MailTeamInvitationNotifier::class);
+        // Destek kanalı (FF-201, `docs/125`): kayıt, referans, iki e-posta.
+        $this->app->bind(SupportRequestRepositoryPort::class, EloquentSupportRequestRepository::class);
+        $this->app->bind(SupportReferenceGeneratorPort::class, RandomSupportReferenceGenerator::class);
+        $this->app->bind(SupportNotifierPort::class, MailSupportNotifier::class);
         $this->app->bind(PlanCatalogRepositoryPort::class, EloquentPlanCatalogRepository::class);
         $this->app->bind(PlanManagementRepositoryPort::class, EloquentPlanManagementRepository::class);
         $this->app->bind(HostCapabilityProbePort::class, RuntimeHostCapabilityProbe::class);

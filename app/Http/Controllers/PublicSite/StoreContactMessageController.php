@@ -4,27 +4,28 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\PublicSite;
 
-use App\Application\Mail\Port\MailTransportSelectorPort;
+use App\Application\Support\Dto\NewSupportRequest;
+use App\Application\Support\UseCase\SubmitSupportRequest;
+use App\Domain\Support\SupportChannel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\StoreContactMessageRequest;
-use App\Mail\ContactMessageReceived;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Throwable;
 
 /**
- * Gelen mesajı SAKLAR — `docs/88` (P1-01).
+ * Gelen mesajı bir DESTEK TALEBİ olarak alır — `docs/88` (P1-01), FF-201
+ * ile referans ve alındı bildirimi kazandı (`docs/125`).
  *
- * Saklamak, göndermekten önce gelir. Gereksinim iletişimi gerçek e-postaya
- * bağlıyor ve o madde sağlayıcı hesabını bekliyor; ama "ulaşmak" için
- * e-posta şart değil. Saklanan bir mesaj kaybolmaz — e-postaya bağlamak,
- * sağlayıcı gelene kadar formu ölü tutardı.
+ * Saklamak göndermekten önce gelir; sıra `SubmitSupportRequest` içinde
+ * yazılı ve panelle ortaktır. Burada kalan iş kamu formuna özgü iki şey:
+ * bal küpü ve konunun mesajdan türetilmesi.
  */
 final class StoreContactMessageController extends Controller
 {
+    /** Konu sütununun sınırı; kamu formunda konu alanı yok. */
+    private const SUBJECT_LENGTH = 80;
+
     public function __construct(
-        private readonly MailTransportSelectorPort $mailTransport,
+        private readonly SubmitSupportRequest $submit,
     ) {}
 
     public function __invoke(StoreContactMessageRequest $request): RedirectResponse
@@ -36,61 +37,43 @@ final class StoreContactMessageController extends Controller
 
             Bota "yakalandın" demek, bir sonraki denemede o alanı atlamasını
             öğretirdi. İnsan bu alanı görmez, dolayısıyla dolduramaz.
+            Referans da yoktur: olmayan bir kaydın numarası uydurulmaz.
         */
-        if ($honeypot === '') {
-            $name = (string) $request->validated('name');
-            $email = (string) $request->validated('email');
-            $body = (string) $request->validated('message');
-
-            $id = (int) DB::table('contact_messages')->insertGetId([
-                'name' => $name,
-                'email' => $email,
-                'message' => $body,
-                'locale' => $request->getPreferredLanguage(['tr', 'en']),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            $this->notify($id, $name, $email, $body);
+        if ($honeypot !== '') {
+            return redirect('/contact')->with('contact.sent', true);
         }
 
-        return redirect('/contact')->with('contact.sent', true);
+        $body = (string) $request->validated('message');
+
+        $submitted = $this->submit->handle(new NewSupportRequest(
+            name: (string) $request->validated('name'),
+            email: (string) $request->validated('email'),
+            subject: self::subjectFrom($body),
+            message: $body,
+            channel: SupportChannel::PublicContact,
+            locale: $request->getPreferredLanguage(['tr', 'en']),
+            workspaceId: null,
+            userId: null,
+        ));
+
+        return redirect('/contact')
+            ->with('contact.sent', true)
+            ->with('contact.reference', $submitted->request->reference);
     }
 
     /**
-     * Bildirimi gönderir — SAKLAMADAN SONRA.
-     *
-     * Gönderim başarısız olsa bile mesaj durur ve sebebi kayda geçer:
-     * sağlayıcı bir gün cevap vermediğinde kaybolan bir talep olmamalı.
-     * Ziyaretçi bunu GÖRMEZ; gönderim bizim iç meselemiz ve onun mesajı
-     * kaybolmadı (`docs/93`).
+     * Konu MESAJIN İLK SATIRIDIR, kırpılmış. Kamu formuna konu alanı
+     * eklemek bir seçenekti; ama fiyat soran biri için "konu" fazladan
+     * bir engel ve sahibin listesinde boş bir sütun, ilk satırdan kötü.
      */
-    private function notify(int $id, string $name, string $email, string $body): void
+    private static function subjectFrom(string $body): string
     {
-        $to = config('contact.notify');
+        $firstLine = trim((string) preg_replace('/\s+/u', ' ', strtok($body, "\r\n") ?: $body));
 
-        // Adres yoksa gönderim de yok — ve bu bir hata değildir.
-        if (! is_string($to) || trim($to) === '') {
-            return;
+        if (mb_strlen($firstLine) <= self::SUBJECT_LENGTH) {
+            return $firstLine;
         }
 
-        try {
-            Mail::mailer($this->mailTransport->select())
-                ->to($to)
-                ->send(new ContactMessageReceived($name, $email, $body));
-
-            DB::table('contact_messages')->where('id', $id)->update([
-                'delivered_at' => now(),
-                'delivery_failure' => null,
-                'updated_at' => now(),
-            ]);
-        } catch (Throwable $exception) {
-            DB::table('contact_messages')->where('id', $id)->update([
-                // Sebep KIRPILIR: sütun sınırlı ve bir yığın izi burada
-                // okunmaz; ilk cümle "neden gitmedi" sorusunu cevaplar.
-                'delivery_failure' => mb_substr($exception->getMessage(), 0, 190),
-                'updated_at' => now(),
-            ]);
-        }
+        return rtrim(mb_substr($firstLine, 0, self::SUBJECT_LENGTH - 1)).'…';
     }
 }
