@@ -67,6 +67,56 @@ export const billing = {
     'workspace.billing.ledger.column.amount': 'Amount',
     'workspace.billing.ledger.column.occurredAt': 'Date',
     'workspace.billing.ledger.balances': 'Balances',
+    // Kendi kendine abonelik (docs/107 Faz 1.1 + 1.3, docs/123): plan seç →
+    // fatura profili → Iyzico ödeme sayfası. Kart alanı YOK — kart yalnız
+    // sağlayıcının sayfasına girilir.
+    'workspace.billing.checkout.region': 'Subscribe',
+    'workspace.billing.checkout.description':
+        'Choose a plan, confirm your billing details, and pay by card on the Iyzico payment page. Each payment covers {days} days.',
+    'workspace.billing.checkout.mode.sandbox': 'Test mode: no real money is charged.',
+    'workspace.billing.checkout.mode.live':
+        'You will be redirected to Iyzico to pay by card. Zabuno never stores card details.',
+    'workspace.billing.checkout.plan.legend': 'Choose a plan',
+    'workspace.billing.checkout.plan.loading': 'Loading plans…',
+    'workspace.billing.checkout.plan.empty': 'No plan can be purchased yet.',
+    'workspace.billing.checkout.plan.error': 'Plans could not be loaded.',
+    'workspace.billing.checkout.plan.price': '{price} / {days} days',
+    'workspace.billing.checkout.profile.heading': 'Billing details',
+    'workspace.billing.checkout.profile.loading': 'Loading billing details…',
+    'workspace.billing.checkout.profile.missing':
+        'Billing details are missing. Add your company name, tax number and address before paying.',
+    'workspace.billing.checkout.profile.error': 'Billing details could not be loaded.',
+    'workspace.billing.checkout.profile.add': 'Add billing details',
+    'workspace.billing.checkout.profile.edit': 'Edit billing details',
+    'workspace.billing.checkout.profile.summary.taxNumber': 'Tax number {number}',
+    'workspace.billing.checkout.proceed': 'Proceed to payment',
+    'workspace.billing.checkout.proceeding': 'Opening the payment page…',
+    'workspace.billing.checkout.invalidRedirect':
+        'Received an unsafe redirect link; cannot continue.',
+    'workspace.billing.checkout.planNotPurchasable': 'This plan cannot be purchased.',
+    'workspace.billing.checkout.status.loading': 'Loading payment status…',
+    'workspace.billing.checkout.status.error': 'Payment status could not be loaded.',
+    'workspace.billing.checkout.latest.failed': 'Payment failed: {reason}',
+    'workspace.billing.checkout.latest.failedNoReason': 'Payment failed.',
+    'workspace.billing.checkout.latest.failedHint': 'Nothing was charged. You can try again.',
+    'workspace.billing.checkout.latest.succeeded': 'Your last payment succeeded.',
+    'workspace.billing.checkout.latest.initiated':
+        'A payment is in progress. If you left the payment page, you can continue or start again.',
+    'workspace.billing.checkout.latest.continue': 'Continue to the payment page',
+    'workspace.billing.checkout.latest.refunded': 'Your last payment was refunded.',
+    'workspace.billing.checkout.retry': 'Retry',
+    'workspace.billing.profile.field.legalName': 'Company name',
+    'workspace.billing.profile.field.taxNumber': 'Tax number',
+    'workspace.billing.profile.field.taxOffice': 'Tax office',
+    'workspace.billing.profile.field.address': 'Address',
+    'workspace.billing.profile.field.city': 'City',
+    'workspace.billing.profile.field.country': 'Country code',
+    'workspace.billing.profile.field.countryHelp': 'Two-letter country code, for example TR.',
+    'workspace.billing.profile.field.email': 'Billing email',
+    'workspace.billing.profile.field.phone': 'Phone',
+    'workspace.billing.profile.save': 'Save billing details',
+    'workspace.billing.profile.cancel': 'Cancel',
+    'workspace.billing.profile.saveError': 'Billing details could not be saved.',
 } as const;
 
 declare module '../workspace' {

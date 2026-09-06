@@ -14,6 +14,12 @@ type PlanCatalogStatus = 'loading' | 'error' | 'success';
 
 type PlanCatalogProps = {
     workspaceId: number;
+    /**
+     * Katalog yüklendikçe sayfaya haber verir (docs/123): abonelik paneli
+     * aynı listeyi İKİNCİ kez indirmez. Kimliği değişse de yeniden fetch
+     * tetiklemez — en son verilen çağrılır.
+     */
+    onPlansChange?: (status: PlanCatalogStatus, plans: Plan[]) => void;
     label: string;
     loadingText: string;
     emptyText: string;
@@ -92,6 +98,7 @@ function derivePriceLabel(plan: Plan, priceUnavailableText: string): string {
  */
 export function PlanCatalog({
     workspaceId,
+    onPlansChange,
     label,
     loadingText,
     emptyText,
@@ -102,10 +109,16 @@ export function PlanCatalog({
     const [status, setStatus] = useState<PlanCatalogStatus>('loading');
     const [plans, setPlans] = useState<Plan[]>([]);
     const requestRef = useRef(0);
+    const onPlansChangeRef = useRef(onPlansChange);
+
+    useEffect(() => {
+        onPlansChangeRef.current = onPlansChange;
+    }, [onPlansChange]);
 
     const fetchPlans = useCallback(async () => {
         const requestId = ++requestRef.current;
         setStatus('loading');
+        onPlansChangeRef.current?.('loading', []);
 
         try {
             const response = await fetch(`/api/workspaces/${workspaceId}/plans`, {
@@ -119,6 +132,7 @@ export function PlanCatalog({
 
             if (!response.ok) {
                 setStatus('error');
+                onPlansChangeRef.current?.('error', []);
 
                 return;
             }
@@ -127,15 +141,18 @@ export function PlanCatalog({
 
             if (!isValidPlanList(body)) {
                 setStatus('error');
+                onPlansChangeRef.current?.('error', []);
 
                 return;
             }
 
             setPlans(body);
             setStatus('success');
+            onPlansChangeRef.current?.('success', body);
         } catch {
             if (requestRef.current === requestId) {
                 setStatus('error');
+                onPlansChangeRef.current?.('error', []);
             }
         }
     }, [workspaceId]);

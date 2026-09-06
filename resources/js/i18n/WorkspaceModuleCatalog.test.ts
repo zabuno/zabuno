@@ -35,7 +35,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1576;
+const FROZEN_LEGACY_KEY_COUNT = 1618;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -172,8 +172,20 @@ const FROZEN_LEGACY_KEY_COUNT = 1576;
 // FF-19x (docs/122 Y4): 1541 → 1576, ON İKİNCİ modül dosyası (`ratings.ts`).
 // Panelde puanlama ekranı: misafirin verdiği oy artık sahibin gözünün
 // önünde — eşikli özet, ürün başına dağılım, sahibin yanıtı ve boş durum.
+// main ile birleştikten SONRA yeniden hesaplandı (ratings.ts + billing.ts).
+// FF-197: 1576 → 1618, kırk iki anahtar — kendi kendine abonelik
+// (docs/107 Faz 1.1 + 1.3, docs/123). Otuz biri ödeme panelinin cümleleri
+// (kip uyarısı, plan seçimi, fatura profili durumu, ödeme durumu, son
+// ödemenin hâli), on biri fatura profili formunun alan adları ve düğmeleri.
+//
+// İKİ ŞEY BİLEREK ANAHTARSIZ: kart numarası/son kullanma/CVV etiketleri
+// (kart yalnız Iyzico'nun sayfasına girilir; bu panelde o alan YOKTUR ve
+// bir etiket yazmak olmayan bir alanı ilan etmek olurdu) ve "ödeme alındı,
+// fatura kesildi" cümlesi (fatura yolu bu pakette yok — docs/107 Faz 1.4).
+// "Test mode" cümlesi sandbox kipinde okunur: prova gerçek yolun aynısıdır
+// ve sahip hangi kipte olduğunu tahmin etmek zorunda kalmaz.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f998a7ad178e7beafd6f1a7b0330829c0768274f0678be3fe2551559ec9fba8d';
+    'ed74cda71a6f75a1cbe35a4cdd815de6094adb391ec8bb0e8e22b16501cd9438';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
