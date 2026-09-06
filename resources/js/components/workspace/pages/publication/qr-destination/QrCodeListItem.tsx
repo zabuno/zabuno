@@ -87,7 +87,7 @@ function CopyUrlButton({ url }: { url: string }) {
                     .then(() => setCopied(true))
                     .catch(() => setCopied(false));
             }}
-            className="inline-flex min-h-[var(--density-hit-area-min)] items-center gap-[var(--space-1)] rounded-[var(--radius-md)] px-[var(--space-2)] text-meta text-fg-secondary hover:bg-surface-hover hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            className="inline-flex min-h-[var(--density-hit-area-min)] shrink-0 items-center gap-[var(--space-1)] rounded-[var(--radius-md)] px-[var(--space-2)] text-meta text-fg-secondary hover:bg-surface-hover hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
             {copied ? <Check size={14} weight="bold" /> : <Copy size={14} />}
             {t(
@@ -203,7 +203,19 @@ export function QrCodeListItem({
                 />
             </span>
 
-            <span className="flex flex-wrap items-center gap-[var(--space-2)]">
+            {/*
+                ADRES VE KOPYALA AYNI SATIRDA — `docs/117` M6.
+
+                Ölçüldü (320×568): kısaltılmış adres 182 piksel, "Bağlantıyı
+                kopyala" 101; ikisi 288 piksellik satıra ÜÇ piksel sığmıyor ve
+                düğme kendi satırına düşüyordu. Her satır 44 piksel boy
+                kazanıyordu — kırk masalı bir salonda 1.760 piksel fazladan
+                kaydırma, hiçbir bilgi eklemeden.
+
+                Satır artık sarmaz: adres sıkışabilir (`min-w-0`, üç nokta
+                zaten var, tam adres `title`ta ve kopyada), düğme sıkışmaz.
+            */}
+            <span className="flex items-center gap-[var(--space-2)]">
                 {/*
                     Adres YENİ SEKMEDE açılır: kodu denemek için tıklayan
                     sahip, yönetim panelinden çıkıp gitmemeli.
@@ -213,7 +225,7 @@ export function QrCodeListItem({
                     target="_blank"
                     rel="noopener noreferrer"
                     title={item.resolverUrl}
-                    className="inline-flex min-h-[var(--density-hit-area-min)] max-w-full items-center truncate text-meta text-fg-muted underline underline-offset-2 hover:text-fg-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                    className="inline-flex min-h-[var(--density-hit-area-min)] min-w-0 items-center truncate text-meta text-fg-muted underline underline-offset-2 hover:text-fg-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                     {shortUrl(item.resolverUrl)}
                 </a>
@@ -245,16 +257,28 @@ export function QrCodeListItem({
                         {t('workspace.publication.qrDestination.move.noOther')}
                     </p>
                 ) : (
-                    <div className="flex flex-wrap items-center gap-2">
+                    /*
+                        ŞUBE SEÇİCİ TAM SATIR, EYLEMLER YAN YANA — `docs/117` M6.
+
+                        Ölçüldü (320×568): seçici ile "Taşı" aynı satırdaydı,
+                        "Vazgeç" tek başına bir alt satıra düşüyordu — bir
+                        kararın iki düğmesi iki ayrı yerde. Seçici satırın
+                        tamamını alır (şube adı kesilmez), iki düğme birlikte
+                        durur.
+
+                        Geniş ekranda dört parça eskisi gibi tek satırdadır
+                        (`sm:basis-auto`): masaüstü görünümü değişmez.
+                    */
+                    <div className="flex flex-wrap items-center gap-[var(--space-2)]">
                         <label
-                            className="inline-flex min-h-[var(--density-hit-area-min)] items-center text-body text-fg-secondary"
+                            className="inline-flex min-h-[var(--density-hit-area-min)] basis-full items-center text-body text-fg-secondary sm:basis-auto"
                             htmlFor={`qr-move-${item.id}`}
                         >
                             {t('workspace.publication.qrDestination.move.label')}
                         </label>
                         <select
                             id={`qr-move-${item.id}`}
-                            className="min-h-[var(--density-hit-area-min)] rounded-md border border-border bg-surface px-2 text-body"
+                            className="min-h-[var(--density-hit-area-min)] basis-full rounded-md border border-border bg-surface px-[var(--space-2)] text-body sm:basis-auto"
                             value={target}
                             onChange={(event) => setTarget(event.target.value)}
                         >

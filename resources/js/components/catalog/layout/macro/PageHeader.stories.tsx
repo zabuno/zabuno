@@ -38,6 +38,24 @@ export const WithBreadcrumbsAndActions: Story = {
     },
 };
 
+/**
+ * 320 pikselde başlık uzunken eylemler kendi satırına iner ve KIRPILMAZ
+ * (`docs/117` M9). Bu hikâye o sarmayı görünür ve ölçülür kılar; kısa
+ * başlıklı hikâyede sarma hiç olmuyordu.
+ */
+export const LongTitleWrapsActions: Story = {
+    args: {
+        title: 'Menu catalog and publishing',
+        description: 'Everything that changes what guests see when they scan a code.',
+        actions: (
+            <>
+                <Button>Publish</Button>
+                <Button>Preview</Button>
+            </>
+        ),
+    },
+};
+
 export const RightToLeft: Story = {
     args: {
         title: 'الطلبات',

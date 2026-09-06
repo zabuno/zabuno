@@ -1,13 +1,8 @@
 {
     "height": 568,
     "stories": {
-        "compound-data-display-heatgrid--all-quiet": ["overflow-x"],
-        "compound-data-display-heatgrid--right-to-left": ["overflow-x"],
-        "compound-data-display-heatgrid--week": ["overflow-x"],
-        "compound-data-display-heatgrid--with-withheld-cells": ["overflow-x"],
         "macro-layout-pageheader--default": ["wasted-width"],
         "macro-layout-pageheader--right-to-left": ["wasted-width"],
-        "macro-menu-menucatalogworkspace--populated": ["small-target"],
         "micro-forms-checkbox--checked": ["small-target"],
         "micro-forms-checkbox--default": ["small-target"],
         "micro-forms-checkbox--disabled": ["small-target"],
@@ -17,9 +12,6 @@
         "surface-workspace-dashboardhomesections--without-measurement": ["wasted-width"],
         "surface-workspace-dashboardsetupjourney--in-progress": ["wasted-width"],
         "surface-workspace-dashboardsetupjourney--nothing-done-yet": ["wasted-width"],
-        "surface-workspace-profilepage--manager": ["tight-gap"],
-        "surface-workspace-profilepage--with-photo": ["tight-gap"],
-        "surface-workspace-profilepage--without-brand-permission": ["tight-gap"],
         "surface-workspace-qrcodelistitem--disabled": ["wasted-width"],
         "surface-workspace-qrcodelistitem--named": ["wasted-width"],
         "surface-workspace-qrcodelistitem--unnamed": ["wasted-width"],

@@ -93,6 +93,16 @@ const CREATED_BRAND = {
 const meta: Meta<typeof BrandOnboardingForm> = {
     title: 'Macro/Workspace/BrandOnboardingForm',
     component: BrandOnboardingForm,
+    /*
+        `*NotApplicable` dışa aktarımları HİKÂYE DEĞİL, üstveridir: durum
+        kapsama testi (`*.stories.test.tsx`) onları okur. Storybook her adlı
+        dışa aktarımı hikâye sayar ve bir boolean'a `parameters` yazmaya
+        çalışınca dosyanın dokuz hikâyesi birden hata ekranına düşüyordu.
+        2026-09-06'ya kadar görülmedi, çünkü mobil denetim hikâyeyi
+        çizilmeden ölçüyor ve boş bir kökü "temiz" sayıyordu (`docs/117`
+        §0.1).
+    */
+    excludeStories: /NotApplicable$/,
     decorators: [withFetchLifecycle],
     parameters: {
         docs: {
