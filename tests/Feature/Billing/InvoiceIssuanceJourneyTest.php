@@ -146,6 +146,33 @@ final class InvoiceIssuanceJourneyTest extends TestCase
         ]);
     }
 
+    /**
+     * Okunabilir bir etiketten GERÇEKTEN UUID biçiminde bir kimlik türetir.
+     *
+     * `payment_transactions.conversation_id` ve `idempotency_key` şemada
+     * `uuid` sütunlarıdır. SQLite `uuid`'yi metin olarak saklar ve her
+     * dizgeyi kabul eder; PostgreSQL etmez ve `22P02` ile reddeder. Dağıtım
+     * hedefi PostgreSQL olduğu için doğru olan davranış PostgreSQL'inkidir:
+     * `'conv-issue'` bir UUID değildir.
+     *
+     * Rastgele UUID üretmek yerine etiketten TÜRETİYORUZ: aynı etiket hep
+     * aynı kimliği verir (tekrar oynatma testi aynı işlemi bulabilsin), ve
+     * bir hata mesajında hangi senaryonun konuşulduğu etiketten okunabilsin.
+     */
+    private function conversationId(string $label): string
+    {
+        $hex = md5($label);
+
+        return sprintf(
+            '%s-%s-%s-%s-%s',
+            substr($hex, 0, 8),
+            substr($hex, 8, 4),
+            substr($hex, 12, 4),
+            substr($hex, 16, 4),
+            substr($hex, 20, 12),
+        );
+    }
+
     private function initiatedTransaction(int $workspaceId, string $token, string $conversationId): int
     {
         $userId = (int) DB::table('workspace_memberships')->where('workspace_id', $workspaceId)->value('user_id');
@@ -209,7 +236,7 @@ final class InvoiceIssuanceJourneyTest extends TestCase
         $workspaceId = $this->workspaceOwnedBy($owner, $slug);
         $this->completeProfile($workspaceId);
         $token = 'tok-'.$slug;
-        $conversationId = 'conv-'.$slug;
+        $conversationId = $this->conversationId($slug);
         $transactionId = $this->initiatedTransaction($workspaceId, $token, $conversationId);
         $this->settleViaCallback($token, $conversationId);
 
@@ -284,9 +311,9 @@ final class InvoiceIssuanceJourneyTest extends TestCase
         $owner = $this->verifiedUser('failed@example.test');
         $workspaceId = $this->workspaceOwnedBy($owner, 'invoice-failed');
         $this->completeProfile($workspaceId);
-        $this->initiatedTransaction($workspaceId, 'tok-failed', 'conv-failed');
+        $this->initiatedTransaction($workspaceId, 'tok-failed', $this->conversationId('failed'));
 
-        $this->settleViaCallback('tok-failed', 'conv-failed', 'FAILURE');
+        $this->settleViaCallback('tok-failed', $this->conversationId('failed'), 'FAILURE');
 
         self::assertSame('failed', DB::table('payment_transactions')->value('state'));
         self::assertSame(0, DB::table('invoices')->count(), 'Tahsil edilmeyen paranın belgesi olmaz.');
@@ -312,7 +339,7 @@ final class InvoiceIssuanceJourneyTest extends TestCase
         $gateway->shouldReceive('refund')->once()->andReturn([
             'status' => 'success',
             'payment_id' => 'pay-01',
-            'conversation_id' => 'conv-refund',
+            'conversation_id' => $this->conversationId('refund'),
             'amount_minor' => self::AMOUNT,
             'currency' => 'TRY',
             'error_message' => null,
@@ -395,8 +422,8 @@ final class InvoiceIssuanceJourneyTest extends TestCase
         $owner = $this->verifiedUser('vat@example.test');
         $workspaceId = $this->workspaceOwnedBy($owner, 'invoice-vat');
         $this->completeProfile($workspaceId);
-        $this->initiatedTransaction($workspaceId, 'tok-vat', 'conv-vat');
-        $this->settleViaCallback('tok-vat', 'conv-vat');
+        $this->initiatedTransaction($workspaceId, 'tok-vat', $this->conversationId('vat'));
+        $this->settleViaCallback('tok-vat', $this->conversationId('vat'));
 
         $invoice = DB::table('invoices')->first();
 
@@ -456,8 +483,8 @@ final class InvoiceIssuanceJourneyTest extends TestCase
         $this->configure();
         $owner = $this->verifiedUser('nobuyer@example.test');
         $workspaceId = $this->workspaceOwnedBy($owner, 'invoice-nobuyer');
-        $this->initiatedTransaction($workspaceId, 'tok-nobuyer', 'conv-nobuyer');
-        $this->settleViaCallback('tok-nobuyer', 'conv-nobuyer');
+        $this->initiatedTransaction($workspaceId, 'tok-nobuyer', $this->conversationId('nobuyer'));
+        $this->settleViaCallback('tok-nobuyer', $this->conversationId('nobuyer'));
 
         self::assertSame('succeeded', DB::table('payment_transactions')->value('state'));
         self::assertSame(0, DB::table('invoices')->count());

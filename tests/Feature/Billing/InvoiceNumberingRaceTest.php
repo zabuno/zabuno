@@ -12,6 +12,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\AbortOnInsertFixture;
 use Tests\TestCase;
@@ -93,14 +94,19 @@ final class InvoiceNumberingRaceTest extends TestCase
     private function succeededPayment(int $workspaceId): int
     {
         $userId = (int) DB::table('workspace_memberships')->where('workspace_id', $workspaceId)->value('user_id');
-        $conversationId = bin2hex(random_bytes(8));
+        /*
+            `conversation_id` ve `idempotency_key` şemada `uuid`dir. SQLite
+            her dizgeyi kabul eder, PostgreSQL etmez — ve dağıtım hedefi
+            PostgreSQL'dir. On altı onaltılık karakter UUID DEĞİLDİR.
+        */
+        $conversationId = (string) Str::uuid();
 
         return (int) DB::table('payment_transactions')->insertGetId([
             'workspace_id' => $workspaceId,
             'actor_user_id' => $userId,
             'plan_id' => $this->planId(),
             'mode' => 'sandbox',
-            'idempotency_key' => bin2hex(random_bytes(8)),
+            'idempotency_key' => (string) Str::uuid(),
             'conversation_id' => $conversationId,
             'token' => bin2hex(random_bytes(8)),
             'amount_minor' => 149900,
