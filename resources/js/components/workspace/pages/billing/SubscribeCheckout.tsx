@@ -8,6 +8,7 @@ import { BillingProfileForm } from './BillingProfileForm';
 import {
     CheckoutPanel,
     type BillingProfileData,
+    type CheckoutConsentState,
     type CheckoutProfileState,
     type LatestTransaction,
     type PurchasablePlan,
@@ -145,6 +146,18 @@ export function SubscribeCheckout({
     const [profileFormOpen, setProfileFormOpen] = useState(false);
     const [proceeding, setProceeding] = useState(false);
     const [proceedError, setProceedError] = useState<string | null>(null);
+    /*
+        İKİ ONAY, İKİSİ DE KAPALI BAŞLAR (FF-216). Önceden işaretli bir kutu
+        onay değildir; bu yüzden burada `false` yazıyor ve başka hiçbir yerde
+        `true`ya çevrilmiyor — yalnız insanın dokunuşu çevirir.
+    */
+    const [consent, setConsent] = useState<CheckoutConsentState>({
+        agreements: false,
+        immediatePerformance: false,
+    });
+    const [consentErrors, setConsentErrors] = useState<
+        Partial<Record<keyof CheckoutConsentState, string>>
+    >({});
     const requestRef = useRef(0);
 
     const load = useCallback(async () => {
@@ -215,6 +228,27 @@ export function SubscribeCheckout({
             return;
         }
 
+        /*
+            ONAYSIZ İSTEK HİÇ GİTMEZ. Sunucu aynı kuralı ayrıca uygular ama
+            eksik kutuyu ödeme sayfasına gitmeden, kendi satırında söylemek
+            gerekir — kararmış bir düğme sebebini söylemez.
+        */
+        const missing: Partial<Record<keyof CheckoutConsentState, string>> = {};
+
+        if (!consent.agreements) {
+            missing.agreements = t('workspace.billing.checkout.consent.agreements.error');
+        }
+
+        if (!consent.immediatePerformance) {
+            missing.immediatePerformance = t('workspace.billing.checkout.consent.immediate.error');
+        }
+
+        setConsentErrors(missing);
+
+        if (Object.keys(missing).length > 0) {
+            return;
+        }
+
         setProceeding(true);
         setProceedError(null);
 
@@ -226,6 +260,10 @@ export function SubscribeCheckout({
                 body: JSON.stringify({
                     plan_id: selectedPlanId,
                     idempotency_key: crypto.randomUUID(),
+                    // Onay gövdede AÇIKÇA taşınır; sunucu ikisini de
+                    // `accepted` bekler ve defterine ayrı satırlar yazar.
+                    agreements_accepted: consent.agreements,
+                    immediate_performance_accepted: consent.immediatePerformance,
                 }),
             });
             const headers = new Headers(init.headers);
@@ -254,6 +292,19 @@ export function SubscribeCheckout({
                 return;
             }
 
+            if (response.status === 409) {
+                const body = (await response.json()) as { reason?: unknown } | null;
+
+                // SATICI YOKSA SATIŞ YOK: bu bir kullanıcı hatası değil ve
+                // öyle yazılmaz (`SellerIdentityMissingException`).
+                setProceedError(
+                    body?.reason === 'seller_identity_missing'
+                        ? t('workspace.billing.checkout.sellerIdentityMissing')
+                        : messageForFailure(classifyResponse(response)),
+                );
+                return;
+            }
+
             if (!response.ok) {
                 setProceedError(messageForFailure(classifyResponse(response)));
                 return;
@@ -272,7 +323,7 @@ export function SubscribeCheckout({
         } finally {
             setProceeding(false);
         }
-    }, [proceeding, selectedPlanId, workspaceId, navigateToPayment]);
+    }, [proceeding, selectedPlanId, workspaceId, navigateToPayment, consent]);
 
     // Yalnız FİYATI olan plan satın alınabilir; fiyatsız plan seçilemez.
     const purchasable: PurchasablePlan[] = plans.items.filter(isPurchasablePlan);
@@ -303,6 +354,20 @@ export function SubscribeCheckout({
             latest={status?.latest ?? null}
             proceeding={proceeding}
             proceedError={proceedError}
+            consent={consent}
+            onConsentChange={(next) => {
+                setConsent(next);
+                // Kutu işaretlenince o satırın hatası hemen kalkar; hâlâ
+                // duran bir hata mesajı, düzeltilmiş bir alanı yanlış
+                // gösterirdi.
+                setConsentErrors((current) => ({
+                    agreements: next.agreements ? undefined : current.agreements,
+                    immediatePerformance: next.immediatePerformance
+                        ? undefined
+                        : current.immediatePerformance,
+                }));
+            }}
+            consentErrors={consentErrors}
             onProceed={() => void proceed()}
             onRetryLoad={() => void load()}
         />

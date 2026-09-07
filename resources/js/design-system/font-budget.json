@@ -1,8 +1,14 @@
 {
-    "maxHostedKb": 100,
+    "maxHostedKb": 145,
+    "maxHostedKbNotu": "FF-195'te 100 idi ve tek bir yazı sistemi (Latin + Kiril, 93.9 KB) taşıyordu. FF-217 ikinci bir yazı sistemi ekledi (Arap yazısı, 45.2 KB) ve toplam 139.2 KB oldu. Bu bir gevşetme DEĞİL, kapsam değişikliğidir: sayının koruduğu şey deponun toplam ikili yükü, ve o yük ölçülerek arttı. HER ziyaretçinin ödediği bedeli koruyan sayı `maxFirstPaintKb`'dir ve o DEĞİŞMEDİ — çünkü Arapça dosya `preload` edilmez ve Arapça karakter geçmeyen bir sayfa onu hiç istemez.",
     "maxFirstPaintKb": 48,
     "firstPaintFile": "resources/fonts/roboto-latin-wght-normal.woff2",
     "preloadPartial": "resources/views/partials/font-preload.blade.php",
-    "licenseFile": "resources/fonts/LICENSE-Roboto.txt",
-    "provenanceFile": "resources/fonts/PROVENANCE.json"
+    "licenseFiles": ["resources/fonts/LICENSE-Roboto.txt", "resources/fonts/LICENSE-Vazirmatn.txt"],
+    "provenanceFile": "resources/fonts/PROVENANCE.json",
+    "provenanceMustMention": [
+        "@fontsource-variable/roboto",
+        "@fontsource-variable/vazirmatn",
+        "OFL-1.1"
+    ]
 }

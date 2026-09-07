@@ -17,5 +17,5 @@ export const Rect: Story = { args: { shape: 'rect', width: '160px', height: '96p
 
 export const RightToLeft: Story = {
     args: { shape: 'text' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

@@ -16,7 +16,7 @@
             You do not have to type 60 dishes one by one. The menu screen takes a CSV file and
             creates everything in one go.
         </p>
-        <ol class="flex list-decimal flex-col gap-2 pl-5 text-fg-secondary">
+        <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Open <strong>Menu</strong> in the workspace.</li>
             <li>
                 Use <strong>Download menu (CSV)</strong> once to get a file with the right
@@ -37,7 +37,7 @@
 
     <section id="help-qr" aria-labelledby="help-qr-heading" class="flex flex-col gap-3">
         <h2 id="help-qr-heading" class="text-2xl font-bold">Print your QR codes</h2>
-        <ol class="flex list-decimal flex-col gap-2 pl-5 text-fg-secondary">
+        <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Publish the menu first — a QR code needs something to point at.</li>
             <li>Open <strong>Publication</strong> and create codes; there is a bulk option for a whole room of tables.</li>
             <li>Export as <strong>PDF</strong> for the printer, or PNG/SVG for a designer.</li>
@@ -53,7 +53,7 @@
 
     <section id="help-price" aria-labelledby="help-price-heading" class="flex flex-col gap-3">
         <h2 id="help-price-heading" class="text-2xl font-bold">Change a price</h2>
-        <ol class="flex list-decimal flex-col gap-2 pl-5 text-fg-secondary">
+        <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Open <strong>Menu</strong>, find the dish, use <strong>Price</strong>.</li>
             <li>Open <strong>Publication</strong> and publish.</li>
         </ol>

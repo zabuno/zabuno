@@ -8,6 +8,7 @@ use App\Application\Content\UseCase\ResolveLocaleAlternates;
 use App\Application\Content\UseCase\ResolvePageDelivery;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Domain\Content\PageEnvironment;
+use App\Domain\Legal\CompanyProfile;
 use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
@@ -49,6 +50,17 @@ use Illuminate\Http\Response;
 final class ShowSitemapController extends Controller
 {
     /**
+     * Satıcının kimliğini SÖYLEMEK zorunda olan sayfalar (FF-216).
+     *
+     * `LegalDocument::$requiresSellerIdentity` ile aynı olgu; burada yol
+     * olarak duruyor çünkü `/about` bir yasal belge değil, kurumsal bir
+     * sayfadır ve aynı kurala tabidir.
+     *
+     * @var list<string>
+     */
+    private const SELLER_IDENTITY_PATHS = ['/about', '/distance-sales', '/pre-information', '/delivery'];
+
+    /**
      * Kütüğe BAĞLI OLMAYAN, bugün gerçekten 200 dönen adresler.
      *
      * Ölçüldü (`docs/129` §4): bu dokuz yolun HİÇBİRİ `content_pages`
@@ -64,11 +76,13 @@ final class ShowSitemapController extends Controller
      */
     private const array LIVING_PATHS = [
         '/',
+        '/about',
         '/terms',
         '/privacy',
         '/kvkk',
         '/distance-sales',
         '/pre-information',
+        '/delivery',
         '/refund-policy',
         '/cookies',
         '/marketing-consent',
@@ -87,6 +101,20 @@ final class ShowSitemapController extends Controller
         $entries = [];
 
         foreach (self::LIVING_PATHS as $path) {
+            /*
+                EKSİK BİR SÖZLEŞME İNDEKSLENMEZ (FF-216).
+
+                Satıcının kimliği girilmemişken mesafeli satış, ön
+                bilgilendirme, teslimat ve hakkımızda metinleri tarafını
+                "not yet provided" diye gösterir. O hâlleriyle sayfa yine 200
+                döner ve okunabilir — ama arama motoruna sunulmaz. Sitemap ile
+                sayfanın kendi robots sinyalinin AYNI cevabı vermesi bu sınıfın
+                pazarlığa kapalı kuralıdır.
+            */
+            if (in_array($path, self::SELLER_IDENTITY_PATHS, true) && ! CompanyProfile::fromConfig()->isComplete()) {
+                continue;
+            }
+
             $entries[] = ['loc' => $this->canonical->for($base, $path), 'lastmod' => null, 'alternates' => []];
         }
 

@@ -27,5 +27,5 @@ export const CustomLabel: Story = {
 
 export const RightToLeft: Story = {
     args: { targetId: 'main-content', children: 'İçeriğe geç' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

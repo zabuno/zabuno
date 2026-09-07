@@ -459,6 +459,10 @@ final class SubscriptionLifecycleJourneyTest extends TestCase
             ->postJson("/api/workspaces/{$workspaceId}/checkout", [
                 'plan_id' => $starterId,
                 'idempotency_key' => (string) Str::uuid(),
+                // FF-216: ödeme adımındaki iki onay zorunlu; onaysız istek
+                // doğrulamadan döner ve buradaki yaşam döngüsü kuralına hiç ulaşmaz.
+                'agreements_accepted' => true,
+                'immediate_performance_accepted' => true,
             ])
             ->assertStatus(422)
             ->assertJsonPath('reason', 'downgrade_requires_schedule');

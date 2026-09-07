@@ -55,6 +55,27 @@
     `--fail` olmadan RAPORLAR ama kırılmaz: mevcut borç bir kapıya
     dönüştürülmeden önce görülmeli. Borç kapandıkça `--fail` ile CI'ya
     bağlanır.
+
+    ═══ YÖN — `--direction rtl` ═══
+
+    Dokuz dilin ikisi sağdan sola yazılır (`ar`, `fa`). `docs/121` §4'ün
+    açıkça söylediği gibi SAHTE-YERELLEŞTİRME BUNU ÖLÇMEZ: aksanlı harf ve
+    dolgu, uzayan metnin kırdığı düzeni gösterir, ters akan bir düzenin
+    kırdığını değil. Onu ölçen tek şey, sayfayı gerçekten sağdan sola
+    açmaktır (`docs/120` §7).
+
+        node scripts/mobile-ux-audit <dizin> --direction rtl \
+             --baseline scripts/mobile-ux-audit.rtl.baseline.json
+
+    Hikâye kipinde yön, Storybook'un KENDİ global'i üzerinden çevrilir
+    (`?globals=direction:rtl`) — yani ürünün gerçekten kullandığı
+    `withDirection` decorator'ünden geçer. DOM'a elle `dir` yazmak, ölçümü
+    ürünün yolundan koparır ve bir gün decorator değiştiğinde ölçüm sessizce
+    başka bir şeyi ölçer. Sayfa kipinde `<html dir>` çevrilir, çünkü orada
+    yönü yazan taraf zaten sunucudur (`DocumentLocale::direction()`).
+
+    ÇEVİRİ DEĞİLDİR. Tek kelime çevrilmez; yalnız yön çevrilir. Ölçülen şey
+    dilin kendisi değil, düzenin ters yönde ayakta kalıp kalmadığıdır.
 */
 
 import { spawn } from 'node:child_process';
@@ -124,6 +145,9 @@ const MEASURE = `(() => {
   if (main) { main.style.margin = '0'; main.style.padding = '0'; }
   root.style.margin = '0';
   root.style.padding = '0';
+
+  /* Animasyonlar ölçümden ÖNCE ayrı bir adımda dondurulur (FREEZE, aşağıda):
+     hareket eden bir öğenin tek bir genişliği yoktur. */
 
   /*
       YATAY KAYAN BİR KAP TAŞMA DEĞİLDİR.
@@ -534,6 +558,23 @@ if (!targetDir || !existsSync(targetDir)) {
 */
 const storybookMode = existsSync(join(targetDir, 'index.json'));
 
+/*
+    ÖLÇÜLEN YÖN.
+
+    Varsayılan `ltr`; `--direction rtl` her hedefi sağdan sola açar.
+    Tanınmayan bir değer sessizce `ltr`'ye düşmez — ölçüm yapıldığını
+    sanmak, ölçüm yapmamaktan kötüdür.
+*/
+const directionFlag = process.argv.indexOf('--direction');
+const DIRECTION = directionFlag > -1 ? (process.argv[directionFlag + 1] ?? '') : 'ltr';
+
+if (DIRECTION !== 'ltr' && DIRECTION !== 'rtl') {
+    console.error(
+        `mobile-ux-audit: --direction yalnız "ltr" ya da "rtl" olabilir (gelen: ${DIRECTION}).`,
+    );
+    process.exit(2);
+}
+
 /** Dizindeki bütün HTML dosyaları, dizine göreli yollarıyla. */
 function htmlFiles(dir, prefix = '') {
     const found = [];
@@ -560,7 +601,50 @@ function htmlFiles(dir, prefix = '') {
     ölçülmesi gereken şey onun ulaştığı hâl. Bu yüzden sayfa kipinde bütün
     açılır bölmeler ölçümden önce açılır.
 */
-const PREPARE = `(() => {
+/*
+    SAYFA KİPİNDE YÖN `<html dir>` ÜZERİNDEN ÇEVRİLİR.
+
+    Statik dışa aktarım İngilizce üretilir ve `<html dir="ltr">` taşır. Yönü
+    burada çevirmek çeviri değildir: tek kelime değişmez, yalnız belge ters
+    akar. Sunucu tarafında bunu yazan taraf `DocumentLocale::direction()` ve
+    onun locale'den türediği ayrıca `tests/Feature/Rtl` altında ölçülüyor;
+    burada ölçülen şey, o yön geldiğinde DÜZENİN ne yaptığı.
+*/
+/*
+    ANİMASYON DONDURULUR — ölçümün kendisinden ÖNCE, ayrı bir adımda.
+
+    Web Animations API doğrudan kullanılır: `document.getAnimations()` sayfadaki
+    her animasyonu verir, `currentTime` ile sabit bir ana kurulur ve `pause()`
+    orada durdurulur. CSS ile (`animation-play-state: paused`) denendi ve
+    YETMEDİ — 2026-09-07'de ölçüldü: üç ardışık koşuda aynı hikâye 322, 323
+    ve 324 piksel bildirdi, çünkü stilin uygulandığı an ile dönüşümün
+    yeniden hesaplandığı çerçeve aynı görev içinde değil.
+
+    Sıfır anına kurulmasının sebebi: dönen bir kare 0 derecede kendi
+    kutusudur; ara açılarda eksen hizalı sınır kutusu 24 pikselden 34
+    piksele kadar çıkar. Ölçüm o ara açıyı örneklerse, sonuç hangi
+    milisaniyede bakıldığına bağlı olur — yani bir kapı değil, bir kumar.
+
+    NE ÖLÇÜLMEZ: dönüşün ara açılarında oluşan geçici taşma. Tek bir değeri
+    yok, dolayısıyla bir eşiği de olamaz. Gözlem `docs/132` §2'de sayılarıyla
+    kayıtlıdır — sessizce yok sayılmıyor, ölçülemez olduğu yazılıyor.
+*/
+const FREEZE = `(() => {
+  const style = document.createElement('style');
+  style.textContent = '*, *::before, *::after { transition: none !important; }';
+  document.head.appendChild(style);
+
+  let frozen = 0;
+  for (const animation of document.getAnimations()) {
+    try { animation.currentTime = 0; animation.pause(); frozen += 1; } catch { /* bitmiş animasyon */ }
+  }
+  return new Promise((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve(frozen))),
+  );
+})()`;
+
+const PREPARE = (direction) => `(() => {
+  document.documentElement.setAttribute('dir', ${JSON.stringify(direction)});
   for (const details of document.querySelectorAll('details')) details.open = true;
   return document.querySelectorAll('details').length;
 })()`;
@@ -570,7 +654,16 @@ const targets = storybookMode
     ? Object.keys(JSON.parse(readFileSync(join(targetDir, 'index.json'), 'utf8')).entries).map(
           (id) => ({
               id,
-              url: `file://${join(targetDir, 'iframe.html')}?id=${id}&viewMode=story`,
+              /*
+                  Yön Storybook'un KENDİ global'i üzerinden çevrilir; ölçüm
+                  böylece ürünün `withDirection` decorator'ünden geçer.
+                  Hikâyenin kendi `globals`'ı (RTL hikâyeleri) adresteki
+                  değeri geçersiz kılar — yani zaten RTL olan bir hikâye
+                  LTR koşusunda da RTL kalır ve öyle raporlanır.
+              */
+              url:
+                  `file://${join(targetDir, 'iframe.html')}?id=${id}&viewMode=story` +
+                  (DIRECTION === 'rtl' ? '&globals=direction:rtl' : ''),
               /*
                   YATAY İSRAF YALNIZ EKRAN HİKÂYELERİNDE SORULUR.
 
@@ -715,6 +808,12 @@ try {
                 await new Promise((r) => setTimeout(r, 150));
 
                 try {
+                    await cdp(ws, 'Runtime.evaluate', {
+                        expression: FREEZE,
+                        awaitPromise: true,
+                        returnByValue: true,
+                    });
+
                     const { result } = await cdp(ws, 'Runtime.evaluate', {
                         expression: MEASURE,
                         returnByValue: true,
@@ -734,7 +833,16 @@ try {
             await new Promise((r) => setTimeout(r, 450));
 
             try {
-                await cdp(ws, 'Runtime.evaluate', { expression: PREPARE, returnByValue: true });
+                await cdp(ws, 'Runtime.evaluate', {
+                    expression: PREPARE(DIRECTION),
+                    returnByValue: true,
+                });
+
+                await cdp(ws, 'Runtime.evaluate', {
+                    expression: FREEZE,
+                    awaitPromise: true,
+                    returnByValue: true,
+                });
 
                 const { result } = await cdp(ws, 'Runtime.evaluate', {
                     expression: MEASURE,
@@ -805,7 +913,7 @@ for (const entry of report) {
 
 const affected = report.filter((entry) => entry.findings.length > 0).length;
 
-console.log(`mobile-ux-audit · ${WIDTH}×${HEIGHT} · ${report.length} hikâye`);
+console.log(`mobile-ux-audit · ${WIDTH}×${HEIGHT} · yön ${DIRECTION} · ${report.length} hikâye`);
 console.log(`etkilenen hikâye: ${affected}/${report.length}`);
 console.log('');
 

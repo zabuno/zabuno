@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Domain\Content\PagePublicationStatus;
 use App\Http\Controllers\FoundationStatusController;
+use App\Http\Controllers\PublicSite\ShowAboutController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
@@ -64,6 +65,8 @@ final class ExportStaticSiteCommand extends Command
         FoundationStatusController::class,
         ShowHelpController::class,
         ShowContactFormController::class,
+        // "Kimden alışveriş yapıyorum?" (FF-216).
+        ShowAboutController::class,
         // Yasal belgeler (FF-198): sekiz adres, tek denetleyici.
         ShowLegalDocumentController::class,
     ];

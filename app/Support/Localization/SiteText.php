@@ -88,11 +88,31 @@ final class SiteText
             'dataRequestCta' => 'site.legal.dataRequest.cta',
             'dataRequestAddressLabel' => 'site.legal.dataRequest.addressLabel',
             'dataRequestAddressMissing' => 'site.legal.dataRequest.addressMissing',
+            /*
+                EKSİK SÖZLEŞME BANDI ve ŞİRKET KİMLİĞİ (FF-216).
+
+                Kimlik etiketleri BURADA, çünkü üç yüzey onları paylaşıyor:
+                yasal sayfanın uyarı bandı, `/about` ve `/contact`. Etiketi
+                sayfanın kendi denetleyicisine yazmak, aynı alanın iki sayfada
+                iki farklı adla görünmesiyle biterdi (`CompanyIdentity`).
+            */
+            'legalIncompleteHeading' => 'site.legal.incomplete.heading',
+            'legalIncompleteBody' => 'site.legal.incomplete.body',
+            'legalIncompleteFields' => 'site.legal.incomplete.fields',
+            'companyLegalName' => 'site.company.legalName',
+            'companyAddress' => 'site.company.address',
+            'companyMersis' => 'site.company.mersis',
+            'companyTaxOffice' => 'site.company.taxOffice',
+            'companyTaxNumber' => 'site.company.taxNumber',
+            'companyEmail' => 'site.company.email',
+            'companyPhone' => 'site.company.phone',
+            'companyValueMissing' => 'site.company.value.missing',
             'skipToContent' => 'site.skipToContent',
             'navFeatures' => 'site.nav.features',
             'navHowItWorks' => 'site.nav.howItWorks',
             'navPricing' => 'site.nav.pricing',
             'navHelp' => 'site.nav.help',
+            'navAbout' => 'site.nav.about',
             'navContact' => 'site.nav.contact',
             'navLogin' => 'site.nav.login',
             'navRegister' => 'site.nav.register',
@@ -119,6 +139,7 @@ final class SiteText
             'footerKvkk' => 'site.footer.kvkk',
             'footerDistanceSales' => 'site.footer.distanceSales',
             'footerPreInformation' => 'site.footer.preInformation',
+            'footerDelivery' => 'site.footer.delivery',
             'footerRefundPolicy' => 'site.footer.refundPolicy',
             'footerCookies' => 'site.footer.cookies',
             'footerTagline' => 'site.footer.tagline',
@@ -130,6 +151,9 @@ final class SiteText
             'perRestaurantCta' => 'site.pricing.perRestaurant.cta',
             'unsure' => 'site.pricing.unsure',
             'unsureCta' => 'site.pricing.unsure.cta',
+            // Kabul edilen ödeme yöntemi, fiyatın yanında (FF-216).
+            'paymentMethods' => 'site.pricing.paymentMethods',
+            'paymentMethodsCta' => 'site.pricing.paymentMethods.cta',
             'includedHeading' => 'site.pricing.included.heading',
             'includedBody' => 'site.pricing.included.body',
             'free' => 'site.pricing.free',
@@ -143,6 +167,23 @@ final class SiteText
             'contactMessage' => 'site.contact.message',
             'contactSubmit' => 'site.contact.submit',
             'contactHoneypot' => 'site.contact.honeypot',
+            'contactIdentityHeading' => 'site.contact.identity.heading',
+            'contactFormHeading' => 'site.contact.form.heading',
+            // "Kimden alışveriş yapıyorum?" (FF-216).
+            'aboutHeading' => 'site.about.heading',
+            'aboutLead' => 'site.about.lead',
+            'aboutSellerHeading' => 'site.about.seller.heading',
+            'aboutSellerBody' => 'site.about.seller.body',
+            'aboutServiceHeading' => 'site.about.service.heading',
+            'aboutServiceBody' => 'site.about.service.body',
+            'aboutServiceScope' => 'site.about.service.scope',
+            'aboutPaymentHeading' => 'site.about.payment.heading',
+            'aboutPaymentBody' => 'site.about.payment.body',
+            'aboutReachHeading' => 'site.about.reach.heading',
+            'aboutReachBody' => 'site.about.reach.body',
+            'aboutReachCta' => 'site.about.reach.cta',
+            'aboutIncompleteHeading' => 'site.about.incomplete.heading',
+            'aboutIncompleteBody' => 'site.about.incomplete.body',
             // Gönderim sonrası REFERANS (FF-201, `docs/125`): denetleyici
             // `{reference}` yer tutucusunu doldurur, şablon yalnız yazar.
             'contactSentReference' => 'site.contact.sentReference',

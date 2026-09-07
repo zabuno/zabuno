@@ -113,6 +113,19 @@ jobs:
       - name: Adaptive bundle gate self-test
         run: ./scripts/adaptive-bundle-gate.test.sh
 
+      # Dokuz dilin IKISI sagdan sola yazilir (ar, fa). Fiziksel yon tasiyan
+      # her CSS kurali o iki dilde TERS calisir ve bu, Arapca bir ceviri
+      # geldigi gun degil, o gunden aylar once yazilmis kodda olur
+      # (docs/121 O10). Bu kapi kaynagi tarar: yeni bir fiziksel yon
+      # ozelligi eklendiginde kirilir. Bugunku gerekceli istisnalar
+      # scripts/logical-direction-gate.baseline.json icinde ve gerekcesiz
+      # bir istisna da kapiyi kirar.
+      - name: Logical direction gate (docs/121 Ö10)
+        run: node scripts/logical-direction-gate
+
+      - name: Logical direction gate self-test
+        run: ./scripts/logical-direction-gate.test.sh
+
       # Kabuk duzeni jsdom'da OLCULEMEZ: jsdom duzen hesaplamaz, her kutu
       # sifir yuksekliktedir ve hicbir sey kaydirilmaz. Kabuk uc kez ust uste
       # sahibin ekraninda kirildi ve her seferinde butun testler yesildi.
@@ -133,6 +146,14 @@ jobs:
         run: |
           npm run build-storybook -- --quiet -o storybook-static
           node scripts/mobile-ux-audit storybook-static --baseline scripts/mobile-ux-audit.baseline.json
+
+      # SAGDAN SOLA, GERCEK BIR DUZEN MOTORUNDA (docs/121 §4, docs/120 §7).
+      # Sahte-yerellestirme RTL'i OLCMEZ: uzayan metnin kirdigini gosterir,
+      # ters akan bir duzenin kirdigini degil. Bu adim ayni 331 hikayeyi
+      # 320 pikselde ve dir=rtl ile yeniden olcuyor; hicbir metin
+      # cevrilmez, yalniz yon cevrilir. Kendi dondurulmus borc listesi var.
+      - name: Mobile UX audit — right-to-left (320px, real browser)
+        run: node scripts/mobile-ux-audit storybook-static --direction rtl --baseline scripts/mobile-ux-audit.rtl.baseline.json
 
       # Yedek tatbikati (docs/124) gercek pg_dump/pg_restore ile OLCULUR.
       # Runner imajinin kendi istemcisi sunucudan (postgres:17) eski

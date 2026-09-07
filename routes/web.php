@@ -15,6 +15,7 @@ use App\Http\Controllers\Media\ServeRenditionController;
 use App\Http\Controllers\Ordering\StoreGuestOrderController;
 use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\Publication\ShowDraftPreviewController;
+use App\Http\Controllers\PublicSite\ShowAboutController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
@@ -59,6 +60,15 @@ Route::get('/pricing', [FoundationStatusController::class, '__invoke'])->name('p
 // Oturum İSTEMEZ: tıkanan biri oturum açamıyor olabilir (`docs/89`).
 Route::get('/help', ShowHelpController::class)->name('public.help');
 
+/*
+    "Kimden alışveriş yapıyorum?" (FF-216).
+
+    Satıcının kimliği ve kabul edilen ödeme yöntemi ayrı bir başlıkta;
+    ödeme kuruluşunun üye iş yeri incelemesi bunu adıyla arıyor. Oturum
+    istemez, veritabanına dokunmaz.
+*/
+Route::get('/about', ShowAboutController::class)->name('public.about');
+
 Route::get('/contact', ShowContactFormController::class)->name('public.contact');
 Route::post('/contact', StoreContactMessageController::class)
     ->middleware('throttle:5,1')
@@ -72,7 +82,7 @@ Route::post('/contact', StoreContactMessageController::class)
     (`docs/118` E4) ama adres Türkiye'deki kanunun adını taşımaya devam
     eder. Oturum istemez, indekslenir: bir sözleşme kaydolmadan okunabilmeli.
 */
-foreach (['terms', 'privacy', 'kvkk', 'distance-sales', 'pre-information', 'refund-policy', 'cookies', 'marketing-consent'] as $legalDocument) {
+foreach (['terms', 'privacy', 'kvkk', 'distance-sales', 'pre-information', 'delivery', 'refund-policy', 'cookies', 'marketing-consent'] as $legalDocument) {
     Route::get('/'.$legalDocument, ShowLegalDocumentController::class)->name('legal.'.$legalDocument);
 }
 

@@ -110,6 +110,14 @@ final class SiteNavigation
                 'items' => [
                     ['labelKey' => 'site.nav.pricing', 'path' => '/pricing'],
                     ['labelKey' => 'site.nav.help', 'path' => '/help'],
+                    /*
+                        SATICI KİM? (FF-216) Ödeme kuruluşunun üye iş yeri
+                        incelemesi "hakkımızda" ve "iletişim" başlıklarını
+                        sitede ADIYLA arar; ikisi de yaşayan rotadır ve
+                        şirket kimliğini TEK kaynaktan (`CompanyProfile`)
+                        okur.
+                    */
+                    ['labelKey' => 'site.nav.about', 'path' => '/about'],
                     ['labelKey' => 'site.nav.contact', 'path' => '/contact'],
                 ],
             ],
@@ -130,6 +138,13 @@ final class SiteNavigation
                     */
                     ['labelKey' => 'site.footer.distanceSales', 'path' => '/distance-sales'],
                     ['labelKey' => 'site.footer.preInformation', 'path' => '/pre-information'],
+                    /*
+                        TESLİMAT/İFA AYRI BİR BAŞLIK (FF-216). Dijital bir
+                        hizmette "teslimat" hesabın ne zaman aktifleştiğidir;
+                        bunu mesafeli satışın yedinci bölümüne gömmek, o
+                        başlığı adıyla arayan incelemede görünmemek olurdu.
+                    */
+                    ['labelKey' => 'site.footer.delivery', 'path' => '/delivery'],
                     ['labelKey' => 'site.footer.refundPolicy', 'path' => '/refund-policy'],
                     ['labelKey' => 'site.footer.cookies', 'path' => '/cookies'],
                 ],

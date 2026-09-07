@@ -400,6 +400,46 @@ msgstr "Sun"
 msgid "workspace.billing.changePlan.button"
 msgstr "Change plan"
 
+#: workspace:workspace.billing.checkout.consent.agreements
+msgid "workspace.billing.checkout.consent.agreements"
+msgstr "I have read and accept the Preliminary Information Form and the Distance Sales Agreement."
+
+#: workspace:workspace.billing.checkout.consent.agreements.error
+msgid "workspace.billing.checkout.consent.agreements.error"
+msgstr "To continue, accept the Preliminary Information Form and the Distance Sales Agreement."
+
+#: workspace:workspace.billing.checkout.consent.immediate
+msgid "workspace.billing.checkout.consent.immediate"
+msgstr "I ask for the service to start as soon as my payment is confirmed, and I have read that once it has started my right of withdrawal ends."
+
+#: workspace:workspace.billing.checkout.consent.immediate.error
+msgid "workspace.billing.checkout.consent.immediate.error"
+msgstr "To continue, confirm that the service should start as soon as the payment is confirmed."
+
+#: workspace:workspace.billing.checkout.consent.legend
+msgid "workspace.billing.checkout.consent.legend"
+msgstr "Before you pay"
+
+#: workspace:workspace.billing.checkout.consent.links
+msgid "workspace.billing.checkout.consent.links"
+msgstr "Documents to read before paying"
+
+#: workspace:workspace.billing.checkout.consent.read.delivery
+msgid "workspace.billing.checkout.consent.read.delivery"
+msgstr "Read the Delivery and Performance Terms"
+
+#: workspace:workspace.billing.checkout.consent.read.distanceSales
+msgid "workspace.billing.checkout.consent.read.distanceSales"
+msgstr "Read the Distance Sales Agreement"
+
+#: workspace:workspace.billing.checkout.consent.read.preInformation
+msgid "workspace.billing.checkout.consent.read.preInformation"
+msgstr "Read the Preliminary Information Form"
+
+#: workspace:workspace.billing.checkout.consent.read.refundPolicy
+msgid "workspace.billing.checkout.consent.read.refundPolicy"
+msgstr "Read the Cancellation and Refund Policy"
+
 #: workspace:workspace.billing.checkout.description
 msgid "workspace.billing.checkout.description"
 msgstr "Choose a plan, confirm your billing details, and pay by card on the Iyzico payment page. Each payment covers {days} days."
@@ -511,6 +551,10 @@ msgstr "Subscribe"
 #: workspace:workspace.billing.checkout.retry
 msgid "workspace.billing.checkout.retry"
 msgstr "Retry"
+
+#: workspace:workspace.billing.checkout.sellerIdentityMissing
+msgid "workspace.billing.checkout.sellerIdentityMissing"
+msgstr "Payments cannot be taken yet: the seller has not published its legal identity, so a distance sales agreement cannot be concluded. Nothing was charged."
 
 #: workspace:workspace.billing.checkout.status.error
 msgid "workspace.billing.checkout.status.error"

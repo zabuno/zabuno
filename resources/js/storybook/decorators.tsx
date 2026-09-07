@@ -72,6 +72,26 @@ export const withFlowbiteTokenTheme: Decorator = (Story) => (
     </ThemeProvider>
 );
 
+/**
+ * YÖN BİR **GLOBAL**DİR — `parameters` DEĞİL.
+ *
+ * Bu satır, 2026-09-07'de ölçülen sessiz bir yalanın kaydıdır. Katalogdaki
+ * 33 hikâyenin 32'si `RightToLeft` adını taşıyordu, Arapça metin
+ * gösteriyordu ve yönünü `parameters: { direction: 'rtl' }` ile bildiriyordu.
+ * Bu decorator ise yönü `context.globals`'tan okur. Yani o 32 hikâye,
+ * adında "sağdan sola" yazan ve gerçekte SOLDAN SAĞA çizilen hikâyelerdi.
+ *
+ * Ölçüm (gerçek Chrome, 320 px): `macro-layout-pageheader--right-to-left`
+ * → sarmalayıcının `dir` özniteliği `ltr`. Kimse bir şey bozmamıştı;
+ * hikâyeler yıllarca RTL'i ölçtüğünü söyleyip hiç ölçmemişti — bu deponun
+ * en sık tekrar eden kusur ailesi (`docs/109` §8.7).
+ *
+ * Storybook'ta bir hikâyenin global'i geçersiz kılmasının yolu `globals`
+ * alanıdır; `parameters` decorator'a ulaşmaz. İki kelime arasındaki bu
+ * fark, tarayıcıda ölçülene kadar görünmez — bu yüzden hem hikâyeler
+ * düzeltildi hem de `decorators.direction.test.ts` tuzağın geri gelmesini
+ * engelliyor.
+ */
 export const withDirection: Decorator = (Story, context) => {
     const direction = (context.globals.direction as Direction | undefined) ?? 'ltr';
     return (
