@@ -395,6 +395,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
             sanılırdı. Sıra dosya yükleme sırasını izler: `team.php`den sonra.
         */
         'GET|api/workspaces/{workspace}/audit-trail||App\Http\Controllers\Workspace\ShowWorkspaceAuditTrailController|api,auth:sanctum,verified',
+        // İLK 15 DAKİKA (`docs/107` 1.7, FF-202) — salt okunur kurulum ilerlemesi:
+        // beş adım durumu + ilk yayına kadar geçen süre. Yazma ucu YOK.
+        'GET|api/workspaces/{workspace}/setup-progress||App\Http\Controllers\Workspace\ShowSetupProgressController|api,auth:sanctum,verified',
         'GET|api/admin/plans||App\Http\Controllers\PlatformAdmin\ListManagedPlansController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/plans||App\Http\Controllers\PlatformAdmin\StoreManagedPlanController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/plans/{plan}/activate||App\Http\Controllers\PlatformAdmin\ActivateManagedPlanController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',

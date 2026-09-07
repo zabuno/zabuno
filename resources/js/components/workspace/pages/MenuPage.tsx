@@ -6,6 +6,7 @@ import type { DashboardMenuTree } from './DashboardPage';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
 import { PageState } from './shared/PageState';
+import { FirstRunHint } from './shared/FirstRunHint';
 import type { CatalogPhase } from '../WorkspaceApp';
 
 type MenuPageProps = {
@@ -16,6 +17,12 @@ type MenuPageProps = {
     onNavigateToSection: (section: string) => void;
     /** Bkz. `MenuCatalogWorkspaceProps.can` — tanımsızsa daraltma yapılmaz. */
     can?: (permission: string) => boolean;
+    /**
+     * Menüde en az bir ürün var mı? (`docs/70` §2.1: menünün varlığı adımı
+     * bitirmez.) `undefined` = henüz bilinmiyor; bilinmeyen için ipucu
+     * çizilmez — "bilmiyorum" ile "bitmedi" aynı şey değildir.
+     */
+    firstProductDone?: boolean;
 };
 
 /**
@@ -40,6 +47,7 @@ export function MenuPage({
     onTreeChange,
     onNavigateToSection,
     can,
+    firstProductDone,
 }: MenuPageProps) {
     /*
         YAYINLAMA da menüyü değiştirmektir — hatta en geri alınamaz biçimde:
@@ -87,6 +95,15 @@ export function MenuPage({
                     ) : null
                 }
             >
+                {/*
+                    İLK KEZ İPUCU (FF-202): kataloğun ÜSTÜNDE, kartın içinde
+                    değil. Katalog başka paketlerde değişiyor; kutu sayfa
+                    kabuğuna aittir.
+                */}
+                {locationId !== null && firstProductDone !== undefined ? (
+                    <FirstRunHint step="menu" workspaceId={workspaceId} done={firstProductDone} />
+                ) : null}
+
                 <PanelCard>{renderCatalog()}</PanelCard>
 
                 {/*

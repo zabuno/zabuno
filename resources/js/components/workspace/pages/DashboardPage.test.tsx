@@ -128,7 +128,9 @@ describe('DashboardPage — Dashboard Setup rows (DASHBOARD_SETUP_RED)', () => {
         const region = screen.getByRole('region', { name: /dashboard setup/i });
 
         await user.click(within(region).getByRole('button', { name: /brand/i }));
-        expect(onNavigateToSection).toHaveBeenLastCalledWith('settings/brand');
+        // Marka YOKKEN oluşturma formu `brand` bölümündedir (FF-202 ölçümü:
+        // `settings/brand` markasız hesapta "Loading your brand…" diyordu).
+        expect(onNavigateToSection).toHaveBeenLastCalledWith('brand');
 
         await user.click(within(region).getByRole('button', { name: /location/i }));
         expect(onNavigateToSection).toHaveBeenLastCalledWith('locations');
@@ -388,20 +390,22 @@ describe('DashboardPage — Publication/QR live status (DASHBOARD_PUBLICATION_QR
         vi.unstubAllGlobals();
     });
 
-    it('shows Published #<id> and active QR count when current-publication and QR-list both resolve', async () => {
+    it('shows Published #<id> and active QR count when the setup-progress endpoint reports both done', async () => {
         const menuTree = makeMenuTree();
+        // FF-202: iki uç yerine tek kurulum ilerlemesi cevabı.
         const fetchMock = vi.fn(async (url: string) => {
-            if (
-                String(url) ===
-                `/api/workspaces/${WORKSPACE_ID}/menu/${menuTree.id}/publications/current`
-            ) {
-                return jsonResponse(200, { id: 55 });
-            }
-            if (
-                String(url) ===
-                `/api/workspaces/${WORKSPACE_ID}/brand/locations/${menuTree.locationId}/qr-codes`
-            ) {
-                return jsonResponse(200, [{ id: 1, state: 'active' }]);
+            if (String(url) === `/api/workspaces/${WORKSPACE_ID}/setup-progress`) {
+                return jsonResponse(200, {
+                    steps: {
+                        brand: { done: true },
+                        location: { done: true },
+                        menu: { done: true, itemCount: 3 },
+                        publication: { done: true, id: 55, version: 1 },
+                        qr: { done: true, activeCount: 1 },
+                    },
+                    doneCount: 5,
+                    total: 5,
+                });
             }
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
@@ -423,14 +427,21 @@ describe('DashboardPage — Publication/QR live status (DASHBOARD_PUBLICATION_QR
         expect(within(region).queryByText('Not connected yet.')).toBeNull();
     });
 
-    it('shows honest not-connected status when current-publication resolves 404, without inventing a QR connection', async () => {
+    it('shows honest not-connected status when the server reports no publication, without inventing a QR connection', async () => {
         const menuTree = makeMenuTree();
         const fetchMock = vi.fn(async (url: string) => {
-            if (
-                String(url) ===
-                `/api/workspaces/${WORKSPACE_ID}/menu/${menuTree.id}/publications/current`
-            ) {
-                return jsonResponse(404, {});
+            if (String(url) === `/api/workspaces/${WORKSPACE_ID}/setup-progress`) {
+                return jsonResponse(200, {
+                    steps: {
+                        brand: { done: true },
+                        location: { done: true },
+                        menu: { done: true, itemCount: 3 },
+                        publication: { done: false },
+                        qr: { done: false, activeCount: 0 },
+                    },
+                    doneCount: 3,
+                    total: 5,
+                });
             }
             throw new Error(`Unhandled fetch: ${String(url)}`);
         });
@@ -452,13 +463,10 @@ describe('DashboardPage — Publication/QR live status (DASHBOARD_PUBLICATION_QR
         expect(within(region).queryByText(/active QR/)).toBeNull();
     });
 
-    it('shows Status unavailable. for Publication and QR on a non-404 publication failure, never a false not-connected claim', async () => {
+    it('shows Status unavailable. for Publication and QR when setup-progress fails, never a false not-connected claim', async () => {
         const menuTree = makeMenuTree();
         const fetchMock = vi.fn(async (url: string) => {
-            if (
-                String(url) ===
-                `/api/workspaces/${WORKSPACE_ID}/menu/${menuTree.id}/publications/current`
-            ) {
+            if (String(url) === `/api/workspaces/${WORKSPACE_ID}/setup-progress`) {
                 return jsonResponse(500, {});
             }
             throw new Error(`Unhandled fetch: ${String(url)}`);

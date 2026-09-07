@@ -115,6 +115,8 @@ okumaz.
 | `upload_rejected` | `reason`, `kind` | Boyut/tür sınırı kaç kişiyi kesiyor |
 | `empty_state_seen` | `screen` | Hangi ekran boş kalıyor |
 | `retry_clicked` | `surface` | Hangi hata tekrar denettiriyor |
+| `setup_hint_dismissed` | `step` | İlk-kez ipucu hangi adımda gürültü sayılıp kapatılıyor (FF-202) |
+| `setup_help_opened` | `step` | Hangi adımda yardım makalesine gidiliyor — "nerede takıldın"ın ürün içindeki ucuz karşılığı (FF-202) |
 
 `action_blocked` özellikle değerli: bu depo "yapılamayan iş çizilmez"
 kuralını uyguluyor, ama sunucunun 403/402 döndüğü her yer bir tasarım

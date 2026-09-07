@@ -179,7 +179,9 @@ export const Success: Story = {
             CREATED_LOCATION.address_line1,
         );
 
-        await userEvent.click(canvas.getByRole('button'));
+        // Formda artık iki düğme var (ilk kez ipucunun kapatması ve gönderme);
+        // oyun gönderme düğmesini ADIYLA bulur.
+        await userEvent.click(canvas.getByRole('button', { name: /create|save|continue/i }));
 
         await expect(await canvas.findByText(CREATED_LOCATION.display_name)).toBeInTheDocument();
     },

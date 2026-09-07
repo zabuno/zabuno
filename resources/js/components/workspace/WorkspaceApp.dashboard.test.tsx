@@ -167,18 +167,20 @@ function buildFetchMock() {
         ) {
             return jsonResponse(200, makeMenuTree());
         }
-        if (
-            String(url) === `/api/workspaces/${WORKSPACE_ID}/menu/42/publications/current` &&
-            method === 'GET'
-        ) {
-            return jsonResponse(200, { id: 55 });
-        }
-        if (
-            String(url) ===
-                `/api/workspaces/${WORKSPACE_ID}/brand/locations/${LOCATION_ID}/qr-codes` &&
-            method === 'GET'
-        ) {
-            return jsonResponse(200, [{ id: 1, state: 'active' }]);
+        // FF-202: pano yayın ve karekod durumunu TEK kurulum ilerlemesi
+        // ucundan okur; süre de oradan gelir.
+        if (String(url) === `/api/workspaces/${WORKSPACE_ID}/setup-progress` && method === 'GET') {
+            return jsonResponse(200, {
+                steps: {
+                    brand: { done: true },
+                    location: { done: true },
+                    menu: { done: true, itemCount: 3 },
+                    publication: { done: true, id: 55, version: 1 },
+                    qr: { done: true, activeCount: 1 },
+                },
+                doneCount: 5,
+                total: 5,
+            });
         }
 
         throw new Error(`Unhandled fetch in WorkspaceApp dashboard test: ${method} ${String(url)}`);

@@ -20,6 +20,7 @@ import {
 import { PublishedSnapshotRegion } from './publication/PublishedSnapshotRegion';
 import { QrDestinationRegion } from './publication/QrDestinationRegion';
 import { PanelCard } from './shared/PanelCard';
+import { FirstRunHint } from './shared/FirstRunHint';
 import { WorkspacePageFrame, type WorkspacePageStatusBadge } from './shared/WorkspacePageFrame';
 import { trackEvent } from '../../../lib/analytics';
 import { minutesSinceSignup } from '../../../lib/analyticsEvents';
@@ -275,6 +276,20 @@ export function PublicationPage({
                     satırda; ve bir sütunun içine sıkışmadığı için üç adım
                     yan yana okunur.
                 */}
+                {/*
+                    İLK KEZ İPUCU (FF-202): yalnız hiç yayın YOKKEN ve bunun
+                    bilindiği anda. Yükleme sürerken ya da durum okunamadıysa
+                    "henüz yayınlamadın" demek, bilinmeyeni bilinmiş gibi
+                    göstermek olurdu.
+                */}
+                {workspaceId !== undefined && !loading && !loadError ? (
+                    <FirstRunHint
+                        step="publication"
+                        workspaceId={workspaceId}
+                        done={current !== null}
+                    />
+                ) : null}
+
                 <PublishStepper
                     pendingChangeCount={pendingChanges.length}
                     previewOpen={previewChecked}

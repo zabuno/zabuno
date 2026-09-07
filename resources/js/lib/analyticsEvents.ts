@@ -65,6 +65,15 @@ export const ANALYTICS_EVENTS = {
     upload_rejected: ['reason', 'kind'],
     empty_state_seen: ['screen'],
     retry_clicked: ['surface'],
+    /*
+        İlk kurulum REHBERLİĞİ (FF-202, `docs/107` 1.7). İki soru, iki olay:
+        "ipucu hangi adımda gürültü sayılıp kapatılıyor?" ve "hangi adımda
+        yardıma gidiliyor?" — ikincisi `docs/101` Faz 4'ün gerçek acemiyle
+        soracağı "nerede takıldın" sorusunun ürün içindeki ucuz karşılığı.
+        Alan yalnız adımın ADI; kim, ne yazdı, ne kadar bekledi yok.
+    */
+    setup_hint_dismissed: ['step'],
+    setup_help_opened: ['step'],
 
     /* ── §4.1 Aktivasyon — "sahip ilk değerine ulaştı mı?" ──────────── */
     workspace_created: ['has_brand'],

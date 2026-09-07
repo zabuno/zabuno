@@ -22,6 +22,7 @@ import {
 } from './qr/qrPrintPlan';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PageState } from './shared/PageState';
+import { FirstRunHint } from './shared/FirstRunHint';
 import { ActionLink } from '../../catalog/navigation/micro/ActionLink';
 import { Button } from '../../catalog/forms/micro/Button';
 
@@ -263,6 +264,19 @@ export function QrCodesPage({
                     />
                 ) : (
                     <>
+                        {/*
+                            İLK KEZ İPUCU (FF-202): liste okunmuş ve etkin kod
+                            yoksa. Yüklenirken ya da liste çekilemediyse
+                            çizilmez — "hiç kodun yok" ancak bilinince söylenir.
+                        */}
+                        {workspaceId !== undefined && !listLoading && !listFailed ? (
+                            <FirstRunHint
+                                step="qr"
+                                workspaceId={workspaceId}
+                                done={activeCodes.length > 0}
+                            />
+                        ) : null}
+
                         {listLoading ? (
                             <p role="status" className="text-body text-fg-muted">
                                 {t('workspace.publication.qrScreen.loading')}

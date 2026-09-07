@@ -29,6 +29,10 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
                 brand={ctx.brand}
                 onSaved={ctx.onBrandSaved}
                 onNavigateToMedia={() => ctx.onNavigateToSection('media')}
+                nextStep={{
+                    done: ctx.locationProfiles.length > 0,
+                    onContinue: () => ctx.onNavigateToSection('locations'),
+                }}
             />
         </Suspense>
     );
