@@ -7,6 +7,8 @@ const config: StorybookConfig = {
         '../resources/js/components/workspace/**/*.stories.tsx',
         // Kimlik yüzeyi (FF-198): kayıt formu da 320 pikselde ölçülür.
         '../resources/js/components/auth/**/*.stories.tsx',
+        // Süperadmin yüzeyi (FF-210): modül envanteri de 320 pikselde ölçülür.
+        '../resources/js/components/admin/**/*.stories.tsx',
     ],
     addons: ['@storybook/addon-a11y'],
     framework: {

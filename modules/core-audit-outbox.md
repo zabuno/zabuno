@@ -1,5 +1,7 @@
 # CORE-07 — Audit & Event Outbox
 
+contexts: belirsiz: denetim izleri Workspace, MenuCatalog, Media ve Platform bağlamlarına dağılmış; olay kutusunun ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

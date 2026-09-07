@@ -6,6 +6,7 @@ namespace App\Http\Controllers\PlatformAdmin;
 
 use App\Domain\Modules\ModuleManifest;
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Modules\RepositoryModuleInventory;
 use Illuminate\Http\JsonResponse;
 use RuntimeException;
 
@@ -26,8 +27,17 @@ use RuntimeException;
  * envanterin durum sütununu oradan doldurmak, yanlış cümleyi ürünün en
  * görünür yerine taşımak olurdu.
  *
+ * ADIM 3 + ADIM 4 (FF-210) BU KAYNAĞA BİR ÜÇÜNCÜSÜNÜ EKLEDİ ve o da kod:
+ *  - `modules/*.md` içindeki tek satırlık `contexts:` alanı — tanım ile kod
+ *    bağlamı arasındaki eşleme (§4.2 B). Bu alan bir DURUM değil bir ADRES
+ *    taşır; dosyanın geri kalanı hâlâ okunmaz.
+ *  - Bu adresten ölçülen gözlem (dizin, rota, tablo, test) ve ondan türetilen
+ *    durum rozeti (§4.1). Rozet elle girilmez ve eşleme kurulamayan modül
+ *    "yok" değil BİLİNMİYOR olur.
+ *
  * SALT OKUNUR ve öyle kalır: modül açma/kapama bu depoda hiçbir yerde
- * modellenmiş değil (§5.1). Uçta taşınmayan bir alan ekrana da çıkamaz.
+ * modellenmiş değil (§5.1). Uçta taşınmayan bir alan ekrana da çıkamaz —
+ * adım 5 hâlâ yalnız bir karardır ve bu uçta tek bir yazma yolu yoktur.
  */
 final class ListCoreModulesController extends Controller
 {
@@ -40,9 +50,26 @@ final class ListCoreModulesController extends Controller
 
     public function __invoke(): JsonResponse
     {
+        $inventory = new RepositoryModuleInventory(base_path());
+
         return response()->json([
             'modules' => $this->modules(),
             'contextGraph' => $this->contextGraph(),
+            /*
+                62 modül TANIMI ve her birinin koddaki ölçülmüş karşılığı.
+                Ayrı bir anahtar altında duruyor çünkü ayrı bir şey: yukarıdaki
+                `modules` doğrulanmış bir KAYIT dosyasıdır, buradaki liste bir
+                ÖLÇÜMDÜR. İkisini tek listeye karıştırmak, kaynağı okunamaz
+                yapardı.
+            */
+            'specModules' => $inventory->specModules(),
+            /*
+                Eşlemenin öteki yarısı: kodda bir bağlamı olan ama hiçbir modül
+                tanımının sahiplenmediği isimler. Sessizce eşleştirmek yerine
+                AYRI listelenir (`docs/111` §4.2) — bir bağlamın tanımsız
+                olması da bir cevaptır.
+            */
+            'unmappedContexts' => $inventory->unmappedContexts(),
         ]);
     }
 

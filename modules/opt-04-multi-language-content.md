@@ -1,5 +1,7 @@
 # OPT-04 — Multi-language Content
 
+contexts: belirsiz: Localization ve Content bağlamlarına dağılmış; ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

@@ -1,5 +1,7 @@
 # CORE-06 — Settings, Secrets & Integrations
 
+contexts: Platform
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

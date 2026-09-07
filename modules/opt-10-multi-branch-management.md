@@ -1,5 +1,7 @@
 # OPT-10 — Multi-branch Management
 
+contexts: belirsiz: şube (location) Tenancy bağlamının içinde; ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

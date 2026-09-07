@@ -1,5 +1,7 @@
 # CORE-08 — Localization
 
+contexts: Localization
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

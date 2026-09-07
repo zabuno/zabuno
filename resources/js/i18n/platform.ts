@@ -62,6 +62,40 @@ const en = {
     'engineering.modules.graph.col.from': 'Context',
     'engineering.modules.graph.col.to': 'Depends on',
     'engineering.modules.graph.col.evidence': 'Proved by',
+
+    // ADIM 3 + ADIM 4 (`docs/111` §4.1, §4.2). Rozet METİNLERİ bilerek iki
+    // parçalı: ne ölçüldüğü ve ne ölçülmediği. "Kod karşılığı var" ile
+    // "üretimde çalışıyor" aynı cümle değildir ve ekranda bu ayrım okunur.
+    'engineering.modules.specs.title': 'Module specs measured against the code',
+    'engineering.modules.specs.about':
+        'Each spec under modules/ names, in one machine-read field, the code contexts it owns. Nothing else in those files is read here. The badge is derived from four observations of this checkout: context directories, registered routes, tables a migration actually creates, and matching test files.',
+    'engineering.modules.specs.claim':
+        'What the badge does not say: “the code is here” is not “it runs in production”. Nothing on this page probes a running installation, so a module with code may still be unconfigured, undeployed or unreachable.',
+    'engineering.modules.specs.source':
+        'Source: the contexts field of each modules/*.md, measured against app/, routes/, database/migrations/ and tests/',
+    'engineering.modules.specs.empty': 'No module spec was found.',
+    'engineering.modules.status.implemented': 'Implemented',
+    'engineering.modules.status.partial': 'Partial',
+    'engineering.modules.status.definitionOnly': 'Definition only',
+    'engineering.modules.status.unknown': 'Unknown',
+    'engineering.modules.status.implemented.means':
+        'A context directory, a surface and at least one test were all found.',
+    'engineering.modules.status.partial.means':
+        'A context directory was found, but a route, a table or a test is missing.',
+    'engineering.modules.status.definitionOnly.means':
+        'The spec owns no code context and none was found.',
+    'engineering.modules.status.unknown.means':
+        'The mapping could not be established, so nothing was measured. This is not the same as absent.',
+    'engineering.modules.obs.directories': '{count} directories',
+    'engineering.modules.obs.routeFiles': '{count} route files',
+    'engineering.modules.obs.tables': '{count} tables',
+    'engineering.modules.obs.tests': '{count} tests',
+    'engineering.modules.obs.noContext': 'No context directory found.',
+    'engineering.modules.legend.title': 'How to read the badge',
+    'engineering.modules.unmapped.title': 'Code contexts with no module spec',
+    'engineering.modules.unmapped.about':
+        'These directories exist in the source tree but no module spec claims them. They are listed on their own because “does this spec have code?” and “does this code have a spec?” are two different questions.',
+    'engineering.modules.unmapped.empty': 'Every code context is claimed by a module spec.',
     'platform.shell.brand': 'Zabuno Platform',
     'platform.shell.navLabel': 'Platform admin',
     'platform.shell.heading': 'Platform administration',

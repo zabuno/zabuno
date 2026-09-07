@@ -164,6 +164,10 @@ msgstr "Observed dependencies between contexts"
 msgid "engineering.modules.heading"
 msgstr "Modules"
 
+#: platform:engineering.modules.legend.title
+msgid "engineering.modules.legend.title"
+msgstr "How to read the badge"
+
 #: platform:engineering.modules.loading
 msgid "engineering.modules.loading"
 msgstr "Loading the module inventory…"
@@ -171,6 +175,90 @@ msgstr "Loading the module inventory…"
 #: platform:engineering.modules.nav.label
 msgid "engineering.modules.nav.label"
 msgstr "Modules"
+
+#: platform:engineering.modules.obs.directories
+msgid "engineering.modules.obs.directories"
+msgstr "{count} directories"
+
+#: platform:engineering.modules.obs.noContext
+msgid "engineering.modules.obs.noContext"
+msgstr "No context directory found."
+
+#: platform:engineering.modules.obs.routeFiles
+msgid "engineering.modules.obs.routeFiles"
+msgstr "{count} route files"
+
+#: platform:engineering.modules.obs.tables
+msgid "engineering.modules.obs.tables"
+msgstr "{count} tables"
+
+#: platform:engineering.modules.obs.tests
+msgid "engineering.modules.obs.tests"
+msgstr "{count} tests"
+
+#: platform:engineering.modules.specs.about
+msgid "engineering.modules.specs.about"
+msgstr "Each spec under modules/ names, in one machine-read field, the code contexts it owns. Nothing else in those files is read here. The badge is derived from four observations of this checkout: context directories, registered routes, tables a migration actually creates, and matching test files."
+
+#: platform:engineering.modules.specs.claim
+msgid "engineering.modules.specs.claim"
+msgstr "What the badge does not say: “the code is here” is not “it runs in production”. Nothing on this page probes a running installation, so a module with code may still be unconfigured, undeployed or unreachable."
+
+#: platform:engineering.modules.specs.empty
+msgid "engineering.modules.specs.empty"
+msgstr "No module spec was found."
+
+#: platform:engineering.modules.specs.source
+msgid "engineering.modules.specs.source"
+msgstr "Source: the contexts field of each modules/*.md, measured against app/, routes/, database/migrations/ and tests/"
+
+#: platform:engineering.modules.specs.title
+msgid "engineering.modules.specs.title"
+msgstr "Module specs measured against the code"
+
+#: platform:engineering.modules.status.definitionOnly
+msgid "engineering.modules.status.definitionOnly"
+msgstr "Definition only"
+
+#: platform:engineering.modules.status.definitionOnly.means
+msgid "engineering.modules.status.definitionOnly.means"
+msgstr "The spec owns no code context and none was found."
+
+#: platform:engineering.modules.status.implemented
+msgid "engineering.modules.status.implemented"
+msgstr "Implemented"
+
+#: platform:engineering.modules.status.implemented.means
+msgid "engineering.modules.status.implemented.means"
+msgstr "A context directory, a surface and at least one test were all found."
+
+#: platform:engineering.modules.status.partial
+msgid "engineering.modules.status.partial"
+msgstr "Partial"
+
+#: platform:engineering.modules.status.partial.means
+msgid "engineering.modules.status.partial.means"
+msgstr "A context directory was found, but a route, a table or a test is missing."
+
+#: platform:engineering.modules.status.unknown
+msgid "engineering.modules.status.unknown"
+msgstr "Unknown"
+
+#: platform:engineering.modules.status.unknown.means
+msgid "engineering.modules.status.unknown.means"
+msgstr "The mapping could not be established, so nothing was measured. This is not the same as absent."
+
+#: platform:engineering.modules.unmapped.about
+msgid "engineering.modules.unmapped.about"
+msgstr "These directories exist in the source tree but no module spec claims them. They are listed on their own because “does this spec have code?” and “does this code have a spec?” are two different questions."
+
+#: platform:engineering.modules.unmapped.empty
+msgid "engineering.modules.unmapped.empty"
+msgstr "Every code context is claimed by a module spec."
+
+#: platform:engineering.modules.unmapped.title
+msgid "engineering.modules.unmapped.title"
+msgstr "Code contexts with no module spec"
 
 #: platform:engineering.shell.brand
 msgid "engineering.shell.brand"
