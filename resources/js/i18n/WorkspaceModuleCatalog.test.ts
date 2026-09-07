@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1641;
+const FROZEN_LEGACY_KEY_COUNT = 1657;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -198,8 +198,20 @@ const FROZEN_LEGACY_KEY_COUNT = 1641;
 // panel tek kaynağı okumak zorunda. Buraya ikinci bir cümle yazmak, iki
 // cümlenin ayrıştığı günü hazırlamak olurdu. "7/24", "en kısa sürede" gibi
 // bir yedek cümle de yok — vaat sahibin kararıdır, katalogun değil.
+// FF-215: 1618 → 1634, on altı anahtar — FATURA (docs/107 Faz 1.4,
+// docs/130). Yukarıdaki "fatura yolu bu pakette yok" notu ARTIK GEÇERSİZ:
+// tahsilatın karşılığında numaralı bir belge doğuyor ve panel onu
+// listeliyor. Anahtarlar belgenin EKRAN kipinindir; kâğıt kipi (A4 PDF)
+// sunucuda üretilir ve metni katalogda değil, belgenin kendi kaynak
+// dilindedir (`LegalDocument` ile aynı karar).
+//
+// ÜÇ CÜMLE BİLEREK "EKSİK" DİYOR ve hiçbiri iyimser değil: şirket bilgisi
+// girilmemişken belgenin tam bir ticari fatura OLMADIĞI, KDV oranı
+// yapılandırılmamışken vergi ayrımının GÖSTERİLMEDİĞİ, ve e-arşiv/
+// e-fatura sağlayıcısı bağlı olmadığı için kaydın hiçbir yere
+// GÖNDERİLMEDİĞİ. "Yakında e-fatura" diye bir anahtar yok ve olmayacak.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '813b35e9a10d8766e0ac533ebbfec082cef0eb8f4f2feb151e2f0550b45b53d3';
+    '8eaeef56eda927e356eb033327705da68f50d74f5fc3098c7913253c65cf3270';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

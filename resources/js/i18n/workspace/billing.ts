@@ -117,6 +117,31 @@ export const billing = {
     'workspace.billing.profile.save': 'Save billing details',
     'workspace.billing.profile.cancel': 'Cancel',
     'workspace.billing.profile.saveError': 'Billing details could not be saved.',
+    // FATURA (FF-215, docs/107 Faz 1.4, docs/130): tahsilatın karşılığındaki
+    // belge. Ekran kipi burada; kâğıt kipi sunucuda üretilen A4 PDF'tir ve
+    // metni belgenin kendi kaynak dilindedir (katalogda değil).
+    'workspace.billing.invoices.region': 'Invoices',
+    'workspace.billing.invoices.description':
+        'Every collected payment is recorded here as a numbered document. A document is never edited or deleted; a refund is recorded as a separate credit note.',
+    'workspace.billing.invoices.loading': 'Loading invoices…',
+    'workspace.billing.invoices.empty':
+        'No invoice yet. The first successful payment creates the first document.',
+    'workspace.billing.invoices.error': 'Invoices could not be loaded.',
+    'workspace.billing.invoices.retry': 'Retry',
+    'workspace.billing.invoices.kind.invoice': 'Invoice',
+    'workspace.billing.invoices.kind.creditNote': 'Credit note',
+    'workspace.billing.invoices.issuedAt': 'Issued {date}',
+    'workspace.billing.invoices.line': '{plan} — {days} days of subscription',
+    'workspace.billing.invoices.vat': 'VAT {amount}',
+    'workspace.billing.invoices.vatUnknown':
+        'No VAT rate is configured, so this document shows no tax breakdown.',
+    'workspace.billing.invoices.download': 'Download PDF',
+    'workspace.billing.invoices.sellerIncomplete':
+        'Our company details are not complete yet, so this document is not a complete commercial invoice.',
+    'workspace.billing.invoices.missingDocuments':
+        '{count} collected payment(s) have no document, because no billing details were recorded when they were collected.',
+    'workspace.billing.invoices.earchiveNotConfigured':
+        'No e-Arşiv / e-Fatura provider is connected, so these records have not been sent to any tax authority.',
 } as const;
 
 declare module '../workspace' {

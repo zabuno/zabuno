@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Billing\DownloadInvoiceDocumentController;
+use App\Http\Controllers\Billing\ListInvoicesController;
 use App\Http\Controllers\Billing\ListPlansController;
 use App\Http\Controllers\Billing\ShowBillingProfileController;
 use App\Http\Controllers\Billing\ShowCheckoutStatusController;
@@ -35,4 +37,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/workspaces/{workspace}/billing-profile', StoreBillingProfileController::class);
     Route::get('/workspaces/{workspace}/checkout', ShowCheckoutStatusController::class);
     Route::post('/workspaces/{workspace}/checkout', StoreCheckoutController::class)->middleware('throttle:10,1');
+
+    /*
+        FATURA (docs/107 Faz 1.4, docs/130).
+
+        Tahsilatın karşılığındaki belge; okunur ve indirilir, YAZILMAZ.
+        Defterle aynı kapı (`billing.view`) ve aynı sessizlik: yetkisiz
+        istek varlığı bile sızdırmaz. PDF ucu hız sınırlı — her istek bir
+        A4 belgesi üretir.
+    */
+    Route::get('/workspaces/{workspace}/invoices', ListInvoicesController::class);
+    Route::get('/workspaces/{workspace}/invoices/{invoice}/document.pdf', DownloadInvoiceDocumentController::class)
+        ->whereNumber('invoice')
+        ->middleware('throttle:30,1');
 });
