@@ -118,6 +118,10 @@ services:
             # İletişim formu bildirimi kime gider — boşsa gönderim yok, bu
             # bir hata değil (`docs/93`).
             CONTACT_NOTIFICATION_ADDRESS: ${CONTACT_NOTIFICATION_ADDRESS:-}
+            # Destek kanalı (`docs/125`): taahhüt saati ve cevap adresi.
+            # İkisi de boş olabilir; boşken uygulama taahhüt yazmaz.
+            SUPPORT_RESPONSE_COMMITMENT_HOURS: ${SUPPORT_RESPONSE_COMMITMENT_HOURS:-}
+            SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
         volumes:
             # Yüklenen medya imajın içinde yaşamaz; imaj değişince kaybolurdu.
             - app-storage:/var/www/html/storage/app

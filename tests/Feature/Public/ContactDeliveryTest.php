@@ -21,6 +21,11 @@ use Tests\TestCase;
  * durur ve sebebi kayda geçer: sağlayıcı bir gün cevap vermediğinde
  * kaybolan bir talep olmamalı.
  *
+ * FF-201 (`docs/125`): sahibe bildirimin sonucu artık `support_requests`
+ * tablosunun `notified_at` / `notification_failure` sütunlarında yaşar;
+ * gönderene giden alındı bildiriminin AYRI kaydı var (`acknowledged_*`)
+ * ve onu `PublicSupportRequestTest` ölçer.
+ *
  * Requirement IDs: CONTACT-DELIVERED-01, CONTACT-DELIVERY-FAILURE-KEPT-01,
  * CONTACT-DELIVERY-OFF-IS-NOT-AN-ERROR-01, CONTACT-DELIVERY-NO-SECRET-01.
  */
@@ -53,10 +58,10 @@ final class ContactDeliveryTest extends TestCase
             return $mail->hasTo('destek@zabuno.com');
         });
 
-        $row = DB::table('contact_messages')->first();
+        $row = DB::table('support_requests')->first();
 
-        self::assertNotNull($row->delivered_at, 'CONTACT-DELIVERED-01: gönderim kayda geçmeli.');
-        self::assertNull($row->delivery_failure);
+        self::assertNotNull($row->notified_at, 'CONTACT-DELIVERED-01: gönderim kayda geçmeli.');
+        self::assertNull($row->notification_failure);
     }
 
     // --- CONTACT-DELIVERY-FAILURE-KEPT-01 ---------------------------------
@@ -66,7 +71,7 @@ final class ContactDeliveryTest extends TestCase
         config(['mail.default' => 'mailgun', 'contact.notify' => 'destek@zabuno.com']);
 
         // Sağlayıcı cevap vermiyor.
-        Mail::shouldReceive('to')->andThrow(new \RuntimeException('mailgun ulaşılamıyor'));
+        Mail::shouldReceive('mailer')->andThrow(new \RuntimeException('mailgun ulaşılamıyor'));
 
         $response = $this->post('/contact', $this->message());
 
@@ -75,12 +80,12 @@ final class ContactDeliveryTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('contact.sent');
 
-        $row = DB::table('contact_messages')->first();
+        $row = DB::table('support_requests')->first();
 
         self::assertNotNull($row, 'CONTACT-DELIVERY-FAILURE-KEPT-01: mesaj durmalı.');
-        self::assertNull($row->delivered_at);
+        self::assertNull($row->notified_at);
         self::assertNotEmpty(
-            $row->delivery_failure,
+            $row->notification_failure,
             'Sebep kayda geçmeli; yoksa "hiç denenmedi" ile "denendi ve düştü" ayırt edilemez.'
         );
     }
@@ -96,12 +101,12 @@ final class ContactDeliveryTest extends TestCase
 
         Mail::assertNothingSent();
 
-        $row = DB::table('contact_messages')->first();
+        $row = DB::table('support_requests')->first();
 
         self::assertNotNull($row);
         // "Gönderildi" DEMEZ: sağlayıcı yokken damga atmak, sahibin
         // gelmeyen bir e-postayı beklemesine yol açardı.
-        self::assertNull($row->delivered_at);
+        self::assertNull($row->notified_at);
     }
 
     // --- CONTACT-DELIVERY-NO-SECRET-01 ------------------------------------

@@ -32,10 +32,12 @@ const FROZEN_MODULE_FILENAMES = [
     'publication.ts',
     'ratings.ts',
     'shell.ts',
+    // FF-201: ON ÜÇÜNCÜ modül dosyası — destek ekranı (`docs/125`).
+    'support.ts',
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1618;
+const FROZEN_LEGACY_KEY_COUNT = 1641;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -184,8 +186,20 @@ const FROZEN_LEGACY_KEY_COUNT = 1618;
 // fatura kesildi" cümlesi (fatura yolu bu pakette yok — docs/107 Faz 1.4).
 // "Test mode" cümlesi sandbox kipinde okunur: prova gerçek yolun aynısıdır
 // ve sahip hangi kipte olduğunu tahmin etmek zorunda kalmaz.
+// main ile birleştikten SONRA yeniden hesaplandı (ratings.ts + support.ts).
+// FF-201: 1576 → 1599, yirmi üç anahtar ve ON ÜÇÜNCÜ modül dosyası
+// (`support.ts`). Destek ekranı (`docs/125`): başlık ve açıklama, yardım
+// bağlantısı (2), yeni talep formu (etiketler, yardım cümleleri, düğme ve
+// ÜÇ sonuç cümlesi — alındı e-postası çıktı / çıkmadı / istek düştü),
+// liste (başlık, üç durum cümlesi, iki tarih satırı) ve üç durum kelimesi.
+//
+// YANIT TAAHHÜDÜ İÇİN ANAHTAR YOK ve olmayacak: cümle sunucudan gelir
+// (`site.support.commitment`), çünkü iletişim sayfası, alındı e-postası ve
+// panel tek kaynağı okumak zorunda. Buraya ikinci bir cümle yazmak, iki
+// cümlenin ayrıştığı günü hazırlamak olurdu. "7/24", "en kısa sürede" gibi
+// bir yedek cümle de yok — vaat sahibin kararıdır, katalogun değil.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'ed74cda71a6f75a1cbe35a4cdd815de6094adb391ec8bb0e8e22b16501cd9438';
+    '813b35e9a10d8766e0ac533ebbfec082cef0eb8f4f2feb151e2f0550b45b53d3';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

@@ -11,19 +11,28 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Gelen iletişim mesajının SAHİBE bildirimi — `docs/93` (P0-06).
+ * Yeni destek talebinin SAHİBE bildirimi — `docs/93` (P0-06), FF-201 ile
+ * referans kazandı (`docs/125`).
  *
- * Bildirim GÖNDERENE değil sahibe gider. Gönderen ekranda zaten teyit aldı;
- * ayrıca kum havuzu alanı ona ulaşamaz (`docs/93` kısıt bölümü).
+ * Bildirim GÖNDERENE değil sahibe gider; gönderen kendi alındı
+ * bildirimini ayrıca alır (`SupportRequestAcknowledged`). Referans burada
+ * da vardır: sahip cevap yazarken müşterinin elindeki numarayla aynı
+ * numarayı görmeli.
+ *
+ * Metin İngilizce ve katalog dışı: bu sahibin iç bildirimi, bir müşteri
+ * yüzeyi değil. Alındı e-postası ise katalogdan gelir.
  */
 final class ContactMessageReceived extends Mailable
 {
     use Queueable, SerializesModels;
 
     public function __construct(
+        public readonly string $reference,
         public readonly string $senderName,
         public readonly string $senderEmail,
+        public readonly string $requestSubject,
         public readonly string $body,
+        public readonly string $channel,
     ) {}
 
     public function envelope(): Envelope
@@ -37,7 +46,7 @@ final class ContactMessageReceived extends Mailable
                 DMARC bunu reddeder ve bildirim hiç ulaşmazdı.
             */
             replyTo: [$this->senderEmail],
-            subject: 'Zabuno — new message from '.$this->senderName,
+            subject: sprintf('Zabuno — support request %s from %s', $this->reference, $this->senderName),
         );
     }
 

@@ -143,6 +143,9 @@ final class SiteText
             'contactMessage' => 'site.contact.message',
             'contactSubmit' => 'site.contact.submit',
             'contactHoneypot' => 'site.contact.honeypot',
+            // Gönderim sonrası REFERANS (FF-201, `docs/125`): denetleyici
+            // `{reference}` yer tutucusunu doldurur, şablon yalnız yazar.
+            'contactSentReference' => 'site.contact.sentReference',
             // Ana sayfa gövdesi (`docs/100` Faz 2): 29 dize Blade'den katalog'a.
             'homeMetaTitle' => 'site.home.meta.title',
             'homeMetaDescription' => 'site.home.meta.description',

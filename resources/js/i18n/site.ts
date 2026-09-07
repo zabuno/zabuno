@@ -224,6 +224,38 @@ export const siteTranslations = {
     // Bal küpü etiketi: insan bunu görmez, ama ekran okuyucu görürse ne
     // yapacağını bilmeli.
     'site.contact.honeypot': 'Leave this empty',
+    /*
+        REFERANS EKRANDA (FF-201, `docs/125`). Sekme kapanır, e-posta
+        spam'e düşer; ekrandaki numara o an not alınabilir. `{reference}`
+        denetleyicide doldurulur.
+    */
+    'site.contact.sentReference':
+        'Your reference is {reference}. Quote it if you write to us again.',
+
+    // --- Destek kanalı (FF-201, `docs/125`) --------------------------------
+    /*
+        YANIT TAAHHÜDÜ — TEK CÜMLE, TEK KAYNAK. İletişim sayfası, alındı
+        e-postası ve panel bu anahtarı okur; `{hours}` sahibin
+        `SUPPORT_RESPONSE_COMMITMENT_HOURS` kararıyla dolar. Değer yoksa
+        cümle HİÇBİR yerde çizilmez — burada bir yedek cümle de yok.
+    */
+    'site.support.commitment': 'We reply within {hours} hours.',
+    /*
+        Gönderene ALINDI e-postası. Düz metin; her satır ayrı anahtar,
+        çünkü iki satır (panel bağlantısı, cevap izni) yalnız bazı
+        durumlarda yazılır ve çevirmen onları ayrı görmeli.
+    */
+    'site.support.ack.subject': 'Zabuno — we received your request {reference}',
+    'site.support.ack.greeting': 'Hello {name},',
+    'site.support.ack.received': 'We received your request and gave it the reference {reference}.',
+    'site.support.ack.subjectLine': 'Subject: {subject}',
+    'site.support.ack.keep': 'Keep this reference and quote it if you write to us again.',
+    // Yalnız PANEL kanalında: kamu formundan yazan birinin paneli yoktur.
+    'site.support.ack.panel':
+        'You can follow the status of this request in your Zabuno panel, under Support.',
+    // Yalnız `SUPPORT_EMAIL` yapılandırılmışsa: kimsenin okumadığı bir
+    // kutuya cevap yazdırmak, hiç cevap istememekten kötü.
+    'site.support.ack.reply': 'You can reply to this email to add more detail.',
 
     // --- Ana sayfadaki iki yeni cümle ------------------------------------
     // --- Ana sayfa gövdesi (`docs/100` Faz 2) -----------------------------

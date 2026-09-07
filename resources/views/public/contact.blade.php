@@ -10,12 +10,24 @@
         @if (session('contact.sent'))
             {{-- Teyit EKRANDA. "Gönderildi" demeyen bir form, gönderilip
                  gönderilmediğini bilmeyen bir kullanıcı bırakır. --}}
-            <p role="status" class="rounded-lg border border-border p-4 text-fg">
-                {{ $st['contactSent'] }}
-            </p>
+            <div role="status" class="flex flex-col gap-2 rounded-lg border border-border p-4 text-fg">
+                <p>{{ $st['contactSent'] }}</p>
+                @if ($sentReference !== null)
+                    {{-- REFERANS EKRANDA (FF-201): e-posta çıkmasa bile
+                         numara elde kalır. Bal küpü gönderiminde referans
+                         yoktur ve bu satır hiç çizilmez. --}}
+                    <p class="font-semibold">{{ $sentReference }}</p>
+                @endif
+            </div>
         @endif
 
         <p class="text-fg-secondary">{{ $st['contactLead'] }}</p>
+
+        @if ($commitment !== null)
+            {{-- Yalnız yapılandırılmışsa (`docs/125` §3). Boşken bu satır
+                 YOKTUR; yedek bir "en kısa sürede" cümlesi de yoktur. --}}
+            <p class="text-fg-secondary">{{ $commitment }}</p>
+        @endif
 
         @if ($errors->any())
             <ul role="alert" class="flex flex-col gap-1 text-fg-danger">

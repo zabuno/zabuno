@@ -105,8 +105,8 @@ final class VaultMailConsumptionTest extends TestCase
 
         Mail::assertSent(ContactMessageReceived::class);
 
-        $row = DB::table('contact_messages')->latest('id')->first();
-        self::assertNotNull($row->delivered_at);
+        $row = DB::table('support_requests')->latest('id')->first();
+        self::assertNotNull($row->notified_at);
         // Kasa sırrı iletişim tablosuna sızmaz.
         self::assertStringNotContainsString('vault-secret-2222', (string) json_encode($row));
     }
