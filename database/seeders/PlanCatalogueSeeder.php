@@ -17,8 +17,10 @@ use Illuminate\Support\Facades\DB;
  * içindir, iş verisi için değil. Fiyat şema değildir; sahibi onu yarın
  * değiştirir.
  *
- * KADEMELER UYDURULMADI, UYGULANANDAN TÜRETİLDİ. Bu üründe tam üç yetenek
- * plana bağlı: toplu QR, ekip daveti, analitik. Temel zincir
+ * KADEMELER UYDURULMADI, UYGULANANDAN TÜRETİLDİ. Plana bağlı yetenek kümesi
+ * `Entitlement` enum'udur ve BURASI ONUN TEK ALICISIDIR: enum'a eklenip
+ * hiçbir kademeye konmayan bir yetenek, çalışsa bile satılamaz
+ * (`PlanCatalogueSellsEveryCapabilityTest`). Temel zincir
  * (kayıt → menü → yayın → QR → misafir sayfası) PLANSIZ çalışır ve
  * `RestaurantCriticalJourneyTest` bunu dondurur. Dördüncü bir kademe icat
  * etmek, parası alınan ama kapanmayan bir kapı satmak olurdu.
@@ -85,6 +87,26 @@ final class PlanCatalogueSeeder extends Seeder
                 Marka görünümü burada açılır çünkü ayırt edici olan tam da
                 budur: ücretsiz kademe menüyü yayınlar ve karekod basar, ama
                 misafirin gördüğü sayfa nötrdür (`docs/113` §10.1).
+
+                MASADAN SİPARİŞ DE BURADA AÇILIR, en üstte değil. Sipariş
+                hattı uçtan uca çalışıyordu ama hiçbir kademede satılmıyordu
+                (`docs/122` §2): yazılmış, para hattına hiç bağlanmamıştı.
+                Kademesi ölçümden geldi — `docs/115` §4 `order.view`,
+                `order.confirm` ve `order.kitchen` izinlerinin üçünü de
+                Sahip'e veriyor, yani sipariş almak için ekip daveti
+                GEREKMİYOR. `team`e koymak, tam da bu kademenin tarif ettiği
+                sahip-işletmeli restorana çalışan bir yeteneği satılamaz
+                kılardı. Ücretsiz kademede olmamasının sebebi de ölçüm:
+                sipariş kalıcı kayıt, mutfak yoklaması ve denetim izi üretir;
+                menüyü göstermek üretmez.
+
+                ZENGİN GÖRSEL de burada başlar ve kademe UYDURULMADI:
+                `config/media-quota.php` ücretsiz kademeye 200 MB, buraya
+                2 GB veriyor. Zengin görseli 200 MB'ın üstünde satmak,
+                kotanın ilk günde bozacağı bir söz olurdu. Hakkın misafir
+                yüzeyi Dalga 6'da yazılır (`docs/122` Y6) ve o güne kadar
+                fiyat sayfasında DUYURULMAZ — hak burada, reklamı orada
+                değil.
             */
             'restaurant' => [
                 'name' => 'Restaurant',
@@ -93,6 +115,8 @@ final class PlanCatalogueSeeder extends Seeder
                     Entitlement::QrBulkGeneration->value,
                     Entitlement::AnalyticsReporting->value,
                     Entitlement::BrandingCustom->value,
+                    Entitlement::OrderingBasic->value,
+                    Entitlement::MenuRichMedia->value,
                 ],
             ],
 
@@ -107,6 +131,8 @@ final class PlanCatalogueSeeder extends Seeder
                     Entitlement::QrBulkGeneration->value,
                     Entitlement::AnalyticsReporting->value,
                     Entitlement::BrandingCustom->value,
+                    Entitlement::OrderingBasic->value,
+                    Entitlement::MenuRichMedia->value,
                     Entitlement::TeamInvitations->value,
                 ],
             ],

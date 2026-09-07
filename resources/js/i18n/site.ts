@@ -170,6 +170,12 @@ export const siteTranslations = {
     'site.plan.analytics':
         'Analytics: what guests look at, and what they search for and cannot find',
     'site.plan.team': 'Team members with roles you control',
+    'site.plan.branding': 'Your own colours and type on the guest menu',
+    // Söz, hattın gerçekten yaptığı kadar: misafir gönderir, personel
+    // onaylar, mutfak görür. "Anında" denmez — kanal yoklamadır
+    // (`docs/115` §6) ve tutulmayacak bir hız sözü vermek istemiyoruz.
+    'site.plan.ordering':
+        'Guests order from the table; your staff confirms and the kitchen sees it',
 
     // --- İletişim --------------------------------------------------------
     'site.contact.heading': 'Contact',

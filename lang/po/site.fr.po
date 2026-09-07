@@ -388,6 +388,14 @@ msgstr ""
 msgid "site.plan.analytics"
 msgstr ""
 
+#: site:site.plan.branding
+msgid "site.plan.branding"
+msgstr ""
+
+#: site:site.plan.ordering
+msgid "site.plan.ordering"
+msgstr ""
+
 #: site:site.plan.qrBulk
 msgid "site.plan.qrBulk"
 msgstr ""
