@@ -1,5 +1,7 @@
 # OPT-24 — Inventory / Recipes
 
+contexts: yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

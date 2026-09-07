@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Content\UseCase;
 
-use App\Application\Content\Port\ContentLibraryPort;
 use App\Domain\Content\PageEnvironment;
-use App\Domain\Content\PageGate;
 use App\Domain\Url\CanonicalUrl;
 use App\Models\ContentPage;
 
@@ -26,11 +24,15 @@ use App\Models\ContentPage;
  * İkinci süzgeç içerik katmanıdır: kütük "yayında" dese bile o dilde
  * gösterilecek metin yoksa sayfa 404 kalır (`ShowCorporatePageController`).
  * Var olmayan bir sayfayı alternatif ilan etmek, ilanın kendisini yalan yapar.
+ *
+ * FF-214: bu iki süzgeç burada İKİNCİ KEZ yazılmıştı. Artık ziyaretçiye
+ * verilen cevabı üreten hesabın kendisinden okunuyor (`ResolvePageDelivery`) —
+ * aynı karar sitemap'i de besliyor.
  */
 final class ResolveLocaleAlternates
 {
     public function __construct(
-        private readonly ContentLibraryPort $library,
+        private readonly ResolvePageDelivery $delivery,
         private readonly CanonicalUrl $canonical,
     ) {}
 
@@ -56,15 +58,13 @@ final class ResolveLocaleAlternates
         $alternates = [];
 
         foreach ($rows as $row) {
-            if ($row->is_template || $row->is_external) {
-                continue;
-            }
-
-            if (! PageGate::decide($row->status(), $environment, false, $row->was_ever_published)->isLinkable()) {
-                continue;
-            }
-
-            if ($this->library->find($row->page_key, $row->locale) === null) {
+            /*
+                ŞABLON, DIŞ BAĞLANTI, YAYINLANMAMIŞ VE METİNSİZ — dördü de tek
+                bir sorunun cevabıdır: bu adres gerçekten açılıyor mu? Cevabı
+                `ResolvePageDelivery` veriyor ve o cevap, ziyaretçinin aldığı
+                HTTP kodunun ta kendisi.
+            */
+            if (! $this->delivery->for($row, $environment)->decision->isLinkable()) {
                 continue;
             }
 

@@ -156,6 +156,10 @@ msgstr "Adınız"
 msgid "site.contact.sent"
 msgstr "Teşekkürler — mesajınızı aldık, verdiğiniz adrese döneceğiz."
 
+#: site:site.contact.sentReference
+msgid "site.contact.sentReference"
+msgstr ""
+
 #: site:site.contact.submit
 msgid "site.contact.submit"
 msgstr "Mesajı gönder"
@@ -580,6 +584,10 @@ msgstr ""
 msgid "site.plan.qrBulk"
 msgstr "Bütün bir salonun masaları için toplu karekod"
 
+#: site:site.plan.richMedia
+msgid "site.plan.richMedia"
+msgstr ""
+
 #: site:site.plan.team
 msgid "site.plan.team"
 msgstr "Yetkisini sizin belirlediğiniz ekip üyeleri"
@@ -606,7 +614,7 @@ msgstr "Fiyat"
 
 #: site:site.pricing.included.body
 msgid "site.pricing.included.body"
-msgstr "Menünüz, tek tıkla geri alınabilen yayınlama, karekodlar ve misafir sayfası, CSV içe ve dışa aktarma, fotoğraflar ve bir yemeği o gün için tükendi olarak işaretleme."
+msgstr ""
 
 #: site:site.pricing.included.heading
 msgid "site.pricing.included.heading"
@@ -647,6 +655,38 @@ msgstr "Bize sorun"
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr "Ana içeriğe geç"
+
+#: site:site.support.ack.greeting
+msgid "site.support.ack.greeting"
+msgstr ""
+
+#: site:site.support.ack.keep
+msgid "site.support.ack.keep"
+msgstr ""
+
+#: site:site.support.ack.panel
+msgid "site.support.ack.panel"
+msgstr ""
+
+#: site:site.support.ack.received
+msgid "site.support.ack.received"
+msgstr ""
+
+#: site:site.support.ack.reply
+msgid "site.support.ack.reply"
+msgstr ""
+
+#: site:site.support.ack.subject
+msgid "site.support.ack.subject"
+msgstr ""
+
+#: site:site.support.ack.subjectLine
+msgid "site.support.ack.subjectLine"
+msgstr ""
+
+#: site:site.support.commitment
+msgid "site.support.commitment"
+msgstr ""
 
 #: site:site.title.emailVerified
 msgid "site.title.emailVerified"

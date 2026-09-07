@@ -22,6 +22,7 @@ describe('ResponsiveDataTable', () => {
                 columns={columns}
                 rows={rows}
                 getRowKey={(row) => row.id}
+                emptyMessage="No menu items yet."
             />,
         );
         expect(screen.getByText('Menu items')).toBeInTheDocument();
@@ -34,6 +35,7 @@ describe('ResponsiveDataTable', () => {
                 columns={columns}
                 rows={rows}
                 getRowKey={(row) => row.id}
+                emptyMessage="No menu items yet."
             />,
         );
         expect(screen.getByText('Name')).toBeInTheDocument();
@@ -61,6 +63,7 @@ describe('ResponsiveDataTable', () => {
                 columns={columns}
                 rows={rows}
                 getRowKey={(row) => row.id}
+                emptyMessage="No menu items yet."
             />,
         );
 
@@ -96,6 +99,7 @@ describe('ResponsiveDataTable', () => {
                 columns={columns}
                 rows={[]}
                 getRowKey={(row) => row.id}
+                emptyMessage="No menu items yet."
             />,
         );
 

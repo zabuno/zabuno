@@ -1,5 +1,7 @@
 # OPT-25 — Feedback / NPS
 
+contexts: belirsiz: misafir puanlaması Rating bağlamında; geri bildirim/NPS için ayrı bir dizin yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

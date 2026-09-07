@@ -39,6 +39,7 @@ const table = {
     columns: [{ key: 'id', header: 'Order', render: (row: { id: string }) => row.id }],
     rows: [{ id: '#1' }],
     getRowKey: (row: { id: string }) => row.id,
+    emptyMessage: 'No orders yet.',
 };
 
 const stats = [
@@ -79,7 +80,7 @@ describe('Fluid Adaptive Shell — intrinsic layout contract', () => {
                 brand={brand}
                 persistentSidebar={
                     <aside className="admin-shell-sidebar">
-                        <SidebarNav groups={navGroups} />
+                        <SidebarNav groups={navGroups} label="Primary" />
                     </aside>
                 }
                 mobileMenuOpen={false}
@@ -137,7 +138,7 @@ describe('Fluid Adaptive Shell — intrinsic layout contract', () => {
                 brand={brand}
                 persistentSidebar={
                     <aside className="admin-shell-sidebar">
-                        <SidebarNav groups={navGroups} />
+                        <SidebarNav groups={navGroups} label="Primary" />
                     </aside>
                 }
                 mobileMenuOpen={false}

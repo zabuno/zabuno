@@ -596,6 +596,70 @@ msgstr "Version {version}"
 msgid "workspace.billing.heading"
 msgstr "Billing"
 
+#: workspace:workspace.billing.invoices.description
+msgid "workspace.billing.invoices.description"
+msgstr "Every collected payment is recorded here as a numbered document. A document is never edited or deleted; a refund is recorded as a separate credit note."
+
+#: workspace:workspace.billing.invoices.download
+msgid "workspace.billing.invoices.download"
+msgstr "Download PDF"
+
+#: workspace:workspace.billing.invoices.earchiveNotConfigured
+msgid "workspace.billing.invoices.earchiveNotConfigured"
+msgstr "No e-Arşiv / e-Fatura provider is connected, so these records have not been sent to any tax authority."
+
+#: workspace:workspace.billing.invoices.empty
+msgid "workspace.billing.invoices.empty"
+msgstr "No invoice yet. The first successful payment creates the first document."
+
+#: workspace:workspace.billing.invoices.error
+msgid "workspace.billing.invoices.error"
+msgstr "Invoices could not be loaded."
+
+#: workspace:workspace.billing.invoices.issuedAt
+msgid "workspace.billing.invoices.issuedAt"
+msgstr "Issued {date}"
+
+#: workspace:workspace.billing.invoices.kind.creditNote
+msgid "workspace.billing.invoices.kind.creditNote"
+msgstr "Credit note"
+
+#: workspace:workspace.billing.invoices.kind.invoice
+msgid "workspace.billing.invoices.kind.invoice"
+msgstr "Invoice"
+
+#: workspace:workspace.billing.invoices.line
+msgid "workspace.billing.invoices.line"
+msgstr "{plan} — {days} days of subscription"
+
+#: workspace:workspace.billing.invoices.loading
+msgid "workspace.billing.invoices.loading"
+msgstr "Loading invoices…"
+
+#: workspace:workspace.billing.invoices.missingDocuments
+msgid "workspace.billing.invoices.missingDocuments"
+msgstr "{count} collected payment(s) have no document, because no billing details were recorded when they were collected."
+
+#: workspace:workspace.billing.invoices.region
+msgid "workspace.billing.invoices.region"
+msgstr "Invoices"
+
+#: workspace:workspace.billing.invoices.retry
+msgid "workspace.billing.invoices.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.invoices.sellerIncomplete
+msgid "workspace.billing.invoices.sellerIncomplete"
+msgstr "Our company details are not complete yet, so this document is not a complete commercial invoice."
+
+#: workspace:workspace.billing.invoices.vat
+msgid "workspace.billing.invoices.vat"
+msgstr "VAT {amount}"
+
+#: workspace:workspace.billing.invoices.vatUnknown
+msgid "workspace.billing.invoices.vatUnknown"
+msgstr "No VAT rate is configured, so this document shows no tax breakdown."
+
 #: workspace:workspace.billing.iyzicoSandbox.amount
 msgid "workspace.billing.iyzicoSandbox.amount"
 msgstr "Amount {amount} {currency}"
@@ -1239,6 +1303,10 @@ msgstr "We could not log you out. Please try again."
 #: workspace:workspace.current.switch
 msgid "workspace.current.switch"
 msgstr "Switch workspace"
+
+#: workspace:workspace.current.switchFor
+msgid "workspace.current.switchFor"
+msgstr "{workspace} — Switch workspace"
 
 #: workspace:workspace.dashboard.empty
 msgid "workspace.dashboard.empty"
@@ -6140,6 +6208,14 @@ msgstr "Workspace"
 msgid "workspace.shell.brand"
 msgstr "Zabuno"
 
+#: workspace:workspace.shell.breadcrumbs.empty
+msgid "workspace.shell.breadcrumbs.empty"
+msgstr "Empty breadcrumb trail"
+
+#: workspace:workspace.shell.breadcrumbs.label
+msgid "workspace.shell.breadcrumbs.label"
+msgstr "Breadcrumb"
+
 #: workspace:workspace.shell.currentLocation.label
 msgid "workspace.shell.currentLocation.label"
 msgstr "Current location"
@@ -6251,6 +6327,98 @@ msgstr "Team"
 #: workspace:workspace.shell.notifications.unavailable
 msgid "workspace.shell.notifications.unavailable"
 msgstr "Notifications unavailable"
+
+#: workspace:workspace.support.description
+msgid "workspace.support.description"
+msgstr "Ask for help from inside your workspace. Every request gets a reference number and stays listed here with its status."
+
+#: workspace:workspace.support.form.error
+msgid "workspace.support.form.error"
+msgstr "Your request could not be sent. Try again."
+
+#: workspace:workspace.support.form.heading
+msgid "workspace.support.form.heading"
+msgstr "New request"
+
+#: workspace:workspace.support.form.message
+msgid "workspace.support.form.message"
+msgstr "What is happening?"
+
+#: workspace:workspace.support.form.message.help
+msgid "workspace.support.form.message.help"
+msgstr "Tell us what you expected and what you saw instead. We reply to {email}."
+
+#: workspace:workspace.support.form.sent
+msgid "workspace.support.form.sent"
+msgstr "Your request {reference} was received. We sent a confirmation to {email}."
+
+#: workspace:workspace.support.form.sentNoCopy
+msgid "workspace.support.form.sentNoCopy"
+msgstr "Your request {reference} was received. The confirmation email could not be sent, but the request is recorded and listed below."
+
+#: workspace:workspace.support.form.subject
+msgid "workspace.support.form.subject"
+msgstr "Subject"
+
+#: workspace:workspace.support.form.subject.help
+msgid "workspace.support.form.subject.help"
+msgstr "One line: what is not working, or what you need."
+
+#: workspace:workspace.support.form.submit
+msgid "workspace.support.form.submit"
+msgstr "Send request"
+
+#: workspace:workspace.support.form.submitting
+msgid "workspace.support.form.submitting"
+msgstr "Sending…"
+
+#: workspace:workspace.support.help.lead
+msgid "workspace.support.help.lead"
+msgstr "Many questions are already answered in the help articles."
+
+#: workspace:workspace.support.help.link
+msgid "workspace.support.help.link"
+msgstr "Open help articles"
+
+#: workspace:workspace.support.list.answered
+msgid "workspace.support.list.answered"
+msgstr "Answered {date}"
+
+#: workspace:workspace.support.list.empty
+msgid "workspace.support.list.empty"
+msgstr "No requests yet. When you send one, it appears here with its reference and status."
+
+#: workspace:workspace.support.list.error
+msgid "workspace.support.list.error"
+msgstr "Your requests could not be loaded."
+
+#: workspace:workspace.support.list.heading
+msgid "workspace.support.list.heading"
+msgstr "Your requests"
+
+#: workspace:workspace.support.list.loading
+msgid "workspace.support.list.loading"
+msgstr "Loading your requests…"
+
+#: workspace:workspace.support.list.received
+msgid "workspace.support.list.received"
+msgstr "Received {date}"
+
+#: workspace:workspace.support.status.answered
+msgid "workspace.support.status.answered"
+msgstr "Answered"
+
+#: workspace:workspace.support.status.closed
+msgid "workspace.support.status.closed"
+msgstr "Closed"
+
+#: workspace:workspace.support.status.received
+msgid "workspace.support.status.received"
+msgstr "Received"
+
+#: workspace:workspace.support.title
+msgid "workspace.support.title"
+msgstr "Support"
 
 #: workspace:workspace.team.heading
 msgid "workspace.team.heading"

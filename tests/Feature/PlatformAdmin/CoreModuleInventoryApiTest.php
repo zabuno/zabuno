@@ -184,24 +184,23 @@ final class CoreModuleInventoryApiTest extends TestCase
         self::assertStringNotContainsString('bilinmiyor', $body);
     }
 
-    // --- §8.7 spec dosyaları kaynak DEĞİLDİR ------------------------------
+    // --- §8.7 spec dosyalarının DURUM iddiası kaynak DEĞİLDİR --------------
 
     #[Test]
-    public function neither_the_endpoint_nor_the_screen_reads_the_module_spec_files(): void
+    public function neither_the_endpoint_nor_the_screen_reaches_into_the_module_spec_files(): void
     {
         /*
-            Cevabı çalışma zamanında aramak yetmez: bugün boş dönen bir
-            ayrıştırıcı yarın dolabilir. Kural KAYNAKTA donar — bu iki dosya
-            `modules/` klasörüne hiç uzanmaz.
-
-            Ölçüm şu: 62 spec dosyasının hepsi kendini "PLANNING ONLY —
-            çalıştırılamaz" ilan ediyordu ve en az 18'inde bu yanlıştı. O
-            alan artık dosyalardan kaldırıldı; asıl kural, bir daha hiçbir
-            yüzeyin durumunu oradan okumamasıdır.
+            KURAL DARALDI, GEVŞEMEDİ (FF-210). Adım 4 `modules/*.md` içine tek
+            satırlık bir `contexts:` alanı koydu ve o alan bir ADRESTİR, bir
+            durum değil (`docs/111` §4.2 B). Onu okuyan TEK yer
+            `RepositoryModuleInventory`'dir; uç ve ekran o klasöre hâlâ hiç
+            uzanmaz — okuma yeri tek olmazsa ikinci bir okuyucu er ya da geç
+            başka bir satırı da ayrıştırır.
         */
         $surfaces = [
             'app/Http/Controllers/PlatformAdmin/ListCoreModulesController.php',
             'resources/js/components/admin/pages/ModulesPage.tsx',
+            'resources/js/components/admin/pages/ModuleInventory.tsx',
         ];
 
         foreach ($surfaces as $surface) {
@@ -220,6 +219,114 @@ final class CoreModuleInventoryApiTest extends TestCase
                 $source,
                 "{$surface}: `modules/` bir kaynak değildir (`docs/111` §3.4)."
             );
+        }
+    }
+
+    #[Test]
+    public function the_only_reader_of_the_spec_files_parses_nothing_but_the_heading_and_the_mapping(): void
+    {
+        /*
+            Kaynak taraması yetmezdi, o yüzden DAVRANIŞ ölçülüyor: gövdesinde
+            "PLANNING ONLY" yazan bir tanım dosyası bile rozete etki etmiyor
+            (`RepositoryModuleInventoryTest`). Burada donan şey, o okuyucunun
+            tekliği: uçtan çıkan her satırın kaynağı ya `config/` ya da
+            ölçümün kendisidir.
+        */
+        $reader = (string) file_get_contents(base_path('app/Infrastructure/Modules/RepositoryModuleInventory.php'));
+        $reader = preg_replace('#/\*.*?\*/#s', '', $reader) ?? $reader;
+
+        foreach (['PLANNING', 'Durum', 'status'] as $forbidden) {
+            self::assertStringNotContainsString(
+                $forbidden,
+                $reader,
+                "Tanım dosyalarının okuyucusu bir DURUM cümlesi ayrıştırmaya başlamış: {$forbidden}."
+            );
+        }
+    }
+
+    // --- §4.1 rozet + §4.2 eşleme ------------------------------------------
+
+    #[Test]
+    public function every_spec_module_carries_the_observation_that_produced_its_badge(): void
+    {
+        $response = $this->actingAs($this->superAdmin())->getJson(self::URI)->assertOk();
+
+        $specs = $response->json('specModules');
+        self::assertNotSame([], $specs, 'Depoda modül tanımı var; boş bir liste yanlış olurdu.');
+
+        foreach ($specs as $spec) {
+            self::assertContains(
+                $spec['presence'],
+                ['implemented', 'partial', 'definition-only', 'unknown'],
+                "{$spec['slug']}: rozet bilinen dört değerden biri olmalı."
+            );
+
+            /*
+                `docs/111` §8.4: rozet gözlemsiz çizilmez. Gözlem UÇTA
+                taşınmazsa ekran onu çizemez; bu yüzden kural burada donar.
+            */
+            self::assertArrayHasKey('observation', $spec);
+            self::assertArrayHasKey('directories', $spec['observation']);
+            self::assertArrayHasKey('routeFiles', $spec['observation']);
+            self::assertArrayHasKey('tables', $spec['observation']);
+            self::assertArrayHasKey('testFiles', $spec['observation']);
+
+            foreach ($spec['observation']['directories'] as $directory) {
+                self::assertDirectoryExists(base_path($directory), "{$spec['slug']}: ölçülen dizin depoda yok.");
+            }
+
+            foreach ($spec['observation']['routeFiles'] as $routeFile) {
+                self::assertFileExists(base_path($routeFile), "{$spec['slug']}: ölçülen rota dosyası depoda yok.");
+            }
+
+            if ($spec['presence'] === 'unknown') {
+                // Bilinmiyor bir cevaptır ama gerekçesiz bir cevap değildir.
+                self::assertTrue(
+                    $spec['mapping'] === 'undeclared' || $spec['mappingNote'] !== '',
+                    "{$spec['slug']}: \"bilinmiyor\" sebebini de yazmalı."
+                );
+            }
+        }
+    }
+
+    #[Test]
+    public function a_module_measured_in_the_code_is_never_reported_as_definition_only(): void
+    {
+        // Menü kataloğu bu ürünün en yoğun bağlamı — `docs/111` §0 bu belgeyi
+        // yazdıran örnek olarak onu seçmişti: tanım dosyası "çalıştırılamaz"
+        // diyordu, kod 9 domain sınıfı ve 21 Feature testi taşıyordu.
+        $response = $this->actingAs($this->superAdmin())->getJson(self::URI)->assertOk();
+
+        $menuCatalog = collect($response->json('specModules'))->firstWhere('slug', 'menu-catalog');
+
+        self::assertSame('implemented', $menuCatalog['presence']);
+        self::assertSame(['MenuCatalog'], $menuCatalog['contexts']);
+        self::assertNotSame([], $menuCatalog['observation']['tables']);
+        self::assertGreaterThan(0, $menuCatalog['observation']['testFiles']);
+    }
+
+    #[Test]
+    public function code_contexts_without_a_spec_are_listed_on_their_own(): void
+    {
+        /*
+            Eşlemenin ikinci yarısı (`docs/111` §4.2). Bunları modül listesine
+            karıştırmak iki soruyu birden bulanıklaştırırdı: "bu tanımın kodu
+            var mı" ile "bu kodun tanımı var mı" aynı soru değildir.
+        */
+        $response = $this->actingAs($this->superAdmin())->getJson(self::URI)->assertOk();
+
+        $unmapped = $response->json('unmappedContexts');
+        $claimed = collect($response->json('specModules'))->pluck('contexts')->flatten()->all();
+
+        foreach ($unmapped as $context) {
+            self::assertNotContains($context, $claimed, "{$context} hem eşleşmiş hem eşleşmemiş olamaz.");
+
+            $directories = array_filter(
+                ['Domain', 'Application', 'Infrastructure'],
+                static fn (string $layer): bool => is_dir(base_path('app/'.$layer.'/'.$context))
+            );
+
+            self::assertNotEmpty($directories, "{$context} bir kod bağlamı değil; listede olmamalı.");
         }
     }
 }

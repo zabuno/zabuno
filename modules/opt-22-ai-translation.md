@@ -1,5 +1,7 @@
 # OPT-22 — AI Translation
 
+contexts: belirsiz: Ai ve Localization bağlamlarına dağılmış; ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

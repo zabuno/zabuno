@@ -18,3 +18,4 @@ require __DIR__.'/api/workspace-audit.php';
 require __DIR__.'/api/platform-admin.php';
 require __DIR__.'/api/ordering.php';
 require __DIR__.'/api/rating.php';
+require __DIR__.'/api/support.php';

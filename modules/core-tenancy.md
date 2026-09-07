@@ -1,5 +1,7 @@
 # CORE-02 — Tenancy / Organization / Venue
 
+contexts: Tenancy, Workspace
+
 **Bounded runtime durumu: S1-WP02B'nin bounded baseline'ı — workspace
 create+owner-membership (tek transaction), üyelik-scope'lu liste,
 current/switch context, enumeration-safe tenant escape reddi —

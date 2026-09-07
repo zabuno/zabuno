@@ -596,6 +596,70 @@ msgstr "Sürüm {version}"
 msgid "workspace.billing.heading"
 msgstr "Faturalandırma"
 
+#: workspace:workspace.billing.invoices.description
+msgid "workspace.billing.invoices.description"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.download
+msgid "workspace.billing.invoices.download"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.earchiveNotConfigured
+msgid "workspace.billing.invoices.earchiveNotConfigured"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.empty
+msgid "workspace.billing.invoices.empty"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.error
+msgid "workspace.billing.invoices.error"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.issuedAt
+msgid "workspace.billing.invoices.issuedAt"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.kind.creditNote
+msgid "workspace.billing.invoices.kind.creditNote"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.kind.invoice
+msgid "workspace.billing.invoices.kind.invoice"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.line
+msgid "workspace.billing.invoices.line"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.loading
+msgid "workspace.billing.invoices.loading"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.missingDocuments
+msgid "workspace.billing.invoices.missingDocuments"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.region
+msgid "workspace.billing.invoices.region"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.retry
+msgid "workspace.billing.invoices.retry"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.sellerIncomplete
+msgid "workspace.billing.invoices.sellerIncomplete"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.vat
+msgid "workspace.billing.invoices.vat"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.vatUnknown
+msgid "workspace.billing.invoices.vatUnknown"
+msgstr ""
+
 #: workspace:workspace.billing.iyzicoSandbox.amount
 msgid "workspace.billing.iyzicoSandbox.amount"
 msgstr "Tutar {amount} {currency}"
@@ -1239,6 +1303,10 @@ msgstr "Çıkış yapamadık. Lütfen tekrar deneyin."
 #: workspace:workspace.current.switch
 msgid "workspace.current.switch"
 msgstr "Çalışma alanı değiştir"
+
+#: workspace:workspace.current.switchFor
+msgid "workspace.current.switchFor"
+msgstr ""
 
 #: workspace:workspace.dashboard.empty
 msgid "workspace.dashboard.empty"
@@ -6140,6 +6208,14 @@ msgstr "Çalışma alanı"
 msgid "workspace.shell.brand"
 msgstr "Zabuno"
 
+#: workspace:workspace.shell.breadcrumbs.empty
+msgid "workspace.shell.breadcrumbs.empty"
+msgstr ""
+
+#: workspace:workspace.shell.breadcrumbs.label
+msgid "workspace.shell.breadcrumbs.label"
+msgstr ""
+
 #: workspace:workspace.shell.currentLocation.label
 msgid "workspace.shell.currentLocation.label"
 msgstr "Geçerli şube"
@@ -6251,6 +6327,98 @@ msgstr "Ekip"
 #: workspace:workspace.shell.notifications.unavailable
 msgid "workspace.shell.notifications.unavailable"
 msgstr "Bildirimler kullanılamıyor"
+
+#: workspace:workspace.support.description
+msgid "workspace.support.description"
+msgstr ""
+
+#: workspace:workspace.support.form.error
+msgid "workspace.support.form.error"
+msgstr ""
+
+#: workspace:workspace.support.form.heading
+msgid "workspace.support.form.heading"
+msgstr ""
+
+#: workspace:workspace.support.form.message
+msgid "workspace.support.form.message"
+msgstr ""
+
+#: workspace:workspace.support.form.message.help
+msgid "workspace.support.form.message.help"
+msgstr ""
+
+#: workspace:workspace.support.form.sent
+msgid "workspace.support.form.sent"
+msgstr ""
+
+#: workspace:workspace.support.form.sentNoCopy
+msgid "workspace.support.form.sentNoCopy"
+msgstr ""
+
+#: workspace:workspace.support.form.subject
+msgid "workspace.support.form.subject"
+msgstr ""
+
+#: workspace:workspace.support.form.subject.help
+msgid "workspace.support.form.subject.help"
+msgstr ""
+
+#: workspace:workspace.support.form.submit
+msgid "workspace.support.form.submit"
+msgstr ""
+
+#: workspace:workspace.support.form.submitting
+msgid "workspace.support.form.submitting"
+msgstr ""
+
+#: workspace:workspace.support.help.lead
+msgid "workspace.support.help.lead"
+msgstr ""
+
+#: workspace:workspace.support.help.link
+msgid "workspace.support.help.link"
+msgstr ""
+
+#: workspace:workspace.support.list.answered
+msgid "workspace.support.list.answered"
+msgstr ""
+
+#: workspace:workspace.support.list.empty
+msgid "workspace.support.list.empty"
+msgstr ""
+
+#: workspace:workspace.support.list.error
+msgid "workspace.support.list.error"
+msgstr ""
+
+#: workspace:workspace.support.list.heading
+msgid "workspace.support.list.heading"
+msgstr ""
+
+#: workspace:workspace.support.list.loading
+msgid "workspace.support.list.loading"
+msgstr ""
+
+#: workspace:workspace.support.list.received
+msgid "workspace.support.list.received"
+msgstr ""
+
+#: workspace:workspace.support.status.answered
+msgid "workspace.support.status.answered"
+msgstr ""
+
+#: workspace:workspace.support.status.closed
+msgid "workspace.support.status.closed"
+msgstr ""
+
+#: workspace:workspace.support.status.received
+msgid "workspace.support.status.received"
+msgstr ""
+
+#: workspace:workspace.support.title
+msgid "workspace.support.title"
+msgstr ""
 
 #: workspace:workspace.team.heading
 msgid "workspace.team.heading"

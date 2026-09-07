@@ -126,6 +126,10 @@ final class PlanCatalogueSellsEveryCapabilityTest extends TestCase
             Entitlement::TeamInvitations,
             Entitlement::BrandingCustom,
             Entitlement::OrderingBasic,
+            // Zengin görselin misafir yüzeyi `docs/122` Y6'da indi
+            // (`ApplyGuestRichMedia`, `GuestRichMediaTest`); artık satılan ve
+            // ÇALIŞAN bir yetenektir ve fiyat sayfasında adı olmak zorunda.
+            Entitlement::MenuRichMedia,
         ];
 
         foreach ($live as $capability) {
@@ -141,27 +145,33 @@ final class PlanCatalogueSellsEveryCapabilityTest extends TestCase
         }
     }
 
-    // --- PLAN-UNBUILT-NOT-ADVERTISED-01 -----------------------------------
+    // --- PLAN-BUILT-SURFACE-ANNOUNCED-01 ----------------------------------
 
     /**
-     * ZENGİN GÖRSEL HENÜZ REKLAM EDİLMEZ.
+     * ZENGİN GÖRSEL ARTIK REKLAM EDİLİR — ÇÜNKÜ YÜZEYİ VAR.
      *
-     * Hak burada tanımlıdır ve kademesi karara bağlanmıştır — böylece
-     * `docs/114` Dalga 6 (`docs/122` Y6) yazıldığında bağlanacağı kapı hazır
-     * olur ve o paket bir fiyat kararı vermek zorunda kalmaz. Ama misafir
-     * yüzeyi HENÜZ YOK: bugün fiyat sayfasına "zengin görsel" yazmak,
-     * ziyaretçiye ödemeden önce olmayan bir şey satmak olurdu.
+     * Burada bir zamanlar PLAN-UNBUILT-NOT-ADVERTISED-01 duruyordu ve doğru
+     * bir şeyi ölçüyordu: hak tanımlıydı, kademesi kararlıydı, ama misafir
+     * yüzeyi yoktu — o gün fiyat sayfasına "zengin görsel" yazmak, ziyaretçiye
+     * ödemeden önce olmayan bir şey satmak olurdu. Kendi kutusunda ömrü de
+     * yazılıydı (`docs/109` §8.6): "Dalga 6 misafir yüzeyini yazdığında eşleme
+     * eklenir ve bu iddia kırılır. Kırıldığında SİLİNİR."
      *
-     * BU SATIRIN ÖMRÜ VAR (`docs/109` §8.6): Dalga 6 misafir yüzeyini
-     * yazdığında eşleme eklenir ve bu iddia kırılır. Kırıldığında SİLİNİR —
-     * çünkü o gün gerekçesi düşmüş olur.
+     * `docs/122` Y6 o yüzeyi yazdı (`ApplyGuestRichMedia`,
+     * `GuestRichMediaTest`), iddia kırıldı ve silindi. Yerine TERSİ kondu:
+     * yüzeyi olan bir hakkın fiyat sayfasında susturulması da bir kusurdur —
+     * `branding.custom` tam olarak öyle kaybolmuştu.
      */
-    public function test_rich_media_is_not_advertised_before_wave_six_builds_its_surface(): void
+    public function test_rich_media_is_advertised_now_that_its_guest_surface_exists(): void
     {
-        self::assertNull(
-            app(SiteText::class)->entitlementLabel(Entitlement::MenuRichMedia->value, 'en'),
-            'PLAN-UNBUILT-NOT-ADVERTISED-01: misafir yüzeyi yazılmadan zengin görsel '
-            .'fiyat sayfasında duyurulmaz.'
+        $label = app(SiteText::class)->entitlementLabel(Entitlement::MenuRichMedia->value, 'en');
+
+        self::assertNotNull(
+            $label,
+            'PLAN-BUILT-SURFACE-ANNOUNCED-01: misafir yüzeyi indi; zengin görsel '
+            .'fiyat sayfasında adıyla anılmalı.'
         );
+
+        self::assertNotSame(Entitlement::MenuRichMedia->value, $label, 'Ham anahtar müşteri dili değildir.');
     }
 }

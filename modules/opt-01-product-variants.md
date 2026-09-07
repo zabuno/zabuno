@@ -1,5 +1,7 @@
 # OPT-01 — Product Variants
 
+contexts: yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

@@ -1,5 +1,7 @@
 # CORE-13 — File / Media
 
+contexts: Media
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

@@ -55,6 +55,7 @@ final class ManageCheckout
         private readonly PaymentGatewaySelectorPort $gateways,
         private readonly BillingModePort $mode,
         private readonly LedgerPort $ledger,
+        private readonly ManageInvoices $invoices,
         private readonly PlatformAuditPort $audit,
         private readonly CredentialResolverPort $credentials,
         private readonly ConfigRepository $config,
@@ -322,6 +323,12 @@ final class ManageCheckout
 
         $window = $this->subscriptions->shortenAfterRefund($transaction->workspaceId, $transaction->periodDays);
         $this->recordRefund($transaction);
+        /*
+            Fatura SİLİNMEZ: iadenin karşılığı ayrı bir belgedir ve aynı
+            seriden sıradaki numarayı alır (docs/130 §K3). Defterdeki ters
+            kayıtla aynı karar — hem satış hem iadesi görünür kalır.
+        */
+        $this->invoices->ensureCreditNoteForRefund($transaction);
         $this->audit->record(
             'billing.refund',
             'refunded',
@@ -388,13 +395,25 @@ final class ManageCheckout
             $token,
         );
 
-        if (! $transitioned) {
-            return true;
+        if ($transitioned) {
+            $window = $this->subscriptions->extendFromPayment($transaction->workspaceId, $transaction->planId, $transaction->periodDays);
+            $this->transactions->recordSubscriptionWindow($transaction->id, $window['before'], $window['after']);
+            $this->recordRevenue($transaction);
         }
 
-        $window = $this->subscriptions->extendFromPayment($transaction->workspaceId, $transaction->planId, $transaction->periodDays);
-        $this->transactions->recordSubscriptionWindow($transaction->id, $window['before'], $window['after']);
-        $this->recordRevenue($transaction);
+        /*
+            BELGE, geçiş bu çağrıda olmasa bile güvenceye alınır.
+
+            Webhook ile tarayıcı geri dönüşü aynı ödeme için sırayla gelir ve
+            yalnız biri geçişi yapar. Faturayı yalnız o dala bağlasaydık,
+            geçişi yapan çağrı belgeyi yazamadığında (örneğin o an fatura
+            profili okunamadığında) ikinci çağrı eksiği hiç kapatamazdı.
+            `ensureForPayment` tekrar tekrar çağrılabilir: kesilmiş belge
+            yeniden kesilmez.
+        */
+        $this->invoices->ensureForPayment(
+            $this->transactions->findForWorkspace($transaction->workspaceId, $transaction->id) ?? $transaction,
+        );
 
         return true;
     }

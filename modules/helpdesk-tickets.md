@@ -1,5 +1,7 @@
 # Helpdesk / Tickets
 
+contexts: yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

@@ -18,7 +18,13 @@ import { WorkspaceSwitcherTrigger, type WorkspaceSwitcherOption } from './Worksp
 export type DesktopChromeProps = {
     navGroups: SidebarNavGroup[];
     activeNavKey?: string;
-    navLabel?: string;
+    /**
+     * Gezinti bölgesinin erişilebilir adı. ZORUNLU — `docs/121` Ö1.
+     *
+     * İsteğe bağlıyken `SidebarNav` kodda gömülü `'Primary'`ye düşüyordu:
+     * katalogdan geçmeyen, hiçbir gün çevrilemeyecek bir kelime.
+     */
+    navLabel: string;
     workspaceName?: string;
     /** Seçilebilir çalışma alanları; tek taneyse seçici menü açılmaz. */
     workspaces?: WorkspaceSwitcherOption[];

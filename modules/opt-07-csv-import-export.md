@@ -1,5 +1,7 @@
 # OPT-07 — CSV Import & Export
 
+contexts: belirsiz: MenuCatalog bağlamının içinde bir dilim (ImportMenuCsv/ExportMenuCsv); ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

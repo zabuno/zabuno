@@ -1,5 +1,7 @@
 # OPT-03 — Multiple Menus
 
+contexts: belirsiz: MenuCatalog bağlamının içinde bir dilim; ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

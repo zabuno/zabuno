@@ -32,10 +32,12 @@ const FROZEN_MODULE_FILENAMES = [
     'publication.ts',
     'ratings.ts',
     'shell.ts',
+    // FF-201: ON ÜÇÜNCÜ modül dosyası — destek ekranı (`docs/125`).
+    'support.ts',
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1629;
+const FROZEN_LEGACY_KEY_COUNT = 1671;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -201,8 +203,41 @@ const FROZEN_LEGACY_KEY_COUNT = 1629;
 // edildiği ödeme sağlayıcısının yapılandırmasından türer, bu depoda öyle bir
 // liste yok) ve bir "cayma süresi şu kadar gün" cümlesi (süre kanundan gelir
 // ve belge metninde, katalogda değil).
+// main ile birleştikten SONRA yeniden hesaplandı (ratings.ts + support.ts).
+// FF-201: 1576 → 1599, yirmi üç anahtar ve ON ÜÇÜNCÜ modül dosyası
+// (`support.ts`). Destek ekranı (`docs/125`): başlık ve açıklama, yardım
+// bağlantısı (2), yeni talep formu (etiketler, yardım cümleleri, düğme ve
+// ÜÇ sonuç cümlesi — alındı e-postası çıktı / çıkmadı / istek düştü),
+// liste (başlık, üç durum cümlesi, iki tarih satırı) ve üç durum kelimesi.
+//
+// YANIT TAAHHÜDÜ İÇİN ANAHTAR YOK ve olmayacak: cümle sunucudan gelir
+// (`site.support.commitment`), çünkü iletişim sayfası, alındı e-postası ve
+// panel tek kaynağı okumak zorunda. Buraya ikinci bir cümle yazmak, iki
+// cümlenin ayrıştığı günü hazırlamak olurdu. "7/24", "en kısa sürede" gibi
+// bir yedek cümle de yok — vaat sahibin kararıdır, katalogun değil.
+// FF-215: 1618 → 1634, on altı anahtar — FATURA (docs/107 Faz 1.4,
+// docs/130). Yukarıdaki "fatura yolu bu pakette yok" notu ARTIK GEÇERSİZ:
+// tahsilatın karşılığında numaralı bir belge doğuyor ve panel onu
+// listeliyor. Anahtarlar belgenin EKRAN kipinindir; kâğıt kipi (A4 PDF)
+// sunucuda üretilir ve metni katalogda değil, belgenin kendi kaynak
+// dilindedir (`LegalDocument` ile aynı karar).
+//
+// ÜÇ CÜMLE BİLEREK "EKSİK" DİYOR ve hiçbiri iyimser değil: şirket bilgisi
+// girilmemişken belgenin tam bir ticari fatura OLMADIĞI, KDV oranı
+// yapılandırılmamışken vergi ayrımının GÖSTERİLMEDİĞİ, ve e-arşiv/
+// e-fatura sağlayıcısı bağlı olmadığı için kaydın hiçbir yere
+// GÖNDERİLMEDİĞİ. "Yakında e-fatura" diye bir anahtar yok ve olmayacak.
+// FF-213 (docs/121 Ö1/Ö2): 1576 → 1579, ÜÇ anahtar ve hiçbiri yeni bir
+// ekran değil. Üçü de ZATEN EKRANDA olan ama katalogdan geçmeyen metinler:
+// kırıntı izinin bölge adı ve boş hâli (`Breadcrumbs` içinde gömülüydü) ve
+// çalışma alanı seçicisinin erişilebilir adı — o ad arayüzde
+// birleştiriliyordu, artık ADLI yer tutuculu tek bir anahtar.
+// Sayının büyümesi burada bir yüzey büyümesi değil, GÖRÜNÜRLÜK: sahte-
+// yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f3b132314dac8139aa008922216ac187be391a283645cc49d022fbcd04dd8e24';
+    '33f65fe40d6c199c4c10bdff364ef0fdafde2971f2dfa0488263000c1c74b82d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

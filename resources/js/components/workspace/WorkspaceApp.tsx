@@ -205,7 +205,12 @@ export type WorkspaceChromeContext = {
      */
     railSections?: readonly RailSection[];
     activeNavKey?: string;
-    navLabel?: string;
+    /**
+     * Gezintinin (ve telefonda çekmecenin) adı. ZORUNLU — `docs/121` Ö1:
+     * isteğe bağlıyken kabuk kodda gömülü `'Primary'`/`'Menu'` metinlerine
+     * düşebiliyordu. Kabuk her zaman kataloğundan verir.
+     */
+    navLabel: string;
     /**
      * Kenar çubuğunun ÜSTÜNDEKİ bağlam: hangi çalışma alanındayız.
      *

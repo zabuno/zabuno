@@ -23,11 +23,15 @@ export const Default: Story = { args: { title: 'Orders' } };
 export const WithBreadcrumbsAndActions: Story = {
     args: {
         title: 'Order #42',
-        breadcrumbs: [
-            { key: 'home', label: 'Home', href: '#' },
-            { key: 'orders', label: 'Orders', href: '#orders' },
-            { key: 'order-42', label: 'Order #42' },
-        ],
+        breadcrumbs: {
+            label: 'Breadcrumb',
+            emptyLabel: 'Empty breadcrumb trail',
+            items: [
+                { key: 'home', label: 'Home', href: '#' },
+                { key: 'orders', label: 'Orders', href: '#orders' },
+                { key: 'order-42', label: 'Order #42' },
+            ],
+        },
         description: 'Placed 2 minutes ago.',
         /*
             Aynı gerekçe `EmptyState.stories` ile: hikâye ürünün düğmesini
@@ -59,10 +63,14 @@ export const LongTitleWrapsActions: Story = {
 export const RightToLeft: Story = {
     args: {
         title: 'الطلبات',
-        breadcrumbs: [
-            { key: 'home', label: 'الرئيسية', href: '#' },
-            { key: 'orders', label: 'الطلبات' },
-        ],
+        breadcrumbs: {
+            label: 'مسار التنقل',
+            emptyLabel: 'مسار التنقل فارغ',
+            items: [
+                { key: 'home', label: 'الرئيسية', href: '#' },
+                { key: 'orders', label: 'الطلبات' },
+            ],
+        },
     },
     parameters: { direction: 'rtl' },
 };

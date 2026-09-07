@@ -6,6 +6,7 @@ import { PlanCatalog, type Plan } from './billing/PlanCatalog';
 import { CurrentSubscriptionStatus } from './billing/CurrentSubscriptionStatus';
 import { IyzicoSandboxCheckout } from './billing/IyzicoSandboxCheckout';
 import { SubscribeCheckout, type CatalogPlansState } from './billing/SubscribeCheckout';
+import { WorkspaceInvoices } from './billing/WorkspaceInvoices';
 import { WorkspaceLedger } from './billing/WorkspaceLedger';
 
 type BillingPageProps = {
@@ -93,6 +94,15 @@ export function BillingPage({ workspaceId, navigateToPayment }: BillingPageProps
                 {import.meta.env?.MODE !== 'production' ? (
                     <IyzicoSandboxCheckout workspaceId={workspaceId} />
                 ) : null}
+
+                {/*
+                    FATURA (docs/107 Faz 1.4, docs/130).
+
+                    Defterin ÜSTÜNDE durur ve bilerek: defter muhasebenin iç
+                    kaydıdır, fatura ise sahibin muhasebecisine verdiği
+                    belgedir — aradığı şey odur.
+                */}
+                <WorkspaceInvoices workspaceId={workspaceId} />
 
                 <WorkspaceLedger workspaceId={workspaceId} />
             </WorkspacePageFrame>

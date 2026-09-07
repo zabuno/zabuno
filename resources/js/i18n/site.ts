@@ -228,8 +228,12 @@ export const siteTranslations = {
         var ve bunu bir test donduruyor (`docs/90`).
     */
     'site.pricing.included.heading': 'Every plan includes',
+    // "Fotoğraflar" TEK BAŞINA yazılamaz (`docs/122` Y6): yüklemek, saklamak
+    // ve panelde görmek her planda; MİSAFİRE göstermek `menu.rich-media`
+    // hakkına bağlı. Kısaltmak, sayfanın kendi eleştirdiği şeyi yapmak —
+    // önemli yarısını gizlemek — olurdu.
     'site.pricing.included.body':
-        'Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, photos, and marking a dish sold out for the day.',
+        'Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, uploading and keeping photos of your dishes, and marking a dish sold out for the day.',
     'site.pricing.free': 'Free',
     'site.pricing.perMonth': 'per month',
     'site.pricing.adds': 'Adds',
@@ -246,6 +250,10 @@ export const siteTranslations = {
     // (`docs/115` §6) ve tutulmayacak bir hız sözü vermek istemiyoruz.
     'site.plan.ordering':
         'Guests order from the table; your staff confirms and the kitchen sees it',
+    // Söz, yüzeyin gerçekten yaptığı kadar: hak GÖSTERMEYİ açar, yüklemeyi
+    // değil. Fotoğraf yüklemek ve saklamak her planda çalışıyor
+    // (`docs/122` Y6, `GuestRichMediaTest`).
+    'site.plan.richMedia': 'Photographs of your dishes on the guest menu',
 
     // --- İletişim --------------------------------------------------------
     'site.contact.heading': 'Contact',
@@ -308,6 +316,38 @@ export const siteTranslations = {
     'site.pricing.paymentMethods':
         'Paid plans are paid by card through the payment service provider Iyzico; no other payment method is offered.',
     'site.pricing.paymentMethods.cta': 'Read the Preliminary Information Form',
+    /*
+        REFERANS EKRANDA (FF-201, `docs/125`). Sekme kapanır, e-posta
+        spam'e düşer; ekrandaki numara o an not alınabilir. `{reference}`
+        denetleyicide doldurulur.
+    */
+    'site.contact.sentReference':
+        'Your reference is {reference}. Quote it if you write to us again.',
+
+    // --- Destek kanalı (FF-201, `docs/125`) --------------------------------
+    /*
+        YANIT TAAHHÜDÜ — TEK CÜMLE, TEK KAYNAK. İletişim sayfası, alındı
+        e-postası ve panel bu anahtarı okur; `{hours}` sahibin
+        `SUPPORT_RESPONSE_COMMITMENT_HOURS` kararıyla dolar. Değer yoksa
+        cümle HİÇBİR yerde çizilmez — burada bir yedek cümle de yok.
+    */
+    'site.support.commitment': 'We reply within {hours} hours.',
+    /*
+        Gönderene ALINDI e-postası. Düz metin; her satır ayrı anahtar,
+        çünkü iki satır (panel bağlantısı, cevap izni) yalnız bazı
+        durumlarda yazılır ve çevirmen onları ayrı görmeli.
+    */
+    'site.support.ack.subject': 'Zabuno — we received your request {reference}',
+    'site.support.ack.greeting': 'Hello {name},',
+    'site.support.ack.received': 'We received your request and gave it the reference {reference}.',
+    'site.support.ack.subjectLine': 'Subject: {subject}',
+    'site.support.ack.keep': 'Keep this reference and quote it if you write to us again.',
+    // Yalnız PANEL kanalında: kamu formundan yazan birinin paneli yoktur.
+    'site.support.ack.panel':
+        'You can follow the status of this request in your Zabuno panel, under Support.',
+    // Yalnız `SUPPORT_EMAIL` yapılandırılmışsa: kimsenin okumadığı bir
+    // kutuya cevap yazdırmak, hiç cevap istememekten kötü.
+    'site.support.ack.reply': 'You can reply to this email to add more detail.',
 
     // --- Ana sayfadaki iki yeni cümle ------------------------------------
     // --- Ana sayfa gövdesi (`docs/100` Faz 2) -----------------------------

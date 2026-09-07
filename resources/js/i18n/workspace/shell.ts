@@ -10,6 +10,19 @@ export const shell = {
     // Telefon alt gezintisi (`docs/50` §20): dört hedef + geri kalanı.
     'workspace.shell.nav.more': 'More',
     'workspace.current.switch': 'Switch workspace',
+    /*
+        SEÇİCİNİN ERİŞİLEBİLİR ADI TEK BİR CÜMLEDİR — `docs/121` Ö2/Ö3.
+
+        Ad arayüzde `${workspaceName} — ${t('workspace.current.switch')}`
+        diye BİRLEŞTİRİLİYORDU. Birleştirilen bir cümle çevrilemez: çevirmen
+        yarım cümleyi görür, tirenin nereye geleceğini ve adın cümlenin
+        başında mı sonunda mı duracağını seçemez — oysa bu, ismin hâli olan
+        dillerde değişir. Tek anahtar, ADLI yer tutucu; sıralı `%1$s` değil.
+
+        Çevirmen notu: {workspace} restoranın/çalışma alanının adıdır ve
+        çevrilmez.
+    */
+    'workspace.current.switchFor': '{workspace} — Switch workspace',
     'workspace.current.logout': 'Log out',
     'workspace.current.logout.error': 'We could not log you out. Please try again.',
     'workspace.catalog.error.heading': 'We could not load your workspace catalog.',
@@ -38,6 +51,20 @@ export const shell = {
         diye iki kez okunur ve kullanıcı hangisinde olduğunu bilemez.
     */
     'workspace.shell.nav.account': 'Account',
+    /*
+        KIRINTI İZİNİN ADI VE BOŞ HÂLİ — `docs/121` Ö1.
+
+        İkisi de `Breadcrumbs` bileşeninin içinde kodda gömülüydü
+        (`'Breadcrumb'`, `'Empty breadcrumb trail'`); katalogdan geçmedikleri
+        için çeviri günü hiç görünmeyeceklerdi. Katalog bileşeni değil,
+        çağıran taşır: `docs/35` kataloğun bileşenlerine metin bilmeyi
+        yasaklar.
+
+        Çevirmen notu: "Breadcrumb" bir yiyecek değil, sayfanın nerede
+        olduğunu gösteren gezinti izidir.
+    */
+    'workspace.shell.breadcrumbs.label': 'Breadcrumb',
+    'workspace.shell.breadcrumbs.empty': 'Empty breadcrumb trail',
     /*
         Kanonik kaynağın kendi cümlesi (`panel.dc.html` > "Ayarlar"):
         "Nadiren açılan işler: marka, çalışma alanı, plan, denetim."

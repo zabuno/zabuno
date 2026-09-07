@@ -1,5 +1,7 @@
 # SEO / Search & Discovery
 
+contexts: belirsiz: SEO yüzeyi Http/Controllers/Seo ve tests/Feature/Seo içinde ama app/ altında kendi bağlam dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

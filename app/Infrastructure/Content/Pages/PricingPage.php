@@ -52,6 +52,7 @@ final class PricingPage
         'branding.custom' => 'your own look on the guest page',
         'team.invitations' => 'people beside the owner',
         'ordering.basic' => 'orders sent from the table',
+        'menu.rich-media' => 'photographs of the dishes on the guest menu',
     ];
 
     /**
@@ -60,11 +61,16 @@ final class PricingPage
      * Anahtar burada bir kez yazılır; test hem kapsamayı hem de bu adların
      * sayfanın hiçbir yerinde geçmediğini ölçer.
      *
+     * BUGÜN BOŞ — VE BU BİR SONUÇ, BİR KURAL DEĞİL. Listenin tek sakini
+     * `menu.rich-media` idi ve sebebi yazılıydı: hakkın misafir yüzeyi yoktu,
+     * dolayısıyla parası alınsa bile masadaki misafirin gördüğü sayfa
+     * değişmiyordu. `docs/122` Y6 o yüzeyi yazdı (`GuestRichMediaTest`), satır
+     * ANNOUNCED'a taşındı ve liste boşaldı. Mekanizma DURUYOR: satılabilen ama
+     * karşılığı olmayan bir sonraki hak buraya, gerekçesiyle birlikte yazılır.
+     *
      * @var array<string, string>
      */
-    public const WITHHELD = [
-        'menu.rich-media' => 'Hakkın misafir yüzeyi yok: parası alınsa bile masadaki misafirin gördüğü sayfa değişmez. Yüzey açıldığı gün bu satır ANNOUNCED\'a taşınır; o güne kadar susmak, satılamayacak bir şeyi satmamaktır.',
-    ];
+    public const WITHHELD = [];
 
     /** Katalogdaki tutarların para birimi (`PlanCatalogueSeeder`). */
     private const CURRENCY = 'TRY';
