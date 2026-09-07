@@ -400,6 +400,126 @@ msgstr "Sun"
 msgid "workspace.billing.changePlan.button"
 msgstr "Change plan"
 
+#: workspace:workspace.billing.checkout.description
+msgid "workspace.billing.checkout.description"
+msgstr "Choose a plan, confirm your billing details, and pay by card on the Iyzico payment page. Each payment covers {days} days."
+
+#: workspace:workspace.billing.checkout.invalidRedirect
+msgid "workspace.billing.checkout.invalidRedirect"
+msgstr "Received an unsafe redirect link; cannot continue."
+
+#: workspace:workspace.billing.checkout.latest.continue
+msgid "workspace.billing.checkout.latest.continue"
+msgstr "Continue to the payment page"
+
+#: workspace:workspace.billing.checkout.latest.failed
+msgid "workspace.billing.checkout.latest.failed"
+msgstr "Payment failed: {reason}"
+
+#: workspace:workspace.billing.checkout.latest.failedHint
+msgid "workspace.billing.checkout.latest.failedHint"
+msgstr "Nothing was charged. You can try again."
+
+#: workspace:workspace.billing.checkout.latest.failedNoReason
+msgid "workspace.billing.checkout.latest.failedNoReason"
+msgstr "Payment failed."
+
+#: workspace:workspace.billing.checkout.latest.initiated
+msgid "workspace.billing.checkout.latest.initiated"
+msgstr "A payment is in progress. If you left the payment page, you can continue or start again."
+
+#: workspace:workspace.billing.checkout.latest.refunded
+msgid "workspace.billing.checkout.latest.refunded"
+msgstr "Your last payment was refunded."
+
+#: workspace:workspace.billing.checkout.latest.succeeded
+msgid "workspace.billing.checkout.latest.succeeded"
+msgstr "Your last payment succeeded."
+
+#: workspace:workspace.billing.checkout.mode.live
+msgid "workspace.billing.checkout.mode.live"
+msgstr "You will be redirected to Iyzico to pay by card. Zabuno never stores card details."
+
+#: workspace:workspace.billing.checkout.mode.sandbox
+msgid "workspace.billing.checkout.mode.sandbox"
+msgstr "Test mode: no real money is charged."
+
+#: workspace:workspace.billing.checkout.plan.empty
+msgid "workspace.billing.checkout.plan.empty"
+msgstr "No plan can be purchased yet."
+
+#: workspace:workspace.billing.checkout.plan.error
+msgid "workspace.billing.checkout.plan.error"
+msgstr "Plans could not be loaded."
+
+#: workspace:workspace.billing.checkout.plan.legend
+msgid "workspace.billing.checkout.plan.legend"
+msgstr "Choose a plan"
+
+#: workspace:workspace.billing.checkout.plan.loading
+msgid "workspace.billing.checkout.plan.loading"
+msgstr "Loading plans…"
+
+#: workspace:workspace.billing.checkout.plan.price
+msgid "workspace.billing.checkout.plan.price"
+msgstr "{price} / {days} days"
+
+#: workspace:workspace.billing.checkout.planNotPurchasable
+msgid "workspace.billing.checkout.planNotPurchasable"
+msgstr "This plan cannot be purchased."
+
+#: workspace:workspace.billing.checkout.proceed
+msgid "workspace.billing.checkout.proceed"
+msgstr "Proceed to payment"
+
+#: workspace:workspace.billing.checkout.proceeding
+msgid "workspace.billing.checkout.proceeding"
+msgstr "Opening the payment page…"
+
+#: workspace:workspace.billing.checkout.profile.add
+msgid "workspace.billing.checkout.profile.add"
+msgstr "Add billing details"
+
+#: workspace:workspace.billing.checkout.profile.edit
+msgid "workspace.billing.checkout.profile.edit"
+msgstr "Edit billing details"
+
+#: workspace:workspace.billing.checkout.profile.error
+msgid "workspace.billing.checkout.profile.error"
+msgstr "Billing details could not be loaded."
+
+#: workspace:workspace.billing.checkout.profile.heading
+msgid "workspace.billing.checkout.profile.heading"
+msgstr "Billing details"
+
+#: workspace:workspace.billing.checkout.profile.loading
+msgid "workspace.billing.checkout.profile.loading"
+msgstr "Loading billing details…"
+
+#: workspace:workspace.billing.checkout.profile.missing
+msgid "workspace.billing.checkout.profile.missing"
+msgstr "Billing details are missing. Add your company name, tax number and address before paying."
+
+#: workspace:workspace.billing.checkout.profile.summary.taxNumber
+msgid "workspace.billing.checkout.profile.summary.taxNumber"
+msgstr "Tax number {number}"
+
+#: workspace:workspace.billing.checkout.region
+msgid "workspace.billing.checkout.region"
+msgstr "Subscribe"
+
+#: workspace:workspace.billing.checkout.retry
+msgid "workspace.billing.checkout.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.checkout.status.error
+msgid "workspace.billing.checkout.status.error"
+msgstr "Payment status could not be loaded."
+
+#: workspace:workspace.billing.checkout.status.loading
+msgid "workspace.billing.checkout.status.loading"
+msgstr "Loading payment status…"
+
 #: workspace:workspace.billing.currentPlan.empty
 msgid "workspace.billing.currentPlan.empty"
 msgstr "Your current plan has not been loaded yet."
@@ -631,6 +751,54 @@ msgstr "Retry"
 #: workspace:workspace.billing.plan.unavailable
 msgid "workspace.billing.plan.unavailable"
 msgstr "Plan information is not available yet."
+
+#: workspace:workspace.billing.profile.cancel
+msgid "workspace.billing.profile.cancel"
+msgstr "Cancel"
+
+#: workspace:workspace.billing.profile.field.address
+msgid "workspace.billing.profile.field.address"
+msgstr "Address"
+
+#: workspace:workspace.billing.profile.field.city
+msgid "workspace.billing.profile.field.city"
+msgstr "City"
+
+#: workspace:workspace.billing.profile.field.country
+msgid "workspace.billing.profile.field.country"
+msgstr "Country code"
+
+#: workspace:workspace.billing.profile.field.countryHelp
+msgid "workspace.billing.profile.field.countryHelp"
+msgstr "Two-letter country code, for example TR."
+
+#: workspace:workspace.billing.profile.field.email
+msgid "workspace.billing.profile.field.email"
+msgstr "Billing email"
+
+#: workspace:workspace.billing.profile.field.legalName
+msgid "workspace.billing.profile.field.legalName"
+msgstr "Company name"
+
+#: workspace:workspace.billing.profile.field.phone
+msgid "workspace.billing.profile.field.phone"
+msgstr "Phone"
+
+#: workspace:workspace.billing.profile.field.taxNumber
+msgid "workspace.billing.profile.field.taxNumber"
+msgstr "Tax number"
+
+#: workspace:workspace.billing.profile.field.taxOffice
+msgid "workspace.billing.profile.field.taxOffice"
+msgstr "Tax office"
+
+#: workspace:workspace.billing.profile.save
+msgid "workspace.billing.profile.save"
+msgstr "Save billing details"
+
+#: workspace:workspace.billing.profile.saveError
+msgid "workspace.billing.profile.saveError"
+msgstr "Billing details could not be saved."
 
 #: workspace:workspace.billing.recordPayment.button
 msgid "workspace.billing.recordPayment.button"

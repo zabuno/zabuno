@@ -10,10 +10,16 @@ use App\Application\Ai\Port\StructuredGenerationPort;
 use App\Application\Ai\Port\VisionExtractionPort;
 use App\Application\Analytics\Port\AnalyticsRepositoryPort;
 use App\Application\Authorization\Port\AuthorizationPort;
+use App\Application\Billing\Port\BillingModePort;
+use App\Application\Billing\Port\BillingProfileRepositoryPort;
 use App\Application\Billing\Port\IyzicoSandboxGatewayPort;
 use App\Application\Billing\Port\IyzicoSandboxTransactionRepositoryPort;
+use App\Application\Billing\Port\LivePaymentGatewayPort;
+use App\Application\Billing\Port\PaymentGatewaySelectorPort;
+use App\Application\Billing\Port\PaymentTransactionRepositoryPort;
 use App\Application\Billing\Port\PlanCatalogRepositoryPort;
 use App\Application\Billing\Port\PlanManagementRepositoryPort;
+use App\Application\Billing\Port\SandboxPaymentGatewayPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Content\Port\ContentLibraryPort;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
@@ -51,6 +57,7 @@ use App\Application\Platform\Port\AccountRoutingPort;
 use App\Application\Platform\Port\ConnectionProbePort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Application\Platform\Port\HostCapabilityProbePort;
+use App\Application\Platform\Port\PlatformAuditPort;
 use App\Application\Platform\Port\PlatformAuthorizationPort;
 use App\Application\Platform\Port\PlatformConnectionAdminPort;
 use App\Application\Platform\Port\PlatformCredentialAdminPort;
@@ -111,11 +118,17 @@ use App\Infrastructure\Ai\StructuredGenerationRouter;
 use App\Infrastructure\Ai\VisionExtractionRouter;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
+use App\Infrastructure\Billing\Persistence\EloquentBillingMode;
+use App\Infrastructure\Billing\Persistence\EloquentBillingProfileRepository;
 use App\Infrastructure\Billing\Persistence\EloquentIyzicoSandboxTransactionRepository;
+use App\Infrastructure\Billing\Persistence\EloquentPaymentTransactionRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPlanCatalogRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPlanManagementRepository;
 use App\Infrastructure\Billing\Persistence\EloquentSubscriptionRepository;
+use App\Infrastructure\Billing\Provider\ContainerPaymentGatewaySelector;
+use App\Infrastructure\Billing\Provider\IyzipayGateway;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
+use App\Infrastructure\Billing\Provider\IyzipaySandboxModeGateway;
 use App\Infrastructure\Content\ProductPageLibrary;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
@@ -153,6 +166,7 @@ use App\Infrastructure\Ordering\Persistence\EloquentOrderingSwitch;
 use App\Infrastructure\Ordering\Persistence\EloquentOrderQuery;
 use App\Infrastructure\Ordering\Persistence\EloquentOrderRepository;
 use App\Infrastructure\Persistence\MenuCatalog\Api\EloquentMenuCatalogApiContext;
+use App\Infrastructure\Platform\Audit\EloquentPlatformAudit;
 use App\Infrastructure\Platform\Capability\RuntimeHostCapabilityProbe;
 use App\Infrastructure\Platform\Credential\EloquentPlatformCredentialStore;
 use App\Infrastructure\Platform\Credential\HttpConnectionProbe;
@@ -253,6 +267,15 @@ final class AppServiceProvider extends ServiceProvider
         // `docs/109` §7.1): şubenin gününü bölen tek yazma kapısı.
         $this->app->bind(MenuSchedulePort::class, EloquentMenuSchedule::class);
         $this->app->bind(LedgerPort::class, DatabaseLedger::class);
+        // Kendi kendine abonelik (docs/107 Faz 1.1 + 1.3, docs/123): geçit
+        // KİPE GÖRE çözülür; canlı geçit sandbox kipinde hiç kurulmaz.
+        $this->app->bind(PaymentTransactionRepositoryPort::class, EloquentPaymentTransactionRepository::class);
+        $this->app->bind(BillingProfileRepositoryPort::class, EloquentBillingProfileRepository::class);
+        $this->app->bind(BillingModePort::class, EloquentBillingMode::class);
+        $this->app->bind(PlatformAuditPort::class, EloquentPlatformAudit::class);
+        $this->app->bind(PaymentGatewaySelectorPort::class, ContainerPaymentGatewaySelector::class);
+        $this->app->bind(SandboxPaymentGatewayPort::class, IyzipaySandboxModeGateway::class);
+        $this->app->bind(LivePaymentGatewayPort::class, IyzipayGateway::class);
         $this->app->singleton(
             MarketReferencePort::class,
             static fn (): IcuMarketReference => new IcuMarketReference

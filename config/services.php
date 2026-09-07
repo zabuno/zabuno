@@ -54,6 +54,17 @@ return [
     ],
 
     'iyzico' => [
+        /*
+         * KİP ANAHTARI — bu dağıtımın ulaşabileceği EN YÜKSEK kip.
+         *
+         * `live` tek başına para tahsil etmez: etkin kip ancak (1) burada
+         * `live`, (2) süperadmin panelden açıkça açtı (`platform_settings`
+         * billing.mode) ve (3) kasada Iyzico üretim anahtarı var ise
+         * `live`dır. Biri eksikse sandbox. Böylece üretim veritabanının bir
+         * kopyasıyla ayağa kalkan staging/CI ortamı, ayarı "live" taşısa
+         * bile hiçbir zaman gerçek para çekemez — env'i `sandbox` der.
+         */
+        'mode' => env('IYZICO_MODE', 'sandbox'),
         'sandbox' => [
             'api_key' => env('IYZICO_SANDBOX_API_KEY', ''),
             'secret_key' => env('IYZICO_SANDBOX_SECRET_KEY', ''),

@@ -29,6 +29,11 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/user/password||App\Http\Controllers\Account\UpdatePasswordController|api,auth:sanctum,throttle:6,1,verified',
         'POST|api/webhooks/iyzico-sandbox||App\Http\Controllers\Billing\ReceiveIyzicoSandboxWebhookController|api',
         'POST|api/billing/iyzico-sandbox/callback||App\Http\Controllers\Billing\ReceiveIyzicoSandboxCallbackController|api',
+        // ÜRETİM ÖDEME UÇLARI (docs/107 Faz 1.1): aynı imza doğrulaması ve
+        // tekrar koruması, gizli anahtar işlemin kipine göre seçilir. Sandbox
+        // uçları KALDIRILMADI — eski yüzey dondurulmuş, yeni yüzey ayrı.
+        'POST|api/webhooks/iyzico||App\Http\Controllers\Billing\ReceiveIyzicoWebhookController|api',
+        'POST|api/billing/iyzico/callback||App\Http\Controllers\Billing\ReceiveIyzicoCallbackController|api',
         'GET|api/reference/markets||App\Http\Controllers\Reference\ShowMarketReferenceController|api,auth:sanctum,verified',
         'POST|api/workspaces||App\Http\Controllers\Tenancy\CreateWorkspaceController|api,auth:sanctum,throttle:5,1,verified',
         'GET|api/workspaces||App\Http\Controllers\Tenancy\ListWorkspacesController|api,auth:sanctum,verified',
@@ -195,6 +200,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/ledger||App\Http\Controllers\Ledger\ShowWorkspaceLedgerController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/iyzico-sandbox/session||App\Http\Controllers\Billing\ShowIyzicoSandboxSessionController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/iyzico-sandbox/session||App\Http\Controllers\Billing\StoreIyzicoSandboxSessionController|api,auth:sanctum,verified',
+        // KENDİ KENDİNE ABONELİK (docs/107 Faz 1.1 + 1.3): plan seçimi → fatura
+        // profili → ödeme. Tutar sunucudan; profil eksikken 422 adıyla.
+        'GET|api/workspaces/{workspace}/billing-profile||App\Http\Controllers\Billing\ShowBillingProfileController|api,auth:sanctum,verified',
+        'PUT|api/workspaces/{workspace}/billing-profile||App\Http\Controllers\Billing\StoreBillingProfileController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/checkout||App\Http\Controllers\Billing\ShowCheckoutStatusController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/checkout||App\Http\Controllers\Billing\StoreCheckoutController|api,auth:sanctum,throttle:10,1,verified',
         'POST|api/workspaces/{workspace}/media||App\Http\Controllers\Media\StoreMediaController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/media||App\Http\Controllers\Media\ListMediaController|api,auth:sanctum,verified',
         // Slot politikaları workspace'e bağlı DEĞİLDİR: ürünün kendi kuralları.
@@ -413,6 +424,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/admin/workspaces/{workspace}||App\Http\Controllers\PlatformAdmin\ShowManagedWorkspaceController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'GET|api/admin/workspaces/{workspace}/subscription||App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'POST|api/admin/workspaces/{workspace}/manual-payments||App\Http\Controllers\PlatformAdmin\StoreManualPaymentController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:5,1,verified',
+        // İADE (docs/107 Faz 1.1): süperadmin, sebep zorunlu, denetimli.
+        'POST|api/admin/workspaces/{workspace}/transactions/{transaction}/refund||App\Http\Controllers\PlatformAdmin\RefundPaymentTransactionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:5,1,verified',
+        // KİP ANAHTARI (docs/107 Faz 1.1): canlı tahsilat yalnız kasa dolu VE
+        // süperadmin açıkça açtıysa; her değişim denetime yazılır.
+        'GET|api/admin/settings/billing-mode||App\Http\Controllers\PlatformAdmin\ShowBillingModeController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
+        'PUT|api/admin/settings/billing-mode||App\Http\Controllers\PlatformAdmin\UpdateBillingModeController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
         // Kullanıcı görünürlüğü ve denetim günlüğü (`docs/122` Y2). Parola
         // sıfırlama, kilitleme ya da kaydı düzeltme ucu YOK; bu listede
         // öyle bir satır belirirse bu da bir kapsam kararıdır.
@@ -578,6 +595,8 @@ final class ModularApiRouteRegistrationTest extends TestCase
         $publicPaths = [
             'api/webhooks/iyzico-sandbox',
             'api/billing/iyzico-sandbox/callback',
+            'api/webhooks/iyzico',
+            'api/billing/iyzico/callback',
         ];
 
         foreach ($publicPaths as $uri) {

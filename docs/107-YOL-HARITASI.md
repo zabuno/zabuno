@@ -37,9 +37,9 @@ imkânsız ya da hukuka aykırıdır.
 
 | # | Madde | Bugün |
 | --- | --- | --- |
-| 1.1 | **Gerçek ödeme alma.** | ❌ Depoda yalnız `IyzipaySandboxGateway` var. Sandbox para tahsil etmez. Üretim sağlayıcısı, 3D Secure akışı, başarısız ödeme ve iade yolu yazılmalı. |
+| 1.1 | **Gerçek ödeme alma.** | ◐ **Kod hazır, canlı tahsilat sahibin anahtarına bağlı** (`docs/123`, FF-197). `IyzipayGateway` (üretim adresi sabit, anahtar KASADAN), üç kapılı kip anahtarı (`IYZICO_MODE` + süperadmin `PUT /admin/settings/billing-mode` + kasa), kendi kendine ödeme (`POST /workspaces/{w}/checkout`, tutar sunucudan, fatura profili zorunlu), `/api/webhooks/iyzico`, başarısız ödemede sebep + tekrar yolu, süperadmin iadesi (defterde ters kayıt, dönem düşülür). Hepsi SAHTE geçitle test edildi; gerçek kartla gerçek para henüz hareket etmedi. 3D Secure Iyzico'nun barındırdığı Checkout Form sayfasındadır; kodda ayrı akış yok. Bitti sayılması için: kasaya üretim anahtarı, üretim env'inde `live`, anahtar açık, Iyzico panelinde webhook adresi — ve ilk gerçek tahsilat + iadenin ölçülmesi. |
 | 1.2 | **Yasal metinler.** | ◐ Sekiz belge yayında ve kabukta (FF-198, `docs/124`): hizmet koşulları, gizlilik, KVKK aydınlatma, mesafeli satış, ön bilgilendirme, iptal-iade, çerez politikası **ve tercih ekranı**, ticari ileti izni — İngilizce kaynak, sürüm 0.1. Kayıt onayı zorunlu (onaysız 422), `consent_records` yazılıyor, çerez şeridi JavaScript'siz çalışıyor; 320 pikselde ölçüldü. **Eksik:** hukukçu incelemesi (`LEGAL_REVIEWED_AT`), şirket bilgisi `.env`'de boş ("not yet provided"), Türkçe sürüm çeviri kilidinde, ödeme adımındaki onay ff-197'de. |
-| 1.3 | **Abonelik yaşam döngüsü.** | ◐ Plan kataloğu ve abonelik okuma var; iptal, plan yükseltme/düşürme, başarısız ödemede askıya alma ve geri dönüş yolu yok. |
+| 1.3 | **Abonelik yaşam döngüsü.** | ◐ Plan kataloğu, abonelik okuma ve **ödemeyle oluşturma/uzatma** var (`docs/123` K5: bir dönem = `billing.subscription.period_days`, bitişin üstüne, ödenen plan geçerli olur; iade dönemi düşer). İptal, plan düşürmede fark iadesi, başarısız ödemede askıya alma ve geri dönüş yolu yok. |
 | 1.4 | **Fatura.** | ❌ Tahsilatın karşılığında belge kesilmeli; e-arşiv/e-fatura yolu yok. |
 | 1.5 | **Yedekleme ve geri yükleme TATBİKATI.** | ◐ (2026-09-06, `docs/124`) Tatbikat kodu iki motor için var — SQLite (geliştirici makinesi) ve PostgreSQL (üretim motoru: `pg_dump` + geçici veritabanına `pg_restore`, satır sayısı ve içerik özeti eşleşmesi) — ve `storage/app` medya kökünü de kapsıyor (tar + SHA-256 manifesti). Koşucu bağlantıya göre seçiliyor; günlük zamanlama tanımlı; kanıt ucu koşucu türünü ve medya kaydını dönüyor. CI'da PostgreSQL üzerinde tatbikat gerçek `pg_dump`/`pg_restore` ile koşuyor (`PostgresBackupRestoreDrillTest`, `DB_CONNECTION=pgsql` işi; yerelde PostgreSQL yok, sonuç orada "bilinmiyor"). **Üretim sunucusunda ilk tatbikat henüz yapılmadı;** üretimde hiçbir kanıt satırı yok ve `db-backups` hacmine yazan bir iş yok. Denenmemiş bir yedek, yedek değildir. |
 | 1.6 | **Destek kanalı ve yanıt taahhüdü.** | ◐ İletişim formu var; taahhüt ve takip yok. |
@@ -51,8 +51,10 @@ kaybedersek geri getirebildiğimizi bir tatbikatla göstermiş oluruz.
 
 **kullaniciYolculugu:** Kadıköy'deki bir kebapçı fiyatlandırma sayfasından
 "Pro"yu seçer, kartını girer, 3D Secure ekranından geçer, e-postasına faturası
-düşer, menüsünü yayınlar ve masalarına kart basar. Bugün bu yolculuk **ödeme
-adımında** durur.
+düşer, menüsünü yayınlar ve masalarına kart basar. Bugün bu yolculuk kod
+düzeyinde ödeme adımını geçer ve sandbox'ta prova edilir (`docs/123`);
+gerçek kartla tahsilat kasadaki üretim anahtarına bağlıdır ve yolculuk
+**fatura adımında** durur (1.4).
 
 ---
 

@@ -10,7 +10,11 @@
         "tests/Feature/Billing/IyzicoSandboxCheckoutJourneyTest.php",
         "tests/Feature/Billing/IyzicoSandboxCallbackTest.php",
         "tests/Feature/Billing/IyzicoSandboxWebhookTest.php",
-        "tests/Unit/Billing/IyzipaySandboxGatewayTest.php"
+        "tests/Unit/Billing/IyzipaySandboxGatewayTest.php",
+        "tests/Feature/Billing/SelfServeCheckoutJourneyTest.php",
+        "tests/Feature/Billing/BillingProfileTest.php",
+        "tests/Feature/Billing/IyzicoWebhookTest.php",
+        "tests/Unit/Billing/IyzipayGatewayTest.php"
     ],
     "Identity": [
         "tests/Feature/Auth/IdentitySessionJourneyTest.php",
@@ -32,7 +36,9 @@
     ],
     "Platform": [
         "tests/Feature/PlatformAdmin/PlanManagementJourneyTest.php",
-        "tests/Feature/PlatformAdmin/PlatformAdminShellJourneyTest.php"
+        "tests/Feature/PlatformAdmin/PlatformAdminShellJourneyTest.php",
+        "tests/Feature/PlatformAdmin/BillingModeTest.php",
+        "tests/Feature/PlatformAdmin/RefundTest.php"
     ],
     "Publication": [
         "tests/Feature/Publication/PublicationJourneyTest.php",
