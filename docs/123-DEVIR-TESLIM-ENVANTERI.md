@@ -71,7 +71,7 @@ ve kurumsal site ilerledi; ama **ürün hâlâ para tahsil edemiyor.**
 | `docs/116` P7–P8 | `external_references` eşleme tablosu, ilk dış adaptör (Zomato/Google/Swarm) |
 | `docs/114` Dalga 6 | Zengin görsel — hak tanımlı, yüzey yok |
 | `docs/111` adım 3–5 | Modül durum rozeti, `modules/` `contexts:` eşlemesi, yaşam döngüsü |
-| `docs/121` | Sahte-yerelleştirmenin bulduğu **15 kırık** (TrendChart, DashboardOverview, MenuScreenActions, DesktopSidebar, PageHeader) |
+| `docs/121` | Sahte-yerelleştirmenin bulduğu kırıklar — ölçüldü ve onarıldı, sonuç `docs/121` §5.1'de; açık kalan iki madde ve sebebi de orada |
 | Dil paketi | Dil değiştirici **hiçbir şablona bağlanmadı**; `zbn_language` çerezini yazan taraf yok |
 | Yazı tipi paketi | Arap yazısı barındırılmıyor; `▲`/`▼` glifleri işletim sisteminden |
 | Kütük paketi | 380 sayfanın kaynak dil satırı yok (adresleri yazılmadığı için, bilinçli) |

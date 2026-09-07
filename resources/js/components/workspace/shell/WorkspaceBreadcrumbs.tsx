@@ -1,5 +1,6 @@
 import { Breadcrumbs, type BreadcrumbItem } from '../../catalog/navigation/compound/Breadcrumbs';
 import { shouldInterceptNavigation } from '../../../lib/navigation';
+import { t } from '../../../i18n/workspace';
 
 export type WorkspaceBreadcrumbsProps = {
     workspaceName: string;
@@ -63,5 +64,15 @@ export function WorkspaceBreadcrumbs({
         label: sectionLabel,
     });
 
-    return <Breadcrumbs items={items} />;
+    /*
+        Bölge adı ve boş hâlin cümlesi KATALOGDAN gelir (`docs/121` Ö1).
+        Kataloğun bileşeni metin bilmez; onu bilen taraf burasıdır.
+    */
+    return (
+        <Breadcrumbs
+            items={items}
+            label={t('workspace.shell.breadcrumbs.label')}
+            emptyLabel={t('workspace.shell.breadcrumbs.empty')}
+        />
+    );
 }

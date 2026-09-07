@@ -46,7 +46,7 @@ const superadminGroups: SidebarNavGroup[] = [
     modüllerde durur ve telefon masaüstü rayının kodunu hiç indirmez
     (docs/54). Hikâye de aynı sözleşmeyi kullanır.
 */
-function sidebarSlot(groups: SidebarNavGroup[], activeKey?: string, label?: string) {
+function sidebarSlot(groups: SidebarNavGroup[], activeKey: string, label: string) {
     return (
         <aside className="flex shrink-0 grow-0 basis-[17rem] flex-col border-e border-[var(--color-border)] p-4">
             <SidebarNav groups={groups} activeKey={activeKey} label={label} />
@@ -62,7 +62,7 @@ function ControlledAdminShell({
 }: Omit<
     Parameters<typeof AdminShell>[0],
     'mobileMenuOpen' | 'onToggleMobileMenu' | 'persistentSidebar' | 'navigationDrawer'
-> & { navGroups: SidebarNavGroup[]; activeNavKey?: string; navLabel?: string }) {
+> & { navGroups: SidebarNavGroup[]; activeNavKey: string; navLabel: string }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
         <AdminShell
@@ -74,7 +74,7 @@ function ControlledAdminShell({
                 <DrawerPanel
                     open={mobileMenuOpen}
                     onClose={() => setMobileMenuOpen(false)}
-                    title={navLabel ?? 'Menu'}
+                    title={navLabel}
                 >
                     <SidebarNav
                         groups={navGroups}
@@ -117,12 +117,13 @@ export const Superadmin: Story = {
 export const MobileMenuOpen: Story = {
     args: {
         brand: { name: 'Zabuno', href: '#' },
-        persistentSidebar: sidebarSlot(restaurantAdminGroups, 'dashboard'),
+        persistentSidebar: sidebarSlot(restaurantAdminGroups, 'dashboard', 'Restaurant admin'),
         navigationDrawer: (
             <DrawerPanel open onClose={() => {}} title="Restaurant admin">
                 <SidebarNav
                     groups={restaurantAdminGroups}
                     activeKey="dashboard"
+                    label="Restaurant admin"
                     asLandmark={false}
                 />
             </DrawerPanel>
@@ -140,6 +141,8 @@ export const RightToLeft: Story = {
     render: () => (
         <ControlledAdminShell
             brand={{ name: 'زابونو', href: '#' }}
+            activeNavKey="dashboard"
+            navLabel="لوحة الإدارة"
             navGroups={[
                 {
                     key: 'main',
@@ -149,7 +152,6 @@ export const RightToLeft: Story = {
                     ],
                 },
             ]}
-            activeNavKey="dashboard"
         >
             <p className="text-body text-gray-500 dark:text-gray-400">محتوى الصفحة هنا.</p>
         </ControlledAdminShell>

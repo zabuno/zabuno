@@ -340,6 +340,10 @@ msgstr "Item"
 msgid "dashboard.table.column.visible"
 msgstr "Visible"
 
+#: dashboard:dashboard.table.empty
+msgid "dashboard.table.empty"
+msgstr "No menu items yet."
+
 #: dashboard:dashboard.table.heading
 msgid "dashboard.table.heading"
 msgstr "Menu at a glance"

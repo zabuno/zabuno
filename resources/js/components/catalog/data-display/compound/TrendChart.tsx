@@ -178,26 +178,42 @@ export function TrendChart({
                 Tablo GÖRSEL OLARAK gizlidir ama ağaçta durur: grafiğin
                 söylediği her sayı buradan okunabilir. Görünür bir tablo
                 aynı bilgiyi iki kez göstererek ekranı doldururdu.
+
+                EKRAN OKUYUCU TABLOSU BİR KAPTA GİZLENİR — ısı ızgarasıyla
+                aynı kusur, aynı çözüm (`docs/117` M8, `docs/121` Ö7).
+
+                `sr-only` doğrudan tablonun üstündeydi ve BİR TABLO 1 PİKSELE
+                SIĞMAZ: CSS genişliği tabloda bir tavan değil bir tabandır,
+                kutu en dar içeriğinin genişliğini alır. Başlık metni
+                uzadığında (sahte-yerelleştirilmiş katalogla ölçüldü, beş
+                hikâye) tablo 326–335 piksele çıktı ve mutlak konumlu olmasına
+                rağmen BELGEYİ o kadar genişletti: 320 pikselde sayfa yana
+                kayıyordu ve kaydıran şey görünmez bir tabloydu.
+
+                Bir `div` 1 piksele sığar ve taşanı kırpar. Ekran okuyucu için
+                hiçbir şey değişmez: tablo, başlığı ve satırları yerinde.
             */}
-            <table className="sr-only">
-                <caption>{description}</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">{columnLabel}</th>
-                        <th scope="col">{primaryLabel}</th>
-                        <th scope="col">{secondaryLabel}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {points.map((point) => (
-                        <tr key={point.label}>
-                            <th scope="row">{point.label}</th>
-                            <td>{point.primary}</td>
-                            <td>{point.secondary}</td>
+            <div className="sr-only">
+                <table>
+                    <caption>{description}</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">{columnLabel}</th>
+                            <th scope="col">{primaryLabel}</th>
+                            <th scope="col">{secondaryLabel}</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {points.map((point) => (
+                            <tr key={point.label}>
+                                <th scope="row">{point.label}</th>
+                                <td>{point.primary}</td>
+                                <td>{point.secondary}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </figure>
     );
 }
