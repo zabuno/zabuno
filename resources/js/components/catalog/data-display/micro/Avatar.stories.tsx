@@ -23,5 +23,5 @@ export const WithImage: Story = {
 
 export const RightToLeft: Story = {
     args: { name: 'ليلى أحمد' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

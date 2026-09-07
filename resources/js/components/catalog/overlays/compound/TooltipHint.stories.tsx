@@ -37,5 +37,5 @@ export const RightToLeft: Story = {
         content: 'نسخ عنصر القائمة هذا',
         children: <Button>نسخ</Button>,
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

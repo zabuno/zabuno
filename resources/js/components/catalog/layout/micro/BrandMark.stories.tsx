@@ -29,5 +29,5 @@ export const HiddenName: Story = {
 
 export const RightToLeft: Story = {
     args: { name: 'زابونو' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

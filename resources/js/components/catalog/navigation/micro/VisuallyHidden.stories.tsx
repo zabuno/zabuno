@@ -21,5 +21,5 @@ export const Default: Story = {
 export const RightToLeft: Story = {
     ...Default,
     args: { children: 'نص مخفي بصريا' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

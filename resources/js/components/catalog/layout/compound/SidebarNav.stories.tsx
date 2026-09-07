@@ -125,5 +125,5 @@ export const RightToLeft: Story = {
         ],
         activeKey: 'dashboard',
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

@@ -30,5 +30,5 @@ export const RightToLeft: Story = {
             { key: 'role', label: 'الدور', value: 'مالك' },
         ],
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };
