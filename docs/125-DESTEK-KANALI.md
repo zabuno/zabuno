@@ -137,6 +137,18 @@ onun takibi cevap e-postasıdır — referans o cevabın konusunda durur.
 
 ## 6. Süperadmin: uçlar var, ekran bekliyor
 
+> **EKRAN GELDİ (FF-218, `docs/122` Y7, `docs/133`).** Aşağıdaki iki uç
+> artık `/platform` → **Destek masası**'nın en üstündeki kuyruk kartından
+> okunuyor: bekleyen talepler (en eski üstte), durum süzgeci, ve
+> `received`/`answered`/`closed` geçişleri. Alındı e-postası çıkmamış bir
+> talep ayrıca işaretleniyor — "yazdım ama cevap gelmedi" çağrısının
+> sebebi çoğu zaman odur.
+>
+> **Cevap yazma yüzeyi HÂLÂ YOK** ve ekran öyle bir yüzey varmış gibi
+> davranmıyor: kart bunu kendi cümlesiyle söylüyor ("replies are written by
+> email… marking a request answered records the timing, it does not send
+> anything"). Var olmayan bir kutuyu çizmek, cevabın gittiğini sandırırdı.
+
 `PlatformApp.tsx` başka bir pakette değişiyor; bu paket ekran eklemedi.
 Sunucu tarafı hazır ve donmuş:
 
@@ -146,10 +158,9 @@ Sunucu tarafı hazır ve donmuş:
 | `PUT /api/admin/support-requests/{id}/status` | `throttle:20,1` | `received` / `answered` / `closed`; ilk `answered` geçişi `first_response_at`'i **bir kez** damgalar |
 
 Geçiş kısıtı yok (kapanmış talep yeniden açılabilir); tek değişmez ilk yanıt
-damgasıdır — "kaç saatte cevap verdik" ölçümünün kaynağı. Ekran
-`docs/122` Y7 ile birlikte gelir; o güne kadar süperadmin talepleri sahibe
-giden bildirim e-postasından okur ve **cevabı e-postayla yazar** — üründe
-cevap yazma yüzeyi yoktur.
+damgasıdır — "kaç saatte cevap verdik" ölçümünün kaynağı. Ekran `docs/122`
+Y7 ile birlikte geldi (yukarıdaki kutu); süperadmin **cevabı hâlâ
+e-postayla yazar** — üründe cevap yazma yüzeyi yoktur.
 
 ## 7. Sahibe açık sorular
 
@@ -192,7 +203,8 @@ bir alındı e-postası alır; sahibe giden bildirim aynı numarayı taşır. Ot
 açmışsa panelden `Destek`'e girer, adını yazmadan talep açar, talebini
 listede durumuyla görür.
 
-**Çalışmaz:** süperadminin talepleri **üründe** görüp cevaplayacağı ekran
-(§6); kamu formundan yazan birinin **durum takibi** (bilerek, §5); yanıt
+**Çalışmaz:** süperadminin talepleri **cevaplayacağı** yüzey — görmek ve
+durumunu işaretlemek FF-218'de geldi (§6), cevabı yazmak hâlâ e-postadan;
+kamu formundan yazan birinin **durum takibi** (bilerek, §5); yanıt
 süresi vaadi (sahip sayıyı verene kadar, §3); Mailgun kum havuzunda
 rastgele alıcıya teslim (§7.4).

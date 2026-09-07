@@ -89,6 +89,8 @@ use App\Application\Security\Port\MediaBackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
 use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
+use App\Application\Support\Port\SupportAccessNotifierPort;
+use App\Application\Support\Port\SupportAccessPort;
 use App\Application\Support\Port\SupportNotifierPort;
 use App\Application\Support\Port\SupportReferenceGeneratorPort;
 use App\Application\Support\Port\SupportRequestRepositoryPort;
@@ -204,7 +206,12 @@ use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\MediaBackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
+use App\Infrastructure\Support\Authorization\SupportAccessAuthorization;
+use App\Infrastructure\Support\Authorization\SupportAccessScope;
+use App\Infrastructure\Support\Authorization\SupportAccessWorkspaceRepository;
+use App\Infrastructure\Support\Mail\MailSupportAccessNotifier;
 use App\Infrastructure\Support\Mail\MailSupportNotifier;
+use App\Infrastructure\Support\Persistence\EloquentSupportAccess;
 use App\Infrastructure\Support\Persistence\EloquentSupportRequestRepository;
 use App\Infrastructure\Support\Reference\RandomSupportReferenceGenerator;
 use App\Infrastructure\Team\Mail\MailTeamInvitationNotifier;
@@ -260,9 +267,25 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(ConsentLedgerPort::class, DatabaseConsentLedger::class);
 
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
-        $this->app->bind(WorkspaceRepositoryPort::class, EloquentWorkspaceRepository::class);
+        /*
+            KİRACI OLARAK BAKMA SARMALAYICILARI (`docs/122` Y7, `docs/133`).
+
+            İkisi de SARMALAYICIDIR, yerine geçen değil: gerçek karar önce
+            üyelikten sorulur ve ancak "hayır" çıktığında açık bir destek
+            oturumu varsa YALNIZ OKUMA izni eklenir. Sarmalama burada
+            yapılır, denetleyicilerde değil — yetki kararının iki farklı
+            yerde verilmesi, bir gün ekranın çizdiği ile sunucunun izin
+            verdiğinin ayrışması demektir.
+        */
+        $this->app->bind(WorkspaceRepositoryPort::class, fn ($app) => new SupportAccessWorkspaceRepository(
+            $app->make(EloquentWorkspaceRepository::class),
+            $app->make(SupportAccessScope::class),
+        ));
         $this->app->bind(WorkspaceContextSessionPort::class, SessionWorkspaceContext::class);
-        $this->app->bind(AuthorizationPort::class, EloquentAuthorizationDecisionPoint::class);
+        $this->app->bind(AuthorizationPort::class, fn ($app) => new SupportAccessAuthorization(
+            $app->make(EloquentAuthorizationDecisionPoint::class),
+            $app->make(SupportAccessScope::class),
+        ));
         $this->app->bind(BrandRepositoryPort::class, EloquentBrandRepository::class);
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
@@ -665,6 +688,8 @@ final class AppServiceProvider extends ServiceProvider
         // sebebi kayda geçer (`docs/110` P0-06).
         $this->app->bind(TeamInvitationNotifierPort::class, MailTeamInvitationNotifier::class);
         // Destek kanalı (FF-201, `docs/125`): kayıt, referans, iki e-posta.
+        $this->app->bind(SupportAccessPort::class, EloquentSupportAccess::class);
+        $this->app->bind(SupportAccessNotifierPort::class, MailSupportAccessNotifier::class);
         $this->app->bind(SupportRequestRepositoryPort::class, EloquentSupportRequestRepository::class);
         $this->app->bind(SupportReferenceGeneratorPort::class, RandomSupportReferenceGenerator::class);
         $this->app->bind(SupportNotifierPort::class, MailSupportNotifier::class);

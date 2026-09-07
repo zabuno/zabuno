@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1644;
+const FROZEN_LEGACY_KEY_COUNT = 1652;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -207,8 +207,16 @@ const FROZEN_LEGACY_KEY_COUNT = 1644;
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-218 (`docs/122` Y7, `docs/133`): 1644 → 1652, SEKİZ anahtar ve hepsi
+// TEK bir cümlenin parçaları — "platform ekibinden biri hesabınıza baktı".
+// `docs/122` §5 kaydın kiracının GÖREBİLECEĞİ biçimde yazılmasını şart
+// koşuyor; sahibin okuyacağı metnin katalogdan geçmesi o şartın kendisidir,
+// yan etkisi değil. Sekiz anahtar: kaynak etiketi, bölüm başlığı, ne
+// yapılamadığını anlatan yardım metni, açık ve kapalı oturumun zaman
+// cümleleri, sebep, kim ve failin bilinmediği hâli.
+// ÇEVİRİ YİNE YAPILMADI: yalnız İngilizce kaynak satırları yazıldı.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '5904f707922b842ef5dadd7053952770ae35fe1951fff335e900da93082efa2d';
+    'eb8fbc0c2a20f6028392032cb1f263c78287fcb77c636f73aae3ffb428db67df';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

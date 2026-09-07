@@ -41,7 +41,19 @@ use Illuminate\Support\Facades\DB;
  */
 final class ListPlatformAuditLogController extends Controller
 {
-    private const SOURCES = ['media', 'menu', 'publication', 'credential'];
+    /*
+        BEŞİNCİ KAYNAK (`docs/122` Y7): platform ekibinin bir kiracıya
+        bakışı. Yukarıdaki yorum "beşinci kaynak eklendiği gün" diye bir
+        varsayım kurmuştu; o gün geldi ve birleştirme uygulamada olduğu için
+        bedeli tek bir dizi oldu.
+
+        Bu satır süperadmin tarafında da görünür — ama kiracının kendi
+        panelinde görünmesi bu satırın YERİNE geçmez, tersine: `docs/122` §5
+        kaydın kiracının görebileceği biçimde yazılmasını istiyor ve o kayıt
+        `ShowWorkspaceAuditTrailController`'da yaşıyor. Buradaki satır,
+        platformun kendi kendini denetleyebilmesi için.
+    */
+    private const SOURCES = ['media', 'menu', 'publication', 'credential', 'support-access'];
 
     private const PER_PAGE_MAX = 200;
 
@@ -115,6 +127,7 @@ final class ListPlatformAuditLogController extends Controller
             'media' => $this->mediaEntries($workspaceId, $limit),
             'menu' => $this->menuEntries($workspaceId, $limit),
             'publication' => $this->publicationEntries($workspaceId, $limit),
+            'support-access' => $this->supportAccessEntries($workspaceId, $limit),
             default => $this->credentialEntries($limit),
         };
     }
@@ -211,6 +224,35 @@ final class ListPlatformAuditLogController extends Controller
                 'workspaceId' => (int) $row->workspace_id,
                 'workspaceName' => (string) $row->workspace_name,
                 'at' => $row->published_at === null ? null : (string) $row->published_at,
+            ])->all();
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function supportAccessEntries(?int $workspaceId, int $limit): array
+    {
+        $builder = DB::table('support_access_sessions as s')
+            ->join('workspaces as w', 'w.id', '=', 's.workspace_id')
+            ->leftJoin('users as u', 'u.id', '=', 's.actor_user_id')
+            ->orderByDesc('s.started_at')
+            ->orderByDesc('s.id')
+            ->limit($limit);
+
+        if ($workspaceId !== null) {
+            $builder->where('s.workspace_id', $workspaceId);
+        }
+
+        return $builder->get(['s.id', 's.reason', 's.started_at', 's.workspace_id', 'w.name as workspace_name', 'u.email'])
+            ->map(static fn (object $row): array => [
+                'id' => 'support-access:'.$row->id,
+                'source' => 'support-access',
+                'action' => 'support_access_opened',
+                // Konu SEBEPTİR: "biri baktı" satırının tek bilgi taşıyan
+                // yarısı odur ve kiracı da aynı cümleyi okuyor.
+                'subject' => (string) $row->reason,
+                'actor' => $row->email === null ? null : (string) $row->email,
+                'workspaceId' => (int) $row->workspace_id,
+                'workspaceName' => (string) $row->workspace_name,
+                'at' => $row->started_at === null ? null : (string) $row->started_at,
             ])->all();
     }
 

@@ -27,6 +27,11 @@ const SOURCE_LABELS = {
     menu: 'platform.auditLog.source.menu',
     publication: 'platform.auditLog.source.publication',
     credential: 'platform.auditLog.source.credential',
+    // BEŞİNCİ KAYNAK (`docs/122` Y7): platform ekibinin bir kiracıya bakışı.
+    // Aynı satır kiracının kendi denetim izinde de görünür ve orada
+    // görünmesi asıl olandır; buradaki kopya platformun kendini
+    // denetleyebilmesi için.
+    'support-access': 'platform.auditLog.source.support-access',
 } as const;
 
 const cellClass = 'px-[var(--space-3)] py-[var(--space-2)] text-body align-top';
