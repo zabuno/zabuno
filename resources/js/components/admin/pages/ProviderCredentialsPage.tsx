@@ -25,6 +25,18 @@ type FieldSchema = {
     secret: boolean;
     required: boolean;
     default: string | null;
+    /*
+        KAPALI UÇLU ALANIN SEÇENEKLERİ (FF-220).
+
+        Ölçüm hedefleri (`ga4`, `yandex_metrica`, `hotjar`) yalnız açık ya da
+        kapalıdır. Serbest metin kutusu olarak çizilseydi, yazılan `evet`
+        sunucuda reddedilir ya da sessizce "kapalı" sayılırdı; ikisi de
+        sahibin ekranda göremeyeceği bir kayıp olurdu.
+
+        Liste ŞEMADAN gelir, panelde sabit yazılmaz: ikinci bir kopya, bir
+        gün şemadan ayrışacak bir kopyadır.
+    */
+    choices?: string[] | null;
 };
 
 type ProviderSchema = {
@@ -140,15 +152,58 @@ function fieldLabel(name: string): string {
     return t(`platform.credentials.field.${name}` as never);
 }
 
+/**
+ * Kapalı uçlu bir seçeneğin ekranda okunan hâli.
+ *
+ * Depolanan değer (`on`/`off`) makine sözleşmesidir ve DEĞİŞMEZ; ekranda
+ * görünen metin çeviriye tabidir. İkisini aynı dize yapmak, bir çeviri
+ * düzeltmesinin veritabanındaki değeri anlamsız kılması demek olurdu.
+ */
+function choiceLabel(value: string): string {
+    return t(`platform.credentials.choice.${value}` as never);
+}
+
 /** Kart başına düzenleme taslağı: bağlantı kimliği → alan → değer. */
 type DraftMap = Record<number, Record<string, string>>;
 
-function draftFor(connection: Connection): Record<string, string> {
+function schemaField(schema: ProviderSchema | undefined, name: string): FieldSchema | undefined {
+    return schema?.fields.find((entry) => entry.name === name);
+}
+
+function choicesOf(field: FieldSchema | undefined): string[] | null {
+    return field?.choices && field.choices.length > 0 ? field.choices : null;
+}
+
+function draftFor(
+    connection: Connection,
+    schema: ProviderSchema | undefined,
+): Record<string, string> {
     const draft: Record<string, string> = {};
     for (const field of connection.fields) {
-        // Sır alan BOŞ başlar (maske bir değer değil, bir izdir); düz alan
-        // mevcut değeriyle dolu gelir.
-        draft[field.name] = field.secret ? '' : (field.preview ?? '');
+        if (field.secret) {
+            // Sır alan BOŞ başlar: maske bir değer değil, bir izdir.
+            draft[field.name] = '';
+            continue;
+        }
+
+        const choices = choicesOf(schemaField(schema, field.name));
+
+        /*
+            Kapalı uçlu bir alan hiçbir zaman BOŞ başlamaz. Boş bir seçim,
+            listedeki hiçbir seçeneğe denk düşmediği için tarayıcıda
+            ilkini gösterirdi — ekranda "kapalı" yazarken kaydedilen
+            değerin bambaşka olduğu bir durum. Kaydedilmemiş bir alan,
+            şemanın varsayılanını gösterir.
+        */
+        if (choices !== null) {
+            draft[field.name] =
+                field.preview !== null && choices.includes(field.preview)
+                    ? field.preview
+                    : (schemaField(schema, field.name)?.default ?? choices[0]);
+            continue;
+        }
+
+        draft[field.name] = field.preview ?? '';
     }
 
     return draft;
@@ -207,7 +262,10 @@ export function ProviderCredentialsPage() {
 
             const next: DraftMap = {};
             for (const connection of data.connections) {
-                next[connection.id] = draftFor(connection);
+                next[connection.id] = draftFor(
+                    connection,
+                    data.providers.find((entry) => entry.provider === connection.provider),
+                );
             }
             setDrafts(next);
         } catch {
@@ -511,26 +569,48 @@ export function ProviderCredentialsPage() {
                     {/* Sağlayıcıya ÖZEL alanlar yalnız seçim yapıldıktan sonra. */}
                     {selectedSchema?.fields.map((field) => {
                         const inputId = `new-connection-${field.name}`;
+                        const choices = choicesOf(field);
 
                         return (
                             <div key={field.name} className="mt-[var(--space-fluid-sm)]">
                                 <label htmlFor={inputId} className="block">
                                     {fieldLabel(field.name)}
                                 </label>
-                                <input
-                                    id={inputId}
-                                    type={field.secret ? 'password' : 'text'}
-                                    autoComplete="off"
-                                    className={inputClass}
-                                    placeholder={field.default ?? ''}
-                                    value={newFields[field.name] ?? ''}
-                                    onChange={(event) =>
-                                        setNewFields((prev) => ({
-                                            ...prev,
-                                            [field.name]: event.target.value,
-                                        }))
-                                    }
-                                />
+                                {choices !== null ? (
+                                    <select
+                                        id={inputId}
+                                        name={field.name}
+                                        className={inputClass}
+                                        value={newFields[field.name] ?? field.default ?? choices[0]}
+                                        onChange={(event) =>
+                                            setNewFields((prev) => ({
+                                                ...prev,
+                                                [field.name]: event.target.value,
+                                            }))
+                                        }
+                                    >
+                                        {choices.map((choice) => (
+                                            <option key={choice} value={choice}>
+                                                {choiceLabel(choice)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <input
+                                        id={inputId}
+                                        type={field.secret ? 'password' : 'text'}
+                                        autoComplete="off"
+                                        className={inputClass}
+                                        placeholder={field.default ?? ''}
+                                        value={newFields[field.name] ?? ''}
+                                        onChange={(event) =>
+                                            setNewFields((prev) => ({
+                                                ...prev,
+                                                [field.name]: event.target.value,
+                                            }))
+                                        }
+                                    />
+                                )}
                             </div>
                         );
                     })}
@@ -587,6 +667,7 @@ export function ProviderCredentialsPage() {
 
                                     {connection.fields.map((field) => {
                                         const inputId = `cred-${connection.id}-${field.name}`;
+                                        const choices = choicesOf(schemaField(schema, field.name));
 
                                         return (
                                             <div
@@ -603,30 +684,56 @@ export function ProviderCredentialsPage() {
                                                         </span>
                                                     ) : null}
                                                 </label>
-                                                <input
-                                                    id={inputId}
-                                                    name={field.name}
-                                                    type={field.secret ? 'password' : 'text'}
-                                                    autoComplete="off"
-                                                    className={inputClass}
-                                                    placeholder={
-                                                        field.secret && field.isSet
-                                                            ? t(
-                                                                  'platform.credentials.keepPlaceholder',
-                                                              )
-                                                            : ''
-                                                    }
-                                                    value={
-                                                        drafts[connection.id]?.[field.name] ?? ''
-                                                    }
-                                                    onChange={(event) =>
-                                                        setField(
-                                                            connection.id,
-                                                            field.name,
-                                                            event.target.value,
-                                                        )
-                                                    }
-                                                />
+                                                {choices !== null ? (
+                                                    <select
+                                                        id={inputId}
+                                                        name={field.name}
+                                                        className={inputClass}
+                                                        value={
+                                                            drafts[connection.id]?.[field.name] ??
+                                                            choices[0]
+                                                        }
+                                                        onChange={(event) =>
+                                                            setField(
+                                                                connection.id,
+                                                                field.name,
+                                                                event.target.value,
+                                                            )
+                                                        }
+                                                    >
+                                                        {choices.map((choice) => (
+                                                            <option key={choice} value={choice}>
+                                                                {choiceLabel(choice)}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                ) : (
+                                                    <input
+                                                        id={inputId}
+                                                        name={field.name}
+                                                        type={field.secret ? 'password' : 'text'}
+                                                        autoComplete="off"
+                                                        className={inputClass}
+                                                        placeholder={
+                                                            field.secret && field.isSet
+                                                                ? t(
+                                                                      'platform.credentials.keepPlaceholder',
+                                                                  )
+                                                                : ''
+                                                        }
+                                                        value={
+                                                            drafts[connection.id]?.[field.name] ??
+                                                            ''
+                                                        }
+                                                        onChange={(event) =>
+                                                            setField(
+                                                                connection.id,
+                                                                field.name,
+                                                                event.target.value,
+                                                            )
+                                                        }
+                                                    />
+                                                )}
                                             </div>
                                         );
                                     })}

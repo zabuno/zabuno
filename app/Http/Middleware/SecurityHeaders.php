@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Domain\Url\UrlPolicy;
+use App\Infrastructure\Analytics\VaultAnalyticsSettings;
 use App\Support\Analytics\AnalyticsConfiguration;
 use Closure;
 use Illuminate\Http\Request;
@@ -30,7 +31,10 @@ final class SecurityHeaders
 {
     public const NONCE_ATTRIBUTE = 'csp-nonce';
 
-    public function __construct(private readonly UrlPolicy $policy) {}
+    public function __construct(
+        private readonly UrlPolicy $policy,
+        private readonly VaultAnalyticsSettings $analytics,
+    ) {}
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -144,9 +148,16 @@ final class SecurityHeaders
 
     private function contentSecurityPolicy(string $nonce): string
     {
-        // Ölçüm araçları kapalıyken bu dizi tamamen boştur ve CSP aşağıdaki
-        // sıkı halinde kalır. Açıkken YALNIZ açılan aracın adresleri girer.
-        $analytics = AnalyticsConfiguration::fromConfig();
+        /*
+            Ölçüm araçları kapalıyken bu dizi tamamen boştur ve CSP aşağıdaki
+            sıkı halinde kalır. Açıkken YALNIZ açılan aracın adresleri girer.
+
+            Kaynak artık KASA, yoksa env (`docs/135`). Bu okuma her istekte
+            veritabanına GİTMEZ (önbellek) ve veritabanı düşmüşse İSTİSNA
+            ATMAZ — bir güvenlik başlığı üretmek, bir sayfayı çökertmenin
+            gerekçesi olamaz.
+        */
+        $analytics = $this->analytics->configuration();
 
         $directives = [
             "default-src 'self'",

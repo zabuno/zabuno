@@ -484,6 +484,14 @@ msgstr "A customer key only ever serves that one workspace. It never appears as 
 msgid "platform.connections.workspace.label"
 msgstr "Workspace ID"
 
+#: platform:platform.credentials.choice.off
+msgid "platform.credentials.choice.off"
+msgstr "Off"
+
+#: platform:platform.credentials.choice.on
+msgid "platform.credentials.choice.on"
+msgstr "On"
+
 #: platform:platform.credentials.disable
 msgid "platform.credentials.disable"
 msgstr "Disable"
@@ -500,6 +508,10 @@ msgstr "API key"
 msgid "platform.credentials.field.base_url"
 msgstr "Base URL"
 
+#: platform:platform.credentials.field.container_id
+msgid "platform.credentials.field.container_id"
+msgstr "Container ID (GTM-…)"
+
 #: platform:platform.credentials.field.domain
 msgid "platform.credentials.field.domain"
 msgstr "Domain"
@@ -507,6 +519,14 @@ msgstr "Domain"
 #: platform:platform.credentials.field.endpoint
 msgid "platform.credentials.field.endpoint"
 msgstr "Endpoint"
+
+#: platform:platform.credentials.field.ga4
+msgid "platform.credentials.field.ga4"
+msgstr "Allow Google Analytics 4"
+
+#: platform:platform.credentials.field.hotjar
+msgid "platform.credentials.field.hotjar"
+msgstr "Allow Hotjar"
 
 #: platform:platform.credentials.field.organization
 msgid "platform.credentials.field.organization"
@@ -523,6 +543,10 @@ msgstr "Secret / API key"
 #: platform:platform.credentials.field.secret_key
 msgid "platform.credentials.field.secret_key"
 msgstr "Secret key"
+
+#: platform:platform.credentials.field.yandex_metrica
+msgid "platform.credentials.field.yandex_metrica"
+msgstr "Allow Yandex Metrica"
 
 #: platform:platform.credentials.intro
 msgid "platform.credentials.intro"
@@ -551,6 +575,10 @@ msgstr "Custom endpoint (OpenAI-compatible)"
 #: platform:platform.credentials.provider.gemini
 msgid "platform.credentials.provider.gemini"
 msgstr "Gemini (Google)"
+
+#: platform:platform.credentials.provider.google_tag_manager
+msgid "platform.credentials.provider.google_tag_manager"
+msgstr "Google Tag Manager (measurement)"
 
 #: platform:platform.credentials.provider.iyzico
 msgid "platform.credentials.provider.iyzico"

@@ -1,4 +1,8 @@
-@php($zabunoConsentConfigured = \App\Support\Analytics\AnalyticsConfiguration::fromConfig()->isEnabled())
+{{-- Ölçüm KASADAN (yoksa env'den) okunur — `docs/135`. Bu satır env'de
+     kalsaydı, sahip kimliği panelden girdiğinde şerit HİÇ çıkmaz, onay
+     alınamaz ve konteyner de hiç yüklenmezdi: ölçüm "açıldı" sanılırken
+     kapalı kalırdı ve bunu gösteren tek bir hata olmazdı. --}}
+@php($zabunoConsentConfigured = app(\App\Infrastructure\Analytics\VaultAnalyticsSettings::class)->configuration()->isEnabled())
 @php($zabunoConsentDecision = \App\Support\Analytics\MeasurementConsent::fromRequest(request()))
 {{-- ÇEREZ SEÇİM ŞERİDİ — FF-198.
 

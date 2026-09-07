@@ -88,17 +88,57 @@ final class ConnectionApiTest extends TestCase
         $providers = collect($response->json('providers'));
 
         self::assertSame(
-            ['mailgun', 'iyzico', 'openai', 'gemini', 'anthropic', 'kimi', 'custom_endpoint'],
+            [
+                'mailgun', 'iyzico', 'openai', 'gemini', 'anthropic', 'kimi',
+                'custom_endpoint', 'google_tag_manager',
+            ],
             $providers->pluck('provider')->all(),
         );
 
         $custom = $providers->firstWhere('provider', 'custom_endpoint');
         self::assertSame(
             [
-                ['name' => 'base_url', 'secret' => false, 'required' => true, 'default' => null],
-                ['name' => 'api_key', 'secret' => true, 'required' => false, 'default' => null],
+                [
+                    'name' => 'base_url', 'secret' => false, 'required' => true,
+                    'default' => null, 'choices' => null,
+                ],
+                [
+                    'name' => 'api_key', 'secret' => true, 'required' => false,
+                    'default' => null, 'choices' => null,
+                ],
             ],
             $custom['fields'],
+        );
+
+        /*
+            KAPALI UÇLU ALANIN SEÇENEKLERİ ŞEMAYLA GELİR (FF-220).
+
+            Panel bunları bilmeden ölçüm hedeflerini serbest metin kutusu
+            olarak çizerdi; sahibin yazdığı `evet` ya reddedilir ya da
+            sessizce "kapalı" sayılırdı. Liste tek kaynaktan gelsin diye
+            uçtan iniyor — panelde ikinci bir kopyası yok.
+        */
+        $gtm = $providers->firstWhere('provider', 'google_tag_manager');
+        self::assertSame(
+            [
+                [
+                    'name' => 'container_id', 'secret' => false, 'required' => true,
+                    'default' => null, 'choices' => null,
+                ],
+                [
+                    'name' => 'ga4', 'secret' => false, 'required' => false,
+                    'default' => 'off', 'choices' => ['off', 'on'],
+                ],
+                [
+                    'name' => 'yandex_metrica', 'secret' => false, 'required' => false,
+                    'default' => 'off', 'choices' => ['off', 'on'],
+                ],
+                [
+                    'name' => 'hotjar', 'secret' => false, 'required' => false,
+                    'default' => 'off', 'choices' => ['off', 'on'],
+                ],
+            ],
+            $gtm['fields'],
         );
 
         self::assertSame([], $response->json('connections'));
