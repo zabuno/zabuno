@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Deployment;
 
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 /**
@@ -633,6 +634,128 @@ final class DeploymentContractTest extends TestCase
             strpos($entrypoint, 'PlanCatalogueSeeder'),
             (int) strpos($entrypoint, 'artisan migrate --force'),
             'Tohum göçlerden SONRA çalışmalı.'
+        );
+    }
+
+    // --- DEPLOY-PAGE-LEDGER-12 --------------------------------------------
+
+    /**
+     * ÜRETİMDE SAYFA KÜTÜĞÜ BOŞ KALMAZ — `docs/128`.
+     *
+     * Ölçülen arıza (2026-09-07): kurumsal sitenin her adresi
+     * `content_pages` tablosunda bir satırdır ve
+     * `ShowCorporatePageController` kütükte olmayan bir yola 404 verir.
+     * Kütüğü üreten komut (`site:import-map`) depoda VARDI, testleri de
+     * vardı — ama onu çalıştıran tek yer testlerdi. Giriş betiğinde,
+     * deploy akışında, `install.sh`'ta ve `scripts/` altında tek bir
+     * çağrısı yoktu.
+     *
+     * Sonucu: dağıtım yeşil, sağlık kontrolü geçiyor, konteyner ayakta —
+     * ve deponun yazılmış on altı kurumsal sayfasının hiçbiri açılamıyor.
+     * Plan kataloğuyla (DEPLOY-SEED) tam olarak aynı sınıftan bir kusur:
+     * şema değil VERİ eksik, ve veri eksikliği hiçbir yerde kırmızı
+     * göstermiyor.
+     */
+    public function test_the_container_fills_the_page_ledger_after_migrating(): void
+    {
+        $entrypoint = $this->read('docker/entrypoint.sh');
+
+        self::assertStringContainsString(
+            'artisan site:import-map',
+            $entrypoint,
+            'DEPLOY-PAGE-LEDGER-12: giriş betiği sayfa kütüğünü doldurmalı; '
+            .'yoksa üretimde kurumsal sitenin her adresi 404 döner.'
+        );
+
+        // SIRA önemli: içe aktarma `content_pages` tablosunu bekler.
+        self::assertLessThan(
+            strpos($entrypoint, 'artisan site:import-map'),
+            (int) strpos($entrypoint, 'artisan migrate --force'),
+            'DEPLOY-PAGE-LEDGER-12: içe aktarma göçlerden SONRA çalışmalı.'
+        );
+    }
+
+    /**
+     * KÜTÜĞÜN KAYNAĞI İMAJA GİRMELİ.
+     *
+     * Bu, adımı giriş betiğine yazarken ölçüldü ve tek başına adımı
+     * anlamsız kılıyordu: `.dockerignore` bütün `docs` dizinini eliyor,
+     * ama `site:import-map` kütüğü tam da o dizindeki site haritası
+     * girdisinden üretiyor. Dosya imajın dışında kalsaydı komut üretimde
+     * "site haritası bulunamadı" ile ölürdü.
+     *
+     * Bu dosya bir BELGE DEĞİL, bir VERİ GİRDİSİDİR — `docs/106`'nın kendi
+     * başlığı da öyle diyor. Dizin elenmeye devam eder; yalnız bu dosya
+     * geri alınır.
+     *
+     * Kapı, iki ucu BİRBİRİNE BAĞLAR: yol komutun kendi varsayılanından
+     * okunur. Ayrı ayrı yazılsalardı, biri değiştiği gün öteki sessizce
+     * yanlış dosyayı korurdu.
+     */
+    public function test_the_page_ledger_source_reaches_the_image(): void
+    {
+        $option = Artisan::all()['site:import-map']
+            ->getDefinition()
+            ->getOption('file');
+
+        $source = (string) $option->getDefault();
+
+        self::assertFileExists(
+            base_path($source),
+            "DEPLOY-PAGE-LEDGER-12: kütüğün kaynağı depoda yok: {$source}"
+        );
+
+        $ignore = $this->read('.dockerignore');
+
+        $ignored = strpos($ignore, "\ndocs\n");
+        $reincluded = strpos($ignore, '!'.$source);
+
+        self::assertIsInt(
+            $reincluded,
+            "DEPLOY-PAGE-LEDGER-12: `{$source}` imaja girmiyor; `site:import-map` "
+            .'üretimde "site haritası bulunamadı" ile ölür.'
+        );
+
+        // Docker'da SON eşleşen desen kazanır: geri alma, elemeden SONRA
+        // gelmezse hiçbir şey yapmaz.
+        if (is_int($ignored)) {
+            self::assertGreaterThan(
+                $ignored,
+                $reincluded,
+                'DEPLOY-PAGE-LEDGER-12: geri alma satırı `docs` elemesinden ÖNCE geliyor; '
+                .'Docker son eşleşen deseni uygular, dosya yine imajın dışında kalır.'
+            );
+        }
+    }
+
+    /**
+     * DAĞITIM BİR YAYIN KARARI VERMEZ — `docs/128`.
+     *
+     * Kütüğü doldurmak ile bir sayfayı yayına almak AYRI işlerdir ve
+     * ikincisi bir insanın kararıdır (yönerge §20: içerik onayı, tasarım,
+     * SEO, erişilebilirlik, QA). `site:sync-content-status` bu kararın
+     * bir kademe altını — "içeriği yazılmış" ölçümünü — yürütür ve tavanı
+     * bilerek `content_draft`tır; ama her dağıtımda KENDİLİĞİNDEN yürüyen
+     * bir durum ilerletici, o tavanı bir gün yükseltmenin en kolay yolunu
+     * açardı.
+     *
+     * Bu yüzden kural: giriş betiği kütüğü DOLDURUR, durumu İLERLETMEZ.
+     * İlerletme elle ve bilerek çalıştırılır.
+     */
+    public function test_the_deploy_fills_the_ledger_without_advancing_a_publication_decision(): void
+    {
+        // Yorumlar ELENİR — bu dosyanın iki kez öğrendiği ders (bkz.
+        // DEPLOY-SENDS-EVERY-TOPOLOGY-10 ve DEPLOY-GATED-04): yasağı
+        // dizgenin GEÇTİĞİ yerde değil, KULLANILDIĞI yerde ara. Kapı ilk
+        // yazıldığında tam da buna takıldı — giriş betiğindeki, komutun
+        // NEDEN konmadığını anlatan yorum, kapıyı düşürüyordu.
+        $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
+
+        self::assertStringNotContainsString(
+            'site:sync-content-status',
+            $entrypoint,
+            'DEPLOY-PAGE-LEDGER-12: dağıtım yayın durumunu ilerletiyor; '
+            .'bir betiğin her seferinde geçtiği kalite kapısı, kapı değildir.'
         );
     }
 }
