@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Content;
 
-use App\Application\Content\Port\ContentLibraryPort;
 use App\Application\Content\UseCase\BuildBreadcrumbTrail;
 use App\Application\Content\UseCase\ResolveLocaleAlternates;
+use App\Application\Content\UseCase\ResolvePageDelivery;
 use App\Domain\Content\Block\BlockType;
 use App\Domain\Content\PageContent;
 use App\Domain\Content\PageEnvironment;
-use App\Domain\Content\PageGate;
-use App\Domain\Content\PagePublicationStatus;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Http\Controllers\Controller;
@@ -43,7 +41,7 @@ final class ShowCorporatePageController extends Controller
 
     public function __construct(
         private readonly SiteText $siteText,
-        private readonly ContentLibraryPort $library,
+        private readonly ResolvePageDelivery $delivery,
         private readonly BuildBreadcrumbTrail $breadcrumbs,
         private readonly CanonicalUrl $canonical,
         private readonly UrlNormalizer $normalizer,
@@ -63,12 +61,6 @@ final class ShowCorporatePageController extends Controller
             abort(404);
         }
 
-        // Şablon bir DESENDİR (`/tr/blog/{slug}/`), bir sayfa değil. Dış
-        // bağlantı da bu sitede bir sayfa değildir.
-        if ($page->is_template || $page->is_external) {
-            abort(404);
-        }
-
         /*
             Ortam YAPILANDIRMADAN okunur, `APP_ENV`'den türetilmez
             (`config/content.php`). Türetseydik yerelde ve testte staging
@@ -78,24 +70,22 @@ final class ShowCorporatePageController extends Controller
         */
         $environment = PageEnvironment::tryFrom((string) config('content.page_environment')) ?? PageEnvironment::Production;
 
-        $decision = PageGate::decide(
-            $page->status(),
-            $environment,
-            /*
-                Önizleme yetkisi HENÜZ YOK: imzalı önizleme token'ı bu paketin
-                dışında. Varsayılanı `false` bırakmak, yanlış tarafta hata
-                yapmamak demek — `true` bırakmak taslakları herkese açardı.
-            */
-            false,
-            $page->was_ever_published,
-        );
+        /*
+            TEK KARAR (FF-214). Şablon/dış bağlantı elemesi, kapı kararı ve
+            "yayında ama metni yok" emniyet kemeri artık burada değil,
+            `ResolvePageDelivery`'de — ve aynı nesne `sitemap.xml`i besliyor.
+            Ayrı yerlerde durdukları sürece sitemap ile bu denetleyicinin bir
+            gün farklı cevap vermesi an meselesiydi (`docs/129`).
+        */
+        $delivery = $this->delivery->for($page, $environment);
+        $decision = $delivery->decision;
 
         if ($decision->mode === 'not-found') {
             abort(404);
         }
 
         $locale = SiteText::pick($page->locale);
-        $stage = $page->status();
+        $stage = $delivery->stage;
 
         /*
             KABUK — kurumsal sitenin geri kalanıyla AYNI (`docs/100` §2).
@@ -111,37 +101,18 @@ final class ShowCorporatePageController extends Controller
         // geçmiş raporlar ikiye bölünmemeli (`docs/100` Faz 3).
         $shell = $this->shell->context($request, $page->page_key, $page->canonical_path, $page->locale);
 
-        if ($decision->mode === 'content') {
-            $content = $this->library->find($page->page_key, $page->locale);
-
-            /*
-                YAYINDA AMA İÇERİĞİ YOK — son emniyet kemeri.
-
-                Kütükteki durum elle ileri sürülebilir; kalite kapısı bir
-                süreçtir, bir kilit değil. Böyle bir sayfayı 200 ile sunmak,
-                kapının en baştan engellemek için var olduğu şeyi üretirdi:
-                hiçbir soruya cevap vermeyen ince bir sayfa. Doğru cevap
-                "burada henüz bir şey yok"tur.
-
-                Bu aynı zamanda `docs/118` E4'ün bugünkü hâlidir: Türkçe içerik
-                yuvası bilerek boş, dolayısıyla Türkçe adres yayına alınsa bile
-                404 kalır.
-            */
-            if ($content !== null) {
-                return $this->withRobots(
-                    $this->renderContent($request, $page, $content, $environment, $shell),
-                    $decision->robots,
-                );
-            }
-
-            /*
-                Ziyaretçiye gösterilen AŞAMA da düzeltilir: kütük "yayında"
-                diyor ama gösterilecek bir metin yok. Fişte "yayında" yazıp
-                404 dönmek, ziyaretçiye anlamsız bir çelişki göstermek olurdu;
-                gerçek durum "iskeleti var, içeriği yok"tur.
-            */
-            $stage = PagePublicationStatus::Scaffolded;
-            $decision = PageGate::decide($stage, $environment, false, false);
+        /*
+            `mode === 'content'` ise metnin VAR OLDUĞU zaten kararın içinde:
+            metin yoksa karar "iskeleti var, içeriği yok"a düşürülmüş olurdu
+            (`ResolvePageDelivery`). Ziyaretçiye gösterilen aşama da oradan
+            geliyor — fişte "yayında" yazıp 404 dönmek, anlamsız bir çelişki
+            göstermek olurdu.
+        */
+        if ($decision->mode === 'content' && $delivery->content !== null) {
+            return $this->withRobots(
+                $this->renderContent($request, $page, $delivery->content, $environment, $shell),
+                $decision->robots,
+            );
         }
 
         $response = $this->withRobots(
@@ -246,11 +217,11 @@ final class ShowCorporatePageController extends Controller
                 ->where('locale', $content->locale)
                 ->first();
 
-            if ($target === null || $target->is_template || $target->is_external) {
+            if ($target === null) {
                 continue;
             }
 
-            if (! PageGate::decide($target->status(), $environment, false, $target->was_ever_published)->isLinkable()) {
+            if (! $this->delivery->for($target, $environment)->decision->isLinkable()) {
                 continue;
             }
 
