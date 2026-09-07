@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Publication;
 
 use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Publication\Exception\UnreadyDraftException;
+use App\Application\Publication\UseCase\ApplyGuestRichMedia;
 use App\Application\Publication\UseCase\AssembleDraftSnapshot;
 use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Http\Controllers\Controller;
@@ -56,6 +57,19 @@ final class ShowDraftPreviewController extends Controller
             misafirin sayfası bir gün iki farklı saat söylerdi.
         */
         private readonly ResolveGuestMenuView $guestMenuView,
+        /*
+            ZENGİN GÖRSEL KAPISI ÖNİZLEMEDE DE GEÇERLİ (`docs/122` Y6).
+
+            Önizlemenin tek işi "misafir bunu nasıl görecek?" sorusuna
+            cevap vermek. Sahibin planı fotoğrafı açmıyorsa, önizlemede
+            fotoğrafı göstermek tam da o soruya YANLIŞ cevap vermek olurdu:
+            sahip yayınlar, masadaki misafir fotoğrafı görmez ve aradaki
+            farkı ancak biri sorduğunda öğrenir.
+
+            Burada donmuş hak YOKTUR ve olmamalı: önizleme bir yayın değil.
+            Bugün yayınlarsa donacak olan hak bugünün planıdır.
+        */
+        private readonly ApplyGuestRichMedia $richMedia,
     ) {}
 
     public function __invoke(Request $request, int $workspace, int $menu): SymfonyResponse
@@ -80,7 +94,7 @@ final class ShowDraftPreviewController extends Controller
         }
 
         return response()->view('public-menu', [
-            'snapshot' => $assembled['snapshot'],
+            'snapshot' => $this->richMedia->forDraftSnapshot($workspace, $assembled['snapshot']),
             'outOfStockItemIds' => $this->outOfStock->forMenu($menu),
             'previewNotice' => 'Draft preview — your guests are not seeing this yet.',
             'previewBlockedReason' => $blockedReason,

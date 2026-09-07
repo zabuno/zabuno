@@ -75,7 +75,7 @@ final class MenuDishesPage
                     ),
                     new BlockEntry(
                         term: 'Attach a photo',
-                        text: 'Pick a photo from the media library. The dish is bound to that photo at a specific version, so a later edit of the picture does not change a published menu.',
+                        text: 'Pick a photo from the media library. The dish is bound to that photo at a specific version, so a later edit of the picture does not change a published menu. Whether the guest sees it depends on your plan.',
                         source: 'app/Http/Controllers/MenuCatalog/BindMenuItemImageController.php',
                     ),
                     new BlockEntry(
@@ -233,7 +233,7 @@ final class MenuDishesPage
 
                 new ContentBlock(BlockType::Cta, 'Dishes cost nothing to add', [
                     new BlockEntry(
-                        text: 'Adding, describing and photographing a dish are on the free plan.',
+                        text: 'Adding, describing and photographing a dish are on the free plan. Showing that photograph to the guest on the menu is what a paid plan opens.',
                         href: '/pricing',
                         term: 'See the plans',
                     ),

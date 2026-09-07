@@ -173,6 +173,21 @@ misafirin gönderdiği bir taleptir, garsonun onayladığı bir iştir.
 | Misafir yüzeyinde plan farkı | Yayın anlık görüntüsüne plan yazılır | — |
 | Zengin görsel | Plan kademesine bağlı | `menu.rich-media` (yeni) |
 
+> **İNDİ (FF-212, 2026-09-07 — `docs/122` Y6.)** Hakkı olan kiracıda ürün
+> fotoğrafı misafire çizilir, olmayanda çizilmez. Hakkı olmayan kiracının
+> misafiri BUNU FARK ETMEZ: boş çerçeve, kırık görsel yer tutucusu ve
+> "yükseltin" cümlesi yok. Misafir müşteri değildir; ona plan satmak,
+> restoranın masasını bizim satış kanalımıza çevirmek olurdu. Menü, fiyat ve
+> alerjen her kademede yerindedir.
+>
+> Fotoğraf VERİDEN çıkarılır, işaretlemede gizlenmez
+> (`App\Domain\Publication\GuestRichMedia`): şablonda gizlemek,
+> yapılandırılmış veride fotoğrafı yine bildirmek ve ürün sayfasının kalite
+> kapısını yanıltmak olurdu — o kapı fotoğrafı "anlatacak şey" sayıyor.
+>
+> YÜKLEMEK DEĞİL GÖSTERMEK satılıyor: fotoğraf yüklemek, sürümlemek ve
+> panelde görmek her planda çalışır.
+
 **Plan yayın anlık görüntüsüne DONDURULUR.** Sebep: sahip planını
 düşürdüğünde basılı karekod aynı kalır ve o karekodun gösterdiği yayın
 değişmemelidir. Plan değişikliği **bir sonraki yayında** etkisini gösterir.

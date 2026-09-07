@@ -188,8 +188,12 @@ export const siteTranslations = {
         var ve bunu bir test donduruyor (`docs/90`).
     */
     'site.pricing.included.heading': 'Every plan includes',
+    // "Fotoğraflar" TEK BAŞINA yazılamaz (`docs/122` Y6): yüklemek, saklamak
+    // ve panelde görmek her planda; MİSAFİRE göstermek `menu.rich-media`
+    // hakkına bağlı. Kısaltmak, sayfanın kendi eleştirdiği şeyi yapmak —
+    // önemli yarısını gizlemek — olurdu.
     'site.pricing.included.body':
-        'Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, photos, and marking a dish sold out for the day.',
+        'Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, uploading and keeping photos of your dishes, and marking a dish sold out for the day.',
     'site.pricing.free': 'Free',
     'site.pricing.perMonth': 'per month',
     'site.pricing.adds': 'Adds',
@@ -206,6 +210,10 @@ export const siteTranslations = {
     // (`docs/115` §6) ve tutulmayacak bir hız sözü vermek istemiyoruz.
     'site.plan.ordering':
         'Guests order from the table; your staff confirms and the kitchen sees it',
+    // Söz, yüzeyin gerçekten yaptığı kadar: hak GÖSTERMEYİ açar, yüklemeyi
+    // değil. Fotoğraf yüklemek ve saklamak her planda çalışıyor
+    // (`docs/122` Y6, `GuestRichMediaTest`).
+    'site.plan.richMedia': 'Photographs of your dishes on the guest menu',
 
     // --- İletişim --------------------------------------------------------
     'site.contact.heading': 'Contact',

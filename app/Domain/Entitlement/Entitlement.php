@@ -55,17 +55,30 @@ enum Entitlement: string
     case OrderingBasic = 'ordering.basic';
 
     /**
-     * Misafir menüsünde zengin görsel: tek küçük fotoğrafın ötesi
-     * (`docs/114` §3 Dalga 6, `docs/122` Y6).
+     * Misafir menüsünde ÜRÜN FOTOĞRAFI (`docs/114` §3 Dalga 6, `docs/122` Y6).
      *
-     * Kapsam kuralına uyar: hakkı olmayan restoran menüsünü yayınlamaya,
-     * karekod basmaya ve bugünkü fotoğrafını göstermeye devam eder.
+     * Sahibin cümlesi (`docs/114` §2): *"Anonim kullanıcı frontend tarafında
+     * resimleri görmeyebilir, veya pricing table'da üst pakete geçerse
+     * görebilir."*
      *
-     * HAK BUGÜN TANIMLI, YÜZEYİ HENÜZ DEĞİL. Kademesi burada karara
-     * bağlandı ki Dalga 6 misafir yüzeyini yazarken bir fiyat kararı
-     * vermek zorunda kalmasın — ama fiyat sayfasında DUYURULMAZ
-     * (`PlanCatalogueSellsEveryCapabilityTest`): olmayan bir yüzeyi
-     * satmak, ödemeden önce söylenmiş bir yalandır.
+     * Kapsam kuralına uyar: hakkı olmayan restoran menüsünü yayınlamaya ve
+     * karekod basmaya devam eder, misafir menüyü görür, fiyatı okur, alerjeni
+     * öğrenir — yalnız tabağın fotoğrafını görmez. Fotoğraf süstür; ad, fiyat
+     * ve alerjen yaşamsaldır ve hiçbir kademe onları kapatmaz.
+     *
+     * HAK YÜKLEMEYİ DEĞİL GÖSTERMEYİ AÇAR. Fotoğraf yüklemek, sürümlemek ve
+     * panelde görmek her planda çalışır; kapanan tek şey misafirin gördüğü
+     * sayfadır. Yüklemeyi kapatmak, sahibin kendi verisini kendi panelinde
+     * rehin almak olurdu.
+     *
+     * YÜZEY 2026-09-07'DE İNDİ (`ApplyGuestRichMedia`, `GuestRichMediaTest`)
+     * ve hak o gün fiyat sayfasında DUYURULMAYA başladı. Öncesinde bilerek
+     * susuluyordu: olmayan bir yüzeyi satmak, ödemeden önce söylenmiş bir
+     * yalandır.
+     *
+     * Hak, misafirin gördüğü yayına DONDURULUR (`menu_publications.
+     * entitlements`): sahip planını düşürdüğünde masadaki basılı karekodun
+     * gösterdiği yayın değişmez; fark BİR SONRAKİ yayında görünür.
      */
     case MenuRichMedia = 'menu.rich-media';
 

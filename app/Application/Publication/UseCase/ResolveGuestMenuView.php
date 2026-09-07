@@ -53,6 +53,17 @@ final class ResolveGuestMenuView
         private readonly ResolveServingMenu $servingMenu,
         private readonly PublicationRepositoryPort $publications,
         private readonly GuestOpeningHoursPort $openingHours,
+        /*
+            ZENGİN GÖRSEL KAPISI DA BURADAN GEÇER (`docs/122` Y6).
+
+            "Misafir şu an ne görüyor?" sorusunun tek cevabı bu sınıf olduğu
+            için, "misafir fotoğrafları görüyor mu?" da burada cevaplanır.
+            Üç yüzey (karekod, kalıcı adres, ürün sayfası) yayını buradan
+            alıyor; kararı her birine ayrı ayrı yaptırsaydık dördüncüsü
+            eklendiği gün sessizce unutulurdu — ve unutulduğunda hiçbir test
+            kırılmaz, yalnız parası ödenmemiş bir fotoğraf masada görünürdü.
+        */
+        private readonly ApplyGuestRichMedia $richMedia,
     ) {}
 
     /**
@@ -67,7 +78,7 @@ final class ResolveGuestMenuView
         if ($publication !== null) {
             return new GuestMenuView(
                 $servingMenuId,
-                $publication,
+                $this->richMedia->forPublication($publication),
                 null,
                 $this->closedNoticeForMenu($workspaceId, $addressedMenuId),
             );
