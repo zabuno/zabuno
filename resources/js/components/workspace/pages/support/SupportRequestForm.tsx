@@ -77,6 +77,16 @@ export function SupportRequestForm({ email, onSubmit }: SupportRequestFormProps)
         <form
             aria-labelledby={headingId}
             className="flex flex-col gap-4"
+            /*
+                `noValidate` — `docs/47` Kural 5(b), `forms.guard.test.ts`.
+                Konu ve mesaj alanları `required` taşır; onlarsız tarayıcı
+                kendi baloncuğunu gösterir, `submit` olayı hiç oluşmaz ve
+                aşağıdaki işleyici çalışmaz. O baloncuk bizim kataloğumuzdan
+                değil tarayıcının dilinden gelir ve odağı biz taşıyamayız.
+                Doğrulama `canSubmit` ile bizde: eksik alanda gönder düğmesi
+                pasif, sunucu reddederse cümleyi biz yazarız.
+            */
+            noValidate
             onSubmit={(event) => {
                 event.preventDefault();
                 void handleSubmit();

@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SupportPage } from './SupportPage';
 import supportSection from './SupportPage.section';
+import { SECTION_DESCRIPTORS } from '../shell/WorkspaceSectionRegistry';
 import type { SupportApi, SupportRequestRow } from './support/supportApi';
 
 /**
@@ -238,11 +239,47 @@ describe('destek ekranı', () => {
         expect(String(postCall?.[1]?.body)).not.toContain('mehmet@');
     });
 
-    it('SUPPORT-PAGE-SECTION-01: bölüm kaydı yönetim iznini ve yardımcı grubu taşır', () => {
+    /*
+        Grup `management` — `utility` DEĞİL. FF-84 Ayarlar'ı kenar
+        çubuğundan kaldırıp `utility` grubunu boşalttı; başlığının İngilizce
+        karşılığı hâlâ "Settings". Destek oraya konunca sahibin kaldırdığı
+        başlık tek maddeyle geri geliyordu. Destek zaten bir yönetim
+        kanalıdır (`docs/125` §4) ve izni Şubeler/Ekip ile aynı.
+    */
+    it('SUPPORT-PAGE-SECTION-01: bölüm kaydı yönetim iznini ve yönetim grubunu taşır', () => {
         expect(supportSection.key).toBe('support');
         expect(supportSection.path).toBe('support');
         expect(supportSection.permission).toBe('workspace.manage');
-        expect(supportSection.group).toBe('utility');
+        expect(supportSection.group).toBe('management');
         expect(supportSection.labelKey).toBe('workspace.support.title');
+    });
+
+    /*
+        SUPPORT-PAGE-SECTION-02 — YERLEŞTİRME KARARI DONDURULUR.
+
+        Kayıt defteri zaten çakışan `order` değerini gürültüyle reddediyor;
+        bu test onun yerine geçmez, KARARI tutar: Destek her gün gidilen bir
+        yer değil, tıkanınca gidilen yerdir; kayıtta ve Yönetim bloğunun
+        içinde EN SONDA durur.
+
+        Sayı yazılmaz (14 bugünün değeridir, yarın bölüm eklenir). Sınanan
+        şey ilişkidir: kayıttaki her bölümün sırası Destek'inkinden küçük.
+        Böylece biri Destek'i günlük ekranların arasına taşıdığında kapı
+        kırılır ve karar yeniden konuşulur.
+    */
+    it('SUPPORT-PAGE-SECTION-02: destek kayıtta en sonda durur', () => {
+        const others = SECTION_DESCRIPTORS.filter((descriptor) => descriptor.key !== 'support');
+
+        expect(others.length).toBeGreaterThan(5);
+
+        const misplaced = others
+            .filter((descriptor) => descriptor.order >= supportSection.order)
+            .map((descriptor) => `${descriptor.key}: ${descriptor.order}`);
+
+        expect(
+            misplaced,
+            'Destek kayıtta en sonda durmalı: günlük operasyon değil, tıkanınca ' +
+                'gidilen yer (docs/125 §4).',
+        ).toEqual([]);
     });
 });

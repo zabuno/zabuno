@@ -90,8 +90,17 @@ panel cümlesi bire bir aynı olmak zorunda.
 
 `resources/js/components/workspace/pages/SupportPage.section.tsx` —
 `WorkspaceApp.tsx`'e dokunmadan kaydolur (kayıt defteri `*.section.tsx`
-dosyalarını toplar). `utility` grubunda, Ayarlar'ın yanında; ikon Phosphor
+dosyalarını toplar). Kenar çubuğunda **Yönetim** (`management`) grubunda,
+Şubeler/Medya/Ekip'ten sonra (kayıt sırası 14, kaydın sonu); ikon Phosphor
 `Lifebuoy`.
+
+Grup önce `utility` yazılmıştı ("Ayarlar'ın yanı"). O gerekçe main'de yok:
+FF-84 Ayarlar'ı kenar çubuğundan hesap menüsüne taşıyıp `utility` grubunu
+boşalttı, ama grubun İngilizce başlığı hâlâ "Settings". Destek oraya
+konduğunda kenar çubuğu sahibin kaldırdığı başlığı tek maddeyle geri
+getiriyordu (`WorkspaceApp.shell.test.tsx` bunu ölçtü). Destek zaten bir
+yönetim kanalıdır ve izni Şubeler ile Ekip'inkiyle aynı — Yönetim grubu hem
+doğru yer hem de dar ekranda bir satır başlık kazandırmaz.
 
 **Yetki `workspace.manage`** — sahip ve yönetici. Karar gerekçesi: destek bir
 yönetim kanalıdır (plan, fatura, hesap) ve editörün göreceği bir liste sahibin
@@ -171,7 +180,8 @@ cevap yazma yüzeyi yoktur.
 | `SupportReferenceTest` (4) | Alfabe; çarpışmada yeni numara; tükenince gürültü; 23000 ve 23505 |
 | `SupportDeploymentContractTest` (2) | İki değişken konteynere `${...}` ile geçer; örnek dosyalarda ad var, değer yok |
 | `ModularApiRouteRegistrationTest` | Dört yeni imza ve `routes/api/support.php` |
-| `SupportPage.test.tsx` (7) | Liste, taahhüt yalnız sunucudan, gönderim ve yeniden okuma, üç sonuç cümlesi, varsayılan istemcinin adresleri, bölüm kaydı |
+| `SupportPage.test.tsx` (8) | Liste, taahhüt yalnız sunucudan, gönderim ve yeniden okuma, üç sonuç cümlesi, varsayılan istemcinin adresleri, bölüm kaydı (izin + Yönetim grubu), bölümün kayıtta en sonda durması |
+| `forms.guard.test.ts` | Talep formu `noValidate` taşır: tarayıcının kendi baloncuğu `submit` olayını yutmaz (`docs/47` Kural 5b) |
 | `scripts/mobile-ux-audit` | Üç hikâye kökü (`SupportPage` 4, `SupportRequestForm` 3, `SupportRequestList` 4), 320×568 gerçek Chrome: 11/11 hikâye ölçüldü, bulgu sıfır; kullanılabilir genişlik sayfa 288/320, kart 270/320 (eşik 230). Ölçüm, aynı makinede eşzamanlı ikinci bir denetim 9355 portunu tuttuğu için ayrı portta ve 2 sn bekleme ile alındı — betiğin 450 ms'lik beklemesi yük altında hikâyeyi çizilmeden ölçüyor ve boş ölçümü "sorun yok" diye raporluyor; bu, aracın kendi açık borcudur (`docs/117` §0 ile aynı aile) |
 
 ## 9. Ürün iddiası
