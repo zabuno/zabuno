@@ -58,3 +58,20 @@ export const RightToLeft: Story = {
     args: { rows: DAYS.map((label, index) => day(label, 13, 10 + index * 8)) },
     parameters: { direction: 'rtl' },
 };
+
+/**
+ * DAR SÜTUNDA (`docs/117` M8): ızgara hücre tabanının altına küçülmez,
+ * KENDİ kabında kayar; belge kaymaz. Kaydırılabilirlik üzerine gelmeye
+ * değil kenardaki solmaya bağlıdır — parmak da görür. Gün adları yerinde
+ * kalır.
+ */
+export const InNarrowColumn: Story = {
+    args: { rows: DAYS.map((label, index) => day(label, 13, 10 + index * 8)) },
+    decorators: [
+        (Story) => (
+            <div className="max-w-[12rem]">
+                <Story />
+            </div>
+        ),
+    ],
+};

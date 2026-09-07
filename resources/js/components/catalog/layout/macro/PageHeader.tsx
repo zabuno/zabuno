@@ -25,10 +25,21 @@ export function PageHeader({
     actions,
     className,
 }: PageHeaderProps) {
+    /*
+        DİKEY RİTİM ÖLÜ ALAN ÖLÇEĞİNDEN — `docs/117` M9.
+
+        Başlık bloğunun aralıkları sabit bir adımdı (`gap-3`, 12px) ve her
+        genişlikte aynıydı: dar ekranda taban, kırpılmış masaüstüydü. Aralık
+        artık ölü alan ölçeğini okur ve dar ekranda daralır; `min()` tavanı
+        bugünkü değerde tutar, yani masaüstü görünümü değişmez. Yazı boyu
+        ve hedefler değişmez — küçülen tek şey satırlar arasındaki boşluk.
+    */
+    const rhythm = 'gap-[min(var(--space-3),var(--space-fluid-sm))]';
+
     return (
-        <div className={clsx('flex flex-col gap-3', className)}>
+        <div className={clsx('flex flex-col', rhythm, className)}>
             {breadcrumbs ? <Breadcrumbs items={breadcrumbs} /> : null}
-            <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className={clsx('flex flex-wrap items-start justify-between', rhythm)}>
                 <div className="flex flex-col gap-1">
                     {/*
                         Sayfa başlığı 700 ve SIKI harf aralığı (FF-131):
