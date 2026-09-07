@@ -1,5 +1,7 @@
 # Page Composition
 
+contexts: belirsiz: sayfa blokları Content bağlamının içinde (Domain/Content/Block); ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

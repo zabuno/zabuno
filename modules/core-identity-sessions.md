@@ -1,5 +1,7 @@
 # CORE-01 — Identity & Sessions
 
+contexts: Identity
+
 **Bounded runtime durumu: S1-WP02A'nın dar dikey dilimi (register→
 verification-pending→signed/expiring email verification→authenticated
 cookie session→logout) yerel çalıştırılabilir bir implementation

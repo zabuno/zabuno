@@ -1,5 +1,7 @@
 # CORE-16 — Legal Records
 
+contexts: belirsiz: yasal saklama (legal hold) Media bağlamının içinde; yasal kayıtların ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

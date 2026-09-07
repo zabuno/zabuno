@@ -164,12 +164,100 @@ msgstr ""
 msgid "engineering.modules.heading"
 msgstr ""
 
+#: platform:engineering.modules.legend.title
+msgid "engineering.modules.legend.title"
+msgstr ""
+
 #: platform:engineering.modules.loading
 msgid "engineering.modules.loading"
 msgstr ""
 
 #: platform:engineering.modules.nav.label
 msgid "engineering.modules.nav.label"
+msgstr ""
+
+#: platform:engineering.modules.obs.directories
+msgid "engineering.modules.obs.directories"
+msgstr ""
+
+#: platform:engineering.modules.obs.noContext
+msgid "engineering.modules.obs.noContext"
+msgstr ""
+
+#: platform:engineering.modules.obs.routeFiles
+msgid "engineering.modules.obs.routeFiles"
+msgstr ""
+
+#: platform:engineering.modules.obs.tables
+msgid "engineering.modules.obs.tables"
+msgstr ""
+
+#: platform:engineering.modules.obs.tests
+msgid "engineering.modules.obs.tests"
+msgstr ""
+
+#: platform:engineering.modules.specs.about
+msgid "engineering.modules.specs.about"
+msgstr ""
+
+#: platform:engineering.modules.specs.claim
+msgid "engineering.modules.specs.claim"
+msgstr ""
+
+#: platform:engineering.modules.specs.empty
+msgid "engineering.modules.specs.empty"
+msgstr ""
+
+#: platform:engineering.modules.specs.source
+msgid "engineering.modules.specs.source"
+msgstr ""
+
+#: platform:engineering.modules.specs.title
+msgid "engineering.modules.specs.title"
+msgstr ""
+
+#: platform:engineering.modules.status.definitionOnly
+msgid "engineering.modules.status.definitionOnly"
+msgstr ""
+
+#: platform:engineering.modules.status.definitionOnly.means
+msgid "engineering.modules.status.definitionOnly.means"
+msgstr ""
+
+#: platform:engineering.modules.status.implemented
+msgid "engineering.modules.status.implemented"
+msgstr ""
+
+#: platform:engineering.modules.status.implemented.means
+msgid "engineering.modules.status.implemented.means"
+msgstr ""
+
+#: platform:engineering.modules.status.partial
+msgid "engineering.modules.status.partial"
+msgstr ""
+
+#: platform:engineering.modules.status.partial.means
+msgid "engineering.modules.status.partial.means"
+msgstr ""
+
+#: platform:engineering.modules.status.unknown
+msgid "engineering.modules.status.unknown"
+msgstr ""
+
+#: platform:engineering.modules.status.unknown.means
+msgid "engineering.modules.status.unknown.means"
+msgstr ""
+
+#: platform:engineering.modules.unmapped.about
+msgid "engineering.modules.unmapped.about"
+msgstr ""
+
+#: platform:engineering.modules.unmapped.empty
+msgid "engineering.modules.unmapped.empty"
+msgstr ""
+
+#: platform:engineering.modules.unmapped.title
+msgid "engineering.modules.unmapped.title"
 msgstr ""
 
 #: platform:engineering.shell.brand

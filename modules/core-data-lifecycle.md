@@ -1,5 +1,7 @@
 # CORE-15 — Data Lifecycle
 
+contexts: belirsiz: yedekleme/geri yükleme kanıtı Security bağlamında; saklama, anonimleştirme ve dışa aktarma için ayrı bir dizin yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

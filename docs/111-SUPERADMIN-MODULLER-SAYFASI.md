@@ -1,14 +1,16 @@
 # 111 — Superadmin "Modüller" sayfası planı
 
 > **BU BELGE BİR PLANDIR. §7'nin 1. ve 2. adımı UYGULANDI (FF-168);
-> 3, 4 ve 5 hâlâ yalnız karardır.**
+> 3. ve 4. adımı UYGULANDI (FF-210); 5 hâlâ yalnız karardır.**
 >
-> Bugün kodda karşılığı olan: `GET /api/admin/modules` (yalnız 16 CORE,
-> `EnsurePlatformSuperAdmin` arkasında) ve `/engineering/modules` ekranı.
-> Kodda karşılığı OLMAYAN, ve bilerek olmayan: durum rozeti ve kod-karşılığı
-> türetmesi (§4.1, adım 3), `modules/` eşlemesi (§4.2, adım 4), modül
-> açma/kapama (§5, adım 5). Sayfa salt okunurdur ve hiçbir anahtar
-> çizmez.
+> Bugün kodda karşılığı olan: `GET /api/admin/modules`
+> (`EnsurePlatformSuperAdmin` arkasında) ve `/engineering/modules` ekranı;
+> uç artık 16 CORE kaydına ek olarak 62 modül tanımının **ölçülmüş** kod
+> karşılığını ve tanımı olmayan kod bağlamlarını da taşıyor.
+>
+> Kodda karşılığı OLMAYAN, ve bilerek olmayan: modül açma/kapama (§5, adım
+> 5). Sayfa salt okunurdur, hiçbir anahtar çizmez ve uçta tek bir yazma
+> yolu yoktur.
 >
 > Bu kutu, üstündeki cümle yanlışa döndüğü için değiştirildi — `docs/109`
 > §8.7'nin kusur ailesi tam olarak budur: *cümle bir zamanlar doğruydu,
@@ -29,10 +31,14 @@ içinde karşılığı ve mümkünse bir test adı bulundu.
 
 Sahibin sorusu tek cümleydi: **"Mevcutta hangi modüller var?"**
 
-Bu soru bugün cevaplanamıyor. Depoda 62 modül tanımı duruyor
-(`modules/*.md`) ve **62'sinin de ilk satırında aynı cümle yazıyor:**
+Bu soru 2026-09-05'te cevaplanamıyordu. Depoda 62 modül tanımı duruyordu
+(`modules/*.md`) ve **62'sinin de ilk satırında aynı cümle yazıyordu:**
 
 > **PLANNING ONLY. Şu an çalıştırılamaz.**
+
+*(O durum satırı sonradan bütün tanım dosyalarından kaldırıldı; aşağıdaki
+teşhis, satırın neden kaldırıldığının kaydıdır. FF-210 ile aynı dosyalara,
+durumun YERİNE, ölçülebilir bir adres kondu — §4.2.)*
 
 `modules/menu-catalog.md` de bunu yazıyor. Oysa menü kataloğu bu ürünün
 en yoğun bağlamı: 9 domain sınıfı, 23 uygulama sınıfı, kendi rota
@@ -226,6 +232,25 @@ Rozetin yanında **her zaman** onu üreten gözlem yazılır: "3 dizin ·
 denetlenebilir yapar. `docs/109` §8.7'nin beş örneğinin ortak noktası,
 iddiaya eşlik eden ölçümün gösterilmemiş olmasıydı.
 
+**UYGULANDI (FF-210) — ve rozet ne İDDİA ETMEDİĞİNİ de yazıyor.** Ekranda,
+rozet efsanesinin hemen yanında duran cümle şudur: *"kod karşılığı var" ile
+"üretimde çalışıyor" aynı şey değildir.* Bu sayfa çalışan bir kurulumu
+sondalamaz; kod karşılığı olan bir modül yapılandırılmamış, dağıtılmamış ya
+da erişilemez olabilir. Sağlık rozeti hâlâ çizilmiyor (§6) ve durum rozeti
+onun yerine geçmiyor.
+
+Türetmenin girdisi ve eşiği tek yerde yazılı
+(`App\Domain\Modules\ModuleCodePresence`) ve testle donuyor
+(`Tests\Unit\Domain\Modules\ModuleCodePresenceTest`): bugün eşik
+"bir dizin, bir yüzey, bir test"tir; yarın biri onu değiştirirse test kırılır
+ve karar konuşulur.
+
+**"Verisi var mı" nasıl ölçülüyor.** Migration'ı dosya ADINDAN eşleştirmek
+kolay olurdu ve yanlış olurdu — `create_workspaces_and_workspace_memberships_tables`
+hangi bağlamındır? Köprü **tablo adıdır**: bağlamın kodu `table('x')` diyorsa
+ve bir migration `Schema::create('x')` yaptıysa, o veri o bağlamındır ve
+kanıtı gösterilebilir. Kesişim yoksa hücre boş kalır.
+
 ### 4.2 İki isim uzayı — ve neden elle eşlenmez
 
 `modules/` dosya adları (`menu-catalog`, `qr-print-export`) ile `app/`
@@ -245,10 +270,41 @@ var:
   bu alanın bulunduğunu ya da açıkça "kod karşılığı yok" dediğini
   doğrular.
 
-**Karar: B.** Ama bu, bu paketin işi değil — B, `modules/` klasörünün
-62 dosyasına dokunmayı gerektirir ve o ayrı bir yazardır. Sayfa B'siz
-başlar ve eşleşmeyeni **"belirsiz"** gösterir. Belirsiz bir satır
-dürüsttür; yanlış eşlenmiş bir satır değildir.
+**Karar: B. UYGULANDI (FF-210).** 62 dosyanın 62'sine tek satırlık bir
+`contexts:` alanı eklendi ve alan üç şekilden birini alıyor — çünkü üç
+gerçek durum var:
+
+| Beyan | Ne demek | Rozet |
+| --- | --- | --- |
+| `contexts: MenuCatalog, Taxonomy` | Modül bu bağlamlara SAHİPTİR; ölçüm oradan yapılır | ölçüme göre |
+| `contexts: yok` | Kod karşılığı yoktur — bu bir ölçümdür, tahmin değil | yalnız tanım |
+| `contexts: belirsiz: <sebep>` | Bağlam ayrıntısında ölçülemez | belirsiz |
+
+Üçüncü şekil, eşlemenin en çok yanılma payı taşıyan yerine verilmiş cevaptır:
+`opt-11-scheduled-publishing` gibi bir modül `Publication` bağlamının
+**içinde** bir dilimdir ve kendi dizini yoktur. Onu `Publication` ile
+eşleştirmek, o bağlamın bütün kanıtını (dizinler, rotalar, tablolar, 12 test)
+dilime mal etmek olurdu — ekranda "uygulanmış" yazardı ve bu, hiç ölçülmemiş
+bir şey hakkında verilmiş bir söz olurdu. Sebep ZORUNLUDUR: gerekçesiz bir
+"belirsiz", sessizce "yok" demenin kibar biçimidir.
+
+Testler (`Tests\Unit\Modules\ModuleSpecMappingTest`) üçünü de donduruyor:
+her tanımda tam olarak bir `contexts:` satırı vardır, beyan edilen her bağlam
+adının `app/` altında gerçekten bir dizini vardır, ve her "belirsiz" sebebini
+yazar. Yazım hatası ya da bayatlamış bir isim artık sessizce bir modülü yok
+saymaz — test kırılır.
+
+**Eşlemenin ikinci yarısı da ayrı çizilir:** `app/` altında bir dizini olan
+ama hiçbir tanımın sahiplenmediği bağlamlar kendi listesinde durur
+(`unmappedContexts`). "Bu tanımın kodu var mı" ile "bu kodun tanımı var mı"
+aynı soru değildir; ikisini tek listede toplamak ikisini de okunamaz yapardı.
+
+2026-09-07 ölçümü: 62 tanımın **13'ü uygulanmış**, **7'si kısmen**,
+**20'si yalnız tanım**, **22'si belirsiz**; tanımı olmayan altı kod bağlamı
+sayıldı (`Persistence`, `Rating`, `Reference`, `Security`, `Team`, `Url`).
+Bu sayılar o günün ölçümüdür ve ekranda her istekte yeniden ölçülür — burada
+tekrar edilmesinin tek sebebi, sayının bir kez bile bakılmış olduğunu
+kaydetmektir.
 
 ---
 
@@ -372,27 +428,33 @@ bir giriş. Bölüm adresten gelir. Neden ikinci: uç olmadan ekranın
 gösterecek verisi olmaz, ve uydurma veriyle çizilen bir ekran sonra
 gerçek veriye uydurulmaz — baştan yeniden yazılır.
 
-**3. Kod-karşılığı türetmesi. — YAPILMADI.**
-Bağlam dizini, rota, migration ve test gözlemleri (§3.3) uca eklenir;
-durum rozeti (§4.1) bunlardan türetilir. Neden üçüncü: bu, sayfanın asıl
-cevabıdır ama en çok yanılma payı taşıyan parçadır. Kanıt gözlemi rozetle
-**aynı anda** çizilir, sonradan eklenmez.
+**3. Kod-karşılığı türetmesi. — UYGULANDI (FF-210).**
+Bağlam dizini, rota, tablo ve test gözlemleri (§3.3) uca eklendi; durum
+rozeti (§4.1) bunlardan türetiliyor ve gözlem rozetle **aynı hücrede**
+üretiliyor — iki ayrı yerde çizilen iki şey er ya da geç ayrışır.
 
-FF-168'de yapılmadı ve sebebi 4. adımdır, zaman değil: adım 1'in kapsamı
-16 CORE koduyken, bir CORE kodunun hangi `app/` bağlamına karşılık geldiği
-depoda **hiçbir yerde yazılı değil** (§4.2'nin iki isim uzayı). O eşleme
-olmadan türetilecek rozetin 16'da 16'sı "belirsiz" çıkardı; eşlemeyi ekran
-koduna gömmek ise §4.2'nin açıkça REDDETTİĞİ A seçeneğidir. Yani 3, 4'ün
-arkasındadır ve sıra §7'de yazıldığından farklıdır. Bugünkü ekran bu
-yüzden hiç rozet çizmez — belirsiz bir rozet de bir iddiadır.
+FF-168'de yapılmamıştı ve sebebi 4. adımdı, zaman değil: bir modülün hangi
+`app/` bağlamına karşılık geldiği depoda hiçbir yerde yazılı değildi
+(§4.2'nin iki isim uzayı). Bu yüzden bu pakette **4 önce, 3 sonra** yapıldı
+ve sıra §7'de yazıldığından farklıdır. Eşlemeyi ekran koduna gömmek —
+§4.2'nin açıkça REDDETTİĞİ A seçeneği — hiçbir aşamada denenmedi.
 
-**4. `modules/` eşlemesi — ayrı yazar, ayrı paket.**
-62 dosyaya `contexts:` alanı ve onu doğrulayan test (§4.2 B). Neden en
-son: `modules/` klasörüne dokunmak bu paketin kapsamı dışıdır ve tek
-writer kuralı gereği ayrı bir pakettir. Bu adım gelene kadar eşleşmeyen
-her satır **"belirsiz"** kalır.
+Kod: `App\Domain\Modules\{ModuleCodeEvidence, ModuleCodePresence,
+ModuleContextDeclaration}` (çerçevesiz, ADR-L02),
+`App\Infrastructure\Modules\RepositoryModuleInventory` (tek okuyucu),
+`resources/js/components/admin/pages/ModuleInventory.tsx` (tek çizici).
+Testler: `ModuleCodePresenceTest` (eşik ve doğruluk tablosu),
+`RepositoryModuleInventoryTest` (sahte depo üzerinde ölçüm kuralı),
+`CoreModuleInventoryApiTest` (uçta rozet gözlemsiz taşınamaz).
 
-**5. Modül yaşam döngüsü — bu planın kapsamında DEĞİL.**
+**4. `modules/` eşlemesi. — UYGULANDI (FF-210).**
+62 dosyanın 62'sine `contexts:` alanı ve onu doğrulayan test eklendi
+(§4.2 B). Alanın taşıdığı şey bir ADRESTİR, bir durum değil; dosyaların geri
+kalanı hâlâ okunmaz ve tek okuyucu `RepositoryModuleInventory`'dir.
+Eşleşmeyen tanımlar ile tanımı olmayan kod bağlamları ekranda **ayrı ayrı**
+listelenir.
+
+**5. Modül yaşam döngüsü — YALNIZ KARAR; bu planın kapsamında DEĞİL.**
 Global açma/kapama (§5.4) ayrı bir karar, ayrı bir tasarım ve ayrı bir
 veri modelidir. Buraya yalnız sırayı işaretlemek için yazıldı: 1–4
 bitmeden 5 başlamaz, çünkü neyin kapatılabileceğini bilmeden anahtar

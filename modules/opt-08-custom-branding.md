@@ -1,5 +1,7 @@
 # OPT-08 — Custom Branding
 
+contexts: belirsiz: marka rengi ve logosu Branding ile Tenancy bağlamlarına dağılmış; ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

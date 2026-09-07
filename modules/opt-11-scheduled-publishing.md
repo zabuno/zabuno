@@ -1,5 +1,7 @@
 # OPT-11 — Scheduled Publishing
 
+contexts: belirsiz: Publication bağlamının içinde bir dilim; ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

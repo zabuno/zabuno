@@ -1,5 +1,7 @@
 # CORE-04 — Entitlements & Usage Metering
 
+contexts: Entitlement
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu

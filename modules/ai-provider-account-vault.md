@@ -1,5 +1,7 @@
 # AI Provider Account Vault
 
+contexts: belirsiz: sağlayıcı kasası Platform bağlamının içinde (Domain/Platform/Credential); ayrı bir dizini yok
+
 > **DURUM BURADA YAZMAZ — KOD SÖYLER.**
 >
 > Bu satırda bir zamanlar "PLANNING ONLY. Şu an çalıştırılamaz." yazıyordu
