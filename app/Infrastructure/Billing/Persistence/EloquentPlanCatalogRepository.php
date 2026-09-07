@@ -22,6 +22,13 @@ final class EloquentPlanCatalogRepository implements PlanCatalogRepositoryPort
         return $rows->map(fn (object $row): PlanSummary => $this->toSummary($row))->all();
     }
 
+    public function findPlan(int $planId): ?PlanSummary
+    {
+        $row = DB::table('plans')->where('id', $planId)->first();
+
+        return $row === null ? null : $this->toSummary($row);
+    }
+
     private function toSummary(object $row): PlanSummary
     {
         $id = (int) $row->id;

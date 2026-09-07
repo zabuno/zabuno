@@ -198,13 +198,16 @@ describe('BillingPage — S1-WP01A tenant Current plan / subscription (BILLING_S
             expect(within(currentPlanRegion()).getByText('Growth')).toBeInTheDocument();
         });
 
-        // Two independent production consumers (CurrentSubscriptionStatus and
-        // IyzicoSandboxCheckout) each fetch the subscription on initial mount,
-        // then the Current-plan Retry click adds exactly one more request.
+        // ÜÇ bağımsız üretim tüketicisi aboneliği ilk kurulumda okur —
+        // CurrentSubscriptionStatus, IyzicoSandboxCheckout ve (FF-219'dan
+        // beri) SubscriptionLifecycle — sonra Current-plan Retry tıklaması
+        // TAM OLARAK bir istek daha ekler. Ölçülen asıl şey ikinci
+        // satırdır: sayı tüketici sayısını izler, katılık ise "Retry bir
+        // tane ekler" iddiasındadır.
         const subscriptionCalls = fetchSpy.mock.calls.filter(
             ([calledUrl]) => String(calledUrl) === SUBSCRIPTION_ENDPOINT,
         );
-        expect(subscriptionCalls.length).toBe(3);
+        expect(subscriptionCalls.length).toBe(4);
         expect(subscriptionCalls.length - subscriptionCallsBeforeRetry).toBe(1);
     });
 

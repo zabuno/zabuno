@@ -2,16 +2,21 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Billing\DestroyPlanChangeController;
+use App\Http\Controllers\Billing\DestroySubscriptionCancellationController;
 use App\Http\Controllers\Billing\DownloadInvoiceDocumentController;
 use App\Http\Controllers\Billing\ListInvoicesController;
 use App\Http\Controllers\Billing\ListPlansController;
 use App\Http\Controllers\Billing\ShowBillingProfileController;
 use App\Http\Controllers\Billing\ShowCheckoutStatusController;
 use App\Http\Controllers\Billing\ShowIyzicoSandboxSessionController;
+use App\Http\Controllers\Billing\ShowPlanChangeController;
 use App\Http\Controllers\Billing\ShowSubscriptionController;
 use App\Http\Controllers\Billing\StoreBillingProfileController;
 use App\Http\Controllers\Billing\StoreCheckoutController;
 use App\Http\Controllers\Billing\StoreIyzicoSandboxSessionController;
+use App\Http\Controllers\Billing\StorePlanChangeController;
+use App\Http\Controllers\Billing\StoreSubscriptionCancellationController;
 use App\Http\Controllers\Entitlement\ShowWorkspaceEntitlementsController;
 use App\Http\Controllers\Ledger\ShowWorkspaceLedgerController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +25,31 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/workspaces/{workspace}/entitlements', ShowWorkspaceEntitlementsController::class);
     Route::get('/workspaces/{workspace}/plans', ListPlansController::class);
     Route::get('/workspaces/{workspace}/subscription', ShowSubscriptionController::class);
+
+    /*
+        ABONELİĞİN EKSİK YARISI (docs/107 Faz 1.3, docs/134).
+
+        İptal SAKLANMAZ ve zorlaştırılmaz: uzaktan satışta çıkış yolunun
+        girişten daha zor olması, tüketici hukukunun tam olarak hoşlanmadığı
+        şeydir. Ama tek tıkla da olmaz — panel önce ne olacağını yazar.
+
+        İptal ve cayma AYNI KAYNAĞIN iki yönüdür (POST/DELETE .../cancellation);
+        plan değişikliği de öyle. Yükseltmenin yolu burası DEĞİL, ödemedir:
+        düşürme uçları yükseltmeyi 422 `not_a_downgrade` ile geri çevirir.
+
+        Hız sınırı iade/ödeme uçlarından GEVŞEKTİR ve olmalıdır: bu uçlar
+        sağlayıcıya gitmez, yalnız kendi satırımızı günceller — sıkı bir
+        sınır, fikrini değiştiren sahibi kapının dışında bırakırdı.
+    */
+    Route::post('/workspaces/{workspace}/subscription/cancellation', StoreSubscriptionCancellationController::class)
+        ->middleware('throttle:20,1');
+    Route::delete('/workspaces/{workspace}/subscription/cancellation', DestroySubscriptionCancellationController::class)
+        ->middleware('throttle:20,1');
+    Route::get('/workspaces/{workspace}/subscription/plan-change', ShowPlanChangeController::class);
+    Route::post('/workspaces/{workspace}/subscription/plan-change', StorePlanChangeController::class)
+        ->middleware('throttle:20,1');
+    Route::delete('/workspaces/{workspace}/subscription/plan-change', DestroyPlanChangeController::class)
+        ->middleware('throttle:20,1');
     Route::get('/workspaces/{workspace}/ledger', ShowWorkspaceLedgerController::class);
 
     Route::get('/workspaces/{workspace}/iyzico-sandbox/session', ShowIyzicoSandboxSessionController::class);
