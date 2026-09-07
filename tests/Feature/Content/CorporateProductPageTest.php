@@ -252,6 +252,69 @@ final class CorporateProductPageTest extends TestCase
         self::assertStringNotContainsString('SoftwareApplication', $html);
     }
 
+    public function test_a_sub_page_walks_its_breadcrumb_through_the_hub_and_links_only_published_steps(): void
+    {
+        /*
+            DALGA 3 — FF-203: ilk üç kademeli sayfa. Kırıntı üç basamak
+            çizer (genel bakış / menü yönetimi / stok durumu); yayınlanmış
+            olan tek ata bağlantı alır, yayınlanmamış olan adıyla durur.
+            Ata etiketleri KÜTÜKTEN değil içerik katmanından gelir — genel
+            bakışın içeriği bu dalgada yazıldı ve kırıntı artık onun kendi
+            kısa adını okur.
+        */
+        $this->page('urun', '/en/product/', PagePublicationStatus::Planned, null, 'en', 'Product overview');
+        $this->page('urun.menu-yonetimi', '/en/product/menu-management/', PagePublicationStatus::Published, 'urun');
+        $this->page('urun.menu-yonetimi.stok-durumu', '/en/product/menu-management/stock-status/', PagePublicationStatus::Published, 'urun.menu-yonetimi');
+
+        $response = $this->get('/en/product/menu-management/stock-status/');
+
+        $response->assertStatus(200);
+        $html = (string) $response->getContent();
+
+        self::assertSame(1, substr_count($html, '<h1'));
+        self::assertStringContainsString('>Stock status</h1>', $html);
+
+        // Yayınlanmış ata bağlantı alır; yayınlanmamış hub adıyla durur.
+        self::assertStringContainsString('href="/en/product/menu-management"', $html);
+        self::assertStringNotContainsString('href="/en/product"', $html);
+
+        $overview = strpos($html, 'Product overview');
+        $parent = strpos($html, 'Menu management');
+        $self = strpos($html, 'Stock status');
+
+        self::assertIsInt($overview);
+        self::assertIsInt($parent);
+        self::assertIsInt($self);
+        self::assertLessThan($parent, $overview);
+        self::assertLessThan($self, $parent);
+
+        // Alt sayfa da bir ürün sayfasıdır: aynı şema, aynı dürüstlük.
+        self::assertStringContainsString('SoftwareApplication', $html);
+        self::assertStringNotContainsString('aggregateRating', $html);
+    }
+
+    public function test_the_product_overview_links_its_published_children_and_skips_the_rest(): void
+    {
+        /*
+            Genel bakış bir HUB'dır: yazılmış her ürün sayfasına bağlantı
+            taşır, ama süzgeç yine kapıdadır. Yayınlanmış çocuk bağlantı
+            alır; yalnız planlanmış olan ne bağlantı ne satır alır.
+        */
+        $this->page('urun', '/en/product/', PagePublicationStatus::Published, null, 'en', 'Product overview');
+        $this->page('urun.qr-menu', '/en/product/qr-menu/', PagePublicationStatus::Published, 'urun');
+        $this->page('urun.analitik', '/en/product/analytics/', PagePublicationStatus::Planned, 'urun');
+
+        $response = $this->get('/en/product/');
+
+        $response->assertStatus(200);
+        $html = (string) $response->getContent();
+
+        self::assertStringContainsString('>Product overview</h1>', $html);
+        self::assertStringContainsString('href="/en/product/qr-menu"', $html);
+        self::assertStringNotContainsString('/en/product/analytics', $html);
+        self::assertStringContainsString('SoftwareApplication', $html);
+    }
+
     public function test_the_corporate_page_draws_no_icons(): void
     {
         // `docs/118` E6: ikon yasağı KURUMSAL SİTE için korunuyor. Yerine

@@ -74,4 +74,21 @@ return [
     'urun.coklu-sube' => '/en/product/multiple-branches/',
     'cozumler' => '/en/solutions/',
     'fiyatlandirma' => '/en/pricing/',
+
+    /*
+        DALGA 3 (FF-203). Aynı kural: hiçbiri çeviri değil, her biri sayfanın
+        KENDİ İngilizce `breadcrumbTitle` alanından slug'a indirildi —
+        "Design and branding", "Categories", "Dishes", "Prices", "Stock
+        status". `urun` zaten yukarıda; bu dalgada içeriği yazıldı ve adresi
+        değişmedi.
+
+        İlk kez ÜÇ kademeli adresler var: alt sayfa, ebeveyninin adresinin
+        altında durur (`/en/product/menu-management/categories/`), çünkü
+        kırıntı ve kütükteki `parent_key` o hiyerarşiyi zaten böyle kuruyor.
+    */
+    'urun.tasarim-ve-marka' => '/en/product/design-and-branding/',
+    'urun.menu-yonetimi.kategoriler' => '/en/product/menu-management/categories/',
+    'urun.menu-yonetimi.urunler' => '/en/product/menu-management/dishes/',
+    'urun.menu-yonetimi.urun-fiyatlari' => '/en/product/menu-management/prices/',
+    'urun.menu-yonetimi.stok-durumu' => '/en/product/menu-management/stock-status/',
 ];
