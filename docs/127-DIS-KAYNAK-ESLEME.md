@@ -1,5 +1,7 @@
 # 127 — Dış kaynak eşlemesi: hangi restoran bizim restoranımız?
 
+**Uygulama commit'i:** `5a0ea4f`.
+
 **Kapsam:** `docs/116` §6 P7 — `external_references` tablosu ve eşleme
 onayı. `docs/116` §1 Ö4 ile §5 D4 kararlarının uygulaması.
 

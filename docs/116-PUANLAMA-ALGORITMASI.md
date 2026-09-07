@@ -169,7 +169,7 @@ da taşıyabilir.
 | P4 | Misafir oy verme ucu (karekod bağlamı şart) + kötüye kullanım | Ö1 ve §4 |
 | P5 | Gösterim (eşikle) — misafir ve panel | Eşik altında çizilmez |
 | P6 | Sahip yanıtı | Silme yok |
-| P7 | `external_references` + eşleme onayı | Dış kaynaktan ÖNCE |
+| P7 | `external_references` + eşleme onayı | Dış kaynaktan ÖNCE — **uygulandı** (commit `5a0ea4f`), kararlar: [docs/127](127-DIS-KAYNAK-ESLEME.md) |
 | P8 | İlk dış adaptör (resmî API'si olan) | D2 |
 
 **P2 P4'ten önce gelir ve bu kasıtlı:** ilk oy toplanmadan kuralın yazılı
