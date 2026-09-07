@@ -15,6 +15,14 @@ storage/framework/views/*
 public/build
 tests
 docs
+# ...ama site haritası girdisi bir BELGE DEĞİL, bir VERİ GİRDİSİDİR: sayfa
+# kütüğü (`php artisan site:import-map`) üretimde bu dosyadan üretilir ve
+# giriş betiği onu her dağıtımda okur (`docs/128`). Dizin elenmeye devam
+# eder; yalnız bu dosya geri alınır. Satır silinirse komut "site haritası
+# bulunamadı" ile ölür ve konteyner hiç açılmaz — sessiz bir boş kütükten
+# yeğdir. Sıra önemli: Docker'da SON eşleşen desen kazanır, bu yüzden geri
+# alma `docs` elemesinden SONRA gelmek zorunda.
+!docs/106-SITE-MAP-INPUT.md
 .env
 .env.*
 *.sqlite

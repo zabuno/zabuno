@@ -42,6 +42,34 @@ php artisan migrate --force
 log "plan kataloğu tohumlanıyor"
 php artisan db:seed --class=Database\\Seeders\\PlanCatalogueSeeder --force
 
+# Sayfa kütüğü de ŞEMA DEĞİL VERİDİR — `docs/128`.
+#
+# Kurumsal sitenin her adresi `content_pages` tablosunda bir satırdır ve
+# `ShowCorporatePageController` kütükte olmayan bir yola 404 verir. Bu satır
+# yazılana kadar kütüğü ÜRETİMDE dolduran hiçbir adım yoktu: komut depoda
+# vardı, testleri de vardı, ama onu çalıştıran tek yer testlerdi. Sonucu,
+# plan kataloğuyla aynı sınıftan bir kusurdu — dağıtım yeşil, konteyner
+# ayakta, ve yazılmış kurumsal sayfaların hiçbiri açılamıyor.
+#
+# Çalıştırması güvenli ve TEKRARLANABİLİR: komut yıkıcı değildir, var olan
+# bir kaydı çoğaltmaz, ve bir insanın verdiği yayın kararına DOKUNMAZ —
+# yayın durumu, yayın tarihi ve geçmiş korunur. Yalnız kütükte olmayan
+# yolları `planned` olarak ekler ve belgeden gelen alanları tazeler.
+# (`ImportSiteMapCommand`, `ImportSiteMapCommandTest`.)
+#
+# Yayın durumunu İLERLETEN komut (`site:sync-content-status`) buraya
+# BİLEREK konmadı. Kalite kapısı insanların işidir; bir betiğin her
+# dağıtımda geçtiği kapı, kapı değildir. Dağıtım kütüğü DOLDURUR, karar
+# vermez.
+#
+# Kaynak belge imajın içindedir: `.dockerignore` `docs` dizinini eler ama
+# bu tek dosyayı geri alır. Geri alma bir gün silinirse komut dosyayı
+# bulamaz ve BAŞARISIZ olur — `set -e` gereği konteyner hiç açılmaz ve
+# sağlık kontrolü deploy'u kırmızıya çeker. Kütüğü dolmamış bir dağıtımın
+# sessizce yeşil görünmesindense açıkça durması yeğdir.
+log "sayfa kütüğü içe aktarılıyor"
+php artisan site:import-map
+
 # Önbellekler migrasyondan SONRA: config ve route önbelleği şemayı değil
 # ama view ve event keşfi kod durumunu dondurur.
 log "önbellekler ısıtılıyor"
