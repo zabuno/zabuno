@@ -151,7 +151,9 @@ final class PublicHomeContractTest extends TestCase
 
             self::assertStringContainsString('<h1', $html);
             self::assertStringContainsString($title, $html);
-            self::assertStringContainsString('pending qualified legal review', $html);
+            // Yer tutucu gitti (FF-198): sayfa gerçek belgeyi ve sürümünü taşır.
+            self::assertStringContainsString('data-legal-document="', $html);
+            self::assertStringContainsString('data-legal-version="', $html);
         }
     }
 }

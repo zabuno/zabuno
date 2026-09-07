@@ -415,3 +415,174 @@
         transform: none;
     }
 }
+
+/* --- Yasal belgeler (FF-198) --------------------------------------------- */
+
+/*
+    OKUNUR SATIR UZUNLUĞU. Bir sözleşme 64 rem genişliğinde okunmaz; kolon
+    44 rem'de durur. Dolgu BİR kez uygulanır (`docs/117` K2): iç bölümler
+    kendi dolgusunu eklemez, 320 pikselde içerik 296 piksel kullanır.
+*/
+.site-legal {
+    width: 100%;
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-inline: var(--space-3);
+    padding-block: var(--space-fluid-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* İnceleme notu: görsel değil geometri — kalın bir başlangıç kenarı. */
+.site-legal-notice {
+    margin: 0;
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-inline-start: 3px solid var(--fg);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    line-height: 1.5;
+}
+
+.site-legal-summary {
+    margin: 0;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+}
+
+.site-legal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding-block: var(--space-2);
+    border-block: 1px solid var(--border);
+}
+
+.site-legal-meta div {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.site-legal-meta dt {
+    margin: 0;
+    color: var(--fg-secondary);
+}
+
+.site-legal-meta dd {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Bölüm listesi: her satır tam genişlikte ve 44 piksel — parmak imleç değil. */
+.site-legal-contents ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.site-legal-contents a {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-height);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    color: var(--fg-secondary);
+}
+
+.site-legal-contents a:hover {
+    background: var(--surface-hover);
+}
+
+.site-legal-contents a:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: -2px;
+}
+
+.site-legal-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    /* Çıpaya atlandığında başlık kenara yapışmaz. */
+    scroll-margin-top: var(--space-5);
+}
+
+.site-legal-section h2 {
+    margin: 0;
+    font-size: var(--text-subsection);
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.site-legal-section p {
+    margin: 0;
+    line-height: 1.65;
+    /* Uzun bir e-posta ya da MERSİS numarası dar ekranda satırı taşırmaz. */
+    overflow-wrap: anywhere;
+}
+
+/* --- Çerez seçim şeridi ve tercih düğmeleri (FF-198) -------------------- */
+
+/*
+    YAPIŞKAN, ALTTA, KOMPAKT. Şerit görüntü alanının altına yapışır; sayfa
+    sonuna gelindiğinde akıştaki yerine oturur. İlk ekranı içerikten önce
+    doldurmaz (`docs/118` E1). Yükseklik düğmelerden gelir: iki satır metin
+    ve bir düğme sırası.
+*/
+.site-consent {
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.site-consent-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+}
+
+.site-consent-body {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--fg-secondary);
+}
+
+.site-consent-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+/* Düğme ve düğme görünümlü bağlantı aynı geometri: 44 piksel, sıkı boşluk. */
+.site-consent-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--control-height);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--fg-secondary);
+    font: inherit;
+    cursor: pointer;
+}
+
+.site-consent-button[data-emphasis='true'] {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+.site-consent-button:hover {
+    background: var(--surface-hover);
+}
+
+.site-consent-button:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}

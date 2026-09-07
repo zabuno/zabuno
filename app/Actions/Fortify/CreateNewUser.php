@@ -23,6 +23,21 @@ final class CreateNewUser implements CreatesNewUsers
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'confirmed', Password::default()],
+            /*
+                SÖZLEŞME ONAYI ZORUNLU (FF-198, `docs/107` Faz 1.2).
+
+                `accepted` örtük bir kuraldır: alan hiç gelmezse de düşer.
+                Aynı doğrulama geçişinde duruyor ki ad, e-posta, parola ve onay
+                hataları TEK yanıtta gelsin — kullanıcı önce parolasını
+                düzeltip sonra bir de onayı öğrenmesin.
+
+                Ticari ileti izni İSTEĞE BAĞLI: yokluğu hata değil, "hayır"
+                da değil — kayıt hiç yazılmaz (`ConsentRecorder`).
+            */
+            'terms_accepted' => ['accepted'],
+            'marketing_consent' => ['sometimes', 'boolean'],
+        ], [
+            'terms_accepted.accepted' => __('auth.terms_required'),
         ])->validate();
 
         $useCase = new RegisterUser(new EloquentUserRepository, new LaravelPasswordHasher);

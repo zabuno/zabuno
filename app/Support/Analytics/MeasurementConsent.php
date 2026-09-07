@@ -99,6 +99,24 @@ final class MeasurementConsent
     }
 
     /**
+     * Çerezde saklanacak değer — `fromRequest` ile AYNI sözlük.
+     *
+     * Yazan uç (`StoreMeasurementConsentController`, FF-198) ile okuyan uç
+     * aynı iki kelimeyi paylaşır; ikisi ayrı yerde yazılsaydı bir gün biri
+     * "accepted" derdi ve kapı sessizce hep kapalı kalırdı. Karar verilmemiş
+     * bir onayın çerez değeri YOKTUR: "sorulmadı"yı çereze yazmak, bir daha
+     * sormamak olurdu.
+     */
+    public function cookieValue(): string
+    {
+        if ($this->granted === null) {
+            throw new \LogicException('An undecided measurement consent has no cookie value.');
+        }
+
+        return $this->granted ? 'granted' : 'denied';
+    }
+
+    /**
      * Konteyner yüklenebilir mi?
      *
      * Yalnız AÇIK bir kabulle. Ret de bir karardır ve konteyneri açmaz —

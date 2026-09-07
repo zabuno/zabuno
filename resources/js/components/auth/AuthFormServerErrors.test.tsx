@@ -67,6 +67,8 @@ describe('RegisterForm — the server said which field was wrong', () => {
         });
         fireEvent.change(screen.getByLabelText(/confirm/i), { target: { value: 'sifre-12345' } });
 
+        // Sözleşme onayı zorunlu (FF-198): kutu boşken form sunucuya gitmez.
+        fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
         fireEvent.click(screen.getByRole('button', { name: /register|create|sign up/i }));
 
         await waitFor(() => {
@@ -93,6 +95,8 @@ describe('RegisterForm — the server said which field was wrong', () => {
         });
         fireEvent.change(screen.getByLabelText(/confirm/i), { target: { value: 'sifre-12345' } });
 
+        // Sözleşme onayı zorunlu (FF-198): kutu boşken form sunucuya gitmez.
+        fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
         fireEvent.click(screen.getByRole('button', { name: /register|create|sign up/i }));
 
         await waitFor(() => {
@@ -112,6 +116,8 @@ describe('RegisterForm — the server said which field was wrong', () => {
         });
         fireEvent.change(screen.getByLabelText(/confirm/i), { target: { value: 'sifre-12345' } });
 
+        // Sözleşme onayı zorunlu (FF-198): kutu boşken form sunucuya gitmez.
+        fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
         fireEvent.click(screen.getByRole('button', { name: /register|create|sign up/i }));
 
         await waitFor(() => {

@@ -26,27 +26,13 @@ use Throwable;
  */
 final class FoundationStatusController extends Controller
 {
-    /** Yasal sayfa yollarının başlıkları. */
-    /*
-        Yasal sayfa başlıkları KATALOG ANAHTARIDIR, düz metin değil (FF-98).
-        Öncesinde burada İngilizce dizeler duruyordu ve Türkçe bir ziyaretçi
-        altbilgide "Kullanım koşulları" yazan bağlantıya tıklayıp başlığında
-        "Terms" yazan bir sayfaya varıyordu. Aynı sayfanın adı iki yerde iki
-        türlü okunuyordu.
-    */
     /** Adres → ölçüm kimliği. Rapor bu adları okur, adresleri değil. */
+    // Yasal sayfalar artık burada DEĞİL: sekiz belge kendi denetleyicisinde
+    // (`ShowLegalDocumentController`, FF-198). Bu sınıfta yalnız ana sayfa
+    // ve fiyat kaldı.
     private const PAGE_KEYS = [
         '' => 'home',
         'pricing' => 'pricing',
-        'terms' => 'legal_terms',
-        'privacy' => 'legal_privacy',
-        'kvkk' => 'legal_kvkk',
-    ];
-
-    private const LEGAL_TITLE_KEYS = [
-        'terms' => 'site.footer.terms',
-        'privacy' => 'site.footer.privacy',
-        'kvkk' => 'site.footer.kvkk',
     ];
 
     public function __construct(
@@ -84,45 +70,7 @@ final class FoundationStatusController extends Controller
             return view('public.pricing', $shared);
         }
 
-        if (isset(self::LEGAL_TITLE_KEYS[$path])) {
-            return view('public.legal', $shared + [
-                'title' => app(SiteText::class)->get(self::LEGAL_TITLE_KEYS[$path]),
-                /*
-                    HESAP VERİSİ TALEBİ YALNIZ VERİ SAYFASINDA (FF-169,
-                    `docs/110` P0-09).
-
-                    Aynı bölümü üç yasal sayfaya birden basmak, sahibe talebin
-                    üç ayrı yolu varmış izlenimi verirdi; tek bir yol var.
-                    Kullanım koşulları bir veri koruma sayfası değildir.
-
-                    ADRES YAPILANDIRMADAN gelir ve varsayılanı YOKTUR: burada
-                    bir adres uydurmak, sahibin cevap gelmeyen bir kutuya
-                    yazmasına yol açardı (`config/legal.php`).
-                */
-                'showDataRequest' => $path === 'kvkk',
-                'dataRequestAddress' => $this->configuredDataRequestAddress(),
-            ]);
-        }
-
         return view('public.home', $shared);
-    }
-
-    /**
-     * Talebin iletileceği adres — GİRİLMEMİŞSE `null`.
-     *
-     * Boş dize de `null` sayılır: yapılandırmada unutulmuş bir `=` işareti,
-     * sayfada boş bir "Talebin iletileceği adres:" satırı bırakırdı ve o
-     * satır sahibe adres varmış gibi görünürdü.
-     */
-    private function configuredDataRequestAddress(): ?string
-    {
-        $address = config('legal.data_request.address');
-
-        if (! is_string($address) || trim($address) === '') {
-            return null;
-        }
-
-        return trim($address);
     }
 
     /**

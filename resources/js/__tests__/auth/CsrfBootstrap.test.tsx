@@ -24,6 +24,8 @@ function fillRegisterForm() {
     fireEvent.change(screen.getByLabelText(/^password$/i), {
         target: { value: 'correct-horse-battery-staple-1' },
     });
+    // Kayıt artık onaysız gitmez (FF-198): sözleşme kutusu işaretlenir.
+    fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
 }
 
 function fillLoginForm() {

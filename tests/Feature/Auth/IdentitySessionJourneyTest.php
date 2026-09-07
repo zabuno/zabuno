@@ -125,6 +125,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'ada@example.com',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         $response->assertSuccessful();
@@ -145,6 +146,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'Ada@Example.COM',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         $second = $this->withHeaders($this->jsonHeaders())->post(self::REGISTER_URI, [
@@ -152,6 +154,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => ' ada@example.com ',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         self::assertSame(
@@ -176,6 +179,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'ada@example.com',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         self::assertStringNotContainsString(self::VALID_PASSWORD, (string) $response->getContent());
@@ -314,6 +318,7 @@ final class IdentitySessionJourneyTest extends TestCase
                 'email' => 'nocsrf@example.com',
                 'password' => self::VALID_PASSWORD,
                 'password_confirmation' => self::VALID_PASSWORD,
+                'terms_accepted' => true,
             ]);
 
             $response->assertStatus(419);
@@ -338,6 +343,7 @@ final class IdentitySessionJourneyTest extends TestCase
                 'email' => 'hascsrf@example.com',
                 'password' => self::VALID_PASSWORD,
                 'password_confirmation' => self::VALID_PASSWORD,
+                'terms_accepted' => true,
             ]);
 
             $response->assertSuccessful();
@@ -421,6 +427,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'ada@example.com',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         Mail::assertSentCount(1);
@@ -438,6 +445,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'ada@example.com',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         Mail::assertSentCount(1);
@@ -452,6 +460,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'ada@example.com',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         User::query()->delete();
@@ -463,6 +472,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'ada@example.com',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         self::assertNotSame(404, $baseline->getStatusCode(), 'AI-01: /register route yok, karar yolu henüz test edilemiyor.');
@@ -494,6 +504,7 @@ final class IdentitySessionJourneyTest extends TestCase
                 'email' => "attacker{$i}@example.com",
                 'password' => self::VALID_PASSWORD,
                 'password_confirmation' => self::VALID_PASSWORD,
+                'terms_accepted' => true,
             ]);
         }
 
@@ -502,6 +513,7 @@ final class IdentitySessionJourneyTest extends TestCase
             'email' => 'victim@example.com',
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
+            'terms_accepted' => true,
         ]);
 
         self::assertNotSame(
@@ -520,6 +532,7 @@ final class IdentitySessionJourneyTest extends TestCase
                 'email' => ' Repeat@Example.com ',
                 'password' => self::VALID_PASSWORD,
                 'password_confirmation' => self::VALID_PASSWORD,
+                'terms_accepted' => true,
             ]);
         }
 

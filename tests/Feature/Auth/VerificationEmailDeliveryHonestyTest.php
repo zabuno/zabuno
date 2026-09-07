@@ -85,6 +85,7 @@ final class VerificationEmailDeliveryHonestyTest extends TestCase
             'email' => 'huseyin-verify-hon-02@example.test',
             'password' => 'Cok-Guclu-Parola-1',
             'password_confirmation' => 'Cok-Guclu-Parola-1',
+            'terms_accepted' => true,
         ]);
 
         /*
