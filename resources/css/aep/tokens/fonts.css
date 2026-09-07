@@ -36,7 +36,28 @@
    işletim sistemine düşüyor; yani davranış AYNI, yalnız yığın artık
    tutmadığı bir söz vermiyor. Boşluk `resources/css/fonts.css` içinde
    kayıtlı. */
+
+/* ZABUNO SAPMASI 3 (FF-217) — `'Vazirmatn'` EKLENDİ; SAPMA 2'nin bıraktığı
+   boşluk kapatıldı.
+
+   SAPMA 2, paketin `"Noto Sans"` satırını çıkarırken Arap yazısını bilerek
+   işletim sistemine bırakmıştı ve boşluğu kayda geçirmişti. Bu satır o
+   kaydı kapatıyor: Arap yazısı artık depoda (`resources/fonts/
+   vazirmatn-arabic-wght-normal.woff2`, OFL-1.1, 45,2 KB).
+
+   BU DOSYA OLMADAN DEĞİŞİKLİK ÇALIŞMIYOR ve bu ölçüldü. `--font-sans`
+   (`app.css`) tek başına yetmez: `aep/tokens/base.css` GÖVDENİN yazı
+   tipini `var(--aep-font-sans)` üzerinden alır, yani Arapça metin bu satır
+   güncellenmeden Vazirmatn'ı hiç istemez. Ölçüm (2026-09-07, gerçek Chrome,
+   Storybook statik çıktısı, Arapça hikâye): yalnız `--font-sans`
+   güncellendiğinde `document.fonts` → `Vazirmatn: unloaded`. İki yığın da
+   güncellendikten sonra `Vazirmatn: loaded` ve Arapça metnin 32 glifi o
+   dosyadan çiziliyor.
+
+   Sıra Roboto'dan SONRA: latin metin Roboto'dan, Arap yazısı Vazirmatn'dan
+   gelir. `unicode-range` sayesinde Arapça karakter geçmeyen bir sayfa bu
+   dosyayı hiç indirmez. */
 :root {
-    --aep-font-sans: 'Roboto', system-ui, sans-serif;
+    --aep-font-sans: 'Roboto', 'Vazirmatn', system-ui, sans-serif;
     --aep-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }

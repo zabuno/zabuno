@@ -21,12 +21,27 @@ use Tests\TestCase;
  * Fiziksel bir yön özelliği o iki dilde arayüzü SESSİZCE yanlış tarafa
  * hizalar — hata vermez, log basmaz, testi kırmaz. Yalnız yanlış görünür.
  *
- * ═══ NEDEN CIRCIR (RATCHET), MUTLAK YASAK DEĞİL ═══
+ * ═══ CIRCIR KAPANDI: ARTIK MUTLAK ═══
  *
- * Ölçüm günü (2026-09-05) tek bir ihlal bulundu ve o ihlal bu paketin
- * kapsamı dışında — paket sınırı korunuyor. Sayı yalnız AZALABİLİR: yeni bir
- * fiziksel yön eklendiği an kapı kırılır, mevcut borç ise ayrı bir pakette
- * kapanır. Sıfıra indiği gün bu liste boşalır ve kural mutlaklaşır.
+ * Ölçüm günü (2026-09-05) tek bir ihlal bulunmuş ve borç listesine
+ * yazılmıştı. FF-217'de o ihlal düzeltildi ve liste BOŞALDI, yani bu kural
+ * Blade katmanında da artık mutlaktır (`docs/132` §2).
+ *
+ * ═══ BU KAPININ KAPSAMI SINIRLIDIR — VE SINIRI ÖLÇÜLDÜ ═══
+ *
+ * Burada taranan yer yalnız `resources/views` ve `resources/css`. FF-217'de
+ * ölçüldü: aynı kusur `resources/help` altında ALTI kez daha duruyordu ve bu
+ * kapının kapsamına hiç girmiyordu. Kardeş kapı `DS-LOGICAL-DIRECTION-06`
+ * (`resources/js`) ise yalnız `m[lr]-`/`p[lr]-`/`text-left|right` desenine
+ * bakıyor; `rounded-tl-`, `border-l-`, `left-0`, `float-left` ve
+ * `origin-top-left` onun deseninde YOK — altı fiziksel köşe sınıfı tam da bu
+ * yüzden `flowbite-theme.ts` içinde görünmeden durmuştu.
+ *
+ * `scripts/logical-direction-gate` iki boşluğu da kapatır: bütün izlenen
+ * kaynak ağacını, geniş bir desenle tarar. Bu dosya kaldırılmadı çünkü
+ * ölçtüğü şeyi PHP tarafında ölçüyor ve `php artisan test` koşan bir
+ * geliştirici Node kapısını çalıştırmayabilir; iki kapı birbirinin yerine
+ * değil, üstüne durur.
  *
  * Requirement ID'leri: I18N-LOGICAL-BLADE-20, I18N-LOGICAL-CSS-21.
  */
@@ -46,16 +61,15 @@ final class LogicalDirectionScanTest extends TestCase
     /**
      * Bilinen ve KAYITLI borç — yalnız azalabilir.
      *
-     * Her satır bir dosyadır; sayı o dosyadaki ihlal sayısıdır. Dosya adını
-     * yazmak, borcu "bir sayı" olmaktan çıkarıp adreslenebilir kılar.
+     * BOŞALDI (FF-217, `docs/132` §2). Tek satırı
+     * `resources/views/public/partials/pricing.blade.php` içindeki `pl-5`
+     * idi ve `ps-5` oldu. Bu sınıfın kendi notu ne yapılacağını söylüyordu:
+     * *"Sıfıra indiği gün bu liste boşalır ve kural mutlaklaşır."* Liste
+     * artık boş, yani bu kapı Blade katmanında da MUTLAK.
      *
      * @var array<string, int>
      */
-    private const DEBT = [
-        // `pl-5` — madde işaretli listenin girintisi. Arapça ve Farsçada
-        // girinti yanlış tarafta kalır ve madde imleri metnin dışına düşer.
-        'resources/views/public/partials/pricing.blade.php' => 1,
-    ];
+    private const DEBT = [];
 
     // --- I18N-LOGICAL-BLADE-20 --------------------------------------------
 

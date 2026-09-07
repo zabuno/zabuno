@@ -39,5 +39,5 @@ export const LongLabels: Story = {
 
 export const RightToLeft: Story = {
     args: { rows: tables, limit: 5 },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

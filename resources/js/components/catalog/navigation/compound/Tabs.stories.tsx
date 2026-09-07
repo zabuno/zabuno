@@ -44,5 +44,5 @@ export const RightToLeft: Story = {
         label: 'أقسام الطلب',
         onChange: () => {},
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

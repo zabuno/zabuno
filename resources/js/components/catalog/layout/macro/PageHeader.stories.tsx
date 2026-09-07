@@ -64,5 +64,5 @@ export const RightToLeft: Story = {
             { key: 'orders', label: 'الطلبات' },
         ],
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

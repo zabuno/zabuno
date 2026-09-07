@@ -71,5 +71,5 @@ export const RightToLeft: Story = {
         confirmLabel: 'حذف',
         cancelLabel: 'إلغاء',
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

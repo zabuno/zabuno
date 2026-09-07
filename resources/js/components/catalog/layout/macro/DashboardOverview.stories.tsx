@@ -73,5 +73,5 @@ export const RightToLeft: Story = {
         stats: [{ key: 'orders', label: 'الطلبات اليوم', value: '١٬٢٠٤', trend: 'up' }],
         table,
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

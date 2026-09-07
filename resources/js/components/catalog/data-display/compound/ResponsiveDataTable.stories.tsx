@@ -55,5 +55,5 @@ export const RightToLeft: Story = {
         rows,
         getRowKey: (row) => row.id,
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

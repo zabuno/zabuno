@@ -85,10 +85,21 @@ a {
 
        `Roboto` artık `resources/css/fonts.css` üzerinden GERÇEKTEN geliyor;
        arkasındaki generic'ler yalnız o dosya indirilemezse devreye girer.
+
+       `Vazirmatn` Roboto'nun HEMEN ARDINDA durur (FF-217). Sıra önemlidir
+       ve keyfi değil: tarayıcı yığını karakter karakter yürür, Roboto'da
+       Arap yazısı yoktur, dolayısıyla latin metin Roboto'dan, Arapça metin
+       Vazirmatn'dan çizilir. Tersi sırada tek bir latin harf bile değişmezdi
+       (Vazirmatn'ın barındırılan alt kümesinde latin yok), ama okuyan kişi
+       için sıra bir niyet bildirir: önce ürünün yazı tipi, sonra o yazı
+       tipinin taşımadığı yazı sistemi.
+
+       Arapça karakter geçmeyen bir sayfa Vazirmatn dosyasını HİÇ indirmez;
+       `unicode-range` bunu tarayıcı seviyesinde garanti eder.
     */
     --font-sans:
-        'Roboto', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+        'Roboto', 'Vazirmatn', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --color-border: var(--border);
 
     /* Semantic utility yüzeyi. Tailwind v4'te utility YALNIZ @theme'den üretilir;

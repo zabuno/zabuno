@@ -34,5 +34,5 @@ export const Destructive: Story = {
 
 export const RightToLeft: Story = {
     args: { children: 'إعادة تسمية', onSelect: () => {} },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

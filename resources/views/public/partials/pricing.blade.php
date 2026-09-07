@@ -82,7 +82,7 @@
 
                     @if (! empty($plan['entitlements']))
                         <p class="mt-2 text-meta font-medium text-fg-secondary">{{ $st['adds'] }}</p>
-                        <ul class="flex list-disc flex-col gap-1 pl-5 text-fg-secondary">
+                        <ul class="flex list-disc flex-col gap-1 ps-5 text-fg-secondary">
                             @foreach ($plan['entitlements'] as $entitlement)
                                 <li>{{ $entitlement }}</li>
                             @endforeach

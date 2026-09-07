@@ -73,7 +73,7 @@ ve kurumsal site ilerledi; ama **ürün hâlâ para tahsil edemiyor.**
 | `docs/111` adım 3–5 | Modül durum rozeti, `modules/` `contexts:` eşlemesi, yaşam döngüsü |
 | `docs/121` | Sahte-yerelleştirmenin bulduğu **15 kırık** (TrendChart, DashboardOverview, MenuScreenActions, DesktopSidebar, PageHeader) |
 | Dil paketi | Dil değiştirici **hiçbir şablona bağlanmadı**; `zbn_language` çerezini yazan taraf yok |
-| Yazı tipi paketi | Arap yazısı barındırılmıyor; `▲`/`▼` glifleri işletim sisteminden |
+| Yazı tipi paketi | Arap yazısı ARTIK barındırılıyor (Vazirmatn, OFL-1.1, 45,2 KB — `docs/132` §5); `▲`/`▼` glifleri hâlâ işletim sisteminden |
 | Kütük paketi | 380 sayfanın kaynak dil satırı yok (adresleri yazılmadığı için, bilinçli) |
 | Kurumsal site | Yaşayan `/pricing` vb. adreslerin `/tr/` diline göçü |
 
