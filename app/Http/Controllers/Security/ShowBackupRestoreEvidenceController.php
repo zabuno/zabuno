@@ -36,28 +36,17 @@ final class ShowBackupRestoreEvidenceController extends Controller
             return response()->json(['message' => 'Evidence integrity check failed.'], 500);
         }
 
+        // Medya kaydı yardımcıdır: yoksa `null`, kurcalanmışsa veritabanı
+        // kaydıyla aynı kapı — hiçbir şey sunulmaz.
+        $media = $this->useCase->latestMedia();
+
+        if ($media !== null && ! $media->verifiesIntegrity()) {
+            return response()->json(['message' => 'Evidence integrity check failed.'], 500);
+        }
+
         return response()->json([
-            'data' => [
-                'id' => $record->id(),
-                'key' => $record->key(),
-                'status' => $record->status(),
-                'scope' => $record->scope(),
-                'runner' => $record->runner(),
-                'ran_at' => $record->ranAt(),
-                'duration_ms' => $record->durationMs(),
-                'exit_code' => $record->exitCode(),
-                'git_sha' => $record->gitSha(),
-                'git_dirty' => $record->gitDirty(),
-                'source_snapshot_sha256' => $record->sourceSnapshotSha256(),
-                'suite_manifest_sha256' => $record->suiteManifestSha256(),
-                'backup_sha256' => $record->backupSha256(),
-                'restored_db_sha256' => $record->restoredDbSha256(),
-                'source_row_count' => $record->sourceRowCount(),
-                'restored_row_count' => $record->restoredRowCount(),
-                'output_sha256' => $record->outputSha256(),
-                'integrity_sha256' => $record->integritySha256(),
-                'claim' => $record->claim(),
-            ],
+            'data' => $record->toArray(),
+            'media' => $media?->toArray(),
         ], 200);
     }
 }

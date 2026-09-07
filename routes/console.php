@@ -59,3 +59,25 @@ Schedule::command('zabuno:publish-scheduled-menus')
 Schedule::command('media:purge-trash')
     ->dailyAt('03:20')
     ->withoutOverlapping();
+
+/*
+    YEDEK TATBİKATI GÜNDE BİR — "denenmemiş bir yedek, yedek değildir"
+    (`docs/107` Faz 1.5, `docs/124`).
+
+    Kanıt uçları 2026-08-26'dan beri vardı; onları dolduran şey bir insanın
+    komutu hatırlamasıydı ve üretimde kimse hatırlamadı. Bu girdi, günlük
+    tatbikatı (veritabanı: bağlantıya göre SQLite/PostgreSQL koşucusu;
+    medya: `storage/app` medya kökü) zamanlayıcıya bağlar. Çöp boşaltımından
+    (03:20) sonra: silinen dosyalar arşive girmesin.
+
+    BU SATIR "ÇALIŞIYOR" DEMEZ. Çalışıp çalışmadığı yalnız kanıt kaydından
+    okunur (`backup_restore_evidence`, `media_backup_restore_evidence` ve
+    `/security/evidence/backup-restore` ucu). Uygulama imajında `pg_dump`
+    yoksa kayıt "unknown" der; bu da bir kayıttır ve doğrudur.
+
+    `withoutOverlapping`: gigabaytlık bir medya kökünde tatbikat uzayabilir;
+    ertesi günün koşusu üstüne binmez.
+*/
+Schedule::command('security:evidence:backup-restore')
+    ->dailyAt('03:40')
+    ->withoutOverlapping();

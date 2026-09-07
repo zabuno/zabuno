@@ -192,7 +192,10 @@ kopyalanıp `--no-dev` ile var olmayan bir sağlayıcıyı yüklemeye çalışt�
 - **Gerçek sunucuda koşum.** Yığın yerelde çalıştı; netcup'ta çalıştığı
   kanıtlanmadı. Exit Gate bu kanıtı bekliyor (`docs/18`).
 - **Yedekleme otomasyonu.** `db-backups` hacmi ayrıldı, içine yazan bir iş
-  yok.
+  yok. (2026-09-06) Uygulama içi günlük TATBİKAT tanımlandı ve ilk elle
+  yedek + izole geri yükleme için runbook yazıldı: `docs/124-YEDEK-TATBIKATI.md`.
+  Hacme düzenli yazan bir yedek işi hâlâ yok; runbook'taki elle adımlar onun
+  yerine geçmez, yalnız ilk kanıtı üretir.
 > **DÜZELTME (2026-09-05, çelişki denetimi FF-161):** aşağıdaki "kuyruk
 > işçisi yok" maddesi **artık doğru değil ve kaldırıldı.** Kuyruğa iş bırakan
 > özellik geldi (fotoğraftan menü aktarımı, `app/Jobs/ExtractMenuBatchPageJob`)

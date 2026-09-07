@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Security\Execution;
 
+use App\Domain\Security\BackupRestoreDriver;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -287,5 +288,57 @@ final class SqliteBackupRestoreDrillRunnerTest extends TestCase
 
         $this->assertFalse($result['passed']);
         $this->assertNotSame(0, $result['exit_code']);
+    }
+
+    // --- FF-199 (docs/124): driver identity and measured phases --------
+
+    /**
+     * The evidence record names the driver that ran; the runner is the
+     * only honest source of that name.
+     */
+    public function test_runner_identifies_its_driver_as_sqlite(): void
+    {
+        $runner = new (self::RUNNER_CLASS)(':memory:');
+
+        $this->assertSame(BackupRestoreDriver::Sqlite, $runner->driver());
+    }
+
+    /**
+     * A drill that ran reports what it measured: the backup image size
+     * in bytes and the two phase durations, and it says so explicitly
+     * (`measured` = true). The previous contract only carried a total.
+     */
+    public function test_a_successful_drill_reports_measured_backup_size_and_phase_durations(): void
+    {
+        $dir = $this->makeUniqueTempDir();
+        $sourcePath = $this->makeSeededSourceDatabase($dir);
+
+        $runner = new (self::RUNNER_CLASS)($sourcePath);
+        $result = $runner->run(self::TABLES);
+
+        $this->assertTrue($result['passed']);
+        $this->assertTrue($result['measured']);
+        $this->assertGreaterThan(0, $result['backup_bytes'], 'A seeded SQLite backup image cannot be empty.');
+        $this->assertGreaterThanOrEqual(0, $result['backup_ms']);
+        $this->assertGreaterThanOrEqual(0, $result['restore_ms']);
+        $this->assertLessThanOrEqual($result['duration_ms'], $result['backup_ms'] + $result['restore_ms']);
+    }
+
+    /**
+     * A drill that could not even start (no readable source) is not a
+     * failed backup — it is an unmeasured one. The result must say
+     * `measured` = false so the evidence is recorded as unknown, never
+     * as a verdict about a backup that was never taken.
+     */
+    public function test_a_drill_that_could_not_start_reports_itself_as_not_measured(): void
+    {
+        $runner = new (self::RUNNER_CLASS)(':memory:');
+
+        $result = $runner->run(self::TABLES);
+
+        $this->assertFalse($result['passed']);
+        $this->assertFalse($result['measured']);
+        $this->assertNotSame(0, $result['exit_code']);
+        $this->assertSame(0, $result['backup_bytes']);
     }
 }

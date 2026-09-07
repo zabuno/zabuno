@@ -6,9 +6,27 @@ namespace App\Domain\Security;
 
 use InvalidArgumentException;
 
-final class BackupRestoreEvidenceRecord
+/**
+ * Medya tatbikatının kanıt kaydı.
+ *
+ * Bir menü yalnız satırlardan ibaret değil: fotoğraflar `storage/app`
+ * altında, veritabanının dışında yaşar ve bugüne kadar hiçbir tatbikat
+ * onlara dokunmamıştı. Bu kayıt, medya kökünün bir tar arşivine alınıp
+ * izole bir dizine geri açıldığını ve kopyanın aslıyla dosya sayısı,
+ * toplam bayt ve dosya başına SHA-256 üzerinden eşleştiğini tutar
+ * (docs/124). Veritabanı kaydıyla aynı disiplin: geçmiş bir koşu kendiyle
+ * çelişemez, bilinmeyen bir koşu sıfır çıkış kodu taşıyamaz, bütünlük
+ * özeti iddia metni dâhil her kanonik alanı kapsar.
+ */
+final class MediaBackupRestoreEvidenceRecord
 {
-    private const KEY = 'backup_restore';
+    private const KEY = 'media_backup_restore';
+
+    private const SCOPE = 'local_media_root_tar_isolated_restore_drill';
+
+    private const RUNNER = 'tar_sha256_manifest';
+
+    private const CLAIM = 'This evidence reflects one tar archive of the local media root and one extraction into an isolated directory on the same host; file count, total bytes and a per-file SHA-256 manifest were compared, then the archive and the restored copy were deleted. It is not an off-host backup, not an RPO/RTO proof, and does not test restoring media into the running application.';
 
     private const STATUSES = ['passed', 'failed', 'unknown'];
 
@@ -18,7 +36,6 @@ final class BackupRestoreEvidenceRecord
         private readonly string $status,
         private readonly string $scope,
         private readonly string $runner,
-        private readonly string $driver,
         private readonly string $ranAt,
         private readonly int $durationMs,
         private readonly int $exitCode,
@@ -26,26 +43,19 @@ final class BackupRestoreEvidenceRecord
         private readonly bool $gitDirty,
         private readonly string $sourceSnapshotSha256,
         private readonly string $suiteManifestSha256,
-        private readonly string $backupSha256,
-        private readonly string $restoredDbSha256,
-        private readonly int $sourceRowCount,
-        private readonly int $restoredRowCount,
-        private readonly int $backupBytes,
-        private readonly int $backupMs,
-        private readonly int $restoreMs,
+        private readonly string $archiveSha256,
+        private readonly int $archiveBytes,
+        private readonly string $sourceManifestSha256,
+        private readonly string $restoredManifestSha256,
+        private readonly int $sourceFileCount,
+        private readonly int $restoredFileCount,
+        private readonly int $sourceBytes,
+        private readonly int $restoredBytes,
         private readonly string $outputSha256,
         private readonly string $integritySha256,
         private readonly string $claim,
     ) {}
 
-    /**
-     * Üç durum: `passed`, `failed`, `unknown`.
-     *
-     * `unknown`, tatbikatın HİÇ DENENEMEDİĞİ hâldir — sunucuda pg_dump
-     * yok, kaynak okunamıyor. Bu bir "başarısız yedek" değildir; yedek
-     * hakkında hiçbir şey söylenememiştir ve kayıt bunu "geçti" diye
-     * yazamaz. Sıfır çıkış koduyla "bilinmiyor" çelişkidir, reddedilir.
-     */
     public static function fromRun(
         string $status,
         int $durationMs,
@@ -54,43 +64,46 @@ final class BackupRestoreEvidenceRecord
         bool $gitDirty,
         string $sourceSnapshotSha256,
         string $suiteManifestSha256,
-        string $backupSha256,
-        string $restoredDbSha256,
-        int $sourceRowCount,
-        int $restoredRowCount,
+        string $archiveSha256,
+        int $archiveBytes,
+        string $sourceManifestSha256,
+        string $restoredManifestSha256,
+        int $sourceFileCount,
+        int $restoredFileCount,
+        int $sourceBytes,
+        int $restoredBytes,
         string $outputSha256,
         string $ranAt,
-        BackupRestoreDriver $driver,
-        int $backupBytes,
-        int $backupMs,
-        int $restoreMs,
     ): self {
         if (! in_array($status, self::STATUSES, true)) {
-            throw new InvalidArgumentException('A backup/restore run status must be one of: '.implode(', ', self::STATUSES).'.');
+            throw new InvalidArgumentException('A media backup/restore run status must be one of: '.implode(', ', self::STATUSES).'.');
         }
 
         if ($status === 'passed' && $exitCode !== 0) {
-            throw new InvalidArgumentException('A passed backup/restore run must have a zero exit code.');
+            throw new InvalidArgumentException('A passed media backup/restore run must have a zero exit code.');
         }
 
-        if ($status === 'passed' && $sourceRowCount !== $restoredRowCount) {
-            throw new InvalidArgumentException('A passed backup/restore run must have matching source and restored row counts.');
+        if ($status === 'passed' && $sourceFileCount !== $restoredFileCount) {
+            throw new InvalidArgumentException('A passed media backup/restore run must have matching source and restored file counts.');
         }
 
-        if ($status === 'passed' && ! hash_equals($backupSha256, $restoredDbSha256)) {
-            throw new InvalidArgumentException('A passed backup/restore run must have matching backup and restored content hashes.');
+        if ($status === 'passed' && $sourceBytes !== $restoredBytes) {
+            throw new InvalidArgumentException('A passed media backup/restore run must have matching source and restored byte totals.');
+        }
+
+        if ($status === 'passed' && ! hash_equals($sourceManifestSha256, $restoredManifestSha256)) {
+            throw new InvalidArgumentException('A passed media backup/restore run must have matching source and restored manifests.');
         }
 
         if ($status === 'unknown' && $exitCode === 0) {
-            throw new InvalidArgumentException('An unknown backup/restore run cannot carry a zero exit code.');
+            throw new InvalidArgumentException('An unknown media backup/restore run cannot carry a zero exit code.');
         }
 
         $integritySha256 = self::computeIntegritySha256(
             key: self::KEY,
             status: $status,
-            scope: $driver->scope(),
-            runner: $driver->runner(),
-            driver: $driver->value,
+            scope: self::SCOPE,
+            runner: self::RUNNER,
             ranAt: $ranAt,
             durationMs: $durationMs,
             exitCode: $exitCode,
@@ -98,24 +111,24 @@ final class BackupRestoreEvidenceRecord
             gitDirty: $gitDirty,
             sourceSnapshotSha256: $sourceSnapshotSha256,
             suiteManifestSha256: $suiteManifestSha256,
-            backupSha256: $backupSha256,
-            restoredDbSha256: $restoredDbSha256,
-            sourceRowCount: $sourceRowCount,
-            restoredRowCount: $restoredRowCount,
-            backupBytes: $backupBytes,
-            backupMs: $backupMs,
-            restoreMs: $restoreMs,
+            archiveSha256: $archiveSha256,
+            archiveBytes: $archiveBytes,
+            sourceManifestSha256: $sourceManifestSha256,
+            restoredManifestSha256: $restoredManifestSha256,
+            sourceFileCount: $sourceFileCount,
+            restoredFileCount: $restoredFileCount,
+            sourceBytes: $sourceBytes,
+            restoredBytes: $restoredBytes,
             outputSha256: $outputSha256,
-            claim: $driver->claim(),
+            claim: self::CLAIM,
         );
 
         return new self(
             id: null,
             key: self::KEY,
             status: $status,
-            scope: $driver->scope(),
-            runner: $driver->runner(),
-            driver: $driver->value,
+            scope: self::SCOPE,
+            runner: self::RUNNER,
             ranAt: $ranAt,
             durationMs: $durationMs,
             exitCode: $exitCode,
@@ -123,16 +136,17 @@ final class BackupRestoreEvidenceRecord
             gitDirty: $gitDirty,
             sourceSnapshotSha256: $sourceSnapshotSha256,
             suiteManifestSha256: $suiteManifestSha256,
-            backupSha256: $backupSha256,
-            restoredDbSha256: $restoredDbSha256,
-            sourceRowCount: $sourceRowCount,
-            restoredRowCount: $restoredRowCount,
-            backupBytes: $backupBytes,
-            backupMs: $backupMs,
-            restoreMs: $restoreMs,
+            archiveSha256: $archiveSha256,
+            archiveBytes: $archiveBytes,
+            sourceManifestSha256: $sourceManifestSha256,
+            restoredManifestSha256: $restoredManifestSha256,
+            sourceFileCount: $sourceFileCount,
+            restoredFileCount: $restoredFileCount,
+            sourceBytes: $sourceBytes,
+            restoredBytes: $restoredBytes,
             outputSha256: $outputSha256,
             integritySha256: $integritySha256,
-            claim: $driver->claim(),
+            claim: self::CLAIM,
         );
     }
 
@@ -142,7 +156,6 @@ final class BackupRestoreEvidenceRecord
         string $status,
         string $scope,
         string $runner,
-        string $driver,
         string $ranAt,
         int $durationMs,
         int $exitCode,
@@ -150,13 +163,14 @@ final class BackupRestoreEvidenceRecord
         bool $gitDirty,
         string $sourceSnapshotSha256,
         string $suiteManifestSha256,
-        string $backupSha256,
-        string $restoredDbSha256,
-        int $sourceRowCount,
-        int $restoredRowCount,
-        int $backupBytes,
-        int $backupMs,
-        int $restoreMs,
+        string $archiveSha256,
+        int $archiveBytes,
+        string $sourceManifestSha256,
+        string $restoredManifestSha256,
+        int $sourceFileCount,
+        int $restoredFileCount,
+        int $sourceBytes,
+        int $restoredBytes,
         string $outputSha256,
         string $integritySha256,
         string $claim,
@@ -167,7 +181,6 @@ final class BackupRestoreEvidenceRecord
             status: $status,
             scope: $scope,
             runner: $runner,
-            driver: $driver,
             ranAt: $ranAt,
             durationMs: $durationMs,
             exitCode: $exitCode,
@@ -175,13 +188,14 @@ final class BackupRestoreEvidenceRecord
             gitDirty: $gitDirty,
             sourceSnapshotSha256: $sourceSnapshotSha256,
             suiteManifestSha256: $suiteManifestSha256,
-            backupSha256: $backupSha256,
-            restoredDbSha256: $restoredDbSha256,
-            sourceRowCount: $sourceRowCount,
-            restoredRowCount: $restoredRowCount,
-            backupBytes: $backupBytes,
-            backupMs: $backupMs,
-            restoreMs: $restoreMs,
+            archiveSha256: $archiveSha256,
+            archiveBytes: $archiveBytes,
+            sourceManifestSha256: $sourceManifestSha256,
+            restoredManifestSha256: $restoredManifestSha256,
+            sourceFileCount: $sourceFileCount,
+            restoredFileCount: $restoredFileCount,
+            sourceBytes: $sourceBytes,
+            restoredBytes: $restoredBytes,
             outputSha256: $outputSha256,
             integritySha256: $integritySha256,
             claim: $claim,
@@ -189,25 +203,15 @@ final class BackupRestoreEvidenceRecord
     }
 
     /**
-     * Zaman damgasını depolama motorundan bağımsız tek bir biçime indirger.
-     *
-     * Bütünlük özeti bu dizeyi hash'liyor. Ham hâliyle bırakıldığında özet,
-     * veritabanı sürücüsünün metni nasıl geri verdiğine bağımlı hâle gelir:
-     * SQLite yazılan dizeyi aynen döndürür (`2026-08-27T08:00:00+00:00`),
-     * PostgreSQL kendi gösterimine çevirir (`2026-08-27 08:00:00+00`). Aynı
-     * kayıt, aynı veri, farklı özet — ve kayıt kurcalanmış görünür.
-     *
-     * Kanıt kayıtlarının varlık sebebi güvenilirliği kanıtlamaktı; özetin
-     * sürücüye bağımlı olması tam da o iddiayı çürütüyordu. Kanonik biçim
-     * UTC + ISO-8601'dir ve motor değişse de değişmez.
+     * Bkz. BackupRestoreEvidenceRecord::canonicalTimestamp — aynı sebep:
+     * özet, veritabanı sürücüsünün zaman damgasını nasıl geri verdiğine
+     * bağlı olamaz.
      */
     private static function canonicalTimestamp(string $value): string
     {
         try {
             $moment = new \DateTimeImmutable($value);
         } catch (\Exception) {
-            // Ayrıştırılamayan değer sessizce düzeltilmez: özet yanlış
-            // olacağına, değer olduğu gibi kalsın ve doğrulama düşsün.
             return $value;
         }
 
@@ -219,7 +223,6 @@ final class BackupRestoreEvidenceRecord
         string $status,
         string $scope,
         string $runner,
-        string $driver,
         string $ranAt,
         int $durationMs,
         int $exitCode,
@@ -227,13 +230,14 @@ final class BackupRestoreEvidenceRecord
         bool $gitDirty,
         string $sourceSnapshotSha256,
         string $suiteManifestSha256,
-        string $backupSha256,
-        string $restoredDbSha256,
-        int $sourceRowCount,
-        int $restoredRowCount,
-        int $backupBytes,
-        int $backupMs,
-        int $restoreMs,
+        string $archiveSha256,
+        int $archiveBytes,
+        string $sourceManifestSha256,
+        string $restoredManifestSha256,
+        int $sourceFileCount,
+        int $restoredFileCount,
+        int $sourceBytes,
+        int $restoredBytes,
         string $outputSha256,
         string $claim,
     ): string {
@@ -241,7 +245,6 @@ final class BackupRestoreEvidenceRecord
             $key,
             $scope,
             $runner,
-            $driver,
             $status,
             self::canonicalTimestamp($ranAt),
             (string) $durationMs,
@@ -250,13 +253,14 @@ final class BackupRestoreEvidenceRecord
             $gitDirty ? '1' : '0',
             $sourceSnapshotSha256,
             $suiteManifestSha256,
-            $backupSha256,
-            $restoredDbSha256,
-            (string) $sourceRowCount,
-            (string) $restoredRowCount,
-            (string) $backupBytes,
-            (string) $backupMs,
-            (string) $restoreMs,
+            $archiveSha256,
+            (string) $archiveBytes,
+            $sourceManifestSha256,
+            $restoredManifestSha256,
+            (string) $sourceFileCount,
+            (string) $restoredFileCount,
+            (string) $sourceBytes,
+            (string) $restoredBytes,
             $outputSha256,
             $claim,
         ]);
@@ -287,11 +291,6 @@ final class BackupRestoreEvidenceRecord
     public function runner(): string
     {
         return $this->runner;
-    }
-
-    public function driver(): string
-    {
-        return $this->driver;
     }
 
     public function ranAt(): string
@@ -329,39 +328,44 @@ final class BackupRestoreEvidenceRecord
         return $this->suiteManifestSha256;
     }
 
-    public function backupSha256(): string
+    public function archiveSha256(): string
     {
-        return $this->backupSha256;
+        return $this->archiveSha256;
     }
 
-    public function restoredDbSha256(): string
+    public function archiveBytes(): int
     {
-        return $this->restoredDbSha256;
+        return $this->archiveBytes;
     }
 
-    public function sourceRowCount(): int
+    public function sourceManifestSha256(): string
     {
-        return $this->sourceRowCount;
+        return $this->sourceManifestSha256;
     }
 
-    public function restoredRowCount(): int
+    public function restoredManifestSha256(): string
     {
-        return $this->restoredRowCount;
+        return $this->restoredManifestSha256;
     }
 
-    public function backupBytes(): int
+    public function sourceFileCount(): int
     {
-        return $this->backupBytes;
+        return $this->sourceFileCount;
     }
 
-    public function backupMs(): int
+    public function restoredFileCount(): int
     {
-        return $this->backupMs;
+        return $this->restoredFileCount;
     }
 
-    public function restoreMs(): int
+    public function sourceBytes(): int
     {
-        return $this->restoreMs;
+        return $this->sourceBytes;
+    }
+
+    public function restoredBytes(): int
+    {
+        return $this->restoredBytes;
     }
 
     public function outputSha256(): string
@@ -386,7 +390,6 @@ final class BackupRestoreEvidenceRecord
             status: $this->status,
             scope: $this->scope,
             runner: $this->runner,
-            driver: $this->driver,
             ranAt: $this->ranAt,
             durationMs: $this->durationMs,
             exitCode: $this->exitCode,
@@ -394,13 +397,14 @@ final class BackupRestoreEvidenceRecord
             gitDirty: $this->gitDirty,
             sourceSnapshotSha256: $this->sourceSnapshotSha256,
             suiteManifestSha256: $this->suiteManifestSha256,
-            backupSha256: $this->backupSha256,
-            restoredDbSha256: $this->restoredDbSha256,
-            sourceRowCount: $this->sourceRowCount,
-            restoredRowCount: $this->restoredRowCount,
-            backupBytes: $this->backupBytes,
-            backupMs: $this->backupMs,
-            restoreMs: $this->restoreMs,
+            archiveSha256: $this->archiveSha256,
+            archiveBytes: $this->archiveBytes,
+            sourceManifestSha256: $this->sourceManifestSha256,
+            restoredManifestSha256: $this->restoredManifestSha256,
+            sourceFileCount: $this->sourceFileCount,
+            restoredFileCount: $this->restoredFileCount,
+            sourceBytes: $this->sourceBytes,
+            restoredBytes: $this->restoredBytes,
             outputSha256: $this->outputSha256,
             claim: $this->claim,
         );
@@ -409,10 +413,6 @@ final class BackupRestoreEvidenceRecord
     }
 
     /**
-     * Dışa açılan projeksiyon — HTTP ucu ve komutun `--json` çıktısı aynı
-     * şekli kullanır. Ham çıktı, yol, bağlantı bilgisi burada yoktur;
-     * kayıt zaten onları taşımaz.
-     *
      * @return array<string, int|string|bool|null>
      */
     public function toArray(): array
@@ -423,7 +423,6 @@ final class BackupRestoreEvidenceRecord
             'status' => $this->status,
             'scope' => $this->scope,
             'runner' => $this->runner,
-            'driver' => $this->driver,
             'ran_at' => $this->ranAt,
             'duration_ms' => $this->durationMs,
             'exit_code' => $this->exitCode,
@@ -431,13 +430,14 @@ final class BackupRestoreEvidenceRecord
             'git_dirty' => $this->gitDirty,
             'source_snapshot_sha256' => $this->sourceSnapshotSha256,
             'suite_manifest_sha256' => $this->suiteManifestSha256,
-            'backup_sha256' => $this->backupSha256,
-            'restored_db_sha256' => $this->restoredDbSha256,
-            'source_row_count' => $this->sourceRowCount,
-            'restored_row_count' => $this->restoredRowCount,
-            'backup_bytes' => $this->backupBytes,
-            'backup_ms' => $this->backupMs,
-            'restore_ms' => $this->restoreMs,
+            'archive_sha256' => $this->archiveSha256,
+            'archive_bytes' => $this->archiveBytes,
+            'source_manifest_sha256' => $this->sourceManifestSha256,
+            'restored_manifest_sha256' => $this->restoredManifestSha256,
+            'source_file_count' => $this->sourceFileCount,
+            'restored_file_count' => $this->restoredFileCount,
+            'source_bytes' => $this->sourceBytes,
+            'restored_bytes' => $this->restoredBytes,
             'output_sha256' => $this->outputSha256,
             'integrity_sha256' => $this->integritySha256,
             'claim' => $this->claim,

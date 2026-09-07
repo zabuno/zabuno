@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Security\Execution;
 
 use App\Application\Security\Port\BackupRestoreDrillRunnerPort;
+use App\Domain\Security\BackupRestoreDriver;
 use App\Domain\Security\BackupRestoreTableManifest;
 use RuntimeException;
 use SQLite3;
@@ -16,14 +17,22 @@ final class SqliteBackupRestoreDrillRunner implements BackupRestoreDrillRunnerPo
 
     private const TEMP_CHILD_PREFIX = 'drill-';
 
+    /** Ön koşul sağlanmadı (kaynak yok/okunamıyor): tatbikat denenemedi. */
+    private const EXIT_PRECONDITION = 126;
+
     public function __construct(
         private readonly string $sourcePath,
         private readonly ?string $workRoot = null,
     ) {}
 
+    public function driver(): BackupRestoreDriver
+    {
+        return BackupRestoreDriver::Sqlite;
+    }
+
     /**
      * @param  list<string>  $tables
-     * @return array{passed: bool, exit_code: int, duration_ms: int, output: string, backup_sha256: string, restored_db_sha256: string, source_row_count: int, restored_row_count: int, restored_integrity_ok: bool}
+     * @return array{passed: bool, exit_code: int, duration_ms: int, output: string, backup_sha256: string, restored_db_sha256: string, source_row_count: int, restored_row_count: int, restored_integrity_ok: bool, measured: bool, backup_bytes: int, backup_ms: int, restore_ms: int}
      */
     public function run(array $tables): array
     {
@@ -36,7 +45,7 @@ final class SqliteBackupRestoreDrillRunner implements BackupRestoreDrillRunnerPo
 
         try {
             if ($this->sourcePath === '' || $this->sourcePath === ':memory:' || ! is_file($this->sourcePath) || ! is_readable($this->sourcePath)) {
-                throw new RuntimeException('Unsupported or missing SQLite source database.');
+                return $this->unmeasured(self::EXIT_PRECONDITION, 'unsupported or missing SQLite source database; drill result unknown', $startedAt);
             }
 
             $workRoot = $this->resolveWorkRoot();
@@ -52,17 +61,26 @@ final class SqliteBackupRestoreDrillRunner implements BackupRestoreDrillRunnerPo
             $backupPath = $tempChild.DIRECTORY_SEPARATOR.'backup.sqlite';
             $restoredPath = $tempChild.DIRECTORY_SEPARATOR.'restored.sqlite';
 
+            $backupStartedAt = hrtime(true);
             [$sourceRowCount, $backupOk] = $this->backupSource($tables, $backupPath);
+            $backupMs = $this->elapsedMs($backupStartedAt);
 
             if (! $backupOk) {
                 throw new RuntimeException('SQLite online backup failed.');
             }
 
+            $backupBytes = filesize($backupPath);
+            if ($backupBytes === false) {
+                throw new RuntimeException('Unable to measure the backup image.');
+            }
+
+            $restoreStartedAt = hrtime(true);
             if (! copy($backupPath, $restoredPath)) {
                 throw new RuntimeException('Unable to copy the backup image into an isolated restore image.');
             }
 
             [$restoredRowCount, $restoredIntegrityOk] = $this->verifyRestored($tables, $restoredPath);
+            $restoreMs = $this->elapsedMs($restoreStartedAt);
 
             $backupSha256 = hash_file('sha256', $backupPath);
             $restoredDbSha256 = hash_file('sha256', $restoredPath);
@@ -85,6 +103,10 @@ final class SqliteBackupRestoreDrillRunner implements BackupRestoreDrillRunnerPo
                 'source_row_count' => $sourceRowCount,
                 'restored_row_count' => $restoredRowCount,
                 'restored_integrity_ok' => $restoredIntegrityOk,
+                'measured' => true,
+                'backup_bytes' => $backupBytes,
+                'backup_ms' => $backupMs,
+                'restore_ms' => $restoreMs,
             ];
         } catch (Throwable $e) {
             return [
@@ -97,10 +119,36 @@ final class SqliteBackupRestoreDrillRunner implements BackupRestoreDrillRunnerPo
                 'source_row_count' => 0,
                 'restored_row_count' => 0,
                 'restored_integrity_ok' => false,
+                'measured' => true,
+                'backup_bytes' => 0,
+                'backup_ms' => 0,
+                'restore_ms' => 0,
             ];
         } finally {
             $this->cleanupTempChild($tempChild);
         }
+    }
+
+    /**
+     * @return array{passed: bool, exit_code: int, duration_ms: int, output: string, backup_sha256: string, restored_db_sha256: string, source_row_count: int, restored_row_count: int, restored_integrity_ok: bool, measured: bool, backup_bytes: int, backup_ms: int, restore_ms: int}
+     */
+    private function unmeasured(int $exitCode, string $output, int|float $startedAt): array
+    {
+        return [
+            'passed' => false,
+            'exit_code' => $exitCode,
+            'duration_ms' => $this->elapsedMs($startedAt),
+            'output' => $output,
+            'backup_sha256' => str_repeat('0', 64),
+            'restored_db_sha256' => str_repeat('0', 64),
+            'source_row_count' => 0,
+            'restored_row_count' => 0,
+            'restored_integrity_ok' => false,
+            'measured' => false,
+            'backup_bytes' => 0,
+            'backup_ms' => 0,
+            'restore_ms' => 0,
+        ];
     }
 
     /**

@@ -97,6 +97,9 @@ final class SharedHostContractTest extends TestCase
         $allowed = [
             'Infrastructure/Platform/Capability/RuntimeHostCapabilityProbe.php',
             'Infrastructure/Security/Execution/SqliteBackupRestoreDrillRunner.php',
+            // pg_dump/pg_restore yoksa ya da süreç açılamıyorsa tatbikat
+            // "unknown" olarak kaydedilir, çökmez (docs/124).
+            'Infrastructure/Security/Execution/PostgresBackupRestoreDrillRunner.php',
         ];
 
         $offenders = [];
