@@ -33,15 +33,24 @@ Bu belge tahmin taşımaz. Her satır depodan **ölçüldü**.
 | 3 — Favoriler | Cihazda favori işaretleme | **YOK** | Kodda karşılığı yok |
 | 4 — Puanlama | Oy, eşikli gösterim, sahip yanıtı | **Bitti** | `docs/116` P4–P6 |
 | 5 — Sepet ve sipariş | Sepet, gönderim, dürüst ret | **Bitti** | `GuestCartTest`, sipariş ucu |
-| 6 — Fotoğraf ve plan kademesi | Zengin görsel, plan farkı | **Hak var, yüzey yok** | `menu.rich-media` tanımlı ve `restaurant` kademesinde; misafir yüzeyi yazılmadı |
+| 6 — Fotoğraf ve plan kademesi | Zengin görsel, plan farkı | **Bitti** | `ApplyGuestRichMedia`, `GuestRichMediaTest` (10 iddia); fiyat sayfası eşlemesi de eklendi |
 
-**Kalan iki dalga.** Üçüncüsü küçük ve karar zaten verilmiş (favori
+> **Y6 KAPANDI (FF-212, 2026-09-07).** Misafir yüzeyi indi: hakkı olan
+> kiracıda ürün fotoğrafı çizilir, olmayanda çizilmez — boş çerçeve, kırık
+> görsel yer tutucusu ya da "yükseltin" reklamı OLMADAN. Karar **donmuş
+> haktan** okunur, canlı plandan değil (`ApplyGuestRichMedia`), ve iki yönü de
+> dondurulmuştur: düşen plan masadaki basılı karekodun fotoğrafını almaz,
+> yükselen plan da eski yayına fotoğraf koymaz. Kaldırma İŞARETLEMEDE değil
+> VERİDE yapılır; böylece yapılandırılmış veri de fotoğrafı bildirmez ve ürün
+> sayfasının kalite kapısı kendiliğinden doğru olur. Yüzey indiği gün fiyat
+> sayfası da susmayı bıraktı: `PricingPage::WITHHELD` boşaldı,
+> `SiteText::entitlementLabel` eşlemesi eklendi ve "her planda fotoğraf var"
+> diyen üç cümle düzeltildi — yüklemek ve saklamak her planda, MİSAFİRE
+> göstermek plana bağlı.
+
+**Kalan tek dalga üçüncüsü** ve o küçük; karar zaten verilmiş (favori
 **cihazda** yaşar — favori bir kolaylıktır, bir varlık değil; kalıcılık için
-kimlik istemek orantısız). Altıncısının **fiyat tarafı FF-19x'te bitti**:
-`menu.rich-media` tanımlandı ve `restaurant` kademesine bağlandı. Geriye
-misafir yüzeyi kaldı — ve o yüzey inene kadar hak fiyat sayfasında
-**duyurulmaz**, çünkü olmayan bir şeyi satmak ödemeden önce söylenmiş bir
-yalandır.
+kimlik istemek orantısız).
 
 ## 2. Restoran paneli — on üç bölüm var, eksik olan ne?
 
@@ -55,7 +64,7 @@ Marka, Ekip, Ayarlar, Profil, Faturalandırma.
 | Puanlama panelde çizilmiyor | `docs/116` P5 panel ucu var, ekran yok | Sahip misafirin verdiği oyu göremiyor |
 | Sipariş bölümü kenar çubuğunda 12. sırada | Bölüm kaydının `order` alanı | Günlük operasyon, en dipte |
 | ~~`ordering.basic` hiçbir planda yok~~ | **KAPANDI (FF-19x)** | `restaurant` ve `team` kademelerinde satılıyor |
-| ~~`menu.rich-media` hakkı yok~~ | **KAPANDI (FF-19x)** | Hak tanımlı ve kademeli; yüzeyi Y6'da |
+| ~~`menu.rich-media` hakkı yok~~ | **KAPANDI (FF-19x + FF-212)** | Hak tanımlı, kademeli, ve misafir yüzeyi de var |
 | Mobil borç: 24 hikâye | `mobile-ux-audit.baseline.json` | `docs/117` M5–M9 |
 
 **En sert olanı üçüncüsüydü.** Sipariş hattı uçtan uca çalışıyordu — misafir
@@ -112,7 +121,7 @@ kasası, entegrasyonlar, planlar, abonelikler). Ekran katmanı **105 satır**.
 | ~~Y3~~ | **BİTTİ** — Süperadmin: modüller ekranı (`docs/111` adım 1–2) | `/engineering` | Plan hazırdı, veri hazırdı; ekran FF-168'de inmişti, bu belge geç fark etti |
 | Y4 | Panel: puanlama ekranı | Restoran paneli | Uç var, ekran yok — en kısa yol |
 | Y5 | Misafir: Dalga 3 favoriler (cihazda) | Misafir menüsü | Küçük, kararı verilmiş |
-| Y6 | Misafir: Dalga 6 zengin görsel yüzeyi | Misafir | Y1 bitti, engel kalktı: hak ve kademe hazır, yalnız yüzey yazılacak — ve o gün fiyat sayfası eşlemesi de eklenir |
+| ~~Y6~~ | **BİTTİ** — Misafir: Dalga 6 zengin görsel yüzeyi | Misafir | Satılabilen bir hakkın ürünü yoktu; yüzey indi, fiyat sayfası eşlemesi aynı turda eklendi |
 | Y7 | Süperadmin: destek görünümü ve kiracı olarak bakma | `/platform` | **Denetim kaydı ve zorluk şart** — bu yüzden en sonda |
 | Y8 | `docs/117` M5–M9: kalan mobil borç | Her yüzey | Ekran ekran, jetonlar bittiği için artık dar kapsamlı |
 

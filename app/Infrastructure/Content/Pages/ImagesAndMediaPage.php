@@ -215,6 +215,11 @@ final class ImagesAndMediaPage
                         source: 'app/Infrastructure/Media/Persistence/EloquentMenuMedia.php',
                     ),
                     new BlockEntry(
+                        term: 'Whether the guest sees the photo depends on the plan',
+                        text: 'Uploading, storing, versioning and seeing a photo in the panel work on every plan. Showing it to the guest on the menu is a paid right, and a workspace without it simply shows the dish without a picture — no empty frame and no notice for the guest.',
+                        source: 'app/Application/Publication/UseCase/ApplyGuestRichMedia.php',
+                    ),
+                    new BlockEntry(
                         term: 'Files are served by the product, not a delivery network',
                         text: 'Images come from the same server the menu does. There is no separate content network in front of them.',
                         source: 'app/Infrastructure/Media/Persistence/EloquentMediaRepository.php',

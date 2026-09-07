@@ -468,6 +468,10 @@ msgstr "Guests order from the table; your staff confirms and the kitchen sees it
 msgid "site.plan.qrBulk"
 msgstr "Bulk QR codes for a whole room of tables"
 
+#: site:site.plan.richMedia
+msgid "site.plan.richMedia"
+msgstr "Photographs of your dishes on the guest menu"
+
 #: site:site.plan.team
 msgid "site.plan.team"
 msgstr "Team members with roles you control"
@@ -494,7 +498,7 @@ msgstr "Pricing"
 
 #: site:site.pricing.included.body
 msgid "site.pricing.included.body"
-msgstr "Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, photos, and marking a dish sold out for the day."
+msgstr "Your menu, publishing with one-click rollback, QR codes and the guest page, CSV import and export, uploading and keeping photos of your dishes, and marking a dish sold out for the day."
 
 #: site:site.pricing.included.heading
 msgid "site.pricing.included.heading"

@@ -468,6 +468,10 @@ msgstr ""
 msgid "site.plan.qrBulk"
 msgstr ""
 
+#: site:site.plan.richMedia
+msgid "site.plan.richMedia"
+msgstr ""
+
 #: site:site.plan.team
 msgid "site.plan.team"
 msgstr ""

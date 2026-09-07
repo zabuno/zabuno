@@ -504,19 +504,21 @@ final class ProductPageLibraryTest extends TestCase
     public function test_the_withheld_rights_are_nowhere_on_the_pricing_page(): void
     {
         /*
-            `menu.rich-media` bilerek duyurulmuyor: hakkın misafir yüzeyi yok,
-            yani parası alınırsa masadaki misafirin gördüğü hiçbir şey
-            değişmez. Duyurulmayan bir hakkın adı sayfaya "yanlışlıkla" da
-            girmemelidir — girerse satılmış sayılır.
+            Duyurulmayan bir hakkın adı sayfaya "yanlışlıkla" da girmemelidir
+            — girerse satılmış sayılır.
+
+            LİSTE BUGÜN BOŞ ve bu bir sonuçtur, bir kural değil. Tek sakini
+            `menu.rich-media` idi: hakkın misafir yüzeyi yoktu, yani parası
+            alınsa bile masadaki misafirin gördüğü hiçbir şey değişmiyordu.
+            `docs/122` Y6 o yüzeyi yazdı (`GuestRichMediaTest`) ve satır
+            ANNOUNCED'a taşındı. Mekanizmanın kendisi duruyor ve bir sonraki
+            yüzeysiz hakta yine ölçer.
         */
-        /*
-            Karar ADIYLA duruyor. Hak henüz katalogda olmadığı için kapsama
-            testi ona bugün değmiyor; kararı yalnız o teste bırakmak, hak
-            kademeye bağlandığı gün birinin sessizce ANNOUNCED'a yazmasına
-            açık kapı bırakırdı. Susmanın sebebi WITHHELD'in kendisinde yazılı
-            ve silinirse bu satır kırılır.
-        */
-        self::assertArrayHasKey('menu.rich-media', PricingPage::WITHHELD);
+        self::assertArrayNotHasKey(
+            'menu.rich-media',
+            PricingPage::WITHHELD,
+            'Zengin görselin misafir yüzeyi yazıldı; susma gerekçesi düştü.',
+        );
 
         $text = mb_strtolower($this->flatten('fiyatlandirma'));
 
@@ -525,7 +527,9 @@ final class ProductPageLibraryTest extends TestCase
             self::assertStringNotContainsString(mb_strtolower($key), $text);
         }
 
-        self::assertStringNotContainsString('rich media', $text);
+        // Geliştirici dili hiçbir hâlde sayfaya sızmaz: anlatılan hak da
+        // insanca cümlesiyle yazılır, ham anahtarıyla değil.
+        self::assertStringNotContainsString('menu.rich-media', $text);
     }
 
     /**

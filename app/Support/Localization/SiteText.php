@@ -204,10 +204,10 @@ final class SiteText
      * `PlanCatalogueSellsEveryCapabilityTest` artık satılan ve ÇALIŞAN her
      * yeteneğin burada bir karşılığı olduğunu donduruyor.
      *
-     * `menu.rich-media` bilerek YOK: hak tanımlı ve kademesi kararlı, ama
-     * misafir yüzeyi Dalga 6'da yazılacak (`docs/122` Y6). Olmayan bir
-     * yüzeyi fiyat sayfasında duyurmak, ödemeden önce söylenmiş bir yalan
-     * olurdu. Satır Dalga 6 ile eklenir.
+     * `menu.rich-media` 2026-09-07'de EKLENDİ (`docs/122` Y6). Bu satır
+     * yokken hak tanımlı ve kademeliydi ama misafir yüzeyi yazılmamıştı;
+     * duyurmak, ödemeden önce söylenmiş bir yalan olurdu. Yüzey indi
+     * (`GuestRichMediaTest`), dolayısıyla sayfa artık susmuyor.
      */
     public function entitlementLabel(string $key, ?string $locale = null): ?string
     {
@@ -217,6 +217,7 @@ final class SiteText
             'team.invitations' => 'site.plan.team',
             'branding.custom' => 'site.plan.branding',
             'ordering.basic' => 'site.plan.ordering',
+            'menu.rich-media' => 'site.plan.richMedia',
         ];
 
         return isset($map[$key]) ? $this->get($map[$key], $locale) : null;

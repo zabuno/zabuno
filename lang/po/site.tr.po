@@ -468,6 +468,10 @@ msgstr ""
 msgid "site.plan.qrBulk"
 msgstr "Bütün bir salonun masaları için toplu karekod"
 
+#: site:site.plan.richMedia
+msgid "site.plan.richMedia"
+msgstr ""
+
 #: site:site.plan.team
 msgid "site.plan.team"
 msgstr "Yetkisini sizin belirlediğiniz ekip üyeleri"
@@ -494,7 +498,7 @@ msgstr "Fiyat"
 
 #: site:site.pricing.included.body
 msgid "site.pricing.included.body"
-msgstr "Menünüz, tek tıkla geri alınabilen yayınlama, karekodlar ve misafir sayfası, CSV içe ve dışa aktarma, fotoğraflar ve bir yemeği o gün için tükendi olarak işaretleme."
+msgstr ""
 
 #: site:site.pricing.included.heading
 msgid "site.pricing.included.heading"
