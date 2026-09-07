@@ -79,6 +79,10 @@ değil, **veri modeli** meselesidir (§5).
 Yerel geliştirme ve testler kapalı durumdadır: tek bir script yüklenmez ve
 testler ağ üzerinden bir ölçüm aracına asla bağlanmaz.
 
+Dört anahtar da `.env.example`, `.env.staging.example` ve
+`.env.production.example` içinde bildirilir. Teslim edilen kimliklerin
+hangisinin nereye girdiği ve kurulumun tuzakları: `docs/126`.
+
 ---
 
 ## 4. Sessiz kayıpların kapatıldığı yerler
