@@ -6,6 +6,7 @@ import { PlanCatalog, type Plan } from './billing/PlanCatalog';
 import { CurrentSubscriptionStatus } from './billing/CurrentSubscriptionStatus';
 import { IyzicoSandboxCheckout } from './billing/IyzicoSandboxCheckout';
 import { SubscribeCheckout, type CatalogPlansState } from './billing/SubscribeCheckout';
+import { SubscriptionLifecycle } from './billing/SubscriptionLifecycle';
 import { WorkspaceInvoices } from './billing/WorkspaceInvoices';
 import { WorkspaceLedger } from './billing/WorkspaceLedger';
 
@@ -29,6 +30,16 @@ export function BillingPage({ workspaceId, navigateToPayment }: BillingPageProps
         setPlans({ state: status, items: list });
     }, []);
 
+    /*
+        İptal ya da plan değişikliği "Current plan" bölgesini de eskitir.
+        Sayaç o bölgeyi yeniden kurar; ikinci bir istemci-tarafı kopya
+        tutulmadı — sunucu tek kaynaktır ve yeniden okunur.
+    */
+    const [subscriptionEpoch, setSubscriptionEpoch] = useState(0);
+    const handleSubscriptionChanged = useCallback(() => {
+        setSubscriptionEpoch((epoch) => epoch + 1);
+    }, []);
+
     return (
         <div id="section-billing">
             <WorkspacePageFrame
@@ -47,7 +58,19 @@ export function BillingPage({ workspaceId, navigateToPayment }: BillingPageProps
                     priceUnavailableText={t('workspace.billing.plan.priceUnavailable')}
                 />
 
-                <CurrentSubscriptionStatus workspaceId={workspaceId} />
+                <CurrentSubscriptionStatus key={subscriptionEpoch} workspaceId={workspaceId} />
+
+                {/*
+                    ABONELİĞİN EKSİK YARISI (docs/107 Faz 1.3, docs/134):
+                    iptal, iptalden cayma, plan düşürme, ödemesiz süre ve askı.
+                    Satın alma panelinin ÜSTÜNDE durur ve bilerek: sahip önce
+                    bugün ne olduğunu okur, sonra ödeme kararını verir.
+                */}
+                <SubscriptionLifecycle
+                    workspaceId={workspaceId}
+                    plans={plans}
+                    onChanged={handleSubscriptionChanged}
+                />
 
                 {/*
                     KENDİ KENDİNE ABONELİK (docs/107 Faz 1.1 + 1.3, docs/123).

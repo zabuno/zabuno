@@ -197,6 +197,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/workspaces/{workspace}/entitlements||App\Http\Controllers\Entitlement\ShowWorkspaceEntitlementsController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/plans||App\Http\Controllers\Billing\ListPlansController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/subscription||App\Http\Controllers\Billing\ShowSubscriptionController|api,auth:sanctum,verified',
+        // Aboneliğin eksik yarısı (FF-219, docs/134): iptal, cayma, düşürme.
+        'POST|api/workspaces/{workspace}/subscription/cancellation||App\Http\Controllers\Billing\StoreSubscriptionCancellationController|api,auth:sanctum,throttle:20,1,verified',
+        'DELETE|api/workspaces/{workspace}/subscription/cancellation||App\Http\Controllers\Billing\DestroySubscriptionCancellationController|api,auth:sanctum,throttle:20,1,verified',
+        'GET|api/workspaces/{workspace}/subscription/plan-change||App\Http\Controllers\Billing\ShowPlanChangeController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/subscription/plan-change||App\Http\Controllers\Billing\StorePlanChangeController|api,auth:sanctum,throttle:20,1,verified',
+        'DELETE|api/workspaces/{workspace}/subscription/plan-change||App\Http\Controllers\Billing\DestroyPlanChangeController|api,auth:sanctum,throttle:20,1,verified',
         'GET|api/workspaces/{workspace}/ledger||App\Http\Controllers\Ledger\ShowWorkspaceLedgerController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/iyzico-sandbox/session||App\Http\Controllers\Billing\ShowIyzicoSandboxSessionController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/iyzico-sandbox/session||App\Http\Controllers\Billing\StoreIyzicoSandboxSessionController|api,auth:sanctum,verified',

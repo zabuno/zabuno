@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1660;
+const FROZEN_LEGACY_KEY_COUNT = 1694;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -219,8 +219,19 @@ const FROZEN_LEGACY_KEY_COUNT = 1660;
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-219: 1660 → 1694, otuz dört anahtar — ABONELİĞİN EKSİK YARISI
+// (docs/107 Faz 1.3, docs/134). İptal, iptalden cayma, plan düşürme,
+// ödemesiz süre ve askı. Bu grubun ayırt edici yanı, cümlelerin bir DURUM
+// değil bir TARİH ve bir SONUÇ söylemesidir: "aboneliğiniz güncellendi"
+// diye bir anahtar yok; "X tarihine kadar kullanmaya devam edeceksiniz",
+// "X tarihinde şunları kaybedeceksiniz", "X tarihinden beri kapalı" var.
+// İki cümle bilerek MİSAFİRİ anlatıyor — sahibin en çok korktuğu şey,
+// ödeme sorununun masadaki müşterisine yansımasıdır ve cevabı ("yansımaz")
+// ekranda yazılı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '19c22ffc0a0d9258c5842418fa1097ef4562695087eeebdf4711b6d34c9a299d';
+    'b1fecb200605db809cd6824c69fbe35fe1f39902356810aab72a24a7a9b1c7f4';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
