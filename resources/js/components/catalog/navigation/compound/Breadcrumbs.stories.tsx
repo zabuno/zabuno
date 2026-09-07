@@ -44,5 +44,5 @@ export const RightToLeft: Story = {
             { key: 'order-42', label: 'طلب #42' },
         ],
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

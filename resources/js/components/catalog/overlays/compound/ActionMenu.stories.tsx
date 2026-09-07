@@ -45,5 +45,5 @@ export const RightToLeft: Story = {
             { key: 'delete', label: 'حذف', onSelect: () => {}, destructive: true },
         ],
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

@@ -51,5 +51,5 @@ export const Month: Story = {
 
 export const RightToLeft: Story = {
     args: { points: week },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

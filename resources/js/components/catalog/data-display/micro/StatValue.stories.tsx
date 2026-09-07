@@ -19,5 +19,5 @@ export const Flat: Story = { args: { value: '512', trend: 'flat' } };
 
 export const RightToLeft: Story = {
     args: { value: '١٬٢٠٤', trend: 'up' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

@@ -16,7 +16,7 @@
             60 ürünü tek tek yazmanız gerekmiyor. Menü ekranı bir CSV dosyası alır ve hepsini
             tek işlemde oluşturur.
         </p>
-        <ol class="flex list-decimal flex-col gap-2 pl-5 text-fg-secondary">
+        <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Çalışma alanında <strong>Menu</strong> ekranını açın.</li>
             <li>
                 Menü boşken bile bir kez <strong>Download menu (CSV)</strong> deyin; doğru
@@ -37,7 +37,7 @@
 
     <section id="help-qr" aria-labelledby="help-qr-heading" class="flex flex-col gap-3">
         <h2 id="help-qr-heading" class="text-2xl font-bold">Karekodlarınızı bastırın</h2>
-        <ol class="flex list-decimal flex-col gap-2 pl-5 text-fg-secondary">
+        <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Önce menüyü yayınlayın — karekodun işaret edeceği bir şey olmalı.</li>
             <li><strong>Publication</strong> ekranını açıp kod oluşturun; bütün bir salonun masaları için toplu seçenek var.</li>
             <li>Matbaa için <strong>PDF</strong>, tasarımcı için PNG/SVG olarak dışa aktarın.</li>
@@ -53,7 +53,7 @@
 
     <section id="help-price" aria-labelledby="help-price-heading" class="flex flex-col gap-3">
         <h2 id="help-price-heading" class="text-2xl font-bold">Fiyat değiştirin</h2>
-        <ol class="flex list-decimal flex-col gap-2 pl-5 text-fg-secondary">
+        <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li><strong>Menu</strong> ekranını açın, ürünü bulun, <strong>Price</strong> deyin.</li>
             <li><strong>Publication</strong> ekranını açıp yayınlayın.</li>
         </ol>

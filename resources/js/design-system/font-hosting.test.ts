@@ -402,15 +402,17 @@ describe('yazı tipi barındırma', () => {
     // --- Kaynak kaydı ------------------------------------------------------
 
     it('barındırılan her yazı tipinin lisansı ve kaynağı kayıtlı', () => {
-        expect(
-            existsSync(budget.licenseFile),
-            `DS-FONT-SELF-HOSTED-01: ${budget.licenseFile} yok. Bir yazı tipini yeniden ` +
-                'dağıtıyoruz; lisans metni onunla birlikte taşınmak ZORUNDA.',
-        ).toBe(true);
+        for (const licenseFile of budget.licenseFiles) {
+            expect(
+                existsSync(licenseFile),
+                `DS-FONT-SELF-HOSTED-01: ${licenseFile} yok. Bir yazı tipini yeniden ` +
+                    'dağıtıyoruz; lisans metni onunla birlikte taşınmak ZORUNDA.',
+            ).toBe(true);
+        }
 
         const provenance = readFileSync(budget.provenanceFile, 'utf8');
 
-        for (const field of ['@fontsource-variable/roboto', 'OFL-1.1']) {
+        for (const field of budget.provenanceMustMention) {
             expect(
                 provenance.includes(field),
                 `DS-FONT-SELF-HOSTED-01: kaynak kaydında "${field}" geçmiyor. Nereden ` +
@@ -418,5 +420,49 @@ describe('yazı tipi barındırma', () => {
                     'bir dosyadır.',
             ).toBe(true);
         }
+    });
+
+    /*
+        BARINDIRILAN HER AİLENİN BİR LİSANS DOSYASI OLMAK ZORUNDA.
+
+        Yukarıdaki iddia listedeki dosyaların VAR olduğunu ölçüyor; bu
+        iddia listenin EKSİK olmadığını ölçüyor. İkisi ayrı sorulardır:
+        üçüncü bir aile eklenip lisansı unutulursa birincisi hâlâ yeşil
+        kalırdı — ve yeniden dağıtılan bir yazı tipinin lisansını taşımamak
+        bir stil kusuru değil, OFL'nin ihlalidir.
+    */
+    it('barındırılan aile sayısı kadar lisans dosyası kayıtlı', () => {
+        const families = new Set(fontFaces().map((face) => face.family));
+
+        expect(
+            budget.licenseFiles.length,
+            `DS-FONT-SELF-HOSTED-01: ${families.size} aile barındırılıyor ` +
+                `(${[...families].join(', ')}) ama ${budget.licenseFiles.length} lisans ` +
+                'dosyası kayıtlı.',
+        ).toBe(families.size);
+    });
+
+    /*
+        ARAP YAZISI PRELOAD EDİLMEZ — `docs/132` §4.
+
+        Dokuz dilin ikisi Arap yazısı kullanır; kalan yedisi o dosyayı hiç
+        açmaz. Preload etmek, yedi dilin ziyaretçisine hiç kullanmayacağı
+        45 KB indirtirdi ve `unicode-range`'in bütün faydasını iptal ederdi:
+        preload, `unicode-range` filtresini ATLAR.
+    */
+    it('latin dışı yazı sistemleri preload edilmiyor', () => {
+        const partial = readFileSync(budget.preloadPartial, 'utf8');
+        const nonLatinHosted = fontFaces()
+            .flatMap((face) => face.sources)
+            .filter((source) => !source.includes(posix.basename(budget.firstPaintFile)))
+            .map((source) => posix.basename(source))
+            .filter((name) => partial.includes(name));
+
+        expect(
+            nonLatinHosted,
+            'DS-FONT-BUDGET-05: ilk boyamada gerekmeyen bir yazı tipi preload ediliyor. ' +
+                'Preload `unicode-range` filtresini atlar: dosyayı, o yazı sistemini hiç ' +
+                'kullanmayacak ziyaretçiye de indirtir.',
+        ).toEqual([]);
     });
 });

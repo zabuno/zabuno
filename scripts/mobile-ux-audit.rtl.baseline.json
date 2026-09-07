@@ -1,0 +1,28 @@
+{
+    "neden": "SAĞDAN SOLA dondurulmuş borç. `scripts/mobile-ux-audit.baseline.json` ile AYNI mekanizma, AYRI liste: yön değişince kusur ailesi de değişir ve tek listede tutmak, hangi bulgunun hangi yönden geldiğini gizlerdi. Üretildiği komut: `node scripts/mobile-ux-audit storybook-static --direction rtl`. Hiçbir metin çevrilmedi; yalnız yön çevrildi.",
+    "olculdu": "2026-09-07 · 331 hikâye · 320×568 · yön rtl · etkilenen 17/331 (aynı ağaçta LTR koşusu 16/331). Ölçüm iki ardışık koşuda BİREBİR aynı çıktı.",
+    "ltrdenFark": "Tek fark `micro-feedback-spinner--large` → `overflow-x`. Sebebi ölçüldü: göstergenin SVG kutusu 320 piksellik görüntü alanının BAŞLANGIÇ kenarına dayanıyor ve kutusu iki piksel taşıyor. LTR koşusunda bu taşma SOLA düşer ve sola taşma kaydırılamaz — belgenin `scrollWidth` değerine hiç girmez. RTL koşusunda aynı taşma SAĞA düşer ve orada kaydırılabilir hâle gelir. Aynı geometri, iki farklı sonuç; ve dar ekranda kaydırılabilir olanı kullanıcının bir daha bulamayacağı bir piksel şerididir.",
+    "olculemeyen": "Dönen bir öğenin ARA açılarındaki geçici taşma. `animate-spin` 24 piksellik kareyi döndürür ve eksen hizalı sınır kutusu açıya göre 34 piksele kadar çıkar; ölçüm bu yüzden her animasyonu sıfır anına dondurur (bkz. `scripts/mobile-ux-audit` FREEZE). Dondurulmadan alınan üç ardışık koşu 322, 323 ve 324 piksel bildirmişti — bir kapı değil, bir kumar. Ara açıların tek bir değeri olmadığı için eşiği de yoktur ve bu araç onları ölçtüğünü İDDİA ETMEZ.",
+    "width": 320,
+    "height": 568,
+    "direction": "rtl",
+    "stories": {
+        "macro-layout-pageheader--default": ["wasted-width"],
+        "macro-layout-pageheader--right-to-left": ["wasted-width"],
+        "micro-feedback-spinner--large": ["overflow-x"],
+        "micro-forms-checkbox--checked": ["small-target"],
+        "micro-forms-checkbox--default": ["small-target"],
+        "micro-forms-checkbox--disabled": ["small-target"],
+        "micro-forms-checkbox--invalid": ["small-target"],
+        "micro-navigation-textlink--default": ["small-target"],
+        "micro-navigation-textlink--in-paragraph": ["small-target"],
+        "surface-workspace-dashboardhomesections--without-measurement": ["wasted-width"],
+        "surface-workspace-dashboardsetupjourney--in-progress": ["wasted-width"],
+        "surface-workspace-dashboardsetupjourney--nothing-done-yet": ["wasted-width"],
+        "surface-workspace-qrcodelistitem--disabled": ["wasted-width"],
+        "surface-workspace-qrcodelistitem--named": ["wasted-width"],
+        "surface-workspace-qrcodelistitem--unnamed": ["wasted-width"],
+        "surface-workspace-qrexportconfigform--image": ["wasted-width"],
+        "surface-workspace-qrexportconfigform--pdf": ["wasted-width"]
+    }
+}

@@ -39,5 +39,5 @@ export const Disabled: Story = {
 
 export const RightToLeft: Story = {
     args: { href: '#dashboard', children: 'لوحة التحكم', current: true },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

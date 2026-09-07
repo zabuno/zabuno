@@ -156,5 +156,5 @@ export const RightToLeft: Story = {
             <p className="text-body text-gray-500 dark:text-gray-400">محتوى الصفحة هنا.</p>
         </ControlledAdminShell>
     ),
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

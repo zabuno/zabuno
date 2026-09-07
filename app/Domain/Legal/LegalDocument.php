@@ -24,6 +24,19 @@ use InvalidArgumentException;
  * ŞİRKET BİLGİSİ METNE GÖMÜLMEZ. Belge `{company.legal_name}` gibi yer
  * tutucular taşır; sayfa çizilirken `CompanyProfile` onları doldurur ya da
  * girilmemiş olduğunu yazar. Bir tüzel kişi adı ya da adres uydurulmaz.
+ *
+ * BELGE KENDİ DİLİNİ TAŞIR (`language`, FF-216 · `docs/121` Ö11). Bugün
+ * kütüphanedeki sekiz+iki belgenin hepsi İngilizce kaynak metindir ve sayfa
+ * `<main lang="en">` çizer. Bu tek satır, çeviri kilidi açıldığı gün
+ * yazılacak Türkçe metnin ŞABLONU değiştirmeden yerleşebilmesi için var:
+ * bir belge dilini söylemiyorsa, Türkçe bir sayfanın içine düşen İngilizce
+ * bir bölüm ekran okuyucuya yanlış dilde okunur ve arama motoruna yanlış
+ * dilde ilan edilir. Dil ÖLÇÜLEN bir olgudur, varsayılan değil.
+ *
+ * SÖZLEŞMENİN TARAFI OLMAYAN BELGE OLMAZ (`requiresSellerIdentity`).
+ * Mesafeli satış sözleşmesi, ön bilgilendirme formu ve teslimat/ifa
+ * koşulları satıcının kim olduğunu SÖYLEMEK zorundadır; şirket bilgisi
+ * girilmemişken bu üç belge "tamam" görünemez (`ShowLegalDocumentController`).
  */
 final class LegalDocument
 {
@@ -35,6 +48,8 @@ final class LegalDocument
         public readonly string $title,
         public readonly string $summary,
         public readonly array $sections,
+        public readonly string $language = 'en',
+        public readonly bool $requiresSellerIdentity = false,
     ) {
         if (preg_match('/^[a-z][a-z-]*$/', $key) !== 1) {
             throw new InvalidArgumentException("Legal document key \"{$key}\" must be a lowercase slug.");
@@ -52,6 +67,12 @@ final class LegalDocument
 
         if ($sections === []) {
             throw new InvalidArgumentException("Legal document \"{$key}\" has no sections.");
+        }
+
+        // Dil BCP-47 etiketidir ve boş olamaz: `lang=""` bir dil bildirimi
+        // değil, bildirimin unutulduğunun kanıtıdır.
+        if (preg_match('/^[a-z]{2}(-[A-Za-z0-9]{2,8})*$/', $language) !== 1) {
+            throw new InvalidArgumentException("Legal document \"{$key}\" language must be a BCP-47 tag, got \"{$language}\".");
         }
     }
 
@@ -71,6 +92,8 @@ final class LegalDocument
                 ),
                 $this->sections,
             ),
+            $this->language,
+            $this->requiresSellerIdentity,
         );
     }
 }

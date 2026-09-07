@@ -206,6 +206,9 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'PUT|api/workspaces/{workspace}/billing-profile||App\Http\Controllers\Billing\StoreBillingProfileController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/checkout||App\Http\Controllers\Billing\ShowCheckoutStatusController|api,auth:sanctum,verified',
         'POST|api/workspaces/{workspace}/checkout||App\Http\Controllers\Billing\StoreCheckoutController|api,auth:sanctum,throttle:10,1,verified',
+        // FATURA (FF-215, docs/107 Faz 1.4, docs/130): okunur ve indirilir, yazılmaz.
+        'GET|api/workspaces/{workspace}/invoices||App\Http\Controllers\Billing\ListInvoicesController|api,auth:sanctum,verified',
+        'GET|api/workspaces/{workspace}/invoices/{invoice}/document.pdf||App\Http\Controllers\Billing\DownloadInvoiceDocumentController|api,auth:sanctum,throttle:30,1,verified',
         'POST|api/workspaces/{workspace}/media||App\Http\Controllers\Media\StoreMediaController|api,auth:sanctum,verified',
         'GET|api/workspaces/{workspace}/media||App\Http\Controllers\Media\ListMediaController|api,auth:sanctum,verified',
         // Slot politikaları workspace'e bağlı DEĞİLDİR: ürünün kendi kuralları.

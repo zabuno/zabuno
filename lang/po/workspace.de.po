@@ -400,6 +400,46 @@ msgstr ""
 msgid "workspace.billing.changePlan.button"
 msgstr ""
 
+#: workspace:workspace.billing.checkout.consent.agreements
+msgid "workspace.billing.checkout.consent.agreements"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.agreements.error
+msgid "workspace.billing.checkout.consent.agreements.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.immediate
+msgid "workspace.billing.checkout.consent.immediate"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.immediate.error
+msgid "workspace.billing.checkout.consent.immediate.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.legend
+msgid "workspace.billing.checkout.consent.legend"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.links
+msgid "workspace.billing.checkout.consent.links"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.delivery
+msgid "workspace.billing.checkout.consent.read.delivery"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.distanceSales
+msgid "workspace.billing.checkout.consent.read.distanceSales"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.preInformation
+msgid "workspace.billing.checkout.consent.read.preInformation"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.refundPolicy
+msgid "workspace.billing.checkout.consent.read.refundPolicy"
+msgstr ""
+
 #: workspace:workspace.billing.checkout.description
 msgid "workspace.billing.checkout.description"
 msgstr ""
@@ -512,6 +552,10 @@ msgstr ""
 msgid "workspace.billing.checkout.retry"
 msgstr ""
 
+#: workspace:workspace.billing.checkout.sellerIdentityMissing
+msgid "workspace.billing.checkout.sellerIdentityMissing"
+msgstr ""
+
 #: workspace:workspace.billing.checkout.status.error
 msgid "workspace.billing.checkout.status.error"
 msgstr ""
@@ -550,6 +594,70 @@ msgstr ""
 
 #: workspace:workspace.billing.heading
 msgid "workspace.billing.heading"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.description
+msgid "workspace.billing.invoices.description"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.download
+msgid "workspace.billing.invoices.download"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.earchiveNotConfigured
+msgid "workspace.billing.invoices.earchiveNotConfigured"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.empty
+msgid "workspace.billing.invoices.empty"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.error
+msgid "workspace.billing.invoices.error"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.issuedAt
+msgid "workspace.billing.invoices.issuedAt"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.kind.creditNote
+msgid "workspace.billing.invoices.kind.creditNote"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.kind.invoice
+msgid "workspace.billing.invoices.kind.invoice"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.line
+msgid "workspace.billing.invoices.line"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.loading
+msgid "workspace.billing.invoices.loading"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.missingDocuments
+msgid "workspace.billing.invoices.missingDocuments"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.region
+msgid "workspace.billing.invoices.region"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.retry
+msgid "workspace.billing.invoices.retry"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.sellerIncomplete
+msgid "workspace.billing.invoices.sellerIncomplete"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.vat
+msgid "workspace.billing.invoices.vat"
+msgstr ""
+
+#: workspace:workspace.billing.invoices.vatUnknown
+msgid "workspace.billing.invoices.vatUnknown"
 msgstr ""
 
 #: workspace:workspace.billing.iyzicoSandbox.amount

@@ -400,6 +400,46 @@ msgstr "Sun"
 msgid "workspace.billing.changePlan.button"
 msgstr "Change plan"
 
+#: workspace:workspace.billing.checkout.consent.agreements
+msgid "workspace.billing.checkout.consent.agreements"
+msgstr "I have read and accept the Preliminary Information Form and the Distance Sales Agreement."
+
+#: workspace:workspace.billing.checkout.consent.agreements.error
+msgid "workspace.billing.checkout.consent.agreements.error"
+msgstr "To continue, accept the Preliminary Information Form and the Distance Sales Agreement."
+
+#: workspace:workspace.billing.checkout.consent.immediate
+msgid "workspace.billing.checkout.consent.immediate"
+msgstr "I ask for the service to start as soon as my payment is confirmed, and I have read that once it has started my right of withdrawal ends."
+
+#: workspace:workspace.billing.checkout.consent.immediate.error
+msgid "workspace.billing.checkout.consent.immediate.error"
+msgstr "To continue, confirm that the service should start as soon as the payment is confirmed."
+
+#: workspace:workspace.billing.checkout.consent.legend
+msgid "workspace.billing.checkout.consent.legend"
+msgstr "Before you pay"
+
+#: workspace:workspace.billing.checkout.consent.links
+msgid "workspace.billing.checkout.consent.links"
+msgstr "Documents to read before paying"
+
+#: workspace:workspace.billing.checkout.consent.read.delivery
+msgid "workspace.billing.checkout.consent.read.delivery"
+msgstr "Read the Delivery and Performance Terms"
+
+#: workspace:workspace.billing.checkout.consent.read.distanceSales
+msgid "workspace.billing.checkout.consent.read.distanceSales"
+msgstr "Read the Distance Sales Agreement"
+
+#: workspace:workspace.billing.checkout.consent.read.preInformation
+msgid "workspace.billing.checkout.consent.read.preInformation"
+msgstr "Read the Preliminary Information Form"
+
+#: workspace:workspace.billing.checkout.consent.read.refundPolicy
+msgid "workspace.billing.checkout.consent.read.refundPolicy"
+msgstr "Read the Cancellation and Refund Policy"
+
 #: workspace:workspace.billing.checkout.description
 msgid "workspace.billing.checkout.description"
 msgstr "Choose a plan, confirm your billing details, and pay by card on the Iyzico payment page. Each payment covers {days} days."
@@ -512,6 +552,10 @@ msgstr "Subscribe"
 msgid "workspace.billing.checkout.retry"
 msgstr "Retry"
 
+#: workspace:workspace.billing.checkout.sellerIdentityMissing
+msgid "workspace.billing.checkout.sellerIdentityMissing"
+msgstr "Payments cannot be taken yet: the seller has not published its legal identity, so a distance sales agreement cannot be concluded. Nothing was charged."
+
 #: workspace:workspace.billing.checkout.status.error
 msgid "workspace.billing.checkout.status.error"
 msgstr "Payment status could not be loaded."
@@ -551,6 +595,70 @@ msgstr "Version {version}"
 #: workspace:workspace.billing.heading
 msgid "workspace.billing.heading"
 msgstr "Billing"
+
+#: workspace:workspace.billing.invoices.description
+msgid "workspace.billing.invoices.description"
+msgstr "Every collected payment is recorded here as a numbered document. A document is never edited or deleted; a refund is recorded as a separate credit note."
+
+#: workspace:workspace.billing.invoices.download
+msgid "workspace.billing.invoices.download"
+msgstr "Download PDF"
+
+#: workspace:workspace.billing.invoices.earchiveNotConfigured
+msgid "workspace.billing.invoices.earchiveNotConfigured"
+msgstr "No e-Arşiv / e-Fatura provider is connected, so these records have not been sent to any tax authority."
+
+#: workspace:workspace.billing.invoices.empty
+msgid "workspace.billing.invoices.empty"
+msgstr "No invoice yet. The first successful payment creates the first document."
+
+#: workspace:workspace.billing.invoices.error
+msgid "workspace.billing.invoices.error"
+msgstr "Invoices could not be loaded."
+
+#: workspace:workspace.billing.invoices.issuedAt
+msgid "workspace.billing.invoices.issuedAt"
+msgstr "Issued {date}"
+
+#: workspace:workspace.billing.invoices.kind.creditNote
+msgid "workspace.billing.invoices.kind.creditNote"
+msgstr "Credit note"
+
+#: workspace:workspace.billing.invoices.kind.invoice
+msgid "workspace.billing.invoices.kind.invoice"
+msgstr "Invoice"
+
+#: workspace:workspace.billing.invoices.line
+msgid "workspace.billing.invoices.line"
+msgstr "{plan} — {days} days of subscription"
+
+#: workspace:workspace.billing.invoices.loading
+msgid "workspace.billing.invoices.loading"
+msgstr "Loading invoices…"
+
+#: workspace:workspace.billing.invoices.missingDocuments
+msgid "workspace.billing.invoices.missingDocuments"
+msgstr "{count} collected payment(s) have no document, because no billing details were recorded when they were collected."
+
+#: workspace:workspace.billing.invoices.region
+msgid "workspace.billing.invoices.region"
+msgstr "Invoices"
+
+#: workspace:workspace.billing.invoices.retry
+msgid "workspace.billing.invoices.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.invoices.sellerIncomplete
+msgid "workspace.billing.invoices.sellerIncomplete"
+msgstr "Our company details are not complete yet, so this document is not a complete commercial invoice."
+
+#: workspace:workspace.billing.invoices.vat
+msgid "workspace.billing.invoices.vat"
+msgstr "VAT {amount}"
+
+#: workspace:workspace.billing.invoices.vatUnknown
+msgid "workspace.billing.invoices.vatUnknown"
+msgstr "No VAT rate is configured, so this document shows no tax breakdown."
 
 #: workspace:workspace.billing.iyzicoSandbox.amount
 msgid "workspace.billing.iyzicoSandbox.amount"

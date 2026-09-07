@@ -49,5 +49,5 @@ export const RightToLeft: Story = {
         title: 'اقتربت من الحد',
         children: 'لقد استخدمت 90% من حصتك الشهرية.',
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

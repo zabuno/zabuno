@@ -56,7 +56,7 @@ export const WithWithheldCells: Story = {
 
 export const RightToLeft: Story = {
     args: { rows: DAYS.map((label, index) => day(label, 13, 10 + index * 8)) },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };
 
 /**

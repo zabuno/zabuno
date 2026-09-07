@@ -82,7 +82,7 @@
 
                     @if (! empty($plan['entitlements']))
                         <p class="mt-2 text-meta font-medium text-fg-secondary">{{ $st['adds'] }}</p>
-                        <ul class="flex list-disc flex-col gap-1 pl-5 text-fg-secondary">
+                        <ul class="flex list-disc flex-col gap-1 ps-5 text-fg-secondary">
                             @foreach ($plan['entitlements'] as $entitlement)
                                 <li>{{ $entitlement }}</li>
                             @endforeach
@@ -96,5 +96,27 @@
             {{ $st['unsure'] }}
             <a class="underline underline-offset-2" href="/contact">{{ $st['unsureCta'] }}</a>
         </p>
+
+        {{-- KABUL EDİLEN ÖDEME YÖNTEMİ, FİYATIN YANINDA (FF-216).
+
+             Fiyatı okuyan kişi "nasıl ödeyeceğim?" sorusunu tam orada
+             sorar; cevabı sözleşmenin on birinci bölümünde bırakmak, onu
+             ödeme adımında öğrenmesi demekti.
+
+             BANKA YA DA KART LOGOSU YOK: hangi kartların kabul edildiği
+             ödeme sağlayıcısının kendi yapılandırmasından türer ve bu
+             depoda öyle bir liste yapılandırılmamıştır. Sağlayıcının adı
+             ise ölçülmüş bir olgudur; uydurulmuş bir logo ise kabul
+             edilmeyen bir kartı kabul ediliyor göstermek olurdu. --}}
+        <div class="flex flex-col text-meta text-fg-muted" data-payment-methods>
+            <p>{{ $st['paymentMethods'] }}</p>
+            {{-- Bağlantı CÜMLENİN İÇİNDE değil, kendi satırında ve 44
+                 piksel: satır içi bir bağlantı dar ekranda 18-42 piksel
+                 yüksekliğinde kalıyor ve parmakla ıskalanıyor (`docs/117`).
+                 Bu sayfadaki eski satır içi bağlantılar #279'un borcudur ve
+                 ayrı ölçülür; YENİ bağlantı o borcu büyütmez. --}}
+            <a class="inline-flex min-h-11 items-center self-start underline underline-offset-2"
+               href="/pre-information">{{ $st['paymentMethodsCta'] }}</a>
+        </div>
     @endif
 </section>

@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1652;
+const FROZEN_LEGACY_KEY_COUNT = 1679;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -186,6 +186,23 @@ const FROZEN_LEGACY_KEY_COUNT = 1652;
 // fatura kesildi" cümlesi (fatura yolu bu pakette yok — docs/107 Faz 1.4).
 // "Test mode" cümlesi sandbox kipinde okunur: prova gerçek yolun aynısıdır
 // ve sahip hangi kipte olduğunu tahmin etmek zorunda kalmaz.
+// FF-216: 1618 → 1629, on bir anahtar — ödeme adımının İKİ ONAYI ve
+// satıcının eksik kimliği (docs/107 Faz 1.2, docs/131). İkisi onay kutusunun
+// cümlesi, ikisi kutu boşken yazılan sebep, biri bölümün başlığı, biri belge
+// listesinin adı, dördü okunacak belgelerin bağlantı etiketi (ön
+// bilgilendirme, mesafeli satış, teslimat/ifa, iptal-iade), biri de canlı
+// kipte satıcının yasal kimliği yayınlanmadan tahsilat yapılamadığını
+// söyleyen cümle.
+//
+// İKİ AYRI ONAY ANAHTARI, çünkü iki ayrı hukuki olgu: sözleşmeyi kabul etmek
+// ile cayma süresi dolmadan ifaya başlanmasını AÇIKÇA istemek aynı şey
+// değildir. Tek bir "kabul ediyorum" anahtarı, defterde hangisine evet
+// dendiğini ayırt edilemez hâle getirirdi.
+//
+// BİLEREK ANAHTARSIZ: bir kart ya da banka markası (hangi kartların kabul
+// edildiği ödeme sağlayıcısının yapılandırmasından türer, bu depoda öyle bir
+// liste yok) ve bir "cayma süresi şu kadar gün" cümlesi (süre kanundan gelir
+// ve belge metninde, katalogda değil).
 // main ile birleştikten SONRA yeniden hesaplandı (ratings.ts + support.ts).
 // FF-201: 1576 → 1599, yirmi üç anahtar ve ON ÜÇÜNCÜ modül dosyası
 // (`support.ts`). Destek ekranı (`docs/125`): başlık ve açıklama, yardım
@@ -198,6 +215,18 @@ const FROZEN_LEGACY_KEY_COUNT = 1652;
 // panel tek kaynağı okumak zorunda. Buraya ikinci bir cümle yazmak, iki
 // cümlenin ayrıştığı günü hazırlamak olurdu. "7/24", "en kısa sürede" gibi
 // bir yedek cümle de yok — vaat sahibin kararıdır, katalogun değil.
+// FF-215: 1618 → 1634, on altı anahtar — FATURA (docs/107 Faz 1.4,
+// docs/130). Yukarıdaki "fatura yolu bu pakette yok" notu ARTIK GEÇERSİZ:
+// tahsilatın karşılığında numaralı bir belge doğuyor ve panel onu
+// listeliyor. Anahtarlar belgenin EKRAN kipinindir; kâğıt kipi (A4 PDF)
+// sunucuda üretilir ve metni katalogda değil, belgenin kendi kaynak
+// dilindedir (`LegalDocument` ile aynı karar).
+//
+// ÜÇ CÜMLE BİLEREK "EKSİK" DİYOR ve hiçbiri iyimser değil: şirket bilgisi
+// girilmemişken belgenin tam bir ticari fatura OLMADIĞI, KDV oranı
+// yapılandırılmamışken vergi ayrımının GÖSTERİLMEDİĞİ, ve e-arşiv/
+// e-fatura sağlayıcısı bağlı olmadığı için kaydın hiçbir yere
+// GÖNDERİLMEDİĞİ. "Yakında e-fatura" diye bir anahtar yok ve olmayacak.
 // FF-213 (docs/121 Ö1/Ö2): 1576 → 1579, ÜÇ anahtar ve hiçbiri yeni bir
 // ekran değil. Üçü de ZATEN EKRANDA olan ama katalogdan geçmeyen metinler:
 // kırıntı izinin bölge adı ve boş hâli (`Breadcrumbs` içinde gömülüydü) ve
@@ -207,16 +236,16 @@ const FROZEN_LEGACY_KEY_COUNT = 1652;
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
-// FF-218 (`docs/122` Y7, `docs/133`): 1644 → 1652, SEKİZ anahtar ve hepsi
-// TEK bir cümlenin parçaları — "platform ekibinden biri hesabınıza baktı".
+// FF-218 (`docs/122` Y7, `docs/133`): SEKİZ anahtar ve hepsi TEK bir
+// cümlenin parçaları — "platform ekibinden biri hesabınıza baktı".
 // `docs/122` §5 kaydın kiracının GÖREBİLECEĞİ biçimde yazılmasını şart
 // koşuyor; sahibin okuyacağı metnin katalogdan geçmesi o şartın kendisidir,
 // yan etkisi değil. Sekiz anahtar: kaynak etiketi, bölüm başlığı, ne
 // yapılamadığını anlatan yardım metni, açık ve kapalı oturumun zaman
 // cümleleri, sebep, kim ve failin bilinmediği hâli.
-// ÇEVİRİ YİNE YAPILMADI: yalnız İngilizce kaynak satırları yazıldı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırları yazıldı.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'eb8fbc0c2a20f6028392032cb1f263c78287fcb77c636f73aae3ffb428db67df';
+    'b2e0092dc4884d5f84a2213ab8fa00e8dbb35821640d671ed33908665bb5c35e';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

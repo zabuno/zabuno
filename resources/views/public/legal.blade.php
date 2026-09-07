@@ -13,11 +13,35 @@
 @section('description', $document->summary)
 
 @section('content')
+    {{-- `lang` BELGENİN kendi dilidir, sayfanın değil (`docs/121` Ö11).
+         Bugün dokuz belgenin hepsi İngilizce kaynak metin; Türkçe bir kabuğun
+         içine düşen İngilizce bir sözleşme, dilini söylemezse ekran okuyucuya
+         yanlış dilde okunur. --}}
     <main id="main-content"
           class="site-legal"
+          lang="{{ $document->language }}"
           data-legal-document="{{ $document->key }}"
           data-legal-version="{{ $document->version }}"
-          data-legal-effective="{{ $document->effectiveDate }}">
+          data-legal-effective="{{ $document->effectiveDate }}"
+          @if ($sellerIdentityMissing ?? false) data-legal-incomplete="seller-identity" @endif>
+        @if ($sellerIdentityMissing ?? false)
+            {{-- EKSİK SÖZLEŞME BUNU YÜKSEK SESLE SÖYLER (FF-216).
+
+                 Bu bant `role="alert"` taşır ve inceleme notunun ÜSTÜNDEDİR:
+                 metnin bir hukukçu tarafından okunmamış olması ile
+                 sözleşmenin TARAFININ hiç yazılmamış olması aynı ağırlıkta
+                 değil. Bant çizilirken sayfa aynı anda `noindex` döner
+                 (`ShowLegalDocumentController`). --}}
+            <p class="site-legal-alert" role="alert" data-legal-alert="seller-identity">
+                <strong class="site-legal-alert-title">{{ $st['legalIncompleteHeading'] }}</strong>
+                <span>{{ $st['legalIncompleteBody'] }}</span>
+                <span class="site-legal-alert-fields">
+                    <span class="font-medium">{{ $st['legalIncompleteFields'] }}</span>
+                    {{ implode(', ', $missingCompanyFields ?? []) }}
+                </span>
+            </p>
+        @endif
+
         @if ($reviewPending)
             {{-- İNCELEME NOTU: belge yayında ama bir hukukçu okuyana kadar
                  bunu SÖYLER. `LEGAL_REVIEWED_AT` dolunca kalkar (`LegalReview`). --}}
