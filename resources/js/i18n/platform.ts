@@ -301,6 +301,124 @@ const en = {
     'platform.credentials.field.base_url': 'Base URL',
     'platform.credentials.field.organization': 'Organization',
     'platform.credentials.field.project': 'Project',
+
+    /*
+        SÜPERADMİNİN İLK GÜNÜ (`docs/122` Y2). Üç ekran, üçü de yalnız
+        OKUYOR: kiracı ayrıntısı, kullanıcı görünürlüğü, denetim günlüğü.
+        Metinler bilerek "bu ekran ne yapmaz" cümlesini de taşır — bir
+        destek aracında eksik olan yeteneğin sessizce eksik olması, yanlış
+        beklenti üretir.
+    */
+    'platform.shell.group.oversight': 'Oversight',
+
+    'platform.tenants.nav.label': 'Workspaces',
+    'platform.tenants.region.label': 'Workspace detail',
+    'platform.tenants.intro':
+        'Pick a workspace to see its branches, menus, usage, subscription and last events. This screen only reads: nothing here changes a customer’s data, and there is no way to sign in as a customer.',
+    'platform.tenants.idle': 'Pick a workspace to see its detail.',
+    'platform.tenants.loading': 'Loading the workspace…',
+    'platform.tenants.error': 'We could not load this workspace.',
+    'platform.tenants.retry': 'Retry',
+    'platform.tenants.identity.title': 'Identity',
+    'platform.tenants.identity.slug': 'Slug',
+    'platform.tenants.identity.state': 'State',
+    'platform.tenants.identity.created': 'Created',
+    'platform.tenants.identity.brand': 'Brand',
+    'platform.tenants.identity.currency': 'Currency',
+    'platform.tenants.identity.locale': 'Content language',
+    'platform.tenants.identity.noBrand': 'This workspace has no brand yet.',
+    'platform.tenants.subscription.title': 'Subscription',
+    // "Aboneliği yok" ile "aboneliğini okuyamadık" AYRI durumlar; boş bir
+    // plan kartı ikisini birbirine karıştırırdı.
+    'platform.tenants.subscription.none':
+        'No subscription has ever been recorded for this workspace.',
+    'platform.tenants.subscription.plan': 'Plan',
+    'platform.tenants.subscription.version': 'Plan version',
+    'platform.tenants.subscription.endsAt': 'Runs until',
+    'platform.tenants.usage.title': 'Usage',
+    'platform.tenants.usage.locations': 'Branches',
+    'platform.tenants.usage.menus': 'Menus',
+    'platform.tenants.usage.products': 'Products',
+    'platform.tenants.usage.mediaAssets': 'Media files',
+    'platform.tenants.usage.members': 'Team members',
+    'platform.tenants.locations.title': 'Branches',
+    'platform.tenants.locations.empty': 'No branch yet.',
+    'platform.tenants.menus.title': 'Menus',
+    'platform.tenants.menus.empty': 'No menu yet.',
+    'platform.tenants.members.title': 'Team',
+    'platform.tenants.members.empty': 'Nobody belongs to this workspace.',
+    'platform.tenants.events.title': 'Last events',
+    'platform.tenants.events.empty': 'Nothing has been recorded for this workspace yet.',
+    // Kırpılan liste, yanlış sayı değildir — ama söylenmezse öyle okunur.
+    'platform.tenants.truncated': 'Only the first rows are drawn; the count above is the real one.',
+    'platform.tenants.col.name': 'Name',
+    'platform.tenants.col.city': 'City',
+    'platform.tenants.col.country': 'Country',
+    'platform.tenants.col.timezone': 'Time zone',
+    'platform.tenants.col.state': 'State',
+    'platform.tenants.col.branch': 'Branch',
+    'platform.tenants.col.role': 'Role',
+    'platform.tenants.col.email': 'Email',
+    'platform.tenants.col.since': 'Member since',
+    'platform.tenants.col.when': 'When',
+    'platform.tenants.col.source': 'Source',
+    'platform.tenants.col.action': 'Event',
+    'platform.tenants.col.subject': 'Subject',
+    'platform.tenants.col.actor': 'By',
+
+    'platform.users.nav.label': 'Users',
+    'platform.users.region.label': 'Users',
+    'platform.users.intro':
+        'Who a person is, which workspaces they belong to and with which role, and whether their address is verified. This screen only reads — there is no password reset, no lock and no role change here.',
+    'platform.users.search.label': 'Search by name or email address',
+    'platform.users.search.submit': 'Search',
+    'platform.users.loading': 'Loading users…',
+    'platform.users.error': 'We could not load users.',
+    'platform.users.retry': 'Retry',
+    'platform.users.empty': 'No user matches this search.',
+    'platform.users.title': 'Users',
+    'platform.users.col.name': 'Person',
+    'platform.users.col.email': 'Email',
+    'platform.users.col.verified': 'Address verified',
+    'platform.users.col.platformRole': 'Platform role',
+    'platform.users.col.sessions': 'Open sessions',
+    'platform.users.col.memberships': 'Workspaces',
+    'platform.users.verified.no': 'Not verified',
+    'platform.users.memberships.none': 'Belongs to no workspace',
+    'platform.users.sessions.note':
+        'Open sessions are only counted where this installation keeps sessions in the database. An empty cell means “not measured here”, not “nobody is signed in”.',
+    'platform.users.lock.note':
+        'This product has no user lock today, so no lock column is drawn: a “not locked” badge would report a check that does not exist.',
+    'platform.users.truncated': 'Only the first rows are drawn. Narrow the search to see the rest.',
+
+    'platform.auditLog.nav.label': 'Audit log',
+    'platform.auditLog.region.label': 'Audit log',
+    'platform.auditLog.intro':
+        'Who did what, and when — read from the trails this product already writes: media, menu, publication and the credential vault. Read-only: a recorded event cannot be edited or erased from here.',
+    'platform.auditLog.loading': 'Loading the audit log…',
+    'platform.auditLog.error': 'We could not load the audit log.',
+    'platform.auditLog.retry': 'Retry',
+    'platform.auditLog.empty': 'Nothing has been recorded yet.',
+    'platform.auditLog.title': 'Events',
+    'platform.auditLog.filter.source': 'Source',
+    'platform.auditLog.filter.source.all': 'All sources',
+    'platform.auditLog.filter.workspace': 'Workspace ID',
+    'platform.auditLog.filter.apply': 'Apply',
+    'platform.auditLog.source.media': 'Media',
+    'platform.auditLog.source.menu': 'Menu',
+    'platform.auditLog.source.publication': 'Publication',
+    'platform.auditLog.source.credential': 'Credential vault',
+    'platform.auditLog.col.when': 'When',
+    'platform.auditLog.col.source': 'Source',
+    'platform.auditLog.col.action': 'Event',
+    'platform.auditLog.col.subject': 'Subject',
+    'platform.auditLog.col.actor': 'By',
+    'platform.auditLog.col.workspace': 'Workspace',
+    'platform.auditLog.page': 'Page {page}',
+    'platform.auditLog.prev': 'Previous page',
+    'platform.auditLog.next': 'Next page',
+    'platform.auditLog.scope':
+        'A credential-vault row belongs to no workspace, so its workspace cell stays empty. A menu event’s old and new values are deliberately not shown here; they live in that workspace’s own menu history.',
 } as const;
 
 type TranslationKey = keyof typeof en;
