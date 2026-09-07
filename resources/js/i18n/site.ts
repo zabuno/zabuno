@@ -72,11 +72,47 @@ export const siteTranslations = {
     */
     'site.legal.dataRequest.addressMissing':
         'This information has not been entered yet. A request sent through the contact form still reaches us and is recorded.',
+
+    /*
+        EKSİK SÖZLEŞME BANDI (FF-216).
+
+        Bu üç dize bir hukuki metin değil, bir DURUM bildirimidir: sözleşmenin
+        tarafı olan tüzel kişi henüz yayınlanmadığı için belge tamam değildir
+        ve okuyucu buna dayanmamalıdır. Renk tek başına bunu anlatamaz —
+        başlık kelimeyle söyler.
+
+        "Do not rely on it" cümlesi bilerek sert: bu bandın gösterildiği
+        sayfa aynı anda arama motoruna kapatılır ve üretimde ödeme bu hâlde
+        başlatılamaz (`ManageCheckout`). Bandı yumuşatmak, üçünden yalnız
+        birini yumuşatmak olurdu.
+    */
+    'site.legal.incomplete.heading': 'This document is not complete yet.',
+    'site.legal.incomplete.body':
+        'The legal identity of the seller has not been published yet, so this text does not name the party you would be contracting with. Read it as a draft: do not rely on it as a contract, and ask us before you act on it.',
+    'site.legal.incomplete.fields': 'Not entered yet:',
+
+    /*
+        ŞİRKET KİMLİĞİNİN ETİKETLERİ (FF-216) — `/about`, `/contact` ve eksik
+        alan bandı bu YEDİ etiketi paylaşır (`CompanyIdentity`). Alan adı →
+        etiket eşlemesi kodda tek yerde; dizeler burada tek yerde.
+    */
+    'site.company.legalName': 'Registered name',
+    'site.company.address': 'Registered address',
+    'site.company.mersis': 'MERSIS number',
+    'site.company.taxOffice': 'Tax office',
+    'site.company.taxNumber': 'Tax number',
+    'site.company.email': 'E-mail',
+    'site.company.phone': 'Phone',
+    /* GİRİLMEMİŞ DEĞER GİZLENMEZ. Satırı atlamak, o alanın hiç istenmediği
+       izlenimi verirdi; uydurmak ise satıcıyı yanlış göstermek olurdu. */
+    'site.company.value.missing': 'Not entered yet',
+
     'site.skipToContent': 'Skip to main content',
     'site.nav.features': 'Features',
     'site.nav.howItWorks': 'How it works',
     'site.nav.pricing': 'Pricing',
     'site.nav.help': 'Help',
+    'site.nav.about': 'About us',
     'site.nav.contact': 'Contact',
     'site.nav.login': 'Log in',
     'site.nav.register': 'Create account',
@@ -111,6 +147,10 @@ export const siteTranslations = {
     // Uzaktan satışın belgeleri (FF-198).
     'site.footer.distanceSales': 'Distance Sales Agreement',
     'site.footer.preInformation': 'Preliminary Information Form',
+    /* Teslimat/ifa AYRI bir başlık (FF-216): dijital bir hizmette
+       "teslimat" hesabın ne zaman aktifleştiğidir ve o başlık adıyla
+       aranır. */
+    'site.footer.delivery': 'Delivery and Performance Terms',
     'site.footer.refundPolicy': 'Cancellation and Refund Policy',
     'site.footer.cookies': 'Cookie Policy',
     'site.footer.tagline': 'Your menu behind a QR code, kept up to date by your own team.',
@@ -224,6 +264,50 @@ export const siteTranslations = {
     // Bal küpü etiketi: insan bunu görmez, ama ekran okuyucu görürse ne
     // yapacağını bilmeli.
     'site.contact.honeypot': 'Leave this empty',
+    /* Formun ÜSTÜNDE satıcının gerçek iletişim bilgisi (FF-216): kime
+       yazdığını bilmeyen ziyaretçi yazmaz. */
+    'site.contact.identity.heading': 'Who you are writing to',
+    'site.contact.form.heading': 'Send us a message',
+
+    // --- Hakkımızda (FF-216) ---------------------------------------------
+    /*
+        Ödeme kuruluşunun üye iş yeri incelemesi "satıcı kim?" sorusunu ayrı
+        bir başlıkta arar. Bu sayfa hiçbir şey uydurmaz: olgular
+        `CompanyProfile` üzerinden ortamdan gelir ve girilmemişse öyle yazar.
+
+        ÜRÜN TANIMI ÖLÇÜLDÜ, ŞİŞİRİLMEDİ: burada yazan her yetenek depoda
+        çalışır ve fiyat sayfasında satılır. "Türkiye'nin en iyisi",
+        "binlerce restoran" gibi doğrulanamayan bir cümle yok.
+    */
+    'site.about.heading': 'About us',
+    'site.about.lead':
+        'Who sells Zabuno, what it is, how it is paid for and how to reach a person about it.',
+    'site.about.seller.heading': 'The seller',
+    'site.about.seller.body':
+        'These are the details of the legal entity that sells the paid plans and is the seller named in the Distance Sales Agreement.',
+    'site.about.service.heading': 'What Zabuno is',
+    'site.about.service.body':
+        'Zabuno is a subscription to a workspace in which a restaurant, cafe or bar keeps its menu and publishes it behind a permanent QR code. Changing a price or hiding a dish updates the page the guests see; the printed code stays the same.',
+    'site.about.service.scope':
+        'Depending on the plan, the workspace also covers branches, tables and QR codes, guest ordering, guest rating, team members with their own permissions, custom branding, reporting, and importing a menu from a photograph with a person confirming the result. The service is used through a web browser; nothing is installed.',
+    'site.about.payment.heading': 'Payment methods we accept',
+    /* SAĞLAYICI ÖLÇÜLDÜ (`IyzipayGateway`); KART MARKASI ÖLÇÜLEMEDİ ve bu
+       yüzden yazılmadı. Bir logo tablosu, kabul edilmeyen bir kartı kabul
+       ediliyor göstermek olurdu. */
+    'site.about.payment.body':
+        "Paid plans are paid by card, through the payment service provider Iyzico. We do not accept bank transfer, cash or payment on delivery for a subscription, and we never see or store your card number: it is entered on the provider's own pages. Which card brands the provider accepts is set in the provider's own configuration, so it is not listed here.",
+    'site.about.reach.heading': 'How to reach us',
+    'site.about.reach.body':
+        'Write to us with the contact form or to the e-mail address above. We keep every message and reply to the address you give us.',
+    'site.about.reach.cta': 'Open the contact form',
+    'site.about.incomplete.heading': 'This page is not complete yet.',
+    'site.about.incomplete.body':
+        'The legal identity of the seller has not been published yet, so the details below are missing. Until they are entered, use the contact form to reach us.',
+
+    /* Fiyatın yanında, ödeme adımından ÖNCE (FF-216). */
+    'site.pricing.paymentMethods':
+        'Paid plans are paid by card through the payment service provider Iyzico; no other payment method is offered.',
+    'site.pricing.paymentMethods.cta': 'Read the Preliminary Information Form',
 
     // --- Ana sayfadaki iki yeni cümle ------------------------------------
     // --- Ana sayfa gövdesi (`docs/100` Faz 2) -----------------------------

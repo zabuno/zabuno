@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Seo;
 
 use App\Application\Publication\Port\PublicMenuAddressPort;
+use App\Domain\Legal\CompanyProfile;
 use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
@@ -30,6 +31,17 @@ use Illuminate\Http\Response;
  */
 final class ShowSitemapController extends Controller
 {
+    /**
+     * Satıcının kimliğini SÖYLEMEK zorunda olan sayfalar (FF-216).
+     *
+     * `LegalDocument::$requiresSellerIdentity` ile aynı olgu; burada yol
+     * olarak duruyor çünkü `/about` bir yasal belge değil, kurumsal bir
+     * sayfadır ve aynı kurala tabidir.
+     *
+     * @var list<string>
+     */
+    private const SELLER_IDENTITY_PATHS = ['/about', '/distance-sales', '/pre-information', '/delivery'];
+
     public function __construct(
         private readonly PublicMenuAddressPort $addresses,
         private readonly CanonicalUrl $canonical,
@@ -43,7 +55,22 @@ final class ShowSitemapController extends Controller
         // Pazarlama sayfaları: sunucuda üretilirler ve indekslenebilirler.
         // Yasal belgelerin hepsi indekslenebilir (FF-198): bir sözleşme
         // arama motorunda bulunabilmeli.
-        foreach (['/', '/terms', '/privacy', '/kvkk', '/distance-sales', '/pre-information', '/refund-policy', '/cookies', '/marketing-consent'] as $path) {
+        foreach (['/', '/about', '/terms', '/privacy', '/kvkk', '/distance-sales', '/pre-information', '/delivery', '/refund-policy', '/cookies', '/marketing-consent'] as $path) {
+            /*
+                EKSİK BİR SÖZLEŞME İNDEKSLENMEZ (FF-216).
+
+                Satıcının kimliği girilmemişken mesafeli satış, ön
+                bilgilendirme ve teslimat metinleri tarafını "not yet
+                provided" diye gösterir. O hâlleriyle sayfa yine 200 döner ve
+                okunabilir — ama arama motoruna sunulmaz. Sitemap ile
+                sayfanın kendi robots sinyalinin AYNI cevabı vermesi bu
+                sınıfın iki pazarlığa kapalı kuralından biriydi; burası o
+                kuralın yeni hâli.
+            */
+            if (in_array($path, self::SELLER_IDENTITY_PATHS, true) && ! CompanyProfile::fromConfig()->isComplete()) {
+                continue;
+            }
+
             $entries[] = ['loc' => $this->canonical->for($base, $path), 'lastmod' => null];
         }
 

@@ -35,7 +35,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1618;
+const FROZEN_LEGACY_KEY_COUNT = 1629;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -184,8 +184,25 @@ const FROZEN_LEGACY_KEY_COUNT = 1618;
 // fatura kesildi" cümlesi (fatura yolu bu pakette yok — docs/107 Faz 1.4).
 // "Test mode" cümlesi sandbox kipinde okunur: prova gerçek yolun aynısıdır
 // ve sahip hangi kipte olduğunu tahmin etmek zorunda kalmaz.
+// FF-216: 1618 → 1629, on bir anahtar — ödeme adımının İKİ ONAYI ve
+// satıcının eksik kimliği (docs/107 Faz 1.2, docs/131). İkisi onay kutusunun
+// cümlesi, ikisi kutu boşken yazılan sebep, biri bölümün başlığı, biri belge
+// listesinin adı, dördü okunacak belgelerin bağlantı etiketi (ön
+// bilgilendirme, mesafeli satış, teslimat/ifa, iptal-iade), biri de canlı
+// kipte satıcının yasal kimliği yayınlanmadan tahsilat yapılamadığını
+// söyleyen cümle.
+//
+// İKİ AYRI ONAY ANAHTARI, çünkü iki ayrı hukuki olgu: sözleşmeyi kabul etmek
+// ile cayma süresi dolmadan ifaya başlanmasını AÇIKÇA istemek aynı şey
+// değildir. Tek bir "kabul ediyorum" anahtarı, defterde hangisine evet
+// dendiğini ayırt edilemez hâle getirirdi.
+//
+// BİLEREK ANAHTARSIZ: bir kart ya da banka markası (hangi kartların kabul
+// edildiği ödeme sağlayıcısının yapılandırmasından türer, bu depoda öyle bir
+// liste yok) ve bir "cayma süresi şu kadar gün" cümlesi (süre kanundan gelir
+// ve belge metninde, katalogda değil).
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'ed74cda71a6f75a1cbe35a4cdd815de6094adb391ec8bb0e8e22b16501cd9438';
+    'f3b132314dac8139aa008922216ac187be391a283645cc49d022fbcd04dd8e24';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

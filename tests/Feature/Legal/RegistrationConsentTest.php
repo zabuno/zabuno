@@ -127,20 +127,59 @@ final class RegistrationConsentTest extends TestCase
         self::assertSame(0, DB::table('consent_records')->where('document_key', 'marketing-consent')->count());
     }
 
-    // --- REG-CONSENT-04: ödeme adımının onayı için servis HAZIR ----------------
+    // --- REG-CONSENT-04: ödeme adımının onayı DEFTERE YAZILIR -----------------
 
-    public function test_the_recorder_can_write_the_checkout_consents_for_the_payment_package(): void
+    public function test_the_recorder_writes_the_checkout_consents_and_the_immediate_performance_consent(): void
     {
         $user = User::factory()->create();
         $request = Request::create('/checkout', 'POST', [], [], [], ['REMOTE_ADDR' => '198.51.100.9', 'HTTP_USER_AGENT' => 'PHPUnit/1.0']);
 
-        app(ConsentRecorder::class)->recordCheckout($user->id, 42, $request);
+        app(ConsentRecorder::class)->recordCheckout($user->id, 42, $request, true);
 
-        $keys = DB::table('consent_records')->where('user_id', $user->id)->orderBy('document_key')->pluck('document_key')->all();
+        $rows = DB::table('consent_records')->where('user_id', $user->id)->orderBy('kind')->orderBy('document_key')->get();
 
-        self::assertSame(['distance-sales', 'pre-information'], $keys);
-        self::assertSame(42, (int) DB::table('consent_records')->where('user_id', $user->id)->first()->workspace_id);
-        self::assertSame('checkout', DB::table('consent_records')->where('user_id', $user->id)->first()->kind);
+        self::assertSame(
+            [['checkout', 'distance-sales'], ['checkout', 'pre-information'], ['immediate_performance', 'distance-sales']],
+            $rows->map(static fn ($row): array => [$row->kind, $row->document_key])->all(),
+            'REG-CONSENT-04: ifaya derhâl başlama onayı AYRI bir satırdır.',
+        );
+
+        self::assertSame(42, (int) $rows->first()->workspace_id);
+
+        // Sürüm çağırandan değil KÜTÜPHANEDEN okunur.
+        $agreement = app(LegalLibraryPort::class)->find('distance-sales');
+        self::assertNotNull($agreement);
+
+        foreach ($rows as $row) {
+            self::assertSame(1, (int) $row->granted);
+        }
+
+        self::assertSame(
+            $agreement->version,
+            $rows->firstWhere('kind', 'immediate_performance')->document_version,
+        );
+    }
+
+    /**
+     * SESSİZLİK ONAY DEĞİLDİR — işaretlenmemiş kutu için satır YAZILMAZ.
+     *
+     * Bu, ticari ileti izniyle aynı kural ama farklı bir sonuç taşır: bir
+     * pazarlama satırının eksikliği yalnız e-posta göndermemek demektir;
+     * ifaya derhâl başlama satırının eksikliği, cayma hakkının SÜRDÜĞÜ
+     * anlamına gelir.
+     */
+    public function test_an_unticked_immediate_performance_box_writes_no_row(): void
+    {
+        $user = User::factory()->create();
+        $request = Request::create('/checkout', 'POST', [], [], [], ['REMOTE_ADDR' => '198.51.100.9']);
+
+        app(ConsentRecorder::class)->recordCheckout($user->id, 42, $request, false);
+
+        self::assertSame(
+            0,
+            DB::table('consent_records')->where('user_id', $user->id)->where('kind', 'immediate_performance')->count(),
+        );
+        self::assertSame(2, DB::table('consent_records')->where('user_id', $user->id)->count());
     }
 
     // --- REG-CONSENT-05: kayıt formu onay kutularını ve bağlantıları taşır -----

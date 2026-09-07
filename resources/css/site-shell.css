@@ -434,6 +434,40 @@
     gap: var(--space-5);
 }
 
+/*
+    EKSİK SÖZLEŞME BANDI (FF-216).
+
+    İnceleme notundan DAHA yüksek sesle konuşur: aynı geometri, ama tehlike
+    mürekkebi ve kalın bir başlık satırı. Renk tek başına anlatmaz — bant
+    `role="alert"` taşır ve başlığı kelimeyle söyler, çünkü rengi göremeyen
+    bir okuyucu için sadece kırmızı bir kenar hiçbir şey demektir.
+
+    Dar ekran taban: tek sütun, kendi dolgusu var ama `.site-legal` dolgusuna
+    EKLENMEZ — bant sütunun içinde durur, sütunu daraltmaz.
+*/
+.site-legal-alert {
+    margin: 0;
+    padding: var(--space-3);
+    border: 1px solid var(--border-danger);
+    border-inline-start: 3px solid var(--border-danger);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.site-legal-alert-title {
+    color: var(--fg-danger);
+}
+
+.site-legal-alert-fields {
+    color: var(--fg-secondary);
+    /* Yedi alan adı dar ekranda satırı taşırmaz. */
+    overflow-wrap: anywhere;
+}
+
 /* İnceleme notu: görsel değil geometri — kalın bir başlangıç kenarı. */
 .site-legal-notice {
     margin: 0;
@@ -585,4 +619,57 @@
 .site-consent-button:focus-visible {
     outline: 2px solid var(--fg);
     outline-offset: 2px;
+}
+
+/* --- Şirket kimliği listesi: `/about` ve `/contact` (FF-216) ------------ */
+
+/*
+    TEK TANIM, İKİ SAYFA. Aynı olguları iki sayfada iki farklı biçimde
+    çizmek, sahibin bir alanı güncellediğinde birinde görünüp diğerinde
+    görünmemesiyle biterdi.
+
+    Dar ekran TABAN: 320 pikselde etiket ve değer ALT ALTA durur (bir MERSİS
+    numarasıyla etiketi yan yana sığdırmaya çalışmak ikisini de kırpardı);
+    daha geniş ekranda iki sütuna geçer. Satır ayracı geometriyle, kutuyla
+    değil.
+*/
+.site-company-identity {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-1) 0;
+    margin: 0;
+}
+
+.site-company-identity > div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-block: var(--space-2);
+    border-block-end: 1px solid var(--border);
+}
+
+.site-company-identity dt {
+    margin: 0;
+    color: var(--fg-secondary);
+}
+
+.site-company-identity dd {
+    margin: 0;
+    font-weight: 600;
+    /* Uzun bir adres ya da MERSİS numarası dar ekranda taşmaz. */
+    overflow-wrap: anywhere;
+}
+
+.site-company-identity dd[data-missing='true'] {
+    font-weight: 400;
+    color: var(--fg-secondary);
+}
+
+@media (min-width: 30rem) {
+    .site-company-identity > div {
+        display: grid;
+        grid-template-columns: minmax(9rem, 1fr) 2fr;
+        gap: var(--space-3);
+        align-items: baseline;
+    }
 }

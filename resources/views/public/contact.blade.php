@@ -17,6 +17,16 @@
 
         <p class="text-fg-secondary">{{ $st['contactLead'] }}</p>
 
+        {{-- SATICININ GERÇEK İLETİŞİM BİLGİSİ (FF-216). Form tek başına bir
+             iletişim yolu değildir; adres, telefon ve e-posta `/about` ile
+             AYNI kaynaktan gelir ve girilmemişse öyle yazar. --}}
+        <section aria-labelledby="contact-identity-heading" class="flex flex-col gap-3">
+            <h2 id="contact-identity-heading" class="text-xl font-bold">{{ $st['contactIdentityHeading'] }}</h2>
+            @include('public.partials.company-identity')
+        </section>
+
+        <h2 class="text-xl font-bold">{{ $st['contactFormHeading'] }}</h2>
+
         @if ($errors->any())
             <ul role="alert" class="flex flex-col gap-1 text-fg-danger">
                 @foreach ($errors->all() as $error)

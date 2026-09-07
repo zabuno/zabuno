@@ -400,6 +400,46 @@ msgstr ""
 msgid "workspace.billing.changePlan.button"
 msgstr ""
 
+#: workspace:workspace.billing.checkout.consent.agreements
+msgid "workspace.billing.checkout.consent.agreements"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.agreements.error
+msgid "workspace.billing.checkout.consent.agreements.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.immediate
+msgid "workspace.billing.checkout.consent.immediate"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.immediate.error
+msgid "workspace.billing.checkout.consent.immediate.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.legend
+msgid "workspace.billing.checkout.consent.legend"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.links
+msgid "workspace.billing.checkout.consent.links"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.delivery
+msgid "workspace.billing.checkout.consent.read.delivery"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.distanceSales
+msgid "workspace.billing.checkout.consent.read.distanceSales"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.preInformation
+msgid "workspace.billing.checkout.consent.read.preInformation"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.refundPolicy
+msgid "workspace.billing.checkout.consent.read.refundPolicy"
+msgstr ""
+
 #: workspace:workspace.billing.checkout.description
 msgid "workspace.billing.checkout.description"
 msgstr ""
@@ -510,6 +550,10 @@ msgstr ""
 
 #: workspace:workspace.billing.checkout.retry
 msgid "workspace.billing.checkout.retry"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.sellerIdentityMissing
+msgid "workspace.billing.checkout.sellerIdentityMissing"
 msgstr ""
 
 #: workspace:workspace.billing.checkout.status.error

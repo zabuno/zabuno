@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Billing;
 
 use App\Application\Billing\Exception\PaymentGatewayUnavailableException;
+use App\Application\Billing\Port\BillingModePort;
+use App\Domain\Billing\BillingMode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -158,6 +160,26 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         return "/api/workspaces/{$workspaceId}/checkout";
     }
 
+    /**
+     * Ödeme başlatma gövdesi — İKİ ONAY dâhil (FF-216).
+     *
+     * Onaylar burada, çünkü artık ödeme akışının bir PARÇASILAR: gövdeyi
+     * onaysız kurmak, ürünün bugün reddettiği bir istek kurmak olurdu. Her
+     * çağrı yeni bir `idempotency_key` alır.
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    private function checkoutBody(int $planId, array $overrides = []): array
+    {
+        return array_merge([
+            'plan_id' => $planId,
+            'idempotency_key' => $this->uuid(),
+            'agreements_accepted' => true,
+            'immediate_performance_accepted' => true,
+        ], $overrides);
+    }
+
     private function configureSandbox(): void
     {
         config()->set('services.iyzico.mode', 'sandbox');
@@ -245,7 +267,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         $outsider = $this->verifiedUser('outsider-authz@example.test');
 
         $this->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(401);
 
         // Yönetici planı GÖRÜR ama satın alamaz: 404, 403 değil.
@@ -253,7 +275,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
             ->getJson($this->checkoutUri($workspaceId))
             ->assertOk();
         $this->actingAs($manager)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(404);
 
         $this->actingAs($outsider)->withHeaders($this->jsonHeaders())
@@ -278,11 +300,131 @@ final class SelfServeCheckoutJourneyTest extends TestCase
 
         foreach ([['amount_minor' => 1], ['currency' => 'USD'], ['card_number' => '4111111111111111']] as $extra) {
             $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-                ->postJson($this->checkoutUri($workspaceId), array_merge(['plan_id' => $planId, 'idempotency_key' => $this->uuid()], $extra))
+                ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId, $extra))
                 ->assertStatus(422);
         }
 
         self::assertSame(0, DB::table('payment_transactions')->count());
+    }
+
+    // --- SELF-SERVE-CONSENT-01: onaysız sipariş BAŞLAMAZ (FF-216) ----------
+
+    /**
+     * Ödeme adımının İKİ onayı sunucuda ayrı ayrı zorunlu.
+     *
+     * Kutu boşken sağlayıcı HİÇ çağrılmaz: onaysız bir istek için Iyzico'da
+     * bir oturum açmak, kurulmamış bir sözleşme için gerçek bir ödeme sayfası
+     * üretmek olurdu.
+     */
+    #[Test]
+    public function checkout_is_refused_when_either_consent_box_is_empty(): void
+    {
+        ['owner' => $owner, 'workspaceId' => $workspaceId, 'planId' => $planId] = $this->readyWorkspace('consent');
+        $this->bindFake(self::SANDBOX_GATEWAY)->shouldNotReceive('initializeCheckout');
+
+        $cases = [
+            ['agreements_accepted' => false],
+            ['immediate_performance_accepted' => false],
+            // Alan hiç GELMEZSE de düşer: sessizlik onay değildir.
+            ['agreements_accepted' => null],
+            ['immediate_performance_accepted' => null],
+        ];
+
+        foreach ($cases as $override) {
+            $body = $this->checkoutBody($planId, $override);
+
+            foreach ($override as $field => $value) {
+                if ($value === null) {
+                    unset($body[$field]);
+                }
+            }
+
+            $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+                ->postJson($this->checkoutUri($workspaceId), $body)
+                ->assertStatus(422);
+        }
+
+        self::assertSame(0, DB::table('payment_transactions')->count());
+        self::assertSame(0, DB::table('consent_records')->where('kind', 'checkout')->count());
+    }
+
+    /**
+     * Sipariş başladığında onay DEFTERE düşer — üç satır, iki kip.
+     *
+     * Kadıköy'deki kebapçı "Pro"yu seçti, iki kutuyu işaretledi ve ödeme
+     * sayfasına gitti: defterde ön bilgilendirme formunu ve mesafeli satış
+     * sözleşmesini kabul ettiği, ve ifaya derhâl başlanmasını AYRICA
+     * istediği yazıyor. Üçüncü satır, cayma hakkının ne zaman sona erdiğini
+     * gösteren kanıttır.
+     */
+    #[Test]
+    public function a_started_checkout_writes_the_two_agreements_and_the_immediate_performance_consent(): void
+    {
+        ['owner' => $owner, 'workspaceId' => $workspaceId, 'planId' => $planId] = $this->readyWorkspace('ledger');
+        $fake = $this->bindFake(self::SANDBOX_GATEWAY);
+        $this->expectInitialize($fake, 'tok-consent');
+
+        $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
+            ->assertStatus(202);
+
+        $rows = DB::table('consent_records')
+            ->where('user_id', $owner->id)
+            ->orderBy('kind')->orderBy('document_key')
+            ->get(['kind', 'document_key', 'workspace_id', 'granted']);
+
+        self::assertSame(
+            [
+                ['checkout', 'distance-sales'],
+                ['checkout', 'pre-information'],
+                ['immediate_performance', 'distance-sales'],
+            ],
+            $rows->map(static fn ($row): array => [$row->kind, $row->document_key])->all(),
+        );
+
+        foreach ($rows as $row) {
+            self::assertSame($workspaceId, (int) $row->workspace_id);
+            self::assertSame(1, (int) $row->granted);
+        }
+    }
+
+    // --- SELF-SERVE-SELLER-IDENTITY-01: satıcısı olmayan satış yok --------
+
+    /**
+     * Canlı kipte, satıcının yasal kimliği yayınlanmadan tahsilat başlamaz.
+     *
+     * Alıcının bilgisi zaten zorunluydu; satıcınınki bugüne kadar hiç
+     * sorulmuyordu. Sandbox'ta yol AÇIK kalır: prova, sahibin şirketini
+     * kurmasını beklemek zorunda değil.
+     */
+    #[Test]
+    public function a_live_checkout_is_refused_by_name_while_the_seller_identity_is_missing(): void
+    {
+        ['owner' => $owner, 'workspaceId' => $workspaceId, 'planId' => $planId] = $this->readyWorkspace('seller');
+        $this->bindFake(self::LIVE_GATEWAY)->shouldNotReceive('initializeCheckout');
+
+        /*
+            ETKİN KİP CANLI. Üç kapının (dağıtım + süperadmin + kasa)
+            hepsini bu testte kurmak, ölçmek istediğimiz şeyi ölçmeyi
+            zorlaştırırdı: buradaki soru kip anahtarının nasıl açıldığı
+            değil, AÇIKKEN satıcısı olmayan bir satışın reddedilmesi.
+        */
+        $this->mock(BillingModePort::class, function (MockInterface $mode): void {
+            $mode->shouldReceive('effective')->andReturn(BillingMode::Live);
+        });
+
+        config(['legal.company' => array_fill_keys(
+            ['legal_name', 'address', 'mersis', 'tax_office', 'tax_number', 'email', 'phone'],
+            null,
+        )]);
+
+        $this->actingAs($owner)->withHeaders($this->jsonHeaders())
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
+            ->assertStatus(409)
+            ->assertJson(['reason' => 'seller_identity_missing']);
+
+        self::assertSame(0, DB::table('payment_transactions')->count());
+        self::assertSame(0, DB::table('consent_records')->where('kind', 'checkout')->count());
     }
 
     // --- SELF-SERVE-PROFILE-REQUIRED-01 ------------------------------------
@@ -302,7 +444,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
             ->assertJson(['profile_complete' => false]);
 
         $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(422)
             ->assertJson(['reason' => 'billing_profile_missing']);
 
@@ -321,7 +463,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
 
         foreach ([$unpriced, $inactive, 999999] as $planId) {
             $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-                ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+                ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
                 ->assertStatus(422);
         }
 
@@ -354,7 +496,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
             ]);
 
         $response = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()]);
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId));
 
         $response->assertStatus(202);
         $body = $response->json();
@@ -382,7 +524,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         $this->expectInitialize($this->bindFake(self::SANDBOX_GATEWAY), 'tok-switchoff');
 
         $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(202)
             ->assertJson(['mode' => 'sandbox']);
     }
@@ -398,7 +540,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         $this->expectInitialize($fake, 'tok-success');
 
         $body = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(202)->json();
         $conversationId = $body['conversation_id'];
 
@@ -466,7 +608,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         $this->expectInitialize($fake, 'tok-extend');
 
         $body = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $proPlan, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($proPlan))
             ->assertStatus(202)->json();
 
         $fake->shouldReceive('retrieveCheckout')->once()
@@ -491,7 +633,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         $this->expectInitialize($fake, 'tok-failure');
 
         $body = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(202)->json();
 
         $fake->shouldReceive('retrieveCheckout')->once()
@@ -514,7 +656,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         // Tekrar deneme: yeni anahtar, yeni işlem.
         $this->expectInitialize($fake, 'tok-failure-retry');
         $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(202);
         self::assertSame(2, DB::table('payment_transactions')->where('workspace_id', $workspaceId)->count());
     }
@@ -529,10 +671,10 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         $key = $this->uuid();
 
         $first = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $key])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId, ['idempotency_key' => $key]))
             ->assertStatus(202)->json();
         $second = $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $key])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId, ['idempotency_key' => $key]))
             ->assertStatus(202)->json();
 
         self::assertSame($first['conversation_id'], $second['conversation_id']);
@@ -541,7 +683,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
         // Aynı anahtar, BAŞKA plan: çatışma.
         $other = $this->insertPlanRow(['name' => 'Other']);
         $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $other, 'idempotency_key' => $key])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($other, ['idempotency_key' => $key]))
             ->assertStatus(409);
     }
 
@@ -555,7 +697,7 @@ final class SelfServeCheckoutJourneyTest extends TestCase
             ->andThrow(new PaymentGatewayUnavailableException('Iyzico sandbox provider is not configured.'));
 
         $this->actingAs($owner)->withHeaders($this->jsonHeaders())
-            ->postJson($this->checkoutUri($workspaceId), ['plan_id' => $planId, 'idempotency_key' => $this->uuid()])
+            ->postJson($this->checkoutUri($workspaceId), $this->checkoutBody($planId))
             ->assertStatus(503);
 
         $row = DB::table('payment_transactions')->first();

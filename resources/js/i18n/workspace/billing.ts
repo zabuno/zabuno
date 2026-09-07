@@ -105,6 +105,41 @@ export const billing = {
     'workspace.billing.checkout.latest.continue': 'Continue to the payment page',
     'workspace.billing.checkout.latest.refunded': 'Your last payment was refunded.',
     'workspace.billing.checkout.retry': 'Retry',
+
+    /*
+        ÖDEME ADIMINDAKİ İKİ ONAY (FF-216).
+
+        İKİ AYRI KUTU, çünkü iki ayrı hukuki olgu: sözleşmeyi kabul etmek ile
+        cayma süresi dolmadan ifaya başlanmasını AÇIKÇA istemek aynı şey
+        değildir ve ikincisinin cayma hakkı üzerinde sonucu vardır. Tek
+        kutuda toplamak, defterde hangisine evet dendiğini ayırt edilemez
+        hâle getirirdi (`ConsentRecorder::KIND_IMMEDIATE_PERFORMANCE`).
+
+        HİÇBİRİ ÖNCEDEN İŞARETLİ DEĞİL ve boş kutuyla düğme çalışmaz. Kayıt
+        ekranındaki zorunlu onay kutusuyla aynı desen — bağlantılar kutunun
+        ALTINDA ayrı satırlarda durur, cümlenin içine gömülmez, çünkü içine
+        gömülmüş bir bağlantı çevrilemez (`docs/121` Ö5).
+    */
+    'workspace.billing.checkout.consent.legend': 'Before you pay',
+    'workspace.billing.checkout.consent.agreements':
+        'I have read and accept the Preliminary Information Form and the Distance Sales Agreement.',
+    'workspace.billing.checkout.consent.agreements.error':
+        'To continue, accept the Preliminary Information Form and the Distance Sales Agreement.',
+    'workspace.billing.checkout.consent.immediate':
+        'I ask for the service to start as soon as my payment is confirmed, and I have read that once it has started my right of withdrawal ends.',
+    'workspace.billing.checkout.consent.immediate.error':
+        'To continue, confirm that the service should start as soon as the payment is confirmed.',
+    'workspace.billing.checkout.consent.links': 'Documents to read before paying',
+    'workspace.billing.checkout.consent.read.preInformation':
+        'Read the Preliminary Information Form',
+    'workspace.billing.checkout.consent.read.distanceSales': 'Read the Distance Sales Agreement',
+    'workspace.billing.checkout.consent.read.delivery': 'Read the Delivery and Performance Terms',
+    'workspace.billing.checkout.consent.read.refundPolicy':
+        'Read the Cancellation and Refund Policy',
+    /* Satıcının kendi yasal kimliği yayınlanmadan canlı tahsilat yapılamaz
+       (FF-216). Bu bir kullanıcı hatası DEĞİLDİR ve öyle yazılmaz. */
+    'workspace.billing.checkout.sellerIdentityMissing':
+        'Payments cannot be taken yet: the seller has not published its legal identity, so a distance sales agreement cannot be concluded. Nothing was charged.',
     'workspace.billing.profile.field.legalName': 'Company name',
     'workspace.billing.profile.field.taxNumber': 'Tax number',
     'workspace.billing.profile.field.taxOffice': 'Tax office',

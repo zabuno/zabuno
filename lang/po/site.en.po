@@ -8,9 +8,97 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: site:site.about.heading
+msgid "site.about.heading"
+msgstr "About us"
+
+#: site:site.about.incomplete.body
+msgid "site.about.incomplete.body"
+msgstr "The legal identity of the seller has not been published yet, so the details below are missing. Until they are entered, use the contact form to reach us."
+
+#: site:site.about.incomplete.heading
+msgid "site.about.incomplete.heading"
+msgstr "This page is not complete yet."
+
+#: site:site.about.lead
+msgid "site.about.lead"
+msgstr "Who sells Zabuno, what it is, how it is paid for and how to reach a person about it."
+
+#: site:site.about.payment.body
+msgid "site.about.payment.body"
+msgstr "Paid plans are paid by card, through the payment service provider Iyzico. We do not accept bank transfer, cash or payment on delivery for a subscription, and we never see or store your card number: it is entered on the provider's own pages. Which card brands the provider accepts is set in the provider's own configuration, so it is not listed here."
+
+#: site:site.about.payment.heading
+msgid "site.about.payment.heading"
+msgstr "Payment methods we accept"
+
+#: site:site.about.reach.body
+msgid "site.about.reach.body"
+msgstr "Write to us with the contact form or to the e-mail address above. We keep every message and reply to the address you give us."
+
+#: site:site.about.reach.cta
+msgid "site.about.reach.cta"
+msgstr "Open the contact form"
+
+#: site:site.about.reach.heading
+msgid "site.about.reach.heading"
+msgstr "How to reach us"
+
+#: site:site.about.seller.body
+msgid "site.about.seller.body"
+msgstr "These are the details of the legal entity that sells the paid plans and is the seller named in the Distance Sales Agreement."
+
+#: site:site.about.seller.heading
+msgid "site.about.seller.heading"
+msgstr "The seller"
+
+#: site:site.about.service.body
+msgid "site.about.service.body"
+msgstr "Zabuno is a subscription to a workspace in which a restaurant, cafe or bar keeps its menu and publishes it behind a permanent QR code. Changing a price or hiding a dish updates the page the guests see; the printed code stays the same."
+
+#: site:site.about.service.heading
+msgid "site.about.service.heading"
+msgstr "What Zabuno is"
+
+#: site:site.about.service.scope
+msgid "site.about.service.scope"
+msgstr "Depending on the plan, the workspace also covers branches, tables and QR codes, guest ordering, guest rating, team members with their own permissions, custom branding, reporting, and importing a menu from a photograph with a person confirming the result. The service is used through a web browser; nothing is installed."
+
 #: site:site.brand
 msgid "site.brand"
 msgstr "Zabuno"
+
+#: site:site.company.address
+msgid "site.company.address"
+msgstr "Registered address"
+
+#: site:site.company.email
+msgid "site.company.email"
+msgstr "E-mail"
+
+#: site:site.company.legalName
+msgid "site.company.legalName"
+msgstr "Registered name"
+
+#: site:site.company.mersis
+msgid "site.company.mersis"
+msgstr "MERSIS number"
+
+#: site:site.company.phone
+msgid "site.company.phone"
+msgstr "Phone"
+
+#: site:site.company.taxNumber
+msgid "site.company.taxNumber"
+msgstr "Tax number"
+
+#: site:site.company.taxOffice
+msgid "site.company.taxOffice"
+msgstr "Tax office"
+
+#: site:site.company.value.missing
+msgid "site.company.value.missing"
+msgstr "Not entered yet"
 
 #: site:site.consent.accept
 msgid "site.consent.accept"
@@ -36,6 +124,10 @@ msgstr "Cookie Policy"
 msgid "site.contact.email"
 msgstr "Your email"
 
+#: site:site.contact.form.heading
+msgid "site.contact.form.heading"
+msgstr "Send us a message"
+
 #: site:site.contact.heading
 msgid "site.contact.heading"
 msgstr "Contact"
@@ -43,6 +135,10 @@ msgstr "Contact"
 #: site:site.contact.honeypot
 msgid "site.contact.honeypot"
 msgstr "Leave this empty"
+
+#: site:site.contact.identity.heading
+msgid "site.contact.identity.heading"
+msgstr "Who you are writing to"
 
 #: site:site.contact.lead
 msgid "site.contact.lead"
@@ -71,6 +167,10 @@ msgstr "Zabuno — Engineering"
 #: site:site.footer.cookies
 msgid "site.footer.cookies"
 msgstr "Cookie Policy"
+
+#: site:site.footer.delivery
+msgid "site.footer.delivery"
+msgstr "Delivery and Performance Terms"
 
 #: site:site.footer.distanceSales
 msgid "site.footer.distanceSales"
@@ -288,6 +388,18 @@ msgstr "The data in your account"
 msgid "site.legal.effective"
 msgstr "Effective from"
 
+#: site:site.legal.incomplete.body
+msgid "site.legal.incomplete.body"
+msgstr "The legal identity of the seller has not been published yet, so this text does not name the party you would be contracting with. Read it as a draft: do not rely on it as a contract, and ask us before you act on it."
+
+#: site:site.legal.incomplete.fields
+msgid "site.legal.incomplete.fields"
+msgstr "Not entered yet:"
+
+#: site:site.legal.incomplete.heading
+msgid "site.legal.incomplete.heading"
+msgstr "This document is not complete yet."
+
 #: site:site.legal.review.pending
 msgid "site.legal.review.pending"
 msgstr "This text is pending legal review. It describes what the product does today and may be reworded after that review."
@@ -295,6 +407,10 @@ msgstr "This text is pending legal review. It describes what the product does to
 #: site:site.legal.version
 msgid "site.legal.version"
 msgstr "Version"
+
+#: site:site.nav.about
+msgid "site.nav.about"
+msgstr "About us"
 
 #: site:site.nav.account
 msgid "site.nav.account"
@@ -499,6 +615,14 @@ msgstr "Every plan includes"
 #: site:site.pricing.lead
 msgid "site.pricing.lead"
 msgstr "What a restaurant pays to publish its menu behind a QR code."
+
+#: site:site.pricing.paymentMethods
+msgid "site.pricing.paymentMethods"
+msgstr "Paid plans are paid by card through the payment service provider Iyzico; no other payment method is offered."
+
+#: site:site.pricing.paymentMethods.cta
+msgid "site.pricing.paymentMethods.cta"
+msgstr "Read the Preliminary Information Form"
 
 #: site:site.pricing.perMonth
 msgid "site.pricing.perMonth"

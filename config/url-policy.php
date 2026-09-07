@@ -141,6 +141,13 @@ return [
             `cookies` slug'ını alırsa çerez politikası gölgelenirdi.
         */
         'consent', 'cookies', 'distance-sales', 'marketing-consent', 'pre-information', 'refund-policy',
+        /*
+            TESLİMAT/İFA KOŞULLARI VE HAKKIMIZDA (FF-216, `docs/131`). Aynı
+            kural: `/delivery` ve `/about` üst düzey yollardır ve bir işletme
+            onları slug olarak alırsa, ödeme kuruluşunun incelemesinde
+            aradığı iki sayfa o işletmenin menüsüyle gölgelenirdi.
+        */
+        'about', 'delivery',
         'en', 'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
         /*
             TASLAK ÖNİZLEMESİ (`/menu-preview/{workspace}/{menu}`, sahibin
