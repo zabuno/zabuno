@@ -75,6 +75,8 @@ use App\Application\QrDestination\Port\QrCodePdfExportPort;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Application\QrDestination\Port\QrPrintSheetPort;
 use App\Application\QrDestination\Port\QrScanCountPort;
+use App\Application\Rating\Port\ExternalReferenceQueryPort;
+use App\Application\Rating\Port\ExternalReferenceRepositoryPort;
 use App\Application\Rating\Port\RatableMenuPort;
 use App\Application\Rating\Port\RatingReplyRepositoryPort;
 use App\Application\Rating\Port\RatingScoreQueryPort;
@@ -186,6 +188,8 @@ use App\Infrastructure\QrDestination\Rendering\EndroidQrCodeImageExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCardPdfAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrCodePdfExportAdapter;
 use App\Infrastructure\QrDestination\Rendering\MpdfQrPrintSheetAdapter;
+use App\Infrastructure\Rating\Persistence\EloquentExternalReferenceQuery;
+use App\Infrastructure\Rating\Persistence\EloquentExternalReferenceRepository;
 use App\Infrastructure\Rating\Persistence\EloquentRatableMenu;
 use App\Infrastructure\Rating\Persistence\EloquentRatingReplyRepository;
 use App\Infrastructure\Rating\Persistence\EloquentRatingScoreQuery;
@@ -614,6 +618,17 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(RatingScoreQueryPort::class, EloquentRatingScoreQuery::class);
         $this->app->bind(RatableMenuPort::class, EloquentRatableMenu::class);
         $this->app->bind(RatingReplyRepositoryPort::class, EloquentRatingReplyRepository::class);
+        /*
+            DIŞ KİMLİK EŞLEMESİ (`docs/116` P7, `docs/127`) — YAZMA VE OKUMA
+            AYRI, ÇÜNKÜ OKUMANIN İKİ AYRI KAPISI VAR.
+
+            Dış veri yalnız ONAYLI bir eşleme üzerinden misafire ulaşabilir;
+            filtreyi çağıranın hatırlamasına bırakmak, bir gün
+            hatırlanmaması demektir. Tek depoya toplasaydık, "hepsini getir"
+            diye bir çağrı elin altında dururdu.
+        */
+        $this->app->bind(ExternalReferenceRepositoryPort::class, EloquentExternalReferenceRepository::class);
+        $this->app->bind(ExternalReferenceQueryPort::class, EloquentExternalReferenceQuery::class);
         // ZAMANLANMIŞ YAYIN ("Planla"): planı yazan, iptal eden ve vakti
         // gelince tek seferlik sahiplenen depo.
         $this->app->bind(PublicationSchedulePort::class, EloquentPublicationSchedule::class);

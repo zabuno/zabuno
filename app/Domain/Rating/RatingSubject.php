@@ -36,6 +36,19 @@ enum RatingSubject: string
      */
     public const MAX_VALUE_LENGTH = 32;
 
-    /** Bir tabak. Bugün tek değer bu. */
+    /** Bir tabak. */
     case Product = 'product';
+
+    /**
+     * Bir şube.
+     *
+     * Bu değer P7 ile (`docs/127`) doğdu ve henüz HİÇBİR PUAN SİNYALİ onu
+     * taşımıyor — bugünkü tek işi dış kimlik eşlemesidir. Sebep fiziksel:
+     * Google Haritalar'daki kayıt bir TABAK değil bir YERDİR; şubeyi
+     * adlandıramadan dış kimliği bağlayacak bir varlığımız olmazdı.
+     *
+     * Ö4 zaten *"bizim varlığımız (şube ya da ürün)"* diyordu; enum'a bu
+     * değeri eklemek yeni bir karar değil, o cümlenin tipte karşılığıdır.
+     */
+    case Location = 'location';
 }
