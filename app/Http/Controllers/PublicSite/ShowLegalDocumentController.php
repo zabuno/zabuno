@@ -9,19 +9,39 @@ use App\Domain\Legal\CompanyProfile;
 use App\Domain\Legal\LegalReview;
 use App\Http\Controllers\Controller;
 use App\Support\Analytics\MeasurementConsent;
+use App\Support\Site\CompanyIdentity;
 use App\Support\Site\SiteShell;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Illuminate\Http\Response;
 
 /**
  * Yasal belgelerin TEK denetleyicisi — FF-198 (`docs/107` Faz 1.2).
  *
- * Sekiz adres, tek şablon, tek denetleyici: belge anahtarı adresin
- * kendisidir (`/terms` → `terms`). Sayfa başına denetleyici yazmak, sekiz
+ * Dokuz adres, tek şablon, tek denetleyici: belge anahtarı adresin
+ * kendisidir (`/terms` → `terms`). Sayfa başına denetleyici yazmak, dokuz
  * kopya üretmek olurdu; yeni bir belge eklemek artık kütüphaneye bir kayıt
  * ve rotaya bir satırdır.
  *
  * OTURUM İSTEMEZ ve İNDEKSLENİR: bir sözleşme, kaydolmadan okunabilmeli.
+ *
+ * ═══ EKSİK BİR SÖZLEŞME "TAMAM" GÖRÜNMEZ (FF-216) ═══
+ *
+ * FF-198'de ölçülen hâl bir hukuki riskti: `/distance-sales` 200 dönüyordu,
+ * altbilgiden bağlantılıydı, sitemap'te ilan ediliyordu ve sözleşmenin
+ * TARAFI sekiz yerde "not yet provided" yazıyordu. Yani sayfa tamam
+ * görünüyor, eksik olduğu yalnız satır aralarında okunuyordu.
+ *
+ * Karar: satıcının kimliğini söylemek ZORUNDA olan belgeler
+ * (`LegalDocument::$requiresSellerIdentity`) şirket bilgisi girilmemişken
+ * (1) üstte GÖRÜNÜR bir uyarı bandı taşır ve hangi alanların girilmediğini
+ * adıyla sayar, (2) `X-Robots-Tag: noindex, nofollow` ile arama motoruna
+ * sunulmaz ve sitemap'ten düşer (`ShowSitemapController`).
+ *
+ * Sayfanın 404 ya da 503 dönmesi DEĞERLENDİRİLDİ ve reddedildi: okunamayan
+ * bir sözleşme, eksik bir sözleşmeden daha kötüdür — alıcı neyi kabul
+ * ettiğini hiç göremezdi ve ödeme kuruluşunun incelemesi de sayfayı hiç
+ * bulamazdı. Eksik olduğunu YÜKSEK SESLE söyleyen bir sayfa dürüst, sessizce
+ * tamam görünen bir sayfa değildir.
  */
 final class ShowLegalDocumentController extends Controller
 {
@@ -30,7 +50,7 @@ final class ShowLegalDocumentController extends Controller
         private readonly SiteShell $shell,
     ) {}
 
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request): Response
     {
         $key = trim($request->getPathInfo(), '/');
         $document = $this->library->find($key);
@@ -49,11 +69,20 @@ final class ShowLegalDocumentController extends Controller
         */
         $shared = $this->shell->context($request, 'legal_'.str_replace('-', '_', $key), '/'.$key);
 
-        return view('public.legal', $shared + [
+        $company = CompanyProfile::fromConfig();
+        $sellerIdentityMissing = $document->requiresSellerIdentity && ! $company->isComplete();
+
+        $view = view('public.legal', $shared + [
             // Yer tutucular şirket olgularıyla dolar; girilmemiş olan
             // "not yet provided" olur — uydurulmaz (`CompanyProfile`).
-            'document' => $document->withCompany(CompanyProfile::fromConfig()),
+            'document' => $document->withCompany($company),
             'reviewPending' => LegalReview::fromConfig()->isPending(),
+            // Sözleşmenin tarafı GİRİLMEDİ: sayfa bunu üstte söyler ve
+            // hangi alanların eksik olduğunu adıyla sayar.
+            'sellerIdentityMissing' => $sellerIdentityMissing,
+            'missingCompanyFields' => $sellerIdentityMissing
+                ? CompanyIdentity::labelsFor($company->missing(), $shared['st'])
+                : [],
             /*
                 HESAP VERİSİ TALEBİ YALNIZ VERİ SAYFASINDA (FF-169, `docs/110`
                 P0-09). Aynı bölümü her yasal sayfaya basmak, sahibe talebin
@@ -69,6 +98,14 @@ final class ShowLegalDocumentController extends Controller
             'consentStateLabel' => $shared['st']['cookiesPreference'.ucfirst($consentState)],
             'returnTo' => '/'.$key,
         ]);
+
+        $response = response($view);
+
+        if ($sellerIdentityMissing) {
+            $response->header('X-Robots-Tag', 'noindex, nofollow');
+        }
+
+        return $response;
     }
 
     /**

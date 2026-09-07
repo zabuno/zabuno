@@ -13,6 +13,7 @@ use App\Application\Billing\Exception\PaymentTransactionNotFoundException;
 use App\Application\Billing\Exception\PlanNotPurchasableException;
 use App\Application\Billing\Exception\RefundNotAllowedException;
 use App\Application\Billing\Exception\RefundRejectedException;
+use App\Application\Billing\Exception\SellerIdentityMissingException;
 use App\Application\Billing\Port\BillingModePort;
 use App\Application\Billing\Port\BillingProfileRepositoryPort;
 use App\Application\Billing\Port\PaymentGatewaySelectorPort;
@@ -22,6 +23,7 @@ use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Application\Platform\Port\PlatformAuditPort;
 use App\Domain\Billing\BillingMode;
+use App\Domain\Legal\CompanyProfile;
 use App\Domain\Money\LedgerEntry;
 use App\Domain\Money\Money;
 use App\Domain\Platform\Credential\CredentialProvider;
@@ -73,6 +75,7 @@ final class ManageCheckout
     /**
      * @throws PlanNotPurchasableException
      * @throws BillingProfileMissingException
+     * @throws SellerIdentityMissingException
      * @throws CheckoutConflictException
      * @throws PaymentGatewayUnavailableException
      * @throws PaymentGatewayBadGatewayException
@@ -93,6 +96,26 @@ final class ManageCheckout
         }
 
         $mode = $this->mode->effective();
+
+        /*
+            SATICISI OLMAYAN SÖZLEŞME KURULMAZ (FF-216).
+
+            Alıcının bilgisi zorunlu (`BillingProfileMissingException`) ama
+            SATICININ bilgisi bugüne kadar hiç sorulmuyordu: şirket alanları
+            `.env`'de boşken mesafeli satış sözleşmesi tarafını sekiz yerde
+            "not yet provided" diye yazıyor ve o metin ödeme adımında kabul
+            ediliyordu. Bir sözleşmenin iki tarafı vardır; birini uydurmamak
+            yetmez, eksik bırakıldığında da satış yapılmamalıdır.
+
+            YALNIZ CANLI KİPTE. Sandbox bir provadır ve prova, sahip henüz
+            şirketini kurmamışken de yapılabilmeli — kapıyı oraya da koymak,
+            ürünün denenmesini sahibin noter işine bağlamak olurdu. Etkin
+            kip zaten üç kapılıdır (`docs/123`): canlı kipteyiz demek, gerçek
+            para hareket edecek demektir.
+        */
+        if ($mode === BillingMode::Live && ! CompanyProfile::fromConfig()->isComplete()) {
+            throw new SellerIdentityMissingException('The seller\'s legal identity is not published; a distance sales agreement cannot be concluded.');
+        }
         $conversationId = (string) Str::uuid();
 
         $claimed = $this->transactions->claim(

@@ -7,6 +7,7 @@ namespace App\Infrastructure\Legal;
 use App\Application\Legal\Port\LegalLibraryPort;
 use App\Domain\Legal\LegalDocument;
 use App\Infrastructure\Legal\Documents\CookiePolicy;
+use App\Infrastructure\Legal\Documents\DeliveryAndPerformancePolicy;
 use App\Infrastructure\Legal\Documents\DistanceSalesAgreement;
 use App\Infrastructure\Legal\Documents\KvkkDisclosure;
 use App\Infrastructure\Legal\Documents\MarketingConsentText;
@@ -16,7 +17,10 @@ use App\Infrastructure\Legal\Documents\RefundPolicy;
 use App\Infrastructure\Legal\Documents\TermsOfService;
 
 /**
- * Sekiz yasal belgenin kütüphanesi — FF-198 (`docs/107` Faz 1.2).
+ * Yasal belgelerin kütüphanesi — FF-198 (`docs/107` Faz 1.2), FF-216'da
+ * dokuza çıktı: teslimat/ifa koşulları ayrı bir belge oldu (`delivery`),
+ * çünkü ödeme kuruluşunun üye iş yeri incelemesi o başlığı ADIYLA ve
+ * altbilgiden bağlantılı olarak arıyor (`DeliveryAndPerformancePolicy`).
  *
  * Metin BUGÜN kodda yaşıyor ve bu bilinçli: kod incelemesinden ve testten
  * geçer, sürümü Git'te izlenir ve hukukçu değişikliği bir diff olarak
@@ -57,6 +61,7 @@ final class LegalLibrary implements LegalLibraryPort
             KvkkDisclosure::document(),
             DistanceSalesAgreement::document(),
             PreliminaryInformationForm::document(),
+            DeliveryAndPerformancePolicy::document(),
             RefundPolicy::document(),
             CookiePolicy::document(),
             MarketingConsentText::document(),

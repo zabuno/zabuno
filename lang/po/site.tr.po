@@ -8,9 +8,97 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: site:site.about.heading
+msgid "site.about.heading"
+msgstr ""
+
+#: site:site.about.incomplete.body
+msgid "site.about.incomplete.body"
+msgstr ""
+
+#: site:site.about.incomplete.heading
+msgid "site.about.incomplete.heading"
+msgstr ""
+
+#: site:site.about.lead
+msgid "site.about.lead"
+msgstr ""
+
+#: site:site.about.payment.body
+msgid "site.about.payment.body"
+msgstr ""
+
+#: site:site.about.payment.heading
+msgid "site.about.payment.heading"
+msgstr ""
+
+#: site:site.about.reach.body
+msgid "site.about.reach.body"
+msgstr ""
+
+#: site:site.about.reach.cta
+msgid "site.about.reach.cta"
+msgstr ""
+
+#: site:site.about.reach.heading
+msgid "site.about.reach.heading"
+msgstr ""
+
+#: site:site.about.seller.body
+msgid "site.about.seller.body"
+msgstr ""
+
+#: site:site.about.seller.heading
+msgid "site.about.seller.heading"
+msgstr ""
+
+#: site:site.about.service.body
+msgid "site.about.service.body"
+msgstr ""
+
+#: site:site.about.service.heading
+msgid "site.about.service.heading"
+msgstr ""
+
+#: site:site.about.service.scope
+msgid "site.about.service.scope"
+msgstr ""
+
 #: site:site.brand
 msgid "site.brand"
 msgstr "Zabuno"
+
+#: site:site.company.address
+msgid "site.company.address"
+msgstr ""
+
+#: site:site.company.email
+msgid "site.company.email"
+msgstr ""
+
+#: site:site.company.legalName
+msgid "site.company.legalName"
+msgstr ""
+
+#: site:site.company.mersis
+msgid "site.company.mersis"
+msgstr ""
+
+#: site:site.company.phone
+msgid "site.company.phone"
+msgstr ""
+
+#: site:site.company.taxNumber
+msgid "site.company.taxNumber"
+msgstr ""
+
+#: site:site.company.taxOffice
+msgid "site.company.taxOffice"
+msgstr ""
+
+#: site:site.company.value.missing
+msgid "site.company.value.missing"
+msgstr ""
 
 #: site:site.consent.accept
 msgid "site.consent.accept"
@@ -36,6 +124,10 @@ msgstr ""
 msgid "site.contact.email"
 msgstr "E-posta adresiniz"
 
+#: site:site.contact.form.heading
+msgid "site.contact.form.heading"
+msgstr ""
+
 #: site:site.contact.heading
 msgid "site.contact.heading"
 msgstr "İletişim"
@@ -43,6 +135,10 @@ msgstr "İletişim"
 #: site:site.contact.honeypot
 msgid "site.contact.honeypot"
 msgstr "Burayı boş bırakın"
+
+#: site:site.contact.identity.heading
+msgid "site.contact.identity.heading"
+msgstr ""
 
 #: site:site.contact.lead
 msgid "site.contact.lead"
@@ -74,6 +170,10 @@ msgstr "Zabuno — Mühendislik"
 
 #: site:site.footer.cookies
 msgid "site.footer.cookies"
+msgstr ""
+
+#: site:site.footer.delivery
+msgid "site.footer.delivery"
 msgstr ""
 
 #: site:site.footer.distanceSales
@@ -292,12 +392,28 @@ msgstr "Hesabınızdaki veriler"
 msgid "site.legal.effective"
 msgstr ""
 
+#: site:site.legal.incomplete.body
+msgid "site.legal.incomplete.body"
+msgstr ""
+
+#: site:site.legal.incomplete.fields
+msgid "site.legal.incomplete.fields"
+msgstr ""
+
+#: site:site.legal.incomplete.heading
+msgid "site.legal.incomplete.heading"
+msgstr ""
+
 #: site:site.legal.review.pending
 msgid "site.legal.review.pending"
 msgstr ""
 
 #: site:site.legal.version
 msgid "site.legal.version"
+msgstr ""
+
+#: site:site.nav.about
+msgid "site.nav.about"
 msgstr ""
 
 #: site:site.nav.account
@@ -507,6 +623,14 @@ msgstr "Her planda var"
 #: site:site.pricing.lead
 msgid "site.pricing.lead"
 msgstr "Bir restoranın menüsünü karekodun arkasında yayınlamak için ödediği tutar."
+
+#: site:site.pricing.paymentMethods
+msgid "site.pricing.paymentMethods"
+msgstr ""
+
+#: site:site.pricing.paymentMethods.cta
+msgid "site.pricing.paymentMethods.cta"
+msgstr ""
 
 #: site:site.pricing.perMonth
 msgid "site.pricing.perMonth"

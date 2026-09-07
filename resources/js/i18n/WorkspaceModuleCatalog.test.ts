@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1660;
+const FROZEN_LEGACY_KEY_COUNT = 1671;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -186,6 +186,23 @@ const FROZEN_LEGACY_KEY_COUNT = 1660;
 // fatura kesildi" cümlesi (fatura yolu bu pakette yok — docs/107 Faz 1.4).
 // "Test mode" cümlesi sandbox kipinde okunur: prova gerçek yolun aynısıdır
 // ve sahip hangi kipte olduğunu tahmin etmek zorunda kalmaz.
+// FF-216: 1618 → 1629, on bir anahtar — ödeme adımının İKİ ONAYI ve
+// satıcının eksik kimliği (docs/107 Faz 1.2, docs/131). İkisi onay kutusunun
+// cümlesi, ikisi kutu boşken yazılan sebep, biri bölümün başlığı, biri belge
+// listesinin adı, dördü okunacak belgelerin bağlantı etiketi (ön
+// bilgilendirme, mesafeli satış, teslimat/ifa, iptal-iade), biri de canlı
+// kipte satıcının yasal kimliği yayınlanmadan tahsilat yapılamadığını
+// söyleyen cümle.
+//
+// İKİ AYRI ONAY ANAHTARI, çünkü iki ayrı hukuki olgu: sözleşmeyi kabul etmek
+// ile cayma süresi dolmadan ifaya başlanmasını AÇIKÇA istemek aynı şey
+// değildir. Tek bir "kabul ediyorum" anahtarı, defterde hangisine evet
+// dendiğini ayırt edilemez hâle getirirdi.
+//
+// BİLEREK ANAHTARSIZ: bir kart ya da banka markası (hangi kartların kabul
+// edildiği ödeme sağlayıcısının yapılandırmasından türer, bu depoda öyle bir
+// liste yok) ve bir "cayma süresi şu kadar gün" cümlesi (süre kanundan gelir
+// ve belge metninde, katalogda değil).
 // main ile birleştikten SONRA yeniden hesaplandı (ratings.ts + support.ts).
 // FF-201: 1576 → 1599, yirmi üç anahtar ve ON ÜÇÜNCÜ modül dosyası
 // (`support.ts`). Destek ekranı (`docs/125`): başlık ve açıklama, yardım
@@ -220,7 +237,7 @@ const FROZEN_LEGACY_KEY_COUNT = 1660;
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '19c22ffc0a0d9258c5842418fa1097ef4562695087eeebdf4711b6d34c9a299d';
+    '33f65fe40d6c199c4c10bdff364ef0fdafde2971f2dfa0488263000c1c74b82d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
