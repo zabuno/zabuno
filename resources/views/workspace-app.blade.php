@@ -19,6 +19,7 @@
             \App\Http\Middleware\NegotiateDeviceClass::ATTRIBUTE,
         ) ?? \App\Support\Device\DeviceClass::detect(request());
     @endphp
+    @include('partials.font-preload')
     @vite(['resources/css/app.css', $zabunoDevice->entryFor('workspace')])
 </head>
 <body class="app-shell-body">

@@ -7,6 +7,7 @@
     @include('partials.theme-bootstrap')
     @include('partials.build-identity')
     @viteReactRefresh
+    @include('partials.font-preload')
     @vite(['resources/css/app.css', 'resources/js/auth.tsx'])
 </head>
 <body>

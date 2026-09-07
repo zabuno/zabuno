@@ -1,18 +1,42 @@
-/* AEP typeface: Roboto (Latin) + Noto Sans (script fallback).
+/* PAKETİN KENDİ BAŞLIĞI (aynen korunur; aşağıdaki SAPMA 2 onu karşılar):
+
+   AEP typeface: Roboto (Latin) + Noto Sans (script fallback).
    SPEC REQUIRES SELF-HOSTING. No binaries were supplied with the source material,
    so these @font-face rules point at the Google Fonts CDN copies as a stand-in.
    Replace the src: url() targets with local /assets/fonts/*.woff2 files when available. */
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap");
-/* ZABUNO SAPMASI (FF-131) — paketin bu üç satırı ÇIKARILDI.
+/* ZABUNO SAPMASI 1 (FF-131) — paketin üç Phosphor satırı ÇIKARILDI.
 
    Paket Phosphor'u ikon WEB YAZI TİPİ olarak yüklüyor. Bu depo Phosphor'u
    zaten React bileşeni olarak kullanıyor (`@phosphor-icons/react`), yani üç
    ayrı dış istek indirilip HİÇ kullanılmıyordu. Kural (Phosphor ikon, emoji
    yok) korunuyor; değişen yalnız teslim biçimi.
 
-   Bu, klasördeki TEK elle düzenlemedir ve paket yeniden kopyalanırsa farkta
-   görünür. Orijinal satırlar:
+   Orijinal satırlar:
      @import url("https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css");
      @import url("https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css");
      @import url("https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"); */
-:root{--aep-font-sans:"Roboto","Noto Sans",system-ui,sans-serif;--aep-font-mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ZABUNO SAPMASI 2 (FF-195) — Google Fonts `@import`'u ÇIKARILDI ve paketin
+   kendi şartı NİHAYET yerine getirildi.
+
+   Paketin başlığı zaten "SPEC REQUIRES SELF-HOSTING" diyordu; ikili dosyalar
+   teslim edilmediği için CDN kopyası "geçici çözüm" olarak bırakılmıştı. O
+   geçici çözüm hiç çalışmadı: üretimdeki CSP `font-src 'self' data:` diyor,
+   yani tarayıcı o isteği ENGELLER. Sonuç, adı Roboto olan ama hiçbir cihazda
+   Roboto olmayan bir tasarım sistemiydi.
+
+   Yazı tipi artık depoda: `resources/fonts/` + `resources/css/fonts.css`.
+
+   Çıkarılan satır:
+     @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap");
+
+   `"Noto Sans"` de yığından çıkarıldı: barındırılmıyor ve macOS/Windows'ta
+   kurulu değil. Paketin ona verdiği iş — Roboto'nun taşımadığı yazı
+   sistemleri, başta Arapça — bugün yığının sonundaki `sans-serif` üzerinden
+   işletim sistemine düşüyor; yani davranış AYNI, yalnız yığın artık
+   tutmadığı bir söz vermiyor. Boşluk `resources/css/fonts.css` içinde
+   kayıtlı. */
+:root {
+    --aep-font-sans: 'Roboto', system-ui, sans-serif;
+    --aep-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

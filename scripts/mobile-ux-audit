@@ -536,6 +536,28 @@ try {
         let measured;
 
         try {
+            /*
+                YAZI TİPİ YÜKLENMEDEN ÖLÇÜM YAPILMAZ.
+
+                Depo artık Roboto'yu kendi içinde barındırıyor, ama bir
+                `@font-face` ANINDA hazır olmaz: tarayıcı önce HTML'i, sonra
+                CSS'i okur, dosyayı ister ve `font-display: swap` altında bu
+                arada YEDEK yazı tipiyle çizer. Sabit bir bekleme (450 ms) o
+                pencereyi çoğu zaman kapatır — "çoğu zaman" ise ölçüm için
+                yetersizdir: kapıyı yılda birkaç kez, kimsenin bir şey
+                bozmadığı bir gün kıran şey tam olarak budur.
+
+                `document.fonts.ready` o belirsizliği kaldırır: ölçüm, sayfanın
+                kullanacağı bütün yazı tipleri yerine oturduktan SONRA başlar.
+                Yani bu satır olmadan barındırma işi yarım kalırdı — dosya
+                depoda olur, ölçüm yine yedeği ölçerdi.
+            */
+            await cdp(ws, 'Runtime.evaluate', {
+                expression: 'document.fonts.ready.then(() => document.fonts.status)',
+                awaitPromise: true,
+                returnByValue: true,
+            });
+
             if (!storybookMode) {
                 await cdp(ws, 'Runtime.evaluate', { expression: PREPARE, returnByValue: true });
             }
@@ -638,52 +660,55 @@ if (baseline !== null) {
     );
 
     /*
-        YAZI TİPİNE BAĞLI BULGU KAPIYI KIRMAZ — ÖLÇÜLDÜ.
+        `wasted-width` YENİDEN KAPIDA — istisna KALDIRILDI, ölçüldü.
 
-        Bu depo kendi yazı tipini BARINDIRMIYOR: `--font-sans` "Roboto" diyor
-        ama hiçbir `@font-face` yok. Yani her ortam kendi yedeğine düşüyor —
-        macOS'ta SF Pro, CI'nin Linux'unda DejaVu Sans. İkisinin ölçüleri
-        belirgin biçimde farklı.
+        2026-09-05'e kadar burada bir istisna vardı: `wasted-width` bulguları
+        raporlanır ama kapıyı kırmazdı. Gerekçesi doğruydu — depo kendi yazı
+        tipini barındırmıyordu, `--font-sans` "Roboto" diyordu ama tek bir
+        `@font-face` yoktu, dolayısıyla her ortam kendi yedeğine düşüyordu
+        (macOS SF Pro, CI'nin Linux'u DejaVu Sans). Metin kutularının
+        uçlarından türeyen bir metrik, o zemin üzerinde ölçüm değil kumardı.
 
-        Ölçüm (2026-09-05): `macro-layout-dashboardoverview--default` aynı
-        commit'te yerelde kullanılabilir genişliği **321/320 (oran 1.003)**,
-        CI'da eşiğin altında. Kimse bir şey bozmadı; yalnız harfler farklı
-        genişlikte.
+        Zemin değişti (FF-195): yazı tipi artık depoda
+        (`resources/fonts/`, `resources/css/fonts.css`) ve ölçüm
+        `document.fonts.ready` beklendikten SONRA yapılıyor. Yani her ortam
+        aynı woff2 dosyasını okuyor.
 
-        `wasted-width` metriği metin kutularının SOL VE SAĞ uçlarından
-        türüyor, yani doğrudan yazı ölçüsüne bağlı. Bu yüzden kapıyı kırmaz,
-        RAPORLANIR. Yapısal aileler (`overflow-x`, `clipped`, `small-target`,
-        `tight-gap`) kapıda kalıyor: onlar bir kutunun taşmasını, bir hedefin
-        küçüklüğünü ve bir kabın kırpmasını ölçüyor.
+        ÖLÇÜM (2026-09-05, aynı commit, aynı makine). Deney: yığının yedeği
+        başka bir yüze çevrilip ("başka bir işletim sistemi" benzetimi) aynı
+        denetim tekrar koşuldu.
 
-        Yazı tipi depoya barındırıldığı gün bu istisna kalkar — ve o gün
-        gerçek bir iyileştirme olur, çünkü ürün de bugün her cihazda farklı
-        bir yazıyla çiziliyor.
+          · Barındırmadan ÖNCE — 267 hikâyenin 109'unda kullanılabilir
+            genişlik oynadı (en büyük fark 188px, ortalama 8.90px) ve 7
+            hikâyenin kusur ailesi DEĞİŞTİ. Aralarında, bu istisnayı doğuran
+            hikâye de vardı: `macro-layout-dashboardoverview--default`
+            yalnız harfler değiştiği için `wasted-width`e düştü.
+          · Barındırmadan SONRA — 268 hikâyenin 5'inde 4px oynama kaldı,
+            ortalama 0.07px, ve kusur ailesi değişen hikâye SIFIR. Kalan beş
+            hikâye `▲`/`▼` taşıyor; bu iki glif Roboto'nun barındırılmayan
+            `symbols` alt kümesinde, yani hâlâ işletim sisteminden geliyor.
+            Beşi de `micro-`/`compound-` hikâyesi, yani `wasted-width` onlara
+            zaten SORULMUYOR — kapıya etkisi yok.
+          · Dondurulmuş liste artık yazıldığı ortamdan farklı bir ortamda
+            birebir tutuyor: 0 yeni ihlal, 0 düzelen. Öncesinde 1 sahte
+            "düzeldi" satırı vardı (`surface-workspace-qrcodelistitem--named`).
+
+        Yani istisnanın gerekçesi kalmadı. Gerekçesi kalmayan bir istisna
+        kalırsa, korumayı kaldırdığı gerçek bulgular bir daha hiç görülmez.
     */
-    const ENVIRONMENT_SENSITIVE = new Set(['wasted-width']);
-
     const regressions = [];
-    const environmental = [];
     const improvements = [];
 
     for (const [storyId, kinds] of current) {
         const known = baseline[storyId];
 
         if (known === undefined) {
-            const gated = kinds.filter((kind) => !ENVIRONMENT_SENSITIVE.has(kind));
-            const noted = kinds.filter((kind) => ENVIRONMENT_SENSITIVE.has(kind));
-
-            if (gated.length > 0) regressions.push(`${storyId} — YENİ: ${gated.join(', ')}`);
-            if (noted.length > 0) environmental.push(`${storyId} — ${noted.join(', ')}`);
+            regressions.push(`${storyId} — YENİ: ${kinds.join(', ')}`);
             continue;
         }
 
         for (const kind of kinds) {
             if (known.includes(kind)) continue;
-            if (ENVIRONMENT_SENSITIVE.has(kind)) {
-                environmental.push(`${storyId} — yeni tür: ${kind}`);
-                continue;
-            }
             regressions.push(`${storyId} — yeni tür: ${kind}`);
         }
     }
@@ -709,31 +734,20 @@ if (baseline !== null) {
     /*
         YALNIZ YENİ İHLAL KAPIYI KIRAR — düzelme KIRMAZ.
 
-        İlk tasarım düzelmede de kırıyordu, ki liste eskimesin. Ölçüldü ve
-        çalışmadı: aynı depo macOS'ta ve CI'nin Linux'unda FARKLI sonuç
-        veriyor, çünkü yazı tipi ölçüleri farklı ve etiket kutularının boyu
-        birkaç piksel oynuyor. Sonuç, kimsenin bozmadığı bir şey yüzünden
-        kırılan bir kapıydı.
+        Bu kararın ESKİ gerekçesi (ölçümün ortamdan ortama oynaması) FF-195
+        ile ortadan kalktı: yazı tipi artık depoda ve aynı commit iki ortamda
+        aynı sonucu veriyor. Yine de davranış korunuyor, çünkü kalan gerekçe
+        ilkinden bağımsız ve hâlâ geçerli:
 
-        Kırılgan bir kapı, olmayan bir kapıdan kötüdür: insanlar onu
-        umursamamayı öğrenir. Koruyucu yarısı (yeni ihlal) katı kalıyor;
-        tazelik yarısı raporlanıyor ve listeyi güncellemek bir karar olarak
-        insana bırakılıyor.
-
-        Ortam farkının kendisi de bir bilgi: eşiğin İKİ YANINDA duran bir
-        hedef, gerçek cihazlarda da iki yana düşer. Raporda görünmesi, o
-        hedefin sınırda olduğunu söyler.
+        Düzelme bir KUSUR DEĞİLDİR. Bir ekranı iyileştiren paketi, "listeyi
+        de aynı pakette güncellemedin" diye kırmızıya düşürmek, iyileştirmeyi
+        cezalandırır. Koruyucu yarı (yeni ihlal) katı kalıyor; tazelik yarısı
+        raporlanıyor ve listeyi güncellemek bir karar olarak insana bırakılıyor.
     */
-    if (environmental.length > 0) {
-        console.log('');
-        console.log('Yazı tipine bağlı bulgular (kapıyı kırmaz, ortamdan ortama değişir):');
-        for (const line of environmental) console.log(`    ${line}`);
-    }
-
     if (improvements.length > 0) {
         console.log('');
         console.log('Düzelen satırlar `scripts/mobile-ux-audit.baseline.json` içinden SİLİNMELİ.');
-        console.log('(Kapı bunun için kırılmaz: ölçüm ortamdan ortama birkaç piksel oynuyor.)');
+        console.log('(Kapı bunun için kırılmaz: düzelme bir kusur değildir.)');
     }
 
     if (regressions.length > 0) {
