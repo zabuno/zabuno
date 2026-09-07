@@ -80,10 +80,28 @@ const primaryClass = clsx(
     'forced-colors:border-[ButtonText]',
 );
 
+/*
+    HAP UZAYAN METNE DAYANIR — `docs/121` Ö7.
+
+    Hap üç parça taşıyor: menü adı, saat ipucu ve "şimdi açık". Üçü de tek
+    satırda, `shrink-0` ile küçülmesi yasaklanmış ve sarma izni verilmemiş
+    bir kutudaydı. Sahte-yerelleştirilmiş katalogla 320×568'de ölçüldü: hap
+    340–376 piksele çıktı, kendisi kenardan kırpıldı VE belgeyi yana
+    kaydırdı (üç hikâye, altı bulgu). Almanca İngilizceden ortalama %35
+    uzundur ve kısa etiketlerde bu oran %100'e çıkar; yani bu, ölçüm dilinin
+    icat ettiği bir durum değil, çeviri günü kesin yaşanacak olanı.
+
+    Kutu artık daralabilir (`shrink-0` yok), görüntü alanını aşamaz
+    (`max-w-full`) ve içindeki parçalar sığmadığında alt satıra iner
+    (`flex-wrap`). DOKUNMA HEDEFİ KÜÇÜLMEZ: asgari boy `--control-height`
+    olarak durur ve sarma boyu yalnız ARTIRIR. Sarılan satırlar arası boşluk
+    ölçeğin en dar adımıdır (`--space-1`) — büyük hedef, sıkı boşluk.
+*/
 const pillClass = clsx(
-    'inline-flex min-h-[var(--control-height)] shrink-0 items-center gap-[var(--space-2)]',
+    'inline-flex min-h-[var(--control-height)] max-w-full min-w-0 flex-wrap items-center',
+    'gap-x-[var(--space-2)] gap-y-[var(--space-1)]',
     'rounded-pill border px-[var(--space-4)] py-[var(--space-1)]',
-    'text-body text-fg',
+    'text-body break-words text-fg',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
 );
 
@@ -156,10 +174,20 @@ export function MenuScreenActions({
                             bir satır üretirdi ve ekran okuyucu kullanan
                             biri menüyü adıyla bulamazdı.
                         */
+                        /*
+                            Ad kendi kutusunda da daralabilmeli: esnek bir
+                            öğe varsayılan olarak EN DAR İÇERİĞİNDEN küçülmez
+                            ve tek uzun bir kelime (Almanca bileşik adlar
+                            bunun kuralıdır, istisnası değil) hapı yeniden
+                            taşırırdı. `min-w-0` o tabanı kaldırır,
+                            `break-words` kelimeyi bölmeye izin verir.
+                        */
+                        const nameClass = 'min-w-0 break-words text-body';
+
                         const nameNode = menu.isSelected ? (
-                            <h2 className="text-body font-bold">{menu.name}</h2>
+                            <h2 className={clsx(nameClass, 'font-bold')}>{menu.name}</h2>
                         ) : (
-                            <span className="text-body font-medium">{menu.name}</span>
+                            <span className={clsx(nameClass, 'font-medium')}>{menu.name}</span>
                         );
 
                         return (

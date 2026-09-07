@@ -40,8 +40,18 @@ export type SidebarNavProps = {
     groups: SidebarNavGroup[];
     /** Currently active item's `key`, used to set `aria-current` on the matching NavLink. */
     activeKey?: string;
-    /** Accessible name for the `<nav>` landmark; defaults to "Primary". */
-    label?: string;
+    /**
+     * Accessible name for the `<nav>` landmark. REQUIRED — `docs/121` Ö1.
+     *
+     * Buradaki varsayılan `'Primary'` idi ve o kelime kodda gömülüydü:
+     * katalogda hiç görünmediği için çeviri kilidi açıldığında da
+     * çevrilemezdi. Ekran okuyucu kullanan biri, ürünün geri kalanı Almanca
+     * konuşurken gezinti bölgesini "Primary" diye duyardı.
+     *
+     * Varsayılanı kaldırmak, metni bir kez daha unutmayı İMKÂNSIZ kılar:
+     * çağıran ya kataloğundan bir metin verir ya da derlenmez.
+     */
+    label: string;
     /**
      * `<nav>` landmark'ı olarak render edilsin mi? Zaten adlandırılmış bir
      * diyalog/çekmece İÇİNDE kullanıldığında `false` verilir: kapsayıcı adı
@@ -61,7 +71,7 @@ export type SidebarNavProps = {
 export function SidebarNav({
     groups,
     activeKey,
-    label = 'Primary',
+    label,
     asLandmark = true,
     className,
 }: SidebarNavProps) {

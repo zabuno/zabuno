@@ -17,10 +17,14 @@ describe('PageHeader', () => {
         render(
             <PageHeader
                 title="Order #42"
-                breadcrumbs={[
-                    { key: 'home', label: 'Home', href: '#' },
-                    { key: 'order-42', label: 'Order #42' },
-                ]}
+                breadcrumbs={{
+                    label: 'Breadcrumb',
+                    emptyLabel: 'Empty breadcrumb trail',
+                    items: [
+                        { key: 'home', label: 'Home', href: '#' },
+                        { key: 'order-42', label: 'Order #42' },
+                    ],
+                }}
             />,
         );
         expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument();

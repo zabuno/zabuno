@@ -17,7 +17,19 @@ export type ResponsiveDataTableProps<Row> = {
     rows: readonly Row[];
     getRowKey: (row: Row, index: number) => string;
     loading?: boolean;
-    emptyMessage?: string;
+    /**
+     * Satır yokken tablonun içinde duran cümle. ZORUNLU — `docs/121` Ö1.
+     *
+     * Varsayılanı `'No data to display.'` idi ve o cümle kodda gömülüydü:
+     * katalogda hiç görünmüyordu, yani çeviri kilidi açıldığı gün de
+     * çevrilecek metinler arasında ÇIKMAZDI. Panelin ana ekranındaki tablo
+     * (`DashboardPage`) tam olarak o varsayılana düşüyordu — ürünün geri
+     * kalanı çevrilmişken orada İngilizce bir cümle kalırdı.
+     *
+     * Boşluk zaten tek bir durum değildir (`docs/66`): "hiç ürün yok" ile
+     * "bu süzgeçte yok" ayrı cümlelerdir ve ikisini de yalnız çağıran bilir.
+     */
+    emptyMessage: string;
     className?: string;
 };
 
@@ -33,7 +45,7 @@ export function ResponsiveDataTable<Row>({
     rows,
     getRowKey,
     loading = false,
-    emptyMessage = 'No data to display.',
+    emptyMessage,
     className,
 }: ResponsiveDataTableProps<Row>) {
     // Yoğunluk token seviyesinde çözülür: bu bileşen hangi modda olduğunu

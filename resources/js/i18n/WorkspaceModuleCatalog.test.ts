@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1657;
+const FROZEN_LEGACY_KEY_COUNT = 1660;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -210,8 +210,17 @@ const FROZEN_LEGACY_KEY_COUNT = 1657;
 // yapılandırılmamışken vergi ayrımının GÖSTERİLMEDİĞİ, ve e-arşiv/
 // e-fatura sağlayıcısı bağlı olmadığı için kaydın hiçbir yere
 // GÖNDERİLMEDİĞİ. "Yakında e-fatura" diye bir anahtar yok ve olmayacak.
+// FF-213 (docs/121 Ö1/Ö2): 1576 → 1579, ÜÇ anahtar ve hiçbiri yeni bir
+// ekran değil. Üçü de ZATEN EKRANDA olan ama katalogdan geçmeyen metinler:
+// kırıntı izinin bölge adı ve boş hâli (`Breadcrumbs` içinde gömülüydü) ve
+// çalışma alanı seçicisinin erişilebilir adı — o ad arayüzde
+// birleştiriliyordu, artık ADLI yer tutuculu tek bir anahtar.
+// Sayının büyümesi burada bir yüzey büyümesi değil, GÖRÜNÜRLÜK: sahte-
+// yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '8eaeef56eda927e356eb033327705da68f50d74f5fc3098c7913253c65cf3270';
+    '19c22ffc0a0d9258c5842418fa1097ef4562695087eeebdf4711b6d34c9a299d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

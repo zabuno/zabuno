@@ -14,7 +14,12 @@ import { DrawerPanel } from '../../catalog/overlays/compound/DrawerPanel';
 export type MobileChromeProps = {
     navGroups: SidebarNavGroup[];
     activeNavKey?: string;
-    navLabel?: string;
+    /**
+     * Hem çekmecenin başlığı hem gezinti bölgesinin adı. ZORUNLU —
+     * `docs/121` Ö1: isteğe bağlıyken burası kodda gömülü `'Menu'`ye,
+     * `SidebarNav` ise `'Primary'`ye düşüyordu.
+     */
+    navLabel: string;
     workspaceName?: string;
     /** Seçilebilir çalışma alanları; tek taneyse seçici menü açılmaz. */
     workspaces?: WorkspaceSwitcherOption[];
@@ -36,7 +41,7 @@ export function MobileNavigationDrawer({
     onClose,
 }: MobileChromeProps): ReactNode {
     return (
-        <DrawerPanel open={open} onClose={onClose} title={navLabel ?? 'Menu'}>
+        <DrawerPanel open={open} onClose={onClose} title={navLabel}>
             {/*
                 Çekmecedeki gezinti bir LANDMARK'tır.
 

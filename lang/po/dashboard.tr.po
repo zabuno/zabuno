@@ -340,6 +340,10 @@ msgstr "Ürün"
 msgid "dashboard.table.column.visible"
 msgstr "Görünür"
 
+#: dashboard:dashboard.table.empty
+msgid "dashboard.table.empty"
+msgstr ""
+
 #: dashboard:dashboard.table.heading
 msgid "dashboard.table.heading"
 msgstr "Menüye bakış"

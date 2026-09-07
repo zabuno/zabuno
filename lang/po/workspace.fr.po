@@ -1260,6 +1260,10 @@ msgstr ""
 msgid "workspace.current.switch"
 msgstr ""
 
+#: workspace:workspace.current.switchFor
+msgid "workspace.current.switchFor"
+msgstr ""
+
 #: workspace:workspace.dashboard.empty
 msgid "workspace.dashboard.empty"
 msgstr ""
@@ -6158,6 +6162,14 @@ msgstr ""
 
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
+msgstr ""
+
+#: workspace:workspace.shell.breadcrumbs.empty
+msgid "workspace.shell.breadcrumbs.empty"
+msgstr ""
+
+#: workspace:workspace.shell.breadcrumbs.label
+msgid "workspace.shell.breadcrumbs.label"
 msgstr ""
 
 #: workspace:workspace.shell.currentLocation.label

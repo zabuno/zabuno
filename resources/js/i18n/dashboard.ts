@@ -43,6 +43,14 @@ const en = {
     'dashboard.stats.visible': 'Visible items',
     'dashboard.table.heading': 'Menu at a glance',
     'dashboard.table.caption': 'Menu item list',
+    /*
+        TABLO BOŞKEN NE YAZAR — `docs/121` Ö1.
+
+        Bu satır yoktu ve tablo, `ResponsiveDataTable`'ın içinde kodda gömülü
+        duran `'No data to display.'` cümlesine düşüyordu: ürünün ANA
+        ekranındaki tablo, katalogdan hiç geçmeyen bir cümle gösteriyordu.
+    */
+    'dashboard.table.empty': 'No menu items yet.',
     'dashboard.table.column.item': 'Item',
     'dashboard.table.column.visible': 'Visible',
     // Adım durumunun METİN karşılığı: işaret görsel, bu ekran okuyucu için
