@@ -12,6 +12,9 @@ use App\Application\Analytics\Port\AnalyticsRepositoryPort;
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Billing\Port\BillingModePort;
 use App\Application\Billing\Port\BillingProfileRepositoryPort;
+use App\Application\Billing\Port\EArchiveGatewayPort;
+use App\Application\Billing\Port\InvoiceDocumentRendererPort;
+use App\Application\Billing\Port\InvoiceRepositoryPort;
 use App\Application\Billing\Port\IyzicoSandboxGatewayPort;
 use App\Application\Billing\Port\IyzicoSandboxTransactionRepositoryPort;
 use App\Application\Billing\Port\LivePaymentGatewayPort;
@@ -125,6 +128,7 @@ use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentBillingMode;
 use App\Infrastructure\Billing\Persistence\EloquentBillingProfileRepository;
+use App\Infrastructure\Billing\Persistence\EloquentInvoiceRepository;
 use App\Infrastructure\Billing\Persistence\EloquentIyzicoSandboxTransactionRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPaymentTransactionRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPlanCatalogRepository;
@@ -134,6 +138,8 @@ use App\Infrastructure\Billing\Provider\ContainerPaymentGatewaySelector;
 use App\Infrastructure\Billing\Provider\IyzipayGateway;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxGateway;
 use App\Infrastructure\Billing\Provider\IyzipaySandboxModeGateway;
+use App\Infrastructure\Billing\Provider\UnconfiguredEArchiveGateway;
+use App\Infrastructure\Billing\Rendering\MpdfInvoiceDocumentAdapter;
 use App\Infrastructure\Content\ProductPageLibrary;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
@@ -286,6 +292,15 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(PaymentGatewaySelectorPort::class, ContainerPaymentGatewaySelector::class);
         $this->app->bind(SandboxPaymentGatewayPort::class, IyzipaySandboxModeGateway::class);
         $this->app->bind(LivePaymentGatewayPort::class, IyzipayGateway::class);
+        /*
+            FATURA (docs/107 Faz 1.4, docs/130): tahsilatın karşılığındaki
+            belge. Numara veritabanı düzeyinde tahsis edilir; e-arşiv/
+            e-fatura kapısının BUGÜN gerçek bir uygulaması yoktur ve
+            bağlı olan uygulama sessizce başarılı dönmek yerine DURUR.
+        */
+        $this->app->bind(InvoiceRepositoryPort::class, EloquentInvoiceRepository::class);
+        $this->app->bind(InvoiceDocumentRendererPort::class, MpdfInvoiceDocumentAdapter::class);
+        $this->app->bind(EArchiveGatewayPort::class, UnconfiguredEArchiveGateway::class);
         $this->app->singleton(
             MarketReferencePort::class,
             static fn (): IcuMarketReference => new IcuMarketReference

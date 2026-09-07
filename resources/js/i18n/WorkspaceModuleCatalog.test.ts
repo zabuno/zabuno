@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1644;
+const FROZEN_LEGACY_KEY_COUNT = 1660;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -198,6 +198,18 @@ const FROZEN_LEGACY_KEY_COUNT = 1644;
 // panel tek kaynağı okumak zorunda. Buraya ikinci bir cümle yazmak, iki
 // cümlenin ayrıştığı günü hazırlamak olurdu. "7/24", "en kısa sürede" gibi
 // bir yedek cümle de yok — vaat sahibin kararıdır, katalogun değil.
+// FF-215: 1618 → 1634, on altı anahtar — FATURA (docs/107 Faz 1.4,
+// docs/130). Yukarıdaki "fatura yolu bu pakette yok" notu ARTIK GEÇERSİZ:
+// tahsilatın karşılığında numaralı bir belge doğuyor ve panel onu
+// listeliyor. Anahtarlar belgenin EKRAN kipinindir; kâğıt kipi (A4 PDF)
+// sunucuda üretilir ve metni katalogda değil, belgenin kendi kaynak
+// dilindedir (`LegalDocument` ile aynı karar).
+//
+// ÜÇ CÜMLE BİLEREK "EKSİK" DİYOR ve hiçbiri iyimser değil: şirket bilgisi
+// girilmemişken belgenin tam bir ticari fatura OLMADIĞI, KDV oranı
+// yapılandırılmamışken vergi ayrımının GÖSTERİLMEDİĞİ, ve e-arşiv/
+// e-fatura sağlayıcısı bağlı olmadığı için kaydın hiçbir yere
+// GÖNDERİLMEDİĞİ. "Yakında e-fatura" diye bir anahtar yok ve olmayacak.
 // FF-213 (docs/121 Ö1/Ö2): 1576 → 1579, ÜÇ anahtar ve hiçbiri yeni bir
 // ekran değil. Üçü de ZATEN EKRANDA olan ama katalogdan geçmeyen metinler:
 // kırıntı izinin bölge adı ve boş hâli (`Breadcrumbs` içinde gömülüydü) ve
@@ -208,7 +220,7 @@ const FROZEN_LEGACY_KEY_COUNT = 1644;
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '5904f707922b842ef5dadd7053952770ae35fe1951fff335e900da93082efa2d';
+    '19c22ffc0a0d9258c5842418fa1097ef4562695087eeebdf4711b6d34c9a299d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

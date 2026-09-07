@@ -552,6 +552,70 @@ msgstr "Version {version}"
 msgid "workspace.billing.heading"
 msgstr "Billing"
 
+#: workspace:workspace.billing.invoices.description
+msgid "workspace.billing.invoices.description"
+msgstr "Every collected payment is recorded here as a numbered document. A document is never edited or deleted; a refund is recorded as a separate credit note."
+
+#: workspace:workspace.billing.invoices.download
+msgid "workspace.billing.invoices.download"
+msgstr "Download PDF"
+
+#: workspace:workspace.billing.invoices.earchiveNotConfigured
+msgid "workspace.billing.invoices.earchiveNotConfigured"
+msgstr "No e-Arşiv / e-Fatura provider is connected, so these records have not been sent to any tax authority."
+
+#: workspace:workspace.billing.invoices.empty
+msgid "workspace.billing.invoices.empty"
+msgstr "No invoice yet. The first successful payment creates the first document."
+
+#: workspace:workspace.billing.invoices.error
+msgid "workspace.billing.invoices.error"
+msgstr "Invoices could not be loaded."
+
+#: workspace:workspace.billing.invoices.issuedAt
+msgid "workspace.billing.invoices.issuedAt"
+msgstr "Issued {date}"
+
+#: workspace:workspace.billing.invoices.kind.creditNote
+msgid "workspace.billing.invoices.kind.creditNote"
+msgstr "Credit note"
+
+#: workspace:workspace.billing.invoices.kind.invoice
+msgid "workspace.billing.invoices.kind.invoice"
+msgstr "Invoice"
+
+#: workspace:workspace.billing.invoices.line
+msgid "workspace.billing.invoices.line"
+msgstr "{plan} — {days} days of subscription"
+
+#: workspace:workspace.billing.invoices.loading
+msgid "workspace.billing.invoices.loading"
+msgstr "Loading invoices…"
+
+#: workspace:workspace.billing.invoices.missingDocuments
+msgid "workspace.billing.invoices.missingDocuments"
+msgstr "{count} collected payment(s) have no document, because no billing details were recorded when they were collected."
+
+#: workspace:workspace.billing.invoices.region
+msgid "workspace.billing.invoices.region"
+msgstr "Invoices"
+
+#: workspace:workspace.billing.invoices.retry
+msgid "workspace.billing.invoices.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.invoices.sellerIncomplete
+msgid "workspace.billing.invoices.sellerIncomplete"
+msgstr "Our company details are not complete yet, so this document is not a complete commercial invoice."
+
+#: workspace:workspace.billing.invoices.vat
+msgid "workspace.billing.invoices.vat"
+msgstr "VAT {amount}"
+
+#: workspace:workspace.billing.invoices.vatUnknown
+msgid "workspace.billing.invoices.vatUnknown"
+msgstr "No VAT rate is configured, so this document shows no tax breakdown."
+
 #: workspace:workspace.billing.iyzicoSandbox.amount
 msgid "workspace.billing.iyzicoSandbox.amount"
 msgstr "Amount {amount} {currency}"
