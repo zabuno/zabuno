@@ -4,8 +4,23 @@ import { Breadcrumbs, type BreadcrumbItem } from '../../navigation/compound/Brea
 
 export type PageHeaderProps = {
     title: string;
-    /** Optional trail rendered above the title; omit to hide. */
-    breadcrumbs?: BreadcrumbItem[];
+    /**
+     * Optional trail rendered above the title; omit to hide.
+     *
+     * İZ, ADIYLA BİRLİKTE GELİR — `docs/121` Ö1.
+     *
+     * Önce yalnız `BreadcrumbItem[]` idi ve `Breadcrumbs` bölge adını kodda
+     * gömülü `'Breadcrumb'`den alıyordu. Adı ayrı bir İSTEĞE BAĞLI prop
+     * yapmak aynı deliği açık bırakırdı: unutulduğu anda gömülü metin geri
+     * gelirdi. Tek bir nesne, ikisini ayrılmaz kılar — iz varsa adı da var.
+     */
+    breadcrumbs?: {
+        /** `<nav>` bölgesinin erişilebilir adı; çağıranın kataloğundan. */
+        label: string;
+        /** İz boşken ekran okuyucuya söylenen cümle. */
+        emptyLabel: string;
+        items: BreadcrumbItem[];
+    };
     description?: ReactNode;
     /** Slot for primary/secondary page actions (buttons), rendered end-aligned. */
     actions?: ReactNode;
@@ -38,7 +53,13 @@ export function PageHeader({
 
     return (
         <div className={clsx('flex flex-col', rhythm, className)}>
-            {breadcrumbs ? <Breadcrumbs items={breadcrumbs} /> : null}
+            {breadcrumbs ? (
+                <Breadcrumbs
+                    items={breadcrumbs.items}
+                    label={breadcrumbs.label}
+                    emptyLabel={breadcrumbs.emptyLabel}
+                />
+            ) : null}
             <div className={clsx('flex flex-wrap items-start justify-between', rhythm)}>
                 <div className="flex flex-col gap-1">
                     {/*

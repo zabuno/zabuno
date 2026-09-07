@@ -14,8 +14,15 @@ const groups: SidebarNavGroup[] = [
 ];
 
 describe('SidebarNav', () => {
-    it('exposes a Primary navigation landmark by default', () => {
-        render(<SidebarNav groups={groups} />);
+    /*
+        LANDMARK ADI ARTIK VARSAYILAN DEĞİL, VERİLİR — `docs/121` Ö1.
+
+        Bileşen bu adı kodda gömülü `'Primary'`den alıyordu; katalogdan
+        geçmeyen bir kelime çeviri günü hiç görünmez. Ad artık zorunlu bir
+        prop; bu hikâye onun `<nav>`a bağlandığını ölçer.
+    */
+    it('verilen adı gezinti bölgesine bağlar', () => {
+        render(<SidebarNav groups={groups} label="Primary" />);
         expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument();
     });
 
@@ -25,7 +32,7 @@ describe('SidebarNav', () => {
     });
 
     it('renders every item as a NavLink', () => {
-        render(<SidebarNav groups={groups} />);
+        render(<SidebarNav groups={groups} label="Primary" />);
         expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveAttribute(
             'href',
             '#dashboard',
@@ -34,7 +41,7 @@ describe('SidebarNav', () => {
     });
 
     it('marks the matching item as current via activeKey', () => {
-        render(<SidebarNav groups={groups} activeKey="orders" />);
+        render(<SidebarNav groups={groups} activeKey="orders" label="Primary" />);
         expect(screen.getByRole('link', { name: 'Orders' })).toHaveAttribute(
             'aria-current',
             'page',
@@ -43,7 +50,7 @@ describe('SidebarNav', () => {
     });
 
     it('renders an optional group heading', () => {
-        render(<SidebarNav groups={groups} />);
+        render(<SidebarNav groups={groups} label="Primary" />);
         expect(screen.getByText('Menu')).toBeInTheDocument();
     });
     /**
@@ -57,6 +64,7 @@ describe('SidebarNav', () => {
     it('her grup başlığı kendi listesini adlandırır', () => {
         render(
             <SidebarNav
+                label="Primary"
                 groups={[
                     { key: 'overview', items: [{ key: 'dashboard', label: 'Dashboard' }] },
                     {
@@ -117,7 +125,7 @@ describe('SidebarNav', () => {
  */
 describe('SidebarNav — AEP kabuk grameri (FF-131)', () => {
     it('grup başlığı gövde ölçüsünde kalır, 700 ağırlıkta ve ikinci planda çizilir', () => {
-        render(<SidebarNav groups={groups} />);
+        render(<SidebarNav groups={groups} label="Primary" />);
 
         const heading = screen.getByText('Menu');
 
@@ -146,6 +154,7 @@ describe('SidebarNav — AEP kabuk grameri (FF-131)', () => {
     it('gezinti maddesi satırın sonuna yaslanan bir sayı rozeti taşıyabilir', () => {
         render(
             <SidebarNav
+                label="Primary"
                 groups={[
                     {
                         key: 'primary',
@@ -178,7 +187,7 @@ describe('SidebarNav — AEP kabuk grameri (FF-131)', () => {
     });
 
     it('rozet verilmeyen satır boş bir kutu taşımaz', () => {
-        render(<SidebarNav groups={groups} />);
+        render(<SidebarNav groups={groups} label="Primary" />);
 
         const link = screen.getByRole('link', { name: 'Dashboard' });
 

@@ -95,8 +95,19 @@ export function WorkspaceSwitcherTrigger({
                 alanı değiştir" deseydik, ekran okuyucu kullanan biri hangi
                 restoranda olduğunu düğmeden hiç duymazdı — oysa bu kutunun
                 asıl işi o soruyu cevaplamak.
+
+                AMA TEK CÜMLE OLARAK — `docs/121` Ö2/Ö5.
+
+                Önceki hâl ad ile eylemi arayüzde BİRLEŞTİRİYORDU:
+                `${workspaceName} — ${t('workspace.current.switch')}`.
+                Sahte-yerelleştirilmiş katalogla ölçüldüğünde bu düğme tek bir
+                cümle değil İKİ AYRI parça olarak göründü (⟦…⟧⟦…⟧) — ki bu,
+                aracın "burada birleştirilmiş bir cümle var" demesinin tam
+                kendisi. Çevirmen o hâlde tireyi kaldıramaz, adı cümlenin
+                sonuna alamaz, ismin hâlini uygulayamaz. Şimdi tek anahtar ve
+                ADLI bir yer tutucu var.
             */
-            label={`${workspaceName} — ${t('workspace.current.switch')}`}
+            label={t('workspace.current.switchFor', { workspace: workspaceName })}
             placement="down"
             triggerContent={label}
             items={workspaces.map((workspace) => ({

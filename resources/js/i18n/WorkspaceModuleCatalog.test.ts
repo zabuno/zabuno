@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1641;
+const FROZEN_LEGACY_KEY_COUNT = 1644;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -198,8 +198,17 @@ const FROZEN_LEGACY_KEY_COUNT = 1641;
 // panel tek kaynağı okumak zorunda. Buraya ikinci bir cümle yazmak, iki
 // cümlenin ayrıştığı günü hazırlamak olurdu. "7/24", "en kısa sürede" gibi
 // bir yedek cümle de yok — vaat sahibin kararıdır, katalogun değil.
+// FF-213 (docs/121 Ö1/Ö2): 1576 → 1579, ÜÇ anahtar ve hiçbiri yeni bir
+// ekran değil. Üçü de ZATEN EKRANDA olan ama katalogdan geçmeyen metinler:
+// kırıntı izinin bölge adı ve boş hâli (`Breadcrumbs` içinde gömülüydü) ve
+// çalışma alanı seçicisinin erişilebilir adı — o ad arayüzde
+// birleştiriliyordu, artık ADLI yer tutuculu tek bir anahtar.
+// Sayının büyümesi burada bir yüzey büyümesi değil, GÖRÜNÜRLÜK: sahte-
+// yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '813b35e9a10d8766e0ac533ebbfec082cef0eb8f4f2feb151e2f0550b45b53d3';
+    '5904f707922b842ef5dadd7053952770ae35fe1951fff335e900da93082efa2d';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

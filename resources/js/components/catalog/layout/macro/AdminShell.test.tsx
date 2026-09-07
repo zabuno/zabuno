@@ -20,7 +20,7 @@ const groups: SidebarNavGroup[] = [
     tarafında bu parça cihaza özgü ayrı bir modülde durur ve telefon onu hiç
     indirmez (docs/54); test de aynı sözleşmeyi kullanır.
 */
-function sidebarSlot(navGroups = groups, activeKey = 'dashboard', label?: string) {
+function sidebarSlot(navGroups = groups, activeKey = 'dashboard', label = 'Primary') {
     return (
         <aside className="admin-shell-sidebar">
             <SidebarNav groups={navGroups} activeKey={activeKey} label={label} />

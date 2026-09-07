@@ -103,6 +103,7 @@ describe('Flowbite tema bağlaması — zorlayıcı kontrol', () => {
                     ]}
                     rows={[{ id: 1 }]}
                     getRowKey={(row: { id: number }) => String(row.id)}
+                    emptyMessage="Henüz ürün yok."
                 />,
             ],
         ];

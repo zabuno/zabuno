@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import { HeatGrid } from '../components/catalog/data-display/compound/HeatGrid';
+import { TrendChart } from '../components/catalog/data-display/compound/TrendChart';
+import { MenuScreenActions } from '../components/catalog/menu/compound/MenuScreenActions';
 import { PageHeader } from '../components/catalog/layout/macro/PageHeader';
 import { MenuCatalogWorkspace } from '../components/catalog/menu/macro/MenuCatalogWorkspace';
 import { QrCodeListItem } from '../components/workspace/pages/publication/qr-destination/QrCodeListItem';
@@ -24,7 +26,14 @@ import { QrCodeListItem } from '../components/workspace/pages/publication/qr-des
  * elle yazılmış bir kopyadan değil, GERÇEK render'dan okunur
  * (`touch-target.contract.test.tsx` deseni).
  *
- * Requirement IDs: DS-NARROW-LAYOUT-01 … DS-NARROW-LAYOUT-06.
+ * Requirement IDs: DS-NARROW-LAYOUT-01 … DS-NARROW-LAYOUT-09.
+ *
+ * ═══ 08 VE 09 SAHTE-YERELLEŞTİRMEDEN GELDİ ═══
+ *
+ * `docs/121` §4: katalog metni gerçek bir dile çevrilmeden mekanik olarak
+ * uzatılır ve mobil denetim aynı 320 pikselde yeniden koşar. Uzayan metnin
+ * kırdığı düzen (Ö7) bugünden görünür — Almanca tek kelime yazılmadan.
+ * Aşağıdaki iki madde o koşunun bulduğu iki kusurun yapı karşılığıdır.
  */
 
 function classesOf(element: Element | null): Set<string> {
@@ -204,7 +213,11 @@ describe('DS-NARROW-LAYOUT — sayfa başlığı (M9)', () => {
             <PageHeader
                 title="Orders"
                 description="All orders today."
-                breadcrumbs={[{ key: 'home', label: 'Home', href: '#' }]}
+                breadcrumbs={{
+                    label: 'Breadcrumb',
+                    emptyLabel: 'Empty breadcrumb trail',
+                    items: [{ key: 'home', label: 'Home', href: '#' }],
+                }}
                 actions={<button type="button">Export</button>}
             />,
         );
@@ -300,5 +313,98 @@ describe('DS-NARROW-LAYOUT — menü kataloğu ürün satırı (M7)', () => {
         expectClass(rename.parentElement, 'flex-1', 'DS-NARROW-LAYOUT-07');
 
         vi.unstubAllGlobals();
+    });
+});
+
+describe('DS-NARROW-LAYOUT — çubuk+çizgi grafiği (docs/121 Ö7)', () => {
+    it('ekran okuyucu tablosu bir kapta gizlenir; uzayan başlık belgeyi genişletemez', () => {
+        /*
+            Sahte-yerelleştirilmiş katalogla ölçüldü (320×568): `sr-only`
+            doğrudan tablonun üstündeydi ve bir tablo 1 piksele SIĞMAZ —
+            CSS genişliği tabloda tavan değil TABANDIR. Başlık uzayınca tablo
+            326–335 piksele çıktı ve belgeyi yana kaydırdı (beş hikâye).
+            Isı ızgarasında aynı kusur, aynı çözüm (DS-NARROW-LAYOUT-01).
+        */
+        const { container } = render(
+            <TrendChart
+                points={[
+                    { label: '29 Ağu', primary: 12, secondary: 9 },
+                    { label: '30 Ağu', primary: 31, secondary: 25 },
+                ]}
+                primaryLabel="Taramalar"
+                secondaryLabel="Menü açılışları"
+                columnLabel="Gün"
+                description="Son 7 günde tarama ve menü açılışı"
+            />,
+        );
+
+        const table = container.querySelector('table');
+
+        expect(table, 'DS-NARROW-LAYOUT-08: tablo yok').not.toBeNull();
+        expectNoClass(table, 'sr-only', 'DS-NARROW-LAYOUT-08');
+        expectClass(table!.parentElement, 'sr-only', 'DS-NARROW-LAYOUT-08');
+        // Ekran okuyucu için hiçbir şey değişmedi.
+        expect(screen.getByRole('table')).toHaveAccessibleName(
+            'Son 7 günde tarama ve menü açılışı',
+        );
+    });
+});
+
+describe('DS-NARROW-LAYOUT — menü hapı (docs/121 Ö7)', () => {
+    it('hap uzayan metinle daralır ve sarar; dokunma hedefi küçülmez', () => {
+        /*
+            Sahte-yerelleştirilmiş katalogla ölçüldü (320×568): hap `shrink-0`
+            ile küçülemiyor, sarma izni olmadığı için de tek satırda kalıyordu.
+            Üç parça (ad + saat ipucu + "şimdi açık") uzayınca kutu 340–376
+            piksele çıktı; kendisi kenardan kırpıldı VE belgeyi kaydırdı
+            (üç hikâye, altı bulgu).
+
+            Asgari boy DEĞİŞMEZ: sarma boyu yalnız artırır. Büyük hedef,
+            sıkı boşluk.
+        */
+        render(
+            <MenuScreenActions
+                label="Menu actions"
+                menusLabel="Menus at this location"
+                menus={[
+                    {
+                        id: 1,
+                        name: 'Ana menü',
+                        hint: '11:00–07:00',
+                        isSelected: true,
+                        isServingNow: true,
+                    },
+                ]}
+                onSelectMenu={vi.fn()}
+                addMenuLabel="New menu"
+                onAddMenu={null}
+                editMenuLabel="Edit menu"
+                onEditMenu={null}
+                servingNowLabel="open now"
+                photoImport={null}
+                csvLabel="CSV"
+                onCsv={null}
+                previewAndPublishLabel="Preview & publish"
+                onPreviewAndPublish={null}
+                addProductLabel="Add product"
+                onAddProduct={null}
+            />,
+        );
+
+        const pill = screen.getByRole('button', { name: /Ana menü/ });
+
+        expectNoClass(pill, 'shrink-0', 'DS-NARROW-LAYOUT-09');
+        expectClass(pill, 'max-w-full', 'DS-NARROW-LAYOUT-09');
+        expectClass(pill, 'min-w-0', 'DS-NARROW-LAYOUT-09');
+        expectClass(pill, 'flex-wrap', 'DS-NARROW-LAYOUT-09');
+        // Hedefin asgari boyu yerinde: sarma boyu artırır, azaltmaz.
+        expectClass(pill, 'min-h-[var(--control-height)]', 'DS-NARROW-LAYOUT-09');
+        // Sarılan satırlar arası boşluk ölçeğin en dar adımı.
+        expectClass(pill, 'gap-y-[var(--space-1)]', 'DS-NARROW-LAYOUT-09');
+
+        // Ad da kendi kutusunda daralabilir; tek uzun kelime hapı taşırmaz.
+        const name = screen.getByRole('heading', { name: 'Ana menü' });
+        expectClass(name, 'min-w-0', 'DS-NARROW-LAYOUT-09');
+        expectClass(name, 'break-words', 'DS-NARROW-LAYOUT-09');
     });
 });

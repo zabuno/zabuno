@@ -210,6 +210,7 @@ export function DashboardPage({
                                     })),
                                 )}
                                 getRowKey={(row) => String(row.id)}
+                                emptyMessage={t('dashboard.table.empty')}
                             />
                         </OpsCard>
                     </>

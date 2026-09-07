@@ -1196,6 +1196,10 @@ msgstr "We could not log you out. Please try again."
 msgid "workspace.current.switch"
 msgstr "Switch workspace"
 
+#: workspace:workspace.current.switchFor
+msgid "workspace.current.switchFor"
+msgstr "{workspace} — Switch workspace"
+
 #: workspace:workspace.dashboard.empty
 msgid "workspace.dashboard.empty"
 msgstr "No menu has been created for this location yet."
@@ -6095,6 +6099,14 @@ msgstr "Workspace"
 #: workspace:workspace.shell.brand
 msgid "workspace.shell.brand"
 msgstr "Zabuno"
+
+#: workspace:workspace.shell.breadcrumbs.empty
+msgid "workspace.shell.breadcrumbs.empty"
+msgstr "Empty breadcrumb trail"
+
+#: workspace:workspace.shell.breadcrumbs.label
+msgid "workspace.shell.breadcrumbs.label"
+msgstr "Breadcrumb"
 
 #: workspace:workspace.shell.currentLocation.label
 msgid "workspace.shell.currentLocation.label"

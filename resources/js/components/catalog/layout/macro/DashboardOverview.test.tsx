@@ -14,6 +14,7 @@ const table = {
     ],
     rows,
     getRowKey: (row: OrderRow) => row.id,
+    emptyMessage: 'No orders yet.',
 };
 
 describe('DashboardOverview', () => {
