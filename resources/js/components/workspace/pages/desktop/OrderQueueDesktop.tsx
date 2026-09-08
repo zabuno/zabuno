@@ -85,8 +85,8 @@ export function OrderQueueDesktop({
     const reasonFieldId = useId();
 
     /** Klavye odağının ÜZERİNDE olduğu satır (roving tabindex). */
-    const [activeId, setActiveId] = useState<number | null>(null);
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [activeIdRaw, setActiveId] = useState<number | null>(null);
+    const [selectedIdsRaw, setSelectedIds] = useState<number[]>([]);
     /** Shift ile aralık seçerken sabit kalan uç. */
     const [anchorId, setAnchorId] = useState<number | null>(null);
     const [menu, setMenu] = useState<{ orderId: number; x: number; y: number } | null>(null);
@@ -105,19 +105,24 @@ export function OrderQueueDesktop({
     const orderIds = orders.map((order) => order.id);
 
     /*
-        LİSTE DEĞİŞİNCE SEÇİM DE DEĞİŞİR.
+        LİSTE DEĞİŞİNCE SEÇİM DE DEĞİŞİR — ama bir ETKİYLE değil, TÜRETEREK.
 
         Sipariş onaylanınca beslemeden düşer. Seçim elde kalsaydı, ekranda
-        olmayan bir siparişe "toplu onayla" denebilirdi — ve o istek
-        sunucuda 409 döner, kullanıcı neden olduğunu anlamazdı.
+        olmayan bir siparişe "toplu onayla" denebilirdi — o istek sunucuda
+        409 döner ve kullanıcı nedenini anlamazdı.
+
+        Bu eşitleme önce `useEffect` içinde `setState` ile yapılıyordu ve
+        `react-hooks` kuralı onu haklı olarak reddetti: etkiyle kurulan bir
+        eşitleme, listenin değiştiği kare ile seçimin düzeldiği kare
+        arasında BİR KARE boyunca yanlış durumu çizer. Türetilmiş değerde
+        böyle bir ara kare yoktur — ham durum saklanır, ekrana giden değer
+        her çizimde listeden süzülür.
     */
-    useEffect(() => {
-        setSelectedIds((current) => current.filter((id) => orderIds.includes(id)));
-        setActiveId((current) =>
-            current !== null && orderIds.includes(current) ? current : (orderIds[0] ?? null),
-        );
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- kimlik dizisi, referansı değil
-    }, [orderIds.join(',')]);
+    const selectedIds = selectedIdsRaw.filter((id) => orderIds.includes(id));
+    const activeId =
+        activeIdRaw !== null && orderIds.includes(activeIdRaw)
+            ? activeIdRaw
+            : (orderIds[0] ?? null);
 
     /* Menü açıkken dışarı tıklamak ve Escape kapatır. */
     useEffect(() => {
