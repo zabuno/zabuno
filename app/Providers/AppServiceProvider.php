@@ -29,6 +29,8 @@ use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Legal\Port\ConsentLedgerPort;
 use App\Application\Legal\Port\LegalLibraryPort;
+use App\Application\Legal\Port\SubprocessorRegistryPort;
+use App\Application\Legal\Port\ThirdPartyLicensePort;
 use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerAvailabilityPort;
@@ -92,6 +94,8 @@ use App\Application\Security\Port\MediaBackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
 use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
+use App\Application\Support\Port\SupportAccessNotifierPort;
+use App\Application\Support\Port\SupportAccessPort;
 use App\Application\Support\Port\SupportNotifierPort;
 use App\Application\Support\Port\SupportReferenceGeneratorPort;
 use App\Application\Support\Port\SupportRequestRepositoryPort;
@@ -110,6 +114,7 @@ use App\Domain\Media\PdfInspector;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SvgSanitizer;
 use App\Domain\Platform\Credential\CredentialProvider;
+use App\Domain\Platform\Credential\PlatformCredentialChanged;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
@@ -125,6 +130,7 @@ use App\Infrastructure\Ai\OpenAiVisionProvider;
 use App\Infrastructure\Ai\StructuredGenerationRouter;
 use App\Infrastructure\Ai\VisionExtractionRouter;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
+use App\Infrastructure\Analytics\VaultAnalyticsSettings;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentBillingMode;
 use App\Infrastructure\Billing\Persistence\EloquentBillingProfileRepository;
@@ -145,6 +151,8 @@ use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Legal\DatabaseConsentLedger;
 use App\Infrastructure\Legal\LegalLibrary;
+use App\Infrastructure\Legal\ManifestThirdPartyLicenses;
+use App\Infrastructure\Legal\MeasuredSubprocessors;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Localization\PseudoLocalizingTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
@@ -210,7 +218,12 @@ use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\MediaBackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
+use App\Infrastructure\Support\Authorization\SupportAccessAuthorization;
+use App\Infrastructure\Support\Authorization\SupportAccessScope;
+use App\Infrastructure\Support\Authorization\SupportAccessWorkspaceRepository;
+use App\Infrastructure\Support\Mail\MailSupportAccessNotifier;
 use App\Infrastructure\Support\Mail\MailSupportNotifier;
+use App\Infrastructure\Support\Persistence\EloquentSupportAccess;
 use App\Infrastructure\Support\Persistence\EloquentSupportRequestRepository;
 use App\Infrastructure\Support\Reference\RandomSupportReferenceGenerator;
 use App\Infrastructure\Team\Mail\MailTeamInvitationNotifier;
@@ -230,6 +243,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -263,12 +277,43 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ContentLibraryPort::class, ProductPageLibrary::class);
         // Yasal belgeler ve onay defteri (FF-198, `docs/124`).
         $this->app->singleton(LegalLibraryPort::class, LegalLibrary::class);
+        /*
+            KURUMSAL SÖZLEŞMELERİN ÖLÇÜLEN GİRDİLERİ (FF-228, `docs/140`).
+
+            Alt işleyen listesi kimlik kasasından, lisans listesi manifest ve
+            kilit dosyalarından TÜRETİLİR; ikisi de elle yazılmaz, çünkü elle
+            yazılmış bir liste bir `composer require` ya da bir kasa kaydıyla
+            hiçbir uyarı vermeden eskir.
+
+            `bind`, `singleton` DEĞİL: ikisi de bir OLGUYU ölçüyor ve ölçüm
+            istek boyunca `LegalLibrary`nin kendi önbelleğinde zaten
+            tutuluyor. Tekil yapmak, uzun ömürlü bir süreçte (Octane) dünkü
+            kasayı bugünkü sözleşmeye yazdırırdı.
+        */
+        $this->app->bind(SubprocessorRegistryPort::class, MeasuredSubprocessors::class);
+        $this->app->bind(ThirdPartyLicensePort::class, ManifestThirdPartyLicenses::class);
         $this->app->bind(ConsentLedgerPort::class, DatabaseConsentLedger::class);
 
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
-        $this->app->bind(WorkspaceRepositoryPort::class, EloquentWorkspaceRepository::class);
+        /*
+            KİRACI OLARAK BAKMA SARMALAYICILARI (`docs/122` Y7, `docs/133`).
+
+            İkisi de SARMALAYICIDIR, yerine geçen değil: gerçek karar önce
+            üyelikten sorulur ve ancak "hayır" çıktığında açık bir destek
+            oturumu varsa YALNIZ OKUMA izni eklenir. Sarmalama burada
+            yapılır, denetleyicilerde değil — yetki kararının iki farklı
+            yerde verilmesi, bir gün ekranın çizdiği ile sunucunun izin
+            verdiğinin ayrışması demektir.
+        */
+        $this->app->bind(WorkspaceRepositoryPort::class, fn ($app) => new SupportAccessWorkspaceRepository(
+            $app->make(EloquentWorkspaceRepository::class),
+            $app->make(SupportAccessScope::class),
+        ));
         $this->app->bind(WorkspaceContextSessionPort::class, SessionWorkspaceContext::class);
-        $this->app->bind(AuthorizationPort::class, EloquentAuthorizationDecisionPoint::class);
+        $this->app->bind(AuthorizationPort::class, fn ($app) => new SupportAccessAuthorization(
+            $app->make(EloquentAuthorizationDecisionPoint::class),
+            $app->make(SupportAccessScope::class),
+        ));
         $this->app->bind(BrandRepositoryPort::class, EloquentBrandRepository::class);
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
@@ -493,6 +538,31 @@ final class AppServiceProvider extends ServiceProvider
         // Posta sürücüsü seçimi kasadan beslenir (`docs/94` Faz 3).
         $this->app->bind(MailTransportSelectorPort::class, VaultMailTransportSelector::class);
 
+        /*
+            Ölçüm kimliği de kasadan beslenir (`docs/135`, FF-220).
+
+            `scoped`, `singleton` DEĞİL: sınıf istek içinde bir kez çözsün
+            (CSP başlığı ile görünüm aynı cevabı iki kez sormasın) ama uzun
+            ömürlü bir çalışan (Octane) istekler arasında onu TAŞIMASIN —
+            taşısaydı, bir istekte panelden açılan hedef sonraki isteklerde
+            görünmezdi.
+        */
+        $this->app->scoped(VaultAnalyticsSettings::class);
+
+        /*
+            Kasada bir şey değişti → ölçüm önbelleği düşer.
+
+            Dinleyici burada, kasanın içinde DEĞİL: depo kendisini okuyan
+            tüketicileri tanımak zorunda kalmamalı. Sağlayıcı ayrımı
+            yapılmıyor çünkü `forget()` tek bir anahtar silmektir; onu
+            koşula bağlamak, koşulun bir gün yanlış olacağı bir yer daha
+            açardı.
+        */
+        Event::listen(
+            PlatformCredentialChanged::class,
+            fn (): mixed => $this->app->make(VaultAnalyticsSettings::class)->forget(),
+        );
+
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
         // Medya klasörleri (`docs/108` §3 madde 1): kütüphanede gezinmeyi
         // aramaya bağımlı olmaktan kurtaran raf düzeni.
@@ -680,6 +750,8 @@ final class AppServiceProvider extends ServiceProvider
         // sebebi kayda geçer (`docs/110` P0-06).
         $this->app->bind(TeamInvitationNotifierPort::class, MailTeamInvitationNotifier::class);
         // Destek kanalı (FF-201, `docs/125`): kayıt, referans, iki e-posta.
+        $this->app->bind(SupportAccessPort::class, EloquentSupportAccess::class);
+        $this->app->bind(SupportAccessNotifierPort::class, MailSupportAccessNotifier::class);
         $this->app->bind(SupportRequestRepositoryPort::class, EloquentSupportRequestRepository::class);
         $this->app->bind(SupportReferenceGeneratorPort::class, RandomSupportReferenceGenerator::class);
         $this->app->bind(SupportNotifierPort::class, MailSupportNotifier::class);

@@ -1,0 +1,210 @@
+/*
+    daisyUI — KURULUM VE TEMA TÜRETİMİ (`docs/136`).
+
+    ═══ SAHİBİN KARARI ═══
+
+    2026-09-08: *"daisyUI kullan, baştan yarat… bu kararım kesin."* Kurumsal
+    sitenin kabuğu bu dosyanın kurduğu tema üzerine yeniden yazıldı.
+
+    ═══ NEDEN BU DOSYA AYRI ═══
+
+    Depoda ZATEN bir jeton sistemi var (`resources/css/aep/tokens/*`) ve
+    panel onun üstünde duruyor. daisyUI'nin de kendi tema değişkenleri var.
+    İki ayrı RENK KAYNAĞI bırakmak, kurumsal siteyle panelin ilk marka
+    değişikliğinde iki ayrı şirkete dönüşmesi demekti.
+
+    Bu dosya o iki sistemin BİRLEŞTİĞİ tek yerdir ve tek bir kuralı vardır:
+
+        daisyUI'nin hiçbir renk değişkeni SAYI TAŞIMAZ.
+        Her biri bir `--aep-*` marka jetonuna işaret eder.
+
+    Kural iddia değil, ölçülüyor: `DaisyThemeDerivationTest` bu dosyayı okur,
+    ham bir renk (hex, `rgb(`, `oklch(`, `hsl(`) bulursa kırar, ve her
+    `--color-*` değerinin işaret ettiği `--aep-*` jetonunun `aep/tokens/`
+    altında GERÇEKTEN tanımlı olduğunu doğrular. Bir marka jetonunun adı
+    değişirse kapı kırmızıya döner; sessizce ayrışamazlar.
+
+    ═══ TAİLWİND v4'TE NASIL KURULUR — ÖLÇÜLDÜ ═══
+
+    Bu depo Tailwind v4 kullanıyor (`tailwindcss ^4.0.0`, `@tailwindcss/vite`)
+    ve v4'te eklenti JS yapılandırmasından DEĞİL, CSS'ten yüklenir: `@plugin`.
+    Kurulum daisyUI 5.7.28'in kendi paketinden ölçüldü
+    (`node_modules/daisyui/functions/pluginOptionsHandler.js`), belgesinden
+    hatırlanarak yazılmadı.
+
+    CDN YOK ve olamaz: `SecurityHeaders` politikası `default-src 'self'`,
+    `style-src 'self' 'nonce-…'` diyor — dışarıdan gelen bir stil sayfası
+    tarayıcıda hiç çalışmaz. daisyUI npm'den gelir ve Vite paketine derlenir.
+*/
+
+/*
+    HAZIR TEMALAR KAPALI.
+
+    `pluginOptionsHandler.js` ölçüldü: `themes` verilmezse varsayılan
+    `["light --default", "dark --prefersdark"]`dir ve daisyUI KENDİ renklerini
+    `:root`a yazar. O an depoda ikinci bir renk kaynağı doğardı — üstelik
+    marka jetonlarını sessizce ezen bir kaynak.
+
+    `themes: false` ile hiçbir hazır tema basılmaz; aşağıdaki iki blok
+    dışında daisyUI'nin bir tek rengi CSS'e girmez.
+
+    `logs: false`: derleme çıktısına satır eklemez.
+*/
+/*
+    ── ÖNEK ZORUNLU: `dz-` ──
+
+    Ölçüldü (2026-09-08, ilk derleme): önek olmadan daisyUI'nin `.modal`,
+    `.card`, `.btn`, `.menu` gibi sınıfları derlenmiş CSS'e GİRDİ — kurumsal
+    sitede o sınıfların bir tanesi bile yazılmadığı hâlde. Sebep, Tailwind
+    v4'ün aday tarayıcısının kaynak dosyalardaki DÜZ KELİMELERİ de sınıf
+    adayı saymasıdır: `aria-modal="true"` yazan bir React bileşeni, tek
+    başına `.modal` kuralının basılmasına yetiyor.
+
+    Bunun bedeli yalnız bayt değil. Panel `flowbite-react` üzerine kurulu ve
+    sahibin açık talimatı *"PANELE DOKUNMA"*. Öneksiz bir daisyUI'de panelde
+    bir gün `class="card"` yazan biri, farkında olmadan kurumsal sitenin
+    bileşen kütüphanesini panele giydirirdi — ve bunu hiçbir test
+    yakalamazdı, çünkü ikisi de "çalışıyor" görünürdü.
+
+    `dz-` öneki o kapıyı KAPATIR: iki kütüphanenin sınıf adları artık
+    kesişemez. `DaisyThemeDerivationTest` öneksiz bir daisyUI sınıfının
+    derlenmiş CSS'e girmediğini ayrıca ölçer.
+*/
+@plugin "daisyui" {
+    themes: false;
+    logs: false;
+    prefix: 'dz-';
+}
+
+/*
+    TEMA ADLARI TESADÜF DEĞİL.
+
+    `partials/theme-bootstrap.blade.php` ilk boyamadan önce kök öğeye
+    `data-theme="light"` ya da `data-theme="dark"` yazıyor ve AEP jetonları
+    (`aep/tokens/colors.css`) tam olarak `[data-theme="dark"]` seçicisiyle
+    koyu değerlerine geçiyor. daisyUI'nin tema seçicisi de aynı öznitelik.
+
+    Yani temayı `zabuno` diye adlandırmak, aynı anahtarın iki farklı adı
+    olması demekti: ziyaretçi koyu temaya geçtiğinde AEP koyulaşır, daisyUI
+    açık kalırdı. `light` ve `dark` adları o ayrışmayı imkânsız kılar.
+
+    ── prefersdark BİLEREK YOK ──
+
+    daisyUI `prefersdark: true` ile `@media (prefers-color-scheme: dark)`
+    altında `:root:not([data-theme])` için de koyu değerleri basar. AEP
+    jetonlarının böyle bir dalı YOKTUR — koyu değerler yalnız
+    `[data-theme="dark"]` altında yaşar. O bayrağı açsaydık, betiği
+    engellenmiş bir ziyaretçide `color-scheme: dark` ilan edilir ama renkler
+    AÇIK kalırdı: form kontrolleri koyu, zemin beyaz. Bugünkü davranış
+    (betiksiz ziyaretçi açık temayı görür) korunuyor ve bu bir ölçüm sonucu,
+    bir unutma değil.
+*/
+@plugin "daisyui/theme" {
+    name: 'light';
+    default: true;
+    color-scheme: light;
+
+    /* Yüzey merdiveni. AEP'de kart ZEMİNDEN açıktır (`docs/102` §1); daisyUI
+       `base-100`i "en üstteki yüzey" sayar, bu yüzden eşleme ters değil. */
+    --color-base-100: var(--aep-surface-raised);
+    --color-base-200: var(--aep-surface-canvas);
+    --color-base-300: var(--aep-surface-sunken);
+    --color-base-content: var(--aep-text-primary);
+
+    /* Marka sarısı ve ÜZERİNDEKİ tek doğru mürekkep. Sarı üstüne beyaz
+       ~1.75:1'dir ve `docs/06` §11 bunu yasaklar. */
+    --color-primary: var(--aep-accent-primary);
+    --color-primary-content: var(--aep-on-accent-primary);
+
+    /* Parlamento mavisi DOLGU olarak; üstünde beyaz. Koyu temada da dolgu
+       olarak kalır (yasak olan, ince metin/ikon olarak kullanılması). */
+    --color-secondary: var(--aep-accent-secondary);
+    --color-secondary-content: var(--aep-white);
+
+    /* METİN seviyesindeki mavi: koyu temada blue/300'e geçen jeton. Üstündeki
+       mürekkep de temayla döner (açıkta beyaz, koyuda ink). */
+    --color-accent: var(--aep-accent-secondary-text);
+    --color-accent-content: var(--aep-text-inverse);
+
+    --color-neutral: var(--aep-text-primary);
+    --color-neutral-content: var(--aep-text-inverse);
+
+    --color-info: var(--aep-status-info);
+    --color-info-content: var(--aep-text-inverse);
+    --color-success: var(--aep-status-success);
+    --color-success-content: var(--aep-text-inverse);
+    --color-warning: var(--aep-status-warning);
+    --color-warning-content: var(--aep-text-inverse);
+    --color-error: var(--aep-status-error);
+    --color-error-content: var(--aep-text-inverse);
+
+    /* Yarıçap tavanı 8px (`aep/tokens/radius.css`): daisyUI'nin kendi
+       varsayılanları (.5rem/.25rem) tesadüfen yakındı, ama tesadüf bir
+       kaynak değildir. */
+    --radius-selector: var(--aep-radius-lg);
+    --radius-field: var(--aep-radius-sm);
+    --radius-box: var(--aep-radius-lg);
+    --size-selector: var(--aep-space-1);
+    --size-field: var(--aep-space-1);
+
+    --border: 1px;
+
+    /* DÜZ. `docs/102` §1: vurgu TONLA verilir, gölgeyle değil (Flat 2.0).
+       `--depth: 1` daisyUI bileşenlerine iç gölge ve degrade ekler; o,
+       panelin kendi görsel dilinden sapmak olurdu. `--noise` aynı sebeple 0:
+       marka jetonlarında karşılığı olmayan bir doku. */
+    --depth: 0;
+    --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+    name: 'dark';
+    color-scheme: dark;
+
+    /*
+        AYNI SATIRLAR, BİLEREK.
+
+        `--aep-*` jetonları `[data-theme="dark"]` altında zaten koyu
+        değerlerine geçiyor; bu blok onları yeniden ÇÖZDÜRÜR. Yani koyu
+        temanın renkleri burada bir kez daha SEÇİLMİYOR, yalnız aynı marka
+        zincirinden okunuyor. İki blokta iki farklı eşleme yazmak, bir gün
+        yalnız birini güncellemek demekti.
+
+        Ayrıca daisyUI, adı hazır bir temayla çakışan özel temayı o hazır
+        temanın üstüne BİNDİRİR (`theme/index.js`). Bu yüzden 28 değişkenin
+        HEPSİ burada da yazılır — biri eksik kalsaydı, daisyUI'nin kendi
+        `dark` teması o değeri sessizce doldururdu. Testi bu yüzden var.
+    */
+    --color-base-100: var(--aep-surface-raised);
+    --color-base-200: var(--aep-surface-canvas);
+    --color-base-300: var(--aep-surface-sunken);
+    --color-base-content: var(--aep-text-primary);
+
+    --color-primary: var(--aep-accent-primary);
+    --color-primary-content: var(--aep-on-accent-primary);
+    --color-secondary: var(--aep-accent-secondary);
+    --color-secondary-content: var(--aep-white);
+    --color-accent: var(--aep-accent-secondary-text);
+    --color-accent-content: var(--aep-text-inverse);
+    --color-neutral: var(--aep-text-primary);
+    --color-neutral-content: var(--aep-text-inverse);
+
+    --color-info: var(--aep-status-info);
+    --color-info-content: var(--aep-text-inverse);
+    --color-success: var(--aep-status-success);
+    --color-success-content: var(--aep-text-inverse);
+    --color-warning: var(--aep-status-warning);
+    --color-warning-content: var(--aep-text-inverse);
+    --color-error: var(--aep-status-error);
+    --color-error-content: var(--aep-text-inverse);
+
+    --radius-selector: var(--aep-radius-lg);
+    --radius-field: var(--aep-radius-sm);
+    --radius-box: var(--aep-radius-lg);
+    --size-selector: var(--aep-space-1);
+    --size-field: var(--aep-space-1);
+
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}

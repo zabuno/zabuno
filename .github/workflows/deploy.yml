@@ -133,6 +133,12 @@ jobs:
           outputs: type=docker,dest=${{ runner.temp }}/zabuno-image.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # Derlenen varlıklar KENDİ commit'lerini taşımalı (`docs/142`).
+          # Bu argüman olmadan `public/build/revision.txt` boş kalır ve
+          # "PHP güncel, varlıklar bayat" durumu dışarıdan görünmez olur —
+          # 2026-09-08'de tam olarak bu oldu ve hiçbir kapı görmedi.
+          build-args: |
+            ZABUNO_RELEASE_SHA=${{ steps.meta.outputs.sha }}
 
       - name: SSH anahtarını yükle
         run: |
@@ -203,7 +209,16 @@ jobs:
           # `DEPLOY_PORT` secret'ı söyler.
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
           ZABUNO_IMAGE: ${{ steps.meta.outputs.image }}
-          ZABUNO_BUILD_REVISION: ${{ github.sha }}
+          # `github.sha` DEĞİL. `workflow_run` bağlamında o, dalın o anki
+          # ucudur — deploy edilen commit değil. İkisi ayrıştığında imaj bir
+          # commit'ten gelir ve etiket başka bir commit'i söyler.
+          #
+          # ÖLÇÜLDÜ (2026-09-08, koşum 34179388196): `c1414278` derlenip
+          # yayına alındı, ama `github.sha` o an `c59d499b` olduğu için canlı
+          # uygulama on iki dakika boyunca `c59d499b` çalıştırdığını SÖYLEDİ.
+          # Sahibi sayfayı yeniledi, hiçbir şey değişmemişti, ve sürüm
+          # etiketi ona "en güncelsin" diyordu.
+          ZABUNO_BUILD_REVISION: ${{ steps.meta.outputs.sha }}
         run: |
           ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" \
             bash -s -- "$DEPLOY_DIR" "$ZABUNO_IMAGE" "$ZABUNO_BUILD_REVISION" <<'REMOTE'
@@ -254,3 +269,110 @@ jobs:
           done
           echo "Sağlık kontrolü 120 saniyede geçmedi."
           exit 1
+
+      # DAĞITIM NE DAĞITTIĞINI KANITLAR — `docs/142`.
+      #
+      # Yukarıdaki sağlık kontrolü yalnız "bir şey cevap veriyor mu?" diye
+      # sorar; ESKİ SÜRÜM DE CEVAP VERİR. 2026-09-08'de dağıtım her adımı —
+      # sağlık kontrolü dâhil — yeşil tamamladı ve canlı site birleştirilen
+      # commit'i çalıştırmıyordu. Sahibi saatlerce "ben mi yanlış yaptım"
+      # diye baktı, çünkü yeşil bir dağıtım ona güncel olduğunu söylüyordu.
+      #
+      # Bu adım o boşluğu kapatır: yayına alınan commit ile CANLI
+      # UYGULAMANIN söylediği commit karşılaştırılır, ve varlıkların
+      # derlendiği commit AYRICA karşılaştırılır — çünkü ikisi ayrışabilir
+      # ve bugünkü arıza tam olarak oydu.
+      - name: Dağıtım ne dağıttı?
+        env:
+          # Yeni bir secret İSTENMEZ. İsteseydi, kurulumu bugün çalışan
+          # makinede kapı sessizce kapalı kalırdı — kapının hiç var olmadığı
+          # hâlin aynısı, ama var sanıldığı için daha kötüsü.
+          DEPLOY_HEALTH_URL: ${{ secrets.DEPLOY_HEALTH_URL }}
+          EXPECTED_SHA: ${{ steps.meta.outputs.sha }}
+          BRANCH_TIP_SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+
+          # Sağlık adresinden yalnız kök adres alınır, yol atılır.
+          origin="$(printf '%s' "$DEPLOY_HEALTH_URL" | sed -E 's#^(https?://[^/]+).*#\1#')"
+          if [ -z "$origin" ]; then
+            echo "Sağlık adresi okunamadı; dağıtımın ne dağıttığı KANITLANAMADI."
+            exit 1
+          fi
+
+          # ADRES HİÇBİR YERE BASILMAZ. GitHub yalnız secret'ın KENDİ
+          # değerini maskeler; ondan türetilmiş bir parça maskelenmez.
+          short() {
+            if [ -z "$1" ]; then printf 'BİLİNMİYOR'; else printf '%s' "$(echo "$1" | cut -c1-8)"; fi
+          }
+
+          running=""
+          assets=""
+
+          # Konteyner değişimi bir an sürer ve vekil o aralıkta hâlâ eski
+          # konteynere bağlı olabilir. Uyuşana kadar beklenir; beklemeden
+          # kırmızı vermek, gerçek bir arıza ile bir saniyelik geçişi aynı
+          # şey sayardı ve kapı güvenilmez olurdu.
+          for attempt in $(seq 1 15); do
+            proof="$(curl -fsS --max-time 15 "${origin}/up/build" 2>/dev/null || true)"
+
+            if [ -n "$proof" ]; then
+              running="$(printf '%s' "$proof" | jq -r '.revision // ""')"
+              assets="$(printf '%s' "$proof" | jq -r '.assets_revision // ""')"
+
+              if [ "$running" = "$EXPECTED_SHA" ] && [ "$assets" = "$EXPECTED_SHA" ]; then
+                break
+              fi
+            fi
+
+            sleep 6
+          done
+
+          {
+            echo "### Canlı sitede şu an ne çalışıyor?"
+            echo
+            echo "| | commit |"
+            echo "| --- | --- |"
+            echo "| Yayına alınan | \`$(short "$EXPECTED_SHA")\` |"
+            echo "| Canlı uygulama | \`$(short "$running")\` |"
+            echo "| Canlı varlıklar (CSS/JS) | \`$(short "$assets")\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          failed=0
+
+          if [ "$running" != "$EXPECTED_SHA" ]; then
+            echo "::error::Yayına alınan commit $(short "$EXPECTED_SHA") ama canlı uygulama $(short "$running") çalıştırıyor."
+            failed=1
+          fi
+
+          # VARLIKLAR AYRI SORULUR. PHP güncel olup derlenmiş CSS/JS bayat
+          # kalabilir; 2026-09-08'de canlı site yeni sayfaları sunarken
+          # daisyUI'den önceki 126.594 baytlık CSS'i veriyordu.
+          if [ "$assets" != "$EXPECTED_SHA" ]; then
+            echo "::error::Derlenmiş varlıklar $(short "$assets") commit'inden; beklenen $(short "$EXPECTED_SHA")."
+            failed=1
+          fi
+
+          if [ "$failed" -ne 0 ]; then
+            echo "Dağıtım tamamlandı ama YAYINA ALDIĞI ŞEY DEĞİL. Bakılacak yer: docs/142."
+            exit 1
+          fi
+
+          echo "Kanıtlandı: canlı uygulama ve varlıklar $(short "$EXPECTED_SHA") commit'inden."
+
+          # ESKİ BİR COMMIT'İN BAŞARILI DAĞITIMI "SİTE GÜNCEL" DEMEK DEĞİL.
+          #
+          # `workflow_run` her CI koşumu için ayrı tetiklenir; yeni bir
+          # commit main'e girdikten SONRA eski bir commit'in CI'ı bitebilir
+          # ve onun dağıtımı yeşil tamamlanır. 2026-09-08 02:16'da tam
+          # olarak bu oldu. Bu bir arıza DEĞİL — daha yeni bir dağıtım
+          # zaten yolda — ama sessiz kalırsa sahibi yeşili "birleştirdiğim
+          # şey yayında" diye okur. Kırmızı değil, söylenmiş olur.
+          if [ -n "$BRANCH_TIP_SHA" ] && [ "$BRANCH_TIP_SHA" != "$EXPECTED_SHA" ]; then
+            echo "::warning::Bu dağıtım $(short "$EXPECTED_SHA") commit'ini yayına aldı, ama main'in ucu $(short "$BRANCH_TIP_SHA"). Site HENÜZ en son birleşmeyi çalıştırmıyor; onun dağıtımı kendi CI'ı bitince koşacak."
+            {
+              echo
+              echo "> Bu koşum **main'in ucunu değil**, \`$(short "$EXPECTED_SHA")\` commit'ini yayına aldı."
+              echo "> En son birleşme (\`$(short "$BRANCH_TIP_SHA")\`) kendi CI'ı bitince ayrı bir dağıtımla gelecek."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

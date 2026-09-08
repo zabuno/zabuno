@@ -100,9 +100,13 @@ kasası, entegrasyonlar, planlar, abonelikler). Ekran katmanı **105 satır**.
    ne olduğu (şubeleri, menüleri, kullanımı, son olayları) görülemiyor.
 2. **Kullanıcı yönetimi yok.** Bir kullanıcının hangi çalışma alanlarında
    olduğu, girişleri, kilitli mi — hiçbiri yok.
-3. **Destek görünümü yok.** "Müşteri arıyor, ekranında ne var?" sorusunun
-   cevabı yok. Kiracı olarak oturum açma (impersonation) yok — ki bu
-   **kasıtlı olarak zor** olmalı ve denetim kaydı bırakmalı.
+3. ~~**Destek görünümü yok.**~~ — **KAPANDI (FF-218, `docs/133`).**
+   `/platform` → Destek masası, "müşteri arıyor, ekranında ne var?"
+   sorusunu **kiracının gözüne hiç girmeden** cevaplıyor: sekiz ölçülmüş
+   bulgu, misafirin gördüğü adres (tıklanabilir), şube/karekod/yayın
+   durumu, kiracının destek talepleri ve bakış geçmişi. Kiracı olarak bakma
+   AYRI bir uçtan ve ekranın EN ALTINDAN açılır — çünkü çağrıların çoğu ona
+   gerek duymaz ve son çare olması gereken şey ilk görülen şey olmamalı.
 4. **Sağlık ve olay görünümü yok.** Kuyruk, hata, dağıtım, dış sağlayıcı
    durumu tek yerde değil.
 5. ~~**Modüller ekranı yok**~~ — **KAPANDI.** Ekran `/engineering/modules`
@@ -122,7 +126,7 @@ kasası, entegrasyonlar, planlar, abonelikler). Ekran katmanı **105 satır**.
 | Y4 | Panel: puanlama ekranı | Restoran paneli | Uç var, ekran yok — en kısa yol |
 | Y5 | Misafir: Dalga 3 favoriler (cihazda) | Misafir menüsü | Küçük, kararı verilmiş |
 | ~~Y6~~ | **BİTTİ** — Misafir: Dalga 6 zengin görsel yüzeyi | Misafir | Satılabilen bir hakkın ürünü yoktu; yüzey indi, fiyat sayfası eşlemesi aynı turda eklendi |
-| Y7 | Süperadmin: destek görünümü ve kiracı olarak bakma | `/platform` | **Denetim kaydı ve zorluk şart** — bu yüzden en sonda |
+| ~~Y7~~ | **BİTTİ** — Süperadmin: destek görünümü ve kiracı olarak bakma | `/platform` | **Denetim kaydı ve zorluk şart** — bu yüzden en sondaydı; dört şart da koda bağlandı (`docs/133`) |
 | Y8 | `docs/117` M5–M9: kalan mobil borç | Her yüzey | Ekran ekran, jetonlar bittiği için artık dar kapsamlı |
 
 ## 5. Y7 neden en sonda ve neden zor olmalı
@@ -135,6 +139,32 @@ Bu yüzden kolay olmamalı: her oturum bir sebep ister, süreli olur, kiracını
 denetim günlüğüne **kiracının görebileceği biçimde** yazılır, ve o oturumda
 yapılabilecekler kısıtlıdır. Kolay bir impersonation, bir gün kimsenin
 hatırlamadığı bir erişim olur.
+
+> **Y7 KAPANDI (FF-218, 2026-09-08).** Yukarıdaki dört cümlenin her biri bir
+> koda ve bir teste bağlandı; hiçbiri iyi niyete bırakılmadı — tam kaydı
+> `docs/133-KIRACI-OLARAK-BAKMA.md`.
+>
+> **Sebep:** kırpıldıktan sonra boş kalan ya da tek kelimelik bir sebep 422
+> alır; varsayılan değer yoktur. **Süre:** yapılandırmadan gelir
+> (`SUPPORT_ACCESS_SESSION_MINUTES`, varsayılan 15 dk), okunamayan bir değer
+> sonsuz değil 15'tir, tavanı vardır, ve süre dolması bir zamanlayıcı işi
+> değil her istekte sorulan bir sorgudur — uzatma ucu **yoktur**.
+> **Kiracının görebileceği kayıt:** sahibin kendi Ayarlar → Denetim izi
+> ekranında, listenin üstünde ayrı bir kutu olarak VE zaman çizgisinde bir
+> satır olarak; ayrıca oturum açıldığı an sahiplere e-posta çıkar (taşıyıcı
+> yoksa damga atılmaz, `docs/93`). **Kısıt:** yasak bir denetleyici `if`'i
+> değil, `web` ve `api` gruplarına eklenen bir ara katmandır — açık oturumda
+> güvenli olmayan her HTTP yöntemi 403 alır ve denetleyicisine hiç ulaşmaz.
+> Ölçüm dizgenin geçtiği yerde değil kullanıldığı yerde yapıldı: ödeme, kip
+> değişikliği, silme, davet ve yayın uçlarına gerçek istek atıldı, beşi de
+> reddedildi.
+>
+> Aynı tur, bu bölümün asıl şartını da yerine getirdi: **impersonation son
+> çare oldu.** Destek masası çağrıların çoğunu kiracının gözüne hiç girmeden
+> cevaplıyor (§3 madde 3) ve bakma kartı ekranın en altında duruyor. Kiracı
+> ayrıntısı ekranına (Y2) bir "bakmaya başla" düğmesi **konmadı**: bir
+> listenin yanına konmuş tek tıklık bir düğme, bu bölümün her cümlesini
+> pratikte iptal ederdi.
 
 ## 6. Bu belgenin kendi gerekçe süresi
 

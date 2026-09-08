@@ -52,7 +52,7 @@ final class Faz3ProviderRegistryTest extends TestCase
         sort($providers);
 
         self::assertSame(
-            ['anthropic', 'custom_endpoint', 'gemini', 'iyzico', 'kimi', 'mailgun', 'openai'],
+            ['anthropic', 'custom_endpoint', 'gemini', 'google_tag_manager', 'iyzico', 'kimi', 'mailgun', 'openai'],
             $providers,
         );
     }

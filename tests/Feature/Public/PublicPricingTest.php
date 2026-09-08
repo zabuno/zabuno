@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Public;
 
+use App\Application\Billing\Dto\PlanSummary;
 use App\Application\Billing\Port\PlanCatalogRepositoryPort;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -154,6 +155,11 @@ final class PublicPricingTest extends TestCase
             return new class implements PlanCatalogRepositoryPort
             {
                 public function listActivePlans(): array
+                {
+                    throw new RuntimeException('katalog okunamıyor');
+                }
+
+                public function findPlan(int $planId): ?PlanSummary
                 {
                     throw new RuntimeException('katalog okunamıyor');
                 }

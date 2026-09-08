@@ -10,6 +10,35 @@
 return [
     'subscription' => [
         'period_days' => (int) env('BILLING_SUBSCRIPTION_PERIOD_DAYS', 30),
+
+        /*
+         * ÖDEMESİZ SÜRE — dönem bittikten sonra yeteneklerin daha kaç gün
+         * ayakta kaldığı (docs/107 Faz 1.3, docs/134 §3).
+         *
+         * NEDEN VAR. Bu depoda otomatik yenileme yoktur: her dönem sahibin
+         * kendi eliyle ödediği bir ödemedir. Bir ödeme gelmediğinde
+         * `ends_at` geçer ve yetenekler O SANİYE kapanırdı — kartının
+         * süresi dolduğunu Cumartesi öğrenen bir restoran sahibi, Pazartesi
+         * bankasını arayana kadar analitiğini ve toplu QR üretimini kaybetmiş
+         * olurdu. Ödemesiz süre, ödemenin gecikmesiyle hizmetin kesilmesi
+         * arasına sahibin fark edip davranabileceği bir aralık koyar.
+         *
+         * VARSAYILAN 7 VE GEREKÇESİ ÖLÇÜLDÜ. Sayı bu depodaki mevcut en kısa
+         * "hâlâ geri alabilirsin" penceresinden alındı: `media-quota.php`
+         * taban planın çöp saklama süresini `trash_retention_days => 7`
+         * yazar; yani depo, geri alınabilir ama sonucu ağır bir olay için
+         * zaten yedi günü ölçü kabul etmiştir. Yedi gün ayrıca haftanın her
+         * gününü tam bir kez kapsar: restoranın kapalı olduğu gün ve hafta
+         * sonu, sahip hiçbir şey kaybetmeden içine düşer.
+         *
+         * ÜST SINIR DÖNEMİN KENDİSİDİR. Ödemesiz süre bir dönemden uzun
+         * olsaydı, hiç ödemeyen bir hesap ödeyenle aynı yeteneklere sahip
+         * olurdu; okuma tarafı bu yüzden değeri dönemle sınırlar.
+         *
+         * SIFIR GEÇERLİ BİR DEĞERDİR ve bugünkü davranışı verir: dönem
+         * bittiği an yetenekler kapanır.
+         */
+        'grace_days' => (int) env('BILLING_SUBSCRIPTION_GRACE_DAYS', 7),
     ],
 
     /*

@@ -108,10 +108,21 @@ final class EntitlementResolutionTest extends TestCase
     {
         $owner = $this->verifiedUser();
 
-        $expired = $this->workspaceOnPlan($owner, [Entitlement::QrBulkGeneration->value], 'active', '-1 day');
+        /*
+            "-1 gün" DEĞİL "-8 gün" (FF-219, `docs/134` §3).
+
+            Bu satır bir zamanlar `-1 day` diyordu ve o gün doğruydu: dönem
+            bittiği saniye yetenekler kapanıyordu. Ödemesiz süre eklendiğinde
+            (`billing.subscription.grace_days`, varsayılan 7) o eşik bilinçli
+            olarak taşındı — dönemi bir gün önce biten bir abonelik artık
+            hâlâ yetenek verir ve bu bir kusur değil, kararın kendisidir.
+            Sınırın DIŞI ölçülüyor: yedi günün ötesi askıdır ve hiçbir şey
+            vermez. Sınırın İÇİ `SubscriptionLifecycleJourneyTest`'te ölçülür.
+        */
+        $expired = $this->workspaceOnPlan($owner, [Entitlement::QrBulkGeneration->value], 'active', '-8 days');
         self::assertFalse(
             $this->resolver()->forWorkspace($expired)->grants(Entitlement::QrBulkGeneration),
-            'ENT-EXPIRED-02: süresi dolmuş abonelik yetenek vermemeli — durum alanı geç güncellenmiş olabilir, tarih daha güvenilir kanıttır.'
+            'ENT-EXPIRED-02: ödemesiz süresi de dolmuş abonelik yetenek vermemeli — durum alanı geç güncellenmiş olabilir, tarih daha güvenilir kanıttır.'
         );
 
         $cancelled = $this->workspaceOnPlan($owner, [Entitlement::QrBulkGeneration->value], 'cancelled');

@@ -59,6 +59,18 @@ export type WorkspaceSectionRuntimeContext = {
     onMenuTreeChange: (tree: DashboardMenuTree) => void;
     /** Boş durumdan çıkış yolunu sunabilmek için. */
     onNavigateToSection: (section: string) => void;
+    /**
+     * Bir bölümün GERÇEK adresi — ekran içi bağlantılar `<a href>` kurabilsin
+     * diye (FF-224).
+     *
+     * `onNavigateToSection` bir ÇAĞRIDIR, bir adres değil: onunla ancak
+     * düğme çizilebilir. Bir düğme yeni sekmede açılmaz, kopyalanamaz,
+     * durum çubuğunda nereye gittiğini göstermez ve yer imine eklenemez —
+     * `docs/38` §4'ün gerçek adrese geçmesini istemesinin sebebi tam olarak
+     * buydu. Adresi bölümler kendisi üretemez: slug'ı taşıyan tek yer kabuk.
+     * (Kırıntıdaki `locationsHref` ile aynı sözleşme, genelleştirilmiş hâli.)
+     */
+    sectionHrefFor: (sectionKey: string, subPath?: string) => string;
     /** Bu kullanıcı bu izne sahip mi? Liste yoksa (eski gövde) evet sayılır. */
     can: (permission: string) => boolean;
     /**
@@ -1084,6 +1096,8 @@ export function WorkspaceApp({
               onBrandSaved: setBrand,
               onMenuTreeChange: handleCatalogTreeChange,
               onNavigateToSection: goToSection,
+              sectionHrefFor: (sectionKey: string, subPath?: string) =>
+                  sectionHref(currentWorkspace.slug, sectionKey, subPath),
               can,
               role: currentWorkspace.role,
               features: currentWorkspace?.features ?? {},

@@ -114,6 +114,26 @@ export const shell = {
     'workspace.settings.audit.unknownActor': 'Unknown',
     'workspace.settings.audit.source.media': 'Photo',
     'workspace.settings.audit.source.publication': 'Publishing',
+    /*
+        KİRACI OLARAK BAKMA (`docs/122` Y7, `docs/133`). Bu satırların
+        BURADA olması paketin şartıdır, süsü değil: `docs/122` §5, platform
+        ekibinin bakışının kiracının GÖREBİLECEĞİ biçimde yazılmasını
+        istiyor. Yalnız süperadmin tarafında gösterilen bir kayıt denetim
+        değil, bir günlük dosyasıdır.
+
+        Metin sahibin dilinden yazıldı, platformun dilinden değil:
+        "impersonation", "oturum" ya da "salt okunur uç" değil — birinin
+        hesabına baktığı, ne kadar süreyle baktığı ve neden baktığı.
+    */
+    'workspace.settings.audit.source.support-access': 'Account access',
+    'workspace.settings.audit.support.title': 'Someone from Zabuno looked at your account',
+    'workspace.settings.audit.support.help':
+        'Support can open a read-only session on your account to answer a question. Nothing can be changed, paid, published, invited or deleted during one, and every session is listed here with the reason it was opened.',
+    'workspace.settings.audit.support.open': 'Open now, ends automatically at {expiresAt}',
+    'workspace.settings.audit.support.closed': 'From {startedAt} until {expiresAt}',
+    'workspace.settings.audit.support.reason': 'Reason: {reason}',
+    'workspace.settings.audit.support.by': 'Opened by {actor}',
+    'workspace.settings.audit.support.unknownActor': 'a platform administrator',
     'workspace.qrCodes.operational.description':
         'Create and print the QR codes your guests scan to open the menu.',
     // Boş durum dört soruyu birden cevaplar: ne yok, neden yok, anlamı ne,

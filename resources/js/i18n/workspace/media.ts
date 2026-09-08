@@ -139,6 +139,26 @@ export const media = {
     'workspace.media.upload.field.assetSlot.profileAvatar': 'Profile/avatar',
     'workspace.media.upload.field.assetSlot.categoryHero': 'Category hero',
     'workspace.media.upload.field.assetSlot.itemImage': 'List/card/detail item',
+    /*
+        ADI OLMAYAN YUVA — FF-224.
+
+        `menuImportSource` bu listede EKSİKTİ ve eksikliği sessiz değildi:
+        uç nokta (`ListSlotPoliciesController`) onu zaten döndürüyor, çünkü
+        sihirbazın seçtirebildiği biçimleri taşıyor. Etiketi olmayan bir
+        anahtar `t()`'den KENDİSİ olarak döner — sahip açılır listede
+        "workspace.media.upload.field.assetSlot.menuImportSource" yazan bir
+        seçenek görüyordu.
+
+        Bunu asıl pahalı yapan şey, ürünün BAŞKA bir ekranda o yuvayı
+        adıyla istemesiydi: fotoğraftan içe aktarma "önce Medya
+        sayfasından yükleyin (yuva: Import source)" diyor. Sahip o adı
+        aramaya gidiyor ve listede bulamıyordu — tarif edilen yol, tarif
+        edildiği hâliyle yürünemiyordu.
+
+        Metin menü alanındaki kardeşiyle AYNIDIR (`menu.media.slot.*`) ve
+        `i18n.guard` ikisinin eşitliğini koruyor.
+    */
+    'workspace.media.upload.field.assetSlot.menuImportSource': 'Import source',
     'workspace.media.upload.field.assetSlot.gallery': 'Gallery',
     'workspace.media.upload.field.assetSlot.printLogo': 'Print logo',
     'workspace.media.upload.field.assetSlot.emailHeader': 'Header/splash/push',
@@ -541,9 +561,19 @@ export const media = {
     'workspace.media.settings.security.heading': 'Security and privacy',
     /*
         Sahibin kararı (2026-09-05): kapatılabilir bir güvenlik anahtarı,
-        kapatıldığı gün bir güvenlik açığıdır. Anahtar GÖRÜNÜR — durumu
-        okunsun diye — ama çevrilemez.
+        kapatıldığı gün bir güvenlik açığıdır. Durum GÖRÜNÜR — okunsun diye —
+        ama değiştirilemez.
+
+        İKİNCİ KARAR (2026-09-08): o durum bir ANAHTAR olarak çiziliyordu ve
+        anahtar çevrilemiyordu. "Değiştirebilirsin" diyen bir biçimin altına
+        "değiştiremezsin" yazmak, kullanıcıya ancak deneyerek öğreneceği bir
+        şey söylemektir. Anahtar kalktı; hâl artık KELİMEDİR — anlamı metin
+        taşır, renk yalnız pekiştirir.
     */
+    'workspace.media.settings.security.state.on': 'On',
+    'workspace.media.settings.security.state.partial': 'Partly on',
+    // "Kapalı" değil: bu bir ORTAM gerçeği, bir kullanıcı kararı değil.
+    'workspace.media.settings.security.state.unavailable': 'Not running here',
     'workspace.media.settings.security.locked': 'Cannot be switched off',
     'workspace.media.settings.security.virusScan': 'Virus scan',
     'workspace.media.settings.security.virusScan.on':

@@ -800,6 +800,142 @@ msgstr "Ledger"
 msgid "workspace.billing.ledger.retry"
 msgstr "Retry"
 
+#: workspace:workspace.billing.lifecycle.active
+msgid "workspace.billing.lifecycle.active"
+msgstr "Your {plan} plan runs until {date}."
+
+#: workspace:workspace.billing.lifecycle.cancel
+msgid "workspace.billing.lifecycle.cancel"
+msgstr "Cancel subscription"
+
+#: workspace:workspace.billing.lifecycle.cancel.confirm
+msgid "workspace.billing.lifecycle.cancel.confirm"
+msgstr "Yes, cancel"
+
+#: workspace:workspace.billing.lifecycle.cancel.confirmBody
+msgid "workspace.billing.lifecycle.cancel.confirmBody"
+msgstr "Your plan stays active until {date}. Nothing is refunded for the period you have already paid for, and you can undo this before {date}."
+
+#: workspace:workspace.billing.lifecycle.cancel.confirmHeading
+msgid "workspace.billing.lifecycle.cancel.confirmHeading"
+msgstr "Cancel your subscription?"
+
+#: workspace:workspace.billing.lifecycle.cancel.dismiss
+msgid "workspace.billing.lifecycle.cancel.dismiss"
+msgstr "Keep my subscription"
+
+#: workspace:workspace.billing.lifecycle.cancel.error
+msgid "workspace.billing.lifecycle.cancel.error"
+msgstr "The subscription could not be cancelled."
+
+#: workspace:workspace.billing.lifecycle.cancelled
+msgid "workspace.billing.lifecycle.cancelled"
+msgstr "You cancelled. You keep using {plan} until {date}, and it will not renew."
+
+#: workspace:workspace.billing.lifecycle.change.effective
+msgid "workspace.billing.lifecycle.change.effective"
+msgstr "Takes effect on {date}. Nothing is refunded for the current period."
+
+#: workspace:workspace.billing.lifecycle.change.empty
+msgid "workspace.billing.lifecycle.change.empty"
+msgstr "There is no cheaper plan to move to."
+
+#: workspace:workspace.billing.lifecycle.change.error
+msgid "workspace.billing.lifecycle.change.error"
+msgstr "The plan change could not be scheduled."
+
+#: workspace:workspace.billing.lifecycle.change.guestWarning
+msgid "workspace.billing.lifecycle.change.guestWarning"
+msgstr "Guests see the difference only in your next publication — the menu behind a QR code you have already printed does not change."
+
+#: workspace:workspace.billing.lifecycle.change.heading
+msgid "workspace.billing.lifecycle.change.heading"
+msgstr "Change plan"
+
+#: workspace:workspace.billing.lifecycle.change.legend
+msgid "workspace.billing.lifecycle.change.legend"
+msgstr "Move to a cheaper plan"
+
+#: workspace:workspace.billing.lifecycle.change.losing
+msgid "workspace.billing.lifecycle.change.losing"
+msgstr "You will lose on {date}:"
+
+#: workspace:workspace.billing.lifecycle.change.losingNothing
+msgid "workspace.billing.lifecycle.change.losingNothing"
+msgstr "Nothing you use today goes away; only the price changes."
+
+#: workspace:workspace.billing.lifecycle.change.previewError
+msgid "workspace.billing.lifecycle.change.previewError"
+msgstr "We could not work out what this change would do."
+
+#: workspace:workspace.billing.lifecycle.change.submit
+msgid "workspace.billing.lifecycle.change.submit"
+msgstr "Schedule the change"
+
+#: workspace:workspace.billing.lifecycle.change.upgradeHint
+msgid "workspace.billing.lifecycle.change.upgradeHint"
+msgstr "To move up a plan, pay for it below — the higher plan starts as soon as the payment succeeds."
+
+#: workspace:workspace.billing.lifecycle.ended
+msgid "workspace.billing.lifecycle.ended"
+msgstr "Your subscription ended on {date}. Your published menus are still online and your data is untouched."
+
+#: workspace:workspace.billing.lifecycle.error
+msgid "workspace.billing.lifecycle.error"
+msgstr "Your subscription could not be loaded."
+
+#: workspace:workspace.billing.lifecycle.grace
+msgid "workspace.billing.lifecycle.grace"
+msgstr "Your paid period ended on {date} and no payment has arrived. Your {plan} features stay on until {graceDate}. Pay below to continue."
+
+#: workspace:workspace.billing.lifecycle.guestUnaffected
+msgid "workspace.billing.lifecycle.guestUnaffected"
+msgstr "Your guests are not told about any of this: the menu behind a printed QR code keeps showing exactly what you published."
+
+#: workspace:workspace.billing.lifecycle.loading
+msgid "workspace.billing.lifecycle.loading"
+msgstr "Loading your subscription…"
+
+#: workspace:workspace.billing.lifecycle.none
+msgid "workspace.billing.lifecycle.none"
+msgstr "You have no paid subscription. The free journey — menu, publishing and QR codes — keeps working."
+
+#: workspace:workspace.billing.lifecycle.region
+msgid "workspace.billing.lifecycle.region"
+msgstr "Subscription"
+
+#: workspace:workspace.billing.lifecycle.resume
+msgid "workspace.billing.lifecycle.resume"
+msgstr "Undo the cancellation"
+
+#: workspace:workspace.billing.lifecycle.resume.error
+msgid "workspace.billing.lifecycle.resume.error"
+msgstr "The cancellation could not be undone."
+
+#: workspace:workspace.billing.lifecycle.resume.hint
+msgid "workspace.billing.lifecycle.resume.hint"
+msgstr "You will not be asked to pay again."
+
+#: workspace:workspace.billing.lifecycle.retry
+msgid "workspace.billing.lifecycle.retry"
+msgstr "Retry"
+
+#: workspace:workspace.billing.lifecycle.scheduled
+msgid "workspace.billing.lifecycle.scheduled"
+msgstr "On {date} your plan becomes {plan}. Until then nothing changes."
+
+#: workspace:workspace.billing.lifecycle.scheduled.error
+msgid "workspace.billing.lifecycle.scheduled.error"
+msgstr "The scheduled change could not be withdrawn."
+
+#: workspace:workspace.billing.lifecycle.scheduled.withdraw
+msgid "workspace.billing.lifecycle.scheduled.withdraw"
+msgstr "Keep my current plan"
+
+#: workspace:workspace.billing.lifecycle.suspended
+msgid "workspace.billing.lifecycle.suspended"
+msgstr "Your {plan} features have been off since {graceDate} because the period was not paid for. Your published menus are still online and your data is untouched — a payment turns the features back on."
+
 #: workspace:workspace.billing.manualPayment.empty
 msgid "workspace.billing.manualPayment.empty"
 msgstr "No manual payment has been recorded yet."
@@ -3424,6 +3560,18 @@ msgstr "Signed link for private files"
 msgid "workspace.media.settings.security.signedLink.on"
 msgstr "The original has no public address. Downloading it needs a signed link that stops working after ten minutes."
 
+#: workspace:workspace.media.settings.security.state.on
+msgid "workspace.media.settings.security.state.on"
+msgstr "On"
+
+#: workspace:workspace.media.settings.security.state.partial
+msgid "workspace.media.settings.security.state.partial"
+msgstr "Partly on"
+
+#: workspace:workspace.media.settings.security.state.unavailable
+msgid "workspace.media.settings.security.state.unavailable"
+msgstr "Not running here"
+
 #: workspace:workspace.media.settings.security.virusScan
 msgid "workspace.media.settings.security.virusScan"
 msgstr "Virus scan"
@@ -3651,6 +3799,10 @@ msgstr "List/card/detail item"
 #: workspace:workspace.media.upload.field.assetSlot.logo
 msgid "workspace.media.upload.field.assetSlot.logo"
 msgstr "Logo"
+
+#: workspace:workspace.media.upload.field.assetSlot.menuImportSource
+msgid "workspace.media.upload.field.assetSlot.menuImportSource"
+msgstr "Import source"
 
 #: workspace:workspace.media.upload.field.assetSlot.ogImage
 msgid "workspace.media.upload.field.assetSlot.ogImage"
@@ -6143,6 +6295,38 @@ msgstr "Photo"
 #: workspace:workspace.settings.audit.source.publication
 msgid "workspace.settings.audit.source.publication"
 msgstr "Publishing"
+
+#: workspace:workspace.settings.audit.source.support-access
+msgid "workspace.settings.audit.source.support-access"
+msgstr "Account access"
+
+#: workspace:workspace.settings.audit.support.by
+msgid "workspace.settings.audit.support.by"
+msgstr "Opened by {actor}"
+
+#: workspace:workspace.settings.audit.support.closed
+msgid "workspace.settings.audit.support.closed"
+msgstr "From {startedAt} until {expiresAt}"
+
+#: workspace:workspace.settings.audit.support.help
+msgid "workspace.settings.audit.support.help"
+msgstr "Support can open a read-only session on your account to answer a question. Nothing can be changed, paid, published, invited or deleted during one, and every session is listed here with the reason it was opened."
+
+#: workspace:workspace.settings.audit.support.open
+msgid "workspace.settings.audit.support.open"
+msgstr "Open now, ends automatically at {expiresAt}"
+
+#: workspace:workspace.settings.audit.support.reason
+msgid "workspace.settings.audit.support.reason"
+msgstr "Reason: {reason}"
+
+#: workspace:workspace.settings.audit.support.title
+msgid "workspace.settings.audit.support.title"
+msgstr "Someone from Zabuno looked at your account"
+
+#: workspace:workspace.settings.audit.support.unknownActor
+msgid "workspace.settings.audit.support.unknownActor"
+msgstr "a platform administrator"
 
 #: workspace:workspace.settings.audit.unknownActor
 msgid "workspace.settings.audit.unknownActor"

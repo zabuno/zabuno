@@ -286,6 +286,13 @@ const en = {
     'platform.credentials.provider.anthropic': 'Anthropic (Claude)',
     'platform.credentials.provider.kimi': 'Kimi (Moonshot)',
     'platform.credentials.provider.custom_endpoint': 'Custom endpoint (OpenAI-compatible)',
+    /*
+        ÖLÇÜM KİMLİĞİ (FF-220, `docs/135`). Etiket "measurement" diyor,
+        "analytics" değil: sahip bu ekrana ölçümü açmak için gelir, ve
+        panelde başka bir yerde "Analytics" başlıklı, tamamen farklı bir
+        şey (kendi raporları) var.
+    */
+    'platform.credentials.provider.google_tag_manager': 'Google Tag Manager (measurement)',
 
     // ÇOK-BAĞLANTI PANELİ — `docs/95` Faz 3. Etiket zorunludur çünkü sır
     // görünmediği için aynı sağlayıcının iki kartını ayırt eden tek şey odur.
@@ -335,6 +342,23 @@ const en = {
     'platform.credentials.field.base_url': 'Base URL',
     'platform.credentials.field.organization': 'Organization',
     'platform.credentials.field.project': 'Project',
+
+    /*
+        GTM ALANLARI. Hedef etiketleri neyi yaptıklarını SÖYLER: bunlar
+        GTM'i değil tarayıcı güvenlik politikasını (CSP) yapılandırır ve bir
+        hedefi açmadan GTM'de etiket kurmak İŞE YARAMAZ (`docs/126` §3).
+        Etiket yalnız "Google Analytics 4" deseydi, sahip bunu GA4'ü kuran
+        düğme sanırdı.
+    */
+    'platform.credentials.field.container_id': 'Container ID (GTM-…)',
+    'platform.credentials.field.ga4': 'Allow Google Analytics 4',
+    'platform.credentials.field.yandex_metrica': 'Allow Yandex Metrica',
+    'platform.credentials.field.hotjar': 'Allow Hotjar',
+
+    // Kapalı uçlu alanın seçenekleri. Depolanan değer (`on`/`off`) makine
+    // sözleşmesidir; buradaki metin yalnız onun okunan hâlidir.
+    'platform.credentials.choice.off': 'Off',
+    'platform.credentials.choice.on': 'On',
 
     /*
         SÜPERADMİNİN İLK GÜNÜ (`docs/122` Y2). Üç ekran, üçü de yalnız
@@ -453,6 +477,98 @@ const en = {
     'platform.auditLog.next': 'Next page',
     'platform.auditLog.scope':
         'A credential-vault row belongs to no workspace, so its workspace cell stays empty. A menu event’s old and new values are deliberately not shown here; they live in that workspace’s own menu history.',
+
+    // DESTEK MASASI (`docs/122` §3 boşluk 3 ve Y7, `docs/133`). Metinler
+    // bilerek "kiracı ne görüyor" diye yazıldı: bu yüzeyin değeri
+    // süperadminin gördüğü liste değil, restoran sahibinin ekranındaki
+    // gerçeğin buradan okunabilmesidir.
+    'platform.support.nav.label': 'Support desk',
+    'platform.support.region.label': 'Support desk',
+    'platform.support.intro':
+        'What the caller is actually looking at, answered without entering their account. Pick the restaurant, read the findings, open their guest address. Looking as the tenant is the last card on this page, and it is meant to be the last resort.',
+    'platform.support.idle': 'Pick a restaurant to see what its guests and its owner see today.',
+    'platform.support.loading': 'Reading the account…',
+    'platform.support.error': 'We could not read this account.',
+    'platform.support.retry': 'Retry',
+
+    'platform.support.findings.title': 'What is wrong right now',
+    'platform.support.findings.none':
+        'Nothing measurable is broken: the workspace is serving, the subscription is active, and every QR code points at a published menu.',
+    'platform.support.findings.scope':
+        'Every line here is the result of a query, not a guess. A question this installation cannot answer is not listed at all.',
+    'platform.support.finding.workspace_not_serving':
+        'The workspace is not in a serving state, so nothing else on this page matters yet.',
+    'platform.support.finding.subscription_not_active': 'No active subscription.',
+    'platform.support.finding.no_location': 'No branch has been created yet.',
+    'platform.support.finding.location_has_no_menu': 'This branch has no menu.',
+    'platform.support.finding.location_has_no_qr': 'This branch has no QR code.',
+    'platform.support.finding.qr_disabled': 'A QR code on this branch is disabled.',
+    'platform.support.finding.qr_has_no_destination':
+        'A QR code on this branch points nowhere: scanning it opens nothing.',
+    'platform.support.finding.qr_menu_never_published':
+        'A QR code points at a menu that was never published, so the printed code on the table opens an empty page.',
+
+    'platform.support.guest.title': 'What the guest sees',
+    'platform.support.guest.noLocation': 'No branch, so there is no guest address yet.',
+    'platform.support.guest.locationMeta': '{menus} menus · {ordering}',
+    'platform.support.guest.orderingOn': 'ordering on',
+    'platform.support.guest.orderingOff': 'ordering off',
+    'platform.support.guest.noQr': 'No QR code on this branch.',
+    'platform.support.guest.noDestination': 'No destination',
+    'platform.support.guest.notPublished': 'never published',
+    'platform.support.guest.published': 'published v{version}',
+
+    'platform.support.requests.title': 'Support requests from this restaurant',
+    'platform.support.requests.none': 'This restaurant has opened no support request.',
+
+    'platform.support.history.title': 'Who looked at this account',
+    'platform.support.history.none': 'Nobody from the platform team has looked at this account.',
+    'platform.support.history.unknownActor': 'unknown',
+    'platform.support.history.tenantSees':
+        'The owner reads this same list in their own panel, under Settings → Audit trail. Write the reason as something they should read.',
+
+    'platform.support.session.title': 'You are inside a tenant account',
+    'platform.support.session.here':
+        'You are looking at {name} as support. The session ends by itself at {expiresAt}.',
+    'platform.support.session.elsewhere':
+        'You have an open support session on another restaurant. It ends by itself at {expiresAt}.',
+    'platform.support.session.reason': 'Reason you gave: {reason}',
+    'platform.support.session.readOnly':
+        'Nothing can be written while this session is open: no payment, no plan change, no deletion, no invitation, no publishing. Switching to another restaurant is closed too.',
+    'platform.support.session.end': 'End the session now',
+    'platform.support.session.endFailed': 'The session could not be ended. Try again.',
+
+    'platform.support.open.title': 'Look at this account as the tenant',
+    'platform.support.open.contract':
+        'This is the most dangerous thing a platform admin can do, so it is deliberately hard. The session is read-only, lasts {minutes} minutes, ends by itself, cannot be extended, and is written into the owner’s own audit trail with the reason you type below. The owner is emailed as well.',
+    'platform.support.open.reason': 'Why do you need to look?',
+    'platform.support.open.reasonHelp':
+        'At least {min} characters, and the restaurant owner will read exactly what you write here.',
+    'platform.support.open.submit': 'Open a support session on {name}',
+    'platform.support.open.failed': 'The session could not be opened.',
+    'platform.support.open.pickTenant': 'Pick a restaurant first.',
+    'platform.support.open.alreadyOpen':
+        'A session is already open. End it before opening another one; sessions never stack and are never renewed.',
+
+    // DESTEK KUYRUĞU (`docs/125` §6'nın kapanışı). Metinler ürünün BUGÜNKÜ
+    // gerçeğini söyler: cevap e-postayla yazılır, çünkü üründe cevap yazma
+    // yüzeyi yok. Var olmayan bir kutuyu ima eden bir cümle, cevabın
+    // gittiğini sandırırdı.
+    'platform.supportQueue.title': 'Support queue',
+    'platform.supportQueue.filter': 'Status',
+    'platform.supportQueue.filter.all': 'All statuses',
+    'platform.supportQueue.status.received': 'Received',
+    'platform.supportQueue.status.answered': 'Answered',
+    'platform.supportQueue.status.closed': 'Closed',
+    'platform.supportQueue.empty': 'Nothing is waiting.',
+    'platform.supportQueue.markAnswered': 'Mark answered',
+    'platform.supportQueue.markClosed': 'Close',
+    'platform.supportQueue.noAcknowledgement':
+        'No acknowledgement email reached this sender, so they may not know the request arrived.',
+    'platform.supportQueue.noReplySurface':
+        'Oldest first: the longest wait is answered first. Replies are written by email — this product has no reply surface yet, so marking a request answered records the timing, it does not send anything.',
+
+    'platform.auditLog.source.support-access': 'Tenant access',
 } as const;
 
 type TranslationKey = keyof typeof en;

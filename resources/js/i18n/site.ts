@@ -154,6 +154,12 @@ export const siteTranslations = {
     'site.footer.refundPolicy': 'Cancellation and Refund Policy',
     'site.footer.cookies': 'Cookie Policy',
     'site.footer.tagline': 'Your menu behind a QR code, kept up to date by your own team.',
+    /*
+        pSEO içerik menüleri bandını AÇAN sözcük (FF-232). Bandın içindeki
+        başlıklar ve bağlantılar sayfa kütüğünden gelir; katalogda yalnız bu
+        tek dize durur.
+    */
+    'site.footer.contentMenus': 'Browse all pages',
     // --- Fiyat -----------------------------------------------------------
     'site.engineering.title': 'Zabuno — Engineering',
     /*
