@@ -1141,3 +1141,42 @@ zaman aşımı ve boyut sınırı senaryoları ilk sonucu değiştirmedi. Mevcut
 örnekleyici metni önceki commit ile birebir aynıdır. 22 ms, CPU ×4, dört
 saniye, kaydırma yolu ve ürün hareketi değiştirilmedi. Tam QA çalıştırılmadı.
 Geri alma bu teşhis kodu, workflow bağlantısı ve bu kaydı birlikte kapsar.
+
+### 14.4 Stil kalıtımını daraltma deneyi — kabul bekliyor (2026-09-08)
+
+`b4dad8be` tabanındaki Linux CI `34253180359`, deneme 2: CPU ×4,
+`reduced` derece ve SwiftShader ile kabul ölçümü 209 kare, p95 33,4 ms,
+maksimum 33,4 ms verdi; 22 ms sınırı karşılanmadı. Ayrı teşhis penceresi
+196 kare ve p95 33,4 ms gösterdi. Ana iş parçacığındaki 1531 ms stil işinin
+1192 ms'si teşhisin `scrollY` callback'i, 339 ms'si ürünün scroll dinleyicisi
+sırasında eşzamanlı tamamlandı; yeniden stillenen öğe sayısı 82–119 idi.
+Bu sürelerin tamamı ürün JavaScript süresi veya ilk kabul penceresinin
+maliyeti değildir. Teşhis okumaları bekleyen stil işini kendileri de
+zorladığından tek başına Linux kök nedenini kanıtlamaz.
+
+Kaynakta `--scene-progress` bütün bölüme yazılırken yalnız dekoratif
+`.scene-progress-glow` ve `.scene-morph` öğelerinde okunuyor;
+`--scene-shift` ise yazıldığı düzlemin kendi transform'unda kullanılıyor.
+Aday, bölüm geometrisini koruyup ilerlemeyi en yakın bölümün sahip olduğu
+bu tüketicilere doğrudan yazar ve iki değişkeni `@property` ile kalıtımsız
+kaydeder. Desteklemeyen tarayıcılar doğrudan yazılan değerleri ve mevcut
+statik/hareket fallback'lerini korur. Efektler, yıldızlar, derece yöneticisi,
+kaydırma yolu ve kabul sınırı değiştirilmedi.
+
+Hedefli iki RED kontrolünden sonra 32 sahne testi GREEN oldu; bağımsız
+kaynak incelemesi GREEN verdi. Build bütçe kontrolü 5040 bayt JavaScript ve
+35493 bayt CSS ile geçti. Root CUA karşılaştırmasında gerçek 1280×800
+görünümde, scroll 0 ve 894 (`#how-it-works`) konumlarında 15 efektin
+hesaplanmış opacity/transform/clip değerleri taban ile adayda birebir aynıydı.
+Bu eşitlik performans kabulü değildir. Değişmemiş baseline ile 48 statik
+kontrol GREEN tamamlandı: çıkış kodu 0 ve `style-visual-report.json` içinde
+`findings: []`. Statik sonuç, bekleyen Linux performans karşılaştırmasının
+yerine geçmez.
+
+Mac SwiftShader karşılaştırması başarılı olmadı: yeni ve sakin sıralı çiftte
+kontrol p95 33,4 ms, aday ise yalnız 21 karelik seyrek örnekte p95 449,9 ms
+ile RED verdi. Önceki çiftte root'un aktif önizlemesi karıştırıcı etkendi.
+Mac kabulü veya performans iyileşmesi iddiası yoktur. Sonraki adım aynı
+Linux koşullarında adayın karşılaştırılmasıdır; bu bir CI deneyi olup üretim
+kabulü değildir. Tam QA tekrarlanmadı. Geri alma, aday commit'inin bu stil
+kapsamı değişikliği, hedefli testleri ve bu kaydı birlikte geri almasıdır.

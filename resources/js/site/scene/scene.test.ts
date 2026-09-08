@@ -315,24 +315,94 @@ describe('derinlik (SAHNE-06)', () => {
         expect(plane.style.getPropertyValue('--scene-shift')).toBe('');
     });
 
-    it('bölüm ilerlemesi 0 ile 1 arasında kalır', () => {
-        document.body.innerHTML = '<section data-scene-progress></section>';
-
-        const effect = createProgress(document);
-        const section = document.querySelector('[data-scene-progress]') as HTMLElement;
-
-        effect?.measure?.('full');
-        effect?.frame({
+    it('progress uses section geometry and writes only its decorative consumers', () => {
+        document.body.innerHTML = `<section data-scene-progress>
+            <div class="scene-morph"></div><span class="scene-progress-glow"></span>
+            <p>Readable content</p>
+        </section>`;
+        const section = document.querySelector('section')!;
+        const consumers = Array.from(
+            section.querySelectorAll<HTMLElement>('.scene-morph, .scene-progress-glow'),
+        );
+        vi.spyOn(section, 'getBoundingClientRect').mockReturnValue({
+            top: 480,
+            height: 480,
+        } as DOMRect);
+        const effect = createProgress(document)!;
+        effect.measure?.('full');
+        const frame = {
             time: 0,
             delta: 0.016,
-            scroll: -9999,
+            scroll: 240,
+            width: 320,
+            height: 480,
+            pointerX: 0,
+            pointerY: 0,
+        };
+        for (const [scroll, expected] of [
+            [-9999, '0.0000'],
+            [240, '0.2500'],
+            [9999, '1.0000'],
+        ] as const) {
+            effect.frame({ ...frame, scroll });
+            for (const consumer of consumers) {
+                expect(consumer.style.getPropertyValue('--scene-progress')).toBe(expected);
+            }
+            expect(section.style.getPropertyValue('--scene-progress')).toBe('');
+            expect(section.querySelector('p')!.style.getPropertyValue('--scene-progress')).toBe('');
+        }
+        effect.destroy?.();
+        for (const consumer of consumers) {
+            expect(consumer.style.getPropertyValue('--scene-progress')).toBe('');
+        }
+    });
+
+    it('nested progress consumers belong only to their nearest section', () => {
+        document.body.innerHTML = `<section id="outer" data-scene-progress>
+            <span id="outer-glow" class="scene-progress-glow"></span>
+            <section id="inner" data-scene-progress><span id="inner-glow" class="scene-progress-glow"></span></section>
+        </section>`;
+        const outer = document.querySelector<HTMLElement>('#outer')!;
+        const inner = document.querySelector<HTMLElement>('#inner')!;
+        vi.spyOn(outer, 'getBoundingClientRect').mockReturnValue({
+            top: 480,
+            height: 480,
+        } as DOMRect);
+        vi.spyOn(inner, 'getBoundingClientRect').mockReturnValue({
+            top: 240,
+            height: 480,
+        } as DOMRect);
+        const innerGlow = document.querySelector<HTMLElement>('#inner-glow')!;
+        const writes = vi.spyOn(innerGlow.style, 'setProperty');
+        const effect = createProgress(document)!;
+        effect.measure?.('full');
+        effect.frame({
+            time: 0,
+            delta: 0.016,
+            scroll: 240,
             width: 320,
             height: 480,
             pointerX: 0,
             pointerY: 0,
         });
+        expect(
+            document
+                .querySelector<HTMLElement>('#outer-glow')!
+                .style.getPropertyValue('--scene-progress'),
+        ).toBe('0.2500');
+        expect(innerGlow.style.getPropertyValue('--scene-progress')).toBe('0.5000');
+        expect(writes).toHaveBeenCalledTimes(1);
+        effect.destroy?.();
+        expect(innerGlow.style.getPropertyValue('--scene-progress')).toBe('');
+    });
 
-        expect(Number(section.style.getPropertyValue('--scene-progress'))).toBe(0);
+    it('reduced motion leaves progress decorations and content untouched', () => {
+        stubMatchMedia(window, { '(prefers-reduced-motion: reduce)': true });
+        document.body.innerHTML =
+            '<section data-scene-progress><span class="scene-progress-glow"></span><p>Readable</p></section>';
+        expect(mountScene(window)).toBeNull();
+        expect(document.querySelector('[style]')).toBeNull();
+        expect(document.documentElement.dataset.motion).toBeUndefined();
     });
 
     it('`IntersectionObserver` yoksa her bölüm HEMEN doğar', () => {
