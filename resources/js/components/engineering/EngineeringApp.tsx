@@ -34,7 +34,7 @@ export function EngineeringApp() {
         <OpsShell<EngineeringSection>
             brandName={t('engineering.shell.brand')}
             navLabel={t('engineering.shell.navLabel')}
-            basePath="/engineering"
+            basePath="/platform/engineering"
             defaultSection="release-readiness"
             groupLabels={{ evidence: t('engineering.shell.group.evidence') }}
             sections={[

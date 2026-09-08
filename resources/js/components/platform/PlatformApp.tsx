@@ -25,7 +25,7 @@ type PlatformSection =
 /**
  * Platform yönetimi kabuğu — plan, abonelik, sağlayıcı anahtarları.
  *
- * Release readiness ve denetim izi buradan ÇIKTI: `/engineering`
+ * Release readiness ve denetim izi buradan ÇIKTI: `/platform/engineering`
  * (`docs/98` FF-66). Aynı kişi olabilir, aynı iş değil.
  *
  * Gövde `OpsShell`'dir (`docs/50`): mühendislik kabuğuyla aynı ray, aynı üst
@@ -103,7 +103,7 @@ export function PlatformApp() {
             ]}
             topBarEnd={
                 <>
-                    <a href="/engineering" className="text-body font-medium underline">
+                    <a href="/platform/engineering" className="text-body font-medium underline">
                         {t('platform.shell.toEngineering')}
                     </a>
                     <a href="/app" className="text-body font-medium underline">
