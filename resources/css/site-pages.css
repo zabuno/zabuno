@@ -1,0 +1,321 @@
+/*
+    ═══════════════════════════════════════════════════════════════════════
+    KURUMSAL SAYFALARIN DÜZENİ — ana sayfa DIŞINDAKİLER (`docs/146` §10).
+    ═══════════════════════════════════════════════════════════════════════
+
+    Döngü 1 sahneyi yalnız ana sayfaya kurdu ve kendi eksik listesinin ilk
+    maddesi buydu (`docs/146` §9 madde 1). Bu dosya o maddenin düzen
+    tarafıdır: önsöz bandının ölçüsü, fiyat ızgarasının kurumsal yüzeyi ve
+    sayfa gövdesinin ritmi.
+
+    ── NEDEN AYRI DOSYA, `site-home.css`E EKLEME DEĞİL ──
+
+    `site-home.css`in kendi başlığı "ANA SAYFANIN DÜZENİ" diyor ve o dosyaya
+    `/pricing` kuralları yazmak, adıyla içeriği ayrışan ilk dosyayı üretirdi.
+    Ayrı dosya bir maliyet değil: ikisi de aynı pakette birleşiyor, ortak
+    bayt tavanı `scripts/scene-budget.json` içinde TEK.
+
+    ── KIRILMA NOKTASI YOK (`HOME-FLUID-04` ile aynı kural) ──
+
+    Tek bir `@media (min-width: …)` yok. Her ölçü ya `clamp()` ya da
+    `minmax(min(100%, …), 1fr)`: 320 pikselde alt sınır, geniş ekranda üst
+    sınır, ARADAKİ HER GENİŞLİKTE tanımlı.
+
+    ── HAM DEĞER YOK ──
+
+    Renk, boşluk, yarıçap ve ölçek `--zc-*` ve `--space-*` jetonlarından
+    gelir. Bu dosyada sabit bir renk yoktur.
+*/
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §1 — ÖNSÖZ BANDI (`site-prologue`).
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── NEDEN KAHRAMANDAN KISA ──
+
+   Ana sayfanın kahramanı `clamp(21rem, 72svh, 44rem)`. Bir iç sayfada aynı
+   yüksekliği kullanmak, ziyaretçinin ARADIĞI ŞEYİ (fiyat, iletişim formu,
+   şirket bilgisi) ilk ekranın dışına iterdi: ana sayfaya gelen keşfeder, iç
+   sayfaya gelen ARAR. Önsöz 320×480'de 163 pikselde durur ve altındaki
+   içeriğin ilk satırı hâlâ ilk ekrandadır — ölçüldü.
+
+   Üst sınır 22 rem: 1920×1080'de bandın ekranı doldurması, sayfanın kendi
+   içeriğini bir kaydırma arkasına saklamak olurdu.
+*/
+.site-prologue {
+    min-block-size: clamp(9rem, 34vh, 22rem);
+    min-block-size: clamp(9rem, 34svh, 22rem);
+    display: grid;
+    align-items: center;
+}
+
+.site-prologue-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: clamp(0.75rem, 0.5rem + 1.2vw, 1.5rem);
+    padding-block: clamp(1rem, 0.5rem + 2vw, 3.5rem);
+}
+
+.site-prologue-text {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 0.35rem + 0.8vw, 1rem);
+    /* Başlık sahnenin TAMAMINI kaplamaz: kalan boşluk yıldızlarındır ve
+       kompozisyonun kendisidir. */
+    max-width: min(100%, 44rem);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §2 — SAYFA GÖVDESİ. Önsözden sonra gelen okuma alanı.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Bant tam kanamalıdır (`.site-stage`), gövde ise okuma genişliğindedir.
+   İkisi arasındaki nefes `--zc-rhythm`ten gelir ve TEK yerden: her sayfanın
+   kendi boşluğunu yazması, ilk bakımda dördünün üçünün ayrışmasıyla biterdi.
+*/
+.site-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--zc-rhythm);
+    padding-block-end: var(--zc-rhythm);
+}
+
+.site-page-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--zc-rhythm-tight);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §3 — FİYAT (`site-pricing`) — kurumsal yüzey dili (`docs/146` §9 madde 2).
+   ══════════════════════════════════════════════════════════════════════════
+
+   Döngü 1'in kendi suçlaması: *"partial'ın kutuları kurumsal yüzey dilini
+   (`site-panel`) hiç kullanmıyor."* Kutular `rounded-lg border border-border`
+   ile çiziliyordu — yani PANELİN dilinde. Aynı sayfada iki yüzey dili,
+   ziyaretçiye iki ayrı ürün gibi okunur.
+
+   Burada hareket YOK ve olmayacak: bir fiyatın okunduğu yer, dikkatin
+   bölünmemesi gereken yerdir. Değişen şey kalınlık, hareket değil.
+*/
+.site-pricing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--zc-rhythm-tight);
+}
+
+.site-pricing-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: min(100%, 46rem);
+}
+
+/*
+    HER PLANDA OLAN — bir plan gibi görünmemeli.
+
+    `site-panel` ile çizilseydi beşinci bir kart gibi okunurdu. Kalın bir
+    başlangıç kenarı aynı bilgiyi TABAN olarak anlatır: altındaki kartların
+    hepsi bunun üstüne biner.
+*/
+.site-pricing-included {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-inline-start: var(--space-3);
+    border-inline-start: 2px solid var(--zc-accent);
+}
+
+.site-pricing-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* 320 pikselde `min()` %100'ü seçer ve ızgara tek sütuna iner — medya
+       sorgusuna gerek yok. 15 rem'in altına inen bir sütunda plan adı ve
+       fiyat aynı satıra sığmazdı. */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-4);
+}
+
+.site-pricing-plan {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--zc-radius-lg);
+    /* Kartlar eşit boyda: farklı boylu kartlarda gözün karşılaştırdığı şey
+       fiyat değil, kutu olur. */
+    block-size: 100%;
+}
+
+.site-pricing-plan-name {
+    font-size: var(--zc-display-3);
+    line-height: 1.2;
+    font-weight: var(--zc-weight-display);
+}
+
+/*
+    RAKAM SAYFANIN EN BÜYÜK İKİNCİ ÖĞESİ.
+
+    Fiyat sayfasında aranan tek şey rakamdır; onu gövde boyutunda yazmak,
+    ziyaretçiyi kutunun içinde aratır. `tabular-nums` şablonda: rakamlar eşit
+    genişlikte olmazsa planlar arasında karşılaştırma gözle yapılamaz.
+*/
+.site-pricing-amount {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: var(--zc-display-3);
+    line-height: 1.1;
+    font-weight: var(--zc-weight-display);
+    color: var(--fg);
+}
+
+.site-pricing-period {
+    font-size: var(--zc-eyebrow);
+    font-weight: var(--zc-weight-strong);
+    letter-spacing: var(--zc-eyebrow-tracking);
+    color: var(--fg-muted);
+}
+
+.site-pricing-entitlements {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding-inline-start: var(--space-5);
+    list-style: disc;
+    color: var(--fg-secondary);
+}
+
+.site-pricing-note {
+    margin: 0;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+}
+
+/*
+    ÖDEME YÖNTEMİ — fiyatın YANINDA, sözleşmenin on birinci bölümünde değil.
+
+    Bağlantı kendi satırında ve 44 piksel (`site-action`): satır içi bir
+    bağlantı dar ekranda 18-42 piksel yüksekliğinde kalıyor ve parmakla
+    ıskalanıyor (`docs/117` K1).
+*/
+.site-pricing-payment {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    color: var(--fg-muted);
+}
+
+.site-pricing-payment p {
+    margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §4 — İLETİŞİM FORMU. Kurumsal yüzeyde bir form.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Form alanları panelin Tailwind yardımcı sınıflarıyla çiziliyordu; aynı
+   ayrışma fiyatta olduğu gibi burada da vardı. Alanlar artık kurumsal
+   kenardan, kurumsal yarıçaptan ve kurumsal odak halkasından geçiyor.
+
+   YÜKSEKLİK 44 PİKSELİN ALTINA İNMEZ. Bir metin alanı bir dokunma
+   hedefidir: parmakla ıskalanan bir alan, doldurulmayan bir formdur.
+*/
+.site-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.site-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.site-form-field > label {
+    font-weight: var(--zc-weight-strong);
+}
+
+.site-input {
+    min-block-size: var(--control-height);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--zc-edge-control);
+    border-radius: var(--zc-radius-md);
+    background: var(--surface);
+    color: var(--fg);
+    font: inherit;
+    /* Uzun bir e-posta adresi dar ekranda kutuyu taşırmaz. */
+    inline-size: 100%;
+}
+
+.site-input:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+/*
+    ONAY VE UYARI ŞERİTLERİ — geometriyle, kutuyla değil.
+
+    Renk TEK BAŞINA anlatmaz: şerit `role` taşır ve durumunu kelimeyle
+    söyler. Kalın bir başlangıç kenarı, rengi göremeyen okuyucuya da bir
+    ayrım verir.
+*/
+.site-notice {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-3);
+    border: 1px solid var(--zc-edge);
+    border-inline-start: 3px solid var(--zc-accent);
+    border-radius: var(--zc-radius-md);
+    line-height: 1.55;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §5 — KURUMSAL EYLEM DÜĞMESİ (`site-cta`).
+   ══════════════════════════════════════════════════════════════════════════
+
+   Döngü 1'de bu blok `site-home.css` içinde `.home-action` adıyla duruyordu.
+   Döngü 2'de iletişim formunun gönder düğmesi ve önsöz bandının eylemi aynı
+   geometriyi isteyince ad yanlış çıktı: bu bir ANA SAYFA düzeni değil,
+   sitenin eylem dili. İkinci bir tanım yazmak yerine adı düzeltildi.
+
+   Geometri `.site-action`tan gelir (44 piksel, `site-shell.css`); burada
+   yalnız KALINLIK var — hap yarıçapı, ışıyan kenar, üstten sönen parıltı.
+   İkisi ayrı sınıf, çünkü cümle içindeki bir bağlantı 44 piksel olmaz ama
+   bir düğme her zaman olur.
+*/
+.site-cta {
+    border-radius: var(--zc-radius-pill);
+    padding-inline: var(--space-5);
+    font-weight: var(--zc-weight-strong);
+    border: 1px solid var(--zc-edge-lit);
+    color: inherit;
+    text-decoration: none;
+    /* Kalınlık hissi: üstten sönen parıltı (`site-identity.css` §6 ile aynı
+       dil, ama düğme ölçeğinde). */
+    background-image: linear-gradient(180deg, var(--zc-sheen) 0%, transparent 60%);
+}
+
+.site-cta[data-emphasis='true'] {
+    background-color: var(--zc-action);
+    border-color: transparent;
+    color: var(--zc-on-action);
+    box-shadow: var(--zc-lift-2);
+}
+
+.site-cta:hover {
+    text-decoration: underline;
+}
+
+.site-cta:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}

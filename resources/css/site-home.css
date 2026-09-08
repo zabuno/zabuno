@@ -1,0 +1,372 @@
+/*
+    ═══════════════════════════════════════════════════════════════════════
+    ANA SAYFANIN DÜZENİ (`docs/146` §5).
+    ═══════════════════════════════════════════════════════════════════════
+
+    Yüzey dili `site-identity.css`te, hareket `site-scene.css`te. Bu dosyada
+    yalnız DÜZEN var: neyin nerede durduğu, ne kadar nefes aldığı, dar
+    ekranda nasıl dizildiği.
+
+    ── KIRILMA NOKTASI YOK (`HOME-FLUID-04`) ──
+
+    Tek bir `@media (min-width: …)` yok ve olmayacak. Her ölçü ya `clamp()`
+    ya da `minmax(min(100%, …), 1fr)`: 320 pikselde alt sınır, geniş ekranda
+    üst sınır, ARADAKİ HER GENİŞLİKTE tanımlı. Kırılma noktasına bağlı bir
+    düzen, kırılma noktaları arasında ölçülmemiş demektir.
+
+    ── DOLGU BİRİKMEZ (`docs/117` K2) ──
+
+    320 pikselde sayfa kenarı 12 piksel (`--zc-gutter` alt sınırı), kart
+    dolgusu 16 piksel. Toplam 56 piksel; içerik 264 piksel kullanır, yani
+    görüntü alanının %82,5'i. `scripts/mobile-ux-audit`in yoğunluk eşiği
+    %72; buradaki pay onun üstünde ve BİLEREK öyle.
+
+    ── BÜYÜK HEDEF + SIKI BOŞLUK (`docs/118` E3) ──
+
+    Dokunma hedefleri 44 pikselin altına inmez (`.site-action`), ama
+    hedefler arasındaki boşluk cihaza göre daralır. Dar ekranda büyüyen tek
+    şey ölü alan olmamalı.
+*/
+
+.site-home {
+    display: flex;
+    flex-direction: column;
+    /* Bölümler arası nefes tek yerden: 320'de 32 px, geniş ekranda 112 px. */
+    gap: var(--zc-rhythm);
+    /*
+        Sayfa kabı KENDİ dolgusunu YAZMAZ.
+
+        Ana sayfanın bantları ekranın tamamını kullanır (`.site-stage`);
+        yatay dolgu her bandın KENDİ ölçü kabındadır (`.site-measure-*`).
+        Kabuk seviyesinde bir dolgu, tam kanamalı bir bandı imkânsız
+        kılardı.
+    */
+    padding-block-end: var(--zc-rhythm);
+}
+
+/* ── KAHRAMAN ─────────────────────────────────────────────────────────────
+
+   Yüksekliği görüntü alanına bağlı ama ONA TESLİM DEĞİL: alt sınır 21 rem,
+   çünkü yatay tutulan kısa bir telefonda `svh` 300 pikselin altına iner ve
+   başlık kendi kabından taşar. Üst sınır 44 rem: 1440 piksellik bir ekranda
+   kahramanın "bitmemesi" ziyaretçiyi aşağı inmekten caydırır.
+
+   ── ÖLÇÜLDÜ: 320×480'DE EYLEM EKRANDA KALMALI ──
+
+   İlk değer 26 rem (416 px) idi ve 480 piksellik bir ekranda — üst çubuğun
+   65 pikseli düşüldükten sonra — birincil düğmeyi ilk ekranın DIŞINA
+   itiyordu. (Buradaki sayı Döngü 1'de "128 piksel" yazıyordu ve ÖLÇÜLMEMİŞTİ;
+   Döngü 2 gerçek Chrome'da 320×480'de ölçtü: `.site-header` 65 piksel —
+   `docs/118` E16.) Bir kahraman, çağırdığı eylemi göstermiyorsa bir kahraman değil
+   bir kapak resmidir. 21 rem, `--zc-rhythm` dolgusuyla birlikte üç düğmeyi
+   de 480 pikselin içinde bırakır.
+
+   `svh` KÜÇÜK görüntü alanı yüksekliğidir: mobil tarayıcının adres çubuğu
+   AÇIKKEN kalan yer. `vh` yazılsaydı, ilk açılışta kahraman çubuğun altında
+   kalan bir şerit taşırdı ve sayfa "kaymış" görünürdü. Desteklemeyen
+   tarayıcı bir satır önceki `vh` değerini okur.
+*/
+.home-hero {
+    min-block-size: clamp(21rem, 72vh, 44rem);
+    min-block-size: clamp(21rem, 72svh, 44rem);
+    display: grid;
+    align-items: center;
+}
+
+.home-hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    /* Dar ekranda boşluk SIKI, geniş ekranda cömert (`docs/118` E3). Sabit
+       bir `--space-5` (24 px) 320 pikselde ölçüldü ve pahalıydı. */
+    gap: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+    padding-block: clamp(1rem, 0.5rem + 2.5vw, 5rem);
+}
+
+/*
+    Kahraman metni sahnenin TAMAMINI kaplamaz.
+
+    `.site-measure-stage` 110 rem'e kadar açılır ve bir başlık orada okunmaz.
+    Metin bloğu kendi ölçüsünü taşır; sahnenin geri kalanı YILDIZLARINDIR ve
+    bu, kompozisyonun kendisi: solda söz, sağda boşluk, boşlukta derinlik.
+*/
+.home-hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.625rem, 0.4rem + 1.1vw, 1.25rem);
+    max-width: min(100%, 46rem);
+}
+
+/* ── EYLEMLER ─────────────────────────────────────────────────────────────
+
+   Üç bağlantı, dar ekranda alt alta değil YAN YANA sarar: `flex-wrap`
+   sığmayanı alt satıra alır ve 320 pikselde bu genelde iki satır eder.
+   `gap` 12 piksel — 8'in üstünde, yani `mobile-ux-audit`in komşu hedef
+   ayrımı kuralını geçer.
+*/
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+/*
+    ── KAHRAMANIN DİPNOTU ──
+
+    Ücretsiz zincir bir kampanya değil, plan kataloğundaki ölçülmüş bir
+    olgu. Eylemin ALTINDA duruyor ve düğmeden küçük: bir dipnot, çağırdığı
+    eylemin önüne geçmez.
+*/
+.home-hero-note {
+    margin: 0;
+    color: var(--fg-secondary);
+    max-width: min(100%, 46rem);
+}
+
+/*
+    DÜĞMENİN KENDİSİ BU DOSYADA DEĞİL (`site-pages.css` §5, Döngü 2).
+
+    `.home-action` ana sayfaya özgü sanılmıştı; Döngü 2'de iletişim formunun
+    gönder düğmesi ve önsöz bandının eylemi aynı geometriyi istedi. Bir
+    yüzeyi ikinci kez tanımlamak yerine adı doğrulandı: kurumsal eylem
+    düğmesi SİTENİN dilidir, ana sayfanın düzeni değil. Sınıf `.site-cta`.
+*/
+
+/* ── AKAN BANTLAR ───────────────────────────────────────────────────────── */
+
+.home-drift {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+    border-block: 1px solid var(--zc-edge);
+}
+
+/* ── BÖLÜM BAŞLIĞI ─────────────────────────────────────────────────────── */
+
+.home-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: min(100%, 52rem);
+    margin-block-end: var(--zc-rhythm-tight);
+}
+
+/* Bölümün giriş cümlesi. `site-lede`den küçük: kahramanın vaadi ile bir
+   bölümün açıklaması aynı ağırlıkta olamaz. */
+.home-lead {
+    margin: 0;
+    color: var(--fg-secondary);
+}
+
+/* Başlık ölçü kabında, şerit onun DIŞINDA; ikisi arasındaki nefes burada
+   ve TEK yerde. */
+.home-band-head {
+    padding-block-start: var(--zc-rhythm);
+}
+
+/* ── IZGARA ───────────────────────────────────────────────────────────────
+
+   `minmax(min(100%, 17rem), 1fr)`: 320 pikselde `min()` %100'ü seçer ve
+   ızgara tek sütuna iner — bir medya sorgusuna gerek kalmadan. 17 rem'in
+   altına inen bir sütun kart başlığını iki satıra bölerdi.
+*/
+.home-grid {
+    /* Liste işareti kapatılıyor: `role="list"` anlamı taşır, nokta taşımaz. */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-4);
+}
+
+.home-card {
+    /* Yükseklik eşitlenir: eğilme efekti farklı boylu kartlarda dalgalı
+       görünür. */
+    block-size: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--zc-radius-lg);
+}
+
+.home-card-body {
+    color: var(--fg-secondary);
+    margin: 0;
+}
+
+/* ── ZİNCİR ŞERİDİ (`home-rail`) ──────────────────────────────────────────
+
+   Altı adım YATAY bir şeritte. Dokunmada yana kaydırma ucuz bir harekettir;
+   altı adımı 320 pikselde dikey dizmek, ilk ekranı zincirin BİR adımına
+   ayırmak demekti.
+
+   ═══ GENİŞ EKRAN HİZASI — sahibin şikâyeti (2026-09-08, 1560 px) ═══
+
+   *"bu niye sığmamış? sığsın"*: şeridin ilk kartının sol kenarı, üstündeki
+   başlığın sol kenarıyla aynı pikselde değildi.
+
+   ÖLÇÜLDÜ (2026-09-08, gerçek Chrome, 1560×900). Başlık `.site-measure-page`
+   içinde duruyor — genişliği `min(100%, 82rem)`, ortalanmış, dolgusu
+   `--zc-gutter` (o genişlikte 39,2 px). Şerit ise tam genişlikte durup
+   dolgusunu doğrudan `--zc-gutter`den alıyordu, yani kendini GÖRÜNTÜ
+   ALANININ kenarına hizalıyordu. Fark: ilk kartın sol kenarı başlığınkinden
+   **124 piksel** solda.
+
+   Aynı ölçüm bu kuralla birlikte tekrarlandı: başlık 163,19 px, ilk kart
+   163,19 px, fark **0 piksel**; sayfanın yatay taşması 0. 320×480'de dolgu
+   14,39 pikselde (yani `--zc-gutter`) kalıyor, fark yine 0 ve bir sonraki
+   kartın 40 pikseli görünür duruyor.
+
+   ═══ ÇÖZÜM BİR MEDYA SORGUSU DEĞİL ═══
+
+   Dolgu kabın kendisinden TÜRETİLİYOR:
+
+       max(--zc-gutter, (100% - 82rem) / 2 + --zc-gutter)
+
+   `100%` bir dolgu yüzdesidir, yani şeridin KABININ genişliği. Kap 82 rem'in
+   altındayken `min(100%, 82rem)` `100%`e çözülür, fark sıfırlanır ve dolgu
+   `--zc-gutter`de kalır — 320 pikselde tabanla BİRE BİR aynı. Kap 82 rem'i
+   aştığındaysa fark, ölçü kabının sol boşluğunu tam olarak geri verir.
+
+   Yani taban kural koşulsuz yazıldı, geniş ekran onun ÜSTÜNE eklendi. Hiçbir
+   şey bastırılmadı, hiçbir genişlik eşiği yazılmadı (HOME-SCENE-01).
+
+   Şeridin KENDİSİ tam genişlikte kalır: dokunmada kenardan kenara kaydırma
+   korunur ve son kart ekranın sağ kenarına kadar gidebilir.
+
+   ═══ KAYDIRILABİLİRLİK HOVER İLE ANLATILMAZ ═══
+
+   Dokunmada `hover` yoktur (`TOUCH-FIRST-INTERFACE` §2). Kart genişliği
+   `min(78vw, 18rem)`: 320 pikselde bir sonraki kartın kenarı görünür kalır
+   ve şeridin devam ettiğini her giriş kipinde aynı biçimde söyler.
+*/
+.home-rail {
+    --home-rail-gutter: max(
+        var(--zc-gutter),
+        calc((100% - var(--zc-measure-page)) / 2 + var(--zc-gutter))
+    );
+    list-style: none;
+    margin: 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(78vw, 18rem);
+    gap: var(--space-4);
+    padding-inline: var(--home-rail-gutter);
+    /* Dikey dolgu panelin gölgesine ve odak halkasına yer bırakır: sıfır
+       olsaydı kaydırma kabı ikisini de kırpardı. */
+    padding-block: var(--space-2);
+    overflow-x: auto;
+    /* Yatay kaydırma ŞERİDİN İŞİ: sayfa yana kaymaz. */
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+    scroll-padding-inline: var(--home-rail-gutter);
+}
+
+.home-rail:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+.home-rail-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--zc-radius-lg);
+    scroll-snap-align: start;
+}
+
+.home-step-index {
+    font-size: var(--zc-display-3);
+    line-height: 1;
+    font-weight: var(--zc-weight-display);
+    color: var(--zc-deep-accent);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── DERİN BANT ───────────────────────────────────────────────────────────
+
+   Tam kanamalı bir sahne. `.site-bleed` YALNIZ bir `.site-stage` torununda
+   kullanılır (`site-identity.css` §6): kabın `overflow: clip`i olmadan
+   `100vw` dikey kaydırma çubuğunu sayar ve sayfayı yatay kaydırır.
+*/
+.home-band {
+    padding-block: var(--zc-rhythm);
+}
+
+/* ── FİYAT VE SSS ────────────────────────────────────────────────────────
+
+   İki bölüm de OKUNAN içeriktir; sahne genişliğinde değil, okuma
+   genişliğinde durur. Kaplar `site-identity.css` §4'ten geliyor; burada
+   yalnız iç ritim var.
+*/
+.home-prose {
+    display: flex;
+    flex-direction: column;
+    gap: var(--zc-rhythm-tight);
+}
+
+/*
+    SSS TEK SÜTUN ve `<details>`.
+
+    Izgara değil: beş soru iki sütuna dizilince göz hangi cevabın hangi
+    soruya ait olduğunu kaybediyor ve açılan bir bölme yanındaki sütunu
+    aşağı itiyordu. Kapalı başlamak 480 piksellik bir ekranda okuyucuya
+    hangi soruyu açacağını SEÇTİRİR.
+*/
+.home-faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+.home-faq-item {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--zc-radius-lg);
+}
+
+/*
+    ÖZET BİR DOKUNMA HEDEFİDİR (`docs/117` K1): 44 pikselin altına inmez.
+    `list-style` kapatılmıyor — tarayıcının kendi üçgeni durumu (açık/kapalı)
+    renk olmadan da anlatır ve bu, rengi göremeyen okuyucunun tek ipucudur.
+*/
+.home-faq-question {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+    font-weight: var(--zc-weight-strong);
+    cursor: pointer;
+}
+
+.home-faq-question:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+.home-faq-answer {
+    margin: 0;
+    padding-block-start: var(--space-2);
+    color: var(--fg-secondary);
+    line-height: 1.6;
+}
+
+/* Bağlantı kendi satırında ve 44 piksel; cümle içine gömülmüş bir bağlantı
+   dar ekranda parmakla ıskalanıyor. `align-self` olmasa düğme sütunun
+   tamamına yayılır ve bir bant gibi okunurdu. */
+.home-faq-link {
+    align-self: start;
+}
+
+/* ── KAPANIŞ ──────────────────────────────────────────────────────────── */
+
+.home-closing {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-4);
+    padding-block: var(--zc-rhythm);
+}

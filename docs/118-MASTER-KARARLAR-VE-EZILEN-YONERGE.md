@@ -207,10 +207,195 @@ baskın hareketli arka plan kuralı yerinde durur.
 
 **Sahibin kararı:** *"daisyUI kullan, baştan yarat… bu kararım kesin."*
 
-Kurumsal kabuk daisyUI 5 üzerine yeniden yazıldı. Tema **marka jetonlarından
-türer** (bir tek renk elle yazılmaz), sınıflar `dz-` önekiyle gelir ve panel
+Kurumsal kabuk daisyUI 5 üzerine yeniden yazıldı. Tema **jetonlardan türer**
+(bir tek renk elle yazılmaz), sınıflar `dz-` önekiyle gelir ve panel
 etkilenmez — panel `flowbite-react` + AEP üzerinde kalır (`docs/102`).
 Ayrıntı, ölçüm ve sonraki ajanlara talimat: **`docs/136`**.
+
+**Bu maddenin "marka jetonları" kısmı aynı gün akşam E10 ile ezildi**; daisyUI
+kararının kendisi kesindir ve durmaktadır.
+
+### E10 — Kurumsal sitenin RENK KAYNAĞI: panelden AYRILDI (2026-09-08 akşamı)
+
+**Ezilen karar:** E9 ve `docs/136` §3 — *"tema marka jetonlarından
+(`--aep-*`) türer"*.
+
+**Sahibin kararı:** *"temanın mevcut marka jetonlarını sikerim, yeter
+artık."* Ve tekrarlanan hedef: *"bir uzay teknolojileri şirketi gibi, abartı
+dursun, görünsün, hissettirsin."*
+
+**Neden ezildi — ölçüldü.** Kural uygulandı, daisyUI kuruldu, kapı yeşile
+döndü ve **ekranda hiçbir şey değişmedi**. Sebep kimsenin hatası değil:
+panelin jetonları sekiz saat bakılan bir ekran için seçilmişti (sakin, düz,
+gölgesiz — `docs/102` §1). Kurumsal sayfanın işi tam tersidir; bir kez
+bakılır ve hatırlanması gerekir. Aynı jetonu ikisine vermek ikisini de
+ortalamaktı.
+
+**Yürürlükteki karar:**
+
+> Kurumsal sitenin renk kaynağı `--zc-*` jetonlarıdır ve tek tanımı
+> `resources/css/site-identity.css`. Panelin `--aep-*` jetonlarına hiç
+> bakmaz. Panel değişmez.
+
+Panelle kalan tek kasıtlı bağ marka altınıdır — ve o da artık bir düğme
+rengi değil, bir vurgu: kurumsal birincil düğme elektrik moru oldu, çünkü
+sarının üstündeki beyaz yazı **1,73:1** ölçülmüştü (WCAG asgarisi 4,5) ve
+yeni değeri **5,84:1**.
+
+**Ne DEĞİŞMEDİ:** E1 (dar ekran taban), E3 (büyük hedef + sıkı boşluk), E6
+(emoji yasak, Phosphor ilk), E8 (taban HTML, tavan serbest), daisyUI kararı,
+`dz-` öneki, hazır temaların kapalılığı ve panelin dokunulmazlığı.
+
+**Zorlayıcı karşılığı:** `CorporateIdentityContrastTest` (KIMLIK-01/02/03) ve
+`CorporateIdentityScopeTest` (KIMLIK-04/05/06/07). Ayrıntı, palet, gerekçe ve
+bütün ölçümler: **`docs/145`**.
+
+### E11 — "Sıfır JavaScript kütüphanesi": **kalktı**, ama ölçüm kütüphaneyi seçmedi (2026-09-08 gecesi)
+
+**Ezilen kısıt:** kurumsal sitede React yok, efekt kütüphanesi yok, betik
+neredeyse hiç yok.
+
+**Sahibin kararı:** *"Kurallar mı engelliyor? Yeni kurallar yaz. React mı
+lazım? Ekle. Ne lazım? Ekle, çöz, yap."* Ve hedef: *"Bir uzay teknolojileri
+şirketi gibi, abartı dursun, görünsün, hissettirsin."*
+
+**Kısıt kalktı. Sonra ÖLÇÜLDÜ ve kütüphane yine alınmadı** — bu bir kural
+değil, bir ölçüm sonucu:
+
+| Aday | gzip (npm dist, `gzip -9`) |
+| --- | --- |
+| GSAP çekirdek | 28.314 bayt |
+| GSAP + ScrollTrigger | 46.339 bayt |
+| motion | 46.644 bayt |
+| three.js | 86.569 bayt |
+| **elle yazılan sahne motoru** | **4.417 bayt** |
+
+Üçünün de taşıdığı şeyin çoğu bu sahnede kullanılmıyor (sahne grafiği,
+malzeme sistemi, zaman çizelgesi motoru). Asıl mesele ağırlık bile değil:
+**derecelendirme merdiveni**. Düşük güçlü bir telefonda hangi katmanın
+söneceğine bir kütüphane karar veremez; o karar ürünün kendi kodunda olmalı.
+
+**React de alınmadı** ve gerekçesi E5 madde 3'ün kendisidir: *"React adacığı
+yalnız bir bileşen GERÇEKTEN etkileşim gerektirdiğinde açılır; süs için
+açılmaz."* Sahnenin etkileşim durumu yok — tuval, kaydırma, imleç.
+
+**Kısıt geri konmadı.** Yarın bir bileşen gerçekten React isterse kapı açık;
+bugün ölçüm onu istemedi. Ayrıntı ve bütün sayılar: **`docs/146`**.
+
+**Zorlayıcı karşılığı:** `SceneContractTest` (SAHNE-B4: motor React
+yüklemez), `scripts/scene-budget-gate` (SITE-SCENE-BUDGET-01).
+
+### E12 — Ağırlık bütçesi: **kaldırılmadı, YÜKSELTİLDİ** (2026-09-08 gecesi)
+
+**Ezilen kısıt:** kurumsal sayfanın JavaScript'i sıfır, toplam ağırlığı ~32 KB.
+
+**Sahibin kararı:** sahne zorunlu. O tavan sahneyi taşıyamıyordu.
+
+**Yeni tavan ve gerekçesi `scripts/scene-budget.json` içinde yaşıyor**, bu
+belgede değil — bir sayıyı iki yere yazmak, ilk ayrışmada hangisinin doğru
+olduğunu belirsiz yapar:
+
+- kurumsal betik ≤ **6.144 bayt gzip** (ölçüm: 4.417)
+- kurumsal stil ≤ **40.960 bayt gzip** (ölçüm: 34.147; paket öncesi 30.410,
+  yani sahnenin payı **3.737 bayt**)
+
+**Neden bütçe KALDIRILMADI:** kaldırılmış bir bütçe, bir gün "bir kütüphane
+daha ekleyelim" denildiğinde kimsenin fark etmeyeceği bir yerdir. Yükseltilmiş
+bir bütçe ise bir soru sorar: bu bayt neyin karşılığında geldi?
+
+**Zorlayıcı karşılığı:** `scripts/scene-budget-gate --fail` ve
+`SceneContractTest` SAHNE-B6 (tavan var ve GEREKÇESİ yazılı).
+
+### E13 — "Sayfa başına en fazla bir baskın hareketli arka plan": **kalktı** (2026-09-08 gecesi)
+
+**Ezilen madde:** E5 madde 6 ve `docs/119` §17.5 — *"Sayfa başına en fazla bir
+baskın hareketli arka plan; aynı görüntü alanında ikinci bir WebGL yok."*
+
+**Sahibin kararı:** kural kalktı.
+
+**Ama ikinci WebGL yine AÇILMADI** — ve bu ayrım önemli. Kuralın iki yarısı
+vardı; biri ezildi, öteki ölçümle doğrulandı:
+
+- **Ezildi:** ana sayfada bugün ÜÇ hareketli sahne var (kahraman, "nasıl
+  çalışır" bandı, kapanış bandı) ve iki akan şerit. Sayfa bir vitrindir;
+  tek bir bant onu taşıyamıyordu.
+- **Duruyor, ama artık bir kural değil bir ÖLÇÜM sonucu:** tuval yalnız
+  kahramanda. İkinci bir WebGL bağlamının vereceği derinliği ikinci bant
+  saf CSS ile zaten alıyor; buna karşılık ikinci bağlam, düşük güçlü bir
+  telefonda kare süresini iki katına çıkarır.
+
+**Yerine gelen zorlayıcı karşılık, sayının kendisidir:** `scripts/scene-perf-gate`
+kare süresini gerçek Chrome'da, CPU kısmalı olarak ölçer. Kaç sahne olduğu
+artık bir tartışma değil, bir bütçe: p95 kare süresi 22 ms'yi geçerse kapı
+kırılır. Ölçüm (2026-09-08): 320×480'den 1920×1080'e, CPU ×4 kısmalı, **p95 =
+16,7–16,8 ms** — yani 60 kare/saniye, uzun kare yok.
+
+### E14 — `mobile-ux-audit` yoğunluk ölçümü: **süs artık içerik sayılmıyor** (2026-09-08 gecesi)
+
+Bu bir yönerge ezmesi değil, bir ÖLÇÜM ARACININ düzeltmesi; kaydı burada
+duruyor çünkü bir kapının davranışını değiştiriyor.
+
+**Arıza:** akan bant döngünün dikişsiz olması için iki özdeş kopya taşır ve
+ikincisi görüntü alanının dışındadır. Bant `overflow: clip` ile kırpılıyor —
+ziyaretçi hiçbir zaman yatay kaydırmıyor — ama `getBoundingClientRect()`
+kırpılmayı bilmez. Araç "içerik 320 piksel yerine 2.764 piksel kullanıyor"
+diyordu. Bu bir yanlış alarm DEĞİL, daha kötüsüydü: oran eşiğin (%72) çok
+üstüne çıktığı için **yoğunluk kuralı o sayfada sessizce devre dışı
+kalıyordu.**
+
+**Düzeltme:** yoğunluk ölçümü artık `aria-hidden="true"` bir alt ağacın
+içindeki metni saymıyor. Kapsam DAR: yalnız bu ölçüm. Yatay taşma, kırpılma ve
+dokunma hedefi kuralları dekoratif bir öğeyi eskisi gibi görür — süs sayfayı
+yatay kaydırıyorsa bu yine bir kusurdur.
+
+**Düzeltme sonrası ölçüm:** ana sayfada kullanılabilir genişlik 320 pikselde
+**308 piksel (%96,3)**.
+
+### E15 — "Derece merdiveni TEK YÖNLÜDÜR": **kalktı** (Döngü 2, 2026-09-08)
+
+**Ezilen madde:** Döngü 1'in kendi kararı (`docs/146` §6) — *"Merdiven tek
+yönlüdür: yükseltmek, cihaz bir an rahatladığında sahneyi ağırlaştırır ve
+ısınınca yine düşürür; kullanıcı sahnenin sürekli kılık değiştirdiğini görür.
+Daha az akıllı ama KARARLI."*
+
+**Gerekçesi doğruydu; bedeli ölçülmemişti.** Döngü 1 aynı belgenin eksik
+listesinde bunu kendisi yazdı (§9 madde 10): sekmeyi bir süre arka planda
+bırakıp dönen ya da başka bir uygulama yüzünden bir kez ısınan ziyaretçi,
+cihaz çoktan rahatlamışken **oturum boyunca** en sade sahnede kalıyordu.
+
+**Yeni karar:** merdiven iki yönlü, ama SİMETRİK DEĞİL. Yükselmek pahalıdır:
+
+| | inmek | çıkmak |
+| --- | --- | --- |
+| gereken ardışık kare | 30 | 600 (~10 saniye) |
+| eşik | tavan (22 ms) | tavanın dörtte üçü (16,5 ms) |
+| her karardan sonra | — | gereken sakinlik **ikiye katlanır** |
+| oturum başına üst sınır | yok | **3 yükseliş** |
+
+**Yerine gelen zorlayıcı karşılık:** kararın kendisi bir sayı değil, üç testtir
+(`scene.test.ts`, SAHNE-08). Sonuncusu tam olarak eski kararın korktuğu şeyi
+ölçüyor: 200 kare boyunca kusursuz koşan bir cihazda yükseliş sayısı **3'te
+kalıyor** — salınım kendi kendini söndürüyor.
+
+### E16 — "Üst çubuk 320'de 128 piksel": **ölçüldü, DOĞRU ÇIKMADI** (Döngü 2, 2026-09-08)
+
+Bu bir yönerge ezmesi değil, bir OLGU düzeltmesi; kaydı burada duruyor çünkü
+bir sonraki döngüyü yanlış bir işe gönderecekti.
+
+Döngü 1 eksik listesine *"Üst çubuk 320'de 128 piksel yüksek. Bu, ilk ekranın
+dörtte biri."* yazdı ve aynı sayı `site-home.css` içindeki bir gerekçe
+yorumuna da geçti. Döngü 2 ölçtü (gerçek Chrome, 320×480, mobil taklidi):
+`.site-header` yüksekliği **65 piksel** — ilk ekranın %13,5'i.
+
+Yapılacak bir iş yoktu ve **yapılmadı**: 65 piksel, 44 piksellik dokunma
+hedefi tabanının (`--control-height`) üstüne 1 piksel kenar ve iki kademe
+dolgu eklenince çıkan sayıdır. Onu küçültmek, kabuğun tek dokunma hedefini
+44 pikselin altına indirmek demekti — ve o sınır `docs/117` K1'de ölçülmüş
+bir sınırdır, bir tercih değil.
+
+**Ders, sayıdan büyük:** bir eksik listesine yazılan sayı da ölçülmüş
+olmalıdır. Ölçülmemiş bir kusur, bir sonraki döngünün bütçesini gerçek
+olmayan bir işe harcatır.
 
 ## 2. Değişmeden korunan kararlar
 
@@ -235,3 +420,8 @@ Yönergenin şu maddeleri bugünkü kararlarla çelişmiyor ve aynen geçerli:
 dili) sahibin kararıyla kapanır ve o gün bu belge güncellenir. E5'in biçimi de
 ölçüme bağlıdır: GSAP ile istenen kalite alınamıyorsa React adacığı kararı
 yeniden tartışılır — ama ölçüm sonrası, tahminle değil.
+
+E5'in bu ölçümü 2026-09-08 gecesi YAPILDI ve sonucu E11'dedir: kütüphane
+kısıtı kalktı, ölçüm yine kütüphane seçmedi. E11–E14 bir "döngü 1" paketinin
+kararlarıdır; Döngü 2 onları eleştirecek ve gerekirse ezecek. Ezerse, kaydı
+yine buraya yazılır.

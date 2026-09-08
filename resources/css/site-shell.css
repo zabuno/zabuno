@@ -68,14 +68,30 @@
     font-size: inherit;
 }
 
-/* Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
-   dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
-   ekranın yarısını yiyordu). */
+/*
+    Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
+    dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
+    ekranın yarısını yiyordu).
+
+    ── GENİŞLİK: 64 rem'DEN 82 rem'E (`docs/145` §4) ──
+
+    Ölçüldü (2026-09-08, `scripts/mobile-ux-audit --width 1440`): 64 rem'lik
+    kolon 1440 piksellik bir ekranda sağda ve solda 208'er piksel BOŞ
+    bırakıyordu; 1920'de 448'er piksel. Sahibin ifadesi birebir buydu.
+
+    320 pikselde HİÇBİR ŞEY DEĞİŞMEZ: `min(100%, 82rem)` orada `100%`e
+    çözülür, yani tavan devreye bile girmez. Geniş ekran zenginleştirmedir,
+    taban değil.
+
+    Dolgu da artık akışkan (`--zc-gutter`) ve alt sınırı yine `--space-3` —
+    dar ekranda önceki değerle bire bir aynı, geniş ekranda 48 piksele
+    kadar açılıyor.
+*/
 .site-shell-inner {
     width: 100%;
-    max-width: 64rem;
+    max-width: var(--zc-measure-page);
     margin-inline: auto;
-    padding-inline: var(--space-3);
+    padding-inline: var(--zc-gutter);
 }
 
 /* --- Üst çubuk ---------------------------------------------------------- */
@@ -580,13 +596,27 @@
 
 .site-main {
     width: 100%;
-    max-width: 64rem;
+    max-width: var(--zc-measure-page);
     margin-inline: auto;
     /* Kabuğun içi ile aynı dolgu: iki farklı değer olsaydı üst çubuktaki
        marka ile sayfa başlığı aynı hizada durmazdı. */
-    padding-inline: var(--space-3);
-    padding-block: var(--space-fluid-lg);
+    padding-inline: var(--zc-gutter);
+    padding-block: var(--zc-rhythm-tight);
 }
+
+/*
+    GEÇİŞ KURALI KALDIRILDI (2026-09-08, `docs/146`).
+
+    Burada `main[class~='max-w-5xl']` için yazılmış bir köprü duruyordu ve
+    kendi metni onun ne zaman sileceğini söylüyordu: *"Gövde kabı
+    `.site-measure-page`e taşındığı gün bu blok SİLİNİR — bir geçiş
+    kuralının en kötü hâli, kalıcı olduğunun unutulmasıdır."*
+
+    O gün geldi. `home.blade.php` sahne motoruyla yeniden yazıldı ve artık
+    kabını `.site-measure-page` / `.site-measure-stage` ile kuruyor; depoda
+    `max-w-5xl` yazan başka bir görünüm yok. `docs/145` §7 aynı silmeyi
+    şart koşuyordu.
+*/
 
 .site-page-title {
     margin: 0;
@@ -770,6 +800,36 @@
     --motion-depth-far: 56px;
 
     /*
+        YATAY MESAFE — sahibin "sağlı sollu hareket eden landing page"i
+        (`docs/146` §9 madde 5).
+
+        Döngü 1'de yatay hareket YALNIZ iki akan şeritti: sayfanın kendisi
+        yerinde duruyordu. Bu üç jeton, kaydırma ilerledikçe katmanların
+        birbirinin TERSİNE yana süzülmesini ölçer. Dikey mesafelerden büyük
+        olmaları kasıtlı: yatay hareket dikey kaydırmayla YARIŞMAZ, onu
+        tamamlar — göz zaten aşağı gidiyorken yanal fark ancak belirgin
+        olduğunda okunur.
+
+        Dar ekranda küçülürler ve bu bir tercih değil bir zorunluluk: 320
+        pikselde 140 piksellik bir yanal öteleme, katmanı ekranın dışına
+        atardı. `clamp()` alt sınırı 320'de ölçüldü.
+    */
+    --motion-drift-near: clamp(10px, 2.2vw, 28px);
+    --motion-drift-mid: clamp(18px, 5vw, 72px);
+    --motion-drift-far: clamp(28px, 9vw, 150px);
+
+    /*
+        YÖN ÇARPANI. Yatay öteleme fiziksel bir eksendir; `translate3d`in
+        mantıksal karşılığı yoktur. Sağdan sola yazılan bir dilde kompozisyon
+        aynalanmalı, yoksa "dışarı açılan" katman "içeri kapanan" olur.
+    */
+    --scene-axis: 1;
+}
+
+[dir='rtl'] {
+    --scene-axis: -1;
+
+    /*
         KATMAN SIRASI — TEK yer.
 
         Kabukta bugün üç yığın var: menü bölmesi (20), çerez şeridi (30) ve
@@ -798,6 +858,15 @@
 .site-stage {
     position: relative;
     isolation: isolate;
+    /*
+        DOKUNMA KAMERASI KAYDIRMAYI ÇALMAZ (`docs/146` §9 madde 6).
+
+        Sahnenin üstünde başlayan bir sürükleme kamerayı çevirir
+        (`runtime.ts`), ama `pan-y` tarayıcıya dikey kaydırmanın HER ZAMAN
+        onun olduğunu söyler: betik `preventDefault()` çağırmaz, çağıramaz.
+        Bir sahne, sayfayı okumanın önüne geçemez.
+    */
+    touch-action: pan-y;
     /* `clip`, `hidden`den farklı olarak yeni bir kaydırma kabı YARATMAZ:
        sayfa içi çıpalar ve `position: sticky` çalışmaya devam eder. */
     overflow: clip;
@@ -871,9 +940,9 @@
 */
 .site-legal {
     width: 100%;
-    max-width: 44rem;
+    max-width: var(--zc-measure-prose);
     margin-inline: auto;
-    padding-inline: var(--space-3);
+    padding-inline: var(--zc-gutter);
     padding-block: var(--space-fluid-lg);
     display: flex;
     flex-direction: column;

@@ -437,6 +437,28 @@ const MEASURE = `(() => {
       dolguların toplamıdır. Sahibin şikâyeti birebir bu: "grid gap ve grid
       margin mobil cihazlarda fazla çalıyor ekrandan."
   */
+  /*
+      SÜS, İÇERİK DEĞİLDİR (2026-09-08 eklendi).
+
+      Ölçüm "içerik en solda nereden başlıyor, en sağda nerede bitiyor"
+      sorusunu soruyor. aria-hidden="true" bir alt ağaç bu sorunun cevabına
+      giremez: orada duran şey tanımı gereği OKUNMAYAN bir katmandır.
+
+      Somut arıza: kurumsal ana sayfanın akan bandı (docs/146 §4) iki özdeş
+      kopya taşır — döngünün dikişsiz olması için — ve ikincisi görüntü
+      alanının dışındadır. Bant overflow:clip ile kırpılıyor, yani ziyaretçi
+      hiçbir zaman yatay kaydırmıyor; ama getBoundingClientRect kırpılmayı
+      bilmez ve şeridin ikinci kopyası "içerik 320 piksel yerine 2764 piksel
+      kullanıyor" dedirtiyordu. Sonuç bir HATA değil, daha kötüsüydü: oran
+      eşiğin (%72) çok üstüne çıktığı için yoğunluk kuralı o sayfada
+      SESSİZCE devre dışı kalıyordu.
+
+      Kapsam DAR: yalnız bu ölçüm. Yatay taşma, kırpılma ve dokunma hedefi
+      kuralları aria-hidden bir öğeyi eskisi gibi görür — dekoratif bir
+      katman sayfayı yatay kaydırıyorsa bu yine bir kusurdur.
+  */
+  const isDecorative = (el) => el.closest('[aria-hidden="true"]') !== null;
+
   let minLeft = Infinity;
   let maxRight = -Infinity;
 
@@ -444,6 +466,7 @@ const MEASURE = `(() => {
     if (el.children.length > 0) continue;
     if ((el.textContent || '').trim() === '') continue;
     if (inHorizontalScroller(el)) continue;
+    if (isDecorative(el)) continue;
     if (inClosedDetails(el)) continue;
     const r = el.getBoundingClientRect();
     if (r.width <= 0 || r.height <= 0) continue;
