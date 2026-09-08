@@ -11,8 +11,9 @@
 
     ═══ DAR EKRAN TABAN (`docs/118` E1, E3) ═══
 
-    Bütün ölçüler 320 piksele göre yazıldı ve geniş ekranda AYNI kalıyor:
-    ikinci bir düzen yok, medya sorgusuyla gizlenen ikinci bir kopya yok.
+    Taban ölçüler 320 piksele göre yazıldı. Sahibin 2026-09-08 masaüstü
+    yönüyle 64rem üzerinde görünür birincil gezinti eklenir; dar ekranda
+    mevcut details menüsü kalır. İki görünüm aynı SiteNavigation verisini okur.
     Bileşim sahibin tarif ettiği gibi — BÜYÜK HEDEF, SIKI BOŞLUK: dokunma
     hedefi `--control-height` (44px) tabanının altına inmez, boşluk ise
     ölçeğin alt adımlarından beslenir.
@@ -37,8 +38,8 @@
 
     ═══ HAM DEĞER YOK (`docs/119` §18) ═══
 
-    Renk, boşluk, yarıçap ve süre jetonlardan gelir. Bu dosyada sabit bir
-    renk ya da uydurma bir boşluk yoktur.
+    Taban renk, boşluk, yarıçap ve süre jetonlardan gelir. Masaüstüne özel
+    ink/cream/coral paleti bu dosyanın 64rem bloğunda yerel jetonlarla tanımlıdır.
 */
 
 /*
@@ -1306,5 +1307,111 @@
         grid-template-columns: minmax(9rem, 1fr) 2fr;
         gap: var(--space-3);
         align-items: baseline;
+    }
+}
+
+/* Owner direction, 2026-09-08: a visible desktop shell above the fluid base.
+   Palette lives here for public desktop surfaces only; app themes are untouched. */
+.site-desktop-primary {
+    display: none;
+}
+
+@media (min-width: 64rem) {
+    .site-shell {
+        --site-desktop-ink: #111824;
+        --site-desktop-panel: #1a2432;
+        --site-desktop-cream: #f6f1e8;
+        --site-desktop-muted: #b9c0cb;
+        --site-desktop-coral: #ff937d;
+        --site-desktop-coral-ink: #942f23;
+    }
+
+    .site-shell .site-deep {
+        --zc-deep-accent: var(--site-desktop-coral);
+        --zc-accent: var(--site-desktop-coral);
+        --zc-deep: var(--site-desktop-ink);
+        --zc-deep-raised: var(--site-desktop-panel);
+    }
+
+    .site-header {
+        background: var(--site-desktop-ink);
+        color: var(--site-desktop-cream);
+        border-color: color-mix(in srgb, var(--site-desktop-cream) 16%, transparent);
+    }
+
+    .site-header-bar {
+        min-block-size: 5.5rem;
+        column-gap: clamp(1rem, 2vw, 2rem);
+    }
+
+    .site-header .site-brand {
+        color: var(--site-desktop-cream);
+        font-size: 1.625rem;
+        font-weight: 750;
+        letter-spacing: -0.06em;
+    }
+
+    .site-desktop-primary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(0.75rem, 1.4vw, 1.5rem);
+        margin-inline-start: auto;
+    }
+
+    .site-desktop-primary a {
+        display: inline-flex;
+        align-items: center;
+        min-block-size: var(--control-height);
+        color: var(--site-desktop-cream);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .site-desktop-primary a:hover {
+        color: var(--site-desktop-coral);
+    }
+
+    .site-header :is(a, summary):focus-visible {
+        outline: 2px solid var(--site-desktop-coral);
+        outline-offset: 4px;
+    }
+
+    .site-header .site-header-cta[data-emphasis='true'] {
+        background: var(--site-desktop-coral);
+        color: var(--site-desktop-ink);
+        border-color: transparent;
+        border-radius: 0.5rem;
+        padding-inline: 1rem;
+        box-shadow: none;
+    }
+
+    .site-header .site-menu-toggle {
+        background: transparent;
+        color: var(--site-desktop-cream);
+        border-color: color-mix(in srgb, var(--site-desktop-cream) 25%, transparent);
+        border-radius: 0.5rem;
+    }
+
+    .site-menu-panel .site-menu-primary {
+        display: none;
+    }
+
+    .site-menu-panel {
+        inset-inline-start: auto;
+        inline-size: min(26rem, 100%);
+        padding: 1.25rem;
+        box-shadow: var(--zc-lift-2);
+    }
+
+    .site-footer {
+        padding-block: 4rem 2rem;
+        border-block-start: 1px solid var(--zc-edge);
+    }
+
+    .site-footer .site-brand {
+        font-size: 2rem;
+        letter-spacing: -0.06em;
     }
 }

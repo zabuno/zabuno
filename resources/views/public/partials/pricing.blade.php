@@ -116,12 +116,13 @@
         </div>
 
         {{-- Izgara: 320 pikselde tek sütun, geniş ekranda sığdığı kadar.
-             Kırılma noktası YOK (`HOME-FLUID-04`). --}}
+             64rem üzerinde ortak satırlar fiyat karşılaştırmasını hizalar. --}}
         <ul class="site-pricing-grid">
             @foreach ($plans as $plan)
                 <li class="site-panel site-lit site-pricing-plan">
                     <span class="site-pricing-plan-name">{{ $plan['name'] }}</span>
 
+                    <div class="site-pricing-price-block">
                     @if (! empty($plan['free']))
                         {{-- `0,00 TRY` teknik olarak doğru ama insan onu
                              "ücretsiz" diye okumaz, bir hata sanır. --}}
@@ -145,6 +146,9 @@
                         </span>
                     @endif
 
+                    </div>
+
+                    <div class="site-pricing-audience-block">
                     @if ($pricingShowAudience && ! empty($plan['audience']))
                         {{--
                             KİME UYGUN — "Pro" bir şey anlatmaz (`docs/139`).
@@ -159,6 +163,9 @@
                         <p class="site-pricing-note">{{ $plan['audience'] }}</p>
                     @endif
 
+                    </div>
+
+                    <div class="site-pricing-features-block">
                     @if (! empty($plan['entitlements']))
                         <p class="site-eyebrow">{{ $st['adds'] }}</p>
                         <ul class="site-pricing-entitlements">
@@ -167,6 +174,7 @@
                             @endforeach
                         </ul>
                     @endif
+                    </div>
                 </li>
             @endforeach
         </ul>

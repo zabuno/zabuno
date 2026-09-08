@@ -519,19 +519,8 @@ final class SceneContractTest extends TestCase
     // --- HOME-SCENE-01 : dar ekran TABAN, YAZIM SIRASI da -----------------
 
     /**
-     * Sahibin cümlesi (2026-09-08): *"Sadece media query değil, gerçek
-     * mobile first."*
-     *
-     * Ölçülebilir karşılığı budur: geniş ekran için yazılıp dar ekranda geri
-     * alınan bir kural YOKTUR. `max-width` bir medya sorgusu, `max-*:` bir
-     * Tailwind varyantı olarak tam bunu yapar — geniş ekranın kuralını taban
-     * sayıp dar ekranda bastırır. Çıktı benzese bile borç oradan birikir:
-     * ikinci düzen yine indirilir, yine odaklanılabilir, yine bakım ister.
-     *
-     * ÖLÇÜLEN DOSYA DEĞİŞTİ, KURAL DEĞİŞMEDİ. Kapı `site-motion.css`i
-     * arıyordu; o dosya bu dalda silindi ve işini üç dosya devraldı. Üçü de
-     * kendi başlık yorumunda "tek bir `@media (min-width: …)` yok" diye
-     * yazıyor; bu kapı o cümleyi bir ölçüye çeviriyor.
+     * 2026-09-08 owner direction: a fluid 320 base with an additive 64rem
+     * desktop composition. Wide-first rules undone with max-width remain forbidden.
      */
     public function test_no_corporate_rule_is_written_for_a_wide_screen_and_undone_on_a_narrow_one(): void
     {
@@ -558,12 +547,12 @@ final class SceneContractTest extends TestCase
                 .'ekran onun ÜSTÜNE eklenir.'
             );
 
-            self::assertDoesNotMatchRegularExpression(
-                '/@media[^{]*\bmin-width\b/i',
-                $css,
-                "HOME-SCENE-01: [{$relative}] genişlik kırılma noktası taşıyor — düzen "
-                .'`clamp()`, `min()` ve `repeat(auto-fit, minmax(…))` ile akışkan yazılır.'
-            );
+            // Owner direction, 2026-09-08: keep the fluid 320 base and allow
+            // one additive desktop composition at 64rem. No narrow-screen undo.
+            preg_match_all('/@media[^{}]*\bmin-width\s*:\s*([^)]*)/i', $css, $widths);
+            foreach ($widths[1] as $width) {
+                self::assertSame('64rem', trim($width), "HOME-SCENE-01: unexpected desktop boundary in {$relative}");
+            }
         }
     }
 

@@ -36,6 +36,27 @@ final class PublicMasterpageContractTest extends TestCase
         return $m[0] ?? '';
     }
 
+    public function test_desktop_primary_navigation_is_available_without_opening_the_menu(): void
+    {
+        $html = $this->extract($this->html('/pricing'), 'header');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $links = $xpath->query('//nav[@data-desktop-primary]//a');
+        self::assertSame(5, $links->length);
+        $hrefs = [];
+        foreach ($links as $link) {
+            self::assertSame(0, $xpath->query('ancestor::details', $link)->length);
+            $hrefs[] = $link->getAttribute('href');
+        }
+        self::assertContains('/pricing', $hrefs);
+        self::assertContains('/help', $hrefs);
+        self::assertContains('/contact', $hrefs);
+        self::assertStringContainsString('data-dismiss-on-outside', $html);
+        self::assertStringContainsString('href="/login"', $html);
+        self::assertSame(1, substr_count($html, 'href="/register"'));
+    }
+
     // --- MP-01 / MP-02 ---------------------------------------------------------
 
     #[DataProvider('publicPaths')]

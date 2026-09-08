@@ -394,3 +394,125 @@
     font-size: var(--zc-lede);
     font-weight: var(--zc-weight-strong);
 }
+
+/* Desktop composition is additive: the approved 320 layout remains the base. */
+@media (min-width: 64rem) {
+    .site-home {
+        gap: clamp(4rem, 7vw, 7rem);
+    }
+
+    .home-hero {
+        min-block-size: 42rem;
+        background: var(--site-desktop-ink);
+    }
+
+    .home-hero-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+        gap: clamp(2rem, 4vw, 5rem);
+        padding-block: 5rem;
+        align-items: center;
+    }
+
+    .home-hero .site-display {
+        font-size: clamp(3.5rem, 5.3vw, 5.75rem);
+        line-height: 1.02;
+        letter-spacing: -0.065em;
+        max-inline-size: 11ch;
+        color: var(--site-desktop-cream);
+        text-wrap: balance;
+    }
+
+    .home-hero .site-lede {
+        max-inline-size: 38ch;
+        font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+        line-height: 1.6;
+        color: var(--site-desktop-muted);
+    }
+
+    .home-hero-copy {
+        gap: 2rem;
+    }
+
+    .home-actions .site-cta {
+        border-radius: 0.5rem;
+        min-block-size: 3.25rem;
+        padding-inline: 1.5rem;
+        background: transparent;
+        color: var(--site-desktop-cream);
+        border: 1px solid color-mix(in srgb, var(--site-desktop-cream) 30%, transparent);
+        box-shadow: none;
+    }
+
+    .home-actions .site-cta[data-emphasis='true'] {
+        background: var(--site-desktop-coral);
+        color: var(--site-desktop-ink);
+        border-color: var(--site-desktop-coral);
+    }
+
+    .home-product-map {
+        --zc-glass: var(--site-desktop-panel);
+        --zc-glass-blurred: var(--site-desktop-panel);
+        background: var(--site-desktop-panel);
+        border: 1px solid color-mix(in srgb, var(--site-desktop-cream) 18%, transparent);
+        border-block-start: 3px solid var(--site-desktop-coral);
+        border-radius: 1rem;
+        box-shadow: none;
+        backdrop-filter: none;
+        padding: clamp(1.5rem, 2.75vw, 3rem);
+        color: var(--site-desktop-cream);
+    }
+
+    .home-product-map-heading {
+        font-size: clamp(1.5rem, 2.3vw, 2.125rem);
+        line-height: 1.2;
+        letter-spacing: -0.035em;
+        max-inline-size: 20ch;
+    }
+
+    .home-product-map-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.75rem 1.25rem;
+        margin-block: 2.5rem;
+    }
+
+    .home-product-map-flow li {
+        border-color: color-mix(in srgb, var(--site-desktop-cream) 20%, transparent);
+        line-height: 1.45;
+    }
+
+    .home-product-map-index {
+        color: var(--site-desktop-coral);
+    }
+
+    .home-product-map-link {
+        color: var(--site-desktop-cream);
+    }
+
+    .home-hero-note {
+        color: var(--site-desktop-muted);
+        max-inline-size: 42ch;
+    }
+
+    .home-hero .scene-canvas {
+        opacity: 0.35;
+    }
+
+    .home-hero :is(.scene-nebula, .scene-orbit, .scene-horizon) {
+        opacity: 0.3;
+    }
+
+    .site-home .home-head {
+        max-inline-size: 48rem;
+    }
+
+    .site-home .home-card {
+        border-radius: 1rem;
+        box-shadow: none;
+        padding: 2rem;
+    }
+
+    .site-home .home-grid {
+        gap: 1.5rem;
+    }
+}
