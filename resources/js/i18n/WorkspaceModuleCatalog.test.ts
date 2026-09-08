@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1705;
+const FROZEN_LEGACY_KEY_COUNT = 1708;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -247,8 +247,18 @@ const FROZEN_LEGACY_KEY_COUNT = 1705;
 // ekranda yazılı.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-225: Medya > Ayarlar'daki güvenlik önlemleri ANAHTAR olmaktan çıktı
+// (sahibin kararı, 2026-09-08: "switch butonlar saçma, UI hatası"). Anahtar
+// hem "değiştirebilirsin" diyordu hem de altında "kapatılamaz" yazıyordu;
+// kullanıcı dokunuyor, hiçbir şey olmuyordu. Anahtarın tek bakışta
+// cevapladığı soru ("açık mı?") kaybolmasın diye hâl artık KELİMEDİR ve üç
+// anahtar bunun için doğdu: "On", "Partly on", "Not running here". Dördüncü
+// bir "Off" anahtarı YOK — bu dört önlemin kapalı diye bir hâli yok; olmayan
+// bir durumu adlandırmak, bir gün onu mümkün sanmaya yol açardı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'c8ce2a3ec0eba1d1150b9d4b4e7467e4d164bb4a1c4ebd546f1708d2cbdcfe37';
+    '24db22f5da187496f576245ddfbd7fbf0903db144e73b391f7b4ca7ae97d0b77';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
