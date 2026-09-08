@@ -10,79 +10,79 @@ msgstr ""
 
 #: site:site.about.heading
 msgid "site.about.heading"
-msgstr ""
+msgstr "Hakkımızda"
 
 #: site:site.about.incomplete.body
 msgid "site.about.incomplete.body"
-msgstr ""
+msgstr "Satıcının yasal kimliği henüz yayımlanmadığı için aşağıdaki bilgiler eksik. Bu bilgiler girilene kadar bize ulaşmak için iletişim formunu kullanın."
 
 #: site:site.about.incomplete.heading
 msgid "site.about.incomplete.heading"
-msgstr ""
+msgstr "Bu sayfa henüz tamamlanmadı."
 
 #: site:site.about.lead
 msgid "site.about.lead"
-msgstr ""
+msgstr "Zabuno’yu kim satıyor, Zabuno nedir, ödemesi nasıl yapılır ve bir yetkiliye nasıl ulaşılır?"
 
 #: site:site.about.payment.body
 msgid "site.about.payment.body"
-msgstr ""
+msgstr "Ücretli planların ödemesi, ödeme hizmeti sağlayıcısı Iyzico üzerinden kartla yapılır. Abonelik için havale, nakit veya kapıda ödeme kabul etmiyoruz. Kart numaranızı hiçbir zaman görmüyor veya saklamıyoruz: numara, sağlayıcının kendi sayfalarına girilir. Sağlayıcının kabul ettiği kart markaları kendi yapılandırmasında belirlendiği için burada listelenmiyor."
 
 #: site:site.about.payment.heading
 msgid "site.about.payment.heading"
-msgstr ""
+msgstr "Kabul ettiğimiz ödeme yöntemleri"
 
 #: site:site.about.reach.body
 msgid "site.about.reach.body"
-msgstr ""
+msgstr "İletişim formundan veya yukarıdaki e-posta adresinden bize yazın. Her mesajı saklar ve verdiğiniz adrese yanıt veririz."
 
 #: site:site.about.reach.cta
 msgid "site.about.reach.cta"
-msgstr ""
+msgstr "İletişim formunu aç"
 
 #: site:site.about.reach.heading
 msgid "site.about.reach.heading"
-msgstr ""
+msgstr "Bize nasıl ulaşabilirsiniz?"
 
 #: site:site.about.seller.body
 msgid "site.about.seller.body"
-msgstr ""
+msgstr "Ücretli planları satan ve Mesafeli Satış Sözleşmesi’nde satıcı olarak belirtilen tüzel kişinin bilgileri bunlardır."
 
 #: site:site.about.seller.heading
 msgid "site.about.seller.heading"
-msgstr ""
+msgstr "Satıcı"
 
 #: site:site.about.service.body
 msgid "site.about.service.body"
-msgstr ""
+msgstr "Zabuno; restoran, kafe veya barın menüsünü tuttuğu ve kalıcı bir QR kodunun arkasında yayımladığı çalışma alanına aboneliktir. Bir fiyatı değiştirmek veya bir yemeği gizlemek, misafirlerin gördüğü sayfayı günceller; basılı kod aynı kalır."
 
 #: site:site.about.service.heading
 msgid "site.about.service.heading"
-msgstr ""
+msgstr "Zabuno nedir?"
 
 #: site:site.about.service.scope
 msgid "site.about.service.scope"
-msgstr ""
+msgstr "Plana bağlı olarak çalışma alanı; şubeleri, masaları ve QR kodlarını, misafir siparişlerini ve puanlarını, kendi yetkileri olan ekip üyelerini, markaya özel görünümü, raporlamayı ve sonucu bir kişinin onayladığı fotoğraftan menü aktarımını da kapsar. Hizmet web tarayıcısından kullanılır; kurulum gerekmez."
 
 #: site:site.assurance.evidence
 msgid "site.assurance.evidence"
-msgstr ""
+msgstr "Ölçüm kaynağı"
 
 #: site:site.assurance.state.knownGap
 msgid "site.assurance.state.knownGap"
-msgstr ""
+msgstr "Bilinen eksik"
 
 #: site:site.assurance.state.measured
 msgid "site.assurance.state.measured"
-msgstr ""
+msgstr "Ölçüldü"
 
 #: site:site.assurance.state.notHeld
 msgid "site.assurance.state.notHeld"
-msgstr ""
+msgstr "Buna sahip değiliz"
 
 #: site:site.assurance.state.notMeasured
 msgid "site.assurance.state.notMeasured"
-msgstr ""
+msgstr "Ölçülmedi"
 
 #: site:site.brand
 msgid "site.brand"
@@ -90,55 +90,55 @@ msgstr "Zabuno"
 
 #: site:site.company.address
 msgid "site.company.address"
-msgstr ""
+msgstr "Kayıtlı adres"
 
 #: site:site.company.email
 msgid "site.company.email"
-msgstr ""
+msgstr "E-posta"
 
 #: site:site.company.legalName
 msgid "site.company.legalName"
-msgstr ""
+msgstr "Ticaret unvanı"
 
 #: site:site.company.mersis
 msgid "site.company.mersis"
-msgstr ""
+msgstr "MERSİS numarası"
 
 #: site:site.company.phone
 msgid "site.company.phone"
-msgstr ""
+msgstr "Telefon"
 
 #: site:site.company.taxNumber
 msgid "site.company.taxNumber"
-msgstr ""
+msgstr "Vergi numarası"
 
 #: site:site.company.taxOffice
 msgid "site.company.taxOffice"
-msgstr ""
+msgstr "Vergi dairesi"
 
 #: site:site.company.value.missing
 msgid "site.company.value.missing"
-msgstr ""
+msgstr "Henüz girilmedi"
 
 #: site:site.consent.accept
 msgid "site.consent.accept"
-msgstr ""
+msgstr "Ölçüme izin ver"
 
 #: site:site.consent.body
 msgid "site.consent.body"
-msgstr ""
+msgstr "Ölçüm araçlarını yalnızca izin verirseniz yükleriz. Siz karar verene kadar hiçbir araç yüklenmez."
 
 #: site:site.consent.decline
 msgid "site.consent.decline"
-msgstr ""
+msgstr "Reddet"
 
 #: site:site.consent.label
 msgid "site.consent.label"
-msgstr ""
+msgstr "Çerez tercihi"
 
 #: site:site.consent.link
 msgid "site.consent.link"
-msgstr ""
+msgstr "Çerez Politikası"
 
 #: site:site.contact.email
 msgid "site.contact.email"
@@ -146,7 +146,7 @@ msgstr "E-posta adresiniz"
 
 #: site:site.contact.form.heading
 msgid "site.contact.form.heading"
-msgstr ""
+msgstr "Bize mesaj gönderin"
 
 #: site:site.contact.heading
 msgid "site.contact.heading"
@@ -158,7 +158,7 @@ msgstr "Burayı boş bırakın"
 
 #: site:site.contact.identity.heading
 msgid "site.contact.identity.heading"
-msgstr ""
+msgstr "Kime yazıyorsunuz?"
 
 #: site:site.contact.lead
 msgid "site.contact.lead"
@@ -178,7 +178,7 @@ msgstr "Teşekkürler — mesajınızı aldık, verdiğiniz adrese döneceğiz."
 
 #: site:site.contact.sentReference
 msgid "site.contact.sentReference"
-msgstr ""
+msgstr "Referans numaranız: {reference}. Bize tekrar yazarsanız bu numarayı belirtin."
 
 #: site:site.contact.submit
 msgid "site.contact.submit"
@@ -186,43 +186,43 @@ msgstr "Mesajı gönder"
 
 #: site:site.dataRights.erasure.body
 msgid "site.dataRights.erasure.body"
-msgstr ""
+msgstr "Sahip yetkisi olan biri, çalışma alanınızın verilerinin silinmesini istedi. Henüz hiçbir şey silinmedi; çalışma alanı aşağıdaki tarihe kadar çalışmaya devam edecek."
 
 #: site:site.dataRights.erasure.detail
 msgid "site.dataRights.erasure.detail"
-msgstr ""
+msgstr "Silme işlemi {date} tarihinde yapılacak."
 
 #: site:site.dataRights.erasure.note
 msgid "site.dataRights.erasure.note"
-msgstr ""
+msgstr "Bunu istemediyseniz çalışma alanınızda Ayarlar’ı açıp talebi geri çekin. Yasal olarak saklamamız gereken kayıtlar — düzenlenmiş faturalar, bunların muhasebe kayıtları, ilgili ödemeler ve verilen onayların kayıtları — bu işlemle silinmez; o ekranda her biri listelenir."
 
 #: site:site.dataRights.erasure.subject
 msgid "site.dataRights.erasure.subject"
-msgstr ""
+msgstr "Zabuno — çalışma alanınız için silme talebi alındı"
 
 #: site:site.dataRights.export.action
 msgid "site.dataRights.export.action"
-msgstr ""
+msgstr "Buradan indirin:"
 
 #: site:site.dataRights.export.body
 msgid "site.dataRights.export.body"
-msgstr ""
+msgstr "İstediğiniz arşiv hazır. Çalışma alanınızdaki tüm bilgileri hem makine tarafından okunabilir biçimde hem de bir kişinin açabileceği elektronik tablo dosyaları olarak içerir."
 
 #: site:site.dataRights.export.detail
 msgid "site.dataRights.export.detail"
-msgstr ""
+msgstr "Aşağıdaki bağlantı {date} tarihinde geçerliliğini yitirecek."
 
 #: site:site.dataRights.export.note
 msgid "site.dataRights.export.note"
-msgstr ""
+msgstr "Bağlantının süresi dolduysa çalışma alanınızda Ayarlar’ı açıp yeni bir arşiv hazırlayın."
 
 #: site:site.dataRights.export.subject
 msgid "site.dataRights.export.subject"
-msgstr ""
+msgstr "Zabuno — veri arşiviniz hazır"
 
 #: site:site.dataRights.greeting
 msgid "site.dataRights.greeting"
-msgstr ""
+msgstr "Merhaba,"
 
 #: site:site.engineering.title
 msgid "site.engineering.title"
@@ -230,35 +230,35 @@ msgstr "Zabuno — Mühendislik"
 
 #: site:site.footer.acceptableUse
 msgid "site.footer.acceptableUse"
-msgstr ""
+msgstr "Kabul Edilebilir Kullanım Politikası"
 
 #: site:site.footer.backToTop
 msgid "site.footer.backToTop"
-msgstr ""
+msgstr "Başa dön"
 
 #: site:site.footer.company
 msgid "site.footer.company"
-msgstr ""
+msgstr "Şirket"
 
 #: site:site.footer.contentMenus
 msgid "site.footer.contentMenus"
-msgstr ""
+msgstr "Tüm sayfalara göz at"
 
 #: site:site.footer.cookies
 msgid "site.footer.cookies"
-msgstr ""
+msgstr "Çerez Politikası"
 
 #: site:site.footer.dataProcessing
 msgid "site.footer.dataProcessing"
-msgstr ""
+msgstr "Veri İşleme Sözleşmesi"
 
 #: site:site.footer.delivery
 msgid "site.footer.delivery"
-msgstr ""
+msgstr "Teslimat ve İfa Koşulları"
 
 #: site:site.footer.distanceSales
 msgid "site.footer.distanceSales"
-msgstr ""
+msgstr "Mesafeli Satış Sözleşmesi"
 
 #: site:site.footer.kvkk
 msgid "site.footer.kvkk"
@@ -270,11 +270,11 @@ msgstr "Yasal"
 
 #: site:site.footer.marketingConsent
 msgid "site.footer.marketingConsent"
-msgstr ""
+msgstr "Ticari Elektronik İleti Onayı"
 
 #: site:site.footer.preInformation
 msgid "site.footer.preInformation"
-msgstr ""
+msgstr "Ön Bilgilendirme Formu"
 
 #: site:site.footer.privacy
 msgid "site.footer.privacy"
@@ -286,11 +286,11 @@ msgstr "Ürün"
 
 #: site:site.footer.refundPolicy
 msgid "site.footer.refundPolicy"
-msgstr ""
+msgstr "İptal ve İade Politikası"
 
 #: site:site.footer.sla
 msgid "site.footer.sla"
-msgstr ""
+msgstr "Hizmet Seviyesi Koşulları"
 
 #: site:site.footer.tagline
 msgid "site.footer.tagline"
@@ -302,67 +302,67 @@ msgstr "Kullanım koşulları"
 
 #: site:site.footer.thirdPartyLicenses
 msgid "site.footer.thirdPartyLicenses"
-msgstr ""
+msgstr "Üçüncü Taraf Lisansları"
 
 #: site:site.home.chain.heading
 msgid "site.home.chain.heading"
-msgstr ""
+msgstr "Boş bir hesaptan masadaki koda"
 
 #: site:site.home.chain.label
 msgid "site.home.chain.label"
-msgstr ""
+msgstr "Altı adım yan yana"
 
 #: site:site.home.chain.lead
 msgid "site.home.chain.lead"
-msgstr ""
+msgstr "Bu sırayla altı adım. Hiçbir ödeme yapmadan hepsini kullanabilirsiniz."
 
 #: site:site.home.chain.step1.body
 msgid "site.home.chain.step1.body"
-msgstr ""
+msgstr "Bir e-posta adresi; ardından işletmenizin adı, dili, para birimi ve saat dilimi."
 
 #: site:site.home.chain.step1.title
 msgid "site.home.chain.step1.title"
-msgstr ""
+msgstr "Hesap ve işletme oluşturun"
 
 #: site:site.home.chain.step2.body
 msgid "site.home.chain.step2.body"
-msgstr ""
+msgstr "Her şubenin bir adresi ve kendi saat dilimi vardır. Tek restoran, tek şubeli bir işletmedir."
 
 #: site:site.home.chain.step2.title
 msgid "site.home.chain.step2.title"
-msgstr ""
+msgstr "Şube ekleyin"
 
 #: site:site.home.chain.step3.body
 msgid "site.home.chain.step3.body"
-msgstr ""
+msgstr "Kategoriler, yemekler, fiyatlar, fotoğraflar ve belirtilen alerjenler; misafirlerin göremeyeceği bir taslakta."
 
 #: site:site.home.chain.step3.title
 msgid "site.home.chain.step3.title"
-msgstr ""
+msgstr "Menüyü yazın"
 
 #: site:site.home.chain.step4.body
 msgid "site.home.chain.step4.body"
-msgstr ""
+msgstr "Yayımladığınızda numaralı bir anlık görüntü sabitlenir. Önceki bir sürüm geri yüklenebilir."
 
 #: site:site.home.chain.step4.title
 msgid "site.home.chain.step4.title"
-msgstr ""
+msgstr "Bir sürüm yayımlayın"
 
 #: site:site.home.chain.step5.body
 msgid "site.home.chain.step5.body"
-msgstr ""
+msgstr "Kart, afiş veya kesilecek bir sayfa olarak dışa aktarın; daha sonra yeniden yazdırmadan yönlendirdiği yeri değiştirin."
 
 #: site:site.home.chain.step5.title
 msgid "site.home.chain.step5.title"
-msgstr ""
+msgstr "Her masa için bir kod yazdırın"
 
 #: site:site.home.chain.step6.body
 msgid "site.home.chain.step6.body"
-msgstr ""
+msgstr "Kod, menüyü telefondaki tarayıcıda açar. Uygulama ve hesap gerekmez."
 
 #: site:site.home.chain.step6.title
 msgid "site.home.chain.step6.title"
-msgstr ""
+msgstr "Misafirler kodu okutur"
 
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
@@ -394,19 +394,19 @@ msgstr "Sık sorulanlar"
 
 #: site:site.home.faq.install.answer
 msgid "site.home.faq.install.answer"
-msgstr ""
+msgstr "Hayır. Kod, telefondaki tarayıcıda bir web sayfası açar."
 
 #: site:site.home.faq.install.question
 msgid "site.home.faq.install.question"
-msgstr ""
+msgstr "Misafirlerin bir şey yüklemesi gerekiyor mu?"
 
 #: site:site.home.faq.pos.answer
 msgid "site.home.faq.pos.answer"
-msgstr ""
+msgstr "Hayır. Menüyü gösterir ve siparişi mutfağa iletebilir. Ödeme almaz ve hasılatınızı bilmez."
 
 #: site:site.home.faq.pos.question
 msgid "site.home.faq.pos.question"
-msgstr ""
+msgstr "Zabuno bir satış noktası sistemi mi?"
 
 #: site:site.home.faq.what.answer
 msgid "site.home.faq.what.answer"
@@ -430,7 +430,7 @@ msgstr "Zabuno ekibinize ortak bir çalışma alanı verir: restoranın menüsü
 
 #: site:site.home.hero.note
 msgid "site.home.hero.note"
-msgstr ""
+msgstr "Menü oluşturmak, yayımlamak ve kod yazdırmak için plan gerekmez."
 
 #: site:site.home.hero.openApp
 msgid "site.home.hero.openApp"
@@ -438,71 +438,71 @@ msgstr "Çalışma alanını aç"
 
 #: site:site.home.hero.register
 msgid "site.home.hero.register"
-msgstr ""
+msgstr "Hesap oluştur"
 
 #: site:site.home.limits.dishNames.body
 msgid "site.home.limits.dishNames.body"
-msgstr ""
+msgstr "Menünün arayüzü iki dilde kullanılabilir; yemekler sizin dilinizde yazılır ve çevrilmez."
 
 #: site:site.home.limits.dishNames.title
 msgid "site.home.limits.dishNames.title"
-msgstr ""
+msgstr "Yemek adları bir kez yazılır"
 
 #: site:site.home.limits.heading
 msgid "site.home.limits.heading"
-msgstr ""
+msgstr "Zabuno ne değildir?"
 
 #: site:site.home.limits.integrations.body
 msgid "site.home.limits.integrations.body"
-msgstr ""
+msgstr "Yazarkasa, muhasebe yazılımı veya yemek platformuyla bağlantı yoktur. Menünüz elektronik tablo olarak dışa aktarılır ve geri alınır."
 
 #: site:site.home.limits.integrations.title
 msgid "site.home.limits.integrations.title"
-msgstr ""
+msgstr "Üçüncü taraf entegrasyonu yok"
 
 #: site:site.home.limits.lead
 msgid "site.home.limits.lead"
-msgstr ""
+msgstr "Ürün bileşenleri listesinden daha kısa; çoğu yazılımın ana sayfasına koymadığı bölüm."
 
 #: site:site.home.limits.oneBrand.body
 msgid "site.home.limits.oneBrand.body"
-msgstr ""
+msgstr "Bir hesap, birden fazla işletmeyi değil, çok şubeli tek bir işletmeyi barındırır."
 
 #: site:site.home.limits.oneBrand.title
 msgid "site.home.limits.oneBrand.title"
-msgstr ""
+msgstr "Her hesapta tek marka"
 
 #: site:site.home.limits.reservations.body
 msgid "site.home.limits.reservations.body"
-msgstr ""
+msgstr "Masa rezervasyonu, kurye entegrasyonu veya puan kartı yoktur."
 
 #: site:site.home.limits.reservations.title
 msgid "site.home.limits.reservations.title"
-msgstr ""
+msgstr "Rezervasyon, teslimat veya sadakat programı yok"
 
 #: site:site.home.limits.sectors.body
 msgid "site.home.limits.sectors.body"
-msgstr ""
+msgstr "Kafe, fırın veya otel için ayrı sürümler yoktur. Tek işletme türü: yiyecek ve içecek sunan yerler."
 
 #: site:site.home.limits.sectors.title
 msgid "site.home.limits.sectors.title"
-msgstr ""
+msgstr "Sektöre özel sürüm yok"
 
 #: site:site.home.limits.store.body
 msgid "site.home.limits.store.body"
-msgstr ""
+msgstr "Sizin veya misafirleriniz için iPhone ya da Android uygulaması yoktur; her iki taraf da web sayfası kullanır."
 
 #: site:site.home.limits.store.title
 msgid "site.home.limits.store.title"
-msgstr ""
+msgstr "Mağazada uygulama yok"
 
 #: site:site.home.limits.till.body
 msgid "site.home.limits.till.body"
-msgstr ""
+msgstr "Misafirler Zabuno üzerinden ödeme yapmaz; burada adisyon yazdırılmaz ve hasılat raporlanmaz."
 
 #: site:site.home.limits.till.title
 msgid "site.home.limits.till.title"
-msgstr ""
+msgstr "Yazarkasa veya ödeme sistemi değil"
 
 #: site:site.home.meta.description
 msgid "site.home.meta.description"
@@ -514,451 +514,451 @@ msgstr "Restoran menüsü ve çalışma alanı"
 
 #: site:site.home.parts.ai.body
 msgid "site.home.parts.ai.body"
-msgstr ""
+msgstr "Basılı menü fotoğrafı onaylayacağınız bir taslağa dönüştürülür ve iki kez yazılan yemekler bulunur."
 
 #: site:site.home.parts.ai.title
 msgid "site.home.parts.ai.title"
-msgstr ""
+msgstr "Zabuno AI"
 
 #: site:site.home.parts.analytics.body
 msgid "site.home.parts.analytics.body"
-msgstr ""
+msgstr "Kod okutma, menü açma, yemek görüntüleme, sonuçsuz arama ve gönderilen siparişler sunucu tarafından sayılır."
 
 #: site:site.home.parts.analytics.title
 msgid "site.home.parts.analytics.title"
-msgstr ""
+msgstr "Analizler"
 
 #: site:site.home.parts.branches.body
 msgid "site.home.parts.branches.body"
-msgstr ""
+msgstr "Tek işletme altında istediğiniz kadar şube; her birinin kendi menüleri, fiyatları, kodları ve çalışma saatleri vardır."
 
 #: site:site.home.parts.branches.title
 msgid "site.home.parts.branches.title"
-msgstr ""
+msgstr "Birden fazla şube"
 
 #: site:site.home.parts.branding.body
 msgid "site.home.parts.branding.body"
-msgstr ""
+msgstr "Her yayında sabitlenen bir logo ve iki renk; böylece misafir menüyü okurken görünümü değişmez."
 
 #: site:site.home.parts.branding.title
 msgid "site.home.parts.branding.title"
-msgstr ""
+msgstr "Tasarım ve marka görünümü"
 
 #: site:site.home.parts.heading
 msgid "site.home.parts.heading"
-msgstr ""
+msgstr "Üründe neler var?"
 
 #: site:site.home.parts.languages.body
 msgid "site.home.parts.languages.body"
-msgstr ""
+msgstr "Misafir sayfası misafirin diline uyar, yemek adları sizin dilinizde kalır, fiyatlar para biriminize göre gösterilir."
 
 #: site:site.home.parts.languages.title
 msgid "site.home.parts.languages.title"
-msgstr ""
+msgstr "Diller ve para birimi"
 
 #: site:site.home.parts.lead
 msgid "site.home.parts.lead"
-msgstr ""
+msgstr "Tek hesabın on iki bileşeni. Her birinin ayrıntıları kendi sayfasında açıklanır."
 
 #: site:site.home.parts.media.body
 msgid "site.home.parts.media.body"
-msgstr ""
+msgstr "Fotoğraflar taranır, bir kez boyutlandırılır ve küçük dosyalar olarak sunulur; kopyalarının yeniden üretilebilmesi için orijinali saklanır."
 
 #: site:site.home.parts.media.title
 msgid "site.home.parts.media.title"
-msgstr ""
+msgstr "Görseller ve medya"
 
 #: site:site.home.parts.menuManagement.body
 msgid "site.home.parts.menuManagement.body"
-msgstr ""
+msgstr "Kategoriler, yemekler, fiyatlar ve stok bilgisi; taslakta düzenlenir, numaralı sürümler olarak yayımlanır."
 
 #: site:site.home.parts.menuManagement.title
 msgid "site.home.parts.menuManagement.title"
-msgstr ""
+msgstr "Menü yönetimi"
 
 #: site:site.home.parts.ordering.body
 msgid "site.home.parts.ordering.body"
-msgstr ""
+msgstr "Etkinleştirdiğiniz yerde misafirler sepet oluşturup mutfak ekranına gönderir."
 
 #: site:site.home.parts.ordering.title
 msgid "site.home.parts.ordering.title"
-msgstr ""
+msgstr "Masadan sipariş"
 
 #: site:site.home.parts.qrMenu.body
 msgid "site.home.parts.qrMenu.body"
-msgstr ""
+msgstr "Kart üzerine sığan kalıcı bir adreste fotoğraf, açıklama, fiyat, alerjenler ve tükendi bilgisi."
 
 #: site:site.home.parts.qrMenu.title
 msgid "site.home.parts.qrMenu.title"
-msgstr ""
+msgstr "QR menü"
 
 #: site:site.home.parts.ratings.body
 msgid "site.home.parts.ratings.body"
-msgstr ""
+msgstr "Kod okutan misafir yemeğe puan verebilir; siz de yanıt verebilirsiniz."
 
 #: site:site.home.parts.ratings.title
 msgid "site.home.parts.ratings.title"
-msgstr ""
+msgstr "Masadan puanlama"
 
 #: site:site.home.parts.tables.body
 msgid "site.home.parts.tables.body"
-msgstr ""
+msgstr "Her masa için bir kod; dosyaya dönüşmeden önce çözücüyle geri okunur ve vektör kart olarak yazdırılır."
 
 #: site:site.home.parts.tables.title
 msgid "site.home.parts.tables.title"
-msgstr ""
+msgstr "Masalar ve QR kodları"
 
 #: site:site.home.parts.team.body
 msgid "site.home.parts.team.body"
-msgstr ""
+msgstr "Düzenleyiciler, yöneticiler ve yalnızca alerjenleri ve tükenen yemekleri işaretleyip başka hiçbir şey görmeyen mutfak rolü."
 
 #: site:site.home.parts.team.title
 msgid "site.home.parts.team.title"
-msgstr ""
+msgstr "Rolleri olan bir ekip"
 
 #: site:site.investors.built.cta
 msgid "site.investors.built.cta"
-msgstr ""
+msgstr "Ürün envanterinin tamamını okuyun"
 
 #: site:site.investors.built.heading
 msgid "site.investors.built.heading"
-msgstr ""
+msgstr "Neler geliştirildi?"
 
 #: site:site.investors.built.lead
 msgid "site.investors.built.lead"
-msgstr ""
+msgstr "Ürünün {parts} bileşeni var. Her biri bu sayfa için yazılmak yerine ürünün kendi envanterinden okunur. Bir bileşenin adı değişirse veya kaldırılırsa bu liste de onunla birlikte değişir."
 
 #: site:site.investors.chain.heading
 msgid "site.investors.chain.heading"
-msgstr ""
+msgstr "Ürünün yaptığı işler, sırayla"
 
 #: site:site.investors.chain.label
 msgid "site.investors.chain.label"
-msgstr ""
+msgstr "Ürün yolculuğu, adım adım"
 
 #: site:site.investors.chain.lead
 msgid "site.investors.chain.lead"
-msgstr ""
+msgstr "Temel yolculuk herkes için aynı ve ücretsizdir: hesap, işletme, şube, menü, yayımlanmış sürüm, basılı kod. Planlar bu zincire ek yetenekler kazandırır; zinciri hiçbir zaman kapatmaz."
 
 #: site:site.investors.commitment.cta
 msgid "site.investors.commitment.cta"
-msgstr ""
+msgstr "Hizmet seviyesi koşullarını okuyun"
 
 #: site:site.investors.commitment.heading
 msgid "site.investors.commitment.heading"
-msgstr ""
+msgstr "Neler taahhüt edildi, neler edilmedi?"
 
 #: site:site.investors.commitment.missingLabel
 msgid "site.investors.commitment.missingLabel"
-msgstr ""
+msgstr "config/sla.php içinde bilerek boş bırakılanlar:"
 
 #: site:site.investors.commitment.open
 msgid "site.investors.commitment.open"
-msgstr ""
+msgstr "Bir hizmet kullanılabilirlik oranı taahhüt edilmedi. Hizmet seviyesi koşulları mevcut; hizmet kullanılabilirliğinin nasıl ölçüleceğini, istisnaları, bildirim ve telafiyi açıklıyor. Ancak bu kurulumda çalışma süresini henüz hiçbir şey ölçmediği için değerler bilerek boş bırakıldı; kimsenin doğrulayamayacağı bir söz, söz değildir."
 
 #: site:site.investors.commitment.set
 msgid "site.investors.commitment.set"
-msgstr ""
+msgstr "Bir hizmet kullanılabilirlik oranı taahhüt edildi. Hizmet seviyesi koşullarında bu oran, nasıl ölçüldüğü ve karşılanmadığında ne olacağı belirtiliyor."
 
 #: site:site.investors.contact.cta
 msgid "site.investors.contact.cta"
-msgstr ""
+msgstr "Bize nasıl ulaşabilirsiniz?"
 
 #: site:site.investors.contact.heading
 msgid "site.investors.contact.heading"
-msgstr ""
+msgstr "Bizimle iletişim"
 
 #: site:site.investors.contact.lead
 msgid "site.investors.contact.lead"
-msgstr ""
+msgstr "Nelerin geliştirildiği, nelerin geliştirilmediği ve bir iddianın nasıl doğrulandığı hakkındaki sorular, bu sayfaların beslendiği envanterden yanıtlanır."
 
 #: site:site.investors.contactPage.commitment.absent
 msgid "site.investors.contactPage.commitment.absent"
-msgstr ""
+msgstr "Yanıt süresi taahhüt edilmediği için burada bir süre gösterilmiyor. “En kısa sürede” gibi bir cümle, kimsenin vermediği bir söz olurdu."
 
 #: site:site.investors.contactPage.cta
 msgid "site.investors.contactPage.cta"
-msgstr ""
+msgstr "İletişim formunu aç"
 
 #: site:site.investors.contactPage.heading
 msgid "site.investors.contactPage.heading"
-msgstr ""
+msgstr "Bizimle iletişim"
 
 #: site:site.investors.contactPage.identity.body
 msgid "site.investors.contactPage.identity.body"
-msgstr ""
+msgstr "Aşağıdaki kimlik bilgileri bu kurulumun kendi yapılandırmasından okunur. Bir alanda bilginin verilmediği yazıyorsa gerçekten verilmemiştir; boş alan gizlenmeden gösterilir."
 
 #: site:site.investors.contactPage.identity.heading
 msgid "site.investors.contactPage.identity.heading"
-msgstr ""
+msgstr "Kiminle görüşeceksiniz?"
 
 #: site:site.investors.contactPage.lead
 msgid "site.investors.contactPage.lead"
-msgstr ""
+msgstr "Bu sitede tek iletişim yolu var; yatırımcılar da aynı yolu kullanır. Ayrı bir yatırımcı gelen kutusu kurulmadı. Varmış gibi davranmak, mesajınızı kimsenin okumadığı bir adrese yönlendirirdi."
 
 #: site:site.investors.contactPage.meta.description
 msgid "site.investors.contactPage.meta.description"
-msgstr ""
+msgstr "Bu sitede yatırımcıların da kullandığı tek iletişim yolu ve satıcının bu kurulumda yapılandırılmış yasal kimlik bilgileri bulunur."
 
 #: site:site.investors.contactPage.meta.title
 msgid "site.investors.contactPage.meta.title"
-msgstr ""
+msgstr "Bizimle iletişim"
 
 #: site:site.investors.contactPage.what.body
 msgid "site.investors.contactPage.what.body"
-msgstr ""
+msgstr "Kim olduğunuzu, neyi incelediğinizi ve ne görmek istediğinizi belirtin. Bir yetenek hakkındaki sorular bu sayfaların beslendiği envanterden yanıtlanır; böylece aldığınız yanıt, ürünün kendisi için verdiği yanıtla aynı olur."
 
 #: site:site.investors.contactPage.what.heading
 msgid "site.investors.contactPage.what.heading"
-msgstr ""
+msgstr "Ne yazmalısınız?"
 
 #: site:site.investors.deck.evidenceLabel
 msgid "site.investors.deck.evidenceLabel"
-msgstr ""
+msgstr "Ölçüldü"
 
 #: site:site.investors.deck.heading
 msgid "site.investors.deck.heading"
-msgstr ""
+msgstr "Kısa anlatım"
 
 #: site:site.investors.deck.lead
 msgid "site.investors.deck.lead"
-msgstr ""
+msgstr "Bu bölümün geri kalanıyla aynı bilgiler, bir kez okuyacağınız sırayla. İndirilecek dosya veya ayrı bir anlatı yok: ürünün söylemediği bir şeyi söyleyen sunumu, birinin daha sonra düzeltmesi gerekir."
 
 #: site:site.investors.deck.meta.description
 msgid "site.investors.deck.meta.description"
-msgstr ""
+msgstr "Bu bölümün geri kalanıyla aynı ölçülmüş bilgiler, okuma sırasıyla: ürün nedir, neler geliştirildi, neler geliştirilmedi, maliyeti nedir, neler taahhüt edildi, nerede çalışır, nasıl doğrulanır ve neler bilinmiyor?"
 
 #: site:site.investors.deck.meta.title
 msgid "site.investors.deck.meta.title"
-msgstr ""
+msgstr "Kısa anlatım"
 
 #: site:site.investors.deckBuilt.body
 msgid "site.investors.deckBuilt.body"
-msgstr ""
+msgstr "Menü, yayın, yazdırılabilir kodlar, fotoğraflar, marka görünümü, diller, şubeler, raporlar, masadan sipariş, ekip ve puanlama ayrı ürünler olarak değil, tek hesapta bulunur."
 
 #: site:site.investors.deckBuilt.evidence
 msgid "site.investors.deckBuilt.evidence"
-msgstr ""
+msgstr "Ürün envanterinden okunan {parts} bileşen."
 
 #: site:site.investors.deckBuilt.heading
 msgid "site.investors.deckBuilt.heading"
-msgstr ""
+msgstr "Neler geliştirildi?"
 
 #: site:site.investors.deckChecked.body
 msgid "site.investors.deckChecked.body"
-msgstr ""
+msgstr "İddialar dosyalara, davranışlar doğrulama kontrollerine bağlıdır. Üründen kaldırılan bir yetenek sayfada satılmaya devam edemez; okuyucu fark etmeden önce başarısız olan bir test bunu bildirir."
 
 #: site:site.investors.deckChecked.evidence
 msgid "site.investors.deckChecked.evidence"
-msgstr ""
+msgstr "Dosyaya bağlı {sources} iddia, mevcut {gates} kontrol betiği."
 
 #: site:site.investors.deckChecked.heading
 msgid "site.investors.deckChecked.heading"
-msgstr ""
+msgstr "Nasıl doğrulanır?"
 
 #: site:site.investors.deckCommitment.body
 msgid "site.investors.deckCommitment.body"
-msgstr ""
+msgstr "Alıcının sorduğu ticari taahhütler — hizmet kullanılabilirliği, olay bildirimi, hizmet kredisi — koşullar olarak yazıldı; ancak ölçülene kadar değerleri bilerek boş bırakıldı."
 
 #: site:site.investors.deckCommitment.heading
 msgid "site.investors.deckCommitment.heading"
-msgstr ""
+msgstr "Neler taahhüt edildi?"
 
 #: site:site.investors.deckCta
 msgid "site.investors.deckCta"
-msgstr ""
+msgstr "Kısa anlatımı okuyun"
 
 #: site:site.investors.deckNotBuilt.body
 msgid "site.investors.deckNotBuilt.body"
-msgstr ""
+msgstr "Ürün bir satış noktası sistemi değildir, misafirden ödeme almaz, rezervasyon yapmaz, üçüncü taraf entegrasyonları veya uygulama mağazasında uygulaması yoktur. Bunlar da yetenekler kadar açık biçimde belirtilir."
 
 #: site:site.investors.deckNotBuilt.evidence
 msgid "site.investors.deckNotBuilt.evidence"
-msgstr ""
+msgstr "Burada ve herkese açık ana sayfada belirtilen {limits} sınır."
 
 #: site:site.investors.deckNotBuilt.heading
 msgid "site.investors.deckNotBuilt.heading"
-msgstr ""
+msgstr "Neler geliştirilmedi?"
 
 #: site:site.investors.deckPrice.body
 msgid "site.investors.deckPrice.body"
-msgstr ""
+msgstr "Temel yolculuk ücretsizdir; planlar buna ek yetenekler kazandırır. Bu sitede gösterilen her fiyat plan kataloğundan okunur, hiçbir sayfaya elle yazılmaz."
 
 #: site:site.investors.deckPrice.evidence
 msgid "site.investors.deckPrice.evidence"
-msgstr ""
+msgstr "Fiyatlar plan kataloğundan okunur ve hesap gerektirmeden /pricing adresinde yayımlanır."
 
 #: site:site.investors.deckPrice.heading
 msgid "site.investors.deckPrice.heading"
-msgstr ""
+msgstr "Maliyeti nedir?"
 
 #: site:site.investors.deckRuns.body
 msgid "site.investors.deckRuns.body"
-msgstr ""
+msgstr "Uygulama, veritabanı ve yüklenen dosyalar tek bir sanal sunucuda bulunur. Müşteri verisine erişen diğer her hizmet, yalnızca gerçekten etkin olduğu sürece adıyla belirtilir."
 
 #: site:site.investors.deckRuns.evidence
 msgid "site.investors.deckRuns.evidence"
-msgstr ""
+msgstr "Sayfa oluşturulurken yapılandırmadan ve kimlik bilgileri kasasından okunan {subprocessors} kayıt."
 
 #: site:site.investors.deckRuns.heading
 msgid "site.investors.deckRuns.heading"
-msgstr ""
+msgstr "Nerede çalışır?"
 
 #: site:site.investors.deckUnknown.body
 msgid "site.investors.deckUnknown.body"
-msgstr ""
+msgstr "Talep, bir restoranın ne kadar ödeyeceği, ilk aydan sonra kullanmaya devam edip etmeyeceği ve büyüyen ölçekte bir restorana hizmet vermenin maliyeti. Bu kodda bunların hiçbiri ölçülmüyor; bu bölüm de aksini iddia etmiyor."
 
 #: site:site.investors.deckUnknown.evidence
 msgid "site.investors.deckUnknown.evidence"
-msgstr ""
+msgstr "Ölçülmedi. Ölçülmemiş bir sorunun dürüst yanıtı, ölçülmediğidir."
 
 #: site:site.investors.deckUnknown.heading
 msgid "site.investors.deckUnknown.heading"
-msgstr ""
+msgstr "Henüz neler bilinmiyor?"
 
 #: site:site.investors.deckWhat.body
 msgid "site.investors.deckWhat.body"
-msgstr ""
+msgstr "Yiyecek ve içecek sunan yerler için tek web ürünü: menüyü yazın, yayımlayın, her masa için bir kod yazdırın; misafirler menüyü telefonlarındaki tarayıcıdan okusun. Misafir için uygulama ve hesap gerekmez."
 
 #: site:site.investors.deckWhat.evidence
 msgid "site.investors.deckWhat.evidence"
-msgstr ""
+msgstr "Yolculuk {chain} adımdan oluşur; her adım, onu çalıştıran denetleyiciyi adıyla belirtir."
 
 #: site:site.investors.deckWhat.heading
 msgid "site.investors.deckWhat.heading"
-msgstr ""
+msgstr "Nedir?"
 
 #: site:site.investors.heading
 msgid "site.investors.heading"
-msgstr ""
+msgstr "Yatırımcı ilişkileri"
 
 #: site:site.investors.infrastructure.dataLabel
 msgid "site.investors.infrastructure.dataLabel"
-msgstr ""
+msgstr "Eriştiği veriler"
 
 #: site:site.investors.infrastructure.heading
 msgid "site.investors.infrastructure.heading"
-msgstr ""
+msgstr "Nerede çalışır ve verileri başka kim görür?"
 
 #: site:site.investors.infrastructure.lead
 msgid "site.investors.infrastructure.lead"
-msgstr ""
+msgstr "Bu {subprocessors} kayıtlık liste elle yazılmadı. Sayfa her oluşturulduğunda barındırma yapılandırmasından, kimlik bilgileri kasasından ve ölçüm ayarlarından okunur; böylece fark edilmeden güncelliğini yitiremez."
 
 #: site:site.investors.infrastructure.locationLabel
 msgid "site.investors.infrastructure.locationLabel"
-msgstr ""
+msgstr "Verileri işlediği yer"
 
 #: site:site.investors.infrastructure.roleLabel
 msgid "site.investors.infrastructure.roleLabel"
-msgstr ""
+msgstr "Rol"
 
 #: site:site.investors.infrastructure.unreadable
 msgid "site.investors.infrastructure.unreadable"
-msgstr ""
+msgstr "Bu sayfa oluşturulurken kimlik bilgileri kasası okunamadığı için liste eksik olabilir. “Bakamadık” ile “hiçbir şey yok” aynı şey değildir."
 
 #: site:site.investors.lead
 msgid "site.investors.lead"
-msgstr ""
+msgstr "Zabuno, bir ticari girişim olmadan önce çalışan bir üründür. Bu sayfalar nelerin geliştirildiğini, nelerin geliştirilmediğini ve henüz nelerin ölçülmediğini anlatır."
 
 #: site:site.investors.limits.heading
 msgid "site.investors.limits.heading"
-msgstr ""
+msgstr "Neler geliştirilmedi?"
 
 #: site:site.investors.limits.lead
 msgid "site.investors.limits.lead"
-msgstr ""
+msgstr "Ürünün bilerek yapmadığı {limits} şey var. Önce okunması gereken bölüm budur: var olduğu sanılan bir yeteneğin eksikliği servis sırasında, bir şeyi değiştirecek zaman kalmadığında fark edilir."
 
 #: site:site.investors.meta.description
 msgid "site.investors.meta.description"
-msgstr ""
+msgstr "Zabuno nedir, hangi bileşenleri geliştirildi, hangileri bilerek geliştirilmedi, neler taahhüt edildi ve henüz neler ölçülmedi? Her iddianın arkasındaki dosyayla birlikte."
 
 #: site:site.investors.meta.title
 msgid "site.investors.meta.title"
-msgstr ""
+msgstr "Yatırımcı ilişkileri"
 
 #: site:site.investors.product.heading
 msgid "site.investors.product.heading"
-msgstr ""
+msgstr "Neler geliştirildi?"
 
 #: site:site.investors.product.lead
 msgid "site.investors.product.lead"
-msgstr ""
+msgstr "Ürünün kendi envanteri, her bileşenin arkasındaki dosyayla birlikte. Bu sayfadaki hiçbir şey yatırımcı için yazılmadı; ürünün kendisini anlattığı listenin aynısıdır."
 
 #: site:site.investors.product.meta.description
 msgid "site.investors.product.meta.description"
-msgstr ""
+msgstr "Her bileşeni bu kurulumda onu üreten dosyayla birlikte gösteren ürün envanteri ve ürünün bilerek yapmadığı yedi şey."
 
 #: site:site.investors.product.meta.title
 msgid "site.investors.product.meta.title"
-msgstr ""
+msgstr "Neler geliştirildi?"
 
 #: site:site.investors.product.sourceLabel
 msgid "site.investors.product.sourceLabel"
-msgstr ""
+msgstr "Üreten kaynak"
 
 #: site:site.investors.product.sourceMissing
 msgid "site.investors.product.sourceMissing"
-msgstr ""
+msgstr "Bu iddianın arkasındaki dosya bu kurulumda yok; bu nedenle iddiayı kanıtlanmamış kabul edin."
 
 #: site:site.investors.product.sourceNone
 msgid "site.investors.product.sourceNone"
-msgstr ""
+msgstr "Bu kayıt, ürünün yapmadığı bir şeyi anlattığı için dosya belirtmez; bir yokluğun işaret edeceği dosya yoktur."
 
 #: site:site.investors.rules.body
 msgid "site.investors.rules.body"
-msgstr ""
+msgstr "Bu sayfalarda, deponun ölçemediği hiçbir sayı yoktur. Ürünün kaç yerde kullanıldığı, ne kadar kazandığı, bunların ne hızla değiştiği, pazarın büyüklüğü ve kimlerin ürünü övdüğü bu kodda sayılmadığı için burada yazılmıyor."
 
 #: site:site.investors.rules.body2
 msgid "site.investors.rules.body2"
-msgstr ""
+msgstr "Bunların yerine yapılan iş var: ürünün kendi envanteri, her iddianın arkasındaki dosya, bilerek boş bırakılan taahhütler ve bunları doğrulayan kontroller. Bu sayfalara ölçülmemiş bir sayı eklenirse bir test derlemeyi durdurur."
 
 #: site:site.investors.rules.heading
 msgid "site.investors.rules.heading"
-msgstr ""
+msgstr "Bu sayfalarda neler yok?"
 
 #: site:site.investors.verification.gates
 msgid "site.investors.verification.gates"
-msgstr ""
+msgstr "Bu kurulumda bulunan kontrol betiği sayısı: {gates}. Her biri ürünün açıklamasını değil, gerçek ürünü denetler."
 
 #: site:site.investors.verification.heading
 msgid "site.investors.verification.heading"
-msgstr ""
+msgstr "Bir iddia nasıl doğrulanır?"
 
 #: site:site.investors.verification.lead
 msgid "site.investors.verification.lead"
-msgstr ""
+msgstr "Bu sayfalardaki iddialardan {sources} tanesi, bu kurulumda onları üreten dosyayı adıyla belirtir. Sayfa oluşturulurken bu dosyaların her biri aranır. Dosyası kaldırılmış bir iddia sessizce korunmak yerine eksik olarak gösterilir."
 
 #: site:site.investors.verification.missing
 msgid "site.investors.verification.missing"
-msgstr ""
+msgstr "Bu kurulumda yok"
 
 #: site:site.investors.verification.present
 msgid "site.investors.verification.present"
-msgstr ""
+msgstr "Mevcut"
 
 #: site:site.legal.contents
 msgid "site.legal.contents"
-msgstr ""
+msgstr "İçindekiler"
 
 #: site:site.legal.cookies.preference.current
 msgid "site.legal.cookies.preference.current"
-msgstr ""
+msgstr "Mevcut tercih:"
 
 #: site:site.legal.cookies.preference.denied
 msgid "site.legal.cookies.preference.denied"
-msgstr ""
+msgstr "ölçüm reddedildi"
 
 #: site:site.legal.cookies.preference.granted
 msgid "site.legal.cookies.preference.granted"
-msgstr ""
+msgstr "ölçüme izin verildi"
 
 #: site:site.legal.cookies.preference.heading
 msgid "site.legal.cookies.preference.heading"
-msgstr ""
+msgstr "Ölçüm tercihiniz"
 
 #: site:site.legal.cookies.preference.undecided
 msgid "site.legal.cookies.preference.undecided"
-msgstr ""
+msgstr "henüz karar verilmedi; ölçüm kapalı kalıyor"
 
 #: site:site.legal.dataRequest.addressLabel
 msgid "site.legal.dataRequest.addressLabel"
@@ -982,39 +982,39 @@ msgstr "Hesabınızdaki veriler"
 
 #: site:site.legal.effective
 msgid "site.legal.effective"
-msgstr ""
+msgstr "Yürürlük tarihi"
 
 #: site:site.legal.incomplete.body
 msgid "site.legal.incomplete.body"
-msgstr ""
+msgstr "Satıcının yasal kimliği henüz yayımlanmadığı için bu metin, sözleşme yapacağınız tarafı belirtmiyor. Metni taslak olarak okuyun; sözleşme olarak esas almayın ve buna dayanarak işlem yapmadan önce bize sorun."
 
 #: site:site.legal.incomplete.fields
 msgid "site.legal.incomplete.fields"
-msgstr ""
+msgstr "Henüz girilmeyenler:"
 
 #: site:site.legal.incomplete.heading
 msgid "site.legal.incomplete.heading"
-msgstr ""
+msgstr "Bu belge henüz tamamlanmadı."
 
 #: site:site.legal.review.pending
 msgid "site.legal.review.pending"
-msgstr ""
+msgstr "Bu metin hukuki inceleme bekliyor. Ürünün bugün yaptığı işleri açıklıyor; inceleme sonrasında ifadeler değişebilir."
 
 #: site:site.legal.version
 msgid "site.legal.version"
-msgstr ""
+msgstr "Sürüm"
 
 #: site:site.nav.about
 msgid "site.nav.about"
-msgstr ""
+msgstr "Hakkımızda"
 
 #: site:site.nav.accessibility
 msgid "site.nav.accessibility"
-msgstr ""
+msgstr "Erişilebilirlik"
 
 #: site:site.nav.account
 msgid "site.nav.account"
-msgstr ""
+msgstr "Hesap"
 
 #: site:site.nav.contact
 msgid "site.nav.contact"
@@ -1022,11 +1022,11 @@ msgstr "İletişim"
 
 #: site:site.nav.customers
 msgid "site.nav.customers"
-msgstr ""
+msgstr "Müşteriler"
 
 #: site:site.nav.explore
 msgid "site.nav.explore"
-msgstr ""
+msgstr "Keşfet"
 
 #: site:site.nav.features
 msgid "site.nav.features"
@@ -1042,11 +1042,11 @@ msgstr "Nasıl çalışır"
 
 #: site:site.nav.integrations
 msgid "site.nav.integrations"
-msgstr ""
+msgstr "Entegrasyonlar"
 
 #: site:site.nav.investors
 msgid "site.nav.investors"
-msgstr ""
+msgstr "Yatırımcılar"
 
 #: site:site.nav.login
 msgid "site.nav.login"
@@ -1054,7 +1054,7 @@ msgstr "Giriş yap"
 
 #: site:site.nav.menu
 msgid "site.nav.menu"
-msgstr ""
+msgstr "Menü"
 
 #: site:site.nav.pricing
 msgid "site.nav.pricing"
@@ -1066,7 +1066,7 @@ msgstr "Ana gezinti"
 
 #: site:site.nav.product
 msgid "site.nav.product"
-msgstr ""
+msgstr "Ürün"
 
 #: site:site.nav.register
 msgid "site.nav.register"
@@ -1074,15 +1074,15 @@ msgstr "Hesap oluştur"
 
 #: site:site.nav.resources
 msgid "site.nav.resources"
-msgstr ""
+msgstr "Kaynaklar"
 
 #: site:site.nav.solutions
 msgid "site.nav.solutions"
-msgstr ""
+msgstr "Çözümler"
 
 #: site:site.nav.trust
 msgid "site.nav.trust"
-msgstr ""
+msgstr "Güven merkezi"
 
 #: site:site.pageState.approved
 msgid "site.pageState.approved"
@@ -1178,23 +1178,23 @@ msgstr "Analitik: misafirler neye bakıyor, ne arayıp bulamıyor"
 
 #: site:site.plan.audience.restaurant
 msgid "site.plan.audience.restaurant"
-msgstr ""
+msgstr "Masaların olduğu bir salonu kendiniz yönetiyorsunuz; misafirin okuduğu sayfanın bir formdan çok restoranınıza benzemesini istiyorsunuz."
 
 #: site:site.plan.audience.starter
 msgid "site.plan.audience.starter"
-msgstr ""
+msgstr "Menünüzü ilk kez QR koduyla sunuyorsunuz, kendiniz yönetiyorsunuz ve işe yarayıp yaramadığını görmek için ödeme yapmak istemiyorsunuz."
 
 #: site:site.plan.audience.team
 msgid "site.plan.audience.team"
-msgstr ""
+msgstr "Menüyü yalnızca siz düzenlemiyorsunuz: yöneticinin, garsonun veya muhasebecinin sizin hesabınız yerine kendi hesabına ihtiyacı var."
 
 #: site:site.plan.branding
 msgid "site.plan.branding"
-msgstr ""
+msgstr "Misafir menüsünde kendi renkleriniz ve yazı tipiniz"
 
 #: site:site.plan.ordering
 msgid "site.plan.ordering"
-msgstr ""
+msgstr "Misafirler masadan sipariş verir; personeliniz onaylar, mutfak görür"
 
 #: site:site.plan.qrBulk
 msgid "site.plan.qrBulk"
@@ -1202,7 +1202,7 @@ msgstr "Bütün bir salonun masaları için toplu karekod"
 
 #: site:site.plan.richMedia
 msgid "site.plan.richMedia"
-msgstr ""
+msgstr "Misafir menüsünde yemeklerinizin fotoğrafları"
 
 #: site:site.plan.team
 msgid "site.plan.team"
@@ -1214,15 +1214,15 @@ msgstr "Ek olarak"
 
 #: site:site.pricing.audience
 msgid "site.pricing.audience"
-msgstr ""
+msgstr "Kimler için?"
 
 #: site:site.pricing.cancellation
 msgid "site.pricing.cancellation"
-msgstr ""
+msgstr "Kendi çalışma alanınızdan iptal edersiniz; plan, ödediğiniz dönemin sonuna kadar devam eder."
 
 #: site:site.pricing.cancellation.cta
 msgid "site.pricing.cancellation.cta"
-msgstr ""
+msgstr "İptal ve İade Politikası’nı okuyun"
 
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
@@ -1234,95 +1234,95 @@ msgstr "Bize yazın"
 
 #: site:site.pricing.excluded.campaign
 msgid "site.pricing.excluded.campaign"
-msgstr ""
+msgstr "Deneme süresi, başlangıç fiyatı, yıllık indirim veya kampanya yoktur. Plan; bir ad, bir tutar ve bir yetki kümesinden oluşur."
 
 #: site:site.pricing.excluded.currency
 msgid "site.pricing.excluded.currency"
-msgstr ""
+msgstr "Fiyatlar yalnızca Türk lirası cinsindendir. Ödeme adımında ikinci para birimi veya kur dönüşümü yoktur."
 
 #: site:site.pricing.excluded.delivery
 msgid "site.pricing.excluded.delivery"
-msgstr ""
+msgstr "Paket servis, teslimat, gel-al veya gelmeden sipariş verme yoktur. Sipariş göndermenin tek yolu masadaki kodu okutmaktır."
 
 #: site:site.pricing.excluded.heading
 msgid "site.pricing.excluded.heading"
-msgstr ""
+msgstr "Hiçbir plana dahil olmayanlar"
 
 #: site:site.pricing.excluded.kitchenHardware
 msgid "site.pricing.excluded.kitchenHardware"
-msgstr ""
+msgstr "Yazıcı çıktısı veya sesli uyarı yoktur. Siparişler kendini yenileyen bir ekranda görünür; bu nedenle birinin o ekranı görebilmesi gerekir."
 
 #: site:site.pricing.excluded.lead
 msgid "site.pricing.excluded.lead"
-msgstr ""
+msgstr "Bunlar yalnızca ucuz planda değil, tüm planlarda eksiktir. Ödeme yaptıktan sonra fark etmeniz yerine burada belirtilir."
 
 #: site:site.pricing.excluded.payment
 msgid "site.pricing.excluded.payment"
-msgstr ""
+msgstr "Misafirler Zabuno üzerinden ödeme yapmaz. Siparişte kartla ödeme adımı veya adisyon bulunmaz; ödeme bugün olduğu gibi masada alınır."
 
 #: site:site.pricing.excluded.pos
 msgid "site.pricing.excluded.pos"
-msgstr ""
+msgstr "Yazarkasa, satış noktası sistemi veya muhasebe yazılımıyla bağlantı yoktur. Sipariş Zabuno’da tutulur ve Zabuno ekranında okunur."
 
 #: site:site.pricing.faq.branch.answer
 msgid "site.pricing.faq.branch.answer"
-msgstr ""
+msgstr "Hayır. Planın tutarı, içerdiği şeylerden bağımsız olarak tüm çalışma alanı için aynıdır. Ekip hesapları kişi başına ücret değil, en üst planın sağladığı bir yetkidir."
 
 #: site:site.pricing.faq.branch.question
 msgid "site.pricing.faq.branch.question"
-msgstr ""
+msgstr "İkinci şube veya başka bir garson için ek ücret var mı?"
 
 #: site:site.pricing.faq.cancel.answer
 msgid "site.pricing.faq.cancel.answer"
-msgstr ""
+msgstr "Evet, çalışma alanınızın Fatura ekranından. İptal, yenilemeyi durdurur: plan, ödediğiniz dönemin sonuna kadar etkin kalır. O tarihten önce aynı ekrandan yeniden ödeme yapmadan iptali geri alabilirsiniz."
 
 #: site:site.pricing.faq.cancel.question
 msgid "site.pricing.faq.cancel.question"
-msgstr ""
+msgstr "Kendim iptal edebilir miyim?"
 
 #: site:site.pricing.faq.change.answer
 msgid "site.pricing.faq.change.answer"
-msgstr ""
+msgstr "Aynı Fatura ekranından. Üst plana geçiş, ödeme başarılı olur olmaz uygulanır. Alt plana geçiş, ödediğiniz dönemin sonu için planlanır; siz onaylamadan önce ekran, daha ucuz planda bulunmayan yetenekleri belirtir."
 
 #: site:site.pricing.faq.change.question
 msgid "site.pricing.faq.change.question"
-msgstr ""
+msgstr "Daha büyük veya daha küçük bir plana nasıl geçerim?"
 
 #: site:site.pricing.faq.heading
 msgid "site.pricing.faq.heading"
-msgstr ""
+msgstr "Ödeme yapmadan önce sorulanlar"
 
 #: site:site.pricing.faq.refund.answer
 msgid "site.pricing.faq.refund.answer"
-msgstr ""
+msgstr "Hayır. Başlamış bir dönemin ücreti iade edilmez; döneme dahil tüm özellikleri süre bitene kadar kullanırsınız. Tüketicinin yasal cayma hakkını kullanması ve bizim, ödenmiş dönem bitmeden hizmeti sonlandırmamız veya daraltmamız istisnadır; bunlar İptal ve İade Politikası’nda belirtilir."
 
 #: site:site.pricing.faq.refund.question
 msgid "site.pricing.faq.refund.question"
-msgstr ""
+msgstr "Dönemin ortasında iptal edersem ücret iadesi alır mıyım?"
 
 #: site:site.pricing.faq.reprint.answer
 msgid "site.pricing.faq.reprint.answer"
-msgstr ""
+msgstr "Hayır. Bir kez yazdırın. Fiyatları değiştirebilir, menüyü yeniden düzenleyebilir, yanlış bir liste yayımlayıp önceki sürüme dönebilir veya kodun yönlendirdiği yeri değiştirebilirsiniz; masadaki kâğıt çalışmaya devam eder."
 
 #: site:site.pricing.faq.reprint.question
 msgid "site.pricing.faq.reprint.question"
-msgstr ""
+msgstr "Fiyatlarımı veya planımı değiştirirsem kodları yeniden yazdırmam gerekir mi?"
 
 #: site:site.pricing.faq.stop.answer
 msgid "site.pricing.faq.stop.answer"
-msgstr ""
+msgstr "Çalışmaya devam eder. Menüyü yazmak, yayımlamak, basılı kodlar ve misafirlerinizin okuduğu sayfa için hiçbir zaman plan gerekmedi. Ücretli dönem ödeme yapılmadan sona ererse plan özellikleri, Fatura ekranında belirtilen ek süre boyunca açık kalır, sonra kapanır; çalışma alanınız, menüleriniz ve yayımlanmış sayfalarınız olduğu gibi kalır."
 
 #: site:site.pricing.faq.stop.question
 msgid "site.pricing.faq.stop.question"
-msgstr ""
+msgstr "Ödeme yapmayı bırakırsam menüme ne olur?"
 
 #: site:site.pricing.faq.trial.answer
 msgid "site.pricing.faq.trial.answer"
-msgstr ""
+msgstr "Hayır; ücretli planlarda da deneme yoktur. Ücretsiz plan, ürünün hiçbir zaman plan gerektirmeyen kısmının gizlenmek yerine adlandırılmış hâlidir: karar vermeden önce tüm menüyü yazabilir, yayımlayabilir ve kodları yazdırabilirsiniz."
 
 #: site:site.pricing.faq.trial.question
 msgid "site.pricing.faq.trial.question"
-msgstr ""
+msgstr "Ücretsiz plan, süresi dolan bir deneme mi?"
 
 #: site:site.pricing.free
 msgid "site.pricing.free"
@@ -1334,7 +1334,7 @@ msgstr "Fiyat"
 
 #: site:site.pricing.included.body
 msgid "site.pricing.included.body"
-msgstr ""
+msgstr "Menünüz, tek tıkla geri alınabilen yayınlar, QR kodları ve misafir sayfası, CSV içe ve dışa aktarma, yemek fotoğraflarını yükleme ve saklama, bir yemeği o gün için tükendi olarak işaretleme."
 
 #: site:site.pricing.included.heading
 msgid "site.pricing.included.heading"
@@ -1346,11 +1346,11 @@ msgstr "Bir restoranın menüsünü karekodun arkasında yayınlamak için öded
 
 #: site:site.pricing.paymentMethods
 msgid "site.pricing.paymentMethods"
-msgstr ""
+msgstr "Ücretli planların ödemesi, ödeme hizmeti sağlayıcısı Iyzico üzerinden kartla yapılır; başka ödeme yöntemi sunulmaz."
 
 #: site:site.pricing.paymentMethods.cta
 msgid "site.pricing.paymentMethods.cta"
-msgstr ""
+msgstr "Ön Bilgilendirme Formu’nu okuyun"
 
 #: site:site.pricing.perMonth
 msgid "site.pricing.perMonth"
@@ -1366,11 +1366,11 @@ msgstr "Bize yazın"
 
 #: site:site.pricing.plans.heading
 msgid "site.pricing.plans.heading"
-msgstr ""
+msgstr "Planlar"
 
 #: site:site.pricing.terms.heading
 msgid "site.pricing.terms.heading"
-msgstr ""
+msgstr "Ödeme ve iptal"
 
 #: site:site.pricing.unsure
 msgid "site.pricing.unsure"
@@ -1386,35 +1386,35 @@ msgstr "Ana içeriğe geç"
 
 #: site:site.support.ack.greeting
 msgid "site.support.ack.greeting"
-msgstr ""
+msgstr "Merhaba {name},"
 
 #: site:site.support.ack.keep
 msgid "site.support.ack.keep"
-msgstr ""
+msgstr "Bu referans numarasını saklayın; bize tekrar yazarsanız belirtin."
 
 #: site:site.support.ack.panel
 msgid "site.support.ack.panel"
-msgstr ""
+msgstr "Talebin durumunu Zabuno panelinizin Destek bölümünden takip edebilirsiniz."
 
 #: site:site.support.ack.received
 msgid "site.support.ack.received"
-msgstr ""
+msgstr "Talebinizi aldık ve {reference} referans numarasını verdik."
 
 #: site:site.support.ack.reply
 msgid "site.support.ack.reply"
-msgstr ""
+msgstr "Ek ayrıntı vermek için bu e-postayı yanıtlayabilirsiniz."
 
 #: site:site.support.ack.subject
 msgid "site.support.ack.subject"
-msgstr ""
+msgstr "Zabuno — {reference} numaralı talebinizi aldık"
 
 #: site:site.support.ack.subjectLine
 msgid "site.support.ack.subjectLine"
-msgstr ""
+msgstr "Konu: {subject}"
 
 #: site:site.support.commitment
 msgid "site.support.commitment"
-msgstr ""
+msgstr "{hours} saat içinde yanıt veririz."
 
 #: site:site.title.emailVerified
 msgid "site.title.emailVerified"

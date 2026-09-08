@@ -18,55 +18,55 @@ msgstr "Menüyü aç"
 
 #: dashboard:dashboard.firstRun.brand
 msgid "dashboard.firstRun.brand"
-msgstr ""
+msgstr "Misafirlerinizin göreceği adla başlayın. Bu formdaki her şeyi daha sonra değiştirebilirsiniz."
 
 #: dashboard:dashboard.firstRun.dismiss
 msgid "dashboard.firstRun.dismiss"
-msgstr ""
+msgstr "Bu ipucunu gizle"
 
 #: dashboard:dashboard.firstRun.help.menu
 msgid "dashboard.firstRun.help.menu"
-msgstr ""
+msgstr "Menü nasıl içe aktarılır?"
 
 #: dashboard:dashboard.firstRun.help.newTab
 msgid "dashboard.firstRun.help.newTab"
-msgstr ""
+msgstr "yeni sekmede açılır"
 
 #: dashboard:dashboard.firstRun.help.qr
 msgid "dashboard.firstRun.help.qr"
-msgstr ""
+msgstr "QR kodları nasıl yazdırılır?"
 
 #: dashboard:dashboard.firstRun.location
 msgid "dashboard.firstRun.location"
-msgstr ""
+msgstr "Misafirlerin kodu okutacağı yer burası. Ad, şehir ve sokak yeterli; diğer yerleri daha sonra ekleyebilirsiniz."
 
 #: dashboard:dashboard.firstRun.menu
 msgid "dashboard.firstRun.menu"
-msgstr ""
+msgstr "İlk ürününüzü ekleyin veya tüm menüyü bir CSV dosyasından içe aktarın. Siz yayımlayana kadar misafirler hiçbir şey görmez."
 
 #: dashboard:dashboard.firstRun.next.location
 msgid "dashboard.firstRun.next.location"
-msgstr ""
+msgstr "Restoranınızın artık bir adı var. Şimdi misafirlerin kodu okutacağı yeri ekleyin."
 
 #: dashboard:dashboard.firstRun.next.menu
 msgid "dashboard.firstRun.next.menu"
-msgstr ""
+msgstr "Konumunuz kaydedildi. Şimdi menüye ilk ürünü ekleyin."
 
 #: dashboard:dashboard.firstRun.next.region
 msgid "dashboard.firstRun.next.region"
-msgstr ""
+msgstr "Sonraki adım"
 
 #: dashboard:dashboard.firstRun.publication
 msgid "dashboard.firstRun.publication"
-msgstr ""
+msgstr "Misafirler henüz hiçbir şey görmüyor. Kutuyu işaretleyip Yayımla’ya basın. Yanlış listeyi mi yayımladınız? Önceki bir sürüme dönebilirsiniz."
 
 #: dashboard:dashboard.firstRun.qr
 msgid "dashboard.firstRun.qr"
-msgstr ""
+msgstr "Kaç masanız olduğunu belirtin, ardından PDF’yi indirin. Bir kez yazdırın: menü değişse de kod çalışmaya devam eder."
 
 #: dashboard:dashboard.firstRun.region
 msgid "dashboard.firstRun.region"
-msgstr ""
+msgstr "İlk kullanım ipucu"
 
 #: dashboard:dashboard.greeting
 msgid "dashboard.greeting"
@@ -158,27 +158,27 @@ msgstr "Restoranınız misafirlere hazır."
 
 #: dashboard:dashboard.setup.firstPublished.days
 msgid "dashboard.setup.firstPublished.days"
-msgstr ""
+msgstr "Bu çalışma alanı açıldıktan {count} gün sonra ilk yayın yapıldı."
 
 #: dashboard:dashboard.setup.firstPublished.hour
 msgid "dashboard.setup.firstPublished.hour"
-msgstr ""
+msgstr "Bu çalışma alanı açıldıktan 1 saat sonra ilk yayın yapıldı."
 
 #: dashboard:dashboard.setup.firstPublished.hours
 msgid "dashboard.setup.firstPublished.hours"
-msgstr ""
+msgstr "Bu çalışma alanı açıldıktan {count} saat sonra ilk yayın yapıldı."
 
 #: dashboard:dashboard.setup.firstPublished.minute
 msgid "dashboard.setup.firstPublished.minute"
-msgstr ""
+msgstr "Bu çalışma alanı açıldıktan 1 dakika sonra ilk yayın yapıldı."
 
 #: dashboard:dashboard.setup.firstPublished.minutes
 msgid "dashboard.setup.firstPublished.minutes"
-msgstr ""
+msgstr "Bu çalışma alanı açıldıktan {count} dakika sonra ilk yayın yapıldı."
 
 #: dashboard:dashboard.setup.firstPublished.underMinute
 msgid "dashboard.setup.firstPublished.underMinute"
-msgstr ""
+msgstr "Bu çalışma alanı açıldıktan sonra bir dakika içinde ilk yayın yapıldı."
 
 #: dashboard:dashboard.setup.heading
 msgid "dashboard.setup.heading"
@@ -186,11 +186,11 @@ msgstr "Kurulum"
 
 #: dashboard:dashboard.setup.help.afterSetup
 msgid "dashboard.setup.help.afterSetup"
-msgstr ""
+msgstr "Sırada ne var: fiyat nasıl değiştirilir?"
 
 #: dashboard:dashboard.setup.help.stuck
 msgid "dashboard.setup.help.stuck"
-msgstr ""
+msgstr "Takıldınız mı? “İlk 15 dakikanız” yazısını okuyun"
 
 #: dashboard:dashboard.setup.location
 msgid "dashboard.setup.location"
@@ -342,7 +342,7 @@ msgstr "Görünür"
 
 #: dashboard:dashboard.table.empty
 msgid "dashboard.table.empty"
-msgstr ""
+msgstr "Henüz menü öğesi yok."
 
 #: dashboard:dashboard.table.heading
 msgid "dashboard.table.heading"

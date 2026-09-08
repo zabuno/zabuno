@@ -166,7 +166,7 @@ msgstr "Modüller"
 
 #: platform:engineering.modules.legend.title
 msgid "engineering.modules.legend.title"
-msgstr ""
+msgstr "Rozet nasıl okunur?"
 
 #: platform:engineering.modules.loading
 msgid "engineering.modules.loading"
@@ -178,87 +178,87 @@ msgstr "Modüller"
 
 #: platform:engineering.modules.obs.directories
 msgid "engineering.modules.obs.directories"
-msgstr ""
+msgstr "{count} dizin"
 
 #: platform:engineering.modules.obs.noContext
 msgid "engineering.modules.obs.noContext"
-msgstr ""
+msgstr "Bağlam dizini bulunamadı."
 
 #: platform:engineering.modules.obs.routeFiles
 msgid "engineering.modules.obs.routeFiles"
-msgstr ""
+msgstr "{count} yönlendirme dosyası"
 
 #: platform:engineering.modules.obs.tables
 msgid "engineering.modules.obs.tables"
-msgstr ""
+msgstr "{count} tablo"
 
 #: platform:engineering.modules.obs.tests
 msgid "engineering.modules.obs.tests"
-msgstr ""
+msgstr "{count} test"
 
 #: platform:engineering.modules.specs.about
 msgid "engineering.modules.specs.about"
-msgstr ""
+msgstr "modules/ altındaki her tanım, sahip olduğu kod bağlamlarını makine tarafından okunan tek bir alanda belirtir. Bu dosyalarda başka hiçbir şey burada okunmaz. Rozet, bu çalışma kopyasındaki dört gözlemden türetilir: bağlam dizinleri, kayıtlı yönlendirmeler, bir göçün gerçekten oluşturduğu tablolar ve eşleşen test dosyaları."
 
 #: platform:engineering.modules.specs.claim
 msgid "engineering.modules.specs.claim"
-msgstr ""
+msgstr "Rozetin söylemediği şey: “kod burada” demek, “üretimde çalışıyor” demek değildir. Bu sayfadaki hiçbir şey çalışan bir kurulumu sorgulamaz; dolayısıyla kodu olan bir modül henüz yapılandırılmamış, dağıtılmamış veya erişilemez olabilir."
 
 #: platform:engineering.modules.specs.empty
 msgid "engineering.modules.specs.empty"
-msgstr ""
+msgstr "Modül tanımı bulunamadı."
 
 #: platform:engineering.modules.specs.source
 msgid "engineering.modules.specs.source"
-msgstr ""
+msgstr "Kaynak: her modules/*.md dosyasının contexts alanı; app/, routes/, database/migrations/ ve tests/ ile karşılaştırılır"
 
 #: platform:engineering.modules.specs.title
 msgid "engineering.modules.specs.title"
-msgstr ""
+msgstr "Kodla karşılaştırılan modül tanımları"
 
 #: platform:engineering.modules.status.definitionOnly
 msgid "engineering.modules.status.definitionOnly"
-msgstr ""
+msgstr "Yalnızca tanım"
 
 #: platform:engineering.modules.status.definitionOnly.means
 msgid "engineering.modules.status.definitionOnly.means"
-msgstr ""
+msgstr "Tanım hiçbir kod bağlamını sahiplenmiyor ve bir bağlam bulunamadı."
 
 #: platform:engineering.modules.status.implemented
 msgid "engineering.modules.status.implemented"
-msgstr ""
+msgstr "Uygulandı"
 
 #: platform:engineering.modules.status.implemented.means
 msgid "engineering.modules.status.implemented.means"
-msgstr ""
+msgstr "Bağlam dizini, bir yüzey ve en az bir test bulundu."
 
 #: platform:engineering.modules.status.partial
 msgid "engineering.modules.status.partial"
-msgstr ""
+msgstr "Kısmen"
 
 #: platform:engineering.modules.status.partial.means
 msgid "engineering.modules.status.partial.means"
-msgstr ""
+msgstr "Bağlam dizini bulundu; ancak yönlendirme, tablo veya test eksik."
 
 #: platform:engineering.modules.status.unknown
 msgid "engineering.modules.status.unknown"
-msgstr ""
+msgstr "Bilinmiyor"
 
 #: platform:engineering.modules.status.unknown.means
 msgid "engineering.modules.status.unknown.means"
-msgstr ""
+msgstr "Eşleme kurulamadığı için ölçüm yapılmadı. Bu, yok olduğu anlamına gelmez."
 
 #: platform:engineering.modules.unmapped.about
 msgid "engineering.modules.unmapped.about"
-msgstr ""
+msgstr "Bu dizinler kaynak ağacında var; ancak hiçbir modül tanımı onları sahiplenmiyor. “Bu tanımın kodu var mı?” ve “Bu kodun tanımı var mı?” farklı sorular olduğu için ayrı listelenirler."
 
 #: platform:engineering.modules.unmapped.empty
 msgid "engineering.modules.unmapped.empty"
-msgstr ""
+msgstr "Her kod bağlamı bir modül tanımı tarafından sahipleniliyor."
 
 #: platform:engineering.modules.unmapped.title
 msgid "engineering.modules.unmapped.title"
-msgstr ""
+msgstr "Modül tanımı olmayan kod bağlamları"
 
 #: platform:engineering.shell.brand
 msgid "engineering.shell.brand"
@@ -282,111 +282,111 @@ msgstr "Platform yönetimi"
 
 #: platform:platform.auditLog.col.action
 msgid "platform.auditLog.col.action"
-msgstr ""
+msgstr "Olay"
 
 #: platform:platform.auditLog.col.actor
 msgid "platform.auditLog.col.actor"
-msgstr ""
+msgstr "Yapan"
 
 #: platform:platform.auditLog.col.source
 msgid "platform.auditLog.col.source"
-msgstr ""
+msgstr "Kaynak"
 
 #: platform:platform.auditLog.col.subject
 msgid "platform.auditLog.col.subject"
-msgstr ""
+msgstr "Konu"
 
 #: platform:platform.auditLog.col.when
 msgid "platform.auditLog.col.when"
-msgstr ""
+msgstr "Zaman"
 
 #: platform:platform.auditLog.col.workspace
 msgid "platform.auditLog.col.workspace"
-msgstr ""
+msgstr "Çalışma alanı"
 
 #: platform:platform.auditLog.empty
 msgid "platform.auditLog.empty"
-msgstr ""
+msgstr "Henüz kayıt yok."
 
 #: platform:platform.auditLog.error
 msgid "platform.auditLog.error"
-msgstr ""
+msgstr "Denetim günlüğü yüklenemedi."
 
 #: platform:platform.auditLog.filter.apply
 msgid "platform.auditLog.filter.apply"
-msgstr ""
+msgstr "Uygula"
 
 #: platform:platform.auditLog.filter.source
 msgid "platform.auditLog.filter.source"
-msgstr ""
+msgstr "Kaynak"
 
 #: platform:platform.auditLog.filter.source.all
 msgid "platform.auditLog.filter.source.all"
-msgstr ""
+msgstr "Tüm kaynaklar"
 
 #: platform:platform.auditLog.filter.workspace
 msgid "platform.auditLog.filter.workspace"
-msgstr ""
+msgstr "Çalışma alanı kimliği"
 
 #: platform:platform.auditLog.intro
 msgid "platform.auditLog.intro"
-msgstr ""
+msgstr "Kim, neyi, ne zaman yaptı? Ürünün zaten tuttuğu medya, menü, yayın ve kimlik bilgileri kasası kayıtlarından okunur. Salt okunurdur: kayıtlı bir olay buradan düzenlenemez veya silinemez."
 
 #: platform:platform.auditLog.loading
 msgid "platform.auditLog.loading"
-msgstr ""
+msgstr "Denetim günlüğü yükleniyor…"
 
 #: platform:platform.auditLog.nav.label
 msgid "platform.auditLog.nav.label"
-msgstr ""
+msgstr "Denetim günlüğü"
 
 #: platform:platform.auditLog.next
 msgid "platform.auditLog.next"
-msgstr ""
+msgstr "Sonraki sayfa"
 
 #: platform:platform.auditLog.page
 msgid "platform.auditLog.page"
-msgstr ""
+msgstr "Sayfa {page}"
 
 #: platform:platform.auditLog.prev
 msgid "platform.auditLog.prev"
-msgstr ""
+msgstr "Önceki sayfa"
 
 #: platform:platform.auditLog.region.label
 msgid "platform.auditLog.region.label"
-msgstr ""
+msgstr "Denetim günlüğü"
 
 #: platform:platform.auditLog.retry
 msgid "platform.auditLog.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.auditLog.scope
 msgid "platform.auditLog.scope"
-msgstr ""
+msgstr "Kimlik bilgileri kasasındaki kayıtlar bir çalışma alanına ait olmadığı için çalışma alanı hücreleri boş kalır. Menü olaylarının eski ve yeni değerleri burada bilerek gösterilmez; ilgili çalışma alanının kendi menü geçmişinde bulunur."
 
 #: platform:platform.auditLog.source.credential
 msgid "platform.auditLog.source.credential"
-msgstr ""
+msgstr "Kimlik bilgileri kasası"
 
 #: platform:platform.auditLog.source.media
 msgid "platform.auditLog.source.media"
-msgstr ""
+msgstr "Medya"
 
 #: platform:platform.auditLog.source.menu
 msgid "platform.auditLog.source.menu"
-msgstr ""
+msgstr "Menü"
 
 #: platform:platform.auditLog.source.publication
 msgid "platform.auditLog.source.publication"
-msgstr ""
+msgstr "Yayın"
 
 #: platform:platform.auditLog.source.support-access
 msgid "platform.auditLog.source.support-access"
-msgstr ""
+msgstr "Kiracı erişimi"
 
 #: platform:platform.auditLog.title
 msgid "platform.auditLog.title"
-msgstr ""
+msgstr "Olaylar"
 
 #: platform:platform.connections.add
 msgid "platform.connections.add"
@@ -490,11 +490,11 @@ msgstr "Çalışma alanı kimliği"
 
 #: platform:platform.credentials.choice.off
 msgid "platform.credentials.choice.off"
-msgstr ""
+msgstr "Kapalı"
 
 #: platform:platform.credentials.choice.on
 msgid "platform.credentials.choice.on"
-msgstr ""
+msgstr "Açık"
 
 #: platform:platform.credentials.disable
 msgid "platform.credentials.disable"
@@ -514,7 +514,7 @@ msgstr "Temel adres"
 
 #: platform:platform.credentials.field.container_id
 msgid "platform.credentials.field.container_id"
-msgstr ""
+msgstr "Kapsayıcı kimliği (GTM-…)"
 
 #: platform:platform.credentials.field.domain
 msgid "platform.credentials.field.domain"
@@ -526,11 +526,11 @@ msgstr "Uç nokta"
 
 #: platform:platform.credentials.field.ga4
 msgid "platform.credentials.field.ga4"
-msgstr ""
+msgstr "Google Analytics 4’e izin ver"
 
 #: platform:platform.credentials.field.hotjar
 msgid "platform.credentials.field.hotjar"
-msgstr ""
+msgstr "Hotjar’a izin ver"
 
 #: platform:platform.credentials.field.organization
 msgid "platform.credentials.field.organization"
@@ -550,7 +550,7 @@ msgstr "Gizli anahtar"
 
 #: platform:platform.credentials.field.yandex_metrica
 msgid "platform.credentials.field.yandex_metrica"
-msgstr ""
+msgstr "Yandex Metrica’ya izin ver"
 
 #: platform:platform.credentials.intro
 msgid "platform.credentials.intro"
@@ -582,7 +582,7 @@ msgstr "Gemini (Google)"
 
 #: platform:platform.credentials.provider.google_tag_manager
 msgid "platform.credentials.provider.google_tag_manager"
-msgstr ""
+msgstr "Google Tag Manager (ölçüm)"
 
 #: platform:platform.credentials.provider.iyzico
 msgid "platform.credentials.provider.iyzico"
@@ -1018,7 +1018,7 @@ msgstr "Entegrasyonlar"
 
 #: platform:platform.shell.group.oversight
 msgid "platform.shell.group.oversight"
-msgstr ""
+msgstr "Denetim"
 
 #: platform:platform.shell.heading
 msgid "platform.shell.heading"
@@ -1154,516 +1154,516 @@ msgstr "Tekrar dene"
 
 #: platform:platform.support.error
 msgid "platform.support.error"
-msgstr ""
+msgstr "Bu hesap okunamadı."
 
 #: platform:platform.support.finding.location_has_no_menu
 msgid "platform.support.finding.location_has_no_menu"
-msgstr ""
+msgstr "Bu şubenin menüsü yok."
 
 #: platform:platform.support.finding.location_has_no_qr
 msgid "platform.support.finding.location_has_no_qr"
-msgstr ""
+msgstr "Bu şubenin QR kodu yok."
 
 #: platform:platform.support.finding.no_location
 msgid "platform.support.finding.no_location"
-msgstr ""
+msgstr "Henüz şube oluşturulmadı."
 
 #: platform:platform.support.finding.qr_disabled
 msgid "platform.support.finding.qr_disabled"
-msgstr ""
+msgstr "Bu şubedeki bir QR kodu devre dışı."
 
 #: platform:platform.support.finding.qr_has_no_destination
 msgid "platform.support.finding.qr_has_no_destination"
-msgstr ""
+msgstr "Bu şubedeki bir QR kodu hiçbir yere yönlendirmiyor: okutulduğunda hiçbir şey açılmıyor."
 
 #: platform:platform.support.finding.qr_menu_never_published
 msgid "platform.support.finding.qr_menu_never_published"
-msgstr ""
+msgstr "Bir QR kodu hiç yayımlanmamış menüye yönlendiriyor; bu nedenle masadaki basılı kod boş sayfa açıyor."
 
 #: platform:platform.support.finding.subscription_not_active
 msgid "platform.support.finding.subscription_not_active"
-msgstr ""
+msgstr "Etkin abonelik yok."
 
 #: platform:platform.support.finding.workspace_not_serving
 msgid "platform.support.finding.workspace_not_serving"
-msgstr ""
+msgstr "Çalışma alanı hizmet verir durumda değil; bu nedenle sayfadaki diğer bilgiler henüz anlam taşımıyor."
 
 #: platform:platform.support.findings.none
 msgid "platform.support.findings.none"
-msgstr ""
+msgstr "Ölçülebilen bir arıza yok: çalışma alanı hizmet veriyor, abonelik etkin ve her QR kodu yayımlanmış bir menüye yönlendiriyor."
 
 #: platform:platform.support.findings.scope
 msgid "platform.support.findings.scope"
-msgstr ""
+msgstr "Buradaki her satır bir sorgunun sonucudur, tahmin değildir. Bu kurulumun yanıtlayamadığı bir soru listelenmez."
 
 #: platform:platform.support.findings.title
 msgid "platform.support.findings.title"
-msgstr ""
+msgstr "Şu anda ne sorun var?"
 
 #: platform:platform.support.guest.locationMeta
 msgid "platform.support.guest.locationMeta"
-msgstr ""
+msgstr "{menus} menü · {ordering}"
 
 #: platform:platform.support.guest.noDestination
 msgid "platform.support.guest.noDestination"
-msgstr ""
+msgstr "Hedef yok"
 
 #: platform:platform.support.guest.noLocation
 msgid "platform.support.guest.noLocation"
-msgstr ""
+msgstr "Şube olmadığı için henüz misafir adresi yok."
 
 #: platform:platform.support.guest.noQr
 msgid "platform.support.guest.noQr"
-msgstr ""
+msgstr "Bu şubede QR kodu yok."
 
 #: platform:platform.support.guest.notPublished
 msgid "platform.support.guest.notPublished"
-msgstr ""
+msgstr "hiç yayımlanmadı"
 
 #: platform:platform.support.guest.orderingOff
 msgid "platform.support.guest.orderingOff"
-msgstr ""
+msgstr "sipariş kapalı"
 
 #: platform:platform.support.guest.orderingOn
 msgid "platform.support.guest.orderingOn"
-msgstr ""
+msgstr "sipariş açık"
 
 #: platform:platform.support.guest.published
 msgid "platform.support.guest.published"
-msgstr ""
+msgstr "yayımlanan sürüm: {version}"
 
 #: platform:platform.support.guest.title
 msgid "platform.support.guest.title"
-msgstr ""
+msgstr "Misafir ne görüyor?"
 
 #: platform:platform.support.history.none
 msgid "platform.support.history.none"
-msgstr ""
+msgstr "Platform ekibinden henüz kimse bu hesaba bakmadı."
 
 #: platform:platform.support.history.tenantSees
 msgid "platform.support.history.tenantSees"
-msgstr ""
+msgstr "Sahip, kendi panelinde Ayarlar → Denetim izi altında aynı listeyi okur. Gerekçeyi onun okuyacağını düşünerek yazın."
 
 #: platform:platform.support.history.title
 msgid "platform.support.history.title"
-msgstr ""
+msgstr "Bu hesaba kim baktı?"
 
 #: platform:platform.support.history.unknownActor
 msgid "platform.support.history.unknownActor"
-msgstr ""
+msgstr "bilinmiyor"
 
 #: platform:platform.support.idle
 msgid "platform.support.idle"
-msgstr ""
+msgstr "Misafirlerinin ve sahibinin bugün ne gördüğünü incelemek için bir restoran seçin."
 
 #: platform:platform.support.intro
 msgid "platform.support.intro"
-msgstr ""
+msgstr "Arayan kişinin neye baktığını, hesabına girmeden görün. Restoranı seçin, bulguları okuyun ve misafir adresini açın. Kiracı olarak görüntüleme bu sayfanın son kartıdır; son çare olarak kullanılmalıdır."
 
 #: platform:platform.support.loading
 msgid "platform.support.loading"
-msgstr ""
+msgstr "Hesap okunuyor…"
 
 #: platform:platform.support.nav.label
 msgid "platform.support.nav.label"
-msgstr ""
+msgstr "Destek masası"
 
 #: platform:platform.support.open.alreadyOpen
 msgid "platform.support.open.alreadyOpen"
-msgstr ""
+msgstr "Zaten açık bir oturum var. Yenisi için önce onu kapatın; oturumlar üst üste açılmaz veya yenilenmez."
 
 #: platform:platform.support.open.contract
 msgid "platform.support.open.contract"
-msgstr ""
+msgstr "Bu, platform yöneticisinin yapabileceği en tehlikeli işlem olduğu için bilerek zorlaştırılmıştır. Oturum salt okunurdur, {minutes} dakika sürer, kendiliğinden kapanır, uzatılamaz ve aşağıya yazdığınız gerekçeyle sahibin kendi denetim izine kaydedilir. Sahibine e-posta da gönderilir."
 
 #: platform:platform.support.open.failed
 msgid "platform.support.open.failed"
-msgstr ""
+msgstr "Oturum açılamadı."
 
 #: platform:platform.support.open.pickTenant
 msgid "platform.support.open.pickTenant"
-msgstr ""
+msgstr "Önce bir restoran seçin."
 
 #: platform:platform.support.open.reason
 msgid "platform.support.open.reason"
-msgstr ""
+msgstr "Neden bakmanız gerekiyor?"
 
 #: platform:platform.support.open.reasonHelp
 msgid "platform.support.open.reasonHelp"
-msgstr ""
+msgstr "En az {min} karakter yazın; restoran sahibi buraya yazdığınızı aynen okuyacak."
 
 #: platform:platform.support.open.submit
 msgid "platform.support.open.submit"
-msgstr ""
+msgstr "{name} için destek oturumu aç"
 
 #: platform:platform.support.open.title
 msgid "platform.support.open.title"
-msgstr ""
+msgstr "Bu hesabı kiracı olarak görüntüle"
 
 #: platform:platform.support.region.label
 msgid "platform.support.region.label"
-msgstr ""
+msgstr "Destek masası"
 
 #: platform:platform.support.requests.none
 msgid "platform.support.requests.none"
-msgstr ""
+msgstr "Bu restoran destek talebi açmadı."
 
 #: platform:platform.support.requests.title
 msgid "platform.support.requests.title"
-msgstr ""
+msgstr "Bu restoranın destek talepleri"
 
 #: platform:platform.support.retry
 msgid "platform.support.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.support.session.elsewhere
 msgid "platform.support.session.elsewhere"
-msgstr ""
+msgstr "Başka bir restoranda açık destek oturumunuz var. Oturum kendiliğinden kapanacak: {expiresAt}."
 
 #: platform:platform.support.session.end
 msgid "platform.support.session.end"
-msgstr ""
+msgstr "Oturumu şimdi kapat"
 
 #: platform:platform.support.session.endFailed
 msgid "platform.support.session.endFailed"
-msgstr ""
+msgstr "Oturum kapatılamadı. Tekrar deneyin."
 
 #: platform:platform.support.session.here
 msgid "platform.support.session.here"
-msgstr ""
+msgstr "Destek görevlisi olarak {name} hesabına bakıyorsunuz. Oturum kendiliğinden kapanacak: {expiresAt}."
 
 #: platform:platform.support.session.readOnly
 msgid "platform.support.session.readOnly"
-msgstr ""
+msgstr "Bu oturum açıkken hiçbir şey yazılamaz: ödeme, plan değişikliği, silme, davet ve yayın yapılamaz. Başka restorana geçiş de kapalıdır."
 
 #: platform:platform.support.session.reason
 msgid "platform.support.session.reason"
-msgstr ""
+msgstr "Belirttiğiniz gerekçe: {reason}"
 
 #: platform:platform.support.session.title
 msgid "platform.support.session.title"
-msgstr ""
+msgstr "Bir kiracı hesabının içindesiniz"
 
 #: platform:platform.supportQueue.empty
 msgid "platform.supportQueue.empty"
-msgstr ""
+msgstr "Bekleyen bir şey yok."
 
 #: platform:platform.supportQueue.filter
 msgid "platform.supportQueue.filter"
-msgstr ""
+msgstr "Durum"
 
 #: platform:platform.supportQueue.filter.all
 msgid "platform.supportQueue.filter.all"
-msgstr ""
+msgstr "Tüm durumlar"
 
 #: platform:platform.supportQueue.markAnswered
 msgid "platform.supportQueue.markAnswered"
-msgstr ""
+msgstr "Yanıtlandı olarak işaretle"
 
 #: platform:platform.supportQueue.markClosed
 msgid "platform.supportQueue.markClosed"
-msgstr ""
+msgstr "Kapat"
 
 #: platform:platform.supportQueue.noAcknowledgement
 msgid "platform.supportQueue.noAcknowledgement"
-msgstr ""
+msgstr "Gönderene alındı e-postası ulaşmadı; talebinin geldiğini bilmiyor olabilir."
 
 #: platform:platform.supportQueue.noReplySurface
 msgid "platform.supportQueue.noReplySurface"
-msgstr ""
+msgstr "Önce en eski: en uzun süredir bekleyen ilk yanıtlanır. Yanıtlar e-postayla yazılır; üründe henüz yanıt ekranı yoktur. Talebi yanıtlandı olarak işaretlemek zamanı kaydeder, mesaj göndermez."
 
 #: platform:platform.supportQueue.status.answered
 msgid "platform.supportQueue.status.answered"
-msgstr ""
+msgstr "Yanıtlandı"
 
 #: platform:platform.supportQueue.status.closed
 msgid "platform.supportQueue.status.closed"
-msgstr ""
+msgstr "Kapalı"
 
 #: platform:platform.supportQueue.status.received
 msgid "platform.supportQueue.status.received"
-msgstr ""
+msgstr "Alındı"
 
 #: platform:platform.supportQueue.title
 msgid "platform.supportQueue.title"
-msgstr ""
+msgstr "Destek kuyruğu"
 
 #: platform:platform.tenants.col.action
 msgid "platform.tenants.col.action"
-msgstr ""
+msgstr "Olay"
 
 #: platform:platform.tenants.col.actor
 msgid "platform.tenants.col.actor"
-msgstr ""
+msgstr "Yapan"
 
 #: platform:platform.tenants.col.branch
 msgid "platform.tenants.col.branch"
-msgstr ""
+msgstr "Şube"
 
 #: platform:platform.tenants.col.city
 msgid "platform.tenants.col.city"
-msgstr ""
+msgstr "Şehir"
 
 #: platform:platform.tenants.col.country
 msgid "platform.tenants.col.country"
-msgstr ""
+msgstr "Ülke"
 
 #: platform:platform.tenants.col.email
 msgid "platform.tenants.col.email"
-msgstr ""
+msgstr "E-posta"
 
 #: platform:platform.tenants.col.name
 msgid "platform.tenants.col.name"
-msgstr ""
+msgstr "Ad"
 
 #: platform:platform.tenants.col.role
 msgid "platform.tenants.col.role"
-msgstr ""
+msgstr "Rol"
 
 #: platform:platform.tenants.col.since
 msgid "platform.tenants.col.since"
-msgstr ""
+msgstr "Üyelik başlangıcı"
 
 #: platform:platform.tenants.col.source
 msgid "platform.tenants.col.source"
-msgstr ""
+msgstr "Kaynak"
 
 #: platform:platform.tenants.col.state
 msgid "platform.tenants.col.state"
-msgstr ""
+msgstr "Durum"
 
 #: platform:platform.tenants.col.subject
 msgid "platform.tenants.col.subject"
-msgstr ""
+msgstr "Konu"
 
 #: platform:platform.tenants.col.timezone
 msgid "platform.tenants.col.timezone"
-msgstr ""
+msgstr "Saat dilimi"
 
 #: platform:platform.tenants.col.when
 msgid "platform.tenants.col.when"
-msgstr ""
+msgstr "Zaman"
 
 #: platform:platform.tenants.error
 msgid "platform.tenants.error"
-msgstr ""
+msgstr "Bu çalışma alanı yüklenemedi."
 
 #: platform:platform.tenants.events.empty
 msgid "platform.tenants.events.empty"
-msgstr ""
+msgstr "Bu çalışma alanı için henüz kayıt yok."
 
 #: platform:platform.tenants.events.title
 msgid "platform.tenants.events.title"
-msgstr ""
+msgstr "Son olaylar"
 
 #: platform:platform.tenants.identity.brand
 msgid "platform.tenants.identity.brand"
-msgstr ""
+msgstr "Marka"
 
 #: platform:platform.tenants.identity.created
 msgid "platform.tenants.identity.created"
-msgstr ""
+msgstr "Oluşturulma tarihi"
 
 #: platform:platform.tenants.identity.currency
 msgid "platform.tenants.identity.currency"
-msgstr ""
+msgstr "Para birimi"
 
 #: platform:platform.tenants.identity.locale
 msgid "platform.tenants.identity.locale"
-msgstr ""
+msgstr "İçerik dili"
 
 #: platform:platform.tenants.identity.noBrand
 msgid "platform.tenants.identity.noBrand"
-msgstr ""
+msgstr "Bu çalışma alanında henüz marka yok."
 
 #: platform:platform.tenants.identity.slug
 msgid "platform.tenants.identity.slug"
-msgstr ""
+msgstr "Adres kısa adı"
 
 #: platform:platform.tenants.identity.state
 msgid "platform.tenants.identity.state"
-msgstr ""
+msgstr "Durum"
 
 #: platform:platform.tenants.identity.title
 msgid "platform.tenants.identity.title"
-msgstr ""
+msgstr "Kimlik"
 
 #: platform:platform.tenants.idle
 msgid "platform.tenants.idle"
-msgstr ""
+msgstr "Ayrıntılarını görmek için çalışma alanı seçin."
 
 #: platform:platform.tenants.intro
 msgid "platform.tenants.intro"
-msgstr ""
+msgstr "Şubelerini, menülerini, kullanımını, aboneliğini ve son olaylarını görmek için çalışma alanı seçin. Bu ekran yalnızca okur: buradan müşteri verisi değiştirilemez ve müşteri olarak giriş yapılamaz."
 
 #: platform:platform.tenants.loading
 msgid "platform.tenants.loading"
-msgstr ""
+msgstr "Çalışma alanı yükleniyor…"
 
 #: platform:platform.tenants.locations.empty
 msgid "platform.tenants.locations.empty"
-msgstr ""
+msgstr "Henüz şube yok."
 
 #: platform:platform.tenants.locations.title
 msgid "platform.tenants.locations.title"
-msgstr ""
+msgstr "Şubeler"
 
 #: platform:platform.tenants.members.empty
 msgid "platform.tenants.members.empty"
-msgstr ""
+msgstr "Bu çalışma alanında kimse yok."
 
 #: platform:platform.tenants.members.title
 msgid "platform.tenants.members.title"
-msgstr ""
+msgstr "Ekip"
 
 #: platform:platform.tenants.menus.empty
 msgid "platform.tenants.menus.empty"
-msgstr ""
+msgstr "Henüz menü yok."
 
 #: platform:platform.tenants.menus.title
 msgid "platform.tenants.menus.title"
-msgstr ""
+msgstr "Menüler"
 
 #: platform:platform.tenants.nav.label
 msgid "platform.tenants.nav.label"
-msgstr ""
+msgstr "Çalışma alanları"
 
 #: platform:platform.tenants.region.label
 msgid "platform.tenants.region.label"
-msgstr ""
+msgstr "Çalışma alanı ayrıntısı"
 
 #: platform:platform.tenants.retry
 msgid "platform.tenants.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.tenants.subscription.endsAt
 msgid "platform.tenants.subscription.endsAt"
-msgstr ""
+msgstr "Bitiş tarihi"
 
 #: platform:platform.tenants.subscription.none
 msgid "platform.tenants.subscription.none"
-msgstr ""
+msgstr "Bu çalışma alanı için hiç abonelik kaydedilmedi."
 
 #: platform:platform.tenants.subscription.plan
 msgid "platform.tenants.subscription.plan"
-msgstr ""
+msgstr "Plan"
 
 #: platform:platform.tenants.subscription.title
 msgid "platform.tenants.subscription.title"
-msgstr ""
+msgstr "Abonelik"
 
 #: platform:platform.tenants.subscription.version
 msgid "platform.tenants.subscription.version"
-msgstr ""
+msgstr "Plan sürümü"
 
 #: platform:platform.tenants.truncated
 msgid "platform.tenants.truncated"
-msgstr ""
+msgstr "Yalnızca ilk satırlar gösteriliyor; yukarıdaki sayı gerçek toplamdır."
 
 #: platform:platform.tenants.usage.locations
 msgid "platform.tenants.usage.locations"
-msgstr ""
+msgstr "Şubeler"
 
 #: platform:platform.tenants.usage.mediaAssets
 msgid "platform.tenants.usage.mediaAssets"
-msgstr ""
+msgstr "Medya dosyaları"
 
 #: platform:platform.tenants.usage.members
 msgid "platform.tenants.usage.members"
-msgstr ""
+msgstr "Ekip üyeleri"
 
 #: platform:platform.tenants.usage.menus
 msgid "platform.tenants.usage.menus"
-msgstr ""
+msgstr "Menüler"
 
 #: platform:platform.tenants.usage.products
 msgid "platform.tenants.usage.products"
-msgstr ""
+msgstr "Ürünler"
 
 #: platform:platform.tenants.usage.title
 msgid "platform.tenants.usage.title"
-msgstr ""
+msgstr "Kullanım"
 
 #: platform:platform.users.col.email
 msgid "platform.users.col.email"
-msgstr ""
+msgstr "E-posta"
 
 #: platform:platform.users.col.memberships
 msgid "platform.users.col.memberships"
-msgstr ""
+msgstr "Çalışma alanları"
 
 #: platform:platform.users.col.name
 msgid "platform.users.col.name"
-msgstr ""
+msgstr "Kişi"
 
 #: platform:platform.users.col.platformRole
 msgid "platform.users.col.platformRole"
-msgstr ""
+msgstr "Platform rolü"
 
 #: platform:platform.users.col.sessions
 msgid "platform.users.col.sessions"
-msgstr ""
+msgstr "Açık oturumlar"
 
 #: platform:platform.users.col.verified
 msgid "platform.users.col.verified"
-msgstr ""
+msgstr "Adres doğrulandı"
 
 #: platform:platform.users.empty
 msgid "platform.users.empty"
-msgstr ""
+msgstr "Aramaya uyan kullanıcı yok."
 
 #: platform:platform.users.error
 msgid "platform.users.error"
-msgstr ""
+msgstr "Kullanıcılar yüklenemedi."
 
 #: platform:platform.users.intro
 msgid "platform.users.intro"
-msgstr ""
+msgstr "Kişi kim, hangi çalışma alanlarına hangi rolle üye ve adresi doğrulanmış mı? Bu ekran yalnızca okur; buradan parola sıfırlanamaz, hesap kilitlenemez veya rol değiştirilemez."
 
 #: platform:platform.users.loading
 msgid "platform.users.loading"
-msgstr ""
+msgstr "Kullanıcılar yükleniyor…"
 
 #: platform:platform.users.lock.note
 msgid "platform.users.lock.note"
-msgstr ""
+msgstr "Üründe henüz kullanıcı kilitleme özelliği olmadığı için kilit sütunu gösterilmiyor: “kilitli değil” rozeti, mevcut olmayan bir kontrolü raporlardı."
 
 #: platform:platform.users.memberships.none
 msgid "platform.users.memberships.none"
-msgstr ""
+msgstr "Hiçbir çalışma alanına üye değil"
 
 #: platform:platform.users.nav.label
 msgid "platform.users.nav.label"
-msgstr ""
+msgstr "Kullanıcılar"
 
 #: platform:platform.users.region.label
 msgid "platform.users.region.label"
-msgstr ""
+msgstr "Kullanıcılar"
 
 #: platform:platform.users.retry
 msgid "platform.users.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: platform:platform.users.search.label
 msgid "platform.users.search.label"
-msgstr ""
+msgstr "Ad veya e-posta adresiyle ara"
 
 #: platform:platform.users.search.submit
 msgid "platform.users.search.submit"
-msgstr ""
+msgstr "Ara"
 
 #: platform:platform.users.sessions.note
 msgid "platform.users.sessions.note"
-msgstr ""
+msgstr "Açık oturumlar yalnızca bu kurulum oturumları veritabanında tutuyorsa sayılır. Boş hücre, “kimse giriş yapmadı” değil, “burada ölçülmedi” demektir."
 
 #: platform:platform.users.title
 msgid "platform.users.title"
-msgstr ""
+msgstr "Kullanıcılar"
 
 #: platform:platform.users.truncated
 msgid "platform.users.truncated"
-msgstr ""
+msgstr "Yalnızca ilk satırlar gösteriliyor. Diğerlerini görmek için aramayı daraltın."
 
 #: platform:platform.users.verified.no
 msgid "platform.users.verified.no"
-msgstr ""
+msgstr "Doğrulanmadı"

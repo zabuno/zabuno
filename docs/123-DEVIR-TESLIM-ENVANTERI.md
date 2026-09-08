@@ -1,5 +1,40 @@
 # 123 — Devir teslim envanteri (2026-09-06)
 
+## 2026-09-08 güncellemesi — aşağıdaki 6 Eylül kaydı tarihseldir
+
+Sahip bu oturumda **tercüme işine başlanmasını** açıkça istedi; §7.1'in
+başlama koşulu karşılandı. Kaynak çevirisi, dilin kullanıcıya açılması ve
+yasal inceleme ayrı kabul durumlarıdır. `shipped_locales` bu pakette değişmedi.
+
+Öncelik: onaylanan durum sayfası kurulumu → frontpages UX design ve paralel
+çeviri paketleri → diğer eksikler. Yol haritası sayacı hâlâ 0/10, 1/10 aktif;
+PR veya katalog sayısı ürün fazının tamamlandığı anlamına gelmez.
+
+- [zabuno/status](https://github.com/zabuno/status) oluşturuldu.
+  [GitHub Pages yayını](https://zabuno.github.io/status/) ve beş gerçek HTTP
+  hedefi doğrulandı; ilk ölçümler 8 Eylül 2026'da başladı. Beş dakikalık
+  zamanlama garanti değildir. `status.zabuno.com` CNAME kaydı henüz yok;
+  SLA hedefleri ve sözleşmeli ölçüm şartları belirlenmiş sayılmaz.
+- İlk özetin yanlış `down` göstermesi Upptime commit önekinin eksikliğiyle,
+  giriş sayfası gecikmesinin eksik hesaplanması ad içindeki ` in ` dizisiyle
+  ilişkiliydi. Yapılandırma düzeltildi; gerçek tarihçe silinmedi. Ölçüm,
+  derleme ve yayın [34247930861](https://github.com/zabuno/status/actions/runs/34247930861)
+  koşusunda başarılı, tarayıcıda beş servis `up` görüldü.
+- Bu çeviri paketi Türkçe katalogdaki **884** boş girdiyi ve Almanca ön yüz
+  kataloğundaki **362** boş girdiyi doldurur. Türkçe 2.986/2.986, Almanca
+  `site` 362/362 doludur. PO kaynakları ayrı incelendi; MO/JSON tek entegrasyon
+  adımında üretildi. Doluluk, eski çevirilerin tamamının dilsel onayı değildir.
+- `fa`, `ku`, `it` katalogları ve derleyici kayıtları hâlâ eksik; diğer
+  dillerin bütün domainleri tamamlanmış değildir. Yasal belge gövdeleri bu
+  pakette çevrilmedi. Hukukçu onayı, üretim ödeme bilgileri ve şirket kimliği
+  hâlâ ayrı engellerdir.
+- İlk ön yüz paketi [#346](https://github.com/zabuno/zabuno/pull/346): gerçek
+  ürün adımları, dar ekranda doğal okuma, farklı yetenek/sınır hiyerarşisi.
+  PR durumu canlı GitHub'dan okunmalıdır; bu kayıt main veya yayın kabulü değildir.
+
+Aşağıdaki listeleri bugünün uçan işleri olarak çalıştırmayın; aynı işin
+birleşip birleşmediğini önce GitHub ve seçilen checkout üzerinden doğrulayın.
+
 Bu belge yeni bir oturuma devretmek içindir. **Ölçüldü, tahmin edilmedi.**
 
 ## 1. Uçan işler — şu anda çalışan üç ajan
