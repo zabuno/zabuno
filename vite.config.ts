@@ -55,6 +55,12 @@ export default defineConfig(({ mode }) => ({
                           'resources/js/workspace.desktop.tsx',
                           'resources/js/platform.tsx',
                           'resources/js/engineering.tsx',
+                          // KURUMSAL SİTENİN TEK BETİĞİ (`docs/138`).
+                          // React DEĞİL ve React'e bağlı değil: kurumsal
+                          // sayfalar sıfır React yüklemeye devam eder.
+                          // Kendi giriş noktası, çünkü kabuğa değil yalnız
+                          // sahne taşıyan sayfaya bağlanır.
+                          'resources/js/site-motion.ts',
                       ],
                       refresh: true,
                   }),

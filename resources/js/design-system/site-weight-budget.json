@@ -1,0 +1,9 @@
+{
+    "$note": "KURUMSAL SİTENİN ağırlık bütçesi (docs/138 §6). `bundle-budget.json` PANELİN JS bütçesidir ve ayrı bir soruya cevap verir: 'en ağır uygulama yüzeyi ne kadar JS indiriyor?'. Bu dosya ise tanıtım sitesinin sorusunu sorar: 'ürünü İLK KEZ gören biri, tek bir satır okumadan önce kaç bayt bekliyor?' İkisi ayrı sayılardır çünkü ayrı kitleleri var — biri kaydolmuş bir kullanıcı, öteki henüz ikna olmamış bir restoran sahibi.",
+    "$measuredAt": "2026-09-08",
+    "$unit": "KB gzip. Ölçülen: `resources/css/app.css` (her kurumsal sayfanın giydiği tek stil) + `resources/js/site-motion.ts` kapanışı (sahne taşıyan sayfaların tek betiği). Yazı tipleri BU SAYIYA GİRMEZ: `woff2` zaten sıkıştırılmıştır ve ayrı bir kararın (FF-195) konusudur; ölçümü docs/138 §6'da ayrıca yazılı.",
+    "$why": "Hedef kitle mutfaktan, zayıf şebekeyle bakan bir restoran sahibi. 32 KB gzip, ~50 KB/s etkili bir bağlantıda 0,65 saniyelik aktarımdır. Bütçe bir temenni değil: 2026-09-08 ölçümü 29,4 KB ve pay ~%9 — yani bir animasyon kütüphanesi eklemek bu kapıyı DERHAL kırar (GSAP tek başına 46,3 KB gzip'tir, yani bütçenin tamamından büyüktür).",
+    "$measurementCaveat": "Ölçümden ÖNCE `php artisan view:clear` çalıştırın. `app.css` derlenmiş Blade önbelleğini de bir tarama kaynağı sayar (`@source '../../storage/framework/views/*.php'`); test suiti koştuktan sonra o dizin dolar ve AYNI kaynak kodu ~6 KB daha büyük bir CSS üretir. Kirli bir önbellekle alınan sayı, kodun değil önbelleğin ölçüsüdür.",
+    "$raise": "Bütçeyi yükseltmek sahibin kararıdır ve ne demek olduğu açıktır: ürünü ilk kez gören kişinin bekleme süresini uzatmak. Önce ne büyüdüğüne bakın.",
+    "maxTotalGzipKb": 32
+}
