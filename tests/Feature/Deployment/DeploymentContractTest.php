@@ -1259,4 +1259,333 @@ final class DeploymentContractTest extends TestCase
             .'adıyla söylemiyor.'
         );
     }
+    // --- DEPLOY-FORWARD-ONLY-15 -------------------------------------------
+
+    /** Guard işindeki bir adımın gövdesi. */
+    private function guardStep(string $name): string
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertSame(
+            1,
+            preg_match('/- name: '.preg_quote($name, '/').'\n(?<step>(?: {8}.*\n|\n)*)/', $workflow, $step),
+            "DEPLOY-FORWARD-ONLY-15: `{$name}` adımı yok."
+        );
+
+        return $step['step'];
+    }
+
+    /** `deploy` işinin tamamı — guard'ın gövdesi karışmadan. */
+    private function deployJob(): string
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        $start = strpos($workflow, "\n  deploy:\n");
+        self::assertIsInt($start, 'Dağıtım işi okunamadı.');
+
+        return substr($workflow, (int) $start);
+    }
+
+    /**
+     * DAĞITIM, TETİKLEYEN KOŞUMUN COMMIT'İNE DEĞİL DALIN UCUNA BAKAR.
+     *
+     * ÖLÇÜLDÜ (2026-09-08, dağıtım koşumu 34210847469): koşum arayüzde
+     * `8085ab18`'e ait görünüyordu ama yayına aldığı `ad02fc21`'di — main'in
+     * ucu değil, bir öncekisi. Canlı `/up/build` de `ad02fc21` diyordu.
+     * Aynı gün beş kez oldu ve her seferinde BİR SONRAKİ birleşme kusuru
+     * kendiliğinden örttü; yani kusur kendini gizliyordu.
+     *
+     * Kök neden: `workflow_run` HER CI koşumu için ayrı tetiklenir ve
+     * tetikleyen koşumun commit'ini taşır. Arka arkaya birleşmelerde
+     * koşumlar birbirini geçer; ESKİ bir commit'in CI'ı, YENİ bir commit'in
+     * dağıtımından SONRA bitip canlıyı geriye alabilir. Sonucu: en son
+     * birleşme ancak bir SONRAKİ birleşme geldiğinde yayına çıkıyordu.
+     * Günün son birleşmesi gece boyu yayında olmuyordu.
+     *
+     * Kural: bir birleşmenin CI'ı yeşil olduğunda O COMMİT (ya da daha
+     * yenisi) yayına çıkar. Başka bir birleşme GEREKMEZ.
+     */
+    public function test_the_deploy_targets_the_branch_tip_not_only_the_run_that_triggered_it(): void
+    {
+        $step = $this->guardStep('Hangi commit yayına alınmalı?');
+
+        // Dalın ucu SORULMALI. Sorulmazsa hedef, tetikleyen koşumun
+        // commit'i olarak kalır ve kusur aynen sürer.
+        self::assertMatchesRegularExpression(
+            '#/commits/\$\{BRANCH\}#',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: dalın ucu hiç sorulmuyor; hedef tetikleyen koşumun commit\'i olarak kalır.'
+        );
+
+        // Ama uç KÖRÜ KÖRÜNE alınamaz: CI'ı geçmemiş bir uç yayına
+        // çıkarsa, `workflow_run` ile beklemenin bütün anlamı gider.
+        self::assertStringContainsString(
+            'actions/workflows/ci.yml/runs',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: ucun CI\'ı geçip geçmediği sorulmuyor.'
+        );
+        self::assertStringContainsString(
+            'status=success',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: ucun CI koşumu yalnız BİTMİŞ değil GEÇMİŞ olmalı.'
+        );
+
+        // Ve karar bir ÇIKTI olmalı; dağıtım işi onu kullanmalı.
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertStringContainsString(
+            'target_sha: ${{ steps.target.outputs.sha }}',
+            $workflow,
+            'DEPLOY-FORWARD-ONLY-15: çözülen hedef guard işinden dışarı çıkmıyor.'
+        );
+
+        self::assertStringContainsString(
+            'ref: ${{ needs.guard.outputs.target_sha }}',
+            $workflow,
+            'DEPLOY-FORWARD-ONLY-15: checkout hâlâ tetikleyen koşumun commit\'ini alıyor.'
+        );
+    }
+
+    /**
+     * HEDEF BİR KEZ ÇÖZÜLÜR.
+     *
+     * İki yerde iki kez hesaplanan bir değer er geç iki farklı cevap
+     * verir. Bu depoda tam olarak bu oldu: imaj etiketi bir kaynaktan,
+     * sürüm etiketi başkasından türüyordu ve canlı site çalıştırmadığı bir
+     * commit'i çalıştırdığını söyledi (`docs/142` §3.2).
+     *
+     * Dağıtım işinin içinde tetikleyici commit'e HİÇ bakılmamalı.
+     */
+    public function test_the_released_commit_is_resolved_once_and_used_everywhere(): void
+    {
+        $job = $this->deployJob();
+
+        // Yorumlar elenir: eski kusuru ANLATAN bir yorum, kusurun geri
+        // geldiği anlamına gelmez.
+        $effective = (string) preg_replace('/^\s*#.*$/m', '', $job);
+
+        self::assertStringNotContainsString(
+            'workflow_run.head_sha',
+            $effective,
+            'DEPLOY-FORWARD-ONLY-15: dağıtım işi hedefi yeniden hesaplıyor; '
+            .'iki hesap er geç iki farklı commit verir.'
+        );
+
+        self::assertStringContainsString(
+            'sha="${{ needs.guard.outputs.target_sha }}"',
+            $effective,
+            'DEPLOY-FORWARD-ONLY-15: imaj etiketi, kapının çözdüğü hedeften türemeli.'
+        );
+    }
+
+    /**
+     * GERİYE GİTME YASAK.
+     *
+     * 8 Eylül'ün kusurunun yarısı buydu: eski bir commit'in dağıtımı,
+     * yeni bir commit'in dağıtımından SONRA koştu ve canlıyı geriye aldı.
+     * Yeni bir birleşme gelene kadar site geride kaldı.
+     *
+     * Canlının ne çalıştırdığı `/up/build` ile okunabilir (`docs/142`);
+     * hedefin onun ATASI olup olmadığı ölçülebilir. Ölçülüp geriye gidiliyorsa
+     * dağıtım DURUR.
+     *
+     * KIRMIZI DEĞİL: ortada arıza yok, canlı zaten daha yeni kodu
+     * çalıştırıyor. Her yarışta kırmızı bir X basmak, bu deponun başka
+     * yerlerde bilerek kaçındığı "kırmızıyı görmezden gel" alışkanlığını
+     * yaratırdı. Ama sessiz de kalamaz.
+     */
+    public function test_a_deploy_that_would_move_the_site_backwards_is_stopped(): void
+    {
+        $step = $this->guardStep('Geriye gitme yasak');
+
+        self::assertStringContainsString(
+            '/up/build',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: canlıda ne çalıştığı sorulmuyor; geriye gidiş ölçülemez.'
+        );
+
+        // Ata mı değil mi ÖLÇÜLMELİ. Tarih karşılaştırması ya da dizge
+        // eşitliği yetmez: iki ayrı dalın uçları da birbirinden farklıdır
+        // ama hiçbiri ötekinin atası değildir.
+        self::assertStringContainsString(
+            '/compare/',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: hedefin canlının atası olup olmadığı ölçülmüyor.'
+        );
+        self::assertStringContainsString(
+            'behind',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: "hedef daha eski" durumu hiç adlandırılmamış.'
+        );
+
+        // Ve ölçüm bir KARARA bağlanmalı: dağıtım gerçekten durmalı.
+        self::assertMatchesRegularExpression(
+            '/"behind".*\n(.*\n)*?.*should_deploy=false/U',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: geriye giden dağıtım ölçülüyor ama durdurulmuyor.'
+        );
+
+        // "Yapacak iş yok" kararı İKİ YARIYA birden bakmalı. Yalnız
+        // `.revision`'a bakıp atlamak, "PHP güncel ama varlıklar bayat"
+        // hâlini (`docs/142` §2) onarılamaz kılardı: yeniden dağıtım her
+        // seferinde atlanır, bayat CSS orada kalırdı.
+        self::assertStringContainsString(
+            'assets_revision',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: atlama kararı varlıkların yarısını görmüyor; bayat CSS onarılamaz hâle gelir.'
+        );
+
+        // Söylenmeli.
+        self::assertStringContainsString(
+            '::warning::',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: durdurulan dağıtım sessiz kalmamalı.'
+        );
+        self::assertStringContainsString(
+            'GITHUB_STEP_SUMMARY',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: sahibi günlük okumaz; koşum özetine yazılmalı.'
+        );
+
+        // Ama kırmızı OLMAMALI.
+        self::assertStringNotContainsString(
+            'exit 1',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: yarışın normal sonucu kırmızı olamaz; '
+            .'her birleşmede kırmızı X, kırmızıyı anlamsız kılar.'
+        );
+    }
+
+    /**
+     * OKUNAMAYAN BİR CANLI SÜRÜM DAĞITIMI KİLİTLEMEZ.
+     *
+     * Kapı canlıyı okuyamıyorsa (ilk kurulum, uç geçici olarak cevapsız)
+     * karşılaştırma YAPILAMAZ. Bilinmeyeni "geriye gidiyor" saymak, siteyi
+     * hiç güncellenemez hâle getirirdi — kapının kapatmaya çalıştığı
+     * kusurdan beteri.
+     *
+     * Bilinmeyen uydurulmaz da: dağıtım sürer ve sonucu kanıt adımı ölçer.
+     */
+    public function test_an_unreadable_live_revision_does_not_wedge_the_deploy(): void
+    {
+        $step = $this->guardStep('Geriye gitme yasak');
+
+        self::assertMatchesRegularExpression(
+            '/-z "\$\{live\}".*\n(.*\n)*?.*should_deploy=true/U',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: canlı sürüm okunamadığında dağıtım kilitleniyor.'
+        );
+    }
+
+    /**
+     * ELLE DAĞITIM HÂLÂ GERİ ALABİLİR.
+     *
+     * `workflow_dispatch` bu akışta geri alma ve yeniden deneme yoludur ve
+     * geri alma TANIMI GEREĞİ geriye gitmektir. İki yeni kapı da onu
+     * kapsasaydı, tek geri alma yolu sessizce kapanırdı: hedef ucun peşine
+     * takılır, geriye gitme de reddedilirdi. Kırık bir sürüm yayındayken
+     * geri dönülemez olmak, bu paketin kapattığı kusurdan ağırdır.
+     */
+    public function test_a_manual_deploy_can_still_roll_back_to_an_older_commit(): void
+    {
+        foreach (['Hangi commit yayına alınmalı?', 'Geriye gitme yasak'] as $name) {
+            $step = $this->guardStep($name);
+
+            self::assertMatchesRegularExpression(
+                '/\$\{GITHUB_EVENT_NAME\}" != "workflow_run"/',
+                $step,
+                "DEPLOY-FORWARD-ONLY-15: `{$name}` elle tetiklemeyi ayırmıyor; geri alma yolu kapanır."
+            );
+        }
+    }
+
+    /**
+     * AYNI ANDA İKİ DAĞITIM YOK — AMA KOŞAN BİR DAĞITIM DA ÖLDÜRÜLMEZ.
+     *
+     * `cancel-in-progress: true` bu akış için yanlış seçim: koşan dağıtım
+     * tam da imajı SSH ile aktarıyor ya da `docker compose up`
+     * çalıştırıyor olabilir. Yarıda kesilmiş bir `up`, üretimde yarım bir
+     * yığın bırakır — bazı konteynerler yeni imajda, bazıları eskisinde.
+     *
+     * `false` ile GitHub koşanı bitirir, bekleyenler arasından yalnız en
+     * yenisini tutar. Sıra beklemek eski bir commit'i yayına çıkarmaz:
+     * hedef, koşum BAŞLADIĞINDA çözülür.
+     */
+    public function test_two_deploys_never_run_at_once_and_a_running_one_is_never_killed(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertSame(
+            1,
+            preg_match('/^concurrency:\n(?<block>(?: {2}.*\n|\n)*)/m', $workflow, $concurrency),
+            'DEPLOY-FORWARD-ONLY-15: eşzamanlılık grubu yok; iki dağıtım aynı yığını birlikte kurabilir.'
+        );
+
+        self::assertMatchesRegularExpression(
+            '/^\s{2}group: \S+/m',
+            $concurrency['block'],
+            'DEPLOY-FORWARD-ONLY-15: eşzamanlılık grubunun adı yok.'
+        );
+
+        self::assertStringContainsString(
+            'cancel-in-progress: false',
+            $concurrency['block'],
+            'DEPLOY-FORWARD-ONLY-15: koşan bir dağıtımı öldürmek, üretimde yarım bir yığın bırakır.'
+        );
+    }
+
+    /**
+     * #322'NİN DÜRÜST UYARISI KORUNUR — ama artık ölçülmüş uçla.
+     *
+     * O uyarı, kusuru görünür kılan tek şeydi: onsuz beş dağıtım sessizce
+     * ucun gerisinde kaldı. Kaldırılamaz.
+     *
+     * Kaynağı değişti: `github.sha`, koşum kuyrukta beklerken eskimiş
+     * olabilir. Uç, kararın verildiği anda ÖLÇÜLDÜ; uyarı onu bildirmeli.
+     */
+    public function test_the_behind_the_tip_warning_reports_the_tip_that_was_measured(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertStringContainsString(
+            'tip_sha: ${{ steps.target.outputs.tip }}',
+            $workflow,
+            'DEPLOY-FORWARD-ONLY-15: karar anındaki uç dışarı çıkmıyor.'
+        );
+
+        self::assertStringContainsString(
+            'BRANCH_TIP_SHA: ${{ needs.guard.outputs.tip_sha || github.sha }}',
+            $workflow,
+            'DEPLOY-FORWARD-ONLY-15: uyarı, ölçülmüş uç yerine olayın taşıdığı eskimiş ucu bildiriyor.'
+        );
+    }
+
+    /**
+     * YENİ KAPI DA SIR SIZDIRMAZ VE YENİ SECRET İSTEMEZ.
+     *
+     * Sağlık adresi bir secret'tır ve GitHub yalnız DEĞERİN KENDİSİNİ
+     * maskeler; ondan türetilmiş kök adres maskelenmez.
+     *
+     * Yeni bir secret isteseydi, kurulumu bugün çalışan makinede kapı
+     * sessizce kapalı kalırdı — kapının hiç var olmadığı hâlin aynısı, ama
+     * var sanıldığı için daha kötüsü.
+     */
+    public function test_the_forward_gate_needs_no_new_secret_and_prints_no_address(): void
+    {
+        $step = $this->guardStep('Geriye gitme yasak');
+
+        preg_match_all('/secrets\.([A-Z_]+)/', $step, $secrets);
+
+        self::assertSame(
+            ['DEPLOY_HEALTH_URL'],
+            array_values(array_unique($secrets[1])),
+            'DEPLOY-FORWARD-ONLY-15: kapı var olan sağlık adresiyle çalışmalı; yeni bir secret onu sessizce kapatır.'
+        );
+
+        self::assertDoesNotMatchRegularExpression(
+            '/echo[^\n]*\$\{?(DEPLOY_HEALTH_URL|origin)\b/',
+            $step,
+            'DEPLOY-FORWARD-ONLY-15: secret\'tan türetilmiş adres günlüğe basılıyor; maskeleme onu kapsamaz.'
+        );
+    }
 }

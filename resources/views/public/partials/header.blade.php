@@ -65,7 +65,22 @@
                 </nav>
             @endforeach
 
-            <details class="dz-dropdown site-menu">
+            {{-- `data-dismiss-on-outside` — KAPANMA YOLLARININ KAPSAM İŞARETİ.
+
+                 Tarayıcının `<details>` davranışı menüyü AÇAR ama dışarı
+                 yapılan hareketi hiç görmez: kapanmanın tek yolu düğmeye
+                 ikinci kez basmaktır ve onu bilmeyen için menü, altındaki
+                 sayfayı örten kapatılamaz bir kapak olur (`SITE-DISMISS-01`).
+
+                 İşaret ÖZNİTELİKTE, sınıfta değil: altbilgideki katlanabilir
+                 gruplar ve SSS akordeonları da `<details>`tir ve onları
+                 kullanıcı BİLEREK açar — dışarı tıklamada kapanmaları,
+                 okuduğu şeyin elinden alınması olurdu. Öznitelik yoksa
+                 davranış da yoktur.
+
+                 Menü betiksiz de açılıp kapanmaya devam eder; betik yalnız
+                 kapanma yollarını EKLER (`resources/js/site/dismiss.ts`). --}}
+            <details class="dz-dropdown site-menu" data-dismiss-on-outside>
                 {{-- İkon + sözcük birlikte (`docs/118` E6): ikon tek başına bir
                      etiket değildir, sözcük tek başına bir hedef göstergesi
                      değildir. Açık/kapalı ayrımı iki ayrı Phosphor glifiyle

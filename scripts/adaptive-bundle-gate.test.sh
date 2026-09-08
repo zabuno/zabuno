@@ -35,7 +35,9 @@ scaffold() {
            "$TMP/resources/js/components/workspace/inspectors" \
            "$TMP/resources/js/components/workspace/shell" \
            "$TMP/resources/js/components/workspace/kitchen" \
-           "$TMP/resources/js/components/workspace/pages/menu"
+           "$TMP/resources/js/components/workspace/pages/menu" \
+           "$TMP/resources/js/components/workspace/pages/desktop" \
+           "$TMP/resources/js/components/workspace/pages/mobile"
 
   local js="$TMP/resources/js"
   # Bölüm kayıtları glob ile toplanır — asıl sızıntı yolu buydu.
@@ -62,9 +64,14 @@ scaffold() {
     > "$js/components/workspace/kitchen/KitchenBoard.tsx"
   printf "export const MobileChrome = () => null;\n" \
     > "$js/components/workspace/chrome/MobileChrome.tsx"
+  # CİHAZ KLASÖRÜ KONVANSİYONU (`docs/149` §8): `pages/desktop/` altındaki her
+  # dosya masaüstü paketine kilitlidir. `pages/mobile/` bilerek BOŞ bırakılır —
+  # boş bir cihaz klasörü hata DEĞİLDİR ve temiz senaryo bunu da kanıtlar.
+  printf "export const OrdersScreenDesktop = () => null;\n" \
+    > "$js/components/workspace/pages/desktop/OrdersScreenDesktop.tsx"
   printf "import type { WorkspaceInspectorMap } from './inspectors/types';\nimport reg from './shell/registry';\nexport const WorkspaceApp = (p: { i?: WorkspaceInspectorMap }) => [p, reg];\n" \
     > "$js/components/workspace/WorkspaceApp.tsx"
-  printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, desktopInspectors];\n" \
+  printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { OrdersScreenDesktop } from './components/workspace/pages/desktop/OrdersScreenDesktop';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, OrdersScreenDesktop, desktopInspectors];\n" \
     > "$js/workspace.desktop.tsx"
   printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { MobileChrome } from './components/workspace/chrome/MobileChrome';\nexport default [WorkspaceApp, MobileChrome];\n" \
     > "$js/workspace.mobile.tsx"
@@ -106,6 +113,33 @@ rm "$TMP/resources/js/components/workspace/chrome/MobileChrome.tsx"
 printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nexport default [WorkspaceApp];\n" \
   > "$TMP/resources/js/workspace.mobile.tsx"
 expect LEAK "bildirilen dosya yoksa sessizce geçmez"
+
+# ═══ CİHAZ KLASÖRÜ KONVANSİYONU (`docs/149` §8) ═══
+#
+# Yukarıdaki senaryolar tek tek ADLANDIRILAN modülleri koruyor. Klasör kuralı
+# ise adlandırılmayanı korur: yarın `pages/desktop/` altına yazılan bir dosya,
+# kapının listesine hiç yazılmadan kilitli olmalı. Aşağıdaki üç senaryo tam
+# olarak bunu sınar — biri kaldırılırsa konvansiyon bir yorum satırına döner.
+
+# Masaüstü sayfası paylaşılan bölüm kaydından mobil girişe sızarsa.
+scaffold
+printf "import { OrdersScreenDesktop } from './desktop/OrdersScreenDesktop';\nvoid OrdersScreenDesktop;\nimport { MenuPage } from './MenuPage';\nexport default { render: MenuPage };\n" \
+  > "$TMP/resources/js/components/workspace/pages/MenuPage.section.tsx"
+expect LEAK "pages/desktop altındaki dosya mobil pakete sızarsa kırılır"
+
+# Ölü masaüstü sayfası: klasörde duruyor ama hiçbir girişten ulaşılmıyor.
+scaffold
+printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, desktopInspectors];\n" \
+  > "$TMP/resources/js/workspace.desktop.tsx"
+expect LEAK "pages/desktop altındaki dosyaya masaüstünden ulaşılmıyorsa kırılır"
+
+# Ters yön: `pages/mobile/` altındaki bir dosya masaüstü paketine girerse.
+scaffold
+printf "export const OrderQueueTouch = () => null;\n" \
+  > "$TMP/resources/js/components/workspace/pages/mobile/OrderQueueTouch.tsx"
+printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { OrdersScreenDesktop } from './components/workspace/pages/desktop/OrdersScreenDesktop';\nimport { OrderQueueTouch } from './components/workspace/pages/mobile/OrderQueueTouch';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, OrdersScreenDesktop, OrderQueueTouch, desktopInspectors];\n" \
+  > "$TMP/resources/js/workspace.desktop.tsx"
+expect LEAK "pages/mobile altındaki dosya masaüstü paketine girerse kırılır"
 
 # Giriş yoksa ayrım ölçülemez; PASS demek yalan olurdu.
 scaffold

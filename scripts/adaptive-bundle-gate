@@ -68,6 +68,26 @@ MOBILE_ONLY = [
     'components/workspace/chrome/MobileChrome.tsx',
 ]
 
+# CİHAZ KLASÖRLERİ — dosya değil, KURAL (`docs/149` §8).
+#
+# Yukarıdaki listeler tek tek modülleri adlandırır ve bir modül eklemeyi
+# unutmak sessizce mümkündür. Bu iki klasör o boşluğu kapatır: altına konan
+# HER dosya, listeye yazılmayı beklemeden kendi paketine kilitlenir.
+#
+# Kural bu yüzden bir konvansiyondur ve belgelenmiştir: masaüstüne özgü bir
+# bileşen `pages/desktop/` altına, dokunmaya özgü olan `pages/mobile/`
+# altına yazılır. Yanlış klasöre yazılan dosya, ötekinin paketinden
+# ulaşılabilir hâle geldiği ANDA kapıyı kırar — kimsenin bir listeyi
+# güncellemesi gerekmeden.
+#
+# BOŞ OLMASI HATA DEĞİL: `pages/mobile/` bugün boştur, çünkü 320 tabanı
+# PAYLAŞILAN koddur (TOUCH-FIRST-INTERFACE §1) ve dokunma sürümü ortak
+# dosyalarda yaşar. Klasör, dokunmaya ÖZGÜ bir bileşen ilk yazıldığında
+# dolacak ve kural o gün de hazır olacak. Boş bir klasörü "bayat bildirim"
+# sayan bir kapı, konvansiyonun kurulmasını imkânsız kılardı.
+DESKTOP_ONLY_DIRS = ['components/workspace/pages/desktop']
+MOBILE_ONLY_DIRS = ['components/workspace/pages/mobile']
+
 
 SPEC_RE = re.compile(
     r"""(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]"""
@@ -175,8 +195,34 @@ def check(patterns, own, other, own_name, other_name):
                 leaks.append(f'{rel} is NOT reachable from the {own_name} entry (dead or misnamed)')
 
 
+def expand_dir(rel_dir):
+    """Klasördeki her kaynak dosya. Klasörün BOŞ ya da yok olması hata değil."""
+    base = (ROOT / rel_dir)
+    if not base.is_dir():
+        return []
+    return sorted(
+        path.resolve()
+        for path in base.rglob('*')
+        if path.is_file()
+        and path.suffix in ('.ts', '.tsx')
+        and not path.name.endswith(('.test.ts', '.test.tsx', '.stories.tsx'))
+    )
+
+
+def check_dirs(dirs, own, other, own_name, other_name):
+    for rel_dir in dirs:
+        for target in expand_dir(rel_dir):
+            rel = target.relative_to(ROOT)
+            if target in other:
+                leaks.append(f'{rel} is reachable from the {other_name} entry')
+            if target not in own:
+                leaks.append(f'{rel} is NOT reachable from the {own_name} entry (dead or misnamed)')
+
+
 check(DESKTOP_ONLY, desktop_reach, mobile_reach, 'desktop', 'MOBILE')
 check(MOBILE_ONLY, mobile_reach, desktop_reach, 'mobile', 'DESKTOP')
+check_dirs(DESKTOP_ONLY_DIRS, desktop_reach, mobile_reach, 'desktop', 'MOBILE')
+check_dirs(MOBILE_ONLY_DIRS, mobile_reach, desktop_reach, 'mobile', 'DESKTOP')
 
 if leaks:
     for leak in leaks:
@@ -184,11 +230,33 @@ if leaks:
     print('LEAK')
     sys.exit(1)
 
-desktop_count = sum(len(expand(p)) for p in DESKTOP_ONLY)
-mobile_count = sum(len(expand(p)) for p in MOBILE_ONLY)
+desktop_count = sum(len(expand(p)) for p in DESKTOP_ONLY) + sum(
+    len(expand_dir(d)) for d in DESKTOP_ONLY_DIRS
+)
+mobile_count = sum(len(expand(p)) for p in MOBILE_ONLY) + sum(
+    len(expand_dir(d)) for d in MOBILE_ONLY_DIRS
+)
+
+
+def weigh(paths):
+    return sum(path.stat().st_size for path in paths)
+
+
+# İKİ PAKETİN AĞIRLIĞI AYRI AYRI (`docs/149` §8).
+#
+# KAYNAK baytıdır, derlenmiş paket değil: kapı derleme İSTEMEDEN koşsun diye.
+# Derlenmiş ağırlık ayrıca ölçülür ve ikisi farklı sorulara cevap verir —
+# buradaki sayı "bu cihaz kaç satır kodu görüyor", ötekisi "kaç bayt iniyor".
+desktop_bytes = weigh(desktop_reach)
+mobile_bytes = weigh(mobile_reach)
+shared = desktop_reach & mobile_reach
 print(f'adaptive-bundle-gate: {desktop_count} desktop-only and '
-      f'{mobile_count} mobile-only modules stay in their own bundle '
-      f'(desktop closure {len(desktop_reach)} files, mobile {len(mobile_reach)})',
+      f'{mobile_count} mobile-only modules stay in their own bundle',
+      file=sys.stderr)
+print(f'adaptive-bundle-gate: desktop closure {len(desktop_reach)} files '
+      f'({desktop_bytes:,} B source), mobile {len(mobile_reach)} files '
+      f'({mobile_bytes:,} B source), shared {len(shared)} files '
+      f'({weigh(shared):,} B)',
       file=sys.stderr)
 print('PASS')
 PY
