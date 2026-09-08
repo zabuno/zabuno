@@ -1013,3 +1013,39 @@ bulgu üretti, ikisi sıfır bulgu verdi; bir koşu da `CDP timeout: Page.naviga
 ile düştü. Aynı statik çıktı, aynı makine. Bu, ölçülen sayfaların değil ARACIN
 oynaklığı ve bu paket onu düzeltmedi — 320 ve 1280 çerçeveleri (taban ve masaüstü)
 üst üste sıfır bulgu verdi ve borç kapanışı oraya dayanıyor.
+
+
+## 14. CI devir düzeltmesi — ölçüm verisi (2026-09-08)
+
+CI koşusu `34238494847` fiyat sayfasında 28–76/255, yardım sayfasının
+320 piksel zorlanmış renk görünümünde 13/255 sapmayla durdu. Fiyatın
+sebebi rasterleştirici değildi: CI yalnız boş şema kurmuştu, yerel taban
+ise üç kanonik plana ek olarak `local-dev` planı taşıyan veriden alınmıştı.
+`public/partials/pricing.blade.php` boş katalogda kartlar yerine boş durum
+çizer; dolu katalogda kart sayısı geniş ekran düzenini değiştirir.
+
+**Düzeltme:** CI, yeni SQLite şemasında `PlanCatalogueSeeder` çalıştırır.
+Yerel ölçüm de ayrı çalışma ağacında, örnek ortam dosyası ve yeni SQLite
+veritabanıyla aynı üç planı kullandı. Ürün fiyatı veya plan davranışı
+değişmedi. Kişisel geliştirme veritabanı kullanılmadı.
+
+İlk hedefli tarayıcı kontrolünde mobil fiyat görünümlerinin sapması sıfır,
+masaüstü fiyat görünümlerinin sapması 43–54/255 çıktı. Beş masaüstü PNG
+gözle incelendi: Starter, Restaurant ve Team kartları görünüyordu. Yalnız
+`pricing-1280-{reduce,light,minimal,contrast,forced}` imzaları bu ölçümden
+güncellendi. Diğer görünümler ve tolerans 12 korundu.
+
+`SceneCiFixtureTest` önce üç testten ikisinde kırmızı verdi: katalog tohumu
+ve görüntü kanıtı saklama adımı eksikti. Düzeltme sonrası üç test ve
+on bir assertion geçti; PHP biçim denetimi de geçti.
+
+**Kalan belirsizlik:** yardım sayfasının Ubuntu koşucusundaki 13/255 farkı
+yerel macOS ölçümünde tekrarlanmadı (sapma sıfır). Kesin sebep henüz
+bilinmiyor. Tabanı veya toleransı değiştirmek için kanıt yok. Görsel kapı
+artık tarayıcı sürümünü ve en çok sapan hücrenin koordinat/değerlerini
+raporlar; CI başarısız olduğunda da PNG ve raporu artifact olarak saklar.
+Yeni CI sonucu görülmeden bu paket main veya canlı için GREEN değildir.
+
+**Rollback:** bu düzeltmenin workflow, kapı, beş fiyat imzası, regresyon
+testi ve bu kayıt değişiklikleri birlikte geri alınır. Ürün/veri göçü yoktur;
+çalışan geliştirme veritabanına veya mevcut çalışma ağaçlarına dokunulmadı.

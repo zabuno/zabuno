@@ -392,6 +392,8 @@ if (PNG_DIR !== null) {
 try {
     const ws = await connect(await debuggerUrl(profilePath, chrome));
 
+    report.browser = await cdp(ws, 'Browser.getVersion');
+
     await cdp(ws, 'Page.enable');
     /* Ölçülen sayfanın dili makinenin değil kapının kararı — gerekçe
        `browser-session.mjs` içinde. */
@@ -504,7 +506,19 @@ try {
                     0,
                 );
 
-                report.views[view] = { compared: true, drift };
+                const worstCell = firstSignature.findIndex(
+                    (value, index) => Math.abs(value - known[index]) === drift,
+                );
+                report.views[view] = {
+                    compared: true,
+                    drift,
+                    worstCell: {
+                        column: worstCell % CELLS_X,
+                        row: Math.floor(worstCell / CELLS_X),
+                        expected: known[worstCell],
+                        actual: firstSignature[worstCell],
+                    },
+                };
 
                 if (drift > TOLERANCE) {
                     findings.push(

@@ -176,13 +176,14 @@ jobs:
       # biliyor: olculen sey sunucunun yanit suresi degil, sahnenin kendi
       # payi (bkz. scene-perf-gate icindeki `sceneDelayMs` gerekcesi).
       #
-      # Veritabani: kamu sayfalari sirket kimligini ve icerik kutugunu
-      # okuyor. Bos bir sema yeterli -- eksik sirket bilgisi zaten sayfanin
-      # dogru davranisidir ve uyari bandini cizdirir.
+      # Fiyat sayfasi plan tablosunu okur: bos sema, fiyat kartlari yerine
+      # bos durum cizer. Yerel gorsel olcum de yeni bir SQLite veritabani
+      # ve yalniz bu kanonik katalogla yapilir; local-dev plani kullanilmaz.
       - name: Serve the corporate site for the scene gates
         run: |
           touch database/database.sqlite
           php artisan migrate --force --no-interaction
+          php artisan db:seed --class=PlanCatalogueSeeder --force --no-interaction
           nohup php artisan serve --port=8291 --no-reload --silent > /tmp/zabuno-serve.log 2>&1 &
           disown || true
           for attempt in $(seq 1 60); do
@@ -199,7 +200,18 @@ jobs:
       # macOS Chrome ile Debian Chromium arasindaki en kotu hucre farki 7,
       # gercek bir gerileme ise 36-80 (docs/146 §12).
       - name: Scene visual gate (SAHNE-GORSEL-01, real browser)
-        run: node scripts/scene-visual-gate --base http://127.0.0.1:8291 --fail
+        run: |
+          mkdir -p storage/app/scene-visual
+          node scripts/scene-visual-gate --base http://127.0.0.1:8291 --fail --png storage/app/scene-visual > storage/app/scene-visual/report.json
+
+      - name: Preserve scene visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scene-visual-${{ github.run_id }}-${{ github.run_attempt }}
+          path: storage/app/scene-visual
+          if-no-files-found: ignore
+          retention-days: 7
 
       # KARE SURESI ve ILK EKRAN. 320x480 taban; CPU dortte bire kisilmis.
       - name: Scene frame budget (320x480, real browser)
