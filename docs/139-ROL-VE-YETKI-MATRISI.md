@@ -91,15 +91,15 @@ Kaynak: `MembershipRole::invitable()`, `::removable()`,
 
 | Rol | Taşıdığı izin | Davet edilebilir | Ekipten çıkarılabilir | Sahipliği devralabilir |
 | --- | ---: | --- | --- | --- |
-| `owner` | 23 / 23 | — | — | — |
-| `manager` | 20 / 23 | ✓ | ✓ | ✓ |
-| `editor` | 10 / 23 | ✓ | ✓ | ✓ |
-| `member` | 6 / 23 | — | ✓ | — |
-| `kitchen` | 6 / 23 | ✓ | ✓ | — |
+| `owner` | 25 / 25 | — | — | — |
+| `manager` | 20 / 25 | ✓ | ✓ | ✓ |
+| `editor` | 10 / 25 | ✓ | ✓ | ✓ |
+| `member` | 6 / 25 | — | ✓ | — |
+| `kitchen` | 6 / 25 | ✓ | ✓ | — |
 
 ### Rol × izin ızgarası
 
-23 izin × 5 rol. Kaynak: `Permission::cases()` ve `RolePermissions::for()`.
+25 izin × 5 rol. Kaynak: `Permission::cases()` ve `RolePermissions::for()`.
 
 | İzin | Eksen | `owner` | `manager` | `editor` | `member` | `kitchen` |
 | --- | --- | :-: | :-: | :-: | :-: | :-: |
@@ -124,6 +124,8 @@ Kaynak: `MembershipRole::invitable()`, `::removable()`,
 | `order.confirm` | order | ✓ | ✓ | — | — | — |
 | `order.kitchen` | order | ✓ | ✓ | — | — | ✓ |
 | `order.settings` | order | ✓ | — | — | — | — |
+| `workspace.data.export` | workspace | ✓ | — | — | — | — |
+| `workspace.data.erase` | workspace | ✓ | — | — | — | — |
 | `rating.view` | rating | ✓ | ✓ | ✓ | ✓ | — |
 | `rating.reply` | rating | ✓ | ✓ | — | — | — |
 
@@ -136,13 +138,15 @@ girmeyen her izin buraya girer. İki liste birbirinden ayrışamaz.
 
 Bu rolün erişemediği adlandırılmış bir yetenek yok.
 
-#### `manager` — yapamadığı 3 iş
+#### `manager` — yapamadığı 5 iş
 
 - `billing.manage`
 - `security.evidence.view`
 - `order.settings`
+- `workspace.data.export`
+- `workspace.data.erase`
 
-#### `editor` — yapamadığı 13 iş
+#### `editor` — yapamadığı 15 iş
 
 - `workspace.manage`
 - `menu.publish`
@@ -156,9 +160,11 @@ Bu rolün erişemediği adlandırılmış bir yetenek yok.
 - `order.confirm`
 - `order.kitchen`
 - `order.settings`
+- `workspace.data.export`
+- `workspace.data.erase`
 - `rating.reply`
 
-#### `member` — yapamadığı 17 iş
+#### `member` — yapamadığı 19 iş
 
 - `workspace.manage`
 - `menu.manage`
@@ -176,9 +182,11 @@ Bu rolün erişemediği adlandırılmış bir yetenek yok.
 - `order.confirm`
 - `order.kitchen`
 - `order.settings`
+- `workspace.data.export`
+- `workspace.data.erase`
 - `rating.reply`
 
-#### `kitchen` — yapamadığı 17 iş
+#### `kitchen` — yapamadığı 19 iş
 
 - `workspace.manage`
 - `menu.manage`
@@ -195,6 +203,8 @@ Bu rolün erişemediği adlandırılmış bir yetenek yok.
 - `media.download_original`
 - `order.confirm`
 - `order.settings`
+- `workspace.data.export`
+- `workspace.data.erase`
 - `rating.view`
 - `rating.reply`
 
@@ -207,7 +217,7 @@ konmuş ama hiçbir kapıya bağlanmamış olduğunu söyler.
 
 | İzin | Okuyan dosya | İlk okuyan |
 | --- | ---: | --- |
-| `workspace.view` | 45 | `app/Http/Controllers/Media/ConvertMediaController.php` |
+| `workspace.view` | 49 | `app/Http/Controllers/Media/ConvertMediaController.php` |
 | `workspace.manage` | 18 | `app/Domain/Media/MediaBulkAction.php` |
 | `menu.view` | 47 | `app/Http/Controllers/Ai/ApplyBulkMenuAiImportController.php` |
 | `menu.manage` | 28 | `app/Http/Controllers/Ai/ApplyBulkMenuAiImportController.php` |
@@ -228,6 +238,8 @@ konmuş ama hiçbir kapıya bağlanmamış olduğunu söyler.
 | `order.confirm` | 1 | `app/Http/Controllers/Ordering/ChangeOrderStatusController.php` |
 | `order.kitchen` | 2 | `app/Http/Controllers/Ordering/ChangeOrderStatusController.php` |
 | `order.settings` | 2 | `app/Http/Controllers/Ordering/ShowOrderingSwitchController.php` |
+| `workspace.data.export` | 2 | `app/Http/Controllers/Workspace/RequestWorkspaceDataExportController.php` |
+| `workspace.data.erase` | 2 | `app/Http/Controllers/Workspace/CancelWorkspaceErasureController.php` |
 | `rating.view` | 2 | `app/Http/Controllers/Rating/ListMenuRatingsController.php` |
 | `rating.reply` | 2 | `app/Http/Controllers/Rating/DeleteRatingReplyController.php` |
 

@@ -81,3 +81,26 @@ Schedule::command('media:purge-trash')
 Schedule::command('security:evidence:backup-restore')
     ->dailyAt('03:40')
     ->withoutOverlapping();
+
+/*
+    VERİ SİLME TALEBİ VAKTİ GELİNCE YÜRÜR (FF-226, `docs/107` Faz 3.3,
+    `docs/138`).
+
+    Bu satır olmadan silme bir SÖZDEN ibaret kalırdı: ekran "şu tarihte
+    silinecek" der, o tarih gelir ve hiçbir şey olmaz. Aynı ders bu depoda
+    bir kez öğrenildi — medya çöp kutusu bir süre vaat ediyordu ve komutu
+    çağıran hiçbir şey yoktu (FF-161).
+
+    GÜNDE BİR, dakikada bir değil: pencere gün ölçeğindedir. Yedek
+    tatbikatından (03:40) SONRA seçildi ve bu sıralama bilinçli — silinen
+    veri o günün arşivine girmesin diye değil, tam tersine: tatbikat
+    silmeden ÖNCEKİ hâli almış olsun ki bir arıza hâlinde geri dönülecek
+    bir nokta bulunsun.
+
+    Aynı koşu, süresi dolmuş dışa aktarma arşivlerini de diskten kaldırır:
+    silme hakkının yanında sonsuza kadar duran bir kopya, o hakkı anlamsız
+    kılar.
+*/
+Schedule::command('zabuno:run-due-erasures')
+    ->dailyAt('04:10')
+    ->withoutOverlapping();

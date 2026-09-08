@@ -178,39 +178,65 @@ yapılmadı.**
 
 Fiyat tablosu dar ekranda en zor çizilen şeydir. Burada **tablo yok**:
 
-- Planlar `repeat(auto-fit, minmax(min(18rem, 100%), 1fr))` ızgarasında; 320
+- Planlar `repeat(auto-fit, minmax(min(100%, 15rem), 1fr))` ızgarasında; 320
   pikselde tek sütun, ekran genişledikçe kendiliğinden çoğalır. **Kırılma
   noktası jetonu yok** (`MP-05`, testle sabit) ve `overflow-x` yok: yatay
   kaydırılan bir fiyat tablosu, ikinci sütununu kimsenin görmediği bir
-  tablodur.
+  tablodur. (Formül `site-pages.css` §3'ün ızgarasıdır; bu paket kendi
+  ızgarasını yazmıyor — aşağıya bakınız.)
 - SSS `<details>` içinde ve **kapalı başlar**: yedi soru açık hâlde fiyatın
   altını bir duvara çevirirdi. Betiksiz çalışır (altbilginin pSEO katıyla
   aynı karar, `docs/136` §6).
-- Bağlantılar cümlenin içinde değil, **kendi satırında ve 44 piksel**. Satır
-  içi bir bağlantı dar ekranda 18-42 piksel yüksekliğinde kalıyor ve parmakla
-  ıskalanıyor (`docs/117`) — sayfanın eski iki bağlantısı (`Contact us`,
-  `Ask us`) tam olarak bu yüzden denetimde bulgu veriyordu.
+- Bu paketin **yeni** bağlantıları cümlenin içinde değil, kendi satırında ve
+  44 piksel (`site-action`). Satır içi bir bağlantı dar ekranda 18-42 piksel
+  yüksekliğinde kalıyor ve parmakla ıskalanıyor (`docs/117`).
 
-### 6.1 daisyUI'nin ölçüsü çekildi (`docs/136` §5)
+  **Eski iki bağlantı borç olarak duruyor ve bu gizlenmiyor:** ortak fiyat
+  bölümündeki `Contact us` (79×18) ve `Ask us` (48×18) hâlâ cümlenin
+  içinde ve denetimde `small-target` veriyor. İkisi de bu paketin yazdığı
+  satırlar değil, ortak bölümün (`partials/pricing`) satırları ve aynı bulgu
+  **ana sayfada da** çıkıyor — yani `/pricing`'e özgü değil, bölümün kendi
+  borcu (#279). Ölçüldü (2026-09-08): dört çerçevede de aynı iki bulgu, ne
+  fazlası ne eksiği; `origin/main`'in kendi ağacında da aynı ikisi çıkıyor.
+  Onları düzeltmek ana sayfayı da değiştirir ve bu paketin sınırının
+  dışındadır.
 
-Paketten okunan gerçek değerler ve neden ezildikleri:
+### 6.1 Sahne motoruyla birleşme (`docs/146` §10) — bu bölüm YENİDEN YAZILDI
 
-| daisyUI | Kendi değeri | Sayfada |
-| --- | --- | --- |
-| `.card-body` dolgusu | `1.5rem` (24px) | `--space-4` (16px) — iç içe dolgu 320'de birikirdi |
-| `.card-body` gövde boyutu | `.875rem` (14px) | `--aep-text-body` (1rem) — yoğunluk **fontu küçülterek** sağlanmaz (`docs/118` E3) |
-| `.collapse-title` yüksekliği | `1lh` (~24px) | `--control-height` (≥44px) — parmak imleç değildir |
-| `.collapse-title` sondaki boşluk | — | `--space-6` (32px); ok `1.4rem` içeriden 8px boyunda çiziliyor ve 24px yetmiyordu (ölçüldü: son sözcük okun üstüne biniyordu) |
+Bu paket `dz-card` / `dz-collapse` üzerine kurulmuştu ve `site-pricing.css`
+adında ayrı bir yoğunluk dosyası taşıyordu; tek işi daisyUI'nin masaüstü
+ölçülerini (kart dolgusu 24px, kart gövdesi 14px, açılır satır 24px) 320
+piksele çekmekti.
 
-`!important` **gerekmedi ve kullanılmadı**: daisyUI kuralları `@layer
-utilities` içinde yaşıyor, `site-pricing.css` katmansız ve katmansız bir kural
-katmanlı bir kurala karşı zaten kazanıyor.
+`main` bu arada fiyat yüzeyini **sahne diline** taşıdı (#332): kutular
+`site-panel site-lit`, ölçüler `--zc-*`, başlık ve giriş cümlesi önsöz
+bandında. Ezilecek bir daisyUI ölçüsü kalmadı, dolayısıyla:
+
+| Önceki hâl | Birleşme sonrası |
+| --- | --- |
+| `resources/css/site-pricing.css` (198 satır) | **silindi** — ezdiği markup artık yok |
+| `dz-card` / `dz-card-body` plan kartı | `site-panel site-lit site-pricing-plan` |
+| `dz-collapse` SSS | `site-panel site-pricing-faq-item` + `--control-height` özet |
+| Sayfanın kendi plan kartı çizimi | ortak bölüm (`partials/pricing`) — **tek çizim** |
+
+**İki çizim yerine bir çizim.** Bu paketin kendi plan kartı markup'ı vardı ve
+ana sayfanınkinden ayrıydı; birleşmede sayfa kendi çizimini bıraktı ve ortak
+bölümü giydi. "Kime uygun" cümlesi orada `pricingShowAudience` bayrağıyla
+yaşıyor: varsayılan **kapalı**, yalnız `/pricing` açıyor. Ana sayfadaki özet
+şişmiyor, kararın verildiği sayfa derinleşiyor ve rakam yine tek yerden
+geliyor.
+
+Yoğunluk kuralları da `site-pages.css` §3'e taşındı: madde imi geri veren
+liste kuralı (aşağıda), 44 piksellik `<summary>`, ödeme ve çıkış yolunun
+ortak kalıbı. `!important` **hiçbirinde kullanılmadı**.
 
 ### 6.2 Yol boyunca çıkan gerçek kusur
 
 Madde imleri **sessizce kaybolmuştu**. Tailwind'in preflight'ı her `ul` için
 `list-style: none` yazıyor; eski bölüm bunu `list-disc` yardımcı sınıfıyla
-telafi ediyordu ve kendi sınıfına geçen liste onu kaybetti. Ölçülebilir
+telafi ediyordu ve kendi sınıfına geçen liste onu kaybetti. (Kural birleşmede
+`site-pages.css` §3'e taşındı ve orada haklar listesiyle **tek kural**
+oldu — ikisi ayrı yazılsaydı biri gün gelir ötekinden ayrışırdı.) Ölçülebilir
 sonucu: 320 pikselde altı madde imsiz cümle, bir liste değil bir **paragraf
 yığını** gibi okunuyordu. Hiçbir test bunu yakalayamazdı — denetim aracı
 taşma, hedef ve kırpılma ölçer, "bu bir liste gibi mi okunuyor" ölçmez. Gerçek
@@ -244,27 +270,42 @@ Var olan kapılar **değişmeden** geçiyor: `PUBLIC-PRICING-NO-AUTH-01`,
 `PLAN-FREE-IS-FREE-01`, `PLAN-INCLUDED-STATED-ONCE-01`,
 `PLAN-LABELS-ARE-HUMAN-01`, `MP-01…MP-06`, `I18N-SSR-RATCHET-16`.
 
-### 7.1 Kapı sonuçları (koşturuldu)
+### 7.1 Kapı sonuçları (birleşme sonrası koşturuldu, 2026-09-08)
+
+Aşağıdaki rakamlar `origin/main` ile birleştirilmiş ağaçta ölçüldü; paketin
+kendi ilk ölçümü (2.869 test / 284 dosya) o günün ağacına aitti ve
+`main` o tarihten sonra üç kez ilerledi.
 
 | Kapı | Sonuç |
 | --- | --- |
-| `vendor/bin/pint --test app resources tests database` | **geçti** |
-| `php -d memory_limit=-1 artisan test` | **2.869 test, 21.148 iddia, 0 hata** (3 atlandı, 1 riskli — ikisi de temelden) |
-| `npx vitest run resources/js` | **284 dosya, 2.153 test, 0 hata** |
+| `vendor/bin/pint --test <değişen php yolları>` | **geçti** |
+| `php -d memory_limit=-1 artisan test` | **2.997 test, 24.069 iddia, 0 hata** (3 atlandı, 1 riskli — ikisi de temelden) |
+| `npx vitest run resources/js` | **289 dosya, 2.207 test, 0 hata** |
 | `npx prettier --check .` | **geçti** |
-| `npm run i18n:check` | **geçti** — 31 yeni anahtar, 7 PO dosyasına yazıldı |
-| `scripts/mobile-ux-audit` 320×568 | `/pricing`: **0 bulgu** (öncesi 2 `small-target`), kullanılabilir genişlik 309/320 |
-| `scripts/mobile-ux-audit --width 1280` | `/pricing`: **0 bulgu**, kullanılabilir genişlik 1141/1280 |
+| `npm run i18n:check` | **geçti** — 31 yeni anahtar, 7 PO dosyasında, **çeviri yok** |
+| `node scripts/scene-budget-gate --fail` | **0 bulgu** (site girişi 4,7 KB gzip; kurumsal CSS 36,6 KB gzip) |
+| `scripts/mobile-ux-audit` 320×**480** | `/pricing`: taşma **0**, kırpılma **0**; 2 `small-target` (§6'daki devralınan borç), kullanılabilir genişlik 308/320 |
+| `scripts/mobile-ux-audit --width 1280` | `/pricing`: taşma 0, kırpılma 0, aynı 2 devralınan bulgu; genişlik 1268/1280 |
+| `scripts/mobile-ux-audit --width 1920` | `/pricing`: taşma 0, kırpılma 0, aynı 2 bulgu; genişlik 1604/1920 |
+| `scripts/mobile-ux-audit --direction rtl` 320×480 | `/pricing`: taşma 0, kırpılma 0, aynı 2 bulgu |
+
+**`scene-visual-gate` bu ağaçta KIRMIZI ve sebebi bu paket değil.** Dört
+sayfanın dördü (`/`, `/pricing`, `/about`, `/contact`) tabandan sapıyor ve
+üçünü bu dal hiç ellemedi. Ölçüldü: `origin/main`'in kendi ağacı ayrı bir
+worktree'de aynı sunucuyla koşturuldu ve **birebir aynı 24 bulgu, birebir
+aynı sapma değerleri** çıktı (320'de 67/255, 1280'de 48/255). Yani taban
+dosyası bu makinenin bugünkü rasterleştirmesiyle ayrışmış durumda — `docs/146`
+§9 borç 5 tam olarak bunu "bilinmiyor" diye kaydetmişti. Bu paket sapmayı
+**büyütmüyor da küçültmüyor da**; kapının tabanını yenilemek `main` üzerinde
+ayrı bir karardır ve burada sahiplenilmedi.
 
 ---
 
 ## 8. Ölçülmeyenler — açıkça
 
-- **480 piksel yükseklik ölçülmedi.** Araç dar ekranı 320×**568** olarak
-  sabitliyor ve yükseklik ayrı bir bayrak değil (`scripts/mobile-ux-audit`).
-  Görev 320×480 istiyordu; ölçülen yükseklik 568'dir ve aradaki fark
-  raporlanmaktadır. Ekranda gözle 320×480'de de bakıldı ve bir kusur
-  görülmedi, ama **gözle bakmak bir ölçüm değildir**.
+- **320×480 artık ölçüldü.** İlk ölçümde araç dar ekranı 320×568'e sabitliyor
+  sanılmıştı; `--height` bayrağı var ve 320×480 gerçekten koşturuldu
+  (§7.1). O ölçümde de taşma ve kırpılma **sıfır**.
 - **iOS Safari doğrulanmadı.** Denetim Chrome'da koşuyor.
 - **Çeviri yapılmadı.** 31 yeni anahtar altı locale PO'suna boş `msgstr` ile
   yazıldı ve öyle duruyor; çeviri kilidi kapalı (`docs/118`) ve yalnız

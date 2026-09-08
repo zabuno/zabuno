@@ -164,6 +164,46 @@ msgstr ""
 msgid "site.contact.submit"
 msgstr ""
 
+#: site:site.dataRights.erasure.body
+msgid "site.dataRights.erasure.body"
+msgstr ""
+
+#: site:site.dataRights.erasure.detail
+msgid "site.dataRights.erasure.detail"
+msgstr ""
+
+#: site:site.dataRights.erasure.note
+msgid "site.dataRights.erasure.note"
+msgstr ""
+
+#: site:site.dataRights.erasure.subject
+msgid "site.dataRights.erasure.subject"
+msgstr ""
+
+#: site:site.dataRights.export.action
+msgid "site.dataRights.export.action"
+msgstr ""
+
+#: site:site.dataRights.export.body
+msgid "site.dataRights.export.body"
+msgstr ""
+
+#: site:site.dataRights.export.detail
+msgid "site.dataRights.export.detail"
+msgstr ""
+
+#: site:site.dataRights.export.note
+msgid "site.dataRights.export.note"
+msgstr ""
+
+#: site:site.dataRights.export.subject
+msgid "site.dataRights.export.subject"
+msgstr ""
+
+#: site:site.dataRights.greeting
+msgid "site.dataRights.greeting"
+msgstr ""
+
 #: site:site.engineering.title
 msgid "site.engineering.title"
 msgstr ""

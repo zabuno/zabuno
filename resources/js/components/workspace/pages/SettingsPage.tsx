@@ -15,6 +15,20 @@ import { PanelCard } from './shared/PanelCard';
 */
 const BillingPage = lazy(async () => ({ default: (await import('./BillingPage')).BillingPage }));
 
+/*
+    VERİ HAKLARI BÖLÜMÜ DE İSTENDİĞİNDE İNER (FF-226).
+
+    Doğrudan içe aktarıldığında masaüstü kapanışı 200 KB gzip bütçesini
+    40 bayt aştı (`DS-BUNDLE-BUDGET-07`, `docs/06`) — ölçüldü, tahmin
+    edilmedi. Bütçeyi yükseltmek kolay olurdu ve yanlış olurdu: bu bölüm,
+    bir çalışma alanının ömründe belki bir kez açılan bir yüzeydir; her
+    gün menü düzenleyen restoranın onu her açılışta indirmesi için hiçbir
+    sebep yok. `BillingPage` aynı gerekçeyle aynı yoldan geçiyor.
+*/
+const DataRightsRegion = lazy(async () => ({
+    default: (await import('./settings/DataRightsRegion')).DataRightsRegion,
+}));
+
 export type SettingsTab = 'brand' | 'workspace' | 'billing' | 'audit';
 
 const TABS: ReadonlyArray<{ key: SettingsTab; labelKey: Parameters<typeof t>[0] }> = [
@@ -167,7 +181,20 @@ export function SettingsPage({
                             ))}
 
                         {activeTab === 'workspace' && (
-                            <WorkspaceIdentityRegion workspaceId={workspaceId} />
+                            <div className="flex flex-col gap-[var(--space-6)]">
+                                <WorkspaceIdentityRegion workspaceId={workspaceId} />
+                                {/*
+                                    TEHLİKELİ BÖLGE EN ALTTA (FF-226,
+                                    `docs/138`). `WorkspaceIdentityRegion`
+                                    onu adıyla bekletiyordu; doğdu ve
+                                    kaynağın söylediği yere geldi. Sırası
+                                    bilinçli: kimlik önce okunur, geri
+                                    alınamaz eylem en sonda durur.
+                                */}
+                                <Suspense fallback={null}>
+                                    <DataRightsRegion workspaceId={workspaceId} />
+                                </Suspense>
+                            </div>
                         )}
 
                         {activeTab === 'audit' && <AuditTrailRegion workspaceId={workspaceId} />}

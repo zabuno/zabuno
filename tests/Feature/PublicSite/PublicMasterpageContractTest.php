@@ -72,13 +72,49 @@ final class PublicMasterpageContractTest extends TestCase
 
     // --- MP-03 -------------------------------------------------------------------
 
-    public function test_navigation_labels_come_from_the_catalogue_so_a_turkish_visitor_reads_turkish(): void
+    /**
+     * Gezinti etiketleri KATALOGDAN gelir — ama yalnız SUNULAN diller için.
+     *
+     * ── Bu test 2026-09-08'de düzeltildi (FF-249) ────────────────────────
+     *
+     * Önceki hâli şunu ölçüyordu: `Accept-Language: tr` ile gelen ziyaretçi
+     * gezintiyi Türkçe okur. O gün `i18n.shipped_locales` yalnız `['en']`
+     * idi, yani test SUNULMAYAN bir dilin ekrana basılmasını ŞART koşuyordu
+     * ve kusuru yerinde tutan şey buydu: aynı istekte `<html lang="en">`,
+     * gezintide "Fiyat", hemen yanında "Create an account" — çünkü Türkçe
+     * `site` kataloğunun 227 metninden 135'i boş.
+     *
+     * MP-03'ün asıl sözleşmesi "etiketler Blade'e gömülü değil, katalogdan
+     * geliyor" idi ve o sözleşme aynen duruyor. Değişen şey, kataloğun ne
+     * zaman kullanılacağı: bir dil ancak SUNULDUĞUNDA çizilir.
+     */
+    public function test_navigation_labels_come_from_the_catalogue_and_only_for_shipped_languages(): void
     {
         $english = $this->extract($this->html('/pricing'), 'header');
-        $turkish = $this->extract($this->html('/pricing', ['Accept-Language' => 'tr']), 'header');
 
         self::assertStringContainsString('>Help<', $english);
-        self::assertStringContainsString('>Yardım<', $turkish, 'MP-03: Türkçe tarayıcı gezintiyi Türkçe okumalı.');
+
+        /*
+            SUNULMAYAN bir dil İSTEMEK hiçbir şeyi değiştirmez. Yarım
+            çevrilmiş bir katalogla arayüz çizmek, aynı ekranda iki dil
+            göstermektir ve o, çevirisizlikten kötüdür.
+        */
+        self::assertSame(
+            $english,
+            $this->extract($this->html('/pricing', ['Accept-Language' => 'tr']), 'header'),
+            'MP-03: sunulmayan bir dil istendiğinde gezinti değişmemeli.'
+        );
+
+        /*
+            Katalog GERÇEKTEN sürüyor. Yukarıdaki kural tek başına "etiketleri
+            Blade'e göm" ile de geçerdi; burası sözleşmenin hâlâ ayakta
+            olduğunu ölçüyor: dil sunulduğu anda etiketler onunla değişir.
+        */
+        config()->set('i18n.shipped_locales', ['en', 'tr']);
+
+        $turkish = $this->extract($this->html('/pricing', ['Accept-Language' => 'tr']), 'header');
+
+        self::assertStringContainsString('>Yardım<', $turkish, 'MP-03: sunulan bir dilde gezinti o dilden okunmalı.');
         self::assertStringContainsString('>Fiyat<', $turkish);
     }
 

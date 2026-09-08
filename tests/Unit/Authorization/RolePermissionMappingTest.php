@@ -111,7 +111,23 @@ final class RolePermissionMappingTest extends TestCase
             sessizce ölürdü. Silmeyi kimseye vermemenin ilk şartı, onu bir
             yetenek olarak adlandırmamaktır.
         */
-        self::assertCount(23, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak yirmi üç permission tanımlar (on üç çekirdek + iki medya + menu.allergens.manage + menu.stock.manage + dört order.* + iki rating.* ekseni) — ek permission eklenmemeli.');
+        self::assertSame('workspace.data.export', Permission::WorkspaceDataExport->value);
+        self::assertSame('workspace.data.erase', Permission::WorkspaceDataErase->value);
+        /*
+            23 → 25 (FF-226, `docs/107` Faz 3.3, `docs/138`): veri hakları
+            ekseni İKİ izin ekliyor — `workspace.data.export` (verinin bir
+            kopyasını almak) ve `workspace.data.erase` (verinin silinmesini
+            istemek).
+
+            İKİSİ AYRI, çünkü sonuçları ayrı: kopya geri alınabilir, silme
+            geri alınamaz. Tek izin olsaydı, bir zincirin merkez ofisine
+            "indirebilsin ama sildiremesin" demek imkânsız olurdu.
+
+            `workspace.manage`'e YEDİRİLMEDİ ve bu da sayının kendisi kadar
+            anlamlı: Yönetici rolü `workspace.manage` taşır ve o gün bütün
+            çalışma alanını sildirebilirdi. Bugün ikisi de yalnız Sahip'te.
+        */
+        self::assertCount(25, $values, 'PERMISSION-ENUM-01: bounded scope tam olarak yirmi beş permission tanımlar (on üç çekirdek + iki medya + menu.allergens.manage + menu.stock.manage + dört order.* + iki rating.* + iki workspace.data.* ekseni) — ek permission eklenmemeli.');
         self::assertNotContains('rating.delete', $values, 'PERMISSION-ENUM-01: puanı silme yeteneği ADLANDIRILMAZ; adı olmayan bir yetenek bir role verilemez (`docs/116` §4).');
         self::assertContains('workspace.view', $values);
         self::assertContains('workspace.manage', $values);
@@ -164,7 +180,9 @@ final class RolePermissionMappingTest extends TestCase
         // silecek bir izin hiç yoktur.
         self::assertContains(Permission::RatingView, $permissions);
         self::assertContains(Permission::RatingReply, $permissions);
-        self::assertCount(23, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak yirmi üç permission taşımalı (bounded scope dışında ek yetki yok).');
+        self::assertContains(Permission::WorkspaceDataExport, $permissions, 'ROLE-MAP-OWNER-01: Owner kendi verisinin kopyasını alabilmeli (`docs/138`).');
+        self::assertContains(Permission::WorkspaceDataErase, $permissions, 'ROLE-MAP-OWNER-01: Owner kendi verisinin silinmesini isteyebilmeli (`docs/138`).');
+        self::assertCount(25, $permissions, 'ROLE-MAP-OWNER-01: Owner tam olarak yirmi beş permission taşımalı (bounded scope dışında ek yetki yok).');
     }
 
     // --- CORE03-ROLE-MAP-MEMBER-01 ----------------------------------------

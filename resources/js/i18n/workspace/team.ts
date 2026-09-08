@@ -198,6 +198,16 @@ export const team = {
     'workspace.team.roleGuide.ability.order.confirm': 'Confirm an order from a table',
     'workspace.team.roleGuide.ability.order.kitchen': 'Move an order through the kitchen',
     'workspace.team.roleGuide.ability.order.settings': 'Turn table ordering on and off',
+    /*
+        VERİ HAKLARI İKİ AYRI YETENEKTİR (FF-226, `docs/138`). Kopya almak
+        ile silmek tek satırda anlatılsaydı, rol rehberini okuyan sahip
+        "arşiv indirmek" ile "her şeyi silmek" arasındaki farkı ekranda
+        göremezdi; ikisi de yalnız sahibindir ve ikisi de adıyla yazılıdır.
+    */
+    'workspace.team.roleGuide.ability.workspace.data.export':
+        'Take a copy of everything this workspace holds',
+    'workspace.team.roleGuide.ability.workspace.data.erase':
+        'Ask for this workspace data to be erased',
     'workspace.team.roleGuide.ability.rating.view': 'See what guests rated',
     'workspace.team.roleGuide.ability.rating.reply': 'Reply to a guest in the menu',
 } as const;

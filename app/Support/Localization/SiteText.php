@@ -17,9 +17,6 @@ final class SiteText
 {
     private const DOMAIN = 'site';
 
-    /** Bu yüzeyin bugün konuştuğu diller. */
-    private const SUPPORTED = ['en', 'tr'];
-
     public function __construct(private readonly TranslationPort $translations) {}
 
     public function get(string $key, ?string $locale = null): string
@@ -353,9 +350,41 @@ final class SiteText
         return isset($map[$code]) ? $this->get($map[$code], $locale) : null;
     }
 
-    /** @param  list<string>  $accepted */
+    /**
+     * ARAYÜZ metni hangi dilde çizilir — cevabı `i18n.shipped_locales` verir.
+     *
+     * Burada `['en', 'tr']` yazılıydı ve o liste hiçbir şeye bağlı değildi.
+     * Sonucu ölçüldü (2026-09-08): `shipped_locales` yalnız `en` iken Türkçe
+     * bir tarayıcı Türkçe gövde alıyordu ve Türkçe `site` kataloğunun 227
+     * metninden 135'i boş olduğu için ekranda "Create an account" ile
+     * "Çalışma alanını aç" yan yana duruyordu. Yarım çeviri çevirisizlikten
+     * kötüdür — çünkü çevirisizlik en azından tutarlıdır.
+     *
+     * Ayarın adı "sunulan diller" diyordu ve arayüz metnini çizen hiçbir kod
+     * onu okumuyordu; bu deponun tekrar eden kusuru (`docs/109` §8.7):
+     * çalışan ama söylediği şeyi yapmayan bir ayar.
+     *
+     * Kural bir dil ADI taşımaz: sahip yarın listeye bir dil eklerse burası
+     * değişmeden o dili çizmeye başlar, çıkarırsa çizmeyi bırakır.
+     */
     public static function pick(?string $preferred): string
     {
-        return in_array((string) $preferred, self::SUPPORTED, true) ? (string) $preferred : 'en';
+        /*
+            `array_values` kasıtlı: liste boş olmadığı hâlde `[0]` tanımsız
+            olabilirdi ve o gün her sayfa aynı anda çöker, sebebi de bir dil
+            ayarında görünmezdi.
+        */
+        /** @var list<string> $shipped */
+        $shipped = array_values((array) config('i18n.shipped_locales', []));
+
+        $source = (string) config('i18n.source_locale', 'en');
+
+        if ($shipped === []) {
+            return $source;
+        }
+
+        return in_array((string) $preferred, $shipped, true)
+            ? (string) $preferred
+            : (in_array($source, $shipped, true) ? $source : $shipped[0]);
     }
 }

@@ -13,15 +13,26 @@
      imkânsız kılıyor (`SHELL-SINGLE-SOURCE-01`).
 
      `lang` SAYFANIN dilidir, uygulamanın değil (`docs/89`, `docs/118` E4):
-     yardım makalesi okuyucunun dilinde gelir, kurumsal sayfanın dili ise
-     ADRESİNDEN türer. Sayfa bir dil bildirmezse uygulamanınkine düşülür. --}}
-{{-- YÖN de SAYFANIN dilinden türer, uygulamanınkinden değil (`docs/120` §5
-     madde 9). Bugüne kadar `dir` uygulamanın locale'ini okuyordu: dokuz dilin
-     ikisi sağdan sola (`ar`, `fa`) ve Arapça bir kurumsal sayfa, arayüzü
-     İngilizce olan bir tarayıcıda soldan sağa çizilirdi — yani metin doğru,
-     düzen ters. `lang` bir satır yukarıda zaten sayfadan türüyordu; ikisinin
-     ayrı kaynaktan gelmesi tek başına bir kusurdu. --}}
-<html lang="{{ $pageLocale ?? \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction($pageLocale ?? null) }}">
+     yardım makalesi okuyucunun dilinde YAZILMIŞTIR, kurumsal sayfanın dili
+     ise ADRESİNDEN türer.
+
+     YÖN de aynı yerden gelir (`docs/120` §5 madde 9): dokuz dilin ikisi
+     sağdan sola (`ar`, `fa`) ve Arapça bir kurumsal sayfa, arayüzü İngilizce
+     olan bir tarayıcıda soldan sağa çizilirdi — yani metin doğru, düzen ters.
+
+     ── BELGE DİLİ, BASILAN DİLDEN AYRILAMAZ (FF-249) ────────────────────
+
+     Burada `$pageLocale ?? \App\Support\Localization\DocumentLocale::tag()`
+     yazıyordu ve o `??` kusurun kendisiydi: soldaki `null` olduğunda sağdaki,
+     gövdeyi çizen dilden BAĞIMSIZ bir kaynaktan geliyordu. Ölçüldü
+     (2026-09-08): `Accept-Language: tr-TR` ile ana sayfa `lang="en"` ilan
+     edip Türkçe gövde bastı. Ekran okuyucu Türkçe cümleyi İngilizce
+     sesletimle okur; arama motoru sayfayı yanlış dilde indeksler.
+
+     İki değer artık TEK nesnede doğuyor (`PageLanguage`) ve şablonun
+     seçebileceği ikinci bir kaynak yok — asıl metni olmayan bir sayfada
+     belge dili zaten arayüzün dilidir, yani ayrışacak bir şey kalmıyor. --}}
+<html lang="{{ $lang->documentTag() }}" dir="{{ $lang->documentDirection() }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -102,7 +113,7 @@
    {{-- Sarı üstüne beyaz metin ~1.75:1 idi; marka sarısının tek doğru
        mürekkebi `--color-action-fg`. Panel tarafındaki SkipLink ile aynı
        kural (FF-125). --}}
-   class="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-50 focus:rounded focus:bg-action focus:px-4 focus:py-2 focus:text-action-fg">
+   class="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-50 focus:rounded focus:bg-action focus:px-4 focus:py-2 focus:text-action-fg"{!! $lang->chromeAttributes() !!}>
     {{ $st['skipToContent'] }}
 </a>
 

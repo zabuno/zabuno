@@ -55,7 +55,25 @@ final class FoundationStatusController extends Controller
             gelir, adresten türetilmez: adres yarın değişirse geçmiş raporlar
             ikiye bölünmemeli.
         */
-        $shared = $this->shell->context($request, self::PAGE_KEYS[$path] ?? 'unknown') + [
+        $shell = $this->shell->context($request, self::PAGE_KEYS[$path] ?? 'unknown');
+
+        /*
+            DİL KABUKTAN GELİR, burada İKİNCİ KEZ pazarlık edilmez (FF-249).
+
+            Aşağıdaki iki satır `SiteText::pick($request->getPreferredLanguage(
+            ['en', 'tr']))` çağırıyordu — elle yazılmış, `i18n.shipped_locales`e
+            hiç bağlı olmayan bir liste. Sonucu ölçüldü (2026-09-08): sunulan
+            tek dil `en` iken Türkçe bir tarayıcı Türkçe plan etiketleri ve
+            Türkçe bir başlık alıyor, aynı ekrandaki "Create an account"
+            İngilizce kalıyordu. Aynı ekranda iki dil, `<html lang="en">`
+            altında.
+
+            Kabuğun seçtiği dil zaten SUNULAN bir dildir; ikinci bir seçim
+            yapmak, o kararı sessizce ezmek olurdu.
+        */
+        $locale = $shell['lang']->ui;
+
+        $shared = $shell + [
             /*
                 FİYAT KAYDOLMADAN GÖRÜLÜR — `docs/88` (P1-01).
 
@@ -63,9 +81,7 @@ final class FoundationStatusController extends Controller
                 ardındaydı: fiyatı görmek için kaydolmak gerekiyordu, yani
                 ürün kaydolmayı fiyatı görmeye bağlı kılıyordu.
             */
-            'plans' => $this->publicPlans(
-                SiteText::pick($request->getPreferredLanguage(['en', 'tr'])),
-            ),
+            'plans' => $this->publicPlans($locale),
         ];
 
         if ($path === 'pricing') {
@@ -80,9 +96,8 @@ final class FoundationStatusController extends Controller
             hiçbir şeyin görünmediği bir iş demekti.
         */
         return view('public.home', $shared + [
-            'story' => $this->story->lists(
-                SiteText::pick($request->getPreferredLanguage(['en', 'tr'])),
-            ),
+            // Aynı gerekçe (FF-249): tek dil kaynağı kabuğun kendisi.
+            'story' => $this->story->lists($locale),
         ]);
     }
 
