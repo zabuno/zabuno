@@ -139,6 +139,26 @@ export const media = {
     'workspace.media.upload.field.assetSlot.profileAvatar': 'Profile/avatar',
     'workspace.media.upload.field.assetSlot.categoryHero': 'Category hero',
     'workspace.media.upload.field.assetSlot.itemImage': 'List/card/detail item',
+    /*
+        ADI OLMAYAN YUVA — FF-224.
+
+        `menuImportSource` bu listede EKSİKTİ ve eksikliği sessiz değildi:
+        uç nokta (`ListSlotPoliciesController`) onu zaten döndürüyor, çünkü
+        sihirbazın seçtirebildiği biçimleri taşıyor. Etiketi olmayan bir
+        anahtar `t()`'den KENDİSİ olarak döner — sahip açılır listede
+        "workspace.media.upload.field.assetSlot.menuImportSource" yazan bir
+        seçenek görüyordu.
+
+        Bunu asıl pahalı yapan şey, ürünün BAŞKA bir ekranda o yuvayı
+        adıyla istemesiydi: fotoğraftan içe aktarma "önce Medya
+        sayfasından yükleyin (yuva: Import source)" diyor. Sahip o adı
+        aramaya gidiyor ve listede bulamıyordu — tarif edilen yol, tarif
+        edildiği hâliyle yürünemiyordu.
+
+        Metin menü alanındaki kardeşiyle AYNIDIR (`menu.media.slot.*`) ve
+        `i18n.guard` ikisinin eşitliğini koruyor.
+    */
+    'workspace.media.upload.field.assetSlot.menuImportSource': 'Import source',
     'workspace.media.upload.field.assetSlot.gallery': 'Gallery',
     'workspace.media.upload.field.assetSlot.printLogo': 'Print logo',
     'workspace.media.upload.field.assetSlot.emailHeader': 'Header/splash/push',

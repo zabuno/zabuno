@@ -320,10 +320,6 @@ msgstr "Fotoğraf okunamadı. Ürünleri yine de elle ekleyebilirsiniz."
 msgid "menu.item.ai.import.fallback"
 msgstr "Yedek sağlayıcı tarafından okundu."
 
-#: menu:menu.item.ai.import.media.empty
-msgid "menu.item.ai.import.media.empty"
-msgstr "Henüz işlenmiş fotoğraf yok. Önce Görseller sayfasından (yuva: Aktarım kaynağı) bir tane yükleyin."
-
 #: menu:menu.item.ai.import.media.label
 msgid "menu.item.ai.import.media.label"
 msgstr "Okunacak fotoğrafları seçin"
@@ -423,10 +419,6 @@ msgstr "Misafirin adın altında okuduğu kısa bir satır. En fazla 500 karakte
 #: menu:menu.item.description.label
 msgid "menu.item.description.label"
 msgstr "Açıklama"
-
-#: menu:menu.item.image.empty
-msgid "menu.item.image.empty"
-msgstr "Henüz işlenmiş fotoğraf yok. Önce Görseller sayfasından bir tane yükleyin."
 
 #: menu:menu.item.image.label
 msgid "menu.item.image.label"
@@ -539,6 +531,34 @@ msgstr "{name} ürününü menüde göster"
 #: menu:menu.loading
 msgid "menu.loading"
 msgstr "Menü yükleniyor…"
+
+#: menu:menu.media.empty
+msgid "menu.media.empty"
+msgstr ""
+
+#: menu:menu.media.empty.readOnly
+msgid "menu.media.empty.readOnly"
+msgstr ""
+
+#: menu:menu.media.link
+msgid "menu.media.link"
+msgstr ""
+
+#: menu:menu.media.requirement
+msgid "menu.media.requirement"
+msgstr ""
+
+#: menu:menu.media.requirement.noAspect
+msgid "menu.media.requirement.noAspect"
+msgstr ""
+
+#: menu:menu.media.slot.itemImage
+msgid "menu.media.slot.itemImage"
+msgstr ""
+
+#: menu:menu.media.slot.menuImportSource
+msgid "menu.media.slot.menuImportSource"
+msgstr ""
 
 #: menu:menu.move.down
 msgid "menu.move.down"
