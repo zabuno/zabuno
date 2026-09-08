@@ -10,7 +10,7 @@ import { updatedAtLabel } from './orderPresentation';
  * görünür; tek ayırt edici şey bu satırdır.
  *
  * KENDİ DOSYASINDA, çünkü her iki giriş kipi de aynı satırı çizer
- * (`docs/149` §4). Dokunma kuyruğunun içinde kalsaydı, masaüstü kuyruğu ya
+ * (`docs/153` §4). Dokunma kuyruğunun içinde kalsaydı, masaüstü kuyruğu ya
  * onu oradan içeri alır — yani mobil ekranın tamamını kendi paketine
  * çeker — ya da ikinci bir kopyasını yazardı. İkisi de yanlış: bu satır
  * cihaza özgü değil, PAYLAŞILANdır.

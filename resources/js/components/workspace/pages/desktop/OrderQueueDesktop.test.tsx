@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { OrderQueueDesktop } from './OrderQueueDesktop';
 
 /**
- * MASAÜSTÜ KUYRUĞU — `docs/149` §6.
+ * MASAÜSTÜ KUYRUĞU — `docs/153` §6.
  *
  * Burada donan şey KUYRUĞUN VERİSİ DEĞİL: onu mobil kuyruğun testi zaten
  * donduruyor ve ikisi aynı `useOrderFeed`/`changeOrderStatus` yolunu
@@ -199,7 +199,7 @@ describe('OrderQueueDesktop', () => {
     });
 
     /*
-        SAĞ TIKIN KLAVYE KARŞILIĞI — WCAG 2.2 AA (`docs/149` §7).
+        SAĞ TIKIN KLAVYE KARŞILIĞI — WCAG 2.2 AA (`docs/153` §7).
 
         Menü yalnız fareyle açılabilseydi, oradaki eylemler klavye
         kullanıcısı için HİÇ yok olurdu. Shift+F10 her masaüstü

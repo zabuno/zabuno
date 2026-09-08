@@ -207,7 +207,7 @@ export type WorkspaceAppProps = {
      */
     renderKitchenMonitor?: KitchenSurfaceRenderer;
     /**
-     * BU CİHAZ PAKETİNİN kendi SAYFALARI — `docs/149`.
+     * BU CİHAZ PAKETİNİN kendi SAYFALARI — `docs/153`.
      *
      * `inspectors` bir bölümün yanındaki paneli, `renderKitchenMonitor` bir
      * sekmenin içindeki yüzeyi cihaza özgü kılar. Bu harita aynı desenin
@@ -216,7 +216,7 @@ export type WorkspaceAppProps = {
      *
      * Bayrak değil HARİTA geçilir, hep aynı sebeple: bir bayrak yalnız
      * gizlerdi — masaüstü sayfası paylaşılan bölüm kaydından telefona yine
-     * inerdi (`docs/149` §3).
+     * inerdi (`docs/153` §3).
      */
     pageOverrides?: WorkspacePageOverrideMap;
 };

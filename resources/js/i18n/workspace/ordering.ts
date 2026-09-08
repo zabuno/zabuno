@@ -172,7 +172,7 @@ export const ordering = {
         'Ask the workspace owner if you need to see the order queue.',
 
     /*
-        MASAÜSTÜ KUYRUĞU (`docs/149`) — yalnız işaretleyici/klavye
+        MASAÜSTÜ KUYRUĞU (`docs/153`) — yalnız işaretleyici/klavye
         yüzeyinde çizilen dizeler.
 
         Bu anahtarların telefonda bir karşılığı YOKTUR ve olmamalı: dokunmada

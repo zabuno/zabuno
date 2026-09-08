@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 
 /**
- * CİHAZA ÖZGÜ SAYFA HARİTASI — `docs/149` §5.
+ * CİHAZA ÖZGÜ SAYFA HARİTASI — `docs/153` §5.
  *
  * Bölüm kaydı (`*.section.tsx`) bir bölümün METADATASINI ve VARSAYILAN
  * çizimini taşır. Kayıtlar `import.meta.glob` ile TOPLUCA ve EAGER

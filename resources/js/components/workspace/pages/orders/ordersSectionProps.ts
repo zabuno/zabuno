@@ -12,7 +12,7 @@ import type { OrdersPageProps } from '../OrdersPage';
  *
  * `renderQueue` BİLEREK DIŞARIDA: cihaza özgü olan tek şey odur ve onu
  * veren taraf çağıranın kendisidir. Buraya konsaydı paylaşılan kod cihaza
- * özgü bir modülü adıyla anardı (`docs/149` §5).
+ * özgü bir modülü adıyla anardı (`docs/153` §5).
  */
 export function ordersPropsFromContext(
     ctx: WorkspaceSectionRuntimeContext,

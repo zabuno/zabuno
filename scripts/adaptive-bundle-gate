@@ -68,7 +68,7 @@ MOBILE_ONLY = [
     'components/workspace/chrome/MobileChrome.tsx',
 ]
 
-# CİHAZ KLASÖRLERİ — dosya değil, KURAL (`docs/149` §8).
+# CİHAZ KLASÖRLERİ — dosya değil, KURAL (`docs/153` §8).
 #
 # Yukarıdaki listeler tek tek modülleri adlandırır ve bir modül eklemeyi
 # unutmak sessizce mümkündür. Bu iki klasör o boşluğu kapatır: altına konan
@@ -242,7 +242,7 @@ def weigh(paths):
     return sum(path.stat().st_size for path in paths)
 
 
-# İKİ PAKETİN AĞIRLIĞI AYRI AYRI (`docs/149` §8).
+# İKİ PAKETİN AĞIRLIĞI AYRI AYRI (`docs/153` §8).
 #
 # KAYNAK baytıdır, derlenmiş paket değil: kapı derleme İSTEMEDEN koşsun diye.
 # Derlenmiş ağırlık ayrıca ölçülür ve ikisi farklı sorulara cevap verir —

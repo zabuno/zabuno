@@ -3,7 +3,7 @@ import { lazy, Suspense } from 'react';
 import type { WorkspacePageOverrideMap } from '../pageOverride';
 
 /**
- * MASAÜSTÜ PAKETİNİN KENDİ SAYFALARI — `docs/149` §5.
+ * MASAÜSTÜ PAKETİNİN KENDİ SAYFALARI — `docs/153` §5.
  *
  * Bu dosyayı YALNIZ `workspace.desktop.tsx` içeri alır. Telefon buraya hiç
  * ulaşmaz, dolayısıyla altındaki hiçbir modülün baytı mobil pakete girmez —
@@ -34,7 +34,7 @@ const OrdersScreenDesktop = lazy(async () => ({
 
 export const desktopPages: WorkspacePageOverrideMap = {
     /*
-        SİPARİŞ KUYRUĞU — masaüstüne taşınan İLK ekran (`docs/149` §6).
+        SİPARİŞ KUYRUĞU — masaüstüne taşınan İLK ekran (`docs/153` §6).
 
         Gerekçe orada yazılı: aynı veriye bakan iki farklı iş var. Salondaki
         garson tek siparişle ilgilenir; kasadaki kişi aynı anda ona bakar,

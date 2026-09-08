@@ -64,7 +64,7 @@ scaffold() {
     > "$js/components/workspace/kitchen/KitchenBoard.tsx"
   printf "export const MobileChrome = () => null;\n" \
     > "$js/components/workspace/chrome/MobileChrome.tsx"
-  # CİHAZ KLASÖRÜ KONVANSİYONU (`docs/149` §8): `pages/desktop/` altındaki her
+  # CİHAZ KLASÖRÜ KONVANSİYONU (`docs/153` §8): `pages/desktop/` altındaki her
   # dosya masaüstü paketine kilitlidir. `pages/mobile/` bilerek BOŞ bırakılır —
   # boş bir cihaz klasörü hata DEĞİLDİR ve temiz senaryo bunu da kanıtlar.
   printf "export const OrdersScreenDesktop = () => null;\n" \
@@ -114,7 +114,7 @@ printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nexp
   > "$TMP/resources/js/workspace.mobile.tsx"
 expect LEAK "bildirilen dosya yoksa sessizce geçmez"
 
-# ═══ CİHAZ KLASÖRÜ KONVANSİYONU (`docs/149` §8) ═══
+# ═══ CİHAZ KLASÖRÜ KONVANSİYONU (`docs/153` §8) ═══
 #
 # Yukarıdaki senaryolar tek tek ADLANDIRILAN modülleri koruyor. Klasör kuralı
 # ise adlandırılmayanı korur: yarın `pages/desktop/` altına yazılan bir dosya,

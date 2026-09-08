@@ -25,7 +25,7 @@ on:
 #
 # `actions: read` YAZMA DEĞİL OKUMA yetkisidir ve tek bir soru için var:
 # "main'in ucundaki commit'in CI'ı geçti mi?". Bu soru sorulamazsa dağıtım
-# hangi commit'i yayına alacağını bilemez (bkz. `docs/149`).
+# hangi commit'i yayına alacağını bilemez (bkz. `docs/152`).
 permissions:
   contents: read
   actions: read
@@ -135,7 +135,7 @@ jobs:
 
           echo "should_deploy=true" >> "$GITHUB_OUTPUT"
 
-      # DAĞITILAN COMMIT, TETİKLEYEN KOŞUMUN COMMIT'İ OLAMAZ — `docs/149`.
+      # DAĞITILAN COMMIT, TETİKLEYEN KOŞUMUN COMMIT'İ OLAMAZ — `docs/152`.
       #
       # ÖLÇÜLDÜ (2026-09-08, dağıtım koşumu 34210847469): koşum GitHub
       # arayüzünde `8085ab18`'e ait görünüyordu ama yayına aldığı
@@ -201,7 +201,7 @@ jobs:
           echo "tip=${tip}" >> "$GITHUB_OUTPUT"
           echo "Yayına alınacak: $(short "${target}") (uç: $(short "${tip}"))"
 
-      # GERİYE GİTME YASAK — `docs/149`.
+      # GERİYE GİTME YASAK — `docs/152`.
       #
       # Yukarıdaki çözüm yarışın çoğunu kapatır ama hepsini kapatamaz:
       # koşumlar arasında saniyeler vardır ve API'nin cevabı bir an
@@ -292,7 +292,7 @@ jobs:
               echo "| Canlıda çalışan | \`$(short "${live}")\` |"
               echo
               echo "Hedef, canlıda çalışanın **atası** — yani daha eski. Yayına alınsaydı site geriye giderdi."
-              echo "Bu bir arıza **değil**: canlı zaten daha yeni kodu çalıştırıyor. Ayrıntı: \`docs/149\`."
+              echo "Bu bir arıza **değil**: canlı zaten daha yeni kodu çalıştırıyor. Ayrıntı: \`docs/152\`."
             } >> "$GITHUB_STEP_SUMMARY"
             echo "should_deploy=false" >> "$GITHUB_OUTPUT"
             exit 0
@@ -323,7 +323,7 @@ jobs:
           # deploy edilmesi gereken, CI'ın GEÇTİĞİ EN YENİ commit'tir — ve
           # onu kapı çözdü. Burada yeniden hesaplanmaz: iki yerde iki kez
           # hesaplanan bir değer, er geç iki farklı cevap verir ve checkout
-          # bir commit'ten, etiket başkasından gelir (`docs/149`).
+          # bir commit'ten, etiket başkasından gelir (`docs/152`).
           sha="${{ needs.guard.outputs.target_sha }}"
           echo "sha=${sha}" >> "$GITHUB_OUTPUT"
           # Etiket yerel: registry adı YOK. İmaj bir kayıt defterine
@@ -586,7 +586,7 @@ jobs:
           #
           # BU UYARI KALDIRILMAZ. Kusuru görünür kılan tek şey oydu: 8 Eylül
           # 2026'da beş dağıtım ucun gerisinde kaldı ve bunu söyleyen başka
-          # hiçbir şey yoktu (`docs/149`).
+          # hiçbir şey yoktu (`docs/152`).
           #
           # Anlamı DARALDI. Eskiden "yayına alınan, tetikleyen koşumun
           # commit'iydi" demekti ve bu, ucun HİÇ yayına çıkmaması anlamına
@@ -601,6 +601,6 @@ jobs:
             {
               echo
               echo "> Bu koşum **main'in ucunu değil**, \`$(short "$EXPECTED_SHA")\` commit'ini yayına aldı — ucun (\`$(short "$BRANCH_TIP_SHA")\`) CI'ı henüz bitmemişti."
-              echo "> Uç, kendi CI'ı bitince ayrı bir dağıtımla gelecek. **Yeni bir birleşme gerekmez**; beklemek yeterli (\`docs/149\`)."
+              echo "> Uç, kendi CI'ı bitince ayrı bir dağıtımla gelecek. **Yeni bir birleşme gerekmez**; beklemek yeterli (\`docs/152\`)."
             } >> "$GITHUB_STEP_SUMMARY"
           fi
