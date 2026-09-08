@@ -1049,3 +1049,21 @@ Yeni CI sonucu görülmeden bu paket main veya canlı için GREEN değildir.
 **Rollback:** bu düzeltmenin workflow, kapı, beş fiyat imzası, regresyon
 testi ve bu kayıt değişiklikleri birlikte geri alınır. Ürün/veri göçü yoktur;
 çalışan geliştirme veritabanına veya mevcut çalışma ağaçlarına dokunulmadı.
+
+**Sonraki CI kanıtı (34245660916):** yukarıdaki yardım belirsizliği artık
+saklanan PNG ile sınırlandı. `scene-visual-34245660916-1` artifact'ındaki
+`help-320-forced.png` (SHA256
+`389e05e50bfcad7cd569bc76b3aa29bf13f2729e83eaac162dec883bcdfb331d`)
+ile macOS görüntüsü aynı düzeni ve satır kırılımlarını gösteriyor; metin
+kenarlarının parlaklığı farklı. Linux Chrome 152.0.7977.64 ölçümünde en kötü
+hücre (9,8) 35 yerine 48: sapma 13/255. Yalnız
+`platformOverrides.linux.help-320-forced` imzası bu gerçek PNG'den üretildi;
+varsayılan macOS imzaları, diğer görünümler ve tolerans 12 değişmedi.
+Kaba ortalama rasterleştirici farkının kapıyı asla kırmayacağını garanti
+etmez; önceki genelleme bu ölçümle düzeltilmiştir. Rapor kullanılan tabanı
+adıyla yazar; rollback bu tek override ile seçicisini geri almaktır.
+Yeni CI koşusunun sonucu hâlâ ayrı kabul kapısıdır.
+
+Platform istisnası varken toplu `--update` yazmadan ve tarayıcı açmadan reddedilir;
+eski kanıtı yeni görüntünün kanıtı gibi taşımamak için hedefli, gözden geçirilmiş
+imza ve kaynak kaydı birlikte yenilenmelidir.

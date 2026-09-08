@@ -46,8 +46,10 @@
 
     Renk doğruluğu, yazı tipi tırtıklanması ve GPU rasterleştirmesi. Başsız
     Chrome yazılım rasterleştirici kullanabilir; imza 16×12 hücrede
-    ortalandığı için bu fark kapıyı kırmaz ama aynı sebeple ince bir tipografi
-    gerilemesini de görmez.
+    ortalanması küçük farkları azaltır, fakat her rasterleştiricide geçiş
+    garantisi vermez. Linux CI yardım görünümünde aynı düzen 13/255 saptı;
+    bu tek görünümün incelenmiş imzası platformOverrides altında kayıtlıdır.
+    Kaba imza ince bir tipografi gerilemesini de kaçırabilir.
 
     ═══ TABAN İKİ RASTERLEŞTİRİCİDE SINANDI (Döngü 3) ═══
 
@@ -122,9 +124,9 @@ const SHOULD_FAIL = process.argv.includes('--fail');
 /*
     TOLERANS 12/255 — ÖLÇÜLDÜ, SEÇİLMEDİ.
 
-    Gerekçe dosyanın başında: iki rasterleştirici arasındaki en kötü fark 7,
-    gerçek bir gerileme ise 36–80. 12, birincisini geçirir ve ikincisini
-    geçirmez.
+    İlk iki rasterleştirici ölçümünde fark 1–7, örnek gerçek gerilemelerde
+    36–80 idi. Sonraki Linux CI yardım farkı 13 olarak ayrıca kaydedildi;
+    tek görünüm istisnası genel toleransı yükseltmez.
 */
 const TOLERANCE = 12;
 /* Taban hangi makinede yazıldı: bir sapma tartışılırken ilk sorulan soru. */
@@ -233,6 +235,11 @@ const STATES = {
         static: false,
     },
 };
+
+/* Yalnız kanıtı kaydedilmiş platform/görünüm çifti varsayılanı değiştirebilir. */
+function selectBaseline(baseline, view, currentPlatform) {
+    return baseline.platformOverrides?.[currentPlatform]?.[view]?.signature ?? baseline.views?.[view];
+}
 
 /* --- PNG çözücü ---------------------------------------------------------
 
@@ -369,12 +376,18 @@ async function settle(ws, ms) {
     });
 }
 
+const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, 'utf8')) : { views: {} };
+
+if (SHOULD_UPDATE && Object.keys(baseline.platformOverrides ?? {}).length > 0) {
+    console.error('SAHNE-GORSEL: --update refused: reviewed platform overrides require a targeted refresh with new provenance.');
+    process.exit(1);
+}
+
 const { chrome, profileDir, profilePath } = launchChrome(CHROME, 'scene-visual-', [
     '--hide-scrollbars',
     '--force-device-scale-factor=1',
 ]);
 
-const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, 'utf8')) : { views: {} };
 const report = {
     base: BASE,
     platform: PLATFORM,
@@ -487,7 +500,7 @@ try {
 
                 next.views[view] = firstSignature;
 
-                const known = baseline.views?.[view];
+                const known = selectBaseline(baseline, view, PLATFORM);
 
                 if (known === undefined) {
                     if (!SHOULD_UPDATE) {
@@ -511,6 +524,9 @@ try {
                 );
                 report.views[view] = {
                     compared: true,
+                    baselineSource: baseline.platformOverrides?.[PLATFORM]?.[view]
+                        ? `platformOverrides.${PLATFORM}.${view}`
+                        : `views.${view}`,
                     drift,
                     worstCell: {
                         column: worstCell % CELLS_X,
@@ -550,13 +566,13 @@ if (SHOULD_UPDATE && findings.every((finding) => !finding.includes('ölçüm yap
                     'yüksek kontrast, zorlanmış renkler. Hareketli hâl KARŞILAŞTIRILMAZ — ' +
                     'yıldızlar sabit tohumlu ama aynı milisaniyede yakalanamaz.',
                 tolerance:
-                    'Tolerans 12/255 ve ölçüldü: macOS Chrome ile Debian Chromium arasındaki ' +
-                    'en kötü hücre farkı 7, gerçek bir gerileme ise 36–80. Taban hangi ' +
-                    'makinede yazılırsa yazılsın ötekinde de geçerlidir — ama renk kipi ' +
-                    'sabitlenmeden bu doğru DEĞİLDİ (sapma 233–255).',
+                    'Tolerans 12/255. İlk macOS/Debian ölçümünde fark 1–7, örnek gerilemelerde ' +
+                    '36–80 idi. Her rasterleştirici için garanti değildir; incelenmiş ' +
+                    'platform/görünüm istisnaları platformOverrides altında kanıtıyla saklanır.',
                 cells: { x: CELLS_X, y: CELLS_Y },
                 writtenOn: PLATFORM,
                 views: next.views,
+                ...(baseline.platformOverrides ? { platformOverrides: baseline.platformOverrides } : {}),
             },
             null,
             4,
