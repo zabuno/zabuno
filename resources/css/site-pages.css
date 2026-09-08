@@ -614,3 +614,123 @@
     margin: 0;
     overflow-wrap: anywhere;
 }
+
+/* Şirket anlatısı ve mesaj formu ayrı okuma düzenleri kullanır. */
+.site-company-page .site-company-body,
+.site-contact-page .site-contact-body {
+    min-inline-size: 0;
+}
+
+.site-company-page .site-company-intro,
+.site-company-page .site-company-details,
+.site-contact-page .site-contact-layout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: var(--zc-rhythm-tight);
+}
+
+.site-company-page .site-company-service {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    padding: clamp(1rem, 2.5vw, 2.5rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-company-page .site-company-service h2 {
+    font-size: var(--zc-display-2);
+}
+
+.site-company-page .site-company-seller {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+}
+
+.site-company-page .site-company-details {
+    padding-block-start: var(--zc-rhythm-tight);
+    border-block-start: 1px solid var(--zc-edge);
+}
+
+.site-company-page .site-company-details > section {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+}
+
+.site-contact-page .site-contact-compose {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-contact-page .site-contact-identity {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+    padding-block: var(--space-4);
+}
+
+.site-contact-page .site-contact-body .site-notice {
+    overflow-wrap: anywhere;
+}
+
+/* Fiyat kararı: çıkış koşulları ve sonraki hesap adımı aynı durakta. */
+.site-pricing-page .site-pricing-decision {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: var(--zc-rhythm-tight);
+    padding: clamp(1rem, 2.5vw, 2rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-pricing-page .site-pricing-decision-copy {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.site-pricing-page .site-pricing-next {
+    flex: 1 1 20rem;
+    min-inline-size: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.site-pricing-page .site-pricing-next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+.site-pricing-page .site-pricing-boundaries {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
+    padding-block: var(--zc-rhythm-tight);
+    border-block-start: 1px solid var(--zc-edge);
+}
+
+.site-pricing-page .site-pricing-boundaries > .site-pricing-head {
+    flex: 1 1 22rem;
+    min-inline-size: 0;
+}
+
+.site-pricing-page .site-pricing-absences {
+    flex: 1.5 1 38rem;
+    min-inline-size: 0;
+    max-inline-size: 66ch;
+    gap: var(--space-4);
+    line-height: 1.65;
+}
+
+.site-pricing-page .site-pricing-absences > li {
+    padding-inline-start: var(--space-2);
+    overflow-wrap: anywhere;
+}

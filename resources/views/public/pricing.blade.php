@@ -64,7 +64,7 @@
 @section('description', $st['pricingLead'])
 
 @section('content')
-    <main id="main-content" class="site-page">
+    <main id="main-content" class="site-page site-pricing-page">
         @include('public.partials.prologue', [
             'prologueHeading' => $st['pricingHeading'],
             'prologueLead' => $st['pricingLead'],
@@ -96,6 +96,48 @@
             --}}
             @if (! empty($plans))
                 {{--
+                    ÇIKIŞ YOLU, FİYATIN YANINDA (FF-216 ile aynı gerekçe).
+
+                    "Nasıl ödeyeceğim?" sorusunun cevabı bölümün kendi ödeme
+                    satırında; "çıkmak istersem ne olur?" ise burada. İkisini
+                    de sözleşmenin içinde bırakmak, ödeme adımından SONRA
+                    öğrenmek demekti.
+
+                    BANKA YA DA KART LOGOSU YOK: hangi kartların kabul
+                    edildiği ödeme sağlayıcısının kendi yapılandırmasından
+                    türer ve bu depoda öyle bir liste yapılandırılmamıştır.
+                    Uydurulmuş bir logo, kabul edilmeyen bir kartı kabul
+                    ediliyor göstermek olurdu.
+
+                    Satır yasal metnin YERİNE GEÇMEZ, ona götürür.
+                --}}
+                <section class="site-pricing site-pricing-decision site-panel" aria-labelledby="pricing-terms-heading">
+                    <div class="site-pricing-decision-copy">
+                        <div class="site-pricing-head">
+                            <h2 id="pricing-terms-heading" class="site-display-3">{{ $st['pricingTermsHeading'] }}</h2>
+                        </div>
+
+                        <div class="site-pricing-exit" data-cancellation>
+                            <p>{{ $st['cancellation'] }}</p>
+                            {{-- Bağlantı CÜMLENİN İÇİNDE değil, kendi satırında ve
+                                 44 piksel: satır içi bir bağlantı dar ekranda
+                                 18-42 piksel yüksekliğinde kalıyor ve parmakla
+                                 ıskalanıyor (`docs/117` K1). --}}
+                            <a class="site-action self-start underline underline-offset-2"
+                               href="/refund-policy">{{ $st['cancellationCta'] }}</a>
+                        </div>
+                    </div>
+                    {{-- Hesap yolları ödeme veya plan seçimi değildir. --}}
+                    <div class="site-pricing-next">
+                        <p class="site-pricing-note">{{ $st['homeHeroNote'] }}</p>
+                        <nav class="site-pricing-next-actions" aria-label="{{ $st['homeHeroActionsLabel'] }}">
+                            <a href="/register" class="site-action site-cta" data-emphasis="true">{{ $st['homeHeroRegister'] }}</a>
+                            <a href="/app" class="site-action site-cta">{{ $st['homeOpenApp'] }}</a>
+                        </nav>
+                    </div>
+                </section>
+
+                {{--
                     NE DAHİL DEĞİL — ve bu bir kademe farkı değil.
 
                     Bir fiyat sayfasının en pahalı sessizliği burasıdır: tik
@@ -109,7 +151,7 @@
 
                     Başlık "hiçbir plan" diyor, "ucuz plan" değil.
                 --}}
-                <section class="site-pricing" aria-labelledby="pricing-excluded-heading">
+                <section class="site-pricing site-pricing-boundaries" aria-labelledby="pricing-excluded-heading">
                     <div class="site-pricing-head">
                         <h2 id="pricing-excluded-heading" class="site-display-3">{{ $st['excludedHeading'] }}</h2>
                         <p class="site-lede">{{ $st['excludedLead'] }}</p>
@@ -165,37 +207,6 @@
                     </div>
                 </section>
 
-                {{--
-                    ÇIKIŞ YOLU, FİYATIN YANINDA (FF-216 ile aynı gerekçe).
-
-                    "Nasıl ödeyeceğim?" sorusunun cevabı bölümün kendi ödeme
-                    satırında; "çıkmak istersem ne olur?" ise burada. İkisini
-                    de sözleşmenin içinde bırakmak, ödeme adımından SONRA
-                    öğrenmek demekti.
-
-                    BANKA YA DA KART LOGOSU YOK: hangi kartların kabul
-                    edildiği ödeme sağlayıcısının kendi yapılandırmasından
-                    türer ve bu depoda öyle bir liste yapılandırılmamıştır.
-                    Uydurulmuş bir logo, kabul edilmeyen bir kartı kabul
-                    ediliyor göstermek olurdu.
-
-                    Satır yasal metnin YERİNE GEÇMEZ, ona götürür.
-                --}}
-                <section class="site-pricing" aria-labelledby="pricing-terms-heading">
-                    <div class="site-pricing-head">
-                        <h2 id="pricing-terms-heading" class="site-display-3">{{ $st['pricingTermsHeading'] }}</h2>
-                    </div>
-
-                    <div class="site-pricing-exit" data-cancellation>
-                        <p>{{ $st['cancellation'] }}</p>
-                        {{-- Bağlantı CÜMLENİN İÇİNDE değil, kendi satırında ve
-                             44 piksel: satır içi bir bağlantı dar ekranda
-                             18-42 piksel yüksekliğinde kalıyor ve parmakla
-                             ıskalanıyor (`docs/117` K1). --}}
-                        <a class="site-action self-start underline underline-offset-2"
-                           href="/refund-policy">{{ $st['cancellationCta'] }}</a>
-                    </div>
-                </section>
             @endif
         </div>
     </main>
