@@ -216,6 +216,66 @@ msgstr "Your menu behind a QR code, kept up to date by your own team."
 msgid "site.footer.terms"
 msgstr "Terms"
 
+#: site:site.home.chain.heading
+msgid "site.home.chain.heading"
+msgstr "From an empty account to a code on the table"
+
+#: site:site.home.chain.label
+msgid "site.home.chain.label"
+msgstr "The six steps, side by side"
+
+#: site:site.home.chain.lead
+msgid "site.home.chain.lead"
+msgstr "Six steps, in this order. Every one of them works before you pay anything."
+
+#: site:site.home.chain.step1.body
+msgid "site.home.chain.step1.body"
+msgstr "An email address, then the name, language, currency and time zone of your business."
+
+#: site:site.home.chain.step1.title
+msgid "site.home.chain.step1.title"
+msgstr "Create an account and a business"
+
+#: site:site.home.chain.step2.body
+msgid "site.home.chain.step2.body"
+msgstr "A branch has an address and its own clock. One restaurant is a business with one branch."
+
+#: site:site.home.chain.step2.title
+msgid "site.home.chain.step2.title"
+msgstr "Add a branch"
+
+#: site:site.home.chain.step3.body
+msgid "site.home.chain.step3.body"
+msgstr "Categories, dishes, prices, photos and declared allergens, in a draft guests cannot see."
+
+#: site:site.home.chain.step3.title
+msgid "site.home.chain.step3.title"
+msgstr "Write the menu"
+
+#: site:site.home.chain.step4.body
+msgid "site.home.chain.step4.body"
+msgstr "Publishing freezes a numbered snapshot. An earlier one can be restored."
+
+#: site:site.home.chain.step4.title
+msgid "site.home.chain.step4.title"
+msgstr "Publish a version"
+
+#: site:site.home.chain.step5.body
+msgid "site.home.chain.step5.body"
+msgstr "Export a card, a poster or a sheet to cut up, and repoint it later without reprinting."
+
+#: site:site.home.chain.step5.title
+msgid "site.home.chain.step5.title"
+msgstr "Print a code for each table"
+
+#: site:site.home.chain.step6.body
+msgid "site.home.chain.step6.body"
+msgstr "The code opens the menu in the browser already on the phone. No app, no account."
+
+#: site:site.home.chain.step6.title
+msgid "site.home.chain.step6.title"
+msgstr "Guests scan"
+
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
 msgstr "Write to us"
@@ -244,6 +304,22 @@ msgstr "What does it cost?"
 msgid "site.home.faq.heading"
 msgstr "FAQ"
 
+#: site:site.home.faq.install.answer
+msgid "site.home.faq.install.answer"
+msgstr "No. The code opens a web page in the browser already on the phone."
+
+#: site:site.home.faq.install.question
+msgid "site.home.faq.install.question"
+msgstr "Do guests install anything?"
+
+#: site:site.home.faq.pos.answer
+msgid "site.home.faq.pos.answer"
+msgstr "No. It shows the menu and can carry an order to the kitchen. It does not take payment and does not know your takings."
+
+#: site:site.home.faq.pos.question
+msgid "site.home.faq.pos.question"
+msgstr "Is Zabuno a point-of-sale system?"
+
 #: site:site.home.faq.what.answer
 msgid "site.home.faq.what.answer"
 msgstr "A workspace app for managing a restaurant's menu and catalog and publishing it to a stable QR-linked page."
@@ -252,93 +328,93 @@ msgstr "A workspace app for managing a restaurant's menu and catalog and publish
 msgid "site.home.faq.what.question"
 msgstr "What is Zabuno?"
 
-#: site:site.home.features.heading
-msgid "site.home.features.heading"
-msgstr "Features"
-
-#: site:site.home.features.media.body
-msgid "site.home.features.media.body"
-msgstr "Media uploads go through quarantined media intake and review before they are available, alongside basic usage analytics for the published page."
-
-#: site:site.home.features.media.title
-msgid "site.home.features.media.title"
-msgstr "Media intake & analytics"
-
-#: site:site.home.features.menu.body
-msgid "site.home.features.menu.body"
-msgstr "Create and edit menu items, categories, and catalog details from the workspace app."
-
-#: site:site.home.features.menu.title
-msgid "site.home.features.menu.title"
-msgstr "Menu & catalog operations"
-
-#: site:site.home.features.publication.body
-msgid "site.home.features.publication.body"
-msgstr "Publish a menu to a stable, shareable page that a printed QR code can keep pointing to."
-
-#: site:site.home.features.publication.title
-msgid "site.home.features.publication.title"
-msgstr "Publication & stable QR"
-
-#: site:site.home.features.workspace.body
-msgid "site.home.features.workspace.body"
-msgstr "Keep a restaurant's workspace, team, and settings organized in one tenant-scoped place."
-
-#: site:site.home.features.workspace.title
-msgid "site.home.features.workspace.title"
-msgstr "Restaurant & workspace context"
-
 #: site:site.home.hero.actions.label
 msgid "site.home.hero.actions.label"
 msgstr "Account actions"
 
 #: site:site.home.hero.heading
 msgid "site.home.hero.heading"
-msgstr "Run your restaurant's menu and workspace from one place"
+msgstr "Run your restaurant's menu from one place"
 
 #: site:site.home.hero.lead
 msgid "site.home.hero.lead"
-msgstr "Zabuno gives your team a shared workspace to manage a restaurant's menu and catalog, publish it as a stable QR-linked page, and keep it updated as things change."
+msgstr "Write a menu, publish it, print a code for each table. Guests read it in the browser already on their phone."
+
+#: site:site.home.hero.note
+msgid "site.home.hero.note"
+msgstr "No plan needed to build a menu, publish it and print codes."
 
 #: site:site.home.hero.openApp
 msgid "site.home.hero.openApp"
-msgstr "Open workspace app"
+msgstr "Open the app"
 
-#: site:site.home.howItWorks.build.body
-msgid "site.home.howItWorks.build.body"
-msgstr "add categories, items, prices, visibility, and allergens to your catalog."
+#: site:site.home.hero.register
+msgid "site.home.hero.register"
+msgstr "Create an account"
 
-#: site:site.home.howItWorks.build.title
-msgid "site.home.howItWorks.build.title"
-msgstr "Build the menu"
+#: site:site.home.limits.dishNames.body
+msgid "site.home.limits.dishNames.body"
+msgstr "The interface around the menu speaks two languages; the dishes are written in yours and are not translated."
 
-#: site:site.home.howItWorks.heading
-msgid "site.home.howItWorks.heading"
-msgstr "How it works"
+#: site:site.home.limits.dishNames.title
+msgid "site.home.limits.dishNames.title"
+msgstr "Dish names are written once"
 
-#: site:site.home.howItWorks.publish.body
-msgid "site.home.howItWorks.publish.body"
-msgstr "publish the menu to a stable page with a QR code."
+#: site:site.home.limits.heading
+msgid "site.home.limits.heading"
+msgstr "What Zabuno is not"
 
-#: site:site.home.howItWorks.publish.title
-msgid "site.home.howItWorks.publish.title"
-msgstr "Publish & get a QR"
+#: site:site.home.limits.integrations.body
+msgid "site.home.limits.integrations.body"
+msgstr "Nothing connects to a till, an accounting package or a food marketplace. Your menu leaves and returns as a spreadsheet."
 
-#: site:site.home.howItWorks.setup.body
-msgid "site.home.howItWorks.setup.body"
-msgstr "complete your workspace and restaurant setup."
+#: site:site.home.limits.integrations.title
+msgid "site.home.limits.integrations.title"
+msgstr "No third-party integrations"
 
-#: site:site.home.howItWorks.setup.title
-msgid "site.home.howItWorks.setup.title"
-msgstr "Set up"
+#: site:site.home.limits.lead
+msgid "site.home.limits.lead"
+msgstr "Shorter than the parts list, and the part most software will not put on its home page."
 
-#: site:site.home.howItWorks.update.body
-msgid "site.home.howItWorks.update.body"
-msgstr "edit the menu and the published page and QR code stay the same."
+#: site:site.home.limits.oneBrand.body
+msgid "site.home.limits.oneBrand.body"
+msgstr "An account holds one business with many branches, not several businesses."
 
-#: site:site.home.howItWorks.update.title
-msgid "site.home.howItWorks.update.title"
-msgstr "Update anytime"
+#: site:site.home.limits.oneBrand.title
+msgid "site.home.limits.oneBrand.title"
+msgstr "One brand per account"
+
+#: site:site.home.limits.reservations.body
+msgid "site.home.limits.reservations.body"
+msgstr "There is no table booking, no courier integration and no points card."
+
+#: site:site.home.limits.reservations.title
+msgid "site.home.limits.reservations.title"
+msgstr "No reservations, delivery or loyalty"
+
+#: site:site.home.limits.sectors.body
+msgid "site.home.limits.sectors.body"
+msgstr "No cafe version, bakery version or hotel version. One kind of business: places that serve food and drink."
+
+#: site:site.home.limits.sectors.title
+msgid "site.home.limits.sectors.title"
+msgstr "No sector editions"
+
+#: site:site.home.limits.store.body
+msgid "site.home.limits.store.body"
+msgstr "There is no iPhone or Android app for you or your guests; both sides are web pages."
+
+#: site:site.home.limits.store.title
+msgid "site.home.limits.store.title"
+msgstr "No app in a store"
+
+#: site:site.home.limits.till.body
+msgid "site.home.limits.till.body"
+msgstr "Guests do not pay through Zabuno, and nothing here prints a bill or reports your takings."
+
+#: site:site.home.limits.till.title
+msgid "site.home.limits.till.title"
+msgstr "Not a till and not a payment system"
 
 #: site:site.home.meta.description
 msgid "site.home.meta.description"
@@ -347,6 +423,110 @@ msgstr "Zabuno gives your team a shared workspace to manage a restaurant's menu 
 #: site:site.home.meta.title
 msgid "site.home.meta.title"
 msgstr "Restaurant menu & workspace"
+
+#: site:site.home.parts.ai.body
+msgid "site.home.parts.ai.body"
+msgstr "A photo of a printed menu becomes a draft you approve, and dishes typed twice are found."
+
+#: site:site.home.parts.ai.title
+msgid "site.home.parts.ai.title"
+msgstr "Zabuno AI"
+
+#: site:site.home.parts.analytics.body
+msgid "site.home.parts.analytics.body"
+msgstr "Scans, menu opens, dish views, searches that found nothing and orders sent, counted by the server."
+
+#: site:site.home.parts.analytics.title
+msgid "site.home.parts.analytics.title"
+msgstr "Analytics"
+
+#: site:site.home.parts.branches.body
+msgid "site.home.parts.branches.body"
+msgstr "Any number of branches under one business, each with its own menus, prices, codes and hours."
+
+#: site:site.home.parts.branches.title
+msgid "site.home.parts.branches.title"
+msgstr "Multiple branches"
+
+#: site:site.home.parts.branding.body
+msgid "site.home.parts.branding.body"
+msgstr "A logo and two colours, frozen into each publication so a menu never changes under a guest."
+
+#: site:site.home.parts.branding.title
+msgid "site.home.parts.branding.title"
+msgstr "Design and branding"
+
+#: site:site.home.parts.heading
+msgid "site.home.parts.heading"
+msgstr "What is in the product"
+
+#: site:site.home.parts.languages.body
+msgid "site.home.parts.languages.body"
+msgstr "The guest page follows the guest, dish names stay in your language, prices follow your currency."
+
+#: site:site.home.parts.languages.title
+msgid "site.home.parts.languages.title"
+msgstr "Languages and currency"
+
+#: site:site.home.parts.lead
+msgid "site.home.parts.lead"
+msgstr "Twelve parts of one account. Each has its own page where it is explained in full."
+
+#: site:site.home.parts.media.body
+msgid "site.home.parts.media.body"
+msgstr "Photos are scanned, resized once and served small; the original is kept so copies can be remade."
+
+#: site:site.home.parts.media.title
+msgid "site.home.parts.media.title"
+msgstr "Images and media"
+
+#: site:site.home.parts.menuManagement.body
+msgid "site.home.parts.menuManagement.body"
+msgstr "Categories, dishes, prices and stock, edited in a draft and released as numbered versions."
+
+#: site:site.home.parts.menuManagement.title
+msgid "site.home.parts.menuManagement.title"
+msgstr "Menu management"
+
+#: site:site.home.parts.ordering.body
+msgid "site.home.parts.ordering.body"
+msgstr "Where you switch it on, guests build a basket and send it to a kitchen screen."
+
+#: site:site.home.parts.ordering.title
+msgid "site.home.parts.ordering.title"
+msgstr "Ordering from the table"
+
+#: site:site.home.parts.qrMenu.body
+msgid "site.home.parts.qrMenu.body"
+msgstr "Photo, description, price, allergens and sold-out state, at a permanent address that fits on a card."
+
+#: site:site.home.parts.qrMenu.title
+msgid "site.home.parts.qrMenu.title"
+msgstr "QR menu"
+
+#: site:site.home.parts.ratings.body
+msgid "site.home.parts.ratings.body"
+msgstr "A guest who scanned a code can rate a dish, and you can reply."
+
+#: site:site.home.parts.ratings.title
+msgid "site.home.parts.ratings.title"
+msgstr "Ratings from the table"
+
+#: site:site.home.parts.tables.body
+msgid "site.home.parts.tables.body"
+msgstr "A code per table, read back by a decoder before it becomes a file, printed as vector cards."
+
+#: site:site.home.parts.tables.title
+msgid "site.home.parts.tables.title"
+msgstr "Tables and QR codes"
+
+#: site:site.home.parts.team.body
+msgid "site.home.parts.team.body"
+msgstr "Editors, managers and a kitchen role that marks allergens and sold-out dishes and sees nothing else."
+
+#: site:site.home.parts.team.title
+msgid "site.home.parts.team.title"
+msgstr "A team with roles"
 
 #: site:site.legal.contents
 msgid "site.legal.contents"
