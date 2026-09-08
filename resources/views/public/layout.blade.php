@@ -91,7 +91,18 @@
          paragraftı — bir kebapçı "16/16 modules registered" okuyordu. --}}
     <meta name="zabuno-build" content="{{ $coreModuleCount }}/16 modules registered">
     @include('partials.font-preload')
-    @vite(['resources/css/app.css'])
+    {{-- SAHNE MOTORU (`docs/146`).
+
+         `type="module"` olduğu için ERTELENİR: ayrıştırmayı durdurmaz, ilk
+         boyamayı geciktirmez. Sunucu HTML'i tek başına eksiksizdir ve bu
+         betik onun ÜSTÜNE ekler (`docs/118` E8: taban HTML, tavan serbest).
+         Yüklenmezse, engellenirse ya da ziyaretçi azaltılmış hareket
+         istiyorsa sayfa aynı içeriği, aynı yolları ve aynı yüzey dilini
+         taşımaya devam eder — yalnız kıpırdamaz.
+
+         React DEĞİL: kurumsal sayfalar React paketini hiç yüklemez
+         (HOME-NO-REACT-05). --}}
+    @vite(['resources/css/app.css', 'resources/js/site.ts'])
 </head>
 <body class="site-shell min-h-screen bg-surface text-fg">
 {{-- Bu sayfalar SUNUCUDA üretilir ve React paketini hiç yüklemez.

@@ -55,12 +55,14 @@ export default defineConfig(({ mode }) => ({
                           'resources/js/workspace.desktop.tsx',
                           'resources/js/platform.tsx',
                           'resources/js/engineering.tsx',
-                          // KURUMSAL SİTENİN TEK BETİĞİ (`docs/138`).
-                          // React DEĞİL ve React'e bağlı değil: kurumsal
-                          // sayfalar sıfır React yüklemeye devam eder.
-                          // Kendi giriş noktası, çünkü kabuğa değil yalnız
-                          // sahne taşıyan sayfaya bağlanır.
-                          'resources/js/site-motion.ts',
+                          // KURUMSAL SAHNE (`docs/146`). React DEĞİL, düz
+                          // modül: kurumsal sayfalar React paketini hiç
+                          // yüklemez (HOME-NO-REACT-05) ve sahne motorunun
+                          // bir bileşen ağacına ihtiyacı yok. Ayrı giriş
+                          // olması şart — panel paketlerinden birine
+                          // eklenseydi, sahneyi hiç kullanmayan panel
+                          // ekranları da onu indirirdi.
+                          'resources/js/site.ts',
                       ],
                       refresh: true,
                   }),
@@ -96,6 +98,14 @@ export default defineConfig(({ mode }) => ({
                 Ölçülen etki: masaüstü kapanışı 199,65 → 188,53 KB gzip
                 (−11,13 KB). Takma adı KALDIRAN bir değişiklik kapıyı
                 kırar; güvenliğini `tailwind-merge-dedupe.test.ts` kanıtlar.
+
+                BU BLOK BİRLEŞTİRMEDE KAYBOLMUŞTU (2026-09-08, `2f87ad89`).
+                Aynı dosyanın giriş noktası listesi ana sayfa paketiyle
+                birlikte değişince takma adlar da onunla birlikte düştü ve
+                iki kapı birden kırıldı: `tailwind-merge-dedupe.test.ts` ve
+                `DS-BUNDLE-BUDGET-07` (687,6 KB ham, tavan 655 KB). Blok
+                geri kondu; ölçüm bu paketin kendi değişikliği değil, geri
+                alınan bir kayıptır.
             */
             'tailwind-merge-v2': 'tailwind-merge',
             'tailwind-merge-v3': 'tailwind-merge',

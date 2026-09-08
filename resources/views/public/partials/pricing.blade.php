@@ -6,6 +6,44 @@
     ayrıştığında hangisinin doğru olduğunu kimse bilemez.
 
     Metin de şablonda DEĞİL katalogda yaşar (`docs/85` ile aynı gerekçe).
+    Bu paket TEK BİR yeni görünür dize yazmadı: `lang/untranslatable-debt.json`
+    hâlâ sıfır.
+
+    ── DÖNGÜ 2: KURUMSAL YÜZEY DİLİ (`docs/146` §9 madde 2) ──────────────
+
+    Döngü 1'in kendi eksik listesi bu dosyayı adıyla suçluyordu: *"bugünkü
+    hâli 'sade' değil FAKİR: partial'ın kutuları kurumsal yüzey dilini
+    (`site-panel`) hiç kullanmıyor."*
+
+    Suçlama doğruydu ve sebebi ölçülebilir: kutular `rounded-lg border
+    border-border p-4` ile çiziliyordu — yani panelin Tailwind yardımcı
+    sınıflarıyla, sitenin KENDİ jetonlarıyla değil. Aynı sayfada iki farklı
+    yüzey dili vardı: kahraman bir uzay sahnesi, fiyat bir yönetim paneli
+    formu. Ziyaretçi bunu "iki ayrı ürün" diye okur.
+
+    Artık kutular `site-panel` (parıltı + kenar + renkli gölge) ve ölçüler
+    `--zc-*` jetonlarından geliyor. Ham renk, ham boşluk ve ham yarıçap YOK.
+
+    ── SAHNE HÂLÂ SUSUYOR ────────────────────────────────────────────────
+
+    Kurumsal YÜZEY dili ile HAREKET ayrı şeylerdir (`site-identity.css` §6:
+    *"Hiçbiri hareket etmez."*). Burada tuval, yörünge, veri hattı ya da
+    parallax yok ve olmayacak: bir fiyatın okunduğu yer, dikkatin
+    bölünmemesi gereken yerdir. Değişen şey kutuların KALINLIĞI, hareketi
+    değil.
+
+    ── DEĞİŞKENLER ───────────────────────────────────────────────────────
+
+    `$pricingHeadingTag`   — `h2` (ana sayfada) ya da `'none'`. `'none'`, başlığın
+                             ÇAĞIRANDA olduğunu söyler: `/pricing` başlığı
+                             önsöz bandında `h1` olarak basar ve bu bölüm onu
+                             tekrar etmez. Aynı sözcüğü alt alta iki kez
+                             yazmak, Döngü 1'in göz izinde ölçtüğü kusurun ta
+                             kendisiydi (`docs/146` §5).
+    `$pricingLabelledBy`   — bölümü adlandıran başlığın `id`si.
+    `$pricingLead`         — isteğe bağlı giriş cümlesi.
+    `$pricingHeadingClass` — çağıran bir ölçek dayatmaz; başlık ölçeği
+                             etikete göre KURUMSAL ölçekten seçilir.
 --}}
 @php
     /* Bu bölüm hem ana sayfada (bir alt başlık olarak) hem de kendi
@@ -14,18 +52,27 @@
        üste iki kez yazardı ve ekran okuyucuda iki ayrı bölüm gibi okunurdu
        (`docs/89`). */
     $pricingHeadingTag = $pricingHeadingTag ?? 'h2';
-    $pricingHeadingClass = $pricingHeadingTag === 'h1' ? 'text-3xl font-bold' : 'text-2xl font-bold';
+    $pricingLabelledBy = $pricingLabelledBy ?? 'pricing-heading';
+
+    /* Ölçek KURUMSAL tipografiden (`site-identity.css` §3), Tailwind'in
+       `text-3xl`inden değil: iki ölçek bir arada, aynı sayfada iki farklı
+       başlık boyu üretiyordu. */
+    $pricingHeadingClass = $pricingHeadingTag === 'h1' ? 'site-display-2' : 'site-display-3';
 
     /* Giriş cümlesi BAŞLIĞIN ALTINDA durur. Sayfa başlığı parçaya
        devredilince cümle yukarıda kalmıştı: okuyucu neyin açıklamasını
        okuduğunu, ancak sonraki satırda öğreniyordu. */
     $pricingLead = $pricingLead ?? null;
 @endphp
-<section id="pricing" aria-labelledby="pricing-heading" class="flex flex-col gap-4">
-    <{{ $pricingHeadingTag }} id="pricing-heading" class="{{ $pricingHeadingClass }}">{{ $st['pricingHeading'] }}</{{ $pricingHeadingTag }}>
+<section id="pricing" aria-labelledby="{{ $pricingLabelledBy }}" class="site-pricing">
+    @if ($pricingHeadingTag !== 'none')
+        <div class="site-pricing-head">
+            <{{ $pricingHeadingTag }} id="pricing-heading" class="{{ $pricingHeadingClass }}">{{ $st['pricingHeading'] }}</{{ $pricingHeadingTag }}>
 
-    @if ($pricingLead)
-        <p class="text-fg-secondary">{{ $pricingLead }}</p>
+            @if ($pricingLead)
+                <p class="site-lede">{{ $pricingLead }}</p>
+            @endif
+        </div>
     @endif
 
     @if (empty($plans))
@@ -34,7 +81,7 @@
             dedirtir. Sayfa DURUMU söyler ve bir ÇIKIŞ YOLU bırakır: boş bir
             hâl bir hata değildir, ama bir çıkmaz da olmamalıdır (`docs/66`).
         --}}
-        <p class="text-fg-secondary">
+        <p class="site-pricing-note">
             {{ $st['pricingEmpty'] }}
             <a class="underline underline-offset-2" href="/contact">{{ $st['pricingEmptyCta'] }}</a>
         </p>
@@ -46,27 +93,33 @@
             onları göstermek, ücretsiz kademeyi "hiçbir şey içermiyor" gibi
             gösterirdi — oysa menü, yayın, karekod ve misafir sayfası her
             planda var (`docs/90`).
+
+            Kutu `site-panel` DEĞİL `site-rule`: bu bir plan değil, bütün
+            planların ALTINDAKİ zemin. Aynı kalınlıkta çizilseydi beşinci bir
+            plan gibi okunurdu.
         --}}
-        <div class="rounded-lg border border-border p-4">
-            <p class="font-semibold">{{ $st['includedHeading'] }}</p>
-            <p class="mt-1 text-fg-secondary">{{ $st['includedBody'] }}</p>
+        <div class="site-pricing-included">
+            <p class="site-eyebrow">{{ $st['includedHeading'] }}</p>
+            <p class="site-pricing-note">{{ $st['includedBody'] }}</p>
         </div>
 
-        <ul class="flex flex-col gap-4">
+        {{-- Izgara: 320 pikselde tek sütun, geniş ekranda sığdığı kadar.
+             Kırılma noktası YOK (`HOME-FLUID-04`). --}}
+        <ul class="site-pricing-grid">
             @foreach ($plans as $plan)
-                <li class="flex flex-col gap-1 rounded-lg border border-border p-4">
-                    <span class="text-lg font-semibold">{{ $plan['name'] }}</span>
+                <li class="site-panel site-lit site-pricing-plan">
+                    <span class="site-pricing-plan-name">{{ $plan['name'] }}</span>
 
                     @if (! empty($plan['free']))
                         {{-- `0,00 TRY` teknik olarak doğru ama insan onu
                              "ücretsiz" diye okumaz, bir hata sanır. --}}
-                        <span class="text-fg">{{ $st['free'] }}</span>
+                        <span class="site-pricing-amount">{{ $st['free'] }}</span>
                     @elseif ($plan['price'] === null)
                         {{--
                             Tutarı girilmemiş bir planı "0" ya da "ücretsiz"
                             göstermek, tutulmayacak bir söz vermek olurdu.
                         --}}
-                        <span class="text-fg-secondary">
+                        <span class="site-pricing-note">
                             {{ $st['perRestaurant'] }}
                             <a class="underline underline-offset-2" href="/contact">{{ $st['perRestaurantCta'] }}</a>
                         </span>
@@ -74,15 +127,15 @@
                         {{-- `tabular-nums`: rakamlar eşit genişlikte olmazsa
                              planlar arasında fiyat karşılaştırması gözle
                              yapılamaz. --}}
-                        <span class="text-fg">
+                        <span class="site-pricing-amount">
                             <span class="tabular-nums">{{ $plan['price'] }}</span>
-                            <span class="text-meta text-fg-muted">{{ $st['perMonth'] }}</span>
+                            <span class="site-pricing-period">{{ $st['perMonth'] }}</span>
                         </span>
                     @endif
 
                     @if (! empty($plan['entitlements']))
-                        <p class="mt-2 text-meta font-medium text-fg-secondary">{{ $st['adds'] }}</p>
-                        <ul class="flex list-disc flex-col gap-1 ps-5 text-fg-secondary">
+                        <p class="site-eyebrow">{{ $st['adds'] }}</p>
+                        <ul class="site-pricing-entitlements">
                             @foreach ($plan['entitlements'] as $entitlement)
                                 <li>{{ $entitlement }}</li>
                             @endforeach
@@ -92,7 +145,7 @@
             @endforeach
         </ul>
 
-        <p class="text-meta text-fg-muted">
+        <p class="site-pricing-note">
             {{ $st['unsure'] }}
             <a class="underline underline-offset-2" href="/contact">{{ $st['unsureCta'] }}</a>
         </p>
@@ -108,14 +161,14 @@
              depoda öyle bir liste yapılandırılmamıştır. Sağlayıcının adı
              ise ölçülmüş bir olgudur; uydurulmuş bir logo ise kabul
              edilmeyen bir kartı kabul ediliyor göstermek olurdu. --}}
-        <div class="flex flex-col text-meta text-fg-muted" data-payment-methods>
+        <div class="site-pricing-payment" data-payment-methods>
             <p>{{ $st['paymentMethods'] }}</p>
             {{-- Bağlantı CÜMLENİN İÇİNDE değil, kendi satırında ve 44
                  piksel: satır içi bir bağlantı dar ekranda 18-42 piksel
                  yüksekliğinde kalıyor ve parmakla ıskalanıyor (`docs/117`).
                  Bu sayfadaki eski satır içi bağlantılar #279'un borcudur ve
                  ayrı ölçülür; YENİ bağlantı o borcu büyütmez. --}}
-            <a class="inline-flex min-h-11 items-center self-start underline underline-offset-2"
+            <a class="site-action self-start underline underline-offset-2"
                href="/pre-information">{{ $st['paymentMethodsCta'] }}</a>
         </div>
     @endif

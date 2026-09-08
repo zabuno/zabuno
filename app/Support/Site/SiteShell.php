@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support\Site;
 
+use App\Domain\Legal\CompanyProfile;
 use App\Domain\Url\CanonicalUrl;
 use App\Support\Localization\PageLanguage;
 use App\Support\Localization\SiteText;
@@ -79,8 +80,30 @@ final class SiteShell
         */
         $anchorPrefix = trim($path, '/') === '' ? '' : '/';
 
+        $siteText = $this->siteText->all($locale);
+
+        /*
+            SATICI KİMLİĞİ ARTIK KABUĞUN VERİSİDİR (FF-237).
+
+            Altbilgide bir kurumsal kimlik satırı var ve o satır her kurumsal
+            adreste çizilir; dolayısıyla kimlik artık `/about`, `/contact` ve
+            yasal sayfaların değil, KABUĞUN ihtiyacı. Üç denetleyicinin
+            hepsi onu ayrıca hesaplamaya devam ediyor ve bu bir tekrar DEĞİL:
+            oradaki liste sayfanın GÖVDESİNDE, buradaki altbilgide, ikisi de
+            aynı `CompanyIdentity::rows()` çağrısından çıkıyor. Değer tek
+            kaynaktan (`CompanyProfile::fromConfig()`) okunuyor, dolayısıyla
+            ikisi ayrışamaz.
+
+            Veritabanına dokunmaz: kimlik ortamdan gelir (`CompanyIdentity`
+            sınıf başlığındaki üç gerekçe), bu yüzden altbilgiye kimlik
+            koymak kurumsal sayfalara bir veritabanı bağımlılığı EKLEMEZ.
+        */
+        $company = CompanyProfile::fromConfig();
+
         return [
-            'st' => $this->siteText->all($locale),
+            'st' => $siteText,
+            'companyRows' => CompanyIdentity::rows($company, $siteText),
+            'companyComplete' => $company->isComplete(),
             'canonicalUrl' => $this->canonical->for($request->getSchemeAndHttpHost(), $path),
             'anchorPrefix' => $anchorPrefix,
             'pageKey' => $pageKey,

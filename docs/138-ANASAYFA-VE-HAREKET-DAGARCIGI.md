@@ -8,6 +8,13 @@
 
 # Ana sayfa ve hareket dağarcığı — 320×480 taban, sıfır kütüphane, iddia envanterden
 
+> **AŞILDI (2026-09-08, `docs/146`).** Bu belgenin anlattığı ilk ana sayfa
+> ve onun `site-motion.css` / `site-motion.ts` ikilisi artık depoda yok.
+> Yerine sahne motoru geçti: `site-scene.css` + `site-home.css` +
+> `site-pages.css` + `resources/js/site.ts`, ağırlık kapısı da
+> `scripts/scene-budget.json`. Belge KAYIT olarak duruyor — ölçümleri ve
+> gerekçeleri o günün gerçeğiydi; bugünün kodunu tarif etmiyor.
+
 ## 1. Sahibin isteği ve bu belgenin kapsamı
 
 2026-09-08, üç cümle:
