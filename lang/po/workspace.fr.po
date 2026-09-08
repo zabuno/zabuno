@@ -5584,6 +5584,10 @@ msgstr ""
 msgid "workspace.publication.qrScreen.cardTheme.signage"
 msgstr ""
 
+#: workspace:workspace.publication.qrScreen.codeAlwaysDark
+msgid "workspace.publication.qrScreen.codeAlwaysDark"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.custom
 msgid "workspace.publication.qrScreen.custom"
 msgstr ""

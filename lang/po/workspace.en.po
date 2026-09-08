@@ -5584,6 +5584,10 @@ msgstr "Plain"
 msgid "workspace.publication.qrScreen.cardTheme.signage"
 msgstr "Signage"
 
+#: workspace:workspace.publication.qrScreen.codeAlwaysDark
+msgid "workspace.publication.qrScreen.codeAlwaysDark"
+msgstr "Whatever the card looks like, the code itself is always printed dark-on-light: scanners assume that, and an inverted code is not read at all by many phones."
+
 #: workspace:workspace.publication.qrScreen.custom
 msgid "workspace.publication.qrScreen.custom"
 msgstr "I need another size"
