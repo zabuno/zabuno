@@ -61,7 +61,7 @@ final class DistanceSellingCompletenessTest extends TestCase
             'hakem heyeti ve tüketici mahkemesi' => ['consumer arbitration committee or to the consumer court'],
             'uygulanacak hukuk ve yetkili merci' => ['courts and enforcement offices at the registered seat'],
             'sözleşmenin kaydı' => ['is recorded with the buyer\'s account'],
-            'metnin dili' => ['A Turkish text of this agreement is not published yet'],
+            'metnin dili' => ['A Turkish translation is also available'],
         ];
     }
 
@@ -114,7 +114,7 @@ final class DistanceSellingCompletenessTest extends TestCase
             'derhâl ifa onayı' => ['separate tick box that is never pre-ticked'],
             'şikâyet ve hakem heyeti' => ['consumer arbitration committee or to the consumer court'],
             'formun geçerliliği' => ['This form is shown to you before payment'],
-            'metnin dili' => ['A Turkish text is not published yet'],
+            'metnin dili' => ['A Turkish translation is also available'],
         ];
     }
 

@@ -77,16 +77,16 @@ final class CompanyProfile
      * `{company.adres}` kalması, okuyucuya bir şablon artığı göstermek
      * olurdu. Testler bütün belgeleri doldurduğu için hata CI'da görünür.
      */
-    public function fill(string $text): string
+    public function fill(string $text, string $locale = 'en'): string
     {
         return (string) preg_replace_callback(
             '/\{company\.([a-z_]+)\}/',
-            function (array $match): string {
+            function (array $match) use ($locale): string {
                 if (! in_array($match[1], self::FIELDS, true)) {
                     throw new LogicException("Unknown company placeholder {company.{$match[1]}}.");
                 }
 
-                return $this->fields[$match[1]] ?? self::NOT_PROVIDED;
+                return $this->fields[$match[1]] ?? ($locale === 'tr' ? 'henüz belirtilmedi' : self::NOT_PROVIDED);
             },
             $text,
         );

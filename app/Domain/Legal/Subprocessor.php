@@ -40,8 +40,12 @@ final readonly class Subprocessor
      * stores data."), bazıları bitirmez ("Karlsruhe, Germany"). İkisini de
      * körü körüne noktalamak, bir sözleşme metninde ".." bırakırdı.
      */
-    public function sentence(): string
+    public function sentence(string $locale = 'en'): string
     {
+        if ($locale === 'tr') {
+            return $this->name.' — '.$this->role.' Görülen veriler: '.$this->data.' İşleme konumu: '.rtrim($this->location, '.').'.';
+        }
+
         return $this->name.' — '.$this->role.' Data seen: '.$this->data.' Processing location: '.rtrim($this->location, '.').'.';
     }
 }

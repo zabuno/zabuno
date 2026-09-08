@@ -49,8 +49,8 @@ interface LegalLibraryPort
     ];
 
     /** Belge yoksa `null` — bir hata değil, bir DURUM. */
-    public function find(string $key): ?LegalDocument;
+    public function find(string $key, string $locale = 'en'): ?LegalDocument;
 
     /** @return list<LegalDocument> */
-    public function all(): array;
+    public function all(string $locale = 'en'): array;
 }

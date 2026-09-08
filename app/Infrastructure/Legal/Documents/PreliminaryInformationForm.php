@@ -80,7 +80,7 @@ final class PreliminaryInformationForm
                     'This form is shown to you before payment and you confirm it electronically at checkout. It applies to the order you place at that moment. Prices shown on the site may change afterwards; the price that binds both parties is the one in your order summary. The version you confirmed, with the date and time, is recorded with your account and the text stays available on this site.',
                 ]),
                 new LegalSection('Language of this form', [
-                    'This text is published in English, which is the language it was written in, and the English text is the one recorded as confirmed. A Turkish text is not published yet. When one is published it will carry its own version and effective date, and this note will say so.',
+                    'This text is published in English, which is the language it was written in and the English text is the one recorded as confirmed. A Turkish translation is also available. Each language displays the applicable version and effective date at the top of the page.',
                 ]),
             ],
             requiresSellerIdentity: true,
