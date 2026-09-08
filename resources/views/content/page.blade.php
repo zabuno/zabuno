@@ -17,8 +17,39 @@
 @section('title', $content->metadata->seoTitle)
 @section('description', $content->metadata->metaDescription)
 
+@php
+    /*
+        SAHNE, 386 SAYFAYA TEK YERDEN (`docs/147` §3).
+
+        Döngü 2 bu sayfaları bilerek dışarıda bırakmıştı: *"kütük sayfalarının
+        kompozisyonu hiç ölçülmedi ve 386 sayfayı tek seferde giydirmek,
+        sahibin göreceği ilk kusuru üretirdi."* Cevap sayfa sayısını
+        azaltmak değil, KARARI TEKİLLEŞTİRMEK: bant burada bir kez isteniyor
+        ve 386 sayfanın hepsi aynı anda aynı şeyi giyiyor.
+
+        ── BANDIN YÜZÜ SAYFANIN ANLAMINDAN TÜRER, RASTGELE DEĞİL ──
+
+        `docs/146` §10.1'in kuralı: aynı bandı üst üste görmek, bandın
+        kendisini görünmez yapar. Ama 386 sayfaya elle yüz seçilemez. Seçim
+        ekmek kırıntısının DERİNLİĞİNDEN geliyor ve derinlik sayfanın
+        hiyerarşideki rolüdür:
+
+          · kök seviyesi  → `orbit`   — bir SİSTEMİN kendisi
+          · ikinci seviye → `grid`    — o sistemin üstünde durduğu ZEMİN
+          · daha derin    → `conduit` — bir İŞLEMİN anlatıldığı yer
+
+        Rastgele bir seçim (yol karması) de üç yüzü dağıtırdı, ama hiçbir
+        şey ANLATMAZDI; ve iki komşu sayfa aynı yüzü rastgele alabilirdi.
+    */
+    $prologueVariant = match (true) {
+        count($trail) <= 1 => 'orbit',
+        count($trail) === 2 => 'grid',
+        default => 'conduit',
+    };
+@endphp
+
 @section('content')
-    <main id="main-content" role="main" class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-8">
+    <main id="main-content" role="main" class="site-page">
         @if (count($trail) >= 2)
             {{-- Ekmek kırıntısı bir SIRALI listedir; sıra bilginin kendisidir.
 
@@ -26,7 +57,7 @@
                  yazılamaz (I18N-SSR-RATCHET-16) ve `aria-label` de görünen
                  metin sayılır. Makine tarafındaki anlamı `BreadcrumbList`
                  taşıyor; bir katalog anahtarı açıldığında landmark eklenir. --}}
-            <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-fg-secondary">
+            <ol class="site-measure-page flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-fg-secondary">
                 @foreach ($trail as $crumb)
                     <li class="flex items-center gap-2">
                         @unless ($loop->first)
@@ -72,17 +103,23 @@
             </ol>
         @endif
 
-        {{-- SAYFANIN TEK H1'i. Şablon tek H1 üretir; ikincisini yazacak yer yok. --}}
-        <h1 class="text-3xl font-semibold leading-tight text-fg">{{ $content->metadata->h1 }}</h1>
+        {{-- SAYFANIN TEK H1'i, ARTIK SAHNENİN İÇİNDE. Şablon tek H1 üretir;
+             ikincisini yazacak yer yok — bant onu taşıyınca da öyle kaldı. --}}
+        @include('public.partials.prologue', [
+            'prologueHeading' => $content->metadata->h1,
+            'prologueVariant' => $prologueVariant,
+        ])
 
-        @foreach ($content->blocks as $block)
-            @include('content.blocks.'.$block->type->value, ['block' => $block])
-        @endforeach
+        <div class="site-measure-page site-page-body">
+            @foreach ($content->blocks as $block)
+                @include('content.blocks.'.$block->type->value, ['block' => $block])
+            @endforeach
 
         {{-- JSON-LD sunucuda üretilen HTML'in İÇİNDEDİR (yönerge §14): JavaScript
              çalıştırmayan bir bot yalnız bunu görür. Gövdede duruyor çünkü
              `<head>` kabuğun dosyasıdır ve bu paket ona dokunmuyor; JSON-LD'nin
              belgedeki yeri geçerliliğini etkilemez. --}}
         <script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! $structuredData !!}</script>
+        </div>
     </main>
 @endsection

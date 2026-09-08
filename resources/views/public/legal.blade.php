@@ -48,8 +48,28 @@
             <p class="site-legal-notice" role="note" data-legal-review="pending">{{ $st['legalReviewPending'] }}</p>
         @endif
 
-        <h1 class="site-page-title">{{ $document->title }}</h1>
-        <p class="site-legal-summary">{{ $document->summary }}</p>
+        {{-- SAHNE, UYARININ ALTINDA — ÖLÇÜLMÜŞ BİR SIRA (`docs/147` §3).
+
+             Döngü 2 bu maddeyi bilerek bırakmıştı: *"yasal sayfada uyarının
+             ÜSTÜNDE bir şey olması ayrıca ölçülmeli."* Ölçüldü ve cevap
+             HAYIR: bant uyarının ALTINDA duruyor, üstünde değil. Bir
+             `role="alert"`, sayfada gördüğü ilk şey olmak için vardır; onun
+             önüne bir dekor koymak, uyarıyı bir başlığın altına gömmek olur.
+
+             Bant `calm`: tuval yok, düzlem yok, animasyon yok. Bir sözleşme
+             okunan metindir ve okunan metnin üstünde hareket bir kusurdur.
+             Kapı `SAHNE-YASAL` üçünü de sayıyor.
+
+             Ölçü kabı BOŞ geçiliyor: `.site-legal` zaten kendi okuma
+             sütununu ve yatay dolgusunu taşıyor; bandın kendi kabını da
+             eklemek 320 pikselde metni iki kat dolgunun arasına sıkıştırırdı. --}}
+        @include('public.partials.prologue', [
+            'prologueHeading' => $document->title,
+            'prologueLead' => $document->summary,
+            'prologueVariant' => 'calm',
+            'prologueMeasure' => '',
+            'prologueInset' => true,
+        ])
 
         {{-- SÜRÜM VE YÜRÜRLÜK belgenin kimliğidir: onay kaydı bu sürüme
              yazılır (`consent_records`). --}}

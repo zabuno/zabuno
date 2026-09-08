@@ -1,15 +1,28 @@
 @section('title', 'Your first 15 minutes')
 @section('description', 'Import your menu, print QR codes, and change a price.')
 
-<main class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10">
-    <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold">Your first 15 minutes</h1>
-        <p class="text-fg-secondary">
-            Three things every restaurant does on day one. Each one describes a screen that
-            exists today — nothing here is planned or coming soon.
-        </p>
-    </div>
+{{-- KABUĞUN BIRAKTIĞI BOŞLUK, KURUMSAL YÜZEY DİLİYLE.
+     Sayfa gövdesi okuma sütununda; bant tam kanamalı. Dolgu BİR kez
+     uygulanır (`.site-measure-prose`): iç içe kapların dolgusu birikirse
+     320 pikselde metin dar bir şeride sıkışır. --}}
+<main id="main-content" class="site-page">
+    {{-- SAHNE, SAKİN KİPTE (`docs/147` §3).
 
+         Bu bir makale sayfası: buraya gelen kişi keşfetmiyor, CEVAP ARIYOR.
+         Bandın markup'ı ortak parçadan geliyor (`public.partials.prologue`) —
+         yani sahne bir yerde değişince burası da değişir; tekrar eden tek şey
+         "bandı istiyorum" cümlesi, bandın kendisi değil.
+
+         `calm`: tuval yok, düzlem yok, animasyon yok. Başlık ve giriş cümlesi
+         bandın İÇİNE taşındı; sayfada ikinci bir h1 yok. --}}
+    @include('public.partials.prologue', [
+        'prologueHeading' => 'Your first 15 minutes',
+        'prologueLead' => 'Three things every restaurant does on day one. Each one describes a screen that exists today — nothing here is planned or coming soon.',
+        'prologueVariant' => 'calm',
+        'prologueMeasure' => 'site-measure-prose',
+    ])
+
+    <div class="site-measure-prose site-page-body">
     <section id="help-import" aria-labelledby="help-import-heading" class="flex flex-col gap-3">
         <h2 id="help-import-heading" class="text-2xl font-bold">Import your menu</h2>
         <p class="text-fg-secondary">
@@ -80,4 +93,5 @@
         Something else in your way?
         <a class="underline underline-offset-2" href="/contact">Write to us</a>.
     </p>
+    </div>
 </main>

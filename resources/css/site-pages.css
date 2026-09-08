@@ -66,6 +66,63 @@
     max-width: min(100%, 44rem);
 }
 
+/* ── SAKİN BANT (`site-prologue-calm`) — Döngü 3 ────────────────────────────
+
+   Yasal belgeler, yardım makaleleri ve kütükten çizilen sayfaların üstünde
+   duran hâl. Farkı bir "tema" değil, üç ölçülebilir eksiklik: tuval yok,
+   düzlem yok, animasyon yok.
+
+   ── NEDEN DAHA DA KISA ──
+
+   Bir sözleşmeyi açan kişi maddeyi arar; bir yardım makalesini açan kişi
+   cevabı arar. Önsöz 320×480'de 145 piksel kalıyordu ve bu bir KEŞİF
+   sayfasında doğru bir orandı. Okunan bir sayfada aynı yükseklik, aranan
+   şeyin önüne konmuş bir dekordur: taban 6 rem, yani 320×480'de ilk ekranın
+   beşte biri, dörtte biri değil.
+
+   ── HAREKET BURADA BİR KURAL DEĞİL, BİR YOKLUK ──
+
+   `animation: none` yazmıyoruz; hareketli katmanların HİÇBİRİ çizilmiyor.
+   Yazılmayan bir kural bozulamaz; kapatılan bir kural bir gün geri açılır.
+*/
+.site-prologue-calm {
+    min-block-size: clamp(6rem, 18vh, 12rem);
+    min-block-size: clamp(6rem, 18svh, 12rem);
+}
+
+/*
+    İÇERİDE DURAN BANT (`site-prologue-inset`).
+
+    Yasal belgenin gövdesi `.site-legal` okuma sütununda yaşıyor ve o sütun
+    bir sözleşmenin konusu: `class="site-legal"` üzerine kurulmuş testler var.
+    Bandı oradan çıkarmak yerine İÇİNDE bırakıldı — ama ekranın kenarına
+    dayanmayan keskin bir dikdörtgen, bir bant gibi değil bir kusur gibi
+    okunur. Köşe yuvarlanıyor ve kenar, yüzey dilinin kendi çizgisini alıyor.
+*/
+.site-prologue-inset {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--zc-edge);
+    padding-inline: var(--space-4);
+}
+
+/*
+    SAKİN ZEMİN (`scene-still`).
+
+    Tek bir gradyan, sıfır animasyon, sıfır `transform`. Nebuladan farkı
+    yalnız durgunluğu değil YOĞUNLUĞU da: okunan bir başlığın arkasındaki
+    ışık, kahramandakinin yarısı kadar. Görünen ama fark edilmeyen bir
+    zemin, tam olarak istenen şeydir.
+*/
+.scene-still {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(58% 120% at 12% 0%, var(--zc-glow-beam) 0%, transparent 72%),
+        radial-gradient(46% 110% at 92% 100%, var(--zc-glow-signal) 0%, transparent 70%);
+    opacity: 0.5;
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    §2 — SAYFA GÖVDESİ. Önsözden sonra gelen okuma alanı.
    ══════════════════════════════════════════════════════════════════════════
