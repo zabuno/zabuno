@@ -268,4 +268,98 @@ final class CorporateIdentityContrastTest extends TestCase
             }
         }
     }
+
+    // --- KIMLIK-04 -------------------------------------------------------------
+
+    /**
+     * DERİN BANT, İÇİNE KONAN YÜZEYİN JETONLARINI DA YENİLEMEK ZORUNDA.
+     *
+     * KIMLIK-02 `--zc-deep-text` ile `--zc-deep-raised` çiftini zaten
+     * ölçüyordu ve YEŞİLDİ — ama ekranda o çift hiç oluşmuyordu.
+     * `.site-panel` zeminini `--zc-raised`ten alıyor, `--zc-deep-raised`ten
+     * değil; `.site-deep` ise yalnız MÜREKKEBİ yeniliyor, ZEMİNİ değil.
+     * Sonuç açık kipte ölçüldü (2026-09-08, gerçek Chrome): beyaz kartın
+     * üstünde bandın açık mürekkebi, `rgb(237,235,247)` / `rgb(255,255,255)`
+     * = **1,18:1**. Sahibin "yazılar okunmuyor" şikâyeti buydu.
+     *
+     * Alınan ders bir renkten büyük: **ölçülen çift, CSS'in gerçekten
+     * ürettiği çift olmalı.** Var olmayan bir eşleşmeyi ölçen bir kapı
+     * yeşil yanar ve hiçbir şey korumaz.
+     *
+     * Bu yüzden burada renk değil YAPI ölçülüyor: `.site-panel` hangi yüzey
+     * jetonlarını tüketiyorsa, `.site-deep` onların hepsine cevap vermek
+     * zorunda. Yarın panele yeni bir jeton eklenirse bu kapı kırılır ve
+     * ekleyen kişiye "bu jetonun derin banttaki karşılığı ne?" diye sorar.
+     */
+    public function test_the_deep_band_answers_for_every_surface_token_the_panel_consumes(): void
+    {
+        $css = (string) file_get_contents(base_path(self::IDENTITY_FILE));
+
+        $panel = $this->ruleBody($css, '.site-panel');
+        $deep = $this->ruleBody($css, '.site-deep');
+
+        self::assertNotSame('', $panel, 'KIMLIK-04: `.site-panel` kuralı bulunamadı.');
+        self::assertNotSame('', $deep, 'KIMLIK-04: `.site-deep` kuralı bulunamadı.');
+
+        /*
+            YALNIZ MÜREKKEP-ZEMİN İLİŞKİSİNİ KURAN ÖZELLİKLER.
+
+            `border-radius` bir yüzey kararı değil bir geometri kararıdır ve
+            derin bantta değişmesi için bir sebep yok; `box-shadow` da ayrı
+            bir soru (koyu yüzeyde gölge zaten başka türlü çalışır) ve onu
+            buraya katmak kapıyı gürültüye boğardı. Ölçülen şey dar ve
+            kasıtlı: kartın ZEMİNİ, KENARI ve üstündeki IŞIK.
+        */
+        $consumed = [];
+
+        foreach (explode(';', $panel) as $declaration) {
+            $parts = explode(':', $declaration, 2);
+
+            if (count($parts) !== 2) {
+                continue;
+            }
+
+            $property = strtolower(trim($parts[0]));
+
+            if (! in_array($property, ['color', 'background-color', 'background-image', 'border', 'border-color'], true)) {
+                continue;
+            }
+
+            preg_match_all('/var\(\s*(--zc-[a-z0-9-]+)/i', $parts[1], $matches);
+
+            foreach ($matches[1] as $token) {
+                $consumed[] = $token;
+            }
+        }
+
+        /** @var list<string> $consumed */
+        $consumed = array_values(array_unique($consumed));
+
+        self::assertNotEmpty(
+            $consumed,
+            'KIMLIK-04: `.site-panel` hiçbir `--zc-*` jetonu tüketmiyor; kapı kör kalmış.'
+        );
+
+        foreach ($consumed as $token) {
+            self::assertMatchesRegularExpression(
+                '/(^|\s|;)'.preg_quote($token, '/').'\s*:/',
+                $deep,
+                sprintf(
+                    'KIMLIK-04: `.site-panel` [%s] jetonunu tüketiyor ama `.site-deep` onu '
+                    .'yenilemiyor. Derin bant mürekkebini yeniliyor, zeminini yenilemezse '
+                    .'banda konan kart temanın yüzeyini bandın mürekkebiyle boyar — açık '
+                    .'kipte 1,18:1 ölçüldü. Jetonun derin banttaki karşılığını yaz.',
+                    $token,
+                )
+            );
+        }
+    }
+
+    /** Bir kuralın gövdesini ADIYLA çıkarır; iç içe kural beklenmiyor. */
+    private function ruleBody(string $css, string $selector): string
+    {
+        $pattern = '/(?:^|\})\s*'.preg_quote($selector, '/').'\s*\{([^}]*)\}/m';
+
+        return preg_match($pattern, $css, $found) === 1 ? $found[1] : '';
+    }
 }
