@@ -130,16 +130,32 @@
                     <p class="site-lede">{{ $st['homeHeroLead'] }}</p>
                 </div>
 
-                {{-- İKİ EYLEM, ÜÇ DEĞİL.
+                {{-- İKİ EYLEM, ÜÇ DEĞİL — VE İKİSİ DE AYNI KİŞİYE AİT.
 
                      Üçüncüsü (`/login`) kabuğun menüsünde zaten duruyor ve
                      `HOME-A11Y-02` onu ORADA arıyor. 320×480'de üç düğme üst
                      üste 132 piksel eder ve vaat cümlesini katlanmanın
-                     altına iterdi. Sıra da düşünülmüştür: ilk düğme HENÜZ
-                     HESABI OLMAYAN için, ikincisi geri dönen için. --}}
+                     altına iterdi.
+
+                     İKİNCİ EYLEM DEĞİŞTİ (`HOME-PRICE-06`). Eskiden `/app`
+                     idi: hesabı OLAN için bir kısayol. Ama ilk ekrandaki iki
+                     yerin ikincisi, sayfanın kimin sorusunu cevapladığını
+                     söyler — ve `/app`, hesabı olmayan ziyaretçiyi bir giriş
+                     ekranına gönderip orada bırakıyordu. Ürünü ilk kez gören
+                     birinin ikinci sorusu "nasıl girerim" değil, "bu bana
+                     kaça mal olur"dur. O cevap sayfada VARDI ama en altta,
+                     soru-cevap bölümünün sonunda duruyordu.
+
+                     Sıra hâlâ düşünülmüştür: ilk düğme hesabı olmayanı
+                     kaydeder, ikincisi henüz karar vermemişi fiyata götürür.
+                     Etiket katalogdan (`site.pricing.heading`) ve soru-cevap
+                     bağlantısıyla AYNI anahtardan geliyor — iki yerde iki
+                     farklı sözcük, aynı sayfayı iki ayrı yer gibi
+                     gösterirdi. `/app` silinmedi: kabuğun altbilgisinde
+                     duruyor ve `HOME-SCENE-05` onu ORADA arıyor. --}}
                 <nav aria-label="{{ $st['homeHeroActionsLabel'] }}" class="home-actions scene-reveal" style="--scene-order: 1">
                     <a href="/register" class="site-action site-cta" data-emphasis="true">{{ $st['homeHeroRegister'] }}</a>
-                    <a href="/app" class="site-action site-cta">{{ $st['homeOpenApp'] }}</a>
+                    <a href="/pricing" class="site-action site-cta">{{ $st['pricingHeading'] }}</a>
                 </nav>
 
                 {{-- Ücretsiz zincir bir kampanya değil, plan kataloğundaki

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\PublicSite;
 
+use App\Support\Localization\SiteText;
 use Tests\TestCase;
 
 /**
@@ -16,7 +17,7 @@ use Tests\TestCase;
  * `<div id="app"></div>`'den ibaretti.
  *
  * Requirement ID'leri: HOME-SSR-01, HOME-A11Y-02, HOME-HONEST-03,
- * HOME-FLUID-04, HOME-NO-REACT-05.
+ * HOME-FLUID-04, HOME-NO-REACT-05, HOME-PRICE-06.
  */
 final class PublicHomeContractTest extends TestCase
 {
@@ -84,6 +85,91 @@ final class PublicHomeContractTest extends TestCase
 
         foreach (['/app', '/login', '/register'] as $target) {
             self::assertStringContainsString('href="'.$target.'"', $html, "HOME-A11Y-02: {$target} bağlantısı yok.");
+        }
+    }
+
+    // --- HOME-PRICE-06 : ilk ekranda fiyata giden yol -----------------------
+
+    /**
+     * İLK EKRANIN İKİNCİ EYLEMİ BİR FİYAT YOLUDUR, BİR GİRİŞ SAPMASI DEĞİL.
+     *
+     * Kahramanın iki eylemi var ve ikisi de HENÜZ MÜŞTERİ OLMAYAN için
+     * yazılmıştır: birincisi hesap açar, ikincisi "bu bana kaça mal olur"
+     * sorusunu cevaplar. `/app` o soruyu cevaplamaz — hesabı olmayan
+     * ziyaretçiyi bir giriş ekranına gönderir ve oradan geri döndürmez.
+     *
+     * Ölçülen şey bir tercih değil, bir YOLCULUK: 320×480'de ilk ekranda
+     * yalnız iki düğme sığıyor ve ikincisi kime ait olursa, sayfa onun
+     * sorusunu cevaplıyor demektir. Fiyat cevabı sayfanın çok altındaki
+     * soru-cevap bağlantısında da duruyor; ilk ekranda DURMUYORDU.
+     *
+     * `/app` sayfadan silinmez — kabuğun altbilgisinde duruyor ve
+     * `HOME-A11Y-02` ile `HOME-SCENE-05` onu ORADA arıyor. Ölçülen,
+     * varlığı değil KAHRAMANDAKİ yeri.
+     */
+    private function heroActions(string $uri = '/'): string
+    {
+        $html = $this->html($uri);
+
+        self::assertSame(
+            1,
+            preg_match('#<nav[^>]*class="[^"]*\bhome-actions\b[^"]*"[^>]*>(.*?)</nav>#s', $html, $match),
+            'HOME-PRICE-06: kahramanın eylem grubu (`home-actions`) bulunamadı — ölçüm dayanaksız.'
+        );
+
+        return $match[1];
+    }
+
+    public function test_the_first_screen_offers_a_route_to_the_price(): void
+    {
+        $actions = $this->heroActions();
+
+        self::assertStringContainsString(
+            'href="/pricing"',
+            $actions,
+            'HOME-PRICE-06: ilk ekranın eylemleri fiyata giden bir yol taşımıyor — '
+            .'"bu bana kaça mal olur" sorusunun cevabı sayfanın altında kalıyor.'
+        );
+
+        self::assertStringContainsString(
+            'href="/register"',
+            $actions,
+            'HOME-PRICE-06: birincil eylem (`/register`) değişmedi; kayboluyorsa ölçüm yanlış yerde.'
+        );
+    }
+
+    public function test_the_first_screen_does_not_detour_through_an_anonymous_app_login(): void
+    {
+        self::assertStringNotContainsString(
+            'href="/app"',
+            $this->heroActions(),
+            'HOME-PRICE-06: kahraman hâlâ `/app` sapmasını taşıyor — hesabı olmayan '
+            .'ziyaretçi bir giriş ekranına gönderiliyor.'
+        );
+
+        // Ama yol SİLİNMEDİ: kabuğun altbilgisinde duruyor.
+        self::assertStringContainsString('href="/app"', $this->html());
+    }
+
+    /**
+     * Etiket KATALOGDAN gelir: `site.pricing.heading` zaten çevrilidir ve
+     * soru-cevap bağlantısı da aynı anahtarı kullanıyor. Elle yazılmış bir
+     * "Pricing", hiçbir PO dosyasında görünmez ve Türkçe sayfada İngilizce
+     * kalırdı (`I18N-SSR-RATCHET-16`).
+     */
+    public function test_the_price_action_carries_the_catalogue_label_in_every_locale(): void
+    {
+        $text = app(SiteText::class);
+
+        foreach (['en', 'tr'] as $locale) {
+            $expected = $text->get('site.pricing.heading', $locale);
+            $actions = $this->heroActions('/?language='.$locale);
+
+            self::assertStringContainsString(
+                e($expected),
+                $actions,
+                "HOME-PRICE-06: [{$locale}] fiyat eylemi katalog etiketini (\"{$expected}\") taşımıyor."
+            );
         }
     }
 
