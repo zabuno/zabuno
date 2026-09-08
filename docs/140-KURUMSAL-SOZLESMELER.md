@@ -447,3 +447,33 @@ etkilemiyor"**dur; "tam takım yeşil" değildir ve öyle yazılmadı
   bu satır ilk bakılacak yerdir. Karar hukukçunun ve sahibindir.
 - **Türkçe metin yok.** Dördü de İngilizce kaynak metindir ve çeviri kilidine
   tabidir (`docs/121`); bu pakette tek bir çeviri üretilmedi.
+
+## Kullanılabilirlik oranı — sahibin ölçümü (2026-09-08)
+
+Sahip birebir şunu söyledi: *"benim netcup server zaten bu yazılım 5 ay+
+%99.8, bunu yaz."*
+
+Bu bir **gözlemdir** ve kaynağı sahibin kendi işletmesidir: aynı yazılım aynı
+sunucuda beş aydan uzun süredir koşuyor. Oran `SLA_AVAILABILITY_TARGET_PERCENT`
+alanına yazıldı.
+
+**Gözlem ile taahhüt aynı şey değildir ve bu belge ikisini ayırır.**
+
+- **Gözlem:** geçmişte ne olduğu. Beş ay, %99.8. Sahibin bilgisi, uydurulmadı.
+- **Taahhüt:** gelecekte ne olacağına dair söz. %99.8 aylık taahhüt, ayda
+  yaklaşık **87 dakika** kesinti hakkı demektir. Tek bir iki saatlik olay onu
+  aşar.
+
+Bu yüzden dört alan **birlikte ya da hiçbiri** kuralına bağlı kaldı. Oran
+girildi; üçü hâlâ sahibin kararını bekliyor ve o üçü girilene kadar `/sla`
+sayfası tek bir yüzde işareti bile yazmıyor:
+
+| Alan | Ne demek | Neden bekliyor |
+| --- | --- | --- |
+| `SLA_MEASUREMENT_SOURCE` | Oranın okunacağı **kamuya açık** adres | Durum sayfası (`docs/107` Faz 3.4) henüz kurulmadı. Müşterinin kendi doğrulayamadığı bir oran taahhüt değil beyandır |
+| `SLA_INCIDENT_NOTIFICATION_HOURS` | Kesinti fark edildikten sonra müşteriye haber verme süresi | Ticari karar |
+| `SLA_SERVICE_CREDIT_PERCENT` | Oran tutmadığında verilecek kredi | Ticari karar |
+
+**Sıra önemli:** ölçüm kaynağı durum sayfasına bağlı. Durum sayfası yayına
+girmeden yazılan bir oran, tutulup tutulmadığı kimsenin doğrulayamayacağı bir
+sözdür — ve ilk itirazda savunulamaz.
