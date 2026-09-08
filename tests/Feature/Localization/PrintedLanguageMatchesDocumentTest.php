@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Localization;
 
+use App\Models\ContentPage;
 use App\Support\Localization\SiteText;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -77,6 +78,9 @@ final class PrintedLanguageMatchesDocumentTest extends TestCase
      */
     public function test_a_browser_asking_for_an_unshipped_language_gets_no_text_in_it(): void
     {
+        // This fallback scenario intentionally offers only English.
+        config(['i18n.shipped_locales' => ['en']]);
+
         /** @var list<string> $shipped */
         $shipped = config('i18n.shipped_locales');
 
@@ -189,14 +193,32 @@ final class PrintedLanguageMatchesDocumentTest extends TestCase
      *
      * ── I18N-PRINTED-CHROME-04 ───────────────────────────────────────────
      *
-     * Türkçe bir makalenin çevresindeki üst çubuk İngilizce çizilir, çünkü
-     * ürünün etiketleri yalnız sunulan dilde tamdır. `lang` yazılmasaydı ekran
-     * okuyucu "Pricing" sözcüğünü Türkçe sesletimle okurdu — yani birinci
-     * kusurun aynısı, bir bölge küçültülmüş hâli.
+     * Yalnız İngilizce sunulan test kurulumunda, adresi Türkçe olan kütük
+     * sayfasının kabuğu İngilizcedir. Hazırlanıyor sayfası 404 döner; dil
+     * farkı yine açıkça ilan edilmelidir. Güncel /help ise seçilen dilde
+     * hem makale hem kabuk sunar ve bu yabancı belge senaryosu değildir.
      */
     public function test_the_chrome_inside_a_foreign_language_document_declares_its_own_language(): void
     {
-        $html = $this->fetch('/help', 'tr-TR,tr;q=0.9');
+        // This fallback scenario intentionally offers only English.
+        config(['i18n.shipped_locales' => ['en']]);
+
+        // Help now negotiates article and chrome together; a locale-addressed
+        // registry document supplies the intentional foreign-language fixture.
+        ContentPage::query()->create([
+            'page_key' => 'urun.qr-menu',
+            'locale' => 'tr',
+            'canonical_path' => '/tr/urun/qr-menu/',
+            'content_type' => 'urun',
+            'template_key' => 'urun',
+            'title' => 'QR Menü',
+            'priority' => 'P0',
+            'publication_status' => 'planned',
+            'was_ever_published' => false,
+        ]);
+        $html = (string) $this->withHeader('Accept-Language', 'en')
+            ->get('/tr/urun/qr-menu/')->assertNotFound()->getContent();
+        self::assertSame('tr', $this->documentLanguage($html));
 
         $ui = SiteText::pick('tr');
 
