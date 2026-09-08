@@ -1,3 +1,4 @@
+import { bindDismiss } from './site/dismiss';
 import { mountScene } from './site/scene/mount';
 
 /**
@@ -21,3 +22,14 @@ import { mountScene } from './site/scene/mount';
  * beklemek, ilk karenin görünmesini gereksiz yere geciktirirdi.
  */
 mountScene(window);
+
+/*
+    KAPANMA YOLLARI — SAHNENİN DIŞINDA, BİLEREK.
+
+    `mountScene` azaltılmış hareket isteyen ziyaretçide hiç başlamaz ve bu
+    doğru: parallax bir süstür. Menüyü kapatabilmek ise bir süs değil, bir
+    ÇIKIŞ YOLUDUR. İkisini aynı kapının arkasına koymak, hareketi istemeyen
+    birinin menüyü kapatamaması demek olurdu — kuralı doğru uygulamış
+    olmanın yarattığı bir arıza.
+*/
+bindDismiss(document);
