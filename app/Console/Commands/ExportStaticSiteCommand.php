@@ -9,6 +9,7 @@ use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\PublicSite\ShowAboutController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
+use App\Http\Controllers\PublicSite\ShowInvestorPageController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
 use App\Models\ContentPage;
 use Illuminate\Console\Command;
@@ -67,6 +68,10 @@ final class ExportStaticSiteCommand extends Command
         ShowContactFormController::class,
         // "Kimden alışveriş yapıyorum?" (FF-216).
         ShowAboutController::class,
+        // Yatırımcı ilişkileri (FF-251): dört adres, tek denetleyici. Statik
+        // önizlemeye girmesi bir tercih değil bir kapı: `mobile-ux-audit` 320
+        // pikselde tam bu çıktıyı ölçüyor.
+        ShowInvestorPageController::class,
         // Yasal belgeler (FF-198): sekiz adres, tek denetleyici.
         ShowLegalDocumentController::class,
     ];

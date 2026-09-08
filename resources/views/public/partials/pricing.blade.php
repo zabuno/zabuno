@@ -44,6 +44,12 @@
     `$pricingLead`         — isteğe bağlı giriş cümlesi.
     `$pricingHeadingClass` — çağıran bir ölçek dayatmaz; başlık ölçeği
                              etikete göre KURUMSAL ölçekten seçilir.
+    `$pricingShowAudience`  — kartın "kime uygun" cümlesini basar mı
+                             (`docs/139`). Ana sayfada `false`: orada bölüm
+                             bir ÖZETTİR ve üç kartın her birine bir cümle
+                             daha eklemek, özeti sayfanın kendisine
+                             çevirirdi. `/pricing` `true` geçer, çünkü karar
+                             orada veriliyor ve "Pro" bir şey anlatmaz.
 --}}
 @php
     /* Bu bölüm hem ana sayfada (bir alt başlık olarak) hem de kendi
@@ -63,6 +69,12 @@
        devredilince cümle yukarıda kalmıştı: okuyucu neyin açıklamasını
        okuduğunu, ancak sonraki satırda öğreniyordu. */
     $pricingLead = $pricingLead ?? null;
+
+    /* Kitle cümlesi VARSAYILAN OLARAK SUSAR. Bir bayrağın açık doğması,
+       bölümü giyen her yeni sayfanın onu istemeden basması demekti; kapalı
+       doğması ise en fazla bir cümlenin görünmemesi. İkisinin bedeli eşit
+       değil. */
+    $pricingShowAudience = $pricingShowAudience ?? false;
 @endphp
 <section id="pricing" aria-labelledby="{{ $pricingLabelledBy }}" class="site-pricing">
     @if ($pricingHeadingTag !== 'none')
@@ -133,6 +145,20 @@
                         </span>
                     @endif
 
+                    @if ($pricingShowAudience && ! empty($plan['audience']))
+                        {{--
+                            KİME UYGUN — "Pro" bir şey anlatmaz (`docs/139`).
+
+                            Cümle katalogdan gelir ve plan KODUNA bağlıdır;
+                            tanınmayan bir kod hiç cümle üretmez. Sahibin
+                            panelden açtığı yeni bir plana uydurulmuş bir
+                            kitle yakıştırmak, bu satırın engellemek için var
+                            olduğu şey olurdu.
+                        --}}
+                        <p class="site-eyebrow">{{ $st['audienceLabel'] }}</p>
+                        <p class="site-pricing-note">{{ $plan['audience'] }}</p>
+                    @endif
+
                     @if (! empty($plan['entitlements']))
                         <p class="site-eyebrow">{{ $st['adds'] }}</p>
                         <ul class="site-pricing-entitlements">
@@ -166,8 +192,9 @@
             {{-- Bağlantı CÜMLENİN İÇİNDE değil, kendi satırında ve 44
                  piksel: satır içi bir bağlantı dar ekranda 18-42 piksel
                  yüksekliğinde kalıyor ve parmakla ıskalanıyor (`docs/117`).
-                 Bu sayfadaki eski satır içi bağlantılar #279'un borcudur ve
-                 ayrı ölçülür; YENİ bağlantı o borcu büyütmez. --}}
+                 Bu sayfadaki eski satır içi bağlantılar #279'un borcuydu ve
+                 o borç Döngü 3'te kapandı (`.site-inline-action`, `docs/146`
+                 §12.8): satır içi kalan üç bağlantı da artık 44 piksel. --}}
             <a class="site-action self-start underline underline-offset-2"
                href="/pre-information">{{ $st['paymentMethodsCta'] }}</a>
         </div>
