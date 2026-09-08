@@ -10,59 +10,59 @@ msgstr ""
 
 #: guest:guest.cart.add
 msgid "guest.cart.add"
-msgstr ""
+msgstr "Ekle"
 
 #: guest:guest.cart.added
 msgid "guest.cart.added"
-msgstr ""
+msgstr "{name} sepetinize eklendi."
 
 #: guest:guest.cart.close
 msgid "guest.cart.close"
-msgstr ""
+msgstr "Sepeti kapat"
 
 #: guest:guest.cart.count
 msgid "guest.cart.count"
-msgstr ""
+msgstr "Sepetteki ürün sayısı: {count}"
 
 #: guest:guest.cart.decrease
 msgid "guest.cart.decrease"
-msgstr ""
+msgstr "Bir azalt"
 
 #: guest:guest.cart.empty
 msgid "guest.cart.empty"
-msgstr ""
+msgstr "Sepetiniz boş. Menüden bir şey seçtiğinizde burada listelenir."
 
 #: guest:guest.cart.increase
 msgid "guest.cart.increase"
-msgstr ""
+msgstr "Bir artır"
 
 #: guest:guest.cart.open
 msgid "guest.cart.open"
-msgstr ""
+msgstr "Sepet"
 
 #: guest:guest.cart.remove
 msgid "guest.cart.remove"
-msgstr ""
+msgstr "Sepetten çıkar"
 
 #: guest:guest.cart.sending
 msgid "guest.cart.sending"
-msgstr ""
+msgstr "Siparişiniz gönderiliyor…"
 
 #: guest:guest.cart.submit
 msgid "guest.cart.submit"
-msgstr ""
+msgstr "Siparişi garsona gönder"
 
 #: guest:guest.cart.submitNote
 msgid "guest.cart.submitNote"
-msgstr ""
+msgstr "Mutfak hazırlığa başlamadan önce garson siparişi kontrol edip onaylar. Ödeme masada alınır."
 
 #: guest:guest.cart.title
 msgid "guest.cart.title"
-msgstr ""
+msgstr "Sepetiniz"
 
 #: guest:guest.cart.total
 msgid "guest.cart.total"
-msgstr ""
+msgstr "Toplam"
 
 #: guest:guest.closed.notice
 msgid "guest.closed.notice"
@@ -118,47 +118,47 @@ msgstr "Menü bulunamadı"
 
 #: guest:guest.favourite.add
 msgid "guest.favourite.add"
-msgstr ""
+msgstr "Favorilere ekle"
 
 #: guest:guest.favourite.remove
 msgid "guest.favourite.remove"
-msgstr ""
+msgstr "Favorilerden çıkar"
 
 #: guest:guest.filters.allergenExclude
 msgid "guest.filters.allergenExclude"
-msgstr ""
+msgstr "Alerjenleri hariç tut"
 
 #: guest:guest.filters.allergenHint
 msgid "guest.filters.allergenHint"
-msgstr ""
+msgstr "Restoranın bu alerjeni içerdiğini belirttiği yemekler listeden çıkarılır. Hakkında bilgi verilmeyen bir yemeğin bu alerjeni içermediği bilinmiyor; lütfen personele sorun."
 
 #: guest:guest.filters.clear
 msgid "guest.filters.clear"
-msgstr ""
+msgstr "Filtreleri temizle"
 
 #: guest:guest.filters.label
 msgid "guest.filters.label"
-msgstr ""
+msgstr "Filtreler"
 
 #: guest:guest.filters.matched
 msgid "guest.filters.matched"
-msgstr ""
+msgstr "{count} yemek gösteriliyor."
 
 #: guest:guest.filters.noMatch
 msgid "guest.filters.noMatch"
-msgstr ""
+msgstr "Filtrelerinize uygun yemek yok. Menüde başka yemekler de var; bir filtreyi kaldırmayı deneyin."
 
 #: guest:guest.filters.priceMax
 msgid "guest.filters.priceMax"
-msgstr ""
+msgstr "En fazla"
 
 #: guest:guest.filters.priceMin
 msgid "guest.filters.priceMin"
-msgstr ""
+msgstr "En az"
 
 #: guest:guest.filters.priceRange
 msgid "guest.filters.priceRange"
-msgstr ""
+msgstr "Fiyat aralığı"
 
 #: guest:guest.language.contentNotice
 msgid "guest.language.contentNotice"
@@ -198,47 +198,47 @@ msgstr "Kategori: {categories} · Ürün: {items}"
 
 #: guest:guest.order.placed
 msgid "guest.order.placed"
-msgstr ""
+msgstr "Siparişiniz alındı. Garson siparişinizi onaylayacak."
 
 #: guest:guest.order.refused.entitlementRequired
 msgid "guest.order.refused.entitlementRequired"
-msgstr ""
+msgstr "Bu restoran menü üzerinden sipariş almadığı için hiçbir şey gönderilmedi. Listenizi personele gösterebilirsiniz."
 
 #: guest:guest.order.refused.itemUnavailable
 msgid "guest.order.refused.itemUnavailable"
-msgstr ""
+msgstr "{name} artık menüde olmadığı için hiçbir şey gönderilmedi. Sepetten çıkarıp kalanları gönderin."
 
 #: guest:guest.order.refused.notSaved
 msgid "guest.order.refused.notSaved"
-msgstr ""
+msgstr "Sipariş kaydedilemediği için mutfağa hiçbir şey ulaşmadı. Lütfen tekrar deneyin."
 
 #: guest:guest.order.refused.offline
 msgid "guest.order.refused.offline"
-msgstr ""
+msgstr "Siparişiniz bu telefondan gönderilemedi. Sepetiniz hâlâ burada; tekrar deneyin veya personele söyleyin."
 
 #: guest:guest.order.refused.orderingClosed
 msgid "guest.order.refused.orderingClosed"
-msgstr ""
+msgstr "Restoran şu anda sipariş almadığı için hiçbir şey gönderilmedi. Lütfen ne istediğinizi personele söyleyin."
 
 #: guest:guest.order.refused.outOfStock
 msgid "guest.order.refused.outOfStock"
-msgstr ""
+msgstr "{name} bugün tükendiği için hiçbir şey gönderilmedi. Sepetten çıkarıp kalanları gönderin."
 
 #: guest:guest.order.refused.tableUnknown
 msgid "guest.order.refused.tableUnknown"
-msgstr ""
+msgstr "Bu kod bir masaya bağlı olmadığı için hiçbir şey gönderilmedi. Lütfen kendi masanızdaki kodu okutun."
 
 #: guest:guest.order.refused.tooManyLines
 msgid "guest.order.refused.tooManyLines"
-msgstr ""
+msgstr "Tek siparişte çok fazla farklı yemek olduğu için hiçbir şey gönderilmedi. Lütfen iki ayrı sipariş olarak gönderin."
 
 #: guest:guest.order.refused.tooManyOpenOrders
 msgid "guest.order.refused.tooManyOpenOrders"
-msgstr ""
+msgstr "Bu masada bekleyen birkaç sipariş olduğu için bu sipariş gönderilmedi. Lütfen önce personele sorun."
 
 #: guest:guest.order.refused.unknown
 msgid "guest.order.refused.unknown"
-msgstr ""
+msgstr "Sipariş gönderilmedi ve mutfağa hiçbir şey ulaşmadı. Lütfen ne istediğinizi personele söyleyin."
 
 #: guest:guest.outOfService.body
 msgid "guest.outOfService.body"
@@ -282,35 +282,35 @@ msgstr "Çevrimdışısınız, son görüntülenen menü gösteriliyor."
 
 #: guest:guest.rating.choice
 msgid "guest.rating.choice"
-msgstr ""
+msgstr "{max} üzerinden {score}"
 
 #: guest:guest.rating.failed
 msgid "guest.rating.failed"
-msgstr ""
+msgstr "Puanınız gönderilemedi. Lütfen tekrar deneyin."
 
 #: guest:guest.rating.label
 msgid "guest.rating.label"
-msgstr ""
+msgstr "Bu yemeği puanlayın"
 
 #: guest:guest.rating.notEnough
 msgid "guest.rating.notEnough"
-msgstr ""
+msgstr "Henüz yeterli puan yok"
 
 #: guest:guest.rating.offline
 msgid "guest.rating.offline"
-msgstr ""
+msgstr "Çevrimdışı görünüyorsunuz. Puanınız gönderilmedi."
 
 #: guest:guest.rating.recorded
 msgid "guest.rating.recorded"
-msgstr ""
+msgstr "Teşekkürler. Puanınız kaydedildi."
 
 #: guest:guest.rating.replyLabel
 msgid "guest.rating.replyLabel"
-msgstr ""
+msgstr "Restoranın yanıtı"
 
 #: guest:guest.rating.score
 msgid "guest.rating.score"
-msgstr ""
+msgstr "Puan: {max} üzerinden {score}"
 
 #: guest:guest.search.label
 msgid "guest.search.label"
@@ -330,16 +330,16 @@ msgstr "Ürün adı yazın"
 
 #: guest:guest.voice.denied
 msgid "guest.voice.denied"
-msgstr ""
+msgstr "Mikrofon izni verilmediği için sesli arama kullanılamıyor. Yazarak arama yapabilirsiniz."
 
 #: guest:guest.voice.error
 msgid "guest.voice.error"
-msgstr ""
+msgstr "Sesli arama bu kez çalışmadı. Yazarak arama yapabilirsiniz."
 
 #: guest:guest.voice.label
 msgid "guest.voice.label"
-msgstr ""
+msgstr "Sesle ara"
 
 #: guest:guest.voice.listening
 msgid "guest.voice.listening"
-msgstr ""
+msgstr "Dinleniyor… bir yemek adı söyleyin."

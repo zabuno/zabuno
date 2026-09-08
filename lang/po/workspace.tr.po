@@ -402,167 +402,167 @@ msgstr "Planı değiştir"
 
 #: workspace:workspace.billing.checkout.consent.agreements
 msgid "workspace.billing.checkout.consent.agreements"
-msgstr ""
+msgstr "Ön Bilgilendirme Formu’nu ve Mesafeli Satış Sözleşmesi’ni okudum ve kabul ediyorum."
 
 #: workspace:workspace.billing.checkout.consent.agreements.error
 msgid "workspace.billing.checkout.consent.agreements.error"
-msgstr ""
+msgstr "Devam etmek için Ön Bilgilendirme Formu’nu ve Mesafeli Satış Sözleşmesi’ni kabul edin."
 
 #: workspace:workspace.billing.checkout.consent.immediate
 msgid "workspace.billing.checkout.consent.immediate"
-msgstr ""
+msgstr "Ödemem onaylanır onaylanmaz hizmetin başlamasını istiyorum ve hizmet başladıktan sonra cayma hakkımın sona ereceğini okudum."
 
 #: workspace:workspace.billing.checkout.consent.immediate.error
 msgid "workspace.billing.checkout.consent.immediate.error"
-msgstr ""
+msgstr "Devam etmek için ödeme onaylanır onaylanmaz hizmetin başlamasını onaylayın."
 
 #: workspace:workspace.billing.checkout.consent.legend
 msgid "workspace.billing.checkout.consent.legend"
-msgstr ""
+msgstr "Ödeme yapmadan önce"
 
 #: workspace:workspace.billing.checkout.consent.links
 msgid "workspace.billing.checkout.consent.links"
-msgstr ""
+msgstr "Ödeme öncesi okunacak belgeler"
 
 #: workspace:workspace.billing.checkout.consent.read.delivery
 msgid "workspace.billing.checkout.consent.read.delivery"
-msgstr ""
+msgstr "Teslimat ve İfa Koşulları’nı okuyun"
 
 #: workspace:workspace.billing.checkout.consent.read.distanceSales
 msgid "workspace.billing.checkout.consent.read.distanceSales"
-msgstr ""
+msgstr "Mesafeli Satış Sözleşmesi’ni okuyun"
 
 #: workspace:workspace.billing.checkout.consent.read.preInformation
 msgid "workspace.billing.checkout.consent.read.preInformation"
-msgstr ""
+msgstr "Ön Bilgilendirme Formu’nu okuyun"
 
 #: workspace:workspace.billing.checkout.consent.read.refundPolicy
 msgid "workspace.billing.checkout.consent.read.refundPolicy"
-msgstr ""
+msgstr "İptal ve İade Politikası’nı okuyun"
 
 #: workspace:workspace.billing.checkout.description
 msgid "workspace.billing.checkout.description"
-msgstr ""
+msgstr "Plan seçin, fatura bilgilerinizi onaylayın ve Iyzico ödeme sayfasında kartla ödeyin. Her ödeme {days} günü kapsar."
 
 #: workspace:workspace.billing.checkout.invalidRedirect
 msgid "workspace.billing.checkout.invalidRedirect"
-msgstr ""
+msgstr "Güvenli olmayan bir yönlendirme bağlantısı alındı; devam edilemiyor."
 
 #: workspace:workspace.billing.checkout.latest.continue
 msgid "workspace.billing.checkout.latest.continue"
-msgstr ""
+msgstr "Ödeme sayfasına devam et"
 
 #: workspace:workspace.billing.checkout.latest.failed
 msgid "workspace.billing.checkout.latest.failed"
-msgstr ""
+msgstr "Ödeme başarısız: {reason}"
 
 #: workspace:workspace.billing.checkout.latest.failedHint
 msgid "workspace.billing.checkout.latest.failedHint"
-msgstr ""
+msgstr "Ücret alınmadı. Tekrar deneyebilirsiniz."
 
 #: workspace:workspace.billing.checkout.latest.failedNoReason
 msgid "workspace.billing.checkout.latest.failedNoReason"
-msgstr ""
+msgstr "Ödeme başarısız."
 
 #: workspace:workspace.billing.checkout.latest.initiated
 msgid "workspace.billing.checkout.latest.initiated"
-msgstr ""
+msgstr "Devam eden bir ödeme var. Ödeme sayfasından ayrıldıysanız devam edebilir veya yeniden başlayabilirsiniz."
 
 #: workspace:workspace.billing.checkout.latest.refunded
 msgid "workspace.billing.checkout.latest.refunded"
-msgstr ""
+msgstr "Son ödemeniz iade edildi."
 
 #: workspace:workspace.billing.checkout.latest.succeeded
 msgid "workspace.billing.checkout.latest.succeeded"
-msgstr ""
+msgstr "Son ödemeniz başarılı."
 
 #: workspace:workspace.billing.checkout.mode.live
 msgid "workspace.billing.checkout.mode.live"
-msgstr ""
+msgstr "Kartla ödeme için Iyzico’ya yönlendirileceksiniz. Zabuno kart bilgilerini asla saklamaz."
 
 #: workspace:workspace.billing.checkout.mode.sandbox
 msgid "workspace.billing.checkout.mode.sandbox"
-msgstr ""
+msgstr "Test modu: gerçek ücret alınmaz."
 
 #: workspace:workspace.billing.checkout.plan.empty
 msgid "workspace.billing.checkout.plan.empty"
-msgstr ""
+msgstr "Henüz satın alınabilecek plan yok."
 
 #: workspace:workspace.billing.checkout.plan.error
 msgid "workspace.billing.checkout.plan.error"
-msgstr ""
+msgstr "Planlar yüklenemedi."
 
 #: workspace:workspace.billing.checkout.plan.legend
 msgid "workspace.billing.checkout.plan.legend"
-msgstr ""
+msgstr "Plan seçin"
 
 #: workspace:workspace.billing.checkout.plan.loading
 msgid "workspace.billing.checkout.plan.loading"
-msgstr ""
+msgstr "Planlar yükleniyor…"
 
 #: workspace:workspace.billing.checkout.plan.price
 msgid "workspace.billing.checkout.plan.price"
-msgstr ""
+msgstr "{price} / {days} gün"
 
 #: workspace:workspace.billing.checkout.planNotPurchasable
 msgid "workspace.billing.checkout.planNotPurchasable"
-msgstr ""
+msgstr "Bu plan satın alınamaz."
 
 #: workspace:workspace.billing.checkout.proceed
 msgid "workspace.billing.checkout.proceed"
-msgstr ""
+msgstr "Ödemeye geç"
 
 #: workspace:workspace.billing.checkout.proceeding
 msgid "workspace.billing.checkout.proceeding"
-msgstr ""
+msgstr "Ödeme sayfası açılıyor…"
 
 #: workspace:workspace.billing.checkout.profile.add
 msgid "workspace.billing.checkout.profile.add"
-msgstr ""
+msgstr "Fatura bilgilerini ekle"
 
 #: workspace:workspace.billing.checkout.profile.edit
 msgid "workspace.billing.checkout.profile.edit"
-msgstr ""
+msgstr "Fatura bilgilerini düzenle"
 
 #: workspace:workspace.billing.checkout.profile.error
 msgid "workspace.billing.checkout.profile.error"
-msgstr ""
+msgstr "Fatura bilgileri yüklenemedi."
 
 #: workspace:workspace.billing.checkout.profile.heading
 msgid "workspace.billing.checkout.profile.heading"
-msgstr ""
+msgstr "Fatura bilgileri"
 
 #: workspace:workspace.billing.checkout.profile.loading
 msgid "workspace.billing.checkout.profile.loading"
-msgstr ""
+msgstr "Fatura bilgileri yükleniyor…"
 
 #: workspace:workspace.billing.checkout.profile.missing
 msgid "workspace.billing.checkout.profile.missing"
-msgstr ""
+msgstr "Fatura bilgileri eksik. Ödeme yapmadan önce şirket adınızı, vergi numaranızı ve adresinizi ekleyin."
 
 #: workspace:workspace.billing.checkout.profile.summary.taxNumber
 msgid "workspace.billing.checkout.profile.summary.taxNumber"
-msgstr ""
+msgstr "Vergi numarası: {number}"
 
 #: workspace:workspace.billing.checkout.region
 msgid "workspace.billing.checkout.region"
-msgstr ""
+msgstr "Abone ol"
 
 #: workspace:workspace.billing.checkout.retry
 msgid "workspace.billing.checkout.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.checkout.sellerIdentityMissing
 msgid "workspace.billing.checkout.sellerIdentityMissing"
-msgstr ""
+msgstr "Henüz ödeme alınamıyor: satıcı yasal kimliğini yayımlamadığı için mesafeli satış sözleşmesi kurulamıyor. Ücret alınmadı."
 
 #: workspace:workspace.billing.checkout.status.error
 msgid "workspace.billing.checkout.status.error"
-msgstr ""
+msgstr "Ödeme durumu yüklenemedi."
 
 #: workspace:workspace.billing.checkout.status.loading
 msgid "workspace.billing.checkout.status.loading"
-msgstr ""
+msgstr "Ödeme durumu yükleniyor…"
 
 #: workspace:workspace.billing.currentPlan.empty
 msgid "workspace.billing.currentPlan.empty"
@@ -598,67 +598,67 @@ msgstr "Faturalandırma"
 
 #: workspace:workspace.billing.invoices.description
 msgid "workspace.billing.invoices.description"
-msgstr ""
+msgstr "Tahsil edilen her ödeme burada numaralı bir belge olarak kaydedilir. Belge düzenlenmez veya silinmez; iade, ayrı bir alacak dekontuyla kaydedilir."
 
 #: workspace:workspace.billing.invoices.download
 msgid "workspace.billing.invoices.download"
-msgstr ""
+msgstr "PDF indir"
 
 #: workspace:workspace.billing.invoices.earchiveNotConfigured
 msgid "workspace.billing.invoices.earchiveNotConfigured"
-msgstr ""
+msgstr "Bağlı bir e-Arşiv / e-Fatura sağlayıcısı olmadığı için bu kayıtlar herhangi bir vergi idaresine gönderilmedi."
 
 #: workspace:workspace.billing.invoices.empty
 msgid "workspace.billing.invoices.empty"
-msgstr ""
+msgstr "Henüz fatura yok. İlk başarılı ödeme ilk belgeyi oluşturur."
 
 #: workspace:workspace.billing.invoices.error
 msgid "workspace.billing.invoices.error"
-msgstr ""
+msgstr "Faturalar yüklenemedi."
 
 #: workspace:workspace.billing.invoices.issuedAt
 msgid "workspace.billing.invoices.issuedAt"
-msgstr ""
+msgstr "Düzenlenme: {date}"
 
 #: workspace:workspace.billing.invoices.kind.creditNote
 msgid "workspace.billing.invoices.kind.creditNote"
-msgstr ""
+msgstr "Alacak dekontu"
 
 #: workspace:workspace.billing.invoices.kind.invoice
 msgid "workspace.billing.invoices.kind.invoice"
-msgstr ""
+msgstr "Fatura"
 
 #: workspace:workspace.billing.invoices.line
 msgid "workspace.billing.invoices.line"
-msgstr ""
+msgstr "{plan} — {days} günlük abonelik"
 
 #: workspace:workspace.billing.invoices.loading
 msgid "workspace.billing.invoices.loading"
-msgstr ""
+msgstr "Faturalar yükleniyor…"
 
 #: workspace:workspace.billing.invoices.missingDocuments
 msgid "workspace.billing.invoices.missingDocuments"
-msgstr ""
+msgstr "Tahsil edildiğinde fatura bilgileri kayıtlı olmadığı için {count} ödemenin belgesi yok."
 
 #: workspace:workspace.billing.invoices.region
 msgid "workspace.billing.invoices.region"
-msgstr ""
+msgstr "Faturalar"
 
 #: workspace:workspace.billing.invoices.retry
 msgid "workspace.billing.invoices.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.invoices.sellerIncomplete
 msgid "workspace.billing.invoices.sellerIncomplete"
-msgstr ""
+msgstr "Şirket bilgilerimiz henüz tamamlanmadığı için bu belge eksiksiz bir ticari fatura değildir."
 
 #: workspace:workspace.billing.invoices.vat
 msgid "workspace.billing.invoices.vat"
-msgstr ""
+msgstr "KDV {amount}"
 
 #: workspace:workspace.billing.invoices.vatUnknown
 msgid "workspace.billing.invoices.vatUnknown"
-msgstr ""
+msgstr "KDV oranı yapılandırılmadığı için bu belgede vergi dökümü gösterilmiyor."
 
 #: workspace:workspace.billing.iyzicoSandbox.amount
 msgid "workspace.billing.iyzicoSandbox.amount"
@@ -802,139 +802,139 @@ msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.lifecycle.active
 msgid "workspace.billing.lifecycle.active"
-msgstr ""
+msgstr "{plan} planınız {date} tarihine kadar geçerli."
 
 #: workspace:workspace.billing.lifecycle.cancel
 msgid "workspace.billing.lifecycle.cancel"
-msgstr ""
+msgstr "Aboneliği iptal et"
 
 #: workspace:workspace.billing.lifecycle.cancel.confirm
 msgid "workspace.billing.lifecycle.cancel.confirm"
-msgstr ""
+msgstr "Evet, iptal et"
 
 #: workspace:workspace.billing.lifecycle.cancel.confirmBody
 msgid "workspace.billing.lifecycle.cancel.confirmBody"
-msgstr ""
+msgstr "Planınız {date} tarihine kadar etkin kalır. Ödediğiniz dönem için iade yapılmaz; {date} tarihinden önce iptali geri alabilirsiniz."
 
 #: workspace:workspace.billing.lifecycle.cancel.confirmHeading
 msgid "workspace.billing.lifecycle.cancel.confirmHeading"
-msgstr ""
+msgstr "Aboneliğiniz iptal edilsin mi?"
 
 #: workspace:workspace.billing.lifecycle.cancel.dismiss
 msgid "workspace.billing.lifecycle.cancel.dismiss"
-msgstr ""
+msgstr "Aboneliğimi koru"
 
 #: workspace:workspace.billing.lifecycle.cancel.error
 msgid "workspace.billing.lifecycle.cancel.error"
-msgstr ""
+msgstr "Abonelik iptal edilemedi."
 
 #: workspace:workspace.billing.lifecycle.cancelled
 msgid "workspace.billing.lifecycle.cancelled"
-msgstr ""
+msgstr "İptal ettiniz. {date} tarihine kadar {plan} planını kullanabilirsiniz; plan yenilenmeyecek."
 
 #: workspace:workspace.billing.lifecycle.change.effective
 msgid "workspace.billing.lifecycle.change.effective"
-msgstr ""
+msgstr "{date} tarihinde uygulanır. Mevcut dönem için iade yapılmaz."
 
 #: workspace:workspace.billing.lifecycle.change.empty
 msgid "workspace.billing.lifecycle.change.empty"
-msgstr ""
+msgstr "Geçilebilecek daha ucuz plan yok."
 
 #: workspace:workspace.billing.lifecycle.change.error
 msgid "workspace.billing.lifecycle.change.error"
-msgstr ""
+msgstr "Plan değişikliği zamanlanamadı."
 
 #: workspace:workspace.billing.lifecycle.change.guestWarning
 msgid "workspace.billing.lifecycle.change.guestWarning"
-msgstr ""
+msgstr "Misafirler farkı ancak sonraki yayınınızda görür; daha önce yazdırdığınız QR kodunun arkasındaki menü değişmez."
 
 #: workspace:workspace.billing.lifecycle.change.heading
 msgid "workspace.billing.lifecycle.change.heading"
-msgstr ""
+msgstr "Planı değiştir"
 
 #: workspace:workspace.billing.lifecycle.change.legend
 msgid "workspace.billing.lifecycle.change.legend"
-msgstr ""
+msgstr "Daha ucuz plana geç"
 
 #: workspace:workspace.billing.lifecycle.change.losing
 msgid "workspace.billing.lifecycle.change.losing"
-msgstr ""
+msgstr "{date} tarihinde kaybedecekleriniz:"
 
 #: workspace:workspace.billing.lifecycle.change.losingNothing
 msgid "workspace.billing.lifecycle.change.losingNothing"
-msgstr ""
+msgstr "Bugün kullandığınız hiçbir özellik kalkmaz; yalnızca fiyat değişir."
 
 #: workspace:workspace.billing.lifecycle.change.previewError
 msgid "workspace.billing.lifecycle.change.previewError"
-msgstr ""
+msgstr "Bu değişikliğin etkisi belirlenemedi."
 
 #: workspace:workspace.billing.lifecycle.change.submit
 msgid "workspace.billing.lifecycle.change.submit"
-msgstr ""
+msgstr "Değişikliği zamanla"
 
 #: workspace:workspace.billing.lifecycle.change.upgradeHint
 msgid "workspace.billing.lifecycle.change.upgradeHint"
-msgstr ""
+msgstr "Üst plana geçmek için aşağıdan ödeme yapın; ödeme başarılı olur olmaz üst plan başlar."
 
 #: workspace:workspace.billing.lifecycle.ended
 msgid "workspace.billing.lifecycle.ended"
-msgstr ""
+msgstr "Aboneliğiniz {date} tarihinde sona erdi. Yayımlanmış menüleriniz hâlâ çevrimiçi; verilerinize dokunulmadı."
 
 #: workspace:workspace.billing.lifecycle.error
 msgid "workspace.billing.lifecycle.error"
-msgstr ""
+msgstr "Aboneliğiniz yüklenemedi."
 
 #: workspace:workspace.billing.lifecycle.grace
 msgid "workspace.billing.lifecycle.grace"
-msgstr ""
+msgstr "Ücretli döneminiz {date} tarihinde sona erdi; ödeme gelmedi. {plan} özellikleriniz {graceDate} tarihine kadar açık kalacak. Devam etmek için aşağıdan ödeme yapın."
 
 #: workspace:workspace.billing.lifecycle.guestUnaffected
 msgid "workspace.billing.lifecycle.guestUnaffected"
-msgstr ""
+msgstr "Misafirlerinize bunların hiçbiri bildirilmez: basılı QR kodunun arkasındaki menü, yayımladığınız hâliyle gösterilmeye devam eder."
 
 #: workspace:workspace.billing.lifecycle.loading
 msgid "workspace.billing.lifecycle.loading"
-msgstr ""
+msgstr "Aboneliğiniz yükleniyor…"
 
 #: workspace:workspace.billing.lifecycle.none
 msgid "workspace.billing.lifecycle.none"
-msgstr ""
+msgstr "Ücretli aboneliğiniz yok. Ücretsiz yolculuk — menü, yayın ve QR kodları — çalışmaya devam eder."
 
 #: workspace:workspace.billing.lifecycle.region
 msgid "workspace.billing.lifecycle.region"
-msgstr ""
+msgstr "Abonelik"
 
 #: workspace:workspace.billing.lifecycle.resume
 msgid "workspace.billing.lifecycle.resume"
-msgstr ""
+msgstr "İptali geri al"
 
 #: workspace:workspace.billing.lifecycle.resume.error
 msgid "workspace.billing.lifecycle.resume.error"
-msgstr ""
+msgstr "İptal geri alınamadı."
 
 #: workspace:workspace.billing.lifecycle.resume.hint
 msgid "workspace.billing.lifecycle.resume.hint"
-msgstr ""
+msgstr "Yeniden ödeme istenmeyecek."
 
 #: workspace:workspace.billing.lifecycle.retry
 msgid "workspace.billing.lifecycle.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.billing.lifecycle.scheduled
 msgid "workspace.billing.lifecycle.scheduled"
-msgstr ""
+msgstr "{date} tarihinde planınız {plan} olacak. O zamana kadar hiçbir şey değişmez."
 
 #: workspace:workspace.billing.lifecycle.scheduled.error
 msgid "workspace.billing.lifecycle.scheduled.error"
-msgstr ""
+msgstr "Zamanlanan değişiklik geri çekilemedi."
 
 #: workspace:workspace.billing.lifecycle.scheduled.withdraw
 msgid "workspace.billing.lifecycle.scheduled.withdraw"
-msgstr ""
+msgstr "Mevcut planımı koru"
 
 #: workspace:workspace.billing.lifecycle.suspended
 msgid "workspace.billing.lifecycle.suspended"
-msgstr ""
+msgstr "Dönem ödenmediği için {plan} özellikleriniz {graceDate} tarihinden beri kapalı. Yayımlanmış menüleriniz hâlâ çevrimiçi; verilerinize dokunulmadı. Ödeme yapıldığında özellikler yeniden açılır."
 
 #: workspace:workspace.billing.manualPayment.empty
 msgid "workspace.billing.manualPayment.empty"
@@ -998,51 +998,51 @@ msgstr "Plan bilgisi henüz yok."
 
 #: workspace:workspace.billing.profile.cancel
 msgid "workspace.billing.profile.cancel"
-msgstr ""
+msgstr "Vazgeç"
 
 #: workspace:workspace.billing.profile.field.address
 msgid "workspace.billing.profile.field.address"
-msgstr ""
+msgstr "Adres"
 
 #: workspace:workspace.billing.profile.field.city
 msgid "workspace.billing.profile.field.city"
-msgstr ""
+msgstr "Şehir"
 
 #: workspace:workspace.billing.profile.field.country
 msgid "workspace.billing.profile.field.country"
-msgstr ""
+msgstr "Ülke kodu"
 
 #: workspace:workspace.billing.profile.field.countryHelp
 msgid "workspace.billing.profile.field.countryHelp"
-msgstr ""
+msgstr "İki harfli ülke kodu; örneğin TR."
 
 #: workspace:workspace.billing.profile.field.email
 msgid "workspace.billing.profile.field.email"
-msgstr ""
+msgstr "Fatura e-postası"
 
 #: workspace:workspace.billing.profile.field.legalName
 msgid "workspace.billing.profile.field.legalName"
-msgstr ""
+msgstr "Şirket adı"
 
 #: workspace:workspace.billing.profile.field.phone
 msgid "workspace.billing.profile.field.phone"
-msgstr ""
+msgstr "Telefon"
 
 #: workspace:workspace.billing.profile.field.taxNumber
 msgid "workspace.billing.profile.field.taxNumber"
-msgstr ""
+msgstr "Vergi numarası"
 
 #: workspace:workspace.billing.profile.field.taxOffice
 msgid "workspace.billing.profile.field.taxOffice"
-msgstr ""
+msgstr "Vergi dairesi"
 
 #: workspace:workspace.billing.profile.save
 msgid "workspace.billing.profile.save"
-msgstr ""
+msgstr "Fatura bilgilerini kaydet"
 
 #: workspace:workspace.billing.profile.saveError
 msgid "workspace.billing.profile.saveError"
-msgstr ""
+msgstr "Fatura bilgileri kaydedilemedi."
 
 #: workspace:workspace.billing.recordPayment.button
 msgid "workspace.billing.recordPayment.button"
@@ -1442,7 +1442,7 @@ msgstr "Çalışma alanı değiştir"
 
 #: workspace:workspace.current.switchFor
 msgid "workspace.current.switchFor"
-msgstr ""
+msgstr "{workspace} — Çalışma alanını değiştir"
 
 #: workspace:workspace.dashboard.empty
 msgid "workspace.dashboard.empty"
@@ -3562,15 +3562,15 @@ msgstr "Aslın herkese açık bir adresi yoktur. İndirmek için, on dakika sonr
 
 #: workspace:workspace.media.settings.security.state.on
 msgid "workspace.media.settings.security.state.on"
-msgstr ""
+msgstr "Açık"
 
 #: workspace:workspace.media.settings.security.state.partial
 msgid "workspace.media.settings.security.state.partial"
-msgstr ""
+msgstr "Kısmen açık"
 
 #: workspace:workspace.media.settings.security.state.unavailable
 msgid "workspace.media.settings.security.state.unavailable"
-msgstr ""
+msgstr "Burada çalışmıyor"
 
 #: workspace:workspace.media.settings.security.virusScan
 msgid "workspace.media.settings.security.virusScan"
@@ -3802,7 +3802,7 @@ msgstr "Logo"
 
 #: workspace:workspace.media.upload.field.assetSlot.menuImportSource
 msgid "workspace.media.upload.field.assetSlot.menuImportSource"
-msgstr ""
+msgstr "İçe aktarma kaynağı"
 
 #: workspace:workspace.media.upload.field.assetSlot.ogImage
 msgid "workspace.media.upload.field.assetSlot.ogImage"
@@ -4230,423 +4230,423 @@ msgstr "Ara, git ya da oluştur"
 
 #: workspace:workspace.orders.actionFailed
 msgid "workspace.orders.actionFailed"
-msgstr ""
+msgstr "İşlem gerçekleşmedi. Tekrar deneyin."
 
 #: workspace:workspace.orders.allergens
 msgid "workspace.orders.allergens"
-msgstr ""
+msgstr "Alerjenler: {list}"
 
 #: workspace:workspace.orders.confirm
 msgid "workspace.orders.confirm"
-msgstr ""
+msgstr "Onayla"
 
 #: workspace:workspace.orders.confirm.pending
 msgid "workspace.orders.confirm.pending"
-msgstr ""
+msgstr "Onaylanıyor…"
 
 #: workspace:workspace.orders.conflict
 msgid "workspace.orders.conflict"
-msgstr ""
+msgstr "Başka biri daha hızlı davrandı: siparişin durumu artık “{status}”."
 
 #: workspace:workspace.orders.heading
 msgid "workspace.orders.heading"
-msgstr ""
+msgstr "Siparişler"
 
 #: workspace:workspace.orders.history.description
 msgid "workspace.orders.history.description"
-msgstr ""
+msgstr "Her sipariş burada kalır. Hiçbir şey silinmez."
 
 #: workspace:workspace.orders.history.empty.description
 msgid "workspace.orders.history.empty.description"
-msgstr ""
+msgstr "Masalardan sipariş gelmeye başladığında her sipariş bu listede kalır."
 
 #: workspace:workspace.orders.history.empty.title
 msgid "workspace.orders.history.empty.title"
-msgstr ""
+msgstr "Henüz sipariş yok"
 
 #: workspace:workspace.orders.history.error.description
 msgid "workspace.orders.history.error.description"
-msgstr ""
+msgstr "Hiçbir şey kaybolmadı. Tekrar deneyin."
 
 #: workspace:workspace.orders.history.error.title
 msgid "workspace.orders.history.error.title"
-msgstr ""
+msgstr "Geçmiş yüklenemedi"
 
 #: workspace:workspace.orders.history.heading
 msgid "workspace.orders.history.heading"
-msgstr ""
+msgstr "Sipariş geçmişi"
 
 #: workspace:workspace.orders.history.loading
 msgid "workspace.orders.history.loading"
-msgstr ""
+msgstr "Geçmiş yükleniyor…"
 
 #: workspace:workspace.orders.history.next
 msgid "workspace.orders.history.next"
-msgstr ""
+msgstr "Sonraki"
 
 #: workspace:workspace.orders.history.page
 msgid "workspace.orders.history.page"
-msgstr ""
+msgstr "Sayfa {page} / {pageCount}"
 
 #: workspace:workspace.orders.history.previous
 msgid "workspace.orders.history.previous"
-msgstr ""
+msgstr "Önceki"
 
 #: workspace:workspace.orders.history.region
 msgid "workspace.orders.history.region"
-msgstr ""
+msgstr "Sipariş geçmişi"
 
 #: workspace:workspace.orders.history.rejected
 msgid "workspace.orders.history.rejected"
-msgstr ""
+msgstr "Reddedildi: {reason}"
 
 #: workspace:workspace.orders.kitchen.deliver
 msgid "workspace.orders.kitchen.deliver"
-msgstr ""
+msgstr "Masaya teslim edildi"
 
 #: workspace:workspace.orders.kitchen.desktopOnly.description
 msgid "workspace.orders.kitchen.desktopOnly.description"
-msgstr ""
+msgstr "Mutfak duvarındaki ekran için tasarlandı. Bu sayfayı tablet veya bilgisayarda açın."
 
 #: workspace:workspace.orders.kitchen.desktopOnly.title
 msgid "workspace.orders.kitchen.desktopOnly.title"
-msgstr ""
+msgstr "Mutfak ekranı için daha büyük ekran gerekiyor"
 
 #: workspace:workspace.orders.kitchen.empty.description
 msgid "workspace.orders.kitchen.empty.description"
-msgstr ""
+msgstr "Siparişler servis ekibi onayladıktan sonra burada görünür. Bekleyen siparişler gösterilmez."
 
 #: workspace:workspace.orders.kitchen.empty.title
 msgid "workspace.orders.kitchen.empty.title"
-msgstr ""
+msgstr "Hazırlanacak yemek yok"
 
 #: workspace:workspace.orders.kitchen.error.description
 msgid "workspace.orders.kitchen.error.description"
-msgstr ""
+msgstr "Onaylanan siparişler güvende. Tekrar deneyin."
 
 #: workspace:workspace.orders.kitchen.error.title
 msgid "workspace.orders.kitchen.error.title"
-msgstr ""
+msgstr "Mutfak ekranı yüklenemedi"
 
 #: workspace:workspace.orders.kitchen.fullscreen
 msgid "workspace.orders.kitchen.fullscreen"
-msgstr ""
+msgstr "Tam ekran"
 
 #: workspace:workspace.orders.kitchen.fullscreen.exit
 msgid "workspace.orders.kitchen.fullscreen.exit"
-msgstr ""
+msgstr "Tam ekrandan çık"
 
 #: workspace:workspace.orders.kitchen.fullscreen.unavailable
 msgid "workspace.orders.kitchen.fullscreen.unavailable"
-msgstr ""
+msgstr "Bu tarayıcı tam ekran özelliği sunmuyor. Tarayıcının kendi tam ekran tuşunu kullanın."
 
 #: workspace:workspace.orders.kitchen.loading
 msgid "workspace.orders.kitchen.loading"
-msgstr ""
+msgstr "Mutfak ekranı yükleniyor…"
 
 #: workspace:workspace.orders.kitchen.plan.description
 msgid "workspace.orders.kitchen.plan.description"
-msgstr ""
+msgstr "“{name}” mevcut planınıza dahil değil. Boş ekran sakin bir akşam izlenimi verebilir; ancak durum bu değil: misafirler hiç sipariş gönderemiyor."
 
 #: workspace:workspace.orders.kitchen.plan.title
 msgid "workspace.orders.kitchen.plan.title"
-msgstr ""
+msgstr "Mutfağa hiçbir sipariş ulaşamıyor"
 
 #: workspace:workspace.orders.kitchen.ready
 msgid "workspace.orders.kitchen.ready"
-msgstr ""
+msgstr "Hazır olarak işaretle"
 
 #: workspace:workspace.orders.kitchen.region
 msgid "workspace.orders.kitchen.region"
-msgstr ""
+msgstr "Mutfak ekranı"
 
 #: workspace:workspace.orders.kitchen.start
 msgid "workspace.orders.kitchen.start"
-msgstr ""
+msgstr "Hazırlamaya başla"
 
 #: workspace:workspace.orders.kitchen.status.confirmed
 msgid "workspace.orders.kitchen.status.confirmed"
-msgstr ""
+msgstr "Onaylandı"
 
 #: workspace:workspace.orders.kitchen.status.preparing
 msgid "workspace.orders.kitchen.status.preparing"
-msgstr ""
+msgstr "Hazırlanıyor"
 
 #: workspace:workspace.orders.kitchen.status.ready
 msgid "workspace.orders.kitchen.status.ready"
-msgstr ""
+msgstr "Hazır"
 
 #: workspace:workspace.orders.permission.description
 msgid "workspace.orders.permission.description"
-msgstr ""
+msgstr "Sipariş kuyruğunu görmeniz gerekiyorsa çalışma alanı sahibine sorun."
 
 #: workspace:workspace.orders.permission.title
 msgid "workspace.orders.permission.title"
-msgstr ""
+msgstr "Rolünüz siparişleri kapsamıyor"
 
 #: workspace:workspace.orders.plan.action
 msgid "workspace.orders.plan.action"
-msgstr ""
+msgstr "Planınızı görüntüleyin"
 
 #: workspace:workspace.orders.plan.name
 msgid "workspace.orders.plan.name"
-msgstr ""
+msgstr "Masalardan sipariş alma"
 
 #: workspace:workspace.orders.prerequisite.description
 msgid "workspace.orders.prerequisite.description"
-msgstr ""
+msgstr "Siparişler bir şubeye aittir: masa, kuyruk ve mutfak aynı konumun parçalarıdır."
 
 #: workspace:workspace.orders.prerequisite.title
 msgid "workspace.orders.prerequisite.title"
-msgstr ""
+msgstr "Önce konum seçin"
 
 #: workspace:workspace.orders.price.unavailable
 msgid "workspace.orders.price.unavailable"
-msgstr ""
+msgstr "Fiyat alınamıyor"
 
 #: workspace:workspace.orders.quantity
 msgid "workspace.orders.quantity"
-msgstr ""
+msgstr "{count} ×"
 
 #: workspace:workspace.orders.queue.count
 msgid "workspace.orders.queue.count"
-msgstr ""
+msgstr "{count} bekliyor"
 
 #: workspace:workspace.orders.queue.desktop.bulkConfirm
 msgid "workspace.orders.queue.desktop.bulkConfirm"
-msgstr ""
+msgstr "{count} siparişi onayla"
 
 #: workspace:workspace.orders.queue.desktop.bulkReason
 msgid "workspace.orders.queue.desktop.bulkReason"
-msgstr ""
+msgstr "Bu {count} siparişi neden reddediyorsunuz?"
 
 #: workspace:workspace.orders.queue.desktop.bulkRegion
 msgid "workspace.orders.queue.desktop.bulkRegion"
-msgstr ""
+msgstr "Seçili siparişler için işlemler"
 
 #: workspace:workspace.orders.queue.desktop.bulkReject
 msgid "workspace.orders.queue.desktop.bulkReject"
-msgstr ""
+msgstr "{count} siparişi reddet"
 
 #: workspace:workspace.orders.queue.desktop.clearSelection
 msgid "workspace.orders.queue.desktop.clearSelection"
-msgstr ""
+msgstr "Seçimi temizle"
 
 #: workspace:workspace.orders.queue.desktop.detail.empty
 msgid "workspace.orders.queue.desktop.detail.empty"
-msgstr ""
+msgstr "İçeriğini burada okumak için listeden sipariş seçin."
 
 #: workspace:workspace.orders.queue.desktop.detail.region
 msgid "workspace.orders.queue.desktop.detail.region"
-msgstr ""
+msgstr "Seçili sipariş"
 
 #: workspace:workspace.orders.queue.desktop.menu
 msgid "workspace.orders.queue.desktop.menu"
-msgstr ""
+msgstr "Sipariş işlemleri"
 
 #: workspace:workspace.orders.queue.desktop.outcome
 msgid "workspace.orders.queue.desktop.outcome"
-msgstr ""
+msgstr "{ok} onaylandı, {failed} işlem gerçekleşmedi."
 
 #: workspace:workspace.orders.queue.desktop.selected
 msgid "workspace.orders.queue.desktop.selected"
-msgstr ""
+msgstr "{count} seçili"
 
 #: workspace:workspace.orders.queue.desktop.shortcuts
 msgid "workspace.orders.queue.desktop.shortcuts"
-msgstr ""
+msgstr "Ok tuşlarıyla gezin · Boşlukla seçin · Enter ile onaylayın · R ile reddedin"
 
 #: workspace:workspace.orders.queue.empty.closed.description
 msgid "workspace.orders.queue.empty.closed.description"
-msgstr ""
+msgstr "Misafirler menüyü okuyabilir; ancak sipariş gönderemez. Ayarlar’dan siparişi açın."
 
 #: workspace:workspace.orders.queue.empty.closed.title
 msgid "workspace.orders.queue.empty.closed.title"
-msgstr ""
+msgstr "Sipariş kapalı"
 
 #: workspace:workspace.orders.queue.empty.description
 msgid "workspace.orders.queue.empty.description"
-msgstr ""
+msgstr "Masalardan gelen yeni siparişler buraya düşer. Liste kendiliğinden yenilenir."
 
 #: workspace:workspace.orders.queue.empty.plan.description
 msgid "workspace.orders.queue.empty.plan.description"
-msgstr ""
+msgstr "Bu sakin bir akşam değil: “{name}” mevcut planınıza dahil olmadığı için misafirlerin gönderdiği her sipariş reddediliyor. Hiçbir şey kaybolmadı; plan bu özelliği içerdiği anda kuyruk dolmaya başlar."
 
 #: workspace:workspace.orders.queue.empty.plan.title
 msgid "workspace.orders.queue.empty.plan.title"
-msgstr ""
+msgstr "Siparişler size ulaşamıyor"
 
 #: workspace:workspace.orders.queue.empty.title
 msgid "workspace.orders.queue.empty.title"
-msgstr ""
+msgstr "Bekleyen sipariş yok"
 
 #: workspace:workspace.orders.queue.error.description
 msgid "workspace.orders.queue.error.description"
-msgstr ""
+msgstr "Hiçbir şey kaybolmadı: siparişler kuyrukta duruyor. Tekrar deneyin."
 
 #: workspace:workspace.orders.queue.error.title
 msgid "workspace.orders.queue.error.title"
-msgstr ""
+msgstr "Kuyruk yüklenemedi"
 
 #: workspace:workspace.orders.queue.loading
 msgid "workspace.orders.queue.loading"
-msgstr ""
+msgstr "Kuyruk yükleniyor…"
 
 #: workspace:workspace.orders.queue.region
 msgid "workspace.orders.queue.region"
-msgstr ""
+msgstr "Onay bekleyen siparişler"
 
 #: workspace:workspace.orders.queue.waiting
 msgid "workspace.orders.queue.waiting"
-msgstr ""
+msgstr "{minutes} dakikadır bekliyor"
 
 #: workspace:workspace.orders.queue.waiting.justNow
 msgid "workspace.orders.queue.waiting.justNow"
-msgstr ""
+msgstr "Yeni geldi"
 
 #: workspace:workspace.orders.refresh
 msgid "workspace.orders.refresh"
-msgstr ""
+msgstr "Şimdi yenile"
 
 #: workspace:workspace.orders.reject
 msgid "workspace.orders.reject"
-msgstr ""
+msgstr "Reddet"
 
 #: workspace:workspace.orders.reject.cancel
 msgid "workspace.orders.reject.cancel"
-msgstr ""
+msgstr "Geri"
 
 #: workspace:workspace.orders.reject.heading
 msgid "workspace.orders.reject.heading"
-msgstr ""
+msgstr "Bu siparişi neden reddediyorsunuz?"
 
 #: workspace:workspace.orders.reject.help
 msgid "workspace.orders.reject.help"
-msgstr ""
+msgstr "Misafir bunu kendi ekranında okur."
 
 #: workspace:workspace.orders.reject.label
 msgid "workspace.orders.reject.label"
-msgstr ""
+msgstr "Gerekçe"
 
 #: workspace:workspace.orders.reject.required
 msgid "workspace.orders.reject.required"
-msgstr ""
+msgstr "Gerekçe yazın. Sipariş hiçbir zaman açıklamasız reddedilmez."
 
 #: workspace:workspace.orders.reject.submit
 msgid "workspace.orders.reject.submit"
-msgstr ""
+msgstr "Siparişi reddet"
 
 #: workspace:workspace.orders.settings.error.description
 msgid "workspace.orders.settings.error.description"
-msgstr ""
+msgstr "Hiçbir şey değişmedi. Tekrar deneyin."
 
 #: workspace:workspace.orders.settings.error.title
 msgid "workspace.orders.settings.error.title"
-msgstr ""
+msgstr "Sipariş ayarları yüklenemedi"
 
 #: workspace:workspace.orders.settings.loading
 msgid "workspace.orders.settings.loading"
-msgstr ""
+msgstr "Sipariş ayarları yükleniyor…"
 
 #: workspace:workspace.orders.settings.plan.missing
 msgid "workspace.orders.settings.plan.missing"
-msgstr ""
+msgstr "“{name}” mevcut planınıza dahil değil. Bu özellik olmadan siparişi açamazsınız; masa kodunu okutan misafir menüyü okuyabilir ancak sipariş gönderemez."
 
 #: workspace:workspace.orders.settings.plan.stuckOn
 msgid "workspace.orders.settings.plan.stuckOn"
-msgstr ""
+msgstr "Sipariş açık; ancak “{name}” artık planınıza dahil olmadığı için mutfağa sipariş ulaşamıyor. Kimse sizin yerinize kapatmadı: bu karar sizindir. Plan yeniden bu özelliği içerdiğinde siparişler gelmeye başlar."
 
 #: workspace:workspace.orders.settings.region
 msgid "workspace.orders.settings.region"
-msgstr ""
+msgstr "Sipariş ayarları"
 
 #: workspace:workspace.orders.settings.switch.error
 msgid "workspace.orders.settings.switch.error"
-msgstr ""
+msgstr "Ayar değiştirilemedi. Tekrar deneyin."
 
 #: workspace:workspace.orders.settings.switch.help
 msgid "workspace.orders.settings.switch.help"
-msgstr ""
+msgstr "Kapalıyken misafirler menüyü okur ancak sipariş gönderemez. Açıkken birinin kuyruğu izlemesi gerekir."
 
 #: workspace:workspace.orders.settings.switch.label
 msgid "workspace.orders.settings.switch.label"
-msgstr ""
+msgstr "Masalardan sipariş kabul et"
 
 #: workspace:workspace.orders.settings.switch.off
 msgid "workspace.orders.settings.switch.off"
-msgstr ""
+msgstr "Sipariş kapalı"
 
 #: workspace:workspace.orders.settings.switch.on
 msgid "workspace.orders.settings.switch.on"
-msgstr ""
+msgstr "Sipariş açık"
 
 #: workspace:workspace.orders.settings.switch.readOnly
 msgid "workspace.orders.settings.switch.readOnly"
-msgstr ""
+msgstr "Siparişi yalnızca çalışma alanı sahibi açıp kapatabilir."
 
 #: workspace:workspace.orders.settings.switch.saving
 msgid "workspace.orders.settings.switch.saving"
-msgstr ""
+msgstr "Kaydediliyor…"
 
 #: workspace:workspace.orders.stale
 msgid "workspace.orders.stale"
-msgstr ""
+msgstr "Son yenileme başarısız oldu. Gördüğünüz bilgiler güncel olmayabilir."
 
 #: workspace:workspace.orders.status.cancelled
 msgid "workspace.orders.status.cancelled"
-msgstr ""
+msgstr "Misafir iptal etti"
 
 #: workspace:workspace.orders.status.confirmed
 msgid "workspace.orders.status.confirmed"
-msgstr ""
+msgstr "Onaylandı"
 
 #: workspace:workspace.orders.status.delivered
 msgid "workspace.orders.status.delivered"
-msgstr ""
+msgstr "Teslim edildi"
 
 #: workspace:workspace.orders.status.pending
 msgid "workspace.orders.status.pending"
-msgstr ""
+msgstr "Bekliyor"
 
 #: workspace:workspace.orders.status.preparing
 msgid "workspace.orders.status.preparing"
-msgstr ""
+msgstr "Hazırlanıyor"
 
 #: workspace:workspace.orders.status.ready
 msgid "workspace.orders.status.ready"
-msgstr ""
+msgstr "Hazır"
 
 #: workspace:workspace.orders.status.rejected
 msgid "workspace.orders.status.rejected"
-msgstr ""
+msgstr "Reddedildi"
 
 #: workspace:workspace.orders.tab.kitchen
 msgid "workspace.orders.tab.kitchen"
-msgstr ""
+msgstr "Mutfak ekranı"
 
 #: workspace:workspace.orders.tab.queue
 msgid "workspace.orders.tab.queue"
-msgstr ""
+msgstr "Kuyruk"
 
 #: workspace:workspace.orders.tab.settings
 msgid "workspace.orders.tab.settings"
-msgstr ""
+msgstr "Ayarlar"
 
 #: workspace:workspace.orders.table
 msgid "workspace.orders.table"
-msgstr ""
+msgstr "Masa {name}"
 
 #: workspace:workspace.orders.total
 msgid "workspace.orders.total"
-msgstr ""
+msgstr "Toplam"
 
 #: workspace:workspace.orders.updated
 msgid "workspace.orders.updated"
-msgstr ""
+msgstr "Güncellendi: {time}"
 
 #: workspace:workspace.orders.updated.never
 msgid "workspace.orders.updated.never"
-msgstr ""
+msgstr "Henüz güncellenmedi"
 
 #: workspace:workspace.profile.account.email.label
 msgid "workspace.profile.account.email.label"
@@ -5630,7 +5630,7 @@ msgstr "Tabela"
 
 #: workspace:workspace.publication.qrScreen.codeAlwaysDark
 msgid "workspace.publication.qrScreen.codeAlwaysDark"
-msgstr ""
+msgstr "Kartın görünümü ne olursa olsun, kod her zaman açık zemin üzerine koyu basılır: tarayıcılar bunu bekler ve renkleri ters çevrilmiş kod birçok telefonda hiç okunmaz."
 
 #: workspace:workspace.publication.qrScreen.custom
 msgid "workspace.publication.qrScreen.custom"
@@ -5714,7 +5714,7 @@ msgstr "Kartlar {part}/{total} (PDF)"
 
 #: workspace:workspace.publication.qrScreen.downloadShort
 msgid "workspace.publication.qrScreen.downloadShort"
-msgstr ""
+msgstr "İndir"
 
 #: workspace:workspace.publication.qrScreen.downloadZip
 msgid "workspace.publication.qrScreen.downloadZip"
@@ -6178,139 +6178,139 @@ msgstr "Misafirlerinizin menüyü açmak için okuttuğu karekodları oluşturun
 
 #: workspace:workspace.ratings.computedAt
 msgid "workspace.ratings.computedAt"
-msgstr ""
+msgstr "Hesaplandı: {time}"
 
 #: workspace:workspace.ratings.computedAt.never
 msgid "workspace.ratings.computedAt.never"
-msgstr ""
+msgstr "Henüz hesaplanmadı"
 
 #: workspace:workspace.ratings.description
 msgid "workspace.ratings.description"
-msgstr ""
+msgstr "Misafirler her yemek hakkında ne söyledi, siz ne yanıt verdiniz?"
 
 #: workspace:workspace.ratings.empty.action
 msgid "workspace.ratings.empty.action"
-msgstr ""
+msgstr "Menüyü aç"
 
 #: workspace:workspace.ratings.empty.description
 msgid "workspace.ratings.empty.description"
-msgstr ""
+msgstr "Puan bir yemeğe aittir. Menüye yemek eklediğinizde masadaki misafirler puan vermeye başlayabilir."
 
 #: workspace:workspace.ratings.empty.title
 msgid "workspace.ratings.empty.title"
-msgstr ""
+msgstr "Henüz gösterilecek yemek yok"
 
 #: workspace:workspace.ratings.error.description
 msgid "workspace.ratings.error.description"
-msgstr ""
+msgstr "Hiçbir şey kaybolmadı: misafirlerin verdiği her puan sayılmaya devam ediyor. Tekrar deneyin."
 
 #: workspace:workspace.ratings.error.title
 msgid "workspace.ratings.error.title"
-msgstr ""
+msgstr "Puanlar yüklenemedi"
 
 #: workspace:workspace.ratings.heading
 msgid "workspace.ratings.heading"
-msgstr ""
+msgstr "Puanlar"
 
 #: workspace:workspace.ratings.loading
 msgid "workspace.ratings.loading"
-msgstr ""
+msgstr "Puanlar yükleniyor…"
 
 #: workspace:workspace.ratings.method
 msgid "workspace.ratings.method"
-msgstr ""
+msgstr "Puanlama yöntemi {version}"
 
 #: workspace:workspace.ratings.method.help
 msgid "workspace.ratings.method.help"
-msgstr ""
+msgstr "Puanlar, zamanla değişebilen bir yöntemle misafir oylarından hesaplanır. Yukarıdaki sürüm, ekrandaki sayıları hangi yöntemin ürettiğini belirtir; böylece yeni oylarla değişen puan ile yöntem değişikliği nedeniyle değişen puan ayırt edilebilir."
 
 #: workspace:workspace.ratings.noRemoval
 msgid "workspace.ratings.noRemoval"
-msgstr ""
+msgstr "Puana yanıt verebilirsiniz; puanı kaldıramazsınız. Restoranın silebildiği bir ortalama, ölçüm değil reklam olurdu."
 
 #: workspace:workspace.ratings.notEnough
 msgid "workspace.ratings.notEnough"
-msgstr ""
+msgstr "Henüz yeterli puan yok"
 
 #: workspace:workspace.ratings.notEnough.help
 msgid "workspace.ratings.notEnough.help"
-msgstr ""
+msgstr "Yeterli sayıda misafir bu yemeği puanladığında sonuç görünür. O zamana kadar gösterilecek sayı yoktur; sıfır göstermek, misafirlerin söylemediği bir şeyi söylemek olurdu."
 
 #: workspace:workspace.ratings.permission.title
 msgid "workspace.ratings.permission.title"
-msgstr ""
+msgstr "Rolünüz puanları kapsamıyor"
 
 #: workspace:workspace.ratings.permission.whyNoAction
 msgid "workspace.ratings.permission.whyNoAction"
-msgstr ""
+msgstr "Misafirlerin verdiği puanları görmeniz gerekiyorsa çalışma alanı sahibine sorun."
 
 #: workspace:workspace.ratings.prerequisite.description
 msgid "workspace.ratings.prerequisite.description"
-msgstr ""
+msgstr "Puan bir yemeğe, yemek de bir menüye aittir. Puanları görmek için şube ve menü seçin."
 
 #: workspace:workspace.ratings.prerequisite.title
 msgid "workspace.ratings.prerequisite.title"
-msgstr ""
+msgstr "Önce menü seçin"
 
 #: workspace:workspace.ratings.reply.empty
 msgid "workspace.ratings.reply.empty"
-msgstr ""
+msgstr "Bir şey yazın. Boş yanıt, misafire boş kutu gösterir."
 
 #: workspace:workspace.ratings.reply.failed
 msgid "workspace.ratings.reply.failed"
-msgstr ""
+msgstr "İşlem gerçekleşmedi. Yazdıklarınız hâlâ burada; tekrar deneyin."
 
 #: workspace:workspace.ratings.reply.help
 msgid "workspace.ratings.reply.help"
-msgstr ""
+msgstr "Misafirler bunu kendi ekranlarında yemeğin altında okur."
 
 #: workspace:workspace.ratings.reply.label
 msgid "workspace.ratings.reply.label"
-msgstr ""
+msgstr "Yanıtınız"
 
 #: workspace:workspace.ratings.reply.none
 msgid "workspace.ratings.reply.none"
-msgstr ""
+msgstr "Bu yemek hakkında yanıt vermediniz."
 
 #: workspace:workspace.ratings.reply.publish
 msgid "workspace.ratings.reply.publish"
-msgstr ""
+msgstr "Yanıtı yayımla"
 
 #: workspace:workspace.ratings.reply.published
 msgid "workspace.ratings.reply.published"
-msgstr ""
+msgstr "yayımlandı: {time}"
 
 #: workspace:workspace.ratings.reply.saving
 msgid "workspace.ratings.reply.saving"
-msgstr ""
+msgstr "Kaydediliyor…"
 
 #: workspace:workspace.ratings.reply.tooLong
 msgid "workspace.ratings.reply.tooLong"
-msgstr ""
+msgstr "Metin {max} karakterden uzun. Kendiniz kısaltın; cümlenizi sizin yerinize kesmeyiz."
 
 #: workspace:workspace.ratings.reply.update
 msgid "workspace.ratings.reply.update"
-msgstr ""
+msgstr "Yanıtı güncelle"
 
 #: workspace:workspace.ratings.reply.who
 msgid "workspace.ratings.reply.who"
-msgstr ""
+msgstr "Restoranın yanıtı"
 
 #: workspace:workspace.ratings.reply.withdraw
 msgid "workspace.ratings.reply.withdraw"
-msgstr ""
+msgstr "Yanıtı geri çek"
 
 #: workspace:workspace.ratings.retry
 msgid "workspace.ratings.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.ratings.score
 msgid "workspace.ratings.score"
-msgstr ""
+msgstr "{max} üzerinden {score}"
 
 #: workspace:workspace.ratings.votes
 msgid "workspace.ratings.votes"
-msgstr ""
+msgstr "Şimdiye kadar verilen oy: {count}"
 
 #: workspace:workspace.settings.audit.empty
 msgid "workspace.settings.audit.empty"
@@ -6338,7 +6338,7 @@ msgstr "Tekrar dene"
 
 #: workspace:workspace.settings.audit.source.dataRights
 msgid "workspace.settings.audit.source.dataRights"
-msgstr ""
+msgstr "Veri talebi"
 
 #: workspace:workspace.settings.audit.source.media
 msgid "workspace.settings.audit.source.media"
@@ -6350,35 +6350,35 @@ msgstr "Yayınlama"
 
 #: workspace:workspace.settings.audit.source.support-access
 msgid "workspace.settings.audit.source.support-access"
-msgstr ""
+msgstr "Hesap erişimi"
 
 #: workspace:workspace.settings.audit.support.by
 msgid "workspace.settings.audit.support.by"
-msgstr ""
+msgstr "Açan: {actor}"
 
 #: workspace:workspace.settings.audit.support.closed
 msgid "workspace.settings.audit.support.closed"
-msgstr ""
+msgstr "{startedAt} ile {expiresAt} arasında"
 
 #: workspace:workspace.settings.audit.support.help
 msgid "workspace.settings.audit.support.help"
-msgstr ""
+msgstr "Destek ekibi, soruyu yanıtlamak için hesabınızda salt okunur oturum açabilir. Bu oturumda değişiklik, ödeme, yayın, davet veya silme yapılamaz. Her oturum açılma gerekçesiyle burada listelenir."
 
 #: workspace:workspace.settings.audit.support.open
 msgid "workspace.settings.audit.support.open"
-msgstr ""
+msgstr "Şu anda açık; otomatik kapanış: {expiresAt}"
 
 #: workspace:workspace.settings.audit.support.reason
 msgid "workspace.settings.audit.support.reason"
-msgstr ""
+msgstr "Gerekçe: {reason}"
 
 #: workspace:workspace.settings.audit.support.title
 msgid "workspace.settings.audit.support.title"
-msgstr ""
+msgstr "Zabuno’dan biri hesabınıza baktı"
 
 #: workspace:workspace.settings.audit.support.unknownActor
 msgid "workspace.settings.audit.support.unknownActor"
-msgstr ""
+msgstr "bir platform yöneticisi"
 
 #: workspace:workspace.settings.audit.unknownActor
 msgid "workspace.settings.audit.unknownActor"
@@ -6386,123 +6386,123 @@ msgstr "Bilinmiyor"
 
 #: workspace:workspace.settings.dataRights.erasure.cancel
 msgid "workspace.settings.dataRights.erasure.cancel"
-msgstr ""
+msgstr "Talebi geri çek"
 
 #: workspace:workspace.settings.dataRights.erasure.confirmHelp
 msgid "workspace.settings.dataRights.erasure.confirmHelp"
-msgstr ""
+msgstr "Bir kutu bakılmadan işaretlenebilir. Adı yazmak, hangi çalışma alanında olduğunuzu kontrol etmenizi sağlar."
 
 #: workspace:workspace.settings.dataRights.erasure.confirmLabel
 msgid "workspace.settings.dataRights.erasure.confirmLabel"
-msgstr ""
+msgstr "Onaylamak için çalışma alanının adını yazın"
 
 #: workspace:workspace.settings.dataRights.erasure.heading
 msgid "workspace.settings.dataRights.erasure.heading"
-msgstr ""
+msgstr "Bu çalışma alanının verilerini sil"
 
 #: workspace:workspace.settings.dataRights.erasure.help
 msgid "workspace.settings.dataRights.erasure.help"
-msgstr ""
+msgstr "Silmek, çalışma alanını kapatmak değildir ve geri alınamaz. Talep {days} gün bekler; tek düğmeyle geri çekilebilir. Çalışma alanı o zamana kadar çalışmaya devam eder."
 
 #: workspace:workspace.settings.dataRights.erasure.keptHeading
 msgid "workspace.settings.dataRights.erasure.keptHeading"
-msgstr ""
+msgstr "Neler silinmez, neden?"
 
 #: workspace:workspace.settings.dataRights.erasure.legalHold
 msgid "workspace.settings.dataRights.erasure.legalHold"
-msgstr ""
+msgstr "Silme başlayamıyor: {count} dosya bir uyuşmazlık nedeniyle korunuyor. Önce Medya’dan korumayı kaldırın."
 
 #: workspace:workspace.settings.dataRights.erasure.mismatch
 msgid "workspace.settings.dataRights.erasure.mismatch"
-msgstr ""
+msgstr "Bu, çalışma alanının adı değil."
 
 #: workspace:workspace.settings.dataRights.erasure.request
 msgid "workspace.settings.dataRights.erasure.request"
-msgstr ""
+msgstr "Silme talep et"
 
 #: workspace:workspace.settings.dataRights.erasure.scheduled
 msgid "workspace.settings.dataRights.erasure.scheduled"
-msgstr ""
+msgstr "Silme işlemi {date} tarihine zamanlandı."
 
 #: workspace:workspace.settings.dataRights.error
 msgid "workspace.settings.dataRights.error"
-msgstr ""
+msgstr "Bu bölüm yüklenemedi."
 
 #: workspace:workspace.settings.dataRights.export.availableUntil
 msgid "workspace.settings.dataRights.export.availableUntil"
-msgstr ""
+msgstr "Bağlantı {date} tarihine kadar çalışır."
 
 #: workspace:workspace.settings.dataRights.export.download
 msgid "workspace.settings.dataRights.export.download"
-msgstr ""
+msgstr "Arşivi indir"
 
 #: workspace:workspace.settings.dataRights.export.expired
 msgid "workspace.settings.dataRights.export.expired"
-msgstr ""
+msgstr "Arşivin süresi doldu. Yenisini hazırlayın."
 
 #: workspace:workspace.settings.dataRights.export.failed
 msgid "workspace.settings.dataRights.export.failed"
-msgstr ""
+msgstr "Arşiv hazırlanamadı. Tekrar deneyin."
 
 #: workspace:workspace.settings.dataRights.export.heading
 msgid "workspace.settings.dataRights.export.heading"
-msgstr ""
+msgstr "Kopyasını alın"
 
 #: workspace:workspace.settings.dataRights.export.help
 msgid "workspace.settings.dataRights.export.help"
-msgstr ""
+msgstr "Çalışma alanındaki tüm bilgiler tek arşivde iki biçimde bulunur: başka sisteme taşımak için makine tarafından okunabilir dosyalar ve bir kişinin açabileceği elektronik tablolar. Yüklenen dosyaların kendileri değil, ayrıntıları bulunur; orijinaller Medya’dan tek tek indirilebilir."
 
 #: workspace:workspace.settings.dataRights.export.notNotified
 msgid "workspace.settings.dataRights.export.notNotified"
-msgstr ""
+msgstr "Gönderim yapılandırılmadığı için e-posta gönderilmedi. Arşiv yine de burada."
 
 #: workspace:workspace.settings.dataRights.export.notified
 msgid "workspace.settings.dataRights.export.notified"
-msgstr ""
+msgstr "Hazır olduğunda size e-posta gönderdik."
 
 #: workspace:workspace.settings.dataRights.export.ready
 msgid "workspace.settings.dataRights.export.ready"
-msgstr ""
+msgstr "Arşiv hazır."
 
 #: workspace:workspace.settings.dataRights.export.request
 msgid "workspace.settings.dataRights.export.request"
-msgstr ""
+msgstr "Arşiv hazırla"
 
 #: workspace:workspace.settings.dataRights.export.sections
 msgid "workspace.settings.dataRights.export.sections"
-msgstr ""
+msgstr "Bölüm sayısı: {count}"
 
 #: workspace:workspace.settings.dataRights.export.working
 msgid "workspace.settings.dataRights.export.working"
-msgstr ""
+msgstr "Arşiv hazırlanıyor. Bu sayfadan ayrılabilirsiniz."
 
 #: workspace:workspace.settings.dataRights.forbidden
 msgid "workspace.settings.dataRights.forbidden"
-msgstr ""
+msgstr "Bu verileri yalnızca çalışma alanı sahibi kopyalayabilir veya silebilir."
 
 #: workspace:workspace.settings.dataRights.history
 msgid "workspace.settings.dataRights.history"
-msgstr ""
+msgstr "Şimdiye kadarki talepler"
 
 #: workspace:workspace.settings.dataRights.history.empty
 msgid "workspace.settings.dataRights.history.empty"
-msgstr ""
+msgstr "Henüz talep yok."
 
 #: workspace:workspace.settings.dataRights.hosting
 msgid "workspace.settings.dataRights.hosting"
-msgstr ""
+msgstr "Sunucular {provider} tarafından {country} konumunda işletiliyor; bu nedenle verileriniz Türkiye dışında saklanıyor. Yedekler de aynı sunucularda tutuluyor."
 
 #: workspace:workspace.settings.dataRights.loading
 msgid "workspace.settings.dataRights.loading"
-msgstr ""
+msgstr "Yükleniyor…"
 
 #: workspace:workspace.settings.dataRights.region
 msgid "workspace.settings.dataRights.region"
-msgstr ""
+msgstr "Verileriniz"
 
 #: workspace:workspace.settings.dataRights.retry
 msgid "workspace.settings.dataRights.retry"
-msgstr ""
+msgstr "Tekrar dene"
 
 #: workspace:workspace.settings.logo.change
 msgid "workspace.settings.logo.change"
@@ -6566,11 +6566,11 @@ msgstr "Zabuno"
 
 #: workspace:workspace.shell.breadcrumbs.empty
 msgid "workspace.shell.breadcrumbs.empty"
-msgstr ""
+msgstr "Gezinti yolu boş"
 
 #: workspace:workspace.shell.breadcrumbs.label
 msgid "workspace.shell.breadcrumbs.label"
-msgstr ""
+msgstr "Gezinti yolu"
 
 #: workspace:workspace.shell.currentLocation.label
 msgid "workspace.shell.currentLocation.label"
@@ -6658,7 +6658,7 @@ msgstr "Daha fazla"
 
 #: workspace:workspace.shell.nav.orders
 msgid "workspace.shell.nav.orders"
-msgstr ""
+msgstr "Siparişler"
 
 #: workspace:workspace.shell.nav.publication
 msgid "workspace.shell.nav.publication"
@@ -6670,7 +6670,7 @@ msgstr "Karekodlar"
 
 #: workspace:workspace.shell.nav.ratings
 msgid "workspace.shell.nav.ratings"
-msgstr ""
+msgstr "Puanlar"
 
 #: workspace:workspace.shell.nav.settings
 msgid "workspace.shell.nav.settings"
@@ -6686,95 +6686,95 @@ msgstr "Bildirimler kullanılamıyor"
 
 #: workspace:workspace.support.description
 msgid "workspace.support.description"
-msgstr ""
+msgstr "Çalışma alanınızdan yardım isteyin. Her talebe referans numarası verilir; talepler durumlarıyla burada listelenir."
 
 #: workspace:workspace.support.form.error
 msgid "workspace.support.form.error"
-msgstr ""
+msgstr "Talebiniz gönderilemedi. Tekrar deneyin."
 
 #: workspace:workspace.support.form.heading
 msgid "workspace.support.form.heading"
-msgstr ""
+msgstr "Yeni talep"
 
 #: workspace:workspace.support.form.message
 msgid "workspace.support.form.message"
-msgstr ""
+msgstr "Ne oluyor?"
 
 #: workspace:workspace.support.form.message.help
 msgid "workspace.support.form.message.help"
-msgstr ""
+msgstr "Ne beklediğinizi ve bunun yerine ne gördüğünüzü anlatın. {email} adresine yanıt veririz."
 
 #: workspace:workspace.support.form.sent
 msgid "workspace.support.form.sent"
-msgstr ""
+msgstr "{reference} numaralı talebiniz alındı. {email} adresine onay gönderdik."
 
 #: workspace:workspace.support.form.sentNoCopy
 msgid "workspace.support.form.sentNoCopy"
-msgstr ""
+msgstr "{reference} numaralı talebiniz alındı. Onay e-postası gönderilemedi; ancak talep kaydedildi ve aşağıda listeleniyor."
 
 #: workspace:workspace.support.form.subject
 msgid "workspace.support.form.subject"
-msgstr ""
+msgstr "Konu"
 
 #: workspace:workspace.support.form.subject.help
 msgid "workspace.support.form.subject.help"
-msgstr ""
+msgstr "Tek satırla neyin çalışmadığını veya neye ihtiyacınız olduğunu belirtin."
 
 #: workspace:workspace.support.form.submit
 msgid "workspace.support.form.submit"
-msgstr ""
+msgstr "Talep gönder"
 
 #: workspace:workspace.support.form.submitting
 msgid "workspace.support.form.submitting"
-msgstr ""
+msgstr "Gönderiliyor…"
 
 #: workspace:workspace.support.help.lead
 msgid "workspace.support.help.lead"
-msgstr ""
+msgstr "Birçok sorunun yanıtı yardım yazılarında var."
 
 #: workspace:workspace.support.help.link
 msgid "workspace.support.help.link"
-msgstr ""
+msgstr "Yardım yazılarını aç"
 
 #: workspace:workspace.support.list.answered
 msgid "workspace.support.list.answered"
-msgstr ""
+msgstr "Yanıtlandı: {date}"
 
 #: workspace:workspace.support.list.empty
 msgid "workspace.support.list.empty"
-msgstr ""
+msgstr "Henüz talep yok. Gönderdiğinizde referans numarası ve durumuyla burada görünür."
 
 #: workspace:workspace.support.list.error
 msgid "workspace.support.list.error"
-msgstr ""
+msgstr "Talepleriniz yüklenemedi."
 
 #: workspace:workspace.support.list.heading
 msgid "workspace.support.list.heading"
-msgstr ""
+msgstr "Talepleriniz"
 
 #: workspace:workspace.support.list.loading
 msgid "workspace.support.list.loading"
-msgstr ""
+msgstr "Talepleriniz yükleniyor…"
 
 #: workspace:workspace.support.list.received
 msgid "workspace.support.list.received"
-msgstr ""
+msgstr "Alındı: {date}"
 
 #: workspace:workspace.support.status.answered
 msgid "workspace.support.status.answered"
-msgstr ""
+msgstr "Yanıtlandı"
 
 #: workspace:workspace.support.status.closed
 msgid "workspace.support.status.closed"
-msgstr ""
+msgstr "Kapalı"
 
 #: workspace:workspace.support.status.received
 msgid "workspace.support.status.received"
-msgstr ""
+msgstr "Alındı"
 
 #: workspace:workspace.support.title
 msgid "workspace.support.title"
-msgstr ""
+msgstr "Destek"
 
 #: workspace:workspace.team.heading
 msgid "workspace.team.heading"
@@ -7026,119 +7026,119 @@ msgstr "Bekleyen davetler"
 
 #: workspace:workspace.team.roleGuide.ability.analytics.view
 msgid "workspace.team.roleGuide.ability.analytics.view"
-msgstr ""
+msgstr "Ziyaret ve kod okutma sayılarını görme"
 
 #: workspace:workspace.team.roleGuide.ability.billing.manage
 msgid "workspace.team.roleGuide.ability.billing.manage"
-msgstr ""
+msgstr "Planı değiştirme ve ödeme yapma"
 
 #: workspace:workspace.team.roleGuide.ability.billing.view
 msgid "workspace.team.roleGuide.ability.billing.view"
-msgstr ""
+msgstr "Planı ve faturaları görme"
 
 #: workspace:workspace.team.roleGuide.ability.media.download_original
 msgid "workspace.team.roleGuide.ability.media.download_original"
-msgstr ""
+msgstr "Orijinal fotoğraf dosyasını indirme"
 
 #: workspace:workspace.team.roleGuide.ability.media.manage
 msgid "workspace.team.roleGuide.ability.media.manage"
-msgstr ""
+msgstr "Fotoğraf yükleme, değiştirme ve silme"
 
 #: workspace:workspace.team.roleGuide.ability.menu.allergens.manage
 msgid "workspace.team.roleGuide.ability.menu.allergens.manage"
-msgstr ""
+msgstr "Yemekteki alerjenleri işaretleme"
 
 #: workspace:workspace.team.roleGuide.ability.menu.manage
 msgid "workspace.team.roleGuide.ability.menu.manage"
-msgstr ""
+msgstr "Yemek, fiyat ve kategori ekleme ve düzenleme"
 
 #: workspace:workspace.team.roleGuide.ability.menu.publish
 msgid "workspace.team.roleGuide.ability.menu.publish"
-msgstr ""
+msgstr "Misafirlerin gördüğü menüyü yayımlama"
 
 #: workspace:workspace.team.roleGuide.ability.menu.stock.manage
 msgid "workspace.team.roleGuide.ability.menu.stock.manage"
-msgstr ""
+msgstr "Yemeği bugün için tükendi olarak işaretleme"
 
 #: workspace:workspace.team.roleGuide.ability.menu.view
 msgid "workspace.team.roleGuide.ability.menu.view"
-msgstr ""
+msgstr "Menüleri görme"
 
 #: workspace:workspace.team.roleGuide.ability.order.confirm
 msgid "workspace.team.roleGuide.ability.order.confirm"
-msgstr ""
+msgstr "Masadan gelen siparişi onaylama"
 
 #: workspace:workspace.team.roleGuide.ability.order.kitchen
 msgid "workspace.team.roleGuide.ability.order.kitchen"
-msgstr ""
+msgstr "Siparişi mutfak aşamalarında ilerletme"
 
 #: workspace:workspace.team.roleGuide.ability.order.settings
 msgid "workspace.team.roleGuide.ability.order.settings"
-msgstr ""
+msgstr "Masadan siparişi açıp kapatma"
 
 #: workspace:workspace.team.roleGuide.ability.order.view
 msgid "workspace.team.roleGuide.ability.order.view"
-msgstr ""
+msgstr "Masalardan gelen siparişleri görme"
 
 #: workspace:workspace.team.roleGuide.ability.qr.create
 msgid "workspace.team.roleGuide.ability.qr.create"
-msgstr ""
+msgstr "Masalar için QR kodu oluşturma"
 
 #: workspace:workspace.team.roleGuide.ability.qr.design.manage
 msgid "workspace.team.roleGuide.ability.qr.design.manage"
-msgstr ""
+msgstr "Basılı QR kodlarının görünümünü değiştirme"
 
 #: workspace:workspace.team.roleGuide.ability.qr.disable
 msgid "workspace.team.roleGuide.ability.qr.disable"
-msgstr ""
+msgstr "QR kodunu kapatma"
 
 #: workspace:workspace.team.roleGuide.ability.qr.view
 msgid "workspace.team.roleGuide.ability.qr.view"
-msgstr ""
+msgstr "QR kodlarını görme"
 
 #: workspace:workspace.team.roleGuide.ability.rating.reply
 msgid "workspace.team.roleGuide.ability.rating.reply"
-msgstr ""
+msgstr "Menüde misafire yanıt verme"
 
 #: workspace:workspace.team.roleGuide.ability.rating.view
 msgid "workspace.team.roleGuide.ability.rating.view"
-msgstr ""
+msgstr "Misafirlerin verdiği puanları görme"
 
 #: workspace:workspace.team.roleGuide.ability.security.evidence.view
 msgid "workspace.team.roleGuide.ability.security.evidence.view"
-msgstr ""
+msgstr "Yedekleme ve veri ayrımı kayıtlarını görme"
 
 #: workspace:workspace.team.roleGuide.ability.workspace.data.erase
 msgid "workspace.team.roleGuide.ability.workspace.data.erase"
-msgstr ""
+msgstr "Bu çalışma alanının verilerinin silinmesini isteme"
 
 #: workspace:workspace.team.roleGuide.ability.workspace.data.export
 msgid "workspace.team.roleGuide.ability.workspace.data.export"
-msgstr ""
+msgstr "Çalışma alanındaki her şeyin kopyasını alma"
 
 #: workspace:workspace.team.roleGuide.ability.workspace.manage
 msgid "workspace.team.roleGuide.ability.workspace.manage"
-msgstr ""
+msgstr "Marka ve şube ayarlarını değiştirme"
 
 #: workspace:workspace.team.roleGuide.ability.workspace.view
 msgid "workspace.team.roleGuide.ability.workspace.view"
-msgstr ""
+msgstr "Bu çalışma alanını açma"
 
 #: workspace:workspace.team.roleGuide.detail.can
 msgid "workspace.team.roleGuide.detail.can"
-msgstr ""
+msgstr "Yapabilir"
 
 #: workspace:workspace.team.roleGuide.detail.cannot
 msgid "workspace.team.roleGuide.detail.cannot"
-msgstr ""
+msgstr "Yapamaz"
 
 #: workspace:workspace.team.roleGuide.detail.show
 msgid "workspace.team.roleGuide.detail.show"
-msgstr ""
+msgstr "Bu rolün tam olarak neleri yapıp yapamayacağını görün"
 
 #: workspace:workspace.team.roleGuide.detail.source
 msgid "workspace.team.roleGuide.detail.source"
-msgstr ""
+msgstr "Bu iki liste, bir düğmeye basıldığında ürünün uyguladığı kurallardan gelir."
 
 #: workspace:workspace.team.roleGuide.editor
 msgid "workspace.team.roleGuide.editor"

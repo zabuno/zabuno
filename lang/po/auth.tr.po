@@ -130,7 +130,7 @@ msgstr "Hesabınızı oluşturamadık. Lütfen tekrar deneyin."
 
 #: auth:auth.register.error.terms
 msgid "auth.register.error.terms"
-msgstr ""
+msgstr "Hesap oluşturmak için bu kutuyu işaretleyin. Her iki belgenin bağlantısı aşağıda."
 
 #: auth:auth.register.heading
 msgid "auth.register.heading"
@@ -138,15 +138,15 @@ msgstr "Hesabınızı oluşturun"
 
 #: auth:auth.register.legal_links
 msgid "auth.register.legal_links"
-msgstr ""
+msgstr "Yasal belgeler"
 
 #: auth:auth.register.marketing
 msgid "auth.register.marketing"
-msgstr ""
+msgstr "Zabuno’dan e-posta yoluyla ticari elektronik ileti almayı kabul ediyorum. Bu isteğe bağlıdır."
 
 #: auth:auth.register.marketing.read
 msgid "auth.register.marketing.read"
-msgstr ""
+msgstr "Ticari ileti onay metnini okuyun"
 
 #: auth:auth.register.name
 msgid "auth.register.name"
@@ -166,15 +166,15 @@ msgstr "Kaydol"
 
 #: auth:auth.register.terms
 msgid "auth.register.terms"
-msgstr ""
+msgstr "Hizmet Koşulları’nı ve Gizlilik Politikası’nı okudum ve kabul ediyorum."
 
 #: auth:auth.register.terms.read_privacy
 msgid "auth.register.terms.read_privacy"
-msgstr ""
+msgstr "Gizlilik Politikası’nı okuyun"
 
 #: auth:auth.register.terms.read_terms
 msgid "auth.register.terms.read_terms"
-msgstr ""
+msgstr "Hizmet Koşulları’nı okuyun"
 
 #: auth:auth.reset_password.error.password
 msgid "auth.reset_password.error.password"
