@@ -1,6 +1,9 @@
 {
     "$note": "docs/06 Public Menü Performance Budget'ından türetilen JS bütçesi. Bu dosya bütçeyi SAHİPLENMEZ; docs/06 sahiplenir. Buradaki sayı ölçüm eşiğidir ve yalnız owner kararıyla yükseltilir — yükseltmek, kullanıcının bekleme süresini uzatmak demektir.",
-    "$measuredAt": "2026-09-04",
-    "$unit": "KB gzip, TEK giriş noktasının kapanışı (kendi dosyası + manifest imports); en büyük yüzey ölçülür. 2026-09-04 öncesi: tüm giriş bundle'larının toplamı.",
-    "maxTotalGzipKb": 200
+    "$measuredAt": "2026-09-08",
+    "$unit": "TEK giriş noktasının kapanışı (kendi dosyası + manifest imports); en büyük yüzey ölçülür. 2026-09-04 öncesi: tüm giriş bundle'larının toplamı.",
+    "$rawNote": "maxTotalRawKb ASIL kapıdır çünkü BELİRLENİMDİR: aynı commit iki ortamda BAYT BAYT aynı paketi üretir (docs/143 §2 — 117/117 dosya, aynı içerik özeti). maxTotalGzipKb aynı baytlar üzerinde çalışan Node'un zlib'ine bağlıdır ve ortamdan ortama ±%0,15 oynar (ölçüldü: 199,771 / 200,065 KB, AYNI commit).",
+    "$headroom": "2026-09-08 ölçümü (masaüstü çalışma alanı): 642,68 KB ham, 188,53 KB gzip. Bütçeler sırasıyla %1,9 ve %1,8 pay bırakır — ölçülmüş ortam bandının (%0,15) on katından fazlası.",
+    "maxTotalRawKb": 655,
+    "maxTotalGzipKb": 192
 }
