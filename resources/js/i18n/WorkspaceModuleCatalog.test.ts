@@ -37,8 +37,6 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1716;
-
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
 // kendi cümlelerini kazandı; tek bir "tekrar deneyin" ikisini de yanlış
@@ -255,6 +253,19 @@ const FROZEN_LEGACY_KEY_COUNT = 1716;
 // ekranda yazılı.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-224: 1705 → 1706, TEK anahtar ve yeni bir yüzey değil — ADI OLMAYAN
+// BİR YUVANIN adı. `menuImportSource`, yükleme sihirbazının açılır
+// listesinde ZATEN duruyordu (uç nokta onu döndürüyor, çünkü sihirbazın
+// seçtirebildiği biçimleri taşıyor) ama etiketi hiç yazılmamıştı: `t()`
+// eksik anahtarı KENDİSİ olarak döndürür, yani sahip listede
+// "workspace.media.upload.field.assetSlot.menuImportSource" okuyordu.
+// Bunu asıl pahalı yapan, ürünün BAŞKA bir ekranda o yuvayı adıyla
+// istemesiydi ("önce Medya sayfasından yükleyin — yuva: Import source"):
+// tarif edilen yol, tarif edildiği hâliyle yürünemiyordu. Sayı bir ekran
+// büyüdüğü için değil, var olan bir seçeneğin okunabilir olması için arttı;
+// `SlotNameIsReadableTest` bundan sonra adsız yuvayı hiç doğurtmuyor.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 // FF-225: Medya > Ayarlar'daki güvenlik önlemleri ANAHTAR olmaktan çıktı
 // (sahibin kararı, 2026-09-08: "switch butonlar saçma, UI hatası"). Anahtar
 // hem "değiştirebilirsin" diyordu hem de altında "kapatılamaz" yazıyordu;
@@ -265,14 +276,17 @@ const FROZEN_LEGACY_KEY_COUNT = 1716;
 // bir durumu adlandırmak, bir gün onu mümkün sanmaya yol açardı.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f83f2cb5244865558cf6e2e2e4c2f46df98f48d6c12cefe8815ecd001ee756ee';
+    '4ab6eddc6f10f557906e7a98d2927a102c14cd19f592dd3db5add086715afa53';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
     const normalized = sortedKeys.map((key) => `${key}=${entries[key]}`).join('\n');
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
+
+const FROZEN_LEGACY_KEY_COUNT = 1717;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

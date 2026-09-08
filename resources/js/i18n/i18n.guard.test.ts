@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { LOCALES, FALLBACK_LOCALE, currentLocale, directionOf, isLocaleCode } from './locales';
 import { coverageOf, createTranslator } from './translator';
 import { menuTranslations } from './menu';
+import { workspaceTranslations } from './workspace';
 import { loadLocaleOverrides, overridesFor } from './generated-overrides';
 
 /**
@@ -157,5 +158,49 @@ describe('i18n kapısı', () => {
             coverage.tr.translated,
             'DS-I18N-OVERRIDE-KEYS-04: Türkçe menü projeksiyonu tamamen boş; PO içeriği kaybolmuş olabilir.',
         ).toBeGreaterThan(0);
+    });
+
+    // --- DS-I18N-SLOT-NAME-05 ---------------------------------------------
+    /**
+     * BİR YUVANIN ADI HER EKRANDA AYNIDIR — FF-224.
+     *
+     * Menü ekranı sahibe "Medya sayfasından yükleyin (yuva: X)" diyor;
+     * sahip Medya ekranına gidiyor ve açılır listede X'i ARIYOR. İki ekran
+     * ayrı alanlardan (`menu` / `workspace`) okuduğu için X iki yerde
+     * yazılıdır — ve ayrıştıkları gün tarif, tarif edildiği hâliyle
+     * yürünemez olur. Kapı ayrışmayı imkânsız kılar.
+     *
+     * Anahtar EKSİK olması da bir ayrışmadır ve en pahalısıdır: `t()` eksik
+     * anahtarı KENDİSİ olarak döndürür, yani sahip açılır listede
+     * "workspace.media.upload.field.assetSlot.menuImportSource" okur.
+     */
+    it('bir yuvanın adı menü alanında ve Medya ekranında AYNI kelimedir', () => {
+        const pairs: [keyof typeof menuTranslations, string][] = [
+            ['menu.media.slot.itemImage', 'workspace.media.upload.field.assetSlot.itemImage'],
+            [
+                'menu.media.slot.menuImportSource',
+                'workspace.media.upload.field.assetSlot.menuImportSource',
+            ],
+        ];
+
+        for (const [menuKey, workspaceKey] of pairs) {
+            const menuLabel = menuTranslations[menuKey];
+            const workspaceLabel = workspaceTranslations[workspaceKey];
+
+            expect(
+                menuLabel,
+                `DS-I18N-SLOT-NAME-05: menü alanında "${String(menuKey)}" yok.`,
+            ).toBeTruthy();
+            expect(
+                workspaceLabel,
+                `DS-I18N-SLOT-NAME-05: Medya ekranının açılır listesinde "${workspaceKey}" yok; ` +
+                    'sahip o yuvayı adıyla bulamaz, ham anahtarı okur.',
+            ).toBeTruthy();
+            expect(
+                menuLabel,
+                `DS-I18N-SLOT-NAME-05: "${String(menuKey)}" ile "${workspaceKey}" ayrışmış; ` +
+                    'menü ekranının tarif ettiği yuva, Medya ekranında başka bir adla duruyor.',
+            ).toBe(workspaceLabel);
+        }
     });
 });
