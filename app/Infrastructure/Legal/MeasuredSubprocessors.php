@@ -197,6 +197,28 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
                 data: 'The billing details submitted with the order and the result of the payment. Card details are entered on the provider\'s own systems and never reach this service.',
                 location: self::LOCATION_NOT_MEASURED,
             ),
+            /*
+                ÖLÇÜM KONTEYNERİ TARAYICIDA ÇALIŞIR, SUNUCUDA DEĞİL.
+
+                Google Tag Manager bir kap'tır: ziyaretçinin tarayıcısına
+                yükleniyor ve içine kurulmuş araçları (GA4, Yandex Metrica)
+                orada çalıştırıyor. Bu servisin sunucusu ziyaretçi verisini
+                Google'a GÖNDERMİYOR — ziyaretçinin kendi tarayıcısı
+                gönderiyor. Alt işleyen listesinde yer alması bu ayrımı
+                gizlemek için değil, tam tersine yazmak içindir: müşteri
+                kimin veri gördüğünü bilmeli.
+
+                VE YALNIZ ONAYDAN SONRA: konteyner, ziyaretçi çerez
+                tercihinde ölçüme izin vermeden hiç yüklenmiyor
+                (`docs/126`, `docs/135`). Onay verilmemişse bu satırın
+                karşılığı olan hiçbir istek çıkmaz.
+            */
+            CredentialProvider::GoogleTagManager => new Subprocessor(
+                name: 'Google (Tag Manager, and the tools configured inside it)',
+                role: 'Measurement container loaded in the visitor\'s browser, and only after the visitor allows measurement in the cookie choice. The container runs the analytics tools the operator has configured inside it.',
+                data: 'What the visitor\'s browser sends to the tools inside the container: pages viewed, the address they arrived from, approximate location derived from the network address, and device and browser characteristics. This service\'s own servers do not send visitor data to Google; the visitor\'s browser does.',
+                location: self::LOCATION_NOT_MEASURED,
+            ),
             CredentialProvider::OpenAi => $this->aiProvider('OpenAI'),
             CredentialProvider::Gemini => $this->aiProvider('Google (Gemini API)'),
             CredentialProvider::Anthropic => $this->aiProvider('Anthropic'),
