@@ -1,15 +1,28 @@
 @section('title', 'İlk 15 dakikanız')
 @section('description', 'Menünüzü aktarın, karekodları bastırın, fiyat değiştirin.')
 
-<main class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10">
-    <div class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold">İlk 15 dakikanız</h1>
-        <p class="text-fg-secondary">
-            Her restoranın ilk gün yaptığı üç iş. Her biri BUGÜN var olan bir ekranı anlatır;
-            burada planlanan ya da yakında gelecek hiçbir şey yok.
-        </p>
-    </div>
+{{-- KABUĞUN BIRAKTIĞI BOŞLUK, KURUMSAL YÜZEY DİLİYLE.
+     Sayfa gövdesi okuma sütununda; bant tam kanamalı. Dolgu BİR kez
+     uygulanır (`.site-measure-prose`): iç içe kapların dolgusu birikirse
+     320 pikselde metin dar bir şeride sıkışır. --}}
+<main id="main-content" class="site-page">
+    {{-- SAHNE, SAKİN KİPTE (`docs/146` §12).
 
+         Bu bir makale sayfası: buraya gelen kişi keşfetmiyor, CEVAP ARIYOR.
+         Bandın markup'ı ortak parçadan geliyor (`public.partials.prologue`) —
+         yani sahne bir yerde değişince burası da değişir; tekrar eden tek şey
+         "bandı istiyorum" cümlesi, bandın kendisi değil.
+
+         `calm`: tuval yok, düzlem yok, animasyon yok. Başlık ve giriş cümlesi
+         bandın İÇİNE taşındı; sayfada ikinci bir h1 yok. --}}
+    @include('public.partials.prologue', [
+        'prologueHeading' => 'İlk 15 dakikanız',
+        'prologueLead' => 'Her restoranın ilk gün yaptığı üç iş. Her biri BUGÜN var olan bir ekranı anlatır; burada planlanan ya da yakında gelecek hiçbir şey yok.',
+        'prologueVariant' => 'calm',
+        'prologueMeasure' => 'site-measure-prose',
+    ])
+
+    <div class="site-measure-prose site-page-body">
     <section id="help-import" aria-labelledby="help-import-heading" class="flex flex-col gap-3">
         <h2 id="help-import-heading" class="text-2xl font-bold">Menünüzü aktarın</h2>
         <p class="text-fg-secondary">
@@ -78,6 +91,7 @@
 
     <p class="text-fg-secondary">
         Önünüzde başka bir şey mi var?
-        <a class="underline underline-offset-2" href="/contact">Bize yazın</a>.
+        <a class="site-inline-action" href="/contact">Bize yazın</a>.
     </p>
+    </div>
 </main>

@@ -32,6 +32,21 @@
     sahne, paletin nereden geldiğini hiç bilmeden çalışır.
 */
 
+/* Per-frame values belong to each effect, not to its content descendants.
+   Browsers without @property still receive the same values directly; existing
+   var() fallbacks and motion gates preserve the readable, static page. */
+@property --scene-shift {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+@property --scene-progress {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    §1 — SAHNE PALETİ. Betiğin okuduğu TEK arayüz.
    ══════════════════════════════════════════════════════════════════════════ */

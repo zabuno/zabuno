@@ -155,6 +155,85 @@ jobs:
       - name: Mobile UX audit — right-to-left (320px, real browser)
         run: node scripts/mobile-ux-audit storybook-static --direction rtl --baseline scripts/mobile-ux-audit.rtl.baseline.json
 
+      # ═══ SAHNE KAPILARI (docs/146 §12) ═══════════════════════════════════
+      #
+      # Uc dongudur yazilan sahne motoru bugune kadar CI'da HIC kosmadi ve
+      # bunun bedeli olculdu: gorsel kapinin tabani, main'e girdigi gunden
+      # beri KIRMIZIYDI. Iki paket ayni gun birlestirildi (#328 ust cubuga
+      # vurgulu bir /register dugmesi koydu, #332 gorsel tabani yazdi) ve
+      # ikisinin birlesimi hicbir yerde olculmedi. Tek bir hucre grubunda
+      # 66/255 sapma vardi -- ust cubuktaki o dugmenin tam yeri.
+      #
+      # Kosulmayan bir kapi yoktur. Uc kapi da buradan itibaren her PR'da
+      # kosuyor.
+
+      - name: Scene weight budget (SITE-SCENE-BUDGET-01)
+        run: node scripts/scene-budget-gate --fail
+
+      # Sahne kapilarinin ikisi gercek bir sayfa ISTER: sunucuda uretilen
+      # HTML, derlenmis CSS ve calisan motor. `php artisan serve` tek is
+      # parcacikli bir gelistirme sunucusudur ve YAVASTIR -- kapilar bunu
+      # biliyor: olculen sey sunucunun yanit suresi degil, sahnenin kendi
+      # payi (bkz. scene-perf-gate icindeki `sceneDelayMs` gerekcesi).
+      #
+      # Fiyat sayfasi plan tablosunu okur: bos sema, fiyat kartlari yerine
+      # bos durum cizer. Yerel gorsel olcum de yeni bir SQLite veritabani
+      # ve yalniz bu kanonik katalogla yapilir; local-dev plani kullanilmaz.
+      - name: Serve the corporate site for the scene gates
+        run: |
+          touch database/database.sqlite
+          php artisan migrate --force --no-interaction
+          php artisan db:seed --class=PlanCatalogueSeeder --force --no-interaction
+          nohup php artisan serve --port=8291 --no-reload --silent > /tmp/zabuno-serve.log 2>&1 &
+          disown || true
+          for attempt in $(seq 1 60); do
+            if curl -sf -o /dev/null http://127.0.0.1:8291/; then
+              echo "sunucu hazir (deneme $attempt)"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "sunucu 60 saniyede acilmadi -- OLCUM YAPILMADI"
+          exit 1
+
+      # DURAGANLIK + GERILEME, boyanan pikselle. Tolerans 12/255 ve olculdu:
+      # macOS Chrome ile Debian Chromium arasindaki en kotu hucre farki 7,
+      # gercek bir gerileme ise 36-80 (docs/146 §12).
+      - name: Scene visual gate (SAHNE-GORSEL-01, real browser)
+        run: |
+          mkdir -p storage/app/scene-visual
+          node scripts/scene-visual-gate --base http://127.0.0.1:8291 --fail --png storage/app/scene-visual > storage/app/scene-visual/report.json
+
+      - name: Preserve scene visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scene-visual-${{ github.run_id }}-${{ github.run_attempt }}
+          path: storage/app/scene-visual
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # KARE SURESI ve ILK EKRAN. 320x480 taban; CPU dortte bire kisilmis.
+      - name: Scene frame budget (320x480, real browser)
+        run: |
+          mkdir -p storage/app/scene-perf
+          node scripts/scene-perf-gate --url http://127.0.0.1:8291/ --width 320 --height 480 --cpu 4 --fail --json storage/app/scene-perf/baseline.json --diagnostics storage/app/scene-perf
+
+      - name: Preserve scene performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scene-perf-${{ github.run_id }}-${{ github.run_attempt }}
+          path: storage/app/scene-perf
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # MERDIVEN GERCEKTEN INIYOR MU: iki cekirdekli bir cihazda tuval
+      # boyanmamali. Bu, kapinin en onemli iddiasi -- "yavas cihazda yavas"
+      # bir kusur degil, "yavas cihazda hala tam yuk" bir kusurdur.
+      - name: Scene tier ladder (2 cores, real browser)
+        run: node scripts/scene-perf-gate --url http://127.0.0.1:8291/ --width 320 --height 480 --cpu 4 --concurrency 2 --expect-tier minimal --fail
+
       # Yedek tatbikati (docs/124) gercek pg_dump/pg_restore ile OLCULUR.
       # Runner imajinin kendi istemcisi sunucudan (postgres:17) eski
       # olabilir ve pg_dump daha yeni bir sunucuyu REDDEDER ("server version

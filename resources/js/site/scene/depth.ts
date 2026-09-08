@@ -98,7 +98,16 @@ export function createProgress(root: ParentNode): SceneEffect | null {
         return null;
     }
 
-    const boxes = elements.map((element) => ({ element, top: 0, height: 1 }));
+    // Keep section geometry, but scope changing values to the effects that read them.
+    // A nested section owns its own consumers and must not receive the outer value.
+    const boxes = elements.map((element) => ({
+        element,
+        consumers: Array.from(
+            element.querySelectorAll<HTMLElement>('.scene-progress-glow, .scene-morph'),
+        ).filter((consumer) => consumer.closest('[data-scene-progress]') === element),
+        top: 0,
+        height: 1,
+    }));
 
     return {
         measure() {
@@ -114,12 +123,16 @@ export function createProgress(root: ParentNode): SceneEffect | null {
                 const span = box.height + scene.height;
                 const progress = Math.max(Math.min((scene.scroll - start) / span, 1), 0);
 
-                box.element.style.setProperty('--scene-progress', progress.toFixed(4));
+                for (const consumer of box.consumers) {
+                    consumer.style.setProperty('--scene-progress', progress.toFixed(4));
+                }
             }
         },
         destroy() {
             for (const box of boxes) {
-                box.element.style.removeProperty('--scene-progress');
+                for (const consumer of box.consumers) {
+                    consumer.style.removeProperty('--scene-progress');
+                }
             }
         },
     };
