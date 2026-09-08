@@ -429,30 +429,18 @@
 }
 
 /*
-    GEÇİŞ KURALI — sayfa gövdeleri henüz `.site-main` kullanmıyor.
+    GEÇİŞ KURALI KALDIRILDI (2026-09-08, `docs/146`).
 
-    `home.blade.php` sayfa kabını Tailwind ile yazıyor (`mx-auto max-w-5xl`)
-    ve BU PAKET O DOSYAYA DOKUNMUYOR: orada başka bir ajan çalışıyor
-    (`docs/145` §7). Ama üst çubuk 82 rem'e açılıp gövde 64 rem'de kalsaydı,
-    marka adı ile sayfa başlığı aynı hizada durmazdı — yani genişletme
-    kusuru düzeltmek yerine ikiye bölerdi.
+    Burada `main[class~='max-w-5xl']` için yazılmış bir köprü duruyordu ve
+    kendi metni onun ne zaman sileceğini söylüyordu: *"Gövde kabı
+    `.site-measure-page`e taşındığı gün bu blok SİLİNİR — bir geçiş
+    kuralının en kötü hâli, kalıcı olduğunun unutulmasıdır."*
 
-    Kural bu yüzden TEK bir sınıfa bağlı: `max-w-5xl` (64 rem). O sınıf bu
-    depoda yalnız SAYFA KABI anlamında kullanılıyor. Okuma ölçüsünü bilerek
-    seçen sayfalar (`max-w-3xl` = iletişim, fiyat, kütükten çizilen makale;
-    `.site-legal` = sözleşme) hiç eşleşmez ve 48/44 rem'de kalır — bir
-    sözleşme 82 rem genişliğinde okunmaz, satır başına ~180 karakter düşerdi.
-
-    Katmansız kural, `@layer utilities` içindeki `max-w-5xl`i yener;
-    `!important` gerekmiyor ve kullanılmıyor.
-
-    Gövde kabı `.site-measure-page`e taşındığı gün bu blok SİLİNİR — bir
-    geçiş kuralının en kötü hâli, kalıcı olduğunun unutulmasıdır.
+    O gün geldi. `home.blade.php` sahne motoruyla yeniden yazıldı ve artık
+    kabını `.site-measure-page` / `.site-measure-stage` ile kuruyor; depoda
+    `max-w-5xl` yazan başka bir görünüm yok. `docs/145` §7 aynı silmeyi
+    şart koşuyordu.
 */
-.site-shell main[class~='max-w-5xl'] {
-    max-width: var(--zc-measure-page);
-    padding-inline: var(--zc-gutter);
-}
 
 .site-page-title {
     margin: 0;

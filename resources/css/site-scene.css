@@ -1,0 +1,564 @@
+/*
+    ═══════════════════════════════════════════════════════════════════════
+    SAHNE — kurumsal sitenin HAREKET katmanı (`docs/146`).
+    ═══════════════════════════════════════════════════════════════════════
+
+    Sahibin emri (2026-09-08): *"Bir uzay teknolojileri şirketi gibi, abartı
+    dursun, görünsün, hissettirsin."*
+
+    `site-identity.css` YÜZEY dilidir ve hiç hareket etmez — o dosyanın kendi
+    başlığı bunu söylüyor: *"Hiçbiri hareket etmez. Hareket ayrı bir paketin
+    işi."* Bu dosya o paket.
+
+    ── SÖZLEŞME: ÜÇ KAPI, ÜÇÜ DE TEK YÖNLÜ ──
+
+    1. `@media (prefers-reduced-motion: no-preference)` — hareket AÇIKÇA
+       istenmiş olmadan hiç doğmaz. Kural `reduce` üzerinden yazılmadı:
+       o biçimde animasyon önce tanımlanır sonra iptal edilir ve iptali
+       yazmayı unutan tek bir satır sessizce hareket eder.
+    2. `:root[data-motion='on']` — betiğin sürdüğü efektler yalnız betik
+       ayağa kalktığında doğar. Betik bu özniteliği yazsa BİLE 1. kapı
+       kapalıysa hiçbir kural eşleşmez; betik kararı geri alamaz.
+    3. `:root[data-scene-tier='…']` — cihaz derecesi. Sahne GİZLENMEZ,
+       DERECELENİR: düşük güçlü telefonda katman sayısı ve çözünürlük düşer,
+       içerik ve düzen aynı kalır.
+
+    ── NEDEN JETONLARI YENİDEN YAZIYOR ──
+
+    Betik renkleri DOM'dan okur ve okuduğu adlar `--scene-*`'dir. Kurumsal
+    palet adları (`--zc-*`) betiğin kaynağına yazılamaz: panelin kimliğe
+    bağlanmadığını ölçen kapı (KIMLIK-06) `resources/js` altında o öneki
+    arar ve bulduğu an kırar. Ayrım bir formalite değil — bu köprü sayesinde
+    sahne, paletin nereden geldiğini hiç bilmeden çalışır.
+*/
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §1 — SAHNE PALETİ. Betiğin okuduğu TEK arayüz.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.site-shell {
+    /*
+        YILDIZ RENKLERİ — düz onaltılık, `color-mix()` DEĞİL.
+
+        `getComputedStyle()` bir özel özelliğin `var()` zincirini çözer ama
+        `color-mix()`i ÇÖZMEZ: betiğe `color-mix(in oklab, …)` dizesi döner
+        ve WebGL onu bir renge çeviremez. Burada dört ad da doğrudan bir
+        palet basamağına bağlı; zincir bir adım uzasa bile sonuç yine
+        onaltılık kalır.
+    */
+    --scene-star-core: var(--zc-starlight);
+    --scene-star-beam: var(--zc-beam-300);
+    --scene-star-pulse: var(--zc-pulse-400);
+    --scene-star-signal: var(--zc-signal-400);
+
+    /* Sahnenin zemini. Tema ne olursa olsun derin (`site-identity.css` §2). */
+    --scene-void: var(--zc-void-1000);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §2 — ALAN TUVALİ (`scene-canvas`) — yıldız alanının indiği yer.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Tuval bir `.site-stage-layer` torunudur; konumunu ve tıklanamazlığını
+   ORADAN alır (`site-shell.css`). Burada yalnız kendi ölçüsü ve zemin
+   parlaklığı var.
+
+   `display: block` zorunlu: satır içi bir `<canvas>` altına satır kutusunun
+   inen boşluğu kadar boşluk bırakır ve katman bir kaç piksel taşar.
+*/
+.scene-canvas {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    /* Tuval boş kalırsa (WebGL yok, betik yok) hiçbir şey göstermez —
+       altındaki gradyan zemin sahnenin kendisidir. */
+    opacity: 0;
+}
+
+/*
+    Tuval GÖRÜNÜR olmadan boyanmaz: betik ilk kareyi çizdiğinde işaretler.
+    Aksi hâlde yüklenme anında bir kare boyunca siyah bir dikdörtgen
+    görünürdü — sahnenin ilk izlenimi bir kusur olurdu.
+*/
+.scene-canvas[data-scene-live='true'] {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .scene-canvas {
+        transition: opacity var(--motion-scene-slow) var(--motion-emphasized);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §3 — ATMOSFER. Betiksiz de yaşayan hacim.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Bu bölümdeki hiçbir efekt betiğe bağlı DEĞİLDİR: yalnız 1. kapıdan geçer.
+   Gerekçe ölçüldü — kurumsal sayfanın en çok okunduğu an, betiklerin en çok
+   engellendiği andır (`docs/118` E8). Betiği engellenmiş bir ziyaretçi
+   hareketsiz bir sayfa değil, DAHA SAKİN bir sayfa görür.
+*/
+
+/*
+    ── NEBULA (`scene-nebula`) ──
+
+    Üç ışık kaynağı, üçü de kabın dışında, üçü de farklı hızda süzülüyor.
+    Tek bir öğe ve tek bir `background` — yani tarayıcı için tek bir katman.
+
+    Boyut `200%`: gradyanların merkezleri kabın dışına çıkabilsin ve ekranda
+    bir "top" değil bir ATMOSFER görünsün.
+*/
+.scene-nebula {
+    position: absolute;
+    inset: -25%;
+    pointer-events: none;
+    background:
+        radial-gradient(38% 34% at 18% 16%, var(--zc-glow-action) 0%, transparent 68%),
+        radial-gradient(34% 38% at 84% 26%, var(--zc-glow-beam) 0%, transparent 70%),
+        radial-gradient(44% 32% at 62% 92%, var(--zc-glow-signal) 0%, transparent 66%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .scene-nebula {
+        animation: scene-nebula-drift 42s var(--motion-drift) infinite alternate;
+    }
+}
+
+@keyframes scene-nebula-drift {
+    from {
+        transform: translate3d(-1.5%, -1%, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(2%, 1.5%, 0) scale(1.08);
+    }
+}
+
+/*
+    ── TARAYICI HÜZME (`scene-beam`) ──
+
+    Sahnenin üstünden geçen tek bir eğik ışık. Bir uzay aracının güneş
+    hüzmesi: nadir, yavaş, ve tek yönlü.
+
+    `mix-blend-mode: screen` yerine düz opaklık kullanılıyor; karışım kipi
+    dar ekranda ayrı bir katman açtırıyor ve düşük güçlü cihazda ölçülen
+    kazanç yok.
+*/
+.scene-beam {
+    position: absolute;
+    inset-block: -40%;
+    inline-size: 42%;
+    inset-inline-start: -50%;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(
+        104deg,
+        transparent 0%,
+        var(--zc-glow-beam) 44%,
+        var(--zc-sheen) 52%,
+        var(--zc-glow-beam) 60%,
+        transparent 100%
+    );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .scene-beam {
+        animation: scene-beam-sweep 19s var(--motion-drift) infinite;
+    }
+}
+
+@keyframes scene-beam-sweep {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) rotate(8deg);
+    }
+
+    12% {
+        opacity: 0.9;
+    }
+
+    58% {
+        opacity: 0.55;
+    }
+
+    72%,
+    100% {
+        opacity: 0;
+        transform: translate3d(320%, 0, 0) rotate(8deg);
+    }
+}
+
+/*
+    ── UFUK (`scene-horizon`) ──
+
+    Sahnenin dibindeki eğrilik: bir gezegen kenarı gibi. Saf CSS, tek öğe,
+    hiç hareket etmiyor — hareket eden şey ONUN ÜSTÜNDEKİ ışıktır.
+*/
+.scene-horizon {
+    position: absolute;
+    /*
+        GEOMETRİ ÖLÇÜLDÜ, TAHMİN EDİLMEDİ.
+
+        İlk sürüm `aspect-ratio: 2 / 1` kullanıyordu: 1280 piksellik bir
+        sahnede elips 1792×896 oluyor ve üst yayı kahramanın TAM ORTASINDAN
+        geçiyordu — ekranda bir gezegen kenarı değil, sahneyi ikiye bölen
+        bir çember görünüyordu (2026-09-08 ekran görüntüsü).
+
+        Yükseklik artık sahnenin kendi boyuna bağlı ve elips aşağı itiliyor:
+        görünen tek şey en üstteki sığ yay. Bir gezegen kenarının doğru
+        okunması, çemberin ÇOĞUNUN görünmemesine bağlı.
+    */
+    inset-inline: -30%;
+    block-size: 62%;
+    bottom: -46%;
+    border-radius: 50%;
+    pointer-events: none;
+    border-top: 1px solid var(--zc-edge-lit);
+    background: radial-gradient(70% 90% at 50% 0%, var(--zc-glow-action) 0%, transparent 74%);
+}
+
+/*
+    ── VİNYET (`scene-vignette`) ──
+
+    Kenarlardan merkeze doğru koyulaşan bir perde. İki işi var ve ikisi de
+    ölçülebilir: sahnenin kenarında yıldızların "bittiği" yeri gizler, ve
+    okunan metnin arkasındaki zemini KOYULAŞTIRIR — yani kontrastı düşürmez,
+    yükseltir. Dekoratif bir katmanın okunurluğa yardım etmesi nadirdir;
+    burada sıra bu yüzden önemli: vinyet yıldızların ÜSTÜNDE, metnin
+    ALTINDA durur.
+*/
+.scene-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /*
+        ÖLÇÜ AYARI (2026-09-08).
+
+        İlk değerler (%30'da saydam, %82 opaklık) sahneyi TAMAMEN
+        karartıyordu: 1280×800 ekran görüntüsünde tek bir yıldız
+        kalmamıştı. Perdenin işi sahneyi söndürmek değil, KENARINI
+        yumuşatmak. Saydam bölge artık merkezin %62'sine kadar uzanıyor ve
+        toplam opaklık yarının biraz üstünde.
+    */
+    background:
+        radial-gradient(125% 105% at 50% 42%, transparent 62%, var(--zc-void-1000) 100%),
+        linear-gradient(90deg, var(--zc-void-1000) 0%, transparent 42%);
+    opacity: 0.55;
+}
+
+/* Sağdan sola dilde perde de yön değiştirir: metin sağda başlar. */
+[dir='rtl'] .scene-vignette {
+    background:
+        radial-gradient(125% 105% at 50% 42%, transparent 62%, var(--zc-void-1000) 100%),
+        linear-gradient(270deg, var(--zc-void-1000) 0%, transparent 42%);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §4 — AKAN BANT (`scene-drift`) — sağdan sola, soldan sağa.
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── İÇERİK GERÇEKTİR ──
+
+   Banttaki her sözcük, sayfanın kendi bölümlerinde de yazan GERÇEK ürün
+   yeteneğidir. Uydurulmuş bir müşteri adı, sahte bir rakam ya da olmayan
+   bir logo yoktur (`docs/118` §2, HOME-HONEST-03).
+
+   Bant `aria-hidden`dır ve bu bir kayıp değil: taşıdığı her başlık, aynı
+   sayfada okunabilir bir bölümde zaten duruyor. Ekran okuyucuya aynı şeyi
+   ikinci kez, üstelik kopyalanmış hâlde okutmak gürültüdür.
+
+   ── DÖNGÜ NEDEN İKİ KOPYA ──
+
+   Şerit kendi genişliğinin TAM YARISI kadar kayar ve iki özdeş kopya taşır;
+   yani kayma bittiğinde ikinci kopya birincinin başladığı yerdedir ve
+   dikiş görünmez. Kopya BLADE'de üretilir, betikte değil: betiksiz bir
+   ziyaretçide de bant tam görünür.
+*/
+.scene-drift {
+    /*
+        Kabın kendi taşması: şerit dışarı çıkar, sayfayı yatay kaydırmaz.
+        `clip`, `hidden`den farklı olarak yeni bir kaydırma kabı yaratmaz.
+    */
+    overflow: clip;
+    /* Uçlar zemine karışır: bant "kesilmez", solar. */
+    mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+
+.scene-drift-track {
+    display: flex;
+    inline-size: max-content;
+    align-items: center;
+    gap: var(--space-6);
+    /* Şeridin kendi hızı: yol uzunluğuna göre değil, SABİT bir tempo. */
+    --scene-drift-duration: 38s;
+}
+
+.scene-drift-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    white-space: nowrap;
+    font-size: var(--zc-eyebrow);
+    font-weight: var(--zc-weight-strong);
+    letter-spacing: var(--zc-eyebrow-tracking);
+    color: var(--fg-secondary);
+}
+
+/* Maddeler arasındaki nokta: bir metin karakteri değil, çizilen bir işaret —
+   ekran okuyucu bandı zaten görmez, ama seçilebilir metne de karışmaz. */
+.scene-drift-item::after {
+    content: '';
+    inline-size: 4px;
+    block-size: 4px;
+    border-radius: 50%;
+    background: var(--zc-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .scene-drift-track {
+        animation: scene-drift-start var(--scene-drift-duration) linear infinite;
+    }
+
+    .scene-drift[data-direction='end'] .scene-drift-track {
+        animation-name: scene-drift-end;
+    }
+
+    /*
+        SAĞDAN SOLA — yön çevrilir, kural DEĞİL.
+
+        Bu iki satır kapının İÇİNDE durmak zorunda. Dışarıda dururlarsa,
+        `prefers-reduced-motion: reduce` diyen bir Arapça ziyaretçide
+        `animation-name` tanımlı olur ve şerit — süresi tanımsız olsa bile
+        — kuralın dışına düşmüş sayılır. Kapı tek yönlüdür ve istisnası
+        yoktur (`SAHNE-B3`).
+    */
+    [dir='rtl'] .scene-drift .scene-drift-track {
+        animation-name: scene-drift-end;
+    }
+
+    [dir='rtl'] .scene-drift[data-direction='end'] .scene-drift-track {
+        animation-name: scene-drift-start;
+    }
+}
+
+/*
+    YÖN MANTIKSALDIR: `start` → satır başından sonuna. Soldan sağa yazılan
+    bir dilde sola, sağdan sola yazılan bir dilde sağa akar. `translateX`
+    yerine bu yüzden mantıksal yönü taşıyan iki ayrı kare kümesi var ve
+    hangisinin seçileceğine `dir` karar verir.
+*/
+@keyframes scene-drift-start {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@keyframes scene-drift-end {
+    from {
+        transform: translate3d(-50%, 0, 0);
+    }
+
+    to {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §5 — PARALLAX. En az üç düzlem, hepsi TEK bir ölçüden türer.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Betik her katmana `--scene-shift` (−1…1 arası bir ilerleme) yazar; mesafe
+   katmanın KENDİ derinlik jetonundan gelir. Yani hız bir sayı olarak
+   betikte değil, bir MESAFE olarak burada durur ve üç düzlem aynı ilerlemeyi
+   üç farklı mesafeyle yaşar.
+*/
+.scene-plane {
+    will-change: transform;
+}
+
+:root[data-motion='on'] .scene-plane {
+    transform: translate3d(0, calc(var(--scene-shift, 0) * var(--motion-depth-mid)), 0);
+}
+
+:root[data-motion='on'] .scene-plane[data-plane='near'] {
+    transform: translate3d(0, calc(var(--scene-shift, 0) * var(--motion-depth-near)), 0);
+}
+
+:root[data-motion='on'] .scene-plane[data-plane='far'] {
+    transform: translate3d(0, calc(var(--scene-shift, 0) * var(--motion-depth-far)), 0);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §6 — EĞİLEN KART (`scene-tilt`) — 3D görünen 2D.
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── GİRİŞ KİPİ AYRIMI (küresel `TOUCH-FIRST-INTERFACE` §2) ──
+
+   Eğilme yalnız İŞARETLEYİCİ ile olur. Dokunmada `hover` yoktur ve parmak
+   kartın üstünü kapatır: bir dokunmalı cihazda eğilmeyi taklit etmek, hiç
+   görünmeyen bir efekt için her karede iş yapmak olurdu. `pointer: fine`
+   kapısı bu yüzden CSS'te, betikte değil — betik olay dinleyicisini de
+   bağlamaz (`tilt.ts`), yani ayrım iki katmanda birden yazılı.
+
+   ── IŞIK KIRILMASI ──
+
+   Kartın üstünde imleci takip eden bir parıltı. Ayrı bir katman
+   (`::after`), çünkü kartın kendi zemini `site-panel`den gelir ve o zemin
+   değişmemeli.
+*/
+.scene-tilt {
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.scene-tilt-face {
+    position: relative;
+    block-size: 100%;
+}
+
+.scene-tilt-face::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+        38% 46% at var(--scene-glint-x, 50%) var(--scene-glint-y, 0%),
+        var(--zc-sheen) 0%,
+        transparent 72%
+    );
+}
+
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    :root[data-motion='on'] .scene-tilt {
+        perspective: 900px;
+    }
+
+    :root[data-motion='on'] .scene-tilt .scene-tilt-face {
+        transform: rotateX(calc(var(--scene-tilt-x, 0) * 1deg))
+            rotateY(calc(var(--scene-tilt-y, 0) * 1deg))
+            translate3d(0, 0, calc(var(--scene-tilt-lift, 0) * 1px));
+        transition: transform var(--motion-scene-fast) var(--motion-emphasized);
+    }
+
+    :root[data-motion='on'] .scene-tilt .scene-tilt-face::after {
+        opacity: var(--scene-glint, 0);
+        transition: opacity var(--motion-scene-fast) var(--motion-emphasized);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §7 — BÖLÜM GEÇİŞİ (`scene-reveal`, `scene-progress`).
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── GİRİŞ ──
+
+   Bir bölüm görünür alana girdiğinde betik `data-revealed="true"` yazar.
+   Başlangıç durumu (`opacity: 0`) YALNIZ betik ayaktayken tanımlıdır:
+   betiği engellenmiş bir ziyaretçide hiçbir şey saklanmaz. Bu sıra
+   pazarlığa kapalı — "önce gizle, sonra betikle göster" deseni, betik
+   düşerse sayfayı BOŞ bırakır.
+
+   ── İLERLEME ──
+
+   `--scene-progress` bölümün görüntü alanındaki ilerlemesidir (0 → 1) ve
+   bölümler birbirine ONUNLA dönüşür: sahne bandının ışığı, ufkun eğrisi ve
+   derinlik katmanları aynı sayıyı okur.
+*/
+@media (prefers-reduced-motion: no-preference) {
+    :root[data-motion='on'] .scene-reveal {
+        opacity: 0;
+        transform: translate3d(0, var(--motion-depth-mid), 0);
+        transition:
+            opacity var(--motion-scene-base) var(--motion-emphasized),
+            transform var(--motion-scene-base) var(--motion-emphasized);
+        /* Sıralı giriş: kardeşler aynı anda değil, arka arkaya doğar. */
+        transition-delay: calc(var(--scene-order, 0) * 90ms);
+    }
+
+    :root[data-motion='on'] .scene-reveal[data-revealed='true'] {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/*
+    İLERLEMEYE BAĞLI SAHNE — bölüm kaydırıldıkça ışık güçlenir ve ufuk
+    yükselir. İki öğe, tek sayı.
+*/
+:root[data-motion='on'] .scene-progress-glow {
+    opacity: calc(0.25 + var(--scene-progress, 0) * 0.75);
+    transform: scale(calc(1 + var(--scene-progress, 0) * 0.12));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §8 — DERECELENDİRME. Sahne gizlenmez, SADELEŞİR.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Betik cihazı ölçer ve üç dereceden birini yazar. Ölçüm iki kaynaklıdır:
+   açılıştaki cihaz ipuçları ve ÇALIŞIRKEN ölçülen kare süresi. İkincisi
+   olmadan derece bir tahmindir — bir telefon "8 çekirdek" diyip ısındığında
+   yine de kare düşürür.
+
+   `minimal` derecesinde tuval hiç boyanmaz; atmosfer, bant ve giriş
+   hareketi durur. Kalan şey `site-identity.css`in yüzey dilidir: gradyan
+   zemin, panel kalınlığı, ışıyan kenar. Yani sayfa hâlâ bir SAHNEDİR,
+   yalnız kıpırdamaz.
+*/
+:root[data-scene-tier='minimal'] .scene-beam,
+:root[data-scene-tier='minimal'] .scene-canvas {
+    display: none;
+}
+
+:root[data-scene-tier='minimal'] .scene-nebula,
+:root[data-scene-tier='minimal'] .scene-drift-track {
+    animation: none;
+}
+
+/* Orta derecede hüzme söner (en pahalı boyama), yıldızlar kalır. */
+:root[data-scene-tier='reduced'] .scene-beam {
+    display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §9 — ERİŞİLEBİLİRLİK KAPILARI
+   ══════════════════════════════════════════════════════════════════════════
+
+   `prefers-contrast: more` diyen ziyaretçi bir tercih değil bir İHTİYAÇ
+   bildiriyor. Yıldız alanı, hüzme ve nebula kontrastı DÜŞÜRÜR; üçü de
+   kapanır. Aynı gerekçe zorlanmış renklerde de geçerli: orada sistem
+   paleti hükmeder ve dekoratif bir katman onu yalnız bozabilir.
+*/
+@media (prefers-contrast: more) {
+    .scene-canvas,
+    .scene-nebula,
+    .scene-beam,
+    .scene-horizon,
+    .scene-vignette {
+        display: none;
+    }
+
+    .scene-drift-track {
+        animation: none;
+    }
+}
+
+@media (forced-colors: active) {
+    .scene-canvas,
+    .scene-nebula,
+    .scene-beam,
+    .scene-horizon,
+    .scene-vignette {
+        display: none;
+    }
+
+    .scene-drift-track {
+        animation: none;
+    }
+}

@@ -81,6 +81,39 @@
 @import './daisy-theme.css';
 
 /*
+    SAHNE — KURUMSAL SİTENİN HAREKET KATMANI (`docs/146`).
+
+    Sahibin emri (2026-09-08): *"Bir uzay teknolojileri şirketi gibi, abartı
+    dursun, görünsün, hissettirsin."*
+
+    KİMLİK VE KABUK KATMANLARINDAN SONRA gelir ve bu sıra bir üslup değil bir
+    ZORUNLULUK: sahne, kabuğun tanımladığı hareket jetonlarını (`--motion-*`,
+    `--layer-scene-*`) ve kimliğin paletini TÜKETİR. Hiçbirini tanımlamaz.
+
+    AYRI DOSYA, çünkü kimlik katmanının kendi kuralı şu: *"Hiçbiri hareket
+    etmez. Hareket ayrı bir paketin işi."* İkisini tek dosyada birleştirmek,
+    "sayfa hareketsizken nasıl görünüyor" sorusunu bir daha okunamaz hâle
+    getirirdi — oysa `prefers-reduced-motion` diyen ziyaretçinin gördüğü şey
+    tam olarak odur.
+
+    PANEL ETKİLENMEZ: her kuralı ya `.site-shell` kapsamında ya da yalnız
+    kurumsal sayfalarda yazılan `scene-*` sınıflarında yaşar.
+*/
+@import './site-scene.css';
+
+/*
+    ANA SAYFANIN DÜZENİ (`docs/146` §5).
+
+    Sayfaya ÖZGÜ düzen, kabuğun ve kimliğin dışında ayrı bir dosyada. Sebep
+    bir sonraki döngüde görünür olacak: motor öteki kurumsal sayfalara
+    yayıldığında her sayfa kendi düzen dosyasını getirir, ama hepsi AYNI
+    yüzey dilini ve AYNI hareket sözleşmesini tüketir. Düzen kabuğa
+    yazılsaydı, ikinci sayfa birincinin ölçülerini miras alır ve ayrışma
+    ancak ekranda fark edilirdi.
+*/
+@import './site-home.css';
+
+/*
     AEP `base.css` her `<a>` etiketini MAVİ ve ALTI ÇİZİLİ yapar — bu, bir
     içerik sayfası için doğru, bir panel için değil. Teslim paketinin kendi
     panel HTML'i de aynı düzeltmeyi kendi `<style>` bloğunda yapıyor:

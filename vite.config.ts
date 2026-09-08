@@ -55,6 +55,14 @@ export default defineConfig(({ mode }) => ({
                           'resources/js/workspace.desktop.tsx',
                           'resources/js/platform.tsx',
                           'resources/js/engineering.tsx',
+                          // KURUMSAL SAHNE (`docs/146`). React DEĞİL, düz
+                          // modül: kurumsal sayfalar React paketini hiç
+                          // yüklemez (HOME-NO-REACT-05) ve sahne motorunun
+                          // bir bileşen ağacına ihtiyacı yok. Ayrı giriş
+                          // olması şart — panel paketlerinden birine
+                          // eklenseydi, sahneyi hiç kullanmayan panel
+                          // ekranları da onu indirirdi.
+                          'resources/js/site.ts',
                       ],
                       refresh: true,
                   }),

@@ -1,0 +1,401 @@
+#!/usr/bin/env node
+/*
+    SAHNE KARE SÜRESİ KAPISI — gerçek Chrome, gerçek kaydırma, gerçek CPU.
+
+    ═══ NEDEN VAR ═══
+
+    Bu deponun bütün arayüz testleri jsdom'da koşuyor ve jsdom bir kare bile
+    ÇİZMEZ. Yani "sahne akıcı mı" sorusu, sahne yazıldıktan sonra bile
+    sorulamaz durumdaydı — ve sorulmayan bir sorunun cevabı raporda "geçti"
+    diye görünür.
+
+    Ölçülen şey ÜÇ ayrı iddia:
+
+      1. KARE SÜRESİ — sahne kaydırılırken kaç milisaniye sürüyor. Ortalama
+         DEĞİL, p95: bir sahnenin akıcı hissedilmesini bozan şey ortalama
+         değil, arada bir gelen uzun karedir.
+      2. DERECELENDİRME — düşük güçlü bir cihazda sahne kendini SADELEŞTİRDİ
+         mi. Kapının en önemli iddiası bu: "yavaş cihazda yavaş" bir kusur
+         değil, "yavaş cihazda hâlâ tam yük" bir kusurdur.
+      3. AZALTILMIŞ HAREKET — tercih açıkken hiçbir hareket kancasının
+         yazılmadığı. Bu bir sayı değil bir OLGU ve ölçülmeden iddia edilemez.
+
+    ═══ NEDEN CPU KISMA ═══
+
+    Geliştirici makinesi ürünün en hızlı kullanıcısıdır. `--cpu 4`,
+    Chrome'un kendi kısma düğmesiyle işlemciyi dörtte bire indirir; orta
+    sınıf bir Android telefonun kabaca karşılığı. Kısmasız bir ölçüm
+    "geçti" der ve sahibin telefonunda kare düşer.
+
+    ═══ NE ÖLÇMÜYOR ═══
+
+    GPU'nun kendisi. Chrome başsız kipte yazılım rasterleştirici (SwiftShader)
+    kullanabilir; bu ölçümü GERÇEK bir cihazdan KÖTÜ yapar, iyi değil — yani
+    kapı iyimser değil, kötümserdir. iOS Safari'nin kendi davranışını da
+    doğrulamaz.
+
+    ═══ KULLANIM ═══
+
+        php artisan serve --port=8177 &
+        node scripts/scene-perf-gate --url http://127.0.0.1:8177/ \
+            --width 320 --height 480 --cpu 4 --json rapor.json [--fail]
+*/
+
+import { spawn } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+const CHROME_CANDIDATES = [
+    process.env.CHROME_PATH,
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+].filter(Boolean);
+
+const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
+
+if (CHROME === undefined) {
+    console.error('scene-perf-gate: Chrome bulunamadı — ölçüm YAPILMADI, sonuç "bilinmiyor".');
+    process.exit(2);
+}
+
+function flag(name, fallback) {
+    const index = process.argv.indexOf(`--${name}`);
+
+    return index > -1 ? process.argv[index + 1] : fallback;
+}
+
+const URL_UNDER_TEST = flag('url', 'http://127.0.0.1:8000/');
+const WIDTH = Number(flag('width', '320'));
+const HEIGHT = Number(flag('height', '480'));
+const CPU = Number(flag('cpu', '1'));
+const SECONDS = Number(flag('seconds', '4'));
+/*
+    BÜTÇE. 60 kare/saniye 16,7 ms demektir; tavan 22 ms, yani ~45 fps.
+
+    Neden tam 16,7 değil: bu ölçüm kısılmış bir CPU'da ve yazılım
+    rasterleştiricide yapılıyor. Orada 16,7'yi şart koşmak, gerçek cihazda
+    kolayca geçilen bir sahneyi kırar ve kapı gürültü üretir — gürültü üreten
+    bir kapı kapatılır. 22 ms, "akıcı hissedilir"in alt sınırıdır.
+*/
+const BUDGET_MS = Number(flag('budget', '22'));
+/*
+    ÇEKİRDEK SAYISI TAKLİDİ — merdivenin GERÇEKTEN indiğini kanıtlar.
+
+    Derecelendirme, cihaz ipuçlarına ve ölçülen kare süresine bakar. Bir
+    geliştirici makinesinde ikisi de her zaman iyidir; yani "düşük güçlü
+    cihazda sahne sadeleşiyor" cümlesi, taklit olmadan ölçülemez ve
+    ölçülemeyen bir cümle bir iddiadır.
+
+    `--concurrency 2` Chrome'un `navigator.hardwareConcurrency` değerini
+    ikiye düşürür; `--expect-tier minimal` ile birlikte kapı, merdivenin
+    o cihazda gerçekten indiğini ŞART KOŞAR.
+*/
+const CONCURRENCY = flag('concurrency', null);
+const EXPECT_TIER = flag('expect-tier', null);
+const JSON_OUT = flag('json', null);
+const SHOULD_FAIL = process.argv.includes('--fail');
+
+let nextId = 0;
+
+function cdp(ws, method, params = {}) {
+    const id = ++nextId;
+    ws.send(JSON.stringify({ id, method, params }));
+
+    return new Promise((resolve, reject) => {
+        const onMessage = (event) => {
+            const message = JSON.parse(event.data);
+
+            if (message.id !== id) return;
+
+            ws.removeEventListener('message', onMessage);
+            message.error ? reject(new Error(message.error.message)) : resolve(message.result);
+        };
+
+        ws.addEventListener('message', onMessage);
+        setTimeout(() => reject(new Error(`CDP timeout: ${method}`)), 60000);
+    });
+}
+
+async function debuggerUrl(profile) {
+    const marker = join(profile, 'DevToolsActivePort');
+
+    for (let attempt = 0; attempt < 120; attempt += 1) {
+        try {
+            const [port] = readFileSync(marker, 'utf8').split('\n');
+            const list = await fetch(`http://127.0.0.1:${port.trim()}/json/list`).then((r) =>
+                r.json(),
+            );
+            const page = list.find((t) => t.type === 'page');
+
+            if (page) return page.webSocketDebuggerUrl;
+        } catch {
+            /* Chrome henüz dinlemiyor. */
+        }
+
+        await new Promise((r) => setTimeout(r, 250));
+    }
+
+    throw new Error('Chrome hata ayıklama portu açılmadı.');
+}
+
+async function evaluate(ws, expression) {
+    const result = await cdp(ws, 'Runtime.evaluate', {
+        expression,
+        awaitPromise: true,
+        returnByValue: true,
+    });
+
+    if (result.exceptionDetails) {
+        throw new Error(result.exceptionDetails.text ?? 'sayfa içi hata');
+    }
+
+    return result.result.value;
+}
+
+/*
+    ÖLÇÜM SAYFANIN İÇİNDE.
+
+    Kareler dışarıdan sayılamaz: CDP üzerinden alınan her örnek, ölçtüğü
+    şeyi yavaşlatır. Sayfa kendi karelerini sayar, sonuç TEK seferde
+    dışarı çıkar.
+
+    Kaydırma ölçümün PARÇASI: parallax, bölüm ilerlemesi ve giriş
+    animasyonları yalnız kaydırırken çalışır. Duran bir sayfada ölçülen
+    kare süresi, sahnenin en ucuz hâlidir ve hiçbir şey kanıtlamaz.
+*/
+const sampler = (seconds) => `new Promise((resolve) => {
+    const durationMs = ${Math.round(seconds * 1000)};
+    const frames = [];
+    const reach = Math.max(document.body.scrollHeight - window.innerHeight, 1);
+    let previous = performance.now();
+    const started = previous;
+
+    const step = (now) => {
+        frames.push(now - previous);
+        previous = now;
+
+        const progress = (now - started) / durationMs;
+        /* Gidiş-dönüş: aşağı in, sonra geri çık. Tek yönlü bir kaydırma,
+           bir kez doğan giriş animasyonlarını yalnız bir kez ölçerdi. */
+        const wave = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
+        window.scrollTo(0, reach * Math.max(Math.min(wave, 1), 0));
+
+        if (now - started < durationMs) {
+            requestAnimationFrame(step);
+        } else {
+            /* İlk kare her zaman uzundur (ilk boyama, yazı tipi, gölgelendirici
+               derlemesi). Onu ölçüme katmak, sahnenin SÜRDÜRÜLEBİLİR hızını
+               değil, açılış maliyetini ölçmek olurdu — o ayrı bir soru. */
+            const sorted = frames.slice(1).sort((a, b) => a - b);
+            const at = (q) => sorted[Math.min(Math.floor(sorted.length * q), sorted.length - 1)] ?? 0;
+            const canvas = document.querySelector('[data-scene="field"]');
+
+            resolve({
+                frames: sorted.length,
+                p50: Number(at(0.5).toFixed(2)),
+                p95: Number(at(0.95).toFixed(2)),
+                max: Number((sorted[sorted.length - 1] ?? 0).toFixed(2)),
+                longFrames: sorted.filter((ms) => ms > 50).length,
+                tier: document.documentElement.dataset.sceneTier ?? null,
+                motion: document.documentElement.dataset.motion ?? null,
+                renderer: canvas ? (canvas.dataset.sceneRenderer ?? null) : null,
+                live: canvas ? (canvas.dataset.sceneLive ?? null) : null,
+                planes: document.querySelectorAll('[data-plane]').length,
+                revealed: document.querySelectorAll('[data-revealed="true"]').length,
+            });
+        }
+    };
+
+    requestAnimationFrame(step);
+})`;
+
+const profileDir = mkdtempSync(join(tmpdir(), 'scene-perf-'));
+
+const chrome = spawn(
+    CHROME,
+    [
+        '--headless=new',
+        '--remote-debugging-port=0',
+        `--user-data-dir=${join(profileDir, 'profile')}`,
+        '--no-first-run',
+        /* WebGL yolu ölçülemezse ölçüm yedek yolu ölçer ve bunu SÖYLER;
+           `--disable-gpu` yazmak WebGL'i tamamen kapatabilirdi. */
+        '--enable-unsafe-swiftshader',
+        'about:blank',
+    ],
+    { stdio: 'ignore' },
+);
+
+const report = {
+    url: URL_UNDER_TEST,
+    width: WIDTH,
+    height: HEIGHT,
+    cpu: CPU,
+    concurrency: CONCURRENCY === null ? null : Number(CONCURRENCY),
+    budgetMs: BUDGET_MS,
+};
+const findings = [];
+
+try {
+    const ws = new WebSocket(await debuggerUrl(join(profileDir, 'profile')));
+    await new Promise((resolve, reject) => {
+        ws.addEventListener('open', resolve, { once: true });
+        ws.addEventListener('error', reject, { once: true });
+    });
+
+    await cdp(ws, 'Page.enable');
+    await cdp(ws, 'Emulation.setDeviceMetricsOverride', {
+        width: WIDTH,
+        height: HEIGHT,
+        deviceScaleFactor: 1,
+        mobile: WIDTH < 768,
+    });
+
+    /* --- 1. Hareket açıkken ------------------------------------------- */
+
+    await cdp(ws, 'Emulation.setEmulatedMedia', {
+        features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
+    });
+
+    if (CPU > 1) {
+        await cdp(ws, 'Emulation.setCPUThrottlingRate', { rate: CPU });
+    }
+
+    if (CONCURRENCY !== null) {
+        await cdp(ws, 'Emulation.setHardwareConcurrencyOverride', {
+            hardwareConcurrency: Number(CONCURRENCY),
+        });
+    }
+
+    await cdp(ws, 'Page.navigate', { url: URL_UNDER_TEST });
+    await evaluate(
+        ws,
+        `new Promise((resolve) => {
+            const ready = () => document.readyState === 'complete';
+            const check = () => (ready() ? document.fonts.ready.then(() => setTimeout(resolve, 600)) : setTimeout(check, 100));
+            check();
+        })`,
+    );
+
+    report.motion = await evaluate(ws, sampler(SECONDS));
+
+    if (report.motion.motion !== 'on') {
+        findings.push(
+            'SAHNE-PERF: hareket açıkken `data-motion` yazılmamış — motor hiç ayağa ' +
+                'kalkmamış ve ölçülen sayı sahneyi TEMSİL ETMİYOR.',
+        );
+    }
+
+    if (EXPECT_TIER !== null && report.motion.tier !== EXPECT_TIER) {
+        findings.push(
+            `SAHNE-PERF: derece "${report.motion.tier}" — beklenen "${EXPECT_TIER}". ` +
+                'Sahne gizlenmez, DERECELENİR; merdiven inmiyorsa düşük güçlü bir cihaz ' +
+                'tam yükü taşımaya devam ediyor demektir.',
+        );
+    }
+
+    if (report.motion.p95 > BUDGET_MS) {
+        findings.push(
+            `SAHNE-PERF: p95 kare süresi ${report.motion.p95} ms — bütçe ${BUDGET_MS} ms ` +
+                `(${WIDTH}×${HEIGHT}, CPU ×${CPU}, derece "${report.motion.tier}").`,
+        );
+    }
+
+    /* --- 2. Azaltılmış hareket ----------------------------------------- */
+
+    await cdp(ws, 'Emulation.setEmulatedMedia', {
+        features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
+    });
+    await cdp(ws, 'Page.navigate', { url: URL_UNDER_TEST });
+    await evaluate(
+        ws,
+        `new Promise((resolve) => {
+            const check = () => (document.readyState === 'complete' ? setTimeout(resolve, 600) : setTimeout(check, 100));
+            check();
+        })`,
+    );
+
+    report.reduced = await evaluate(
+        ws,
+        `({
+            motion: document.documentElement.dataset.motion ?? null,
+            tier: document.documentElement.dataset.sceneTier ?? null,
+            /* İÇERİK SAYILIR: azaltılmış hareket bir "azaltılmış sürüm" değildir.
+               Sayfanın bütün bölümleri, bütün bağlantıları ve bütün metni
+               orada olmalı. */
+            sections: document.querySelectorAll('main section').length,
+            links: document.querySelectorAll('main a[href]').length,
+            headings: document.querySelectorAll('main h1, main h2, main h3').length,
+            hiddenReveals: Array.from(document.querySelectorAll('.scene-reveal'))
+                .filter((el) => getComputedStyle(el).opacity === '0').length,
+            animated: Array.from(document.querySelectorAll('main *'))
+                .filter((el) => getComputedStyle(el).animationName !== 'none').length,
+        })`,
+    );
+
+    if (report.reduced.motion !== null) {
+        findings.push(
+            'SAHNE-PERF: `prefers-reduced-motion: reduce` açıkken `data-motion` YAZILMIŞ. ' +
+                'Parallax bazı insanlarda fiziksel rahatsızlık yapar; bu bir zevk meselesi değil.',
+        );
+    }
+
+    if (report.reduced.animated > 0) {
+        findings.push(
+            `SAHNE-PERF: azaltılmış hareket açıkken ${report.reduced.animated} öğe hâlâ ` +
+                'animasyon taşıyor.',
+        );
+    }
+
+    if (report.reduced.hiddenReveals > 0) {
+        findings.push(
+            `SAHNE-PERF: azaltılmış hareket açıkken ${report.reduced.hiddenReveals} bölüm ` +
+                'GİZLİ kalmış — sayfa eksik görünür. Giriş animasyonu, içeriği saklamanın ' +
+                'gerekçesi olamaz.',
+        );
+    }
+
+    if (report.reduced.sections < 3 || report.reduced.headings < 3) {
+        findings.push(
+            'SAHNE-PERF: azaltılmış hareket açıkken sayfa TAM DEĞİL — bölüm ya da başlık eksik.',
+        );
+    }
+
+    ws.close();
+} catch (error) {
+    findings.push(`SAHNE-PERF: ölçüm yapılamadı — ${error.message}`);
+} finally {
+    chrome.kill();
+    /*
+        PROFİL DİZİNİ, CHROME GERÇEKTEN ÇIKTIKTAN SONRA silinir.
+
+        `kill()` bir sinyaldir, bir söz değil: Chrome o an hâlâ profiline
+        yazıyor olabilir ve dizin "boş değil" diye silinemez. Silememek bu
+        aracın ölçümünü geçersiz kılmaz — bu yüzden hata ÖLÇÜMÜ değil,
+        yalnız temizliği ilgilendirir ve raporu düşürmez.
+    */
+    await new Promise((resolve) => chrome.once('exit', resolve));
+
+    try {
+        rmSync(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+    } catch {
+        /* Geçici dizin işletim sistemine bırakılır. */
+    }
+}
+
+report.findings = findings;
+
+const serialized = JSON.stringify(report, null, 2);
+console.log(serialized);
+
+if (JSON_OUT) {
+    writeFileSync(JSON_OUT, `${serialized}\n`);
+}
+
+if (findings.length > 0 && SHOULD_FAIL) {
+    process.exit(1);
+}

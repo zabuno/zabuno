@@ -250,6 +250,107 @@ yeni değeri **5,84:1**.
 `CorporateIdentityScopeTest` (KIMLIK-04/05/06/07). Ayrıntı, palet, gerekçe ve
 bütün ölçümler: **`docs/145`**.
 
+### E11 — "Sıfır JavaScript kütüphanesi": **kalktı**, ama ölçüm kütüphaneyi seçmedi (2026-09-08 gecesi)
+
+**Ezilen kısıt:** kurumsal sitede React yok, efekt kütüphanesi yok, betik
+neredeyse hiç yok.
+
+**Sahibin kararı:** *"Kurallar mı engelliyor? Yeni kurallar yaz. React mı
+lazım? Ekle. Ne lazım? Ekle, çöz, yap."* Ve hedef: *"Bir uzay teknolojileri
+şirketi gibi, abartı dursun, görünsün, hissettirsin."*
+
+**Kısıt kalktı. Sonra ÖLÇÜLDÜ ve kütüphane yine alınmadı** — bu bir kural
+değil, bir ölçüm sonucu:
+
+| Aday | gzip (npm dist, `gzip -9`) |
+| --- | --- |
+| GSAP çekirdek | 28.314 bayt |
+| GSAP + ScrollTrigger | 46.339 bayt |
+| motion | 46.644 bayt |
+| three.js | 86.569 bayt |
+| **elle yazılan sahne motoru** | **4.417 bayt** |
+
+Üçünün de taşıdığı şeyin çoğu bu sahnede kullanılmıyor (sahne grafiği,
+malzeme sistemi, zaman çizelgesi motoru). Asıl mesele ağırlık bile değil:
+**derecelendirme merdiveni**. Düşük güçlü bir telefonda hangi katmanın
+söneceğine bir kütüphane karar veremez; o karar ürünün kendi kodunda olmalı.
+
+**React de alınmadı** ve gerekçesi E5 madde 3'ün kendisidir: *"React adacığı
+yalnız bir bileşen GERÇEKTEN etkileşim gerektirdiğinde açılır; süs için
+açılmaz."* Sahnenin etkileşim durumu yok — tuval, kaydırma, imleç.
+
+**Kısıt geri konmadı.** Yarın bir bileşen gerçekten React isterse kapı açık;
+bugün ölçüm onu istemedi. Ayrıntı ve bütün sayılar: **`docs/146`**.
+
+**Zorlayıcı karşılığı:** `SceneContractTest` (SAHNE-B4: motor React
+yüklemez), `scripts/scene-budget-gate` (SITE-SCENE-BUDGET-01).
+
+### E12 — Ağırlık bütçesi: **kaldırılmadı, YÜKSELTİLDİ** (2026-09-08 gecesi)
+
+**Ezilen kısıt:** kurumsal sayfanın JavaScript'i sıfır, toplam ağırlığı ~32 KB.
+
+**Sahibin kararı:** sahne zorunlu. O tavan sahneyi taşıyamıyordu.
+
+**Yeni tavan ve gerekçesi `scripts/scene-budget.json` içinde yaşıyor**, bu
+belgede değil — bir sayıyı iki yere yazmak, ilk ayrışmada hangisinin doğru
+olduğunu belirsiz yapar:
+
+- kurumsal betik ≤ **6.144 bayt gzip** (ölçüm: 4.417)
+- kurumsal stil ≤ **40.960 bayt gzip** (ölçüm: 34.147; paket öncesi 30.410,
+  yani sahnenin payı **3.737 bayt**)
+
+**Neden bütçe KALDIRILMADI:** kaldırılmış bir bütçe, bir gün "bir kütüphane
+daha ekleyelim" denildiğinde kimsenin fark etmeyeceği bir yerdir. Yükseltilmiş
+bir bütçe ise bir soru sorar: bu bayt neyin karşılığında geldi?
+
+**Zorlayıcı karşılığı:** `scripts/scene-budget-gate --fail` ve
+`SceneContractTest` SAHNE-B6 (tavan var ve GEREKÇESİ yazılı).
+
+### E13 — "Sayfa başına en fazla bir baskın hareketli arka plan": **kalktı** (2026-09-08 gecesi)
+
+**Ezilen madde:** E5 madde 6 ve `docs/119` §17.5 — *"Sayfa başına en fazla bir
+baskın hareketli arka plan; aynı görüntü alanında ikinci bir WebGL yok."*
+
+**Sahibin kararı:** kural kalktı.
+
+**Ama ikinci WebGL yine AÇILMADI** — ve bu ayrım önemli. Kuralın iki yarısı
+vardı; biri ezildi, öteki ölçümle doğrulandı:
+
+- **Ezildi:** ana sayfada bugün ÜÇ hareketli sahne var (kahraman, "nasıl
+  çalışır" bandı, kapanış bandı) ve iki akan şerit. Sayfa bir vitrindir;
+  tek bir bant onu taşıyamıyordu.
+- **Duruyor, ama artık bir kural değil bir ÖLÇÜM sonucu:** tuval yalnız
+  kahramanda. İkinci bir WebGL bağlamının vereceği derinliği ikinci bant
+  saf CSS ile zaten alıyor; buna karşılık ikinci bağlam, düşük güçlü bir
+  telefonda kare süresini iki katına çıkarır.
+
+**Yerine gelen zorlayıcı karşılık, sayının kendisidir:** `scripts/scene-perf-gate`
+kare süresini gerçek Chrome'da, CPU kısmalı olarak ölçer. Kaç sahne olduğu
+artık bir tartışma değil, bir bütçe: p95 kare süresi 22 ms'yi geçerse kapı
+kırılır. Ölçüm (2026-09-08): 320×480'den 1920×1080'e, CPU ×4 kısmalı, **p95 =
+16,7–16,8 ms** — yani 60 kare/saniye, uzun kare yok.
+
+### E14 — `mobile-ux-audit` yoğunluk ölçümü: **süs artık içerik sayılmıyor** (2026-09-08 gecesi)
+
+Bu bir yönerge ezmesi değil, bir ÖLÇÜM ARACININ düzeltmesi; kaydı burada
+duruyor çünkü bir kapının davranışını değiştiriyor.
+
+**Arıza:** akan bant döngünün dikişsiz olması için iki özdeş kopya taşır ve
+ikincisi görüntü alanının dışındadır. Bant `overflow: clip` ile kırpılıyor —
+ziyaretçi hiçbir zaman yatay kaydırmıyor — ama `getBoundingClientRect()`
+kırpılmayı bilmez. Araç "içerik 320 piksel yerine 2.764 piksel kullanıyor"
+diyordu. Bu bir yanlış alarm DEĞİL, daha kötüsüydü: oran eşiğin (%72) çok
+üstüne çıktığı için **yoğunluk kuralı o sayfada sessizce devre dışı
+kalıyordu.**
+
+**Düzeltme:** yoğunluk ölçümü artık `aria-hidden="true"` bir alt ağacın
+içindeki metni saymıyor. Kapsam DAR: yalnız bu ölçüm. Yatay taşma, kırpılma ve
+dokunma hedefi kuralları dekoratif bir öğeyi eskisi gibi görür — süs sayfayı
+yatay kaydırıyorsa bu yine bir kusurdur.
+
+**Düzeltme sonrası ölçüm:** ana sayfada kullanılabilir genişlik 320 pikselde
+**308 piksel (%96,3)**.
+
 ## 2. Değişmeden korunan kararlar
 
 Yönergenin şu maddeleri bugünkü kararlarla çelişmiyor ve aynen geçerli:
@@ -273,3 +374,8 @@ Yönergenin şu maddeleri bugünkü kararlarla çelişmiyor ve aynen geçerli:
 dili) sahibin kararıyla kapanır ve o gün bu belge güncellenir. E5'in biçimi de
 ölçüme bağlıdır: GSAP ile istenen kalite alınamıyorsa React adacığı kararı
 yeniden tartışılır — ama ölçüm sonrası, tahminle değil.
+
+E5'in bu ölçümü 2026-09-08 gecesi YAPILDI ve sonucu E11'dedir: kütüphane
+kısıtı kalktı, ölçüm yine kütüphane seçmedi. E11–E14 bir "döngü 1" paketinin
+kararlarıdır; Döngü 2 onları eleştirecek ve gerekirse ezecek. Ezerse, kaydı
+yine buraya yazılır.
