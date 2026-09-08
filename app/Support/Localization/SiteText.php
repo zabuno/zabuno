@@ -143,6 +143,18 @@ final class SiteText
             'footerRefundPolicy' => 'site.footer.refundPolicy',
             'footerCookies' => 'site.footer.cookies',
             'footerTagline' => 'site.footer.tagline',
+            /*
+                pSEO İÇERİK MENÜLERİ BANDININ BAŞLIĞI (FF-232).
+
+                Bandın İÇİNDEKİ her başlık ve her bağlantı sayfanın KENDİ
+                kütük başlığından gelir — katalogdan değil. Bir katalog
+                anahtarı yazmak, yayına alınan her sayfa için bir kod
+                değişikliği ve bir çeviri borcu üretirdi; oysa bandın bütün
+                varlık sebebi, sahibin yayın kararının altbilgiyi kendiliğinden
+                zenginleştirmesi. Katalogda duran tek dize, bandı AÇAN sözcük:
+                o kabuğa aittir, kütüğe değil.
+            */
+            'footerContentMenus' => 'site.footer.contentMenus',
             'pricingHeading' => 'site.pricing.heading',
             'pricingLead' => 'site.pricing.lead',
             'pricingEmpty' => 'site.pricing.empty',

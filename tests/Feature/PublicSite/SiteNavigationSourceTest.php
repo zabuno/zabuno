@@ -100,27 +100,75 @@ final class SiteNavigationSourceTest extends TestCase
 
     public function test_publishing_a_registry_page_makes_it_appear_in_navigation_without_a_code_change(): void
     {
-        $this->registryPage('/tr/urun/', PagePublicationStatus::Published);
+        /*
+            SAYFA GERÇEKTEN AÇILAN BİR SAYFA OLMALI.
+
+            Eskiden bu test Türkçe bir `/tr/urun/` satırını "yayında"
+            işaretliyor ve gezintide görünmesini bekliyordu. Ölçüldü
+            (2026-09-08): o adres yayına alınsa BİLE 404 döner, çünkü Türkçe
+            içerik yuvası bilerek boş (`docs/118` E4) ve
+            `ShowCorporatePageController` son emniyet kemerini uyguluyor. Yani
+            test, gezintinin ÇALIŞMAYAN bir adrese bağlanmasını doğru
+            sayıyordu.
+
+            Artık gezinti de ziyaretçiyle aynı kararı okuyor
+            (`ResolvePageDelivery`), dolayısıyla kanıt gerçekten açılan bir
+            sayfayla verilir: `urun` / `en`, metni depoda yazılı.
+        */
+        $this->registryPage('/en/product/', PagePublicationStatus::Published, 'urun', 'en');
 
         foreach (['/', '/pricing', '/contact'] as $path) {
-            $chrome = $this->chrome($path);
+            $chrome = $this->chrome($path, ['Accept-Language' => 'en']);
 
             self::assertStringContainsString(
-                'href="/tr/urun/"',
+                'href="/en/product"',
                 $chrome,
                 "NAV-REGISTRY-03: [{$path}] yayınlanmış sayfayı gezintide göstermiyor."
             );
-            self::assertStringContainsString('data-nav-group="explore"', $chrome);
+            self::assertStringContainsString(
+                'data-nav-group="content-explore"',
+                $chrome,
+                "NAV-REGISTRY-03: [{$path}] içerik menüleri katı çizilmemiş."
+            );
+        }
+    }
+
+    // --- NAV-REGISTRY-05 -------------------------------------------------------
+
+    public function test_a_page_marked_published_but_never_written_is_never_linked(): void
+    {
+        /*
+            KÜTÜKTEKİ DURUM BİR İDDİADIR, KANIT DEĞİL.
+
+            `publication_status` elle ileri sürülebilir; o dilde yazılmış bir
+            metin olup olmadığı ayrı bir sorudur ve ziyaretçinin aldığı HTTP
+            kodunu O soru belirler. İkisini ayrı hesaplayan bir gezinti,
+            altbilgi zenginleştikçe yüzlerce 404'e bağlanırdı.
+        */
+        $page = $this->registryPage('/tr/urun/', PagePublicationStatus::Published);
+
+        $this->get($page->canonical_path)->assertNotFound();
+
+        foreach (['/', '/pricing', '/contact'] as $path) {
+            self::assertStringNotContainsString(
+                'href="/tr/urun/"',
+                $this->chrome($path, ['Accept-Language' => 'tr']),
+                "NAV-REGISTRY-05: [{$path}] 404 dönen bir adrese bağlantı veriyor."
+            );
         }
     }
 
     // --- Yardımcılar -----------------------------------------------------------
 
-    private function registryPage(string $path, PagePublicationStatus $status): ContentPage
-    {
+    private function registryPage(
+        string $path,
+        PagePublicationStatus $status,
+        ?string $pageKey = null,
+        string $locale = 'tr',
+    ): ContentPage {
         return ContentPage::query()->create([
-            'page_key' => trim(str_replace('/', '.', $path), '.'),
-            'locale' => 'tr',
+            'page_key' => $pageKey ?? trim(str_replace('/', '.', $path), '.'),
+            'locale' => $locale,
             'canonical_path' => $path,
             'content_type' => 'urun',
             'template_key' => 'urun',
@@ -131,9 +179,10 @@ final class SiteNavigationSourceTest extends TestCase
         ]);
     }
 
-    private function chrome(string $path): string
+    /** @param  array<string, string>  $headers */
+    private function chrome(string $path, array $headers = []): string
     {
-        $html = (string) $this->get($path)->assertOk()->getContent();
+        $html = (string) $this->withHeaders($headers)->get($path)->assertOk()->getContent();
         $chrome = '';
 
         foreach (['header', 'footer'] as $tag) {

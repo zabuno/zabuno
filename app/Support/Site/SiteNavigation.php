@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Support\Site;
 
+use App\Application\Content\UseCase\ResolvePageDelivery;
 use App\Domain\Content\PageEnvironment;
-use App\Domain\Content\PageGate;
+use App\Domain\Url\UrlNormalizer;
 use App\Models\ContentPage;
 use App\Support\Localization\SiteText;
 use Throwable;
@@ -25,6 +26,9 @@ use Throwable;
  *    ve `/en/` altını tutar, `docs/105` §8) ve her zaman bağlanabilir.
  * 2. KÜTÜK YOLU (`/tr/urun/`): sayfa kütüğündeki canonical yollar. Bunlar
  *    yalnız `PageRenderDecision::isLinkable()` evet dediğinde gezintiye girer.
+ *    O kararı üreten tek yol `ResolvePageDelivery`dir (`docs/129` §3): kütükteki
+ *    durum "yayında" dese bile, o dilde yazılmış bir metin yoksa adres 404
+ *    döner ve gezintiye GİRMEZ.
  *
  * Neden ikinci kural bu kadar sert: mega menü doğası gereği "ileride olacak"
  * sayfaları listelemeye davet eder. Kütükteki 386 yolun bugün hiçbiri yayında
@@ -152,7 +156,36 @@ final class SiteNavigation
         ],
     ];
 
-    public function __construct(private readonly SiteText $siteText) {}
+    public function __construct(
+        private readonly SiteText $siteText,
+        /*
+            KAPIYA GİDEN TEK YOL (`docs/129` §3).
+
+            Önceden burada `PageGate::decide()` DOĞRUDAN çağrılıyordu ve bu,
+            aynı sorunun dördüncü kez ayrı yazılmış hâliydi. Kapı tek başına
+            "bu satırın durumu gösterilebilir mi" sorusunu yanıtlar; ziyaretçinin
+            gördüğü 200/404 ise bir soru daha sorar: *o dilde gerçekten yazılmış
+            bir metin var mı?*
+
+            Ölçülen sonuç (2026-09-08): kütükte `published` işaretli ama içeriği
+            yazılmamış bir sayfa gezintide GÖRÜNÜYOR ve tıklandığında 404
+            dönüyordu — çünkü `ShowCorporatePageController` son emniyet kemerini
+            ayrıca uyguluyor, gezinti ise uygulamıyordu. Altbilginin zenginleşmesi
+            tam olarak bu kusuru yüzlerce bağlantıya çoğaltacaktı.
+        */
+        private readonly ResolvePageDelivery $delivery,
+        /*
+            BAĞLANTI, SUNUCUNUN YÖNLENDİRMEDEN SUNDUĞU ADRESE GİDER.
+
+            Kütükteki kanonik yol sondaki eğik çizgiyi taşır (`/en/product/`)
+            ama adres politikası `never_except_root` (`config/url.php`): o
+            adres 301 döner. İç bir bağlantıyı yönlendirmeye sokmak, her
+            tıklamaya bir tur eklemek ve arama motoruna iki adres göstermektir.
+            Kırıntı ve "ilgili sayfalar" listesi zaten bu normalleştiriciyi
+            kullanıyor; altbilgi de aynı kaynağı kullanır.
+        */
+        private readonly UrlNormalizer $normalizer,
+    ) {}
 
     /**
      * Gezintinin işaret ettiği BÜTÜN yollar — çıpalar hariç.
@@ -184,6 +217,10 @@ final class SiteNavigation
     /**
      * Kabuğun çizeceği gezinti — yalnız GERÇEKTEN çalışan adresler.
      *
+     * Üç bölge döner: `header`, `footer` ve `content`. İlk ikisi elle
+     * bildirilmiş gruplardır; `content` ise altbilginin pSEO katıdır ve
+     * kütükten türer (bkz. `contentMenus()`).
+     *
      * @param  string  $anchorPrefix  Ana sayfada `''`, diğer sayfalarda `'/'`.
      * @return array<string, list<array{
      *     id: string,
@@ -195,6 +232,19 @@ final class SiteNavigation
     {
         $linkable = $this->linkableRegistryPaths();
         $shell = [];
+
+        /*
+            İÇERİK MENÜLERİ — altbilginin KÜTÜKTEN türeyen katı.
+
+            Sahibin isteği (2026-09-08): *"çoook zengin, çok katmanlı, çok row,
+            çok menu grubu, pSEO için footer üzerinde content menus."*
+
+            Elle yazılmış zengin bir ızgara bugün YÜZLERCE 404'e giden bağlantı
+            demekti: içeriği yazılmış on altı sayfanın hiçbiri yayında değil.
+            Bu yüzden bu kat elle YAZILMIYOR, kütükten türüyor — ve o gün
+            geldiğinde tek bir Blade satırı değişmeden zenginleşiyor.
+        */
+        $shell['content'] = $this->contentMenus($locale);
 
         foreach (self::GROUPS as $region => $groups) {
             $shell[$region] = [];
@@ -259,8 +309,7 @@ final class SiteNavigation
             return [];
         }
 
-        $environment = PageEnvironment::tryFrom((string) config('content.page_environment'))
-            ?? PageEnvironment::Production;
+        $environment = $this->environment();
 
         try {
             $pages = ContentPage::query()->whereIn('canonical_path', array_unique($candidates))->get();
@@ -286,26 +335,136 @@ final class SiteNavigation
 
         /** @var ContentPage $page */
         foreach ($pages as $page) {
-            // Şablon bir DESEN, dış bağlantı da bu sitede bir sayfa değildir
-            // (`ShowCorporatePageController` ile aynı kural).
-            if ($page->is_template || $page->is_external) {
-                continue;
-            }
-
-            $decision = PageGate::decide(
-                $page->status(),
-                $environment,
-                // Önizleme yetkisi gezintiyi DEĞİŞTİRMEZ: bir menü herkese
-                // aynı siteyi göstermeli.
-                false,
-                $page->was_ever_published,
-            );
-
-            if ($decision->isLinkable()) {
+            if ($this->isLinkable($page, $environment)) {
                 $linkable[] = $page->canonical_path;
             }
         }
 
         return $linkable;
+    }
+
+    /**
+     * ALTBİLGİNİN İÇERİK MENÜLERİ — kütükten türer, elle yazılmaz.
+     *
+     * ── Kapı tek cümledir ────────────────────────────────────────────────
+     *
+     * *Buradaki her bağlantı 200 döner.* Bunu sağlayan şey bir dikkat değil,
+     * bir kaynak: liste ziyaretçinin alacağı HTTP kodunu üreten aynı
+     * `ResolvePageDelivery` kararından süzülüyor (`docs/129` §3). Ayrı bir
+     * süzgeç yazsaydık, ikisi bir gün ayrışır ve altbilgi 404'lere bağlanırdı
+     * — üstelik altbilgi, kimsenin bakmadığı yerdir.
+     *
+     * ── Grup iskeleti tasarımda, boş grup ekranda YOK ─────────────────────
+     *
+     * Gruplar sayfaların KENDİ hiyerarşisinden çıkar (`parent_key`): bağlanabilir
+     * bir ata, altında bağlanabilir çocuklarıyla bir grup olur. Atası
+     * bağlanamayan sayfalar tek bir "Explore" grubunda toplanır. Bir grubun
+     * çizilebilmesi için içinde EN AZ BİR bağlantı olması gerekir; başlığı
+     * çizilip altı boş kalan bir grup, olmayan bir bölümün sözünü vermektir.
+     *
+     * ── Etiket nereden geliyor ────────────────────────────────────────────
+     *
+     * Sayfanın KENDİ başlığından. Bir katalog anahtarı yazmak, her yeni
+     * sayfa için bir kod değişikliği ve bir çeviri borcu üretirdi; oysa bu
+     * katın bütün varlık sebebi, sahibin bir sayfayı yayına almasının
+     * altbilgiyi kendiliğinden zenginleştirmesi. Uydurma yok: başlık kütükte
+     * zaten yazılı olan dizedir.
+     *
+     * @return list<array{id: string, label: string, items: list<array{label: string, href: string, emphasis: bool}>}>
+     */
+    private function contentMenus(?string $locale): array
+    {
+        $locale = SiteText::pick($locale ?? app()->getLocale());
+        $environment = $this->environment();
+
+        try {
+            /*
+                YALNIZ YAYIN İDDİASI OLAN SATIRLAR OKUNUR.
+
+                Kütükte 400'e yakın satır var ve hepsini her sayfa yüklemesinde
+                okumak, altbilgiyi sitenin en pahalı parçası yapardı. Kapıdan
+                geçme ihtimali olan tek küme, insan eliyle yayına alınmış
+                satırlardır; gerisi zaten `not-found` döner.
+            */
+            $pages = ContentPage::query()
+                ->where('locale', $locale)
+                ->where('was_ever_published', true)
+                ->orderBy('canonical_path')
+                ->get();
+        } catch (Throwable) {
+            // Kütük okunamazsa site ÖLMEZ — yaşayan gruplar çizilmeye devam
+            // eder (aynı karar, `linkableRegistryPaths()`).
+            return [];
+        }
+
+        /** @var array<string, ContentPage> $linkable */
+        $linkable = [];
+
+        /** @var ContentPage $page */
+        foreach ($pages as $page) {
+            if ($this->isLinkable($page, $environment)) {
+                $linkable[$page->page_key] = $page;
+            }
+        }
+
+        // Elle yazılmış gruplarda ZATEN duran adres burada tekrar edilmez:
+        // aynı bağlantıyı iki kez vermek, ziyaretçiye iki farklı yer olduğunu
+        // düşündürür.
+        $declared = $this->declaredTargets();
+
+        /** @var array<string, list<ContentPage>> $grouped */
+        $grouped = [];
+
+        foreach ($linkable as $page) {
+            if (in_array($page->canonical_path, $declared, true)) {
+                continue;
+            }
+
+            $parentKey = (string) $page->parent_key;
+            $grouped[isset($linkable[$parentKey]) ? $parentKey : ''][] = $page;
+        }
+
+        $groups = [];
+
+        foreach ($grouped as $parentKey => $children) {
+            $heading = $parentKey === ''
+                ? $this->siteText->get('site.nav.explore', $locale)
+                : (string) $linkable[$parentKey]->title;
+
+            $groups[] = [
+                'id' => 'content-'.($parentKey === '' ? 'explore' : str_replace('.', '-', $parentKey)),
+                'label' => $heading,
+                'items' => array_map(
+                    fn (ContentPage $page): array => [
+                        'label' => (string) $page->title,
+                        'href' => $this->normalizer->normalize($page->canonical_path)->target(),
+                        'emphasis' => false,
+                    ],
+                    $children,
+                ),
+            ];
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Bu satır bugün BAĞLANABİLİR mi — ziyaretçinin alacağı kodla aynı karar.
+     */
+    private function isLinkable(ContentPage $page, PageEnvironment $environment): bool
+    {
+        /*
+            Önizleme yetkisi gezintiyi DEĞİŞTİRMEZ: bir menü herkese aynı
+            siteyi göstermeli. `ResolvePageDelivery` bunu zaten böyle
+            varsayıyor (önizleme `false` sabitlenmiş), yani burada ikinci bir
+            karar verilmiyor.
+        */
+        return $this->delivery->for($page, $environment)->decision->isLinkable();
+    }
+
+    private function environment(): PageEnvironment
+    {
+        return PageEnvironment::tryFrom((string) config('content.page_environment'))
+            ?? PageEnvironment::Production;
     }
 }
