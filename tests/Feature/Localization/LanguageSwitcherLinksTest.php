@@ -162,19 +162,10 @@ final class LanguageSwitcherLinksTest extends TestCase
         self::assertNull($kurdish->href);
     }
 
-    /**
-     * BU PAKET ÇEVİRİ KİLİDİNE DOKUNMAZ.
-     *
-     * Dil değiştiricinin var olması, bir dilin sunulduğu anlamına gelmez.
-     * Bugün sunulan tek dil `en` ve bu ölçüm onu dondurur: paket
-     * `shipped_locales`'i genişletmedi.
-     */
-    public function test_the_package_did_not_widen_the_shipped_language_list(): void
+    /** The owner-approved public languages keep canonical English first. */
+    public function test_the_shipped_language_list_is_english_then_turkish(): void
     {
-        self::assertSame(
-            ['en'],
-            config('i18n.shipped_locales'),
-            'I18N-SWITCH-UNSHIPPED-13: sunulan diller listesi genişlemiş — çeviri kilidi sahibin kararıdır.'
-        );
+        self::assertSame(['en', 'tr'], config('i18n.shipped_locales'));
+        self::assertSame('en', config('i18n.source_locale'));
     }
 }

@@ -53,7 +53,8 @@ final class ShowLegalDocumentController extends Controller
     public function __invoke(Request $request): Response
     {
         $key = trim($request->getPathInfo(), '/');
-        $document = $this->library->find($key);
+        $shared = $this->shell->context($request, 'legal_'.str_replace('-', '_', $key), '/'.$key);
+        $document = $this->library->find($key, $shared['lang']->ui);
 
         if ($document === null) {
             abort(404);
@@ -67,7 +68,6 @@ final class ShowLegalDocumentController extends Controller
             Adres yarın `/tr/` altına taşındığında (`docs/105` §4.1) rapor
             aynı satırda kalır.
         */
-        $shared = $this->shell->context($request, 'legal_'.str_replace('-', '_', $key), '/'.$key);
 
         $company = CompanyProfile::fromConfig();
         $sellerIdentityMissing = $document->requiresSellerIdentity && ! $company->isComplete();

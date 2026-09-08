@@ -36,6 +36,27 @@ final class PublicMasterpageContractTest extends TestCase
         return $m[0] ?? '';
     }
 
+    public function test_desktop_primary_navigation_is_available_without_opening_the_menu(): void
+    {
+        $html = $this->extract($this->html('/pricing'), 'header');
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($html);
+        $xpath = new \DOMXPath($dom);
+        $links = $xpath->query('//nav[@data-desktop-primary]//a');
+        self::assertSame(5, $links->length);
+        $hrefs = [];
+        foreach ($links as $link) {
+            self::assertSame(0, $xpath->query('ancestor::details', $link)->length);
+            $hrefs[] = $link->getAttribute('href');
+        }
+        self::assertContains('/pricing', $hrefs);
+        self::assertContains('/help', $hrefs);
+        self::assertContains('/contact', $hrefs);
+        self::assertStringContainsString('data-dismiss-on-outside', $html);
+        self::assertStringContainsString('href="/login"', $html);
+        self::assertSame(1, substr_count($html, 'href="/register"'));
+    }
+
     // --- MP-01 / MP-02 ---------------------------------------------------------
 
     #[DataProvider('publicPaths')]
@@ -52,7 +73,20 @@ final class PublicMasterpageContractTest extends TestCase
 
     public function test_header_and_footer_are_the_same_on_every_page(): void
     {
-        $normalise = static fn (string $fragment): string => preg_replace('#href="/?\#[a-z-]+"#', 'href="ANCHOR"', $fragment);
+        $normalise = static function (string $fragment): string {
+            // Only the language form's return destination varies by current page.
+            $fragment = (string) preg_replace_callback(
+                '#<form\b[^>]*class="site-language-switcher"[^>]*>.*?</form>#s',
+                static fn (array $form): string => (string) preg_replace(
+                    '#(<input type="hidden" name="return_to" value=")[^"]*(">)#',
+                    '${1}CURRENT_PAGE${2}',
+                    $form[0],
+                ),
+                $fragment,
+            );
+
+            return (string) preg_replace('#href="/?\#[a-z-]+"#', 'href="ANCHOR"', $fragment);
+        };
 
         $reference = null;
 
@@ -90,6 +124,7 @@ final class PublicMasterpageContractTest extends TestCase
      */
     public function test_navigation_labels_come_from_the_catalogue_and_only_for_shipped_languages(): void
     {
+        config(['i18n.shipped_locales' => ['en']]);
         $english = $this->extract($this->html('/pricing'), 'header');
 
         self::assertStringContainsString('>Help<', $english);

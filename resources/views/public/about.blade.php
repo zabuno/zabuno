@@ -22,52 +22,57 @@
          kimliğini de bandın taşıması gerekiyordu; sıra bu yüzden önsöz →
          uyarı → gövde. Ekran okuyucu uyarıyı yine belge sırasında ikinci
          öğede bulur, üstelik başlıktan hemen sonra. --}}
-    <main id="main-content" class="site-page">
+    <main id="main-content" class="site-page site-company-page">
         @include('public.partials.prologue', [
             'prologueHeading' => $st['aboutHeading'],
             'prologueLead' => $st['aboutLead'],
             'prologueVariant' => 'orbit',
         ])
 
-        <div class="site-legal">
-        @if ($sellerIdentityMissing)
-            <p class="site-legal-alert" role="alert" data-legal-alert="seller-identity">
-                <strong class="site-legal-alert-title">{{ $st['aboutIncompleteHeading'] }}</strong>
-                <span>{{ $st['aboutIncompleteBody'] }}</span>
-            </p>
-        @endif
+        <div class="site-measure-page site-page-body site-company-body">
+            @if ($sellerIdentityMissing)
+                <p class="site-legal-alert" role="alert" data-legal-alert="seller-identity">
+                    <strong class="site-legal-alert-title">{{ $st['aboutIncompleteHeading'] }}</strong>
+                    <span>{{ $st['aboutIncompleteBody'] }}</span>
+                </p>
+            @endif
 
-        <section aria-labelledby="about-seller-heading" class="site-legal-section">
-            <h2 id="about-seller-heading">{{ $st['aboutSellerHeading'] }}</h2>
-            <p>{{ $st['aboutSellerBody'] }}</p>
-            @include('public.partials.company-identity')
-        </section>
+            {{-- Ürün önce anlatılır; satıcı aynı kanonik kimlikten okunur. --}}
+            <div class="site-company-intro">
+                <section aria-labelledby="about-service-heading" class="site-legal-section site-company-service site-panel site-lit">
+                    <h2 id="about-service-heading">{{ $st['aboutServiceHeading'] }}</h2>
+                    <p>{{ $st['aboutServiceBody'] }}</p>
+                    <p>{{ $st['aboutServiceScope'] }}</p>
+                </section>
 
-        <section aria-labelledby="about-service-heading" class="site-legal-section">
-            <h2 id="about-service-heading">{{ $st['aboutServiceHeading'] }}</h2>
-            <p>{{ $st['aboutServiceBody'] }}</p>
-            <p>{{ $st['aboutServiceScope'] }}</p>
-        </section>
+                <section aria-labelledby="about-seller-heading" class="site-legal-section site-company-seller">
+                    <h2 id="about-seller-heading">{{ $st['aboutSellerHeading'] }}</h2>
+                    <p>{{ $st['aboutSellerBody'] }}</p>
+                    @include('public.partials.company-identity')
+                </section>
+            </div>
 
-        <section aria-labelledby="about-payment-heading" class="site-legal-section">
-            {{-- KABUL EDİLEN ÖDEME YÖNTEMLERİ. Banka ya da kart logosu YOK:
-                 hangi kartın kabul edildiği ödeme sağlayıcısının kendi
-                 yapılandırmasından gelir ve bu depoda böyle bir liste
-                 yapılandırılmamıştır. Sağlayıcının adı ise ölçülmüş bir
-                 olgudur (`IyzipayGateway`). --}}
-            <h2 id="about-payment-heading">{{ $st['aboutPaymentHeading'] }}</h2>
-            <p>{{ $st['aboutPaymentBody'] }}</p>
-        </section>
+            <div class="site-company-details">
+                <section aria-labelledby="about-payment-heading" class="site-legal-section">
+                    {{-- KABUL EDİLEN ÖDEME YÖNTEMLERİ. Banka ya da kart logosu YOK:
+                         hangi kartın kabul edildiği ödeme sağlayıcısının kendi
+                         yapılandırmasından gelir ve bu depoda böyle bir liste
+                         yapılandırılmamıştır. Sağlayıcının adı ise ölçülmüş bir
+                         olgudur (`IyzipayGateway`). --}}
+                    <h2 id="about-payment-heading">{{ $st['aboutPaymentHeading'] }}</h2>
+                    <p>{{ $st['aboutPaymentBody'] }}</p>
+                </section>
 
-        <section aria-labelledby="about-reach-heading" class="site-legal-section">
-            <h2 id="about-reach-heading">{{ $st['aboutReachHeading'] }}</h2>
-            <p>{{ $st['aboutReachBody'] }}</p>
-            <p>
-                <a href="/contact" class="site-action font-medium text-fg underline">
-                    {{ $st['aboutReachCta'] }}
-                </a>
-            </p>
-        </section>
+                <section aria-labelledby="about-reach-heading" class="site-legal-section">
+                    <h2 id="about-reach-heading">{{ $st['aboutReachHeading'] }}</h2>
+                    <p>{{ $st['aboutReachBody'] }}</p>
+                    <p>
+                        <a href="/contact" class="site-action site-cta">
+                            {{ $st['aboutReachCta'] }}
+                        </a>
+                    </p>
+                </section>
+            </div>
         </div>
     </main>
 @endsection

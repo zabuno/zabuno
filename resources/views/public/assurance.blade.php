@@ -64,9 +64,8 @@
         ];
     @endphp
 
-    <main id="main-content"
+    <main lang="{{ $statement->language }}" id="main-content"
           class="site-legal"
-          lang="en"
           aria-labelledby="assurance-heading"
           data-assurance-statement="{{ $statement->key }}">
         {{-- SAYFA İÇİ BÖLÜM LİSTESİ. Bir beyan uzundur ve aranan tek bir

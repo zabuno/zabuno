@@ -110,7 +110,7 @@ final class DistanceSalesAgreement
                     'This agreement enters into force when the buyer confirms the order and the payment is completed. The version accepted by the buyer, together with the date and time of acceptance, is recorded with the buyer\'s account, and the text of every version stays available on this site so the buyer can read the one that was accepted.',
                 ]),
                 new LegalSection('Language of this agreement', [
-                    'This text is published in English, which is the language it was written in, and the English text is the one recorded as accepted. A Turkish text of this agreement is not published yet. When one is published it will carry its own version and effective date, and this note will say so.',
+                    'This text is published in English, which is the language it was written in and the English text is the one recorded as accepted. A Turkish translation is also available. Each language displays the applicable version and effective date at the top of the page.',
                 ]),
             ],
             requiresSellerIdentity: true,

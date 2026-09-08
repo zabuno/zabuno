@@ -30,7 +30,7 @@
      satır. Küçülen şey HEDEF değil ÖLÜ ALAN: yükseklik 44 pikselde kaldı.
 
      Çubuk yine de `flex-wrap` taşır: daha uzun bir dildeki etiket sığmazsa
-     sarar — taşmaz. Kırılma noktası jetonu YOK (`MP-05`).
+     sarar — taşmaz. 320 tabanı korunur; sahibin yeni masaüstü yönü 64rem üzerinde görünür gezinti ekler.
 
      ── TABAN HTML, TAVAN SERBEST (`docs/118` E8) ────────────────────────
 
@@ -45,7 +45,22 @@
     <div class="dz-navbar site-shell-inner site-header-bar">
         <a href="/" class="site-brand">{{ $st['brand'] }}</a>
 
+        {{-- 2026-09-08 owner direction: desktop navigation is visible at 64rem.
+             Both presentations read SiteNavigation; CSS exposes only one primary group. --}}
+        @foreach ($nav['header'] as $group)
+            @if ($group['id'] === 'primary')
+                <nav class="site-desktop-primary" data-desktop-primary aria-label="{{ $group['label'] }}">
+                    @foreach ($group['items'] as $item)
+                        <a href="{{ $item['href'] }}">{{ $item['label'] }}</a>
+                    @endforeach
+                </nav>
+            @endif
+        @endforeach
+
         <div class="site-header-actions">
+            <div class="site-language-desktop" data-language-presentation="desktop">
+                @include('public.partials.language-switcher')
+            </div>
             {{-- BİRİNCİL EYLEM ÇUBUKTA, İKİNCİSİ BÖLMEDE.
 
                  Hangisinin çubukta kalacağı bir zevk değil bir sıra sorusu:
@@ -98,7 +113,7 @@
                          ulaşmaz, dolayısıyla menüde 404'e giden bir bağlantı
                          bulunamaz (`docs/129` §3 ile aynı karar nesnesi). --}}
                     @foreach ($nav['header'] as $group)
-                        <nav aria-label="{{ $group['label'] }}" data-nav-group="{{ $group['id'] }}">
+                        <nav aria-label="{{ $group['label'] }}" data-nav-group="{{ $group['id'] }}" @if ($group['id'] === 'primary') class="site-menu-primary" @endif>
                             {{-- BAŞLIK GÖRÜNÜR OLDU (FF-237).
 
                                  FF-232'de grup adı yalnız `aria-label`daydı:
@@ -125,6 +140,9 @@
                             </ul>
                         </nav>
                     @endforeach
+                    <div class="site-language-menu" data-language-presentation="menu">
+                        @include('public.partials.language-switcher')
+                    </div>
                 </div>
             </details>
         </div>

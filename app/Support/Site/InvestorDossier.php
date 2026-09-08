@@ -111,7 +111,7 @@ final class InvestorDossier
 
         $gates = $this->gates();
         $commitment = ServiceLevelCommitment::fromConfig();
-        $subprocessors = $this->subprocessorRows();
+        $subprocessors = $this->subprocessorRows($locale ?? 'en');
 
         $sources = 0;
 
@@ -141,7 +141,7 @@ final class InvestorDossier
                 'missing' => $commitment->missing(),
             ],
             'subprocessors' => $subprocessors,
-            'vaultUnreadable' => $this->vaultUnreadable(),
+            'vaultUnreadable' => $this->vaultUnreadable($locale ?? 'en'),
         ];
     }
 
@@ -282,11 +282,11 @@ final class InvestorDossier
     }
 
     /** @return list<array{name: string, role: string, data: string, location: string}> */
-    private function subprocessorRows(): array
+    private function subprocessorRows(string $locale): array
     {
         $rows = [];
 
-        foreach ($this->inventory()->active as $entry) {
+        foreach ($this->inventory($locale)->active as $entry) {
             if (! $entry instanceof Subprocessor) {
                 continue;
             }
@@ -302,15 +302,15 @@ final class InvestorDossier
         return $rows;
     }
 
-    private function vaultUnreadable(): bool
+    private function vaultUnreadable(string $locale): bool
     {
-        return $this->inventory()->vaultUnreadable;
+        return $this->inventory($locale)->vaultUnreadable;
     }
 
-    private function inventory(): SubprocessorInventory
+    private function inventory(string $locale): SubprocessorInventory
     {
         try {
-            return $this->subprocessors->inventory();
+            return $this->subprocessors->inventory($locale);
         } catch (Throwable) {
             /*
                 KASA OKUNAMAZSA SAYFA ÖLMEZ ama SUSMAZ da.

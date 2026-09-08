@@ -1,0 +1,96 @@
+/* Two presentations share one native form; only one can receive focus. */
+.site-language-switcher {
+    min-inline-size: 0;
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--border);
+}
+
+.site-language-switcher fieldset {
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+}
+
+.site-language-switcher legend {
+    padding: 0;
+    margin-block-end: var(--space-2);
+    color: var(--fg-secondary);
+}
+
+.site-language-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.site-language-option {
+    min-block-size: var(--control-height);
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.site-language-option[aria-pressed='true'] {
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+.site-language-option:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
+.site-language-desktop {
+    display: none;
+}
+
+@media (min-width: 64rem) {
+    .site-language-menu {
+        display: none;
+    }
+
+    .site-language-desktop {
+        display: block;
+        min-inline-size: 0;
+    }
+
+    .site-language-desktop .site-language-switcher {
+        padding: 0;
+        border: 0;
+    }
+
+    .site-language-desktop legend {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .site-language-desktop .site-language-options {
+        gap: 0.25rem;
+    }
+
+    .site-language-desktop .site-language-option {
+        padding-inline: 0.5rem;
+        font-size: 0.875rem;
+        background: transparent;
+        color: var(--site-desktop-cream);
+        border-color: currentColor;
+    }
+
+    /* Intrinsic wrapping retains every target at 1024px and with longer text. */
+    .site-header .site-desktop-primary {
+        flex: 1 1 24rem;
+        min-inline-size: 0;
+    }
+
+    .site-header .site-header-actions {
+        max-inline-size: 100%;
+        gap: 0.5rem;
+    }
+}

@@ -112,6 +112,7 @@ final class SiteShellSingleSourceTest extends TestCase
 
     public function test_a_planned_registry_page_wears_the_same_shell_as_a_live_page(): void
     {
+        config(['i18n.shipped_locales' => ['en']]);
         $this->registryPage('/tr/urun/qr-menu/', PagePublicationStatus::Planned);
 
         /*
@@ -237,6 +238,18 @@ final class SiteShellSingleSourceTest extends TestCase
             preg_match("#<{$tag}\b.*?</{$tag}>#s", $html, $match);
             $chrome .= $match[0] ?? "[{$tag} YOK]";
         }
+
+        // The language POST must return to the page it was rendered on.
+        // Normalize only that form's destination; retain every other shell byte.
+        $chrome = (string) preg_replace_callback(
+            '#<form\b[^>]*class="site-language-switcher"[^>]*>.*?</form>#s',
+            static fn (array $form): string => (string) preg_replace(
+                '#(<input type="hidden" name="return_to" value=")[^"]*(">)#',
+                '${1}CURRENT_PAGE${2}',
+                $form[0],
+            ),
+            $chrome,
+        );
 
         return (string) preg_replace('#href="/?\#[a-z-]+"#', 'href="ANCHOR"', $chrome);
     }

@@ -61,6 +61,9 @@ return Application::configure(basePath: dirname(__DIR__))
          * kullanıcı önce yanlış dilde bir sayfa görür (FF-93).
          */
         $middleware->prepend(NegotiateLocale::class);
+        // Locale negotiation runs before web cookie decryption. This public
+        // preference is constrained by the shipped-language allowlist.
+        $middleware->encryptCookies(except: ['zbn_language']);
         // Cihaz pazarlığı, HTML üretilmeden ÖNCE çözülmeli: hangi paketin
         // yükleneceği Blade'de karara bağlanıyor.
         $middleware->append(NegotiateDeviceClass::class);

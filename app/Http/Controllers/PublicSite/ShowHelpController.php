@@ -22,23 +22,10 @@ final class ShowHelpController extends Controller
 
     public function __invoke(Request $request): View
     {
-        /*
-            MAKALENİN DİLİ, ARAYÜZÜN DİLİ DEĞİLDİR (FF-249).
-
-            `HelpLibrary::SUPPORTED` bilerek `i18n.shipped_locales`ten
-            ayrıdır ve bu bir tutarsızlık değil, iki ayrı sorunun iki ayrı
-            cevabıdır. Katalog bir dili ancak TAM olduğunda sunabilir, çünkü
-            yarım bir katalog aynı ekranda iki dil gösterir. Bir makale ise
-            bütün hâlinde YAZILMIŞTIR: `resources/help/tr/first-15-minutes`
-            baştan sona Türkçedir ve dosyanın varlığı bir kapıyla zorlanıyor
-            (`HelpContentTest`). Türkçe okuyan birine Türkçe yazılmış makaleyi
-            vermemek, var olan bir belgeyi saklamak olurdu.
-
-            Bu yüzden makale kendi dilinde gelir ve belge `lang="tr"` ilan
-            eder — doğrusu budur; çevresindeki kabuk ise sunulan dilde çizilir
-            ve kendi `lang`ini yazar (`PageLanguage::chromeAttributes()`).
-        */
-        $locale = HelpLibrary::localeFor($request->getPreferredLanguage(HelpLibrary::SUPPORTED));
+        // /help has both complete article files. Honor the already negotiated
+        // interface choice, including its explicit cookie, rather than letting
+        // the browser header independently override the selected language.
+        $locale = HelpLibrary::localeFor(app()->getLocale());
 
         /*
             Kabuk verisi TEK yerden gelir (`SiteShell`): metin kataloğu,

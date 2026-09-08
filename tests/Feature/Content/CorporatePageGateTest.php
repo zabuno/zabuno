@@ -48,9 +48,9 @@ final class CorporatePageGateTest extends TestCase
 
     public function test_a_planned_page_answers_404_with_a_page_that_says_what_is_happening(): void
     {
-        $this->page('/tr/urun/qr-menu/', PagePublicationStatus::Planned);
+        $this->page('/en/product/qr-menu/', PagePublicationStatus::Planned, false, 'en');
 
-        $response = $this->get('/tr/urun/qr-menu/');
+        $response = $this->get('/en/product/qr-menu/');
 
         /*
             404 — ve bu, kapının en önemli kararı. Yayınlanmamış 414 URL'ye
@@ -60,13 +60,26 @@ final class CorporatePageGateTest extends TestCase
         $response->assertStatus(404);
         $html = (string) $response->getContent();
 
-        self::assertStringContainsString('Bu sayfa henüz servise çıkmadı', $html);
+        self::assertStringContainsString('This page is not live yet.', $html);
         // Ziyaretçi neyin hazırlandığını bilmeli: hem tarif hem ADRES.
         self::assertStringContainsString('QR Menü', $html);
-        self::assertStringContainsString('/tr/urun/qr-menu/', $html);
+        self::assertStringContainsString('/en/product/qr-menu/', $html);
         // Teknik durum adı DEĞİL, ziyaretçinin okuyabileceği bir cümle.
         self::assertStringNotContainsString('content_draft', $html);
         self::assertStringContainsString('noindex', (string) $response->headers->get('X-Robots-Tag'));
+    }
+
+    public function test_a_turkish_planned_page_uses_turkish_ui_when_turkish_is_shipped(): void
+    {
+        config(['i18n.shipped_locales' => ['en', 'tr']]);
+        $this->page('/tr/urun/qr-menu/', PagePublicationStatus::Planned);
+
+        $this->withHeader('Accept-Language', 'tr')->get('/tr/urun/qr-menu/')
+            ->assertStatus(404)
+            ->assertSee('Bu sayfa henüz servise çıkmadı.')
+            ->assertSee('QR Menü')
+            ->assertSee('/tr/urun/qr-menu/')
+            ->assertSee('lang="tr"', false);
     }
 
     public function test_the_visitor_is_never_left_without_a_way_out(): void

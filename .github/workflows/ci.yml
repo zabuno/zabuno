@@ -131,6 +131,9 @@ jobs:
       # sahibin ekraninda kirildi ve her seferinde butun testler yesildi.
       # Bu adim gercek Chrome'da olcer: kabuk gorunen alan boyunda mi, belge
       # kayiyor mu, ana alan kaydirilabiliyor mu, alt cubuk dipte mi.
+      - name: Shell browser startup self-test
+        run: node --test scripts/shell-scroll-startup.node.mjs
+
       - name: Shell scroll gate (real browser)
         run: node scripts/shell-scroll-gate "file://$PWD/$(ls public/build/assets/app-*.css | head -1)"
 

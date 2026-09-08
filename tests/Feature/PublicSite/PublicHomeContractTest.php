@@ -133,10 +133,10 @@ final class PublicHomeContractTest extends TestCase
 
     // --- HOME-FLUID-04 -----------------------------------------------------
 
-    public function test_the_layout_is_fluid_rather_than_breakpoint_gated(): void
+    public function test_the_base_layout_stays_fluid_without_breakpoint_utility_classes(): void
     {
-        // Düzen 320 pikselden itibaren akışkan olmalı; kırılma noktasına
-        // bağlı bir düzen, aradaki her genişlikte bozuk demektir.
+        // 320 tabanı akışkan kalır; 64rem CSS masaüstü bileşimi sahibin
+        // 2026-09-08 kararıyla eklenir. Utility ile mobil geri alma yok.
         preg_match_all('/class="([^"]*)"/', $this->html(), $matches);
 
         foreach ($matches[1] as $classList) {

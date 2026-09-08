@@ -34,9 +34,8 @@ use App\Infrastructure\Legal\Documents\ThirdPartyLicenses;
  * geçer, sürümü Git'te izlenir ve hukukçu değişikliği bir diff olarak
  * görür. `ProductPageLibrary` ile aynı karar.
  *
- * YALNIZ İNGİLİZCE (`docs/118` E4): Türkçe sürüm çeviri kilidine tabidir
- * ve sahibin `ÇEVİRİLERE BAŞLA` kararını bekler. Bu pakette tek bir çeviri
- * üretilmedi.
+ * İngilizce varsayılan kaynaktır; sahibin onayıyla Türkçe belge kaynakları
+ * ayrı sınıflarda tutulur. Önbellek belge anahtarı ve dile göre ayrılır.
  *
  * ═══ BELGELER ARTIK TEMBEL KURULUYOR (FF-228) ═══
  *
@@ -57,26 +56,29 @@ final class LegalLibrary implements LegalLibraryPort
         private readonly ThirdPartyLicensePort $licenses,
     ) {}
 
-    public function find(string $key): ?LegalDocument
+    public function find(string $key, string $locale = 'en'): ?LegalDocument
     {
-        if (isset($this->cache[$key])) {
-            return $this->cache[$key];
+        $locale = $locale === 'tr' ? 'tr' : 'en';
+        $cacheKey = $locale.':'.$key;
+
+        if (isset($this->cache[$cacheKey])) {
+            return $this->cache[$cacheKey];
         }
 
         if (! in_array($key, LegalLibraryPort::KEYS, true)) {
             return null;
         }
 
-        return $this->cache[$key] = $this->build($key);
+        return $this->cache[$cacheKey] = $this->build($key, $locale);
     }
 
     /** @return list<LegalDocument> */
-    public function all(): array
+    public function all(string $locale = 'en'): array
     {
         $documents = [];
 
         foreach (LegalLibraryPort::KEYS as $key) {
-            $document = $this->find($key);
+            $document = $this->find($key, $locale);
 
             if ($document !== null) {
                 $documents[] = $document;
@@ -91,8 +93,29 @@ final class LegalLibrary implements LegalLibraryPort
      * karşılığı yazılmazsa çağrı patlar. Sessizce `null` dönen bir kütüphane,
      * altbilgide bağlantısı olan bir 404 üretirdi.
      */
-    private function build(string $key): LegalDocument
+    private function build(string $key, string $locale): LegalDocument
     {
+        if ($locale === 'tr') {
+            return match ($key) {
+                'terms' => Documents\Turkish\TermsOfService::document(),
+                'privacy' => Documents\Turkish\PrivacyPolicy::document(),
+                'kvkk' => Documents\Turkish\KvkkDisclosure::document(),
+                'distance-sales' => Documents\Turkish\DistanceSalesAgreement::document(),
+                'pre-information' => Documents\Turkish\PreliminaryInformationForm::document(),
+                'delivery' => Documents\Turkish\DeliveryAndPerformancePolicy::document(),
+                'refund-policy' => Documents\Turkish\RefundPolicy::document(),
+                'cookies' => Documents\Turkish\CookiePolicy::document(),
+                'marketing-consent' => Documents\Turkish\MarketingConsentText::document(),
+                // Alt işleyen listesi ÇİZİM ANINDA ölçülür (`docs/140` §3).
+                'data-processing' => Documents\Turkish\DataProcessingAgreement::document($this->subprocessors->inventory($locale)),
+                // Rakamlar `config/sla.php`'den; girilmemişken taahhüt yazılmaz.
+                'sla' => Documents\Turkish\ServiceLevelTerms::document(ServiceLevelCommitment::fromConfig()),
+                'acceptable-use' => Documents\Turkish\AcceptableUsePolicy::document(),
+                // Lisanslar manifestlerden TÜRETİLİR (`docs/140` §5).
+                'third-party-licenses' => Documents\Turkish\ThirdPartyLicenses::document($this->licenses->inventories()),
+            };
+        }
+
         return match ($key) {
             'terms' => TermsOfService::document(),
             'privacy' => PrivacyPolicy::document(),

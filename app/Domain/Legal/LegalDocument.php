@@ -83,12 +83,12 @@ final class LegalDocument
             $this->key,
             $this->version,
             $this->effectiveDate,
-            $company->fill($this->title),
-            $company->fill($this->summary),
+            $company->fill($this->title, $this->language),
+            $company->fill($this->summary, $this->language),
             array_map(
-                static fn (LegalSection $section): LegalSection => new LegalSection(
-                    $company->fill($section->heading),
-                    array_map(static fn (string $paragraph): string => $company->fill($paragraph), $section->paragraphs),
+                fn (LegalSection $section): LegalSection => new LegalSection(
+                    $company->fill($section->heading, $this->language),
+                    array_map(fn (string $paragraph): string => $company->fill($paragraph, $this->language), $section->paragraphs),
                 ),
                 $this->sections,
             ),

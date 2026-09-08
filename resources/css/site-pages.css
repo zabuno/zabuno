@@ -17,7 +17,8 @@
 
     ── KIRILMA NOKTASI YOK (`HOME-FLUID-04` ile aynı kural) ──
 
-    Tek bir `@media (min-width: …)` yok. Her ölçü ya `clamp()` ya da
+    Tek 320 tabanı akışkandır; 2026-09-08 sahip kararıyla 64rem üzerinde
+    fiyat karşılaştırması genişletilir. Taban ölçüleri `clamp()` ya da
     `minmax(min(100%, …), 1fr)`: 320 pikselde alt sınır, geniş ekranda üst
     sınır, ARADAKİ HER GENİŞLİKTE tanımlı.
 
@@ -613,4 +614,273 @@
 .site-facts-value {
     margin: 0;
     overflow-wrap: anywhere;
+}
+
+/* Şirket anlatısı ve mesaj formu ayrı okuma düzenleri kullanır. */
+.site-company-page .site-company-body,
+.site-contact-page .site-contact-body {
+    min-inline-size: 0;
+}
+
+.site-company-page .site-company-intro,
+.site-company-page .site-company-details,
+.site-contact-page .site-contact-layout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: var(--zc-rhythm-tight);
+}
+
+.site-company-page .site-company-service {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    padding: clamp(1rem, 2.5vw, 2.5rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-company-page .site-company-service h2 {
+    font-size: var(--zc-display-2);
+}
+
+.site-company-page .site-company-seller {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+}
+
+.site-company-page .site-company-details {
+    padding-block-start: var(--zc-rhythm-tight);
+    border-block-start: 1px solid var(--zc-edge);
+}
+
+.site-company-page .site-company-details > section {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+}
+
+.site-contact-page .site-contact-compose {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-contact-page .site-contact-identity {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+    padding-block: var(--space-4);
+}
+
+.site-contact-page .site-contact-body .site-notice {
+    overflow-wrap: anywhere;
+}
+
+/* Fiyat kararı: çıkış koşulları ve sonraki hesap adımı aynı durakta. */
+.site-pricing-page .site-pricing-decision {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: var(--zc-rhythm-tight);
+    padding: clamp(1rem, 2.5vw, 2rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-pricing-page .site-pricing-decision-copy {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.site-pricing-page .site-pricing-next {
+    flex: 1 1 20rem;
+    min-inline-size: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.site-pricing-page .site-pricing-next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+.site-pricing-page .site-pricing-boundaries {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
+    padding-block: var(--zc-rhythm-tight);
+    border-block-start: 1px solid var(--zc-edge);
+}
+
+.site-pricing-page .site-pricing-boundaries > .site-pricing-head {
+    flex: 1 1 22rem;
+    min-inline-size: 0;
+}
+
+.site-pricing-page .site-pricing-absences {
+    flex: 1.5 1 38rem;
+    min-inline-size: 0;
+    max-inline-size: 66ch;
+    gap: var(--space-4);
+    line-height: 1.65;
+}
+
+.site-pricing-page .site-pricing-absences > li {
+    padding-inline-start: var(--space-2);
+    overflow-wrap: anywhere;
+}
+
+/* Layout wrappers are transparent to the approved mobile card flow. */
+.site-pricing-price-block,
+.site-pricing-audience-block,
+.site-pricing-features-block {
+    display: contents;
+}
+
+/* 2026-09-08 owner direction: calm desktop pricing, fluid 320 foundation. */
+@media (min-width: 64rem) {
+    /* One gap after the hero; do not stack page gap and body padding.
+       Keep the first comparison row within a laptop's initial viewport. */
+    .site-pricing-page {
+        gap: 1.25rem;
+    }
+
+    .site-pricing-page > .site-prologue {
+        min-block-size: 13.75rem;
+        background: var(--site-desktop-ink);
+    }
+
+    .site-pricing-page .site-prologue-inner {
+        align-items: center;
+        text-align: center;
+        padding-block: 1.5rem;
+    }
+
+    .site-pricing-page .site-prologue-text {
+        max-inline-size: 54rem;
+    }
+
+    .site-pricing-page .site-prologue :is(h1, .site-display-2) {
+        font-size: clamp(3.5rem, 5.5vw, 5.5rem);
+        letter-spacing: -0.065em;
+        line-height: 1.05;
+        color: var(--site-desktop-cream);
+    }
+
+    .site-pricing-page .site-prologue .site-lede {
+        color: var(--site-desktop-muted);
+        font-size: 1.25rem;
+    }
+
+    .site-pricing-page .site-prologue .scene-canvas {
+        opacity: 0.2;
+    }
+
+    .site-pricing-page
+        .site-prologue
+        :is(.scene-nebula, .scene-grid, .scene-orbit, .scene-horizon) {
+        opacity: 0.25;
+    }
+
+    .site-pricing-page .site-page-body {
+        padding-block-start: 0;
+    }
+
+    .site-pricing-page #pricing {
+        gap: 1.25rem;
+    }
+
+    .site-pricing-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+        align-items: stretch;
+    }
+
+    .site-pricing-plan {
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        align-content: start;
+        gap: 1.5rem;
+        padding: clamp(1.5rem, 2.3vw, 2.5rem);
+        background: var(--site-desktop-panel);
+        color: var(--site-desktop-cream);
+        border: 1px solid color-mix(in srgb, var(--site-desktop-cream) 18%, transparent);
+        border-radius: 1rem;
+        box-shadow: none;
+        overflow-wrap: anywhere;
+    }
+
+    .site-pricing-plan::before,
+    .site-pricing-plan::after {
+        background: none;
+        box-shadow: none;
+    }
+
+    .site-pricing-plan-name {
+        font-size: 1.375rem;
+        color: var(--site-desktop-cream);
+    }
+
+    .site-pricing-price-block,
+    .site-pricing-audience-block,
+    .site-pricing-features-block {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .site-pricing-amount {
+        font-size: clamp(2.25rem, 3.4vw, 3.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.05em;
+        color: var(--site-desktop-cream);
+    }
+
+    .site-pricing-plan :is(.site-pricing-period, .site-pricing-note, .site-pricing-entitlements) {
+        color: var(--site-desktop-muted);
+        line-height: 1.65;
+    }
+
+    .site-pricing-plan .site-eyebrow {
+        color: var(--site-desktop-coral);
+        letter-spacing: 0.04em;
+    }
+
+    .site-pricing-entitlements {
+        gap: 0.75rem;
+    }
+
+    .site-pricing-entitlements li::marker {
+        color: var(--site-desktop-coral);
+    }
+
+    .site-pricing-included {
+        max-inline-size: 66rem;
+        border-color: var(--site-desktop-coral-ink);
+        gap: 0.5rem;
+    }
+
+    .site-pricing-page .site-pricing-decision {
+        box-shadow: none;
+        border-radius: 1rem;
+        padding: 2.5rem;
+    }
+
+    .site-pricing-page .site-pricing-head .site-display-3 {
+        font-size: clamp(1.75rem, 2.5vw, 2.5rem);
+        letter-spacing: -0.04em;
+    }
+
+    @supports (grid-template-rows: subgrid) {
+        .site-pricing-plan {
+            grid-template-rows: subgrid;
+            grid-row: span 4;
+        }
+    }
 }

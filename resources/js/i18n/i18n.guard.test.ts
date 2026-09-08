@@ -42,7 +42,7 @@ describe('i18n kapısı', () => {
      * TANIMLI OLMAK ZORUNDA. Bir dilin silinmesi hâlâ kapıyı kırar — asıl
      * korunması gereken buydu. Eklenmesi kırmaz.
      */
-    it('CORE-08 tabanındaki altı katalog tanımlıdır ve yalnız biri complete sayılır', () => {
+    it('CORE-08 tabanındaki altı katalog tanımlıdır ve yalnız İngilizce ile Türkçe complete sayılır', () => {
         const codes = Object.keys(LOCALES);
 
         for (const required of ['ar', 'de', 'en', 'fr', 'ru', 'tr']) {
@@ -58,9 +58,9 @@ describe('i18n kapısı', () => {
 
         expect(
             complete,
-            "DS-I18N-SIX-CATALOGS-01: Stage 1'de yalnız `en` complete'tir; " +
+            "DS-I18N-SIX-CATALOGS-01: yalnız `en` ve `tr` complete'tir; " +
                 'bir dili complete ilan etmek içerik kanıtı ister.',
-        ).toEqual(['en']);
+        ).toEqual(['en', 'tr']);
     });
 
     // --- DS-I18N-FALLBACK-02 ----------------------------------------------

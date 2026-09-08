@@ -139,7 +139,7 @@ final class PublishedPagesSurfaceTest extends TestCase
      * Altbilgi aniden on sekiz bağlantı büyüdü ve altbilgi, kimsenin
      * bakmadığı yerdir; kırık bir bağlantı orada aylarca yaşayabilir.
      */
-    public function test_every_link_in_the_grown_footer_returns_two_hundred(): void
+    public function test_every_link_in_the_grown_footer_resolves_or_authenticates(): void
     {
         $published = $this->applyRealDecisions();
 
@@ -154,6 +154,13 @@ final class PublishedPagesSurfaceTest extends TestCase
         );
 
         foreach ($targets as $target) {
+            // The account entry intentionally sends guests to authentication.
+            if ($target === '/app') {
+                $this->get($target)->assertRedirect(route('login'));
+
+                continue;
+            }
+
             self::assertSame(
                 200,
                 $this->get($target)->getStatusCode(),

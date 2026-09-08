@@ -37,9 +37,11 @@
      Çözüm GİZLEMEK DEĞİL, KATLAMAK. Dörtten çok maddesi olan her grup
      kapalı başlar (`SiteNavigation::OPEN_ITEM_CEILING`); katlama bir
      `<details>`tir, betiksiz çalışır ve içindeki her bağlantı sunucu
-     HTML'inde ZATEN durur. Bu dosyada tek bir `max-*` bastırması, tek bir
-     "mobilde gizle" ve tek bir kırılma noktası jetonu yoktur (`MP-05`). --}}
+     HTML'inde ZATEN durur. Bu mobil görünüm korunur. 2026-09-08 sahip kararıyla 64rem üzerinde
+     ayrı açık gezinti görünür; native details CSS ile zorla açılmaz. --}}
 <footer class="site-footer"{!! $lang->chromeAttributes() !!}>
+    {{-- The original mobile presentation remains native; desktop has its own open navigation. --}}
+    <div class="site-mobile-footer" data-mobile-footer>
     {{-- 1. MARKA SATIRI. Ürünün ne olduğunu söyleyen tek cümle katalogdan
          gelir; kimin sattığını 5. satır söyler. --}}
     <div class="site-shell-inner site-footer-row site-footer-brand">
@@ -137,4 +139,6 @@
         <span>&copy; {{ now()->year }} {{ $st['brand'] }}</span>
         <a href="#main-content" class="site-footer-top-link">{{ $st['footerBackToTop'] }}</a>
     </div>
+    </div>
+    @include('public.partials.desktop-footer')
 </footer>

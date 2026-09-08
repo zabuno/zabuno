@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\PublicSite;
 
+use App\Application\Legal\Port\SubprocessorRegistryPort;
 use App\Support\Localization\SiteText;
 use App\Support\Site\HomeStory;
 use App\Support\Site\InvestorDossier;
@@ -479,5 +480,27 @@ final class InvestorPagesContractTest extends TestCase
                 .'adrese bağlanıyor.'
             );
         }
+    }
+
+    public function test_provider_descriptions_follow_the_selected_language_and_preserve_configured_facts(): void
+    {
+        config(['legal.hosting.provider' => 'Configured Host', 'legal.hosting.location' => 'Configured City, Country']);
+        $registry = app(SubprocessorRegistryPort::class);
+        $dossier = app(InvestorDossier::class);
+        $english = $registry->inventory('en')->active[0];
+        $turkish = $registry->inventory('tr')->active[0];
+        self::assertStringStartsWith('Barındırma:', $turkish->role);
+        self::assertNotSame($english->data, $turkish->data);
+        foreach (['tr' => $turkish, 'en' => $english] as $locale => $expected) {
+            $row = $dossier->facts($locale)['subprocessors'][0];
+            self::assertSame('Configured Host', $row['name']);
+            self::assertSame('Configured City, Country', $row['location']);
+            self::assertSame($expected->role, $row['role']);
+            self::assertSame($expected->data, $row['data']);
+            $this->withUnencryptedCookie('zbn_language', $locale)->get('/investors')->assertOk()
+                ->assertSee($expected->role)->assertSee($expected->data);
+        }
+        self::assertSame($english->role, $dossier->facts()['subprocessors'][0]['role']);
+        self::assertSame($english->data, $dossier->facts()['subprocessors'][0]['data']);
     }
 }

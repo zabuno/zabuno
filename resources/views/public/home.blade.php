@@ -124,6 +124,7 @@
                      düğmeyi ilk ekranın dışına iten farkın içindeydi. Aynı
                      sözcüğü 320 piksellik bir ekranda iki kez yazmak, en kıt
                      kaynağı tekrar için harcamaktır (`docs/118` E3). --}}
+                <div class="home-hero-copy">
                 <div class="home-hero-text scene-reveal">
                     <h1 class="site-display">{{ $st['homeHeroHeading'] }}</h1>
                     <p class="site-lede">{{ $st['homeHeroLead'] }}</p>
@@ -144,6 +145,21 @@
                 {{-- Ücretsiz zincir bir kampanya değil, plan kataloğundaki
                      ölçülmüş bir olgu (`PlanCatalogueSeeder`). --}}
                 <p class="home-hero-note scene-reveal" style="--scene-order: 2">{{ $st['homeHeroNote'] }}</p>
+                </div>
+
+                {{-- Ürünün gerçek adımları: sahte bir yönetim ekranı ya da canlı veri değil. --}}
+                <aside class="home-product-map site-glass scene-reveal" aria-label="{{ $st['navHowItWorks'] }}" style="--scene-order: 3">
+                    <p class="home-product-map-heading">{{ $st['homeChainHeading'] }}</p>
+                    <ol class="home-product-map-flow" role="list">
+                        @foreach ($story['chain'] as $index => $step)
+                            <li>
+                                <span class="home-product-map-index" aria-hidden="true">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
+                                <span>{{ $step['title'] }}</span>
+                            </li>
+                        @endforeach
+                    </ol>
+                    <a href="#how-it-works" class="site-action home-product-map-link">{{ $st['navHowItWorks'] }}</a>
+                </aside>
             </div>
         </section>
 
@@ -229,18 +245,9 @@
              `id="how-it-works"` KORUNDU: kabuğun gezintisi (`SiteNavigation`)
              bu çıpaya işaret ediyor.
 
-             YATAY ŞERİT — dokunmanın ucuz hareketi. Altı adımı 320 pikselde
-             dikey dizmek, ilk ekranı zincirin BİR adımına ayırmak demekti.
-             Şerit kendi kaydırma kabıdır: sayfa yana kaymaz.
-
-             Kaydırılabilirlik HOVER İLE anlatılmaz (dokunmada hover yoktur,
-             `docs/118` E2): bir sonraki kartın kenarı görünür kalır. Bu her
-             giriş kipinde aynı biçimde çalışır.
-
-             Burada TUVAL YOK ve bu ölçülmüş bir karar: aynı sayfada ikinci
-             bir WebGL bağlamı açmak, düşük güçlü bir telefonda kare süresini
-             iki katına çıkarır ve kazandırdığı şey birincisinin zaten
-             verdiği derinliktir. Bandın hacmi saf CSS'ten geliyor. --}}
+             Altı adım 320 pikselde doğal okuma sırasındadır, alan büyüdükçe
+             ızgara kendiliğinden çoğalır. Sahne mevcut CSS katmanlarını
+             kullanır; ikinci bir tuval eklenmez. --}}
         <section id="how-it-works" aria-labelledby="how-it-works-heading" class="site-stage site-deep" data-scene-progress>
             {{-- Nebula katmanı ŞEKİL DEĞİŞTİRİYOR (`scene-morph`): bant
                  kaydırıldıkça ışık halesinin sınırı dar bir kubbeden geniş
@@ -271,34 +278,8 @@
                     </div>
                 </div>
 
-                {{-- ŞERİT ÖLÇÜ KABININ DIŞINDA, HİZASI İÇİNDE.
-
-                     Sahibin şikâyeti birebir buydu (2026-09-08, 1560 px):
-                     *"bu niye sığmamış? sığsın"* — şeridin ilk kartı
-                     üstündeki başlığın soluna hizalanmıyordu.
-
-                     Sebep ölçüldü: şerit tam genişlikte durup dolgusunu
-                     `--zc-gutter`den alınca kendini GÖRÜNTÜ ALANININ
-                     kenarına hizalıyor, başlık ise 82 rem'lik ölçü kabının
-                     içinde duruyordu; 1560 pikselde aradaki fark 124
-                     pikseldi (gerçek Chrome, 2026-09-08). Düzeltmeden sonra
-                     aynı ölçüm: ikisi de 163,19 px, fark 0.
-
-                     Çözüm bir medya sorgusu DEĞİL: `.home-rail`in dolgusu
-                     kendi kabından türetiliyor (`site-home.css`
-                     `--home-rail-gutter`). Şeridin KENDİSİ tam genişlikte
-                     kalır — dokunmada kenardan kenara kaydırma korunur — ama
-                     İÇERİĞİ sütunla aynı pikselde başlar. 320 pikselde
-                     tavan devreye bile girmez ve dolgu `--zc-gutter`e
-                     çözülür; geniş ekran taban kuralın ÜSTÜNE ekleniyor,
-                     onu bastırmıyor.
-
-                     `tabindex="0"`: kendi kaydırma kabı olan bir bölge
-                     klavyeyle de gezilebilmeli — ok tuşları, tarayıcının
-                     kendi davranışı, betiksiz. `role="list"` ise
-                     `display: grid`in bazı ekran okuyucularda liste anlamını
-                     düşürmesine karşı yazıldı. --}}
-                <ol class="home-rail" role="list" tabindex="0" aria-label="{{ $st['homeChainLabel'] }}">
+                {{-- Altı adım doğal akışta: keşif yatay kaydırmaya bağlı değil. --}}
+                <ol class="home-rail site-measure-page" role="list" aria-label="{{ $st['navHowItWorks'] }}">
                     @foreach ($story['chain'] as $index => $step)
                         <li class="site-panel site-lit home-rail-card scene-reveal" style="--scene-order: {{ $index }}">
                             {{-- Numara ekran okuyucuya `<ol>` üzerinden zaten
@@ -365,7 +346,7 @@
 
                 <ul class="home-grid scene-plane" role="list" data-plane="near" data-axis="x">
                     @foreach ($story['parts'] as $index => $part)
-                        <li class="scene-tilt scene-reveal" style="--scene-order: {{ $index }}">
+                        <li class="home-feature scene-tilt scene-reveal" @if ($index === 0) data-featured @endif style="--scene-order: {{ $index }}">
                             <div class="site-panel site-lit scene-tilt-face home-card">
                                 <h3 class="site-display-3">{{ $part['title'] }}</h3>
                                 <p class="home-card-body">{{ $part['body'] }}</p>
@@ -405,10 +386,10 @@
                     <p class="home-lead">{{ $st['homeLimitsLead'] }}</p>
                 </div>
 
-                <ul class="home-grid" role="list">
+                <ul class="home-limits" role="list">
                     @foreach ($story['limits'] as $index => $limit)
-                        <li class="site-panel home-card scene-reveal" style="--scene-order: {{ $index }}">
-                            <h3 class="site-display-3">{{ $limit['title'] }}</h3>
+                        <li class="home-limit scene-reveal" style="--scene-order: {{ $index }}">
+                            <h3>{{ $limit['title'] }}</h3>
                             <p class="home-card-body">{{ $limit['body'] }}</p>
                         </li>
                     @endforeach

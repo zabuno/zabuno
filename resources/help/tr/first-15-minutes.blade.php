@@ -30,14 +30,14 @@
             tek işlemde oluşturur.
         </p>
         <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
-            <li>Çalışma alanında <strong>Menu</strong> ekranını açın.</li>
+            <li>Çalışma alanında <strong>Menü</strong> ekranını açın.</li>
             <li>
-                Menü boşken bile bir kez <strong>Download menu (CSV)</strong> deyin; doğru
+                Menü boşken bile bir kez <strong>Menüyü indir (CSV)</strong> deyin; doğru
                 sütunları taşıyan bir dosya iner:
                 <code class="rounded bg-surface px-1">category, product, price, currency, allergens, description, visible</code>.
             </li>
             <li>Dosyayı Excel'de doldurun. Alerjenleri noktalı virgülle ayırın (<code>süt;gluten</code>).</li>
-            <li>Geri dönüp <strong>Import a CSV menu</strong> ile yükleyin.</li>
+            <li>Geri dönüp <strong>CSV menü içe aktar</strong> ile yükleyin.</li>
         </ol>
         <p class="text-fg-secondary">
             Okunamayan satırlar dosyadaki SATIR NUMARASIYLA listelenir ve geçerli satırlar yine
@@ -52,7 +52,7 @@
         <h2 id="help-qr-heading" class="text-2xl font-bold">Karekodlarınızı bastırın</h2>
         <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Önce menüyü yayınlayın — karekodun işaret edeceği bir şey olmalı.</li>
-            <li><strong>Publication</strong> ekranını açıp kod oluşturun; bütün bir salonun masaları için toplu seçenek var.</li>
+            <li><strong>Yayın</strong> ekranını açıp kod oluşturun; bütün bir salonun masaları için toplu seçenek var.</li>
             <li>Matbaa için <strong>PDF</strong>, tasarımcı için PNG/SVG olarak dışa aktarın.</li>
         </ol>
         <p class="text-fg-secondary">
@@ -67,8 +67,8 @@
     <section id="help-price" aria-labelledby="help-price-heading" class="flex flex-col gap-3">
         <h2 id="help-price-heading" class="text-2xl font-bold">Fiyat değiştirin</h2>
         <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
-            <li><strong>Menu</strong> ekranını açın, ürünü bulun, <strong>Price</strong> deyin.</li>
-            <li><strong>Publication</strong> ekranını açıp yayınlayın.</li>
+            <li><strong>Menü</strong> ekranını açın, ürünü bulun, <strong>Fiyat</strong> deyin.</li>
+            <li><strong>Yayın</strong> ekranını açıp yayınlayın.</li>
         </ol>
         <p class="text-fg-secondary">
             Unutulan adım ikincisidir. Düzenleme TASLAĞI değiştirir; siz yeniden yayınlayana
@@ -76,12 +76,12 @@
             fiyat listesini, hiçbir misafir yarısını görmeden düzeltebilirsiniz.
         </p>
         <p class="text-fg-secondary">
-            Yanlış listeyi mi yayınladınız? <strong>Publication</strong> ekranında
-            <strong>Published versions</strong> altından istediğiniz sürümü bulup ona dönün.
+            Yanlış listeyi mi yayınladınız? <strong>Yayın</strong> ekranında
+            <strong>Yayınlanmış sürümler</strong> altından istediğiniz sürümü bulup ona dönün.
             Hiçbir şey silinmez ve basılı kodlarınıza dokunulmaz.
         </p>
         <p class="text-fg-secondary">
-            Bu akşam bir şey mi bitti? Ürün satırında <strong>Sold out</strong> deyin. Ürün
+            Bu akşam bir şey mi bitti? Ürün satırında <strong>Tükendi</strong> deyin. Ürün
             fiyatıyla birlikte menüde kalır, bugün alınamayacağı yazar ve işaret ertesi gün
             kendiliğinden düşer — yayınlamanız gerekmez.
         </p>

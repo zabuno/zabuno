@@ -1086,91 +1086,91 @@ msgstr "Trust centre"
 
 #: site:site.pageState.approved
 msgid "site.pageState.approved"
-msgstr "Servise çıkmayı bekliyor"
+msgstr "Waiting to go live"
 
 #: site:site.pageState.contact
 msgid "site.pageState.contact"
-msgstr "İletişime geç"
+msgstr "Contact us"
 
 #: site:site.pageState.content_draft
 msgid "site.pageState.content_draft"
-msgstr "Türkçe içeriği hazırlanıyor"
+msgstr "Turkish content is being prepared"
 
 #: site:site.pageState.content_review
 msgid "site.pageState.content_review"
-msgstr "İçeriği kontrol ediliyor"
+msgstr "Content is being reviewed"
 
 #: site:site.pageState.design_review
 msgid "site.pageState.design_review"
-msgstr "Görsel düzeni hazırlanıyor"
+msgstr "Visual layout is being prepared"
 
 #: site:site.pageState.explore
 msgid "site.pageState.explore"
-msgstr "Çalışan sayfaları keşfet"
+msgstr "Explore available pages"
 
 #: site:site.pageState.headline
 msgid "site.pageState.headline"
-msgstr "Bu sayfa henüz servise çıkmadı."
+msgstr "This page is not live yet."
 
 #: site:site.pageState.home
 msgid "site.pageState.home"
-msgstr "Ana sayfaya dön"
+msgstr "Return to the home page"
 
 #: site:site.pageState.lede
 msgid "site.pageState.lede"
-msgstr "İçerik, tasarım, arama görünürlüğü ve kalite kontrolü katman katman hazırlanıyor."
+msgstr "Content, design, search visibility, and quality checks are being prepared in stages."
 
 #: site:site.pageState.maintenance
 msgid "site.pageState.maintenance"
-msgstr "Kısa süreli bakımda"
+msgstr "Brief maintenance"
 
 #: site:site.pageState.maintenanceHeadline
 msgid "site.pageState.maintenanceHeadline"
-msgstr "Bu sayfa kısa süreliğine bakımda."
+msgstr "This page is undergoing brief maintenance."
 
 #: site:site.pageState.maintenanceLede
 msgid "site.pageState.maintenanceLede"
-msgstr "Sayfa yayındaydı ve geri gelecek. Bu sırada diğer sayfalar çalışmaya devam ediyor."
+msgstr "This page was live and will be back. Other pages continue to work in the meantime."
 
 #: site:site.pageState.pageLabel
 msgid "site.pageState.pageLabel"
-msgstr "Sayfa"
+msgstr "Page"
 
 #: site:site.pageState.planned
 msgid "site.pageState.planned"
-msgstr "Sıraya alındı"
+msgstr "Queued"
 
 #: site:site.pageState.published
 msgid "site.pageState.published"
-msgstr "Yayında"
+msgstr "Live"
 
 #: site:site.pageState.qa
 msgid "site.pageState.qa"
-msgstr "Son kalite kontrolünde"
+msgstr "Final quality checks"
 
 #: site:site.pageState.retired
 msgid "site.pageState.retired"
-msgstr "Yayından kaldırıldı"
+msgstr "Taken offline"
 
 #: site:site.pageState.scaffolded
 msgid "site.pageState.scaffolded"
-msgstr "İskeleti hazırlandı"
+msgstr "Structure prepared"
 
 #: site:site.pageState.seo_review
 msgid "site.pageState.seo_review"
-msgstr "Arama görünürlüğü kontrol ediliyor"
+msgstr "Search visibility is being checked"
 
 #: site:site.pageState.stageLabel
 msgid "site.pageState.stageLabel"
-msgstr "Durum"
+msgstr "Status"
 
 #: site:site.pageState.title
 msgid "site.pageState.title"
-msgstr "Hazırlanıyor"
+msgstr "In preparation"
 
 #: site:site.pageState.updatedLabel
 msgid "site.pageState.updatedLabel"
-msgstr "Son güncelleme"
+msgstr "Last updated"
 
 #: site:site.plan.analytics
 msgid "site.plan.analytics"
