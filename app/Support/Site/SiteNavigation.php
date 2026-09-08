@@ -186,6 +186,16 @@ final class SiteNavigation
                 'items' => [
                     ['labelKey' => 'site.nav.about', 'path' => '/about'],
                     ['labelKey' => 'site.nav.contact', 'path' => '/contact'],
+                    /*
+                        YATIRIMCI İLİŞKİLERİ (FF-251). Yaşayan bir rotadır ve
+                        bugün 200 döner; altbilgide durmasının sebebi, onu
+                        arayan kişinin ürün gezintisinde gezinmemesi — "kim
+                        bu şirket" sorusunun yanıtlarını aynı başlık altında
+                        arar. Alt sayfaları burada YOK ve bilerek yok: dört
+                        bağlantı bir grubu on üç satırlık yasal satıra
+                        çevirirdi; giriş sayfası üçüne de bağlanıyor.
+                    */
+                    ['labelKey' => 'site.nav.investors', 'path' => '/investors'],
                 ],
             ],
             [
