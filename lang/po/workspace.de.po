@@ -3688,6 +3688,10 @@ msgstr ""
 msgid "workspace.media.storage.trash.note"
 msgstr ""
 
+#: workspace:workspace.media.upload.back
+msgid "workspace.media.upload.back"
+msgstr ""
+
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"
 msgstr ""
@@ -3872,6 +3876,58 @@ msgstr ""
 msgid "workspace.media.upload.more.progress"
 msgstr ""
 
+#: workspace:workspace.media.upload.next
+msgid "workspace.media.upload.next"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.floor
+msgid "workspace.media.upload.optimize.floor"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.heading
+msgid "workspace.media.upload.optimize.heading"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.longEdge
+msgid "workspace.media.upload.optimize.longEdge"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.longEdge.value
+msgid "workspace.media.upload.optimize.longEdge.value"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.none
+msgid "workspace.media.upload.optimize.none"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.privacy
+msgid "workspace.media.upload.optimize.privacy"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.result
+msgid "workspace.media.upload.optimize.result"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.saved
+msgid "workspace.media.upload.optimize.saved"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.savedNote
+msgid "workspace.media.upload.optimize.savedNote"
+msgstr ""
+
+#: workspace:workspace.media.upload.optimize.working
+msgid "workspace.media.upload.optimize.working"
+msgstr ""
+
+#: workspace:workspace.media.upload.pick.camera
+msgid "workspace.media.upload.pick.camera"
+msgstr ""
+
+#: workspace:workspace.media.upload.pick.lead
+msgid "workspace.media.upload.pick.lead"
+msgstr ""
+
 #: workspace:workspace.media.upload.region
 msgid "workspace.media.upload.region"
 msgstr ""
@@ -3902,6 +3958,94 @@ msgstr ""
 
 #: workspace:workspace.media.upload.selected.replace
 msgid "workspace.media.upload.selected.replace"
+msgstr ""
+
+#: workspace:workspace.media.upload.step.done
+msgid "workspace.media.upload.step.done"
+msgstr ""
+
+#: workspace:workspace.media.upload.step.frame
+msgid "workspace.media.upload.step.frame"
+msgstr ""
+
+#: workspace:workspace.media.upload.step.optimize
+msgid "workspace.media.upload.step.optimize"
+msgstr ""
+
+#: workspace:workspace.media.upload.step.pick
+msgid "workspace.media.upload.step.pick"
+msgstr ""
+
+#: workspace:workspace.media.upload.step.position
+msgid "workspace.media.upload.step.position"
+msgstr ""
+
+#: workspace:workspace.media.upload.step.send
+msgid "workspace.media.upload.step.send"
+msgstr ""
+
+#: workspace:workspace.media.upload.steps.label
+msgid "workspace.media.upload.steps.label"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.audio
+msgid "workspace.media.upload.supported.audio"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.audio.note
+msgid "workspace.media.upload.supported.audio.note"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.column.extensions
+msgid "workspace.media.upload.supported.column.extensions"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.column.max
+msgid "workspace.media.upload.supported.column.max"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.column.note
+msgid "workspace.media.upload.supported.column.note"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.column.type
+msgid "workspace.media.upload.supported.column.type"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.documents
+msgid "workspace.media.upload.supported.documents"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.documents.note
+msgid "workspace.media.upload.supported.documents.note"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.heading
+msgid "workspace.media.upload.supported.heading"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.images
+msgid "workspace.media.upload.supported.images"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.images.note
+msgid "workspace.media.upload.supported.images.note"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.vector
+msgid "workspace.media.upload.supported.vector"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.vector.note
+msgid "workspace.media.upload.supported.vector.note"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.video
+msgid "workspace.media.upload.supported.video"
+msgstr ""
+
+#: workspace:workspace.media.upload.supported.video.note
+msgid "workspace.media.upload.supported.video.note"
 msgstr ""
 
 #: workspace:workspace.media.upload.uploading

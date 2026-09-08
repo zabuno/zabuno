@@ -287,8 +287,23 @@ const FROZEN_MODULE_FILENAMES = [
 // Enter yok) ve o yüzden mobil kuyrukta hiçbiri çizilmez.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+
+// MEDIA-C2 (`FF-226`): 1789 → 1825. OTUZ ALTI anahtar, ama YENİ bir yüzey
+// değil — yükleme sihirbazının EKRANDA ZATEN GÖRÜNEN metinleri. Bu satırlar
+// `uploadWizardCopy.ts` içindeki geçici bir tabloda duruyordu; o tablo,
+// katalog gelene kadar ekranda ham anahtar adı (`workspace.media.upload.
+// step.pick`) görünmesin diye kurulmuş bir köprüdür ve kendi kendini silmek
+// üzere yazılmıştı. Sayı bir ekran büyüdüğü için değil, var olan bir ekranın
+// metni tabana taşındığı için arttı.
+// Asıl kusur İNGİLİZCEDE DEĞİL ÇEVİRİDEYDİ: köprüdeki metin PO boru hattına
+// hiç girmiyordu, yani Türkçe panelde sihirbaz İngilizce konuşuyordu —
+// sahibin gördüğü ekranın yarısı Türkçe, yarısı İngilizceydi ve bu bir çeviri
+// eksiği gibi değil, bitmemiş bir ürün gibi görünüyordu.
+// ÇEVİRİ YAPILDI: otuz altı satırın tamamı `workspace.tr.po` içinde dolu ve
+// `workspace.tr.json` projeksiyonu yeniden üretildi; İngilizce taban
+// DEĞİŞMEDİ — cümleler bayt bayt aynı taşındı.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'e1a3729def42d9f5655197c47320b648cbdf1d355b7ac996e0ac9753e96ad4a3';
+    '61ee9ea2123e66c18209a999c8b6a746e7d042d0b7acdc8ff8f356b55f6e924b';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -296,7 +311,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1789;
+const FROZEN_LEGACY_KEY_COUNT = 1825;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

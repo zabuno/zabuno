@@ -3688,6 +3688,10 @@ msgstr "Trash"
 msgid "workspace.media.storage.trash.note"
 msgstr "Deleting does not free space. The {bytes} in the trash still counts against your plan; it is released when the retention period ends."
 
+#: workspace:workspace.media.upload.back
+msgid "workspace.media.upload.back"
+msgstr "Back"
+
 #: workspace:workspace.media.upload.button
 msgid "workspace.media.upload.button"
 msgstr "Upload"
@@ -3872,6 +3876,58 @@ msgstr "{count} more photo(s) will be uploaded with the same place. Name each on
 msgid "workspace.media.upload.more.progress"
 msgstr "Uploading photo {done} of {total}…"
 
+#: workspace:workspace.media.upload.next
+msgid "workspace.media.upload.next"
+msgstr "Continue"
+
+#: workspace:workspace.media.upload.optimize.floor
+msgid "workspace.media.upload.optimize.floor"
+msgstr "It stops here: this place needs at least {width} × {height} pixels, and cropping cannot add pixels back."
+
+#: workspace:workspace.media.upload.optimize.heading
+msgid "workspace.media.upload.optimize.heading"
+msgstr "Shrunk on your phone"
+
+#: workspace:workspace.media.upload.optimize.longEdge
+msgid "workspace.media.upload.optimize.longEdge"
+msgstr "Longest side"
+
+#: workspace:workspace.media.upload.optimize.longEdge.value
+msgid "workspace.media.upload.optimize.longEdge.value"
+msgstr "{pixels} px"
+
+#: workspace:workspace.media.upload.optimize.none
+msgid "workspace.media.upload.optimize.none"
+msgstr "This photo is already small enough. It will be sent unchanged."
+
+#: workspace:workspace.media.upload.optimize.privacy
+msgid "workspace.media.upload.optimize.privacy"
+msgstr "The file is shrunk on your own device. Nothing leaves it until you press Upload."
+
+#: workspace:workspace.media.upload.optimize.result
+msgid "workspace.media.upload.optimize.result"
+msgstr "{width} × {height} pixels will be sent."
+
+#: workspace:workspace.media.upload.optimize.saved
+msgid "workspace.media.upload.optimize.saved"
+msgstr "{percent}% smaller"
+
+#: workspace:workspace.media.upload.optimize.savedNote
+msgid "workspace.media.upload.optimize.savedNote"
+msgstr "{after} will be sent instead of {before}. That is data you do not pay for twice."
+
+#: workspace:workspace.media.upload.optimize.working
+msgid "workspace.media.upload.optimize.working"
+msgstr "Shrinking on this device…"
+
+#: workspace:workspace.media.upload.pick.camera
+msgid "workspace.media.upload.pick.camera"
+msgstr "Take a photo"
+
+#: workspace:workspace.media.upload.pick.lead
+msgid "workspace.media.upload.pick.lead"
+msgstr "Take one with your phone, or pick one from your gallery."
+
 #: workspace:workspace.media.upload.region
 msgid "workspace.media.upload.region"
 msgstr "Media upload"
@@ -3903,6 +3959,94 @@ msgstr "{width} × {height} pixels"
 #: workspace:workspace.media.upload.selected.replace
 msgid "workspace.media.upload.selected.replace"
 msgstr "Choose a different file"
+
+#: workspace:workspace.media.upload.step.done
+msgid "workspace.media.upload.step.done"
+msgstr "Done"
+
+#: workspace:workspace.media.upload.step.frame
+msgid "workspace.media.upload.step.frame"
+msgstr "Frame"
+
+#: workspace:workspace.media.upload.step.optimize
+msgid "workspace.media.upload.step.optimize"
+msgstr "Shrink"
+
+#: workspace:workspace.media.upload.step.pick
+msgid "workspace.media.upload.step.pick"
+msgstr "Choose"
+
+#: workspace:workspace.media.upload.step.position
+msgid "workspace.media.upload.step.position"
+msgstr "Step {step} of {total}"
+
+#: workspace:workspace.media.upload.step.send
+msgid "workspace.media.upload.step.send"
+msgstr "Send"
+
+#: workspace:workspace.media.upload.steps.label
+msgid "workspace.media.upload.steps.label"
+msgstr "Upload steps"
+
+#: workspace:workspace.media.upload.supported.audio
+msgid "workspace.media.upload.supported.audio"
+msgstr "Audio"
+
+#: workspace:workspace.media.upload.supported.audio.note
+msgid "workspace.media.upload.supported.audio.note"
+msgstr "For spoken menu descriptions. It plays inside the panel."
+
+#: workspace:workspace.media.upload.supported.column.extensions
+msgid "workspace.media.upload.supported.column.extensions"
+msgstr "Extensions"
+
+#: workspace:workspace.media.upload.supported.column.max
+msgid "workspace.media.upload.supported.column.max"
+msgstr "Largest size"
+
+#: workspace:workspace.media.upload.supported.column.note
+msgid "workspace.media.upload.supported.column.note"
+msgstr "Note"
+
+#: workspace:workspace.media.upload.supported.column.type
+msgid "workspace.media.upload.supported.column.type"
+msgstr "Type"
+
+#: workspace:workspace.media.upload.supported.documents
+msgid "workspace.media.upload.supported.documents"
+msgstr "Documents"
+
+#: workspace:workspace.media.upload.supported.documents.note
+msgid "workspace.media.upload.supported.documents.note"
+msgstr "A PDF is read page by page in the panel; the first page becomes the cover image."
+
+#: workspace:workspace.media.upload.supported.heading
+msgid "workspace.media.upload.supported.heading"
+msgstr "Supported types"
+
+#: workspace:workspace.media.upload.supported.images
+msgid "workspace.media.upload.supported.images"
+msgstr "Images"
+
+#: workspace:workspace.media.upload.supported.images.note
+msgid "workspace.media.upload.supported.images.note"
+msgstr "HEIC and HEIF are converted to JPEG on your phone; AVIF and WebP are taken as they are."
+
+#: workspace:workspace.media.upload.supported.vector
+msgid "workspace.media.upload.supported.vector"
+msgstr "Vector (SVG)"
+
+#: workspace:workspace.media.upload.supported.vector.note
+msgid "workspace.media.upload.supported.vector.note"
+msgstr "A logo stays sharp at any size, including in print. Every line is checked before it is accepted, so the size limit is much smaller than for photos."
+
+#: workspace:workspace.media.upload.supported.video
+msgid "workspace.media.upload.supported.video"
+msgstr "Video"
+
+#: workspace:workspace.media.upload.supported.video.note
+msgid "workspace.media.upload.supported.video.note"
+msgstr "MOV and MP4 can be converted to WebM after upload; the first frame becomes the cover."
 
 #: workspace:workspace.media.upload.uploading
 msgid "workspace.media.upload.uploading"
