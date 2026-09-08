@@ -21,6 +21,13 @@
 # NEDEN GLOB ÖNEMLİ: ilk sızıntı düz bir `import` satırından değil,
 # `import.meta.glob('../pages/*.section.tsx')` üzerinden geldi. Glob'u
 # genişletmeyen bir gezgin, yakalamak için yazıldığı sızıntıyı kaçırırdı.
+#
+# STİL DE BİR PAKETTİR (`docs/151`): masaüstünün kendi stil katmanı
+# (`resources/css/app-desktop.css`) yalnız masaüstü belgesinden istenir.
+# JavaScript için yazılan cümlenin aynısı burada da geçerli — `app.css`
+# içine bir `@import` satırı, o katmanı telefona da indirirdi ve hiç
+# çizilmediği için kimse fark etmezdi. Kapı bu yüzden CSS zincirini de
+# yürür.
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -63,6 +70,14 @@ DESKTOP_ONLY = [
     # bölünürse (fiş bileşeni, tam ekran düğmesi) o parça listeye yazılmayı
     # beklemeden kapının kapsamına girer.
     'components/workspace/kitchen/*.tsx',
+    # MASAÜSTÜNÜN KENDİ DİZELERİ (`docs/151`, `docs/153` §9 M1).
+    #
+    # `docs/153` §8 borcu adıyla yazmıştı: kataloglar cihaz TANIMIYORDU ve
+    # yalnız masaüstünde çizilen on bir dize telefonun paketine de iniyordu.
+    # Ayrı bir glob'la toplanan bu klasör o borcu kapatır; kapı da onu
+    # bileşenlerle aynı sertlikte tutar, çünkü bir dize tablosu da bayttır.
+    'i18n/workspace-desktop.ts',
+    'i18n/workspace-desktop/*.ts',
 ]
 MOBILE_ONLY = [
     'components/workspace/chrome/MobileChrome.tsx',
@@ -92,7 +107,17 @@ MOBILE_ONLY_DIRS = ['components/workspace/pages/mobile']
 SPEC_RE = re.compile(
     r"""(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]"""
 )
-GLOB_RE = re.compile(r"""import\.meta\.glob\(\s*['"]([^'"]+)['"]""")
+# TÜR ARGÜMANI GLOB'U GÖRÜNMEZ YAPIYORDU (`docs/151`).
+#
+# Kapı `import.meta.glob(` diye arıyordu; oysa i18n toplayıcıları çağrıyı
+# `import.meta.glob<{ ... }>(` biçiminde yazıyor. Yani KATALOG GLOB'LARININ
+# HİÇBİRİ gezilmiyordu ve kapı bunu söylemiyordu — bir dize tablosunun
+# sızması, tam da yakalamak için yazıldığı yoldan geçip görünmez kalırdı.
+# Tür argümanı derlemede silinir ama ÇAĞRI kalır: örüntü onu atlar, glob'u
+# değil.
+GLOB_RE = re.compile(
+    r"""import\.meta\.glob\s*(?:<[^()]*>)?\s*\(\s*['"]([^'"]+)['"]"""
+)
 
 # `import type` ve `export type` derlemede TAMAMEN silinir: hiçbir baytı pakete
 # girmez. Bunları saymak, olmayan bir sızıntıyı bildirmek olurdu. Ama satır
@@ -257,6 +282,110 @@ print(f'adaptive-bundle-gate: desktop closure {len(desktop_reach)} files '
       f'({desktop_bytes:,} B source), mobile {len(mobile_reach)} files '
       f'({mobile_bytes:,} B source), shared {len(shared)} files '
       f'({weigh(shared):,} B)',
+      file=sys.stderr)
+
+# ══════════════════════════════════════════════════════════════════════
+# STİL KATMANI — `docs/151`
+#
+# Bileşen kapısının stil karşılığı. Üç şey ölçülür ve üçü de ayrı bir
+# arıza ailesidir:
+#
+# 1. SIZINTI — paylaşılan giriş (`app.css`) masaüstü katmanını `@import`
+#    ediyorsa, katman telefona da iner. Bileşen tarafında bunun karşılığı
+#    "paylaşılan dosya cihaza özgü modülü adıyla anıyor"du.
+# 2. ÖLÜ KOD — katman kendi girişinden ulaşılamıyorsa (Vite girdi listesine
+#    yazılmamışsa) hiç yüklenmiyor demektir; yeşil bir kapı, çizilmeyen bir
+#    stili "ayrılmış" diye rapor ederdi.
+# 3. GENİŞLİKLE CİHAZ SEÇİMİ — katmanın içinde `min-width`/`max-width` ile
+#    yapılan bir cihaz kararı, `docs/54`'ün reddettiği şeyin CSS'e taşınmış
+#    hâlidir. `hover`/`pointer`/`prefers-*` özellik sorguları SERBEST: onlar
+#    genişlik değil GİRİŞ KİPİ sorgular ve ayrımın kendisidir.
+# ══════════════════════════════════════════════════════════════════════
+
+CSS_ROOT = ROOT.parent / 'css'
+SHARED_CSS_ENTRY = CSS_ROOT / 'app.css'
+DESKTOP_CSS_ENTRY = CSS_ROOT / 'app-desktop.css'
+VITE_CONFIG = ROOT.parent.parent / 'vite.config.ts'
+
+CSS_IMPORT_RE = re.compile(r"""@import\s+(?:url\()?['"]([^'"]+)['"]""")
+# `@media` başlığındaki genişlik ölçütü. `@container` KAPSAM DIŞI: o ekranı
+# değil kapsayıcıyı sorar ve bir cihaz seçimi değildir.
+MEDIA_WIDTH_RE = re.compile(r'@media[^{]*\b(?:min|max)-width\b')
+# YORUMLAR ÖNCE SİLİNİR. Bu dosyaların yorumları kuralın KENDİSİNİ anlatıyor
+# ("`max-width` ile bastırma yok") ve ham metinde arayan bir kapı, yasağı
+# açıklayan cümleyi ihlal sanardı — ilk koşuda tam bu oldu.
+CSS_COMMENT_RE = re.compile(r'/\*.*?\*/', re.S)
+
+
+def css_closure(entry):
+    """Bir CSS girişinden `@import` ile ulaşılan tüm yerel dosyalar."""
+    seen, stack = set(), [entry]
+    while stack:
+        path = stack.pop()
+        if path in seen or not path.is_file():
+            continue
+        seen.add(path)
+        try:
+            source = path.read_text(encoding='utf-8')
+        except (UnicodeDecodeError, OSError):
+            continue
+        for spec in CSS_IMPORT_RE.findall(source):
+            if not spec.startswith('.'):
+                continue  # paket adı (tailwindcss, flowbite) — cihazın konusu değil
+            target = (path.parent / spec).resolve()
+            if target.is_file():
+                stack.append(target)
+    return seen
+
+
+css_leaks = []
+
+if not DESKTOP_CSS_ENTRY.is_file():
+    css_leaks.append('resources/css/app-desktop.css is missing (the desktop style layer is declared but absent)')
+else:
+    shared_css = css_closure(SHARED_CSS_ENTRY)
+
+    if DESKTOP_CSS_ENTRY.resolve() in shared_css:
+        css_leaks.append(
+            'app-desktop.css is reachable from the SHARED css entry (app.css) — '
+            'the phone would download it'
+        )
+
+    desktop_css = css_closure(DESKTOP_CSS_ENTRY)
+
+    if SHARED_CSS_ENTRY.resolve() in desktop_css:
+        css_leaks.append(
+            'app-desktop.css imports the shared entry app.css — every shared byte '
+            'would be served twice'
+        )
+
+    # ÖLÜ KOD: katman Vite girdi listesinde yoksa hiç derlenmez.
+    if VITE_CONFIG.is_file():
+        vite_source = VITE_CONFIG.read_text(encoding='utf-8')
+        if 'resources/css/app-desktop.css' not in vite_source:
+            css_leaks.append(
+                'app-desktop.css is not a Vite input (dead: it would never be built)'
+            )
+
+    for path in sorted(desktop_css):
+        source = CSS_COMMENT_RE.sub('', path.read_text(encoding='utf-8'))
+        for match in MEDIA_WIDTH_RE.findall(source):
+            css_leaks.append(
+                f'{path.name} selects by WIDTH in a media query — the device '
+                'decision belongs to the server (use hover/pointer feature queries)'
+            )
+
+if css_leaks:
+    for leak in css_leaks:
+        print(f'adaptive-bundle-gate: {leak}', file=sys.stderr)
+    print('LEAK')
+    sys.exit(1)
+
+shared_css_bytes = weigh(css_closure(SHARED_CSS_ENTRY))
+desktop_css_bytes = weigh(css_closure(DESKTOP_CSS_ENTRY))
+print(f'adaptive-bundle-gate: shared css {shared_css_bytes:,} B source, '
+      f'desktop-only css {desktop_css_bytes:,} B source '
+      f'(mobile documents request 0 B of it)',
       file=sys.stderr)
 print('PASS')
 PY

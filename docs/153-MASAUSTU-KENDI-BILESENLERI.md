@@ -2,7 +2,14 @@
 
 **Paket:** `FF-256` · **Öncesi:** `docs/54` (adaptive cihaz yükleme), `docs/60`
 (bağlam paneli), `docs/115` S4/S5 (sipariş kuyruğu ve mutfak monitörü) ·
-**Global kural:** `TOUCH-FIRST-INTERFACE`
+**Sonrası:** `docs/151` (2. paket) · **Global kural:**
+`TOUCH-FIRST-INTERFACE`
+
+> **§8 ve §9 KISMEN AŞILDI.** `docs/151` (FF-259) §8'in adıyla saydığı M1
+> borcunu kapattı (kataloglar artık cihaz tanıyor), §9'un ekran listesinden
+> üçünü daha dönüştürdü (`media`, `team`, `ratings`) ve masaüstüne kendi stil
+> katmanını verdi. Bu belgenin DESENİ geçerliliğini koruyor; güncel sayılar
+> ve kalan ekran listesi `docs/151`'dedir.
 
 Sahibin cümlesi (2026-09-08):
 

@@ -52,6 +52,61 @@ final class AdaptiveServingTest extends TestCase
     }
 
     /**
+     * STİL DE CİHAZA GÖRE AYRILIR (`docs/151`).
+     *
+     * `docs/54` JavaScript'i ayırmıştı; stil hâlâ tekti. Masaüstünün kendi
+     * stil katmanı ayrı bir Vite girişidir ve yalnız masaüstü belgesinden
+     * istenir — yani telefon onun tek baytını indirmez.
+     *
+     * Bu test bir dosya adı aramıyor gibi görünebilir ama ölçtüğü şey somut:
+     * `@vite` derlenmiş varlığın adını belgeye yazar ve masaüstü katmanının
+     * adı `app.desktop` ile başlar. Telefonun belgesinde o ad geçiyorsa,
+     * telefon o dosyayı İSTİYOR demektir; hiçbir kuralı çizilmese bile
+     * indirilmiş ve ayrıştırılmıştır.
+     */
+    #[Test]
+    public function a_phone_is_never_served_the_desktop_style_layer(): void
+    {
+        $html = $this->renderWorkspaceShellFor(
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148',
+        );
+
+        $this->assertStringNotContainsString('app-desktop', $html);
+    }
+
+    #[Test]
+    public function a_desktop_is_served_the_desktop_style_layer(): void
+    {
+        $html = $this->renderWorkspaceShellFor(
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/120.0',
+        );
+
+        $this->assertStringContainsString('app-desktop', $html);
+    }
+
+    /**
+     * CİHAZ KARARI BELGEDE OKUNABİLİR.
+     *
+     * Masaüstü katmanı bütün kurallarını `[data-device='desktop']` kapsamında
+     * yazar. Nitelik yazılmazsa katman inen bir dosya olarak durur ama HİÇBİR
+     * kuralı uygulanmaz — ve bu, ekranda "stil yok" diye değil, "sanki hiç
+     * eklenmemiş" diye görünür. En pahalı arıza türü: sessiz.
+     */
+    #[Test]
+    public function the_document_carries_the_server_side_device_decision(): void
+    {
+        $desktop = $this->renderWorkspaceShellFor(
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/120.0',
+        );
+        $phone = $this->renderWorkspaceShellFor(
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148',
+        );
+
+        $this->assertStringContainsString('data-device="desktop"', $desktop);
+        $this->assertStringContainsString('data-device="mobile"', $phone);
+    }
+
+    /**
      * `Vary` olmadan adaptive yükleme SESSİZCE bozulur.
      *
      * Aynı adres cihaza göre farklı HTML döndürüyor. Araya giren herhangi bir

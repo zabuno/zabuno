@@ -287,8 +287,26 @@ const FROZEN_MODULE_FILENAMES = [
 // Enter yok) ve o yüzden mobil kuyrukta hiçbiri çizilmez.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+//
+// FF-259 (`docs/151`, `docs/153` §9 M1): SAYI İKİNCİ KEZ AŞAĞI İNDİ —
+// 1789'dan 1778'e, ON BİR anahtar. Hiçbir dize SİLİNMEDİ ve hiçbir cümle
+// değişmedi: bir üstteki paragrafın saydığı on bir masaüstü anahtarı ORTAK
+// katalogdan çıkıp cihazın kendi kataloğuna taşındı
+// (`i18n/workspace-desktop/ordering.ts`).
+//
+// Bu sayacın anlamı da bu paketle DARALDI ve daralması kasıtlı: artık
+// "çalışma alanının kaç dizesi var" değil, "TELEFONUN indirdiği kaç dize
+// var" sorusunu cevaplıyor. Masaüstünün kendi sayısı ayrı ölçülür
+// (`WorkspaceDesktopCatalog.test.ts`) ve ikisinin TOPLAMI çeviri alan
+// adının büyüklüğüdür — `i18n/domains.ts` iki tabloyu orada birleştirir,
+// yani PO/POT zinciri hiçbir dizeyi kaybetmez.
+//
+// Borç neden kapandı: `docs/153` §8 mobil paketin 833 baytını bu on bir
+// dizeye bağlamıştı ve sebebini de yazmıştı — kataloglar cihaz tanımıyordu.
+// Yön yanlıştı: masaüstüne taşınan her yeni ekran telefonun paketini biraz
+// daha büyütecekti.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'e1a3729def42d9f5655197c47320b648cbdf1d355b7ac996e0ac9753e96ad4a3';
+    'f9101db45b20e19291508407806f3bd47e235a69b9fc01bf6de31e29271d934e';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -296,7 +314,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1789;
+const FROZEN_LEGACY_KEY_COUNT = 1778;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

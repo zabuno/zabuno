@@ -2804,6 +2804,38 @@ msgstr "{count} yerde kullanılıyor"
 msgid "workspace.media.library.assets.heading"
 msgstr "Görseller"
 
+#: workspace:workspace.media.library.desktop.bulkRegion
+msgid "workspace.media.library.desktop.bulkRegion"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.count
+msgid "workspace.media.library.desktop.count"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.detail.empty
+msgid "workspace.media.library.desktop.detail.empty"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.detail.region
+msgid "workspace.media.library.desktop.detail.region"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.detail.usage
+msgid "workspace.media.library.desktop.detail.usage"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.grid
+msgid "workspace.media.library.desktop.grid"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.menu
+msgid "workspace.media.library.desktop.menu"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.shortcuts
+msgid "workspace.media.library.desktop.shortcuts"
+msgstr ""
+
 #: workspace:workspace.media.library.detail.actionFailed
 msgid "workspace.media.library.detail.actionFailed"
 msgstr "Bu işlem olmadı. Hiçbir şey değişmedi."
@@ -6188,6 +6220,38 @@ msgstr ""
 msgid "workspace.ratings.description"
 msgstr ""
 
+#: workspace:workspace.ratings.desktop.detail.empty
+msgid "workspace.ratings.desktop.detail.empty"
+msgstr ""
+
+#: workspace:workspace.ratings.desktop.detail.region
+msgid "workspace.ratings.desktop.detail.region"
+msgstr ""
+
+#: workspace:workspace.ratings.desktop.list
+msgid "workspace.ratings.desktop.list"
+msgstr ""
+
+#: workspace:workspace.ratings.desktop.shortcuts
+msgid "workspace.ratings.desktop.shortcuts"
+msgstr ""
+
+#: workspace:workspace.ratings.desktop.sort
+msgid "workspace.ratings.desktop.sort"
+msgstr ""
+
+#: workspace:workspace.ratings.desktop.sort.lowest
+msgid "workspace.ratings.desktop.sort.lowest"
+msgstr ""
+
+#: workspace:workspace.ratings.desktop.sort.most
+msgid "workspace.ratings.desktop.sort.most"
+msgstr ""
+
+#: workspace:workspace.ratings.desktop.sort.name
+msgid "workspace.ratings.desktop.sort.name"
+msgstr ""
+
 #: workspace:workspace.ratings.empty.action
 msgid "workspace.ratings.empty.action"
 msgstr ""
@@ -6919,6 +6983,58 @@ msgstr "Davet oluşturuldu."
 #: workspace:workspace.team.invite.unavailable
 msgid "workspace.team.invite.unavailable"
 msgstr "Ekip arkadaşı davet etme henüz bağlı değil."
+
+#: workspace:workspace.team.members.desktop.bulkRegion
+msgid "workspace.team.members.desktop.bulkRegion"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.bulkRole
+msgid "workspace.team.members.desktop.bulkRole"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.clearSelection
+msgid "workspace.team.members.desktop.clearSelection"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.column.email
+msgid "workspace.team.members.desktop.column.email"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.column.name
+msgid "workspace.team.members.desktop.column.name"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.column.role
+msgid "workspace.team.members.desktop.column.role"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.kept
+msgid "workspace.team.members.desktop.kept"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.menu
+msgid "workspace.team.members.desktop.menu"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.outcome
+msgid "workspace.team.members.desktop.outcome"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.remove.named
+msgid "workspace.team.members.desktop.remove.named"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.row.label
+msgid "workspace.team.members.desktop.row.label"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.selected
+msgid "workspace.team.members.desktop.selected"
+msgstr ""
+
+#: workspace:workspace.team.members.desktop.shortcuts
+msgid "workspace.team.members.desktop.shortcuts"
+msgstr ""
 
 #: workspace:workspace.team.members.empty
 msgid "workspace.team.members.empty"

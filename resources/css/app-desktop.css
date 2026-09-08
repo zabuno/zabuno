@@ -1,0 +1,513 @@
+/*
+    MASAÜSTÜNÜN KENDİ STİL KATMANI — `docs/151`.
+
+    Sahibin emri (2026-09-08): *"ama artık desktop adaptive components,
+    desktop adaptive styles, yap"*.
+
+    `docs/153` masaüstüne kendi BİLEŞENLERİNİ verdi ama stil hâlâ tekti:
+    `resources/css/app.css` her cihaza aynı tabanı gönderiyordu ve
+    masaüstünün kendine ait tek bir kuralı yoktu. Bu dosya o boşluğu
+    kapatır.
+
+    ═══ NASIL YÜKLENİR ═══
+
+    AYRI BİR VITE GİRİŞİDİR (`vite.config.ts` girdi listesi) ve yalnız
+    `resources/views/workspace-app.blade.php` içindeki MASAÜSTÜ dalından
+    istenir. Telefona giden belge bu dosyanın adını hiç anmaz, dolayısıyla
+    tek baytını indirmez. Kapılar:
+
+    - `scripts/adaptive-bundle-gate` — `app.css` bu dosyayı `@import`
+      edemez (etseydi mobil pakete girerdi ve "yalnız masaüstünde" cümlesi
+      yazıldığı anda yanlış olurdu).
+    - `tests/Feature/Device/AdaptiveServingTest` — telefonun belgesinde bu
+      dosyanın adı GEÇEMEZ.
+
+    ═══ NEDEN AYRICA KAPSAMLI (`[data-device='desktop']`) ═══
+
+    Ayrı dosya olması "indirilmez"i garanti eder; kapsam ise "yanlışlıkla
+    uygulanmaz"ı. İkisi farklı sorulara cevap verir ve ikisi de gerekli:
+    Storybook, statik dışa aktarım ya da yarın açılacak bir önizleme
+    yüzeyi bütün CSS'i tek belgeye toplayabilir. Kapsam olmasaydı, o
+    belgede 320 tabanı sessizce masaüstü yoğunluğuna dönerdi.
+
+    `data-device` niteliğini SUNUCU yazar (`App\Support\Device\DeviceClass`).
+    Yani bu bir tarayıcı kararı değil, sunucunun verdiği kararın belgede
+    görünür hâlidir.
+
+    ═══ GENİŞLİK SORGUSU YOK — GİRİŞ KİPİ SORGUSU VAR ═══
+
+    Bu dosyada tek bir `min-width`/`max-width` cihaz seçimi YOKTUR ve
+    olamaz (`scripts/adaptive-bundle-gate` bunu kırar). Cihaz kararı
+    sunucuda verilir.
+
+    Buna karşılık `@media (hover: hover) and (pointer: fine)` SERBEST ve
+    bu katmanın belkemiğidir: o bir genişlik değil GİRİŞ KİPİ sorgusudur
+    ve `docs/153` §2'nin ayrımının ta kendisidir. Önemi somut: `DeviceClass`
+    iPad'i masaüstü sayar (bağlam paneli için yeterli genişliği var), ama
+    iPad'de parmak vardır. Yoğunluğu genişliğe bağlasaydım iPad'de dokunma
+    hedefleri 44 pikselin altına inerdi — yani "masaüstü stili" bir
+    erişilebilirlik kusuru üretirdi. Yoğunluk bu yüzden `pointer: fine`
+    ardındadır: imleci olan makine sıkışır, parmakla kullanılan makine
+    320 tabanında kalır.
+
+    ═══ 320 TABANI YERİNDE DURUR ═══
+
+    Bu dosya tabanın YERİNE değil ÜSTÜNE gelir. Hiçbir taban kuralı
+    `max-width` ile bastırılmaz, hiçbir şey "mobilde gizle" ile
+    saklanmaz — mobil belge bu dosyayı zaten hiç görmez, dolayısıyla
+    bastırılacak bir şey de yoktur.
+
+    ═══ HAREKET ═══
+
+    `prefers-reduced-motion` MUTLAK. Bu katmanın ürettiği tek hareket,
+    satır eylemlerinin görünürlük geçişidir ve azaltılmış hareket
+    isteyen kullanıcıda o geçiş de kapanır.
+*/
+
+/* ════════════════════════════════════════════════════════════════════
+   1. JETONLAR — masaüstü yoğunluğunun sayıları tek yerde durur.
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-device='desktop'] {
+    /*
+        KALICI BÖLME GENİŞLİĞİ. Bağlam panelinin 336 pikseline yakın ama
+        ondan dar: denetçi rayı kabuğun kenarında durur, buradaki bölme
+        ise ekranın İÇİNDE bir sütundur ve listeye yer bırakmak zorundadır.
+    */
+    --dk-pane: 20rem;
+
+    /*
+        SÜTUNLAR SIKIŞMASIN. Liste bu genişliğin altına inerse iki bölme
+        tek bölmeden kötü olur; o yüzden bölme yalnız liste bu kadar yer
+        bulabildiğinde açılır (`.dk-split` içindeki `min()` hesabı).
+    */
+    --dk-list-min: 28rem;
+
+    /*
+        OKUNABİLİR TAVAN. 1920 piksellik bir ekranda tam genişliğe yayılan
+        bir tablo, gözü satır boyunca metrelerce yürütür. Tavan `ch`
+        cinsindendir: ölçü karakter sayısıdır, piksel değil.
+    */
+    --dk-measure-wide: min(100%, 150ch);
+
+    /* Bağlam menüsü — imleçle ve klavyeyle açılan AYNI menü. */
+    --dk-menu-min: 12rem;
+
+    /*
+        TABAN YOĞUNLUĞU DEĞİŞMEZ. Bu üç jeton burada yalnız TANIMLANIR;
+        gerçek daraltma aşağıda, `pointer: fine` ardında yapılır. Böylece
+        parmakla kullanılan bir masaüstü makinesi (iPad) 320 tabanının
+        hedeflerini korur.
+    */
+    --dk-row-h: var(--aep-row-h, 44px);
+    --dk-control-h: var(--aep-control-h, 44px);
+    --dk-pad-block: var(--aep-control-pad-block, 10px);
+    --dk-pad-inline: var(--aep-control-pad-inline, 12px);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   2. YOĞUNLUK — YALNIZ İMLEÇLİ MAKİNEDE.
+
+   320 tabanının bol boşluğu masaüstünde israftır: aynı anda çok şey
+   görmek geniş ekranın tek gerçek kazancıdır ve satır yüksekliği onu
+   harcayan ilk şeydir. Ama yoğunluk FONTU KÜÇÜLTEREK sağlanmaz —
+   `TOUCH-FIRST-INTERFACE` §3 bunu açıkça yasaklıyor ve AEP yoğunluk
+   jetonlarının kendi yorumu da aynı: "Density changes padding only —
+   fonts never shrink."
+
+   Hedef boyu 32 piksele iner ve orada durur: WCAG 2.2 AA'nın işaretleyici
+   için ölçtüğü asgari 24×24'ün üstünde, dokunma için gereken 44'ün
+   altında. Aradaki farkı meşru kılan tek şey, buranın parmakla
+   kullanılmadığının SORULMUŞ olmasıdır.
+   ════════════════════════════════════════════════════════════════════ */
+
+@media (hover: hover) and (pointer: fine) {
+    [data-device='desktop'] {
+        --dk-row-h: 32px;
+        --dk-control-h: 32px;
+        --dk-pad-block: 4px;
+        --dk-pad-inline: 8px;
+
+        /*
+            AEP yoğunluk jetonları da BU KAPSAMDA yeniden bağlanır, yani
+            masaüstü paketindeki paylaşılan bileşenler de sıkışır. Değer
+            AEP'nin kendi `compact` kipinden gelir — yeni bir sayı
+            uydurmak, tasarım sisteminin dışında ikinci bir ölçek kurmak
+            olurdu.
+        */
+        --aep-control-h: 36px;
+        --aep-row-h: 36px;
+        --aep-control-pad-block: 6px;
+        --aep-control-pad-inline: 8px;
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   3. ÇOK BÖLMELİ DÜZEN
+
+   Telefonda ikinci sütun YOKTUR ve aynı bilgi tek akışta durur. Burada
+   ayrılmasının sebebi süs değil: tarama yaparken satırların KISA kalması
+   gerekir, ayrıntı ise tek bir yerde ve hep aynı yerde okunur.
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-device='desktop'] .dk-split {
+    display: grid;
+    gap: var(--aep-space-4, 16px);
+    /*
+        BÖLME KOŞULLU AÇILIR ve koşul bir medya sorgusu DEĞİL, kapsayıcının
+        kendi genişliğidir. Fark önemli: kenar çubuğu açılıp kapandığında
+        ekran genişliği değişmez ama bu ızgaranın genişliği değişir — medya
+        sorgusuyla yazılsaydı, dar bir sütunda iki bölme zorla çizilirdi.
+    */
+    grid-template-columns: minmax(0, 1fr);
+}
+
+@container (min-width: 56rem) {
+    [data-device='desktop'] .dk-split {
+        grid-template-columns: minmax(var(--dk-list-min), 1fr) var(--dk-pane);
+    }
+}
+
+/*
+    KAPSAYICI SORGUSUNUN DAYANAĞI. `.dk-split` ve `.dk-columns` ekran
+    genişliğini değil BU kutunun genişliğini sorar; sorulacak bir kutu
+    olmadan ikisi de tek sütunda kalır (ve bu, kırık değil, dürüst bir
+    varsayılandır).
+*/
+[data-device='desktop'] .dk-frame {
+    container-type: inline-size;
+}
+
+/*
+    KALICI BÖLME KENDİ KAYDIRMASINI TAŞIR.
+
+    Sayfayla birlikte kaydırılsaydı, uzun bir listede seçili satırın
+    ayrıntısı ekrandan çıkardı — yani "hep aynı yerde" sözü tutulmazdı.
+    `position: sticky` üst kenardan bir boşlukla yapışır ve kendi içinde
+    kaydırılır.
+*/
+[data-device='desktop'] .dk-pane {
+    align-self: start;
+    position: sticky;
+    top: var(--aep-space-4, 16px);
+    max-height: calc(100dvh - var(--aep-space-7, 48px));
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 8px);
+    padding: var(--aep-space-3, 12px);
+    background: var(--surface);
+}
+
+/* Liste kendi yüksekliğini alır; iki bölme birbirini itmez. */
+[data-device='desktop'] .dk-listbox {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 8px);
+    background: var(--surface);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   4. SATIR — tarama için yazılmıştır
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-device='desktop'] .dk-row {
+    display: grid;
+    align-items: center;
+    gap: var(--aep-space-3, 12px);
+    min-height: var(--dk-row-h);
+    padding: var(--dk-pad-block) var(--dk-pad-inline);
+    border-bottom: 1px solid var(--border);
+}
+
+/*
+    SÜTUN ŞABLONU SATIRIN KENDİ İŞİDİR, ızgaranın değil.
+
+    Her masaüstü listesinin sütunları farklıdır (ekipte ad/e-posta/rol,
+    kuyrukta masa/süre/tutar). Şablonu tek bir yerde toplamak, üçüncü liste
+    geldiğinde ya bir sütunu bölmeye zorlar ya da hepsini "auto"ya kaçırır.
+*/
+[data-device='desktop'] .dk-row[data-columns='team'] {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.6fr) minmax(0, 0.8fr) auto;
+}
+
+[data-device='desktop'] .dk-row[data-columns='ratings'] {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+[data-device='desktop'] .dk-row:last-child {
+    border-bottom: 0;
+}
+
+[data-device='desktop'] .dk-row[aria-selected='true'] {
+    background: var(--surface-hover, var(--surface-subtle));
+}
+
+/*
+    ETKİN SATIR (roving tabindex'in üzerinde durduğu satır) bir ANAHAT ile
+    işaretlenir, arka planla değil: seçim zaten arka planı kullanıyor ve
+    ikisi aynı dili konuşsaydı "seçili" ile "üzerinde" ayırt edilemezdi.
+*/
+[data-device='desktop'] .dk-row[data-active='true'] {
+    outline: 2px solid var(--focus, var(--border-strong));
+    outline-offset: -2px;
+}
+
+/*
+    ODAK HALKASI İÇERİ ÇİZİLİR.
+
+    Dışa çizilen bir halka, kendi kaydırma kutusu olan bir bölmenin ilk ve
+    son satırında kırpılır — yani klavyeyle gezen kullanıcı tam da listenin
+    ucundayken nerede olduğunu göremez.
+*/
+[data-device='desktop'] .dk-row:focus-visible,
+[data-device='desktop'] .dk-tile:focus-visible {
+    outline: 2px solid var(--focus, var(--border-strong));
+    outline-offset: -2px;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   5. `hover` İLE AÇIĞA ÇIKAN EYLEMLER
+
+   ANLAM `hover`da KALMAZ. Burada gizlenen şey yalnız EYLEM DÜĞMELERİNİN
+   GÖRÜNÜRLÜĞÜDÜR; aynı eylemler her zaman (a) satırın bağlam menüsünde,
+   (b) klavye kısayolunda ve (c) çoklu seçim şeridinde durur. Yani hiçbir
+   bilgi ve hiçbir yetenek yalnız imleçle ulaşılabilir değildir
+   (`docs/153` §7).
+
+   `focus-within` ŞART: yalnız `hover` yazılsaydı klavyeyle gezen kullanıcı
+   düğmeleri hiç göremezdi — ve bu ekranların asıl kullanıcısı klavyeyle
+   çalışıyor.
+   ════════════════════════════════════════════════════════════════════ */
+
+/*
+    TABAN: HER ZAMAN GÖRÜNÜR. Gizleme aşağıda, yalnız imleçli makinede
+    eklenir. Ters sırada yazılsaydı (gizle, sonra dokunmada geri getir)
+    dokunmalı bir masaüstü makinesinde tek bir CSS hatası eylemleri
+    tamamen erişilemez yapardı.
+*/
+[data-device='desktop'] .dk-rowactions {
+    display: flex;
+    gap: var(--aep-space-1, 4px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    [data-device='desktop'] .dk-rowactions {
+        opacity: 0;
+        transition: opacity 120ms ease-out;
+    }
+
+    [data-device='desktop'] .dk-row:hover .dk-rowactions,
+    [data-device='desktop'] .dk-row:focus-within .dk-rowactions,
+    [data-device='desktop'] .dk-row[data-active='true'] .dk-rowactions,
+    [data-device='desktop'] .dk-tile:hover .dk-rowactions,
+    [data-device='desktop'] .dk-tile:focus-within .dk-rowactions {
+        opacity: 1;
+    }
+
+    [data-device='desktop'] .dk-row:hover,
+    [data-device='desktop'] .dk-tile:hover {
+        background: var(--surface-hover, var(--surface-subtle));
+    }
+}
+
+/*
+    AZALTILMIŞ HAREKET — MUTLAK. Görünürlük yine değişir (bilgi kaybı
+    olmaz), yalnız geçiş anlıklaşır.
+*/
+@media (prefers-reduced-motion: reduce) {
+    [data-device='desktop'] .dk-rowactions {
+        transition: none;
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   6. BAĞLAM MENÜSÜ — imleçle ve klavyeyle AYNI menü
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-device='desktop'] .dk-menu {
+    position: fixed;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    min-width: var(--dk-menu-min);
+    padding: var(--aep-space-1, 4px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 8px);
+    background: var(--surface);
+    /*
+        YÜKSELTİ JETONU AEP'DEN GELİR ve koyu temada `none` olur — orada
+        gölgenin yerini ton adımı ve 1 piksellik kenarlık alır. Menüye kendi
+        gölgesini yazsaydık koyu temada yüzen bir kutu kalırdı.
+    */
+    box-shadow: var(--aep-elevation-overlay);
+}
+
+[data-device='desktop'] .dk-menuitem {
+    display: flex;
+    align-items: center;
+    gap: var(--aep-space-2, 8px);
+    min-height: var(--dk-control-h);
+    padding: var(--dk-pad-block) var(--dk-pad-inline);
+    border-radius: var(--radius-md, 6px);
+    text-align: start;
+    color: var(--fg);
+}
+
+[data-device='desktop'] .dk-menuitem[data-tone='danger'] {
+    color: var(--fg-danger);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    [data-device='desktop'] .dk-menuitem:hover {
+        background: var(--surface-hover, var(--surface-subtle));
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   7. TOPLU İŞLEM ŞERİDİ VE KISAYOL SATIRI
+
+   İkisi de telefonda hiç çizilmez: orada ne çoklu seçim ne de klavye var.
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-device='desktop'] .dk-bulkbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aep-space-3, 12px);
+    padding: var(--aep-space-2, 8px) var(--aep-space-3, 12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 8px);
+    background: var(--surface-subtle);
+}
+
+[data-device='desktop'] .dk-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--aep-space-2, 8px);
+    color: var(--fg-muted);
+}
+
+[data-device='desktop'] .dk-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--aep-space-3, 12px);
+}
+
+/*
+    MASAÜSTÜ DÜĞMESİ — sıkı ama 24×24'ün altına inmez (WCAG 2.2 AA 2.5.8).
+    Yazı tipi küçülmez; küçülen yalnız dolgudur.
+*/
+[data-device='desktop'] .dk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aep-space-1, 4px);
+    min-height: var(--dk-control-h);
+    min-width: var(--dk-control-h);
+    justify-content: center;
+    padding: var(--dk-pad-block) var(--dk-pad-inline);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 6px);
+    background: var(--surface);
+    color: var(--fg);
+}
+
+[data-device='desktop'] .dk-btn[data-tone='danger'] {
+    border-color: var(--border-danger);
+    color: var(--fg-danger);
+}
+
+[data-device='desktop'] .dk-btn[disabled] {
+    opacity: 0.5;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   8. IZGARA — aynı anda çok nesne görmek
+
+   Telefonda ızgara tek sütundur ve orada öyle kalır. Burada sütun sayısı
+   kapsayıcıya göre kendiliğinden büyür: sabit bir sütun sayısı, kenar
+   çubuğu açıldığında yanlış olurdu.
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-device='desktop'] .dk-grid {
+    display: grid;
+    gap: var(--aep-space-3, 12px);
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+[data-device='desktop'] .dk-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aep-space-1, 4px);
+    padding: var(--aep-space-2, 8px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg, 8px);
+    background: var(--surface);
+}
+
+[data-device='desktop'] .dk-tile[aria-selected='true'] {
+    background: var(--surface-hover, var(--surface-subtle));
+    border-color: var(--border-strong);
+}
+
+[data-device='desktop'] .dk-tile[data-active='true'] {
+    outline: 2px solid var(--focus, var(--border-strong));
+    outline-offset: -2px;
+}
+
+/*
+    ÖNİZLEME KUTUSU sabit orandadır: değişken oranlı kutular ızgarayı her
+    satırda farklı yükseklikte kırar ve tarama ritmi kaybolur.
+*/
+[data-device='desktop'] .dk-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-md, 6px);
+    background: var(--surface-subtle);
+}
+
+[data-device='desktop'] .dk-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   9. GENİŞ EKRANDA OKUNABİLİR ÖLÇÜ
+
+   Tavan bir CİHAZ seçimi değil, bir OKUNABİLİRLİK sınırıdır: masaüstü
+   paketinde yaşar çünkü 320 pikselde uygulanacak bir tavan yoktur.
+   ════════════════════════════════════════════════════════════════════ */
+
+[data-device='desktop'] .dk-measure {
+    max-width: var(--dk-measure-wide);
+}
+
+/*
+    ÇOK SÜTUNLU İÇERİK yalnız kapsayıcı gerçekten genişse ikiye ayrılır.
+    Yine kapsayıcı sorgusu: kenar çubuğu açıkken ekran hâlâ 1920 pikseldir
+    ama sütun değildir.
+*/
+[data-device='desktop'] .dk-columns {
+    display: grid;
+    gap: var(--aep-space-4, 16px);
+    grid-template-columns: minmax(0, 1fr);
+}
+
+@container (min-width: 64rem) {
+    [data-device='desktop'] .dk-columns {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
