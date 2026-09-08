@@ -114,6 +114,7 @@ use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
 use App\Application\Workspace\Port\SetupProgressPort;
 use App\Application\Workspace\Port\WorkspaceAuditTrailPort;
 use App\Domain\Ai\Capability;
+use App\Domain\Legal\CompanyProfile;
 use App\Domain\Media\PdfInspector;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SvgSanitizer;
@@ -246,6 +247,7 @@ use App\Infrastructure\Workspace\EloquentSetupProgress;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
 use App\Support\Localization\PseudoLocalizer;
 use App\Support\Localization\SiteText;
+use App\Support\Site\CompanyIdentity;
 use App\Support\Site\HomeStory;
 use App\Support\Site\SiteNavigation;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -889,6 +891,23 @@ final class AppServiceProvider extends ServiceProvider
                 $view->with('nav', app(SiteNavigation::class)->forShell(
                     (string) ($data['anchorPrefix'] ?? '/'),
                 ));
+            }
+
+            /*
+                SATICI KİMLİĞİ DE KABUĞUN VERİSİ (FF-237) — aynı desen.
+
+                Altbilginin beşinci satırı satıcının kim olduğunu söyler ve o
+                satır her kurumsal adreste çizilir. Değeri elle geçirmeyi
+                unutan bir görünüm ÇÖKERDİ; gezinti için verilen kararın
+                aynısı burada da geçerli. Değer `.env` → `config/legal.php`
+                yolundan gelir, veritabanına dokunmaz (`CompanyIdentity`).
+            */
+            if (! array_key_exists('companyRows', $data)) {
+                $company = CompanyProfile::fromConfig();
+                $siteText = $data['st'] ?? app(SiteText::class)->all();
+
+                $view->with('companyRows', CompanyIdentity::rows($company, $siteText));
+                $view->with('companyComplete', $company->isComplete());
             }
         });
 

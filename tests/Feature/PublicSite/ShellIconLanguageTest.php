@@ -48,6 +48,10 @@ final class ShellIconLanguageTest extends TestCase
         'views/components/phosphor.blade.php',
         'css/site-shell.css',
         'css/daisy-theme.css',
+        /* Kurumsal görsel kimlik (`docs/145`). Bir CSS dosyasına emoji
+           yazmak tuhaf görünür ama `content: '…'` tam olarak onu yapar ve
+           kurala bir istisna açmamak için liste eksiksiz tutulur. */
+        'css/site-identity.css',
     ];
 
     // --- ICON-01 ---------------------------------------------------------------

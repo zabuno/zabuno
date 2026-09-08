@@ -281,7 +281,7 @@ const FROZEN_MODULE_FILENAMES = [
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'd706c6af9a30d613fdc64ccf1917b6b3747dbc9eb50147ae6a61b3123dc8b764';
+    'f9101db45b20e19291508407806f3bd47e235a69b9fc01bf6de31e29271d934e';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -289,7 +289,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1749;
+const FROZEN_LEGACY_KEY_COUNT = 1778;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

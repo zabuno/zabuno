@@ -1,0 +1,403 @@
+{
+    "generatedBy": "php artisan authorization:matrix",
+    "source": [
+        "app/Domain/Authorization/Permission.php",
+        "app/Domain/Authorization/RolePermissions.php",
+        "app/Domain/Tenancy/MembershipRole.php"
+    ],
+    "permissions": [
+        {
+            "key": "workspace.view",
+            "group": "workspace",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "member",
+                "kitchen"
+            ]
+        },
+        {
+            "key": "workspace.manage",
+            "group": "workspace",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        },
+        {
+            "key": "menu.view",
+            "group": "menu",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "member",
+                "kitchen"
+            ]
+        },
+        {
+            "key": "menu.manage",
+            "group": "menu",
+            "roles": [
+                "owner",
+                "manager",
+                "editor"
+            ]
+        },
+        {
+            "key": "menu.publish",
+            "group": "menu",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        },
+        {
+            "key": "menu.allergens.manage",
+            "group": "menu",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "kitchen"
+            ]
+        },
+        {
+            "key": "menu.stock.manage",
+            "group": "menu",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "kitchen"
+            ]
+        },
+        {
+            "key": "qr.view",
+            "group": "qr",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "member"
+            ]
+        },
+        {
+            "key": "qr.create",
+            "group": "qr",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        },
+        {
+            "key": "qr.disable",
+            "group": "qr",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        },
+        {
+            "key": "qr.design.manage",
+            "group": "qr",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        },
+        {
+            "key": "analytics.view",
+            "group": "analytics",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "member"
+            ]
+        },
+        {
+            "key": "billing.view",
+            "group": "billing",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        },
+        {
+            "key": "billing.manage",
+            "group": "billing",
+            "roles": [
+                "owner"
+            ]
+        },
+        {
+            "key": "security.evidence.view",
+            "group": "security",
+            "roles": [
+                "owner"
+            ]
+        },
+        {
+            "key": "media.manage",
+            "group": "media",
+            "roles": [
+                "owner",
+                "manager",
+                "editor"
+            ]
+        },
+        {
+            "key": "media.download_original",
+            "group": "media",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "member"
+            ]
+        },
+        {
+            "key": "order.view",
+            "group": "order",
+            "roles": [
+                "owner",
+                "manager",
+                "kitchen"
+            ]
+        },
+        {
+            "key": "order.confirm",
+            "group": "order",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        },
+        {
+            "key": "order.kitchen",
+            "group": "order",
+            "roles": [
+                "owner",
+                "manager",
+                "kitchen"
+            ]
+        },
+        {
+            "key": "order.settings",
+            "group": "order",
+            "roles": [
+                "owner"
+            ]
+        },
+        {
+            "key": "workspace.data.export",
+            "group": "workspace",
+            "roles": [
+                "owner"
+            ]
+        },
+        {
+            "key": "workspace.data.erase",
+            "group": "workspace",
+            "roles": [
+                "owner"
+            ]
+        },
+        {
+            "key": "rating.view",
+            "group": "rating",
+            "roles": [
+                "owner",
+                "manager",
+                "editor",
+                "member"
+            ]
+        },
+        {
+            "key": "rating.reply",
+            "group": "rating",
+            "roles": [
+                "owner",
+                "manager"
+            ]
+        }
+    ],
+    "roles": [
+        {
+            "key": "owner",
+            "granted": [
+                "workspace.view",
+                "workspace.manage",
+                "menu.view",
+                "menu.manage",
+                "menu.publish",
+                "menu.allergens.manage",
+                "menu.stock.manage",
+                "qr.view",
+                "qr.create",
+                "qr.disable",
+                "qr.design.manage",
+                "analytics.view",
+                "billing.view",
+                "billing.manage",
+                "security.evidence.view",
+                "media.manage",
+                "media.download_original",
+                "order.view",
+                "order.confirm",
+                "order.kitchen",
+                "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
+                "rating.view",
+                "rating.reply"
+            ],
+            "denied": [],
+            "invitable": false,
+            "removable": false,
+            "ownershipTransferable": false
+        },
+        {
+            "key": "manager",
+            "granted": [
+                "workspace.view",
+                "workspace.manage",
+                "menu.view",
+                "menu.manage",
+                "menu.publish",
+                "menu.allergens.manage",
+                "menu.stock.manage",
+                "qr.view",
+                "qr.create",
+                "qr.disable",
+                "qr.design.manage",
+                "analytics.view",
+                "billing.view",
+                "media.manage",
+                "media.download_original",
+                "order.view",
+                "order.confirm",
+                "order.kitchen",
+                "rating.view",
+                "rating.reply"
+            ],
+            "denied": [
+                "billing.manage",
+                "security.evidence.view",
+                "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase"
+            ],
+            "invitable": true,
+            "removable": true,
+            "ownershipTransferable": true
+        },
+        {
+            "key": "editor",
+            "granted": [
+                "workspace.view",
+                "menu.view",
+                "menu.manage",
+                "menu.allergens.manage",
+                "menu.stock.manage",
+                "qr.view",
+                "analytics.view",
+                "media.manage",
+                "media.download_original",
+                "rating.view"
+            ],
+            "denied": [
+                "workspace.manage",
+                "menu.publish",
+                "qr.create",
+                "qr.disable",
+                "qr.design.manage",
+                "billing.view",
+                "billing.manage",
+                "security.evidence.view",
+                "order.view",
+                "order.confirm",
+                "order.kitchen",
+                "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
+                "rating.reply"
+            ],
+            "invitable": true,
+            "removable": true,
+            "ownershipTransferable": true
+        },
+        {
+            "key": "member",
+            "granted": [
+                "workspace.view",
+                "menu.view",
+                "qr.view",
+                "analytics.view",
+                "media.download_original",
+                "rating.view"
+            ],
+            "denied": [
+                "workspace.manage",
+                "menu.manage",
+                "menu.publish",
+                "menu.allergens.manage",
+                "menu.stock.manage",
+                "qr.create",
+                "qr.disable",
+                "qr.design.manage",
+                "billing.view",
+                "billing.manage",
+                "security.evidence.view",
+                "media.manage",
+                "order.view",
+                "order.confirm",
+                "order.kitchen",
+                "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
+                "rating.reply"
+            ],
+            "invitable": false,
+            "removable": true,
+            "ownershipTransferable": false
+        },
+        {
+            "key": "kitchen",
+            "granted": [
+                "workspace.view",
+                "menu.view",
+                "menu.allergens.manage",
+                "menu.stock.manage",
+                "order.view",
+                "order.kitchen"
+            ],
+            "denied": [
+                "workspace.manage",
+                "menu.manage",
+                "menu.publish",
+                "qr.view",
+                "qr.create",
+                "qr.disable",
+                "qr.design.manage",
+                "analytics.view",
+                "billing.view",
+                "billing.manage",
+                "security.evidence.view",
+                "media.manage",
+                "media.download_original",
+                "order.confirm",
+                "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
+                "rating.view",
+                "rating.reply"
+            ],
+            "invitable": true,
+            "removable": true,
+            "ownershipTransferable": false
+        }
+    ]
+}

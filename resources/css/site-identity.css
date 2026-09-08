@@ -1,0 +1,1062 @@
+/*
+    KURUMSAL GÖRSEL KİMLİK — kurumsal sitenin KENDİ paleti, ölçeği ve yüzey dili.
+
+    Kanonik kayıt: `docs/145-KURUMSAL-GORSEL-KIMLIK.md`.
+
+    ═══ SAHİBİN KARARI (2026-09-08) — ÖNCEKİNİ EZER ═══
+
+    `docs/136` (FF-232) kurumsal sitenin daisyUI temasının panelin marka
+    jetonlarından (`--aep-*`) türemesini şart koşuyordu. Gerekçesi gerçekti:
+    iki renk kaynağı bir gün ayrışır.
+
+    Ama ölçülen sonuç şuydu: daisyUI kuruldu, tema kuruldu, kapı yeşile döndü
+    ve EKRANDA HİÇBİR ŞEY DEĞİŞMEDİ. Aynı renkler, aynı tipografi, aynı sade
+    sayfa. Çünkü bir panelin jetonları bir panel için seçilmişti: sakin,
+    düz (Flat 2.0), gölgesiz, dikkat çekmemek üzere. Kurumsal sitenin işi ise
+    tam tersidir — dikkat çekmek.
+
+    Sahip bunu gördü ve kısıtı kaldırdı:
+
+        *"temanın mevcut marka jetonlarını sikerim, yeter artık."*
+
+    ve defalarca tekrar ettiği hedef:
+
+        *"bir uzay teknolojileri şirketi gibi, abartı dursun, görünsün,
+        hissettirsin."*
+
+    ═══ NE DEĞİŞTİ — TEK CÜMLE ═══
+
+        Kurumsal sitenin renk kaynağı artık `--zc-*` jetonlarıdır ve bu
+        dosya onların TEK tanımıdır. Panelin `--aep-*` jetonlarına hiç
+        bakmaz.
+
+    ═══ İKİ KAYNAK OLMASI BİR KUSUR DEĞİL Mİ ═══
+
+    `docs/136` §3'ün korkusu haklıydı ama YANLIŞ ŞEYE uygulanmıştı. İki renk
+    kaynağının tehlikeli olduğu durum, İKİSİNİN DE AYNI ŞEYİ anlatmaya
+    çalışmasıdır: aynı düğme, aynı kart, aynı gri, iki dosyada iki kez
+    yazılırsa bir gün ayrışır ve hangisinin doğru olduğu belirsizleşir.
+
+    Burada durum bu değil. İki AYRI ÜRÜN YÜZEYİ var:
+
+    | Yüzey            | Kim bakar                  | İşi ne                      | Kaynak    |
+    |------------------|----------------------------|-----------------------------|-----------|
+    | Panel (`/app`)   | Restoran sahibi, her gün   | Sekiz saat çalışmak         | `--aep-*` |
+    | Kurumsal site    | Ziyaretçi, bir kez         | İkna etmek, sonra çekilmek  | `--zc-*`  |
+
+    Sekiz saat bakılan bir ekranın ışıması yorar; bir kez bakılan bir sayfanın
+    ışımaması unutulur. Aynı jetonu ikisine birden vermek, ikisini de
+    ortalamaktı: panel gereksiz gürültülü, site gereksiz sessiz.
+
+    AYRIŞMA RİSKİ ORTADAN KALKMIYOR, YER DEĞİŞTİRİYOR ve görünür oluyor: iki
+    yüzey artık AYNI GÖRÜNMEYE çalışmıyor, dolayısıyla "ayrıştılar" diye bir
+    kusur da doğmuyor. Kalan tek gerçek bağ marka işaretidir (altın sarısı) ve
+    o bilerek korunuyor (§1 `signal` merdiveni).
+
+    ═══ SINIR — PANELE DOKUNULMADI ═══
+
+    Bu dosyadaki hiçbir kural `:root` seviyesinde var olan bir jetonu
+    DEĞİŞTİRMEZ; yalnız yeni adlar (`--zc-*`) ekler ve mevcut semantik
+    takma adları (`--surface`, `--fg`, `--color-surface` …) YALNIZ
+    `.site-shell` kapsamında yeniden bağlar. `.site-shell` sınıfı kurumsal
+    sitenin `<body>`sindedir (`views/public/layout.blade.php`); panelin
+    gövdesinde YOKTUR. Kapı: `CorporateIdentityScopeTest` (KIMLIK-05).
+
+    ═══ HAM SAYI YALNIZ §1'DE ═══
+
+    Bu dosyanın §1'i kurumsal sitenin TEK ham renk kaynağıdır. §2'den sonra
+    ve diğer bütün kurumsal CSS dosyalarında bir tek `#` yoktur. Kapı:
+    KIMLIK-01.
+*/
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §1 — İLKEL PALET. Kurumsal sitenin TEK ham renk kaynağı.
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── NEDEN BU RENKLER ──
+
+   Hedef bir HİS değil bir OKUMA sırasıdır: derinlik, sonra ışık, sonra
+   marka. Üç merdiven bu sırayı taşır.
+
+   `void` — DERİNLİK. Nötr gri değil, mavi-mora çalan bir siyah. Sebep
+   ölçülebilir: nötr gri bir zemin "kapalı ekran" gibi okunur; hafif mavi bir
+   siyah "uzak" gibi okunur, çünkü atmosferik perspektif uzaktaki her şeyi
+   maviye kaydırır. Aynı numarayı her manzara ressamı kullanır. Merdivenin
+   adımları arası bilerek küçüktür (1000'den 600'e): derinlik katmanlarının
+   BİRBİRİNDEN ayrılması gerekir, birbiriyle YARIŞMASI değil.
+
+   `halo` — GÜNDÜZ. Aynı mor-mavi tonun aydınlık tarafı ve merdiven bir
+   MERDİVENDİR: sayfanın zemini saf beyaz DEĞİL (`halo-100`), kart ise beyaz.
+   Sıra bilerek böyle, çünkü tersi ölçülebilir bir kayıp: beyaz bir zeminin
+   üstünde beyaz bir kart görünmez (1.00:1) ve o kartı ayakta tutan tek şey
+   kenar çizgisi kalır. Zemini bir tık koyulaştırmak, kartı ışık kaynağı
+   yapmadan YÜKSELTİR — beyaz kâğıt, hafif renkli bir masanın üstünde.
+   Ton ailesi void ile aynı; yani açık kip koyu kipin negatifi gibi durur,
+   başka bir markanın sayfası gibi değil.
+
+   `pulse` — EYLEM. Elektrik moru. Bu merdiven bir DÜZELTME de taşır:
+   bugüne kadar kurumsal sitenin birincil düğmesi marka sarısıydı ve
+   `home.blade.php` onun üstüne `text-white` yazıyordu. Ölçüldü: beyaz üstüne
+   `#ffb300` = 1.73:1 — WCAG'nin asgarisinin (4.5) dörtte biri. Yani sitenin
+   EN ÖNEMLİ düğmesinin yazısı okunmuyordu. `pulse-500` üstüne beyaz 5.84:1.
+   Kimlik kararı bir erişilebilirlik kusurunu da kapatıyor.
+
+   `beam` — BAĞLANTI VE IŞIMA. Buz mavisi. Metin seviyesinde kullanılan tek
+   soğuk vurgu; koyu kipte `beam-300`, açık kipte `beam-700`.
+
+   `signal` — MARKA. Altın sarısı. Zabuno'nun tanınan rengi ve kimliğin
+   panelle KALAN tek kasıtlı bağı. Ama artık bir DÜĞME rengi değil, bir
+   VURGU: marka işareti, ışıma, bölüm başlığının altındaki çizgi. Sarı bir
+   düğme olmaktan çıkıp sarı bir IŞIK olmak, aynı rengin daha az yerde daha
+   çok görünmesidir.
+
+   ── DEĞERLER ÖLÇÜLDÜ, SEÇİLMEDİ ──
+
+   Aşağıdaki her rol eşleşmesinin WCAG 2.x kontrast oranı
+   `CorporateIdentityContrastTest` (KIMLIK-02/03) tarafından hesaplanır ve
+   asgarilerin altına düşen bir değer kapıyı kırar. Sayılar `docs/145` §2'de
+   tablo hâlinde duruyor.
+*/
+:root {
+    /* --- void: derinlik merdiveni ------------------------------------- */
+    --zc-void-1000: #04030e;
+    --zc-void-900: #0a0820;
+    --zc-void-800: #120f31;
+    --zc-void-700: #1b1745;
+    --zc-void-600: #262059;
+    --zc-void-500: #39316f;
+    /* Koyu kipte KONTROL kenarı: zemine karşı 3.95:1 (WCAG 1.4.11 asgarisi
+       3:1). Dekoratif ayraç değil, bir girdinin nerede bittiğini söyleyen
+       çizgi — o yüzden merdivenin en açık adımı. */
+    --zc-void-400: #6f68a8;
+
+    /* --- halo: gündüz merdiveni --------------------------------------- */
+    --zc-halo-50: #fbfaff;
+    --zc-halo-100: #f3f1fb;
+    --zc-halo-200: #e7e4f5;
+    --zc-halo-300: #d3cfe9;
+    --zc-halo-400: #b8b2d6;
+    /* Açık kipte kontrol kenarı: 5.20:1. */
+    --zc-halo-500: #6b6590;
+
+    /* --- pulse: eylem -------------------------------------------------- */
+    /* `pulse-400` YALNIZ ışımadır: bir metnin arkasına asla konmaz (üstüne
+       beyaz 3.94:1). Bu bir kısıt, bir eksiklik değil — ışıma zaten metnin
+       ARKASINDA değil, KENARINDA yaşar. */
+    --zc-pulse-400: #8b63ff;
+    --zc-pulse-500: #6d3bf5;
+    --zc-pulse-600: #5424d0;
+
+    /* --- beam: bağlantı ve soğuk ışıma --------------------------------- */
+    --zc-beam-300: #8fd8ff;
+    --zc-beam-500: #1e93d6;
+    --zc-beam-700: #0b5e96;
+
+    /* --- signal: marka ------------------------------------------------- */
+    --zc-signal-400: #ffc94d;
+    --zc-signal-500: #ffb300;
+    /* Açık zeminde okunabilen altın: `signal-500` beyaz üstünde 1.73:1'dir
+       ve bir METİN rengi olamaz. Koyulaştırılmış hâli 6.93:1. */
+    --zc-signal-700: #7a4e00;
+
+    /* --- mürekkep ------------------------------------------------------ */
+    --zc-starlight: #edebf7;
+    --zc-starlight-dim: #a9a4c6;
+    --zc-ink: #100d26;
+    --zc-ink-soft: #4a4568;
+    --zc-white: #ffffff;
+
+    /*
+        --- durum renkleri ---
+
+        Koyu kipte AÇIK ton, açık kipte KOYU ton. Tek bir "kırmızı"
+        yazılsaydı biri iki zeminden birinde okunmazdı; bu, tema anahtarını
+        çeviren ziyaretçinin bir hata mesajını kaybetmesi demekti.
+    */
+    --zc-alert-300: #ff9aa2;
+    --zc-alert-700: #b3261e;
+    --zc-thrive-300: #6ee7a8;
+    --zc-thrive-700: #0f6b3c;
+    --zc-caution-300: #ffc94d;
+    --zc-caution-700: #8a5200;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §2 — ROLLER. Ham renk buradan sonra YOK; yalnız §1'e işaret var.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Roller AÇIK kiple başlar ve koyu kip bir SAPMA değil, ikinci bir tam
+   tanımdır. Sıra bilerek böyle: betiği engellenmiş bir ziyaretçi
+   `data-theme` özniteliğini hiç görmez ve açık kipi okur (`docs/136` §3.3).
+   Bugünkü davranış korunuyor.
+*/
+:root {
+    /* Yüzey merdiveni. `canvas` sayfanın zemini, `raised` onun üstündeki
+       kart, `sunken` içine gömülen alan (kod bloğu, tablo başlığı). */
+    --zc-canvas: var(--zc-halo-100);
+    --zc-raised: var(--zc-white);
+    --zc-sunken: var(--zc-halo-200);
+    /* Açılır bölme ve şerit: karttan bir tık YUMUŞAK, çünkü içeriğin
+       üstüne biner ve saf beyaz orada bir delik gibi okunur. */
+    --zc-overlay: var(--zc-halo-50);
+
+    --zc-text: var(--zc-ink);
+    --zc-text-soft: var(--zc-ink-soft);
+    --zc-text-inverse: var(--zc-white);
+
+    /* Ayraç (dekoratif) ve KONTROL kenarı (bilgi taşır) ayrı iki roldür;
+       ikincisi 3:1'in altına inemez. */
+    --zc-edge: var(--zc-halo-300);
+    --zc-edge-strong: var(--zc-halo-400);
+    /* `--zc-halo-200` zemin merdiveninin gömülü adımıdır ve ayrıca
+       kullanılmaz: iki rolü olan bir jeton, bir gün ikisinden birini
+       bozmadan değiştirilemez. */
+    --zc-edge-control: var(--zc-halo-500);
+
+    --zc-action: var(--zc-pulse-500);
+    --zc-on-action: var(--zc-white);
+    --zc-action-hover: var(--zc-pulse-600);
+
+    --zc-support: var(--zc-beam-700);
+    --zc-on-support: var(--zc-white);
+
+    /* Marka vurgusu METİN seviyesinde: açık kipte koyulaştırılmış altın. */
+    --zc-accent: var(--zc-signal-700);
+    --zc-on-accent: var(--zc-white);
+
+    --zc-neutral: var(--zc-ink);
+    --zc-on-neutral: var(--zc-white);
+
+    --zc-info: var(--zc-beam-700);
+    --zc-on-info: var(--zc-white);
+    --zc-success: var(--zc-thrive-700);
+    --zc-on-success: var(--zc-white);
+    --zc-warning: var(--zc-caution-700);
+    --zc-on-warning: var(--zc-white);
+    --zc-error: var(--zc-alert-700);
+    --zc-on-error: var(--zc-white);
+
+    --zc-focus: var(--zc-beam-700);
+
+    /*
+        IŞIMA VE DUMAN — açık kipte KISIK.
+
+        Bir ışıma açık zeminde ışımaz, kirletir: beyazın üstündeki mor bir
+        parıltı bir leke gibi okunur. Açık kipte aynı jetonlar çok daha
+        düşük opaklıkta yaşar ve "ışıma" değil "renk sıcaklığı" işi görür.
+    */
+    --zc-glow-action: color-mix(in oklab, var(--zc-pulse-500) 14%, transparent);
+    --zc-glow-beam: color-mix(in oklab, var(--zc-beam-500) 12%, transparent);
+    --zc-glow-signal: color-mix(in oklab, var(--zc-signal-500) 14%, transparent);
+
+    /* Üst kenarın parlaması: yüzeye kalınlık hissi veren tek çizgi. */
+    --zc-sheen: color-mix(in oklab, var(--zc-white) 90%, transparent);
+    --zc-edge-lit: color-mix(in oklab, var(--zc-white) 70%, transparent);
+
+    /* Cam: arkasını süzen yüzey. İki değer, çünkü bulanıklık DESTEKLENMEZSE
+       aynı opaklık okunmaz bir yüzey bırakır (§6). */
+    --zc-glass: color-mix(in oklab, var(--zc-white) 86%, transparent);
+    --zc-glass-blurred: color-mix(in oklab, var(--zc-white) 62%, transparent);
+
+    /* Gölge: renkli, siyah değil. Nötr siyah bir gölge kirli görünür;
+       zeminin tonundan gelen bir gölge yüzeyin altına oturur. */
+    --zc-lift-1:
+        0 1px 2px color-mix(in oklab, var(--zc-ink) 8%, transparent),
+        0 2px 8px color-mix(in oklab, var(--zc-ink) 6%, transparent);
+    --zc-lift-2:
+        0 2px 4px color-mix(in oklab, var(--zc-ink) 10%, transparent),
+        0 12px 32px color-mix(in oklab, var(--zc-ink) 10%, transparent);
+    --zc-lift-3:
+        0 4px 8px color-mix(in oklab, var(--zc-ink) 12%, transparent),
+        0 24px 64px color-mix(in oklab, var(--zc-ink) 14%, transparent);
+
+    --zc-scrim: color-mix(in oklab, var(--zc-void-1000) 46%, transparent);
+}
+
+[data-theme='dark'] {
+    --zc-canvas: var(--zc-void-900);
+    --zc-raised: var(--zc-void-800);
+    --zc-sunken: var(--zc-void-1000);
+    --zc-overlay: var(--zc-void-800);
+
+    --zc-text: var(--zc-starlight);
+    --zc-text-soft: var(--zc-starlight-dim);
+    --zc-text-inverse: var(--zc-void-1000);
+
+    --zc-edge: var(--zc-void-600);
+    --zc-edge-strong: var(--zc-void-500);
+    --zc-edge-control: var(--zc-void-400);
+
+    /*
+        EYLEM RENGİ TEMAYLA DÖNMEZ — bilerek.
+
+        `pulse-500` koyu zemine karşı 3.36:1, açık zemine karşı 5.63:1; her
+        iki kipte de bir yüzey olarak ayırt edilir (WCAG 1.4.11 asgarisi 3).
+        Üstündeki beyaz her iki kipte AYNI: 5.84:1. Rengi tema başına
+        değiştirmek, "bizim düğmemiz bu renktir" cümlesini iki cümleye
+        bölerdi.
+    */
+    --zc-support: var(--zc-beam-300);
+    --zc-on-support: var(--zc-void-1000);
+
+    --zc-accent: var(--zc-signal-400);
+    --zc-on-accent: var(--zc-void-1000);
+
+    --zc-neutral: var(--zc-starlight);
+    --zc-on-neutral: var(--zc-void-1000);
+
+    --zc-info: var(--zc-beam-300);
+    --zc-on-info: var(--zc-void-1000);
+    --zc-success: var(--zc-thrive-300);
+    --zc-on-success: var(--zc-void-1000);
+    --zc-warning: var(--zc-caution-300);
+    --zc-on-warning: var(--zc-void-1000);
+    --zc-error: var(--zc-alert-300);
+    --zc-on-error: var(--zc-void-1000);
+
+    --zc-focus: var(--zc-beam-300);
+
+    /* Koyu zeminde ışıma GERÇEKTEN ışır: opaklıklar açık kipin iki-üç katı. */
+    --zc-glow-action: color-mix(in oklab, var(--zc-pulse-400) 34%, transparent);
+    --zc-glow-beam: color-mix(in oklab, var(--zc-beam-300) 22%, transparent);
+    --zc-glow-signal: color-mix(in oklab, var(--zc-signal-400) 24%, transparent);
+
+    --zc-sheen: color-mix(in oklab, var(--zc-white) 10%, transparent);
+    --zc-edge-lit: color-mix(in oklab, var(--zc-white) 16%, transparent);
+
+    --zc-glass: color-mix(in oklab, var(--zc-void-800) 88%, transparent);
+    --zc-glass-blurred: color-mix(in oklab, var(--zc-void-800) 58%, transparent);
+
+    /*
+        KOYU KİPTE GÖLGE İŞE YARAMAZ — ölçülmüş bir gerçek, bir zevk değil.
+
+        Siyah üstüne siyah gölge görünmez. Derinlik koyu kipte GÖLGEYLE değil
+        IŞIKLA anlatılır: yüzeyin üst kenarı parlar, alt kenarı zemine
+        karışır. Bu yüzden aşağıdaki üç jeton koyu kipte hem bir dış gölge
+        hem bir iç üst çizgi taşır.
+    */
+    --zc-lift-1:
+        0 1px 2px color-mix(in oklab, var(--zc-void-1000) 60%, transparent),
+        inset 0 1px 0 color-mix(in oklab, var(--zc-white) 6%, transparent);
+    --zc-lift-2:
+        0 8px 24px color-mix(in oklab, var(--zc-void-1000) 66%, transparent),
+        inset 0 1px 0 color-mix(in oklab, var(--zc-white) 8%, transparent);
+    --zc-lift-3:
+        0 24px 64px color-mix(in oklab, var(--zc-void-1000) 72%, transparent),
+        inset 0 1px 0 color-mix(in oklab, var(--zc-white) 10%, transparent);
+
+    --zc-scrim: color-mix(in oklab, var(--zc-void-1000) 72%, transparent);
+}
+
+/*
+    DERİN BANT — tema TANIMAZ.
+
+    Kahraman bölümü ve harekete çağrı bandı, ziyaretçi hangi kipte olursa
+    olsun DERİN kalır. Gerekçe: sahibin istediği "uzay" hissi koyu bir
+    zeminde yaşar ve açık kipte sayfanın tamamını koyulaştırmak, açık kipi
+    seçmiş kişinin kararını yok saymak olurdu. Bu yüzden karar ikiye
+    ayrılıyor:
+
+        okunan metin ziyaretçinin kipinde  ·  sahne her zaman derin
+
+    Aynı numara gerçek hayatta da var: aydınlık bir müzede planetaryum
+    salonu karanlıktır. Ziyaretçi ışığı seçer, sahne kendi ışığını taşır.
+
+    Bandın İÇİNDEKİ metin bu yüzden `--zc-deep-text`tir, `--zc-text` değil —
+    açık kipte `--zc-text` koyu mürekkeptir ve derin bandın üstünde
+    okunmazdı.
+*/
+:root {
+    --zc-deep-canvas: var(--zc-void-1000);
+    --zc-deep-raised: var(--zc-void-800);
+    --zc-deep-text: var(--zc-starlight);
+    --zc-deep-text-soft: var(--zc-starlight-dim);
+    --zc-deep-edge: var(--zc-void-600);
+    --zc-deep-accent: var(--zc-signal-400);
+    --zc-deep-support: var(--zc-beam-300);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §3 — TİPOGRAFİ ÖLÇEĞİ. Büyük, kendinden emin; gövde okunur kalır.
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── YENİ BİR YAZI TİPİ YOK ──
+
+   Roboto bu depoda DEĞİŞKEN eksenle barındırılıyor (`fonts.css`,
+   `font-weight: 100 900`). Yani 800 ve 900 ağırlıklar zaten indirilen
+   dosyanın içinde, ek bir bayt maliyeti YOK. Kurumsal başlıkların
+   "kendinden emin" olması için ikinci bir yazı tipi eklemek, sıfır kazanç
+   için bir ağ isteği ve bir CSP tartışması demekti.
+
+   ── YOĞUNLUK FONTU KÜÇÜLTEREK SAĞLANMAZ (`docs/118` E3) ──
+
+   Aşağıda hiçbir gövde ölçüsü küçülmüyor. Büyüyen tek şey BAŞLIK; gövde
+   tabanı `--aep-text-body` (1rem) yerinde duruyor.
+
+   ── AKIŞKAN, KIRILMA NOKTASI YOK (`MP-05`) ──
+
+   Her adım `clamp()`: 320 pikselde alt sınır, geniş ekranda üst sınır.
+   Medya sorgusu ile ikinci bir ölçek YOK. Alt sınırlar 320 pikselde
+   GERÇEKTEN ölçüldü — `--zc-display-1` orada 32 pikseldir, 64 değil.
+*/
+:root {
+    /* Kahraman başlığı. 320'de 32px, 1920'de 72px. */
+    --zc-display-1: clamp(2rem, 1.4rem + 3vw, 4.5rem);
+    --zc-display-1-leading: 1.04;
+
+    /* Bölüm başlığı. 320'de 26px, geniş ekranda 44px. */
+    --zc-display-2: clamp(1.625rem, 1.25rem + 1.9vw, 2.75rem);
+    --zc-display-2-leading: 1.12;
+
+    /* Alt bölüm / kart başlığı. 320'de 20px, geniş ekranda 28px. */
+    --zc-display-3: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+    --zc-display-3-leading: 1.25;
+
+    /* Öne çıkan giriş paragrafı. Gövdeden büyük ama başlık değil. */
+    --zc-lede: clamp(1.0625rem, 1rem + 0.4vw, 1.375rem);
+    --zc-lede-leading: 1.55;
+
+    /*
+        GÖZ İZİ (`eyebrow`) — başlığın üstündeki küçük etiket.
+
+        Tek yerde küçülmeye izin verilen ölçü ve gerekçesi var: bu bir
+        OKUNAN metin değil, bir SINIFLANDIRMADIR ("ÜRÜN", "GÜVENLİK") ve
+        harf aralığı açıldığı için 0.8rem'de bile okunur. Cümle taşıyamaz;
+        kapı yok, kural yazılı: iki-üç sözcük.
+    */
+    --zc-eyebrow: 0.8125rem;
+    --zc-eyebrow-tracking: 0.16em;
+
+    /*
+        AĞIRLIK VE SIKIŞTIRMA.
+
+        Büyük bir başlık, küçük bir başlıkla aynı harf aralığında YAYVAN
+        görünür: optik boyut büyüdükçe harfler birbirine yaklaşmalıdır.
+        Roboto'da bu ekseni `letter-spacing` ile taklit ediyoruz — negatif
+        ve küçük, çünkü aşırısı okunurluğu yer.
+    */
+    --zc-weight-display: 800;
+    --zc-weight-strong: 600;
+    --zc-tracking-display: -0.02em;
+    --zc-tracking-tight: -0.01em;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §4 — ÖLÇÜ. Geniş ekran KULLANILIR; 320 taban değişmez.
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── ÖLÇÜLEN KUSUR ──
+
+   Bugün her kurumsal sayfanın içeriği 64 rem'lik (1024 px) bir sütunda
+   ortalanıyor. 1920 piksellik bir ekranda bu, sağda ve solda 448'er piksel
+   HİÇBİR ŞEY demektir: ekranın %47'si boş. Sahibin ifadesi birebir buydu.
+
+   ── AMA "GENİŞ" TEK BİR SAYI DEĞİL ──
+
+   Sütunu 90 rem yapıp her şeyi içine koymak kusuru yer değiştirirdi: bir
+   sözleşme metni 90 rem genişliğinde okunmaz (satır başına ~180 karakter;
+   okunabilir aralık 45-75). Ölçü İÇERİĞİN TÜRÜNE bağlıdır ve bu yüzden dört
+   ayrı roldür:
+
+   | Rol      | Ne için                              | Tavan  |
+   |----------|--------------------------------------|--------|
+   | `prose`  | sözleşme, yardım makalesi            | 44 rem |
+   | `form`   | iletişim formu, fiyat kartları       | 48 rem |
+   | `page`   | kurumsal sayfa gövdesi (varsayılan)  | 82 rem |
+   | `stage`  | kahraman ve tam genişlik bantları    | 110 rem|
+
+   Hepsi `min(100%, …)`: 320 pikselde tavan hiç devreye girmez, sütun
+   kapsayıcıya teslim olur. Yani geniş ekran zenginleştirmedir, taban
+   değil (`docs/118` E1).
+
+   ── BOŞ KALMAMAK ──
+
+   Geniş sütun tek başına yetmez; 82 rem'lik bir sütunun iki yanı hâlâ boş
+   kalır. Boşluğu DOLDURAN şey §5'in tam kanamalı (`.site-bleed`) bantları ve
+   alan gradyanlarıdır: metin okunur genişlikte kalır, SAHNE ekranın
+   tamamını kullanır.
+*/
+:root {
+    --zc-measure-prose: min(100%, 44rem);
+    --zc-measure-form: min(100%, 48rem);
+    --zc-measure-page: min(100%, 82rem);
+    --zc-measure-stage: min(100%, 110rem);
+
+    /*
+        KENAR BOŞLUĞU — 320'de SIKI, geniş ekranda cömert.
+
+        Alt sınır `--space-3` (12 px): bugünkü kabuk değeriyle bire bir
+        aynı, yani dar ekranda tek piksel kaybedilmiyor. Üst sınır
+        `--space-7` (48 px): geniş ekranda içerik kenara yapışmaz.
+
+        `docs/118` E3'ün kuralı burada da geçerli — büyüyen tek şey ölü
+        alandır ve yalnız yer varken büyür.
+    */
+    --zc-gutter: clamp(var(--space-3), 0.5rem + 2vw, var(--space-7));
+
+    /* Bölümler arası dikey nefes. Dar ekranda 32 px, geniş ekranda 112 px. */
+    --zc-rhythm: clamp(2rem, 1.25rem + 3.75vw, 7rem);
+    --zc-rhythm-tight: clamp(1.5rem, 1rem + 2.5vw, 4rem);
+
+    /*
+        YARIÇAP — panelinkinden AYRI ve daha yumuşak.
+
+        Panelin tavanı 8 px (`aep/tokens/radius.css`) ve gerekçesi doğru:
+        veri yoğun bir tabloda yuvarlak köşe yer yer. Kurumsal sayfada
+        tablo yok; orada yarıçap bir YÜZEY işaretidir — bir kartın gerçekten
+        bir nesne gibi durmasını sağlayan şey. Bu yüzden ayrı bir merdiven.
+    */
+    --zc-radius-sm: 6px;
+    --zc-radius-md: 10px;
+    --zc-radius-lg: 16px;
+    --zc-radius-xl: 24px;
+    --zc-radius-pill: 9999px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §5 — KURUMSAL KAPSAM. Semantik takma adlar `--zc-*`'a yeniden bağlanır.
+   ══════════════════════════════════════════════════════════════════════════
+
+   ── NEDEN İKİ AD KÜMESİ BİRDEN YAZILIYOR ──
+
+   Depoda her renk rolünün İKİ adı var ve ikisi de gerçekten tüketiliyor:
+
+     · `--surface`, `--fg`, `--border` …  — düz CSS (`site-shell.css`)
+     · `--color-surface`, `--color-fg` …  — Tailwind utility'leri
+                                            (`bg-surface`, `text-fg`)
+
+   İkincisi `@theme` bloğunda `var(--surface)` diye tanımlı. Bir `var()`
+   içeren özel özellik, TANIMLANDIĞI YERDE bir kez ikame edilir ve alt
+   öğelere ÇÖZÜLMÜŞ hâlde miras kalır — bu deponun kendi ölçümü
+   (`app.css`, yoğunluk bloğu). Yani yalnız `--surface`i burada yeniden
+   yazmak `bg-surface` sınıfını DEĞİŞTİRMEZDİ: sayfanın yarısı yeni
+   palete, yarısı eskisine bakardı.
+
+   Bu yüzden her rol İKİ satır. Tekrar bir özensizlik değil, dilin kendi
+   kuralı; ve bir kapı eksik satırı yakalıyor (KIMLIK-04).
+
+   ── KAPSAM `.site-shell` ──
+
+   Sınıf yalnız `views/public/layout.blade.php` gövdesindedir. Panelin
+   gövdesinde yoktur, misafir menüsünde yoktur. Yani bu bloğun ilk satırı
+   aynı zamanda panele dokunulmadığının KANITIDIR: kural panelin hiçbir
+   öğesine eşleşemez.
+*/
+.site-shell {
+    /* --- yüzeyler --- */
+    --canvas: var(--zc-canvas);
+    --surface: var(--zc-raised);
+    --surface-subtle: var(--zc-sunken);
+    --surface-hover: var(--zc-glow-action);
+    --surface-active: var(--zc-glow-beam);
+    --color-canvas: var(--zc-canvas);
+    --color-surface: var(--zc-raised);
+    --color-surface-subtle: var(--zc-sunken);
+    --color-surface-hover: var(--zc-glow-action);
+    --color-surface-active: var(--zc-glow-beam);
+
+    /* --- mürekkep --- */
+    --fg: var(--zc-text);
+    --fg-secondary: var(--zc-text-soft);
+    --fg-muted: var(--zc-text-soft);
+    --fg-subtle: var(--zc-text-soft);
+    --fg-danger: var(--zc-error);
+    --fg-success: var(--zc-success);
+    --fg-warning: var(--zc-warning);
+    --fg-link: var(--zc-support);
+    --color-fg: var(--zc-text);
+    --color-fg-secondary: var(--zc-text-soft);
+    --color-fg-muted: var(--zc-text-soft);
+    --color-fg-subtle: var(--zc-text-soft);
+    --color-fg-danger: var(--zc-error);
+    --color-fg-success: var(--zc-success);
+    --color-fg-warning: var(--zc-warning);
+    --color-fg-link: var(--zc-support);
+    /* Eski sözdizimi (`--color-text-*`) hâlâ tüketiliyor; ikisi ayrılmasın. */
+    --color-text-primary: var(--zc-text);
+    --color-text-secondary: var(--zc-text-soft);
+
+    /* --- kenarlar --- */
+    --border: var(--zc-edge);
+    --border-strong: var(--zc-edge-strong);
+    --border-control: var(--zc-edge-control);
+    --border-danger: var(--zc-error);
+    --color-border: var(--zc-edge);
+    --color-border-strong: var(--zc-edge-strong);
+    --color-border-control: var(--zc-edge-control);
+    --color-border-danger: var(--zc-error);
+    --color-surface-glass-border: var(--zc-edge);
+
+    /*
+        --- EYLEM ---
+
+        `home.blade.php` birincil düğmeye `bg-action ... text-white` yazıyor
+        ve bu paket o dosyaya dokunmuyor (başka bir ajan orada çalışıyor).
+        Düğmenin okunur hâle gelmesi bu yüzden RENKTEN gelmek zorundaydı:
+        `--color-action` artık elektrik moru, üstündeki beyaz 5.84:1.
+        Ölçülen eski değer 1.73:1'di.
+    */
+    --color-action: var(--zc-action);
+    --color-action-fg: var(--zc-on-action);
+    --color-action-primary-bg: var(--zc-action);
+    --color-action-primary-fg: var(--zc-on-action);
+    --color-brand: var(--zc-accent);
+    --color-brand-500: var(--zc-accent);
+
+    /* --- odak --- */
+    --focus: var(--zc-focus);
+    --color-focus: var(--zc-focus);
+
+    /* --- yarıçap: kurumsal merdiven --- */
+    --radius-sm: var(--zc-radius-sm);
+    --radius-md: var(--zc-radius-md);
+    --radius-lg: var(--zc-radius-lg);
+
+    /*
+        --- BAŞLIK ÖLÇEĞİ ---
+
+        `home.blade.php` kahraman başlığına satır içi
+        `style="font-size: var(--font-size-display)"` yazıyor. Satır içi stil
+        her kuralı yener; yani başlığı büyütmenin TEK yolu, o değişkenin
+        kurumsal kapsamdaki değerini değiştirmekti. Dosyaya dokunmadan
+        başlık 2.5 rem tavandan 4.5 rem tavana çıkıyor.
+    */
+    --font-size-display: var(--zc-display-1);
+    --text-title: var(--zc-display-2);
+    --text-section: var(--zc-display-3);
+}
+
+/*
+    GÖVDE ZEMİNİ.
+
+    `layout.blade.php` gövdeye `bg-surface` yazıyor; yani sayfanın zemini
+    KART rengiydi. Kurumsal sitede zemin `canvas`tır ve kart onun ÜSTÜNDE
+    yükselir — merdiven olmadan derinlik de olmaz.
+
+    Kural katmansız, utility ise `@layer utilities` içinde; katmansız olan
+    kazanır ve `!important` gerekmiyor.
+*/
+body.site-shell {
+    background-color: var(--zc-canvas);
+    color: var(--zc-text);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §6 — YÜZEY DİLİ. 2D ile 3D görünen katmanlar; betik YOK.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Buradaki her sınıf bir GÖRÜNÜŞ verir, bir düzen kurmaz: hiçbiri genişlik,
+   ızgara ya da akış değiştirmez. Sayfa gövdelerini yazan ajanlar kendi
+   düzenlerini kurar ve bu sınıfları GİYDİRİR.
+
+   Hiçbiri hareket etmez. Hareket ayrı bir paketin işi (`docs/136` §7); bu
+   dosyada tek bir `animation` ya da `transition` yoktur.
+*/
+
+/*
+    ── ALAN (`site-field`) — gradyan zemin ──
+
+    Üç yumuşak ışık kaynağı: mor (eylem), buz mavisi (bağlantı) ve altın
+    (marka). Işıklar kabın DIŞINA taşacak kadar geniş ve merkezleri kenarda;
+    böylece ekranda bir "top" değil bir ATMOSFER görünür.
+
+    `::before` kullanılıyor, doğrudan `background` değil: kabın kendi zemini
+    (kart, bant) ayrı kalsın ve alan onun ÜSTÜNE binsin. Katman
+    tıklanamaz ve ekran okuyucuya görünmez.
+
+    `overflow: clip` KABIN sorumluluğu: `.site-stage` (site-shell.css) zaten
+    onu veriyor. Burada tekrar edilmiyor, çünkü iki yerde yazılan bir kısıt
+    bir gün yalnız birinde güncellenir.
+*/
+.site-field {
+    position: relative;
+    isolation: isolate;
+}
+
+.site-field::before {
+    content: '';
+    position: absolute;
+    /* Kabın dışına taşar: ışık kaynağının kendisi görünmez, yalnız etkisi. */
+    inset: -30%;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(42% 38% at 22% 12%, var(--zc-glow-action) 0%, transparent 70%),
+        radial-gradient(38% 42% at 82% 28%, var(--zc-glow-beam) 0%, transparent 72%),
+        radial-gradient(46% 34% at 58% 96%, var(--zc-glow-signal) 0%, transparent 68%);
+}
+
+/*
+    ── DERİN BANT (`site-deep`) ──
+
+    Sahne. Tema ne olursa olsun derindir ve kendi mürekkebini taşır (§2
+    sonundaki gerekçe). İçindeki metin `color: inherit` ile beslendiği için
+    bandın içine konan her şey doğru mürekkebi alır — bir alt bileşenin
+    "koyu bantta hangi renk" diye sormasına gerek kalmaz.
+*/
+.site-deep {
+    background-color: var(--zc-deep-canvas);
+    color: var(--zc-deep-text);
+    --surface: var(--zc-deep-raised);
+    --color-surface: var(--zc-deep-raised);
+    --fg: var(--zc-deep-text);
+    --color-fg: var(--zc-deep-text);
+    --fg-secondary: var(--zc-deep-text-soft);
+    --color-fg-secondary: var(--zc-deep-text-soft);
+    --border: var(--zc-deep-edge);
+    --color-border: var(--zc-deep-edge);
+    /* Derin bantta ışıma her zaman koyu kip gücündedir. */
+    --zc-glow-action: color-mix(in oklab, var(--zc-pulse-400) 34%, transparent);
+    --zc-glow-beam: color-mix(in oklab, var(--zc-beam-300) 22%, transparent);
+    --zc-glow-signal: color-mix(in oklab, var(--zc-signal-400) 24%, transparent);
+    --zc-sheen: color-mix(in oklab, var(--zc-white) 10%, transparent);
+    --zc-edge-lit: color-mix(in oklab, var(--zc-white) 16%, transparent);
+}
+
+/*
+    ── PANEL (`site-panel`) — kalınlığı olan yüzey ──
+
+    Üç katman, üçü de tek bir kutuda:
+
+      1. üstten aşağı sönen bir parıltı (`--zc-sheen`) — ışığın yukarıdan
+         geldiğini söyler ve yüzeye KALINLIK hissi verir;
+      2. bir kenar (`--zc-edge`) — nesnenin nerede bittiğini söyler;
+      3. renkli bir gölge (`--zc-lift-2`) — nesnenin zeminden ne kadar
+         yükseldiğini söyler.
+
+    Üçü olmadan bir kart "renkli bir dikdörtgen"dir. Üçüyle birlikte bir
+    NESNE olur — ve bu, sahibin istediği "3D gibi görünen 2D"nin tamamıdır;
+    perspektif ya da dönüşüm gerekmez.
+*/
+.site-panel {
+    position: relative;
+    border: 1px solid var(--zc-edge);
+    border-radius: var(--zc-radius-lg);
+    background-image: linear-gradient(180deg, var(--zc-sheen) 0%, transparent 46%);
+    background-color: var(--zc-raised);
+    box-shadow: var(--zc-lift-2);
+}
+
+/* Daha sakin ve daha yüksek varyantlar: aynı dil, farklı ses tonu. */
+.site-panel[data-lift='low'] {
+    box-shadow: var(--zc-lift-1);
+}
+
+.site-panel[data-lift='high'] {
+    box-shadow: var(--zc-lift-3);
+}
+
+/*
+    ── KENAR IŞIMASI (`site-lit`) ──
+
+    Yüzeyin üst kenarına bir piksellik bir ışık. Ayrı bir sınıf, çünkü her
+    kartın ışımaması gerekir: ışıma bir VURGUDUR ve her yerde olan bir vurgu
+    vurgu değildir.
+
+    `inset` gölge kullanılıyor, `border-top` değil: kenar rengi değişirse
+    düzen kaymaz (gölge yer kaplamaz).
+*/
+.site-lit {
+    box-shadow: inset 0 1px 0 var(--zc-edge-lit);
+}
+
+/*
+    ── CAM (`site-glass`) ──
+
+    Arkasını süzen yüzey. İKİ tanım var ve ikisi de gerekli:
+
+      · bulanıklık DESTEKLENMİYORSA yüzey neredeyse opaktır (`--zc-glass`),
+        çünkü şeffaf ama bulanık olmayan bir yüzeyin arkasındaki metin öndeki
+        metnin içinden geçer ve ikisi de okunmaz;
+      · destekleniyorsa opaklık düşer (`--zc-glass-blurred`) ve gerçek cam
+        etkisi doğar.
+
+    Bu ayrım tahmin değil: aynı `@supports` çifti `app.css` içinde de var ve
+    orada aynı sebeple yazılmış.
+*/
+.site-glass {
+    background-color: var(--zc-glass);
+    border: 1px solid var(--zc-edge);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .site-glass {
+        background-color: var(--zc-glass-blurred);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        backdrop-filter: blur(14px) saturate(140%);
+    }
+}
+
+/*
+    ── DUMAN (`site-veil`) ──
+
+    Bir bandın altını ya da üstünü zemine karıştıran geçiş. Sert bir kenar
+    yerine kaybolan bir kenar: iki bölüm birbirine "çarpmaz", birbirine
+    geçer.
+
+    Yön DİKEY olduğu için sağdan sola dillerde ters çalışacak bir şey yok.
+*/
+.site-veil {
+    position: relative;
+}
+
+.site-veil::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    block-size: var(--zc-rhythm-tight);
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 0%, var(--zc-canvas) 100%);
+}
+
+.site-deep.site-veil::after {
+    background: linear-gradient(180deg, transparent 0%, var(--zc-deep-canvas) 100%);
+}
+
+/*
+    ── IŞIYAN AYRAÇ (`site-rule`) ──
+
+    Uçlarında kaybolan bir saç teli. Düz bir `border-top` bölümü keser; bu
+    ise bağlar. Gradyan SİMETRİKTİR, yani sağdan sola dillerde aynı görünür.
+*/
+.site-rule {
+    border: 0;
+    block-size: 1px;
+    margin: 0;
+    background: linear-gradient(90deg, transparent 0%, var(--zc-edge-strong) 50%, transparent 100%);
+}
+
+.site-rule[data-tone='accent'] {
+    background: linear-gradient(90deg, transparent 0%, var(--zc-accent) 50%, transparent 100%);
+}
+
+/*
+    ── GÖZ İZİ (`site-eyebrow`) ──
+
+    Başlığın üstündeki sınıflandırma etiketi. Harf aralığı açık, ağırlık
+    yüksek, renk marka vurgusu. `text-transform` YOK: bir ekran okuyucu
+    büyük harfe çevrilmiş metni bazen harf harf okur ve bu, iki-üç sözcük
+    için bile can sıkıcıdır. Büyük harf isteniyorsa metnin KENDİSİ öyle
+    yazılır — o zaman ekran okuyucu da doğru okur.
+*/
+.site-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--zc-eyebrow);
+    font-weight: var(--zc-weight-strong);
+    letter-spacing: var(--zc-eyebrow-tracking);
+    color: var(--zc-accent);
+}
+
+/*
+    ── BAŞLIK VE GİRİŞ ──
+
+    Ölçek §3'te tanımlı; burada yalnız KULLANILIYOR. `text-wrap: balance`
+    başlığın son satırında tek bir kelimenin yalnız kalmasını engeller
+    (`text-wrap` desteklenmeyen tarayıcıda satır kırma bugünkü gibi çalışır
+    — bir yedek gerekmiyor).
+
+    `overflow-wrap: anywhere` 320 pikselde ZORUNLU: 32 piksellik bir başlıkta
+    uzun bir kelime (ör. "Restoranlarınızın") 296 piksellik sütuna sığmaz ve
+    sığmadığında sayfayı yatay olarak kaydırır — `mobile-ux-audit`in ilk
+    kuralı tam olarak budur.
+*/
+.site-display {
+    font-size: var(--zc-display-1);
+    line-height: var(--zc-display-1-leading);
+    font-weight: var(--zc-weight-display);
+    letter-spacing: var(--zc-tracking-display);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+    margin: 0;
+}
+
+.site-display-2 {
+    font-size: var(--zc-display-2);
+    line-height: var(--zc-display-2-leading);
+    font-weight: var(--zc-weight-display);
+    letter-spacing: var(--zc-tracking-tight);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+    margin: 0;
+}
+
+.site-display-3 {
+    font-size: var(--zc-display-3);
+    line-height: var(--zc-display-3-leading);
+    font-weight: var(--zc-weight-strong);
+    letter-spacing: var(--zc-tracking-tight);
+    overflow-wrap: anywhere;
+    margin: 0;
+}
+
+.site-lede {
+    font-size: var(--zc-lede);
+    line-height: var(--zc-lede-leading);
+    color: var(--fg-secondary);
+    /* Giriş paragrafı okunabilir ölçüde kalır; başlıkla aynı genişlikte
+       değil. */
+    max-width: var(--zc-measure-prose);
+    margin: 0;
+}
+
+/*
+    ── VURGULU SÖZCÜK (`site-emphasis`) ──
+
+    Başlığın içinde tek bir sözcüğü marka rengine boyar. Renk TEK BAŞINA
+    bilgi taşımaz (WCAG 1.4.1): burada boyanan şey zaten cümlenin kendi
+    vurgusudur, ek bir anlam değil.
+*/
+.site-emphasis {
+    color: var(--zc-accent);
+}
+
+/*
+    ── ÖLÇÜ KAPLARI ──
+
+    §4'ün dört rolü sınıf olarak. Dolgu BİR kez uygulanır (`docs/117` K2):
+    bu kaplardan biri bir diğerinin İÇİNE konmaz.
+*/
+.site-measure-prose {
+    width: 100%;
+    max-width: var(--zc-measure-prose);
+    margin-inline: auto;
+    padding-inline: var(--zc-gutter);
+}
+
+.site-measure-form {
+    width: 100%;
+    max-width: var(--zc-measure-form);
+    margin-inline: auto;
+    padding-inline: var(--zc-gutter);
+}
+
+.site-measure-page {
+    width: 100%;
+    max-width: var(--zc-measure-page);
+    margin-inline: auto;
+    padding-inline: var(--zc-gutter);
+}
+
+.site-measure-stage {
+    width: 100%;
+    max-width: var(--zc-measure-stage);
+    margin-inline: auto;
+    padding-inline: var(--zc-gutter);
+}
+
+/*
+    ── TAM KANAMA (`site-bleed`) ──
+
+    Ölçülü bir sütunun İÇİNDE duran ama görüntü alanının TAMAMINI kaplayan
+    bant. "Geniş ekranda sayfa nefes almalı ama boş kalmamalı" cümlesinin
+    teknik karşılığı budur: metin 82 rem'de okunur kalır, SAHNE 1920
+    piksele yayılır.
+
+    ── ZORUNLU KOŞUL: `.site-stage` İÇİNDE ──
+
+    `100vw` dikey kaydırma çubuğunu SAYAR. Yani kaydırılabilir bir sayfada
+    bant, görüntü alanından kaydırma çubuğu kadar geniş olur ve sayfayı
+    YATAY olarak kaydırır — `scripts/mobile-ux-audit`in ilk kuralı budur ve
+    kapıyı kırar.
+
+    Kısıtın çözümü bu sınıfta DEĞİL, kabında: `.site-stage` zaten
+    `overflow: clip` taşıyor (`site-shell.css`) ve taşan pikseli kırpar.
+    Bu yüzden kural şudur ve pazarlığa kapalıdır:
+
+        `.site-bleed` yalnız bir `.site-stage` torununda kullanılır.
+
+    Aynı kısıtı `body`ye `overflow-x: clip` yazarak da çözebilirdik;
+    yazılmadı, çünkü o satır çerez şeridinin `position: sticky`
+    davranışını sessizce riske atardı ve bu paket onu ölçmedi. Ölçülmemiş
+    bir yan etkiyi kabul etmektense, kısıtı görünür bir kural yapmak
+    seçildi.
+*/
+.site-bleed {
+    /* `50%` kabın kendi genişliğinin yarısı; `50vw` görüntü alanının
+       yarısı. Fark, sütunun her iki yanındaki boşluktur. */
+    margin-inline: calc(50% - 50vw);
+    padding-inline: calc(50vw - 50%);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §7 — ERİŞİLEBİLİRLİK KAPILARI
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/*
+    ── YÜKSEK KONTRAST İSTEYEN ZİYARETÇİ ──
+
+    `prefers-contrast: more` diyen kişi bir tercih bildirmiyor, bir İHTİYAÇ
+    bildiriyor: düşük görme, parlak güneş, kötü bir ekran. Gradyan, cam ve
+    ışıma o ihtiyacın tam karşıtıdır — hepsi kontrastı DÜŞÜRÜR.
+
+    Bu blokta üçü de kapanır ve kenarlar kontrol seviyesine (3:1 üstü)
+    çıkar. Sayfa fakirleşmez; yalnız SAHNE söner, içerik olduğu gibi kalır.
+*/
+@media (prefers-contrast: more) {
+    .site-field::before,
+    .site-veil::after {
+        display: none;
+    }
+
+    .site-panel {
+        background-image: none;
+        border-color: var(--zc-edge-control);
+        box-shadow: none;
+    }
+
+    .site-glass {
+        background-color: var(--zc-raised);
+        border-color: var(--zc-edge-control);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .site-rule {
+        background: var(--zc-edge-control);
+    }
+}
+
+/*
+    ── ZORLANMIŞ RENKLER (Windows yüksek kontrast kipi) ──
+
+    İşletim sistemi renkleri devralır ve devralmalıdır. Dekoratif katmanlar
+    orada anlamsızdır: sistem paleti onları çizemez, çizerse de kullanıcının
+    seçtiği kontrastı bozar.
+*/
+@media (forced-colors: active) {
+    .site-field::before,
+    .site-veil::after {
+        display: none;
+    }
+
+    .site-panel,
+    .site-glass {
+        background-image: none;
+        box-shadow: none;
+        border: 1px solid CanvasText;
+    }
+
+    .site-rule {
+        background: CanvasText;
+    }
+
+    .site-deep {
+        background-color: Canvas;
+        color: CanvasText;
+    }
+}
+
+/*
+    ── HAREKET ──
+
+    Bu dosyada hareket YOK ve bu bir eksiklik değil, paketin sınırı: parallax
+    ve parçacık ayrı bir pakette yazılacak (`docs/136` §7, `docs/145` §6).
+
+    Buradaki yüzeylerin hiçbiri `prefers-reduced-motion` diyen bir ziyaretçi
+    için farklı davranmaz, çünkü hiçbiri kıpırdamıyor. Bir sonraki paket
+    hareketi eklerken `site-shell.css`teki `no-preference` kapısını kullanır;
+    o kapı tek yönlüdür ve betik onu geri alamaz.
+*/
