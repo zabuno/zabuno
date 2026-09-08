@@ -32,6 +32,7 @@ final class BuildIdentity
         private readonly ?string $revision,
         private readonly ?int $builtAt,
         private readonly ?int $sourceChangedAt,
+        private readonly ?string $assetsRevision = null,
     ) {}
 
     public static function resolve(): self
@@ -40,17 +41,56 @@ final class BuildIdentity
             self::resolveRevision(),
             self::resolveBuiltAt(),
             self::resolveSourceChangedAt(),
+            self::resolveAssetsRevision(),
         );
     }
 
-    public static function fromValues(?string $revision, ?int $builtAt, ?int $sourceChangedAt): self
-    {
-        return new self($revision, $builtAt, $sourceChangedAt);
+    public static function fromValues(
+        ?string $revision,
+        ?int $builtAt,
+        ?int $sourceChangedAt,
+        ?string $assetsRevision = null,
+    ): self {
+        return new self($revision, $builtAt, $sourceChangedAt, $assetsRevision);
     }
 
     public function revision(): ?string
     {
         return $this->revision;
+    }
+
+    /**
+     * Sunulan VARLIKLARIN hangi commit'ten derlendiği — `docs/142`.
+     *
+     * `revision()` yalnız PHP tarafını anlatır ve 2026-09-08'de arıza tam
+     * olarak öteki yarıydı: uygulama bir noktaya kadar güncelken derlenmiş
+     * CSS bir önceki tasarımdan geliyordu. Tek bir "sürüm" alanı bu durumu
+     * gösteremez — hangisini söylerse söylesin öbür yarıyı gizler.
+     *
+     * Damgayı üretim imajı yazar; `npm run build` ile AYNI komutta, yani
+     * varlıklarla tek katmanda doğar ve onlardan ayrışamaz. Geliştirmede
+     * dosya yoktur ve cevap `null`'dır — orada bayatlığı ölçen ayrı bir
+     * mekanizma zaten var (`isBuildStale`).
+     */
+    public function assetsRevision(): ?string
+    {
+        return $this->assetsRevision;
+    }
+
+    /**
+     * İki yarı aynı commit'ten mi?
+     *
+     * Taraflardan biri bilinmiyorsa cevap `null`'dır — "hayır" değil.
+     * Bilinmeyeni ayrışma saymak her geliştirme kurulumunda alarm verirdi;
+     * eşitlik saymak dedektörü sessizce işlevsiz bırakırdı. İkisi de yanlış.
+     */
+    public function assetsMatchApplication(): ?bool
+    {
+        if ($this->revision === null || $this->assetsRevision === null) {
+            return null;
+        }
+
+        return $this->revision === $this->assetsRevision;
     }
 
     /**
@@ -97,13 +137,15 @@ final class BuildIdentity
     }
 
     /**
-     * @return array{revision: ?string, short_revision: ?string, built_at: ?int, source_changed_at: ?int, build_stale: bool}
+     * @return array{revision: ?string, short_revision: ?string, assets_revision: ?string, assets_match: ?bool, built_at: ?int, source_changed_at: ?int, build_stale: bool}
      */
     public function toArray(): array
     {
         return [
             'revision' => $this->revision,
             'short_revision' => $this->shortRevision(),
+            'assets_revision' => $this->assetsRevision,
+            'assets_match' => $this->assetsMatchApplication(),
             'built_at' => $this->builtAt,
             'source_changed_at' => $this->sourceChangedAt,
             'build_stale' => $this->isBuildStale(),
@@ -119,6 +161,34 @@ final class BuildIdentity
         }
 
         return GitHead::read(base_path());
+    }
+
+    /**
+     * Varlık damgası — üretim imajının `public/build/revision.txt`'i.
+     *
+     * BİÇİM ZORLANIR ve zorlanması bir güvenlik kararıdır: dosya `public/`
+     * altında durur ve içeriği bir HTTP yanıtına giriyor. Ham içeriği geri
+     * yansıtan bir okuma, o dosyaya yazabilen herkese küçük bir yayın
+     * kanalı verirdi. Commit kimliği değilse cevap `null`'dır — ve `null`
+     * "bilinmiyor" demektir, uydurma değil.
+     */
+    private static function resolveAssetsRevision(): ?string
+    {
+        $stamp = public_path('build/revision.txt');
+
+        if (! is_file($stamp)) {
+            return null;
+        }
+
+        $raw = @file_get_contents($stamp);
+
+        if ($raw === false) {
+            return null;
+        }
+
+        $value = trim($raw);
+
+        return preg_match('/^[0-9a-f]{7,64}$/', $value) === 1 ? $value : null;
     }
 
     /**

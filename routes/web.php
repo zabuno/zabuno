@@ -8,6 +8,7 @@ use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SendEmailVerificationNotificationController;
+use App\Http\Controllers\Build\ShowBuildProofController;
 use App\Http\Controllers\Content\ShowCorporatePageController;
 use App\Http\Controllers\EngineeringAppController;
 use App\Http\Controllers\FoundationStatusController;
@@ -38,6 +39,24 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+
+/*
+    DAĞITIM NE DAĞITTI? — `docs/142`.
+
+    Sağlık kontrolü yalnız "bir şey 200 dönüyor mu?" diye sorar; eski sürüm
+    de 200 döner. 2026-09-08'de dağıtım her adımı yeşil tamamladı ve canlı
+    site birleştirilen commit'i çalıştırmıyordu. Bu uç, dağıtımın kendi
+    yayınını doğrulayabilmesi için var: uygulamanın çalıştırdığı commit ile
+    sunulan varlıkların derlendiği commit AYRI AYRI okunur.
+
+    `/up` DEĞİŞTİRİLMEDİ: o, konteynerin sağlık probu ve dağıtımın bekleme
+    döngüsüdür. Kanıt onun yerine değil yanına gelir. Adres `/build`
+    olamazdı: orası nginx'in diskten sunduğu statik varlık dizinidir.
+
+    Kütükteki `/{locale}/{path?}` yakalayıcısı `tr|en` ile sınırlı olduğu
+    için bu adresi gölgelemez; yine de sıra burada, en üstte tutuluyor.
+*/
+Route::get('/up/build', ShowBuildProofController::class)->name('build.proof');
 
 Route::get('/', [FoundationStatusController::class, '__invoke'])->name('foundation.status');
 
