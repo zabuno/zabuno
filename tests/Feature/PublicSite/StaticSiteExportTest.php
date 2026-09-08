@@ -194,6 +194,17 @@ final class StaticSiteExportTest extends TestCase
             $chrome .= $match[0] ?? '';
         }
 
+        // Preserve the form contract while normalizing its page-specific destination.
+        $chrome = (string) preg_replace_callback(
+            '#<form\b[^>]*class="site-language-switcher"[^>]*>.*?</form>#s',
+            static fn (array $form): string => (string) preg_replace(
+                '#(<input type="hidden" name="return_to" value=")[^"]*(">)#',
+                '${1}CURRENT_PAGE${2}',
+                $form[0],
+            ),
+            $chrome,
+        );
+
         // Çıpa öneki ve göreli derinlik sayfaya göre değişmek ZORUNDA:
         // `/help` altındaki bir dosyanın köke çıkması için `../` gerekir,
         // kökteki dosyanın gerekmez. İkisini farklılık saymak, doğru

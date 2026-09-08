@@ -141,7 +141,7 @@ return [
     */
     'reserved_slugs' => [
         'admin', 'api', 'app', 'assets', 'build', 'dish', 'email', 'forgot-password',
-        'contact', 'health', 'help', 'invitations', 'kvkk', 'login', 'logout', 'media',
+        'contact', 'health', 'help', 'invitations', 'kvkk', 'language', 'login', 'logout', 'media',
         /*
             YASAL SAYFALAR VE ÇEREZ TERCİHİ UCU (FF-198). Her üst düzey yol
             rezerve olmak zorunda (URL-RESERVED-COVERS-ROUTES-13); bir işletme

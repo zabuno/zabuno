@@ -73,7 +73,20 @@ final class PublicMasterpageContractTest extends TestCase
 
     public function test_header_and_footer_are_the_same_on_every_page(): void
     {
-        $normalise = static fn (string $fragment): string => preg_replace('#href="/?\#[a-z-]+"#', 'href="ANCHOR"', $fragment);
+        $normalise = static function (string $fragment): string {
+            // Only the language form's return destination varies by current page.
+            $fragment = (string) preg_replace_callback(
+                '#<form\b[^>]*class="site-language-switcher"[^>]*>.*?</form>#s',
+                static fn (array $form): string => (string) preg_replace(
+                    '#(<input type="hidden" name="return_to" value=")[^"]*(">)#',
+                    '${1}CURRENT_PAGE${2}',
+                    $form[0],
+                ),
+                $fragment,
+            );
+
+            return (string) preg_replace('#href="/?\#[a-z-]+"#', 'href="ANCHOR"', $fragment);
+        };
 
         $reference = null;
 
