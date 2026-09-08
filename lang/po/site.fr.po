@@ -10,1448 +10,1448 @@ msgstr ""
 
 #: site:site.about.heading
 msgid "site.about.heading"
-msgstr ""
+msgstr "À propos"
 
 #: site:site.about.incomplete.body
 msgid "site.about.incomplete.body"
-msgstr ""
+msgstr "L’identité juridique du vendeur n’a pas encore été publiée ; les informations ci-dessous sont donc manquantes. En attendant leur saisie, utilisez le formulaire de contact pour nous joindre."
 
 #: site:site.about.incomplete.heading
 msgid "site.about.incomplete.heading"
-msgstr ""
+msgstr "Cette page n’est pas encore complète."
 
 #: site:site.about.lead
 msgid "site.about.lead"
-msgstr ""
+msgstr "Qui vend Zabuno, de quoi il s’agit, comment le payer et comment joindre quelqu’un à ce sujet."
 
 #: site:site.about.payment.body
 msgid "site.about.payment.body"
-msgstr ""
+msgstr "Les offres payantes se règlent par carte, via le prestataire de paiement Iyzico. Nous n’acceptons ni virement bancaire, ni espèces, ni paiement à la livraison pour un abonnement. Nous ne voyons et ne conservons jamais votre numéro de carte : vous le saisissez sur les pages du prestataire. Les réseaux de cartes acceptés dépendent de sa propre configuration et ne sont donc pas répertoriés ici."
 
 #: site:site.about.payment.heading
 msgid "site.about.payment.heading"
-msgstr ""
+msgstr "Modes de paiement acceptés"
 
 #: site:site.about.reach.body
 msgid "site.about.reach.body"
-msgstr ""
+msgstr "Écrivez-nous via le formulaire de contact ou à l’adresse e-mail ci-dessus. Nous conservons chaque message et répondons à l’adresse que vous nous indiquez."
 
 #: site:site.about.reach.cta
 msgid "site.about.reach.cta"
-msgstr ""
+msgstr "Ouvrir le formulaire de contact"
 
 #: site:site.about.reach.heading
 msgid "site.about.reach.heading"
-msgstr ""
+msgstr "Comment nous joindre"
 
 #: site:site.about.seller.body
 msgid "site.about.seller.body"
-msgstr ""
+msgstr "Voici les coordonnées de la personne morale qui vend les offres payantes et qui est désignée comme vendeur dans le Contrat de vente à distance."
 
 #: site:site.about.seller.heading
 msgid "site.about.seller.heading"
-msgstr ""
+msgstr "Le vendeur"
 
 #: site:site.about.service.body
 msgid "site.about.service.body"
-msgstr ""
+msgstr "Zabuno est un abonnement à un espace de travail dans lequel un restaurant, un café ou un bar gère son menu et le publie derrière un QR code permanent. Modifier un prix ou masquer un plat met à jour la page que voient les clients ; le code imprimé reste le même."
 
 #: site:site.about.service.heading
 msgid "site.about.service.heading"
-msgstr ""
+msgstr "Ce qu’est Zabuno"
 
 #: site:site.about.service.scope
 msgid "site.about.service.scope"
-msgstr ""
+msgstr "Selon l’offre, l’espace de travail couvre aussi les établissements, les tables et les QR codes, les commandes et les évaluations des clients, les membres de l’équipe avec leurs propres autorisations, la personnalisation visuelle, les rapports et l’importation d’un menu à partir d’une photo, avec validation du résultat par une personne. Le service s’utilise dans un navigateur web ; aucune installation n’est nécessaire."
 
 #: site:site.assurance.evidence
 msgid "site.assurance.evidence"
-msgstr ""
+msgstr "Mesuré par"
 
 #: site:site.assurance.state.knownGap
 msgid "site.assurance.state.knownGap"
-msgstr ""
+msgstr "Lacune connue"
 
 #: site:site.assurance.state.measured
 msgid "site.assurance.state.measured"
-msgstr ""
+msgstr "Mesuré"
 
 #: site:site.assurance.state.notHeld
 msgid "site.assurance.state.notHeld"
-msgstr ""
+msgstr "Nous n’en disposons pas"
 
 #: site:site.assurance.state.notMeasured
 msgid "site.assurance.state.notMeasured"
-msgstr ""
+msgstr "Non mesuré"
 
 #: site:site.brand
 msgid "site.brand"
-msgstr ""
+msgstr "Zabuno"
 
 #: site:site.company.address
 msgid "site.company.address"
-msgstr ""
+msgstr "Adresse du siège social"
 
 #: site:site.company.email
 msgid "site.company.email"
-msgstr ""
+msgstr "E-mail"
 
 #: site:site.company.legalName
 msgid "site.company.legalName"
-msgstr ""
+msgstr "Dénomination sociale"
 
 #: site:site.company.mersis
 msgid "site.company.mersis"
-msgstr ""
+msgstr "Numéro MERSIS"
 
 #: site:site.company.phone
 msgid "site.company.phone"
-msgstr ""
+msgstr "Téléphone"
 
 #: site:site.company.taxNumber
 msgid "site.company.taxNumber"
-msgstr ""
+msgstr "Numéro fiscal"
 
 #: site:site.company.taxOffice
 msgid "site.company.taxOffice"
-msgstr ""
+msgstr "Centre des impôts"
 
 #: site:site.company.value.missing
 msgid "site.company.value.missing"
-msgstr ""
+msgstr "Pas encore renseigné"
 
 #: site:site.consent.accept
 msgid "site.consent.accept"
-msgstr ""
+msgstr "Autoriser la mesure"
 
 #: site:site.consent.body
 msgid "site.consent.body"
-msgstr ""
+msgstr "Nous ne chargeons les outils de mesure qu’avec votre autorisation. Rien n’est chargé avant votre décision."
 
 #: site:site.consent.decline
 msgid "site.consent.decline"
-msgstr ""
+msgstr "Refuser"
 
 #: site:site.consent.label
 msgid "site.consent.label"
-msgstr ""
+msgstr "Choix des cookies"
 
 #: site:site.consent.link
 msgid "site.consent.link"
-msgstr ""
+msgstr "Politique relative aux cookies"
 
 #: site:site.contact.email
 msgid "site.contact.email"
-msgstr ""
+msgstr "Votre adresse e-mail"
 
 #: site:site.contact.form.heading
 msgid "site.contact.form.heading"
-msgstr ""
+msgstr "Envoyez-nous un message"
 
 #: site:site.contact.heading
 msgid "site.contact.heading"
-msgstr ""
+msgstr "Contact"
 
 #: site:site.contact.honeypot
 msgid "site.contact.honeypot"
-msgstr ""
+msgstr "Laissez ce champ vide"
 
 #: site:site.contact.identity.heading
 msgid "site.contact.identity.heading"
-msgstr ""
+msgstr "À qui vous écrivez"
 
 #: site:site.contact.lead
 msgid "site.contact.lead"
-msgstr ""
+msgstr "Posez-nous vos questions sur les tarifs, un projet pilote ou ce qui vous bloque. Nous conservons chaque message ; rien ne se perd."
 
 #: site:site.contact.message
 msgid "site.contact.message"
-msgstr ""
+msgstr "Votre message"
 
 #: site:site.contact.name
 msgid "site.contact.name"
-msgstr ""
+msgstr "Votre nom"
 
 #: site:site.contact.sent
 msgid "site.contact.sent"
-msgstr ""
+msgstr "Merci — nous avons reçu votre message et répondrons à l’adresse que vous avez indiquée."
 
 #: site:site.contact.sentReference
 msgid "site.contact.sentReference"
-msgstr ""
+msgstr "Votre référence est {reference}. Indiquez-la si vous nous écrivez à nouveau."
 
 #: site:site.contact.submit
 msgid "site.contact.submit"
-msgstr ""
+msgstr "Envoyer le message"
 
 #: site:site.dataRights.erasure.body
 msgid "site.dataRights.erasure.body"
-msgstr ""
+msgstr "Une personne disposant des droits de propriétaire a demandé l’effacement des données de votre espace de travail. Rien n’a encore été supprimé et l’espace de travail continue de fonctionner jusqu’à la date ci-dessous."
 
 #: site:site.dataRights.erasure.detail
 msgid "site.dataRights.erasure.detail"
-msgstr ""
+msgstr "L’effacement aura lieu le {date}."
 
 #: site:site.dataRights.erasure.note
 msgid "site.dataRights.erasure.note"
-msgstr ""
+msgstr "Si ce n’était pas votre intention, ouvrez les Paramètres de votre espace de travail et annulez la demande. Les documents que la loi nous impose de conserver — factures émises, écritures comptables correspondantes, paiements associés et traces des consentements donnés — ne sont pas supprimés lors de l’effacement ; cet écran les énumère tous."
 
 #: site:site.dataRights.erasure.subject
 msgid "site.dataRights.erasure.subject"
-msgstr ""
+msgstr "Zabuno — une demande d’effacement a été faite pour votre espace de travail"
 
 #: site:site.dataRights.export.action
 msgid "site.dataRights.export.action"
-msgstr ""
+msgstr "Téléchargez-la ici :"
 
 #: site:site.dataRights.export.body
 msgid "site.dataRights.export.body"
-msgstr ""
+msgstr "L’archive que vous avez demandée est prête. Elle contient toutes les données de votre espace de travail, dans un format lisible par machine et sous forme de fichiers tableurs que vous pouvez ouvrir."
 
 #: site:site.dataRights.export.detail
 msgid "site.dataRights.export.detail"
-msgstr ""
+msgstr "Le lien ci-dessous cessera de fonctionner le {date}."
 
 #: site:site.dataRights.export.note
 msgid "site.dataRights.export.note"
-msgstr ""
+msgstr "Si le lien a expiré, ouvrez les Paramètres de votre espace de travail et préparez une nouvelle archive."
 
 #: site:site.dataRights.export.subject
 msgid "site.dataRights.export.subject"
-msgstr ""
+msgstr "Zabuno — votre archive de données est prête"
 
 #: site:site.dataRights.greeting
 msgid "site.dataRights.greeting"
-msgstr ""
+msgstr "Bonjour,"
 
 #: site:site.engineering.title
 msgid "site.engineering.title"
-msgstr ""
+msgstr "Zabuno — Ingénierie"
 
 #: site:site.footer.acceptableUse
 msgid "site.footer.acceptableUse"
-msgstr ""
+msgstr "Politique d’utilisation acceptable"
 
 #: site:site.footer.backToTop
 msgid "site.footer.backToTop"
-msgstr ""
+msgstr "Retour en haut"
 
 #: site:site.footer.company
 msgid "site.footer.company"
-msgstr ""
+msgstr "Entreprise"
 
 #: site:site.footer.contentMenus
 msgid "site.footer.contentMenus"
-msgstr ""
+msgstr "Parcourir toutes les pages"
 
 #: site:site.footer.cookies
 msgid "site.footer.cookies"
-msgstr ""
+msgstr "Politique relative aux cookies"
 
 #: site:site.footer.dataProcessing
 msgid "site.footer.dataProcessing"
-msgstr ""
+msgstr "Accord de traitement des données"
 
 #: site:site.footer.delivery
 msgid "site.footer.delivery"
-msgstr ""
+msgstr "Conditions de livraison et d’exécution"
 
 #: site:site.footer.distanceSales
 msgid "site.footer.distanceSales"
-msgstr ""
+msgstr "Contrat de vente à distance"
 
 #: site:site.footer.kvkk
 msgid "site.footer.kvkk"
-msgstr ""
+msgstr "KVKK"
 
 #: site:site.footer.legal
 msgid "site.footer.legal"
-msgstr ""
+msgstr "Informations juridiques"
 
 #: site:site.footer.marketingConsent
 msgid "site.footer.marketingConsent"
-msgstr ""
+msgstr "Consentement aux communications commerciales électroniques"
 
 #: site:site.footer.preInformation
 msgid "site.footer.preInformation"
-msgstr ""
+msgstr "Formulaire d’information précontractuelle"
 
 #: site:site.footer.privacy
 msgid "site.footer.privacy"
-msgstr ""
+msgstr "Confidentialité"
 
 #: site:site.footer.product
 msgid "site.footer.product"
-msgstr ""
+msgstr "Produit"
 
 #: site:site.footer.refundPolicy
 msgid "site.footer.refundPolicy"
-msgstr ""
+msgstr "Politique de résiliation et de remboursement"
 
 #: site:site.footer.sla
 msgid "site.footer.sla"
-msgstr ""
+msgstr "Conditions de niveau de service"
 
 #: site:site.footer.tagline
 msgid "site.footer.tagline"
-msgstr ""
+msgstr "Votre menu derrière un QR code, tenu à jour par votre propre équipe."
 
 #: site:site.footer.terms
 msgid "site.footer.terms"
-msgstr ""
+msgstr "Conditions"
 
 #: site:site.footer.thirdPartyLicenses
 msgid "site.footer.thirdPartyLicenses"
-msgstr ""
+msgstr "Licences tierces"
 
 #: site:site.home.chain.heading
 msgid "site.home.chain.heading"
-msgstr ""
+msgstr "D’un compte vide à un code sur la table"
 
 #: site:site.home.chain.label
 msgid "site.home.chain.label"
-msgstr ""
+msgstr "Les six étapes, côte à côte"
 
 #: site:site.home.chain.lead
 msgid "site.home.chain.lead"
-msgstr ""
+msgstr "Six étapes, dans cet ordre. Chacune fonctionne avant le moindre paiement."
 
 #: site:site.home.chain.step1.body
 msgid "site.home.chain.step1.body"
-msgstr ""
+msgstr "Une adresse e-mail, puis le nom, la langue, la devise et le fuseau horaire de votre entreprise."
 
 #: site:site.home.chain.step1.title
 msgid "site.home.chain.step1.title"
-msgstr ""
+msgstr "Créer un compte et une entreprise"
 
 #: site:site.home.chain.step2.body
 msgid "site.home.chain.step2.body"
-msgstr ""
+msgstr "Un établissement possède une adresse et sa propre heure locale. Un restaurant seul est une entreprise avec un seul établissement."
 
 #: site:site.home.chain.step2.title
 msgid "site.home.chain.step2.title"
-msgstr ""
+msgstr "Ajouter un établissement"
 
 #: site:site.home.chain.step3.body
 msgid "site.home.chain.step3.body"
-msgstr ""
+msgstr "Catégories, plats, prix, photos et allergènes déclarés, dans un brouillon invisible pour les clients."
 
 #: site:site.home.chain.step3.title
 msgid "site.home.chain.step3.title"
-msgstr ""
+msgstr "Rédiger le menu"
 
 #: site:site.home.chain.step4.body
 msgid "site.home.chain.step4.body"
-msgstr ""
+msgstr "La publication fige un instantané numéroté. Vous pouvez restaurer un instantané précédent."
 
 #: site:site.home.chain.step4.title
 msgid "site.home.chain.step4.title"
-msgstr ""
+msgstr "Publier une version"
 
 #: site:site.home.chain.step5.body
 msgid "site.home.chain.step5.body"
-msgstr ""
+msgstr "Exportez une carte, une affiche ou une feuille à découper, puis changez sa destination sans réimprimer."
 
 #: site:site.home.chain.step5.title
 msgid "site.home.chain.step5.title"
-msgstr ""
+msgstr "Imprimer un code pour chaque table"
 
 #: site:site.home.chain.step6.body
 msgid "site.home.chain.step6.body"
-msgstr ""
+msgstr "Le code ouvre le menu dans le navigateur déjà présent sur le téléphone. Sans application ni compte."
 
 #: site:site.home.chain.step6.title
 msgid "site.home.chain.step6.title"
-msgstr ""
+msgstr "Les clients scannent"
 
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
-msgstr ""
+msgstr "Écrivez-nous"
 
 #: site:site.home.contact.lead
 msgid "site.home.contact.lead"
-msgstr ""
+msgstr "Posez-nous vos questions sur les tarifs, un projet pilote ou ce qui vous bloque. Nous conservons chaque message ; une confirmation s’affiche à l’écran."
 
 #: site:site.home.faq.account.answer
 msgid "site.home.faq.account.answer"
-msgstr ""
+msgstr "Oui, créez un compte ou connectez-vous pour ouvrir l’application de l’espace de travail."
 
 #: site:site.home.faq.account.question
 msgid "site.home.faq.account.question"
-msgstr ""
+msgstr "Ai-je besoin d’un compte pour essayer ?"
 
 #: site:site.home.faq.cost.answer
 msgid "site.home.faq.cost.answer"
-msgstr ""
+msgstr "Les prix proviennent de notre catalogue d’offres : le prix affiché est donc celui que nous facturons."
 
 #: site:site.home.faq.cost.question
 msgid "site.home.faq.cost.question"
-msgstr ""
+msgstr "Combien cela coûte-t-il ?"
 
 #: site:site.home.faq.heading
 msgid "site.home.faq.heading"
-msgstr ""
+msgstr "Questions fréquentes"
 
 #: site:site.home.faq.install.answer
 msgid "site.home.faq.install.answer"
-msgstr ""
+msgstr "Non. Le code ouvre une page web dans le navigateur déjà présent sur le téléphone."
 
 #: site:site.home.faq.install.question
 msgid "site.home.faq.install.question"
-msgstr ""
+msgstr "Les clients doivent-ils installer quelque chose ?"
 
 #: site:site.home.faq.pos.answer
 msgid "site.home.faq.pos.answer"
-msgstr ""
+msgstr "Non. Zabuno affiche le menu et peut transmettre une commande à la cuisine. Il n’encaisse aucun paiement et ne connaît pas vos recettes."
 
 #: site:site.home.faq.pos.question
 msgid "site.home.faq.pos.question"
-msgstr ""
+msgstr "Zabuno est-il un système de caisse ?"
 
 #: site:site.home.faq.what.answer
 msgid "site.home.faq.what.answer"
-msgstr ""
+msgstr "Une application qui offre un espace de travail pour gérer le menu et le catalogue d’un restaurant et les publier sur une page accessible par un QR code stable."
 
 #: site:site.home.faq.what.question
 msgid "site.home.faq.what.question"
-msgstr ""
+msgstr "Qu’est-ce que Zabuno ?"
 
 #: site:site.home.hero.actions.label
 msgid "site.home.hero.actions.label"
-msgstr ""
+msgstr "Actions du compte"
 
 #: site:site.home.hero.heading
 msgid "site.home.hero.heading"
-msgstr ""
+msgstr "Gérez le menu de votre restaurant au même endroit"
 
 #: site:site.home.hero.lead
 msgid "site.home.hero.lead"
-msgstr ""
+msgstr "Rédigez un menu, publiez-le et imprimez un code pour chaque table. Les clients le consultent dans le navigateur déjà présent sur leur téléphone."
 
 #: site:site.home.hero.note
 msgid "site.home.hero.note"
-msgstr ""
+msgstr "Aucune offre nécessaire pour créer un menu, le publier et imprimer des codes."
 
 #: site:site.home.hero.openApp
 msgid "site.home.hero.openApp"
-msgstr ""
+msgstr "Ouvrir l’application"
 
 #: site:site.home.hero.register
 msgid "site.home.hero.register"
-msgstr ""
+msgstr "Créer un compte"
 
 #: site:site.home.limits.dishNames.body
 msgid "site.home.limits.dishNames.body"
-msgstr ""
+msgstr "L’interface du menu est disponible en deux langues ; les plats sont rédigés dans la vôtre et ne sont pas traduits."
 
 #: site:site.home.limits.dishNames.title
 msgid "site.home.limits.dishNames.title"
-msgstr ""
+msgstr "Les noms des plats sont rédigés une seule fois"
 
 #: site:site.home.limits.heading
 msgid "site.home.limits.heading"
-msgstr ""
+msgstr "Ce que Zabuno n’est pas"
 
 #: site:site.home.limits.integrations.body
 msgid "site.home.limits.integrations.body"
-msgstr ""
+msgstr "Aucune connexion à une caisse, à un logiciel comptable ou à une plateforme de commande de repas. Votre menu s’exporte et se réimporte sous forme de tableur."
 
 #: site:site.home.limits.integrations.title
 msgid "site.home.limits.integrations.title"
-msgstr ""
+msgstr "Aucune intégration tierce"
 
 #: site:site.home.limits.lead
 msgid "site.home.limits.lead"
-msgstr ""
+msgstr "Plus courte que la liste des fonctionnalités, c’est aussi la partie que la plupart des logiciels n’affichent pas sur leur page d’accueil."
 
 #: site:site.home.limits.oneBrand.body
 msgid "site.home.limits.oneBrand.body"
-msgstr ""
+msgstr "Un compte contient une entreprise avec plusieurs établissements, pas plusieurs entreprises."
 
 #: site:site.home.limits.oneBrand.title
 msgid "site.home.limits.oneBrand.title"
-msgstr ""
+msgstr "Une marque par compte"
 
 #: site:site.home.limits.reservations.body
 msgid "site.home.limits.reservations.body"
-msgstr ""
+msgstr "Il n’y a ni réservation de table, ni intégration avec un service de livraison, ni carte à points."
 
 #: site:site.home.limits.reservations.title
 msgid "site.home.limits.reservations.title"
-msgstr ""
+msgstr "Ni réservation, ni livraison, ni fidélité"
 
 #: site:site.home.limits.sectors.body
 msgid "site.home.limits.sectors.body"
-msgstr ""
+msgstr "Pas de version pour les cafés, les boulangeries ou les hôtels. Un seul type d’activité : les lieux qui servent à manger et à boire."
 
 #: site:site.home.limits.sectors.title
 msgid "site.home.limits.sectors.title"
-msgstr ""
+msgstr "Aucune édition sectorielle"
 
 #: site:site.home.limits.store.body
 msgid "site.home.limits.store.body"
-msgstr ""
+msgstr "Il n’existe pas d’application iPhone ou Android, ni pour vous ni pour vos clients ; les deux interfaces sont des pages web."
 
 #: site:site.home.limits.store.title
 msgid "site.home.limits.store.title"
-msgstr ""
+msgstr "Aucune application dans les boutiques d’applications"
 
 #: site:site.home.limits.till.body
 msgid "site.home.limits.till.body"
-msgstr ""
+msgstr "Les clients ne paient pas via Zabuno. Aucun outil ici n’imprime d’addition ni ne présente vos recettes."
 
 #: site:site.home.limits.till.title
 msgid "site.home.limits.till.title"
-msgstr ""
+msgstr "Ni caisse ni système de paiement"
 
 #: site:site.home.meta.description
 msgid "site.home.meta.description"
-msgstr ""
+msgstr "Zabuno offre à votre équipe un espace de travail partagé pour gérer le menu et le catalogue d’un restaurant, les publier sur une page accessible par un QR code stable et les tenir à jour au fil des changements."
 
 #: site:site.home.meta.title
 msgid "site.home.meta.title"
-msgstr ""
+msgstr "Menu de restaurant et espace de travail"
 
 #: site:site.home.parts.ai.body
 msgid "site.home.parts.ai.body"
-msgstr ""
+msgstr "La photo d’un menu imprimé devient un brouillon que vous validez, et les plats saisis en double sont repérés."
 
 #: site:site.home.parts.ai.title
 msgid "site.home.parts.ai.title"
-msgstr ""
+msgstr "Zabuno AI"
 
 #: site:site.home.parts.analytics.body
 msgid "site.home.parts.analytics.body"
-msgstr ""
+msgstr "Scans, ouvertures de menus, consultations de plats, recherches sans résultat et commandes envoyées, comptabilisés par le serveur."
 
 #: site:site.home.parts.analytics.title
 msgid "site.home.parts.analytics.title"
-msgstr ""
+msgstr "Statistiques"
 
 #: site:site.home.parts.branches.body
 msgid "site.home.parts.branches.body"
-msgstr ""
+msgstr "Autant d’établissements que nécessaire au sein d’une entreprise, chacun avec ses menus, prix, codes et horaires."
 
 #: site:site.home.parts.branches.title
 msgid "site.home.parts.branches.title"
-msgstr ""
+msgstr "Plusieurs établissements"
 
 #: site:site.home.parts.branding.body
 msgid "site.home.parts.branding.body"
-msgstr ""
+msgstr "Un logo et deux couleurs, figés à chaque publication pour que le menu ne change jamais pendant qu’un client le consulte."
 
 #: site:site.home.parts.branding.title
 msgid "site.home.parts.branding.title"
-msgstr ""
+msgstr "Design et identité visuelle"
 
 #: site:site.home.parts.heading
 msgid "site.home.parts.heading"
-msgstr ""
+msgstr "Ce que comprend le produit"
 
 #: site:site.home.parts.languages.body
 msgid "site.home.parts.languages.body"
-msgstr ""
+msgstr "La page client s’adapte au client, les noms des plats restent dans votre langue et les prix utilisent votre devise."
 
 #: site:site.home.parts.languages.title
 msgid "site.home.parts.languages.title"
-msgstr ""
+msgstr "Langues et devise"
 
 #: site:site.home.parts.lead
 msgid "site.home.parts.lead"
-msgstr ""
+msgstr "Douze composantes dans un seul compte. Chacune possède sa propre page, où elle est expliquée en détail."
 
 #: site:site.home.parts.media.body
 msgid "site.home.parts.media.body"
-msgstr ""
+msgstr "Les photos sont analysées, redimensionnées une fois et diffusées en petit format ; l’original est conservé pour pouvoir recréer les copies."
 
 #: site:site.home.parts.media.title
 msgid "site.home.parts.media.title"
-msgstr ""
+msgstr "Images et médias"
 
 #: site:site.home.parts.menuManagement.body
 msgid "site.home.parts.menuManagement.body"
-msgstr ""
+msgstr "Catégories, plats, prix et stocks, modifiés dans un brouillon puis publiés sous forme de versions numérotées."
 
 #: site:site.home.parts.menuManagement.title
 msgid "site.home.parts.menuManagement.title"
-msgstr ""
+msgstr "Gestion du menu"
 
 #: site:site.home.parts.ordering.body
 msgid "site.home.parts.ordering.body"
-msgstr ""
+msgstr "Là où vous l’activez, les clients composent un panier et l’envoient à un écran en cuisine."
 
 #: site:site.home.parts.ordering.title
 msgid "site.home.parts.ordering.title"
-msgstr ""
+msgstr "Commande à table"
 
 #: site:site.home.parts.qrMenu.body
 msgid "site.home.parts.qrMenu.body"
-msgstr ""
+msgstr "Photo, description, prix, allergènes et indication des plats épuisés, à une adresse permanente qui tient sur une carte."
 
 #: site:site.home.parts.qrMenu.title
 msgid "site.home.parts.qrMenu.title"
-msgstr ""
+msgstr "Menu QR"
 
 #: site:site.home.parts.ratings.body
 msgid "site.home.parts.ratings.body"
-msgstr ""
+msgstr "Un client qui a scanné un code peut évaluer un plat, et vous pouvez lui répondre."
 
 #: site:site.home.parts.ratings.title
 msgid "site.home.parts.ratings.title"
-msgstr ""
+msgstr "Évaluations depuis la table"
 
 #: site:site.home.parts.tables.body
 msgid "site.home.parts.tables.body"
-msgstr ""
+msgstr "Un code par table, relu par un décodeur avant d’être enregistré dans un fichier, puis imprimé sur des cartes vectorielles."
 
 #: site:site.home.parts.tables.title
 msgid "site.home.parts.tables.title"
-msgstr ""
+msgstr "Tables et QR codes"
 
 #: site:site.home.parts.team.body
 msgid "site.home.parts.team.body"
-msgstr ""
+msgstr "Des éditeurs, des responsables et un rôle cuisine qui indique les allergènes et les plats épuisés, sans accès au reste."
 
 #: site:site.home.parts.team.title
 msgid "site.home.parts.team.title"
-msgstr ""
+msgstr "Une équipe avec des rôles"
 
 #: site:site.investors.built.cta
 msgid "site.investors.built.cta"
-msgstr ""
+msgstr "Consulter l’inventaire complet"
 
 #: site:site.investors.built.heading
 msgid "site.investors.built.heading"
-msgstr ""
+msgstr "Ce qui est développé"
 
 #: site:site.investors.built.lead
 msgid "site.investors.built.lead"
-msgstr ""
+msgstr "Le produit comprend {parts} composantes, toutes issues de son propre inventaire, et non rédigées pour cette page. Si une composante est renommée ou retirée, cette liste évolue avec elle."
 
 #: site:site.investors.chain.heading
 msgid "site.investors.chain.heading"
-msgstr ""
+msgstr "Ce que fait le produit, dans l’ordre"
 
 #: site:site.investors.chain.label
 msgid "site.investors.chain.label"
-msgstr ""
+msgstr "Le parcours produit, étape par étape"
 
 #: site:site.investors.chain.lead
 msgid "site.investors.chain.lead"
-msgstr ""
+msgstr "Le parcours de base est le même pour tous et ne coûte rien : un compte, une entreprise, un établissement, un menu, une version publiée, un code imprimé. Les offres ajoutent des fonctionnalités à ce parcours ; elles ne le désactivent jamais."
 
 #: site:site.investors.commitment.cta
 msgid "site.investors.commitment.cta"
-msgstr ""
+msgstr "Lire les conditions de niveau de service"
 
 #: site:site.investors.commitment.heading
 msgid "site.investors.commitment.heading"
-msgstr ""
+msgstr "Les engagements pris et ceux qui ne le sont pas"
 
 #: site:site.investors.commitment.missingLabel
 msgid "site.investors.commitment.missingLabel"
-msgstr ""
+msgstr "Laissé vide volontairement dans config/sla.php :"
 
 #: site:site.investors.commitment.open
 msgid "site.investors.commitment.open"
-msgstr ""
+msgstr "Aucun taux de disponibilité n’est garanti. Les conditions de niveau de service existent et décrivent comment la disponibilité serait mesurée, les exclusions, les notifications et les compensations. Mais les valeurs sont volontairement laissées vides, car rien dans ce déploiement ne mesure encore la disponibilité, et une promesse que personne ne peut vérifier n’est pas une promesse."
 
 #: site:site.investors.commitment.set
 msgid "site.investors.commitment.set"
-msgstr ""
+msgstr "Un engagement de disponibilité chiffré a été pris. Les conditions de niveau de service l’indiquent, avec sa méthode de mesure et les conséquences de son non-respect."
 
 #: site:site.investors.contact.cta
 msgid "site.investors.contact.cta"
-msgstr ""
+msgstr "Comment nous joindre"
 
 #: site:site.investors.contact.heading
 msgid "site.investors.contact.heading"
-msgstr ""
+msgstr "Échanger avec nous"
 
 #: site:site.investors.contact.lead
 msgid "site.investors.contact.lead"
-msgstr ""
+msgstr "Les réponses aux questions sur ce qui est développé, ce qui ne l’est pas et la vérification des affirmations proviennent du même inventaire que ces pages."
 
 #: site:site.investors.contactPage.commitment.absent
 msgid "site.investors.contactPage.commitment.absent"
-msgstr ""
+msgstr "Aucun délai de réponse n’a été promis ; aucun n’est donc affiché ici. Une formule par défaut comme « dès que possible » serait une promesse que personne n’a faite."
 
 #: site:site.investors.contactPage.cta
 msgid "site.investors.contactPage.cta"
-msgstr ""
+msgstr "Ouvrir le formulaire de contact"
 
 #: site:site.investors.contactPage.heading
 msgid "site.investors.contactPage.heading"
-msgstr ""
+msgstr "Échanger avec nous"
 
 #: site:site.investors.contactPage.identity.body
 msgid "site.investors.contactPage.identity.body"
-msgstr ""
+msgstr "L’identité ci-dessous provient de la configuration de ce déploiement. Lorsqu’un champ indique qu’il n’a pas été renseigné, c’est bien le cas ; un champ vide est affiché plutôt que masqué."
 
 #: site:site.investors.contactPage.identity.heading
 msgid "site.investors.contactPage.identity.heading"
-msgstr ""
+msgstr "Votre interlocuteur"
 
 #: site:site.investors.contactPage.lead
 msgid "site.investors.contactPage.lead"
-msgstr ""
+msgstr "Ce site propose un seul canal de contact, également utilisé par les investisseurs. Aucune boîte de réception distincte ne leur est dédiée ; prétendre le contraire enverrait votre message à une adresse que personne ne consulte."
 
 #: site:site.investors.contactPage.meta.description
 msgid "site.investors.contactPage.meta.description"
-msgstr ""
+msgstr "Ce site propose un seul canal de contact, également utilisé par les investisseurs, ainsi que l’identité juridique du vendeur telle qu’elle est configurée dans ce déploiement."
 
 #: site:site.investors.contactPage.meta.title
 msgid "site.investors.contactPage.meta.title"
-msgstr ""
+msgstr "Échanger avec nous"
 
 #: site:site.investors.contactPage.what.body
 msgid "site.investors.contactPage.what.body"
-msgstr ""
+msgstr "Précisez qui vous êtes, ce que vous examinez et ce que vous souhaitez voir. Les réponses sur les fonctionnalités proviennent de l’inventaire dont sont issues ces pages : vous obtenez ainsi la même réponse que celle donnée par le produit lui-même."
 
 #: site:site.investors.contactPage.what.heading
 msgid "site.investors.contactPage.what.heading"
-msgstr ""
+msgstr "Que nous envoyer"
 
 #: site:site.investors.deck.evidenceLabel
 msgid "site.investors.deck.evidenceLabel"
-msgstr ""
+msgstr "Mesuré"
 
 #: site:site.investors.deck.heading
 msgid "site.investors.deck.heading"
-msgstr ""
+msgstr "La version courte"
 
 #: site:site.investors.deck.lead
 msgid "site.investors.deck.lead"
-msgstr ""
+msgstr "Les mêmes faits que dans le reste de cette rubrique, dans l’ordre d’une lecture unique. Il n’y a ni fichier à télécharger ni récit distinct : une présentation qui affirme autre chose que le produit devra être corrigée un jour."
 
 #: site:site.investors.deck.meta.description
 msgid "site.investors.deck.meta.description"
-msgstr ""
+msgstr "Les mêmes faits mesurés que dans le reste de cette rubrique, dans l’ordre d’une lecture unique : ce qu’est le produit, ce qui est développé ou non, son prix, les engagements pris, son hébergement, ses vérifications et ce que personne ne sait."
 
 #: site:site.investors.deck.meta.title
 msgid "site.investors.deck.meta.title"
-msgstr ""
+msgstr "La version courte"
 
 #: site:site.investors.deckBuilt.body
 msgid "site.investors.deckBuilt.body"
-msgstr ""
+msgstr "Menu, publication, codes imprimables, photos, identité visuelle, langues, établissements, rapports, commande à table, équipe et évaluations sont réunis dans un seul compte, et non dans des produits séparés."
 
 #: site:site.investors.deckBuilt.evidence
 msgid "site.investors.deckBuilt.evidence"
-msgstr ""
+msgstr "{parts} composantes, chacune issue de l’inventaire du produit."
 
 #: site:site.investors.deckBuilt.heading
 msgid "site.investors.deckBuilt.heading"
-msgstr ""
+msgstr "Ce qui est développé"
 
 #: site:site.investors.deckChecked.body
 msgid "site.investors.deckChecked.body"
-msgstr ""
+msgstr "Les affirmations sont liées à des fichiers et le comportement à des contrôles. Une fonctionnalité qui disparaît du produit ne peut pas continuer à être vendue sur une page : un test en échec le signale avant un lecteur."
 
 #: site:site.investors.deckChecked.evidence
 msgid "site.investors.deckChecked.evidence"
-msgstr ""
+msgstr "{sources} affirmations liées à un fichier, {gates} scripts de contrôle présents."
 
 #: site:site.investors.deckChecked.heading
 msgid "site.investors.deckChecked.heading"
-msgstr ""
+msgstr "Comment c’est vérifié"
 
 #: site:site.investors.deckCommitment.body
 msgid "site.investors.deckCommitment.body"
-msgstr ""
+msgstr "Les engagements commerciaux attendus par un acheteur — disponibilité, notification d’incident, avoir de service — sont rédigés dans les conditions, mais restent volontairement sans valeurs chiffrées tant qu’aucun dispositif ne les mesure."
 
 #: site:site.investors.deckCommitment.heading
 msgid "site.investors.deckCommitment.heading"
-msgstr ""
+msgstr "Les engagements pris"
 
 #: site:site.investors.deckCta
 msgid "site.investors.deckCta"
-msgstr ""
+msgstr "Lire la version courte"
 
 #: site:site.investors.deckNotBuilt.body
 msgid "site.investors.deckNotBuilt.body"
-msgstr ""
+msgstr "Le produit n’est pas un système de caisse, n’encaisse pas les clients, ne gère pas les réservations, ne possède aucune intégration tierce et n’a pas d’application dans les boutiques d’applications. Ces limites sont énoncées aussi clairement que les fonctionnalités."
 
 #: site:site.investors.deckNotBuilt.evidence
 msgid "site.investors.deckNotBuilt.evidence"
-msgstr ""
+msgstr "{limits} limites déclarées, présentes sur la page d’accueil publique comme ici."
 
 #: site:site.investors.deckNotBuilt.heading
 msgid "site.investors.deckNotBuilt.heading"
-msgstr ""
+msgstr "Ce qui n’est pas développé"
 
 #: site:site.investors.deckPrice.body
 msgid "site.investors.deckPrice.body"
-msgstr ""
+msgstr "Le parcours de base ne coûte rien et les offres lui ajoutent des fonctionnalités. Chaque prix affiché sur ce site provient du catalogue d’offres ; aucun n’est saisi dans une page."
 
 #: site:site.investors.deckPrice.evidence
 msgid "site.investors.deckPrice.evidence"
-msgstr ""
+msgstr "Les prix proviennent du catalogue d’offres et sont publiés sur /pricing, sans compte requis."
 
 #: site:site.investors.deckPrice.heading
 msgid "site.investors.deckPrice.heading"
-msgstr ""
+msgstr "Ce que cela coûte"
 
 #: site:site.investors.deckRuns.body
 msgid "site.investors.deckRuns.body"
-msgstr ""
+msgstr "Un serveur virtuel héberge l’application, la base de données et les fichiers téléversés. Tout autre service qui traite des données clients est nommé, et uniquement tant qu’il est réellement activé."
 
 #: site:site.investors.deckRuns.evidence
 msgid "site.investors.deckRuns.evidence"
-msgstr ""
+msgstr "{subprocessors} entrées, lues dans la configuration et le coffre des identifiants lors du rendu."
 
 #: site:site.investors.deckRuns.heading
 msgid "site.investors.deckRuns.heading"
-msgstr ""
+msgstr "Où le produit fonctionne"
 
 #: site:site.investors.deckUnknown.body
 msgid "site.investors.deckUnknown.body"
-msgstr ""
+msgstr "La demande, ce qu’un restaurant est prêt à payer, s’il continue à utiliser le produit après le premier mois et le coût de ce service à grande échelle. Rien de cela n’est mesuré dans ce code, et cette rubrique ne prétend pas le contraire."
 
 #: site:site.investors.deckUnknown.evidence
 msgid "site.investors.deckUnknown.evidence"
-msgstr ""
+msgstr "Non mesuré. La réponse honnête à une question qui n’a pas été mesurée est qu’elle ne l’a pas été."
 
 #: site:site.investors.deckUnknown.heading
 msgid "site.investors.deckUnknown.heading"
-msgstr ""
+msgstr "Ce que personne ne sait encore"
 
 #: site:site.investors.deckWhat.body
 msgid "site.investors.deckWhat.body"
-msgstr ""
+msgstr "Un produit web pour les lieux qui servent à manger et à boire : vous rédigez un menu, le publiez, imprimez un code par table, et les clients le consultent dans le navigateur déjà présent sur leur téléphone. Ni application ni compte pour le client."
 
 #: site:site.investors.deckWhat.evidence
 msgid "site.investors.deckWhat.evidence"
-msgstr ""
+msgstr "Le parcours comporte {chain} étapes, et chacune nomme le contrôleur qui l’exécute."
 
 #: site:site.investors.deckWhat.heading
 msgid "site.investors.deckWhat.heading"
-msgstr ""
+msgstr "De quoi il s’agit"
 
 #: site:site.investors.heading
 msgid "site.investors.heading"
-msgstr ""
+msgstr "Relations investisseurs"
 
 #: site:site.investors.infrastructure.dataLabel
 msgid "site.investors.infrastructure.dataLabel"
-msgstr ""
+msgstr "Données auxquelles il accède"
 
 #: site:site.investors.infrastructure.heading
 msgid "site.investors.infrastructure.heading"
-msgstr ""
+msgstr "Où le produit fonctionne et qui d’autre accède aux données"
 
 #: site:site.investors.infrastructure.lead
 msgid "site.investors.infrastructure.lead"
-msgstr ""
+msgstr "Cette liste de {subprocessors} entrées n’est pas rédigée à la main. Elle est lue dans la configuration de l’hébergement, le coffre des identifiants et les paramètres de mesure à chaque rendu de la page ; elle ne peut donc pas devenir obsolète silencieusement."
 
 #: site:site.investors.infrastructure.locationLabel
 msgid "site.investors.infrastructure.locationLabel"
-msgstr ""
+msgstr "Lieu de traitement"
 
 #: site:site.investors.infrastructure.roleLabel
 msgid "site.investors.infrastructure.roleLabel"
-msgstr ""
+msgstr "Rôle"
 
 #: site:site.investors.infrastructure.unreadable
 msgid "site.investors.infrastructure.unreadable"
-msgstr ""
+msgstr "Le coffre des identifiants n’a pas pu être lu lors du rendu de cette page ; cette liste peut donc être incomplète. « Nous n’avons pas pu vérifier » ne signifie pas « il n’y a rien »."
 
 #: site:site.investors.lead
 msgid "site.investors.lead"
-msgstr ""
+msgstr "Zabuno est un produit qui fonctionne avant d’être une activité commerciale. Ces pages présentent ce qui est développé, ce qui ne l’est pas et ce que personne n’a encore mesuré."
 
 #: site:site.investors.limits.heading
 msgid "site.investors.limits.heading"
-msgstr ""
+msgstr "Ce qui n’est pas développé"
 
 #: site:site.investors.limits.lead
 msgid "site.investors.limits.lead"
-msgstr ""
+msgstr "Il y a {limits} choses que le produit ne fait volontairement pas. Lisez cette section en premier : découvrir pendant le service qu’une fonctionnalité supposée présente manque ne laisse plus le temps de changer quoi que ce soit."
 
 #: site:site.investors.meta.description
 msgid "site.investors.meta.description"
-msgstr ""
+msgstr "Ce qu’est Zabuno, les composantes développées et celles volontairement absentes, les engagements pris et ce que personne n’a encore mesuré — avec le fichier qui étaye chaque affirmation."
 
 #: site:site.investors.meta.title
 msgid "site.investors.meta.title"
-msgstr ""
+msgstr "Relations investisseurs"
 
 #: site:site.investors.product.heading
 msgid "site.investors.product.heading"
-msgstr ""
+msgstr "Ce qui a été développé"
 
 #: site:site.investors.product.lead
 msgid "site.investors.product.lead"
-msgstr ""
+msgstr "L’inventaire propre au produit, composante par composante, avec le fichier correspondant à chacune. Rien sur cette page n’a été rédigé pour un investisseur : c’est la même liste que le produit utilise pour se décrire."
 
 #: site:site.investors.product.meta.description
 msgid "site.investors.product.meta.description"
-msgstr ""
+msgstr "L’inventaire du produit, composante par composante, chacune nommée avec le fichier de ce déploiement qui la produit, et les sept choses que le produit ne fait volontairement pas."
 
 #: site:site.investors.product.meta.title
 msgid "site.investors.product.meta.title"
-msgstr ""
+msgstr "Ce qui a été développé"
 
 #: site:site.investors.product.sourceLabel
 msgid "site.investors.product.sourceLabel"
-msgstr ""
+msgstr "Produit par"
 
 #: site:site.investors.product.sourceMissing
 msgid "site.investors.product.sourceMissing"
-msgstr ""
+msgstr "Le fichier qui étaye cette affirmation est absent de ce déploiement ; considérez donc l’affirmation comme non démontrée."
 
 #: site:site.investors.product.sourceNone
 msgid "site.investors.product.sourceNone"
-msgstr ""
+msgstr "Cette entrée ne nomme aucun fichier, car elle décrit quelque chose que le produit ne fait pas : une absence n’a pas de fichier vers lequel pointer."
 
 #: site:site.investors.rules.body
 msgid "site.investors.rules.body"
-msgstr ""
+msgstr "Ces pages ne contiennent aucun chiffre que ce dépôt ne peut mesurer. Le nombre d’établissements utilisant le produit, ses revenus, la progression de ces deux indicateurs, la taille du marché et les éloges reçus ne sont comptabilisés nulle part dans ce code ; ils ne figurent donc pas ici."
 
 #: site:site.investors.rules.body2
 msgid "site.investors.rules.body2"
-msgstr ""
+msgstr "Vous trouvez ici le travail lui-même : l’inventaire du produit, le fichier qui étaye chaque affirmation, les engagements volontairement laissés vides et les contrôles qui les vérifient. Un test fait échouer la compilation si un chiffre non mesuré est ajouté à ces pages."
 
 #: site:site.investors.rules.heading
 msgid "site.investors.rules.heading"
-msgstr ""
+msgstr "Ce qui ne figure pas sur ces pages"
 
 #: site:site.investors.verification.gates
 msgid "site.investors.verification.gates"
-msgstr ""
+msgstr "Scripts de contrôle présents dans ce déploiement : {gates}. Chacun vérifie le produit réel, plutôt que sa description."
 
 #: site:site.investors.verification.heading
 msgid "site.investors.verification.heading"
-msgstr ""
+msgstr "Comment une affirmation est vérifiée"
 
 #: site:site.investors.verification.lead
 msgid "site.investors.verification.lead"
-msgstr ""
+msgstr "{sources} affirmations de ces pages nomment le fichier de ce déploiement qui les produit, et l’existence de chacun de ces fichiers est vérifiée lors du rendu. Une affirmation dont le fichier a disparu est signalée comme manquante, plutôt que conservée silencieusement."
 
 #: site:site.investors.verification.missing
 msgid "site.investors.verification.missing"
-msgstr ""
+msgstr "Absent de ce déploiement"
 
 #: site:site.investors.verification.present
 msgid "site.investors.verification.present"
-msgstr ""
+msgstr "Présent"
 
 #: site:site.legal.contents
 msgid "site.legal.contents"
-msgstr ""
+msgstr "Sommaire"
 
 #: site:site.legal.cookies.preference.current
 msgid "site.legal.cookies.preference.current"
-msgstr ""
+msgstr "Choix actuel :"
 
 #: site:site.legal.cookies.preference.denied
 msgid "site.legal.cookies.preference.denied"
-msgstr ""
+msgstr "mesure refusée"
 
 #: site:site.legal.cookies.preference.granted
 msgid "site.legal.cookies.preference.granted"
-msgstr ""
+msgstr "mesure autorisée"
 
 #: site:site.legal.cookies.preference.heading
 msgid "site.legal.cookies.preference.heading"
-msgstr ""
+msgstr "Votre choix concernant la mesure"
 
 #: site:site.legal.cookies.preference.undecided
 msgid "site.legal.cookies.preference.undecided"
-msgstr ""
+msgstr "pas encore décidé, la mesure reste donc désactivée"
 
 #: site:site.legal.dataRequest.addressLabel
 msgid "site.legal.dataRequest.addressLabel"
-msgstr ""
+msgstr "Destination de la demande"
 
 #: site:site.legal.dataRequest.addressMissing
 msgid "site.legal.dataRequest.addressMissing"
-msgstr ""
+msgstr "Cette information n’a pas encore été renseignée. Une demande envoyée via le formulaire de contact nous parvient tout de même et est enregistrée."
 
 #: site:site.legal.dataRequest.body
 msgid "site.legal.dataRequest.body"
-msgstr ""
+msgstr "Vous pouvez télécharger vous-même votre menu au format CSV depuis votre espace de travail à tout moment, sans avoir à nous le demander. Pour toute autre donnée conservée dans votre compte, écrivez-nous via le formulaire de contact en précisant votre demande."
 
 #: site:site.legal.dataRequest.cta
 msgid "site.legal.dataRequest.cta"
-msgstr ""
+msgstr "Ouvrir le formulaire de contact"
 
 #: site:site.legal.dataRequest.heading
 msgid "site.legal.dataRequest.heading"
-msgstr ""
+msgstr "Les données de votre compte"
 
 #: site:site.legal.effective
 msgid "site.legal.effective"
-msgstr ""
+msgstr "En vigueur à compter du"
 
 #: site:site.legal.incomplete.body
 msgid "site.legal.incomplete.body"
-msgstr ""
+msgstr "L’identité juridique du vendeur n’a pas encore été publiée ; ce texte ne nomme donc pas la partie avec laquelle vous concluriez un contrat. Lisez-le comme un brouillon : ne vous y fiez pas comme à un contrat et consultez-nous avant d’agir sur cette base."
 
 #: site:site.legal.incomplete.fields
 msgid "site.legal.incomplete.fields"
-msgstr ""
+msgstr "Pas encore renseigné :"
 
 #: site:site.legal.incomplete.heading
 msgid "site.legal.incomplete.heading"
-msgstr ""
+msgstr "Ce document n’est pas encore complet."
 
 #: site:site.legal.review.pending
 msgid "site.legal.review.pending"
-msgstr ""
+msgstr "Ce texte est en attente d’une revue juridique. Il décrit le fonctionnement actuel du produit et pourra être reformulé après cette revue."
 
 #: site:site.legal.version
 msgid "site.legal.version"
-msgstr ""
+msgstr "Version"
 
 #: site:site.nav.about
 msgid "site.nav.about"
-msgstr ""
+msgstr "À propos"
 
 #: site:site.nav.accessibility
 msgid "site.nav.accessibility"
-msgstr ""
+msgstr "Accessibilité"
 
 #: site:site.nav.account
 msgid "site.nav.account"
-msgstr ""
+msgstr "Compte"
 
 #: site:site.nav.contact
 msgid "site.nav.contact"
-msgstr ""
+msgstr "Contact"
 
 #: site:site.nav.customers
 msgid "site.nav.customers"
-msgstr ""
+msgstr "Clients"
 
 #: site:site.nav.explore
 msgid "site.nav.explore"
-msgstr ""
+msgstr "Découvrir"
 
 #: site:site.nav.features
 msgid "site.nav.features"
-msgstr ""
+msgstr "Fonctionnalités"
 
 #: site:site.nav.help
 msgid "site.nav.help"
-msgstr ""
+msgstr "Aide"
 
 #: site:site.nav.howItWorks
 msgid "site.nav.howItWorks"
-msgstr ""
+msgstr "Comment ça marche"
 
 #: site:site.nav.integrations
 msgid "site.nav.integrations"
-msgstr ""
+msgstr "Intégrations"
 
 #: site:site.nav.investors
 msgid "site.nav.investors"
-msgstr ""
+msgstr "Investisseurs"
 
 #: site:site.nav.login
 msgid "site.nav.login"
-msgstr ""
+msgstr "Se connecter"
 
 #: site:site.nav.menu
 msgid "site.nav.menu"
-msgstr ""
+msgstr "Menu"
 
 #: site:site.nav.pricing
 msgid "site.nav.pricing"
-msgstr ""
+msgstr "Tarifs"
 
 #: site:site.nav.primary
 msgid "site.nav.primary"
-msgstr ""
+msgstr "Navigation principale"
 
 #: site:site.nav.product
 msgid "site.nav.product"
-msgstr ""
+msgstr "Produit"
 
 #: site:site.nav.register
 msgid "site.nav.register"
-msgstr ""
+msgstr "Créer un compte"
 
 #: site:site.nav.resources
 msgid "site.nav.resources"
-msgstr ""
+msgstr "Ressources"
 
 #: site:site.nav.solutions
 msgid "site.nav.solutions"
-msgstr ""
+msgstr "Solutions"
 
 #: site:site.nav.trust
 msgid "site.nav.trust"
-msgstr ""
+msgstr "Centre de confiance"
 
 #: site:site.pageState.approved
 msgid "site.pageState.approved"
-msgstr ""
+msgstr "En attente de mise en ligne"
 
 #: site:site.pageState.contact
 msgid "site.pageState.contact"
-msgstr ""
+msgstr "Nous contacter"
 
 #: site:site.pageState.content_draft
 msgid "site.pageState.content_draft"
-msgstr ""
+msgstr "Contenu en turc en cours de rédaction"
 
 #: site:site.pageState.content_review
 msgid "site.pageState.content_review"
-msgstr ""
+msgstr "Contenu en cours de vérification"
 
 #: site:site.pageState.design_review
 msgid "site.pageState.design_review"
-msgstr ""
+msgstr "Présentation visuelle en cours de préparation"
 
 #: site:site.pageState.explore
 msgid "site.pageState.explore"
-msgstr ""
+msgstr "Découvrir les pages disponibles"
 
 #: site:site.pageState.headline
 msgid "site.pageState.headline"
-msgstr ""
+msgstr "Cette page n’est pas encore en ligne."
 
 #: site:site.pageState.home
 msgid "site.pageState.home"
-msgstr ""
+msgstr "Retour à l’accueil"
 
 #: site:site.pageState.lede
 msgid "site.pageState.lede"
-msgstr ""
+msgstr "Le contenu, la présentation, la visibilité dans les moteurs de recherche et les contrôles qualité sont préparés couche par couche."
 
 #: site:site.pageState.maintenance
 msgid "site.pageState.maintenance"
-msgstr ""
+msgstr "Maintenance temporaire"
 
 #: site:site.pageState.maintenanceHeadline
 msgid "site.pageState.maintenanceHeadline"
-msgstr ""
+msgstr "Cette page est temporairement en maintenance."
 
 #: site:site.pageState.maintenanceLede
 msgid "site.pageState.maintenanceLede"
-msgstr ""
+msgstr "Cette page était en ligne et le sera à nouveau. Les autres pages continuent de fonctionner en attendant."
 
 #: site:site.pageState.pageLabel
 msgid "site.pageState.pageLabel"
-msgstr ""
+msgstr "Page"
 
 #: site:site.pageState.planned
 msgid "site.pageState.planned"
-msgstr ""
+msgstr "En attente"
 
 #: site:site.pageState.published
 msgid "site.pageState.published"
-msgstr ""
+msgstr "En ligne"
 
 #: site:site.pageState.qa
 msgid "site.pageState.qa"
-msgstr ""
+msgstr "Contrôle qualité final en cours"
 
 #: site:site.pageState.retired
 msgid "site.pageState.retired"
-msgstr ""
+msgstr "Retirée du site"
 
 #: site:site.pageState.scaffolded
 msgid "site.pageState.scaffolded"
-msgstr ""
+msgstr "Structure préparée"
 
 #: site:site.pageState.seo_review
 msgid "site.pageState.seo_review"
-msgstr ""
+msgstr "Visibilité dans les moteurs de recherche en cours de vérification"
 
 #: site:site.pageState.stageLabel
 msgid "site.pageState.stageLabel"
-msgstr ""
+msgstr "État"
 
 #: site:site.pageState.title
 msgid "site.pageState.title"
-msgstr ""
+msgstr "En préparation"
 
 #: site:site.pageState.updatedLabel
 msgid "site.pageState.updatedLabel"
-msgstr ""
+msgstr "Dernière mise à jour"
 
 #: site:site.plan.analytics
 msgid "site.plan.analytics"
-msgstr ""
+msgstr "Statistiques : ce que les clients consultent et ce qu’ils recherchent sans le trouver"
 
 #: site:site.plan.audience.restaurant
 msgid "site.plan.audience.restaurant"
-msgstr ""
+msgstr "Vous gérez vous-même une salle et ses tables, et vous souhaitez que la page consultée par vos clients ressemble à votre restaurant plutôt qu’à un formulaire."
 
 #: site:site.plan.audience.starter
 msgid "site.plan.audience.starter"
-msgstr ""
+msgstr "Vous rendez votre menu accessible par QR code pour la première fois, vous le gérez vous-même et vous préférez ne pas payer pour découvrir si cela fonctionne."
 
 #: site:site.plan.audience.team
 msgid "site.plan.audience.team"
-msgstr ""
+msgstr "Vous n’êtes pas la seule personne à intervenir sur le menu : un responsable, un serveur ou un comptable a besoin de son propre compte plutôt que du vôtre."
 
 #: site:site.plan.branding
 msgid "site.plan.branding"
-msgstr ""
+msgstr "Vos couleurs et votre typographie sur le menu client"
 
 #: site:site.plan.ordering
 msgid "site.plan.ordering"
-msgstr ""
+msgstr "Les clients commandent à table ; votre équipe confirme et la cuisine voit la commande"
 
 #: site:site.plan.qrBulk
 msgid "site.plan.qrBulk"
-msgstr ""
+msgstr "Des QR codes en lot pour toutes les tables d’une salle"
 
 #: site:site.plan.richMedia
 msgid "site.plan.richMedia"
-msgstr ""
+msgstr "Des photos de vos plats sur le menu client"
 
 #: site:site.plan.team
 msgid "site.plan.team"
-msgstr ""
+msgstr "Des membres d’équipe avec des rôles que vous contrôlez"
 
 #: site:site.pricing.adds
 msgid "site.pricing.adds"
-msgstr ""
+msgstr "Fonctionnalités supplémentaires"
 
 #: site:site.pricing.audience
 msgid "site.pricing.audience"
-msgstr ""
+msgstr "À qui cette offre s’adresse"
 
 #: site:site.pricing.cancellation
 msgid "site.pricing.cancellation"
-msgstr ""
+msgstr "Vous résiliez depuis votre espace de travail et l’offre reste active jusqu’à la fin de la période payée."
 
 #: site:site.pricing.cancellation.cta
 msgid "site.pricing.cancellation.cta"
-msgstr ""
+msgstr "Lire la Politique de résiliation et de remboursement"
 
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
-msgstr ""
+msgstr "Les prix des offres ne sont pas encore publiés. Décrivez-nous votre restaurant et nous vous répondrons avec un prix adapté à votre situation."
 
 #: site:site.pricing.empty.cta
 msgid "site.pricing.empty.cta"
-msgstr ""
+msgstr "Nous contacter"
 
 #: site:site.pricing.excluded.campaign
 msgid "site.pricing.excluded.campaign"
-msgstr ""
+msgstr "Il n’y a ni période d’essai, ni tarif de lancement, ni remise annuelle, ni promotion. Une offre est un nom, un montant et un ensemble de droits."
 
 #: site:site.pricing.excluded.currency
 msgid "site.pricing.excluded.currency"
-msgstr ""
+msgstr "Les prix sont exclusivement en livres turques. Il n’y a ni seconde devise ni conversion lors du paiement."
 
 #: site:site.pricing.excluded.delivery
 msgid "site.pricing.excluded.delivery"
-msgstr ""
+msgstr "Il n’y a ni vente à emporter, ni livraison, ni retrait, ni commande avant l’arrivée. Le seul moyen d’envoyer une commande est de scanner le code d’une table."
 
 #: site:site.pricing.excluded.heading
 msgid "site.pricing.excluded.heading"
-msgstr ""
+msgstr "Ce qu’aucune offre ne comprend"
 
 #: site:site.pricing.excluded.kitchenHardware
 msgid "site.pricing.excluded.kitchenHardware"
-msgstr ""
+msgstr "Rien ne s’imprime et aucun signal sonore ne retentit. Les commandes s’affichent sur un écran qui s’actualise automatiquement ; quelqu’un doit donc pouvoir le consulter."
 
 #: site:site.pricing.excluded.lead
 msgid "site.pricing.excluded.lead"
-msgstr ""
+msgstr "Ces fonctionnalités sont absentes de toutes les offres, pas seulement de la moins chère. Elles sont indiquées ici pour éviter de le découvrir après avoir payé."
 
 #: site:site.pricing.excluded.payment
 msgid "site.pricing.excluded.payment"
-msgstr ""
+msgstr "Les clients ne paient pas via Zabuno. Une commande ne comporte ni étape de paiement par carte ni addition ; l’encaissement se fait toujours à table, exactement comme aujourd’hui."
 
 #: site:site.pricing.excluded.pos
 msgid "site.pricing.excluded.pos"
-msgstr ""
+msgstr "Il n’existe aucune connexion à une caisse, à un système de point de vente ou à un logiciel comptable. Une commande reste dans Zabuno et se lit sur un écran Zabuno."
 
 #: site:site.pricing.faq.branch.answer
 msgid "site.pricing.faq.branch.answer"
-msgstr ""
+msgstr "Non. Une offre prévoit un montant unique pour l’ensemble de l’espace de travail, quel que soit son contenu. Les comptes pour votre équipe sont un droit inclus dans l’offre supérieure, pas un tarif par personne."
 
 #: site:site.pricing.faq.branch.question
 msgid "site.pricing.faq.branch.question"
-msgstr ""
+msgstr "Un deuxième établissement ou un serveur supplémentaire coûte-t-il plus cher ?"
 
 #: site:site.pricing.faq.cancel.answer
 msgid "site.pricing.faq.cancel.answer"
-msgstr ""
+msgstr "Oui, depuis l’écran Facturation de votre espace de travail. La résiliation arrête le renouvellement : l’offre reste active jusqu’à la fin de la période déjà payée, et vous pouvez annuler la résiliation depuis le même écran avant cette date sans payer à nouveau."
 
 #: site:site.pricing.faq.cancel.question
 msgid "site.pricing.faq.cancel.question"
-msgstr ""
+msgstr "Puis-je résilier moi-même ?"
 
 #: site:site.pricing.faq.change.answer
 msgid "site.pricing.faq.change.answer"
-msgstr ""
+msgstr "Depuis le même écran Facturation. Le passage à une offre supérieure prend effet dès que le paiement aboutit. Le passage à une offre inférieure est programmé pour la fin de la période payée ; avant votre confirmation, l’écran indique les fonctionnalités absentes de l’offre moins chère."
 
 #: site:site.pricing.faq.change.question
 msgid "site.pricing.faq.change.question"
-msgstr ""
+msgstr "Comment passer à une offre supérieure ou inférieure ?"
 
 #: site:site.pricing.faq.heading
 msgid "site.pricing.faq.heading"
-msgstr ""
+msgstr "Les questions que l’on se pose avant de payer"
 
 #: site:site.pricing.faq.refund.answer
 msgid "site.pricing.faq.refund.answer"
-msgstr ""
+msgstr "Non. Une période déjà commencée n’est pas remboursée, et vous conservez tout ce qu’elle inclut jusqu’à son terme. Les exceptions concernent un consommateur exerçant son droit légal de rétractation, ainsi que l’arrêt ou la réduction du service de notre fait avant la fin d’une période payée ; elles sont précisées dans la Politique de résiliation et de remboursement."
 
 #: site:site.pricing.faq.refund.question
 msgid "site.pricing.faq.refund.question"
-msgstr ""
+msgstr "Suis-je remboursé si je résilie en cours de période ?"
 
 #: site:site.pricing.faq.reprint.answer
 msgid "site.pricing.faq.reprint.answer"
-msgstr ""
+msgstr "Non. Imprimez une seule fois. Vous pouvez changer les prix, réorganiser le menu, publier une liste erronée puis revenir à la précédente, ou modifier la destination d’un code ; le document imprimé sur la table continue de fonctionner."
 
 #: site:site.pricing.faq.reprint.question
 msgid "site.pricing.faq.reprint.question"
-msgstr ""
+msgstr "Dois-je réimprimer les codes si je change mes prix ou mon offre ?"
 
 #: site:site.pricing.faq.stop.answer
 msgid "site.pricing.faq.stop.answer"
-msgstr ""
+msgstr "Il continue de fonctionner. Rédiger le menu, le publier, utiliser les codes imprimés et afficher la page que lisent vos clients n’ont jamais nécessité d’offre. Lorsqu’une période payée se termine sans nouveau paiement, les fonctionnalités de l’offre restent actives pendant une période supplémentaire indiquée sur votre écran Facturation, puis se désactivent ; votre espace de travail, vos menus et vos pages publiées restent exactement tels quels."
 
 #: site:site.pricing.faq.stop.question
 msgid "site.pricing.faq.stop.question"
-msgstr ""
+msgstr "Que devient mon menu si j’arrête de payer ?"
 
 #: site:site.pricing.faq.trial.answer
 msgid "site.pricing.faq.trial.answer"
-msgstr ""
+msgstr "Non, et les offres payantes n’ont pas non plus de période d’essai. L’offre gratuite désigne la partie du produit qui n’a jamais nécessité d’offre, au lieu de la cacher : vous pouvez rédiger tout le menu, le publier et imprimer des codes avant de prendre une décision."
 
 #: site:site.pricing.faq.trial.question
 msgid "site.pricing.faq.trial.question"
-msgstr ""
+msgstr "L’offre gratuite est-elle un essai qui finit par expirer ?"
 
 #: site:site.pricing.free
 msgid "site.pricing.free"
-msgstr ""
+msgstr "Gratuit"
 
 #: site:site.pricing.heading
 msgid "site.pricing.heading"
-msgstr ""
+msgstr "Tarifs"
 
 #: site:site.pricing.included.body
 msgid "site.pricing.included.body"
-msgstr ""
+msgstr "Votre menu, sa publication avec retour à la version précédente en un clic, les QR codes et la page client, l’importation et l’exportation CSV, le téléversement et la conservation des photos de vos plats, ainsi que le signalement d’un plat épuisé pour la journée."
 
 #: site:site.pricing.included.heading
 msgid "site.pricing.included.heading"
-msgstr ""
+msgstr "Toutes les offres comprennent"
 
 #: site:site.pricing.lead
 msgid "site.pricing.lead"
-msgstr ""
+msgstr "Ce qu’un restaurant paie pour publier son menu derrière un QR code."
 
 #: site:site.pricing.paymentMethods
 msgid "site.pricing.paymentMethods"
-msgstr ""
+msgstr "Les offres payantes se règlent par carte via le prestataire de paiement Iyzico ; aucun autre mode de paiement n’est proposé."
 
 #: site:site.pricing.paymentMethods.cta
 msgid "site.pricing.paymentMethods.cta"
-msgstr ""
+msgstr "Lire le Formulaire d’information précontractuelle"
 
 #: site:site.pricing.perMonth
 msgid "site.pricing.perMonth"
-msgstr ""
+msgstr "par mois"
 
 #: site:site.pricing.perRestaurant
 msgid "site.pricing.perRestaurant"
-msgstr ""
+msgstr "Tarif par restaurant."
 
 #: site:site.pricing.perRestaurant.cta
 msgid "site.pricing.perRestaurant.cta"
-msgstr ""
+msgstr "Nous contacter"
 
 #: site:site.pricing.plans.heading
 msgid "site.pricing.plans.heading"
-msgstr ""
+msgstr "Les offres"
 
 #: site:site.pricing.terms.heading
 msgid "site.pricing.terms.heading"
-msgstr ""
+msgstr "Payer et résilier"
 
 #: site:site.pricing.unsure
 msgid "site.pricing.unsure"
-msgstr ""
+msgstr "Vous ne savez pas quelle offre choisir ?"
 
 #: site:site.pricing.unsure.cta
 msgid "site.pricing.unsure.cta"
-msgstr ""
+msgstr "Demandez-nous"
 
 #: site:site.skipToContent
 msgid "site.skipToContent"
-msgstr ""
+msgstr "Aller au contenu principal"
 
 #: site:site.support.ack.greeting
 msgid "site.support.ack.greeting"
-msgstr ""
+msgstr "Bonjour {name},"
 
 #: site:site.support.ack.keep
 msgid "site.support.ack.keep"
-msgstr ""
+msgstr "Conservez cette référence et indiquez-la si vous nous écrivez à nouveau."
 
 #: site:site.support.ack.panel
 msgid "site.support.ack.panel"
-msgstr ""
+msgstr "Vous pouvez suivre l’état de cette demande dans votre interface Zabuno, à la rubrique Assistance."
 
 #: site:site.support.ack.received
 msgid "site.support.ack.received"
-msgstr ""
+msgstr "Nous avons reçu votre demande et lui avons attribué la référence {reference}."
 
 #: site:site.support.ack.reply
 msgid "site.support.ack.reply"
-msgstr ""
+msgstr "Vous pouvez répondre à cet e-mail pour ajouter des précisions."
 
 #: site:site.support.ack.subject
 msgid "site.support.ack.subject"
-msgstr ""
+msgstr "Zabuno — nous avons reçu votre demande {reference}"
 
 #: site:site.support.ack.subjectLine
 msgid "site.support.ack.subjectLine"
-msgstr ""
+msgstr "Objet : {subject}"
 
 #: site:site.support.commitment
 msgid "site.support.commitment"
-msgstr ""
+msgstr "Nous répondons sous {hours} heures."
 
 #: site:site.title.emailVerified
 msgid "site.title.emailVerified"
-msgstr ""
+msgstr "Zabuno — Adresse e-mail vérifiée"
 
 #: site:site.title.forgotPassword
 msgid "site.title.forgotPassword"
-msgstr ""
+msgstr "Zabuno — Mot de passe oublié"
 
 #: site:site.title.invitation
 msgid "site.title.invitation"
-msgstr ""
+msgstr "Zabuno — Invitation à rejoindre l’équipe"
 
 #: site:site.title.login
 msgid "site.title.login"
-msgstr ""
+msgstr "Zabuno — Connexion"
 
 #: site:site.title.platform
 msgid "site.title.platform"
-msgstr ""
+msgstr "Zabuno — Administration de la plateforme"
 
 #: site:site.title.register
 msgid "site.title.register"
-msgstr ""
+msgstr "Zabuno — Inscription"
 
 #: site:site.title.resetPassword
 msgid "site.title.resetPassword"
-msgstr ""
+msgstr "Zabuno — Réinitialiser le mot de passe"
 
 #: site:site.title.suffix
 msgid "site.title.suffix"
-msgstr ""
+msgstr "Zabuno"
 
 #: site:site.title.verifyEmail
 msgid "site.title.verifyEmail"
-msgstr ""
+msgstr "Zabuno — Vérifiez votre adresse e-mail"
 
 #: site:site.title.workspace
 msgid "site.title.workspace"
-msgstr ""
+msgstr "Zabuno — Espace de travail"
