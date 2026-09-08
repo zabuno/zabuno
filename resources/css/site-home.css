@@ -91,6 +91,10 @@
 }
 
 .home-product-map {
+    /* Kahraman her temada koyu: camın iki destek yolu da aynı opak sahne
+       yüzeyini kullanır. Kontrast/forced-colors kuralları site-glass'ta kalır. */
+    --zc-glass: var(--zc-deep-raised);
+    --zc-glass-blurred: var(--zc-deep-raised);
     flex: 1 1 24rem;
     min-inline-size: 0;
     padding: clamp(1rem, 2vw, 2rem);
