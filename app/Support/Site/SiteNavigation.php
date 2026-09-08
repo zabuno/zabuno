@@ -97,15 +97,70 @@ final class SiteNavigation
                 ],
             ],
             [
+                /*
+                    HESAP GRUBUNUN İKİNCİ YARISI — bölmede kalır.
+
+                    Birincil eylem (`/register`) çubuğa çıktı; oturum açmak
+                    burada. Ayrımın sebebi ÖLÇÜLDÜ (`docs/138` §4): 320
+                    pikselde marka (62px) + iki hesap düğmesi (211px) + menü
+                    düğmesi (95px) yan yana SIĞMIYOR ve çubuk ÜÇ satıra
+                    çıkıyordu — 157 piksel, yani 480 piksel boyundaki bir
+                    ekranın üçte biri, içerikten ÖNCE.
+
+                    Hangisinin çubukta kalacağı bir zevk değil bir sıra
+                    sorusu: tanıtım sitesini ilk kez açan kişinin henüz hesabı
+                    yoktur. Oturumu olan kişi zaten geri gelen kişidir ve bir
+                    dokunuş fazlasını öder.
+                */
                 'id' => 'account',
                 'labelKey' => 'site.nav.account',
                 'registry' => false,
                 'items' => [
                     ['labelKey' => 'site.nav.login', 'path' => '/login'],
+                ],
+            ],
+        ],
+        /*
+            HESAP EYLEMLERİ ÜST ÇUBUKTA (FF-237).
+
+            FF-232'de bu grup açılır BÖLMENİN içindeydi. Sahibin isteği
+            (2026-09-08) çubuğun üç şey taşımasıydı: *"marka, gezinti, hesap
+            eylemleri."* Kaydolmaya karar vermiş birini önce bir menü açmaya
+            zorlamak, kararla eylem arasına bir dokunuş koymaktır.
+
+            AYRI BİR BÖLGE, çünkü çizildiği yer farklı: bu grup çubukta
+            düğme olarak, ötekiler bölmede liste olarak çiziliyor. Aynı
+            bölgede tutup Blade'de kimliğe bakarak ayırmak, veriyi bir yerde,
+            kararı başka bir yerde tutmak olurdu.
+        */
+        'headerActions' => [
+            [
+                'id' => 'account-primary',
+                'labelKey' => 'site.nav.account',
+                'registry' => false,
+                'items' => [
                     ['labelKey' => 'site.nav.register', 'path' => '/register', 'emphasis' => true],
                 ],
             ],
         ],
+        /*
+            ALTBİLGİNİN BAĞLANTI GRUPLARI SATIRI (FF-237).
+
+            FF-232'de tek bir grup vardı (`Ürün`) ve içine dört farklı işi
+            olan dört bağlantı doldurulmuştu: fiyat, yardım, hakkımızda,
+            iletişim. Sahip bunu gördü ve haklı olarak *"iki sütunluk bir
+            altbilgi"* dedi.
+
+            Ayrıştırma UYDURMA DEĞİL: bugün canlıda 200 dönen dört adres
+            zaten üç farklı soruya cevap veriyor — "ne kadar / nasıl
+            kullanırım", "kimden alıyorum", "nasıl başlarım". Grup adı o
+            soruyu söyler. Yeni bir sayfa gerekmedi; var olanlar doğru
+            başlığın altına yazıldı.
+
+            Zenginliğin geri kalanı hâlâ KÜTÜKTEN gelir (`contentMenus()`);
+            elle yazılmış bir "Çözümler" grubu bugün 404'e giden bir başlık
+            olurdu.
+        */
         'footer' => [
             [
                 'id' => 'product',
@@ -114,17 +169,68 @@ final class SiteNavigation
                 'items' => [
                     ['labelKey' => 'site.nav.pricing', 'path' => '/pricing'],
                     ['labelKey' => 'site.nav.help', 'path' => '/help'],
-                    /*
-                        SATICI KİM? (FF-216) Ödeme kuruluşunun üye iş yeri
-                        incelemesi "hakkımızda" ve "iletişim" başlıklarını
-                        sitede ADIYLA arar; ikisi de yaşayan rotadır ve
-                        şirket kimliğini TEK kaynaktan (`CompanyProfile`)
-                        okur.
-                    */
+                ],
+            ],
+            [
+                /*
+                    SATICI KİM? (FF-216) Ödeme kuruluşunun üye iş yeri
+                    incelemesi "hakkımızda" ve "iletişim" başlıklarını
+                    sitede ADIYLA arar; ikisi de yaşayan rotadır ve şirket
+                    kimliğini TEK kaynaktan (`CompanyProfile`) okur. FF-237'de
+                    kendi başlıklarının altına taşındılar: bir inceleme
+                    "Şirket" başlığını arar, "Ürün" başlığının altına bakmaz.
+                */
+                'id' => 'company',
+                'labelKey' => 'site.footer.company',
+                'registry' => false,
+                'items' => [
                     ['labelKey' => 'site.nav.about', 'path' => '/about'],
                     ['labelKey' => 'site.nav.contact', 'path' => '/contact'],
                 ],
             ],
+            [
+                /*
+                    HESAP EYLEMLERİ ALTBİLGİDE DE DURUR.
+
+                    Üst çubuktakiyle aynı iki adres. Bu bir tekrar gibi
+                    görünür ama ölçülebilir bir sebebi var: altbilgi, uzun
+                    bir sayfayı SONUNA kadar okumuş kişinin durduğu yerdir ve
+                    üst çubuk o an ekranın yüzlerce piksel yukarısındadır.
+                    Kararını orada veren birini yukarı geri göndermek,
+                    kararla eylem arasına bir kaydırma koymaktır.
+                */
+                'id' => 'account',
+                'labelKey' => 'site.nav.account',
+                'registry' => false,
+                'items' => [
+                    ['labelKey' => 'site.nav.login', 'path' => '/login'],
+                    ['labelKey' => 'site.nav.register', 'path' => '/register'],
+                ],
+            ],
+        ],
+        /*
+            YASAL SATIR — KENDİ SATIRI, ON ÜÇ BELGE (FF-237).
+
+            FF-232'de yasal belgeler ötekilerle aynı ızgaradaydı ve sekizi
+            listeleniyordu; oysa kütüphanede (`LegalLibraryPort::KEYS`) ON ÜÇ
+            belge var ve on üçünün de rotası, metni ve 200 dönen bir adresi
+            var. Beşi altbilgide HİÇ görünmüyordu — yani yazılmış, incelenmiş
+            ve yayınlanmış bir sözleşme, onu arayan kişinin bakacağı tek
+            yerde yoktu.
+
+            Ayrı bir satır olmasının sebebi bir tasarım zevki değil: bir
+            sözleşmeyi arayan kişi (alıcı, hukukçu, ödeme kuruluşunun üye iş
+            yeri incelemesi) ürün gezintisinde gezinmez, "yasal" başlığını
+            arar. Ayrı satır o başlığı tek bir yere koyar.
+
+            Ticari ileti izni (`/marketing-consent`) FF-232'de bilerek
+            dışarıdaydı — gerekçe "onu okuyacak kişi kayıt ekranındadır"dı.
+            O gerekçe kayıt ekranı için doğru, ALTBİLGİ için değil: bir
+            metnin bir yerden bağlantılı olması, başka bir yerden
+            bulunamamasını gerektirmez. Sahibin isteği açık: on üç belge,
+            ayrı ve bulunur.
+        */
+        'legal' => [
             [
                 'id' => 'legal',
                 'labelKey' => 'site.footer.legal',
@@ -133,13 +239,6 @@ final class SiteNavigation
                     ['labelKey' => 'site.footer.terms', 'path' => '/terms'],
                     ['labelKey' => 'site.footer.privacy', 'path' => '/privacy'],
                     ['labelKey' => 'site.footer.kvkk', 'path' => '/kvkk'],
-                    /*
-                        UZAKTAN SATIŞIN BELGELERİ (FF-198, `docs/107` Faz 1.2).
-                        Hepsi yaşayan rotadır (`ShowLegalDocumentController`)
-                        ve her zaman bağlanabilir. Ticari ileti izni metni
-                        (`/marketing-consent`) bilerek altbilgide DEĞİL: onu
-                        okuyacak kişi kayıt ekranındadır ve oradan bağlanır.
-                    */
                     ['labelKey' => 'site.footer.distanceSales', 'path' => '/distance-sales'],
                     ['labelKey' => 'site.footer.preInformation', 'path' => '/pre-information'],
                     /*
@@ -151,10 +250,49 @@ final class SiteNavigation
                     ['labelKey' => 'site.footer.delivery', 'path' => '/delivery'],
                     ['labelKey' => 'site.footer.refundPolicy', 'path' => '/refund-policy'],
                     ['labelKey' => 'site.footer.cookies', 'path' => '/cookies'],
+                    ['labelKey' => 'site.footer.marketingConsent', 'path' => '/marketing-consent'],
+                    /*
+                        KURUMSAL SÖZLEŞMELER (FF-228, `docs/140`). Bir
+                        zincirin satın alma ya da hukuk birimi için yazıldılar
+                        ve tam olarak o birim tarafından ADIYLA aranırlar.
+                        Yazılıp altbilgiye konmamış bir sözleşme, yatırımcıya
+                        ya da kurumsal alıcıya "yok" görünür.
+                    */
+                    ['labelKey' => 'site.footer.dataProcessing', 'path' => '/data-processing'],
+                    ['labelKey' => 'site.footer.sla', 'path' => '/sla'],
+                    ['labelKey' => 'site.footer.acceptableUse', 'path' => '/acceptable-use'],
+                    ['labelKey' => 'site.footer.thirdPartyLicenses', 'path' => '/third-party-licenses'],
                 ],
             ],
         ],
     ];
+
+    /**
+     * Bir grup kaç maddeden SONRA kapalı başlar.
+     *
+     * ── Neden bir sayı, neden bir kırılma noktası değil ──────────────────
+     *
+     * Altbilgi artık altı satır taşıyor ve yasal satırın tek başına on üç
+     * bağlantısı var. 320 pikselde her satır tam genişlikte ve 44 piksel
+     * yüksektir (`docs/118` E3): on üç bağlantı, tek başına 572 piksel —
+     * yani bir telefon ekranından uzun. Hepsini açık çizmek altbilgiyi
+     * sayfanın en uzun parçası yapardı.
+     *
+     * Çözüm GİZLEMEK DEĞİL, KATLAMAK: grup bir `<details>`tir, kapalı
+     * başlar, parmakla açılır, betiksiz çalışır ve içindeki her bağlantı
+     * sunucu HTML'inde ZATEN durur (`docs/118` E8). Arama motoru ve betiği
+     * engellenmiş ziyaretçi hepsini görür.
+     *
+     * Karar GENİŞLİĞE değil, GRUBUN KENDİ BOYUNA bağlıdır ve bu bilinçli
+     * (`MP-05`, `docs/118` E1): bir medya sorgusu "geniş ekranda yer boldur"
+     * varsayımını kurala çevirirdi ve o varsayım hiç ölçülmedi. Aynı grup her
+     * genişlikte aynı davranır; değişen tek şey kaç sütun sığdığıdır.
+     *
+     * Dört: iki maddelik bir grubu katlamak, bir dokunuşu iki dokunuşa
+     * çevirip hiçbir yer kazandırmaz (2 madde = 88 piksel, katlanmış hâli 44).
+     * Beşinci maddeden itibaren kazanç dokunuşun bedelini geçer.
+     */
+    private const OPEN_ITEM_CEILING = 4;
 
     public function __construct(
         private readonly SiteText $siteText,
@@ -217,14 +355,18 @@ final class SiteNavigation
     /**
      * Kabuğun çizeceği gezinti — yalnız GERÇEKTEN çalışan adresler.
      *
-     * Üç bölge döner: `header`, `footer` ve `content`. İlk ikisi elle
-     * bildirilmiş gruplardır; `content` ise altbilginin pSEO katıdır ve
+     * Dört bölge döner: `header`, `footer`, `legal` ve `content`. İlk üçü
+     * elle bildirilmiş gruplardır; `content` ise altbilginin pSEO katıdır ve
      * kütükten türer (bkz. `contentMenus()`).
+     *
+     * Her grup bir `collapsed` bayrağı taşır; ne demek olduğu
+     * `OPEN_ITEM_CEILING`de yazılı.
      *
      * @param  string  $anchorPrefix  Ana sayfada `''`, diğer sayfalarda `'/'`.
      * @return array<string, list<array{
      *     id: string,
      *     label: string,
+     *     collapsed: bool,
      *     items: list<array{label: string, href: string, emphasis: bool}>
      * }>>
      */
@@ -273,6 +415,7 @@ final class SiteNavigation
                 $shell[$region][] = [
                     'id' => $group['id'],
                     'label' => $this->siteText->get($group['labelKey'], $locale),
+                    'collapsed' => count($items) > self::OPEN_ITEM_CEILING,
                     'items' => $items,
                 ];
             }
@@ -434,6 +577,10 @@ final class SiteNavigation
             $groups[] = [
                 'id' => 'content-'.($parentKey === '' ? 'explore' : str_replace('.', '-', $parentKey)),
                 'label' => $heading,
+                // Kural bandın İÇİNDE de aynıdır (`OPEN_ITEM_CEILING`). Bir
+                // istisna yazmak, "kütükten gelen grup başka türlü davranır"
+                // demekti ve o fark hiçbir yerde ölçülmemiş olurdu.
+                'collapsed' => count($children) > self::OPEN_ITEM_CEILING,
                 'items' => array_map(
                     fn (ContentPage $page): array => [
                         'label' => (string) $page->title,

@@ -47,6 +47,8 @@
         php artisan site:export-static --out=<dizin>
         node scripts/mobile-ux-audit <dizin> [--json rapor.json] [--fail]
 
+    Ölçülen çerçeve: `--width` ve `--height` (varsayılan 320×568).
+
     İkinci kip, dizinde `index.json` OLMAMASINDAN anlaşılır. Kurumsal sitenin
     kabuğu bir React hikâyesi değil, Blade'dir; onu ölçmek için elle bir
     hikâye yazmak, ölçtüğünü sandığı şeyden sessizce ayrışan bir düzenek
@@ -146,7 +148,30 @@ if (!Number.isInteger(WIDTH) || WIDTH < 320 || WIDTH > 3840) {
     giriş kipinde.
 */
 const MOBILE = WIDTH < 768;
-const HEIGHT = MOBILE ? 568 : 800;
+
+/*
+    ÖLÇÜLEN YÜKSEKLİK — `--height`, FF-237'de eklendi.
+
+    Genişlik taşmayı ve hedef boyunu belirler; YÜKSEKLİK ise "ilk ekranda ne
+    var" sorusunun tek ölçüsüdür. Global kural (`TOUCH-FIRST-INTERFACE`)
+    tabanı 320×480'e indirdi ve o iki sayı ayrılamaz: 320 pikselde sığan bir
+    altbilgi, 480 piksel boyunda bir ekranda kaç ekran boyu yer kapladığını
+    söylemez.
+
+    Varsayılan DEĞİŞMEDİ (telefonda 568, geniş ekranda 800): CI kapısı
+    aynı sayıyı ölçmeye devam ediyor. Bayrak yalnız ikinci bir soru sormayı
+    mümkün kılar.
+*/
+const heightFlag = process.argv.indexOf('--height');
+const HEIGHT =
+    heightFlag > -1 ? Number.parseInt(process.argv[heightFlag + 1] ?? '', 10) : MOBILE ? 568 : 800;
+
+if (!Number.isInteger(HEIGHT) || HEIGHT < 320 || HEIGHT > 2160) {
+    console.error(
+        `mobile-ux-audit: --height 320 ile 2160 arasında bir tam sayı olmalı (gelen: ${process.argv[heightFlag + 1]}).`,
+    );
+    process.exit(2);
+}
 
 /** Dokunma hedefinin asgarisi (CSS pikseli). */
 const MIN_TARGET = 44;

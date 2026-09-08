@@ -133,6 +133,7 @@ final class SiteText
             'pageState.explore' => 'site.pageState.explore',
             'pageState.contact' => 'site.pageState.contact',
             'footerProduct' => 'site.footer.product',
+            'footerCompany' => 'site.footer.company',
             'footerLegal' => 'site.footer.legal',
             'footerTerms' => 'site.footer.terms',
             'footerPrivacy' => 'site.footer.privacy',
@@ -142,6 +143,14 @@ final class SiteText
             'footerDelivery' => 'site.footer.delivery',
             'footerRefundPolicy' => 'site.footer.refundPolicy',
             'footerCookies' => 'site.footer.cookies',
+            // FF-237: on üç yasal belgenin tamamı altbilgide.
+            'footerMarketingConsent' => 'site.footer.marketingConsent',
+            'footerDataProcessing' => 'site.footer.dataProcessing',
+            'footerSla' => 'site.footer.sla',
+            'footerAcceptableUse' => 'site.footer.acceptableUse',
+            'footerThirdPartyLicenses' => 'site.footer.thirdPartyLicenses',
+            // Altbilginin alt satırındaki geri dönüş yolu (FF-237).
+            'footerBackToTop' => 'site.footer.backToTop',
             'footerTagline' => 'site.footer.tagline',
             /*
                 pSEO İÇERİK MENÜLERİ BANDININ BAŞLIĞI (FF-232).

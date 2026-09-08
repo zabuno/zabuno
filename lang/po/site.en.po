@@ -168,6 +168,18 @@ msgstr "Send message"
 msgid "site.engineering.title"
 msgstr "Zabuno — Engineering"
 
+#: site:site.footer.acceptableUse
+msgid "site.footer.acceptableUse"
+msgstr "Acceptable Use Policy"
+
+#: site:site.footer.backToTop
+msgid "site.footer.backToTop"
+msgstr "Back to top"
+
+#: site:site.footer.company
+msgid "site.footer.company"
+msgstr "Company"
+
 #: site:site.footer.contentMenus
 msgid "site.footer.contentMenus"
 msgstr "Browse all pages"
@@ -175,6 +187,10 @@ msgstr "Browse all pages"
 #: site:site.footer.cookies
 msgid "site.footer.cookies"
 msgstr "Cookie Policy"
+
+#: site:site.footer.dataProcessing
+msgid "site.footer.dataProcessing"
+msgstr "Data Processing Agreement"
 
 #: site:site.footer.delivery
 msgid "site.footer.delivery"
@@ -192,6 +208,10 @@ msgstr "KVKK"
 msgid "site.footer.legal"
 msgstr "Legal"
 
+#: site:site.footer.marketingConsent
+msgid "site.footer.marketingConsent"
+msgstr "Electronic Commercial Message Consent"
+
 #: site:site.footer.preInformation
 msgid "site.footer.preInformation"
 msgstr "Preliminary Information Form"
@@ -208,6 +228,10 @@ msgstr "Product"
 msgid "site.footer.refundPolicy"
 msgstr "Cancellation and Refund Policy"
 
+#: site:site.footer.sla
+msgid "site.footer.sla"
+msgstr "Service Level Terms"
+
 #: site:site.footer.tagline
 msgid "site.footer.tagline"
 msgstr "Your menu behind a QR code, kept up to date by your own team."
@@ -215,6 +239,10 @@ msgstr "Your menu behind a QR code, kept up to date by your own team."
 #: site:site.footer.terms
 msgid "site.footer.terms"
 msgstr "Terms"
+
+#: site:site.footer.thirdPartyLicenses
+msgid "site.footer.thirdPartyLicenses"
+msgstr "Third-Party Licences"
 
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"
