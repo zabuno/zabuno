@@ -33,6 +33,11 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
                 onNavigateToSection={ctx.onNavigateToSection}
                 can={ctx.can}
                 /*
+                    Boş fotoğraf seçicisi Medya ekranına GERÇEK bir bağlantı
+                    verir (FF-224); adresi kabuk üretir, katalog değil.
+                */
+                mediaHref={ctx.sectionHrefFor('media')}
+                /*
                     Menü adımı ÜRÜN sayar. Katalog aşaması menüye ulaşmadıysa
                     (şube yok / yükleniyor / hata) cevap "bilinmiyor"dur ve
                     ipucu çizilmez.

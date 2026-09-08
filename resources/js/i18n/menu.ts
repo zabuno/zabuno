@@ -244,8 +244,6 @@ const en = {
     'menu.item.ai.import.media.label': 'Choose the photos to read',
     'menu.item.ai.import.photo.failed':
         '“{name}” could not be read — the other photos still went through.',
-    'menu.item.ai.import.media.empty':
-        'No processed photo is available yet. Upload one on the Media page (slot: Import source) first.',
     'menu.item.ai.import.read': 'Read these photos',
     'menu.item.ai.import.reading': 'Reading…',
     'menu.item.ai.import.unavailable': 'Reading menu photos is not available right now.',
@@ -259,8 +257,59 @@ const en = {
     'menu.item.ai.import.rejected.row': 'Row {row}: {reason}',
     'menu.item.image.label': 'Photo',
     'menu.item.image.none': 'No photo',
-    'menu.item.image.empty':
-        'No processed photo is available yet. Upload one on the Media page first.',
+    /*
+        SEÇİLECEK GÖRSEL YOKKEN KONUŞAN CÜMLELER — FF-224.
+
+        ═══ NEDEN TEK BİR CÜMLE, İKİ EKRANDA ═══
+
+        Aynı çıkmaz sokak iki yerde vardı: ürünün sunum paneli ve
+        fotoğraftan içe aktarma. İkisi de "seçilebilecek hazır medya yok"
+        durumundadır ve ikisinin de cevabı aynıdır — yalnız YUVA farklıdır.
+        İki ayrı anahtar iki ayrı İngilizce cümle demekti; aynı gerçeğin iki
+        sesi, çevrildiğinde ayrışır. Bu yüzden yuva bir DEĞİŞKENDİR.
+        (Önceki `menu.item.image.empty` ve `menu.item.ai.import.media.empty`
+        bunun yerine geçti.)
+
+        ═══ NEDEN YUVA ADI CÜMLENİN İÇİNDE ═══
+
+        Sahip, sunum panelinde "No photo"dan başka seçenek görmeyince
+        "resim yükleme alanı yok mu?" diye sordu. Yükleme VARDI — Medya
+        ekranında. Ama medya YUVAYA göre yüklenir
+        (`config/media-slots.php`): Medya ekranını kendi başına bulup
+        yanlış yuvaya yükleyen sahip, fotoğrafını yine bu listede göremez
+        ve sebebini yine hiçbir yerden okuyamazdı. Yuvanın adı, ikinci
+        çıkmaz sokağı kapatan şeydir.
+
+        ═══ NEDEN ADLAR BURADA DA YAZILI ═══
+
+        Medya ekranının açılır listesi bu adları
+        `workspace.media.upload.field.assetSlot.*` içinden okur ve menü
+        alanı o kataloğu göremez (`docs/35`: katalog bileşeni tek alan
+        konuşur). İki yerde yazılı olmaları bir kopya DEĞİL, iki alanın
+        aynı kelimeyi taşımasıdır — ve ayrışmaları imkânsız: `i18n.guard`
+        ikisinin EŞİT olmasını şart koşuyor. Eşit olmasalardı ekran sahibe
+        açılır listede bulamayacağı bir yuva adı söylerdi.
+    */
+    'menu.media.slot.itemImage': 'List/card/detail item',
+    'menu.media.slot.menuImportSource': 'Import source',
+    'menu.media.empty':
+        'No processed photo is available yet. Upload one on the Media page (slot: {slot}) first.',
+    /*
+        MEDYAYI YÖNETEMEYEN ROL (Mutfak, `docs/109` §6.4) için ayrı cümle.
+        Ona "yükleyin" demek, yapamayacağı bir işe davettir; bağlantı da
+        çizilmez, çünkü o ekran ona kapalı (`media.manage`).
+    */
+    'menu.media.empty.readOnly':
+        'No processed photo is available yet. Someone with media access has to upload one on the Media page (slot: {slot}).',
+    /*
+        ÖLÇÜ BEKLENTİSİ SUNUCUDAN OKUNUR (`GET /api/media/slot-policies` →
+        `config/media-slots.php`). Buraya bir rakam YAZILMAZ: yapılandırma
+        değiştiğinde ekranın eski sayıyı söylemesi, hiç söylememesinden
+        kötüdür. Politika okunamadıysa satır hiç çizilmez.
+    */
+    'menu.media.requirement': 'That slot needs at least {width}×{height} px and a {aspect} frame.',
+    'menu.media.requirement.noAspect': 'That slot needs at least {width}×{height} px.',
+    'menu.media.link': 'Open the Media page',
     // Satır içi düzenleyicinin etiketi ÜRÜN ADINI taşır.
     //
     // Ekranda aynı anda iki "Price" alanı olabilir: aşağıdaki "menüye ürün
