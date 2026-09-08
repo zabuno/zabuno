@@ -2,6 +2,7 @@ import { Image } from '@phosphor-icons/react';
 import { lazy, Suspense, type ReactNode } from 'react';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
+import { mediaPropsFromContext } from './media/mediaSectionProps';
 
 /*
     EKRAN İSTENDİĞİNDE İNER (FF-97).
@@ -13,6 +14,14 @@ import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegist
 */
 const MediaPage = lazy(async () => ({ default: (await import('./MediaPage')).MediaPage }));
 
+/*
+    BU KAYIT CİHAZ TANIMAZ ve tanımamalı (`docs/153` §5).
+
+    Kayıtlar `import.meta.glob` ile TOPLUCA ve EAGER okunur, yani bu dosya
+    iki pakete birden girer. Burada masaüstü kütüphanesi adıyla anılsaydı,
+    kodu telefona da inerdi — çizilmese bile. Masaüstü çizimi bu yüzden
+    kayıtta değil, cihaz paketindeki sayfa haritasında durur.
+*/
 function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     return (
         /*
@@ -22,7 +31,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
             düşündürür.
         */
         <Suspense fallback={null}>
-            <MediaPage workspaceId={ctx.workspaceId} />
+            <MediaPage {...mediaPropsFromContext(ctx)} />
         </Suspense>
     );
 }

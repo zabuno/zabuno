@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Check, CursorClick, Keyboard, X } from '@phosphor-icons/react';
 
-import { t } from '../../../../i18n/workspace';
+/*
+    MASAÜSTÜ PAKETİNİN ÇEVİRMENİ (`docs/151`).
+
+    Yol tek kelime farklı ve fark önemli: bu modülün kataloğu yalnız
+    masaüstü paketinde bulunur. Aşağıdaki `desktop.*` anahtarları ortak
+    katalogdan çıkarıldı, çünkü telefonda çizilmiyorlardı ama iniyorlardı.
+    `t` ikisini de okur — önce masaüstü tablosu, sonra ortak tablo.
+*/
+import { t } from '../../../../i18n/workspace-desktop';
 import { PageState } from '../shared/PageState';
 import { changeOrderStatus } from '../orders/changeOrderStatus';
 import { FeedStatusLine } from '../orders/FeedStatusLine';

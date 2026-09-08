@@ -2,6 +2,7 @@ import { Users } from '@phosphor-icons/react';
 import { lazy, Suspense, type ReactNode } from 'react';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
+import { teamPropsFromContext } from './team/teamSectionProps';
 
 /*
     EKRAN İSTENDİĞİNDE İNER (FF-97).
@@ -28,7 +29,7 @@ function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
                 devretmek yalnız Sahibin işidir. Sayfa, yapılamayan işi
                 çizmemek için bunu bilmek zorunda (`docs/98` FF-74).
             */}
-            <TeamPage workspaceId={ctx.workspaceId} viewerRole={ctx.role} />
+            <TeamPage {...teamPropsFromContext(ctx)} />
         </Suspense>
     );
 }

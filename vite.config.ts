@@ -46,6 +46,18 @@ export default defineConfig(({ mode }) => ({
                   laravel({
                       input: [
                           'resources/css/app.css',
+                          /*
+                              MASAÜSTÜNÜN KENDİ STİLİ (`docs/151`). Ayrı bir
+                              giriş, çünkü ayrı bir dosya olarak inmesi
+                              gerekiyor: `app.css` içine `@import` edilseydi
+                              telefon da onu indirirdi ve "yalnız masaüstünde"
+                              cümlesi yazıldığı anda yanlış olurdu. Belgeye
+                              yalnız masaüstü dalında eklenir
+                              (`resources/views/workspace-app.blade.php`) ve
+                              `scripts/adaptive-bundle-gate` bunu her koşuda
+                              doğrular.
+                          */
+                          'resources/css/app-desktop.css',
                           'resources/js/auth.tsx',
                           // Cihaz başına ayrı giriş: seçim SUNUCUDA yapılır
                           // (App\Support\Device\DeviceClass), tarayıcıda medya

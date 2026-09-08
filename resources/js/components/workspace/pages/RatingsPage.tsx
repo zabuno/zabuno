@@ -5,6 +5,7 @@ import { Button } from '../../catalog/forms/micro/Button';
 import type { DashboardMenuTree } from './DashboardPage';
 import { PageState } from './shared/PageState';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
+import { DeviceSurface } from './shared/DeviceSurface';
 import { RatingReplyEditor } from './ratings/RatingReplyEditor';
 import {
     computedAtLabel,
@@ -12,6 +13,10 @@ import {
     scoreLabel,
     type RatingRow,
 } from './ratings/ratingPresentation';
+import type {
+    RatingListSurfaceContext,
+    RatingListSurfaceRenderer,
+} from './ratings/ratingListSurface';
 
 /**
  * SAHİBİN PUAN EKRANI — `docs/122` Y4, `docs/116` P5/P6/Ö3.
@@ -43,6 +48,17 @@ export type RatingsPageProps = {
     menuTree: DashboardMenuTree | null;
     can: (permission: string) => boolean;
     onNavigateToSection: (section: string) => void;
+    /**
+     * PUAN LİSTESİNİ ÇİZEN İŞLEV — YALNIZ masaüstü paketinde doludur
+     * (`docs/151`).
+     *
+     * `undefined` telefonun NORMAL hâlidir: liste o pakette bugünkü kart
+     * listesiyle çizilir. Sayfanın kararları (izin, ön koşul, yükleme,
+     * hata, boş liste, "puan kaldırılamaz" cümlesi) İKİ cihazda da aynıdır
+     * ve buraya kopyalanmaz — iki kopya, `docs/116` §4'ün kuralını bir gün
+     * yalnız bir yüzeyde tutardı.
+     */
+    renderRatingList?: RatingListSurfaceRenderer;
 };
 
 type Status = 'loading' | 'ready' | 'error';
@@ -53,7 +69,13 @@ type RatingsBody = {
     scaleMax?: number;
 };
 
-export function RatingsPage({ workspaceId, menuTree, can, onNavigateToSection }: RatingsPageProps) {
+export function RatingsPage({
+    workspaceId,
+    menuTree,
+    can,
+    onNavigateToSection,
+    renderRatingList,
+}: RatingsPageProps) {
     const [status, setStatus] = useState<Status>('loading');
     const [rows, setRows] = useState<RatingRow[]>([]);
     /*
@@ -231,6 +253,17 @@ export function RatingsPage({ workspaceId, menuTree, can, onNavigateToSection }:
         );
     }
 
+    /*
+        LİSTENİN BAĞLAMI TEK YERDE KURULUR (`docs/151`). İki yüzey de AYNI
+        satırları ve AYNI yazma yolunu alır.
+    */
+    const ratingListSurface: RatingListSurfaceContext = {
+        workspaceId,
+        rows,
+        algorithmVersion,
+        onReplySaved: replaceReply,
+    };
+
     return (
         <Frame>
             {/*
@@ -253,57 +286,60 @@ export function RatingsPage({ workspaceId, menuTree, can, onNavigateToSection }:
                 {t('workspace.ratings.noRemoval')}
             </p>
 
-            <ul className="flex list-none flex-col gap-[var(--space-4)] p-0">
-                {rows.map((row) => (
-                    <li
-                        key={row.menuItemId}
-                        className="flex min-w-0 flex-col gap-[var(--space-3)] rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-5)] py-[var(--space-5)]"
-                    >
-                        <div className="flex flex-wrap items-baseline justify-between gap-[var(--space-2)]">
-                            <h3 className="text-body font-bold tracking-tight text-fg">
-                                {row.productName}
-                            </h3>
-                            <p
-                                className={
-                                    hasScore(row)
-                                        ? 'text-body font-bold text-fg'
-                                        : 'text-meta text-fg-muted'
-                                }
-                            >
-                                {scoreLabel(row)}
-                            </p>
-                        </div>
+            {renderRatingList ? (
+                <DeviceSurface render={renderRatingList} context={ratingListSurface} />
+            ) : (
+                <ul className="flex list-none flex-col gap-[var(--space-4)] p-0">
+                    {rows.map((row) => (
+                        <li
+                            key={row.menuItemId}
+                            className="flex min-w-0 flex-col gap-[var(--space-3)] rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-5)] py-[var(--space-5)]"
+                        >
+                            <div className="flex flex-wrap items-baseline justify-between gap-[var(--space-2)]">
+                                <h3 className="text-body font-bold tracking-tight text-fg">
+                                    {row.productName}
+                                </h3>
+                                <p
+                                    className={
+                                        hasScore(row)
+                                            ? 'text-body font-bold text-fg'
+                                            : 'text-meta text-fg-muted'
+                                    }
+                                >
+                                    {scoreLabel(row)}
+                                </p>
+                            </div>
 
-                        {/*
+                            {/*
                             SAYIM EŞİK ALTINDA DA YAZILIR. Gizlenen şey puan,
                             yani henüz güvenilmeyen türetilmiş değerdir; kaç oy
                             geldiği bilinen bir ölçümdür ve sahibin "eşiğe ne
                             kadar kaldı?" sorusunun tek cevabıdır.
                         */}
-                        <div className="flex flex-wrap gap-x-[var(--space-3)] gap-y-[var(--space-1)]">
-                            <span className="text-meta text-fg-secondary">
-                                {t('workspace.ratings.votes', {
-                                    count: String(row.signalCount),
-                                })}
-                            </span>
-                            {/*
+                            <div className="flex flex-wrap gap-x-[var(--space-3)] gap-y-[var(--space-1)]">
+                                <span className="text-meta text-fg-secondary">
+                                    {t('workspace.ratings.votes', {
+                                        count: String(row.signalCount),
+                                    })}
+                                </span>
+                                {/*
                                 Ö3'ün ikinci yarısı: sayının YAŞI. Türetilmiş
                                 puan bir işin çıktısıdır; iş çalışmadıysa
                                 ekrandaki sayı dünkü sayıdır ve donmuş bir
                                 ekranla dolu bir ekran aynı görünür.
                             */}
-                            <span className="text-meta text-fg-secondary">
-                                {computedAtLabel(row)}
-                            </span>
-                        </div>
+                                <span className="text-meta text-fg-secondary">
+                                    {computedAtLabel(row)}
+                                </span>
+                            </div>
 
-                        {hasScore(row) ? null : (
-                            <p className="max-w-[64ch] text-meta text-fg-muted">
-                                {t('workspace.ratings.notEnough.help')}
-                            </p>
-                        )}
+                            {hasScore(row) ? null : (
+                                <p className="max-w-[64ch] text-meta text-fg-muted">
+                                    {t('workspace.ratings.notEnough.help')}
+                                </p>
+                            )}
 
-                        {/*
+                            {/*
                             ANAHTAR YAYINDAKİ CÜMLEDİR.
 
                             Kutuyu sunucunun bildiği cümleye döndürmenin bir
@@ -312,17 +348,18 @@ export function RatingsPage({ workspaceId, menuTree, can, onNavigateToSection }:
                             değişmez, yani yarım kalmış bir taslak kimsenin
                             elinden alınmaz.
                         */}
-                        <RatingReplyEditor
-                            key={row.reply?.body ?? ''}
-                            workspaceId={workspaceId}
-                            productId={row.productId}
-                            body={row.reply?.body ?? null}
-                            publishedAt={row.reply?.publishedAt ?? null}
-                            onSaved={(body) => replaceReply(row.productId, body)}
-                        />
-                    </li>
-                ))}
-            </ul>
+                            <RatingReplyEditor
+                                key={row.reply?.body ?? ''}
+                                workspaceId={workspaceId}
+                                productId={row.productId}
+                                body={row.reply?.body ?? null}
+                                publishedAt={row.reply?.publishedAt ?? null}
+                                onSaved={(body) => replaceReply(row.productId, body)}
+                            />
+                        </li>
+                    ))}
+                </ul>
+            )}
         </Frame>
     );
 }

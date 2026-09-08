@@ -2804,6 +2804,38 @@ msgstr "used in {count}"
 msgid "workspace.media.library.assets.heading"
 msgstr "Assets"
 
+#: workspace:workspace.media.library.desktop.bulkRegion
+msgid "workspace.media.library.desktop.bulkRegion"
+msgstr "Actions for the selected files"
+
+#: workspace:workspace.media.library.desktop.count
+msgid "workspace.media.library.desktop.count"
+msgstr "{shown} of {total} files"
+
+#: workspace:workspace.media.library.desktop.detail.empty
+msgid "workspace.media.library.desktop.detail.empty"
+msgstr "Pick a file from the grid to read its details here."
+
+#: workspace:workspace.media.library.desktop.detail.region
+msgid "workspace.media.library.desktop.detail.region"
+msgstr "Selected file"
+
+#: workspace:workspace.media.library.desktop.detail.usage
+msgid "workspace.media.library.desktop.detail.usage"
+msgstr "Used in {count} place(s)"
+
+#: workspace:workspace.media.library.desktop.grid
+msgid "workspace.media.library.desktop.grid"
+msgstr "Media files"
+
+#: workspace:workspace.media.library.desktop.menu
+msgid "workspace.media.library.desktop.menu"
+msgstr "File actions"
+
+#: workspace:workspace.media.library.desktop.shortcuts
+msgid "workspace.media.library.desktop.shortcuts"
+msgstr "Arrow keys move · Space selects · Shift+arrow extends · Delete removes"
+
 #: workspace:workspace.media.library.detail.actionFailed
 msgid "workspace.media.library.detail.actionFailed"
 msgstr "That did not work. Nothing was changed."
@@ -6188,6 +6220,38 @@ msgstr "Not worked out yet"
 msgid "workspace.ratings.description"
 msgstr "What guests said about each dish — and what you said back."
 
+#: workspace:workspace.ratings.desktop.detail.empty
+msgid "workspace.ratings.desktop.detail.empty"
+msgstr "Pick a product from the list to read and answer it here."
+
+#: workspace:workspace.ratings.desktop.detail.region
+msgid "workspace.ratings.desktop.detail.region"
+msgstr "Selected product"
+
+#: workspace:workspace.ratings.desktop.list
+msgid "workspace.ratings.desktop.list"
+msgstr "Rated products"
+
+#: workspace:workspace.ratings.desktop.shortcuts
+msgid "workspace.ratings.desktop.shortcuts"
+msgstr "Arrow keys move · Enter opens the reply box"
+
+#: workspace:workspace.ratings.desktop.sort
+msgid "workspace.ratings.desktop.sort"
+msgstr "Sort: {label}"
+
+#: workspace:workspace.ratings.desktop.sort.lowest
+msgid "workspace.ratings.desktop.sort.lowest"
+msgstr "Lowest score"
+
+#: workspace:workspace.ratings.desktop.sort.most
+msgid "workspace.ratings.desktop.sort.most"
+msgstr "Most votes"
+
+#: workspace:workspace.ratings.desktop.sort.name
+msgid "workspace.ratings.desktop.sort.name"
+msgstr "Name"
+
 #: workspace:workspace.ratings.empty.action
 msgid "workspace.ratings.empty.action"
 msgstr "Open the menu"
@@ -6919,6 +6983,58 @@ msgstr "Invitation created successfully."
 #: workspace:workspace.team.invite.unavailable
 msgid "workspace.team.invite.unavailable"
 msgstr "Inviting teammates is not connected yet."
+
+#: workspace:workspace.team.members.desktop.bulkRegion
+msgid "workspace.team.members.desktop.bulkRegion"
+msgstr "Actions for the selected members"
+
+#: workspace:workspace.team.members.desktop.bulkRole
+msgid "workspace.team.members.desktop.bulkRole"
+msgstr "Set role for {count}"
+
+#: workspace:workspace.team.members.desktop.clearSelection
+msgid "workspace.team.members.desktop.clearSelection"
+msgstr "Clear selection"
+
+#: workspace:workspace.team.members.desktop.column.email
+msgid "workspace.team.members.desktop.column.email"
+msgstr "Email"
+
+#: workspace:workspace.team.members.desktop.column.name
+msgid "workspace.team.members.desktop.column.name"
+msgstr "Name"
+
+#: workspace:workspace.team.members.desktop.column.role
+msgid "workspace.team.members.desktop.column.role"
+msgstr "Role"
+
+#: workspace:workspace.team.members.desktop.kept
+msgid "workspace.team.members.desktop.kept"
+msgstr "{count} row(s) were left as they are: ownership is transferred, not changed here."
+
+#: workspace:workspace.team.members.desktop.menu
+msgid "workspace.team.members.desktop.menu"
+msgstr "Member actions"
+
+#: workspace:workspace.team.members.desktop.outcome
+msgid "workspace.team.members.desktop.outcome"
+msgstr "{ok} updated, {failed} did not go through."
+
+#: workspace:workspace.team.members.desktop.remove.named
+msgid "workspace.team.members.desktop.remove.named"
+msgstr "Remove {name}"
+
+#: workspace:workspace.team.members.desktop.row.label
+msgid "workspace.team.members.desktop.row.label"
+msgstr "{name}, {email}, {role}"
+
+#: workspace:workspace.team.members.desktop.selected
+msgid "workspace.team.members.desktop.selected"
+msgstr "{count} selected"
+
+#: workspace:workspace.team.members.desktop.shortcuts
+msgid "workspace.team.members.desktop.shortcuts"
+msgstr "Arrow keys move · Space selects · Shift+arrow extends"
 
 #: workspace:workspace.team.members.empty
 msgid "workspace.team.members.empty"

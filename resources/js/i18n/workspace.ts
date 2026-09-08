@@ -1,28 +1,66 @@
+/**
+ * Bir katalog modülü kümesini TEK bir anahtar/metin tablosuna indirir.
+ *
+ * Dışa açık olmasının sebebi cihaz ayrımı (`docs/151` M1): masaüstünün
+ * kendi katalog klasörü aynı birleştirmeyi kullanır ama BAŞKA bir
+ * `import.meta.glob` ile toplar. Birleştirme iki yerde ayrı ayrı
+ * yazılsaydı, çakışma kuralı bir gün yalnız birinde geçerli olurdu.
+ *
+ * Glob'un kendisi geçilemez, sonucu geçilir: `import.meta.glob` bir
+ * derleme zamanı dönüşümüdür ve değişkenle çağrılamaz.
+ */
+export function mergeCatalogModules(
+    modules: Record<string, unknown>,
+    label: string,
+): Record<string, string> {
+    const merged: Record<string, string> = {};
+    const seenSourceByKey = new Map<string, string>();
+
+    for (const modulePath of Object.keys(modules).sort()) {
+        const moduleExports = modules[modulePath] as Record<string, Record<string, string>>;
+
+        for (const catalog of Object.values(moduleExports)) {
+            for (const [key, value] of Object.entries(catalog)) {
+                const existingSource = seenSourceByKey.get(key);
+
+                if (existingSource !== undefined) {
+                    throw new Error(
+                        `Duplicate ${label} translation key "${key}" found in "${modulePath}"; already defined in "${existingSource}".`,
+                    );
+                }
+
+                seenSourceByKey.set(key, modulePath);
+                merged[key] = value;
+            }
+        }
+    }
+
+    return merged;
+}
+
+/**
+ * `{ad}` yer tutucularını doldurur — tek yerde.
+ *
+ * Masaüstü kataloğunun kendi `t`'si de bunu çağırır. İki kopya yazılsaydı
+ * biri bir gün `replaceAll` yerine `replace` kullanır ve aynı yer tutucu
+ * ikinci geçtiğinde sessizce ham kalırdı.
+ */
+export function interpolate(template: string, vars?: Record<string, string>): string {
+    if (!vars) {
+        return template;
+    }
+
+    return Object.entries(vars).reduce<string>(
+        (result, [name, value]) => result.replaceAll(`{${name}}`, value),
+        template,
+    );
+}
+
 const modules = import.meta.glob<{ default?: never; [key: string]: unknown }>('./workspace/*.ts', {
     eager: true,
 });
 
-const en: Record<string, string> = {};
-const seenSourceByKey = new Map<string, string>();
-
-for (const modulePath of Object.keys(modules).sort()) {
-    const moduleExports = modules[modulePath] as Record<string, Record<string, string>>;
-
-    for (const catalog of Object.values(moduleExports)) {
-        for (const [key, value] of Object.entries(catalog)) {
-            const existingSource = seenSourceByKey.get(key);
-
-            if (existingSource !== undefined) {
-                throw new Error(
-                    `Duplicate workspace translation key "${key}" found in "${modulePath}"; already defined in "${existingSource}".`,
-                );
-            }
-
-            seenSourceByKey.set(key, modulePath);
-            en[key] = value;
-        }
-    }
-}
+const en: Record<string, string> = mergeCatalogModules(modules, 'workspace');
 
 export const workspaceTranslations = en;
 
@@ -37,14 +75,5 @@ export interface WorkspaceTranslationCatalog {}
 export type WorkspaceTranslationKey = keyof WorkspaceTranslationCatalog;
 
 export function t(key: WorkspaceTranslationKey, vars?: Record<string, string>): string {
-    const template: string = en[key] ?? key;
-
-    if (!vars) {
-        return template;
-    }
-
-    return Object.entries(vars).reduce<string>(
-        (result, [name, value]) => result.replaceAll(`{${name}}`, value),
-        template,
-    );
+    return interpolate(en[key] ?? key, vars);
 }

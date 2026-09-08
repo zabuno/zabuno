@@ -2,6 +2,7 @@ import { Star } from '@phosphor-icons/react';
 import { lazy, Suspense, type ReactNode } from 'react';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
+import { ratingsPropsFromContext } from './ratings/ratingsSectionProps';
 
 /*
     EKRAN İSTENDİĞİNDE İNER (FF-97): kaydın metadatası (ad, ikon, sıra, izin)
@@ -14,18 +15,7 @@ const RatingsPage = lazy(async () => ({
 function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     return (
         <Suspense fallback={null}>
-            <RatingsPage
-                workspaceId={ctx.workspaceId}
-                /*
-                    Puanlar bir MENÜNÜN satırlarına dayanır (`docs/116` P5:
-                    okuma adresi menüye dayanır, yanıt adresi ürüne). Panom ile
-                    aynı ağacı okumak, iki ekranın aynı menüden bahsetmesini
-                    garanti eder.
-                */
-                menuTree={ctx.dashboardMenuTree}
-                can={ctx.can}
-                onNavigateToSection={ctx.onNavigateToSection}
-            />
+            <RatingsPage {...ratingsPropsFromContext(ctx)} />
         </Suspense>
     );
 }

@@ -30,14 +30,16 @@ expect() {
 }
 
 scaffold() {
-  rm -rf "$TMP/resources"
-  mkdir -p "$TMP/resources/js/components/workspace/chrome" \
+  rm -rf "$TMP/resources" "$TMP/vite.config.ts"
+  mkdir -p "$TMP/resources/css" \
+           "$TMP/resources/js/components/workspace/chrome" \
            "$TMP/resources/js/components/workspace/inspectors" \
            "$TMP/resources/js/components/workspace/shell" \
            "$TMP/resources/js/components/workspace/kitchen" \
            "$TMP/resources/js/components/workspace/pages/menu" \
            "$TMP/resources/js/components/workspace/pages/desktop" \
-           "$TMP/resources/js/components/workspace/pages/mobile"
+           "$TMP/resources/js/components/workspace/pages/mobile" \
+           "$TMP/resources/js/i18n/workspace-desktop"
 
   local js="$TMP/resources/js"
   # Bölüm kayıtları glob ile toplanır — asıl sızıntı yolu buydu.
@@ -69,12 +71,33 @@ scaffold() {
   # boş bir cihaz klasörü hata DEĞİLDİR ve temiz senaryo bunu da kanıtlar.
   printf "export const OrdersScreenDesktop = () => null;\n" \
     > "$js/components/workspace/pages/desktop/OrdersScreenDesktop.tsx"
+  # MASAÜSTÜNÜN KENDİ DİZELERİ (`docs/151`). Toplayıcı TÜR ARGÜMANLI bir glob
+  # yazar ve bu bilerek böyle: kapının örüntüsü tür argümanını atlamayı
+  # unutursa katalog dosyası "ulaşılamıyor" görünür ve temiz senaryo kırılır.
+  printf "const mods = import.meta.glob<{ x?: never }>('./workspace-desktop/*.ts', { eager: true });\nexport default mods;\n" \
+    > "$js/i18n/workspace-desktop.ts"
+  printf "export const orderingDesktop = { a: 'A' };\n" \
+    > "$js/i18n/workspace-desktop/ordering.ts"
   printf "import type { WorkspaceInspectorMap } from './inspectors/types';\nimport reg from './shell/registry';\nexport const WorkspaceApp = (p: { i?: WorkspaceInspectorMap }) => [p, reg];\n" \
     > "$js/components/workspace/WorkspaceApp.tsx"
-  printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { OrdersScreenDesktop } from './components/workspace/pages/desktop/OrdersScreenDesktop';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, OrdersScreenDesktop, desktopInspectors];\n" \
+  printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { OrdersScreenDesktop } from './components/workspace/pages/desktop/OrdersScreenDesktop';\nimport i18nDesktop from './i18n/workspace-desktop';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, OrdersScreenDesktop, i18nDesktop, desktopInspectors];\n" \
     > "$js/workspace.desktop.tsx"
   printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { MobileChrome } from './components/workspace/chrome/MobileChrome';\nexport default [WorkspaceApp, MobileChrome];\n" \
     > "$js/workspace.mobile.tsx"
+
+  # ═══ STİL KATMANI (`docs/151`) ═══
+  #
+  # Kapı artık CSS zincirini de yürüyor, yani sentetik sahnenin de bir stil
+  # tarafı olmak zorunda. Olmasaydı temiz senaryo "masaüstü katmanı yok"
+  # diyerek LEAK verir ve JavaScript senaryolarının hepsi anlamsızlaşırdı.
+  local css="$TMP/resources/css"
+  printf "@import 'tailwindcss';\n@import './shared-bits.css';\nbody { color: #000; }\n" \
+    > "$css/app.css"
+  printf ".shared { padding: 8px; }\n" > "$css/shared-bits.css"
+  printf "[data-device='desktop'] .dk-row { min-height: 32px; }\n@media (hover: hover) and (pointer: fine) {\n  [data-device='desktop'] .dk-row { min-height: 28px; }\n}\n" \
+    > "$css/app-desktop.css"
+  printf "export default { input: ['resources/css/app.css', 'resources/css/app-desktop.css'] };\n" \
+    > "$TMP/vite.config.ts"
 }
 
 echo "adaptive-bundle-gate"
@@ -137,9 +160,48 @@ expect LEAK "pages/desktop altındaki dosyaya masaüstünden ulaşılmıyorsa k�
 scaffold
 printf "export const OrderQueueTouch = () => null;\n" \
   > "$TMP/resources/js/components/workspace/pages/mobile/OrderQueueTouch.tsx"
-printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { OrdersScreenDesktop } from './components/workspace/pages/desktop/OrdersScreenDesktop';\nimport { OrderQueueTouch } from './components/workspace/pages/mobile/OrderQueueTouch';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, OrdersScreenDesktop, OrderQueueTouch, desktopInspectors];\n" \
+printf "import { WorkspaceApp } from './components/workspace/WorkspaceApp';\nimport { DesktopChrome } from './components/workspace/chrome/DesktopChrome';\nimport { KitchenBoard } from './components/workspace/kitchen/KitchenBoard';\nimport { OrdersScreenDesktop } from './components/workspace/pages/desktop/OrdersScreenDesktop';\nimport i18nDesktop from './i18n/workspace-desktop';\nimport { OrderQueueTouch } from './components/workspace/pages/mobile/OrderQueueTouch';\nimport { desktopInspectors } from './components/workspace/inspectors/desktopInspectors';\nexport default [WorkspaceApp, DesktopChrome, KitchenBoard, OrdersScreenDesktop, i18nDesktop, OrderQueueTouch, desktopInspectors];\n" \
   > "$TMP/resources/js/workspace.desktop.tsx"
 expect LEAK "pages/mobile altındaki dosya masaüstü paketine girerse kırılır"
+
+# MASAÜSTÜ DİZE KATALOĞU MOBİL PAKETE SIZARSA (`docs/151` M1).
+#
+# Bir dize tablosu da bayttır ve bileşenden farkı yoktur: paylaşılan bir dosya
+# onu adıyla andığı anda telefon indirir, çizilmese bile. Sızıntı yolu bilerek
+# TÜR ARGÜMANLI bir glob üzerinden kuruluyor — kapının örüntüsü tür argümanını
+# atlamayı bırakırsa bu senaryo sessizce PASS derdi ve depodaki bütün katalog
+# glob'ları görünmez kalırdı (bu paketten önce tam olarak öyleydi).
+scaffold
+printf "const mods = import.meta.glob<{ x?: never }>('../../../i18n/workspace-desktop/*.ts', { eager: true });\nimport { MenuPage } from './MenuPage';\nexport default { render: MenuPage, mods };\n" \
+  > "$TMP/resources/js/components/workspace/pages/MenuPage.section.tsx"
+expect LEAK "masaüstü dize kataloğu mobil pakete sızarsa kırılır"
+
+# ═══ STİL KATMANI (`docs/151`) ═══
+#
+# Bileşen kapısının stil karşılığı. Üç senaryo, üç ayrı arıza ailesi: sızıntı,
+# ölü kod ve genişlikle cihaz seçimi. Biri düşerse "masaüstü stili yalnız
+# masaüstüne iner" cümlesi bir yorum satırına döner.
+
+# SIZINTI: paylaşılan stil girişi masaüstü katmanını içeri alırsa telefon da
+# indirir — bileşen tarafındaki "paylaşılan dosya cihaza özgü modülü anıyor"un
+# birebir aynısı.
+scaffold
+printf "@import 'tailwindcss';\n@import './app-desktop.css';\nbody { color: #000; }\n" \
+  > "$TMP/resources/css/app.css"
+expect LEAK "masaüstü stili paylaşılan CSS girişine sızarsa kırılır"
+
+# ÖLÜ KOD: katman Vite girdi listesinde yoksa hiç derlenmez; yeşil bir kapı
+# çizilmeyen bir stili "ayrılmış" diye raporlardı.
+scaffold
+printf "export default { input: ['resources/css/app.css'] };\n" > "$TMP/vite.config.ts"
+expect LEAK "masaüstü stili Vite girdisi değilse (ölü) kırılır"
+
+# GENİŞLİKLE CİHAZ SEÇİMİ: `docs/54`'ün reddettiği kararın CSS'e taşınmış hâli.
+# `hover`/`pointer` sorguları serbesttir ve temiz senaryo bunu kanıtlıyor.
+scaffold
+printf "@media (min-width: 1024px) {\n  [data-device='desktop'] .dk-row { min-height: 28px; }\n}\n" \
+  > "$TMP/resources/css/app-desktop.css"
+expect LEAK "masaüstü stili genişlikle cihaz seçerse kırılır"
 
 # Giriş yoksa ayrım ölçülemez; PASS demek yalan olurdu.
 scaffold

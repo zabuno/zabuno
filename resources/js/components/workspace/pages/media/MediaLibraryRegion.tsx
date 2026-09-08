@@ -14,37 +14,29 @@ import { MediaLibrarySlotList } from './MediaLibrarySlotList';
 import { MediaTrashList } from './MediaTrashList';
 import { MediaLibraryToolbar, type MediaLibraryView } from './MediaLibraryToolbar';
 import { MEDIA_SORT_ORDER, type MediaSortKey } from './mediaSort';
-import type { MediaFolder, MediaFolderId } from './MediaFolderRail';
+/*
+    SÜZME VE SIRALAMA BAŞSIZ BİR MODÜLDEN GELİR (`docs/151`).
+
+    Aynı kararı masaüstü ızgarası da okur. İki kopya yazılsaydı aynı arama
+    iki yüzeyde farklı sonuç verebilirdi ve bu, ekrana bakarak fark
+    edilemeyecek bir ayrışma olurdu.
+*/
+import { selectVisibleAssets } from './mediaLibraryQuery';
+import type { MediaLibrarySurfaceContext } from './librarySurface';
 import { displayName, formatBytes } from './mediaFormat';
-import type { MediaAsset, MediaLibraryActions } from '../MediaPage';
+import type { MediaAsset } from '../MediaPage';
 
-export type MediaLibraryLoadState = 'loading' | 'idle' | 'error';
+/*
+    YÜZEY SÖZLEŞMESİ ORTAK BİR DOSYADA (`docs/151`).
 
-type MediaLibraryRegionProps = {
-    assets: MediaAsset[];
-    onDelete: (id: number) => void;
-    loadState: MediaLibraryLoadState;
-    onRetry?: () => void;
-    pendingDeleteIds?: Set<number>;
-    deleteErrorIds?: Set<number>;
-    deleteNotice?: string | null;
-    /**
-     * Kütüphane eylemleri (kullanım, sürüm, çöp). Verilmezse bölge yalnız
-     * listeler ve siler — bileşen tek başına da çalışır.
-     */
-    actions?: MediaLibraryActions;
-    trashRetentionDays?: number;
-    /**
-     * Arama KABUKTAN gelebilir (`MediaManagerShell`). Verildiğinde bölge
-     * kendi arama kutusunu çizmez: aynı ekranda iki arama alanı, hangisinin
-     * geçerli olduğunu belirsizleştirir.
-     */
-    query?: string;
-    /** Klasörler — boşsa hap şeridi hiç çizilmez. */
-    folders?: MediaFolder[];
-    activeFolderId?: MediaFolderId | null;
-    onFolderChange?: (id: MediaFolderId | null) => void;
-};
+    Bu bölge dokunma sürümüdür ve masaüstü ızgarası AYNI bağlamı alır.
+    Sözleşme burada yazılsaydı masaüstü sürümü dokunma bileşeninin
+    dosyasından tür çekerdi — yani paylaşılan kod ile cihaza özgü kod
+    arasındaki ok, yanlış yöne bakardı.
+*/
+export type { MediaLibraryLoadState } from './librarySurface';
+
+type MediaLibraryRegionProps = MediaLibrarySurfaceContext;
 
 const STATUS_ORDER = [
     'ready',
@@ -55,32 +47,6 @@ const STATUS_ORDER = [
     'failed',
     'rejected',
 ] as const;
-
-/**
- * Sıralama karşılaştırıcıları.
- *
- * Elimizde OLMAYAN alana göre sıralamayız: `createdAt` ya da `sizeBytes`
- * gelmediğinde satır sırası KORUNUR (kararlı sıralama), uydurma bir sıraya
- * itilmez.
- */
-function compareAssets(a: MediaAsset, b: MediaAsset, sort: MediaSortKey): number {
-    if (sort === 'name') {
-        return displayName(a).localeCompare(displayName(b));
-    }
-
-    if (sort === 'largest') {
-        return (b.sizeBytes ?? 0) - (a.sizeBytes ?? 0);
-    }
-
-    const left = a.createdAt ? Date.parse(a.createdAt) : Number.NaN;
-    const right = b.createdAt ? Date.parse(b.createdAt) : Number.NaN;
-
-    if (Number.isNaN(left) && Number.isNaN(right)) return 0;
-    if (Number.isNaN(left)) return 1;
-    if (Number.isNaN(right)) return -1;
-
-    return right - left;
-}
 
 /**
  * Kütüphane (`docs/49` Faz 4-5, `docs/98` FF-70, FF-131 kanonik kaynak):
@@ -129,22 +95,18 @@ export function MediaLibraryRegion({
         return STATUS_ORDER.filter((s) => present.has(s));
     }, [assets]);
 
-    const visible = useMemo(() => {
-        const needle = effectiveQuery.trim().toLocaleLowerCase();
-        const matched = assets.filter((asset) => {
-            if (activeFolderId !== null && asset.folderId !== activeFolderId) return false;
-            if (slot !== '' && asset.slot !== slot) return false;
-            if (status !== '' && asset.status !== status) return false;
-            if (unusedOnly && (asset.usageCount ?? 0) > 0) return false;
-            if (needle === '') return true;
-            return (
-                asset.altText.toLocaleLowerCase().includes(needle) ||
-                (asset.originalName ?? '').toLocaleLowerCase().includes(needle)
-            );
-        });
-
-        return [...matched].sort((a, b) => compareAssets(a, b, sort));
-    }, [assets, effectiveQuery, slot, status, unusedOnly, activeFolderId, sort]);
+    const visible = useMemo(
+        () =>
+            selectVisibleAssets(assets, {
+                query: effectiveQuery,
+                slot,
+                status,
+                unusedOnly,
+                folderId: activeFolderId,
+                sort,
+            }),
+        [assets, effectiveQuery, slot, status, unusedOnly, activeFolderId, sort],
+    );
 
     const detailAsset = assets.find((a) => a.id === detailId) ?? null;
     const impactAsset = assets.find((a) => a.id === impactId) ?? null;

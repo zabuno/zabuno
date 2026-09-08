@@ -16,7 +16,12 @@ import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
-import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
+import { MediaLibraryRegion } from './media/MediaLibraryRegion';
+import type {
+    MediaLibraryLoadState,
+    MediaLibrarySurfaceContext,
+    MediaLibrarySurfaceRenderer,
+} from './media/librarySurface';
 import { MediaAuditRegion } from './media/MediaAuditRegion';
 import { MediaSizeEngineRegion } from './media/MediaSizeEngineRegion';
 import { MediaConvertRegion } from './media/MediaConvertRegion';
@@ -33,6 +38,7 @@ import { MediaFolderRail, type MediaFolderId } from './media/MediaFolderRail';
 import { useMediaFolders } from './media/mediaFolders';
 import { WorkspacePageFrame } from './shared/WorkspacePageFrame';
 import { PanelCard } from './shared/PanelCard';
+import { DeviceSurface } from './shared/DeviceSurface';
 
 export type MediaAsset = {
     id: number;
@@ -99,6 +105,21 @@ export type MediaLibraryActions = {
 
 type MediaPageProps = {
     workspaceId?: number;
+    /**
+     * KÜTÜPHANEYİ ÇİZEN İŞLEV — YALNIZ masaüstü paketinde doludur
+     * (`docs/151`).
+     *
+     * `undefined` telefonun NORMAL hâlidir ve bir eksiklik anlatmaz:
+     * kütüphane o pakette bugünkü dokunmatik listeyle çizilir. Sayfanın
+     * geri kalanı (kabuk, klasör şeridi, yükleme, toplu sihirbaz, denetim
+     * izi) İKİ cihazda da aynıdır ve buraya kopyalanmaz — iki kopya sekme
+     * mantığı, yarın bir izin değiştiğinde yalnız birinde düzeltilirdi.
+     *
+     * Bayrak değil ÇİZİCİ geçilir: `deviceClass === 'desktop'` diye bir dal
+     * kodu yalnız GİZLERDİ; masaüstü ızgarası telefon paketine yine iner,
+     * ayrıştırılır ve bakım isterdi (`docs/153` §3).
+     */
+    renderLibrary?: MediaLibrarySurfaceRenderer;
 };
 
 /**
@@ -106,7 +127,7 @@ type MediaPageProps = {
  * remove an own quarantined asset — same-origin credentials throughout, CSRF
  * bootstrapped before every state-changing request (S1-WP03a).
  */
-export function MediaPage({ workspaceId }: MediaPageProps) {
+export function MediaPage({ workspaceId, renderLibrary }: MediaPageProps) {
     const [assets, setAssets] = useState<MediaAsset[]>([]);
     const [loadState, setLoadState] = useState<MediaLibraryLoadState>('loading');
     const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<number>>(new Set());
@@ -383,6 +404,30 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
         bilinmiyorsa o iki bölüm hiç yazılmaz. Adressiz bir bölüm sekmesi,
         açıldığında yalnız bir hata gösterirdi.
     */
+    /*
+        KÜTÜPHANENİN BAĞLAMI TEK YERDE KURULUR (`docs/151`).
+
+        İki yüzey de AYNI nesneyi alır: aynı liste, aynı silme yolu, aynı
+        klasör seçimi. Ayrı ayrı kurulsaydı, yarın eklenen bir alan yalnız
+        birine bağlanır ve fark ancak masaüstünde eksik çalışan bir ekranla
+        anlaşılırdı.
+    */
+    const librarySurface: MediaLibrarySurfaceContext = {
+        assets,
+        onDelete: (id) => void handleDelete(id),
+        loadState,
+        onRetry: () => void loadAssets(),
+        pendingDeleteIds,
+        deleteErrorIds,
+        deleteNotice,
+        actions: workspaceId === undefined ? undefined : actions,
+        trashRetentionDays,
+        query,
+        folders,
+        activeFolderId: folderId,
+        onFolderChange: setFolderId,
+    };
+
     const sections: MediaManagerSection[] = [
         {
             key: 'library',
@@ -390,21 +435,11 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             icon: <Images aria-hidden="true" size={18} />,
             content: (
                 <PanelCard>
-                    <MediaLibraryRegion
-                        assets={assets}
-                        onDelete={(id) => void handleDelete(id)}
-                        loadState={loadState}
-                        onRetry={() => void loadAssets()}
-                        pendingDeleteIds={pendingDeleteIds}
-                        deleteErrorIds={deleteErrorIds}
-                        deleteNotice={deleteNotice}
-                        actions={workspaceId === undefined ? undefined : actions}
-                        trashRetentionDays={trashRetentionDays}
-                        query={query}
-                        folders={folders}
-                        activeFolderId={folderId}
-                        onFolderChange={setFolderId}
-                    />
+                    {renderLibrary ? (
+                        <DeviceSurface render={renderLibrary} context={librarySurface} />
+                    ) : (
+                        <MediaLibraryRegion {...librarySurface} />
+                    )}
                 </PanelCard>
             ),
         },
