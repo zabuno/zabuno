@@ -87,38 +87,51 @@ function isBody(value: unknown): value is MediaSettingsBody {
 }
 
 /**
- * Salt okunur anahtar.
+ * HÂL KELİMESİ — anahtar DEĞİL (sahibin kararı, 2026-09-08: "switch butonlar
+ * saçma, UI hatası").
  *
- * ANAHTAR ÇİZİLİR ama ÇEVRİLEMEZ. Sahibin kararı (2026-09-05):
- * kapatılabilir bir güvenlik anahtarı, kapatıldığı gün bir güvenlik
- * açığıdır. Yine de anahtar biçiminde çizilir, çünkü sorulan soru
- * "açık mı?" — ve bir anahtar bu soruyu tek bakışta cevaplar.
+ * Burada bir anahtar vardı ve çevrilemiyordu; altında da "kapatılamaz"
+ * yazıyordu. Ekran aynı anda iki şey söylüyordu: anahtarın biçimi
+ * "değiştirebilirsin", cümlesi "değiştiremezsin". Kullanıcı dokunuyor,
+ * hiçbir şey olmuyor — ve dokunmanın işe yaramadığını ancak DENEYEREK
+ * öğreniyordu. Devre dışı bırakmak bunu düzeltmez: devre dışı bir anahtar
+ * hâlâ bir anahtardır.
  *
- * `role="switch"` + `aria-checked` yazılır ve düğme `disabled`'dır:
- * ekran okuyucu hem durumu hem de çevrilemez olduğunu duyurur. Yanındaki
- * "kapatılamaz" cümlesi bunu gören kullanıcıya da söyler.
+ * Sorulan soru ("açık mı?") yine tek bakışta cevaplanmalı, o yüzden hâl
+ * KAYBOLMAZ — biçim değişir: kontrol değil, KELİME. Deponun bu iş için hazır
+ * sözcüğü `MediaAssetStatusBadge`tir ve buradaki de aynı dili konuşur:
+ * anlamı METİN taşır, renk yalnız pekiştirir. Renk tek başına anlatsaydı,
+ * onu ayırt edemeyen için ekran boş kalırdı.
+ *
+ * İKON YOK. Bir kalkan simgesi kelimenin söylemediği hiçbir şeyi söylemez,
+ * ama 320 pikselde satırdan bir sütun genişliği götürür — bu bölümün en kıt
+ * kaynağı ekran alanıdır.
+ *
+ * `role="status"` de YOK: bu satır bir olay bildirmiyor, sayfanın sabit
+ * içeriği. Canlı bölge yapmak, ekran okuyucuya olmayan bir değişikliği
+ * duyurmak olurdu.
  */
-function LockedSwitch({ label, checked }: { label: string; checked: boolean }) {
-    return (
-        <button
-            type="button"
-            role="switch"
-            aria-checked={checked}
-            aria-label={label}
-            disabled
-            className={`inline-flex min-h-[var(--control-height)] w-[3rem] shrink-0 items-center rounded-pill border border-border p-[var(--space-1)] ${
-                checked ? 'bg-action' : 'bg-surface-active'
-            }`}
-        >
-            <span
-                aria-hidden="true"
-                className={`block size-[1.25rem] rounded-pill bg-surface ${
-                    checked ? 'ms-auto' : ''
-                }`}
-            />
-        </button>
-    );
-}
+const SECURITY_STATE: Record<string, { label: TranslationKey; tone: string }> = {
+    on: { label: 'workspace.media.settings.security.state.on', tone: 'text-fg-success' },
+    partial: { label: 'workspace.media.settings.security.state.partial', tone: 'text-fg-warning' },
+    unavailable: {
+        label: 'workspace.media.settings.security.state.unavailable',
+        tone: 'text-fg-warning',
+    },
+    /*
+        `missing` için hâl kelimesi YOK: olmayan bir şeyin durumu olmaz.
+        Açıklaması zaten "Not built yet." diyor; ikinci bir kelime aynı
+        yokluğu iki kez söylerdi.
+    */
+};
+
+/**
+ * "Kapatılamaz" cümlesi yalnız GERÇEKTEN YÜRÜYEN önlemin altında durur.
+ *
+ * Çalışmayan bir tarayıcının altına "kapatılamaz" yazmak, hemen üstündeki
+ * açıklamayla çelişirdi: o satır zaten "kapalı ve buradan açamazsın" diyor.
+ */
+const LOCKED_STATES = ['on', 'partial'];
 
 /**
  * MEDYA AYARLARI (kanonik kaynak: `docs/reference/media-manager/
@@ -132,7 +145,12 @@ function LockedSwitch({ label, checked }: { label: string; checked: boolean }) {
  *   - Dizin ve dosya adı deseni DEPOLAMA ANAHTARIDIR ve anahtar asla
  *     değişmez; değişse yayınlanmış her menü görselini kaybederdi.
  *   - Güvenlik önlemleri bir ayara bağlı DEĞİLDİR; hepsi koşulsuz uygulanır.
- *   - Filigran diye bir kod YOKTUR; anahtar çizilmez, "henüz yok" yazılır.
+ *   - Filigran diye bir kod YOKTUR; "henüz yok" yazılır.
+ *
+ * BU YÜZDEN EKRANDA HİÇBİR KONTROL YOKTUR — ne kutu, ne anahtar, ne devre
+ * dışı bir anahtar (sahibin kararı, 2026-09-08). Kapatılamayan dört önlem
+ * bir ayar değil bir OLGUDUR ve olgu okunur: etiket + hâl + sebebi.
+ * Kapı `controls.guard.test.ts`tedir.
  *
  * Virüs taraması sahibin AÇIK kararıdır: gösterilir, kapatılamaz. Tarayıcı
  * bu ortamda bağlı değilse durum "kapalı" değil "çalışmıyor" diye okunur —
@@ -255,35 +273,43 @@ export function MediaSettingsRegion({ workspaceId }: MediaSettingsRegionProps) {
                         const descriptionKey =
                             SECURITY_DESCRIPTION[`${measure.key}:${measure.state}`];
 
+                        const state = SECURITY_STATE[measure.state];
+
                         return (
+                            /*
+                                Satırın biçimi YUKARIDAN alındı: desen listesi
+                                bu sayfada zaten doğru olan yarıdır ve aynı
+                                dikey ritmi taşır. İkinci bir satır düzeni
+                                icat etmek, aynı ekranda iki tasarım dili
+                                konuşmak olurdu.
+
+                                Anahtarın gittiği yer geri kazanılan yerdir:
+                                3rem'lik kontrol ve yanındaki `space-3`
+                                boşluğu düştü — satır başına 60 piksel, 320
+                                pikselin beşte biri. Dolgu BÜYÜTÜLMEDİ; dar
+                                ekranda kıt olan alan metne geri verildi
+                                (ölçüm: 270/320 kullanılabilir genişlik).
+                            */
                             <li
                                 key={measure.key}
-                                className="flex items-start gap-[var(--space-3)] border-t border-border py-[var(--space-3)] first:border-t-0"
+                                className="flex flex-col gap-[var(--space-1)] border-t border-border py-[var(--space-3)] first:border-t-0"
                             >
-                                {/*
-                                    `missing` durumunda ANAHTAR ÇİZİLMEZ.
-                                    Kapalı görünen bir anahtar "açabilirsin"
-                                    der; oysa açılacak bir şey yok.
-                                */}
-                                {measure.state === 'missing' ? null : (
-                                    <LockedSwitch
-                                        label={label}
-                                        checked={measure.state !== 'unavailable'}
-                                    />
-                                )}
-                                <div className="flex min-w-0 flex-col gap-[var(--space-1)]">
+                                <div className="flex flex-wrap items-baseline gap-x-[var(--space-2)]">
                                     <span className="text-body font-medium text-fg">{label}</span>
-                                    {descriptionKey === undefined ? null : (
-                                        <p className="text-body text-fg-muted">
-                                            {t(descriptionKey)}
-                                        </p>
-                                    )}
-                                    {measure.state === 'missing' ? null : (
-                                        <span className="text-meta text-fg-secondary">
-                                            {t('workspace.media.settings.security.locked')}
+                                    {state === undefined ? null : (
+                                        <span className={`text-meta font-medium ${state.tone}`}>
+                                            {t(state.label)}
                                         </span>
                                     )}
                                 </div>
+                                {descriptionKey === undefined ? null : (
+                                    <p className="text-body text-fg-muted">{t(descriptionKey)}</p>
+                                )}
+                                {LOCKED_STATES.includes(measure.state) ? (
+                                    <span className="text-meta text-fg-secondary">
+                                        {t('workspace.media.settings.security.locked')}
+                                    </span>
+                                ) : null}
                             </li>
                         );
                     })}

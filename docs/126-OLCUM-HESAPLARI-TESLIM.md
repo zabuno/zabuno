@@ -8,6 +8,13 @@
 
 **Sahibin cümlesiyle:** *"ozan tamam ama dns eksik."*
 
+> **2026-09-08 güncellemesi (FF-220).** Konteyner kimliğinin girileceği yer
+> değişti: artık sunucuya SSH ile girmek gerekmiyor, panelin sağlayıcı
+> kasasından giriliyor. Nasıl ve hangi ekranda: **`docs/135`**. Aşağıdaki
+> §3 (hedefi açmadan etiket kurma tuzağı) ve §4 (restoran yolculuğu)
+> **aynen geçerlidir**; yalnız §3'teki `destinations` listesi artık aynı
+> panelden de yönetilebilir.
+
 ## 0. Ölçülmüş durum (2026-09-07)
 
 | Ne | Durum | Nerede |
@@ -27,7 +34,7 @@ arayüzdür; depo onu ne okuyabilir ne de doğrulayabilir.
 
 | Araç | Kimlik | Nereye girer |
 | --- | --- | --- |
-| Google Tag Manager | `GTM-W3DF46LN` | **Üretim sunucusunun kendi `.env` dosyasına**, `ANALYTICS_GTM_CONTAINER_ID` olarak |
+| Google Tag Manager | `GTM-W3DF46LN` | **Panelin kasasına** (Provider keys → Google Tag Manager); `.env`in `ANALYTICS_GTM_CONTAINER_ID` yolu da açık kalmaya devam ediyor. Adım adım: `docs/135` §7 |
 | Google Analytics 4 | `G-LGRKH7L672` | **GTM arayüzüne**, GA4 yapılandırma etiketinin içine. Koda girmez |
 | Yandex Metrica (sayaç) | `112364424` | **GTM arayüzüne**, Metrica etiketinin içine. Koda girmez |
 
@@ -150,7 +157,7 @@ girilir (`/platform/credentials`, `docs/94`).
 | # | İş | Kim | Durum |
 | --- | --- | --- | --- |
 | 1 | Örnek dosyalarda anahtarların bulunabilirliği | Depo | Yapıldı |
-| 2 | Üretim `.env`'ine `ANALYTICS_GTM_CONTAINER_ID=GTM-W3DF46LN` | Dağıtım | Bekliyor |
+| 2 | Konteyner kimliğinin üretime girmesi — artık panelden (`docs/135` §7), SSH gerekmiyor | Sahip | Bekliyor |
 | 3 | GTM'de GA4 etiketi (`G-LGRKH7L672`) | Sahip / GTM | Bekliyor |
 | 4 | GTM'de Metrica etiketi (`112364424`) | Sahip / GTM | Bekliyor |
 | 5 | DNS: SPF, DKIM, takip CNAME + Mailgun "Verified" | Ozan | Bekliyor |

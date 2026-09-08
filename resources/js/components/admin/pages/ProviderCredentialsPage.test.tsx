@@ -40,6 +40,44 @@ function providers() {
                 { name: 'project', secret: false, required: false, default: null },
             ],
         },
+        /*
+            ÖLÇÜM KİMLİĞİ (FF-220, `docs/135`). Bu sağlayıcının HİÇBİR sır
+            alanı yoktur ve üç alanı KAPALI UÇLUDUR — panelin bugüne kadar
+            hiç karşılaşmadığı iki durum.
+        */
+        {
+            provider: 'google_tag_manager',
+            fields: [
+                {
+                    name: 'container_id',
+                    secret: false,
+                    required: true,
+                    default: null,
+                    choices: null,
+                },
+                {
+                    name: 'ga4',
+                    secret: false,
+                    required: false,
+                    default: 'off',
+                    choices: ['off', 'on'],
+                },
+                {
+                    name: 'yandex_metrica',
+                    secret: false,
+                    required: false,
+                    default: 'off',
+                    choices: ['off', 'on'],
+                },
+                {
+                    name: 'hotjar',
+                    secret: false,
+                    required: false,
+                    default: 'off',
+                    choices: ['off', 'on'],
+                },
+            ],
+        },
     ];
 }
 
@@ -96,6 +134,26 @@ function connections() {
                 { name: 'base_url', secret: false, isSet: false, preview: null },
                 { name: 'organization', secret: false, isSet: false, preview: null },
                 { name: 'project', secret: false, isSet: false, preview: null },
+            ],
+        },
+        {
+            id: 4,
+            provider: 'google_tag_manager',
+            label: 'Measurement',
+            scope: 'platform_owned',
+            workspaceId: null,
+            configured: true,
+            state: 'active',
+            health: 'unknown',
+            lastRotatedAt: null,
+            lastHealthCheckAt: null,
+            fields: [
+                // Konteyner kimliği SIR DEĞİL: tam değeriyle geri gelir.
+                { name: 'container_id', secret: false, isSet: true, preview: 'GTM-PANELFAKE' },
+                { name: 'ga4', secret: false, isSet: true, preview: 'on' },
+                { name: 'yandex_metrica', secret: false, isSet: true, preview: 'off' },
+                // Hiç kaydedilmemiş bir hedef: panel şemanın varsayılanını gösterir.
+                { name: 'hotjar', secret: false, isSet: false, preview: null },
             ],
         },
     ];
@@ -400,6 +458,95 @@ describe('ProviderCredentialsPage', () => {
         // "Yoklanacak bir şey yok" bir HATA değildir — Mailgun'un model
         // listesi yoktur ve bu onu bozuk yapmaz.
         expect(await screen.findByText('Nothing to test for this provider.')).toBeInTheDocument();
+    });
+
+    // --- FF-220: ölçüm kimliği kasadan girilir (`docs/135`) ---------------
+
+    it('shows the measurement container id in full because it is not a secret', async () => {
+        vi.spyOn(globalThis, 'fetch').mockResolvedValue(jsonResponse(payload()));
+
+        render(<ProviderCredentialsPage />);
+        await waitFor(() =>
+            expect(screen.getByRole('heading', { name: 'Measurement' })).toBeInTheDocument(),
+        );
+
+        const card = screen.getByRole('heading', { name: 'Measurement' }).closest('li')!;
+        const container = within(card).getByLabelText(/Container ID/) as HTMLInputElement;
+
+        /*
+            Sır olsaydı `type="password"` olur ve değeri boş gelirdi — sahip
+            girdiği kimliği bir daha hiç doğrulayamazdı. GTM kimliği zaten
+            sayfanın kaynağında herkese görünür; saklamanın koruduğu bir şey
+            yok, maliyeti ise sahibin gözüyle denetleyememesi.
+        */
+        expect(container.type).toBe('text');
+        expect(container.value).toBe('GTM-PANELFAKE');
+    });
+
+    it('draws a destination as a closed list, not a free-text box', async () => {
+        vi.spyOn(globalThis, 'fetch').mockResolvedValue(jsonResponse(payload()));
+
+        render(<ProviderCredentialsPage />);
+        await waitFor(() =>
+            expect(screen.getByRole('heading', { name: 'Measurement' })).toBeInTheDocument(),
+        );
+
+        const card = screen.getByRole('heading', { name: 'Measurement' }).closest('li')!;
+
+        /*
+            Serbest bir metin kutusu olsaydı sahibin yazdığı `evet` ya
+            sunucuda reddedilir ya da sessizce "kapalı" sayılırdı; ikincisi
+            ekranda hiçbir iz bırakmazdı ve yalnız raporlar boş kalırdı.
+        */
+        const ga4 = within(card).getByLabelText('Allow Google Analytics 4') as HTMLSelectElement;
+        expect(ga4.tagName).toBe('SELECT');
+        expect([...ga4.options].map((option) => option.value)).toEqual(['off', 'on']);
+        expect(ga4.value).toBe('on');
+
+        expect(
+            (within(card).getByLabelText('Allow Yandex Metrica') as HTMLSelectElement).value,
+        ).toBe('off');
+
+        // Hiç kaydedilmemiş bir hedef BOŞ değil, şemanın varsayılanını
+        // gösterir: boş bir seçim ekranda "Off" görünürken bambaşka bir
+        // değer kaydetmek demek olurdu.
+        expect((within(card).getByLabelText('Allow Hotjar') as HTMLSelectElement).value).toBe(
+            'off',
+        );
+    });
+
+    it('sends the destination the admin picked', async () => {
+        const fetchMock = vi
+            .spyOn(globalThis, 'fetch')
+            .mockResolvedValueOnce(jsonResponse(payload()))
+            .mockResolvedValueOnce(jsonResponse({})) // csrf
+            .mockResolvedValueOnce(jsonResponse({})) // PUT
+            .mockResolvedValueOnce(jsonResponse(payload()));
+
+        render(<ProviderCredentialsPage />);
+        await waitFor(() =>
+            expect(screen.getByRole('heading', { name: 'Measurement' })).toBeInTheDocument(),
+        );
+
+        const card = screen.getByRole('heading', { name: 'Measurement' }).closest('li')!;
+        await userEvent.selectOptions(within(card).getByLabelText('Allow Hotjar'), 'on');
+        await userEvent.click(within(card).getByRole('button', { name: 'Save' }));
+
+        await waitFor(() => {
+            const put = fetchMock.mock.calls.find(
+                (call) =>
+                    String(call[0]).endsWith('/connections/4') &&
+                    (call[1] as RequestInit)?.method === 'PUT',
+            );
+            expect(put).toBeTruthy();
+            const body = JSON.parse((put![1] as RequestInit).body as string);
+            expect(body.fields.hotjar).toBe('on');
+            // Dokunulmayan hedefler olduğu gibi gider: bir kaydetme, başka
+            // bir hedefi sessizce kapatmamalı.
+            expect(body.fields.ga4).toBe('on');
+            expect(body.fields.yandex_metrica).toBe('off');
+            expect(body.fields.container_id).toBe('GTM-PANELFAKE');
+        });
     });
 
     it('shows an error with retry when loading fails', async () => {

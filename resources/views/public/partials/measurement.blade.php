@@ -1,4 +1,7 @@
-@php($zabunoMeasurementEnabled = \App\Support\Analytics\AnalyticsConfiguration::fromConfig()->isEnabled())
+{{-- Ölçüm KASADAN (yoksa env'den) okunur — `docs/135`. Kaynak, şeridi ve
+     konteyneri besleyenle AYNI olmak zorunda: ayrışsalardı onay alınır,
+     konteyner yüklenir ama dönüşüm olayları hiç yazılmazdı. --}}
+@php($zabunoMeasurementEnabled = app(\App\Infrastructure\Analytics\VaultAnalyticsSettings::class)->configuration()->isEnabled())
 @php($zabunoMeasurementConsent = \App\Support\Analytics\MeasurementConsent::fromRequest(request()))
 {{--
     Kamu sayfalarının dönüşüm olayları da onaya bağlıdır: bu olaylar

@@ -1,5 +1,5 @@
 @php
-    $zabunoAnalytics = \App\Support\Analytics\AnalyticsConfiguration::fromConfig();
+    $zabunoAnalytics = app(\App\Infrastructure\Analytics\VaultAnalyticsSettings::class)->configuration();
     $zabunoConsent = \App\Support\Analytics\MeasurementConsent::fromRequest(request());
 @endphp
 {{--

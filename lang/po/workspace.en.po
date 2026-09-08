@@ -3560,6 +3560,18 @@ msgstr "Signed link for private files"
 msgid "workspace.media.settings.security.signedLink.on"
 msgstr "The original has no public address. Downloading it needs a signed link that stops working after ten minutes."
 
+#: workspace:workspace.media.settings.security.state.on
+msgid "workspace.media.settings.security.state.on"
+msgstr "On"
+
+#: workspace:workspace.media.settings.security.state.partial
+msgid "workspace.media.settings.security.state.partial"
+msgstr "Partly on"
+
+#: workspace:workspace.media.settings.security.state.unavailable
+msgid "workspace.media.settings.security.state.unavailable"
+msgstr "Not running here"
+
 #: workspace:workspace.media.settings.security.virusScan
 msgid "workspace.media.settings.security.virusScan"
 msgstr "Virus scan"
